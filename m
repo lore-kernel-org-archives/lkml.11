@@ -2,159 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D46B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 02:56:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0840FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 02:57:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443680AbiDVC7P (ORCPT
+        id S1443634AbiDVDAJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 22:59:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48764 "EHLO
+        Thu, 21 Apr 2022 23:00:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443635AbiDVC67 (ORCPT
+        with ESMTP id S1443681AbiDVC7x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 22:58:59 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B12B4ECE0
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 19:56:01 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id g13so13721667ejb.4
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 19:56:01 -0700 (PDT)
+        Thu, 21 Apr 2022 22:59:53 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 757434EA02
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 19:56:39 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id g20so8824218edw.6
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 19:56:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ppxYJpilG8kq+TFq7q0/hAFZJS7FtFUQSQusR4SqlvA=;
-        b=Xctnh2iK5uByYnDTDm5OXbRfKcEVx4Xs78FxhxW87Sw/K0tponrZPQ+y9TipNokajo
-         yMZLfRCLO6Pr6DCynUM4uHbdbfAIEevQALChH2DhzRyAy3ocXyIrbT+tBuTUR1rxaypw
-         q+M9mSEDvFTqlaMTl/bftJ5L/6+6k0Tkc5roo=
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to:cc
+         :content-transfer-encoding;
+        bh=I6Rk2jsbXOAIxG1A5lmiEupjlgITDVei+c3ecVf7c6I=;
+        b=mfV9T4S5I5l4rgMoG1OpPRftD54XDgGTf9QNYQEiUbUTkDY2te8HSfF6N8cSqtsf+r
+         TDzwAkkKyJtPg35vRjz096lcBqDWCJ8gW5hdtx+mbeIQjJSH+zpI+7eNyKwH1MTsF3hq
+         MpgSYNHwL7XRGTngrV3cCq6nbX16lzyztdaeN3W+oMpr31v2UugssKeQNa9AVY1Jsb1G
+         1p6nTKqlWZBaFxJEgfxANEqh+FayQkhY/Rx83SoEQWnJ/UkUGp9MncVz3QTfVab5p+fJ
+         0dIaIWY0TZw9UiLC0yTP0+WMJbR13dbWZteU0qqEqod1n2CMKiyYxxSnrwliEzixdJf+
+         tP3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ppxYJpilG8kq+TFq7q0/hAFZJS7FtFUQSQusR4SqlvA=;
-        b=P+FbLw96mrsvPMsPxZWDh/+q09+z+tqSgwHDX3TLCLHlgNbnakvM7k2HYeTx5NCsrN
-         XJ/0RyerHIgkfjuRe7wajTn0Xd84fOAEgGLjF/JI8mRtQ4OAm84hH//anXCdy5VvJgyG
-         haLkDNclwTToZm3hswiRaJmHd2K4shlt/QfEzbYm7PuwQmNQNDWg4s3r3DPli8Ldd0dP
-         HYKvmv3PgLPC9YXbpEixBzkz1h/jmqP++LkNh73qcKzJFF5keoQAIbR0L8BpJMfJ3bFb
-         BGNI6lUlldYS6qjYJVVlHgXFM+4Osj63N08SidD2Mix6rd1s5CSO/KyE/JYpltEW2z8B
-         Kdgw==
-X-Gm-Message-State: AOAM533ocuBCbD3Nno0q5EPLmZty9px6EvRkLp6O2Nga2QH36vmDdo/e
-        VEBbTzx3ILBdzkJnqVp9q9uAYoyPlas+2pB+YKs=
-X-Google-Smtp-Source: ABdhPJzYo7AM9d3GKrfcway/wMVkIAuuyE5+5LtPAFI9XtEAI/38Jk7NZtrF6vj82tTIDwGggdeudw==
-X-Received: by 2002:a17:907:6d25:b0:6ef:5af5:f1d3 with SMTP id sa37-20020a1709076d2500b006ef5af5f1d3mr2064526ejc.315.1650596159627;
-        Thu, 21 Apr 2022 19:55:59 -0700 (PDT)
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com. [209.85.221.49])
-        by smtp.gmail.com with ESMTPSA id kx5-20020a170907774500b006e1382b8192sm279910ejc.147.2022.04.21.19.55.59
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Apr 2022 19:55:59 -0700 (PDT)
-Received: by mail-wr1-f49.google.com with SMTP id q7so1471010wrm.5
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 19:55:59 -0700 (PDT)
-X-Received: by 2002:a05:6512:3c93:b0:44b:4ba:c334 with SMTP id
- h19-20020a0565123c9300b0044b04bac334mr1630672lfv.27.1650595688485; Thu, 21
- Apr 2022 19:48:08 -0700 (PDT)
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc
+         :content-transfer-encoding;
+        bh=I6Rk2jsbXOAIxG1A5lmiEupjlgITDVei+c3ecVf7c6I=;
+        b=jz2VGFRT3QdaQjtVBu55Qze3pOd74eXh+odNaDS6LgwQxbCKISxXk5ZyN7r3krPykC
+         jKbvfaviwdQ/RS/U7559wfOBn1KYTYGs0wXDDPzCW3anMYEPVoe1Zv8AsYeOPfR4ByHe
+         KBXwITrpulCHTKgFW3FZ9ceF6GakRCXRNnPasrNSo0klw5IRvxav2jlNBKDObiBVVON4
+         EpqsnG7WEdcFvWWwygMoHFUKCbAHnDHF96hjggrY4AIvErN7RC952p35DBNPXoxuQG2p
+         ak2AnXJQi8TsOpZLH2VKFJ+2F5awckdhnxeRIOh6/yx8nn+6KmotLIkCj28or3aUZiqq
+         jksg==
+X-Gm-Message-State: AOAM5300+IDMS25HKRRpZ4KxnfXMKPyXd10WIbzBcXWBqxLKeb75zd3A
+        zFaiu4L8fmxk1iVCj7vHEQ/rCNyLPQzGK/8NaSg=
+X-Google-Smtp-Source: ABdhPJz8Bnz3N7vJ3BCNH4L2dNjA5ebD4y5+mbWIZJ04x6ANdJyIesUHyouSxmjOWo9H7LFKWPhHZh4uQzF8O9xzK2E=
+X-Received: by 2002:a05:6402:1cc1:b0:413:2cfb:b6ca with SMTP id
+ ds1-20020a0564021cc100b004132cfbb6camr2546390edb.265.1650596189459; Thu, 21
+ Apr 2022 19:56:29 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220415164413.2727220-1-song@kernel.org> <YlnCBqNWxSm3M3xB@bombadil.infradead.org>
- <YlpPW9SdCbZnLVog@infradead.org> <4AD023F9-FBCE-4C7C-A049-9292491408AA@fb.com>
- <CAHk-=wiMCndbBvGSmRVvsuHFWC6BArv-OEG2Lcasih=B=7bFNQ@mail.gmail.com>
- <B995F7EB-2019-4290-9C09-AE19C5BA3A70@fb.com> <Yl04LO/PfB3GocvU@kernel.org>
- <Yl4F4w5NY3v0icfx@bombadil.infradead.org> <88eafc9220d134d72db9eb381114432e71903022.camel@intel.com>
- <B20F8051-301C-4DE4-A646-8A714AF8450C@fb.com> <Yl8CicJGHpTrOK8m@kernel.org>
- <CAHk-=wh6um5AFR6TObsYY0v+jUSZxReiZM_5Kh4gAMU8Z8-jVw@mail.gmail.com>
- <1650511496.iys9nxdueb.astroid@bobo.none> <CAHk-=wiQ5=S3m2+xRbm-1H8fuQwWfQxnO7tHhKg8FjegxzdVaQ@mail.gmail.com>
- <1650530694.evuxjgtju7.astroid@bobo.none> <25437eade8b2ecf52ff9666a7de9e36928b7d28f.camel@intel.com>
- <CAHk-=wiQcg=7++Odg08=eZZgdX4NKcPqiqGKXHNXqesTtfkmmA@mail.gmail.com>
- <1650584815.0dtcbd4qky.astroid@bobo.none> <310d562b80ad328e19a4959356600e4efe49cf4c.camel@intel.com>
-In-Reply-To: <310d562b80ad328e19a4959356600e4efe49cf4c.camel@intel.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 21 Apr 2022 19:47:52 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wg+xn7WbSEb1boSCj+AEUwwAGmXf5Hvb0822BHyBwRoDw@mail.gmail.com>
-Message-ID: <CAHk-=wg+xn7WbSEb1boSCj+AEUwwAGmXf5Hvb0822BHyBwRoDw@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf 0/4] vmalloc: bpf: introduce VM_ALLOW_HUGE_VMAP
-To:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
-Cc:     "npiggin@gmail.com" <npiggin@gmail.com>,
-        "songliubraving@fb.com" <songliubraving@fb.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "hch@infradead.org" <hch@infradead.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "Kernel-team@fb.com" <Kernel-team@fb.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "rppt@kernel.org" <rppt@kernel.org>,
-        "song@kernel.org" <song@kernel.org>,
-        "pmladek@suse.com" <pmladek@suse.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "dborkman@redhat.com" <dborkman@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "mcgrof@kernel.org" <mcgrof@kernel.org>,
-        "mbenes@suse.cz" <mbenes@suse.cz>,
-        "imbrenda@linux.ibm.com" <imbrenda@linux.ibm.com>
+From:   Dave Airlie <airlied@gmail.com>
+Date:   Fri, 22 Apr 2022 12:56:18 +1000
+Message-ID: <CAPM=9tzQpOnBBNNYWDaJRBztOCVM-PmprHHWZnr2yLh2rb2Y8g@mail.gmail.com>
+Subject: [git pull] drm fixes for 5.18-rc4
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 7:29 PM Edgecombe, Rick P
-<rick.p.edgecombe@intel.com> wrote:
->
-> FWIW, I like this direction. I think it needs to free them differently
-> though?
+Hi Linus,
 
-Very much so.
+Extra quiet after Easter, only have minor i915 and msm pulls. However
+I haven't seen a PR from our misc tree in a little while, I've cc'ed
+all the suspects. Once that unblocks I expect a bit larger bunch of
+patches to arrive.
 
-> Besides fixing the bisected issue (hopefully), it also more cleanly
-> separates the mapping from the backing allocation logic. And then since
-> all the pages are 4k (from the page allocator perspective), it would be
-> easier to support non-huge page aligned sizes. i.e. not use up a whole
-> additional 2MB page if you only need 4k more of allocation size.
+Otherwise as I said, one msm revert and two i915 fixes.
 
-I don't disagree, but I think the real problem is that the whole "oen
-page_order per vmalloc() area" itself is a bit broken.
+Regards,
+Dave.
 
-For example, AMD already does this "automatic TLB size" thing for when
-you have multiple contiguous PTE entries (shades of the old alpha
-"page size hint" thing, except it's automatic and doesn't have
-explicit hints).
+drm-fixes-2022-04-22:
+drm-fixes for 5.18-rc4
 
-And I'm hoping Intel will do something similar in the future.
+msm:
+- revert iommu change that broke some platforms.
 
-End result? It would actually be really good to just map contiguous
-pages, but it doesn't have anything to do with the 2MB PMD size.
+i915:
+- Unset enable_psr2_sel_fetch if PSR2 detection fails
+- Fix to detect when VRR is turned off from panel settings
+The following changes since commit b2d229d4ddb17db541098b83524d901257e93845=
+:
 
-And there's no "fixed order" needed either. If you have mapping that
-is 17 pages in size, it would still be good to allocate them as a
-block of 16 pages ("page_order = 4") and as a single page, because
-just laying them out in the page tables that way will already allow
-AMD to use a 64kB TLB entry for that 16-page block.
+  Linux 5.18-rc3 (2022-04-17 13:57:31 -0700)
 
-But it would also work to just do the allocations as a set of 8, 4, 4 and 1.
+are available in the Git repository at:
 
-But the whole "one page order for one vmalloc" means that doesn't work
-very well.
+  git://anongit.freedesktop.org/drm/drm tags/drm-fixes-2022-04-22
 
-Where I disagree (violently) with Nick is his contention that (a) this
-is x86-specific and (b) this is somehow trivial to fix.
+for you to fetch changes up to 70da382e1c5b9b2049c10abfd4489a40c1b60df0:
 
-Let's face it - the current code is broken. I think the sub-page issue
-is not entirely trivial, and the current design isn't even very good
-for it.
+  Merge tag 'drm-msm-fixes-2022-04-20' of
+https://gitlab.freedesktop.org/drm/msm into drm-fixes (2022-04-22
+09:25:47 +1000)
 
-But the *easy* cases are the ones that simply don't care - the ones
-that powerpc has actually been testing.
+----------------------------------------------------------------
+drm-fixes for 5.18-rc4
 
-So for 5.18, I think it's quite likely reasonable to re-enable
-large-page vmalloc for the easy case (ie those big hash tables).
+msm:
+- revert iommu change that broke some platforms.
 
-Re-enabling it *all*, considering how broken it has been, and how
-little testing it has clearly gotten? And potentially not enabling it
-on x86 because x86 is so much better at showing issues? That's not
-what I want to do.
+i915:
+- Unset enable_psr2_sel_fetch if PSR2 detection fails
+- Fix to detect when VRR is turned off from panel settings
 
-If the code is so broken that it can't be used on x86, then it's too
-broken to be enabled on powerpc and s390 too. Never mind that those
-architectures might have so limited use that they never realized how
-broken they were..
+----------------------------------------------------------------
+Dave Airlie (2):
+      Merge tag 'drm-intel-fixes-2022-04-20' of
+git://anongit.freedesktop.org/drm/drm-intel into drm-fixes
+      Merge tag 'drm-msm-fixes-2022-04-20' of
+https://gitlab.freedesktop.org/drm/msm into drm-fixes
 
-                 Linus
+Dmitry Baryshkov (1):
+      drm/msm: Revert "drm/msm: Stop using iommu_present()"
+
+Jos=C3=A9 Roberto de Souza (1):
+      drm/i915/display/psr: Unset enable_psr2_sel_fetch if other
+checks in intel_psr2_config_valid() fails
+
+Manasi Navare (1):
+      drm/i915/display/vrr: Reset VRR capable property on a long hpd
+
+ drivers/gpu/drm/i915/display/intel_dp.c  | 17 +++++++++-----
+ drivers/gpu/drm/i915/display/intel_psr.c | 38 ++++++++++++++++++----------=
+----
+ drivers/gpu/drm/msm/msm_drv.c            |  2 +-
+ 3 files changed, 33 insertions(+), 24 deletions(-)
