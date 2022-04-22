@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5383EC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 10:35:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4E2BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 10:35:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446745AbiDVKiM (ORCPT
+        id S1387183AbiDVKiQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 06:38:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34854 "EHLO
+        Fri, 22 Apr 2022 06:38:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446690AbiDVKhz (ORCPT
+        with ESMTP id S1446693AbiDVKh5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 06:37:55 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 699EB267D;
-        Fri, 22 Apr 2022 03:35:02 -0700 (PDT)
-Date:   Fri, 22 Apr 2022 10:34:59 -0000
+        Fri, 22 Apr 2022 06:37:57 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EF2AFFE;
+        Fri, 22 Apr 2022 03:35:04 -0700 (PDT)
+Date:   Fri, 22 Apr 2022 10:35:01 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650623701;
+        s=2020; t=1650623702;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=oiEYmoZjIQrxdFGwC+0CzfQvHyMPdpawUJRLao7DDa4=;
-        b=eVfOyHIVmsugcS3svJ0So0tIVmSoxp5WDCrQjvoPDXz9dzvmvwWDtmyK+eZI/+7M5vuV7H
-        I5hkLhJZr0Bu+/wGSCsukLTiPoSPK86o8GDEVS30M17SRIvJwNTy865u5kut7V5yOIdFaI
-        ldJgGNj8YHNTESWZ8Uogzq5oLk3rQGJeoE7aKV1MRME1VionjluxqgrOaiWM07rcpFy3Pa
-        CX97EKm5RImWxzBQeqPACxxnVLw5d7BHYaw8X8vVbwQO3x7N+sSrHsf7fvQrmkVZjvZwB9
-        /2Wiq0zANlhHC4w09fslF/NUMlmAd5ownsGBT88NWvqvLGUeffgGAxPd1uN9xQ==
+        bh=vtPY+McC2X3GmLxhfhh8W+7jnWnYDzaFOqZql0H3+eA=;
+        b=eO8EEaGILApUtwdRUHubkYvE2AdP+YGg0nIcQUgtbvkL3syh8oxU+XNE1vBfbUGN2o0xbG
+        miEOpNfECjQxBKu79M0wwuq37/75Xgy/yhETjav5m8dWr16joW4HkjBQv0g8x8mdMHXjZo
+        IdLZADMd2YvDLRPOOxlPxz1D5hw1mvesSqDqOQuKkXWmON+Nctv37D8XzYzDXnPOOJbZSX
+        hmMYQ6s+H5GxgnE3yXDQnrG0V1NiFUfuqSFTow1vSj1npiKqDEGGIkxY5U85ywKa9bawLS
+        AKOCL79Gptl612ptXHGmEkydhiVuh28hlSayz8fF9JRwpa5IGDUJzP7ml5na7A==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650623701;
+        s=2020e; t=1650623702;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=oiEYmoZjIQrxdFGwC+0CzfQvHyMPdpawUJRLao7DDa4=;
-        b=NFeAERcHYlEGG1jPZDXVjGCb/ZdSud6Q/SYZTJzbYs73GVIKKm7kn4XJuA8NJ2fyRxMJTo
-        FAczuZ6M/SJ181DQ==
+        bh=vtPY+McC2X3GmLxhfhh8W+7jnWnYDzaFOqZql0H3+eA=;
+        b=/mj8qvJ/TfIb3vNB1InQ9bFYg6I5l8i5yMp1yUcJ5Cs1JelT7jGk3FYFbiU2/rTpaktBTH
+        BI4UilKf6Gh1HKBg==
 From:   "tip-bot2 for Josh Poimboeuf" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: objtool/core] objtool: Make jump label hack optional
+Subject: [tip: objtool/core] objtool: Make stack validation frame-pointer-specific
 Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Miroslav Benes <mbenes@suse.cz>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <3bdcbfdd27ecb01ddec13c04bdf756a583b13d24.1650300597.git.jpoimboe@redhat.com>
-References: <3bdcbfdd27ecb01ddec13c04bdf756a583b13d24.1650300597.git.jpoimboe@redhat.com>
+In-Reply-To: <f563fa064b3b63d528de250c72012d49e14742a3.1650300597.git.jpoimboe@redhat.com>
+References: <f563fa064b3b63d528de250c72012d49e14742a3.1650300597.git.jpoimboe@redhat.com>
 MIME-Version: 1.0
-Message-ID: <165062369992.4207.4944845531831968750.tip-bot2@tip-bot2>
+Message-ID: <165062370171.4207.2165496648398690010.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -63,205 +63,110 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the objtool/core branch of tip:
 
-Commit-ID:     4ab7674f5951ac6a8ac4fa8828090edb64a4771f
-Gitweb:        https://git.kernel.org/tip/4ab7674f5951ac6a8ac4fa8828090edb64a4771f
+Commit-ID:     72064474964724c59ddff58a581a31b1ede75cf9
+Gitweb:        https://git.kernel.org/tip/72064474964724c59ddff58a581a31b1ede75cf9
 Author:        Josh Poimboeuf <jpoimboe@redhat.com>
-AuthorDate:    Mon, 18 Apr 2022 09:50:39 -07:00
+AuthorDate:    Mon, 18 Apr 2022 09:50:37 -07:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Fri, 22 Apr 2022 12:32:04 +02:00
+CommitterDate: Fri, 22 Apr 2022 12:32:03 +02:00
 
-objtool: Make jump label hack optional
+objtool: Make stack validation frame-pointer-specific
 
-Objtool secretly does a jump label hack to overcome the limitations of
-the toolchain.  Make the hack explicit (and optional for other arches)
-by turning it into a cmdline option and kernel config option.
+Now that CONFIG_STACK_VALIDATION is frame-pointer specific, do the same
+for the '--stackval' option.  Now the '--no-fp' option is redundant and
+can be removed.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Reviewed-by: Miroslav Benes <mbenes@suse.cz>
-Link: https://lkml.kernel.org/r/3bdcbfdd27ecb01ddec13c04bdf756a583b13d24.1650300597.git.jpoimboe@redhat.com
+Link: https://lkml.kernel.org/r/f563fa064b3b63d528de250c72012d49e14742a3.1650300597.git.jpoimboe@redhat.com
 ---
- arch/Kconfig                            |  4 +++-
- arch/x86/Kconfig                        |  1 +-
- arch/x86/include/asm/jump_label.h       |  6 ++--
- scripts/Makefile.build                  |  1 +-
- scripts/link-vmlinux.sh                 |  4 +++-
- tools/objtool/builtin-check.c           | 37 ++++++++++++++++++------
- tools/objtool/check.c                   |  2 +-
- tools/objtool/include/objtool/builtin.h |  1 +-
- 8 files changed, 44 insertions(+), 12 deletions(-)
+ scripts/Makefile.build                  | 1 -
+ scripts/link-vmlinux.sh                 | 4 ----
+ tools/objtool/builtin-check.c           | 3 +--
+ tools/objtool/check.c                   | 4 ++--
+ tools/objtool/include/objtool/builtin.h | 1 -
+ 5 files changed, 3 insertions(+), 10 deletions(-)
 
-diff --git a/arch/Kconfig b/arch/Kconfig
-index 04cdef1..9dce6d6 100644
---- a/arch/Kconfig
-+++ b/arch/Kconfig
-@@ -46,6 +46,7 @@ config JUMP_LABEL
- 	bool "Optimize very unlikely/likely branches"
- 	depends on HAVE_ARCH_JUMP_LABEL
- 	depends on CC_HAS_ASM_GOTO
-+	select OBJTOOL if HAVE_JUMP_LABEL_HACK
- 	help
- 	 This option enables a transparent branch optimization that
- 	 makes certain almost-always-true or almost-always-false branch
-@@ -1031,6 +1032,9 @@ config ARCH_WANT_DEFAULT_TOPDOWN_MMAP_LAYOUT
- config HAVE_OBJTOOL
- 	bool
- 
-+config HAVE_JUMP_LABEL_HACK
-+	bool
-+
- config HAVE_STACK_VALIDATION
- 	bool
- 	help
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 43e26ee..26d012f 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -212,6 +212,7 @@ config X86
- 	select HAVE_IOREMAP_PROT
- 	select HAVE_IRQ_EXIT_ON_IRQ_STACK	if X86_64
- 	select HAVE_IRQ_TIME_ACCOUNTING
-+	select HAVE_JUMP_LABEL_HACK		if HAVE_OBJTOOL
- 	select HAVE_KERNEL_BZIP2
- 	select HAVE_KERNEL_GZIP
- 	select HAVE_KERNEL_LZ4
-diff --git a/arch/x86/include/asm/jump_label.h b/arch/x86/include/asm/jump_label.h
-index 3ce0e67..071572e 100644
---- a/arch/x86/include/asm/jump_label.h
-+++ b/arch/x86/include/asm/jump_label.h
-@@ -20,7 +20,7 @@
- 	_ASM_PTR "%c0 + %c1 - .\n\t"			\
- 	".popsection \n\t"
- 
--#ifdef CONFIG_OBJTOOL
-+#ifdef CONFIG_HAVE_JUMP_LABEL_HACK
- 
- static __always_inline bool arch_static_branch(struct static_key *key, bool branch)
- {
-@@ -34,7 +34,7 @@ l_yes:
- 	return true;
- }
- 
--#else /* !CONFIG_OBJTOOL */
-+#else /* !CONFIG_HAVE_JUMP_LABEL_HACK */
- 
- static __always_inline bool arch_static_branch(struct static_key * const key, const bool branch)
- {
-@@ -48,7 +48,7 @@ l_yes:
- 	return true;
- }
- 
--#endif /* CONFIG_OBJTOOL */
-+#endif /* CONFIG_HAVE_JUMP_LABEL_HACK */
- 
- static __always_inline bool arch_static_branch_jump(struct static_key * const key, const bool branch)
- {
 diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index 3f20d56..f1d2c2e 100644
+index 0f73e02..6eb99cb 100644
 --- a/scripts/Makefile.build
 +++ b/scripts/Makefile.build
-@@ -227,6 +227,7 @@ ifdef CONFIG_OBJTOOL
- objtool := $(objtree)/tools/objtool/objtool
+@@ -235,7 +235,6 @@ objtool_args =								\
+ 	$(if $(CONFIG_STACK_VALIDATION), --stackval)			\
+ 	$(if $(CONFIG_X86_SMAP), --uaccess)				\
+ 	$(if $(part-of-module), --module)				\
+-	$(if $(CONFIG_FRAME_POINTER),, --no-fp)				\
+ 	$(if $(CONFIG_GCOV_KERNEL), --no-unreachable)
  
- objtool_args =								\
-+	$(if $(CONFIG_HAVE_JUMP_LABEL_HACK), --hacks=jump_label)	\
- 	$(if $(CONFIG_X86_KERNEL_IBT), --lto --ibt)			\
- 	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)		\
- 	$(if $(CONFIG_UNWINDER_ORC), --orc)				\
+ cmd_objtool = $(if $(objtool-enabled), ; $(objtool) $(objtool_args) $@)
 diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-index 33f14fe..fa1f168 100755
+index 5101a7f..1be0116 100755
 --- a/scripts/link-vmlinux.sh
 +++ b/scripts/link-vmlinux.sh
-@@ -117,6 +117,10 @@ objtool_link()
- 		# Don't perform vmlinux validation unless explicitly requested,
- 		# but run objtool on vmlinux.o now that we have an object file.
+@@ -155,10 +155,6 @@ objtool_link()
  
-+		if is_enabled CONFIG_HAVE_JUMP_LABEL_HACK; then
-+			objtoolopt="${objtoolopt} --hacks=jump_label"
-+		fi
-+
- 		if is_enabled CONFIG_X86_KERNEL_IBT; then
- 			objtoolopt="${objtoolopt} --ibt"
+ 	if [ -n "${objtoolopt}" ]; then
+ 
+-		if ! is_enabled CONFIG_FRAME_POINTER; then
+-			objtoolopt="${objtoolopt} --no-fp"
+-		fi
+-
+ 		if is_enabled CONFIG_GCOV_KERNEL; then
+ 			objtoolopt="${objtoolopt} --no-unreachable"
  		fi
 diff --git a/tools/objtool/builtin-check.c b/tools/objtool/builtin-check.c
-index c8c4d2b..b2c626d 100644
+index d4e6930..30971cc 100644
 --- a/tools/objtool/builtin-check.c
 +++ b/tools/objtool/builtin-check.c
-@@ -31,8 +31,28 @@ static int parse_dump(const struct option *opt, const char *str, int unset)
- 	return -1;
- }
+@@ -39,7 +39,7 @@ const struct option check_options[] = {
+ 	OPT_BOOLEAN('o', "orc", &opts.orc, "generate ORC metadata"),
+ 	OPT_BOOLEAN('r', "retpoline", &opts.retpoline, "validate and annotate retpoline usage"),
+ 	OPT_BOOLEAN('l', "sls", &opts.sls, "validate straight-line-speculation mitigations"),
+-	OPT_BOOLEAN('s', "stackval", &opts.stackval, "validate stack unwinding rules"),
++	OPT_BOOLEAN('s', "stackval", &opts.stackval, "validate frame pointer rules"),
+ 	OPT_BOOLEAN('u', "uaccess", &opts.uaccess, "validate uaccess rules for SMAP"),
+ 	OPT_CALLBACK_OPTARG(0, "dump", NULL, NULL, "orc", "dump metadata", parse_dump),
  
-+static int parse_hacks(const struct option *opt, const char *str, int unset)
-+{
-+	bool found = false;
-+
-+	/*
-+	 * Use strstr() as a lazy method of checking for comma-separated
-+	 * options.
-+	 *
-+	 * No string provided == enable all options.
-+	 */
-+
-+	if (!str || strstr(str, "jump_label")) {
-+		opts.hack_jump_label = true;
-+		found = true;
-+	}
-+
-+	return found ? 0 : -1;
-+}
-+
- const struct option check_options[] = {
- 	OPT_GROUP("Actions:"),
-+	OPT_CALLBACK_OPTARG('h', "hacks", NULL, NULL, "jump_label", "patch toolchain bugs/limitations", parse_hacks),
- 	OPT_BOOLEAN('i', "ibt", &opts.ibt, "validate and annotate IBT"),
- 	OPT_BOOLEAN('m', "mcount", &opts.mcount, "annotate mcount/fentry calls for ftrace"),
- 	OPT_BOOLEAN('n', "noinstr", &opts.noinstr, "validate noinstr rules"),
-@@ -87,14 +107,15 @@ int cmd_parse_options(int argc, const char **argv, const char * const usage[])
- 
- static bool opts_valid(void)
- {
--	if (opts.ibt		||
--	    opts.mcount		||
--	    opts.noinstr	||
--	    opts.orc		||
--	    opts.retpoline	||
--	    opts.sls		||
--	    opts.stackval	||
--	    opts.static_call	||
-+	if (opts.hack_jump_label	||
-+	    opts.ibt			||
-+	    opts.mcount			||
-+	    opts.noinstr		||
-+	    opts.orc			||
-+	    opts.retpoline		||
-+	    opts.sls			||
-+	    opts.stackval		||
-+	    opts.static_call		||
- 	    opts.uaccess) {
- 		if (opts.dump_orc) {
- 			fprintf(stderr, "--dump can't be combined with other options\n");
+@@ -49,7 +49,6 @@ const struct option check_options[] = {
+ 	OPT_BOOLEAN(0, "dry-run", &opts.dryrun, "don't write modifications"),
+ 	OPT_BOOLEAN(0, "lto", &opts.lto, "whole-archive like runs"),
+ 	OPT_BOOLEAN(0, "module", &opts.module, "object is part of a kernel module"),
+-	OPT_BOOLEAN(0, "no-fp", &opts.no_fp, "skip frame pointer validation"),
+ 	OPT_BOOLEAN(0, "no-unreachable", &opts.no_unreachable, "skip 'unreachable instruction' warnings"),
+ 	OPT_BOOLEAN(0, "sec-address", &opts.sec_address, "print section addresses in warnings"),
+ 	OPT_BOOLEAN(0, "stats", &opts.stats, "print statistics"),
 diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index b9ac351..d157978 100644
+index 27126ff..3e02126 100644
 --- a/tools/objtool/check.c
 +++ b/tools/objtool/check.c
-@@ -1592,7 +1592,7 @@ static int handle_jump_alt(struct objtool_file *file,
- 		return -1;
- 	}
+@@ -2806,7 +2806,7 @@ static int update_cfi_state(struct instruction *insn,
+ 		}
  
--	if (special_alt->key_addend & 2) {
-+	if (opts.hack_jump_label && special_alt->key_addend & 2) {
- 		struct reloc *reloc = insn_reloc(file, orig_insn);
+ 		/* detect when asm code uses rbp as a scratch register */
+-		if (!opts.no_fp && insn->func && op->src.reg == CFI_BP &&
++		if (opts.stackval && insn->func && op->src.reg == CFI_BP &&
+ 		    cfa->base != CFI_BP)
+ 			cfi->bp_scratch = true;
+ 		break;
+@@ -3279,7 +3279,7 @@ static int validate_branch(struct objtool_file *file, struct symbol *func,
+ 			if (ret)
+ 				return ret;
  
- 		if (reloc) {
+-			if (!opts.no_fp && func && !is_fentry_call(insn) &&
++			if (opts.stackval && func && !is_fentry_call(insn) &&
+ 			    !has_valid_stack_frame(&state)) {
+ 				WARN_FUNC("call without frame pointer save/setup",
+ 					  sec, insn->offset);
 diff --git a/tools/objtool/include/objtool/builtin.h b/tools/objtool/include/objtool/builtin.h
-index dc47572..c6acf05 100644
+index 8618585..24a7ff4 100644
 --- a/tools/objtool/include/objtool/builtin.h
 +++ b/tools/objtool/include/objtool/builtin.h
-@@ -12,6 +12,7 @@ extern const struct option check_options[];
- struct opts {
- 	/* actions: */
- 	bool dump_orc;
-+	bool hack_jump_label;
- 	bool ibt;
- 	bool mcount;
- 	bool noinstr;
+@@ -27,7 +27,6 @@ struct opts {
+ 	bool dryrun;
+ 	bool lto;
+ 	bool module;
+-	bool no_fp;
+ 	bool no_unreachable;
+ 	bool sec_address;
+ 	bool stats;
