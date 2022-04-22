@@ -2,91 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45E93C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 10:41:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB5FFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 10:41:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446791AbiDVKoW (ORCPT
+        id S1446803AbiDVKo2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 06:44:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42264 "EHLO
+        Fri, 22 Apr 2022 06:44:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446792AbiDVKoD (ORCPT
+        with ESMTP id S1446804AbiDVKoW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 06:44:03 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6759A1FB
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 03:41:06 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id ks6so15611583ejb.1
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 03:41:06 -0700 (PDT)
+        Fri, 22 Apr 2022 06:44:22 -0400
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7AAE2AC1
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 03:41:26 -0700 (PDT)
+Received: by mail-yb1-xb30.google.com with SMTP id r189so13741047ybr.6
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 03:41:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MkdTds2gqnd8Xl8DjK8EF0/jpc2ZR5Q5WZgVXWZ5jSc=;
-        b=z2km03Qw8xmX4MpL5+XyOmUK8TWb03ryVWsqBYYCd8WqKF9Rr5lgwVyGwB28/plE2S
-         6Xqgqz9FHT9wek7ZK8NtmK1ls18ds8QXKwaHpR3G5W4KlV9lEAaZ1JBmaFB4u3QQPRWz
-         aiFZmp9aN8f5rm2H7qmglKvrjTiYwlH8GfBj096y4T523ohUTna+9ERXWCqmsY+new06
-         zY4rB3aDj0DnP0QDFF6z6KOAACqNWiqvuEEUuqPpRmoh1R7gitcnjKyjCzpmkfujUvqP
-         Xj9eAxxikEw8EMjzJj3hEnMNSxb+cXuPzCKk/1/r9YoSt7pw/nAH4PblfXaXzKiy4FGX
-         GJ3g==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BB+z/sNpdoQmOp+aeDFGtzesrgj54ahnX85kbOB7QMg=;
+        b=abNt8UJyo7oWu4YeugczIcw2HKnt573QtuCIX0kpROHHBTfDZ44GLVwSZbHXFcj6ok
+         gtW7g3p/up4ectz36iG/SH6o5V/x/RKjenuuTvxPUt8ZzfiqxUXXgzQDg/tz8MKFNcYz
+         ildOPGsN/S1GC5l6LWtEmSveqZrZkIT5Tyw2N5OL8fxmP/vannelo27VcTV/eTKh/mUW
+         1+Hm9E6rUbWvwUJaqal6SMegDE135493vMaM0OQefuPmkxB0kMPhI3NtgWSfLemUqvna
+         DMIOl1ND9xRdijwsZ/jQP5ysxHcGlkfQdhEQH4TXakrqAiUEA7nymqvQyWfDjWQPSIW6
+         lZ0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MkdTds2gqnd8Xl8DjK8EF0/jpc2ZR5Q5WZgVXWZ5jSc=;
-        b=cw8vio2kHmvB2vFStDIj92tyuoprsN1RbDj1JWdlj3GOC/7useOiCI7JLB8P4RI93m
-         RA4QJ1p6lBHqaSRx+OSPfp+4ilDNaaitkfPWWtHkQ6SPBwTqeu5CFbedlOW+LcMq6PO4
-         HIPSx7W6BoPgqA/am+IBgFAyxq53vJsSgjD2dDsIYeteaf9PuYfIIyD0cd84iVZZWBJe
-         SWSC5aalVktKsfWdPShlIFkc3sZsrL/Cy0LuobBm0B5obKRV6E2jh/GO4vB7ztvDs3Oz
-         bDYC9+mxicDhDGoRr3/mV6a3GTAh8N+KSEJgExH6y7oHHk+iSs16zsaQIZMg6bXlqwnM
-         E3Vg==
-X-Gm-Message-State: AOAM531DQaoHpfDGwnjRhegkTXJZe9B0pEHFP0RPyGp8+lxPYQdoErs+
-        rfY/VuXDoUjKh7Q8TElE8pLN5g==
-X-Google-Smtp-Source: ABdhPJwn3gxzgcRJY+u63RKV+6qqGy9XgIfyv4Z3nxAi8YZqa3+l86k/3nOaO8RSz4OFM7SWzp7qgQ==
-X-Received: by 2002:a17:907:6e25:b0:6f0:99d4:9711 with SMTP id sd37-20020a1709076e2500b006f099d49711mr3019301ejc.511.1650624065001;
-        Fri, 22 Apr 2022 03:41:05 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id g24-20020a1709063b1800b006e8cf786ee8sm619736ejf.21.2022.04.22.03.41.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 03:41:04 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-oxnas@groups.io
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH] clocksource/drivers/oxnas-rps: Fix irq_of_parse_and_map() return value
-Date:   Fri, 22 Apr 2022 12:41:01 +0200
-Message-Id: <20220422104101.55754-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BB+z/sNpdoQmOp+aeDFGtzesrgj54ahnX85kbOB7QMg=;
+        b=DiQl/kk4OMZd1Hs9Z8xBkVsTzJt9KEtY3709Yl4h3jdIMaAcStulFpAlYDhis51wqr
+         QgFmiaNSXHyJfwUFVbBqfsgFZMluk8vVlpE6GS19hFZGg/NKUYU2uTZmr/C94QnfYTt2
+         zKdwri+OhMuO1wZJSPZMHcg0RbjDsT6AKRKigqiFAdeWjI4hcUy+0bXYhw72IuqypIXE
+         TbiEHN9GAFxsTNpamskWEAXd+kK9jgwbt7SWDc/J+KOyJ5dnkri7B4v7i7XlfPMhcVuM
+         PyxmbTxTjrQGf1wAg4jRzXgx8qXjDQeKzeD6VyqrQDPoJ4xEFnMoLNds2E4QN6eq5nSG
+         mkgQ==
+X-Gm-Message-State: AOAM530E57U95A5T9drT2zf6SuNNdUzi6AhuJ5PW1i8I16YteCD9Zc7U
+        BSV/NC5b3wwrTmrf1OgXiUocKD14AALOu+wqHCmNl2OPQevefA==
+X-Google-Smtp-Source: ABdhPJywlbGi8Liw+QkSDej3Yl+pGh+CnUP5xw1RQTvw7UzpZloUGNHHQvZWxVNt0MvxBaCcf9gKq0bKcE3NMiK40DY=
+X-Received: by 2002:a05:6902:1547:b0:641:fb0b:4830 with SMTP id
+ r7-20020a056902154700b00641fb0b4830mr3946865ybu.175.1650624086191; Fri, 22
+ Apr 2022 03:41:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220422032227.2991553-1-yangyingliang@huawei.com>
+In-Reply-To: <20220422032227.2991553-1-yangyingliang@huawei.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date:   Fri, 22 Apr 2022 13:41:15 +0300
+Message-ID: <CAA8EJpq2dNaRgEqrKpKTTfAm1p=QRZd2z1ouguiA6wUoxA9QAA@mail.gmail.com>
+Subject: Re: [PATCH] drm/msm/hdmi: check return value after calling platform_get_resource_byname()
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, freedreno@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        robdclark@gmail.com, jilaiw@codeaurora.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
+On Fri, 22 Apr 2022 at 06:10, Yang Yingliang <yangyingliang@huawei.com> wrote:
+>
+> It will cause null-ptr-deref if platform_get_resource_byname() returns NULL,
+> we need check the return value.
+>
+> Fixes: c6a57a50ad56 ("drm/msm/hdmi: add hdmi hdcp support (V3)")
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 
-Fixes: 89355274e1f7 ("clocksource/drivers/oxnas-rps: Add Oxford Semiconductor RPS Dual Timer")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- drivers/clocksource/timer-oxnas-rps.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-diff --git a/drivers/clocksource/timer-oxnas-rps.c b/drivers/clocksource/timer-oxnas-rps.c
-index 56c0cc32d0ac..d514b44e67dd 100644
---- a/drivers/clocksource/timer-oxnas-rps.c
-+++ b/drivers/clocksource/timer-oxnas-rps.c
-@@ -236,7 +236,7 @@ static int __init oxnas_rps_timer_init(struct device_node *np)
- 	}
- 
- 	rps->irq = irq_of_parse_and_map(np, 0);
--	if (rps->irq < 0) {
-+	if (!rps->irq) {
- 		ret = -EINVAL;
- 		goto err_iomap;
- 	}
+> ---
+>  drivers/gpu/drm/msm/hdmi/hdmi.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+>
+> diff --git a/drivers/gpu/drm/msm/hdmi/hdmi.c b/drivers/gpu/drm/msm/hdmi/hdmi.c
+> index ec324352e862..07e2ad527af9 100644
+> --- a/drivers/gpu/drm/msm/hdmi/hdmi.c
+> +++ b/drivers/gpu/drm/msm/hdmi/hdmi.c
+> @@ -142,6 +142,10 @@ static struct hdmi *msm_hdmi_init(struct platform_device *pdev)
+>         /* HDCP needs physical address of hdmi register */
+>         res = platform_get_resource_byname(pdev, IORESOURCE_MEM,
+>                 config->mmio_name);
+> +       if (!res) {
+> +               ret = -EINVAL;
+> +               goto fail;
+> +       }
+>         hdmi->mmio_phy_addr = res->start;
+>
+>         hdmi->qfprom_mmio = msm_ioremap(pdev, config->qfprom_mmio_name);
+> --
+> 2.25.1
+>
+
+
 -- 
-2.32.0
-
+With best wishes
+Dmitry
