@@ -2,183 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9237DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:22:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04D32C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:23:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232531AbiDVWZn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:25:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45784 "EHLO
+        id S232712AbiDVWZy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:25:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232155AbiDVWZ1 (ORCPT
+        with ESMTP id S232913AbiDVWZd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:25:27 -0400
-Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BA791B8282
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:17:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
-        MIME-Version:Message-ID:Date:Subject:Cc:To:From:References:In-Reply-To:
-        Content-ID:Content-Description;
-        bh=XRgs5dgoBGBDr9oS5MRbFhujpNneuzIzg2K4+SgByuA=; b=LTDQ4JRHSj7PS7jOvG31dv/Q7W
-        ZB5cT+8p9nbf0eUz5yz+8PNMcOu8i0/sHYrLMr3C/t55uXOeknvcQDdlGTXTeMpLgihR40eBAQrJl
-        P8l8Yv+c2+K3v1qKaaDgvgjT/zsxA/Gt8AP0vETbSgpH+/Oypsirx7HCyP9w9S5r9Ny+XmwPHYsPh
-        OD0V3dy2DL0UwsPda7DPkigL/etquLdpVrlB4a09h5JMZbQruEXzTWncpVrqar8Pu+2lSR9If/7vj
-        6Sfamqo8kSVgsRbeLyTkBYnX6ubInNVSO4lRPybZO0yubOK1HC2gLVQOlrVaDga2fNKMRVP8a1TwZ
-        a5O+Mt7SbmZCZ5whMbAq6J/sbt3uRetJNum0op4p4Znw31xcjBGhLnzh6SjDFFt3BbvYihp6cKqn7
-        dkTGuC1GoUabk3W6/3J1KoJHonNV04yf5QB93sTVhwRrcZxIdWrKbEz6Z4ct2yZuBSshH8WGtUbiz
-        nHkhgpU2Sp4VB5Nd4X/4W4aZjSWomDcCPXUPtxBntMzd5yZ2VuUorQlLZkeLD+smipJlYjfUoGSJz
-        jOZzjLoKQXDyvGhRGNtsJdM0GXy9JXuSlLg+kwYpj7/s3+tMQV1MB6hBmAYF+UHfpIB3b4kVxThdl
-        Ha2e37FPpqkbh9tzHmQsXrvnrM6fckHGNMhBwlTnM=;
-From:   Christian Schoenebeck <qemu_oss@crudebyte.com>
-To:     qemu-devel@nongnu.org
-Cc:     Will Cohen <wwcohen@gmail.com>, Greg Kurz <groug@kaod.org>,
-        Michael Roitzsch <reactorcontrol@icloud.com>,
-        Keno Fischer <keno@juliacomputing.com>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        v9fs-developer@lists.sourceforge.net,
-        Latchesar Ionkov <lucho@ionkov.net>
-Subject: [RFC PATCH] 9p: case-insensitive host filesystems
-Date:   Fri, 22 Apr 2022 20:02:46 +0200
-Message-ID: <1757498.AyhHxzoH2B@silver>
+        Fri, 22 Apr 2022 18:25:33 -0400
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E4CB1CD8EB
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:17:33 -0700 (PDT)
+Received: by mail-yb1-xb30.google.com with SMTP id i20so16695771ybj.7
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:17:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=AEXINFBxuSdD+7ajNy/LTJwAuKduMs79L1VZw5ckLgw=;
+        b=YPX9uaDWm6FyszcIeSL6VLxMtHjGpipQS1CT+MROq+lyzWSXP9zeOJilU3YTuHeADl
+         gVfMx7CZ/Bp1jpwp63gKAwhhwytpJb+IeqrtAMVC6/5CIX3Ky3jzzBWpPocZ+B2rJ9pI
+         PgEIW9H0Q9RYS8itMZnvFXFkypugEZSo8611na4wlf1KUSbzAXaq0bn4IBI2vWmwvmzi
+         ZjMTjnLJ/JnM5ssLK+3n8M1QfuhPVPFT3dG+jYE+WDQrXqIlmNh4BZ1B+i/NoNMbs6mm
+         95AoR8XauXSPoozrjT+qgPfex9J2yOUOUBCjKAmESZZaYT5LSsVsU3MUjXU0rxnlGpAD
+         tC6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AEXINFBxuSdD+7ajNy/LTJwAuKduMs79L1VZw5ckLgw=;
+        b=Ezklctjdx8ZWpc6UDgp6xe2oSjSu+OxkfboF51IGpweHaN13NwU2YBhsBN3WItroYC
+         L5rK5d0d21zmh1Uzhkkg18gflZp+BHB/yGwPRn63P0fzhz9PIGXrowOjjiyeiKGw7hIr
+         MxlLnNLT5VB7d49pT+BkCIdkxadflS+6Z3kRqSc5vv0IPYLVBn35JjEJrMAVxL0v+n2V
+         n2BSxjDgHtK+nBH4eV1fzVHWBE4rbi0WoWpKQey/2txAzBcs6Ug1PGb1MRdJdSFpnS6X
+         XypKu0ubANHNRegVvn5DZ5xMu0QeQrwvbgNDu0wPpRwN+n3I57z2piD3q+cAjMyHsUio
+         ZbhQ==
+X-Gm-Message-State: AOAM530wnf4QgzPkpHI7CgAPA2CMaRvzzVyTg/bO1l1ob/mE4hNyH8ii
+        MILNSxghBCU0aExmW+4HBwBVs+ylMwijWlC4p15uVw==
+X-Google-Smtp-Source: ABdhPJwEMor42osEuSk1UZ2FnNZS/vcpuI9uXKIDxgV1q2FGoggt/IKFaagXtPhObqlqNzaaHAXkGaXNYoZps1VvbDQ=
+X-Received: by 2002:a25:e6d5:0:b0:645:7257:8271 with SMTP id
+ d204-20020a25e6d5000000b0064572578271mr6674251ybh.291.1650662252356; Fri, 22
+ Apr 2022 14:17:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+References: <20220421074204.1284072-1-hch@lst.de>
+In-Reply-To: <20220421074204.1284072-1-hch@lst.de>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Fri, 22 Apr 2022 23:17:20 +0200
+Message-ID: <CACRpkdbdKBfmXGdyTm3T-MFAK30N-z4KH0k8eD8F7xaYUbDDhA@mail.gmail.com>
+Subject: Re: fully convert arm to use dma-direct
+To:     Christoph Hellwig <hch@lst.de>, Marc Zyngier <maz@kernel.org>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@kernel.org>,
+        Andre Przywara <andre.przywara@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        iommu@lists.linux-foundation.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that 9p support for macOS hosts just landed in QEMU 7.0 and with support 
-for Windows hosts on the horizon [1], the question is how to deal with case-
-insensitive host filesystems, which are very common on those two systems?
+On Thu, Apr 21, 2022 at 9:42 AM Christoph Hellwig <hch@lst.de> wrote:
 
-I made some tests, e.g. trying to setup a 9p root fs Linux installation on a 
-macOS host as described in the QEMU HOWTO [2], which at a certain point causes 
-the debootstrap script to fail when trying to unpack the 'libpam-runtime' 
-package. That's because it would try to create this symlink:
+> arm is the last platform not using the dma-direct code for directly
+> mapped DMA.  With the dmaboune removal from Arnd we can easily switch
+> arm to always use dma-direct now (it already does for LPAE configs
+> and nommu).  I'd love to merge this series through the dma-mapping tree
+> as it gives us the opportunity for additional core dma-mapping
+> improvements.
+(...)
 
-  /usr/share/man/man7/PAM.7.gz -> /usr/share/man/man7/pam.7.gz
+>  b/arch/arm/mach-footbridge/Kconfig                   |    1
+>  b/arch/arm/mach-footbridge/common.c                  |   19
+>  b/arch/arm/mach-footbridge/include/mach/dma-direct.h |    8
+>  b/arch/arm/mach-footbridge/include/mach/memory.h     |    4
 
-which fails with EEXIST on a case-insensitive APFS. Unfortunately you can't 
-easily switch an existing APFS partition to case-sensitivity. It requires to 
-reformat the entire partition, loosing all your data, etc.
+I think Marc Z has a Netwinder that he can test this on. Marc?
+I have one too, just not much in my office because of parental leave.
 
-So I did a quick test with QEMU as outlined below, trying to simply let 9p 
-server "eat" EEXIST errors in such cases, but then I realized that most of the 
-time it would not even come that far, as Linux client would first send a 
-'Twalk' request to check whether target symlink entry already exists, and as 
-it gets a positive response from 9p server (again, due to case-insensitivity) 
-client would stop right there without even trying to send a 'Tsymlink' 
-request.
-
-So maybe it's better to handle case-insensitivity entirely on client side? 
-I've read that some generic "case fold" code has landed in the Linux kernel 
-recently that might do the trick?
-
-Should 9p server give a hint to 9p client that it's a case-insensitive fs? And 
-if yes, once per entire exported fs or rather for each directory (as there 
-might be submounts on host)?
-
-[1] https://lore.kernel.org/all/20220408171013.912436-1-bmeng.cn@gmail.com/
-[2] https://wiki.qemu.org/Documentation/9p_root_fs
-
----
- hw/9pfs/9p-local.c | 54 ++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 54 insertions(+)
-
-diff --git a/hw/9pfs/9p-local.c b/hw/9pfs/9p-local.c
-index d42ce6d8b8..d6cb45c758 100644
---- a/hw/9pfs/9p-local.c
-+++ b/hw/9pfs/9p-local.c
-@@ -39,6 +39,10 @@
- #endif
- #endif
- #include <sys/ioctl.h>
-+#ifdef CONFIG_DARWIN
-+#include <glib.h>
-+#include <glib/gprintf.h>
-+#endif
- 
- #ifndef XFS_SUPER_MAGIC
- #define XFS_SUPER_MAGIC  0x58465342
-@@ -57,6 +61,18 @@ typedef struct {
-     int mountfd;
- } LocalData;
- 
-+#ifdef CONFIG_DARWIN
-+
-+/* Compare strings case-insensitive (assuming UTF-8 encoding). */
-+static int p9_stricmp(const char *a, const char *b)
-+{
-+    g_autofree gchar *cia = g_utf8_casefold(a, -1);
-+    g_autofree gchar *cib = g_utf8_casefold(b, -1);
-+    return g_utf8_collate(cia, cib);
-+}
-+
-+#endif
-+
- int local_open_nofollow(FsContext *fs_ctx, const char *path, int flags,
-                         mode_t mode)
- {
-@@ -931,6 +947,25 @@ static int local_symlink(FsContext *fs_ctx, const char 
-*oldpath,
-                fs_ctx->export_flags & V9FS_SM_NONE) {
-         err = symlinkat(oldpath, dirfd, name);
-         if (err) {
-+#if CONFIG_DARWIN
-+            if (errno == EEXIST) {
-+                printf("  -> symlinkat(oldpath='%s', dirfd=%d, name='%s') = 
-EEXIST\n", oldpath, dirfd, name);
-+            }
-+            if (errno == EEXIST &&
-+                strcmp(oldpath, name) && !p9_stricmp(oldpath, name))
-+            {
-+                struct stat st1, st2;
-+                const int cur_errno = errno;
-+                if (!fstatat(dirfd, oldpath, &st1, AT_SYMLINK_NOFOLLOW) &&
-+                    !fstatat(dirfd, name, &st2, AT_SYMLINK_NOFOLLOW) &&
-+                    st1.st_dev == st2.st_dev && st1.st_ino == st2.st_ino)
-+                {
-+                    printf("  -> iCASE SAME\n");
-+                    err = 0;
-+                }
-+                errno = cur_errno;
-+            }
-+#endif
-             goto out;
-         }
-         err = fchownat(dirfd, name, credp->fc_uid, credp->fc_gid,
-@@ -983,6 +1018,25 @@ static int local_link(FsContext *ctx, V9fsPath *oldpath,
- 
-     ret = linkat(odirfd, oname, ndirfd, name, 0);
-     if (ret < 0) {
-+#if CONFIG_DARWIN
-+        if (errno == EEXIST) {
-+            printf("  -> linkat(odirfd=%d, oname='%s', ndirfd=%d, name='%s') 
-= EEXIST\n", odirfd, oname, ndirfd, name);
-+        }
-+        if (errno == EEXIST &&
-+            strcmp(oname, name) && !p9_stricmp(oname, name))
-+        {
-+            struct stat st1, st2;
-+            const int cur_errno = errno;
-+            if (!fstatat(odirfd, oname, &st1, AT_SYMLINK_NOFOLLOW) &&
-+                !fstatat(ndirfd, name, &st2, AT_SYMLINK_NOFOLLOW) &&
-+                st1.st_dev == st2.st_dev && st1.st_ino == st2.st_ino)
-+            {
-+                printf("  -> iCASE SAME\n");
-+                ret = 0;
-+            }
-+            errno = cur_errno;
-+        }
-+#endif
-         goto out_close;
-     }
- 
--- 
-2.32.0 (Apple Git-132)
-
-
-
-
+Yours,
+Linus Walleij
