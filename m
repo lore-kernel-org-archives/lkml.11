@@ -2,121 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C183C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 03:15:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 739BBC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 03:16:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443691AbiDVDSg (ORCPT
+        id S1443714AbiDVDTq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 23:18:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60234 "EHLO
+        Thu, 21 Apr 2022 23:19:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242102AbiDVDSb (ORCPT
+        with ESMTP id S242102AbiDVDTl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Apr 2022 23:18:31 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1978C41F8E
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 20:15:36 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KkzzW0NMkzfZMc;
-        Fri, 22 Apr 2022 11:14:47 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+        Thu, 21 Apr 2022 23:19:41 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBC8F41F8E
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 20:16:46 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kl01Z42CVzhY3g;
+        Fri, 22 Apr 2022 11:16:34 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 22 Apr 2022 11:15:33 +0800
-Subject: Re: [PATCH v2 3/3] mm/madvise: free hwpoison and swapin error entry
- in madvise_free_pte_range
-To:     Peter Xu <peterx@redhat.com>
-CC:     <akpm@linux-foundation.org>, <willy@infradead.org>,
-        <vbabka@suse.cz>, <dhowells@redhat.com>, <neilb@suse.de>,
-        <david@redhat.com>, <apopple@nvidia.com>, <surenb@google.com>,
-        <minchan@kernel.org>, <sfr@canb.auug.org.au>,
-        <naoya.horiguchi@nec.com>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220421125348.62483-1-linmiaohe@huawei.com>
- <20220421125348.62483-4-linmiaohe@huawei.com> <YmFqHBMtNKqib8lt@xz-m1.local>
- <d391b905-e017-5d0c-7485-2ea51d2587ae@huawei.com>
- <YmIYi0AD+46YYTVj@xz-m1.local>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <e8e2df53-2ba5-e052-d420-56f8890eb852@huawei.com>
-Date:   Fri, 22 Apr 2022 11:15:33 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+ 15.1.2375.24; Fri, 22 Apr 2022 11:16:45 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 22 Apr
+ 2022 11:16:44 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>,
+        <linux-rockchip@lists.infradead.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <dri-devel@lists.freedesktop.org>
+CC:     <hjc@rock-chips.com>, <heiko@sntech.de>, <daniel@ffwll.ch>,
+        <markyao0591@gmail.com>
+Subject: [PATCH] drm/rockchip: vop: fix possible null-ptr-deref in vop_bind()
+Date:   Fri, 22 Apr 2022 11:28:54 +0800
+Message-ID: <20220422032854.2995175-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <YmIYi0AD+46YYTVj@xz-m1.local>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500002.china.huawei.com (7.192.104.244)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/22 10:52, Peter Xu wrote:
-> On Fri, Apr 22, 2022 at 10:47:32AM +0800, Miaohe Lin wrote:
->> On 2022/4/21 22:28, Peter Xu wrote:
->>> On Thu, Apr 21, 2022 at 08:53:48PM +0800, Miaohe Lin wrote:
->>>> Once the MADV_FREE operation has succeeded, callers can expect they might
->>>> get zero-fill pages if accessing the memory again. Therefore it should be
->>>> safe to delete the hwpoison entry and swapin error entry. There is no
->>>> reason to kill the process if it has called MADV_FREE on the range.
->>>>
->>>> Suggested-by: Alistair Popple <apopple@nvidia.com>
->>>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
->>>> ---
->>>>  mm/madvise.c | 13 ++++++++-----
->>>>  1 file changed, 8 insertions(+), 5 deletions(-)
->>>>
->>>> diff --git a/mm/madvise.c b/mm/madvise.c
->>>> index 4d6592488b51..5f4537511532 100644
->>>> --- a/mm/madvise.c
->>>> +++ b/mm/madvise.c
->>>> @@ -624,11 +624,14 @@ static int madvise_free_pte_range(pmd_t *pmd, unsigned long addr,
->>>>  			swp_entry_t entry;
->>>>  
->>>>  			entry = pte_to_swp_entry(ptent);
->>>> -			if (non_swap_entry(entry))
->>>> -				continue;
->>>> -			nr_swap--;
->>>> -			free_swap_and_cache(entry);
->>>> -			pte_clear_not_present_full(mm, addr, pte, tlb->fullmm);
->>>
->>> Nitpick: IMHO you don't need to invert non_swap_entry() then it'll generate
->>> a smaller diff, just add the new code above "continue".
->>
->> I tried this way, but that lead to long line splitting, so I rewrote the code like this.
->> If you prefer to just add the new code above "continue", I will do it in the next version.
-> 
-> No worry then, feel free to keep it as is
+It will cause null-ptr-deref in resource_size(), if platform_get_resource()
+returns NULL, move calling resource_size() after devm_ioremap_resource() that
+will check 'res' to avoid null-ptr-deref.
 
-Will keep it. Thanks!
+Fixes: 2048e3286f34 ("drm: rockchip: Add basic drm driver")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/gpu/drm/rockchip/rockchip_drm_vop.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->>
->>>
->>>> +			if (!non_swap_entry(entry)) {
->>>> +				nr_swap--;
->>>> +				free_swap_and_cache(entry);
->>>> +				pte_clear_not_present_full(mm, addr, pte, tlb->fullmm);
->>>> +			} else if (is_hwpoison_entry(entry) ||
->>>> +				   is_swapin_error_entry(entry)) {
->>>> +				pte_clear_not_present_full(mm, addr, pte, tlb->fullmm);
->>>
->>> Since it's been discussed and you're reposting a new version anyway, why
->>> not start with either reusing hwpoison or pte markers?  Or do you think it
->>> should be for future to drop the new swap entry again?
->>>
->>
->> IMHO if reusing hwpoison markers, there are some places that we need to distinguish them and do
->> different processing (and maybe also well comment them) which will make code more complicated and
->> somewhat hard to follow. And the "swapin error marker" here is most straightforward. And If pte markers
->> will support the "swapin error case" in the future, I think it's fine to change to use it then.
->> Does this make sense for you?
-> 
-> Yeah it's fine.  If the pte marker things can finally land as expected,
-> maybe I can try it out as the 2nd user of it. :)
+diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
+index 3e8d9e2d1b67..d53037531f40 100644
+--- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
++++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
+@@ -2118,10 +2118,10 @@ static int vop_bind(struct device *dev, struct device *master, void *data)
+ 	vop_win_init(vop);
+ 
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	vop->len = resource_size(res);
+ 	vop->regs = devm_ioremap_resource(dev, res);
+ 	if (IS_ERR(vop->regs))
+ 		return PTR_ERR(vop->regs);
++	vop->len = resource_size(res);
+ 
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+ 	if (res) {
+-- 
+2.25.1
 
-Sounds good to me. And if needed, I am glad to do it then. Thanks! ;)
-
-> 
