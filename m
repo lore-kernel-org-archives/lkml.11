@@ -2,93 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67295C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:26:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98DB2C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:26:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232708AbiDVW3K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:29:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38746 "EHLO
+        id S232759AbiDVW3P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:29:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234059AbiDVW2W (ORCPT
+        with ESMTP id S233367AbiDVW1n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:28:22 -0400
-Received: from mail-oa1-f52.google.com (mail-oa1-f52.google.com [209.85.160.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D851A5DFB;
-        Fri, 22 Apr 2022 14:22:32 -0700 (PDT)
-Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-e5c42b6e31so9898082fac.12;
-        Fri, 22 Apr 2022 14:22:32 -0700 (PDT)
+        Fri, 22 Apr 2022 18:27:43 -0400
+Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6101343E5F
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:58:19 -0700 (PDT)
+Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2ef5380669cso98914787b3.9
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:58:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NNQJP7ntF8soE81iHLRX4D3rG4OVRx16kjDK5B0hv+E=;
+        b=pWfQKYNkMMZJG9PgkJeJ10O0wcxeCiz9fbN53VOitR3Jgn6iD6bHOE0TaZa6BoDjMG
+         /0y4+UcKW3gaHILLuTRNBUEikivRNDHV6EhM+wkH4JsIAcxZpEUeS+jqi4yRhcqbgBGH
+         LJa2Zlj22o8pt1vbAV/M0CA9z3p3+0UwqWaSgfQ6lwaeoiOE2YsAfmYV6oR668MMsCjd
+         WPQwsweyVem8CCU/2FazMcS46azD5MomO3E2Ome+pa2BqkhgiFtRdq49gyKcagra7/T5
+         tuShQiWL1DnAq7DyRYnVQn89PtwxxHp2DRoMLHDp8QbMp40VTeFoAHWr4lT5zDeyA5Iz
+         PrKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0GD2I3shbaNSD6vzQaqySalLolH0HoMXjX9mtXC2rw4=;
-        b=sXr5RL4oeQnDemv7SUBJqZpeW8ycJ21NDj+WVr0AFBejSJWrcqlcIm/LMygCueLhek
-         2bP2SbwCE+sj8YuJTI6fOmbzgFfNSxpUkcATEvRewnC7lHNzBJ5wIMeN2mtzvjDF9jJl
-         juGv2IfNmYDIDG69B+r0Lwc5uSh2GbBV34LPuUcCQoyqO8NVKRB5llp4ClGxUlEsyMVA
-         PGj4FIS4mchsNnTgI/ACo0tqpDqskSNMsfs9Xeso5MsDXbLRpNjlVZEcxEuFtCMJPxux
-         EibMIbGshrzIfeH3LByyH81LbNYwuNQW6dUvkE1ZbBrbYeB9YNg9JON9dnTlPEVOVH0u
-         VRWw==
-X-Gm-Message-State: AOAM532SlAsaYb3sV7TqNNa5mcxuA3auofi02eWOf6CGCIqDOxgpSL7/
-        AVq9AOOlpot4uVZz1ansYq2Zo4ngHg==
-X-Google-Smtp-Source: ABdhPJyCWTYuNLp/3p34tuoYQ+xy+uv7oNPjk1V39wjfw8QoXlE0QZYEd64pt6rvSAhL5vt/xJJkTA==
-X-Received: by 2002:a05:6808:11c3:b0:2f9:62e0:ebe with SMTP id p3-20020a05680811c300b002f962e00ebemr3061171oiv.22.1650655251553;
-        Fri, 22 Apr 2022 12:20:51 -0700 (PDT)
-Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.googlemail.com with ESMTPSA id q203-20020acad9d4000000b002f8ee3f69e2sm1086501oig.52.2022.04.22.12.20.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 12:20:51 -0700 (PDT)
-From:   Rob Herring <robh@kernel.org>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Slawomir Stepien <sst@poczta.fm>
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: iio: Fix incorrect compatible strings in examples
-Date:   Fri, 22 Apr 2022 14:20:39 -0500
-Message-Id: <20220422192039.2590548-1-robh@kernel.org>
-X-Mailer: git-send-email 2.32.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NNQJP7ntF8soE81iHLRX4D3rG4OVRx16kjDK5B0hv+E=;
+        b=hv02jH8LGtdNPTYzQAg8d6a82zN+ElgdnIOAgO4q30M5HZ7pTZJ1AYqXuyybBmPaOS
+         gZQxnWcSvktfeqXuWXgcDvjIL3jfZ7UY+oZOg+U9ZRiX5EW0UPGOXCSxe+dPMcry5MdM
+         u+CANBVLlFnJS0pYyE1QoPx2tdIukEZlFT51LRSZTP7glzQBO0iN8tiT41alrcn+m+6V
+         YZLasyHaV59wJU8b7r+4c2FqNktbNLm1SmDJhTcfLodlzv5SsWk/2ErrLnXFQ7jEMEOF
+         JywdJ5aX7VfHNZ0H/xA40S6y07Np3+OiuEtX9aVxOiWOTX0+hBCwV/OGOW29Zrs8RT/W
+         vdXA==
+X-Gm-Message-State: AOAM530iHOLZjKRQoxOekHt9h6cZnKWSgM2e7ibDo67Ppsy1UXvONzvs
+        VxT0KOkYxnPxdZfBO2uHtE+STylEnKuhMMrdCD6eJA==
+X-Google-Smtp-Source: ABdhPJwiYz27q9al29EVKwaUieTIJ7vxG56fmMN5dBUaNlUXP7voSN0iSDPygWM4Z2MQ1vTu71BmS8xz8YZ3T+3KZMo=
+X-Received: by 2002:a81:2154:0:b0:2f4:d79e:35dc with SMTP id
+ h81-20020a812154000000b002f4d79e35dcmr7091549ywh.126.1650664699156; Fri, 22
+ Apr 2022 14:58:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220421094228.2141569-1-nobuhiro1.iwamatsu@toshiba.co.jp>
+In-Reply-To: <20220421094228.2141569-1-nobuhiro1.iwamatsu@toshiba.co.jp>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Fri, 22 Apr 2022 23:58:08 +0200
+Message-ID: <CACRpkdZizkeBsRhk7-VqcJ5u3+6ksRv++znnpYhnX9-7UN=x9A@mail.gmail.com>
+Subject: Re: [PATCH v2] gpio: visconti: Fix fwnode of GPIO IRQ
+To:     Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+Cc:     Bartosz Golaszewski <brgl@bgdev.pl>, linux-gpio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix a couple of examples using incorrect compatible strings.
+On Thu, Apr 21, 2022 at 11:42 AM Nobuhiro Iwamatsu
+<nobuhiro1.iwamatsu@toshiba.co.jp> wrote:
 
-Signed-off-by: Rob Herring <robh@kernel.org>
----
- Documentation/devicetree/bindings/iio/dac/lltc,ltc2632.yaml     | 2 +-
- .../bindings/iio/potentiometer/microchip,mcp4131.yaml           | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+> The fwnode of GPIO IRQ must be set to its own fwnode, not the fwnode of the
+> parent IRQ. Therefore, this sets own fwnode instead of the parent IRQ fwnode to
+> GPIO IRQ's.
+>
+> Fixes: 2ad74f40dacc ("gpio: visconti: Add Toshiba Visconti GPIO support")
+> Signed-off-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
 
-diff --git a/Documentation/devicetree/bindings/iio/dac/lltc,ltc2632.yaml b/Documentation/devicetree/bindings/iio/dac/lltc,ltc2632.yaml
-index edf804d0aca2..b1eb77335d05 100644
---- a/Documentation/devicetree/bindings/iio/dac/lltc,ltc2632.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/lltc,ltc2632.yaml
-@@ -68,7 +68,7 @@ examples:
-       #size-cells = <0>;
- 
-       dac@0 {
--        compatible = "lltc,ltc2632";
-+        compatible = "lltc,ltc2632-l12";
-         reg = <0>;    /* CS0 */
-         spi-max-frequency = <1000000>;
-         vref-supply = <&vref>;
-diff --git a/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp4131.yaml b/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp4131.yaml
-index 945a2d644ddc..32e92bced81f 100644
---- a/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp4131.yaml
-+++ b/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp4131.yaml
-@@ -95,7 +95,7 @@ examples:
-         #size-cells = <0>;
- 
-         potentiometer@0 {
--            compatible = "mcp4131-502";
-+            compatible = "microchip,mcp4131-502";
-             reg = <0>;
-             spi-max-frequency = <500000>;
-         };
--- 
-2.32.0
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
+Yours,
+Linus Walleij
