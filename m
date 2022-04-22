@@ -2,111 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48380C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:34:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 253D4C43217
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 22:35:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232915AbiDVWh1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 18:37:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59792 "EHLO
+        id S233337AbiDVWi3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 18:38:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233271AbiDVWhH (ORCPT
+        with ESMTP id S233085AbiDVWh3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 18:37:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A754024766C;
-        Fri, 22 Apr 2022 14:49:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7235EB831F5;
-        Fri, 22 Apr 2022 19:04:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 059E8C385A0;
-        Fri, 22 Apr 2022 19:04:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650654261;
-        bh=/hQTHTPZ+8EMV0t0+BWR+cNB6HkAVNSrcB0f4XxB0uo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=e7W3PV+GoD7Ha2W0fT29yk3eI7sObxvOyea9pB3TA1nfeWcqBP30+4EL8qO0cddDL
-         1naoJHDmxy8N+1iTy+DK01hyZyG7fz0Pfl8lyLTvmXcJ5P6WtI/pXOrx6M2NqEUNW6
-         Nf7Rt5g13AQ71tnz7xlxL7k/vLzfMc6qetAcK1+7xVHwqYUcVsKHGe3ezcwCpn4j/1
-         2jvX2cOBgJ/tot0Yee12YrzrbowKIv+JPWSFbV55/P3oJqt/a69YITOULv1f7WtRGT
-         jJYEqX/oSDbivZ6hFmiZpsMCUeM8iRAkEAgWNRPpYvftLAIgEALjYJb9yzvv/mnck1
-         K+eT13/x+c1TA==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id CACD9400B1; Fri, 22 Apr 2022 16:04:18 -0300 (-03)
-Date:   Fri, 22 Apr 2022 16:04:18 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Namhyung Kim <namhyung@kernel.org>
-Cc:     Milian Wolff <milian.wolff@kdab.com>, Jiri Olsa <jolsa@kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Ian Rogers <irogers@google.com>,
-        Song Liu <songliubraving@fb.com>, Hao Luo <haoluo@google.com>,
-        bpf <bpf@vger.kernel.org>,
-        linux-perf-users <linux-perf-users@vger.kernel.org>,
-        Blake Jones <blakejones@google.com>
-Subject: Re: [RFC 0/4] perf record: Implement off-cpu profiling with BPF (v1)
-Message-ID: <YmL8MlTX12zHtzbd@kernel.org>
-References: <20220422053401.208207-1-namhyung@kernel.org>
- <35121321.B44TWeBT9p@milian-workstation>
- <CAM9d7cjU6RGMStG4YOW5D50Sx4PRia2dfzcPKxb4JLh5Q668mw@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAM9d7cjU6RGMStG4YOW5D50Sx4PRia2dfzcPKxb4JLh5Q668mw@mail.gmail.com>
-X-Url:  http://acmel.wordpress.com
+        Fri, 22 Apr 2022 18:37:29 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BD011F313C
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:29:51 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id d22-20020a25add6000000b00645d796034fso2039885ybe.2
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 14:29:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=2OUrHBVQ2XGsiWEMmpN9lcaXOoCh5x5IHeSwakaqCjU=;
+        b=Aow8LWdbHQ8mE+wjvovuTbsPF39TiJA6sPYxg2JQZd+23m8l/+XB1F9qkMvdVXNRg0
+         fZev5Etdz1q0hIsgyZWbSaFZjTBdJ9VWCFBRU8eBVfHaxsBOGqI7cDhN5oo9gC413a3m
+         gvWZRS9e7nI30010ze8OFrC8V0LO6LXC6C5UwdqfIs2kLN7U21jZtH7KzWi2ief0rAaS
+         CYQdE1MI7oRVde8cp8DeJ4sP2q24P5vdBoqq4mORARm3WuCFCIS7zNqsMlQPsYyrhUDe
+         LO3euRkIUxqJygFfIefkCW2M4IxKVAvFPsRkNRhJwmmkIG9+Oudn+R7bw4c5wsDDt67i
+         rj5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=2OUrHBVQ2XGsiWEMmpN9lcaXOoCh5x5IHeSwakaqCjU=;
+        b=C8GheYd359KXgC/IIZtsTiTkhF2VWtjZxnASHEfk9Ki9XtnMCtdHbI7RogvC/H255i
+         zZnW2aCd+ucxYMrBj2Mh5oOGSDFrwfbbCUNepsmJjwP+/l8zmnugDUsLzL+ymb/LhLUp
+         MeR5ne6ChzHX2RTM+JdB834pd0L+don2Y2LE/NicBeONSWad1v+bEa+soUQC55W3ERvg
+         4pWA6EKFYDbMrHz/qDqLlA1roZBMcV8EHZMVehky/JsRUdcRPnUrB0DPhpK43/mRZlhu
+         ZnGNfW6hSakHWAXvTe14/jepcTQgo4y2o3gdkTOSIYiWeziZzKrASfdjGhSqHfvNEUT9
+         WKdQ==
+X-Gm-Message-State: AOAM532DCPq0G5Ylxy65b89gz2LYd5njLsldFUyuZx2WIbua1HNzaDqr
+        39RX+tRlNSgn2cSozEtLDhAYPBkMWnmMwTn5btiD
+X-Google-Smtp-Source: ABdhPJzN20+x39HHCgsQ8s+XetICyuwHBA/K5CIlhrR9l07xTY2TvqCOCgmubuPwmhK7ht8/vTRA3nNCJmwDMnx0uVbs
+X-Received: from ajr0.svl.corp.google.com ([2620:15c:2cd:203:7ba6:20ac:a8f7:1dbd])
+ (user=axelrasmussen job=sendgmr) by 2002:a25:9f90:0:b0:624:521e:d4a5 with
+ SMTP id u16-20020a259f90000000b00624521ed4a5mr6505440ybq.230.1650662990723;
+ Fri, 22 Apr 2022 14:29:50 -0700 (PDT)
+Date:   Fri, 22 Apr 2022 14:29:39 -0700
+Message-Id: <20220422212945.2227722-1-axelrasmussen@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
+Subject: [PATCH v2 0/6] userfaultfd: add /dev/userfaultfd for fine grained
+ access control
+From:   Axel Rasmussen <axelrasmussen@google.com>
+To:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Charan Teja Reddy <charante@codeaurora.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Dmitry V . Levin" <ldv@altlinux.org>,
+        Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>,
+        Hugh Dickins <hughd@google.com>, Jan Kara <jack@suse.cz>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@kernel.org>, Nadav Amit <namit@vmware.com>,
+        Peter Xu <peterx@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>, zhangyi <yi.zhang@huawei.com>
+Cc:     Axel Rasmussen <axelrasmussen@google.com>,
+        linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-kselftest@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Fri, Apr 22, 2022 at 08:01:15AM -0700, Namhyung Kim escreveu:
-> Hi Milian,
- 
-> On Fri, Apr 22, 2022 at 3:21 AM Milian Wolff <milian.wolff@kdab.com> wrote:
-> > On Freitag, 22. April 2022 07:33:57 CEST Namhyung Kim wrote:
-> > > This is the first version of off-cpu profiling support.  Together with
-> > > (PMU-based) cpu profiling, it can show holistic view of the performance
-> > > characteristics of your application or system.
+This series is based on torvalds/master, but additionally the run_vmtests.sh
+changes assume my refactor [1] has been applied first.
 
-> > Hey Namhyung,
+The series is split up like so:
+- Patch 1 is a simple fixup which we should take in any case (even by itself).
+- Patches 2-4 add the feature, basic support for it to the selftest, and docs.
+- Patches 5-6 make the selftest configurable, so you can test one or the other
+  instead of always both. If we decide this is overcomplicated, we could just
+  drop these two patches and take the rest of the series.
 
-> > this is awesome news! In hotspot, I've long done off-cpu profiling manually by
-> > looking at the time between --switch-events. The downside is that we also need
-> > to track the sched:sched_switch event to get a call stack. But this approach
-> > also works with dwarf based unwinding, and also includes kernel stacks.
-> 
-> Thanks, I've also briefly thought about the switch event based off-cpu
-> profiling as it doesn't require root.  But collecting call stacks is hard and
-> I'd like to do it in kernel/bpf to reduce the overhead.
+[1]: https://patchwork.kernel.org/project/linux-mm/patch/20220421224928.1848230-1-axelrasmussen@google.com/
 
-It would be great to have both in perf. Right now since we have one in
-hotspot that is working, perfecting the other method, Namhyung's, using
-BPF to reduce the amount of data to postprocess in userspace, looks
-great.
- 
-> > > With BPF, it can aggregate scheduling stats for interested tasks
-> > > and/or states and convert the data into a form of perf sample records.
-> > > I chose the bpf-output event which is a software event supposed to be
-> > > consumed by BPF programs and renamed it as "offcpu-time".  So it
-> > > requires no change on the perf report side except for setting sample
-> > > types of bpf-output event.
-> > >
-> > > Basically it collects userspace callstack for tasks as it's what users
-> > > want mostly.  Maybe we can add support for the kernel stacks but I'm
-> > > afraid that it'd cause more overhead.  So the offcpu-time event will
-> > > always have callchains regardless of the command line option, and it
-> > > enables the children mode in perf report by default.
-> >
-> > Has anything changed wrt perf/bpf and user applications not compiled with `-
-> > fno-omit-frame-pointer`? I.e. does this new utility only work for specially
-> > compiled applications, or do we also get backtraces for "normal" binaries that
-> > we can install through package managers?
-> 
-> I am not aware of such changes, it still needs a frame pointer to get
-> backtraces.
+Changelog:
+v1->v2:
+  - Add documentation update.
+  - Test *both* userfaultfd(2) and /dev/userfaultfd via the selftest.
 
-I see this as an initial limitation, one that we can lift later?
+Axel Rasmussen (6):
+  selftests: vm: add hugetlb_shared userfaultfd test to run_vmtests.sh
+  userfaultfd: add /dev/userfaultfd for fine grained access control
+  userfaultfd: selftests: modify selftest to use /dev/userfaultfd
+  userfaultfd: update documentation to describe /dev/userfaultfd
+  userfaultfd: selftests: make /dev/userfaultfd testing configurable
+  selftests: vm: add /dev/userfaultfd test cases to run_vmtests.sh
 
-- Arnaldo
+ Documentation/admin-guide/mm/userfaultfd.rst | 38 +++++++++-
+ Documentation/admin-guide/sysctl/vm.rst      |  3 +
+ fs/userfaultfd.c                             | 79 ++++++++++++++++----
+ include/uapi/linux/userfaultfd.h             |  4 +
+ tools/testing/selftests/vm/run_vmtests.sh    | 11 ++-
+ tools/testing/selftests/vm/userfaultfd.c     | 60 +++++++++++++--
+ 6 files changed, 170 insertions(+), 25 deletions(-)
+
+--
+2.36.0.rc2.479.g8af0fa9b8e-goog
+
