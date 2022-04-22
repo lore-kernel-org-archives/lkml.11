@@ -2,70 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF6FFC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:25:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4430FC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:27:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444201AbiDVG2R (ORCPT
+        id S1444355AbiDVG34 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 02:28:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36614 "EHLO
+        Fri, 22 Apr 2022 02:29:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232313AbiDVG2M (ORCPT
+        with ESMTP id S232680AbiDVG3u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 02:28:12 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFF024D257
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 23:25:19 -0700 (PDT)
-Received: from kwepemi500018.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kl4BQ13tVzfYsX;
-        Fri, 22 Apr 2022 14:24:30 +0800 (CST)
-Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- kwepemi500018.china.huawei.com (7.221.188.213) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 22 Apr 2022 14:25:17 +0800
-Received: from localhost.localdomain (10.175.112.70) by
- kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 22 Apr 2022 14:25:17 +0800
-From:   Xu Jia <xujia39@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <dhowells@redhat.com>
-CC:     <edumazet@google.com>, <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] watch_queue: fix mistake in kcalloc
-Date:   Fri, 22 Apr 2022 14:39:07 +0800
-Message-ID: <1650609547-9854-1-git-send-email-xujia39@huawei.com>
-X-Mailer: git-send-email 1.8.3.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.70]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600017.china.huawei.com (7.193.23.234)
-X-CFilter-Loop: Reflected
+        Fri, 22 Apr 2022 02:29:50 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6196050B0E
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 23:26:58 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id c23so8773544plo.0
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 23:26:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=Y1YHaeXBfTbZfoBkSkWzaPdDe8ew5e9JhA6bfb6pRoE=;
+        b=fhDY+Gu1VdlyMnkVxX8ZSA+fulTIKGS1pUFJKkEwCBZfAXOAQ1b24SC36olqknBP/4
+         hQm8Fryq5s4n2AwOmTEchOXe3pHKJZttQq/3GGotS37ho3UsFMtVzOioJeqXB0HV03dK
+         rwkwQ/H/+5pF/+jJZHuUBmNTUlIAxK+vW8+7+VL6d2YbjUuyseKlrUWY0avncLbDZkLf
+         Qen3ZRACqL7ATPJ0jrTP4w/iMCfzHYIQryWsMTVfzSOAt2jHT4GsdDAC+IL82gl7CBP+
+         nRQV4jLpTtLFamcSHv/6iEfSqzZ0TU6eqUr65GROcBfS3HzskiOAK9g3KzUfZNoCJt4e
+         Gq8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Y1YHaeXBfTbZfoBkSkWzaPdDe8ew5e9JhA6bfb6pRoE=;
+        b=4mNMl/rJgy0fkOjDD0SUn/OXqQrwNVQflCbQ+EWKdHNZ2ehFl6EC/oVQVYR8apzF0p
+         I9m4HJbrgcFZL5EF217TEML5AcaIKa35D09xLFay4JHNY6uUjV3Fus+zAr1Zj393jtKn
+         JzZwn3ZbctK6EG558wt6GjJqbWDXj1mxep8CBPVsZGPPJ3Yg/scE6keXuZUdJnV1EegI
+         U1Ru2fXQh2um5Pd3qWVTzJOe6iQ6syh3JF9BEEgh4qJFD7aD/D064BagwZCJW8ExutuJ
+         oL3ih9iaydPr0HbXXp8q/mhTey75Ly5ExViIPCsdjZpoTOSfKRQy0+uCAVlqkVl1f4dt
+         xCmQ==
+X-Gm-Message-State: AOAM531QUTBFIZdl6dZVgNxzGkEu65ROZyIWtdtb3IU3tJZ3d9/Jo60O
+        GLaneJOV5C6LKYB6LemEKYQ=
+X-Google-Smtp-Source: ABdhPJxlKzf+MZG6ybuWwrjftcHjKzx28RfjZXreCxWvDH1j7z8ZhQAAp6VzX1pfWf/O1RTMUWYiHw==
+X-Received: by 2002:a17:902:d717:b0:156:20a9:d388 with SMTP id w23-20020a170902d71700b0015620a9d388mr3104594ply.19.1650608817581;
+        Thu, 21 Apr 2022 23:26:57 -0700 (PDT)
+Received: from localhost.localdomain ([2402:7500:477:11a5:b8c8:12d2:abba:7a5c])
+        by smtp.gmail.com with ESMTPSA id 76-20020a62194f000000b0050abaf80f99sm1159200pfz.114.2022.04.21.23.26.54
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 21 Apr 2022 23:26:56 -0700 (PDT)
+From:   cy_huang <u0084500@gmail.com>
+To:     perex@perex.cz, tiwai@suse.com
+Cc:     oder_chiou@realtek.com, lgirdwood@gmail.com, broonie@kernel.org,
+        cy_huang@richtek.com, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] ASoC: rt9120: Correct the reg 0x09 size to one byte
+Date:   Fri, 22 Apr 2022 14:26:50 +0800
+Message-Id: <1650608810-3829-1-git-send-email-u0084500@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In function watch_queue_set_size, when the func kcalloc is
-invoked, the number of elements and the element size are reversed.
-It is a cleanup patch and does not affect the implementation.
+From: ChiYuan Huang <cy_huang@richtek.com>
 
-Signed-off-by: Xu Jia <xujia39@huawei.com>
+Correct the reg 0x09 size to one byte.
+
+Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
 ---
- kernel/watch_queue.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Sorry, in the original datasheet, reg 0x09 size is marked as 2 bytes.
+But actually it's one byte RG size.
+---
+ sound/soc/codecs/rt9120.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/kernel/watch_queue.c b/kernel/watch_queue.c
-index 230038d4f908..868ce7e94cf6 100644
---- a/kernel/watch_queue.c
-+++ b/kernel/watch_queue.c
-@@ -248,7 +248,7 @@ long watch_queue_set_size(struct pipe_inode_info *pipe, unsigned int nr_notes)
- 	if (ret < 0)
- 		goto error;
- 
--	pages = kcalloc(sizeof(struct page *), nr_pages, GFP_KERNEL);
-+	pages = kcalloc(nr_pages, sizeof(struct page *), GFP_KERNEL);
- 	if (!pages)
- 		goto error;
- 
+diff --git a/sound/soc/codecs/rt9120.c b/sound/soc/codecs/rt9120.c
+index 7aa1772..6e0d7cf 100644
+--- a/sound/soc/codecs/rt9120.c
++++ b/sound/soc/codecs/rt9120.c
+@@ -341,7 +341,6 @@ static int rt9120_get_reg_size(unsigned int reg)
+ {
+ 	switch (reg) {
+ 	case 0x00:
+-	case 0x09:
+ 	case 0x20 ... 0x27:
+ 		return 2;
+ 	case 0x30 ... 0x3D:
 -- 
-2.25.1
+2.7.4
 
