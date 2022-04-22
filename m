@@ -2,152 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F91FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:03:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E3EFC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 06:04:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444212AbiDVGGg (ORCPT
+        id S1442114AbiDVGHD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 02:06:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44414 "EHLO
+        Fri, 22 Apr 2022 02:07:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233115AbiDVGFN (ORCPT
+        with ESMTP id S1379367AbiDVGHA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 02:05:13 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC614FC69;
-        Thu, 21 Apr 2022 23:02:20 -0700 (PDT)
-X-UUID: 328b8f36615a4c0ab8ebe0576757e96b-20220422
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:ee578494-8512-478b-b3d2-5acd83b19ba7,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:-20
-X-CID-META: VersionHash:faefae9,CLOUDID:ef24bdef-06b0-4305-bfbf-554bfc9d151a,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: 328b8f36615a4c0ab8ebe0576757e96b-20220422
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 972753486; Fri, 22 Apr 2022 14:02:13 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 22 Apr 2022 14:01:57 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 22 Apr
- 2022 14:01:56 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 22 Apr 2022 14:01:56 +0800
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     <mturquette@baylibre.com>, <sboyd@kernel.org>,
-        <matthias.bgg@gmail.com>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>
-CC:     <p.zabel@pengutronix.de>,
-        <angelogioacchino.delregno@collabora.com>,
-        <chun-jie.chen@mediatek.com>, <wenst@chromium.org>,
-        <runyang.chen@mediatek.com>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-clk@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>
-Subject: [PATCH V3 04/17] clk: mediatek: reset: Extract common drivers to update function
-Date:   Fri, 22 Apr 2022 14:01:39 +0800
-Message-ID: <20220422060152.13534-5-rex-bc.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220422060152.13534-1-rex-bc.chen@mediatek.com>
-References: <20220422060152.13534-1-rex-bc.chen@mediatek.com>
+        Fri, 22 Apr 2022 02:07:00 -0400
+Received: from mail.meizu.com (edge07.meizu.com [112.91.151.210])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90A624FC7B
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 23:04:07 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail11.meizu.com
+ (172.16.1.15) with Microsoft SMTP Server (TLS) id 14.3.487.0; Fri, 22 Apr
+ 2022 14:04:01 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Fri, 22 Apr
+ 2022 14:03:59 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+CC:     Haowen Bai <baihaowen@meizu.com>, <amd-gfx@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH] drm/amdgpu: Remove useless kfree
+Date:   Fri, 22 Apr 2022 14:03:57 +0800
+Message-ID: <1650607437-22275-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
 Content-Type: text/plain
-X-MTK:  N
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To make drivers more clear and readable, we extract common code
-within assert and deassert to mtk_reset_update_set_clr() and
-mtk_reset_update().
+After alloc fail, we do not need to kfree.
 
-Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
 ---
- drivers/clk/mediatek/reset.c | 38 +++++++++++++++++++++---------------
- 1 file changed, 22 insertions(+), 16 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/clk/mediatek/reset.c b/drivers/clk/mediatek/reset.c
-index 5cbbcc22a4fc..22fa9f09752c 100644
---- a/drivers/clk/mediatek/reset.c
-+++ b/drivers/clk/mediatek/reset.c
-@@ -12,24 +12,27 @@
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c
+index ec709997c9c7..5fb3e69c04c4 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c
+@@ -1849,7 +1849,6 @@ static int amdgpu_ras_realloc_eh_data_space(struct amdgpu_device *adev,
+ 	void *bps = kmalloc(align_space * sizeof(*data->bps), GFP_KERNEL);
  
- #include "reset.h"
+ 	if (!bps) {
+-		kfree(bps);
+ 		return -ENOMEM;
+ 	}
  
--static int mtk_reset_assert(struct reset_controller_dev *rcdev,
--			    unsigned long id)
-+static int mtk_reset_update(struct reset_controller_dev *rcdev,
-+			    unsigned long id, bool deassert)
- {
- 	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
-+	unsigned int val = deassert ? 0 : ~0;
- 
- 	return regmap_update_bits(data->regmap,
- 				  data->regofs + ((id / 32) << 2),
--				  BIT(id % 32), ~0);
-+				  BIT(id % 32), val);
-+}
-+
-+static int mtk_reset_assert(struct reset_controller_dev *rcdev,
-+			    unsigned long id)
-+{
-+	return mtk_reset_update(rcdev, id, false);
- }
- 
- static int mtk_reset_deassert(struct reset_controller_dev *rcdev,
- 			      unsigned long id)
- {
--	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
--
--	return regmap_update_bits(data->regmap,
--				  data->regofs + ((id / 32) << 2),
--				  BIT(id % 32), 0);
-+	return mtk_reset_update(rcdev, id, true);
- }
- 
- static int mtk_reset(struct reset_controller_dev *rcdev, unsigned long id)
-@@ -43,24 +46,27 @@ static int mtk_reset(struct reset_controller_dev *rcdev, unsigned long id)
- 	return mtk_reset_deassert(rcdev, id);
- }
- 
--static int mtk_reset_assert_set_clr(struct reset_controller_dev *rcdev,
--				    unsigned long id)
-+static int mtk_reset_update_set_clr(struct reset_controller_dev *rcdev,
-+				    unsigned long id, bool deassert)
- {
- 	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
-+	unsigned int deassert_ofs = deassert ? 0x4 : 0;
- 
- 	return regmap_write(data->regmap,
--			    data->regofs + ((id / 32) << 4),
-+			    data->regofs + ((id / 32) << 4) + deassert_ofs,
- 			    BIT(id % 32));
- }
- 
-+static int mtk_reset_assert_set_clr(struct reset_controller_dev *rcdev,
-+				    unsigned long id)
-+{
-+	return mtk_reset_update_set_clr(rcdev, id, false);
-+}
-+
- static int mtk_reset_deassert_set_clr(struct reset_controller_dev *rcdev,
- 				      unsigned long id)
- {
--	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
--
--	return regmap_write(data->regmap,
--			    data->regofs + ((id / 32) << 4) + 0x4,
--			    BIT(id % 32));
-+	return mtk_reset_update_set_clr(rcdev, id, true);
- }
- 
- static int mtk_reset_set_clr(struct reset_controller_dev *rcdev,
 -- 
-2.18.0
+2.7.4
 
