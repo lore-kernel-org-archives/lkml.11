@@ -2,101 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A01A0C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFF4CC43217
 	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 18:00:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233888AbiDVSBf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 14:01:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59998 "EHLO
+        id S234155AbiDVSBi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 14:01:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237150AbiDVR7y (ORCPT
+        with ESMTP id S235962AbiDVR7U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 13:59:54 -0400
-Received: from conssluserg-02.nifty.com (conssluserg-02.nifty.com [210.131.2.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C41EDE7897;
-        Fri, 22 Apr 2022 10:56:58 -0700 (PDT)
-Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com [209.85.210.178]) (authenticated)
-        by conssluserg-02.nifty.com with ESMTP id 23MHuSvD011330;
-        Sat, 23 Apr 2022 02:56:29 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 23MHuSvD011330
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1650650189;
-        bh=gk07vilBCiMI29TG7qTdTVlHsDhJg3HiwHT6cJ72G38=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=fAg5O2gdGVHY4nbbdUmmUdG5mXC8/4MQCXmNdC4ja0d+hmwZe3CxVp1hxdFqxdHhs
-         Me4a4s6iWqATyZAlMExpIyN//XKR0Bg9vmUG2oztwirNLCmM8ITY6CWFUlx64FLxZo
-         CTOoB8dXGkBaFnTfl8TIY/op63JtE8k5r/+MDmWGDTBJvEYg22dcrmHe/rP5HvN2u/
-         m9Qu0biYqE4GYO+t57YzwIjfcQaQVYi6hSJckJDJRlyiNALH0oKKwvaZLxOEuShuP8
-         FQNvQWxvt0Flh4w+ATPSy9Ml2rebSkjvv0YdOWdJbfPdyPGNrrmk3jB/fhNGlJqSsj
-         rGxwAlRpFl54Q==
-X-Nifty-SrcIP: [209.85.210.178]
-Received: by mail-pf1-f178.google.com with SMTP id c1so2136975pfo.0;
-        Fri, 22 Apr 2022 10:56:29 -0700 (PDT)
-X-Gm-Message-State: AOAM5318QQehN3KDLA2mAGZksmGa4z3CPi+aADeHBtggp/NsmmApZ6BT
-        64GN1oF2z3sSzVayocyehyj7Dc55QOkIWN+awTs=
-X-Google-Smtp-Source: ABdhPJwd35httsCgLSN0X0xVey2bXAULqz0Uhk5NAIucoZobWBuOO55vYgY7fw+tZaguODtqvHUQz0wbbT9VmbGyrYU=
-X-Received: by 2002:a05:6a00:a02:b0:4fd:f9dd:5494 with SMTP id
- p2-20020a056a000a0200b004fdf9dd5494mr6119706pfh.68.1650650188191; Fri, 22 Apr
- 2022 10:56:28 -0700 (PDT)
+        Fri, 22 Apr 2022 13:59:20 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9F859F9573
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 10:56:26 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 816BA1063;
+        Fri, 22 Apr 2022 10:28:00 -0700 (PDT)
+Received: from lakrids (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EF4C63F73B;
+        Fri, 22 Apr 2022 10:27:58 -0700 (PDT)
+Date:   Fri, 22 Apr 2022 18:27:53 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Wang ShaoBo <bobo.shaobowang@huawei.com>, cj.chengjian@huawei.com,
+        huawei.libin@huawei.com, xiexiuqi@huawei.com, liwei391@huawei.com,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        catalin.marinas@arm.com, will@kernel.org, zengshun.wu@outlook.com,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Subject: Re: [RFC PATCH -next v2 3/4] arm64/ftrace: support dynamically
+ allocated trampolines
+Message-ID: <YmLlmaXF00hPkOID@lakrids>
+References: <20220316100132.244849-1-bobo.shaobowang@huawei.com>
+ <20220316100132.244849-4-bobo.shaobowang@huawei.com>
+ <YmFXrBG5AmX3+4f8@lakrids>
+ <20220421100639.03c0d123@gandalf.local.home>
+ <YmF0xYpTMoWOIl00@lakrids>
+ <20220421114201.21228eeb@gandalf.local.home>
+ <YmGF/OpIhAF8YeVq@lakrids>
+ <20220421130648.56b21951@gandalf.local.home>
+ <YmJ/l4vJoEpFt68l@FVFF77S0Q05N>
+ <20220422114541.34d71ad9@gandalf.local.home>
 MIME-Version: 1.0
-References: <20220422090505.551472-1-ldewangan@nvidia.com>
-In-Reply-To: <20220422090505.551472-1-ldewangan@nvidia.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Sat, 23 Apr 2022 02:55:28 +0900
-X-Gmail-Original-Message-ID: <CAK7LNARLFQdm+2Ka=0U1sX9LXyqCRb3ohzjPmg3Lpfs-ZEbz7A@mail.gmail.com>
-Message-ID: <CAK7LNARLFQdm+2Ka=0U1sX9LXyqCRb3ohzjPmg3Lpfs-ZEbz7A@mail.gmail.com>
-Subject: Re: [PATCH V1 1/1] scripts/Kbuild: Add path of fixeddep script
-To:     Laxman Dewangan <ldewangan@nvidia.com>
-Cc:     Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220422114541.34d71ad9@gandalf.local.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 6:05 PM Laxman Dewangan <ldewangan@nvidia.com> wrote:
->
-> Add path of the fixdep script from the object tree.
-> This will make the path of script absolute rather than
-> relative and execute the command from makefile from any
-> location.
+On Fri, Apr 22, 2022 at 11:45:41AM -0400, Steven Rostedt wrote:
+> On Fri, 22 Apr 2022 11:12:39 +0100
+> Mark Rutland <mark.rutland@arm.com> wrote:
+> 
+> > As an aside, I'd also love to remove the REGS/!REGs distinction, and always
+> > save a minimum amount of state (like ARGS, but never saving a full pt_regs),
+> > since on arm64 the extra state stored for the REGS case isn't useful (and we
+> > can't reliably capture all of the pt_regs state anyway, so bits of it are made
+> > up or not filled in).
+> 
+> Note, the reason for the addition of REGS was a requirement of kprobes.
+> Because before ftrace, kprobes would be triggered at the start of a
+> function by a breakpoint that would load in all the regs. And for backward
+> compatibility, Masami wanted to make sure that kprobes coming from ftrace
+> had all the regs just like it had when coming from a breakpoint.
+> 
+> IIUC, kprobes is the only reason we have the "regs" variant (all other use
+> cases could get by with the ARGS version).
 
+I see. FWIW, we don't have KPROBES_ON_FTRACE on arm64.
 
+Also, the same problems apply to KRETPROBES: the synthetic `pstate`
+value is bogus and we don't fill in other bits of the regs (e.g. the PMR
+value), so it's not a "real" pt_regs, and things like
+interrupts_enabled(regs) won't work correctly. In addition, as
+KRETPROBES only hooks function entry/exit and x9-x17 + x19-x28 are
+meaningless at those times, no-one's going to care what they contain
+anyway. The state we can correctly snapshot (and that would be useful)
+is the same as ARGS.
 
-Why is this necessary?
+It'd be nice if KRETPROBES could just use ARGS, but a standard KPROBE
+that traps could provide regs (since it actually gets "real" regs, and
+within a function the other GPRs could be important).
 
-Also, this patch does not make anything.
-$(objtree)/ is still a relative path.
-See the top Makefile.
-
-
-
->
-> Signed-off-by: Laxman Dewangan <ldewangan@nvidia.com>
-> ---
->  scripts/Kbuild.include | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/scripts/Kbuild.include b/scripts/Kbuild.include
-> index cdec22088423e..e07e9265829f8 100644
-> --- a/scripts/Kbuild.include
-> +++ b/scripts/Kbuild.include
-> @@ -147,7 +147,7 @@ if_changed_dep = $(if $(if-changed-cond),$(cmd_and_fixdep),@:)
->
->  cmd_and_fixdep =                                                             \
->         $(cmd);                                                              \
-> -       scripts/basic/fixdep $(depfile) $@ '$(make-cmd)' > $(dot-target).cmd;\
-> +       $(objtree)/scripts/basic/fixdep $(depfile) $@ '$(make-cmd)' > $(dot-target).cmd;\
->         rm -f $(depfile)
->
->  # Usage: $(call if_changed_rule,foo)
-> --
-> 2.17.1
->
-
-
--- 
-Best Regards
-Masahiro Yamada
+Thanks,
+Mark.
