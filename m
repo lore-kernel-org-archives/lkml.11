@@ -2,72 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2C51C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:36:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DACE6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:36:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230051AbiDVViy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 17:38:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40622 "EHLO
+        id S230118AbiDVVjd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 17:39:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230062AbiDVVit (ORCPT
+        with ESMTP id S230098AbiDVVjc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 17:38:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DCFE29DF15;
-        Fri, 22 Apr 2022 13:44:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C8204B8325D;
-        Fri, 22 Apr 2022 20:44:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAD2DC385A0;
-        Fri, 22 Apr 2022 20:44:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650660247;
-        bh=HnbkQVOtfa7+/56LQ5INga98V0wHs2i7oJ/vI85Yrbo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ncbmxN3DmsIJneYRy5/ENYjoC5IpODUGNtoqIcYvp/kNhyNvjtlhNgLsf6F+yjb1g
-         jVstrDggPk3uYKOKKFux0FNjQg3bs96RfiXaseCMLwErKmAc8oBTYrAdPRplYUgsCr
-         QYNI4YeEOzSnE32G+XYQ8zz4EfY8tkrhGUEPj68EpOas+hjCUvS65aUIip7ajutCsd
-         +gdiDnVGG5UwdRzvLF6aiIWhUeiNmoIpEkflQamA1hjzkDrTzh8s4lIvT10OyyMXKF
-         AaV6d/p07sO4C8+ML8hhojkVpFX7fBRXEmpsgecLOiAB2R/yWEnqoAlV1bTEkyIF0K
-         ZJXv69B6gizkw==
-Date:   Fri, 22 Apr 2022 13:44:05 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     Jani Nikula <jani.nikula@intel.com>,
+        Fri, 22 Apr 2022 17:39:32 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14D054169E6
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:45:59 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id k14so8279970pga.0
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:45:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=7IQD1XVsVgNtpnSIJlyB1Igy1Zt/tIoNBydvA5N9QY8=;
+        b=lMzILyzVY4s6HqsqcMbieRZUuzRhTfhOR3I/bs3u5XTfI/8c0Q8csI4tw+7aSR7FzJ
+         lZhHjenfud/GLz8MrvPhRok6un812iDrEpnDXIce7PSTQcfKM42NahuNIBku3irxgGlg
+         Hg/x7ZvBxQ51J9+vnDV5d3QrkFrWDo0liJh1zQU3Vr39aVF6R2+KylmIF46tvPc20lEP
+         aLnEykbAWUoE4X1f15OOk4c6l67AOSi3PXp0Z+4g6QXXEeSCFhZh4mTcTDUzB8X4hgWr
+         BbqhFW3WwnAPLzKmTZHmDPu3QQvaHfYT3z+DxUBp4jT8SabsJ0r9b2pID7g+W5c4yY1Q
+         Q2Gg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=7IQD1XVsVgNtpnSIJlyB1Igy1Zt/tIoNBydvA5N9QY8=;
+        b=NWmTJtECvZUAfY5gaJLJ8QXBdpi1QbF+pWPiskBTKNABc/wOQh6X6YvmB2adyoKPSi
+         3Ge+rWjes7/uiUASsra+5L7BnKMxM1JW/IvIufG72LYjTt7+Eay0z55MDl5/W2Ebgsx4
+         WJB4IlDPwwjnRdvEB9zD9K6fS/vG/5/O3Pw1/jkhOqKPsbltVqNsgLmetWfnih0HFuEt
+         vYdTpwSKQM0UcJbeKowiNqnwPjTEW1No5b29ZpEghHaXmuEjppC6INSAriUTlvpEv8t0
+         Ze3sqP2YoRMk1jtoyuOoTqaa86eVlL+IO/29JiXQDHNRHTfbsI3VhVANwFv/ekJ6GmKH
+         hYxQ==
+X-Gm-Message-State: AOAM531MeDt4G0XSdsPjAn+/egjb5OA6XVBXkxV0GbCmKDvovo3k4lnD
+        B3baRK7jdHrbXKd+JCdl3aoj9I+ft1Kt4A==
+X-Google-Smtp-Source: ABdhPJwck26beUm/r/6Y9AyQaLFefvEwf0yPOn/B0kTV9OwEcXXwd2UxbZV63DbOsNL6PH9M1hnwbw==
+X-Received: by 2002:a17:902:b106:b0:159:5c6:cb53 with SMTP id q6-20020a170902b10600b0015905c6cb53mr6148972plr.99.1650655971280;
+        Fri, 22 Apr 2022 12:32:51 -0700 (PDT)
+Received: from makvihas.localhost.com ([2405:201:202b:15:bfe0:e8c0:bea6:ee63])
+        by smtp.gmail.com with ESMTPSA id z5-20020a056a00240500b004e15d39f15fsm3518932pfh.83.2022.04.22.12.32.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Apr 2022 12:32:50 -0700 (PDT)
+From:   Vihas Makwana <makvihas@gmail.com>
+To:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 0/1] add support for enum module parameters
-Message-ID: <20220422134405.7a519a0f@kernel.org>
-In-Reply-To: <87sfq8qqus.fsf@tynnyri.adurom.net>
-References: <20220414123033.654198-1-jani.nikula@intel.com>
-        <YlgfXxjefuxiXjtC@kroah.com>
-        <87a6cneoco.fsf@intel.com>
-        <87sfq8qqus.fsf@tynnyri.adurom.net>
+        Michael Straube <straube.linux@gmail.com>
+Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Vihas Makwana <makvihas@gmail.com>
+Subject: [PATCH v3 5/7] staging: r8188eu: drop unnecessary wrapper _rtw_free_mlme_priv
+Date:   Sat, 23 Apr 2022 01:02:21 +0530
+Message-Id: <20220422193223.11948-6-makvihas@gmail.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220422193223.11948-1-makvihas@gmail.com>
+References: <20220422193223.11948-1-makvihas@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 20 Apr 2022 08:13:47 +0300 Kalle Valo wrote:
-> Wireless drivers would also desperately need to pass device specific
-> parameters at (or before) probe time. And not only debug parameters but
-> also configuration parameters, for example firmware memory allocations
-> schemes (optimise for features vs number of clients etc) and whatnot.
-> 
-> Any ideas how to implement that? Is there any prior work for anything
-> like this? This is pretty hard limiting usability of upstream wireless
-> drivers and I really want to find a proper solution.
+Drop unnecessary wrapper _rtw_free_mlme_priv and move its logic to
+rtw_free_mlme_priv.
 
-In netdev we have devlink which is used for all sort of device
-configuration. devlink-resource sounds like what you need,
-but it'd have to be extended to support configuration which requires
-reload/re-probe. Currently only devlink-params support that but params
-were a mistake so don't use that.
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Vihas Makwana <makvihas@gmail.com>
+---
+ drivers/staging/r8188eu/core/rtw_mlme.c    | 15 ++++-----------
+ drivers/staging/r8188eu/include/rtw_mlme.h |  2 --
+ 2 files changed, 4 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/r8188eu/core/rtw_mlme.c
+index 50a65a4e2..fb64954a0 100644
+--- a/drivers/staging/r8188eu/core/rtw_mlme.c
++++ b/drivers/staging/r8188eu/core/rtw_mlme.c
+@@ -53,16 +53,6 @@ void rtw_free_mlme_priv_ie_data(struct mlme_priv *pmlmepriv)
+ 	rtw_free_mlme_ie_data(&pmlmepriv->p2p_assoc_req_ie, &pmlmepriv->p2p_assoc_req_ie_len);
+ }
+ 
+-void _rtw_free_mlme_priv(struct mlme_priv *pmlmepriv)
+-{
+-
+-	rtw_free_mlme_priv_ie_data(pmlmepriv);
+-
+-	if (pmlmepriv)
+-		vfree(pmlmepriv->free_bss_buf);
+-
+-}
+-
+ struct	wlan_network *_rtw_alloc_network(struct	mlme_priv *pmlmepriv)/* _queue *free_queue) */
+ {
+ 	struct	wlan_network	*pnetwork;
+@@ -289,7 +279,10 @@ int rtw_init_mlme_priv(struct adapter *padapter)/* struct	mlme_priv *pmlmepriv)
+ 
+ void rtw_free_mlme_priv(struct mlme_priv *pmlmepriv)
+ {
+-	_rtw_free_mlme_priv(pmlmepriv);
++	rtw_free_mlme_priv_ie_data(pmlmepriv);
++
++	if (pmlmepriv)
++		vfree(pmlmepriv->free_bss_buf);
+ }
+ 
+ static struct wlan_network *rtw_alloc_network(struct mlme_priv *pmlmepriv)
+diff --git a/drivers/staging/r8188eu/include/rtw_mlme.h b/drivers/staging/r8188eu/include/rtw_mlme.h
+index 1dc1fbf04..fc30793f4 100644
+--- a/drivers/staging/r8188eu/include/rtw_mlme.h
++++ b/drivers/staging/r8188eu/include/rtw_mlme.h
+@@ -560,8 +560,6 @@ void rtw_scan_timeout_handler(struct adapter *adapter);
+ 
+ void rtw_free_mlme_priv_ie_data(struct mlme_priv *pmlmepriv);
+ 
+-void _rtw_free_mlme_priv(struct mlme_priv *pmlmepriv);
+-
+  struct wlan_network *_rtw_alloc_network(struct mlme_priv *pmlmepriv);
+ 
+ void _rtw_free_network(struct mlme_priv *pmlmepriv,
+-- 
+2.30.2
+
