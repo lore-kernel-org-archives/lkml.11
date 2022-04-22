@@ -2,126 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91050C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:23:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C984AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 09:25:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445931AbiDVJ0u convert rfc822-to-8bit (ORCPT
+        id S1445965AbiDVJ15 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 05:26:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44222 "EHLO
+        Fri, 22 Apr 2022 05:27:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377251AbiDVJ0q (ORCPT
+        with ESMTP id S1445943AbiDVJ1y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 05:26:46 -0400
-Received: from mail.holtmann.org (coyote.holtmann.net [212.227.132.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A7B4F27CE0;
-        Fri, 22 Apr 2022 02:23:53 -0700 (PDT)
-Received: from smtpclient.apple (p4fefc32f.dip0.t-ipconnect.de [79.239.195.47])
-        by mail.holtmann.org (Postfix) with ESMTPSA id C11D8CECD2;
-        Fri, 22 Apr 2022 11:16:04 +0200 (CEST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
-Subject: Re: [PATCH v2] Bluetooth: btusb: add support for Qualcomm WCN785x
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <1650017516-28912-1-git-send-email-quic_zijuhu@quicinc.com>
-Date:   Fri, 22 Apr 2022 11:16:04 +0200
-Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <7EF2E4E4-2DC5-450C-8840-314B9D210521@holtmann.org>
-References: <1650017516-28912-1-git-send-email-quic_zijuhu@quicinc.com>
-To:     Zijun Hu <quic_zijuhu@quicinc.com>
-X-Mailer: Apple Mail (2.3696.80.82.1.1)
+        Fri, 22 Apr 2022 05:27:54 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13A3A2DCB;
+        Fri, 22 Apr 2022 02:25:01 -0700 (PDT)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23M815rN008056;
+        Fri, 22 Apr 2022 09:24:55 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=Hk7Ac73kGeVVf0vrXna8FQdc/Yg16YPb85IKIhoH7qc=;
+ b=PQ6V4jN0Ox0uypcarZstLZJn+tJVP+2L3Rk3BrFm2c0JdMI4B/PZX2iKBqsTJx7LvZS1
+ VDvroEVe0kUuJrnJ2E3xKNBwcU7NUMNR0dIS/Ac+LFXT+npjgK6YxbLupzxZB7xkARBb
+ zEWPGJ726YYwgXj76ORM1CG+abn3YLNfY7HTBDDnrn5OVO1xYpTT2cGt1GL48mxOXGjv
+ ndeKcw7fB4SYuvSbiDI0DK1WzOL3+oeg/yKjeRAVK6OPKz1GQnOEQUri/nM8WNl2ZHQo
+ JIHzjXtAziaRcHZ+cXJ5iaXUtY7Q+P7qzZ2VLUBXao34In7qrUkrNtRAQ8D5p4OssBsT Sw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fjhsyybss-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 22 Apr 2022 09:24:55 +0000
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23M7x7fG005110;
+        Fri, 22 Apr 2022 09:24:54 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fjhsyybs5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 22 Apr 2022 09:24:54 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23M9NI0F019142;
+        Fri, 22 Apr 2022 09:24:52 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma04ams.nl.ibm.com with ESMTP id 3ffne9946d-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 22 Apr 2022 09:24:52 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23M9OnVN58393028
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 22 Apr 2022 09:24:49 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A78FFA4055;
+        Fri, 22 Apr 2022 09:24:49 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 29389A404D;
+        Fri, 22 Apr 2022 09:24:49 +0000 (GMT)
+Received: from [9.171.62.248] (unknown [9.171.62.248])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 22 Apr 2022 09:24:49 +0000 (GMT)
+Message-ID: <4ac3ecef-8438-072b-82b3-ef0b594edfd2@linux.ibm.com>
+Date:   Fri, 22 Apr 2022 11:24:51 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH net] net/smc: sync err code when tcp connection was
+ refused
+Content-Language: en-US
+To:     liuyacan@corp.netease.com
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, tonylu@linux.alibaba.com, ubraun@linux.ibm.com
+References: <20220421094027.683992-1-liuyacan@corp.netease.com>
+ <20220421115805.1642771-1-liuyacan@corp.netease.com>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+In-Reply-To: <20220421115805.1642771-1-liuyacan@corp.netease.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: xC0YdByMi1YD-XLRlZXMb7obVVf0Y4S1
+X-Proofpoint-GUID: HG0Lv2td8mmgvG2k1YZG68YvqXVmHWE0
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-22_02,2022-04-21_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 clxscore=1015
+ lowpriorityscore=0 adultscore=0 mlxlogscore=876 priorityscore=1501
+ spamscore=0 phishscore=0 bulkscore=0 suspectscore=0 impostorscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204220040
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Zijun,
+On 21/04/2022 13:58, liuyacan@corp.netease.com wrote:
+> From: Yacan Liu <liuyacan@corp.netease.com>
+> 
+> Forgot to cc ubraun@linux.ibm.com
 
-> Qualcomm WCN785x has PID/VID 0cf3/e700 as shown by
-> /sys/kernel/debug/usb/devices:
-> 
-> T:  Bus=02 Lev=02 Prnt=02 Port=01 Cnt=02 Dev#=  8 Spd=12   MxCh= 0
-> D:  Ver= 1.10 Cls=e0(wlcon) Sub=01 Prot=01 MxPS=64 #Cfgs=  1
-> P:  Vendor=0cf3 ProdID=e700 Rev= 0.01
-> C:* #Ifs= 2 Cfg#= 1 Atr=e0 MxPwr=100mA
-> I:* If#= 0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-> E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=1ms
-> E:  Ad=82(I) Atr=02(Bulk) MxPS=  64 Ivl=0ms
-> E:  Ad=02(O) Atr=02(Bulk) MxPS=  64 Ivl=0ms
-> I:* If#= 1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-> E:  Ad=83(I) Atr=01(Isoc) MxPS=   0 Ivl=1ms
-> E:  Ad=03(O) Atr=01(Isoc) MxPS=   0 Ivl=1ms
-> I:  If#= 1 Alt= 1 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-> E:  Ad=83(I) Atr=01(Isoc) MxPS=   9 Ivl=1ms
-> E:  Ad=03(O) Atr=01(Isoc) MxPS=   9 Ivl=1ms
-> I:  If#= 1 Alt= 2 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-> E:  Ad=83(I) Atr=01(Isoc) MxPS=  17 Ivl=1ms
-> E:  Ad=03(O) Atr=01(Isoc) MxPS=  17 Ivl=1ms
-> I:  If#= 1 Alt= 3 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-> E:  Ad=83(I) Atr=01(Isoc) MxPS=  25 Ivl=1ms
-> E:  Ad=03(O) Atr=01(Isoc) MxPS=  25 Ivl=1ms
-> I:  If#= 1 Alt= 4 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-> E:  Ad=83(I) Atr=01(Isoc) MxPS=  33 Ivl=1ms
-> E:  Ad=03(O) Atr=01(Isoc) MxPS=  33 Ivl=1ms
-> I:  If#= 1 Alt= 5 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-> E:  Ad=83(I) Atr=01(Isoc) MxPS=  49 Ivl=1ms
-> E:  Ad=03(O) Atr=01(Isoc) MxPS=  49 Ivl=1ms
-> I:  If#= 1 Alt= 6 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-> E:  Ad=83(I) Atr=01(Isoc) MxPS=  63 Ivl=1ms
-> E:  Ad=03(O) Atr=01(Isoc) MxPS=  63 Ivl=1ms
-> I:  If#= 1 Alt= 7 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-> E:  Ad=83(I) Atr=01(Isoc) MxPS=  65 Ivl=1ms
-> E:  Ad=03(O) Atr=01(Isoc) MxPS=  65 Ivl=1ms
-> 
-> Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
-> ---
-> drivers/bluetooth/btusb.c | 10 ++++++++--
-> 1 file changed, 8 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
-> index 06a854a2507e..67a6a84a6f61 100644
-> --- a/drivers/bluetooth/btusb.c
-> +++ b/drivers/bluetooth/btusb.c
-> @@ -317,6 +317,11 @@ static const struct usb_device_id blacklist_table[] = {
-> 						     BTUSB_WIDEBAND_SPEECH |
-> 						     BTUSB_VALID_LE_STATES },
-> 
-> +	/* QCA WCN785x chipset */
-> +	{ USB_DEVICE(0x0cf3, 0xe700), .driver_info = BTUSB_QCA_WCN6855 |
-> +						     BTUSB_WIDEBAND_SPEECH |
-> +						     BTUSB_VALID_LE_STATES },
-> +
-> 	/* Broadcom BCM2035 */
-> 	{ USB_DEVICE(0x0a5c, 0x2009), .driver_info = BTUSB_BCM92035 },
-> 	{ USB_DEVICE(0x0a5c, 0x200a), .driver_info = BTUSB_WRONG_SCO_MTU },
-> @@ -3037,6 +3042,7 @@ static const struct qca_device_info qca_devices_table[] = {
-> 	{ 0x00130100, 40, 4, 16 }, /* WCN6855 1.0 */
-> 	{ 0x00130200, 40, 4, 16 }, /* WCN6855 2.0 */
-> 	{ 0x00130201, 40, 4, 16 }, /* WCN6855 2.1 */
-> +	{ 0x00190200, 40, 4, 16 }, /* WCN785x 2.0 */
-> };
-> 
-> static int btusb_qca_send_vendor_req(struct usb_device *udev, u8 request,
-> @@ -3327,11 +3333,11 @@ static int btusb_setup_qca(struct hci_dev *hdev)
-> 		if (err < 0)
-> 			return err;
-> 
-> -		/* WCN6855 2.1 will reset to apply firmware downloaded here, so
-> +		/* WCN6855 2.1 and later will reset to apply firmware downloaded here, so
-> 		 * wait ~100ms for reset Done then go ahead, otherwise, it maybe
-> 		 * cause potential enable failure.
-> 		 */
-> -		if (info->rom_version == 0x00130201)
-> +		if ((info->rom_version == 0x00130201) || (info->rom_version == 0x00190200))
-> 			msleep(QCA_BT_RESET_WAIT_MS);
-
-I think it is better to start using a switch statement here.
-
-Regards
-
-Marcel
-
+No problem, its okay to add the current maintainers. 
+Ursula left the company in the meantime.
