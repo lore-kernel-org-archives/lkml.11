@@ -2,86 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBCA3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 11:43:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA765C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 11:44:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447124AbiDVLqJ (ORCPT
+        id S1447133AbiDVLrO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 07:46:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49260 "EHLO
+        Fri, 22 Apr 2022 07:47:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447095AbiDVLqI (ORCPT
+        with ESMTP id S1447119AbiDVLrE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 07:46:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 23A9952B24
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 04:43:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650627794;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0Ka4pkaIl0n0C8wRiVJB+Tf0N4jkuRhOTDXzmulvrko=;
-        b=N7lpY4NMtlZ9NF3FU+/vhJqEmLCiE1JW9NxLR2YrakY9j1GhBYkAOvSo2VJ9Iec2uXo/IP
-        Lt/of2Bbk9dMSmpAqySogwLaeFFNVO1wBNCXVS4x3B6rVCiYccC9zoWzDO68ck1lp/iwbo
-        fIPk6C/zOCLU+4bQ6Ds85U3RZXfrU8Q=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-43-2aQCrlSrPfuy5v4vWNiTYg-1; Fri, 22 Apr 2022 07:43:10 -0400
-X-MC-Unique: 2aQCrlSrPfuy5v4vWNiTYg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AFC621C05AB6;
-        Fri, 22 Apr 2022 11:43:09 +0000 (UTC)
-Received: from [172.16.176.1] (ovpn-64-2.rdu2.redhat.com [10.10.64.2])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 567B3C33AE8;
-        Fri, 22 Apr 2022 11:43:09 +0000 (UTC)
-From:   "Benjamin Coddington" <bcodding@redhat.com>
-To:     "Matthew Wilcox" <willy@infradead.org>
-Cc:     lsf-pc@lists.linuxfoundation.org, linux-fsdevel@vger.kernel.org,
-        linux-mm@kvack.org, linux-block@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-nvme@lists.infradead.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: LSF/MM/BPF 2022: Running BOF
-Date:   Fri, 22 Apr 2022 07:43:08 -0400
-Message-ID: <15847F8A-5246-4634-ABBE-9C05AA3CBF34@redhat.com>
-In-Reply-To: <Yl7TUDtLcrhXcp1g@casper.infradead.org>
-References: <Yl7TUDtLcrhXcp1g@casper.infradead.org>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+        Fri, 22 Apr 2022 07:47:04 -0400
+Received: from hutie.ust.cz (hutie.ust.cz [185.8.165.127])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 224E5546B5;
+        Fri, 22 Apr 2022 04:44:10 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cutebit.org; s=mail;
+        t=1650627847; bh=FpuPF57lqV2wF0ozxJVgJREDohc1ui5JNgdpVwE+l8w=;
+        h=Subject:From:In-Reply-To:Date:Cc:References:To;
+        b=dbRI4qKchxCMWHz/gRQ8gR1uvvn7q5BnJWLyllNZscu8zPDEr7VSPjV96/jjfK8Do
+         8A5M9XStn6yvgo/Fy0WO7RvQsnYEZt0e7qpaI+kedi46sXd3oIbt4NUPGClhTAI4qc
+         /vctMet+PKq2Cn8h8xKfhCfdMfXGEddPIrsxnkGo=
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
+Subject: Re: [RFC PATCH 0/5] Apple Macs machine-level ASoC driver
+From:   =?utf-8?Q?Martin_Povi=C5=A1er?= <povik@cutebit.org>
+In-Reply-To: <YmKSgHrbb/7koM36@sirena.org.uk>
+Date:   Fri, 22 Apr 2022 13:44:06 +0200
+Cc:     =?utf-8?Q?Martin_Povi=C5=A1er?= <povik+lin@cutebit.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mark Kettenis <kettenis@openbsd.org>,
+        Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <A1574F30-62D2-467D-A40B-8FD7C6B8BCFA@cutebit.org>
+References: <20220331000449.41062-1-povik+lin@cutebit.org>
+ <YkWfziQzprEsWL72@sirena.org.uk>
+ <CCE4A06E-6D6F-457D-B3C5-C36209BF38D3@cutebit.org>
+ <YkW4MPh8VWc8eSGg@sirena.org.uk>
+ <6D199EAB-FE14-4030-96A7-2E0E89D25FAB@cutebit.org>
+ <YkXKmxJ0R3qpUoH4@sirena.org.uk>
+ <DB0255C3-C9EC-4EFA-A377-C4BB1073D9B3@cutebit.org>
+ <YmKPQ6kLCPz+2XTJ@sirena.org.uk>
+ <B68302F2-3D77-4065-8A16-A9CC690AE10B@cutebit.org>
+ <YmKSgHrbb/7koM36@sirena.org.uk>
+To:     Mark Brown <broonie@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 19 Apr 2022, at 11:20, Matthew Wilcox wrote:
 
-> As in the past few years, let's hold a running BOF.
->
-> I propose meeting in the lobby of the Margaritaville hotel at 6:15 for
-> a 6:30 departure for an hour-long run on Monday, Tuesday and Wednesday
-> mornings.  I'm assuming breakfast will be 8-9am and sessions start at 9am.
-> Pace will be determined by whoever shows up.
->
-> We're only a mile from the North Lykken north Trailhead.
-> Other trails are a little more distant.  I've been reading
-> http://www.hiking-in-ps.com/the-north-lykken-trail/ (note this map is
-> for the south trailhead of the North Lykken trail).  I haven't been
-> to this area in 30 years and I have no idea what the trails are like,
-> so if somebody has local information, that would be great.
->
-> I note that the room rate includes complimentary bicycle rentals.  If
-> we want to, we could cycle to various other local trails.
+> On 22. 4. 2022, at 13:33, Mark Brown <broonie@kernel.org> wrote:
+>=20
+> On Fri, Apr 22, 2022 at 01:28:20PM +0200, Martin Povi=C5=A1er wrote:
+>>> On 22. 4. 2022, at 13:19, Mark Brown <broonie@kernel.org> wrote:
+>>> On Fri, Apr 22, 2022 at 12:43:30PM +0200, Martin Povi=C5=A1er wrote:
+>=20
+>>>> One final thought on the playback routing controls: On systems with =
+>2
+>>>> speakers, the codecs need to be assigned slots through =
+set_tdm_slot.
+>>>> The macaudio driver RFCed here assigns a single slot to each =
+speaker,
+>>>> making the effect of each speaker's routing control this:
+>=20
+> ...
+>=20
+>>> I don't quite grasp the difference between the arrangement you're
+>>> proposing and assigning a single slot to each speaker?  Possibly =
+it's
+>>> just a reordering of the slots?
+>=20
+>> Ah, maybe what=E2=80=99s missing is the fact that the way the speaker =
+amp drivers
+>> are written, if they are assigned two slots with a call to =
+set_tdm_slot,
+>> the first slot is considered 'left' and the second is 'right'.
+>=20
+>> So in the arrangement I am proposing the 'Left', 'Right' and =
+'LeftRight'
+>> values of the routing control have the nominal effect (within the =
+left-right
+>> speaker pair), while in the other arrangement it is as I described =
+above.
+>=20
+> So previously each speaker would get two slots but now it just gets =
+one?
 
-I'm in unless I'm trying to run in the PM.  I've got a tentative run/explore
-of one of the slot canyons about an hour away if I can swing it (painted
-canyon, ladder canyon, I may have to borrow a car from someone), and would
-be nice to try to get up into Mt San Jacinto park as well.
+No the other way around. Previously (with the driver as it is RFCed),
+each speaker gets a single slot, and 'Left', 'Right' and =E2=80=98LeftRigh=
+t'
+values of the routing control don't do anything different from each
+other (well except maybe 'LeftRight' lessens the volume due to how
+the chip handles the edge case of mixing down two channels from the
+same slot).
 
-I'm interested in getting some trail and elevation, but I've not run out
-there yet and will need to scope out what's possible when I get there.
-
-Ben
+With the new arrangement I am proposing, the two speakers in a =
+left-right
+pair get both the same two slots, meaning they get to choose one of the
+two slots based on the 'Left' 'Right' value of their routing control.
 
