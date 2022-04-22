@@ -2,108 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01F22C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:34:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 493E7C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 21:35:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229798AbiDVVhv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 17:37:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36318 "EHLO
+        id S230074AbiDVViY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 17:38:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229991AbiDVVhk (ORCPT
+        with ESMTP id S229983AbiDVViO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 17:37:40 -0400
-Received: from mail-oi1-f169.google.com (mail-oi1-f169.google.com [209.85.167.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FDF6400EDA
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:38:40 -0700 (PDT)
-Received: by mail-oi1-f169.google.com with SMTP id r85so10313081oie.7
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:38:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2FeuhW6y4os5v9CoDi1x5cL69WTrNP7orQRjD5u2f2Q=;
-        b=SWA5JCifyGGgXC8kg9oqcVEfzGpcJyubvgXISY/tkiQ4LkAnBvdJQ4x+SDJdCcN5r5
-         l/D5Xwmleml/wGOTyuQey0sip6/0Tgoq+rQ7CHZro/fqIgNVa0LsvarIkgGhhvY5j1sF
-         LMm1oOI3X0eDdolQ9LpFcFBcvkgDAo4IEFQp7an7GZ4F5A6E9vw8lZlu+PJZ8/F/XeaE
-         2XrN/+haQevXPxaL9uHcm3fCWmwsIiDq4XpsMffkJ/1dAHzee/+nBWc5FxrRuv2Yv75v
-         ot9Gi+ioqe4rUavjZ2Ml02hMsz+UFQFITKvVGI/dulXXz+ZeW0uqaldMetwuQxNGpPe6
-         t/zg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2FeuhW6y4os5v9CoDi1x5cL69WTrNP7orQRjD5u2f2Q=;
-        b=4MlbXWArR+Cz5opcS7HSSeCoGSQj45gUh9z4EzJW5/GXYFRuDmhtJfbZ402RTEc05t
-         i0b6351yxsOWMwyxD5wkySPv9CfaRgMXOOoctl7RUdLnQmUgYw/xhT3jDpJKSsrghD/H
-         5w+UBBT8UyvuCMFUelxWKA4W92W8yH1nFYsGR/Rxu4g5TeUA679jqJGNEjARqOd5iycp
-         5uHBn7KcQU+XBQ8GvZc8qdE1sYMRcVXd2gDIk+2Ws42GXzF4ZNGYH4LuUWSyUBr80gyu
-         lzV2Ovm+ORFWNdw6VozdZrX+TXy9uBH+rl+CzpZBYv//BsdzlZaAwheHwzGLiO1ekxJ5
-         RyyQ==
-X-Gm-Message-State: AOAM531LqcwCdunnjzn1vPzpPhBhFfIFupUIL0mBd0l8F8glU6+Ih2x0
-        2kONGQVbLKO9hZMCVS4y/ZTsRWRApapG5NaDL7cgve41SRg=
-X-Google-Smtp-Source: ABdhPJxCip4JkFs0bch4l1aLRcJlX/rZIBmOxuo46xJlHa8tYFRtgabnDRNRUlP/nwaE4268Bz4NxqEBLVaSJWXdjEQ=
-X-Received: by 2002:a17:90b:1d84:b0:1d0:6472:e0a3 with SMTP id
- pf4-20020a17090b1d8400b001d06472e0a3mr18058060pjb.207.1650658963307; Fri, 22
- Apr 2022 13:22:43 -0700 (PDT)
+        Fri, 22 Apr 2022 17:38:14 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 829A91E3DF3
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 13:39:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650659989; x=1682195989;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=CPrMsqPBc4d+/2ELT/59dZdNya95D7ohcRstQplIP1w=;
+  b=OmjFPCf3qyFFDC0Xb8AwCAHuogKUc2gXFX9OAsxP7fPDApkLy1BSxbBx
+   q1oQmYcUlgCAtsi7YMnG5WUqBcuwFatfnwESr+xomSWbxvbQr3STYAKCW
+   2BLUDcOniIxzNq1Cr4gMOgTOBz1EBB+qf4u1FSRu6ftcsqhV6ASzxC/oo
+   HZNWSDKM+HLoyIhahfOSQ8cX07eG6uTrHZ33xCr4MpgrTEcKOL4ZNO/dd
+   exrWncZUcdfZ6cHseAOVwXEQivE3F4SDVyQWenke9hUX22LgOeTYRpZ6l
+   KxyA3mtYnrMVFDYiUsjVAS1l5sqC3h2smqfP0GcDhi7WWnkEqWo5eXhQU
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="325188982"
+X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
+   d="scan'208";a="325188982"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 10:25:54 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
+   d="scan'208";a="806077611"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 22 Apr 2022 10:25:52 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nhx2W-000AOU-7j;
+        Fri, 22 Apr 2022 17:25:52 +0000
+Date:   Sat, 23 Apr 2022 01:25:13 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Matteo Croce <mcroce@microsoft.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Emil Renner Berthing <kernel@esmil.dk>
+Subject: [esmil:visionfive 2/54] mm/kasan/shadow.c:63:7: warning: no previous
+ prototype for 'memcpy'
+Message-ID: <202204230129.dHHHV3FB-lkp@intel.com>
 MIME-Version: 1.0
-References: <46c1c59e-1368-620d-e57a-f35c2c82084d@linux.dev>
- <55605876-d05a-8be3-a6ae-ec26de9ee178@openvz.org> <CALvZod47PARcupR4P41p5XJRfCaTqSuy-cfXs7Ky9=-aJQuoFA@mail.gmail.com>
- <964ae72a-0484-67de-8143-a9a2d492a520@openvz.org> <e9cd84f2-d2e9-33a8-d74e-edcf60d35236@openvz.org>
-In-Reply-To: <e9cd84f2-d2e9-33a8-d74e-edcf60d35236@openvz.org>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Fri, 22 Apr 2022 13:22:32 -0700
-Message-ID: <CALvZod7ys1SNrQhbweCoCKVyfN1itE16jhC97TqjWtHDFh1RpQ@mail.gmail.com>
-Subject: Re: [PATCH memcg RFC] net: set proper memcg for net_init hooks allocations
-To:     Vasily Averin <vvs@openvz.org>
-Cc:     Vlastimil Babka <vbabka@suse.cz>,
-        Roman Gushchin <roman.gushchin@linux.dev>, kernel@openvz.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>,
-        Michal Hocko <mhocko@suse.com>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 1:09 PM Vasily Averin <vvs@openvz.org> wrote:
->
-> On 4/22/22 23:01, Vasily Averin wrote:
-> > On 4/21/22 18:56, Shakeel Butt wrote:
-> >> On Sat, Apr 16, 2022 at 11:39 PM Vasily Averin <vvs@openvz.org> wrote:
-> >>> @@ -1147,7 +1148,13 @@ static int __register_pernet_operations(struct list_head *list,
-> >>>                  * setup_net() and cleanup_net() are not possible.
-> >>>                  */
-> >>>                 for_each_net(net) {
-> >>> +                       struct mem_cgroup *old, *memcg = NULL;
-> >>> +#ifdef CONFIG_MEMCG
-> >>> +                       memcg = (net == &init_net) ? root_mem_cgroup : mem_cgroup_from_obj(net);
-> >>
-> >> memcg from obj is unstable, so you need a reference on memcg. You can
-> >> introduce get_mem_cgroup_from_kmem() which works for both
-> >> MEMCG_DATA_OBJCGS and MEMCG_DATA_KMEM. For uncharged objects (like
-> >> init_net) it should return NULL.
-> >
-> > Could you please elaborate with more details?
-> > It seems to me mem_cgroup_from_obj() does everything exactly as you say:
-> > - for slab objects it returns memcg taken from according slab->memcg_data
-> > - for ex-slab objects (i.e. page->memcg_data & MEMCG_DATA_OBJCGS)
-> >     page_memcg_check() returns NULL
-> > - for kmem objects (i.e. page->memcg_data & MEMCG_DATA_KMEM)
-> >     page_memcg_check() returns objcg->memcg
-> > - in another cases
-> >     page_memcg_check() returns page->memcg_data,
-> >     so for uncharged objects like init_net NULL should be returned.
-> >
-> > I can introduce exported get_mem_cgroup_from_kmem(), however it should only
-> > call mem_cgroup_from_obj(), perhaps under read_rcu_lock/unlock.
->
-> I think I finally got your point:
-> Do you mean I should use css_tryget(&memcg->css) for found memcg,
-> like get_mem_cgroup_from_mm() does?
+tree:   https://github.com/esmil/linux visionfive
+head:   68fe13e37af4c8331cdd40841353c9725cb65925
+commit: 359a031f0505e46e0274570b6e015984f45da29b [2/54] riscv: optimized memcpy
+config: riscv-randconfig-c003-20220422 (https://download.01.org/0day-ci/archive/20220423/202204230129.dHHHV3FB-lkp@intel.com/config)
+compiler: riscv64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/esmil/linux/commit/359a031f0505e46e0274570b6e015984f45da29b
+        git remote add esmil https://github.com/esmil/linux
+        git fetch --no-tags esmil visionfive
+        git checkout 359a031f0505e46e0274570b6e015984f45da29b
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash mm/kasan/
 
-Yes.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> mm/kasan/shadow.c:63:7: warning: no previous prototype for 'memcpy' [-Wmissing-prototypes]
+      63 | void *memcpy(void *dest, const void *src, size_t len)
+         |       ^~~~~~
+
+
+vim +/memcpy +63 mm/kasan/shadow.c
+
+bb359dbcb70085 Andrey Konovalov 2020-12-22  61  
+bb359dbcb70085 Andrey Konovalov 2020-12-22  62  #undef memcpy
+bb359dbcb70085 Andrey Konovalov 2020-12-22 @63  void *memcpy(void *dest, const void *src, size_t len)
+bb359dbcb70085 Andrey Konovalov 2020-12-22  64  {
+f00748bfa0246c Andrey Konovalov 2021-02-24  65  	if (!kasan_check_range((unsigned long)src, len, false, _RET_IP_) ||
+f00748bfa0246c Andrey Konovalov 2021-02-24  66  	    !kasan_check_range((unsigned long)dest, len, true, _RET_IP_))
+bb359dbcb70085 Andrey Konovalov 2020-12-22  67  		return NULL;
+bb359dbcb70085 Andrey Konovalov 2020-12-22  68  
+bb359dbcb70085 Andrey Konovalov 2020-12-22  69  	return __memcpy(dest, src, len);
+bb359dbcb70085 Andrey Konovalov 2020-12-22  70  }
+bb359dbcb70085 Andrey Konovalov 2020-12-22  71  
+
+:::::: The code at line 63 was first introduced by commit
+:::::: bb359dbcb70085a63e8bdbf14837a900750f0cf7 kasan: split out shadow.c from common.c
+
+:::::: TO: Andrey Konovalov <andreyknvl@google.com>
+:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
