@@ -2,94 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ED15C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 15:54:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2901C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 15:54:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449605AbiDVP51 (ORCPT
+        id S1449648AbiDVP5p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 11:57:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59916 "EHLO
+        Fri, 22 Apr 2022 11:57:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449587AbiDVP5Z (ORCPT
+        with ESMTP id S234345AbiDVP5m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 11:57:25 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92004237FD;
-        Fri, 22 Apr 2022 08:54:31 -0700 (PDT)
-Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23MExSaS028654;
-        Fri, 22 Apr 2022 17:54:27 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=selector1;
- bh=/ZsiM/JVSStGy085+VUcOInF1XyD4vqdtylPW/d5gq8=;
- b=2rPNmR8qK7iYuF8eztJY/RH/AjGxVchq46xGxrCRGIxD4AX0udT3s9e7kO63Evlap+Um
- 2rvZTiD5JtgwEHStlzJjTn+OUnJbdmCs+TH7rZUY2NDYmbEpO5K24sacp1lXf3HsCpYK
- 4cQpffwgYwI+lz76MmlYic6DChgTyULQ7hjLlrqvxGlcBXs4loyMKy8eYG0rppUpQJ/5
- XfrBcauEAsA3MgipT75hTZ7pyM6qLgrSr7R0Xv9O6PyG9lAAg31BSbZ2znY2k+1Prkp5
- zfTHq8Dyz5/rHx/r2yVKfTrBcNL6mTvVnUzH8rVUo9CoYemfni/04lU2MUkVL6K93Zt3 Ug== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3fk4fvg40d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 22 Apr 2022 17:54:27 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 3CD5010002A;
-        Fri, 22 Apr 2022 17:54:27 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 3611B23695A;
-        Fri, 22 Apr 2022 17:54:27 +0200 (CEST)
-Received: from localhost (10.75.127.44) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Fri, 22 Apr 2022 17:54:26
- +0200
-From:   Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>
-CC:     <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <arnaud.pouliquen@foss.st.com>, Hangyu Hua <hbh25y@gmail.com>
-Subject: [PATCH] rpmsg: virtio: Fix the unregistration of the device rpmsg_ctrl
-Date:   Fri, 22 Apr 2022 17:54:02 +0200
-Message-ID: <20220422155402.721982-1-arnaud.pouliquen@foss.st.com>
-X-Mailer: git-send-email 2.24.3
+        Fri, 22 Apr 2022 11:57:42 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 532DF237CE;
+        Fri, 22 Apr 2022 08:54:48 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id x17so15014465lfa.10;
+        Fri, 22 Apr 2022 08:54:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=lks2EMkJckKXXGPYQAgtI2m89X51SNXNx9xbd5ZHWuQ=;
+        b=RCNN9kyQCGrAsGwyCpavddgEtmbY9NeuE4Ot7kXpayx0n+zJI3lsI2t2ZO2EJFl5c2
+         sHK53YgOIlt6ckp0cZbPr6vfAmIMg7odXi4ueWZepSa/bSJPEUEYU2tmbuOMgYTh8QWN
+         dD8qYrjW5nH4I9/XgVeFtd9GutaSlGxrewRSxVwS4EaJJfilF6Qsl+4kPxuxsyOQ3DT7
+         XEZlBoNHQ5u86W+Wq0TO2e3QXnGrzD75ca8cb7JE78OFFhDiWzVvQtCO+BmHhyrRZ0qu
+         qHeedafEFUp4Qw/bXtmYn0jCL4Hx8yEJmkQj2kSqKiQbNqKjRtJHB+v8OZcXnp20B01T
+         0/QA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=lks2EMkJckKXXGPYQAgtI2m89X51SNXNx9xbd5ZHWuQ=;
+        b=3HsOo9PPWykQoAxyA8zmsUyjrlHFECvLud50tzg4mOPb2RvZ2Sx9pUbu7RnGFnFUwe
+         lXkpz6CjuR4vrgfqCBJdXV+he1C4jWQ7PSLelM2JN4vVEcyrIOKcANg0okipqyuGWi1i
+         3rR/XSxKvmRVLHdPkxVJQWJoK3Zvdd9oCy7FOxyKvj2Q5NHPv9uGUjGOZ3y9ogIbKumf
+         77AyiFM1fvQC5uKe7vA67VIeZUBSOBxjSgJQhzl9RPQ6kDgtHumJHCETKLJH59hTMipy
+         XinbljZCUvcReKWdduOyCEWOUJ538Kb3tErxJw0O9z+5NEx2zl/9qxPofQA3A1gWFG5s
+         GamA==
+X-Gm-Message-State: AOAM531yPW+l4Bhrdf10y/7kXnKqKwve9Rx/k4kPm9TUe30dyHoByYuC
+        9ELHRNI/j0lgajFZxA1TakuziVMJsK8=
+X-Google-Smtp-Source: ABdhPJzr+3Gb2AIG7O7wrQYBlHeGFDGlNWyVADyEhW/hlpfcokuiZn9eYXUjmLhKsBDzcqhS2x/4CQ==
+X-Received: by 2002:a05:6512:3d14:b0:46b:81d9:b9ee with SMTP id d20-20020a0565123d1400b0046b81d9b9eemr3542774lfv.109.1650642886407;
+        Fri, 22 Apr 2022 08:54:46 -0700 (PDT)
+Received: from orome ([62.96.65.119])
+        by smtp.gmail.com with ESMTPSA id f4-20020a193804000000b00471a32f8f72sm264901lfa.229.2022.04.22.08.54.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Apr 2022 08:54:45 -0700 (PDT)
+Date:   Fri, 22 Apr 2022 17:54:42 +0200
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+Cc:     paul@crapouillou.net, robh+dt@kernel.org,
+        linux-mips@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] dt-bindings: timer: Add PWM compatible for X1000
+ SoC
+Message-ID: <YmLPwtJYRE+qI2oJ@orome>
+References: <20220224234133.15708-1-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.44]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-22_04,2022-04-22_01,2022-02-23_01
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="wslXXE2EBCJbUgwQ"
+Content-Disposition: inline
+In-Reply-To: <20220224234133.15708-1-aidanmacdonald.0x0@gmail.com>
+User-Agent: Mutt/2.2.1 (c8109e14) (2022-02-19)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Unregister the rpmsg_ctrl device instead of just freeing the
-the virtio_rpmsg_channel structure.
-This will properly unregister the device and call
-virtio_rpmsg_release_device() that frees the structure.
 
-Fixes: c486682ae1e2 ("rpmsg: virtio: Register the rpmsg_char device")
+--wslXXE2EBCJbUgwQ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-Cc: Hangyu Hua <hbh25y@gmail.com>
----
- drivers/rpmsg/virtio_rpmsg_bus.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Thu, Feb 24, 2022 at 11:41:33PM +0000, Aidan MacDonald wrote:
+> The PWM hardware on the X1000 SoC is almost identical to other
+> Ingenic SoCs, so it can be used with only minor driver changes.
+>=20
+> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+> ---
+> It seems Thierry picked up the driver patch separately (thanks for
+> that) so here's the DTS changes on their own. Would've uploaded a
+> v2 sooner but I was busy the past couple weeks and couldn't spend
+> any time on kernel stuff. I guess this isn't a v2 per se, but for
+> completeness:
+>=20
+> v1: https://lore.kernel.org/linux-mips/20220209231141.20184-1-aidanmacdon=
+ald.0x0@gmail.com/
+>=20
+>  Documentation/devicetree/bindings/timer/ingenic,tcu.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/rpmsg/virtio_rpmsg_bus.c b/drivers/rpmsg/virtio_rpmsg_bus.c
-index 3b7b47f785cf..0db8043e6c49 100644
---- a/drivers/rpmsg/virtio_rpmsg_bus.c
-+++ b/drivers/rpmsg/virtio_rpmsg_bus.c
-@@ -861,7 +861,7 @@ static void rpmsg_virtio_del_ctrl_dev(struct rpmsg_device *rpdev_ctrl)
- {
- 	if (!rpdev_ctrl)
- 		return;
--	kfree(to_virtio_rpmsg_channel(rpdev_ctrl));
-+	device_unregister(&rpdev_ctrl->dev);
- }
- 
- static int rpmsg_probe(struct virtio_device *vdev)
--- 
-2.24.3
+Looks like I also somehow ended up applying this snippet, though
+possibly from the earlier patch.
 
+Thierry
+
+--wslXXE2EBCJbUgwQ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmJiz8IACgkQ3SOs138+
+s6G8TA//aNfTdXlORXO6PccUeVulC2D1QRHujiQBe2dGOgoilLVkRc49K8fHizPf
+sOQ3ALFaibR6O1A9WjO0DuIQ//l/gt9NlTsuhFzklL8wkn6wy+lPEeUWpEyks+f2
+aly8o9m7zYBNhIDcB3M+t9DQ5YhrU5MlQRwDutupWSs7ayW2PrWJEsl7OoL2pjLM
+Y2M4JkcGD43WoYQsAuJxn+ZKYWC7pT7PeaO3sQpt9+/UzzFP9NWbSubVpfESNSE+
+38vmuytaEZtlLsnwPUJcf5xR99DmyEfIFcrlnxHGY1l9AnpVbAKGygtTE4l++Xrp
+LrIPob/y6eBC6J0BnOQ2hNBMNxxs6kL5smFgGPw+YlB1kBsYNLpG6RUBxsF6dv1k
+t0kVKYuiSojMF682A5ga1KUHPqL/FXAFpqT4HrciqHN8AHymaR50K6kMIybSNn6P
+gUxHr4hPDsaqmDDfyrnUyle+UbmCnP9TuHsikNj1LMgFXT7K58BYpM3uisLDlPap
+IMxQS5JizTulZ1Db+u4B0hgRk2vA0u320XGbP8Wf2wlvqxRaGSfFgDNo6WSzA3mz
+C4Ip+2eUjXpmAv5Ly91KYRvcOLWQ42glDhlNbAS6u/bEus8jN2isum9fXv6ctNeB
+caeel3DG+SZIAAs04/lEtTK2L65SyjLOXkw4QyBfegt/qMF6Tfs=
+=SaPD
+-----END PGP SIGNATURE-----
+
+--wslXXE2EBCJbUgwQ--
