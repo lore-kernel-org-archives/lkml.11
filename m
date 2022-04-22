@@ -2,355 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21DE6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 02:48:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15713C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 02:48:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443578AbiDVCut (ORCPT
+        id S1443579AbiDVCu7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Apr 2022 22:50:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43686 "EHLO
+        Thu, 21 Apr 2022 22:50:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443548AbiDVCul (ORCPT
+        with ESMTP id S1443551AbiDVCul (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 21 Apr 2022 22:50:41 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2126.outbound.protection.outlook.com [40.107.237.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8E714CD41;
-        Thu, 21 Apr 2022 19:47:41 -0700 (PDT)
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8BE24CD55
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Apr 2022 19:47:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650595663; x=1682131663;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=SYH5aOKVpbF+qSxADbQNlGUcMR53GAWT+9ShWtgjRCQ=;
+  b=akblmXQC10IFp7kREX4e2AWrvEvohWUEx6cZdcDr4gkW/PxX6flQoRSx
+   mNesON57eAhbO7SwVGt54mJFwtYwhMnD/+YmYvDHz/DmJRNgMJ3yOgazY
+   IHJVlFi8PG7aXWK/XiJYKU/ntgPLctVV1AOz6PxsXZBqN9jIPoEXhSjlK
+   gsVgwWJHqEQXkXhzckL7osvzPVpbDGdNv3hHPCxLipJSPSlp3zgt6t/Hz
+   CasudEdsYFsBeO4OVAtRLBHbmY4onVXu6ki13nNxk/cMBmL35iIIIGTYS
+   Tk4rmcJUiTj2j8RMVWwWH12997d8zQ1kw2GEIUfjVYzElMsIV9n/ah0Hi
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="289667334"
+X-IronPort-AV: E=Sophos;i="5.90,280,1643702400"; 
+   d="scan'208";a="289667334"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 19:47:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,280,1643702400"; 
+   d="scan'208";a="533904899"
+Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
+  by orsmga002.jf.intel.com with ESMTP; 21 Apr 2022 19:47:43 -0700
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Thu, 21 Apr 2022 19:47:42 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Thu, 21 Apr 2022 19:47:42 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.170)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Thu, 21 Apr 2022 19:47:42 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TnZZYjUNUjNtUNIzzaIrn0lkzXeSiKcXuHDD8x5SXsvFmvTTM5JNDTWdweMOXF7Gy0lHfvm7H9MvwkN5TMU4JucdiVBO6sjNG/pkt7fF0QakenFZfYBy4OGJbPh59EsXyqeTutKQNr5HLDTpc8fOPaNKUl/5IxtOyuiXy9qVk9Z3+IBalPG46et2bJbiHYDsTL8gtyz4C3r+4wwJzNwVzxQ34+rwFzAMqaSojTfzhyxd4/s2AA0hzs+G2g9I6F1wCOwYflS26I064Bf2inDZIwsbowVjA072QL6K63Znl4peW6g+4zjfkwyvben6B3eBuANV+ndx3o/HG2rVn04iaQ==
+ b=XpcdtHgUlDbtiMRaRx7msQfD1OkSrB23+qY7Y8+YE6CEBO32kZLv/5gZPkDuhXY05hL/ptcX+mBIr5+W3dozZqxWJqw3Dosz75tNXyFIXNRgN+J+9DM871aiAKlz33OJ+QYp6FLq/3+fzmCoCYmfJvGGYi2849AqlolI/NV+emyjLQ15/8/WDAx57xAcdKooSbn2qfh0xWkYojGpmLgyE9jmg0sxOpPi4xzduokcy7po7AKZXRxTo4Jph8t5iuV0L9Gl4H07lDE3AY5RvCR6QCmqPuyf+OOACPByaF+msQe0XQr3nPchAZK4YmXy0JyVwnwcVIx34uGE6epMoB4vvQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qPLBQJxKYqwOxcgTU8j2CKy193bPvhctvPDUM3mTFGA=;
- b=cFhNL5ndlbkhFuQNzsOeZGW2SbWicYvoaq1yHRChirlj6IzeD/ZJbL8kA5DktbP1+HZl5Q5cp/65V8KqFAxD5xdqugdAKpqDvoClFz4XKoMax5givJ1WUQS8kjRuLQ4/Fol112jyVmroVRV6lcgaqn2W4AnO0ZhCFf33BQx2DnetR6J7fFC6u9v93NPAxI1go9qCcw9RmD/S60qwSFm8VAkDuvJF14JgP+Eo7deKNvTbIfRjvVTf3x0Y61fnW5VYwleIpPwy/70//M5ME5M+0jQyogPgNsWIf/jk5NIS20kWpH30j2t9uouDfoxEQ1xfEdt6+Gq+zascGN4QTc9d0A==
+ bh=NymsNYJoiT1Khmb8fWirGvKTJELy3NAfJZRiermBwtU=;
+ b=bGlgiC5mS0f1SGpyAOHzAKWAUVBDuQt68y97AY72tQG9DHVS71Tx6ycHCQ5RmBkHT8qsuxBq5+CNTe/0ZovqL6jezkC9Lhtk7OcPZ9pBW0o8GHR08tsHdjLaDKp2km+vLgwVKOybQkY1hrb9XL3uQLTuKQYoem0xi8ZEDzefwbqUINIC6UU2mzI88tJkxU6VraE0oCIzuFvaNOB2fv5MCGS+TAS3q2/9ujsh40AaWW0NP+VnUOAkJWft1tNWJjm9PWyChExtk9oZijwXmJFsLuI/zg7ywfNgI+HZHn4dHYsf36sbdHLr7kr2gv0lmN1eDuzL4WEUW7C43H7nz/ydlw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=os.amperecomputing.com; dmarc=pass action=none
- header.from=os.amperecomputing.com; dkim=pass
- header.d=os.amperecomputing.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=os.amperecomputing.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qPLBQJxKYqwOxcgTU8j2CKy193bPvhctvPDUM3mTFGA=;
- b=ifYoutSazFiEoS0TUJIrVQ1B2QudxvytXqcQ08iYv9wveLo0Rm+LM6n+chRHMn31Ny2DiOfALFswCm5Xh6YuBtjcYymHuKOvXdMhwdrCBW/jJs5thr46RzDaCsOUY4GJhbaiEw/a/F3RHQ++WeiqbJevfys5c/gqgOqBlVga0mo=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=os.amperecomputing.com;
-Received: from SJ0PR01MB7282.prod.exchangelabs.com (2603:10b6:a03:3f2::24) by
- PH0PR01MB6293.prod.exchangelabs.com (2603:10b6:510:13::6) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5186.15; Fri, 22 Apr 2022 02:47:38 +0000
-Received: from SJ0PR01MB7282.prod.exchangelabs.com
- ([fe80::319b:4612:e6f4:f22c]) by SJ0PR01MB7282.prod.exchangelabs.com
- ([fe80::319b:4612:e6f4:f22c%3]) with mapi id 15.20.5186.015; Fri, 22 Apr 2022
- 02:47:38 +0000
-From:   Quan Nguyen <quan@os.amperecomputing.com>
-To:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Derek Kiernan <derek.kiernan@xilinx.com>,
-        Dragan Cvetic <dragan.cvetic@xilinx.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Quan Nguyen <quan@os.amperecomputing.com>,
-        Thu Nguyen <thu@os.amperecomputing.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org,
-        OpenBMC Maillist <openbmc@lists.ozlabs.org>
-Cc:     Open Source Submission <patches@amperecomputing.com>,
-        Phong Vo <phong@os.amperecomputing.com>,
-        "Thang Q . Nguyen" <thang@os.amperecomputing.com>
-Subject: [PATCH v8 5/9] misc: smpro-misc: Add Ampere's Altra SMpro misc driver
-Date:   Fri, 22 Apr 2022 09:46:49 +0700
-Message-Id: <20220422024653.2199489-6-quan@os.amperecomputing.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220422024653.2199489-1-quan@os.amperecomputing.com>
-References: <20220422024653.2199489-1-quan@os.amperecomputing.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SG2P153CA0023.APCP153.PROD.OUTLOOK.COM (2603:1096:4:c7::10)
- To SJ0PR01MB7282.prod.exchangelabs.com (2603:10b6:a03:3f2::24)
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by SJ0PR11MB5937.namprd11.prod.outlook.com (2603:10b6:a03:42c::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Fri, 22 Apr
+ 2022 02:47:40 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::24dd:37c2:3778:1adb]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::24dd:37c2:3778:1adb%2]) with mapi id 15.20.5186.015; Fri, 22 Apr 2022
+ 02:47:40 +0000
+From:   "Tian, Kevin" <kevin.tian@intel.com>
+To:     Lu Baolu <baolu.lu@linux.intel.com>,
+        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+        "Raj, Ashok" <ashok.raj@intel.com>,
+        "Liu, Yi L" <yi.l.liu@intel.com>
+CC:     "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v2 1/4] iommu/vt-d: Check before setting PGSNP bit in
+ pasid table entry
+Thread-Topic: [PATCH v2 1/4] iommu/vt-d: Check before setting PGSNP bit in
+ pasid table entry
+Thread-Index: AQHYVXRiJweT3/DMakGQhv0qzMieEqz7Od6w
+Date:   Fri, 22 Apr 2022 02:47:40 +0000
+Message-ID: <BN9PR11MB52767A16DC6BB80838C876068CF79@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20220421113558.3504874-1-baolu.lu@linux.intel.com>
+ <20220421113558.3504874-2-baolu.lu@linux.intel.com>
+In-Reply-To: <20220421113558.3504874-2-baolu.lu@linux.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c94ddc82-6e0a-4d50-097f-08da240a77a5
+x-ms-traffictypediagnostic: SJ0PR11MB5937:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-microsoft-antispam-prvs: <SJ0PR11MB59379BD440121A6BA433AF0D8CF79@SJ0PR11MB5937.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: /D4Ze9fJSxP/+LgGurzTP+3K09ithY8HIN4liCrDFVsRjRYXYuKtbufznxr+tqfig3hnRVZ9fjCkqdl9k5+3MOBdYT9rRcEe3VaOeY9wTl3IHWUx8Z6sV9UPv4rYGyMWgCBDZeQYe9bAG6GoC79ZQvH1Ut1+6d+8D7X7Y+tA/wXawwUgKKE3MCeWwxkXJgsf28kmPr2locTtHto/ZvzJEFjRGMCmtDi+jBkw9UFpZWRRt/Hfy70mwyVeA8Fe5SsqwRfb8eLjod00/PpmH2UGaVIdajrz66Rp+6tAyfvXKATb0KETPeBxi5I6zw3wV2xtgj+AApvuzw0SN9KrCaWE2H2nnix8XGFCYPJTU6X3J/AFeeqE9b1YxCKnD1vf+U8FPk/6qOxK3JO3AqP6PnjsGvXaY9wIzC4VLCLBCYxa0tyTlWIx7dbr//USXny15vIGE8RvGvt2sCCESmsCjGITjp747ziac27BaWETRkDIR7YHptken/xCXRIH91Z+RnGNJojMBnhjGtaiJHqDKU6S5JZ02ZAOTY5fett8YUx1a/WoD0/sC9BQWxmn+cIzSU4Cpqa4WcoaoDYFWNe0/LmkT2dn1Mhkp4Ix/wrk+jWsG0Hn6+B4ZPjn+Wj9No1esxLWy0m3i7Y+MlFOgvxURQuANYRRIpMO+/kL8zo1L+JKPzOjtFeZKf82GJmksqSIUweq4FQA3kd6NvZOXyki3NfBydxvUNCzGwd8QlOiSly+oek=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(4326008)(76116006)(2906002)(33656002)(186003)(110136005)(6636002)(316002)(26005)(508600001)(71200400001)(6506007)(9686003)(54906003)(7696005)(8676002)(64756008)(122000001)(66556008)(66946007)(38070700005)(38100700002)(55016003)(82960400001)(5660300002)(52536014)(83380400001)(86362001)(66476007)(8936002)(66446008)(309714004);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?pOCOxk6KuhHmWBY7mzLAeRmn/ak/p/08AoTRlrO0y7QUHbmk95sszqT8Vxhj?=
+ =?us-ascii?Q?sfZxGdVOaxFSZrFvvP6Js5kw0ECfHbuIKMH17IOOwlvlwzb/4Z0f+iedJ6c6?=
+ =?us-ascii?Q?D6ok68QeC7Q8q4G0Nkx6y1Thia/X8FYIYa6c1Y+m1H627AfjeZJ6+Xct+PuB?=
+ =?us-ascii?Q?iq3QsAYQEdvOBR9Yc95G+xgicwPVP+mMGp+d/gzdDeg0h6xpc3BVQOWZ41ex?=
+ =?us-ascii?Q?A7acnvucc0Z13vI4SWbEQV25dCHOQo0A1zQIhVbn1eLwdMsVJY0v4yNjlhWs?=
+ =?us-ascii?Q?eKyoMqtIzSmFPkloCr7GV0xG+hmuloKy0d3OMJP/KUOHYiyy9VqMXmHEPBeJ?=
+ =?us-ascii?Q?5uhAYTDk/7q4HrQhS8zrnyh2G92FRVwIDdTcJjfGMlNgfHJA2lT2Hzpq91p/?=
+ =?us-ascii?Q?RrjjKu6KFIHqD9mrRRAUFXs2I8IwwYvANve7ILdkbwzHRMV/wy3NKps2U7c9?=
+ =?us-ascii?Q?w/m+P5VdUo7KMuEn8qpP1f1hKZaRU5Y9XccsSIOGb+2CF/gFcue42RIRmDLN?=
+ =?us-ascii?Q?CkvXn7vLAPrFqlemsjuNJUs8XeOGRLYguyvIW/bVWha6fW57aYn0/BbKYNGe?=
+ =?us-ascii?Q?KFLSkqGjks7S4eB/+EG51axjanQd7jXwWNsbopOj65/hlLGTVQg0yo4upT5j?=
+ =?us-ascii?Q?Bti6dGg8V+HNLHXdMAfl+sh3lHs7m/Y9o9A2l+usthWCgZm9TLAOx/2EP4Rv?=
+ =?us-ascii?Q?Dm9GpeeIXv023Pq/vKgs4WoL8vbpWEq3Gf6zNOgWvlcJnhm7MXyzBe0iHixz?=
+ =?us-ascii?Q?XTyMBuIQzWl8lZTdgag7rLJn2hubKwT299f6MVIwJvRHCrwfQ6uoDJoenPez?=
+ =?us-ascii?Q?cGzohz/ALLOXkGReZFfQdwlTioVYY8BTEnuw3Vb2meeUCbkSdsQUTuK/eq4S?=
+ =?us-ascii?Q?GGLEbMlbSFXXW8nz88/pI1GrsotT1FoXjLE/wEltV8qFZnHW9Gv9dyjmUKZO?=
+ =?us-ascii?Q?EZLAKhtxK+Y0h2pSldDTm24k3vydfTEbFofZ62uWFCL5gdoKPArunZhe1oIk?=
+ =?us-ascii?Q?vxZjItmU6HOmSTZvLEdZjpdg3hhllmRd5fSixNARQyvlx69l54hnQAM4EsMy?=
+ =?us-ascii?Q?Va+4aZtBZPOt/cpWkIejbCCrS9u5OTt//4ddG79+Zy7py94JS2NPy0urD6l5?=
+ =?us-ascii?Q?GYky/vlTZrATqZnEq2lMFGmg2yq8x+SPiLy02X6EvuNb1nUO2J/1ZPd3pREV?=
+ =?us-ascii?Q?JsTHU3DS5oK0RULrMCPxdRvwkleNmy2ZwqohRW64y4pfG6UY+CbouaenV2Ic?=
+ =?us-ascii?Q?FzB3oLBD+PcqjFQuAiqZValJUw65PRf/h1ve4EompK9bJZ8xCzuSfiMywL33?=
+ =?us-ascii?Q?/yU8o7usbq+1pXUjcz8pnmimINSN9swxZyWYkakxDhVxg5YL92k7s5j3YC0a?=
+ =?us-ascii?Q?SyHzuUYT9BnM/Y2YsqicFbK2DQxJCPI4Wq5M5a9Seaa5+BqmDCKHpMpS21XO?=
+ =?us-ascii?Q?NwNITN9I5S6t9HNWKUsgq+iTVnyvoZVW84wy3bQpfOemGQPBibDkEjOh9SFb?=
+ =?us-ascii?Q?/VonXT9wIL/wHKUz9dNdqVoh9JTueU12kJoUuVftlWW1s1S8Zcj5SGNbstny?=
+ =?us-ascii?Q?lTGiCr9BssOpar272v8b9ixqwMy0dtQWflR10gOM6/DX7mTHF727R5nJb9oI?=
+ =?us-ascii?Q?XmoEA9gkMG75YMzX3LbI/0kV/YNPXitT7im0XDC0KyDJaClg4J13eUHGwXj6?=
+ =?us-ascii?Q?SoHAGEQFhpK6UZd9+p2kNESoDcGlQmggxIepYJWG10jk47vDyEgsOTcXjNcG?=
+ =?us-ascii?Q?+/JE48kAYw=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 21e7844d-07d0-4634-ba23-08da240a765f
-X-MS-TrafficTypeDiagnostic: PH0PR01MB6293:EE_
-X-Microsoft-Antispam-PRVS: <PH0PR01MB6293D813830F73A0E2464E10F2F79@PH0PR01MB6293.prod.exchangelabs.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 92i4RmQI5eVycWNYUujN4ep+ONtkkAvqwxv42R5e8QNX7sSgfDwOB+XFxPFebN6Qw/PoRx/Mzy1Xs7o7IxYGghvKZ330bvXotNoUTFYzielYhDcJlNRqMG1DgZZXFIWSUuxHzpkYzEbz1D3XTaP5eoRAR/Cfjo7HmQMZk6t2nkf5tlthLTZE8qX0rcWuR5u+70/EK6iIqX3If1t+P233A2CF+RpsQGHf8yLsM0knUP9A45PL51ZR6HSuoqJnhnfDEfbRQgEXbqIqhzWgQU6oJeI5BYR9fJUNxk5ljk0wP2xTkaSRHynh1lSkKvzh6v7oqdM7O8RFrpjsX2rmdnYcYhU7yOqCuhY9VmHnp8trTbUO1vB2qs7lvJ4qlpV3SGnW43HV5e+2kCNNKtdeKAJ5EqhvlGdHqtdL0O8RxrpiLFn2TYTu8cdDYcdwpRHQqju9+2z/Mi/lAPKoC4G+xbr7hu9e+PG7Y0eWVtX1UmBgPsc9rj3QP1e/vd0duA1QX7iof6xErN3Hx6KmaniepupD5o+fg2gO62pgBlNQKxVhBISkQyjWTFZXTA6iREPKMf/VvKCNR+TU98Qqx+A4fWa8Sp1T5z36BTUzVsnnm1kqWHd6HdFwa4+3M3Ki1Y0zaP+/s/7wTcJt5HKzwZWWGwvZ1++cx/gcgPQhBWAhXwDzuLxYk9P5qjA/7TogWWfz4sZMppeM2nMXzWSJJwZVVasDa04w9ZktozgX+vwtgllm+i4=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR01MB7282.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(186003)(66476007)(66556008)(7416002)(66946007)(2616005)(1076003)(107886003)(6512007)(26005)(8676002)(83380400001)(52116002)(6506007)(38350700002)(4326008)(921005)(54906003)(110136005)(38100700002)(86362001)(2906002)(6666004)(8936002)(316002)(5660300002)(508600001)(6486002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?nEynoEkmneOzZ30wjLrKh6eMmd4hXoVYWcWiA32zKqyfWgevVqwvXgxVkIND?=
- =?us-ascii?Q?xUGVRMQJorRsuOn7zW+SK14PcuXCldysrAhfyrbH+WN83rwXSTBAM3MWZb9e?=
- =?us-ascii?Q?Qv8aTHqIRs3Sz9UZiZFRtxo2eHANDgYoUBbXvazFnTj4f/EYSntJfMaeYL+T?=
- =?us-ascii?Q?tbTUJfRxRoxuqyE+SKGNsHKNKDjM6VdQblcsYjJK/a8+jnc/sbRCjN8JVBLe?=
- =?us-ascii?Q?pTLFsJLcsuodZQaOmR0g7tckKo+JfNCa1V5UPL6jQmqkEFcLGIg5PjePcxLx?=
- =?us-ascii?Q?8Inh21Vy66xo2eoCCELXuL1cDxovOEltnytYg4pHnEFAiQ2hg8exYVVZ/ZGg?=
- =?us-ascii?Q?pykC9s0yFLaz2KUYVLVqzQwG/7h5SMWdBilAJOK1AqGz2NAEeacubt5GjNh9?=
- =?us-ascii?Q?W0GhotyqRYu8mll9d7MvvR28HiGar+yHuZ2gvyBQxAkXm8QTtalcsrxhZ5aG?=
- =?us-ascii?Q?tbhphC9QT6rAHdstyjlUe7vmw2V8LW1kD9TBK3wZTmHw0j9LrQ+BuBxmYp2d?=
- =?us-ascii?Q?bKQPbujHICoqDeXHuNNHTQBA9LWWvhn0L0IhVSbT/9k5oNEn9vhmwfIE2r0M?=
- =?us-ascii?Q?/Rl+/qiAFzV/FpedWdrFvLNC2fqyPxcEbAd48sSpdjf265mj5rDZ4CGSVsDh?=
- =?us-ascii?Q?vHTXYlGOqPVgHvb8BFX9nBQgawsyAcqeqTOa7CtRdKwEm6oBaFy87zrt/z6v?=
- =?us-ascii?Q?A5mwrMzFryeb9ClVPj8F9xBhsFGWOF4Idl3rfrmAFhzhQBlptlzbF8eM8F+O?=
- =?us-ascii?Q?xHuZL362rQbxKRg1Z/DHMC0QCKC6vrmncCoRddkihwHg80aldgVzxhEtw6qj?=
- =?us-ascii?Q?VzYeOkBL6HRxDiHfNI2FNV9gXOi6WtaroMS0Pp0a5sqVlQhFkYAuza9ZlnSK?=
- =?us-ascii?Q?11g8yKPSLZIbWrNTX1iv63YmruQl+vc6N9anK6PH62NVvHYuyfTMn7/ZW51V?=
- =?us-ascii?Q?br1wJz+8Gw5Q9WybdGtuzbcl2jIb28XbxgultberY2lLJPudlVv+ivR6tgjQ?=
- =?us-ascii?Q?RCG/EUKKsN0tlAe5S2iXKlaYFpvHD2b3vqCxKFtg7sSButOK/XjBtehRnhwH?=
- =?us-ascii?Q?ZTgy6jpzIdBURZ1/+y535hL820GtWgI8sPjK2ka9MVQG0MG9N7HdtCIC+Ptc?=
- =?us-ascii?Q?faA69iz+CCcCHIw0c7znmtzLZGmXaEApLucB8TxxErFMrd6N2BaWXTR9Io9a?=
- =?us-ascii?Q?tfht6z0RpT9Mm2SGhhcqaT08v2uiu5vvfaCUFTwqo7iff0MZy6X62mVnIVTB?=
- =?us-ascii?Q?yL1rZyMazr5ipHZL1wxOoY2hdoQJCHYGe3Uymuvils86vVTpAyq6wGPOvbyM?=
- =?us-ascii?Q?7/GUg2W5Q91w4x6N6jcq30PeI0MomDhtXLbDm3Ym1O/JxqsmAAMao3DY9dGH?=
- =?us-ascii?Q?3Lz9wa1DEHuaFKsaregGSPoi0Xkwes+yHZ26GuLxAe+iqeU5wpXIaLAntscy?=
- =?us-ascii?Q?bUdZeiIuSTCOU+0om4lej99kc+tL9mGSvoaJMwuaFILeIo/c4dMnXeTLGyGk?=
- =?us-ascii?Q?ho9FJC+xGc0xVIXF2ldLSTtsTx5PCebbojiMf2uSHpKokXlaYT9nZZ1WtbEO?=
- =?us-ascii?Q?U1MgevSKZWPeIZZm1hF3j38a+JLCb/EDOWLGnJUJn5r4MkUCp15pLCTsPjly?=
- =?us-ascii?Q?mQ3TFbPm2aqnb85pEmHgsIKYW1592IYO/vh5zvKOayBs8qflWTpFfVT+VfSY?=
- =?us-ascii?Q?Q+scXJBP3dPkVxqE1UsJsgmnNHM1N2hO5Pug558H0RsQM3guPo4GjQ1k1RBt?=
- =?us-ascii?Q?TxIwlC7AfBpoEXZ5n5IQrJrd5F8Ne4pTxEdChaHK4kdyCkZdD0TO?=
-X-OriginatorOrg: os.amperecomputing.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 21e7844d-07d0-4634-ba23-08da240a765f
-X-MS-Exchange-CrossTenant-AuthSource: SJ0PR01MB7282.prod.exchangelabs.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2022 02:47:38.3416
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c94ddc82-6e0a-4d50-097f-08da240a77a5
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Apr 2022 02:47:40.1611
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3bc2b170-fd94-476d-b0ce-4229bdc904a7
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: nykhc5I5j/Juy8AeQRrFiXmc1Aicm8/+OeTBiYvTC5ccOem19Nx38TBy62k7JytSqosA+DJGpsq9CwhCubZ+4KDU/+fPFKcTgqmxwRhOnT4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR01MB6293
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 1LKoVKTX1FXFFW1IvOHrF/dsqKBfV1ah14A+3RMR9zbaEAeyNohG77uFoy1W+lar1UHy3MP11G6sH8qE8z4fXQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB5937
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This commit adds driver support for accessing various information
-reported by Ampere's SMpro co-processor such as Boot Progress and
-other miscellaneous data.
+> From: Lu Baolu
+> Sent: Thursday, April 21, 2022 7:36 PM
+>=20
+> The latest VT-d specification states that the PGSNP field in the pasid
+> table entry should be treated as Reserved(0) for implementations not
+> supporting Snoop Control (SC=3D0 in the Extended Capability Register).
+> This adds a check before setting the field.
+>=20
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  drivers/iommu/intel/pasid.c | 13 ++++++++++---
+>  1 file changed, 10 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+> index f8d215d85695..5cb2daa2b8cb 100644
+> --- a/drivers/iommu/intel/pasid.c
+> +++ b/drivers/iommu/intel/pasid.c
+> @@ -625,8 +625,14 @@ int intel_pasid_setup_first_level(struct intel_iommu
+> *iommu,
+>  		}
+>  	}
+>=20
+> -	if (flags & PASID_FLAG_PAGE_SNOOP)
+> -		pasid_set_pgsnp(pte);
+> +	if (flags & PASID_FLAG_PAGE_SNOOP) {
+> +		if (ecap_sc_support(iommu->ecap)) {
+> +			pasid_set_pgsnp(pte);
+> +		} else {
+> +			pasid_clear_entry(pte);
+> +			return -EINVAL;
+> +		}
+> +	}
+>=20
+>  	pasid_set_domain_id(pte, did);
+>  	pasid_set_address_width(pte, iommu->agaw);
+> @@ -710,7 +716,8 @@ int intel_pasid_setup_second_level(struct
+> intel_iommu *iommu,
+>  	pasid_set_fault_enable(pte);
+>  	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
+>=20
+> -	if (domain->domain.type =3D=3D IOMMU_DOMAIN_UNMANAGED)
+> +	if (ecap_sc_support(iommu->ecap) &&
+> +	    domain->domain.type =3D=3D IOMMU_DOMAIN_UNMANAGED)
+>  		pasid_set_pgsnp(pte);
+>=20
 
-Signed-off-by: Quan Nguyen <quan@os.amperecomputing.com>
----
-Changes in v8:
-  + Update wording for SMPRO_MISC in Kconfig file           [Quan]
-  + Switch to use sysfs_emit()                              [Quan]
+This should be rebased on top of Jason's enforce coherency series
+instead of blindly setting it. No matter whether it's legacy mode
+where we set SNP in PTE or scalable mode where we set PGSNP
+in PASID entry for entire page table, the trigger point should be
+same i.e. when someone calls enforce_cache_coherency().
 
-Changes in v7:
-  + Fix wrong return type of *_show/store()
-  functions                                    [kernel robot test]
-  + Adjust patch order to remove dependence with
-  smpro-mfd                                            [Lee Jones]
-
-Changes in v6:
-  + First introduced in v6 [Quan]
-
- drivers/misc/Kconfig      |  10 +++
- drivers/misc/Makefile     |   1 +
- drivers/misc/smpro-misc.c | 161 ++++++++++++++++++++++++++++++++++++++
- 3 files changed, 172 insertions(+)
- create mode 100644 drivers/misc/smpro-misc.c
-
-diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
-index 9fbe6797c440..368fbe73853e 100644
---- a/drivers/misc/Kconfig
-+++ b/drivers/misc/Kconfig
-@@ -188,6 +188,16 @@ config SMPRO_ERRMON
- 	  To compile this driver as a module, say M here. The driver will be
- 	  called smpro-errmon.
- 
-+config SMPRO_MISC
-+	tristate "Ampere Computing SMPro miscellaneous driver"
-+	depends on MFD_SMPRO || COMPILE_TEST
-+	help
-+	  Say Y here to get support for the SMpro error miscellalenous function
-+	  provided by Ampere Computing's Altra and Altra Max SoCs.
-+
-+	  To compile this driver as a module, say M here. The driver will be
-+	  called smpro-misc.
-+
- config CS5535_MFGPT
- 	tristate "CS5535/CS5536 Geode Multi-Function General Purpose Timer (MFGPT) support"
- 	depends on MFD_CS5535
-diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
-index 483308a6e113..e61e462924d0 100644
---- a/drivers/misc/Makefile
-+++ b/drivers/misc/Makefile
-@@ -24,6 +24,7 @@ obj-$(CONFIG_KGDB_TESTS)	+= kgdbts.o
- obj-$(CONFIG_SGI_XP)		+= sgi-xp/
- obj-$(CONFIG_SGI_GRU)		+= sgi-gru/
- obj-$(CONFIG_SMPRO_ERRMON)	+= smpro-errmon.o
-+obj-$(CONFIG_SMPRO_MISC)	+= smpro-misc.o
- obj-$(CONFIG_CS5535_MFGPT)	+= cs5535-mfgpt.o
- obj-$(CONFIG_GEHC_ACHC)		+= gehc-achc.o
- obj-$(CONFIG_HP_ILO)		+= hpilo.o
-diff --git a/drivers/misc/smpro-misc.c b/drivers/misc/smpro-misc.c
-new file mode 100644
-index 000000000000..4b98098ace8f
---- /dev/null
-+++ b/drivers/misc/smpro-misc.c
-@@ -0,0 +1,161 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * Ampere Computing SoC's SMpro Misc Driver
-+ *
-+ * Copyright (c) 2022, Ampere Computing LLC
-+ */
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/regmap.h>
-+
-+/* Boot Stage/Progress Registers */
-+#define BOOTSTAGE_SELECT	0xB0
-+#define BOOTSTAGE_STATUS_LO	0xB1
-+#define BOOTSTAGE_CUR_STAGE	0xB2
-+#define BOOTSTAGE_STATUS_HI	0xB3
-+
-+/* SOC State Registers */
-+#define SOC_POWER_LIMIT		0xE5
-+
-+struct smpro_misc {
-+	struct regmap *regmap;
-+};
-+
-+static ssize_t boot_progress_show(struct device *dev, struct device_attribute *da, char *buf)
-+{
-+	struct smpro_misc *misc = dev_get_drvdata(dev);
-+	u32 boot_progress;
-+	u8 current_stage;
-+	u8 boot_status;
-+	u8 boot_stage;
-+	u32 select;
-+	u32 reg_lo;
-+	u32 reg;
-+	int ret;
-+
-+	/* Read current boot stage */
-+	ret = regmap_read(misc->regmap, BOOTSTAGE_CUR_STAGE, &reg);
-+	if (ret)
-+		return ret;
-+
-+	current_stage = reg & 0xff;
-+
-+	/* Read the boot progress */
-+	ret = regmap_read(misc->regmap, BOOTSTAGE_SELECT, &select);
-+	if (ret)
-+		return ret;
-+
-+	boot_stage = (select >> 8) & 0xff;
-+	boot_status = select & 0xff;
-+
-+	if (boot_stage > current_stage)
-+		return -EINVAL;
-+
-+	ret = regmap_read(misc->regmap,	BOOTSTAGE_STATUS_LO, &reg_lo);
-+	if (!ret)
-+		ret = regmap_read(misc->regmap, BOOTSTAGE_STATUS_HI, &reg);
-+	if (ret)
-+		return ret;
-+
-+	boot_progress = swab16(reg) << 16 | swab16(reg_lo);
-+
-+	/* Tell firmware to provide next boot stage next time */
-+	if (boot_stage < current_stage) {
-+		ret = regmap_write(misc->regmap, BOOTSTAGE_SELECT, ((select & 0xff00) | 0x1));
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return sysfs_emit(buf, "%02x%02x%08x\n", boot_stage, boot_status, boot_progress);
-+}
-+
-+static DEVICE_ATTR_RO(boot_progress);
-+
-+static ssize_t soc_power_limit_show(struct device *dev, struct device_attribute *da, char *buf)
-+{
-+	struct smpro_misc *misc = dev_get_drvdata(dev);
-+	unsigned int value;
-+	int ret;
-+
-+	ret = regmap_read(misc->regmap, SOC_POWER_LIMIT, &value);
-+	if (ret)
-+		return ret;
-+
-+	return sysfs_emit(buf, "%d\n", value);
-+}
-+
-+static ssize_t soc_power_limit_store(struct device *dev, struct device_attribute *da,
-+				     const char *buf, size_t count)
-+{
-+	struct smpro_misc *misc = dev_get_drvdata(dev);
-+	unsigned long val;
-+	s32 ret;
-+
-+	ret = kstrtoul(buf, 0, &val);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(misc->regmap, SOC_POWER_LIMIT, (unsigned int)val);
-+	if (ret)
-+		return -EPROTO;
-+
-+	return count;
-+}
-+
-+static DEVICE_ATTR_RW(soc_power_limit);
-+
-+static struct attribute *smpro_misc_attrs[] = {
-+	&dev_attr_boot_progress.attr,
-+	&dev_attr_soc_power_limit.attr,
-+	NULL
-+};
-+
-+static const struct attribute_group smpro_misc_attr_group = {
-+	.attrs = smpro_misc_attrs
-+};
-+
-+static int smpro_misc_probe(struct platform_device *pdev)
-+{
-+	struct smpro_misc *misc;
-+	int ret;
-+
-+	misc = devm_kzalloc(&pdev->dev, sizeof(struct smpro_misc), GFP_KERNEL);
-+	if (!misc)
-+		return -ENOMEM;
-+
-+	platform_set_drvdata(pdev, misc);
-+
-+	misc->regmap = dev_get_regmap(pdev->dev.parent, NULL);
-+	if (!misc->regmap)
-+		return -ENODEV;
-+
-+	ret = sysfs_create_group(&pdev->dev.kobj, &smpro_misc_attr_group);
-+	if (ret)
-+		dev_err(&pdev->dev, "SMPro misc sysfs registration failed\n");
-+
-+	return 0;
-+}
-+
-+static int smpro_misc_remove(struct platform_device *pdev)
-+{
-+	sysfs_remove_group(&pdev->dev.kobj, &smpro_misc_attr_group);
-+	pr_info("SMPro misc sysfs entries removed");
-+
-+	return 0;
-+}
-+
-+static struct platform_driver smpro_misc_driver = {
-+	.probe		= smpro_misc_probe,
-+	.remove		= smpro_misc_remove,
-+	.driver = {
-+		.name	= "smpro-misc",
-+	},
-+};
-+
-+module_platform_driver(smpro_misc_driver);
-+
-+MODULE_AUTHOR("Tung Nguyen <tungnguyen@os.amperecomputing.com>");
-+MODULE_AUTHOR("Quan Nguyen <quan@os.amperecomputing.com>");
-+MODULE_DESCRIPTION("Ampere Altra SMpro Misc driver");
-+MODULE_LICENSE("GPL");
--- 
-2.35.1
-
+Thanks
+Kevin
