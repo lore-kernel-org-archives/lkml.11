@@ -2,144 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A021C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:16:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89A99C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Apr 2022 14:16:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448559AbiDVOTS (ORCPT
+        id S1448536AbiDVOTk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 10:19:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37880 "EHLO
+        Fri, 22 Apr 2022 10:19:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448529AbiDVOTO (ORCPT
+        with ESMTP id S1448530AbiDVOTe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 10:19:14 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41B305AECC
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 07:16:21 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id c23so11177109plo.0
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 07:16:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=mhiX9pOS55YaO3CdrDwpUy6BkzPbq10Xj73NWvQBwAg=;
-        b=vRUi3XTt6AzV9QlheY6fezduSTcEh/sZN3k+dAddNZiw8rhhyhbGXtJLNYs3J/UwD5
-         bRx0NNWnHM1TYIelLSIgCtSpmnbMKDgukzfetN9iXKdtLRwPXB54SYzt6H400lsd3P4D
-         ++PGiqJSRNedibPs1CaxKSPMQyTwkUYyruCII4+3lOh3uWSvP8+idLkPjw5BBA8QJsEi
-         kvO8DlCiTkUMJj9c+3Kb4kPubeS7hxUdkzPshkGtiJXpeZOSSMzbk6sHBs+4HmVJPMRp
-         e9Uz5m7trgk2XIsiSCfl29aZ0LqcmQ7ZWTP8PJh4RgMon1aGFHXpRKjuAUHuYVAvcCcH
-         noKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=mhiX9pOS55YaO3CdrDwpUy6BkzPbq10Xj73NWvQBwAg=;
-        b=m5hIAFvszlhsmHPkSBOlgxx9Gco5LQpB3ybbWFUYBYiHQRu76fUHMaGojIBM8BQ9jg
-         MLnUb5UIpSujhjJfG5DVkmouFSZmM8ikR5dv27UM0BFK4lm1u8BizE181wAkL1bXtxqj
-         6/ZRkwX2xkJKVNpo99Ilj/1Nl45Arh0gU/ahrxpXcPJENbMhkfi3d/sxa82Oi2vbJbA8
-         tC16ZFnH/IuvsBkhGPqGUo6yFvm2+Fe0n62r55CUitxsBbLk8NlsB+9k6fZB6duHftTR
-         JbzXnH3C5GtgFVL19IPnpQPOJGeA1Gw3EB7oXdJ4URxjA6qF5SvqZ8WV60hCuLUu+3+j
-         4VBg==
-X-Gm-Message-State: AOAM530c9C2qlrs1XC2E1NETufZ39ermjfNncGXoUW8aZFgWK1fJVQyu
-        8YdkiEvgZ7WAKJE3ss597xWEwm22A5QlQJslIT5UfQ==
-X-Google-Smtp-Source: ABdhPJz8CXOzCAMrumvED5/FUzZpCHykjU/HdiKEagzluI2x9YcnPtdeO8E7Knfq/KSP3T5vLQuff5phq8eDfMmbJXk=
-X-Received: by 2002:a17:903:2352:b0:159:3fa:261 with SMTP id
- c18-20020a170903235200b0015903fa0261mr4632628plh.21.1650636980753; Fri, 22
- Apr 2022 07:16:20 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220419010852.452169-1-victor.liu@nxp.com> <20220419010852.452169-2-victor.liu@nxp.com>
-In-Reply-To: <20220419010852.452169-2-victor.liu@nxp.com>
-From:   Robert Foss <robert.foss@linaro.org>
-Date:   Fri, 22 Apr 2022 16:16:09 +0200
-Message-ID: <CAG3jFyvAjzHaA_BUJYj18Y-FbY5ROd3iXetAJ+BJaoEjZd6vsQ@mail.gmail.com>
-Subject: Re: [PATCH resend v8 1/5] drm/bridge: nwl-dsi: Set PHY mode in nwl_dsi_mode_set()
-To:     Liu Ying <victor.liu@nxp.com>
-Cc:     linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, kishon@ti.com,
-        vkoul@kernel.org, robh+dt@kernel.org, krzk+dt@kernel.org,
-        andrzej.hajda@intel.com, narmstrong@baylibre.com,
-        Laurent.pinchart@ideasonboard.com, jonas@kwiboo.se,
-        jernej.skrabec@gmail.com, airlied@linux.ie, daniel@ffwll.ch,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        festevam@gmail.com, linux-imx@nxp.com, agx@sigxcpu.org,
-        robert.chiras@nxp.com, martin.kepplinger@puri.sm
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Fri, 22 Apr 2022 10:19:34 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A274B5AED0;
+        Fri, 22 Apr 2022 07:16:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650637001; x=1682173001;
+  h=from:to:cc:subject:date:message-id;
+  bh=RqQTZ9rQaDwBAdZS5QETujxpLislpihWCdAyP9oPqZc=;
+  b=WXZArPrRv+AMsb4CYy2OlDXa5ukdZMlk2V8f4zY/YFUgwRZtzqMbLIjk
+   S1LxeYrZijwQVPt8YyPG5sYXzkA5NclyOzYAakbFxJhA0KrQ6T9uyguAB
+   v7Fcx3agb32VPAatMy1t5F0GzPtuRo3425eS5fgtE4dZeosgb2XzLwg7B
+   jXsaMaBiRbUjFLqW8pUutqDzhec2F43jpLNVkWskbwD275+VcUkXLsKBs
+   KwNr68drR7nYm9Lme1l3nVTUzt8lpOCeAltDLYKOsFI6zQKjieaPgpyqm
+   LksHg7WXzaz/hebkmfT+L3vkIU8kqGFI2t5s4OW2+e/dsuP2dfKAbdquS
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="245258580"
+X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
+   d="scan'208";a="245258580"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 07:16:41 -0700
+X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
+   d="scan'208";a="556396437"
+Received: from arthur-vostro-3668.sh.intel.com ([10.239.13.120])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 07:16:35 -0700
+From:   Zeng Guang <guang.zeng@intel.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jethro Beekman <jethro@fortanix.com>,
+        Kai Huang <kai.huang@intel.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        Robert Hu <robert.hu@intel.com>, Gao Chao <chao.gao@intel.com>,
+        Zeng Guang <guang.zeng@intel.com>
+Subject: [PATCH] kvm: selftests: Add KVM_CAP_MAX_VCPU_ID cap test
+Date:   Fri, 22 Apr 2022 21:44:56 +0800
+Message-Id: <20220422134456.26655-1-guang.zeng@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 19 Apr 2022 at 03:07, Liu Ying <victor.liu@nxp.com> wrote:
->
-> The Northwest Logic MIPI DSI host controller embedded in i.MX8qxp
-> works with a Mixel MIPI DPHY + LVDS PHY combo to support either
-> a MIPI DSI display or a LVDS display.  So, this patch calls
-> phy_set_mode() from nwl_dsi_mode_set() to set PHY mode to MIPI DPHY
-> explicitly.
->
-> Cc: Guido G=C3=BCnther <agx@sigxcpu.org>
-> Cc: Robert Chiras <robert.chiras@nxp.com>
-> Cc: Martin Kepplinger <martin.kepplinger@puri.sm>
-> Cc: Andrzej Hajda <andrzej.hajda@intel.com>
-> Cc: Neil Armstrong <narmstrong@baylibre.com>
-> Cc: Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
-> Cc: Jonas Karlman <jonas@kwiboo.se>
-> Cc: Jernej Skrabec <jernej.skrabec@gmail.com>
-> Cc: David Airlie <airlied@linux.ie>
-> Cc: Daniel Vetter <daniel@ffwll.ch>
-> Cc: NXP Linux Team <linux-imx@nxp.com>
-> Signed-off-by: Liu Ying <victor.liu@nxp.com>
-> ---
-> v7->v8:
-> * Resend with Andrzej's and Jernej's mail addressed updated.
->
-> v6->v7:
-> * No change.
->
-> v5->v6:
-> * Rebase the series upon v5.17-rc1.
-> * Set PHY mode in ->mode_set() instead of ->pre_enable() in the nwl-dsi
->   bridge driver due to the rebase.
-> * Drop Guido's R-b tag due to the rebase.
->
-> v4->v5:
-> * No change.
->
-> v3->v4:
-> * No change.
->
-> v2->v3:
-> * No change.
->
-> v1->v2:
-> * Add Guido's R-b tag.
->
->  drivers/gpu/drm/bridge/nwl-dsi.c | 6 ++++++
->  1 file changed, 6 insertions(+)
->
-> diff --git a/drivers/gpu/drm/bridge/nwl-dsi.c b/drivers/gpu/drm/bridge/nw=
-l-dsi.c
-> index d5945501a5ee..85bab7372af1 100644
-> --- a/drivers/gpu/drm/bridge/nwl-dsi.c
-> +++ b/drivers/gpu/drm/bridge/nwl-dsi.c
-> @@ -666,6 +666,12 @@ static int nwl_dsi_mode_set(struct nwl_dsi *dsi)
->                 return ret;
->         }
->
-> +       ret =3D phy_set_mode(dsi->phy, PHY_MODE_MIPI_DPHY);
-> +       if (ret < 0) {
-> +               DRM_DEV_ERROR(dev, "Failed to set DSI phy mode: %d\n", re=
-t);
-> +               goto uninit_phy;
-> +       }
-> +
->         ret =3D phy_configure(dsi->phy, phy_cfg);
->         if (ret < 0) {
->                 DRM_DEV_ERROR(dev, "Failed to configure DSI phy: %d\n", r=
-et);
-> --
-> 2.25.1
->
+Basic test coverage of KVM_CAP_MAX_VCPU_ID cap.
 
-Acked-by: Robert Foss <robert.foss@linaro.org>
+This capability can be enabled before vCPU creation and only allowed
+to set once. if assigned vcpu id is beyond KVM_CAP_MAX_VCPU_ID
+capability, vCPU creation will fail.
+
+Signed-off-by: Zeng Guang <guang.zeng@intel.com>
+---
+This patch appends the test case to verify the KVM_CAP_MAX_VCPU_ID cap
+enabling mechanism introduced in IPI virtualization enabling patch.
+https://lore.kernel.org/lkml/20220419153155.11504-1-guang.zeng@intel.com/
+ tools/testing/selftests/kvm/.gitignore        |  1 +
+ tools/testing/selftests/kvm/Makefile          |  1 +
+ .../kvm/x86_64/max_vcpuid_cap_test.c          | 60 +++++++++++++++++++
+ 3 files changed, 62 insertions(+)
+ create mode 100644 tools/testing/selftests/kvm/x86_64/max_vcpuid_cap_test.c
+
+diff --git a/tools/testing/selftests/kvm/.gitignore b/tools/testing/selftests/kvm/.gitignore
+index d1e8f5237469..b860dcfee920 100644
+--- a/tools/testing/selftests/kvm/.gitignore
++++ b/tools/testing/selftests/kvm/.gitignore
+@@ -22,6 +22,7 @@
+ /x86_64/hyperv_cpuid
+ /x86_64/hyperv_features
+ /x86_64/hyperv_svm_test
++/x86_64/max_vcpuid_cap_test
+ /x86_64/mmio_warning_test
+ /x86_64/mmu_role_test
+ /x86_64/platform_info_test
+diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
+index 21c2dbd21a81..e92dc78de4d0 100644
+--- a/tools/testing/selftests/kvm/Makefile
++++ b/tools/testing/selftests/kvm/Makefile
+@@ -86,6 +86,7 @@ TEST_GEN_PROGS_x86_64 += x86_64/xen_shinfo_test
+ TEST_GEN_PROGS_x86_64 += x86_64/xen_vmcall_test
+ TEST_GEN_PROGS_x86_64 += x86_64/sev_migrate_tests
+ TEST_GEN_PROGS_x86_64 += x86_64/amx_test
++TEST_GEN_PROGS_x86_64 += x86_64/max_vcpuid_cap_test
+ TEST_GEN_PROGS_x86_64 += access_tracking_perf_test
+ TEST_GEN_PROGS_x86_64 += demand_paging_test
+ TEST_GEN_PROGS_x86_64 += dirty_log_test
+diff --git a/tools/testing/selftests/kvm/x86_64/max_vcpuid_cap_test.c b/tools/testing/selftests/kvm/x86_64/max_vcpuid_cap_test.c
+new file mode 100644
+index 000000000000..3fc84efa7460
+--- /dev/null
++++ b/tools/testing/selftests/kvm/x86_64/max_vcpuid_cap_test.c
+@@ -0,0 +1,60 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * maximum APIC ID capability tests
++ *
++ * Copyright (C) 2022, Intel, Inc.
++ *
++ * Tests for getting/setting maximum APIC ID capability
++ */
++
++#include "kvm_util.h"
++#include "../lib/kvm_util_internal.h"
++
++#define MAX_VCPU_ID	2
++
++int main(int argc, char *argv[])
++{
++	struct kvm_vm *vm;
++	struct kvm_enable_cap cap = { 0 };
++	int ret;
++
++	vm = vm_create(VM_MODE_DEFAULT, 0, O_RDWR);
++
++	/* Get KVM_CAP_MAX_VCPU_ID cap supported in KVM */
++	ret = vm_check_cap(vm, KVM_CAP_MAX_VCPU_ID);
++
++	/* Try to set KVM_CAP_MAX_VCPU_ID beyond KVM cap */
++	cap.cap = KVM_CAP_MAX_VCPU_ID;
++	cap.args[0] = ret + 1;
++	ret = ioctl(vm->fd, KVM_ENABLE_CAP, &cap);
++	TEST_ASSERT(ret < 0,
++		    "Unexpected success to enable KVM_CAP_MAX_VCPU_ID"
++		    "beyond KVM cap!\n");
++
++	/* Set KVM_CAP_MAX_VCPU_ID */
++	cap.cap = KVM_CAP_MAX_VCPU_ID;
++	cap.args[0] = MAX_VCPU_ID;
++	ret = ioctl(vm->fd, KVM_ENABLE_CAP, &cap);
++	TEST_ASSERT(ret == 0,
++		    "Unexpected failure to enable KVM_CAP_MAX_VCPU_ID!\n");
++
++	/* Check current KVM_CAP_MAX_VCPU_ID value */
++	ret = vm_check_cap(vm, KVM_CAP_MAX_VCPU_ID);
++	TEST_ASSERT(ret == MAX_VCPU_ID,
++		    "Unexpected failure to set KVM_CAP_MAX_VCPU_ID as %d\n",
++		    MAX_VCPU_ID);
++
++	/* Try to set KVM_CAP_MAX_VCPU_ID again */
++	cap.args[0] = MAX_VCPU_ID + 1;
++	ret = ioctl(vm->fd, KVM_ENABLE_CAP, &cap);
++	TEST_ASSERT(ret < 0,
++		    "Unexpected success to enable KVM_CAP_MAX_VCPU_ID again\n");
++
++	/* Create vCPU with id beyond KVM_CAP_MAX_VCPU_ID cap*/
++	ret = ioctl(vm->fd, KVM_CREATE_VCPU, MAX_VCPU_ID);
++	TEST_ASSERT(ret < 0,
++		    "Unexpected success in creating a vCPU with VCPU ID out of range\n");
++
++	kvm_vm_free(vm);
++	return 0;
++}
+-- 
+2.27.0
+
