@@ -2,162 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B36EC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 03:47:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CE55C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 03:47:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232519AbiDWDuD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 23:50:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50566 "EHLO
+        id S232606AbiDWDuF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 23:50:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232538AbiDWDtk (ORCPT
+        with ESMTP id S232535AbiDWDtk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 22 Apr 2022 23:49:40 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A1B417E18
+Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0452013977F
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 20:46:46 -0700 (PDT)
+Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-e67799d278so6809000fac.11
         for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 20:46:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650685605; x=1682221605;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=CpwUEPhvROzXnQPbUtKRRdh+SpyfvXHZowOEY+MMlYc=;
-  b=Fqx6duZG13Pq1/uFqCQVC/8H0GFZNmzVAWNC8tRW9MdVAh62Vpoa9ueO
-   Q2GeIr8H+mUZaj3XIIEp5Z13Vo8NjRgRBX0q8SO/DRMC9qtJanEcXFN6a
-   llX1pu+ziNeHjFQUkC/EJ1cnU7wuKmijSRVOa4lTZtA6wEQRmESfif3TH
-   7NIZnI/gFxTJtv9wPil7R3lRF4aR5qAALuihKax39AMM74x+VKItu6INB
-   HoJVbpL2gJETebJuGuRvb91xo7033LI1jhEMBN99SCf18eF8gc1pEd1Zg
-   nuFUfMZEBAduRAjjYHYcWK2xWiCLce/a3UvdNdLximbUBahKfJFEDIX6c
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="327756776"
-X-IronPort-AV: E=Sophos;i="5.90,283,1643702400"; 
-   d="scan'208";a="327756776"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 20:46:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,283,1643702400"; 
-   d="scan'208";a="648897786"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 22 Apr 2022 20:46:42 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ni6jJ-000AyR-W1;
-        Sat, 23 Apr 2022 03:46:42 +0000
-Date:   Sat, 23 Apr 2022 11:45:43 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Brian Norris <briannorris@chromium.org>,
-        Heiko Stuebner <heiko@sntech.de>, Arnd Bergmann <arnd@arndb.de>
-Cc:     kbuild-all@lists.01.org, Guenter Roeck <linux@roeck-us.net>,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Brian Norris <briannorris@chromium.org>
-Subject: Re: [PATCH] soc: rockchip: Fix compile-testing SoC drivers
-Message-ID: <202204231158.8u0SOzm6-lkp@intel.com>
-References: <20220422111914.1.Id5f16dec920f620120c0a143a97a12e16d401760@changeid>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=VK+Mc12IDWDoCeB4UokFVRy/0yOeXXdrFoo8csy15fI=;
+        b=rj1fWjvFr6UfrBYJZaadRrPi88B/qmQLm8ZzbEv6/alcfmDFmFeBGWnL4HKOjP37Oo
+         XIMpB2qQ1V8TZ5PJZgcS9t0rwYLuCx/HXeYd46dXX9BffgCtszf+ujA7bpVEDTbTllKr
+         9KuNVf4yaUNy1B2uLsiF1lj0wM19F15AdtbVlPC3DYFAWn8EYd5Wb3/cp0mY5gePmOY0
+         uDlSHzgYy48VHrRChwQWIbKfAU2B7/G+sVEH4wDLIPfXhyL1qCG67Gokmjruh61W/Wkf
+         ArAI0RkwHAhB9loPoYk+0/fRNf1D40UaO2lsgdjDih3yTT+SgLXv2D69dVSO4yoTT1lF
+         9EPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=VK+Mc12IDWDoCeB4UokFVRy/0yOeXXdrFoo8csy15fI=;
+        b=dDjY7rpYij1qS4EP8O35ZoBqZ8ZmuqTWmblu5YYRCWEwgwEtq+izypcmFstvqrOvBu
+         IkbVXnuynfNmWxuaaYM63B8ZUcCTWdMVRk/TA1jsRn7wz6i1CTjQYDsDvyBi9xmCFUj1
+         zSsV4z7FVErmNMrmTY+nHsd5pKoUTa2gNra1vTEo/JCKsSNCMA+wooMDbLNgQxqBqfuI
+         EUYyfOTLvGAqKrEJVXY/al3V9co8+ksXIum3M3NpVbI6GfWLYVsf7ieS6NhnZMefa1rb
+         PYIe+1E/DSIjY95yoxOI6NK8rDCWPp48YTqEcOdHz3uf/kxNYNNl9y/3FXgMjgjDevQu
+         h87Q==
+X-Gm-Message-State: AOAM531SRZSKgWvoKb4MA5NrhbV/Kz8WnAO5IK19nHMg6peSJTeFgC+9
+        oz6C1yFzRdVjOLaBLgxwqLS0zD6ygyE+tQN2
+X-Google-Smtp-Source: ABdhPJwkRUj9ppkMSZqmz3YeDFf41/hx08RbxlEXevnET+FZzlP8mrOGYwNPSqQII5QEVaDRbcIT6A==
+X-Received: by 2002:a05:6870:8907:b0:e2:a4fd:7539 with SMTP id i7-20020a056870890700b000e2a4fd7539mr7629021oao.56.1650685605139;
+        Fri, 22 Apr 2022 20:46:45 -0700 (PDT)
+Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
+        by smtp.gmail.com with ESMTPSA id b188-20020aca34c5000000b002da579c994dsm1440218oia.31.2022.04.22.20.46.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Apr 2022 20:46:44 -0700 (PDT)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-arm-msm@vger.kernel.org, Andy Gross <agross@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        linux-remoteproc@vger.kernel.org
+Subject: Re: (subset) [PATCH] rpmsg: qcom_smd: Fix irq_of_parse_and_map() return value
+Date:   Fri, 22 Apr 2022 22:46:41 -0500
+Message-Id: <165068558593.2759280.17055526649115604333.b4-ty@linaro.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220422105326.78713-1-krzysztof.kozlowski@linaro.org>
+References: <20220422105326.78713-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220422111914.1.Id5f16dec920f620120c0a143a97a12e16d401760@changeid>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Brian,
+On Fri, 22 Apr 2022 12:53:26 +0200, Krzysztof Kozlowski wrote:
+> The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
+> 
+> 
 
-I love your patch! Yet something to improve:
+Applied, thanks!
 
-[auto build test ERROR on rockchip/for-next]
-[also build test ERROR on soc/for-next linus/master v5.18-rc3 next-20220422]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+[1/1] rpmsg: qcom_smd: Fix irq_of_parse_and_map() return value
+      commit: 1a358d35066487d228a68303d808bc4721c6b1b9
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Brian-Norris/soc-rockchip-Fix-compile-testing-SoC-drivers/20220423-022353
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/mmind/linux-rockchip.git for-next
-config: sh-allmodconfig (https://download.01.org/0day-ci/archive/20220423/202204231158.8u0SOzm6-lkp@intel.com/config)
-compiler: sh4-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/bb37a0dd33d08baf273f38dbea4951d50f020588
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Brian-Norris/soc-rockchip-Fix-compile-testing-SoC-drivers/20220423-022353
-        git checkout bb37a0dd33d08baf273f38dbea4951d50f020588
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=sh SHELL=/bin/bash drivers/soc/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   drivers/soc/rockchip/pm_domains.c: In function 'rockchip_pmu_set_idle_request':
->> drivers/soc/rockchip/pm_domains.c:181:9: error: implicit declaration of function 'dsb' [-Werror=implicit-function-declaration]
-     181 |         dsb(sy);
-         |         ^~~
->> drivers/soc/rockchip/pm_domains.c:181:13: error: 'sy' undeclared (first use in this function); did you mean 's8'?
-     181 |         dsb(sy);
-         |             ^~
-         |             s8
-   drivers/soc/rockchip/pm_domains.c:181:13: note: each undeclared identifier is reported only once for each function it appears in
-   drivers/soc/rockchip/pm_domains.c: In function 'rockchip_do_pmu_set_power_domain':
-   drivers/soc/rockchip/pm_domains.c:288:13: error: 'sy' undeclared (first use in this function); did you mean 's8'?
-     288 |         dsb(sy);
-         |             ^~
-         |             s8
-   cc1: some warnings being treated as errors
-
-
-vim +/dsb +181 drivers/soc/rockchip/pm_domains.c
-
-e4c8cd82d5e114 Caesar Wang  2016-10-13  159  
-7c696693a4f54d Caesar Wang  2015-09-08  160  static int rockchip_pmu_set_idle_request(struct rockchip_pm_domain *pd,
-7c696693a4f54d Caesar Wang  2015-09-08  161  					 bool idle)
-7c696693a4f54d Caesar Wang  2015-09-08  162  {
-7c696693a4f54d Caesar Wang  2015-09-08  163  	const struct rockchip_domain_info *pd_info = pd->info;
-e4c8cd82d5e114 Caesar Wang  2016-10-13  164  	struct generic_pm_domain *genpd = &pd->genpd;
-7c696693a4f54d Caesar Wang  2015-09-08  165  	struct rockchip_pmu *pmu = pd->pmu;
-e4c8cd82d5e114 Caesar Wang  2016-10-13  166  	unsigned int target_ack;
-7c696693a4f54d Caesar Wang  2015-09-08  167  	unsigned int val;
-e4c8cd82d5e114 Caesar Wang  2016-10-13  168  	bool is_idle;
-e4c8cd82d5e114 Caesar Wang  2016-10-13  169  	int ret;
-7c696693a4f54d Caesar Wang  2015-09-08  170  
-6aa841c8097fee Elaine Zhang 2016-03-10  171  	if (pd_info->req_mask == 0)
-6aa841c8097fee Elaine Zhang 2016-03-10  172  		return 0;
-79bb17ce8edb31 Elaine Zhang 2016-12-23  173  	else if (pd_info->req_w_mask)
-79bb17ce8edb31 Elaine Zhang 2016-12-23  174  		regmap_write(pmu->regmap, pmu->info->req_offset,
-79bb17ce8edb31 Elaine Zhang 2016-12-23  175  			     idle ? (pd_info->req_mask | pd_info->req_w_mask) :
-79bb17ce8edb31 Elaine Zhang 2016-12-23  176  			     pd_info->req_w_mask);
-79bb17ce8edb31 Elaine Zhang 2016-12-23  177  	else
-7c696693a4f54d Caesar Wang  2015-09-08  178  		regmap_update_bits(pmu->regmap, pmu->info->req_offset,
-7c696693a4f54d Caesar Wang  2015-09-08  179  				   pd_info->req_mask, idle ? -1U : 0);
-7c696693a4f54d Caesar Wang  2015-09-08  180  
-7c696693a4f54d Caesar Wang  2015-09-08 @181  	dsb(sy);
-7c696693a4f54d Caesar Wang  2015-09-08  182  
-e4c8cd82d5e114 Caesar Wang  2016-10-13  183  	/* Wait util idle_ack = 1 */
-e4c8cd82d5e114 Caesar Wang  2016-10-13  184  	target_ack = idle ? pd_info->ack_mask : 0;
-e4c8cd82d5e114 Caesar Wang  2016-10-13  185  	ret = readx_poll_timeout_atomic(rockchip_pmu_read_ack, pmu, val,
-e4c8cd82d5e114 Caesar Wang  2016-10-13  186  					(val & pd_info->ack_mask) == target_ack,
-e4c8cd82d5e114 Caesar Wang  2016-10-13  187  					0, 10000);
-e4c8cd82d5e114 Caesar Wang  2016-10-13  188  	if (ret) {
-e4c8cd82d5e114 Caesar Wang  2016-10-13  189  		dev_err(pmu->dev,
-e4c8cd82d5e114 Caesar Wang  2016-10-13  190  			"failed to get ack on domain '%s', val=0x%x\n",
-e4c8cd82d5e114 Caesar Wang  2016-10-13  191  			genpd->name, val);
-e4c8cd82d5e114 Caesar Wang  2016-10-13  192  		return ret;
-e4c8cd82d5e114 Caesar Wang  2016-10-13  193  	}
-7c696693a4f54d Caesar Wang  2015-09-08  194  
-e4c8cd82d5e114 Caesar Wang  2016-10-13  195  	ret = readx_poll_timeout_atomic(rockchip_pmu_domain_is_idle, pd,
-e4c8cd82d5e114 Caesar Wang  2016-10-13  196  					is_idle, is_idle == idle, 0, 10000);
-e4c8cd82d5e114 Caesar Wang  2016-10-13  197  	if (ret) {
-e4c8cd82d5e114 Caesar Wang  2016-10-13  198  		dev_err(pmu->dev,
-e4c8cd82d5e114 Caesar Wang  2016-10-13  199  			"failed to set idle on domain '%s', val=%d\n",
-e4c8cd82d5e114 Caesar Wang  2016-10-13  200  			genpd->name, is_idle);
-e4c8cd82d5e114 Caesar Wang  2016-10-13  201  		return ret;
-e4c8cd82d5e114 Caesar Wang  2016-10-13  202  	}
-7c696693a4f54d Caesar Wang  2015-09-08  203  
-7c696693a4f54d Caesar Wang  2015-09-08  204  	return 0;
-7c696693a4f54d Caesar Wang  2015-09-08  205  }
-7c696693a4f54d Caesar Wang  2015-09-08  206  
-
+Best regards,
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Bjorn Andersson <bjorn.andersson@linaro.org>
