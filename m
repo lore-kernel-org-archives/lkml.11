@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 770B3C4332F
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 03:48:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9B11C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 03:48:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232754AbiDWDvi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 23:51:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55312 "EHLO
+        id S232957AbiDWDvl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 23:51:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232747AbiDWDvO (ORCPT
+        with ESMTP id S232781AbiDWDvT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 23:51:14 -0400
-Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 261501C37AA
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 20:48:18 -0700 (PDT)
-Received: by mail-pf1-x449.google.com with SMTP id j17-20020a62b611000000b004fa6338bd77so6549569pff.10
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 20:48:18 -0700 (PDT)
+        Fri, 22 Apr 2022 23:51:19 -0400
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C50451C3E70
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 20:48:21 -0700 (PDT)
+Received: by mail-pg1-x549.google.com with SMTP id z132-20020a63338a000000b003844e317066so6046970pgz.19
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 20:48:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=s1FdvFSZ5B4eOljesil+5nZQsUnLyQTrJ9BbjzQR3zY=;
-        b=dG4roe8tmNBs3teFZlh8AQCmDvgQZvVdbxLP3lsVzH1JbCuuVevt2rKfOqBKh9FwzH
-         0L++ZsjttRWY8LjRlxb/2k8UzTLWR8IaheYNrtUBIGyfM0MpPto/9X/66EV5ytOqfI4N
-         ZhSg5a5+4WtQpkXd08lpYFN8748PHSodN8+GXDDzsXBsEH9mKY/hQC2LN8Tq6/47EDOf
-         kO6N0oP2vaHXSS4JMTFRKcjp/1nPA6FuLe8nJGUOnUNJAZ6LsdaGbx4RZtsYWjzUjRqb
-         yF6Y0tPVEgcgFOIsUfHPmbU8nlWxYadO/5uCTOZjEQrZF65AvNMKw2uwprWDATQ5Gl/s
-         Vz3g==
+        bh=QaIK5hbUNuIoBL/vPKNJJnLGWUg9x9GQfI0ts38CvUw=;
+        b=FtNsmllT//XrLcX5ne2kL6yQKkeHsq3D2zI2Xzn8HpzZA6vzUqDZtNKOsa0PYyP+eL
+         eSe6NitmPB4/hX1Mxolr+zv/gnK/yMOGcxLurUDIv71cWfwbnq1iA9RM9IreHWlO58uM
+         dT4PKcEbwuI6NyNaJIQFCNIBFZ40Hc/MrA2ywsy6q7zFb1jhgb4e20lM0kXbmotCACTx
+         3MI09l6cGQkKCuQlB/DzvHLdb0/vGIL4gnFQrrqE5ltI3gqw4NxJnpnMuFNE0SYM7o3M
+         7Xfj5Jd8Ct7hGwx5fJJFyy77vN52n3Z/pmXnEunqjRBUz/qbFX8M36SZLEEtJXLkrnFB
+         vdVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=s1FdvFSZ5B4eOljesil+5nZQsUnLyQTrJ9BbjzQR3zY=;
-        b=iS9EqwfM92R5llfPuqw41H/GyKc7YyV2gkbfjJxRQtnpz5KMUDjtglaFrekJtjq5+f
-         ADZ3c5G3k6jdnWdfvGqn/xZhgqw9bC7EcQ4/bySSAEFw70kxGb98yE15bOA5lYLQishR
-         M34yQs99zb8q7FttnbnzWFmPBJsCcQVfSVOs3AqtiUGE56ArBOZWR/k9e2qGFwn047uq
-         50d0ZtYaO6ubJpq47Lhuqst1T4OLOfD11/JLxctHnENmsjeXZ681DcSe1u+ybzeNGTH7
-         WGinj8V9OKWeFRYxpRuNsjXP3RwWGRwQ/T8LIxwBVh6Rc+ZZ/F2crHtaEMm7GutkTIsk
-         cuFQ==
-X-Gm-Message-State: AOAM532yoYKY6XJVsxYjm8Sbt1vdLjQJ0yuUT80w+DcX3OEOx7++ff6v
-        lt9UmSOSEjiAhsZBb6k247XbblK5Gww=
-X-Google-Smtp-Source: ABdhPJz5NQNv1hdLtAQq4ffsV/hY9ndFZZJXFkD5aX28NMEWgpojXPxIe+Priq6HJRRLcXS48lPt84zpYlU=
+        bh=QaIK5hbUNuIoBL/vPKNJJnLGWUg9x9GQfI0ts38CvUw=;
+        b=ktB/s9sA9chZpEB4HaK4OtZSlfKYr963DkTibGOVjjKSAQjkX8nfQir17WcxYCEr1o
+         TiA+u9abQisPG39fKl7JnycUr+fvjTko5w3aCPooduRfMIVxiB94F75a4frB9HzPmfBj
+         cV+i53XrjacXPOVx6SlP2qjEXCRCU3HSv/uCI64XmJBeboNUAtuQk2V9qCU4PKBuhYUi
+         nx2syS1Cgj8w7b9wgpznOg8yjp84AqeBTkpN6FY2GoV4oAv4zfV0EJCVNkHQ97oSl29R
+         je3HXhxE2IBFuPx6F95Oe3XoVbv7Khx9opfvI+uEk4wudkknXTi0bWsJpb4fN8kdhf8m
+         9rLA==
+X-Gm-Message-State: AOAM530ja4bbEPUbXBnD61EwZxi9tAL5+cTaNBYv+P8okqKYwZ3MwscF
+        w9QDCQ2m2xMAbjyyOFHopSe6Y0tAsvA=
+X-Google-Smtp-Source: ABdhPJzewDqgk9TdQxLpF903Hqz7WXWv0VBiYFXxfvQYdLhtDL8p/28Ud5xlsAjN3E7FvZ7kT2AvsFpyJbI=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90a:5d08:b0:1d7:9587:9288 with SMTP id
- s8-20020a17090a5d0800b001d795879288mr9142204pji.204.1650685697637; Fri, 22
- Apr 2022 20:48:17 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:1256:b0:4fb:1374:2f65 with SMTP id
+ u22-20020a056a00125600b004fb13742f65mr8305139pfi.72.1650685701202; Fri, 22
+ Apr 2022 20:48:21 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Sat, 23 Apr 2022 03:47:44 +0000
+Date:   Sat, 23 Apr 2022 03:47:46 +0000
 In-Reply-To: <20220423034752.1161007-1-seanjc@google.com>
-Message-Id: <20220423034752.1161007-5-seanjc@google.com>
+Message-Id: <20220423034752.1161007-7-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220423034752.1161007-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
-Subject: [PATCH 04/12] KVM: x86/mmu: Don't attempt fast page fault just
- because EPT is in use
+Subject: [PATCH 06/12] KVM: x86/mmu: Add RET_PF_CONTINUE to eliminate
+ bool+int* "returns"
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -71,160 +71,221 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Check for A/D bits being disabled instead of the access tracking mask
-being non-zero when deciding whether or not to attempt to fix a page
-fault vian the fast path.  Originally, the access tracking mask was
-non-zero if and only if A/D bits were disabled by _KVM_ (including not
-being supported by hardware), but that hasn't been true since nVMX was
-fixed to honor EPTP12's A/D enabling, i.e. since KVM allowed L1 to cause
-KVM to not use A/D bits while running L2 despite KVM using them while
-running L1.
+Add RET_PF_CONTINUE and use it in handle_abnormal_pfn() and
+kvm_faultin_pfn() to signal that the page fault handler should continue
+doing its thing.  Aside from being gross and inefficient, using a boolean
+return to signal continue vs. stop makes it extremely difficult to add
+more helpers and/or move existing code to a helper.
 
-In other words, don't attempt the fast path just because EPT is enabled.
+E.g. hypothetically, if nested MMUs were to gain a separate page fault
+handler in the future, everything up to the "is self-modifying PTE" check
+can be shared by all shadow MMUs, but communicating up the stack whether
+to continue on or stop becomes a nightmare.
 
-Note, attempting the fast path for all !PRESENT faults can "fix" a very,
-_VERY_ tiny percentage of faults out of mmu_lock by detecting that the
-fault is spurious, i.e. has been fixed by a different vCPU, but again the
-odds of that happening are vanishingly small.  E.g. booting an 8-vCPU VM
-gets less than 10 successes out of 30k+ faults, and that's likely one of
-the more favorable scenarios.  Disabling dirty logging can likely lead to
-a rash of collisions between vCPUs for some workloads that operate on a
-common set of pages, but penalizing _all_ !PRESENT faults for that one
-case is unlikely to be a net positive, not to mention that that problem
-is best solved by not zapping in the first place.
+More concretely, proposed support for private guest memory ran into a
+similar issue, where it'll be forced to forego a helper in order to yield
+sane code: https://lore.kernel.org/all/YkJbxiL%2FAz7olWlq@google.com.
 
-The number of spurious faults does scale with the number of vCPUs, e.g. a
-255-vCPU VM using TDP "jumps" to ~60 spurious faults detected in the fast
-path (again out of 30k), but that's all of 0.2% of faults.  Using legacy
-shadow paging does get more spurious faults, and a few more detected out
-of mmu_lock, but the percentage goes _down_ to 0.08% (and that's ignoring
-faults that are reflected into the guest), i.e. the extra detections are
-purely due to the sheer number of faults observed.
+No functional change intended.
 
-On the other hand, getting a "negative" in the fast path takes in the
-neighborhood of 150-250 cycles.  So while it is tempting to keep/extend
-the current behavior, such a change needs to come with hard numbers
-showing that it's actually a win in the grand scheme, or any scheme for
-that matter.
-
-Fixes: 995f00a61958 ("x86: kvm: mmu: use ept a/d in vmcs02 iff used in vmcs12")
+Cc: David Matlack <dmatlack@google.com>
+Cc: Chao Peng <chao.p.peng@linux.intel.com>
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/mmu/mmu.c     | 45 ++++++++++++++++++++++++--------------
- arch/x86/kvm/mmu/spte.h    | 11 ++++++++++
- arch/x86/kvm/mmu/tdp_mmu.c |  2 +-
- 3 files changed, 41 insertions(+), 17 deletions(-)
+ arch/x86/kvm/mmu/mmu.c          | 51 ++++++++++++++-------------------
+ arch/x86/kvm/mmu/mmu_internal.h |  9 +++++-
+ arch/x86/kvm/mmu/mmutrace.h     |  1 +
+ arch/x86/kvm/mmu/paging_tmpl.h  |  6 ++--
+ 4 files changed, 35 insertions(+), 32 deletions(-)
 
 diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 65b723201738..dfd1cfa9c08c 100644
+index f1618d8289ce..f1e8d71e6f7c 100644
 --- a/arch/x86/kvm/mmu/mmu.c
 +++ b/arch/x86/kvm/mmu/mmu.c
-@@ -3013,19 +3013,20 @@ static bool page_fault_can_be_fast(struct kvm_page_fault *fault)
+@@ -2970,14 +2970,12 @@ static int kvm_handle_bad_page(struct kvm_vcpu *vcpu, gfn_t gfn, kvm_pfn_t pfn)
+ 	return -EFAULT;
+ }
  
- 	/*
- 	 * #PF can be fast if:
--	 * 1. The shadow page table entry is not present, which could mean that
--	 *    the fault is potentially caused by access tracking (if enabled).
--	 * 2. The shadow page table entry is present and the fault
--	 *    is caused by write-protect, that means we just need change the W
--	 *    bit of the spte which can be done out of mmu-lock.
- 	 *
--	 * However, if access tracking is disabled we know that a non-present
--	 * page must be a genuine page fault where we have to create a new SPTE.
--	 * So, if access tracking is disabled, we return true only for write
--	 * accesses to a present page.
-+	 * 1. The shadow page table entry is not present and A/D bits are
-+	 *    disabled _by KVM_, which could mean that the fault is potentially
-+	 *    caused by access tracking (if enabled).  If A/D bits are enabled
-+	 *    by KVM, but disabled by L1 for L2, KVM is forced to disable A/D
-+	 *    bits for L2 and employ access tracking, but the fast page fault
-+	 *    mechanism only supports direct MMUs.
-+	 * 2. The shadow page table entry is present, the access is a write,
-+	 *    and no reserved bits are set (MMIO SPTEs cannot be "fixed"), i.e.
-+	 *    the fault was caused by a write-protection violation.  If the
-+	 *    SPTE is MMU-writable (determined later), the fault can be fixed
-+	 *    by setting the Writable bit, which can be done out of mmu_lock.
+-static bool handle_abnormal_pfn(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault,
+-				unsigned int access, int *ret_val)
++static int handle_abnormal_pfn(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault,
++			       unsigned int access)
+ {
+ 	/* The pfn is invalid, report the error! */
+-	if (unlikely(is_error_pfn(fault->pfn))) {
+-		*ret_val = kvm_handle_bad_page(vcpu, fault->gfn, fault->pfn);
+-		return true;
+-	}
++	if (unlikely(is_error_pfn(fault->pfn)))
++		return kvm_handle_bad_page(vcpu, fault->gfn, fault->pfn);
+ 
+ 	if (unlikely(!fault->slot)) {
+ 		gva_t gva = fault->is_tdp ? 0 : fault->addr;
+@@ -2989,13 +2987,11 @@ static bool handle_abnormal_pfn(struct kvm_vcpu *vcpu, struct kvm_page_fault *fa
+ 		 * touching the shadow page tables as attempting to install an
+ 		 * MMIO SPTE will just be an expensive nop.
+ 		 */
+-		if (unlikely(!enable_mmio_caching)) {
+-			*ret_val = RET_PF_EMULATE;
+-			return true;
+-		}
++		if (unlikely(!enable_mmio_caching))
++			return RET_PF_EMULATE;
+ 	}
+ 
+-	return false;
++	return RET_PF_CONTINUE;
+ }
+ 
+ static bool page_fault_can_be_fast(struct kvm_page_fault *fault)
+@@ -3903,7 +3899,7 @@ static bool kvm_arch_setup_async_pf(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
+ 				  kvm_vcpu_gfn_to_hva(vcpu, gfn), &arch);
+ }
+ 
+-static bool kvm_faultin_pfn(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault, int *r)
++static int kvm_faultin_pfn(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
+ {
+ 	struct kvm_memory_slot *slot = fault->slot;
+ 	bool async;
+@@ -3914,7 +3910,7 @@ static bool kvm_faultin_pfn(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault,
+ 	 * be zapped before KVM inserts a new MMIO SPTE for the gfn.
  	 */
+ 	if (slot && (slot->flags & KVM_MEMSLOT_INVALID))
+-		goto out_retry;
++		return RET_PF_RETRY;
+ 
+ 	if (!kvm_is_visible_memslot(slot)) {
+ 		/* Don't expose private memslots to L2. */
+@@ -3922,7 +3918,7 @@ static bool kvm_faultin_pfn(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault,
+ 			fault->slot = NULL;
+ 			fault->pfn = KVM_PFN_NOSLOT;
+ 			fault->map_writable = false;
+-			return false;
++			return RET_PF_CONTINUE;
+ 		}
+ 		/*
+ 		 * If the APIC access page exists but is disabled, go directly
+@@ -3931,10 +3927,8 @@ static bool kvm_faultin_pfn(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault,
+ 		 * when the AVIC is re-enabled.
+ 		 */
+ 		if (slot && slot->id == APIC_ACCESS_PAGE_PRIVATE_MEMSLOT &&
+-		    !kvm_apicv_activated(vcpu->kvm)) {
+-			*r = RET_PF_EMULATE;
+-			return true;
+-		}
++		    !kvm_apicv_activated(vcpu->kvm))
++			return RET_PF_EMULATE;
+ 	}
+ 
+ 	async = false;
+@@ -3942,26 +3936,23 @@ static bool kvm_faultin_pfn(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault,
+ 					  fault->write, &fault->map_writable,
+ 					  &fault->hva);
+ 	if (!async)
+-		return false; /* *pfn has correct page already */
++		return RET_PF_CONTINUE; /* *pfn has correct page already */
+ 
+ 	if (!fault->prefetch && kvm_can_do_async_pf(vcpu)) {
+ 		trace_kvm_try_async_get_page(fault->addr, fault->gfn);
+ 		if (kvm_find_async_pf_gfn(vcpu, fault->gfn)) {
+ 			trace_kvm_async_pf_doublefault(fault->addr, fault->gfn);
+ 			kvm_make_request(KVM_REQ_APF_HALT, vcpu);
+-			goto out_retry;
+-		} else if (kvm_arch_setup_async_pf(vcpu, fault->addr, fault->gfn))
+-			goto out_retry;
++			return RET_PF_RETRY;
++		} else if (kvm_arch_setup_async_pf(vcpu, fault->addr, fault->gfn)) {
++			return RET_PF_RETRY;
++		}
+ 	}
+ 
+ 	fault->pfn = __gfn_to_pfn_memslot(slot, fault->gfn, false, NULL,
+ 					  fault->write, &fault->map_writable,
+ 					  &fault->hva);
+-	return false;
 -
--	return shadow_acc_track_mask != 0 || (fault->write && fault->present);
-+	return !kvm_ad_enabled() || (fault->write && fault->present);
+-out_retry:
+-	*r = RET_PF_RETRY;
+-	return true;
++	return RET_PF_CONTINUE;
  }
  
  /*
-@@ -3140,13 +3141,25 @@ static int fast_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
+@@ -4016,10 +4007,12 @@ static int direct_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault
+ 	mmu_seq = vcpu->kvm->mmu_notifier_seq;
+ 	smp_rmb();
  
- 		new_spte = spte;
+-	if (kvm_faultin_pfn(vcpu, fault, &r))
++	r = kvm_faultin_pfn(vcpu, fault);
++	if (r != RET_PF_CONTINUE)
+ 		return r;
  
--		if (is_access_track_spte(spte))
-+		/*
-+		 * KVM only supports fixing page faults outside of MMU lock for
-+		 * direct MMUs, nested MMUs are always indirect, and KVM always
-+		 * uses A/D bits for non-nested MMUs.  Thus, if A/D bits are
-+		 * enabled, the SPTE can't be an access-tracked SPTE.
-+		 */
-+		if (unlikely(!kvm_ad_enabled()) && is_access_track_spte(spte))
- 			new_spte = restore_acc_track_spte(new_spte);
+-	if (handle_abnormal_pfn(vcpu, fault, ACC_ALL, &r))
++	r = handle_abnormal_pfn(vcpu, fault, ACC_ALL);
++	if (r != RET_PF_CONTINUE)
+ 		return r;
  
- 		/*
--		 * Currently, to simplify the code, write-protection can
--		 * be removed in the fast path only if the SPTE was
--		 * write-protected for dirty-logging or access tracking.
-+		 * To keep things simple, only SPTEs that are MMU-writable can
-+		 * be made fully writable outside of mmu_lock, e.g. only SPTEs
-+		 * that were write-protected for dirty-logging or access
-+		 * tracking are handled here.  Don't bother checking if the
-+		 * SPTE is writable to prioritize running with A/D bits enabled.
-+		 * The is_access_allowed() check above handles the common case
-+		 * of the fault being spurious, and the SPTE is known to be
-+		 * shadow-present, i.e. except for access tracking restoration
-+		 * making the new SPTE writable, the check is wasteful.
- 		 */
- 		if (fault->write && is_mmu_writable_spte(spte)) {
- 			new_spte |= PT_WRITABLE_MASK;
-@@ -4751,7 +4764,7 @@ kvm_calc_tdp_mmu_root_page_role(struct kvm_vcpu *vcpu,
- 	role.efer_nx = true;
- 	role.smm = cpu_role.base.smm;
- 	role.guest_mode = cpu_role.base.guest_mode;
--	role.ad_disabled = (shadow_accessed_mask == 0);
-+	role.ad_disabled = !kvm_ad_enabled();
- 	role.level = kvm_mmu_get_tdp_level(vcpu);
- 	role.direct = true;
- 	role.has_4_byte_gpte = false;
-diff --git a/arch/x86/kvm/mmu/spte.h b/arch/x86/kvm/mmu/spte.h
-index 098d7d144627..43ec7a8641b3 100644
---- a/arch/x86/kvm/mmu/spte.h
-+++ b/arch/x86/kvm/mmu/spte.h
-@@ -220,6 +220,17 @@ static inline bool is_shadow_present_pte(u64 pte)
- 	return !!(pte & SPTE_MMU_PRESENT_MASK);
- }
+ 	r = RET_PF_RETRY;
+diff --git a/arch/x86/kvm/mmu/mmu_internal.h b/arch/x86/kvm/mmu/mmu_internal.h
+index 1bff453f7cbe..c0e502b17ef7 100644
+--- a/arch/x86/kvm/mmu/mmu_internal.h
++++ b/arch/x86/kvm/mmu/mmu_internal.h
+@@ -143,6 +143,7 @@ unsigned int pte_list_count(struct kvm_rmap_head *rmap_head);
+ /*
+  * Return values of handle_mmio_page_fault, mmu.page_fault, and fast_page_fault().
+  *
++ * RET_PF_CONTINUE: So far, so good, keep handling the page fault.
+  * RET_PF_RETRY: let CPU fault again on the address.
+  * RET_PF_EMULATE: mmio page fault, emulate the instruction directly.
+  * RET_PF_INVALID: the spte is invalid, let the real page fault path update it.
+@@ -151,9 +152,15 @@ unsigned int pte_list_count(struct kvm_rmap_head *rmap_head);
+  *
+  * Any names added to this enum should be exported to userspace for use in
+  * tracepoints via TRACE_DEFINE_ENUM() in mmutrace.h
++ *
++ * Note, all values must be greater than or equal to zero so as not to encroach
++ * on -errno return values.  Somewhat arbitrarily use '0' for CONTINUE, which
++ * will allow for efficient machine code when checking for CONTINUE, e.g.
++ * "TEST %rax, %rax, JNZ", as all "stop!" values are non-zero.
+  */
+ enum {
+-	RET_PF_RETRY = 0,
++	RET_PF_CONTINUE = 0,
++	RET_PF_RETRY,
+ 	RET_PF_EMULATE,
+ 	RET_PF_INVALID,
+ 	RET_PF_FIXED,
+diff --git a/arch/x86/kvm/mmu/mmutrace.h b/arch/x86/kvm/mmu/mmutrace.h
+index 12247b96af01..ae86820cef69 100644
+--- a/arch/x86/kvm/mmu/mmutrace.h
++++ b/arch/x86/kvm/mmu/mmutrace.h
+@@ -54,6 +54,7 @@
+ 	{ PFERR_RSVD_MASK, "RSVD" },	\
+ 	{ PFERR_FETCH_MASK, "F" }
  
-+/*
-+ * Returns true if A/D bits are supported in hardware and are enabled by KVM.
-+ * When enabled, KVM uses A/D bits for all non-nested MMUs.  Because L1 can
-+ * disable A/D bits in EPTP12, SP and SPTE variants are needed to handle the
-+ * scenario where KVM is using A/D bits for L1, but not L2.
-+ */
-+static inline bool kvm_ad_enabled(void)
-+{
-+	return !!shadow_accessed_mask;
-+}
-+
- static inline bool sp_ad_disabled(struct kvm_mmu_page *sp)
- {
- 	return sp->role.ad_disabled;
-diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-index e9033cce8aeb..a2eda3e55697 100644
---- a/arch/x86/kvm/mmu/tdp_mmu.c
-+++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -1135,7 +1135,7 @@ static int tdp_mmu_link_sp(struct kvm *kvm, struct tdp_iter *iter,
- 			   struct kvm_mmu_page *sp, bool account_nx,
- 			   bool shared)
- {
--	u64 spte = make_nonleaf_spte(sp->spt, !shadow_accessed_mask);
-+	u64 spte = make_nonleaf_spte(sp->spt, !kvm_ad_enabled());
- 	int ret = 0;
++TRACE_DEFINE_ENUM(RET_PF_CONTINUE);
+ TRACE_DEFINE_ENUM(RET_PF_RETRY);
+ TRACE_DEFINE_ENUM(RET_PF_EMULATE);
+ TRACE_DEFINE_ENUM(RET_PF_INVALID);
+diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
+index b025decf610d..7f8f1c8dbed2 100644
+--- a/arch/x86/kvm/mmu/paging_tmpl.h
++++ b/arch/x86/kvm/mmu/paging_tmpl.h
+@@ -838,10 +838,12 @@ static int FNAME(page_fault)(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault
+ 	mmu_seq = vcpu->kvm->mmu_notifier_seq;
+ 	smp_rmb();
  
- 	if (shared) {
+-	if (kvm_faultin_pfn(vcpu, fault, &r))
++	r = kvm_faultin_pfn(vcpu, fault);
++	if (r != RET_PF_CONTINUE)
+ 		return r;
+ 
+-	if (handle_abnormal_pfn(vcpu, fault, walker.pte_access, &r))
++	r = handle_abnormal_pfn(vcpu, fault, walker.pte_access);
++	if (r != RET_PF_CONTINUE)
+ 		return r;
+ 
+ 	/*
 -- 
 2.36.0.rc2.479.g8af0fa9b8e-goog
 
