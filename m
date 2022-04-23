@@ -2,122 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FEF5C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 15:55:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C03B1C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 15:57:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235409AbiDWP5W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 11:57:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55912 "EHLO
+        id S236164AbiDWP7z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 11:59:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229584AbiDWP5U (ORCPT
+        with ESMTP id S229584AbiDWP7s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 11:57:20 -0400
-Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12BF9202267
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 08:54:23 -0700 (PDT)
-Received: by mail-oi1-x236.google.com with SMTP id e189so12334571oia.8
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 08:54:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=hrGPwkbDgIWnJ4Onq4/Uw+01BRMLP89hoICAxPX1lZg=;
-        b=phBNBzVskW/COz4zfKD/DezyL5LTtjRofDqci3Srne5x2R+gtrqEhHytCh78rJsO90
-         mtHvp8Qtrz3S4xvbF4AHktkGtMBk0X1nmUcWk660VXeYJObzTHlHNRmZIe3m6Cq8duQ5
-         gKMISYiBRrToNq6aId2OMigdjXLMCrCeLz7XBkufalIkbnO5dDM9C3vttXXpApWepY6i
-         EK3RlAZyAvH16nYOhmlzO0fgiRadqi4I0C4bMQLaPODTuP4bgy8BHmay6ZZi3ptFiYdG
-         2Eo9LsMk6nVaruBUA/CTeyIG2WiK18d31FQAnOHE50/xc3G4uyvAOIpr4x4ZDcwbusIk
-         CAxA==
+        Sat, 23 Apr 2022 11:59:48 -0400
+Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08C75E9B;
+        Sat, 23 Apr 2022 08:56:50 -0700 (PDT)
+Received: by mail-qt1-f169.google.com with SMTP id o18so7600383qtk.7;
+        Sat, 23 Apr 2022 08:56:49 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=hrGPwkbDgIWnJ4Onq4/Uw+01BRMLP89hoICAxPX1lZg=;
-        b=ToVslD3DD++Rlh+VqZyNstXczFHhjk5Wbp0NOySvAIoRa8H+6yx7vFbuoN0PyDc69Z
-         4QB58l9cF46/+hpiZ8mM9yILbwQq3yOWkeiXzmz3xuo+JnkmiYo+WmESpzQYKVqbxWaS
-         iG8Wf2SWg42LUd0sNpjtIEUWsa4O50cOzN8CW6pOKnQJ3kRlYOQ9lTnWoipGV2jb4bZf
-         xv6Ne8E10rNJvJntRKW10Fhmyg0g3xwgw9XeC9UIruSe95rTBw0+wAzMvhpfXoPva2/J
-         3ASqpLnIBU/jlSCGHGziq6UYCDeMDfOObTCTVZxCRV5daTWjKfUxCIuKISYPGKbSBQup
-         0mpg==
-X-Gm-Message-State: AOAM530ofy9M0+kwFgSjJL68te3aISjdRJidpi9/qapO5mHR4I+V7LEe
-        zDDZAaADDExJvnLfrv3loZlneA==
-X-Google-Smtp-Source: ABdhPJwLI+vAZIQMAK7ev1g3Xpqgo1rOXHieHQmvJPiguFY8z0G2GNpRD4EJ2n+MK1ojus7g7RX6jw==
-X-Received: by 2002:a05:6808:f90:b0:325:4a7:5555 with SMTP id o16-20020a0568080f9000b0032504a75555mr1422399oiw.157.1650729262444;
-        Sat, 23 Apr 2022 08:54:22 -0700 (PDT)
-Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id s6-20020a4ae546000000b0032480834193sm2098338oot.46.2022.04.23.08.54.21
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KYSyRCk38u4G2hktKJeu3gAfTkZxhlPFYSytt9pTpIw=;
+        b=OrAsGGvI7KVsuFC7+m+H5y48lbisyzgehwBNVCgYJMw4teiiGO5nYN2dzcuLDISM9C
+         rMZYJYOSSIjKACCcP3SFwlo0EQ4YQxQMOtHLBJkeg20NM4KUkc6eWrI1tFcit6KPRBjH
+         ptWxTsC04zq7qh6UC9SnB+Cy7zZWcQf+JiBuv/UVQzgx47GyeV1vMqZ8N9FHMts74Qwv
+         p4m36gammhz1if0uu5HicciF586qjGGNUu/rFZzYoUm/SgevG6fwXqR5t1rcTwg2OaB7
+         VPC7lAcPhZP0QzOdHfsa4Pl6mYjrb1rgfw+ghAla0h5WICVS67GbyhbD5zgHun72fu4y
+         RhAw==
+X-Gm-Message-State: AOAM533gLFfUFp7NbUaCPBgpFnfUg6RNsTADhU4+VkRwtzs55twpdURe
+        h7yQbuqt8SfsdkBSe0HI9jY=
+X-Google-Smtp-Source: ABdhPJwMzqu+MSfBXkoJcYYp/xxZpV8JWGg4fm1DIKo3/DT++ZvLT7JwV9+hqT59/UZrCpyeL1m+zw==
+X-Received: by 2002:ac8:5f06:0:b0:2f1:f657:eb3a with SMTP id x6-20020ac85f06000000b002f1f657eb3amr6846295qta.151.1650729409102;
+        Sat, 23 Apr 2022 08:56:49 -0700 (PDT)
+Received: from localhost (fwdproxy-ash-022.fbsv.net. [2a03:2880:20ff:16::face:b00c])
+        by smtp.gmail.com with ESMTPSA id n11-20020a05622a11cb00b002f344f11849sm2967490qtk.71.2022.04.23.08.56.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Apr 2022 08:54:21 -0700 (PDT)
-Date:   Sat, 23 Apr 2022 08:56:22 -0700
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        bhupesh.linux@gmail.com, agross@kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        robh+dt@kernel.org, vkoul@kernel.org, Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v3 2/4] dt-bindings: phy: qcom,qmp: Describe
- 'vdda-max-microamp' & 'vdda-pll-max-microamp' properties
-Message-ID: <YmQhpsmiYJzR99LK@ripper>
-References: <20220418205509.1102109-1-bhupesh.sharma@linaro.org>
- <20220418205509.1102109-3-bhupesh.sharma@linaro.org>
+        Sat, 23 Apr 2022 08:56:48 -0700 (PDT)
+From:   David Vernet <void@manifault.com>
+To:     akpm@linux-foundation.org
+Cc:     tj@kernel.org, roman.gushchin@linux.dev,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        cgroups@vger.kernel.org, hannes@cmpxchg.org, mhocko@kernel.org,
+        shakeelb@google.com, kernel-team@fb.com, void@manifault.com
+Subject: [PATCH v2 0/5] Fix bugs in memcontroller cgroup tests
+Date:   Sat, 23 Apr 2022 08:56:15 -0700
+Message-Id: <20220423155619.3669555-1-void@manifault.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220418205509.1102109-3-bhupesh.sharma@linaro.org>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 18 Apr 13:55 PDT 2022, Bhupesh Sharma wrote:
+tools/testing/selftests/cgroup/test_memcontrol.c contains a set of
+testcases which validate expected behavior of the cgroup memory controller.
+Roman Gushchin recently sent out a patchset that fixed a few issues in the
+test. This patchset continues that effort by fixing a few more issues that
+were causing non-deterministic failures in the suite. With this patchset,
+I'm unable to reproduce any more errors after running the tests in a
+continuous loop for many iterations. Before, I was able to reproduce at
+least one of the errors fixed in this patchset with just one or two runs.
 
-> Since a few boards based on QCoM qmp phy use the
-> 'vdda-max-microamp' & 'vdda-pll-max-microamp' properties to
-> describe the ufs phy nodes, add them to the dt-bindings doc as well.
-> 
-> This fixes the following '$ make dtbs_check' warning(s):
-> 
-> sm8350-microsoft-surface-duo2.dt.yaml: phy@1d87000:
->   'vdda-max-microamp', 'vdda-pll-max-microamp' do not match any of
->    the regexes: '^phy@[0-9a-f]+$', 'pinctrl-[0-9]+'
-> 
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Cc: Vinod Koul <vkoul@kernel.org>
-> Acked-by: Rob Herring <robh@kernel.org>
-> Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
-> ---
->  Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
-> index c39ead81ecd7..411c79dbfa15 100644
-> --- a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
-> +++ b/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
-> @@ -90,6 +90,14 @@ properties:
->      minItems: 1
->      maxItems: 3
->  
-> +  vdda-max-microamp:
-> +    description:
-> +      Specifies max. load that can be drawn from phy supply.
-> +
-> +  vdda-pll-max-microamp:
-> +    description:
-> +      Specifies max. load that can be drawn from pll supply.
+Changelog:
+v2:
+  - Fixed the comment headers in test_memcg_min() and test_memcg_low() to
+    reflect the new ordering of child cgroups in those tests.
+  - Fixed the comment I added in test_memcg_oom_group_leaf_events() to use /* */
+    for multiline comments, as is the norm according to the kernel style guide.
+  - Changed some of the conditional logic in test_memcg_oom_group_leaf_events()
+    that checks for OOM event counts based on memory_localevents to be more
+    intuitive.
 
-It's not clear to me what an implementation would do with this
-information. As expressed here it sounds like it's a property of the
-specified regulator, so the driver should just request that information
-from the regulator framework.
+David Vernet (5):
+  cgroups: Refactor children cgroups in memcg tests
+  cgroup: Account for memory_recursiveprot in test_memcg_low()
+  cgroup: Account for memory_localevents in
+    test_memcg_oom_group_leaf_events()
+  cgroup: Removing racy check in test_memcg_sock()
+  cgroup: Fix racy check in alloc_pagecache_max_30M() helper function
 
-So let's wait with introducing such properties until we know.
+ tools/testing/selftests/cgroup/cgroup_util.c  | 12 +++
+ tools/testing/selftests/cgroup/cgroup_util.h  |  1 +
+ .../selftests/cgroup/test_memcontrol.c        | 77 ++++++++++++-------
+ 3 files changed, 64 insertions(+), 26 deletions(-)
 
-Thanks,
-Bjorn
+-- 
+2.30.2
 
-> +
->    vdda-phy-supply:
->      description:
->        Phandle to a regulator supply to PHY core block.
-> -- 
-> 2.35.1
-> 
