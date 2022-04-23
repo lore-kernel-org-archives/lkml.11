@@ -2,42 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D73E4C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 07:46:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE255C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 07:47:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234036AbiDWHtp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 03:49:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52132 "EHLO
+        id S234057AbiDWHuC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 03:50:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232680AbiDWHtd (ORCPT
+        with ESMTP id S232732AbiDWHte (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 03:49:33 -0400
-Received: from ciao.gmane.io (ciao.gmane.io [116.202.254.214])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23266233
+        Sat, 23 Apr 2022 03:49:34 -0400
+Received: from smtp.smtpout.orange.fr (smtp09.smtpout.orange.fr [80.12.242.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 238C9257
         for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 00:46:32 -0700 (PDT)
-Received: from list by ciao.gmane.io with local (Exim 4.92)
-        (envelope-from <glk-linux-kernel-4@m.gmane-mx.org>)
-        id 1niATN-0004js-Os
-        for linux-kernel@vger.kernel.org; Sat, 23 Apr 2022 09:46:29 +0200
-X-Injected-Via-Gmane: http://gmane.org/
-To:     linux-kernel@vger.kernel.org
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: Re: [PATCH v2 5/7] mm: provide shrinkers with names
-Date:   Sat, 23 Apr 2022 09:46:25 +0200
+Received: from [192.168.1.18] ([86.243.180.246])
+        by smtp.orange.fr with ESMTPA
+        id iATJnxcm4KpuHiATKn1U8C; Sat, 23 Apr 2022 09:46:29 +0200
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Sat, 23 Apr 2022 09:46:29 +0200
+X-ME-IP: 86.243.180.246
 Message-ID: <5272f8f0-7624-141b-076c-e8de08e595f5@wanadoo.fr>
-References: <20220422202644.799732-1-roman.gushchin@linux.dev>
- <20220422202644.799732-6-roman.gushchin@linux.dev>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Date:   Sat, 23 Apr 2022 09:46:25 +0200
+MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
+Subject: Re: [PATCH v2 5/7] mm: provide shrinkers with names
 Content-Language: fr
+To:     Roman Gushchin <roman.gushchin@linux.dev>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org
+Cc:     Dave Chinner <dchinner@redhat.com>, linux-kernel@vger.kernel.org,
+        Yang Shi <shy828301@gmail.com>,
+        Kent Overstreet <kent.overstreet@gmail.com>,
+        Hillf Danton <hdanton@sina.com>
+Newsgroups: gmane.linux.kernel,gmane.linux.kernel.mm
+References: <20220422202644.799732-1-roman.gushchin@linux.dev>
+ <20220422202644.799732-6-roman.gushchin@linux.dev>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 In-Reply-To: <20220422202644.799732-6-roman.gushchin@linux.dev>
-Cc:     linux-mm@kvack.org
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
+Message-ID: <20220423074625.2Qh0RJodcQmGvMPYiyCRxPavCA3DQyyXiKmHzk7mBs8@z>
 
 Hi,
 
@@ -203,4 +211,3 @@ CJ
 >   /*
 
 [...]
-
