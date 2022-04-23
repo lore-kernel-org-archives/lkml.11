@@ -2,100 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA249C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 15:51:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4998CC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 15:51:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236159AbiDWPyk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 11:54:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44658 "EHLO
+        id S236150AbiDWPyn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 11:54:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233748AbiDWPye (ORCPT
+        with ESMTP id S236081AbiDWPye (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 23 Apr 2022 11:54:34 -0400
 Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2C51D64C3;
-        Sat, 23 Apr 2022 08:51:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E41AD64F3;
+        Sat, 23 Apr 2022 08:51:37 -0700 (PDT)
 Received: from g550jk.arnhem.chello.nl (a246182.upc-a.chello.nl [62.163.246.182])
-        by mail.z3ntu.xyz (Postfix) with ESMTPSA id 3E165CAE5B;
-        Sat, 23 Apr 2022 15:51:35 +0000 (UTC)
+        by mail.z3ntu.xyz (Postfix) with ESMTPSA id 2BAA0CEA98;
+        Sat, 23 Apr 2022 15:51:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
-        t=1650729095; bh=Pv8SOge4wX45Hpi29ExyVTuAkh3jcltOvD+t2ezoUEQ=;
-        h=From:To:Cc:Subject:Date;
-        b=djoiGXYM+jQLxx3Tu89EH4wzvKevDNK/X+X84GBLjY8YiOP/EjoyHYlVgR4Kx1SR+
-         8XvzpPveYIIPeqjsRBXmsn/JlCowliOsBBzfG+daUdgaF6R6iebsqbkC04vi95aCEx
-         l16kezGumToX0L+sDK99D0BOhGQSi3J8m/onfAWc=
+        t=1650729096; bh=4FbqOnvbK4kBZ8h4ATICE2OUK1SQ+ceRmCqQrNZk+pA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=ZuGGHuQC71JOKl/Z2l7lNTNwp6PPN4wQwfnSE75c60m8RS4MbJvZPvKgNpJzEe5wo
+         ckgmlDDVP9o4jwaqTQCeVu5wkD5UQWSvngUSpbxCbYPoctLMDfZ1aSzSeg/6jHbPmG
+         9e47pgpsY8kWi1661G5l/CiPjLd51SB+BQWBal/g=
 From:   Luca Weiss <luca@z3ntu.xyz>
 To:     linux-arm-msm@vger.kernel.org
 Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
         Luca Weiss <luca@z3ntu.xyz>, Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        linux-remoteproc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 1/5] dt-bindings: remoteproc: qcom: pas: Add MSM8226 adsp
-Date:   Sat, 23 Apr 2022 17:50:55 +0200
-Message-Id: <20220423155059.660387-1-luca@z3ntu.xyz>
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 3/5] ARM: dts: qcom: msm8226: Add ADSP node
+Date:   Sat, 23 Apr 2022 17:50:57 +0200
+Message-Id: <20220423155059.660387-3-luca@z3ntu.xyz>
 X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220423155059.660387-1-luca@z3ntu.xyz>
+References: <20220423155059.660387-1-luca@z3ntu.xyz>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the compatible for the adsp found in MSM8226.
+Add a node for the adsp found on msm8226.
 
 Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
 ---
- Documentation/devicetree/bindings/remoteproc/qcom,adsp.yaml | 5 +++++
- 1 file changed, 5 insertions(+)
+ .../boot/dts/qcom-apq8026-asus-sparrow.dts    |  2 +
+ arch/arm/boot/dts/qcom-msm8226.dtsi           | 65 +++++++++++++++++++
+ 2 files changed, 67 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/remoteproc/qcom,adsp.yaml b/Documentation/devicetree/bindings/remoteproc/qcom,adsp.yaml
-index a4409c398193..925e4015d59b 100644
---- a/Documentation/devicetree/bindings/remoteproc/qcom,adsp.yaml
-+++ b/Documentation/devicetree/bindings/remoteproc/qcom,adsp.yaml
-@@ -16,6 +16,7 @@ description:
- properties:
-   compatible:
-     enum:
-+      - qcom,msm8226-adsp-pil
-       - qcom,msm8974-adsp-pil
-       - qcom,msm8996-adsp-pil
-       - qcom,msm8996-slpi-pil
-@@ -159,6 +160,7 @@ allOf:
-         compatible:
-           contains:
-             enum:
-+              - qcom,msm8226-adsp-pil
-               - qcom,msm8974-adsp-pil
-               - qcom,msm8996-adsp-pil
-               - qcom,msm8996-slpi-pil
-@@ -274,6 +276,7 @@ allOf:
-         compatible:
-           contains:
-             enum:
-+              - qcom,msm8226-adsp-pil
-               - qcom,msm8974-adsp-pil
-               - qcom,msm8996-adsp-pil
-               - qcom,msm8996-slpi-pil
-@@ -364,6 +367,7 @@ allOf:
-         compatible:
-           contains:
-             enum:
-+              - qcom,msm8226-adsp-pil
-               - qcom,msm8996-adsp-pil
-               - qcom,msm8998-adsp-pas
-     then:
-@@ -546,6 +550,7 @@ allOf:
-         compatible:
-           contains:
-             enum:
-+              - qcom,msm8226-adsp-pil
-               - qcom,msm8974-adsp-pil
-               - qcom,msm8996-adsp-pil
-               - qcom,msm8996-slpi-pil
+diff --git a/arch/arm/boot/dts/qcom-apq8026-asus-sparrow.dts b/arch/arm/boot/dts/qcom-apq8026-asus-sparrow.dts
+index ace8cea27949..818c1a201227 100644
+--- a/arch/arm/boot/dts/qcom-apq8026-asus-sparrow.dts
++++ b/arch/arm/boot/dts/qcom-apq8026-asus-sparrow.dts
+@@ -8,6 +8,8 @@
+ #include "qcom-msm8226.dtsi"
+ #include "qcom-pm8226.dtsi"
+ 
++/delete-node/ &adsp_region;
++
+ / {
+ 	model = "ASUS ZenWatch 2";
+ 	compatible = "asus,sparrow", "qcom,apq8026";
+diff --git a/arch/arm/boot/dts/qcom-msm8226.dtsi b/arch/arm/boot/dts/qcom-msm8226.dtsi
+index 28eca15b5712..3016035d5e21 100644
+--- a/arch/arm/boot/dts/qcom-msm8226.dtsi
++++ b/arch/arm/boot/dts/qcom-msm8226.dtsi
+@@ -8,6 +8,7 @@
+ #include <dt-bindings/interrupt-controller/arm-gic.h>
+ #include <dt-bindings/clock/qcom,gcc-msm8974.h>
+ #include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/power/qcom-rpmpd.h>
+ #include <dt-bindings/reset/qcom,gcc-msm8974.h>
+ 
+ / {
+@@ -60,6 +61,11 @@ smem_region: smem@3000000 {
+ 			reg = <0x3000000 0x100000>;
+ 			no-map;
+ 		};
++
++		adsp_region: adsp@dc00000 {
++			reg = <0x0dc00000 0x1900000>;
++			no-map;
++		};
+ 	};
+ 
+ 	smd {
+@@ -115,6 +121,31 @@ smem {
+ 		hwlocks = <&tcsr_mutex 3>;
+ 	};
+ 
++	smp2p-adsp {
++		compatible = "qcom,smp2p";
++		qcom,smem = <443>, <429>;
++
++		interrupt-parent = <&intc>;
++		interrupts = <GIC_SPI 158 IRQ_TYPE_EDGE_RISING>;
++
++		qcom,ipc = <&apcs 8 10>;
++
++		qcom,local-pid = <0>;
++		qcom,remote-pid = <2>;
++
++		adsp_smp2p_out: master-kernel {
++			qcom,entry-name = "master-kernel";
++			#qcom,smem-state-cells = <1>;
++		};
++
++		adsp_smp2p_in: slave-kernel {
++			qcom,entry-name = "slave-kernel";
++
++			interrupt-controller;
++			#interrupt-cells = <2>;
++		};
++	};
++
+ 	soc: soc {
+ 		compatible = "simple-bus";
+ 		#address-cells = <1>;
+@@ -512,6 +543,40 @@ tcsr_mutex_block: syscon@fd484000 {
+ 			compatible = "syscon";
+ 			reg = <0xfd484000 0x2000>;
+ 		};
++
++		adsp: remoteproc@fe200000 {
++			compatible = "qcom,msm8226-adsp-pil";
++			reg = <0xfe200000 0x100>;
++
++			interrupts-extended = <&intc GIC_SPI 162 IRQ_TYPE_EDGE_RISING>,
++					      <&adsp_smp2p_in 0 IRQ_TYPE_EDGE_RISING>,
++					      <&adsp_smp2p_in 1 IRQ_TYPE_EDGE_RISING>,
++					      <&adsp_smp2p_in 2 IRQ_TYPE_EDGE_RISING>,
++					      <&adsp_smp2p_in 3 IRQ_TYPE_EDGE_RISING>;
++			interrupt-names = "wdog", "fatal", "ready", "handover", "stop-ack";
++
++			power-domains = <&rpmpd MSM8226_VDDCX>;
++			power-domain-names = "cx";
++
++			clocks = <&xo_board>;
++			clock-names = "xo";
++
++			memory-region = <&adsp_region>;
++
++			qcom,smem-states = <&adsp_smp2p_out 0>;
++			qcom,smem-state-names = "stop";
++
++			status = "disabled";
++
++			smd-edge {
++				interrupts = <GIC_SPI 156 IRQ_TYPE_EDGE_RISING>;
++
++				qcom,ipc = <&apcs 8 8>;
++				qcom,smd-edge = <1>;
++
++				label = "lpass";
++			};
++		};
+ 	};
+ 
+ 	timer {
 -- 
 2.36.0
 
