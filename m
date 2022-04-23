@@ -2,88 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50ED6C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 09:30:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBEC1C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 09:30:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234519AbiDWJd1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 05:33:27 -0400
+        id S234543AbiDWJdn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 05:33:43 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234494AbiDWJdS (ORCPT
+        with ESMTP id S234504AbiDWJdb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 05:33:18 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D69A6C8BE5
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 02:30:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650706215; x=1682242215;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=PBCdMFUfBx3arTmg/F40pbY08SWeH4eP+o9eyt9mTZI=;
-  b=SypYRQVroPQGSbh9RU7qXQu2gEQag6VGPWsVM7iehjKDiYZ4JG6teq9w
-   phkcn+/fWLyG5/Borpv7rAGOX2mM/c4l/ZmsRmRxuQyYZons0qS32aRU8
-   8rO/lStDx5ceaFjrp/bmC7kMLUkZQPeofePuLZ+RhiQlcHLPwItGJ1lGp
-   PFLPyIQuKqKKo7YbZWcURomgFA2FOuU0E08eS6rKABSydQq6R3XgM6o0g
-   MZVOrO2FP4EskQNax3M3R51osQecf+50m8TvaBtLXNLxhHnTQ1dQCyZH4
-   XAjr3HHPDTBY3UZhm+WrODU0U8WRX1ukB3WtDPt7KeeDBXAOfi12eoHf9
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="263723032"
-X-IronPort-AV: E=Sophos;i="5.90,284,1643702400"; 
-   d="scan'208";a="263723032"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2022 02:30:15 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,284,1643702400"; 
-   d="scan'208";a="703875136"
-Received: from lkp-server01.sh.intel.com (HELO dd58949a6e39) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 23 Apr 2022 02:30:14 -0700
-Received: from kbuild by dd58949a6e39 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1niC5l-00007T-Lk;
-        Sat, 23 Apr 2022 09:30:13 +0000
-Date:   Sat, 23 Apr 2022 17:29:33 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>
-Subject: [intel-tdx:guest-rebased 4/129] arch/x86/kernel/tdcall.o: warning:
- objtool: __tdx_module_call()+0x3f: missing int3 after ret
-Message-ID: <202204231753.86pSanI4-lkp@intel.com>
+        Sat, 23 Apr 2022 05:33:31 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73EE12386FF
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 02:30:31 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id el3so8288168edb.11
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 02:30:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=nTcAsy4mzwYOzYnyy+Pdf5GpE9fpUTuHJcRHNUedXG4=;
+        b=COZnpYZAB7aBIS9wzX/ddD29PCH1zlNNAj5hH8wOAoDFoSVOzm29I6cx/TLUjFAa85
+         UugHvo3mZx1MXTbknoNisatHOhcNZqijjwBVlNThV+X8IevQmkbRMAlb1ZRKOuMI+e5c
+         N2FhgvYCu/cJ1DNPR53ovouR3bM9+5fFbOSINBzxH88acOsT7Pfy9gtwsd8uXDrwWXah
+         VbCedUab0cv8LhLgHFzZPupy/j+9DSIcMO7SBl/ZSFZpn6OictzbyYfFxMi7NUgGUQn/
+         oROpYZkwkgcFz2J1KH7EzUtY8BwWdJFhSKkAj7PjatKcQCETsa+0Z4Wyno9p3pYl11KE
+         E1HQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nTcAsy4mzwYOzYnyy+Pdf5GpE9fpUTuHJcRHNUedXG4=;
+        b=eJ28mTPvxDvZpdxjH6YKCgyLkfvOMQ2uqHbxz65eXnepJ/4Q1P1uPSp+XwvcFBKmiW
+         KXNABrJdJWNX34YsEuzV0BBwgIqUghhKhV7rosUwqcbOaQLjGTcSZFeOgA/zp7v4BJdm
+         rZeURl7BWSOtsaPeldI6KLn8wQSf6DzGTqlqSXtP+IAE09UIhCeKiPyqkuQTcIxFvAn5
+         5X3PwCh9H9U8vNUD+bs3MhFKC6sB39ZuNTISe+DUHy5PWPtKRDPXOUa+olrmymLkRqux
+         mGwLZKgAB5YWpZR1NuFq6i8vLY6gpX3f+wrF2oKcnIuHfwEgdH7qlCx2DNYlkD5r470F
+         uNRg==
+X-Gm-Message-State: AOAM533ro/4AQ+gNcge3cEBizI+UoCqB2NEUjxXv362ej/pJ2ihf3uwf
+        xhIrCw/J0tYkkzwnnH+w5ndPyg==
+X-Google-Smtp-Source: ABdhPJwfiNmA1XC7Z7lDiA90dKU0QIG0pmXdVT6qFJUm3IvKZtebMLv4WOpL2QcX8HtU3avv/DUGNw==
+X-Received: by 2002:a05:6402:2695:b0:425:c55e:b0ff with SMTP id w21-20020a056402269500b00425c55eb0ffmr5072132edd.358.1650706229802;
+        Sat, 23 Apr 2022 02:30:29 -0700 (PDT)
+Received: from [192.168.0.234] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id kw3-20020a170907770300b006d2a835ac33sm1497226ejc.197.2022.04.23.02.30.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 23 Apr 2022 02:30:29 -0700 (PDT)
+Message-ID: <b5a7dd3b-53b5-99c0-5107-6f9f4d62bc88@linaro.org>
+Date:   Sat, 23 Apr 2022 11:30:28 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 2/2] pinctrl: nuvoton: Fix irq_of_parse_and_map() return
+ value
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, openbmc@lists.ozlabs.org
+References: <20220422105339.78810-1-krzysztof.kozlowski@linaro.org>
+ <20220422105339.78810-2-krzysztof.kozlowski@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220422105339.78810-2-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kuppuswamy,
+On 22/04/2022 12:53, Krzysztof Kozlowski wrote:
+> The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
+> 
+> Fixes: 3b588e43ee5c ("pinctrl: nuvoton: add NPCM7xx pinctrl and GPIO driver")
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c b/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
+> index 3cf0f8a43c37..6271eac82fec 100644
+> --- a/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
+> +++ b/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
+> @@ -1898,7 +1898,7 @@ static int npcm7xx_gpio_of(struct npcm7xx_pinctrl *pctrl)
+>  		}
+>  
+>  		ret = irq_of_parse_and_map(np, 0);
+> -		if (ret < 0) {
+> +		if (!ret) {
+>  			dev_err(dev, "No IRQ for GPIO bank %u\n", id);
+>  			return ret;
 
-First bad commit (maybe != root cause):
+This is wrong. I will send a v2.
 
-tree:   https://github.com/intel/tdx.git guest-rebased
-head:   4c095660b91dbdd18042456e395af0deeef93485
-commit: 78ee914ccc3ec6aba40ea3ffd044ea17b1aba9ce [4/129] x86/tdx: Add __tdx_module_call() and __tdx_hypercall() helper functions
-config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220423/202204231753.86pSanI4-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel/tdx/commit/78ee914ccc3ec6aba40ea3ffd044ea17b1aba9ce
-        git remote add intel-tdx https://github.com/intel/tdx.git
-        git fetch --no-tags intel-tdx guest-rebased
-        git checkout 78ee914ccc3ec6aba40ea3ffd044ea17b1aba9ce
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> arch/x86/kernel/tdcall.o: warning: objtool: __tdx_module_call()+0x3f: missing int3 after ret
->> arch/x86/kernel/tdcall.o: warning: objtool: __tdx_hypercall()+0x60: missing int3 after ret
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Best regards,
+Krzysztof
