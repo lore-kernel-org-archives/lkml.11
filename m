@@ -2,160 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 183EEC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 10:29:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4B60C43217
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 10:30:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235045AbiDWKc0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 06:32:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55542 "EHLO
+        id S235043AbiDWKd2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 06:33:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234999AbiDWKcR (ORCPT
+        with ESMTP id S232670AbiDWKdZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 06:32:17 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F09AC1BFC85
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 03:29:19 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23MI1ekR064962;
-        Fri, 22 Apr 2022 13:01:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1650650500;
-        bh=iioj9dZNPxWBOuNiHxgIG3fFC7hgfus1/G3r1hCrOwg=;
-        h=From:To:CC:Subject:Date;
-        b=RU7ZgSLto1armfOWggIUaf1nEf27eGSu83XDccsMEo2eEzzi18NnnjAd5D7l9S32P
-         tzX5viXE0pucYcFQjy94DBGvVh6qiMqVxuEDcWO4Gglm0/pR9YYZbBWnOC7HbdJBwd
-         6NJ4z8MkXeZjlk6xBWDuVaUyr5np0H5qHWOJSjpI=
-Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23MI1eUw013714
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 22 Apr 2022 13:01:40 -0500
-Received: from DLEE102.ent.ti.com (157.170.170.32) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 22
- Apr 2022 13:01:40 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE102.ent.ti.com
- (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Fri, 22 Apr 2022 13:01:40 -0500
-Received: from ula0226330.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23MI1dsn125884;
-        Fri, 22 Apr 2022 13:01:39 -0500
-From:   Andrew Davis <afd@ti.com>
-To:     Jens Wiklander <jens.wiklander@linaro.org>,
-        Sumit Garg <sumit.garg@linaro.org>,
-        <op-tee@lists.trustedfirmware.org>, <linux-kernel@vger.kernel.org>
-CC:     Andrew Davis <afd@ti.com>
-Subject: [PATCH 1/2] tee: remove tee_shm_va2pa() and tee_shm_pa2va()
-Date:   Fri, 22 Apr 2022 13:01:38 -0500
-Message-ID: <20220422180139.13447-1-afd@ti.com>
-X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+        Sat, 23 Apr 2022 06:33:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C5211EACF;
+        Sat, 23 Apr 2022 03:30:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0117E60F72;
+        Sat, 23 Apr 2022 10:30:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51ABFC385A5;
+        Sat, 23 Apr 2022 10:30:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650709828;
+        bh=ff4v014/iePNUz+icT/yCsh2zIx6F6nb3gqJB1eZ8UE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=IXbxE35IvogCm4AZ8zf3jDibpQvSyM0C/W7X9aOUpsRCzXOI07cfGdkWgEbDXWuCr
+         kHSslvl42YFufuJLUjxH+6Rlemh4k5ehoJ0U76XnWwo/D64jT3So83tqkAFjCS9+H6
+         9XGZjuNh5XDyj1VT2QzlODsbPR56lIo8wzJ2/IPR+6qUMek4L2BCV/t5x64hN25Q8y
+         Xr9LLlVN3fF+XBKV03hhLSY0wx9o5lEU7yd8whJ6OEG30xUTbuEa5djU8KMh+2QwPC
+         oAsEmKmW3z1C/HA7pmQSaW9nJigb1Pte7SU3itFZmqvPUSBZDBhkZgGwGurE72xs+j
+         1h8z5Y+LbCwCQ==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=billy-the-mountain.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1niD21-006Mq2-Qb; Sat, 23 Apr 2022 11:30:25 +0100
+Date:   Sat, 23 Apr 2022 11:30:25 +0100
+Message-ID: <874k2kccse.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, Bartosz Golaszewski <brgl@bgdev.pl>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Joey Gouly <joey.gouly@arm.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
+        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, kernel-team@android.com
+Subject: Re: [PATCH v3 00/10] gpiolib: Handle immutable irq_chip structures
+In-Reply-To: <CACRpkda3L_itpqcnPq6xDoJtNHt8NuvE1MZk1bCNR+u2KKUpBA@mail.gmail.com>
+References: <20220419141846.598305-1-maz@kernel.org>
+        <CACRpkda3L_itpqcnPq6xDoJtNHt8NuvE1MZk1bCNR+u2KKUpBA@mail.gmail.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (aarch64-unknown-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: linus.walleij@linaro.org, linux-kernel@vger.kernel.org, brgl@bgdev.pl, thierry.reding@gmail.com, joey.gouly@arm.com, jonathanh@nvidia.com, marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io, bjorn.andersson@linaro.org, agross@kernel.org, jeffrey.l.hugo@gmail.com, tglx@linutronix.de, Basavaraj.Natikar@amd.com, Shyam-sundar.S-k@amd.com, andy.shevchenko@gmail.com, linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, kernel-team@android.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We should not need to index into SHMs based on absolute VA/PA.
-These functions are not used and this kind of usage should not be
-encouraged anyway. Remove these functions.
+On Fri, 22 Apr 2022 22:24:22 +0100,
+Linus Walleij <linus.walleij@linaro.org> wrote:
+> 
+> On Tue, Apr 19, 2022 at 4:19 PM Marc Zyngier <maz@kernel.org> wrote:
+> 
+> > This is a followup from [2].
+> >
+> > I recently realised that the gpiolib play ugly tricks on the
+> > unsuspecting irq_chip structures by patching the callbacks.
+> >
+> > Not only this breaks when an irq_chip structure is made const (which
+> > really should be the default case), but it also forces this structure
+> > to be copied at nauseam for each instance of the GPIO block, which is
+> > a waste of memory.
+> >
+> > My current approach is to add a new irq_chip flag (IRQCHIP_IMMUTABLE)
+> > which does what it says on the tin: don't you dare writing to them.
+> > Gpiolib is further updated not to install its own callbacks, and it
+> > becomes the responsibility of the driver to call into the gpiolib when
+> > required. This is similar to what we do for other subsystems such as
+> > PCI-MSI.
+> >
+> > 5 drivers are updated to this new model: M1, QC, Tegra, pl061 and AMD
+> > (as I actively use them) keeping a single irq_chip structure, marking
+> > it const, and exposing the new flag.
+> >
+> > Nothing breaks, the volume of change is small, the memory usage goes
+> > down and we have fewer callbacks that can be used as attack vectors.
+> > What's not to love?
+> >
+> > Since there wasn't any objection in the previous round of review, I'm
+> > going to take this series into -next to see if anything breaks at
+> > scale.
+> 
+> The series:
+> Acked-by: Linus Walleij <linus.walleij@linaro.org>
+> 
+> Bartosz: if you're happy with this can you apply it to an immutable branch
+> from v5.18-rc1 and merge that into the GPIO for-next and then I can also
+> pull that into pinctrl?
 
-Signed-off-by: Andrew Davis <afd@ti.com>
----
- drivers/tee/tee_shm.c   | 50 -----------------------------------------
- include/linux/tee_drv.h | 18 ---------------
- 2 files changed, 68 deletions(-)
+For what it is worth, I've pushed this branch into irqchip-next.
 
-diff --git a/drivers/tee/tee_shm.c b/drivers/tee/tee_shm.c
-index f31e29e8f1cac..b0c6d553d3a70 100644
---- a/drivers/tee/tee_shm.c
-+++ b/drivers/tee/tee_shm.c
-@@ -414,56 +414,6 @@ void tee_shm_free(struct tee_shm *shm)
- }
- EXPORT_SYMBOL_GPL(tee_shm_free);
- 
--/**
-- * tee_shm_va2pa() - Get physical address of a virtual address
-- * @shm:	Shared memory handle
-- * @va:		Virtual address to tranlsate
-- * @pa:		Returned physical address
-- * @returns 0 on success and < 0 on failure
-- */
--int tee_shm_va2pa(struct tee_shm *shm, void *va, phys_addr_t *pa)
--{
--	if (!shm->kaddr)
--		return -EINVAL;
--	/* Check that we're in the range of the shm */
--	if ((char *)va < (char *)shm->kaddr)
--		return -EINVAL;
--	if ((char *)va >= ((char *)shm->kaddr + shm->size))
--		return -EINVAL;
--
--	return tee_shm_get_pa(
--			shm, (unsigned long)va - (unsigned long)shm->kaddr, pa);
--}
--EXPORT_SYMBOL_GPL(tee_shm_va2pa);
--
--/**
-- * tee_shm_pa2va() - Get virtual address of a physical address
-- * @shm:	Shared memory handle
-- * @pa:		Physical address to tranlsate
-- * @va:		Returned virtual address
-- * @returns 0 on success and < 0 on failure
-- */
--int tee_shm_pa2va(struct tee_shm *shm, phys_addr_t pa, void **va)
--{
--	if (!shm->kaddr)
--		return -EINVAL;
--	/* Check that we're in the range of the shm */
--	if (pa < shm->paddr)
--		return -EINVAL;
--	if (pa >= (shm->paddr + shm->size))
--		return -EINVAL;
--
--	if (va) {
--		void *v = tee_shm_get_va(shm, pa - shm->paddr);
--
--		if (IS_ERR(v))
--			return PTR_ERR(v);
--		*va = v;
--	}
--	return 0;
--}
--EXPORT_SYMBOL_GPL(tee_shm_pa2va);
--
- /**
-  * tee_shm_get_va() - Get virtual address of a shared memory plus an offset
-  * @shm:	Shared memory handle
-diff --git a/include/linux/tee_drv.h b/include/linux/tee_drv.h
-index 911cad324acc7..17eb1c5205d34 100644
---- a/include/linux/tee_drv.h
-+++ b/include/linux/tee_drv.h
-@@ -298,24 +298,6 @@ void tee_shm_free(struct tee_shm *shm);
-  */
- void tee_shm_put(struct tee_shm *shm);
- 
--/**
-- * tee_shm_va2pa() - Get physical address of a virtual address
-- * @shm:	Shared memory handle
-- * @va:		Virtual address to tranlsate
-- * @pa:		Returned physical address
-- * @returns 0 on success and < 0 on failure
-- */
--int tee_shm_va2pa(struct tee_shm *shm, void *va, phys_addr_t *pa);
--
--/**
-- * tee_shm_pa2va() - Get virtual address of a physical address
-- * @shm:	Shared memory handle
-- * @pa:		Physical address to tranlsate
-- * @va:		Returned virtual address
-- * @returns 0 on success and < 0 on failure
-- */
--int tee_shm_pa2va(struct tee_shm *shm, phys_addr_t pa, void **va);
--
- /**
-  * tee_shm_get_va() - Get virtual address of a shared memory plus an offset
-  * @shm:	Shared memory handle
+You can pick it up from:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms.git/log/?h=irq/gpio-immutable
+
+but I can also drop it from the irqchip tree.
+
+Just let me know.
+
+	M.
+
 -- 
-2.17.1
-
+Without deviation from the norm, progress is not possible.
