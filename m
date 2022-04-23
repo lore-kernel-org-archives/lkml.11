@@ -2,149 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56252C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 07:56:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8054BC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 08:02:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234118AbiDWH7h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 03:59:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59928 "EHLO
+        id S234151AbiDWIFG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 04:05:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234073AbiDWH7e (ORCPT
+        with ESMTP id S231787AbiDWIFA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 03:59:34 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 413043B2BC
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 00:56:38 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id v1so8740987ljv.3
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 00:56:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=openvz-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:subject:to:cc
-         :references:content-language:in-reply-to:content-transfer-encoding;
-        bh=mif/hptMttckx/mJ2yjacwOwrfg6csXHsP1C0SeWPl4=;
-        b=Jh3EjOr+fbFSxsWWXzKZ1dLFWdYWIgAT+OvVwnM/YGyDQ7mBB2EepGX50xPrhenMRy
-         1u2x0E0gGW9XabiMiNEXr83wUcsgtzGlaWKoPNL4DichQ32o6WBMLLJm5WsseIYsGBM6
-         bpJDaCTTtsHJGcYtnnYYiY5zbPsAe9vWmAk3/b2eHsr7dOgmStQfhoy132T/YObSkjYC
-         rcqowhNPmMq6tcJiN9k+xWNYvmBBNXVUGzvkel+WVoExNr+k2Vgl9IvU7FAzkQyzrQL4
-         sJq5PQfF02ZAr6M/man+jrRycFRNHpEDaLYAi8IRdb/B4kMJEt1pBYbsZgVDAKSASN1C
-         zIgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:to:cc:references:content-language:in-reply-to
-         :content-transfer-encoding;
-        bh=mif/hptMttckx/mJ2yjacwOwrfg6csXHsP1C0SeWPl4=;
-        b=Yv+jMEW5axiuGp9siQh0+ept6ydXbTPGlnTx1gRcOttd/aDIwvYN3IhzPTlUmnxIRz
-         k1NU9OfkjekZ/57N2vS4oQ/JhAO8m9Yfm01pCr/9s4juMDTGVya6vJ27L5jXR4//vRPm
-         qOA6d+cFDyDo8DHXY3qgnyC9qVDkqpvsi7UFmxwcMdaSex501UQhyadHTmPzp3PovH2n
-         ric2+s5MMUKhI1N3N5U3OPPbADCEOtI4iZ8KUHxbcLRq2Br4GeINj1hAvVd/bzyXxOWG
-         mUkMQirdDQ5N93+VUoEvZuGJqqBir30AerM3Ntg2VDFOLzIRfrDyC7epTfN4Iz3kJyfe
-         0RKg==
-X-Gm-Message-State: AOAM531zoA3o9xcaO8viJwWJ+5l8o8S4dB9dwjUSsgJYI24ys/GZewN1
-        mJi1ioE6c/Fh+9QTjBMP74D/AA==
-X-Google-Smtp-Source: ABdhPJzwOxJDiUT+mxVE2gdeqnTfab1zeDWAizki2WmGRG2zg3Ej+gEKUwuqGX9Bc50MTmsxtY5imA==
-X-Received: by 2002:a2e:9182:0:b0:24f:66f:7ca9 with SMTP id f2-20020a2e9182000000b0024f066f7ca9mr615846ljg.397.1650700596565;
-        Sat, 23 Apr 2022 00:56:36 -0700 (PDT)
-Received: from [192.168.1.65] ([46.188.121.177])
-        by smtp.gmail.com with ESMTPSA id m5-20020a194345000000b0046e951e34b3sm525140lfj.24.2022.04.23.00.56.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 23 Apr 2022 00:56:35 -0700 (PDT)
-Message-ID: <6f38e02b-9af3-4dcf-9000-1118a04b13c7@openvz.org>
-Date:   Sat, 23 Apr 2022 10:56:34 +0300
+        Sat, 23 Apr 2022 04:05:00 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE28A1035
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 01:02:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650700924; x=1682236924;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=oYSa9eG/ZLGjKfhpFORv9gMTTxmsCZoyxnq7RTpNwu0=;
+  b=IRLMsWjBX6XtasNzPJMjx70D8b63WzmkSIRcZvWhbWuOl8azMD3sceU2
+   rsUJF9qYXgJVk8f1E+psAdmu7crzjG0YO2gFqkMoY7R3Ix1rLXJMcTvxm
+   DBQ4fcfC0oDCW9bLquw+8AajFwJcOTx1XvJkJlBCw2hAzeljkBsF+36oa
+   c2LVy2BinSAZ3R2CKqAkx4l9N6HV5R1G//Hh2s+OedgHH3BKQtUtYYBUP
+   aYGFhfalfVHhmyRMw24BrinVDql/m3npO0lMcfHRpc0BtVejFh6FffSto
+   +hPT3ImaqzhBVpRvqb5mqlF0E7EMLVBplhR3SABMFYQuskJaqButSLTO6
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="265034545"
+X-IronPort-AV: E=Sophos;i="5.90,284,1643702400"; 
+   d="scan'208";a="265034545"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2022 01:02:04 -0700
+X-IronPort-AV: E=Sophos;i="5.90,284,1643702400"; 
+   d="scan'208";a="578312714"
+Received: from yjsun1-mobl.ccr.corp.intel.com (HELO [10.255.31.217]) ([10.255.31.217])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2022 01:02:00 -0700
+Message-ID: <36764562-ad54-b192-4084-842fee8fca78@linux.intel.com>
+Date:   Sat, 23 Apr 2022 16:01:59 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-From:   Vasily Averin <vvs@openvz.org>
-Subject: [PATCH] net: set proper memcg for net_init hooks allocations
-To:     Vlastimil Babka <vbabka@suse.cz>,
-        Shakeel Butt <shakeelb@google.com>
-Cc:     kernel@openvz.org, Florian Westphal <fw@strlen.de>,
-        linux-kernel@vger.kernel.org,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Michal Hocko <mhocko@suse.com>, cgroups@vger.kernel.org,
-        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-References: <CALvZod7ys1SNrQhbweCoCKVyfN1itE16jhC97TqjWtHDFh1RpQ@mail.gmail.com>
+Subject: Re: [PATCH 02/13] iommu: Move bus setup to IOMMU device registration
 Content-Language: en-US
-In-Reply-To: <CALvZod7ys1SNrQhbweCoCKVyfN1itE16jhC97TqjWtHDFh1RpQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org,
+        will@kernel.org
+Cc:     iommu@lists.linux-foundation.org, sven@svenpeter.dev,
+        robdclark@gmail.com, m.szyprowski@samsung.com,
+        yong.wu@mediatek.com, mjrosato@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, zhang.lyra@gmail.com,
+        thierry.reding@gmail.com, vdumpa@nvidia.com,
+        jean-philippe@linaro.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+References: <cover.1649935679.git.robin.murphy@arm.com>
+ <e607a32be8e84c56d65160902f4bd3fb434ee9d3.1649935679.git.robin.murphy@arm.com>
+ <d838c7f8-2d31-2327-9b4d-c05b06a516bb@linux.intel.com>
+ <1d9a2146-9e48-ba97-d049-5d2332ebbd3a@arm.com>
+ <d928d256-b1bc-2d45-a9c3-382edfe67b80@linux.intel.com>
+ <7f693a3a-bbab-237a-af9a-4395e501a5b2@arm.com>
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+In-Reply-To: <7f693a3a-bbab-237a-af9a-4395e501a5b2@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-__register_pernet_operations() executes init hook of registered
-pernet_operation structure in all existing net namespaces.
+Hi Robin,
 
-Typically, these hooks are called by a process associated with
-the specified net namespace, and all __GFP_ACCOUNTING marked
-allocation are accounted for corresponding container/memcg.
+On 2022/4/19 15:20, Robin Murphy wrote:
+> On 2022-04-19 00:37, Lu Baolu wrote:
+>> On 2022/4/19 6:09, Robin Murphy wrote:
+>>> On 2022-04-16 01:04, Lu Baolu wrote:
+>>>> On 2022/4/14 20:42, Robin Murphy wrote:
+>>>>> @@ -1883,27 +1900,12 @@ static int iommu_bus_init(struct bus_type 
+>>>>> *bus)
+>>>>>    */
+>>>>>   int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops)
+>>>>>   {
+>>>>> -    int err;
+>>>>> -
+>>>>> -    if (ops == NULL) {
+>>>>> -        bus->iommu_ops = NULL;
+>>>>> -        return 0;
+>>>>> -    }
+>>>>> -
+>>>>> -    if (bus->iommu_ops != NULL)
+>>>>> +    if (bus->iommu_ops && ops && bus->iommu_ops != ops)
+>>>>>           return -EBUSY;
+>>>>>       bus->iommu_ops = ops;
+>>>>
+>>>> Do we still need to keep above lines in bus_set_iommu()?
+>>>
+>>> It preserves the existing behaviour until each callsite and its 
+>>> associated error handling are removed later on, which seems like as 
+>>> good a thing to do as any. Since I'm already relaxing 
+>>> iommu_device_register() to a warn-but-continue behaviour while it 
+>>> keeps the bus ops on life-support internally, I figured not changing 
+>>> too much at once would make it easier to bisect any potential issues 
+>>> arising from this first step.
+>>
+>> Fair enough. Thank you for the explanation.
+>>
+>> Do you have a public tree that I could pull these patches and try them
+>> on an Intel hardware? Or perhaps you have done this? I like the whole
+>> idea of this series, but it's better to try it with a real hardware.
+> 
+> I haven't bothered with separate branches since there's so many 
+> different pieces in-flight, but my complete (unstable) development 
+> branch can be found here:
+> 
+> https://gitlab.arm.com/linux-arm/linux-rm/-/commits/iommu/bus
+> 
+> For now I'd recommend winding the head back to "iommu: Clean up 
+> bus_set_iommu()" for testing - some of the patches above that have 
+> already been posted and picked up by their respective subsystems, but 
+> others are incomplete and barely compile-tested. I'll probably rearrange 
+> it later this week to better reflect what's happened so far.
 
-However __register_pernet_operations() calls the hooks in the same
-context, and as a result all marked allocations are accounted
-to one memcg for all processed net namespaces.
+I wound the head back to "iommu: Clean up bus_set_iommu" and tested it
+on an Intel machine. It got stuck during boot. This test was on a remote
+machine and I have no means to access it physically. So I can't get any
+kernel debugging messages. (I have to work from home these days. :-()
 
-This patch adjusts active memcg for each net namespace and helps
-to account memory allocated inside ops_init() into the proper memcg.
+I guess it's due to the fact that intel_iommu_probe_device() callback
+only works for the pci devices. The issue occurs when probing a device
+other than a PCI one.
 
-Signed-off-by: Vasily Averin <vvs@openvz.org>
----
-v1: introduced get_mem_cgroup_from_kmem(), which takes the refcount
-    for the found memcg, suggested by Shakeel
----
- include/linux/memcontrol.h | 11 +++++++++++
- net/core/net_namespace.c   |  9 +++++++++
- 2 files changed, 20 insertions(+)
-
-diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-index 0abbd685703b..16b157852a8c 100644
---- a/include/linux/memcontrol.h
-+++ b/include/linux/memcontrol.h
-@@ -1768,4 +1768,15 @@ static inline struct mem_cgroup *mem_cgroup_from_obj(void *p)
- 
- #endif /* CONFIG_MEMCG_KMEM */
- 
-+static inline struct mem_cgroup *get_mem_cgroup_from_kmem(void *p)
-+{
-+	struct mem_cgroup *memcg;
-+
-+	rcu_read_lock();
-+	do {
-+		memcg = mem_cgroup_from_obj(p);
-+	} while (memcg && !css_tryget(&memcg->css));
-+	rcu_read_unlock();
-+	return memcg;
-+}
- #endif /* _LINUX_MEMCONTROL_H */
-diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
-index a5b5bb99c644..56608f56bed6 100644
---- a/net/core/net_namespace.c
-+++ b/net/core/net_namespace.c
-@@ -26,6 +26,7 @@
- #include <net/net_namespace.h>
- #include <net/netns/generic.h>
- 
-+#include <linux/sched/mm.h>
- /*
-  *	Our network namespace constructor/destructor lists
-  */
-@@ -1147,7 +1148,15 @@ static int __register_pernet_operations(struct list_head *list,
- 		 * setup_net() and cleanup_net() are not possible.
- 		 */
- 		for_each_net(net) {
-+			struct mem_cgroup *old, *memcg;
-+
-+			memcg = get_mem_cgroup_from_kmem(net);
-+			if (!memcg)
-+				memcg = root_mem_cgroup;
-+			old = set_active_memcg(memcg);
- 			error = ops_init(ops, net);
-+			set_active_memcg(old);
-+			css_put(&memcg->css);
- 			if (error)
- 				goto out_undo;
- 			list_add_tail(&net->exit_list, &net_exit_list);
--- 
-2.31.1
-
+Best regards,
+baolu
