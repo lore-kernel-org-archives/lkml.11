@@ -2,50 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05BFAC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 07:51:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07E29C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 07:51:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234058AbiDWHye (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 03:54:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41468 "EHLO
+        id S234097AbiDWHys (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 03:54:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229942AbiDWHyb (ORCPT
+        with ESMTP id S229942AbiDWHyg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 03:54:31 -0400
-Received: from smtp.smtpout.orange.fr (smtp09.smtpout.orange.fr [80.12.242.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B6FAB62
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 00:51:35 -0700 (PDT)
-Received: from [192.168.1.18] ([86.243.180.246])
-        by smtp.orange.fr with ESMTPA
-        id iAYGnxejTKpuHiAYGn1Uqr; Sat, 23 Apr 2022 09:51:33 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sat, 23 Apr 2022 09:51:33 +0200
-X-ME-IP: 86.243.180.246
-Message-ID: <0c64fd49-4ca3-1f5e-a69c-bb1d65f2263c@wanadoo.fr>
-Date:   Sat, 23 Apr 2022 09:51:31 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
+        Sat, 23 Apr 2022 03:54:36 -0400
+Received: from ciao.gmane.io (ciao.gmane.io [116.202.254.214])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31A34B62
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 00:51:40 -0700 (PDT)
+Received: from list by ciao.gmane.io with local (Exim 4.92)
+        (envelope-from <glk-linux-kernel-4@m.gmane-mx.org>)
+        id 1niAYM-0000UQ-LR
+        for linux-kernel@vger.kernel.org; Sat, 23 Apr 2022 09:51:38 +0200
+X-Injected-Via-Gmane: http://gmane.org/
+To:     linux-kernel@vger.kernel.org
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 Subject: Re: [PATCH v2 1/7] mm: introduce debugfs interface for kernel memory
  shrinkers
-Content-Language: fr
-To:     Roman Gushchin <roman.gushchin@linux.dev>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org
-Cc:     Dave Chinner <dchinner@redhat.com>, linux-kernel@vger.kernel.org,
-        Yang Shi <shy828301@gmail.com>,
-        Kent Overstreet <kent.overstreet@gmail.com>,
-        Hillf Danton <hdanton@sina.com>
-Newsgroups: gmane.linux.kernel,gmane.linux.kernel.mm
+Date:   Sat, 23 Apr 2022 09:51:31 +0200
+Message-ID: <0c64fd49-4ca3-1f5e-a69c-bb1d65f2263c@wanadoo.fr>
 References: <20220422202644.799732-1-roman.gushchin@linux.dev>
  <20220422202644.799732-2-roman.gushchin@linux.dev>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <20220422202644.799732-2-roman.gushchin@linux.dev>
+Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: fr
+In-Reply-To: <20220422202644.799732-2-roman.gushchin@linux.dev>
+Cc:     linux-mm@kvack.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
+Message-ID: <20220423075131.wE1iSPYm0hwi9RttGpjkNFTSqCZpnhaq91uvS1qRmlQ@z>
 
 Le 22/04/2022 à 22:26, Roman Gushchin a écrit :
 > This commit introduces the /sys/kernel/debug/shrinker debugfs
@@ -129,3 +123,4 @@ CJ
 > +	}
 
 [...]
+
