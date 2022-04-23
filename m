@@ -2,280 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB155C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 21:29:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A93C8C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 21:30:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237385AbiDWVcG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 17:32:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50388 "EHLO
+        id S236678AbiDWVcz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 17:32:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237324AbiDWVbm (ORCPT
+        with ESMTP id S237271AbiDWVck (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 17:31:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFAE4522FE;
-        Sat, 23 Apr 2022 14:27:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5527B61032;
-        Sat, 23 Apr 2022 21:27:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B6A1C385A5;
-        Sat, 23 Apr 2022 21:27:50 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="C8luVCeb"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1650749269;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Hu1lHLanvuWgDiYPkgc7jxugEFdHG8nWUyE1TlHRrEs=;
-        b=C8luVCebv3YG9BqZ3ogBOPu9yRbwkzPcKVVuzjwAAe4sh8FBZdzMZ+pekTkHq8daxAocFG
-        DoK+YUdfvAg9e4NnI5KcRPuQ8y9ETSdolP5+YG35UimIIvxdJU0x7f5GljKYtfMSLCD1Ra
-        aP80gS0bz9htr4paxBRnmQw22CrcXs0=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id a63ddb13 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Sat, 23 Apr 2022 21:27:48 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        tglx@linutronix.de, arnd@arndb.de
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Theodore Ts'o <tytso@mit.edu>
-Subject: [PATCH v6 17/17] random: insist on random_get_entropy() existing in order to simplify
-Date:   Sat, 23 Apr 2022 23:26:23 +0200
-Message-Id: <20220423212623.1957011-18-Jason@zx2c4.com>
-In-Reply-To: <20220423212623.1957011-1-Jason@zx2c4.com>
-References: <20220423212623.1957011-1-Jason@zx2c4.com>
+        Sat, 23 Apr 2022 17:32:40 -0400
+Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E2AA1F604;
+        Sat, 23 Apr 2022 14:29:32 -0700 (PDT)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.nyi.internal (Postfix) with ESMTP id D3E0A5C00D1;
+        Sat, 23 Apr 2022 17:29:31 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Sat, 23 Apr 2022 17:29:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm2; t=1650749371; x=
+        1650835771; bh=Pj0wzKf6dex5toiA0Kiw7U4VWCF5jYwgc7tf+MRocTc=; b=W
+        hdQMsMqi+xCWMjbGqY+t5oRH6pqQ34asy6z49IHhxNi7yc829+nDlcQfz8/i1Hh6
+        b3ICSgvcN6/c4Jlt0X95wy1pZ/7vXIl8P01QIK5SH9NN39zvD5oq9e+st/LFWuIl
+        AiSMCDXoAqEiIYpDvrk1sA4sUwn90n3ZrtBpMI50jHyCHXaT9plDkbMAfVlWB/HB
+        cX8yGiNEIPyr2ogEAqG9JD2rCQJ7o3SsasSWvNBFRDydokiK4BhmorEy3EkCxG3o
+        zGMMyHyV/TB5rCN9L5pKkRhNw8hAMNYW3aGPlQBGM5d4smczpNr43SdCgf1V27+F
+        5l5PUCICVXYqM5WZfpF/Q==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; t=1650749371; x=1650835771; bh=Pj0wzKf6dex5t
+        oiA0Kiw7U4VWCF5jYwgc7tf+MRocTc=; b=aawUbErFS6LqyNtEnu+g7ebqgQBUY
+        8ltMy1fzWyw3OVl/IS5vOTSwEaJoDTiyPsDSextiHOZDAxzU/KO9hTuvepVpCAc+
+        Ph5tDE62olgcpHfWr2JK9LNs9H6MPpYx7tf+rP4MfsZTc/dksML6eQKDwssARs/u
+        cj5Vo9c+yuq/2+Xlo9koQRhtoLLjTMz+n78Aar21TJyCT5hSEwjLU33eyBESUzkv
+        rMiUvNEhekB18sRa6TU0/9QDEWd/x6TtNl8WKZIyQpVTWxXWVuXAyf/fQpQrgcKc
+        989QI01FOFP1OtAHlG+kZQwaoxo8p+kfk40pnAeB+FWExeMV4KBN//Gzg==
+X-ME-Sender: <xms:u29kYiXsnQfGLWnHZMduinOBBMS3-yxQ-0PmgAUCvWmbjyCExjnKEg>
+    <xme:u29kYunleDDiYBkDAbsnLMO7FkoJR4C64kHFIsQ3xThU92yir5oS2RdU5aSJzF1U8
+    G3V1sBlJr7WI-1qNg>
+X-ME-Received: <xmr:u29kYmaSNTpZmwyHuFKdHQwc-AccgRATbJBQSRnQYm2IbdHUW0ZBY-V9pkzBLzz5AYUH4FToyE5k9WoytJLqT9638EKsDpJ-c9Unnr_iCFUEGSIWgwwtmpDFbg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrtdeigdduiedvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepuffvvehfhffkffgfgggjtgfgsehtjeertddtfeejnecuhfhrohhmpefurghm
+    uhgvlhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenuc
+    ggtffrrghtthgvrhhnpeelteejffdvgeehkedtkeevueeuteffteffhedufeeujedvudef
+    udetieeijeevleenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrh
+    fuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshgrmhhuvghlsehshhholhhl
+    rghnugdrohhrgh
+X-ME-Proxy: <xmx:u29kYpVlQpm8em9p5f8vrWn6XKOgbu6dOvUdawBinBTHHWZCH0mqsQ>
+    <xmx:u29kYsniKACYKNioTk0gWytNv0JU-vfXSIWvGWM3hBfj9VYEXKiNWA>
+    <xmx:u29kYufBW60TawUWpqRJ6uYBn1apqYH05N3icgqADiFAg6FMMhClIQ>
+    <xmx:u29kYle5oQ9uOaZIgFNEyLHX0JUy5eIG_aoexcMdT4rMHDpLbr6Aag>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
+ 23 Apr 2022 17:29:30 -0400 (EDT)
+Subject: Re: [PATCH 02/12] pinctrl: sunxi: add support for R329 CPUX pin
+ controller
+To:     Icenowy Zheng <icenowy@aosc.io>
+Cc:     Rob Herring <robh+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andre Przywara <andre.przywara@arm.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Icenowy Zheng <icenowy@aosc.io>
+References: <20220422140902.1058101-1-icenowy@aosc.io>
+ <BYAPR20MB2472B703E377AA813EE55B26BCF79@BYAPR20MB2472.namprd20.prod.outlook.com>
+From:   Samuel Holland <samuel@sholland.org>
+Message-ID: <d82f6c90-1926-f3b1-02a0-b82e5ee179b0@sholland.org>
+Date:   Sat, 23 Apr 2022 16:29:30 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <BYAPR20MB2472B703E377AA813EE55B26BCF79@BYAPR20MB2472.namprd20.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-All platforms are now guaranteed to provide some value for
-random_get_entropy(). In case some bug leads to this not being so, we
-print a warning, because that indicates that something is really very
-wrong (and likely other things are impacted too). This should never be
-hit, but it's a good and cheap way of finding out if something ever is
-problematic.
+On 4/22/22 10:40 AM, icenowy@outlook.com wrote:
+> From: Icenowy Zheng <icenowy@aosc.io>
+> 
+> Allwinner R329 SoC has two pin controllers similar to ones on previous
+> SoCs, one in CPUX power domain and another in CPUS.
+> 
+> This patch adds support for the CPUX domain pin controller.
+> 
+> Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
 
-Since we now have viable fallback code for random_get_entropy() on all
-platforms, which is, in the worst case, not worse than jiffies, we can
-count on getting the best possible value out of it. That means there's
-no longer a use for using jiffies as entropy input. It also means we no
-longer have a reason for doing the round-robin register flow in the IRQ
-handler, which was always of fairly dubious value.
+This is identical to the previous version. Please see my comments on that, as
+they still apply:
 
-Instead we can greatly simplify the IRQ handler inputs and also unify
-the construction between 64-bits and 32-bits. We now collect the cycle
-counter and the return address, since those are the two things that
-matter. Because the return address and the irq number are likely
-related, to the extent we mix in the irq number, we can just xor it into
-the top unchanging bytes of the return address, rather than the bottom
-changing bytes of the cycle counter as before. Then, we can do a fixed 2
-rounds of SipHash/HSipHash. Finally, we use the same construction of
-hashing only half of the [H]SipHash state on 32-bit and 64-bit. We're
-not actually discarding any entropy, since that entropy is carried
-through until the next time. And more importantly, it lets us do the
-same sponge-like construction everywhere.
-
-Cc: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- drivers/char/random.c | 89 ++++++++++++++-----------------------------
- 1 file changed, 29 insertions(+), 60 deletions(-)
-
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 4c9adb4f3d5d..bf89c6f27a19 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1012,6 +1012,9 @@ int __init rand_initialize(void)
- 		urandom_warning.interval = 0;
- 		unseeded_warning.interval = 0;
- 	}
-+
-+	WARN(!random_get_entropy(), "Missing cycle counter and fallback timer; RNG "
-+				    "entropy collection will consequently suffer.");
- 	return 0;
- }
- 
-@@ -1025,15 +1028,14 @@ int __init rand_initialize(void)
-  */
- void add_device_randomness(const void *buf, size_t size)
- {
--	unsigned long cycles = random_get_entropy();
--	unsigned long flags, now = jiffies;
-+	unsigned long entropy = random_get_entropy();
-+	unsigned long flags;
- 
- 	if (crng_init == 0 && size)
- 		crng_pre_init_inject(buf, size, false);
- 
- 	spin_lock_irqsave(&input_pool.lock, flags);
--	_mix_pool_bytes(&cycles, sizeof(cycles));
--	_mix_pool_bytes(&now, sizeof(now));
-+	_mix_pool_bytes(&entropy, sizeof(entropy));
- 	_mix_pool_bytes(buf, size);
- 	spin_unlock_irqrestore(&input_pool.lock, flags);
- }
-@@ -1056,12 +1058,11 @@ struct timer_rand_state {
-  */
- static void add_timer_randomness(struct timer_rand_state *state, unsigned int num)
- {
--	unsigned long cycles = random_get_entropy(), now = jiffies, flags;
-+	unsigned long entropy = random_get_entropy(), now = jiffies, flags;
- 	long delta, delta2, delta3;
- 
- 	spin_lock_irqsave(&input_pool.lock, flags);
--	_mix_pool_bytes(&cycles, sizeof(cycles));
--	_mix_pool_bytes(&now, sizeof(now));
-+	_mix_pool_bytes(&entropy, sizeof(entropy));
- 	_mix_pool_bytes(&num, sizeof(num));
- 	spin_unlock_irqrestore(&input_pool.lock, flags);
- 
-@@ -1223,7 +1224,6 @@ struct fast_pool {
- 	unsigned long pool[4];
- 	unsigned long last;
- 	unsigned int count;
--	u16 reg_idx;
- };
- 
- static DEFINE_PER_CPU(struct fast_pool, irq_randomness) = {
-@@ -1241,13 +1241,13 @@ static DEFINE_PER_CPU(struct fast_pool, irq_randomness) = {
-  * This is [Half]SipHash-1-x, starting from an empty key. Because
-  * the key is fixed, it assumes that its inputs are non-malicious,
-  * and therefore this has no security on its own. s represents the
-- * 128 or 256-bit SipHash state, while v represents a 128-bit input.
-+ * four-word SipHash state, while v represents a two-word input.
-  */
--static void fast_mix(unsigned long s[4], const unsigned long *v)
-+static void fast_mix(unsigned long s[4], const unsigned long v[2])
- {
- 	size_t i;
- 
--	for (i = 0; i < 16 / sizeof(long); ++i) {
-+	for (i = 0; i < 2; ++i) {
- 		s[3] ^= v[i];
- #ifdef CONFIG_64BIT
- 		s[0] += s[1]; s[1] = rol64(s[1], 13); s[1] ^= s[0]; s[0] = rol64(s[0], 32);
-@@ -1287,33 +1287,17 @@ int random_online_cpu(unsigned int cpu)
- }
- #endif
- 
--static unsigned long get_reg(struct fast_pool *f, struct pt_regs *regs)
--{
--	unsigned long *ptr = (unsigned long *)regs;
--	unsigned int idx;
--
--	if (regs == NULL)
--		return 0;
--	idx = READ_ONCE(f->reg_idx);
--	if (idx >= sizeof(struct pt_regs) / sizeof(unsigned long))
--		idx = 0;
--	ptr += idx++;
--	WRITE_ONCE(f->reg_idx, idx);
--	return *ptr;
--}
--
- static void mix_interrupt_randomness(struct work_struct *work)
- {
- 	struct fast_pool *fast_pool = container_of(work, struct fast_pool, mix);
- 	/*
--	 * The size of the copied stack pool is explicitly 16 bytes so that we
--	 * tax mix_pool_byte()'s compression function the same amount on all
--	 * platforms. This means on 64-bit we copy half the pool into this,
--	 * while on 32-bit we copy all of it. The entropy is supposed to be
--	 * sufficiently dispersed between bits that in the sponge-like
--	 * half case, on average we don't wind up "losing" some.
-+	 * The size of the copied stack pool is explicitly 2 longs so that we
-+	 * only ever ingest half of the siphash output each time, retaining
-+	 * the other half as the next "key" that carries over. The entropy is
-+	 * supposed to be sufficiently dispersed between bits so on average
-+	 * we don't wind up "losing" some.
- 	 */
--	u8 pool[16];
-+	unsigned long pool[2];
- 
- 	/* Check to see if we're running on the wrong CPU due to hotplug. */
- 	local_irq_disable();
-@@ -1345,36 +1329,21 @@ static void mix_interrupt_randomness(struct work_struct *work)
- void add_interrupt_randomness(int irq)
- {
- 	enum { MIX_INFLIGHT = 1U << 31 };
--	unsigned long cycles = random_get_entropy(), now = jiffies;
-+	unsigned long cycles = random_get_entropy();
- 	struct fast_pool *fast_pool = this_cpu_ptr(&irq_randomness);
- 	struct pt_regs *regs = get_irq_regs();
- 	unsigned int new_count;
--	union {
--		u32 u32[4];
--		u64 u64[2];
--		unsigned long longs[16 / sizeof(long)];
--	} irq_data;
--
--	if (cycles == 0)
--		cycles = get_reg(fast_pool, regs);
--
--	if (sizeof(unsigned long) == 8) {
--		irq_data.u64[0] = cycles ^ rol64(now, 32) ^ irq;
--		irq_data.u64[1] = regs ? instruction_pointer(regs) : _RET_IP_;
--	} else {
--		irq_data.u32[0] = cycles ^ irq;
--		irq_data.u32[1] = now;
--		irq_data.u32[2] = regs ? instruction_pointer(regs) : _RET_IP_;
--		irq_data.u32[3] = get_reg(fast_pool, regs);
--	}
- 
--	fast_mix(fast_pool->pool, irq_data.longs);
-+	fast_mix(fast_pool->pool, (unsigned long[2]){
-+		(regs ? instruction_pointer(regs) : _RET_IP_) ^ swab(irq),
-+		cycles
-+	});
- 	new_count = ++fast_pool->count;
- 
- 	if (new_count & MIX_INFLIGHT)
- 		return;
- 
--	if (new_count < 64 && (!time_after(now, fast_pool->last + HZ) ||
-+	if (new_count < 64 && (!time_is_before_jiffies(fast_pool->last + HZ) ||
- 			       unlikely(crng_init == 0)))
- 		return;
- 
-@@ -1410,28 +1379,28 @@ static void entropy_timer(struct timer_list *t)
- static void try_to_generate_entropy(void)
- {
- 	struct {
--		unsigned long cycles;
-+		unsigned long entropy;
- 		struct timer_list timer;
- 	} stack;
- 
--	stack.cycles = random_get_entropy();
-+	stack.entropy = random_get_entropy();
- 
- 	/* Slow counter - or none. Don't even bother */
--	if (stack.cycles == random_get_entropy())
-+	if (stack.entropy == random_get_entropy())
- 		return;
- 
- 	timer_setup_on_stack(&stack.timer, entropy_timer, 0);
- 	while (!crng_ready() && !signal_pending(current)) {
- 		if (!timer_pending(&stack.timer))
- 			mod_timer(&stack.timer, jiffies + 1);
--		mix_pool_bytes(&stack.cycles, sizeof(stack.cycles));
-+		mix_pool_bytes(&stack.entropy, sizeof(stack.entropy));
- 		schedule();
--		stack.cycles = random_get_entropy();
-+		stack.entropy = random_get_entropy();
- 	}
- 
- 	del_timer_sync(&stack.timer);
- 	destroy_timer_on_stack(&stack.timer);
--	mix_pool_bytes(&stack.cycles, sizeof(stack.cycles));
-+	mix_pool_bytes(&stack.entropy, sizeof(stack.entropy));
- }
- 
- 
--- 
-2.35.1
-
+https://lore.kernel.org/linux-sunxi/2f6de069-7983-efc2-3c4a-7c1355c4cbc5@sholland.org/
