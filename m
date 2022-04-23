@@ -2,250 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F4BBC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 16:40:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29E73C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 16:41:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236452AbiDWQno (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 12:43:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55888 "EHLO
+        id S236459AbiDWQoA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 12:44:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236441AbiDWQnl (ORCPT
+        with ESMTP id S236451AbiDWQn4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 12:43:41 -0400
-X-Greylist: delayed 532 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 23 Apr 2022 09:40:42 PDT
-Received: from mailout-l3b-97.contactoffice.com (mailout-l3b-97.contactoffice.com [212.3.242.97])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8F913CA5B
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 09:40:42 -0700 (PDT)
-Received: from smtpauth2.co-bxl (smtpauth2.co-bxl [10.2.0.24])
-        by mailout-l3b-97.contactoffice.com (Postfix) with ESMTP id 6A530771
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 18:31:49 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1650731509;
-        s=20210208-e7xh; d=mailfence.com; i=flaskhalsaren@mailfence.com;
-        h=Message-ID:Date:MIME-Version:From:Content-Type:Content-Transfer-Encoding;
-        l=5571; bh=0R8nPHhTzHrR7qwjgjmoB8zkJbRXGE/jXo1Sg2ABPyk=;
-        b=BvIIgwiDKclVZmrrxLP4c4ds5UsOqdKoWV9LkZosXZ2LTj8kL9d2SCpOgjkfMX5c
-        RBsuHLwGdqlxjiyeWe5nrvIOQE0xGJOtxNvw+0dhDKawiuE14EKe1M83D/xvSYBz8CI
-        CL3IR2WKv9aUE+pHoff2aHtx1t1NncfYxysTwIf7yugaaG1TxHjVEE6rbRUG68657Yj
-        pMyRmYJsxainH2Jyj3k+WoFJYx+ZyzfBnIXSZyTYGPG79RffNQz/43KNpPRc4XZPHGj
-        tLk3BhHTTEgkKvnq7FGmEKK+PtUA0uxVkWhdb0XOigBwkoW1PAUG8a5F2EV+oG1aggk
-        lUE2L+ZwNQ==
-Received: by smtp.mailfence.com with ESMTPSA
-          for <linux-kernel@vger.kernel.org> ; Sat, 23 Apr 2022 18:31:46 +0200 (CEST)
-Message-ID: <a444299d-377b-a175-2d69-5dc068a840e7@mailfence.com>
-Date:   Sat, 23 Apr 2022 18:31:45 +0200
+        Sat, 23 Apr 2022 12:43:56 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8180F42A38
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 09:40:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=2MvqW49dlfPXlTFO4cVz6jW0fsGriUccE1VFxe7rooQ=; b=4CpgKtZWpr1YvrwrgR0PVODSfR
+        eFHq3GErIpjs8WXAaxmLwUJKW2Z//2hg9eashRdzhcM19R6oVxxqIxAe6YlPuPVuItoTu4azCvfr2
+        pGg65CQ/FdUzZKmE6ubYHxzYTixg9YZgL+KZeg+2Hf6FBRSvPF83kFxQ+JjE8EUs6qRpgGpXw+r1e
+        ukp3Ji2ELJKv1OizDiizyYel4rZFkUXo+rKGnGWuuAZi6cPGZi7Gj7OSWaq4fKE93lQDwpAxnqKSd
+        7sMpv5r84yTKbhECYHDRHM16S9tNaakXyhMW2GipLr8jLem2OCOeIy90YqNtk/EF11ryDiHiAuK4s
+        nqKdocew==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1niIoX-004edG-Bn; Sat, 23 Apr 2022 16:40:53 +0000
+Date:   Sat, 23 Apr 2022 09:40:53 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Oleksandr Tyshchenko <olekstysh@gmail.com>
+Cc:     xen-devel@lists.xenproject.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Juergen Gross <jgross@suse.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Julien Grall <julien@xen.org>,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Christoph Hellwig <hch@infradead.org>
+Subject: Re: [PATCH V1 3/6] xen/virtio: Add option to restrict memory access
+ under Xen
+Message-ID: <YmQsFb36UEH9BUnN@infradead.org>
+References: <1650646263-22047-1-git-send-email-olekstysh@gmail.com>
+ <1650646263-22047-4-git-send-email-olekstysh@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Content-Language: en-US
-To:     linux-kernel@vger.kernel.org
-From:   flaskhalsaren it <flaskhalsaren@mailfence.com>
-Subject: Slowing down task using a modified FIFO scheduler
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ContactOffice-Account: com:351898251
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1650646263-22047-4-git-send-email-olekstysh@gmail.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, I have been experimenting with the FIFO scheduler and tick rate in order
-to reduce execution speed for tasks; I need to run legacy code that runs 
-on old
-slow hardware at approximately the same speed on new faster hardware while
-preserving "realtime-like" properties of the code. The general idea
-was to add a delay
-during each task, tick to mimic the execution speed of the slower system.
+Please split this into one patch that creates grant-dma-ops, and another
+that sets up the virtio restricted access helpers.
 
-At the end of this mail are my modifications in the kernel, where I for the
-FIFO scheduler introduces a delay of 500 microseconds for each scheduling
-tick, that is
-my intention is to use up about 500 microseconds of the scheduling tick 
-for the
-task. Assuming a tick length of 1000 microseconds we effectively reduce the
-execution speed to about 1 - 500/1000 or about 50%.
+> +
+> +#ifdef CONFIG_ARCH_HAS_RESTRICTED_VIRTIO_MEMORY_ACCESS
+> +int arch_has_restricted_virtio_memory_access(void)
+> +{
+> +	return (xen_has_restricted_virtio_memory_access() ||
+> +			cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT));
+> +}
 
-I am using kernel version 5.15.7 and Ubuntu 20.04.4
+So instead of hardcoding Xen here, this seems like a candidate for
+another cc_platform_has flag.
 
-I have made a small test program to verify that my approach works as 
-expected
-which I run in userspace (delay_test.c):
+> +config XEN_VIRTIO
+> +	bool "Xen virtio support"
+> +	default n
 
-#include <stdio.h>
-#include <unistd.h>
-#include <time.h>
-#include <sched.h>
-#include <stdint.h>
-#include <sys/time.h>
+n is the default default, so no need to specify it.
 
-static inline void timespec_diff(struct timespec *a, struct timespec *b,
-     struct timespec *result) {
-     result->tv_sec  = a->tv_sec  - b->tv_sec;
-     result->tv_nsec = a->tv_nsec - b->tv_nsec;
-     if (result->tv_nsec < 0) {
-         --result->tv_sec;
-         result->tv_nsec += 1000000000L;
-     }
-}
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/******************************************************************************
 
-void main(int argc, char *args[])
-{
-   struct sched_param param;
-   param.sched_priority = 99;
-   sched_setscheduler(0,SCHED_FIFO,&param);
-   struct timespec start,now,diff;
-   uint64_t  sleep_delay = 100L;
-   clock_gettime(CLOCK_MONOTONIC, &start);
+The all * line is not the usual kernel style, I'd suggest to drop it.
 
-   printf("Start is %lu.%lu\n",start.tv_sec,start.tv_nsec);
-   for(;;)
-   {
-     usleep(sleep_delay);
-     clock_gettime(CLOCK_MONOTONIC, &now);
-     timespec_diff(&now,&start,&diff);
-     printf("Time is %lus 
-%luns\n",(uint64_t)diff.tv_sec,(uint64_t)diff.tv_nsec);
+> +static struct page *xen_grant_dma_alloc_pages(struct device *dev, size_t size,
+> +					      dma_addr_t *dma_handle,
+> +					      enum dma_data_direction dir,
+> +					      gfp_t gfp)
+> +{
+> +	WARN_ONCE(1, "xen_grant_dma_alloc_pages size %zu\n", size);
+> +	return NULL;
+> +}
+> +
+> +static void xen_grant_dma_free_pages(struct device *dev, size_t size,
+> +				     struct page *vaddr, dma_addr_t dma_handle,
+> +				     enum dma_data_direction dir)
+> +{
+> +	WARN_ONCE(1, "xen_grant_dma_free_pages size %zu\n", size);
+> +}
 
-   }
-}
+Please just wire this up to the same implementation as .alloc and .free.
 
+> +	spin_lock(&xen_grant_dma_lock);
+> +	list_add(&data->list, &xen_grant_dma_devices);
+> +	spin_unlock(&xen_grant_dma_lock);
 
-I compile the above program like this (assuming a 2GHz CPU core that is
-evacuated and assigned a dedicated Cgroup) $ gcc ....
-and create it like this with Cgroup v1
-sudo cgcreate -t $USER:$GRP -a $USER:$GRP -g cpuset,memory,freezer:tes
-echo "1" | sudo tee /sys/fs/cgroup/cpuset/test/cpuset.cpus > /dev/null
-echo "0" | sudo tee /sys/fs/cgroup/cpuset/test/cpuset.mems > /dev/null
-echo "1" | sudo tee /sys/fs/cgroup/cpuset/test/cpuset.cpu_exclusive > 
-/dev/null
+Hmm, having to do this device lookup for every DMA operation is going
+to suck. It might make sense to add a private field (e.g. as a union
+with the iommu field) in struct device instead.
 
-and run it with
-sudo cgexec -g memory,freezer,cpuset:test ./a.out
+But if not you probably want to switch to a more efficient data
+structure like the xarray at least.
 
-The expected output is something like
-Start is 1835.474539419
-Time is 0s 200000ns
-Time is 0s 300000ns
-Time is 0s 500000ns
-Time is 0s 1000000ns <-- Here scheduler delay kicks i.
-Time is 0s 1100000ns
-Time is 0s 1200000ns
-...
+> +EXPORT_SYMBOL_GPL(xen_grant_setup_dma_ops);
 
-and so on. Instead, I get this
-Start is 1835.474539419
-Time is 0s 175382ns
-Time is 0s 283956ns
-Time is 0s 391289ns
-Time is 0s 501217ns <-- Around here scheduler delay should have kicked in.
-Time is 0s 610443ns <- Instead roughly the same delay is added.
-Time is 0s 721963ns
-Time is 0s 835387ns
-Time is 0s 948290ns
-Time is 0s 1061414ns
-
-Things I have tried so far: Turning off SMT, making sure that I am using
-CONFIG_HZ_PERIODIC , Isolating tasks using cgroups and isolcpus, making sure
-that the system is running at the correct tick rate and changing the 
-frequency
-in combination with the Governor. Is it something I am missing in regards to
-doing this slowdown? Any answers or hints would be appreciated.
-
-My own delay method I have added to the kernel (register_time.c):
-
-static uint64_t rdtsc2(void){
-     uint32_t hi, lo;
-     __asm__ __volatile__ ("xorl %%eax,%%eax\ncpuid" ::: "%rax",
-"%rbx", "%rcx", "%rdx");
-     __asm__ __volatile__ ("rdtsc" : "=a"(lo), "=d"(hi));
-     return  (((uint64_t)hi)<<32) | ((uint64_t)lo) ; }
-
-uint64_t get_khz(void){
-     uint64_t aperf,mperf,khz;
-     unsigned long flags;
-
-     local_irq_save(flags);
-     rdmsrl(MSR_IA32_APERF,aperf);
-     rdmsrl(MSR_IA32_MPERF,mperf);
-     local_irq_restore(flags);
-
-     khz = div64_u64((cpu_khz * aperf),mperf);
-
-     return khz;
-}
-
-uint64_t nanos_to_ticks(uint64_t nanos){
-      return (get_khz() * 1000L * nanos)/NSEC_PER_SEC;
-}
-  /*
-  *Sleeps for the specified amount of ticks.
-  * Ticks to sleep can be calculated with nanos_to_tick().
-  * Going from ticks to nanoseconds is done using ticks_to_nanos().
-  */
-uint64_t tick_sleep(uint64_t ticks_to_sleep) {
-     uint64_t now;
-     uint64_t sleep_until;
-     uint64_t delta_ticks;
-
-     preempt_disable();
-     now = rdtsc2();
-     sleep_until = now + ticks_to_sleep;
-     while (now < sleep_until)
-     {
-         now = rdtsc2();
-     }
-     delta_ticks = now - sleep_until;
-     preempt_enable();
-     return delta_ticks;
-}
-
-The part where I try to add the delay (rt.c):
-
-static void task_tick_rt(struct rq *rq, struct task_struct *p, int queued) {
-   struct sched_rt_entity *rt_se = &p->rt;
-
-   update_curr_rt(rq);
-   update_rt_rq_load_avg(rq_clock_pelt(rq), rq, 1);
-
-   watchdog(rq, p);
-
-   /*
-    * RR tasks need a special form of timeslice management.
-    * FIFO tasks have no timeslices.
-    * CONFIG_PWM_FRAMEWORK is used to activate the special FIFO
-    */
-   #ifdef CONFIG_PWM_FRAMEWORK
-   if (p->policy == SCHED_FIFO)
-   {
-       tick_sleep(nanos_to_ticks(500000));
-       return;
-   }
-   #else
-   if (p->policy != SCHED_RR)
-   {
-       return;
-   }
-   #endif
-
-   if (--p->rt.time_slice)
-       return;
-
-   p->rt.time_slice = sched_rr_timeslice;
-
-   /*
-    * Requeue to the end of the queue if we (and all of our ancestors) 
-are not
-    * the only element on the queue
-    */
-   for_each_sched_rt_entity(rt_se)
-   {
-       if (rt_se->run_list.prev != rt_se->run_list.next)
-       {
-           requeue_task_rt(rq, p, 0);
-           resched_curr(rq);
-           return;
-       }
-   }
-}
-
-
-Best Regards
-Jacob M
+I don't think this has any modular users, or did I miss something?
