@@ -2,100 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00317C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 12:31:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5F29C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 12:32:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235424AbiDWMeA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 08:34:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58756 "EHLO
+        id S235441AbiDWMfQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 08:35:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231231AbiDWMd6 (ORCPT
+        with ESMTP id S233468AbiDWMfN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 08:33:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2D7321696EE
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 05:31:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650717060;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=BeOJYjv9Uq2XAYhQoQ5l1QOio0YQGcQSqiAKchKFN5I=;
-        b=E9/ioy77zwY21eX+UcpvtdiQp7kIrGOwyLaIlUDUqof3GRr+g1vSHYf9fBDJPYeFm13/Lh
-        5DmhvvO23lmQ5ScMglaT++D0RUrZ/7edi2+FCFwXFVbtucpeGMbdCJ79kW9UAFY2PZCmL4
-        x6mVT9yNHg9nqeT7uKIGtJEuTVcSZJ8=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-286-YZgoz7wRPfaJGnnhAoYjew-1; Sat, 23 Apr 2022 08:30:58 -0400
-X-MC-Unique: YZgoz7wRPfaJGnnhAoYjew-1
-Received: by mail-qv1-f69.google.com with SMTP id u7-20020a0cb407000000b00446687f0b1bso8767117qve.5
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 05:30:58 -0700 (PDT)
+        Sat, 23 Apr 2022 08:35:13 -0400
+Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 127D119F52C;
+        Sat, 23 Apr 2022 05:32:17 -0700 (PDT)
+Received: by mail-qt1-f178.google.com with SMTP id he8so39126qtb.9;
+        Sat, 23 Apr 2022 05:32:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BeOJYjv9Uq2XAYhQoQ5l1QOio0YQGcQSqiAKchKFN5I=;
-        b=A5zZIkOmVVKuO5vTzu1qrpOOMj3zp/8Cg3+T7ur3rw8iSPWy2pZFhr0un40Vxgb4Yk
-         w0ARybTBnOO9D/fdMj3n45YKisn23LsqT5U5kIy3XvlNegPZ47M20YkVO731Dkwu4IZY
-         7OZc/j88GZ/ce68lvHI2rA+vars0SY2a5gtJRJdmtw9k2IjbBQhxLRaKfnXJdb6lm3KP
-         JONBjdeqXesbhPZ66XQIDgfXqweG+faK7KMfKyL8/Wj6pMeI5bR0PUMX7XwE6Ot/bWPs
-         uLaGCcl8DscwDqiRlTbAEwYDrxc/gzeXXQ9WDWZLtFSnWakl4eo/nCfh2JaXhe9t+Znb
-         ACsQ==
-X-Gm-Message-State: AOAM530HoYSEB5zDUJ0F/GLZL5LHPHbFbKwxqbeOC+t7E57ODVAnhZmj
-        OjC9PUjulRnWjjCuvfFdtNBsrvUvuX1FXfwEenPHKluiZ7b1EK0jzD2nQVLsEii1hZ9Xu6l50f7
-        JxVV+Q4hMjt+5XHBl3+saZXKb
-X-Received: by 2002:ad4:5be1:0:b0:440:a2ec:ea99 with SMTP id k1-20020ad45be1000000b00440a2ecea99mr6617958qvc.20.1650717058476;
-        Sat, 23 Apr 2022 05:30:58 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzhVcaF6hVaQMxy2Bx+WEj0Dv5VCNN+pTO04EbmEvOcA4BOxWj6bxa7W6hRQnXKI8Wa64U7Yg==
-X-Received: by 2002:ad4:5be1:0:b0:440:a2ec:ea99 with SMTP id k1-20020ad45be1000000b00440a2ecea99mr6617945qvc.20.1650717058312;
-        Sat, 23 Apr 2022 05:30:58 -0700 (PDT)
-Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id y15-20020a05620a09cf00b0069c80404de6sm2105323qky.31.2022.04.23.05.30.57
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=lmuV6uC7742vbWxBxz4f2KL4s2GeIfbnuaz1eBVbmx0=;
+        b=N+86osPToAoZvQxH6sKRbIeqyR+Lryx5ZEeqlHIFSkPOGPYZwWsgdoLytvDoPI8cqz
+         4yWj9tOWXW4vJTMhkuo3gSUHD3nmm1mJf44ag2S4sUer84TAHhGDYgabGTJuDOtOXlSN
+         8Otp7UMu1687F9SsgU9XxUEF4iZQMfOIfpAbPilYSuBiGauQw+mArY3bWelDOyQ89HwQ
+         5ULrgmtJHF/oCmHEfGzJy3SlycFEdqHnEMGxuZuuScAM2M8x/zMRXsypiCwXr2s8NgYv
+         OUi0FJBrhujpRD/s54V7K0GdbM8z4ADRkCS1UrRVoGQaAuAWGlZV06oTPHYErJLNdyBL
+         cv7w==
+X-Gm-Message-State: AOAM533t+8R8daEXNNy+ij0uHz2FRcDjIGFKmivdixYteFs2791wkX+h
+        6orG8b3PS/TnfgoqCVpOjVw=
+X-Google-Smtp-Source: ABdhPJwS9rcOlJGz05c30Z0xqlgGEsjuKsWX9+cQAailQviDg+UNOshJs7LESxfAYVxC1O9viCxqFw==
+X-Received: by 2002:ac8:7387:0:b0:2f1:eb13:ceb2 with SMTP id t7-20020ac87387000000b002f1eb13ceb2mr6240360qtp.51.1650717136038;
+        Sat, 23 Apr 2022 05:32:16 -0700 (PDT)
+Received: from localhost (fwdproxy-ash-017.fbsv.net. [2a03:2880:20ff:11::face:b00c])
+        by smtp.gmail.com with ESMTPSA id g19-20020ac87f53000000b002f1c774a4cbsm3036635qtk.12.2022.04.23.05.32.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Apr 2022 05:30:57 -0700 (PDT)
-From:   Tom Rix <trix@redhat.com>
-To:     irenic.rajneesh@gmail.com, david.e.box@intel.com,
-        hdegoede@redhat.com, markgross@kernel.org
-Cc:     platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] platform/x86/intel: pmc/core: change pmc_lpm_modes to static
-Date:   Sat, 23 Apr 2022 08:30:48 -0400
-Message-Id: <20220423123048.591405-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        Sat, 23 Apr 2022 05:32:15 -0700 (PDT)
+From:   David Vernet <void@manifault.com>
+To:     tj@kernel.org, lizefan.x@bytedance.com, hannes@cmpxchg.org
+Cc:     cgroups@vger.kernel.org, peterz@infradead.org, mingo@redhat.com,
+        linux-kernel@vger.kernel.org, kernel-team@fb.com
+Subject: [PATCH 2/5] cgroup: Add test_cpucg_nested_weight_underprovisioned() testcase
+Date:   Sat, 23 Apr 2022 05:30:51 -0700
+Message-Id: <20220423123053.2982931-2-void@manifault.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220423123053.2982931-1-void@manifault.com>
+References: <20220423123053.2982931-1-void@manifault.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sparse reports this issue
-core.c: note: in included file:
-core.h:239:12: warning: symbol 'pmc_lpm_modes' was not declared. Should it be static?
+The cgroup cpu controller test suite currently contains a testcase called
+test_cpucg_nested_weight_underprovisioned() which verifies the expected
+behavior of cpu.weight when applied to nested cgroups. That first testcase
+validated the expected behavior when the processes in the leaf cgroups
+overcommitted the system. This patch adds a complementary
+test_cpucg_nested_weight_underprovisioned() testcase which validates
+behavior when those leaf cgroups undercommit the system.
 
-Global variables should not be defined in headers.  This only works
-because core.h is only included by core.c. Single file use
-variables should be static, so change its storage-class specifier
-to static.
-
-Signed-off-by: Tom Rix <trix@redhat.com>
+Signed-off-by: David Vernet <void@manifault.com>
 ---
- drivers/platform/x86/intel/pmc/core.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/testing/selftests/cgroup/test_cpu.c | 73 ++++++++++++++++++-----
+ 1 file changed, 57 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/platform/x86/intel/pmc/core.h b/drivers/platform/x86/intel/pmc/core.h
-index a46d3b53bf61..7a059e02c265 100644
---- a/drivers/platform/x86/intel/pmc/core.h
-+++ b/drivers/platform/x86/intel/pmc/core.h
-@@ -236,7 +236,7 @@ enum ppfear_regs {
- #define ADL_LPM_STATUS_LATCH_EN_OFFSET		0x1704
- #define ADL_LPM_LIVE_STATUS_OFFSET		0x1764
+diff --git a/tools/testing/selftests/cgroup/test_cpu.c b/tools/testing/selftests/cgroup/test_cpu.c
+index fc90b4d0feb9..de6289814c23 100644
+--- a/tools/testing/selftests/cgroup/test_cpu.c
++++ b/tools/testing/selftests/cgroup/test_cpu.c
+@@ -403,22 +403,8 @@ static int test_cpucg_weight_underprovisioned(const char *root)
+ 			underprovision_validate);
+ }
  
--const char *pmc_lpm_modes[] = {
-+static const char *pmc_lpm_modes[] = {
- 	"S0i2.0",
- 	"S0i2.1",
- 	"S0i2.2",
+-/*
+- * First, this test creates the following hierarchy:
+- * A
+- * A/B     cpu.weight = 1000
+- * A/C     cpu.weight = 1000
+- * A/C/D   cpu.weight = 5000
+- * A/C/E   cpu.weight = 5000
+- *
+- * A separate process is then created for each leaf, which spawn nproc threads
+- * that burn a CPU for a few seconds.
+- *
+- * Once all of those processes have exited, we verify that each of the leaf
+- * cgroups have roughly the same usage from cpu.stat.
+- */
+ static int
+-test_cpucg_nested_weight_overprovisioned(const char *root)
++run_cpucg_nested_weight_test(const char *root, bool overprovisioned)
+ {
+ 	int ret = KSFT_FAIL, i;
+ 	char *parent = NULL, *child = NULL;
+@@ -426,6 +412,16 @@ test_cpucg_nested_weight_overprovisioned(const char *root)
+ 	long nested_leaf_usage, child_usage;
+ 	int nprocs = get_nprocs();
+ 
++	if (!overprovisioned) {
++		if (nprocs < 4)
++			/*
++			 * Only run the test if there are enough cores to avoid overprovisioning
++			 * the system.
++			 */
++			return KSFT_SKIP;
++		nprocs /= 4;
++	}
++
+ 	parent = cg_name(root, "cpucg_test");
+ 	child = cg_name(parent, "cpucg_child");
+ 	if (!parent || !child)
+@@ -501,9 +497,13 @@ test_cpucg_nested_weight_overprovisioned(const char *root)
+ 	}
+ 
+ 	nested_leaf_usage = leaf[1].usage + leaf[2].usage;
+-	if (!values_close(leaf[0].usage, nested_leaf_usage, 15))
++	if (overprovisioned) {
++		if (!values_close(leaf[0].usage, nested_leaf_usage, 15))
++			goto cleanup;
++	} else if (!values_close(leaf[0].usage * 2, nested_leaf_usage, 15))
+ 		goto cleanup;
+ 
++
+ 	child_usage = cg_read_key_long(child, "cpu.stat", "usage_usec");
+ 	if (child_usage <= 0)
+ 		goto cleanup;
+@@ -524,6 +524,46 @@ test_cpucg_nested_weight_overprovisioned(const char *root)
+ 	return ret;
+ }
+ 
++/*
++ * First, this test creates the following hierarchy:
++ * A
++ * A/B     cpu.weight = 1000
++ * A/C     cpu.weight = 1000
++ * A/C/D   cpu.weight = 5000
++ * A/C/E   cpu.weight = 5000
++ *
++ * A separate process is then created for each leaf, which spawn nproc threads
++ * that burn a CPU for a few seconds.
++ *
++ * Once all of those processes have exited, we verify that each of the leaf
++ * cgroups have roughly the same usage from cpu.stat.
++ */
++static int
++test_cpucg_nested_weight_overprovisioned(const char *root)
++{
++	return run_cpucg_nested_weight_test(root, true);
++}
++
++/*
++ * First, this test creates the following hierarchy:
++ * A
++ * A/B     cpu.weight = 1000
++ * A/C     cpu.weight = 1000
++ * A/C/D   cpu.weight = 5000
++ * A/C/E   cpu.weight = 5000
++ *
++ * A separate process is then created for each leaf, which nproc / 4 threads
++ * that burns a CPU for a few seconds.
++ *
++ * Once all of those processes have exited, we verify that each of the leaf
++ * cgroups have roughly the same usage from cpu.stat.
++ */
++static int
++test_cpucg_nested_weight_underprovisioned(const char *root)
++{
++	return run_cpucg_nested_weight_test(root, false);
++}
++
+ #define T(x) { x, #x }
+ struct cpucg_test {
+ 	int (*fn)(const char *root);
+@@ -534,6 +574,7 @@ struct cpucg_test {
+ 	T(test_cpucg_weight_overprovisioned),
+ 	T(test_cpucg_weight_underprovisioned),
+ 	T(test_cpucg_nested_weight_overprovisioned),
++	T(test_cpucg_nested_weight_underprovisioned),
+ };
+ #undef T
+ 
 -- 
-2.27.0
+2.30.2
 
