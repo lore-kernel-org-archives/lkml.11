@@ -2,95 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C9A3C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 15:57:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30F28C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 15:58:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236235AbiDWQAl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 12:00:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38822 "EHLO
+        id S236238AbiDWQB0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 12:01:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236196AbiDWQAM (ORCPT
+        with ESMTP id S235824AbiDWQBY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 12:00:12 -0400
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40704260F;
-        Sat, 23 Apr 2022 08:57:13 -0700 (PDT)
-Received: by mail-qt1-f182.google.com with SMTP id f22so7573996qtp.13;
-        Sat, 23 Apr 2022 08:57:13 -0700 (PDT)
+        Sat, 23 Apr 2022 12:01:24 -0400
+Received: from mail-oo1-xc35.google.com (mail-oo1-xc35.google.com [IPv6:2607:f8b0:4864:20::c35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71E6BFD27
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 08:58:27 -0700 (PDT)
+Received: by mail-oo1-xc35.google.com with SMTP id g30-20020a4a251e000000b0033a39d8340aso1968619ooa.5
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 08:58:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=27WRb8TAj1xwCmRX5jLJOJcOnmbBFcgubgVjuAUaE4o=;
+        b=y6xW2G1XsSHeyH5DXQeveuW/+O0IFPUrGFlQdrEGfcYGVPfpVes+ogoxf7DdHI/rMa
+         S8CrJLRFP05dPLdga+w21Qd116oGA0vO+lAzTSoTXebiKhah9Ph1yHMOHQgKMiaXlGiY
+         5xmiiuhimxwugnQGhKahuJCYouLaT7oKHwdPdVgdnCoH2QOVmA6tPHoJqkbsvusRTQcm
+         0ll1BLKmpkslmQZMJJz4FLOKBMGF0M2ilrmO+BAxwZf224P5MYKanmGke0HCiAFh1gzT
+         2YStkcU3++Wqa9VF6mP3hDJz/aE5Xo7uJ4vBngiH1obS1VEWtTAwNxXBwhfuOToxYiMG
+         YA/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=feBO+KbcIht+BPtu2AkAQpokc7FT3Bt17XhQc38rY6I=;
-        b=Joa6bmM+0gvNBp9oBUlhTxR8ZPxs/9eAbHbOEsWovmEaQHfNDnOVwPcKDPfCcCuxdy
-         76oFJIQ+bW95H9niQwNAoIIFCCWUNb3bCeTjXcgAPog8cBZ6EdlpLNlklbX8Fgm/BqTQ
-         gU9Uauzrf3O3q+ns4PTxeQRLidvplH0lf6jjny8dUmVCsePCpcl3pBUd87HtLnzLMmgd
-         cCwZIoE2+X1k23EeBJe8QLxH4w1vZatcyGArDZp94Zj7NaZXzBcrj9fbU8WJrOu2odLC
-         Ko82xmphao59BHrycD4/45q+/4A4/eNnzOGP5ONwlSguoFvLOEl0x3Cx7OYNcdj0LHzP
-         zt5A==
-X-Gm-Message-State: AOAM532JEMmGhtk67ka1LX3072PcPr07zvR6wN7lwnsBfsuQQACmdWm3
-        RnTHmHyERML1KqKEc14saVk=
-X-Google-Smtp-Source: ABdhPJxIXud5TfSFIhMm/UhJy9PJtx0SRoz2tqQh0wV2kl2SWYF7ZeJPEXsR6zpNHVRdizGPzQIUjw==
-X-Received: by 2002:ac8:5956:0:b0:2f2:521:7195 with SMTP id 22-20020ac85956000000b002f205217195mr6834676qtz.409.1650729432349;
-        Sat, 23 Apr 2022 08:57:12 -0700 (PDT)
-Received: from localhost (fwdproxy-ash-014.fbsv.net. [2a03:2880:20ff:e::face:b00c])
-        by smtp.gmail.com with ESMTPSA id i68-20020a375447000000b006809e0adfffsm2529753qkb.25.2022.04.23.08.57.12
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=27WRb8TAj1xwCmRX5jLJOJcOnmbBFcgubgVjuAUaE4o=;
+        b=UVZJ5qMPC/AZILIlrCu+z8Dphf6uLxbAWITMT2rAy2FGTE77AfOT9U5a0YRjzQQJCL
+         PfZHl+AZqfRHMb8tbWPuamPqXBhr4BX5FOMJg+Hngk20U3nNG3rA+gS5XwYMcSbhL43x
+         Cm5MV8Edv3mqqI3apVlGo+G40GimH/j4jEQSfMfrqdFs5bo7Qm77tpoyjwV9S/mEy46f
+         crpZzEWULXwzC7naDhoGX0m5utJFswHrLYD3rK2xm1W6Oxcf4sjvyC0uZPvza4vqM17W
+         Wfjh0cltp0JVgeRiMFkWORYbccMMVB+oZzBnu8W7pZUTQraO5mU+xH7w53udhgOUyPJA
+         ug6g==
+X-Gm-Message-State: AOAM533xBxKwHYUZiIf8Ypqci6GxIBGFNm5u7SMyvGY97N73GpOozm/N
+        vTdENylaoE+yv7kkm0JQFOCkaQ==
+X-Google-Smtp-Source: ABdhPJxirqopZgxakMSnC5mL6OQFJH4GIYYrYUpo7jcz3xc42mq/IIeVQ0PA9j/DS5UivlF8dtmF+Q==
+X-Received: by 2002:a4a:c294:0:b0:329:2fed:ad3f with SMTP id b20-20020a4ac294000000b003292fedad3fmr3543974ooq.4.1650729506813;
+        Sat, 23 Apr 2022 08:58:26 -0700 (PDT)
+Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
+        by smtp.gmail.com with ESMTPSA id a37-20020a9d2628000000b0060563c52952sm1915719otb.8.2022.04.23.08.58.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Apr 2022 08:57:12 -0700 (PDT)
-From:   David Vernet <void@manifault.com>
-To:     akpm@linux-foundation.org
-Cc:     tj@kernel.org, roman.gushchin@linux.dev,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        cgroups@vger.kernel.org, hannes@cmpxchg.org, mhocko@kernel.org,
-        shakeelb@google.com, kernel-team@fb.com, void@manifault.com
-Subject: [PATCH v2 4/5] cgroup: Removing racy check in test_memcg_sock()
-Date:   Sat, 23 Apr 2022 08:56:21 -0700
-Message-Id: <20220423155619.3669555-5-void@manifault.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220423155619.3669555-1-void@manifault.com>
-References: <20220423155619.3669555-1-void@manifault.com>
+        Sat, 23 Apr 2022 08:58:26 -0700 (PDT)
+Date:   Sat, 23 Apr 2022 10:58:24 -0500
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Cc:     agross@kernel.org, robh+dt@kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_rohkumar@quicinc.com,
+        srinivas.kandagatla@linaro.org, dianders@chromium.org,
+        swboyd@chromium.org, judyhsiao@chromium.org,
+        quic_rjendra@quicinc.com,
+        Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Subject: Re: [PATCH] arm64: dts: qcom: sc7280: Add ldo_l17b regulator node
+Message-ID: <YmQiIJatomyUVahR@builder.lan>
+References: <1650550779-8133-1-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1650550779-8133-1-git-send-email-quic_srivasam@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-test_memcg_sock() in the cgroup memcg tests, verifies expected memory
-accounting for sockets. The test forks a process which functions as a TCP
-server, and sends large buffers back and forth between itself (as the TCP
-client) and the forked TCP server. While doing so, it verifies that
-memory.current and memory.stat.sock look correct.
+On Thu 21 Apr 09:19 CDT 2022, Srinivasa Rao Mandadapu wrote:
 
-There is currently a check in tcp_client() which asserts memory.current >=
-memory.stat.sock. This check is racy, as between memory.current and
-memory.stat.sock being queried, a packet could come in which causes
-mem_cgroup_charge_skmem() to be invoked. This could cause memory.stat.sock
-to exceed memory.current. Reversing the order of querying doesn't address
-the problem either, as memory may be reclaimed between the two calls.
-Instead, this patch just removes that assertion altogether, and instead
-relies on the values_close() check that follows to validate the expected
-accounting.
+> Add ldo_l17b in pm7325 regulator, which is required for
+> wcd codec vdd buck supply.
+> 
+> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> ---
+>  arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi b/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
+> index b833ba1..17d0c05 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
+> @@ -113,6 +113,11 @@
+>  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+>  		};
+>  
+> +		vreg_l17b_1p8: ldo17 {
+> +			regulator-min-microvolt = <1700000>;
+> +			regulator-max-microvolt = <1900000>;
 
-Signed-off-by: David Vernet <void@manifault.com>
-Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
----
- tools/testing/selftests/cgroup/test_memcontrol.c | 3 ---
- 1 file changed, 3 deletions(-)
+Can you confirm that this doesn't need to be in HPM mode?
 
-diff --git a/tools/testing/selftests/cgroup/test_memcontrol.c b/tools/testing/selftests/cgroup/test_memcontrol.c
-index e899b3f28c22..38d2054eefe6 100644
---- a/tools/testing/selftests/cgroup/test_memcontrol.c
-+++ b/tools/testing/selftests/cgroup/test_memcontrol.c
-@@ -993,9 +993,6 @@ static int tcp_client(const char *cgroup, unsigned short port)
- 		if (current < 0 || sock < 0)
- 			goto close_sk;
- 
--		if (current < sock)
--			goto close_sk;
--
- 		if (values_close(current, sock, 10)) {
- 			ret = KSFT_PASS;
- 			break;
--- 
-2.30.2
+Thanks,
+Bjorn
 
+> +		};
+> +
+>  		vdd_px_wcd9385:
+>  		vdd_txrx:
+>  		vddpx_0:
+> -- 
+> 2.7.4
+> 
