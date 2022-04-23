@@ -2,74 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C164C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 15:20:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74D12C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 15:23:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233115AbiDWPW6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 11:22:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36646 "EHLO
+        id S233059AbiDWP00 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 11:26:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233392AbiDWPWt (ORCPT
+        with ESMTP id S232983AbiDWP0X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 11:22:49 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBF48522DA
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 08:19:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650727192; x=1682263192;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=i8eWzr/4uekI1U0JfCoaPpapRCBU7hNQjLGinbAYv3Q=;
-  b=j6+4Ihz5aIEaUYoo6a2RTfgESZ4Md7ZFrU8YhRRvZQzxQ0mpKoimmRp9
-   o346xoa484a2vE6vyKDLXl7namrkr8B6dPb+vmzstXRhyBaW37wgUVt57
-   MQ6wK9z9n2RZPwKtgFdk6BVxa5HGi0tbUMMrkEeLXrapqTrd8ByCGfLMA
-   /9QJkjanPRTCxDUpkhNkGtSGlGY0IxcGqvb6fmp9/cC2FbN2tFIYJTo7t
-   S7eioCO6VLKRgBDMdAliCKjnzkVWQc3qd/3gxWikpyw0rd7o6WOyhAjtE
-   1y5MIbeOPLQ6wFaeVh6Of2ZGH0U88n5wjbu++bBOEGSCRMCGnbIOFRUBL
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10326"; a="263752967"
-X-IronPort-AV: E=Sophos;i="5.90,284,1643702400"; 
-   d="scan'208";a="263752967"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2022 08:19:52 -0700
-X-IronPort-AV: E=Sophos;i="5.90,284,1643702400"; 
-   d="scan'208";a="674098907"
-Received: from aescapa-mobl1.amr.corp.intel.com (HELO [10.212.100.233]) ([10.212.100.233])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2022 08:19:51 -0700
-Message-ID: <4cce3734-03e0-ff62-b13e-cd8405d3a8b7@intel.com>
-Date:   Sat, 23 Apr 2022 08:20:18 -0700
+        Sat, 23 Apr 2022 11:26:23 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E29D36304
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 08:23:23 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id l19so289425ljb.7
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 08:23:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=IrpG+O4O8YGPLjnEW6ym2q9Ak0YBISr2l1Uzmevi7UU=;
+        b=IQIfElwQ6vipgSII8m7fw6jPT7ARLMUo+GYVfI8Knl2qwcFVEEhcFvD8Om4SSjKAx2
+         rhHWD/FD4idPYpw6gGmafqjLSO6s5PnKgRub3B+6obIRWzQnvSBJtyJQi3yrabfM/3YH
+         nyMF8uDK1IRSsUIm9AaGjRtkUTA84vsuNJIwUvyB4GNP5y1x7sQZT+c8y4qqZ/6mHAet
+         nubs7NGVFobqf7TGI1y4TrUGgxgSag+RI8iLIe9SEJTQyV0518eyYpKVLK3gEmGFlfzs
+         i97+MmHFuoXsYprc+xZO4DAi1h+VcMtO3Ecc7KkUECH8yT0sSemR7hzD5vvLn3BlyJFZ
+         JNuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=IrpG+O4O8YGPLjnEW6ym2q9Ak0YBISr2l1Uzmevi7UU=;
+        b=Boxa8PKIiWQScriew/uQDYXv4ui3iyIZ8aSX2pcgk7LfIjvtmts8u+cKeTd0meYw6I
+         UqAFGyMJG+kwZWKnjgy/2JNZ+llPWnZsvAKoG1KLFJYqeNMrBmWCv626wIIpIsJZk+gk
+         GymO+rlQlX0sS5EqnuTdsXt+F6PdcU+z25X7tnPusK2hwcLh5P0/c9o1TgKkcixYHYYP
+         Uq/ZV2pbjO6ZZ19zd+yJFwadjnYlKI3Zv2uMtiVu28U5a8etJEQ/0RiUIDuoTHu6zJsm
+         pU+L4uxhfThwSVhFS4/eTLID0NLgjyXh+7yxIL//lIn7ISF4Tj7MGvMBvta0wUQp3gFr
+         +xRg==
+X-Gm-Message-State: AOAM532jTXtZ1tXV38llvyD/VpqQ1X7ldY4AxgkGDk8H1s9GD7c0/4M3
+        Yn33l8AJCLOPly0WFD5ASfU=
+X-Google-Smtp-Source: ABdhPJzDEm0kTMzLCkWHC07bFgwWAdrQLhfM8wiRtUiko+APIl1auVipAlGP2engdswsIY79u6w4jg==
+X-Received: by 2002:a2e:b537:0:b0:24f:9dc:28a6 with SMTP id z23-20020a2eb537000000b0024f09dc28a6mr637763ljm.509.1650727401488;
+        Sat, 23 Apr 2022 08:23:21 -0700 (PDT)
+Received: from [192.168.1.7] ([212.22.223.21])
+        by smtp.gmail.com with ESMTPSA id x22-20020a19e016000000b00471f7e4f09asm252577lfg.112.2022.04.23.08.23.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 23 Apr 2022 08:23:21 -0700 (PDT)
+Subject: Re: [PATCH V1 5/6] xen/grant-dma-ops: Retrieve the ID of backend's
+ domain for DT devices
+To:     Stefano Stabellini <sstabellini@kernel.org>
+Cc:     xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>, Julien Grall <julien@xen.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Christoph Hellwig <hch@infradead.org>
+References: <1650646263-22047-1-git-send-email-olekstysh@gmail.com>
+ <1650646263-22047-6-git-send-email-olekstysh@gmail.com>
+ <alpine.DEB.2.22.394.2204221534080.915916@ubuntu-linux-20-04-desktop>
+From:   Oleksandr <olekstysh@gmail.com>
+Message-ID: <6ac03d9f-a678-60e9-ca6e-fcbe1aee51d3@gmail.com>
+Date:   Sat, 23 Apr 2022 18:23:19 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [patch 3/3] x86/fpu/xsave: Optimize XSAVEC/S when XGETBV1 is
- supported
-Content-Language: en-US
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     x86@kernel.org, Andrew Cooper <andrew.cooper3@citrix.com>,
-        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
-References: <20220404103741.809025935@linutronix.de>
- <20220404104820.713066297@linutronix.de>
- <a93e6d3f-e8b9-2fab-1139-a8ba3dc4820b@intel.com> <87ee1t9oka.ffs@tglx>
- <878rs0vkd2.ffs@tglx> <60e5a4d1-df7c-d3bd-2730-e528cd75c351@amd.com>
- <87bkws6hmc.ffs@tglx>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <87bkws6hmc.ffs@tglx>
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <alpine.DEB.2.22.394.2204221534080.915916@ubuntu-linux-20-04-desktop>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/22/22 12:30, Thomas Gleixner wrote:
-> So I just go and add the XSAVEC support alone as that's actually
-> something which _is_ beneficial for guests.
 
-Yeah, agreed.
+On 23.04.22 02:00, Stefano Stabellini wrote:
 
-When I went to test these patches, a bit loop with XSAVEC was ~10%
-faster that XSAVEOPT.  This system has XSAVES, so wouldn't have been
-using XSAVEOPT in the first place in the kernel.  But, this is at least
-one more data point in favor of XSAVEC.
+Hello Stefano
+
+> On Fri, 22 Apr 2022, Oleksandr Tyshchenko wrote:
+>> From: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+>>
+>> Use the presence of recently introduced "xen,dev-domid" property
+>> in the device node as a clear indicator of enabling Xen grant
+>> mappings scheme for that device and read the ID of Xen domain where
+>> the corresponding backend resides. The ID (domid) is used as
+>> an argument to the Xen grant mapping APIs.
+>>
+>> Also introduce xen_is_grant_dma_device() to check whether xen-grant
+>> DMA ops need to be set for a passed device.
+>>
+>> Remove the hardcoded domid 0 in xen_grant_setup_dma_ops().
+>>
+>> Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+>> ---
+>> Changes RFC -> V1:
+>>     - new patch, split required changes from commit:
+>>      "[PATCH 4/6] virtio: Various updates to xen-virtio DMA ops layer"
+>>     - update checks in xen_virtio_setup_dma_ops() to only support
+>>       DT devices for now
+>>     - remove the "virtio,mmio" check from xen_is_virtio_device()
+>>     - remane everything according to the new naming scheme:
+>>       s/virtio/grant_dma
+>> ---
+>>   drivers/xen/grant-dma-ops.c | 25 ++++++++++++++++++-------
+>>   include/xen/xen-ops.h       |  5 +++++
+>>   2 files changed, 23 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/drivers/xen/grant-dma-ops.c b/drivers/xen/grant-dma-ops.c
+>> index 0e69aa8..70d5d77 100644
+>> --- a/drivers/xen/grant-dma-ops.c
+>> +++ b/drivers/xen/grant-dma-ops.c
+>> @@ -66,11 +66,6 @@ static struct xen_grant_dma_data *find_xen_grant_dma_data(struct device *dev)
+>>    * Such a DMA address is formed by using the grant reference as a frame
+>>    * number and setting the highest address bit (this bit is for the backend
+>>    * to be able to distinguish it from e.g. a mmio address).
+>> - *
+>> - * Note that for now we hard wire dom0 to be the backend domain. In order
+>> - * to support any domain as backend we'd need to add a way to communicate
+>> - * the domid of this backend, e.g. via Xenstore, via the PCI-device's
+>> - * config space or DT/ACPI.
+>>    */
+>>   static void *xen_grant_dma_alloc(struct device *dev, size_t size,
+>>   				 dma_addr_t *dma_handle, gfp_t gfp,
+>> @@ -277,6 +272,16 @@ static const struct dma_map_ops xen_grant_dma_ops = {
+>>   	.dma_supported = xen_grant_dma_supported,
+>>   };
+>>   
+>> +bool xen_is_grant_dma_device(struct device *dev)
+>> +{
+>> +	/* XXX Handle only DT devices for now */
+>> +	if (!dev->of_node)
+>> +		return false;
+>> +
+>> +	return of_property_read_bool(dev->of_node, "xen,dev-domid");
+>> +}
+>> +EXPORT_SYMBOL_GPL(xen_is_grant_dma_device);
+>> +
+>>   void xen_grant_setup_dma_ops(struct device *dev)
+>>   {
+>>   	struct xen_grant_dma_data *data;
+>> @@ -288,8 +293,14 @@ void xen_grant_setup_dma_ops(struct device *dev)
+>>   		return;
+>>   	}
+>>   
+>> -	/* XXX The dom0 is hardcoded as the backend domain for now */
+>> -	dev_domid = 0;
+>> +	/* XXX ACPI and PCI devices unsupported for now */
+>> +	if (dev_is_pci(dev) || !dev->of_node)
+>> +		goto err;
+> I think we can remove the "dev_is_pci" check, right?
+
+I think, yes (at least for now). I will remove the inclusion of #include 
+<linux/pci.h> as well.
+
+
+>
+>
+>> +	if (of_property_read_u32(dev->of_node, "xen,dev-domid", &dev_domid)) {
+>> +		dev_err(dev, "xen,dev-domid property is not present\n");
+>> +		goto err;
+>> +	}
+>>   
+>>   	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
+>>   	if (!data) {
+>> diff --git a/include/xen/xen-ops.h b/include/xen/xen-ops.h
+>> index 4f9fad5..62be9dc 100644
+>> --- a/include/xen/xen-ops.h
+>> +++ b/include/xen/xen-ops.h
+>> @@ -223,10 +223,15 @@ static inline void xen_preemptible_hcall_end(void) { }
+>>   
+>>   #ifdef CONFIG_XEN_GRANT_DMA_OPS
+>>   void xen_grant_setup_dma_ops(struct device *dev);
+>> +bool xen_is_grant_dma_device(struct device *dev);
+>>   #else
+>>   static inline void xen_grant_setup_dma_ops(struct device *dev)
+>>   {
+>>   }
+>> +static inline bool xen_is_grant_dma_device(struct device *dev)
+>> +{
+>> +	return false;
+>> +}
+>>   #endif /* CONFIG_XEN_GRANT_DMA_OPS */
+>>   
+>>   #endif /* INCLUDE_XEN_OPS_H */
+>> -- 
+>> 2.7.4
+>>
+>>
+>> _______________________________________________
+>> linux-arm-kernel mailing list
+>> linux-arm-kernel@lists.infradead.org
+>> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+>>
+-- 
+Regards,
+
+Oleksandr Tyshchenko
+
