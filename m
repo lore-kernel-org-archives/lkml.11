@@ -2,274 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19404C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 13:47:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A890C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 13:52:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235828AbiDWNt7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 09:49:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34852 "EHLO
+        id S235854AbiDWNzv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 09:55:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235799AbiDWNt4 (ORCPT
+        with ESMTP id S235842AbiDWNzu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 09:49:56 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 912B0180712
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 06:46:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650721618; x=1682257618;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=W8aiW7WDpNTFq9qDCpszM1S8oEcX5Bsj4089g/7FQP0=;
-  b=ltmm93tcPpNNkvUxyJEakAqAyn3WAUC0DY2ixpfxb9E3uAY4B2fDjZvc
-   JiETeHiSPsT/Rld79GlDta7AmCaSHvTbmapXsXX7WOG5oby10EEJwwodf
-   bzHLYa6RIDABCQvUkmSpZBkITGRU198Z0soVCSELHhJNMlsK39XCl7h3I
-   k99ZRxGzv9iQ9sm5mqqeap1AI2UcTILGP83Jr0YcQugL4PTK5IQms7vq4
-   Yw6c5AyZJXnq2RomZEuAgUSjtQimWhwt6cKDjH2yylRmVemQ3Diz9DU0y
-   xKYLITtLWuUsa8z2326IEL9eGzeh7fwPEnNe3tmYzEqWeD8Dwc9wMNZs6
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="327814821"
-X-IronPort-AV: E=Sophos;i="5.90,284,1643702400"; 
-   d="scan'208";a="327814821"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2022 06:46:58 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,284,1643702400"; 
-   d="scan'208";a="594549830"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 23 Apr 2022 06:46:56 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1niG6B-00005B-FV;
-        Sat, 23 Apr 2022 13:46:55 +0000
-Date:   Sat, 23 Apr 2022 21:46:03 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        x86@kernel.org
-Subject: [tip:x86/urgent 3/14] WARNING: modpost: vmlinux.o(.text+0x167248d):
- Section mismatch in reference from the variable memcpy to the variable
- .init.text:.LM90
-Message-ID: <202204232143.iWyrqggA-lkp@intel.com>
+        Sat, 23 Apr 2022 09:55:50 -0400
+Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E8BB15708;
+        Sat, 23 Apr 2022 06:52:52 -0700 (PDT)
+Received: by mail-ot1-x329.google.com with SMTP id e15-20020a9d63cf000000b006054e65aaecso7508810otl.0;
+        Sat, 23 Apr 2022 06:52:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=glcKdBqRA2i6LZMNuWIeDf+vpXAFKLwX/8Rt5E789cI=;
+        b=aKI7PAVjjMm2ZSI2pcfc9k7v7p3TWbHHjeK/XH9IYVwwKEkjtnDnM401eva2hYm99l
+         UFxmjebyivKz1r2nk9vVfZzxW20YF5KNggnYXZAYJ8E+fJQ9BKTKHi0rjP45gVMxPAoF
+         PDZHheMMiASnGzMHtHS3Xx+AGHiMqHbwedIC/wAaRnPx9ZLnZdGnyPpPjhvqzH714BBY
+         uGZht11/jSdwNEH8kuavCkRjo7azLCdq+BwlKj3FbJ4GEAxKmq9xF/b1ASrGlF7/oqQt
+         oLVakidSieSRIq4fdzs5pssTkezG3/jpEADZ3iYZAmFi4N/SO7bOJsceLZlMw1tG+9YG
+         xJTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=glcKdBqRA2i6LZMNuWIeDf+vpXAFKLwX/8Rt5E789cI=;
+        b=hRGzut03o1Wbhzpivj2jFyeHTrKosc3sV2IKlmwM8MuyOAW7SJnigkWosTaxxLRQ7O
+         UNZhzlmgto3O+vpj+d8gAwpiVU4ZTp/4On+yw5foZjHID3UgeR4sTLA4zdGOohIwfJKT
+         u4+Yb96CN+It0ZspA2LDVHmp5bBFcCrhmcUtibCRkuY9NuK4NvIVpwRMAum4Z9sDTbiu
+         flYrUarEFcS9ABcFMzHQT60dQn7qn0pwhh72bZd2Jws4gbFhan55pXXvHW+kJXEgNgM1
+         4r5RrG6XnGvaW6kqBr1zxbHYDOMsda/phrWdKBzEML6aqynqVDt1O1g92M+n7YdyhaBJ
+         Zdgg==
+X-Gm-Message-State: AOAM5318GQYJ5GhkqOxRIKJc1wougFqbRLkvrosdGclri7VqOYB2BbOs
+        PojzvubxkO71B+qi3s33pXk=
+X-Google-Smtp-Source: ABdhPJz3HKRzw5ZYJnvTUBsAoDIXYpqqx2OHhzEXcRJ98gx/IZhCnSrOfDQhKSwDDbUvGF7H5cMsuQ==
+X-Received: by 2002:a9d:6d8e:0:b0:5e6:bf81:f7ff with SMTP id x14-20020a9d6d8e000000b005e6bf81f7ffmr3446799otp.383.1650721971704;
+        Sat, 23 Apr 2022 06:52:51 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id o133-20020acaf08b000000b002ef7562e07csm1834027oih.41.2022.04.23.06.52.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 23 Apr 2022 06:52:50 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Sat, 23 Apr 2022 06:52:49 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Lin Ma <linma@zju.edu.cn>
+Cc:     krzk@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mudongliangabcd@gmail.com
+Subject: Re: [PATCH v0] nfc: nci: add flush_workqueue to prevent uaf
+Message-ID: <20220423135249.GA3958174@roeck-us.net>
+References: <20220412160430.11581-1-linma@zju.edu.cn>
+ <20220418134133.GA872670@roeck-us.net>
+ <524c4fb6.6e33.1803cf85ae9.Coremail.linma@zju.edu.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <524c4fb6.6e33.1803cf85ae9.Coremail.linma@zju.edu.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/urgent
-head:   4cdfc11b2836e659c0b7b31152a8b0d976167b59
-commit: 226d44acf6dfe71c9df5804b82364e93cf908b53 [3/14] lib/strn*,objtool: Enforce user_access_begin() rules
-config: h8300-buildonly-randconfig-r002-20220422 (https://download.01.org/0day-ci/archive/20220423/202204232143.iWyrqggA-lkp@intel.com/config)
-compiler: h8300-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/commit/?id=226d44acf6dfe71c9df5804b82364e93cf908b53
-        git remote add tip https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git
-        git fetch --no-tags tip x86/urgent
-        git checkout 226d44acf6dfe71c9df5804b82364e93cf908b53
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=h8300 SHELL=/bin/bash
+On Mon, Apr 18, 2022 at 09:59:10PM +0800, Lin Ma wrote:
+> Hello Guenter,
+> 
+> > I have been wondering about this and the same code further below.
+> > What prevents the command timer from firing after the call to
+> > flush_workqueue() ?
+> > 
+> > Thanks,
+> > Guenter
+> > 
+> 
+> From my understanding, once the flush_workqueue() is executed, the work that queued in
+> ndev->cmd_wq will be taken the care of.
+> 
+> That is, once the flush_workqueue() is finished, it promises there is no executing or 
+> pending nci_cmd_work() ever.
+> 
+> static void nci_cmd_work(struct work_struct *work)
+> {
+>     // ...
+> 		mod_timer(&ndev->cmd_timer,
+> 			  jiffies + msecs_to_jiffies(NCI_CMD_TIMEOUT));
+>     // ...
+> }
+> 
+> The command timer is still able be fired because the mod_timer() here. That is why the
+> del_timer_sync() is necessary after the flush_workqueue().
+> 
+> One very puzzling part is that you may find out the timer queue the work again
+> 
+> /* NCI command timer function */
+> static void nci_cmd_timer(struct timer_list *t)
+> {
+>     // ...
+> 	queue_work(ndev->cmd_wq, &ndev->cmd_work);
+> }
+> 
+> But I found that this is okay because there is no packets in ndev->cmd_q buffers hence 
+> even there is a queued nci_cmd_work(), it simply checks the queue and returns.
+> 
+> That is, the old race picture as below
+> 
+> > Thread-1                           Thread-2
+> >                                  | nci_dev_up()
+> >                                  |   nci_open_device()
+> >                                  |     __nci_request(nci_reset_req)
+> >                                  |       nci_send_cmd
+> >                                  |         queue_work(cmd_work)
+> > nci_unregister_device()          |
+> >   nci_close_device()             | ...
+> >     del_timer_sync(cmd_timer)[1] |
+> > ...                              | Worker
+> > nci_free_device()                | nci_cmd_work()
+> >   kfree(ndev)[3]                 |   mod_timer(cmd_timer)[2]
+> 
+> is impossible now because the patched flush_workqueue() make the race like below
+> 
+> > Thread-1                           Thread-2
+> >                                  | nci_dev_up()
+> >                                  |   nci_open_device()
+> >                                  |     __nci_request(nci_reset_req)
+> >                                  |       nci_send_cmd
+> >                                  |         queue_work(cmd_work)
+> > nci_unregister_device()          |
+> >   nci_close_device()             | ...
+> >     flush_workqueue()[patch]     | Worker
+> >                                  | nci_cmd_work()
+> >                                  |   mod_timer(cmd_timer)[2]
+> >     // work over then return
+> >     del_timer_sync(cmd_timer)[1] |
+> >                                  | Timer
+> >                                  | nci_cmd_timer()
+> >                                  | 
+> >     // timer over then return    |
+> > ...                              |
+> > nci_free_device()                | 
+> >   kfree(ndev)[3]                 | 
+> 
+> 
+> With above thinkings and the given fact that my POC didn't raise the UAF, I think the 
+> flush_workqueue() + del_timer_sync() combination is okay to hinder this race.
+> 
+> Tell me if there is anything wrong.
+> 
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Thanks a lot for the detailed explanation and analysis.
+I agree with your conclusion.
 
-All warnings (new ones prefixed by >>, old ones prefixed by <<):
-
->> WARNING: modpost: vmlinux.o(.text+0x167248d): Section mismatch in reference from the variable memcpy to the variable .init.text:.LM90
-The function memcpy() references
-the variable __init .LM90.
-This is often because memcpy lacks a __init
-annotation or the annotation of .LM90 is wrong.
---
->> WARNING: modpost: vmlinux.o(.text+0x1672505): Section mismatch in reference from the variable memset to the variable .init.text:.LM105
-The function memset() references
-the variable __init .LM105.
-This is often because memset lacks a __init
-annotation or the annotation of .LM105 is wrong.
---
->> WARNING: modpost: vmlinux.o(.text+0x1672583): Section mismatch in reference from the variable mpostive to the variable .init.text:.LM119
-The function mpostive() references
-the variable __init .LM119.
-This is often because mpostive lacks a __init
-annotation or the annotation of .LM119 is wrong.
---
->> WARNING: modpost: vmlinux.o(.data+0xefc10): Section mismatch in reference from the variable iio_const_attr_hwfifo_watermark_min to the variable .init.text:.LVL187
-The variable iio_const_attr_hwfifo_watermark_min references
-the variable __init .LVL187
-If the reference is valid then annotate the
-variable with or __refdata (see linux/init.h) or name the variable:
-
---
->> WARNING: modpost: vmlinux.o(.data+0xeff2c): Section mismatch in reference from the variable iio_const_attr_accel_scale_available to the variable .init.text:.LVL187
-The variable iio_const_attr_accel_scale_available references
-the variable __init .LVL187
-If the reference is valid then annotate the
-variable with or __refdata (see linux/init.h) or name the variable:
-
---
->> WARNING: modpost: vmlinux.o(.data+0xf0048): Section mismatch in reference from the variable iio_const_attr_in_accel_scale_available to the variable .init.text:.LVL187
-The variable iio_const_attr_in_accel_scale_available references
-the variable __init .LVL187
-If the reference is valid then annotate the
-variable with or __refdata (see linux/init.h) or name the variable:
-
---
->> WARNING: modpost: vmlinux.o(.data+0xf00f8): Section mismatch in reference from the variable iio_const_attr_accel_transient_scale to the variable .init.text:.LVL187
-The variable iio_const_attr_accel_transient_scale references
-the variable __init .LVL187
-If the reference is valid then annotate the
-variable with or __refdata (see linux/init.h) or name the variable:
-
---
->> WARNING: modpost: vmlinux.o(.data+0xf03d4): Section mismatch in reference from the variable iio_const_attr_sampling_frequency_available to the variable .init.text:.LVL187
-The variable iio_const_attr_sampling_frequency_available references
-the variable __init .LVL187
-If the reference is valid then annotate the
-variable with or __refdata (see linux/init.h) or name the variable:
-
---
->> WARNING: modpost: vmlinux.o(.text+0x16726b1): Section mismatch in reference from the variable __mulsi3 to the variable .init.text:.LM208
-The function __mulsi3() references
-the variable __init .LM208.
-This is often because __mulsi3 lacks a __init
-annotation or the annotation of .LM208 is wrong.
---
->> WARNING: modpost: vmlinux.o(.data+0xf15b4): Section mismatch in reference from the variable iio_const_attr_ads1115_sampling_frequency_available to the variable .init.text:.LVL187
-The variable iio_const_attr_ads1115_sampling_frequency_available references
-the variable __init .LVL187
-If the reference is valid then annotate the
-variable with or __refdata (see linux/init.h) or name the variable:
-
---
->> WARNING: modpost: vmlinux.o(.data+0xf15c8): Section mismatch in reference from the variable iio_const_attr_ads1015_sampling_frequency_available to the variable .init.text:.LVL187
-The variable iio_const_attr_ads1015_sampling_frequency_available references
-the variable __init .LVL187
-If the reference is valid then annotate the
-variable with or __refdata (see linux/init.h) or name the variable:
-
-..
-
-Note: the below error/warnings can be found in parent commit:
-<< WARNING: modpost: vmlinux.o(.text+0x167249d): Section mismatch in reference from the variable memcpy to the variable .init.text:.LM88
-<< WARNING: modpost: vmlinux.o(.text+0x1672515): Section mismatch in reference from the variable memset to the variable .init.text:.LM103
-<< WARNING: modpost: vmlinux.o(.text+0x1672593): Section mismatch in reference from the variable mpostive to the variable .init.text:.LM117
-<< WARNING: modpost: vmlinux.o(.data+0xf0eac): Section mismatch in reference from the variable iio_const_attr_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15b4): Section mismatch in reference from the variable iio_const_attr_ads1115_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15c8): Section mismatch in reference from the variable iio_const_attr_ads1015_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15dc): Section mismatch in reference from the variable iio_const_attr_ads1115_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15f0): Section mismatch in reference from the variable iio_const_attr_ads1015_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf1bb8): Section mismatch in reference from the variable iio_const_attr_calibration_forced_value_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf229c): Section mismatch in reference from the variable iio_const_attr_in_anglvel_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.text+0x167249d): Section mismatch in reference from the variable memcpy to the variable .init.text:.LM88
-<< WARNING: modpost: vmlinux.o(.text+0x1672515): Section mismatch in reference from the variable memset to the variable .init.text:.LM103
-<< WARNING: modpost: vmlinux.o(.text+0x1672593): Section mismatch in reference from the variable mpostive to the variable .init.text:.LM117
-<< WARNING: modpost: vmlinux.o(.data+0xf0eac): Section mismatch in reference from the variable iio_const_attr_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15b4): Section mismatch in reference from the variable iio_const_attr_ads1115_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15c8): Section mismatch in reference from the variable iio_const_attr_ads1015_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15dc): Section mismatch in reference from the variable iio_const_attr_ads1115_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15f0): Section mismatch in reference from the variable iio_const_attr_ads1015_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf1bb8): Section mismatch in reference from the variable iio_const_attr_calibration_forced_value_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf229c): Section mismatch in reference from the variable iio_const_attr_in_anglvel_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.text+0x167249d): Section mismatch in reference from the variable memcpy to the variable .init.text:.LM88
-<< WARNING: modpost: vmlinux.o(.text+0x1672515): Section mismatch in reference from the variable memset to the variable .init.text:.LM103
-<< WARNING: modpost: vmlinux.o(.text+0x1672593): Section mismatch in reference from the variable mpostive to the variable .init.text:.LM117
-<< WARNING: modpost: vmlinux.o(.data+0xf0eac): Section mismatch in reference from the variable iio_const_attr_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15b4): Section mismatch in reference from the variable iio_const_attr_ads1115_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15c8): Section mismatch in reference from the variable iio_const_attr_ads1015_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15dc): Section mismatch in reference from the variable iio_const_attr_ads1115_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15f0): Section mismatch in reference from the variable iio_const_attr_ads1015_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf1bb8): Section mismatch in reference from the variable iio_const_attr_calibration_forced_value_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf229c): Section mismatch in reference from the variable iio_const_attr_in_anglvel_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.text+0x167249d): Section mismatch in reference from the variable memcpy to the variable .init.text:.LM88
-<< WARNING: modpost: vmlinux.o(.text+0x1672515): Section mismatch in reference from the variable memset to the variable .init.text:.LM103
-<< WARNING: modpost: vmlinux.o(.text+0x1672593): Section mismatch in reference from the variable mpostive to the variable .init.text:.LM117
-<< WARNING: modpost: vmlinux.o(.data+0xf0eac): Section mismatch in reference from the variable iio_const_attr_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15b4): Section mismatch in reference from the variable iio_const_attr_ads1115_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15c8): Section mismatch in reference from the variable iio_const_attr_ads1015_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15dc): Section mismatch in reference from the variable iio_const_attr_ads1115_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15f0): Section mismatch in reference from the variable iio_const_attr_ads1015_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf1bb8): Section mismatch in reference from the variable iio_const_attr_calibration_forced_value_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf229c): Section mismatch in reference from the variable iio_const_attr_in_anglvel_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.text+0x167249d): Section mismatch in reference from the variable memcpy to the variable .init.text:.LM88
-<< WARNING: modpost: vmlinux.o(.text+0x1672515): Section mismatch in reference from the variable memset to the variable .init.text:.LM103
-<< WARNING: modpost: vmlinux.o(.text+0x1672593): Section mismatch in reference from the variable mpostive to the variable .init.text:.LM117
-<< WARNING: modpost: vmlinux.o(.data+0xf0eac): Section mismatch in reference from the variable iio_const_attr_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15b4): Section mismatch in reference from the variable iio_const_attr_ads1115_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15c8): Section mismatch in reference from the variable iio_const_attr_ads1015_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15dc): Section mismatch in reference from the variable iio_const_attr_ads1115_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15f0): Section mismatch in reference from the variable iio_const_attr_ads1015_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf1bb8): Section mismatch in reference from the variable iio_const_attr_calibration_forced_value_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf229c): Section mismatch in reference from the variable iio_const_attr_in_anglvel_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.text+0x167249d): Section mismatch in reference from the variable memcpy to the variable .init.text:.LM88
-<< WARNING: modpost: vmlinux.o(.text+0x1672515): Section mismatch in reference from the variable memset to the variable .init.text:.LM103
-<< WARNING: modpost: vmlinux.o(.text+0x1672593): Section mismatch in reference from the variable mpostive to the variable .init.text:.LM117
-<< WARNING: modpost: vmlinux.o(.data+0xf0eac): Section mismatch in reference from the variable iio_const_attr_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15b4): Section mismatch in reference from the variable iio_const_attr_ads1115_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15c8): Section mismatch in reference from the variable iio_const_attr_ads1015_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15dc): Section mismatch in reference from the variable iio_const_attr_ads1115_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15f0): Section mismatch in reference from the variable iio_const_attr_ads1015_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf1bb8): Section mismatch in reference from the variable iio_const_attr_calibration_forced_value_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf229c): Section mismatch in reference from the variable iio_const_attr_in_anglvel_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.text+0x167249d): Section mismatch in reference from the variable memcpy to the variable .init.text:.LM88
-<< WARNING: modpost: vmlinux.o(.text+0x1672515): Section mismatch in reference from the variable memset to the variable .init.text:.LM103
-<< WARNING: modpost: vmlinux.o(.text+0x1672593): Section mismatch in reference from the variable mpostive to the variable .init.text:.LM117
-<< WARNING: modpost: vmlinux.o(.data+0xf0eac): Section mismatch in reference from the variable iio_const_attr_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15b4): Section mismatch in reference from the variable iio_const_attr_ads1115_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15c8): Section mismatch in reference from the variable iio_const_attr_ads1015_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15dc): Section mismatch in reference from the variable iio_const_attr_ads1115_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15f0): Section mismatch in reference from the variable iio_const_attr_ads1015_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf1bb8): Section mismatch in reference from the variable iio_const_attr_calibration_forced_value_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf229c): Section mismatch in reference from the variable iio_const_attr_in_anglvel_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.text+0x167249d): Section mismatch in reference from the variable memcpy to the variable .init.text:.LM88
-<< WARNING: modpost: vmlinux.o(.text+0x1672515): Section mismatch in reference from the variable memset to the variable .init.text:.LM103
-<< WARNING: modpost: vmlinux.o(.text+0x1672593): Section mismatch in reference from the variable mpostive to the variable .init.text:.LM117
-<< WARNING: modpost: vmlinux.o(.data+0xf0eac): Section mismatch in reference from the variable iio_const_attr_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15b4): Section mismatch in reference from the variable iio_const_attr_ads1115_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15c8): Section mismatch in reference from the variable iio_const_attr_ads1015_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15dc): Section mismatch in reference from the variable iio_const_attr_ads1115_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15f0): Section mismatch in reference from the variable iio_const_attr_ads1015_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf1bb8): Section mismatch in reference from the variable iio_const_attr_calibration_forced_value_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf229c): Section mismatch in reference from the variable iio_const_attr_in_anglvel_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.text+0x167249d): Section mismatch in reference from the variable memcpy to the variable .init.text:.LM88
-<< WARNING: modpost: vmlinux.o(.text+0x1672515): Section mismatch in reference from the variable memset to the variable .init.text:.LM103
-<< WARNING: modpost: vmlinux.o(.text+0x1672593): Section mismatch in reference from the variable mpostive to the variable .init.text:.LM117
-<< WARNING: modpost: vmlinux.o(.data+0xf0eac): Section mismatch in reference from the variable iio_const_attr_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15b4): Section mismatch in reference from the variable iio_const_attr_ads1115_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15c8): Section mismatch in reference from the variable iio_const_attr_ads1015_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15dc): Section mismatch in reference from the variable iio_const_attr_ads1115_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15f0): Section mismatch in reference from the variable iio_const_attr_ads1015_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf1bb8): Section mismatch in reference from the variable iio_const_attr_calibration_forced_value_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf229c): Section mismatch in reference from the variable iio_const_attr_in_anglvel_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.text+0x167249d): Section mismatch in reference from the variable memcpy to the variable .init.text:.LM88
-<< WARNING: modpost: vmlinux.o(.text+0x1672515): Section mismatch in reference from the variable memset to the variable .init.text:.LM103
-<< WARNING: modpost: vmlinux.o(.text+0x1672593): Section mismatch in reference from the variable mpostive to the variable .init.text:.LM117
-<< WARNING: modpost: vmlinux.o(.data+0xf0eac): Section mismatch in reference from the variable iio_const_attr_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15b4): Section mismatch in reference from the variable iio_const_attr_ads1115_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15c8): Section mismatch in reference from the variable iio_const_attr_ads1015_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15dc): Section mismatch in reference from the variable iio_const_attr_ads1115_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15f0): Section mismatch in reference from the variable iio_const_attr_ads1015_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf1bb8): Section mismatch in reference from the variable iio_const_attr_calibration_forced_value_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf229c): Section mismatch in reference from the variable iio_const_attr_in_anglvel_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.text+0x167249d): Section mismatch in reference from the variable memcpy to the variable .init.text:.LM88
-<< WARNING: modpost: vmlinux.o(.text+0x1672515): Section mismatch in reference from the variable memset to the variable .init.text:.LM103
-<< WARNING: modpost: vmlinux.o(.text+0x1672593): Section mismatch in reference from the variable mpostive to the variable .init.text:.LM117
-<< WARNING: modpost: vmlinux.o(.data+0xf0eac): Section mismatch in reference from the variable iio_const_attr_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15b4): Section mismatch in reference from the variable iio_const_attr_ads1115_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15c8): Section mismatch in reference from the variable iio_const_attr_ads1015_sampling_frequency_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15dc): Section mismatch in reference from the variable iio_const_attr_ads1115_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf15f0): Section mismatch in reference from the variable iio_const_attr_ads1015_scale_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf1bb8): Section mismatch in reference from the variable iio_const_attr_calibration_forced_value_available to the variable .init.text:.LVL172
-<< WARNING: modpost: vmlinux.o(.data+0xf229c): Section mismatch in reference from the variable iio_const_attr_in_anglvel_scale_available to the variable .init.text:.LVL172
-
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for DRM_GEM_SHMEM_HELPER
-   Depends on HAS_IOMEM && DRM && MMU
-   Selected by
-   - DRM_SSD130X && HAS_IOMEM && DRM
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Guenter
