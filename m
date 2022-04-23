@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E39A8C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 15:57:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2357C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 15:57:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236225AbiDWQAe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 12:00:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38820 "EHLO
+        id S236230AbiDWQAi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 12:00:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236193AbiDWQAM (ORCPT
+        with ESMTP id S236185AbiDWQAJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 12:00:12 -0400
-Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53A4D2626;
-        Sat, 23 Apr 2022 08:57:14 -0700 (PDT)
-Received: by mail-qk1-f171.google.com with SMTP id b68so7960491qkc.4;
-        Sat, 23 Apr 2022 08:57:14 -0700 (PDT)
+        Sat, 23 Apr 2022 12:00:09 -0400
+Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79955115D;
+        Sat, 23 Apr 2022 08:57:12 -0700 (PDT)
+Received: by mail-qt1-f180.google.com with SMTP id hf18so7622929qtb.0;
+        Sat, 23 Apr 2022 08:57:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=gmXNl4tIfL5wRbTrjuvKfaCU9MK0lOXp83omTUSrSMo=;
-        b=RqYcKbwdqymvvBUcZsqs2449ogL1+J5xlvDJt3JhwCZln//N/ASrDT/R/AsaDi4r5W
-         cIyOVCbsVpPi/SMbtnKam77lZMmMXxm9wLpnJBdJi/HllZEC2KQiJYrGcW17reB32E54
-         ku+/2abwX9sE/cQp5p7y95LwjCInYWf/PuEm1+9jJa8GmEgcnvTCIx7C246S0wt0brbM
-         IJgdz59Ydq00nA13w6Mblr78h/uNX+FOOUhhm3rqqL+/dIC/t5+7RfKdrIdBRQy6/lWA
-         8jl+qDzgEVcBy2wNfZ9eccDkleiFjXgCCdLv9JKEJntYEOhy5LTMNg+nvHMOpmhSXgD5
-         x2tw==
-X-Gm-Message-State: AOAM530fcqYnQojJzgxWl3pQ39U0MPI9ieIcXsNi8GwxbBLydcYne6SW
-        W7onRlfVvmLEvZOoX0OFoic=
-X-Google-Smtp-Source: ABdhPJxrka55ASWkCj+31Zq8g/DCOT2vSRE9a3/Q38M+L6ijF+65YD0/feALRFzYTD/HSx0KMyH5Rg==
-X-Received: by 2002:a05:620a:2588:b0:680:f657:fbd6 with SMTP id x8-20020a05620a258800b00680f657fbd6mr5649398qko.287.1650729433397;
-        Sat, 23 Apr 2022 08:57:13 -0700 (PDT)
-Received: from localhost (fwdproxy-ash-119.fbsv.net. [2a03:2880:20ff:77::face:b00c])
-        by smtp.gmail.com with ESMTPSA id w4-20020a05620a0e8400b0067b1bcd081csm2321762qkm.66.2022.04.23.08.57.12
+        bh=3Tpzhq0+TI5H5bdvK5Vbm+VLYv/+B/98xqWutaPHg68=;
+        b=YalIeLBAMpRNzq8xlnQ2CIEV933BYDUGRMwJlLIrAfPD5SjOv77i8IYwxj3s9JBJYr
+         OKgnL3MJxmopPCgecn9FLF76gXTfJFzDCZFPVu1HUrW5N7RClSB9/Cn3cXI7u4ppdeGq
+         7vPkNDWpvExDHO/fsz4OBoYkgdduEXQKJi49PaOUi6nt2uRl4HEWFGjO1wkVZYYnnxQj
+         GR0kK5qKwE4sYVmx+WrkSCiBGNzxU6TBpuOx5rQd8JFMNjQnDRtm/2scq2Q9HKSlUEt9
+         54OYRPOQhqm7P9XxFLnqLGKqo7XWPVQ4N9QNTaffaKufAbUpljlYaiMnbFLCWL4N7ycy
+         awJg==
+X-Gm-Message-State: AOAM531E6Uv/D2C2hd9bU7qcQNdC+xhcXdjUO2bPmEkqVtp3mWiBLydA
+        FoP4JU19Cs4expT117FgOGU=
+X-Google-Smtp-Source: ABdhPJy3crThvLR/oO0Mz5YJCL0+y4Sy/Jx7i2E9UGDNE2Y8oLiSfFfMWXH4+Nf8j3wVjv8GhAHcBA==
+X-Received: by 2002:ac8:7a8a:0:b0:2f1:de6a:c044 with SMTP id x10-20020ac87a8a000000b002f1de6ac044mr6873334qtr.243.1650729431500;
+        Sat, 23 Apr 2022 08:57:11 -0700 (PDT)
+Received: from localhost (fwdproxy-ash-006.fbsv.net. [2a03:2880:20ff:6::face:b00c])
+        by smtp.gmail.com with ESMTPSA id w15-20020ac857cf000000b002f33f220c76sm2959583qta.32.2022.04.23.08.57.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Apr 2022 08:57:13 -0700 (PDT)
+        Sat, 23 Apr 2022 08:57:11 -0700 (PDT)
 From:   David Vernet <void@manifault.com>
 To:     akpm@linux-foundation.org
 Cc:     tj@kernel.org, roman.gushchin@linux.dev,
         linux-kernel@vger.kernel.org, linux-mm@kvack.org,
         cgroups@vger.kernel.org, hannes@cmpxchg.org, mhocko@kernel.org,
         shakeelb@google.com, kernel-team@fb.com, void@manifault.com
-Subject: [PATCH v2 5/5] cgroup: Fix racy check in alloc_pagecache_max_30M() helper function
-Date:   Sat, 23 Apr 2022 08:56:22 -0700
-Message-Id: <20220423155619.3669555-6-void@manifault.com>
+Subject: [PATCH v2 3/5] cgroup: Account for memory_localevents in test_memcg_oom_group_leaf_events()
+Date:   Sat, 23 Apr 2022 08:56:20 -0700
+Message-Id: <20220423155619.3669555-4-void@manifault.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220423155619.3669555-1-void@manifault.com>
 References: <20220423155619.3669555-1-void@manifault.com>
@@ -55,55 +55,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-alloc_pagecache_max_30M() in the cgroup memcg tests performs a 50MB
-pagecache allocation, which it expects to be capped at 30MB due to the
-calling process having a memory.high setting of 30MB. After the allocation,
-the function contains a check that verifies that MB(29) < memory.current <=
-MB(30). This check can actually fail non-deterministically.
-
-The testcases that use this function are test_memcg_high() and
-test_memcg_max(), which set memory.min and memory.max to 30MB respectively
-for the cgroup under test. The allocation can slightly exceed this number
-in both cases, and for memory.max, the process performing the allocation
-will not have the OOM killer invoked as it's performing a pagecache
-allocation.  This patchset therefore updates the above check to instead use
-the verify_close() helper function.
+The test_memcg_oom_group_leaf_events() testcase in the cgroup memcg tests
+validates that processes in a group that perform allocations exceeding
+memory.oom.group are killed. It also validates that the
+memory.events.oom_kill events are properly propagated in this case.  Commit
+06e11c907ea4 ("kselftests: memcg: update the oom group leaf events test")
+fixed test_memcg_oom_group_leaf_events() to account for the fact that the
+memory.events.oom_kill events in a child cgroup is propagated up to its
+parent. This behavior can actually be configured by the memory_localevents
+mount option, so this patch updates the testcase to properly account for
+the possible presence of this mount option.
 
 Signed-off-by: David Vernet <void@manifault.com>
 Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
 ---
- tools/testing/selftests/cgroup/test_memcontrol.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ .../selftests/cgroup/test_memcontrol.c        | 21 +++++++++++++++----
+ 1 file changed, 17 insertions(+), 4 deletions(-)
 
 diff --git a/tools/testing/selftests/cgroup/test_memcontrol.c b/tools/testing/selftests/cgroup/test_memcontrol.c
-index 38d2054eefe6..3bac06999354 100644
+index d37e8dfb1248..e899b3f28c22 100644
 --- a/tools/testing/selftests/cgroup/test_memcontrol.c
 +++ b/tools/testing/selftests/cgroup/test_memcontrol.c
-@@ -564,9 +564,14 @@ static int alloc_pagecache_max_30M(const char *cgroup, void *arg)
+@@ -21,6 +21,7 @@
+ #include "../kselftest.h"
+ #include "cgroup_util.h"
+ 
++static bool has_localevents;
+ static bool has_recursiveprot;
+ 
+ /*
+@@ -1091,6 +1092,7 @@ static int test_memcg_oom_group_leaf_events(const char *root)
  {
- 	size_t size = MB(50);
- 	int ret = -1;
--	long current;
-+	long current, high, max;
- 	int fd;
+ 	int ret = KSFT_FAIL;
+ 	char *parent, *child;
++	long parent_oom_events;
  
-+	high = cg_read_long(cgroup, "memory.high");
-+	max = cg_read_long(cgroup, "memory.max");
-+	if (high != MB(30) && max != MB(30))
-+		goto cleanup;
+ 	parent = cg_name(root, "memcg_test_0");
+ 	child = cg_name(root, "memcg_test_0/memcg_test_1");
+@@ -1128,10 +1130,16 @@ static int test_memcg_oom_group_leaf_events(const char *root)
+ 	if (cg_read_key_long(child, "memory.events", "oom_kill ") <= 0)
+ 		goto cleanup;
+ 
+-	if (cg_read_key_long(parent, "memory.events", "oom_kill ") <= 0)
+-		goto cleanup;
+-
+-	ret = KSFT_PASS;
++	parent_oom_events = cg_read_key_long(
++			parent, "memory.events", "oom_kill ");
++	/*
++	 * If memory_localevents is not enabled (the default), the parent should
++	 * count OOM events in its children groups. Otherwise, it should not
++	 * have observed any events.
++	 */
++	if ((has_localevents && parent_oom_events == 0) ||
++	    parent_oom_events > 0)
++		ret = KSFT_PASS;
+ 
+ cleanup:
+ 	if (child)
+@@ -1298,6 +1306,11 @@ int main(int argc, char **argv)
+ 		ksft_exit_skip("Failed to query cgroup mount option\n");
+ 	has_recursiveprot = proc_status;
+ 
++	proc_status = proc_mount_contains("memory_localevents");
++	if (proc_status < 0)
++		ksft_exit_skip("Failed to query cgroup mount option\n");
++	has_localevents = proc_status;
 +
- 	fd = get_temp_fd();
- 	if (fd < 0)
- 		return -1;
-@@ -575,7 +580,7 @@ static int alloc_pagecache_max_30M(const char *cgroup, void *arg)
- 		goto cleanup;
- 
- 	current = cg_read_long(cgroup, "memory.current");
--	if (current <= MB(29) || current > MB(30))
-+	if (!values_close(current, MB(30), 5))
- 		goto cleanup;
- 
- 	ret = 0;
+ 	for (i = 0; i < ARRAY_SIZE(tests); i++) {
+ 		switch (tests[i].fn(root)) {
+ 		case KSFT_PASS:
 -- 
 2.30.2
 
