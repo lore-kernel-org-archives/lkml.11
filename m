@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1DEBC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 10:25:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88E39C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 10:25:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229540AbiDWK2F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 06:28:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38104 "EHLO
+        id S234908AbiDWK2L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 06:28:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234891AbiDWK13 (ORCPT
+        with ESMTP id S234911AbiDWK1e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 06:27:29 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C022564E6
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 03:24:31 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id u17-20020a05600c211100b0038eaf4cdaaeso9512953wml.1
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 03:24:31 -0700 (PDT)
+        Sat, 23 Apr 2022 06:27:34 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79AFF10E4
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 03:24:36 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id f6so76674wma.0
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 03:24:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hmwzzU+oUsjeOQ4831eC65EcSxjUz8YhjuhTAsVP8U8=;
-        b=CTywPRVtNSBTMd0idOhtNLInS25aX2di8NMiKJ27MTuKI1wC3wAHYqqtMgBrz8Uk38
-         h2aEDAHeC30IBkOpwZ/KQ1AZ8P1nGF09QL9Wcaz6pUWT8JZe4PCbvW3AuES/GZ/hqdwh
-         sMlhO9k9rvzQIs5689LR03VsW1J2lMBR3y7QcQQsmFNkOybMA4OucGR6KhLNEDo5GbF8
-         JnWhJAaO114p3KBNsbT5zEMilZ9I///u+DrVidCADR5QS0CwEtJktemFPTBWIcjgm8qD
-         HLRvSofPBigx71DWgavXtPg2FtQi+l9kNCWFTDyG7mEZABSWaYGj+it8R9DmjZxeaHTz
-         zIsQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=JnzJn9/apOse1TRdog9QxKjgDoh08yuT8iYmEPjnkLo=;
+        b=EdRnFs11rrayuYTjd5BRRXOPQ+6lHEDn37pxNXH+HIV3NgWTWMAzKj3mdnLsnM7ntT
+         q05koXcf1+O2OIpp3SfPEK9RptcDXAr6XlEyDnuOQ+Poug3JuqInykzDCJnjQLqq13I2
+         MXclDmF1rAmIMpbZ9wI77X72rk9zp9AN+zxKfWMhMvHVypCkm9VzQlrIA1S5kh0oBUjg
+         1DqtbpsbmQfT9LU33EtELKde09//wwPjGq3kWkyKnVk72c1jd12/zfeHXnkK3xMqEKUe
+         dpoCsaBFopex08M2tgjBPQhIiVq2P1Xrzi4licGX4dNkfqg7853kCehT2Af/eJE87sYy
+         S6Nw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hmwzzU+oUsjeOQ4831eC65EcSxjUz8YhjuhTAsVP8U8=;
-        b=ja4+w45Jqdd02UVgSJ6dl8oA0LTprs2orcykkSQcYbi9/KzCCSaMGn+IV7jkOjZBZx
-         etATruSf0IcLMhHNh3HJr6Cj6KS58OIeUqhfG8SnFFF6Wpu6t+9Jg4XauQ5yx63OR4h+
-         2Ob+pKMbSmNKULBBVFVSG8g9X9gmUv2jRoCvLaCXNsoiy/fQYzOLk1oqB2CVM6NGQCoq
-         lFno6HyiG6R3V5SvDFbrqTxHcuIcVHxAXGR6AAoSDYJEW2cLTY4lkPhwCkMg9K+GoYKa
-         gDJfiUiQ/laVRaM6o2pr+gibqgc11ATtaEcqKkKppMAhy+sU7N15h1Y/BTcYOttueEvG
-         LQ8Q==
-X-Gm-Message-State: AOAM530oB78XtYzRQRoboPoGLH+/Xe/a5eYNCunm1Pab/d64A8dLpct/
-        kBbK3zrH/Csh87G3ti18008=
-X-Google-Smtp-Source: ABdhPJwbDV6RBBsBs4YLiSHH1R3BI3vAH6+s7n1iUCc/tczi8HEpXIcuEVEJVmm3XPrlOPfEROozog==
-X-Received: by 2002:a7b:cf05:0:b0:38e:b707:1c3d with SMTP id l5-20020a7bcf05000000b0038eb7071c3dmr7890731wmg.164.1650709470282;
-        Sat, 23 Apr 2022 03:24:30 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=JnzJn9/apOse1TRdog9QxKjgDoh08yuT8iYmEPjnkLo=;
+        b=iHfiMqegn+dM2owAmFgEkWFgcD9p+B+2EqDCZLhnnz+2+L05DJt1I7KvWgFFUYN0Y7
+         2PdVuYXYd4MlSkgCoQiXiEpwwBB9dSXeduQNok7xHKyglRgfwkJQs/6lrYUOpKO178Vl
+         DCPxsWTvZqo3m1y+bBLxcLbsoKIFZbixugsJ7jNy48ZvqE/lS/0743ghIwK3Kqk6LTVS
+         2ofs+mC2I/uyJ9er6of/NXUmkzB6t3sZaS7gMUumfK/iCySex2fGIGSXsZCCv+8m0OyQ
+         JTuuI4s3n90PkrVGM2ukHX9AGGSS+w/ZLdqo6+5uBZ7J3FcwtcMnJusoHGfqv2/1Afy5
+         Yikg==
+X-Gm-Message-State: AOAM532TMcNe8ALnaxzQ4q6pGgyj8wcIechbztf4bW0gsJxMfUth4037
+        nuGE2PYiflig03C+d59QUMTeulBtRjE=
+X-Google-Smtp-Source: ABdhPJyS1uQmxp9EjFBBuu7Wu0WbDYSAIAiNH9tMqDan9RYRWsD+dh/C82c+oe7q2B0VbV9fc3mpvg==
+X-Received: by 2002:a05:600c:3641:b0:38e:4b2f:330 with SMTP id y1-20020a05600c364100b0038e4b2f0330mr17410186wmq.180.1650709475085;
+        Sat, 23 Apr 2022 03:24:35 -0700 (PDT)
 Received: from localhost.localdomain (host-79-50-86-254.retail.telecomitalia.it. [79.50.86.254])
-        by smtp.gmail.com with ESMTPSA id t15-20020adfeb8f000000b002060d26c211sm4089057wrn.114.2022.04.23.03.24.27
+        by smtp.gmail.com with ESMTPSA id t15-20020adfeb8f000000b002060d26c211sm4089057wrn.114.2022.04.23.03.24.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Apr 2022 03:24:28 -0700 (PDT)
+        Sat, 23 Apr 2022 03:24:33 -0700 (PDT)
 From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         =?UTF-8?q?Arve=20Hj=C3=B8nnev=C3=A5g?= <arve@android.com>,
@@ -59,31 +59,49 @@ To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Suren Baghdasaryan <surenb@google.com>,
         Ira Weiny <ira.weiny@intel.com>, linux-kernel@vger.kernel.org
 Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Subject: [PATCH 0/3] binder: Use kmap_local_page() in binder_alloc.c
-Date:   Sat, 23 Apr 2022 12:24:18 +0200
-Message-Id: <20220423102421.16869-1-fmdefrancesco@gmail.com>
+Subject: [PATCH 2/3] binder: Use kmap_local_page() in binder_alloc_copy_user_to_buffer()
+Date:   Sat, 23 Apr 2022 12:24:20 +0200
+Message-Id: <20220423102421.16869-3-fmdefrancesco@gmail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220423102421.16869-1-fmdefrancesco@gmail.com>
+References: <20220423102421.16869-1-fmdefrancesco@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use kmap_local_page() in binder_alloc.c because kmap() and kmap_atomic()
-are being deprecated and kmap_local_page is preferred where it is feasible.
+The use of kmap() is being deprecated in favor of kmap_local_page()
+where it is feasible. With kmap_local_page(), the mapping is per
+thread, CPU local and not globally visible.
 
-With kmap_local_page(), the mapping is per thread, CPU local and not
-globally visible. Furthermore, the mapping can be acquired from any
-context, including interrupts.
+binder_alloc_copy_user_to_buffer() is a function where the use of
+kmap_local_page() in place of kmap() is correctly suited because
+the mapping is local to the thread.
 
-Fabio M. De Francesco (3):
-  binder: Use memset_page() in binder_alloc_clear_buf()
-  binder: Use kmap_local_page() in binder_alloc_copy_user_to_buffer()
-  binder: Use kmap_local_page() in binder_alloc_get_page()
+Therefore, use kmap_local_page() / kunmap_local().
 
- drivers/android/binder_alloc.c | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
+Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+---
+ drivers/android/binder_alloc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/android/binder_alloc.c b/drivers/android/binder_alloc.c
+index 0b3f2f569053..0875c463c002 100644
+--- a/drivers/android/binder_alloc.c
++++ b/drivers/android/binder_alloc.c
+@@ -1217,9 +1217,9 @@ binder_alloc_copy_user_to_buffer(struct binder_alloc *alloc,
+ 		page = binder_alloc_get_page(alloc, buffer,
+ 					     buffer_offset, &pgoff);
+ 		size = min_t(size_t, bytes, PAGE_SIZE - pgoff);
+-		kptr = kmap(page) + pgoff;
++		kptr = kmap_local_page(page) + pgoff;
+ 		ret = copy_from_user(kptr, from, size);
+-		kunmap(page);
++		kunmap_local(kptr);
+ 		if (ret)
+ 			return bytes - size + ret;
+ 		bytes -= size;
 -- 
 2.34.1
 
