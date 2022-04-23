@@ -2,144 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 435BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 15:25:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3488DC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 15:25:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234209AbiDWP1b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 11:27:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52922 "EHLO
+        id S236074AbiDWP2g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 11:28:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233384AbiDWP1I (ORCPT
+        with ESMTP id S236067AbiDWP2d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 11:27:08 -0400
-Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B582F3585F;
-        Sat, 23 Apr 2022 08:24:11 -0700 (PDT)
-Received: by mail-qk1-x733.google.com with SMTP id b68so7921148qkc.4;
-        Sat, 23 Apr 2022 08:24:11 -0700 (PDT)
+        Sat, 23 Apr 2022 11:28:33 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C650C40E57
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 08:25:35 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id p10so19092935lfa.12
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 08:25:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=OAdcJDVWazZX4dXGCD7+iF7myvUA+4bRuij6vVerXqI=;
-        b=VLmOkuSGPNxi+Bn0Kbd99h+1Ub83VpbQRYo3/rv6mYfYEZi/ENANpvI/EwS2wP9x6b
-         hPNLPLHtXUz/t2yDzPPYRzWimvosVq+qWWm87ajW/TO/otWvkRSXxZmoabpG7F6vmJsb
-         18PpUrzBFh8F6x3viJJREgJKizPpXI/4jmRjw1tNFbcgAreAJQcp67r8H1HjOZ3BZICj
-         oPd1uTyuM8Yx+zxJViSL4hLYPQJmB6V62ehwutaER2CcRqOH0UPawH63EsYR4DM8Ywzc
-         5tpwxpMQTbmQwByJouPv+yPDos0Iyq49bpCWbpCiWRBIwwWmNb6BGEsKkogxdeLbmK7n
-         av/w==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=uPFaFyXz+EDuxvlVGUNcApp1IgYD33kJxyk7ho7JgsI=;
+        b=qAX7YMz/JVxRQSD3fqnQXDX9zVCZWMtAGJZf1JQG6BC5yFq+jBJs0Bmw87DF2eoCmq
+         eB2jJ/jLcplC0r+dgKvQHASQCXlpPx9qQUvjOIRwmext+2BEI0HSQFsH+wCaKaT+dSrx
+         pM78v3UdfvFh6ZqEaYYirFC4NVvxB3UYNKeyJAuxTPBGueHYmNO1YXcqFHfXfqC5kFeK
+         XCKNDjDTj1YGjwgrnHyOM3osVRjWrQAzoW4HO1CVCAsEzUy/NId/1IIJ6vn2OTwihsxL
+         HbGqWv2cHnxee5QlZ8keGC34Wlv1JJF3pXORff0x5PdSPBVpKxUSGjq/0Pa0qxEffFfF
+         oZZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=OAdcJDVWazZX4dXGCD7+iF7myvUA+4bRuij6vVerXqI=;
-        b=1fKo1ZU4ELg+exsizDmDBGPcHtC3HyE0UQWUzSk3l9dp3DuGNDlYEp7Qaz3UCGsC4u
-         XssTGZE9b2ZoLyVPX/G7Bx2CbA6F0xZBVigDVrAUgAbNGenO3ILb4LNApp8IY1AKxPgi
-         n3s69W7UrlwsjKvrh9+8J1jVf5Qfk2QYoITSD6AeUjwYnS4k+3vhtp46SyF/ZY0V7f7s
-         5ri4qDFWQ/78pqN7GH+Nuo0i5e0AovD2oOB+IHR4yxmJDHHR5JQ0l1yVJUr+40XHSc46
-         Eb/RuTWPclbevxq2PS9F7HzjUtYqJlY6bhaDPujm29exlj5lEuWUw3o34SFLVOgG9zvP
-         Bhmw==
-X-Gm-Message-State: AOAM533VZSI5SOauJOY1rTwdmSvxvccePQrhACwtU+moZxcHdOC/PhGP
-        4QQ1Y09+uZyDqD3QrYe8tWg=
-X-Google-Smtp-Source: ABdhPJyia0XabZnmUlsN995dOAIz25vVgGiXhUoSyZce7ayaDdE6Gq3gIaVnQ2tH4qNuYDr4ii7LSA==
-X-Received: by 2002:a05:620a:2909:b0:69f:6e6:8d9c with SMTP id m9-20020a05620a290900b0069f06e68d9cmr5487902qkp.51.1650727450863;
-        Sat, 23 Apr 2022 08:24:10 -0700 (PDT)
-Received: from master-x64.sparksnet ([2601:153:980:85b1::10])
-        by smtp.gmail.com with ESMTPSA id y6-20020a05622a004600b002f33ba280cbsm3184165qtw.8.2022.04.23.08.24.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Apr 2022 08:24:10 -0700 (PDT)
-From:   Peter Geis <pgwipeout@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>
-Cc:     linux-rockchip@lists.infradead.org,
-        Peter Geis <pgwipeout@gmail.com>,
-        Marc Zyngier <maz@kernel.org>, linux-pci@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v8 4/5] arm64: dts: rockchip: add rk3568 pcie2x1 controller
-Date:   Sat, 23 Apr 2022 11:24:02 -0400
-Message-Id: <20220423152403.1681222-5-pgwipeout@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220423152403.1681222-1-pgwipeout@gmail.com>
-References: <20220423152403.1681222-1-pgwipeout@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=uPFaFyXz+EDuxvlVGUNcApp1IgYD33kJxyk7ho7JgsI=;
+        b=XyI2QWpq0jX+fokHZBGsFLuVlxhvvEAhBObdSOBKHnarVNpeRO8LgoVoddjf1QUdzJ
+         pwc8E/UF0IxZAzRXq/mbjD/kBi7s1qUXmWfIkaPNaqQ9vimThv0WlVA+GeYST/8XkX/V
+         mYAZDV5Jk6l2/nnIGMJ7wD7b8UJ1dDGwXXbasGWR0qd8crytdouclsQwRvENSbaF8PBL
+         kjym2Y4aQJaMXkgWCk/unCa6DjbmFEKW4Xywm7iZhrIaruSMjb2JuyVRmD1eB2DiON9W
+         jJioT8QhDqB2B8C6ZuFAxTI6JRF22vOrJ1e8n2hf/IhsDyhX/5Es6+RZTg5Bl+CQPukN
+         AkaA==
+X-Gm-Message-State: AOAM530CssUzsZ1dumUHoW+nVD6l1rVU97TEwvaRKUcuW3iXBgVWVOgD
+        v9oHEjPxh8FtGWQNBuEs+/4=
+X-Google-Smtp-Source: ABdhPJwZNl8ZX/SsU1gM9f+mVYW4LB3X8j+kRC6d+voW45tPtkkQcLAFY9FBtTyQGpxCpCgIZRyrOQ==
+X-Received: by 2002:a19:dc0f:0:b0:439:702c:d83b with SMTP id t15-20020a19dc0f000000b00439702cd83bmr6906996lfg.192.1650727534046;
+        Sat, 23 Apr 2022 08:25:34 -0700 (PDT)
+Received: from [192.168.1.7] ([212.22.223.21])
+        by smtp.gmail.com with ESMTPSA id w23-20020a197b17000000b0046d1729e7d9sm651824lfc.294.2022.04.23.08.25.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 23 Apr 2022 08:25:33 -0700 (PDT)
+Subject: Re: [PATCH V1 3/6] xen/virtio: Add option to restrict memory access
+ under Xen
+To:     Juergen Gross <jgross@suse.com>
+Cc:     Stefano Stabellini <sstabellini@kernel.org>,
+        xen-devel@lists.xenproject.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Julien Grall <julien@xen.org>,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Christoph Hellwig <hch@infradead.org>
+References: <1650646263-22047-1-git-send-email-olekstysh@gmail.com>
+ <1650646263-22047-4-git-send-email-olekstysh@gmail.com>
+ <alpine.DEB.2.22.394.2204221526221.915916@ubuntu-linux-20-04-desktop>
+ <3de2852b-0a94-fd1d-2eb6-fd818f33fc88@gmail.com>
+ <8acfaa93-50ce-8dd9-49c6-cc328bb37569@suse.com>
+From:   Oleksandr <olekstysh@gmail.com>
+Message-ID: <cfeec3e9-8a04-b2ae-56bf-153e4ff2d9c7@gmail.com>
+Date:   Sat, 23 Apr 2022 18:25:30 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
+In-Reply-To: <8acfaa93-50ce-8dd9-49c6-cc328bb37569@suse.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pcie2x1 controller is common between the rk3568 and rk3566. It is a
-single lane pcie2 compliant controller.
 
-Signed-off-by: Peter Geis <pgwipeout@gmail.com>
----
- arch/arm64/boot/dts/rockchip/rk356x.dtsi | 52 ++++++++++++++++++++++++
- 1 file changed, 52 insertions(+)
+On 23.04.22 12:10, Juergen Gross wrote:
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk356x.dtsi b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-index 7cdef800cb3c..aea5d9255235 100644
---- a/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-@@ -689,6 +689,58 @@ qos_vop_m1: qos@fe1a8100 {
- 		reg = <0x0 0xfe1a8100 0x0 0x20>;
- 	};
- 
-+	pcie2x1: pcie@fe260000 {
-+		compatible = "rockchip,rk3568-pcie";
-+		#address-cells = <3>;
-+		#size-cells = <2>;
-+		bus-range = <0x0 0xf>;
-+		clocks = <&cru ACLK_PCIE20_MST>, <&cru ACLK_PCIE20_SLV>,
-+			 <&cru ACLK_PCIE20_DBI>, <&cru PCLK_PCIE20>,
-+			 <&cru CLK_PCIE20_AUX_NDFT>;
-+		clock-names = "aclk_mst", "aclk_slv",
-+			      "aclk_dbi", "pclk", "aux";
-+		device_type = "pci";
-+		interrupts = <GIC_SPI 75 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 74 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 72 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 71 IRQ_TYPE_LEVEL_HIGH>;
-+		interrupt-names = "sys", "pmc", "msi", "legacy", "err";
-+		#interrupt-cells = <1>;
-+		interrupt-map-mask = <0 0 0 7>;
-+		interrupt-map = <0 0 0 1 &pcie_intc 0>,
-+				<0 0 0 2 &pcie_intc 1>,
-+				<0 0 0 3 &pcie_intc 2>,
-+				<0 0 0 4 &pcie_intc 3>;
-+		linux,pci-domain = <0>;
-+		num-ib-windows = <6>;
-+		num-ob-windows = <2>;
-+		max-link-speed = <2>;
-+		msi-map = <0x0 &gic 0x0 0x1000>;
-+		num-lanes = <1>;
-+		phys = <&combphy2 PHY_TYPE_PCIE>;
-+		phy-names = "pcie-phy";
-+		power-domains = <&power RK3568_PD_PIPE>;
-+		reg = <0x3 0xc0000000 0x0 0x00400000>,
-+		      <0x0 0xfe260000 0x0 0x00010000>,
-+		      <0x3 0x00000000 0x0 0x01000000>;
-+		ranges = <0x01000000 0x0 0x01000000 0x3 0x01000000 0x0 0x00100000
-+			  0x02000000 0x0 0x02000000 0x3 0x01100000 0x0 0x3ef00000>;
-+		reg-names = "dbi", "apb", "config";
-+		resets = <&cru SRST_PCIE20_POWERUP>;
-+		reset-names = "pipe";
-+		status = "disabled";
-+
-+		pcie_intc: legacy-interrupt-controller {
-+			#address-cells = <0>;
-+			#interrupt-cells = <1>;
-+			interrupt-controller;
-+			interrupt-parent = <&gic>;
-+			interrupts = <GIC_SPI 72 IRQ_TYPE_EDGE_RISING>;
-+		};
-+
-+	};
-+
- 	sdmmc0: mmc@fe2b0000 {
- 		compatible = "rockchip,rk3568-dw-mshc", "rockchip,rk3288-dw-mshc";
- 		reg = <0x0 0xfe2b0000 0x0 0x4000>;
+Hello Juergen
+
+> On 23.04.22 09:05, Oleksandr wrote:
+>>
+>> On 23.04.22 02:00, Stefano Stabellini wrote:
+>>
+>> Hello Stefano
+>>
+>>
+>>> On Fri, 22 Apr 2022, Oleksandr Tyshchenko wrote:
+>>>> From: Juergen Gross <jgross@suse.com>
+>>>>
+>>>> Introduce Xen grant DMA-mapping layer which contains special 
+>>>> DMA-mapping
+>>>> routines for providing grant references as DMA addresses to be used by
+>>>> frontends (e.g. virtio) in Xen guests.
+>>>>
+>>>> In order to support virtio in Xen guests add a config option 
+>>>> XEN_VIRTIO
+>>>> enabling the user to specify whether in all Xen guests virtio should
+>>>> be able to access memory via Xen grant mappings only on the host side.
+>>>>
+>>>> As this also requires providing 
+>>>> arch_has_restricted_virtio_memory_access
+>>>> implementation, switch from a pure stub to a real function on Arm
+>>>> and combine with existing implementation for the SEV guests on x86.
+>>>>
+>>>> Add the needed functionality by providing a special set of DMA ops
+>>>> handling the needed grant operations for the I/O pages.
+>>>>
+>>>> Signed-off-by: Juergen Gross <jgross@suse.com>
+>>>> Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+>>> There are a couple of minor things that checkpatch.pl reports,
+>>
+>> Thank you for pointing this out, my fault.
+>>
+>>
+>>>   but aside
+>>> from those the patch looks fine to me.
+>>
+>> good
+>>
+>>
+>> The attached diff to be squashed for the new version. One thing remains:
+>>
+>> checkpatch.pl says regarding drivers/xen/grant-dma-ops.c:
+>>
+>> WARNING: added, moved or deleted file(s), does MAINTAINERS need 
+>> updating?
+>> #151:
+>> new file mode 100644
+>>
+>>
+>> Which, I assume, this is not an issue as new file falls under XEN 
+>> HYPERVISOR INTERFACE maintainership?
+>
+> Yes.
+
+
+ok, thank you for the confirmation.
+
+
+>
+>
+> Juergen
+
 -- 
-2.25.1
+Regards,
+
+Oleksandr Tyshchenko
 
