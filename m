@@ -2,94 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C65F5C4332F
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 14:36:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69945C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 14:38:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229810AbiDWOjp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 10:39:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47156 "EHLO
+        id S230038AbiDWOlA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 10:41:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229500AbiDWOjn (ORCPT
+        with ESMTP id S229545AbiDWOk5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 10:39:43 -0400
-X-Greylist: delayed 557 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 23 Apr 2022 07:36:45 PDT
-Received: from mail.tambre.ee (mail.tambre.ee [IPv6:2a01:7e01:e001:cc::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B783A203F65;
-        Sat, 23 Apr 2022 07:36:45 -0700 (PDT)
-Received: from [IPV6:2001:7d0:8a11:4700:d8bd:7f1f:5e8b:fc58] (fc58-5e8b-7f1f-d8bd-4700-8a11-07d0-2001.dyn.estpak.ee [IPv6:2001:7d0:8a11:4700:d8bd:7f1f:5e8b:fc58])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: raul)
-        by mail.tambre.ee (Postfix) with ESMTPSA id 8855980062;
-        Sat, 23 Apr 2022 17:27:24 +0300 (EEST)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.tambre.ee 8855980062
-Authentication-Results: mail.tambre.ee; dmarc=fail (p=reject dis=none) header.from=tambre.ee
-Authentication-Results: mail.tambre.ee; spf=fail smtp.mailfrom=tambre.ee
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.tambre.ee 8855980062
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tambre.ee; s=201812;
-        t=1650724045; bh=9gYBnH9KPURUghbXDsxTxayhdYgcj3IoMHz0DPDiA00=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=YFgvVKD7HJJ9Dxt3j4BzH1t+gogs0lTsdo/enGYiXmC3VXwnRvQ3t57zMMt0iZ+9u
-         Jq8Tz1pauz57NTsXO5SiXynbah+A6+ha5nqC4k3sxntLvGPG2geobXEyLphQ+AuEVQ
-         iYiQV19jWpvftSMs3dpA1XLNdylbAPuz7lv1tjUks0SW91D1PlFhJEePXndrLmM+rD
-         ikX5KpU9FGz3Rx+vUhn+9sQ3swxSMHZHaYzK1pi93hOFGrD7CbbqSH1P+dV0WtViIl
-         wKd75cZX/ZjdDfdzDOf0+l2ccErKsDzSqYtZDX96R7FvnavUjmMR5kBTQidW+GsD0V
-         CqQNvyZsmn+0w==
-Message-ID: <50b80804-e95c-2137-5d74-2451e5bb826f@tambre.ee>
-Date:   Sat, 23 Apr 2022 17:27:21 +0300
+        Sat, 23 Apr 2022 10:40:57 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FF54205D8F;
+        Sat, 23 Apr 2022 07:37:59 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id p12so13418285lfs.5;
+        Sat, 23 Apr 2022 07:37:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=9Q3pZjqL2YRbxMi3ZEZPC+BgttCsWqeK314Feyp4SQ4=;
+        b=O6lRTdmyP9SYSA3U8hfLl6p8PcytluSsbHwEFXxwQ+ubIxxSVZKbp9ABI4a104ybmE
+         4B0KpBf9zDgnV1i4oYkJNepeB9/rfyra7k5PI9DZqHke1VwN6482HV8XrLngsjtfpsFr
+         6bM8w36eLRa4VwfIxnHVhQfOZg/AaPvpoW8tB1wDHi0T7pELIli9N4UTO8TGcKuvFaKm
+         eOZaalv2Z8+00j28i8eI7dMT0V4YIeOFmc8x7xswIRAT1Q9HRGUBVnLTfkM6C5KtYtu2
+         I9VW/XbIJHjaJqcC0s3p2b54l8r+mGP1Bv8UyPsSSwS8lK/HSTCCWDhUQlDqrMwBzC0h
+         BFLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=9Q3pZjqL2YRbxMi3ZEZPC+BgttCsWqeK314Feyp4SQ4=;
+        b=hITe/9VMMlFUCA4L5rhC7CETwwWr1R38gINgDTJe8GrmYa2QyxQ+jaQLPKcK2P+cO0
+         jcgXB+rgPxP6KUE6y70ejcmtp2H5Tl9dns4C52W5de1rTwfu2op0zxyy0mfQA0LOSLV3
+         1dyahedLUiyF1+ms0rHgP0K+eWkD22soMiLSkTg5+iT+i5aw2ek5q4+3Q9rww9U04TXU
+         8jEsz8dZTX/eFTKa95DI6pENlhiq5yyVGoY+IMSo9uQODWSzWcsFKEXwSVj10o/qdOsi
+         yFftzvhu+KCMDGjWKoJJDHgJiwMoQIb4aAURjatdN9P9mqfmWrmIqIekJ1cFR2ckWEnZ
+         Y0Nw==
+X-Gm-Message-State: AOAM533uDOxbzxAYS+q9wNNgh/ufB1shEhREIDwUePDqxGBjonSc3ya8
+        28hBXjK7tfhtw5MJAIyUO9w=
+X-Google-Smtp-Source: ABdhPJx8PYPHNf3hIYDk6xxcUZ5Cz4AjHRjZCng72eHk60GDl8rPACcXENIApaJQbCkMeAProiKKeA==
+X-Received: by 2002:a05:6512:150f:b0:45d:ccac:c43c with SMTP id bq15-20020a056512150f00b0045dccacc43cmr7231892lfb.604.1650724677772;
+        Sat, 23 Apr 2022 07:37:57 -0700 (PDT)
+Received: from [192.168.1.7] ([212.22.223.21])
+        by smtp.gmail.com with ESMTPSA id k11-20020a196f0b000000b00471c56b7a3dsm641075lfc.74.2022.04.23.07.37.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 23 Apr 2022 07:37:57 -0700 (PDT)
+Subject: Re: [PATCH V1 4/6] dt-bindings: Add xen, dev-domid property
+ description for xen-grant DMA ops
+To:     Stefano Stabellini <sstabellini@kernel.org>
+Cc:     xen-devel@lists.xenproject.org,
+        virtualization@lists.linux-foundation.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Julien Grall <julien@xen.org>, Juergen Gross <jgross@suse.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Christoph Hellwig <hch@infradead.org>
+References: <1650646263-22047-1-git-send-email-olekstysh@gmail.com>
+ <1650646263-22047-5-git-send-email-olekstysh@gmail.com>
+ <alpine.DEB.2.22.394.2204221527500.915916@ubuntu-linux-20-04-desktop>
+From:   Oleksandr <olekstysh@gmail.com>
+Message-ID: <638a5b09-ce9e-ab7e-0a5e-d81afe851cc1@gmail.com>
+Date:   Sat, 23 Apr 2022 17:37:55 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH V2 2/8] dt-bindings: PCI: tegra: Add device tree support
- for Tegra234
-Content-Language: en-GB
-To:     Vidya Sagar <vidyas@nvidia.com>, bhelgaas@google.com,
-        lorenzo.pieralisi@arm.com, robh+dt@kernel.org,
-        thierry.reding@gmail.com, jonathanh@nvidia.com
-Cc:     kishon@ti.com, vkoul@kernel.org, kw@linux.com, krzk@kernel.org,
-        p.zabel@pengutronix.de, mperttunen@nvidia.com,
-        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-phy@lists.infradead.org, kthota@nvidia.com,
-        mmaddireddy@nvidia.com, sagar.tv@gmail.com
-References: <20220423124858.25946-1-vidyas@nvidia.com>
- <20220423124858.25946-3-vidyas@nvidia.com>
-From:   Raul Tambre <raul@tambre.ee>
-In-Reply-To: <20220423124858.25946-3-vidyas@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+In-Reply-To: <alpine.DEB.2.22.394.2204221527500.915916@ubuntu-linux-20-04-desktop>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-04-23 15:48, Vidya Sagar wrote:
-> @@ -47,16 +64,33 @@ Required properties:
->     "p2u-N": where N ranges from 0 to one less than the total number of lanes
->   - nvidia,bpmp: Must contain a pair of phandle to BPMP controller node followed
->     by controller-id. Following are the controller ids for each controller.
-> +  Tegra194:
-> +  ---------
->       0: C0
->       1: C1
->       2: C2
->       3: C3
->       4: C4
->       5: C5
-> +  Tegra194:
 
-Should this be Tegra234?
+On 23.04.22 02:00, Stefano Stabellini wrote:
 
-> +  ---------
-> +    0 : C0
-> +    1 : C1
-> +    2 : C2
-> +    3 : C3
-> +    4 : C4
-> +    5 : C5
-> +    6 : C6
-> +    7 : C7
-> +    8 : C8
-> +    9 : C9
-> +    10: C10
+Hello Stefano
+
+> On Fri, 22 Apr 2022, Oleksandr Tyshchenko wrote:
+>> From: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+>>
+>> Introduce Xen specific binding for the virtualized device (e.g. virtio)
+>> to be used by Xen grant DMA-mapping layer in the subsequent commit.
+>>
+>> This binding indicates that Xen grant mappings scheme needs to be
+>> enabled for the device which DT node contains that property and specifies
+>> the ID of Xen domain where the corresponding backend resides. The ID
+>> (domid) is used as an argument to the grant mapping APIs.
+>>
+>> This is needed for the option to restrict memory access using Xen grant
+>> mappings to work which primary goal is to enable using virtio devices
+>> in Xen guests.
+>>
+>> Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+> Looks OK to me. Just a couple of grammar improvements below. Aside from
+> those, I have no further comments.
+
+thank you, I agree with proposed comments, will update
+
+
+
+>
+>
+>> ---
+>> Changes RFC -> V1:
+>>     - update commit subject/description and text in description
+>>     - move to devicetree/bindings/arm/
+>> ---
+>>   .../devicetree/bindings/arm/xen,dev-domid.yaml     | 37 ++++++++++++++++++++++
+>>   1 file changed, 37 insertions(+)
+>>   create mode 100644 Documentation/devicetree/bindings/arm/xen,dev-domid.yaml
+>>
+>> diff --git a/Documentation/devicetree/bindings/arm/xen,dev-domid.yaml b/Documentation/devicetree/bindings/arm/xen,dev-domid.yaml
+>> new file mode 100644
+>> index 00000000..ef0f747
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/arm/xen,dev-domid.yaml
+>> @@ -0,0 +1,37 @@
+>> +# SPDX-License-Identifier: (GPL-2.0-only or BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/arm/xen,dev-domid.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: Xen specific binding for the virtualized device (e.g. virtio)
+> NIT: Xen specific binding for virtualized devices (e.g. virtio)
+>
+>
+>> +maintainers:
+>> +  - Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+>> +
+>> +select: true
+>> +
+>> +description:
+>> +  This binding indicates that Xen grant mappings scheme needs to be enabled
+>> +  for that device and specifies the ID of Xen domain where the corresponding
+>> +  device (backend) resides. This is needed for the option to restrict memory
+>> +  access using Xen grant mappings to work.
+> NIT:
+>
+> This binding indicates that Xen grant mappings need to be enabled for
+> the device, and it specifies the ID of the domain where the
+> corresponding device (backend) resides. The property is required to
+> restrict memory access using Xen grant mappings.
+>
+>
+>> +properties:
+>> +  xen,dev-domid:
+>> +    $ref: /schemas/types.yaml#/definitions/uint32
+>> +    description:
+>> +      The domid (domain ID) of the domain where the device (backend) is running.
+>> +
+>> +additionalProperties: true
+>> +
+>> +examples:
+>> +  - |
+>> +    virtio_block@3000 {
+>> +            compatible = "virtio,mmio";
+>> +            reg = <0x3000 0x100>;
+>> +            interrupts = <41>;
+>> +
+>> +            /* The device is located in Xen domain with ID 1 */
+>> +            xen,dev-domid = <1>;
+>> +    };
+
+-- 
+Regards,
+
+Oleksandr Tyshchenko
 
