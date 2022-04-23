@@ -2,147 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9024C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 15:27:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8871C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 15:33:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234535AbiDWP1d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 11:27:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53034 "EHLO
+        id S234156AbiDWPgY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 11:36:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233462AbiDWP1L (ORCPT
+        with ESMTP id S230271AbiDWPgW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 11:27:11 -0400
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C630A35DDF;
-        Sat, 23 Apr 2022 08:24:12 -0700 (PDT)
-Received: by mail-qt1-x82c.google.com with SMTP id o18so7562261qtk.7;
-        Sat, 23 Apr 2022 08:24:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=DB27knfDqQc7OD0leI6JmLLgT8Ml329OWNhxU2Af7WI=;
-        b=V8Ya5SEin/5zgbYymNln3A+hUT/anyCJ1fnyD17zBLO17TQ74WliCoBmaeGiCG4OXO
-         8F3JWIHBR5EvaNlpP62NmBJqNTvnC8ke21pI39iJRqZMdNqaoFVGLfsJXBGt0q1galOl
-         0FpPTXf4fCwgWjgx0vpmMBSREtgn4o4OFLwHKklq/eq43A1eF9MU8Ssh52jRbp3tPMbs
-         KL0nLbjUuM/AzfqyVRtdAjGbeiTyQZKm6z6AUeZeV82wuw40IOGY0YM73AFQHJKamgua
-         b45Z3yNhEtB7ObbJ+T1HpaT0UxBszaHaNhx+/iQC8/7EWVi7eFj/V7phkzF1j8ZfUkMA
-         0iJQ==
+        Sat, 23 Apr 2022 11:36:22 -0400
+Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85F771E2C34;
+        Sat, 23 Apr 2022 08:33:25 -0700 (PDT)
+Received: by mail-qt1-f172.google.com with SMTP id f14so7580083qtq.1;
+        Sat, 23 Apr 2022 08:33:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=DB27knfDqQc7OD0leI6JmLLgT8Ml329OWNhxU2Af7WI=;
-        b=LkvWUBVO3Ly9CccC6b4VAVOcarVHx1EjHHdFvwD2qPXeSezTnpEaemiyq8kOAObwsa
-         JnUYxWKAWl+JdLG94OadiSUZQNPF7+7DeZQr95LEASGWfLyRweuvWEdBfnNwY4hZXYbl
-         vvlyqFVvlk5V9K2FgB6G3IKEgWU0WT/ZXUHdMVilloEdlSFg6skN4LN6G8KjBvvGBUK5
-         4BZnKicxV3LfHYG6sJeESWC/baA5CLNGULvD9IB7F9ylSAwi5UhbBmmwAvbcQl1YEwXx
-         QU8out5/3Hlk6i8PB5mCi7z03eyftih54cqlIPqB/n4nWg2cGRjJ2bxVRsamqYi7qSkb
-         xw/w==
-X-Gm-Message-State: AOAM531wiLCGFE8g4uLh9a/JUB75nxT57iUcCoucJC/tflxSeWZ+WKe3
-        m+3iMRXITYF+jH6JzduLCJE=
-X-Google-Smtp-Source: ABdhPJybRjaMCkQ7fMxW5I3iMYatbJOQ+l0qY41y/qN0g1LtLCGvGnPRdyP5lvab9ohjC4EXH6prwA==
-X-Received: by 2002:ac8:4d51:0:b0:2f1:ec64:cf90 with SMTP id x17-20020ac84d51000000b002f1ec64cf90mr6789779qtv.53.1650727451831;
-        Sat, 23 Apr 2022 08:24:11 -0700 (PDT)
-Received: from master-x64.sparksnet ([2601:153:980:85b1::10])
-        by smtp.gmail.com with ESMTPSA id y6-20020a05622a004600b002f33ba280cbsm3184165qtw.8.2022.04.23.08.24.11
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=qJrUJVGVT6gqJK4KN8HDJusUJ1FB5XVpIwvyKJbnkls=;
+        b=k6FpbbMMBnbTlsX4CQCthBCen/1Kr7VPQfLSHOIvEEGwgwvviL5VLKueOMvS+RNiVt
+         +fa6sYL00wUT4yXeW2tdYTb6aVUVqAQHuJeXFp5aXd8L9cxFoc+zXFObAwI8A8yIi+bt
+         A4ErT1vJiPcoMazNW5xa7QpVKb1lcf7hE4hVBorzf+zVxiIGTfXovdCvxjTQK0Wdwlfs
+         9zsfcU+0UVUPHY0FIHPGrmxo56T9giQ1mBYXFoz5gPHLJ3kmrBt6YwtNDYGg7zmd48Lo
+         /1zSsH0gIBqLYbpekyQ7tEtQq5RmSbJDWplxxcbuq84C6wDZlmbNTSWcA3kDz43dgY3G
+         M1gQ==
+X-Gm-Message-State: AOAM531CzIV9tcTdNopeJ3XiOJGcliohb8etJwchhJymI4w+VHryD9PX
+        PL9QCR1s5FKvwOypp6Vf5IU=
+X-Google-Smtp-Source: ABdhPJydqQZ+KYP1B8EgK79hxqm7VtvY1k4CpTZbNBftmTVxThWugowAhDIPkdk/lE5nCghmUeiGlw==
+X-Received: by 2002:a05:622a:651:b0:2f2:600:d146 with SMTP id a17-20020a05622a065100b002f20600d146mr6920846qtb.88.1650728004508;
+        Sat, 23 Apr 2022 08:33:24 -0700 (PDT)
+Received: from dev0025.ash9.facebook.com (fwdproxy-ash-005.fbsv.net. [2a03:2880:20ff:5::face:b00c])
+        by smtp.gmail.com with ESMTPSA id g11-20020ac84b6b000000b002f35e802a55sm1754224qts.1.2022.04.23.08.33.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Apr 2022 08:24:11 -0700 (PDT)
-From:   Peter Geis <pgwipeout@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>
-Cc:     linux-rockchip@lists.infradead.org,
-        Peter Geis <pgwipeout@gmail.com>,
-        Marc Zyngier <maz@kernel.org>, linux-pci@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v8 5/5] arm64: dts: rockchip: enable pcie controller on quartz64-a
-Date:   Sat, 23 Apr 2022 11:24:03 -0400
-Message-Id: <20220423152403.1681222-6-pgwipeout@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220423152403.1681222-1-pgwipeout@gmail.com>
-References: <20220423152403.1681222-1-pgwipeout@gmail.com>
+        Sat, 23 Apr 2022 08:33:24 -0700 (PDT)
+Date:   Sat, 23 Apr 2022 08:33:21 -0700
+From:   David Vernet <void@manifault.com>
+To:     Roman Gushchin <roman.gushchin@linux.dev>
+Cc:     akpm@linux-foundation.org, tj@kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        cgroups@vger.kernel.org, hannes@cmpxchg.org, mhocko@kernel.org,
+        shakeelb@google.com, kernel-team@fb.com
+Subject: Re: [PATCH 1/5] cgroups: Refactor children cgroups in memcg tests
+Message-ID: <20220423153321.cts6qhlybkghoe2o@dev0025.ash9.facebook.com>
+References: <20220423113037.gnfysktiuzmfnpmp@dev0025.ash9.facebook.com>
+ <EEC47283-0467-4C97-AAB2-73F17A97CE15@linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <EEC47283-0467-4C97-AAB2-73F17A97CE15@linux.dev>
+User-Agent: NeoMutt/20211029
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the nodes to enable the pcie controller on the quartz64 model a
-board.
+On Sat, Apr 23, 2022 at 08:19:12AM -0700, Roman Gushchin wrote:
+> 
+> > On Apr 23, 2022, at 4:30 AM, David Vernet <void@manifault.com> wrote:
+> > 
+> > ﻿On Fri, Apr 22, 2022 at 04:04:15PM -0700, Roman Gushchin wrote:
+> >> 
+> > 
+> > Thanks for the reviews on this patchset, Roman. FYI I think Andrew already
+> > merged these patches to the -mm tree. I'll send out a follow-on patch that
+> > fixes everything you pointed out, both here and on the other patches in the
+> > set.
+> 
+> The mm tree isn’t a git tree, but a collection of the text patches, managed by Andrew. So you can send a new version and Andrew can update it in place. It’s happening all the time: mostly for adding reviewed-by/acked-by tags etc, but for code updates as well.
+> It’s not uncommon for some patchset to mature while being in the mm tree, this allows to include them into linux-next and give some more testing, but without doing many reverts/fixups (Andrew is often squashing fixups into the original patch too). So long story short, you can just send a new version, especially because all changes all minor.
 
-Signed-off-by: Peter Geis <pgwipeout@gmail.com>
----
- .../boot/dts/rockchip/rk3566-quartz64-a.dts   | 34 +++++++++++++++++++
- 1 file changed, 34 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/rockchip/rk3566-quartz64-a.dts b/arch/arm64/boot/dts/rockchip/rk3566-quartz64-a.dts
-index dd7f4b9b686b..8b0537744a60 100644
---- a/arch/arm64/boot/dts/rockchip/rk3566-quartz64-a.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3566-quartz64-a.dts
-@@ -125,6 +125,18 @@ vbus: vbus {
- 		vin-supply = <&vcc12v_dcin>;
- 	};
- 
-+	vcc3v3_pcie_p: vcc3v3_pcie_p {
-+		compatible = "regulator-fixed";
-+		enable-active-high;
-+		gpio = <&gpio0 RK_PC6 GPIO_ACTIVE_HIGH>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pcie_enable_h>;
-+		regulator-name = "vcc3v3_pcie_p";
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+		vin-supply = <&vcc_3v3>;
-+	};
-+
- 	vcc5v0_usb: vcc5v0_usb {
- 		compatible = "regulator-fixed";
- 		regulator-name = "vcc5v0_usb";
-@@ -187,6 +199,10 @@ vcc_wl: vcc_wl {
- 	};
- };
- 
-+&combphy2 {
-+	status = "okay";
-+};
-+
- &cpu0 {
- 	cpu-supply = <&vdd_cpu>;
- };
-@@ -495,6 +511,14 @@ rgmii_phy1: ethernet-phy@0 {
- 	};
- };
- 
-+&pcie2x1 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pcie_reset_h>;
-+	reset-gpios = <&gpio1 RK_PB2 GPIO_ACTIVE_HIGH>;
-+	vpcie3v3-supply = <&vcc3v3_pcie_p>;
-+	status = "okay";
-+};
-+
- &pinctrl {
- 	bt {
- 		bt_enable_h: bt-enable-h {
-@@ -520,6 +544,16 @@ diy_led_enable_h: diy-led-enable-h {
- 		};
- 	};
- 
-+	pcie {
-+		pcie_enable_h: pcie-enable-h {
-+			rockchip,pins = <0 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
-+		};
-+
-+		pcie_reset_h: pcie-reset-h {
-+			rockchip,pins = <1 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>;
-+		};
-+	};
-+
- 	pmic {
- 		pmic_int_l: pmic-int-l {
- 			rockchip,pins = <0 RK_PA3 RK_FUNC_GPIO &pcfg_pull_up>;
--- 
-2.25.1
-
+Ah, that makes sense. Thanks for explaining that. I'll send out a v2 of the
+patches shortly, then!
