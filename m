@@ -2,254 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01B45C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 03:14:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9BC5C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 03:14:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232477AbiDWDQy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 23:16:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33962 "EHLO
+        id S232489AbiDWDRE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 23:17:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232288AbiDWDQl (ORCPT
+        with ESMTP id S232414AbiDWDQs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 23:16:41 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E59DC24;
-        Fri, 22 Apr 2022 20:13:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650683625; x=1682219625;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=mto+Vzxn6JKa+YbM4+e4HPrTh2VU2rRn+mkbkVddMG4=;
-  b=XhhFSbMEG71pxZssP+iOx9kYPnLMqZxgS314QbUHafn00JkIKPB5pAaN
-   uVBoWwr5cDQ4cljacggFIu6wAU6BGzCKv5G94VLzQ+6zpa/LyBkas4dvp
-   aHRN7nIybw+HwFrr8iDXvmWH4F9G5EoXqZNQUpFGXfRBpm8aMNFpXhVI1
-   uorGbU5IwswcQSpV0g3u345+LTiyr07zm3dQYhPAzjZkbXS8H9FdJ9f2z
-   b3qb1YlQtnJaNszOLdjr6QUjgg2X81iR94EUQwaTNGBAfuRXNVXXVda0X
-   D9hTetYJlDijJOVMe6J0B0+bnXLLnQv0QP2UwYpaqR+PYmQ1XpGr603mA
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="245410921"
-X-IronPort-AV: E=Sophos;i="5.90,283,1643702400"; 
-   d="scan'208";a="245410921"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 20:13:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,283,1643702400"; 
-   d="scan'208";a="556691793"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 22 Apr 2022 20:13:40 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ni6DL-000AwR-MR;
-        Sat, 23 Apr 2022 03:13:39 +0000
-Date:   Sat, 23 Apr 2022 11:00:39 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ong Boon Leong <boon.leong.ong@intel.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Ong Boon Leong <boon.leong.ong@intel.com>
-Subject: Re: [PATCH net-next 1/4] net: pcs: xpcs: add CL37 1000BASE-X AN
- support
-Message-ID: <202204231033.DjMxbbXU-lkp@intel.com>
-References: <20220422073505.810084-2-boon.leong.ong@intel.com>
+        Fri, 22 Apr 2022 23:16:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AEC0C60;
+        Fri, 22 Apr 2022 20:13:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4CDECB8335D;
+        Sat, 23 Apr 2022 03:13:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01299C385A0;
+        Sat, 23 Apr 2022 03:13:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650683630;
+        bh=cAjB3SwesxGlhRGXCKftp+OPMZZqvtJP/UCppIG/HvA=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=OP0hdxPZNSvivrDZoK0G6hQtq+j61ny5knTMEfFwL0Con60lrQ1oaYhaVVB7LJ79V
+         4baTC7tvXP6FwN2rTlcdvLumGdhHfS5Qp7ChLxmqiIWwFSto95M54Hr22HFEufPOH9
+         wcvdrNcMMsrwnBUx9GgqLbmL4vCFpwta7TugRPl/HoeVcjHIbDoovqdeEPo1Giy4xz
+         BI+QlrKhBYdyynnPalzlwH7TZpHZYtEgXMlN0xYKK2g+gP05Im1V8alSHjBifY9ZvG
+         dWicF5RDot33bfL5HKhXthcURnzQj2IVoal3mZGePG8EB32p2jltoqMle4zwgRtlb8
+         pNAlaYY498otg==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220422073505.810084-2-boon.leong.ong@intel.com>
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <YmNsYSxLtwLpw98t@ripper>
+References: <20220422230013.1332993-1-bjorn.andersson@linaro.org> <20220423014824.912ACC385A0@smtp.kernel.org> <YmNsYSxLtwLpw98t@ripper>
+Subject: Re: [PATCH v2 1/2] dt-bindings: clock: Add Qualcomm SC8280XP GCC bindings
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        quic_tdas@quicinc.com
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Date:   Fri, 22 Apr 2022 20:13:48 -0700
+User-Agent: alot/0.10
+Message-Id: <20220423031350.01299C385A0@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Ong,
+Quoting Bjorn Andersson (2022-04-22 20:02:57)
+> On Fri 22 Apr 18:48 PDT 2022, Stephen Boyd wrote:
+>=20
+> > Quoting Bjorn Andersson (2022-04-22 16:00:12)
+> > > Add binding for the Qualcomm SC8280XP Global Clock controller.
+> > >=20
+> > > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> >=20
+> > Why no cover letter?
+> >=20
+>=20
+> I didn't have anything useful to write in it. Will provide you one in
+> the future...
 
-Thank you for the patch! Yet something to improve:
+Thanks!
 
-[auto build test ERROR on net-next/master]
+> > > +  clocks:
+> > > +    items:
+> > > +      - description: XO reference clock
+> >=20
+> > "clock" is redundant in all these descriptions. Please remove.
+> >=20
+>=20
+> You don't think it's a little bit odd to have description such as
+> "Sleep", "PCIe 2a pipe" or First EMAC controller reference"?
+>=20
+> I mean I agree that it's obviously clocks we're talking about, but to me
+> that makes it seems like the descriptions are cut short, just for the
+> sake of avoiding "clock".
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Ong-Boon-Leong/pcs-xpcs-stmmac-add-1000BASE-X-AN-for-network-switch/20220422-154446
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 9c8774e629a1950c24b44e3c8fb93d76fb644b49
-config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20220423/202204231033.DjMxbbXU-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/dc88c5b7c183eeaff9db0e88d7b0d1d7f73e830b
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Ong-Boon-Leong/pcs-xpcs-stmmac-add-1000BASE-X-AN-for-network-switch/20220422-154446
-        git checkout dc88c5b7c183eeaff9db0e88d7b0d1d7f73e830b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
+Alright, keeping clock is OK as long as
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+>=20
+> > > +      - description: Sleep clock
+> > > +      - description: UFS memory first RX symbol clock
+> > > +      - description: UFS memory second RX symbol clock
+> > > +      - description: UFS memory first TX symbol clock
+> > > +      - description: UFS card first RX symbol clock
+> > > +      - description: UFS card second RX symbol clock
+> > > +      - description: UFS card first TX symbol clock
+> > > +      - description: Primary USB SuperSpeed pipe clock
+> > > +      - description: gcc_usb4_phy_pipegmux_clk_src
 
-All errors (new ones prefixed by >>):
+there is a better name for this and the other non-word descriptions.
 
-   drivers/net/dsa/sja1105/sja1105_main.c: In function 'sja1105_static_config_reload':
->> drivers/net/dsa/sja1105/sja1105_main.c:2334:22: error: too few arguments to function 'xpcs_do_config'
-    2334 |                 rc = xpcs_do_config(xpcs, priv->phy_mode[i], mode);
-         |                      ^~~~~~~~~~~~~~
-   In file included from drivers/net/dsa/sja1105/sja1105_main.c:19:
-   include/linux/pcs/pcs-xpcs.h:33:5: note: declared here
-      33 | int xpcs_do_config(struct dw_xpcs *xpcs, phy_interface_t interface,
-         |     ^~~~~~~~~~~~~~
+USB4 phy pipe gmux clock source?
 
+> > > +      - description: gcc_usb4_phy_dp_gmux_clk_src
+> > > +      - description: gcc_usb4_phy_sys_pipegmux_clk_src
+> > > +      - description: usb4_phy_gcc_usb4_pcie_pipe_clk
+> > > +      - description: usb4_phy_gcc_usb4rtr_max_pipe_clk
+> > > +      - description: Primary USB4 RX0 clock
+> > > +      - description: Primary USB4 RX1 clock
+> > > +      - description: Secondary USB SuperSpeed pipe clock
+> > > +      - description: gcc_usb4_1_phy_pipegmux_clk_src
+> > > +      - description: gcc_usb4_1_phy_dp_gmux_clk_src
+> > > +      - description: gcc_usb4_1_phy_sys_pipegmux_clk_src
+> > > +      - description: usb4_1_phy_gcc_usb4_pcie_pipe_clk
+> > > +      - description: usb4_1_phy_gcc_usb4rtr_max_pipe_clk
+> > > +      - description: Secondary USB4 RX0 clock
+> > > +      - description: Secondary USB4 RX0 clock
+> > > +      - description: Multiport USB first SupserSpeed pipe clock
+> > > +      - description: Multiport USB second SuperSpeed pipe clock
+> > > +      - description: PCIe 2a pipe clock
+> > > +      - description: PCIe 2b pipe clock
+> > > +      - description: PCIe 3a pipe clock
+> > > +      - description: PCIe 3b pipe clock
+> > > +      - description: PCIe 4 pipe clock
+> > > +      - description: First EMAC controller reference clock
+> > > +      - description: Second EMAC controller reference clock
+> > > +
+> > > +  clock-names:
+> > > +    items:
+> > > +      - const: bi_tcxo
+> > > +      - const: sleep_clk
+> >=20
+> > And "_clk" postfix is redundant in all these strings. Remove?
+> >=20
+>=20
+> In this case I think they should include _clk, as they actually matches
+> the clock names in the documentation.
+>=20
 
-vim +/xpcs_do_config +2334 drivers/net/dsa/sja1105/sja1105_main.c
-
-2eea1fa82f681b Vladimir Oltean 2019-11-12  2224  
-6666cebc5e306f Vladimir Oltean 2019-05-02  2225  /* For situations where we need to change a setting at runtime that is only
-6666cebc5e306f Vladimir Oltean 2019-05-02  2226   * available through the static configuration, resetting the switch in order
-6666cebc5e306f Vladimir Oltean 2019-05-02  2227   * to upload the new static config is unavoidable. Back up the settings we
-6666cebc5e306f Vladimir Oltean 2019-05-02  2228   * modify at runtime (currently only MAC) and restore them after uploading,
-6666cebc5e306f Vladimir Oltean 2019-05-02  2229   * such that this operation is relatively seamless.
-6666cebc5e306f Vladimir Oltean 2019-05-02  2230   */
-2eea1fa82f681b Vladimir Oltean 2019-11-12  2231  int sja1105_static_config_reload(struct sja1105_private *priv,
-2eea1fa82f681b Vladimir Oltean 2019-11-12  2232  				 enum sja1105_reset_reason reason)
-6666cebc5e306f Vladimir Oltean 2019-05-02  2233  {
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2234  	struct ptp_system_timestamp ptp_sts_before;
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2235  	struct ptp_system_timestamp ptp_sts_after;
-82760d7f2ea638 Vladimir Oltean 2021-05-24  2236  	int speed_mbps[SJA1105_MAX_NUM_PORTS];
-84db00f2c04338 Vladimir Oltean 2021-05-31  2237  	u16 bmcr[SJA1105_MAX_NUM_PORTS] = {0};
-6666cebc5e306f Vladimir Oltean 2019-05-02  2238  	struct sja1105_mac_config_entry *mac;
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2239  	struct dsa_switch *ds = priv->ds;
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2240  	s64 t1, t2, t3, t4;
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2241  	s64 t12, t34;
-6666cebc5e306f Vladimir Oltean 2019-05-02  2242  	int rc, i;
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2243  	s64 now;
-6666cebc5e306f Vladimir Oltean 2019-05-02  2244  
-af580ae2dcb250 Vladimir Oltean 2019-11-09  2245  	mutex_lock(&priv->mgmt_lock);
-af580ae2dcb250 Vladimir Oltean 2019-11-09  2246  
-6666cebc5e306f Vladimir Oltean 2019-05-02  2247  	mac = priv->static_config.tables[BLK_IDX_MAC_CONFIG].entries;
-6666cebc5e306f Vladimir Oltean 2019-05-02  2248  
-8400cff60b472c Vladimir Oltean 2019-06-08  2249  	/* Back up the dynamic link speed changed by sja1105_adjust_port_config
-8400cff60b472c Vladimir Oltean 2019-06-08  2250  	 * in order to temporarily restore it to SJA1105_SPEED_AUTO - which the
-8400cff60b472c Vladimir Oltean 2019-06-08  2251  	 * switch wants to see in the static config in order to allow us to
-8400cff60b472c Vladimir Oltean 2019-06-08  2252  	 * change it through the dynamic interface later.
-6666cebc5e306f Vladimir Oltean 2019-05-02  2253  	 */
-542043e91df452 Vladimir Oltean 2021-05-24  2254  	for (i = 0; i < ds->num_ports; i++) {
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2255  		u32 reg_addr = mdiobus_c45_addr(MDIO_MMD_VEND2, MDIO_CTRL1);
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2256  
-41fed17fdbe531 Vladimir Oltean 2021-05-31  2257  		speed_mbps[i] = sja1105_port_speed_to_ethtool(priv,
-41fed17fdbe531 Vladimir Oltean 2021-05-31  2258  							      mac[i].speed);
-41fed17fdbe531 Vladimir Oltean 2021-05-31  2259  		mac[i].speed = priv->info->port_speed[SJA1105_SPEED_AUTO];
-6666cebc5e306f Vladimir Oltean 2019-05-02  2260  
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2261  		if (priv->xpcs[i])
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2262  			bmcr[i] = mdiobus_read(priv->mdio_pcs, i, reg_addr);
-84db00f2c04338 Vladimir Oltean 2021-05-31  2263  	}
-ffe10e679cec9a Vladimir Oltean 2020-03-20  2264  
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2265  	/* No PTP operations can run right now */
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2266  	mutex_lock(&priv->ptp_data.lock);
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2267  
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2268  	rc = __sja1105_ptp_gettimex(ds, &now, &ptp_sts_before);
-61c77533b82ba8 Vladimir Oltean 2021-06-18  2269  	if (rc < 0) {
-61c77533b82ba8 Vladimir Oltean 2021-06-18  2270  		mutex_unlock(&priv->ptp_data.lock);
-61c77533b82ba8 Vladimir Oltean 2021-06-18  2271  		goto out;
-61c77533b82ba8 Vladimir Oltean 2021-06-18  2272  	}
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2273  
-6666cebc5e306f Vladimir Oltean 2019-05-02  2274  	/* Reset switch and send updated static configuration */
-6666cebc5e306f Vladimir Oltean 2019-05-02  2275  	rc = sja1105_static_config_upload(priv);
-61c77533b82ba8 Vladimir Oltean 2021-06-18  2276  	if (rc < 0) {
-61c77533b82ba8 Vladimir Oltean 2021-06-18  2277  		mutex_unlock(&priv->ptp_data.lock);
-61c77533b82ba8 Vladimir Oltean 2021-06-18  2278  		goto out;
-61c77533b82ba8 Vladimir Oltean 2021-06-18  2279  	}
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2280  
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2281  	rc = __sja1105_ptp_settime(ds, 0, &ptp_sts_after);
-61c77533b82ba8 Vladimir Oltean 2021-06-18  2282  	if (rc < 0) {
-61c77533b82ba8 Vladimir Oltean 2021-06-18  2283  		mutex_unlock(&priv->ptp_data.lock);
-61c77533b82ba8 Vladimir Oltean 2021-06-18  2284  		goto out;
-61c77533b82ba8 Vladimir Oltean 2021-06-18  2285  	}
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2286  
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2287  	t1 = timespec64_to_ns(&ptp_sts_before.pre_ts);
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2288  	t2 = timespec64_to_ns(&ptp_sts_before.post_ts);
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2289  	t3 = timespec64_to_ns(&ptp_sts_after.pre_ts);
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2290  	t4 = timespec64_to_ns(&ptp_sts_after.post_ts);
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2291  	/* Mid point, corresponds to pre-reset PTPCLKVAL */
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2292  	t12 = t1 + (t2 - t1) / 2;
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2293  	/* Mid point, corresponds to post-reset PTPCLKVAL, aka 0 */
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2294  	t34 = t3 + (t4 - t3) / 2;
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2295  	/* Advance PTPCLKVAL by the time it took since its readout */
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2296  	now += (t34 - t12);
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2297  
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2298  	__sja1105_ptp_adjtime(ds, now);
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2299  
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2300  	mutex_unlock(&priv->ptp_data.lock);
-6666cebc5e306f Vladimir Oltean 2019-05-02  2301  
-2eea1fa82f681b Vladimir Oltean 2019-11-12  2302  	dev_info(priv->ds->dev,
-2eea1fa82f681b Vladimir Oltean 2019-11-12  2303  		 "Reset switch and programmed static config. Reason: %s\n",
-2eea1fa82f681b Vladimir Oltean 2019-11-12  2304  		 sja1105_reset_reasons[reason]);
-2eea1fa82f681b Vladimir Oltean 2019-11-12  2305  
-6666cebc5e306f Vladimir Oltean 2019-05-02  2306  	/* Configure the CGU (PLLs) for MII and RMII PHYs.
-6666cebc5e306f Vladimir Oltean 2019-05-02  2307  	 * For these interfaces there is no dynamic configuration
-6666cebc5e306f Vladimir Oltean 2019-05-02  2308  	 * needed, since PLLs have same settings at all speeds.
-6666cebc5e306f Vladimir Oltean 2019-05-02  2309  	 */
-cb5a82d2b9aaca Vladimir Oltean 2021-06-18  2310  	if (priv->info->clocking_setup) {
-c50376783f23ff Vladimir Oltean 2021-05-24  2311  		rc = priv->info->clocking_setup(priv);
-6666cebc5e306f Vladimir Oltean 2019-05-02  2312  		if (rc < 0)
-6666cebc5e306f Vladimir Oltean 2019-05-02  2313  			goto out;
-cb5a82d2b9aaca Vladimir Oltean 2021-06-18  2314  	}
-6666cebc5e306f Vladimir Oltean 2019-05-02  2315  
-542043e91df452 Vladimir Oltean 2021-05-24  2316  	for (i = 0; i < ds->num_ports; i++) {
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2317  		struct dw_xpcs *xpcs = priv->xpcs[i];
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2318  		unsigned int mode;
-84db00f2c04338 Vladimir Oltean 2021-05-31  2319  
-8400cff60b472c Vladimir Oltean 2019-06-08  2320  		rc = sja1105_adjust_port_config(priv, i, speed_mbps[i]);
-6666cebc5e306f Vladimir Oltean 2019-05-02  2321  		if (rc < 0)
-6666cebc5e306f Vladimir Oltean 2019-05-02  2322  			goto out;
-ffe10e679cec9a Vladimir Oltean 2020-03-20  2323  
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2324  		if (!xpcs)
-84db00f2c04338 Vladimir Oltean 2021-05-31  2325  			continue;
-84db00f2c04338 Vladimir Oltean 2021-05-31  2326  
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2327  		if (bmcr[i] & BMCR_ANENABLE)
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2328  			mode = MLO_AN_INBAND;
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2329  		else if (priv->fixed_link[i])
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2330  			mode = MLO_AN_FIXED;
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2331  		else
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2332  			mode = MLO_AN_PHY;
-ffe10e679cec9a Vladimir Oltean 2020-03-20  2333  
-3ad1d171548e85 Vladimir Oltean 2021-06-11 @2334  		rc = xpcs_do_config(xpcs, priv->phy_mode[i], mode);
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2335  		if (rc < 0)
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2336  			goto out;
-ffe10e679cec9a Vladimir Oltean 2020-03-20  2337  
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2338  		if (!phylink_autoneg_inband(mode)) {
-ffe10e679cec9a Vladimir Oltean 2020-03-20  2339  			int speed = SPEED_UNKNOWN;
-ffe10e679cec9a Vladimir Oltean 2020-03-20  2340  
-56b63466333b25 Vladimir Oltean 2021-06-11  2341  			if (priv->phy_mode[i] == PHY_INTERFACE_MODE_2500BASEX)
-56b63466333b25 Vladimir Oltean 2021-06-11  2342  				speed = SPEED_2500;
-56b63466333b25 Vladimir Oltean 2021-06-11  2343  			else if (bmcr[i] & BMCR_SPEED1000)
-ffe10e679cec9a Vladimir Oltean 2020-03-20  2344  				speed = SPEED_1000;
-84db00f2c04338 Vladimir Oltean 2021-05-31  2345  			else if (bmcr[i] & BMCR_SPEED100)
-ffe10e679cec9a Vladimir Oltean 2020-03-20  2346  				speed = SPEED_100;
-053d8ad10d585a Vladimir Oltean 2021-03-04  2347  			else
-ffe10e679cec9a Vladimir Oltean 2020-03-20  2348  				speed = SPEED_10;
-ffe10e679cec9a Vladimir Oltean 2020-03-20  2349  
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2350  			xpcs_link_up(&xpcs->pcs, mode, priv->phy_mode[i],
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2351  				     speed, DUPLEX_FULL);
-ffe10e679cec9a Vladimir Oltean 2020-03-20  2352  		}
-ffe10e679cec9a Vladimir Oltean 2020-03-20  2353  	}
-4d7525085a9ba8 Vladimir Oltean 2020-05-28  2354  
-4d7525085a9ba8 Vladimir Oltean 2020-05-28  2355  	rc = sja1105_reload_cbs(priv);
-4d7525085a9ba8 Vladimir Oltean 2020-05-28  2356  	if (rc < 0)
-4d7525085a9ba8 Vladimir Oltean 2020-05-28  2357  		goto out;
-6666cebc5e306f Vladimir Oltean 2019-05-02  2358  out:
-af580ae2dcb250 Vladimir Oltean 2019-11-09  2359  	mutex_unlock(&priv->mgmt_lock);
-af580ae2dcb250 Vladimir Oltean 2019-11-09  2360  
-6666cebc5e306f Vladimir Oltean 2019-05-02  2361  	return rc;
-6666cebc5e306f Vladimir Oltean 2019-05-02  2362  }
-6666cebc5e306f Vladimir Oltean 2019-05-02  2363  
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+I'd really rather not have clock-names at all because we spend a bunch
+of time comparing strings with them when we could just as easily use
+a number.
