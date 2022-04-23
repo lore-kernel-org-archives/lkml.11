@@ -2,236 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5661BC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 05:21:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA8AAC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 05:25:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233367AbiDWFYl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 01:24:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38668 "EHLO
+        id S233336AbiDWF2v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 01:28:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233372AbiDWFYh (ORCPT
+        with ESMTP id S231922AbiDWF2q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 01:24:37 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E78F5A584
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 22:21:40 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id v64-20020a1cac43000000b0038cfd1b3a6dso9217660wme.5
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 22:21:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=sbU8RRqvuKwLWG8J3BfpPsUyUgY2ByjD6sNT/NW9Qas=;
-        b=B6wZBHSzUPdCcDLRt1WF1wSVUZ6IaPZJKGzRkGxcMgrYRTCyx7oSwk7DfdsA3pIH0/
-         3L/eQ8eCefAuJK0ZDUAcwKkxBObXj+j74XX2+U401kaeQ8NEUVwctEUF0ORbQx01jUtF
-         lWQ+vcl0M/AV6JkP/osjzHeMq8XbkJX5EMKF0NUF4yrSw+6jnZbRZ090GCI3c0teQ1pW
-         sp8FdQOPq969THiLOqq0bUDuzvxKY5guY3vvvPNRUzi1QBR+2pfwyt/kAvH9k0BZjNwO
-         9qoFuOcNsY9/WEXcJwGkVg9bb9iW458LYRNr4pr9LIhMCmUeBudX6sG/Kphcpldtz6hY
-         rsrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=sbU8RRqvuKwLWG8J3BfpPsUyUgY2ByjD6sNT/NW9Qas=;
-        b=S7bZ0U/Bj2ZuycypDNVcG9XRNwWUaBK+Dhx8BMIIpeiITVWf698YDaXEhIKjR032sh
-         g64WP6YEK/fBClUoMeu13/u46/WroC2LmEDuh/xJLwZQDxbiHgVEbsQSxNWb8aC2Vtb+
-         Gwd2wvIz+5VhffV3dZnn9ghZXWXFxSJK6YPFjRPtrKfQhR1jxigyPTf/dTdrWeM2w/Dn
-         yCs1oKJQdBZA6yz/L+KPE5zFVQzELdhrSAVnje5KlWz04HUMxV5R+0yKAq7egcZBj7Se
-         G9rUT1REkuZj5KCWptgynGjExx9S+Hp4XnnRrMDai8fPZOP3FRe75IWGRzUyxtIAsMLd
-         FQ3Q==
-X-Gm-Message-State: AOAM531owkdaVEdsbkjmyg81iVWMyRkJMWKJyCp8GLb8vCpPE8qoZFb2
-        YfMOhRB1JfxUY5RKsG94WKqtp405TeNT2h0XeLtNuQ==
-X-Google-Smtp-Source: ABdhPJxnpi9iklJash3oBnOjkGhS8EaN+Bz6xw+hWOgd0DstcjPeFSZjE122Tq7X7+gHuxZSEmIi2G1jabwClBKyMmI=
-X-Received: by 2002:a05:600c:1d15:b0:393:e534:eb93 with SMTP id
- l21-20020a05600c1d1500b00393e534eb93mr816388wms.137.1650691298392; Fri, 22
- Apr 2022 22:21:38 -0700 (PDT)
+        Sat, 23 Apr 2022 01:28:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A076818744A;
+        Fri, 22 Apr 2022 22:25:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 588E0B801BA;
+        Sat, 23 Apr 2022 05:25:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BBF8C385A9;
+        Sat, 23 Apr 2022 05:25:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650691545;
+        bh=q6jqaY03g41hcsI0QCManqaNvGa5sGMYC6V39cLA0l8=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=bbR2UUPIqcJGuZZzm8nOgkWxo2ChtfrEfUBPvE4VPt8a+ThQn1tRffXiPDbxtsUIe
+         wqyz42+I92dr0a+15dlgb77MpJuS0Sa0ddLMcrQx3LXqtvoFNGG85vUu7Iln5vZb6C
+         uVX+RHbMhBTxVU9HJnmOsmQHYEOOIF8bQ+8+wY766NrkKrh9/vFVmPr39RVlumcCx0
+         Ocnm0a6GGnPzVuZ7//PbngCzH6HbvD/oSf/Qmzq2gamYr3e1iFFrCEGj0e6zG6kNFv
+         NvPe3BIgu3xBbxEeGUi5TceyAJ9GizKX0T0JwT5zhFaW/FuemcgYIDtr97YpNMwr9O
+         a0XgAFAuAYuvA==
+Received: by mail-yb1-f176.google.com with SMTP id b26so12362307ybj.13;
+        Fri, 22 Apr 2022 22:25:45 -0700 (PDT)
+X-Gm-Message-State: AOAM530LhD8aFr/mr+wnf+kf5PjmWAf2UNjPPZB31wC9/W5oZtkakfvw
+        CzvArl3ybCZ21VFJvPyUJsRDiJKwD8UDLdKJWf0=
+X-Google-Smtp-Source: ABdhPJxECgRV5ioL9K3lI8C1A9nSRRuKOZ108iWKeb3lc81+AwWwf2cxB3V44iK7qyJeRhTXiT++O1jnhjHju0z9HLs=
+X-Received: by 2002:a25:395:0:b0:645:8146:9a9e with SMTP id
+ 143-20020a250395000000b0064581469a9emr7287113ybd.389.1650691544022; Fri, 22
+ Apr 2022 22:25:44 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220420112408.155561-1-apatel@ventanamicro.com>
- <3fa5215b-84c3-5e4c-cb53-6c05d05e4350@canonical.com> <CAOnJCUJrN4frY_OdQzO-yr5CrDLvj=ge9KY2d=XnGvAF-uQNvQ@mail.gmail.com>
- <CAOnJCUK5q0k1qKD0fM4NtbP6KAGcaBBknkCKLBXxcC=EPGVu1Q@mail.gmail.com>
-In-Reply-To: <CAOnJCUK5q0k1qKD0fM4NtbP6KAGcaBBknkCKLBXxcC=EPGVu1Q@mail.gmail.com>
-From:   Anup Patel <anup@brainfault.org>
-Date:   Sat, 23 Apr 2022 10:51:26 +0530
-Message-ID: <CAAhSdy3gO6a47fsO=UEp=k6KtMjzuNG_9pGnOky5LwGBmwL4rw@mail.gmail.com>
-Subject: Re: [PATCH v3] RISC-V: Increase range and default value of NR_CPUS
-To:     Atish Patra <atishp@atishpatra.org>
-Cc:     Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
-        Anup Patel <apatel@ventanamicro.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Alistair Francis <Alistair.Francis@wdc.com>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>
+References: <20220421072212.608884-1-song@kernel.org> <CAHk-=wi3eu8mdKmXOCSPeTxABVbstbDg1q5Fkak+A9kVwF+fVw@mail.gmail.com>
+ <CAADnVQKyDwXUMCfmdabbVE0vSGxdpqmWAwHRBqbPLW=LdCnHBQ@mail.gmail.com>
+ <CAHk-=whFeBezdSrPy31iYv-UZNnNavymrhqrwCptE4uW8aeaHw@mail.gmail.com>
+ <CAPhsuW7M6exGD3C1cPBGjhU0Y5efxtJ3=0BWNnbuH87TgQMzdg@mail.gmail.com>
+ <CAHk-=wh1mO5HdrOMTq68WHM51-=jdmQS=KipVYxS+5u3uRc5rg@mail.gmail.com>
+ <1A4FF473-0988-48BE-9993-0F5E9F0AAC95@fb.com> <CAHk-=wi62LDc5B3DOr5pyVtOUOuLkLzHvmZQApH9q=raqaGkUg@mail.gmail.com>
+ <8F788446-899C-4BA3-8236-612A94D98582@fb.com> <20220422073118.GR2731@worktop.programming.kicks-ass.net>
+In-Reply-To: <20220422073118.GR2731@worktop.programming.kicks-ass.net>
+From:   Song Liu <song@kernel.org>
+Date:   Fri, 22 Apr 2022 22:25:32 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW58Y2wOe68jHmqj9ZCUQO-4nMWZn82wU=5sA+n7LEkM=A@mail.gmail.com>
+Message-ID: <CAPhsuW58Y2wOe68jHmqj9ZCUQO-4nMWZn82wU=5sA+n7LEkM=A@mail.gmail.com>
+Subject: Re: [PATCH bpf] bpf: invalidate unused part of bpf_prog_pack
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Song Liu <songliubraving@fb.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Andrii Nakryiko <andrii@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+Alistair
-
-On Sat, Apr 23, 2022 at 7:19 AM Atish Patra <atishp@atishpatra.org> wrote:
+On Fri, Apr 22, 2022 at 12:31 AM Peter Zijlstra <peterz@infradead.org> wrote:
 >
-> On Fri, Apr 22, 2022 at 5:16 PM Atish Patra <atishp@atishpatra.org> wrote=
-:
-> >
-> > On Thu, Apr 21, 2022 at 12:05 AM Heinrich Schuchardt
-> > <heinrich.schuchardt@canonical.com> wrote:
+> > > On Apr 21, 2022, at 3:30 PM, Linus Torvalds <torvalds@linux-foundation.org> wrote:
+>
+> > > I actually think bpf_arch_text_copy() is another horribly badly done thing.
 > > >
+> > > It seems only implemented on x86 (I'm not sure how anything else is
+> > > supposed to work, I didn't go look), and there it is horribly badly
+> > > done, using __text_poke() that does all these magical things just to
+> > > make it atomic wrt concurrent code execution.
 > > >
+> > > None of which is *AT*ALL* relevant for this case, since concurrent
+> > > code execution simply isn't a thing (and if it were, you would already
+> > > have lost).
 > > >
-> > > On 4/20/22 13:24, Anup Patel wrote:
-> > > > Currently, the range and default value of NR_CPUS is too restrictiv=
-e
-> > > > for high-end RISC-V systems with large number of HARTs. The latest
-> > > > QEMU virt machine supports upto 512 CPUs so the current NR_CPUS is
-> > > > restrictive for QEMU as well. Other major architectures (such as
-> > > > ARM64, x86_64, MIPS, etc) have a much higher range and default
-> > > > value of NR_CPUS.
-> > > >
-> > > > This patch increases NR_CPUS range to 2-512 and default value to
-> > > > XLEN (i.e. 32 for RV32 and 64 for RV64).
-> > > >
-> > > > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> > > And if that wasn't pointless enough, it does all that magic "map the
+> > > page writably at a different virtual address using poking_addr in
+> > > poking_mm" and a different address space entirely.
 > > >
-> >
-> > This works upto 207 harts in upstream Qemu + OpenSBI. Beyond that,
-> > firmware size becomes > 2MB and PMP protection
-> > kicks in for the kernel boot address (0x80200000)
-> >
->
-> Just wanted to clarify that this is as per the current configuration
-> in OpenSBI. The boot address
-> is configured to be 0x80000000 for the generic platform. Thus, it can
-> support a maximum of 207 harts.
->
-> If anybody wishes to boot more than that, the boot address should be
-> changed to a valid DRAM address such that
-> it doesn't step on kernel/DT or other resident boot loaders (e.g. U-Boot)=
-.
->
-> It should be changed per platform (if supporting more than 128 harts)
-> rather than changing
-> to a common address for all platforms.
-
-The OpenSBI limit of 128 harts was carefully chosen considering the
-fact that QEMU by default loads OpenSBI at start of DRAM and kernel
-at 2M (for RV64) or 4M (for RV32) offset. This means for RV64 if
-OpenSBI is loaded at the start of DRAM then we only have 2M space
-for OpenSBI hence the 128 harts limit.
-
-To use more than 128 harts with OpenSBI, we will have to load it
-somewhere else (probably in the middle of DRAM) but this will be a
-platform specific choice. If a separate LOADER booting stage (e.g.
-U-Boot SPL) is available on a platform then it can load OpenSBI
-at desired platform specific location.
-
-Overall, this is indeed a platform configuration issue. We will continue
-to optimize OpenSBI to support more harts with less RAM usage but
-this is a separate topic.
-
-Regards,
-Anup
-
->
-> > Here is the OpenSBI boot prints for 256 harts with some hacks around
-> > sanitize_domain to disable sbi_domain_check_addr
-> >
-> > Platform Name             : riscv-virtio,qemu
-> > Platform Features         : medeleg
-> > Platform HART Count       : 208
-> > Platform IPI Device       : aclint-mswi
-> > Platform Timer Device     : aclint-mtimer @ 10000000Hz
-> > Platform Console Device   : uart8250
-> > Platform HSM Device       : ---
-> > Platform Reboot Device    : sifive_test
-> > Platform Shutdown Device  : sifive_test
-> > Firmware Base             : 0x80000000
-> > Firmware Size             : 2052 KB ---------->>> Firmware size is
-> > greater than 2MB where
-> > Runtime SBI Version       : 0.3
-> >
-> > Domain0 Name              : root
-> > Domain0 Boot HART         : 122
-> > Domain0 HARTs             :
-> > 0*,1*,2*,3*,4*,5*,6*,7*,8*,9*,10*,11*,12*,13*,14*,15*,16*,17*,18*,19*,2=
-0*,21*,22*,23*,24*,25*,26*,27*,28*,29*,30*,31*,32*,33*,34*,35*,36*,37*,38*,=
-39*,40*,41*,42*,43*,44*,45*,46*,47*,48*,49*,50*,51*,52*,53*,54*,55*,56*,57*=
-,58*,59*,60*,61*,62*,63*,64*,65*,66*,67*,68*,69*,70*,71*,72*,73*,74*,75*,76=
-*,77*,78*,79*,80*,81*,82*,83*,84*,85*,86*,87*,88*,89*,90*,91*,92*,93*,94*,9=
-5*,96*,97*,98*,99*,100*,101*,102*,103*,104*,105*,106*,107*,108*,109*,110*,1=
-11*,112*,113*,114*,115*,116*,117*,118*,119*,120*,121*,122*,123*,124*,125*,1=
-26*,127*,128*,129*,130*,131*,132*,133*,134*,135*,136*,137*,138*,139*,140*,1=
-41*,142*,143*,144*,145*,146*,147*,148*,149*,150*,151*,152*,153*,154*,155*,1=
-56*,157*,158*,159*,160*,161*,162*,163*,164*,165*,166*,167*,168*,169*,170*,1=
-71*,172*,173*,174*,175*,176*,177*,178*,179*,180*,181*,182*,183*,184*,185*,1=
-86*,187*,188*,189*,190*,191*,192*,193*,194*,195*,196*,197*,198*,199*,200*,2=
-01*,202*,203*,204*,205*,206*,207*
-> > Domain0 Region00          : 0x0000000002000000-0x000000000200ffff (I)
-> > Domain0 Region01          : 0x0000000080000000-0x00000000803fffff ()
-> > Domain0 Region02          : 0x0000000000000000-0xffffffffffffffff (R,W,=
-X)
-> > Domain0 Next Address      : 0x0000000080200000
-> > Domain0 Next Arg1         : 0x00000000bf000000
-> > Domain0 Next Mode         : S-mode
-> > Domain0 SysReset          : yes
-> >
-> > Boot HART ID              : 122
-> > Boot HART Domain          : root
-> > Boot HART ISA             : rv64imafdcsuh
-> > Boot HART Features        : scounteren,mcounteren,time
-> > Boot HART PMP Count       : 16
-> > Boot HART PMP Granularity : 4
-> > Boot HART PMP Address Bits: 54
-> > Boot HART MHPM Count      : 0
-> > Boot HART MIDELEG         : 0x0000000000001666
-> > Boot HART MEDELEG         : 0x0000000000f0b509
-> >
-> >
-> > > Reviewed-by: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
+> > > All of that is required for REAL KERNEL CODE.
 > > >
-> > > > ---
-> > > > Changes since v2:
-> > > >   - Rebased on Linux-5.18-rc3
-> > > >   - Use a different range when SBI v0.1 is enabled
-> > > > Changes since v1:
-> > > >   - Updated NR_CPUS range to 2-512 which reflects maximum number of
-> > > >     CPUs supported by QEMU virt machine.
-> > > > ---
-> > > >   arch/riscv/Kconfig | 9 ++++++---
-> > > >   1 file changed, 6 insertions(+), 3 deletions(-)
-> > > >
-> > > > diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
-> > > > index 00fd9c548f26..1823f281069f 100644
-> > > > --- a/arch/riscv/Kconfig
-> > > > +++ b/arch/riscv/Kconfig
-> > > > @@ -275,10 +275,13 @@ config SMP
-> > > >         If you don't know what to do here, say N.
-> > > >
-> > > >   config NR_CPUS
-> > > > -     int "Maximum number of CPUs (2-32)"
-> > > > -     range 2 32
-> > > > +     int "Maximum number of CPUs (2-512)"
-> > > >       depends on SMP
-> > > > -     default "8"
-> > > > +     range 2 512 if !SBI_V01
-> > > > +     range 2 32 if SBI_V01 && 32BIT
-> > > > +     range 2 64 if SBI_V01 && 64BIT
-> > > > +     default "32" if 32BIT
-> > > > +     default "64" if 64BIT
-> > > >
-> > > >   config HOTPLUG_CPU
-> > > >       bool "Support for hot-pluggable CPUs"
-> >
-> >
-> >
-> > --
-> > Regards,
-> > Atish
+> > > But the thing is, for bpf_prog_pack, all of that is just completely
+> > > pointless and stupid complexity.
 >
+> I think the point is that this hole will likely share a page with active
+> code, and as such there should not be a writable mapping mapping to it,
+> necessitating the whole __text_poke() mess.
 >
+> That said; it does seem somewhat silly have a whole page worth of int3
+> around just for this.
 >
-> --
-> Regards,
-> Atish
+> Perhaps we can do something like the completely untested below?
+
+Yeah, this looks like a better approach. I will draft v2 based on this.
+
+Thanks,
+Song
+
+>
+> ---
+>  arch/x86/kernel/alternative.c | 48 +++++++++++++++++++++++++++++++++++++------
+>  1 file changed, 42 insertions(+), 6 deletions(-)
+>
+> diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
+> index d374cb3cf024..60afa9105307 100644
+> --- a/arch/x86/kernel/alternative.c
+> +++ b/arch/x86/kernel/alternative.c
+> @@ -994,7 +994,20 @@ static inline void unuse_temporary_mm(temp_mm_state_t prev_state)
+>  __ro_after_init struct mm_struct *poking_mm;
+>  __ro_after_init unsigned long poking_addr;
+>
+> -static void *__text_poke(void *addr, const void *opcode, size_t len)
+> +static void text_poke_memcpy(void *dst, const void *src, size_t len)
+> +{
+> +       memcpy(dst, src, len);
+> +}
+> +
+> +static void text_poke_memset(void *dst, const void *src, size_t len)
+> +{
+> +       int c = *(int *)src;
+> +       memset(dst, c, len);
+> +}
+> +
+> +typedef void text_poke_f(void *dst, const void *src, size_t len);
+> +
+> +static void *__text_poke(text_poke_f func, void *addr, const void *src, size_t len)
+>  {
+>         bool cross_page_boundary = offset_in_page(addr) + len > PAGE_SIZE;
+>         struct page *pages[2] = {NULL};
+> @@ -1059,7 +1072,7 @@ static void *__text_poke(void *addr, const void *opcode, size_t len)
+>         prev = use_temporary_mm(poking_mm);
+>
+>         kasan_disable_current();
+> -       memcpy((u8 *)poking_addr + offset_in_page(addr), opcode, len);
+> +       func((void *)poking_addr + offset_in_page(addr), src, len);
+>         kasan_enable_current();
+>
+>         /*
+> @@ -1091,7 +1104,8 @@ static void *__text_poke(void *addr, const void *opcode, size_t len)
+>          * If the text does not match what we just wrote then something is
+>          * fundamentally screwy; there's nothing we can really do about that.
+>          */
+> -       BUG_ON(memcmp(addr, opcode, len));
+> +       if (func == text_poke_memcpy)
+> +               BUG_ON(memcmp(addr, src, len));
+>
+>         local_irq_restore(flags);
+>         pte_unmap_unlock(ptep, ptl);
+> @@ -1118,7 +1132,7 @@ void *text_poke(void *addr, const void *opcode, size_t len)
+>  {
+>         lockdep_assert_held(&text_mutex);
+>
+> -       return __text_poke(addr, opcode, len);
+> +       return __text_poke(text_poke_memcpy, addr, opcode, len);
+>  }
+>
+>  /**
+> @@ -1137,7 +1151,7 @@ void *text_poke(void *addr, const void *opcode, size_t len)
+>   */
+>  void *text_poke_kgdb(void *addr, const void *opcode, size_t len)
+>  {
+> -       return __text_poke(addr, opcode, len);
+> +       return __text_poke(text_poke_memcpy, addr, opcode, len);
+>  }
+>
+>  /**
+> @@ -1167,7 +1181,29 @@ void *text_poke_copy(void *addr, const void *opcode, size_t len)
+>
+>                 s = min_t(size_t, PAGE_SIZE * 2 - offset_in_page(ptr), len - patched);
+>
+> -               __text_poke((void *)ptr, opcode + patched, s);
+> +               __text_poke(text_poke_memcpy, (void *)ptr, opcode + patched, s);
+> +               patched += s;
+> +       }
+> +       mutex_unlock(&text_mutex);
+> +       return addr;
+> +}
+> +
+> +void *text_poke_set(void *addr, int c, size_t len)
+> +{
+> +       unsigned long start = (unsigned long)addr;
+> +       size_t patched = 0;
+> +
+> +       if (WARN_ON_ONCE(core_kernel_text(start)))
+> +               return NULL;
+> +
+> +       mutex_lock(&text_mutex);
+> +       while (patched < len) {
+> +               unsigned long ptr = start + patched;
+> +               size_t s;
+> +
+> +               s = min_t(size_t, PAGE_SIZE * 2 - offset_in_page(ptr), len - patched);
+> +
+> +               __text_poke(text_poke_memset, (void *)ptr, (void *)&c, s);
+>                 patched += s;
+>         }
+>         mutex_unlock(&text_mutex);
