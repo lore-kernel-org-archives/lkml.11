@@ -2,109 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B412C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 16:30:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D638C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 16:32:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236210AbiDWQdJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 12:33:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46900 "EHLO
+        id S236280AbiDWQfc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 12:35:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232381AbiDWQdH (ORCPT
+        with ESMTP id S232381AbiDWQf0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 12:33:07 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B405A1AF31
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 09:30:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650731410; x=1682267410;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=erq/J6IugNqFBPl/JfID0tI97ob10byjp/0rK7jZ9Qw=;
-  b=DTUiHbB9ALjsRZrf9GA4B9C+lAt/gg8LlpZ3bfRVOz3PyY6pMB8lSZWc
-   Kkstx2HfbZqYeFOHnlDIxUa+5HqZowkzNO6qVb40QHjqnvjtw3P5rkZJK
-   VgM7v6/bm7g6wVU3jfB5wJlspZX4Qivgz0Vx5XKGkGr7ao+gLy5SRO4Uc
-   10Pou64RRqmLb5EQAk+UTGbtQR02U0tY9eylBdywuNYCuB2DaT41WULG8
-   awHqZETnT3ZPfkIOSDH6Ln3XOnyUN71eDmesPeTyY9KHRmv/QNg12XLbt
-   zPDMaffGUbfRNTAPxT++e68qhnrsnFYvQ1JfLpPY6MibcO7AMBghcR5C8
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10326"; a="252251517"
-X-IronPort-AV: E=Sophos;i="5.90,284,1643702400"; 
-   d="scan'208";a="252251517"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2022 09:30:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,284,1643702400"; 
-   d="scan'208";a="531346832"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 23 Apr 2022 09:30:09 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1niIe8-0000Dz-DQ;
-        Sat, 23 Apr 2022 16:30:08 +0000
-Date:   Sun, 24 Apr 2022 00:29:09 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [mingo-tip:sched/headers 1760/2579] fs/ceph/cache.h:130:9: error:
- call to undeclared function 'filemap_dirty_folio'; ISO C99 and later do not
- support implicit function declarations
-Message-ID: <202204240008.JDntM9cU-lkp@intel.com>
+        Sat, 23 Apr 2022 12:35:26 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC58B2F023
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 09:32:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=tm0gSqV7/P9ncZVPB8LqYHR3Gz1xeU6baJ61OHE1BW8=; b=udvQngrutqjVgHNdHAkQtTYj4Z
+        uj9eaEdm3fjU1uTVZOIo8pU0/Xxa1IKlKSUeYPCiWaC9FpsXAJEnJgqJz/yitw2wTHWU0tEc7LSB0
+        X0fJM5ntfIPoWNdpv6L+CjuafNJPUUUUSwV8L4ktUqnMQ1hQBI8wsyqfk1dQwn/uh4gWv85fnhRh5
+        /2X1dbCuYTh75gIu7ru2dCAx8PLj/duLjwK9+USlnlkZAl5R53zH9b1eckSJdfd8QiJmEOQ/WBdN7
+        56vfH6cgCE6eS5U3OAlXcaMK1noDeWW7GbezDKIaRw7AZsWDTsNetOJKT90zCvQ8NQKBlrdbciioY
+        HZy5IN0A==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1niIgK-004dlm-8q; Sat, 23 Apr 2022 16:32:24 +0000
+Date:   Sat, 23 Apr 2022 09:32:24 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Oleksandr Tyshchenko <olekstysh@gmail.com>
+Cc:     xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        David Hildenbrand <david@redhat.com>,
+        Martin Oliveira <martin.oliveira@eideticom.com>,
+        Kees Cook <keescook@chromium.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Julien Grall <julien@xen.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Christoph Hellwig <hch@infradead.org>
+Subject: Re: [PATCH V1 1/6] arm/xen: Introduce xen_setup_dma_ops()
+Message-ID: <YmQqGOoNDwkKSbZr@infradead.org>
+References: <1650646263-22047-1-git-send-email-olekstysh@gmail.com>
+ <1650646263-22047-2-git-send-email-olekstysh@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <1650646263-22047-2-git-send-email-olekstysh@gmail.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
-head:   49e1ec6c70a6eb4b7de9250a455b8b63eb42afbe
-commit: 5906052f724ace8783a32193d743f4db58a3bfee [1760/2579] headers/deps: writeback: Remove the <linux/writeback_api.h> header from <linux/writeback.h>
-config: x86_64-randconfig-c007 (https://download.01.org/0day-ci/archive/20220424/202204240008.JDntM9cU-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 1cddcfdc3c683b393df1a5c9063252eb60e52818)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=5906052f724ace8783a32193d743f4db58a3bfee
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip sched/headers
-        git checkout 5906052f724ace8783a32193d743f4db58a3bfee
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash fs/
+On Fri, Apr 22, 2022 at 07:50:58PM +0300, Oleksandr Tyshchenko wrote:
+> +#ifndef _ASM_ARM_XEN_OPS_H
+> +#define _ASM_ARM_XEN_OPS_H
+> +
+> +#include <xen/swiotlb-xen.h>
+> +
+> +static inline void xen_setup_dma_ops(struct device *dev)
+> +{
+> +#ifdef CONFIG_XEN
+> +	if (xen_swiotlb_detect())
+> +		dev->dma_ops = &xen_swiotlb_dma_ops;
+> +#endif
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from fs/ceph/caps.c:33:
->> fs/ceph/cache.h:130:9: error: call to undeclared function 'filemap_dirty_folio'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-           return filemap_dirty_folio(mapping, folio);
-                  ^
-   fs/ceph/cache.h:130:9: note: did you mean 'filemap_get_folio'?
-   include/linux/pagemap.h:525:29: note: 'filemap_get_folio' declared here
-   static inline struct folio *filemap_get_folio(struct address_space *mapping,
-                               ^
-   1 error generated.
-
-
-vim +/filemap_dirty_folio +130 fs/ceph/cache.h
-
-400e1286c0ec3f Jeff Layton             2021-12-07  126  
-8fb72b4a76933a Matthew Wilcox (Oracle  2022-02-09  127) static inline int ceph_fscache_dirty_folio(struct address_space *mapping,
-8fb72b4a76933a Matthew Wilcox (Oracle  2022-02-09  128) 		struct folio *folio)
-400e1286c0ec3f Jeff Layton             2021-12-07  129  {
-8fb72b4a76933a Matthew Wilcox (Oracle  2022-02-09 @130) 	return filemap_dirty_folio(mapping, folio);
-400e1286c0ec3f Jeff Layton             2021-12-07  131  }
-400e1286c0ec3f Jeff Layton             2021-12-07  132  
-
-:::::: The code at line 130 was first introduced by commit
-:::::: 8fb72b4a76933ae6f86725cc8e4a8190ba84d755 fscache: Convert fscache_set_page_dirty() to fscache_dirty_folio()
-
-:::::: TO: Matthew Wilcox (Oracle) <willy@infradead.org>
-:::::: CC: Matthew Wilcox (Oracle) <willy@infradead.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Maybe create a proper !CONFIG_XEN stub for xen_swiotlb_detect instead
+of the ifdef here, but otherwise this looks good to me.
