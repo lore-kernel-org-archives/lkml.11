@@ -2,249 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ACC9C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 03:47:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AF57C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 03:48:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232480AbiDWDua (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 23:50:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50836 "EHLO
+        id S232574AbiDWDvJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 23:51:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232574AbiDWDtr (ORCPT
+        with ESMTP id S231573AbiDWDvH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 23:49:47 -0400
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam08olkn2043.outbound.protection.outlook.com [40.92.47.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4381D13977A;
-        Fri, 22 Apr 2022 20:46:52 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SFmtbCaZIEnuiPmmNmwGITR1lZMLKCft3uUCaBWw2XVuXWJ0RYvWspUBRGSz2Se2DOW2sGnyYV4kHh3uXwxHIclEt9vnT9ND8hD2BVIR/aMwlObHYEAlyUdH3rmVDGBfVn/E/1DHLnTnmeu58/33D9ZVNBMkxN7AZDbhUFGPzdlGsHNTnUC314FFU/ZL9WjsXPvFQO1X4mmFrIvUW6FyFm0NorGm7dQR24EXOQnGy8Tw+izOHf6TgSOzEh3sLL2GSzfovbVziu7MG5mz6VcgD27llWcCRGSwcoVjsea3F9gen3OJQFjryb0jfczZIn+Gx3H1pTdcvH3XCWaWdAR+Tw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gRz4KJxx36uXke3/M9dDj+fZyMzrPh775UfAXXXdqLs=;
- b=JEIpcY9r0MdREHPGbC45BblBA7dO4DCoBM8EZ4f7xZA5DB/98fqFSWgBR5d2JL7hxNcIdd5nM+sc8ScVFYtSsQAsSiaKBMETvUClbw7YoImx37Q3t7BeMYszHzRcL/yYdJKprv1h96af+tdyCsDFET5RwkAYGreFzBqSEHP8lWWmC+uIePojvIUNrCF0QaOrxOHYbd9GP3zGUgjyJgP3pZgFfV1mh7/dJWNZ84zn+GIz2bIf8y8RZ6R2JAj4qHc+pnA8YCYQXhhDZq6EawtyrhYRAGEQLiLjn7j91PqFhyzIxAq9Pe1+PW33qOXD0KHdS/hsrcausW58jX7gb3GDtA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-Received: from CY4PR04MB0567.namprd04.prod.outlook.com (2603:10b6:903:b1::20)
- by SN6PR04MB4205.namprd04.prod.outlook.com (2603:10b6:805:30::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Sat, 23 Apr
- 2022 03:46:48 +0000
-Received: from CY4PR04MB0567.namprd04.prod.outlook.com
- ([fe80::8e:6e22:f98c:29d5]) by CY4PR04MB0567.namprd04.prod.outlook.com
- ([fe80::8e:6e22:f98c:29d5%5]) with mapi id 15.20.5186.015; Sat, 23 Apr 2022
- 03:46:48 +0000
-From:   Jonathan Bakker <xc-racer2@live.ca>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Kyungmin Park <kyungmin.park@samsung.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        =?UTF-8?q?Pawe=C5=82=20Chmiel?= <pawel.mikolaj.chmiel@gmail.com>,
-        Jonathan Bakker <xc-racer2@live.ca>
-Subject: [PATCH 5/5] mtd: onenand: samsung: Add device tree support
-Date:   Fri, 22 Apr 2022 20:46:22 -0700
-Message-ID: <CY4PR04MB056716B2AE01D243F6AE3C13CBF69@CY4PR04MB0567.namprd04.prod.outlook.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220423034622.366696-1-xc-racer2@live.ca>
-References: <20220423034524.366612-1-xc-racer2@live.ca>
- <20220423034622.366696-1-xc-racer2@live.ca>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-TMN:  [lSK7iLLjEA4qxR34T9AkrmY8T4I/xv1/GtDCGGhtOGPCqTn2DHcGevU28dsWUlY+]
-X-ClientProxiedBy: MW4PR04CA0210.namprd04.prod.outlook.com
- (2603:10b6:303:86::35) To CY4PR04MB0567.namprd04.prod.outlook.com
- (2603:10b6:903:b1::20)
-X-Microsoft-Original-Message-ID: <20220423034622.366696-4-xc-racer2@live.ca>
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2aa12229-2cfd-4497-1fbd-08da24dbe4f9
-X-MS-TrafficTypeDiagnostic: SN6PR04MB4205:EE_
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vSjq2cDEbz9929l0WJ5DX2V8SSHhDexGbbVKKH8u9EMklwUiL3xKzXvMeaD5OOXRsG1Ry/cCH1amM/NERgDITpBjiTEioZ9rNh+2+1kVdlyqHmxv9RAFM6Ur0nhUvOsiQ3laqzo2G2PSNrmMM3hzB3nvtMqdqXiL17zIWJPYv8MZVmQSSPLSffLAtlXdupSR2jBiYI4hH9c66wIUE7bGfxo4U0iElFvdPp9j4yCn15i7SeyaDjFcWni7cKE7X48QuzVr814gIwQgvdLvJDORRwRMeIZD1H3OFFgxM3EQ2fYhi2g1+rCEEtclyo7FhQuasg3KzYDzozSrNGiAAHDXN1az1G8zP9xfGWgOyrOvBTvY1+OC3dSG9x9fdU9gj0zZlBaueFY/14or6XztAmibdsTLIpNgxNVOMXuaN31kzXQi4taybi0cEzGHN053IZdNel2Ee+AN0K4CSa1dSxe52H7t30rfynG+t4CvVeRZ1sliemW4MKnF/0qgBHron4+oEsKqOFOL/mOl0Z56+bAYqu1p8h9b6wLsqAO4oywRMUfXrwGRC/Hc9UEJkpHu4i+EW3EzwMNZXN+gbWjma+XsJg==
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VnpLU21FWWNGZDJEVndZbzRQMExWaUZPVWExMUw2eUxVNmJzUnRyTEVpeTNC?=
- =?utf-8?B?QlM1eUptc0dvRXA1WE9YT01uVjllR0JNMEVmR1ZaWXlJUTJZVGF4YWcrd3Iw?=
- =?utf-8?B?MjJ6M3BOWEpsTzgvYzdTTkJ4NmM2Uy9EcERGV0htSEc0N0I1ODQrWTFmcDNw?=
- =?utf-8?B?cVN5TnlJdG5QR01rSm92SHE5VllMT3o3N0FZa29qTGcxQjQ4SW4xYlZGWWpk?=
- =?utf-8?B?WkJBc0MrVFVTRFlxU2ppUmpCMk1ISVl5WkIyNjdqcnM4NHE0MVU1OUVMWG40?=
- =?utf-8?B?bXJQVEtLclhFeVpqeCsyR0NFMHFFaW8xbG50bEllWXhmUmZuQnU4OEU2MTlk?=
- =?utf-8?B?dEIrL0dsQ2c2OTNUek1tQ2tUc1dKQ2hCa0VOb0IwczlPMUNYYW1IK0ZDdFR4?=
- =?utf-8?B?eElsdE1LVDhJWm9WNlFIOTVWT3MwWnZSOGdVRW1zaEZ5NXh6UnBFcnNDdit3?=
- =?utf-8?B?b01KNWkxRlNiZmtDbnJVOCszelVwSld4ZGhIOEthZnpaMFpvVTFoM2gyeHhM?=
- =?utf-8?B?aDRVRy83MXV5TmtyNW0zOTNTd1kwZnlOK1ZiSUtYcDRHRzczaDRzbENmejZ1?=
- =?utf-8?B?WEdBQ1oxSlp3b0g2RVNCVzMzMXAvaDc2OVdsVGdocmpObWxTQ001b3NkVXE1?=
- =?utf-8?B?dWNpdW1pUHVqdE5LcmhGL0Z4cVd3MXAyNisyMk9rcmwzZnB5aUpYK0tDZkZG?=
- =?utf-8?B?WXlyQ1pLaDd1OUVWaU9KRHViaCs5S0VaYloxTDRNbjljNUIrcExjcVlYT0xn?=
- =?utf-8?B?Z2daU3JQK2pEUmsvelFEWmRxZFd6UnQzSUhMYTczcm1MT3RjNWxZYVZOYVkr?=
- =?utf-8?B?U1hRUjhJUVM4TmF5Yk5ob2lVUmV2aVVTcWJJUGJzWXY0LzlMZTJPejNLa2ZW?=
- =?utf-8?B?VmZhTlloZVZramVVdjBWbnljSU9SWnNCcUxMYUZmZmc2cFF6ZUNRdEZmODl0?=
- =?utf-8?B?UkxtRTBWYmdVRnNXZWhubWhzajlYSXQybldaY0FObStMZTY4bHdMendEd0lX?=
- =?utf-8?B?WmhseVR1RXZQOHRIb0hYTzVOamhPTnAycUgwZUw2MUoyVFNvc0VFUlM4bTdj?=
- =?utf-8?B?S3M4RmVwR1pXS3pieEtGMzNFcy9yQnQrUW5uQzd6T2hZTzNTSlVvODRwSU5j?=
- =?utf-8?B?dWtLRXlmdDdhczJ6V0ZSeGRRc2w4SnJOVE11T0RFU2lWL2xJN29QaHpVVUJJ?=
- =?utf-8?B?R1R5UzFyQm9HNThWNk52NWFLMnNKOHdPTTRQeFhmdFplcThibUhLRkVZQkZs?=
- =?utf-8?B?UzNoVFJ0V2s3L2liUzlhU2NwbHRPVDJEUGZZTjhROENFc2JwaDdlNGRXWEtO?=
- =?utf-8?B?Y2FjSWNRWGZmMVM0MFZ4U1pxaUNyaXJnTjBTeGZXTlNIMXVldXZ2RS9KQVVR?=
- =?utf-8?B?eFVGZWlsc2d6VDN3YllOUGFUMTVTcXE3T1VJYmxxaHZ5U2FaZFFwSlpzUzJo?=
- =?utf-8?B?Y0lRTWFoSXpzYWxXR1pmczdkSTdUcVpHaTVTdFBqeFJGL25RUTFFeHA4bStv?=
- =?utf-8?B?WDFBdk1QVXhPTUgrYXpOMlZuUEJpeCs3TjRMaXdHbWhCNXpIbXRvNW9IdGhT?=
- =?utf-8?B?WEkvTDRaNVpJV0NISi9jaDRERnFHWEZSN3BUemJEcFpCSFpmUU13VVdhamd1?=
- =?utf-8?B?YmZ3c2hqRllwcWRyL29xZHVzTE9ER0tWUVJpdnVZYS9UZk9OS1EySGEzdUpB?=
- =?utf-8?B?ZjJObzhhTStQN2ZINk5TWGVFcGozbXhVVjFibitQZFY2bFdnYy9EV3lJMzk0?=
- =?utf-8?B?cFNSSVRPSkZwMjFZL1dLOVd5R1dDOGp2a0kvUjhUNFJWcFJtMXJBc2xxMHBj?=
- =?utf-8?B?U2xGTExKOXVHZnRWaTQ4NGo5VWlSOUx3Q0pCRVhxWDRlSmN6NDgzWlplOTV6?=
- =?utf-8?B?WTdWajlvM2pzaHI3NkNHVUo1ekJjeEZIWDFHeEJoSlBBYmNFcm12bVFzNGF0?=
- =?utf-8?B?Nk9HbW9Fclg3L3JYb2VhZGVTWTVuNkplbmVoRXVGVkF4dnVoMXRHN0ZrOE9I?=
- =?utf-8?Q?qVjnUHKka+W+7hVeFRYHbKVgDF33tU=3D?=
-X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-edb50.templateTenant
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2aa12229-2cfd-4497-1fbd-08da24dbe4f9
-X-MS-Exchange-CrossTenant-AuthSource: CY4PR04MB0567.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Apr 2022 03:46:48.8065
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR04MB4205
+        Fri, 22 Apr 2022 23:51:07 -0400
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD92E1BD5C4
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 20:48:10 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id x23-20020a170902b41700b0015906c1ea31so5803210plr.20
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 20:48:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=reply-to:date:message-id:mime-version:subject:from:to:cc;
+        bh=2/2IDHF+UQ6jtMwpPgf1EieaHKtX5K2WHMKeO5lYUGI=;
+        b=DvXnKwIoXWz6M3dlxBDz90XEu6kkeG9Poa/DdzCukU8eLQg9ELHonSW/iSn0E4JdyB
+         Vzki0sPVVNWPFUQMMJERlCaMbuBZpsroI6gX2DdUvwQgWTH8IL3N99rXFZCwkJ4Y+4S7
+         GQz3wUz6o85hvT4qlvK8goOKRcKEjvTs9ZvWvKioKNSPZNrIkXWCOGP3XH9Ll4SxcPkA
+         JX3IrF8n6freQhLljnVSyYC5whoLmm8eX4KguXzMHlMJrQ7fqwOGHB4DV2S6Do2oTZE+
+         da7ftAY3+yE5RDqFSx+RX2L17+PDoDfhf/c4DYKfGefz9Lqz4B1s2TdueoOdPvnY2xzJ
+         tABg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:reply-to:date:message-id:mime-version:subject
+         :from:to:cc;
+        bh=2/2IDHF+UQ6jtMwpPgf1EieaHKtX5K2WHMKeO5lYUGI=;
+        b=f1+T0uEyAErFpCWlWdIWHVb9RM20Gf0hiOqXiRkQDf4QSuBNu/ocPprFTNl1ClH081
+         ATFdeZYVkDx18e8kQkuZTaDSSZA8x+vVVu5Rk8nZOTo1pVN9V39+hWsKbAPIrU6Y2vGM
+         U6CnDFKjTAw36u5BbKfDdC7W6hOQL6lSWDdSJSSkdqJR/UqR34AqHZjv3UewRn6Rjo8f
+         ILlf9LbhxCNT5cnCZt3FsKRC7ClkTJcP6Doe8feuspLH3QCa74rZ2UUuLSRl+eaXWUfL
+         I7hNGUXz8FHyWYyy69kWLI9QPB3WNJRoREWs6jhfDvB/rKMNsHaY9RMSiYNOU8CjfKYr
+         HS1g==
+X-Gm-Message-State: AOAM533EpBlfX2YnzzN75beQTfvIAbRYKYZE+eMaS3X0MWaXUr9Ml6rz
+        h9Sgh6ZInhJ37qZTA2byLwomt2Wxpio=
+X-Google-Smtp-Source: ABdhPJzPtbSgi0VvU/ry8YwZHeilStJR6BLJJsV0qncfT7FKVm86KwKHyoMdam99HekVC13FGk4zzC2hpMI=
+X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
+ (user=seanjc job=sendgmr) by 2002:a63:1215:0:b0:39c:fa33:9427 with SMTP id
+ h21-20020a631215000000b0039cfa339427mr6578042pgl.296.1650685690254; Fri, 22
+ Apr 2022 20:48:10 -0700 (PDT)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Sat, 23 Apr 2022 03:47:40 +0000
+Message-Id: <20220423034752.1161007-1-seanjc@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
+Subject: [PATCH 00/12] KVM: x86/mmu: Bug fixes and cleanups
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ben Gardon <bgardon@google.com>,
+        David Matlack <dmatlack@google.com>,
+        Venkatesh Srinivas <venkateshs@google.com>,
+        Chao Peng <chao.p.peng@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tomasz Figa <tomasz.figa@gmail.com>
+This all started from an offhand comment wondering if we might be dropping
+A/D bits.  Turns out, yes, we are dropping A/D bits (and W bits) in the
+TDP MMU.
 
-This patch adds support for instantation using Device Tree.
+Attempting to prove that bug exposed two other notable goofs, the first of
+which has been lurking for a decade, give or take:
 
-Signed-off-by: Tomasz Figa <tomasz.figa@gmail.com>
-Signed-off-by: Paweł Chmiel <pawel.mikolaj.chmiel@gmail.com>
-Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
+  Patch 1 - KVM treats _all_ MMU-writable SPTEs as volatile, even though
+            KVM never clears WRITABLE outside of MMU lock.  As a result,
+            the legacy MMU (and the TDP MMU if not fixed) uses XCHG to
+            update writable SPTEs.
 
----
-Changes from previous patchset
-- Adjust to having a nand child node as per binding feedback
----
- drivers/mtd/nand/onenand/onenand_samsung.c | 67 +++++++++++++++++++++-
- 1 file changed, 65 insertions(+), 2 deletions(-)
+  Patch 4 - KVM sends literally all EPT violations down the fast page
+            fault handler.  The bug was introduced when KVM started
+            honoring EPTP12's A/D enabling, circa 2016.
 
-diff --git a/drivers/mtd/nand/onenand/onenand_samsung.c b/drivers/mtd/nand/onenand/onenand_samsung.c
-index 62014f8d27b6..0108c8c75d5b 100644
---- a/drivers/mtd/nand/onenand/onenand_samsung.c
-+++ b/drivers/mtd/nand/onenand/onenand_samsung.c
-@@ -22,6 +22,7 @@
- #include <linux/dma-mapping.h>
- #include <linux/interrupt.h>
- #include <linux/io.h>
-+#include <linux/of.h>
- 
- #include "samsung.h"
- 
-@@ -832,8 +833,36 @@ static void s3c_onenand_setup(struct mtd_info *mtd)
- 	this->write_bufferram = onenand_write_bufferram;
- }
- 
-+#ifdef CONFIG_OF
-+static const struct of_device_id s3c_onenand_of_match[] = {
-+	{ .compatible = "samsung,s3c6400-onenand",
-+		.data = (void *)TYPE_S3C6400 },
-+	{ .compatible = "samsung,s3c6410-onenand",
-+		.data = (void *)TYPE_S3C6410 },
-+	{ .compatible = "samsung,s5pv210-onenand",
-+		.data = (void *)TYPE_S5PC110 },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, onenand_s3c_dt_match);
-+#endif
-+
-+static enum soc_type s3c_onenand_get_device_id(struct platform_device *pdev)
-+{
-+	struct device_node *np = pdev->dev.of_node;
-+
-+	if (IS_ENABLED(CONFIG_OF) && np) {
-+		const struct of_device_id *match;
-+
-+		match = of_match_node(s3c_onenand_of_match, np);
-+		return (enum soc_type)match->data;
-+	}
-+
-+	return platform_get_device_id(pdev)->driver_data;
-+}
-+
- static int s3c_onenand_probe(struct platform_device *pdev)
+Neither fix seems to have an easily-measurable affect on performance;
+page faults are so slow that wasting even a few hundred cycles is dwarfed
+by the base cost.
+
+The rest of the series is cleanups, including a v2 of my RET_PF_CONTINUE,
+which would conflict in mildly annoying ways.
+
+The first two "DO NOT MERGE" patches are effectively a PoC showing that
+sending indirect MMUs down the fast page fault handler can work, it's
+just ineffective.  I went down this rabbit hole after I saw a massive
+performance drop in the legacy MMU from patch 3 and thought it might be due
+to detecting spurious faults out of mmu_lock.  The TDP MMU didn't exhibit
+the same problem, so it just _had_ to be write-contention on mmu_lock.
+Right!?!?
+
+Wrong. Turns out that spurious faults are a non-issue, but inverting the
+"ad_disabled" flag in the shadow page role and preventing reuse?  Yep,
+that's a wee bit of an issue.  I included the patches here to publicly
+document that this has been tried, it works, it's just likely not a win.
+
+The "DO NOT MERGE" selftest is my attempt to prove that the TDP MMU can
+drop W/A/D bits.  It does work in the sense that it can trigger dropped
+bits, but it's fairly worthless as a selftest because it requires an
+explicit WARN in KVM :-/  Posted mostly as a reminder to myself that
+the primary MMU write-protects on writeback (this isn't the first time
+I've gone spelunking in that code...).
+
+E.g. it can trigger the WARN on WRITABLE and DIRTY bits this patch on
+top of the series:
+
+diff --git a/arch/x86/kvm/mmu/tdp_iter.h b/arch/x86/kvm/mmu/tdp_iter.h
+index f0af385c56e0..4f1ec56460ad 100644
+--- a/arch/x86/kvm/mmu/tdp_iter.h
++++ b/arch/x86/kvm/mmu/tdp_iter.h
+@@ -32,6 +32,8 @@ static inline void __kvm_tdp_mmu_write_spte(tdp_ptep_t sptep, u64 new_spte)
+ static inline u64 kvm_tdp_mmu_write_spte(tdp_ptep_t sptep, u64 old_spte,
+                                         u64 new_spte, int level)
  {
-+	struct device_node *np = pdev->dev.of_node;
- 	struct onenand_platform_data *pdata;
- 	struct onenand_chip *this;
- 	struct mtd_info *mtd;
-@@ -856,9 +885,10 @@ static int s3c_onenand_probe(struct platform_device *pdev)
- 	this = (struct onenand_chip *) &mtd[1];
- 	mtd->name = dev_name(&pdev->dev);
- 	mtd->priv = this;
-+	mtd->dev.of_node = np;
- 	mtd->dev.parent = &pdev->dev;
- 	onenand->pdev = pdev;
--	onenand->type = platform_get_device_id(pdev)->driver_data;
-+	onenand->type = s3c_onenand_get_device_id(pdev);
- 
- 	s3c_onenand_setup(mtd);
- 
-@@ -867,7 +897,35 @@ static int s3c_onenand_probe(struct platform_device *pdev)
- 	if (IS_ERR(onenand->ctrl_base))
- 		return PTR_ERR(onenand->ctrl_base);
- 
--	r = platform_get_resource(pdev, IORESOURCE_MEM, 1);
-+	if (np) {
-+		/* Determine which CS to use - this driver only supports one */
-+		u32 cs = 0;
-+		struct device_node *child_np;
-+		struct device_node *extra_chip_np;
++       u64 current_spte;
 +
-+		child_np = of_get_next_available_child(np, NULL);
-+		if (child_np == NULL) {
-+			dev_err(&pdev->dev, "failed to get chip node\n");
-+			return -EINVAL;
-+		}
+        /*
+         * Atomically write the SPTE if it is a shadow-present, leaf SPTE with
+         * volatile bits, i.e. has bits that can be set outside of mmu_lock.
+@@ -46,7 +48,13 @@ static inline u64 kvm_tdp_mmu_write_spte(tdp_ptep_t sptep, u64 old_spte,
+         */
+        if (is_shadow_present_pte(old_spte) && is_last_spte(old_spte, level) &&
+            spte_has_volatile_bits(old_spte))
+-               return kvm_tdp_mmu_write_spte_atomic(sptep, new_spte);
++               ;
 +
-+		/* Warn if more than one chip as this unsupported */
-+		extra_chip_np = of_get_next_available_child(np, child_np);
-+		if (extra_chip_np != NULL) {
-+			dev_warn(&pdev->dev, "multiple chip nodes, using only first\n");
-+			of_node_put(extra_chip_np);
-+		}
-+
-+		err = of_property_read_u32(child_np, "reg", &cs);
-+		of_node_put(child_np);
-+		if (err < 0)
-+			return err;
-+
-+		r = platform_get_resource(pdev, IORESOURCE_MEM, cs + 1);
-+	} else {
-+		r = platform_get_resource(pdev, IORESOURCE_MEM, 1);
-+	}
-+
- 	onenand->chip_base = devm_ioremap_resource(&pdev->dev, r);
- 	if (IS_ERR(onenand->chip_base))
- 		return PTR_ERR(onenand->chip_base);
-@@ -917,6 +975,10 @@ static int s3c_onenand_probe(struct platform_device *pdev)
- 	}
++       current_spte = kvm_tdp_mmu_read_spte(sptep);
++       WARN_ONCE((old_spte ^ current_spte) & current_spte &
++                 (PT_WRITABLE_MASK | PT_ACCESSED_MASK | PT_DIRTY_MASK),
++                 "KVM: Dropped SPTE W/A/D bits: 0x%llx\n",
++                 (old_spte ^ current_spte) & current_spte);
  
- 	onenand->clk_bus = devm_clk_get(&pdev->dev, "bus");
-+	if (np && IS_ERR(onenand->clk_bus)) {
-+		dev_err(&pdev->dev, "failed to get bus clock\n");
-+		return PTR_ERR(onenand->clk_bus);
-+	}
- 	if (!IS_ERR(onenand->clk_bus))
- 		clk_prepare_enable(onenand->clk_bus);
- 
-@@ -998,6 +1060,7 @@ static struct platform_driver s3c_onenand_driver = {
- 	.driver         = {
- 		.name	= "samsung-onenand",
- 		.pm	= &s3c_pm_ops,
-+		.of_match_table = of_match_ptr(s3c_onenand_of_match),
- 	},
- 	.id_table	= s3c_onenand_driver_ids,
- 	.probe          = s3c_onenand_probe,
+        __kvm_tdp_mmu_write_spte(sptep, new_spte);
+        return old_spte;
+
+  ------------[ cut here ]------------
+  KVM: Dropped SPTE W/A/D bits: 0x2
+  WARNING: CPU: 5 PID: 874 at arch/x86/kvm/mmu/tdp_iter.h:56 __tdp_mmu_set_spte+0x18b/0x1a0 [kvm]
+  Modules linked in: kvm_intel kvm irqbypass
+  CPU: 5 PID: 874 Comm: volatile_spte_t Not tainted 5.18.0-rc1+ #830
+  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 0.0.0 02/06/2015
+  RIP: 0010:__tdp_mmu_set_spte+0x18b/0x1a0 [kvm]
+  Call Trace:
+   <TASK>
+   tdp_mmu_zap_leafs+0xbc/0x180 [kvm]
+   kvm_tdp_mmu_zap_leafs+0x74/0x90 [kvm]
+   kvm_unmap_gfn_range+0xe8/0x100 [kvm]
+   kvm_mmu_notifier_invalidate_range_start+0x11c/0x2c0 [kvm]
+   __mmu_notifier_invalidate_range_start+0x7e/0x190
+   change_protection+0x657/0xb30
+   mprotect_fixup+0x1a1/0x310
+   do_mprotect_pkey+0x1f9/0x3a0
+   __x64_sys_mprotect+0x1b/0x20
+   do_syscall_64+0x31/0x50
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
+   </TASK>
+  ---[ end trace 0000000000000000 ]---
+
+
+Sean Christopherson (12):
+  KVM: x86/mmu: Don't treat fully writable SPTEs as volatile (modulo
+    A/D)
+  KVM: x86/mmu: Move shadow-present check out of
+    spte_has_volatile_bits()
+  KVM: x86/mmu: Use atomic XCHG to write TDP MMU SPTEs with volatile
+    bits
+  KVM: x86/mmu: Don't attempt fast page fault just because EPT is in use
+  KVM: x86/mmu: Drop exec/NX check from "page fault can be fast"
+  KVM: x86/mmu: Add RET_PF_CONTINUE to eliminate bool+int* "returns"
+  KVM: x86/mmu: Make all page fault handlers internal to the MMU
+  KVM: x86/mmu: Use IS_ENABLED() to avoid RETPOLINE for TDP page faults
+  KVM: x86/mmu: Expand and clean up page fault stats
+  DO NOT MERGE: KVM: x86/mmu: Always send !PRESENT faults down the fast
+    path
+  DO NOT MERGE: KVM: x86/mmu: Use fast_page_fault() to detect spurious
+    shadow MMU faults
+  DO NOT MERGE: KVM: selftests: Attempt to detect lost dirty bits
+
+ arch/x86/include/asm/kvm_host.h               |   5 +
+ arch/x86/kvm/mmu.h                            |  87 --------
+ arch/x86/kvm/mmu/mmu.c                        | 211 ++++++++++--------
+ arch/x86/kvm/mmu/mmu_internal.h               | 123 +++++++++-
+ arch/x86/kvm/mmu/mmutrace.h                   |   1 +
+ arch/x86/kvm/mmu/paging_tmpl.h                |  15 +-
+ arch/x86/kvm/mmu/spte.c                       |  28 +++
+ arch/x86/kvm/mmu/spte.h                       |  15 +-
+ arch/x86/kvm/mmu/tdp_iter.h                   |  34 ++-
+ arch/x86/kvm/mmu/tdp_mmu.c                    |  92 +++++---
+ arch/x86/kvm/x86.c                            |  24 +-
+ tools/testing/selftests/kvm/.gitignore        |   1 +
+ tools/testing/selftests/kvm/Makefile          |   4 +
+ .../selftests/kvm/volatile_spte_test.c        | 208 +++++++++++++++++
+ 14 files changed, 600 insertions(+), 248 deletions(-)
+ create mode 100644 tools/testing/selftests/kvm/volatile_spte_test.c
+
+
+base-commit: 2a39d8b39bffdaf1a4223d0d22f07baee154c8f3
 -- 
-2.30.2
+2.36.0.rc2.479.g8af0fa9b8e-goog
 
