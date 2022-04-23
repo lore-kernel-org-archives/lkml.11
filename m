@@ -2,277 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A6A3C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 00:12:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3CA9C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 00:13:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229852AbiDWAPT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 20:15:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47126 "EHLO
+        id S229791AbiDWAQ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 20:16:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbiDWAPK (ORCPT
+        with ESMTP id S229484AbiDWAQX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 20:15:10 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B456D13E35;
-        Fri, 22 Apr 2022 17:12:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650672735; x=1682208735;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=YJl9w6Z+z8JEkRBhDh5DcaLSvnFKy2IR10dCfngngHw=;
-  b=AB5reNgs2hRSWGyjUJoRP0tntHETSHdWW7bKRKxBtQPIorugR2Ik/Ifu
-   igcGnpdq+nyCKs2clLWxFSOeBXCarz7anvoAB3MPBFq7YI3vDeekvqg8n
-   VOyn7KyM/7gU3H2o4lWA+Gfq46j0yJ2uz4lUm0uSNRoWGme6ph3WdioHx
-   w=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 22 Apr 2022 17:12:14 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 17:12:13 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 22 Apr 2022 17:12:13 -0700
-Received: from [10.111.175.210] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 22 Apr
- 2022 17:12:10 -0700
-Message-ID: <73e2a37e-23db-d614-5f5c-8120f1869158@quicinc.com>
-Date:   Fri, 22 Apr 2022 17:12:08 -0700
+        Fri, 22 Apr 2022 20:16:23 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3468E63396
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 17:13:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650672809; x=1682208809;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=3XhHEcMoII5/nzUs6nGDnfPsDeBcQbNn7EV4eDUD/Ag=;
+  b=fk0oVSrMiAze04I7XxBQs7ukgJ6XrpQLfIYnro1HfoEGMlKuvquSsDEm
+   kPRUTOJzOe5vnj+gEzd9eODzGtT/bM5rVSja+NJZPkC/SDxnLQYRr6yYO
+   1ZEYkD6qPP2zJLZuMLIVbUpGaYAJdIwrCQN6Jjxj0AOEVa+x6ZN+Sa1b5
+   0rLqCfYq0DWBot1UPHcZCI40+tRyxx8q9BB9bT6ijFCDZDeY3TegqNwSF
+   gQUJObJgIxYiKYG75E2EbZu7gnZmG8DqMxi9XseeePbZHn/Ml13LK60Za
+   gKi/84bhHfxIbEHWXEjaeXE0cbXPI4KniQwxnuv5TsZ6Xkb1k78xKbjae
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="264990020"
+X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
+   d="scan'208";a="264990020"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 17:13:29 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
+   d="scan'208";a="648848884"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 22 Apr 2022 17:13:27 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ni3Ox-000Ai6-AY;
+        Sat, 23 Apr 2022 00:13:27 +0000
+Date:   Sat, 23 Apr 2022 08:13:25 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-maple 41/44] ERROR:
+ modpost: "netfs_page_mkwrite" [fs/afs/kafs.ko] undefined!
+Message-ID: <202204230857.dn8iQWG0-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH] drm/msm/dp: move add fail safe mode to
- dp_connector_get_mode()
-Content-Language: en-US
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Kuogee Hsieh <quic_khsieh@quicinc.com>, <robdclark@gmail.com>,
-        <sean@poorly.run>, <swboyd@chromium.org>, <vkoul@kernel.org>,
-        <daniel@ffwll.ch>, <airlied@linux.ie>, <agross@kernel.org>,
-        <bjorn.andersson@linaro.org>
-CC:     <quic_sbillaka@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
-        <quic_aravindh@quicinc.com>, <freedreno@lists.freedesktop.org>
-References: <1650671124-14030-1-git-send-email-quic_khsieh@quicinc.com>
- <3b9588d2-d9f6-c96f-b316-953b56b59bfe@linaro.org>
-From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
-In-Reply-To: <3b9588d2-d9f6-c96f-b316-953b56b59bfe@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-maple
+head:   931e50676c6598d0eda1954ead465519ff91874d
+commit: bd4ce8115969d3c18aef5998bb59625d4ff48991 [41/44] afs: Use the netfs write helpers
+config: i386-randconfig-a005 (https://download.01.org/0day-ci/archive/20220423/202204230857.dn8iQWG0-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
+reproduce (this is a W=1 build):
+        # https://github.com/ammarfaizi2/linux-block/commit/bd4ce8115969d3c18aef5998bb59625d4ff48991
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-maple
+        git checkout bd4ce8115969d3c18aef5998bb59625d4ff48991
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-On 4/22/2022 5:07 PM, Dmitry Baryshkov wrote:
-> On 23/04/2022 02:45, Kuogee Hsieh wrote:
->> Current DP driver implementation has adding safe mode done at
->> dp_hpd_plug_handle() which is expected to be executed under event
->> thread context.
->>
->> However there is possible circular locking happen (see blow stack trace)
->> after edp driver call dp_hpd_plug_handle() from dp_bridge_enable() which
->> is executed under drm_thread context.
->>
->> To break this circular locking, this patch have safe mode added at
->> dp_connector_get_mode() which is executed under drm thread context.
->> Therefore no lock acquired required for &dev->mode_config.mutex while
->> adding fail safe mode since it has been hold by drm thread already.
->>
->> ======================================================
->>   WARNING: possible circular locking dependency detected
->>   5.15.35-lockdep #6 Tainted: G        W
->>   ------------------------------------------------------
->>   frecon/429 is trying to acquire lock:
->>   ffffff808dc3c4e8 (&dev->mode_config.mutex){+.+.}-{3:3}, at:
->> dp_panel_add_fail_safe_mode+0x4c/0xa0
->>
->>   but task is already holding lock:
->>   ffffff808dc441e0 (&kms->commit_lock[i]){+.+.}-{3:3}, at: 
->> lock_crtcs+0xb4/0x124
->>
->>   which lock already depends on the new lock.
->>
->>   the existing dependency chain (in reverse order) is:
->>
->>   -> #3 (&kms->commit_lock[i]){+.+.}-{3:3}:
->>          __mutex_lock_common+0x174/0x1a64
->>          mutex_lock_nested+0x98/0xac
->>          lock_crtcs+0xb4/0x124
->>          msm_atomic_commit_tail+0x330/0x748
->>          commit_tail+0x19c/0x278
->>          drm_atomic_helper_commit+0x1dc/0x1f0
->>          drm_atomic_commit+0xc0/0xd8
->>          drm_atomic_helper_set_config+0xb4/0x134
->>          drm_mode_setcrtc+0x688/0x1248
->>          drm_ioctl_kernel+0x1e4/0x338
->>          drm_ioctl+0x3a4/0x684
->>          __arm64_sys_ioctl+0x118/0x154
->>          invoke_syscall+0x78/0x224
->>          el0_svc_common+0x178/0x200
->>          do_el0_svc+0x94/0x13c
->>          el0_svc+0x5c/0xec
->>          el0t_64_sync_handler+0x78/0x108
->>          el0t_64_sync+0x1a4/0x1a8
->>
->>   -> #2 (crtc_ww_class_mutex){+.+.}-{3:3}:
->>          __mutex_lock_common+0x174/0x1a64
->>          ww_mutex_lock+0xb8/0x278
->>          modeset_lock+0x304/0x4ac
->>          drm_modeset_lock+0x4c/0x7c
->>          drmm_mode_config_init+0x4a8/0xc50
->>          msm_drm_init+0x274/0xac0
->>          msm_drm_bind+0x20/0x2c
->>          try_to_bring_up_master+0x3dc/0x470
->>          __component_add+0x18c/0x3c0
->>          component_add+0x1c/0x28
->>          dp_display_probe+0x954/0xa98
->>          platform_probe+0x124/0x15c
->>          really_probe+0x1b0/0x5f8
->>          __driver_probe_device+0x174/0x20c
->>          driver_probe_device+0x70/0x134
->>          __device_attach_driver+0x130/0x1d0
->>          bus_for_each_drv+0xfc/0x14c
->>          __device_attach+0x1bc/0x2bc
->>          device_initial_probe+0x1c/0x28
->>          bus_probe_device+0x94/0x178
->>          deferred_probe_work_func+0x1a4/0x1f0
->>          process_one_work+0x5d4/0x9dc
->>          worker_thread+0x898/0xccc
->>          kthread+0x2d4/0x3d4
->>          ret_from_fork+0x10/0x20
->>
->>   -> #1 (crtc_ww_class_acquire){+.+.}-{0:0}:
->>          ww_acquire_init+0x1c4/0x2c8
->>          drm_modeset_acquire_init+0x44/0xc8
->>          drm_helper_probe_single_connector_modes+0xb0/0x12dc
->>          drm_mode_getconnector+0x5dc/0xfe8
->>          drm_ioctl_kernel+0x1e4/0x338
->>          drm_ioctl+0x3a4/0x684
->>          __arm64_sys_ioctl+0x118/0x154
->>          invoke_syscall+0x78/0x224
->>          el0_svc_common+0x178/0x200
->>          do_el0_svc+0x94/0x13c
->>          el0_svc+0x5c/0xec
->>          el0t_64_sync_handler+0x78/0x108
->>          el0t_64_sync+0x1a4/0x1a8
->>
->>   -> #0 (&dev->mode_config.mutex){+.+.}-{3:3}:
->>          __lock_acquire+0x2650/0x672c
->>          lock_acquire+0x1b4/0x4ac
->>          __mutex_lock_common+0x174/0x1a64
->>          mutex_lock_nested+0x98/0xac
->>          dp_panel_add_fail_safe_mode+0x4c/0xa0
->>          dp_hpd_plug_handle+0x1f0/0x280
->>          dp_bridge_enable+0x94/0x2b8
->>          drm_atomic_bridge_chain_enable+0x11c/0x168
->>          drm_atomic_helper_commit_modeset_enables+0x500/0x740
->>          msm_atomic_commit_tail+0x3e4/0x748
->>          commit_tail+0x19c/0x278
->>          drm_atomic_helper_commit+0x1dc/0x1f0
->>          drm_atomic_commit+0xc0/0xd8
->>          drm_atomic_helper_set_config+0xb4/0x134
->>          drm_mode_setcrtc+0x688/0x1248
->>          drm_ioctl_kernel+0x1e4/0x338
->>          drm_ioctl+0x3a4/0x684
->>          __arm64_sys_ioctl+0x118/0x154
->>          invoke_syscall+0x78/0x224
->>          el0_svc_common+0x178/0x200
->>          do_el0_svc+0x94/0x13c
->>          el0_svc+0x5c/0xec
->>          el0t_64_sync_handler+0x78/0x108
->>          el0t_64_sync+0x1a4/0x1a8
->>
->> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
->> ---
->>   drivers/gpu/drm/msm/dp/dp_display.c |  6 ------
->>   drivers/gpu/drm/msm/dp/dp_panel.c   | 23 +++++++++++++----------
->>   2 files changed, 13 insertions(+), 16 deletions(-)
->>
->> diff --git a/drivers/gpu/drm/msm/dp/dp_display.c 
->> b/drivers/gpu/drm/msm/dp/dp_display.c
->> index 92cd50f..01453db 100644
->> --- a/drivers/gpu/drm/msm/dp/dp_display.c
->> +++ b/drivers/gpu/drm/msm/dp/dp_display.c
->> @@ -555,12 +555,6 @@ static int dp_hpd_plug_handle(struct 
->> dp_display_private *dp, u32 data)
->>       mutex_unlock(&dp->event_mutex);
->> -    /*
->> -     * add fail safe mode outside event_mutex scope
->> -     * to avoid potiential circular lock with drm thread
->> -     */
->> -    dp_panel_add_fail_safe_mode(dp->dp_display.connector);
->> -
->>       /* uevent will complete connection part */
->>       return 0;
->>   };
->> diff --git a/drivers/gpu/drm/msm/dp/dp_panel.c 
->> b/drivers/gpu/drm/msm/dp/dp_panel.c
->> index 1aa9aa8c..23fee42 100644
->> --- a/drivers/gpu/drm/msm/dp/dp_panel.c
->> +++ b/drivers/gpu/drm/msm/dp/dp_panel.c
->> @@ -151,15 +151,6 @@ static int dp_panel_update_modes(struct 
->> drm_connector *connector,
->>       return rc;
->>   }
->> -void dp_panel_add_fail_safe_mode(struct drm_connector *connector)
->> -{
->> -    /* fail safe edid */
->> -    mutex_lock(&connector->dev->mode_config.mutex);
->> -    if (drm_add_modes_noedid(connector, 640, 480))
->> -        drm_set_preferred_mode(connector, 640, 480);
->> -    mutex_unlock(&connector->dev->mode_config.mutex);
->> -}
->> -
->>   int dp_panel_read_sink_caps(struct dp_panel *dp_panel,
->>       struct drm_connector *connector)
->>   {
->> @@ -216,7 +207,11 @@ int dp_panel_read_sink_caps(struct dp_panel 
->> *dp_panel,
->>               goto end;
->>           }
->> -        dp_panel_add_fail_safe_mode(connector);
->> +        /* fail safe edid */
->> +        mutex_lock(&connector->dev->mode_config.mutex);
->> +        if (drm_add_modes_noedid(connector, 640, 480))
->> +            drm_set_preferred_mode(connector, 640, 480);
->> +        mutex_unlock(&connector->dev->mode_config.mutex);
->>       }
->>       if (panel->aux_cfg_update_done) {
->> @@ -266,6 +261,14 @@ int dp_panel_get_modes(struct dp_panel *dp_panel,
->>           return -EINVAL;
->>       }
->> +    /*
->> +     * add fail safe mode (640x480) here
->> +     * since we are executed in drm_thread context,
->> +     * no mode_config.mutex acquired required
->> +     */
->> +    if (drm_add_modes_noedid(connector, 640, 480))
->> +        drm_set_preferred_mode(connector, 640, 480);
->> +
->>       if (dp_panel->edid)
->>           return dp_panel_update_modes(connector, dp_panel->edid);
-> Also, wouldn't calling get_modes() several times make cause adding more 
-> and more 640x480 modes to the modes list?
-> 
+All errors (new ones prefixed by >>, old ones prefixed by <<):
 
-Shouldnt DRM be blocking that here? Call should trickle down here only 
-if count_modes was 0
+ERROR: modpost: "netfs_put_subrequest" [fs/afs/kafs.ko] undefined!
+>> ERROR: modpost: "__tracepoint_netfs_sreq" [fs/afs/kafs.ko] undefined!
+>> ERROR: modpost: "netfs_page_mkwrite" [fs/afs/kafs.ko] undefined!
+>> ERROR: modpost: "__SCT__tp_func_netfs_sreq" [fs/afs/kafs.ko] undefined!
 
-    if (out_resp->count_modes == 0) {
-         if (is_current_master)
-             connector->funcs->fill_modes(connector,
-                              dev->mode_config.max_width,
-                              dev->mode_config.max_height);
-         else
-             drm_dbg_kms(dev, "User-space requested a forced probe on 
-[CONNECTOR:%d:%s] but is not the DRM master, demoting to read-only probe",
-                     connector->base.id, connector->name);
-     }
-
-> 
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
