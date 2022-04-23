@@ -2,189 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5007C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 00:13:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD410C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 00:13:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230251AbiDWAQa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 20:16:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51072 "EHLO
+        id S230241AbiDWAQo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 20:16:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229747AbiDWAQY (ORCPT
+        with ESMTP id S229548AbiDWAQl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 20:16:24 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3CF5694A1
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 17:13:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650672809; x=1682208809;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=NskPxwyMc7Rc29Qn91x0BUpQWc5sb1MVI78i+P2Oj/I=;
-  b=BqmV3LQGFmyFMd+Wat+bLMxGjZ7OVAuAx7trVKrCnnitfrZFpzYht13t
-   xiGG95EC1WhhFr0ISFetPfrjH/0iSF6cVnuhEJLAsAKOf2xQbsLj23v39
-   oAEVnBE648jKhAtAkw+f9mLTdBj5HYy5P9p8s1Z9RK1Zwja0BPoI+nJtL
-   vlfkPNNFP/TRoCKZzBEfRLppo7VkR7HiNBYejdBRgKVY1bdHKxGFzvdEj
-   97zQ+qUHWSBF8ZLwP9spKgcEdpQLdLURfOYoN2vGSGrLAXiu6YyuScr1T
-   D03fVOgoji6Xg8sJiNvrc6ewvuTYgF9QFhQAFGDUHSb2o5gK4BB0DYzAI
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="264990025"
-X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="264990025"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 17:13:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="806214074"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 22 Apr 2022 17:13:28 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ni3Ox-000Ai8-Bz;
-        Sat, 23 Apr 2022 00:13:27 +0000
-Date:   Sat, 23 Apr 2022 08:13:23 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-maple 35/44]
- fs/netfs/buffered_write.c:28:26: warning: comparison of distinct pointer
- types ('typeof (((1UL) << 12) - offset) *' (aka 'unsigned long *') and
- 'typeof (size) *' (aka 'unsigned int *'))
-Message-ID: <202204230822.ABum5vzC-lkp@intel.com>
+        Fri, 22 Apr 2022 20:16:41 -0400
+Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5CB46F491
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 17:13:46 -0700 (PDT)
+Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-deb9295679so10278703fac.6
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 17:13:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=zfFaHSOoCxM9k7WKIO+SokAw11U0tu3SQrHG+UYnnlM=;
+        b=SMTCDHnxPQC5SWcOnrjWlUXYfTnq2kSb7H1LnbYRP0ofrUmzM0854ZNXMkmhrSDnWT
+         3RZUnfA5zAxRFraIm7Qjx9cilV+2Ss7wB7JctfUBW0X5wdAlynDjUAwvHAr+dMNJ44BZ
+         s/fxmjw3HKSl+k+EjZ4bHrJ/VUc44pDQvSTwI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=zfFaHSOoCxM9k7WKIO+SokAw11U0tu3SQrHG+UYnnlM=;
+        b=fJkDpSJZPbA6wqr2sEr5vX4JIKsRFKlNU9sxNJcLZfgw5jx2hsvjInkRdkACoRz4TT
+         GZ8gEObw6wlhgRlqdhQf8OmkQEMIOdER/p9edvNVpzCSmTXNax/isKoBtNoeVDZQjm8k
+         QWf5U9CWSoJwsn8ZU8ZjvXd1ygU6W9TqTGm9KF/Nv9VbyflZ0w2PthBRhbuPAvJ9ILkw
+         wb3/tDmaAuxYfmiuwkpL4rvTs2tIjYLSQkdqad6xv2p1bojmA7ODqd234kYjrsKd7lvf
+         1rdCi7Y87yhJIrWvtDlscY2NJMoxEA+8l4fu7PlkBRnIUJr4H00FGx/OHW9pMGuPc522
+         Cltg==
+X-Gm-Message-State: AOAM531ft9/313Vp4h9Y5sskBttW7R9rpuVxAr0GPuEkiosImUQTillf
+        HNBsmH5ObvL+ZJflXzGVULgCJhhXo9YBwn7npEyyig==
+X-Google-Smtp-Source: ABdhPJyDBwXV+rdQrcRoHA6+8NjnidEoQADmYUSSgyUssOflCC+zmPxyfEsir5j8jsvIFyT+93lwtCnrCsLX4JuITZg=
+X-Received: by 2002:a05:6870:15ca:b0:e9:551:6d1c with SMTP id
+ k10-20020a05687015ca00b000e905516d1cmr1773145oad.193.1650672826133; Fri, 22
+ Apr 2022 17:13:46 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Fri, 22 Apr 2022 17:13:45 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+In-Reply-To: <1650618666-15342-2-git-send-email-quic_sbillaka@quicinc.com>
+References: <1650618666-15342-1-git-send-email-quic_sbillaka@quicinc.com> <1650618666-15342-2-git-send-email-quic_sbillaka@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Fri, 22 Apr 2022 17:13:45 -0700
+Message-ID: <CAE-0n51VBDmOOworjpuB1nqVD-7055yqvn2Er5H13qgFC5R2AQ@mail.gmail.com>
+Subject: Re: [PATCH v9 1/4] drm/msm/dp: Add eDP support via aux_bus
+To:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     robdclark@gmail.com, seanpaul@chromium.org,
+        quic_kalyant@quicinc.com, quic_abhinavk@quicinc.com,
+        dianders@chromium.org, quic_khsieh@quicinc.com,
+        bjorn.andersson@linaro.org, sean@poorly.run, airlied@linux.ie,
+        daniel@ffwll.ch, dmitry.baryshkov@linaro.org,
+        quic_vproddut@quicinc.com, quic_aravindh@quicinc.com,
+        steev@kali.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-maple
-head:   931e50676c6598d0eda1954ead465519ff91874d
-commit: f343507aeda88b2f1a528a659b8fadaa9b6b0f79 [35/44] netfs: Implement buffered writes through netfs_file_write_iter()
-config: i386-randconfig-a002 (https://download.01.org/0day-ci/archive/20220423/202204230822.ABum5vzC-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5bd87350a5ae429baf8f373cb226a57b62f87280)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/f343507aeda88b2f1a528a659b8fadaa9b6b0f79
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-maple
-        git checkout f343507aeda88b2f1a528a659b8fadaa9b6b0f79
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash fs/netfs/
+Quoting Sankeerth Billakanti (2022-04-22 02:11:03)
+> diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+> index d7a19d6..055681a 100644
+> --- a/drivers/gpu/drm/msm/dp/dp_display.c
+> +++ b/drivers/gpu/drm/msm/dp/dp_display.c
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Some nitpicks
 
-All warnings (new ones prefixed by >>):
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
 
->> fs/netfs/buffered_write.c:28:26: warning: comparison of distinct pointer types ('typeof (((1UL) << 12) - offset) *' (aka 'unsigned long *') and 'typeof (size) *' (aka 'unsigned int *')) [-Wcompare-distinct-pointer-types]
-                   unsigned int psize   = min(PAGE_SIZE - offset, size);
-                                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:45:19: note: expanded from macro 'min'
-   #define min(x, y)       __careful_cmp(x, y, <)
-                           ^~~~~~~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:36:24: note: expanded from macro '__careful_cmp'
-           __builtin_choose_expr(__safe_cmp(x, y), \
-                                 ^~~~~~~~~~~~~~~~
-   include/linux/minmax.h:26:4: note: expanded from macro '__safe_cmp'
-                   (__typecheck(x, y) && __no_side_effects(x, y))
-                    ^~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:20:28: note: expanded from macro '__typecheck'
-           (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
-                      ~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~~~~
-   fs/netfs/buffered_write.c:94:18: warning: comparison of distinct pointer types ('typeof (target->from) *' (aka 'unsigned long long *') and 'typeof (folio_pos(folio) + offset) *' (aka 'long long *')) [-Wcompare-distinct-pointer-types]
-           target->from  = min(target->from, folio_pos(folio) + offset);
-                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:45:19: note: expanded from macro 'min'
-   #define min(x, y)       __careful_cmp(x, y, <)
-                           ^~~~~~~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:36:24: note: expanded from macro '__careful_cmp'
-           __builtin_choose_expr(__safe_cmp(x, y), \
-                                 ^~~~~~~~~~~~~~~~
-   include/linux/minmax.h:26:4: note: expanded from macro '__safe_cmp'
-                   (__typecheck(x, y) && __no_side_effects(x, y))
-                    ^~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:20:28: note: expanded from macro '__typecheck'
-           (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
-                      ~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~~~~
-   fs/netfs/buffered_write.c:95:18: warning: comparison of distinct pointer types ('typeof (target->to) *' (aka 'unsigned long long *') and 'typeof (folio_pos(folio) + offset + len) *' (aka 'long long *')) [-Wcompare-distinct-pointer-types]
-           target->to    = max(target->to,   folio_pos(folio) + offset + len);
-                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:52:19: note: expanded from macro 'max'
-   #define max(x, y)       __careful_cmp(x, y, >)
-                           ^~~~~~~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:36:24: note: expanded from macro '__careful_cmp'
-           __builtin_choose_expr(__safe_cmp(x, y), \
-                                 ^~~~~~~~~~~~~~~~
-   include/linux/minmax.h:26:4: note: expanded from macro '__safe_cmp'
-                   (__typecheck(x, y) && __no_side_effects(x, y))
-                    ^~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:20:28: note: expanded from macro '__typecheck'
-           (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
-                      ~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~~~~
-   fs/netfs/buffered_write.c:254:36: warning: format specifies type 'unsigned long' but the argument has type 'size_t' (aka 'unsigned int') [-Wformat]
-           _enter("e=%llx o=%lx l=%lx", end, offset, len);
-                            ~~~              ^~~~~~
-                            %zx
-   fs/netfs/internal.h:270:65: note: expanded from macro '_enter'
-   #define _enter(FMT, ...) no_printk("==> %s("FMT")", __func__, ##__VA_ARGS__)
-                                               ~~~                 ^~~~~~~~~~~
-   include/linux/printk.h:132:17: note: expanded from macro 'no_printk'
-                   printk(fmt, ##__VA_ARGS__);             \
-                          ~~~    ^~~~~~~~~~~
-   include/linux/printk.h:446:60: note: expanded from macro 'printk'
-   #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
-                                                       ~~~    ^~~~~~~~~~~
-   include/linux/printk.h:418:19: note: expanded from macro 'printk_index_wrap'
-                   _p_func(_fmt, ##__VA_ARGS__);                           \
-                           ~~~~    ^~~~~~~~~~~
-   fs/netfs/buffered_write.c:254:44: warning: format specifies type 'unsigned long' but the argument has type 'size_t' (aka 'unsigned int') [-Wformat]
-           _enter("e=%llx o=%lx l=%lx", end, offset, len);
-                                  ~~~                ^~~
-                                  %zx
-   fs/netfs/internal.h:270:65: note: expanded from macro '_enter'
-   #define _enter(FMT, ...) no_printk("==> %s("FMT")", __func__, ##__VA_ARGS__)
-                                               ~~~                 ^~~~~~~~~~~
-   include/linux/printk.h:132:17: note: expanded from macro 'no_printk'
-                   printk(fmt, ##__VA_ARGS__);             \
-                          ~~~    ^~~~~~~~~~~
-   include/linux/printk.h:446:60: note: expanded from macro 'printk'
-   #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
-                                                       ~~~    ^~~~~~~~~~~
-   include/linux/printk.h:418:19: note: expanded from macro 'printk_index_wrap'
-                   _p_func(_fmt, ##__VA_ARGS__);                           \
-                           ~~~~    ^~~~~~~~~~~
-   5 warnings generated.
+> @@ -1508,7 +1509,8 @@ void msm_dp_irq_postinstall(struct msm_dp *dp_display)
+>
+>         dp_hpd_event_setup(dp);
+>
+> -       dp_add_event(dp, EV_HPD_INIT_SETUP, 0, 100);
+> +       if (!dp_display->is_edp)
+> +               dp_add_event(dp, EV_HPD_INIT_SETUP, 0, 100);
 
+Did it turn out that in fact DP isn't ready still to setup even after
+delaying the irq?
 
-vim +28 fs/netfs/buffered_write.c
+>  }
+>
+>  void msm_dp_debugfs_init(struct msm_dp *dp_display, struct drm_minor *minor)
+> @@ -1530,6 +1532,65 @@ void msm_dp_debugfs_init(struct msm_dp *dp_display, struct drm_minor *minor)
+>         }
+>  }
+>
+> +static int dp_display_get_next_bridge(struct msm_dp *dp)
+> +{
+> +       int rc;
+> +       struct dp_display_private *dp_priv;
+> +       struct device_node *aux_bus;
+> +       struct device *dev;
+> +
+> +       dp_priv = container_of(dp, struct dp_display_private, dp_display);
+> +       dev = &dp_priv->pdev->dev;
+> +       aux_bus = of_get_child_by_name(dev->of_node, "aux-bus");
+> +
+> +       if (aux_bus && dp->is_edp) {
+> +               dp_display_host_init(dp_priv);
+> +               dp_catalog_ctrl_hpd_config(dp_priv->catalog);
+> +               dp_display_host_phy_init(dp_priv);
+> +               enable_irq(dp_priv->irq);
+> +
+> +               /*
+> +                * The code below assumes that the panel will finish probing
+> +                * by the time devm_of_dp_aux_populate_ep_devices() returns.
+> +                * This isn't a great assumption since it will fail if the
+> +                * panel driver is probed asynchronously but is the best we
+> +                * can do without a bigger driver reorganization.
+> +                */
+> +               rc = devm_of_dp_aux_populate_ep_devices(dp_priv->aux);
+> +               of_node_put(aux_bus);
+> +               if (rc)
+> +                       goto error;
+> +       } else if (dp->is_edp) {
+> +               DRM_ERROR("eDP aux_bus not found\n");
+> +               return -ENODEV;
+> +       }
+> +
+> +       /*
+> +        * External bridges are mandatory for eDP interfaces: one has to
+> +        * provide at least an eDP panel (which gets wrapped into panel-bridge).
+> +        *
+> +        * For DisplayPort interfaces external bridges are optional, so
+> +        * silently ignore an error if one is not present (-ENODEV).
+> +        */
+> +       rc = dp_parser_find_next_bridge(dp_priv->parser);
+> +       if (!dp->is_edp && rc == -ENODEV)
+> +               return 0;
+> +       else if (rc)
 
-    18	
-    19	static size_t copy_folio_from_iter_atomic(struct folio *folio,
-    20						  unsigned int offset, size_t size,
-    21						  struct iov_iter *i)
-    22	{
-    23		size_t copied = 0, n;
-    24	
-    25		do {
-    26			unsigned int index   = offset / PAGE_SIZE;
-    27			unsigned int poffset = offset % PAGE_SIZE;
-  > 28			unsigned int psize   = min(PAGE_SIZE - offset, size);
-    29	
-    30			n = copy_page_from_iter_atomic(folio_file_page(folio, index),
-    31						       poffset, psize, i);
-    32			copied += n;
-    33			if (n < psize)
-    34				break;
-    35			size -= n;
-    36		} while (size);
-    37		return copied;
-    38	}
-    39	
+Just an if because there's a return above.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> +               goto error;
+> +
+> +       dp->next_bridge = dp_priv->parser->next_bridge;
+
+In which case it almost feels like it could be written
+
+	if (!dp->is_edp && rc == -ENODEV)
+		return 0;
+	if (!rc) {
+		dp->next_bridge = dp_priv->parser->next_bridge;
+		return 0;
+	}
+error:
+	if (dp->is_edp) {
+
+but I'm not worried either way, besides removing the else from the else-if.
+
+> +
+> +       return 0;
+> +
+> +error:
+> +       if (dp->is_edp) {
+> +               disable_irq(dp_priv->irq);
+> +               dp_display_host_phy_exit(dp_priv);
+> +               dp_display_host_deinit(dp_priv);
+> +       }
+> +       return rc;
+> +}
+> +
+>  int msm_dp_modeset_init(struct msm_dp *dp_display, struct drm_device *dev,
+>                         struct drm_encoder *encoder)
+>  {
+> diff --git a/drivers/gpu/drm/msm/dp/dp_parser.h b/drivers/gpu/drm/msm/dp/dp_parser.h
+> index d371bae..950416c 100644
+> --- a/drivers/gpu/drm/msm/dp/dp_parser.h
+> +++ b/drivers/gpu/drm/msm/dp/dp_parser.h
+> @@ -125,7 +125,7 @@ struct dp_parser {
+>         u32 max_dp_lanes;
+>         struct drm_bridge *next_bridge;
+>
+> -       int (*parse)(struct dp_parser *parser, int connector_type);
+> +       int (*parse)(struct dp_parser *parser);
+>  };
+>
+>  /**
+> @@ -141,4 +141,15 @@ struct dp_parser {
+>   */
+>  struct dp_parser *dp_parser_get(struct platform_device *pdev);
+>
+> +/**
+> + * dp_parser_find_next_bridge() - find an additional bridge to DP
+> + *
+> + * @parser: dp_parser data from client
+> + * return: 0 if able to get the bridge else return an error code
+
+return comes after the description below. Also should be capitalized.
+You can check this by compiling with W=1 I believe, or run the
+kernel doc format script on the file..
+
+> + *
+> + * This function is used to find any additional bridge attached to
+> + * the DP controller. The eDP interface requires a panel bridge.
+
+Return: 0 if able to get the bridge, otherwise negative errno for failure
+
+> + */
+> +int dp_parser_find_next_bridge(struct dp_parser *parser);
+> +
