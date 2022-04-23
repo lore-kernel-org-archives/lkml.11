@@ -2,55 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A83DCC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 02:14:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35FEAC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 02:14:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231848AbiDWCRQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 22:17:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49526 "EHLO
+        id S231892AbiDWCRS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 22:17:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229919AbiDWCRM (ORCPT
+        with ESMTP id S231817AbiDWCRM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 22 Apr 2022 22:17:12 -0400
 Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A768521743B
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 19:14:13 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id bj12-20020a056a02018c00b003a9eebaad34so5962574pgb.10
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 19:14:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5DBE21AF41
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 19:14:16 -0700 (PDT)
+Received: by mail-pg1-x54a.google.com with SMTP id x2-20020a63aa42000000b003aafe948eeeso81445pgo.0
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 19:14:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=reply-to:date:message-id:mime-version:subject:from:to:cc;
-        bh=lga5SX9wwlH6iXTjGCkZNdU+mF1h6VNNYWdofZefQoQ=;
-        b=Ar3nvOusu1xUjBNKJIWHoWfKpkQ2DC1j+vfsZeV0pbFFe0w2Ca6Ud8UP4nDBggrM/Q
-         AJ05xtF4ELmvZSZmgLSsdV+btP+AGGD2wKpYcGXXSpilmmO+mfvCnNAZAOO3++/Q2IK2
-         r+qIfTBMjBXJZ8Gfvw2XNAuW36T+fz6/b2yj05+eYMgSwBU2G+VEnrtQkYB8QEuW99TW
-         O21GStphUZ6h5RN2W33qj4CEOI72+7WkgkeF1xZT20MT/q1m2Sc6Pg3U91Z5IypxWO6A
-         kWCee/7RW9pFDShHMhqIiMHSrBbb+md4cgglCV/mgrn5MtPZs9m6V9kxgkgoV5NT03pt
-         Y8VQ==
+        h=reply-to:date:in-reply-to:message-id:mime-version:references
+         :subject:from:to:cc;
+        bh=4V4fYOOx19aLgtO3bZkAZcLhXo54aE7TN/hmI1hVjK0=;
+        b=fxN5sEadn4wpsVuyRDEN1xnjtYATl9Jnlz1X/u04pUWGdAY7yRwdXgWYouii6v/Ynh
+         0L0GDMLYsS7xNqWEudFlq/aNhrB4XVYfEICu7PnqkeRyXItjj/rELzxkxwvDiC4EuD10
+         SkQcdHOLprj8bmaFKELTi7uxOvKfbe+48AJ/ux7HSl2f7pvIIH4YxfhT98DB0t2+jRVU
+         EH/CzjKSbZQwiCQzcSHbYUlGb8QpHPBr/JCLqTn8O4qLIVCKMYm/O3o462bqzh5H8gSJ
+         boAtGxiSCbxfcGn0d9Zf2OWpNZR/qCbo2eWlUQNgZLYUH8yuOHOZCecEFgViDq6nI5Fh
+         vPgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:message-id:mime-version:subject
-         :from:to:cc;
-        bh=lga5SX9wwlH6iXTjGCkZNdU+mF1h6VNNYWdofZefQoQ=;
-        b=ZcUCTQ8En5Itnz8Vj17JiqXT9lCQtu/MB6q1eNerrqSqMC846VdeuApreFHJwJ9P2I
-         6uYG5+bgAij/HxWLNGVQcT6xTBETl0+Q/daNkZTGRQ61/mG6Cj0/Fb4UTFufjVOn5uLa
-         w7lvK5p/9e2aCk6KEIU3XtzPgADlWQ+UUfQc7q7BGKiMro3E6/hf5E3zuSYRR+EQCrK+
-         A6KW+ZGZYqL0BeY3fzNAuv7YH3xa6SH9V1bE3mpNKhLXJ4hPbkFXLsOd88Zftu7RHlLu
-         goMbyZuWZrIvbQ0ubiPukX+tuv4h81r5HQ1gFSUOr0YH+nNmeWJm5OpX+mjprygJ7Z44
-         cI4Q==
-X-Gm-Message-State: AOAM532hG7WoPs0nz1RH5gan60A5aLCsUk1py7wwwP1px+PFffyiF+QM
-        hrCvTiijYLDciQdm0WsyhjNGcbSp348=
-X-Google-Smtp-Source: ABdhPJwQ8/aUQUtuzGWmLPl2e/WfDGGRnhWAfqh2zS2aUVfBmyCyAtTXTmNErdui41AYXdJwTWazT4BksvY=
+        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
+         :mime-version:references:subject:from:to:cc;
+        bh=4V4fYOOx19aLgtO3bZkAZcLhXo54aE7TN/hmI1hVjK0=;
+        b=jdF5cZ7AnVc42lLli3OS+eH2aZ34Ga0C7WOOoypDqi6Nn/gWogBeuyg5iofFtWRqu5
+         j/iV7pyMuWiRI2r9DbbE/B2HLsnICGEiYQSfmPt2tAbE8W2EkXQvGPWOynJm4CuZ72u/
+         v0KsC0Cy+XHapb/fj4loyry+5JscolZ7bKTSZaW6Ey6ZcTMLxtxq7ePsAW1RFaVbnA2F
+         roJfrQGecau6LpbolI2EiFc6p+jiqRptklqeOA1c7PDTI/2MODyH2y2FPLEtujSq1EAg
+         G7M5n03PaO2yBEWZB9eRbBQv3obwPwjS0qj6JRibVbA2us7h/MLdVSjA94o4P5IRe6XV
+         OuIw==
+X-Gm-Message-State: AOAM530WtbhaKSpucLS0nb2bkYCqiJfBJUBPIkKsPQsL3ppdeGN5vmho
+        wSxt4oOle/nuznJtaSut1FWHLkxUYWg=
+X-Google-Smtp-Source: ABdhPJzQ/xbiIP/rNdWA1KVR1iUlC6bHzhLcVP7dnu4Hsyaxr1/n90CtPDb8g5YEeO16z5rt0uFKMql6qFg=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90a:c781:b0:1d0:c23e:5842 with SMTP id
- gn1-20020a17090ac78100b001d0c23e5842mr19434228pjb.182.1650680053199; Fri, 22
- Apr 2022 19:14:13 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:90a:8a92:b0:1d7:3cca:69d8 with SMTP id
+ x18-20020a17090a8a9200b001d73cca69d8mr10179857pjn.61.1650680056056; Fri, 22
+ Apr 2022 19:14:16 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Sat, 23 Apr 2022 02:14:00 +0000
-Message-Id: <20220423021411.784383-1-seanjc@google.com>
+Date:   Sat, 23 Apr 2022 02:14:02 +0000
+In-Reply-To: <20220423021411.784383-1-seanjc@google.com>
+Message-Id: <20220423021411.784383-3-seanjc@google.com>
 Mime-Version: 1.0
+References: <20220423021411.784383-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
-Subject: [PATCH v2 00/11] KVM: SVM: Fix soft int/ex re-injection
+Subject: [PATCH v2 02/11] KVM: SVM: Don't BUG if userspace injects a soft
+ interrupt with GIF=0
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -65,98 +69,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix soft interrupt/exception reinjection on SVM.
+From: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
 
-The underlying issue is that SVM simply retries INT* instructions instead
-of reinjecting the soft interupt/exception if an exception VM-Exit occurred
-during vectoring.  Lack of reinjection breaks nested virtualization if
-the injected event came from L1 and the VM-Exit is not forwarded to L1,
-as there is no instruction to retry.  More fundamentally, retrying the
-instruction is wrong as it can produce side effects that shouldn't occur,
-e.g. code #DBs.
+Don't BUG/WARN on interrupt injection due to GIF being cleared if the
+injected event is a soft interrupt, which are not actually IRQs and thus
+not subject to IRQ blocking conditions.  KVM doesn't currently use event
+injection to handle incomplete soft interrupts, but it's trivial for
+userspace to force the situation via KVM_SET_VCPU_EVENTS.
 
-VMX has been fixed since commit 66fd3f7f901f ("KVM: Do not re-execute
-INTn instruction."), but SVM was left behind.  Probably because fixing
-SVM is a mess due to NRIPS not being supported on all architectures, and
-due to it being poorly implemented (with respect to soft events) when it
-is supported.
+Opportunistically downgrade the BUG_ON() to WARN_ON(), there's no need to
+bring down the whole host just because there might be some issue with
+respect to guest GIF handling in KVM, or as evidenced here, an egregious
+oversight with respect to KVM's uAPI.
 
-Opportunistically clean up related tracepoints to make debugging related
-issues less painful in the future.
+  kernel BUG at arch/x86/kvm/svm/svm.c:3386!
+  invalid opcode: 0000 [#1] SMP
+  CPU: 15 PID: 926 Comm: smm_test Not tainted 5.17.0-rc3+ #264
+  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 0.0.0 02/06/2015
+  RIP: 0010:svm_inject_irq+0xab/0xb0 [kvm_amd]
+  Code: <0f> 0b 0f 1f 00 0f 1f 44 00 00 80 3d ac b3 01 00 00 55 48 89 f5 53
+  RSP: 0018:ffffc90000b37d88 EFLAGS: 00010246
+  RAX: 0000000000000000 RBX: ffff88810a234ac0 RCX: 0000000000000006
+  RDX: 0000000000000000 RSI: ffffc90000b37df7 RDI: ffff88810a234ac0
+  RBP: ffffc90000b37df7 R08: ffff88810a1fa410 R09: 0000000000000000
+  R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+  R13: ffff888109571000 R14: ffff88810a234ac0 R15: 0000000000000000
+  FS:  0000000001821380(0000) GS:ffff88846fdc0000(0000) knlGS:0000000000000000
+  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  CR2: 00007f74fc550008 CR3: 000000010a6fe000 CR4: 0000000000350ea0
+  Call Trace:
+   <TASK>
+   inject_pending_event+0x2f7/0x4c0 [kvm]
+   kvm_arch_vcpu_ioctl_run+0x791/0x17a0 [kvm]
+   kvm_vcpu_ioctl+0x26d/0x650 [kvm]
+   __x64_sys_ioctl+0x82/0xb0
+   do_syscall_64+0x3b/0xc0
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
+   </TASK>
 
-The last patch is not-signed-off-by as I think it needs broader review
-and feedback before KVM drops support for CPUs that are old, but not
-thaaaaat old.
+Fixes: 219b65dcf6c0 ("KVM: SVM: Improve nested interrupt injection")
+Cc: stable@vger.kernel.org
+Signed-off-by: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
+Co-developed-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+---
+ arch/x86/kvm/svm/svm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-The tracepoint output looks like:
-
-    kvm_inj_exception: #GP (0x0) 
-    kvm_inj_exception: #UD       
-    kvm_inj_exception: #DE       
-    kvm_inj_exception: #DE [reinjected]
-    kvm_inj_exception: #BP [reinjected]
-    kvm_inj_exception: #NP (0x18) [reinjected]
-
-and for "irqs":
-
-    kvm_inj_virq: Soft/INTn 0x20 [reinjected]
-    kvm_inj_virq: Soft/INTn 0x19 [reinjected]
-    kvm_inj_virq: IRQ 0x20
-    kvm_inj_virq: IRQ 0xf1
-
-v2:
-  - Collect reviews. [Maxim]
-  - Drop a stale comment midway through. [Paolo]
-  - Correctly handle (at least as correctly as SVM allows) the scenario
-    where an injected soft interrupt/exception has no backing insn. [Maxim]
-  - Tag reinjected exceptions in the tracepoint. [Maxim]
-  - Use the correct L2 RIP (hopefully) in svm_set_nested_state. [Maciej]
-  - Fix a BUG that can be triggered by userspace.
-  - Fix the error code FIXME in the exception tracepoint.
-  - Differentiate soft vs. hard "IRQ" injection in tracepoint.
-  - Assert that the first soft int is injected on the correct RIP in
-    the selftest.
-
-v1:
-  https://lore.kernel.org/all/20220402010903.727604-1-seanjc@google.com
-
-Maciej's original series:
-  https://lore.kernel.org/all/cover.1646944472.git.maciej.szmigiero@oracle.com
-
-Maciej S. Szmigiero (3):
-  KVM: nSVM: Sync next_rip field from vmcb12 to vmcb02
-  KVM: SVM: Don't BUG if userspace injects a soft interrupt with GIF=0
-  KVM: selftests: nSVM: Add svm_nested_soft_inject_test
-
-Sean Christopherson (8):
-  KVM: SVM: Unwind "speculative" RIP advancement if INTn injection
-    "fails"
-  KVM: SVM: Stuff next_rip on emulated INT3 injection if NRIPS is
-    supported
-  KVM: SVM: Re-inject INT3/INTO instead of retrying the instruction
-  KVM: SVM: Re-inject INTn instead of retrying the insn on "failure"
-  KVM: x86: Trace re-injected exceptions
-  KVM: x86: Print error code in exception injection tracepoint iff valid
-  KVM: x86: Differentiate Soft vs. Hard IRQs vs. reinjected in
-    tracepoint
-  KVM: SVM: Drop support for CPUs without NRIPS (NextRIP Save) support
-
- arch/x86/include/asm/kvm_host.h               |   2 +-
- arch/x86/kvm/svm/nested.c                     |  46 ++++-
- arch/x86/kvm/svm/svm.c                        | 169 ++++++++++++------
- arch/x86/kvm/svm/svm.h                        |   7 +-
- arch/x86/kvm/trace.h                          |  31 ++--
- arch/x86/kvm/vmx/vmx.c                        |   4 +-
- arch/x86/kvm/x86.c                            |  20 ++-
- tools/testing/selftests/kvm/.gitignore        |   3 +-
- tools/testing/selftests/kvm/Makefile          |   1 +
- .../selftests/kvm/include/x86_64/svm_util.h   |   2 +
- .../kvm/x86_64/svm_nested_soft_inject_test.c  | 149 +++++++++++++++
- 11 files changed, 351 insertions(+), 83 deletions(-)
- create mode 100644 tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c
-
-
-base-commit: 2a39d8b39bffdaf1a4223d0d22f07baee154c8f3
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index 75b4f3ac8b1a..151fba0b405f 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -3384,7 +3384,7 @@ static void svm_inject_irq(struct kvm_vcpu *vcpu)
+ {
+ 	struct vcpu_svm *svm = to_svm(vcpu);
+ 
+-	BUG_ON(!(gif_set(svm)));
++	WARN_ON(!vcpu->arch.interrupt.soft && !gif_set(svm));
+ 
+ 	trace_kvm_inj_virq(vcpu->arch.interrupt.nr);
+ 	++vcpu->stat.irq_injections;
 -- 
 2.36.0.rc2.479.g8af0fa9b8e-goog
 
