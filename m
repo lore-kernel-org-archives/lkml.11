@@ -2,54 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3CAEC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 16:02:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96382C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 16:03:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236269AbiDWQFw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 12:05:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33104 "EHLO
+        id S236279AbiDWQF6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 12:05:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236251AbiDWQFv (ORCPT
+        with ESMTP id S236251AbiDWQFx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 12:05:51 -0400
-Received: from smtp.smtpout.orange.fr (smtp02.smtpout.orange.fr [80.12.242.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0313D2496E
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 09:02:52 -0700 (PDT)
-Received: from [192.168.1.18] ([86.243.180.246])
-        by smtp.orange.fr with ESMTPA
-        id iIDhnoslywn8GiIDhns99I; Sat, 23 Apr 2022 18:02:50 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sat, 23 Apr 2022 18:02:50 +0200
-X-ME-IP: 86.243.180.246
-Message-ID: <fad918d3-6923-5bec-7830-5cddf7a725d6@wanadoo.fr>
-Date:   Sat, 23 Apr 2022 18:02:48 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
+        Sat, 23 Apr 2022 12:05:53 -0400
+Received: from ciao.gmane.io (ciao.gmane.io [116.202.254.214])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 884F22496E
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 09:02:56 -0700 (PDT)
+Received: from list by ciao.gmane.io with local (Exim 4.92)
+        (envelope-from <glk-linux-kernel-4@m.gmane-mx.org>)
+        id 1niIDl-0004Qj-VQ
+        for linux-kernel@vger.kernel.org; Sat, 23 Apr 2022 18:02:53 +0200
+X-Injected-Via-Gmane: http://gmane.org/
+To:     linux-kernel@vger.kernel.org
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 Subject: Re: [PATCH 3/3] binder: Use kmap_local_page() in
  binder_alloc_get_page()
-Content-Language: fr
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?Q?Arve_Hj=c3=b8nnev=c3=a5g?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Hridya Valsaraju <hridya@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Ira Weiny <ira.weiny@intel.com>, linux-kernel@vger.kernel.org
-Newsgroups: gmane.linux.kernel
+Date:   Sat, 23 Apr 2022 18:02:48 +0200
+Message-ID: <fad918d3-6923-5bec-7830-5cddf7a725d6@wanadoo.fr>
 References: <20220423102421.16869-1-fmdefrancesco@gmail.com>
  <20220423102421.16869-4-fmdefrancesco@gmail.com>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <20220423102421.16869-4-fmdefrancesco@gmail.com>
+Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: fr
+In-Reply-To: <20220423102421.16869-4-fmdefrancesco@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
+Message-ID: <20220423160248.pbji89_SCUcDSdI-Jnww5qVgWFNZaAl7F-sHhtbyihE@z>
 
 Hi,
 
@@ -107,4 +96,5 @@ CJ
 >   		bytes -= size;
 >   		pgoff = 0;
 >   		ptr = ptr + size;
+
 
