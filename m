@@ -2,74 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02D21C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 09:48:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0657C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 09:54:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234665AbiDWJvP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 05:51:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59214 "EHLO
+        id S234695AbiDWJ53 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 05:57:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234603AbiDWJvI (ORCPT
+        with ESMTP id S234669AbiDWJ52 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 05:51:08 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E3EFF5;
-        Sat, 23 Apr 2022 02:48:11 -0700 (PDT)
-Received: from mail-wm1-f50.google.com ([209.85.128.50]) by
- mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1Mdvyi-1oHoND33Ek-00b06H; Sat, 23 Apr 2022 11:48:09 +0200
-Received: by mail-wm1-f50.google.com with SMTP id v64-20020a1cac43000000b0038cfd1b3a6dso9458750wme.5;
-        Sat, 23 Apr 2022 02:48:09 -0700 (PDT)
-X-Gm-Message-State: AOAM532mkaZkI76BSgwQ1G5OuUdvION8dU+2nNRM6n0FEmBSrtS2IHGw
-        FddRzAQcH35evr/ohZ7bJW2E8JZbwNM7dkBQ3Hg=
-X-Google-Smtp-Source: ABdhPJzB571QS23ads9/X6bqp8kn5uvfGAj6Ip74WQj7sqmxjMCA85CiNrM4H8Eqf/GMMA0WHQ6q++BsxTECp2b2his=
-X-Received: by 2002:a7b:ce15:0:b0:38e:b7b0:79be with SMTP id
- m21-20020a7bce15000000b0038eb7b079bemr7890160wmc.71.1650707289338; Sat, 23
- Apr 2022 02:48:09 -0700 (PDT)
+        Sat, 23 Apr 2022 05:57:28 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD5081399B5
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 02:54:31 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id p8so10241393pfh.8
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 02:54:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=yUtsnYBIm01JXZecNVsIjjwJM9zeU9bP2sYqdVupyhs=;
+        b=s2hZa+V1gBmYvlkiakilXv/njbEHD3uo6Q+veU65MapnY7ergLjc0EcstslsKTuDem
+         hD2Wplm+D+hYzgFz8tTKyb8mPGn8vUiEoBTwSVEGDzjr0PyhnhO1IH/oj1P3dMPowB7e
+         gm3GW9ARiqEkLnCJKY/9cPqA8wzFbxL/6N2jkww8i6OdbOqRAYnJoEednmjHsfwH8FHV
+         Oxuun+ZFtniPOU33RGtU9DUjZAajYIbtXzLR/BM5bGjCa5645s544KVtpZC+NDqFM/ax
+         ocgK4S8RBm0qTosF5SXoAu5HWGRx0F0Myp1y6NUIb8gYu9sG35NhLTXdTisEOdY0viOW
+         GTuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=yUtsnYBIm01JXZecNVsIjjwJM9zeU9bP2sYqdVupyhs=;
+        b=Cz6oHKBMM2YyjDNjQqqAbIQuDemBkHXN/ERppc7NM5DUIwWauaM3X4pc3R8+nIEnNd
+         tX4xmcCCrYOhr0G1xMFh+pr3OdkwsaAwoMBFknRWyRi5kgj6Gxyh9qP20Q/seU4pFQSQ
+         LtGCzGI9EtgrePh49z7ttRV3dGbyIyh3aUoSsYML2qPqExmwL5Kzf+nhjtRefCKgJN4b
+         kpcZr7hzatq0NOeMv5CrbAImOc8VvuUHO8IxIX9YqWpytEPMvX+wdj6zOXCy6GzstHw8
+         +3Ispv05wSQtmXxcCIE0U9KHSZXr9HFUu/vSTrldXIZcT7gVzRmHtlWBPjslCkfV4sQE
+         Wq8Q==
+X-Gm-Message-State: AOAM531Uxw8e+IJfvvfhXZjCglQipVQ7cjeB95ojmbK9ymgJcSHad1su
+        IAsumMlG/EnZK9yEa9db/Zki
+X-Google-Smtp-Source: ABdhPJyUD2+pddHG8R+pE+ymvssOE4dR8B16cM/ywDRUpHhIwOAvha9/v9gMtwZJBfeuBUslOAaECg==
+X-Received: by 2002:aa7:90d5:0:b0:4e1:307c:d94a with SMTP id k21-20020aa790d5000000b004e1307cd94amr9292303pfk.38.1650707671128;
+        Sat, 23 Apr 2022 02:54:31 -0700 (PDT)
+Received: from thinkpad ([117.207.28.196])
+        by smtp.gmail.com with ESMTPSA id iy2-20020a17090b16c200b001d75aabe050sm6309658pjb.34.2022.04.23.02.54.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 23 Apr 2022 02:54:30 -0700 (PDT)
+Date:   Sat, 23 Apr 2022 15:24:23 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Andrew Halaney <ahalaney@redhat.com>
+Cc:     martin.petersen@oracle.com, jejb@linux.ibm.com,
+        avri.altman@wdc.com, alim.akhtar@samsung.com,
+        bjorn.andersson@linaro.org, linux-arm-msm@vger.kernel.org,
+        quic_asutoshd@quicinc.com, quic_cang@quicinc.com,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/5] scsi: ufs: qcom: Fix acquiring the optional reset
+ control line
+Message-ID: <20220423095423.GA374560@thinkpad>
+References: <20220422132140.313390-1-manivannan.sadhasivam@linaro.org>
+ <20220422132140.313390-2-manivannan.sadhasivam@linaro.org>
+ <20220422154010.2cxk4qy5eikxujb2@halaneylaptop>
 MIME-Version: 1.0
-References: <20220421070440.1282704-1-hch@lst.de>
-In-Reply-To: <20220421070440.1282704-1-hch@lst.de>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Sat, 23 Apr 2022 11:47:53 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2Tw+fdf-dTKfu+aFFv010u50+LhiiVBRRujfSFNrqbEA@mail.gmail.com>
-Message-ID: <CAK8P3a2Tw+fdf-dTKfu+aFFv010u50+LhiiVBRRujfSFNrqbEA@mail.gmail.com>
-Subject: Re: [PATCH] net: unexport csum_and_copy_{from,to}_user
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Networking <netdev@vger.kernel.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        alpha <linux-alpha@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:albdKOiXIS0kHHBHYY/wSNMr7J/VHZ4po6jMFPsFdo/ckkLmRZa
- 1VoBD2lMusGXaTOwKgePBGAhmIIgg4ksXVIhQxQnCSs95SoLNISfvuy4D40bYKb27RKGdQI
- MBQEYj/TSdoQ2SGoHwx2yo8dSb4WNYFlScICDWv3K4qjj25L1+QaRDujS/YE7nt/ZcjDJv+
- g6zIVbk2QNn3vSaIawtvw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:/UwY+B2U1fQ=:/s5taf5kqaEeN/04c0o4ZL
- tOjTQMMUPayGnj3PlwbTCyCZn/kZQNCI1ks8gqpkpaFdbqd9fKfyZr9SCIV2Pd7DiYfXhv9Q0
- SnFnrXvpkZLtZdtm6TR8qKk7Sr3cxJ8SqQALjJlwahu3NxIf7CGHERqQX3wpVyQohoXalcIyj
- L6iPMtQz0yBlEeavOU+sH15UXllHxXH6Ptqumxsqt6gSK6h/LqZCz6feQAHZh8WCSdTJqtXUm
- K9ys7IZRng53Y6cjdZW4dkay1Lp1OjQqqq2ngwhB8BIB4u0GIthybNMCXF7S+etW4yM6hD9Dz
- 8RfXJzcgO7MEUhbnzUIUqx77ebsF8XKdErGaXYjCqnAwS1iy7lGLbSlGAngsOve2W1/j+r83o
- 1K/jjhU4v7No5EEh9EIuSes2Oga6dE5unUkjz+jiRNV/3KWomV8TQWWTpMMG9rFJAlGlPNo6z
- NAlXy/FGeIrkysBG/Yrxt3CGWmysxKp7MHp1VgyR66GAoNF+5r3YzMEBrEd6Ku0e1219qSp9x
- rFPB9zl+vCXhDthB3+gljgOu5GdF+20eJYGZNIDMIo0Mi7PRDF8G2gqh8e6Vx2hxa4ivt4VlL
- WJV2RVfSzOdOiiBuatQO2FsUweKVq/xAXmqDAXnPo/Au6usY+/I1HuKT42hmG8T3NfruVvZPs
- OtRnxz2+OzWS6UETIsr4Kpx+NqATOeB1qN2CXDC+6iY3a2HvZ1TPw5cJjDWKphxNY4O+z80Dp
- xsUkBWMxsTGebKuCzONT30s16j4s51kZfbiC6rHDxkpQU0P+f/X0ylEy7Vvu/bc7qfEA8HMNX
- nN/hJSWiE1lYASQ6K5955iUCwkiwdFN3ZzayU0/qJ1GI3n4rBM=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220422154010.2cxk4qy5eikxujb2@halaneylaptop>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 9:04 AM Christoph Hellwig <hch@lst.de> wrote:
->
-> csum_and_copy_from_user and csum_and_copy_to_user are exported by
-> a few architectures, but not actually used in modular code.  Drop
-> the exports.
->
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+On Fri, Apr 22, 2022 at 10:40:10AM -0500, Andrew Halaney wrote:
+> On Fri, Apr 22, 2022 at 06:51:36PM +0530, Manivannan Sadhasivam wrote:
+> > On Qcom UFS platforms, the reset control line seems to be optional
+> > (for SoCs like MSM8996 and probably for others too). The current logic
+> > tries to mimic the `devm_reset_control_get_optional()` API but it also
+> > continues the probe if there is an error with the declared reset line in
+> > DT/ACPI.
+> > 
+> > In an ideal case, if the reset line is not declared in DT/ACPI, the probe
+> > should continue. But if there is problem in acquiring the declared reset
+> > line (like EPROBE_DEFER) it should fail and return the appropriate error
+> > code.
+> > 
+> > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> > ---
+> >  drivers/scsi/ufs/ufs-qcom.c | 10 +++++-----
+> >  1 file changed, 5 insertions(+), 5 deletions(-)
+> > 
+> > diff --git a/drivers/scsi/ufs/ufs-qcom.c b/drivers/scsi/ufs/ufs-qcom.c
+> > index 0d2e950d0865..5db0fd922062 100644
+> > --- a/drivers/scsi/ufs/ufs-qcom.c
+> > +++ b/drivers/scsi/ufs/ufs-qcom.c
+> > @@ -1002,13 +1002,13 @@ static int ufs_qcom_init(struct ufs_hba *hba)
+> >  	host->hba = hba;
+> >  	ufshcd_set_variant(hba, host);
+> >  
+> > -	/* Setup the reset control of HCI */
+> > -	host->core_reset = devm_reset_control_get(hba->dev, "rst");
+> > +	/* Setup the optional reset control of HCI */
+> > +	host->core_reset = devm_reset_control_get_optional(hba->dev, "rst");
+> >  	if (IS_ERR(host->core_reset)) {
+> >  		err = PTR_ERR(host->core_reset);
+> > -		dev_warn(dev, "Failed to get reset control %d\n", err);
+> > -		host->core_reset = NULL;
+> > -		err = 0;
+> > +		if (err != -EPROBE_DEFER)
+> > +			dev_err(dev, "Failed to get reset control %d\n", err);
+> 
+> Could we use dev_err_probe() here?
+> 
 
-Acked-by: Arnd Bergmann <arnd@arndb.de>
+Yes. Will do the same for patch 2/5 as well.
+
+Thanks,
+Mani
+
+> Otherwise, looks good to me.
+> 
+> > +		goto out_variant_clear;
+> >  	}
+> >  
+> >  	/* Fire up the reset controller. Failure here is non-fatal. */
+> > -- 
+> > 2.25.1
+> > 
+> 
