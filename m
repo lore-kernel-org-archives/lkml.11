@@ -2,98 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A3ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 14:27:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D0D8C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 14:28:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232103AbiDWOah (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 10:30:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36554 "EHLO
+        id S230517AbiDWObJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 10:31:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236157AbiDWO3Q (ORCPT
+        with ESMTP id S232666AbiDWObG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 10:29:16 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26210C8;
-        Sat, 23 Apr 2022 07:26:18 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23NEQDiJ017135;
-        Sat, 23 Apr 2022 09:26:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1650723973;
-        bh=3GgoJpyppBXDIA+/GDUz6X8ijNWOukuZyHhXVYccPS8=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=tGiXsz9Y8fXfvidKwWeLtalI5X2VX9cme567gQh1zbkVUE/KS3cLxgH1hr3L6rFhU
-         VsktYRNp0k1zwI1Y5+F/szHOhmdS+oGgbNf2uPZz0ZlZOBVuJ2P/Jw4Vsq4VL1TuZb
-         aKymVKh98Y0Oy0i4gkgA/yrq7wIawYZnF2dTw2f8=
-Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23NEQDt7015799
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Sat, 23 Apr 2022 09:26:13 -0500
-Received: from DLEE102.ent.ti.com (157.170.170.32) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Sat, 23
- Apr 2022 09:26:12 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE102.ent.ti.com
- (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Sat, 23 Apr 2022 09:26:12 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23NEQCqF059088;
-        Sat, 23 Apr 2022 09:26:12 -0500
-Date:   Sat, 23 Apr 2022 09:26:12 -0500
-From:   Nishanth Menon <nm@ti.com>
-To:     Stephen Boyd <sboyd@kernel.org>
-CC:     Guo Zhengkui <guozhengkui@vivo.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Tero Kristo <kristo@kernel.org>, <linux-clk@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <zhengkui_guo@outlook.com>
-Subject: Re: [PATCH linux-next] clk: keystone: sci-clk: change `struct
- sci_clk **clk` to `struct sci_clk *clk`
-Message-ID: <20220423142612.o4qiabqthflh3r3h@marrow>
-References: <20220406050321.26177-1-guozhengkui@vivo.com>
- <20220423020608.808E8C385A4@smtp.kernel.org>
-MIME-Version: 1.0
+        Sat, 23 Apr 2022 10:31:06 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B2DB27FC4
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 07:28:05 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2f7d4addafdso1748857b3.6
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 07:28:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=DXAXkVZYPHcetFXE1oISHIeSMz1Xot5LLxB15W3LMjk=;
+        b=tQibwGA8uz8Ue+E3pvs+c8ZLtax4gGb4dFOV3dy8bzYAyRQotxBRYtX3oExAAr/e5W
+         lcJykMgKZDqXuCRcUTWrpgdKqNqa7SDK7R5LQ1iWkeMFOMj4/GvkIliYrru0Fcz3ot5h
+         cvD+hIJBFRnHqnE3eBGsznogk3ef/KiPrus6ZbeRLGrGf+/GlLHeLPEohW773ai5NpM2
+         pXrvOgHb8VQuBDo7BbJ8vcpHd3CLD6msHLW5xjWZJUln3dl7h6R0dYjUMivzqyXucYGI
+         E+67TMHQeiyQW5PXgSo8AKsLGTtBzdyQAAlPZ+C99mPyDJfjZvDTgswF9XlojwtZrxoc
+         qXMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=DXAXkVZYPHcetFXE1oISHIeSMz1Xot5LLxB15W3LMjk=;
+        b=hGWOuiK2Efr9VbRW4h4232ncrDlerfDegl5hoCnJWuoJpyUxHJe11Vy9ZCVS3T0qHG
+         X+ntpt7fKhkJyL+8695ihCQz0rplEGlg5PT3G1qPArSlreqOWmjwjSY2u8Rspdk6XTiL
+         kATRefC8qHP9coNDD8Pkqms97gOBkLFuSUQPXZmDJYZtm4PFk3NUTIiMUQMYBn+NvJtj
+         2eRnrhtvn5G0lhJzfNA6SfpxKfMBJRphXybNhvHCm3pNCZvrId4UNGDXf1HbMCZXbXyI
+         BpuiH/jpryQtXxPu2wvcLxMKZON3F9jiWYKFfgt1K42IFEiap84aROsKCOQvyhOAh3O2
+         BZjw==
+X-Gm-Message-State: AOAM531CJ1LmYsyw8qsbqWfOSteYvsjVfY0Q3jGGB1zEp66h38jqGo80
+        1pjDPoloFTSwDt9ngA86ZpBNhaSPBaRg8g==
+X-Google-Smtp-Source: ABdhPJymwLMUEIWwXLSUSEFl1hrUHDozuSw0iJLPBiMCTcvECf3BdD1JzQSLUMCkewcVDkKmZFBQ5OvW5vc+iw==
+X-Received: from shakeelb.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:28b])
+ (user=shakeelb job=sendgmr) by 2002:a05:6902:124b:b0:644:c3bf:fa2d with SMTP
+ id t11-20020a056902124b00b00644c3bffa2dmr9159316ybu.462.1650724084357; Sat,
+ 23 Apr 2022 07:28:04 -0700 (PDT)
+Date:   Sat, 23 Apr 2022 14:28:01 +0000
+In-Reply-To: <20220421234426.3494842-5-yosryahmed@google.com>
+Message-Id: <20220423142801.gnvd42cdcsz4hpon@google.com>
+Mime-Version: 1.0
+References: <20220421234426.3494842-1-yosryahmed@google.com> <20220421234426.3494842-5-yosryahmed@google.com>
+Subject: Re: [PATCH v4 4/4] selftests: cgroup: add a selftest for memory.reclaim
+From:   Shakeel Butt <shakeelb@google.com>
+To:     Yosry Ahmed <yosryahmed@google.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        David Rientjes <rientjes@google.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Shuah Khan <shuah@kernel.org>, Yu Zhao <yuzhao@google.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
+        Chen Wandun <chenwandun@huawei.com>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>,
+        "Michal =?utf-8?Q?Koutn=C3=BD?=" <mkoutny@suse.com>,
+        Tim Chen <tim.c.chen@linux.intel.com>,
+        Dan Schatzberg <schatzberg.dan@gmail.com>,
+        cgroups@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-kselftest@vger.kernel.org
 Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220423020608.808E8C385A4@smtp.kernel.org>
-User-Agent: NeoMutt/20171215
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 19:06-20220422, Stephen Boyd wrote:
-> Quoting Guo Zhengkui (2022-04-05 22:02:32)
-> > `struct sci_clk **clk` is unnecessary. Change it to `struct sci_clk *clk`.
-> > 
-> > Also fix functions relating to it.
-> > 
-> > Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
-> > ---
+On Thu, Apr 21, 2022 at 11:44:26PM +0000, Yosry Ahmed wrote:
+> Add a new test for memory.reclaim that verifies that the interface
+> correctly reclaims memory as intended, from both anon and file pages.
 > 
-> Waiting for Nishanth to review.
+> Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
+> Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
+> ---
+>  .../selftests/cgroup/test_memcontrol.c        | 86 +++++++++++++++++++
+>  1 file changed, 86 insertions(+)
+> 
+> diff --git a/tools/testing/selftests/cgroup/test_memcontrol.c b/tools/testing/selftests/cgroup/test_memcontrol.c
+> index f2ffb3a30194..5f7c20de2426 100644
+> --- a/tools/testing/selftests/cgroup/test_memcontrol.c
+> +++ b/tools/testing/selftests/cgroup/test_memcontrol.c
+> @@ -760,6 +760,91 @@ static int test_memcg_max(const char *root)
+>  	return ret;
+>  }
+>  
+> +/*
+> + * This test checks that memory.reclaim reclaims the given
+> + * amount of memory (from both anon and file).
+> + */
+> +static int test_memcg_reclaim(const char *root)
+> +{
+> +	int ret = KSFT_FAIL, fd, retries;
+> +	char *memcg;
+> +	long current, to_reclaim;
+> +	char buf[64];
+> +
+> +	memcg = cg_name(root, "memcg_test");
+> +	if (!memcg)
+> +		goto cleanup;
+> +
+> +	if (cg_create(memcg))
+> +		goto cleanup;
+> +
+> +	current = cg_read_long(memcg, "memory.current");
+> +	if (current != 0)
+> +		goto cleanup;
+> +
+> +	cg_run_nowait(memcg, alloc_anon_noexit, (void *) MB(50));
 
-Sorry, this has to be a NAK from me. Broke all the K3 boards. I have'nt
-dug to see why exactly.
+Don't you need is_swap_enabled() check before deciding to do the anon
+allocations?
 
-https://gist.github.com/nmenon/de29ec88efc9f83acc4a8d2c13580290
+> +	sleep(1);
+> +
+> +	fd = get_temp_fd();
+> +	if (fd < 0)
+> +		goto cleanup;
+> +
+> +	cg_run_nowait(memcg, alloc_pagecache_50M_noexit, (void *)(long)fd);
+> +	sleep(1);
 
-
-Compare
-vanilla next-20220422:
-https://gist.github.com/nmenon/de29ec88efc9f83acc4a8d2c13580290#file-next-20220422-L631
-
-Vs
-
-next-20220422 + this patch:
-https://gist.github.com/nmenon/de29ec88efc9f83acc4a8d2c13580290#file-next-20220422-patch-L631
-
-
-Just posting am64xx-evm log, all other platforms follow the same
-pattern.
-
--- 
-Regards,
-Nishanth Menon
-Key (0xDDB5849D1736249D)/Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
+These sleep(1)s do not seem robust. Since kernel keeps the page cache
+around, you can convert anon to use tmpfs and use simple cg_run to
+trigger the allocations of anon (tmpfs) and file which will remain in
+memory even after return from cg_run.
