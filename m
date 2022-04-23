@@ -2,97 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C16FC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 13:10:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 626CBC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 13:15:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235708AbiDWNNr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 09:13:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43622 "EHLO
+        id S232643AbiDWNR4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 09:17:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235720AbiDWNNf (ORCPT
+        with ESMTP id S235666AbiDWNRg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 09:13:35 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B646918E08
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 06:10:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650719436;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=Wij39qJ9HWPhVr791bjyPrFYtgEnPWODJDqQF2hE5C4=;
-        b=WjdODTvEld4tDtlS+lc8YhaeMaAVeTt9/jH96zHyNLGKKxeeqFQ9fPSGYTYJxdUcpPiMs5
-        P06685oZx+yfGrRId4VAZ/jsb99u+fFSsST+Pd6aurofsQLRRC3USC+CmCFlwM58cuuurN
-        qgwKkm6HRqoN+/OUUgK3VM8bDZSLkds=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-509-0t3Z-RvgOMSZBOZwi5B81Q-1; Sat, 23 Apr 2022 09:10:35 -0400
-X-MC-Unique: 0t3Z-RvgOMSZBOZwi5B81Q-1
-Received: by mail-qv1-f71.google.com with SMTP id s19-20020ad44b33000000b00456107e1120so1810438qvw.0
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 06:10:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Wij39qJ9HWPhVr791bjyPrFYtgEnPWODJDqQF2hE5C4=;
-        b=WIoGYXH5fLlliIzY7T7l+sSCTHA3zQXVFGPtaJo6hx9MizJvf8tksRoBXuO4JJhrQM
-         UdVoM+9LjVVfOyVyfXZbSFnnvAPvIxhf7sTHFHH9z6ip8iBbxhXqxkMU3wmz3/UHX/oB
-         J0ngzyPqSGQzKeBD0Xbtebnt3v3d5C07HJItmb6H2crMPSVX7OlCaSxGpMamNYnPAnST
-         5eUi2q6IocGQUnVQAKttrpg9GE9PFykvzp5JHXo+5+Ayt6gCDZhT2dPdeMRfeBWopYL3
-         mftX8ZtuKtblw8ycKW+g8av3KwHOSrCFGzj+/fK0m12zkQEipe4qSQ3hhRFj0FUaYIaw
-         l2Pg==
-X-Gm-Message-State: AOAM531an3UsU6XWHxSRPtgj55CVZivqtgX/fTcJNplbv2CRTUIQRvng
-        n/OpYIR8S6MIYjzPOWh1J9gWcEh2XpjiHur4E9QFU1cVdAfnT2xjF1tWxfnOnUeoKfiL9p8zCx6
-        v8VHKnAcJfdhDQHeSdwu8pFTm
-X-Received: by 2002:a05:6214:21c2:b0:446:529d:fbee with SMTP id d2-20020a05621421c200b00446529dfbeemr6726387qvh.106.1650719434909;
-        Sat, 23 Apr 2022 06:10:34 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwWqrYzu4Si5AwvbGKg7LWrjxMSKeUOHEcrlmxnE8PbfEereCgweyLbtYiOzUEYXONTVCdpLA==
-X-Received: by 2002:a05:6214:21c2:b0:446:529d:fbee with SMTP id d2-20020a05621421c200b00446529dfbeemr6726378qvh.106.1650719434758;
-        Sat, 23 Apr 2022 06:10:34 -0700 (PDT)
-Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id v23-20020ae9e317000000b0069ea555b54dsm2261137qkf.128.2022.04.23.06.10.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Apr 2022 06:10:34 -0700 (PDT)
-From:   Tom Rix <trix@redhat.com>
-To:     sanju.mehta@amd.com, vkoul@kernel.org
-Cc:     dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] dmaengine: ptdma: change pt_tx_status to static
-Date:   Sat, 23 Apr 2022 09:10:26 -0400
-Message-Id: <20220423131026.798269-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        Sat, 23 Apr 2022 09:17:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 955E81DD225;
+        Sat, 23 Apr 2022 06:14:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 15A4CB801BD;
+        Sat, 23 Apr 2022 13:14:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87D7CC385A5;
+        Sat, 23 Apr 2022 13:14:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650719676;
+        bh=EhGNChbTex4daXC/4M0L+MFTZGt5iVXyh5mOH6CzWeM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=WEmbry3swwcKTDm+Y+ygHIERtUNF07Xpg8tZ0fNPrw3SURPGXJCuDUSlWatSz4NzS
+         J7WRYJHTHP1LG048fDCbUzh0D8pR1so2Tb81e1ggWtWQW5vKmUM8ts5CYeTJmRmcue
+         nEQQZR189UIYCpuyXDhZjJ03PaRJJg1kUJEMY/QDNjpxl3ij7XOCjeJ71k+HsgWREE
+         rFVNuLh8oQ8v9npLTz7zopnpRp/wOnZL+8kp6tZcF6/g5ut7lNG7dASJC0YpwHVE7X
+         R4FX+Izd/8WE7NmavgLgGwHE0LDpZO0bIbmbQN2OkA4PnLPWQS04z2sAF1Vq0IIe6d
+         /RnyZwKr6/Z+w==
+Date:   Sat, 23 Apr 2022 18:44:29 +0530
+From:   Manivannan Sadhasivam <mani@kernel.org>
+To:     Jeffrey Hugo <quic_jhugo@quicinc.com>
+Cc:     quic_hemantk@quicinc.com, quic_bbhatt@quicinc.com,
+        mhi@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4] bus: mhi: host: Wait for ready state after reset
+Message-ID: <20220423131429.GN374560@thinkpad>
+References: <1650302562-30964-1-git-send-email-quic_jhugo@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1650302562-30964-1-git-send-email-quic_jhugo@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sparse reports thise issue
-ptdma-dmaengine.c:262:1: warning: symbol 'pt_tx_status' was not declared. Should it be static?
+On Mon, Apr 18, 2022 at 11:22:42AM -0600, Jeffrey Hugo wrote:
+> After the device has signaled the end of reset by clearing the reset bit,
+> it will automatically reinit MHI and the internal device structures.  Once
+> That is done, the device will signal it has entered the ready state.
+> 
+> Signaling the ready state involves sending an interrupt (MSI) to the host
+> which might cause IOMMU faults if it occurs at the wrong time.
+> 
+> If the controller is being powered down, and possibly removed, then the
+> reset flow would only wait for the end of reset.  At which point, the host
+> and device would start a race.  The host may complete its reset work, and
+> remove the interrupt handler, which would cause the interrupt to be
+> disabled in the IOMMU.  If that occurs before the device signals the ready
+> state, then the IOMMU will fault since it blocked an interrupt.  While
+> harmless, the fault would appear like a serious issue has occurred so let's
+> silence it by making sure the device hits the ready state before the host
+> completes its reset processing.
+> 
+> Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
+> Reviewed-by: Hemant Kumar <quic_hemantk@quicinc.com>
+> Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-pt_tx_status, like other pt_* functions in ptdam-dmaengine.c, is assigned
-to a function pointer and is not used directly outside of this file.
-So change its storage-class specifier to static.
+Applied to mhi-next!
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/dma/ptdma/ptdma-dmaengine.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks,
+Mani
 
-diff --git a/drivers/dma/ptdma/ptdma-dmaengine.c b/drivers/dma/ptdma/ptdma-dmaengine.c
-index ea07cc42f4d0..cc22d162ce25 100644
---- a/drivers/dma/ptdma/ptdma-dmaengine.c
-+++ b/drivers/dma/ptdma/ptdma-dmaengine.c
-@@ -258,7 +258,7 @@ static void pt_issue_pending(struct dma_chan *dma_chan)
- 		pt_cmd_callback(desc, 0);
- }
- 
--enum dma_status
-+static enum dma_status
- pt_tx_status(struct dma_chan *c, dma_cookie_t cookie,
- 		struct dma_tx_state *txstate)
- {
--- 
-2.27.0
-
+> ---
+> 
+> v4:
+> Cleanup email domain change
+> 
+> v3:
+> Rebase and use dev_err over dev_warn
+> 
+> v2: 
+> Fix subject and remove use of cur_state
+> 
+>  drivers/bus/mhi/host/pm.c | 9 +++++++++
+>  1 file changed, 9 insertions(+)
+> 
+> diff --git a/drivers/bus/mhi/host/pm.c b/drivers/bus/mhi/host/pm.c
+> index 3d90b8e..c000a92 100644
+> --- a/drivers/bus/mhi/host/pm.c
+> +++ b/drivers/bus/mhi/host/pm.c
+> @@ -476,6 +476,15 @@ static void mhi_pm_disable_transition(struct mhi_controller *mhi_cntrl)
+>  		 * hence re-program it
+>  		 */
+>  		mhi_write_reg(mhi_cntrl, mhi_cntrl->bhi, BHI_INTVEC, 0);
+> +
+> +		if (!MHI_IN_PBL(mhi_get_exec_env(mhi_cntrl))) {
+> +			/* wait for ready to be set */
+> +			ret = mhi_poll_reg_field(mhi_cntrl, mhi_cntrl->regs,
+> +						 MHISTATUS,
+> +						 MHISTATUS_READY_MASK, 1, 25000);
+> +			if (ret)
+> +				dev_err(dev, "Device failed to enter READY state\n");
+> +		}
+>  	}
+>  
+>  	dev_dbg(dev,
+> -- 
+> 2.7.4
+> 
