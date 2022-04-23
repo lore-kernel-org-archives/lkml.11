@@ -2,52 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC264C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 03:13:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B00E1C4332F
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 03:13:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232378AbiDWDQj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 23:16:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33630 "EHLO
+        id S232437AbiDWDQr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 23:16:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232288AbiDWDQh (ORCPT
+        with ESMTP id S232359AbiDWDQh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 22 Apr 2022 23:16:37 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC73AC24
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 20:13:41 -0700 (PDT)
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7364CC60
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 20:13:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650683621; x=1682219621;
+  t=1650683622; x=1682219622;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=4EfAqps1S26NU0HsC6SPFbnCEDUxkX2SnVkPsdS5F5A=;
-  b=YzgtMSbZIe7AtiRTeIRfdZjxMUWm02BEa4vloEJzo7Y96+4sI0iEzHS/
-   fK0C7yamy1GSoS27jMgzaJViC/yfeVUEj5ZI7fHmP1uzYM5/UJPPrUUP4
-   t5z07bUrvjRzn03CAZ7V7yRtBUV1Rzdr8qBig8WcpPqdDZibeDOee/ghp
-   LfIrB5oazOeq7HX+mHxHphUbLGFVv/9NXhVl03ISNrjCxYUuMnLcSO2bE
-   XxhTuSkjIMkZjwyndoPTP8uPrzgndIjyIGfSRDqBfQv8xubYyHjfkD6hD
-   iDSb/GS6QMkjrdMkFiJ66h9EzbK4SXXoNbERCKNpwsqFA6fRp9iGckvyj
+  bh=+M/y3ZiwrUHCKNrEkV5MGO0xbR9T3K7uVqIPPNRdSK8=;
+  b=EEhS2lgGj5A8+1q77tzjLmOIKfNlOp368/Ez9IP6J2TPb0pMrJb6hYH1
+   UoLOV5doQaDD21cizESLtwhK+/Zu8JDp0B8n8665xJPaNvy+ekyhyO7t4
+   FG6OoVlUPw/TNn9FCW1KGdoM0+7upS24OgFG7xTVHew1rDVyKrtQtwYK7
+   MvI9h9M8/M70U8xBaJnQtiGn9XEuZchYbccTUGo13DnJt/esMkvkf7NDO
+   eV5DfUJ2PdaP9opAu8gxZX9Wy5XoHZuZmVEFsLxwqyYjkmuR/92BUX9TJ
+   jz4C/4+4uXtDfnlMUj9VajKOFRlLEzk2PPqq//vlnqK0iDc36mixKf6Ex
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="263688885"
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="325291559"
 X-IronPort-AV: E=Sophos;i="5.90,283,1643702400"; 
-   d="scan'208";a="263688885"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 20:13:41 -0700
+   d="scan'208";a="325291559"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 20:13:42 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,283,1643702400"; 
-   d="scan'208";a="563301615"
+   d="scan'208";a="703804137"
 Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 22 Apr 2022 20:13:40 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 22 Apr 2022 20:13:40 -0700
 Received: from kbuild by 3abc53900bec with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1ni6DM-000Awa-1Y;
-        Sat, 23 Apr 2022 03:13:40 +0000
-Date:   Sat, 23 Apr 2022 11:13:22 +0800
+        id 1ni6DL-000AwX-U1;
+        Sat, 23 Apr 2022 03:13:39 +0000
+Date:   Sat, 23 Apr 2022 11:13:28 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: drivers/acpi/x86/s2idle.c:395:13: sparse: sparse: restricted
- suspend_state_t degrades to integer
-Message-ID: <202204231048.EycoTlYU-lkp@intel.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-maple 30/44]
+ fs/netfs/direct_read.c:198:3: error: expected expression
+Message-ID: <202204231010.5DHxVC96-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -55,93 +57,129 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   c00c5e1d157bec0ef0b0b59aa5482eb8dc7e8e49
-commit: fef98671194be005853cbbf51b164a3927589b64 ACPI: PM: s2idle: Move x86-specific code to the x86 directory
-date:   1 year, 4 months ago
-config: x86_64-randconfig-s022 (https://download.01.org/0day-ci/archive/20220423/202204231048.EycoTlYU-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=fef98671194be005853cbbf51b164a3927589b64
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout fef98671194be005853cbbf51b164a3927589b64
+tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-maple
+head:   931e50676c6598d0eda1954ead465519ff91874d
+commit: d1c47ebbbed8921181b4573ba5736595bc3b787c [30/44] netfs: Support decryption on DIO read
+config: i386-randconfig-a015 (https://download.01.org/0day-ci/archive/20220423/202204231010.5DHxVC96-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5bd87350a5ae429baf8f373cb226a57b62f87280)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/d1c47ebbbed8921181b4573ba5736595bc3b787c
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-maple
+        git checkout d1c47ebbbed8921181b4573ba5736595bc3b787c
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/ drivers/ kernel// net/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash fs/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
+All errors (new ones prefixed by >>):
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/acpi/x86/s2idle.c:395:13: sparse: sparse: restricted suspend_state_t degrades to integer
-   drivers/acpi/x86/s2idle.c:395:33: sparse: sparse: restricted suspend_state_t degrades to integer
+>> fs/netfs/direct_read.c:198:3: error: expected expression
+                   unsigned int min_bsize = 1ULL << ctx->min_bshift;
+                   ^
+>> fs/netfs/direct_read.c:199:54: error: use of undeclared identifier 'min_bsize'
+                   unsigned long long start = round_down(rreq->start, min_bsize);
+                                                                      ^
+   fs/netfs/direct_read.c:201:47: error: use of undeclared identifier 'min_bsize'
+                                                  round_up(rreq->start + rreq->len, min_bsize),
+                                                                                    ^
+   fs/netfs/direct_read.c:201:47: error: use of undeclared identifier 'min_bsize'
+   fs/netfs/direct_read.c:199:22: warning: mixing declarations and code is incompatible with standards before C99 [-Wdeclaration-after-statement]
+                   unsigned long long start = round_down(rreq->start, min_bsize);
+                                      ^
+   1 warning and 4 errors generated.
 
-vim +395 drivers/acpi/x86/s2idle.c
 
-   348	
-   349	static int lps0_device_attach(struct acpi_device *adev,
-   350				      const struct acpi_device_id *not_used)
-   351	{
-   352		union acpi_object *out_obj;
-   353	
-   354		if (lps0_device_handle)
-   355			return 0;
-   356	
-   357		if (!(acpi_gbl_FADT.flags & ACPI_FADT_LOW_POWER_S0))
-   358			return 0;
-   359	
-   360		if (acpi_s2idle_vendor_amd()) {
-   361			guid_parse(ACPI_LPS0_DSM_UUID_AMD, &lps0_dsm_guid);
-   362			out_obj = acpi_evaluate_dsm(adev->handle, &lps0_dsm_guid, 0, 0, NULL);
-   363			rev_id = 0;
-   364		} else {
-   365			guid_parse(ACPI_LPS0_DSM_UUID, &lps0_dsm_guid);
-   366			out_obj = acpi_evaluate_dsm(adev->handle, &lps0_dsm_guid, 1, 0, NULL);
-   367			rev_id = 1;
-   368		}
-   369	
-   370		/* Check if the _DSM is present and as expected. */
-   371		if (!out_obj || out_obj->type != ACPI_TYPE_BUFFER) {
-   372			acpi_handle_debug(adev->handle,
-   373					  "_DSM function 0 evaluation failed\n");
-   374			return 0;
-   375		}
-   376	
-   377		lps0_dsm_func_mask = *(char *)out_obj->buffer.pointer;
-   378	
-   379		ACPI_FREE(out_obj);
-   380	
-   381		acpi_handle_debug(adev->handle, "_DSM function mask: 0x%x\n",
-   382				  lps0_dsm_func_mask);
-   383	
-   384		lps0_device_handle = adev->handle;
-   385	
-   386		if (acpi_s2idle_vendor_amd())
-   387			lpi_device_get_constraints_amd();
-   388		else
-   389			lpi_device_get_constraints();
-   390	
-   391		/*
-   392		 * Use suspend-to-idle by default if the default suspend mode was not
-   393		 * set from the command line.
-   394		 */
- > 395		if (mem_sleep_default > PM_SUSPEND_MEM && !acpi_sleep_default_s3)
-   396			mem_sleep_current = PM_SUSPEND_TO_IDLE;
-   397	
-   398		/*
-   399		 * Some LPS0 systems, like ASUS Zenbook UX430UNR/i7-8550U, require the
-   400		 * EC GPE to be enabled while suspended for certain wakeup devices to
-   401		 * work, so mark it as wakeup-capable.
-   402		 */
-   403		acpi_ec_mark_gpe_for_wake();
-   404	
-   405		return 0;
-   406	}
-   407	
+vim +198 fs/netfs/direct_read.c
+
+   116	
+   117	/**
+   118	 * netfs_direct_read_iter - Perform a direct I/O read
+   119	 * @iocb: The I/O control descriptor describing the read
+   120	 * @iter: The output buffer (also specifies read length)
+   121	 */
+   122	ssize_t netfs_direct_read_iter(struct kiocb *iocb, struct iov_iter *iter)
+   123	{
+   124		struct netfs_io_request *rreq;
+   125		struct netfs_i_context *ctx;
+   126		ssize_t n, ret;
+   127	
+   128		_enter("");
+   129	
+   130		rreq = netfs_alloc_request(iocb->ki_filp->f_mapping, iocb->ki_filp,
+   131					   iocb->ki_pos, iov_iter_count(iter),
+   132					   NETFS_DIO_READ);
+   133		if (IS_ERR(rreq))
+   134			return PTR_ERR(rreq);
+   135	
+   136		ctx = netfs_i_context(rreq->inode);
+   137		netfs_stat(&netfs_n_rh_dio_read);
+   138		trace_netfs_read(rreq, rreq->start, rreq->len, netfs_read_trace_dio_read);
+   139	
+   140		rreq->buffering = NETFS_DIRECT;
+   141		if (test_bit(NETFS_RREQ_CONTENT_ENCRYPTION, &rreq->flags)) {
+   142			static const enum netfs_buffering buffering[2][2] = {
+   143				/* [async][aligned] */
+   144				[false][false]	= NETFS_BOUNCE_DEC_COPY,
+   145				[false][true]	= NETFS_BOUNCE_DEC_TO_DIRECT,
+   146				[true ][false]	= NETFS_BOUNCE_DEC_COPY_BV,
+   147				[true ][true]	= NETFS_BOUNCE_DEC_TO_DIRECT_BV,
+   148			};
+   149			bool aligned = netfs_is_crypto_aligned(rreq, iter);
+   150			bool async = !is_sync_kiocb(iocb);
+   151	
+   152			rreq->buffering = buffering[async][aligned];
+   153		}
+   154	
+   155		kdebug("remote_i %llx %llx %llx",
+   156		       ctx->remote_i_size, rreq->i_size, i_size_read(netfs_inode(ctx)));
+   157	
+   158		/* If this is an async op, we have to keep track of the destination
+   159		 * buffer for ourselves as the caller's iterator will be trashed when
+   160		 * we return.
+   161		 *
+   162		 * In such a case, extract an iterator to represent as much of the the
+   163		 * output buffer as we can manage.  Note that the extraction might not
+   164		 * be able to allocate a sufficiently large bvec array and may shorten
+   165		 * the request.
+   166		 */
+   167		switch (rreq->buffering) {
+   168		case NETFS_DIRECT:
+   169		case NETFS_BOUNCE_DEC_TO_DIRECT:
+   170		case NETFS_BOUNCE_DEC_COPY:
+   171			rreq->direct_iter = *iter;
+   172			rreq->len = iov_iter_count(&rreq->direct_iter);
+   173			break;
+   174		case NETFS_DIRECT_BV:
+   175		case NETFS_BOUNCE_DEC_TO_DIRECT_BV:
+   176		case NETFS_BOUNCE_DEC_COPY_BV:
+   177			n = extract_iter_to_iter(iter, rreq->len, &rreq->direct_iter,
+   178						 &rreq->direct_bv);
+   179			if (n < 0) {
+   180				ret = n;
+   181				goto out;
+   182			}
+   183			rreq->direct_bv_count = n;
+   184			rreq->len = iov_iter_count(&rreq->direct_iter);
+   185			break;
+   186		default:
+   187			BUG();
+   188		}
+   189	
+   190		/* If we're going to use a bounce buffer, we need to set it up.  We
+   191		 * will then need to pad the request out to the minimum block size.
+   192		 */
+   193		switch (rreq->buffering) {
+   194		case NETFS_BOUNCE_DEC_TO_DIRECT:
+   195		case NETFS_BOUNCE_DEC_COPY:
+   196		case NETFS_BOUNCE_DEC_TO_DIRECT_BV:
+   197		case NETFS_BOUNCE_DEC_COPY_BV:
+ > 198			unsigned int min_bsize = 1ULL << ctx->min_bshift;
+ > 199			unsigned long long start = round_down(rreq->start, min_bsize);
 
 -- 
 0-DAY CI Kernel Test Service
