@@ -2,118 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BE34C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 15:15:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B776C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 15:15:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232158AbiDWPSF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 11:18:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44878 "EHLO
+        id S232122AbiDWPSe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 11:18:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231707AbiDWPRw (ORCPT
+        with ESMTP id S231775AbiDWPRy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 11:17:52 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A085E15708;
-        Sat, 23 Apr 2022 08:14:55 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id t13so9715372pgn.8;
-        Sat, 23 Apr 2022 08:14:55 -0700 (PDT)
+        Sat, 23 Apr 2022 11:17:54 -0400
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E70B1D4A4D
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 08:14:56 -0700 (PDT)
+Received: by mail-ot1-x330.google.com with SMTP id w23-20020a056830111700b00603c6d1ce73so7582199otq.9
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 08:14:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=HaWZYkIToDpIcggCzzIREPknCIirh1Q5Ng9bwQqh7rg=;
-        b=Ha1ewV9/ZKH5gNBLigDYDJc8kBXDt5R6ECJk+Zy/i92ysyhtW8u0UPvUblw4r3AeJH
-         rDP7i+VKWYNkfzwTLJkO8aP7kpWtjEpQfeVNssBHu8Y0yU0rcDjS9K+vIHAB1JHD7MrI
-         HxIZ4ah46XdbA/0FoiPVbgQeILP15MmRpbkkWmxcnpodqBAmbVnjoJLR6Mb2RGUTS5UG
-         E7Fad/T/YPKbJ5qzENOMnpSaTeLQMs37WW1M3/s5uzk13on9gyqv9oOaTwVpuHQ7LGqk
-         Qr1dV40XjrHOhjJDkr93mgEjXcurO5bYS03bCZP0a3HUx6PcKL3/X7fcL4Lj5zekaXGT
-         Fw2Q==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=22eenijkFNhaFMADi9ElotDWSOkFn1tnTr48x0vYVAk=;
+        b=GVdoeLER62JBuMZ1/XSDwKSXWJkTrASzMX5GiiwdNPfJpMt3lNuHKyAGznJg8Jj4YD
+         Y0OgdPH+yHPluQvdKK3tdKlA4FhK00j6P8A+eVTuWE62F0BA+1BT9iPrsiEQhdeB0Lyv
+         Mp55lWoI9zECwZV1oVFZ44zoPfl0NGOMvxjTvQzy57f8uBYv9cxvyEVwOAonr4A0dTy/
+         FylA5e256esQ4NvjSDMgX+7TWx3tRd5+MhV6m1R/JrsoaVFNS4Zknfl56tfhL248WpNR
+         ORX4eiJMnfEkp8WGVALV2vSEcA9fQNUvChHieI4oGExC8+50/kh7o16ztg8T6y4QK1w/
+         OjZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=HaWZYkIToDpIcggCzzIREPknCIirh1Q5Ng9bwQqh7rg=;
-        b=cA/a+cXxqID6TfU3T8k1fethTscM0e/F7LG6g35VFt2gdeT4cf8ISFkKlAHcOTjLHE
-         QjVyts+3LdFLJN1600Kh8wytY9of7/Xv1LLdV3KC1GhHJZ4loCgIs3ZNiEWfwbffLvvM
-         jDMYHF53EcAH9sPgr7BYqwcWrF8tHH1ycO02MsTK/7srizPnYDTAkkSZKPmSZGj+zR/N
-         70JNc+CD8t4zPvfrtgG2HaMeHLxz8WtY8oSgVy1qA35i2Bnf9pIu3mCQh22/gYykMLwq
-         WZsqZPtJzsKTKGRmfIlayQz/0DDouRNrH7uohhyIcPIyQ1/LDRtdYqmUdrIuBxlXuZ1F
-         ZwwQ==
-X-Gm-Message-State: AOAM532nGwKVV13FrMkxxWcxQCcSuq+wD1R+LIIuwxBYp/YNF3ihYUe9
-        N9pkpABwBwvhErrlxU0mAf4=
-X-Google-Smtp-Source: ABdhPJz2ht11c+e4unTJ3LxGk1NAUDGSSEJtoxC5QD3dzyRSKhzbBCNyqHAFlQgLmXhaU9xciXNGqA==
-X-Received: by 2002:a63:f749:0:b0:3aa:361c:8827 with SMTP id f9-20020a63f749000000b003aa361c8827mr8382156pgk.361.1650726895185;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=22eenijkFNhaFMADi9ElotDWSOkFn1tnTr48x0vYVAk=;
+        b=qTm0cgL5HNQRdK06c4gAmMLKZV0wulBhAr/31g/SfIWIsnOXXgwfIavUallEdR58ut
+         5Mb6BJhjag7E6Xh+QPQ4qqygqIU1jXFci3LHft5FLZOV2rWzKGbgbHOeqENwi4dyJNvw
+         MlWoH6mHJbMPIA6NNErqcF2qbpR5NP4105PJaACbcZXh725O6dt8ur5yFBr39+ysiQSb
+         aeuINGPIhiOIV5lGScg0SkD03uLHHPa9nGlW4T6D1WlAbmgaf5LLXBZTE+49TPxw7PDQ
+         817zmhqjIxphsjsq1MSgt14GJE42wTiVH4VR0AABoS06a258N/wTVebcfRyMnxjmm+uX
+         wOQA==
+X-Gm-Message-State: AOAM531M5OA0z3jYY+hjSXYv8IkYnnZnbM7HRUebBXra92s7ZiJ4GTVx
+        3+6kdiqONYHqERQflo5/63Zz4g==
+X-Google-Smtp-Source: ABdhPJyb/SfQ9fd+qfhl32OUbxio3UtCSvHIoOgBXrvsGqMSbnLd4vidbHe+NzwDUCm28o1ezpfXrQ==
+X-Received: by 2002:a9d:3624:0:b0:5e9:5778:d0c6 with SMTP id w33-20020a9d3624000000b005e95778d0c6mr3657575otb.367.1650726895781;
         Sat, 23 Apr 2022 08:14:55 -0700 (PDT)
-Received: from ip-172-31-12-67.us-west-1.compute.internal (ec2-54-241-4-221.us-west-1.compute.amazonaws.com. [54.241.4.221])
-        by smtp.gmail.com with ESMTPSA id s50-20020a056a001c7200b0050acf7cadc5sm6114680pfw.112.2022.04.23.08.14.53
+Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id 1-20020a05687011c100b000de98359b43sm1684551oav.1.2022.04.23.08.14.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Apr 2022 08:14:54 -0700 (PDT)
-From:   Xiaobing Luo <luoxiaobing0926@gmail.com>
-To:     tiny.windzz@gmail.com, rafael@kernel.org, viresh.kumar@linaro.org,
-        wens@csie.org, jernej.skrabec@gmail.com, samuel@sholland.org,
-        mripard@kernel.org
-Cc:     linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Xiaobing Luo <luoxiaobing0926@gmail.com>
-Subject: [PATCH v2] cpufreq:fix memory leak in sun50i_cpufreq_nvmem_probe
-Date:   Sat, 23 Apr 2022 15:12:04 +0000
-Message-Id: <20220423151204.2102314-1-luoxiaobing0926@gmail.com>
-X-Mailer: git-send-email 2.36.0
+        Sat, 23 Apr 2022 08:14:55 -0700 (PDT)
+Date:   Sat, 23 Apr 2022 08:16:55 -0700
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     martin.petersen@oracle.com, jejb@linux.ibm.com,
+        avri.altman@wdc.com, alim.akhtar@samsung.com,
+        linux-arm-msm@vger.kernel.org, quic_asutoshd@quicinc.com,
+        quic_cang@quicinc.com, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bvanassche@acm.org,
+        ahalaney@redhat.com
+Subject: Re: [PATCH v2 2/5] scsi: ufs: qcom: Simplify handling of
+ devm_phy_get()
+Message-ID: <YmQYZ8l+QOsz11ld@ripper>
+References: <20220423140245.394092-1-manivannan.sadhasivam@linaro.org>
+ <20220423140245.394092-3-manivannan.sadhasivam@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220423140245.394092-3-manivannan.sadhasivam@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---------------------------------------------
-unreferenced object 0xffff000010742a00 (size 128):
-  comm "swapper/0", pid 1, jiffies 4294902015 (age 1187.652s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<00000000b4dfebaa>] __kmalloc+0x338/0x474
-    [<00000000d6e716db>] sun50i_cpufreq_nvmem_probe+0xc4/0x36c
-    [<000000007d6082a0>] platform_probe+0x98/0x11c
-    [<00000000c990f549>] really_probe+0x234/0x5a0
-    [<000000002d9fecc6>] __driver_probe_device+0x194/0x224
-    [<00000000cf0b94fa>] driver_probe_device+0x64/0x13c
-    [<00000000f238e4cf>] __device_attach_driver+0xf8/0x180
-    [<000000006720e418>] bus_for_each_drv+0xf8/0x160
-    [<00000000df4f14f6>] __device_attach+0x174/0x29c
-    [<00000000782002fb>] device_initial_probe+0x20/0x30
-    [<00000000c2681b06>] bus_probe_device+0xfc/0x110
-    [<00000000964cf3bd>] device_add+0x5f0/0xcd0
-    [<000000004b9264e3>] platform_device_add+0x198/0x390
-    [<00000000fa82a9d0>] platform_device_register_full+0x178/0x210
-    [<000000009a5daf13>] sun50i_cpufreq_init+0xf8/0x168
-    [<000000000377cc7c>] do_one_initcall+0xe4/0x570
---------------------------------------------
+On Sat 23 Apr 07:02 PDT 2022, Manivannan Sadhasivam wrote:
 
-if sun50i_cpufreq_get_efuse failed, then opp_tables leak.
-Fixes: f328584f7bff ("cpufreq: Add sun50i nvmem based CPU scaling driver")
+> There is no need to call devm_phy_get() if ACPI is used, so skip it.
+> The "host->generic_phy" pointer should already be NULL due to the kzalloc,
+> so no need to set it NULL again.
+> 
+> Also, don't print the error message in case of -EPROBE_DEFER and return
+> the error code directly.
+> 
+> While at it, also remove the comment that has no relationship with
+> devm_phy_get().
+> 
+> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> ---
+>  drivers/scsi/ufs/ufs-qcom.c | 26 +++++---------------------
+>  1 file changed, 5 insertions(+), 21 deletions(-)
+> 
+> diff --git a/drivers/scsi/ufs/ufs-qcom.c b/drivers/scsi/ufs/ufs-qcom.c
+> index bee81b45299e..6ee33cc0ad09 100644
+> --- a/drivers/scsi/ufs/ufs-qcom.c
+> +++ b/drivers/scsi/ufs/ufs-qcom.c
+> @@ -1022,28 +1022,12 @@ static int ufs_qcom_init(struct ufs_hba *hba)
+>  		err = 0;
+>  	}
+>  
+> -	/*
+> -	 * voting/devoting device ref_clk source is time consuming hence
+> -	 * skip devoting it during aggressive clock gating. This clock
+> -	 * will still be gated off during runtime suspend.
+> -	 */
+> -	host->generic_phy = devm_phy_get(dev, "ufsphy");
+> -
+> -	if (host->generic_phy == ERR_PTR(-EPROBE_DEFER)) {
+> -		/*
+> -		 * UFS driver might be probed before the phy driver does.
+> -		 * In that case we would like to return EPROBE_DEFER code.
+> -		 */
+> -		err = -EPROBE_DEFER;
+> -		dev_warn(dev, "%s: required phy device. hasn't probed yet. err = %d\n",
+> -			__func__, err);
+> -		goto out_variant_clear;
+> -	} else if (IS_ERR(host->generic_phy)) {
+> -		if (has_acpi_companion(dev)) {
+> -			host->generic_phy = NULL;
+> -		} else {
+> +	if (!has_acpi_companion(dev)) {
+> +		host->generic_phy = devm_phy_get(dev, "ufsphy");
+> +		if (IS_ERR(host->generic_phy)) {
+>  			err = PTR_ERR(host->generic_phy);
+> -			dev_err(dev, "%s: PHY get failed %d\n", __func__, err);
+> +			if (err != -EPROBE_DEFER)
+> +				dev_err_probe(dev, err, "Failed to get PHY\n");
 
-Signed-off-by: Xiaobing Luo <luoxiaobing0926@gmail.com>
----
- drivers/cpufreq/sun50i-cpufreq-nvmem.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+I believe the idiomatic form is:
+			err = dev_err_probe(dev, PTR_ERR(host->generic_phy), "Failed to get PHY\n");
 
-diff --git a/drivers/cpufreq/sun50i-cpufreq-nvmem.c b/drivers/cpufreq/sun50i-cpufreq-nvmem.c
-index 2deed8d8773f..75e1bf3a08f7 100644
---- a/drivers/cpufreq/sun50i-cpufreq-nvmem.c
-+++ b/drivers/cpufreq/sun50i-cpufreq-nvmem.c
-@@ -98,8 +98,10 @@ static int sun50i_cpufreq_nvmem_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 
- 	ret = sun50i_cpufreq_get_efuse(&speed);
--	if (ret)
-+	if (ret) {
-+		kfree(opp_tables);
- 		return ret;
-+	}
- 
- 	snprintf(name, MAX_NAME_LEN, "speed%d", speed);
- 
--- 
-2.36.0
 
+But as with the previous patch, please remove the condition and you have
+my:
+
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+
+Regards,
+Bjorn
+
+>  			goto out_variant_clear;
+>  		}
+>  	}
+> -- 
+> 2.25.1
+> 
