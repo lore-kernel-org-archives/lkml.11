@@ -2,102 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D0A7C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 01:01:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4FB5C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 01:03:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231396AbiDWBEb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 21:04:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46140 "EHLO
+        id S231403AbiDWBGY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 21:06:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229662AbiDWBE1 (ORCPT
+        with ESMTP id S229771AbiDWBGR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 21:04:27 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 832BB113C
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 18:01:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650675692; x=1682211692;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=2WP7ub7xrR2H1DfDmRE4zdawKRwwQDpCBnp9sLDotDQ=;
-  b=bUnY6NboJHWPaKVt7SlZAkcDr2BpKCSiXHDzVoPuzpodi5yKG61F5GtF
-   Wgh4kDmiXg9F0DguElgaxdhUzNK7PTD/d0sGvMEhrTBk2hoAvDAuEer/6
-   +6xH05ROetKKaTDCxpLGKNxYrbrmq5NOJWyERhS/74JSkQJTwXYPM0s9v
-   bazVIQUZsJk1OZYzeFKUsbnNeZXOzyj+ulFDFaJHGaHxLIzxRe9AEYa/O
-   HSPCv4/gnZjY2SoKV6L1oVEGHvgpJr5sgnUtA0aoCYzmJyMHlLRdfZOqf
-   Z4WXp3l24UxUiOPx4E3zozWxGokz/2/R63EI06ZpfplkrbWe6Imvky/bu
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="327738818"
-X-IronPort-AV: E=Sophos;i="5.90,283,1643702400"; 
-   d="scan'208";a="327738818"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 18:01:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,283,1643702400"; 
-   d="scan'208";a="648862967"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 22 Apr 2022 18:01:30 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ni49S-000AkQ-2n;
-        Sat, 23 Apr 2022 01:01:30 +0000
-Date:   Sat, 23 Apr 2022 09:00:27 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Hannes Reinecke <hare@suse.de>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Christoph Hellwig <hch@lst.de>,
-        Chaitanya Kulkarni <kch@nvidia.com>
-Subject: [PATCH] nvme-fabrics: fix returnvar.cocci warnings
-Message-ID: <YmNPq+bwSj0tTilJ@faef68fbc567>
-References: <202204230847.xzM1AwY1-lkp@intel.com>
+        Fri, 22 Apr 2022 21:06:17 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B2EFB18BD
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 18:03:21 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id p10so17027868lfa.12
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 18:03:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=g096DpfSCcf8IWJKS1josNtXLu3tIDY7masJQNFWcAg=;
+        b=AQYaKU5/J5+aM5TlCj8JWxqEyNRrWADeSBitRwGal1ELDw+cu8iXPNVIYHG5rXsFKr
+         EttNL829nFI/wGAfiIXCY1eNMdjdRPK/3HU5lHecTvmamw0HZg8jKDTcyxWmvbvs+/HQ
+         Zc3NjzjDRQt7nWoj0trGeL7HrH1BccrnLvfSg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=g096DpfSCcf8IWJKS1josNtXLu3tIDY7masJQNFWcAg=;
+        b=b2xO+TtllsNJuxQ4BlCweMfkYWBsLCGixBStXtTwVpeedWP29pG7N4jjf4dvfKi3SC
+         fuWaEf2igTGDTqLJ3tMl/38wj41PpiCxFs8AoOGMQ1mbetCpva4ZDFWu5GRZVMSHgSVJ
+         O0ukR7zpZ/L8Ku1dUofg3TVotTQ8O2ZwArV3WJsjb5XxlImSRohRdz+FQQTlWH+cnSgz
+         KcAts8T4yDfS+CZnEXBn+zvakLUnAHq16+b+STQK2StwMvu7APVkc+FEoZt6kLscK2HA
+         78ZmOmICmb8HW8sOhDn3C5OEjr4/1uXw58BubSasNktOZuiMhn53P2FtaCBfVNPWuabO
+         uQHg==
+X-Gm-Message-State: AOAM530LJOqTgVkFUcsRx25ui/jQQ8O/Xs3iWFeHmuIypKxEG5i5ezWY
+        aynIu4lhetMmNOYmUZaglrkJLkj/24jZlnrCu3U=
+X-Google-Smtp-Source: ABdhPJwVN09y5xdiyE7iLB3BLAKrTDiQMdXvRGPPFqbx3bw/IF5Nnt4r3/S/zTaBqjTId8qVlESsgA==
+X-Received: by 2002:a05:6512:2213:b0:471:c296:b659 with SMTP id h19-20020a056512221300b00471c296b659mr5077137lfu.24.1650675799382;
+        Fri, 22 Apr 2022 18:03:19 -0700 (PDT)
+Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com. [209.85.208.176])
+        by smtp.gmail.com with ESMTPSA id e9-20020a196909000000b00471924f1f01sm410800lfc.228.2022.04.22.18.03.17
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Apr 2022 18:03:17 -0700 (PDT)
+Received: by mail-lj1-f176.google.com with SMTP id h11so11533744ljb.2
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 18:03:17 -0700 (PDT)
+X-Received: by 2002:a2e:9041:0:b0:24a:ce83:dcb4 with SMTP id
+ n1-20020a2e9041000000b0024ace83dcb4mr4454046ljg.291.1650675796759; Fri, 22
+ Apr 2022 18:03:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202204230847.xzM1AwY1-lkp@intel.com>
+References: <20220422131452.20757-1-mario.limonciello@amd.com>
+In-Reply-To: <20220422131452.20757-1-mario.limonciello@amd.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Fri, 22 Apr 2022 18:03:00 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wh-F2KtXkQueVJRNqWr7O737NzN=8mYA_r-h-16=VxLQA@mail.gmail.com>
+Message-ID: <CAHk-=wh-F2KtXkQueVJRNqWr7O737NzN=8mYA_r-h-16=VxLQA@mail.gmail.com>
+Subject: Re: [PATCH v2 0/1] Fix regression in 5.18 for GPIO
+To:     Mario Limonciello <mario.limonciello@amd.com>
+Cc:     Natikar Basavaraj <Basavaraj.Natikar@amd.com>,
+        Gong Richard <Richard.Gong@amd.com>,
+        Linux regressions mailing list <regressions@lists.linux.dev>,
+        Thorsten Leemhuis <regressions@leemhuis.info>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        stable <stable@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Shreeya Patel <shreeya.patel@collabora.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: kernel test robot <lkp@intel.com>
+On Fri, Apr 22, 2022 at 6:15 AM Mario Limonciello
+<mario.limonciello@amd.com> wrote:
+>
+> This patch is being sent directly to you because there has been
+> a regression in 5.18 that I identified and sent a fix up that has been
+> reviewed/tested/acked for nearly a week but the current subsystem
+> maintainer (Bartosz) hasn't picked it up to send to you.
 
-drivers/nvme/host/fabrics.c:1095:5-8: Unneeded variable: "ret". Return "0" on line 1109
+Applied.
 
+I'm not sure the "cc: stable" makes much sense since the bug was
+introduced in this release, but I assume you added it because the
+problem commit was also marked for stable.
 
- Remove unneeded variable used to store return value.
+The "Fixes:" tag should take care of it, but I left that cc:stable alone.
 
-Generated by: scripts/coccinelle/misc/returnvar.cocci
-
-Fixes: f18ee3d98815 ("nvme-fabrics: print out valid arguments when reading from /dev/nvme-fabrics")
-CC: Hannes Reinecke <hare@suse.de>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: kernel test robot <lkp@intel.com>
----
-
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   06fb4ecfeac7e00d6704fa5ed19299f2fefb3cc9
-commit: f18ee3d988157ebcadc9b7e5fd34811938f50223 nvme-fabrics: print out valid arguments when reading from /dev/nvme-fabrics
-:::::: branch date: 4 hours ago
-:::::: commit date: 4 months ago
-
- host/fabrics.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
---- drivernvme/host/fabrics.c
-@@ -1092,7 +1092,6 @@ static void __nvmf_concat_opt_tokens(str
- static int nvmf_dev_show(struct seq_file *seq_file, void *private)
- {
- 	struct nvme_ctrl *ctrl;
--	int ret = 0;
- 
- 	mutex_lock(&nvmf_dev_mutex);
- 	ctrl = seq_file->private;
-@@ -1106,7 +1105,7 @@ static int nvmf_dev_show(struct seq_file
- 
- out_unlock:
- 	mutex_unlock(&nvmf_dev_mutex);
--	return ret;
-+	return 0;
- }
- 
- static int nvmf_dev_open(struct inode *inode, struct file *file)
+           Linus
