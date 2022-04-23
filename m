@@ -2,58 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56FBBC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 02:14:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77B7AC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 02:14:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231927AbiDWCRZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 22:17:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49530 "EHLO
+        id S232065AbiDWCRc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 22:17:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231812AbiDWCRM (ORCPT
+        with ESMTP id S231845AbiDWCRP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 22:17:12 -0400
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24426218ACB
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 19:14:15 -0700 (PDT)
-Received: by mail-pf1-x44a.google.com with SMTP id y2-20020a62ce02000000b0050ac8d73c8dso6456546pfg.8
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 19:14:15 -0700 (PDT)
+        Fri, 22 Apr 2022 22:17:15 -0400
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AE9321B9A1
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 19:14:20 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id n4-20020a170902f60400b00158d1f2d442so5713691plg.18
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 19:14:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=WvYNbXCHSub5KkMALa85GDZKJJrB7zWtW+x8WTGBVkU=;
-        b=IaXui+tsgGzP2B1ZAiifgEXK1LwLvFAo7dQbWGK1/kUsopw7JzrPTq/XaY/sraoP+9
-         Bvn7wl6jamlohzVvEulLZAh99z0PPVeZyAmPTK3Ivg/X2gXRg/qP2JdItQ4jtoukSOMn
-         PduoYkBt8LCyWj05UZPWBhYr+jq5mijbSJ57KHgKDkUdWGCL9riUs3Pi+jiVVISUOLod
-         R8PYEu4WrzKdjlEVZWPLKkuNbSlRxb71Jy7qVsuNf/OUUiYVn1RkHIl0QGsT/21l2A0M
-         eNc+tB8rH2+1AsxUKyCq0GYaokxW9Dht6pkFLupuD6eRN92BEYBs2hM7/ZQz4CBFmIK3
-         sVYw==
+        bh=PyT8c4uOpMREZ0ICFl/zs2j7McPJGYK9LkWRLQoEbds=;
+        b=fSMxFj4x5SruHcAurF3Hkt5R2t78474Ci8gOTMRUVZEAZUv5QFEaSVW5YASiuKZmHL
+         458qRAV/dMQ1NTePpDszaMhgo3LMxvB9LsWHc2CbUusE/FTnw4mDV9crM7K5XeiIAo5K
+         wjiF5ulN5I+Bf02AGazFTA4Ga/f0yuxapmWY9kVSagfsyn/Fg5rh5oJkg4uCwlp11bL7
+         sZ95T/wkiLftfMbUY8EgYvDUveVfIGYnAKRt9/HDuArfmwub/1xO2Z/WKxtqzAaW9fi9
+         YvckJBOmqnN38Yi/smWuAAzODcH80h/dt+XyNGN5/cuVrxGcltyBDotH/rC0ScFf878V
+         Eibg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=WvYNbXCHSub5KkMALa85GDZKJJrB7zWtW+x8WTGBVkU=;
-        b=Rzya4KuhwrxmU6b4Yh3g5NEn6D1lojpRmlhO7FX3ji/eQwEjHZscE8wwT5BHUM8TZ9
-         1lbSQhWHBI5wS4BvKdPYDv08BTmbAr08YH1vyAStpwRfYQBpCcpw8MamUp0XxIE1B+qj
-         4vSQrKlOv1tGrwxuaI/5lJkZH/B83TfHeNo851z4ArrViehrfGipjjE4nOO8Vwhw/YEQ
-         +iK5gyYZr2HSd06prWh1k97T4uKx6MI0J+PC7oRlRm0coC3V8/ISTnBpQ4wIBV56X3LY
-         sidFzI1nTRTcmiEiLct/EEppJqigx2OeaU5ZhYxS2Cni6lbSBzt+xtyHwMUsO047McaX
-         HB2w==
-X-Gm-Message-State: AOAM532nBufvOcQDudMKTfxHoVk807JK7TDcV9djQ9gVCn3/Gm1i54eM
-        AveePllkghs8yBCvqPwiu9KuQqg7bkA=
-X-Google-Smtp-Source: ABdhPJzwtxGab+SWqq/nXEKXlT078e4hr6toJXE1iOhNPI6d699PB1AKdLAEBkjzPn0YhMl4kVkzs5NYF7Y=
+        bh=PyT8c4uOpMREZ0ICFl/zs2j7McPJGYK9LkWRLQoEbds=;
+        b=3weteGGrv5jzJtHFzD9L3HfelKcgn7LbGIcljJYU1RrLTzi49udmfb3Fv0SZU0UxvT
+         XqhYGGBwfBmj+xc2NcR1D7jSj/MIEptwZFnpaktvXp91VO0QdSzmMUyiGWepfQr8E+Zr
+         cD96+KfAL5vUfqeULImdQP8m5jNMX2zdPFcG/JIK+e4KkpKYvvVvqLNsRjkmwps8ROwX
+         PH/WaERqLyAkofXZ2Kmo2eqvGStS786KjuWvnGp3hgW/bEeEPtkruLufpb+vWf2iy9a9
+         tNLdy1P1Iwk79OBDp2BL87vLqBHKaPlfUbx0arrTeKle43Z7XXrIFD3iM5Lt2t0BP2zT
+         P6nQ==
+X-Gm-Message-State: AOAM5304luuuddx+ffzvzdrMFIOb0j/tnWSY1ZLFOL83KLwHEDWQp8F6
+        qReKK7XUI1RsRWKUf9nSR6FLyJjrrKY=
+X-Google-Smtp-Source: ABdhPJw5hXpv/3W1ZRCBDFE197HCr7uSU9IoBaxVUiWUd5dzGROUXkWDoEtWISqGRD7YhNCxphH44X2pfZQ=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:902:cf05:b0:156:2aa:6e13 with SMTP id
- i5-20020a170902cf0500b0015602aa6e13mr7472391plg.137.1650680054612; Fri, 22
- Apr 2022 19:14:14 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a62:ed0e:0:b0:4fa:11ed:2ad1 with SMTP id
+ u14-20020a62ed0e000000b004fa11ed2ad1mr8110804pfh.34.1650680059539; Fri, 22
+ Apr 2022 19:14:19 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Sat, 23 Apr 2022 02:14:01 +0000
+Date:   Sat, 23 Apr 2022 02:14:04 +0000
 In-Reply-To: <20220423021411.784383-1-seanjc@google.com>
-Message-Id: <20220423021411.784383-2-seanjc@google.com>
+Message-Id: <20220423021411.784383-5-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220423021411.784383-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
-Subject: [PATCH v2 01/11] KVM: nSVM: Sync next_rip field from vmcb12 to vmcb02
+Subject: [PATCH v2 04/11] KVM: SVM: Stuff next_rip on emulated INT3 injection
+ if NRIPS is supported
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -68,108 +69,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
-
-The next_rip field of a VMCB is *not* an output-only field for a VMRUN.
-This field value (instead of the saved guest RIP) in used by the CPU for
-the return address pushed on stack when injecting a software interrupt or
-INT3 or INTO exception.
-
-Make sure this field gets synced from vmcb12 to vmcb02 when entering L2 or
-loading a nested state and NRIPS is exposed to L1.  If NRIPS is supported
-in hardware but not exposed to L1 (nrips=0 or hidden by userspace), stuff
-vmcb02's next_rip from the new L2 RIP to emulate a !NRIPS CPU (which
-saves RIP on the stack as-is).
+If NRIPS is supported in hardware but disabled in KVM, set next_rip to
+the next RIP when advancing RIP as part of emulating INT3 injection.
+There is no flag to tell the CPU that KVM isn't using next_rip, and so
+leaving next_rip is left as is will result in the CPU pushing garbage
+onto the stack when vectoring the injected event.
 
 Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-Signed-off-by: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
-Co-developed-by: Sean Christopherson <seanjc@google.com>
+Fixes: 66b7138f9136 ("KVM: SVM: Emulate nRIP feature when reinjecting INT3")
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/svm/nested.c | 22 +++++++++++++++++++---
- arch/x86/kvm/svm/svm.h    |  1 +
- 2 files changed, 20 insertions(+), 3 deletions(-)
+ arch/x86/kvm/svm/svm.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
-index bed5e1692cef..461c5f247801 100644
---- a/arch/x86/kvm/svm/nested.c
-+++ b/arch/x86/kvm/svm/nested.c
-@@ -371,6 +371,7 @@ void __nested_copy_vmcb_control_to_cache(struct kvm_vcpu *vcpu,
- 	to->nested_ctl          = from->nested_ctl;
- 	to->event_inj           = from->event_inj;
- 	to->event_inj_err       = from->event_inj_err;
-+	to->next_rip            = from->next_rip;
- 	to->nested_cr3          = from->nested_cr3;
- 	to->virt_ext            = from->virt_ext;
- 	to->pause_filter_count  = from->pause_filter_count;
-@@ -608,7 +609,8 @@ static void nested_vmcb02_prepare_save(struct vcpu_svm *svm, struct vmcb *vmcb12
- 	}
- }
- 
--static void nested_vmcb02_prepare_control(struct vcpu_svm *svm)
-+static void nested_vmcb02_prepare_control(struct vcpu_svm *svm,
-+					  unsigned long vmcb12_rip)
- {
- 	u32 int_ctl_vmcb01_bits = V_INTR_MASKING_MASK;
- 	u32 int_ctl_vmcb12_bits = V_TPR_MASK | V_IRQ_INJECTION_BITS_MASK;
-@@ -662,6 +664,19 @@ static void nested_vmcb02_prepare_control(struct vcpu_svm *svm)
- 	vmcb02->control.event_inj           = svm->nested.ctl.event_inj;
- 	vmcb02->control.event_inj_err       = svm->nested.ctl.event_inj_err;
- 
-+	/*
-+	 * next_rip is consumed on VMRUN as the return address pushed on the
-+	 * stack for injected soft exceptions/interrupts.  If nrips is exposed
-+	 * to L1, take it verbatim from vmcb12.  If nrips is supported in
-+	 * hardware but not exposed to L1, stuff the actual L2 RIP to emulate
-+	 * what a nrips=0 CPU would do (L1 is responsible for advancing RIP
-+	 * prior to injecting the event).
-+	 */
-+	if (svm->nrips_enabled)
-+		vmcb02->control.next_rip    = svm->nested.ctl.next_rip;
-+	else if (boot_cpu_has(X86_FEATURE_NRIPS))
-+		vmcb02->control.next_rip    = vmcb12_rip;
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index 82175a13c668..14bc4e87437b 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -392,6 +392,10 @@ static void svm_queue_exception(struct kvm_vcpu *vcpu)
+ 		 */
+ 		(void)svm_skip_emulated_instruction(vcpu);
+ 		rip = kvm_rip_read(vcpu);
 +
- 	vmcb02->control.virt_ext            = vmcb01->control.virt_ext &
- 					      LBR_CTL_ENABLE_MASK;
- 	if (svm->lbrv_enabled)
-@@ -745,7 +760,7 @@ int enter_svm_guest_mode(struct kvm_vcpu *vcpu, u64 vmcb12_gpa,
- 	nested_svm_copy_common_state(svm->vmcb01.ptr, svm->nested.vmcb02.ptr);
- 
- 	svm_switch_vmcb(svm, &svm->nested.vmcb02);
--	nested_vmcb02_prepare_control(svm);
-+	nested_vmcb02_prepare_control(svm, vmcb12->save.rip);
- 	nested_vmcb02_prepare_save(svm, vmcb12);
- 
- 	ret = nested_svm_load_cr3(&svm->vcpu, svm->nested.save.cr3,
-@@ -1418,6 +1433,7 @@ static void nested_copy_vmcb_cache_to_control(struct vmcb_control_area *dst,
- 	dst->nested_ctl           = from->nested_ctl;
- 	dst->event_inj            = from->event_inj;
- 	dst->event_inj_err        = from->event_inj_err;
-+	dst->next_rip             = from->next_rip;
- 	dst->nested_cr3           = from->nested_cr3;
- 	dst->virt_ext              = from->virt_ext;
- 	dst->pause_filter_count   = from->pause_filter_count;
-@@ -1602,7 +1618,7 @@ static int svm_set_nested_state(struct kvm_vcpu *vcpu,
- 	nested_copy_vmcb_control_to_cache(svm, ctl);
- 
- 	svm_switch_vmcb(svm, &svm->nested.vmcb02);
--	nested_vmcb02_prepare_control(svm);
-+	nested_vmcb02_prepare_control(svm, save->rip);
- 
++		if (boot_cpu_has(X86_FEATURE_NRIPS))
++			svm->vmcb->control.next_rip = rip;
++
+ 		svm->int3_rip = rip + svm->vmcb->save.cs.base;
+ 		svm->int3_injected = rip - old_rip;
+ 	}
+@@ -3703,7 +3707,7 @@ static void svm_complete_interrupts(struct kvm_vcpu *vcpu)
  	/*
- 	 * While the nested guest CR3 is already checked and set by
-diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-index 32220a1b0ea2..7d97e4d18c8b 100644
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -139,6 +139,7 @@ struct vmcb_ctrl_area_cached {
- 	u64 nested_ctl;
- 	u32 event_inj;
- 	u32 event_inj_err;
-+	u64 next_rip;
- 	u64 nested_cr3;
- 	u64 virt_ext;
- 	u32 clean;
+ 	 * If NextRIP isn't enabled, KVM must manually advance RIP prior to
+ 	 * injecting the soft exception/interrupt.  That advancement needs to
+-	 * be unwound if vectoring didn't complete.  Note, the _new_ event may
++	 * be unwound if vectoring didn't complete.  Note, the new event may
+ 	 * not be the injected event, e.g. if KVM injected an INTn, the INTn
+ 	 * hit a #NP in the guest, and the #NP encountered a #PF, the #NP will
+ 	 * be the reported vectored event, but RIP still needs to be unwound.
 -- 
 2.36.0.rc2.479.g8af0fa9b8e-goog
 
