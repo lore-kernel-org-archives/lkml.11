@@ -2,78 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03679C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 00:56:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 526F2C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 01:00:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231319AbiDWA7J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 20:59:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56788 "EHLO
+        id S231331AbiDWBDb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 21:03:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229894AbiDWA7H (ORCPT
+        with ESMTP id S229785AbiDWBD2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Apr 2022 20:59:07 -0400
-Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D64FD225289
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 17:56:11 -0700 (PDT)
-Received: by mail-qv1-xf34.google.com with SMTP id kd22so2432856qvb.4
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 17:56:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=VoXvIeqAbmOIw8MPtifiiSU52O9NLhujq72iuIkL/pQ=;
-        b=VN1VG1wmBwvFxp4RPfHBPhTPXmDyYQiCmA9iJfE+mgzPibnuv2zEF4b+525pX/HiLm
-         XaG9K7A5NYqZxVwtuXpatasdGzcfJ5WauI2qRb1ReDzjwkUkmgNQ6irzVS4mUHOx03ZR
-         R6/vP7a2Sw3QfrgwEciuB1p1bud5hqKVRmhxJiEnhsN5prJG5f52aouHCduUULhsT/rv
-         EoqSEQcee+zLWi/qfA9XHjdVkhSJrVilbaldOCp/BNtmvfJoJcEQeU6YsMq0KlI3u3CR
-         tuIFAQGL33Q6/vUcKpnUmTeHnBOgAfJTZItBJHqQTLgI8mWB+JTHTnG6loiXb2FEzVw5
-         ye+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=VoXvIeqAbmOIw8MPtifiiSU52O9NLhujq72iuIkL/pQ=;
-        b=vvyfPSUmaD02u6oqVlXEny/UweHytMtL1PxtH/84bsoBY8ALPkIRjPjvJVJI0ZMf2J
-         AHfetX1tknZb1+wTRkzZzZF+91TJHTBcI4arR/FaeIJ7Y88ZXU8F1wV74yCJQaR9ktQN
-         4Fbh2+fyCaR3Rv46cbZs3zhtllXqhVdbkI1uJm/3g8+IuwLO8MlQn532xU1aM2B0fnf2
-         a1PwjeJ2I1S6+3ghbVwvwEYSQCuFdArbIv+mX/gM5yDKC9FLkdBMxHq+BF4K3NU39gOy
-         ffRusQExcc0eMOe+21o9WtqBIS8Mul3Yfs8FLnfIQXUQ0c9GYKePnSgwHp0KkeL4N8S/
-         D9gQ==
-X-Gm-Message-State: AOAM532B6KQ5hJSWlbFE4foMvedeIl6EhetYXR++3YoPN19vy7mN2/Rw
-        gNc1zPqZ3tfAfZ601lznc1N24g==
-X-Google-Smtp-Source: ABdhPJy3Gor+up+vdFVQl37njOan+NvWWBlSTjU5FXP+S77AJ12gOqugu5s/TSwOs1rr6XqF48aRGQ==
-X-Received: by 2002:a0c:c404:0:b0:431:31c3:3d15 with SMTP id r4-20020a0cc404000000b0043131c33d15mr5523691qvi.116.1650675371094;
-        Fri, 22 Apr 2022 17:56:11 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
-        by smtp.gmail.com with ESMTPSA id f186-20020a379cc3000000b0069e82c4d8a1sm1650037qke.80.2022.04.22.17.56.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 17:56:10 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.94)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1ni44H-008OZg-Oh; Fri, 22 Apr 2022 21:56:09 -0300
-Date:   Fri, 22 Apr 2022 21:56:09 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     "lizhijian@fujitsu.com" <lizhijian@fujitsu.com>
-Cc:     "zyjzyj2000@gmail.com" <zyjzyj2000@gmail.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/3] RDMA/rxe: Remove useless parameters for
- update_state()
-Message-ID: <20220423005609.GW64706@ziepe.ca>
-References: <20220412022903.574238-1-lizhijian@fujitsu.com>
- <b3c747ed-1a87-896b-d95e-35fd2a80ccf7@fujitsu.com>
+        Fri, 22 Apr 2022 21:03:28 -0400
+X-Greylist: delayed 39070 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 22 Apr 2022 18:00:31 PDT
+Received: from relay3.mymailcheap.com (relay3.mymailcheap.com [217.182.66.161])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76C3D5C671;
+        Fri, 22 Apr 2022 18:00:30 -0700 (PDT)
+Received: from filter1.mymailcheap.com (filter1.mymailcheap.com [149.56.130.247])
+        by relay3.mymailcheap.com (Postfix) with ESMTPS id 553EF3ECDF;
+        Sat, 23 Apr 2022 03:00:26 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by filter1.mymailcheap.com (Postfix) with ESMTP id A2F5E2A374;
+        Sat, 23 Apr 2022 01:00:25 +0000 (UTC)
+X-Virus-Scanned: Debian amavisd-new at filter1.mymailcheap.com
+Received: from filter1.mymailcheap.com ([127.0.0.1])
+        by localhost (filter1.mymailcheap.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Zdi33cixN-Om; Sat, 23 Apr 2022 01:00:24 +0000 (UTC)
+Received: from mail20.mymailcheap.com (mail20.mymailcheap.com [51.83.111.147])
+        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by filter1.mymailcheap.com (Postfix) with ESMTPS;
+        Sat, 23 Apr 2022 01:00:24 +0000 (UTC)
+Received: from [172.16.34.145] (unknown [113.67.11.122])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail20.mymailcheap.com (Postfix) with ESMTPSA id 6B041401C4;
+        Sat, 23 Apr 2022 01:00:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=aosc.io; s=default;
+        t=1650675623; bh=N4i/1Sl8XBZEoIx04G8sQIpXEjM3YdS6eNFHmG+4P2c=;
+        h=Subject:From:To:Cc:In-Reply-To:References:Date:From;
+        b=j8JylXwwyvys35BdMKnA21asyRFKv5QAT5RyRJye1BcC4s4ZxAYq3xb4ALCDLsVxJ
+         yXrpji/F3661RFq/bT/yfPsdoJc8gwd28N2Fa41NhKFWxvDqTk7uxBtZo/NedaZcSt
+         fcg4g4Jn7K+v+hH5i+xOX1dSZtSlmfsOP3DQD4JM=
+Message-ID: <41a8e5353f95ec1031f5700588313d379b63ec78.camel@aosc.io>
+Subject: Re: [PATCH 4/4] spi: sun6i: add support for R329 SPI controllers
+From:   Icenowy Zheng <icenowy@aosc.io>
+To:     Samuel Holland <samuel@sholland.org>,
+        Mark Brown <broonie@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Maxime Ripard <mripard@kernel.org>
+Cc:     linux-spi@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <0b5b586a-3bc7-384e-103c-e40d0b2fac23@sholland.org>
+References: <20220422155639.1071645-1-icenowy@outlook.com>
+         <BYAPR20MB2472717D5AC20E7702329996BCF79@BYAPR20MB2472.namprd20.prod.outlook.com>
+         <0b5b586a-3bc7-384e-103c-e40d0b2fac23@sholland.org>
+Content-Type: text/plain; charset="UTF-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b3c747ed-1a87-896b-d95e-35fd2a80ccf7@fujitsu.com>
+Date:   Sat, 23 Apr 2022 08:07:10 +0800
+User-Agent: Evolution 3.40.4 
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 01:07:46AM +0000, lizhijian@fujitsu.com wrote:
-> ping
+在 2022-04-22星期五的 18:59 -0500，Samuel Holland写道：
+> On 4/22/22 10:56 AM, icenowy@outlook.com wrote:
+> > From: Icenowy Zheng <icenowy@aosc.io>
+> > 
+> > R329 has two SPI controllers. One of it is quite similar to
+> > previous
+> > ones, but with internal clock divider removed; the other added MIPI
+> > DBI
+> > Type-C offload based on the first one.
+> > 
+> > Add basical support for these controllers. As we're not going to
+> > support the DBI functionality now, just implement the two kinds of
+> > controllers as the same.
+> 
+> I'm curious what speeds you were able to use SPI at. On D1, with
+> effectively
+> these same changes, I would always get corrupted data when reading
+> from the
+> onboard SPI NAND on the Nezha board. However, if I enabled the "new
+> mode of
+> sample timing" (bit 2 in GBL_CTL_REG), I got the correct data.
 
-I'd like to see some of the people testing rxe look over these, at
-least until we get rxe back to being stable
+See 7.3.3.10 of R329_User_Manual_v1.0.pdf ? (named SPI sample mode and
+Run Clock configuration)
 
-Jason
+> 
+> Regards,
+> Samuel
+
+
