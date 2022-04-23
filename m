@@ -2,90 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4DC9C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 02:34:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8F3AC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 02:34:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232191AbiDWCg6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Apr 2022 22:36:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36554 "EHLO
+        id S232206AbiDWChC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Apr 2022 22:37:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232016AbiDWCgw (ORCPT
+        with ESMTP id S232163AbiDWCgw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 22 Apr 2022 22:36:52 -0400
-Received: from m12-12.163.com (m12-12.163.com [220.181.12.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D9DA513696A;
-        Fri, 22 Apr 2022 19:33:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=huM+m
-        OZR7PJhaVONZnXeurYvNfm3rx48wRZTVxQfbeE=; b=WArgwkzyovv1uu+1GkZ9P
-        ox2lVvulFCAT1BKjqLBhbNq4BS6dxTfpGKYOXNCKHC3R+6qOYaHLYnOrdtHkpVZe
-        +oBBLJyMExiN31vPIdfwpxXTdUC+UHUmSbonl/QtPbzitWUOtGVe9Pa292GzIg2m
-        6PSOfacHggEs/fHqSt8Sfg=
-Received: from localhost (unknown [119.123.75.74])
-        by smtp8 (Coremail) with SMTP id DMCowACnGfR+ZWNiMUVWCg--.36859S2;
-        Sat, 23 Apr 2022 10:33:34 +0800 (CST)
-From:   Junwen Wu <wudaemon@163.com>
-To:     akpm@linux-foundation.org, keescook@chromium.org,
-        adobriyan@gmail.com, fweimer@redhat.com, ddiss@suse.de
-Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        Junwen Wu <wudaemon@163.com>
-Subject: [PATCH v1] proc: limit schedstate node write operation
-Date:   Sat, 23 Apr 2022 02:31:04 +0000
-Message-Id: <20220423023104.153004-1-wudaemon@163.com>
-X-Mailer: git-send-email 2.25.1
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64F29135657;
+        Fri, 22 Apr 2022 19:33:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C36E5B8335C;
+        Sat, 23 Apr 2022 02:33:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 849C2C385A4;
+        Sat, 23 Apr 2022 02:33:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650681234;
+        bh=t0ImcbWybH3sSsXr94ynvBKQK32TJrvfv99STsPv0rg=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=vLIW0nlNx9mM2dr+Vu/Luf0TZPUAgu4vGf55IuVSJ+ky1QD0X0fXYk8FJIAuHTmU+
+         WWfIEaJQSQ/Siv9XBJ9xm1aQDZkJ5HylciOtPFF8A1OZpvWhCAyKRn0YWc9KFKaCgN
+         pmSkfH91gX5jDyhW5QRGshqajGVyjfQuGwFCvSNtz/0n2xqfn1WcI+lYGqK/ZYUZPp
+         duQ/5r72YJM+GARZeGr5vD86ZV14gP1ppPKYE03XHwE6vVGn/N9+aTIuKqZx2V6otg
+         /TwhZgo8ZMt1ctpTSuRRbU/aPlYsLpBSVSsPzJr6vAYSeKJ6vsizr2rtPOVdhvlcqA
+         qPJI3Ru3BqObw==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DMCowACnGfR+ZWNiMUVWCg--.36859S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7GryfKF48Kr1kAF47tF4UCFg_yoWDuFXEva
-        45KaykGwsYqFn5JFW5C343Jryjva1kGrn8GayDtFyDJF4kK3sYgFWUAF9rCFWUXr1fA3Z8
-        Cr4kXF93Cr15CjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRu1v33UUUUU==
-X-Originating-IP: [119.123.75.74]
-X-CM-SenderInfo: 5zxgtvxprqqiywtou0bp/1tbisR7rbVXlpag8xQAAst
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220407151831.2371706-7-steve@sk2.org>
+References: <20220407151831.2371706-1-steve@sk2.org> <20220407151831.2371706-7-steve@sk2.org>
+Subject: Re: [PATCH v2 06/10] clk: si5341: use simple i2c probe function
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Wolfram Sang <wsa@kernel.org>, Stephen Kitt <steve@sk2.org>
+To:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Kitt <steve@sk2.org>
+Date:   Fri, 22 Apr 2022 19:33:51 -0700
+User-Agent: alot/0.10
+Message-Id: <20220423023354.849C2C385A4@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Whatever value is written to /proc/$pid/sched, a task's schedstate data
-will reset.In some cases, schedstate will drop by accident. We restrict
-writing a certain value to this node before the data is reset.
+Quoting Stephen Kitt (2022-04-07 08:18:27)
+> The i2c probe function here doesn't use the id information provided in
+> its second argument, so the single-parameter i2c probe function
+> ("probe_new") can be used instead.
+>=20
+> This avoids scanning the identifier tables during probes.
+>=20
+> Signed-off-by: Stephen Kitt <steve@sk2.org>
+> ---
 
-Signed-off-by: Junwen Wu <wudaemon@163.com>
----
- fs/proc/base.c | 18 +++++++++++++-----
- 1 file changed, 13 insertions(+), 5 deletions(-)
-
-diff --git a/fs/proc/base.c b/fs/proc/base.c
-index d654ce7150fd..6bb2677659ce 100644
---- a/fs/proc/base.c
-+++ b/fs/proc/base.c
-@@ -1459,13 +1459,21 @@ sched_write(struct file *file, const char __user *buf,
- {
- 	struct inode *inode = file_inode(file);
- 	struct task_struct *p;
-+	char ubuf[5];
- 
--	p = get_proc_task(inode);
--	if (!p)
--		return -ESRCH;
--	proc_sched_set_task(p);
-+	memset(ubuf, 0, sizeof(ubuf));
-+	if (count > 5)
-+		count = 0;
-+	if (copy_from_user(ubuf, buf, count))
-+		return -EFAULT;
-+	if (strcmp(ubuf, "reset") == 0) {
-+		p = get_proc_task(inode);
-+		if (!p)
-+			return -ESRCH;
-+		proc_sched_set_task(p);
- 
--	put_task_struct(p);
-+		put_task_struct(p);
-+	}
- 
- 	return count;
- }
--- 
-2.25.1
-
+Applied to clk-next
