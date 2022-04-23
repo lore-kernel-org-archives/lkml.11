@@ -2,149 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 285E8C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 10:17:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8E85C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 10:20:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234867AbiDWKUg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 06:20:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44344 "EHLO
+        id S234888AbiDWKXd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 06:23:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233592AbiDWKU3 (ORCPT
+        with ESMTP id S233592AbiDWKX1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 06:20:29 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 448371B5BCC
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 03:17:32 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id l7so20788001ejn.2
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 03:17:32 -0700 (PDT)
+        Sat, 23 Apr 2022 06:23:27 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C291B89D9
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 03:20:29 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id bv19so20741863ejb.6
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 03:20:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Mklb5aXcxYipDAFtZhLjAH2YhDWDlT80DvRI+nyyIRY=;
-        b=IL7auybyir92nS7ynxcqpLhd4/Afr9KHN3opym3dFVqZqdIvG6G5WeaQeNSrud2jLf
-         YOmvQQC1Yjzd1BZ8hU14kf+Y5QZSBAbwzPgtOlJ0UhBEVdleQoNRNuXAqoeHXJbhRgxT
-         xLFvi5JZAMDlHBDAMiQqc9nnCF3YsHuZJskjGxq/dwzeMZzqJz+sjIspuHo/FO+yzZdn
-         1qftw1eWzxJw29oQvdL2nyHhuWSHuTaPqcznuTD0yTGGaXaha/oyQOFdDrt+X3K+tc4+
-         s8bLGGoQfRmv4426NZah/AATrSZpWe6rxBVbtrG3FZxHOCXznGFXmxd6XUxG1o22XBU3
-         bRMg==
+        bh=wFau58/3dbFFXW5s/rSRyjR0Vv6vq15uvojLlFyaWYw=;
+        b=VdBeLuXQeTfZ0WLS8qcex/zqFzDuiG8Txkpzd9okBbMJ4TgfIsIFJmbW7Tf99SDUoQ
+         jDozl0XWC7OEZ6qTd1JLMPr6dl6mvilBQdyKEKzH8OW9agDsvPmBN5W6j283532gx1nQ
+         MKdbMzmYHmf9+1S/2AXVdz8polAsDE+i7Og35b7TDRH84FLh0oABC4bn10uokB4GMmXr
+         RJ9baprrI9l2mL35Yor4CqdnWDHYtm78mZu5PaX7vEJexhH80EuAKtL1Vrnb0VpEpI1d
+         C61sPiiOwt1ZnMr75JCXwE6BBhUAsRrwaaW2u+lfmaMFzb7HvaMkm468iZIi0KV+yeZW
+         ryyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=Mklb5aXcxYipDAFtZhLjAH2YhDWDlT80DvRI+nyyIRY=;
-        b=gs5Gw53byghnJ4vhJ9MZqevrGV+hRWmg4iiPvEPLgD5aXm5B6skVa4YnG5KuZ9PGIU
-         cG4LH4aWoLmebxBNtLOqiZUVp6pobGikgo8stJfVaZv1XgWv6gzjvnAQGJHwHazXRftD
-         dZ8r8KCH81npa9BOS0Rz88oIuFlCqcBE0c7RoDPLIV/1zxqmoSv3EvGjbuztDv5uwJ+n
-         rD6Aauw161Mj+3G2wCwJR9QmkrmkfV5O8FaMBKZ7O1oXPEf/98evGNaA2XhwFouWP3QJ
-         o0I3RnpsX8UvL3NS3XVkYMkFhA505ga2q9J2xf6YCT1Ud4sb0rLOchfF3MvyxaQu6hB0
-         awFg==
-X-Gm-Message-State: AOAM530nL8gjko+nLyP9AvY4cCfND9jZ35OpBylsYf/0iJCmIRB7TPV4
-        eGdXRzeRSwHx/JYVO1QgpMfKZQ==
-X-Google-Smtp-Source: ABdhPJxnYTs0tniLxFUdD7NtLPSv45OL0EoKnxDQUZGPp9FZgg1EzeCxUp68BDPozKySpPgos26AyQ==
-X-Received: by 2002:a17:907:7e8b:b0:6f3:78f1:80b0 with SMTP id qb11-20020a1709077e8b00b006f378f180b0mr985409ejc.596.1650709050883;
-        Sat, 23 Apr 2022 03:17:30 -0700 (PDT)
+        bh=wFau58/3dbFFXW5s/rSRyjR0Vv6vq15uvojLlFyaWYw=;
+        b=2obR/UTfNMmGTU0T3nIAkfBYmo0x8HPT78UzSehMY45AXaY7bnoVwwwqtfzi1ayMm2
+         HlU2ftazQyzSjTTOUz/ymDeaX1msnj2grBr/SMuYGy0+2oBAip4BrOJOsImJz+uxINmO
+         ZTZWFR26bGuk0JlxULMO4cXuLUuo5idTjD4YV3uYjvp4neBcRks1Dk9/ALoAOHXPNbGP
+         fVak55AksdGa6QPMIL0S/Tcq9m4ySi9uwqzeoN4gIf57NU5kJPdIkz+Qwj+DQZXDaMTP
+         e7lrGckkstVriE3NHITXdWI4iLO5G2N+jGYpnwGKgFVCfNnbu+s+QgYJU/oGSGqcYre3
+         LcUw==
+X-Gm-Message-State: AOAM5307MbLFI5DR7ZIdrNk8UBzT1+gtGQupGx0cND/qMxgiwvNh4igE
+        4c+JSCxsSUNsF217/UTpFKO+YQ==
+X-Google-Smtp-Source: ABdhPJyHlCCVCTAtns0efc4iZ7S75fDASI52u/P1Kc0Vy4D6sBJpiZ7iYAysEriC5MzcgajCOpK+XA==
+X-Received: by 2002:a17:907:9721:b0:6f3:806c:b9f4 with SMTP id jg33-20020a170907972100b006f3806cb9f4mr119631ejc.462.1650709227598;
+        Sat, 23 Apr 2022 03:20:27 -0700 (PDT)
 Received: from [192.168.0.234] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id gq5-20020a170906e24500b006e87644f2f7sm1544023ejb.38.2022.04.23.03.17.30
+        by smtp.gmail.com with ESMTPSA id g9-20020aa7c849000000b00412fc6bf26dsm2063437edt.80.2022.04.23.03.20.26
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 23 Apr 2022 03:17:30 -0700 (PDT)
-Message-ID: <fb8c2c57-38bf-065f-a781-beb2fb89353e@linaro.org>
-Date:   Sat, 23 Apr 2022 12:17:29 +0200
+        Sat, 23 Apr 2022 03:20:27 -0700 (PDT)
+Message-ID: <ad62836d-b66f-8423-8c9a-c3b9f90e0add@linaro.org>
+Date:   Sat, 23 Apr 2022 12:20:26 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH] dt-bindings: fsl: convert fsl,layerscape-scfg to YAML
+Subject: Re: [PATCH] dt-bindings: fsl: convert fsl,layerscape-dcfg to YAML
 Content-Language: en-US
 To:     Michael Walle <michael@walle.cc>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
 Cc:     Li Yang <leoyang.li@nxp.com>, Shawn Guo <shawnguo@kernel.org>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220421153115.3496834-1-michael@walle.cc>
+References: <20220421153044.3496643-1-michael@walle.cc>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220421153115.3496834-1-michael@walle.cc>
+In-Reply-To: <20220421153044.3496643-1-michael@walle.cc>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21/04/2022 17:31, Michael Walle wrote:
-> Convert the fsl,layerscape-scfg binding to the new YAML format.
+On 21/04/2022 17:30, Michael Walle wrote:
+> Convert the fsl,layerscape-dcfg binding to the new YAML format.
 > 
-> Added, compared to the original binding, is the interrupt-controller
-> subnode as used in arch/arm/boot/dts/ls1021a.dtsi as well as the
-> litte-endian and big-endian properties.
+> One thing added here, compared to the original binding, is the clock
+> controller subnode of the LS1028A SoC and its "simple-mfd" compatible as
+> used in arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi as well as the
+> little-endian and big-endian properties.
 > 
 > Signed-off-by: Michael Walle <michael@walle.cc>
 > ---
->  .../arm/freescale/fsl,layerscape-scfg.txt     | 19 ------
->  .../arm/freescale/fsl,layerscape-scfg.yaml    | 58 +++++++++++++++++++
->  2 files changed, 58 insertions(+), 19 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/arm/freescale/fsl,layerscape-scfg.txt
->  create mode 100644 Documentation/devicetree/bindings/arm/freescale/fsl,layerscape-scfg.yaml
+>  .../arm/freescale/fsl,layerscape-dcfg.txt     | 19 ------
+>  .../arm/freescale/fsl,layerscape-dcfg.yaml    | 68 +++++++++++++++++++
+>  2 files changed, 68 insertions(+), 19 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/arm/freescale/fsl,layerscape-dcfg.txt
+>  create mode 100644 Documentation/devicetree/bindings/arm/freescale/fsl,layerscape-dcfg.yaml
 
-This should be moved to bindings/soc/freescale. Arm directory is only
-for top-level stuff.
-
-(...)
-
-> +description: |
-> +  SCFG is the supplemental configuration unit, that provides SoC specific
-> +  configuration and status registers for the chip. Such as getting PEX port
-> +  status.
-> +
-> +properties:
-> +  compatible:
-> +    items:
-> +      - enum:
-> +          - fsl,ls1012a-scfg
-> +          - fsl,ls1021a-scfg
-> +          - fsl,ls1028a-scfg
-> +          - fsl,ls1043a-scfg
-> +          - fsl,ls1046a-scfg
-> +      - const: syscon
-
-This was not present in old bindings, so please mention it in commit msg.
-
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  little-endian: true
-> +  big-endian: true
-> +
-> +  '#address-cells':
-> +    const: 1
-> +
-> +  '#size-cells':
-> +    const: 1
-> +
-> +  ranges: true
-> +
-> +patternProperties:
-> +  "^interrupt-controller@[a-z0-9]+$":
-> +    $ref: /schemas/interrupt-controller.yaml#
-
-Do you have a specific FSL schema (bindings) for the child?
-
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    scfg@1570000 {
-
-Generic node name, so I guess here it would be a "syscon".
-
-> +        compatible = "fsl,ls1021a-scfg", "syscon";
-> +        reg = <0x1570000 0x10000>;
-> +    };
-
+Same comments as for scfg (move to soc, generic node name, reference
+clock controller schema, mention adding syscon in commit msg).
 
 Best regards,
 Krzysztof
