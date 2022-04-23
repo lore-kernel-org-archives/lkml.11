@@ -2,127 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5029C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 04:58:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73D74C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 05:03:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233067AbiDWFAw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 01:00:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38726 "EHLO
+        id S233096AbiDWFGX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 01:06:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231760AbiDWFAp (ORCPT
+        with ESMTP id S231760AbiDWFGV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 01:00:45 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A32D1A921A
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Apr 2022 21:57:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650689869; x=1682225869;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=xGggyQUO1bhk35uzumc+QrFv6rg6rQZPFjQ9Dm76t08=;
-  b=EZnlKtWBcbiHEuALex6ecEJvFxjrnv6YkYynHqQda8iJOIr7Qh3gz/cz
-   kvBKKWgnO2tnaV1Lt2sIz36xnshphcDIvnqHHSIJ1Y5nwabRrIQ7WMuog
-   FrJhW6JE4pOLaIC0Vd+uYCmIip0z/nGe1xi1k29TwZd5Tt//OrXepDRrA
-   sWKOD4arpVMtPeohZMx7R1K/7wOzAOKFTpbMtvbaKXWjdVuAi8vTwQozJ
-   6wJKTBEcSzZ2cGLqQ6OxILR1lOivQ9PVuHhxkqKcmNvNibRJZWCiYOYQ+
-   +zLZRWF6OdYNf+KlwiFHMlQwFTb8ZpO1CdZMiEo4NEUeEBMHmLRpQciTU
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="252182197"
-X-IronPort-AV: E=Sophos;i="5.90,283,1643702400"; 
-   d="scan'208";a="252182197"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 21:57:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,283,1643702400"; 
-   d="scan'208";a="563325645"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 22 Apr 2022 21:57:45 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ni7q4-000B1r-So;
-        Sat, 23 Apr 2022 04:57:44 +0000
-Date:   Sat, 23 Apr 2022 12:57:00 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Donghai Qiao <dqiao@redhat.com>, akpm@linux-foundation.org,
-        sfr@canb.auug.org.au, arnd@arndb.de, heying24@huawei.com,
-        andriy.shevchenko@linux.intel.com, axboe@kernel.dk,
-        rdunlap@infradead.org, tglx@linutronix.de, gor@linux.ibm.com
-Cc:     kbuild-all@lists.01.org, donghai.w.qiao@gmail.com,
-        linux-kernel@vger.kernel.org, Donghai Qiao <dqiao@redhat.com>
-Subject: Re: [PATCH v2 01/11] smp: consolidate the structure definitions to
- smp.h
-Message-ID: <202204231212.Os1QwhiN-lkp@intel.com>
-References: <20220422200040.93813-2-dqiao@redhat.com>
+        Sat, 23 Apr 2022 01:06:21 -0400
+Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com [209.85.210.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D331F8EF4;
+        Fri, 22 Apr 2022 22:03:25 -0700 (PDT)
+Received: by mail-pf1-f178.google.com with SMTP id p8so9835237pfh.8;
+        Fri, 22 Apr 2022 22:03:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=vD0W6bI9inxY1IqwYpYGCs5VOO5jHMZ9Ui2cOWh/okI=;
+        b=RWffJnpR0EMAvWQ4n2uAQXH5VLGnAAh/w4N9lv+SQOf4g6YmvoL9PFiFykGtYKhk7x
+         grsCxY+NknzeRoR12SmHnJqHcKY4pph25sgJqAY+Lbo4ra8rU3GvcdqBL9omc9twkdIC
+         oMe4adn6AwuBdfuawmRqT2v+eUIUz2ZAE2gImJ47Ghl/aAHiZenZWWsuoj1yXb+3BCwM
+         ifpS6TbmsfKApb7HnQ1X1/8TlrJcfac5lag46NuEtw/KoyFvtSMDtGpPB69LlgNpuUqE
+         dygL8IfQTH7uYgC6SkiuixzzRQqaHsw0YbMvobXXlFxm6FSFKeE6oCBU2hVR0o10lo2c
+         WARw==
+X-Gm-Message-State: AOAM533xQsTJGJDcfOqdykMC6p5QsJzIA5Si0h39Toq3ANa13WPhDcNZ
+        Vlz2Q70kuV4X2LXvJV66t9c=
+X-Google-Smtp-Source: ABdhPJx6rWeo45nxheFodGYu+usoypVGBw0VrjbV/QATcx3S17+KMoJacGaZFY6u3PPv2KOdDQPdXw==
+X-Received: by 2002:a05:6a00:164c:b0:50a:472a:6b0a with SMTP id m12-20020a056a00164c00b0050a472a6b0amr8424873pfc.77.1650690204550;
+        Fri, 22 Apr 2022 22:03:24 -0700 (PDT)
+Received: from ?IPV6:2601:647:4000:d7:feaa:14ff:fe9d:6dbd? ([2601:647:4000:d7:feaa:14ff:fe9d:6dbd])
+        by smtp.gmail.com with ESMTPSA id r19-20020a17090b051300b001cd4989ff5esm7630037pjz.37.2022.04.22.22.03.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Apr 2022 22:03:23 -0700 (PDT)
+Message-ID: <5ee685f5-152c-aca0-cc14-646cfae93000@acm.org>
+Date:   Fri, 22 Apr 2022 22:03:22 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220422200040.93813-2-dqiao@redhat.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 3/5] scsi: ufs: qcom: Add a readl() to make sure ref_clk
+ gets enabled
+Content-Language: en-US
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        martin.petersen@oracle.com, jejb@linux.ibm.com
+Cc:     avri.altman@wdc.com, alim.akhtar@samsung.com,
+        bjorn.andersson@linaro.org, linux-arm-msm@vger.kernel.org,
+        quic_asutoshd@quicinc.com, quic_cang@quicinc.com,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+References: <20220422132140.313390-1-manivannan.sadhasivam@linaro.org>
+ <20220422132140.313390-4-manivannan.sadhasivam@linaro.org>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <20220422132140.313390-4-manivannan.sadhasivam@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Donghai,
+On 4/22/22 06:21, Manivannan Sadhasivam wrote:
+> In ufs_qcom_dev_ref_clk_ctrl(), it was noted that the ref_clk needs to be
+> stable for atleast 1us. Eventhough there is wmb() to make sure the write
+                ^              ^
+Some spaces are missing.
 
-Thank you for the patch! Yet something to improve:
+> gets "completed", there is no guarantee that the write actually reached
+> the UFS device. There is a good chance that the write could be stored in
+> a Write Buffer (WB). In that case, eventhough the CPU waits for 1us, the
+                                          ^
+missing space----------------------------
 
-[auto build test ERROR on powerpc/next]
-[also build test ERROR on rafael-pm/linux-next linus/master v5.18-rc3 next-20220422]
-[cannot apply to tip/x86/core]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> ref_clk might not be stable for that period.
+> 
+> So lets do a readl() to make sure that the previous write has reached the
+> UFS device before udelay().
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: f06fcc7155dc ("scsi: ufs-qcom: add QUniPro hardware support and power optimizations")
+> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> ---
+>   drivers/scsi/ufs/ufs-qcom.c | 6 ++++++
+>   1 file changed, 6 insertions(+)
+> 
+> diff --git a/drivers/scsi/ufs/ufs-qcom.c b/drivers/scsi/ufs/ufs-qcom.c
+> index 5f0a8f646eb5..5b9986c63eed 100644
+> --- a/drivers/scsi/ufs/ufs-qcom.c
+> +++ b/drivers/scsi/ufs/ufs-qcom.c
+> @@ -690,6 +690,12 @@ static void ufs_qcom_dev_ref_clk_ctrl(struct ufs_qcom_host *host, bool enable)
+>   		/* ensure that ref_clk is enabled/disabled before we return */
+>   		wmb();
+>   
+> +		/*
+> +		 * Make sure the write to ref_clk reaches the destination and
+> +		 * not stored in a Write Buffer (WB).
+> +		 */
+> +		readl(host->dev_ref_clk_ctrl_mmio);
+> +
+>   		/*
+>   		 * If we call hibern8 exit after this, we need to make sure that
+>   		 * device ref_clk is stable for at least 1us before the hibern8
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Donghai-Qiao/smp-cross-CPU-call-interface/20220423-060436
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/powerpc/linux.git next
-config: sparc-randconfig-r026-20220422 (https://download.01.org/0day-ci/archive/20220423/202204231212.Os1QwhiN-lkp@intel.com/config)
-compiler: sparc64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/1c14bdafe09740690b249824f3526527e4c02d2a
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Donghai-Qiao/smp-cross-CPU-call-interface/20220423-060436
-        git checkout 1c14bdafe09740690b249824f3526527e4c02d2a
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=sparc SHELL=/bin/bash lib/
+The comment above the wmb() call looks wrong to me. How about removing 
+that wmb() call?
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Thanks,
 
-All errors (new ones prefixed by >>):
-
-   In file included from include/linux/lockdep.h:14,
-                    from include/linux/spinlock.h:62,
-                    from include/linux/kref.h:16,
-                    from include/linux/mm_types.h:8,
-                    from include/linux/buildid.h:5,
-                    from include/linux/module.h:14,
-                    from lib/test_bitops.c:9:
->> include/linux/smp.h:131:14: error: 'seq_type' defined but not used [-Werror=unused-variable]
-     131 | static char *seq_type[] = {
-         |              ^~~~~~~~
-   cc1: all warnings being treated as errors
-
-
-vim +/seq_type +131 include/linux/smp.h
-
-   130	
- > 131	static char *seq_type[] = {
-   132		[CFD_SEQ_QUEUE]		= "queue",
-   133		[CFD_SEQ_IPI]		= "ipi",
-   134		[CFD_SEQ_NOIPI]		= "noipi",
-   135		[CFD_SEQ_PING]		= "ping",
-   136		[CFD_SEQ_PINGED]	= "pinged",
-   137		[CFD_SEQ_HANDLE]	= "handle",
-   138		[CFD_SEQ_DEQUEUE]	= "dequeue (src CPU 0 == empty)",
-   139		[CFD_SEQ_IDLE]		= "idle",
-   140		[CFD_SEQ_GOTIPI]	= "gotipi",
-   141		[CFD_SEQ_HDLEND]	= "hdlend (src CPU 0 == early)",
-   142	};
-   143	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Bart.
