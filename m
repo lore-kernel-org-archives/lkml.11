@@ -2,233 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C517FC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 14:35:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C65F5C4332F
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Apr 2022 14:36:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236028AbiDWOil (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 10:38:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43462 "EHLO
+        id S229810AbiDWOjp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 10:39:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232210AbiDWOij (ORCPT
+        with ESMTP id S229500AbiDWOjn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 10:38:39 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E4966AA41
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 07:35:41 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id bq30so18976574lfb.3
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 07:35:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=5Ob5FZ3XWHH7ndiX9e02UPLlc8ptKYdQZQQb2q10kFk=;
-        b=edcQjFzK13CxlrO3DRi39U1HLX1VBiZdMToLxtPriW5w54rke5iEMAjcSbz0qLKiU1
-         6Dg/+t7jlWN4zLOE4R7gc+Oiehyx44/fBegjF9CUPZTdazhsEq5kmlyBBIDrFcpJ2UXh
-         39lAPieblL9SemJymxB3+VitLdVV4ID+j2PN+nuGr61uKUGz8IVRPkA+fobqsdBAqXKq
-         ApWZOKdhVIcgtmhqGwlNCdGSukJgvhZDorgcmTlkv0mfPzZ/PfSWiA/hCgs5Wv2oL+vK
-         XJZN28Yak1op0o0AkGamHUIANzbptaiH+ktbXi6pl22teiG63KGXxIYyM50hdzwzZcwU
-         6EXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=5Ob5FZ3XWHH7ndiX9e02UPLlc8ptKYdQZQQb2q10kFk=;
-        b=v5fAXtOMLNsLkV+LbT/bHMU1SJ7kVfgmEeAOFy3SbhzlNukzDNVpdUvpDZfu/kfjb7
-         XGgXDt22Mp1gNS8gt4nbA/kbmx2ZGzt2ZdMeqwrsZbgL2Do459qbOLLU5AP0dAe+eLDa
-         2f8dhqDmxUd7sIkqgcNEGIVeb3MrcKcLIeBfUD3Ls7KS1wecdYNBRB2EiMgKmM/4vrYl
-         FGclPv8YEQuaQGJj0IDoJgTPYtwgEgY2Huz+D1Yu6lRkvswMT0kKrbItcBbBBvdv9X6g
-         wRJhX4srmZSlwvHZk/CMfTUjqfnKk0A61tRzCF6Hh0tduhJgi2Q70zHCwT1LrOY1H8Ro
-         o6AQ==
-X-Gm-Message-State: AOAM533okCZXzhPf+pjTSB+KimSmYTGg2/OFDIxScguohfGaI3nMKwKr
-        haeMGyEH9446FN2BidpEkwo=
-X-Google-Smtp-Source: ABdhPJzuBm8Fq2ksLNZubEsggwEds0YNor4simf+758e/Wch36unqYhiwGrQiA/w92oNFg+B4tk+9w==
-X-Received: by 2002:a05:6512:2348:b0:471:92ac:3bfd with SMTP id p8-20020a056512234800b0047192ac3bfdmr6525788lfu.199.1650724539295;
-        Sat, 23 Apr 2022 07:35:39 -0700 (PDT)
-Received: from [192.168.1.7] ([212.22.223.21])
-        by smtp.gmail.com with ESMTPSA id k10-20020a19560a000000b0046d1707fcbdsm640495lfb.215.2022.04.23.07.35.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 23 Apr 2022 07:35:38 -0700 (PDT)
-Subject: Re: [PATCH V1 1/6] arm/xen: Introduce xen_setup_dma_ops()
-To:     Stefano Stabellini <sstabellini@kernel.org>
-Cc:     xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        David Hildenbrand <david@redhat.com>,
-        Martin Oliveira <martin.oliveira@eideticom.com>,
-        Kees Cook <keescook@chromium.org>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Julien Grall <julien@xen.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Christoph Hellwig <hch@infradead.org>
-References: <1650646263-22047-1-git-send-email-olekstysh@gmail.com>
- <1650646263-22047-2-git-send-email-olekstysh@gmail.com>
- <alpine.DEB.2.22.394.2204221509220.915916@ubuntu-linux-20-04-desktop>
-From:   Oleksandr <olekstysh@gmail.com>
-Message-ID: <a1112ea4-6eb9-f4ec-745d-e28c41fd1930@gmail.com>
-Date:   Sat, 23 Apr 2022 17:35:37 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Sat, 23 Apr 2022 10:39:43 -0400
+X-Greylist: delayed 557 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 23 Apr 2022 07:36:45 PDT
+Received: from mail.tambre.ee (mail.tambre.ee [IPv6:2a01:7e01:e001:cc::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B783A203F65;
+        Sat, 23 Apr 2022 07:36:45 -0700 (PDT)
+Received: from [IPV6:2001:7d0:8a11:4700:d8bd:7f1f:5e8b:fc58] (fc58-5e8b-7f1f-d8bd-4700-8a11-07d0-2001.dyn.estpak.ee [IPv6:2001:7d0:8a11:4700:d8bd:7f1f:5e8b:fc58])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: raul)
+        by mail.tambre.ee (Postfix) with ESMTPSA id 8855980062;
+        Sat, 23 Apr 2022 17:27:24 +0300 (EEST)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.tambre.ee 8855980062
+Authentication-Results: mail.tambre.ee; dmarc=fail (p=reject dis=none) header.from=tambre.ee
+Authentication-Results: mail.tambre.ee; spf=fail smtp.mailfrom=tambre.ee
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.tambre.ee 8855980062
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tambre.ee; s=201812;
+        t=1650724045; bh=9gYBnH9KPURUghbXDsxTxayhdYgcj3IoMHz0DPDiA00=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=YFgvVKD7HJJ9Dxt3j4BzH1t+gogs0lTsdo/enGYiXmC3VXwnRvQ3t57zMMt0iZ+9u
+         Jq8Tz1pauz57NTsXO5SiXynbah+A6+ha5nqC4k3sxntLvGPG2geobXEyLphQ+AuEVQ
+         iYiQV19jWpvftSMs3dpA1XLNdylbAPuz7lv1tjUks0SW91D1PlFhJEePXndrLmM+rD
+         ikX5KpU9FGz3Rx+vUhn+9sQ3swxSMHZHaYzK1pi93hOFGrD7CbbqSH1P+dV0WtViIl
+         wKd75cZX/ZjdDfdzDOf0+l2ccErKsDzSqYtZDX96R7FvnavUjmMR5kBTQidW+GsD0V
+         CqQNvyZsmn+0w==
+Message-ID: <50b80804-e95c-2137-5d74-2451e5bb826f@tambre.ee>
+Date:   Sat, 23 Apr 2022 17:27:21 +0300
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.22.394.2204221509220.915916@ubuntu-linux-20-04-desktop>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH V2 2/8] dt-bindings: PCI: tegra: Add device tree support
+ for Tegra234
+Content-Language: en-GB
+To:     Vidya Sagar <vidyas@nvidia.com>, bhelgaas@google.com,
+        lorenzo.pieralisi@arm.com, robh+dt@kernel.org,
+        thierry.reding@gmail.com, jonathanh@nvidia.com
+Cc:     kishon@ti.com, vkoul@kernel.org, kw@linux.com, krzk@kernel.org,
+        p.zabel@pengutronix.de, mperttunen@nvidia.com,
+        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-phy@lists.infradead.org, kthota@nvidia.com,
+        mmaddireddy@nvidia.com, sagar.tv@gmail.com
+References: <20220423124858.25946-1-vidyas@nvidia.com>
+ <20220423124858.25946-3-vidyas@nvidia.com>
+From:   Raul Tambre <raul@tambre.ee>
+In-Reply-To: <20220423124858.25946-3-vidyas@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 2022-04-23 15:48, Vidya Sagar wrote:
+> @@ -47,16 +64,33 @@ Required properties:
+>     "p2u-N": where N ranges from 0 to one less than the total number of lanes
+>   - nvidia,bpmp: Must contain a pair of phandle to BPMP controller node followed
+>     by controller-id. Following are the controller ids for each controller.
+> +  Tegra194:
+> +  ---------
+>       0: C0
+>       1: C1
+>       2: C2
+>       3: C3
+>       4: C4
+>       5: C5
+> +  Tegra194:
 
-On 23.04.22 01:59, Stefano Stabellini wrote:
+Should this be Tegra234?
 
-
-Hello Stefano
-
-
-> On Fri, 22 Apr 2022, Oleksandr Tyshchenko wrote:
->> From: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
->>
->> This patch introduces new helper and places it in new header.
->> The helper's purpose is to assign any Xen specific DMA ops in
->> a single place. For now, we deal with xen-swiotlb DMA ops only.
->> The one of the subsequent commits in current series will add
->> xen-grant DMA ops case.
->>
->> Also re-use the xen_swiotlb_detect() check on Arm32.
->>
->> Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-> Reviewed-by: Stefano Stabellini <sstabellini@kernel.org>
-
-
-Thanks!
-
-
-checkpatch.pl suggests adding missing SPDX-License-Identifier to 
-Arm/Arm64's xen-ops.h
-
-I will retain your R-b tag after making this change. Please let me know 
-if you think otherwise.
-
-
-
->> ---
->> Changes RFC -> V1:
->>     - update commit description
->>     - move commit to the beginning of the series
->>     - move #ifdef CONFIG_XEN from dma-mapping.c to xen-ops.h
->> ---
->>   arch/arm/include/asm/xen/xen-ops.h   |  1 +
->>   arch/arm/mm/dma-mapping.c            |  7 ++-----
->>   arch/arm64/include/asm/xen/xen-ops.h |  1 +
->>   arch/arm64/mm/dma-mapping.c          |  7 ++-----
->>   include/xen/arm/xen-ops.h            | 15 +++++++++++++++
->>   5 files changed, 21 insertions(+), 10 deletions(-)
->>   create mode 100644 arch/arm/include/asm/xen/xen-ops.h
->>   create mode 100644 arch/arm64/include/asm/xen/xen-ops.h
->>   create mode 100644 include/xen/arm/xen-ops.h
->>
->> diff --git a/arch/arm/include/asm/xen/xen-ops.h b/arch/arm/include/asm/xen/xen-ops.h
->> new file mode 100644
->> index 00000000..8d2fa24
->> --- /dev/null
->> +++ b/arch/arm/include/asm/xen/xen-ops.h
->> @@ -0,0 +1 @@
->> +#include <xen/arm/xen-ops.h>
->> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
->> index 82ffac6..059cce0 100644
->> --- a/arch/arm/mm/dma-mapping.c
->> +++ b/arch/arm/mm/dma-mapping.c
->> @@ -33,7 +33,7 @@
->>   #include <asm/dma-iommu.h>
->>   #include <asm/mach/map.h>
->>   #include <asm/system_info.h>
->> -#include <xen/swiotlb-xen.h>
->> +#include <asm/xen/xen-ops.h>
->>   
->>   #include "dma.h"
->>   #include "mm.h"
->> @@ -2287,10 +2287,7 @@ void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
->>   
->>   	set_dma_ops(dev, dma_ops);
->>   
->> -#ifdef CONFIG_XEN
->> -	if (xen_initial_domain())
->> -		dev->dma_ops = &xen_swiotlb_dma_ops;
->> -#endif
->> +	xen_setup_dma_ops(dev);
->>   	dev->archdata.dma_ops_setup = true;
->>   }
->>   
->> diff --git a/arch/arm64/include/asm/xen/xen-ops.h b/arch/arm64/include/asm/xen/xen-ops.h
->> new file mode 100644
->> index 00000000..8d2fa24
->> --- /dev/null
->> +++ b/arch/arm64/include/asm/xen/xen-ops.h
->> @@ -0,0 +1 @@
->> +#include <xen/arm/xen-ops.h>
->> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
->> index 6719f9e..6099c81 100644
->> --- a/arch/arm64/mm/dma-mapping.c
->> +++ b/arch/arm64/mm/dma-mapping.c
->> @@ -9,9 +9,9 @@
->>   #include <linux/dma-map-ops.h>
->>   #include <linux/dma-iommu.h>
->>   #include <xen/xen.h>
->> -#include <xen/swiotlb-xen.h>
->>   
->>   #include <asm/cacheflush.h>
->> +#include <asm/xen/xen-ops.h>
->>   
->>   void arch_sync_dma_for_device(phys_addr_t paddr, size_t size,
->>   		enum dma_data_direction dir)
->> @@ -52,8 +52,5 @@ void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
->>   	if (iommu)
->>   		iommu_setup_dma_ops(dev, dma_base, dma_base + size - 1);
->>   
->> -#ifdef CONFIG_XEN
->> -	if (xen_swiotlb_detect())
->> -		dev->dma_ops = &xen_swiotlb_dma_ops;
->> -#endif
->> +	xen_setup_dma_ops(dev);
->>   }
->> diff --git a/include/xen/arm/xen-ops.h b/include/xen/arm/xen-ops.h
->> new file mode 100644
->> index 00000000..288deb1
->> --- /dev/null
->> +++ b/include/xen/arm/xen-ops.h
->> @@ -0,0 +1,15 @@
->> +/* SPDX-License-Identifier: GPL-2.0 */
->> +#ifndef _ASM_ARM_XEN_OPS_H
->> +#define _ASM_ARM_XEN_OPS_H
->> +
->> +#include <xen/swiotlb-xen.h>
->> +
->> +static inline void xen_setup_dma_ops(struct device *dev)
->> +{
->> +#ifdef CONFIG_XEN
->> +	if (xen_swiotlb_detect())
->> +		dev->dma_ops = &xen_swiotlb_dma_ops;
->> +#endif
->> +}
->> +
->> +#endif /* _ASM_ARM_XEN_OPS_H */
->> -- 
->> 2.7.4
->>
->>
->> _______________________________________________
->> linux-arm-kernel mailing list
->> linux-arm-kernel@lists.infradead.org
->> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
->>
--- 
-Regards,
-
-Oleksandr Tyshchenko
+> +  ---------
+> +    0 : C0
+> +    1 : C1
+> +    2 : C2
+> +    3 : C3
+> +    4 : C4
+> +    5 : C5
+> +    6 : C6
+> +    7 : C7
+> +    8 : C8
+> +    9 : C9
+> +    10: C10
 
