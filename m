@@ -2,65 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E446EC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 16:27:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6B05C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 16:27:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235006AbiDXQaP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 12:30:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59024 "EHLO
+        id S234943AbiDXQaS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 12:30:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234868AbiDXQaA (ORCPT
+        with ESMTP id S234882AbiDXQaB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 12:30:00 -0400
+        Sun, 24 Apr 2022 12:30:01 -0400
 Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24F1288785;
-        Sun, 24 Apr 2022 09:26:56 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 58E755C006B;
-        Sun, 24 Apr 2022 12:26:56 -0400 (EDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B156E86E04;
+        Sun, 24 Apr 2022 09:27:00 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 231395C006B;
+        Sun, 24 Apr 2022 12:27:00 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sun, 24 Apr 2022 12:26:56 -0400
+  by compute4.internal (MEProxy); Sun, 24 Apr 2022 12:27:00 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
         cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
         :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm2; t=1650817616; x=1650904016; bh=Qk
-        iqJQsRMBNjDm556z2E8TzPBn5kwgUgalPVUN5j18M=; b=Q/c5IPmxsggKWmRxpq
-        +C+jTeClr+XKPnylCa22/GBMsnOYOtyPreGQdSBqQgVBXEeXAyXCadGdddFXzNBc
-        ld1cAyWBkd7ls04A/kWdMKiz/TdraQN96zBfVl3cbNvN4pjZ1kFRTiiY9mt63A0v
-        uYnrblMrEc8hdbC8nfTPy2ciTulsiRn7ygK6mJ+/7sf7Ye+e2r44bAwG1zaVemyF
-        VvqLlv8PA3k4bLjMSZ7VedxAvIP7yjGeqkTzIRWe4GKKdcFxwuGjOS/imn4r3Gks
-        WUW/m7tcll42Lu/3JImRgZyjy5SkHYbbExeAUGL/9+j6BT4sFpzFb31GoqwpYFCk
-        z7yw==
+        :subject:subject:to:to; s=fm2; t=1650817620; x=1650904020; bh=jS
+        AQioVCfjpv/SLyFbyb4J2+q2O/sEhXHaA/OKfch5E=; b=owH8nFbrV52KXis1jY
+        saHuNJNk2iaCJfvgGc/5hy6qVCVBpUxgvMpP2f+1mSU90rPv0yjW78TAO+88d12M
+        Ik+shxrRh7w0tZV1ThDBjEhl8Q3pE22T70xpSEtHfCNhFR4v+prC0Ou7ljtw8Qqs
+        Sc1Uq2IzzYwmpEgllgRlZ5UhUmPDI817AoIbzYtrHaY8Mi2VEUTCWtPpVrnRNzUJ
+        pFouG8HQWxma2kxFKIMHVDTUgxhTVnhIUJrIOMcOkSJoFBnXMIczFnvxdbxxpONo
+        /PyNbMZf4+Z32O4rUN3vQxXeLIWAQ/1nq0hi2fE5oz+Lnktsuy1XLnUQyVj31Bw/
+        huTg==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
         :from:from:in-reply-to:in-reply-to:message-id:mime-version
         :references:reply-to:sender:subject:subject:to:to:x-me-proxy
         :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-        1650817616; x=1650904016; bh=QkiqJQsRMBNjDm556z2E8TzPBn5kwgUgalP
-        VUN5j18M=; b=L6qCzV1y0/apGCUEP0lR+3CD/yl0nVhR+xFgGuvMyHGuUFeoBmS
-        kLUFZUEYYa1NIcbshTL/dbDRgPERDNLT5npUkedKOzeofZrIj+2ws6JQVDx6xMvR
-        RS/47Y83XFwiGHWBxsAhdAWQ8ktRmgzvvL1XLGWPdmblLZ1Ez0sfoblIQ+cPmBy2
-        60CEdax7UzyMs+mbljFnVzqUTAoMIROqN752nBI+vIHLUiLEL85v3i4aauXuS2Cx
-        RxqVNixVCL8XHLANkbcjeLZEs6VS6UmXO2o730ktS6x2LOfDDwVg99s6hK1A3iHz
-        n0lA4jVVNMRRS760ZwAaNX70b79WJQaekOw==
-X-ME-Sender: <xms:UHplYoRa_9JXMj6Ov_GQ0WbpjmyLxHuHf25lsInAG20JMt6ykXi4NQ>
-    <xme:UHplYlw-snOdvUu8pe-29brYF4_Q0y4LLhJRm7knVLm_WetV1wuqXheXPbPT5IGYw
-    obs-fA9ACeMOr_K0A>
-X-ME-Received: <xmr:UHplYl2NG6NX_D6OrxVWD-hIROY7UBLXu5bTDxAre9MVDX73AktEG3bNj1ceCvQt6ELCruDZ6PY56v9SeyN796JNDD3oqZtxvnix2ubJ25_7y330X_DXMmbF5zo97dBuC_9qzw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrtdelgddutdefucetufdoteggodetrfdotf
+        1650817620; x=1650904020; bh=jSAQioVCfjpv/SLyFbyb4J2+q2O/sEhXHaA
+        /OKfch5E=; b=t0JVulGjxI4PsCXNuXNVbyincET5yoEBeY/yYSnzub+xXUAq65R
+        hbVuiYd/SBTWe8sd0IPP/3ayZdWyvFNFDu8zP3T0RTVrWsP+MTR64qY420tNhMA3
+        Ek3XOtS4apzSWqbG6vYFJ+oe4/8znt4tpOhZUb6FIBSm7zE+mAWvd+EZdh1Zx8+j
+        W7zukWCtyq36fL4sxVoiwtZE/SvY0krtkctcvn/vtY2zSl0HsOjBXKp+Vn3uUtGp
+        J7UtxM7OP5C0JTqblS9UxVhAFFZqYUs5NNbNxTglEwj2tgm/ZrgDCDOwKEwq5qhm
+        my6RF94vjKLfpCNG7lJx8WfjGmnvLZCT+jw==
+X-ME-Sender: <xms:U3plYjB7FB0exoC0CwYNxAE5m8h3h44KS4xEETiWTP25PQRWl7IYdA>
+    <xme:U3plYpivm0CR2oHO8iT3Y1j_Wzy2IY1ILk101Cg1lyeJE62NCliBBwjRObEqGpREw
+    GIo336d6cr2m8ZGyQ>
+X-ME-Received: <xmr:U3plYumrjAm0NRi98tmGAFY2cmC5nNHG6ON9Eoq2ofEhOtETgr0YtIZnpX-NpIkaU29EXAr646SKnnsYdsJ9zoj9KXJowBNZJA8Omb8c1xpb5xpyuy3MsRbLba_JlIhmaHQOUQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrtdelgddutddvucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
     cujfgurhephffvvefufffkofgjfhgggfestdekredtredttdenucfhrhhomhepufgrmhhu
     vghlucfjohhllhgrnhguuceoshgrmhhuvghlsehshhholhhlrghnugdrohhrgheqnecugg
     ftrfgrthhtvghrnhepudekteeuudehtdelteevgfduvddvjefhfedulefgudevgeeghefg
-    udefiedtveetnecuvehluhhsthgvrhfuihiivgepudenucfrrghrrghmpehmrghilhhfrh
+    udefiedtveetnecuvehluhhsthgvrhfuihiivgepgeenucfrrghrrghmpehmrghilhhfrh
     homhepshgrmhhuvghlsehshhholhhlrghnugdrohhrgh
-X-ME-Proxy: <xmx:UHplYsAqXHCdRsaSif6NSSjIUu__IdNk8be07hHFSG5tktprVJNFHQ>
-    <xmx:UHplYhh46sppP6CbH8TiYs5SlpwLkW_H68Wzv94rajIcZbbYvYdNkg>
-    <xmx:UHplYopOwRSqkNOcY2fR-Wr8Ia2RgDlOMtYHoy8LCcTzfdqwYxFr-g>
-    <xmx:UHplYsoX0FyUamTvpsUCnD4yZ6oETwvOu6Ah_gNTB0MuLCfNsNxvfA>
+X-ME-Proxy: <xmx:VHplYlz0B0Hz-b8oEcKPGZyhOuVbZ2MC7Hl_K0tnb7UuS5DLhdRTaA>
+    <xmx:VHplYoR3AR_vn3CkaPDlzCF0dkc0iiiQyVBmymP4PHIhMfnZf8ZJww>
+    <xmx:VHplYoYXl6sb3ozlDQqOyOQt-feduj_REUdPDKEgXYJiHV-5qA55ZQ>
+    <xmx:VHplYsYX2uZZQNc-VKixgQI0wECDG9s-rk13dVftoBrcDd2-CyeRwA>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 24 Apr 2022 12:26:55 -0400 (EDT)
+ 24 Apr 2022 12:26:59 -0400 (EDT)
 From:   Samuel Holland <samuel@sholland.org>
 To:     Chen-Yu Tsai <wens@csie.org>,
         Jernej Skrabec <jernej.skrabec@gmail.com>,
@@ -73,9 +73,9 @@ Cc:     Samuel Holland <samuel@sholland.org>,
         dri-devel@lists.freedesktop.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-sunxi@lists.linux.dev
-Subject: [PATCH v3 11/14] drm/sun4i: Add support for D1 mixers
-Date:   Sun, 24 Apr 2022 11:26:29 -0500
-Message-Id: <20220424162633.12369-12-samuel@sholland.org>
+Subject: [PATCH v3 13/14] drm/sun4i: Add support for D1 TCONs
+Date:   Sun, 24 Apr 2022 11:26:31 -0500
+Message-Id: <20220424162633.12369-14-samuel@sholland.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220424162633.12369-1-samuel@sholland.org>
 References: <20220424162633.12369-1-samuel@sholland.org>
@@ -85,63 +85,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-D1 has a display engine with the usual pair of mixers, albeit with
-relatively few layers. In fact, D1 appears to be the first SoC to have
-a mixer without any UI layers. Add support for these new variants.
+D1 has a TCON TOP, so its quirks are similar to those for the R40 TCONs.
+While there are some register changes, the part of the TCON TV supported
+by the driver matches the R40 quirks, so that quirks structure can be
+reused. D1 has the first supported TCON LCD with a TCON TOP, so the TCON
+LCD needs a new quirks structure.
 
-Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+D1's TCON LCD hardware supports LVDS; in fact it provides dual-link LVDS
+from a single TCON. However, it comes with a brand new LVDS PHY. Since
+this PHY has not been tested, leave out LVDS driver support for now.
+
 Signed-off-by: Samuel Holland <samuel@sholland.org>
 ---
 
 (no changes since v1)
 
- drivers/gpu/drm/sun4i/sun8i_mixer.c | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+ drivers/gpu/drm/sun4i/sun4i_tcon.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.c b/drivers/gpu/drm/sun4i/sun8i_mixer.c
-index 4ce593c99807..875a1156c04e 100644
---- a/drivers/gpu/drm/sun4i/sun8i_mixer.c
-+++ b/drivers/gpu/drm/sun4i/sun8i_mixer.c
-@@ -615,6 +615,24 @@ static const struct sun8i_mixer_cfg sun8i_v3s_mixer_cfg = {
- 	.mod_rate = 150000000,
+diff --git a/drivers/gpu/drm/sun4i/sun4i_tcon.c b/drivers/gpu/drm/sun4i/sun4i_tcon.c
+index 88db2d2a9336..2ee158aaeb9e 100644
+--- a/drivers/gpu/drm/sun4i/sun4i_tcon.c
++++ b/drivers/gpu/drm/sun4i/sun4i_tcon.c
+@@ -1542,6 +1542,12 @@ static const struct sun4i_tcon_quirks sun9i_a80_tcon_tv_quirks = {
+ 	.needs_edp_reset = true,
  };
  
-+static const struct sun8i_mixer_cfg sun20i_d1_mixer0_cfg = {
-+	.ccsc		= CCSC_D1_MIXER0_LAYOUT,
-+	.mod_rate	= 297000000,
-+	.scaler_mask	= 0x3,
-+	.scanline_yuv	= 2048,
-+	.ui_num		= 1,
-+	.vi_num		= 1,
++static const struct sun4i_tcon_quirks sun20i_d1_lcd_quirks = {
++	.has_channel_0		= true,
++	.dclk_min_div		= 1,
++	.set_mux		= sun8i_r40_tcon_tv_set_mux,
 +};
 +
-+static const struct sun8i_mixer_cfg sun20i_d1_mixer1_cfg = {
-+	.ccsc		= CCSC_MIXER1_LAYOUT,
-+	.mod_rate	= 297000000,
-+	.scaler_mask	= 0x1,
-+	.scanline_yuv	= 1024,
-+	.ui_num		= 0,
-+	.vi_num		= 1,
-+};
-+
- static const struct sun8i_mixer_cfg sun50i_a64_mixer0_cfg = {
- 	.ccsc		= CCSC_MIXER0_LAYOUT,
- 	.mod_rate	= 297000000,
-@@ -668,6 +686,14 @@ static const struct of_device_id sun8i_mixer_of_table[] = {
- 		.compatible = "allwinner,sun8i-v3s-de2-mixer",
- 		.data = &sun8i_v3s_mixer_cfg,
- 	},
-+	{
-+		.compatible = "allwinner,sun20i-d1-de2-mixer-0",
-+		.data = &sun20i_d1_mixer0_cfg,
-+	},
-+	{
-+		.compatible = "allwinner,sun20i-d1-de2-mixer-1",
-+		.data = &sun20i_d1_mixer1_cfg,
-+	},
- 	{
- 		.compatible = "allwinner,sun50i-a64-de2-mixer-0",
- 		.data = &sun50i_a64_mixer0_cfg,
+ /* sun4i_drv uses this list to check if a device node is a TCON */
+ const struct of_device_id sun4i_tcon_of_table[] = {
+ 	{ .compatible = "allwinner,sun4i-a10-tcon", .data = &sun4i_a10_quirks },
+@@ -1559,6 +1565,8 @@ const struct of_device_id sun4i_tcon_of_table[] = {
+ 	{ .compatible = "allwinner,sun8i-v3s-tcon", .data = &sun8i_v3s_quirks },
+ 	{ .compatible = "allwinner,sun9i-a80-tcon-lcd", .data = &sun9i_a80_tcon_lcd_quirks },
+ 	{ .compatible = "allwinner,sun9i-a80-tcon-tv", .data = &sun9i_a80_tcon_tv_quirks },
++	{ .compatible = "allwinner,sun20i-d1-tcon-lcd", .data = &sun20i_d1_lcd_quirks },
++	{ .compatible = "allwinner,sun20i-d1-tcon-tv", .data = &sun8i_r40_tv_quirks },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, sun4i_tcon_of_table);
 -- 
 2.35.1
 
