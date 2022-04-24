@@ -2,125 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E620C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 19:06:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFC22C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 19:10:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238249AbiDXTJ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 15:09:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46926 "EHLO
+        id S238073AbiDXTNp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 15:13:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238049AbiDXTIS (ORCPT
+        with ESMTP id S237850AbiDXTNl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 15:08:18 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97A4114085
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 12:05:08 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: dmitry.osipenko)
-        with ESMTPSA id 423BF1F44DB3
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1650827107;
-        bh=v+jC0YBB4Q1BHtuN+QSR1N9z8+FgGIDkfR2SgOwOH1c=;
+        Sun, 24 Apr 2022 15:13:41 -0400
+Received: from conuserg-10.nifty.com (conuserg-10.nifty.com [210.131.2.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 184272AC4;
+        Sun, 24 Apr 2022 12:10:11 -0700 (PDT)
+Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
+        by conuserg-10.nifty.com with ESMTP id 23OJ8o6C019069;
+        Mon, 25 Apr 2022 04:09:02 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-10.nifty.com 23OJ8o6C019069
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1650827342;
+        bh=V46C7hNoSC3dq/1A/6IyIkhULaKBN7SdX3Bqg3MVSi4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dQZUF6UHZhc4aQV6I+8YCzzf0nwtfM6G8rjdEz0XemNXO4l75m8rPbvP1/IEK6R7u
-         cizJD0xfpYI7U4Ifc+ExN+4gRqDGF7qUio413Ar1LLCsMfl13thRZs5Ml9FSqfAt9p
-         Mtu13Nlart7C7CJj+ZNLnBSc5L6i79QRSAH9RZCtgfxRQ0N7nURFSRkW2iL81gMGqg
-         x00/HmwsoMwKVcoHg93sBPHx55uRCpNhVsssGAorv6/CexZbF1/olfxB1DZmERhdOl
-         +EQuMF0k9ACRM6Afw5eyMoFVkTyT38owkQwoXYwVQfMSudBjb1TiRovoPmJqnNf+AH
-         ZzYkUTyZMl6BQ==
-From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
-To:     David Airlie <airlied@linux.ie>, Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        Daniel Almeida <daniel.almeida@collabora.com>,
-        Gert Wollny <gert.wollny@collabora.com>,
-        Gustavo Padovan <gustavo.padovan@collabora.com>,
-        Daniel Stone <daniel@fooishbar.org>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Rob Herring <robh@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
-        Rob Clark <robdclark@gmail.com>,
-        Emil Velikov <emil.l.velikov@gmail.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Qiang Yu <yuq825@gmail.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Subject: [PATCH v5 16/17] drm/shmem-helper: Make drm_gem_shmem_is_purgeable() private
-Date:   Sun, 24 Apr 2022 22:04:23 +0300
-Message-Id: <20220424190424.540501-17-dmitry.osipenko@collabora.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220424190424.540501-1-dmitry.osipenko@collabora.com>
-References: <20220424190424.540501-1-dmitry.osipenko@collabora.com>
+        b=YtUsxM1YDdn18ie0G+pVK/aaU7BNzQ0btX2Xa80A/gQbXhlJmJZwOoTjtsNiOwt2R
+         IuSKDh401fi8qHBEXvsljZMwo8tTTj8AfZ0u0BOJkBbAyV+cxHI2APrUqJJGwfSgbZ
+         Hh9wBQH7+QlP88pqFD+ItBDlfX+MG5JiKJDZDlalGM0jfzZ8vRRGLEj18J7WXhHUDB
+         V4QOEL2HgSe1JqsJ9MJDXKQJrKRz8UMW4tgfxfZcTt6mfEQYVR8t9y/lv3c1/4EAb8
+         RXKWGXly2yOhlXIckzIMl/W88BEiv39rclskRe+WGKtyjAE/nXyS4yWDKnMBuz7aVG
+         Z6xYkad79CpIA==
+X-Nifty-SrcIP: [133.32.177.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Subject: [PATCH 18/27] modpost: make sym_add_exported() a void function
+Date:   Mon, 25 Apr 2022 04:08:02 +0900
+Message-Id: <20220424190811.1678416-19-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220424190811.1678416-1-masahiroy@kernel.org>
+References: <20220424190811.1678416-1-masahiroy@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Panfrost driver was the only user of the drm_gem_shmem_is_purgeable()
-helper. Panfrost driver was converted to use new generic memory shrinker
-and the helper doesn't have external users anymore, hence make it private
-to the drm_gem_shmem_helper.c to keep the code clean.
+Currently, sym_add_exported() returns the pointer to the added symbol
+just for doing:
 
-Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+    s->is_static = false;
+
+in the read_dump() function.
+
+I noticed it was unneeded because sym_add_exported() can know the proper
+default for the 'is_static' member by checking mod->from_dump.
+
+This makes the code slightly simpler.
+
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 ---
- drivers/gpu/drm/drm_gem_shmem_helper.c | 9 ++++++++-
- include/drm/drm_gem_shmem_helper.h     | 7 -------
- 2 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/gpu/drm/drm_gem_shmem_helper.c b/drivers/gpu/drm/drm_gem_shmem_helper.c
-index 7ec5f8002f68..045921ad4795 100644
---- a/drivers/gpu/drm/drm_gem_shmem_helper.c
-+++ b/drivers/gpu/drm/drm_gem_shmem_helper.c
-@@ -169,6 +169,13 @@ static bool drm_gem_shmem_is_evictable(struct drm_gem_shmem_object *shmem)
- 		!shmem->base.import_attach && shmem->sgt && !shmem->evicted;
+ scripts/mod/modpost.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
+
+diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+index 4f0b2b23516a..fd710aa59bda 100644
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -243,7 +243,7 @@ static struct symbol *alloc_symbol(const char *name, struct symbol *next)
+ 	memset(s, 0, sizeof(*s));
+ 	strcpy(s->name, name);
+ 	s->next = next;
+-	s->is_static = true;
++
+ 	return s;
  }
  
-+static bool drm_gem_shmem_is_purgeable(struct drm_gem_shmem_object *shmem)
-+{
-+	return (shmem->madv > 0) && !shmem->purge_disable_count &&
-+		!shmem->vmap_use_count && !shmem->base.dma_buf &&
-+		!shmem->base.import_attach && shmem->sgt;
-+}
-+
- static void
- drm_gem_shmem_update_pages_state_locked(struct drm_gem_shmem_object *shmem)
+@@ -401,8 +401,8 @@ static void sym_update_namespace(const char *symname, const char *namespace)
+ 	s->namespace = namespace[0] ? NOFAIL(strdup(namespace)) : NULL;
+ }
+ 
+-static struct symbol *sym_add_exported(const char *name, struct module *mod,
+-				       enum export export)
++static void sym_add_exported(const char *name, struct module *mod,
++			     enum export export)
  {
-@@ -182,7 +189,7 @@ drm_gem_shmem_update_pages_state_locked(struct drm_gem_shmem_object *shmem)
+ 	struct symbol *s = find_symbol(name);
  
- 	mutex_lock(&gem_shrinker->lock);
+@@ -414,9 +414,9 @@ static struct symbol *sym_add_exported(const char *name, struct module *mod,
  
--	if (drm_gem_shmem_is_purgeable(shmem) && !shmem->purge_disable_count) {
-+	if (drm_gem_shmem_is_purgeable(shmem)) {
- 		drm_gem_shmem_add_pages_to_shrinker(shmem);
- 		list_move_tail(&shmem->madv_list, &gem_shrinker->lru_purgeable);
- 	} else if (drm_gem_shmem_is_evictable(shmem)) {
-diff --git a/include/drm/drm_gem_shmem_helper.h b/include/drm/drm_gem_shmem_helper.h
-index 5b351933c293..972687bf9717 100644
---- a/include/drm/drm_gem_shmem_helper.h
-+++ b/include/drm/drm_gem_shmem_helper.h
-@@ -194,13 +194,6 @@ int drm_gem_shmem_madvise(struct drm_gem_shmem_object *shmem, int madv);
- int drm_gem_shmem_set_purgeable(struct drm_gem_shmem_object *shmem);
- int drm_gem_shmem_set_purgeable_and_evictable(struct drm_gem_shmem_object *shmem);
+ 	s = new_symbol(name, mod, export);
+ 	s->module = mod;
++	s->is_static = !mod->from_dump;
+ 	s->export    = export;
+ 	list_add_tail(&s->list, &mod->exported_symbols);
+-	return s;
+ }
  
--static inline bool drm_gem_shmem_is_purgeable(struct drm_gem_shmem_object *shmem)
--{
--	return (shmem->madv > 0) &&
--		!shmem->vmap_use_count && shmem->sgt &&
--		!shmem->base.dma_buf && !shmem->base.import_attach;
--}
--
- int drm_gem_shmem_swap_in_locked(struct drm_gem_shmem_object *shmem);
- void drm_gem_shmem_purge_locked(struct drm_gem_shmem_object *shmem);
+ static void sym_set_crc(const char *name, unsigned int crc)
+@@ -2419,7 +2419,6 @@ static void read_dump(const char *fname)
+ 		char *symname, *namespace, *modname, *d, *export;
+ 		unsigned int crc;
+ 		struct module *mod;
+-		struct symbol *s;
  
+ 		if (!(symname = strchr(line, '\t')))
+ 			goto fail;
+@@ -2442,8 +2441,7 @@ static void read_dump(const char *fname)
+ 			mod = new_module(modname);
+ 			mod->from_dump = true;
+ 		}
+-		s = sym_add_exported(symname, mod, export_no(export));
+-		s->is_static = false;
++		sym_add_exported(symname, mod, export_no(export));
+ 		sym_set_crc(symname, crc);
+ 		sym_update_namespace(symname, namespace);
+ 	}
 -- 
-2.35.1
+2.32.0
 
