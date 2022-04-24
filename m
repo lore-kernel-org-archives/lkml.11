@@ -2,99 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13777C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 15:09:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09ECCC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 15:34:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233893AbiDXPMX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 11:12:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51206 "EHLO
+        id S231540AbiDXPhC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 11:37:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231605AbiDXPMO (ORCPT
+        with ESMTP id S240452AbiDXPbY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 11:12:14 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F21BE66F9E;
-        Sun, 24 Apr 2022 08:09:12 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id j8so21587553pll.11;
-        Sun, 24 Apr 2022 08:09:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Zx+YaIWJey4qzWLJKHpX/8eOZNZqHoxAIr2LpwgG1oI=;
-        b=HhLSNzrntAkIJsbkeLJX1axnBynXa/65EKVtiiPG3OTpRFtGTY6JuKYM0zZ3vvfCBU
-         RDlSqOhkO//MsibbAJeiWs3yE7x87TYQ0etBqLO9gD+yuk/bm6Pr4ygJidzPk96veBZf
-         O7daXyq6RFvuIjPSsoqcXYrTqEJ2EPX+VvgCYl82uK2X+ZEiNBkGHxx5GWPfQyEpQA/3
-         fug9YV3FWKx2+I8p4sOGf4wtGu8bqTgUjFuxiKI/ptKAl347VEcig9SdJ+lS8EjGX9ap
-         R9ru4MrPUGLJIGMa1aZDahFU+dIHSf6x3k00yUd/ZfQUk/MUkyjO7ul59tt5itjSglHR
-         P1KA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Zx+YaIWJey4qzWLJKHpX/8eOZNZqHoxAIr2LpwgG1oI=;
-        b=Z+42264eGnyXaFoJO+1bijug32qAqWydAJfKKvsqrg+2ibfUy/Jlr+va0qlJLrzLYl
-         eArsR6BsWuBk0dIMaaYNiTBsV0rVD6IPWVlQreFq1k6Am3BhZF8qG/+70KP33vk/Z6Kw
-         hmIsC7Ar0hdZqrE4Tf+m0iQ/sB4R88x7qKTji0xvoOr4ejhGxDIYOvqrn+Ml2Lh2ncAc
-         O8/BvIPJUpBFwVz3NkH6L8+L0rOnLxpueNtyws/eZW5LJ3e9b8W3j2xOC+dGXry7nQMs
-         tTZmOEgTKt3ZK+JGnVObOdyk61erneeE9ZzEgTc0VPtb3bM2uIxFE2OFjiY7fUmrGf8a
-         QZqg==
-X-Gm-Message-State: AOAM533wNzQazEBheZQU9MD3JKf/UH8yhRd8dk5GqrZ2insD0IEPTwXE
-        STANntHpSju92dmcipFeeL23vucDepM=
-X-Google-Smtp-Source: ABdhPJzFGGBCFpxapSXUNHoP4G5tCoGTm2UyFllGwbA9dCszVILsFulse0PeoGl54W7MuZ5CAuRDCA==
-X-Received: by 2002:a17:902:a585:b0:14d:58ef:65 with SMTP id az5-20020a170902a58500b0014d58ef0065mr13834388plb.139.1650812952455;
-        Sun, 24 Apr 2022 08:09:12 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id h13-20020a056a00230d00b004f427ffd485sm9382792pfh.143.2022.04.24.08.09.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Apr 2022 08:09:11 -0700 (PDT)
-Date:   Sun, 24 Apr 2022 08:09:09 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH net-next 5/5] net: lan966x: Add support for PTP_PF_EXTTS
-Message-ID: <20220424150909.GA29569@hoboy.vegasvil.org>
-References: <20220424145824.2931449-1-horatiu.vultur@microchip.com>
- <20220424145824.2931449-6-horatiu.vultur@microchip.com>
+        Sun, 24 Apr 2022 11:31:24 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F4F6170E3F;
+        Sun, 24 Apr 2022 08:28:23 -0700 (PDT)
+Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KmX615WTxzGp53;
+        Sun, 24 Apr 2022 23:25:45 +0800 (CST)
+Received: from huawei.com (10.67.174.197) by kwepemi500013.china.huawei.com
+ (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sun, 24 Apr
+ 2022 23:28:19 +0800
+From:   Xu Kuohai <xukuohai@huawei.com>
+To:     <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>
+CC:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        <hpa@zytor.com>, Shuah Khan <shuah@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Daniel Kiss <daniel.kiss@arm.com>,
+        Steven Price <steven.price@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Mark Brown <broonie@kernel.org>,
+        Delyan Kratunov <delyank@fb.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Subject: [PATCH bpf-next v3 4/7] bpf, arm64: Impelment bpf_arch_text_poke() for arm64
+Date:   Sun, 24 Apr 2022 11:40:25 -0400
+Message-ID: <20220424154028.1698685-5-xukuohai@huawei.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220424154028.1698685-1-xukuohai@huawei.com>
+References: <20220424154028.1698685-1-xukuohai@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220424145824.2931449-6-horatiu.vultur@microchip.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.197]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemi500013.china.huawei.com (7.221.188.120)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 24, 2022 at 04:58:24PM +0200, Horatiu Vultur wrote:
+Impelment bpf_arch_text_poke() for arm64, so bpf trampoline code can use
+it to replace nop with jump, or replace jump with nop.
 
-> @@ -321,6 +321,63 @@ irqreturn_t lan966x_ptp_irq_handler(int irq, void *args)
->  	return IRQ_HANDLED;
->  }
->  
-> +irqreturn_t lan966x_ptp_ext_irq_handler(int irq, void *args)
-> +{
-> +	struct lan966x *lan966x = args;
-> +	struct lan966x_phc *phc;
-> +	unsigned long flags;
-> +	u64 time = 0;
-> +	time64_t s;
-> +	int pin, i;
-> +	s64 ns;
-> +
-> +	if (!(lan_rd(lan966x, PTP_PIN_INTR)))
-> +		return IRQ_NONE;
-> +
-> +	/* Go through all domains and see which pin generated the interrupt */
-> +	for (i = 0; i < LAN966X_PHC_COUNT; ++i) {
-> +		struct ptp_clock_event ptp_event = {0};
-> +
-> +		phc = &lan966x->phc[i];
-> +		pin = ptp_find_pin(phc->clock, PTP_PF_EXTTS, 0);
+Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
+Acked-by: Song Liu <songliubraving@fb.com>
+---
+ arch/arm64/net/bpf_jit_comp.c | 63 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 63 insertions(+)
 
-Not safe to call ptp_find_pin() from ISR.  See comment in include/linux/ptp_clock_kernel.h
+diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
+index 8ab4035dea27..3f9bdfec54c4 100644
+--- a/arch/arm64/net/bpf_jit_comp.c
++++ b/arch/arm64/net/bpf_jit_comp.c
+@@ -9,6 +9,7 @@
+ 
+ #include <linux/bitfield.h>
+ #include <linux/bpf.h>
++#include <linux/memory.h>
+ #include <linux/filter.h>
+ #include <linux/printk.h>
+ #include <linux/slab.h>
+@@ -18,6 +19,7 @@
+ #include <asm/cacheflush.h>
+ #include <asm/debug-monitors.h>
+ #include <asm/insn.h>
++#include <asm/patching.h>
+ #include <asm/set_memory.h>
+ 
+ #include "bpf_jit.h"
+@@ -1529,3 +1531,64 @@ void bpf_jit_free_exec(void *addr)
+ {
+ 	return vfree(addr);
+ }
++
++static int gen_branch_or_nop(enum aarch64_insn_branch_type type, void *ip,
++			     void *addr, u32 *insn)
++{
++	if (!addr)
++		*insn = aarch64_insn_gen_nop();
++	else
++		*insn = aarch64_insn_gen_branch_imm((unsigned long)ip,
++						    (unsigned long)addr,
++						    type);
++
++	return *insn != AARCH64_BREAK_FAULT ? 0 : -EFAULT;
++}
++
++int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type poke_type,
++		       void *old_addr, void *new_addr)
++{
++	int ret;
++	u32 old_insn;
++	u32 new_insn;
++	u32 replaced;
++	enum aarch64_insn_branch_type branch_type;
++
++	if (!is_bpf_text_address((long)ip))
++		/* Only poking bpf text is supported. Since kernel function
++		 * entry is set up by ftrace, we reply on ftrace to poke kernel
++		 * functions. For kernel funcitons, bpf_arch_text_poke() is only
++		 * called after a failed poke with ftrace. In this case, there
++		 * is probably something wrong with fentry, so there is nothing
++		 * we can do here. See register_fentry, unregister_fentry and
++		 * modify_fentry for details.
++		 */
++		return -EINVAL;
++
++	if (poke_type == BPF_MOD_CALL)
++		branch_type = AARCH64_INSN_BRANCH_LINK;
++	else
++		branch_type = AARCH64_INSN_BRANCH_NOLINK;
++
++	if (gen_branch_or_nop(branch_type, ip, old_addr, &old_insn) < 0)
++		return -EFAULT;
++
++	if (gen_branch_or_nop(branch_type, ip, new_addr, &new_insn) < 0)
++		return -EFAULT;
++
++	mutex_lock(&text_mutex);
++	if (aarch64_insn_read(ip, &replaced)) {
++		ret = -EFAULT;
++		goto out;
++	}
++
++	if (replaced != old_insn) {
++		ret = -EFAULT;
++		goto out;
++	}
++
++	ret = aarch64_insn_patch_text_nosync((void *)ip, new_insn);
++out:
++	mutex_unlock(&text_mutex);
++	return ret;
++}
+-- 
+2.30.2
 
-Thanks,
-Richard
