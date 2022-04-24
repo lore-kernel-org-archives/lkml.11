@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CED24C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 19:06:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1EA1C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 19:06:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233542AbiDXTJL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 15:09:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46904 "EHLO
+        id S235922AbiDXTJT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 15:09:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237987AbiDXTIS (ORCPT
+        with ESMTP id S237847AbiDXTIS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 24 Apr 2022 15:08:18 -0400
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EBB613A4F1
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 12:05:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 571E122BCB
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 12:05:10 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: dmitry.osipenko)
-        with ESMTPSA id 38A481F44DB2
+        with ESMTPSA id 4F6101F4065F
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1650827105;
-        bh=CCVdkmki7kdyUl6LNHWZFBWC7kDCorH5xyYEwWyTQkM=;
+        s=mail; t=1650827109;
+        bh=AlpWMMFY2kuHyruY9FDCsN1f6mNBZxXcpmSdzVCs994=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PeIqGijAucrlGWSeF+jw7ZQRqaZe6pTgb1MFz2Wsg37VIHyV9RLMzLqx4NCkhhp5/
-         Qlnd03Rv6PefyqQTINhkU/ZhsuZP1H+YubZLph2S3ty/exYV7g+uynUreKAtahIl/u
-         gptKYg9Ry5Ijn73dbA21KlGvxXv7bObnNk6hYh9fJaPLyZdR4dFWJauPb1GLECSJ00
-         DgT4okf+CdriRoVMk5OczMgAfuhn9W/IRcZydoj4XYeTCMGZ2m7FnGDxUM7Dm7LxK6
-         n9jXfvly6TlFoATqoG9ne5C7IY2l/uzbX9Ho8VgRlNzEfUICpt9pXCFxVu2ZMignJs
-         ekuLri1lVuGsQ==
+        b=Ry+ZPMXQVP4xnByVPenI0tsSh+KMi7RYEpqpfiLul1cWE2liWNSVpPF7mdvTKsDf8
+         xMV/7sATfjAaFp1aKNpKKZVZHGvay96HMbwMhUZatIDB0+Y34qyQbm+S3NaMyK5Vo6
+         wrUY9C8NjiDr9BUaY0c2Wf2TEv5hgSRBEB9XXA62XAwPCuoRrs7l47RGOkjA8ma+f6
+         dUzSbg2NzG06GPMAywlfYjJu46eJBwFBF3HmrYwUj7wwY/SKwFtl619lyjd8ZUlLqG
+         WAGXyzpQs1vlNCDn5coseHNkg4bI4C/IneTx2kfFrSDJYWgSBtw7izIZVoyE3bfZlw
+         BeS+lMaC6L9zA==
 From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
 To:     David Airlie <airlied@linux.ie>, Gerd Hoffmann <kraxel@redhat.com>,
         Gurchetan Singh <gurchetansingh@chromium.org>,
@@ -53,9 +53,9 @@ Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
         virtualization@lists.linux-foundation.org,
         Dmitry Osipenko <digetx@gmail.com>,
         Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Subject: [PATCH v5 15/17] drm/shmem-helper: Make drm_gem_shmem_get_pages() private
-Date:   Sun, 24 Apr 2022 22:04:22 +0300
-Message-Id: <20220424190424.540501-16-dmitry.osipenko@collabora.com>
+Subject: [PATCH v5 17/17] drm/shmem-helper: Remove drm_gem_shmem_purge_locked()
+Date:   Sun, 24 Apr 2022 22:04:24 +0300
+Message-Id: <20220424190424.540501-18-dmitry.osipenko@collabora.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220424190424.540501-1-dmitry.osipenko@collabora.com>
 References: <20220424190424.540501-1-dmitry.osipenko@collabora.com>
@@ -65,49 +65,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-VirtIO-GPU driver was the only user of drm_gem_shmem_get_pages()
-and it now uses drm_gem_shmem_get_pages_sgt(). Make the get_pages()
-private to drm_gem_shmem_helper.
+Panfrost driver was the only user of the drm_gem_shmem_purge_locked()
+helper. Panfrost driver was converted to use new generic memory shrinker
+and the helper doesn't have users anymore, remove it.
 
 Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
 ---
- drivers/gpu/drm/drm_gem_shmem_helper.c | 3 +--
- include/drm/drm_gem_shmem_helper.h     | 1 -
- 2 files changed, 1 insertion(+), 3 deletions(-)
+ drivers/gpu/drm/drm_gem_shmem_helper.c | 30 --------------------------
+ include/drm/drm_gem_shmem_helper.h     |  1 -
+ 2 files changed, 31 deletions(-)
 
 diff --git a/drivers/gpu/drm/drm_gem_shmem_helper.c b/drivers/gpu/drm/drm_gem_shmem_helper.c
-index 25e9bc2803ee..7ec5f8002f68 100644
+index 045921ad4795..ef7691c84fa8 100644
 --- a/drivers/gpu/drm/drm_gem_shmem_helper.c
 +++ b/drivers/gpu/drm/drm_gem_shmem_helper.c
-@@ -490,7 +490,7 @@ static int drm_gem_shmem_get_pages_locked(struct drm_gem_shmem_object *shmem)
-  * Returns:
-  * 0 on success or a negative error code on failure.
-  */
--int drm_gem_shmem_get_pages(struct drm_gem_shmem_object *shmem)
-+static int drm_gem_shmem_get_pages(struct drm_gem_shmem_object *shmem)
- {
- 	int ret;
- 
-@@ -507,7 +507,6 @@ int drm_gem_shmem_get_pages(struct drm_gem_shmem_object *shmem)
- 
- 	return ret;
+@@ -899,36 +899,6 @@ static void drm_gem_shmem_unpin_pages_locked(struct drm_gem_shmem_object *shmem)
+ 	shmem->sgt = NULL;
  }
--EXPORT_SYMBOL(drm_gem_shmem_get_pages);
  
- static void drm_gem_shmem_get_pages_no_fail(struct drm_gem_shmem_object *shmem)
- {
+-void drm_gem_shmem_purge_locked(struct drm_gem_shmem_object *shmem)
+-{
+-	struct drm_gem_object *obj = &shmem->base;
+-	struct drm_device *dev = obj->dev;
+-
+-	WARN_ON(!drm_gem_shmem_is_purgeable(shmem));
+-
+-	dma_unmap_sgtable(dev->dev, shmem->sgt, DMA_BIDIRECTIONAL, 0);
+-	sg_free_table(shmem->sgt);
+-	kfree(shmem->sgt);
+-	shmem->sgt = NULL;
+-
+-	drm_gem_shmem_put_pages_locked(shmem);
+-
+-	shmem->madv = -1;
+-
+-	drm_vma_node_unmap(&obj->vma_node, dev->anon_inode->i_mapping);
+-	drm_gem_free_mmap_offset(obj);
+-
+-	/* Our goal here is to return as much of the memory as
+-	 * is possible back to the system as we are called from OOM.
+-	 * To do this we must instruct the shmfs to drop all of its
+-	 * backing pages, *now*.
+-	 */
+-	shmem_truncate_range(file_inode(obj->filp), 0, (loff_t)-1);
+-
+-	invalidate_mapping_pages(file_inode(obj->filp)->i_mapping, 0, (loff_t)-1);
+-}
+-EXPORT_SYMBOL(drm_gem_shmem_purge_locked);
+-
+ /**
+  * drm_gem_shmem_dumb_create - Create a dumb shmem buffer object
+  * @file: DRM file structure to create the dumb buffer for
 diff --git a/include/drm/drm_gem_shmem_helper.h b/include/drm/drm_gem_shmem_helper.h
-index 638cb16a4576..5b351933c293 100644
+index 972687bf9717..8d7053c36fa6 100644
 --- a/include/drm/drm_gem_shmem_helper.h
 +++ b/include/drm/drm_gem_shmem_helper.h
-@@ -180,7 +180,6 @@ struct drm_gem_shmem_object {
- struct drm_gem_shmem_object *drm_gem_shmem_create(struct drm_device *dev, size_t size);
- void drm_gem_shmem_free(struct drm_gem_shmem_object *shmem);
+@@ -195,7 +195,6 @@ int drm_gem_shmem_set_purgeable(struct drm_gem_shmem_object *shmem);
+ int drm_gem_shmem_set_purgeable_and_evictable(struct drm_gem_shmem_object *shmem);
  
--int drm_gem_shmem_get_pages(struct drm_gem_shmem_object *shmem);
- void drm_gem_shmem_put_pages(struct drm_gem_shmem_object *shmem);
- int drm_gem_shmem_pin(struct drm_gem_shmem_object *shmem);
- void drm_gem_shmem_unpin(struct drm_gem_shmem_object *shmem);
+ int drm_gem_shmem_swap_in_locked(struct drm_gem_shmem_object *shmem);
+-void drm_gem_shmem_purge_locked(struct drm_gem_shmem_object *shmem);
+ 
+ struct sg_table *drm_gem_shmem_get_sg_table(struct drm_gem_shmem_object *shmem);
+ struct sg_table *drm_gem_shmem_get_pages_sgt(struct drm_gem_shmem_object *shmem);
 -- 
 2.35.1
 
