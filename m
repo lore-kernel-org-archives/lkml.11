@@ -2,371 +2,272 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4073C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 16:27:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1C9EC43219
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 16:29:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235221AbiDXQao (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 12:30:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60656 "EHLO
+        id S230399AbiDXQcr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 12:32:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235027AbiDXQaR (ORCPT
+        with ESMTP id S235281AbiDXQce (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 12:30:17 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DB5C8597F;
-        Sun, 24 Apr 2022 09:27:14 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id bg9so11438714pgb.9;
-        Sun, 24 Apr 2022 09:27:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=uKZTe7yQ+O8BqMJZ1XBsdEQMbjgQxMztKFfEfSP4DbA=;
-        b=ezJI2puFVbW14r0youAGJ7L4Rbt+34wxknV7H2XhIyuChx42XaummsijV3sb2EPzw1
-         TIEqbG2HIlaQFoKWseMdxMOXbsjSuvlFu8idGeWSnpwUR93pO30zgLS4ZboyZaV8x13y
-         0eUEAJZjX0Glmkx8iPztla0wn7KwhijZFbt5SwC+sxfGrZR28vSSMyaXdndpsz6fDxd8
-         VA7ZVYTV5QsNYASFHgDeFgfRBqL215Y77b8HL8hOU4cnRDpGfobWzT8CNkWk8Z7XFZPx
-         MVaBKHFJDvoxrzxeLRkpYA6Az/3/LZlC3koUonq4OjQTlerxpJNyFabIVGozlXqSpIQp
-         dcBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=uKZTe7yQ+O8BqMJZ1XBsdEQMbjgQxMztKFfEfSP4DbA=;
-        b=tELkYBZxFEYc3fUy1ujzXyBCAe+5JeIxu1GJiNkh5Oy/VpIdjvXvoaBlbYelFp3EUd
-         jf4hBDVrtx+6a9FEcnLcLcW0rT7bySXZdktGUqPhVDBu1X3eSuWtiJlp+CF/6/JUurid
-         ij9J90fq9H7J6HM+t5vyBytVdaMXpFfmjaM/YQKYw9UGSf8K/m9sJifUoj1D5PRhATcJ
-         BiUJ7Fwfs4sY2sOX9o4MuAeCt3P3cHjeUELasDUr9/IWP/7HCjc1r3UQgyS/2sRTe2PP
-         SG5ynbcx79+6qUEd5d5S+dX+X/WYb42CIiyhLVD+H04ykZPxfLsvbhLr9ZxEvtb8Amzf
-         5n6g==
-X-Gm-Message-State: AOAM533cUcUUgexFGGMaH8LteEoIb2KyxkKWVoeqCF/gxs8+no2+LsrG
-        uat3QCZCOCU2wbgxCAPX8kaRRO7bFLGp3/XwpeiE5GdQTmr3Ig==
-X-Google-Smtp-Source: ABdhPJwLNsx+d0aJZw4U4/z/k9FtHQPg0byXIPMF1uN6Dht7jX5WsY40i8IlyBdo6ij6cXUmujzbZD/+vAf8LEhzeq0=
-X-Received: by 2002:a05:6a00:1814:b0:50d:3ccc:653f with SMTP id
- y20-20020a056a00181400b0050d3ccc653fmr2020994pfa.70.1650817633197; Sun, 24
- Apr 2022 09:27:13 -0700 (PDT)
+        Sun, 24 Apr 2022 12:32:34 -0400
+Received: from mailgw.felk.cvut.cz (mailgw.felk.cvut.cz [147.32.82.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 929E79F39D;
+        Sun, 24 Apr 2022 09:29:32 -0700 (PDT)
+Received: from mailgw.felk.cvut.cz (localhost.localdomain [127.0.0.1])
+        by mailgw.felk.cvut.cz (Proxmox) with ESMTP id 17AAC30B294B;
+        Sun, 24 Apr 2022 18:29:31 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        cmp.felk.cvut.cz; h=cc:cc:content-transfer-encoding:date:from
+        :from:in-reply-to:message-id:mime-version:references:reply-to
+        :subject:subject:to:to; s=felkmail; bh=Ax0KQPwjuExnaEvtd22PQdQnU
+        r+CXdcm1/Rj4ihe0y8=; b=gDE7F9u2ikEnMGnudKDqwma7vTNegIffcl0wDMPXG
+        01YXRYqTT5IAkfzWpU+mO0UoNQ1p+uFc4dbCJLTka2VtfxgJS2eCPpik6fX+CKBF
+        rix02b+s4OZMhTtbeNJhEB1JpWrhDwWH4sjnpy3Zkd+89FX77JcHqHQQLLgzp5gh
+        nYv1P8R34I8GcWK0Qeps6DEVIS7ciXAW9JuqiMZgxoxN+9GA2YpqL6ajkjyr3hf0
+        Vqy25NXU2We+T+3RCB/alSs0QtwGGcthGsVhedMYPPISOdsVDpLUGEmZJx9L23fW
+        +zXrq+wx501WmtkK/QVzyt5Xxtl7eqqTsKJ1KbSAkJvPQ==
+Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
+        by mailgw.felk.cvut.cz (Proxmox) with ESMTPS id 4829F30ADC00;
+        Sun, 24 Apr 2022 18:29:30 +0200 (CEST)
+Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
+        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 23OGTTrY030937;
+        Sun, 24 Apr 2022 18:29:29 +0200
+Received: (from pisa@localhost)
+        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 23OGTTAY030936;
+        Sun, 24 Apr 2022 18:29:29 +0200
+From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
+To:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
+        Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Marin Jerabek <martin.jerabek01@gmail.com>,
+        Ondrej Ille <ondrej.ille@gmail.com>,
+        Jiri Novak <jnovak@fel.cvut.cz>,
+        Jaroslav Beran <jara.beran@gmail.com>,
+        Petr Porazil <porazil@pikron.com>, Pavel Machek <pavel@ucw.cz>,
+        Carsten Emde <c.emde@osadl.org>,
+        Drew Fustini <pdp7pdp7@gmail.com>,
+        Matej Vasilevski <matej.vasilevski@gmail.com>,
+        Pavel Pisa <pisa@cmp.felk.cvut.cz>
+Subject: [PATCH v1 1/4] can: ctucanfd: remove PCI module debug parameters and core debug statements
+Date:   Sun, 24 Apr 2022 18:28:08 +0200
+Message-Id: <1fd684bcf5ddb0346aad234072f54e976a5210fb.1650816929.git.pisa@cmp.felk.cvut.cz>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <cover.1650816929.git.pisa@cmp.felk.cvut.cz>
+References: <cover.1650816929.git.pisa@cmp.felk.cvut.cz>
 MIME-Version: 1.0
-From:   jin young choi <ychoijy@gmail.com>
-Date:   Mon, 25 Apr 2022 01:27:02 +0900
-Message-ID: <CAM36TBuKy=6JRbAS352nBYsLCj=J09tWmte0yarv0A7xaOJmRw@mail.gmail.com>
-Subject: [PATCH v2] scsi: ufs: wb: Add Manual Flush sysfs and cleanup toggle functions
-To:     linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        adrian.hunter@intel.com, ALIM AKHTAR <alim.akhtar@samsung.com>,
-        asutoshd@codeaurora.org, Avri Altman <Avri.Altman@wdc.com>,
-        martin.petersen@oracle.com, jejb@linux.ibm.com,
-        j-young.choi@samsung.com, beanhuo@micron.com,
-        Bart Van Assche <bvanassche@acm.org>, cang@codeaurora.org,
-        Daejun Park <daejun7.park@samsung.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is the following quirk to bypass "WB Manual Flush" in Write
-Booster.
+This and remove of inline keyword from the local static functions
+should make happy all checks in actual versions of the both checkpatch.pl
+and patchwork tools.
 
-  - UFSHCI_QUIRK_SKIP_MANUAL_WB_FLUSH_CTRL
-
-If this quirk is not set, there is no knob that can control "WB Manual Flush".
-
-There are three flags that control Write Booster Feature.
-1. WB ON/OFF
-2. WB Hibern Flush ON/OFF
-3. WB Flush ON/OFF
-
-The sysfs that controls the WB was implemented. (1)
-
-In the case of "Hibern Flush", it is always good to turn on.
-Control may not be required. (2)
-
-Finally, "Manual flush" may be determined that it can affect
-performance or power consumption.
-So the sysfs that controls this may be necessary. (3)
-
-In addition, toggle functions for controlling the above flags are cleaned.
-
-Signed-off-by: Jinyoung Choi <j-young.choi@samsung.com>
+Signed-off-by: Pavel Pisa <pisa@cmp.felk.cvut.cz>
 ---
- drivers/scsi/ufs/ufs-sysfs.c | 46 +++++++++++++++++++++-
- drivers/scsi/ufs/ufshcd.c    | 76 ++++++++++++++++++------------------
- drivers/scsi/ufs/ufshcd.h    |  7 ++++
- 3 files changed, 89 insertions(+), 40 deletions(-)
+ drivers/net/can/ctucanfd/ctucanfd_base.c | 33 +++---------------------
+ drivers/net/can/ctucanfd/ctucanfd_pci.c  | 22 +++++-----------
+ 2 files changed, 9 insertions(+), 46 deletions(-)
 
-diff --git a/drivers/scsi/ufs/ufs-sysfs.c b/drivers/scsi/ufs/ufs-sysfs.c
-index 5c405ff7b6ea..e0f6ba7ffefc 100644
---- a/drivers/scsi/ufs/ufs-sysfs.c
-+++ b/drivers/scsi/ufs/ufs-sysfs.c
-@@ -229,7 +229,7 @@ static ssize_t wb_on_store(struct device *dev,
-struct device_attribute *attr,
-  * If the platform supports UFSHCD_CAP_CLK_SCALING, turn WB
-  * on/off will be done while clock scaling up/down.
-  */
-- dev_warn(dev, "To control WB through wb_on is not allowed!\n");
-+ dev_warn(dev, "It is not allowed to control WB!\n");
-  return -EOPNOTSUPP;
-  }
-
-@@ -253,6 +253,48 @@ static ssize_t wb_on_store(struct device *dev,
-struct device_attribute *attr,
-  return res < 0 ? res : count;
+diff --git a/drivers/net/can/ctucanfd/ctucanfd_base.c b/drivers/net/can/ctucanfd/ctucanfd_base.c
+index 7a4550f60abb..a1f6d37fca11 100644
+--- a/drivers/net/can/ctucanfd/ctucanfd_base.c
++++ b/drivers/net/can/ctucanfd/ctucanfd_base.c
+@@ -133,13 +133,12 @@ static u32 ctucan_read32_be(struct ctucan_priv *priv,
+ 	return ioread32be(priv->mem_base + reg);
  }
-
-+static ssize_t wb_buf_flush_en_show(struct device *dev,
-+     struct device_attribute *attr,
-+     char *buf)
-+{
-+ struct ufs_hba *hba = dev_get_drvdata(dev);
-+
-+ return sysfs_emit(buf, "%d\n", hba->dev_info.wb_buf_flush_enabled);
-+}
-+
-+static ssize_t wb_buf_flush_en_store(struct device *dev,
-+      struct device_attribute *attr,
-+      const char *buf, size_t count)
-+{
-+ struct ufs_hba *hba = dev_get_drvdata(dev);
-+ unsigned int wb_buf_flush_en;
-+ ssize_t res;
-+
-+ if (!ufshcd_is_wb_buf_flush_allowed(hba)) {
-+ dev_warn(dev, "It is not allowed to control WB buf flush!\n");
-+ return -EOPNOTSUPP;
-+ }
-+
-+ if (kstrtouint(buf, 0, &wb_buf_flush_en))
-+ return -EINVAL;
-+
-+ if (wb_buf_flush_en != 0 && wb_buf_flush_en != 1)
-+ return -EINVAL;
-+
-+ down(&hba->host_sem);
-+ if (!ufshcd_is_user_access_allowed(hba)) {
-+ res = -EBUSY;
-+ goto out;
-+ }
-+
-+ ufshcd_rpm_get_sync(hba);
-+ res = ufshcd_wb_toggle_buf_flush(hba, wb_buf_flush_en);
-+ ufshcd_rpm_put_sync(hba);
-+out:
-+ up(&hba->host_sem);
-+ return res < 0 ? res : count;
-+}
-+
- static DEVICE_ATTR_RW(rpm_lvl);
- static DEVICE_ATTR_RO(rpm_target_dev_state);
- static DEVICE_ATTR_RO(rpm_target_link_state);
-@@ -261,6 +303,7 @@ static DEVICE_ATTR_RO(spm_target_dev_state);
- static DEVICE_ATTR_RO(spm_target_link_state);
- static DEVICE_ATTR_RW(auto_hibern8);
- static DEVICE_ATTR_RW(wb_on);
-+static DEVICE_ATTR_RW(wb_buf_flush_en);
-
- static struct attribute *ufs_sysfs_ufshcd_attrs[] = {
-  &dev_attr_rpm_lvl.attr,
-@@ -271,6 +314,7 @@ static struct attribute *ufs_sysfs_ufshcd_attrs[] = {
-  &dev_attr_spm_target_link_state.attr,
-  &dev_attr_auto_hibern8.attr,
-  &dev_attr_wb_on.attr,
-+ &dev_attr_wb_buf_flush_en.attr,
-  NULL
- };
-
-diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
-index 3f9caafa91bf..153a625b3111 100644
---- a/drivers/scsi/ufs/ufshcd.c
-+++ b/drivers/scsi/ufs/ufshcd.c
-@@ -248,8 +248,7 @@ static int ufshcd_setup_vreg(struct ufs_hba *hba, bool on);
- static inline int ufshcd_config_vreg_hpm(struct ufs_hba *hba,
-  struct ufs_vreg *vreg);
- static int ufshcd_try_to_abort_task(struct ufs_hba *hba, int tag);
--static void ufshcd_wb_toggle_flush_during_h8(struct ufs_hba *hba, bool set);
--static inline void ufshcd_wb_toggle_flush(struct ufs_hba *hba, bool enable);
-+static void ufshcd_wb_toggle_buf_flush_during_h8(struct ufs_hba *hba,
-bool set);
- static void ufshcd_hba_vreg_set_lpm(struct ufs_hba *hba);
- static void ufshcd_hba_vreg_set_hpm(struct ufs_hba *hba);
-
-@@ -269,16 +268,17 @@ static inline void ufshcd_disable_irq(struct ufs_hba *hba)
-  }
- }
-
--static inline void ufshcd_wb_config(struct ufs_hba *hba)
-+static void ufshcd_wb_set_default_flags(struct ufs_hba *hba)
+ 
+-static inline void ctucan_write32(struct ctucan_priv *priv, enum ctu_can_fd_can_registers reg,
+-				  u32 val)
++static void ctucan_write32(struct ctucan_priv *priv, enum ctu_can_fd_can_registers reg, u32 val)
  {
-  if (!ufshcd_is_wb_allowed(hba))
-  return;
-
-  ufshcd_wb_toggle(hba, true);
-
-- ufshcd_wb_toggle_flush_during_h8(hba, true);
-- if (!(hba->quirks & UFSHCI_QUIRK_SKIP_MANUAL_WB_FLUSH_CTRL))
-- ufshcd_wb_toggle_flush(hba, true);
-+ ufshcd_wb_toggle_buf_flush_during_h8(hba, true);
-+
-+ if (ufshcd_is_wb_buf_flush_allowed(hba))
-+ ufshcd_wb_toggle_buf_flush(hba, true);
+ 	priv->write_reg(priv, reg, val);
  }
-
- static void ufshcd_scsi_unblock_requests(struct ufs_hba *hba)
-@@ -1274,9 +1274,10 @@ static int ufshcd_devfreq_scale(struct ufs_hba
-*hba, bool scale_up)
-  }
-  }
-
-- /* Enable Write Booster if we have scaled up else disable it */
-  downgrade_write(&hba->clk_scaling_lock);
-  is_writelock = false;
-+
-+ /* Enable Write Booster if we have scaled up else disable it */
-  ufshcd_wb_toggle(hba, scale_up);
-
- out_unprepare:
-@@ -5693,9 +5694,13 @@ static int __ufshcd_wb_toggle(struct ufs_hba
-*hba, bool set, enum flag_idn idn)
+ 
+-static inline u32 ctucan_read32(struct ctucan_priv *priv, enum ctu_can_fd_can_registers reg)
++static u32 ctucan_read32(struct ctucan_priv *priv, enum ctu_can_fd_can_registers reg)
  {
-  u8 index;
-  enum query_opcode opcode = set ? UPIU_QUERY_OPCODE_SET_FLAG :
--    UPIU_QUERY_OPCODE_CLEAR_FLAG;
-+ UPIU_QUERY_OPCODE_CLEAR_FLAG;
-+
-+ if (!ufshcd_is_wb_allowed(hba))
-+ return -EPERM;
-
-  index = ufshcd_wb_get_query_index(hba);
-+
-  return ufshcd_query_flag_retry(hba, opcode, idn, index, NULL);
+ 	return priv->read_reg(priv, reg);
  }
-
-@@ -5703,60 +5708,51 @@ int ufshcd_wb_toggle(struct ufs_hba *hba, bool enable)
- {
-  int ret;
-
-- if (!ufshcd_is_wb_allowed(hba))
-- return 0;
+@@ -179,8 +178,6 @@ static int ctucan_reset(struct net_device *ndev)
+ 	struct ctucan_priv *priv = netdev_priv(ndev);
+ 	int i = 100;
+ 
+-	ctucan_netdev_dbg(ndev, "%s\n", __func__);
 -
-- if (!(enable ^ hba->dev_info.wb_enabled))
-+ if (hba->dev_info.wb_enabled == enable)
-  return 0;
-
-  ret = __ufshcd_wb_toggle(hba, enable, QUERY_FLAG_IDN_WB_EN);
-  if (ret) {
-- dev_err(hba->dev, "%s Write Booster %s failed %d\n",
-+ dev_err(hba->dev, "%s: failed to %s WB %d\n",
-  __func__, enable ? "enable" : "disable", ret);
-  return ret;
-  }
-
-  hba->dev_info.wb_enabled = enable;
-- dev_info(hba->dev, "%s Write Booster %s\n",
-- __func__, enable ? "enabled" : "disabled");
-
-  return ret;
+ 	ctucan_write32(priv, CTUCANFD_MODE, REG_MODE_RST);
+ 	clear_bit(CTUCANFD_FLAG_RX_FFW_BUFFERED, &priv->drv_flags);
+ 
+@@ -266,8 +263,6 @@ static int ctucan_set_bittiming(struct net_device *ndev)
+ 	struct ctucan_priv *priv = netdev_priv(ndev);
+ 	struct can_bittiming *bt = &priv->can.bittiming;
+ 
+-	ctucan_netdev_dbg(ndev, "%s\n", __func__);
+-
+ 	/* Note that bt may be modified here */
+ 	return ctucan_set_btr(ndev, bt, true);
  }
-
--static void ufshcd_wb_toggle_flush_during_h8(struct ufs_hba *hba, bool set)
-+static void ufshcd_wb_toggle_buf_flush_during_h8(struct ufs_hba *hba,
-+ bool enable)
- {
-  int ret;
-
-- ret = __ufshcd_wb_toggle(hba, set,
-- QUERY_FLAG_IDN_WB_BUFF_FLUSH_DURING_HIBERN8);
-- if (ret) {
-- dev_err(hba->dev, "%s: WB-Buf Flush during H8 %s failed: %d\n",
-- __func__, set ? "enable" : "disable", ret);
-- return;
-- }
-- dev_dbg(hba->dev, "%s WB-Buf Flush during H8 %s\n",
-- __func__, set ? "enabled" : "disabled");
-+ ret = __ufshcd_wb_toggle(hba, enable,
-+ QUERY_FLAG_IDN_WB_BUFF_FLUSH_DURING_HIBERN8);
-+ if (ret)
-+ dev_err(hba->dev, "%s: failed to %s WB buf flush during H8 %d\n",
-+ __func__, enable ? "enable" : "disable", ret);
+@@ -283,8 +278,6 @@ static int ctucan_set_data_bittiming(struct net_device *ndev)
+ 	struct ctucan_priv *priv = netdev_priv(ndev);
+ 	struct can_bittiming *dbt = &priv->can.data_bittiming;
+ 
+-	ctucan_netdev_dbg(ndev, "%s\n", __func__);
+-
+ 	/* Note that dbt may be modified here */
+ 	return ctucan_set_btr(ndev, dbt, false);
  }
-
--static inline void ufshcd_wb_toggle_flush(struct ufs_hba *hba, bool enable)
-+int ufshcd_wb_toggle_buf_flush(struct ufs_hba *hba, bool enable)
+@@ -302,8 +295,6 @@ static int ctucan_set_secondary_sample_point(struct net_device *ndev)
+ 	int ssp_offset = 0;
+ 	u32 ssp_cfg = 0; /* No SSP by default */
+ 
+-	ctucan_netdev_dbg(ndev, "%s\n", __func__);
+-
+ 	if (CTU_CAN_FD_ENABLED(priv)) {
+ 		netdev_err(ndev, "BUG! Cannot set SSP - CAN is enabled\n");
+ 		return -EPERM;
+@@ -390,8 +381,6 @@ static int ctucan_chip_start(struct net_device *ndev)
+ 	int err;
+ 	struct can_ctrlmode mode;
+ 
+-	ctucan_netdev_dbg(ndev, "%s\n", __func__);
+-
+ 	priv->txb_prio = 0x01234567;
+ 	priv->txb_head = 0;
+ 	priv->txb_tail = 0;
+@@ -457,8 +446,6 @@ static int ctucan_do_set_mode(struct net_device *ndev, enum can_mode mode)
  {
-  int ret;
-
-- if (!ufshcd_is_wb_allowed(hba) ||
--     hba->dev_info.wb_buf_flush_enabled == enable)
-- return;
-+ if (hba->dev_info.wb_buf_flush_enabled == enable)
-+ return 0;
-
-- ret = __ufshcd_wb_toggle(hba, enable, QUERY_FLAG_IDN_WB_BUFF_FLUSH_EN);
-+ ret = __ufshcd_wb_toggle(hba, enable,
-+ QUERY_FLAG_IDN_WB_BUFF_FLUSH_EN);
-  if (ret) {
-- dev_err(hba->dev, "%s WB-Buf Flush %s failed %d\n", __func__,
-- enable ? "enable" : "disable", ret);
-- return;
-+ dev_err(hba->dev, "%s: failed to %s WB buf flush %d\n",
-+ __func__, enable ? "enable" : "disable", ret);
-+ return ret;
-  }
-
-  hba->dev_info.wb_buf_flush_enabled = enable;
-
-- dev_dbg(hba->dev, "%s WB-Buf Flush %s\n",
-- __func__, enable ? "enabled" : "disabled");
-+ return ret;
- }
-
- static bool ufshcd_wb_presrv_usrspc_keep_vcc_on(struct ufs_hba *hba,
-@@ -5790,10 +5786,10 @@ static bool
-ufshcd_wb_presrv_usrspc_keep_vcc_on(struct ufs_hba *hba,
-
- static void ufshcd_wb_force_disable(struct ufs_hba *hba)
- {
-- if (!(hba->quirks & UFSHCI_QUIRK_SKIP_MANUAL_WB_FLUSH_CTRL))
-- ufshcd_wb_toggle_flush(hba, false);
-+ if (ufshcd_is_wb_buf_flush_allowed(hba))
-+ ufshcd_wb_toggle_buf_flush(hba, false);
-
-- ufshcd_wb_toggle_flush_during_h8(hba, false);
-+ ufshcd_wb_toggle_buf_flush_during_h8(hba, false);
-  ufshcd_wb_toggle(hba, false);
-  hba->caps &= ~UFSHCD_CAP_WB_EN;
-
-@@ -8178,7 +8174,9 @@ static int ufshcd_probe_hba(struct ufs_hba *hba,
-bool init_dev_params)
+ 	int ret;
+ 
+-	ctucan_netdev_dbg(ndev, "%s\n", __func__);
+-
+ 	switch (mode) {
+ 	case CAN_MODE_START:
+ 		ret = ctucan_reset(ndev);
+@@ -486,7 +473,7 @@ static int ctucan_do_set_mode(struct net_device *ndev, enum can_mode mode)
+  *
+  * Return: Status of TXT buffer
   */
-  ufshcd_set_active_icc_lvl(hba);
-
-- ufshcd_wb_config(hba);
-+ /* Enable UFS Write Booster if supported */
-+ ufshcd_wb_set_default_flags(hba);
-+
-  if (hba->ee_usr_mask)
-  ufshcd_write_ee_control(hba);
-  /* Enable Auto-Hibernate if configured */
-diff --git a/drivers/scsi/ufs/ufshcd.h b/drivers/scsi/ufs/ufshcd.h
-index 94f545be183a..69b5f33d5746 100644
---- a/drivers/scsi/ufs/ufshcd.h
-+++ b/drivers/scsi/ufs/ufshcd.h
-@@ -991,6 +991,12 @@ static inline bool ufshcd_is_wb_allowed(struct
-ufs_hba *hba)
-  return hba->caps & UFSHCD_CAP_WB_EN;
- }
-
-+static inline bool ufshcd_is_wb_buf_flush_allowed(struct ufs_hba *hba)
-+{
-+ return ufshcd_is_wb_allowed(hba) &&
-+ !(hba->quirks & UFSHCI_QUIRK_SKIP_MANUAL_WB_FLUSH_CTRL);
-+}
-+
- static inline bool ufshcd_is_user_access_allowed(struct ufs_hba *hba)
+-static inline enum ctucan_txtb_status ctucan_get_tx_status(struct ctucan_priv *priv, u8 buf)
++static enum ctucan_txtb_status ctucan_get_tx_status(struct ctucan_priv *priv, u8 buf)
  {
-  return !hba->shutting_down;
-@@ -1209,6 +1215,7 @@ int ufshcd_exec_raw_upiu_cmd(struct ufs_hba *hba,
-       enum query_opcode desc_op);
-
- int ufshcd_wb_toggle(struct ufs_hba *hba, bool enable);
-+int ufshcd_wb_toggle_buf_flush(struct ufs_hba *hba, bool enable);
- int ufshcd_suspend_prepare(struct device *dev);
- int __ufshcd_suspend_prepare(struct device *dev, bool rpm_ok_for_spm);
- void ufshcd_resume_complete(struct device *dev);
+ 	u32 tx_status = ctucan_read32(priv, CTUCANFD_TX_STATUS);
+ 	enum ctucan_txtb_status status = (tx_status >> (buf * 4)) & 0x7;
+@@ -1123,8 +1110,6 @@ static irqreturn_t ctucan_interrupt(int irq, void *dev_id)
+ 	u32 imask;
+ 	int irq_loops;
+ 
+-	ctucan_netdev_dbg(ndev, "%s\n", __func__);
+-
+ 	for (irq_loops = 0; irq_loops < 10000; irq_loops++) {
+ 		/* Get the interrupt status */
+ 		isr = ctucan_read32(priv, CTUCANFD_INT_STAT);
+@@ -1198,8 +1183,6 @@ static void ctucan_chip_stop(struct net_device *ndev)
+ 	u32 mask = 0xffffffff;
+ 	u32 mode;
+ 
+-	ctucan_netdev_dbg(ndev, "%s\n", __func__);
+-
+ 	/* Disable interrupts and disable CAN */
+ 	ctucan_write32(priv, CTUCANFD_INT_ENA_CLR, mask);
+ 	ctucan_write32(priv, CTUCANFD_INT_MASK_SET, mask);
+@@ -1222,8 +1205,6 @@ static int ctucan_open(struct net_device *ndev)
+ 	struct ctucan_priv *priv = netdev_priv(ndev);
+ 	int ret;
+ 
+-	ctucan_netdev_dbg(ndev, "%s\n", __func__);
+-
+ 	ret = pm_runtime_get_sync(priv->dev);
+ 	if (ret < 0) {
+ 		netdev_err(ndev, "%s: pm_runtime_get failed(%d)\n",
+@@ -1283,8 +1264,6 @@ static int ctucan_close(struct net_device *ndev)
+ {
+ 	struct ctucan_priv *priv = netdev_priv(ndev);
+ 
+-	ctucan_netdev_dbg(ndev, "%s\n", __func__);
+-
+ 	netif_stop_queue(ndev);
+ 	napi_disable(&priv->napi);
+ 	ctucan_chip_stop(ndev);
+@@ -1310,8 +1289,6 @@ static int ctucan_get_berr_counter(const struct net_device *ndev, struct can_ber
+ 	struct ctucan_priv *priv = netdev_priv(ndev);
+ 	int ret;
+ 
+-	ctucan_netdev_dbg(ndev, "%s\n", __func__);
+-
+ 	ret = pm_runtime_get_sync(priv->dev);
+ 	if (ret < 0) {
+ 		netdev_err(ndev, "%s: pm_runtime_get failed(%d)\n", __func__, ret);
+@@ -1337,8 +1314,6 @@ int ctucan_suspend(struct device *dev)
+ 	struct net_device *ndev = dev_get_drvdata(dev);
+ 	struct ctucan_priv *priv = netdev_priv(ndev);
+ 
+-	ctucan_netdev_dbg(ndev, "%s\n", __func__);
+-
+ 	if (netif_running(ndev)) {
+ 		netif_stop_queue(ndev);
+ 		netif_device_detach(ndev);
+@@ -1355,8 +1330,6 @@ int ctucan_resume(struct device *dev)
+ 	struct net_device *ndev = dev_get_drvdata(dev);
+ 	struct ctucan_priv *priv = netdev_priv(ndev);
+ 
+-	ctucan_netdev_dbg(ndev, "%s\n", __func__);
+-
+ 	priv->can.state = CAN_STATE_ERROR_ACTIVE;
+ 
+ 	if (netif_running(ndev)) {
+diff --git a/drivers/net/can/ctucanfd/ctucanfd_pci.c b/drivers/net/can/ctucanfd/ctucanfd_pci.c
+index c37a42480533..8f2956a8ae43 100644
+--- a/drivers/net/can/ctucanfd/ctucanfd_pci.c
++++ b/drivers/net/can/ctucanfd/ctucanfd_pci.c
+@@ -45,14 +45,6 @@
+ #define CTUCAN_WITHOUT_CTUCAN_ID  0
+ #define CTUCAN_WITH_CTUCAN_ID     1
+ 
+-static bool use_msi = true;
+-module_param(use_msi, bool, 0444);
+-MODULE_PARM_DESC(use_msi, "PCIe implementation use MSI interrupts. Default: 1 (yes)");
+-
+-static bool pci_use_second = true;
+-module_param(pci_use_second, bool, 0444);
+-MODULE_PARM_DESC(pci_use_second, "Use the second CAN core on PCIe card. Default: 1 (yes)");
+-
+ struct ctucan_pci_board_data {
+ 	void __iomem *bar0_base;
+ 	void __iomem *cra_base;
+@@ -117,13 +109,11 @@ static int ctucan_pci_probe(struct pci_dev *pdev,
+ 		goto err_disable_device;
+ 	}
+ 
+-	if (use_msi) {
+-		ret = pci_enable_msi(pdev);
+-		if (!ret) {
+-			dev_info(dev, "MSI enabled\n");
+-			pci_set_master(pdev);
+-			msi_ok = 1;
+-		}
++	ret = pci_enable_msi(pdev);
++	if (!ret) {
++		dev_info(dev, "MSI enabled\n");
++		pci_set_master(pdev);
++		msi_ok = 1;
+ 	}
+ 
+ 	dev_info(dev, "ctucan BAR0 0x%08llx 0x%08llx\n",
+@@ -184,7 +174,7 @@ static int ctucan_pci_probe(struct pci_dev *pdev,
+ 
+ 	core_i++;
+ 
+-	while (pci_use_second && (core_i < num_cores)) {
++	while (core_i < num_cores) {
+ 		addr += 0x4000;
+ 		ret = ctucan_probe_common(dev, addr, irq, ntxbufs, 100000000,
+ 					  0, ctucan_pci_set_drvdata);
 -- 
-2.25.1
+2.20.1
+
+
