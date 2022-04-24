@@ -2,148 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2752AC4332F
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 15:34:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51C65C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 15:34:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232556AbiDXPhF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 11:37:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36716 "EHLO
+        id S233227AbiDXPhM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 11:37:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240447AbiDXPbV (ORCPT
+        with ESMTP id S240198AbiDXP2p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 11:31:21 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8C61170E3F;
-        Sun, 24 Apr 2022 08:28:18 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KmX3k0mGpzCs9g;
-        Sun, 24 Apr 2022 23:23:46 +0800 (CST)
-Received: from huawei.com (10.67.174.197) by kwepemi500013.china.huawei.com
- (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sun, 24 Apr
- 2022 23:28:14 +0800
-From:   Xu Kuohai <xukuohai@huawei.com>
-To:     <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>
-CC:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        <hpa@zytor.com>, Shuah Khan <shuah@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Daniel Kiss <daniel.kiss@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Mark Brown <broonie@kernel.org>,
-        Delyan Kratunov <delyank@fb.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Subject: [PATCH bpf-next v3 0/7] bpf trampoline for arm64
-Date:   Sun, 24 Apr 2022 11:40:21 -0400
-Message-ID: <20220424154028.1698685-1-xukuohai@huawei.com>
-X-Mailer: git-send-email 2.30.2
+        Sun, 24 Apr 2022 11:28:45 -0400
+Received: from m12-16.163.com (m12-16.163.com [220.181.12.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 502C3186F0;
+        Sun, 24 Apr 2022 08:25:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=SSwEb
+        R1Q0zSkY2pkp2ZsB1ndiNG5yqAkeTuM/roPQF8=; b=hPyVegbjX0JylMYh/e+HX
+        IS+ahqmgjqBBm3IzNIva1SPiyQvhX/4uvc5lC8MeFzN4p5beKIW23HqerLPeB6oE
+        6gtvtrZFCsjBx1ss/mPNFAxzBa+RkwO0/NLdv6sM+RYMIHsGidfaoV3L5w+m9HBO
+        6a8Cv0TKCzZ1OULa4sgnks=
+Received: from localhost (unknown [113.116.51.137])
+        by smtp12 (Coremail) with SMTP id EMCowAC3kXW4a2ViEoBPBQ--.1532S2;
+        Sun, 24 Apr 2022 23:24:41 +0800 (CST)
+From:   Junwen Wu <wudaemon@163.com>
+To:     willy@infradead.org, Junwen Wu <wudaemon@163.com>
+Cc:     adobriyan@gmail.com, akpm@linux-foundation.org, ddiss@suse.de,
+        fweimer@redhat.com, keescook@chromium.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1] proc: limit schedstate node write operation
+Date:   Sun, 24 Apr 2022 15:23:54 +0000
+Message-ID: <YmNs+i/unWKvj4Kx@casper.infradead.org> (raw)
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220423023104.153004-1-wudaemon@163.com>
+References: <YmNs+i/unWKvj4Kx@casper.infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.197]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemi500013.china.huawei.com (7.221.188.120)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: EMCowAC3kXW4a2ViEoBPBQ--.1532S2
+X-Coremail-Antispam: 1Uf129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
+        VFW2AGmfu7bjvjm3AaLaJ3UbIYCTnIWIevJa73UjIFyTuYvjTRJ8neDUUUU
+X-Originating-IP: [113.116.51.137]
+X-CM-SenderInfo: 5zxgtvxprqqiywtou0bp/xtbBFArrbVaEDhGxwgABsn
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
+Message-ID: <20220424152354.YvP810z4DjdXxXspWzCdwUz-SQHILZydxFs4QMGuHqI@z>
 
-Add bpf trampoline support for arm64. Most of the logic is the same as
-x86.
+From: Matthew Wilcox <willy@infradead.org>
 
-Tested on qemu, result:
- #18  bpf_tcp_ca:OK
- #51  dummy_st_ops:OK
- #55  fentry_fexit:OK
- #56  fentry_test:OK
- #57  fexit_bpf2bpf:OK
- #58  fexit_sleep:OK
- #59  fexit_stress:OK
- #60  fexit_test:OK
- #67  get_func_args_test:OK
- #68  get_func_ip_test:OK
- #101 modify_return:OK
- #233 xdp_bpf2bpf:OK
+On Sat, Apr 23, 2022 at 02:31:04AM +0000, Junwen Wu wrote:
+> Whatever value is written to /proc/$pid/sched, a task's schedstate data
+> will reset.In some cases, schedstate will drop by accident. We restrict
+> writing a certain value to this node before the data is reset.
 
-Also tested bpftrace kfunc/kretfunc and it worked fine. 
+... and break the existing scripts which expect the current behaviour.
 
-v3:
-- Append test results for bpf_tcp_ca, dummy_st_ops, fexit_bpf2bpf,
-  xdp_bpf2bpf
-- Support to poke bpf progs
-- Fix return value of arch_prepare_bpf_trampoline() to the total number
-  of bytes instead of number of instructions 
-- Do not check whether CONFIG_DYNAMIC_FTRACE_WITH_REGS is enabled in
-  arch_prepare_bpf_trampoline, since the trampoline may be hooked to a bpf
-  prog
-- Restrict bpf_arch_text_poke() to poke bpf text only, as kernel functions
-  are poked by ftrace
-- Rewrite trace_direct_tramp() in inline assembly in trace_selftest.c
-  to avoid messing entry-ftrace.S
-- isolate arch_ftrace_set_direct_caller() with macro
-  CONFIG_HAVE_DYNAMIC_FTRACE_WITH_DIRECT_CALLS to avoid compile error
-  when this macro is disabled
-- Some trivial code sytle fixes
 
-v2: https://lore.kernel.org/bpf/20220414162220.1985095-1-xukuohai@huawei.com/
-- Add Song's ACK
-- Change the multi-line comment in is_valid_bpf_tramp_flags() into net
-  style (patch 3)
-- Fix a deadloop issue in ftrace selftest (patch 2)
-- Replace pt_regs->x0 with pt_regs->orig_x0 in patch 1 commit message 
-- Replace "bpf trampoline" with "custom trampoline" in patch 1, as
-  ftrace direct call is not only used by bpf trampoline.
+Hi, Matthew,can you describe it in more detail.
 
-v1: https://lore.kernel.org/bpf/20220413054959.1053668-1-xukuohai@huawei.com/
-
-Xu Kuohai (7):
-  arm64: ftrace: Add ftrace direct call support
-  ftrace: Fix deadloop caused by direct call in ftrace selftest
-  bpf: Move is_valid_bpf_tramp_flags() to the public trampoline code
-  bpf, arm64: Impelment bpf_arch_text_poke() for arm64
-  bpf, arm64: Support to poke bpf prog
-  bpf, arm64: bpf trampoline for arm64
-  selftests/bpf: Fix trivial typo in fentry_fexit.c
-
- arch/arm64/Kconfig                            |   2 +
- arch/arm64/include/asm/ftrace.h               |  12 +
- arch/arm64/kernel/asm-offsets.c               |   1 +
- arch/arm64/kernel/entry-ftrace.S              |  18 +-
- arch/arm64/net/bpf_jit.h                      |   8 +
- arch/arm64/net/bpf_jit_comp.c                 | 446 +++++++++++++++++-
- arch/x86/net/bpf_jit_comp.c                   |  20 -
- include/linux/bpf.h                           |   5 +
- kernel/bpf/bpf_struct_ops.c                   |   4 +-
- kernel/bpf/trampoline.c                       |  34 +-
- kernel/trace/trace_selftest.c                 |  16 +
- .../selftests/bpf/prog_tests/fentry_fexit.c   |   4 +-
- 12 files changed, 531 insertions(+), 39 deletions(-)
-
--- 
-2.30.2
+Thanks
 
