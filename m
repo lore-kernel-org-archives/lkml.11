@@ -2,99 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C016EC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 17:43:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B31FBC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 18:03:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236889AbiDXRq6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 13:46:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37126 "EHLO
+        id S236968AbiDXSGz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 14:06:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236851AbiDXRq4 (ORCPT
+        with ESMTP id S232215AbiDXSGx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 13:46:56 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B580DD399F
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 10:43:54 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id v4so3145627ljd.10
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 10:43:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=peeXpSGRMeGEzoalpORyTqQLMLKNcHauKDKhUxOBeNk=;
-        b=IekpBZl+Z1RTJbQ89uIac/0pvqJlPZbLqqT1M3FrGlhuNapxhk9LXvDklkTRji31Iv
-         YqTjbVNa45HZCZIFzco0ewinoAbriHZX7UDnNI0FvzoEh8a8GQ8BBe2n2fDNj6t+nH15
-         eBbh3tx/hkS1SojrqBNx+y9nwQoRTjBiF36VA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=peeXpSGRMeGEzoalpORyTqQLMLKNcHauKDKhUxOBeNk=;
-        b=y7BBVF1tkot/yjyCJkhm5c+xCKKRDreiOOhS+loOYPvJyqTzEOSF3ItN+HpLVsbGxY
-         BGPfExSOBJaX5n3NrvosbnPed0+1esqZGmOS01vGx1HicctgulQ3hBaRvYqAime4renS
-         AyeU7LvswR9LJASgoRuGPdowXfXpkb7sAKWyCpGycY9cckFsjTP3gWACIwbZ2zcHHRWC
-         RGvlNcFuMNEXNE/RS6yF+g7SFuQwAkZTfbEkUG/hdFY1+jRdvoMpFaxrcIaJf1Bu3qse
-         GfGu21J7GtoNofW/Ht8QdZmbyLtx8ON/ydaq4uXWAFwsZMXST5hJOkEaG6BNZSjjOaHe
-         aajQ==
-X-Gm-Message-State: AOAM530sZUHBQvblF/qPTz+C3v2ziXZIAklYKIr5CKsyaD7Q5r3ozA5U
-        3Nwrjqrl0GG9zloeUnJpqAXdempAVjvjjGfp
-X-Google-Smtp-Source: ABdhPJwgOBjRY5xH/xRcoIKNulpgVPjErAJ57YXX1hv9yngTCfUB4RUdTT0KbhHP2zQ9seyzyiWKkA==
-X-Received: by 2002:a2e:9010:0:b0:244:c66c:c3e6 with SMTP id h16-20020a2e9010000000b00244c66cc3e6mr8691494ljg.391.1650822232780;
-        Sun, 24 Apr 2022 10:43:52 -0700 (PDT)
-Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com. [209.85.167.44])
-        by smtp.gmail.com with ESMTPSA id g18-20020a2eb0d2000000b0024f0fe97fc4sm193293ljl.56.2022.04.24.10.43.46
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 24 Apr 2022 10:43:47 -0700 (PDT)
-Received: by mail-lf1-f44.google.com with SMTP id t25so22549181lfg.7
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 10:43:46 -0700 (PDT)
-X-Received: by 2002:a05:6512:b12:b0:44a:ba81:f874 with SMTP id
- w18-20020a0565120b1200b0044aba81f874mr10677909lfu.449.1650822226569; Sun, 24
- Apr 2022 10:43:46 -0700 (PDT)
+        Sun, 24 Apr 2022 14:06:53 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 149D52FFE5;
+        Sun, 24 Apr 2022 11:03:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650823432; x=1682359432;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=1JfL2buY68y4ymF82P3twiQr9v5MgJo65F2Iu6rMRAc=;
+  b=M/2lxNOw6adNyw21e5OEVILDXRF3kaNcndT5+umrZwo1xKV+1jpn2Ygn
+   eiAb657gKnpy9PkRI1QO5DdHxyQnXV8BA+8Mw6EDWDbl0xz8opeDMH5tA
+   /r+jEMjiBHIeWqphY/D59D0j8WuEqTuc2yFkNOw8pMtdAt/UTqekM0VzM
+   OnN8dcuKGB0ADHjIckl6o0TkeggB72k+096g1vv39xac31djmShI38TmD
+   d5K5yk2Tx9Tb9bdfjuy+Do6oTOicy2ERXLssFrpgyXB7L0uvy3VirLRyn
+   GVxx2Jb40Zl/M96Pf726Brrxe+LCr/QFVXfa+65JGVY7lX9Qqwqz/NNr7
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10327"; a="246991172"
+X-IronPort-AV: E=Sophos;i="5.90,286,1643702400"; 
+   d="scan'208";a="246991172"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2022 11:03:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,286,1643702400"; 
+   d="scan'208";a="512314083"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 24 Apr 2022 11:03:49 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nigaK-0001f9-Sy;
+        Sun, 24 Apr 2022 18:03:48 +0000
+Date:   Mon, 25 Apr 2022 02:03:07 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org
+Subject: drivers/media/platform/mediatek/mdp/mtk_mdp_core.c:31:34: warning:
+ unused variable 'mtk_mdp_comp_dt_ids'
+Message-ID: <202204250140.voIrCzyh-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220415164413.2727220-1-song@kernel.org> <YlnCBqNWxSm3M3xB@bombadil.infradead.org>
- <YlpPW9SdCbZnLVog@infradead.org> <4AD023F9-FBCE-4C7C-A049-9292491408AA@fb.com>
-In-Reply-To: <4AD023F9-FBCE-4C7C-A049-9292491408AA@fb.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sun, 24 Apr 2022 10:43:30 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whadDF2MGN_THUo-n9S-m9isA-+vwhMeVvwGvmuZaYb6Q@mail.gmail.com>
-Message-ID: <CAHk-=whadDF2MGN_THUo-n9S-m9isA-+vwhMeVvwGvmuZaYb6Q@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf 0/4] vmalloc: bpf: introduce VM_ALLOW_HUGE_VMAP
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Song Liu <song@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[ I see that you posted a new version of the series, but I wasn't cc'd
-on that one, so I'm replying to the old thread instead ]
+Hi Mauro,
 
-On Sat, Apr 16, 2022 at 12:55 PM Song Liu <songliubraving@fb.com> wrote:
->
-> Patch 2/4 enables huge pages for large hash.
+First bad commit (maybe != root cause):
 
-I decided that for 5.18, we want to at least fix the performance
-regression on powerpc, so I've applied the 2/4 patch to enable huge
-pages for the large hashes.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   22da5264abf497a10a4ed629f07f4ba28a7ed5eb
+commit: 2023a99811110aebba9eee4aa09ef7bd21a8a249 media: platform: rename mediatek/mtk-jpeg/ to mediatek/jpeg/
+date:   5 weeks ago
+config: s390-randconfig-c005-20220424 (https://download.01.org/0day-ci/archive/20220425/202204250140.voIrCzyh-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 1cddcfdc3c683b393df1a5c9063252eb60e52818)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install s390 cross compiling tool for clang build
+        # apt-get install binutils-s390x-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=2023a99811110aebba9eee4aa09ef7bd21a8a249
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 2023a99811110aebba9eee4aa09ef7bd21a8a249
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash drivers/media/platform/mediatek/mdp/
 
-I also enabled them for kvmalloc(), since that seemed like the one
-ObviouslySafe(tm) case of vmalloc use (famous last words, maybe I'll
-be informed of somebody who still did odd protection games on the
-result, but that really sounds invalid with the whole SLUB component).
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-I'm not touching the bpf parts. I think that's a 5.19 issue by now,
-and since it's new, there's no equivalent performance regression
-issue.
+All warnings (new ones prefixed by >>):
 
-               Linus
+   In file included from drivers/media/platform/mediatek/mdp/mtk_mdp_core.c:15:
+   In file included from include/linux/of_address.h:7:
+   In file included from include/linux/io.h:13:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:464:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __raw_readb(PCI_IOBASE + addr);
+                             ~~~~~~~~~~ ^
+   include/asm-generic/io.h:477:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:37:59: note: expanded from macro '__le16_to_cpu'
+   #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
+                                                             ^
+   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
+   #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
+                                                        ^
+   In file included from drivers/media/platform/mediatek/mdp/mtk_mdp_core.c:15:
+   In file included from include/linux/of_address.h:7:
+   In file included from include/linux/io.h:13:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:35:59: note: expanded from macro '__le32_to_cpu'
+   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
+                                                             ^
+   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
+   #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
+                                                        ^
+   In file included from drivers/media/platform/mediatek/mdp/mtk_mdp_core.c:15:
+   In file included from include/linux/of_address.h:7:
+   In file included from include/linux/io.h:13:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:501:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writeb(value, PCI_IOBASE + addr);
+                               ~~~~~~~~~~ ^
+   include/asm-generic/io.h:511:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:521:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:609:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsb(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:617:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsw(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:625:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsl(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:634:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesb(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:643:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesw(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:652:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesl(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+>> drivers/media/platform/mediatek/mdp/mtk_mdp_core.c:31:34: warning: unused variable 'mtk_mdp_comp_dt_ids' [-Wunused-const-variable]
+   static const struct of_device_id mtk_mdp_comp_dt_ids[] = {
+                                    ^
+   13 warnings generated.
+
+
+vim +/mtk_mdp_comp_dt_ids +31 drivers/media/platform/mediatek/mdp/mtk_mdp_core.c
+
+c8eb2d7e8202fd drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  30  
+c8eb2d7e8202fd drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08 @31  static const struct of_device_id mtk_mdp_comp_dt_ids[] = {
+c8eb2d7e8202fd drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  32  	{
+c8eb2d7e8202fd drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  33  		.compatible = "mediatek,mt8173-mdp-rdma",
+c8eb2d7e8202fd drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  34  		.data = (void *)MTK_MDP_RDMA
+c8eb2d7e8202fd drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  35  	}, {
+c8eb2d7e8202fd drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  36  		.compatible = "mediatek,mt8173-mdp-rsz",
+c8eb2d7e8202fd drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  37  		.data = (void *)MTK_MDP_RSZ
+c8eb2d7e8202fd drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  38  	}, {
+c8eb2d7e8202fd drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  39  		.compatible = "mediatek,mt8173-mdp-wdma",
+c8eb2d7e8202fd drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  40  		.data = (void *)MTK_MDP_WDMA
+c8eb2d7e8202fd drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  41  	}, {
+c8eb2d7e8202fd drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  42  		.compatible = "mediatek,mt8173-mdp-wrot",
+c8eb2d7e8202fd drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  43  		.data = (void *)MTK_MDP_WROT
+55d80506c5f7c3 drivers/media/platform/mtk-mdp/mtk_mdp_core.c Vincent Stehlé 2016-10-27  44  	},
+55d80506c5f7c3 drivers/media/platform/mtk-mdp/mtk_mdp_core.c Vincent Stehlé 2016-10-27  45  	{ },
+c8eb2d7e8202fd drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  46  };
+c8eb2d7e8202fd drivers/media/platform/mtk-mdp/mtk_mdp_core.c Minghsiu Tsai  2016-09-08  47  
+
+:::::: The code at line 31 was first introduced by commit
+:::::: c8eb2d7e8202fd9cb912f5d33cc34ede66dcb24a [media] media: Add Mediatek MDP Driver
+
+:::::: TO: Minghsiu Tsai <minghsiu.tsai@mediatek.com>
+:::::: CC: Mauro Carvalho Chehab <mchehab@s-opensource.com>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
