@@ -2,126 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0034C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 17:18:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30AF7C4332F
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 17:20:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236329AbiDXRV1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 13:21:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51292 "EHLO
+        id S236372AbiDXRXd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 13:23:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236289AbiDXRVV (ORCPT
+        with ESMTP id S236289AbiDXRXb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 13:21:21 -0400
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EBA86FF77;
-        Sun, 24 Apr 2022 10:18:18 -0700 (PDT)
-Received: by mail-oi1-x22e.google.com with SMTP id z2so14756417oic.6;
-        Sun, 24 Apr 2022 10:18:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Gs5UTs020l+gW01sKQqLDKCl0tqBUVQZB/K/2Vj/X5s=;
-        b=EcQN96BbT0hS27iiyZji+xL4168i1B2ZY2PpCuEMQkDB0gQxDREY48J/Csx5qOPI0q
-         +LMRwMmYuW+4Ofa4NslwdbGoTzL7TAo2G7BMwoEv35MMkyw9Rm6QuOcpVbbicxvidV4e
-         YziSWciHMsluN74SsmgeCb7gGKsNIwxejIG4UrZZbAHKkSF8WE1Y3plRhEImivL/f62F
-         i6qmSM1wLX5GaaLZbJ4p4I2xToRC1gftU41CWFDxuv2YYry6NE1mvfNjo2SEokfkA6Sd
-         TYhSqAwHiJ2Nmf+u7BXc5odEfdPS703igsrtAP7k49P0sVXMNQ0vcIS6PKaMJy36SwCm
-         VQZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=Gs5UTs020l+gW01sKQqLDKCl0tqBUVQZB/K/2Vj/X5s=;
-        b=iwUz/BuS7FXasV/1CjQ42rvesAdMOTnRXVlM/e8G2nVqqNqi9oQaLiHUDFMxGXz5bw
-         e9OE2rZhsLuOU2N6eV84PkS8P6FuYEKNbLpiMIg7FDGHnmAyVqftwCkjjFcenoh8Ux3r
-         5zVKZ4tfyUUSvxwdf9uK1+FkqU6bZ6IBcjVd04fowvBmCQ7FQp+8nD2XJpI0v5m/ou+n
-         clXNMcXkEKwKOuGwUR+1EqvxYpe5felsPA01YIiHxbuSlknbwYlrIMxB2bpmW4OdBNjc
-         KvRVk9KoOBD05qggL14qbEqYCihvssCi9vefT8yn9zCn5WHnbt3mRzeasEJJUIfZku+0
-         GH3Q==
-X-Gm-Message-State: AOAM531GOO1bzhi79wNEvoWLcRvrMESjodOuFv/LXBd+iWMwv30fNnBr
-        uIY5zis4QRx8Lh+xFyUCgqNp7pFqxDI=
-X-Google-Smtp-Source: ABdhPJxPYm6vNc7dijlvCZSMaFALq1sItV+Emb8KLA31LsAUUVnHhzlAb6urX4aS2wHnQfDIuM8ASw==
-X-Received: by 2002:aca:df03:0:b0:2ef:895e:7373 with SMTP id w3-20020acadf03000000b002ef895e7373mr6531638oig.177.1650820697900;
-        Sun, 24 Apr 2022 10:18:17 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id e18-20020a9d7312000000b006054dfa7eb6sm2907397otk.78.2022.04.24.10.18.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Apr 2022 10:18:17 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Sun, 24 Apr 2022 10:18:16 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Eddie James <eajames@linux.ibm.com>
-Cc:     linux-fsi@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, jdelvare@suse.com, joel@jms.id.au,
-        jk@ozlabs.org, alistair@popple.id.au
-Subject: Re: [PATCH 2/2] hwmon (occ): Retry for checksum failure
-Message-ID: <20220424171816.GA749761@roeck-us.net>
-References: <20220321153112.12199-1-eajames@linux.ibm.com>
- <20220321153112.12199-3-eajames@linux.ibm.com>
+        Sun, 24 Apr 2022 13:23:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC42250E3F;
+        Sun, 24 Apr 2022 10:20:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 640EE611E8;
+        Sun, 24 Apr 2022 17:20:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A896C385A7;
+        Sun, 24 Apr 2022 17:20:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650820828;
+        bh=DwMMsZyJAKsQaSinOfX7JygHjnby7hXYQAkvC+fxrtU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BbIylMDYZoeuM6RGcFhQ/Weq5g63gJPu61zr4MpPG2UfpgwfraIV/Y2sWj3HwfZCT
+         TBGC0jfPzmMHmarufxH0ORdLkqMVfnKcjBuj7V2YSeU+vgorF+BDY4pvJwVIYhvCLO
+         VvouuVn/vMKPnjS+lhFWIq/3mXDqezbh7qyWtbbVGO6lj/4qoO1K1MKZezi3jK2U7R
+         JLeTGihAiT6UeLyC0JNxLPJaFugvwn/Yv3DkkzZcTr/tVPmrNOHaDFLJsAv1Lqi2fq
+         fn1nkWt2aatyVfAoYcnaxfyxB+4jxhX5WBPS9lNdesu70Z8vnFgN422FBEZOsPqOlS
+         xKi4bCr22FKXA==
+Date:   Sun, 24 Apr 2022 18:28:34 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Cixi Geng <gengcixi@gmail.com>
+Cc:     lars@metafoo.de, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, orsonzhai@gmail.com,
+        baolin.wang7@gmail.com, zhang.lyra@gmail.com,
+        yuming.zhu1@unisoc.com, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V4 3/7] iio: adc: Fine tune the scale calibration values
+Message-ID: <20220424182834.1d8b5d7e@jic23-huawei>
+In-Reply-To: <20220424180147.02d3c8ca@jic23-huawei>
+References: <20220419142458.884933-1-gengcixi@gmail.com>
+        <20220419142458.884933-4-gengcixi@gmail.com>
+        <20220424180147.02d3c8ca@jic23-huawei>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220321153112.12199-3-eajames@linux.ibm.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 10:31:12AM -0500, Eddie James wrote:
-> Due to the OCC communication design with a shared SRAM area,
-> checkum errors are expected due to corrupted buffer from OCC
-> communications with other system components. Therefore, retry
-> the command twice in the event of a checksum failure.
+On Sun, 24 Apr 2022 18:01:47 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
+
+> On Tue, 19 Apr 2022 22:24:54 +0800
+> Cixi Geng <gengcixi@gmail.com> wrote:
 > 
-> Signed-off-by: Eddie James <eajames@linux.ibm.com>
-
-I assume this will be applied together with patch 1 of the series.
-
-Acked-by: Guenter Roeck <linux@roeck-us.net>
-
-Guenter
-
-> ---
->  drivers/hwmon/occ/p9_sbe.c | 28 ++++++++++++++++++----------
->  1 file changed, 18 insertions(+), 10 deletions(-)
+> > From: Cixi Geng <cixi.geng1@unisoc.com>
+> > 
+> > Small adjustment the scale calibration value for the sc2731,
+> > use new name sc2731_[big|small]_scale_graph_calib, and remove
+> > the origin [big|small]_scale_graph_calib struct for unused.
+> > 
+> > Fixes: 8ba0dbfd07a35 (iio: adc: sc27xx: Add ADC scale calibration)  
+> No blank line here.
+> > 
+> > Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
+> > ---
+> >  drivers/iio/adc/sc27xx_adc.c | 19 +++++++++++--------
+> >  1 file changed, 11 insertions(+), 8 deletions(-)
+> > 
+> > diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
+> > index aee076c8e2b1..24211d2a71b1 100644
+> > --- a/drivers/iio/adc/sc27xx_adc.c
+> > +++ b/drivers/iio/adc/sc27xx_adc.c
+> > @@ -103,14 +103,17 @@ static struct sc27xx_adc_linear_graph small_scale_graph = {
+> >  	100, 341,
+> >  };
+> >  
+> > -static const struct sc27xx_adc_linear_graph big_scale_graph_calib = {
+> > -	4200, 856,
+> > -	3600, 733,
+> > +/*
+> > + * Add the sc2731_[big|small]_scale_graph_calib for sc2731 pmic.
+> > + */  
 > 
-> diff --git a/drivers/hwmon/occ/p9_sbe.c b/drivers/hwmon/occ/p9_sbe.c
-> index 49b13cc01073..7f4c3f979c54 100644
-> --- a/drivers/hwmon/occ/p9_sbe.c
-> +++ b/drivers/hwmon/occ/p9_sbe.c
-> @@ -84,17 +84,25 @@ static int p9_sbe_occ_send_cmd(struct occ *occ, u8 *cmd, size_t len)
->  	struct p9_sbe_occ *ctx = to_p9_sbe_occ(occ);
->  	size_t resp_len = sizeof(*resp);
->  	int rc;
-> -
-> -	rc = fsi_occ_submit(ctx->sbe, cmd, len, resp, &resp_len);
-> -	if (rc < 0) {
-> -		if (resp_len) {
-> -			if (p9_sbe_occ_save_ffdc(ctx, resp, resp_len))
-> -				sysfs_notify(&occ->bus_dev->kobj, NULL,
-> -					     bin_attr_ffdc.attr.name);
-> +	int tries = 0;
-> +
-> +	do {
-> +		rc = fsi_occ_submit(ctx->sbe, cmd, len, resp, &resp_len);
-> +		if (rc < 0) {
-> +			if (resp_len) {
-> +				if (p9_sbe_occ_save_ffdc(ctx, resp, resp_len))
-> +					sysfs_notify(&occ->bus_dev->kobj, NULL,
-> +						     bin_attr_ffdc.attr.name);
-> +
-> +				return rc;
-> +			} else if (rc != -EBADE) {
-> +				return rc;
-> +			}
-> +			/* retry twice for checksum failures */
-> +		} else {
-> +			break;
->  		}
-> -
-> -		return rc;
-> -	}
-> +	} while (++tries < 3);
->  
->  	switch (resp->return_status) {
->  	case OCC_RESP_CMD_IN_PRG:
+> Why Add?
+> 
+> Given the variable naming conveys this anyway, I would drop the comment entirely.
+
+I dropped the comment whilst applying and added sc27xx to the patch title prefix.
+> 
+> > +static const struct sc27xx_adc_linear_graph sc2731_big_scale_graph_calib = {
+> > +	4200, 850,
+> > +	3600, 728,
+> >  };
+> >  
+> > -static const struct sc27xx_adc_linear_graph small_scale_graph_calib = {
+> > -	1000, 833,
+> > -	100, 80,
+> > +static const struct sc27xx_adc_linear_graph sc2731_small_scale_graph_calib = {
+> > +	1000, 838,
+> > +	100, 84,
+> >  };
+> >  
+> >  static int sc27xx_adc_get_calib_data(u32 calib_data, int calib_adc)
+> > @@ -130,11 +133,11 @@ static int sc27xx_adc_scale_calibration(struct sc27xx_adc_data *data,
+> >  	size_t len;
+> >  
+> >  	if (big_scale) {
+> > -		calib_graph = &big_scale_graph_calib;
+> > +		calib_graph = &sc2731_big_scale_graph_calib;
+> >  		graph = &big_scale_graph;
+> >  		cell_name = "big_scale_calib";
+> >  	} else {
+> > -		calib_graph = &small_scale_graph_calib;
+> > +		calib_graph = &sc2731_small_scale_graph_calib;
+> >  		graph = &small_scale_graph;
+> >  		cell_name = "small_scale_calib";
+> >  	}  
+> 
+
