@@ -2,93 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D229EC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 00:01:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2366C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 00:10:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237314AbiDXAED (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 20:04:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48654 "EHLO
+        id S237605AbiDXANh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 20:13:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236902AbiDXAEB (ORCPT
+        with ESMTP id S237577AbiDXANf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 20:04:01 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBBE724979
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 17:01:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650758461; x=1682294461;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=0vV2vCN2rMFvugaf0x3OEAD+At1B20d2LF2+PMimzUE=;
-  b=Ct6Hga85abQqfTkztO7aeCsze0ktGS0iw+TjHcuD5arJdptN72zIO+kR
-   Zvnnv3HpyIvJVq7yW5NfqaDCTt3OVbD3bCgEuoslxo7C+eDR5JZ1BNHAU
-   Lja7xFHcuARdIHytotweHJqIC3qiqJnTHp3T5TYY7ENLpYB17DSNIP3Xy
-   9Eu7MbqzMJ8WRrbUeDvazYyfvNuXoDJBG1KNc7nS6I/7ppeLpBDlwYfRL
-   XgsIzDF1iAlU8AfS+xqbchUNuSRFR2oR5+lWRh7oPJpcfv6V6izyhRNkR
-   FFyRJefD+kBbV7RpjZkE5IvLEfieUBsupBaF0Ndmatk6ZN6/bJC7hCr2T
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10326"; a="265136059"
-X-IronPort-AV: E=Sophos;i="5.90,285,1643702400"; 
-   d="scan'208";a="265136059"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2022 17:01:01 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,285,1643702400"; 
-   d="scan'208";a="563563630"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 23 Apr 2022 17:01:00 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1niPgR-0000k1-UH;
-        Sun, 24 Apr 2022 00:00:59 +0000
-Date:   Sun, 24 Apr 2022 08:00:30 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Steven Rostedt (VMware)" <rostedt@goodmis.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: WARNING: modpost: vmlinux.o(.text.unlikely+0x1338): Section mismatch
- in reference from the function trace_define_generic_fields.isra.0() to the
- variable .init.data:initcall_level_names
-Message-ID: <202204240728.DzSAdKzG-lkp@intel.com>
+        Sat, 23 Apr 2022 20:13:35 -0400
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 260603FDBE;
+        Sat, 23 Apr 2022 17:10:36 -0700 (PDT)
+Received: by mail-lj1-x22c.google.com with SMTP id q14so13739103ljc.12;
+        Sat, 23 Apr 2022 17:10:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=KGwY3w/LUk+p3Q5uLCT6SYX2S/12e2zbleAJeZwrDYg=;
+        b=G3fienA+ez19EBrR2L/csO/MP0X8ecN5glUBPwTMLXUKzqG9OUvMbiBfNHQQ7AFb3D
+         wtw15LVMt5GFE+R3iabH0Xe4j8nAfWnKTjA3t33OOY66P22lI90+R9nw3pStZb6821eI
+         uzWY/Wd8rJpQaycR1Rr5t28Kwmx+j0mjPXptXLWYJECBVWd3hG+SyOf/trj27uqFKCfZ
+         A6VsKNPnrpLwSSy6DVMKqNXBKSo2KlX4VAMupObiKBT/SvX1pB8s/lVhCZid0snDP+V4
+         mxice+nMrHabfvjHywciadTQ/cbgwy5w4x4TxnqJ+Jc++4pl0INOsEd6Lr2DrDN4/0WW
+         U0dw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=KGwY3w/LUk+p3Q5uLCT6SYX2S/12e2zbleAJeZwrDYg=;
+        b=uIEZx3pRP8M9do2jKDbZQcdTTHk9pfMH0YdXAYCZoy5a6aPqJuYbZxEBEzYkxhh2e9
+         /K6vSqDXoapwAlR69Es0KB2w395CD/aWOFH4TkxnbtQDEEHFKG9gH3G9bs+V3vnPEFNr
+         19ZBcTM08Nb1ZDZmwm5PlZQ4JtRr9s62HIBkdOYbFmrzS2uBI3RW7kF77DUEABoFzcZ9
+         43g3321zn9GngiAUIPPX9qRE/kt+2vFwCIsZ5H0WlmfPcD9V3IJVfmwjhrdy2pkMAkOG
+         5rCwZElKr4QwBf3c8hKZVFsGikbtHKUGLRFds4SHVXHpnpuu+r9zDCaIKJnZAL+Qndjb
+         9Hhg==
+X-Gm-Message-State: AOAM530seIKOK/9Yxv5MVk40KsRb91dj2T4Fapf1+5Au6sOTKW3uJwVD
+        rK3DJiYOWXdaCsb8eoZBOgW3uzXGs5xtRTm24hTEZhdU0Nw=
+X-Google-Smtp-Source: ABdhPJznNOSlpjE1X3V5T70Dkcg9tAL96reP0179VZxiy6c2HoiT4NCTh2KLQ5GMQlEVB9yZVKoUz5le3e6rvCEIWCo=
+X-Received: by 2002:a2e:bf08:0:b0:247:f79c:5794 with SMTP id
+ c8-20020a2ebf08000000b00247f79c5794mr6633811ljr.398.1650759034242; Sat, 23
+ Apr 2022 17:10:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+From:   Steve French <smfrench@gmail.com>
+Date:   Sat, 23 Apr 2022 19:10:23 -0500
+Message-ID: <CAH2r5muyG8HZJvOYi+wPa_Qj6Yce8Q4MR-Oh28DrT1j8iH8FuQ@mail.gmail.com>
+Subject: [GIT PULL] ksmbd server fixes
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        Namjae Jeon <linkinjeon@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Steven,
+Please pull the following changes since commit
+ce522ba9ef7e2d9fb22a39eb3371c0c64e2a433e:
 
-FYI, the error/warning still remains.
+  Linux 5.18-rc2 (2022-04-10 14:21:36 -1000)
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   13bc32bad7059d6c5671e9d037e6e3ed001cc0f4
-commit: a55f224ff5f238013de8762c4287117e47b86e22 tracing: Fix pid filtering when triggers are attached
-date:   5 months ago
-config: xtensa-randconfig-r002-20220424 (https://download.01.org/0day-ci/archive/20220424/202204240728.DzSAdKzG-lkp@intel.com/config)
-compiler: xtensa-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a55f224ff5f238013de8762c4287117e47b86e22
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout a55f224ff5f238013de8762c4287117e47b86e22
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=xtensa SHELL=/bin/bash
+are available in the Git repository at:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+  git://git.samba.org/ksmbd.git tags/5.18-rc3-ksmbd-fixes
 
-All warnings (new ones prefixed by >>, old ones prefixed by <<):
+for you to fetch changes up to 02655a70b7cc0f534531ee65fa72692f4d31a944:
 
-<< WARNING: modpost: vmlinux.o(.text.unlikely+0x1198): Section mismatch in reference from the function __trace_event_discard_commit() to the variable .init.data:initcall_level_names
->> WARNING: modpost: vmlinux.o(.text.unlikely+0x1338): Section mismatch in reference from the function trace_define_generic_fields.isra.0() to the variable .init.data:initcall_level_names
-The function trace_define_generic_fields.isra.0() references
-the variable __initdata initcall_level_names.
-This is often because trace_define_generic_fields.isra.0 lacks a __initdata
-annotation or the annotation of initcall_level_names is wrong.
+  ksmbd: set fixed sector size to FS_SECTOR_SIZE_INFORMATION
+(2022-04-14 20:56:13 -0500)
+
+----------------------------------------------------------------
+3 fixes to ksmbd server
+- cap maximum sector size reported to avoid mount problems
+- reference count fix
+- fix filename rename race
+
+----------------------------------------------------------------
+Namjae Jeon (3):
+      ksmbd: remove filename in ksmbd_file
+      ksmbd: increment reference count of parent fp
+      ksmbd: set fixed sector size to FS_SECTOR_SIZE_INFORMATION
+
+ fs/ksmbd/misc.c      | 40 +++++++++++++++++++++++++++++++---------
+ fs/ksmbd/misc.h      |  3 ++-
+ fs/ksmbd/oplock.c    | 30 ------------------------------
+ fs/ksmbd/oplock.h    |  2 --
+ fs/ksmbd/smb2pdu.c   | 34 ++++++++++++++++------------------
+ fs/ksmbd/vfs.c       |  6 ++----
+ fs/ksmbd/vfs_cache.c |  2 +-
+ fs/ksmbd/vfs_cache.h |  1 -
+ 8 files changed, 52 insertions(+), 66 deletions(-)
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks,
+
+Steve
