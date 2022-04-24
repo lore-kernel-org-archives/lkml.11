@@ -2,276 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03B90C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 11:29:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A021AC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 11:41:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239291AbiDXLbz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 07:31:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41610 "EHLO
+        id S239277AbiDXLlA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 07:41:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239288AbiDXLbs (ORCPT
+        with ESMTP id S236187AbiDXLk6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 07:31:48 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEA074D611;
-        Sun, 24 Apr 2022 04:28:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1650799726; x=1682335726;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=8k1ES70BmUWZMSrJyoRyHOAjXPeAakRkGgoz8h1dkfU=;
-  b=r8VdgN++kI4+X8jgUgCiP5BEsdt4viZF+/GQ6SbF4ibbZXy4C+pxH9Aq
-   O3LzexRDGSb/M77EUCO6ZactKwCvfmfhu/CQC/YP2RnqJCUa+OXY0ms0R
-   Ny+tHOphgEotHafQQ9jvR2vrsmVBkvK3w5kHOweGGdoHAbN3AS/MpGlPx
-   QV7qSC77Tx3KKcrLjf363+nvpIPxWS5aUW9zXSG+SIB2FSMKPwZlhv+VR
-   62Yi9R+Pz8w49jmu/pCJ7yyHHtggMODhxfHCbDlpKZa1z7q7UYTJZt3Yq
-   YbgGqoslbmbGZeJe6EKulMU+AjZBVAGU6XjCtdj57EmpjX3YGB5TO3Og1
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,286,1643698800"; 
-   d="scan'208";a="93351080"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Apr 2022 04:28:46 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Sun, 24 Apr 2022 04:28:44 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Sun, 24 Apr 2022 04:28:35 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, <UNGLinuxDriver@microchip.com>,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: [Patch net-next] net: dsa: ksz: added the generic port_stp_state_set function
-Date:   Sun, 24 Apr 2022 16:58:31 +0530
-Message-ID: <20220424112831.11504-1-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.33.0
+        Sun, 24 Apr 2022 07:40:58 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96EDF68330
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 04:37:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=J52/y0wer3B0T+4cYDsBVLY8kFVWGPrWC8ox6E699sM=; b=XOBj1JyWOy0YKlbd1VK52pfN3Z
+        SMpS/Rusca/TM1/oPcOBGopdw8AIHvv+78BsXNwovz3Hpm3Dko0n3fTY8XuROXR0bxXzSb83GGtRt
+        Y/CKlSNFnNd/COsEozn6fscLJkXHnWgkoL0Q0LRJJiBy790E+/j2RFJ9bsvPobjClwiJ6dJhVvaTy
+        Bm/YlQXUZw2HR+fPFK/vT35MWB2j3m8om2mnwNwFiCAmRNXsxmdPAMhiVZRhX/KU/9GtPPwzCEVTR
+        fReRHo4XsnuXyyhkNEnVtyj4koqp0QJXlzUUYvM+pt4PDp5+lqsac4no8XRnmvi65aFItS7fsaVzk
+        r3WbQBAQ==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1niaYl-007iNS-Mh; Sun, 24 Apr 2022 11:37:47 +0000
+Date:   Sun, 24 Apr 2022 12:37:47 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Guo Xuenan <guoxuenan@huawei.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        houtao1@huawei.com, fangwei1@huawei.com
+Subject: Re: Questions about folio allocation.
+Message-ID: <YmU2izhF0HDlgbrW@casper.infradead.org>
+References: <20220424113543.456342-1-guoxuenan@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220424113543.456342-1-guoxuenan@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ksz8795 and ksz9477 uses the same algorithm for the
-port_stp_state_set function except the register address is different. So
-moved the algorithm to the ksz_common.c and used the dev_ops for
-register read and write. This function can also used for the lan937x
-part. Hence making it generic for all the parts.
+On Sun, Apr 24, 2022 at 07:35:43PM +0800, Guo Xuenan wrote:
+> Hi Matthew,
+> 
+> You have done a lot of work on folio, many folio related patches have been
+> incorporated into the mainline. I'm very interested in your excellent work
+> and did some sequential read test (using fixed read length, testing on a
+> 10G file), and found something.
+> 1. different read length may effect folio order
+>    using 100KB read length during sequentital read, when readahead folio
+>    order may always 0, so there always allocate folios with 0 or 2. 
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
----
- drivers/net/dsa/microchip/ksz8795.c     | 35 +---------------------
- drivers/net/dsa/microchip/ksz8795_reg.h |  3 --
- drivers/net/dsa/microchip/ksz9477.c     | 33 +-------------------
- drivers/net/dsa/microchip/ksz9477_reg.h |  4 ---
- drivers/net/dsa/microchip/ksz_common.c  | 40 +++++++++++++++++++++++++
- drivers/net/dsa/microchip/ksz_common.h  |  7 +++++
- 6 files changed, 49 insertions(+), 73 deletions(-)
+Hmm.  Looks like we're foiling readahead somehow.  I'll look into this.
 
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index b2752978cb09..f91deea9368e 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -1027,40 +1027,7 @@ static void ksz8_cfg_port_member(struct ksz_device *dev, int port, u8 member)
- 
- static void ksz8_port_stp_state_set(struct dsa_switch *ds, int port, u8 state)
- {
--	struct ksz_device *dev = ds->priv;
--	struct ksz_port *p;
--	u8 data;
--
--	ksz_pread8(dev, port, P_STP_CTRL, &data);
--	data &= ~(PORT_TX_ENABLE | PORT_RX_ENABLE | PORT_LEARN_DISABLE);
--
--	switch (state) {
--	case BR_STATE_DISABLED:
--		data |= PORT_LEARN_DISABLE;
--		break;
--	case BR_STATE_LISTENING:
--		data |= (PORT_RX_ENABLE | PORT_LEARN_DISABLE);
--		break;
--	case BR_STATE_LEARNING:
--		data |= PORT_RX_ENABLE;
--		break;
--	case BR_STATE_FORWARDING:
--		data |= (PORT_TX_ENABLE | PORT_RX_ENABLE);
--		break;
--	case BR_STATE_BLOCKING:
--		data |= PORT_LEARN_DISABLE;
--		break;
--	default:
--		dev_err(ds->dev, "invalid STP state: %d\n", state);
--		return;
--	}
--
--	ksz_pwrite8(dev, port, P_STP_CTRL, data);
--
--	p = &dev->ports[port];
--	p->stp_state = state;
--
--	ksz_update_port_member(dev, port);
-+	ksz_port_stp_state_set(ds, port, state, P_STP_CTRL);
- }
- 
- static void ksz8_flush_dyn_mac_table(struct ksz_device *dev, int port)
-diff --git a/drivers/net/dsa/microchip/ksz8795_reg.h b/drivers/net/dsa/microchip/ksz8795_reg.h
-index d74defcd86b4..4109433b6b6c 100644
---- a/drivers/net/dsa/microchip/ksz8795_reg.h
-+++ b/drivers/net/dsa/microchip/ksz8795_reg.h
-@@ -160,9 +160,6 @@
- #define PORT_DISCARD_NON_VID		BIT(5)
- #define PORT_FORCE_FLOW_CTRL		BIT(4)
- #define PORT_BACK_PRESSURE		BIT(3)
--#define PORT_TX_ENABLE			BIT(2)
--#define PORT_RX_ENABLE			BIT(1)
--#define PORT_LEARN_DISABLE		BIT(0)
- 
- #define REG_PORT_1_CTRL_3		0x13
- #define REG_PORT_2_CTRL_3		0x23
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 8222c8a6c5ec..4f617fee9a4e 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -517,38 +517,7 @@ static void ksz9477_cfg_port_member(struct ksz_device *dev, int port,
- static void ksz9477_port_stp_state_set(struct dsa_switch *ds, int port,
- 				       u8 state)
- {
--	struct ksz_device *dev = ds->priv;
--	struct ksz_port *p = &dev->ports[port];
--	u8 data;
--
--	ksz_pread8(dev, port, P_STP_CTRL, &data);
--	data &= ~(PORT_TX_ENABLE | PORT_RX_ENABLE | PORT_LEARN_DISABLE);
--
--	switch (state) {
--	case BR_STATE_DISABLED:
--		data |= PORT_LEARN_DISABLE;
--		break;
--	case BR_STATE_LISTENING:
--		data |= (PORT_RX_ENABLE | PORT_LEARN_DISABLE);
--		break;
--	case BR_STATE_LEARNING:
--		data |= PORT_RX_ENABLE;
--		break;
--	case BR_STATE_FORWARDING:
--		data |= (PORT_TX_ENABLE | PORT_RX_ENABLE);
--		break;
--	case BR_STATE_BLOCKING:
--		data |= PORT_LEARN_DISABLE;
--		break;
--	default:
--		dev_err(ds->dev, "invalid STP state: %d\n", state);
--		return;
--	}
--
--	ksz_pwrite8(dev, port, P_STP_CTRL, data);
--	p->stp_state = state;
--
--	ksz_update_port_member(dev, port);
-+	ksz_port_stp_state_set(ds, port, state, P_STP_CTRL);
- }
- 
- static void ksz9477_flush_dyn_mac_table(struct ksz_device *dev, int port)
-diff --git a/drivers/net/dsa/microchip/ksz9477_reg.h b/drivers/net/dsa/microchip/ksz9477_reg.h
-index 0bd58467181f..7a2c8d4767af 100644
---- a/drivers/net/dsa/microchip/ksz9477_reg.h
-+++ b/drivers/net/dsa/microchip/ksz9477_reg.h
-@@ -1586,10 +1586,6 @@
- 
- #define REG_PORT_LUE_MSTP_STATE		0x0B04
- 
--#define PORT_TX_ENABLE			BIT(2)
--#define PORT_RX_ENABLE			BIT(1)
--#define PORT_LEARN_DISABLE		BIT(0)
--
- /* C - PTP */
- 
- #define REG_PTP_PORT_RX_DELAY__2	0x0C00
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 8014b18d9391..9b9f570ebb0b 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -372,6 +372,46 @@ int ksz_enable_port(struct dsa_switch *ds, int port, struct phy_device *phy)
- }
- EXPORT_SYMBOL_GPL(ksz_enable_port);
- 
-+void ksz_port_stp_state_set(struct dsa_switch *ds, int port,
-+			    u8 state, int reg)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	struct ksz_port *p;
-+	u8 data;
-+
-+	ksz_pread8(dev, port, reg, &data);
-+	data &= ~(PORT_TX_ENABLE | PORT_RX_ENABLE | PORT_LEARN_DISABLE);
-+
-+	switch (state) {
-+	case BR_STATE_DISABLED:
-+		data |= PORT_LEARN_DISABLE;
-+		break;
-+	case BR_STATE_LISTENING:
-+		data |= (PORT_RX_ENABLE | PORT_LEARN_DISABLE);
-+		break;
-+	case BR_STATE_LEARNING:
-+		data |= PORT_RX_ENABLE;
-+		break;
-+	case BR_STATE_FORWARDING:
-+		data |= (PORT_TX_ENABLE | PORT_RX_ENABLE);
-+		break;
-+	case BR_STATE_BLOCKING:
-+		data |= PORT_LEARN_DISABLE;
-+		break;
-+	default:
-+		dev_err(ds->dev, "invalid STP state: %d\n", state);
-+		return;
-+	}
-+
-+	ksz_pwrite8(dev, port, reg, data);
-+
-+	p = &dev->ports[port];
-+	p->stp_state = state;
-+
-+	ksz_update_port_member(dev, port);
-+}
-+EXPORT_SYMBOL_GPL(ksz_port_stp_state_set);
-+
- struct ksz_device *ksz_switch_alloc(struct device *base, void *priv)
- {
- 	struct dsa_switch *ds;
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 485d4a948c38..4d978832c448 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -165,6 +165,8 @@ int ksz_port_bridge_join(struct dsa_switch *ds, int port,
- 			 struct netlink_ext_ack *extack);
- void ksz_port_bridge_leave(struct dsa_switch *ds, int port,
- 			   struct dsa_bridge bridge);
-+void ksz_port_stp_state_set(struct dsa_switch *ds, int port,
-+			    u8 state, int reg);
- void ksz_port_fast_age(struct dsa_switch *ds, int port);
- int ksz_port_fdb_dump(struct dsa_switch *ds, int port, dsa_fdb_dump_cb_t *cb,
- 		      void *data);
-@@ -292,6 +294,11 @@ static inline void ksz_regmap_unlock(void *__mtx)
- 	mutex_unlock(mtx);
- }
- 
-+/* STP State Defines */
-+#define PORT_TX_ENABLE			BIT(2)
-+#define PORT_RX_ENABLE			BIT(1)
-+#define PORT_LEARN_DISABLE		BIT(0)
-+
- /* Regmap tables generation */
- #define KSZ_SPI_OP_RD		3
- #define KSZ_SPI_OP_WR		2
+root@pepe-kvm:~# mkfs.xfs /dev/sdb
+root@pepe-kvm:~# mount /dev/sdb /mnt/
+root@pepe-kvm:~# truncate -s 10G /mnt/bigfile
+root@pepe-kvm:~# echo 1 >/sys/kernel/tracing/events/filemap/mm_filemap_add_to_page_cache/enable
+root@pepe-kvm:~# dd if=/mnt/bigfile of=/dev/null bs=100K count=4 
+root@pepe-kvm:~# cat /sys/kernel/tracing/trace
+[...]
+              dd-286     [000] .....   175.495258: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x106b0c ofs=0 order=2
+              dd-286     [000] .....   175.495266: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x106b10 ofs=16384 order=2
+              dd-286     [000] .....   175.495267: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x106b14 ofs=32768 order=2
+              dd-286     [000] .....   175.495268: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x106b18 ofs=49152 order=2
+              dd-286     [000] .....   175.495269: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x106b1c ofs=65536 order=2
+              dd-286     [000] .....   175.495270: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x106b20 ofs=81920 order=2
+              dd-286     [000] .....   175.495271: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x106b24 ofs=98304 order=2
+              dd-286     [000] .....   175.495272: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x106b28 ofs=114688 order=2
+              dd-286     [000] .....   175.495485: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x1048a3 ofs=135168 order=0
+              dd-286     [000] .....   175.495486: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x1036eb ofs=139264 order=0
+              dd-286     [000] .....   175.495486: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x103f4a ofs=143360 order=0
+              dd-286     [000] .....   175.495487: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x106b2c ofs=147456 order=2
+              dd-286     [000] .....   175.495490: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x106b48 ofs=163840 order=3
+              dd-286     [000] .....   175.495491: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x106b30 ofs=196608 order=2
+              dd-286     [000] .....   175.495492: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x103f76 ofs=212992 order=0
+              dd-286     [000] .....   175.495666: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x103f79 ofs=131072 order=0
+              dd-286     [000] .....   175.495669: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x103f5b ofs=217088 order=0
+              dd-286     [000] .....   175.495669: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x103c99 ofs=221184 order=0
+              dd-286     [000] .....   175.495670: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x1037a0 ofs=225280 order=0
+              dd-286     [000] .....   175.495673: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x103f45 ofs=229376 order=0
+              dd-286     [000] .....   175.495674: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x103f44 ofs=233472 order=0
+              dd-286     [000] .....   175.495675: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x10378c ofs=237568 order=0
+              dd-286     [000] .....   175.495675: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x103fde ofs=241664 order=0
+              dd-286     [000] .....   175.495676: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x103fdd ofs=245760 order=0
+              dd-286     [000] .....   175.495677: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x103fe1 ofs=249856 order=0
+              dd-286     [000] .....   175.495677: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x103fe2 ofs=253952 order=0
+              dd-286     [000] .....   175.495678: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x103fa7 ofs=258048 order=0
+              dd-286     [000] .....   175.495687: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x106b34 ofs=262144 order=2
+              dd-286     [000] .....   175.495690: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x106b38 ofs=278528 order=2
+              dd-286     [000] .....   175.495691: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x106b3c ofs=294912 order=2
+              dd-286     [000] .....   175.495692: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x106b40 ofs=311296 order=2
+              dd-286     [000] .....   175.495693: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x106b44 ofs=327680 order=2
+              dd-286     [000] .....   175.495701: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x106b80 ofs=344064 order=2
+              dd-286     [000] .....   175.495703: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x106b84 ofs=360448 order=2
+              dd-286     [000] .....   175.495704: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x106b88 ofs=376832 order=2
+              dd-286     [000] .....   175.495894: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x106bc0 ofs=393216 order=4
+              dd-286     [000] .....   175.495896: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x106bd0 ofs=458752 order=4
+              dd-286     [000] .....   175.496096: mm_filemap_add_to_page_cache: dev 8:16 ino 83 pfn=0x106be0 ofs=524288 order=5
 
-base-commit: cfc1d91a7d78cf9de25b043d81efcc16966d55b3
--- 
-2.33.0
+We do eventually get up to an order=5 allocation (128kB), but we should
+get there far sooner.
 
+> 2. folio order can not reach MAX_PAGECACHE_ORDER, when read length is small.
+>    (eg, less than 32KB)
+
+I'm less concerned about that.  It's not necessarily a good idea to go
+all the way to an order-9 page; 2MB pages are pretty big.
+
+> As you have mentationed here[1],
+> "The heuristic for choosing which folio sizes will surely need some tuning"
+> I wonder (1) why the folio order need align with page index. is this
+> necessary or there are some certain restrictions?
+
+That's partly because of the limitations of the radix tree used by
+the page cache.  With an aligned folio, an order-6 folio will take
+up a single entry; if it were unaligned, we'd need two nodes.  Worse,
+we'd have to constantly be walking around the tree in order to find
+all the entries associated with an unaligned folio.
+
+Partly, it's to try to use CPU resources more effectively.  For the
+pages which are mapped to userspace, we set up the alignments so we can
+use things like PMD-sized TLB entries and ARM's 64KiB TLB entries.
+
+> (2) for pagecache, by using large folio, it saving loops for allocating pages,
+> and i also did some test on dropcache, it shows that dropcache costs less time.
+> there are twenty times performance improvement when drop the 10G file's cache.
+> so, can i concluded that pagecache should tend to use large order of folio?
+
+Well, dropping the pagecache isn't a performance path ;-)  But as a
+proxy for doing page reclaim under memory pressure, yes, that kind of
+performance gain is what I'd expect and was one of the major motivators
+for this work (shortening the LRU list and keeping memory unfragmented).
