@@ -2,158 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EEFAC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 03:38:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD19EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 03:54:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238077AbiDXDlY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 23:41:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42076 "EHLO
+        id S238105AbiDXD5C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 23:57:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238063AbiDXDlQ (ORCPT
+        with ESMTP id S238101AbiDXD5B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 23:41:16 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4805626FB;
-        Sat, 23 Apr 2022 20:38:17 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id b12so4839612plg.4;
-        Sat, 23 Apr 2022 20:38:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:to:cc:references:subject
-         :content-language:from:in-reply-to:content-transfer-encoding;
-        bh=nGMc+Z22AXUnC+pCn5jAPVEn9ljsBIe0MBnGTXohsCg=;
-        b=HevHAIoIufDAkmbDUiJyea4LZ411BtHC1g9Z+0bknJ7VB+kgepu70ImFX/DFiEq+Gp
-         O2sKW6BHe9ApjEduYLp96JKsywmVbyeQLn2YkLZbkKuZrV9VAUGMvOFFpMYo7ii/hTNj
-         F3GmJnTMfxXCf9QzHkaZza1vtNGrPjNZC21vFWI5092hYagk4hk7JKVkkC4mdmD+RIA+
-         NHA7eQTlbuh0O/0NleWxx0eeynrOlWBtMo/8w4z7McqospSSbsjgL5zoo0VrMgXcOi5F
-         LzaZHip/Kykt5AjWcEJS4vqSy8onEBkiHtf3HEQkpCux0wK8y/LOdIwGypgfjsI+AZA4
-         G6YA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:to:cc
-         :references:subject:content-language:from:in-reply-to
-         :content-transfer-encoding;
-        bh=nGMc+Z22AXUnC+pCn5jAPVEn9ljsBIe0MBnGTXohsCg=;
-        b=sDV73ePyTfIR52SVuc1IJXuC6biBs7FJL98EHaQcXeac5lJErrEVpgKq0J34ocv7er
-         632JJiWkQsYV1FOVCEOQ1X8lwoqClLYcbfei19tRF+FeV/BAZvDy7p2GOMY+WLX07FCw
-         4SiV6E8/eYJj1e/3fN0RpTpnGJkQo4Cq62wlT3BcqmJ0eMNrNatRFiqu+ESFchq14wGX
-         +XnAMALAgQY5UsHTbwo/twfP3avILwKrifpodeobq/zofFpHi4iio6gNVV9CFVFepgW8
-         WPzCrhCxzQKUQO3es/r/EZOiM48BJpocClTsu42r/Pkbe2h4kJRFKgdAcZj2trXBB0hH
-         XyMA==
-X-Gm-Message-State: AOAM533Lh+4BMEqzypn/SLCgeILmr/06jDCRD+AJK+mfEW79Ma53Hkne
-        8iwKnfqzril0IAMrqqU8qjs=
-X-Google-Smtp-Source: ABdhPJznANpdO/h8c2xYNCXXhfqwXvCdFcaQb/J6/UnoprwsCE+Udlz/pc5ksWseLaC8iwhWQlmxVg==
-X-Received: by 2002:a17:90a:c002:b0:1d9:250a:73c8 with SMTP id p2-20020a17090ac00200b001d9250a73c8mr7657096pjt.133.1650771496841;
-        Sat, 23 Apr 2022 20:38:16 -0700 (PDT)
-Received: from [192.168.11.5] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
-        by smtp.gmail.com with ESMTPSA id ei12-20020a17090ae54c00b001d952b8f728sm953593pjb.2.2022.04.23.20.38.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 23 Apr 2022 20:38:16 -0700 (PDT)
-Message-ID: <3ce4feb9-5477-e7fb-e98c-3d6342ddc7b5@gmail.com>
-Date:   Sun, 24 Apr 2022 12:38:10 +0900
+        Sat, 23 Apr 2022 23:57:01 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BF7652B2A
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 20:54:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650772442; x=1682308442;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=UKJQEnsMftdGE/bY8JiKT7d4w5bXIEmB3cqQhlhwCY4=;
+  b=ReCe4X3OLMXSixyLzXJh9IQ9B05WjXEqPG1PIKtRreDgGdIXXjzuQDjz
+   a0rdbyUAaun/0r3qtfciOSqpv9IgYuvzSBsb4X+XkYUONR9zPoKW2IrGl
+   etW5sR0X2rIH//2ZvhRLopM/WhJrHpGSsvmtuSSW6JlBFxD11iB9q4aph
+   b1orzP8rRFwetxSdnbNGmfxOY8QLfnxe5D8ZmfZX59Cuh1j2G8OYqX3Ur
+   ERThdgESBuq5/LUgvo+QKQJ4EyTt0KOmiZeDFYtZBQDkKF+HraInM6Whb
+   TWbvIZX0hzXZd3si9uoZf8S4r2tqHns+kNn7Ny1G4Rfmzd7OPQA6IbwTe
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10326"; a="245558731"
+X-IronPort-AV: E=Sophos;i="5.90,285,1643702400"; 
+   d="scan'208";a="245558731"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2022 20:54:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,285,1643702400"; 
+   d="scan'208";a="729142199"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 23 Apr 2022 20:54:00 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1niTJv-0000yn-RP;
+        Sun, 24 Apr 2022 03:53:59 +0000
+Date:   Sun, 24 Apr 2022 11:53:31 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-maple 35/44]
+ include/linux/instrumented.h:101: undefined reference to `fscache_n_updates'
+Message-ID: <202204241147.EvsFGZii-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-To:     baihaowen@meizu.com
-Cc:     alexs@kernel.org, corbet@lwn.net, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, seakeel@gmail.com,
-        siyanteng01@gmail.com, siyanteng@loongson.cn
-References: <1650424016-7225-3-git-send-email-baihaowen@meizu.com>
-Subject: Re: [PATCH 2/2] doc/vm/page_owner.rst: Fix table display confusion
-Content-Language: en-US
-From:   Akira Yokosawa <akiyks@gmail.com>
-In-Reply-To: <1650424016-7225-3-git-send-email-baihaowen@meizu.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-maple
+head:   931e50676c6598d0eda1954ead465519ff91874d
+commit: f343507aeda88b2f1a528a659b8fadaa9b6b0f79 [35/44] netfs: Implement buffered writes through netfs_file_write_iter()
+config: x86_64-rhel-8.3-func (https://download.01.org/0day-ci/archive/20220424/202204241147.EvsFGZii-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
+reproduce (this is a W=1 build):
+        # https://github.com/ammarfaizi2/linux-block/commit/f343507aeda88b2f1a528a659b8fadaa9b6b0f79
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-maple
+        git checkout f343507aeda88b2f1a528a659b8fadaa9b6b0f79
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-Wed, 20 Apr 2022 11:06:56 +0800,
-baihaowen wrote:
-> After make htmldocs, the table which is made of tab will
-> display all by one line. so we make a standard table for STANDARD
-> FORMAT SPECIFIERS description.
-> 
-> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-> ---
->  Documentation/vm/page_owner.rst | 34 ++++++++++++++++++++--------------
->  1 file changed, 20 insertions(+), 14 deletions(-)
-> 
-> diff --git a/Documentation/vm/page_owner.rst b/Documentation/vm/page_owner.rst
-> index 422d5fa99e84..a8505e3a3044 100644
-> --- a/Documentation/vm/page_owner.rst
-> +++ b/Documentation/vm/page_owner.rst
-> @@ -174,22 +174,28 @@ STANDARD FORMAT SPECIFIERS
->  
->  For --sort option:
->  
-> -	KEY		LONG		DESCRIPTION
-> -	p		pid		process ID
-> -	tg		tgid		thread group ID
-> -	n		name		task command name
-> -	st		stacktrace	stack trace of the page allocation
-> -	T		txt		full text of block
-> -	ft		free_ts		timestamp of the page when it was released
-> -	at		alloc_ts	timestamp of the page when it was allocated
-> +        ====            ==========      ============================================
-> +        KEY             LONG            DESCRIPTION
-> +        ====            ==========      ============================================
-> +        p               pid             process ID
-> +        tg              tgid            thread group ID
-> +        n               name            task command name
-> +        st              stacktrace      stack trace of the page allocation
-> +        T               txt             full text of block
-> +        ft              free_ts         timestamp of the page when it was released
-> +        at              alloc_ts        timestamp of the page when it was allocated
->          ator            allocator       memory allocator for pages
-> +        ====            ==========      ============================================
->  
->  For --curl option:
->  
-> -	KEY		LONG		DESCRIPTION
-> -	p		pid		process ID
-> -	tg		tgid		thread group ID
-> -	n		name		task command name
-> -	f		free		whether the page has been released or not
-> -	st		stacktrace	stack trace of the page allocation
-> +        ====            ===========     ============================================
-> +        KEY             LONG            DESCRIPTION
-> +        ====            ===========     ============================================
-> +        p               pid             process ID
-> +        tg              tgid            thread group ID
-> +        n               name            task command name
-> +        f               free            whether the page has been released or not
-> +        st              stacktrace      stack trace of the page allocation
->          ator            allocator       memory allocator for pages
-> +        ====            ===========     ============================================
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-This patch looks like against akpm's tree (or linux-next).
-So it is not applicable to docs-next of Jonathan's tree at the
-moment.
+All errors (new ones prefixed by >>):
 
-You need to wait until docs-next catches up akpm's tree.
+   ld: fs/netfs/buffered_write.o: in function `instrument_atomic_read_write':
+>> include/linux/instrumented.h:101: undefined reference to `fscache_n_updates'
+   ld: fs/netfs/buffered_write.o: in function `arch_atomic_inc':
+>> arch/x86/include/asm/atomic.h:95: undefined reference to `fscache_n_updates'
+   ld: fs/netfs/output.o: in function `fscache_begin_write_operation':
+   include/linux/fscache.h:540: undefined reference to `__fscache_begin_write_operation'
 
-Patch 1/2 should wait until the English doc is updated,
-I suppose.
 
-By the way, I don't think the list of options need tables.
-Literal blocks should suffice.
+vim +101 include/linux/instrumented.h
 
-I mean, How about the simpler changes:
+36e4d4dd4fc4f1 Marco Elver 2020-01-21   89  
+00047c2e6d7c57 Marco Elver 2020-07-24   90  /**
+00047c2e6d7c57 Marco Elver 2020-07-24   91   * instrument_atomic_read_write - instrument atomic read-write access
+00047c2e6d7c57 Marco Elver 2020-07-24   92   *
+00047c2e6d7c57 Marco Elver 2020-07-24   93   * Instrument an atomic read-write access. The instrumentation should be
+00047c2e6d7c57 Marco Elver 2020-07-24   94   * inserted before the actual write happens.
+00047c2e6d7c57 Marco Elver 2020-07-24   95   *
+00047c2e6d7c57 Marco Elver 2020-07-24   96   * @ptr address of access
+00047c2e6d7c57 Marco Elver 2020-07-24   97   * @size size of access
+00047c2e6d7c57 Marco Elver 2020-07-24   98   */
+00047c2e6d7c57 Marco Elver 2020-07-24   99  static __always_inline void instrument_atomic_read_write(const volatile void *v, size_t size)
+00047c2e6d7c57 Marco Elver 2020-07-24  100  {
+00047c2e6d7c57 Marco Elver 2020-07-24 @101  	kasan_check_write(v, size);
+00047c2e6d7c57 Marco Elver 2020-07-24  102  	kcsan_check_atomic_read_write(v, size);
+00047c2e6d7c57 Marco Elver 2020-07-24  103  }
+00047c2e6d7c57 Marco Elver 2020-07-24  104  
 
->  For --sort option:
-   For --sort option::
+:::::: The code at line 101 was first introduced by commit
+:::::: 00047c2e6d7c576c1a847f7db07ef0fc58085f22 instrumented.h: Introduce read-write instrumentation hooks
 
->  For --curl option:
-   For --curl option::
+:::::: TO: Marco Elver <elver@google.com>
+:::::: CC: Paul E. McKenney <paulmck@kernel.org>
 
-Thoughts?
-
-       Thanks, Akira
-
-> -- 
-> 2.7.4
-
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
