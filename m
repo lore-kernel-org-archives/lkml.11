@@ -2,193 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48C82C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 17:21:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAD37C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 17:22:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236289AbiDXRYD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 13:24:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32846 "EHLO
+        id S236485AbiDXRZU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 13:25:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236394AbiDXRX6 (ORCPT
+        with ESMTP id S236252AbiDXRZS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 13:23:58 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2395957B3F;
-        Sun, 24 Apr 2022 10:20:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 3096CCE0EA0;
-        Sun, 24 Apr 2022 17:20:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50E1FC385A9;
-        Sun, 24 Apr 2022 17:20:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650820853;
-        bh=4SgAcVXLHGqxh2NVuCquX9xm9/nhdLmAxMSJu3gMgqI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=MYh21kkHqtkHrAMHn/d2IYATE6bWshwZufmkNFFqMaffarwSSnQ0JWyKz2w1dudBI
-         oG/0vGaGZKmTFYvYaVwW6V/pCMi1ef4ZTzwnUfirI6b8IIo0QqhhusrLP6Og+LQqCQ
-         fS485VteVO6wC5RHi7itPwhlJBrYLM/hjwAQsXu6biY5f3g32iI9G3iMSyUhZTMKfm
-         mF19N6ijiUsZvPGCtqX8Wn9o8eJEp5CrVsPQeHHy5ACwUOZ57iHDVpF02qKySpXdgC
-         oJ7WRo7qCUdgZLFbOM+Ls8LQJomxxoPSJRfMsfFoQZ9SofyFhzAIk1K48S3QYlyYwK
-         ZZ3IWbNKjBqLg==
-From:   Mike Rapoport <rppt@kernel.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Guillaume Tucker <gtucker@collabora.com>,
-        Mark Brown <broonie@kernel.org>,
-        Mark-PK Tsai <mark-pk.tsai@mediatek.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Tony Lindgren <tony@atomide.com>,
-        Will Deacon <will@kernel.org>, bot@kernelci.org,
-        kernelci-results@groups.io, linux-arm-kernel@lists.infradead.org,
-        stable@vger.kernel.org
-Subject: [PATCH] arm[64]/memremap: don't abuse pfn_valid() to ensure presence of linear map
-Date:   Sun, 24 Apr 2022 20:20:44 +0300
-Message-Id: <20220424172044.22220-1-rppt@kernel.org>
-X-Mailer: git-send-email 2.28.0
+        Sun, 24 Apr 2022 13:25:18 -0400
+Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 304D7BCB4F;
+        Sun, 24 Apr 2022 10:22:17 -0700 (PDT)
+Received: by mail-oi1-x234.google.com with SMTP id v65so10041632oig.10;
+        Sun, 24 Apr 2022 10:22:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=gJyERW7nV1azvnBTWPVilJ/+td61cNeV8dCVgXesf3Q=;
+        b=dGy6/ijHGSinpAhXyG50I7RMcLyJtabc5wZ/L46eLgalkIKeHi3fGhilfEreEqlBb1
+         Fvd3D+kM6A90QO2tKrAi/MY3ZRLeMInuqhFHGvWqXJJPTE7DSCwa2Ht6+LxVIjtgmTPV
+         ouSMIas5WDanAud3e75o10rtT4I2riCdDrNbSc7yWNuu8MVOYsai8reuO9cpPfX9TQDK
+         SxHqfq+1Xpw+17Fpj8zCsysSJ9NLuBi5V/4ILQ2Qs2BmEKfEs6aAirtwLb6RIihx7PI3
+         Z/05U9IyzdmaLUhu40xXSe9BRxORba0uqA3I+2sMooDBzXhvP+JqPbVZCswE/uTh4hBU
+         a9Dg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=gJyERW7nV1azvnBTWPVilJ/+td61cNeV8dCVgXesf3Q=;
+        b=LLbJzMznwdHhg/85v8V4kwlqVZHOQgwM49nHpPtbDHInOxRj8tN7c/ch7M/M29fedn
+         JFejatifnaK/WgOZLNFL27r7m3+GAE/vRtMjOycfp7x8NV9ZOQb7mfhtfrmK3PD2HAGm
+         p5o7yepg9VSHa29ELVkPMBuYHPxIpNxO6q46RaELPpVw89QlMUYMaBUju9VhaaB6o0jW
+         YYHyLK5I8SjiVwSi5msDkHMJfc6JV38Blw+iohgB2UM1JOTgtk1OQ79SEYsfoHw5ixJp
+         Vo9dj+lN/PnMWdZPaJW+Rd6J0ad2wCPbeh5bhZ4Ivhi8RTYcME4SvMFSdOj9af3pLpxt
+         7D9w==
+X-Gm-Message-State: AOAM530yuoGpg8X3ufxugAQwcxyRumo/v8kM3L17NDYdbsmONPfeObf4
+        0chbPTSgEmPkXCsVJNGhXPdusm6wuNE=
+X-Google-Smtp-Source: ABdhPJyhmqtv3yVUfBGfryC42dIVU6dGijgvoVy604uCSr07RfjCw61rqfszzV/H/S9wdO2aAJC+KQ==
+X-Received: by 2002:a05:6808:218e:b0:322:8478:cac9 with SMTP id be14-20020a056808218e00b003228478cac9mr10782271oib.99.1650820936612;
+        Sun, 24 Apr 2022 10:22:16 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id v26-20020a05683011da00b0060554e2fd07sm2939626otq.58.2022.04.24.10.22.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 24 Apr 2022 10:22:15 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <4c8673de-2503-7f9d-01ae-8f059e8a58ed@roeck-us.net>
+Date:   Sun, 24 Apr 2022 10:22:13 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] dt-bindings: watchdog: uniphier: Use
+ unevaluatedProperties
+Content-Language: en-US
+To:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
+        Keiji Hayashibara <hayashibara.keiji@socionext.com>,
+        linux-watchdog@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <1649317606-21267-1-git-send-email-hayashi.kunihiko@socionext.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <1649317606-21267-1-git-send-email-hayashi.kunihiko@socionext.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Rapoport <rppt@linux.ibm.com>
+On 4/7/22 00:46, Kunihiko Hayashi wrote:
+> This refers common bindings, so this is preferred for
+> unevaluatedProperties instead of additionalProperties.
+> 
+> Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
 
-The semantics of pfn_valid() is to check presence of the memory map for a
-PFN and not whether a PFN is covered by the linear map. The memory map may
-be present for NOMAP memory regions, but they won't be mapped in the linear
-mapping.  Accessing such regions via __va() when they are memremap()'ed
-will cause a crash.
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
 
-On v5.4.y the crash happens on qemu-arm with UEFI [1]:
-
-<1>[    0.084476] 8<--- cut here ---
-<1>[    0.084595] Unable to handle kernel paging request at virtual address dfb76000
-<1>[    0.084938] pgd = (ptrval)
-<1>[    0.085038] [dfb76000] *pgd=5f7fe801, *pte=00000000, *ppte=00000000
-
-...
-
-<4>[    0.093923] [<c0ed6ce8>] (memcpy) from [<c16a06f8>] (dmi_setup+0x60/0x418)
-<4>[    0.094204] [<c16a06f8>] (dmi_setup) from [<c16a38d4>] (arm_dmi_init+0x8/0x10)
-<4>[    0.094408] [<c16a38d4>] (arm_dmi_init) from [<c0302e9c>] (do_one_initcall+0x50/0x228)
-<4>[    0.094619] [<c0302e9c>] (do_one_initcall) from [<c16011e4>] (kernel_init_freeable+0x15c/0x1f8)
-<4>[    0.094841] [<c16011e4>] (kernel_init_freeable) from [<c0f028cc>] (kernel_init+0x8/0x10c)
-<4>[    0.095057] [<c0f028cc>] (kernel_init) from [<c03010e8>] (ret_from_fork+0x14/0x2c)
-
-On kernels v5.10.y and newer the same crash won't reproduce on ARM because
-commit b10d6bca8720 ("arch, drivers: replace for_each_membock() with
-for_each_mem_range()") changed the way memory regions are registered in the
-resource tree, but that merely covers up the problem.
-
-On ARM64 memory resources registered in yet another way and there the
-issue of wrong usage of pfn_valid() to ensure availability of the linear
-map is also covered.
-
-Implement arch_memremap_can_ram_remap() on ARM and ARM64 to prevent access
-to NOMAP regions via the linear mapping in memremap().
-
-Link: https://lore.kernel.org/all/Yl65zxGgFzF1Okac@sirena.org.uk
-Reported-by: "kernelci.org bot" <bot@kernelci.org>
-Tested-by: Mark Brown <broonie@kernel.org>
-Cc: stable@vger.kernel.org	# 5.4+
-Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
----
- arch/arm/include/asm/io.h   | 4 ++++
- arch/arm/mm/ioremap.c       | 9 ++++++++-
- arch/arm64/include/asm/io.h | 4 ++++
- arch/arm64/mm/ioremap.c     | 8 ++++++++
- kernel/iomem.c              | 2 +-
- 5 files changed, 25 insertions(+), 2 deletions(-)
-
-diff --git a/arch/arm/include/asm/io.h b/arch/arm/include/asm/io.h
-index 0c70eb688a00..fbb2eeea7285 100644
---- a/arch/arm/include/asm/io.h
-+++ b/arch/arm/include/asm/io.h
-@@ -145,6 +145,10 @@ extern void __iomem * (*arch_ioremap_caller)(phys_addr_t, size_t,
- 	unsigned int, void *);
- extern void (*arch_iounmap)(volatile void __iomem *);
- 
-+extern bool arch_memremap_can_ram_remap(resource_size_t offset, size_t size,
-+					unsigned long flags);
-+#define arch_memremap_can_ram_remap arch_memremap_can_ram_remap
-+
- /*
-  * Bad read/write accesses...
-  */
-diff --git a/arch/arm/mm/ioremap.c b/arch/arm/mm/ioremap.c
-index aa08bcb72db9..6eb1ad24544d 100644
---- a/arch/arm/mm/ioremap.c
-+++ b/arch/arm/mm/ioremap.c
-@@ -43,7 +43,6 @@
- #include <asm/mach/pci.h>
- #include "mm.h"
- 
--
- LIST_HEAD(static_vmlist);
- 
- static struct static_vm *find_static_vm_paddr(phys_addr_t paddr,
-@@ -493,3 +492,11 @@ void __init early_ioremap_init(void)
- {
- 	early_ioremap_setup();
- }
-+
-+bool arch_memremap_can_ram_remap(resource_size_t offset, size_t size,
-+				 unsigned long flags)
-+{
-+	unsigned long pfn = PHYS_PFN(offset);
-+
-+	return memblock_is_map_memory(pfn);
-+}
-diff --git a/arch/arm64/include/asm/io.h b/arch/arm64/include/asm/io.h
-index 7fd836bea7eb..3995652daf81 100644
---- a/arch/arm64/include/asm/io.h
-+++ b/arch/arm64/include/asm/io.h
-@@ -192,4 +192,8 @@ extern void __iomem *ioremap_cache(phys_addr_t phys_addr, size_t size);
- extern int valid_phys_addr_range(phys_addr_t addr, size_t size);
- extern int valid_mmap_phys_addr_range(unsigned long pfn, size_t size);
- 
-+extern bool arch_memremap_can_ram_remap(resource_size_t offset, size_t size,
-+					unsigned long flags);
-+#define arch_memremap_can_ram_remap arch_memremap_can_ram_remap
-+
- #endif	/* __ASM_IO_H */
-diff --git a/arch/arm64/mm/ioremap.c b/arch/arm64/mm/ioremap.c
-index b7c81dacabf0..b21f91cd830d 100644
---- a/arch/arm64/mm/ioremap.c
-+++ b/arch/arm64/mm/ioremap.c
-@@ -99,3 +99,11 @@ void __init early_ioremap_init(void)
- {
- 	early_ioremap_setup();
- }
-+
-+bool arch_memremap_can_ram_remap(resource_size_t offset, size_t size,
-+				 unsigned long flags)
-+{
-+	unsigned long pfn = PHYS_PFN(offset);
-+
-+	return pfn_is_map_memory(pfn);
-+}
-diff --git a/kernel/iomem.c b/kernel/iomem.c
-index 62c92e43aa0d..e85bed24c0a9 100644
---- a/kernel/iomem.c
-+++ b/kernel/iomem.c
-@@ -33,7 +33,7 @@ static void *try_ram_remap(resource_size_t offset, size_t size,
- 	unsigned long pfn = PHYS_PFN(offset);
- 
- 	/* In the simple case just return the existing linear address */
--	if (pfn_valid(pfn) && !PageHighMem(pfn_to_page(pfn)) &&
-+	if (!PageHighMem(pfn_to_page(pfn)) &&
- 	    arch_memremap_can_ram_remap(offset, size, flags))
- 		return __va(offset);
- 
-
-base-commit: b2d229d4ddb17db541098b83524d901257e93845
--- 
-2.28.0
+> ---
+>   .../devicetree/bindings/watchdog/socionext,uniphier-wdt.yaml    | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/watchdog/socionext,uniphier-wdt.yaml b/Documentation/devicetree/bindings/watchdog/socionext,uniphier-wdt.yaml
+> index a059d16cb4f2..90698cfa8f94 100644
+> --- a/Documentation/devicetree/bindings/watchdog/socionext,uniphier-wdt.yaml
+> +++ b/Documentation/devicetree/bindings/watchdog/socionext,uniphier-wdt.yaml
+> @@ -19,7 +19,7 @@ properties:
+>   required:
+>     - compatible
+>   
+> -additionalProperties: false
+> +unevaluatedProperties: false
+>   
+>   examples:
+>     - |
 
