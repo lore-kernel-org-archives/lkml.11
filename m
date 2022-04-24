@@ -2,85 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A6D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 14:59:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08535C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 15:05:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232546AbiDXPBA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 11:01:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58864 "EHLO
+        id S230235AbiDXPGw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 11:06:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239540AbiDXO64 (ORCPT
+        with ESMTP id S231424AbiDXPGj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 10:58:56 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A60D3393C7;
-        Sun, 24 Apr 2022 07:55:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1650812156; x=1682348156;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ZDgnc/AWZ2GzndkIPVq+n1FwfPAm1cIU+Eo/I6edMr8=;
-  b=xYrIR3MrNdU+6i45nG9EjDe0vs4a4CnyDUg7YCNedK+KrQ5d2bB5trka
-   uhamCaGWTj2qcrpkQpljhLYEM+qgAHCOKbX1htlEoeppMz3fjkQ4q7Oav
-   H+oPfUKHZb8IgErkstsCTCDstFk6iyC/SKx3/NgC35EkSGSlvbCwGKV12
-   mVJFYEwlHpfgtl311itruu+wr2ZNwmhM/Chozdj+oFOXin7N/qzE4WQOF
-   I3XpNDRPxzv6J5kYg4tfGc61m7KJEiZLGP/p01v0JYIAI3jjVi6aWC75l
-   4iU4lsvhXBxc7diZoDn5Gpw3xfawcMQhVGUgF198ZrSv7QI9V8yY4RcnI
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.90,286,1643698800"; 
-   d="scan'208";a="153623567"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Apr 2022 07:55:55 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Sun, 24 Apr 2022 07:55:54 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Sun, 24 Apr 2022 07:55:52 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <UNGLinuxDriver@microchip.com>, <richardcochran@gmail.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next 2/5] net: lan966x: Change the PTP pin used to read/write the PHC.
-Date:   Sun, 24 Apr 2022 16:58:21 +0200
-Message-ID: <20220424145824.2931449-3-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220424145824.2931449-1-horatiu.vultur@microchip.com>
-References: <20220424145824.2931449-1-horatiu.vultur@microchip.com>
+        Sun, 24 Apr 2022 11:06:39 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 107831632E7
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 08:03:39 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id d6so10624471ede.8
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 08:03:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oZgdjt03EFmKkCkALdaRUu9j5orxJYcBeTCfsLBxk8A=;
+        b=e79ORiAutXKpfRKfDI4jXkdPYCMgpBeTvyplaO+1daTM2LEQLNjQDBuki3dPzftEbT
+         GeqbES3KlYcCt9jbS8fdgYO84BMtLoYAFxws1eeKquJru9TKMDP7yrYT9BaLthSRO+Aj
+         P/JOyv/te+KN67fq/EL8gGk11S21wp5KVo/RgFA7vLNXQcUwMZawImHOtms4IqKdPIRC
+         YSYII2ER/jGF0nsTT7f9ba3JDw7PBtP9JfoeOSLC/h/aVBLn1j8e/ntS3A2NKc84EfXx
+         VXWJVqVKKBEb6yeaRcj4ws7cKTsq3dXdOoKXkFfqoYbnzN06V/L4a/UOGfF1WBukjaDr
+         S0CQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oZgdjt03EFmKkCkALdaRUu9j5orxJYcBeTCfsLBxk8A=;
+        b=AAxcetVQ5oaF4uQL6CPSUnuRs5czvcOaSZilF5U84Xy9RCjOnAVb90CA3cJkN/a4tv
+         O825D1iDT4DdsTNwySYxwhGmTn1cFu3shO5spCwjp9gLItYIRvtutLjIlZXSGricHC86
+         H8ELUNXajJbYwyaBRsXdzcl/BvtGpAnohJ5mQ1B21LlH1zeqPCGC14C24hEHyFEmfJrW
+         2biFCgl8u01h9Dzlq4RLBo6GIUFtBD8iqh1sVps7B2XkgLpLFYTfgyni6KmGUXgVxbzE
+         2NlDnaaWfdzd2MeUQcOE/CieuarOqOYCmwGu5AZKWw0zSHoYRAF9XPlhe/p+6Wtu4rn+
+         4rrQ==
+X-Gm-Message-State: AOAM532EfNQPr27SrwsOKmbmusEMZhicpu7BXf27e7PiwgD0DFlsTSE0
+        94Cl6IfEARy7Z0Ehf3drypZVKw==
+X-Google-Smtp-Source: ABdhPJytUEtWPCyxY1vXwS1p2kyE6foHlshe66Lm72wo7JRHSm6EBgDpEJrg4kT5X1AqveMjrWjE1Q==
+X-Received: by 2002:a05:6402:370c:b0:425:a9c4:88c4 with SMTP id ek12-20020a056402370c00b00425a9c488c4mr14454907edb.190.1650812616952;
+        Sun, 24 Apr 2022 08:03:36 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id y23-20020a170906071700b006e8a19cefa6sm2655165ejb.106.2022.04.24.08.03.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Apr 2022 08:03:36 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 1/3] dt-bindings: timer: cdns,ttc: drop unneeded minItems
+Date:   Sun, 24 Apr 2022 17:03:31 +0200
+Message-Id: <20220424150333.75172-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To read/write a value to a PHC, it is required to use a PTP pin.
-Currently it is used pin 5, but change to pin 7 as is the last pin.
-All the other pins will have different functions.
+There is no need to add minItems when it is equal to maxItems.
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/devicetree/bindings/timer/cdns,ttc.yaml | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c b/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c
-index 0a1041da4384..3e455a3fad08 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c
-@@ -16,7 +16,7 @@
-  */
- #define LAN966X_1PPB_FORMAT		3480517749LL
+diff --git a/Documentation/devicetree/bindings/timer/cdns,ttc.yaml b/Documentation/devicetree/bindings/timer/cdns,ttc.yaml
+index c3386076a98c..7d821fd480f6 100644
+--- a/Documentation/devicetree/bindings/timer/cdns,ttc.yaml
++++ b/Documentation/devicetree/bindings/timer/cdns,ttc.yaml
+@@ -17,7 +17,6 @@ properties:
+     maxItems: 1
  
--#define TOD_ACC_PIN		0x5
-+#define TOD_ACC_PIN		0x7
- 
- enum {
- 	PTP_PIN_ACTION_IDLE = 0,
+   interrupts:
+-    minItems: 3
+     maxItems: 3
+     description: |
+       A list of 3 interrupts; one per timer channel.
 -- 
-2.33.0
+2.32.0
 
