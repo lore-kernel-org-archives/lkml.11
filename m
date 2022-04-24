@@ -2,154 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2B20C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 11:12:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34285C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 11:17:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239253AbiDXLPG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 07:15:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37562 "EHLO
+        id S239260AbiDXLUX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 07:20:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237795AbiDXLPE (ORCPT
+        with ESMTP id S235620AbiDXLUR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 07:15:04 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D445DE0AE
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 04:12:04 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id l7so24538723ejn.2
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 04:12:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=/poCgpgeQHKZ0kafLJZ7iBP9Nl8gQzlXb2tE2PvG41A=;
-        b=ohDHGzn+AQzNfa+Ufe3IbVJ+Hy0aS+wzo+K72EPX0hPMX0m9z5QMYeUSuOK0IIKhX7
-         U3IJv07tWsVfRk40LZCU2qLoWMIHB/aFWcFauz5wJYLplsMBTWblKTc/oV97hDxPBeuE
-         CySybWxNjbuZThXUlHsTo1iUIhRtudEt6PYHhKvgyaXe1SWOXOHFjNhEMr4GxCu6pory
-         ex+1H8edUAjPi/GlipFEzUypJeJC3/KPYtQVrxhQFIlXg2EYplZUDOeXahEqZfVuDy5F
-         ziMM3ijI1qMK66wVmYbphrNaEFkOKsjLC+XaI0bjNXHX7bSnQzqQ+uhVbj14cT4WStPn
-         PflQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=/poCgpgeQHKZ0kafLJZ7iBP9Nl8gQzlXb2tE2PvG41A=;
-        b=hVWgbdI6XB9wr8+mE2gIsr8RCXeXhZ1KhDPVnQMhYhJQmltEzAfRVk+nTGXP/Amhi3
-         M7uq//D8BUTMCTlwkKhgUGaHzd2RwM6/Ym2CCyRJGWPb6K7fUeFKA5vYcyat7g/mnWpy
-         2SnGkBs1HIrnjzM1yLRjwypTWHpd1HkpJT3Li1G6omtA+GYL5aL25ze+j+Lbdqa1fIL3
-         Uvy4yf3oi304ABsY86NC528NCq7xlKv/p2e+cBNR215AybU51kgltVjVtDPO9+7cOo93
-         tqIzVahkO1nVArHgE2apHJoe3MIKwNV9XQ7kT1UEeGO41HTE80UgJXZp6EGh1yCjxqpl
-         DD8Q==
-X-Gm-Message-State: AOAM530M9lDDWWbH4ndN5P0331kFAZTa6/e/1humPOOUquKJMidzatow
-        B7qTFFPamN/YSaJFIzujpZ3IiQ==
-X-Google-Smtp-Source: ABdhPJxE5+FK9rjnAAc7wNu/qc3cAWyO2XXDHed8BuvmWqdT4x6H/PlMmGAE3d+a4v3dMK7+Nco84A==
-X-Received: by 2002:a17:907:3e03:b0:6da:8c5a:6d4a with SMTP id hp3-20020a1709073e0300b006da8c5a6d4amr12132043ejc.585.1650798722793;
-        Sun, 24 Apr 2022 04:12:02 -0700 (PDT)
-Received: from [192.168.0.235] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id kb9-20020a1709070f8900b006e889aad94esm2525078ejc.128.2022.04.24.04.12.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 24 Apr 2022 04:12:02 -0700 (PDT)
-Message-ID: <70db8ad7-ba2e-ac08-492c-b2117c3235e5@linaro.org>
-Date:   Sun, 24 Apr 2022 13:12:01 +0200
+        Sun, 24 Apr 2022 07:20:17 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ABF41738E8
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 04:17:17 -0700 (PDT)
+Received: from kwepemi100014.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KmQb12W3FzhYRH;
+        Sun, 24 Apr 2022 19:17:01 +0800 (CST)
+Received: from kwepemm600004.china.huawei.com (7.193.23.242) by
+ kwepemi100014.china.huawei.com (7.221.188.106) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sun, 24 Apr 2022 19:17:15 +0800
+Received: from huawei.com (10.175.124.27) by kwepemm600004.china.huawei.com
+ (7.193.23.242) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sun, 24 Apr
+ 2022 19:17:14 +0800
+From:   Guo Xuenan <guoxuenan@huawei.com>
+To:     <willy@infradead.org>
+CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        <houtao1@huawei.com>, <fangwei1@huawei.com>, <guoxuenan@huawei.com>
+Subject: Questions about folio allocation.
+Date:   Sun, 24 Apr 2022 19:35:43 +0800
+Message-ID: <20220424113543.456342-1-guoxuenan@huawei.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 5/5] mtd: onenand: samsung: Add device tree support
-Content-Language: en-US
-To:     Jonathan Bakker <xc-racer2@live.ca>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Kyungmin Park <kyungmin.park@samsung.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        =?UTF-8?Q?Pawe=c5=82_Chmiel?= <pawel.mikolaj.chmiel@gmail.com>
-References: <20220423034524.366612-1-xc-racer2@live.ca>
- <20220423034622.366696-1-xc-racer2@live.ca>
- <CY4PR04MB056716B2AE01D243F6AE3C13CBF69@CY4PR04MB0567.namprd04.prod.outlook.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CY4PR04MB056716B2AE01D243F6AE3C13CBF69@CY4PR04MB0567.namprd04.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600004.china.huawei.com (7.193.23.242)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23/04/2022 05:46, Jonathan Bakker wrote:
-> From: Tomasz Figa <tomasz.figa@gmail.com>
-> 
-> This patch adds support for instantation using Device Tree.
-> 
-> Signed-off-by: Tomasz Figa <tomasz.figa@gmail.com>
-> Signed-off-by: Paweł Chmiel <pawel.mikolaj.chmiel@gmail.com>
-> Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
-> 
-> ---
-> Changes from previous patchset
-> - Adjust to having a nand child node as per binding feedback
-> ---
->  drivers/mtd/nand/onenand/onenand_samsung.c | 67 +++++++++++++++++++++-
->  1 file changed, 65 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/mtd/nand/onenand/onenand_samsung.c b/drivers/mtd/nand/onenand/onenand_samsung.c
-> index 62014f8d27b6..0108c8c75d5b 100644
-> --- a/drivers/mtd/nand/onenand/onenand_samsung.c
-> +++ b/drivers/mtd/nand/onenand/onenand_samsung.c
-> @@ -22,6 +22,7 @@
->  #include <linux/dma-mapping.h>
->  #include <linux/interrupt.h>
->  #include <linux/io.h>
-> +#include <linux/of.h>
->  
->  #include "samsung.h"
->  
-> @@ -832,8 +833,36 @@ static void s3c_onenand_setup(struct mtd_info *mtd)
->  	this->write_bufferram = onenand_write_bufferram;
->  }
->  
-> +#ifdef CONFIG_OF
-> +static const struct of_device_id s3c_onenand_of_match[] = {
-> +	{ .compatible = "samsung,s3c6400-onenand",
-> +		.data = (void *)TYPE_S3C6400 },
-> +	{ .compatible = "samsung,s3c6410-onenand",
-> +		.data = (void *)TYPE_S3C6410 },
-> +	{ .compatible = "samsung,s5pv210-onenand",
-> +		.data = (void *)TYPE_S5PC110 },
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(of, onenand_s3c_dt_match);
-> +#endif
-> +
-> +static enum soc_type s3c_onenand_get_device_id(struct platform_device *pdev)
-> +{
-> +	struct device_node *np = pdev->dev.of_node;
-> +
-> +	if (IS_ENABLED(CONFIG_OF) && np) {
-> +		const struct of_device_id *match;
-> +
-> +		match = of_match_node(s3c_onenand_of_match, np);
-> +		return (enum soc_type)match->data;
-> +	}
+Hi Matthew,
 
-This can be simpler:
+You have done a lot of work on folio, many folio related patches have been
+incorporated into the mainline. I'm very interested in your excellent work
+and did some sequential read test (using fixed read length, testing on a
+10G file), and found something.
+1. different read length may effect folio order
+   using 100KB read length during sequentital read, when readahead folio
+   order may always 0, so there always allocate folios with 0 or 2. 
+2. folio order can not reach MAX_PAGECACHE_ORDER, when read length is small.
+   (eg, less than 32KB)
 
-if (dev_of_node(&pdev->dev))
-	return of_device_get_match_data(&pdev->dev);
+As you have mentationed here[1],
+"The heuristic for choosing which folio sizes will surely need some tuning"
+I wonder (1) why the folio order need align with page index. is this
+necessary or there are some certain restrictions?
+(2) for pagecache, by using large folio, it saving loops for allocating pages,
+and i also did some test on dropcache, it shows that dropcache costs less time.
+there are twenty times performance improvement when drop the 10G file's cache.
+so, can i concluded that pagecache should tend to use large order of folio?
 
-This allows you to put the of_device_id table in usual place, so just
-before the platform_driver structure.
+[1] https://lore.kernel.org/linux-mm/20220204195852.1751729-72-willy@infradead.org/,
 
-> +
-> +	return platform_get_device_id(pdev)->driver_data;
-> +}
-> +
->  static int s3c_onenand_probe(struct platform_device *pdev)
->  {
-> +	struct device_node *np = pdev->dev.of_node;
-
-dev_of_node()
-
-
-Best regards,
-Krzysztof
+Thanks,
+Guo Xuenan
