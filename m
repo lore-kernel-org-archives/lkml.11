@@ -2,105 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EAEAC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 10:03:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA0E2C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 10:07:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238991AbiDXKGQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 06:06:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43126 "EHLO
+        id S238951AbiDXKKf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 06:10:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238990AbiDXKGN (ORCPT
+        with ESMTP id S237417AbiDXKKe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 06:06:13 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F5F1174430
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 03:03:13 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 33CAE210EA;
-        Sun, 24 Apr 2022 10:03:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1650794592; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=9LLD+iTz0yZM84SOfGGfYeIkDQx1NxGJm4CTFo6b/Ws=;
-        b=VUWAriDdhCJUg7IHwEEFYdNPBB+hJ24YgoiAbvEugNcVB5nnnosjERpWnnVdVdUvHPo6pv
-        KkzNJmWlspCdXYWyltN6cD6ChjIKRS/EG50dpcmT6G1Mrerc4j0mqhVcELUdpIGwGTvjjm
-        Q5txyIpalVT6AZ0GLNS2urKfIOXyPMA=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1650794592;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=9LLD+iTz0yZM84SOfGGfYeIkDQx1NxGJm4CTFo6b/Ws=;
-        b=Zw2uqeGNqOINnYnKpnX65z4mWLZSgTVk9Ntr6QdeReqsKdyzdRiF26ThfM6CXuNT4820mU
-        v8JXSoO5arz3njCA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 2201F13AE0;
-        Sun, 24 Apr 2022 10:03:12 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id diJHCGAgZWK2KAAAMHmgww
-        (envelope-from <bp@suse.de>); Sun, 24 Apr 2022 10:03:12 +0000
-Date:   Sun, 24 Apr 2022 12:03:12 +0200
-From:   Borislav Petkov <bp@suse.de>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
-Subject: [GIT PULL] perf/urgent for 5.18-rc4
-Message-ID: <YmUgYLZF8ptmhyj/@zn.tnic>
+        Sun, 24 Apr 2022 06:10:34 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EDF765C3
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 03:07:32 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id y20so24327693eju.7
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 03:07:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=OJlYAV8vSTnWXomsTtiXBSUp1xsB3tnRUddj5QlukZ4=;
+        b=X5cwwo5Fd8HeegNgzPpR3bnJKm0VpMNgBLaqICYXGKbcNlAv4VZoHtysrExiZIaVa1
+         BV3TC6w+210sUzNjW+XLZWJi2mZ9A3I6YIMgNWT6NeWvbg5WtBlAZQswj+0/yg6Tlf/4
+         l6Vfk5TTMd0x7mnuG+mF24xgJxSJsZiYvDftdMpWqJSVYfRlVwI9aF7TaptdRZu9PVkG
+         FkpLE8EuggJ66Z1G+YEXBtOxNNrYr9j2usxfB6VC2gKJR1QO21/67++3tneENQzq9QVU
+         94SDfGGRMYCQ8JOI6tveOLGtXx7kHU3/2FGiOhJz71BJW3zHG2lFD7z9M3tFELZAeCZK
+         VWrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=OJlYAV8vSTnWXomsTtiXBSUp1xsB3tnRUddj5QlukZ4=;
+        b=aZH4nqH3Qbi2sMYz4cepD/0eXX0s6Vrp2IpxJ6D3QY413NUOnGUc97AnLIdXDwIYsK
+         Io4WqMtkEbp2KPIse96WR+TmSkdFlvE522cA8jylRmidLxW8tcs4gJ7okur3HUy7nfTW
+         Odevb8LB3UuQfxfKw79Imqgc8R57HSvBrH6ZuCcGm23tKBvkvjfH/uzZhn7JcvG86rVu
+         fLxQkPmE2KOZT2H2SLAtl7irGpEH+OfEVk8ASkROT9zuXdYO5TDuiQnVzBFr6zj63nDU
+         i/JJ9VNGCI6tip96lDt+8a5o77ti79iPGa3z5a5Tuwh9uAK9zDGVBsCQ5ryn1+MdeHcL
+         0uNA==
+X-Gm-Message-State: AOAM533YdVGBhCnv7qXOK+q5PxeBDJvEVnLvzQEPBvtnH6J5XinFX6yV
+        wnHp26gdf8r7DPz45gdkJqFwXg==
+X-Google-Smtp-Source: ABdhPJyuiF2SOSBKDXcmSIorC2U4elJdrOewuVp/EizS+DAVjXzvXyjjopr/0ydow9WgZxPsYXt9Mg==
+X-Received: by 2002:a17:906:3ce9:b0:6ef:a8aa:ab46 with SMTP id d9-20020a1709063ce900b006efa8aaab46mr11365983ejh.579.1650794850702;
+        Sun, 24 Apr 2022 03:07:30 -0700 (PDT)
+Received: from [192.168.0.234] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id g21-20020a056402115500b00413c824e422sm3091656edw.72.2022.04.24.03.07.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 24 Apr 2022 03:07:30 -0700 (PDT)
+Message-ID: <b620e809-4375-3559-4a27-3b168edf985e@linaro.org>
+Date:   Sun, 24 Apr 2022 12:07:29 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH V3 1/3] dt-bindings: clk: sprd: Add bindings for ums512
+ clock controller
+Content-Language: en-US
+To:     Cixi Geng <gengcixi@gmail.com>
+Cc:     Michael Turquette <mturquette@baylibre.com>, sboyd@kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org,
+        Orson Zhai <orsonzhai@gmail.com>,
+        "baolin.wang7@gmail.com" <baolin.wang7@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        linux-clk@vger.kernel.org,
+        Devicetree List <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220418125630.2342538-1-gengcixi@gmail.com>
+ <20220418125630.2342538-2-gengcixi@gmail.com>
+ <714caf6e-5f81-6d73-7629-b2c675f1f1d4@linaro.org>
+ <CAF12kFv6uioc7ATtXLpGTTDBFT1wYWZUBoyjQqP1bSUnut0pKA@mail.gmail.com>
+ <a5a59f3c-00a3-afc5-24aa-1ae3de2600ec@linaro.org>
+ <CAF12kFsqOSZDZ9iw+KfR-x533YzNa=yxR1rqWuoGX=vBgh+wGw@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAF12kFsqOSZDZ9iw+KfR-x533YzNa=yxR1rqWuoGX=vBgh+wGw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+On 24/04/2022 05:14, Cixi Geng wrote:
+> Hi Krzysztof:
+> I find the history discuss about the sp9863 clock[1] and last
+> ums512-clk dt-bindings patch[2] which from chunyan.
+> please refer to the reasons below.
+> 
+> These clocks are at the same register range with global registers.
+> the registers shared with more than one devices
+>  which  basically are multimedia devices. You may noticed that these
+> are all gate clocks which are in the global registers
+>  ranges and are used to controll the enable status of some devices or
+> some part of devices.
 
-please pull two urgent fixes to the perf side of things, for 5.18.
+You replied top-post, I don't know what is it about.
+> 
+> [1].https://lore.kernel.org/all/CAAfSe-s0gcehu0ZDj=FTe5S7CzAHC5mahXBH2fJm7mXS7Xys1Q@mail.gmail.com/
+> [2].https://lore.kernel.org/all/163425295208.1688384.11023187625793114662@swboyd.mtv.corp.google.com/
 
-Thx.
+Could you keep URLs without any additional characters (so surrounded by
+whitespace characters) because it makes impossible to open them.
 
----
-
-The following changes since commit b2d229d4ddb17db541098b83524d901257e93845:
-
-  Linux 5.18-rc3 (2022-04-17 13:57:31 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/perf_urgent_for_v5.18_rc4
-
-for you to fetch changes up to 528c9f1daf20da14d3e7348dc4b1d7c55743ee64:
-
-  perf/x86/cstate: Add SAPPHIRERAPIDS_X CPU support (2022-04-19 21:15:42 +0200)
-
-----------------------------------------------------------------
-- Add Sapphire Rapids CPU support
-
-- Fix a perf vmalloc-ed buffer mapping error (PERF_USE_VMALLOC in use)
-
-----------------------------------------------------------------
-Zhang Rui (1):
-      perf/x86/cstate: Add SAPPHIRERAPIDS_X CPU support
-
-Zhipeng Xie (1):
-      perf/core: Fix perf_mmap fail when CONFIG_PERF_USE_VMALLOC enabled
-
- arch/x86/events/intel/cstate.c | 7 ++++---
- kernel/events/core.c           | 2 +-
- kernel/events/internal.h       | 5 +++++
- kernel/events/ring_buffer.c    | 5 -----
- 4 files changed, 10 insertions(+), 9 deletions(-)
-
--- 
-Regards/Gruss,
-    Boris.
-
-SUSE Software Solutions Germany GmbH, GF: Ivo Totev, HRB 36809, AG Nürnberg
+Best regards,
+Krzysztof
