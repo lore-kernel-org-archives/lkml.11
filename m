@@ -2,291 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C956AC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 09:34:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA2E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 09:34:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238887AbiDXJhk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 05:37:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37060 "EHLO
+        id S238865AbiDXJh4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 05:37:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235905AbiDXJhZ (ORCPT
+        with ESMTP id S235905AbiDXJhy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 05:37:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A76392019D
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 02:34:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650792863;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kSIpLejv7h+Qh7GF1vX9N5MH/EeI/nqqXVhbiI5Iaao=;
-        b=JT4zAvLE7ru0Naf5eT3rnPvheHAkPkjbzFtLMO0tkZmviSMe48AkgHJWMGFlAzracaNrlq
-        PI07pd3GqGkl9kBEagmSzLEG8LbGIZTgqvchFYym0dhYXKrCmJaa4kl2DavI9wparfN4wq
-        QzlPBnxi+cioGscvtKKOjKY6S3QU96Q=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-252-u0DT-vpdOgay35q41ALOKg-1; Sun, 24 Apr 2022 05:34:20 -0400
-X-MC-Unique: u0DT-vpdOgay35q41ALOKg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DFD013806729;
-        Sun, 24 Apr 2022 09:34:19 +0000 (UTC)
-Received: from starship (unknown [10.40.192.41])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8B45F145BEF9;
-        Sun, 24 Apr 2022 09:34:17 +0000 (UTC)
-Message-ID: <2327614a18d60a5e1b0d9d3aed754cccebce3117.camel@redhat.com>
-Subject: Re: [PATCH v2 11/11] KVM: SVM: Drop support for CPUs without NRIPS
- (NextRIP Save) support
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Maciej S . Szmigiero" <maciej.szmigiero@oracle.com>
-Date:   Sun, 24 Apr 2022 12:34:16 +0300
-In-Reply-To: <20220423021411.784383-12-seanjc@google.com>
-References: <20220423021411.784383-1-seanjc@google.com>
-         <20220423021411.784383-12-seanjc@google.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        Sun, 24 Apr 2022 05:37:54 -0400
+Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2136.outbound.protection.outlook.com [40.107.255.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72BAF205DE
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 02:34:54 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mf9nWUegVXEKw290C5vH3TT4WLS/qCdxSFxo03IoNZNBXcmJeqkSD6vdeQI9u5tAIayJ7GFoTADoTsCaXpgzOxrLWd3HicZiiqSLcoFNIwTzv7go/bWWr2yLl13z2EMXQetGIIEpHWYq15ZlYWcMwDmPZ2uVfsTbNZ4DAqzJwv8rQ7x5VCQBdRKpwBedoLzv6cQO5KJWmvOXEUEp5HADULe/L/7zk5qy49JZYt7toUL2AC4/cFZ9sU1qcTQ16LScq0DErbC9JQyFANyj6UNQYUDdgj3n7Df37/bDXr0QW434EtjZSmkWIG+njiy28i0ZfEsfqiIOxwjFlgrRJBqFbA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=K7Xm4piBEcxho0DpT/YOvOb7d/WIfaoLAlrD4oP2OpQ=;
+ b=MH+QnG9QxhIEkMJWFg82HLfd4gbpnc/VZBrbNXOvvQMxC5+h/QpYc1X6lW02PeEODKBNilmxnGgNIB0okkOO+d2JHQSUUHYf2B/133aa8RMjAH8b5U4ibgXvUzmyCB1XTvilvLCHw1w1aGQGPnmJ45UbXnL1DaVMlywGMgBu04ZWrA5z0+FFEEoLta8ng4dW2kpBg3n7dijtmLEvAfDBqre+hr5uswaQTg1yK/jXtoGQ5KWxhQH9HSpxOPwsz9FpwQ5G1Co1nbNWaYQwrhIyMxeoKLupDlA3Ulb693yFFw8fQZzUzHX0jl8+XtAlAYKBVtzTc5FmBB6kO3qYKxuPqw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
+ s=selector2-vivo0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=K7Xm4piBEcxho0DpT/YOvOb7d/WIfaoLAlrD4oP2OpQ=;
+ b=aNUI90j3lzKPQWIuHfOJQwKrjrwZnYSQYpONQOMFMe6wxBBLU2dOlt4FK2mLlOTdkjMwRZSrPw2K8hxx1317Wt7LiVYfsxxKM3OpSEKzxFNi/MCnFV3Bs19IAlzELhuxlIrM/j35as6siMW+VwukX74G0Lzmn/4G5eiElv59KKU=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vivo.com;
+Received: from SG2PR06MB3367.apcprd06.prod.outlook.com (2603:1096:4:78::19) by
+ TYZPR06MB4335.apcprd06.prod.outlook.com (2603:1096:400:74::10) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5186.13; Sun, 24 Apr 2022 09:34:50 +0000
+Received: from SG2PR06MB3367.apcprd06.prod.outlook.com
+ ([fe80::4591:4f3e:f951:6c8c]) by SG2PR06MB3367.apcprd06.prod.outlook.com
+ ([fe80::4591:4f3e:f951:6c8c%7]) with mapi id 15.20.5186.019; Sun, 24 Apr 2022
+ 09:34:50 +0000
+From:   Wan Jiabing <wanjiabing@vivo.com>
+To:     Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org
+Cc:     kael_w@yeah.net, Wan Jiabing <wanjiabing@vivo.com>
+Subject: [PATCH] ring-buffer: simplify if-if to if-else
+Date:   Sun, 24 Apr 2022 17:34:41 +0800
+Message-Id: <20220424093442.102230-1-wanjiabing@vivo.com>
+X-Mailer: git-send-email 2.35.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: HK2PR06CA0016.apcprd06.prod.outlook.com
+ (2603:1096:202:2e::28) To SG2PR06MB3367.apcprd06.prod.outlook.com
+ (2603:1096:4:78::19)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3a062de4-3a3b-4f22-aade-08da25d5aded
+X-MS-TrafficTypeDiagnostic: TYZPR06MB4335:EE_
+X-Microsoft-Antispam-PRVS: <TYZPR06MB4335CB10B717FF125B49BD9CABF99@TYZPR06MB4335.apcprd06.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: SoSvpeetuRn8+pp3qroF2ijwIyYFi9wWMfJOYUHow5Qlt5B3YS5j6bSUPaxIv/tm5NdsLYclqWzGce4l62qUMPAnGXcDtPoTe1hdpG3wgxikUjv4vhGLD0rkiMA9mge4WF7SLUJfmzxrOSfgpEaDCu9aPb8oov4VgiRbFOOON5DloWJ+B0xQLxBKHvMF+GFQkWFGLYBc6l1VHCBJy/aHrl49MIt1Ho67N8eFMIs4eP2NmCxpS7hgO1ra9C+oWHj6yqY+4faMWK++w20q/j7HvEGoeD3PL7bnL0FxCpB8DDyfzhvQ7JOpV5y+h0ne5sl76GhnUvD6EvIPda/FRyKM32LZ4x8ny9QudsOEvF9bMBBzlRRCGVv+TiKj+kvOP//w5B28RXdORJmvHbASbo9d0xRBNu9rIALUtDfdgY0Lw0Hjq9AGICxM8zImgr6vGCzvvk1E7Vf26Zk9AETeO8o5T8G38T6NZ9OY4XzFZ1kZS98qySMlzKHWW5znvMVrnynVPw8D4YiCJhn6Qjp0j6lx2y4SqpcV7NiM36FW36idbihQ0UKsiH8BP5Yfrk6h02YXw3Vj3GnWwnnJwXORvN/rZpM/7yxn+JhSkRmo4q2Ors1rRElJGd3/3dp4/ncjwNi07lrzouMVYZUnjTJWgUF1X5RhfHaXcboeyXQ996f8Nafv7mNgC6stjkEvjaT55jHfAwZgornHPi+/g6bs+FWnJQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB3367.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2906002)(86362001)(2616005)(107886003)(83380400001)(1076003)(4326008)(508600001)(66556008)(8676002)(4744005)(186003)(66476007)(52116002)(8936002)(6486002)(6512007)(26005)(6506007)(316002)(6666004)(66946007)(38100700002)(38350700002)(5660300002)(110136005)(36756003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?xyChDSW3MaF9gQJhtJ61Q09bCdjOcuWx9fyqYwmm5kI4U+P9ePPHpJqEtDEY?=
+ =?us-ascii?Q?z6GKyOX5jUzElcHamCNk+FT+djpOwcTXAjAxYivobdt9glLRjLaFILbpMYyL?=
+ =?us-ascii?Q?FwJQZ51NduyhPKAQVbOaB4xavIcwg8lD+D+fb+PPDJfFY30llpB1R8CcW3pO?=
+ =?us-ascii?Q?mMrNkF9imxRY/B7+8zjkJNrCXy2mhXnH3rOEE8LK0W7x2gA4V8fRabewLVIW?=
+ =?us-ascii?Q?GsNz7pmqtLuPKM/NL7/8/hAnNGcuOLV9YPJlkYS/VSOvoWoOmrDPZcmhtzCF?=
+ =?us-ascii?Q?wCovGZDjK2X2qValcezQJ5vpqdJ9MXmp+21oatDm4FPl57m4EGjJrs+oaREI?=
+ =?us-ascii?Q?9eVN468RyOrItY+jRUc8c7wuI+1u24G5vNf34E8VOTIQjia/YVxi68G1gYwb?=
+ =?us-ascii?Q?K5tx8Qu+4dBeSnPA0qOPzjNKaGfWZcQU/hqyFK0qpB44BTyhhb41ow/9tUrP?=
+ =?us-ascii?Q?H+WT+dgSnMvBd4cL5xXVxIyH8CXLdWDqhSy7SBRnEppQ0U9o87V7hK+8CduP?=
+ =?us-ascii?Q?zxhaT+Sh+EZKsddWnRd2NXzwezX+h+iORe/tJ6kImFIZ4asEwS1kWuqt13hO?=
+ =?us-ascii?Q?Rv7Jb7J5RJ0AnfcZG/g5ZkiqK6r0Ps7kFtjmt55uwsQ95vvQ2Y306xhnqxdn?=
+ =?us-ascii?Q?XvIBL21UJbO+Qpz0vT5VEpFUJGrDL0WWMVDoQ+iPc3LrHWjtwP645vRF+jba?=
+ =?us-ascii?Q?+EiOJ88TxUbh64wnLsUiG71AEvDT23g1ilvrTueiKFRkb2EucHndT9ZKTxEn?=
+ =?us-ascii?Q?haRww5ZIhd6gnMhV/curZ9K0f/NHtDfm+pGYZ5bawj3kRBtB+mT5dh84fjqb?=
+ =?us-ascii?Q?HbqO+veS1uDFIIaXHShef6FgkiC6P6Jvi9rtQYcs6G8cRki1Ef/yUHOhvm0t?=
+ =?us-ascii?Q?xzjrCN/WENyF+eDbwWE6ZcglF12h0JBGfN4Ke0qaCsou6vjMu9brp8gxxCC+?=
+ =?us-ascii?Q?iqKHdWBzobj8yZdw/AatAK7ZVYTwoP59SBdiJOMiaPsGuuixciEK1if9XBKx?=
+ =?us-ascii?Q?pMnnqp29m+cUAKvzN1VPRYpaeOiiVuGDSQk4z5G6DUcJ7ZVBzC6wvlmEH2Mv?=
+ =?us-ascii?Q?LD3nMWxNY3bJvI8OnuYeFgBFGnK9YOqx6B0CpOPB8Rna7jlMiAE+ozq5uNu1?=
+ =?us-ascii?Q?3HuGaiHGtEwCAwWHbkacoJAxlOoRENt/GbRpZMZuZapptRyttUJ02HpvScr7?=
+ =?us-ascii?Q?E/7Qk0BauHD9aNDUIFvXXT3kUhX4kcpwBjjZMoG/nH2JvNhRd6OkWYz7mLZI?=
+ =?us-ascii?Q?TSRSoUeKFFTTzcrNDHZDHSkOYUerz6+ok3fK8yTLpvXULEEh/bY6H9ZQI8Zb?=
+ =?us-ascii?Q?lvZTft2+fvZPC6qC110/lJaPtYOUxZDf/YJcg3Wr+Kkvim5I9W1F8uCGExuU?=
+ =?us-ascii?Q?k3nwEsqt3Inzk7LBToVbNzmb4Kd/bFEULAWaPvlj1bY0nE//JsP2OhcTM8Yk?=
+ =?us-ascii?Q?HZkqiVFFv+PwZDqXO6t9RlyI/Dq3PQc/osaLBPDs8dMG3OjKPB4iB1s/3UfB?=
+ =?us-ascii?Q?hrLlJdhXuHHauQk7kfXTjgBUP35XOGL0fURBRqX2hXGJVNQGC/HUi6Tvxqyq?=
+ =?us-ascii?Q?uCWhn/xa8alzpT4P6E5y9UbF2mRtrMCXjL846RQyzvtSpt4/19/VhpDw+8L1?=
+ =?us-ascii?Q?k3Ilo74K2NpgwUsjOukYrbBwCjs438zc7Le/UPXYJOD07UzSyOALxVf1UhJ6?=
+ =?us-ascii?Q?o4CSLFB9Lxn2bAwO76KFbE1eu/59XFHcXRaCi6PyIdzw5WNyAntGAuDa/nkW?=
+ =?us-ascii?Q?K44zPRdOsw=3D=3D?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3a062de4-3a3b-4f22-aade-08da25d5aded
+X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB3367.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Apr 2022 09:34:50.5142
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: LXon5KOUEMw6BUrP3CiPxjvh+iWJSrZhH1udAAaDGsJxGfUYwC3eXNtK1OKpMBZIK20UM0zt1pUNBvWlwTk9Ag==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYZPR06MB4335
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 2022-04-23 at 02:14 +0000, Sean Christopherson wrote:
-> Drop support for CPUs without NRIPS along with the associated module
-> param.  Requiring NRIPS simplifies a handful of paths in KVM, especially
-> paths where KVM has to do silly things when nrips=false but supported in
-> hardware as there is no way to tell the CPU _not_ to use NRIPS.
-> 
-> NRIPS was introduced in 2009, i.e. every AMD-based CPU released in the
-> last decade should support NRIPS.
-> 
-> Suggested-by: Paolo Bonzini <pbonzini@redhat.com>
-> Not-signed-off-by: Sean Christopherson <seanjc@google.com>
-> ---
->  arch/x86/kvm/svm/nested.c                     |  9 +--
->  arch/x86/kvm/svm/svm.c                        | 77 +++++++------------
->  .../kvm/x86_64/svm_nested_soft_inject_test.c  |  6 +-
->  3 files changed, 32 insertions(+), 60 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
-> index a83e367ade54..f39c958c77f5 100644
-> --- a/arch/x86/kvm/svm/nested.c
-> +++ b/arch/x86/kvm/svm/nested.c
-> @@ -681,14 +681,13 @@ static void nested_vmcb02_prepare_control(struct vcpu_svm *svm,
->  	/*
->  	 * next_rip is consumed on VMRUN as the return address pushed on the
->  	 * stack for injected soft exceptions/interrupts.  If nrips is exposed
-> -	 * to L1, take it verbatim from vmcb12.  If nrips is supported in
-> -	 * hardware but not exposed to L1, stuff the actual L2 RIP to emulate
-> -	 * what a nrips=0 CPU would do (L1 is responsible for advancing RIP
-> -	 * prior to injecting the event).
-> +	 * to L1, take it verbatim from vmcb12.  If nrips is not exposed to L1,
-> +	 * stuff the actual L2 RIP to emulate what an nrips=0 CPU would do (L1
-> +	 * is responsible for advancing RIP prior to injecting the event).
->  	 */
->  	if (svm->nrips_enabled)
->  		vmcb02->control.next_rip    = svm->nested.ctl.next_rip;
-> -	else if (boot_cpu_has(X86_FEATURE_NRIPS))
-> +	else
->  		vmcb02->control.next_rip    = vmcb12_rip;
->  
->  	if (is_evtinj_soft(vmcb02->control.event_inj)) {
-> diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-> index 4a912623b961..6e6530c01e34 100644
-> --- a/arch/x86/kvm/svm/svm.c
-> +++ b/arch/x86/kvm/svm/svm.c
-> @@ -162,10 +162,6 @@ module_param_named(npt, npt_enabled, bool, 0444);
->  static int nested = true;
->  module_param(nested, int, S_IRUGO);
->  
-> -/* enable/disable Next RIP Save */
-> -static int nrips = true;
-> -module_param(nrips, int, 0444);
-> -
->  /* enable/disable Virtual VMLOAD VMSAVE */
->  static int vls = true;
->  module_param(vls, int, 0444);
-> @@ -355,10 +351,8 @@ static int __svm_skip_emulated_instruction(struct kvm_vcpu *vcpu,
->  	if (sev_es_guest(vcpu->kvm))
->  		goto done;
->  
-> -	if (nrips && svm->vmcb->control.next_rip != 0) {
-> -		WARN_ON_ONCE(!static_cpu_has(X86_FEATURE_NRIPS));
-> +	if (svm->vmcb->control.next_rip != 0)
->  		svm->next_rip = svm->vmcb->control.next_rip;
-> -	}
->  
->  	if (!svm->next_rip) {
->  		if (unlikely(!commit_side_effects))
-> @@ -394,15 +388,14 @@ static int svm_update_soft_interrupt_rip(struct kvm_vcpu *vcpu)
->  	 * Due to architectural shortcomings, the CPU doesn't always provide
->  	 * NextRIP, e.g. if KVM intercepted an exception that occurred while
->  	 * the CPU was vectoring an INTO/INT3 in the guest.  Temporarily skip
-> -	 * the instruction even if NextRIP is supported to acquire the next
-> -	 * RIP so that it can be shoved into the NextRIP field, otherwise
-> -	 * hardware will fail to advance guest RIP during event injection.
-> -	 * Drop the exception/interrupt if emulation fails and effectively
-> -	 * retry the instruction, it's the least awful option.  If NRIPS is
-> -	 * in use, the skip must not commit any side effects such as clearing
-> -	 * the interrupt shadow or RFLAGS.RF.
-> +	 * the instruction to acquire the next RIP so that it can be shoved
-> +	 * into the NextRIP field, otherwise hardware will fail to advance
-> +	 * guest RIP during event injection.  Drop the exception/interrupt if
-> +	 * emulation fails and effectively retry the instruction, it's the
-> +	 * least awful option.  The skip must not commit any side effects such
-> +	 * as clearing the interrupt shadow or RFLAGS.RF.
->  	 */
-> -	if (!__svm_skip_emulated_instruction(vcpu, !nrips))
-> +	if (!__svm_skip_emulated_instruction(vcpu, false))
->  		return -EIO;
->  
->  	rip = kvm_rip_read(vcpu);
-> @@ -421,11 +414,9 @@ static int svm_update_soft_interrupt_rip(struct kvm_vcpu *vcpu)
->  	svm->soft_int_old_rip = old_rip;
->  	svm->soft_int_next_rip = rip;
->  
-> -	if (nrips)
-> -		kvm_rip_write(vcpu, old_rip);
-> +	kvm_rip_write(vcpu, old_rip);
->  
-> -	if (static_cpu_has(X86_FEATURE_NRIPS))
-> -		svm->vmcb->control.next_rip = rip;
-> +	svm->vmcb->control.next_rip = rip;
->  
->  	return 0;
->  }
-> @@ -3732,28 +3723,16 @@ static void svm_complete_soft_interrupt(struct kvm_vcpu *vcpu, u8 vector,
->  	struct vcpu_svm *svm = to_svm(vcpu);
->  
->  	/*
-> -	 * If NRIPS is enabled, KVM must snapshot the pre-VMRUN next_rip that's
-> -	 * associated with the original soft exception/interrupt.  next_rip is
-> -	 * cleared on all exits that can occur while vectoring an event, so KVM
-> -	 * needs to manually set next_rip for re-injection.  Unlike the !nrips
-> -	 * case below, this needs to be done if and only if KVM is re-injecting
-> -	 * the same event, i.e. if the event is a soft exception/interrupt,
-> -	 * otherwise next_rip is unused on VMRUN.
-> +	 * KVM must snapshot the pre-VMRUN next_rip that's associated with the
-> +	 * original soft exception/interrupt.  next_rip is cleared on all exits
-> +	 * that can occur while vectoring an event, so KVM needs to manually
-> +	 * set next_rip for re-injection.  This needs to be done if and only if
-> +	 * KVM is re-injecting the same event, i.e. if the event is a soft
-> +	 * exception/interrupt, otherwise next_rip is unused on VMRUN.
->  	 */
-> -	if (nrips && (is_soft || (is_exception && kvm_exception_is_soft(vector))) &&
-> +	if ((is_soft || (is_exception && kvm_exception_is_soft(vector))) &&
->  	    kvm_is_linear_rip(vcpu, svm->soft_int_old_rip + svm->soft_int_csbase))
->  		svm->vmcb->control.next_rip = svm->soft_int_next_rip;
-> -	/*
-> -	 * If NRIPS isn't enabled, KVM must manually advance RIP prior to
-> -	 * injecting the soft exception/interrupt.  That advancement needs to
-> -	 * be unwound if vectoring didn't complete.  Note, the new event may
-> -	 * not be the injected event, e.g. if KVM injected an INTn, the INTn
-> -	 * hit a #NP in the guest, and the #NP encountered a #PF, the #NP will
-> -	 * be the reported vectored event, but RIP still needs to be unwound.
-> -	 */
-> -	else if (!nrips && (is_soft || is_exception) &&
-> -		 kvm_is_linear_rip(vcpu, svm->soft_int_next_rip + svm->soft_int_csbase))
-> -		kvm_rip_write(vcpu, svm->soft_int_old_rip);
->  }
->  
->  static void svm_complete_interrupts(struct kvm_vcpu *vcpu)
-> @@ -4112,8 +4091,7 @@ static void svm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
->  				    boot_cpu_has(X86_FEATURE_XSAVES);
->  
->  	/* Update nrips enabled cache */
-> -	svm->nrips_enabled = kvm_cpu_cap_has(X86_FEATURE_NRIPS) &&
-> -			     guest_cpuid_has(vcpu, X86_FEATURE_NRIPS);
-> +	svm->nrips_enabled = guest_cpuid_has(vcpu, X86_FEATURE_NRIPS);
->  
->  	svm->tsc_scaling_enabled = tsc_scaling && guest_cpuid_has(vcpu, X86_FEATURE_TSCRATEMSR);
->  	svm->lbrv_enabled = lbrv && guest_cpuid_has(vcpu, X86_FEATURE_LBRV);
-> @@ -4324,9 +4302,7 @@ static int svm_check_intercept(struct kvm_vcpu *vcpu,
->  		break;
->  	}
->  
-> -	/* TODO: Advertise NRIPS to guest hypervisor unconditionally */
-> -	if (static_cpu_has(X86_FEATURE_NRIPS))
-> -		vmcb->control.next_rip  = info->next_rip;
-> +	vmcb->control.next_rip  = info->next_rip;
->  	vmcb->control.exit_code = icpt_info.exit_code;
->  	vmexit = nested_svm_exit_handled(svm);
->  
-> @@ -4859,9 +4835,7 @@ static __init void svm_set_cpu_caps(void)
->  	if (nested) {
->  		kvm_cpu_cap_set(X86_FEATURE_SVM);
->  		kvm_cpu_cap_set(X86_FEATURE_VMCBCLEAN);
-> -
-> -		if (nrips)
-> -			kvm_cpu_cap_set(X86_FEATURE_NRIPS);
-> +		kvm_cpu_cap_set(X86_FEATURE_NRIPS);
->  
->  		if (npt_enabled)
->  			kvm_cpu_cap_set(X86_FEATURE_NPT);
-> @@ -4908,6 +4882,12 @@ static __init int svm_hardware_setup(void)
->  	int r;
->  	unsigned int order = get_order(IOPM_SIZE);
->  
-> +	/* KVM no longer supports CPUs without NextRIP Save support. */
-> +	if (!boot_cpu_has(X86_FEATURE_NRIPS)) {
-> +		pr_err_ratelimited("NRIPS (NextRIP Save) not supported\n");
-> +		return -EOPNOTSUPP;
-> +	}
-> +
->  	/*
->  	 * NX is required for shadow paging and for NPT if the NX huge pages
->  	 * mitigation is enabled.
-> @@ -4989,11 +4969,6 @@ static __init int svm_hardware_setup(void)
->  			goto err;
->  	}
->  
-> -	if (nrips) {
-> -		if (!boot_cpu_has(X86_FEATURE_NRIPS))
-> -			nrips = false;
-> -	}
-> -
->  	enable_apicv = avic = avic && npt_enabled && (boot_cpu_has(X86_FEATURE_AVIC) || force_avic);
->  
->  	if (enable_apicv) {
-> diff --git a/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c b/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c
-> index 257aa2280b5c..39a6569715fd 100644
-> --- a/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c
-> +++ b/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c
-> @@ -106,10 +106,8 @@ int main(int argc, char *argv[])
->  	nested_svm_check_supported();
->  
->  	cpuid = kvm_get_supported_cpuid_entry(0x8000000a);
-> -	if (!(cpuid->edx & X86_FEATURE_NRIPS)) {
-> -		print_skip("nRIP Save unavailable");
-> -		exit(KSFT_SKIP);
-> -	}
-> +	TEST_ASSERT(cpuid->edx & X86_FEATURE_NRIPS,
-> +		    "KVM is supposed to unconditionally advertise nRIP Save\n");
->  
->  	vm = vm_create_default(VCPU_ID, 0, (void *) l1_guest_code);
->  
+Use if and else instead of if(A) and if (!A).
 
+Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+---
+ kernel/trace/ring_buffer.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-The only issue would be IMHO that if (for testing/whatever) you boot a guest without NRIPS,
-then the guest won't be able to use SVM
-Or in other words, its true that every sane AMD cpu supports NRIPs, but a "nested AMD cpu"
-in theory might not.
-
-Best regards,
-	Maxim Levitsky
-
-
-
+diff --git a/kernel/trace/ring_buffer.c b/kernel/trace/ring_buffer.c
+index 05dfc7a12d3d..0fa21bd1a1e9 100644
+--- a/kernel/trace/ring_buffer.c
++++ b/kernel/trace/ring_buffer.c
+@@ -6014,7 +6014,7 @@ static __init int test_ringbuffer(void)
+ 		if (total_lost)
+ 			pr_info(" With dropped events, record len and size may not match\n"
+ 				" alloced and written from above\n");
+-		if (!total_lost) {
++		else {
+ 			if (RB_WARN_ON(buffer, total_len != total_alloc ||
+ 				       total_size != total_written))
+ 				break;
+-- 
+2.35.1
 
