@@ -2,192 +2,219 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89666C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 16:20:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 617D1C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 16:24:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234394AbiDXQWz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 12:22:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32788 "EHLO
+        id S234398AbiDXQ1K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 12:27:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234208AbiDXQWx (ORCPT
+        with ESMTP id S232940AbiDXQ1I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 12:22:53 -0400
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6CFF1606AB;
-        Sun, 24 Apr 2022 09:19:52 -0700 (PDT)
-Received: by mail-oi1-x22d.google.com with SMTP id v65so9929156oig.10;
-        Sun, 24 Apr 2022 09:19:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=4tNCsdnlVnPEJ7/xhc5Cq22tippVdust1ZNiw0N7EtA=;
-        b=Jd1/eSljZ1f2OryQk8wmUVQZbEffQoMUhrL8PFGn1II4+G604oiaQSCWK46EHa9HEi
-         dFCZZKpkd0XjKaUBBgYfpj+kQz8CoEErL6uOC9fo3tc6sx4XtDYoNyqqvLJW6/zSJVat
-         q/64W2dCQK4HoRO5K9teE3c1rbGAGn/e/OlYH/Eqn41+iuKg6FOZrV5563TmXby6FQqW
-         iwvKpGkO5wJ7GqLlEZzhiTbX4bAVElj3/8mwpSTLSvrFxkg8Mohdk9I154arU0sUC5Gt
-         hhkgYyiSkIqRjQtibdB6ggsQtBCWFfbOZmALGKHKvCBTKrSd3z64xBkdCghdAtlI7YLI
-         jxDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=4tNCsdnlVnPEJ7/xhc5Cq22tippVdust1ZNiw0N7EtA=;
-        b=zRjhcTZPyPGbgbrnR15/gDtp4mwEM4L02Gt3gDTpUjKIJDZHuggY7zUVieO7fDfHug
-         ATXccZDhUR52qID34WJI6RL5dnJVGdGEBNjir8aDRGecZ2OiATp59Fz/UGVfWcQCaRVT
-         QSXVfOH0bDbHmYhY9kzpQDpqn/zTYCqOHk2O7OxdPg7Ocjs4wSvnDDp/35GHjq+MU+d7
-         DuWYRcZ55D9w0YSqXNKSMXdlDbDP+UY3bMJOo6lbx/Imv/fayqExjq78epqbL5bQ3krY
-         irgsCRKrpsFZpNDfN/8zUrTyHdsQQgvB8V+y7jAnRthaWkZas0z80I3fbLm2ajIxhYKa
-         H2Dw==
-X-Gm-Message-State: AOAM530HwyQ59ea5GeExbGMoe9u7J7v2bx5mgZfq2W/O0j4t+9GvSAm8
-        /e8XABXNw23pxpqPRt5VBnE=
-X-Google-Smtp-Source: ABdhPJzp5UJS8K9KqriWBEetcOKWxWj90jUPJ370wZJnUrNCtpB65v5aAKHrP6qpIHK5OsSXsIfRzw==
-X-Received: by 2002:aca:f389:0:b0:322:3753:bf51 with SMTP id r131-20020acaf389000000b003223753bf51mr10155645oih.44.1650817191970;
-        Sun, 24 Apr 2022 09:19:51 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id u7-20020a4a85c7000000b0035c12c8be73sm3317675ooh.29.2022.04.24.09.19.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 24 Apr 2022 09:19:51 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <665df671-23bb-475d-5148-8613cb6cf16c@roeck-us.net>
-Date:   Sun, 24 Apr 2022 09:19:49 -0700
+        Sun, 24 Apr 2022 12:27:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C0B57DE1A;
+        Sun, 24 Apr 2022 09:24:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C7EC1B80E45;
+        Sun, 24 Apr 2022 16:24:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EF52C385A7;
+        Sun, 24 Apr 2022 16:24:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650817445;
+        bh=SKkt44/pdWWtJDnAFjZyfdHI94wAj09CMu8k9vIQhF0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=QXHqVXxuifbmtoq8vQmDLAQa4ePAIET9jxbcqo1EU2YpPJvwYwMdMQrg2BgFW22HT
+         ZACr5tMW64j+0WiLqb30/EDOA1mSBAul6pjTVCj0SIlDOlzHrEvi+i3vxAU3CfqBrY
+         zHiWOqOHbu/3GSFzXnAbgThfq8j+l1PYpz/1pXcO8PxdhD5vPq551IPF6pTIBGvI6z
+         zjSSk7ZhvWcVXEM5CdNmagp0J/2KdPB53n06yuN7dZ7FTDezV9IbWJTTZU71F2/j4e
+         ObZ2M6BAoy1oiBl0lK/fePOnVcYISZocdWyZGSHq5t+TBdJxNnBovLmFW+Czd11/2b
+         gXk+UPtVEVoSQ==
+Date:   Sun, 24 Apr 2022 17:32:10 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Shreeya Patel <shreeya.patel@collabora.com>
+Cc:     lars@metafoo.de, robh+dt@kernel.org, Zhigang.Shi@liteon.com,
+        krzk@kernel.org, krisman@collabora.com, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com, alvaro.soliverez@collabora.com
+Subject: Re: [PATCH v2 3/3] iio: light: Add support for ltrf216a sensor
+Message-ID: <20220424173210.554c8247@jic23-huawei>
+In-Reply-To: <20220421140133.354498-4-shreeya.patel@collabora.com>
+References: <20220421140133.354498-1-shreeya.patel@collabora.com>
+        <20220421140133.354498-4-shreeya.patel@collabora.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] hwmon: (pmbus/max16601) Add MAX16602 support
-Content-Language: en-US
-To:     "Ofluoglu, Atif" <Atif.Ofluoglu@analog.com>
-Cc:     "linux-hwmon@vger.kernel.org" <linux-hwmon@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Jean Delvare <jdelvare@suse.com>
-References: <BYAPR03MB40063CFD52C6D8831A8740AD8AEE9@BYAPR03MB4006.namprd03.prod.outlook.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <BYAPR03MB40063CFD52C6D8831A8740AD8AEE9@BYAPR03MB4006.namprd03.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/15/22 07:06, Ofluoglu, Atif wrote:
->>From e2a1f7d1a836188a9b284fc473af9118aa160ddb Mon Sep 17 00:00:00 2001
-> From: Atif Ofluoglu <mailto:atif.ofluoglu@maximintegrated.com>
-> Date: Fri, 15 Apr 2022 16:34:29 +0300
-> Subject: [PATCH] hwmon: (pmbus/max16601) Add MAX16602 support
-> 
-> Adding another MAX16602 chip support to MAX16601 driver
-> Tested with MAX16602 works as expected.
-> 
-> Signed-off-by: Atif Ofluoglu <mailto:atif.ofluoglu@maximintegrated.com>
+On Thu, 21 Apr 2022 19:31:33 +0530
+Shreeya Patel <shreeya.patel@collabora.com> wrote:
 
-Never mind, applied. The problem was that your e-mail system adds
-"mailto:" to all e-mail addresses. See above and in the patch.
-Also, the actual patch was embedded in another e-mail frame which
-confused git. After fixing that up, that the patch applied cleanly.
-In the future, please make sure that your e-mail system leaves
-any patches you send alone.
+> From: Zhigang Shi <Zhigang.Shi@liteon.com>
+> 
+> Add initial support for ltrf216a ambient light sensor.
+> 
+> Datasheet: gitlab.steamos.cloud/shreeya/iio/-/blob/main/LTRF216A.pdf
+> Co-developed-by: Shreeya Patel <shreeya.patel@collabora.com>
+> Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+> Signed-off-by: Zhigang Shi <Zhigang.Shi@liteon.com>
+
+Hi Shreeya,
+
+Looking pretty good.  Just a few minor things in here - I very nearly
+just made the changes whilst applying but the one about reusing the
+available array is slightly more complex than I like to do without
+bouncing it back to the author.
 
 Thanks,
-Guenter
+
+Jonathan
 
 > ---
->   Documentation/hwmon/max16601.rst |  8 ++++++++
->   drivers/hwmon/pmbus/Kconfig      |  4 ++--
->   drivers/hwmon/pmbus/max16601.c   | 13 ++++++++-----
->   3 files changed, 18 insertions(+), 7 deletions(-)
 > 
-> diff --git a/Documentation/hwmon/max16601.rst b/Documentation/hwmon/max16601.rst
-> index 92c0a7d7808c..6a4eef8efbaf 100644
-> --- a/Documentation/hwmon/max16601.rst
-> +++ b/Documentation/hwmon/max16601.rst
-> @@ -21,6 +21,14 @@ Supported chips:
->   
->       Datasheet: Not published
->   
-> +  * Maxim MAX16602
-> +
-> +    Prefix: 'max16602'
-> +
-> +    Addresses scanned: -
-> +
-> +    Datasheet: https://datasheets.maximintegrated.com/en/ds/MAX16602.pdf
-> +
->   Author: Guenter Roeck <mailto:linux@roeck-us.net>
->   
->   
-> diff --git a/drivers/hwmon/pmbus/Kconfig b/drivers/hwmon/pmbus/Kconfig
-> index a2ea1d5a8765..53683d2d0fb2 100644
-> --- a/drivers/hwmon/pmbus/Kconfig
-> +++ b/drivers/hwmon/pmbus/Kconfig
-> @@ -228,10 +228,10 @@ config SENSORS_MAX16064
->   	  be called max16064.
->   
->   config SENSORS_MAX16601
-> -	tristate "Maxim MAX16508, MAX16601"
-> +	tristate "Maxim MAX16508, MAX16601, MAX16602"
->   	help
->   	  If you say yes here you get hardware monitoring support for Maxim
-> -	  MAX16508 and MAX16601.
-> +	  MAX16508, MAX16601 and MAX16602.
->   
->   	  This driver can also be built as a module. If so, the module will
->   	  be called max16601.
-> diff --git a/drivers/hwmon/pmbus/max16601.c b/drivers/hwmon/pmbus/max16601.c
-> index 5a226a564776..b628405e6586 100644
-> --- a/drivers/hwmon/pmbus/max16601.c
-> +++ b/drivers/hwmon/pmbus/max16601.c
-> @@ -1,6 +1,6 @@
->   // SPDX-License-Identifier: GPL-2.0
->   /*
-> - * Hardware monitoring driver for Maxim MAX16508 and MAX16601.
-> + * Hardware monitoring driver for Maxim MAX16508, MAX16601 and MAX16602.
->    *
->    * Implementation notes:
->    *
-> @@ -31,7 +31,7 @@
->   
->   #include "pmbus.h"
->   
-> -enum chips { max16508, max16601 };
-> +enum chips { max16508, max16601, max16602 };
->   
->   #define REG_DEFAULT_NUM_POP	0xc4
->   #define REG_SETPT_DVID		0xd1
-> @@ -202,7 +202,7 @@ static int max16601_identify(struct i2c_client *client,
->   	else
->   		info->vrm_version[0] = vr12;
->   
-> -	if (data->id != max16601)
-> +	if (data->id != max16601 && data->id != max16602)
->   		return 0;
->   
->   	reg = i2c_smbus_read_byte_data(client, REG_DEFAULT_NUM_POP);
-> @@ -264,6 +264,7 @@ static void max16601_remove(void *_data)
->   static const struct i2c_device_id max16601_id[] = {
->   	{"max16508", max16508},
->   	{"max16601", max16601},
-> +	{"max16602", max16602},
->   	{}
->   };
->   MODULE_DEVICE_TABLE(i2c, max16601_id);
-> @@ -280,13 +281,15 @@ static int max16601_get_id(struct i2c_client *client)
->   		return -ENODEV;
->   
->   	/*
-> -	 * PMBUS_IC_DEVICE_ID is expected to return "MAX16601y.xx"
-> -	 * or "MAX16500y.xx".
-> +	 * PMBUS_IC_DEVICE_ID is expected to return "MAX16601y.xx" or
-> +	 * MAX16602y.xx or "MAX16500y.xx".cdxxcccccccccc
->   	 */
->   	if (!strncmp(buf, "MAX16500", 8)) {
->   		id = max16508;
->   	} else if (!strncmp(buf, "MAX16601", 8)) {
->   		id = max16601;
-> +	} else if (!strncmp(buf, "MAX16602", 8)) {
-> +		id = max16602;
->   	} else {
->   		buf[ret] = '\0';
->   		dev_err(dev, "Unsupported chip '%s'\n", buf);
+> Changes in v2
+>   - Add support for 25ms and 50ms integration time.
+>   - Rename some of the macros as per names given in datasheet
+>   - Add a comment for the mutex lock
+>   - Use read_avail callback instead of attributes and set the
+>     appropriate _available bit.
+>   - Use FIELD_PREP() at appropriate places.
+>   - Add a constant lookup table for integration time and reg val
+>   - Use BIT() macro for magic numbers.
+>   - Improve error handling at few places.
+>   - Use get_unaligned_le24() and div_u64()
+>   - Use probe_new() callback and devm functions
+>   - Return errors in probe using dev_err_probe()
+>   - Use DEFINE_SIMPLE_DEV_PM_OPS()
+>   - Correct the formula for lux to use 0.45 instead of 0.8
+> 
+> 
+>  drivers/iio/light/Kconfig    |  10 +
+>  drivers/iio/light/Makefile   |   1 +
+>  drivers/iio/light/ltrf216a.c | 349 +++++++++++++++++++++++++++++++++++
+>  3 files changed, 360 insertions(+)
+>  create mode 100644 drivers/iio/light/ltrf216a.c
+> 
 
+> diff --git a/drivers/iio/light/ltrf216a.c b/drivers/iio/light/ltrf216a.c
+> new file mode 100644
+> index 000000000000..de6d2e2e7f08
+> --- /dev/null
+> +++ b/drivers/iio/light/ltrf216a.c
+> @@ -0,0 +1,349 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * LTRF216A Ambient Light Sensor
+> + *
+> + * Copyright (C) 2021 Lite-On Technology Corp (Singapore)
+> + * Author: Shi Zhigang <Zhigang.Shi@liteon.com>
+> + *
+> + * IIO driver for LTRF216A (7-bit I2C slave address 0x53).
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/init.h>
+> +#include <linux/i2c.h>
+> +#include <linux/mutex.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+
+I don't think you are using anything from iio/sysfs.h any more so please
+drop this header (unless I'm missing something!)
+
+> +#include <linux/mod_devicetable.h>
+> +#include <linux/bitfield.h>
+> +#include <linux/pm.h>
+> +#include <linux/delay.h>
+> +#include <asm/unaligned.h>
+> +
+Where no other reason to have a particular order for headers IIO preference is
+3 blocks of headers.  First set are the non IIO related ones in alphabetical order.
+Second block typically IIO specific ones.  Final block the asm includes
+
+So here best order is something like
+
+#include <linux/bitfield.h>
+#include <linux/delay.h>
+#include <linux/init.h>
+#include <linux/i2c.h>
+#include <linux/module.h>
+#include <linux/mod_devicetable.h>
+#include <linux/mutex.h>
+#include <linux/pm.h>
+
+#include <linux/iio/iio.h>
+
+#include <asm/unaligned.h>
+
+
+> +#define LTRF216A_ALS_DATA_0		0x0D
+> +
+> +static const int int_time_mapping[] = { 400000, 200000, 100000, 50000, 25000 };
+
+You should use the array below for the same matching purpose as this one and
+avoid duplicating data.
+
+> +
+> +static const int ltrf216a_int_time_available[5][2] = {
+> +	{0, 400000},
+> +	{0, 200000},
+> +	{0, 100000},
+> +	{0, 50000},
+> +	{0, 25000},
+> +};
+> +
+> +static const int ltrf216a_int_time_reg[5][2] = {
+> +	{400, 0x03},
+> +	{200, 0x13},
+> +	{100, 0x22},
+> +	{50, 0x31},
+> +	{25, 0x40},
+> +};
+> +
+> +struct ltrf216a_data {
+> +	struct i2c_client *client;
+> +	u32 int_time;
+> +	u8 int_time_fac;
+> +	u8 als_gain_fac;
+> +	struct mutex mutex; /* Protect read and write operations */
+
+This could probably have been more descriptive. I think you are also
+ensuring that the cached state and the device state are kept in sync.
+
+> +};
+
+
+> +
+> +static int ltrf216a_get_lux(struct ltrf216a_data *data)
+> +{
+> +	int greendata, cleardata;
+> +	u64 lux, div;
+> +
+> +	greendata = ltrf216a_read_data(data, LTRF216A_ALS_DATA_0);
+> +	cleardata = ltrf216a_read_data(data, LTRF216A_CLEAR_DATA_0);
+> +
+> +	if (greendata < 0 || cleardata < 0) {
+> +		return -EINVAL;
+
+As this is an error case and you correctly return directly there is
+no need to have else.  That will reduce indentation and
+allow last line to simply be
+
+return div_u64(lux, div);
+
+> +
+> +	} else {
+> +		lux = greendata * 45 * WIN_FAC * 100;
+> +		div = data->als_gain_fac * data->int_time_fac * 100;
+> +		lux = div_u64(lux, div);
+> +	}
+> +
+> +	return lux;
+> +}
+> +
