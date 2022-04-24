@@ -2,229 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1257CC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 12:57:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F05C1C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 13:00:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231187AbiDXNAc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 09:00:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56148 "EHLO
+        id S231431AbiDXNDE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 09:03:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231205AbiDXNA2 (ORCPT
+        with ESMTP id S230198AbiDXNDC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 09:00:28 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6160212A9DA
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 05:57:28 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id r189so22586408ybr.6
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 05:57:28 -0700 (PDT)
+        Sun, 24 Apr 2022 09:03:02 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EEFA15A09
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 06:00:00 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id k27so352265edk.4
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 06:00:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=nathanrossi.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qmtIFptWMRA8qS+AOTNBa5g5ggHQNo6aqpELlxy2Zrk=;
-        b=ggVWQHuUWBjHGTIKOf05ByEQgMsv7iDyLiC8l6mQJyn43YlKC94o/DF3w28TBzQIgt
-         A284htmVI1eZbBAgXnwmPIK4TUqgYe1WG+zlOtg1BjXkEcXrxmYs31rIpbIq47Z3Scbo
-         INa3EbTidTGr4aH4Q0k+Ch3/5W/VCIUHix3wNmp+uBSy3UjHPHJoTyJ+O7KYnLR0rumy
-         j4fXiB0P1TtO2V2opE6Pd+pkO944HncEqegzrlBkS8ji46IhW2BaEFK4X/759vYB5EOd
-         T7/axqTuFRULG1X7h5cKAPuJFGk1LGxwSozTmcsNmYEJ9UgEZ9cO4OOyoJWTFVfii4bN
-         ra0A==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xiS7jXTGQnjBRoWj5ugUGTqfRqlbiuFUwXWLNi1EeJU=;
+        b=SoA9P8/6lxB7hLukKtbzsp9CZjR0hxa/1dGYCHYuHry7e1fzAxQ6TYBM8js3bDZUdT
+         iOm61Ysfp+VWCcf+9mqf0kUzLrJUYw7YuJ15uXa1Qg/j5yGudMfYL9/jYojurUwjC/PT
+         EF4eq9ZGJxtYkojhD+sVMg2nwuFOqrgxJSR6D5TaQWwjSD288Y4Ge6oKuMs4n8E7w6aM
+         xlBuR90SsvtbwqDUVbaqEvYNuhXy9uc6zPZnL2UfwXO7tlG42uwMzk9iwiMgihzm2CQo
+         Q3x7R66oab/+2CtRiaVN33ycNZmpYEmz8Y7GZZ01aEkb9YareOofyAESNR8hK7Nytuwx
+         horA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qmtIFptWMRA8qS+AOTNBa5g5ggHQNo6aqpELlxy2Zrk=;
-        b=KY424rg/5HC8UkeSJiZvbn4tTc4H8Hy7QP4tTAaE8QeYqjHIeFN+YM2BJiEBshMzVA
-         TLwl6V1wkJxLP/Bb6a6I+eW2AcgKufVLHqr3gEdWj6it0J88EJbD8Q1HpsNWEAgMcpfe
-         iWCpPpOBRJoBrSIpZn5U9Bf/QvMgWiSs5OAdrNo8HDXw7XZUFS1/Ic43DSfZQmzgTT/5
-         S/m5eBfhvwCFfRkjmF/BSmFw8uDqDtMMvWJ3rT+jLEWyGCQlueAoe8poBjlnfiV/JrK0
-         PMHiMo+/jrZgrllWgGAQc/C8T+4iNfl1vVZMjAWfz4GFkK0UPHrYhTi4UHx8javARhHE
-         Md8g==
-X-Gm-Message-State: AOAM533Sg2S8w04fwxNl6ffkcFQ8+sbgjVBP94QscoLAGZiNgiMV5U1y
-        bMLw2uU/7vlFcFzfUeT5JkyAkwtlmodyDDGvxaSeTQ==
-X-Google-Smtp-Source: ABdhPJwp8MuffFE7HDcpRdAlmZwbiXW/QePc52LnrKt9GZc2to7TLMs7f47PgFbXh+3zNyzfjO18t51geXtiy5/03kA=
-X-Received: by 2002:a25:e056:0:b0:645:d68d:8474 with SMTP id
- x83-20020a25e056000000b00645d68d8474mr9396114ybg.294.1650805047571; Sun, 24
- Apr 2022 05:57:27 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xiS7jXTGQnjBRoWj5ugUGTqfRqlbiuFUwXWLNi1EeJU=;
+        b=o8Mi9jhJnln2d20TTieAViwRLDSNqiqqI4ViWbCZbY8OcfNmH55kD8aPgNv+VmSK42
+         NyznSEtpKMOIEIRZhHQ0xvf2q4gYn0l1pfckucPZ6VrOh6/K7xd+oZAg+m37NjDZFXrY
+         KlT8HBSETdAkslYOWdbUl2bkgsaEvXcIXkZFXgaynH6mOEvpETk9rlpGN1VCJ/l22kk0
+         kz2HmeaijvY19MRtaZv56snNxKTujLEbW4x2bt1639otGHA6wNxIVDVhmIvQK7G8BTjZ
+         4p3rO4uFF+r4wYE8B9YWCSZyqNoUTetUacwKpU8AZ/vMEX/OldQ3RKTMGY6xv3yWsRFW
+         yaNw==
+X-Gm-Message-State: AOAM533HaMzmYTeXf6wrZbCTsg0wMMoUs4sALwFB8pDpJKhzh53p3Fdl
+        2YoFlHIUOPoogn1BGm4hruo3+g==
+X-Google-Smtp-Source: ABdhPJzWd6TnX8cfWuoEpPnonVAdlLmH1faYJGpdsybfh5SgAIg5RUp8Wh3mjpXz0jixZJTcziCJFw==
+X-Received: by 2002:a05:6402:2985:b0:425:d51f:ae4 with SMTP id eq5-20020a056402298500b00425d51f0ae4mr6102711edb.379.1650805198838;
+        Sun, 24 Apr 2022 05:59:58 -0700 (PDT)
+Received: from leoy-ThinkPad-X240s ([104.245.96.34])
+        by smtp.gmail.com with ESMTPSA id y14-20020a056402440e00b00416046b623csm3408984eda.2.2022.04.24.05.59.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Apr 2022 05:59:58 -0700 (PDT)
+Date:   Sun, 24 Apr 2022 20:59:51 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Timothy Hayes <timothy.hayes@arm.com>
+Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        acme@kernel.org, John Garry <john.garry@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH 2/3] perf: arm-spe: Fix SPE events with phys addresses
+Message-ID: <20220424125951.GD978927@leoy-ThinkPad-X240s>
+References: <20220421165205.117662-1-timothy.hayes@arm.com>
+ <20220421165205.117662-3-timothy.hayes@arm.com>
 MIME-Version: 1.0
-References: <20220423131427.237160-1-nathan@nathanrossi.com>
- <20220423131427.237160-2-nathan@nathanrossi.com> <YmQIHWL4iTS5qVIz@lunn.ch>
- <CA+aJhH3EtAxAKy8orC-SU8UnagBCibF3dHXrp78zfjuAzj4vUg@mail.gmail.com> <YmQeIL4XYdTFTNm7@lunn.ch>
-In-Reply-To: <YmQeIL4XYdTFTNm7@lunn.ch>
-From:   Nathan Rossi <nathan@nathanrossi.com>
-Date:   Sun, 24 Apr 2022 22:57:16 +1000
-Message-ID: <CA+aJhH1qDBEi18oz1NiWB3L7fjOT+Z9EdD5PfO7uZQ9K9u5wPQ@mail.gmail.com>
-Subject: Re: [PATCH 2/2] net: dsa: mv88e6xxx: Handle single-chip-address OF property
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220421165205.117662-3-timothy.hayes@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 24 Apr 2022 at 01:41, Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Sun, Apr 24, 2022 at 12:41:22AM +1000, Nathan Rossi wrote:
-> > On Sun, 24 Apr 2022 at 00:07, Andrew Lunn <andrew@lunn.ch> wrote:
-> > >
-> > > On Sat, Apr 23, 2022 at 01:14:27PM +0000, Nathan Rossi wrote:
-> > > > Handle the parsing and use of single chip addressing when the switch has
-> > > > the single-chip-address property defined. This allows for specifying the
-> > > > switch as using single chip addressing even when mdio address 0 is used
-> > > > by another device on the bus. This is a feature of some switches (e.g.
-> > > > the MV88E6341/MV88E6141) where the switch shares the bus only responding
-> > > > to the higher 16 addresses.
-> > >
-> > > Hi Nathan
-> > >
-> > > I think i'm missing something in this explanation:
-> > >
-> > > smi.c says:
-> > >
-> > > /* The switch ADDR[4:1] configuration pins define the chip SMI device address
-> > >  * (ADDR[0] is always zero, thus only even SMI addresses can be strapped).
-> > >  *
-> > >  * When ADDR is all zero, the chip uses Single-chip Addressing Mode, assuming it
-> > >  * is the only device connected to the SMI master. In this mode it responds to
-> > >  * all 32 possible SMI addresses, and thus maps directly the internal devices.
-> > >  *
-> > >  * When ADDR is non-zero, the chip uses Multi-chip Addressing Mode, allowing
-> > >  * multiple devices to share the SMI interface. In this mode it responds to only
-> > >  * 2 registers, used to indirectly access the internal SMI devices.
-> > >  *
-> > >  * Some chips use a different scheme: Only the ADDR4 pin is used for
-> > >  * configuration, and the device responds to 16 of the 32 SMI
-> > >  * addresses, allowing two to coexist on the same SMI interface.
-> > >  */
-> > >
-> > > So if ADDR = 0, it takes up the whole bus. And in this case reg = 0.
-> > > If ADDR != 0, it is in multi chip mode, and DT reg = ADDR.
-> > >
-> > > int mv88e6xxx_smi_init(struct mv88e6xxx_chip *chip,
-> > >                        struct mii_bus *bus, int sw_addr)
-> > > {
-> > >         if (chip->info->dual_chip)
-> > >                 chip->smi_ops = &mv88e6xxx_smi_dual_direct_ops;
-> > >         else if (sw_addr == 0)
-> > >                 chip->smi_ops = &mv88e6xxx_smi_direct_ops;
-> > >         else if (chip->info->multi_chip)
-> > >                 chip->smi_ops = &mv88e6xxx_smi_indirect_ops;
-> > >         else
-> > >                 return -EINVAL;
-> > >
-> > > This seems to implement what is above. smi_direct_ops == whole bus,
-> > > smi_indirect_ops == multi-chip mode.
-> > >
-> > > In what situation do you see this not working? What device are you
-> > > using, what does you DT look like, and what at the ADDR value?
-> >
-> > The device I am using is the MV88E6141, it follows the second scheme
-> > such that it only responds to the upper 16 of the 32 SMI addresses in
-> > single chip addressing mode. I am able to define the switch at address
-> > 0, and everything works. However in the device I am using (Netgate
-> > SG-3100) the ethernet phys for the non switch ethernet interfaces are
-> > also on the same mdio bus as the switch. One of those phys is
-> > configured with address 0. Defining both the ethernet-phy and switch
-> > as address 0 does not work.
-> >
-> > The device tree I have looks like:
-> >
-> > &mdio {
-> >     status = "okay";
-> >     pinctrl-0 = <&mdio_pins>;
-> >     pinctrl-names = "default";
-> >
-> >     phy0: ethernet-phy@0 {
-> >         status = "okay";
-> >         reg = <0>;
-> >     };
-> >
-> >     phy1: ethernet-phy@1 {
-> >         status = "okay";
-> >         reg = <1>;
-> >     };
->
-> So normally, we would have
->
->
->     switch0: switch0@16 {
->         compatible = "marvell,mv88e6141", "marvell,mv88e6085";
->         single-chip-address;
->         reg = <0>;
->         dsa,member = <0 0>;
->         status = "okay";
->
-> and then i guess you are seeing mdiobus_register_device() returning
-> -EBUSY because the PHY is also at address 0?
+Hi Timothy,
 
-Correct, that is the issue I am trying to solve here.
+On Thu, Apr 21, 2022 at 05:52:04PM +0100, Timothy Hayes wrote:
+> This patch corrects a bug whereby SPE collection is invoked with
+> pa_enable=1 but synthesized events fail to show physical addresses.
+> 
+> Signed-off-by: Timothy Hayes <timothy.hayes@arm.com>
+> ---
+>  tools/perf/arch/arm64/util/arm-spe.c | 10 ++++++++++
+>  tools/perf/util/arm-spe.c            |  3 ++-
+>  2 files changed, 12 insertions(+), 1 deletion(-)
+> 
+> diff --git a/tools/perf/arch/arm64/util/arm-spe.c b/tools/perf/arch/arm64/util/arm-spe.c
+> index af4d63af8072..e8b577d33e53 100644
+> --- a/tools/perf/arch/arm64/util/arm-spe.c
+> +++ b/tools/perf/arch/arm64/util/arm-spe.c
+> @@ -148,6 +148,7 @@ static int arm_spe_recording_options(struct auxtrace_record *itr,
+>  	bool privileged = perf_event_paranoid_check(-1);
+>  	struct evsel *tracking_evsel;
+>  	int err;
+> +	u64 bit;
+>  
+>  	sper->evlist = evlist;
+>  
+> @@ -245,6 +246,15 @@ static int arm_spe_recording_options(struct auxtrace_record *itr,
+>  	 */
+>  	evsel__set_sample_bit(arm_spe_evsel, DATA_SRC);
+>  
+> +	/*
+> +	 * The PHYS_ADDR flag does not affect the driver behaviour, it is used to
+> +	 * inform that the resulting output's SPE samples contain physical addresses
+> +	 * where applicable.
+> +	 */
+> +	bit = perf_pmu__format_bits(&arm_spe_pmu->format, "pa_enable");
+> +	if (arm_spe_evsel->core.attr.config & bit)
+> +		evsel__set_sample_bit(arm_spe_evsel, PHYS_ADDR);
+> +
+>  	/* Add dummy event to keep tracking */
+>  	err = parse_events(evlist, "dummy:u", NULL);
+>  	if (err)
+> diff --git a/tools/perf/util/arm-spe.c b/tools/perf/util/arm-spe.c
+> index 151cc38a171c..1a80151baed9 100644
+> --- a/tools/perf/util/arm-spe.c
+> +++ b/tools/perf/util/arm-spe.c
+> @@ -1033,7 +1033,8 @@ arm_spe_synth_events(struct arm_spe *spe, struct perf_session *session)
+>  	memset(&attr, 0, sizeof(struct perf_event_attr));
+>  	attr.size = sizeof(struct perf_event_attr);
+>  	attr.type = PERF_TYPE_HARDWARE;
+> -	attr.sample_type = evsel->core.attr.sample_type & PERF_SAMPLE_MASK;
+> +	attr.sample_type = evsel->core.attr.sample_type &
+> +				(PERF_SAMPLE_MASK | PERF_SAMPLE_PHYS_ADDR);
 
->
-> This is what is missing from your explanation. It is always better to
-> have more than less in the commit message.
->
-> So the chip is using addresses 0x10-0x1f, but in order to probe, you
-> need to put reg = 0, taking up slot 0, clashing with the PHY. Ideally
-> we want to take up one of the slots in the range 0x10-0x1f. reg=16 on
-> its own indicates multi-chip mode and the device is using address 16.
->
-> O.K, a bit more digging into the datasheet:
->
-> For multi-chip mode, for the 6341 family,
->
-> The SMI address that is used is determined by the ADDR[3:0]
-> configuration pins. ADDR[4] must be zero to select the device.
->
-> So it can only take the address range 0-f, since ADDR[4] == 0.  So 16
-> is not even a valid multi-chip address. But it is valid for some other
-> chips.
->
-> So your DT property is says, ignore reg, i really am in single chip
-> mode.
->
-> This appears to be a general problem for any device with
-> .port_base_addr = 0x10.
+I verified this patch and I can confirm the physical address can be
+dumped successfully.
 
-I had initially thought of using the port_base_addr along with setting
-up an of_match for the 6141 to provide compat_info which smi init
-could use.
+I have a more general question, seems to me, we need to change the
+macro PERF_SAMPLE_MASK in the file util/event.h as below, so
+here doesn't need to 'or' the flag PERF_SAMPLE_PHYS_ADDR anymore.
 
->
-> I'm wondering if a better solution to this is special case
-> reg=16. First try mv88e6xxx_detect() in single chip mode. That will
-> read register 3. A read should be safe. If we get back a valid ID for
-> a switch, keep with single chip mode. Otherwise swap to multi-chip
-> mode. A multi-chip mv88e6xxx_detect() is more dangerous, because that
-> involves writes.
+@Arnaldo, @Jiri, could you confirm if this is the right way to move
+forward?  I am not sure why PERF_SAMPLE_MASK doesn't contain the bit
+PERF_SAMPLE_PHYS_ADDR in current code.
 
-I tested this idea and have sent out a patch for it
-(https://lore.kernel.org/netdev/20220424125451.295435-1-nathan@nathanrossi.com/).
-It works correctly for the single chip detection case and safely falls
-through on other multi-chip addresses. It would be great if you could
-test this on the armada 370 rd board with reg=16.
-
-However just a side note, I had to move the reset gpio setup to occur
-before the smi init. Interestingly I am not sure if there was a reason
-for the reset to be unconfigured before setting up smi, it seems that
-might cause issues with the multi-chip smi init ops?
+diff --git a/tools/perf/util/event.h b/tools/perf/util/event.h
+index cdd72e05fd28..c905ac32ebad 100644
+--- a/tools/perf/util/event.h
++++ b/tools/perf/util/event.h
+@@ -39,7 +39,7 @@ struct perf_event_attr;
+         PERF_SAMPLE_TIME | PERF_SAMPLE_ADDR |          \
+        PERF_SAMPLE_ID | PERF_SAMPLE_STREAM_ID |        \
+         PERF_SAMPLE_CPU | PERF_SAMPLE_PERIOD |         \
+-        PERF_SAMPLE_IDENTIFIER)
++        PERF_SAMPLE_IDENTIFIER | PERF_SAMPLE_PHYS_ADDR)
 
 Thanks,
-Nathan
+Leo
 
-
-
->
-> Looking at the existing DTs, there are only two using multi-chip mode
-> with reg=16:
->
-> arm/boot/dts/armada-370-rd.dts-         reg = <0x10>;
-> arm/boot/dts/kirkwood-linksys-viper.dts-                reg = <16>;
->
-> And i happen to have an armada-370-rd :-)
->
->     Andrew
+>  	attr.sample_type |= PERF_SAMPLE_IP | PERF_SAMPLE_TID |
+>  			    PERF_SAMPLE_PERIOD | PERF_SAMPLE_DATA_SRC |
+>  			    PERF_SAMPLE_WEIGHT | PERF_SAMPLE_ADDR;
+> -- 
+> 2.25.1
+> 
