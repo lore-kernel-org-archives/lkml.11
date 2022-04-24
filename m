@@ -2,75 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86003C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 13:03:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F5E7C4332F
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 13:03:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231761AbiDXNF7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 09:05:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46328 "EHLO
+        id S232351AbiDXNGR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 09:06:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231551AbiDXNFz (ORCPT
+        with ESMTP id S231551AbiDXNGP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 09:05:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0FF217C50A;
-        Sun, 24 Apr 2022 06:02:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D56060DBA;
-        Sun, 24 Apr 2022 13:02:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEE58C385AA;
-        Sun, 24 Apr 2022 13:02:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650805374;
-        bh=Sfn37A1dh/fhIxC3f/qXOh/1zuOdRPddO4X4656m+Vc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ev44lSZXtB/5w8YjY8IM8XfTN6cfrvEuTbIjzHk7qrbgL7TMss7qaa2EBAKn3PlgB
-         xGLMXk2wts6/AIFZNcvNF+Vw0Hu5rcBGAh47fZ/fv4FXOA1obYGfZtTtDpF+RJ+fMr
-         TPzMoeJWf2qKnFAfA/5+qzfiwFphHoie8I7nwMTGbHrwE/3NQcy2EuX3KRJxzff29f
-         8Jfl7NsBb7URapT0+Gvsy06leM8GtJLCR5W9LbR5QD+irivnTjF1UHXz5qXvtp9Svp
-         xXvWUkYOhMhyNj5o4laqCEjEJJqm0wPJ9GCEqBA2tjMXxUERVsXDjYI8ISxn8tJdgE
-         VABFusXR0/M9g==
-Date:   Sun, 24 Apr 2022 21:02:47 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Marcel Ziswiler <marcel@ziswiler.com>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        Max Krummenacher <max.krummenacher@toradex.com>,
-        Denys Drozdov <denys.drozdov@toradex.com>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Stefan Agner <stefan@agner.ch>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 02/14] ARM: dts: imx6ull-colibri: fix vqmmc regulator
-Message-ID: <20220424130247.GV391514@dragon>
-References: <20220414085106.18621-1-marcel@ziswiler.com>
- <20220414085106.18621-3-marcel@ziswiler.com>
+        Sun, 24 Apr 2022 09:06:15 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25B0717C50A;
+        Sun, 24 Apr 2022 06:03:14 -0700 (PDT)
+Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KmSxG0y9wzhYPT;
+        Sun, 24 Apr 2022 21:02:58 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ kwepemi500015.china.huawei.com (7.221.188.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sun, 24 Apr 2022 21:03:12 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sun, 24 Apr 2022 21:03:11 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
+        <chenhao288@hisilicon.com>
+Subject: [PATCH net 1/6] net: hns3: clear inited state and stop client after failed to register netdev
+Date:   Sun, 24 Apr 2022 20:57:20 +0800
+Message-ID: <20220424125725.43232-2-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220424125725.43232-1-huangguangbin2@huawei.com>
+References: <20220424125725.43232-1-huangguangbin2@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220414085106.18621-3-marcel@ziswiler.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 10:50:54AM +0200, Marcel Ziswiler wrote:
-> From: Max Krummenacher <max.krummenacher@toradex.com>
-> 
-> The correct spelling for the property is gpios. Otherwise, the regulator
-> will neither reserve nor control any GPIOs. Thus, any SD/MMC card which
-> can use UHS-I modes will fail.
-> 
-> Fixes: c2e4987e ("ARM: dts: imx6ull: add Toradex Colibri iMX6ULL support")
-> Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
-> Signed-off-by: Denys Drozdov <denys.drozdov@toradex.com>
-> Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+From: Jian Shen <shenjian15@huawei.com>
 
-Applied, thanks!
+If failed to register netdev, it needs to clear INITED state and stop
+client in case of cause problem when concurrency with uninitialized
+process of driver.
+
+Fixes: a289a7e5c1d4 ("net: hns3: put off calling register_netdev() until client initialize complete")
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+---
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+index 14dc12c2155d..a3ee7875d6a7 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+@@ -5203,6 +5203,13 @@ static void hns3_state_init(struct hnae3_handle *handle)
+ 		set_bit(HNS3_NIC_STATE_RXD_ADV_LAYOUT_ENABLE, &priv->state);
+ }
+ 
++static void hns3_state_uninit(struct hnae3_handle *handle)
++{
++	struct hns3_nic_priv *priv  = handle->priv;
++
++	clear_bit(HNS3_NIC_STATE_INITED, &priv->state);
++}
++
+ static int hns3_client_init(struct hnae3_handle *handle)
+ {
+ 	struct pci_dev *pdev = handle->pdev;
+@@ -5320,7 +5327,9 @@ static int hns3_client_init(struct hnae3_handle *handle)
+ 	return ret;
+ 
+ out_reg_netdev_fail:
++	hns3_state_uninit(handle);
+ 	hns3_dbg_uninit(handle);
++	hns3_client_stop(handle);
+ out_client_start:
+ 	hns3_free_rx_cpu_rmap(netdev);
+ 	hns3_nic_uninit_irq(priv);
+-- 
+2.33.0
+
