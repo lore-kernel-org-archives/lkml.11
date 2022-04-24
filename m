@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25231C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 13:03:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80264C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 13:03:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233041AbiDXNGp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 09:06:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48246 "EHLO
+        id S233301AbiDXNGt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 09:06:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231989AbiDXNGP (ORCPT
+        with ESMTP id S232007AbiDXNGP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 24 Apr 2022 09:06:15 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47E2D17C51C;
-        Sun, 24 Apr 2022 06:03:14 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KmStZ1qGrzGp43;
-        Sun, 24 Apr 2022 21:00:38 +0800 (CST)
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 632CC17C530;
+        Sun, 24 Apr 2022 06:03:15 -0700 (PDT)
+Received: from kwepemi100023.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KmSxM0xpGzhY4g;
+        Sun, 24 Apr 2022 21:03:03 +0800 (CST)
 Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
+ kwepemi100023.china.huawei.com (7.221.188.59) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sun, 24 Apr 2022 21:03:12 +0800
+ 15.1.2375.24; Sun, 24 Apr 2022 21:03:13 +0800
 Received: from localhost.localdomain (10.67.165.24) by
  kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sun, 24 Apr 2022 21:03:12 +0800
+ 15.1.2375.24; Sun, 24 Apr 2022 21:03:13 +0800
 From:   Guangbin Huang <huangguangbin2@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
         <chenhao288@hisilicon.com>
-Subject: [PATCH net 2/6] net: hns3: align the debugfs output to the left
-Date:   Sun, 24 Apr 2022 20:57:21 +0800
-Message-ID: <20220424125725.43232-3-huangguangbin2@huawei.com>
+Subject: [PATCH net 5/6] net: hns3: add validity check for message data length
+Date:   Sun, 24 Apr 2022 20:57:24 +0800
+Message-ID: <20220424125725.43232-6-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220424125725.43232-1-huangguangbin2@huawei.com>
 References: <20220424125725.43232-1-huangguangbin2@huawei.com>
@@ -48,189 +48,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hao Chen <chenhao288@hisilicon.com>
+From: Jian Shen <shenjian15@huawei.com>
 
-For debugfs node rx/tx_queue_info and rx/tx_bd_info, their output info is
-aligned to the right, it's not aligned with output of other debugfs node,
-so uniform their output info.
+Add validity check for message data length in function
+hclge_send_mbx_msg(), avoid unexpected overflow.
 
-Fixes: 907676b13071 ("net: hns3: use tx bounce buffer for small packets")
-Fixes: e44c495d95e0 ("net: hns3: refactor queue info of debugfs")
-Fixes: 77e9184869c9 ("net: hns3: refactor dump bd info of debugfs")
-Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
+Fixes: dde1a86e93ca ("net: hns3: Add mailbox support to PF driver")
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- .../ethernet/hisilicon/hns3/hns3_debugfs.c    | 84 +++++++++----------
- 1 file changed, 42 insertions(+), 42 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-index 44d9b560b337..93aeb615191d 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-@@ -562,12 +562,12 @@ static void hns3_dbg_tx_spare_info(struct hns3_enet_ring *ring, char *buf,
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
+index 36cbafc5f944..53f939923c28 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
+@@ -94,6 +94,13 @@ static int hclge_send_mbx_msg(struct hclge_vport *vport, u8 *msg, u16 msg_len,
+ 	enum hclge_comm_cmd_status status;
+ 	struct hclge_desc desc;
  
- 	for (i = 0; i < ring_num; i++) {
- 		j = 0;
--		sprintf(result[j++], "%8u", i);
--		sprintf(result[j++], "%9u", ring->tx_copybreak);
--		sprintf(result[j++], "%3u", tx_spare->len);
--		sprintf(result[j++], "%3u", tx_spare->next_to_use);
--		sprintf(result[j++], "%3u", tx_spare->next_to_clean);
--		sprintf(result[j++], "%3u", tx_spare->last_to_clean);
-+		sprintf(result[j++], "%u", i);
-+		sprintf(result[j++], "%u", ring->tx_copybreak);
-+		sprintf(result[j++], "%u", tx_spare->len);
-+		sprintf(result[j++], "%u", tx_spare->next_to_use);
-+		sprintf(result[j++], "%u", tx_spare->next_to_clean);
-+		sprintf(result[j++], "%u", tx_spare->last_to_clean);
- 		sprintf(result[j++], "%pad", &tx_spare->dma);
- 		hns3_dbg_fill_content(content, sizeof(content),
- 				      tx_spare_info_items,
-@@ -598,35 +598,35 @@ static void hns3_dump_rx_queue_info(struct hns3_enet_ring *ring,
- 	u32 base_add_l, base_add_h;
- 	u32 j = 0;
++	if (msg_len > HCLGE_MBX_MAX_MSG_SIZE) {
++		dev_err(&hdev->pdev->dev,
++			"msg data length(=%u) exceeds maximum(=%u)\n",
++			msg_len, HCLGE_MBX_MAX_MSG_SIZE);
++		return -EMSGSIZE;
++	}
++
+ 	resp_pf_to_vf = (struct hclge_mbx_pf_to_vf_cmd *)desc.data;
  
--	sprintf(result[j++], "%8u", index);
-+	sprintf(result[j++], "%u", index);
- 
--	sprintf(result[j++], "%6u", readl_relaxed(ring->tqp->io_base +
-+	sprintf(result[j++], "%u", readl_relaxed(ring->tqp->io_base +
- 		HNS3_RING_RX_RING_BD_NUM_REG));
- 
--	sprintf(result[j++], "%6u", readl_relaxed(ring->tqp->io_base +
-+	sprintf(result[j++], "%u", readl_relaxed(ring->tqp->io_base +
- 		HNS3_RING_RX_RING_BD_LEN_REG));
- 
--	sprintf(result[j++], "%4u", readl_relaxed(ring->tqp->io_base +
-+	sprintf(result[j++], "%u", readl_relaxed(ring->tqp->io_base +
- 		HNS3_RING_RX_RING_TAIL_REG));
- 
--	sprintf(result[j++], "%4u", readl_relaxed(ring->tqp->io_base +
-+	sprintf(result[j++], "%u", readl_relaxed(ring->tqp->io_base +
- 		HNS3_RING_RX_RING_HEAD_REG));
- 
--	sprintf(result[j++], "%6u", readl_relaxed(ring->tqp->io_base +
-+	sprintf(result[j++], "%u", readl_relaxed(ring->tqp->io_base +
- 		HNS3_RING_RX_RING_FBDNUM_REG));
- 
--	sprintf(result[j++], "%6u", readl_relaxed(ring->tqp->io_base +
-+	sprintf(result[j++], "%u", readl_relaxed(ring->tqp->io_base +
- 		HNS3_RING_RX_RING_PKTNUM_RECORD_REG));
--	sprintf(result[j++], "%9u", ring->rx_copybreak);
-+	sprintf(result[j++], "%u", ring->rx_copybreak);
- 
--	sprintf(result[j++], "%7s", readl_relaxed(ring->tqp->io_base +
-+	sprintf(result[j++], "%s", readl_relaxed(ring->tqp->io_base +
- 		HNS3_RING_EN_REG) ? "on" : "off");
- 
- 	if (hnae3_ae_dev_tqp_txrx_indep_supported(ae_dev))
--		sprintf(result[j++], "%10s", readl_relaxed(ring->tqp->io_base +
-+		sprintf(result[j++], "%s", readl_relaxed(ring->tqp->io_base +
- 			HNS3_RING_RX_EN_REG) ? "on" : "off");
- 	else
--		sprintf(result[j++], "%10s", "NA");
-+		sprintf(result[j++], "%s", "NA");
- 
- 	base_add_h = readl_relaxed(ring->tqp->io_base +
- 					HNS3_RING_RX_RING_BASEADDR_H_REG);
-@@ -700,36 +700,36 @@ static void hns3_dump_tx_queue_info(struct hns3_enet_ring *ring,
- 	u32 base_add_l, base_add_h;
- 	u32 j = 0;
- 
--	sprintf(result[j++], "%8u", index);
--	sprintf(result[j++], "%6u", readl_relaxed(ring->tqp->io_base +
-+	sprintf(result[j++], "%u", index);
-+	sprintf(result[j++], "%u", readl_relaxed(ring->tqp->io_base +
- 		HNS3_RING_TX_RING_BD_NUM_REG));
- 
--	sprintf(result[j++], "%2u", readl_relaxed(ring->tqp->io_base +
-+	sprintf(result[j++], "%u", readl_relaxed(ring->tqp->io_base +
- 		HNS3_RING_TX_RING_TC_REG));
- 
--	sprintf(result[j++], "%4u", readl_relaxed(ring->tqp->io_base +
-+	sprintf(result[j++], "%u", readl_relaxed(ring->tqp->io_base +
- 		HNS3_RING_TX_RING_TAIL_REG));
- 
--	sprintf(result[j++], "%4u", readl_relaxed(ring->tqp->io_base +
-+	sprintf(result[j++], "%u", readl_relaxed(ring->tqp->io_base +
- 		HNS3_RING_TX_RING_HEAD_REG));
- 
--	sprintf(result[j++], "%6u", readl_relaxed(ring->tqp->io_base +
-+	sprintf(result[j++], "%u", readl_relaxed(ring->tqp->io_base +
- 		HNS3_RING_TX_RING_FBDNUM_REG));
- 
--	sprintf(result[j++], "%6u", readl_relaxed(ring->tqp->io_base +
-+	sprintf(result[j++], "%u", readl_relaxed(ring->tqp->io_base +
- 		HNS3_RING_TX_RING_OFFSET_REG));
- 
--	sprintf(result[j++], "%6u", readl_relaxed(ring->tqp->io_base +
-+	sprintf(result[j++], "%u", readl_relaxed(ring->tqp->io_base +
- 		HNS3_RING_TX_RING_PKTNUM_RECORD_REG));
- 
--	sprintf(result[j++], "%7s", readl_relaxed(ring->tqp->io_base +
-+	sprintf(result[j++], "%s", readl_relaxed(ring->tqp->io_base +
- 		HNS3_RING_EN_REG) ? "on" : "off");
- 
- 	if (hnae3_ae_dev_tqp_txrx_indep_supported(ae_dev))
--		sprintf(result[j++], "%10s", readl_relaxed(ring->tqp->io_base +
-+		sprintf(result[j++], "%s", readl_relaxed(ring->tqp->io_base +
- 			HNS3_RING_TX_EN_REG) ? "on" : "off");
- 	else
--		sprintf(result[j++], "%10s", "NA");
-+		sprintf(result[j++], "%s", "NA");
- 
- 	base_add_h = readl_relaxed(ring->tqp->io_base +
- 					HNS3_RING_TX_RING_BASEADDR_H_REG);
-@@ -848,15 +848,15 @@ static void hns3_dump_rx_bd_info(struct hns3_nic_priv *priv,
- {
- 	unsigned int j = 0;
- 
--	sprintf(result[j++], "%5d", idx);
-+	sprintf(result[j++], "%d", idx);
- 	sprintf(result[j++], "%#x", le32_to_cpu(desc->rx.l234_info));
--	sprintf(result[j++], "%7u", le16_to_cpu(desc->rx.pkt_len));
--	sprintf(result[j++], "%4u", le16_to_cpu(desc->rx.size));
-+	sprintf(result[j++], "%u", le16_to_cpu(desc->rx.pkt_len));
-+	sprintf(result[j++], "%u", le16_to_cpu(desc->rx.size));
- 	sprintf(result[j++], "%#x", le32_to_cpu(desc->rx.rss_hash));
--	sprintf(result[j++], "%5u", le16_to_cpu(desc->rx.fd_id));
--	sprintf(result[j++], "%8u", le16_to_cpu(desc->rx.vlan_tag));
--	sprintf(result[j++], "%15u", le16_to_cpu(desc->rx.o_dm_vlan_id_fb));
--	sprintf(result[j++], "%11u", le16_to_cpu(desc->rx.ot_vlan_tag));
-+	sprintf(result[j++], "%u", le16_to_cpu(desc->rx.fd_id));
-+	sprintf(result[j++], "%u", le16_to_cpu(desc->rx.vlan_tag));
-+	sprintf(result[j++], "%u", le16_to_cpu(desc->rx.o_dm_vlan_id_fb));
-+	sprintf(result[j++], "%u", le16_to_cpu(desc->rx.ot_vlan_tag));
- 	sprintf(result[j++], "%#x", le32_to_cpu(desc->rx.bd_base_info));
- 	if (test_bit(HNS3_NIC_STATE_RXD_ADV_LAYOUT_ENABLE, &priv->state)) {
- 		u32 ol_info = le32_to_cpu(desc->rx.ol_info);
-@@ -930,19 +930,19 @@ static void hns3_dump_tx_bd_info(struct hns3_nic_priv *priv,
- {
- 	unsigned int j = 0;
- 
--	sprintf(result[j++], "%6d", idx);
-+	sprintf(result[j++], "%d", idx);
- 	sprintf(result[j++], "%#llx", le64_to_cpu(desc->addr));
--	sprintf(result[j++], "%5u", le16_to_cpu(desc->tx.vlan_tag));
--	sprintf(result[j++], "%5u", le16_to_cpu(desc->tx.send_size));
-+	sprintf(result[j++], "%u", le16_to_cpu(desc->tx.vlan_tag));
-+	sprintf(result[j++], "%u", le16_to_cpu(desc->tx.send_size));
- 	sprintf(result[j++], "%#x",
- 		le32_to_cpu(desc->tx.type_cs_vlan_tso_len));
--	sprintf(result[j++], "%5u", le16_to_cpu(desc->tx.outer_vlan_tag));
--	sprintf(result[j++], "%5u", le16_to_cpu(desc->tx.tv));
--	sprintf(result[j++], "%10u",
-+	sprintf(result[j++], "%u", le16_to_cpu(desc->tx.outer_vlan_tag));
-+	sprintf(result[j++], "%u", le16_to_cpu(desc->tx.tv));
-+	sprintf(result[j++], "%u",
- 		le32_to_cpu(desc->tx.ol_type_vlan_len_msec));
- 	sprintf(result[j++], "%#x", le32_to_cpu(desc->tx.paylen_ol4cs));
- 	sprintf(result[j++], "%#x", le16_to_cpu(desc->tx.bdtp_fe_sc_vld_ra_ri));
--	sprintf(result[j++], "%5u", le16_to_cpu(desc->tx.mss_hw_csum));
-+	sprintf(result[j++], "%u", le16_to_cpu(desc->tx.mss_hw_csum));
- }
- 
- static int hns3_dbg_tx_bd_info(struct hns3_dbg_data *d, char *buf, int len)
+ 	hclge_cmd_setup_basic_desc(&desc, HCLGEVF_OPC_MBX_PF_TO_VF, false);
 -- 
 2.33.0
 
