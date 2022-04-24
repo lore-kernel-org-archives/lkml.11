@@ -2,93 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33935C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 13:38:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BD19C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 13:48:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236916AbiDXNlx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 09:41:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36554 "EHLO
+        id S237341AbiDXNu5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 09:50:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236298AbiDXNlv (ORCPT
+        with ESMTP id S233019AbiDXNuz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 09:41:51 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2478FEE9B6
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 06:38:51 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id y3so4503150ejo.12
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 06:38:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=0/aR4FG3opfP8wTU42wsK2pjpb2lLl/56PN0te8U1K0=;
-        b=gjcKJHwunnnQUYJuweRcZ4XrtvNF7vGQYWRV8gUf6bnQxNG2kwh/uss2F7Sz60ggNr
-         xFaycIotrnx6LSeiTfByGBZUJLJlsUc2azBvA01Zf3KQmpwRYs9faMyilCbDqd3FbRtm
-         bUtT8vYrt9NzZaQ+kIRDiMDHk9uwnZ7vj4pcEyGn4I8SHbEHnUtmxygspeUKZtwGiFuD
-         MnJDkESTEDi8yjvPr8T5HKoyv6qeJ0Rgc32+paz0CYLlNz+bF8gEB5zjgIJZnzy9j7AU
-         o720N/dml63+DRh6sAodrJ8frdTG/6Vqk++ZnvD2ZfWP4sKFwtYMENENMcefAR3qXeF7
-         NmFw==
+        Sun, 24 Apr 2022 09:50:55 -0400
+Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A988D16C17A;
+        Sun, 24 Apr 2022 06:47:55 -0700 (PDT)
+Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-e9027efe6aso6249819fac.10;
+        Sun, 24 Apr 2022 06:47:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=0/aR4FG3opfP8wTU42wsK2pjpb2lLl/56PN0te8U1K0=;
-        b=vzzoiZKeAcNSBWm6JM5QWztLZeTM6qqMg7UWlrPZNhWDYgdHUSqaqOjrnylqaGxt5t
-         xo4L7cqzBg6e4cdBOTjvaE4NPWMeEVLrkxzNWHWksFZYivZGniZpOeqsAHceeXiOPD0l
-         irizDy3o3jySIZm33O6jaIV4z28MEppOANrqcX148hpflkIKXT+nLVvKyF0ej7BbF4UG
-         46PO13DzVeAGMuObw0BiKKhj2kUtGWsAO9mz6zLTVvVVBYNW7AOe+Og9cuvaQs32ayuq
-         Q8bu/+vO674m1Yhnv1/lndozv8MgbgSP/89MyI9iyfTXZHVQ4YpN+pYI2y1oxkbmPJzP
-         mRRg==
-X-Gm-Message-State: AOAM530uu2bWhfg5i7PnLD8Z3ZWv9HCkE7N+p5yyCbSm5WUuE2D0zB06
-        BKBMs/t1FT2uKmXexdwLj27CuBBSH544/A==
-X-Google-Smtp-Source: ABdhPJz3zBuOc6qL/jK+PtKnZ3hFOPsD1+aIaU9X5jsHg0iuxfme3W3oCizOrczlAVwjkYkI9WQ0Cg==
-X-Received: by 2002:a17:906:7751:b0:6ce:e3c:81a6 with SMTP id o17-20020a170906775100b006ce0e3c81a6mr11719145ejn.278.1650807529701;
-        Sun, 24 Apr 2022 06:38:49 -0700 (PDT)
-Received: from [192.168.0.235] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id b26-20020a1709062b5a00b006e8daae2359sm2608403ejg.95.2022.04.24.06.38.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 24 Apr 2022 06:38:49 -0700 (PDT)
-Message-ID: <e794c995-7f8f-a75b-6f30-1cbcbd9edd56@linaro.org>
-Date:   Sun, 24 Apr 2022 15:38:48 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 3/3] dt-bindings: soc: qcom: convert QCOM SMP2P binding
- to yaml
-Content-Language: en-US
-To:     David Heidelberg <david@ixit.cz>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220424131522.14185-1-david@ixit.cz>
- <20220424131522.14185-3-david@ixit.cz>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220424131522.14185-3-david@ixit.cz>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=Pu6DnoU4e+S28wwiQtquR83df83fF19JIUY4ZsQ9G1U=;
+        b=1yJt4kspoDaZPUYWJSt61Dv2vQcq5TPuUUfTn0ltlocx4gnpHJ7HjqpLPUTG04E7Bs
+         MvXWyvmM2DSxqWWq4a5fWcAL0uOkOrRIvqSxculBos5HrPjRLBZSQFmUv5gmvIhLiKGh
+         pm/HB3A9m0OQUpb0NFPoovhcxdCmAWpjOcU1utUcjN9NuLJWUScbx8vztc63mkzBpyOS
+         8IOOj1V09v29pAHLKXQ1PZ1OXQVFYjmrWCPQVt0YRj9SNX4LlqnCaJoiLLE3Fj9D/NXc
+         kKqwt0yR1G2bzd6di81RCBr5lAbrm6uei/Hp0JQQzR6kTexFGFW3yxiwp8mp9LzMjJpW
+         nl/g==
+X-Gm-Message-State: AOAM532nYqqHGr4c2AsPTgCf4WH2/pJLFyrQrQ7gObk+kvVwjWpt9lHS
+        z0nXDXeMCZf1F4xajNrh6Q==
+X-Google-Smtp-Source: ABdhPJyvEyxNrCShSr4B9GI+N2FFzDSFgIt2A4wEHMS5YRIGTBE48y06oer1YkM1bftG/CRPVFlAgQ==
+X-Received: by 2002:a05:6870:ac06:b0:e9:cba:68cc with SMTP id kw6-20020a056870ac0600b000e90cba68ccmr3646271oab.144.1650808074936;
+        Sun, 24 Apr 2022 06:47:54 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id y83-20020aca4b56000000b003251ffeaf7csm724139oia.10.2022.04.24.06.47.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Apr 2022 06:47:54 -0700 (PDT)
+Received: (nullmailer pid 1284015 invoked by uid 1000);
+        Sun, 24 Apr 2022 13:47:53 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Yassine Oudjana <yassine.oudjana@gmail.com>
+Cc:     Stephen Boyd <sboyd@kernel.org>,
+        Yassine Oudjana <y.oudjana@protonmail.com>,
+        devicetree@vger.kernel.org, Ryder Lee <ryder.lee@kernel.org>,
+        linux-mediatek@lists.infradead.org,
+        Michael Turquette <mturquette@baylibre.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Sam Shih <sam.shih@mediatek.com>, linux-clk@vger.kernel.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+In-Reply-To: <20220424084647.76577-4-y.oudjana@protonmail.com>
+References: <20220424084647.76577-1-y.oudjana@protonmail.com> <20220424084647.76577-4-y.oudjana@protonmail.com>
+Subject: Re: [PATCH v2 3/3] dt-bindings: arm: mediatek: infracfg: Convert to DT schema
+Date:   Sun, 24 Apr 2022 08:47:53 -0500
+Message-Id: <1650808073.407864.1284014.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 24/04/2022 15:15, David Heidelberg wrote:
-> Convert Qualcomm SoC SMP2P binding to the yaml format.
+On Sun, 24 Apr 2022 12:46:47 +0400, Yassine Oudjana wrote:
+> From: Yassine Oudjana <y.oudjana@protonmail.com>
 > 
-> Signed-off-by: David Heidelberg <david@ixit.cz>
+> Convert infracfg bindings to DT schema format. Not all drivers
+> currently implement resets, so #reset-cells is made a required
+> property only for those that do. Using power-controller in the
+> example node name makes #power-domain-cells required causing
+> a dt_binding_check error. To solve this, the node is renamed to
+> syscon@10001000.
+> 
+> Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
 > ---
-> v2:
->  - dropped constraints on sub-node names,
->    converted patternProperties to additionalProperties
->  - adjusted name from "Point 2 Point" to "Point to Point"
-> ---
->  .../bindings/soc/qcom/qcom,smp2p.txt          | 110 --------------
->  .../bindings/soc/qcom/qcom,smp2p.yaml         | 136 ++++++++++++++++++
+>  .../arm/mediatek/mediatek,infracfg.txt        | 42 ----------
+>  .../arm/mediatek/mediatek,infracfg.yaml       | 81 +++++++++++++++++++
+>  2 files changed, 81 insertions(+), 42 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.txt
+>  create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.yaml
+> 
 
-This was already done. Sorry that I did not notice your earlier work, I
-am usually checking for prior work but this was missed.
+Running 'make dtbs_check' with the schema in this patch gives the
+following warnings. Consider if they are expected or the schema is
+incorrect. These may not be new warnings.
+
+Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+This will change in the future.
+
+Full log is available here: https://patchwork.ozlabs.org/patch/
 
 
-Best regards,
-Krzysztof
+infracfg@10001000: '#reset-cells' is a required property
+	arch/arm64/boot/dts/mediatek/mt7986a-rfb.dtb
+	arch/arm64/boot/dts/mediatek/mt7986b-rfb.dtb
+
+syscon@10001000: '#reset-cells' is a required property
+	arch/arm64/boot/dts/mediatek/mt2712-evb.dtb
+
