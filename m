@@ -2,185 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32934C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 16:04:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B033C4332F
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 16:04:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233151AbiDXQGC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 12:06:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51296 "EHLO
+        id S233327AbiDXQHK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 12:07:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231513AbiDXQF7 (ORCPT
+        with ESMTP id S231513AbiDXQHI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 12:05:59 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9044A74DE8;
-        Sun, 24 Apr 2022 09:02:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650816179; x=1682352179;
-  h=from:to:cc:subject:date:message-id;
-  bh=hgmWv2J10YMgm1PnZWc/9wRep8El2UqAWfmRn8325s4=;
-  b=jEt7LQkoynYBAPloafnl0suI/aTOA9YzWNOkiVz0lSTgSjKpjLbSswaD
-   2c2c0LnuOvcjz8gUWaf21W1QudwrIPLnV2BUBKuUNkto3TBGmxXLlBgEQ
-   gYtGE32aDWyRLivpy+WwpZ2VHAwPkBv+AdPystonVEj7jNOZweZ9gnwCp
-   4=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 24 Apr 2022 09:02:58 -0700
-X-QCInternal: smtphost
-Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 24 Apr 2022 09:02:56 -0700
-X-QCInternal: smtphost
-Received: from c-sbhanu-linux.qualcomm.com ([10.242.50.201])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 24 Apr 2022 21:32:34 +0530
-Received: by c-sbhanu-linux.qualcomm.com (Postfix, from userid 2344807)
-        id 5C3C45B82; Sun, 24 Apr 2022 21:32:33 +0530 (IST)
-From:   Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
-To:     agross@kernel.org, bjorn.andersson@linaro.org,
-        adrian.hunter@intel.com, ulf.hansson@linaro.org,
-        p.zabel@pengutronix.de, chris@printf.net, venkatg@codeaurora.org,
-        gdjakov@mm-sol.com, quic_asutoshd@quicinc.com
-Cc:     linux-arm-msm@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_rampraka@quicinc.com,
-        quic_pragalla@quicinc.com, quic_sartgarg@quicinc.com,
-        quic_nitirawa@quicinc.com, quic_sayalil@quicinc.com,
-        Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
-Subject: [PATCH V5] mmc: sdhci-msm: Reset GCC_SDCC_BCR register for SDHC
-Date:   Sun, 24 Apr 2022 21:32:33 +0530
-Message-Id: <1650816153-23797-1-git-send-email-quic_c_sbhanu@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Sun, 24 Apr 2022 12:07:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 558547B127;
+        Sun, 24 Apr 2022 09:04:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 11F0FB80DD4;
+        Sun, 24 Apr 2022 16:04:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44783C385A9;
+        Sun, 24 Apr 2022 16:04:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650816244;
+        bh=g8dkPhiULK/SVyEdnpRLy5JR9O4qchMC2KRkj1DVmx0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=OdmrwaqhoK/HFNPQYlIIJDmZbLgVG9fZJG28WGp3SXEV1c6F3+qBQ5enRuBAykzWl
+         x8fvbxJWOHCoM7QIeiUJPyDMI+W7GrN/1CYA5Xg030L5M0FZFhbvHCmwNnUQ5VZHjp
+         Ayr40WNb7fI0t/4Zx+VbFHPYHN0Dg7oLnc+Nx6Loe1Ui3/g9c1FZmuH/9vf7LnadXW
+         9OpZ+jq4hQ7oso3NQ6RjwoP75gRbG7hzZMlrC9a2+TstaCSsO+7Z/nvj7K89OAJ6Pp
+         uANpriusle4YSoHmomU8kudET++FHffsJCWBMgIKEzX8RaAPuW2FB0ztulaYSofCkO
+         kRZkhVSfBZckA==
+Date:   Sun, 24 Apr 2022 17:12:12 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Slawomir Stepien <sst@poczta.fm>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: iio: Fix incorrect compatible strings in
+ examples
+Message-ID: <20220424171212.6d247854@jic23-huawei>
+In-Reply-To: <20220422192039.2590548-1-robh@kernel.org>
+References: <20220422192039.2590548-1-robh@kernel.org>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reset GCC_SDCC_BCR register before every fresh initilazation. This will
-reset whole SDHC-msm controller, clears the previous power control
-states and avoids, software reset timeout issues as below.
+On Fri, 22 Apr 2022 14:20:39 -0500
+Rob Herring <robh@kernel.org> wrote:
 
-[ 5.458061][ T262] mmc1: Reset 0x1 never completed.
-[ 5.462454][ T262] mmc1: sdhci: ============ SDHCI REGISTER DUMP ===========
-[ 5.469065][ T262] mmc1: sdhci: Sys addr: 0x00000000 | Version: 0x00007202
-[ 5.475688][ T262] mmc1: sdhci: Blk size: 0x00000000 | Blk cnt: 0x00000000
-[ 5.482315][ T262] mmc1: sdhci: Argument: 0x00000000 | Trn mode: 0x00000000
-[ 5.488927][ T262] mmc1: sdhci: Present: 0x01f800f0 | Host ctl: 0x00000000
-[ 5.495539][ T262] mmc1: sdhci: Power: 0x00000000 | Blk gap: 0x00000000
-[ 5.502162][ T262] mmc1: sdhci: Wake-up: 0x00000000 | Clock: 0x00000003
-[ 5.508768][ T262] mmc1: sdhci: Timeout: 0x00000000 | Int stat: 0x00000000
-[ 5.515381][ T262] mmc1: sdhci: Int enab: 0x00000000 | Sig enab: 0x00000000
-[ 5.521996][ T262] mmc1: sdhci: ACmd stat: 0x00000000 | Slot int: 0x00000000
-[ 5.528607][ T262] mmc1: sdhci: Caps: 0x362dc8b2 | Caps_1: 0x0000808f
-[ 5.535227][ T262] mmc1: sdhci: Cmd: 0x00000000 | Max curr: 0x00000000
-[ 5.541841][ T262] mmc1: sdhci: Resp[0]: 0x00000000 | Resp[1]: 0x00000000
-[ 5.548454][ T262] mmc1: sdhci: Resp[2]: 0x00000000 | Resp[3]: 0x00000000
-[ 5.555079][ T262] mmc1: sdhci: Host ctl2: 0x00000000
-[ 5.559651][ T262] mmc1: sdhci_msm: ----------- VENDOR REGISTER DUMP-----------
-[ 5.566621][ T262] mmc1: sdhci_msm: DLL sts: 0x00000000 | DLL cfg: 0x6000642c | DLL cfg2: 0x0020a000
-[ 5.575465][ T262] mmc1: sdhci_msm: DLL cfg3: 0x00000000 | DLL usr ctl: 0x00010800 | DDR cfg: 0x80040873
-[ 5.584658][ T262] mmc1: sdhci_msm: Vndr func: 0x00018a9c | Vndr func2 : 0xf88218a8 Vndr func3: 0x02626040
+> Fix a couple of examples using incorrect compatible strings.
+> 
+> Signed-off-by: Rob Herring <robh@kernel.org>
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Fixes: 0eb0d9f4de34 ("mmc: sdhci-msm: Initial support for Qualcomm chipsets")
-Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
----
+or I can pick these up through IIO if preferred.
 
-Changes since V4:
-	- Called reset_control_put() in error path.
+Thanks,
 
-Changes since V3:
-	- Used reset controller local variable as suggested by
-	  Bjorn Andersson.
-	- Passed NULL as a parameter to
-	  devm_reset_control_get_optional_exclusive() as suggested by
-	  Bjorn Andersson.
-	- Replaced devm_reset_control_get_optional_exclusive() with
-	  reset_control_get_optional_exclusive() and called
-	  reset_control_put() before returning to clear the reset
-	  controller as suggested by Bjorn Andersson.
+Jonathan
 
-Changes since V2:
-	- Dropped new line after fixes tag as suggested by Bjorn
-	  Andersson.
-	- Passed device structure instead of passing platform_device
-	  structure as a argument for sdhci_msm_gcc_reset() as suggested
-	  by Bjorn Andersson.
-	- Replaced dev_err() with dev_err_probe() as suggested by Bjorn
-	  Andersson.
-
-Changes since V1:
-	- Added fixes tag as suggested by Ulf Hansson.
-	- Replaced devm_reset_control_get() with
-	  devm_reset_control_get_optional_exclusive() as suggested by
-	  Ulf Hansson.
----
- drivers/mmc/host/sdhci-msm.c | 42 ++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 42 insertions(+)
-
-diff --git a/drivers/mmc/host/sdhci-msm.c b/drivers/mmc/host/sdhci-msm.c
-index 50c71e0..ff9f5b6 100644
---- a/drivers/mmc/host/sdhci-msm.c
-+++ b/drivers/mmc/host/sdhci-msm.c
-@@ -17,6 +17,7 @@
- #include <linux/regulator/consumer.h>
- #include <linux/interconnect.h>
- #include <linux/pinctrl/consumer.h>
-+#include <linux/reset.h>
- 
- #include "sdhci-pltfm.h"
- #include "cqhci.h"
-@@ -2482,6 +2483,43 @@ static inline void sdhci_msm_get_of_property(struct platform_device *pdev,
- 	of_property_read_u32(node, "qcom,dll-config", &msm_host->dll_config);
- }
- 
-+static int sdhci_msm_gcc_reset(struct device *dev, struct sdhci_host *host)
-+{
-+	struct reset_control *reset;
-+	int ret = 0;
-+
-+	reset = reset_control_get_optional_exclusive(dev, NULL);
-+	if (IS_ERR(reset))
-+		return dev_err_probe(dev, PTR_ERR(reset),
-+				"unable to acquire core_reset\n");
-+
-+	if (!reset)
-+		return ret;
-+
-+	ret = reset_control_assert(reset);
-+	if (ret) {
-+		reset_control_put(reset);
-+		return dev_err_probe(dev, ret, "core_reset assert failed\n");
-+	}
-+
-+	/*
-+	 * The hardware requirement for delay between assert/deassert
-+	 * is at least 3-4 sleep clock (32.7KHz) cycles, which comes to
-+	 * ~125us (4/32768). To be on the safe side add 200us delay.
-+	 */
-+	usleep_range(200, 210);
-+
-+	ret = reset_control_deassert(reset);
-+	if (ret) {
-+		reset_control_put(reset);
-+		return dev_err_probe(dev, ret, "core_reset deassert failed\n");
-+	}
-+
-+	usleep_range(200, 210);
-+	reset_control_put(reset);
-+
-+	return ret;
-+}
- 
- static int sdhci_msm_probe(struct platform_device *pdev)
- {
-@@ -2529,6 +2567,10 @@ static int sdhci_msm_probe(struct platform_device *pdev)
- 
- 	msm_host->saved_tuning_phase = INVALID_TUNING_PHASE;
- 
-+	ret = sdhci_msm_gcc_reset(&pdev->dev, host);
-+	if (ret)
-+		goto pltfm_free;
-+
- 	/* Setup SDCC bus voter clock. */
- 	msm_host->bus_clk = devm_clk_get(&pdev->dev, "bus");
- 	if (!IS_ERR(msm_host->bus_clk)) {
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
-of Code Aurora Forum, hosted by The Linux Foundation
+> ---
+>  Documentation/devicetree/bindings/iio/dac/lltc,ltc2632.yaml     | 2 +-
+>  .../bindings/iio/potentiometer/microchip,mcp4131.yaml           | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/dac/lltc,ltc2632.yaml b/Documentation/devicetree/bindings/iio/dac/lltc,ltc2632.yaml
+> index edf804d0aca2..b1eb77335d05 100644
+> --- a/Documentation/devicetree/bindings/iio/dac/lltc,ltc2632.yaml
+> +++ b/Documentation/devicetree/bindings/iio/dac/lltc,ltc2632.yaml
+> @@ -68,7 +68,7 @@ examples:
+>        #size-cells = <0>;
+>  
+>        dac@0 {
+> -        compatible = "lltc,ltc2632";
+> +        compatible = "lltc,ltc2632-l12";
+>          reg = <0>;    /* CS0 */
+>          spi-max-frequency = <1000000>;
+>          vref-supply = <&vref>;
+> diff --git a/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp4131.yaml b/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp4131.yaml
+> index 945a2d644ddc..32e92bced81f 100644
+> --- a/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp4131.yaml
+> +++ b/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp4131.yaml
+> @@ -95,7 +95,7 @@ examples:
+>          #size-cells = <0>;
+>  
+>          potentiometer@0 {
+> -            compatible = "mcp4131-502";
+> +            compatible = "microchip,mcp4131-502";
+>              reg = <0>;
+>              spi-max-frequency = <500000>;
+>          };
 
