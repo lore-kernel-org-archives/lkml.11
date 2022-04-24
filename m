@@ -2,212 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6701C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 15:36:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3314CC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 15:36:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233284AbiDXPj0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 11:39:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36910 "EHLO
+        id S233389AbiDXPjf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 11:39:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240454AbiDXPbY (ORCPT
+        with ESMTP id S240742AbiDXPfB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 11:31:24 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5CBA171C08;
-        Sun, 24 Apr 2022 08:28:21 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KmX8m3tPzzhYWy;
-        Sun, 24 Apr 2022 23:28:08 +0800 (CST)
-Received: from huawei.com (10.67.174.197) by kwepemi500013.china.huawei.com
- (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sun, 24 Apr
- 2022 23:28:18 +0800
-From:   Xu Kuohai <xukuohai@huawei.com>
-To:     <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>
-CC:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        <hpa@zytor.com>, Shuah Khan <shuah@kernel.org>,
+        Sun, 24 Apr 2022 11:35:01 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 750C2171C03
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 08:32:00 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id n18so21713184plg.5
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 08:32:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=nathanrossi.com; s=google;
+        h=date:message-id:from:to:cc:subject:content-transfer-encoding
+         :mime-version;
+        bh=DPNto3RCybjogKfr456o+QEcokurj06jetoOd1VBs74=;
+        b=Kb28HEvQESzMvIBoLcX56XxVgEM+RnJHXrpj37528afTgp5M3XHE4/G5VHSKlDTP1a
+         SYUo447iH71nX8OvnfTf28m2Hielc6+e3XygAR4dUxK3AThrSpYR8XRn25b1cSL1znrf
+         1PFEQRjw1lxEWr9moRYYsItBgY69ADMrm6JN7axZ2Tdp4degAxJGGA6G39LBVcGcLvqW
+         Ul+ZiA6guY7o7v13drb7yIuaZEOzpPbgc2y8aQDe+17KuEwzEUztgzKhLUPl1hT95BUw
+         vNEymW4QNodpWQnSrx6tEFi9ZvWwmD4quTO3Y0TgngJPWWSdMIPCDxJrl2htOzyZMxZf
+         03zQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:from:to:cc:subject
+         :content-transfer-encoding:mime-version;
+        bh=DPNto3RCybjogKfr456o+QEcokurj06jetoOd1VBs74=;
+        b=kInSK4ptLUeUmbOlL0ZA+xSGcfYS49vwqBRFkR0P/VTDZXo0vv1JI+fF/3kyK0rQbN
+         sIdFK54MSfz/Nm9yrcKoMg2QLutEfL31dwus7Iu188uMl0M3A37+S/o41AKnk/k0tB/Q
+         rKIkH0VR6tqvB+Kt6iP5j5RTOCFD/is3FL4pvNw9wPlnimoiaHvBYK+/aJfLZFuOvATf
+         fSuKF8tF60yG6zmbBtj98yEuZBNApArLTZcElxEt1Qv44wsSkhtGzh3q/0bJ1h+pQGfM
+         3v8Zm19UpqAailMw8OkbKlkdTcg2iDtMr4CTFiMXkRcHWmv1SRuBESGbXBxmg8luLJwH
+         LQ1w==
+X-Gm-Message-State: AOAM530m5zZMjdNm0njt69J01YZ8bfLv8Q8XQqrwDQ/CsD5yvw/jXtce
+        eqN7cCEqRkmx3+b5ucSoDSddyw==
+X-Google-Smtp-Source: ABdhPJyETDVhVTYNkCKpQXCEPpl7+sz2RmWm0F2IMHyootGSXwrP7S6fl4n0LIJfkleB3tYY+cstng==
+X-Received: by 2002:a17:90a:db45:b0:1d9:29d0:4c6e with SMTP id u5-20020a17090adb4500b001d929d04c6emr9037581pjx.46.1650814320015;
+        Sun, 24 Apr 2022 08:32:00 -0700 (PDT)
+Received: from [127.0.1.1] (117-20-68-98.751444.bne.nbn.aussiebb.net. [117.20.68.98])
+        by smtp.gmail.com with UTF8SMTPSA id u25-20020aa78399000000b00505f75651e7sm8374307pfm.158.2022.04.24.08.31.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Apr 2022 08:31:59 -0700 (PDT)
+Date:   Sun, 24 Apr 2022 15:31:43 +0000
+Message-Id: <20220424153143.323338-1-nathan@nathanrossi.com>
+From:   Nathan Rossi <nathan@nathanrossi.com>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Nathan Rossi <nathan@nathanrossi.com>,
+        Marek Behun <kabel@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Daniel Kiss <daniel.kiss@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Mark Brown <broonie@kernel.org>,
-        Delyan Kratunov <delyank@fb.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Subject: [PATCH bpf-next v3 3/7] bpf: Move is_valid_bpf_tramp_flags() to the public trampoline code
-Date:   Sun, 24 Apr 2022 11:40:24 -0400
-Message-ID: <20220424154028.1698685-4-xukuohai@huawei.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220424154028.1698685-1-xukuohai@huawei.com>
-References: <20220424154028.1698685-1-xukuohai@huawei.com>
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH v2] net: dsa: mv88e6xxx: Fix port_hidden_wait to account for
+ port_base_addr
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.197]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemi500013.china.huawei.com (7.221.188.120)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-is_valid_bpf_tramp_flags() is not relevant to architecture, so move it
-to the public trampoline code.
+The other port_hidden functions rely on the port_read/port_write
+functions to access the hidden control port. These functions apply the
+offset for port_base_addr where applicable. Update port_hidden_wait to
+use the port_wait_bit so that port_base_addr offsets are accounted for
+when waiting for the busy bit to change.
 
-Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
-Acked-by: Song Liu <songliubraving@fb.com>
+Without the offset the port_hidden_wait function would timeout on
+devices that have a non-zero port_base_addr (e.g. MV88E6141), however
+devices that have a zero port_base_addr would operate correctly (e.g.
+MV88E6390).
+
+Fixes: ea89098ef9a5 ("net: dsa: mv88x6xxx: mv88e6390 errata")
+Signed-off-by: Nathan Rossi <nathan@nathanrossi.com>
 ---
- arch/x86/net/bpf_jit_comp.c | 20 --------------------
- include/linux/bpf.h         |  5 +++++
- kernel/bpf/bpf_struct_ops.c |  4 ++--
- kernel/bpf/trampoline.c     | 34 +++++++++++++++++++++++++++++++---
- 4 files changed, 38 insertions(+), 25 deletions(-)
+Changes in v2:
+- Add fixes
+---
+ drivers/net/dsa/mv88e6xxx/port_hidden.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-index 8fe35ed11fd6..774f05f92737 100644
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -1900,23 +1900,6 @@ static int invoke_bpf_mod_ret(const struct btf_func_model *m, u8 **pprog,
- 	return 0;
- }
- 
--static bool is_valid_bpf_tramp_flags(unsigned int flags)
--{
--	if ((flags & BPF_TRAMP_F_RESTORE_REGS) &&
--	    (flags & BPF_TRAMP_F_SKIP_FRAME))
--		return false;
--
--	/*
--	 * BPF_TRAMP_F_RET_FENTRY_RET is only used by bpf_struct_ops,
--	 * and it must be used alone.
--	 */
--	if ((flags & BPF_TRAMP_F_RET_FENTRY_RET) &&
--	    (flags & ~BPF_TRAMP_F_RET_FENTRY_RET))
--		return false;
--
--	return true;
--}
--
- /* Example:
-  * __be16 eth_type_trans(struct sk_buff *skb, struct net_device *dev);
-  * its 'struct btf_func_model' will be nr_args=2
-@@ -1995,9 +1978,6 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
- 	if (nr_args > 6)
- 		return -ENOTSUPP;
- 
--	if (!is_valid_bpf_tramp_flags(flags))
--		return -EINVAL;
--
- 	/* Generated trampoline stack layout:
- 	 *
- 	 * RBP + 8         [ return address  ]
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 7bf441563ffc..90f878de2842 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -706,6 +706,11 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *tr, void *image, void *i
- 				const struct btf_func_model *m, u32 flags,
- 				struct bpf_tramp_progs *tprogs,
- 				void *orig_call);
-+int bpf_prepare_trampoline(struct bpf_tramp_image *tr, void *image, void *image_end,
-+			   const struct btf_func_model *m, u32 flags,
-+			   struct bpf_tramp_progs *tprogs,
-+			   void *orig_call);
-+
- /* these two functions are called from generated trampoline */
- u64 notrace __bpf_prog_enter(struct bpf_prog *prog);
- void notrace __bpf_prog_exit(struct bpf_prog *prog, u64 start);
-diff --git a/kernel/bpf/bpf_struct_ops.c b/kernel/bpf/bpf_struct_ops.c
-index de01d37c2d3b..3248dd86783a 100644
---- a/kernel/bpf/bpf_struct_ops.c
-+++ b/kernel/bpf/bpf_struct_ops.c
-@@ -325,8 +325,8 @@ int bpf_struct_ops_prepare_trampoline(struct bpf_tramp_progs *tprogs,
- 	tprogs[BPF_TRAMP_FENTRY].progs[0] = prog;
- 	tprogs[BPF_TRAMP_FENTRY].nr_progs = 1;
- 	flags = model->ret_size > 0 ? BPF_TRAMP_F_RET_FENTRY_RET : 0;
--	return arch_prepare_bpf_trampoline(NULL, image, image_end,
--					   model, flags, tprogs, NULL);
-+	return bpf_prepare_trampoline(NULL, image, image_end, model, flags,
-+				      tprogs, NULL);
- }
- 
- static int bpf_struct_ops_map_update_elem(struct bpf_map *map, void *key,
-diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
-index ada97751ae1b..00e6ad80fed2 100644
---- a/kernel/bpf/trampoline.c
-+++ b/kernel/bpf/trampoline.c
-@@ -360,9 +360,9 @@ static int bpf_trampoline_update(struct bpf_trampoline *tr)
- 	if (ip_arg)
- 		flags |= BPF_TRAMP_F_IP_ARG;
- 
--	err = arch_prepare_bpf_trampoline(im, im->image, im->image + PAGE_SIZE,
--					  &tr->func.model, flags, tprogs,
--					  tr->func.addr);
-+	err = bpf_prepare_trampoline(im, im->image, im->image + PAGE_SIZE,
-+				     &tr->func.model, flags, tprogs,
-+				     tr->func.addr);
- 	if (err < 0)
- 		goto out;
- 
-@@ -641,6 +641,34 @@ arch_prepare_bpf_trampoline(struct bpf_tramp_image *tr, void *image, void *image
- 	return -ENOTSUPP;
- }
- 
-+static bool is_valid_bpf_tramp_flags(unsigned int flags)
-+{
-+	if ((flags & BPF_TRAMP_F_RESTORE_REGS) &&
-+	    (flags & BPF_TRAMP_F_SKIP_FRAME))
-+		return false;
-+
-+	/* BPF_TRAMP_F_RET_FENTRY_RET is only used by bpf_struct_ops,
-+	 * and it must be used alone.
-+	 */
-+	if ((flags & BPF_TRAMP_F_RET_FENTRY_RET) &&
-+	    (flags & ~BPF_TRAMP_F_RET_FENTRY_RET))
-+		return false;
-+
-+	return true;
-+}
-+
-+int bpf_prepare_trampoline(struct bpf_tramp_image *tr, void *image,
-+			   void *image_end, const struct btf_func_model *m,
-+			   u32 flags, struct bpf_tramp_progs *tprogs,
-+			   void *orig_call)
-+{
-+	if (!is_valid_bpf_tramp_flags(flags))
-+		return -EINVAL;
-+
-+	return arch_prepare_bpf_trampoline(tr, image, image_end, m, flags,
-+					   tprogs, orig_call);
-+}
-+
- static int __init init_trampolines(void)
+diff --git a/drivers/net/dsa/mv88e6xxx/port_hidden.c b/drivers/net/dsa/mv88e6xxx/port_hidden.c
+index b49d05f0e1..7a9f9ff6de 100644
+--- a/drivers/net/dsa/mv88e6xxx/port_hidden.c
++++ b/drivers/net/dsa/mv88e6xxx/port_hidden.c
+@@ -40,8 +40,9 @@ int mv88e6xxx_port_hidden_wait(struct mv88e6xxx_chip *chip)
  {
- 	int i;
--- 
-2.30.2
+ 	int bit = __bf_shf(MV88E6XXX_PORT_RESERVED_1A_BUSY);
+ 
+-	return mv88e6xxx_wait_bit(chip, MV88E6XXX_PORT_RESERVED_1A_CTRL_PORT,
+-				  MV88E6XXX_PORT_RESERVED_1A, bit, 0);
++	return mv88e6xxx_port_wait_bit(chip,
++				       MV88E6XXX_PORT_RESERVED_1A_CTRL_PORT,
++				       MV88E6XXX_PORT_RESERVED_1A, bit, 0);
+ }
+ 
+ int mv88e6xxx_port_hidden_read(struct mv88e6xxx_chip *chip, int block, int port,
+---
+2.35.2
 
