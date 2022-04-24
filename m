@@ -2,229 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CA82C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 08:51:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F33EDC4167E
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 08:53:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233945AbiDXIyC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 04:54:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42556 "EHLO
+        id S235089AbiDXI4A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 04:56:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238767AbiDXIxq (ORCPT
+        with ESMTP id S234595AbiDXIz5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 04:53:46 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EAFA1EAF4;
-        Sun, 24 Apr 2022 01:50:46 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id r13so24163567ejd.5;
-        Sun, 24 Apr 2022 01:50:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=SaSVAGu2XwyZao07Jymtbz3ykD0KKs6DAdj6tUH3Obk=;
-        b=RjB5zd+KGvmtQtc+Xo1nuEZ0TX1aASqC0Ic8+GKMksqXdoF05w8NKSukK9SvU0bDHM
-         HXBwIv8iOKcJrAiDJET8kX5a1Fqw86SsDwF2cMhj6u3pfVGWbbBOHe6YxtBtVov0nal2
-         ZuqTegYZwQPG7fzG1OP9oaM9RKhzR5xu7DY+TMtgkLGClKa1grpucmDBVRDWVw+k1+Qg
-         b4aUVB15cZTvGptA1h8GwOJ6jlWWG/+ISKNI6hpUPVPiEzC0RN4G9iNvOJP+FFteSEMQ
-         N3de/O6n/9pUrwqNjnI6hDTnsfkBfcDu6Yzh1hrxlPEcVMW8qyCJDFGuop2lfkFGtlz5
-         NZVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=SaSVAGu2XwyZao07Jymtbz3ykD0KKs6DAdj6tUH3Obk=;
-        b=hs3pU/SVFtgViUxmhD6y4ehMH7SAWJnymvQVkXjHi0+wqGPF1rvB9dtnWvSv/zNYiJ
-         29DbCzhDaGlG2+z8j3yLkpxJ5pf84FUef70+QySySBcACSOV4ayNcn4L3ZdMquu51h80
-         hUKlRfFudpcKn9KqLTrX8gLjWhEy5Pdp5GJb5l3Xs950MGEbPY5OWc8LKsKvN5vhGDST
-         VLqXFZE4vglAxHY+kbkAkE35Ml++fm8/3FPW8J1+7DEF1/hWeZtjUB9/vFeJxjbU3YWD
-         TwYjzruDvK12u9Jqgm2dnQ54ZzRc8I4Y/8ron6YhnuO6p65IIn+y6Wu1FIYDHZzs+GV6
-         dqiQ==
-X-Gm-Message-State: AOAM531+0Dy1ngyfvyFMMNoVrvzYCguWRdfd5OOmxJ0nZvHq730D6NIF
-        XEqv3Ffovm4InFow169lJLM=
-X-Google-Smtp-Source: ABdhPJzzvMcUnsjX5m8kOC3MoubcHlQ48XHwvDcY9nmYjBRcmKIN1r5JLTL2A/SCNRd7aPswcvoc8w==
-X-Received: by 2002:a17:906:dc8b:b0:6ef:86e8:777 with SMTP id cs11-20020a170906dc8b00b006ef86e80777mr11822490ejc.326.1650790244772;
-        Sun, 24 Apr 2022 01:50:44 -0700 (PDT)
-Received: from localhost.localdomain ([138.199.7.245])
-        by smtp.gmail.com with ESMTPSA id gy10-20020a170906f24a00b006e894144707sm2435971ejb.53.2022.04.24.01.50.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Apr 2022 01:50:44 -0700 (PDT)
-From:   Yassine Oudjana <yassine.oudjana@gmail.com>
-X-Google-Original-From: Yassine Oudjana <y.oudjana@protonmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Sun, 24 Apr 2022 04:55:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A587095A38;
+        Sun, 24 Apr 2022 01:52:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E1003B80DDE;
+        Sun, 24 Apr 2022 08:52:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F33DC385B6;
+        Sun, 24 Apr 2022 08:52:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650790374;
+        bh=VAIS5RCD9giYhrbO5Hac6FpKh7We3My7pPHwyo54GI8=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=IlEUmxA7Upi/jZvwszo5tWXIcRM0EAFPHSwLNctN9Y58IvDFrOEsiQajUPCMH7Jvj
+         ffMGYU3Am1eiuRxan/QEzVGZIU4/nZDiD4I9qyEihHwFs57oDBFuZkioK/aaH82E/D
+         cafv1RJevyhRqAmfrOprDhzFhC5PdErVyqMypulLdZQgaDPE2OydWwwQC4+yvZmqbe
+         cKfnbHuByU+9iCxgB+9sW82eJWEWf6s1YXcaaJOKEOR6FMrQj52g4nRCkxQaL9o5DE
+         hRPjDgGmvEn6UrlX0oEzCHgEu1vF7VzmeRUbf/lMOXmL9MVlUAWdZQ45wrK1ipQsiq
+         1YeW3uUpHXgig==
+Received: by mail-wm1-f46.google.com with SMTP id n32-20020a05600c3ba000b00393ea7192faso338998wms.2;
+        Sun, 24 Apr 2022 01:52:54 -0700 (PDT)
+X-Gm-Message-State: AOAM530pm5LKoJ9S9zURth3ykurMGPhtGlFWlgWWk21lbp77o9sfaDGO
+        08lMtfVWNAsO9QdzyqUCGCnBOiJi5UCARkJqihE=
+X-Google-Smtp-Source: ABdhPJwWxQyFReh1xxhP87snsCB/AySgR1dxVTGy6Gpi4+Uz2ZZzeirzOgx8S2o3MdbrdLkLr/78d+DVsl9RCKwJ5Q8=
+X-Received: by 2002:a1c:f219:0:b0:38c:782c:3bb with SMTP id
+ s25-20020a1cf219000000b0038c782c03bbmr20347843wmc.94.1650790372472; Sun, 24
+ Apr 2022 01:52:52 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220419163810.2118169-1-arnd@kernel.org> <20220422170530.GA2338209@roeck-us.net>
+ <CAK8P3a3V=qxUqYT3Yt=dpXVv58-Y+HVi952wO6D4LPN5NNphGA@mail.gmail.com>
+ <8b36d3a4-ec85-2f9f-e4b7-734d8ddd3d8f@roeck-us.net> <CAK8P3a0R9cpEb1d2=e9KnGSbi_uRv48RWfCu_J4DDak_cGZSuw@mail.gmail.com>
+ <20220422234150.GA3442771@roeck-us.net> <CAK8P3a3qZdEqnJ2nTOKwDMossngOgCpEvZq4cQMPQjSsUoU=6g@mail.gmail.com>
+ <3b4046ed-fd75-13ea-fac3-06469172806c@roeck-us.net>
+In-Reply-To: <3b4046ed-fd75-13ea-fac3-06469172806c@roeck-us.net>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Sun, 24 Apr 2022 10:52:36 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1LzEG1vo+5nMrnL3TOMcbSKJ3u=StcfY8dajV2raUBjA@mail.gmail.com>
+Message-ID: <CAK8P3a1LzEG1vo+5nMrnL3TOMcbSKJ3u=StcfY8dajV2raUBjA@mail.gmail.com>
+Subject: Re: [PATCH v2 00/48] ARM: PXA multiplatform support
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Robert Jarzmik <robert.jarzmik@free.fr>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>, Daniel Mack <daniel@zonque.org>,
+        Haojian Zhuang <haojian.zhuang@gmail.com>,
+        Marek Vasut <marek.vasut@gmail.com>,
+        Philipp Zabel <philipp.zabel@gmail.com>,
+        Lubomir Rintel <lkundrak@v3.sk>,
+        Paul Parsons <lost.distance@yahoo.com>,
+        Tomas Cech <sleep_walker@suse.com>,
+        Sergey Lapin <slapin@ossfans.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Michael Turquette <mturquette@baylibre.com>,
         Stephen Boyd <sboyd@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Sam Shih <sam.shih@mediatek.com>, Ryder Lee <ryder.lee@kernel.org>,
-        devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Yassine Oudjana <y.oudjana@protonmail.com>,
-        Yassine Oudjana <yassine.oudjana@gmail.com>
-Subject: [PATCH v2 3/3] dt-bindings: arm: mediatek: infracfg: Convert to DT schema
-Date:   Sun, 24 Apr 2022 12:46:47 +0400
-Message-Id: <20220424084647.76577-4-y.oudjana@protonmail.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220424084647.76577-1-y.oudjana@protonmail.com>
-References: <20220424084647.76577-1-y.oudjana@protonmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Helge Deller <deller@gmx.de>, Mark Brown <broonie@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        IDE-ML <linux-ide@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        patches@opensource.cirrus.com, linux-leds@vger.kernel.org,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        linux-mtd <linux-mtd@lists.infradead.org>,
+        linux-rtc@vger.kernel.org, USB list <linux-usb@vger.kernel.org>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yassine Oudjana <y.oudjana@protonmail.com>
+On Sun, Apr 24, 2022 at 4:09 AM Guenter Roeck <linux@roeck-us.net> wrote:
+> On 4/23/22 12:55, Arnd Bergmann wrote:
+> > On Sat, Apr 23, 2022 at 1:41 AM Guenter Roeck <linux@roeck-us.net> wrote:
+> >> On Sat, Apr 23, 2022 at 12:04:31AM +0200, Arnd Bergmann wrote:
+> >
+> > Odd, I can't reproduce this at all. Do you get any console output at
+> > all for this?
+> >
+> > Is this the plain omap1_defconfig, or something else?
+> >
+>
+> No, it is my own sx1 specific configuration.
+>
+> https://github.com/groeck/linux-build-test/blob/master/rootfs/arm/qemu_sx1_defconfig
+>
+> I don't recall where I got it from but ...
 
-Convert infracfg bindings to DT schema format. Not all drivers
-currently implement resets, so #reset-cells is made a required
-property only for those that do. Using power-controller in the
-example node name makes #power-domain-cells required causing
-a dt_binding_check error. To solve this, the node is renamed to
-syscon@10001000.
+Ok, that explains it, thanks!
 
-Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
----
- .../arm/mediatek/mediatek,infracfg.txt        | 42 ----------
- .../arm/mediatek/mediatek,infracfg.yaml       | 81 +++++++++++++++++++
- 2 files changed, 81 insertions(+), 42 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.txt
- create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.yaml
+I fixed all the defconfig files that come with the kernel, but for your own
+ones you have to add
 
-diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.txt b/Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.txt
-deleted file mode 100644
-index f66bd720571d..000000000000
---- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.txt
-+++ /dev/null
-@@ -1,42 +0,0 @@
--Mediatek infracfg controller
--============================
--
--The Mediatek infracfg controller provides various clocks and reset
--outputs to the system.
--
--Required Properties:
--
--- compatible: Should be one of:
--	- "mediatek,mt2701-infracfg", "syscon"
--	- "mediatek,mt2712-infracfg", "syscon"
--	- "mediatek,mt6765-infracfg", "syscon"
--	- "mediatek,mt6779-infracfg_ao", "syscon"
--	- "mediatek,mt6797-infracfg", "syscon"
--	- "mediatek,mt7622-infracfg", "syscon"
--	- "mediatek,mt7623-infracfg", "mediatek,mt2701-infracfg", "syscon"
--	- "mediatek,mt7629-infracfg", "syscon"
--	- "mediatek,mt7986-infracfg", "syscon"
--	- "mediatek,mt8135-infracfg", "syscon"
--	- "mediatek,mt8167-infracfg", "syscon"
--	- "mediatek,mt8173-infracfg", "syscon"
--	- "mediatek,mt8183-infracfg", "syscon"
--	- "mediatek,mt8516-infracfg", "syscon"
--- #clock-cells: Must be 1
--- #reset-cells: Must be 1
--
--The infracfg controller uses the common clk binding from
--Documentation/devicetree/bindings/clock/clock-bindings.txt
--The available clocks are defined in dt-bindings/clock/mt*-clk.h.
--Also it uses the common reset controller binding from
--Documentation/devicetree/bindings/reset/reset.txt.
--The available reset outputs are defined in
--dt-bindings/reset/mt*-resets.h
--
--Example:
--
--infracfg: power-controller@10001000 {
--	compatible = "mediatek,mt8173-infracfg", "syscon";
--	reg = <0 0x10001000 0 0x1000>;
--	#clock-cells = <1>;
--	#reset-cells = <1>;
--};
-diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.yaml
-new file mode 100644
-index 000000000000..8681b785ed6d
---- /dev/null
-+++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.yaml
-@@ -0,0 +1,81 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/arm/mediatek/mediatek,infracfg.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+
-+title: MediaTek Infrastructure System Configuration Controller
-+
-+maintainers:
-+  - Matthias Brugger <matthias.bgg@gmail.com>
-+
-+description:
-+  The Mediatek infracfg controller provides various clocks and reset outputs
-+  to the system. The clock values can be found in <dt-bindings/clock/mt*-clk.h>,
-+  and reset values in <dt-bindings/reset/mt*-reset.h> and
-+  <dt-bindings/reset/mt*-resets.h>.
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - items:
-+          - enum:
-+              - mediatek,mt2701-infracfg
-+              - mediatek,mt2712-infracfg
-+              - mediatek,mt6765-infracfg
-+              - mediatek,mt6779-infracfg_ao
-+              - mediatek,mt6797-infracfg
-+              - mediatek,mt7622-infracfg
-+              - mediatek,mt7629-infracfg
-+              - mediatek,mt7986-infracfg
-+              - mediatek,mt8135-infracfg
-+              - mediatek,mt8167-infracfg
-+              - mediatek,mt8173-infracfg
-+              - mediatek,mt8183-infracfg
-+              - mediatek,mt8516-infracfg
-+          - const: syscon
-+      - items:
-+          - const: mediatek,mt7623-infracfg
-+          - const: mediatek,mt2701-infracfg
-+          - const: syscon
-+
-+  reg:
-+    maxItems: 1
-+
-+  '#clock-cells':
-+    const: 1
-+
-+  '#reset-cells':
-+    const: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - '#clock-cells'
-+
-+if:
-+  properties:
-+    compatible:
-+      contains:
-+        enum:
-+          - mediatek,mt2701-infracfg
-+          - mediatek,mt2712-infracfg
-+          - mediatek,mt7622-infracfg
-+          - mediatek,mt7986-infracfg
-+          - mediatek,mt8135-infracfg
-+          - mediatek,mt8173-infracfg
-+          - mediatek,mt8183-infracfg
-+then:
-+  required:
-+    - '#reset-cells'
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    infracfg: clock-controller@10001000 {
-+        compatible = "mediatek,mt8173-infracfg", "syscon";
-+        reg = <0x10001000 0x1000>;
-+        #clock-cells = <1>;
-+        #reset-cells = <1>;
-+    };
--- 
-2.36.0
+# CONFIG_ARCH_MULTI_V7 is not set
 
+into the defconfig file, otherwise the multiplatform target defaults to
+an ARMv7 instead of ARMv5 build. For an OMAP15xx as in the SX1,
+you also need to enable CONFIG_ARCH_MULTI_V4T.
+
+This is slightly unfortunate, but I don't see any way to avoid it, and the
+modified defconfig will still work fine with older kernel trees.
+
+> > One thing I keep having to apply myself is this snippet:
+> >
+> > diff --git a/arch/arm/mm/proc-arm925.S b/arch/arm/mm/proc-arm925.S
+> > index 0bfad62ea858..87c695703580 100644
+> > --- a/arch/arm/mm/proc-arm925.S
+> > +++ b/arch/arm/mm/proc-arm925.S
+> > @@ -441,7 +441,6 @@ __arm925_setup:
+> >
+> >   #ifdef CONFIG_CPU_DCACHE_WRITETHROUGH
+> >          mov     r0, #4                          @ disable write-back
+> > on caches explicitly
+> > -       mcr     p15, 7, r0, c15, c0, 0
+> >   #endif
+>
+> it does not have CONFIG_CPU_DCACHE_WRITETHROUGH enabled.
+
+Maybe it was disabled explicitly for the sx1_defconfig because of this
+bug. I would think that this is required for actual sx1 hardware because the
+option is default-enabled for ARM925T, and that CPU core is exclusively
+used in OMAP15xx.
+
+        Arnd
