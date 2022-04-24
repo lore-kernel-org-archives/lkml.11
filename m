@@ -2,145 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 145BCC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 19:04:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76225C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 19:04:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237535AbiDXTHC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 15:07:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42586 "EHLO
+        id S237571AbiDXTHy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 15:07:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235171AbiDXTHA (ORCPT
+        with ESMTP id S237589AbiDXTHj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 15:07:00 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C6F1138C8A
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 12:03:59 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id z99so16099853ede.5
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 12:03:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=qJq22moH50D3yv21TnAqKX91eugYhGfPDI8P8HcZhgY=;
-        b=u4f9uaPTM2qqSek3Ph5UN5CThDaMVDlVcGSOQ5d2lcd1ujtvYPbN+NMRXl4Q6K93KX
-         tsRtItnFuZXrcIeMzf32whW8fYf/mK/BTclzbG7AEf2zI8xoKjfppuT3P+vhD70Y3Bka
-         uo/+265lmvNoy4vRb7bB6bOXhCH5YaCaXT2npe4SsKJKh1wkWhI4M8RwLgbBH3ax2pFX
-         27TYnAhsYH712KbrUwq7TdbsQ11T7lHRIXWNuLwFiPmV6p9TOHQFheUmO35D8sXkt1zF
-         KFVs1/LlHNiYtQcictJS6vxebKuQM7fd9vvEBSgXAcW6JRlTLDdZsvHg008KyIGKQYBz
-         2w2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=qJq22moH50D3yv21TnAqKX91eugYhGfPDI8P8HcZhgY=;
-        b=eIjftfO8YwIl06cT8gyD8DiOlUzWGVfGnG/RBVyNM1/JuIUDQwrwI8y+Me5OogA2N1
-         XbS7Fsqq5GQhopY5YehRsAyLBvrc0FHwykUQ5alLsYWNnzOs1HViyQKV0iHfqcq80ZPv
-         in45kkRbFpl7a6sj/op/ncn/A/g6Wf51ImYJM85v6uBYfjBoeHVH5L5VEKba89kCzFrl
-         i3JyRgaKNeqYyaHq8DbcpkyK74X/sn9yeTdjg+UczN0O8UZMiEZcZMXqVqZOY932E6ps
-         ZyZYwdzWgw4Y1n/yPncHQ8SCCAcYFdVx8Zg5wej0G8B1DXDDgMAoA3JYoN//C2TLk3cK
-         wqbw==
-X-Gm-Message-State: AOAM531FslmlbUGnJgXCJVI/qItHjH0z3olwM8xFyfIoUYbHkc1jBtdR
-        cjQH/cJ3NwR+uf5ZBgKn/Phbng==
-X-Google-Smtp-Source: ABdhPJyUVaMPjUt+mdsjqcf930Ct9uv9xglikY4FGgz8i3dp7UkGqa4JXcCFi8ZR3vHIZp8MjPpMFw==
-X-Received: by 2002:aa7:cb96:0:b0:413:8d05:ebc with SMTP id r22-20020aa7cb96000000b004138d050ebcmr15415684edt.81.1650827037726;
-        Sun, 24 Apr 2022 12:03:57 -0700 (PDT)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id q7-20020a170906540700b006d5eca5c9cfsm2847723ejo.191.2022.04.24.12.03.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 24 Apr 2022 12:03:57 -0700 (PDT)
-Message-ID: <3b8c790d-9e90-d920-9580-8e736435f7f3@blackwall.org>
-Date:   Sun, 24 Apr 2022 22:03:55 +0300
+        Sun, 24 Apr 2022 15:07:39 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E0AF13977C
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 12:04:36 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: dmitry.osipenko)
+        with ESMTPSA id 4924D1F4065F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1650827075;
+        bh=lhIfNUJOR+nfmdpbizX2v1sPc4G/RBRenNvxpsrr5ps=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=SSgxi5gTDPsbwqj3S8FS6JR87X6ArOk1WQ04ZdPXubrgGmRt4/nBe8QXJZrSya0ZJ
+         9fVXZwDePk9CZeZDRI1wZKEHgtmOZYZuljgHrABV8Ew3TMLRBeiG3qt26uxnYVIbvt
+         k5XbONcAh/wxl7I0OneAMqeog6v5KlPq4NkMA487HRO4wMuwfE9JNOQGkiEnN2ChAR
+         Q64OUwS03AGYGQVic/yF288hGD8dLCceAahPfbxHsbMKUYCowV4khcdgOa/Jt1ia95
+         7LDM+hxtEq/+vpdKr/dKttlCnOEUctIj2P8Hy2Dm4Qlp7AF9IqzecSjuMqgZXX/NsU
+         xkC4xgEy4HCEQ==
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+To:     David Airlie <airlied@linux.ie>, Gerd Hoffmann <kraxel@redhat.com>,
+        Gurchetan Singh <gurchetansingh@chromium.org>,
+        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+        Daniel Almeida <daniel.almeida@collabora.com>,
+        Gert Wollny <gert.wollny@collabora.com>,
+        Gustavo Padovan <gustavo.padovan@collabora.com>,
+        Daniel Stone <daniel@fooishbar.org>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Rob Herring <robh@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
+        Rob Clark <robdclark@gmail.com>,
+        Emil Velikov <emil.l.velikov@gmail.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Qiang Yu <yuq825@gmail.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Subject: [PATCH v5 01/17] drm/panfrost: Put mapping instead of shmem obj on panfrost_mmu_map_fault_addr() error
+Date:   Sun, 24 Apr 2022 22:04:08 +0300
+Message-Id: <20220424190424.540501-2-dmitry.osipenko@collabora.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220424190424.540501-1-dmitry.osipenko@collabora.com>
+References: <20220424190424.540501-1-dmitry.osipenko@collabora.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH net-next v3 2/2] net: vxlan: vxlan_core.c: Add extack
- support to vxlan_fdb_delete
-Content-Language: en-US
-To:     Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>,
-        Julia Lawall <julia.lawall@inria.fr>
-Cc:     netdev@vger.kernel.org, outreachy@lists.linux.dev,
-        roopa@nvidia.com, jdenham@redhat.com, sbrivio@redhat.com,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
-        alexandre.belloni@bootlin.com, shshaikh@marvell.com,
-        manishc@marvell.com, intel-wired-lan@lists.osuosl.org,
-        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        GR-Linux-NIC-Dev@marvell.com, bridge@lists.linux-foundation.org
-References: <cover.1650800975.git.eng.alaamohamedsoliman.am@gmail.com>
- <0d09ad611bb78b9113491007955f2211f3a06e82.1650800975.git.eng.alaamohamedsoliman.am@gmail.com>
- <alpine.DEB.2.22.394.2204241813210.7691@hadrien>
- <06622e4c-b9a5-1c4f-2764-a72733000b4e@gmail.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <06622e4c-b9a5-1c4f-2764-a72733000b4e@gmail.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 24/04/2022 21:52, Alaa Mohamed wrote:
-> 
-> On ٢٤‏/٤‏/٢٠٢٢ ١٨:١٥, Julia Lawall wrote:
->>
->> On Sun, 24 Apr 2022, Alaa Mohamed wrote:
->>
->>> Add extack to vxlan_fdb_delete and vxlan_fdb_parse
->> It could be helpful to say more about what adding extack support involves.
->>
->>> Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
->>> ---
->>> changes in V2:
->>>     - fix spelling vxlan_fdb_delete
->>>     - add missing braces
->>>     - edit error message
->>> ---
->>> changes in V3:
->>>     fix errors reported by checkpatch.pl
->> But your changes would seem to also be introducing more checkpatch errors,
->> because the Linux kernel coding style puts a space before an { at the
->> start of an if branch.
-> I ran checkpatch script before submitting this patch and got no error
+When panfrost_mmu_map_fault_addr() fails, the BO's mapping should be
+unreferenced and not the shmem object that backs that mapping.
 
-This is what I got:
-WARNING: suspect code indent for conditional statements (8, 24)
-#366: FILE: drivers/net/vxlan/vxlan_core.c:1137:
- 	if (tb[NDA_NH_ID] && (tb[NDA_DST] || tb[NDA_VNI] || tb[NDA_IFINDEX] ||
-[...]
-+			NL_SET_ERR_MSG(extack, "DST, VNI, ifindex and port are mutually exclusive with NH_ID");
+Cc: stable@vger.kernel.org
+Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+---
+ drivers/gpu/drm/panfrost/panfrost_mmu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-WARNING: line length of 111 exceeds 100 columns
-#370: FILE: drivers/net/vxlan/vxlan_core.c:1139:
-+			NL_SET_ERR_MSG(extack, "DST, VNI, ifindex and port are mutually exclusive with NH_ID");
-
-ERROR: space required before the open brace '{'
-#377: FILE: drivers/net/vxlan/vxlan_core.c:1145:
-+		if (err){
-
-ERROR: space required before the open brace '{'
-#389: FILE: drivers/net/vxlan/vxlan_core.c:1164:
-+		if (nla_len(tb[NDA_PORT]) != sizeof(__be16)){
-
-ERROR: space required before the open brace '{'
-#400: FILE: drivers/net/vxlan/vxlan_core.c:1174:
-+		if (nla_len(tb[NDA_VNI]) != sizeof(u32)){
-
-ERROR: space required before the open brace '{'
-#411: FILE: drivers/net/vxlan/vxlan_core.c:1184:
-+		if (nla_len(tb[NDA_SRC_VNI]) != sizeof(u32)){
-
-ERROR: space required before the open brace '{'
-#423: FILE: drivers/net/vxlan/vxlan_core.c:1196:
-+		if (nla_len(tb[NDA_IFINDEX]) != sizeof(u32)){
-
-ERROR: space required before the open brace '{'
-#430: FILE: drivers/net/vxlan/vxlan_core.c:1202:
-+		if (!tdev){
-
-ERROR: space required after that ',' (ctx:VxV)
-#431: FILE: drivers/net/vxlan/vxlan_core.c:1203:
-+			NL_SET_ERR_MSG(extack,"Device not found");
-
-
+diff --git a/drivers/gpu/drm/panfrost/panfrost_mmu.c b/drivers/gpu/drm/panfrost/panfrost_mmu.c
+index d3f82b26a631..b285a8001b1d 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_mmu.c
++++ b/drivers/gpu/drm/panfrost/panfrost_mmu.c
+@@ -518,7 +518,7 @@ static int panfrost_mmu_map_fault_addr(struct panfrost_device *pfdev, int as,
+ err_pages:
+ 	drm_gem_shmem_put_pages(&bo->base);
+ err_bo:
+-	drm_gem_object_put(&bo->base.base);
++	panfrost_gem_mapping_put(bomapping);
+ 	return ret;
+ }
+ 
+-- 
+2.35.1
 
