@@ -2,101 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE14AC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 08:00:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ABA7C43217
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 08:07:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238626AbiDXID3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 04:03:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59728 "EHLO
+        id S238640AbiDXIKz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 04:10:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236822AbiDXID1 (ORCPT
+        with ESMTP id S236428AbiDXIKx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 04:03:27 -0400
-Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28F8B3524B;
-        Sun, 24 Apr 2022 01:00:27 -0700 (PDT)
-Subject: Re: [PATCH v2 00/12] Improve Raid5 Lock Contention
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1650787222;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gLLGzwk8fcXEWz+exNqSl7CbwMy3y1DnQlR3cQo6pOM=;
-        b=kxd5j0CDABqAmfdF5I1+eE0CSu2jldOESNMCBSr5p2ePClJy+932zJZLSSyYPFhc8RpLLH
-        sDVHG4pYUhd2jvjUF+y3sybLkSQgSooy1HP0Wi9/GzARheb7uyTNX1CDttD7pFpbkWFBIF
-        UVXImihoFCh2w4CJNBGWmxXLUxg/kXI=
-To:     Logan Gunthorpe <logang@deltatee.com>, Xiao Ni <xni@redhat.com>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        linux-raid <linux-raid@vger.kernel.org>,
-        Song Liu <song@kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Stephen Bates <sbates@raithlin.com>,
-        Martin Oliveira <Martin.Oliveira@eideticom.com>,
-        David Sloan <David.Sloan@eideticom.com>
-References: <20220420195425.34911-1-logang@deltatee.com>
- <CALTww28fwNpm0O_jc7-2Xr0JSX9i6F1kgoUQ8m_k6ZgPa1XxXw@mail.gmail.com>
- <c14c0103-9cbd-7d0f-486b-344dd33725ab@deltatee.com>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Guoqing Jiang <guoqing.jiang@linux.dev>
-Message-ID: <4094aed9-d22d-d14f-07a7-5abe599beeab@linux.dev>
-Date:   Sun, 24 Apr 2022 16:00:15 +0800
+        Sun, 24 Apr 2022 04:10:53 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AB101816C6;
+        Sun, 24 Apr 2022 01:07:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650787674; x=1682323674;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=Jg69NAeROVkmxoEWc411QwNioJnF4WnIiJ0sHVRfPPE=;
+  b=gl1rcmLSizfukbF+kURWVeQ4WDc6GXknisCAooeJSK5KrUnRfxau5Ldv
+   /f//mIHeegzZVbXychQYSUZfHzUbIjTOJl3EPoUtVvq0XVPY8jO9w8E0f
+   JFQTqnqvp/ODv0keKt0KFlKUEfIConqJkvaLbciCSEKkPWCX2ydMGRxTB
+   /VNcdAkmv/POalgQ2zYktLqTYvUeyp4OIpPWK9+t93vkosScOo/oJSXXW
+   FqJSK9QNlzhI4JSLEPT/SLI1n+nXxkoFs9ikujHMKt71obVDrzjLH/1lI
+   WBC0fvBjNjsGZiPDyOcx+S1S+Bf35DIwlTh1t7KKxyOO1uD2H7NZXhEnR
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10326"; a="265182519"
+X-IronPort-AV: E=Sophos;i="5.90,286,1643702400"; 
+   d="scan'208";a="265182519"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2022 01:07:53 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,286,1643702400"; 
+   d="scan'208";a="704146191"
+Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
+  by fmsmga001.fm.intel.com with ESMTP; 24 Apr 2022 01:07:45 -0700
+Date:   Sun, 24 Apr 2022 16:07:37 +0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Quentin Perret <qperret@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        kvm list <kvm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        Linux API <linux-api@vger.kernel.org>, qemu-devel@nongnu.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        "Nakajima, Jun" <jun.nakajima@intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        David Hildenbrand <david@redhat.com>,
+        Marc Zyngier <maz@kernel.org>, Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v5 00/13] KVM: mm: fd-based approach for supporting KVM
+ guest private memory
+Message-ID: <20220424080737.GA4207@chaop.bj.intel.com>
+Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
+References: <80aad2f9-9612-4e87-a27a-755d3fa97c92@www.fastmail.com>
+ <YkcTTY4YjQs5BRhE@google.com>
+ <83fd55f8-cd42-4588-9bf6-199cbce70f33@www.fastmail.com>
+ <YksIQYdG41v3KWkr@google.com>
+ <Ykslo2eo2eRXrpFR@google.com>
+ <eefc3c74-acca-419c-8947-726ce2458446@www.fastmail.com>
+ <Ykwbqv90C7+8K+Ao@google.com>
+ <YkyEaYiL0BrDYcZv@google.com>
+ <20220422105612.GB61987@chaop.bj.intel.com>
+ <ae7c9c7a-ecda-8c80-751f-f05dbc6489d7@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <c14c0103-9cbd-7d0f-486b-344dd33725ab@deltatee.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ae7c9c7a-ecda-8c80-751f-f05dbc6489d7@redhat.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Apr 22, 2022 at 01:06:25PM +0200, Paolo Bonzini wrote:
+> On 4/22/22 12:56, Chao Peng wrote:
+> >          /* memfile notifier flags */
+> >          #define MFN_F_USER_INACCESSIBLE   0x0001  /* memory allocated in the file is inaccessible from userspace (e.g. read/write/mmap) */
+> >          #define MFN_F_UNMOVABLE           0x0002  /* memory allocated in the file is unmovable */
+> >          #define MFN_F_UNRECLAIMABLE       0x0003  /* memory allocated in the file is unreclaimable (e.g. via kswapd or any other pathes) */
+> 
+> You probably mean BIT(0/1/2) here.
 
+Right, it's BIT(n), Thanks.
 
-On 4/22/22 12:02 AM, Logan Gunthorpe wrote:
->
-> On 2022-04-21 02:45, Xiao Ni wrote:
->> Could you share the commands to get the test result (lock contention
->> and performance)?
-> Sure. The performance we were focused on was large block writes. So we
-> setup raid5 instances with varying number of disks and ran the following
-> fio script directly on the drive.
->
-> [simple]
-> filename=/dev/md0
-> ioengine=libaio
-> rw=write
-> direct=1
-> size=8G
-> blocksize=2m
-> iodepth=16
-> runtime=30s
-> time_based=1
-> offset_increment=8G
-> numjobs=12
-> ￼
-> (We also played around with tuning this but didn't find substantial
-> changes once the bottleneck was hit)
-
-Nice, I suppose other IO patterns keep the same performance as before.
-
-> We tuned md with parameters like:
->
-> echo 4 > /sys/block/md0/md/group_thread_cnt
-> echo 8192 > /sys/block/md0/md/stripe_cache_size
->
-> For lock contention stats, we just used lockstat[1]; roughly like:
->
-> echo 1 > /proc/sys/kernel/lock_stat
-> fio test.fio
-> echo 0 > /proc/sys/kernel/lock_stat
-> cat /proc/lock_stat
->
-> And compared the before and after.
-
-Thanks for your effort, besides the performance test, please try to run
-mdadm test suites to avoid regression.
-
-Thanks,
-Guoqing
+Chao
+> 
+> Paolo
+> 
+> >      When memfile_notifier is being registered, memfile_register_notifier will
+> >      need check these flags. E.g. for MFN_F_USER_INACCESSIBLE, it fails when
+> >      previous mmap-ed mapping exists on the fd (I'm still unclear on how to do
+> >      this). When multiple consumers are supported it also need check all
+> >      registered consumers to see if any conflict (e.g. all consumers should have
+> >      MFN_F_USER_INACCESSIBLE set). Only when the register succeeds, the fd is
+> >      converted into a private fd, before that, the fd is just a normal (shared)
+> >      one. During this conversion, the previous data is preserved so you can put
+> >      some initial data in guest pages (whether the architecture allows this is
+> >      architecture-specific and out of the scope of this patch).
