@@ -2,140 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D87DDC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 13:03:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 921FCC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 13:05:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233518AbiDXNGw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 09:06:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48328 "EHLO
+        id S233368AbiDXNIj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 09:08:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232131AbiDXNGQ (ORCPT
+        with ESMTP id S233689AbiDXNId (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 09:06:16 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C33E17C533;
-        Sun, 24 Apr 2022 06:03:15 -0700 (PDT)
-Received: from kwepemi100025.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KmSwb62Q0z1JBQx;
-        Sun, 24 Apr 2022 21:02:23 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi100025.china.huawei.com (7.221.188.158) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sun, 24 Apr 2022 21:03:13 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sun, 24 Apr 2022 21:03:13 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
-        <chenhao288@hisilicon.com>
-Subject: [PATCH net 6/6] net: hns3: add return value for mailbox handling in PF
-Date:   Sun, 24 Apr 2022 20:57:25 +0800
-Message-ID: <20220424125725.43232-7-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220424125725.43232-1-huangguangbin2@huawei.com>
-References: <20220424125725.43232-1-huangguangbin2@huawei.com>
+        Sun, 24 Apr 2022 09:08:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F4FE13DC3;
+        Sun, 24 Apr 2022 06:05:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2282E60DF5;
+        Sun, 24 Apr 2022 13:05:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4C71C385A7;
+        Sun, 24 Apr 2022 13:05:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650805529;
+        bh=2X5hMs183RqeHSVY1PeHySg2Ltw/F1NKTy9wX+4K8bw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KMrftHpBO0GWHjcMWBNpkF88AXfqDai7dGL4dx8syqFGEuMWDsOJRnWdsiTuy5ezB
+         NHCnrkUl8ZiFdWw8KVZqHgK4w3RESkC+3VAawZeFBDYOq7FQyPmvUGhDswxvN+xq8m
+         YjnKShTMNpH5scZKDC1ChN55lQOdKUNbvv8CBVflgxvUWK1FvXk9Fr3DPbAKy/MH7d
+         X4N+nqSa2WDgVjIMbIOJ3+cnqtnAYDAxIm/+iVjhLmHIvG4BchGyq9MkD7rmsmubcy
+         NMA0gitQH1hpf3hvBUSIhTG2F07qUHfVSmdzyI7Bvsa9DoQmzIJuHT3gxq4yfHHw7z
+         pWGJmFrCXg9vQ==
+Date:   Sun, 24 Apr 2022 21:05:22 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Marcel Ziswiler <marcel@ziswiler.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        Denys Drozdov <denys.drozdov@toradex.com>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 05/14] ARM: dts: imx6ull-colibri: add touchscreen
+ device nodes
+Message-ID: <20220424130522.GW391514@dragon>
+References: <20220414085106.18621-1-marcel@ziswiler.com>
+ <20220414085106.18621-6-marcel@ziswiler.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220414085106.18621-6-marcel@ziswiler.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
+On Thu, Apr 14, 2022 at 10:50:57AM +0200, Marcel Ziswiler wrote:
+> From: Denys Drozdov <denys.drozdov@toradex.com>
+> 
+> Move all Atmel nodes from the board-level into the main module-level
+> device tree and prepare the device trees for use with Atmel MXT device
+> tree overlays. Also, add required pinmux groups.
+> 
+> The common scheme for pin groups in touch screen overlays is as follows:
+> - pinctrl_atmel_conn - SODIMM 106/107 pins for INT/RST signals (default)
+> - pinctrl_atmel_adap - SODIMM   28/30 pins for INT/RST signals.
+> 
+> Signed-off-by: Denys Drozdov <denys.drozdov@toradex.com>
+> Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+> ---
+> 
+>  .../arm/boot/dts/imx6ull-colibri-nonwifi.dtsi |  4 +-
+>  arch/arm/boot/dts/imx6ull-colibri-wifi.dtsi   |  4 +-
+>  arch/arm/boot/dts/imx6ull-colibri.dtsi        | 39 +++++++++++++------
+>  3 files changed, 31 insertions(+), 16 deletions(-)
+> 
+> diff --git a/arch/arm/boot/dts/imx6ull-colibri-nonwifi.dtsi b/arch/arm/boot/dts/imx6ull-colibri-nonwifi.dtsi
+> index 95a11b8bcbdb..5e55a6c820bc 100644
+> --- a/arch/arm/boot/dts/imx6ull-colibri-nonwifi.dtsi
+> +++ b/arch/arm/boot/dts/imx6ull-colibri-nonwifi.dtsi
+> @@ -15,10 +15,10 @@ memory@80000000 {
+>  &iomuxc {
+>  	pinctrl-names = "default";
+>  	pinctrl-0 = <&pinctrl_gpio1 &pinctrl_gpio2 &pinctrl_gpio3
+> -		&pinctrl_gpio4 &pinctrl_gpio5 &pinctrl_gpio6 &pinctrl_gpio7>;
+> +		&pinctrl_gpio4 &pinctrl_gpio6 &pinctrl_gpio7>;
+>  };
+>  
+>  &iomuxc_snvs {
+>  	pinctrl-names = "default";
+> -	pinctrl-0 = <&pinctrl_snvs_gpio1 &pinctrl_snvs_gpio2 &pinctrl_snvs_gpio3>;
+> +	pinctrl-0 = <&pinctrl_snvs_gpio1 &pinctrl_snvs_gpio3>;
+>  };
+> diff --git a/arch/arm/boot/dts/imx6ull-colibri-wifi.dtsi b/arch/arm/boot/dts/imx6ull-colibri-wifi.dtsi
+> index 9f1e38282bee..6e8ddb07e11d 100644
+> --- a/arch/arm/boot/dts/imx6ull-colibri-wifi.dtsi
+> +++ b/arch/arm/boot/dts/imx6ull-colibri-wifi.dtsi
+> @@ -26,13 +26,13 @@ &cpu0 {
+>  &iomuxc {
+>  	pinctrl-names = "default";
+>  	pinctrl-0 = <&pinctrl_gpio1 &pinctrl_gpio2 &pinctrl_gpio3
+> -		&pinctrl_gpio4 &pinctrl_gpio5 &pinctrl_gpio7>;
+> +		&pinctrl_gpio4 &pinctrl_gpio7>;
+>  
+>  };
+>  
+>  &iomuxc_snvs {
+>  	pinctrl-names = "default";
+> -	pinctrl-0 = <&pinctrl_snvs_gpio1 &pinctrl_snvs_gpio2>;
+> +	pinctrl-0 = <&pinctrl_snvs_gpio1>;
+>  };
+>  
+>  &usdhc2 {
+> diff --git a/arch/arm/boot/dts/imx6ull-colibri.dtsi b/arch/arm/boot/dts/imx6ull-colibri.dtsi
+> index e619da3b00b3..b2345a5573f4 100644
+> --- a/arch/arm/boot/dts/imx6ull-colibri.dtsi
+> +++ b/arch/arm/boot/dts/imx6ull-colibri.dtsi
+> @@ -124,6 +124,19 @@ &i2c1 {
+>  	pinctrl-1 = <&pinctrl_i2c1_gpio>;
+>  	sda-gpios = <&gpio1 29 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+>  	scl-gpios = <&gpio1 28 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+> +	status = "okay";
+> +
+> +	/* Atmel maxtouch controller */
+> +	atmel_mxt_ts: touchscreen@4a {
+> +		compatible = "atmel,maxtouch";
+> +		pinctrl-names = "default";
+> +		pinctrl-0 = <&pinctrl_atmel_conn>;
+> +		reg = <0x4a>;
+> +		interrupt-parent = <&gpio5>;
+> +		interrupts = <4 IRQ_TYPE_EDGE_FALLING>;       /* SODIMM_107, INT */
+> +		reset-gpios = <&gpio1 10 GPIO_ACTIVE_HIGH>;   /* SODIMM_106, RST */
+> +		status = "disabled";
+> +	};
+>  };
+>  
+>  &i2c2 {
+> @@ -241,6 +254,20 @@ MX6UL_PAD_GPIO1_IO09__GPIO1_IO09        0x3000 /* SODIMM 2 */
+>  		>;
+>  	};
+>  
+> +	pinctrl_atmel_adap: atmel_adap_group {
 
-Currently, there are some querying mailboxes sent from VF to PF,
-and VF will wait the PF's handling result. For mailbox
-HCLGE_MBX_GET_QID_IN_PF and HCLGE_MBX_GET_RSS_KEY, it may fail
-when the input parameter is invalid, but the prototype of their
-handler function is void. In this case, PF always return success
-to VF, which may cause the VF get incorrect result.
+Use hyphen instead of underscore in node name, and try to keep the
+naming style consistent with other pinctrl nodes.
 
-Fixes it by adding return value for these function.
+Shawn
 
-Fixes: 63b1279d9905 ("net: hns3: check queue id range before using")
-Fixes: 532cfc0df1e4 ("net: hns3: add a check for index in hclge_get_rss_key()")
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
----
- .../hisilicon/hns3/hns3pf/hclge_mbx.c         | 22 ++++++++++---------
- 1 file changed, 12 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-index 53f939923c28..7998ca617a92 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-@@ -594,9 +594,9 @@ static int hclge_set_vf_mtu(struct hclge_vport *vport,
- 	return hclge_set_vport_mtu(vport, mtu);
- }
- 
--static void hclge_get_queue_id_in_pf(struct hclge_vport *vport,
--				     struct hclge_mbx_vf_to_pf_cmd *mbx_req,
--				     struct hclge_respond_to_vf_msg *resp_msg)
-+static int hclge_get_queue_id_in_pf(struct hclge_vport *vport,
-+				    struct hclge_mbx_vf_to_pf_cmd *mbx_req,
-+				    struct hclge_respond_to_vf_msg *resp_msg)
- {
- 	struct hnae3_handle *handle = &vport->nic;
- 	struct hclge_dev *hdev = vport->back;
-@@ -606,17 +606,18 @@ static void hclge_get_queue_id_in_pf(struct hclge_vport *vport,
- 	if (queue_id >= handle->kinfo.num_tqps) {
- 		dev_err(&hdev->pdev->dev, "Invalid queue id(%u) from VF %u\n",
- 			queue_id, mbx_req->mbx_src_vfid);
--		return;
-+		return -EINVAL;
- 	}
- 
- 	qid_in_pf = hclge_covert_handle_qid_global(&vport->nic, queue_id);
- 	memcpy(resp_msg->data, &qid_in_pf, sizeof(qid_in_pf));
- 	resp_msg->len = sizeof(qid_in_pf);
-+	return 0;
- }
- 
--static void hclge_get_rss_key(struct hclge_vport *vport,
--			      struct hclge_mbx_vf_to_pf_cmd *mbx_req,
--			      struct hclge_respond_to_vf_msg *resp_msg)
-+static int hclge_get_rss_key(struct hclge_vport *vport,
-+			     struct hclge_mbx_vf_to_pf_cmd *mbx_req,
-+			     struct hclge_respond_to_vf_msg *resp_msg)
- {
- #define HCLGE_RSS_MBX_RESP_LEN	8
- 	struct hclge_dev *hdev = vport->back;
-@@ -634,13 +635,14 @@ static void hclge_get_rss_key(struct hclge_vport *vport,
- 		dev_warn(&hdev->pdev->dev,
- 			 "failed to get the rss hash key, the index(%u) invalid !\n",
- 			 index);
--		return;
-+		return -EINVAL;
- 	}
- 
- 	memcpy(resp_msg->data,
- 	       &rss_cfg->rss_hash_key[index * HCLGE_RSS_MBX_RESP_LEN],
- 	       HCLGE_RSS_MBX_RESP_LEN);
- 	resp_msg->len = HCLGE_RSS_MBX_RESP_LEN;
-+	return 0;
- }
- 
- static void hclge_link_fail_parse(struct hclge_dev *hdev, u8 link_fail_code)
-@@ -816,10 +818,10 @@ void hclge_mbx_handler(struct hclge_dev *hdev)
- 					"VF fail(%d) to set mtu\n", ret);
- 			break;
- 		case HCLGE_MBX_GET_QID_IN_PF:
--			hclge_get_queue_id_in_pf(vport, req, &resp_msg);
-+			ret = hclge_get_queue_id_in_pf(vport, req, &resp_msg);
- 			break;
- 		case HCLGE_MBX_GET_RSS_KEY:
--			hclge_get_rss_key(vport, req, &resp_msg);
-+			ret = hclge_get_rss_key(vport, req, &resp_msg);
- 			break;
- 		case HCLGE_MBX_GET_LINK_MODE:
- 			hclge_get_link_mode(vport, req);
--- 
-2.33.0
-
+> +		fsl,pins = <
+> +			MX6UL_PAD_NAND_DQS__GPIO4_IO16          0xb0a0  /* SODIMM 28 */
+> +			MX6UL_PAD_ENET1_TX_EN__GPIO2_IO05       0xb0a0  /* SODIMM 30 */
+> +		>;
+> +	};
+> +
+> +	pinctrl_atmel_conn: atmel_conn_group {
+> +		fsl,pins = <
+> +			MX6UL_PAD_JTAG_MOD__GPIO1_IO10          0xb0a0  /* SODIMM 106 */
+> +			MX6ULL_PAD_SNVS_TAMPER4__GPIO5_IO04     0xb0a0	/* SODIMM 107 */
+> +		>;
+> +	};
+> +
+>  	pinctrl_can_int: canint-grp {
+>  		fsl,pins = <
+>  			MX6UL_PAD_ENET1_TX_DATA1__GPIO2_IO04	0x13010	/* SODIMM 73 */
+> @@ -347,12 +374,6 @@ MX6UL_PAD_CSI_DATA07__GPIO4_IO28	0x10b0 /* SODIMM 65 */
+>  		>;
+>  	};
+>  
+> -	pinctrl_gpio5: gpio5-grp { /* ATMEL MXT TOUCH */
+> -		fsl,pins = <
+> -			MX6UL_PAD_JTAG_MOD__GPIO1_IO10		0xb0a0 /* SODIMM 106 */
+> -		>;
+> -	};
+> -
+>  	pinctrl_gpio6: gpio6-grp { /* Wifi pins */
+>  		fsl,pins = <
+>  			MX6UL_PAD_GPIO1_IO03__GPIO1_IO03	0x10b0 /* SODIMM 89 */
+> @@ -606,12 +627,6 @@ MX6ULL_PAD_SNVS_TAMPER8__GPIO5_IO08	0x110a0	/* SODIMM 138 */
+>  		>;
+>  	};
+>  
+> -	pinctrl_snvs_gpio2: snvs-gpio2-grp { /* ATMEL MXT TOUCH */
+> -		fsl,pins = <
+> -			MX6ULL_PAD_SNVS_TAMPER4__GPIO5_IO04	0xb0a0	/* SODIMM 107 */
+> -		>;
+> -	};
+> -
+>  	pinctrl_snvs_gpio3: snvs-gpio3-grp { /* Wifi pins */
+>  		fsl,pins = <
+>  			MX6ULL_PAD_BOOT_MODE1__GPIO5_IO11	0x130a0	/* SODIMM 127 */
+> -- 
+> 2.35.1
+> 
