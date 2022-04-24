@@ -2,171 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5432C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 15:34:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EDC2C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 15:34:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233434AbiDXPhW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 11:37:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37174 "EHLO
+        id S233644AbiDXPhy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 11:37:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240462AbiDXPb1 (ORCPT
+        with ESMTP id S239844AbiDXPbZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 11:31:27 -0400
-Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98985171C04;
-        Sun, 24 Apr 2022 08:28:25 -0700 (PDT)
-Received: by mail-oi1-x22a.google.com with SMTP id e4so14578216oif.2;
-        Sun, 24 Apr 2022 08:28:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:content-language:to
-         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=yr0/AkbMMu8pn1dkU35YlQmF7na7yjrNnK/horRQvq8=;
-        b=YTsJBncPwlsdJoy0clMDPkRYsap010NbelrrDwP4gT2p8VkAeOwyCadOMVg4EkLC3g
-         BU6v4rcHRP7TcChruJdux/6WqtJmUToOWUlOimc0ldD0p/STL+v6YSxQqTz/SiEj3JGk
-         6SfYzDXOC60C+Zk6YtFsjMz2c7gYsvaefbEF/eKAM03STJHCFm25OuC/Z0YH/2cfNqkA
-         U538FM4O480tv4oZ6rwPTTcYDvIV4RyyrEvA6n7gY5KKJPB4B+s22HrjImpN8j9osv2G
-         SEdJ9k63zxNOgRDgM+KmfcxMquHhbq8CJJjUKerT4sEDujG7ogRPrwOnyNIjdLCE9lFh
-         BU0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=yr0/AkbMMu8pn1dkU35YlQmF7na7yjrNnK/horRQvq8=;
-        b=6vnD+8dQFmxyCIkjIp2rzinoLopet/bOToKxMnl2YtHOByGo/3uzEEWghB5ivZYWCi
-         +rlylgSvpddSCP7L/jowhR+EY8PKx8gmUpaAklTLvOnGzBu+KsO0K5sZma/VxYfD+8O7
-         cY1obNpFAKSpXcqX/vynqo70JQqRpH2fX6OJ/az/sdloBzVT1Hlbsy0t+ISTk9eja4i2
-         NPP0370RoYz/QRrb9fuISYcH3nGQX0swBEPrmTAqQY3CW47NEd9aiH8cBNciV3kMxAg/
-         0HhL+B10ELgesmaEYtrPaSpDfQrPLH0USQ0+qkRh8SEWZ8FsnZoU4Bz5k5H7i2AYbXQ+
-         GfoA==
-X-Gm-Message-State: AOAM533aS0heWnGx1qtXYFFuC/rH9r8ilEPuKVhXK6t5ZIQox5cSnKAm
-        JAmIERVQLb6nkLj0Rfc7TIQ=
-X-Google-Smtp-Source: ABdhPJy+gDyQI+jYYZai2x5URiEV01l+fMZDWT8YjU8/GgIriEk0FB5ZVdkvpb6NfVQx+IMk0aUfQA==
-X-Received: by 2002:aca:f286:0:b0:2da:58ba:c578 with SMTP id q128-20020acaf286000000b002da58bac578mr6576017oih.127.1650814104777;
+        Sun, 24 Apr 2022 11:31:25 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65045171C03;
         Sun, 24 Apr 2022 08:28:24 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id w8-20020a056830410800b00605b48122eesm53063ott.14.2022.04.24.08.28.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 24 Apr 2022 08:28:23 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <3df135a2-17f5-d6c6-b4a8-e1a60e254297@roeck-us.net>
-Date:   Sun, 24 Apr 2022 08:28:19 -0700
+Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KmX6265dFzGp58;
+        Sun, 24 Apr 2022 23:25:46 +0800 (CST)
+Received: from huawei.com (10.67.174.197) by kwepemi500013.china.huawei.com
+ (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sun, 24 Apr
+ 2022 23:28:20 +0800
+From:   Xu Kuohai <xukuohai@huawei.com>
+To:     <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>
+CC:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        <hpa@zytor.com>, Shuah Khan <shuah@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Daniel Kiss <daniel.kiss@arm.com>,
+        Steven Price <steven.price@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Mark Brown <broonie@kernel.org>,
+        Delyan Kratunov <delyank@fb.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Subject: [PATCH bpf-next v3 5/7] bpf, arm64: Support to poke bpf prog
+Date:   Sun, 24 Apr 2022 11:40:26 -0400
+Message-ID: <20220424154028.1698685-6-xukuohai@huawei.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220424154028.1698685-1-xukuohai@huawei.com>
+References: <20220424154028.1698685-1-xukuohai@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Content-Language: en-US
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Robert Jarzmik <robert.jarzmik@free.fr>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>, Daniel Mack <daniel@zonque.org>,
-        Haojian Zhuang <haojian.zhuang@gmail.com>,
-        Marek Vasut <marek.vasut@gmail.com>,
-        Philipp Zabel <philipp.zabel@gmail.com>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        Paul Parsons <lost.distance@yahoo.com>,
-        Tomas Cech <sleep_walker@suse.com>,
-        Sergey Lapin <slapin@ossfans.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Helge Deller <deller@gmx.de>, Mark Brown <broonie@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        IDE-ML <linux-ide@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        patches@opensource.cirrus.com, linux-leds@vger.kernel.org,
-        linux-mmc <linux-mmc@vger.kernel.org>,
-        linux-mtd <linux-mtd@lists.infradead.org>,
-        linux-rtc@vger.kernel.org, USB list <linux-usb@vger.kernel.org>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>
-References: <20220419163810.2118169-1-arnd@kernel.org>
- <20220422170530.GA2338209@roeck-us.net>
- <CAK8P3a3V=qxUqYT3Yt=dpXVv58-Y+HVi952wO6D4LPN5NNphGA@mail.gmail.com>
- <8b36d3a4-ec85-2f9f-e4b7-734d8ddd3d8f@roeck-us.net>
- <CAK8P3a0R9cpEb1d2=e9KnGSbi_uRv48RWfCu_J4DDak_cGZSuw@mail.gmail.com>
- <20220422234150.GA3442771@roeck-us.net>
- <CAK8P3a3qZdEqnJ2nTOKwDMossngOgCpEvZq4cQMPQjSsUoU=6g@mail.gmail.com>
- <3b4046ed-fd75-13ea-fac3-06469172806c@roeck-us.net>
- <CAK8P3a1LzEG1vo+5nMrnL3TOMcbSKJ3u=StcfY8dajV2raUBjA@mail.gmail.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH v2 00/48] ARM: PXA multiplatform support
-In-Reply-To: <CAK8P3a1LzEG1vo+5nMrnL3TOMcbSKJ3u=StcfY8dajV2raUBjA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.197]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemi500013.china.huawei.com (7.221.188.120)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/24/22 01:52, Arnd Bergmann wrote:
-> On Sun, Apr 24, 2022 at 4:09 AM Guenter Roeck <linux@roeck-us.net> wrote:
->> On 4/23/22 12:55, Arnd Bergmann wrote:
->>> On Sat, Apr 23, 2022 at 1:41 AM Guenter Roeck <linux@roeck-us.net> wrote:
->>>> On Sat, Apr 23, 2022 at 12:04:31AM +0200, Arnd Bergmann wrote:
->>>
->>> Odd, I can't reproduce this at all. Do you get any console output at
->>> all for this?
->>>
->>> Is this the plain omap1_defconfig, or something else?
->>>
->>
->> No, it is my own sx1 specific configuration.
->>
->> https://github.com/groeck/linux-build-test/blob/master/rootfs/arm/qemu_sx1_defconfig
->>
->> I don't recall where I got it from but ...
-> 
-> Ok, that explains it, thanks!
-> 
-> I fixed all the defconfig files that come with the kernel, but for your own
-> ones you have to add
-> 
-> # CONFIG_ARCH_MULTI_V7 is not set
-> 
-> into the defconfig file, otherwise the multiplatform target defaults to
-> an ARMv7 instead of ARMv5 build. For an OMAP15xx as in the SX1,
-> you also need to enable CONFIG_ARCH_MULTI_V4T.
-> 
-> This is slightly unfortunate, but I don't see any way to avoid it, and the
-> modified defconfig will still work fine with older kernel trees.
-> 
+1. Set up the bpf prog entry in the same way as fentry to support
+   trampoline. Now bpf prog entry looks like this:
 
-Yes, that works. I changed it in my configuration.
+   bti c        // if BTI enabled
+   mov x9, x30  // save lr
+   nop          // to be replaced with jump instruction
+   paciasp      // if PAC enabled
 
->>> One thing I keep having to apply myself is this snippet:
->>>
->>> diff --git a/arch/arm/mm/proc-arm925.S b/arch/arm/mm/proc-arm925.S
->>> index 0bfad62ea858..87c695703580 100644
->>> --- a/arch/arm/mm/proc-arm925.S
->>> +++ b/arch/arm/mm/proc-arm925.S
->>> @@ -441,7 +441,6 @@ __arm925_setup:
->>>
->>>    #ifdef CONFIG_CPU_DCACHE_WRITETHROUGH
->>>           mov     r0, #4                          @ disable write-back
->>> on caches explicitly
->>> -       mcr     p15, 7, r0, c15, c0, 0
->>>    #endif
->>
->> it does not have CONFIG_CPU_DCACHE_WRITETHROUGH enabled.
-> 
-> Maybe it was disabled explicitly for the sx1_defconfig because of this
-> bug. I would think that this is required for actual sx1 hardware because the
-> option is default-enabled for ARM925T, and that CPU core is exclusively
-> used in OMAP15xx.
-> 
+2. Update bpf_arch_text_poke() to poke bpf prog. If the instruction
+   to be poked is bpf prog's first instruction, skip to the nop
+   instruction in the prog entry.
 
-That looks like a bug in qemu. ARM925T instruction support is limited to V4T
-instructions. qemu doesn't have explicit 5T support. It is either V4T
-or V5.
+Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
+---
+ arch/arm64/net/bpf_jit.h      |  1 +
+ arch/arm64/net/bpf_jit_comp.c | 41 +++++++++++++++++++++++++++--------
+ 2 files changed, 33 insertions(+), 9 deletions(-)
 
-Guenter
+diff --git a/arch/arm64/net/bpf_jit.h b/arch/arm64/net/bpf_jit.h
+index 194c95ccc1cf..1c4b0075a3e2 100644
+--- a/arch/arm64/net/bpf_jit.h
++++ b/arch/arm64/net/bpf_jit.h
+@@ -270,6 +270,7 @@
+ #define A64_BTI_C  A64_HINT(AARCH64_INSN_HINT_BTIC)
+ #define A64_BTI_J  A64_HINT(AARCH64_INSN_HINT_BTIJ)
+ #define A64_BTI_JC A64_HINT(AARCH64_INSN_HINT_BTIJC)
++#define A64_NOP    A64_HINT(AARCH64_INSN_HINT_NOP)
+ 
+ /* DMB */
+ #define A64_DMB_ISH aarch64_insn_gen_dmb(AARCH64_INSN_MB_ISH)
+diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
+index 3f9bdfec54c4..293bdefc5d0c 100644
+--- a/arch/arm64/net/bpf_jit_comp.c
++++ b/arch/arm64/net/bpf_jit_comp.c
+@@ -237,14 +237,23 @@ static bool is_lsi_offset(int offset, int scale)
+ 	return true;
+ }
+ 
+-/* Tail call offset to jump into */
+-#if IS_ENABLED(CONFIG_ARM64_BTI_KERNEL) || \
+-	IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL)
+-#define PROLOGUE_OFFSET 9
++#if IS_ENABLED(CONFIG_ARM64_BTI_KERNEL)
++#define BTI_INSNS	1
++#else
++#define BTI_INSNS	0
++#endif
++
++#if IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL)
++#define PAC_INSNS	1
+ #else
+-#define PROLOGUE_OFFSET 8
++#define PAC_INSNS	0
+ #endif
+ 
++/* Tail call offset to jump into */
++#define PROLOGUE_OFFSET	(BTI_INSNS + 2 + PAC_INSNS + 8)
++/* Offset of nop instruction in bpf prog entry to be poked */
++#define POKE_OFFSET	(BTI_INSNS + 1)
++
+ static int build_prologue(struct jit_ctx *ctx, bool ebpf_from_cbpf)
+ {
+ 	const struct bpf_prog *prog = ctx->prog;
+@@ -281,12 +290,15 @@ static int build_prologue(struct jit_ctx *ctx, bool ebpf_from_cbpf)
+ 	 *
+ 	 */
+ 
++	if (IS_ENABLED(CONFIG_ARM64_BTI_KERNEL))
++		emit(A64_BTI_C, ctx);
++
++	emit(A64_MOV(1, A64_R(9), A64_LR), ctx);
++	emit(A64_NOP, ctx);
++
+ 	/* Sign lr */
+ 	if (IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL))
+ 		emit(A64_PACIASP, ctx);
+-	/* BTI landing pad */
+-	else if (IS_ENABLED(CONFIG_ARM64_BTI_KERNEL))
+-		emit(A64_BTI_C, ctx);
+ 
+ 	/* Save FP and LR registers to stay align with ARM64 AAPCS */
+ 	emit(A64_PUSH(A64_FP, A64_LR, A64_SP), ctx);
+@@ -1552,9 +1564,11 @@ int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type poke_type,
+ 	u32 old_insn;
+ 	u32 new_insn;
+ 	u32 replaced;
++	unsigned long offset = ~0UL;
+ 	enum aarch64_insn_branch_type branch_type;
++	char namebuf[KSYM_NAME_LEN];
+ 
+-	if (!is_bpf_text_address((long)ip))
++	if (!__bpf_address_lookup((unsigned long)ip, NULL, &offset, namebuf))
+ 		/* Only poking bpf text is supported. Since kernel function
+ 		 * entry is set up by ftrace, we reply on ftrace to poke kernel
+ 		 * functions. For kernel funcitons, bpf_arch_text_poke() is only
+@@ -1565,6 +1579,15 @@ int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type poke_type,
+ 		 */
+ 		return -EINVAL;
+ 
++	/* bpf entry */
++	if (offset == 0UL)
++		/* skip to the nop instruction in bpf prog entry:
++		 * bti c	// if BTI enabled
++		 * mov x9, x30
++		 * nop
++		 */
++		ip = (u32 *)ip + POKE_OFFSET;
++
+ 	if (poke_type == BPF_MOD_CALL)
+ 		branch_type = AARCH64_INSN_BRANCH_LINK;
+ 	else
+-- 
+2.30.2
+
