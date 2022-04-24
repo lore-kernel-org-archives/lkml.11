@@ -2,103 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAD37C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 17:22:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61708C4332F
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 17:22:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236485AbiDXRZU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 13:25:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38980 "EHLO
+        id S236527AbiDXRZ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 13:25:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236252AbiDXRZS (ORCPT
+        with ESMTP id S236252AbiDXRZz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 13:25:18 -0400
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 304D7BCB4F;
-        Sun, 24 Apr 2022 10:22:17 -0700 (PDT)
-Received: by mail-oi1-x234.google.com with SMTP id v65so10041632oig.10;
-        Sun, 24 Apr 2022 10:22:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=gJyERW7nV1azvnBTWPVilJ/+td61cNeV8dCVgXesf3Q=;
-        b=dGy6/ijHGSinpAhXyG50I7RMcLyJtabc5wZ/L46eLgalkIKeHi3fGhilfEreEqlBb1
-         Fvd3D+kM6A90QO2tKrAi/MY3ZRLeMInuqhFHGvWqXJJPTE7DSCwa2Ht6+LxVIjtgmTPV
-         ouSMIas5WDanAud3e75o10rtT4I2riCdDrNbSc7yWNuu8MVOYsai8reuO9cpPfX9TQDK
-         SxHqfq+1Xpw+17Fpj8zCsysSJ9NLuBi5V/4ILQ2Qs2BmEKfEs6aAirtwLb6RIihx7PI3
-         Z/05U9IyzdmaLUhu40xXSe9BRxORba0uqA3I+2sMooDBzXhvP+JqPbVZCswE/uTh4hBU
-         a9Dg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=gJyERW7nV1azvnBTWPVilJ/+td61cNeV8dCVgXesf3Q=;
-        b=LLbJzMznwdHhg/85v8V4kwlqVZHOQgwM49nHpPtbDHInOxRj8tN7c/ch7M/M29fedn
-         JFejatifnaK/WgOZLNFL27r7m3+GAE/vRtMjOycfp7x8NV9ZOQb7mfhtfrmK3PD2HAGm
-         p5o7yepg9VSHa29ELVkPMBuYHPxIpNxO6q46RaELPpVw89QlMUYMaBUju9VhaaB6o0jW
-         YYHyLK5I8SjiVwSi5msDkHMJfc6JV38Blw+iohgB2UM1JOTgtk1OQ79SEYsfoHw5ixJp
-         Vo9dj+lN/PnMWdZPaJW+Rd6J0ad2wCPbeh5bhZ4Ivhi8RTYcME4SvMFSdOj9af3pLpxt
-         7D9w==
-X-Gm-Message-State: AOAM530yuoGpg8X3ufxugAQwcxyRumo/v8kM3L17NDYdbsmONPfeObf4
-        0chbPTSgEmPkXCsVJNGhXPdusm6wuNE=
-X-Google-Smtp-Source: ABdhPJyhmqtv3yVUfBGfryC42dIVU6dGijgvoVy604uCSr07RfjCw61rqfszzV/H/S9wdO2aAJC+KQ==
-X-Received: by 2002:a05:6808:218e:b0:322:8478:cac9 with SMTP id be14-20020a056808218e00b003228478cac9mr10782271oib.99.1650820936612;
-        Sun, 24 Apr 2022 10:22:16 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id v26-20020a05683011da00b0060554e2fd07sm2939626otq.58.2022.04.24.10.22.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 24 Apr 2022 10:22:15 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <4c8673de-2503-7f9d-01ae-8f059e8a58ed@roeck-us.net>
-Date:   Sun, 24 Apr 2022 10:22:13 -0700
+        Sun, 24 Apr 2022 13:25:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 921C6C6655;
+        Sun, 24 Apr 2022 10:22:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0FDC5B80EAB;
+        Sun, 24 Apr 2022 17:22:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7530CC385A7;
+        Sun, 24 Apr 2022 17:22:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650820971;
+        bh=8TMjDBDgpcomAsVaP9MlNAhl3VrxPdhymQBYOTG9SYY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Ik8jUjp4qS+NI7aTk/i0P5CHKk/ZZg+mxK556bvdeg7+hu/ipWZ993tkuwhYS5IT9
+         BTrJK/7dgzrb9rgNASqJ9aWOl+6TKWK/jRGzty3Kmuj8tOh1pOx8tgd8Q4y7Kbd7nY
+         7ECRR0tQAOppVjEFq279WfGM4ZeKoeYvf7WygnYqTq4fK5S0X9ojT9+S5xq9kfVDEU
+         1gBlgenoLfY4J2ZbBv87/WYIINllvoop6QKfdWyi3shzpMRJ/UnxhB60Z4j++lM7D7
+         Ef77192mSIpc7bOAUopdSCRlwcB5VVA1IlDIi2npkR4Vacf2Hrm1mcrT2D/S/hCbl5
+         d0NLHz7/mI0dA==
+Date:   Sun, 24 Apr 2022 18:30:58 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Cixi Geng <gengcixi@gmail.com>
+Cc:     lars@metafoo.de, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, orsonzhai@gmail.com,
+        baolin.wang7@gmail.com, zhang.lyra@gmail.com,
+        yuming.zhu1@unisoc.com, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V4 5/7] iio: adc: refactor some functions for support
+ more PMiCs
+Message-ID: <20220424183058.5119dbf5@jic23-huawei>
+In-Reply-To: <20220419142458.884933-6-gengcixi@gmail.com>
+References: <20220419142458.884933-1-gengcixi@gmail.com>
+        <20220419142458.884933-6-gengcixi@gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] dt-bindings: watchdog: uniphier: Use
- unevaluatedProperties
-Content-Language: en-US
-To:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
-        Keiji Hayashibara <hayashibara.keiji@socionext.com>,
-        linux-watchdog@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <1649317606-21267-1-git-send-email-hayashi.kunihiko@socionext.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <1649317606-21267-1-git-send-email-hayashi.kunihiko@socionext.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/7/22 00:46, Kunihiko Hayashi wrote:
-> This refers common bindings, so this is preferred for
-> unevaluatedProperties instead of additionalProperties.
+On Tue, 19 Apr 2022 22:24:56 +0800
+Cixi Geng <gengcixi@gmail.com> wrote:
+
+> From: Cixi Geng <cixi.geng1@unisoc.com>
+Added sc27xx to patch title whilst applying.
+
+Also a small amount of 'fuzz' as a result of the edit I made to the earlier
+patch to drop the comment but I think it all went in cleanly.
+
+Thanks,
+
+Jonathan
+
 > 
-> Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-
+> Refactor the common adc_nvmem_cell_calib_data,adc_to_volt and call
+> these in the origin sc27xx_adc_scale_calibration,sc27xx_adc_to_volt
+> 
+> Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
 > ---
->   .../devicetree/bindings/watchdog/socionext,uniphier-wdt.yaml    | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/iio/adc/sc27xx_adc.c | 56 +++++++++++++++++++++++++-----------
+>  1 file changed, 40 insertions(+), 16 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/watchdog/socionext,uniphier-wdt.yaml b/Documentation/devicetree/bindings/watchdog/socionext,uniphier-wdt.yaml
-> index a059d16cb4f2..90698cfa8f94 100644
-> --- a/Documentation/devicetree/bindings/watchdog/socionext,uniphier-wdt.yaml
-> +++ b/Documentation/devicetree/bindings/watchdog/socionext,uniphier-wdt.yaml
-> @@ -19,7 +19,7 @@ properties:
->   required:
->     - compatible
->   
-> -additionalProperties: false
-> +unevaluatedProperties: false
->   
->   examples:
->     - |
+> diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
+> index a8906ffd85bf..27fab579a281 100644
+> --- a/drivers/iio/adc/sc27xx_adc.c
+> +++ b/drivers/iio/adc/sc27xx_adc.c
+> @@ -138,16 +138,41 @@ static int sc27xx_adc_get_calib_data(u32 calib_data, int calib_adc)
+>  	return ((calib_data & 0xff) + calib_adc - 128) * 4;
+>  }
+>  
+> +/* get the adc nvmem cell calibration data */
+> +static int adc_nvmem_cell_calib_data(struct sc27xx_adc_data *data, const char *cell_name)
+> +{
+> +	struct nvmem_cell *cell;
+> +	void *buf;
+> +	u32 origin_calib_data = 0;
+> +	size_t len;
+> +
+> +	if (!data)
+> +		return -EINVAL;
+> +
+> +	cell = nvmem_cell_get(data->dev, cell_name);
+> +	if (IS_ERR(cell))
+> +		return PTR_ERR(cell);
+> +
+> +	buf = nvmem_cell_read(cell, &len);
+> +	if (IS_ERR(buf)) {
+> +		nvmem_cell_put(cell);
+> +		return PTR_ERR(buf);
+> +	}
+> +
+> +	memcpy(&origin_calib_data, buf, min(len, sizeof(u32)));
+> +
+> +	kfree(buf);
+> +	nvmem_cell_put(cell);
+> +	return origin_calib_data;
+> +}
+> +
+>  static int sc27xx_adc_scale_calibration(struct sc27xx_adc_data *data,
+>  					bool big_scale)
+>  {
+>  	const struct sc27xx_adc_linear_graph *calib_graph;
+>  	struct sc27xx_adc_linear_graph *graph;
+> -	struct nvmem_cell *cell;
+>  	const char *cell_name;
+>  	u32 calib_data = 0;
+> -	void *buf;
+> -	size_t len;
+>  
+>  	if (big_scale) {
+>  		calib_graph = data->var_data->bscale_cal;
+> @@ -159,24 +184,13 @@ static int sc27xx_adc_scale_calibration(struct sc27xx_adc_data *data,
+>  		cell_name = "small_scale_calib";
+>  	}
+>  
+> -	cell = nvmem_cell_get(data->dev, cell_name);
+> -	if (IS_ERR(cell))
+> -		return PTR_ERR(cell);
+> -
+> -	buf = nvmem_cell_read(cell, &len);
+> -	nvmem_cell_put(cell);
+> -
+> -	if (IS_ERR(buf))
+> -		return PTR_ERR(buf);
+> -
+> -	memcpy(&calib_data, buf, min(len, sizeof(u32)));
+> +	calib_data = adc_nvmem_cell_calib_data(data, cell_name);
+>  
+>  	/* Only need to calibrate the adc values in the linear graph. */
+>  	graph->adc0 = sc27xx_adc_get_calib_data(calib_data, calib_graph->adc0);
+>  	graph->adc1 = sc27xx_adc_get_calib_data(calib_data >> 8,
+>  						calib_graph->adc1);
+>  
+> -	kfree(buf);
+>  	return 0;
+>  }
+>  
+> @@ -312,7 +326,7 @@ static void sc27xx_adc_volt_ratio(struct sc27xx_adc_data *data,
+>  	*div_denominator = ratio & SC27XX_RATIO_DENOMINATOR_MASK;
+>  }
+>  
+> -static int sc27xx_adc_to_volt(struct sc27xx_adc_linear_graph *graph,
+> +static int adc_to_volt(struct sc27xx_adc_linear_graph *graph,
+>  			      int raw_adc)
+>  {
+> 	int tmp;
+> @@ -321,6 +335,16 @@ static int sc27xx_adc_to_volt(struct sc27xx_adc_linear_graph *graph,
+>  	tmp /= (graph->adc0 - graph->adc1);
+>  	tmp += graph->volt1;
+>  
+> +	return tmp;
+> +}
+> +
+> +static int sc27xx_adc_to_volt(struct sc27xx_adc_linear_graph *graph,
+> +			      int raw_adc)
+> +{
+> +	int tmp;
+> +
+> +	tmp = adc_to_volt(graph, raw_adc);
+> +
+>  	return tmp < 0 ? 0 : tmp;
+>  }
+>  
 
