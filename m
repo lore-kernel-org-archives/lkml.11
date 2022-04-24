@@ -2,126 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F4A9C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 17:28:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68040C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 17:31:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236793AbiDXRbV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 13:31:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33550 "EHLO
+        id S236052AbiDXRei (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 13:34:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236597AbiDXRbK (ORCPT
+        with ESMTP id S229539AbiDXReg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 13:31:10 -0400
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2BEE14AAF3;
-        Sun, 24 Apr 2022 10:28:09 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 0F01C5C017E;
-        Sun, 24 Apr 2022 13:28:09 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Sun, 24 Apr 2022 13:28:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm2; t=1650821289; x=1650907689; bh=HV
-        olP6ZkMyb65XG1QvbeY08lLQkAYv1LBjKVDIgum5k=; b=YJ+7dCtdDGuT9u3w5g
-        5qjQiu9grty/l+q8FCL3g/SAefYxN4xDgAOXAqfVG29eNasMrYScvpXlqtONbjpJ
-        7Mhf7uBXBjYVViSrst0u15HsOhe7mloWQ8JFmfdKtaswVo7yh53NnjpzhHdDnZve
-        fGjSqIY/lbMqIihq3sPS4RZAQTQEmZS3mP68H7YpW1bQmo7pHUdfBdWPOwHK0hr2
-        Fdp6z5L14lpxyFs2qncBp1oYJwIULb8HAKTvRb0zuZUox8X+hrn4IRKqSBP2gi5L
-        z7pV4OdAm7TZWfaQI5ILRNyAsVJicQNYbZmjuHGusIRWMr/+lBVpi4C7TgWreaBs
-        VeHQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :from:from:in-reply-to:in-reply-to:message-id:mime-version
-        :references:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-        1650821289; x=1650907689; bh=HVolP6ZkMyb65XG1QvbeY08lLQkAYv1LBjK
-        VDIgum5k=; b=sXHT+ylENl6l8k7rlDj9Ox832v31yLcMK4oGuAZ8+YYaCF6awLb
-        eDgvCKo2M6Dvl1hpUGYIcOG0lA0pjZSRf44YLZFZ+th7FwK6y/S/3YlaqjjFmji9
-        RDDiHSMJvCBnrz97iBn6UeoNXd+RfLezQx3lStqRUgrChPAGoRizgimejzEGYVaI
-        KEg0fOW1sBk4lg2yaAJCyQoDHqquRVZgm1tU5gpOTLQPfsQsICgtBwvD1ZhFjMVy
-        7qze4h3E2uboe2rmMNgbXCmdT9MjCSFZShxzjzXApyUVugCCMLs8wjOwrNaZsOtB
-        w7f3g+NmiMxmqlXbaoCdDUYqaLNiC0gCS/A==
-X-ME-Sender: <xms:qIhlYqTT_pnOx1pZOdd8vzq6WN6O_WWliGct4qlYJR6lWjlxOGjVZw>
-    <xme:qIhlYvyQyx7vN6neWoYsx1DdWTCsGsAghVy56lHHanO_aqHUiMB11TwWTYGwZnuJb
-    S4rnXP20yBgsSe8Yw>
-X-ME-Received: <xmr:qIhlYn17nyjAz1YhGm7Q4HE06KbMb9YFYRt3EqXsfQFmWR1toGoxYTcwVxLpazHsF558wTNuIxvQkH2wnUOyukkbqSm2gvpZG4S9hthKegTeTWjRfUgigE40JCAPMPnrHWh6mA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrtdelgdduudeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvvefufffkofgjfhgggfestdekredtredttdenucfhrhhomhepufgrmhhu
-    vghlucfjohhllhgrnhguuceoshgrmhhuvghlsehshhholhhlrghnugdrohhrgheqnecugg
-    ftrfgrthhtvghrnhepudekteeuudehtdelteevgfduvddvjefhfedulefgudevgeeghefg
-    udefiedtveetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrh
-    homhepshgrmhhuvghlsehshhholhhlrghnugdrohhrgh
-X-ME-Proxy: <xmx:qIhlYmBO-RauKQmJrmZ4qNbYsI7aQQeVAsyeksyHQBhpCKHdvVdh8g>
-    <xmx:qIhlYjhjVIFOwKD_pVLNfRDKT6UlDhiNCxyBvgP0ytBLJ5UAsi70Tw>
-    <xmx:qIhlYiormWo_jL8GRc7TgEu2tmr83XFPlMDBZqsLFgmAZmqKmi62gQ>
-    <xmx:qYhlYmpc2NBBmQoWcyfmTFQX7pnke2p8D-RtudQmNaugTLeJ1_ZqVA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 24 Apr 2022 13:28:08 -0400 (EDT)
-From:   Samuel Holland <samuel@sholland.org>
-To:     Vinod Koul <vkoul@kernel.org>, dmaengine@vger.kernel.org
-Cc:     Samuel Holland <samuel@sholland.org>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev, Maxime Ripard <maxime@cerno.tech>
-Subject: [PATCH v3 4/4] dmaengine: sun6i: Add support for the D1 variant
-Date:   Sun, 24 Apr 2022 12:27:58 -0500
-Message-Id: <20220424172759.33383-5-samuel@sholland.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220424172759.33383-1-samuel@sholland.org>
-References: <20220424172759.33383-1-samuel@sholland.org>
+        Sun, 24 Apr 2022 13:34:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A223662A1B;
+        Sun, 24 Apr 2022 10:31:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 441C761203;
+        Sun, 24 Apr 2022 17:31:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DEA5C385A7;
+        Sun, 24 Apr 2022 17:31:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650821494;
+        bh=jjxwm4sbDuaBN4rFT9BE+jraiy9tujTIunLpi1T1TEI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=bgGcfKBQJSA9ZTmvok+gWbgQBWcu8FBdj6HJ7gStN+DRw7spivYeG6PBklcWTaiSF
+         XJcIqflG8yO9nabBJlZfoT23DGTVezq74ofTTQbWK/7oq24cyZ9X82IftHDg76WQuf
+         9o2bCyLtV6Nti0ikA3P2/RlzeCMGfF/Hbl9fGDCtflaL3hGm1eGgEHUCPu/E/Ak2ml
+         irUOx9E3zWAPLed9T3l2cnvouu0NT6glhQJxLcmWfC9EjPm/GTJlhKHG4T1Nz5YUxH
+         f7bTrHsaXYymy1xORDRUE/7fsEmgd5D3Pc674vZHBqrIIWQctQf6S403EDync8Fwgu
+         BsEu1G69WinVg==
+Date:   Sun, 24 Apr 2022 18:39:40 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Colin Ian King <colin.i.king@gmail.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH] staging: iio: ad2s1210: remove redundant assignment to
+ variable negative
+Message-ID: <20220424183940.3b209ee5@jic23-huawei>
+In-Reply-To: <20220418134603.81336-1-colin.i.king@gmail.com>
+References: <20220418134603.81336-1-colin.i.king@gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-So far it appears to match the configuration of the A100 variant.
+On Mon, 18 Apr 2022 14:46:03 +0100
+Colin Ian King <colin.i.king@gmail.com> wrote:
 
-Since D1 is a RISC-V chip, it does not meet any of the existing
-dependencies for this driver, so relax the dependency somewhat.
+> Variable negative is being assigned a value that is never read, it is
+> being re-assigned later. The assignment is redundant and can be removed.
+> 
+> Cleans up clang scan build warning:
+> drivers/staging/iio/resolver/ad2s1210.c:502:3: warning: Value stored
+> to 'negative' is never read [deadcode.DeadStores]
+> 
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 
-Acked-by: Maxime Ripard <maxime@cerno.tech>
-Signed-off-by: Samuel Holland <samuel@sholland.org>
----
+Seems that someone decided to match again against the endian converted
+version so indeed this is pointless.
 
-(no changes since v1)
+Applied to the togreg branch of iio.git and pushed out as testing for 0-day
+to see if it can find anything we missed.
 
- drivers/dma/Kconfig     | 2 +-
- drivers/dma/sun6i-dma.c | 1 +
- 2 files changed, 2 insertions(+), 1 deletion(-)
+Thanks,
 
-diff --git a/drivers/dma/Kconfig b/drivers/dma/Kconfig
-index d5de3f77d3aa..b6845303cf7e 100644
---- a/drivers/dma/Kconfig
-+++ b/drivers/dma/Kconfig
-@@ -163,7 +163,7 @@ config DMA_SUN4I
- 
- config DMA_SUN6I
- 	tristate "Allwinner A31 SoCs DMA support"
--	depends on MACH_SUN6I || MACH_SUN8I || (ARM64 && ARCH_SUNXI) || COMPILE_TEST
-+	depends on ARCH_SUNXI || COMPILE_TEST
- 	depends on RESET_CONTROLLER
- 	select DMA_ENGINE
- 	select DMA_VIRTUAL_CHANNELS
-diff --git a/drivers/dma/sun6i-dma.c b/drivers/dma/sun6i-dma.c
-index 1eb3bafa7324..b7557f437936 100644
---- a/drivers/dma/sun6i-dma.c
-+++ b/drivers/dma/sun6i-dma.c
-@@ -1271,6 +1271,7 @@ static const struct of_device_id sun6i_dma_match[] = {
- 	{ .compatible = "allwinner,sun8i-a83t-dma", .data = &sun8i_a83t_dma_cfg },
- 	{ .compatible = "allwinner,sun8i-h3-dma", .data = &sun8i_h3_dma_cfg },
- 	{ .compatible = "allwinner,sun8i-v3s-dma", .data = &sun8i_v3s_dma_cfg },
-+	{ .compatible = "allwinner,sun20i-d1-dma", .data = &sun50i_a100_dma_cfg },
- 	{ .compatible = "allwinner,sun50i-a64-dma", .data = &sun50i_a64_dma_cfg },
- 	{ .compatible = "allwinner,sun50i-a100-dma", .data = &sun50i_a100_dma_cfg },
- 	{ .compatible = "allwinner,sun50i-h6-dma", .data = &sun50i_h6_dma_cfg },
--- 
-2.35.1
+Jonathan
+
+> ---
+>  drivers/staging/iio/resolver/ad2s1210.c | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
+> index 74adb82f37c3..c0b2716d0511 100644
+> --- a/drivers/staging/iio/resolver/ad2s1210.c
+> +++ b/drivers/staging/iio/resolver/ad2s1210.c
+> @@ -499,7 +499,6 @@ static int ad2s1210_read_raw(struct iio_dev *indio_dev,
+>  		ret = IIO_VAL_INT;
+>  		break;
+>  	case IIO_ANGL_VEL:
+> -		negative = st->rx[0] & 0x80;
+>  		vel = be16_to_cpup((__be16 *)st->rx);
+>  		vel >>= 16 - st->resolution;
+>  		if (vel & 0x8000) {
 
