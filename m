@@ -2,58 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 481E5C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 15:43:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE259C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 15:47:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232082AbiDXPqn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 11:46:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35670 "EHLO
+        id S232530AbiDXPu3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 11:50:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229657AbiDXPqi (ORCPT
+        with ESMTP id S229657AbiDXPuY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 11:46:38 -0400
-X-Greylist: delayed 907 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 24 Apr 2022 08:43:36 PDT
-Received: from m12-18.163.com (m12-18.163.com [220.181.12.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A146232EF7;
-        Sun, 24 Apr 2022 08:43:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=xuJCo
-        hPLpFFq0nMkMgsbwR1ueyZayVeBCU2CJqE14pI=; b=jNQkkiccd/n8seGOBVHS4
-        m0YAZMfc4LWuwlRnOjvlX1aNv7CljcpvJSThbl52VsZFLGEU95vGyg5xWI+jwvdC
-        XOT+p/3n00a00myuOBiZQ7djO4umHcLO9JfNcv1yUzEP0XgsTlUX8Z+hqSmiRQuq
-        pZBzoOT8A7e6Xj4D7+Icww=
-Received: from localhost (unknown [113.87.88.166])
-        by smtp14 (Coremail) with SMTP id EsCowAC3FO6BbGVifODzCg--.55167S2;
-        Sun, 24 Apr 2022 23:28:02 +0800 (CST)
-From:   Junwen Wu <wudaemon@163.com>
-To:     lkp@intel.com, Junwen Wu <wudaemon@163.com>,
-        akpm@linux-foundation.org, keescook@chromium.org,
-        adobriyan@gmail.com, fweimer@redhat.com, ddiss@suse.de
-Cc:     kbuild-all@lists.01.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1] proc: limit schedstate node write operation
-Date:   Sun, 24 Apr 2022 15:27:55 +0000
-Message-ID: <202204231250.LYIILAXn-lkp@intel.com> (raw)
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220423023104.153004-1-wudaemon@163.com>
-References: <202204231250.LYIILAXn-lkp@intel.com>
+        Sun, 24 Apr 2022 11:50:24 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64082369E3;
+        Sun, 24 Apr 2022 08:47:23 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id j15so4374946wrb.2;
+        Sun, 24 Apr 2022 08:47:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HL7fiyqBRJgE+CGCRvNmcBkaeCPL+1i1yCArETsMyBM=;
+        b=n2yWnonI7du9MFsjYTSAWxBiEk3Zx4vMDTNeK4HGkocQMwrAHedYIpioUmELh5BuMf
+         tw+hs3iMD8c2kPcRipWzi9NEy25L7t6RVmlW8YuLJyIMMIHSkH/sd9Fw+uZPqeJ9F7iS
+         8tRKAXD7zsFUplY5aKdHoePaghWshlXzK/j4Cxjz8GAcz1RW7d1BEsy/Z/qmC7MaXGfi
+         lF+7Z96VQzo8YOqGaSA26zAmR04pOO0Vf30YRWGGFmhPvVUZ+ddlT+PqfFFcCGqhSTAN
+         dsvDMmePDzEWLKv6Dsq3SzcrbUh6woAPxlIhsjYI3PGHNVPDsvPLeK5sOqx2zn2D5k8Q
+         sXSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HL7fiyqBRJgE+CGCRvNmcBkaeCPL+1i1yCArETsMyBM=;
+        b=EEplXDSsqZLiNdkv/XM+pYpqd+i6Gzp6TaKaXLa+iP5CTrVaYeEwrPU1bOAfqQRyUx
+         DF2VK/XGZeCOYxYgcOT/F/w8OKRz/pUqhD1zXsC8EOA6i7dWHQ/dIjiqSO1eOh2349jv
+         a19ytkqq0thA61icnr87sURm6ucqEFplXIP0hF/MtJbL0lo88Fn/0Zr0yK38j/Mw1Z77
+         7TI62MpPkN71QY3Z4Alp5LtOUhqTUlYh3PkEKQp7wxk0JPH8Fe0UpP/7mMhvfw8Z/3fM
+         E6OVDYpfqFxybWp2EPUxaQSWVUrwI5r+f1SUAfAePjfbm1aZhIgT+OpWxIn9fn6VT2lb
+         tirg==
+X-Gm-Message-State: AOAM533m4Oah7k2G+wd3fKxj1J32h3JdKTIUVMeduw64ksX5EQjxWvAg
+        q+ftVKzWkI5EUbhEo2AZ3Es=
+X-Google-Smtp-Source: ABdhPJztWvLsOXWw956Mfgn5IeL2UgX9y+VtogVSBEpQQHlKROzfOtMt4S3ZnFmm8Ws3U3WoOKUyhw==
+X-Received: by 2002:adf:db86:0:b0:205:bccf:8cbf with SMTP id u6-20020adfdb86000000b00205bccf8cbfmr10914407wri.346.1650815241868;
+        Sun, 24 Apr 2022 08:47:21 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id q16-20020a1ce910000000b0038eabd31749sm7937628wmc.32.2022.04.24.08.47.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Apr 2022 08:47:21 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-media@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] media: dvbdev: remove redundant initialization of variable ret
+Date:   Sun, 24 Apr 2022 16:47:20 +0100
+Message-Id: <20220424154720.1356873-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: EsCowAC3FO6BbGVifODzCg--.55167S2
-X-Coremail-Antispam: 1Uf129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
-        VFW2AGmfu7bjvjm3AaLaJ3UbIYCTnIWIevJa73UjIFyTuYvjTRuQ6pUUUUU
-X-Originating-IP: [113.87.88.166]
-X-CM-SenderInfo: 5zxgtvxprqqiywtou0bp/1tbisRrsbVXlpdDfGgABsr
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
-Message-ID: <20220424152755.XlKFOAM1-eaPDq6XDux8UQbPy3XXH1M7hPn9guR1W1Q@z>
 
-From: kernel test robot <lkp@intel.com>
+Variable ret is being ininitialized with a value that is never read.
+The ininitializtion is redundant and can be removed. Move the variable
+to the scope it is required.
 
->Hi Junwen,
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ drivers/media/dvb-core/dvbdev.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
->Thank you for the patch! Perhaps something to improve:
-
-ooh ,I will fix the warning
+diff --git a/drivers/media/dvb-core/dvbdev.c b/drivers/media/dvb-core/dvbdev.c
+index 675d877a67b2..d5a142ef9876 100644
+--- a/drivers/media/dvb-core/dvbdev.c
++++ b/drivers/media/dvb-core/dvbdev.c
+@@ -243,7 +243,7 @@ static void dvb_media_device_free(struct dvb_device *dvbdev)
+ static int dvb_create_tsout_entity(struct dvb_device *dvbdev,
+ 				    const char *name, int npads)
+ {
+-	int i, ret = 0;
++	int i;
+ 
+ 	dvbdev->tsout_pads = kcalloc(npads, sizeof(*dvbdev->tsout_pads),
+ 				     GFP_KERNEL);
+@@ -260,6 +260,7 @@ static int dvb_create_tsout_entity(struct dvb_device *dvbdev,
+ 	for (i = 0; i < npads; i++) {
+ 		struct media_pad *pads = &dvbdev->tsout_pads[i];
+ 		struct media_entity *entity = &dvbdev->tsout_entity[i];
++		int ret;
+ 
+ 		entity->name = kasprintf(GFP_KERNEL, "%s #%d", name, i);
+ 		if (!entity->name)
+-- 
+2.35.1
 
