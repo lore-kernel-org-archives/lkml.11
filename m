@@ -2,119 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51BC8C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 16:53:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9081DC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 16:54:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236057AbiDXQ4s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 12:56:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45728 "EHLO
+        id S236108AbiDXQ5M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 12:57:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236019AbiDXQ4o (ORCPT
+        with ESMTP id S235513AbiDXQ5J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 12:56:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B62BB30550;
-        Sun, 24 Apr 2022 09:53:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6B49BB80EAE;
-        Sun, 24 Apr 2022 16:53:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54B73C385A7;
-        Sun, 24 Apr 2022 16:53:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650819221;
-        bh=D+w4BgSyXQuDDH5Cn/FASs6D+s7VpvQ7sliY6knecQM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rt1P0mtHJme34JK/ebPbf8acP+t6jv55z0nITUJWtL/Xb3xoFiTZoyFZ+oSVrdurq
-         WeUsRw7mmtuWxTLX97JJkAnIdZtHqIdNcoinCgHg//6mpDLjbgFMx3B/RvBEpdhkDa
-         2KKkTx/6Ku8N9tIeix12R6DWEh/44mOhTq1p51L897cr6sf4qdUjW3lEfnwkTTCWzc
-         Cfc2aF2EHcIaI4UQmXsyL9TgV+DVwHJU87hH5tgKhKmTCYE48wgHL/U3zOqfQ9Ve5C
-         LuoxivDlYfWAxEtByVwAxEZF+fKNXyOGb/Vdn8/wnRIkndX2BKAj0wGsXdvXmK2SX7
-         UO4tn83DUKAKA==
-Date:   Sun, 24 Apr 2022 18:01:47 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Cixi Geng <gengcixi@gmail.com>
-Cc:     lars@metafoo.de, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, orsonzhai@gmail.com,
-        baolin.wang7@gmail.com, zhang.lyra@gmail.com,
-        yuming.zhu1@unisoc.com, linux-iio@vger.kernel.org,
+        Sun, 24 Apr 2022 12:57:09 -0400
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8597F30572;
+        Sun, 24 Apr 2022 09:54:08 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id z2so14712543oic.6;
+        Sun, 24 Apr 2022 09:54:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=hRAH0k2Yx6YMl62m1v8EooRBhKPXrROU9TyI3nKQ9h4=;
+        b=pqFKMba01+YQBzDT+GkO1di7psZEsTPAWB+KXe11Zaiu3U4fE5VSs+f4mg4s3uzVLB
+         JVRXErrhf6YKDpVBDcF1ENOEZ+8ZQiVAQjaKH8ymMfzdJjIVUY8AQ80D2gl4g5ItXANv
+         1LruuPRNB//bZxP+luU2NpvFX8naDllvd4vo3C4VJ0ID+UjQqaBcWXerXco+UMo5hAVf
+         VfUBXtwcI7hB45lr3gKHkSeyndcI+N3NXeB/9sZne8O/6bb10zn204w/LUTq2OhmGXk4
+         a8bvMtf6esSOLo378VXVQrFL7HGJQJr5MSmAD/QXhp7Ofq6LJcm12MO/xdqQDEbpmF8y
+         XF9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=hRAH0k2Yx6YMl62m1v8EooRBhKPXrROU9TyI3nKQ9h4=;
+        b=a4wV79eTly3J5JO2iyB/Lu4729fx8E2dXGlTgKl1nJTqDN+cHRAYg8HFkpIPx70DuC
+         DBm5x1A7JknM96XW6uzTm9kYpQw6W8BgDw1Ih4Mn1ySozLnqZg/rffzaLNwmxwAROeOw
+         zEcTPK7yFwa3G0QGOhXjjJHAcLP7LfoOmAzxEE8bJczfqpLky0gRGvQKk79AdEoDQCHP
+         30KV0AGPvxjXYlgtUJdY6suFT5UUfX4AuKl/d1gc0at2jQClKH7h4RCzWKAedyiQZiYj
+         evEeTvvslh/iRjfnEzPBuxW4NH6Euw3GjuDFt/l7DiagWRQZMrrcRVZF5RLn4TnZ0abJ
+         Imtw==
+X-Gm-Message-State: AOAM532QvcK0ybZsCmztWUkAK+uf8gn2AlLStRGWxXaL22u7Mkd9ZJ6G
+        bsTak9yAUOau6w+rPVYwmZCwjCmRXJ8=
+X-Google-Smtp-Source: ABdhPJz+3UIw6L48V+U8cJJeoYzeRquJY0e6WI2ozWbeataP3bgDZ4fQUU96L8oEYqQWWE/6M3IMhg==
+X-Received: by 2002:a54:460b:0:b0:322:7964:1b60 with SMTP id p11-20020a54460b000000b0032279641b60mr6424342oip.16.1650819247782;
+        Sun, 24 Apr 2022 09:54:07 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id r17-20020a056808211100b00322fbb8bb28sm2796779oiw.57.2022.04.24.09.54.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Apr 2022 09:54:07 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Sun, 24 Apr 2022 09:54:05 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Chris Packham <chris.packham@alliedtelesis.co.nz>
+Cc:     jdelvare@suse.com, robh+dt@kernel.org, linux-hwmon@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V4 3/7] iio: adc: Fine tune the scale calibration values
-Message-ID: <20220424180147.02d3c8ca@jic23-huawei>
-In-Reply-To: <20220419142458.884933-4-gengcixi@gmail.com>
-References: <20220419142458.884933-1-gengcixi@gmail.com>
-        <20220419142458.884933-4-gengcixi@gmail.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+Subject: Re: [PATCH v3 3/3] hwmon: (adt7475) Use enum chips when loading
+ attenuator settings
+Message-ID: <20220424165405.GA748437@roeck-us.net>
+References: <20220323034056.260455-1-chris.packham@alliedtelesis.co.nz>
+ <20220323034056.260455-4-chris.packham@alliedtelesis.co.nz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220323034056.260455-4-chris.packham@alliedtelesis.co.nz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 19 Apr 2022 22:24:54 +0800
-Cixi Geng <gengcixi@gmail.com> wrote:
+On Wed, Mar 23, 2022 at 04:40:56PM +1300, Chris Packham wrote:
+> Make use of enum chips and use a switch statement in load_attenuators()
+> so that the compiler can tell us if we've failed to cater for a
+> supported chip.
+> 
+> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
 
-> From: Cixi Geng <cixi.geng1@unisoc.com>
-> 
-> Small adjustment the scale calibration value for the sc2731,
-> use new name sc2731_[big|small]_scale_graph_calib, and remove
-> the origin [big|small]_scale_graph_calib struct for unused.
-> 
-> Fixes: 8ba0dbfd07a35 (iio: adc: sc27xx: Add ADC scale calibration)
-No blank line here.
-> 
-> Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
+For my reference:
+
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+
+Guenter
+
 > ---
->  drivers/iio/adc/sc27xx_adc.c | 19 +++++++++++--------
->  1 file changed, 11 insertions(+), 8 deletions(-)
 > 
-> diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
-> index aee076c8e2b1..24211d2a71b1 100644
-> --- a/drivers/iio/adc/sc27xx_adc.c
-> +++ b/drivers/iio/adc/sc27xx_adc.c
-> @@ -103,14 +103,17 @@ static struct sc27xx_adc_linear_graph small_scale_graph = {
->  	100, 341,
->  };
+> Notes:
+>     Changes in v3:
+>     - Reword commit message
+>     - Use switch instead of if/else
+>     Changes in v2:
+>     - New
+> 
+>  drivers/hwmon/adt7475.c | 23 ++++++++++-------------
+>  1 file changed, 10 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/hwmon/adt7475.c b/drivers/hwmon/adt7475.c
+> index 6de501de41b2..ac480e6e4818 100644
+> --- a/drivers/hwmon/adt7475.c
+> +++ b/drivers/hwmon/adt7475.c
+> @@ -1569,12 +1569,12 @@ static int set_property_bit(const struct i2c_client *client, char *property,
+>  	return ret;
+>  }
 >  
-> -static const struct sc27xx_adc_linear_graph big_scale_graph_calib = {
-> -	4200, 856,
-> -	3600, 733,
-> +/*
-> + * Add the sc2731_[big|small]_scale_graph_calib for sc2731 pmic.
-> + */
-
-Why Add?
-
-Given the variable naming conveys this anyway, I would drop the comment entirely.
-
-> +static const struct sc27xx_adc_linear_graph sc2731_big_scale_graph_calib = {
-> +	4200, 850,
-> +	3600, 728,
->  };
+> -static int load_attenuators(const struct i2c_client *client, int chip,
+> +static int load_attenuators(const struct i2c_client *client, enum chips chip,
+>  			    struct adt7475_data *data)
+>  {
+> -	int ret;
+> -
+> -	if (chip == adt7476 || chip == adt7490) {
+> +	switch (chip) {
+> +	case adt7476:
+> +	case adt7490:
+>  		set_property_bit(client, "adi,bypass-attenuator-in0",
+>  				 &data->config4, 4);
+>  		set_property_bit(client, "adi,bypass-attenuator-in1",
+> @@ -1584,18 +1584,15 @@ static int load_attenuators(const struct i2c_client *client, int chip,
+>  		set_property_bit(client, "adi,bypass-attenuator-in4",
+>  				 &data->config4, 7);
 >  
-> -static const struct sc27xx_adc_linear_graph small_scale_graph_calib = {
-> -	1000, 833,
-> -	100, 80,
-> +static const struct sc27xx_adc_linear_graph sc2731_small_scale_graph_calib = {
-> +	1000, 838,
-> +	100, 84,
->  };
+> -		ret = i2c_smbus_write_byte_data(client, REG_CONFIG4,
+> -						data->config4);
+> -		if (ret < 0)
+> -			return ret;
+> -	} else if (chip == adt7473 || chip == adt7475) {
+> +		return i2c_smbus_write_byte_data(client, REG_CONFIG4,
+> +						 data->config4);
+> +	case adt7473:
+> +	case adt7475:
+>  		set_property_bit(client, "adi,bypass-attenuator-in1",
+>  				 &data->config2, 5);
 >  
->  static int sc27xx_adc_get_calib_data(u32 calib_data, int calib_adc)
-> @@ -130,11 +133,11 @@ static int sc27xx_adc_scale_calibration(struct sc27xx_adc_data *data,
->  	size_t len;
->  
->  	if (big_scale) {
-> -		calib_graph = &big_scale_graph_calib;
-> +		calib_graph = &sc2731_big_scale_graph_calib;
->  		graph = &big_scale_graph;
->  		cell_name = "big_scale_calib";
->  	} else {
-> -		calib_graph = &small_scale_graph_calib;
-> +		calib_graph = &sc2731_small_scale_graph_calib;
->  		graph = &small_scale_graph;
->  		cell_name = "small_scale_calib";
+> -		ret = i2c_smbus_write_byte_data(client, REG_CONFIG2,
+> -						data->config2);
+> -		if (ret < 0)
+> -			return ret;
+> +		return i2c_smbus_write_byte_data(client, REG_CONFIG2,
+> +						 data->config2);
 >  	}
-
+>  
+>  	return 0;
