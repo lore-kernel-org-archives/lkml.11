@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0355C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 16:29:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40A5AC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 16:30:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235276AbiDXQcx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 12:32:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41412 "EHLO
+        id S235319AbiDXQdP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 12:33:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235240AbiDXQcd (ORCPT
+        with ESMTP id S235203AbiDXQcs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 12:32:33 -0400
+        Sun, 24 Apr 2022 12:32:48 -0400
 Received: from mailgw.felk.cvut.cz (mailgw.felk.cvut.cz [147.32.82.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A2F69E9E2;
-        Sun, 24 Apr 2022 09:29:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25A229F39D;
+        Sun, 24 Apr 2022 09:29:48 -0700 (PDT)
 Received: from mailgw.felk.cvut.cz (localhost.localdomain [127.0.0.1])
-        by mailgw.felk.cvut.cz (Proxmox) with ESMTP id 7A27F30B2949;
-        Sun, 24 Apr 2022 18:28:56 +0200 (CEST)
+        by mailgw.felk.cvut.cz (Proxmox) with ESMTP id C9B2730B294C;
+        Sun, 24 Apr 2022 18:29:46 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         cmp.felk.cvut.cz; h=cc:cc:content-transfer-encoding:date:from
-        :from:message-id:mime-version:reply-to:subject:subject:to:to; s=
-        felkmail; bh=rbdws84/pPnNeVWA2UKPTIunpmkpZDaaF/q976N9vt8=; b=psm
-        /M+3k0OMSTqMdnVsNJT2Hi+gAtjzK2pIYp2R4A2ozUuMUieIzMBpH37gm9y+CozB
-        dQuchbPBwmj5vDgAkGjapPy6uWBtkdnOzhI+oht+DmGoY8Uq8tKBVVUzS+6Jy/KR
-        WXqsn2EMSK++0tt83UeDitUzAuCYmB3eXF91ilTU8j6kNlCzTXLfBU9ykBl0PIsU
-        yVy2qPB82mmevBnq4Gpr89KTGDeqtRsJ4s+osR+jcUB5DZi81j9eUxrxsPCRop9p
-        lIGYJL1ORbrrfPuzAxv+QxctDXeKxE3ITPPd/25ipyHvxVTCiUxb9hptB1HTSRai
-        Z3Y/zAibYi1+xasua6Q==
+        :from:in-reply-to:message-id:mime-version:references:reply-to
+        :subject:subject:to:to; s=felkmail; bh=2Oe7LSiwBmNwhJ/UY1qjyHq4V
+        hkxUAYZ7Yp2XEydlQQ=; b=qmVZdLSEVIj2rkS904OFENQayxlVVa10ZOamW+B32
+        Vjj/PaAjnUolrmq1663Bh1NvYjYvG6NJCQ+aJMH8rFHMWUDJdu92WsKtVX9fGAd8
+        YSH09X2rKlYhCVSVnq4oixgjXtbO45NSExTE7etwK0wY9pOvv+NPgxLNzPsmCbhi
+        KDWGIc1JgGLiD15o5YerALJZjDLJRWMeF/qlmsqx7YrpOe3AWpGPs+wUnEB1CpEC
+        aYAIM4+Oe3fXHsTzDFIFdsFfJ0zKRCeerXTOmLHO6lfyTbdIEKOpMTvBuHDDI/ys
+        yAjVBt5Q3+1pZcRclxJKZy0c8Yvoqxnx7dBD1r83+FLGQ==
 Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
-        by mailgw.felk.cvut.cz (Proxmox) with ESMTPS id 04C1230ADC00;
-        Sun, 24 Apr 2022 18:28:56 +0200 (CEST)
+        by mailgw.felk.cvut.cz (Proxmox) with ESMTPS id 6C18930ADC00;
+        Sun, 24 Apr 2022 18:29:46 +0200 (CEST)
 Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
-        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 23OGSteb030890;
-        Sun, 24 Apr 2022 18:28:55 +0200
+        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 23OGTkoh030973;
+        Sun, 24 Apr 2022 18:29:46 +0200
 Received: (from pisa@localhost)
-        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 23OGSou2030886;
-        Sun, 24 Apr 2022 18:28:50 +0200
+        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 23OGTknT030972;
+        Sun, 24 Apr 2022 18:29:46 +0200
 From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
 To:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
         Oliver Hartkopp <socketcan@hartkopp.net>
@@ -51,49 +51,47 @@ Cc:     Wolfgang Grandegger <wg@grandegger.com>,
         Carsten Emde <c.emde@osadl.org>,
         Drew Fustini <pdp7pdp7@gmail.com>,
         Matej Vasilevski <matej.vasilevski@gmail.com>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>,
         Pavel Pisa <pisa@cmp.felk.cvut.cz>
-Subject: [PATCH v1 0/4] can: ctucanfd: clenup acoording to the actual rules and documentation linking
-Date:   Sun, 24 Apr 2022 18:28:07 +0200
-Message-Id: <cover.1650816929.git.pisa@cmp.felk.cvut.cz>
+Subject: [PATCH v1 3/4] can: ctucanfd: Remove unused including <linux/version.h>
+Date:   Sun, 24 Apr 2022 18:28:10 +0200
+Message-Id: <0671ef23de7457202613acf8743540a571103a20.1650816929.git.pisa@cmp.felk.cvut.cz>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <cover.1650816929.git.pisa@cmp.felk.cvut.cz>
+References: <cover.1650816929.git.pisa@cmp.felk.cvut.cz>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The minor problems reported by actual checkpatch.pl and patchwork
-rules has been resolved at price of disable of some debugging
-options used initially to locate FPGA PCIe integration problems.
+From: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 
-The CTU CAN FD IP core driver documentation has been linked
-into CAN drivers index.
+Eliminate the follow versioncheck warning:
 
-The code has been tested on QEMU with CTU CAN FD IP core
-included functional model of PCIe integration.
+./drivers/net/can/ctucanfd/ctucanfd_base.c: 34 linux/version.h not
+needed.
 
-The Linux net-next CTU CAN FD driver has been tested on real Xilinx
-Zynq hardware by Matej Vasilevski even together with his
-timestamp support patches. Preparation for public discussion
-and mainlining is work in progress.
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Signed-off-by: Pavel Pisa <pisa@cmp.felk.cvut.cz>
+---
+ drivers/net/can/ctucanfd/ctucanfd_base.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-Jiapeng Chong (2):
-  can: ctucanfd: Remove unnecessary print function dev_err()
-  can: ctucanfd: Remove unused including <linux/version.h>
-
-Pavel Pisa (2):
-  can: ctucanfd: remove PCI module debug parameters and core debug
-    statements.
-  docs: networking: device drivers: can: add ctucanfd and its author
-    e-mail update
-
- .../can/ctu/ctucanfd-driver.rst               |  2 +-
- .../networking/device_drivers/can/index.rst   |  1 +
- drivers/net/can/ctucanfd/ctucanfd_base.c      | 34 ++-----------------
- drivers/net/can/ctucanfd/ctucanfd_pci.c       | 22 ++++--------
- drivers/net/can/ctucanfd/ctucanfd_platform.c  |  1 -
- 5 files changed, 11 insertions(+), 49 deletions(-)
-
+diff --git a/drivers/net/can/ctucanfd/ctucanfd_base.c b/drivers/net/can/ctucanfd/ctucanfd_base.c
+index a1f6d37fca11..2ada097d1ede 100644
+--- a/drivers/net/can/ctucanfd/ctucanfd_base.c
++++ b/drivers/net/can/ctucanfd/ctucanfd_base.c
+@@ -31,7 +31,6 @@
+ #include <linux/can/error.h>
+ #include <linux/can/led.h>
+ #include <linux/pm_runtime.h>
+-#include <linux/version.h>
+ 
+ #include "ctucanfd.h"
+ #include "ctucanfd_kregs.h"
 -- 
 2.20.1
 
