@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B979EC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 02:41:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 298C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 02:41:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237838AbiDXCor (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 22:44:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40754 "EHLO
+        id S237887AbiDXCot (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 22:44:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237780AbiDXCoA (ORCPT
+        with ESMTP id S237766AbiDXCoB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 22:44:00 -0400
-Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 181E88164C
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 19:40:57 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R851e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0VAzcuah_1650768055;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VAzcuah_1650768055)
+        Sat, 23 Apr 2022 22:44:01 -0400
+Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B287582D01
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 19:41:00 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R531e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0VAzpPKB_1650768057;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VAzpPKB_1650768057)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Sun, 24 Apr 2022 10:40:55 +0800
+          Sun, 24 Apr 2022 10:40:58 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
         Jason Wang <jasowang@redhat.com>,
         virtualization@lists.linux-foundation.org
-Subject: [RFC PATCH 12/16] virtio_ring: packed: extract detach_from_vring_packed()
-Date:   Sun, 24 Apr 2022 10:40:40 +0800
-Message-Id: <20220424024044.94749-13-xuanzhuo@linux.alibaba.com>
+Subject: [RFC PATCH 15/16] virtio_ring: packed: resize support re-use buffers
+Date:   Sun, 24 Apr 2022 10:40:43 +0800
+Message-Id: <20220424024044.94749-16-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.31.0
 In-Reply-To: <20220424024044.94749-1-xuanzhuo@linux.alibaba.com>
 References: <20220424024044.94749-1-xuanzhuo@linux.alibaba.com>
@@ -37,98 +37,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To handle freeing buf from the detached vring, do a split for
-detach_buf_packed().
+Packed vring resize supports reusing the original buffer.
 
-The split function detach_buf_from_vring_packed() is used to release buf
-from vring, and the vq passed in is read-only. All modifications are for
-vring.
-
-In this way, detach_buf_from_vring_packed() becomes a general function,
-which can be used for detach_buf_packed() and also for handling detached
-vrings.
+The packed vring resize function implemented earlier uses the method
+of letting the upper layer recycle all the buffers. This commit will
+first try to re-put it to the new vring in the order submitted to the
+old vring. The remaining buffers that cannot be submitted to the new
+vring will be called the recycle callback to release.
 
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 ---
- drivers/virtio/virtio_ring.c | 36 +++++++++++++++++++++++++-----------
- 1 file changed, 25 insertions(+), 11 deletions(-)
+ drivers/virtio/virtio_ring.c | 22 +++++++++++++++++-----
+ 1 file changed, 17 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index 5e6bd9a4e648..1efb47b88b40 100644
+index 66f71e22ece0..730c8dded4c7 100644
 --- a/drivers/virtio/virtio_ring.c
 +++ b/drivers/virtio/virtio_ring.c
-@@ -1703,28 +1703,28 @@ static bool virtqueue_kick_prepare_packed(struct virtqueue *_vq)
- 	return needs_kick;
+@@ -217,7 +217,6 @@ struct vring_virtqueue {
+ };
+ 
+ static struct vring_desc_extra *vring_alloc_desc_extra(unsigned int num);
+-static void vring_free(struct virtqueue *_vq);
+ 
+ /*
+  * Helpers.
+@@ -2357,11 +2356,13 @@ static struct virtqueue *vring_create_virtqueue_packed(
+ 	return NULL;
  }
  
--static void detach_buf_packed(struct vring_virtqueue *vq,
--			      unsigned int id, void **ctx)
-+static int detach_buf_from_vring_packed(struct vring_virtqueue_packed *vring,
-+					struct vring_virtqueue const *vq,
-+					unsigned int id,
-+					unsigned int free_head,
-+					void **ctx)
+-static int virtqueue_resize_packed(struct virtqueue *_vq, u32 num)
++static int virtqueue_resize_packed(struct virtqueue *_vq, u32 num,
++				   void (*recycle)(struct virtqueue *vq, void *buf))
  {
- 	struct vring_desc_state_packed *state = NULL;
- 	struct vring_packed_desc *desc;
- 	unsigned int i, curr;
+-	struct vring_virtqueue_packed vring = {};
++	struct vring_virtqueue_packed vring = {}, vring_old = {};
+ 	struct vring_virtqueue *vq = to_vvq(_vq);
+ 	struct virtio_device *vdev = _vq->vdev;
++	void *buf;
+ 	int err;
  
--	state = &vq->packed.desc_state[id];
-+	state = &vring->desc_state[id];
+ 	if (vring_alloc_queue_packed(&vring, vdev, num))
+@@ -2371,17 +2372,28 @@ static int virtqueue_resize_packed(struct virtqueue *_vq, u32 num)
+ 	if (err)
+ 		goto err_state_extra;
  
- 	/* Clear data ptr. */
- 	state->data = NULL;
+-	vring_free(&vq->vq);
++	vring_virtqueue_detach_packed(vq, &vring_old);
  
--	vq->packed.desc_extra[state->last].next = vq->free_head;
--	vq->free_head = id;
--	vq->vq.num_free += state->num;
-+	vring->desc_extra[state->last].next = free_head;
+ 	virtqueue_init(vq, vring.vring.num);
+ 	virtqueue_vring_attach_packed(vq, &vring);
+ 	virtqueue_vring_init_packed(vq);
  
- 	if (unlikely(vq->use_dma_api)) {
- 		curr = id;
- 		for (i = 0; i < state->num; i++) {
--			vring_unmap_extra_packed(vq,
--						 &vq->packed.desc_extra[curr]);
--			curr = vq->packed.desc_extra[curr].next;
-+			vring_unmap_extra_packed(vq, &vring->desc_extra[curr]);
-+			curr = vring->desc_extra[curr].next;
- 		}
- 	}
- 
-@@ -1734,10 +1734,10 @@ static void detach_buf_packed(struct vring_virtqueue *vq,
- 		/* Free the indirect table, if any, now that it's unmapped. */
- 		desc = state->indir_desc;
- 		if (!desc)
--			return;
-+			return state->num;
- 
- 		if (vq->use_dma_api) {
--			len = vq->packed.desc_extra[id].len;
-+			len = vring->desc_extra[id].len;
- 			for (i = 0; i < len / sizeof(struct vring_packed_desc);
- 					i++)
- 				vring_unmap_desc_packed(vq, &desc[i]);
-@@ -1747,6 +1747,20 @@ static void detach_buf_packed(struct vring_virtqueue *vq,
- 	} else if (ctx) {
- 		*ctx = state->indir_desc;
- 	}
++	vring_reuse_bufs_packed(vq, &vring_old, recycle);
++	vring_free_packed(&vring_old, vdev);
 +
-+	return state->num;
-+}
+ 	return 0;
+ 
+ err_state_extra:
+ 	vring_free_packed(&vring, vdev);
+ err_ring:
++	/*
++	 * In the case of failure to create vring, do not try to reuse the
++	 * original buffer. Because the probability of this situation is not
++	 * high, but we have to introduce new logic.
++	 */
++	while ((buf = virtqueue_detach_unused_buf(&vq->vq)))
++		recycle(&vq->vq, buf);
 +
-+static void detach_buf_packed(struct vring_virtqueue *vq,
-+			      unsigned int id, void **ctx)
-+{
-+	int num;
-+
-+	num = detach_buf_from_vring_packed(&vq->packed, vq, id, vq->free_head,
-+					   ctx);
-+
-+	vq->free_head = id;
-+	vq->vq.num_free += num;
+ 	virtqueue_reinit_packed(vq);
+ 	return -ENOMEM;
  }
+@@ -2914,7 +2926,7 @@ int virtqueue_resize(struct virtqueue *_vq, u32 num,
+ 		recycle(_vq, buf);
  
- static inline bool is_used_desc_packed(const struct vring_virtqueue *vq,
+ 	if (packed)
+-		err = virtqueue_resize_packed(_vq, num);
++		err = virtqueue_resize_packed(_vq, num, recycle);
+ 	else
+ 		err = virtqueue_resize_split(_vq, num, recycle);
+ 
 -- 
 2.31.0
 
