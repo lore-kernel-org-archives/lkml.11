@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1EE8C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 02:42:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B3EDC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 02:42:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237856AbiDXCpA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 22:45:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40864 "EHLO
+        id S237823AbiDXCpE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 22:45:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237795AbiDXCoB (ORCPT
+        with ESMTP id S237792AbiDXCoB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 23 Apr 2022 22:44:01 -0400
-Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75C9D86E12
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 19:41:01 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0VAzpPKJ_1650768058;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VAzpPKJ_1650768058)
+Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3076C84EE1
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 19:40:58 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0VAzcub1_1650768055;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VAzcub1_1650768055)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Sun, 24 Apr 2022 10:40:59 +0800
+          Sun, 24 Apr 2022 10:40:56 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
         Jason Wang <jasowang@redhat.com>,
         virtualization@lists.linux-foundation.org
-Subject: [RFC PATCH 16/16] virtio_ring: virtqueue_resize() no longer call recycle() directly
-Date:   Sun, 24 Apr 2022 10:40:44 +0800
-Message-Id: <20220424024044.94749-17-xuanzhuo@linux.alibaba.com>
+Subject: [RFC PATCH 13/16] virtio_ring: packed: support copy from vring
+Date:   Sun, 24 Apr 2022 10:40:41 +0800
+Message-Id: <20220424024044.94749-14-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.31.0
 In-Reply-To: <20220424024044.94749-1-xuanzhuo@linux.alibaba.com>
 References: <20220424024044.94749-1-xuanzhuo@linux.alibaba.com>
@@ -37,51 +37,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-virtqueue_resize() no longer calls the recycle callback to release the
-buffer. These bufs are reused by virtqueue_resize_* first, and if they
-cannot be used, the buffers that cannot be reused will be released
+To support reusing old buffers during resize.
+
+This patch implements copying a buffer from the detached vring to the vq
+where the new vring is attached.
+
+This process is similar to virtqueue_add_packed(), but skips DMA. Use
+the function virtqueue_update_packed() provided by the previous patch to
+update the state of the vq.
 
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 ---
- drivers/virtio/virtio_ring.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/virtio/virtio_ring.c | 76 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 76 insertions(+)
 
 diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index 730c8dded4c7..51dab35a54c9 100644
+index 1efb47b88b40..8ca9985ffb4b 100644
 --- a/drivers/virtio/virtio_ring.c
 +++ b/drivers/virtio/virtio_ring.c
-@@ -2895,7 +2895,6 @@ int virtqueue_resize(struct virtqueue *_vq, u32 num,
- 	struct vring_virtqueue *vq = to_vvq(_vq);
- 	struct virtio_device *vdev = vq->vq.vdev;
- 	bool packed;
--	void *buf;
- 	int err;
- 
- 	if (!vq->we_own_ring)
-@@ -2922,16 +2921,19 @@ int virtqueue_resize(struct virtqueue *_vq, u32 num,
- 	if (err)
- 		return err;
- 
--	while ((buf = virtqueue_detach_unused_buf(_vq)) != NULL)
--		recycle(_vq, buf);
--
- 	if (packed)
- 		err = virtqueue_resize_packed(_vq, num, recycle);
- 	else
- 		err = virtqueue_resize_split(_vq, num, recycle);
- 
--	if (vdev->config->enable_reset_vq(_vq))
-+	if (vdev->config->enable_reset_vq(_vq)) {
- 		return -EBUSY;
-+	} else if (!err) {
-+		num = packed ? vq->packed.vring.num : vq->split.vring.num;
-+
-+		if (num != vq->vq.num_free)
-+			virtqueue_kick(_vq);
-+	}
- 
- 	return err;
+@@ -1654,6 +1654,82 @@ static inline int virtqueue_add_packed(struct virtqueue *_vq,
+ 	return -EIO;
  }
+ 
++static u32 vring_copy_desc_packed(struct vring_virtqueue *vq,
++				  u32 idx,
++				  u16 curr,
++				  __le16 *head_flags,
++				  struct vring_virtqueue_packed *vring,
++				  u32 src)
++{
++	u16 old_flags = vring->desc_extra[src].flags;
++	u16 flags = vq->packed.avail_used_flags;
++	struct vring_packed_desc *desc;
++	struct vring_desc_extra *extra;
++
++	if (old_flags & VRING_DESC_F_NEXT)
++		flags |= VRING_DESC_F_NEXT;
++
++	if (old_flags & VRING_DESC_F_WRITE)
++		flags |= VRING_DESC_F_WRITE;
++
++	if (old_flags & VRING_DESC_F_INDIRECT)
++		flags |= VRING_DESC_F_INDIRECT;
++
++	desc = vq->packed.vring.desc + idx;
++	extra = vq->packed.desc_extra + curr;
++
++	if (head_flags)
++		*head_flags = cpu_to_le16(flags);
++	else
++		desc->flags = cpu_to_le16(flags);
++
++	desc->addr = cpu_to_le64(vring->desc_extra[src].addr);
++	desc->len  = cpu_to_le32(vring->desc_extra[src].len);
++	desc->id   = cpu_to_le16(vq->free_head);
++
++	extra->addr  = vring->desc_extra[src].addr;
++	extra->len   = vring->desc_extra[src].len;
++	extra->flags = vring->desc_extra[src].flags;
++
++	return vq->packed.desc_extra[curr].next;
++}
++
++static int vring_copy_to_vq_packed(struct vring_virtqueue *vq,
++				   struct vring_virtqueue_packed *vring,
++				   u32 old_id)
++{
++	struct vring_desc_state_packed *state;
++	__le16 head_flags;
++	u16 prev, curr;
++	u32 i, n;
++
++	state = &vring->desc_state[old_id];
++
++	if (state->num > vq->vq.num_free)
++		return -ENOSPC;
++
++	i = vq->packed.next_avail_idx;
++	curr = vq->free_head;
++
++	for (n = 0; n < state->num; n++) {
++		prev = curr;
++		curr = vring_copy_desc_packed(vq, i, curr,
++					      n ? NULL : &head_flags,
++					      vring, old_id);
++
++		old_id = vring->desc_extra[old_id].next;
++
++		i = next_idx(vq, i);
++	}
++
++	virtqueue_update_packed(vq, state->num, curr, prev, i, head_flags,
++				state->indir_desc, state->data);
++
++	state->data = NULL;
++
++	return state->num;
++}
++
+ static bool virtqueue_kick_prepare_packed(struct virtqueue *_vq)
+ {
+ 	struct vring_virtqueue *vq = to_vvq(_vq);
 -- 
 2.31.0
 
