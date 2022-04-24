@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F4216C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 02:41:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8579C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 02:41:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237394AbiDXCoC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 22:44:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39900 "EHLO
+        id S237769AbiDXCoE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 22:44:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237738AbiDXCnt (ORCPT
+        with ESMTP id S237744AbiDXCnv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 22:43:49 -0400
-Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 253CA7DE3E
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 19:40:49 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0VAzRZYU_1650768047;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VAzRZYU_1650768047)
+        Sat, 23 Apr 2022 22:43:51 -0400
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF9817EA09
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Apr 2022 19:40:51 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0VAzbmr0_1650768049;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VAzbmr0_1650768049)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Sun, 24 Apr 2022 10:40:47 +0800
+          Sun, 24 Apr 2022 10:40:49 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
         Jason Wang <jasowang@redhat.com>,
         virtualization@lists.linux-foundation.org
-Subject: [RFC PATCH 03/16] virtio_ring: split: extract virtqueue_update_split()
-Date:   Sun, 24 Apr 2022 10:40:31 +0800
-Message-Id: <20220424024044.94749-4-xuanzhuo@linux.alibaba.com>
+Subject: [RFC PATCH 05/16] virtio_ring: split: support copy from vring
+Date:   Sun, 24 Apr 2022 10:40:33 +0800
+Message-Id: <20220424024044.94749-6-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.31.0
 In-Reply-To: <20220424024044.94749-1-xuanzhuo@linux.alibaba.com>
 References: <20220424024044.94749-1-xuanzhuo@linux.alibaba.com>
@@ -37,140 +37,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Separate the logic for updating the vq state from virtqueue_add_split().
+To support reusing old buffers during resize.
 
-In this way, when the subsequent patch implements the logic of reusing
-the buffer when resize, we can share this function.
+This patch implements copying a buffer from the detached vring to the vq
+where the new vring is attached.
+
+This process is similar to virtqueue_add_split(), but skips DMA. Use
+the function virtqueue_update_split() provided by the previous patch to
+update the state of the vq.
 
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 ---
- drivers/virtio/virtio_ring.c | 95 ++++++++++++++++++++----------------
- 1 file changed, 54 insertions(+), 41 deletions(-)
+ drivers/virtio/virtio_ring.c | 60 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 60 insertions(+)
 
 diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index f3ad9322b512..6fd45c9a3517 100644
+index aa85058978cb..167442cfdb2a 100644
 --- a/drivers/virtio/virtio_ring.c
 +++ b/drivers/virtio/virtio_ring.c
-@@ -507,6 +507,51 @@ static inline unsigned int virtqueue_add_desc_split(struct virtqueue *vq,
- 	return next;
+@@ -703,6 +703,66 @@ static inline int virtqueue_add_split(struct virtqueue *_vq,
+ 	return -ENOMEM;
  }
  
-+static inline void virtqueue_update_split(struct vring_virtqueue *vq,
-+					  u32 descs_used,
-+					  u32 next,
-+					  struct vring_desc *desc,
-+					  void *data)
++static u32 vring_copy_desc_split(struct vring_virtqueue *vq, u32 i,
++				 struct vring_virtqueue_split *vring,
++				 u32 src)
 +{
-+	struct virtqueue *_vq = &vq->vq;
-+	u32 avail, head;
++	struct vring_desc_extra *extra = vq->split.desc_extra;
++	struct vring_desc *desc = vq->split.vring.desc;
++	u16 next;
 +
-+	head = vq->free_head;
++	desc[i].flags = vring->vring.desc[src].flags;
++	desc[i].addr  = vring->vring.desc[src].addr;
++	desc[i].len   = vring->vring.desc[src].len;
 +
-+	/* We're using some buffers from the free list. */
-+	vq->vq.num_free -= descs_used;
++	next = extra[i].next;
 +
-+	/* Update free pointer */
-+	vq->free_head = next;
++	desc[i].next = cpu_to_virtio16(vq->vq.vdev, next);
 +
-+	/* Store token and indirect buffer state. */
-+	vq->split.desc_state[head].data = data;
-+	vq->split.desc_state[head].indir_desc = desc;
++	extra[i].addr  = vring->desc_extra[src].addr;
++	extra[i].len   = vring->desc_extra[src].len;
++	extra[i].flags = vring->desc_extra[src].flags;
 +
-+	/* Put entry in available array (but don't update avail->idx until they
-+	 * do sync).
-+	 */
-+	avail = vq->split.avail_idx_shadow & (vq->split.vring.num - 1);
-+	vq->split.vring.avail->ring[avail] = cpu_to_virtio16(_vq->vdev, head);
-+
-+	/* Descriptors and available array need to be set before we expose the
-+	 * new available array entries.
-+	 */
-+	virtio_wmb(vq->weak_barriers);
-+	vq->split.avail_idx_shadow++;
-+	vq->split.vring.avail->idx = cpu_to_virtio16(_vq->vdev,
-+						vq->split.avail_idx_shadow);
-+	vq->num_added++;
-+
-+	pr_debug("Added buffer head %i to %p\n", head, vq);
-+
-+	/* This is very unlikely, but theoretically possible.  Kick
-+	 * just in case.
-+	 */
-+	if (unlikely(vq->num_added == (1 << 16) - 1))
-+		virtqueue_kick(_vq);
++	return next;
 +}
 +
- static inline int virtqueue_add_split(struct virtqueue *_vq,
- 				      struct scatterlist *sgs[],
- 				      unsigned int total_sg,
-@@ -519,7 +564,7 @@ static inline int virtqueue_add_split(struct virtqueue *_vq,
++static int vring_copy_to_vq_split(struct vring_virtqueue *vq,
++				  struct vring_virtqueue_split *vring,
++				  u32 old_index)
++{
++	__virtio16 nextflag = cpu_to_virtio16(vq->vq.vdev, VRING_DESC_F_NEXT);
++	struct vring_desc_state_split *state;
++	u32 i, num = 1, old_idx;
++
++	old_idx = old_index;
++	while (vring->vring.desc[old_idx].flags & nextflag) {
++		old_idx = vring->desc_extra[old_idx].next;
++		++num;
++	}
++
++	if (num > vq->vq.num_free)
++		return -ENOSPC;
++
++	i = vq->free_head;
++
++	old_idx = old_index;
++	while (vring->vring.desc[old_idx].flags & nextflag) {
++		i = vring_copy_desc_split(vq, i, vring, old_idx);
++
++		old_idx = vring->desc_extra[old_idx].next;
++	}
++
++	i = vring_copy_desc_split(vq, i, vring, old_idx);
++
++	state = &vring->desc_state[old_index];
++
++	virtqueue_update_split(vq, num, i, state->indir_desc, state->data);
++
++	state->data = NULL;
++
++	return num;
++}
++
+ static bool virtqueue_kick_prepare_split(struct virtqueue *_vq)
+ {
  	struct vring_virtqueue *vq = to_vvq(_vq);
- 	struct scatterlist *sg;
- 	struct vring_desc *desc;
--	unsigned int i, n, avail, descs_used, prev, err_idx;
-+	unsigned int i, n, descs_used, prev, err_idx;
- 	int head;
- 	bool indirect;
- 
-@@ -619,50 +664,18 @@ static inline int virtqueue_add_split(struct virtqueue *_vq,
- 		if (vring_mapping_error(vq, addr))
- 			goto unmap_release;
- 
--		virtqueue_add_desc_split(_vq, vq->split.vring.desc,
--					 head, addr,
--					 total_sg * sizeof(struct vring_desc),
--					 VRING_DESC_F_INDIRECT,
--					 false);
-+		i = virtqueue_add_desc_split(_vq, vq->split.vring.desc,
-+					     head, addr,
-+					     total_sg * sizeof(struct vring_desc),
-+					     VRING_DESC_F_INDIRECT,
-+					     false);
-+	} else {
-+		desc = ctx;
- 	}
- 
--	/* We're using some buffers from the free list. */
--	vq->vq.num_free -= descs_used;
--
--	/* Update free pointer */
--	if (indirect)
--		vq->free_head = vq->split.desc_extra[head].next;
--	else
--		vq->free_head = i;
--
--	/* Store token and indirect buffer state. */
--	vq->split.desc_state[head].data = data;
--	if (indirect)
--		vq->split.desc_state[head].indir_desc = desc;
--	else
--		vq->split.desc_state[head].indir_desc = ctx;
--
--	/* Put entry in available array (but don't update avail->idx until they
--	 * do sync). */
--	avail = vq->split.avail_idx_shadow & (vq->split.vring.num - 1);
--	vq->split.vring.avail->ring[avail] = cpu_to_virtio16(_vq->vdev, head);
--
--	/* Descriptors and available array need to be set before we expose the
--	 * new available array entries. */
--	virtio_wmb(vq->weak_barriers);
--	vq->split.avail_idx_shadow++;
--	vq->split.vring.avail->idx = cpu_to_virtio16(_vq->vdev,
--						vq->split.avail_idx_shadow);
--	vq->num_added++;
--
--	pr_debug("Added buffer head %i to %p\n", head, vq);
-+	virtqueue_update_split(vq, descs_used, i, desc, data);
- 	END_USE(vq);
- 
--	/* This is very unlikely, but theoretically possible.  Kick
--	 * just in case. */
--	if (unlikely(vq->num_added == (1 << 16) - 1))
--		virtqueue_kick(_vq);
--
- 	return 0;
- 
- unmap_release:
 -- 
 2.31.0
 
