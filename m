@@ -2,132 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FA4CC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 14:41:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A92AEC4332F
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 14:43:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239413AbiDXOou (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 10:44:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37852 "EHLO
+        id S239427AbiDXOqX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 10:46:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239395AbiDXOoq (ORCPT
+        with ESMTP id S239410AbiDXOqW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 10:44:46 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EAD6689A9
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 07:41:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650811306; x=1682347306;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=3qakcHWEZbb/tE6ZLoH7UT+OIS/LUOLJ19s9X3V6mpY=;
-  b=AAjLRufFmOwjNIuBMtv/AWFi44zdt+tP+yf2xfDcGNbJCBhp9RpmNsPr
-   plEk45w9AudvqAUfqKBDVpdmAChii8/RUn0C+JvoQFXmhiOByt5XdwrcT
-   U8tnQo6YuWa2AP2Vw61MqSz6eDi2AtX8kwAhAWjeroblzKmCOTI57N0hx
-   qdfPmJyw3+kb/uUZ1liCdpxyMAl11wgx70741wwY1IDmUg5nnW4dg0yU4
-   K2dZsfDsGIC+kwgdcw1I9KmGXDE5hdJxjrUXd+YZneSDsU6rjCh8Hx1Jz
-   YvDsAZ1RKyjadyXR8akWg8sKLzWtpKra6wLkp25nInXEKuClaoATqwXct
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10326"; a="264841045"
-X-IronPort-AV: E=Sophos;i="5.90,286,1643702400"; 
-   d="scan'208";a="264841045"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2022 07:41:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,286,1643702400"; 
-   d="scan'208";a="704223679"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 24 Apr 2022 07:41:42 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nidQk-0001Wr-6u;
-        Sun, 24 Apr 2022 14:41:42 +0000
-Date:   Sun, 24 Apr 2022 22:40:52 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Philipp Hortmann <philipp.g.hortmann@gmail.com>,
-        Forest Bond <forest@alittletooquiet.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org
-Subject: Re: [PATCH 4/5] staging: vt6655: Replace two VNSvInPortD with
- ioread64_lo_hi
-Message-ID: <202204242226.Y6Amb3he-lkp@intel.com>
-References: <db5ba681cea27de815b172f8b93a8fd1efa30e99.1650784817.git.philipp.g.hortmann@gmail.com>
+        Sun, 24 Apr 2022 10:46:22 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09E9E6F4A0
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 07:43:21 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id kq17so1904584ejb.4
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 07:43:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=CUwHn5LcN/jPUon6t5Vp4fHS3jup7Ak+niSGtw8dmg4=;
+        b=dcSGtrlFaEvsDm0BQsAQx/ik8aLhT8jHvXKu+9yuu1m46PPNK89megPvnUCpmrPdAY
+         uv2rMjFy8R3VvjvTU8OR5ROxk0Cmc3HLQCETQHyRFAgr1jdAfUXybB/Qa0bZJjrycUnt
+         1tBeAIrYjqJnQwY3C3PGv8L2mfkYhpGjOmzRFt076jGIQ0RVcApT5sPEb8Qs5PmRC9gX
+         PikG0NEa+r89bL3Tf+tYnG85Ui+vpytwaduIqXXbspIBab7vf/l5Mqtdg4xwsh63j3aU
+         4tkjjMCNzQOT2FDMzut/HKqkiYwd+K0cH09mjZ5P8joJVR1fpDTCjJFrAUclTNS/njmY
+         Zb8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=CUwHn5LcN/jPUon6t5Vp4fHS3jup7Ak+niSGtw8dmg4=;
+        b=iyACr9Nbd0Tp6lc5fP4tUSkpB3XnuH0g8IFiok8ufPKZmExS0PDx3iiR2hwRO4nCTn
+         Qa7NBqMV7YcO2dwqjuh3ASDAXtAG7N9ptROYvMr0efJJqdsrysrf6EOn1xFh8UnRAVPf
+         r+LwiHt/mgPrx0h6i1vY/T08hEsG40Wr0SGV0j03YDcJ8roNtCLH0EdIR0Dnh4Eix4h4
+         8X0Ka9IibSWMfuTdbMsEGvG6jgCG8bn7yrRdpgJFd+sovpXBJW2+ClXDIDN0pMwhNHXr
+         U5V9bND5nALOPrDi3UxDtp8e9ebGkEFEIoeAN0426Bwl8ccTqXy7i5eSp4aQrllXe7bY
+         rN8Q==
+X-Gm-Message-State: AOAM531K8Xou2ijPonl5QDroiNFihAidPL2qPma+hLM+dHK8Yg4yS1MA
+        k0y/ShackvP7n406QiNVaCYMww==
+X-Google-Smtp-Source: ABdhPJxxXjktzPATxGp4cvCDqA3bguvqYj5lfoO1JAHAJSjSFOjey+2nzg73oNdoM5cZTYrjToX/Qg==
+X-Received: by 2002:a17:907:7fac:b0:6ef:e068:f5aa with SMTP id qk44-20020a1709077fac00b006efe068f5aamr5783755ejc.238.1650811399613;
+        Sun, 24 Apr 2022 07:43:19 -0700 (PDT)
+Received: from [192.168.0.235] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id lo15-20020a170906fa0f00b006e8a81cb623sm2667962ejb.224.2022.04.24.07.43.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 24 Apr 2022 07:43:19 -0700 (PDT)
+Message-ID: <5bc96cbd-cc5a-9ddb-4756-9f94324f00a7@linaro.org>
+Date:   Sun, 24 Apr 2022 16:43:18 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <db5ba681cea27de815b172f8b93a8fd1efa30e99.1650784817.git.philipp.g.hortmann@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 2/3] dt-bindings: mailbox: qcom-ipcc: add missing
+ properties into example
+Content-Language: en-US
+To:     David Heidelberg <david@ixit.cz>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+References: <20220424131522.14185-1-david@ixit.cz>
+ <20220424131522.14185-2-david@ixit.cz>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220424131522.14185-2-david@ixit.cz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Philipp,
+On 24/04/2022 15:15, David Heidelberg wrote:
+> These missing required properties are needed for
+> smp2p binding reference checks.
+> 
+> Misc: adjusted examples properties formatting from dtsi.
 
-Thank you for the patch! Yet something to improve:
+I don't get the "misc:" comment. What is it about?
 
-[auto build test ERROR on staging/staging-testing]
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Philipp-Hortmann/staging-vt6655-Replace-macro-VNSvInPortW-D-with-ioread16-32/20220424-154730
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git 1efba7ef1d7da5944493728c5375fef5b2130de4
-config: i386-allmodconfig (https://download.01.org/0day-ci/archive/20220424/202204242226.Y6Amb3he-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 1cddcfdc3c683b393df1a5c9063252eb60e52818)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/6e7e66f536e6d9d9eef8e7786de652b2702e1ee8
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Philipp-Hortmann/staging-vt6655-Replace-macro-VNSvInPortW-D-with-ioread16-32/20220424-154730
-        git checkout 6e7e66f536e6d9d9eef8e7786de652b2702e1ee8
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/staging/vt6655/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/staging/vt6655/card.c:757:16: error: call to undeclared function 'ioread64_lo_hi'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-           *pqwCurrTSF = ioread64_lo_hi(iobase + MAC_REG_TSFCNTR);
-                         ^
-   1 error generated.
-
-
-vim +/ioread64_lo_hi +757 drivers/staging/vt6655/card.c
-
-   730	
-   731	/*
-   732	 * Description: Read NIC TSF counter
-   733	 *              Get local TSF counter
-   734	 *
-   735	 * Parameters:
-   736	 *  In:
-   737	 *      priv         - The adapter to be read
-   738	 *  Out:
-   739	 *      qwCurrTSF       - Current TSF counter
-   740	 *
-   741	 * Return Value: true if success; otherwise false
-   742	 */
-   743	bool CARDbGetCurrentTSF(struct vnt_private *priv, u64 *pqwCurrTSF)
-   744	{
-   745		void __iomem *iobase = priv->port_offset;
-   746		unsigned short ww;
-   747		unsigned char data;
-   748	
-   749		MACvRegBitsOn(iobase, MAC_REG_TFTCTL, TFTCTL_TSFCNTRRD);
-   750		for (ww = 0; ww < W_MAX_TIMEOUT; ww++) {
-   751			data = ioread8(iobase + MAC_REG_TFTCTL);
-   752			if (!(data & TFTCTL_TSFCNTRRD))
-   753				break;
-   754		}
-   755		if (ww == W_MAX_TIMEOUT)
-   756			return false;
- > 757		*pqwCurrTSF = ioread64_lo_hi(iobase + MAC_REG_TSFCNTR);
-   758	
-   759		return true;
-   760	}
-   761	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Best regards,
+Krzysztof
