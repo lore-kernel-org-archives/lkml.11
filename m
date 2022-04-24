@@ -2,125 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A9B4C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 03:27:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54A02C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 03:28:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238036AbiDXDaZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Apr 2022 23:30:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58488 "EHLO
+        id S238041AbiDXDbO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Apr 2022 23:31:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237363AbiDXD3j (ORCPT
+        with ESMTP id S238078AbiDXDak (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Apr 2022 23:29:39 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 730ED105207;
-        Sat, 23 Apr 2022 20:26:36 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id y14so10983003pfe.10;
-        Sat, 23 Apr 2022 20:26:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=dTSKZRhjg25O5C1jlBW1LRl5IUhwoxhhyCVs3jC3lXs=;
-        b=NQEwgIsyvQM+8c91zHJp/VLeFL09cmvrN/vlUyahcrDgfjqF0SOWuHfyKAebhXKaGB
-         8CDfEF/W//rKPtjwmgE/i1SsC8KrAP0TsaHOjEGv/YFAhMkXwQkEcxo7FAaj51MDJciG
-         C+BZE/k+XF1IPrsGNVcTf0u0VgX9jmXoYj7RMJ8gg7I1HtnT+C3y5pO/5gQbaWYWxr4u
-         Mv+yHTv0SJwqegA4QhJW9D6NITCZiLRCumAsqrYAn7mFQnBOOXBd5pA69m4NV7ItlNPt
-         AKTeCQ0KuwivsKU7Sj06o2fF5omHx5+c/CwcDOh/bqTgnjst0d1r6HB5Mz6G/roFBqXn
-         0kiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=dTSKZRhjg25O5C1jlBW1LRl5IUhwoxhhyCVs3jC3lXs=;
-        b=Cj9m7RCmdtALCILFdj5OxyW/l9U90FUJXn4KgJT6jL36RAyFNt5djZXftjqZGMH5WF
-         N1MkK4JNGJaW2jdPYu2qGFPtTvQqjLOYmnhAZbO94opEY9TMFHhphvoWrlzryi1zCXTe
-         efsz2yIRc81JO32HmJwcKSUM3dCu17fxPT0CSn7b/GCp/nA1p5yZECK/+ru1GNzyTs4n
-         CH085KzTIzk1U8PYLF8jWSaXD7c/cQFhBpt8E82JVsCpZBc1v161Q4QhRY2v2dkk2AsD
-         4aAz3kWl97i18kyg25HJuVvrcCqj0O6sfNWOqRG0RFpms8cvqDGqCk1s8gFnMW4t6L2p
-         ektQ==
-X-Gm-Message-State: AOAM532bSx4gj3ego3ww0zNTEFE3663iYr8QTgU3coyGZSPZ7frP0AFH
-        c9E4QAHh8GWHSDPH1CIwKAwzkTfbByBxUzZC
-X-Google-Smtp-Source: ABdhPJwnCkDmNFP2ub0LUJ5XFBOw3WVX1bkBhe4XHDPGH7PdIKzQy9kZ9No2Rbpa1oUDlTX3Rbfi3g==
-X-Received: by 2002:a63:358c:0:b0:39c:c97a:ee80 with SMTP id c134-20020a63358c000000b0039cc97aee80mr9999124pga.7.1650770795849;
-        Sat, 23 Apr 2022 20:26:35 -0700 (PDT)
-Received: from guoguo-omen.lan ([222.201.153.219])
-        by smtp.gmail.com with ESMTPSA id r76-20020a632b4f000000b003820643e1c2sm5790724pgr.59.2022.04.23.20.26.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Apr 2022 20:26:35 -0700 (PDT)
-From:   Chuanhong Guo <gch981213@gmail.com>
-To:     linux-spi@vger.kernel.org
-Cc:     Chuanhong Guo <gch981213@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Roger Quadros <rogerq@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Cai Huoqing <cai.huoqing@linux.dev>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Colin Ian King <colin.king@intel.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Pratyush Yadav <p.yadav@ti.com>, Yu Kuai <yukuai3@huawei.com>,
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE BINDINGS),
-        linux-arm-kernel@lists.infradead.org (moderated list:ARM/Mediatek SoC
-        support),
-        linux-mediatek@lists.infradead.org (moderated list:ARM/Mediatek SoC
-        support), linux-kernel@vger.kernel.org (open list),
-        linux-mtd@lists.infradead.org (open list:NAND FLASH SUBSYSTEM)
-Subject: [PATCH v6 5/5] arm64: dts: mediatek: add mtk-snfi for mt7622
-Date:   Sun, 24 Apr 2022 11:25:27 +0800
-Message-Id: <20220424032527.673605-6-gch981213@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220424032527.673605-1-gch981213@gmail.com>
-References: <20220424032527.673605-1-gch981213@gmail.com>
+        Sat, 23 Apr 2022 23:30:40 -0400
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 542EE1892BA;
+        Sat, 23 Apr 2022 20:27:21 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=shile.zhang@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VB-HW7s_1650770837;
+Received: from 30.225.28.161(mailfrom:shile.zhang@linux.alibaba.com fp:SMTPD_---0VB-HW7s_1650770837)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Sun, 24 Apr 2022 11:27:18 +0800
+Message-ID: <550e9439-adf6-3df8-41a0-9a7ee5447907@linux.alibaba.com>
+Date:   Sun, 24 Apr 2022 11:27:17 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.7.0
+Subject: Re: [PATCH 5.10.y] drm/cirrus: fix a NULL vs IS_ERR() checks
+Content-Language: en-US
+From:   Shile Zhang <shile.zhang@linux.alibaba.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     Wen Kang <kw01107137@alibaba-inc.com>, stable@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+References: <20211228132556.108711-1-shile.zhang@linux.alibaba.com>
+ <YcsWcqVN7Dwue1I2@kroah.com>
+ <f4dedbfc-0cca-a6cb-996b-4bd928008269@linux.alibaba.com>
+ <YcsZqU8M11elHqg3@kroah.com>
+ <1cc25ebe-2c68-458b-15a2-fc4c80ba2054@linux.alibaba.com>
+ <Ycshhu6pXC4Pt1YK@kroah.com>
+ <c74d61a5-31dc-0946-5a35-e1a4cd549b6e@linux.alibaba.com>
+ <YcxjGDxgF+mA7vLY@kroah.com>
+ <ae3ebd93-e3c0-ec2e-24be-07241b558b5e@linux.alibaba.com>
+In-Reply-To: <ae3ebd93-e3c0-ec2e-24be-07241b558b5e@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds a device-tree node for the MTK SPI-NAND Flash Interface
-for MT7622 device tree.
+Hi David and Daniel,
 
-Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
----
-Changes since v1:
-  1. use the newly introduced nand-ecc-engine instead
-  2. reword commit message
-Change in v2-v6: none
+Sorry but could you please help to check this issue?
+Due to the function 'drm_gem_shmem_vmap' could return ERROR pointers 
+which will cause the kernel crash due to 'cirrus_fb_blit_rect' only 
+check the pointer.
 
- arch/arm64/boot/dts/mediatek/mt7622.dtsi | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+Since the related code has been refactoring in mainline, so this issue 
+only happened in stable 5.10.y branch.
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt7622.dtsi b/arch/arm64/boot/dts/mediatek/mt7622.dtsi
-index f232f8baf4e8..8c2563a3919a 100644
---- a/arch/arm64/boot/dts/mediatek/mt7622.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt7622.dtsi
-@@ -545,6 +545,18 @@ nandc: nfi@1100d000 {
- 		status = "disabled";
- 	};
- 
-+	snfi: spi@1100d000 {
-+		compatible = "mediatek,mt7622-snand";
-+		reg = <0 0x1100d000 0 0x1000>;
-+		interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_LOW>;
-+		clocks = <&pericfg CLK_PERI_NFI_PD>, <&pericfg CLK_PERI_SNFI_PD>;
-+		clock-names = "nfi_clk", "pad_clk";
-+		nand-ecc-engine = <&bch>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		status = "disabled";
-+	};
-+
- 	bch: ecc@1100e000 {
- 		compatible = "mediatek,mt7622-ecc";
- 		reg = <0 0x1100e000 0 0x1000>;
--- 
-2.35.1
+@Greg
+I think it is probably not realistic to backport the related refactoring 
+from mainline directly, so I just give this bugfix patch only for 5.10.y 
+branch.
 
+Thanks!
+
+On 2021/12/29 22:51, Shile Zhang wrote:
+> 
+> 
+> On 2021/12/29 21:31, Greg Kroah-Hartman wrote:
+>> On Wed, Dec 29, 2021 at 08:48:53AM +0800, Shile Zhang wrote:
+>>>
+>>>
+>>> On 2021/12/28 22:39, Greg Kroah-Hartman wrote:
+>>>> On Tue, Dec 28, 2021 at 10:19:30PM +0800, Shile Zhang wrote:
+>>>>>
+>>>>>
+>>>>> On 2021/12/28 22:05, Greg Kroah-Hartman wrote:
+>>>>>> On Tue, Dec 28, 2021 at 09:56:25PM +0800, Shile Zhang wrote:
+>>>>>>>
+>>>>>>>
+>>>>>>> On 2021/12/28 21:51, Greg Kroah-Hartman wrote:
+>>>>>>>> On Tue, Dec 28, 2021 at 09:25:56PM +0800, Shile Zhang wrote:
+>>>>>>>>> The function drm_gem_shmem_vmap can returns error pointers as 
+>>>>>>>>> well,
+>>>>>>>>> which could cause following kernel crash:
+>>>>>>>>>
+>>>>>>>>> BUG: unable to handle page fault for address: fffffffffffffffc
+>>>>>>>>> PGD 1426a12067 P4D 1426a12067 PUD 1426a14067 PMD 0
+>>>>>>>>> Oops: 0000 [#1] SMP NOPTI
+>>>>>>>>> CPU: 12 PID: 3598532 Comm: stress-ng Kdump: loaded Not tainted 
+>>>>>>>>> 5.10.50.x86_64 #1
+>>>>>>>>> ...
+>>>>>>>>> RIP: 0010:memcpy_toio+0x23/0x50
+>>>>>>>>> Code: 00 00 00 00 0f 1f 00 0f 1f 44 00 00 48 85 d2 74 28 40 f6 
+>>>>>>>>> c7 01 75 2b 48 83 fa 01 76 06 40 f6 c7 02 75 17 48 89 d1 48 c1 
+>>>>>>>>> e9 02 <f3> a5 f6 c2 02 74 02 66 a5 f6 c2 01 74 01 a4 c3 66 a5 
+>>>>>>>>> 48 83 ea 02
+>>>>>>>>> RSP: 0018:ffffafbf8a203c68 EFLAGS: 00010216
+>>>>>>>>> RAX: 0000000000000000 RBX: fffffffffffffffc RCX: 0000000000000200
+>>>>>>>>> RDX: 0000000000000800 RSI: fffffffffffffffc RDI: ffffafbf82000000
+>>>>>>>>> RBP: ffffafbf82000000 R08: 0000000000000002 R09: 0000000000000000
+>>>>>>>>> R10: 00000000000002b5 R11: 0000000000000000 R12: 0000000000000800
+>>>>>>>>> R13: ffff8a6801099300 R14: 0000000000000001 R15: 0000000000000300
+>>>>>>>>> FS:  00007f4a6bc5f740(0000) GS:ffff8a8641900000(0000) 
+>>>>>>>>> knlGS:0000000000000000
+>>>>>>>>> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>>>>>>>>> CR2: fffffffffffffffc CR3: 00000016d3874001 CR4: 00000000003606e0
+>>>>>>>>> Call Trace:
+>>>>>>>>>      drm_fb_memcpy_dstclip+0x5e/0x80 [drm_kms_helper]
+>>>>>>>>>      cirrus_fb_blit_rect.isra.0+0xb7/0xe0 [cirrus]
+>>>>>>>>>      cirrus_pipe_update+0x9f/0xa8 [cirrus]
+>>>>>>>>>      drm_atomic_helper_commit_planes+0xb8/0x220 [drm_kms_helper]
+>>>>>>>>>      drm_atomic_helper_commit_tail+0x42/0x80 [drm_kms_helper]
+>>>>>>>>>      commit_tail+0xce/0x130 [drm_kms_helper]
+>>>>>>>>>      drm_atomic_helper_commit+0x113/0x140 [drm_kms_helper]
+>>>>>>>>>      drm_client_modeset_commit_atomic+0x1c4/0x200 [drm]
+>>>>>>>>>      drm_client_modeset_commit_locked+0x53/0x80 [drm]
+>>>>>>>>>      drm_client_modeset_commit+0x24/0x40 [drm]
+>>>>>>>>>      drm_fbdev_client_restore+0x48/0x85 [drm_kms_helper]
+>>>>>>>>>      drm_client_dev_restore+0x64/0xb0 [drm]
+>>>>>>>>>      drm_release+0xf2/0x110 [drm]
+>>>>>>>>>      __fput+0x96/0x240
+>>>>>>>>>      task_work_run+0x5c/0x90
+>>>>>>>>>      exit_to_user_mode_loop+0xce/0xd0
+>>>>>>>>>      exit_to_user_mode_prepare+0x6a/0x70
+>>>>>>>>>      syscall_exit_to_user_mode+0x12/0x40
+>>>>>>>>>      entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>>>>>>>>> RIP: 0033:0x7f4a6bd82c2b
+>>>>>>>>>
+>>>>>>>>> Fixes: ab3e023b1b4c9 ("drm/cirrus: rewrite and modernize driver.")
+>>>>>>>>>
+>>>>>>>>> CC: stable@vger.kernel.org
+>>>>>>>>> Reported-by: Wen Kang <kw01107137@alibaba-inc.com>
+>>>>>>>>> Signed-off-by: Shile Zhang <shile.zhang@linux.alibaba.com>
+>>>>>>>>> ---
+>>>>>>>>>      drivers/gpu/drm/tiny/cirrus.c | 2 +-
+>>>>>>>>>      1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>>>>>
+>>>>>>>> What is the git commit id of this patch in Linus's tree?
+>>>>>>>
+>>>>>>> Sorry, I checked that this issue seems fixed by the improvement 
+>>>>>>> in following
+>>>>>>> series:
+>>>>>>> https://patchwork.freedesktop.org/series/82217/
+>>>>>>
+>>>>>> I do not understand, that is a huge patch series.  What individual
+>>>>>> commit in Linus's tree resolves this?
+>>>>>
+>>>>> Sorry,
+>>>>> 1. This crash only happened in 5.10.y tree now, which fixed in 
+>>>>> Linus's tree
+>>>>> by refactoring in above huge series.
+>>>>
+>>>> Which specific patch resolved the issue?
+>>>>
+>>>>> 2. It's hard to get the individual commit to fix this issue from that
+>>>>> series. So I try to send this simple fix help to fix only for 
+>>>>> 5.10.y, which
+>>>>> is needless to Linus's tree.
+>>>>
+>>>> 'git bisect' should be able to help you out.
+>>>
+>>> Thanks for your guidance!
+>>>
+>>>>
+>>>>> 3. If this patch is not OK for stable tree, Could you please help to
+>>>>> backport the correct fix from Linus's tree in next version of 5.10.y?
+>>>>
+>>>> If you can provide the commit id of the fix, sure.
+>>>
+>>> Thanks!
+>>> I think it is this commit, which refactor the drm_gem_shmem_vmap 
+>>> makes the
+>>> pointer returned by new added parameter.
+>>> https://github.com/torvalds/linux/commit/49a3f51dfeeecb52c5aa28c5cb9592fe5e39bf95 
+>>>
+>>
+>> Have you tested it to be sure?  If so, can you please provide a
+>> backported version that works?  As-is, it does not apply at all.
+> 
+> Yes, we've tested that the mainline code fixed this issue.
+> But sorry, I have not backported the bugfix from mainline due to that a 
+> huge series for code refactoring, with more dependencies an conflicts.
+> 
+> So I just work out a simple patch help to fix the crash.
+> 
+>>
+>> Note, if this is to bit of a change for a stable tree (and I think it
+>> is), your original patch might be correct, but I need some acks from the
+>> subsystem maintainers before I can take such a thing.  I also need a lot
+>> of documentation in the changelog text about why this is a 5.10-only
+>> thing.
+> 
+> Since the original guilty commit (ab3e023b1b4c9) merge in 5.2-rc1, and 
+> Thomas's refactoring series (49a3f51dfee) just merged in 5.11-rc1. So 
+> this issue only happened in stable 5.4 & 5.10 only.
+> 
+> @David @Daniel
+> Could you guys also help to check this crash issue?
+> 
+> Thanks all!
+> 
+>>
+>> thanks,
+>>
+>> greg k-h
