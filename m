@@ -2,80 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 847FEC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 16:44:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81D02C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 16:49:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235808AbiDXQrd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 12:47:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41618 "EHLO
+        id S235858AbiDXQwF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 12:52:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232795AbiDXQrZ (ORCPT
+        with ESMTP id S229486AbiDXQwE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 12:47:25 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E152AA88AA;
-        Sun, 24 Apr 2022 09:44:23 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        Sun, 24 Apr 2022 12:52:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B23EC13E3B;
+        Sun, 24 Apr 2022 09:49:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 4798122205;
-        Sun, 24 Apr 2022 18:44:21 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1650818661;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jXfsHUGKTURUo7Q7QC4akzndTGBjfMtiuq9NMiwlIeg=;
-        b=rLwy+jwYNz5i1xoSWFINcDYAntlYfK+ZChasNk+xMu1+3v1XbYAvnCGEQv8zq2aHYkjE/L
-        ZRZraXFOq0HszlQl5CWBdvI4bIQ7kZ0NzBWipNecd/h6+/TuxuMsG0OFGRl7v/ex3PEEtS
-        vnEltJM4KLeCv+0Fi3lXnTpeUbCGJU0=
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Sun, 24 Apr 2022 18:44:20 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Jean Delvare <jdelvare@suse.com>, Rob Herring <robh+dt@kernel.org>,
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 433D9611B4;
+        Sun, 24 Apr 2022 16:49:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A5FEC385A9;
+        Sun, 24 Apr 2022 16:49:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650818942;
+        bh=77Pl2K8NTUry4sZCW3/QnIlnyl6J6z/j1k9mYvZOCNA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kdsEauZAbdyOaUz5DthJxSnOJEmeWAVplJlacmyj7v9YOhXxwSJ3QNDBaZ/DZGTPn
+         iyVQZjm1gYG9Hvn602mhdq4OZ0OhiGn1TmvhAJM4D3Hu0bv4nfxSjxufJzWMoCNDTn
+         flAFp7ovZxhBqPmRwDO6tt4UidF9y+8T+oeD//grWD9TO28cL9yjgA+ceTV6KAz2Lw
+         CdzSt9Of5Wj3JDItjTyltDEodBdgV8clKz+B5WeE6yDMgAV4DV5TK064aY7Ldxug4o
+         ydao8O9k6Dt27TZs+t4NU3WY2rzbn046Wiv2rOuPAIvFS8i0wga8FmIwT+U39xN9SK
+         YvVQvYFTFMsAg==
+Date:   Sun, 24 Apr 2022 17:57:10 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Arnaud Ferraris <arnaud.ferraris@collabora.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 4/4] hwmon: add driver for the Microchip LAN966x SoC
-In-Reply-To: <82834494-dec7-b827-2910-f7823cb48561@roeck-us.net>
-References: <20220401214032.3738095-1-michael@walle.cc>
- <20220401214032.3738095-5-michael@walle.cc>
- <82834494-dec7-b827-2910-f7823cb48561@roeck-us.net>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <47f81dbfb160abba385b98069fe0d06a@walle.cc>
-X-Sender: michael@walle.cc
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@collabora.com
+Subject: Re: [PATCH v2 0/2] iio: stk3310: Export near level property for
+ proximity sensor
+Message-ID: <20220424175710.0453ab11@jic23-huawei>
+In-Reply-To: <20220420112540.91907-1-arnaud.ferraris@collabora.com>
+References: <20220420112540.91907-1-arnaud.ferraris@collabora.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-04-24 18:38, schrieb Guenter Roeck:
-> On 4/1/22 14:40, Michael Walle wrote:
->> Add support for the temperatur sensor and the fan controller on the
->> Microchip LAN966x SoC. Apparently, an Analog Bits PVT sensor is used
->> which can measure temperature and process voltages. But only a 
->> forumlae
->> for the temperature sensor is known. Additionally, the SoC support a 
->> fan
->> tacho input as well as a PWM signal to control the fan.
->> 
->> Signed-off-by: Michael Walle <michael@walle.cc>
-> 
-> For my reference:
-> 
-> Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-> 
-> I'll apply as soon as the devicetree file has been approved.
+On Wed, 20 Apr 2022 13:25:38 +0200
+Arnaud Ferraris <arnaud.ferraris@collabora.com> wrote:
 
-Thanks! Could you please make a stable branch with this series the
-hwmon_sanatize_names() series [1] so I can ask the netdev guys to
-merge it?
+> Userspace tools like iio-sensor-proxy need to be instructed the value from
+> which they should consider an object is "near". This threshold can be
+> exported through the sysfs ABI based on the "proximity-near-level"
+> device-tree property.
+> 
+> This patchset implements this property for the stk3310 driver and adds the
+> necessary bits to export its value to userspace. It is based on similar
+> changes applied to the vcnl4000 and ltr501 drivers.
+> 
+Series applied to the togreg branch of iio.git and pushed out as testing for
+0-day to work it's magic.
 
--michael
+Thanks,
 
-[1] 
-https://lore.kernel.org/linux-hwmon/20220405092452.4033674-1-michael@walle.cc/
+Jonathan
+
+> Changes in v2:
+>   - drop zero-assignment as the variable won't be modified if DT property
+>     is missing
+> 
+> Arnaud Ferraris (2):
+>   dt-bindings: iio: light: stk33xx: Add proximity-near-level
+>   iio: stk3310: Export near level property for proximity sensor
+> 
+>  .../bindings/iio/light/stk33xx.yaml           |  6 +++++
+>  drivers/iio/light/stk3310.c                   | 25 +++++++++++++++++++
+>  2 files changed, 31 insertions(+)
+> 
+
