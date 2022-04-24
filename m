@@ -2,151 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D1A7C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 08:49:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC75EC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 08:50:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238724AbiDXIwE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 04:52:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36000 "EHLO
+        id S238733AbiDXIxU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 04:53:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238692AbiDXIwC (ORCPT
+        with ESMTP id S237601AbiDXIxR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 04:52:02 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21D971773F1;
-        Sun, 24 Apr 2022 01:49:01 -0700 (PDT)
-X-UUID: 58c3337572634859b511d0737ffff2b5-20220424
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:4471379d-6c90-4a20-9a38-c1f0b68a0825,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:faefae9,CLOUDID:e0b9bcf0-da02-41b4-b6df-58f4ccd36682,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: 58c3337572634859b511d0737ffff2b5-20220424
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-        (envelope-from <jason-jh.lin@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 605543717; Sun, 24 Apr 2022 16:48:56 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Sun, 24 Apr 2022 16:48:55 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 24 Apr
- 2022 16:48:54 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sun, 24 Apr 2022 16:48:54 +0800
-Message-ID: <a0b90deb9d30fe331493f5fbe8e67a97b698fe49.camel@mediatek.com>
-Subject: Re: [PATCH v20 2/8] soc: mediatek: add mtk-mutex support for mt8195
- vdosys0
-From:   Jason-JH Lin <jason-jh.lin@mediatek.com>
-To:     Matthias Brugger <matthias.bgg@gmail.com>,
-        CK Hu <ck.hu@mediatek.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-CC:     Nancy Lin <nancy.lin@mediatek.com>,
-        Singo Chang <singo.chang@mediatek.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Sun, 24 Apr 2022 16:48:54 +0800
-In-Reply-To: <074d8c26-3fb7-bee1-d559-7ce96f583fee@gmail.com>
-References: <20220419094143.9561-1-jason-jh.lin@mediatek.com>
-         <20220419094143.9561-3-jason-jh.lin@mediatek.com>
-         <82cc5e6900138e13ed9d75c6d2a42c6d7afc1959.camel@mediatek.com>
-         <c3de9ccb314316b5296b115dd3e9f8171577489f.camel@mediatek.com>
-         <074d8c26-3fb7-bee1-d559-7ce96f583fee@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Sun, 24 Apr 2022 04:53:17 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B3821EAE1;
+        Sun, 24 Apr 2022 01:50:16 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id g20so15177588edw.6;
+        Sun, 24 Apr 2022 01:50:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pSeVxZ7kFGybIVIVrBXvwtctttqQblAdAr2j0viXYNA=;
+        b=aukjRI/5KCMQTzkPd19KIyPbTyUf0ZA/YZ1GLvemCzic3DvYYjMVirH5qMtR7rgyta
+         vCVzb+ANU3LrzBCTusfG7ydBMZLWBP0f9MyP+0tQwyY1EfCDcY+ipSMaie6NP5XiGlRe
+         AUSKBx3vVW0g99i7TQNCNg5hoDZqEUluAjLnrjDrg2Gue/HSL39DB9iOBBjhHODZIpr2
+         RLPrpzzxEuXZHkDBk03eFAYGhdUs+0c8geLCrBsnQrE89C3pc2HNhhMF1AWTFLFKYD2b
+         2J9g/FEVML8LWPkgmUq0RljlySLR0Hv0esSVVPkbvOzMwsOYN/2+s0PRqdBb2Kc9GHVl
+         oaJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pSeVxZ7kFGybIVIVrBXvwtctttqQblAdAr2j0viXYNA=;
+        b=hYyoAUorTRrroufp8nkK8p8tYD1OP8U4/P3A5hkGa5dwSfJ0v3gwukC8m70mB4jAWO
+         ZqDmq0XcKzVDX/gNvNM+ll6qGZ1TeA6ADFNAtsM/sbxUiIU0QzNRDvzYy0m+GTQmFP8r
+         M4zqp61yeMP+KYfYFnkG0Q1C1KkkZB/paFGeRYWmDOqsre/ciZaKxfSz/BgBWicHuMO4
+         UN6+A13y0xZa9kgr3SpTVryXMKJUr16M3m3IaQUvVXrGPu6yxK/6V7tLZs3gmRgPyP7J
+         HIK0/MncFtcrHKkfPlbw//qsQLDj41x9wxx2HxvrzFVNrZGFH27JZu+z7I2arbX74T5p
+         fHww==
+X-Gm-Message-State: AOAM533xAcqElzzTI+01/Iu4O4DBlmoWU3nhye+AxrzA+gS6LILnn9Y1
+        3ft3sOTeYpfHmfqox+uT9clrqN8yjnFz6AwMP7Q=
+X-Google-Smtp-Source: ABdhPJykDiz0AzVaoaUs4aHkau3AAtDAZ/ewV87Q1XEIBzcMj6OlpB+UYSoFWakcVx5TXsbYw/LJFw==
+X-Received: by 2002:a05:6402:e85:b0:41d:121b:f436 with SMTP id h5-20020a0564020e8500b0041d121bf436mr13518567eda.121.1650790214813;
+        Sun, 24 Apr 2022 01:50:14 -0700 (PDT)
+Received: from localhost.localdomain ([138.199.7.245])
+        by smtp.gmail.com with ESMTPSA id gy10-20020a170906f24a00b006e894144707sm2435971ejb.53.2022.04.24.01.50.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Apr 2022 01:50:14 -0700 (PDT)
+From:   Yassine Oudjana <yassine.oudjana@gmail.com>
+X-Google-Original-From: Yassine Oudjana <y.oudjana@protonmail.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Sam Shih <sam.shih@mediatek.com>, Ryder Lee <ryder.lee@kernel.org>,
+        devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Yassine Oudjana <y.oudjana@protonmail.com>,
+        Yassine Oudjana <yassine.oudjana@gmail.com>
+Subject: [PATCH v2 0/3] dt-bindings: arm: mediatek: Convert some docs to DT schema
+Date:   Sun, 24 Apr 2022 12:46:44 +0400
+Message-Id: <20220424084647.76577-1-y.oudjana@protonmail.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Matthias,
+From: Yassine Oudjana <y.oudjana@protonmail.com>
 
-Thanks for the reviews.
+This series includes DT schema conversions for topckgen, apmixedsys
+and infracfg bindings.
 
-On Fri, 2022-04-22 at 14:31 +0200, Matthias Brugger wrote:
-> 
-> On 22/04/2022 04:32, Jason-JH Lin wrote:
-> > Hi CK,
-> > 
-> > Thanks for the reviews.
-> > 
-> > On Thu, 2022-04-21 at 14:50 +0800, CK Hu wrote:
-> > > Hi, Jason:
-> > > 
-> > > On Tue, 2022-04-19 at 17:41 +0800, jason-jh.lin wrote:
-> > > > Add mtk-mutex support for mt8195 vdosys0.
-> > > > 
-> > > > Signed-off-by: jason-jh.lin <jason-jh.lin@mediatek.com>
-> > > > Acked-by: AngeloGioacchino Del Regno <
-> > > > angelogioacchino.delregno@collabora.com>
-> > > > Tested-by: Fei Shao <fshao@chromium.org>
-> > > > ---
-> > > >   drivers/soc/mediatek/mtk-mutex.c | 87
-> > > > ++++++++++++++++++++++++++++++--
-> > > >   1 file changed, 84 insertions(+), 3 deletions(-)
-> > > > 
-> > > > diff --git a/drivers/soc/mediatek/mtk-mutex.c
-> > > > b/drivers/soc/mediatek/mtk-mutex.c
-> > > > index aaf8fc1abb43..729ee88035ed 100644
-> > > > --- a/drivers/soc/mediatek/mtk-mutex.c
-> > > > +++ b/drivers/soc/mediatek/mtk-mutex.c
-> > > > @@ -17,6 +17,9 @@
-> > > >   #define MT8183_MUTEX0_MOD0			0x30
-> > > >   #define MT8183_MUTEX0_SOF0			0x2c
-> > > >   
-> > > > +#define MT8195_DISP_MUTEX0_MOD0			0x30
-> > > > +#define MT8195_DISP_MUTEX0_SOF			0x2c
-> > > 
-> > > This is identical to mt8183, so use mt8183 one instead of
-> > > creating
-> > > new
-> > > one.
-> > > 
-> > > Regards,
-> > > CK
-> > > 
-> > 
-> > I'll fix this in the next version.
-> 
-> Please send this as a follow-up fix on top of:
-> 
-https://urldefense.com/v3/__https://git.kernel.org/pub/scm/linux/kernel/git/matthias.bgg/linux.git/log/?h=v5.18-next*soc__;Lw!!CTRNKA9wMg0ARbw!0QzNDaejnt54R86SL628fJ9p2BKTOmYBnoz6uPz9X8WsHXeQi3rqPAXmPFRBcw1vEtUu$
->  
-> 
-> Regards,
-> Matthias
-> 
-OK, I'll send the fix-up patch soon.
+Changes since v1:
+- Move mediatek,topckgen.yaml and mediatek,apmixedsys.yaml to ../bindings/clock/
+- Remove items from first enums in topckgen and apmixedsys schemas
+- Mention headers with clock and reset values in all schema descriptions
+- Add clock framework maintainers to topckgen and apmixedsys schemas
+- Rename node name in infracfg example to clock-controller
 
-Regards,
-Jason-JH.Lin
+Yassine Oudjana (3):
+  dt-bindings: arm: mediatek: topckgen: Convert to DT schema
+  dt-bindings: arm: mediatek: apmixedsys: Convert to DT schema
+  dt-bindings: arm: mediatek: infracfg: Convert to DT schema
 
-> > 
-> > Regards,
-> > Jason-JH.Lin.
-> > > > 
-> > > >   
-> > > > +static const struct mtk_mutex_data mt8195_mutex_driver_data =
-> > > > {
-> > > > +	.mutex_mod = mt8195_mutex_mod,
-> > > > +	.mutex_sof = mt8195_mutex_sof,
-> > > > +	.mutex_mod_reg = MT8195_DISP_MUTEX0_MOD0,
-> > > > +	.mutex_sof_reg = MT8195_DISP_MUTEX0_SOF,
-> > > > +};
-> > > > +
-> > > >   
-> > > 
-> > > 
+ .../arm/mediatek/mediatek,apmixedsys.txt      | 35 --------
+ .../arm/mediatek/mediatek,infracfg.txt        | 42 ----------
+ .../arm/mediatek/mediatek,infracfg.yaml       | 81 +++++++++++++++++++
+ .../arm/mediatek/mediatek,topckgen.txt        | 35 --------
+ .../bindings/clock/mediatek,apmixedsys.yaml   | 61 ++++++++++++++
+ .../bindings/clock/mediatek,topckgen.yaml     | 61 ++++++++++++++
+ 6 files changed, 203 insertions(+), 112 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,apmixedsys.txt
+ delete mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.txt
+ create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.yaml
+ delete mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,topckgen.txt
+ create mode 100644 Documentation/devicetree/bindings/clock/mediatek,apmixedsys.yaml
+ create mode 100644 Documentation/devicetree/bindings/clock/mediatek,topckgen.yaml
+
 -- 
-Jason-JH Lin <jason-jh.lin@mediatek.com>
+2.36.0
 
