@@ -2,100 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B033C4332F
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 16:04:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66EA2C43217
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 16:05:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233327AbiDXQHK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 12:07:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56036 "EHLO
+        id S233374AbiDXQIL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 12:08:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231513AbiDXQHI (ORCPT
+        with ESMTP id S233453AbiDXQIG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 12:07:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 558547B127;
-        Sun, 24 Apr 2022 09:04:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 11F0FB80DD4;
-        Sun, 24 Apr 2022 16:04:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44783C385A9;
-        Sun, 24 Apr 2022 16:04:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650816244;
-        bh=g8dkPhiULK/SVyEdnpRLy5JR9O4qchMC2KRkj1DVmx0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=OdmrwaqhoK/HFNPQYlIIJDmZbLgVG9fZJG28WGp3SXEV1c6F3+qBQ5enRuBAykzWl
-         x8fvbxJWOHCoM7QIeiUJPyDMI+W7GrN/1CYA5Xg030L5M0FZFhbvHCmwNnUQ5VZHjp
-         Ayr40WNb7fI0t/4Zx+VbFHPYHN0Dg7oLnc+Nx6Loe1Ui3/g9c1FZmuH/9vf7LnadXW
-         9OpZ+jq4hQ7oso3NQ6RjwoP75gRbG7hzZMlrC9a2+TstaCSsO+7Z/nvj7K89OAJ6Pp
-         uANpriusle4YSoHmomU8kudET++FHffsJCWBMgIKEzX8RaAPuW2FB0ztulaYSofCkO
-         kRZkhVSfBZckA==
-Date:   Sun, 24 Apr 2022 17:12:12 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Slawomir Stepien <sst@poczta.fm>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: iio: Fix incorrect compatible strings in
- examples
-Message-ID: <20220424171212.6d247854@jic23-huawei>
-In-Reply-To: <20220422192039.2590548-1-robh@kernel.org>
-References: <20220422192039.2590548-1-robh@kernel.org>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Sun, 24 Apr 2022 12:08:06 -0400
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22B43111;
+        Sun, 24 Apr 2022 09:05:03 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id BD6055C0186;
+        Sun, 24 Apr 2022 12:05:00 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Sun, 24 Apr 2022 12:05:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
+         s=fm2; t=1650816300; x=1650902700; bh=2ifXnimlzF9mOdaX4RxX8QFk2
+        i4QWGOnS3cijNufVA8=; b=d137+bSzS0+tF9O+osV5Tv2wyLZiivoaOn8z0C9wP
+        xXNii2ALeOMvCBmFkfdshnvpeF0eFHPXCB5xpEstCRwfEgsjq3j97hEW3vBs7fKc
+        H5PaCpnevQo6d2SO1sJlUBn6zxHM3nYEkDnVeit6FSCs/z+88dciUksbpXVEFnvK
+        lakuTSjXajideD7JD1QMXmwj+yjCbeOX3c+lI3hqJ/uOJhFCg3C+3+kq8uhlDypf
+        QZRkzdGIkthNHZeaXjG4SqCWHEY5tF043jH9wSBQEOyOY6SvcROpd/5U1L53+BPo
+        9sYAXnxDU4TSli4ZkhlUZRi65g78lKUL+wWByi89tfVbw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :from:from:in-reply-to:message-id:mime-version:reply-to:sender
+        :subject:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender
+        :x-me-sender:x-sasl-enc; s=fm1; t=1650816300; x=1650902700; bh=2
+        ifXnimlzF9mOdaX4RxX8QFk2i4QWGOnS3cijNufVA8=; b=kLp2w4rRwVpIPY9+v
+        6hFxwaK/HK/a6pBIhan5JnscVB7+9ZyzLMYaLuAhrJHgfwliQJXS58m0PBlprxTJ
+        H6ZtEGAOmjDpDN7ohg+h+iPRbB7Sc2RkXHQG3HPrSNVwKdwTrbR1V2QTE1QUuQTW
+        Y3G6C0kubTHtvqgxyD2YKzBp3raofQLZKEaAlgDscAqoT7xIcY+NfixR5XfRwp2n
+        +6X4TbQOjOQF4AfT7yCObd/fhPxloHNlp6rr0WRBAL4YgFmIQTjdYDrOqeJBTkxS
+        p30Ry0qnWTORpXOgAFmZ7QpHNc4npavrvCpl5n4PM6oN3r0EzH1k/7asTPqxWB+E
+        yEGMg==
+X-ME-Sender: <xms:LHVlYt4Kg9pvfDUlHsR2LWF1d-yl2aTLo9qUOypa4JY4EAiDzYamcA>
+    <xme:LHVlYq4wLZbNK01UreXSlvl19fAB-LTQLKvF0NzVVP4tn7UadTJTdTh3qQdlV1iLJ
+    5dBcjorjsTUgkWnKQ>
+X-ME-Received: <xmr:LHVlYkdmwkbx6NwwZ4lwXZZbVDzi7NUt-hykOWlgjGJw2Q6reU0V-JTd6ed_lg1bfraRcnxDEx0rouByAwCVm9sXikxTpRDnQXG7rfuSS5JKrU5LvSbq5EOvj7pBThB8exGsJw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrtdelgdelkecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgvlhcu
+    jfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtffrrg
+    htthgvrhhnpeevudeigeekledvgfevlefgueelkeduieelveejfffhjefggeelfefhteej
+    gfegvdenucffohhmrghinhepmhgvghhouhhsrdgtohhmnecuvehluhhsthgvrhfuihiivg
+    eptdenucfrrghrrghmpehmrghilhhfrhhomhepshgrmhhuvghlsehshhholhhlrghnugdr
+    ohhrgh
+X-ME-Proxy: <xmx:LHVlYmLCAOkgwA6N4So1xDAz8eg89QFp0DNwwOkA2CB9XLcEju4FBg>
+    <xmx:LHVlYhKUkk6FRjNocK_e5KOaYLdNZZ9BENjDbgHrfaeDR3vRrp_R2g>
+    <xmx:LHVlYvzT78IM3O9klLki2Up6yCucdVKf8SWiqEgAM3cJl9IcXtQYbQ>
+    <xmx:LHVlYp_jYFlkmDWhMLRhChYyUsqZlTiS9ssPCXDxgazQoibrlIprJw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 24 Apr 2022 12:04:59 -0400 (EDT)
+From:   Samuel Holland <samuel@sholland.org>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        linux-input@vger.kernel.org
+Cc:     Rob Herring <robh+dt@kernel.org>, Ondrej Jirman <x@xff.cz>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Samuel Holland <samuel@sholland.org>
+Subject: [PATCH v3 0/4] Pine64 PinePhone keyboard support
+Date:   Sun, 24 Apr 2022 11:04:53 -0500
+Message-Id: <20220424160458.60370-1-samuel@sholland.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 22 Apr 2022 14:20:39 -0500
-Rob Herring <robh@kernel.org> wrote:
+This series adds support for the official keyboard case for the Pine64
+PinePhone and PinePhone Pro. This accessory contains a keyboard MCU and
+an IP5209 power bank IC. The keyboard MCU firmware[0] is free software.
+It exposes the keyboard scan matrix over I2C, and also provides commands
+for SMBus access to the IP5209. In order to keep the IP5209 driver
+(CONFIG_IP5XXX_POWER) generic, this is modeled as a child I2C bus.
 
-> Fix a couple of examples using incorrect compatible strings.
-> 
-> Signed-off-by: Rob Herring <robh@kernel.org>
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+[0]: https://megous.com/git/pinephone-keyboard/about/
 
-or I can pick these up through IIO if preferred.
+Changes in v3:
+ - Replace unevaluatedProperties with additionalProperties
+ - Rename i2c-bus to i2c
 
-Thanks,
+Changes in v2:
+ - Drop keymap DT properties
+ - Add vbat-supply property
+ - Fix missing key release events when FN state changes
+ - Add VBAT consumer to ensure enough power is available for the MCU
+ - Use a single fixed-size, fixed-contents keymap for both layers
 
-Jonathan
+Samuel Holland (4):
+  dt-bindings: input: Add the PinePhone keyboard binding
+  Input: pinephone-keyboard - Add PinePhone keyboard driver
+  Input: pinephone-keyboard - Support the proxied I2C bus
+  [DO NOT MERGE] arm64: dts: allwinner: pinephone: Add keyboard
 
-> ---
->  Documentation/devicetree/bindings/iio/dac/lltc,ltc2632.yaml     | 2 +-
->  .../bindings/iio/potentiometer/microchip,mcp4131.yaml           | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/dac/lltc,ltc2632.yaml b/Documentation/devicetree/bindings/iio/dac/lltc,ltc2632.yaml
-> index edf804d0aca2..b1eb77335d05 100644
-> --- a/Documentation/devicetree/bindings/iio/dac/lltc,ltc2632.yaml
-> +++ b/Documentation/devicetree/bindings/iio/dac/lltc,ltc2632.yaml
-> @@ -68,7 +68,7 @@ examples:
->        #size-cells = <0>;
->  
->        dac@0 {
-> -        compatible = "lltc,ltc2632";
-> +        compatible = "lltc,ltc2632-l12";
->          reg = <0>;    /* CS0 */
->          spi-max-frequency = <1000000>;
->          vref-supply = <&vref>;
-> diff --git a/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp4131.yaml b/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp4131.yaml
-> index 945a2d644ddc..32e92bced81f 100644
-> --- a/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp4131.yaml
-> +++ b/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp4131.yaml
-> @@ -95,7 +95,7 @@ examples:
->          #size-cells = <0>;
->  
->          potentiometer@0 {
-> -            compatible = "mcp4131-502";
-> +            compatible = "microchip,mcp4131-502";
->              reg = <0>;
->              spi-max-frequency = <500000>;
->          };
+ .../input/pine64,pinephone-keyboard.yaml      |  66 +++
+ MAINTAINERS                                   |   6 +
+ .../dts/allwinner/sun50i-a64-pinephone.dtsi   |  18 +
+ drivers/input/keyboard/Kconfig                |  10 +
+ drivers/input/keyboard/Makefile               |   1 +
+ drivers/input/keyboard/pinephone-keyboard.c   | 438 ++++++++++++++++++
+ 6 files changed, 539 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/input/pine64,pinephone-keyboard.yaml
+ create mode 100644 drivers/input/keyboard/pinephone-keyboard.c
+
+-- 
+2.35.1
 
