@@ -2,113 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47209C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 13:09:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFBF2C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 13:15:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232889AbiDXNL7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 09:11:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40448 "EHLO
+        id S233897AbiDXNSp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 09:18:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229880AbiDXNL5 (ORCPT
+        with ESMTP id S233876AbiDXNSn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 09:11:57 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 735B321818
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 06:08:56 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        Sun, 24 Apr 2022 09:18:43 -0400
+Received: from ixit.cz (ip-94-112-206-30.net.upcbroadband.cz [94.112.206.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 317A514005;
+        Sun, 24 Apr 2022 06:15:39 -0700 (PDT)
+Received: from localhost.localdomain (unknown [185.14.232.186])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KmT432ncHz4xLb;
-        Sun, 24 Apr 2022 23:08:51 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-        s=201909; t=1650805731;
-        bh=aD20Ip6O0k4ur0B2dS9sPY/ZrzmWmmRTAz9tDJoSTE8=;
-        h=From:To:Cc:Subject:Date:From;
-        b=W3XW05/8eCCvEe2qhydOVID0LEjQT05ZwmU9KuRH8FhcCtfs3wceZJO22ej56/sSy
-         8VS3VId1vBE0uEiJ97oV3hn3A6DdGYth0DrWfi6hvuJNa6dd2VFnWtfj+7Eg+sLpx4
-         rYTBXYzDbq/MrVI+LkaMPyOQfWncI9lehShYcZCoF7E6ZfgWWigUpOpx2LM3kAJorX
-         JrWq+No3WnEpK11Q5A2V+tCP+BTs7p1Nf7NuovW9gOZYk7hmT6eBhEWICAShHh4cuE
-         /HXV1A25ANAyaIj3uqVqel3INcy8vdVssOELgE2BbXW51rHRSMlLHhThL2yeon+v6u
-         mo7YvutK35KZQ==
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     aik@ozlabs.ru, atrajeev@linux.vnet.ibm.com,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [GIT PULL] Please pull powerpc/linux.git powerpc-5.18-3 tag
-Date:   Sun, 24 Apr 2022 23:08:48 +1000
-Message-ID: <87ilqy8w7z.fsf@mpe.ellerman.id.au>
+        by ixit.cz (Postfix) with ESMTPSA id A14C724CD1;
+        Sun, 24 Apr 2022 15:15:37 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ixit.cz; s=dkim;
+        t=1650806137;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QvNIByDPWVlUgq4sXqZW7DEkdiTU/qc8abTFhlUfzbA=;
+        b=mGzbTnEIMiQMC4UseBr6IXSQT4mFg7LjQ0reaGagczg/On51YrH9Xsv2x4q/umcFjQhM+j
+        3jPTNIdOmIZ93RzsbgjSFfvPxr0KBZICwnzlH+RnFhptDy3WQYGWLvI8lBYsL3jS6viFGv
+        w6yswJEq2bt+2HjM2LXkImhk9kY7W5M=
+From:   David Heidelberg <david@ixit.cz>
+To:     Manivannan Sadhasivam <mani@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     David Heidelberg <david@ixit.cz>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: [PATCH v2 2/3] dt-bindings: mailbox: qcom-ipcc: add missing properties into example
+Date:   Sun, 24 Apr 2022 15:15:20 +0200
+Message-Id: <20220424131522.14185-2-david@ixit.cz>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220424131522.14185-1-david@ixit.cz>
+References: <20220424131522.14185-1-david@ixit.cz>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA256
+These missing required properties are needed for
+smp2p binding reference checks.
 
-Hi Linus,
+Misc: adjusted examples properties formatting from dtsi.
 
-Please pull some more powerpc fixes for 5.18:
+Signed-off-by: David Heidelberg <david@ixit.cz>
+---
+ .../devicetree/bindings/mailbox/qcom-ipcc.yaml        | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-The following changes since commit ce522ba9ef7e2d9fb22a39eb3371c0c64e2a433e:
+diff --git a/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml b/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml
+index 866efb278813..d573d555f4c6 100644
+--- a/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml
++++ b/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml
+@@ -75,9 +75,14 @@ examples:
+ 
+         smp2p-modem {
+                 compatible = "qcom,smp2p";
+-                interrupts-extended = <&ipcc_mproc IPCC_CLIENT_MPSS
+-                                IPCC_MPROC_SIGNAL_SMP2P IRQ_TYPE_EDGE_RISING>;
+-                mboxes = <&ipcc_mproc IPCC_CLIENT_MPSS IPCC_MPROC_SIGNAL_SMP2P>;
++                qcom,smem = <443>, <429>;
++                interrupts-extended = <&ipcc IPCC_CLIENT_LPASS
++                                             IPCC_MPROC_SIGNAL_SMP2P
++                                             IRQ_TYPE_EDGE_RISING>;
++                mboxes = <&ipcc IPCC_CLIENT_LPASS
++                                IPCC_MPROC_SIGNAL_SMP2P>;
+ 
++                qcom,local-pid = <0>;
++                qcom,remote-pid = <2>;
+                 /* Other SMP2P fields */
+         };
+-- 
+2.35.1
 
-  Linux 5.18-rc2 (2022-04-10 14:21:36 -1000)
-
-are available in the git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/powerpc/linux.git tags/powerpc-5.18-3
-
-for you to fetch changes up to bb82c574691daf8f7fa9a160264d15c5804cb769:
-
-  powerpc/perf: Fix 32bit compile (2022-04-21 23:26:47 +1000)
-
-- ------------------------------------------------------------------
-powerpc fixes for 5.18 #3
-
- - Partly revert a change to our timer_interrupt() that caused lockups with high res
-   timers disabled.
-
- - Fix a bug in KVM TCE handling that could corrupt kernel memory.
-
- - Two commits fixing Power9/Power10 perf alternative event selection.
-
-Thanks to: Alexey Kardashevskiy, Athira Rajeev, David Gibson, Frederic Barrat, Madhavan
-Srinivasan, Miguel Ojeda, Nicholas Piggin.
-
-- ------------------------------------------------------------------
-Alexey Kardashevskiy (2):
-      KVM: PPC: Fix TCE handling for VFIO
-      powerpc/perf: Fix 32bit compile
-
-Athira Rajeev (2):
-      powerpc/perf: Fix power9 event alternatives
-      powerpc/perf: Fix power10 event alternatives
-
-Michael Ellerman (1):
-      powerpc/time: Always set decrementer in timer_interrupt()
-
-
- arch/powerpc/kernel/time.c          | 29 ++++++-------
- arch/powerpc/kvm/book3s_64_vio.c    | 45 ++++++++++----------
- arch/powerpc/kvm/book3s_64_vio_hv.c | 44 +++++++++----------
- arch/powerpc/perf/Makefile          |  4 +-
- arch/powerpc/perf/power10-pmu.c     |  2 +-
- arch/powerpc/perf/power9-pmu.c      |  8 ++--
- 6 files changed, 66 insertions(+), 66 deletions(-)
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEJFGtCPCthwEv2Y/bUevqPMjhpYAFAmJlSSoACgkQUevqPMjh
-pYDAkA/7BkoLPd4V9VwBu847BkwK6Dd15b2Qu71y0ieF0xzDzG8pkOEjpk5gCVmd
-DV17CXSeX8t9ppDcKp82tLtuTnBIDjpZVtoKBALvzxB8tgErTp1CemwRcnlu+ILT
-Y5K/tioe+Y6V07HKcDefLIJrtt73IpHUV7GighPtbah0a/HNLB6+zx6HENzR2vKS
-G5ccs+FDbVgStRxw1tzWSH9JiAC7AznRJTWjA7XDiMcRva4t4qoZHSVU32H6Tlis
-fCQfIwyhyppxS5MizZx45qkumy5oJggdXhb2r7g1Wl7jeSAVPldY/S7Fq3UU8usa
-e2k5ZyUGWVSKZxGAlY7v6h6SwAhs28fspA/+tI0pvSH9a8knBkHk8H8bHlnORKkv
-j6zx1hx3qdD2BnVstEEwdiZzWrff6LwfaEytNfC1Fri7yVTkZoZVGihMKyCGHftB
-7TmRMIg99WsEx8xNNDGelaEePyRhCPGHgrB0oEHrmCzJVi3a4IiVwGcaLZdYUekG
-oEFwcyXz4mStftyS5qV/NhFSHMgum9CuTjV8fi2pqN9fFVcPoDEXoGyaSzji9UDf
-AOIP1NXJMZZGgXAN5rusjRJ9zfyFkzLcRcLPjMUqRtKaDJD86LyGPgvxh+gR8ky4
-8IzPHbwbYt6fMcDXkFjiS5Ks+x0ZfKkL5R7HbHNqyyKYWUSZxK0=
-=21WF
------END PGP SIGNATURE-----
