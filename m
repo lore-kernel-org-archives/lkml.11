@@ -2,98 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF4EBC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 17:38:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB8D6C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 17:40:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236800AbiDXRlG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 13:41:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43732 "EHLO
+        id S236829AbiDXRm7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 13:42:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229539AbiDXRlF (ORCPT
+        with ESMTP id S229539AbiDXRmz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 13:41:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F86D888DC;
-        Sun, 24 Apr 2022 10:38:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D3C25B80EB5;
-        Sun, 24 Apr 2022 17:38:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4E88C385A7;
-        Sun, 24 Apr 2022 17:37:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650821881;
-        bh=OZ3ZNwAjJ99XyonwrsvaeBt7eMtJuk8ZKZXR950meuU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=BDYPqfuZADYQJjCnehGftjbJlt/dAcf26kTVgjZvLZGCbZbE1/vJ+j1zHiYAR7xJ7
-         +LW8cx1jXeOovrdrDXTmTSA0KrzQFj23HJ0FY2vZxy1Xfe94QSy2ZzLtzId98LCTvd
-         ++CWOBaiqiInRIxyPL2FiSqK361v01RX858l7u3CP8U/l4SExEK2Uy8zrCKR6CriFn
-         5QqPzIre0vyMAGx0ovVgIITkYQHyed+2OGBZqalr7mHUPWNxigbnbLKJXs7zFzwMyP
-         fPsjxdBbZ/Yco8PnAJECmwDpzv9e3Dhizc0ENe4JG0kQ3nV1PkcmFIEO66bDyKVFua
-         KdXsnZodl8VAA==
-Date:   Sun, 24 Apr 2022 18:46:06 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Lars-Peter Clausen <lars@metafoo.de>
-Cc:     Andrea Merello <andrea.merello@gmail.com>,
-        mchehab+huawei@kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        robh+dt@kernel.org, andy.shevchenko@gmail.com,
-        matt.ranostay@konsulko.com, ardeleanalex@gmail.com,
-        jacopo@jmondi.org, Andrea Merello <andrea.merello@iit.it>
-Subject: Re: [v4 10/14] iio: document "serial_number" sysfs attribute
-Message-ID: <20220424184606.571b3764@jic23-huawei>
-In-Reply-To: <4a940702-8a34-c163-2e5a-8dfd835e56d0@metafoo.de>
-References: <20220415130005.85879-1-andrea.merello@gmail.com>
-        <20220415130005.85879-11-andrea.merello@gmail.com>
-        <4a940702-8a34-c163-2e5a-8dfd835e56d0@metafoo.de>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Sun, 24 Apr 2022 13:42:55 -0400
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89C4A15CE92
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 10:39:54 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id EF9375C0195;
+        Sun, 24 Apr 2022 13:39:53 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Sun, 24 Apr 2022 13:39:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
+         s=fm2; t=1650821993; x=1650908393; bh=Q0fUmUpjk4ehqpKV88l8lG4g2
+        rimPdp92Zdhdby1yW4=; b=OM3WFx/ewbae8l4vvMBR5e8scIiEXmBxc+KVStoeg
+        DnvG4pcfR98whawG9yjdx9N6Hp0hvKO9KqIQjXGIdAZkbLaSYOPguqJiyZokOBb8
+        ehqilgugAbz//ndHt82lOf1mCmXgvywDmqeDcrfy5fWnjLWWeyZSBoaN6h0vooTv
+        hnKqbnTbzEALhqN8eteNXPFuMq4URhRJRv6PwbUHRfh2HthuN7JvsXTH3RA/M/9+
+        2fayKpQ/radeJLaQtlw9GTCv946mUolvi6nqc+e0cfNCZNZq1wXvQQWHgCdleXiv
+        ll+0r1rOvNqV6sZCANDo3M9s+K6l+snXFBG1n1ABfWqXg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :from:from:in-reply-to:message-id:mime-version:reply-to:sender
+        :subject:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender
+        :x-me-sender:x-sasl-enc; s=fm1; t=1650821993; x=1650908393; bh=Q
+        0fUmUpjk4ehqpKV88l8lG4g2rimPdp92Zdhdby1yW4=; b=KSHXLk4dO5MlF12Bs
+        mZG0zdiMxeR1LsktTdF5Imu66EapGffyF9U3feFOL84J+y68JRtNhEWGjIEA2x6z
+        DT/0ttrRhIvgBgznJJDvenX0+GAjtuTwDpMB87ZBdppibEWxXim7hkp99eu97UVz
+        qbb9L2H/45ldFxZHEi91gQyg92aMSKiqsFbl13SwdToVblLpXU4gSpOzGSq9I75g
+        2O8BjA1QwXlyV9gjErwYZSmlAdVehiEP6stey6BigmJD1lmKQB5RPWUaPcmy7lYX
+        gdrcwIfisOWbz9U/QrDD+8k6Ac+m7S21Ual4EA8X4v1NvYUBF+Q+LqEfJj1IHOSw
+        XAN7g==
+X-ME-Sender: <xms:aYtlYlvdZw1X3u2hn4yQhhhk4ScV-tSOAFgjzkzvC4qhC6B7NR9Qcw>
+    <xme:aYtlYucd80ehnAhsyB2uwuvq-M3p5n5LAAJnk8t9DT82aOC_4PLVrLawBVMueZioM
+    Yjm-fdZuNaruWpb5w>
+X-ME-Received: <xmr:aYtlYoydteku-Mu4Rbv8VUhIsR079UjTRo70elw0s78MZIRPTHFgMC6IIwlN83t7ZM2IKRCwaoE-fUOSPN1CHt3pdzorY0brVgl7y3j47ZvTMsjY5GwLuWHlh5FXbS_gh2vJ_w>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrtdelgdduudekucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhephffvvefufffkofgggfestdekredtredttdenucfhrhhomhepufgrmhhuvghl
+    ucfjohhllhgrnhguuceoshgrmhhuvghlsehshhholhhlrghnugdrohhrgheqnecuggftrf
+    grthhtvghrnhepkeevlefhjeeuleeltedvjedvfeefteegleehueejffehgffffeekhefh
+    hfekkeegnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
+    epshgrmhhuvghlsehshhholhhlrghnugdrohhrgh
+X-ME-Proxy: <xmx:aYtlYsNI05f252_LVUXM317n4k3HnCDUqjIILoDpnEBkdG_Sbvzy5w>
+    <xmx:aYtlYl_xXOJ58XgvY4nhomk_VQPiVb0z9u6NwXVZZXJmNIKPZTj2vA>
+    <xmx:aYtlYsW76EjvBZbE6G0C3paZpmlRGmK-3d6-TZKL4pGs5MJ9-z2ehQ>
+    <xmx:aYtlYuPvC0pKqnoFI6R3usONzZWt5c8rqLKTJLz-9Biz8wp_VSBUpA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 24 Apr 2022 13:39:53 -0400 (EDT)
+From:   Samuel Holland <samuel@sholland.org>
+To:     Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>
+Cc:     Samuel Holland <samuel@sholland.org>,
+        kernel test robot <lkp@intel.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev
+Subject: [PATCH] irqchip/sun6i-r: Use NULL for chip_data
+Date:   Sun, 24 Apr 2022 12:39:51 -0500
+Message-Id: <20220424173952.36591-1-samuel@sholland.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 19 Apr 2022 09:41:54 +0200
-Lars-Peter Clausen <lars@metafoo.de> wrote:
+sparse complains about using an integer as a NULL pointer.
 
-> On 4/15/22 15:00, Andrea Merello wrote:
-> > From: Andrea Merello <andrea.merello@iit.it>
-> >
-> > This patch adds ABI documentation for the new "serial_number" sysfs
-> > attribute. The first user is the bno055 IIO driver.
-> >
-> > Signed-off-by: Andrea Merello <andrea.merello@iit.it>
-> > ---
-> >   Documentation/ABI/testing/sysfs-bus-iio | 7 +++++++
-> >   1 file changed, 7 insertions(+)
-> >
-> > diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> > index 2a6954ea1c71..3be613f64843 100644
-> > --- a/Documentation/ABI/testing/sysfs-bus-iio
-> > +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> > @@ -2048,3 +2048,10 @@ Contact:	linux-iio@vger.kernel.org
-> >   Description:
-> >   		Raw (unscaled) euler angles readings. Units after
-> >   		application of scale are deg.
-> > +
-> > +What:		/sys/bus/iio/devices/iio:deviceX/serial_number  
-> 
-> Can we make this `serialnumber`? IIO uses underscores to separate 
-> different parts of the name and to a machine (e.g. libiio) serial_number 
-> looks like a channel called serial with an attribute called number.
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+---
 
-Works for me.
+ drivers/irqchip/irq-sun6i-r.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-J
-> 
-> 
-> > +KernelVersion:	5.19
-> > +Contact:	linux-iio@vger.kernel.org
-> > +Description:
-> > +		An example format is 16-bytes, 2-digits-per-byte, HEX-string
-> > +		representing the sensor unique ID number.  
-> 
-> 
+diff --git a/drivers/irqchip/irq-sun6i-r.c b/drivers/irqchip/irq-sun6i-r.c
+index 4cd3e533740b..a01e44049415 100644
+--- a/drivers/irqchip/irq-sun6i-r.c
++++ b/drivers/irqchip/irq-sun6i-r.c
+@@ -249,11 +249,13 @@ static int sun6i_r_intc_domain_alloc(struct irq_domain *domain,
+ 	for (i = 0; i < nr_irqs; ++i, ++hwirq, ++virq) {
+ 		if (hwirq == nmi_hwirq) {
+ 			irq_domain_set_hwirq_and_chip(domain, virq, hwirq,
+-						      &sun6i_r_intc_nmi_chip, 0);
++						      &sun6i_r_intc_nmi_chip,
++						      NULL);
+ 			irq_set_handler(virq, handle_fasteoi_ack_irq);
+ 		} else {
+ 			irq_domain_set_hwirq_and_chip(domain, virq, hwirq,
+-						      &sun6i_r_intc_wakeup_chip, 0);
++						      &sun6i_r_intc_wakeup_chip,
++						      NULL);
+ 		}
+ 	}
+ 
+-- 
+2.35.1
 
