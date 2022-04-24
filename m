@@ -2,126 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30AF7C4332F
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 17:20:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC0A1C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Apr 2022 17:20:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236372AbiDXRXd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 13:23:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59462 "EHLO
+        id S236421AbiDXRX5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 13:23:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236289AbiDXRXb (ORCPT
+        with ESMTP id S236289AbiDXRXz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 13:23:31 -0400
+        Sun, 24 Apr 2022 13:23:55 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC42250E3F;
-        Sun, 24 Apr 2022 10:20:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 510B65675F;
+        Sun, 24 Apr 2022 10:20:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 640EE611E8;
-        Sun, 24 Apr 2022 17:20:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A896C385A7;
-        Sun, 24 Apr 2022 17:20:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 19ECE611DE;
+        Sun, 24 Apr 2022 17:20:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32ED0C385A7;
+        Sun, 24 Apr 2022 17:20:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650820828;
-        bh=DwMMsZyJAKsQaSinOfX7JygHjnby7hXYQAkvC+fxrtU=;
+        s=k20201202; t=1650820852;
+        bh=8YAkiDCHNS9PdDSByTQ12GIjlNhj3SzM6u+5fNxbJO0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=BbIylMDYZoeuM6RGcFhQ/Weq5g63gJPu61zr4MpPG2UfpgwfraIV/Y2sWj3HwfZCT
-         TBGC0jfPzmMHmarufxH0ORdLkqMVfnKcjBuj7V2YSeU+vgorF+BDY4pvJwVIYhvCLO
-         VvouuVn/vMKPnjS+lhFWIq/3mXDqezbh7qyWtbbVGO6lj/4qoO1K1MKZezi3jK2U7R
-         JLeTGihAiT6UeLyC0JNxLPJaFugvwn/Yv3DkkzZcTr/tVPmrNOHaDFLJsAv1Lqi2fq
-         fn1nkWt2aatyVfAoYcnaxfyxB+4jxhX5WBPS9lNdesu70Z8vnFgN422FBEZOsPqOlS
-         xKi4bCr22FKXA==
-Date:   Sun, 24 Apr 2022 18:28:34 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Cixi Geng <gengcixi@gmail.com>
-Cc:     lars@metafoo.de, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, orsonzhai@gmail.com,
-        baolin.wang7@gmail.com, zhang.lyra@gmail.com,
-        yuming.zhu1@unisoc.com, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V4 3/7] iio: adc: Fine tune the scale calibration values
-Message-ID: <20220424182834.1d8b5d7e@jic23-huawei>
-In-Reply-To: <20220424180147.02d3c8ca@jic23-huawei>
-References: <20220419142458.884933-1-gengcixi@gmail.com>
-        <20220419142458.884933-4-gengcixi@gmail.com>
-        <20220424180147.02d3c8ca@jic23-huawei>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        b=YKQ5u6j6e5I5Oog+kDMGmMr9uNIdmteV8T84bSi60THEFgfwCVfnMfukav2R3rMSe
+         hb7A6oRKc5XLbqzAbUwGEBkyxg67ytcaGZ7UqP5lHohQARzzzqPLPxGObMli4olfzE
+         RjbxRkbwYsykQ8KL3T4VNvJ7XLpdNfaXw/n88bODDbSnK7JyHD/vBqZblaJBXFIT+C
+         KiWu1JbznqX2Uwn4wu/2af6sN7rg94QMvEMewiDOXwK9mHZfX5dZwyf7Lj9CdxyQob
+         xPCpWPrTYW0z83wyRUypkQ0E1qNnciMAr18tvbTkxUt3HUniIYXLxg8991za+bR3sP
+         mcIuUk02voFgw==
+Date:   Sun, 24 Apr 2022 19:20:46 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Nathan Rossi <nathan@nathanrossi.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH v2] net: dsa: mv88e6xxx: Fix port_hidden_wait to account
+ for port_base_addr
+Message-ID: <20220424192046.6f77655a@thinkpad>
+In-Reply-To: <20220424153143.323338-1-nathan@nathanrossi.com>
+References: <20220424153143.323338-1-nathan@nathanrossi.com>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 24 Apr 2022 18:01:47 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Sun, 24 Apr 2022 15:31:43 +0000
+Nathan Rossi <nathan@nathanrossi.com> wrote:
 
-> On Tue, 19 Apr 2022 22:24:54 +0800
-> Cixi Geng <gengcixi@gmail.com> wrote:
-> 
-> > From: Cixi Geng <cixi.geng1@unisoc.com>
-> > 
-> > Small adjustment the scale calibration value for the sc2731,
-> > use new name sc2731_[big|small]_scale_graph_calib, and remove
-> > the origin [big|small]_scale_graph_calib struct for unused.
-> > 
-> > Fixes: 8ba0dbfd07a35 (iio: adc: sc27xx: Add ADC scale calibration)  
-> No blank line here.
-> > 
-> > Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
-> > ---
-> >  drivers/iio/adc/sc27xx_adc.c | 19 +++++++++++--------
-> >  1 file changed, 11 insertions(+), 8 deletions(-)
-> > 
-> > diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
-> > index aee076c8e2b1..24211d2a71b1 100644
-> > --- a/drivers/iio/adc/sc27xx_adc.c
-> > +++ b/drivers/iio/adc/sc27xx_adc.c
-> > @@ -103,14 +103,17 @@ static struct sc27xx_adc_linear_graph small_scale_graph = {
-> >  	100, 341,
-> >  };
-> >  
-> > -static const struct sc27xx_adc_linear_graph big_scale_graph_calib = {
-> > -	4200, 856,
-> > -	3600, 733,
-> > +/*
-> > + * Add the sc2731_[big|small]_scale_graph_calib for sc2731 pmic.
-> > + */  
-> 
-> Why Add?
-> 
-> Given the variable naming conveys this anyway, I would drop the comment entirely.
+> The other port_hidden functions rely on the port_read/port_write
+> functions to access the hidden control port. These functions apply the
+> offset for port_base_addr where applicable. Update port_hidden_wait to
+> use the port_wait_bit so that port_base_addr offsets are accounted for
+> when waiting for the busy bit to change.
+>=20
+> Without the offset the port_hidden_wait function would timeout on
+> devices that have a non-zero port_base_addr (e.g. MV88E6141), however
+> devices that have a zero port_base_addr would operate correctly (e.g.
+> MV88E6390).
+>=20
+> Fixes: ea89098ef9a5 ("net: dsa: mv88x6xxx: mv88e6390 errata")
+> Signed-off-by: Nathan Rossi <nathan@nathanrossi.com>
+> ---
+> Changes in v2:
+> - Add fixes
+> ---
+>  drivers/net/dsa/mv88e6xxx/port_hidden.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/net/dsa/mv88e6xxx/port_hidden.c b/drivers/net/dsa/mv=
+88e6xxx/port_hidden.c
+> index b49d05f0e1..7a9f9ff6de 100644
+> --- a/drivers/net/dsa/mv88e6xxx/port_hidden.c
+> +++ b/drivers/net/dsa/mv88e6xxx/port_hidden.c
+> @@ -40,8 +40,9 @@ int mv88e6xxx_port_hidden_wait(struct mv88e6xxx_chip *c=
+hip)
+>  {
+>  	int bit =3D __bf_shf(MV88E6XXX_PORT_RESERVED_1A_BUSY);
+> =20
+> -	return mv88e6xxx_wait_bit(chip, MV88E6XXX_PORT_RESERVED_1A_CTRL_PORT,
+> -				  MV88E6XXX_PORT_RESERVED_1A, bit, 0);
+> +	return mv88e6xxx_port_wait_bit(chip,
+> +				       MV88E6XXX_PORT_RESERVED_1A_CTRL_PORT,
+> +				       MV88E6XXX_PORT_RESERVED_1A, bit, 0);
+>  }
+> =20
+>  int mv88e6xxx_port_hidden_read(struct mv88e6xxx_chip *chip, int block, i=
+nt port,
 
-I dropped the comment whilst applying and added sc27xx to the patch title prefix.
-> 
-> > +static const struct sc27xx_adc_linear_graph sc2731_big_scale_graph_calib = {
-> > +	4200, 850,
-> > +	3600, 728,
-> >  };
-> >  
-> > -static const struct sc27xx_adc_linear_graph small_scale_graph_calib = {
-> > -	1000, 833,
-> > -	100, 80,
-> > +static const struct sc27xx_adc_linear_graph sc2731_small_scale_graph_calib = {
-> > +	1000, 838,
-> > +	100, 84,
-> >  };
-> >  
-> >  static int sc27xx_adc_get_calib_data(u32 calib_data, int calib_adc)
-> > @@ -130,11 +133,11 @@ static int sc27xx_adc_scale_calibration(struct sc27xx_adc_data *data,
-> >  	size_t len;
-> >  
-> >  	if (big_scale) {
-> > -		calib_graph = &big_scale_graph_calib;
-> > +		calib_graph = &sc2731_big_scale_graph_calib;
-> >  		graph = &big_scale_graph;
-> >  		cell_name = "big_scale_calib";
-> >  	} else {
-> > -		calib_graph = &small_scale_graph_calib;
-> > +		calib_graph = &sc2731_small_scale_graph_calib;
-> >  		graph = &small_scale_graph;
-> >  		cell_name = "small_scale_calib";
-> >  	}  
-> 
-
+Reviewed-by: Marek Beh=C3=BAn <kabel@kernel.org>
