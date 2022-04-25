@@ -2,76 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D107DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 07:34:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4161C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 07:35:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235798AbiDYHhN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 03:37:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36498 "EHLO
+        id S235020AbiDYHh7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 03:37:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229785AbiDYHhK (ORCPT
+        with ESMTP id S240233AbiDYHhs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 03:37:10 -0400
+        Mon, 25 Apr 2022 03:37:48 -0400
 Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F1D1DEBD
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 00:34:07 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KmxZL2yNhzfb7r;
-        Mon, 25 Apr 2022 15:33:14 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0863DEDA
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 00:34:44 -0700 (PDT)
+Received: from kwepemi500016.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kmxb322vHzfb6c;
+        Mon, 25 Apr 2022 15:33:51 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi500016.china.huawei.com (7.221.188.220) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 25 Apr 2022 15:33:55 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 25 Apr
- 2022 15:33:54 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <alsa-devel@alsa-project.org>,
-        <linux-arm-kernel@lists.infradead.org>
-CC:     <arnd@arndb.de>, <robert.jarzmik@free.fr>
-Subject: [PATCH -next] ARM: pxa: pxa2xx-ac97-lib: fix return value check of platform_get_irq()
-Date:   Mon, 25 Apr 2022 15:45:59 +0800
-Message-ID: <20220425074559.2436002-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+ 15.1.2375.24; Mon, 25 Apr 2022 15:34:41 +0800
+Received: from [10.174.179.234] (10.174.179.234) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 25 Apr 2022 15:34:40 +0800
+Message-ID: <d6eb7e4e-aaf1-ab4f-dbe1-90e60b37b18e@huawei.com>
+Date:   Mon, 25 Apr 2022 15:34:39 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500007.china.huawei.com (7.185.36.183)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH -next v5 4/5] arm64: mm: add support for page table check
+To:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+CC:     <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-riscv@lists.infradead.org>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Guohanjun <guohanjun@huawei.com>
+References: <20220421082042.1167967-1-tongtiangen@huawei.com>
+ <20220421082042.1167967-5-tongtiangen@huawei.com>
+ <89ec03a9-5fee-7f4f-d189-67eb2aad24a3@arm.com>
+ <c64e2159-d560-b560-f37e-4594692d88e1@huawei.com>
+ <1ad261fc-4eb0-21f4-2f6b-11696cd5c1c3@arm.com>
+From:   Tong Tiangen <tongtiangen@huawei.com>
+In-Reply-To: <1ad261fc-4eb0-21f4-2f6b-11696cd5c1c3@arm.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.234]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-platform_get_irq() returns negative error number on failure, fix the
-return value check in pxa2xx_ac97_hw_probe() and assign the error code
-to 'ret'.
 
-Fixes: 2548e6c76ebf ("ARM: pxa: pxa2xx-ac97-lib: use IRQ resource")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- sound/arm/pxa2xx-ac97-lib.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/sound/arm/pxa2xx-ac97-lib.c b/sound/arm/pxa2xx-ac97-lib.c
-index e55c0421718b..2ca33fd5a575 100644
---- a/sound/arm/pxa2xx-ac97-lib.c
-+++ b/sound/arm/pxa2xx-ac97-lib.c
-@@ -402,8 +402,10 @@ int pxa2xx_ac97_hw_probe(struct platform_device *dev)
- 		goto err_clk2;
- 
- 	irq = platform_get_irq(dev, 0);
--	if (!irq)
-+	if (irq < 0) {
-+		ret = irq;
- 		goto err_irq;
-+	}
- 
- 	ret = request_irq(irq, pxa2xx_ac97_irq, 0, "AC97", NULL);
- 	if (ret < 0)
--- 
-2.25.1
+在 2022/4/25 13:41, Anshuman Khandual 写道:
+> 
+> 
+> On 4/24/22 09:44, Tong Tiangen wrote:
+>>
+>>
+>> 在 2022/4/22 14:45, Anshuman Khandual 写道:
+>>> Please change the subject line as
+>>>
+>>> arm64/mm: Enable ARCH_SUPPORTS_PAGE_TABLE_CHECK
+>>>
+>>> OR
+>>>
+>>> arm64/mm: Subscribe ARCH_SUPPORTS_PAGE_TABLE_CHECK
+>>>
+>>> On 4/21/22 13:50, Tong Tiangen wrote:
+>>>> From: Kefeng Wang <wangkefeng.wang@huawei.com>
+>>>>
+>>>> As commit d283d422c6c4 ("x86: mm: add x86_64 support for page table
+>>>> check"), add some necessary page table check hooks into routines that
+>>>> modify user page tables.
+>>>
+>>> Please make the commit message comprehensive, which should include
+>>>
+>>> - Enabling ARCH_SUPPORTS_PAGE_TABLE_CHECK on arm64
+>>> - Adding all additional page table helpers required for PAGE_TABLE_CHECK
+>>> - Instrumenting existing page table helpers with page table check hooks
+>>>
+>>
+>> Good suggestion, if i need to do a new version for some other reason i think it should be described more comprehensivel
+> 
+> 
+> This series needs revision to accommodate earlier comments.
+> .
 
+OK, Thanks.
