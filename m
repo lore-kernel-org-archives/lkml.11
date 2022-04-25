@@ -2,134 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 401E8C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 15:01:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A44BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 15:03:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242697AbiDYPEo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 11:04:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55302 "EHLO
+        id S237886AbiDYPGO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 11:06:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242577AbiDYPEl (ORCPT
+        with ESMTP id S234132AbiDYPGK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 11:04:41 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72E995F6C;
-        Mon, 25 Apr 2022 08:01:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650898897; x=1682434897;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=FBrhtTN2aS8dT3F1AKor4CP1gqyYhfOxCA3kTdmrgqA=;
-  b=UjY4g4CE5ScekPwphlgge125EFaJ7B7fnUTrZy9th44WzVhyzZV5dy8E
-   L19pXWfLpYWT3JhLivpHyuS8MdbSWFTHHCFo0ni71JzH/wq6UVCwzzPcL
-   wwdj7LP2kbsVvpePbY2WR2lYlWrafq6s8lStokJ30G4XkevXbFJY/ObNX
-   Y=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 25 Apr 2022 08:01:37 -0700
-X-QCInternal: smtphost
-Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 08:01:37 -0700
-Received: from zijuhu-gv.qualcomm.com (10.80.80.8) by
- nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 25 Apr 2022 08:01:34 -0700
-From:   Zijun Hu <quic_zijuhu@quicinc.com>
-To:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>,
-        <luiz.dentz@gmail.com>
-CC:     <linux-kernel@vger.kernel.org>, <linux-bluetooth@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, Zijun Hu <quic_zijuhu@quicinc.com>
-Subject: [PATCH v3] Bluetooth: btusb: add support for Qualcomm WCN785x
-Date:   Mon, 25 Apr 2022 23:01:29 +0800
-Message-ID: <1650898889-12470-1-git-send-email-quic_zijuhu@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Mon, 25 Apr 2022 11:06:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0ACEBC8E;
+        Mon, 25 Apr 2022 08:03:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D6F960AEC;
+        Mon, 25 Apr 2022 15:03:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76B13C385A7;
+        Mon, 25 Apr 2022 15:03:05 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="FmlRDvmV"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1650898982;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=IRG2KHeOyDhcUmVlkf7s8JUrvKt8qVlfa0xo+V7Zi+4=;
+        b=FmlRDvmVWhzLXhqsNjg6ICBQOautm7yeN+whkRHB+yIdFQ1VdhHUaQB5JtALIZG+9SF3O9
+        J/uT5NnFu9NsR5hvOQB47KceJtYgct192LdP31FZ6IEfuVbBUTB8eMVvido1YB0l2QpCHj
+        sn/y9Qn1H8mHxXpgEVnTNWBGNY56UbU=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 6854621e (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Mon, 25 Apr 2022 15:03:01 +0000 (UTC)
+Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-2f7d19cac0bso44552677b3.13;
+        Mon, 25 Apr 2022 08:03:01 -0700 (PDT)
+X-Gm-Message-State: AOAM532LaL7aMsUhIZcomVCQrzso4tjZme0mD+h8+MxQM2fwiKmTtGXO
+        SxNMmR2zmvXRbdqhPf0SEwg5n6bJM7SbI9o4JiM=
+X-Google-Smtp-Source: ABdhPJwRBkzycZNtw+Xpgw+TUn2gCHD/52y23ZaBb64ec3dvvERDUW8hwIJ64xGWlSDPyjvcqUgcHuAr8LcjyaS7fTE=
+X-Received: by 2002:a81:515:0:b0:2f7:f0f8:b521 with SMTP id
+ 21-20020a810515000000b002f7f0f8b521mr3983397ywf.2.1650898980131; Mon, 25 Apr
+ 2022 08:03:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01a.na.qualcomm.com (10.52.223.231)
+References: <20220423212623.1957011-9-Jason@zx2c4.com> <mhng-57e67f41-bbc5-437c-b4cd-c6f5f9924a67@palmer-mbp2014>
+In-Reply-To: <mhng-57e67f41-bbc5-437c-b4cd-c6f5f9924a67@palmer-mbp2014>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Mon, 25 Apr 2022 17:02:49 +0200
+X-Gmail-Original-Message-ID: <CAHmME9qosSq+3RYtBCMiS6yCaiZcJtaBW=8StMTACEkr3hVSow@mail.gmail.com>
+Message-ID: <CAHmME9qosSq+3RYtBCMiS6yCaiZcJtaBW=8StMTACEkr3hVSow@mail.gmail.com>
+Subject: Re: [PATCH v6 08/17] riscv: use fallback for random_get_entropy()
+ instead of zero
+To:     Palmer Dabbelt <palmer@dabbelt.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Paul Walmsley <paul.walmsley@sifive.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Qualcomm WCN785x has PID/VID 0cf3/e700 as shown by
-/sys/kernel/debug/usb/devices:
+Hi Palmer,
 
-T:  Bus=02 Lev=02 Prnt=02 Port=01 Cnt=02 Dev#=  8 Spd=12   MxCh= 0
-D:  Ver= 1.10 Cls=e0(wlcon) Sub=01 Prot=01 MxPS=64 #Cfgs=  1
-P:  Vendor=0cf3 ProdID=e700 Rev= 0.01
-C:* #Ifs= 2 Cfg#= 1 Atr=e0 MxPwr=100mA
-I:* If#= 0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=1ms
-E:  Ad=82(I) Atr=02(Bulk) MxPS=  64 Ivl=0ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS=  64 Ivl=0ms
-I:* If#= 1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=   0 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=   0 Ivl=1ms
-I:  If#= 1 Alt= 1 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=   9 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=   9 Ivl=1ms
-I:  If#= 1 Alt= 2 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  17 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  17 Ivl=1ms
-I:  If#= 1 Alt= 3 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  25 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  25 Ivl=1ms
-I:  If#= 1 Alt= 4 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  33 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  33 Ivl=1ms
-I:  If#= 1 Alt= 5 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  49 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  49 Ivl=1ms
-I:  If#= 1 Alt= 6 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  63 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  63 Ivl=1ms
-I:  If#= 1 Alt= 7 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  65 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  65 Ivl=1ms
+On Mon, Apr 25, 2022 at 4:55 PM Palmer Dabbelt <palmer@dabbelt.com> wrote:
+> Fine for me if this goes in via some other tree, but also happy to take
+> it via the RISC-V tree if you'd like.
 
-Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
----
- drivers/bluetooth/btusb.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+I'm going to take this series through the random.git tree, as I've got
+things that build on top of it for random.c slated for 5.19.
 
-diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
-index 06a854a2507e..e6e28d3d1683 100644
---- a/drivers/bluetooth/btusb.c
-+++ b/drivers/bluetooth/btusb.c
-@@ -317,6 +317,11 @@ static const struct usb_device_id blacklist_table[] = {
- 						     BTUSB_WIDEBAND_SPEECH |
- 						     BTUSB_VALID_LE_STATES },
- 
-+	/* QCA WCN785x chipset */
-+	{ USB_DEVICE(0x0cf3, 0xe700), .driver_info = BTUSB_QCA_WCN6855 |
-+						     BTUSB_WIDEBAND_SPEECH |
-+						     BTUSB_VALID_LE_STATES },
-+
- 	/* Broadcom BCM2035 */
- 	{ USB_DEVICE(0x0a5c, 0x2009), .driver_info = BTUSB_BCM92035 },
- 	{ USB_DEVICE(0x0a5c, 0x200a), .driver_info = BTUSB_WRONG_SCO_MTU },
-@@ -3037,6 +3042,7 @@ static const struct qca_device_info qca_devices_table[] = {
- 	{ 0x00130100, 40, 4, 16 }, /* WCN6855 1.0 */
- 	{ 0x00130200, 40, 4, 16 }, /* WCN6855 2.0 */
- 	{ 0x00130201, 40, 4, 16 }, /* WCN6855 2.1 */
-+	{ 0x00190200, 40, 4, 16 }, /* WCN785x 2.0 */
- };
- 
- static int btusb_qca_send_vendor_req(struct usb_device *udev, u8 request,
-@@ -3327,11 +3333,11 @@ static int btusb_setup_qca(struct hci_dev *hdev)
- 		if (err < 0)
- 			return err;
- 
--		/* WCN6855 2.1 will reset to apply firmware downloaded here, so
-+		/* WCN6855 2.1 and later will reset to apply firmware downloaded here, so
- 		 * wait ~100ms for reset Done then go ahead, otherwise, it maybe
- 		 * cause potential enable failure.
- 		 */
--		if (info->rom_version == 0x00130201)
-+		if (info->rom_version >= 0x00130201)
- 			msleep(QCA_BT_RESET_WAIT_MS);
- 	}
- 
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project
+> IMO we could just call this a
+> fix, maybe
+>
+> Fixes: aa9887608e77 ("RISC-V: Check clint_time_val before use")
+>
+> (but that just brought this back, so there's likely older kernels broken
+> too).  Shouldn't be breaking any real hardware, though, so no rush on my
+> end.
 
+That'd be fine with me, but it'd involve also backporting the
+timekeeping patch, which adds a new API, so maybe we better err on the
+side of caution with that new code.
+
+> Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
+> Reviewed-by: Palmer Dabbelt <palmer@rivosinc.com>
+
+Thanks for the review.
+
+> Makes sense: we had an architecturally-mandated timer at the time, but
+> we don't any more.
+
+That's too bad. Out of curiosity, what happened? Was that deemed too
+expensive for certain types of chips that western digital wanted to
+produce for their hard drives, or some really constrained use case
+like that?
+
+Jason
