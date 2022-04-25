@@ -2,89 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF8B8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 02:47:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F48FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 02:49:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238521AbiDYCue (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 22:50:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38550 "EHLO
+        id S240465AbiDYCwU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 22:52:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240477AbiDYCtn (ORCPT
+        with ESMTP id S229635AbiDYCwK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 22:49:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BABAD68FB0
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 19:46:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650854793;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4mSFbIABjzRdSlvpdVrloyLlnqCDEpfJ/ut9z+vIsrM=;
-        b=ClB1DdtgpJ84MY7qAvoD6guHVHinkXAB5tyvPuYrXzw/LPtGoYXYjHkgmoTQJNqQoedxqd
-        N2BcvgPRlzq/9VH1ZDU5ZKT94qYQS2y2ia+fu9LmhZ4iekunoIWiJFPtd/5lBUO/fZT7sW
-        Cx6fVHYC8MXoLexWt1cB8+1jxTWBf2E=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-258-4Ainub48OoWr7r0QcFBmiw-1; Sun, 24 Apr 2022 22:46:30 -0400
-X-MC-Unique: 4Ainub48OoWr7r0QcFBmiw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C8C0F3C14100;
-        Mon, 25 Apr 2022 02:46:29 +0000 (UTC)
-Received: from localhost.localdomain (ovpn-13-160.pek2.redhat.com [10.72.13.160])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 436239E6E;
-        Mon, 25 Apr 2022 02:46:03 +0000 (UTC)
-From:   Jason Wang <jasowang@redhat.com>
-To:     jasowang@redhat.com, mst@redhat.com, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-Cc:     sgarzare@redhat.com, eperezma@redhat.com, lulu@redhat.com,
-        tglx@linutronix.de, peterz@infradead.org, paulmck@kernel.org,
-        maz@kernel.org, pasic@linux.ibm.com, cohuck@redhat.com
-Subject: [PATCH V3 9/9] virtio: use WARN_ON() to warning illegal status value
-Date:   Mon, 25 Apr 2022 10:44:18 +0800
-Message-Id: <20220425024418.8415-10-jasowang@redhat.com>
-In-Reply-To: <20220425024418.8415-1-jasowang@redhat.com>
-References: <20220425024418.8415-1-jasowang@redhat.com>
+        Sun, 24 Apr 2022 22:52:10 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B33526E4CE;
+        Sun, 24 Apr 2022 19:49:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1650854948; x=1682390948;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Lt7d0D8HFzqruaBD/gXwgUjsYO2oRO7TeES1RHdfgc0=;
+  b=kkf39t2mBxYphBUJ2G2MP9CgxtT07WM3WX9JJp/FlZB+3HBV0cNbDaql
+   5SXabtNZ+InVAps7wJavGLU3OL/0+t0NHmjzrIeW6ZptHNzrIVIpuaxnz
+   5/Hz5VvUdemBgtfVGCJrPEFT2yJxAAmpJ/6K+I5rOfuL1bLa5vDI4qJyk
+   U=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 24 Apr 2022 19:49:08 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2022 19:49:08 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Sun, 24 Apr 2022 19:49:07 -0700
+Received: from hu-pkondeti-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Sun, 24 Apr 2022 19:49:02 -0700
+Date:   Mon, 25 Apr 2022 08:18:58 +0530
+From:   Pavan Kondeti <quic_pkondeti@quicinc.com>
+To:     Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+CC:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        "Doug Anderson" <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        <devicetree@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <quic_pkondeti@quicinc.com>, <quic_ppratap@quicinc.com>,
+        <quic_kriskura@quicinc.com>, <quic_vpulyala@quicinc.com>
+Subject: Re: [PATCH v4 0/3] Skip phy initialization for DWC3 USB Controllers
+Message-ID: <20220425024858.GA7052@hu-pkondeti-hyd.qualcomm.com>
+References: <1650517255-4871-1-git-send-email-quic_c_sanm@quicinc.com>
 MIME-Version: 1.0
-Content-type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <1650517255-4871-1-git-send-email-quic_c_sanm@quicinc.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We used to use BUG_ON() in virtio_device_ready() to detect illegal
-status value, this seems sub-optimal since the value is under the
-control of the device. Switch to use WARN_ON() instead.
+Hi Mathias,
 
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: "Paul E. McKenney" <paulmck@kernel.org>
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: Halil Pasic <pasic@linux.ibm.com>
-Cc: Cornelia Huck <cohuck@redhat.com>
-Signed-off-by: Jason Wang <jasowang@redhat.com>
----
- include/linux/virtio_config.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Thu, Apr 21, 2022 at 10:30:52AM +0530, Sandeep Maheswaram wrote:
+> Runtime suspend of phy drivers was failing from DWC3 driver as
+> runtime usage value is 2 because the phy is initialized from
+> DWC3 core and HCD core.
+> Some controllers like DWC3 and CDNS3 manage phy in their core drivers.
+> This property can be set to avoid phy initialization in HCD core.
+> 
+> v4:
+> Added the device tree binding patch in the series.
+> 
+> v3:
+> Coming back to this series based on discussion at below thread
+> https://patchwork.kernel.org/project/linux-arm-msm/patch/1648103831-12347-4-git-send-email-quic_c_sanm@quicinc.com/
+> Dropped the dt bindings PATCH 1/3 in v2
+> https://patchwork.kernel.org/project/linux-arm-msm/cover/1636353710-25582-1-git-send-email-quic_c_sanm@quicinc.com/ 
+> 
+> v2:
+> Updated the commit descriptions.
+> Changed subject prefix from dwc to dwc3.
+> Increased props array size.
+> 
+> 
+> Sandeep Maheswaram (3):
+>   dt-bindings: usb: usb-xhci: Add bindings for usb-skip-phy-init
+>     property
+>   usb: host: xhci-plat: Add device property to set XHCI_SKIP_PHY_INIT
+>     quirk
+>   usb: dwc3: host: Set the property usb-skip-phy-init
+> 
+>  Documentation/devicetree/bindings/usb/usb-xhci.yaml | 4 ++++
+>  drivers/usb/dwc3/host.c                             | 4 +++-
+>  drivers/usb/host/xhci-plat.c                        | 3 +++
+>  3 files changed, 10 insertions(+), 1 deletion(-)
+> 
 
-diff --git a/include/linux/virtio_config.h b/include/linux/virtio_config.h
-index 3e2bc8aff51e..b0010b2ca7c2 100644
---- a/include/linux/virtio_config.h
-+++ b/include/linux/virtio_config.h
-@@ -254,7 +254,7 @@ void virtio_device_ready(struct virtio_device *dev)
- {
- 	unsigned status = dev->config->get_status(dev);
- 
--	BUG_ON(status & VIRTIO_CONFIG_S_DRIVER_OK);
-+	WARN_ON(status & VIRTIO_CONFIG_S_DRIVER_OK);
- 
- 	/*
- 	 * The virtio_synchronize_cbs() makes sure vring_interrupt()
--- 
-2.25.1
+This is the latest series with bindings added as per Greg's comment. Can you
+please pick up this series if you don't have any further comments.
 
+Thanks,
+Pavan
