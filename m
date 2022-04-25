@@ -2,79 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D05CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 03:42:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 063C1C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 03:43:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240806AbiDYDpW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 23:45:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56482 "EHLO
+        id S240813AbiDYDqP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 23:46:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240826AbiDYDnl (ORCPT
+        with ESMTP id S240909AbiDYDqD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 23:43:41 -0400
-Received: from m1541.mail.126.com (m1541.mail.126.com [220.181.15.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DF2CB645E;
-        Sun, 24 Apr 2022 20:40:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=Xb2jU
-        I68L4ingevBNbIwSF+oSRTmjSydhDTtvsIxWcs=; b=pFYM06IGpHTkeYdf0zJK8
-        +GSBQZCR2VR6HNUh6tNvRFpRpwCXpr7bY9XUlgBFkn2vjdilIyecsrQSVdy9lRd9
-        bpKLnWsW46UYad2Yv2T7a0Tl6uAk846LQizehMhZytT7oOvoYiNQnQXECBDZskko
-        /wBb7WgdTAp6yJc+RnfCNA=
-Received: from zhaojunkui2008$126.com ( [112.80.34.205] ) by
- ajax-webmail-wmsvr41 (Coremail) ; Mon, 25 Apr 2022 11:40:02 +0800 (CST)
-X-Originating-IP: [112.80.34.205]
-Date:   Mon, 25 Apr 2022 11:40:02 +0800 (CST)
-From:   z <zhaojunkui2008@126.com>
-To:     "Jakub Kicinski" <kubakici@wp.pl>
-Cc:     "Kalle Valo" <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        bernard@vivo.com
-Subject: Re:Re: [PATCH v2] mediatek/mt7601u: add debugfs exit function
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210622(1d4788a8)
- Copyright (c) 2002-2022 www.mailtech.cn 126com
-In-Reply-To: <20220422124704.259244e7@kicinski-fedora-PC1C0HJN>
-References: <20220422080854.490379-1-zhaojunkui2008@126.com>
- <20220422124704.259244e7@kicinski-fedora-PC1C0HJN>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
-MIME-Version: 1.0
-Message-ID: <15b4f.2aad.1805ece06a1.Coremail.zhaojunkui2008@126.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: KcqowABHV98TGGZi9k4TAA--.52204W
-X-CM-SenderInfo: p2kd0y5xqn3xasqqmqqrswhudrp/1tbiqBPtqlpD9keacgAAs8
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+        Sun, 24 Apr 2022 23:46:03 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0956E29CAC;
+        Sun, 24 Apr 2022 20:42:23 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id n8so24208055plh.1;
+        Sun, 24 Apr 2022 20:42:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=ohE50qU4qaQMeCii+Z+po7lmX+itL/YGUd1v4oq6lSE=;
+        b=QFRvN00dPEFFBl991bCGDjOG7DP6CFyFhqSf7G0NoTIUctzPGQu3fHWyT6m4pCMO3L
+         HTeL8qM/nN7T5xBOdgqqcVhO2yCTe46B+EIw71grg/NQy+WgcTnDU6+aTUyXZnDHYQ4s
+         qy3qbqqcRuAQV78uesb40eVtoe4Gzl3FFMfZFz0NxtMIup7YD34UQ039Fk/89G55jAuc
+         U76yPK7DaHYZtOXSHULHVknFfsjNre++JetVxzoonixo9G9h1sZdJerrG9hA0HEAwddl
+         tnX0M2Hqij0gau10lhQcxtGQh69ReFtyPi4GL34lIymcpj8YwPCjNZACPPE/l1Qky4ZW
+         BVEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=ohE50qU4qaQMeCii+Z+po7lmX+itL/YGUd1v4oq6lSE=;
+        b=Jcy4SkRWhNoca0HYJvOKM9DKzpPKLBYgA3Z8wI/X3cYA8wB3nFhVwdmF4WDmLuPaZT
+         7mdZ1ZS9I/pcLd6eDEnXPL7LqTcb7YrAPT4mlMlbSUWLSafAztaTXg2ZAxCAY/IljwyO
+         A9UL/ft33znRR3nURqplZHByZb7Y26FVTUe1gZynsUulkaAnIxZqOYs2XKV5sJPcFDsq
+         sobqiye/0PBEBznOWvM/nDdJmTTzowefn4khTQqSnQwRj54HKmvWfuV5cqJilBDUGJju
+         YLT1adGJKwnbvYZMZOGFFa5Yre8EwhVQdJ/0eSSmUEV39GoWW5ydwp1YLRQh1Ffat29t
+         tXTQ==
+X-Gm-Message-State: AOAM5308xT6sudPHqWpFXDVzceB+P8M6t68VQWKj8MMzxDc487LnL8jv
+        Xyjg0aqumbe82JoVcIv9nAc=
+X-Google-Smtp-Source: ABdhPJzUDhFmD+FGEc/XuB74nBKfc3m5WWIREDnnzzQrZQWELhYTpfSJ2Bji24Ge1HEhBreek/OB7g==
+X-Received: by 2002:a17:90a:df0f:b0:1d9:2372:b55e with SMTP id gp15-20020a17090adf0f00b001d92372b55emr12678494pjb.104.1650858143030;
+        Sun, 24 Apr 2022 20:42:23 -0700 (PDT)
+Received: from ethan-Latitude-7280.localdomain (125-228-239-174.hinet-ip.hinet.net. [125.228.239.174])
+        by smtp.googlemail.com with ESMTPSA id t21-20020a17090a951500b001d77f392280sm10450231pjo.30.2022.04.24.20.42.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Apr 2022 20:42:22 -0700 (PDT)
+From:   Ethan Yang <ipis.yang@gmail.com>
+X-Google-Original-From: Ethan Yang <etyang@sierrawireless.com>
+To:     johan@kernel.org, gregkh@linuxfoundation.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     gchiang@sierrawireless.com, Ethan Yang <etyang@sierrawireless.com>
+Subject: [PATCH] add support for Sierra Wireless EM7590 0xc080 and 0xc081 compositions.
+Date:   Mon, 25 Apr 2022 11:42:04 +0800
+Message-Id: <20220425034204.4345-1-etyang@sierrawireless.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CkF0IDIwMjItMDQtMjMgMDM6NDc6MDQsICJKYWt1YiBLaWNpbnNraSIgPGt1YmFraWNpQHdwLnBs
-PiB3cm90ZToKPk9uIEZyaSwgMjIgQXByIDIwMjIgMDE6MDg6NTQgLTA3MDAgQmVybmFyZCBaaGFv
-IHdyb3RlOgo+PiBXaGVuIG10NzYwMXUgbG9hZGVkLCB0aGVyZSBhcmUgdHdvIGNhc2VzOgo+PiBG
-aXJzdCB3aGVuIG10NzYwMXUgaXMgbG9hZGVkLCBpbiBmdW5jdGlvbiBtdDc2MDF1X3Byb2JlLCBp
-Zgo+PiBmdW5jdGlvbiBtdDc2MDF1X3Byb2JlIHJ1biBpbnRvIGVycm9yIGxhYmxlIGVycl9odywK
-Pj4gbXQ3NjAxdV9jbGVhbnVwIGRpZG5gdCBjbGVhbnVwIHRoZSBkZWJ1Z2ZzIG5vZGUuCj4+IFNl
-Y29uZCB3aGVuIHRoZSBtb2R1bGUgZGlzY29ubmVjdCwgaW4gZnVuY3Rpb24gbXQ3NjAxdV9kaXNj
-b25uZWN0LAo+PiBtdDc2MDF1X2NsZWFudXAgZGlkbmB0IGNsZWFudXAgdGhlIGRlYnVnZnMgbm9k
-ZS4KPj4gVGhpcyBwYXRjaCBhZGQgZGVidWdmcyBleGl0IGZ1bmN0aW9uIGFuZCB0cnkgdG8gY2xl
-YW51cCBkZWJ1Z2ZzCj4+IG5vZGUgd2hlbiBtdDc2MDF1IGxvYWRlZCBmYWlsIG9yIHVubG9hZGVk
-Lgo+PiAKPj4gU2lnbmVkLW9mZi1ieTogQmVybmFyZCBaaGFvIDx6aGFvanVua3VpMjAwOEAxMjYu
-Y29tPgo+Cj5BaCwgbWlzc2VkIHRoYXQgdGhlcmUgd2FzIGEgdjIuIE15IHBvaW50IHN0YW5kcywg
-d2lwaHkgZGVidWdmcyBkaXIKPnNob3VsZCBkbyB0aGUgY2xlYW51cC4KPgo+RG8geW91IGVuY291
-bnRlciBwcm9ibGVtcyBpbiBwcmFjdGljZSBvciBhcmUgeW91IHNlbmRpbmcgdGhpcyBwYXRjaGVz
-Cj5iYXNlZCBvbiByZWFkaW5nIC8gc3RhdGljIGFuYWx5c2lzIG9mIHRoZSBjb2RlIG9ubHkuCgpI
-aSBKYWt1YiBLaWNpbnNraToKClRoZSBpc3N1ZSBoZXJlIGlzIGZvdW5kIGJ5IHJlYWRpbmcgY29k
-ZS4KSSByZWFkIHRoZSBkcml2ZXJzL25ldC93aXJlbGVzcyBjb2RlIGFuZCBmb3VuZCB0aGF0IG1h
-bnkgbW9kdWxlcyBhcmUgbm90IGNsZWFudXAgdGhlIGRlYnVnZnMuIApJIHNvcnRlZCBvdXQgdGhl
-IG1vZHVsZXMgdGhhdCB3ZXJlIG5vdCBjbGVhbmVkIHVwIHRoZSBkZWJ1Z2ZzOgouL3RpL3dsMTh4
-eAouL3RpL3dsMTJ4eAouL2ludGVsL2l3bHdpZmkKLi9pbnRlbC9pd2x3aWZpCi4vbWVkaWF0ZWsv
-bXQ3NgpJIGFtIG5vdCBzdXJlIHdoZXRoZXIgdGhpcyBwYXJ0IGlzIHdlbGNvbWUgdG8ga2VybmVs
-IHNvIEkgc3VibWl0dGVkIGEgcGF0Y2guCklmIHlvdSBoYXZlIGFueSBzdWdnZXN0aW9ucywgd2Vs
-Y29tZSB0byBwdXQgZm9yd2FyZCBmb3IgZGlzY3Vzc2lvbiwgdGhhbmsgeW91o6EKCkJSLy9CZXJu
-YXJkCgo=
+add support for Sierra Wireless EM7590 0xc080 and 0xc081 compositions.
+
+Signed-off-by: Ethan Yang <etyang@sierrawireless.com>
+---
+ drivers/usb/serial/qcserial.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/usb/serial/qcserial.c b/drivers/usb/serial/qcserial.c
+index c18bf8164bc2..38e70a573e2c 100644
+--- a/drivers/usb/serial/qcserial.c
++++ b/drivers/usb/serial/qcserial.c
+@@ -166,6 +166,8 @@ static const struct usb_device_id id_table[] = {
+ 	{DEVICE_SWI(0x1199, 0x9090)},	/* Sierra Wireless EM7565 QDL */
+ 	{DEVICE_SWI(0x1199, 0x9091)},	/* Sierra Wireless EM7565 */
+ 	{DEVICE_SWI(0x1199, 0x90d2)},	/* Sierra Wireless EM9191 QDL */
++	{DEVICE_SWI(0x1199, 0xc080)},	/* Sierra Wireless EM7590 */
++	{DEVICE_SWI(0x1199, 0xc081)},	/* Sierra Wireless EM7590 QDL */
+ 	{DEVICE_SWI(0x413c, 0x81a2)},	/* Dell Wireless 5806 Gobi(TM) 4G LTE Mobile Broadband Card */
+ 	{DEVICE_SWI(0x413c, 0x81a3)},	/* Dell Wireless 5570 HSPA+ (42Mbps) Mobile Broadband Card */
+ 	{DEVICE_SWI(0x413c, 0x81a4)},	/* Dell Wireless 5570e HSPA+ (42Mbps) Mobile Broadband Card */
+-- 
+2.17.1
+
