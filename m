@@ -2,124 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDAE1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:33:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79DC1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:34:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233324AbiDYWgt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 18:36:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49480 "EHLO
+        id S233806AbiDYWhV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 18:37:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230156AbiDYWgr (ORCPT
+        with ESMTP id S232174AbiDYWhQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 18:36:47 -0400
-X-Greylist: delayed 458 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 25 Apr 2022 15:33:40 PDT
-Received: from crane.ash.relay.mailchannels.net (crane.ash.relay.mailchannels.net [23.83.222.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4886BDC996
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 15:33:39 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|ian@linux.cowan.aero
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 413BB8011DB;
-        Mon, 25 Apr 2022 22:25:38 +0000 (UTC)
-Received: from pdx1-sub0-mail-a217.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id CB72980109A;
-        Mon, 25 Apr 2022 22:25:37 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1650925537; a=rsa-sha256;
-        cv=none;
-        b=F/wx94kfenO3fjgrOI4AwghZ2n50+gkSoBpcoeuKVOps8GDk/wksfJdK1gTo2o/YmR10Zl
-        snTx6m4Kk4VkkWXmZWDC0s0U44l2lS5+Vhao2g/AJQrM7wllhzFMWmBZvcEKfSF/r0vc7W
-        cZg37BUMYP9x2YUcKLTImQ3X66KNobn5eFvtr35hBQFAAyTPowk54+ermY6ljgGLCUqJtY
-        0pqXbHe1ifwz1zht4xPlnUkP1lR7Ci8JU51OofmGHp8Adk7YICEpODyjKiUO2ViYuoppON
-        ZvasyIC2KVZordPsG/W65YvA2Mq/K6onTpG0cF+kziSuOBCtBLyoyrODXSgNMQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1650925537;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:dkim-signature;
-        bh=qrIAaUSjnb2wlp86fkBj4QhxXpIqPeoU2r+zy2bjOXo=;
-        b=ndFeoIBj6LZ+Q528R9oyeR+sLkyYniiI7odjOr8tJ8WsYZCs16YDLJUWckkVWO0ZFdkBMR
-        YxnRqq7WYWLkBVnzXAX6tZ0yOhTeF0034tSieTmivsnvV+UNO8N29pE5QGQiBPmbBeHqdG
-        02U9KQIoF6rOKTtvay2YUoxEZ/qnFNuSfS/UNu47ZAGpjvLimSFP3Jy3HwbsVumQSlJolP
-        Axj0kT4pul4C7I3AX7Qf1iIpCvCNWK9FbVNiTcCk4I32aHONRzTpPcsPNTq2zAD/LPiGwM
-        bGH6DLQ2uYgH8CPFFNK92f/RKnBDoFR3oVoxAhw26nTqdHiu1NLwspFXpqTk5w==
-ARC-Authentication-Results: i=1;
-        rspamd-67b64f579b-dhxks;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=ian@linux.cowan.aero
-X-Sender-Id: dreamhost|x-authsender|ian@linux.cowan.aero
-Received: from pdx1-sub0-mail-a217.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.96.96.48 (trex/6.7.1);
-        Mon, 25 Apr 2022 22:25:38 +0000
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|ian@linux.cowan.aero
-X-MailChannels-Auth-Id: dreamhost
-X-Irritate-Descriptive: 173270db09277b4f_1650925538102_2579386843
-X-MC-Loop-Signature: 1650925538102:2428176500
-X-MC-Ingress-Time: 1650925538101
-Received: from localhost.localdomain (unknown [69.12.38.97])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: ian@linux.cowan.aero)
-        by pdx1-sub0-mail-a217.dreamhost.com (Postfix) with ESMTPSA id 4KnKMz0bNjz3D;
-        Mon, 25 Apr 2022 15:25:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.cowan.aero;
-        s=dreamhost; t=1650925535;
-        bh=qrIAaUSjnb2wlp86fkBj4QhxXpIqPeoU2r+zy2bjOXo=;
-        h=From:To:Cc:Subject:Date:Content-Transfer-Encoding;
-        b=wi/qHUUa+5Xgij1xZFcQcG1fs5arzExUI+HRyTxGN2Nk/QU2JwZ7ORPGbWbJ1BpSv
-         2EwTOsm49ZxieGyjmaJFIInkv6cozpBjXdI1qvl5papF9GCgK7zn3DvbOeeyk/hnop
-         zoyr9hZopx0pqhOxGAzst6NCCHfxX2ldeNWTI8a6Ijstkup5/n4QmQKlppPeIIy7Us
-         9ECXa4NtwFuavYKBE9lZKI3n+t/x9rd4njCFQwwB5pjR7gIXSyjozt+3tGJKn9mINV
-         obNmq40tZTQwQVFoh5uO7M5v04jwsRhSnicqpX6SfZmEkWjnqBYiGjU2VdY22GFkKU
-         7lOZGNKKNR2cQ==
-From:   Ian Cowan <ian@linux.cowan.aero>
-To:     Sven Van Asbroeck <TheSven73@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Ian Cowan <ian@linux.cowan.aero>
-Subject: [PATCH v2] staging: fieldbus: remove unnecessary double negation
-Date:   Mon, 25 Apr 2022 18:25:26 -0400
-Message-Id: <20220425222526.6023-1-ian@linux.cowan.aero>
-X-Mailer: git-send-email 2.35.1
+        Mon, 25 Apr 2022 18:37:16 -0400
+Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98916F8952;
+        Mon, 25 Apr 2022 15:34:10 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id 0B439C009; Tue, 26 Apr 2022 00:34:09 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1650926049; bh=FO8lBDbgbFDnZpS6QEZLDuT4Og863KeNmQh+iSxsAos=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=4p5bDOi4kml8LAfT3y9DVdbqrU9AHDOLFRViKm0GcHmpdfk88q+p+pBWZI2QNN1r2
+         leaw/ggHd42no9n5L6wVZUTRKLMgI9TD8vRfNYrmZ8cicfWcjV+Ds0ZsZnNANOVImK
+         ENXAWv8H08j6U/ADSTHA7Bi+k2PtwfiMJVIRi6VCk+ur16DjOVEe7QZZC1/VPNO6EA
+         S5IaZ2VJNJQttpagCfiF4dmZdxMmCVcjNxx5GmN4WcuK7Foqjq7RCHJ8+JhVjJlf7V
+         Sdk7yDmRrq+FtTtpAOwmMMlylXRCP5vwd5SLYDgvYE93Sv1MKgQ7Z3bTn7kU9VYacc
+         7fJYAflviWvmw==
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 17F84C009;
+        Tue, 26 Apr 2022 00:34:04 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1650926048; bh=FO8lBDbgbFDnZpS6QEZLDuT4Og863KeNmQh+iSxsAos=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=vnlE41CTMa82HWCJ27fSorsXxGCcFFmWdefNZZNWKm42GWrkP6o7JuA0S8JAQhI1L
+         Ex6RtE5Qj3N0IeuF1lrcNCmNI4j8ANCzWdm5ZanNbXUpJMd2l6VolZk4E+0tRBMFWH
+         6z7WA1o8Dr14Dkt7NLdQ5wp15ClTp0Z/cP03W7PUiT744N2jFc41moSBiRtqt3u11A
+         3VCJSN/c+KiWOHdaZ/ertGicVTAvXQxFdRmvJCHnzRid7gW9/i+F7fXhuVlUtwicve
+         3noPTz7eZ2VUhMrZ9O3EvAwNrzCG/qTt0IM3rKcVzFaVzcGIxU4ON+7aaENHN0zvtr
+         IrjZFtAJaCksw==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 81b62d03;
+        Mon, 25 Apr 2022 22:34:00 +0000 (UTC)
+Date:   Tue, 26 Apr 2022 07:33:45 +0900
+From:   Dominique Martinet <asmadeus@codewreck.org>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, KP Singh <kpsingh@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Yonghong Song <yhs@fb.com>, Song Liu <songliubraving@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: Re: [PATCH 1/4] tools/bpf/runqslower: musl compat: explicitly link
+ with libargp if found
+Message-ID: <YmchyUOkfKW1Qzxf@codewreck.org>
+References: <20220424051022.2619648-1-asmadeus@codewreck.org>
+ <20220424051022.2619648-2-asmadeus@codewreck.org>
+ <YmT1GxK1HimY2Os9@codewreck.org>
+ <80728495-e1fe-21bb-9814-6251648f8359@iogearbox.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <80728495-e1fe-21bb-9814-6251648f8359@iogearbox.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The values that are being double negated in this case are booleans to begin
-with, so the double negation has no effect on the result.
+Daniel Borkmann wrote on Mon, Apr 25, 2022 at 11:35:41PM +0200:
+> > I've dropped this patch from my alpine MR[1] and built things directly
+> > with make bpftool etc as suggested above, so my suggestion to make it
+> > more easily buildable that way is probably the way to go?
+> > [1] https://gitlab.alpinelinux.org/alpine/aports/-/merge_requests/33554
+> 
+> Thanks for looking into this, Dominique! I slightly massaged patch 3 & 4
+> and applied it to bpf-next tree.
 
-Signed-off-by: Ian Cowan <ian@linux.cowan.aero>
----
- drivers/staging/fieldbus/dev_core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Thanks!
 
-diff --git a/drivers/staging/fieldbus/dev_core.c b/drivers/staging/fieldbus/dev_core.c
-index 5aab734606ea..6766b2b13482 100644
---- a/drivers/staging/fieldbus/dev_core.c
-+++ b/drivers/staging/fieldbus/dev_core.c
-@@ -28,7 +28,7 @@ static ssize_t online_show(struct device *dev, struct device_attribute *attr,
- {
- 	struct fieldbus_dev *fb = dev_get_drvdata(dev);
+> I don't really mind about patch 1 & 2, though out of tools/bpf/ the only
+> one you /really/ might want to package is bpftool. The other tools are on
+> the legacy side of things and JIT disasm you can also get via bpftool anyway.
+
+I was thinking the other tools still had their uses, but I'll readily
+admit I've never had a need for them so wasn't sure if I should package
+them together or not.
+
+I can see the use of bpf_dbg, but it's occasional enough that people who
+need it can just build it when they need... Let's drop both patches and
+I'll remove the other legacy tools from package as well.
+
+My last concern would then just be to build it more easily. I just
+noticed I can actually 'make bpf/bpftool' directly from the tools/
+parent directory, but there's no equivalent for _install rules.
+
+Would something like this make sense? (I can resend as proper patch if
+so)
+----
+diff --git a/tools/Makefile b/tools/Makefile
+index db2f7b8ebed5..743d242aebb3 100644
+--- a/tools/Makefile
++++ b/tools/Makefile
+@@ -112,6 +112,9 @@ cpupower_install:
+ cgroup_install counter_install firewire_install gpio_install hv_install iio_install perf_install bootconfig_install spi_install usb_install virtio_install vm_install bpf_install objtool_install wmi_install pci_install debugging_install tracing_install:
+        $(call descend,$(@:_install=),install)
  
--	return sprintf(buf, "%d\n", !!fb->online);
-+	return sprintf(buf, "%d\n", fb->online);
- }
- static DEVICE_ATTR_RO(online);
++bpf/%_install: FORCE
++       $(call descend,$(@:_install=),install)
++
+ selftests_install:
+        $(call descend,testing/$(@:_install=),install)
  
-@@ -39,7 +39,7 @@ static ssize_t enabled_show(struct device *dev, struct device_attribute *attr,
- 
- 	if (!fb->enable_get)
- 		return -EINVAL;
--	return sprintf(buf, "%d\n", !!fb->enable_get(fb));
-+	return sprintf(buf, "%d\n", fb->enable_get(fb));
- }
- 
- static ssize_t enabled_store(struct device *dev, struct device_attribute *attr,
+----
+
+
+> Given this is not covered by BPF CI, are you planning to regularly check
+> for musl compatibility before a new kernel is cut?
+
+alpine doesn't update the 'tools' subpackage with every kernel release,
+I'm not sure what the exact schedule is but from the looks of it it
+tracks LTS releases with updates every few months within the stable
+release or to the next one.
+
+
+I don't really have any resource to run a regular CI, but I guess I can
+check from time to time.. If I ever get around to adding a linux-next
+test to work's CI I can check bpftool builds at the same time, but who
+knows when that'll ever be.
+
+OTOH I had a first look last year (back when I tried to push
+ACTIONRETVAL to musl) and there haven't been any new incompatibility, so
+I think it's fine to just deal with minor hiccups when alpine upgrades
+once in a while.
+
 -- 
-2.35.1
-
+Dominique
