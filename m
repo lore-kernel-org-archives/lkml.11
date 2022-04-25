@@ -2,81 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8FF4C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:21:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B76BDC4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:21:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235654AbiDYWYr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 18:24:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43296 "EHLO
+        id S236560AbiDYWYw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 18:24:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343684AbiDYWLi (ORCPT
+        with ESMTP id S1343572AbiDYVgI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 18:11:38 -0400
-Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF1291D33F;
-        Mon, 25 Apr 2022 15:08:32 -0700 (PDT)
-Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-e656032735so16313938fac.0;
-        Mon, 25 Apr 2022 15:08:32 -0700 (PDT)
+        Mon, 25 Apr 2022 17:36:08 -0400
+Received: from mail-oa1-f53.google.com (mail-oa1-f53.google.com [209.85.160.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8E78388E;
+        Mon, 25 Apr 2022 14:33:02 -0700 (PDT)
+Received: by mail-oa1-f53.google.com with SMTP id 586e51a60fabf-d39f741ba0so17460532fac.13;
+        Mon, 25 Apr 2022 14:33:02 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=4Vl1OROUqlthzjOaEFjMsGx8YqO64AcME2u3EpueJzI=;
-        b=i9TuOkhlARCl9aQMcUo2cNwDgMZDh+roFOsuc9+UA7BQeZkh41lb1lBUtGC35vjgMW
-         FuRxctK2JgC9Pg85sJLT4FBqblKCSurU3VKs271n64sJlyWAonGOrAzWIYM2Nm+ZsgjY
-         6EiwHlGAmaRxE6gh9pnRQVIG43XEdCfm+CSF+0TXt4lfmVQLg75deWD7EH3YAivM1xr3
-         yN5GBlWk1Jk8CuNbV88/eIakMz88QXrvhXQ7s9xPoCLpnAVt64MLoXvnqpPyRWnykBg9
-         OUK5dJjH0+O9JLjNtx7HIY2ShzOWha13u/V0VlOmpayDouzOwmBErwugsfJWLxORflaj
-         75qQ==
-X-Gm-Message-State: AOAM5320+DfbHHmqYHfikhGkbkeJOfbPoGaP/T8qAoNlPLPWw4h3mU0E
-        SOhFyiX2S8BcTjWuMZaM5h2D2VD8zA==
-X-Google-Smtp-Source: ABdhPJyEkoJ3W+F7gZoppYO+zKCee+EKuyTwdZtAmqesCu0jqESilGtI7Ik+vQ0WiitU87F9sIdNGA==
-X-Received: by 2002:a05:6870:9596:b0:d6:d3ea:1d92 with SMTP id k22-20020a056870959600b000d6d3ea1d92mr8110457oao.6.1650924511817;
-        Mon, 25 Apr 2022 15:08:31 -0700 (PDT)
+        bh=QY5JW2v7HSbT1hDkjRPZNNU8p+12B6QymuL3kJfE5XI=;
+        b=wD5n9GNdSp+2EsJ14khiDjUDlPZ6lQz8WkHbG1ynlzFPW1DfvJdUKyvYrCcx1aPOaz
+         mJhWCBTo9NAZWUM9cuQMAafS7rsHkTFmrhpCVb6JX0W/AxW/ET3ad0i4Yc6cpMiz4xY4
+         TSllvssyhqe2EaC9VgVfv5U424G9JZQ/OD6oy3BJ7cB4oJfpDix9B3C+JM7DjrkCZbcW
+         LKakaXmjsFEuzLj/bPkl79unRzVqhPGappe3KwUi31crM1VIMt8emxfl1YyNzYwKUJlg
+         2aQv+8WSGX6iSF1A4C+IRROOCB0FgZcXsG11dqnoeAWnzrb+G+KQi5oJwyAlYQ1nZZmY
+         Hf+A==
+X-Gm-Message-State: AOAM530yQQYqKGmYkQwdjXxHdeO/8hQXRDcrXmL2k4SwvYOdK+mbjrIf
+        sImBW52OXP1TqdJmoOdYfw==
+X-Google-Smtp-Source: ABdhPJxg7V0WshHnQdpqtbth9drF587QkF1vqISr18GX25hBvkaHQgNvi2RhjX5q0y2yuAuxpFb4FQ==
+X-Received: by 2002:a05:6871:85:b0:d9:ac7a:7a5a with SMTP id u5-20020a056871008500b000d9ac7a7a5amr8021873oaa.9.1650922382146;
+        Mon, 25 Apr 2022 14:33:02 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id g1-20020a056870340100b000e686d1386bsm161602oah.5.2022.04.25.15.08.30
+        by smtp.gmail.com with ESMTPSA id n66-20020acabd45000000b002ef6c6992e8sm4124993oif.42.2022.04.25.14.33.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 15:08:31 -0700 (PDT)
-Received: (nullmailer pid 383119 invoked by uid 1000);
-        Mon, 25 Apr 2022 22:08:30 -0000
-Date:   Mon, 25 Apr 2022 17:08:30 -0500
+        Mon, 25 Apr 2022 14:33:01 -0700 (PDT)
+Received: (nullmailer pid 323996 invoked by uid 1000);
+        Mon, 25 Apr 2022 21:33:00 -0000
+Date:   Mon, 25 Apr 2022 16:33:00 -0500
 From:   Rob Herring <robh@kernel.org>
-To:     Andrea Merello <andrea.merello@gmail.com>
-Cc:     jic23@kernel.org, mchehab+huawei@kernel.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, lars@metafoo.de,
-        andy.shevchenko@gmail.com, matt.ranostay@konsulko.com,
-        ardeleanalex@gmail.com, jacopo@jmondi.org,
-        Andrea Merello <andrea.merello@iit.it>
-Subject: Re: [v4 11/14] dt-bindings: iio: imu: add documentation for Bosch
- BNO055 bindings
-Message-ID: <Ymcb3sODr0j6zFHF@robh.at.kernel.org>
-References: <20220415130005.85879-1-andrea.merello@gmail.com>
- <20220415130005.85879-12-andrea.merello@gmail.com>
+To:     Ashish Mhetre <amhetre@nvidia.com>
+Cc:     jonathanh@nvidia.com, linux-kernel@vger.kernel.org,
+        dmitry.osipenko@collabora.com, devicetree@vger.kernel.org,
+        thierry.reding@gmail.com, robh+dt@kernel.org, digetx@gmail.com,
+        Snikam@nvidia.com, krzysztof.kozlowski+dt@linaro.org,
+        vdumpa@nvidia.com, krzysztof.kozlowski@linaro.org,
+        linux-tegra@vger.kernel.org
+Subject: Re: [Patch v8 3/4] dt-bindings: memory: tegra: Update validation for
+ reg and reg-names
+Message-ID: <YmcTjBxU7BfOX/SB@robh.at.kernel.org>
+References: <20220425075036.30098-1-amhetre@nvidia.com>
+ <20220425075036.30098-4-amhetre@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220415130005.85879-12-andrea.merello@gmail.com>
+In-Reply-To: <20220425075036.30098-4-amhetre@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 15, 2022 at 03:00:02PM +0200, Andrea Merello wrote:
-> From: Andrea Merello <andrea.merello@iit.it>
-
-For the subject:
-
-dt-bindings: iio/imu: Add Bosch BNO055
-
+On Mon, 25 Apr 2022 13:20:35 +0530, Ashish Mhetre wrote:
 > 
-> Introduce new documentation file for the Bosch BNO055 IMU
-> 
-> Signed-off-by: Andrea Merello <andrea.merello@iit.it>
-> ---
->  .../bindings/iio/imu/bosch,bno055.yaml        | 59 +++++++++++++++++++
->  1 file changed, 59 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/imu/bosch,bno055.yaml
-
-With the subject fixed:
 
 Reviewed-by: Rob Herring <robh@kernel.org>
