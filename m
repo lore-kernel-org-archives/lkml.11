@@ -2,67 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2EA6C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 15:38:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5896C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 15:39:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242934AbiDYPlq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 11:41:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55102 "EHLO
+        id S242944AbiDYPmL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 11:42:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239227AbiDYPlp (ORCPT
+        with ESMTP id S240526AbiDYPmH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 11:41:45 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F21A444A17;
-        Mon, 25 Apr 2022 08:38:40 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id z99so18897591ede.5;
-        Mon, 25 Apr 2022 08:38:40 -0700 (PDT)
+        Mon, 25 Apr 2022 11:42:07 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8287C23168;
+        Mon, 25 Apr 2022 08:39:01 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id r13so30408869ejd.5;
+        Mon, 25 Apr 2022 08:39:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=lyKb4FdguiCq+rrS9QTQp8nb4hp+SYmLFGLR3Wa4zP0=;
-        b=oR0hgVe+fDdxZD9+CK6avbwwxst9IxTbsMtLq6aW8nl049044HLXTgVi9nHCY+Qc5n
-         GMmxTLe9j6AsomYiIspYq9X9YCBjYb3QrCgO8e75oi5Ip2iR02r/0xDDKIkN8H1V6398
-         DH6oUE+7acEJ3s3LcKhnf8heFGPMFI6NahiyzttiY/ZuPZH/iQpUsjjgiZ72ISHVHT2z
-         2KB4ViwjkhWkcWf4b6u6ZOACe4oj+ACgcDAqUtvRFigC8GlOAdb8EKLWIFqsR7uj3FgR
-         CfhJl9XUC0NooRA5BFTahfsDuLxzdbTtqP56TE5L6rOke5C+YgB+2Mi4TOTlVYB2TmN7
-         BiMw==
+        bh=pYmQqIYD75N8SfHaj0AHYF+l6GG1We6pvmxz4RUic0U=;
+        b=HcSKLFcQ39VMWJjtBZOifOr7HgnGBAnQ/2K6mqcHILLQHQEUof1EcH0ST5RP2UyCJW
+         sPlugYviZSHSzfhUOdEgns1D2XbP9ik5vVLAa8eQyh+ujOu3Lu7vfKwOvBGFzAgZvNbU
+         IVSox7dVLyL/HoeY3CNQ+eVnLotEv6w2ejPCurmWyENlL9f+Jtx40Z/cAX0ihd6LUeJH
+         4LTCpaJ6ib1GjFQ1g7nKC9zvclPmJkQy1D4af2UW1r3iG3PFl9M5GO8Qtswn7ipHZde0
+         YxEIzYVmsQWrtVf2akEMf6LfzlFWMJknvrruua5q5qcfAX/sW+18ZYvIuUX6M5J1ojo/
+         O5aw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=lyKb4FdguiCq+rrS9QTQp8nb4hp+SYmLFGLR3Wa4zP0=;
-        b=GBTYKmbqkeGLzq3wFKY/CMyvV7QxKtKR5bD+arH4cYqF4BeE/dFaaf5aEGIR4TwtZN
-         rm+tbsdfctJ5SA43z7fIcfIsNBABGv8jtH457FcvrZvC2t5X+VGcy7PSt0LRrVXydX4w
-         QBrunsuARKjiDk926aYpEYpIJ0sMi3iAARPO+Mjn9dXSw1iULXAhZxHhb+giNmsgvx0h
-         I3lDkJrgXk5DAs+Fdi9juTHAkWlo4Oz0ureTAlgi/N0u99V0oCcGWQVev8U7h5vyFUsV
-         oferHz6cwmJUyns6yKIzsoMhm3/OhZ4u9VbU4GDc7G3r6B0vzhf4OOvGfw2LSm4z5JFJ
-         MGqA==
-X-Gm-Message-State: AOAM531+TUjW1FgYyskCTcm4Eklbdmlxz7nKJ2MfjHTX+6CXAtgZWLo8
-        d+qkOfpi6y04aUge2eXDCIA=
-X-Google-Smtp-Source: ABdhPJy7/i2EjP7Cft8S7OWZdF41cMgkZwTrPEfilPCAN8PeG/6lORkVjz6ueYqKFCMOyADTntHYyA==
-X-Received: by 2002:a05:6402:1e93:b0:424:1b50:688d with SMTP id f19-20020a0564021e9300b004241b50688dmr19810193edf.405.1650901119465;
-        Mon, 25 Apr 2022 08:38:39 -0700 (PDT)
+        bh=pYmQqIYD75N8SfHaj0AHYF+l6GG1We6pvmxz4RUic0U=;
+        b=pr1u17HYRbqbbqqpvhhP4IUD7sUa3dNhkz2DwHVs94G06h/hJZ97VIDtOw76Dl6FXI
+         XBCvZ9GrcImxDl68oz0qOMUf7faJUv/7QEd4RiflWYi4jN05rMAs5WdZpzL8XTZp4kW8
+         93GKfG9vrI+Glzyyy0RyvKN3sgbpt0ITvLB6FXYeNtHwKKJ8hX/xQq5b67/evhaP8GY0
+         FNny50IkL7tR0ilTbucPJAcKN7rAnwq12Iqjw0WdYcLSzohSTES40tRthEnWTrLt7V0X
+         RR5MNucsU62z+R+MNQNTJsud2v894c6qN6iSiypKGMSWrCB8QGfOXqYruIsNPFYDC2Ye
+         +i2Q==
+X-Gm-Message-State: AOAM530PQST24InvL1lRiMtHVafP06hCV9FW9CcnCADKZZjJRtycY20U
+        K1D3/IQF97t/Jys/AbrO73Q=
+X-Google-Smtp-Source: ABdhPJwwSkqiGf16KxdNekflI3QJP2lMS26OvuOMJjFrLD26JHb5D0s3BuIki9ZRVb340m/EuLrD8Q==
+X-Received: by 2002:a17:907:2daa:b0:6da:924e:955 with SMTP id gt42-20020a1709072daa00b006da924e0955mr16948119ejc.1.1650901139986;
+        Mon, 25 Apr 2022 08:38:59 -0700 (PDT)
 Received: from kista.localnet (cpe-86-58-32-107.static.triera.net. [86.58.32.107])
-        by smtp.gmail.com with ESMTPSA id e22-20020a170906505600b006da7d71f25csm3747575ejk.41.2022.04.25.08.38.38
+        by smtp.gmail.com with ESMTPSA id s1-20020a056402036100b004240a3fc6b4sm4838063edw.82.2022.04.25.08.38.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 08:38:39 -0700 (PDT)
+        Mon, 25 Apr 2022 08:38:59 -0700 (PDT)
 From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
-To:     Ulf Hansson <ulf.hansson@linaro.org>, linux-mmc@vger.kernel.org,
-        Samuel Holland <samuel@sholland.org>
-Cc:     Samuel Holland <samuel@sholland.org>,
-        Andre Przywara <andre.przywara@arm.com>,
+To:     Dang Huynh <danct12@riseup.net>, Dang Huynh <danct12@riseup.net>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Chen-Yu Tsai <wens@csie.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Yangtao Li <frank@allwinnertech.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH] mmc: sunxi-mmc: Fix DMA descriptors allocated above 32 bits
-Date:   Mon, 25 Apr 2022 17:38:37 +0200
-Message-ID: <7372337.EvYhyI6sBW@kista>
-In-Reply-To: <20220424231751.32053-1-samuel@sholland.org>
-References: <20220424231751.32053-1-samuel@sholland.org>
+        Samuel Holland <samuel@sholland.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ARM: dts: sunxi: nanopi: Remove input-name property
+Date:   Mon, 25 Apr 2022 17:38:58 +0200
+Message-ID: <3427349.iIbC2pHGDl@kista>
+In-Reply-To: <20220425064231.243482-1-danct12@riseup.net>
+References: <20220425064231.243482-1-danct12@riseup.net>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7Bit
 Content-Type: text/plain; charset="us-ascii"
@@ -70,45 +68,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dne ponedeljek, 25. april 2022 ob 01:17:50 CEST je Samuel Holland napisal(a):
-> Newer variants of the MMC controller support a 34-bit physical address
-> space by using word addresses instead of byte addresses. However, the
-> code truncates the DMA descriptor address to 32 bits before applying the
-> shift. This breaks DMA for descriptors allocated above the 32-bit limit.
+Dne ponedeljek, 25. april 2022 ob 08:42:32 CEST je Dang Huynh napisal(a):
+> This property doesn't seem to exist in the documentation nor
+> in source code, but for some reason it is defined in a bunch
+> of device trees.
 > 
-> Fixes: 3536b82e5853 ("mmc: sunxi: add support for A100 mmc controller")
-> Signed-off-by: Samuel Holland <samuel@sholland.org>
+> Signed-off-by: Dang Huynh <danct12@riseup.net>
 
-Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 
 Best regards,
 Jernej
 
 > ---
+> This patch is a split of this treewide patch [1] to ease the 
+> maintainers. 
 > 
->  drivers/mmc/host/sunxi-mmc.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
+> [1]: https://patchwork.kernel.org/patch/12633497/
 > 
-> diff --git a/drivers/mmc/host/sunxi-mmc.c b/drivers/mmc/host/sunxi-mmc.c
-> index c62afd212692..46f9e2923d86 100644
-> --- a/drivers/mmc/host/sunxi-mmc.c
-> +++ b/drivers/mmc/host/sunxi-mmc.c
-> @@ -377,8 +377,9 @@ static void sunxi_mmc_init_idma_des(struct 
-sunxi_mmc_host *host,
->  		pdes[i].buf_addr_ptr1 =
->  			cpu_to_le32(sg_dma_address(&data->sg[i]) >>
->  				    host->cfg->idma_des_shift);
-> -		pdes[i].buf_addr_ptr2 = cpu_to_le32((u32)next_desc >>
-> -						    host-
->cfg->idma_des_shift);
-> +		pdes[i].buf_addr_ptr2 =
-> +			cpu_to_le32(next_desc >>
-> +				    host->cfg->idma_des_shift);
->  	}
+>  arch/arm/boot/dts/sun8i-h3-nanopi.dtsi | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/arch/arm/boot/dts/sun8i-h3-nanopi.dtsi b/arch/arm/boot/dts/
+sun8i-h3-nanopi.dtsi
+> index fc45d5aaa67f..a9f749f49beb 100644
+> --- a/arch/arm/boot/dts/sun8i-h3-nanopi.dtsi
+> +++ b/arch/arm/boot/dts/sun8i-h3-nanopi.dtsi
+> @@ -75,7 +75,6 @@ led-1 {
 >  
->  	pdes[0].config |= cpu_to_le32(SDXC_IDMAC_DES0_FD);
+>  	r_gpio_keys {
+>  		compatible = "gpio-keys";
+> -		input-name = "k1";
+>  
+>  		k1 {
+>  			label = "k1";
 > -- 
-> 2.35.1
+> 2.36.0
 > 
 > 
 
