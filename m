@@ -2,117 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ABFEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:23:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0172EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:23:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234011AbiDYW0M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 18:26:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41816 "EHLO
+        id S234403AbiDYW0Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 18:26:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343664AbiDYWDy (ORCPT
+        with ESMTP id S1343507AbiDYV3P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 18:03:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E71E2AED
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 15:00:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Mon, 25 Apr 2022 17:29:15 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D9F1220CE
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 14:26:08 -0700 (PDT)
+Received: from zn.tnic (p5de8eeb4.dip0.t-ipconnect.de [93.232.238.180])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4ABD6B81ACD
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 22:00:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFCACC385A7;
-        Mon, 25 Apr 2022 22:00:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1650924047;
-        bh=D/VDL1DahBoKxuAKBJl+6cBrdh/4mvjtNLDy8kSYqLo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=OTvaaRx+WZC2FTgPWUF92ffX7vNnsCvJ6xGzm3EYYE+onLaPH8ue4af3+31PLTHFQ
-         +8nJQqfkcm2RPP7Ibj38OVAk1WzMIa3swMC+VomMeRFckVw0CQGDAYWMBFgHxsKjB+
-         KKqgUwCcumKjax0obedXSG38hajcEmIeMkSJOTbE=
-Date:   Mon, 25 Apr 2022 15:00:46 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Jagdish Gediya <jvgediya@linux.ibm.com>
-Cc:     andy@kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        minchan@kernel.org, ying.huang@intel.com, dave.hansen@intel.com
-Subject: Re: [RESEND PATCH] string_helpers: sysfs: Add helper to get bool
- from string
-Message-Id: <20220425150046.e23a0198e0076221549eb7cf@linux-foundation.org>
-In-Reply-To: <20220425085233.82576-1-jvgediya@linux.ibm.com>
-References: <20220425085233.82576-1-jvgediya@linux.ibm.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id B81DA1EC04A6;
+        Mon, 25 Apr 2022 23:26:01 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1650921961;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=VzCRn9yN2ByyCFR5QKv9+K8B8VcoQwcA3ZVz2Ifi7JQ=;
+        b=fNnh8YiUMApB0I9iM+V6r0nvmh8FA7oNdMa5U7S15/LCpqbI1/jM6tKwfyZ0aDGbo5ZAAv
+        UISb+73NpqVJqWCi+Fa1hLJKqxhd+c42n4JjVcHL1lptzDXi9IsAxaLj9BDartlz8vh+99
+        YmQB5O8tl20QGO/Fbc7aZfQyJMnzDYU=
+Date:   Mon, 25 Apr 2022 23:25:57 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Oleksandr <olekstysh@gmail.com>
+Cc:     Juergen Gross <jgross@suse.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        xen-devel@lists.xenproject.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Julien Grall <julien@xen.org>,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>
+Subject: Re: [PATCH V1 3/6] xen/virtio: Add option to restrict memory access
+ under Xen
+Message-ID: <YmcR5bfaYh1z7VUq@zn.tnic>
+References: <1650646263-22047-1-git-send-email-olekstysh@gmail.com>
+ <1650646263-22047-4-git-send-email-olekstysh@gmail.com>
+ <YmQsFb36UEH9BUnN@infradead.org>
+ <6c5042fe-dafc-eb4f-c1fa-03b0faf252de@gmail.com>
+ <abc5d23d-3d38-d198-4646-e886df2e83d4@suse.com>
+ <YmZUpua3hkCPdbfx@infradead.org>
+ <147f68f6-7d67-1884-bd14-5040639b3396@suse.com>
+ <67c7460a-3001-35a6-8e5b-f367270b257a@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <67c7460a-3001-35a6-8e5b-f367270b257a@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 25 Apr 2022 14:22:33 +0530 Jagdish Gediya <jvgediya@linux.ibm.com> wrote:
-
-> At many places in kernel, It is necessary to convert sysfs input
-> to corrosponding bool value e.g. "false" or "0" need to be converted
-> to bool false, "true" or "1" need to be converted to bool true,
-> places where such conversion is needed currently check the input
-> string manually. Also, such conversions compare sysfs input using
-> strncmp functions so even if certain number of character match in the
-> beginning, they assume the string as valid bool, which is not the
-> right semantic e.g. false is bool but falseX is not.
-> 
-> Introduce new string helper function to convert sysfs input to
-> corrosponding bool value. Modify existing such conversions to use
-> this new function.
-> 
-> logs,
-> $ cat /sys/kernel/mm/numa/demotion_enabled
-> false
-> $ echo true > /sys/kernel/mm/numa/demotion_enabled
-> $ cat demotion_enabled
-> true
-> $ echo truex > /sys/kernel/mm/numa/demotion_enabled
-> -bash: echo: write error: Invalid argument
-> $ echo 10 > /sys/kernel/mm/numa/demotion_enabled
-> -bash: echo: write error: Invalid argument
-> $ echo false > /sys/kernel/mm/numa/demotion_enabled
-> $ cat demotion_enabled
-> false
-> $ echo falseabc > /sys/kernel/mm/numa/demotion_enabled
-> -bash: echo: write error: Invalid argument
-> $ echo 1 > /sys/kernel/mm/numa/demotion_enabled
-> $ cat demotion_enabled
-> true
-> $ echo 0 > /sys/kernel/mm/numa/demotion_enabled
-> $ cat demotion_enabled
-> false
-> 
-> This patch doesn't have any functionality change.
-> 
-> ...
->
-> --- a/lib/string_helpers.c
-> +++ b/lib/string_helpers.c
-> @@ -967,6 +967,26 @@ void memcpy_and_pad(void *dest, size_t dest_len, const void *src, size_t count,
->  }
->  EXPORT_SYMBOL(memcpy_and_pad);
->  
-> +/**
-> + * sysfs_strbool - Get bool value corrosponding to string
-> + * @s: The string to operate on.
-> + * @output: Pointer to fill resulting bool value
-> + *
-> + * Returns 1 if string represents bool value, 0 otherwise
-> + */
-> +int sysfs_strbool(const char *s, bool *output)
-> +{
-> +	if (sysfs_streq(s, "1") || sysfs_streq(s, "true"))
-> +		*output = true;
-> +	else if (sysfs_streq(s, "0") || sysfs_streq(s, "false"))
-> +		*output = false;
-> +	else
-> +		return 0;
+On Mon, Apr 25, 2022 at 11:38:36PM +0300, Oleksandr wrote:
+> diff --git a/include/linux/cc_platform.h b/include/linux/cc_platform.h
+> index efd8205..d06bc7a 100644
+> --- a/include/linux/cc_platform.h
+> +++ b/include/linux/cc_platform.h
+> @@ -72,6 +72,19 @@ enum cc_attr {
+>          * Examples include TDX guest & SEV.
+>          */
+>         CC_ATTR_GUEST_UNROLL_STRING_IO,
 > +
-> +	return 1;
-> +}
-> +EXPORT_SYMBOL(sysfs_strbool);
-> +
+> +       /**
+> +        * @CC_ATTR_GUEST_MEM_ACCESS_RESTRICTED: Restricted memory access to
+> +        *                                       Guest memory is active
+> +        *
+> +        * The platform/OS is running as a guest/virtual machine and uses
+> +        * the restricted access to its memory. This attribute is set if
+> either
+> +        * Guest memory encryption or restricted memory access using Xen
+> grant
+> +        * mappings is active.
+> +        *
+> +        * Examples include Xen guest and SEV.
 
-Can we teach kstrtobool() about "true" and "false" then use that?
+Wait, whaaat?
+
+The cc_platform* stuff is for *confidential computing* guests to check
+different platform aspects.
+
+From quickly skimming over this, this looks like a misuse to me.
+
+Why can't you query this from the hypervisor just like you do your other
+querying about what is supported, etc? Hypercalls, CPUID, whatever...
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
