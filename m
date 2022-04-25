@@ -2,246 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F9CFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:22:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8153DC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:22:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230280AbiDYWZz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 18:25:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39564 "EHLO
+        id S232161AbiDYWZ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 18:25:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343645AbiDYWCm (ORCPT
+        with ESMTP id S1343730AbiDYWVb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 18:02:42 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36BB63298E
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 14:59:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650923977; x=1682459977;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=K37orOMojrXs5qDL8WyLkZCi+08bdVnSS7jsmHDoBsc=;
-  b=XoYN+HJb31ugHdVs8F9xXo1yylc7ogr4zcJZsX0fNTrw6GHHU1meUkJj
-   tkMsT/vmgnNzTYZZR3mFFpDOQIX5O9zDfF/b4qV6uZdoB55GiEhuKM1K6
-   Vyj7LkD+P9SelVZGSbKOjccSNO3UUg0Hy9iBSnngVxdaMoJiV4phH3Cc3
-   dYh4i6sR9FyMf/lArdrWZUftkSaQeZ6uWxhs69u5YdXgYCTmHESzchPaG
-   T0vCZsKg31qwAhbOd8zwFlpUaL4QFyS2T9K4KxkGUhGRf+cKyI1WpJ/kM
-   ShZY7VfN3EloZd97sD+T3iumj4CzEuK5xlZC8EfrxuNZhpDop4hrRm9zp
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="328315383"
-X-IronPort-AV: E=Sophos;i="5.90,289,1643702400"; 
-   d="scan'208";a="328315383"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 14:59:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,289,1643702400"; 
-   d="scan'208";a="512829792"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 25 Apr 2022 14:59:34 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nj6k2-0002us-4m;
-        Mon, 25 Apr 2022 21:59:34 +0000
-Date:   Tue, 26 Apr 2022 05:59:17 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Janne Grunau <j@jannau.net>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Hector Martin <marcan@marcan.st>
-Subject: [asahilinux:pr/22 73/189] drivers/hid/hid-magicmouse.c:662:41:
- warning: format specifies type 'unsigned short' but the argument has type
- 'int'
-Message-ID: <202204260549.BK1ztC91-lkp@intel.com>
+        Mon, 25 Apr 2022 18:21:31 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2135.outbound.protection.outlook.com [40.107.223.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90308644E6;
+        Mon, 25 Apr 2022 15:18:25 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PneKFFdCBFRNLuqo4vt7WhHL1V6MmokbBbh290DvwoPDPQs0Di5bgQ+jVlKT9loAtFsWDtbbWhMExIKLD9dbfyvc4AZRxBfQ1geJBDr5ZVw2A6UD4vqNM+iwSkAhzLiw36LBCNJCs4jivDSBzXFGXFy4tjTZIPOtPz1u1+38noRcVFMGDvkVl8+t8Jj9taCdu81RhyqXNs81dTfouIPeUmoWNc2JDnvB3mVzlQHf2PhAvMMpH8bYD+syCTbekPKUwinto7Nimnqq/QXQeeCmcTdtf9bW5qreQJWJ/N+Ole6qPXd/0GrR0wAnJ0tdhBajby6KYf9j0fwRefn4NlnhdA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=CtrvvNBlBlQElBlRpv1FH8wYGHhXgw41j18xQ1uOJaM=;
+ b=A3ptzbBPpBYBHfGVSPpbFIpuly5JOam08RT9asjTOLQnacz/8qPVCFiND/fiSahKg2a40G1n5OQtBYE41We3wuIiAcZKgIIjsraxdv13PxJtrXztj1CdMOc+aow85yg7HM1y+E6BcJeg2X1/00wgcR8cPQmzDbdhA7u8dLoaYBLYt0bX4DKCzvNBbwhhCQJWErMl0FYofKFERpLJUNx/T4HjuIj3b358bwyQTA6RL23AeArTd0DZ2NflTDKHDxhXYfGr5ck0Ua5SM9tbVa5Hh07wztTBQdjxPTxkLihWXGqilpeG+X6TIa+Rcfaz0yhaMnco4Q/+Whr/XcfS9zgR5A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=os.amperecomputing.com; dmarc=pass action=none
+ header.from=os.amperecomputing.com; dkim=pass
+ header.d=os.amperecomputing.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=os.amperecomputing.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CtrvvNBlBlQElBlRpv1FH8wYGHhXgw41j18xQ1uOJaM=;
+ b=X2QLgZAF0+BfjtaQDB2fahjdoiJAMDpnxy7HIXeKz/IRFqUaaA9SXs/7HwURFKa0hZ/gtLscVtviIhyW6J5nMQUvRUnqKbsl47aBKAGYGaz7eF11y0co0iTrcPAJ/RFlOSsyx1Yq7k9iejap5gZk/9hup2TB+cNHH3HYqt0QgIo=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=os.amperecomputing.com;
+Received: from DM5PR0102MB3590.prod.exchangelabs.com (2603:10b6:4:a4::25) by
+ SN6PR0102MB3598.prod.exchangelabs.com (2603:10b6:805:d::24) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5186.14; Mon, 25 Apr 2022 22:18:21 +0000
+Received: from DM5PR0102MB3590.prod.exchangelabs.com
+ ([fe80::6523:e373:99c:8ce]) by DM5PR0102MB3590.prod.exchangelabs.com
+ ([fe80::6523:e373:99c:8ce%5]) with mapi id 15.20.5186.021; Mon, 25 Apr 2022
+ 22:18:21 +0000
+From:   Ilkka Koskinen <ilkka@os.amperecomputing.com>
+To:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>
+Cc:     Len Brown <lenb@kernel.org>,
+        Ilkka Koskinen <ilkka@os.amperecomputing.com>,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] ACPI: AGDI: Fix missing prototype warning for acpi_agdi_init()
+Date:   Mon, 25 Apr 2022 15:18:02 -0700
+Message-Id: <20220425221802.68498-1-ilkka@os.amperecomputing.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: CH0PR03CA0012.namprd03.prod.outlook.com
+ (2603:10b6:610:b0::17) To DM5PR0102MB3590.prod.exchangelabs.com
+ (2603:10b6:4:a4::25)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: fbe2f045-1896-41f6-ede1-08da27098209
+X-MS-TrafficTypeDiagnostic: SN6PR0102MB3598:EE_
+X-Microsoft-Antispam-PRVS: <SN6PR0102MB3598DD1D6EE29EA71F734E7C9DF89@SN6PR0102MB3598.prod.exchangelabs.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 2NKKsb+OCDE1EXmTVnnQ90cbR+n5oseYhXeel5Mq9SzP/7Brf2NjTbdKPu5HIlDba5s4QxrFnOCbEDg+wWPvzfUFmKFHjn3T3veaqLQH752L8xMJe5tzUXre2r6RkTM7apmgjhe/vtb2ncsMWZCx8wfQ4zCAOz2ShgLR/dwr86Rw3mzidulzgAtwL/pnbhEWXitWRCzBeLXpFTSGPieHkL4IploTT9Js3gWdFine3FprHftGsgnssUMeTBJ4jg8rw9dk3lLgwvAWnSynJrikLaYuTCqDU/6Svo2OrbNRil8MpEzqDpBNwmgDrGWs7HGPIaZpZC9IlG6P2WIkz+xh9o2unsNpSYt4iOk5fU4ZWaDe/jw5++hyA9B9HB4nvycDTWr7o2eIyLF6yNu+kqpyH0+cwflQ0RD4wb/5Ez44fFqWn90zHQzGFq1+lrxIJT1pd39/TkT1B3jBO+1mc4OnGYlgU4XtBQdV3e22EbY2WSCqtiY8mwPdiYpzozasalbU5gjCrF5zxYbrY+yc8IuoZVZet1rA56irW9hOlFvL0DmFMkoQzBxwY6Fz8lLaHkVkQLtJ2xeIez1mSvcIm1i7I2NRnKjLvamFLMvsakcBt7/AwxABexJ4kBAlEvVGOTv2WluioNmxr9InHH5hFU6yWNYrKhyhK3xrH9RA/icjvPDa8FybqufIz90MskX82JUeoNXNP95DDhwLF9MfkQap+g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR0102MB3590.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(508600001)(52116002)(4326008)(6486002)(6666004)(6506007)(6512007)(26005)(186003)(2616005)(1076003)(66946007)(66476007)(83380400001)(66556008)(8676002)(54906003)(86362001)(38100700002)(5660300002)(8936002)(38350700002)(4744005)(2906002)(316002)(110136005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZzFYZy8xQnZpSnFNME5XL3dMWWxYYVZiSFlqYi9iR1hGUk16SnBUNHlKTmFU?=
+ =?utf-8?B?ZXhsQ3AwdEpPaVk3MUpibnloQkdyTWx3S2pFN3R4UW54di9pb1NObGl5a1FX?=
+ =?utf-8?B?ZTl1T1paTVdnVkFqNU82RitHeG5aeFFyeFR1K0p0ZUYrYkJndFpTS040QzJO?=
+ =?utf-8?B?NnpBRHYyMTQvNjdETzgzYUVXTW5ldy9tTWlvbnkyaWM1YlBzd3ZmYjI1OUdw?=
+ =?utf-8?B?UmVuNmNscTBFZHlER1RpMDJReGIwenFzbCs1MmFmVkduRHh2NFNQTkY3R2dy?=
+ =?utf-8?B?WFU0Wk1lVWZUdGRjU0FqbDRiVFZXenplb3o5b1QySmlJWEdjU211L01PWXFy?=
+ =?utf-8?B?ODAzUlg5UVl6T2Z4ckZoSkRpYVJ1RVoxdzl2Ly9JRDR3aDVCWVVZTTk1M0t5?=
+ =?utf-8?B?TVY5MVdEZ21GQmFCSzdQdW9ET2hlbXp3TjJKUUJkS1lRQ1JkcnJxcDRrUkhB?=
+ =?utf-8?B?a2hQZGVJdzlodUFCYnhva0t0dUNBZ1lYTk40TUhQK1ZPczFwQVZacktUMlNE?=
+ =?utf-8?B?ZmFGbEZhRDR3MFdmSDF0MXoySFB6L1ZMbEdZakZwTGJhN2Zyaytwa1lKaFJH?=
+ =?utf-8?B?RlVxQmV0SnNtaVN5QWFaVlp0bGpWKzNrVFFkbUZxcUg4Qjc0bDZIZldzNy93?=
+ =?utf-8?B?eG9YK3QzVmpiWG9FOWtMQWs3NWt6M2NWMDcxeG1tMGRiSXJvMHFmQStjMHFS?=
+ =?utf-8?B?UlpPMlVUVGFYTk96TmFpdmJNeVZQeGpTc256Qk1pVjdOeUR2aGxGck1DQzFs?=
+ =?utf-8?B?M05XdFM5alhuWnVqSS9aYWVXRHRpZTZkVXNJU2xxNTJxTW02dHhhdTNiVmhu?=
+ =?utf-8?B?Z015S3RyMFgzZi9Tdktuc1czMHlGRk5KTURKY2dyMGNLRVphL0VyMEpFVWdn?=
+ =?utf-8?B?ek1sVCtNK0R5UUJYY3hEK1pacWEzZmE4M2hkd20zTERMa3NBOURjMWJLQmc3?=
+ =?utf-8?B?TUkxVGJMZDdsdWNDa0UycHN2NnlHN1Z2U20ydHRPSE5MN3ZTVzdGNEhRZWZ6?=
+ =?utf-8?B?cTVySVpESUZyNU5YdmN3TWRQNmxtZTdXSlVUQVBjRG9jejJwcWpjU0ZoTVRw?=
+ =?utf-8?B?RkN5eGZuSXhjUktEY3JSMnRwWEQyY0E1NkZVL2drVlpEOTg1VFhDak9JT3pn?=
+ =?utf-8?B?WkN6czJaa282QUhybTdSemVLSkYvZkE0OXVJbXRzVjh1cmd0c1hJU3JlN2FD?=
+ =?utf-8?B?RTJVYTZvZjN4TXFwWllNOGp0M2ZlQ2NCUG9hclRvNUEwY0wzR2FIeEI1YWNV?=
+ =?utf-8?B?bWNnK2pzUTlSOGxPTWpYckJaSlA0Qm9VSFVETzNBTCtpZFd4V2NMcDlIYmsy?=
+ =?utf-8?B?QlhqT2w2VTN3NUFRbDlRT25vdkk4OGd4R1NyWXB5YTdERkM2WGQ3Q0R4TDgv?=
+ =?utf-8?B?VHVNS0owS1RqMmNEMHY5STkrTzUrbHo5cWhnbVNFZjY5bnVFVFNuQzA2dk5V?=
+ =?utf-8?B?aEh0VHZyM3hoVkQ0Y3dEY0tVWGEzV3NRc1lUS1BmYkg1cC9TMnNJTFhueVRO?=
+ =?utf-8?B?MllMb0ozTTljNSthc1loTGV5M1pPRlUwK3VpQUFYd1R2NW5wN0FselhrNjFT?=
+ =?utf-8?B?ejFybHhlWGZJVjcxSTA5TzVDOVp3NUtzUWlmM1B1Zmx2cDBBNk9pekVaa2lx?=
+ =?utf-8?B?aDJEUlhBcVZFS3dOdDljR1RyQjhlNWNVVTZPcUtlcnBvc0Z5Vjc4QTZmR1gx?=
+ =?utf-8?B?U2trMW1wMVVWcHlVYWJtUkdVSkpJUmQ2Vi9SQWVrdnIwMEdoeXcyODZwWlNM?=
+ =?utf-8?B?Q3FKbGhJL25VMVR0V0NJYmdXdXV3THdvMUYycFB1TE1FaFc4dkJabnA5MCtY?=
+ =?utf-8?B?TDZJVjdPeFd3bWsway9DZUcyL1AyeW5rYUY0SjBsTDBod3BSY1pqQmpJS2dN?=
+ =?utf-8?B?VXpzSS9QRUFZajVTQ2JvUDJvMkRHY3B1eUpTUDJ3NE5IZmovZUNFYysxQ1lJ?=
+ =?utf-8?B?ZDBqUzFkL0s0R3ZYb3c1VThyalV4VmRFYk1lY2FxSDRORVZ3NWpxOENEYzds?=
+ =?utf-8?B?bU1vVlZOelB6QWk2NWIybEg4R05XRXVxeXBPajQ2WU5obkplRXJSRmc0NHc1?=
+ =?utf-8?B?dmsyZEFURDdvNDdCWklRaDdmVk5QQUdZWlJRZ1JxL0lGeXcxL2FESHVtTThT?=
+ =?utf-8?B?bWpHWjNGMUV6a25aMEN5SGZNK2U1SDludlAxVFJaSGpqMlFNbU5EcERTaHU5?=
+ =?utf-8?B?QjYrcksvUHF5dFNJNVdRZjhLWXQvY2RUVDZlTzFLYm5nKytYTFA0N2NVTyt2?=
+ =?utf-8?B?cURFWWZXYTU0SzFmUWhzb2JvQ1pCdkhoUHNTSWdoNjZkaUIzUGhCcTNJZ2Vr?=
+ =?utf-8?B?WnNRckFKV1NxTStya3B6ZEVQelhEUzY3cFRYQUYyczdkTndpRklib1M2SGRl?=
+ =?utf-8?Q?eujT09KyapBhsUWQfKHSrcE1TkJy1KLxiampF?=
+X-OriginatorOrg: os.amperecomputing.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fbe2f045-1896-41f6-ede1-08da27098209
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR0102MB3590.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Apr 2022 22:18:21.7786
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3bc2b170-fd94-476d-b0ce-4229bdc904a7
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: oFZCEcG1Atms31XCYR0Ui/uBAPReSu4PukRX+Yfa7GXuzdeevfXXJljuL4QyLkkqlpJHEc1aIa7f2BSazUPs3uKOJCTv19tBfDMQYW+n+t56KtmnLTjXNWjqizsa2u0J
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR0102MB3598
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/AsahiLinux/linux pr/22
-head:   7ee315306d1a3b0da8cf2a53e7f55889d0e7f034
-commit: 03f2bf13a1adfe8af74f01c14af0943adef72470 [73/189] HID: magicmouse: add support for Macbook trackpads
-config: hexagon-randconfig-r041-20220425 (https://download.01.org/0day-ci/archive/20220426/202204260549.BK1ztC91-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 1cddcfdc3c683b393df1a5c9063252eb60e52818)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/AsahiLinux/linux/commit/03f2bf13a1adfe8af74f01c14af0943adef72470
-        git remote add asahilinux https://github.com/AsahiLinux/linux
-        git fetch --no-tags asahilinux pr/22
-        git checkout 03f2bf13a1adfe8af74f01c14af0943adef72470
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/hid/
+When building with W=1, we get the following warning:
 
-If you fix the issue, kindly add following tag as appropriate
+drivers/acpi/arm64/agdi.c:88:13: warning: no previous prototype for ‘acpi_agdi_init’ [-Wmissing-prototypes]
+ void __init acpi_agdi_init(void)
+
+Include AGDI driver's header file to pull in the prototype definition
+for acpi_agdi_init() to get rid of the compiler warning
+
+Fixes: a2a591fb76e6 ("ACPI: AGDI: Add driver for Arm Generic Diagnostic Dump and Reset device")
 Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Ilkka Koskinen <ilkka@os.amperecomputing.com>
+---
+ drivers/acpi/arm64/agdi.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-All warnings (new ones prefixed by >>):
-
->> drivers/hid/hid-magicmouse.c:662:41: warning: format specifies type 'unsigned short' but the argument has type 'int' [-Wformat]
-                   hid_dbg(hdev, "ev x:%04hx y:%04hx\n", le16_to_int(f->abs_x),
-                                       ~~~~~             ^~~~~~~~~~~~~~~~~~~~~
-                                       %04x
-   include/linux/hid.h:1218:30: note: expanded from macro 'hid_dbg'
-           dev_dbg(&(hid)->dev, fmt, ##__VA_ARGS__)
-                                ~~~    ^~~~~~~~~~~
-   include/linux/dev_printk.h:155:39: note: expanded from macro 'dev_dbg'
-           dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
-                                        ~~~     ^~~~~~~~~~~
-   include/linux/dynamic_debug.h:167:19: note: expanded from macro 'dynamic_dev_dbg'
-                              dev, fmt, ##__VA_ARGS__)
-                                   ~~~    ^~~~~~~~~~~
-   include/linux/dynamic_debug.h:152:56: note: expanded from macro '_dynamic_func_call'
-           __dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
-                                                                 ^~~~~~~~~~~
-   include/linux/dynamic_debug.h:134:15: note: expanded from macro '__dynamic_func_call'
-                   func(&id, ##__VA_ARGS__);               \
-                               ^~~~~~~~~~~
-   drivers/hid/hid-magicmouse.c:663:4: warning: format specifies type 'unsigned short' but the argument has type 'int' [-Wformat]
-                           le16_to_int(f->abs_y));
-                           ^~~~~~~~~~~~~~~~~~~~~
-   include/linux/hid.h:1218:30: note: expanded from macro 'hid_dbg'
-           dev_dbg(&(hid)->dev, fmt, ##__VA_ARGS__)
-                                ~~~    ^~~~~~~~~~~
-   include/linux/dev_printk.h:155:39: note: expanded from macro 'dev_dbg'
-           dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
-                                        ~~~     ^~~~~~~~~~~
-   include/linux/dynamic_debug.h:167:19: note: expanded from macro 'dynamic_dev_dbg'
-                              dev, fmt, ##__VA_ARGS__)
-                                   ~~~    ^~~~~~~~~~~
-   include/linux/dynamic_debug.h:152:56: note: expanded from macro '_dynamic_func_call'
-           __dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
-                                                                 ^~~~~~~~~~~
-   include/linux/dynamic_debug.h:134:15: note: expanded from macro '__dynamic_func_call'
-                   func(&id, ##__VA_ARGS__);               \
-                               ^~~~~~~~~~~
-   2 warnings generated.
---
-   drivers/hid/hid-magicmouse.c:169: warning: Function parameter or member 'pos' not described in 'magicmouse_sc'
-   drivers/hid/hid-magicmouse.c:169: warning: Function parameter or member 'hdev' not described in 'magicmouse_sc'
-   drivers/hid/hid-magicmouse.c:169: warning: Function parameter or member 'work' not described in 'magicmouse_sc'
-   drivers/hid/hid-magicmouse.c:169: warning: Function parameter or member 'battery_timer' not described in 'magicmouse_sc'
-   drivers/hid/hid-magicmouse.c:169: warning: Function parameter or member 'input_ops' not described in 'magicmouse_sc'
->> drivers/hid/hid-magicmouse.c:592: warning: expecting prototype for struct trackpad. Prototype was for struct tp_header instead
-
-
-vim +662 drivers/hid/hid-magicmouse.c
-
-   571	
-   572	/**
-   573	 * struct trackpad report
-   574	 *
-   575	 * @report_id:		reportid
-   576	 * @buttons:		HID Usage Buttons 3 1-bit reports
-   577	 * @num_fingers:	the number of fingers being reported in @fingers
-   578	 * @clicked:		same as @buttons
-   579	 */
-   580	struct tp_header {
-   581		// HID mouse report
-   582		u8 report_id;
-   583		u8 buttons;
-   584		u8 rel_x;
-   585		u8 rel_y;
-   586		u8 padding[4];
-   587		// HID vendor part, up to 1751 bytes
-   588		u8 unknown[22];
-   589		u8 num_fingers;
-   590		u8 clicked;
-   591		u8 unknown3[14];
- > 592	};
-   593	
-   594	static inline int le16_to_int(__le16 x)
-   595	{
-   596		return (signed short)le16_to_cpu(x);
-   597	}
-   598	
-   599	static void report_finger_data(struct input_dev *input, int slot,
-   600				       const struct input_mt_pos *pos,
-   601				       const struct tp_finger *f)
-   602	{
-   603		input_mt_slot(input, slot);
-   604		input_mt_report_slot_state(input, MT_TOOL_FINGER, true);
-   605	
-   606		input_report_abs(input, ABS_MT_TOUCH_MAJOR,
-   607				 le16_to_int(f->touch_major) << 1);
-   608		input_report_abs(input, ABS_MT_TOUCH_MINOR,
-   609				 le16_to_int(f->touch_minor) << 1);
-   610		input_report_abs(input, ABS_MT_WIDTH_MAJOR,
-   611				 le16_to_int(f->tool_major) << 1);
-   612		input_report_abs(input, ABS_MT_WIDTH_MINOR,
-   613				 le16_to_int(f->tool_minor) << 1);
-   614		input_report_abs(input, ABS_MT_ORIENTATION,
-   615				 J314_TP_MAX_FINGER_ORIENTATION - le16_to_int(f->orientation));
-   616		input_report_abs(input, ABS_MT_PRESSURE, le16_to_int(f->pressure));
-   617		input_report_abs(input, ABS_MT_POSITION_X, pos->x);
-   618		input_report_abs(input, ABS_MT_POSITION_Y, pos->y);
-   619	}
-   620	
-   621	static int magicmouse_raw_event_spi(struct hid_device *hdev,
-   622			struct hid_report *report, u8 *data, int size)
-   623	{
-   624		struct magicmouse_sc *msc = hid_get_drvdata(hdev);
-   625		struct input_dev *input = msc->input;
-   626		struct tp_header *tp_hdr;
-   627		struct tp_finger *f;
-   628		int i, n;
-   629		u32 npoints;
-   630		const size_t hdr_sz = sizeof(struct tp_header);
-   631		const size_t touch_sz = sizeof(struct tp_finger);
-   632		u8 map_contacs[MAX_CONTACTS];
-   633	
-   634		// hid_warn(hdev, "%s\n", __func__);
-   635		// print_hex_dump_debug("appleft ev: ", DUMP_PREFIX_OFFSET, 16, 1, data,
-   636		// 		     size, false);
-   637	
-   638		if (data[0] != TRACKPAD2_USB_REPORT_ID)
-   639			return 0;
-   640	
-   641		/* Expect 46 bytes of prefix, and N * 30 bytes of touch data. */
-   642		if (size < hdr_sz || ((size - hdr_sz) % touch_sz) != 0)
-   643			return 0;
-   644	
-   645		tp_hdr = (struct tp_header *)data;
-   646	
-   647		npoints = (size - hdr_sz) / touch_sz;
-   648		if (npoints < tp_hdr->num_fingers || npoints > MAX_CONTACTS) {
-   649			hid_warn(hdev,
-   650				 "unexpected number of touches (%u) for "
-   651				 "report\n",
-   652				 npoints);
-   653			return 0;
-   654		}
-   655	
-   656		n = 0;
-   657		for (i = 0; i < tp_hdr->num_fingers; i++) {
-   658			f = (struct tp_finger *)(data + hdr_sz + i * touch_sz);
-   659			if (le16_to_int(f->touch_major) == 0)
-   660				continue;
-   661	
- > 662			hid_dbg(hdev, "ev x:%04hx y:%04hx\n", le16_to_int(f->abs_x),
-   663				le16_to_int(f->abs_y));
-   664			msc->pos[n].x = le16_to_int(f->abs_x);
-   665			msc->pos[n].y = -le16_to_int(f->abs_y);
-   666			map_contacs[n] = i;
-   667			n++;
-   668		}
-   669	
-   670		input_mt_assign_slots(input, msc->tracking_ids, msc->pos, n, 0);
-   671	
-   672		for (i = 0; i < n; i++) {
-   673			int idx = map_contacs[i];
-   674			f = (struct tp_finger *)(data + hdr_sz + idx * touch_sz);
-   675			report_finger_data(input, msc->tracking_ids[i], &msc->pos[i], f);
-   676		}
-   677	
-   678		input_mt_sync_frame(input);
-   679		input_report_key(input, BTN_MOUSE, data[1] & 1);
-   680	
-   681		input_sync(input);
-   682		return 1;
-   683	}
-   684	
-
+diff --git a/drivers/acpi/arm64/agdi.c b/drivers/acpi/arm64/agdi.c
+index 4df337d545b7..cf31abd0ed1b 100644
+--- a/drivers/acpi/arm64/agdi.c
++++ b/drivers/acpi/arm64/agdi.c
+@@ -9,6 +9,7 @@
+ #define pr_fmt(fmt) "ACPI: AGDI: " fmt
+ 
+ #include <linux/acpi.h>
++#include <linux/acpi_agdi.h>
+ #include <linux/arm_sdei.h>
+ #include <linux/io.h>
+ #include <linux/kernel.h>
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.17.1
+
