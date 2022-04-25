@@ -2,109 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70390C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 14:17:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B35BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 14:19:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242410AbiDYOUb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 10:20:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52544 "EHLO
+        id S242418AbiDYOWD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 10:22:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237175AbiDYOU3 (ORCPT
+        with ESMTP id S231361AbiDYOWB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 10:20:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BD2421D336
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 07:17:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650896243;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3M0aoxkyxBu8tMQw8TfYWG0VMojy3pZmIs9OKgeG0uY=;
-        b=I45q1LiJfmZlSy/1hvA6gRGwZ1cXOHYPrCAwnT7HIxZwb0yc8FL01DE2XA97cxK+zvHe+w
-        U81smKudZNz3npuDjwB76hoNUjY+kgGBq1HNqnLCiebWhJ3luoMQdA0yTRT1MV7EEgVOGC
-        U+PWjXskryQDWqCWlrtNz9Y3pJULoQY=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-315-a92EowTmN7aRTbViTfYHQA-1; Mon, 25 Apr 2022 10:17:22 -0400
-X-MC-Unique: a92EowTmN7aRTbViTfYHQA-1
-Received: by mail-wm1-f69.google.com with SMTP id t2-20020a7bc3c2000000b003528fe59cb9so7205321wmj.5
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 07:17:22 -0700 (PDT)
+        Mon, 25 Apr 2022 10:22:01 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB7A91F610
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 07:18:57 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id d15so27276925pll.10
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 07:18:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=34R6TCm5dOXxCSCPteYCdV9oQ3SrvUL6TjoVApRAPyA=;
+        b=rKhoq9rj7V21/dSBiuO+irr6LlHbxDqcCLQpYECeIGt8kL7By/MR3EyWj84oZ3Qm+K
+         7J8o0eRSX8Pff3PswT8uq++deAWHjgx4NGr6B9gLD9hGl0ZmbKsH0D7LvWtmYtzN0KKp
+         aDsh1jjczDoNpAGXlQqJSHRfwI1dDyrILALAkxOMP9+Ng3hYFcjTN5bVxYD/5QRcdcjX
+         hOsEF5De0EhGuBOZVXEdTuUAQFhUAN3IMDAgo0xpW7eDhWqpq9grcVAMmAcTbNOy+zFP
+         YnQKvIfsw0Vy33sbUX96qeU8wMzj5Mon/I6G18wOD03RGON/RbiH2SEcqA5xJgxHQrF0
+         f5vA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3M0aoxkyxBu8tMQw8TfYWG0VMojy3pZmIs9OKgeG0uY=;
-        b=qmeTYiRYZgbobjS8Nvv/Na7B0/W43ly2Aapz6+AIOTK/MevRHcuJ32JTHAWkHlwSvf
-         1kEhjQ528f4XscuUxtYE+coxmhxHeLuhNeL1NuONweRiY/6AdTBXC3p35T0zoTatjMUT
-         iHJxA2FcJigA5Od8PAMNFYonNc72KBnGKXW9xadD/pMEMbsyym00p0tCpqfDZbR43Zp0
-         Hm6/9xVR/qQ/YjQ40l91Ibec8zbQPA7A3GDaOtBq9yb14sMI/oDCB3297DF9OXlbu06K
-         KZWtXrLpv27S4MnCtT2aQDqwCGYOypdQwgkLL8KyjzlmBdnd62PW/Usb/nB8OigF9fLY
-         WwVg==
-X-Gm-Message-State: AOAM531X4Xlu5TvF/B4MDxX8SMk8aY+97dXdJ6jDdlLjMj2TTzDXvF0u
-        WXZu/U+qSZEUo8BNc7xBiOUXR5Fh4CSqjHu/uEPKJb1NLp9bNuh+LlkDMi2z8xsWohf6KjWjlPg
-        N4BIgoHatlPvtX3gmBPwAZPo=
-X-Received: by 2002:a7b:c84f:0:b0:393:e729:e670 with SMTP id c15-20020a7bc84f000000b00393e729e670mr8781326wml.153.1650896241040;
-        Mon, 25 Apr 2022 07:17:21 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyMT+A2bqCqaIIs9ZgaQ2ZSK7SudVpQXxznSITCu/tmHcNBfasGTF4frwxIwbGgb5wHo/ba1w==
-X-Received: by 2002:a7b:c84f:0:b0:393:e729:e670 with SMTP id c15-20020a7bc84f000000b00393e729e670mr8781309wml.153.1650896240824;
-        Mon, 25 Apr 2022 07:17:20 -0700 (PDT)
-Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
-        by smtp.gmail.com with ESMTPSA id t2-20020a1c4602000000b003917d43d339sm11918988wma.4.2022.04.25.07.17.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 07:17:19 -0700 (PDT)
-Date:   Mon, 25 Apr 2022 15:17:17 +0100
-From:   Aaron Tomlin <atomlin@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Christoph Lameter <cl@gentwo.de>, frederic@kernel.org,
-        mtosatti@redhat.com, tglx@linutronix.de, mingo@kernel.org,
-        pauld@redhat.com, neelx@redhat.com, oleksandr@natalenko.name,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [RFC PATCH v3] tick/sched: Ensure quiet_vmstat() is called when
- the idle tick was stopped too
-Message-ID: <20220425141717.vw2jfnn3zp6c5ib2@ava.usersys.com>
-X-PGP-Key: http://pgp.mit.edu/pks/lookup?search=atomlin%40redhat.com
-X-PGP-Fingerprint: 7906 84EB FA8A 9638 8D1E  6E9B E2DE 9658 19CC 77D6
-References: <20220422193647.3808657-1-atomlin@redhat.com>
- <alpine.DEB.2.22.394.2204250919400.2367@gentwo.de>
- <20220425113909.u3smtztp66svlw4o@ava.usersys.com>
- <alpine.DEB.2.22.394.2204251406370.13839@gentwo.de>
- <20220425132700.GK2731@worktop.programming.kicks-ass.net>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=34R6TCm5dOXxCSCPteYCdV9oQ3SrvUL6TjoVApRAPyA=;
+        b=xQUcuiZ7d9BoXl9kL7k3Lzj1EOYDEWdkH8HzPHfJFaQsO6KNJ6kWVei3yZIofJU3zS
+         NeFHdLvzVxeS9bBRGl7a+lPodL0pktVVdBMzxEX2zhhFoKA4f4WvEPrqvhJMa5qMYlGK
+         pb5gsYear6HEZABPRKiy9AolMJlaj5dzlpYCyKfWnBqiA4oI0hEF9LdAPLtYSs9qslGH
+         jw3sJuZh75tXUSLF+GBF9eLFarQe/TCmYwZwHHnF0Ldddab/Gt8W8Yr90jQ30mdLaZMr
+         MxhlUTiB7YEI+AKmOp36POS1Kqn3Ud98V2kMlhEj1yaGbXJY+YKE5lhKEzg3brfvlqwJ
+         XX9w==
+X-Gm-Message-State: AOAM530bVn5Ed8l/1KedS9RE/SMsnH5VVGPSfFK8ZPrch8JNl8d6J15I
+        LgK7HwqVWV2CoGkyKjn2ZO6DTtr7aSHtNktOxa7u9CL8KP4oZw==
+X-Google-Smtp-Source: ABdhPJyM5CmdcL/mAU2sTH7BML/sQzHjXqgWVTuTNWDJV7jfPvh4xxvZIToS71OCDcD4V+vpkGIku1/FqIQtrUM52Mc=
+X-Received: by 2002:a17:902:9f96:b0:15d:1ee7:4231 with SMTP id
+ g22-20020a1709029f9600b0015d1ee74231mr3161790plq.131.1650896337383; Mon, 25
+ Apr 2022 07:18:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220425132700.GK2731@worktop.programming.kicks-ass.net>
+References: <20220425141617.23925-1-afd@ti.com> <20220425141617.23925-2-afd@ti.com>
+In-Reply-To: <20220425141617.23925-2-afd@ti.com>
+From:   Sumit Garg <sumit.garg@linaro.org>
+Date:   Mon, 25 Apr 2022 19:48:46 +0530
+Message-ID: <CAFA6WYN7GG6ZgxQ=AMinZ91f7QDh+aEPhL-Obx1s=zqReViAew@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] tee: remove flags TEE_IOCTL_SHM_MAPPED and TEE_IOCTL_SHM_DMA_BUF
+To:     Andrew Davis <afd@ti.com>
+Cc:     Jens Wiklander <jens.wiklander@linaro.org>,
+        op-tee@lists.trustedfirmware.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 2022-04-25 15:27 +0200, Peter Zijlstra wrote:
-> On Mon, Apr 25, 2022 at 02:09:06PM +0200, Christoph Lameter wrote:
-> > On Mon, 25 Apr 2022, Aaron Tomlin wrote:
-> > 
-> > > Yes, in the context of nohz, this patch should ensure it, if required, when
-> > > the idle tick is to be stopped.
-> > 
-> > What I said was that it is generally useful. Even in the non NOHZ case.
-> > 
-> > Folding the vmstat diffs *always* when entering idle prevents unnecessary
-> > wakeups and processing in the future and also provides more accurate
-> > counters for the VM allowing better decision to be made on reclaim.
-> 
-> I'm thinking you're going to find a ton of regressions if you try it
-> though; some workloads go idle *very* shortly, doing all this accounting
-> is going to be counter-productive.
+On Mon, 25 Apr 2022 at 19:46, Andrew Davis <afd@ti.com> wrote:
+>
+> These look to be leftover from an early edition of this driver. Userspace
+> does not need this information. Checking all users of this that I have
+> access to I have verified no one is using them.
+>
+> They leak internal use flags out to userspace. Even more they are not
+> correct anymore after a45ea4efa358. Lets drop these flags before
+> someone does try to use them for something and they become ABI.
+>
+> Signed-off-by: Andrew Davis <afd@ti.com>
+> ---
+>
+> Changes from v1:
+>  - Removed flags return from tee_ioctl_shm_alloc()
+>
 
-Hi Peter, Christoph,
+Acked-by: Sumit Garg <sumit.garg@linaro.org>
 
-Indeed. Which was why I decided, initially, against the general-purpose
-case/or approach. Personally, I would prefer to keep this somewhat
-restrictive to nohz.
+-Sumit
 
-
-Kind regards,
-
--- 
-Aaron Tomlin
-
+>  drivers/tee/tee_core.c   | 2 --
+>  include/uapi/linux/tee.h | 4 ----
+>  2 files changed, 6 deletions(-)
+>
+> diff --git a/drivers/tee/tee_core.c b/drivers/tee/tee_core.c
+> index 8aa1a4836b92f..af0f7c603fa46 100644
+> --- a/drivers/tee/tee_core.c
+> +++ b/drivers/tee/tee_core.c
+> @@ -302,7 +302,6 @@ static int tee_ioctl_shm_alloc(struct tee_context *ctx,
+>                 return PTR_ERR(shm);
+>
+>         data.id = shm->id;
+> -       data.flags = shm->flags;
+>         data.size = shm->size;
+>
+>         if (copy_to_user(udata, &data, sizeof(data)))
+> @@ -339,7 +338,6 @@ tee_ioctl_shm_register(struct tee_context *ctx,
+>                 return PTR_ERR(shm);
+>
+>         data.id = shm->id;
+> -       data.flags = shm->flags;
+>         data.length = shm->size;
+>
+>         if (copy_to_user(udata, &data, sizeof(data)))
+> diff --git a/include/uapi/linux/tee.h b/include/uapi/linux/tee.h
+> index 25a6c534beb1b..23e57164693c4 100644
+> --- a/include/uapi/linux/tee.h
+> +++ b/include/uapi/linux/tee.h
+> @@ -42,10 +42,6 @@
+>  #define TEE_IOC_MAGIC  0xa4
+>  #define TEE_IOC_BASE   0
+>
+> -/* Flags relating to shared memory */
+> -#define TEE_IOCTL_SHM_MAPPED   0x1     /* memory mapped in normal world */
+> -#define TEE_IOCTL_SHM_DMA_BUF  0x2     /* dma-buf handle on shared memory */
+> -
+>  #define TEE_MAX_ARG_SIZE       1024
+>
+>  #define TEE_GEN_CAP_GP         (1 << 0)/* GlobalPlatform compliant TEE */
+> --
+> 2.17.1
+>
