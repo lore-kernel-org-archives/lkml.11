@@ -2,217 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4747EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 05:50:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24B9DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 05:52:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235552AbiDYFxY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 01:53:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51538 "EHLO
+        id S236115AbiDYFza (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 01:55:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230052AbiDYFxT (ORCPT
+        with ESMTP id S231330AbiDYFzW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 01:53:19 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12E3E22530;
-        Sun, 24 Apr 2022 22:50:16 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id d15so24604037pll.10;
-        Sun, 24 Apr 2022 22:50:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=QtDanb++15hBXNtBohBibz08hgDs29LL2PnLGIAiZD8=;
-        b=ky0IXZBBsPIDqP7EVAQluRnJOVYLTSPPI4fvbyU4LCSr5qMPTKPvpGtijHGkr3ex7M
-         o7jr/Gm2KwS2UqeZmgoz/1fErqEGvfp8u8K2a0hLxzr/uqqcpJS3Ee6kLcLOUhvFrtIa
-         E1XfoHdm4auPynYE3pM1bsTVSbQj6fBXWQ3bylXzdCIxeVo8Igz3ZIJzqKykggs7AP9+
-         8yA6BKOEE40a37fLEt0OU+bBK7oBkiczHDGo/bAHbu8HHOQzZ7dwMFLu26acZ3YC+51D
-         Xxa3IT02NkKZa9b5jy1+zO4Urpco+PMJrK/3rUpFbSdNv4l0oSIriH1lI1+TC0VmnTMd
-         NJJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=QtDanb++15hBXNtBohBibz08hgDs29LL2PnLGIAiZD8=;
-        b=IlpdQWcc7/vsCOlC1nojfZOai/HNq5P6Ol9UjR0PZ3DFXSSf/J8Ge3vW65d/S7db8F
-         ZJHfr94Il+LE02I0f4sCtzcyM4P3FVG4+BgoAolFWNkSPEFqSmkg5t0s2JbW1Kag66Ku
-         qz8LypeE84YdhXM2Z9WQz3dK2yRN/PG9wzqrhihoXENW76vZBCO2R3r2kI3S0xe1PoWg
-         B0uFQPp6RBlNrU+PJ+kzxFbH5k86DhLZn5PBKlI5MlwV40/GX5gYofADEz3BWu6ldZ9K
-         ETAnlVzXtro7iuLqJ+Tn1XIKJ3tEVWBNvyry4/dTjL6BPX94FMstGLL4KO2WZ5lFHZTq
-         c1ng==
-X-Gm-Message-State: AOAM530slL1rj2rjLQNu2uamrEfKLjs6kHNmZZTASMUwdB13c+uuN1sb
-        MtujyfV48rijsb2cAEsyq+F+kl8vheQ=
-X-Google-Smtp-Source: ABdhPJzfsCJlnygDTA3grtoAOGlWYa2odyE4V9vfonHtKHDtQ9xY3Krf9kJeLnbaJfay6azSUfxHJg==
-X-Received: by 2002:a17:902:a987:b0:158:b020:e5b8 with SMTP id bh7-20020a170902a98700b00158b020e5b8mr16375807plb.103.1650865815433;
-        Sun, 24 Apr 2022 22:50:15 -0700 (PDT)
-Received: from cyhuang-hp-elitebook-840-g3.rt ([2402:7500:46a:c2e1:d402:1333:c60b:f1a1])
-        by smtp.gmail.com with ESMTPSA id k10-20020a056a00168a00b004f7e2a550ccsm10029597pfc.78.2022.04.24.22.50.02
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 24 Apr 2022 22:50:10 -0700 (PDT)
-Date:   Mon, 25 Apr 2022 13:49:53 +0800
-From:   ChiYuan Huang <u0084500@gmail.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        ChiYuan Huang <cy_huang@richtek.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] regulator: richtek,rt4801: use existing ena_gpiod
- feature
-Message-ID: <20220425054943.GA3993@cyhuang-hp-elitebook-840-g3.rt>
-References: <20220423181419.19397-1-krzysztof.kozlowski@linaro.org>
- <20220423181419.19397-3-krzysztof.kozlowski@linaro.org>
+        Mon, 25 Apr 2022 01:55:22 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1694B36318
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 22:52:17 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id ACB7F1FB;
+        Sun, 24 Apr 2022 22:52:16 -0700 (PDT)
+Received: from [10.163.40.250] (unknown [10.163.40.250])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5DF9A3F774;
+        Sun, 24 Apr 2022 22:52:06 -0700 (PDT)
+Message-ID: <0f4de9db-1e36-b9d8-bd94-6e3ec3842940@arm.com>
+Date:   Mon, 25 Apr 2022 11:22:58 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220423181419.19397-3-krzysztof.kozlowski@linaro.org>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH -next v5 3/5] mm: page_table_check: add hooks to public
+ helpers
+Content-Language: en-US
+To:     Tong Tiangen <tongtiangen@huawei.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-riscv@lists.infradead.org,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Guohanjun <guohanjun@huawei.com>
+References: <20220421082042.1167967-1-tongtiangen@huawei.com>
+ <20220421082042.1167967-4-tongtiangen@huawei.com>
+ <7fc56f41-a3c2-76be-7a20-dda392f3c4fc@arm.com>
+ <eaf17cfc-880e-2181-b253-d520781c428f@huawei.com>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+In-Reply-To: <eaf17cfc-880e-2181-b253-d520781c428f@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 23, 2022 at 08:14:19PM +0200, Krzysztof Kozlowski wrote:
-> The driver duplicated regulator core feature of controlling
-> regulators with GPIOs (of_parse_cb + ena_gpiod) and created its own
-> enable-gpios property with multiple GPIOs.
-> 
-> The core already does it. Keep old method for backwards compatibility.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
->  drivers/regulator/rt4801-regulator.c | 68 ++++++++++++++++++++++++----
->  1 file changed, 58 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/regulator/rt4801-regulator.c b/drivers/regulator/rt4801-regulator.c
-> index 7a87788d3f09..22efe44cd3a0 100644
-> --- a/drivers/regulator/rt4801-regulator.c
-> +++ b/drivers/regulator/rt4801-regulator.c
-> @@ -29,17 +29,71 @@
->  
->  struct rt4801_priv {
->  	struct device *dev;
-> +	/*
-> +	 * Driver supports enable GPIOs in two ways:
-> +	 * 1. Legacy enable-gpios property with multiple entries and enable
-> +	 *    control handled by the driver.
-> +	 * 2. Per-regulator enable-gpios property with enable control handled by
-> +	 *    the regulator core.
-> +	 *
-> +	 * The enable_gpios and enable_flag properties are for the (1) case.
-> +	 */
->  	struct gpio_descs *enable_gpios;
->  	unsigned int enable_flag;
->  	unsigned int volt_sel[DSV_OUT_MAX];
->  };
->  
-> +static int rt4801_of_parse_cb(struct device_node *np,
-> +			      const struct regulator_desc *desc,
-> +			      struct regulator_config *config)
-> +{
-> +	struct rt4801_priv *priv = config->driver_data;
-> +
-> +	if (priv->enable_gpios) {
-> +		dev_warn(priv->dev, "duplicated enable-gpios property\n");
-> +		return 0;
-> +	}
-> +	config->ena_gpiod = fwnode_gpiod_get_index(of_fwnode_handle(np),
-> +						   "enable-gpios",
-'enable' only, gpiod API will automatically concat it to 'enable-gpios'.
-> +						   0,
-> +						   GPIOD_OUT_HIGH |
-> +						   GPIOD_FLAGS_BIT_NONEXCLUSIVE,
-> +						   "rt4801");
-> +	if (IS_ERR(config->ena_gpiod))
-> +		config->ena_gpiod = NULL;
-> +
-> +	return 0;
-> +}
-> +
-> +/*
-> + * regulator_ops->is_enabled() implementation
-> + */
-> +static int rt4801_is_enabled(struct regulator_dev *rdev)
-> +{
-> +	struct rt4801_priv *priv = rdev_get_drvdata(rdev);
-> +	int id = rdev_get_id(rdev);
-> +
-> +	return !!(priv->enable_flag & BIT(id));
-> +}
-> +
-> +/*
-> + * Internally used only is_enabled() implementation using also ena_pin from
-> + * regulator core.
-> + */
-> +static bool rt4801_is_enabled_ena_pin(struct regulator_dev *rdev)
-> +{
-> +	if (rdev->ena_pin)
-> +		return rdev->ena_gpio_state;
-> +
-> +	return rt4801_is_enabled(rdev);
-> +}
-> +
->  static int rt4801_set_voltage_sel(struct regulator_dev *rdev, unsigned int selector)
->  {
->  	struct rt4801_priv *priv = rdev_get_drvdata(rdev);
->  	int id = rdev_get_id(rdev), ret;
->  
-> -	if (priv->enable_flag & BIT(id)) {
-> +	if (rt4801_is_enabled_ena_pin(rdev)) {
->  		ret = regulator_set_voltage_sel_regmap(rdev, selector);
->  		if (ret)
->  			return ret;
-> @@ -54,7 +108,7 @@ static int rt4801_get_voltage_sel(struct regulator_dev *rdev)
->  	struct rt4801_priv *priv = rdev_get_drvdata(rdev);
->  	int id = rdev_get_id(rdev);
->  
-> -	if (priv->enable_flag & BIT(id))
-> +	if (rt4801_is_enabled_ena_pin(rdev))
->  		return regulator_get_voltage_sel_regmap(rdev);
->  
->  	return priv->volt_sel[id];
-> @@ -100,14 +154,6 @@ static int rt4801_disable(struct regulator_dev *rdev)
->  	return 0;
->  }
->  
-> -static int rt4801_is_enabled(struct regulator_dev *rdev)
-> -{
-> -	struct rt4801_priv *priv = rdev_get_drvdata(rdev);
-> -	int id = rdev_get_id(rdev);
-> -
-> -	return !!(priv->enable_flag & BIT(id));
-> -}
-> -
->  static const struct regulator_ops rt4801_regulator_ops = {
->  	.list_voltage = regulator_list_voltage_linear,
->  	.set_voltage_sel = rt4801_set_voltage_sel,
-> @@ -122,6 +168,7 @@ static const struct regulator_desc rt4801_regulator_descs[] = {
->  		.name = "DSVP",
->  		.ops = &rt4801_regulator_ops,
->  		.of_match = of_match_ptr("DSVP"),
-> +		.of_parse_cb = rt4801_of_parse_cb,
->  		.type = REGULATOR_VOLTAGE,
->  		.id = DSV_OUT_POS,
->  		.min_uV = MIN_UV,
-> @@ -135,6 +182,7 @@ static const struct regulator_desc rt4801_regulator_descs[] = {
->  		.name = "DSVN",
->  		.ops = &rt4801_regulator_ops,
->  		.of_match = of_match_ptr("DSVN"),
-> +		.of_parse_cb = rt4801_of_parse_cb,
->  		.type = REGULATOR_VOLTAGE,
->  		.id = DSV_OUT_NEG,
->  		.min_uV = MIN_UV,
 
-There's one problem.
-If 'ena_gpiod' is specified, it cannot be conexisted with ops
-'enable/disable/is_enabled' by regulator framework.
-It will cause no one to recover the voltage back.
-You can check the original 'enable' ops.
 
-How about to only parse gpio in 'of_parse_cb' and put it all into the
-driver data, not to use regulator framework 'ena_gpiod'?
-
-Best regards,
-ChiYuan Huang.
-> -- 
-> 2.32.0
+On 4/24/22 09:40, Tong Tiangen wrote:
 > 
+> 
+> 在 2022/4/22 14:05, Anshuman Khandual 写道:
+>>
+>>
+>> On 4/21/22 13:50, Tong Tiangen wrote:
+>>> Move ptep_clear() to the include/linux/pgtable.h and add page table check
+>>> relate hooks to some helpers, it's prepare for support page table check
+>>> feature on new architecture.
+>>
+>> Could instrumenting generic page table helpers (fallback instances when its
+>> corresponding __HAVE_ARCH_XXX is not defined on the platform), might add all
+>> the page table check hooks into paths on platforms which have not subscribed
+>> ARCH_SUPPORTS_PAGE_TABLE_CHECK in the first place ? Although these looks have
+>> !CONFIG_PAGE_TABLE_CHECK fallback stubs in the header, hence a build problem
+>> gets avoided.
+> 
+> Right, build problems are avoided by fallback stubs in the header file.
+
+Although there might not be a build problem as such, but should non subscribing
+platforms get their page table helpers instrumented with page table check hooks
+in the first place ? The commit message should address these questions.
+
+> 
+>>
+>>>
+>>> Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
+>>> Acked-by: Pasha Tatashin <pasha.tatashin@soleen.com>
+>>> ---
+>>>   arch/x86/include/asm/pgtable.h | 10 ----------
+>>>   include/linux/pgtable.h        | 26 ++++++++++++++++++--------
+>>>   2 files changed, 18 insertions(+), 18 deletions(-)
+>>>
+>>> diff --git a/arch/x86/include/asm/pgtable.h b/arch/x86/include/asm/pgtable.h
+>>> index 564abe42b0f7..51cd39858f81 100644
+>>> --- a/arch/x86/include/asm/pgtable.h
+>>> +++ b/arch/x86/include/asm/pgtable.h
+>>> @@ -1073,16 +1073,6 @@ static inline pte_t ptep_get_and_clear_full(struct mm_struct *mm,
+>>>       return pte;
+>>>   }
+>>>   -#define __HAVE_ARCH_PTEP_CLEAR
+>>
+>> AFICS X86 is the only platform subscribing __HAVE_ARCH_PTEP_CLEAR. Hence if
+>> this is getting dropped for generic ptep_clear(), then no need to add back
+>> #ifnded __HAVE_ARCH_PTEP_CLEAR construct. Generic ptep_clear() is the only
+>> definition for all platforms ?
+>>
+>> Also if this patch is trying to drop off __HAVE_ARCH_PTEP_CLEAR along with
+>> other page table check related changes, it needs to be done via a separate
+>> patch instead.
+> 
+> Agreed.
+> IMO, this fix can be patched later.
+> 
+>>
+>>> -static inline void ptep_clear(struct mm_struct *mm, unsigned long addr,
+>>> -                  pte_t *ptep)
+>>> -{
+>>> -    if (IS_ENABLED(CONFIG_PAGE_TABLE_CHECK))
+>>> -        ptep_get_and_clear(mm, addr, ptep);
+>>> -    else
+>>> -        pte_clear(mm, addr, ptep);
+>>> -}
+>>> -
+>>>   #define __HAVE_ARCH_PTEP_SET_WRPROTECT
+>>>   static inline void ptep_set_wrprotect(struct mm_struct *mm,
+>>>                         unsigned long addr, pte_t *ptep)
+>>> diff --git a/include/linux/pgtable.h b/include/linux/pgtable.h
+>>> index 49ab8ee2d6d7..10d2d91edf20 100644
+>>> --- a/include/linux/pgtable.h
+>>> +++ b/include/linux/pgtable.h
+>>> @@ -12,6 +12,7 @@
+>>>   #include <linux/bug.h>
+>>>   #include <linux/errno.h>
+>>>   #include <asm-generic/pgtable_uffd.h>
+>>> +#include <linux/page_table_check.h>
+>>>     #if 5 - defined(__PAGETABLE_P4D_FOLDED) - defined(__PAGETABLE_PUD_FOLDED) - \
+>>>       defined(__PAGETABLE_PMD_FOLDED) != CONFIG_PGTABLE_LEVELS
+>>> @@ -272,14 +273,6 @@ static inline bool arch_has_hw_pte_young(void)
+>>>   }
+>>>   #endif
+>>>   -#ifndef __HAVE_ARCH_PTEP_CLEAR
+>>> -static inline void ptep_clear(struct mm_struct *mm, unsigned long addr,
+>>> -                  pte_t *ptep)
+>>> -{
+>>> -    pte_clear(mm, addr, ptep);
+>>> -}
+>>> -#endif
+>>> -
+>>>   #ifndef __HAVE_ARCH_PTEP_GET_AND_CLEAR
+>>>   static inline pte_t ptep_get_and_clear(struct mm_struct *mm,
+>>>                          unsigned long address,
+>>> @@ -287,10 +280,22 @@ static inline pte_t ptep_get_and_clear(struct mm_struct *mm,
+>>>   {
+>>>       pte_t pte = *ptep;
+>>>       pte_clear(mm, address, ptep);
+>>> +    page_table_check_pte_clear(mm, address, pte);
+>>>       return pte;
+>>>   }
+>>>   #endif
+>>>   +#ifndef __HAVE_ARCH_PTEP_CLEAR
+>>> +static inline void ptep_clear(struct mm_struct *mm, unsigned long addr,
+>>> +                  pte_t *ptep)
+>>> +{
+>>> +    if (IS_ENABLED(CONFIG_PAGE_TABLE_CHECK))
+>>> +        ptep_get_and_clear(mm, addr, ptep);
+>>> +    else
+>>> +        pte_clear(mm, addr, ptep);
+>>
+>> Could not this be reworked to avoid IS_ENABLED() ? This is confusing. If the page
+>> table hooks can be added to all potential page table paths via generic helpers,
+>> irrespective of CONFIG_PAGE_TABLE_CHECK option, there is no rationale for doing
+>> a IS_ENABLED() check here.
+>>
+> 
+> From the perspective of code logic, we need to check the pte before being cleared. Whether pte check is required depends on IS_ENABLED().
+> 
+> Are there any suggestions for better implementation?
+
+But other generic page table helpers already have page table check hooks
+instrumented without IS_ENABLED() checks, then why this is any different.
+
+> 
+> Thank you,
+> Tong.
+> 
+>>> +}
+>>> +#endif
+>>> +
+>>>   #ifndef __HAVE_ARCH_PTEP_GET
+>>>   static inline pte_t ptep_get(pte_t *ptep)
+>>>   {
+>>> @@ -360,7 +365,10 @@ static inline pmd_t pmdp_huge_get_and_clear(struct mm_struct *mm,
+>>>                           pmd_t *pmdp)
+>>>   {
+>>>       pmd_t pmd = *pmdp;
+>>> +
+>>>       pmd_clear(pmdp);
+>>> +    page_table_check_pmd_clear(mm, address, pmd);
+>>> +
+>>>       return pmd;
+>>>   }
+>>>   #endif /* __HAVE_ARCH_PMDP_HUGE_GET_AND_CLEAR */
+>>> @@ -372,6 +380,8 @@ static inline pud_t pudp_huge_get_and_clear(struct mm_struct *mm,
+>>>       pud_t pud = *pudp;
+>>>         pud_clear(pudp);
+>>> +    page_table_check_pud_clear(mm, address, pud);
+>>> +
+>>>       return pud;
+>>>   }
+>>>   #endif /* __HAVE_ARCH_PUDP_HUGE_GET_AND_CLEAR */
+>> .
