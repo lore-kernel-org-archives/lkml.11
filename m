@@ -2,218 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E577AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 08:26:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A08EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 08:27:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235954AbiDYI3F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 04:29:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36320 "EHLO
+        id S235385AbiDYIay (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 04:30:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234904AbiDYI2Z (ORCPT
+        with ESMTP id S237626AbiDYIa3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 04:28:25 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D63071CB39
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 01:25:21 -0700 (PDT)
-X-UUID: 80ba59ffa7af4c7581137d686469fae7-20220425
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:081ee2f8-c059-4f03-a6c9-b84ff32a7470,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:-20
-X-CID-META: VersionHash:faefae9,CLOUDID:ae0f02f0-06b0-4305-bfbf-554bfc9d151a,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: 80ba59ffa7af4c7581137d686469fae7-20220425
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
-        (envelope-from <miles.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1274526290; Mon, 25 Apr 2022 16:25:15 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Mon, 25 Apr 2022 16:24:55 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 25 Apr
- 2022 16:24:54 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 25 Apr 2022 16:24:54 +0800
-From:   Miles Chen <miles.chen@mediatek.com>
-To:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
-        "Will Deacon" <will@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "Hans Verkuil" <hverkuil-cisco@xs4all.nl>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-CC:     Miles Chen <miles.chen@mediatek.com>,
-        Joerg Roedel <jroedel@suse.de>,
-        <iommu@lists.linux-foundation.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2] iommu/mediatek: fix NULL pointer dereference when printing dev_name
-Date:   Mon, 25 Apr 2022 16:24:48 +0800
-Message-ID: <20220425082449.1821-1-miles.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        Mon, 25 Apr 2022 04:30:29 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 488C71DA57;
+        Mon, 25 Apr 2022 01:27:02 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 01AE21F37D;
+        Mon, 25 Apr 2022 08:27:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1650875221; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=w4ANeXLzjcqotnphnOK0rUPz/EKYu7iEZD+lfX94N5M=;
+        b=AklELnOH5ksAZwBokZhcRdfs2KA+xCZFzqI4I8LzcMbiOxJ8L0C6QlnWkvSs5xF0CvPape
+        4zd3lNTLNfNmqZwvA5cqCXf4uNwfhirt4X7Ay32IM78ZUgBA4nHCDawmPcEqZ6d/BbyMCu
+        NJRiFfmAWIKgTe6IqYTaZr5IxDKDpL8=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1650875221;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=w4ANeXLzjcqotnphnOK0rUPz/EKYu7iEZD+lfX94N5M=;
+        b=LKWQEiQj0RfY51/CMozD8tJt6TuYAXiTApafez9NxgDnRXuIpqc4hX+ppNMq/1Mzy9sPzG
+        3Iqf8Ge2GMBCx/Cg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id B3BD513AED;
+        Mon, 25 Apr 2022 08:27:00 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id kMzhKlRbZmIjfAAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Mon, 25 Apr 2022 08:27:00 +0000
+Message-ID: <44804419-0e83-b584-96d9-a35939b715bf@suse.de>
+Date:   Mon, 25 Apr 2022 10:27:00 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v3 3/5] fbdev: Restart conflicting fb removal loop when
+ unregistering devices
+Content-Language: en-US
+To:     Javier Martinez Canillas <javierm@redhat.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        dri-devel@lists.freedesktop.org,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Changcheng Deng <deng.changcheng@zte.com.cn>,
+        Daniel Vetter <daniel@ffwll.ch>, Helge Deller <deller@gmx.de>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        linux-fbdev@vger.kernel.org
+References: <20220420085303.100654-1-javierm@redhat.com>
+ <20220420085303.100654-4-javierm@redhat.com>
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+In-Reply-To: <20220420085303.100654-4-javierm@redhat.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------ZBj3qqpnqvIaLxVKiCxcVXoT"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When larbdev is NULL (in the case I hit, the node is incorrectly set
-iommus = <&iommu NUM>), it will cause device_link_add() fail and
-kernel crashes when we try to print dev_name(larbdev).
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------ZBj3qqpnqvIaLxVKiCxcVXoT
+Content-Type: multipart/mixed; boundary="------------tndJ8OcZcz64aezTVTn0Tn0n";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: Javier Martinez Canillas <javierm@redhat.com>,
+ linux-kernel@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Daniel Vetter <daniel.vetter@ffwll.ch>, dri-devel@lists.freedesktop.org,
+ Alex Deucher <alexander.deucher@amd.com>,
+ Changcheng Deng <deng.changcheng@zte.com.cn>, Daniel Vetter
+ <daniel@ffwll.ch>, Helge Deller <deller@gmx.de>,
+ Sam Ravnborg <sam@ravnborg.org>, Zhen Lei <thunder.leizhen@huawei.com>,
+ linux-fbdev@vger.kernel.org
+Message-ID: <44804419-0e83-b584-96d9-a35939b715bf@suse.de>
+Subject: Re: [PATCH v3 3/5] fbdev: Restart conflicting fb removal loop when
+ unregistering devices
+References: <20220420085303.100654-1-javierm@redhat.com>
+ <20220420085303.100654-4-javierm@redhat.com>
+In-Reply-To: <20220420085303.100654-4-javierm@redhat.com>
 
-Fix it by adding a NULL pointer check before
-device_link_add/device_link_remove.
+--------------tndJ8OcZcz64aezTVTn0Tn0n
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-It should work for normal correct setting and avoid the crash caused
-by my incorrect setting.
+SGkNCg0KQW0gMjAuMDQuMjIgdW0gMTA6NTMgc2NocmllYiBKYXZpZXIgTWFydGluZXogQ2Fu
+aWxsYXM6DQo+IERyaXZlcnMgdGhhdCB3YW50IHRvIHJlbW92ZSByZWdpc3RlcmVkIGNvbmZs
+aWN0aW5nIGZyYW1lYnVmZmVycyBwcmlvciB0bw0KPiByZWdpc3RlciB0aGVpciBvd24gZnJh
+bWVidWZmZXIsIGNhbGxzIHJlbW92ZV9jb25mbGljdGluZ19mcmFtZWJ1ZmZlcnMoKS4NCj4g
+DQo+IFRoaXMgZnVuY3Rpb24gdGFrZXMgdGhlIHJlZ2lzdHJhdGlvbl9sb2NrIG11dGV4LCB0
+byBwcmV2ZW50IGEgcmFjZXMgd2hlbg0KPiBkcml2ZXJzIHJlZ2lzdGVyIGZyYW1lYnVmZmVy
+IGRldmljZXMuIEJ1dCBpZiBhIGNvbmZsaWN0aW5nIGZyYW1lYnVmZmVyDQo+IGRldmljZSBp
+cyBmb3VuZCwgdGhlIHVuZGVybGF5aW5nIHBsYXRmb3JtIGRldmljZSBpcyB1bnJlZ2lzdGVy
+ZWQgYW5kIHRoaXMNCj4gd2lsbCBsZWFkIHRvIHRoZSBwbGF0Zm9ybSBkcml2ZXIgLnJlbW92
+ZSBjYWxsYmFjayB0byBiZSBjYWxsZWQsIHdoaWNoIGluDQo+IHR1cm4gd2lsbCBjYWxsIHRv
+IHRoZSB1bnJlZ2lzdGVyX2ZyYW1lYnVmZmVyKCkgdGhhdCB0YWtlcyB0aGUgc2FtZSBsb2Nr
+Lg0KPiANCj4gVG8gcHJldmVudCB0aGlzLCBhIHN0cnVjdCBmYl9pbmZvLmZvcmNlZF9vdXQg
+ZmllbGQgd2FzIHVzZWQgYXMgaW5kaWNhdGlvbg0KPiB0byB1bnJlZ2lzdGVyX2ZyYW1lYnVm
+ZmVyKCkgd2hldGhlciB0aGUgbXV0ZXggaGFzIHRvIGJlIGdyYWJiZWQgb3Igbm90Lg0KPiAN
+Cj4gQSBjbGVhbmVyIHNvbHV0aW9uIGlzIHRvIGRyb3AgdGhlIGxvY2sgYmVmb3JlIHBsYXRm
+b3JtX2RldmljZV91bnJlZ2lzdGVyKCkNCj4gc28gdW5yZWdpc3Rlcl9mcmFtZWJ1ZmZlcigp
+IGNhbiB0YWtlIGl0IHdoZW4gY2FsbGVkIGZyb20gdGhlIGZiZGV2IGRyaXZlciwNCj4gYW5k
+IGp1c3QgZ3JhYiB0aGUgbG9jayBhZ2FpbiBhZnRlciB0aGUgZGV2aWNlIGhhcyBiZWVuIHJl
+Z2lzdGVyZWQgYW5kIGRvDQo+IGEgcmVtb3ZhbCBsb29wIHJlc3RhcnQuDQoNCkkgZG9uJ3Qg
+c2VlIGhvdyB0aGlzIHBhdGNoIGltcHJvdmVzIHRoZSBzaXR1YXRpb24uIFNvIGZhciwgDQpk
+b19yZW1vdmVfY29uZmxpY3RpbmdfZnJhbWVidWZmZXJzKCkgaGFkIG5vIGJ1c2luZXNzIGlu
+IG1haW50YWluaW5nIA0KbG9ja3MuIEFuZCBub3cgaXQncyBkb2luZyB0aGlzIGluIGluIGEg
+Z290by1sb29wIHdoZXJlIGl0IGtlZXBzIA0KZ2V0dGluZy9kcm9wcGluZyBsb2Nrcy4gIFRo
+YXQncyBhc2tpbmcgZm9yIGJ1Z3MgSU1ITy4NCg0KQmVzdCByZWdhcmRzDQpUaG9tYXMNCg0K
+PiANCj4gU2luY2UgdGhlIGZyYW1lYnVmZmVyIGRldmljZXMgd2lsbCBhbHJlYWR5IGJlIHJl
+bW92ZWQsIHRoZSBsb29wIHdvdWxkIGp1c3QNCj4gZmluaXNoIHdoZW4gbm8gbW9yZSBjb25m
+bGljdGluZyBmcmFtZWJ1ZmZlcnMgYXJlIGZvdW5kLg0KPiANCj4gU3VnZ2VzdGVkLWJ5OiBE
+YW5pZWwgVmV0dGVyIDxkYW5pZWwudmV0dGVyQGZmd2xsLmNoPg0KPiBTaWduZWQtb2ZmLWJ5
+OiBKYXZpZXIgTWFydGluZXogQ2FuaWxsYXMgPGphdmllcm1AcmVkaGF0LmNvbT4NCj4gUmV2
+aWV3ZWQtYnk6IERhbmllbCBWZXR0ZXIgPGRhbmllbC52ZXR0ZXJAZmZ3bGwuY2g+DQo+IC0t
+LQ0KPiANCj4gKG5vIGNoYW5nZXMgc2luY2UgdjEpDQo+IA0KPiAgIGRyaXZlcnMvdmlkZW8v
+ZmJkZXYvY29yZS9mYm1lbS5jIHwgMjIgKysrKysrKysrKysrKysrLS0tLS0tLQ0KPiAgIGlu
+Y2x1ZGUvbGludXgvZmIuaCAgICAgICAgICAgICAgIHwgIDEgLQ0KPiAgIDIgZmlsZXMgY2hh
+bmdlZCwgMTUgaW5zZXJ0aW9ucygrKSwgOCBkZWxldGlvbnMoLSkNCj4gDQo+IGRpZmYgLS1n
+aXQgYS9kcml2ZXJzL3ZpZGVvL2ZiZGV2L2NvcmUvZmJtZW0uYyBiL2RyaXZlcnMvdmlkZW8v
+ZmJkZXYvY29yZS9mYm1lbS5jDQo+IGluZGV4IDg0NDI3NDcwMzY3Yi4uMGJiNDU5MjU4ZGYz
+IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL3ZpZGVvL2ZiZGV2L2NvcmUvZmJtZW0uYw0KPiAr
+KysgYi9kcml2ZXJzL3ZpZGVvL2ZiZGV2L2NvcmUvZmJtZW0uYw0KPiBAQCAtMTU1Myw2ICsx
+NTUzLDcgQEAgc3RhdGljIHZvaWQgZG9fcmVtb3ZlX2NvbmZsaWN0aW5nX2ZyYW1lYnVmZmVy
+cyhzdHJ1Y3QgYXBlcnR1cmVzX3N0cnVjdCAqYSwNCj4gICB7DQo+ICAgCWludCBpOw0KPiAg
+IA0KPiArcmVzdGFydF9yZW1vdmFsOg0KPiAgIAkvKiBjaGVjayBhbGwgZmlybXdhcmUgZmJz
+IGFuZCBraWNrIG9mZiBpZiB0aGUgYmFzZSBhZGRyIG92ZXJsYXBzICovDQo+ICAgCWZvcl9l
+YWNoX3JlZ2lzdGVyZWRfZmIoaSkgew0KPiAgIAkJc3RydWN0IGFwZXJ0dXJlc19zdHJ1Y3Qg
+Kmdlbl9hcGVyOw0KPiBAQCAtMTU4NSwxMiArMTU4NiwyMyBAQCBzdGF0aWMgdm9pZCBkb19y
+ZW1vdmVfY29uZmxpY3RpbmdfZnJhbWVidWZmZXJzKHN0cnVjdCBhcGVydHVyZXNfc3RydWN0
+ICphLA0KPiAgIAkJCQlwcl93YXJuKCJmYiVkOiBubyBkZXZpY2Ugc2V0XG4iLCBpKTsNCj4g
+ICAJCQkJZG9fdW5yZWdpc3Rlcl9mcmFtZWJ1ZmZlcihyZWdpc3RlcmVkX2ZiW2ldKTsNCj4g
+ICAJCQl9IGVsc2UgaWYgKGRldl9pc19wbGF0Zm9ybShkZXZpY2UpKSB7DQo+IC0JCQkJcmVn
+aXN0ZXJlZF9mYltpXS0+Zm9yY2VkX291dCA9IHRydWU7DQo+ICsJCQkJLyoNCj4gKwkJCQkg
+KiBEcm9wIHRoZSBsb2NrIGJlY2F1c2UgaWYgdGhlIGRldmljZSBpcyB1bnJlZ2lzdGVyZWQs
+IGl0cw0KPiArCQkJCSAqIGRyaXZlciB3aWxsIGNhbGwgdG8gdW5yZWdpc3Rlcl9mcmFtZWJ1
+ZmZlcigpLCB0aGF0IHRha2VzDQo+ICsJCQkJICogdGhpcyBsb2NrLg0KPiArCQkJCSAqLw0K
+PiArCQkJCW11dGV4X3VubG9jaygmcmVnaXN0cmF0aW9uX2xvY2spOw0KPiAgIAkJCQlwbGF0
+Zm9ybV9kZXZpY2VfdW5yZWdpc3Rlcih0b19wbGF0Zm9ybV9kZXZpY2UoZGV2aWNlKSk7DQo+
+ICsJCQkJbXV0ZXhfbG9jaygmcmVnaXN0cmF0aW9uX2xvY2spOw0KPiAgIAkJCX0gZWxzZSB7
+DQo+ICAgCQkJCXByX3dhcm4oImZiJWQ6IGNhbm5vdCByZW1vdmUgZGV2aWNlXG4iLCBpKTsN
+Cj4gICAJCQkJZG9fdW5yZWdpc3Rlcl9mcmFtZWJ1ZmZlcihyZWdpc3RlcmVkX2ZiW2ldKTsN
+Cj4gICAJCQl9DQo+ICsJCQkvKg0KPiArCQkJICogUmVzdGFydCB0aGUgcmVtb3ZhbCBsb29w
+IG5vdyB0aGF0IHRoZSBkZXZpY2UgaGFzIGJlZW4NCj4gKwkJCSAqIHVucmVnaXN0ZXJlZCBh
+bmQgaXRzIGFzc29jaWF0ZWQgZnJhbWVidWZmZXIgZ29uZS4NCj4gKwkJCSAqLw0KPiArCQkJ
+Z290byByZXN0YXJ0X3JlbW92YWw7DQo+ICAgCQl9DQo+ICAgCX0NCj4gICB9DQo+IEBAIC0x
+ODk3LDEzICsxOTA5LDkgQEAgRVhQT1JUX1NZTUJPTChyZWdpc3Rlcl9mcmFtZWJ1ZmZlcik7
+DQo+ICAgdm9pZA0KPiAgIHVucmVnaXN0ZXJfZnJhbWVidWZmZXIoc3RydWN0IGZiX2luZm8g
+KmZiX2luZm8pDQo+ICAgew0KPiAtCWJvb2wgZm9yY2VkX291dCA9IGZiX2luZm8tPmZvcmNl
+ZF9vdXQ7DQo+IC0NCj4gLQlpZiAoIWZvcmNlZF9vdXQpDQo+IC0JCW11dGV4X2xvY2soJnJl
+Z2lzdHJhdGlvbl9sb2NrKTsNCj4gKwltdXRleF9sb2NrKCZyZWdpc3RyYXRpb25fbG9jayk7
+DQo+ICAgCWRvX3VucmVnaXN0ZXJfZnJhbWVidWZmZXIoZmJfaW5mbyk7DQo+IC0JaWYgKCFm
+b3JjZWRfb3V0KQ0KPiAtCQltdXRleF91bmxvY2soJnJlZ2lzdHJhdGlvbl9sb2NrKTsNCj4g
+KwltdXRleF91bmxvY2soJnJlZ2lzdHJhdGlvbl9sb2NrKTsNCj4gICB9DQo+ICAgRVhQT1JU
+X1NZTUJPTCh1bnJlZ2lzdGVyX2ZyYW1lYnVmZmVyKTsNCj4gICANCj4gZGlmZiAtLWdpdCBh
+L2luY2x1ZGUvbGludXgvZmIuaCBiL2luY2x1ZGUvbGludXgvZmIuaA0KPiBpbmRleCBmOTVk
+YTFhZjlmZjYuLmI3ODFiYzcyMTExMyAxMDA2NDQNCj4gLS0tIGEvaW5jbHVkZS9saW51eC9m
+Yi5oDQo+ICsrKyBiL2luY2x1ZGUvbGludXgvZmIuaA0KPiBAQCAtNTAyLDcgKzUwMiw2IEBA
+IHN0cnVjdCBmYl9pbmZvIHsNCj4gICAJfSAqYXBlcnR1cmVzOw0KPiAgIA0KPiAgIAlib29s
+IHNraXBfdnRfc3dpdGNoOyAvKiBubyBWVCBzd2l0Y2ggb24gc3VzcGVuZC9yZXN1bWUgcmVx
+dWlyZWQgKi8NCj4gLQlib29sIGZvcmNlZF9vdXQ7IC8qIHNldCB3aGVuIGJlaW5nIHJlbW92
+ZWQgYnkgYW5vdGhlciBkcml2ZXIgKi8NCj4gICB9Ow0KPiAgIA0KPiAgIHN0YXRpYyBpbmxp
+bmUgc3RydWN0IGFwZXJ0dXJlc19zdHJ1Y3QgKmFsbG9jX2FwZXJ0dXJlcyh1bnNpZ25lZCBp
+bnQgbWF4X251bSkgew0KDQotLSANClRob21hcyBaaW1tZXJtYW5uDQpHcmFwaGljcyBEcml2
+ZXIgRGV2ZWxvcGVyDQpTVVNFIFNvZnR3YXJlIFNvbHV0aW9ucyBHZXJtYW55IEdtYkgNCk1h
+eGZlbGRzdHIuIDUsIDkwNDA5IE7DvHJuYmVyZywgR2VybWFueQ0KKEhSQiAzNjgwOSwgQUcg
+TsO8cm5iZXJnKQ0KR2VzY2jDpGZ0c2bDvGhyZXI6IEl2byBUb3Rldg0K
 
-Error log:
-[   18.189042][  T301] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000050
-[   18.190247][  T301] Mem abort info:
-[   18.190255][  T301]   ESR = 0x96000005
-[   18.190263][  T301]   EC = 0x25: DABT (current EL), IL = 32 bits
-[   18.192142][  T301]   SET = 0, FnV = 0
-[   18.192151][  T301]   EA = 0, S1PTW = 0
-[   18.194710][  T301]   FSC = 0x05: level 1 translation fault
-[   18.195424][  T301] Data abort info:
-[   18.195888][  T301]   ISV = 0, ISS = 0x00000005
-[   18.196500][  T301]   CM = 0, WnR = 0
-[   18.196977][  T301] user pgtable: 4k pages, 39-bit VAs, pgdp=0000000104f9e000
-[   18.197889][  T301] [0000000000000050] pgd=0000000000000000, p4d=0000000000000000, pud=0000000000000000
-[   18.199220][  T301] Internal error: Oops: 96000005 [#1] PREEMPT SMP
-[   18.343152][  T301] Kernel Offset: 0x1444080000 from 0xffffffc008000000
-[   18.343988][  T301] PHYS_OFFSET: 0x40000000
-[   18.344519][  T301] pstate: a0400005 (NzCv daif +PAN -UAO)
-[   18.345213][  T301] pc : mtk_iommu_probe_device+0xf8/0x118 [mtk_iommu]
-[   18.346050][  T301] lr : mtk_iommu_probe_device+0xd0/0x118 [mtk_iommu]
-[   18.346884][  T301] sp : ffffffc00a5635e0
-[   18.347392][  T301] x29: ffffffc00a5635e0 x28: ffffffd44a46c1d8
-[   18.348156][  T301] x27: ffffff80c39a8000 x26: ffffffd44a80cc38
-[   18.348917][  T301] x25: 0000000000000000 x24: ffffffd44a80cc38
-[   18.349677][  T301] x23: ffffffd44e4da4c6 x22: ffffffd44a80cc38
-[   18.350438][  T301] x21: ffffff80cecd1880 x20: 0000000000000000
-[   18.351198][  T301] x19: ffffff80c439f010 x18: ffffffc00a50d0c0
-[   18.351959][  T301] x17: ffffffffffffffff x16: 0000000000000004
-[   18.352719][  T301] x15: 0000000000000004 x14: ffffffd44eb5d420
-[   18.353480][  T301] x13: 0000000000000ad2 x12: 0000000000000003
-[   18.354241][  T301] x11: 00000000fffffad2 x10: c0000000fffffad2
-[   18.355003][  T301] x9 : a0d288d8d7142d00 x8 : a0d288d8d7142d00
-[   18.355763][  T301] x7 : ffffffd44c2bc640 x6 : 0000000000000000
-[   18.356524][  T301] x5 : 0000000000000080 x4 : 0000000000000001
-[   18.357284][  T301] x3 : 0000000000000000 x2 : 0000000000000005
-[   18.358045][  T301] x1 : 0000000000000000 x0 : 0000000000000000
-[   18.360208][  T301] Hardware name: MT6873 (DT)
-[   18.360771][  T301] Call trace:
-[   18.361168][  T301]  dump_backtrace+0xf8/0x1f0
-[   18.361737][  T301]  dump_stack_lvl+0xa8/0x11c
-[   18.362305][  T301]  dump_stack+0x1c/0x2c
-[   18.362816][  T301]  mrdump_common_die+0x184/0x40c [mrdump]
-[   18.363575][  T301]  ipanic_die+0x24/0x38 [mrdump]
-[   18.364230][  T301]  atomic_notifier_call_chain+0x128/0x2b8
-[   18.364937][  T301]  die+0x16c/0x568
-[   18.365394][  T301]  __do_kernel_fault+0x1e8/0x214
-[   18.365402][  T301]  do_page_fault+0xb8/0x678
-[   18.366934][  T301]  do_translation_fault+0x48/0x64
-[   18.368645][  T301]  do_mem_abort+0x68/0x148
-[   18.368652][  T301]  el1_abort+0x40/0x64
-[   18.368660][  T301]  el1h_64_sync_handler+0x54/0x88
-[   18.368668][  T301]  el1h_64_sync+0x68/0x6c
-[   18.368673][  T301]  mtk_iommu_probe_device+0xf8/0x118 [mtk_iommu]
-[   18.369840][  T301]  __iommu_probe_device+0x12c/0x358
-[   18.370880][  T301]  iommu_probe_device+0x3c/0x31c
-[   18.372026][  T301]  of_iommu_configure+0x200/0x274
-[   18.373587][  T301]  of_dma_configure_id+0x1b8/0x230
-[   18.375200][  T301]  platform_dma_configure+0x24/0x3c
-[   18.376456][  T301]  really_probe+0x110/0x504
-[   18.376464][  T301]  __driver_probe_device+0xb4/0x188
-[   18.376472][  T301]  driver_probe_device+0x5c/0x2b8
-[   18.376481][  T301]  __driver_attach+0x338/0x42c
-[   18.377992][  T301]  bus_add_driver+0x218/0x4c8
-[   18.379389][  T301]  driver_register+0x84/0x17c
-[   18.380580][  T301]  __platform_driver_register+0x28/0x38
-...
+--------------tndJ8OcZcz64aezTVTn0Tn0n--
 
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 635319a4a744 ("media: iommu/mediatek: Add device_link between the consumer and the larb devices")
-Signed-off-by: Miles Chen <miles.chen@mediatek.com>
+--------------ZBj3qqpnqvIaLxVKiCxcVXoT
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
 
----
+-----BEGIN PGP SIGNATURE-----
 
-Change since v1
-fix a build warning reported by kernel test robot
-https://lore.kernel.org/lkml/202204231446.IYKdZ674-lkp@intel.com/
+wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmJmW1QFAwAAAAAACgkQlh/E3EQov+D5
+EQ/+LYErdR2uljbQz9gIF56jHpRYK9entfnaNT/iWs4+3EE6NRaPYieK3BOP8fkOGKx0njYfBl/k
+/dlQ1INXlX8rcn/5VmWMbtYt///Rd6eaw0n8plz4lbq69sEEzRAIAxgC8nA78lQ6ipHnDXXso3C7
+hpj5u/eNdsfUCoGNy8Msi3NcNfZmk/jnMQyu3UsoBJnMIukI+EvAeHCIX9O1uj3JkZcf2udE97QP
+3RWb5UaQhc69Rl4fe8WSq3E00edwo+UDgazzfGckjvYYUaoIuQdnUwzehRFylnpEPfZkL95eVm6w
+tQkgJTBCMI14mAhyEyNMg/Y7Rb5zsnFywCSY/wHD1mkygUn1MvUUw0QXBUkHQ8e3p0kVfa+cUMW/
+bzumF9LIn2IpBEh2VbSqLVNO6P9lZz4Otelu3Z6knfCyCd3Fw/YDWJcNv+QZidz/SrgvCkpA0jLh
+A0m7xyhha6wTOiaOdSe55+1S4bEaoq8YCcfzD9uGMwHailGjXanw+aUC9v2mDpyK95lEVPud22nx
+QTJ+yI6WZwg2bvfpV/wQtqoyDO+LrHW/tevSijiDex5W/akVz8OtrlBF//TxTJfYDNWPCO/MBuOY
+BLYT1Z2HH63P9X4jJbw4QsVwLeLeNvP9K4n/Qka8OAwkDv/5xbM6Jd+Y0NL0AR5V002Lt0bX030o
+wVw=
+=4Zal
+-----END PGP SIGNATURE-----
 
----
- drivers/iommu/mtk_iommu.c    | 13 ++++++++-----
- drivers/iommu/mtk_iommu_v1.c | 13 ++++++++-----
- 2 files changed, 16 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 6fd75a60abd6..03e0133f346a 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -581,10 +581,12 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
- 		}
- 	}
- 	larbdev = data->larb_imu[larbid].dev;
--	link = device_link_add(dev, larbdev,
--			       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
--	if (!link)
--		dev_err(dev, "Unable to link %s\n", dev_name(larbdev));
-+	if (larbdev) {
-+		link = device_link_add(dev, larbdev,
-+				       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
-+		if (!link)
-+			dev_err(dev, "Unable to link %s\n", dev_name(larbdev));
-+	}
- 	return &data->iommu;
- }
- 
-@@ -601,7 +603,8 @@ static void mtk_iommu_release_device(struct device *dev)
- 	data = dev_iommu_priv_get(dev);
- 	larbid = MTK_M4U_TO_LARB(fwspec->ids[0]);
- 	larbdev = data->larb_imu[larbid].dev;
--	device_link_remove(dev, larbdev);
-+	if (larbdev)
-+		device_link_remove(dev, larbdev);
- 
- 	iommu_fwspec_free(dev);
- }
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index ecff800656e6..18365c73eeb2 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -467,10 +467,12 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
- 	}
- 
- 	larbdev = data->larb_imu[larbid].dev;
--	link = device_link_add(dev, larbdev,
--			       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
--	if (!link)
--		dev_err(dev, "Unable to link %s\n", dev_name(larbdev));
-+	if (larbdev) {
-+		link = device_link_add(dev, larbdev,
-+				       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
-+		if (!link)
-+			dev_err(dev, "Unable to link %s\n", dev_name(larbdev));
-+	}
- 
- 	return &data->iommu;
- }
-@@ -502,7 +504,8 @@ static void mtk_iommu_release_device(struct device *dev)
- 	data = dev_iommu_priv_get(dev);
- 	larbid = mt2701_m4u_to_larb(fwspec->ids[0]);
- 	larbdev = data->larb_imu[larbid].dev;
--	device_link_remove(dev, larbdev);
-+	if (larbdev)
-+		device_link_remove(dev, larbdev);
- 
- 	iommu_fwspec_free(dev);
- }
--- 
-2.18.0
-
+--------------ZBj3qqpnqvIaLxVKiCxcVXoT--
