@@ -2,177 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13707C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 15:37:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1581AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 15:38:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242905AbiDYPki (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 11:40:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49920 "EHLO
+        id S242919AbiDYPlh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 11:41:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242916AbiDYPkd (ORCPT
+        with ESMTP id S230227AbiDYPle (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 11:40:33 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AAF2744A17
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 08:37:25 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7094A1FB;
-        Mon, 25 Apr 2022 08:37:25 -0700 (PDT)
-Received: from [192.168.178.6] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EFD233F774;
-        Mon, 25 Apr 2022 08:37:23 -0700 (PDT)
-Message-ID: <c7b19b42-d7b1-74bb-46ea-e5674837e491@arm.com>
-Date:   Mon, 25 Apr 2022 17:37:02 +0200
+        Mon, 25 Apr 2022 11:41:34 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2052.outbound.protection.outlook.com [40.107.244.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BB443E0EB
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 08:38:29 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=K/zS5kz+6qkkxYImuFRluyx8AqjnFL4K9c1kPM3kh+Lwz2gUFd+/V30i/cTU2lZs/GI3gd8J/eInVIzkOQSUUCi9ITg7m9WREXDrpzJKvNhQQ2E0Tx4wKVSMyrvPPJsbHkFWLEd4Bb1Po4RlmWwzmNLagEld71PhanbMkL2KhAn98q/Nv7CUBmCjynYsfjwu7XPer8CycG6e0efVBejuYFozk91mL2mI4oTnrXlpVQvdsz7wObSWZAbgbBSg9/3HIG17116/7qyIQgZX+FBt9VztQWH0GwzXNXtGn23JJDJxcwKQg6bc5jHCchheHGvIYszQ3zlq2jBCXbDIxJvuBA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ZmZSuflsf8g7vJ6OGhRmEgjuCkq4swunPSMsQ9Q9cw0=;
+ b=J3DEk4Ocjzt9wl9Fe2hnR5VYALWtpvxiHp8rckc1uzbLPyamZzLmklJ5CIwK12uCmjq1k2GklzO+zKKTTTCW0coivUzJt9rwNu5CNENB1kWbULVRxtl3vOyg/ipHSmMVD1ihVvQr6H2kBI8jDtUq+/12jjVhBo77Td3ZmA/mlxcJr5Eao875dDfrOgH9XE3hWObds1vOl386mzUJ8IwNz4RmiQIVucriDmmOJbRgZEsjB/b2URSQ4xE1IETh4gD7TfdzIfBqvwtyRK4iYJiRdDoKnp6pxI6DMX2hMFMZymu0y5TtEpaxCFb1ENtpplDzHlZNsb7SwQ/tA5n+5BL+uw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
+ dkim=pass header.d=silabs.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZmZSuflsf8g7vJ6OGhRmEgjuCkq4swunPSMsQ9Q9cw0=;
+ b=Qg8aqhw6bY8LWT9drInzRxgUsVpWQpIWNYvJc52MmsakD2EWdXMVpFGm9yCFBQut5GPIkr/RjYFeKpOJtWw+cbOsEw2WOnflukKQXnaclA9Bnx4OpMpxMP2urBc9slsMSg9iLmkbnkEWhvzGXkO94VbzDKwwYUYYsDgleN1hDk0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=silabs.com;
+Received: from PH0PR11MB5657.namprd11.prod.outlook.com (2603:10b6:510:ee::19)
+ by BN7PR11MB2739.namprd11.prod.outlook.com (2603:10b6:406:a9::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.18; Mon, 25 Apr
+ 2022 15:38:27 +0000
+Received: from PH0PR11MB5657.namprd11.prod.outlook.com
+ ([fe80::89b8:2d6e:d075:527]) by PH0PR11MB5657.namprd11.prod.outlook.com
+ ([fe80::89b8:2d6e:d075:527%5]) with mapi id 15.20.5186.021; Mon, 25 Apr 2022
+ 15:38:27 +0000
+From:   =?ISO-8859-1?Q?J=E9r=F4me?= Pouiller <jerome.pouiller@silabs.com>
+To:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de
+Cc:     linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v3 2/4] dt-bindings: net: silabs,wfx: add prt,prtt1c-wfm200 antenna variant
+Date:   Mon, 25 Apr 2022 17:38:20 +0200
+Message-ID: <14881918.tv2OnDr8pf@pc-42>
+Organization: Silicon Labs
+In-Reply-To: <20220425132844.866743-3-o.rempel@pengutronix.de>
+References: <20220425132844.866743-1-o.rempel@pengutronix.de> <20220425132844.866743-3-o.rempel@pengutronix.de>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
+X-ClientProxiedBy: PAZP264CA0143.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:102:1f8::14) To PH0PR11MB5657.namprd11.prod.outlook.com
+ (2603:10b6:510:ee::19)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 1/2] sched/core: Avoid obvious double update_rq_clock
- warning
-Content-Language: en-US
-To:     Hao Jia <jiahao.os@bytedance.com>, mingo@redhat.com,
-        peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, rostedt@goodmis.org,
-        bsegall@google.com, mgorman@suse.de, bristot@redhat.com
-Cc:     linux-kernel@vger.kernel.org
-References: <20220422090944.52618-1-jiahao.os@bytedance.com>
- <20220422090944.52618-2-jiahao.os@bytedance.com>
-From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
-In-Reply-To: <20220422090944.52618-2-jiahao.os@bytedance.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d86218ce-cdf9-489c-cda1-08da26d1a428
+X-MS-TrafficTypeDiagnostic: BN7PR11MB2739:EE_
+X-Microsoft-Antispam-PRVS: <BN7PR11MB2739D877C19DC8BD8B81D3B393F89@BN7PR11MB2739.namprd11.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: mfs7nXYaqjeOubb0/gke4O33OpiE/c7+uJz5E18+JmGuDQ0t1aV4BCk4ZtF47w6cvp2D9lhDolyv7LGY231GxtN1gEwA9UpZPu1i2D1DYKx6HfdnkCtikN7oFWpk3Fh1kXohVUrDUyqFQ1HaDSrdxqB1Kgkwj3ckXf3mah/zUjKU3MKWD3O2we7AMSpPRDWH+5Mssc0kBkm5InbgN/HOOu3I7cYPSgxo+0ZxFLaQFLGoh33RWBuEuXYhvLPbJaVUqMbgIBj/qx4NTO0e35G7R2ukyf5FpKy9IqQMh18Ikqvl9TGmHAKGYOu9Sken1ZcVtxXONK9X4kAZ1swt/MnxukwZOJNC39C6ahsjCQ93JT6w/XLz4fBwajJXL+gbYoPq0z5udJ+fOabXfYvf2wF2CqgPC+mLQomFrV9ZV6ePPXE3VDuZn7VNE8H6Q68bR5K9v21P2hPZbq2/CwTg5Kfy6JIRjtm7Tw3pQTFlVjGGsKbKxIFSLC0Pw/gMMSkowQ2Wd+bGJ/e7HW/yubjs+7hqJ3IeMiB4Bk/JYgMR6mlRkvL+30ZqAH1lkyKNVKglppucBaLr9IidI8eu9iPfC/fG5QmK/oVVI4FwTC21Yn9OvEAyQ9VK93V4Ub1xdiQ3QGpqmu8Uqy/oDd3hXGz0W6kRCYgxv9EaSkz95+ZT+lEfkdAmHF3JAr1FO0t1M8Zy3oaVKop4c9dkXMyaBYiR+xzstvaEIzwOEh97qT1Sg7hxUKM=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(508600001)(8936002)(5660300002)(186003)(6486002)(316002)(9686003)(66556008)(66476007)(66946007)(6666004)(2906002)(38100700002)(52116002)(38350700002)(36916002)(86362001)(26005)(110136005)(6512007)(33716001)(6506007)(8676002)(4326008)(39026012);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?6OLfSPZm2RDE2mhjQ8duEHsxIknytFNN8SxxlCEWDIFnTVmD0ng2r2IDOW?=
+ =?iso-8859-1?Q?C3ESdv5pAlIubv7yFNTR1sDq9NL6/Ww6FdtejIqVhLDIXdCFfwZoFG3fdt?=
+ =?iso-8859-1?Q?Exfm4Xa7Iqvfxf0+UAaU3bX/7iq2a38xSOO3QxGV6nFZDk7QryuvJEykd6?=
+ =?iso-8859-1?Q?9ovRh1cQbfNNIWs+4R6iJ29fREMoyG4LN7nwZQ+2WebGj8JfwbHVkDNuza?=
+ =?iso-8859-1?Q?LQ7l9PEAF1qq7lEeajkFGz0gKFrCIo4Mjse9vWPCDt6pmcEiKU5y0Vh5wH?=
+ =?iso-8859-1?Q?mOb9iweUYIO3jeUVmN0VQW5UvnrlrnHn9+wYmZvQdRPi7GCyopG2ulR1MK?=
+ =?iso-8859-1?Q?V7hiONPVis5+915yCyEMu3XdFSo2w1AJi1S22h2ybomcfEZq01fFhKUx2N?=
+ =?iso-8859-1?Q?NlxH06dHkf2NIxHEyTpJKIUQs8lSJQIrBNEQSvuPhKXYEvtBfq1YuKuFXB?=
+ =?iso-8859-1?Q?6RTF59aOvzSDriv6X7laW2yAYqCD2a+IZ87lUeRcjkMgZ4DohPcM99xlem?=
+ =?iso-8859-1?Q?/vJINfE0kGRAkZhh8q/Io9SHUK365IwFAsYFGrTjxWsPJ/X92rhT6ba77l?=
+ =?iso-8859-1?Q?yf302/n/rgNHPYJ1sxNuvA0wOAtmziq5T8XOPtFDQMDfzJ8G/SS5ZQhY8C?=
+ =?iso-8859-1?Q?hTYpmK26xoj+tzmv4yHiOJp36J4M0V8xxFAPB2ed50RaOFnBig1Wakx+87?=
+ =?iso-8859-1?Q?H+PinfByWWFsohLn+FXU1nc4PSR0AOTu052bhRkWzbMEMOCvx8ZgTLFxPv?=
+ =?iso-8859-1?Q?c8EGOcD+VTUfiX7dlh8kjCxGqreObB5Q2j8vyZkGcPCmSnhrK94c2uujca?=
+ =?iso-8859-1?Q?yivrutk2fNjkZdzgy6BCvrQguWCpt92dUjZuYcIS/QYVtQLxu58BVNIOz0?=
+ =?iso-8859-1?Q?HjOwrxH1fCPzCHvrPI3il7IrIuR7gBX0kHTrwl7NlZBnFNsQfqJ0p7vzI6?=
+ =?iso-8859-1?Q?2sohFCNy9LRJXSP/Zw08C2lQJ/hl3+jQFqQ5x6kQL6WKTaO1uuLymg8+/e?=
+ =?iso-8859-1?Q?JKVimCVlyFzfcW9pJLhqCTncJRWBajpjOUOi4dCXfik95rXXtMdizaWbbB?=
+ =?iso-8859-1?Q?AGjeV5VvcakHU9ztY9uQHdw5B5AgOdCukXF0bWYTApLjv+FRC5RPD2tpDw?=
+ =?iso-8859-1?Q?OegtwDlLaE68ODtLQIY7n/Lo+AVehGlbyhzYwiUAy9pbHdI9v2yMKSgXrO?=
+ =?iso-8859-1?Q?9O0RvtnmW6qw84A1PcLO8AqUpxg6jge/tqElIw/ccCFXKoovzcYdXGmEn0?=
+ =?iso-8859-1?Q?gKqupv59mWpN6Sscnt9j16YHOWh0j5QVWVQJjEmAchLA9/vLPgruEH1uzw?=
+ =?iso-8859-1?Q?pFPWMjmemNR9cNUmMFmeezlti3fzAD8GNrDVlred4FeQHn0XrX9M5QShAk?=
+ =?iso-8859-1?Q?meYLuNDKiR7Hnwy0zHt+6h+sVGDIXj1BO4Q3U2fl5F+mdWKf44PB5wThxf?=
+ =?iso-8859-1?Q?MjC5DbnIeoGB1x1xhtS+c6kZ5AsNgIMzRJtdxIqoyi2KGX5v7LGR05VH5/?=
+ =?iso-8859-1?Q?ePYvZjqSxz10TBADUacgtzgsqcbsUzeAklt1HRgLtrjseH96R02hnKnXB3?=
+ =?iso-8859-1?Q?U9+qFQJs9WiBBX88l3KXMs9tMSao/3cm1xXX4vR++T4/PNCm4BWEiW/QNA?=
+ =?iso-8859-1?Q?rOoTcoF1Hh/nwqdQT7yNw6AsLGAKs8RUS5vFypXHOoKsfLrf3N/2YIU31M?=
+ =?iso-8859-1?Q?1rJZLdET8dAwtROjWRPjpx4fCCtP+l5IggNtBB23w+aqJtm8YZtNy7uQDR?=
+ =?iso-8859-1?Q?U5uCoaDDA6Ol9tRvzs7EAbT5B16tvxPWHd04BFiIljQlDRFyCmzCNToR4T?=
+ =?iso-8859-1?Q?yt1LYCHS+w=3D=3D?=
+X-OriginatorOrg: silabs.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d86218ce-cdf9-489c-cda1-08da26d1a428
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5657.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Apr 2022 15:38:27.3160
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: JNz23Zn/c8O9TCo6XnDvhEel30SQ30WgyxnnGPnPCXwBbVFFbqcyTFBqatKP5lsRXEUVXNSyfg8fQuzOsaxPOQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR11MB2739
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/04/2022 11:09, Hao Jia wrote:
-> When we use raw_spin_rq_lock to acquire the rq lock and have to
-> update the rq clock while holding the lock, the kernel may issue
-> a WARN_DOUBLE_CLOCK warning.
-> 
-> Since we directly use raw_spin_rq_lock to acquire rq lock instead of
-> rq_lock, there is no corresponding change to rq->clock_update_flags.
-> In particular, we have obtained the rq lock of other cores,
-> the core rq->clock_update_flags may be RQCF_UPDATED at this time, and
-> then calling update_rq_clock will trigger the WARN_DOUBLE_CLOCK warning.
-> 
-> So we need to clear RQCF_UPDATED of rq->clock_update_flags synchronously
-> to avoid the WARN_DOUBLE_CLOCK warning.
-> 
-> Some call trace reports:
-> Call Trace 1:
->  <IRQ>
->  sched_rt_period_timer+0x10f/0x3a0
->  ? enqueue_top_rt_rq+0x110/0x110
->  __hrtimer_run_queues+0x1a9/0x490
->  hrtimer_interrupt+0x10b/0x240
+On Monday 25 April 2022 15:28:42 CEST Oleksij Rempel wrote:
+> Add compatible for wfm200 antenna configuration variant for Protonic PRTT=
+1C
+> board.
+>=20
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+>  .../devicetree/bindings/staging/net/wireless/silabs,wfx.yaml     | 1 +
+>  1 file changed, 1 insertion(+)
+>=20
+> diff --git a/Documentation/devicetree/bindings/staging/net/wireless/silab=
+s,wfx.yaml b/Documentation/devicetree/bindings/staging/net/wireless/silabs,=
+wfx.yaml
+> index 105725a127ab..ce107fe45d7c 100644
+> --- a/Documentation/devicetree/bindings/staging/net/wireless/silabs,wfx.y=
+aml
+> +++ b/Documentation/devicetree/bindings/staging/net/wireless/silabs,wfx.y=
+aml
+> @@ -39,6 +39,7 @@ properties:
+>    compatible:
+>      items:
+>        - enum:
+> +          - prt,prtt1c-wfm200 # Protonic PRTT1C Board
+>            - silabs,brd4001a # WGM160P Evaluation Board
+>            - silabs,brd8022a # WF200 Evaluation Board
+>            - silabs,brd8023a # WFM200 Evaluation Board
 
-[...]
+I think you also have to declare this new entry in wfx_sdio_of_match,
+and/or wfx_spi_of_match and wfx_spi_id.
 
-For the  sched_rt_period_timer() case you simply replace
-raw_spin_rq_lock()/raw_spin_rq_unlock() with rq_lock()/rq_unlock().
-I.e. you're not using the new double_rq_clock_clear_update() which
-is depicted in the text above.
+On the WFM200 variant, the antenna is built in the chip. So I think you
+can point on the same configuration than the brd8023a.
 
-> Call Trace 2:
->  <TASK>
->  activate_task+0x8b/0x110
->  push_rt_task.part.108+0x241/0x2c0
->  push_rt_tasks+0x15/0x30
->  finish_task_switch+0xaa/0x2e0
->  ? __switch_to+0x134/0x420
->  __schedule+0x343/0x8e0
 
-[...]
+--=20
+J=E9r=F4me Pouiller
 
-> Call Trace 3:
->  <TASK>
->  deactivate_task+0x93/0xe0
->  pull_rt_task+0x33e/0x400
->  balance_rt+0x7e/0x90
->  __schedule+0x62f/0x8e0
->  do_task_dead+0x3f/0x50
 
-[...]
-
-> Steps to reproduce:
-> 1. Enable CONFIG_SCHED_DEBUG when compiling the kernel
-> 2. echo 1 > /sys/kernel/debug/clear_warn_once
->    echo "WARN_DOUBLE_CLOCK" > /sys/kernel/debug/sched_features
-
-s/sched_features/sched/features
-
->    echo "NO_RT_PUSH_IPI" > /sys/kernel/debug/sched_features
-
-s/sched_features/sched/features
-
-> 3. Run some rt tasks that periodically change the priority and sleep
-
-Not sure about the `change the priority` part? I'm using rt-app with 2*n
-rt or dl (90% running) tasks (on a system with n CPUs) and can trigger
-all of these cases.
- 
-> Signed-off-by: Hao Jia <jiahao.os@bytedance.com>
-> Signed-off-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-
-You can remove this Signed-off-by. I can provide a Reviewed-By for the
-next version.
-
-[...]
-
-When running PREEMPT_RT kernel there is another similar case in DL.
-
-[  215.158100] ------------[ cut here ]------------
-[  215.158105] rq->clock_update_flags & RQCF_UPDATED
-[  215.158113] WARNING: CPU: 2 PID: 1942 at kernel/sched/core.c:690 update_rq_clock+0x128/0x1a0
-...
-[  215.158245]  update_rq_clock+0x128/0x1a0
-[  215.158253]  migrate_task_rq_dl+0xec/0x310    <--- !!!
-[  215.158259]  set_task_cpu+0x84/0x1e4
-[  215.158264]  try_to_wake_up+0x1d8/0x5c0
-[  215.158268]  wake_up_process+0x1c/0x30
-[  215.158272]  hrtimer_wakeup+0x24/0x3c
-[  215.158279]  __hrtimer_run_queues+0x114/0x270
-[  215.158285]  hrtimer_interrupt+0xe8/0x244
-[  215.158291]  arch_timer_handler_phys+0x30/0x50
-[  215.158301]  handle_percpu_devid_irq+0x88/0x140
-[  215.158306]  generic_handle_domain_irq+0x40/0x60
-[  215.158313]  gic_handle_irq+0x48/0xe0
-[  215.158320]  call_on_irq_stack+0x2c/0x60
-[  215.158327]  do_interrupt_handler+0x80/0x84
-
-For a non_contending task, this is the same issue as in sched_rt_period_timer().
-
--->8--
-
-diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
-index cfe7b40bc4ff..668a9910cd6d 100644
---- a/kernel/sched/deadline.c
-+++ b/kernel/sched/deadline.c
-@@ -1804,6 +1804,7 @@ select_task_rq_dl(struct task_struct *p, int cpu, int flags)
- 
- static void migrate_task_rq_dl(struct task_struct *p, int new_cpu __maybe_unused)
- {
-+	struct rq_flags rf;
- 	struct rq *rq;
- 
- 	if (READ_ONCE(p->__state) != TASK_WAKING)
-@@ -1815,7 +1816,7 @@ static void migrate_task_rq_dl(struct task_struct *p, int new_cpu __maybe_unused
- 	 * from try_to_wake_up(). Hence, p->pi_lock is locked, but
- 	 * rq->lock is not... So, lock it
- 	 */
--	raw_spin_rq_lock(rq);
-+	rq_lock(rq, &rf);
- 	if (p->dl.dl_non_contending) {
- 		update_rq_clock(rq);
- 		sub_running_bw(&p->dl, &rq->dl);
-@@ -1831,7 +1832,7 @@ static void migrate_task_rq_dl(struct task_struct *p, int new_cpu __maybe_unused
- 			put_task_struct(p);
- 	}
- 	sub_rq_bw(&p->dl, &rq->dl);
--	raw_spin_rq_unlock(rq);
-+	rq_unlock(rq, &rf);
- }
- 
- static void check_preempt_equal_dl(struct rq *rq, struct task_struct *p)
--- 
-2.25.1
