@@ -2,170 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66D66C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 07:54:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A9B6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 07:55:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241469AbiDYH5T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 03:57:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59000 "EHLO
+        id S232576AbiDYH6y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 03:58:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241648AbiDYH40 (ORCPT
+        with ESMTP id S234283AbiDYH5D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 03:56:26 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AD652A706
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 00:52:43 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id p4so1744140edx.0
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 00:52:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=G1EEwSPV9OR3PwrucirkIopsjrE2Zt+VuxuH1o+sws0=;
-        b=g4oAlia2jlJQAi6qpWUu/xsE6u6TzsW6fzAmcXqSR/a0DZEdffoSguPFsw2/59X1JQ
-         GhxsVbccqmFL8GVI3lNN5/thcSv+hm4AU2JDKDO3P5ooYDuRddd7CmD37OHUgMYcTzfV
-         19fp2um13sYkYrwR2LF4CJfEy0zY2mH7PtX2q4C2a9+aRWTf4or1/zDQ5UaHK6y6ddcv
-         t7IyseTxXOyTIPHVo0fWC7dCTd88BRteCe57eoT/5jlNaCH/ZTKyLb0pssxspCLRuhPv
-         JVi4QPs/MT/GKoSPvyL2b8gp/CqFKmycYR7Jmq9SMrWSHvJ97dC5dfl9tQmH5xBOWPKx
-         OBBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=G1EEwSPV9OR3PwrucirkIopsjrE2Zt+VuxuH1o+sws0=;
-        b=07Z77fceRx+zrurs0jDUsjjaH28aerR9O+YarL7aG4h9MOAfUCZyNAthbOP4L/bw95
-         tlylSKhD1pqGNR89E5SFYRf0kQb28vSPTUgcQVE29GdV9e/Z7HshmUx0SZMR14gaDKHw
-         Wgc3xPGRW8xFiSGb0mVyzN3NRAdOMMZmWBbjCZnKO5qAhnCjYaVZw4M48rnu+QZ4Rly7
-         eDkTKKCPbfUC++/jZAE9v8x6GJz0LFd4yjUWx4omkutwqeUkHFN2wdPA5VCiauqT8N5A
-         X5NqSWtJuXXjh3K15LObB8VofN+kiPRSBvwXXlfaNtdLbaQenpxImt3FolXLmmFTCcUG
-         bzgA==
-X-Gm-Message-State: AOAM532XfuGifRJUsPhIBr8X3nzKc39C7pZdK9BHseNYnXApIpHFjjtn
-        bKen50oG77V/Dx2lgqsNNizT9w==
-X-Google-Smtp-Source: ABdhPJxz3kWZkDl6FSThVokLJ4bTIeDew2DPyUD21w07yOl/NVskqg/AQ1XoobmWhZKSghrmtLVXmg==
-X-Received: by 2002:a05:6402:1148:b0:413:11e0:1f58 with SMTP id g8-20020a056402114800b0041311e01f58mr17119200edw.113.1650873162160;
-        Mon, 25 Apr 2022 00:52:42 -0700 (PDT)
-Received: from [192.168.0.239] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id n16-20020a05640204d000b0042062f9f0e1sm4154445edw.15.2022.04.25.00.52.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Apr 2022 00:52:41 -0700 (PDT)
-Message-ID: <418c5f0c-5279-41f5-3705-345ec9a97ea2@linaro.org>
-Date:   Mon, 25 Apr 2022 09:52:40 +0200
+        Mon, 25 Apr 2022 03:57:03 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A203BCF5
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 00:53:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=GRc/u2VY9j2J1+X39lc63KFsRB/jvBEkfMYe0ddJlyg=; b=CiFWcvcs+5lKGEQ3/31C2xjRMq
+        GU/6NvG7ToDQgZTdsEwcJdhiANFRnxUGvDD0uOkC58W8oOH6ceAqIp4nFm+agX7WyviL9YEjC6ysc
+        41iRjMXAadNj9Tg3nBOA7f7yzZQr8LV3ZV3Exam11Xqz9/nmaC0LW8dNVPSUsi/NjuSuYiyXCXCbC
+        ympNVeC6nMYONHt1sdHDfywIfhFp42EXzpX63e4Tu8Qei4EvyeJpTOiNc4N54uYjZ5z5GJzfInAV6
+        PUZR4xUky5sP/UxyiPJ20An9L8hgAh9w5KqhZblQQ1T8nbaNg1mrSDljCSbzY4DY/mdurOz+NXC7G
+        0TOchEew==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nitXO-008WQ7-FX; Mon, 25 Apr 2022 07:53:38 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id B1CF8986167; Mon, 25 Apr 2022 09:53:35 +0200 (CEST)
+Date:   Mon, 25 Apr 2022 09:53:35 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Feng Tang <feng.tang@intel.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@intel.com>,
+        "H . Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
+        Denys Vlasenko <dvlasenk@redhat.com>
+Subject: Re: [PATCH v2] x86, vmlinux.lds: Add debug option to force all data
+ sections aligned
+Message-ID: <20220425075335.GZ2731@worktop.programming.kicks-ass.net>
+References: <20220424122533.27590-1-feng.tang@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH V3 12/17] dt-binding: mt8192: Add infra_ao reset bit
-Content-Language: en-US
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        "mturquette@baylibre.com" <mturquette@baylibre.com>,
-        "sboyd@kernel.org" <sboyd@kernel.org>,
-        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>
-Cc:     "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        "angelogioacchino.delregno@collabora.com" 
-        <angelogioacchino.delregno@collabora.com>,
-        =?UTF-8?B?Q2h1bi1KaWUgQ2hlbiAo6Zmz5rWa5qGAKQ==?= 
-        <Chun-Jie.Chen@mediatek.com>,
-        "wenst@chromium.org" <wenst@chromium.org>,
-        =?UTF-8?B?UnVueWFuZyBDaGVuICjpmYjmtqbmtIsp?= 
-        <Runyang.Chen@mediatek.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        Project_Global_Chrome_Upstream_Group 
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-References: <20220422060152.13534-1-rex-bc.chen@mediatek.com>
- <20220422060152.13534-13-rex-bc.chen@mediatek.com>
- <e5b18654-ce83-44ee-e4c8-4cdfc4ceaa1d@linaro.org>
- <5ec37a01b0b84140a7d171b9a5cff7ad8f9fbe87.camel@mediatek.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <5ec37a01b0b84140a7d171b9a5cff7ad8f9fbe87.camel@mediatek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220424122533.27590-1-feng.tang@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25/04/2022 07:01, Rex-BC Chen wrote:
-> On Sat, 2022-04-23 at 18:28 +0800, Krzysztof Kozlowski wrote:
->> On 22/04/2022 08:01, Rex-BC Chen wrote:
->>> To support reset of infra_ao, add the bit definition for
->>> thermal/PCIe/SVS.
->>>
->>> Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
->>> ---
->>>  include/dt-bindings/reset/mt8192-resets.h | 10 ++++++++++
->>>  1 file changed, 10 insertions(+)
->>>
->>> diff --git a/include/dt-bindings/reset/mt8192-resets.h
->>> b/include/dt-bindings/reset/mt8192-resets.h
->>> index be9a7ca245b9..d5f3433175c1 100644
->>> --- a/include/dt-bindings/reset/mt8192-resets.h
->>> +++ b/include/dt-bindings/reset/mt8192-resets.h
->>> @@ -27,4 +27,14 @@
->>>  
->>>  #define MT8192_TOPRGU_SW_RST_NUM				23
->>>  
->>> +/* INFRA RST0 */
->>> +#define MT8192_INFRA_RST0_LVTS_AP_RST				
->>> 0
->>> +/* INFRA RST2 */
->>> +#define MT8192_INFRA_RST2_PCIE_PHY_RST				
->>> 15
->>> +/* INFRA RST3 */
->>> +#define MT8192_INFRA_RST3_PTP_RST				5
->>> +/* INFRA RST4 */
->>> +#define MT8192_INFRA_RST4_LVTS_MCU				12
->>> +#define MT8192_INFRA_RST4_PCIE_TOP				1
->>
->> These should be the IDs of reset, not some register values/offsets.
->> Therefore it is expected to have them incremented by 1.
->>
->>
-> 
-> Hello Krzysztof,
-> 
-> This is define bit.
-> 
-> There is serveral reset set for infra_ao while it's not serial.
-> For MT8192, it's 0x120/0x130/0x140/0x150/0x730.
-> We are implement #reset-cells = <2>, and we can use this reset drive
-> more easier.
-> 
-> For example, in dts, we can define
-> infra_ao: syscon {
-> 	compatible = "mediatek,mt8192-infracfg", "syscon";
->  	reg = <0 0x10001000 0 0x1000>;
->  	#clock-cells = <1>;
-> 	#reset-cells = <2>;
-> };
-> 
-> thermal {
-> 	...
-> 	resets = <&infra_ao 0x730 MT8192_INFRA_RST4_LVTS_MCU>;
-> 	...
-> };
-> 
-> If it's acceptabel, I can update all bit difinition from 0 to 15 for
-> all reset set.
+On Sun, Apr 24, 2022 at 08:25:33PM +0800, Feng Tang wrote:
 
-Bits are not acceptable, because you embed specific device programming
-model (register bits) into the binding.
+> diff --git a/arch/x86/Kconfig.debug b/arch/x86/Kconfig.debug
+> index d3a6f74a94bd..7b8cfe9717f2 100644
+> --- a/arch/x86/Kconfig.debug
+> +++ b/arch/x86/Kconfig.debug
+> @@ -225,6 +225,19 @@ config PUNIT_ATOM_DEBUG
+>  	  The current power state can be read from
+>  	  /sys/kernel/debug/punit_atom/dev_power_state
+> 
+> +config DEBUG_FORCE_DATA_SECTION_ALIGNED
+> +	bool "Force all data sections to be THREAD_SIZE aligned"
 
-These should be IDs, so decimal numbers incremented from 0, so:
-#define MT8192_INFRA_RST0_LVTS_AP_RST				0
-#define MT8192_INFRA_RST4_LVTS_MCU				1
-#define MT8192_INFRA_RST4_PCIE_TOP				2
+s/THREAD_SIZE/PAGE_SIZE/ as that seems to be what the actual patch does.
 
-And what is 0x730 in your example? It does not look like ID of a reset...
+> +	depends on EXPERT && !DYNAMIC_DEBUG
+> +	help
+> +	  There are cases that a commit from one kernel domain changes
+> +	  data sections' alignment of other domains, as they are all
+> +	  linked together compactly, and cause magic performance bump
+> +	  (regression or improvement), which is hard to debug. Enable
+> +	  this option will help to verify if the bump is caused by
+> +	  data alignment changes.
+> +
+> +	  It is mainly for debug and performance tuning use.
+> +
+>  choice
+>  	prompt "Choose kernel unwinder"
+>  	default UNWINDER_ORC if X86_64
+> diff --git a/arch/x86/kernel/vmlinux.lds.S b/arch/x86/kernel/vmlinux.lds.S
+> index 7fda7f27e762..6add703de45f 100644
+> --- a/arch/x86/kernel/vmlinux.lds.S
+> +++ b/arch/x86/kernel/vmlinux.lds.S
+> @@ -155,7 +155,17 @@ SECTIONS
+>  	X86_ALIGN_RODATA_END
+> 
+>  	/* Data */
+> -	.data : AT(ADDR(.data) - LOAD_OFFSET) {
+> +	.data : AT(ADDR(.data) - LOAD_OFFSET)
+> +#ifdef CONFIG_DEBUG_FORCE_DATA_SECTION_ALIGNED
+> +	/*
+> +	 * In theroy, THREAD_SIZE as the biggest alignment of below sections
 
-Entire changeset look wrong from DT point of view.
+I think the more common spelling is: 'theory' :-)
 
-Best regards,
-Krzysztof
+> +	 * should be picked, but since upper 'X86_ALIGN_RODATA_END' can
+> +	 * ganrantees the alignment of 'INIT_TASK_DATA', PAGE_SIZE is picked
+> +	 * instead to reduce size of kernel binary
+> +	 */
+> +	SUBALIGN(PAGE_SIZE)
+> +#endif
+> +	{
+>  		/* Start of data section */
+>  		_sdata = .;
+> 
+> --
+> 2.27.0
+> 
