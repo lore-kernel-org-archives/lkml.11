@@ -2,83 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3085AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 08:17:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC101C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 08:18:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231938AbiDYIUG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 04:20:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43060 "EHLO
+        id S233473AbiDYIVb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 04:21:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234682AbiDYIUA (ORCPT
+        with ESMTP id S233286AbiDYIVY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 04:20:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92085DDF;
-        Mon, 25 Apr 2022 01:16:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9C784B81133;
-        Mon, 25 Apr 2022 08:16:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E127FC385A4;
-        Mon, 25 Apr 2022 08:16:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650874611;
-        bh=FayFAUSz5bqwCJWpaceqLYKGKKoGKJUh2CLGNEr2u4c=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OZKidCZGUAMANW86hNIvXoJuDe+ngtkeCsx4VsoaOxDz/l58rEKt+O82+85e+Qc4/
-         K0gwkIyH3Wb72kOWUvHh70QyAMYkz0UkJ4nUtAGIQATdLyoT6tLCtjb7BMzA0lTpI0
-         38orWvFbEpAI/lWZ2d+1O/OeRBHwrHww6jQRGOmc=
-Date:   Mon, 25 Apr 2022 10:16:48 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Scott Chen <scott@labau.com.tw>
-Cc:     young@labau.com.tw, roger@labau.com.tw,
-        Johan Hovold <johan@kernel.org>, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] USB: serial: pl2303: add device id for HP LM930 Display
-Message-ID: <YmZY8HAezroMkNbj@kroah.com>
-References: <20220425072454.33126-1-scott@labau.com.tw>
+        Mon, 25 Apr 2022 04:21:24 -0400
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1147BDDF
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 01:18:16 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id D033460002;
+        Mon, 25 Apr 2022 08:18:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1650874695;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wUCFqZtEvrVs7Fx/crY2Dz8HfkvrR/d4IUi8U+8pLkU=;
+        b=O1J+Nn31pRNFQ7WJhWgfcJ2mPKDVdj6fsFZBhF8QQm4xkrzY7P3ocMlkW0ANhIlOZOy2Y1
+        4GrIqjQvnXYCGG7knPU6MjxOMlcf/4ID0tiSCfS7YJbSMUCHl51q4r/6oYiW/xP5Z060CC
+        VI2eG+vzC3stq1SlCe5dR4h+pf6r9CQd2snn+1miNiM8rX8YRwyrNwHw31UyamvsiyEDbP
+        KvMKiIirFI9VlDc/zLbR33fJO9LNNTUZDaMvah3FmhedaHi1RY0loUW7eGrjq86aI6Zqqj
+        FEpEEriuPamXsOevuRQ4jeIbMPwuLJfXtJb62Gkh4AU66YVnMAeY2TMCRb5+3g==
+Date:   Mon, 25 Apr 2022 10:18:13 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Jean-Marc Eurin <jmeurin@google.com>
+Cc:     kernel test robot <lkp@intel.com>, llvm@lists.linux.dev,
+        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: Re: [mtd:mtd/next 10/11] drivers/mtd/mtdoops.c:244:39: warning:
+ format specifies type 'long' but the argument has type 'unsigned int'
+Message-ID: <20220425101813.141844d7@xps13>
+In-Reply-To: <CAL3wywWoTkd927n7Uuc6KSxqUGcDZmx1+S+3cBEVXD6kdnFPUQ@mail.gmail.com>
+References: <202204212106.9R1ylUB7-lkp@intel.com>
+        <20220421154806.52e1992b@xps13>
+        <CAL3wywUBghrRqDgnPTe4g2XK8nkJkw+8H64f-NE6kNAwDC6JYw@mail.gmail.com>
+        <20220422111755.6b26ea9e@xps13>
+        <CAL3wywWoTkd927n7Uuc6KSxqUGcDZmx1+S+3cBEVXD6kdnFPUQ@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220425072454.33126-1-scott@labau.com.tw>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 03:24:52PM +0800, Scott Chen wrote:
-> Add the device id for the HPLM930Display which is a PL2303GC based device
-> 
-> Signed-off-by: Scott Chen <scott@labau.com.tw>
-> ---
->  drivers/usb/serial/pl2303.c | 1 +
->  drivers/usb/serial/pl2303.h | 1 +
->  2 files changed, 2 insertions(+)
-> 
-> diff --git a/drivers/usb/serial/pl2303.c b/drivers/usb/serial/pl2303.c
-> index 88b284d61681..1d878d05a658 100644
-> --- a/drivers/usb/serial/pl2303.c
-> +++ b/drivers/usb/serial/pl2303.c
-> @@ -106,6 +106,7 @@ static const struct usb_device_id id_table[] = {
->  	{ USB_DEVICE(HP_VENDOR_ID, HP_LCM220_PRODUCT_ID) },
->  	{ USB_DEVICE(HP_VENDOR_ID, HP_LCM960_PRODUCT_ID) },
->  	{ USB_DEVICE(HP_VENDOR_ID, HP_LM920_PRODUCT_ID) },
-> +	{ USB_DEVICE(HP_VENDOR_ID, HP_LM930_PRODUCT_ID) },
->  	{ USB_DEVICE(HP_VENDOR_ID, HP_LM940_PRODUCT_ID) },
->  	{ USB_DEVICE(HP_VENDOR_ID, HP_TD620_PRODUCT_ID) },
->  	{ USB_DEVICE(CRESSI_VENDOR_ID, CRESSI_EDY_PRODUCT_ID) },
-> diff --git a/drivers/usb/serial/pl2303.h b/drivers/usb/serial/pl2303.h
-> index c5406452b774..9d8102639e16 100644
-> --- a/drivers/usb/serial/pl2303.h
-> +++ b/drivers/usb/serial/pl2303.h
-> @@ -135,6 +135,7 @@
->  #define HP_TD620_PRODUCT_ID	0x0956
->  #define HP_LD960_PRODUCT_ID	0x0b39
->  #define HP_LD381_PRODUCT_ID	0x0f7f
-> +#define HP_LM930_PRODUCT_ID     0x0f9b
+Hi Jean-Marc,
 
-Please use a tab here too.
+jmeurin@google.com wrote on Fri, 22 Apr 2022 12:10:13 -0700:
 
-thanks,
+> Hi Miquel,
+>=20
+> On Fri, Apr 22, 2022 at 2:17 AM Miquel Raynal <miquel.raynal@bootlin.com>=
+ wrote:
+> >
+> > Hi Jean-Marc,
+> >
+> > jmeurin@google.com wrote on Thu, 21 Apr 2022 15:22:26 -0700:
+> > =20
+> > > On Thu, Apr 21, 2022 at 6:48 AM Miquel Raynal <miquel.raynal@bootlin.=
+com> wrote: =20
+> > > >
+> > > > Hi Jean-Marc,
+> > > >
+> > > > lkp@intel.com wrote on Thu, 21 Apr 2022 21:22:47 +0800:
+> > > > =20
+> > > > > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux=
+.git mtd/next
+> > > > > head:   f812679fab605b3d5b853ed24a81dabb222ea23a
+> > > > > commit: 0629fcef16d703d384f76cb2c2c3a119a9149a34 [10/11] mtd: mtd=
+oops: Create a header structure for the saved mtdoops.
+> > > > > config: hexagon-randconfig-r045-20220420 (https://download.01.org=
+/0day-ci/archive/20220421/202204212106.9R1ylUB7-lkp@intel.com/config)
+> > > > > compiler: clang version 15.0.0 (https://github.com/llvm/llvm-proj=
+ect bac6cd5bf85669e3376610cfc4c4f9ca015e7b9b)
+> > > > > reproduce (this is a W=3D1 build):
+> > > > >         wget https://raw.githubusercontent.com/intel/lkp-tests/ma=
+ster/sbin/make.cross -O ~/bin/make.cross
+> > > > >         chmod +x ~/bin/make.cross
+> > > > >         # https://git.kernel.org/pub/scm/linux/kernel/git/mtd/lin=
+ux.git/commit/?id=3D0629fcef16d703d384f76cb2c2c3a119a9149a34
+> > > > >         git remote add mtd https://git.kernel.org/pub/scm/linux/k=
+ernel/git/mtd/linux.git
+> > > > >         git fetch --no-tags mtd mtd/next
+> > > > >         git checkout 0629fcef16d703d384f76cb2c2c3a119a9149a34
+> > > > >         # save the config file
+> > > > >         mkdir build_dir && cp config build_dir/.config
+> > > > >         COMPILER_INSTALL_PATH=3D$HOME/0day COMPILER=3Dclang make.=
+cross W=3D1 O=3Dbuild_dir ARCH=3Dhexagon SHELL=3D/bin/bash drivers/mtd/
+> > > > >
+> > > > > If you fix the issue, kindly add following tag as appropriate
+> > > > > Reported-by: kernel test robot <lkp@intel.com>
+> > > > >
+> > > > > All warnings (new ones prefixed by >>):
+> > > > > =20
+> > > > > >> drivers/mtd/mtdoops.c:244:39: warning: format specifies type '=
+long' but the argument has type 'unsigned int' [-Wformat] =20
+> > > > >                                   page * record_size, retlen, siz=
+eof(hdr), ret);
+> > > > >                                                               ^~~=
+~~~~~~~~
+> > > > >    include/linux/printk.h:446:60: note: expanded from macro 'prin=
+tk'
+> > > > >    #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__V=
+A_ARGS__)
+> > > > >                                                        ~~~    ^~~=
+~~~~~~~~
+> > > > >    include/linux/printk.h:418:19: note: expanded from macro 'prin=
+tk_index_wrap'
+> > > > >                    _p_func(_fmt, ##__VA_ARGS__);                 =
+          \
+> > > > >                            ~~~~    ^~~~~~~~~~~
+> > > > >    1 warning generated. =20
+> > > >
+> > > > I've dropped the series for now. Please have a look at the reports =
+and
+> > > > propose a new version when this is fixed? =20
+> > >
+> > > Sorry about that, I had made that change based on this suggestion
+> > > https://lore.kernel.org/all/202203310648.it4f2xXD-lkp@intel.com/ :-) =
+=20
+> >
+> > Did you verify with
+> > =20
+> > > > >         # save the config file
+> > > > >         mkdir build_dir && cp config build_dir/.config
+> > > > >         COMPILER_INSTALL_PATH=3D$HOME/0day COMPILER=3Dclang make.=
+cross W=3D1 O=3Dbuild_dir ARCH=3Dhexagon SHELL=3D/bin/bash drivers/mtd/ =20
+> >
+> > That the errors were actually gone? You seem to suggest that you didn't
+> > :) =20
+>=20
+> I did run it. I believe the issue is because the field is a size_t so
+> when building 64 bits like the first bot on v2, the %ld suggestion
+> compiled but then it failed the hexagon build (which I'm guessing is
+> 32 bit).  Using %zu in v4 builds both versions (ARCH=3Dx86_64 and
+> hexagon).  I should have double checked the bot suggestion and noticed
+> this was a sizeof / size_t field, sorry about that.
 
-greg k-h
+No problem at all, it often happens to me as well.
+
+Thanks,
+Miqu=C3=A8l
