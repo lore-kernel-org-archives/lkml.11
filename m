@@ -2,116 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC174C46467
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:21:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A8C9C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:21:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233927AbiDYWYj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 18:24:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40792 "EHLO
+        id S235109AbiDYWYm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 18:24:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343621AbiDYVsQ (ORCPT
+        with ESMTP id S1343644AbiDYWCC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 17:48:16 -0400
-Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF53E23BEF;
-        Mon, 25 Apr 2022 14:45:10 -0700 (PDT)
-Received: by mail-oi1-f177.google.com with SMTP id z8so18661916oix.3;
-        Mon, 25 Apr 2022 14:45:10 -0700 (PDT)
+        Mon, 25 Apr 2022 18:02:02 -0400
+Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B727A3298E;
+        Mon, 25 Apr 2022 14:58:57 -0700 (PDT)
+Received: by mail-oi1-f174.google.com with SMTP id r85so18697902oie.7;
+        Mon, 25 Apr 2022 14:58:57 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=VZMstEGR59a6WeLJcSDZzBTL969MVFol/7kqyWovv4c=;
-        b=obXWrnqaFu91kMdRfKfdulQkxPwilw0ID+21Ett64qWaxPNy2uxP56wO5XJYositR4
-         JYKRdFty/787G2glyiFp7CU3t5wNUcGCiuiM8sEgOty3FvrKKaGmppIQTRMmjSJVUkfl
-         r/3YRJnB7JsuJz1axlyrYmzwhNLWW3Qqpc4UJu+1WXwdw1xstSP5exDmt9o783RMywPa
-         cux8yPkniuL3yrj10Gw8dl1br+4z+rWQh93G32YsX7XROWQ8k8Y28PnaqdCBlZgPKwKw
-         O/QSvb6YB+6OCESeRpjGLzQKUE2gbHy2H4ieQCD7iFYgpH2yZos3w9YOjuA3850z8QAy
-         fcDQ==
-X-Gm-Message-State: AOAM530UFRAaIHYtUyu6K+J4lfs68JMO/6ZzCPODjR3QrlpPiS3iVkmC
-        Z3Wt2+GDSOIWX3GoVeYQUg==
-X-Google-Smtp-Source: ABdhPJy/rpBx/iJkVWRVcZNGd8eAyl3X6OyANl4MITXioNcKwEoeJ12MJdt0640bsxJiI2ms7mVrhw==
-X-Received: by 2002:a05:6808:2388:b0:325:e69:4ec5 with SMTP id bp8-20020a056808238800b003250e694ec5mr5220386oib.10.1650923110270;
-        Mon, 25 Apr 2022 14:45:10 -0700 (PDT)
+        bh=giYEePQGwfyo/twGmZzP8uZHE1niv7Jue0jlfyNBG/w=;
+        b=iR9haEPnoDiiq0N/p9KzUVlr2hzsBKtv3XMA6Q3WlAR89IE/49doHEIKCuGo2GGf+d
+         207bnxSGrZx/k0YPDeTv/9X/6AdFEt6npbZ05dakhZ/d61sfqNcZbjRr6xuwqj93OghR
+         AhnV8lLKse8CyvFPfUZMF185GWAwnfZ/gOgr5I5CNioXiovwzY0pkA7ZRprrThgEdbpg
+         ujlPQHCsFkVm3Nq6lwF9nzgliXC68GNtS3GQuCHAQgWpPkOFBnrtyfo22wUfPMCTuhle
+         jA1N1AGlL2DHQGHltecG9YHQQMAyDsDcsY34DZe+2AVv+GRF4wkCt+s2/ls2mYmIMhYJ
+         nwHw==
+X-Gm-Message-State: AOAM5307F4V8fEX7CdIZRJlNB2y2GZxneO9w7HwgR+PAx54cM9Z1hg5o
+        xDWvoqwcG8Aqi6+k6ibtLA==
+X-Google-Smtp-Source: ABdhPJw07VATwV9Pi6FNS0BWGKvJTnXzmA3vvTfsUF3ThnLFDbsVteQpIwHVnR4kBKSYrwLDl8g+AA==
+X-Received: by 2002:aca:6c5:0:b0:325:5bce:bbc1 with SMTP id 188-20020aca06c5000000b003255bcebbc1mr84990oig.221.1650923937051;
+        Mon, 25 Apr 2022 14:58:57 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id x64-20020acae043000000b003222bb3dfb0sm4208670oig.36.2022.04.25.14.45.09
+        by smtp.gmail.com with ESMTPSA id c25-20020a0568301af900b0060579b0abe2sm4225067otd.61.2022.04.25.14.58.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 14:45:09 -0700 (PDT)
-Received: (nullmailer pid 344104 invoked by uid 1000);
-        Mon, 25 Apr 2022 21:45:09 -0000
-Date:   Mon, 25 Apr 2022 16:45:08 -0500
+        Mon, 25 Apr 2022 14:58:56 -0700 (PDT)
+Received: (nullmailer pid 367439 invoked by uid 1000);
+        Mon, 25 Apr 2022 21:58:55 -0000
+Date:   Mon, 25 Apr 2022 16:58:55 -0500
 From:   Rob Herring <robh@kernel.org>
-To:     Anjelique Melendez <quic_amelende@quicinc.com>
-Cc:     dmitry.torokhov@gmail.com, corbet@lwn.net, sre@kernel.org,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, bjorn.andersson@linaro.org,
-        swboyd@chromium.org, linux-doc@vger.kernel.org,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        David Collins <collinsd@quicinc.com>,
-        David Collins <quic_collinsd@quicinc.com>
-Subject: Re: [PATCH v6] dt-bindings: power: reset: qcom-pon: update "reg"
- property details
-Message-ID: <YmcWZLp2X8UYOVas@robh.at.kernel.org>
-References: <20220422191239.6271-1-quic_amelende@quicinc.com>
- <20220422191239.6271-2-quic_amelende@quicinc.com>
+To:     Fabio Baltieri <fabiobaltieri@chromium.org>
+Cc:     Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        chrome-platform@lists.linux.dev, linux-pwm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 3/4] dt-bindings: update google,cros-ec-pwm
+ documentation
+Message-ID: <YmcZn8mWQveT5HzT@robh.at.kernel.org>
+References: <20220420141556.681212-1-fabiobaltieri@chromium.org>
+ <20220420141556.681212-4-fabiobaltieri@chromium.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220422191239.6271-2-quic_amelende@quicinc.com>
+In-Reply-To: <20220420141556.681212-4-fabiobaltieri@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 12:12:38PM -0700, Anjelique Melendez wrote:
-> From: David Collins <collinsd@quicinc.com>
+On Wed, Apr 20, 2022 at 02:15:55PM +0000, Fabio Baltieri wrote:
+> Update google,cros-ec-pwm node documentation to mention the
+> google,cros-ec-pwm-type compatible.
+
+It would be good if the subject provided some clue what the update is. 
+Every change is an update. And all bindings are 'documentation' so 
+that can be dropped.
+
 > 
-> Update the description of "reg" property to add the PON_PBS base
-> address along with PON_HLOS base address.  Also add "reg-names"
-> property description.
-> 
-> Signed-off-by: David Collins <quic_collinsd@quicinc.com>
-> Signed-off-by: Anjelique Melendez <quic_amelende@quicinc.com>
+> Signed-off-by: Fabio Baltieri <fabiobaltieri@chromium.org>
 > ---
->  .../bindings/power/reset/qcom,pon.yaml | 19 ++++++++++++++++++-
->  1 file changed, 18 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/power/reset/qcom,pon.yaml b/Documentation/devicetree/bindings/power/reset/qcom,pon.yaml
-> index 353f155d..65ec8197 100644
-> --- a/Documentation/devicetree/bindings/power/reset/qcom,pon.yaml
-> +++ b/Documentation/devicetree/bindings/power/reset/qcom,pon.yaml
-> @@ -26,7 +26,24 @@ properties:
->        - qcom,pm8998-pon
->  
->    reg:
-> -    maxItems: 1
-> +    description: |
-> +      Specifies the SPMI base address for the PON (power-on) peripheral.  For
-> +      PMICs that have the PON peripheral (GEN3) split into PON_HLOS and PON_PBS
-> +      (e.g. PMK8350), this can hold addresses of both PON_HLOS and PON_PBS
-> +      peripherals.  In that case, the PON_PBS address needs to be specified to
-> +      facilitate software debouncing on some PMICs.
-> +    minItems: 1
-> +    maxItems: 2
-> +
-> +  reg-names:
-> +    description: |
-> +      For PON GEN1 and GEN2, it should be "pon".  For PON GEN3 it should include
-> +      "pon_hlos" and optionally "pon_pbs".
-> +    minItems: 1
-> +    items:
-> +      - const: pon_hlos
-> +      - const: pon_pbs
-> +      - const: pon
+>  .../devicetree/bindings/pwm/google,cros-ec-pwm.yaml      | 9 ++++++++-
+>  1 file changed, 8 insertions(+), 1 deletion(-)
 
-Did you test that 'reg-names = "pon";' works? It doesn't. The schema 
-says 'pon' is the 3rd entry in reg-names.
+In any case,
 
-As 'reg-names' is new I thin this should be:
+Reviewed-by: Rob Herring <robh@kernel.org>
 
-items:
-  - const: hlos
-  - const: pbs
-
-And if there's 1 entry, then 'reg-names' should not be there.
-
-Rob
