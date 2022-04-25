@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0916CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 14:31:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF377C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 14:31:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241109AbiDYOeo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 10:34:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49798 "EHLO
+        id S242473AbiDYOet (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 10:34:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236086AbiDYOee (ORCPT
+        with ESMTP id S236700AbiDYOeg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 10:34:34 -0400
+        Mon, 25 Apr 2022 10:34:36 -0400
 Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 011856466
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 07:31:29 -0700 (PDT)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id 655155C0165;
-        Mon, 25 Apr 2022 10:31:29 -0400 (EDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7CFB2666
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 07:31:31 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 2C26B5C0185;
+        Mon, 25 Apr 2022 10:31:31 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Mon, 25 Apr 2022 10:31:29 -0400
+  by compute2.internal (MEProxy); Mon, 25 Apr 2022 10:31:31 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sent.com; h=cc
         :cc:content-transfer-encoding:content-type:date:date:from:from
         :in-reply-to:in-reply-to:message-id:mime-version:references
         :reply-to:reply-to:sender:subject:subject:to:to; s=fm1; t=
-        1650897089; x=1650983489; bh=OeQFxiIFvToaCLpTa2plz66iPIth4OqYoQ1
-        7JpnzViQ=; b=A9b3waUUGp3F2UWeLiSYPfFrFcvP+AopJc6K0snGGxr9P40nHHo
-        EIoODQMsQjv0W6y8i2bYfegJq0o9QJgpx/pcL/vmu1ZfX87ybZYI44mMea8YhNa/
-        N39Ba+44iuTydKxdvHlTwn3oWeXJmk7zgEsxvKouV4GswEQZE4OyV10tjlE/W0On
-        0mCmoW7i+4K0TKA0Pg52p6M7xMIy1Sgl6e4GpkrTDPFGvUAA7zegvbqAebNYDlhe
-        zD7kCKskjDgdQABpnmOOuzux09fEh3E/q6YpCCXqABPto1TkNp9BNskU6NI7vTpE
-        HLsvtyXguNt4SClWV4nyoEUaxApG+61awxw==
+        1650897091; x=1650983491; bh=FGuSjq7Qo3xUzFw7F3hZNaEuHq5HI+jj6I+
+        FwTpeURQ=; b=PMgvB8euRccq21wM7F4HnHrBKTiTgoZEpN3WVqB5zlpFZxbrB48
+        qhfl/a7b8yXeFFi3Xo0fNpxjbOzr998/Bcq1/6FxoX7iCxu4bMMuBfOY8faEBNCM
+        exGviOuRiFZXq9CnnfR6DyJ/HpUzPMVYYv6f8k8BQCcVMFZAvOoxU9jO3eZkdD6A
+        SEej2hXqTRrTnVmKtGKdnMVcxyRwVxcVkpLzfML5EE6l2xCwsJsnk4QhXKukybla
+        PmYZcwpo3flYMI2amf9m5hD/2RgjBdV4hzHRtMQFod1gXz5Bn9Q/JANUgYmeio/2
+        J2CAAPclPa0iEjDu/Mo0aG6DvfxYyXtXdbA==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding
         :content-type:date:date:from:from:in-reply-to:in-reply-to
         :message-id:mime-version:references:reply-to:reply-to:sender
         :subject:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender
-        :x-me-sender:x-sasl-enc; s=fm1; t=1650897089; x=1650983489; bh=O
-        eQFxiIFvToaCLpTa2plz66iPIth4OqYoQ17JpnzViQ=; b=oYsissR3PHWqDArA4
-        HfFAmFfENAfSER9HKJGmrMOrOCpfxw0HustA7k6EVvUhGGUryXMusRnyuDwV+8ub
-        iZ0PxQRtPkk9ABrQhiqeenaony75e23HvlqmH/+p9KUnttwYyY6IPtP1Z7PE005K
-        d/EippddZZJnHM5pkdbZtal+8YW3oghi3t4c1ceARr9xQV9nePP3NK7nvjL/gugm
-        fY2nY+XvzV5GPRCPiV0a5o7wDXQ+ZaF8zvVRgDvfefckuPHJVuAZTa/fghuv2N2a
-        pXk+5Dw1CKTqX/s9dVdc/PbCWl0MtoKo0mjqzU95VedAD5PNwG/MDtPnaflvR4DG
-        0kbDg==
-X-ME-Sender: <xms:wbBmYpOcskIFYyNEMs6r93hzSZslEn2suc7QVLJYtT8T2cbgykuUMw>
-    <xme:wbBmYr_YMvipxgQOv9bKm6fbpzu1uQOXrZbn8o53rxne4lz8DgT15GggWGNZ10BX_
-    F32SBJnbXucjGKZ8Q>
-X-ME-Received: <xmr:wbBmYoQ71sUE13J6VbFnVdrETkxRRnzkQFoNFzhQlPUa3OqZiuTmyB8aHhdNHng7lxLNlMl22tD7i398dw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedruddugdejhecutefuodetggdotefrodftvf
+        :x-me-sender:x-sasl-enc; s=fm1; t=1650897091; x=1650983491; bh=F
+        GuSjq7Qo3xUzFw7F3hZNaEuHq5HI+jj6I+FwTpeURQ=; b=qF6TRLPv4pfzD9D9/
+        Va14A9OhcHzxGGmwchLkfogHJk8Kw/w3urkm17g1zS7m5zLGfrkHltP491iRgIlL
+        SjVWPErSQ6CHljQY1LzsKrHF8LMxSbfXjVEv0RODooUTNTHkqi15kT/KqCjSKVe1
+        RZ4tR2vxCLxmJjSf5Ik2WhoxTTR0XqWmkPyjTUKLJWbvM0SShmVESvM6vo2xG+x5
+        w5cKHyDn8FBsn22O2i/GNF2hbLAq/X8yx9bOlsYlpwxEMJT9UB4fx54Je+Bw5hF0
+        KvV5szFX8WUati0aY0SlUcEGqhdbY9VcXGEDQy2ce5BvdG9hiNbfUBPOaqEh2J1d
+        ZH1Qw==
+X-ME-Sender: <xms:wrBmYk57kdiDNgYPe3fjrybhSIl-OjaIr4ayW1XIc4rydNAlyGag6A>
+    <xme:wrBmYl6wl4KfUaXM7K1jJf2jNu6d5BRCYOcAODtyXo8TtdVxzjET_TvABXxd6fnQ-
+    CkEa0cjPPHP-ybUNA>
+X-ME-Received: <xmr:wrBmYjfkEvWVenocoJPqCuZiNTeqr-DIU-VgP9Nw4PSgbGGj0FN-zG1-W4S48QKB0RMtKeoVy07-hkzxig>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedruddugdejiecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
     fjughrpefhvfevufffkffojghfrhggtgfgsehtqhertdertdejnecuhfhrohhmpegkihcu
@@ -56,12 +56,12 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedruddugdejhecutefuodetggdote
     evleehgfduhffhudefteehhfegjeeiudevheevffetuedttdfhkeeuleehudenucevlhhu
     shhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpeiiihdrhigrnhessh
     gvnhhtrdgtohhm
-X-ME-Proxy: <xmx:wbBmYltbQ1CrDXOM3gxEVjsWRIHUz8xIZB5jVzhj3XNxNjQo79Q2vg>
-    <xmx:wbBmYhds6Q7E2lqkZEZ7uIY0TuIwMMcCoY71roAUHjzuMi4cjxHWlw>
-    <xmx:wbBmYh1MmiiZeXsDJBvKOZ37xmokOL1kV39vbDh4XyB7iYsZwFsBLQ>
-    <xmx:wbBmYiUy78YTBybpy0iekAkVgk3ICQ1cyipRpqMVEAnTuDRLQdmJ0g>
+X-ME-Proxy: <xmx:wrBmYpIBrKt925zD6JjWG5bCqdiEYBjcTwWlD3vysN5khjqLC9OjBw>
+    <xmx:wrBmYoKbgeyIz73j_Wd0eW-I1JFuAFMqlrDoo-OHC-Oez2a_PwiUWg>
+    <xmx:wrBmYqyepL1XHzTtBWHDmpc89nbMrYIZrbo7SVGSveRIMX__rK_axQ>
+    <xmx:w7BmYlASbtcyLYrCbgqtlT8h8cuY9WneDmUbuHGKOT3wB1R8MWApwA>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 25 Apr 2022 10:31:28 -0400 (EDT)
+ 25 Apr 2022 10:31:30 -0400 (EDT)
 From:   Zi Yan <zi.yan@sent.com>
 To:     David Hildenbrand <david@redhat.com>, linux-mm@kvack.org
 Cc:     linux-kernel@vger.kernel.org,
@@ -74,9 +74,9 @@ Cc:     linux-kernel@vger.kernel.org,
         Christophe Leroy <christophe.leroy@csgroup.eu>,
         Andrew Morton <akpm@linux-foundation.org>,
         Zi Yan <ziy@nvidia.com>
-Subject: [PATCH v11 2/6] mm: page_isolation: check specified range for unmovable pages
-Date:   Mon, 25 Apr 2022 10:31:14 -0400
-Message-Id: <20220425143118.2850746-3-zi.yan@sent.com>
+Subject: [PATCH v11 4/6] mm: page_isolation: enable arbitrary range page isolation.
+Date:   Mon, 25 Apr 2022 10:31:16 -0400
+Message-Id: <20220425143118.2850746-5-zi.yan@sent.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220425143118.2850746-1-zi.yan@sent.com>
 References: <20220425143118.2850746-1-zi.yan@sent.com>
@@ -90,150 +90,141 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Zi Yan <ziy@nvidia.com>
 
-Enable set_migratetype_isolate() to check specified range for
-unmovable pages during isolation to prepare arbitrary range page
-isolation. The functionality will take effect in upcoming commits by
-adjusting the callers of start_isolate_page_range(), which uses
-set_migratetype_isolate().
-
-For example, alloc_contig_range(), which calls start_isolate_page_range(),
-accepts unaligned ranges, but because page isolation is currently done at
-MAX_ORDER_NR_PAEGS granularity, pages that are out of the specified range
-but withint MAX_ORDER_NR_PAEGS alignment might be attempted for isolation
-and the failure of isolating these unrelated pages fails the whole
-operation undesirably.
+Now start_isolate_page_range() is ready to handle arbitrary range
+isolation, so move the alignment check/adjustment into the function body.
+Do the same for its counterpart undo_isolate_page_range().
+alloc_contig_range(), its caller, can pass an arbitrary range instead of
+a MAX_ORDER_NR_PAGES aligned one.
 
 Signed-off-by: Zi Yan <ziy@nvidia.com>
 ---
- mm/page_isolation.c | 47 ++++++++++++++++++++++++++++++++-------------
- 1 file changed, 34 insertions(+), 13 deletions(-)
+ mm/page_alloc.c     | 16 ++--------------
+ mm/page_isolation.c | 33 ++++++++++++++++-----------------
+ 2 files changed, 18 insertions(+), 31 deletions(-)
 
-diff --git a/mm/page_isolation.c b/mm/page_isolation.c
-index df49f86a6ed1..c2f7a8bb634d 100644
---- a/mm/page_isolation.c
-+++ b/mm/page_isolation.c
-@@ -16,7 +16,9 @@
- #include <trace/events/page_isolation.h>
-=20
- /*
-- * This function checks whether pageblock includes unmovable pages or not.
-+ * This function checks whether the range [start_pfn, end_pfn) includes
-+ * unmovable pages or not. The range must fall into a single pageblock and
-+ * consequently belong to a single zone.
-  *
-  * PageLRU check without isolation or lru_lock could race so that
-  * MIGRATE_MOVABLE block might include unmovable pages. And __PageMovable
-@@ -28,12 +30,15 @@
-  * cannot get removed (e.g., via memory unplug) concurrently.
-  *
-  */
--static struct page *has_unmovable_pages(struct zone *zone, struct page *pa=
-ge,
--				 int migratetype, int flags)
-+static struct page *has_unmovable_pages(unsigned long start_pfn, unsigned =
-long end_pfn,
-+				int migratetype, int flags)
- {
--	unsigned long iter =3D 0;
--	unsigned long pfn =3D page_to_pfn(page);
--	unsigned long offset =3D pfn % pageblock_nr_pages;
-+	struct page *page =3D pfn_to_page(start_pfn);
-+	struct zone *zone =3D page_zone(page);
-+	unsigned long pfn;
-+
-+	VM_BUG_ON(ALIGN_DOWN(start_pfn, pageblock_nr_pages) !=3D
-+		  ALIGN_DOWN(end_pfn - 1, pageblock_nr_pages));
-=20
- 	if (is_migrate_cma_page(page)) {
- 		/*
-@@ -47,8 +52,8 @@ static struct page *has_unmovable_pages(struct zone *zone=
-, struct page *page,
- 		return page;
- 	}
-=20
--	for (; iter < pageblock_nr_pages - offset; iter++) {
--		page =3D pfn_to_page(pfn + iter);
-+	for (pfn =3D start_pfn; pfn < end_pfn; pfn++) {
-+		page =3D pfn_to_page(pfn);
-=20
- 		/*
- 		 * Both, bootmem allocations and memory holes are marked
-@@ -85,7 +90,7 @@ static struct page *has_unmovable_pages(struct zone *zone=
-, struct page *page,
- 			}
-=20
- 			skip_pages =3D compound_nr(head) - (page - head);
--			iter +=3D skip_pages - 1;
-+			pfn +=3D skip_pages - 1;
- 			continue;
- 		}
-=20
-@@ -97,7 +102,7 @@ static struct page *has_unmovable_pages(struct zone *zon=
-e, struct page *page,
- 		 */
- 		if (!page_ref_count(page)) {
- 			if (PageBuddy(page))
--				iter +=3D (1 << buddy_order(page)) - 1;
-+				pfn +=3D (1 << buddy_order(page)) - 1;
- 			continue;
- 		}
-=20
-@@ -134,11 +139,18 @@ static struct page *has_unmovable_pages(struct zone *=
-zone, struct page *page,
- 	return NULL;
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 70ddd9a0bcf3..a002cf12eb6c 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -8924,16 +8924,6 @@ void *__init alloc_large_system_hash(const char *tab=
+lename,
  }
 =20
--static int set_migratetype_isolate(struct page *page, int migratetype, int=
- isol_flags)
-+/*
-+ * This function set pageblock migratetype to isolate if no unmovable page=
- is
-+ * present in [start_pfn, end_pfn). The pageblock must intersect with
-+ * [start_pfn, end_pfn).
-+ */
-+static int set_migratetype_isolate(struct page *page, int migratetype, int=
- isol_flags,
-+			unsigned long start_pfn, unsigned long end_pfn)
- {
- 	struct zone *zone =3D page_zone(page);
- 	struct page *unmovable;
- 	unsigned long flags;
-+	unsigned long check_unmovable_start, check_unmovable_end;
-=20
- 	spin_lock_irqsave(&zone->lock, flags);
-=20
-@@ -155,8 +167,16 @@ static int set_migratetype_isolate(struct page *page, =
-int migratetype, int isol_
- 	/*
- 	 * FIXME: Now, memory hotplug doesn't call shrink_slab() by itself.
- 	 * We just check MOVABLE pages.
-+	 *
-+	 * Pass the intersection of [start_pfn, end_pfn) and the page's pageblock
-+	 * to avoid redundant checks.
+ #ifdef CONFIG_CONTIG_ALLOC
+-static unsigned long pfn_max_align_down(unsigned long pfn)
+-{
+-	return ALIGN_DOWN(pfn, MAX_ORDER_NR_PAGES);
+-}
+-
+-static unsigned long pfn_max_align_up(unsigned long pfn)
+-{
+-	return ALIGN(pfn, MAX_ORDER_NR_PAGES);
+-}
+-
+ #if defined(CONFIG_DYNAMIC_DEBUG) || \
+ 	(defined(CONFIG_DYNAMIC_DEBUG_CORE) && defined(DYNAMIC_DEBUG_MODULE))
+ /* Usage: See admin-guide/dynamic-debug-howto.rst */
+@@ -9075,8 +9065,7 @@ int alloc_contig_range(unsigned long start, unsigned =
+long end,
+ 	 * put back to page allocator so that buddy can use them.
  	 */
--	unmovable =3D has_unmovable_pages(zone, page, migratetype, isol_flags);
-+	check_unmovable_start =3D max(page_to_pfn(page), start_pfn);
-+	check_unmovable_end =3D min(ALIGN(page_to_pfn(page) + 1, pageblock_nr_pag=
-es),
-+				  end_pfn);
-+
-+	unmovable =3D has_unmovable_pages(check_unmovable_start, check_unmovable_=
-end,
-+			migratetype, isol_flags);
- 	if (!unmovable) {
- 		unsigned long nr_pages;
- 		int mt =3D get_pageblock_migratetype(page);
-@@ -313,7 +333,8 @@ int start_isolate_page_range(unsigned long start_pfn, u=
-nsigned long end_pfn,
- 	     pfn < end_pfn;
+=20
+-	ret =3D start_isolate_page_range(pfn_max_align_down(start),
+-				pfn_max_align_up(end), migratetype, 0, gfp_mask);
++	ret =3D start_isolate_page_range(start, end, migratetype, 0, gfp_mask);
+ 	if (ret)
+ 		goto done;
+=20
+@@ -9157,8 +9146,7 @@ int alloc_contig_range(unsigned long start, unsigned =
+long end,
+ 		free_contig_range(end, outer_end - end);
+=20
+ done:
+-	undo_isolate_page_range(pfn_max_align_down(start),
+-				pfn_max_align_up(end), migratetype);
++	undo_isolate_page_range(start, end, migratetype);
+ 	return ret;
+ }
+ EXPORT_SYMBOL(alloc_contig_range);
+diff --git a/mm/page_isolation.c b/mm/page_isolation.c
+index 94b3467e5ba2..75e454f5cf45 100644
+--- a/mm/page_isolation.c
++++ b/mm/page_isolation.c
+@@ -435,7 +435,6 @@ static int isolate_single_pageblock(unsigned long bound=
+ary_pfn, gfp_t gfp_flags,
+  * be MIGRATE_ISOLATE.
+  * @start_pfn:		The lower PFN of the range to be isolated.
+  * @end_pfn:		The upper PFN of the range to be isolated.
+- *			start_pfn/end_pfn must be aligned to pageblock_order.
+  * @migratetype:	Migrate type to set in error recovery.
+  * @flags:		The following flags are allowed (they can be combined in
+  *			a bit mask)
+@@ -482,33 +481,33 @@ int start_isolate_page_range(unsigned long start_pfn,=
+ unsigned long end_pfn,
+ {
+ 	unsigned long pfn;
+ 	struct page *page;
++	/* isolation is done at page block granularity */
++	unsigned long isolate_start =3D ALIGN_DOWN(start_pfn, pageblock_nr_pages);
++	unsigned long isolate_end =3D ALIGN(end_pfn, pageblock_nr_pages);
+ 	int ret;
+=20
+-	BUG_ON(!IS_ALIGNED(start_pfn, pageblock_nr_pages));
+-	BUG_ON(!IS_ALIGNED(end_pfn, pageblock_nr_pages));
+-
+-	/* isolate [start_pfn, start_pfn + pageblock_nr_pages) pageblock */
+-	ret =3D isolate_single_pageblock(start_pfn, gfp_flags, false);
++	/* isolate [isolate_start, isolate_start + pageblock_nr_pages) pageblock =
+*/
++	ret =3D isolate_single_pageblock(isolate_start, gfp_flags, false);
+ 	if (ret)
+ 		return ret;
+=20
+-	/* isolate [end_pfn - pageblock_nr_pages, end_pfn) pageblock */
+-	ret =3D isolate_single_pageblock(end_pfn, gfp_flags, true);
++	/* isolate [isolate_end - pageblock_nr_pages, isolate_end) pageblock */
++	ret =3D isolate_single_pageblock(isolate_end, gfp_flags, true);
+ 	if (ret) {
+-		unset_migratetype_isolate(pfn_to_page(start_pfn), migratetype);
++		unset_migratetype_isolate(pfn_to_page(isolate_start), migratetype);
+ 		return ret;
+ 	}
+=20
+ 	/* skip isolated pageblocks at the beginning and end */
+-	for (pfn =3D start_pfn + pageblock_nr_pages;
+-	     pfn < end_pfn - pageblock_nr_pages;
++	for (pfn =3D isolate_start + pageblock_nr_pages;
++	     pfn < isolate_end - pageblock_nr_pages;
  	     pfn +=3D pageblock_nr_pages) {
  		page =3D __first_valid_page(pfn, pageblock_nr_pages);
--		if (page && set_migratetype_isolate(page, migratetype, flags)) {
-+		if (page && set_migratetype_isolate(page, migratetype, flags,
-+					start_pfn, end_pfn)) {
- 			undo_isolate_page_range(start_pfn, pfn, migratetype);
+ 		if (page && set_migratetype_isolate(page, migratetype, flags,
+ 					start_pfn, end_pfn)) {
+-			undo_isolate_page_range(start_pfn, pfn, migratetype);
++			undo_isolate_page_range(isolate_start, pfn, migratetype);
+ 			unset_migratetype_isolate(
+-				pfn_to_page(end_pfn - pageblock_nr_pages),
++				pfn_to_page(isolate_end - pageblock_nr_pages),
+ 				migratetype);
  			return -EBUSY;
  		}
+@@ -524,12 +523,12 @@ void undo_isolate_page_range(unsigned long start_pfn,=
+ unsigned long end_pfn,
+ {
+ 	unsigned long pfn;
+ 	struct page *page;
++	unsigned long isolate_start =3D ALIGN_DOWN(start_pfn, pageblock_nr_pages);
++	unsigned long isolate_end =3D ALIGN(end_pfn, pageblock_nr_pages);
+=20
+-	BUG_ON(!IS_ALIGNED(start_pfn, pageblock_nr_pages));
+-	BUG_ON(!IS_ALIGNED(end_pfn, pageblock_nr_pages));
+=20
+-	for (pfn =3D start_pfn;
+-	     pfn < end_pfn;
++	for (pfn =3D isolate_start;
++	     pfn < isolate_end;
+ 	     pfn +=3D pageblock_nr_pages) {
+ 		page =3D __first_valid_page(pfn, pageblock_nr_pages);
+ 		if (!page || !is_migrate_isolate_page(page))
 --=20
 2.35.1
 
