@@ -2,95 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 773A8C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 13:27:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63600C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 13:27:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229535AbiDYNaK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 09:30:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40304 "EHLO
+        id S238262AbiDYNaR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 09:30:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235641AbiDYN37 (ORCPT
+        with ESMTP id S232474AbiDYNaK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 09:29:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF443FBEB
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 06:26:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 49597614EC
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 13:26:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A87E4C385A4;
-        Mon, 25 Apr 2022 13:26:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650893214;
-        bh=a+0NZEJ8nHXpJbL0is/cZVV2TUWQq/Qh4MN4veAvkSI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QKsLeTI77/UNLHRaceL0QDzlvbwugACqZoCzXLlKffa6ODqQv3cv0xRsdZ/W8MsH7
-         sDHXDHiplW+hnkQge47OP9CZKIHGxSkRicTPNGKU4Lm0epvjzJznLDqW6mStMxvEmx
-         8GxGeZwuiIp2nGPXv6BcVlXd3Br0qN+7Rh027E+HSkw4ZFnf82ANF18+VHY0BJajJ0
-         7Vd/UPnAf04s2t85JfcDLetnS3lflynNd7NlSi1J+XlcjEs0Dr/CoHEqLp8Y5ugzsd
-         Z5/q2H1mpWN1iRZ/wwYLq/khn9HDEfr1vd0DPWjJPdZTHCcszq3A/BesN2P1oxSG1H
-         ZcVI/FGYjhELw==
-Date:   Mon, 25 Apr 2022 14:26:50 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Stephen Kitt <steve@sk2.org>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>, Wolfram Sang <wsa@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 7/7] ASoC: tpa6130: use i2c_match_id and simple i2c
- probe
-Message-ID: <YmahmnPi4B2n29BE@sirena.org.uk>
-References: <20220415160613.148882-1-steve@sk2.org>
- <20220415160613.148882-8-steve@sk2.org>
+        Mon, 25 Apr 2022 09:30:10 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BED30403F6
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 06:27:01 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Kn5PX0w8Yz1JBjg;
+        Mon, 25 Apr 2022 21:26:08 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
+ (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 25 Apr
+ 2022 21:26:59 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <akpm@linux-foundation.org>, <mike.kravetz@oracle.com>,
+        <naoya.horiguchi@nec.com>
+CC:     <ying.huang@intel.com>, <hch@lst.de>, <dhowells@redhat.com>,
+        <cl@linux.com>, <david@redhat.com>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
+Subject: [PATCH v2 0/4] A few cleanup and fixup patches for migration
+Date:   Mon, 25 Apr 2022 21:27:19 +0800
+Message-ID: <20220425132723.34824-1-linmiaohe@huawei.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="T8rJwMde3z+laYB7"
-Content-Disposition: inline
-In-Reply-To: <20220415160613.148882-8-steve@sk2.org>
-X-Cookie: Last week's pet, this week's special.
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi everyone,
+This series contains a few patches to remove unneeded lock page and
+PageMovable check, reduce the rcu lock duration. Also we fix potential
+pte_unmap on an not mapped pte. More details can be found in the
+respective changelogs. Thanks!
 
---T8rJwMde3z+laYB7
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+---
+v2:
+  collect Reviewed-by tag
+  make isolate_huge_page consistent with isolate_lru_page
+  add hugetlbfs variant of hugetlb_migration_entry_wait
+v1:
+  rebase [1] on mainline.
 
-On Fri, Apr 15, 2022 at 06:06:13PM +0200, Stephen Kitt wrote:
-> As part of the ongoing i2c transition to the simple probe
-> ("probe_new"), this patch uses i2c_match_id to retrieve the
-> driver_data for the probed device. The id parameter is thus no longer
-> necessary and the simple probe can be used instead.
+[1] https://lore.kernel.org/lkml/20220304093409.25829-2-linmiaohe@huawei.com/T/
+---
+Miaohe Lin (4):
+  mm/migration: reduce the rcu lock duration
+  mm/migration: remove unneeded lock page and PageMovable check
+  mm/migration: return errno when isolate_huge_page failed
+  mm/migration: fix potential pte_unmap on an not mapped pte
 
-This breaks the build for omap2plus defconfig on arm:
+ include/linux/hugetlb.h |  6 +++---
+ include/linux/swapops.h | 12 ++++++++----
+ mm/gup.c                |  2 +-
+ mm/hugetlb.c            | 15 +++++++--------
+ mm/memory-failure.c     |  2 +-
+ mm/mempolicy.c          |  2 +-
+ mm/migrate.c            | 39 +++++++++++++++++++++++++--------------
+ 7 files changed, 46 insertions(+), 32 deletions(-)
 
-/build/stage/linux/sound/soc/codecs/tpa6130a2.c:322:11: error: initializati=
-on of =E2=80=98int (*)(struct i2c_client *, const struct i2c_device_id *)=
-=E2=80=99 from incompatible pointer type =E2=80=98int (*)(struct i2c_client=
- *)=E2=80=99 [-Werror=3Dincompatible-pointer-types]
-  322 |  .probe =3D tpa6130a2_probe,
-      |           ^~~~~~~~~~~~~~~
-/build/stage/linux/sound/soc/codecs/tpa6130a2.c:322:11: note: (near initial=
-ization for =E2=80=98tpa6130a2_i2c_driver.probe=E2=80=99)
-cc1: some warnings being treated as errors
+-- 
+2.23.0
 
-You forgot to move probe() to probe_new() in the driver struct.
-
---T8rJwMde3z+laYB7
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJmoZkACgkQJNaLcl1U
-h9BefAf/VDPZ0QQrR6OeJku+HULqwEWbUZpAa/ixPLJa2dPE1oZZDRB2TYdUD1Tt
-NccZ3n8Btpt80ic08sQeSAyNMwy35WKJRCKtLQmiXWMQ83XNO+vc0DBAVYxYYZfH
-ijjKNYUpNac0Zf1m0hSRdIqsAFoQJ1oMWxIARx5p0SU+RpZqvOesbqrxwsu4ll/Y
-EmCwRTJDfFd83r6iz5MpTGk3i4mbQxznMVwCT8zvtAdovGToy8OWD8veBk1Kbmje
-cs4eelWdRW2w4/uzV2ljKbyvvwX8defeanZOCxt94moqUjVr5PA/VBj4Yofmxo/1
-yJ7li4d0QB/Jcs/bJzUZtcb/19Hdvw==
-=g1Ku
------END PGP SIGNATURE-----
-
---T8rJwMde3z+laYB7--
