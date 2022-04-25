@@ -2,145 +2,350 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4838DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 07:51:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 015E8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 07:51:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241501AbiDYHyf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 03:54:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50634 "EHLO
+        id S241463AbiDYHyk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 03:54:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241506AbiDYHww (ORCPT
+        with ESMTP id S241507AbiDYHwx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 03:52:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C0BA2113
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 00:49:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650872987;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=TMN+SqXsYo3d//MTs5uT9QiA8HmOLnYDXkfcKG4wEW0=;
-        b=TbhaCiBaF9AI+T98PJCpx3PSJK5do5TcxE744+jrhiFVumzjdmrCRo2/Vk8LKYutC3rXIS
-        NmTTeoUU4oiIWtj7C0w5BD29+bWJA/YHmFFJPbsDHGQk6+/ZZ0dq6iE6Qa43soNkyiiFSb
-        V0XeKbcem+SMVejshZgoMA2Qmpyp6eQ=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-119-KHfZ2AkNMSK6h0TDdzmzOw-1; Mon, 25 Apr 2022 03:49:46 -0400
-X-MC-Unique: KHfZ2AkNMSK6h0TDdzmzOw-1
-Received: by mail-wr1-f70.google.com with SMTP id n17-20020adfc611000000b0020a7e397ccaso3033011wrg.23
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 00:49:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=TMN+SqXsYo3d//MTs5uT9QiA8HmOLnYDXkfcKG4wEW0=;
-        b=NoznD0kFFXRbkOpvkY1ueJNitl8NEArVmcHj3V88dF7gbZ2HYUZ3lBDdpaerTyo0kn
-         8DSVYee6aiXTxpa1Ds0Ka73KuWdMxaOl+QoNREzgunet1skq8MWfGuPvz67FYURBCv8O
-         jaKi5LwQr8aCtiMTsO8BczZTsvILn+GcWzGi7hsajJQo1oNYoPCHfYVYepYdT7QG4ajG
-         etNN+WhBdNVMmloZ28Sgpsk20u3GQTr3tZqoT3lx8RyKZijYn1S42DcDNZ5QtdWeVzOp
-         r0fuqu/ivBxjfcgnTC9fGr6jgjTvaXm2NiWPAzGab5wLBTyYlCmN2Uf+byb2Sux9Jl4h
-         noEw==
-X-Gm-Message-State: AOAM533h2QXKRv9cqP5fJwxb0xh69ETJWwBgCZntKBQsEFBPxlkYer1k
-        btIyBuqKHQ3QJ7FGgRyk921YeNC/FF6MN7ydox3SPUiCGTMhTZ70Vvg6bx2wXCmD6KV+m5w1vRi
-        nwL6yvSQpDAVjnFAozFrmzlZe
-X-Received: by 2002:a05:600c:350f:b0:393:ec06:4262 with SMTP id h15-20020a05600c350f00b00393ec064262mr3417383wmq.165.1650872985017;
-        Mon, 25 Apr 2022 00:49:45 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyxQO8+qq0D++pW4n/MjMu77yOzpy/8PzYibDLgHNPuYQDzKI0pe3hNoGJFI6KjwOY0rJrejg==
-X-Received: by 2002:a05:600c:350f:b0:393:ec06:4262 with SMTP id h15-20020a05600c350f00b00393ec064262mr3417358wmq.165.1650872984803;
-        Mon, 25 Apr 2022 00:49:44 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c700:fc00:490d:ed6a:8b22:223a? (p200300cbc700fc00490ded6a8b22223a.dip0.t-ipconnect.de. [2003:cb:c700:fc00:490d:ed6a:8b22:223a])
-        by smtp.gmail.com with ESMTPSA id s10-20020adf978a000000b0020ae0154f1esm373753wrb.5.2022.04.25.00.49.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Apr 2022 00:49:44 -0700 (PDT)
-Message-ID: <f88412b4-83db-e594-fc48-2f4b8b9f3be8@redhat.com>
-Date:   Mon, 25 Apr 2022 09:49:43 +0200
+        Mon, 25 Apr 2022 03:52:53 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42624D0
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 00:49:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650872990; x=1682408990;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=SuHhKloRFvglX9zFGdP7Nu+8Y1f8MGBa3hFTJEwSwKI=;
+  b=IKZoJ/CqQgrHypoz2XJroV2Pap75CFtzPzEcyyVUIvCFG9zTJr81chYT
+   lCd2UoKbhhri0mEjFpem8gC2rvNxUPkkYuOqIDuZTsxLgvzifKFl9VRfb
+   +awpmSJ04Td9xz109yhhDF4EppUjs5zgpLwVtVqdB1qeHOunTelmNXdFE
+   EP+sXGJrxSpDRh2fOxlN7jy81fDCCmccnz1aL9OyU4XbBKugdKSP+dqYa
+   d2nlz4wKHxum8afKcNympxZOUhm04B6qYrZv82liKaHKQOx+qxMIaazuT
+   QEKoKA39EH1Rmv8Bi9wQdvy6fQhVq7n9yUKIbo4xVihQJQjeV1o0ZSNVt
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10327"; a="264973785"
+X-IronPort-AV: E=Sophos;i="5.90,287,1643702400"; 
+   d="scan'208";a="264973785"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 00:49:50 -0700
+X-IronPort-AV: E=Sophos;i="5.90,287,1643702400"; 
+   d="scan'208";a="557600041"
+Received: from sannilnx.jer.intel.com ([10.12.231.73])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 00:49:46 -0700
+From:   Alexander Usyskin <alexander.usyskin@intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+Cc:     Tomas Winkler <tomas.winkler@intel.com>,
+        Alexander Usyskin <alexander.usyskin@intel.com>,
+        Vitaly Lubart <vitaly.lubart@intel.com>,
+        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
+Subject: [PATCH v2 11/14] mei: gsc: setup gsc extended operational memory
+Date:   Mon, 25 Apr 2022 10:48:58 +0300
+Message-Id: <20220425074901.3991274-12-alexander.usyskin@intel.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220425074901.3991274-1-alexander.usyskin@intel.com>
+References: <20220425074901.3991274-1-alexander.usyskin@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH v3 1/3] mm/swapfile: unuse_pte can map random data if swap
- read fails
-Content-Language: en-US
-To:     "ying.huang@intel.com" <ying.huang@intel.com>,
-        Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org
-Cc:     willy@infradead.org, vbabka@suse.cz, dhowells@redhat.com,
-        neilb@suse.de, apopple@nvidia.com, surenb@google.com,
-        minchan@kernel.org, peterx@redhat.com, sfr@canb.auug.org.au,
-        naoya.horiguchi@nec.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-References: <20220424091105.48374-1-linmiaohe@huawei.com>
- <20220424091105.48374-2-linmiaohe@huawei.com>
- <8aeebc2f0b2a251d3d70402cd0edf063ba911013.camel@intel.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <8aeebc2f0b2a251d3d70402cd0edf063ba911013.camel@intel.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25.04.22 09:41, ying.huang@intel.com wrote:
-> Hi, Miaohe,
-> 
-> On Sun, 2022-04-24 at 17:11 +0800, Miaohe Lin wrote:
->> There is a bug in unuse_pte(): when swap page happens to be unreadable,
->> page filled with random data is mapped into user address space.  In case
->> of error, a special swap entry indicating swap read fails is set to the
->> page table.  So the swapcache page can be freed and the user won't end up
->> with a permanently mounted swap because a sector is bad.  And if the page
->> is accessed later, the user process will be killed so that corrupted data
->> is never consumed.  On the other hand, if the page is never accessed, the
->> user won't even notice it.
->>
->> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
->> Acked-by: David Hildenbrand <david@redhat.com>
->> ---
->>  include/linux/swap.h    |  7 ++++++-
->>  include/linux/swapops.h | 10 ++++++++++
->>  mm/memory.c             |  5 ++++-
->>  mm/swapfile.c           | 11 +++++++++++
->>  4 files changed, 31 insertions(+), 2 deletions(-)
->>
->> diff --git a/include/linux/swap.h b/include/linux/swap.h
->> index 5553189d0215..b82c196d8867 100644
->> --- a/include/linux/swap.h
->> +++ b/include/linux/swap.h
->> @@ -55,6 +55,10 @@ static inline int current_is_kswapd(void)
->>   * actions on faults.
->>   */
->>
->> +#define SWP_SWAPIN_ERROR_NUM 1
->> +#define SWP_SWAPIN_ERROR     (MAX_SWAPFILES + SWP_HWPOISON_NUM + \
->> +			     SWP_MIGRATION_NUM + SWP_DEVICE_NUM + \
->> +			     SWP_PTE_MARKER_NUM)
->>
->>
-> 
-> It appears wasteful to use another swap device number. 
+From: Tomas Winkler <tomas.winkler@intel.com>
 
-Do we really care?
+1. Retrieve extended operational memory physical pointers from the
+   auxiliary device info.
+2. Setup memory registers.
+3. Notify firmware that the memory is ready by sending the memory
+   ready command.
+4. Disable PXP device if GSC is not in PXP mode.
 
-We currently use 5 bits for swap types, so we have a total of 32.
+CC: Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
+Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
+Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
+---
+ drivers/misc/mei/bus-fixup.c  | 70 ++++++++++++++++++++++++++++++++++-
+ drivers/misc/mei/gsc-me.c     | 16 ++++++++
+ drivers/misc/mei/hw-me-regs.h |  7 ++++
+ drivers/misc/mei/hw-me.c      | 28 +++++++++++++-
+ drivers/misc/mei/mei_dev.h    | 10 +++++
+ include/linux/mei_aux.h       |  1 +
+ 6 files changed, 129 insertions(+), 3 deletions(-)
 
-SWP_HWPOISON_NUM -> 1
-SWP_MIGRATION_NUM -> 3
-SWP_PTE_MARKER_NUM -> 1
-SWP_DEVICE_NUM -> 4
-SWP_SWAPIN_ERROR_NUM -> 1
-
-Which would leave us with 32 - 10 = 22 swap devices. IMHO that's plenty
-for real life scenarios.
-
-I'd prefer reworking this when we really run into trouble (and we could
-think about using more bits for applicable architectures then, for
-select 64bit architectures it might be fairly easily possible).
-
+diff --git a/drivers/misc/mei/bus-fixup.c b/drivers/misc/mei/bus-fixup.c
+index 190691abddc9..d2929f68604d 100644
+--- a/drivers/misc/mei/bus-fixup.c
++++ b/drivers/misc/mei/bus-fixup.c
+@@ -189,6 +189,19 @@ static int mei_fwver(struct mei_cl_device *cldev)
+ 	return ret;
+ }
+ 
++static int mei_gfx_memory_ready(struct mei_cl_device *cldev)
++{
++	struct mkhi_gfx_mem_ready req = {0};
++	unsigned int mode = MEI_CL_IO_TX_INTERNAL;
++
++	req.hdr.group_id = MKHI_GROUP_ID_GFX;
++	req.hdr.command = MKHI_GFX_MEMORY_READY_CMD_REQ;
++	req.flags = MKHI_GFX_MEM_READY_PXP_ALLOWED;
++
++	dev_dbg(&cldev->dev, "Sending memory ready command\n");
++	return __mei_cl_send(cldev->cl, (u8 *)&req, sizeof(req), 0, mode);
++}
++
+ static void mei_mkhi_fix(struct mei_cl_device *cldev)
+ {
+ 	int ret;
+@@ -235,6 +248,39 @@ static void mei_gsc_mkhi_ver(struct mei_cl_device *cldev)
+ 		dev_err(&cldev->dev, "FW version command failed %d\n", ret);
+ 	mei_cldev_disable(cldev);
+ }
++
++static void mei_gsc_mkhi_fix_ver(struct mei_cl_device *cldev)
++{
++	int ret;
++
++	/* No need to enable the client if nothing is needed from it */
++	if (!cldev->bus->fw_f_fw_ver_supported &&
++	    (cldev->bus->pxp_mode != MEI_DEV_PXP_INIT))
++		return;
++
++	ret = mei_cldev_enable(cldev);
++	if (ret)
++		return;
++
++	if (cldev->bus->pxp_mode == MEI_DEV_PXP_INIT) {
++		ret = mei_gfx_memory_ready(cldev);
++		if (ret < 0)
++			dev_err(&cldev->dev, "memory ready command failed %d\n", ret);
++		else
++			dev_dbg(&cldev->dev, "memory ready command sent\n");
++		/* we go to reset after that */
++		cldev->bus->pxp_mode = MEI_DEV_PXP_SETUP;
++		goto out;
++	}
++
++	ret = mei_fwver(cldev);
++	if (ret < 0)
++		dev_err(&cldev->dev, "FW version command failed %d\n",
++			ret);
++out:
++	mei_cldev_disable(cldev);
++}
++
+ /**
+  * mei_wd - wd client on the bus, change protocol version
+  *   as the API has changed.
+@@ -474,6 +520,26 @@ static void vt_support(struct mei_cl_device *cldev)
+ 		cldev->do_match = 1;
+ }
+ 
++/**
++ * pxp_isready - enable bus client if pxp is ready
++ *
++ * @cldev: me clients device
++ */
++static void pxp_isready(struct mei_cl_device *cldev)
++{
++	struct mei_device *bus = cldev->bus;
++
++	switch (bus->pxp_mode) {
++	case MEI_DEV_PXP_READY:
++	case MEI_DEV_PXP_DEFAULT:
++		cldev->do_match = 1;
++	break;
++	default:
++		cldev->do_match = 0;
++	break;
++	}
++}
++
+ #define MEI_FIXUP(_uuid, _hook) { _uuid, _hook }
+ 
+ static struct mei_fixup {
+@@ -487,10 +553,10 @@ static struct mei_fixup {
+ 	MEI_FIXUP(MEI_UUID_WD, mei_wd),
+ 	MEI_FIXUP(MEI_UUID_MKHIF_FIX, mei_mkhi_fix),
+ 	MEI_FIXUP(MEI_UUID_IGSC_MKHI, mei_gsc_mkhi_ver),
+-	MEI_FIXUP(MEI_UUID_IGSC_MKHI_FIX, mei_gsc_mkhi_ver),
++	MEI_FIXUP(MEI_UUID_IGSC_MKHI_FIX, mei_gsc_mkhi_fix_ver),
+ 	MEI_FIXUP(MEI_UUID_HDCP, whitelist),
+ 	MEI_FIXUP(MEI_UUID_ANY, vt_support),
+-	MEI_FIXUP(MEI_UUID_PAVP, whitelist),
++	MEI_FIXUP(MEI_UUID_PAVP, pxp_isready),
+ };
+ 
+ /**
+diff --git a/drivers/misc/mei/gsc-me.c b/drivers/misc/mei/gsc-me.c
+index 4f6c916282b7..c8a167b57cc9 100644
+--- a/drivers/misc/mei/gsc-me.c
++++ b/drivers/misc/mei/gsc-me.c
+@@ -32,6 +32,17 @@ static int mei_gsc_read_hfs(const struct mei_device *dev, int where, u32 *val)
+ 	return 0;
+ }
+ 
++static void mei_gsc_set_ext_op_mem(const struct mei_me_hw *hw, struct resource *mem)
++{
++	u32 low = lower_32_bits(mem->start);
++	u32 hi  = upper_32_bits(mem->start);
++	u32 limit = (resource_size(mem) / SZ_4K) | GSC_EXT_OP_MEM_VALID;
++
++	iowrite32(low, hw->mem_addr + H_GSC_EXT_OP_MEM_BASE_ADDR_LO_REG);
++	iowrite32(hi, hw->mem_addr + H_GSC_EXT_OP_MEM_BASE_ADDR_HI_REG);
++	iowrite32(limit, hw->mem_addr + H_GSC_EXT_OP_MEM_LIMIT_REG);
++}
++
+ static int mei_gsc_probe(struct auxiliary_device *aux_dev,
+ 			 const struct auxiliary_device_id *aux_dev_id)
+ {
+@@ -67,6 +78,11 @@ static int mei_gsc_probe(struct auxiliary_device *aux_dev,
+ 
+ 	dev_set_drvdata(device, dev);
+ 
++	if (adev->ext_op_mem.start) {
++		mei_gsc_set_ext_op_mem(hw, &adev->ext_op_mem);
++		dev->pxp_mode = MEI_DEV_PXP_INIT;
++	}
++
+ 	/* use polling */
+ 	if (mei_me_hw_use_polling(hw)) {
+ 		mei_disable_interrupts(dev);
+diff --git a/drivers/misc/mei/hw-me-regs.h b/drivers/misc/mei/hw-me-regs.h
+index 64ce3f830262..8bbe3e9f1269 100644
+--- a/drivers/misc/mei/hw-me-regs.h
++++ b/drivers/misc/mei/hw-me-regs.h
+@@ -125,6 +125,8 @@
+ #  define PCI_CFG_HFS_3_FW_SKU_SPS   0x00000060
+ #define PCI_CFG_HFS_4         0x64
+ #define PCI_CFG_HFS_5         0x68
++#  define GSC_CFG_HFS_5_BOOT_TYPE_MSK      0x00000003
++#  define GSC_CFG_HFS_5_BOOT_TYPE_PXP               3
+ #define PCI_CFG_HFS_6         0x6C
+ 
+ /* MEI registers */
+@@ -141,6 +143,11 @@
+ /* H_D0I3C - D0I3 Control  */
+ #define H_D0I3C    0x800
+ 
++#define H_GSC_EXT_OP_MEM_BASE_ADDR_LO_REG 0x100
++#define H_GSC_EXT_OP_MEM_BASE_ADDR_HI_REG 0x104
++#define H_GSC_EXT_OP_MEM_LIMIT_REG        0x108
++#define GSC_EXT_OP_MEM_VALID              BIT(31)
++
+ /* register bits of H_CSR (Host Control Status register) */
+ /* Host Circular Buffer Depth - maximum number of 32-bit entries in CB */
+ #define H_CBD             0xFF000000
+diff --git a/drivers/misc/mei/hw-me.c b/drivers/misc/mei/hw-me.c
+index 93d8b6dcedda..b70a36021fc4 100644
+--- a/drivers/misc/mei/hw-me.c
++++ b/drivers/misc/mei/hw-me.c
+@@ -433,6 +433,29 @@ static bool mei_me_hw_is_resetting(struct mei_device *dev)
+ 	return (mecsr & ME_RST_HRA) == ME_RST_HRA;
+ }
+ 
++/**
++ * mei_gsc_pxp_check - check for gsc firmware entering pxp mode
++ *
++ * @dev: the device structure
++ */
++static void mei_gsc_pxp_check(struct mei_device *dev)
++{
++	struct mei_me_hw *hw = to_me_hw(dev);
++	u32 fwsts5 = 0;
++
++	if (dev->pxp_mode == MEI_DEV_PXP_DEFAULT)
++		return;
++
++	hw->read_fws(dev, PCI_CFG_HFS_5, &fwsts5);
++	trace_mei_pci_cfg_read(dev->dev, "PCI_CFG_HFS_5", PCI_CFG_HFS_5, fwsts5);
++	if ((fwsts5 & GSC_CFG_HFS_5_BOOT_TYPE_MSK) == GSC_CFG_HFS_5_BOOT_TYPE_PXP) {
++		dev_dbg(dev->dev, "pxp mode is ready 0x%08x\n", fwsts5);
++		dev->pxp_mode = MEI_DEV_PXP_READY;
++	} else {
++		dev_dbg(dev->dev, "pxp mode is not ready 0x%08x\n", fwsts5);
++	}
++}
++
+ /**
+  * mei_me_hw_ready_wait - wait until the me(hw) has turned ready
+  *  or timeout is reached
+@@ -452,6 +475,8 @@ static int mei_me_hw_ready_wait(struct mei_device *dev)
+ 		return -ETIME;
+ 	}
+ 
++	mei_gsc_pxp_check(dev);
++
+ 	mei_me_hw_reset_release(dev);
+ 	dev->recvd_hw_ready = false;
+ 	return 0;
+@@ -1268,7 +1293,8 @@ irqreturn_t mei_me_irq_thread_handler(int irq, void *dev_id)
+ 
+ 	/* check if ME wants a reset */
+ 	if (!mei_hw_is_ready(dev) && dev->dev_state != MEI_DEV_RESETTING) {
+-		dev_warn(dev->dev, "FW not ready: resetting.\n");
++		dev_warn(dev->dev, "FW not ready: resetting: dev_state = %d pxp = %d\n",
++			 dev->dev_state, dev->pxp_mode);
+ 		if (dev->dev_state == MEI_DEV_POWERING_DOWN ||
+ 		    dev->dev_state == MEI_DEV_POWER_DOWN)
+ 			mei_cl_all_disconnect(dev);
+diff --git a/drivers/misc/mei/mei_dev.h b/drivers/misc/mei/mei_dev.h
+index 16f59b3a45fc..7c508bca9a00 100644
+--- a/drivers/misc/mei/mei_dev.h
++++ b/drivers/misc/mei/mei_dev.h
+@@ -62,6 +62,14 @@ enum mei_dev_state {
+ 	MEI_DEV_POWER_UP
+ };
+ 
++/* MEI PXP mode state */
++enum mei_dev_pxp_mode {
++	MEI_DEV_PXP_DEFAULT = 0,
++	MEI_DEV_PXP_INIT    = 1,
++	MEI_DEV_PXP_SETUP   = 2,
++	MEI_DEV_PXP_READY   = 3,
++};
++
+ const char *mei_dev_state_str(int state);
+ 
+ enum mei_file_transaction_states {
+@@ -454,6 +462,7 @@ struct mei_dev_timeouts {
+  * @reset_count : number of consecutive resets
+  * @dev_state   : device state
+  * @hbm_state   : state of host bus message protocol
++ * @pxp_mode    : PXP device mode
+  * @init_clients_timer : HBM init handshake timeout
+  *
+  * @pg_event    : power gating event
+@@ -537,6 +546,7 @@ struct mei_device {
+ 	unsigned long reset_count;
+ 	enum mei_dev_state dev_state;
+ 	enum mei_hbm_state hbm_state;
++	enum mei_dev_pxp_mode pxp_mode;
+ 	u16 init_clients_timer;
+ 
+ 	/*
+diff --git a/include/linux/mei_aux.h b/include/linux/mei_aux.h
+index a29f4064b9c0..c3fc137a2aba 100644
+--- a/include/linux/mei_aux.h
++++ b/include/linux/mei_aux.h
+@@ -11,6 +11,7 @@ struct mei_aux_device {
+ 	struct auxiliary_device aux_dev;
+ 	int irq;
+ 	struct resource bar;
++	struct resource ext_op_mem;
+ 	bool slow_fw;
+ };
+ 
 -- 
-Thanks,
-
-David / dhildenb
+2.32.0
 
