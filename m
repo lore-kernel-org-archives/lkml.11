@@ -2,81 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA0DDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 12:08:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EEFCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 12:08:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238474AbiDYMLR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 08:11:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43902 "EHLO
+        id S239419AbiDYMLj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 08:11:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232495AbiDYMLC (ORCPT
+        with ESMTP id S240563AbiDYMLY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 08:11:02 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9305F580C2
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 05:07:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650888477;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3I28rQJDnhHxMtAGkz1SevfRVOxy1YWGVvIDo5VbNQY=;
-        b=X9w6Cl6qSOLz38Ul2YXC2RPhMArsTITZrk9axM+3E1Pwc0BgGc3EExCm9a+C3+JFJtbVjf
-        OWb8S+GU4kl/9m/fOaRUhi3qk8taMghhI31sppqTr3mMAvsbsTAApsq8DzD+k8K4r6Hbn9
-        mfYLuJ3i4m9nnNoaJ9Lv+BO19ZOq6MA=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-6-OAw2PWF8O5CZiGHgMX8hCw-1; Mon, 25 Apr 2022 08:07:56 -0400
-X-MC-Unique: OAw2PWF8O5CZiGHgMX8hCw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A3EC580005D;
-        Mon, 25 Apr 2022 12:07:55 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.13])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2AB599E71;
-        Mon, 25 Apr 2022 12:07:42 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <Yk9V/03wgdYi65Lb@casper.infradead.org>
-References: <Yk9V/03wgdYi65Lb@casper.infradead.org> <Yk5W6zvvftOB+80D@casper.infradead.org> <164928615045.457102.10607899252434268982.stgit@warthog.procyon.org.uk> <164928630577.457102.8519251179327601178.stgit@warthog.procyon.org.uk> <469869.1649313707@warthog.procyon.org.uk>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     dhowells@redhat.com, linux-cachefs@redhat.com,
-        Rohith Surabattula <rohiths.msft@gmail.com>,
-        Steve French <sfrench@samba.org>,
-        Shyam Prasad N <nspmangalore@gmail.com>,
-        linux-cifs@vger.kernel.org, Jeff Layton <jlayton@redhat.com>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [PATCH 14/14] mm, netfs, fscache: Stop read optimisation when folio removed from pagecache
+        Mon, 25 Apr 2022 08:11:24 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 377855BD0B
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 05:08:12 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <l.stach@pengutronix.de>)
+        id 1nixVU-0000PM-KI; Mon, 25 Apr 2022 14:07:56 +0200
+Message-ID: <56052bc6e3b6cab6bfdfc5f706ec9984bea16bba.camel@pengutronix.de>
+Subject: Re: [PATCH v3] PCI: imx6: Replace legacy gpio interface for gpiod
+ interface
+From:   Lucas Stach <l.stach@pengutronix.de>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        =?ISO-8859-1?Q?Ma=EDra?= Canal <maira.canal@usp.br>
+Cc:     hongxing.zhu@nxp.com, lorenzo.pieralisi@arm.com, robh@kernel.org,
+        bhelgaas@google.com, helgaas@kernel.org, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de, linux-imx@nxp.com,
+        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 25 Apr 2022 14:07:53 +0200
+In-Reply-To: <CACRpkdYmw4yBm3Y1P42TcRs4fFNEiy3LXxmO_j=zeTv_usDR+g@mail.gmail.com>
+References: <YYCOTx68LXu1Tn1i@fedora>
+         <CACRpkdYmw4yBm3Y1P42TcRs4fFNEiy3LXxmO_j=zeTv_usDR+g@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <3118842.1650888461.1@warthog.procyon.org.uk>
-Date:   Mon, 25 Apr 2022 13:07:41 +0100
-Message-ID: <3118843.1650888461@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: l.stach@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Matthew Wilcox <willy@infradead.org> wrote:
+Hi Linus,
 
-> OK.  You suggested that releasepage was an acceptable place to call it.
-> How about we have AS_RELEASE_ALL (... or something ...) and then
-> page_has_private() becomes a bit more complicated ... to the point
-> where we should probably get rid of it (by embedding it into
-> filemap_release_folio():
+Am Donnerstag, dem 21.04.2022 um 01:24 +0200 schrieb Linus Walleij:
+> Hi Maira and sorry for being slow on reviews.
+> 
+> On Tue, Nov 2, 2021 at 2:04 AM Maíra Canal <maira.canal@usp.br> wrote:
+> 
+> > -               gpio_set_value_cansleep(imx6_pcie->reset_gpio,
+> > +               gpiod_set_raw_value_cansleep(imx6_pcie->reset_gpio,
+> >                                         !imx6_pcie->gpio_active_high);
+> 
+> Hm I see you got advised to use the raw api. I'm not so sure about
+> that I like v1 better.
+> 
+> > +       imx6_pcie->reset_gpio = devm_gpiod_get_optional(dev, "reset",
+> > +                       imx6_pcie->gpio_active_high ?  GPIOD_OUT_HIGH : GPIOD_OUT_LOW);
+> > +       if (IS_ERR(imx6_pcie->reset_gpio))
+> > +               return dev_err_probe(dev, PTR_ERR(imx6_pcie->reset_gpio),
+> > +                               "unable to get reset gpio\n");
+> 
+> Where is this descriptor coming from? Device trees? Can't we just fix the
+> DTS file(s) in that case given how wrong they are if they don't set
+> GPIO_ACTIVE_LOW flag on this IRQ.
 
-I'm not sure page_has_private() is quite so easy to get rid of.
-shrink_page_list() and collapse_file(), for example, use it to conditionalise
-a call to try_to_release_page() plus some other bits.
+The binding explicitly describes the GPIO as not polarity aware and has
+a separate property "reset-gpio-active-high" to avoid breaking old
+DTBs. I don't think it's helpful to dismiss this explicit backward
+compat just because the driver code looks nicer that way.
 
-I think that, for the moment, I would need to add a check for AS_RELEASE_ALL
-to page_has_private().
-
-David
+Regards,
+Lucas
 
