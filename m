@@ -2,103 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D4F6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 14:05:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3908C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 14:05:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242340AbiDYOIC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 10:08:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35114 "EHLO
+        id S242337AbiDYOII (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 10:08:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242362AbiDYOHu (ORCPT
+        with ESMTP id S242354AbiDYOHp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 10:07:50 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C5D3B82F4
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 07:04:46 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id g6so7008454ejw.1
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 07:04:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=bfw7Ovddlbe5fuQTBnG7gPxDqU0ldis3EFn+ik6O63U=;
-        b=AEz26bWaEvfDbb5t4AbG182TG19r1l/X05IUJ+vH3MIEogFnH4fEn7R31IB75kWsv2
-         19bmvbuvksG+FvVmkY/xjtNCF3EkDL3svXC2kKjzAArbAMv4V0iQGbaZTZgfrZyxj1s1
-         UHxiDa3dDBugsiFh0s+aUhsYs6Oq7y8qV///5i2eVr1FM8ju6HnRXVubQkCIJboDkxmO
-         4DKtTofiBmfvK/o03CXKAfSzTMnR0DwG4Me3gDrP/LC8MKMmKnPF6L18ZG75YyGiPfOH
-         tmm2f4zqIy9JefYDZ04sWIb26q2lemKTu76tF1hyyjw5N+cyhnkclF1zOJ7Z4GNfEF+f
-         b38w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=bfw7Ovddlbe5fuQTBnG7gPxDqU0ldis3EFn+ik6O63U=;
-        b=uR6eigSF3wy89VCMeJM0HuY+y302M/KwQxnZuBNV2SpVWuqaPPQItV27QOT2P65n/4
-         zmtoR4iuNEFRGwmmgyL5TPm4z1Z/oGMyBG5Qn+oRIliLclTatQ2V7k7kHbHcKqdRhIHL
-         IS8QU9/DmXNjjDf/YkAB1C4gSPAa2f+AOgrBllR8TvslBF8+he0AW7uyR+x0csGNhSR8
-         5M6pbXciBXHp6j9ubztBPT8OksWPjjHl0gba16MnN1fHIKl4f8uY21gXMD8NH1AgSicy
-         bUQ05j6z/y8PpOgl8ftowAMVzf9HvdDba+kbqsZgOSqdF/M2KobtJ79fuE/m/YTyQgq9
-         7a7A==
-X-Gm-Message-State: AOAM532xvKjwl+teZHzcFFQldpYVUBG0JoVAXI27hIWztBw/a0FNbA48
-        xZN2HFVB34z2e/60ujzy4C3G5OwaMR7G+A==
-X-Google-Smtp-Source: ABdhPJzVppVn/CGFKgoq3i/K1iOhoC7Cj/AxBhEdlNJwYwG0469109BHlaTisf80vW6oi22PRrj8ow==
-X-Received: by 2002:a17:907:961c:b0:6f3:a3f9:bcef with SMTP id gb28-20020a170907961c00b006f3a3f9bcefmr1500534ejc.425.1650895484977;
-        Mon, 25 Apr 2022 07:04:44 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id l20-20020a1709062a9400b006ce71a88bf5sm3663554eje.183.2022.04.25.07.04.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 07:04:44 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+        Mon, 25 Apr 2022 10:07:45 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3005B82C4;
+        Mon, 25 Apr 2022 07:04:41 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id B602A22246;
+        Mon, 25 Apr 2022 16:04:39 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1650895480;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=bUitewNJHajFmjL/ogC1mENRsNcvM4rPxiJv4gb2Hoc=;
+        b=ukM1SZgQSSmvD2B13UP6HtlKZwz+OkIhyKhywqhhd9wtkkGSRzld1ZO24fMKcNLWBTYdCy
+        RxMDh3ubMI0NiXgq+Bv5LFE0O3PiD7deTySmdG0ZQsS6620f+ls69MML+Mt8cWuuqxZ38c
+        LzU9D2G6ujI0/24gBpq0c4Ta1pRgvis=
+From:   Michael Walle <michael@walle.cc>
 To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        devicetree@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 2/2] dt-bindings: arm: stm32: correct blank lines
-Date:   Mon, 25 Apr 2022 16:04:36 +0200
-Message-Id: <20220425140436.332467-2-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220425140436.332467-1-krzysztof.kozlowski@linaro.org>
-References: <20220425140436.332467-1-krzysztof.kozlowski@linaro.org>
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Li Yang <leoyang.li@nxp.com>, Michael Walle <michael@walle.cc>,
+        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] dt-bindings: fsl: convert fsl,layerscape-dcfg to YAML
+Date:   Mon, 25 Apr 2022 16:04:33 +0200
+Message-Id: <20220425140433.33936-1-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Correct blank lines to precesily separate entries.
+Convert the fsl,layerscape-dcfg binding to the new YAML format.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In the device trees, the device node always have a "syscon"
+compatible, which wasn't mentioned in the previous binding.
+
+One thing added here, compared to the original binding is the clock
+controller subnode of the LS1028A SoC and its "simple-mfd" compatible as
+used in arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi as well as the
+little-endian and big-endian properties.
+
+Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- Documentation/devicetree/bindings/arm/stm32/stm32.yaml | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+changes since v1:
+ - moved to soc/fsl/fsl,layerscape-dcfg.yaml
+ - generic name for node in example
+ - mention added "syscon" compatible in commit message
+ - reference specific clock controller
 
-diff --git a/Documentation/devicetree/bindings/arm/stm32/stm32.yaml b/Documentation/devicetree/bindings/arm/stm32/stm32.yaml
-index 2f83f2760e6a..80b29f6903f0 100644
---- a/Documentation/devicetree/bindings/arm/stm32/stm32.yaml
-+++ b/Documentation/devicetree/bindings/arm/stm32/stm32.yaml
-@@ -64,8 +64,8 @@ properties:
-               - st,stm32mp157c-ed1
-               - st,stm32mp157a-dk1
-               - st,stm32mp157c-dk2
+ .../arm/freescale/fsl,layerscape-dcfg.txt     | 19 ------
+ .../bindings/soc/fsl/fsl,layerscape-dcfg.yaml | 68 +++++++++++++++++++
+ 2 files changed, 68 insertions(+), 19 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/arm/freescale/fsl,layerscape-dcfg.txt
+ create mode 100644 Documentation/devicetree/bindings/soc/fsl/fsl,layerscape-dcfg.yaml
+
+diff --git a/Documentation/devicetree/bindings/arm/freescale/fsl,layerscape-dcfg.txt b/Documentation/devicetree/bindings/arm/freescale/fsl,layerscape-dcfg.txt
+deleted file mode 100644
+index 10a91cc8b997..000000000000
+--- a/Documentation/devicetree/bindings/arm/freescale/fsl,layerscape-dcfg.txt
++++ /dev/null
+@@ -1,19 +0,0 @@
+-Freescale DCFG
 -
-           - const: st,stm32mp157
+-DCFG is the device configuration unit, that provides general purpose
+-configuration and status for the device. Such as setting the secondary
+-core start address and release the secondary core from holdoff and startup.
+-
+-Required properties:
+-  - compatible: Should contain a chip-specific compatible string,
+-	Chip-specific strings are of the form "fsl,<chip>-dcfg",
+-	The following <chip>s are known to be supported:
+-	ls1012a, ls1021a, ls1043a, ls1046a, ls2080a, lx2160a
+-
+-  - reg : should contain base address and length of DCFG memory-mapped registers
+-
+-Example:
+-	dcfg: dcfg@1ee0000 {
+-		compatible = "fsl,ls1021a-dcfg";
+-		reg = <0x0 0x1ee0000 0x0 0x10000>;
+-	};
+diff --git a/Documentation/devicetree/bindings/soc/fsl/fsl,layerscape-dcfg.yaml b/Documentation/devicetree/bindings/soc/fsl/fsl,layerscape-dcfg.yaml
+new file mode 100644
+index 000000000000..397f75909b20
+--- /dev/null
++++ b/Documentation/devicetree/bindings/soc/fsl/fsl,layerscape-dcfg.yaml
+@@ -0,0 +1,68 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/soc/fsl/fsl,layerscape-dcfg.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-       - items:
-           - const: st,stm32mp157c-ev1
-           - const: st,stm32mp157c-ed1
-@@ -110,6 +110,7 @@ properties:
-           - const: oct,stm32mp15xx-osd32
-           - enum:
-               - st,stm32mp157
++title: Freescale Layerscape Device Configuration Unit
 +
-       - description: Odyssey STM32MP1 SoM based Boards
-         items:
-           - enum:
++maintainers:
++  - Shawn Guo <shawnguo@kernel.org>
++  - Li Yang <leoyang.li@nxp.com>
++
++description: |
++  DCFG is the device configuration unit, that provides general purpose
++  configuration and status for the device. Such as setting the secondary
++  core start address and release the secondary core from holdoff and
++  startup.
++
++properties:
++  compatible:
++    oneOf:
++      - items:
++          - enum:
++              - fsl,ls1012a-dcfg
++              - fsl,ls1021a-dcfg
++              - fsl,ls1043a-dcfg
++              - fsl,ls1046a-dcfg
++              - fsl,ls1088a-dcfg
++              - fsl,ls2080a-dcfg
++              - fsl,lx2160a-dcfg
++          - const: syscon
++
++      - items:
++          - enum:
++              - fsl,ls1028a-dcfg
++          - const: syscon
++          - const: simple-mfd
++
++  reg:
++    maxItems: 1
++
++  little-endian: true
++  big-endian: true
++
++  '#address-cells':
++    const: 1
++
++  '#size-cells':
++    const: 1
++
++  ranges: true
++
++patternProperties:
++  "^clock-controller@[0-9a-z]+$":
++    $ref: /schemas/clock/fsl,flexspi-clock.yaml#
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    syscon@1ee0000 {
++        compatible = "fsl,ls1021a-dcfg", "syscon";
++        reg = <0x1ee0000 0x10000>;
++    };
 -- 
-2.32.0
+2.30.2
 
