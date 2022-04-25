@@ -2,93 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CC47C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:21:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C95EAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:22:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237030AbiDYWY5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 18:24:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49974 "EHLO
+        id S237523AbiDYWZC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 18:25:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343698AbiDYWOZ (ORCPT
+        with ESMTP id S1343509AbiDYV3z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 18:14:25 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B65915FF8;
-        Mon, 25 Apr 2022 15:11:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650924680; x=1682460680;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=SqFzvS1Vc9oTG2jjt6u78Rm9pxS3TsSJqVWac7ewhJM=;
-  b=wqXixH+xANty5j8+rqeLkifzaLZtOUPrjcLO4/Ca/xFxrw7c2OKqp6wO
-   hg9e+n5Rd4XXw/9GtX0i7IP5hoJ0XtrTtDpttRHTn0cNpVsH2KY6ljMmw
-   q7LER2yBb9yJlS8ZRrzWaSEr7iZqWIR57R7JvYcWdEmDNGHDN+ebJumVz
-   0=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 25 Apr 2022 15:11:19 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 15:11:19 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 25 Apr 2022 15:11:18 -0700
-Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 25 Apr 2022 15:11:18 -0700
-From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
-To:     <dri-devel@lists.freedesktop.org>, <robdclark@gmail.com>,
-        <sean@poorly.run>, <swboyd@chromium.org>, <vkoul@kernel.org>,
-        <daniel@ffwll.ch>, <airlied@linux.ie>, <agross@kernel.org>,
-        <dmitry.baryshkov@linaro.org>, <bjorn.andersson@linaro.org>
-CC:     Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
-        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v1 1/2] drm/msm/dp: reset DP controller before transmit phy test pattern
-Date:   Mon, 25 Apr 2022 15:11:02 -0700
-Message-ID: <1650924663-24892-2-git-send-email-quic_khsieh@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1650924663-24892-1-git-send-email-quic_khsieh@quicinc.com>
-References: <1650924663-24892-1-git-send-email-quic_khsieh@quicinc.com>
+        Mon, 25 Apr 2022 17:29:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E55A8220CE;
+        Mon, 25 Apr 2022 14:26:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DF016147E;
+        Mon, 25 Apr 2022 21:26:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64745C385A4;
+        Mon, 25 Apr 2022 21:26:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650922009;
+        bh=2a6f0s0gfgQOFCVygX88D/Jy9FT1s2II/UBEFfZwGmU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=JzoZI6Thq9FaEgO3Mkkbp4aFCZ3Z7SguW+p4EFcL/hZwSR71eWB7lQrtCdStFiwJC
+         D1lPI1kl/uUpuHDl39mZR33MBDxQfDwUZcMx2SOy8esXcCAupoEdZ86ahHPPsUFq+A
+         JW4VUzQSpKpID+SI91ORDXSUAEiRDLsbzLhKFSgCZQ15+6n37sCSLPSKpNF5s2mG5f
+         YariGsa+QPrpVyHoYSKQJpukgLJFnbYGqFIv36Zt/sswY+hMhqKvhMnSbLTTgeE31A
+         oKKpvQMEKelT7D27Rauoujy0YlPFS8O0rD0kkaRnWGhQf+ZfoAYH4GrM+RJ0lCvqCb
+         M/zD88dCkupKw==
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Chas Williams <3chas3@gmail.com>
+Cc:     linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>
+Subject: [PATCH 0/2] net: Remove unused __SLOW_DOWN_IO
+Date:   Mon, 25 Apr 2022 16:26:42 -0500
+Message-Id: <20220425212644.1659070-1-helgaas@kernel.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DP controller state can not switch from video ready state to
-transmit phy pattern state at run time. DP mainlink has to be
-teared down followed by reset controller to default state to have
-DP controller switch to transmit phy test pattern state and start
-generate specified phy test pattern to sinker once main link setup
-again.
+From: Bjorn Helgaas <bhelgaas@google.com>
 
-Fixes: ee35444be0c8 ("drm/msm/dp: use dp_ctrl_off_link_stream during PHY compliance test run")
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
----
- drivers/gpu/drm/msm/dp/dp_ctrl.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Remove unused mentions of __SLOW_DOWN_IO.
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
-index 5356856..193cc1a 100644
---- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
-+++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
-@@ -1532,7 +1532,7 @@ static int dp_ctrl_process_phy_test_request(struct dp_ctrl_private *ctrl)
- 	 * running. Add the global reset just before disabling the
- 	 * link clocks and core clocks.
- 	 */
--	ret = dp_ctrl_off_link_stream(&ctrl->dp_ctrl);
-+	ret = dp_ctrl_off(&ctrl->dp_ctrl);
- 	if (ret) {
- 		DRM_ERROR("failed to disable DP controller\n");
- 		return ret;
+Bjorn Helgaas (2):
+  net: wan: atp: remove unused eeprom_delay()
+  net: remove comments that mention obsolete __SLOW_DOWN_IO
+
+ drivers/atm/nicstarmac.c                     | 5 -----
+ drivers/net/ethernet/dec/tulip/winbond-840.c | 2 --
+ drivers/net/ethernet/natsemi/natsemi.c       | 2 --
+ drivers/net/ethernet/realtek/atp.h           | 4 ----
+ 4 files changed, 13 deletions(-)
+
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+2.25.1
 
