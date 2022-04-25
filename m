@@ -2,199 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95DA5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 14:53:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 511F8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 14:54:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242602AbiDYO4Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 10:56:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50364 "EHLO
+        id S242596AbiDYO53 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 10:57:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241240AbiDYO4L (ORCPT
+        with ESMTP id S229941AbiDYO50 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 10:56:11 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 247ED34BB9
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 07:53:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 57B51CE1721
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 14:53:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CBCDC385AE;
-        Mon, 25 Apr 2022 14:53:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650898383;
-        bh=2d/1yAOVmYsCW9kJuQkBsU2TaXtcebq8zUB95NfIY+o=;
-        h=In-Reply-To:References:Date:From:To:Cc:Subject:From;
-        b=DcaQOwd2glVEIGv68OVG+JqWGxGpGsbOq9cnQ9+ci+DHgf/FSwnn6inBuWIlDT0j2
-         f2O/X9AdBeVZw0bxpVR2sjRcgL4c02GMUpuOBLfiWufgOuBG/50lfZjGooD9dcfty5
-         +tgeKgMHDUAC2gpFo3Gumc9JbT/c48Y/91WlUfMrKU1chTnaOwMsG3dcgGJtiPpk7X
-         h9Qa9PG1X4OWoveTyLdciVuF6yqdQ5z9Frg2BWUIxG6mA6m73jQVBTcARjUP0i4YZA
-         GF2hawVOkZ1jyldWVDtqeV1Hwldg759FPWrd8KPCSCqIq2RB/8tPJbj13xJ/0WUV0Q
-         QKXvt4bHisc3g==
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailauth.nyi.internal (Postfix) with ESMTP id 7C3AC27C0054;
-        Mon, 25 Apr 2022 10:53:00 -0400 (EDT)
-Received: from imap48 ([10.202.2.98])
-  by compute2.internal (MEProxy); Mon, 25 Apr 2022 10:53:00 -0400
-X-ME-Sender: <xms:y7VmYtrBZC8Zu64O4UXFwaKxuZup8ZeVuoCIhCms7J92pM3Q7gB6Uw>
-    <xme:y7VmYvqB_ryXW1_4_ZphfM_s6K9iBovtAxdtQn1bRrtX8Xk3eiXdDvpldyZl3xRlb
-    te5XDlFXy-rYkGpOB0>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedruddugdektdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdetnhgu
-    hicunfhuthhomhhirhhskhhifdcuoehluhhtoheskhgvrhhnvghlrdhorhhgqeenucggtf
-    frrghtthgvrhhnpedvhfeuvddthfdufffhkeekffetgffhledtleegffetheeugeejffdu
-    hefgteeihfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
-    hmpegrnhguhidomhgvshhmthhprghuthhhphgvrhhsohhnrghlihhthidqudduiedukeeh
-    ieefvddqvdeifeduieeitdekqdhluhhtoheppehkvghrnhgvlhdrohhrgheslhhinhhugi
-    drlhhuthhordhush
-X-ME-Proxy: <xmx:y7VmYqNL_LZicuZal0_wT-FGnRkaFFOzXPObXQSxPaGJUtMxqFGadw>
-    <xmx:y7VmYo4SiO5H2zySG1LRtiwiDkqIQyUUkI9Pp5F2u-jjdQRXlIm60Q>
-    <xmx:y7VmYs4-x0vwyMzJZ7T18qHW7WCv9WHuX_YMkaGLcrDTSivfmPUCTQ>
-    <xmx:zLVmYhYi4pSZLux0Nq7oJpRDXaCJpdEbVmv58hLuFhFBa0uvCJZiIw>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 0E2B821E006E; Mon, 25 Apr 2022 10:52:59 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-569-g7622ad95cc-fm-20220421.002-g7622ad95
-Mime-Version: 1.0
-Message-Id: <27616b2f-1eff-42ff-91e0-047f531639ea@www.fastmail.com>
-In-Reply-To: <20220425134051.GA175928@chaop.bj.intel.com>
-References: <80aad2f9-9612-4e87-a27a-755d3fa97c92@www.fastmail.com>
- <YkcTTY4YjQs5BRhE@google.com>
- <83fd55f8-cd42-4588-9bf6-199cbce70f33@www.fastmail.com>
- <YksIQYdG41v3KWkr@google.com> <Ykslo2eo2eRXrpFR@google.com>
- <eefc3c74-acca-419c-8947-726ce2458446@www.fastmail.com>
- <Ykwbqv90C7+8K+Ao@google.com> <YkyEaYiL0BrDYcZv@google.com>
- <20220422105612.GB61987@chaop.bj.intel.com>
- <3b99f157-0f30-4b30-8399-dd659250ab8d@www.fastmail.com>
- <20220425134051.GA175928@chaop.bj.intel.com>
-Date:   Mon, 25 Apr 2022 07:52:38 -0700
-From:   "Andy Lutomirski" <luto@kernel.org>
-To:     "Chao Peng" <chao.p.peng@linux.intel.com>
-Cc:     "Sean Christopherson" <seanjc@google.com>,
-        "Quentin Perret" <qperret@google.com>,
-        "Steven Price" <steven.price@arm.com>,
-        "kvm list" <kvm@vger.kernel.org>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        "Linux API" <linux-api@vger.kernel.org>, qemu-devel@nongnu.org,
-        "Paolo Bonzini" <pbonzini@redhat.com>,
-        "Jonathan Corbet" <corbet@lwn.net>,
-        "Vitaly Kuznetsov" <vkuznets@redhat.com>,
-        "Wanpeng Li" <wanpengli@tencent.com>,
-        "Jim Mattson" <jmattson@google.com>,
-        "Joerg Roedel" <joro@8bytes.org>,
-        "Thomas Gleixner" <tglx@linutronix.de>,
-        "Ingo Molnar" <mingo@redhat.com>, "Borislav Petkov" <bp@alien8.de>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "Hugh Dickins" <hughd@google.com>,
-        "Jeff Layton" <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        "Andrew Morton" <akpm@linux-foundation.org>,
-        "Mike Rapoport" <rppt@kernel.org>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        "Vlastimil Babka" <vbabka@suse.cz>,
-        "Vishal Annapurve" <vannapurve@google.com>,
-        "Yu Zhang" <yu.c.zhang@linux.intel.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        "Nakajima, Jun" <jun.nakajima@intel.com>,
-        "Dave Hansen" <dave.hansen@intel.com>,
-        "Andi Kleen" <ak@linux.intel.com>,
-        "David Hildenbrand" <david@redhat.com>,
-        "Marc Zyngier" <maz@kernel.org>, "Will Deacon" <will@kernel.org>
-Subject: Re: [PATCH v5 00/13] KVM: mm: fd-based approach for supporting KVM guest
- private memory
-Content-Type: text/plain
+        Mon, 25 Apr 2022 10:57:26 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F8BF36319
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 07:54:22 -0700 (PDT)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23PEl2e5021703;
+        Mon, 25 Apr 2022 14:54:08 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=jLpnZgj2KDnbV1EAo897LuWjxlkp1tf6fTyDAjwF04A=;
+ b=bAk62XsGQut0n0qI9tx01dPywABUBCSt9xZRdMeEOy9ksxhFA7VMNjcalw21laUl8Cfb
+ mN717hJw4rPSjGVTJMbTnR4mez50h+vlpiLunr6cTG0Q+4oDS9NaEmsOy0axKbgJUCBp
+ y4J6GFIBxhYxZUMeLDdxlnfuEb3rUb4PL6edzFLqLaE6L0geK0E0OVk/gLSZhSUDldfp
+ wMFsqtA0ql9mp6QiC6T2KZ/Xe4dHrrU6wv0oX+D7VF9XjLYUv3c3FgNSmdyePh2jNgCy
+ LE7ZFm6i63gGQ/qHiInTrlC7KHPzseJuCgErwEfZDHIYlo/NuAiBj7zW/ruUBa75ivm+ jw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fnr448mxt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 25 Apr 2022 14:54:08 +0000
+Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23PEq6Wd000819;
+        Mon, 25 Apr 2022 14:54:07 GMT
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fnr448mwr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 25 Apr 2022 14:54:07 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23PEctt1009728;
+        Mon, 25 Apr 2022 14:54:04 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma03fra.de.ibm.com with ESMTP id 3fm938t3v2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 25 Apr 2022 14:54:04 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23PEs2rN23462250
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 25 Apr 2022 14:54:02 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 31E4BAE04D;
+        Mon, 25 Apr 2022 14:54:02 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 306AFAE045;
+        Mon, 25 Apr 2022 14:53:58 +0000 (GMT)
+Received: from [9.43.106.14] (unknown [9.43.106.14])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 25 Apr 2022 14:53:57 +0000 (GMT)
+Message-ID: <132150b3-73f8-ea94-2839-91b92e5d2991@linux.ibm.com>
+Date:   Mon, 25 Apr 2022 20:23:56 +0530
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v3 0/7] mm: demotion: Introduce new node state
+ N_DEMOTION_TARGETS
+Content-Language: en-US
+To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>
+Cc:     "ying.huang@intel.com" <ying.huang@intel.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
+        baolin.wang@linux.alibaba.com, dave.hansen@linux.intel.com,
+        shy828301@gmail.com, weixugc@google.com, gthelen@google.com,
+        dan.j.williams@intel.com
+References: <20220422195516.10769-1-jvgediya@linux.ibm.com>
+ <4b986b46afb2fe888c127d8758221d0f0d3ec55f.camel@intel.com>
+ <YmaC2jw6WaQ4X+8W@li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com>
+ <20220425145735.000007ca@Huawei.com>
+From:   Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>
+In-Reply-To: <20220425145735.000007ca@Huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 9kBEF8donZZtARCCL5DvrH3i5MoXPFCS
+X-Proofpoint-ORIG-GUID: 7KSGHI4kL0ebDcvbx8cP1kp8E9barXtB
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-25_08,2022-04-25_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 lowpriorityscore=0
+ spamscore=0 suspectscore=0 bulkscore=0 phishscore=0 clxscore=1015
+ adultscore=0 priorityscore=1501 mlxlogscore=891 malwarescore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204250063
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On Mon, Apr 25, 2022, at 6:40 AM, Chao Peng wrote:
-> On Sun, Apr 24, 2022 at 09:59:37AM -0700, Andy Lutomirski wrote:
->> 
-
->> 
->> 2. Bind the memfile to a VM (or at least to a VM technology).  Now it's in the initial state appropriate for that VM.
->> 
->> For TDX, this completely bypasses the cases where the data is prepopulated and TDX can't handle it cleanly.  For SEV, it bypasses a situation in which data might be written to the memory before we find out whether that data will be unreclaimable or unmovable.
+On 4/25/22 7:27 PM, Jonathan Cameron wrote:
+> On Mon, 25 Apr 2022 16:45:38 +0530
+> Jagdish Gediya <jvgediya@linux.ibm.com> wrote:
 >
-> This sounds a more strict rule to avoid semantics unclear.
->
-> So userspace needs to know what excatly happens for a 'bind' operation.
-> This is different when binds to different technologies. E.g. for SEV, it
-> may imply after this call, the memfile can be accessed (through mmap or
-> what ever) from userspace, while for current TDX this should be not allowed.
 
-I think this is actually a good thing.  While SEV, TDX, pKVM, etc achieve similar goals and have broadly similar ways of achieving them, they really are different, and having userspace be aware of the differences seems okay to me.
+....
 
-(Although I don't think that allowing userspace to mmap SEV shared pages is particularly wise -- it will result in faults or cache incoherence depending on the variant of SEV in use.)
+>> $ numactl -H
+>> available: 2 nodes (0-1)
+>> node 0 cpus: 0 1 2 3 4 5 6 7
+>> node 0 size: 14272 MB
+>> node 0 free: 13392 MB
+>> node 1 cpus:
+>> node 1 size: 2028 MB
+>> node 1 free: 1971 MB
+>> node distances:
+>> node   0   1
+>>    0:  10  40
+>>    1:  40  10
+>>
+>> 1) without N_DEMOTION_TARGETS patch series, 1 is demotion target
+>>     for 0 even when 1 is DRAM node and there is no demotion targets for 1.
+> 
+> I'm not convinced the distinction between DRAM and persistent memory is
+> valid. There will definitely be systems with a large pool
+> of remote DRAM (and potentially no NV memory) where the right choice
+> is to demote to that DRAM pool.
+> 
+> Basing the decision on whether the memory is from kmem or
+> normal DRAM doesn't provide sufficient information to make the decision.
+> 
+>>
+>> $ cat /sys/bus/nd/devices/dax0.0/target_node
+>> 2
+>> $
+>> # cd /sys/bus/dax/drivers/
+>> :/sys/bus/dax/drivers# ls
+>> device_dax  kmem
+>> :/sys/bus/dax/drivers# cd device_dax/
+>> :/sys/bus/dax/drivers/device_dax# echo dax0.0 > unbind
+>> :/sys/bus/dax/drivers/device_dax# echo dax0.0 >  ../kmem/new_id
+>> :/sys/bus/dax/drivers/device_dax# numactl -H
+>> available: 3 nodes (0-2)
+>> node 0 cpus: 0 1 2 3 4 5 6 7
+>> node 0 size: 14272 MB
+>> node 0 free: 13380 MB
+>> node 1 cpus:
+>> node 1 size: 2028 MB
+>> node 1 free: 1961 MB
+>> node 2 cpus:
+>> node 2 size: 0 MB
+>> node 2 free: 0 MB
+>> node distances:
+>> node   0   1   2
+>>    0:  10  40  80
+>>    1:  40  10  80
+>>    2:  80  80  10
+>>
+>> 2) Once this new node brought online,  without N_DEMOTION_TARGETS
+>> patch series, 1 is demotion target for 0 and 2 is demotion target
+>> for 1.
+>>
+>> With this patch series applied,
+>> 1) No demotion target for either 0 or 1 before dax device is online
+> 
+> I'd argue that is wrong.  At this state you have a tiered memory system
+> be it one with just DRAM.  Using it as such is correct behavior that
+> we should not be preventing.  Sure some usecases wouldn't want that
+> arrangement but some do want it.
+> 
 
->
-> And I feel we still need a third flow/operation to indicate the
-> completion of the initialization on the memfile before the guest's 
-> first-time launch. SEV needs to check previous mmap-ed areas are munmap-ed
-> and prevent future userspace access. After this point, then the memfile
-> becomes truely private fd.
-
-Even that is technology-dependent.  For TDX, this operation doesn't really exist.  For SEV, I'm not sure (I haven't read the specs in nearly enough detail).  For pKVM, I guess it does exist and isn't quite the same as a shared->private conversion.
-
-Maybe this could be generalized a bit as an operation "measure and make private" that would be supported by the technologies for which it's useful.
+I missed this in my earlier reply. Are you suggesting that we would want 
+Node 1 (DRAM only memory numa node) to act as demotion target for Node 
+0?  Any reason why we would want to do that? That is clearly opposite of 
+what we are trying to do here. IMHO node using Node1 as demotion target 
+for Node0 is a better default?
 
 
->
->> 
->> 
->> ----------------------------------------------
->> 
->> Now I have a question, since I don't think anyone has really answered it: how does this all work with SEV- or pKVM-like technologies in which private and shared pages share the same address space?  I sounds like you're proposing to have a big memfile that contains private and shared pages and to use that same memfile as pages are converted back and forth.  IO and even real physical DMA could be done on that memfile.  Am I understanding correctly?
->
-> For TDX case, and probably SEV as well, this memfile contains private memory
-> only. But this design at least makes it possible for usage cases like
-> pKVM which wants both private/shared memory in the same memfile and rely
-> on other ways like mmap/munmap or mprotect to toggle private/shared instead
-> of fallocate/hole punching.
 
-Hmm.  Then we still need some way to get KVM to generate the correct SEV pagetables.  For TDX, there are private memslots and shared memslots, and they can overlap.  If they overlap and both contain valid pages at the same address, then the results may not be what the guest-side ABI expects, but everything will work.  So, when a single logical guest page transitions between shared and private, no change to the memslots is needed.  For SEV, this is not the case: everything is in one set of pagetables, and there isn't a natural way to resolve overlaps.
-
-If the memslot code becomes efficient enough, then the memslots could be fragmented.  Or the memfile could support private and shared data in the same memslot.  And if pKVM does this, I don't see why SEV couldn't also do it and hopefully reuse the same code.
-
->
->> 
->> If so, I think this makes sense, but I'm wondering if the actual memslot setup should be different.  For TDX, private memory lives in a logically separate memslot space.  For SEV and pKVM, it doesn't.  I assume the API can reflect this straightforwardly.
->
-> I believe so. The flow should be similar but we do need pass different
-> flags during the 'bind' to the backing store for different usages. That
-> should be some new flags for pKVM but the callbacks (API here) between
-> memfile_notifile and its consumers can be reused.
-
-And also some different flag in the operation that installs the fd as a memslot?
-
->
->> 
->> And the corresponding TDX question: is the intent still that shared pages aren't allowed at all in a TDX memfile?  If so, that would be the most direct mapping to what the hardware actually does.
->
-> Exactly. TDX will still use fallocate/hole punching to turn on/off the
-> private page. Once off, the traditional shared page will become
-> effective in KVM.
-
-Works for me.
-
-For what it's worth, I still think it should be fine to land all the TDX memfile bits upstream as long as we're confident that SEV, pKVM, etc can be added on without issues.
-
-I think we can increase confidence in this by either getting one other technology's maintainers to get far enough along in the design to be confident and/or by having a pure-kernel-software implementation that serves as a testbed.  For the latter, maybe it could support two different models with little overhead:
-
-Pure software "interleaved" model: pages are shared or private and a hypercall converts them.  The access mode is entirely determined by the state programmed by hypercall.  I think this is essentially what Vishal implemented, but with the "HACK" replaced by something permanent and (if they're not already in the series) appropriate access checks implemented to actually protect the private memory.
-
-Pure software "separate" mode: one GPA bit is set aside as the shared vs private bit.  The normal memslots are restricted to the shared half of GPA space.  Private memslots use the private half.  This works a lot like TDX.  This would be new code.  We don't *really* need this for testing, since TDX itself exercises the same programming model, but it would let people without TDX hardware exercise the interesting bits of the memory management.
-
-Paolo, etc: what do you think?
-
->
-> Chao
->> 
->> --Andy
+-aneesh
