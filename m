@@ -2,235 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FD3FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 11:31:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42205C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 11:33:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238643AbiDYLeV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 07:34:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46302 "EHLO
+        id S236530AbiDYLgh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 07:36:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbiDYLeR (ORCPT
+        with ESMTP id S229468AbiDYLge (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 07:34:17 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED0EFEB7
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 04:31:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650886273; x=1682422273;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version:content-transfer-encoding;
-  bh=2B2qF7ouiCd0JZFcYIGy5M7pqO0kLaQtk6/N2v8nVhA=;
-  b=cy7pPk/DDUfauZrOboUn+PyZLDv5ZyyYBfb7HFLY/NpXvhRJEHRAGmD+
-   j3PVWDTxmjGtnypSSORBt3XoYApZqenKNO5yQNsQaTio2g1pW8Ax45wdc
-   t2Pdmd07wCtkV/CPzhMhqI3/GLDv4duqUTdNg3azvBpEsUKTnHLNJrV8X
-   f+r1y5/MS0i82cI+ufuCqgtRk9dVKRnYO6C+iIhPy1lxGVd6aXq2sF4Sj
-   DfQ4U61KdKWp55Zuzgt2ByOLrqNYAiJXJ49v/xiDmpJQ4mIPq6UGwlpYe
-   KbzJ61qz7XjfSU+k6EXiyjxEWy44MzVsrDQmOhUt0PXDvC+jHFfBEJt4n
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10327"; a="247148446"
-X-IronPort-AV: E=Sophos;i="5.90,288,1643702400"; 
-   d="scan'208";a="247148446"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 04:31:13 -0700
-X-IronPort-AV: E=Sophos;i="5.90,288,1643702400"; 
-   d="scan'208";a="532071727"
-Received: from tgiecew-mobl.ger.corp.intel.com (HELO localhost) ([10.249.131.125])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 04:31:09 -0700
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     "Wang, Zhi A" <zhi.a.wang@intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-Cc:     "intel-gvt-dev@lists.freedesktop.org" 
-        <intel-gvt-dev@lists.freedesktop.org>,
-        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>
-Subject: Re: [PULL v3] gvt-next
-In-Reply-To: <25a713cd-0b7d-4c09-7d91-4f4ef6c9eb11@intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <25a713cd-0b7d-4c09-7d91-4f4ef6c9eb11@intel.com>
-Date:   Mon, 25 Apr 2022 14:31:06 +0300
-Message-ID: <87o80pv1qd.fsf@intel.com>
+        Mon, 25 Apr 2022 07:36:34 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF7E4FE5
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 04:33:30 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kn2vK3cXLzhYm4;
+        Mon, 25 Apr 2022 19:33:17 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 25 Apr 2022 19:33:28 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 25 Apr
+ 2022 19:33:28 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <iommu@lists.linux-foundation.org>,
+        <linux-arm-kernel@lists.infradead.org>
+CC:     <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>
+Subject: [PATCH] iommu/arm-smmu-v3: check return value after calling platform_get_resource()
+Date:   Mon, 25 Apr 2022 19:45:25 +0800
+Message-ID: <20220425114525.2651143-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 21 Apr 2022, "Wang, Zhi A" <zhi.a.wang@intel.com> wrote:
-> Hi folks:
->
-> Here is the PR of gvt-next. Thanks so much for the patience.
+It will cause null-ptr-deref if platform_get_resource() returns NULL,
+we need check the return value.
 
-Thanks, pulled to drm-intel-next, applied the below fix for the silent
-conflict on top, and pushed out. Should show up in linux-next shortly.
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-BR,
-Jani.
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 627a3ed5ee8f..88817a3376ef 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -3770,6 +3770,8 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 
+ 	/* Base address */
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res)
++		return -EINVAL;
+ 	if (resource_size(res) < arm_smmu_resource_size(smmu)) {
+ 		dev_err(dev, "MMIO region too small (%pr)\n", res);
+ 		return -EINVAL;
+-- 
+2.25.1
 
->
-> Mostly it includes the patch bundle of GVT-g re-factor patches for adapti=
-ng the GVT-g with the
-> new MDEV interfaces:
->
-> - Separating the MMIO table from GVT-g. (Zhi)
-> - GVT-g re-factor. (Christoph)
-> - GVT-g mdev API cleanup. (Jason)
-> - GVT-g trace/makefile cleanup. (Jani)
->
-> Thanks so much for making this happen.
->
-> This PR has been tested as following and no problem shows up:
->
-> $dim update-branches
-> $dim apply-pull drm-intel-next < this_email.eml
->
-> When merging this pull to drm-intel-next, please include the following co=
-de in the merge commit:
->
-> diff --git a/drivers/gpu/drm/i915/intel_gvt_mmio_table.c b/drivers/gpu/dr=
-m/i915/intel_gvt_mmio_table.c
-> index 03a7fcd0f904..72dac1718f3e 100644
-> --- a/drivers/gpu/drm/i915/intel_gvt_mmio_table.c
-> +++ b/drivers/gpu/drm/i915/intel_gvt_mmio_table.c
-> @@ -3,6 +3,7 @@
->   * Copyright =C2=A9 2020 Intel Corporation
->   */
->=20=20
-> +#include "display/intel_dmc_regs.h"
->  #include "display/vlv_dsi_pll_regs.h"
->  #include "gt/intel_gt_regs.h"
->  #include "gvt/gvt.h"
->
->
-> The following changes since commit 3123109284176b1532874591f7c81f3837bbdc=
-17:
->
->   Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
->
-> are available in the Git repository at:
->
->   https://github.com/intel/gvt-linux tags/gvt-next-2022-04-21-for-christo=
-ph
->
-> for you to fetch changes up to 2917f53113be3b7a0f374e02cebe6d6b749366b5:
->
->   vfio/mdev: Remove mdev drvdata (2022-04-21 07:36:56 -0400)
->
-> ----------------------------------------------------------------
-> gvt-next-2022-04-21-for-christoph
->
-> - Separating the MMIO table from GVT-g. (Zhi)
-> - GVT-g re-factor. (Christoph)
-> - GVT-g mdev API cleanup. (Jason)
-> - GVT-g trace/makefile cleanup. (Jani)
->
-> ----------------------------------------------------------------
-> Christoph Hellwig (27):
->       drm/i915/gvt: remove module refcounting in intel_gvt_{,un}register_=
-hypervisor
->       drm/i915/gvt: remove enum hypervisor_type
->       drm/i915/gvt: rename intel_vgpu_ops to intel_vgpu_mdev_ops
->       drm/i915/gvt: move the gvt code into kvmgt.ko
->       drm/i915/gvt: remove intel_gvt_ops
->       drm/i915/gvt: remove the map_gfn_to_mfn and set_trap_area ops
->       drm/i915/gvt: remove the unused from_virt_to_mfn op
->       drm/i915/gvt: merge struct kvmgt_vdev into struct intel_vgpu
->       drm/i915/gvt: merge struct kvmgt_guest_info into strut intel_vgpu
->       drm/i915/gvt: remove vgpu->handle
->       drm/i915/gvt: devirtualize ->{read,write}_gpa
->       drm/i915/gvt: devirtualize ->{get,put}_vfio_device
->       drm/i915/gvt: devirtualize ->set_edid and ->set_opregion
->       drm/i915/gvt: devirtualize ->detach_vgpu
->       drm/i915/gvt: devirtualize ->inject_msi
->       drm/i915/gvt: devirtualize ->is_valid_gfn
->       drm/i915/gvt: devirtualize ->gfn_to_mfn
->       drm/i915/gvt: devirtualize ->{enable,disable}_page_track
->       drm/i915/gvt: devirtualize ->dma_{,un}map_guest_page
->       drm/i915/gvt: devirtualize dma_pin_guest_page
->       drm/i915/gvt: remove struct intel_gvt_mpt
->       drm/i915/gvt: remove the extra vfio_device refcounting for dmabufs
->       drm/i915/gvt: streamline intel_vgpu_create
->       drm/i915/gvt: pass a struct intel_vgpu to the vfio read/write helpe=
-rs
->       drm/i915/gvt: remove kvmgt_guest_{init,exit}
->       drm/i915/gvt: convert to use vfio_register_emulated_iommu_dev
->       drm/i915/gvt: merge gvt.c into kvmgvt.c
->
-> Jani Nikula (2):
->       drm/i915/gvt: fix trace TRACE_INCLUDE_PATH
->       drm/i915/gvt: better align the Makefile with i915 Makefile
->
-> Jason Gunthorpe (5):
->       vfio/mdev: Remove vfio_mdev.c
->       vfio/mdev: Remove mdev_parent_ops dev_attr_groups
->       vfio/mdev: Remove mdev_parent_ops
->       vfio/mdev: Use the driver core to create the 'remove' file
->       vfio/mdev: Remove mdev drvdata
->
-> Zhi Wang (3):
->       i915/gvt: Separate the MMIO tracking table from GVT-g
->       i915/gvt: Save the initial HW state snapshot in i915
->       i915/gvt: Use the initial HW state snapshot saved in i915
->
->  Documentation/driver-api/vfio-mediated-device.rst |   27 +-
->  drivers/gpu/drm/i915/Kconfig                      |   36 +-
->  drivers/gpu/drm/i915/Makefile                     |    8 +-
->  drivers/gpu/drm/i915/gvt/Makefile                 |   30 +-
->  drivers/gpu/drm/i915/gvt/cfg_space.c              |   89 +-
->  drivers/gpu/drm/i915/gvt/cmd_parser.c             |    4 +-
->  drivers/gpu/drm/i915/gvt/dmabuf.c                 |   36 +-
->  drivers/gpu/drm/i915/gvt/execlist.c               |   12 +-
->  drivers/gpu/drm/i915/gvt/firmware.c               |   25 +-
->  drivers/gpu/drm/i915/gvt/gtt.c                    |   55 +-
->  drivers/gpu/drm/i915/gvt/gvt.c                    |  340 ------
->  drivers/gpu/drm/i915/gvt/gvt.h                    |  128 +-
->  drivers/gpu/drm/i915/gvt/handlers.c               | 1033 +++------------=
---
->  drivers/gpu/drm/i915/gvt/hypercall.h              |   82 --
->  drivers/gpu/drm/i915/gvt/interrupt.c              |   40 +-
->  drivers/gpu/drm/i915/gvt/kvmgt.c                  | 1097 +++++++++------=
---
->  drivers/gpu/drm/i915/gvt/mmio.c                   |    4 +-
->  drivers/gpu/drm/i915/gvt/mmio.h                   |    1 -
->  drivers/gpu/drm/i915/gvt/mpt.h                    |  400 -------
->  drivers/gpu/drm/i915/gvt/opregion.c               |  148 +--
->  drivers/gpu/drm/i915/gvt/page_track.c             |    8 +-
->  drivers/gpu/drm/i915/gvt/reg.h                    |    9 +-
->  drivers/gpu/drm/i915/gvt/scheduler.c              |   37 +-
->  drivers/gpu/drm/i915/gvt/trace.h                  |    2 +-
->  drivers/gpu/drm/i915/gvt/vgpu.c                   |   22 +-
->  drivers/gpu/drm/i915/i915_driver.c                |    7 -
->  drivers/gpu/drm/i915/i915_drv.h                   |    3 +
->  drivers/gpu/drm/i915/intel_gvt.c                  |  248 +++-
->  drivers/gpu/drm/i915/intel_gvt.h                  |   32 +-
->  drivers/gpu/drm/i915/intel_gvt_mmio_table.c       | 1291 +++++++++++++++=
-++++++
->  drivers/s390/cio/vfio_ccw_ops.c                   |    7 +-
->  drivers/s390/crypto/vfio_ap_ops.c                 |    9 +-
->  drivers/vfio/mdev/Makefile                        |    2 +-
->  drivers/vfio/mdev/mdev_core.c                     |   52 +-
->  drivers/vfio/mdev/mdev_driver.c                   |   10 -
->  drivers/vfio/mdev/mdev_private.h                  |    6 +-
->  drivers/vfio/mdev/mdev_sysfs.c                    |   37 +-
->  drivers/vfio/mdev/vfio_mdev.c                     |  152 ---
->  include/linux/mdev.h                              |   82 +-
->  samples/vfio-mdev/mbochs.c                        |    9 +-
->  samples/vfio-mdev/mdpy.c                          |    9 +-
->  samples/vfio-mdev/mtty.c                          |   39 +-
->  42 files changed, 2530 insertions(+), 3138 deletions(-)
->  delete mode 100644 drivers/gpu/drm/i915/gvt/gvt.c
->  delete mode 100644 drivers/gpu/drm/i915/gvt/hypercall.h
->  delete mode 100644 drivers/gpu/drm/i915/gvt/mpt.h
->  create mode 100644 drivers/gpu/drm/i915/intel_gvt_mmio_table.c
->  delete mode 100644 drivers/vfio/mdev/vfio_mdev.c
-
---=20
-Jani Nikula, Intel Open Source Graphics Center
