@@ -2,106 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC00BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 17:25:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A10AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 17:25:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244091AbiDYR2A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 13:28:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44568 "EHLO
+        id S243956AbiDYR2a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 13:28:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243931AbiDYR1T (ORCPT
+        with ESMTP id S244037AbiDYR1r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 13:27:19 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 033B840E74
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 10:24:15 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nj2RK-0007xm-MT; Mon, 25 Apr 2022 19:23:58 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nj2RJ-005BoB-Kh; Mon, 25 Apr 2022 19:23:56 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nj2RH-005ZQu-FS; Mon, 25 Apr 2022 19:23:55 +0200
-Date:   Mon, 25 Apr 2022 19:23:50 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Yihao Han <hanyihao@vivo.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Sven Van Asbroeck <TheSven73@gmail.com>,
-        Corentin Labbe <clabbe@baylibre.com>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        kernel@vivo.com
-Subject: Re: [PATCH] macintosh: macio_asic: fix resource_size.cocci warnings
-Message-ID: <20220425172350.fggwi7a76v5d6cbh@pengutronix.de>
-References: <20220414140304.82751-1-hanyihao@vivo.com>
- <87zgkd8vnb.fsf@mpe.ellerman.id.au>
+        Mon, 25 Apr 2022 13:27:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35DF340E71;
+        Mon, 25 Apr 2022 10:24:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C718B61585;
+        Mon, 25 Apr 2022 17:24:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8E29C385A9;
+        Mon, 25 Apr 2022 17:24:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650907482;
+        bh=6gmtLm26FKCqWWG3JfvENu2V0fQ81REkQJwYzVoLt0w=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=Cf9bZmvm0JAXgYFKXN9AAJ0idCc220H9FGJhA5kZ5FjpVCzgXftyJSRhZY5TOFwW7
+         KMaTgCQuAEF/5YDg2kGyC9C6nw/NRqcKk539HXDDgB9G1aPSFqFRuIMNU3CJ0jGJJ5
+         A/ntB4WhpUAxI9Uk0xlem31LJ5CFi7YUqtJXLHc+OL5kSEdv9ZWLSyb4KNzSOaUdKv
+         huLTybryQ8FPVKZh++L26rZSp3l9GePdJF4VOcPzqOihvmdBlc0qcbEH4yB1Zv+6y1
+         s7TARXTzMNAUjR4wQhe41POLrP//S+mB7uR/E8tfkaYQbO+9DlENeXFqvh3gvjmY6Z
+         OaGEU2t+fkjZQ==
+From:   Mark Brown <broonie@kernel.org>
+To:     cgel.zte@gmail.com, ldewangan@nvidia.com
+Cc:     linux-spi@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-kernel@vger.kernel.org, chi.minghao@zte.com.cn,
+        zealci@zte.com.cn
+In-Reply-To: <20220418110141.2559019-1-chi.minghao@zte.com.cn>
+References: <20220418110141.2559019-1-chi.minghao@zte.com.cn>
+Subject: Re: [PATCH] spi: spi-tegra20-slink: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+Message-Id: <165090748053.584172.14297698011907857671.b4-ty@kernel.org>
+Date:   Mon, 25 Apr 2022 18:24:40 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="y36m4bm5lfadd555"
-Content-Disposition: inline
-In-Reply-To: <87zgkd8vnb.fsf@mpe.ellerman.id.au>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, 18 Apr 2022 11:01:41 +0000, cgel.zte@gmail.com wrote:
+> From: Minghao Chi <chi.minghao@zte.com.cn>
+> 
+> Using pm_runtime_resume_and_get is more appropriate
+> for simplifing code
+> 
+> 
 
---y36m4bm5lfadd555
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Applied to
 
-Hello Michael,
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
 
-On Fri, Apr 22, 2022 at 04:44:24PM +1000, Michael Ellerman wrote:
-> Yihao Han <hanyihao@vivo.com> writes:
-> > -		if (index =3D=3D 0 && (res->end - res->start) > 0xfff)
-> > +		if (index =3D=3D 0 && (resource_size(res)) > 0xfff)
-> >  			res->end =3D res->start + 0xfff;
-> > -		if (index =3D=3D 1 && (res->end - res->start) > 0xff)
-> > +		if (index =3D=3D 1 && (resource_size(res)) > 0xff)
->=20
-> Are you sure the conversion is correct? It's not exactly equivalent:
->=20
-> static inline resource_size_t resource_size(const struct resource *res)
-> {
-> 	return res->end - res->start + 1;
-> }
+Thanks!
 
-Indeed. I pointed out this issue in the v2 that already hit my inbox.
+[1/1] spi: spi-tegra20-slink: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+      commit: 1e6f8bd15cf8447a42375b005476e02fc13deb2a
 
-Best regards
-Uwe
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
---y36m4bm5lfadd555
-Content-Type: application/pgp-signature; name="signature.asc"
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
 
------BEGIN PGP SIGNATURE-----
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
 
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmJm2SMACgkQwfwUeK3K
-7AmYawf/QfGR/l+1FYITPyljtHxUcmS2QItRhRWCUUYh3GfjAbISpfA4QpCoQ+FV
-WrQ8w0FW6XEbi5mXqI71rsL6jLQjRB9dheQYapd7JXuL1Q8Vtzr0UaOBmksGWKLH
-RCAOvlqfTBMMcR17vsYoo1DQlrE0721MAilie6JcbCBzmV376tRsox+p2Bcuc0Xo
-19T9Od9nMz79J6wBsOXccAwqc9UUlaxAfth2nxJyQbTtn1OBLtEztz8nf3+Y9VGo
-CIj/3UBriHrGFUH/LVtFuAZwncErTxwUk6wcesgNUJNNSUJylLTfRarjZ+cHXlZr
-Zu/WQOBr2X9h7xo73uriTK9lfqIw4Q==
-=zCfi
------END PGP SIGNATURE-----
-
---y36m4bm5lfadd555--
+Thanks,
+Mark
