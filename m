@@ -2,91 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B485CC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:23:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6421C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:23:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235891AbiDYW03 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 18:26:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34056 "EHLO
+        id S232635AbiDYW0i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 18:26:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343614AbiDYVp7 (ORCPT
+        with ESMTP id S1343672AbiDYWIH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 17:45:59 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9546210C88A
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 14:42:53 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id q14so19520824ljc.12
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 14:42:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=J0ON/l2oodv3sNlP+eHVo6ZPpiqCxnVVyYN++iumNjA=;
-        b=Fbz20CF4Jj2RaIdFgpKFZNrAzaKTxj2Uv1lUdUtavR82B8XjNHdJlqKRYFj8J5sYnH
-         2a+cy65W/7lJaACwuKUGno6crPpRa3JpDQ/3evU6c5XeZIM8JF/489oyyF9AR5CR/faW
-         UkPxO4Xj9bmhWF8R8j+SJ7JRENzCLryJSbSxQ=
+        Mon, 25 Apr 2022 18:08:07 -0400
+Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8FFA13DF5;
+        Mon, 25 Apr 2022 15:05:00 -0700 (PDT)
+Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-deb9295679so17562657fac.6;
+        Mon, 25 Apr 2022 15:05:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=J0ON/l2oodv3sNlP+eHVo6ZPpiqCxnVVyYN++iumNjA=;
-        b=orlZYkrgB5brEsd5JkCWNGwlkEc6xTkR+RWP2sc/sF9hzdM8Fjor8xtNplzDB6yymJ
-         UfbGq66ls+mZzi35gXWJFbXFjiNHPyXUtD46vHjW4VD+xgoPPca8ksBa1yBDW9dwpFij
-         Pb7tsPwzthu0OO2qqgn9wcrqD77x1uBeUZpAhl9aV4A0ZV18WpBpDRChlbvgs4YBjpon
-         +QApG+yOPbFwQsCho1NM+dq6nkvYGxkbJlL79LjDJztpe+nmD06CxivnMh0uug9rLDXL
-         WC7acHWq0FwB3M62T/1JMev27zS5z9N4Ycad21mQ+KLrbx2RMXsmuwGSO+uxkFq4lV3B
-         gCUA==
-X-Gm-Message-State: AOAM532Fa7maIL4cSdnVRXv/IAkk1Jpb7GZl2xbnXN4i5+zN7DazY/Vo
-        CWXCIU/EIcGPVu8oQLQG54dkZaBUjWOsv9eF
-X-Google-Smtp-Source: ABdhPJzxqfSAE6HmSSWAytMBB+E4dsOvzwhDlC3V98AFQUrCuWuVaancY7eyB7SdQlb1VBryduC77w==
-X-Received: by 2002:a2e:5c81:0:b0:24b:7d:6ae7 with SMTP id q123-20020a2e5c81000000b0024b007d6ae7mr12727284ljb.76.1650922971566;
-        Mon, 25 Apr 2022 14:42:51 -0700 (PDT)
-Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com. [209.85.208.176])
-        by smtp.gmail.com with ESMTPSA id d6-20020a056512320600b0047196449b7fsm1530932lfe.92.2022.04.25.14.42.50
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Apr 2022 14:42:50 -0700 (PDT)
-Received: by mail-lj1-f176.google.com with SMTP id c15so19511744ljr.9
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 14:42:50 -0700 (PDT)
-X-Received: by 2002:a2e:8245:0:b0:24b:48b1:a1ab with SMTP id
- j5-20020a2e8245000000b0024b48b1a1abmr12172414ljh.152.1650922970684; Mon, 25
- Apr 2022 14:42:50 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4/357n4d4PC5YAq5NidvohooacKB5fUdQBW6Hucbgps=;
+        b=f9e2kPji76y7S8LW8opig1/hPl0HNqz+V6/gMyw5DoR22aUIGIKC9B4eXQVAz7S7OO
+         +GkqKNXgXF6+4gmCGaK9T7Z9ihQliygU1tjXpJHGQ7U2HrhN0j3pd3MV78ToS1X3ELR4
+         okDyC1qz1Fe7OSQdmg8XmmiJCiLSXh9ncnnN4K6EZJUq/VO6/uVzCplML+E/z7Qrgdr9
+         xnT3e4gaNBBJc6H5vDRcVA8Jo2fM2/Jzlpm9EJYz/av6+gbTPZWU3djV0z/pVj2fz+B+
+         gA8Wmbe5nZdunvQVvBKPSVTv3du36OItWISqxJoSrN/OyYbEo7qHVdkBt5bwKJoRKnDa
+         /muQ==
+X-Gm-Message-State: AOAM533Qw64PXUAaT+9zA5C2GWMipyQdQtEjXmg8PcGSQhjg7iOa6dVF
+        VvtXsaM0gZLo0QcNRZYgzA==
+X-Google-Smtp-Source: ABdhPJw+13gRwqKTE4KCf4uh5v9udRaFyOju2a4GrnrwgI4sxoE14O7swvkeJZIz+clMKl759cYWfQ==
+X-Received: by 2002:a05:6870:e3d1:b0:e9:25a0:f5d8 with SMTP id y17-20020a056870e3d100b000e925a0f5d8mr4284283oad.132.1650924299987;
+        Mon, 25 Apr 2022 15:04:59 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id u7-20020a056870440700b000e686d1387asm165030oah.20.2022.04.25.15.04.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Apr 2022 15:04:59 -0700 (PDT)
+Received: (nullmailer pid 377536 invoked by uid 1000);
+        Mon, 25 Apr 2022 22:04:58 -0000
+Date:   Mon, 25 Apr 2022 17:04:58 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     nick.hawkins@hpe.com
+Cc:     verdun@hpe.com, joel@jms.id.au, arnd@arndb.de,
+        openbmc@lists.ozlabs.org,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-watchdog@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 06/11] dt-bindings: watchdog: Add HPE GXP Watchdog
+ timer binding
+Message-ID: <YmcbCgjD85lIRMSf@robh.at.kernel.org>
+References: <20220421192132.109954-1-nick.hawkins@hpe.com>
+ <20220421192132.109954-7-nick.hawkins@hpe.com>
 MIME-Version: 1.0
-References: <CAHk-=whmtHMzjaVUF9bS+7vE_rrRctcCTvsAeB8fuLYcyYLN-g@mail.gmail.com>
- <YmZvAUakbWnyQEqa@debian> <20220425142706.23e6bea1d5bfdd944e33bc96@linux-foundation.org>
-In-Reply-To: <20220425142706.23e6bea1d5bfdd944e33bc96@linux-foundation.org>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 25 Apr 2022 14:42:34 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wiR+dTAw7qRGRQ80B4oUZEithHd2J4ZfNjc5eGqY1mWwA@mail.gmail.com>
-Message-ID: <CAHk-=wiR+dTAw7qRGRQ80B4oUZEithHd2J4ZfNjc5eGqY1mWwA@mail.gmail.com>
-Subject: Re: Linux 5.18-rc4
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>, Song Liu <song@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220421192132.109954-7-nick.hawkins@hpe.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 2:27 PM Andrew Morton <akpm@linux-foundation.org> wrote:
->
-> From: Andrew Morton <akpm@linux-foundation.org>
-> Subject: mm/nommu.c: provide vmalloc_huge() for CONFIG_MMU=n
+On Thu, Apr 21, 2022 at 02:21:27PM -0500, nick.hawkins@hpe.com wrote:
+> From: Nick Hawkins <nick.hawkins@hpe.com>
+> 
+> Add the hpe gxp watchdog timer binding hpe,gxp-wdt.
+> This will enable support for the HPE GXP Watchdog.
+> 
+> Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
+> 
+> ---
+> v5:
+> * Fixed version log
+> v4:
+> * Made watchdog a child of timer because of same register
+>   area based on review feedback
+> * Simplified the watchdog yaml as it will get information
+>   from parent device
+> v3:
+> * Used proper patchset format.
+> v2:
+> * Converted from txt to yaml
+> ---
+>  .../bindings/watchdog/hpe,gxp-wdt.yaml        | 30 +++++++++++++++++++
+>  1 file changed, 30 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/watchdog/hpe,gxp-wdt.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/watchdog/hpe,gxp-wdt.yaml b/Documentation/devicetree/bindings/watchdog/hpe,gxp-wdt.yaml
+> new file mode 100644
+> index 000000000000..c20da146352f
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/watchdog/hpe,gxp-wdt.yaml
+> @@ -0,0 +1,30 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/watchdog/hpe,gxp-wdt.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: HPE GXP Controlled Watchdog
+> +
+> +allOf:
+> +  - $ref: "watchdog.yaml#"
+> +
+> +maintainers:
+> +  - Nick Hawkins <nick.hawkins@hpe.com>
+> +  - Jean-Marie Verdun <verdun@hpe.com>
+> +
+> +properties:
+> +  compatible:
+> +    const: hpe,gxp-wdt
+> +
+> +required:
+> +  - compatible
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    watchdog0:  watchdog {
+> +      compatible = "hpe,gxp-wdt";
 
-Note, should already be fixed differently (with an alias) by
+How is this h/w controlled? I'm guessing it's part of the timer? If so, 
+you don't need this node. A single node can implement multiple 
+functions.
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0fc74d820a012550be006ba82dd8f1e3fe6fa9f7
-
-although when I looked at the random collection of vmalloc things it
-did make me go "hmm".
-
-It might be a better long-term idea to only implement the very generic
-low-level function in mm/vmalloc.c and mm/nommu.c (ie the
-__vmalloc_node_range() function) and then move all the random wrapper
-functions into mm/util.c.
-
-Because right now we effectively duplicate all those wrapper
-functions, which is kind of ugly.
-
-             Linus
+Rob
