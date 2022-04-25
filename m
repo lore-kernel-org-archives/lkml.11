@@ -2,85 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E6A6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 08:56:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36BBCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 08:57:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239965AbiDYI7q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 04:59:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58458 "EHLO
+        id S240154AbiDYJAX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 05:00:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230087AbiDYI7d (ORCPT
+        with ESMTP id S230087AbiDYJAP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 04:59:33 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC95C13D61
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 01:56:27 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KmzQ66fxwzhYjN;
-        Mon, 25 Apr 2022 16:56:14 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 25 Apr 2022 16:56:26 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 25 Apr
- 2022 16:56:25 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <iommu@lists.linux-foundation.org>
-CC:     <will@kernel.org>, <joro@8bytes.org>, <alyssa@rosenzweig.io>,
-        <sven@svenpeter.dev>
-Subject: [PATCH] iommu/dart: check return value after calling platform_get_resource()
-Date:   Mon, 25 Apr 2022 17:08:26 +0800
-Message-ID: <20220425090826.2532165-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 25 Apr 2022 05:00:15 -0400
+Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBACC63D8;
+        Mon, 25 Apr 2022 01:57:07 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id 396B13200E79;
+        Mon, 25 Apr 2022 04:57:03 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Mon, 25 Apr 2022 04:57:04 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm1; t=1650877022; x=1650963422; bh=jjab8bGcXC
+        tNVAOVMvXLVzO2xI8lhzCj4Yq0VclOquo=; b=lGr9po7cUVaHSjl7HwN/6wVH9e
+        L7sgZzoWcLsRs2HzCQzhVruD8giJJgAEhYm0bqe/l3F2tpqFXksw/VdPOiSXFkVc
+        F1bRiNMbMEi1XV+qP915FDoBbBvjZMEaGDd+2QqyNmt9jmPzpnV7YCicVoZJmDyn
+        8jRhQcMlKFIQuTx0yp04XFZs69tC5Mp2HTQNXepOicVUtnpLHyZq4yj7ak9ao/J6
+        T4dEaeUz+C2YlnHjqknBMKYibPg2mqqVFhLHQCgZhKVMQdYuIarRKvDNRuMIX129
+        f9jsbJvXW+TJqq3kIf2EQlkrysmcz/yt9FhnQbw5vqAePqGqLtVbF5gG494Q==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1650877022; x=
+        1650963422; bh=jjab8bGcXCtNVAOVMvXLVzO2xI8lhzCj4Yq0VclOquo=; b=l
+        LcpYECNCjrDzsL0CbPv+qi+rW1LX2CnBc1fKIHVh2VURCus8BeUfrQ/ILBbbdpcF
+        MtB+6NMc7ZdOudAGj12rEJ8VDnDFghXXTu11SVPWW8VaA2vO0BlMoyEo27n5OTEu
+        FuMGJrzGQUOcCC5D+ydo6aIs9fl8f+mRynBRC2FqtDPjnkzezqa1jVXeKWXTfoqN
+        4qx9qdPSv6jyEwTRgVC0BHVdbCRxjDxL3EyxH1Y1hBGIuH83h6ldZwWgIRsD6vTs
+        O82KGK7PKSw3Kl8XC3Xz/RoyK88CMTXP91Dlm/1HyWBpVnTrt2edgSq/9Jn93SFc
+        npKPWcEd+PjjhuKU5VDwg==
+X-ME-Sender: <xms:XmJmYlHeUZu3LGPPmk40s5RLcoZ7W7IajN0ohWLklNe6zIXKiajhuQ>
+    <xme:XmJmYqWKOii65KNE4vg_yI-_3CjtB4g3_J7--r_WFrYo59ZbPcuXx4wZID2HHrp5O
+    wOBB2SSeV0Luw>
+X-ME-Received: <xmr:XmJmYnKe-ZaiLG54i4xxDlLQO0N3On5zvmv_1k-aLMCRwZn9vfPAj8flDDs_Ax_w8okhC5Azwtxvw1pIbo6N_ev_XrhtrF9S>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedruddugddtkecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgvghcu
+    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeehgedvve
+    dvleejuefgtdduudfhkeeltdeihfevjeekjeeuhfdtueefhffgheekteenucevlhhushht
+    vghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhh
+    drtghomh
+X-ME-Proxy: <xmx:XmJmYrFOnr64ORQ5FTauihsRBkrKmy-qQjRBbfu5g1U36wRSTXqCDA>
+    <xmx:XmJmYrVLiqmAJzPm_ij1lQ3X8w4Ed702Ec-ZFiZSOP-ZKU4ke-PZaw>
+    <xmx:XmJmYmN2qbG8WTpyai_Y4vKUCIlp5XuCUp5eBcGolMDdNCnzI_JBLA>
+    <xmx:XmJmYvkmg_ZQbVQhY95LS2OzroLOwwlnxDDGn7ot_hXOxNK-J10xeA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 25 Apr 2022 04:57:01 -0400 (EDT)
+Date:   Mon, 25 Apr 2022 10:56:59 +0200
+From:   Greg KH <greg@kroah.com>
+To:     Akilesh Kailash <akailash@google.com>
+Cc:     stable@vger.kernel.org, Jiazi Li <lijiazi@xiaomi.com>,
+        kernel-team@android.com, Jiazi Li <jqqlijiazi@gmail.com>,
+        Mike Snitzer <snitzer@redhat.com>,
+        Alasdair Kergon <agk@redhat.com>, dm-devel@redhat.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dm: fix mempool NULL pointer race when completing IO
+Message-ID: <YmZiW0TUSjxrEGGZ@kroah.com>
+References: <20220425082812.780445-1-akailash@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220425082812.780445-1-akailash@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It will cause null-ptr-deref in resource_size(), if platform_get_resource()
-returns NULL, move calling resource_size() after devm_ioremap_resource() that
-will check 'res' to avoid null-ptr-deref.
-And use devm_platform_get_and_ioremap_resource() to simplify code.
+On Mon, Apr 25, 2022 at 08:28:12AM +0000, Akilesh Kailash wrote:
+> From: Jiazi Li <jqqlijiazi@gmail.com>
+> 
+> commit d208b89401e073de986dc891037c5a668f5d5d95 upstream.
+> 
+> This is a backport of the upstream patch to 5.10.y stable branch.
 
-Fixes: 46d1fb072e76 ("iommu/dart: Add DART iommu driver")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/iommu/apple-dart.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+Now queued up, thanks.
 
-diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-index decafb07ad08..15b77f16cfa3 100644
---- a/drivers/iommu/apple-dart.c
-+++ b/drivers/iommu/apple-dart.c
-@@ -859,16 +859,15 @@ static int apple_dart_probe(struct platform_device *pdev)
- 	dart->dev = dev;
- 	spin_lock_init(&dart->lock);
- 
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	dart->regs = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
-+	if (IS_ERR(dart->regs))
-+		return PTR_ERR(dart->regs);
-+
- 	if (resource_size(res) < 0x4000) {
- 		dev_err(dev, "MMIO region too small (%pr)\n", res);
- 		return -EINVAL;
- 	}
- 
--	dart->regs = devm_ioremap_resource(dev, res);
--	if (IS_ERR(dart->regs))
--		return PTR_ERR(dart->regs);
--
- 	dart->irq = platform_get_irq(pdev, 0);
- 	if (dart->irq < 0)
- 		return -ENODEV;
--- 
-2.25.1
-
+greg k-h
