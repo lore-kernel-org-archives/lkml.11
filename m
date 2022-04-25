@@ -2,112 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37404C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:56:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5434BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:56:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239754AbiDYQ7B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 12:59:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43924 "EHLO
+        id S243661AbiDYQ7W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 12:59:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231520AbiDYQ7A (ORCPT
+        with ESMTP id S239122AbiDYQ7U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 12:59:00 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0116D15727
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 09:55:55 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id iq2-20020a17090afb4200b001d93cf33ae9so504712pjb.5
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 09:55:55 -0700 (PDT)
+        Mon, 25 Apr 2022 12:59:20 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D6D913F9B
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 09:56:15 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id p18so14024159edr.7
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 09:56:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=fHj0AXFpbHX+x5jOd8SRt9e16ihhUng0D/feKZZnpv8=;
-        b=FEvSxjhbaiBv88L8kOktym3iC8R8O3qQefPdoXOLlesqLA7PHFDH4Ly1WACA+rAmHU
-         WFYWAsFAgO9K4ek0AIY1Py4MA2xes8OeKQTniMnqopB4OUBWhSYZyycRYIIrrO66eF+q
-         TezSS9rHfXn8M6biPzALcA8etR6djyTk3IYCFtRAc6AtM9o311inxeF5QVFsv9YOJdtQ
-         Iav/UtTiNPUp3qqSJW9SDbHTJ8n7Qn1kEQ7qIAsed4W8ZdZMYBKJuCxFSbqn3W4cofC3
-         vxKrxlTxfU0xkOltUvgpDhUIfB2B58Ap/oM5hMcHQAVk2ZVy/hup4ude5BbsD80l9n+2
-         sAUA==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YXo+ObBRhEePToAUIshvslaAhUHCrrCP+3VFCVvt/4I=;
+        b=Rgajd143kZY1K05Q9IPBzZEAvOdKl5fnxOqPjswV36E0PnneOrdTDzlLXfk6kEff2p
+         ZleTcs3nOA0IxBGmk1VYNU3WpY+ADRDhClHGbKOIHkIpq3ZO8o2kLyocP4GGHG9F4YKq
+         dQz+eUcxWYQmasGuiAGMdUiluNB71N08enuC4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=fHj0AXFpbHX+x5jOd8SRt9e16ihhUng0D/feKZZnpv8=;
-        b=C774qNL1wSyXXfBR9riEAUbygMlAwQ05EnADJQdJmPPHn5jrw9QAHHhMXeVQNJ33gD
-         1NLxud0w0jjPIgusdNd/WhgOdr55Az/nf2M5ykdxLJ2BgwiTVun7i4YAQSuTJqCudZXe
-         3QVGzuv9od73mgIfPkNi+lXCb55TBAPoXcfqMb/uH1g2Ij+FhqJfQ+0ELw8YDQpNk3l4
-         gOF2Y7UZxOGp9t949G05PkdrckmalF1GhvcC+B6URt2ZZKycDe1YcJMDnXfZfycR0LsU
-         5RUcmFKj9zGZEKBxg6Y3GyyjZprixzog1KIcuhzl+VTBOD8+XJTIi2+yF+LVyCPqEr9g
-         IPVw==
-X-Gm-Message-State: AOAM533QNp3bZ5hcPFbGQA6cPgMfT/wbNbPkViaFAPurRt2yNL6MawpG
-        vY1l0wQZ/XeXwRcJIH5PGQ8BhJ86WEboZg==
-X-Google-Smtp-Source: ABdhPJy8UDRi8nvlNJ/DZUcck1tp5UrommAF25tWePBOj8Foc0cM4QAxsDb5oZ1qiqmpv2T1TVm1OQ==
-X-Received: by 2002:a17:90b:255:b0:1cf:39e7:a7aa with SMTP id fz21-20020a17090b025500b001cf39e7a7aamr22087982pjb.137.1650905755524;
-        Mon, 25 Apr 2022 09:55:55 -0700 (PDT)
-Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
-        by smtp.gmail.com with ESMTPSA id d20-20020a056a00199400b005060849909esm14038460pfl.176.2022.04.25.09.55.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 09:55:54 -0700 (PDT)
-Date:   Mon, 25 Apr 2022 10:55:52 -0600
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-To:     Hangyu Hua <hbh25y@gmail.com>
-Cc:     bjorn.andersson@linaro.org, arnaud.pouliquen@foss.st.com,
-        linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] rpmsg: virtio: fix possible double free in rpmsg_probe()
-Message-ID: <20220425165552.GB1917807@p14s>
-References: <20220418093144.40859-1-hbh25y@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YXo+ObBRhEePToAUIshvslaAhUHCrrCP+3VFCVvt/4I=;
+        b=t8obu0WXZqpr5vtQo1AYNRbccmoenDaaKDgFhXnCW3esRqqhwk8V0pxeOroRIuyJlw
+         OKpc/u9VP5aYgIcwD/sPO/YzlEqJNpi9zHvmd7gjcEJRpmunYUo24g7bWUT2ur2sCIL7
+         Qn68zHJsxYj6caaqbQhhVVJW3uZXW9IVzo6+VsdiRfcWmZyCDpgbQhkVUmM/mCwZTg3+
+         1HQ/PIH6lMrhbLObuIKlBWWKnmTPivcIuv7sYv5B3SDJsc4d3kcfkKWPS8AF4iJMLjDX
+         yIUB0mQUrWU+ipirss5ABINlz24TICCP7D/cZqOu/6SNz9YfF37DvEiABNyXDNwSvlwn
+         L2mA==
+X-Gm-Message-State: AOAM533ag1i7xPcfBW7mG8RwhlX70sztQMIV/2gLRVsxNr7C+S+fsXsd
+        0mmHb19xxS/Ha+3uDeXz//GXGfr49nNjEQ==
+X-Google-Smtp-Source: ABdhPJwDyh8faxEETNVX0YxxDDUaVjS4pxBpZ7/Bat0FIIqoimQchy7Ufq7LHHKR0k61eKjDB/yBYA==
+X-Received: by 2002:a05:6402:1e89:b0:425:e3fa:f266 with SMTP id f9-20020a0564021e8900b00425e3faf266mr7337544edf.20.1650905774186;
+        Mon, 25 Apr 2022 09:56:14 -0700 (PDT)
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com. [209.85.221.48])
+        by smtp.gmail.com with ESMTPSA id k7-20020a17090666c700b006e8688d5fcbsm3797310ejp.135.2022.04.25.09.56.12
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 Apr 2022 09:56:13 -0700 (PDT)
+Received: by mail-wr1-f48.google.com with SMTP id j15so8518703wrb.2
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 09:56:12 -0700 (PDT)
+X-Received: by 2002:adf:f50d:0:b0:20a:e096:ef with SMTP id q13-20020adff50d000000b0020ae09600efmr1827132wro.679.1650905772336;
+ Mon, 25 Apr 2022 09:56:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220418093144.40859-1-hbh25y@gmail.com>
+References: <1650621734-10297-1-git-send-email-quic_srivasam@quicinc.com>
+In-Reply-To: <1650621734-10297-1-git-send-email-quic_srivasam@quicinc.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Mon, 25 Apr 2022 09:56:00 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=VoKE7DwoqSffXCbmx6MvOUEs7LbHiYtaR42BkHAei0dQ@mail.gmail.com>
+Message-ID: <CAD=FV=VoKE7DwoqSffXCbmx6MvOUEs7LbHiYtaR42BkHAei0dQ@mail.gmail.com>
+Subject: Re: [PATCH v2] arm64: dts: qcom: sc7280-qcard: Add ldo_l17b regulator node
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        quic_rohkumar@quicinc.com,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Judy Hsiao <judyhsiao@chromium.org>,
+        Rajendra Nayak <quic_rjendra@quicinc.com>,
+        Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 18, 2022 at 05:31:44PM +0800, Hangyu Hua wrote:
-> vch will be free in virtio_rpmsg_release_device() when
-> rpmsg_ns_register_device() fails. There is no need to call kfree() again.
-> 
-> Fix this by changing error path from free_vch to free_ctrldev.
-> 
-> Fixes: c486682ae1e2 ("rpmsg: virtio: Register the rpmsg_char device")
-> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Hi,
+
+On Fri, Apr 22, 2022 at 3:02 AM Srinivasa Rao Mandadapu
+<quic_srivasam@quicinc.com> wrote:
+>
+> Add pm7325 ldo_l17b regulator, which is required for
+> wcd codec vdd buck supply on sc7280-qcard board.
+>
+> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
 > ---
->  drivers/rpmsg/virtio_rpmsg_bus.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/drivers/rpmsg/virtio_rpmsg_bus.c b/drivers/rpmsg/virtio_rpmsg_bus.c
-> index 3ede25b1f2e4..603233f0686e 100644
-> --- a/drivers/rpmsg/virtio_rpmsg_bus.c
-> +++ b/drivers/rpmsg/virtio_rpmsg_bus.c
-> @@ -973,7 +973,7 @@ static int rpmsg_probe(struct virtio_device *vdev)
->  
->  		err = rpmsg_ns_register_device(rpdev_ns);
->  		if (err)
-> -			goto free_vch;
+>  arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi | 6 ++++++
+>  1 file changed, 6 insertions(+)
 
-Please add a comment that highlights where 'vch' will be free'd to avoid
-receiving patches that will introduce another kfree().  Same for your other
-patch.
-
-In the next revision please use a cover letter and add Arnaud's patches to it.
-
-Thanks,
-Mathieu
-
-> +			goto free_ctrldev;
->  	}
->  
->  	/*
-> @@ -997,8 +997,6 @@ static int rpmsg_probe(struct virtio_device *vdev)
->  
->  	return 0;
->  
-> -free_vch:
-> -	kfree(vch);
->  free_ctrldev:
->  	rpmsg_virtio_del_ctrl_dev(rpdev_ctrl);
->  free_coherent:
-> -- 
-> 2.25.1
-> 
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
