@@ -2,140 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE966C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 15:56:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91560C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 15:57:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243120AbiDYP7k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 11:59:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41150 "EHLO
+        id S231685AbiDYQAL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 12:00:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243122AbiDYP7c (ORCPT
+        with ESMTP id S237163AbiDYP77 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 11:59:32 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC73711483C;
-        Mon, 25 Apr 2022 08:56:22 -0700 (PDT)
-Date:   Mon, 25 Apr 2022 15:56:19 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650902180;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=BvEo3pIPmkeqJjZJjnqzOY4nYV5eWsz50+K81wzXkOk=;
-        b=dWROzVM6FwtJUAsAsqTW+fKPmDnOPiiD4XLt6KZL3S4ztjXar4ZLTDQHoEYcvB93gPBeDc
-        Wl4tYszU2gN2JWjNLg2H6se6K/N/vyLoI2mRe0ONQxRY52y4iUBlIYnrAWSlIWDJyj7tbo
-        6HPJht0uggQayfHZ70gxdkucsUhbq8wxpz28IVycNktl7zaIQEFAk2Zs3IAQS55qgA7qJD
-        d8VlZPGKeSy8IUE7ZmWt+GNgg9ADltg/g+GjM6JR95TxzidialT+Ftd/lop7lWcIhiYZ89
-        U02lti50OtH72iMMGpAJ5rbtLqnaZ4wjuA/i8oBTxVqBfSJAJLGZ3qF5I5FgnA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650902180;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=BvEo3pIPmkeqJjZJjnqzOY4nYV5eWsz50+K81wzXkOk=;
-        b=4cEnn3tZowq7JmYeLoPtla68lcpBgWx51yQAkaUYc01pnfplTl+UunM8sAyT4lmAmksBUv
-        fQftZ9AJJVyncWDA==
-From:   "tip-bot2 for Carlos Bilbao" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: ras/core] x86/mce: Add messages for panic errors in AMD's MCE grading
-Cc:     Carlos Bilbao <carlos.bilbao@amd.com>,
-        Borislav Petkov <bp@suse.de>,
-        Yazen Ghannam <yazen.ghannam@amd.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220405183212.354606-3-carlos.bilbao@amd.com>
-References: <20220405183212.354606-3-carlos.bilbao@amd.com>
+        Mon, 25 Apr 2022 11:59:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8287C1183B8;
+        Mon, 25 Apr 2022 08:56:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1EFAE61248;
+        Mon, 25 Apr 2022 15:56:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1B86C385A4;
+        Mon, 25 Apr 2022 15:56:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650902208;
+        bh=aSk7K/v4xG31FFuzTn+bPxMOX3ZjI4TnLihEq1sTN0Q=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=MKGRLbhavBVnUb2+uqG0aR5DX3lviiqjDPzfFkIoG+wYCp0AQiRsqHhxuh/UU83zp
+         8GXf1ejsZDnbL3SfOKBF2zu3HgK87cITu/rf3ucb+erK3NTqkGH9lBWdMOwCZ2pLUr
+         NEqj5UhTaVQqItuvKZ4EkvyEkaqAhswvqGzIecAZUHKkEUJVXebewSdAts9rXKcepN
+         xGeMp7SiNSzeDQ0g2WG0yyl/adhIorwF67j3IiO4Mr47eezrYXUSXFrTKFgnbjfLBj
+         A5wQyun9lfTe6h4ZaIN+aUfoho3V6AHeaxl/vdNPDfz9PkphdcV8whsOg2wh/ZhABU
+         GymcqbvJ0IPYw==
+Message-ID: <353023ba-d506-5d45-be68-df2025074ed6@kernel.org>
+Date:   Mon, 25 Apr 2022 17:56:32 +0200
 MIME-Version: 1.0
-Message-ID: <165090217952.4207.18288395575874990441.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC 1/1] drivers/dma/*: replace tasklets with workqueue
+Content-Language: en-US
+To:     Allen Pais <apais@linux.microsoft.com>,
+        olivier.dautricourt@orolia.com, sr@denx.de, vkoul@kernel.org
+Cc:     keescook@chromium.org, linux-hardening@vger.kernel.org,
+        ludovic.desroches@microchip.com, tudor.ambarus@microchip.com,
+        f.fainelli@gmail.com, rjui@broadcom.com, sbranden@broadcom.com,
+        bcm-kernel-feedback-list@broadcom.com, nsaenz@kernel.org,
+        paul@crapouillou.net, Eugeniy.Paltsev@synopsys.com,
+        gustavo.pimentel@synopsys.com, vireshk@kernel.org,
+        andriy.shevchenko@linux.intel.com, leoyang.li@nxp.com,
+        zw@zh-kernel.org, wangzhou1@hisilicon.com, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, sean.wang@mediatek.com,
+        matthias.bgg@gmail.com, afaerber@suse.de, mani@kernel.org,
+        logang@deltatee.com, sanju.mehta@amd.com, daniel@zonque.org,
+        haojian.zhuang@gmail.com, robert.jarzmik@free.fr,
+        agross@kernel.org, bjorn.andersson@linaro.org,
+        krzysztof.kozlowski@linaro.org, green.wan@sifive.com,
+        orsonzhai@gmail.com, baolin.wang7@gmail.com, zhang.lyra@gmail.com,
+        patrice.chotard@foss.st.com, linus.walleij@linaro.org,
+        wens@csie.org, jernej.skrabec@gmail.com, samuel@sholland.org,
+        dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220419211658.11403-1-apais@linux.microsoft.com>
+ <20220419211658.11403-2-apais@linux.microsoft.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <20220419211658.11403-2-apais@linux.microsoft.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the ras/core branch of tip:
+On 19/04/2022 23:16, Allen Pais wrote:
+> The tasklet is an old API which will be deprecated, workqueue API
+> cab be used instead of them.
+> 
 
-Commit-ID:     fa619f5156cf1ee3773edc6d756be262c9ef35de
-Gitweb:        https://git.kernel.org/tip/fa619f5156cf1ee3773edc6d756be262c9ef35de
-Author:        Carlos Bilbao <carlos.bilbao@amd.com>
-AuthorDate:    Tue, 05 Apr 2022 13:32:14 -05:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Mon, 25 Apr 2022 12:40:48 +02:00
+Thank you for your patch. There is something to discuss/improve.
 
-x86/mce: Add messages for panic errors in AMD's MCE grading
+> This patch replaces the tasklet usage in drivers/dma/* with a
+> simple work.
 
-When a machine error is graded as PANIC by the AMD grading logic, the
-MCE handler calls mce_panic(). The notification chain does not come
-into effect so the AMD EDAC driver does not decode the errors. In these
-cases, the messages displayed to the user are more cryptic and miss
-information that might be relevant, like the context in which the error
-took place.
+Minor nits:
 
-Add messages to the grading logic for machine errors so that it is clear
-what error it was.
+1. Don't use "this patch".
+https://elixir.bootlin.com/linux/v5.17.1/source/Documentation/process/submitting-patches.rst#L95
+2. Use subject prefix matching subsystem (git log --oneline)
 
-  [ bp: Massage commit message. ]
+> 
+> Github: https://github.com/KSPP/linux/issues/94
 
-Signed-off-by: Carlos Bilbao <carlos.bilbao@amd.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Yazen Ghannam <yazen.ghannam@amd.com>
-Link: https://lore.kernel.org/r/20220405183212.354606-3-carlos.bilbao@amd.com
----
- arch/x86/kernel/cpu/mce/severity.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+3. No external references to some issue management systems, change-ids
+etc. Lore link could work, but it's not relevant here, I guess.
 
-diff --git a/arch/x86/kernel/cpu/mce/severity.c b/arch/x86/kernel/cpu/mce/severity.c
-index d842148..00483d1 100644
---- a/arch/x86/kernel/cpu/mce/severity.c
-+++ b/arch/x86/kernel/cpu/mce/severity.c
-@@ -304,6 +304,7 @@ static noinstr int error_context(struct mce *m, struct pt_regs *regs)
- /* See AMD PPR(s) section Machine Check Error Handling. */
- static noinstr int mce_severity_amd(struct mce *m, struct pt_regs *regs, char **msg, bool is_excp)
- {
-+	char *panic_msg = NULL;
- 	int ret;
- 
- 	/*
-@@ -314,6 +315,7 @@ static noinstr int mce_severity_amd(struct mce *m, struct pt_regs *regs, char **
- 
- 	/* Processor Context Corrupt, no need to fumble too much, die! */
- 	if (m->status & MCI_STATUS_PCC) {
-+		panic_msg = "Processor Context Corrupt";
- 		ret = MCE_PANIC_SEVERITY;
- 		goto out;
- 	}
-@@ -337,19 +339,26 @@ static noinstr int mce_severity_amd(struct mce *m, struct pt_regs *regs, char **
- 	 * system will not be able to recover, panic.
- 	 */
- 	if ((m->status & MCI_STATUS_OVER) && !mce_flags.overflow_recov) {
-+		panic_msg = "Overflowed uncorrected error without MCA Overflow Recovery";
- 		ret = MCE_PANIC_SEVERITY;
- 		goto out;
- 	}
- 
- 	if (!mce_flags.succor) {
-+		panic_msg = "Uncorrected error without MCA Recovery";
- 		ret = MCE_PANIC_SEVERITY;
- 		goto out;
- 	}
- 
--	if (error_context(m, regs) == IN_KERNEL)
-+	if (error_context(m, regs) == IN_KERNEL) {
-+		panic_msg = "Uncorrected unrecoverable error in kernel context";
- 		ret = MCE_PANIC_SEVERITY;
-+	}
- 
- out:
-+	if (msg && panic_msg)
-+		*msg = panic_msg;
-+
- 	return ret;
- }
- 
+Best regards,
+Krzysztof
