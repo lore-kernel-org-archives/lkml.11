@@ -2,179 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AC3BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 14:35:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 315E0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 14:35:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238704AbiDYOi3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 10:38:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36618 "EHLO
+        id S231397AbiDYOi5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 10:38:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236898AbiDYOiE (ORCPT
+        with ESMTP id S242465AbiDYOix (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 10:38:04 -0400
-Received: from mail.schwermer.no (mail.schwermer.no [49.12.228.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D35D35255;
-        Mon, 25 Apr 2022 07:34:59 -0700 (PDT)
-X-Virus-Scanned: Yes
-From:   sven@svenschwermer.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=svenschwermer.de;
-        s=mail; t=1650897296;
-        bh=bCqpzZ7ENFdi2f0fLeph5m6zYDRJ0s1xvrInntYSd8w=;
-        h=From:To:Cc:Subject;
-        b=Uzu32iGLmRoJgIKniK9obUXGrGUH5nQjNTpMXM1KDCFtYeCu2HLk/3a1deAKb/1hd
-         aQ26gDuGquv6yoKqzSnsZYxcTPGYtVIHq2QSJ8WXMdVZTP8LszLoMf7q0UAwy2hii1
-         Idh1Kzfi6sn1LTCmj5B4M05jBm7NmgwJxbPr8Rr4+670AjiqUxb4F23F8i4p3uIplJ
-         p88M9PiamyIfrU90E15Xqucn/9FEcInb2p4ZhsfsuS3dz6S7MYcxsusr9i7PhGv1u6
-         eKGSVanRBg8+7/LgC23LZO8h5UxAsObDkx/ZPDUi4VExDzuiG0UdCwTXW6de/1sUpB
-         hLofhdaNhXPWw==
-To:     linux-usb@vger.kernel.org
-Cc:     Sven Schwermer <sven.schwermer@disruptive-technologies.com>,
-        linux-kernel@vger.kernel.org, johan@kernel.org
-Subject: [PATCH v3 1/2] usb: serial: option: Add Fibocom L610 modem
-Date:   Mon, 25 Apr 2022 16:34:49 +0200
-Message-Id: <20220425143450.44886-1-sven@svenschwermer.de>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 25 Apr 2022 10:38:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 993C813EA1
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 07:35:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650897348;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=llh5N9erjou2WpvVGaytLaZbplT+rXm40NCMpXmjhzw=;
+        b=Sjad16SK/xLlTSrW7Eu1gbcfNFxJc4c3h17sYb3nE/Wu0GE/6eGY9mD8PkL+OjfmDewBmW
+        C0kmapgJhgVmYyi4ALP30bXU+8tMAn2mjjB+HFgErR7ohBpmizTHtDUEeIovH3rTqhLva3
+        4/nPOVURwizqcwAXNU2wTWZr40yuRGU=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-253-vFNx0tuZPzW0a37m-9SEtg-1; Mon, 25 Apr 2022 10:35:44 -0400
+X-MC-Unique: vFNx0tuZPzW0a37m-9SEtg-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 84665811E84;
+        Mon, 25 Apr 2022 14:35:43 +0000 (UTC)
+Received: from dhcp-27-174.brq.redhat.com (unknown [10.40.193.11])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 881D0400F8F6;
+        Mon, 25 Apr 2022 14:35:40 +0000 (UTC)
+Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
+        oleg@redhat.com; Mon, 25 Apr 2022 16:35:41 +0200 (CEST)
+Date:   Mon, 25 Apr 2022 16:35:37 +0200
+From:   Oleg Nesterov <oleg@redhat.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     rjw@rjwysocki.net, mingo@kernel.org, vincent.guittot@linaro.org,
+        dietmar.eggemann@arm.com, rostedt@goodmis.org, mgorman@suse.de,
+        ebiederm@xmission.com, bigeasy@linutronix.de,
+        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+        tj@kernel.org, linux-pm@vger.kernel.org
+Subject: Re: [PATCH v2 2/5] sched,ptrace: Fix ptrace_check_attach() vs
+ PREEMPT_RT
+Message-ID: <20220425143537.GA12412@redhat.com>
+References: <20220421150248.667412396@infradead.org>
+ <20220421150654.817117821@infradead.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220421150654.817117821@infradead.org>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
+On 04/21, Peter Zijlstra wrote:
+>
+> +static void clear_traced_quiesce(void)
+> +{
+> +	spin_lock_irq(&current->sighand->siglock);
+> +	WARN_ON_ONCE(!(current->jobctl & JOBCTL_TRACED_QUIESCE));
 
-The L610 modem has 3 USB configurations that are configurable via the AT
-command AT+GTUSBMODE={31,32,33} which make the modem enumerate with the
-following interfaces, respectively:
+This WARN_ON_ONCE() doesn't look right, the task can be killed right
+after ptrace_stop() sets JOBCTL_TRACED | JOBCTL_TRACED_QUIESCE and
+drops siglock.
 
-31: Modem + NV + MOS + Diag + LOG + AT + AT
-32: ECM + Modem + NV + MOS + Diag + LOG + AT + AT
-33: RNDIS + Modem + NV + MOS + Diag + LOG + AT + AT
+> @@ -2290,14 +2303,26 @@ static int ptrace_stop(int exit_code, in
+>  		/*
+>  		 * Don't want to allow preemption here, because
+>  		 * sys_ptrace() needs this task to be inactive.
+> -		 *
+> -		 * XXX: implement read_unlock_no_resched().
+>  		 */
+>  		preempt_disable();
+>  		read_unlock(&tasklist_lock);
+> -		cgroup_enter_frozen();
+> +		cgroup_enter_frozen(); // XXX broken on PREEMPT_RT !!!
+> +
+> +		/*
+> +		 * JOBCTL_TRACE_QUIESCE bridges the gap between
+> +		 * set_current_state(TASK_TRACED) above and schedule() below.
+> +		 * There must not be any blocking (specifically anything that
+> +		 * touched ->saved_state on PREEMPT_RT) between here and
+> +		 * schedule().
+> +		 *
+> +		 * ptrace_check_attach() relies on this with its
+> +		 * wait_task_inactive() usage.
+> +		 */
+> +		clear_traced_quiesce();
 
-A detailed description of the USB configuration for each mode follows:
+Well, I think it should be called earlier under tasklist_lock,
+before preempt_disable() above.
 
-+GTUSBMODE: 31
---------------
-T:  Bus=03 Lev=01 Prnt=01 Port=06 Cnt=04 Dev#=124 Spd=480  MxCh= 0
-D:  Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
-P:  Vendor=1782 ProdID=4d10 Rev= 0.00
-S:  Manufacturer=FIBOCOM
-S:  Product=L610
-C:* #Ifs= 7 Cfg#= 1 Atr=e0 MxPwr=400mA
-I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 1 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 2 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=83(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 4 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=85(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=05(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=06(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 6 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=87(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=07(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+We need tasklist_lock to protect ->parent, debugger can be killed
+and go away right after read_unlock(&tasklist_lock).
 
-+GTUSBMODE: 32
---------------
-T:  Bus=03 Lev=01 Prnt=01 Port=06 Cnt=04 Dev#=122 Spd=480  MxCh= 0
-D:  Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
-P:  Vendor=1782 ProdID=4d11 Rev= 0.00
-S:  Manufacturer=FIBOCOM
-S:  Product=L610
-C:* #Ifs= 9 Cfg#= 1 Atr=e0 MxPwr=400mA
-A:  FirstIf#= 0 IfCount= 2 Cls=02(comm.) Sub=06 Prot=00
-I:* If#= 0 Alt= 0 #EPs= 1 Cls=02(comm.) Sub=06 Prot=00 Driver=cdc_ether
-E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=32ms
-I:  If#= 1 Alt= 0 #EPs= 0 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
-I:* If#= 1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
-E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 2 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=83(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 4 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=85(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=05(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 6 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=87(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=06(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 7 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=88(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=07(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 8 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=89(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=08(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+Still trying to convince myself everything is right with
+JOBCTL_STOPPED/TRACED ...
 
-+GTUSBMODE: 33
---------------
-T:  Bus=03 Lev=01 Prnt=01 Port=06 Cnt=04 Dev#=126 Spd=480  MxCh= 0
-D:  Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
-P:  Vendor=1782 ProdID=4d11 Rev= 0.00
-S:  Manufacturer=FIBOCOM
-S:  Product=L610
-C:* #Ifs= 9 Cfg#= 1 Atr=e0 MxPwr=400mA
-A:  FirstIf#= 0 IfCount= 2 Cls=e0(wlcon) Sub=01 Prot=03
-I:* If#= 0 Alt= 0 #EPs= 1 Cls=e0(wlcon) Sub=01 Prot=03 Driver=rndis_host
-E:  Ad=82(I) Atr=03(Int.) MxPS=   8 Ivl=4096ms
-I:* If#= 1 Alt= 0 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=rndis_host
-E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 2 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=83(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 4 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=85(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=05(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 6 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=87(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=06(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 7 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=88(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=07(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 8 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=89(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=08(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-
-Signed-off-by: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
----
-V2 -> V3: Add this changelog
-V1 -> V2: Use USB_DEVICE_INTERFACE_CLASS, add comments
-
- drivers/usb/serial/option.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/usb/serial/option.c b/drivers/usb/serial/option.c
-index e7755d9cfc61..e0af45e3a6f7 100644
---- a/drivers/usb/serial/option.c
-+++ b/drivers/usb/serial/option.c
-@@ -2111,6 +2111,8 @@ static const struct usb_device_id option_ids[] = {
- 	  .driver_info = RSVD(3) },
- 	{ USB_DEVICE(0x1508, 0x1001),						/* Fibocom NL668 (IOT version) */
- 	  .driver_info = RSVD(4) | RSVD(5) | RSVD(6) },
-+	{ USB_DEVICE(0x1782, 0x4d10) },						/* Fibocom L610 (AT mode) */
-+	{ USB_DEVICE_INTERFACE_CLASS(0x1782, 0x4d11, 0xff) },			/* Fibocom L610 (ECM/RNDIS mode) */
- 	{ USB_DEVICE(0x2cb7, 0x0104),						/* Fibocom NL678 series */
- 	  .driver_info = RSVD(4) | RSVD(5) },
- 	{ USB_DEVICE_INTERFACE_CLASS(0x2cb7, 0x0105, 0xff),			/* Fibocom NL678 series */
--- 
-2.36.0
+Oleg.
 
