@@ -2,77 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 411D6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 11:21:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7082FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 11:30:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237218AbiDYLYK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 07:24:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41856 "EHLO
+        id S237347AbiDYLdE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 07:33:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237124AbiDYLX7 (ORCPT
+        with ESMTP id S238443AbiDYLci (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 07:23:59 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0EA0C8AAA
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 04:20:55 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kn2cp6cxBzhYj8;
-        Mon, 25 Apr 2022 19:20:42 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
+        Mon, 25 Apr 2022 07:32:38 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5FBE636B
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 04:29:33 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kn2ph3llTzhYjF;
+        Mon, 25 Apr 2022 19:29:16 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 25 Apr 2022 19:29:32 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 25 Apr
- 2022 19:20:54 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>
-CC:     <ying.huang@intel.com>, <hch@infradead.org>, <hannes@cmpxchg.org>,
-        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        <linmiaohe@huawei.com>
-Subject: [PATCH v3] mm/vmscan: take min_slab_pages into account when try to call shrink_node
-Date:   Mon, 25 Apr 2022 19:21:18 +0800
-Message-ID: <20220425112118.20924-1-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
+ 2022 19:29:31 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <iommu@lists.linux-foundation.org>,
+        <linux-arm-kernel@lists.infradead.org>
+CC:     <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>
+Subject: [PATCH] iommu/arm-smmu: fix possible null-ptr-deref in arm_smmu_device_probe()
+Date:   Mon, 25 Apr 2022 19:41:36 +0800
+Message-ID: <20220425114136.2649310-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500002.china.huawei.com (7.192.104.244)
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit 6b4f7799c6a5 ("mm: vmscan: invoke slab shrinkers from
-shrink_zone()"), slab reclaim and lru page reclaim are done together
-in the shrink_node. So we should take min_slab_pages into account
-when try to call shrink_node.
+It will cause null-ptr-deref when using 'res', if platform_get_resource()
+returns NULL, so move using 'res' after devm_ioremap_resource() that
+will check it to avoid null-ptr-deref.
+And use devm_platform_get_and_ioremap_resource() to simplify code.
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Cc: Huang Ying <ying.huang@intel.com>
-Cc: Christoph Hellwig <hch@infradead.org>
-Cc: Johannes Weiner <hannes@cmpxchg.org>
+Fixes: 9648cbc9625b ("iommu/arm-smmu: Make use of the iommu_register interface")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
-v3:
-  This patch is pending verifying. Split it out to make it easier
-  to move forward.
----
- mm/vmscan.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/iommu/arm/arm-smmu/arm-smmu.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/mm/vmscan.c b/mm/vmscan.c
-index a2752e8fc879..1049f5324765 100644
---- a/mm/vmscan.c
-+++ b/mm/vmscan.c
-@@ -4718,7 +4718,8 @@ static int __node_reclaim(struct pglist_data *pgdat, gfp_t gfp_mask, unsigned in
- 	noreclaim_flag = memalloc_noreclaim_save();
- 	set_task_reclaim_state(p, &sc.reclaim_state);
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+index 568cce590ccc..52b71f6aee3f 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+@@ -2092,11 +2092,10 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 	if (err)
+ 		return err;
  
--	if (node_pagecache_reclaimable(pgdat) > pgdat->min_unmapped_pages) {
-+	if (node_pagecache_reclaimable(pgdat) > pgdat->min_unmapped_pages ||
-+	    node_page_state_pages(pgdat, NR_SLAB_RECLAIMABLE_B) > pgdat->min_slab_pages) {
- 		/*
- 		 * Free memory by calling shrink node with increasing
- 		 * priorities until we have enough memory freed.
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	ioaddr = res->start;
+-	smmu->base = devm_ioremap_resource(dev, res);
++	smmu->base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+ 	if (IS_ERR(smmu->base))
+ 		return PTR_ERR(smmu->base);
++	ioaddr = res->start;
+ 	/*
+ 	 * The resource size should effectively match the value of SMMU_TOP;
+ 	 * stash that temporarily until we know PAGESIZE to validate it with.
 -- 
-2.23.0
+2.25.1
 
