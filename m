@@ -2,132 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93882C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 17:17:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8FB6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 17:17:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243872AbiDYRUT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 13:20:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39182 "EHLO
+        id S243819AbiDYRVA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 13:21:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243983AbiDYRTr (ORCPT
+        with ESMTP id S243736AbiDYRU4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 13:19:47 -0400
-Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5E4726AC4
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 10:16:38 -0700 (PDT)
-Received: by mail-oi1-x22a.google.com with SMTP id t15so17859725oie.1
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 10:16:38 -0700 (PDT)
+        Mon, 25 Apr 2022 13:20:56 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EC8B289B5
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 10:17:52 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id i24so15390740pfa.7
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 10:17:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=eclypsium.com; s=google;
+        d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=dBhJQBFFy4Ceg8cAsnJhQlAVWnX2jFGl2toK7LYg2vI=;
-        b=ZUI1SW0LDagU7wptgLkLAyo11l74Ya3MsuwD1LvUoGpHB7JFCD9eGwk+TPuFbsg94J
-         1/2jlCIpJxuoSUuRE77FpuY8ivlJycTuspgiLAQKEm++YBdSPzIgc1bCHwvyU3bM1OIx
-         QVQlUy6mpNLw/RH+old6c5hmH0AGxCuRDi6JZa0UvmfRHrSkPnUMz3ibircJSgTzvhqv
-         vzyJoGr57dosEvqOjyqJIo0/ae+ilr8gmRG4Nybz3RfmwCFa0D2hnsmc/RJNg/8pRgkF
-         kbG9O8mJJfwfTK2t76xzeoPxWz1lE+4Zb2NHMLo5de+3pUBSoQI789poPU5L2Sskqw9r
-         QDHA==
+        bh=LB+mmEmtSM6N/iMNtUelrgbgK3X940eJfV3qLOHCqJ4=;
+        b=cZTNmb7GwCW+IZWsIPO1vgRVD3FnUtDriF1O9qu9/UbUYS26dkKEtaLGcELgRCS/hH
+         H08NYddXndDAKi5uEjRfS43PQ8rW2hCBndV4UbwTnYO8r1beyLeaJxnn2mZREIfeOkVH
+         bThY/Q1PtUPFRH2ZCl2adO8d24xCmd7iLCEzE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=dBhJQBFFy4Ceg8cAsnJhQlAVWnX2jFGl2toK7LYg2vI=;
-        b=WlosovNO2PqrGdq9NSkiGFFSY9Kt+ROu3yY6NagpfnQgBLaBR0vqTiOWSgOJEqZP7e
-         LSWcQyLktFZK6wepXMCWB8XndgJKbPGemntdLX88FNLpdfZuQ0U/CBVS2ebavZUXNzTN
-         1n6DKA3hihe0Aki9beKswKtujt3kTyu6MWs54rZyyHtOo1cCyNz3O7isSxeLXbnIXznE
-         znT9NE13o8cArFFplBKB9piN9Tv/0cs4rygbgAgovw6A4KSydD2Xu+DhU8B+LhSC7oWJ
-         mXl1jhOWrPw6LXQ1iEGVEJF/GklJliLz2meKLnVO8eQfcpTQBI9hsXZiuZHTKtBfc87L
-         jWmQ==
-X-Gm-Message-State: AOAM532f0LHekJJviEIdUrJOmGn8TA04jw7EZai0Ta/EUAWM8L6taVZL
-        8np/sf5KQ1qWRDtpCO+vTfS9oQOWHMSMycbYoo2nfuYFwTe/zYwprSkmELW4pHcdoMC2IZ1gzqh
-        YUFefm7/HSOOM2Eh/eASmI+UTWbS97ixq8vIErD2PhfigAIMrNpz504wk+AUU/Yar2r5+TZn6Zc
-        NSb/QFO/QJtyFBNFOiisw=
-X-Google-Smtp-Source: ABdhPJw2CA5OnWQr+1gbJ1Fj/HVda/dNTu+4D8Lx2yhRTTRMdTF6nMZAB44F7+DCfcQSISEqTGmGkw==
-X-Received: by 2002:a54:4d86:0:b0:324:ecc3:fd02 with SMTP id y6-20020a544d86000000b00324ecc3fd02mr7359683oix.243.1650906997950;
-        Mon, 25 Apr 2022 10:16:37 -0700 (PDT)
-Received: from localhost ([181.97.174.128])
-        by smtp.gmail.com with ESMTPSA id fz13-20020a056870ed8d00b000e593f1f26fsm3441269oab.18.2022.04.25.10.16.32
+        bh=LB+mmEmtSM6N/iMNtUelrgbgK3X940eJfV3qLOHCqJ4=;
+        b=xL0lvd/6pIz5bkI9pujm2IO3I4hX6n+3QWS1z1s36GG8Vi07Gtsg7WW3M5TO8eXSGr
+         PSYPH46FCHUso7Azvvv5Ide0ydPK+iA94wOIFLpBOtf0xaHF+wdhPT91K/EyjWN2G14F
+         JpHVZrYqx+h5yWW2ociATyFHu3s6aeHpcYBljFW0AUXULx73PesyNlUHZ56RCu95nms4
+         tiHnvor6u1NY+3+m2sh6wOHZXpcNOwCLsTOjmMsVmRujENLT/zHJpHXKnxEhsAhR7FV0
+         fI/ssil0ZpODuw+DruszTBhE2AKdRx8yNdBChDQL+YkxEiC4Fkdo6N6te0XKnQgvnFQX
+         u95g==
+X-Gm-Message-State: AOAM530Pzdj2ybSx8g0R8nhPji/QS8KTXtpe9kBz1vl3NuON0YajIobW
+        zElBNTfPZzaoXMU3hEAUnzzsHg==
+X-Google-Smtp-Source: ABdhPJznoB/9Z0WWQLZbk3TSWrZBwAo/tkD3Ukr5vZ9klzHak9BNDS/s+EzAwjs3AK8oT+ejZ9QrNw==
+X-Received: by 2002:a62:b50d:0:b0:50d:43b8:f2cb with SMTP id y13-20020a62b50d000000b0050d43b8f2cbmr4708758pfe.13.1650907071876;
+        Mon, 25 Apr 2022 10:17:51 -0700 (PDT)
+Received: from localhost ([2620:15c:202:201:3897:4488:e7c2:f2a1])
+        by smtp.gmail.com with UTF8SMTPSA id c11-20020a62f84b000000b0050d33b253a0sm5774878pfm.112.2022.04.25.10.17.50
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Apr 2022 10:16:37 -0700 (PDT)
-From:   Martin Fernandez <martin.fernandez@eclypsium.com>
-To:     linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, linux-mm@kvack.org
-Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        ardb@kernel.org, dvhart@infradead.org, andy@infradead.org,
-        gregkh@linuxfoundation.org, rafael@kernel.org, rppt@kernel.org,
-        akpm@linux-foundation.org, daniel.gutson@eclypsium.com,
-        hughsient@gmail.com, alex.bazhaniuk@eclypsium.com,
-        alison.schofield@intel.com, keescook@chromium.org,
-        Martin Fernandez <martin.fernandez@eclypsium.com>
-Subject: [PATCH v7 8/8] drivers/node: Show in sysfs node's crypto capabilities
-Date:   Mon, 25 Apr 2022 14:15:26 -0300
-Message-Id: <20220425171526.44925-9-martin.fernandez@eclypsium.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220425171526.44925-1-martin.fernandez@eclypsium.com>
-References: <20220425171526.44925-1-martin.fernandez@eclypsium.com>
+        Mon, 25 Apr 2022 10:17:51 -0700 (PDT)
+From:   Brian Norris <briannorris@chromium.org>
+To:     Heiko Stuebner <heiko@sntech.de>, Arnd Bergmann <arnd@arndb.de>
+Cc:     linux-kernel@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        linux-rockchip@lists.infradead.org,
+        Brian Norris <briannorris@chromium.org>
+Subject: [PATCH v2 2/2] soc: rockchip: Fix compile-testing SoC drivers
+Date:   Mon, 25 Apr 2022 10:17:37 -0700
+Message-Id: <20220425101646.v2.2.Id5f16dec920f620120c0a143a97a12e16d401760@changeid>
+X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
+In-Reply-To: <20220425171737.321813-1-briannorris@chromium.org>
+References: <20220425171737.321813-1-briannorris@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Show in each node in sysfs if its memory is able to do be encrypted by
-the CPU, ie. if all its memory is marked with EFI_MEMORY_CPU_CRYPTO in
-the EFI memory map.
+Similar to commit 7f94b69ece51 ("ARM: ixp4xx: fix compile-testing soc
+drivers").
 
-Signed-off-by: Martin Fernandez <martin.fernandez@eclypsium.com>
+drivers/soc/rockchip/Kconfig makes plenty of provision for configuring
+drivers either for ARCH_ROCKCHIP or for COMPILE_TEST. But
+drivers/soc/Makefile pulls the rug out from under us, by refusing to
+build anything if we specified COMPILE_TEST but not ARCH_ROCKCHIP.
+
+Currently, I'm not aware of anything that breaks without this patch, but
+it certainly makes for confusing builds (CONFIG_ROCKCHIP_PM_DOMAINS=y,
+but we didn't actually compile the driver?) and leaves room for future
+error (I have pending patches that break confusingly with COMPILE_TEST=y
+even though their Kconfig dependencies seem correct [1]).
+
+Defer to drivers/soc/rockchip/{Makefile,Kconfig} to do the right thing.
+
+We also need to force ARM/ARM64 dependencies for ROCKCHIP_PM_DOMAINS,
+because it uses ARM-specific macros (dsb()).
+
+[1] e.g.,
+https://lore.kernel.org/linux-rockchip/20220405184816.RFC.2.I2d73b403944f0b8b5871a77585b73f31ccc62999@changeid/
+[RFC PATCH 2/2] PM / devfreq: rk3399_dmc: Block PMU during transitions
+
+Signed-off-by: Brian Norris <briannorris@chromium.org>
 ---
- Documentation/ABI/testing/sysfs-devices-node | 10 ++++++++++
- drivers/base/node.c                          | 10 ++++++++++
- 2 files changed, 20 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-devices-node
 
-diff --git a/Documentation/ABI/testing/sysfs-devices-node b/Documentation/ABI/testing/sysfs-devices-node
-new file mode 100644
-index 000000000000..5fd5dc7fc2eb
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-devices-node
-@@ -0,0 +1,10 @@
-+What:		/sys/devices/system/node/nodeX/crypto_capable
-+Date:		April 2022
-+Contact:	Martin Fernandez <martin.fernandez@eclypsium.com>
-+Users:		fwupd (https://fwupd.org)
-+Description:
-+		This value is 1 if all system memory in this node is
-+		marked with EFI_MEMORY_CPU_CRYPTO, indicating that the
-+		system memory is capable of being protected with the
-+		CPU’s memory cryptographic capabilities. It is 0
-+		otherwise.
-\ No newline at end of file
-diff --git a/drivers/base/node.c b/drivers/base/node.c
-index ec8bb24a5a22..1df15ea03c27 100644
---- a/drivers/base/node.c
-+++ b/drivers/base/node.c
-@@ -560,11 +560,21 @@ static ssize_t node_read_distance(struct device *dev,
- }
- static DEVICE_ATTR(distance, 0444, node_read_distance, NULL);
- 
-+static ssize_t crypto_capable_show(struct device *dev,
-+				   struct device_attribute *attr, char *buf)
-+{
-+	struct pglist_data *pgdat = NODE_DATA(dev->id);
-+
-+	return sysfs_emit(buf, "%d\n", pgdat->crypto_capable);
-+}
-+static DEVICE_ATTR_RO(crypto_capable);
-+
- static struct attribute *node_dev_attrs[] = {
- 	&dev_attr_meminfo.attr,
- 	&dev_attr_numastat.attr,
- 	&dev_attr_distance.attr,
- 	&dev_attr_vmstat.attr,
-+	&dev_attr_crypto_capable.attr,
- 	NULL
- };
- 
+Changes in v2:
+ * Depend on ARM||ARM64
+
+ drivers/soc/Makefile         | 2 +-
+ drivers/soc/rockchip/Kconfig | 1 +
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/soc/Makefile b/drivers/soc/Makefile
+index fd7717d597fc..4c91705a8bb3 100644
+--- a/drivers/soc/Makefile
++++ b/drivers/soc/Makefile
+@@ -23,7 +23,7 @@ obj-y				+= pxa/
+ obj-y				+= amlogic/
+ obj-y				+= qcom/
+ obj-y				+= renesas/
+-obj-$(CONFIG_ARCH_ROCKCHIP)	+= rockchip/
++obj-y				+= rockchip/
+ obj-$(CONFIG_SOC_SAMSUNG)	+= samsung/
+ obj-$(CONFIG_SOC_SIFIVE)	+= sifive/
+ obj-y				+= sunxi/
+diff --git a/drivers/soc/rockchip/Kconfig b/drivers/soc/rockchip/Kconfig
+index aff2f7e95237..785e1798d286 100644
+--- a/drivers/soc/rockchip/Kconfig
++++ b/drivers/soc/rockchip/Kconfig
+@@ -25,6 +25,7 @@ config ROCKCHIP_IODOMAIN
+ config ROCKCHIP_PM_DOMAINS
+ 	bool "Rockchip generic power domain"
+ 	depends on PM
++	depends on ARM || ARM64
+ 	select PM_GENERIC_DOMAINS
+ 	help
+ 	  Say y here to enable power domain support.
 -- 
-2.30.2
+2.36.0.rc2.479.g8af0fa9b8e-goog
 
