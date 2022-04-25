@@ -2,97 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D303C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 13:31:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54F83C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 13:31:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242072AbiDYNeb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 09:34:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53174 "EHLO
+        id S242109AbiDYNep (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 09:34:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242048AbiDYNe1 (ORCPT
+        with ESMTP id S242078AbiDYNee (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 09:34:27 -0400
-Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CE2F2B1;
-        Mon, 25 Apr 2022 06:31:23 -0700 (PDT)
-Received: by mail-oi1-f173.google.com with SMTP id 12so17038166oix.12;
-        Mon, 25 Apr 2022 06:31:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=Axyt9xLWwnpfr+htuIM2/g7D3vysIvMnk+0DJEac8Rg=;
-        b=0/n53HuI1/ClFQlYtQ6E8FngtWdd27krB/6K5hHNae9wsWHaszIT+7vffsh7tOxktL
-         b84KMHfb1jMhx5NP1CfmFbRiKUVC1W/TSarDz0IN7FFH4vDyt/Kjbhwb9SESJl/QmZA8
-         UOWoRjX3QlrTBtTEOXrs+nj9iJ9BkWSPKds6E9OvcH2TIPZe41Sb0jcqldsKOar3mts/
-         ySApG0qcv6wYKYWgA4HoQxQNkRn1mVTCjXixby6n1d79m6ccJd2V1xzQdcVkzbdfRBLz
-         BKizikU4JLWtf2VVCoKjCOKyYlU+PSg52OgitWCA8PTvYCt28syf62MUVQyP7DIw/UnL
-         VIow==
-X-Gm-Message-State: AOAM531NSuABgjp6Seoe7sJmcckl1k/cGP6oqwa9jeelwk09X5qUTsHr
-        eEqm/EUJouTaR7coZY68fg==
-X-Google-Smtp-Source: ABdhPJyVjn+HTDw2xumFtgvqDomRgaw07jqy9n+QJpvWG9J0fVtbmDg5NYHNy4qZ3JPmObwI1qJBVQ==
-X-Received: by 2002:a05:6808:f06:b0:324:f7bd:c3a with SMTP id m6-20020a0568080f0600b00324f7bd0c3amr6214113oiw.25.1650893482373;
-        Mon, 25 Apr 2022 06:31:22 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id j126-20020acab984000000b002da77222b7dsm3717265oif.22.2022.04.25.06.31.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 06:31:21 -0700 (PDT)
-Received: (nullmailer pid 3715965 invoked by uid 1000);
-        Mon, 25 Apr 2022 13:31:19 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Ashish Mhetre <amhetre@nvidia.com>
-Cc:     linux-tegra@vger.kernel.org, krzysztof.kozlowski@linaro.org,
-        vdumpa@nvidia.com, Snikam@nvidia.com, thierry.reding@gmail.com,
-        dmitry.osipenko@collabora.com, digetx@gmail.com,
-        robh+dt@kernel.org, linux-kernel@vger.kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, jonathanh@nvidia.com,
-        devicetree@vger.kernel.org
-In-Reply-To: <20220425075036.30098-4-amhetre@nvidia.com>
-References: <20220425075036.30098-1-amhetre@nvidia.com> <20220425075036.30098-4-amhetre@nvidia.com>
-Subject: Re: [Patch v8 3/4] dt-bindings: memory: tegra: Update validation for reg and reg-names
-Date:   Mon, 25 Apr 2022 08:31:19 -0500
-Message-Id: <1650893479.258020.3715964.nullmailer@robh.at.kernel.org>
+        Mon, 25 Apr 2022 09:34:34 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A44EFBA5;
+        Mon, 25 Apr 2022 06:31:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650893490; x=1682429490;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=LeeHzvwWWIhoJET4Iby9NAsLpM72fA5MdvAHRDjBpqQ=;
+  b=mRO0MNdsbOJI6HUbDPtpFlxZJSpWLWYEZQetSRdeJeA46CsInfy41C11
+   wo2TVI5MiSoNsV/Wfs+K6O0o4tTK0psb6rfH5xu3gttldeBV5g1+7fx5B
+   hdly0soWuDImL61DQQQFyDMjp7spVhVTwRS3slwm3rpA1ST0fX2QkwEWC
+   JNrv0jSQbMlGfbtAnlzgdBVeSkO3ymngfFXT/s7igoX9ypx8e339uy0FY
+   DgUwzGso//PuZmB13WQMY0xbYXSLkj9Fah/C3iBlOyMWkDVUxhpGkJPis
+   pPH1gtU6VlN2pL5/v9v2wdI/EBxRe1HAEL2kP8YTi1iskx7UDRrvH89bY
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10327"; a="247174639"
+X-IronPort-AV: E=Sophos;i="5.90,288,1643702400"; 
+   d="scan'208";a="247174639"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 06:31:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,288,1643702400"; 
+   d="scan'208";a="579286511"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
+  by orsmga008.jf.intel.com with ESMTP; 25 Apr 2022 06:31:28 -0700
+Date:   Mon, 25 Apr 2022 21:23:46 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     Nava kishore Manne <nava.manne@xilinx.com>
+Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com,
+        michal.simek@xilinx.com, linux-fpga@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        git@xilinx.com
+Subject: Re: [PATCH v6 1/5] fpga: zynq: Fix incorrect variable type
+Message-ID: <20220425132346.GB367066@yilunxu-OptiPlex-7050>
+References: <20220423170235.2115479-1-nava.manne@xilinx.com>
+ <20220423170235.2115479-2-nava.manne@xilinx.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220423170235.2115479-2-nava.manne@xilinx.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 25 Apr 2022 13:20:35 +0530, Ashish Mhetre wrote:
+On Sat, Apr 23, 2022 at 10:32:31PM +0530, Nava kishore Manne wrote:
+> zynq_fpga_has_sync () API is expecting "u8 *" but the
+> formal parameter that was passed is of type "const char *".
+> fix this issue by changing the buf type to "const char *"
 > 
+> Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
+> Acked-by: Xu Yilun <yilun.xu@intel.com>
 
-Running 'make dtbs_check' with the schema in this patch gives the
-following warnings. Consider if they are expected or the schema is
-incorrect. These may not be new warnings.
+Hi Nava:
 
-Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-This will change in the future.
+There is a lkp bug report yet to be fixed. Please fix it.
 
-Full log is available here: https://patchwork.ozlabs.org/patch/
+Thanks,
+Yilun
 
-
-memory-controller@2c00000: reg: [[0, 46137344, 0, 720896]] is too short
-	arch/arm64/boot/dts/nvidia/tegra186-p2771-0000.dtb
-	arch/arm64/boot/dts/nvidia/tegra186-p2771-0000.dtb
-	arch/arm64/boot/dts/nvidia/tegra186-p3509-0000+p3636-0001.dtb
-	arch/arm64/boot/dts/nvidia/tegra186-p3509-0000+p3636-0001.dtb
-
-memory-controller@2c00000: reg: [[46137344, 1048576], [45613056, 262144], [24117248, 1048576]] is too short
-	arch/arm64/boot/dts/nvidia/tegra194-p2972-0000.dtb
-	arch/arm64/boot/dts/nvidia/tegra194-p2972-0000.dtb
-	arch/arm64/boot/dts/nvidia/tegra194-p3509-0000+p3668-0000.dtb
-	arch/arm64/boot/dts/nvidia/tegra194-p3509-0000+p3668-0000.dtb
-	arch/arm64/boot/dts/nvidia/tegra194-p3509-0000+p3668-0001.dtb
-	arch/arm64/boot/dts/nvidia/tegra194-p3509-0000+p3668-0001.dtb
-	arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dtb
-	arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dtb
-	arch/arm64/boot/dts/nvidia/tegra234-sim-vdk.dtb
-	arch/arm64/boot/dts/nvidia/tegra234-sim-vdk.dtb
-
-memory-controller@2c00000: 'reg-names' is a required property
-	arch/arm64/boot/dts/nvidia/tegra186-p2771-0000.dtb
-	arch/arm64/boot/dts/nvidia/tegra186-p3509-0000+p3636-0001.dtb
-	arch/arm64/boot/dts/nvidia/tegra194-p2972-0000.dtb
-	arch/arm64/boot/dts/nvidia/tegra194-p3509-0000+p3668-0000.dtb
-	arch/arm64/boot/dts/nvidia/tegra194-p3509-0000+p3668-0001.dtb
-	arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dtb
-	arch/arm64/boot/dts/nvidia/tegra234-sim-vdk.dtb
-
+> ---
+> Changes for v2:
+>                 -None.
+> Changes for v3:
+>                - Changed arg buf type to "const char *" as suggested by Tom.
+>                - update zynq_fpga_has_sync () API description to align with API
+>                  functionality.
+> Changes for v4:
+>                - None.
+> 
+> Changes for v5:
+>                - Dropped the irrelevant doc update changes.
+> Changes for v6:
+>                - None.
+> 
+>  drivers/fpga/zynq-fpga.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/fpga/zynq-fpga.c b/drivers/fpga/zynq-fpga.c
+> index 426aa34c6a0d..6beaba9dfe97 100644
+> --- a/drivers/fpga/zynq-fpga.c
+> +++ b/drivers/fpga/zynq-fpga.c
+> @@ -239,7 +239,7 @@ static irqreturn_t zynq_fpga_isr(int irq, void *data)
+>   * the correct byte order, and be dword aligned. The input is a Xilinx .bin
+>   * file with every 32 bit quantity swapped.
+>   */
+> -static bool zynq_fpga_has_sync(const u8 *buf, size_t count)
+> +static bool zynq_fpga_has_sync(const char *buf, size_t count)
+>  {
+>  	for (; count >= 4; buf += 4, count -= 4)
+>  		if (buf[0] == 0x66 && buf[1] == 0x55 && buf[2] == 0x99 &&
+> -- 
+> 2.25.1
