@@ -2,61 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7563AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 09:50:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43594C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 09:50:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239007AbiDYJxZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 05:53:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44400 "EHLO
+        id S240855AbiDYJxj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 05:53:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240932AbiDYJxH (ORCPT
+        with ESMTP id S239966AbiDYJx0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 05:53:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C2313E0E6;
-        Mon, 25 Apr 2022 02:50:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1766CB811AC;
-        Mon, 25 Apr 2022 09:50:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47DA8C385A4;
-        Mon, 25 Apr 2022 09:49:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650880199;
-        bh=JVAQ5gkZLZo+XCl0pVA/MBO5F3Pm37Lwl9hXUsz8POE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=VAhDmXHjAjyEI/jK26+pTYrdu8hM2U+KkH3A/lbw+Ujyr8l/p79A90CbRlWGDZM6K
-         w5t75jowt+GT28CqVur/4tXWIcP74tbZRx79bXdkE6RW/l8/0cpWmGJsNYs6MSi1B5
-         nJcUjpt6DtngZ/oeJ2k/7cEqngkmrN+68P5Nggef/Ec4+8yp/886JhffwTesnOfYy9
-         +qlYRBviuwEWgCO49DPGYfN9zf7hleRKoeiZ0Aiwr9XehXIQ60ENRcpgAmHmh8gywL
-         2qtnJLx49RESBFqwaZbWOpsgR89nDDHMk3kbxy34onHot0dzJ3rTGrkMsWpXrs1shv
-         PV4ADAqkrbt7g==
-Date:   Mon, 25 Apr 2022 11:49:55 +0200
-From:   Christian Brauner <brauner@kernel.org>
-To:     Karthik Alapati <mail@karthek.com>
-Cc:     Shuah Khan <skhan@linuxfoundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Carlos Llamas <cmllamas@google.com>,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] selftests/binderfs: Improve message to provide more info
-Message-ID: <20220425094955.ti3hw7asp6h5funn@wittgenstein>
-References: <YmOSQv2U8+Hs5WjP@karthik-strix-linux.karthek.com>
+        Mon, 25 Apr 2022 05:53:26 -0400
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED9693EF14
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 02:50:16 -0700 (PDT)
+Received: by mail-il1-f198.google.com with SMTP id v11-20020a056e0213cb00b002cbcd972206so5826311ilj.11
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 02:50:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=sVvRetvU66viZg03zt42J481swUWQOVgkFgrLPfYY/8=;
+        b=ajBHNWOsX/cz3XPkivWo6rqojYpnO9DvHcPQEZwffWxEac2A0lbxqemJxdJKaSgcay
+         eopXLOzrGltByQXv3PEXa5a7BLQAGPKzd3spTl7CU6Dk1YaFFZI01UMQwgf/DLc+6nPN
+         3/wDAt9BFxdY5u81oSbjBfzj1xQ06fh+dg79G3U2YrgBXCJZX48t+mIHeCBov35Brjl+
+         3QYVQXBbFD8v7koauJd9ZOhdvXBkh/NlgoqpV3/hwLMOM/kW3vBOFpIH9veaX5JAsU9m
+         RWUouEsE5NC8UUnV/GknJZ0LFc8Gy/sCDdL/GaWrxdGiTbzQqGj7R3u5ZQtFqhVpSsI+
+         PwQA==
+X-Gm-Message-State: AOAM533pc5NZyLlkd79I0HD21qN9EdSVnYOn89mwPEeLY0duXQvowKKE
+        g36RXUAfmzcpSstXjzVvluEauVWkrOJaBuRSXmDTq61iXJ1O
+X-Google-Smtp-Source: ABdhPJxsnwec4qGQ3iLqyhhN2fhXLxrey6xzMvtkmdOoNXX3lAAYt4RpxgKTopWG4cnjRkENFohSS1FyKXcLwAdKrc+jdVS1o4Dc
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YmOSQv2U8+Hs5WjP@karthik-strix-linux.karthek.com>
+X-Received: by 2002:a05:6638:22d2:b0:32a:934e:8a62 with SMTP id
+ j18-20020a05663822d200b0032a934e8a62mr7212999jat.138.1650880216395; Mon, 25
+ Apr 2022 02:50:16 -0700 (PDT)
+Date:   Mon, 25 Apr 2022 02:50:16 -0700
+In-Reply-To: <000000000000b960c00594598949@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000dd782c05dd77804f@google.com>
+Subject: Re: KASAN: use-after-free Read in tc_chain_fill_node
+From:   syzbot <syzbot+5f229e48cccc804062c0@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, gregkh@linuxfoundation.org, jiri@mellanox.com,
+        lee.jones@linaro.org, linux-kernel@vger.kernel.org,
+        stable-commits@vger.kernel.org, stable@vger.kernel.org,
+        syzkaller-lts-bugs@googlegroups.com, vladbu@mellanox.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 23, 2022 at 11:14:34AM +0530, Karthik Alapati wrote:
-> Currently the binderfs test says what failure it encountered
-> without saying why it may occurred when it fails to mount
-> binderfs. So, Warn about enabling CONFIG_ANDROID_BINDERFS in the
-> running kernel.
-> 
-> Signed-off-by: Karthik Alapati <mail@karthek.com>
-> ---
-
-Reviewed-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+This bug is marked as fixed by commit:
+net: core: netlink: add helper refcount dec and lock function
+net: sched: add helper function to take reference to Qdisc
+net: sched: extend Qdisc with rcu
+net: sched: rename qdisc_destroy() to qdisc_put()
+net: sched: use Qdisc rcu API instead of relying on rtnl lock
+But I can't find it in any tested tree for more than 90 days.
+Is it a correct commit? Please update it by replying:
+#syz fix: exact-commit-title
+Until then the bug is still considered open and
+new crashes with the same signature are ignored.
