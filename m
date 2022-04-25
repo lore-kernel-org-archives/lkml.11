@@ -2,174 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4828C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:25:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F387C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:25:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236089AbiDYW2M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 18:28:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49756 "EHLO
+        id S234312AbiDYW2W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 18:28:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343695AbiDYWOW (ORCPT
+        with ESMTP id S1343646AbiDYWCz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 18:14:22 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9FA0167C4
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 15:11:16 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id bu29so28771431lfb.0
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 15:11:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=wNSzXqr9gdAV/1UM9LYsZKhA56gdS5t/rHhHRCuCh9o=;
-        b=Hiz+GTMfZU/jt91kJKCco1eBpfOqVPKVZMhV/zyHzpUJa9fxMwVoWkXni0uPP2otu0
-         jputn5/iM0C+IFHkKBouHDGxaaUSjcGVmVQSzBARnE3ScQV7/lkhQKbygWxZx6iGnJr9
-         hu7s2AHKExVON0O6Ah4Eowky6GyYnyEDNiWd3HUwmT5wnID2LVAGVA+HsUmc7os0MBv6
-         fZ8VyzyqeFQ2b1gpKs+xwyPyVZWhvPtb45NweWrXltBzpcFoA/xNvCeO2QN8bJLLZHou
-         wpb34eHMRCEkIzq5Ib74y5rfhBAWj2t+9hFioOfJR5tltu+0PCFzrNwmG/xiEbl5Usoz
-         THDg==
+        Mon, 25 Apr 2022 18:02:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4F6013298E
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 14:59:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650923989;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=cN/7P16/pl2aWC7+3xLQLZmXX5wgJctZprhKvrxwdx0=;
+        b=A221Eubpm99Lz7vvbGucZTYCQRvuorCtXsIm5EA3yL6u1uvu0hQzRpW50muuEoJx4jt08n
+        2I4RF8krALU3QMK1llNCvSJG79zJ757tE7QPI3NSDEzQnIYLTvXLW8S22cmgXAw1N1SoQ/
+        sKdb7CCRWGxrqjTd/BqB+SthP5EDQ6U=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-134-AeK5VyioPPa5ji3YQMZHeA-1; Mon, 25 Apr 2022 17:59:48 -0400
+X-MC-Unique: AeK5VyioPPa5ji3YQMZHeA-1
+Received: by mail-wm1-f71.google.com with SMTP id i66-20020a1c3b45000000b0038eab4e0feaso7263921wma.9
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 14:59:47 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=wNSzXqr9gdAV/1UM9LYsZKhA56gdS5t/rHhHRCuCh9o=;
-        b=0rEeP6rqPXqIOSYYz5E0SXe7a3Qy+/FkG42vR+Qu52MlCdZtzJWvXhXLO3n5NOJMiB
-         WVzv44eLLsPI7aIMXAYhd6G3WdRL7CHub6CsREYsHlSBdDbiPcr6l6Kr3PG89t9T7IaT
-         2A8bpoFmuXJ8BFRRk5RzFALaD7oaW3dvwl7T0fOON5LCy0ExF0C6XBSg6IM1b36YLYK5
-         iRXEInwHHlbbzi6K40cukqnMQdcVRToGGRetXociEtwn2Omr1pEIz3cWaQGFEJCGp01r
-         brlxkjkyq/2EeQ4C0GiPpgfbM3fZ+XarKDe+TF7F3iw04p1K7msotK5z4h+uJZPIqP5a
-         URNg==
-X-Gm-Message-State: AOAM533KjvIf5tbGAa8OxoNtZw6CJwzEMU/A7lVooANpRr8PYv+xdQbj
-        C8YEH1f5DF3dWsVI+m1KBzfzrw==
-X-Google-Smtp-Source: ABdhPJygzyWrtK9unqztvwrqXyM2kAZwTWywvbu94iVNo3ZY5VdXZlRg8gXQR4FdAEqJKb2oRknSyQ==
-X-Received: by 2002:a19:ac04:0:b0:471:664f:95df with SMTP id g4-20020a19ac04000000b00471664f95dfmr14698796lfc.310.1650924675274;
-        Mon, 25 Apr 2022 15:11:15 -0700 (PDT)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id i13-20020a2e864d000000b0024f1564ea12sm207876ljj.105.2022.04.25.15.11.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Apr 2022 15:11:14 -0700 (PDT)
-Message-ID: <94435133-b875-3005-ab23-dc4457ec9002@linaro.org>
-Date:   Tue, 26 Apr 2022 01:11:13 +0300
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=cN/7P16/pl2aWC7+3xLQLZmXX5wgJctZprhKvrxwdx0=;
+        b=NZkhanyZ1k0dA1SsLs457zbTfvXQlvPacDXMQc0yaxSGorA0JsHQFvhiZnLv+W6QLn
+         Yk0mgLuVM7Yrk/QsDJEEZMTrJwtUCCJuj4eQ6LtCAGJNd4IYfNiR2ruoVnyOW4YtEos3
+         L0v4pS26ghOlqrrUYYt+M4+H8Z90zHt+fiw+2JIpZ725LVnFb5T8wCd1QiQxAIDeKbiD
+         3n9RMPwqNmjDdiBbBK0l9uxugpmTQN20YXmU6gcFXT56+KLolLs9i1SdlGI71oBtf0JT
+         OMuSkR/n/LyCVKDM/ZFZyPA8fIFDGrgL3+m/VrWV2qnofSt7tCc1Hk4D0Ae9beXGHLv9
+         MSvQ==
+X-Gm-Message-State: AOAM530FVXa+XowuOLfxZNZ69cacuyFmh0iADh3MvXfnsqv+f/OOE981
+        OUXeVBILbQD6JNUNsEZpFnM4ktoUQEIwV6tlXeUUsuTAmQDUp+xFiziqav/fZXGzX2cuAeHBVwD
+        I6KU75VPDh4tX7e8kx6lJwrKB
+X-Received: by 2002:a1c:4489:0:b0:392:aa5d:1e01 with SMTP id r131-20020a1c4489000000b00392aa5d1e01mr18318952wma.40.1650923986801;
+        Mon, 25 Apr 2022 14:59:46 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJySTPjZ89pDYe6iKi3jCxpsym6BBaw3EytnAI40Z836ix8Wge4rySsnOsLynTub++vuj7RPFA==
+X-Received: by 2002:a1c:4489:0:b0:392:aa5d:1e01 with SMTP id r131-20020a1c4489000000b00392aa5d1e01mr18318940wma.40.1650923986623;
+        Mon, 25 Apr 2022 14:59:46 -0700 (PDT)
+Received: from vschneid.remote.csb ([185.11.37.247])
+        by smtp.gmail.com with ESMTPSA id n16-20020adf8b10000000b0020ae5ed2b9dsm35891wra.20.2022.04.25.14.59.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Apr 2022 14:59:45 -0700 (PDT)
+From:   Valentin Schneider <vschneid@redhat.com>
+To:     paulmck@kernel.org
+Cc:     linux-kernel@vger.kernel.org, mingo@redhat.com,
+        peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com
+Subject: Re: "Dying CPU not properly vacated" splat
+In-Reply-To: <20220425173320.GX4285@paulmck-ThinkPad-P17-Gen-1>
+References: <20220421193821.GA173010@paulmck-ThinkPad-P17-Gen-1>
+ <xhsmh4k2h9m26.mognet@vschneid.remote.csb>
+ <20220425173320.GX4285@paulmck-ThinkPad-P17-Gen-1>
+Date:   Mon, 25 Apr 2022 22:59:44 +0100
+Message-ID: <xhsmh1qxkakof.mognet@vschneid.remote.csb>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v4 2/2] drm/msm/dpu: Issue MDSS reset during
- initialization
-Content-Language: en-GB
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Clark <robdclark@gmail.com>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220421041550.643964-1-bjorn.andersson@linaro.org>
- <20220421041550.643964-2-bjorn.andersson@linaro.org>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <20220421041550.643964-2-bjorn.andersson@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21/04/2022 07:15, Bjorn Andersson wrote:
-> It's typical for the bootloader to bring up the display for showing a
-> boot splash or efi framebuffer. But in some cases the kernel driver ends
-> up only partially configuring (in particular) the DPU, which might
-> result in e.g. that two different data paths attempts to push data to
-> the interface - with resulting graphical artifacts.
-> 
-> Naturally the end goal would be to inherit the bootloader's
-> configuration and provide the user with a glitch free handover from the
-> boot configuration to a running DPU.
-> 
-> But as implementing seamless transition from the bootloader
-> configuration to the running OS will be a considerable effort, start by
-> simply resetting the entire MDSS to its power-on state, to avoid the
-> partial configuration.
-> 
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+On 25/04/22 10:33, Paul E. McKenney wrote:
+> On Mon, Apr 25, 2022 at 05:15:13PM +0100, Valentin Schneider wrote:
+>>
+>> Hi Paul,
+>>
+>> On 21/04/22 12:38, Paul E. McKenney wrote:
+>> > Hello!
+>> >
+>> > The rcutorture TREE03 scenario got the following splat, which appears
+>> > to be a one-off, or if not, having an MTBF in the thousands of hours,
+>> > even assuming that it is specific to TREE03.  (If it is not specific to
+>> > TREE03, we are talking tens of thousands of hours of rcutorture runtime.)
+>> >
+>> > So just in case this rings any bells or there are some diagnostics I
+>> > should add in case this ever happens again.  ;-)
+>>
+>> There should be a dump of the enqueued tasks right after the snippet you've
+>> sent, any chance you could share that if it's there? That should tell us
+>> which tasks are potentially misbehaving.
+>
+> And now that I know to look for them, there they are!  Thank you!!!
+>
+> CPU7 enqueued tasks (2 total):
+>  pid: 52, name: migration/7
+>  pid: 135, name: rcu_torture_rea
+> smpboot: CPU 7 is now offline
+>
+> So what did rcu_torture_reader() do wrong here?  ;-)
+>
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+So on teardown, CPUHP_AP_SCHED_WAIT_EMPTY->sched_cpu_wait_empty() waits for
+the rq to be empty. Tasks must *not* be enqueued onto that CPU after that
+step has been run - if there are per-CPU tasks bound to that CPU, they must
+be unbound in their respective hotplug callback.
 
-> ---
-> 
-> Changes since v3:
-> - Rebased upon the mdss dpu/mdp restructuring (https://patchwork.freedesktop.org/series/98525/)
-> 
->   drivers/gpu/drm/msm/msm_mdss.c | 32 ++++++++++++++++++++++++++++++++
->   1 file changed, 32 insertions(+)
-> 
-> diff --git a/drivers/gpu/drm/msm/msm_mdss.c b/drivers/gpu/drm/msm/msm_mdss.c
-> index f6f0d0fa5ab2..20f154dda9cf 100644
-> --- a/drivers/gpu/drm/msm/msm_mdss.c
-> +++ b/drivers/gpu/drm/msm/msm_mdss.c
-> @@ -4,11 +4,13 @@
->    */
->   
->   #include <linux/clk.h>
-> +#include <linux/delay.h>
->   #include <linux/irq.h>
->   #include <linux/irqchip.h>
->   #include <linux/irqdesc.h>
->   #include <linux/irqchip/chained_irq.h>
->   #include <linux/pm_runtime.h>
-> +#include <linux/reset.h>
->   
->   #include "msm_drv.h"
->   #include "msm_kms.h"
-> @@ -193,6 +195,32 @@ static void msm_mdss_destroy(struct msm_mdss *msm_mdss)
->   	irq_set_chained_handler_and_data(irq, NULL, NULL);
->   }
->   
-> +static int msm_mdss_reset(struct device *dev)
-> +{
-> +	struct reset_control *reset;
-> +
-> +	reset = reset_control_get_optional_exclusive(dev, NULL);
-> +	if (!reset) {
-> +		/* Optional reset not specified */
-> +		return 0;
-> +	} else if (IS_ERR(reset)) {
-> +		return dev_err_probe(dev, PTR_ERR(reset),
-> +				     "failed to acquire mdss reset\n");
-> +	}
-> +
-> +	reset_control_assert(reset);
-> +	/*
-> +	 * Tests indicate that reset has to be held for some period of time,
-> +	 * make it one frame in a typical system
-> +	 */
-> +	msleep(20);
-> +	reset_control_deassert(reset);
-> +
-> +	reset_control_put(reset);
-> +
-> +	return 0;
-> +}
-> +
->   /*
->    * MDP5 MDSS uses at most three specified clocks.
->    */
-> @@ -229,6 +257,10 @@ static struct msm_mdss *msm_mdss_init(struct platform_device *pdev, bool is_mdp5
->   	int ret;
->   	int irq;
->   
-> +	ret = msm_mdss_reset(&pdev->dev);
-> +	if (ret)
-> +		return ERR_PTR(ret);
-> +
->   	msm_mdss = devm_kzalloc(&pdev->dev, sizeof(*msm_mdss), GFP_KERNEL);
->   	if (!msm_mdss)
->   		return ERR_PTR(-ENOMEM);
+For instance for workqueue.c, we have workqueue_offline_cpu() as a hotplug
+callback which invokes unbind_workers(cpu), the interesting bit being:
 
+                for_each_pool_worker(worker, pool) {
+                        kthread_set_per_cpu(worker->task, -1);
+                        WARN_ON_ONCE(set_cpus_allowed_ptr(worker->task, cpu_possible_mask) < 0);
+                }
 
--- 
-With best wishes
-Dmitry
+The rcu_torture_reader() kthreads aren't bound to any particular CPU are
+they? I can't find any code that would indicate they are - and in that case
+it means we have a problem with is_cpu_allowed() or related.
+
