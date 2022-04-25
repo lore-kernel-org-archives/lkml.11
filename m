@@ -2,106 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50BE8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 08:25:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5ABAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 08:26:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231947AbiDYI2v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 04:28:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35710 "EHLO
+        id S235710AbiDYI3B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 04:29:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239900AbiDYI1w (ORCPT
+        with ESMTP id S240736AbiDYI2G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 04:27:52 -0400
-Received: from mail-qv1-f47.google.com (mail-qv1-f47.google.com [209.85.219.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3868DF07;
-        Mon, 25 Apr 2022 01:24:45 -0700 (PDT)
-Received: by mail-qv1-f47.google.com with SMTP id b17so11226445qvf.12;
-        Mon, 25 Apr 2022 01:24:45 -0700 (PDT)
+        Mon, 25 Apr 2022 04:28:06 -0400
+Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79155DF07
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 01:25:02 -0700 (PDT)
+Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-2f7b815ac06so63970857b3.3
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 01:25:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6PKUUhwBuA+ch0Uuq1T1DwshtjMaHDXX/uf2rDKBNDQ=;
+        b=LfPW9WXgTpr+8/iVd5AE2JI65Goo9Kb2vfmKqdAD7xilZMOadB4Hs7hyaEuHJcebSq
+         Jb6OAXCefLv+Q4wDL3KmNpjmMTgKBGfeHRrT+Wa1UxLqcTruKd81ztbl6lCMZFjlmDC4
+         g9lfIGc9u5ZZt7MRgeKrf6IK7WUXWAptRCM0o=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=/re6+Ak0/fc+uJjRwCS2l54bhVpG5GK4J73hEmUsv20=;
-        b=KGWEKt3bonigeuAfv/M+7vu/1UfKDa5y5Aa6lFRnM2+cBfZn7bZTvT5BPqMInGYZt5
-         oIxhZY0coopAPiEUrj+Atm1BX17gf/zZEs/EzK/xuOflWhvS4Q7rh1aC9qobe6hMsa0P
-         0KYctkX66gX9gtOlqNWCynO2AYxli4sRyPZCAJngKOKwR8KY0+hMElhJXDM2WmY36aFz
-         jWva5dzFk6bmtrRV7qjOA4Se7rYuTcx9QMBURMtf0Y2RdHYnD/mSr3sQhqLkGBhLM5zK
-         KRYaAnFzxjbnQoazVsDHi2z4mV16Wxok4nqV+noKzixOhYTBQESBQdVI+qyeGdJmW1al
-         dE3g==
-X-Gm-Message-State: AOAM532WgU8BFjvOWq3jyj9g9Kem18H01frHlPftmSn3l6rhhv87BN9x
-        0QLoLBU4xvJe/79FAPZj1yb3Gzzb/pkk9A==
-X-Google-Smtp-Source: ABdhPJxJTZcxDdOinavtl9wtteuOaDpzqdi1qJgDfCC7HezMaN8Fgk17O6sy+k3DkH2Vk2G4U7LjIw==
-X-Received: by 2002:ad4:5dc8:0:b0:446:493e:aed with SMTP id m8-20020ad45dc8000000b00446493e0aedmr11960515qvh.92.1650875084953;
-        Mon, 25 Apr 2022 01:24:44 -0700 (PDT)
-Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com. [209.85.128.172])
-        by smtp.gmail.com with ESMTPSA id o21-20020a05620a0d5500b0069c59fae1a5sm4601937qkl.96.2022.04.25.01.24.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Apr 2022 01:24:44 -0700 (PDT)
-Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-2f7c424c66cso48333987b3.1;
-        Mon, 25 Apr 2022 01:24:44 -0700 (PDT)
-X-Received: by 2002:a81:c703:0:b0:2d0:cc6b:3092 with SMTP id
- m3-20020a81c703000000b002d0cc6b3092mr15284248ywi.449.1650875084343; Mon, 25
- Apr 2022 01:24:44 -0700 (PDT)
+        bh=6PKUUhwBuA+ch0Uuq1T1DwshtjMaHDXX/uf2rDKBNDQ=;
+        b=WTHR5e6rVADX2mHyvYaGWeyT1lbJaIDHxOKFsLEgOMlfRTDJUZsT5J+ZvHnaj+2Apy
+         RvXM7l9VEedwzDRym64ODnBOKUNZsPk07x7GVhwcQVJfanlVDNdjw9aEEF2XuTjtL3MJ
+         oRwQsT1wEVVb4SzP0o5J+mcueuCr0WLzw1Pf1UouJUUKdlw3y7C4p8N58Wr5ow3afY5U
+         0Xv0AY7ooiagYJEm2ahWdhtOn4Es/dR52Y0bwxOsUBFeCcETcx0GRwFtNAdLERS2BuzS
+         x2VaIetHKn8CAtP374wc4ZtYGAE3m+8miI6VxVB26JgLaaY0L65fQSAF7U0lvJnd/EMv
+         L6RQ==
+X-Gm-Message-State: AOAM531P7UcEd3cN85ojMwlw6Jl3JxWsEckHEEbs31PXiu8F7q71EzHa
+        P+9nIiph01KO3lJz6nvHqQi94gLTYw3XlqSgcL+Ohg==
+X-Google-Smtp-Source: ABdhPJxbt5i4+hFeo1dGmq14YTb4HSm9CGzOHMOg7ZYoAkkPlsj1JpB9JC+WReAMlPR0hNsAbsVPwv+zgr881d/xQJs=
+X-Received: by 2002:a81:b044:0:b0:2d6:bd1f:5d8b with SMTP id
+ x4-20020a81b044000000b002d6bd1f5d8bmr15448618ywk.27.1650875101688; Mon, 25
+ Apr 2022 01:25:01 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220415164413.2727220-1-song@kernel.org> <20220415164413.2727220-3-song@kernel.org>
- <5e5e4759efef83250f9511d4ab0e1ba34f987ce5.camel@fb.com> <CAMuHMdVdx2V1uhv_152Sw3_z2xE0spiaWp1d6Ko8-rYmAxUBAg@mail.gmail.com>
- <CAHk-=wi5DYKbFE4j-jC2HGsKVuf1RpZbEiYt4tSXuxGKiN9oJg@mail.gmail.com>
-In-Reply-To: <CAHk-=wi5DYKbFE4j-jC2HGsKVuf1RpZbEiYt4tSXuxGKiN9oJg@mail.gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 25 Apr 2022 10:24:31 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXLBxATLYavmWRVQvHiLzQG_=ej_0Aq4Ctpdz4egUSbMA@mail.gmail.com>
-Message-ID: <CAMuHMdXLBxATLYavmWRVQvHiLzQG_=ej_0Aq4Ctpdz4egUSbMA@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf 2/4] page_alloc: use vmalloc_huge for large system hash
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     "song@kernel.org" <song@kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        Rik van Riel <riel@fb.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "rick.p.edgecombe@intel.com" <rick.p.edgecombe@intel.com>,
-        "hch@lst.de" <hch@lst.de>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "hch@infradead.org" <hch@infradead.org>,
-        "mcgrof@kernel.org" <mcgrof@kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "imbrenda@linux.ibm.com" <imbrenda@linux.ibm.com>
+References: <20220422084720.959271-1-xji@analogixsemi.com> <20220422084720.959271-4-xji@analogixsemi.com>
+ <CAG3jFytWGSUM9mevHewdmEe-hq3JgB74s7_f0fsEQqkXr9VUHg@mail.gmail.com> <CAG3jFyvEYbwkdGtiNR-6vFEXTLjcyT_viqp9qeVxFTu0PrJEVA@mail.gmail.com>
+In-Reply-To: <CAG3jFyvEYbwkdGtiNR-6vFEXTLjcyT_viqp9qeVxFTu0PrJEVA@mail.gmail.com>
+From:   Chen-Yu Tsai <wenst@chromium.org>
+Date:   Mon, 25 Apr 2022 16:24:50 +0800
+Message-ID: <CAGXv+5E1cCNWD98fMDjC38y2UztZd=PNQ+=G=wrBYfoXkswvHA@mail.gmail.com>
+Subject: Re: [PATCH v2 4/4] drm/bridge: anx7625: Use DPI bus type
+To:     Robert Foss <robert.foss@linaro.org>, Xin Ji <xji@analogixsemi.com>
+Cc:     dri-devel@lists.freedesktop.org, Jonas Karlman <jonas@kwiboo.se>,
+        David Airlie <airlied@linux.ie>, qwen@analogixsemi.com,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        linux-kernel@vger.kernel.org,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        bliang@analogixsemi.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
-
-On Mon, Apr 25, 2022 at 10:18 AM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
-> On Mon, Apr 25, 2022 at 12:07 AM Geert Uytterhoeven
-> <geert@linux-m68k.org> wrote:
-> > vmalloc_huge() is provided by mm/vmalloc.c, which is not
-> > compiled if CONFIG_MMU=n.
+On Fri, Apr 22, 2022 at 10:13 PM Robert Foss <robert.foss@linaro.org> wrote:
 >
-> Well, that's annoying.
+> On Fri, 22 Apr 2022 at 16:01, Robert Foss <robert.foss@linaro.org> wrote:
+> >
+> > On Fri, 22 Apr 2022 at 10:49, Xin Ji <xji@analogixsemi.com> wrote:
+> > >
+> > > As V4L2_FWNODE_BUS_TYPE_PARALLEL not properly descript for DPI
+> > > interface, this patch use new defined V4L2_FWNODE_BUS_TYPE_DPI for it.
+> > >
+> > > Fixes: fd0310b6fe7d ("drm/bridge: anx7625: add MIPI DPI input feature")
+> > > Signed-off-by: Xin Ji <xji@analogixsemi.com>
+> > > ---
+> > >  drivers/gpu/drm/bridge/analogix/anx7625.c | 8 ++++----
+> > >  1 file changed, 4 insertions(+), 4 deletions(-)
+> > >
+> > > diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
+> > > index 376da01243a3..71df977e8f53 100644
+> > > --- a/drivers/gpu/drm/bridge/analogix/anx7625.c
+> > > +++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
+> > > @@ -1623,14 +1623,14 @@ static int anx7625_parse_dt(struct device *dev,
+> > >
+> > >         anx7625_get_swing_setting(dev, pdata);
+> > >
+> > > -       pdata->is_dpi = 1; /* default dpi mode */
+> > > +       pdata->is_dpi = 0; /* default dsi mode */
+> > >         pdata->mipi_host_node = of_graph_get_remote_node(np, 0, 0);
+> > >         if (!pdata->mipi_host_node) {
+> > >                 DRM_DEV_ERROR(dev, "fail to get internal panel.\n");
+> > >                 return -ENODEV;
+> > >         }
+> > >
+> > > -       bus_type = V4L2_FWNODE_BUS_TYPE_PARALLEL;
+> > > +       bus_type = 0;
+> > >         mipi_lanes = MAX_LANES_SUPPORT;
+> > >         ep0 = of_graph_get_endpoint_by_regs(np, 0, 0);
+> > >         if (ep0) {
+> > > @@ -1640,8 +1640,8 @@ static int anx7625_parse_dt(struct device *dev,
+> > >                 mipi_lanes = of_property_count_u32_elems(ep0, "data-lanes");
+> > >         }
+> > >
+> > > -       if (bus_type == V4L2_FWNODE_BUS_TYPE_PARALLEL) /* bus type is Parallel(DSI) */
+> > > -               pdata->is_dpi = 0;
+> > > +       if (bus_type == V4L2_FWNODE_BUS_TYPE_DPI) /* bus type is DPI */
+> > > +               pdata->is_dpi = 1;
+> > >
+> > >         pdata->mipi_lanes = mipi_lanes;
+> > >         if (pdata->mipi_lanes > MAX_LANES_SUPPORT || pdata->mipi_lanes <= 0)
+> >
+> > Reviewed-by: Robert Foss <robert.foss@linaro.org>
 >
-> Does this trivial patch fix it for you?
+> Acked-by: Robert Foss <robert.foss@linaro.org>
 
-Thanks, yes it does.
-(at least it fixes the m5272c3_defconfig build, no hardware to test).
+Tested-by: Chen-Yu Tsai <wenst@chromium.org>
 
-> I get this feeling that this could be done better with a weak alias to
-> __vmalloc(), and that could take care of the "arch doesn't support
-> VMAP_HUGE" case too, but the attached is the stupid and
-> straightforward version.
+Confirmed this fixes the display on Juniper (Acer Chromebook Spin 311) on
+mainline (next-20220422).
 
-Sounds reasonable.
+Xin, in the future, please send the whole series to all recipients of
+all patches listed by get_maintainers.pl, not just the recipients of
+each patch. In the case of this series, they should have been sent
+to all of the mailing lists (media, devicetree, dri-devel) so that
+everyone has the same, full view of the patches.
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+ChenYu
