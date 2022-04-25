@@ -2,140 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21474C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 21:08:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96703C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 21:09:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245702AbiDYVLt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 17:11:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54678 "EHLO
+        id S245693AbiDYVMR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 17:12:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245685AbiDYVLm (ORCPT
+        with ESMTP id S240879AbiDYVMP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 17:11:42 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EEFC6D976;
-        Mon, 25 Apr 2022 14:08:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650920916; x=1682456916;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=w9h6Cdx4XjslBo66HrakyPOtDRXWJENi2JZ7dmBusrQ=;
-  b=WxiLxXoLjnOUypy6ZJghPASHB/D/JGsUdE+mW994LJmgleaZ0DV0SP97
-   TNZLIIRMYBdO+owWgjTVBA7ikq2ALPcV/V9jLgY2qE7buxplLmoPVwQ14
-   0CMrJXtOHA84Ka1KSxAccosqGFLS8fz8m1LtcqvaW8FtBhCJvMpLQ//Lc
-   opg5THyeHyddVhjua25DV+wzfaIF6CGha0QsO2FxZF4MU4eSEm8Xk73Mc
-   h8SFVItnO3eQQdjezEbbBGGf46h1cPYRof0/jgqu93azAwLjOpmdYe7UI
-   etozUQ0XzfNgRE5PrjHGb6uEQOLV2+gDejN6KKTd4aIYStIvkxQmkwpgp
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="262961519"
-X-IronPort-AV: E=Sophos;i="5.90,289,1643702400"; 
-   d="scan'208";a="262961519"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 14:08:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,289,1643702400"; 
-   d="scan'208";a="564254914"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 25 Apr 2022 14:08:32 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nj5wd-0002sj-V6;
-        Mon, 25 Apr 2022 21:08:31 +0000
-Date:   Tue, 26 Apr 2022 05:08:16 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Russ Weight <russell.h.weight@intel.com>, mdf@kernel.org,
-        linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, trix@redhat.com,
-        marpagan@redhat.com, lgoncalv@redhat.com, yilun.xu@intel.com,
-        hao.wu@intel.com, matthew.gerlach@linux.intel.com,
-        tianfei.zhang@intel.com, Russ Weight <russell.h.weight@intel.com>
-Subject: Re: [PATCH v1 1/1] fpga: dfl: fix the kernel warning when
- release/assign ports for SRIOV
-Message-ID: <202204260456.dOkQIjjg-lkp@intel.com>
-References: <20220425174827.89819-1-russell.h.weight@intel.com>
+        Mon, 25 Apr 2022 17:12:15 -0400
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B9B26FA2E;
+        Mon, 25 Apr 2022 14:09:10 -0700 (PDT)
+Received: by mail-ot1-x330.google.com with SMTP id l9-20020a056830268900b006054381dd35so11699735otu.4;
+        Mon, 25 Apr 2022 14:09:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=g17J6sFTPMUFOZrO9IXMP8Nx+aSWZ2iq9i8H5lFtblY=;
+        b=Bwjd3J9JaGkkW3IkvJP5kiokTgjlGRJif9MGnM46DuWr3AKs0ni3QAWukxjMxhaZoM
+         uaycti6CQpazIJMl4fyTWExYmX5kHNj4FG/e78U/SkK+pu9NfcH+cpynODX5hRjwO7pK
+         NN9PfeiNBCi/7xdqRWjMJ5ozemm0vXRsj7gBL+5RP8OXHnOrNqtOjWCKh1LQuCQ05UcE
+         avGLU9rKB+BoR4tYkXFVJEj7qtIm2Hpf/3mcUAJZ9BbUDopmb6t1uY9sJVc4B3py8KSm
+         MQxywQNBgkeWoP5nCb6GJsReOp/WXPgufYAYdv6FWXWUjKrXldqU1R8P83x1kAzuN7XA
+         GhDg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=g17J6sFTPMUFOZrO9IXMP8Nx+aSWZ2iq9i8H5lFtblY=;
+        b=CfjCB4bZXkaTX2BLI0KuOa18ceN/lStFiUz0cq0GxRlAHIEh+EXVJ7+x0UEQprAGxm
+         dT5lxDRdCeVUrxEKUraathoH/h7kPD8QjNApamKyMcM/xJY3P0OXgf6xGT5ix1Fepx8i
+         JIEvOvRdktkukN291hDq8sG3SQyRH0boVxejD2FSAYTjb5ZbzZfXhP7fWrwe9ShT6gXn
+         C0VmwsD6btrNzm1FlJoavHUZBrekBX9ZAppcvMbzt4K77ZdGeX17wYJSIGMVAeIlY6FI
+         3MG6fN5ZQ77148x9tJ4jZKEowKeDtiq3tjlieOkay1QdRjtjGFa2SGJXWo3luCiAHTjf
+         8uCQ==
+X-Gm-Message-State: AOAM533vDrLFVyqdqjJ7qbf9nuA1n23+932CTZ8Tta1cITDEC/bmu9t/
+        oyvPubfnpR1BKYeqX5hrcE4=
+X-Google-Smtp-Source: ABdhPJwiV0xUrnMDRE+FrYkXQ1iC1m4yTl6zBe9e3+YwEcqnzuUw4Q6+8texda10+SXyWGaXAIy66A==
+X-Received: by 2002:a05:6830:4b6:b0:605:47ba:2310 with SMTP id l22-20020a05683004b600b0060547ba2310mr7199480otd.301.1650920949900;
+        Mon, 25 Apr 2022 14:09:09 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id n3-20020a056870a44300b000e9436ea03fsm134545oal.36.2022.04.25.14.09.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Apr 2022 14:09:08 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Mon, 25 Apr 2022 14:09:07 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Peter Rosin <peda@axentia.se>
+Cc:     linux-kernel@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] dt-bindings: hwmon: Add Atmel AT30TS74
+Message-ID: <20220425210907.GA4184243@roeck-us.net>
+References: <ea4cd16b-4a04-8857-d08a-53be58b00d28@axentia.se>
+ <9c01b1b5-871a-2b34-9f98-766d043e0759@axentia.se>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220425174827.89819-1-russell.h.weight@intel.com>
+In-Reply-To: <9c01b1b5-871a-2b34-9f98-766d043e0759@axentia.se>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Russ,
+On Mon, Apr 25, 2022 at 10:35:41PM +0200, Peter Rosin wrote:
+> Document the Atmel (now Microchip) AT30TS74 which is an LM75 based
+> temperature sensor.
+> 
+> Acked-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Peter Rosin <peda@axentia.se>
 
-I love your patch! Perhaps something to improve:
+Applied to hmon-next.
 
-[auto build test WARNING on linus/master]
-[also build test WARNING on v5.18-rc4 next-20220422]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Thanks,
+Guenter
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Russ-Weight/fpga-dfl-fix-the-kernel-warning-when-release-assign-ports-for-SRIOV/20220426-014949
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git af2d861d4cd2a4da5137f795ee3509e6f944a25b
-config: hexagon-randconfig-r041-20220425 (https://download.01.org/0day-ci/archive/20220426/202204260456.dOkQIjjg-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 1cddcfdc3c683b393df1a5c9063252eb60e52818)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/4b4db40cd1b608457d6e1fcf95443bd940d01f3c
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Russ-Weight/fpga-dfl-fix-the-kernel-warning-when-release-assign-ports-for-SRIOV/20220426-014949
-        git checkout 4b4db40cd1b608457d6e1fcf95443bd940d01f3c
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/fpga/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/fpga/dfl.c:54: warning: cannot understand function prototype: 'struct dfl_dev_info '
-   drivers/fpga/dfl.c:74: warning: cannot understand function prototype: 'struct dfl_chardev_info '
-   drivers/fpga/dfl.c:154: warning: Function parameter or member 'fdata' not described in 'dfl_fpga_port_ops_get'
-   drivers/fpga/dfl.c:154: warning: Excess function parameter 'pdev' description in 'dfl_fpga_port_ops_get'
-   drivers/fpga/dfl.c:220: warning: Function parameter or member 'fdata' not described in 'dfl_fpga_check_port_id'
-   drivers/fpga/dfl.c:220: warning: Excess function parameter 'pdev' description in 'dfl_fpga_check_port_id'
-   drivers/fpga/dfl.c:716: warning: Function parameter or member 'revision' not described in 'dfl_feature_info'
->> drivers/fpga/dfl.c:1509: warning: expecting prototype for __dfl_fpga_cdev_find_port(). Prototype was for __dfl_fpga_cdev_find_port_data() instead
-
-
-vim +1509 drivers/fpga/dfl.c
-
-543be3d8c999b3 Wu Hao   2018-06-30  1490  
-5d56e117001996 Wu Hao   2018-06-30  1491  /**
-5d56e117001996 Wu Hao   2018-06-30  1492   * __dfl_fpga_cdev_find_port - find a port under given container device
-5d56e117001996 Wu Hao   2018-06-30  1493   *
-5d56e117001996 Wu Hao   2018-06-30  1494   * @cdev: container device
-5d56e117001996 Wu Hao   2018-06-30  1495   * @data: data passed to match function
-5d56e117001996 Wu Hao   2018-06-30  1496   * @match: match function used to find specific port from the port device list
-5d56e117001996 Wu Hao   2018-06-30  1497   *
-5d56e117001996 Wu Hao   2018-06-30  1498   * Find a port device under container device. This function needs to be
-5d56e117001996 Wu Hao   2018-06-30  1499   * invoked with lock held.
-5d56e117001996 Wu Hao   2018-06-30  1500   *
-5d56e117001996 Wu Hao   2018-06-30  1501   * Return: pointer to port's platform device if successful, NULL otherwise.
-5d56e117001996 Wu Hao   2018-06-30  1502   *
-5d56e117001996 Wu Hao   2018-06-30  1503   * NOTE: you will need to drop the device reference with put_device() after use.
-5d56e117001996 Wu Hao   2018-06-30  1504   */
-4b4db40cd1b608 Xu Yilun 2022-04-25  1505  struct dfl_feature_dev_data *
-4b4db40cd1b608 Xu Yilun 2022-04-25  1506  __dfl_fpga_cdev_find_port_data(struct dfl_fpga_cdev *cdev, void *data,
-4b4db40cd1b608 Xu Yilun 2022-04-25  1507  			       int (*match)(struct dfl_feature_dev_data *,
-4b4db40cd1b608 Xu Yilun 2022-04-25  1508  					    void *))
-5d56e117001996 Wu Hao   2018-06-30 @1509  {
-4b4db40cd1b608 Xu Yilun 2022-04-25  1510  	struct dfl_feature_dev_data *fdata;
-5d56e117001996 Wu Hao   2018-06-30  1511  
-4b4db40cd1b608 Xu Yilun 2022-04-25  1512  	list_for_each_entry(fdata, &cdev->port_dev_list, node) {
-4b4db40cd1b608 Xu Yilun 2022-04-25  1513  		if (match(fdata, data))
-4b4db40cd1b608 Xu Yilun 2022-04-25  1514  			return fdata;
-5d56e117001996 Wu Hao   2018-06-30  1515  	}
-5d56e117001996 Wu Hao   2018-06-30  1516  
-5d56e117001996 Wu Hao   2018-06-30  1517  	return NULL;
-5d56e117001996 Wu Hao   2018-06-30  1518  }
-4b4db40cd1b608 Xu Yilun 2022-04-25  1519  EXPORT_SYMBOL_GPL(__dfl_fpga_cdev_find_port_data);
-5d56e117001996 Wu Hao   2018-06-30  1520  
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> ---
+>  Documentation/devicetree/bindings/hwmon/lm75.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/hwmon/lm75.yaml b/Documentation/devicetree/bindings/hwmon/lm75.yaml
+> index 72980d083c21..8226e3b5d028 100644
+> --- a/Documentation/devicetree/bindings/hwmon/lm75.yaml
+> +++ b/Documentation/devicetree/bindings/hwmon/lm75.yaml
+> @@ -14,6 +14,7 @@ properties:
+>    compatible:
+>      enum:
+>        - adi,adt75
+> +      - atmel,at30ts74
+>        - dallas,ds1775
+>        - dallas,ds75
+>        - dallas,ds7505
