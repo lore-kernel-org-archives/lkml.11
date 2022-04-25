@@ -2,136 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D6C1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 15:56:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBCBDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 15:56:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243114AbiDYP7W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 11:59:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40178 "EHLO
+        id S243110AbiDYP7i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 11:59:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243052AbiDYP7T (ORCPT
+        with ESMTP id S243121AbiDYP7c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 11:59:19 -0400
-Received: from mail-oo1-f43.google.com (mail-oo1-f43.google.com [209.85.161.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A575E3FBF8;
-        Mon, 25 Apr 2022 08:56:15 -0700 (PDT)
-Received: by mail-oo1-f43.google.com with SMTP id f13-20020a4aa68d000000b0033a2c53d0baso2872004oom.0;
-        Mon, 25 Apr 2022 08:56:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Keqz+An68JFJoxGJpxJgcEsiVu09q9HsfX88H2vT/Hs=;
-        b=0j095FHTFpAZjkZrsNz4z8gPuOyntHQdy7F3Est2c690Y9An4fckH8lUbiSq8VWhu9
-         BmOn0o/OuBlkXl5od/TVpgLWRUYwTpjXCd5e5rPLdIxZUxengQPWcyO9LG3DKkBF0CMV
-         GI/5IHzzN+Tv3fJHWLVAUjO7TvSBkuVczsVjL53LTDsf/2WEu5SLKgjBAUEwdwJryq4g
-         9A3VHW8kHKvuygHMkgN9+oJEPo33Rs94XoPXLJmT+HkX/T0L3gIaTOd2gyHw2ChAeV6A
-         DeMt5fOWa975S7+uk3M4FhMaG4DuDahPCDmC+/OTd2uGjgcxHVDh/YXu59pe4mJpYE/J
-         pkUw==
-X-Gm-Message-State: AOAM531HwZdMJlNhTX0v+G9UOD5zbMs5AeexDr6tVD9H3313y0w+t9mB
-        p9DesbKZGZtwaagRUxjeHA==
-X-Google-Smtp-Source: ABdhPJznQ8C2Rt9OEFAObU32Vgd+lYQoJcQox9kfvmE+P+WF1kE1eMz1m9UOW8O0fWdO7BdxStQpew==
-X-Received: by 2002:a4a:b3c5:0:b0:324:527f:8709 with SMTP id q5-20020a4ab3c5000000b00324527f8709mr6637977ooo.90.1650902174750;
-        Mon, 25 Apr 2022 08:56:14 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id 6-20020a9d0006000000b0060152dd63a6sm3863297ota.55.2022.04.25.08.56.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 08:56:14 -0700 (PDT)
-Received: (nullmailer pid 3956552 invoked by uid 1000);
-        Mon, 25 Apr 2022 15:56:13 -0000
-Date:   Mon, 25 Apr 2022 10:56:13 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     frowand.list@gmail.com
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Rob Herring <robh+dt@kernel.org>,
-        pantelis.antoniou@konsulko.com,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        Slawomir Stepien <slawomir.stepien@nokia.com>,
-        Slawomir Stepien <sst@poczta.fm>
-Subject: Re: [PATCH v4 2/2] of: overlay: rework overlay apply and remove
- kfree()s
-Message-ID: <YmbEneH6PrPxAj4u@robh.at.kernel.org>
-References: <20220420222505.928492-1-frowand.list@gmail.com>
- <20220420222505.928492-3-frowand.list@gmail.com>
+        Mon, 25 Apr 2022 11:59:32 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE32114FAE;
+        Mon, 25 Apr 2022 08:56:22 -0700 (PDT)
+Date:   Mon, 25 Apr 2022 15:56:20 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1650902181;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=2yTwPxv8H/dUOhfrqLiZHWdWH8T8aQb7iNOdHS/XIE4=;
+        b=QM/oyovEFP74DbhBQUiQArTi16JTpDv1T8KT1a9///cLClfSdaiiiIvGhWKnWf2N66Esms
+        EGvAqwqzRn4SWQP96r9Ell8BptCwln4X+BfyZwlfaOgieGam9P8rCHpAMCm1BCKSxZOjJ4
+        kFeeiHHuPFjEVCCaRX+ywmKmMV8ye+wbG3L8eRGgn6lxz5EWu2qaobWxFzyLD4RySFB4gq
+        IgKXLc+wFWktRgGJsrHStz7/Ijb9AYVaBNNdVmZuw+RAxZn8onAsxBpedWL24Ebvhl9Pq7
+        o7qNUZP6z/CWeYKAaOwd9N15Nx9jtgMU3OrmEH9KvyqP+bSzPl5idpeLMHzk5A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1650902181;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=2yTwPxv8H/dUOhfrqLiZHWdWH8T8aQb7iNOdHS/XIE4=;
+        b=zeD6UgsbVv9QIvZ0MOBD7VZMyGdm+HWz3GKTC5pwEujnyULwCo7IqO16+hqHfY2KoeGKcZ
+        FLiWQB9IuGoYknDQ==
+From:   "tip-bot2 for Carlos Bilbao" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: ras/core] x86/mce: Simplify AMD severity grading logic
+Cc:     Carlos Bilbao <carlos.bilbao@amd.com>,
+        Borislav Petkov <bp@suse.de>,
+        Yazen Ghannam <yazen.ghannam@amd.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220405183212.354606-2-carlos.bilbao@amd.com>
+References: <20220405183212.354606-2-carlos.bilbao@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220420222505.928492-3-frowand.list@gmail.com>
+Message-ID: <165090218047.4207.9735013762678136837.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 20 Apr 2022 17:25:05 -0500, frowand.list@gmail.com wrote:
-> From: Frank Rowand <frank.rowand@sony.com>
-> 
-> Fix various kfree() issues related to of_overlay_apply().
->   - Double kfree() of fdt and tree when init_overlay_changeset()
->     returns an error.
->   - free_overlay_changeset() free the root of the unflattened
->     overlay (variable tree) instead of the memory that contains
->     the unflattened overlay.
->   - For the case of a failure during applying an overlay, move kfree()
->     of new_fdt and overlay_mem into free_overlay_changeset(), which
->     is called by the function that allocated them.
->   - For the case of removing an overlay, the kfree() of new_fdt and
->     overlay_mem remains in free_overlay_changeset().
->   - Check return value of of_fdt_unflatten_tree() for error instead
->     of checking the returned value of overlay_root.
->   - When storing pointers to allocated objects in ovcs, do so as
->     near to the allocation as possible instead of in deeply layered
->     function.
-> 
-> More clearly document policy related to lifetime of pointers into
-> overlay memory.
-> 
-> Double kfree()
-> Reported-by: Slawomir Stepien <slawomir.stepien@nokia.com>
-> 
-> Signed-off-by: Frank Rowand <frank.rowand@sony.com>
-> 
-> ---
-> 
-> Chose value of zero for OF_OVERLAY_INIT instead of -1, so that the
-> value of ovcs->notify_state would be properly initialed by the
-> kzalloc() of ovcs.
-> 
-> My first reply to this email will be a diff of this patch vs
-> v3 of this patch.
-> 
-> Changes since v3:
->    - Instead of field kfree_unsafe in struct overlay_changeset, add
->      field notify_state to track action of most recent notification,
->      allowing the free_overlay_changeset() code to choose whether
->      to free overlay_mem and new_fdt.
->    - Add new value OF_OVERLAY_INIT to enum of_overlay_notify_action
-> 
-> Changes since v2:
->   - A version 2 review comment correctly said "This screams hack".
->     Restructure as listed below in response to the comment.
->   - Quit passing kfree_unsafe in function parameters, move it to
->     be a field of ovcs
->   - Quit passing a bunch of objects as function parameters, which
->     were used only for saving in ovcs
->   - Save pointers to allocated objects as near to the allocation as
->     possible instead of in a different function.
->   - Move object allocation as early in the calling stack (starting
->     at of_overlay_fdt_apply()) and move object freeing more fully
->     into free_overlay_changeset(), which is called in two places:
->     (1) on error path of applying overlay and (2) removal of an
->     overlay by of_overlay_remove().
->   - Additional notes in the overlay documentation regarding pointers
->     into overlay nodes and data.
-> 
-> Changes since v1:
->   - Move kfree()s from init_overlay_changeset() to of_overlay_fdt_apply()
->   - Better document lifetime of pointers into overlay, both in overlay.c
->     and Documentation/devicetree/overlay-notes.rst
-> 
->  Documentation/devicetree/overlay-notes.rst |  30 ++-
->  drivers/of/overlay.c                       | 263 ++++++++++-----------
->  include/linux/of.h                         |   3 +-
->  3 files changed, 153 insertions(+), 143 deletions(-)
-> 
+The following commit has been merged into the ras/core branch of tip:
 
-Applied, thanks!
+Commit-ID:     70c459d915e838b7f536b8e26e0b3a6141bd2645
+Gitweb:        https://git.kernel.org/tip/70c459d915e838b7f536b8e26e0b3a6141bd2645
+Author:        Carlos Bilbao <carlos.bilbao@amd.com>
+AuthorDate:    Tue, 05 Apr 2022 13:32:13 -05:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Mon, 25 Apr 2022 12:32:03 +02:00
+
+x86/mce: Simplify AMD severity grading logic
+
+The MCE handler needs to understand the severity of the machine errors to
+act accordingly. Simplify the AMD grading logic following a logic that
+closely resembles the descriptions of the public PPR documents. This will
+help include more fine-grained grading of errors in the future.
+
+  [ bp: Touchups. ]
+
+Signed-off-by: Carlos Bilbao <carlos.bilbao@amd.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Yazen Ghannam <yazen.ghannam@amd.com>
+Link: https://lore.kernel.org/r/20220405183212.354606-2-carlos.bilbao@amd.com
+---
+ arch/x86/kernel/cpu/mce/severity.c | 101 +++++++++-------------------
+ 1 file changed, 36 insertions(+), 65 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/mce/severity.c b/arch/x86/kernel/cpu/mce/severity.c
+index 1add869..d842148 100644
+--- a/arch/x86/kernel/cpu/mce/severity.c
++++ b/arch/x86/kernel/cpu/mce/severity.c
+@@ -301,85 +301,56 @@ static noinstr int error_context(struct mce *m, struct pt_regs *regs)
+ 	}
+ }
+ 
+-static __always_inline int mce_severity_amd_smca(struct mce *m, enum context err_ctx)
++/* See AMD PPR(s) section Machine Check Error Handling. */
++static noinstr int mce_severity_amd(struct mce *m, struct pt_regs *regs, char **msg, bool is_excp)
+ {
+-	u64 mcx_cfg;
++	int ret;
+ 
+ 	/*
+-	 * We need to look at the following bits:
+-	 * - "succor" bit (data poisoning support), and
+-	 * - TCC bit (Task Context Corrupt)
+-	 * in MCi_STATUS to determine error severity.
++	 * Default return value: Action required, the error must be handled
++	 * immediately.
+ 	 */
+-	if (!mce_flags.succor)
+-		return MCE_PANIC_SEVERITY;
+-
+-	mcx_cfg = mce_rdmsrl(MSR_AMD64_SMCA_MCx_CONFIG(m->bank));
+-
+-	/* TCC (Task context corrupt). If set and if IN_KERNEL, panic. */
+-	if ((mcx_cfg & MCI_CONFIG_MCAX) &&
+-	    (m->status & MCI_STATUS_TCC) &&
+-	    (err_ctx == IN_KERNEL))
+-		return MCE_PANIC_SEVERITY;
+-
+-	 /* ...otherwise invoke hwpoison handler. */
+-	return MCE_AR_SEVERITY;
+-}
+-
+-/*
+- * See AMD Error Scope Hierarchy table in a newer BKDG. For example
+- * 49125_15h_Models_30h-3Fh_BKDG.pdf, section "RAS Features"
+- */
+-static noinstr int mce_severity_amd(struct mce *m, struct pt_regs *regs, char **msg, bool is_excp)
+-{
+-	enum context ctx = error_context(m, regs);
++	ret = MCE_AR_SEVERITY;
+ 
+ 	/* Processor Context Corrupt, no need to fumble too much, die! */
+-	if (m->status & MCI_STATUS_PCC)
+-		return MCE_PANIC_SEVERITY;
+-
+-	if (m->status & MCI_STATUS_UC) {
+-
+-		if (ctx == IN_KERNEL)
+-			return MCE_PANIC_SEVERITY;
++	if (m->status & MCI_STATUS_PCC) {
++		ret = MCE_PANIC_SEVERITY;
++		goto out;
++	}
+ 
+-		/*
+-		 * On older systems where overflow_recov flag is not present, we
+-		 * should simply panic if an error overflow occurs. If
+-		 * overflow_recov flag is present and set, then software can try
+-		 * to at least kill process to prolong system operation.
+-		 */
+-		if (mce_flags.overflow_recov) {
+-			if (mce_flags.smca)
+-				return mce_severity_amd_smca(m, ctx);
+-
+-			/* kill current process */
+-			return MCE_AR_SEVERITY;
+-		} else {
+-			/* at least one error was not logged */
+-			if (m->status & MCI_STATUS_OVER)
+-				return MCE_PANIC_SEVERITY;
+-		}
+-
+-		/*
+-		 * For any other case, return MCE_UC_SEVERITY so that we log the
+-		 * error and exit #MC handler.
+-		 */
+-		return MCE_UC_SEVERITY;
++	if (m->status & MCI_STATUS_DEFERRED) {
++		ret = MCE_DEFERRED_SEVERITY;
++		goto out;
+ 	}
+ 
+ 	/*
+-	 * deferred error: poll handler catches these and adds to mce_ring so
+-	 * memory-failure can take recovery actions.
++	 * If the UC bit is not set, the system either corrected or deferred
++	 * the error. No action will be required after logging the error.
+ 	 */
+-	if (m->status & MCI_STATUS_DEFERRED)
+-		return MCE_DEFERRED_SEVERITY;
++	if (!(m->status & MCI_STATUS_UC)) {
++		ret = MCE_KEEP_SEVERITY;
++		goto out;
++	}
+ 
+ 	/*
+-	 * corrected error: poll handler catches these and passes responsibility
+-	 * of decoding the error to EDAC
++	 * On MCA overflow, without the MCA overflow recovery feature the
++	 * system will not be able to recover, panic.
+ 	 */
+-	return MCE_KEEP_SEVERITY;
++	if ((m->status & MCI_STATUS_OVER) && !mce_flags.overflow_recov) {
++		ret = MCE_PANIC_SEVERITY;
++		goto out;
++	}
++
++	if (!mce_flags.succor) {
++		ret = MCE_PANIC_SEVERITY;
++		goto out;
++	}
++
++	if (error_context(m, regs) == IN_KERNEL)
++		ret = MCE_PANIC_SEVERITY;
++
++out:
++	return ret;
+ }
+ 
+ static noinstr int mce_severity_intel(struct mce *m, struct pt_regs *regs, char **msg, bool is_excp)
