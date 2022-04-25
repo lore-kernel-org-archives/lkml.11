@@ -2,280 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D29CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 07:52:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 884F0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 07:52:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234326AbiDYHzJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 03:55:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51648 "EHLO
+        id S234446AbiDYHzt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 03:55:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241008AbiDYHxN (ORCPT
+        with ESMTP id S241524AbiDYHyg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 03:53:13 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 753031A5
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 00:50:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650873005; x=1682409005;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=HxcK3Y9CYtajuNDTLIHEUDdKJgVEo2P2iuRGDnGLJJM=;
-  b=IdFdEIA47JVBuXNWdu0AODBnKcLz/23GLjkYAj+zFFs5nIGu1wYOwIwk
-   LM2oE72hKYSQ6RVmMRNdJzQDqaB7zY8QiNQJfi//Djpqt7nCMBJHhkCK1
-   h3RU0tjSz36000tn62cMxZIsu838QDq3Zj8PjiuSzHHmch4N83oZXc5ny
-   aSH4XtrhkFQT8d6Xr3PkqjXPI9ArJcrbG2aDoUVb1fLtJu8BsLMYJUoJC
-   XzMjuXH+4KjJsHyCeUx45be+bVx3ExdRugvwUp1gP4FHibfXbr2mKHuDs
-   c2cQ2dvSDqy3jpH9TzhzMwtE/aKiQTxWuxY+XgPvKfAxrUU9g1PjbE1Le
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10327"; a="264973812"
-X-IronPort-AV: E=Sophos;i="5.90,287,1643702400"; 
-   d="scan'208";a="264973812"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 00:50:00 -0700
-X-IronPort-AV: E=Sophos;i="5.90,287,1643702400"; 
-   d="scan'208";a="557600093"
-Received: from sannilnx.jer.intel.com ([10.12.231.73])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 00:49:57 -0700
-From:   Alexander Usyskin <alexander.usyskin@intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-Cc:     Tomas Winkler <tomas.winkler@intel.com>,
-        Alexander Usyskin <alexander.usyskin@intel.com>,
-        Vitaly Lubart <vitaly.lubart@intel.com>,
-        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>,
-        Alan Previn <alan.previn.teres.alexis@intel.com>
-Subject: [PATCH v2 14/14] drm/i915/gsc: allocate extended operational memory in LMEM
-Date:   Mon, 25 Apr 2022 10:49:01 +0300
-Message-Id: <20220425074901.3991274-15-alexander.usyskin@intel.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220425074901.3991274-1-alexander.usyskin@intel.com>
-References: <20220425074901.3991274-1-alexander.usyskin@intel.com>
+        Mon, 25 Apr 2022 03:54:36 -0400
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam07on2084.outbound.protection.outlook.com [40.107.95.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6133D25C5F;
+        Mon, 25 Apr 2022 00:50:55 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=C45K3Qaju3SnJwhvdiy05t5u35QoK5QYI2m5jTIOXoVvVUYoaD/YV4ds6y8AU4YpQDnTtqc/cSuP+5z+AErUAxdi0PO18OUg5Np/J4nosqimvJN6QUsag2MGzEF67FI+aILM1xwdpgRyBYIeDtkvSYyWkGW3HdmClhzHD38GubdkxkSms01deNnO5GgdCWDu/TR6Dd5grUpM6uaOQR4xZiJwSzAp9KMDofvcEXKviODwTbNGvF8GzrRPJcc+NE1C/gG6QqKRmOP7siQeD4oXf7T5sLppCCy7tATjDgKudkQwsm+EOW4eEu3f9Qk9Fuak0eqcMuGNj3+bzLJvC13lqw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=q2Oc58YS2bntBt7DCXUQ7MuAdw+B3FRabD0LESnq4hU=;
+ b=oa9tDILm1I2HVXWNIao5dtdYz6NfxSLyaV6SrDcmR++X9kaaG9qJgSww4tJnkV/6vihnvXNfHoWnKMT5E2pmvUsRV8J0+fA5+B67300yIMkX+6n9F3tXAtd8/6p3/naZLmVC9C5jDtagGuzUHTTBdD5rGl5g1tw3iGUvb7rMotzmnWU2r7wlNJik8FmU6TBirCpzMNGaxcKtsR2V9a04PDdxSnKxviOmZOhYmcCDOYT3Jz1IelxQjm3l+U4YMnu/XJFKxW4ipnevQ6MDA4cQG1S8dnhdEocmMR1+DB9QKI5Ok+5884+mXa2qWXfC5jffrOPrs5b4235jTqHjWX+i4g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.236) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=q2Oc58YS2bntBt7DCXUQ7MuAdw+B3FRabD0LESnq4hU=;
+ b=Fec9u8mzYQ1VsfsirVWIj8Ge8cjZzgPmb6+KneXNqQCDc0R4QP/qVAwv6l4hL8q4peUmCblSVmLy5lWkIRVYCzuGU/8+V69zxXPikFegQLjPZCCZ46FjCoaXMg/c9G4mrbSrHmoVvnDJ1zXGbTptKXOGjI4O5S9QdObE4S4Ey2VaRAyH6Jq1lykMvONj8wNW/oQjZlccXODG2S/HsCHwylregOtpz9gZDHjwoTci31/t6TS9C/70K4Ocw040mYULtdG9RqPMN/0diMXq85auKHnaz1sRGB4yYMijaBW8A73m0kACuxPoh63A5dZaBczakHiLT52AEtj6IVOFUL9tAw==
+Received: from MW4PR03CA0235.namprd03.prod.outlook.com (2603:10b6:303:b9::30)
+ by DM5PR1201MB0171.namprd12.prod.outlook.com (2603:10b6:4:56::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Mon, 25 Apr
+ 2022 07:50:53 +0000
+Received: from CO1NAM11FT033.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:b9:cafe::d8) by MW4PR03CA0235.outlook.office365.com
+ (2603:10b6:303:b9::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.13 via Frontend
+ Transport; Mon, 25 Apr 2022 07:50:53 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.236) by
+ CO1NAM11FT033.mail.protection.outlook.com (10.13.174.247) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5186.14 via Frontend Transport; Mon, 25 Apr 2022 07:50:53 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by DRHQMAIL109.nvidia.com
+ (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Mon, 25 Apr
+ 2022 07:50:52 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 25 Apr
+ 2022 00:50:52 -0700
+Received: from amhetre.nvidia.com (10.127.8.9) by mail.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server id 15.2.986.22 via Frontend
+ Transport; Mon, 25 Apr 2022 00:50:48 -0700
+From:   Ashish Mhetre <amhetre@nvidia.com>
+To:     <krzysztof.kozlowski@linaro.org>, <thierry.reding@gmail.com>,
+        <jonathanh@nvidia.com>, <digetx@gmail.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>,
+        <dmitry.osipenko@collabora.com>, <linux-kernel@vger.kernel.org>,
+        <linux-tegra@vger.kernel.org>, <devicetree@vger.kernel.org>
+CC:     <vdumpa@nvidia.com>, <Snikam@nvidia.com>,
+        Ashish Mhetre <amhetre@nvidia.com>
+Subject: [Patch v8 0/4] memory: tegra: Add MC channels and error logging
+Date:   Mon, 25 Apr 2022 13:20:32 +0530
+Message-ID: <20220425075036.30098-1-amhetre@nvidia.com>
+X-Mailer: git-send-email 2.17.1
+X-NVConfidentiality: public
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 974327e0-9f5c-42e3-0219-08da269052ed
+X-MS-TrafficTypeDiagnostic: DM5PR1201MB0171:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR1201MB017115EF0588E7AECFA9B12CCAF89@DM5PR1201MB0171.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: +D3IM/B3PIq9gW4llDfAFabu0KQ/xPaBo9fbKqKhdiw7nO8ArGiv0mTMUJmdQm0Zie282BfWf9VPWSe9gCtRwYBKB/hqJYUIHRfaHvAHj6iwC9ArV4xSn4RkUUrO+fp35FC65tQxS2G9KUeAIrFIRVdSYOjprJ/g54Pj0bqW2Ai2dEnxHd1BEdpNtuRyZDJLC4E4bMaPo+GosaPieHEDXkMp+g+Gn8e1k9VdnOENQk98pHlp1GYKES5oXEFvF1EsXTx08iLR+9L9/G0dCFBQxXn7Rdm3t2IKsgB2QP6paBQspfd3S0LI+qz4YjVNdL7YbYEDbNvQEd8hAoUY4z2xM/A2FUfxPGwD/uNjqJBm6FJNDHXFK3F3pO1+YiUa32Em9ZjaE+ScWyO5a+a06zdccPy3Us9LN7QFHbuYhYUFiWZpqHoNbK7Mfun+G+/9Si9F4Dlt75gcUhyYBA2YwNEoP/vr9Xub91QqMTanEB6kg9zRF06DjDmvA97QtUUZN5wk2UIHB6rg2NFHhhj/aJwpSjllXazrJcEr86P9FbzaL2p5jYKFUoGK29LISnINDQhxo2pTLuZ5H6VtOgciyviWzP7SuIzAov2zBATDAkjmY3rMK0ZEyuALVuiEbncVXvo7HiF06nV2Rsae2b2T5S6d3EBaRav7H9Esqk6AMrAnlQokUkvm+Bb+ThG3kC/EoRARE7lXECGTTiUSrsB3sZxKXqV0FCbfuLPLGbhIj0LB7Z8=
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(426003)(336012)(4326008)(70586007)(70206006)(8676002)(186003)(82310400005)(36756003)(6666004)(26005)(316002)(7696005)(81166007)(921005)(356005)(2616005)(1076003)(47076005)(54906003)(86362001)(110136005)(5660300002)(107886003)(2906002)(36860700001)(83380400001)(40460700003)(508600001)(8936002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Apr 2022 07:50:53.3819
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 974327e0-9f5c-42e3-0219-08da269052ed
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT033.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1201MB0171
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tomas Winkler <tomas.winkler@intel.com>
+From tegra186 onward, memory controllers support multiple channels.
+Add memory controller channels in device tree and add support to map
+address spaces of these channels in tegra MC driver.
+When memory controller interrupt occurs, registers from these channels
+are required to be read in order to get error information.
+Add error logging support from tegra186 onward for memory controller
+interrupts.
 
-GSC requires more operational memory than available on chip.
-Reserve 4M of LMEM for GSC operation. The memory is provided to the
-GSC as struct resource to the auxiliary data of the child device.
+Ashish Mhetre (4):
+  memory: tegra: Add memory controller channels support
+  memory: tegra: Add MC error logging on tegra186 onward
+  dt-bindings: memory: tegra: Update validation for reg and reg-names
+  arm64: tegra: Add memory controller channels
 
-Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
-Signed-off-by: Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
-Cc: Alan Previn <alan.previn.teres.alexis@intel.com>
 ---
- drivers/gpu/drm/i915/gt/intel_gsc.c | 92 ++++++++++++++++++++++++++---
- drivers/gpu/drm/i915/gt/intel_gsc.h |  3 +
- 2 files changed, 88 insertions(+), 7 deletions(-)
+Changes in v8:
+- Updated the bindings patch commit message to reflect the ABI change
+  and added "tegra" in subject
+- Updated function name with "mc_" prefix
+- Used snprintf instead of sprintf
+- Set mc->bcast_ch_regs to NULL in case of old bindings and checking for
+  NULL before accessing it
 
-diff --git a/drivers/gpu/drm/i915/gt/intel_gsc.c b/drivers/gpu/drm/i915/gt/intel_gsc.c
-index bfc307e49bf9..4d87519d5773 100644
---- a/drivers/gpu/drm/i915/gt/intel_gsc.c
-+++ b/drivers/gpu/drm/i915/gt/intel_gsc.c
-@@ -7,6 +7,7 @@
- #include <linux/mei_aux.h>
- #include "i915_drv.h"
- #include "i915_reg.h"
-+#include "gem/i915_gem_region.h"
- #include "gt/intel_gsc.h"
- #include "gt/intel_gt.h"
- 
-@@ -36,12 +37,68 @@ static int gsc_irq_init(int irq)
- 	return irq_set_chip_data(irq, NULL);
- }
- 
-+static int
-+gsc_ext_om_alloc(struct intel_gsc *gsc, struct intel_gsc_intf *intf, size_t size)
-+{
-+	struct intel_gt *gt = gsc_to_gt(gsc);
-+	struct drm_i915_gem_object *obj;
-+	void *vaddr;
-+	int err;
-+
-+	obj = i915_gem_object_create_lmem(gt->i915, size, I915_BO_ALLOC_CONTIGUOUS);
-+	if (IS_ERR(obj)) {
-+		drm_err(&gt->i915->drm, "Failed to allocate gsc memory\n");
-+		return PTR_ERR(obj);
-+	}
-+
-+	err = i915_gem_object_pin_pages_unlocked(obj);
-+	if (err) {
-+		drm_err(&gt->i915->drm, "Failed to pin pages for gsc memory\n");
-+		goto out_put;
-+	}
-+
-+	vaddr = i915_gem_object_pin_map_unlocked(obj, i915_coherent_map_type(gt->i915, obj, true));
-+	if (IS_ERR(vaddr)) {
-+		err = PTR_ERR(vaddr);
-+		drm_err(&gt->i915->drm, "Failed to map gsc memory\n");
-+		goto out_unpin;
-+	}
-+
-+	memset(vaddr, 0, obj->base.size);
-+
-+	i915_gem_object_unpin_map(obj);
-+
-+	intf->gem_obj = obj;
-+
-+	return 0;
-+
-+out_unpin:
-+	i915_gem_object_unpin_pages(obj);
-+out_put:
-+	i915_gem_object_put(obj);
-+	return err;
-+}
-+
-+static void gsc_ext_om_destroy(struct intel_gsc_intf *intf)
-+{
-+	struct drm_i915_gem_object *obj = fetch_and_zero(&intf->gem_obj);
-+
-+	if (!obj)
-+		return;
-+
-+	if (i915_gem_object_has_pinned_pages(obj))
-+		i915_gem_object_unpin_pages(obj);
-+
-+	i915_gem_object_put(obj);
-+}
-+
- struct gsc_def {
- 	const char *name;
- 	unsigned long bar;
- 	size_t bar_size;
- 	bool use_polling;
- 	bool slow_fw;
-+	size_t lmem_size;
- };
- 
- /* gsc resources and definitions (HECI1 and HECI2) */
-@@ -74,6 +131,7 @@ static const struct gsc_def gsc_def_dg2[] = {
- 		.name = "mei-gsc",
- 		.bar = DG2_GSC_HECI1_BASE,
- 		.bar_size = GSC_BAR_LENGTH,
-+		.lmem_size = SZ_4M,
- 	},
- 	{
- 		.name = "mei-gscfi",
-@@ -90,26 +148,33 @@ static void gsc_release_dev(struct device *dev)
- 	kfree(adev);
- }
- 
--static void gsc_destroy_one(struct intel_gsc_intf *intf)
-+static void gsc_destroy_one(struct drm_i915_private *i915,
-+				  struct intel_gsc *gsc, unsigned int intf_id)
- {
-+	struct intel_gsc_intf *intf = &gsc->intf[intf_id];
-+
- 	if (intf->adev) {
- 		auxiliary_device_delete(&intf->adev->aux_dev);
- 		auxiliary_device_uninit(&intf->adev->aux_dev);
- 		intf->adev = NULL;
- 	}
-+
- 	if (intf->irq >= 0)
- 		irq_free_desc(intf->irq);
- 	intf->irq = -1;
-+
-+	gsc_ext_om_destroy(intf);
- }
- 
- static void gsc_init_one(struct drm_i915_private *i915,
--			 struct intel_gsc_intf *intf,
--			 unsigned int intf_id)
-+			       struct intel_gsc *gsc,
-+			       unsigned int intf_id)
- {
- 	struct pci_dev *pdev = to_pci_dev(i915->drm.dev);
- 	struct mei_aux_device *adev;
- 	struct auxiliary_device *aux_dev;
- 	const struct gsc_def *def;
-+	struct intel_gsc_intf *intf = &gsc->intf[intf_id];
- 	int ret;
- 
- 	intf->irq = -1;
-@@ -141,7 +206,7 @@ static void gsc_init_one(struct drm_i915_private *i915,
- 	intf->irq = irq_alloc_desc(0);
- 	if (intf->irq < 0) {
- 		drm_err(&i915->drm, "gsc irq error %d\n", intf->irq);
--		return;
-+		goto fail;
- 	}
- 
- 	ret = gsc_irq_init(intf->irq);
-@@ -155,6 +220,19 @@ static void gsc_init_one(struct drm_i915_private *i915,
- 	if (!adev)
- 		goto fail;
- 
-+	if (def->lmem_size) {
-+		dev_dbg(&pdev->dev, "setting up GSC lmem\n");
-+
-+		if (gsc_ext_om_alloc(gsc, intf, def->lmem_size)) {
-+			dev_err(&pdev->dev, "setting up gsc extended operational memory failed\n");
-+			kfree(adev);
-+			goto fail;
-+		}
-+
-+		adev->ext_op_mem.start = i915_gem_object_get_dma_address(intf->gem_obj, 0);
-+		adev->ext_op_mem.end = adev->ext_op_mem.start + def->lmem_size;
-+	}
-+
- 	adev->irq = intf->irq;
- 	adev->bar.parent = &pdev->resource[0];
- 	adev->bar.start = def->bar + pdev->resource[0].start;
-@@ -188,7 +266,7 @@ static void gsc_init_one(struct drm_i915_private *i915,
- 
- 	return;
- fail:
--	gsc_destroy_one(intf);
-+	gsc_destroy_one(i915, gsc, intf->id);
- }
- 
- static void gsc_irq_handler(struct intel_gt *gt, unsigned int intf_id)
-@@ -229,7 +307,7 @@ void intel_gsc_init(struct intel_gsc *gsc, struct drm_i915_private *i915)
- 		return;
- 
- 	for (i = 0; i < INTEL_GSC_NUM_INTERFACES; i++)
--		gsc_init_one(i915, &gsc->intf[i], i);
-+		gsc_init_one(i915, gsc, i);
- }
- 
- void intel_gsc_fini(struct intel_gsc *gsc)
-@@ -241,5 +319,5 @@ void intel_gsc_fini(struct intel_gsc *gsc)
- 		return;
- 
- 	for (i = 0; i < INTEL_GSC_NUM_INTERFACES; i++)
--		gsc_destroy_one(&gsc->intf[i]);
-+		gsc_destroy_one(gt->i915, gsc, i);
- }
-diff --git a/drivers/gpu/drm/i915/gt/intel_gsc.h b/drivers/gpu/drm/i915/gt/intel_gsc.h
-index 68582f912b21..fcac1775e9c3 100644
---- a/drivers/gpu/drm/i915/gt/intel_gsc.h
-+++ b/drivers/gpu/drm/i915/gt/intel_gsc.h
-@@ -20,11 +20,14 @@ struct mei_aux_device;
- 
- /**
-  * struct intel_gsc - graphics security controller
-+ *
-+ * @gem_obj: scratch memory GSC operations
-  * @intf : gsc interface
-  */
- struct intel_gsc {
- 	struct intel_gsc_intf {
- 		struct mei_aux_device *adev;
-+		struct drm_i915_gem_object *gem_obj;
- 		int irq;
- 		unsigned int id;
- 	} intf[INTEL_GSC_NUM_INTERFACES];
+Changes in v7:
+- Updated reg-names as per comments on v6
+- Removed use of of_property_count_elems_of_size() and used broadcast
+  reg for checking whether old or new DTS is getting used
+- Updated variable names as per comments on v6
+- Added helper function for getting global_intstatus bit from channel
+- Used to_platform_device() instead of passing pdev pointer to
+  map_regs()
+- Allocated ch_regs at runtime
+- Updated DT binding documentation to add validation for reg-names
+
+Changes in v6:
+- Added reg-names for each reg item of memory controller node
+- Added logging for interrupts on multiple memory controller channels
+- Added clearing interrupt support for global intstatus
+- Updated DT binding documentation to work with existing DTS as well
+- Updated function to get MC channels
+- Updated variable names
+
+Changes in v5:
+- Updated patch sequence such that driver patches are before DT patches
+- Fixed DT ABI break from v4
+- Fixed smatch bug
+- Updated description in DT binding documentation
+- Updated variable names
+
+Changes in v4:
+- Added memory controller channels support
+- Added newlines after every break statement of all switch cases
+- Fixed compile error with W=1 build
+- Fixed the interrupt mask bit logic
+
+Changes in v3:
+- Removed unnecessary ifdefs
+- Grouped newly added MC registers with existing MC registers
+- Removed unnecessary initialization of variables
+- Updated code to use newly added field 'has_addr_hi_reg' instead of ifdefs
+
+Changes in v2:
+- Updated patch subject and commit message
+- Removed separate irq handlers
+- Updated tegra30_mc_handle_irq to be used for tegra186 onwards as well
+
+ .../nvidia,tegra186-mc.yaml                   |  80 +++++++++-
+ arch/arm64/boot/dts/nvidia/tegra186.dtsi      |   8 +-
+ arch/arm64/boot/dts/nvidia/tegra194.dtsi      |  24 ++-
+ arch/arm64/boot/dts/nvidia/tegra234.dtsi      |  24 ++-
+ drivers/memory/tegra/mc.c                     | 140 ++++++++++++++++--
+ drivers/memory/tegra/mc.h                     |  43 +++++-
+ drivers/memory/tegra/tegra186.c               |  43 ++++++
+ drivers/memory/tegra/tegra194.c               |   9 ++
+ drivers/memory/tegra/tegra234.c               |   8 +
+ include/soc/tegra/mc.h                        |   7 +
+ 10 files changed, 356 insertions(+), 30 deletions(-)
+
 -- 
-2.32.0
+2.17.1
 
