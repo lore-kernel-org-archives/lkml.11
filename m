@@ -2,290 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BB06C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:20:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 949DDC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:21:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243321AbiDYQXy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 12:23:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50202 "EHLO
+        id S243333AbiDYQYh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 12:24:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238909AbiDYQXv (ORCPT
+        with ESMTP id S243332AbiDYQYe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 12:23:51 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CE6F68302
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 09:20:47 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id a21so6877326edb.1
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 09:20:47 -0700 (PDT)
+        Mon, 25 Apr 2022 12:24:34 -0400
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6A406D1B6
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 09:21:30 -0700 (PDT)
+Received: by mail-io1-xd2e.google.com with SMTP id z19so11802940iof.12
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 09:21:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=raspberrypi.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9Fe6LxZHEqkixiJSvboLiKadG37amnsHY4Z+NTobank=;
-        b=PQ+pDUS7FMhEa365JDHWZHkT7SB9g8TLyESL1A3E6ssjzeZT12XEFoOS4S5PTnTfpZ
-         GixK5jYaNDEX+cN6BCQuKIr9szisyoX8YI0l9IHGjKBnECk6kf1p1SIytS2dKcRMw979
-         x/yqGkTt4xS10tQKMOIgfdRKBwIRAWlnBCvozTPgeCN0aTCOfeBd+J/msyRkMHpwJhMj
-         /K4XIdUyBgCzhvGwGYN7sm6SeyPXY8asTWf5qIbFcvRinuP/pS8uRt3bkBr+kFbnKxle
-         8PMsy6QaDcKQUQvpm+LsNxld6BtcSPNkmCl8jHNvyoOniBhjXcF/aA3dziVfILKOrPuo
-         y2lA==
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=m8zyZFhgZtJWBx1ewY9EOqVFGvVP4XffFDuTR4TMpZg=;
+        b=MQGT7rHPHJlegzzdydwoJhuaK1pG/0OJnThzowwuLn6x+cXtb77D9y87kJTDstyih4
+         YK/CNOa++pAeVSwwTe6cUUrtkx09oMp5w3WBMvA1GfvwY0vxBhcovOYOaasRLYY1ARbM
+         OngZjpYsSL2SXEYYNa/u687tdECwchngQQkWc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9Fe6LxZHEqkixiJSvboLiKadG37amnsHY4Z+NTobank=;
-        b=MSYOVCkPid6FLd4RUNpMqMpB1VdmIJBqi0HMJI+KRCs5SbvaCr//Q+NNu76/OtJF/j
-         O2R7cqiDwvK8qO5THFBUyWnyBdQ1eIJtCrqOkjihIoYbHpjQgCKrK4+dNTaVODSVYDYn
-         LowwCk2hlNAddGoWkUF8KruIi+Gnq+K3QxDcNy54C+1tUv00bD08FZCZMQ3tiR5TbrAi
-         I2Djigljubt6hA5xB/slK2sm+V+XD4LsUeC2hl+NkqaWEJWo4NFd3NOHzladxUdkFy1r
-         OvaE/t4FcNv25BA9a58Wym9OTOZ0I6a6M2CHrLSgtDTwDyS8CFGsIQkj1I02kpzqvzQl
-         +Dbw==
-X-Gm-Message-State: AOAM533AwCDfz/w5q9w+p7XL+gjhdmBmRsW8xgJmi0yUHcjzK/qvj4Er
-        yJi0jw/NfB1NRz6JBPOQN83Fp4GTgv4KK0Atu9QDhQ==
-X-Google-Smtp-Source: ABdhPJx2yDEdvEhFCkE9/UJ3OYVSrXf0wvM9TSGwgmJy7RjUSw0/Ac9QtaXkvwbeMtzu51EGMfh+faJw+mhpYs47DEk=
-X-Received: by 2002:aa7:dd45:0:b0:425:8cea:8c76 with SMTP id
- o5-20020aa7dd45000000b004258cea8c76mr19617581edw.353.1650903645608; Mon, 25
- Apr 2022 09:20:45 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=m8zyZFhgZtJWBx1ewY9EOqVFGvVP4XffFDuTR4TMpZg=;
+        b=z7u8AKq9V4EOT4MJXXrZmIRIVfSo9qUoiWGdqdvHpfT7wrobqYIzrgDapeL0L5fgDJ
+         eXFdnLewNrDWVJFP2SNwlhwjwlpkCDq6TnVeE44p9UShSvLw2lWAH5Fd3tdbalwRhxsA
+         3lAiVWGv22Qs9fUh26J36FkxHx/KWr+YilykBl/Z9Mv3aduJ0VsWZYzX6dqvKyFQTNht
+         HGlijnWpIiha60Y7f8ITkii7qqvwGw0xW8YibvtVBaKKvd14fXLggmysXYJKuAqoKc/h
+         OianOKMIs4rRrEfdXmAF5FcTmraaX2iPrujd6b/qdOFkNVwgtGK8O4wRP69iM0PvyZOe
+         Za1w==
+X-Gm-Message-State: AOAM5331rJEbOLlJ8W0EA9jlcq2THLN/eyHEk1tPRBfy1cyAr/18uVBE
+        1MxyPQ11mgZpFVkF6zoJQOoP7w==
+X-Google-Smtp-Source: ABdhPJyMkwLOWnY1zix4ts8sFxUiiA+CSi4WCWiBdfUop6aOA7TnBZaYztTUMenPZ4hB53BjOvzegw==
+X-Received: by 2002:a05:6638:41a0:b0:32a:90ae:f7a1 with SMTP id az32-20020a05663841a000b0032a90aef7a1mr7963693jab.101.1650903690100;
+        Mon, 25 Apr 2022 09:21:30 -0700 (PDT)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id m8-20020a92cac8000000b002ca9d826c3fsm6495170ilq.34.2022.04.25.09.21.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 Apr 2022 09:21:29 -0700 (PDT)
+Subject: Re: [PATCH] selftests/resctrl: Fix null pointer dereference on open
+ failed
+To:     "Colin King (gmail)" <colin.i.king@gmail.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Shuah Khan <shuah@kernel.org>, Babu Moger <babu.moger@amd.com>,
+        Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>,
+        linux-kselftest@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220424211536.1373878-1-colin.i.king@gmail.com>
+ <04a35a47-d83a-67a1-5ed4-ba314c6e1ecf@linuxfoundation.org>
+ <604ea061-c566-e032-67cf-9bc622aa76ae@gmail.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <a238cdbb-e5fd-64f1-ea18-8ef2e7481d33@linuxfoundation.org>
+Date:   Mon, 25 Apr 2022 10:21:29 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-References: <20220412135534.2796158-1-aford173@gmail.com> <20220412135534.2796158-2-aford173@gmail.com>
-In-Reply-To: <20220412135534.2796158-2-aford173@gmail.com>
-From:   Dave Stevenson <dave.stevenson@raspberrypi.com>
-Date:   Mon, 25 Apr 2022 17:20:29 +0100
-Message-ID: <CAPY8ntCKxRMFX023BsM70bA0UbPApzOzLbg+2X0SU93_GABKiA@mail.gmail.com>
-Subject: Re: [PATCH 1/4] media: i2c: imx219: Split common registers from mode tables
-To:     Adam Ford <aford173@gmail.com>
-Cc:     Linux Media Mailing List <linux-media@vger.kernel.org>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Tim Harvey <tharvey@gateworks.com>,
-        cstevens@beaconembedded.com, aford@beaconembedded.com,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <604ea061-c566-e032-67cf-9bc622aa76ae@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Adam
+On 4/25/22 10:06 AM, Colin King (gmail) wrote:
+> On 25/04/2022 16:51, Shuah Khan wrote:
+>> On 4/24/22 3:15 PM, Colin Ian King wrote:
+>>> Currently if opening /dev/null fails to open then file pointer fp
+>>> is null and further access to fp via fprintf will cause a null
+>>> pointer dereference. Fix this by returning a negative error value
+>>> when a null fp is detected.
+>>>
+>>
+>> How did you find this problem and how can it be reproduced? Is there
+>> a case where test fails to open "/dev/null"?
+> 
+> Found with static analysis, cppcheck. Open on /dev/null is unlikely to fail, but it's good to fail reliably rather than have a SIGSEGV :-)
+> 
 
-On Tue, 12 Apr 2022 at 14:55, Adam Ford <aford173@gmail.com> wrote:
->
-> There are four modes, and each mode has a table of registers.
-> Some of the registers are common to all modes, so create new
-> tables for these common registers to reduce duplicate code.
->
-> Signed-off-by: Adam Ford <aford173@gmail.com>
-> ---
->  drivers/media/i2c/imx219.c | 103 ++++++++++++++-----------------------
->  1 file changed, 39 insertions(+), 64 deletions(-)
->
-> diff --git a/drivers/media/i2c/imx219.c b/drivers/media/i2c/imx219.c
-> index e10af3f74b38..b7cc36b16547 100644
-> --- a/drivers/media/i2c/imx219.c
-> +++ b/drivers/media/i2c/imx219.c
-> @@ -145,19 +145,36 @@ struct imx219_mode {
->         struct imx219_reg_list reg_list;
->  };
->
-> -/*
-> - * Register sets lifted off the i2C interface from the Raspberry Pi firmware
-> - * driver.
-> - * 3280x2464 = mode 2, 1920x1080 = mode 1, 1640x1232 = mode 4, 640x480 = mode 7.
-> - */
-> -static const struct imx219_reg mode_3280x2464_regs[] = {
-> -       {0x0100, 0x00},
-> +/* To Access Addresses 3000-5fff, send the following commands */
-> +static const struct imx219_reg mfg_specific_reg[] = {
-> +       {0x0100, 0x00}, /* Mode Select */
->         {0x30eb, 0x0c},
->         {0x30eb, 0x05},
->         {0x300a, 0xff},
->         {0x300b, 0xff},
->         {0x30eb, 0x05},
->         {0x30eb, 0x09},
-> +};
-> +
-> +static const struct imx219_reg pll_clk_table[] = {
-> +
-> +       {0x0301, 0x05}, /* VTPXCK_DIV */
-> +       {0x0303, 0x01}, /* VTSYSCK_DIV */
-> +       {0x0304, 0x03}, /* PREPLLCK_VT_DIV 0x03 = AUTO set */
-> +       {0x0305, 0x03}, /* PREPLLCK_OP_DIV 0x03 = AUTO set */
-> +       {0x0306, 0x00}, /* PLL_VT_MPY */
-> +       {0x0307, 0x39},
-> +       {0x030b, 0x01}, /* OP_SYS_CLK_DIV */
-> +       {0x030c, 0x00}, /* PLL_OP_MPY */
-> +       {0x030d, 0x72},
-> +};
+I don't see how /dev/null open could fail here in this test.
+However, I will take this fix. Please add information how
+you found it and include the cppheck log in the commit log
+and send me v2.
 
-(I've come back to this patch last as my first reading was happy with it)
-Is there a good reason for making these two tables instead of one with
-comments as to what the registers are doing?
-
-As per my comment on patch 4, one table of registers setting these,
-the DPHY register, and registers
-    {0x455e, 0x00},
-    {0x471e, 0x4b},
-    {0x4767, 0x0f},
-    {0x4750, 0x14},
-    {0x4540, 0x00},
-    {0x47b4, 0x14},
-    {0x4713, 0x30},
-    {0x478b, 0x10},
-    {0x478f, 0x10},
-    {0x4793, 0x10},
-    {0x4797, 0x0e},
-    {0x479b, 0x0e},
-    {0x0162, 0x0d},
-    {0x0163, 0x78},
-would remove the duplication, reduce the code size, and be slightly
-more readable.
-
-  Dave
-
-> +/*
-> + * Register sets lifted off the i2C interface from the Raspberry Pi firmware
-> + * driver.
-> + * 3280x2464 = mode 2, 1920x1080 = mode 1, 1640x1232 = mode 4, 640x480 = mode 7.
-> + */
-> +static const struct imx219_reg mode_3280x2464_regs[] = {
->         {0x0114, 0x01},
->         {0x0128, 0x00},
->         {0x012a, 0x18},
-> @@ -178,15 +195,6 @@ static const struct imx219_reg mode_3280x2464_regs[] = {
->         {0x0171, 0x01},
->         {0x0174, 0x00},
->         {0x0175, 0x00},
-> -       {0x0301, 0x05},
-> -       {0x0303, 0x01},
-> -       {0x0304, 0x03},
-> -       {0x0305, 0x03},
-> -       {0x0306, 0x00},
-> -       {0x0307, 0x39},
-> -       {0x030b, 0x01},
-> -       {0x030c, 0x00},
-> -       {0x030d, 0x72},
->         {0x0624, 0x0c},
->         {0x0625, 0xd0},
->         {0x0626, 0x09},
-> @@ -208,13 +216,6 @@ static const struct imx219_reg mode_3280x2464_regs[] = {
->  };
->
->  static const struct imx219_reg mode_1920_1080_regs[] = {
-> -       {0x0100, 0x00},
-> -       {0x30eb, 0x05},
-> -       {0x30eb, 0x0c},
-> -       {0x300a, 0xff},
-> -       {0x300b, 0xff},
-> -       {0x30eb, 0x05},
-> -       {0x30eb, 0x09},
->         {0x0114, 0x01},
->         {0x0128, 0x00},
->         {0x012a, 0x18},
-> @@ -237,15 +238,6 @@ static const struct imx219_reg mode_1920_1080_regs[] = {
->         {0x0171, 0x01},
->         {0x0174, 0x00},
->         {0x0175, 0x00},
-> -       {0x0301, 0x05},
-> -       {0x0303, 0x01},
-> -       {0x0304, 0x03},
-> -       {0x0305, 0x03},
-> -       {0x0306, 0x00},
-> -       {0x0307, 0x39},
-> -       {0x030b, 0x01},
-> -       {0x030c, 0x00},
-> -       {0x030d, 0x72},
->         {0x0624, 0x07},
->         {0x0625, 0x80},
->         {0x0626, 0x04},
-> @@ -265,13 +257,6 @@ static const struct imx219_reg mode_1920_1080_regs[] = {
->  };
->
->  static const struct imx219_reg mode_1640_1232_regs[] = {
-> -       {0x0100, 0x00},
-> -       {0x30eb, 0x0c},
-> -       {0x30eb, 0x05},
-> -       {0x300a, 0xff},
-> -       {0x300b, 0xff},
-> -       {0x30eb, 0x05},
-> -       {0x30eb, 0x09},
->         {0x0114, 0x01},
->         {0x0128, 0x00},
->         {0x012a, 0x18},
-> @@ -292,15 +277,6 @@ static const struct imx219_reg mode_1640_1232_regs[] = {
->         {0x0171, 0x01},
->         {0x0174, 0x01},
->         {0x0175, 0x01},
-> -       {0x0301, 0x05},
-> -       {0x0303, 0x01},
-> -       {0x0304, 0x03},
-> -       {0x0305, 0x03},
-> -       {0x0306, 0x00},
-> -       {0x0307, 0x39},
-> -       {0x030b, 0x01},
-> -       {0x030c, 0x00},
-> -       {0x030d, 0x72},
->         {0x0624, 0x06},
->         {0x0625, 0x68},
->         {0x0626, 0x04},
-> @@ -322,13 +298,6 @@ static const struct imx219_reg mode_1640_1232_regs[] = {
->  };
->
->  static const struct imx219_reg mode_640_480_regs[] = {
-> -       {0x0100, 0x00},
-> -       {0x30eb, 0x05},
-> -       {0x30eb, 0x0c},
-> -       {0x300a, 0xff},
-> -       {0x300b, 0xff},
-> -       {0x30eb, 0x05},
-> -       {0x30eb, 0x09},
->         {0x0114, 0x01},
->         {0x0128, 0x00},
->         {0x012a, 0x18},
-> @@ -351,15 +320,6 @@ static const struct imx219_reg mode_640_480_regs[] = {
->         {0x0171, 0x01},
->         {0x0174, 0x03},
->         {0x0175, 0x03},
-> -       {0x0301, 0x05},
-> -       {0x0303, 0x01},
-> -       {0x0304, 0x03},
-> -       {0x0305, 0x03},
-> -       {0x0306, 0x00},
-> -       {0x0307, 0x39},
-> -       {0x030b, 0x01},
-> -       {0x030c, 0x00},
-> -       {0x030d, 0x72},
->         {0x0624, 0x06},
->         {0x0625, 0x68},
->         {0x0626, 0x04},
-> @@ -1041,6 +1001,13 @@ static int imx219_start_streaming(struct imx219 *imx219)
->         if (ret < 0)
->                 return ret;
->
-> +       /* Send the Manufacturing Header common to all modes */
-> +       ret = imx219_write_regs(imx219, mfg_specific_reg, ARRAY_SIZE(mfg_specific_reg));
-> +       if (ret) {
-> +               dev_err(&client->dev, "%s failed to send mfg header\n", __func__);
-> +               goto err_rpm_put;
-> +       }
-> +
->         /* Apply default values of current mode */
->         reg_list = &imx219->mode->reg_list;
->         ret = imx219_write_regs(imx219, reg_list->regs, reg_list->num_of_regs);
-> @@ -1056,6 +1023,14 @@ static int imx219_start_streaming(struct imx219 *imx219)
->                 goto err_rpm_put;
->         }
->
-> +       /* Configure the PLL clocks */
-> +       ret = imx219_write_regs(imx219, pll_clk_table, ARRAY_SIZE(pll_clk_table));
-> +       if (ret) {
-> +               dev_err(&client->dev, "%s failed to sent PLL clocks\n", __func__);
-> +               goto err_rpm_put;
-> +       }
-> +
-> +
->         /* Apply customized values from user */
->         ret =  __v4l2_ctrl_handler_setup(imx219->sd.ctrl_handler);
->         if (ret)
-> --
-> 2.34.1
->
+thanks,
+-- Shuah
