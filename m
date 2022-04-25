@@ -2,97 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FAC4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 13:41:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EDF5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 13:41:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242110AbiDYNoD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 09:44:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58690 "EHLO
+        id S242114AbiDYNoS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 09:44:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242017AbiDYNn7 (ORCPT
+        with ESMTP id S240386AbiDYNoO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 09:43:59 -0400
-Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CE9D49276
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 06:40:55 -0700 (PDT)
-Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-2f7bb893309so68447087b3.12
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 06:40:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0iW0lfnOAQF5cFI1vUpJrSs+pwJtGVWKWvpMUuWdKzw=;
-        b=a+4h19FIk30YOSOnT/EZ40c6x1uajSyiYVz5RRsTKaKN1eJGtIyF+2r5q+eNdqyBBl
-         XIQoID+tBiBPNrscesCiG4KqQt0dg0KP03zgfjtqy8IXImQPeYwJTvXtbhdA9/9YKgVa
-         za6lWLnHoXo+B9bQTRCOygkqQD8Uzd9Gvvxg45OueC7y69tCefIlMbj0v7FaR/0VXpqJ
-         SRSU1QAVzrqhVDWYqVcpTwWWxpXq0DAaGj9oJyWbE8h6Ru6nmgFRoZUV5vtHrXZs0DYh
-         Nz8aN0NZaESQOyygNvXnoDRbUCvTEuQ0xFVpJxPQpuloFRUaXbhytj2y2xhHlkWmyNu1
-         nNNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0iW0lfnOAQF5cFI1vUpJrSs+pwJtGVWKWvpMUuWdKzw=;
-        b=hU927sPmPXUgH+kTtPR34uwv/3RU7YYE78EiDgL0lnaIOgfICQyZb0h50a46TnLlih
-         eYP8jOkjPgmHHvVcA+WT1Kjm1bNeuZsiE99R1WD84x2WBzNTlgq8FcaUkMckfMOM1c6X
-         +nSwGlC2P3cnN93Sid9SiprZ9qlpLwvUtG4ZpuSvyxT09+BWXxGXzyy8eqESG804PzIM
-         LZDsEuUWhHEPdhbJxFuojKmn3to7LSdm3fF81rGLK238gLA0AXQTIXMhb9FRRQmz+/T8
-         EYb6EHxoNay9DRcsLZ0IR/svwhiJ5EbInaVZZSynPjr8AEBJurb3H4HRqZelX0RsrAKU
-         YDVw==
-X-Gm-Message-State: AOAM531xpraxk5oEOX7EHPAte11Sd47j1n6K/XAFEpaUA4orN4BQ6pZX
-        9s6zYeIBkMzzyERmC/pzagUxzj7NLY9wr/Rh85twgg==
-X-Google-Smtp-Source: ABdhPJyLGPhTNmwcVKp/aPjOE6zhKyC+wcn0ap56Z0HIRwG+0xlW9MTQtYt2TvyL34lPTJFEh5UsTwcwn5RaRNHPmiQ=
-X-Received: by 2002:a0d:c4c2:0:b0:2f1:6c00:9eb4 with SMTP id
- g185-20020a0dc4c2000000b002f16c009eb4mr17318800ywd.448.1650894054719; Mon, 25
- Apr 2022 06:40:54 -0700 (PDT)
+        Mon, 25 Apr 2022 09:44:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E834349276;
+        Mon, 25 Apr 2022 06:41:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9D345B817FE;
+        Mon, 25 Apr 2022 13:41:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99CFBC385A4;
+        Mon, 25 Apr 2022 13:41:05 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="HCy+TgIw"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1650894064;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=uUwRxX7Od1S9mr2fS/Pfy6EUiVME26A+4yI8z6Tcx64=;
+        b=HCy+TgIwoaP/ZwSk50MW69l80eLdoGsRXfg6mcPbSqM2EBcW0J8IIz5hzKDAC0pYZIfCoO
+        WYwESwWjWWG0sHnI0naiYR3+ZqQn/SYABXLVvx/XUbQrM/HbXPLj9kvIMyQvM4Ibt366gR
+        QsKlKrAA6E5XfiPjg9TjhK5mPXQ/f7A=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 9eb25e26 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Mon, 25 Apr 2022 13:41:03 +0000 (UTC)
+Date:   Mon, 25 Apr 2022 15:41:00 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        arnd@arndb.de, Borislav Petkov <bp@alien8.de>, x86@kernel.org
+Subject: Re: [PATCH v6 13/17] x86: use fallback for random_get_entropy()
+ instead of zero
+Message-ID: <Ymak7LJd6GnFxsOo@zx2c4.com>
+References: <20220423212623.1957011-1-Jason@zx2c4.com>
+ <20220423212623.1957011-14-Jason@zx2c4.com>
+ <871qxl2vdw.ffs@tglx>
 MIME-Version: 1.0
-References: <YYCOTx68LXu1Tn1i@fedora> <CACRpkdYmw4yBm3Y1P42TcRs4fFNEiy3LXxmO_j=zeTv_usDR+g@mail.gmail.com>
- <56052bc6e3b6cab6bfdfc5f706ec9984bea16bba.camel@pengutronix.de>
-In-Reply-To: <56052bc6e3b6cab6bfdfc5f706ec9984bea16bba.camel@pengutronix.de>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Mon, 25 Apr 2022 15:40:43 +0200
-Message-ID: <CACRpkdZYgym8f0o00EU7QKOUzkzOJZMeZYmQL6XoNLP6V7rz3g@mail.gmail.com>
-Subject: Re: [PATCH v3] PCI: imx6: Replace legacy gpio interface for gpiod interface
-To:     Lucas Stach <l.stach@pengutronix.de>
-Cc:     =?UTF-8?B?TWHDrXJhIENhbmFs?= <maira.canal@usp.br>,
-        hongxing.zhu@nxp.com, lorenzo.pieralisi@arm.com, robh@kernel.org,
-        bhelgaas@google.com, helgaas@kernel.org, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, kernel@pengutronix.de, linux-imx@nxp.com,
-        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <871qxl2vdw.ffs@tglx>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 2:07 PM Lucas Stach <l.stach@pengutronix.de> wrote:
+Hi Thomas,
 
-> The binding explicitly describes the GPIO as not polarity aware and has
-> a separate property "reset-gpio-active-high" to avoid breaking old
-> DTBs. I don't think it's helpful to dismiss this explicit backward
-> compat just because the driver code looks nicer that way.
+On Mon, Apr 25, 2022 at 02:35:39PM +0200, Thomas Gleixner wrote:
+> On Sat, Apr 23 2022 at 23:26, Jason A. Donenfeld wrote:
+> 
+> Please follow the guidelines of the tip maintainers when touching x86
+> code. https://www.kernel.org/doc/html/latest/process/maintainer-tip.html#patch-subject
+> https://www.kernel.org/doc/html/latest/process/maintainer-tip.html#changelog
 
-I see. We handle such things a specific way.
+Will fix up the message and topic.
 
-Look in drivers/gpio/gpiolib-of.c, especially the function
-of_gpio_flags_quirks().
+> > In the event that random_get_entropy() can't access a cycle counter or
+> > similar, falling back to returning 0 is really not the best we can do.
+> > Instead, at least calling random_get_entropy_fallback() would be
+> > preferable, because that always needs to return _something_, even
+> > falling back to jiffies eventually. It's not as though
+> > random_get_entropy_fallback() is super high precision or guaranteed to
+> > be entropic, but basically anything that's not zero all the time is
+> > better than returning zero all the time.
+> >
+> > If CONFIG_X86_TSC=n, then it's possible that we're running on a 486
+> > with no RDTSC, so we only need the fallback code for that case.
+> 
+> There are also 586 CPUs which lack TSC.
 
-Here we special-case all bindings which for some reason introduced
-something necessary custom, like in this case not using the proper
-polarity flag.
+Will note this in the rewritten commit message.
 
-Add code to this file in the proper place to handle and hide the
-old style DTBs using "reset-gpio-active-high" as active high flag
-and assuming active low otherwise in this file.
+> > +static inline unsigned long random_get_entropy(void)
+> > +{
+> > +#ifndef CONFIG_X86_TSC
+> > +	if (!cpu_feature_enabled(X86_FEATURE_TSC))
+> > +		return random_get_entropy_fallback();
+> > +#endif
+> 
+> Please get rid of this ifdeffery. While you are right, that anything
+> with CONFIG_X86_TSC=y should have a TSC, there is virt ....
+> 
+> cpu_feature_enabled() is runtime patched and only evaluated before
+> alternative patching, so the win of this ifdef is marginally, if even
+> noticable.
+> 
+> We surely can think about making TSC mandatory, but not selectively in a
+> particalur context.
 
-I imagine it begins with
+This would be a regression of sorts from the current code, which reads:
 
-if (IS_ENABLED(CONFIG_PCI_IMX6)) { ... }
+    static inline cycles_t get_cycles(void)
+    {
+    #ifndef CONFIG_X86_TSC
+            if (!boot_cpu_has(X86_FEATURE_TSC))
+                    return 0;
+    #endif
+            return rdtsc();
+    }
 
-Then modify the code in drivers/pci/controller/dwc/pci-imx6.c
-to act as if gpiolib handles polarity inversion. Include all changes
-to all files in the same patch so this is changed in tandem (one technical
-step).
+So my ifdef is just copying that one. I can make it into a `if
+(IS_ENABLED(CONFIG_X86_TSC))` thing, if you'd prefer that. But on
+systems where CONFIG_X86_TSC=n, including the extra code there seems
+kind of undesirable. Consider the current interrupt handler random.c
+code on x86, whose first lines (usually) compile to:
 
-Yours,
-Linus Walleij
+.text:0000000000001A70 add_interrupt_randomness proc near
+.text:0000000000001A70                 movsxd  rcx, edi
+.text:0000000000001A73                 rdtsc
+.text:0000000000001A75                 shl     rdx, 20h
+.text:0000000000001A79                 mov     rdi, [rsp+0]
+.text:0000000000001A7D                 or      rax, rdx
+.text:0000000000001A80                 mov     rdx, offset irq_randomness
+.text:0000000000001A87                 mov     rsi, gs:__irq_regs
+.text:0000000000001A8F                 add     rdx, gs:this_cpu_off
+
+I'm not sure what advantage we'd get by changing that from the ifdefs to
+unconditionally including that if statement. Your argument about virt
+can't be valid, since the current get_cycles() code uses the ifdefs. And
+if you're arguing from the basis that CONFIG_X86_TSC=y is not reliable,
+then why does CONFIG_X86_TSC even exist in the first place?
+
+Rather the stronger argument you could make would be that moving from
+boot_cpu_has() to cpu_feature_enabled() (Borislav's suggestion) means
+that there's now a static branch here, so the actual cost to the
+assembly is a few meaningless nops, which you don't think would play a
+part in quantizing when rdtsc is called. If this is actually what you
+have in mind, and you find that ifdef ugly enough that this would be
+worth it, I can understand, and I'll make that change for v7. But I
+don't understand you to currently be making that argument, so I'm not
+quite sure what your position is.
+
+Could you clarify what you mean here and what your expectations are? And
+how does that point of view tie into the fact that get_cycles()
+currently uses the ifdef?
+
+Thanks,
+Jason
