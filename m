@@ -2,126 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 214C7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 18:06:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BF1EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 18:06:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244219AbiDYSJi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 14:09:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35122 "EHLO
+        id S244229AbiDYSJk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 14:09:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237543AbiDYSJb (ORCPT
+        with ESMTP id S238709AbiDYSJc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 14:09:31 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14F5138BCA
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 11:06:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650909987; x=1682445987;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=rrOdhDVkrjSqoJ/S0GscDU5/gE99xaEHwiNxAV66yds=;
-  b=L0AEbTcSGjvsLxPnGJVaLh1UTCGaNVQLkLU21aa1JWEVt75zqYP5eGct
-   vxY8N6wRIB6F56BqjzrgxQhYW4JLaU2c2bBaSt9XP+cBFE904JoqZt3wa
-   jgO9Vfexk+04SFaVx9cxzWUnttnlgOSDYYD05qSVmhqRTnGb0xZd7jOO5
-   GFSWJXgCoTEttzIWPWXGCO61g2Fj5kS4rxG22zqvAMCvumr7kN5bDLyT4
-   WnRnmo4plF/N7xUKMcH0Vr5SwwNOIBd3WRzr6sb19jSI61JcFaw72EKzJ
-   3E/ZIv4fGwlplv6QwDhXsptHZunSUkUpHlOPrmimk+0iuMSvyAowE7mUq
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="325813053"
-X-IronPort-AV: E=Sophos;i="5.90,289,1643702400"; 
-   d="scan'208";a="325813053"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 11:06:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,289,1643702400"; 
-   d="scan'208";a="704670374"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 25 Apr 2022 11:06:24 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nj36N-0002kk-RW;
-        Mon, 25 Apr 2022 18:06:23 +0000
-Date:   Tue, 26 Apr 2022 02:05:25 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     cgel.zte@gmail.com, daniel@thingy.jp
-Cc:     kbuild-all@lists.01.org, romain.perier@gmail.com,
-        daniel.lezcano@linaro.org, tglx@linutronix.de,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] clocksource/drivers: remove unnecessary return in switch
- statement
-Message-ID: <202204260158.ccGqDClt-lkp@intel.com>
-References: <20220425084644.3495153-1-chi.minghao@zte.com.cn>
+        Mon, 25 Apr 2022 14:09:32 -0400
+Received: from mail-ua1-x92d.google.com (mail-ua1-x92d.google.com [IPv6:2607:f8b0:4864:20::92d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2782F38BD7
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 11:06:28 -0700 (PDT)
+Received: by mail-ua1-x92d.google.com with SMTP id 63so5942380uaw.10
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 11:06:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VsCWtGvQdpehXpOnJzf3Xy4LkzxOmS8c7itH/1kQMSU=;
+        b=KeTmEFAL7NujVcG7aypNbHt9mUPTHmIapKOtNOb1rSbp7sY7D18ulNsQ+OWs4CBHpP
+         Ta1EjNmapbeR/qBgcEZhfW1J8aIDhrlx75HHgVSxpg4UZ1i2VHQY0gXr5+R35AUpG3Fr
+         RO0CoBQ5rz8l/z8SecS/fDj+s4LPDDsCU7M4B35wKjeq8y7+/R+zMG1+AnlV4jrJO3sv
+         QVZlhIAAH+IAZMIbEL9ZlKkYZVRy9zJjJltJE7Eq9SQt0m4l9phmmfi2cnB2fxMBEtrF
+         Qoet435VR3xYvNO3eIoYzJ9CYgpb295PmP7ONqd3SZiWt+nzL7ULdZxl0wibOY3y3a9N
+         gXNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VsCWtGvQdpehXpOnJzf3Xy4LkzxOmS8c7itH/1kQMSU=;
+        b=MqQZ+yu4//ldfhZ/nvS+80CwUiUnXyI8IllBZVsRiXbunpB6bLZ7xWxelGXnf1liKg
+         yRQ1dYqWnTnZhfuBB55Il10RnrlURO1cMG86uzNYKny9D97fmmSoZvP6/PeuS25M3/hn
+         dM61lCNXDzmAWauPIVKWzBwmC4KGE9Go80Mcq0Ll2AY7G4C9XZVLf1HEBmgakPzd8dXe
+         +IaFxoer9788GRj15PGEzzfplLHJLsyn1D8+E40cNbfPIcIic6qyeJ9guuaIP+wjqj1f
+         flqjIOs/cgrQE94tcin6uWuw43GEtZljfFshpoOo7yuDJEfQgtz4R1J0N/m/8SMgI1h8
+         EpQg==
+X-Gm-Message-State: AOAM5326t6sVnZ2uyw8jLJuwRVmU4lG9XDJ3Zyss/9qK+TUup7MAD9Uj
+        stLJQHvPycn3QKYgUwfL9NSLINuC6jilulzkDAPkVQ==
+X-Google-Smtp-Source: ABdhPJyEjWKt6MQz612hu23UA90+bvp40aD7BMW+buy6PMhx+mCqvc6VvEtk/VNzTsIK/CoeIzcC8MCZfSDNmWZjURY=
+X-Received: by 2002:ab0:77d5:0:b0:352:42d7:88c2 with SMTP id
+ y21-20020ab077d5000000b0035242d788c2mr5531417uar.1.1650909987129; Mon, 25 Apr
+ 2022 11:06:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220425084644.3495153-1-chi.minghao@zte.com.cn>
+References: <20220414121911.8bb89fc3681b13af1566d79c@linux-foundation.org>
+ <YlkaiUopM5HKWEdX@google.com> <20220416010259.4gbz5hgvm2lgr3sj@revolver>
+ <CAOUHufZ8zPnpamkkpKK6KcSLTF91Eiba+S9VTX-ivhFrPQ_Cpw@mail.gmail.com>
+ <20220416151923.ig5zavuptjsufm3d@revolver> <CAOUHufZewjQyMy1pHKxRkY82J5STPbUSJor7Q2aJgrkpZvU6bw@mail.gmail.com>
+ <20220419155055.qf52xpcftqb3r5nj@revolver> <CAOUHufbX_aq+aHf-EVKFLN_jw6hXJ5vtKpG0jskD6uXVKB406w@mail.gmail.com>
+ <20220419231748.omnhkl43vl5ep2j5@revolver> <CAOUHufaR3Pbv_PgGpzfmzzCHLLwBkHT8G-RcDfe1bo0zESekPw@mail.gmail.com>
+ <20220420134336.bny7wza3ez2ldjsd@revolver>
+In-Reply-To: <20220420134336.bny7wza3ez2ldjsd@revolver>
+From:   Yu Zhao <yuzhao@google.com>
+Date:   Mon, 25 Apr 2022 12:05:51 -0600
+Message-ID: <CAOUHufZZbF-e6LF=xgig-Q8zuTSq_hvgPc-rMOwhyPdsD5=p0w@mail.gmail.com>
+Subject: Re: [PATCH v7 00/70] Introducing the Maple Tree
+To:     Liam Howlett <liam.howlett@oracle.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Wed, Apr 20, 2022 at 7:43 AM Liam Howlett <liam.howlett@oracle.com> wrote:
+>
+> * Yu Zhao <yuzhao@google.com> [220419 19:23]:
+> > On Tue, Apr 19, 2022 at 5:18 PM Liam Howlett <liam.howlett@oracle.com> wrote:
+> > >
+> > > * Yu Zhao <yuzhao@google.com> [220419 17:59]:
+> > > > On Tue, Apr 19, 2022 at 9:51 AM Liam Howlett <liam.howlett@oracle.com> wrote:
+> > > > >
+> > > > > * Yu Zhao <yuzhao@google.com> [220416 15:30]:
+> > > > > > On Sat, Apr 16, 2022 at 9:19 AM Liam Howlett <liam.howlett@oracle.com> wrote:
+> > > > > > >
+> > > > > >
+> > > > > > <snipped>
+> > > > > >
+> > > > > > > How did you hit this issue?  Just on boot?
+> > > > > >
+> > > > > > I was hoping this is known to you or you have something I can verify for you.
+> > > > >
+> > > > >
+> > > > > Thanks, yes.  I believe that both crashes are the same root cause.  The
+> > > > > cause is that I was not cleaning up after the kmem bulk allocation
+> > > > > failure on my side.  Please test with this patch.
+> > > >
+> > > > Thanks. I applied this patch and hit a LOCKDEP and then a BUG_ON:
+> > > >
+> > > >   lib/maple_tree.c:847 suspicious rcu_dereference_protected() usage!
+> > > >   Call Trace:
+> > > >    <TASK>
+> > > >    dump_stack_lvl+0x6c/0x9a
+> > > >    dump_stack+0x10/0x12
+> > > >    lockdep_rcu_suspicious+0x12c/0x140
+> > > >    __mt_destroy+0x96/0xd0
+> > > >    exit_mmap+0x2a0/0x360
+> > > >    __mmput+0x34/0x100
+> > > >    mmput+0x2f/0x40
+> > > >    free_bprm+0x64/0xe0
+> > > >    kernel_execve+0x129/0x330
+> > > >    call_usermodehelper_exec_async+0xd8/0x130
+> > > >    ? proc_cap_handler+0x210/0x210
+> > > >    ret_from_fork+0x1f/0x30
+> > > >    </TASK>
+> > >
+> > > Thanks - I'm not sure how this got through, but this should fix it.
+> > >
+> > > This should be added to 4236a642ad185 to avoid the LOCKDEP issue.
+> > >
+> > > --- a/mm/mmap.c
+> > > +++ b/mm/mmap.c
+> > > @@ -3163,9 +3163,9 @@ void exit_mmap(struct mm_struct *mm)
+> > >
+> > >         BUG_ON(count != mm->map_count);
+> > >
+> > > -       mmap_write_unlock(mm);
+> > >         trace_exit_mmap(mm);
+> > >         __mt_destroy(&mm->mm_mt);
+> > > +       mmap_write_unlock(mm);
+> > >         vm_unacct_memory(nr_accounted);
+> > >  }
+> >
+> > Will try this.
+>
+>
+> Andrew,
+>
+> Please add this fix to the commit 4236a642ad185 "mm: start tracking VMAs
+> with maple tree"
+>
+> I've attached the patch for your convenience.
 
-Thank you for the patch! Perhaps something to improve:
+Hi Liam,
 
-[auto build test WARNING on tip/timers/core]
-[also build test WARNING on v5.18-rc4 next-20220422]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+I assume you are still looking at the BUG_ON problem. I'll restart my
+testing once you have something for me to try.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/cgel-zte-gmail-com/clocksource-drivers-remove-unnecessary-return-in-switch-statement/20220425-170540
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git ce8abf340e40e1126bfcb9e7679b3d6b524ae3e0
-config: sh-allmodconfig (https://download.01.org/0day-ci/archive/20220426/202204260158.ccGqDClt-lkp@intel.com/config)
-compiler: sh4-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/f185e49aea517bee5dfb706df47fa5f70bfac370
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review cgel-zte-gmail-com/clocksource-drivers-remove-unnecessary-return-in-switch-statement/20220425-170540
-        git checkout f185e49aea517bee5dfb706df47fa5f70bfac370
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=sh SHELL=/bin/bash drivers/clocksource/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/clocksource/timer-msc313e.c: In function 'msc313e_timer_init':
->> drivers/clocksource/timer-msc313e.c:230:13: warning: variable 'ret' set but not used [-Wunused-but-set-variable]
-     230 |         int ret = 0;
-         |             ^~~
-
-
-vim +/ret +230 drivers/clocksource/timer-msc313e.c
-
-5fc1f93f69989e Romain Perier 2021-12-17  227  
-5fc1f93f69989e Romain Perier 2021-12-17  228  static int __init msc313e_timer_init(struct device_node *np)
-5fc1f93f69989e Romain Perier 2021-12-17  229  {
-5fc1f93f69989e Romain Perier 2021-12-17 @230  	int ret = 0;
-5fc1f93f69989e Romain Perier 2021-12-17  231  	static int num_called;
-5fc1f93f69989e Romain Perier 2021-12-17  232  
-5fc1f93f69989e Romain Perier 2021-12-17  233  	switch (num_called) {
-5fc1f93f69989e Romain Perier 2021-12-17  234  	case 0:
-5fc1f93f69989e Romain Perier 2021-12-17  235  		ret = msc313e_clksrc_init(np);
-5fc1f93f69989e Romain Perier 2021-12-17  236  		break;
-5fc1f93f69989e Romain Perier 2021-12-17  237  
-5fc1f93f69989e Romain Perier 2021-12-17  238  	default:
-5fc1f93f69989e Romain Perier 2021-12-17  239  		ret = msc313e_clkevt_init(np);
-5fc1f93f69989e Romain Perier 2021-12-17  240  		break;
-5fc1f93f69989e Romain Perier 2021-12-17  241  	}
-5fc1f93f69989e Romain Perier 2021-12-17  242  
-5fc1f93f69989e Romain Perier 2021-12-17  243  	num_called++;
-5fc1f93f69989e Romain Perier 2021-12-17  244  
-5fc1f93f69989e Romain Perier 2021-12-17  245  	return 0;
-5fc1f93f69989e Romain Perier 2021-12-17  246  }
-5fc1f93f69989e Romain Perier 2021-12-17  247  
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks.
