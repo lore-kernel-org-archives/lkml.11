@@ -2,115 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A054C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:57:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1291C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:57:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243668AbiDYRAa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 13:00:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49252 "EHLO
+        id S243681AbiDYRAo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 13:00:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241573AbiDYRAY (ORCPT
+        with ESMTP id S241573AbiDYRAi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 13:00:24 -0400
-Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E3538DB1
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 09:57:19 -0700 (PDT)
-Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-2f7ca2ce255so55809927b3.7
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 09:57:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=R8mpja/iP5Nbz85UZUacmFckb1rKaCSa5v9MWuGjwmo=;
-        b=Hit4MsC3VLtzu1/T7YNypnAXxDMwh6/FO/R/vuKTm+Ho3INY0v2/PAb3fE0mIclNZi
-         FEDRjJ+i63hMN/IS0EpPHCGoA3qFbxH+d83C05RhFEq5tR25Nn0u3dOtZXkMm5DFu640
-         Jwwl7bMIdUkamkmwBO/mmyof+KAWX3IjLwd2WwrJIb4Vgm5VVbaTqM/ezvagFifUjjrR
-         vp5OH0+o7Ywy9rIfn1n/saoKqXNk2LbdAHcdu+UkfYBBr8PfAroGLeMQ7XhzUOOH9JgI
-         /AWJz2QCE7iNULQw0GETfAYlEV+WpZzgPVFYyVZgS2zWkiKnCMxmRpERA0F3NYO/Jx7p
-         823Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=R8mpja/iP5Nbz85UZUacmFckb1rKaCSa5v9MWuGjwmo=;
-        b=OJX9aDQyFI8n/3mlOoOsJItRgu0N2c8EZnqM2XdUnUC30rdmyuaKf5N9zTFygEsQdp
-         POaJmCKs8LuxWytJXr2nkXHqS5cHeo2TdmXusnVmtpE0GyzYlC6XI3biniLxrGi+JBv1
-         1ARHzU9IAUey6McQG1pZ0/PYC6mwQ7JSQ27WiG73SXQGuOHNQzUlOqa6xeWjBC2JbtXO
-         DMuG+Ijrh6H2KB2nXZBOKSCcx2/s2DvGAUjstnPrbiyMbuSuNccMLhcC2rXdAWzxuLam
-         2fpk+3TAi69U8jIeqsomasx44omn2Q8zmCe5aTFyT3gzY20/gOXdj0Uk2oK/PwKldDvR
-         oOsA==
-X-Gm-Message-State: AOAM530ttnQle3Ii6D4tBPYZui3PRIEddC3ULhx7KDpl7t++obg8uaJ7
-        h/Ierw/Jm+PU+JxY0fS2TqowTrRzcsx3bnvRuk/tXBYCfWZzKqqS
-X-Google-Smtp-Source: ABdhPJy0nyVhT7loR4EvoAaEfil6j6eVfaYuQhkhcf1G5PACqci5QE7e5Jchkk5HN+ptE3iO36YVUnShvWY0YlenZQU=
-X-Received: by 2002:a81:3dc6:0:b0:2f8:f29:b429 with SMTP id
- k189-20020a813dc6000000b002f80f29b429mr1523022ywa.393.1650905838908; Mon, 25
- Apr 2022 09:57:18 -0700 (PDT)
+        Mon, 25 Apr 2022 13:00:38 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8FA838DB1
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 09:57:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1650905845;
+        bh=+w1XGlae5PPeOjjw+gr6PD9JurCdainpAoyyeVkgGwQ=;
+        h=X-UI-Sender-Class:Date:From:To:Cc:Subject:References:In-Reply-To;
+        b=XWubnlnoPqhvUduh4OmbZXKnazoqg6lvGdlmoDXN6T4F3uwsaUkO/Pbg5NOCkFi/r
+         HLVCkZPLco6hlV+j6spOqu429OlVkqIfbVR74lDwxGv7KP2vu0285yvUWeFoI9Eh/M
+         Tah1EBQoMPmnQ2tMmM284nrX+2UVWjWcxpeKWfhs=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from longitude ([37.201.215.103]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MfHEJ-1oOPFe1RHP-00glRq; Mon, 25
+ Apr 2022 18:57:25 +0200
+Date:   Mon, 25 Apr 2022 18:57:22 +0200
+From:   Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+To:     Haowen Bai <baihaowen@meizu.com>
+Cc:     linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] docs/zh_CN: sync with original text
+ Documentation/vm/page_owner.rst
+Message-ID: <YmbS8ll0LP1Axrm5@latitude>
+References: <1650871931-10015-1-git-send-email-baihaowen@meizu.com>
+ <1650871931-10015-2-git-send-email-baihaowen@meizu.com>
 MIME-Version: 1.0
-References: <1641749107-31979-1-git-send-email-quic_mkshah@quicinc.com>
- <164369277345.3095904.10944386444643776011.b4-ty@linaro.org> <CAMi1Hd2Sngya_2m2odkjq4fdV8OiiXsFMEX1bb807cWMC7H-sg@mail.gmail.com>
-In-Reply-To: <CAMi1Hd2Sngya_2m2odkjq4fdV8OiiXsFMEX1bb807cWMC7H-sg@mail.gmail.com>
-From:   Amit Pundir <amit.pundir@linaro.org>
-Date:   Mon, 25 Apr 2022 22:26:42 +0530
-Message-ID: <CAMi1Hd1phWki6EVUH0OPJwW3br2qGxVwFUSGY+9VsTVuRKUmAw@mail.gmail.com>
-Subject: Re: (subset) [PATCH 00/10] Add APSS RSC to Cluster power domain
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     ulf.hansson@linaro.org, Maulik Shah <quic_mkshah@quicinc.com>,
-        quic_rjendra@quicinc.com, daniel.lezcano@linaro.org,
-        rafael@kernel.org, linux-pm@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="Ui6ZlquGFn8+P/LI"
+Content-Disposition: inline
+In-Reply-To: <1650871931-10015-2-git-send-email-baihaowen@meizu.com>
+X-Provags-ID: V03:K1:7Y7qOBbviNTHDNQPJBSajnhP3mmdC+G+yoJ/FJ3WpQN6+dN+Han
+ MElmcs8zKAa+EJ8VGG/qtXr/WKh7H6/mkBZdaZmNleRUEdIQmbc/8Ri9N2bDqkTYkXAzQHC
+ U4Vaaqm3Zsg7MrNdH7ZXqK3DN6hHU9zrVk7Y7eACI2PYI4OpnvRQcrIsnZhC31Tx3vXvu6I
+ PR+8TujXO2Is6Kpr71/rg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:aVM8qTfbfm4=:T6GO+QWg25Y8pv8pT2MAsa
+ 3OIxsqL5dtphrR0PRD3Xan5OlJfER0Z+tHWYWvJEYHAi85TAHDOOEf2x6E7rolXeJT+nz0/Gy
+ mEKFouE/uZ2eMtv4u0qOH0YQkuaQoKzigeqIrHarDG2AMIc6cCn9Z6hidWFqw/K+jof/+Bj9H
+ AyQUrhwfqSCOeVs2PE0hfVq4xny+J4Pi2svBFQXo0RgB6joYRl3WYhsHlM0hHskhGmgTjnUka
+ fu/ccIPSuVpSO2F+AyfzPp/VOR+rp59oHSt5hwUOh3mg6L0kWZiUmq0fk77Wb1p72HibV63fl
+ GH6E4sZxAQ/13x+qUm5kraNA4ESXO9FeTX00E1QYYqM0fcygPgc1qVAYH+Et8S4ub6JB9XR9M
+ uyfjgCeDVMGbjqajmRI50li6ZqtLKvJ7sKuXzWQvTzjlKg+ZH9rsWNZAPi4hY40sjCRuszuwV
+ V7wtXueFGJ446ep8Q0ImMrRWN54vYqN4GYb21UvxJw2/JgOEk8mmKrhpudo6+0LgdXTYTU5Yn
+ KKzdvDVDGdqB5KnL6hGa88ZejiFTLwD0fA7eBDavRgFykLtG+bEyIKYw9K6WKiW3uJfOIh/0H
+ lsy5ewx4EhBexR3/P8fawPzTW8Qiy95VZ5m7Wxdz0OCq6WgiiQdsAXNxA2MteMMYb801PP5P4
+ G8SEKet8IjYtR9RemBXHcNIw3iskeFnB+17nCp6uFahAT+LVU5wn4mhvM/Trk0OCEW+0cG5sN
+ t4abGIGhNlSXb45v9YJaFEpsEhT0y5iL+hClf9y4c2JQMHs7IuY6GtVwKGpUWchUEVMf8UOlf
+ AVhydVySnfvCB6eApPIxCD5pAsykvQc29JZ2g0V6ymPCvdkb/ZEsUFtqMi98Oan/Z2nGkuflc
+ ieOiMLbqOA47viFz468rgtJaMpMn17OYywT9hNadXNiIdFhHkePdDE1Fgg4WxkzIDMyKssvD/
+ dNcGmkjcTdFOM2jZHNyEihSczpP85fDgOqiBtb//UNdIMvB9UHcAum2hSQ+FtkdJE7Rkn8Xzk
+ 0+VZJW18FAW6GoRyAEyz07NW+9QDKfsEiY2vxPLyCQf1UoHTbk5x9wZME1n88zQ9ppujleuby
+ 99ypkjTKqKzpas=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 29 Mar 2022 at 15:25, Amit Pundir <amit.pundir@linaro.org> wrote:
->
-> On Tue, 1 Feb 2022 at 10:52, Bjorn Andersson <bjorn.andersson@linaro.org> wrote:
-> >
-> > On Sun, 9 Jan 2022 22:54:57 +0530, Maulik Shah wrote:
-> > > This series patches 1 to 4 adds/corrects the cpuidle states/
-> > > apps_rsc TCS configuration to make it same as downstream kernel.
-> > >
-> > > The patches 5, 6 and 7 adds apps_rsc device to cluster power domain such
-> > > that when cluster is going to power down the cluster pre off notification
-> > > will program the 'sleep' and 'wake' votes in SLEEP TCS and WAKE TCSes.
-> > >
-> > > [...]
-> >
-> > Applied, thanks!
-> >
-> > [01/10] arm64: dts: qcom: sm8150: Correct TCS configuration for apps rsc
-> >         commit: 17ac8af678b6da6a8f1df7da8ebf2c5198741827
-> > [02/10] arm64: dts: qcom: sm8250: Add cpuidle states
-> >         commit: 32bc936d732171d48c9c8f96c4fa25ac3ed7e1c7
->
-> Hi, These patches landed upstream and I see a boot regression on RB5
-> with this sm8250 patch:
->
-> [    T1] vreg_l11c_3p3: failed to enable: -ETIMEDOUT
-> [    T1] qcom-rpmh-regulator 18200000.rsc:pm8150l-rpmh-regulators:
-> ldo11: devm_regulator_register() failed, ret=-110
-> [    T1] qcom-rpmh-regulator: probe of
-> 18200000.rsc:pm8150l-rpmh-regulators failed with error -110
->
-> Doesn't regress everytime but It is fairly reproducible. RB5 fails to
-> boot on every alternate reboot or so. But the device boots everytime
-> if I revert this patch.
 
-Hi, I'm still waiting on a resolution/fix for this. I'm happy to test
-or run any debug patches, if it would help narrow the issue down.
-Fwiw, this is the defconfig I'm using
-https://git.linaro.org/people/amit.pundir/linux.git/plain/arch/arm64/configs/rbX_aosp_defconfig?h=rb5-rpmh-regression
+--Ui6ZlquGFn8+P/LI
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Regards,
-Amit Pundir
+On Mon, Apr 25, 2022 at 03:32:10PM +0800, Haowen Bai wrote:
+[...]
+> +--curl =E9=80=89=E9=A1=B9:
 
->
-> > [03/10] arm64: dts: qcom: sm8350: Correct TCS configuration for apps rsc
-> >         commit: a131255e4ad1ef8d4873ecba21561ba272b2547a
-> > [04/10] arm64: dts: qcom: sm8450: Update cpuidle states parameters
-> >         commit: 6574702b0d394d2acc9ff808c4a79df8b9999173
-> >
-> > Best regards,
-> > --
-> > Bjorn Andersson <bjorn.andersson@linaro.org>
+This should be --cull, not --curl.
+
+
+Jonathan
+
+--Ui6ZlquGFn8+P/LI
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEvHAHGBBjQPVy+qvDCDBEmo7zX9sFAmJm0tEACgkQCDBEmo7z
+X9s5Ow//YJ2S0SEHGsNn/lVAKYrdWRv2FRjgF95wE+XJgmHovA2weCQnfGw+gcml
+O73+r5sY2Ppov7VpVhstX8bSgHewevS0f1p4udu45vqK9LwnMwJLiq/peXtySS+6
+D4ErAVdpssZRm2cZhv01q4duIe21fJcDK7BfZAH2mV/9Ev6EeZJ0ah8tLOKJTwGA
+VB0coNV0j1t7pzI/3Bh/LeKLY8j0ykeR7N/0gGJqB7EZb0V49RjBJweq+IaPypyt
+yk495wMsIhEvCO77KUveh9Y1VQKg3Wgk6/XAVjhbyUschPOveyatGV47lZOGFyhj
+huuteJi1DYlNBZxmosxnkc/l1ryQ9k1XVZLoqMofd6atB2lLfayZH21ZphAtDcKE
+02ymCy82hxSj5htm7qmm6L8Vyz9WLU8TPT4MGwIDcOq7PHshmdQm2HTJsBBgPLAf
++Rdm0oOgMfCklOQJdlbDDJtvcCy6PiJn2axxLSv5w4SBsXJ6n5oiKAaz4y+7ZscJ
+pOa6BnOzGgllgD4rOdfjytUrNiZWCeg7KaFl6p3+jnhVptTsvw24EPBKeCBEzg7w
+kfIh+XoH4FobRWsXPIyPQeapTrm237wJAy6vrnKA83J7zeFNJm3jo5DGyDQ7jrjT
+WAnQUeU/xC4wirrgR/XtvREkefGeSiVLegdp0qFgnux8+nuU1Fk=
+=DPcX
+-----END PGP SIGNATURE-----
+
+--Ui6ZlquGFn8+P/LI--
