@@ -2,117 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0051C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 08:18:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08E56C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 08:18:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234922AbiDYIVk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 04:21:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46574 "EHLO
+        id S234771AbiDYIVx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 04:21:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233168AbiDYIVY (ORCPT
+        with ESMTP id S231858AbiDYIVw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 04:21:24 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12E9F29C9C
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 01:18:20 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id 4so3300299ljw.11
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 01:18:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Gf4qna+chgdqKRpP/Wa5zsGXxEnC9UfbtEiM/gls+m0=;
-        b=Aml0zD/fxPnfqRhWfiNo69LwKx2/KRsDrIss9R5tS0Ba7quxETTRhXIyWpj4qhK09T
-         Gt2fpu8LSyw0qXIyi384DNEtzxsABGGLhu4D3ZrRWYZkwVDzZaz5+/BzVYa3S302X1yY
-         yYRDLXxGnGeSi1OfZ5tLmVptCJpEd526sjy/c=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Gf4qna+chgdqKRpP/Wa5zsGXxEnC9UfbtEiM/gls+m0=;
-        b=T8ZrYgJEkK3XNkVIFLcnvvY2esVVt7u1QJMJGkO0Ez13hRScwwfrfS3fo/vXaxPuD/
-         JaRd5RzLOt5FsjCD/ERXWV7WjiS0m0qXhEvs++/Qrxiw0EAJmLOKqDISvKLBuNDV74PR
-         pcCncCSUmn+H7xsqksVPknnnzWFinqi40TEtoGUWFA49qTBOnX1CKxeX3v28GaaZV+Yx
-         VtFxew4gbtbCb/4OI02wkjkDIlxJAsRW3P7+TfmDJRDqHBxxaJ27+0M2srP8JhtRiIMb
-         UD/ywAWz8FHyHffKmDn0TD7ZiUlyfy+k+bWKutMvCvcmZ4/mKwEDQehn4bVKiNSiw8j6
-         ex9A==
-X-Gm-Message-State: AOAM533LNBrjqMYaUyvn4DgVgaAm9beeDdzKCYTrsBLCRkysRVxamfzL
-        U9hXQ2sBoxksy88vCU1pzQzEA5dwpjZQmfF9e9o=
-X-Google-Smtp-Source: ABdhPJxujWdXt95DKaZWjJj1WuFBkAk+Awq63k2o3YIkirTaYGT4hKinfK2vUZloZRXWHQvc/9l+Pg==
-X-Received: by 2002:a05:651c:2122:b0:24d:b9b4:aae5 with SMTP id a34-20020a05651c212200b0024db9b4aae5mr10552024ljq.157.1650874698088;
-        Mon, 25 Apr 2022 01:18:18 -0700 (PDT)
-Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com. [209.85.208.169])
-        by smtp.gmail.com with ESMTPSA id bq8-20020a056512150800b00448ab58bd53sm1332923lfb.40.2022.04.25.01.18.13
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Apr 2022 01:18:14 -0700 (PDT)
-Received: by mail-lj1-f169.google.com with SMTP id l19so4239744ljb.7
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 01:18:13 -0700 (PDT)
-X-Received: by 2002:a2e:934b:0:b0:24f:cce:5501 with SMTP id
- m11-20020a2e934b000000b0024f0cce5501mr4447272ljh.443.1650874693427; Mon, 25
- Apr 2022 01:18:13 -0700 (PDT)
+        Mon, 25 Apr 2022 04:21:52 -0400
+Received: from mail.meizu.com (edge05.meizu.com [157.122.146.251])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD03C5DA05;
+        Mon, 25 Apr 2022 01:18:41 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail12.meizu.com
+ (172.16.1.108) with Microsoft SMTP Server (TLS) id 14.3.487.0; Mon, 25 Apr
+ 2022 16:18:40 +0800
+Received: from [172.16.137.70] (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Mon, 25 Apr
+ 2022 16:18:39 +0800
+Message-ID: <53ac1850-0286-0dc7-4a76-8a0ddee696c0@meizu.com>
+Date:   Mon, 25 Apr 2022 16:18:39 +0800
 MIME-Version: 1.0
-References: <20220415164413.2727220-1-song@kernel.org> <20220415164413.2727220-3-song@kernel.org>
- <5e5e4759efef83250f9511d4ab0e1ba34f987ce5.camel@fb.com> <CAMuHMdVdx2V1uhv_152Sw3_z2xE0spiaWp1d6Ko8-rYmAxUBAg@mail.gmail.com>
-In-Reply-To: <CAMuHMdVdx2V1uhv_152Sw3_z2xE0spiaWp1d6Ko8-rYmAxUBAg@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 25 Apr 2022 01:17:57 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wi5DYKbFE4j-jC2HGsKVuf1RpZbEiYt4tSXuxGKiN9oJg@mail.gmail.com>
-Message-ID: <CAHk-=wi5DYKbFE4j-jC2HGsKVuf1RpZbEiYt4tSXuxGKiN9oJg@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf 2/4] page_alloc: use vmalloc_huge for large system hash
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     "song@kernel.org" <song@kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        Rik van Riel <riel@fb.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "rick.p.edgecombe@intel.com" <rick.p.edgecombe@intel.com>,
-        "hch@lst.de" <hch@lst.de>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "hch@infradead.org" <hch@infradead.org>,
-        "mcgrof@kernel.org" <mcgrof@kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "imbrenda@linux.ibm.com" <imbrenda@linux.ibm.com>
-Content-Type: multipart/mixed; boundary="000000000000abeec805dd7637e2"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 1/2] docs/zh_CN: sync with original text
+ Documentation/vm/page_owner.rst
+To:     yanteng si <siyanteng01@gmail.com>
+CC:     Alex Shi <seakeel@gmail.com>, Alex Shi <alexs@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Yanteng Si <siyanteng@loongson.cn>
+References: <CAEensMzuQ0uAw8_5Xb7u1n685au=DpaJyPevGCT8GCG7xS42ow@mail.gmail.com>
+ <1650424016-7225-1-git-send-email-baihaowen@meizu.com>
+ <1650424016-7225-2-git-send-email-baihaowen@meizu.com>
+ <30d2f96e-99e1-2976-a294-8e112166afff@gmail.com>
+ <049ccac8-c394-0cdc-c2ed-4ea91cab6439@meizu.com>
+ <c498b2a7-8f0e-4f6d-10ba-49c4c7794ff9@gmail.com>
+ <0be9fe6a-b01e-b355-9283-6ad8372932d6@meizu.com>
+ <CAEensMzgJ6LmGiJajqwgE3cQCR-pcgr1o35Qf=n1K215BwHLhA@mail.gmail.com>
+From:   baihaowen <baihaowen@meizu.com>
+In-Reply-To: <CAEensMzgJ6LmGiJajqwgE3cQCR-pcgr1o35Qf=n1K215BwHLhA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---000000000000abeec805dd7637e2
-Content-Type: text/plain; charset="UTF-8"
-
-On Mon, Apr 25, 2022 at 12:07 AM Geert Uytterhoeven
-<geert@linux-m68k.org> wrote:
+在 4/25/22 11:19 AM, yanteng si 写道:
+> baihaowen <baihaowen@meizu.com> 于2022年4月25日周一 09:17写道：
+>> 在 4/24/22 11:16 AM, Alex Shi 写道:
+>>> On 4/24/22 10:56, baihaowen wrote:
+>>>>>> +        ======          ==========      ==================
+>>>> hi, Alex
+>>>> I can apply local.
+>>>> ➜  linux-next git:(heads/next-20220421) ✗ git am doc_pageonwer_patches/0001-docs-zh_CN-sync-with-original-text-Documentation-vm-.patch
+>>>> 应用：docs/zh_CN: sync with original text Documentation/vm/page_owner.rst
+>>>> ➜  linux-next git:(heads/next-20220421) ✗ git am doc_pageonwer_patches/0002-doc-vm-page_owner.rst-Fix-table-display-confusion.patch
+>>>> 应用：doc/vm/page_owner.rst: Fix table display confusion
+>>>>
+>>>> I think git send-email will change format by my select. I'll try to resend.
+>>> Send to yourself only then get it from your email client and try applying.
+>>>
+>>> Thanks
+>>> Alex
+>> Hi Alex
+>>
+>> Could you tell me how do you do when you get a patch from email ?
+> $: git clone git://git.kernel.org/pub/scm/utils/b4/b4.git
+> $: b4/b4.sh am <message-id>
+> ###在你的邮箱里查看原始有邮件，然后找到message-id，贴过来就行，前提是你的补丁系列在lore里是按照前几天我说的那么弄。
+> $: vim xxxx.mbx   ### [modify your patch]
+> $: git am  xxxx.mbx
 >
-> vmalloc_huge() is provided by mm/vmalloc.c, which is not
-> compiled if CONFIG_MMU=n.
+>
+> Thanks,
+> Yanteng
+>
+>> I get my patch from email and then copy-patse to a new file, then git am xx.patch.
+>> It will notice 补丁格式检测失败。
+>>
+>> --
+>> Haowen Bai
+>>
+hi, Yanteng
 
-Well, that's annoying.
+No matter I select y or N, I could not git am the Chinese translation patch.
 
-Does this trivial patch fix it for you?
+    doc_pageonwer_patches/0001-docs-zh_CN-sync-with-original-text-Documentation-vm-.patch
+Which 8bit encoding should I declare [UTF-8]? y
+Are you sure you want to use <y> [y/N]? y
 
-I get this feeling that this could be done better with a weak alias to
-__vmalloc(), and that could take care of the "arch doesn't support
-VMAP_HUGE" case too, but the attached is the stupid and
-straightforward version.
+    doc_pageonwer_patches/0001-docs-zh_CN-sync-with-original-text-Documentation-vm-.patch
+Which 8bit encoding should I declare [UTF-8]? N
+Are you sure you want to use <N> [y/N]? y
 
-                  Linus
+$git am xxx.patch
+error: cannot convert from y to UTF-8
+fatal: could not parse patch
+or
+$git am xxx.patch
+error: cannot convert from N to UTF-8
+fatal: could not parse patch
 
---000000000000abeec805dd7637e2
-Content-Type: text/x-patch; charset="US-ASCII"; name="patch.diff"
-Content-Disposition: attachment; filename="patch.diff"
-Content-Transfer-Encoding: base64
-Content-ID: <f_l2efx5810>
-X-Attachment-Id: f_l2efx5810
+so, the problem is happening when I did git send-email, and the original zh_CN patch is successful for git am.
+Have you ever meet this problem ?
 
-IG1tL25vbW11LmMgfCA1ICsrKysrCiAxIGZpbGUgY2hhbmdlZCwgNSBpbnNlcnRpb25zKCspCgpk
-aWZmIC0tZ2l0IGEvbW0vbm9tbXUuYyBiL21tL25vbW11LmMKaW5kZXggNTVhOWU0OGE3YTAyLi4y
-YTY1NWVkNTY2NDQgMTAwNjQ0Ci0tLSBhL21tL25vbW11LmMKKysrIGIvbW0vbm9tbXUuYwpAQCAt
-MjI2LDYgKzIyNiwxMSBAQCB2b2lkICp2bWFsbG9jKHVuc2lnbmVkIGxvbmcgc2l6ZSkKIH0KIEVY
-UE9SVF9TWU1CT0wodm1hbGxvYyk7CiAKK3ZvaWQgKnZtYWxsb2NfaHVnZSh1bnNpZ25lZCBsb25n
-IHNpemUsIGdmcF90IGdmcF9tYXNrKQoreworCXJldHVybiBfX3ZtYWxsb2Moc2l6ZSwgZ2ZwX21h
-c2spOworfQorCiAvKgogICoJdnphbGxvYyAtIGFsbG9jYXRlIHZpcnR1YWxseSBjb250aWd1b3Vz
-IG1lbW9yeSB3aXRoIHplcm8gZmlsbAogICoK
---000000000000abeec805dd7637e2--
+-- 
+Haowen Bai
+
