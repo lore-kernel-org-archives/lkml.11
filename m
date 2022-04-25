@@ -2,107 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86FC5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 13:13:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF972C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 13:16:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232900AbiDYNQ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 09:16:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57308 "EHLO
+        id S231395AbiDYNTJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 09:19:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229774AbiDYNQY (ORCPT
+        with ESMTP id S229774AbiDYNTD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 09:16:24 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 93E5D35DEB
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 06:13:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650892398;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=OV5M88ExrHBJLlDEVqDhMiG8Kzj0MFYt6DBHZT5ejGQ=;
-        b=WwfqwWuJElflgMtspe5HpTUo+BOaTmCLmDyqYMsJDUxDl4Dk3xxLp7S/IcCEV6k1CJ4UQ/
-        D3nvzSSPd8uESrO3FOLbiqHXPXaQj/Jgdi43OC5Uf+rG2ZUGxSV0keYKj1+pX4sMm/6Rv/
-        WNW/9S8aI30meIbFO1By+MW9k86CHtk=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-350-7qkZ546dN_GyN6eTrqEX7g-1; Mon, 25 Apr 2022 09:13:17 -0400
-X-MC-Unique: 7qkZ546dN_GyN6eTrqEX7g-1
-Received: by mail-qk1-f198.google.com with SMTP id q5-20020a05620a0d8500b004738c1b48beso9645315qkl.7
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 06:13:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OV5M88ExrHBJLlDEVqDhMiG8Kzj0MFYt6DBHZT5ejGQ=;
-        b=lcah2QMzhFJeNJEz4uy8RdprFa1merH//5nalNS8F+hhRLMmKFEasgXY4WEbqp9rQd
-         NbEaBs+qdk7xa9Q1hpEYuawTpSTejoHAxJLQdnFk+qi6NKGJvrMtfulS6HBL6weT0zgb
-         /sv56+IwKi+M0T3kFW/rJqvPa5S1oHLqgZuiRgk/LmEkqUZSkroGNP8SVXmYa4a15Ri6
-         rzGSxvlTeRbv3Lmj2roE7iC6pp+fTpNp/HsmfMmRhHZaDhhnL//cLX5xSt3EHMFxdhXC
-         ZQUDp9et8mzGlJ+IJu3y06IyFgki3s1yxXs1hkOsvzOU5a8+Iz4pdk89hWevnN4R4vX9
-         mqXg==
-X-Gm-Message-State: AOAM531CbnoNZ6fdkaGrOZWMzFrY24qY+Sb+fJ4TsX+YnAOd+KA9YGv6
-        fGowZQfWbuttyaTEvyUIOR+6YTBCBOqEnZWnzOc0+rmduLjVklw3PRo36JABmm8PWoo5T1K42VN
-        7IJGLlfqsByTVUgxvhzvnR0Dd
-X-Received: by 2002:a05:6214:1c87:b0:42d:20cb:e484 with SMTP id ib7-20020a0562141c8700b0042d20cbe484mr12145218qvb.10.1650892396727;
-        Mon, 25 Apr 2022 06:13:16 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzPOqTD8cO+BzlbfrXGx8bSpW2fXt9dKS1tp8Lcv1B7tS2bEgBAUJkY4Q26CjFWa0jOYCeRbQ==
-X-Received: by 2002:a05:6214:1c87:b0:42d:20cb:e484 with SMTP id ib7-20020a0562141c8700b0042d20cbe484mr12145207qvb.10.1650892396506;
-        Mon, 25 Apr 2022 06:13:16 -0700 (PDT)
-Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id s195-20020a37a9cc000000b0069ca29ab6f4sm4961900qke.26.2022.04.25.06.13.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 06:13:16 -0700 (PDT)
-From:   Tom Rix <trix@redhat.com>
-To:     bskeggs@redhat.com, kherbst@redhat.com, lyude@redhat.com,
-        airlied@linux.ie, daniel@ffwll.ch
-Cc:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
-Subject: [PATCH] drm/nouveau/disp/gv100: make gv100_disp_wndw and gv100_disp_wndw_mthd static
-Date:   Mon, 25 Apr 2022 09:13:08 -0400
-Message-Id: <20220425131308.158635-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        Mon, 25 Apr 2022 09:19:03 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A191F17E0A;
+        Mon, 25 Apr 2022 06:15:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650892559; x=1682428559;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=zYnxt+dOMmGR9ixG9CjwBptYMb5IpG26lgSZqv0tNlM=;
+  b=aHww7+9ty9Cdx+Mb3xk4CvVtIXsANaKQGowAFgmnKXidGIgtrDFrIUUH
+   x5G29vfc9XdGygMZlw0gq7/irUqGiEeBMtd0Hqc+pz7jdQ1NETj+p9Gt/
+   A2oxGTzGs42KLi4mB09zB/aLspg1FStfSH7T8kXkIsfKffIP+LNcJzqzi
+   YKGkGTT49MF1h5Ux40TLAHF1rJXvR5mfBk88Lldv5M6P91l4W9+qdncSE
+   dEHUe7TeSioxEjrs23c5Y+k1Cx0mkR2zjIj+bvYKxdnnpLovrI+VhCMVG
+   /yO6yF9beDc8O9Oh8pfoQtoZj5PezB5B8mWI9xav2ax1ywuKbMNe+rK7i
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10327"; a="265044384"
+X-IronPort-AV: E=Sophos;i="5.90,288,1643702400"; 
+   d="scan'208";a="265044384"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 06:15:58 -0700
+X-IronPort-AV: E=Sophos;i="5.90,288,1643702400"; 
+   d="scan'208";a="579279569"
+Received: from pvagawan-mobl1.amr.corp.intel.com (HELO [10.0.2.15]) ([10.252.47.228])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 06:15:52 -0700
+Message-ID: <ff1e190a-95e6-e2a6-dc01-a46f7ffd2162@intel.com>
+Date:   Mon, 25 Apr 2022 16:15:47 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.7.0
+Subject: Re: [PATCH V2 03/11] perf/x86: Add support for TSC in nanoseconds as
+ a perf event clock
+Content-Language: en-US
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>
+Cc:     Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        H Peter Anvin <hpa@zytor.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        "jgross@suse.com" <jgross@suse.com>,
+        "sdeep@vmware.com" <sdeep@vmware.com>,
+        "pv-drivers@vmware.com" <pv-drivers@vmware.com>,
+        "pbonzini@redhat.com" <pbonzini@redhat.com>,
+        "seanjc@google.com" <seanjc@google.com>,
+        "kys@microsoft.com" <kys@microsoft.com>,
+        "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "Andrew.Cooper3@citrix.com" <Andrew.Cooper3@citrix.com>,
+        "Hall, Christopher S" <christopher.s.hall@intel.com>
+References: <20220214110914.268126-1-adrian.hunter@intel.com>
+ <20220214110914.268126-4-adrian.hunter@intel.com>
+ <YiIXFmA4vpcTSk2L@hirez.programming.kicks-ass.net>
+ <853ce127-25f0-d0fe-1d8f-0b0dd4f3ce71@intel.com>
+ <YiXVgEk/1UClkygX@hirez.programming.kicks-ass.net>
+ <30383f92-59cb-2875-1e1b-ff1a0eacd235@intel.com>
+ <YiYZv+LOmjzi5wcm@hirez.programming.kicks-ass.net>
+ <013b5425-2a60-e4d4-b846-444a576f2b28@intel.com>
+ <6f07a7d4e1ad4440bf6c502c8cb6c2ed@intel.com>
+ <c3e1842b-79c3-634a-3121-938b5160ca4c@intel.com>
+ <50fd2671-6070-0eba-ea68-9df9b79ccac3@intel.com> <87ilqx33vk.ffs@tglx>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+In-Reply-To: <87ilqx33vk.ffs@tglx>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sparse reports these issues
-wndwgv100.c:120:1: warning: symbol 'gv100_disp_wndw_mthd' was not declared. Should it be static?
-wndwgv100.c:140:1: warning: symbol 'gv100_disp_wndw' was not declared. Should it be static?
+On 25/04/22 12:32, Thomas Gleixner wrote:
+> On Mon, Apr 25 2022 at 08:30, Adrian Hunter wrote:
+>> On 14/03/22 13:50, Adrian Hunter wrote:
+>>>> TSC offsetting may also be a problem. The VMCS TSC offset must be discoverable by the
+>>>> guest. This can be done via TSC_ADJUST MSR. The offset in the VMCS and the guest
+>>>> TSC_ADJUST MSR must always be equivalent, i.e. a write to TSC_ADJUST in the guest
+>>>> must be reflected in the VMCS and any changes to the offset in the VMCS must be
+>>>> reflected in the TSC_ADJUST MSR. Otherwise a para-virtualized method must
+>>>> be invented to communicate an arbitrary VMCS TSC offset to the guest.
+>>>>
+>>>
+>>> In my view it is reasonable for perf to support TSC as a perf clock in any case
+>>> because:
+>>> 	a) it allows users to work entirely with TSC if they wish
+>>> 	b) other kernel performance / debug facilities like ftrace already support TSC
+>>> 	c) the patches to add TSC support are relatively small and straight-forward
+>>>
+>>> May we have support for TSC as a perf event clock?
+>>
+>> Any update on this?
+> 
+> If TSC is reliable on the host, then there is absolutely no reason not
+> to use it in the guest all over the place. And that is independent of
+> exposing ART to the guest.
+> 
+> So why do we need extra solutions for PT and perf, ftrace and whatever?
+> 
+> Can we just fix the underlying problem and make the hypervisor tell the
+> guest that TSC is stable, reliable and good to use?
+> 
+> Then everything else just falls into place and using TSC is a
+> substantial performance gain in general. Just look at the VDSO
+> implementation of __arch_get_hw_counter() -> vread_pvclock():
+> 
+> Instead of just reading the TSC, this needs to take a nested seqcount,
+> read TSC and do yet another mult/shift, which makes clock_gettime() ~20%
+> slower than necessary.
+> 
+> It's hillarious, that we still cling to this pvclock abomination, while
+> we happily expose TSC deadline timer to the guest. TSC virt scaling was
+> implemented in hardware for a reason.
 
-These variable are only used in wndwgv100.c.  Single file variables should be static.
-So use static as their storage-class specifiers.
+So you are talking about changing VMX TCS Offset on every VM-Entry to try to hide
+the time jumps when the VM is scheduled out?  Or neglect that and just let the time
+jumps happen?
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/gpu/drm/nouveau/nvkm/engine/disp/wndwgv100.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/gpu/drm/nouveau/nvkm/engine/disp/wndwgv100.c b/drivers/gpu/drm/nouveau/nvkm/engine/disp/wndwgv100.c
-index 5d3b641dbb14..e635247d794f 100644
---- a/drivers/gpu/drm/nouveau/nvkm/engine/disp/wndwgv100.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/engine/disp/wndwgv100.c
-@@ -116,7 +116,7 @@ gv100_disp_wndw_mthd_base = {
- 	}
- };
- 
--const struct nv50_disp_chan_mthd
-+static const struct nv50_disp_chan_mthd
- gv100_disp_wndw_mthd = {
- 	.name = "Window",
- 	.addr = 0x001000,
-@@ -136,7 +136,7 @@ gv100_disp_wndw_intr(struct nv50_disp_chan *chan, bool en)
- 	nvkm_mask(device, 0x611da4, mask, data);
- }
- 
--const struct nv50_disp_chan_func
-+static const struct nv50_disp_chan_func
- gv100_disp_wndw = {
- 	.init = gv100_disp_dmac_init,
- 	.fini = gv100_disp_dmac_fini,
--- 
-2.27.0
-
+If changing VMX TCS Offset, how can TSC be kept consistent between each VCPU i.e.
+wouldn't that mean each VCPU has to have the same VMX TSC Offset?
