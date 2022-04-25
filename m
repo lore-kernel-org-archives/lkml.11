@@ -2,79 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC0EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 10:31:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBDE9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 10:31:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235088AbiDYKeF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 06:34:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54830 "EHLO
+        id S237975AbiDYKeR convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 06:34:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235076AbiDYKdV (ORCPT
+        with ESMTP id S235723AbiDYKdw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 06:33:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6129B6318;
-        Mon, 25 Apr 2022 03:30:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 10401B8128F;
-        Mon, 25 Apr 2022 10:30:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8B1CEC385AD;
-        Mon, 25 Apr 2022 10:30:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650882612;
-        bh=wvjdFamBQ4IGaLRRyZZ8Q0E9aHm34WZs4MnP+NDZNVk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=cfFMwl9esLX+4WnngsAC6Vw+tdQrngAAIofRMS3dSmjKSCZQKNnztwuhEHaBWtuXH
-         ZBaDTFPZdlOeoEz6wPUrfWb2gl/dNyFzDW1HdQaLOKRTkRJU9AkeR7dDllVOP+yM+v
-         BMBP8MH/Il3YeiV1WC8n+0FxhY2lGa69pkJ+ZjLmu9EGqm4FQG7iehb7EVBUVus4q2
-         5WMiF9qYFbyra3Kn0dS8+pf6B1Sm/PO3WWrWCEPw86eTLqF2d2BHqmBBR4L9NGaJIe
-         SgJ5iTIefjf22CDL533fuUS0GSnQ1WY3suVaWA2WaLc1lBAW+rie0N6ZVhSVvDXu4H
-         rhFovQe12Hgnw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 737A3E85D90;
-        Mon, 25 Apr 2022 10:30:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Mon, 25 Apr 2022 06:33:52 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F4121110
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 03:30:47 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0] helo=[IPv6:::1])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <r.czerwinski@pengutronix.de>)
+        id 1nivzH-0005Ci-Ci; Mon, 25 Apr 2022 12:30:35 +0200
+Message-ID: <72c1f0b80e76b7f4ab1c59f09e6edeffe892fbdc.camel@pengutronix.de>
+Subject: Re: [PATCH 6/8] ARM: dts: stm32: enable optee firmware and SCMI
+ support on STM32MP15
+From:   Rouven Czerwinski <r.czerwinski@pengutronix.de>
+To:     Marek Vasut <marex@denx.de>,
+        Etienne CARRIERE <etienne.carriere@st.com>,
+        Alexandre TORGUE - foss <alexandre.torgue@foss.st.com>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        "soc@kernel.org" <soc@kernel.org>, Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>
+Date:   Mon, 25 Apr 2022 12:30:32 +0200
+In-Reply-To: <71c0dd94-8cd3-9ca0-f06d-ee13ad063618@denx.de>
+References: <20220422150952.20587-1-alexandre.torgue@foss.st.com>
+         <20220422150952.20587-7-alexandre.torgue@foss.st.com>
+         <174bea56-3e99-e01c-4133-f1350d34448d@denx.de>
+         <PAXPR10MB4687B8C3DF485E814AE8158BFDF89@PAXPR10MB4687.EURPRD10.PROD.OUTLOOK.COM>
+         <71c0dd94-8cd3-9ca0-f06d-ee13ad063618@denx.de>
+Organization: Pengutronix e.K.
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.44.0 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH V2] net: mscc: ocelot: Remove useless code
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165088261246.604.9770330765327308123.git-patchwork-notify@kernel.org>
-Date:   Mon, 25 Apr 2022 10:30:12 +0000
-References: <1650537281-15069-1-git-send-email-baihaowen@meizu.com>
-In-Reply-To: <1650537281-15069-1-git-send-email-baihaowen@meizu.com>
-To:     Haowen Bai <baihaowen@meizu.com>
-Cc:     UNGLinuxDriver@microchip.com, alexandre.belloni@bootlin.com,
-        claudiu.manoil@nxp.com, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, vladimir.oltean@nxp.com
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: r.czerwinski@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Hi,
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Thu, 21 Apr 2022 18:34:41 +0800 you wrote:
-> payload only memset but no use at all, so we drop them.
+On Mon, 2022-04-25 at 12:25 +0200, Marek Vasut wrote:
+> On 4/25/22 12:19, Etienne CARRIERE wrote:
+> > Hello Marek,
 > 
-> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-> ---
-> V1->V2: change correct title
+> Hi,
 > 
->  drivers/net/ethernet/mscc/ocelot_vcap.c | 4 ----
->  1 file changed, 4 deletions(-)
+> > > From: Marek Vasut <marex@denx.de>
+> > > 
+> > > > On 4/22/22 17:09, Alexandre Torgue wrote:
+> > > > Enable optee and SCMI clocks/reset protocols support.
+> > > > 
+> > > > Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
+> > > > 
+> > > > diff --git a/arch/arm/boot/dts/stm32mp151.dtsi
+> > > > b/arch/arm/boot/dts/stm32mp151.dtsi
+> > > > index 7fdc324b3cf9..1b2fd3426a81 100644
+> > > > --- a/arch/arm/boot/dts/stm32mp151.dtsi
+> > > > +++ b/arch/arm/boot/dts/stm32mp151.dtsi
+> > > > @@ -115,6 +115,33 @@
+> > > >                  status = "disabled";
+> > > >          };
+> > > >     
+> > > > +     firmware {
+> > > > +             optee: optee {
+> > > > +                     compatible = "linaro,optee-tz";
+> > > > +                     method = "smc";
+> > > > +                     status = "disabled";
+> > > > +             };
+> > > 
+> > > Doesn't this TEE node get automatically generated and patched into DT by
+> > > the TEE ? I think OpTee-OS does that.
+> > 
+> > OP-TEE OS does that if it gets passed the DT from early boot stage which is not always the case.
+> 
+> Shouldn't that be something to fix ?
+> 
+> I think R-Car3 does that already.
 
-Here is the summary with links:
-  - [V2] net: mscc: ocelot: Remove useless code
-    https://git.kernel.org/netdev/net-next/c/985e254c738c
+FWIW it's also possible for OP-TEE to generate a device tree overlay
+which can be applied by later boot stages.
 
-You are awesome, thank you!
+Drawback is that you either need an additional parameter to pass
+between boot stages (address of the DT overlay) or it needs to be
+hardcoded. Hardcoding has it's own bag of drawbacks, but it's what we
+do for some i.MX6 platforms within barebox. However there is no TF-A
+there, so only OP-TEE and Barebox need to agree on the fixed location
+beforehand.
+
+Best regards,
+Rouven Czerwinski
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+Pengutronix e.K.           | Rouven Czerwinski          |
+Steuerwalder Str. 21       | http://www.pengutronix.de/ |
+31137 Hildesheim, Germany  | Phone: +49-5121-206917-0   |
 
