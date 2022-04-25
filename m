@@ -2,108 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AB96C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 07:07:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DB31C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 07:08:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235694AbiDYHKw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 03:10:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52592 "EHLO
+        id S234971AbiDYHLw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 03:11:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240653AbiDYHKi (ORCPT
+        with ESMTP id S231663AbiDYHLt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 03:10:38 -0400
-Received: from mail-qv1-f51.google.com (mail-qv1-f51.google.com [209.85.219.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A464D13D1E;
-        Mon, 25 Apr 2022 00:07:26 -0700 (PDT)
-Received: by mail-qv1-f51.google.com with SMTP id kk26so3188514qvb.6;
-        Mon, 25 Apr 2022 00:07:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=i0fy0ju/RjV4t6J/6vekfJMKMcci/Xy9FO1WhPYjEWY=;
-        b=DA6BMPi7Hq+DnQbnyeinKQe9ta7PvzFmtWmkvAtgkl9xJkY89J47qbMV+0CRIBJ4uY
-         nD86dGyith2PQSGtDsV5EOnTE/BuCQNAUz4e1y8aqtUzq/C4o8ejrm4b/KjKwrWzcx1A
-         5cn0XOTjH81KYOcmIkm4e0h3RlUxMzx5acs9lnQt4x+KQvAXYpO5bok9D2UaCF7wIl/k
-         L98ZjgnhK9EC0ao0iHWv5Gngnju5fGdzyVVMdCUU5JTJmBXxTbpj0cKL/5Tgwuuhq9VM
-         HxNykWxAyWa7d/hjnD9mnaXNhGCbkxqqmTSsQrB2dDz7KhgQUqeUMIW8kXcBOSIjBXWZ
-         KmHQ==
-X-Gm-Message-State: AOAM532x/nIp6FHYwgVH742xxoxhwYt1aGjJQSqZTtGzlY9N86WJt11B
-        vZ6rBXhv1+bxNp1NJncL8/8ZoGi3B+CzQg==
-X-Google-Smtp-Source: ABdhPJwxFCI5s1Q5M44JkUkqTIzYTNsUZbzfwqsmX0j31BEplLJg2+KB/3DkznDcZ8tyf4V3zFX8hA==
-X-Received: by 2002:a0c:d80e:0:b0:456:31a1:fa52 with SMTP id h14-20020a0cd80e000000b0045631a1fa52mr4816712qvj.109.1650870445711;
-        Mon, 25 Apr 2022 00:07:25 -0700 (PDT)
-Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com. [209.85.219.177])
-        by smtp.gmail.com with ESMTPSA id 2-20020ac85702000000b002f367910ab0sm1792026qtw.94.2022.04.25.00.07.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Apr 2022 00:07:25 -0700 (PDT)
-Received: by mail-yb1-f177.google.com with SMTP id j2so25444033ybu.0;
-        Mon, 25 Apr 2022 00:07:24 -0700 (PDT)
-X-Received: by 2002:a25:d393:0:b0:648:4871:3b91 with SMTP id
- e141-20020a25d393000000b0064848713b91mr5823322ybf.506.1650870444696; Mon, 25
- Apr 2022 00:07:24 -0700 (PDT)
+        Mon, 25 Apr 2022 03:11:49 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6211C13D0A;
+        Mon, 25 Apr 2022 00:08:45 -0700 (PDT)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kmwyk0JrjzGpLq;
+        Mon, 25 Apr 2022 15:05:50 +0800 (CST)
+Received: from localhost.localdomain (10.67.164.66) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 25 Apr 2022 15:08:24 +0800
+From:   Yicong Yang <yangyicong@hisilicon.com>
+To:     <bhelgaas@google.com>, <rafael@kernel.org>,
+        <linux-pci@vger.kernel.org>, <linux-acpi@vger.kernel.org>
+CC:     <lenb@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <yangyicong@hisilicon.com>, <linuxarm@huawei.com>
+Subject: [PATCH] PCI/ACPI: Always advertise ASPM support if CONFIG_PCIEASPM=y
+Date:   Mon, 25 Apr 2022 15:06:34 +0800
+Message-ID: <20220425070634.28227-1-yangyicong@hisilicon.com>
+X-Mailer: git-send-email 2.31.0
 MIME-Version: 1.0
-References: <20220415164413.2727220-1-song@kernel.org> <20220415164413.2727220-3-song@kernel.org>
- <5e5e4759efef83250f9511d4ab0e1ba34f987ce5.camel@fb.com>
-In-Reply-To: <5e5e4759efef83250f9511d4ab0e1ba34f987ce5.camel@fb.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 25 Apr 2022 09:07:12 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVdx2V1uhv_152Sw3_z2xE0spiaWp1d6Ko8-rYmAxUBAg@mail.gmail.com>
-Message-ID: <CAMuHMdVdx2V1uhv_152Sw3_z2xE0spiaWp1d6Ko8-rYmAxUBAg@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf 2/4] page_alloc: use vmalloc_huge for large system hash
-To:     "song@kernel.org" <song@kernel.org>
-Cc:     "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        Rik van Riel <riel@fb.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "rick.p.edgecombe@intel.com" <rick.p.edgecombe@intel.com>,
-        "hch@lst.de" <hch@lst.de>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "hch@infradead.org" <hch@infradead.org>,
-        "mcgrof@kernel.org" <mcgrof@kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "imbrenda@linux.ibm.com" <imbrenda@linux.ibm.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.164.66]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Song,
+When we have CONFIG_PCIEASPM enabled it means OS can always support ASPM no
+matter user have disabled it through pcie_aspm=off or not. But currently we
+won't advertise ASPM support in _OSC negotiation if user disables it, which
+doesn't match the fact. This will also have side effects that other PCIe
+services like AER and hotplug will be disabled as ASPM support is required
+and we won't negotiate other services if ASPM support is absent.
 
-On Fri, 2022-04-15 at 09:44 -0700, Song Liu wrote:
-> > Use vmalloc_huge() in alloc_large_system_hash() so that large system
-> > hash
-> > (>= PMD_SIZE) could benefit from huge pages. Note that vmalloc_huge
-> > only
-> > allocates huge pages for systems with HAVE_ARCH_HUGE_VMALLOC.
-> >
-> > Reviewed-by: Christoph Hellwig <hch@lst.de>
-> > Signed-off-by: Song Liu <song@kernel.org>
->
-> Reviewed-by: Rik van Riel <riel@surriel.com>
+So this patch makes OS always advertising ASPM support if CONFIG_PCIEASPM=y.
+It intends no functional change to pcie_aspm=off as it will still mark
+aspm_disabled=1 and aspm_support_enabled=false, driver will check these
+status before configuring ASPM.
 
-Thanks for your patch, which is now commit f2edd118d02dd114
-("page_alloc: use vmalloc_huge for large system hash") upstream
-(and which hasn't been in linux-next before).
+Tested this patch with pcie_aspm=off:
+estuary:/$ dmesg | egrep -i "aspm|osc"
+[    0.000000] PCIe ASPM is disabled
+[    8.706961] acpi PNP0A08:00: _OSC: OS supports [ExtendedConfig ASPM
+ClockPM Segments MSI EDR HPX-Type3]
+[    8.726032] acpi PNP0A08:00: _OSC: platform does not support [LTR]
+[    8.742818] acpi PNP0A08:00: _OSC: OS now controls [PCIeHotplug PME
+AER PCIeCapability DPC]
+estuary:/sys/module/pcie_aspm/parameters$ cat policy
+[default] performance powersave powersupersave
+estuary:/sys/module/pcie_aspm/parameters$ echo powersave > policy
+bash: echo: write error: Operation not permitted
 
-As reported by noreply@ellerman.id.au, this is breaking e.g.
-m68k/m5272c3_defconfig with:
+Cc: Rafael J. Wysocki <rafael@kernel.org>
+Suggested-by: Bjorn Helgaas <bhelgaas@google.com>
+[https://lore.kernel.org/linux-pci/20220407154257.GA235990@bhelgaas/]
+Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+---
+ drivers/acpi/pci_root.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-page_alloc.c:(.init.text+0x13de): undefined reference to `vmalloc_huge'
+diff --git a/drivers/acpi/pci_root.c b/drivers/acpi/pci_root.c
+index 6f9e75d14808..17e78582e633 100644
+--- a/drivers/acpi/pci_root.c
++++ b/drivers/acpi/pci_root.c
+@@ -393,7 +393,7 @@ static u32 calculate_support(void)
+ 	support |= OSC_PCI_HPX_TYPE_3_SUPPORT;
+ 	if (pci_ext_cfg_avail())
+ 		support |= OSC_PCI_EXT_CONFIG_SUPPORT;
+-	if (pcie_aspm_support_enabled())
++	if (IS_ENABLED(CONFIG_PCIEASPM))
+ 		support |= OSC_PCI_ASPM_SUPPORT | OSC_PCI_CLOCK_PM_SUPPORT;
+ 	if (pci_msi_enabled())
+ 		support |= OSC_PCI_MSI_SUPPORT;
+-- 
+2.24.0
 
-vmalloc_huge() is provided by mm/vmalloc.c, which is not
-compiled if CONFIG_MMU=n.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
