@@ -2,127 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24EE6C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 15:05:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 129FAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 15:06:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242724AbiDYPIa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 11:08:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41574 "EHLO
+        id S242735AbiDYPKA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 11:10:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242719AbiDYPIZ (ORCPT
+        with ESMTP id S233191AbiDYPJ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 11:08:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E955F1FCF3;
-        Mon, 25 Apr 2022 08:05:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A19C6B8160D;
-        Mon, 25 Apr 2022 15:05:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65958C385A4;
-        Mon, 25 Apr 2022 15:05:14 +0000 (UTC)
-Date:   Mon, 25 Apr 2022 11:05:12 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Xu Kuohai <xukuohai@huawei.com>
-Cc:     <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        <hpa@zytor.com>, Shuah Khan <shuah@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Daniel Kiss <daniel.kiss@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Mark Brown <broonie@kernel.org>,
-        Delyan Kratunov <delyank@fb.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Subject: Re: [PATCH bpf-next v3 2/7] ftrace: Fix deadloop caused by direct
- call in ftrace selftest
-Message-ID: <20220425110512.538ce0bf@gandalf.local.home>
-In-Reply-To: <20220424154028.1698685-3-xukuohai@huawei.com>
-References: <20220424154028.1698685-1-xukuohai@huawei.com>
-        <20220424154028.1698685-3-xukuohai@huawei.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Mon, 25 Apr 2022 11:09:58 -0400
+Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AA6C606FF
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 08:06:55 -0700 (PDT)
+Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-2f7d621d1caso40119597b3.11
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 08:06:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aqiODolKDwfyRALQlYWQcszGWRFH6z+IxhiKOhDhTFo=;
+        b=HG1YlSO8m3GLToDGvpIw/Zvu2U9nZ5SndeRDDJRZzwhTyGyEpMsAxW5XPxX3IOWTRs
+         mGvIVPSDaRHy3QTsHxyXTARve8aN2WtIy6ova2yzzY8yBXooOL/eJBy9rlWHhiXosZjo
+         aMGBCzSNe6GgdoMJQ+aAeYOwvM6Xz2h5Xr2NDt6h4EsVuLdOcc9IAGHXNWJ6LE2+8cjT
+         ieq+gd2dQVwDMzWSbvHmF1Rq1dPImaQVS9oV3TeJoDvXhzEDK0IGEYuai6dJBHbdsHa7
+         6ifG5Hd1qIJvMevVQy9ygMtTboxW3zHpSvK+ldc5jOgaMmF+oBehT404iwlLts1OYMkU
+         F/IA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aqiODolKDwfyRALQlYWQcszGWRFH6z+IxhiKOhDhTFo=;
+        b=A9fAsydZRdYOwnj3acQ8NjBuAUEwmUmbhoQGsztGtkmbqftlmjgEDHcUWAwuWZwUgZ
+         gvG3Ek/frlTIjAXKuWknjNRuk1TPnSk8Sbzw0JrXjez+4zAftAvzeTz7lh4FrDoEC9rI
+         KozJUt6R9iYJseP7DLlTcL3NkTeHRVGNhDdRNNk4tRkg7ZyM4vcwNQDNZ29joP9ZCWhl
+         AzEY1r8JVA8cPKsDBV8rUV9lvLm5zxodiJQi2yaKgh1IpyieJksFI8AmjJAtd9A4ec7M
+         Xd70K3mpImdWTpldMlOywqxQxIFDxK39sA3mecHQgcDGqHotWSxqkSswmmPHA4a3VJcW
+         4JKw==
+X-Gm-Message-State: AOAM533oAnjyRc5h0ZH6SL9LuLa225QzLWEc9qeJVvuPz6N057iq9u4M
+        tm1wEs7vzzg3A4MVQjEE69tn+7Htph9Emh7mhandsQ==
+X-Google-Smtp-Source: ABdhPJwTVuRcAfvc1fO1xeG98w40wfDx7OdmNy1nAU7g1tneXxN06QNrYfNTjYzGAMDWsyK50c82G3B9eEZZeRy29HU=
+X-Received: by 2002:a81:1d48:0:b0:2f1:8ebf:25f3 with SMTP id
+ d69-20020a811d48000000b002f18ebf25f3mr16690680ywd.118.1650899212383; Mon, 25
+ Apr 2022 08:06:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220419211658.11403-1-apais@linux.microsoft.com> <20220419211658.11403-2-apais@linux.microsoft.com>
+In-Reply-To: <20220419211658.11403-2-apais@linux.microsoft.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Mon, 25 Apr 2022 17:06:40 +0200
+Message-ID: <CACRpkdZz_JGGCv74gQYKMq5fdHLo_6jFuJ2uh8N9Q1VG5+kCFw@mail.gmail.com>
+Subject: Re: [RFC 1/1] drivers/dma/*: replace tasklets with workqueue
+To:     Allen Pais <apais@linux.microsoft.com>
+Cc:     olivier.dautricourt@orolia.com, sr@denx.de, vkoul@kernel.org,
+        keescook@chromium.org, linux-hardening@vger.kernel.org,
+        ludovic.desroches@microchip.com, tudor.ambarus@microchip.com,
+        f.fainelli@gmail.com, rjui@broadcom.com, sbranden@broadcom.com,
+        bcm-kernel-feedback-list@broadcom.com, nsaenz@kernel.org,
+        paul@crapouillou.net, Eugeniy.Paltsev@synopsys.com,
+        gustavo.pimentel@synopsys.com, vireshk@kernel.org,
+        andriy.shevchenko@linux.intel.com, leoyang.li@nxp.com,
+        zw@zh-kernel.org, wangzhou1@hisilicon.com, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, sean.wang@mediatek.com,
+        matthias.bgg@gmail.com, afaerber@suse.de, mani@kernel.org,
+        logang@deltatee.com, sanju.mehta@amd.com, daniel@zonque.org,
+        haojian.zhuang@gmail.com, robert.jarzmik@free.fr,
+        agross@kernel.org, bjorn.andersson@linaro.org,
+        krzysztof.kozlowski@linaro.org, green.wan@sifive.com,
+        orsonzhai@gmail.com, baolin.wang7@gmail.com, zhang.lyra@gmail.com,
+        patrice.chotard@foss.st.com, wens@csie.org,
+        jernej.skrabec@gmail.com, samuel@sholland.org,
+        dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 24 Apr 2022 11:40:23 -0400
-Xu Kuohai <xukuohai@huawei.com> wrote:
+On Tue, Apr 19, 2022 at 11:17 PM Allen Pais <apais@linux.microsoft.com> wrote:
 
-> diff --git a/kernel/trace/trace_selftest.c b/kernel/trace/trace_selftest.c
-> index abcadbe933bb..d2eff2b1d743 100644
-> --- a/kernel/trace/trace_selftest.c
-> +++ b/kernel/trace/trace_selftest.c
-> @@ -785,8 +785,24 @@ static struct fgraph_ops fgraph_ops __initdata  = {
->  };
->  
->  #ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
-> +#ifdef CONFIG_ARM64
+> The tasklet is an old API which will be deprecated, workqueue API
+> cab be used instead of them.
+>
+> This patch replaces the tasklet usage in drivers/dma/* with a
+> simple work.
+>
+> Github: https://github.com/KSPP/linux/issues/94
+>
+> Signed-off-by: Allen Pais <apais@linux.microsoft.com>
 
-Please find a way to add this in arm specific code. Do not add architecture
-defines in generic code.
+Booted on:
 
-You could add:
+>  drivers/dma/ste_dma40.c                       | 17 ++++-----
 
-#ifndef ARCH_HAVE_FTRACE_DIRECT_TEST_FUNC
-noinline __noclone static void trace_direct_tramp(void) { }
-#endif
+This DMA-controller with no regressions:
+Tested-by: Linus Walleij <linus.walleij@linaro.org>
 
-here, and in arch/arm64/include/ftrace.h
+Also looks good so:
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-#define ARCH_HAVE_FTRACE_DIRECT_TEST_FUNC
-
-and define your test function in the arm64 specific code.
-
--- Steve
-
-
-
-
-> +extern void trace_direct_tramp(void);
-> +
-> +asm (
-> +"	.pushsection	.text, \"ax\", @progbits\n"
-> +"	.type		trace_direct_tramp, %function\n"
-> +"	.global		trace_direct_tramp\n"
-> +"trace_direct_tramp:"
-> +"	mov	x10, x30\n"
-> +"	mov	x30, x9\n"
-> +"	ret	x10\n"
-> +"	.size		trace_direct_tramp, .-trace_direct_tramp\n"
-> +"	.popsection\n"
-> +);
-> +#else
->  noinline __noclone static void trace_direct_tramp(void) { }
->  #endif
-> +#endif
->  
->  /*
->   * Pretty much the same than for the function tracer from which the selftest
-
+Yours,
+Linus Walleij
