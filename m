@@ -2,86 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63FC9C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:21:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 206D4C41535
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:21:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229661AbiDYWYb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 18:24:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37254 "EHLO
+        id S232090AbiDYWYg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 18:24:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343680AbiDYWKN (ORCPT
+        with ESMTP id S1343589AbiDYVm2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 18:10:13 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2B891D33F;
-        Mon, 25 Apr 2022 15:07:08 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KnJyg3zk0z4xLb;
-        Tue, 26 Apr 2022 08:07:07 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1650924427;
-        bh=8W/XQMfl13oPVMn3H/dXL2UEr59p5Ucby+ot8qSJ6hw=;
-        h=Date:From:To:Cc:Subject:From;
-        b=YrpMu9SJ0cRmhOgd8zLvq/5BYbf0jtO5z6XZ4hhR2PTrJOrcmRlUOUy2giPQgCt+p
-         OgCiQW3dpYFFgR4ahDwtMuAfLrsLD6h6I4wW64UN4qvz2lsmZFuBGxkVz1C3Yl4qlw
-         S6KuDZzMBQEvmaaFMQKyvR9nJfqX4uIGs5O5Pr6QxyvMioJlEY+MZAcfcXlaZIHaZt
-         QQbd1JRWN6Ub0/WfsVodpWGFaqWhkAfmHBHmyWrNb9ubeUTiajgD/oeGv5z6hLlgcr
-         OBVshZmLUWdwx8XJXABrcNOYYX6xy+ZEMQvDp3SY3al2P33YBxalon1AhXu5L+/cOH
-         yD2JSB9e9e9uA==
-Date:   Tue, 26 Apr 2022 08:07:06 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: Signed-off-by missing for commit in the mediatek tree
-Message-ID: <20220426080706.26c6816b@canb.auug.org.au>
+        Mon, 25 Apr 2022 17:42:28 -0400
+Received: from mail-oa1-f43.google.com (mail-oa1-f43.google.com [209.85.160.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D290812862D;
+        Mon, 25 Apr 2022 14:39:21 -0700 (PDT)
+Received: by mail-oa1-f43.google.com with SMTP id 586e51a60fabf-e93bbb54f9so4804735fac.12;
+        Mon, 25 Apr 2022 14:39:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=M3R043itbLpaOlNutqBsUrB9rfl8TA7O8rvFQFaCgW0=;
+        b=YGomX+gDZsUz0aV8H2oeclZGUzW+LXBRKYEPDf2G6d+g5Yb0l80UyvFwyxXiwm3zcd
+         UP1YPzR2etRXQk4IUaavZewVmZtSUzNpC0av8wbe38dlb2CabyXh1AK7f22XQtqaGHHg
+         kn+Rh9/+hIFLeX0zQXdjScuqOEJPCUEcOM13PDBRXuCxXws4L+fbJALV8lrxZyeUMk0b
+         fOndJUX2w6yd1sWQvNMrU/RmNG1MAVoO/kCYfqqDW6ZIKDN8o1Qwm/tg6xvaNxDb+H+R
+         wswI3bcci6unQC/eM5syQZwE35NDEtwjULPVLdA4arX1UWfM/Nkjs1XTfQ4hbgEgVIzd
+         nHOg==
+X-Gm-Message-State: AOAM5328xGLSzYmcMJVx29GcfaFAKznoQe1V/xjqLDoMzbRwjfDtIj6p
+        FBNhcnUsAbf98WUktno+jw==
+X-Google-Smtp-Source: ABdhPJx95JVH34JzFNbcrxkClorcgvSIy6VQetgVvlAGfeInSVtMGuS9SDe47ls3sAPTDW45mGk2tA==
+X-Received: by 2002:a05:6870:618e:b0:e5:c2f3:e009 with SMTP id a14-20020a056870618e00b000e5c2f3e009mr8008861oah.10.1650922761186;
+        Mon, 25 Apr 2022 14:39:21 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id r8-20020a05683001c800b006059d4bc39dsm2893087ota.6.2022.04.25.14.39.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Apr 2022 14:39:20 -0700 (PDT)
+Received: (nullmailer pid 334467 invoked by uid 1000);
+        Mon, 25 Apr 2022 21:39:19 -0000
+Date:   Mon, 25 Apr 2022 16:39:19 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Quan Nguyen <quan@os.amperecomputing.com>
+Cc:     Corey Minyard <minyard@acm.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        linux-i2c@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
+        openbmc@lists.ozlabs.org, devicetree@vger.kernel.org,
+        Wolfram Sang <wsa@kernel.org>,
+        Open Source Submission <patches@amperecomputing.com>,
+        "Thang Q . Nguyen" <thang@os.amperecomputing.com>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Joel Stanley <joel@jms.id.au>,
+        linux-arm-kernel@lists.infradead.org,
+        Phong Vo <phong@os.amperecomputing.com>,
+        openipmi-developer@lists.sourceforge.net
+Subject: Re: [PATCH v7 2/3] bindings: ipmi: Add binding for SSIF BMC driver
+Message-ID: <YmcVB/9lB6xkw4d2@robh.at.kernel.org>
+References: <20220422040803.2524940-1-quan@os.amperecomputing.com>
+ <20220422040803.2524940-3-quan@os.amperecomputing.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/MyGZ3Dh2DsRjcdKT49YsKkP";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220422040803.2524940-3-quan@os.amperecomputing.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/MyGZ3Dh2DsRjcdKT49YsKkP
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Fri, 22 Apr 2022 11:08:02 +0700, Quan Nguyen wrote:
+> Add device tree binding document for the SSIF BMC driver.
+> 
+> Signed-off-by: Quan Nguyen <quan@os.amperecomputing.com>
+> ---
+> v7:
+>   + Change compatible string from "ampere,ssif-bmc" to "ssif-bmc"  [Jae]
+> 
+> v6:
+>   + None
+> 
+> v5:
+>   + None
+> 
+> v4:
+>   + Fix warning with dt_binding_check [Rob]
+>   + Change aspeed-ssif-bmc.yaml to ssif-bmc.yaml [Quan]
+> 
+> v3:
+>   + Switched to use DT schema format [Rob]
+> 
+> v2:
+>   + None
+> 
+>  .../devicetree/bindings/ipmi/ssif-bmc.yaml    | 38 +++++++++++++++++++
+>  1 file changed, 38 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/ipmi/ssif-bmc.yaml
+> 
 
-Hi all,
-
-Commits
-
-  775ef8aaa66e ("arm64: dts: mediatek: align thermal zone node names with d=
-tschema")
-  c8b8db1a173d ("arm64: dts: mediatek: align operating-points table name wi=
-th dtschema")
-  c01d9aa630b8 ("arm64: dts: mediatek: mt8183: align Google CROS EC PWM nod=
-e name with dtschema")
-  75a3c81bc634 ("arm64: dts: hisilicon: align 'freq-table-hz' with dtschema=
- in UFS")
-
-are missing a Signed-off-by from their committer.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/MyGZ3Dh2DsRjcdKT49YsKkP
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJnG4oACgkQAVBC80lX
-0GyHnwf5AVVusdviDPGwJRcrItMi1tSpgB44cQeOTxF3OrEsMycpZA/jJnBfDcu2
-4l4WEjUYtjBK9gP8t/mEie3d8lH3Twm4q2zx60cio/JN+VJ56m1Mqp9RgFNimhB5
-VEZxoEneg47vxmMqSXkAEit0Rm350GK1NSG0TZZqOaLNyMmhbHvlz213ObgIJAhb
-SXXtcxr4fnedP/htogeBJpU6VItHQHLWxhTTS+EA/HK51TmC8GumaSbXiMiMc+LH
-kdnrNRN2auSfCvoK02U6wmL9sjJcTmnoYkE0CBgvF+zdue+XLhs2Xwfz2WoQX399
-M9zJkBOC6KuPaZFiRanlPSeAq+u0pg==
-=IAHA
------END PGP SIGNATURE-----
-
---Sig_/MyGZ3Dh2DsRjcdKT49YsKkP--
+Reviewed-by: Rob Herring <robh@kernel.org>
