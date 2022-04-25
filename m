@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1AE4C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 04:05:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC0C4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 04:05:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239650AbiDYEIW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 00:08:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53868 "EHLO
+        id S240941AbiDYEIo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 00:08:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240919AbiDYEHH (ORCPT
+        with ESMTP id S240920AbiDYEHJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 00:07:07 -0400
+        Mon, 25 Apr 2022 00:07:09 -0400
 Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1051C36E05;
-        Sun, 24 Apr 2022 21:03:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FE9C5FB6;
+        Sun, 24 Apr 2022 21:04:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650859438; x=1682395438;
+  t=1650859446; x=1682395446;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=hof9Ekix9EjtYtaS54reIGiHeG4nyNfi6qTBdWbqHos=;
-  b=DcT35NtDGNxWcY7aejek+TTU43Tsx4cqDzlNBkhps56vX5C+9RcJNds7
-   XZ2u//cxS7GZY6jWMacMCBQEIhaCfQzaBJGzdyDIanswFezo6dAB1VghW
-   Euq6W3qliblccOnANH4br4Uv8Uy+uYqjK4TW6ATTPpk9RnNUrVrlTNTIw
-   s=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 24 Apr 2022 21:03:57 -0700
+  bh=epEUqf31ElN2iwkVA9Vu9xc8cIpmIvPTSGEeACWlOBU=;
+  b=EQwfFzw9I6vbcxuVpYx5jew6kPlDA2jZnxg09Qh7dr6hEhvVTvolKodG
+   DfA1A1GS7xhzK+tWFzVKQBruTZyvWnDtxBxu0X9LLVt3JLpkowj5DFDqX
+   /pcACoHnl4G6ohBU/11u7xDpmFy5rBuLMeXxrjxUACNYWYmfOn2K9F4tn
+   I=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 24 Apr 2022 21:04:06 -0700
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2022 21:03:57 -0700
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2022 21:04:05 -0700
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Sun, 24 Apr 2022 21:03:57 -0700
+ 15.2.986.22; Sun, 24 Apr 2022 21:04:04 -0700
 Received: from jinlmao-gv.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Sun, 24 Apr 2022 21:03:53 -0700
+ 15.2.986.22; Sun, 24 Apr 2022 21:04:00 -0700
 From:   Mao Jinlong <quic_jinlmao@quicinc.com>
 To:     Mathieu Poirier <mathieu.poirier@linaro.org>,
         Suzuki K Poulose <suzuki.poulose@arm.com>,
@@ -57,9 +57,9 @@ CC:     Mao Jinlong <quic_jinlmao@quicinc.com>,
         Hao Zhang <quic_hazha@quicinc.com>,
         <linux-arm-msm@vger.kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: [PATCH v6 07/10] Coresight: Add TPDA link driver
-Date:   Mon, 25 Apr 2022 12:03:01 +0800
-Message-ID: <20220425040304.37487-8-quic_jinlmao@quicinc.com>
+Subject: [PATCH v6 09/10] ARM: dts: msm: Add coresight components for SM8250
+Date:   Mon, 25 Apr 2022 12:03:03 +0800
+Message-ID: <20220425040304.37487-10-quic_jinlmao@quicinc.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220425040304.37487-1-quic_jinlmao@quicinc.com>
 References: <20220425040304.37487-1-quic_jinlmao@quicinc.com>
@@ -72,318 +72,513 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-TPDA(Trace, Profiling and Diagnostics Aggregator) is
-to provide packetization, funneling and timestamping of
-TPDM data. Multiple monitors are connected to different
-input ports of TPDA.This change is to add tpda
-enable/disable/probe functions for coresight tpda driver.
-
- - - - -         - - - -        - - - -
-| TPDM 0|      | TPDM 1 |     | TPDM 2|
- - - - -         - - - -        - - - -
-    |               |             |
-    |_ _ _ _ _ _    |     _ _ _ _ |
-                |   |    |
-                |   |    |
-           ------------------
-          |        TPDA      |
-           ------------------
+Add coresight components for sm8250. STM/ETM are added.
 
 Signed-off-by: Tao Zhang <quic_taozha@quicinc.com>
 Signed-off-by: Mao Jinlong <quic_jinlmao@quicinc.com>
 ---
- drivers/hwtracing/coresight/Kconfig          |  11 +
- drivers/hwtracing/coresight/Makefile         |   1 +
- drivers/hwtracing/coresight/coresight-tpda.c | 201 +++++++++++++++++++
- drivers/hwtracing/coresight/coresight-tpda.h |  33 +++
- 4 files changed, 246 insertions(+)
- create mode 100644 drivers/hwtracing/coresight/coresight-tpda.c
- create mode 100644 drivers/hwtracing/coresight/coresight-tpda.h
+ arch/arm64/boot/dts/qcom/sm8250.dtsi | 488 +++++++++++++++++++++++++++
+ 1 file changed, 488 insertions(+)
 
-diff --git a/drivers/hwtracing/coresight/Kconfig b/drivers/hwtracing/coresight/Kconfig
-index 5c506a1cd08f..447919565326 100644
---- a/drivers/hwtracing/coresight/Kconfig
-+++ b/drivers/hwtracing/coresight/Kconfig
-@@ -205,6 +205,7 @@ config CORESIGHT_TRBE
- config CORESIGHT_TPDM
- 	tristate "CoreSight Trace, Profiling & Diagnostics Monitor driver"
- 	select CORESIGHT_LINKS_AND_SINKS
-+	select CORESIGHT_TPDA
- 	help
- 	  This driver provides support for configuring monitor. Monitors are
- 	  primarily responsible for data set collection and support the
-@@ -214,4 +215,14 @@ config CORESIGHT_TPDM
- 	  To compile this driver as a module, choose M here: the module will be
- 	  called coresight-tpdm.
+diff --git a/arch/arm64/boot/dts/qcom/sm8250.dtsi b/arch/arm64/boot/dts/qcom/sm8250.dtsi
+index af8f22636436..53ab2b457a2f 100644
+--- a/arch/arm64/boot/dts/qcom/sm8250.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8250.dtsi
+@@ -4685,6 +4685,494 @@
+ 			interrupt-names = "dcvsh-irq-0", "dcvsh-irq-1", "dcvsh-irq-2";
+ 			#freq-domain-cells = <1>;
+ 		};
++
++		stm@6002000 {
++			compatible = "arm,coresight-stm", "arm,primecell";
++			reg = <0 0x06002000 0 0x1000>, <0 0x16280000 0 0x180000>;
++			reg-names = "stm-base", "stm-stimulus-base";
++
++			clocks = <&aoss_qmp>;
++			clock-names = "apb_pclk";
++
++			out-ports {
++				port {
++					stm_out: endpoint {
++						remote-endpoint = <&funnel0_in7>;
++					};
++				};
++			};
++		};
++
++		funnel@6041000 {
++			compatible = "arm,coresight-dynamic-funnel", "arm,primecell";
++			reg = <0 0x06041000 0 0x1000>;
++
++			clocks = <&aoss_qmp>;
++			clock-names = "apb_pclk";
++
++			out-ports {
++				port {
++					funnel0_out: endpoint {
++						remote-endpoint = <&merge_funnel_in0>;
++					};
++				};
++			};
++
++			in-ports {
++				#address-cells = <1>;
++				#size-cells = <0>;
++
++				port@7 {
++					reg = <7>;
++					funnel0_in7: endpoint {
++						remote-endpoint = <&stm_out>;
++					};
++				};
++			};
++		};
++
++		funnel@6042000 {
++			compatible = "arm,coresight-dynamic-funnel", "arm,primecell";
++			reg = <0 0x06042000 0 0x1000>;
++
++			clocks = <&aoss_qmp>;
++			clock-names = "apb_pclk";
++
++			out-ports {
++				port {
++					funnel2_out: endpoint {
++						remote-endpoint = <&merge_funnel_in2>;
++					};
++				};
++			};
++
++			in-ports {
++				#address-cells = <1>;
++				#size-cells = <0>;
++
++				port@2 {
++					reg = <4>;
++					funnel2_in5: endpoint {
++						remote-endpoint = <&apss_merge_funnel_out>;
++					};
++				};
++			};
++		};
++
++		funnel@6045000 {
++			compatible = "arm,coresight-dynamic-funnel", "arm,primecell";
++			reg = <0 0x06045000 0 0x1000>;
++
++			clocks = <&aoss_qmp>;
++			clock-names = "apb_pclk";
++
++			out-ports {
++				port {
++					funnel_merg_out_funnel_swao: endpoint {
++						remote-endpoint = <&funnel_swao_in_funnel_merg>;
++					};
++				};
++			};
++
++			in-ports {
++				#address-cells = <1>;
++				#size-cells = <0>;
++
++				port@1 {
++					reg = <0>;
++					merge_funnel_in0: endpoint {
++						remote-endpoint = <&funnel0_out>;
++					};
++				};
++
++				port@2 {
++					reg = <1>;
++					merge_funnel_in2: endpoint {
++						remote-endpoint = <&funnel2_out>;
++					};
++				};
++			};
++		};
++
++		replicator@6046000 {
++			compatible = "arm,coresight-dynamic-replicator", "arm,primecell";
++			reg = <0 0x06046000 0 0x1000>;
++
++
++			clocks = <&aoss_qmp>;
++			clock-names = "apb_pclk";
++
++			out-ports {
++				port {
++					replicator_out: endpoint {
++						remote-endpoint = <&etr_in>;
++					};
++				};
++			};
++
++			in-ports {
++				port {
++					replicator_cx_in_swao_out: endpoint {
++						remote-endpoint = <&replicator_swao_out_cx_in>;
++					};
++				};
++			};
++		};
++
++		etr@6048000 {
++			compatible = "arm,coresight-tmc", "arm,primecell";
++			reg = <0 0x06048000 0 0x1000>;
++
++			clocks = <&aoss_qmp>;
++			clock-names = "apb_pclk";
++			arm,scatter-gather;
++
++			in-ports {
++				port {
++					etr_in: endpoint {
++						remote-endpoint = <&replicator_out>;
++					};
++				};
++			};
++		};
++
++		funnel@6b04000 {
++			compatible = "arm,coresight-dynamic-funnel", "arm,primecell";
++			arm,primecell-periphid = <0x000bb908>;
++
++			reg = <0 0x06b04000 0 0x1000>;
++			reg-names = "funnel-base";
++
++			clocks = <&aoss_qmp>;
++			clock-names = "apb_pclk";
++
++			out-ports {
++				port {
++					merge_funnel_out: endpoint {
++						remote-endpoint = <&etf_in>;
++					};
++				};
++			};
++
++			in-ports {
++				#address-cells = <1>;
++				#size-cells = <0>;
++
++				port@7 {
++					reg = <7>;
++					funnel_swao_in_funnel_merg: endpoint {
++						remote-endpoint= <&funnel_merg_out_funnel_swao>;
++					};
++				};
++			};
++
++		};
++
++		etf@6b05000 {
++			compatible = "arm,coresight-tmc", "arm,primecell";
++			reg = <0 0x06b05000 0 0x1000>;
++
++			clocks = <&aoss_qmp>;
++			clock-names = "apb_pclk";
++
++			out-ports {
++				port {
++					etf_out: endpoint {
++						remote-endpoint = <&replicator_in>;
++					};
++				};
++			};
++
++			in-ports {
++				#address-cells = <1>;
++				#size-cells = <0>;
++
++				port@1 {
++					reg = <0>;
++					etf_in: endpoint {
++						remote-endpoint = <&merge_funnel_out>;
++					};
++				};
++			};
++		};
++
++		replicator@6b06000 {
++			compatible = "arm,coresight-dynamic-replicator", "arm,primecell";
++			reg = <0 0x06b06000 0 0x1000>;
++
++			clocks = <&aoss_qmp>;
++			clock-names = "apb_pclk";
++
++			out-ports {
++				port {
++					replicator_swao_out_cx_in: endpoint {
++						remote-endpoint = <&replicator_cx_in_swao_out>;
++					};
++				};
++			};
++
++			in-ports {
++				port {
++					replicator_in: endpoint {
++						remote-endpoint = <&etf_out>;
++					};
++				};
++			};
++		};
++
++		etm@7040000 {
++			compatible = "arm,coresight-etm4x", "arm,primecell";
++			reg = <0 0x07040000 0 0x1000>;
++
++			cpu = <&CPU0>;
++
++			clocks = <&aoss_qmp>;
++			clock-names = "apb_pclk";
++			arm,coresight-loses-context-with-cpu;
++
++			out-ports {
++				port {
++					etm0_out: endpoint {
++						remote-endpoint = <&apss_funnel_in0>;
++					};
++				};
++			};
++		};
++
++		etm@7140000 {
++			compatible = "arm,coresight-etm4x", "arm,primecell";
++			reg = <0 0x07140000 0 0x1000>;
++
++			cpu = <&CPU1>;
++
++			clocks = <&aoss_qmp>;
++			clock-names = "apb_pclk";
++			arm,coresight-loses-context-with-cpu;
++
++			out-ports {
++				port {
++					etm1_out: endpoint {
++						remote-endpoint = <&apss_funnel_in1>;
++					};
++				};
++			};
++		};
++
++		etm@7240000 {
++			compatible = "arm,coresight-etm4x", "arm,primecell";
++			reg = <0 0x07240000 0 0x1000>;
++
++			cpu = <&CPU2>;
++
++			clocks = <&aoss_qmp>;
++			clock-names = "apb_pclk";
++			arm,coresight-loses-context-with-cpu;
++
++			out-ports {
++				port {
++					etm2_out: endpoint {
++						remote-endpoint = <&apss_funnel_in2>;
++					};
++				};
++			};
++		};
++
++		etm@7340000 {
++			compatible = "arm,coresight-etm4x", "arm,primecell";
++			reg = <0 0x07340000 0 0x1000>;
++
++			cpu = <&CPU3>;
++
++			clocks = <&aoss_qmp>;
++			clock-names = "apb_pclk";
++			arm,coresight-loses-context-with-cpu;
++
++			out-ports {
++				port {
++					etm3_out: endpoint {
++						remote-endpoint = <&apss_funnel_in3>;
++					};
++				};
++			};
++		};
++
++		etm@7440000 {
++			compatible = "arm,coresight-etm4x", "arm,primecell";
++			reg = <0 0x07440000 0 0x1000>;
++
++			cpu = <&CPU4>;
++
++			clocks = <&aoss_qmp>;
++			clock-names = "apb_pclk";
++			arm,coresight-loses-context-with-cpu;
++
++			out-ports {
++				port {
++					etm4_out: endpoint {
++						remote-endpoint = <&apss_funnel_in4>;
++					};
++				};
++			};
++		};
++
++		etm@7540000 {
++			compatible = "arm,coresight-etm4x", "arm,primecell";
++			reg = <0 0x07540000 0 0x1000>;
++
++			cpu = <&CPU5>;
++
++			clocks = <&aoss_qmp>;
++			clock-names = "apb_pclk";
++			arm,coresight-loses-context-with-cpu;
++
++			out-ports {
++				port {
++					etm5_out: endpoint {
++						remote-endpoint = <&apss_funnel_in5>;
++					};
++				};
++			};
++		};
++
++		etm@7640000 {
++			compatible = "arm,coresight-etm4x", "arm,primecell";
++			reg = <0 0x07640000 0 0x1000>;
++
++			cpu = <&CPU6>;
++
++			clocks = <&aoss_qmp>;
++			clock-names = "apb_pclk";
++			arm,coresight-loses-context-with-cpu;
++
++			out-ports {
++				port {
++					etm6_out: endpoint {
++						remote-endpoint = <&apss_funnel_in6>;
++					};
++				};
++			};
++		};
++
++		etm@7740000 {
++			compatible = "arm,coresight-etm4x", "arm,primecell";
++			reg = <0 0x07740000 0 0x1000>;
++
++			cpu = <&CPU7>;
++
++			clocks = <&aoss_qmp>;
++			clock-names = "apb_pclk";
++			arm,coresight-loses-context-with-cpu;
++
++			out-ports {
++				port {
++					etm7_out: endpoint {
++						remote-endpoint = <&apss_funnel_in7>;
++					};
++				};
++			};
++		};
++
++		funnel@7800000 {
++			compatible = "arm,coresight-dynamic-funnel", "arm,primecell";
++			reg = <0 0x07800000 0 0x1000>;
++
++			clocks = <&aoss_qmp>;
++			clock-names = "apb_pclk";
++
++			out-ports {
++				port {
++					apss_funnel_out: endpoint {
++						remote-endpoint = <&apss_merge_funnel_in>;
++					};
++				};
++			};
++
++			in-ports {
++				#address-cells = <1>;
++				#size-cells = <0>;
++
++				port@0 {
++					reg = <0>;
++					apss_funnel_in0: endpoint {
++						remote-endpoint = <&etm0_out>;
++					};
++				};
++
++				port@1 {
++					reg = <1>;
++					apss_funnel_in1: endpoint {
++						remote-endpoint = <&etm1_out>;
++					};
++				};
++
++				port@2 {
++					reg = <2>;
++					apss_funnel_in2: endpoint {
++						remote-endpoint = <&etm2_out>;
++					};
++				};
++
++				port@3 {
++					reg = <3>;
++					apss_funnel_in3: endpoint {
++						remote-endpoint = <&etm3_out>;
++					};
++				};
++
++				port@4 {
++					reg = <4>;
++					apss_funnel_in4: endpoint {
++						remote-endpoint = <&etm4_out>;
++					};
++				};
++
++				port@5 {
++					reg = <5>;
++					apss_funnel_in5: endpoint {
++						remote-endpoint = <&etm5_out>;
++					};
++				};
++
++				port@6 {
++					reg = <6>;
++					apss_funnel_in6: endpoint {
++						remote-endpoint = <&etm6_out>;
++					};
++				};
++
++				port@7 {
++					reg = <7>;
++					apss_funnel_in7: endpoint {
++						remote-endpoint = <&etm7_out>;
++					};
++				};
++			};
++		};
++
++		funnel@7810000 {
++			compatible = "arm,coresight-dynamic-funnel", "arm,primecell";
++			reg = <0 0x07810000 0 0x1000>;
++
++			clocks = <&aoss_qmp>;
++			clock-names = "apb_pclk";
++
++			out-ports {
++				port {
++					apss_merge_funnel_out: endpoint {
++						remote-endpoint = <&funnel2_in5>;
++					};
++				};
++			};
++
++			in-ports {
++				port@1 {
++					reg = <0>;
++					apss_merge_funnel_in: endpoint {
++						remote-endpoint = <&apss_funnel_out>;
++					};
++				};
++			};
++		};
+ 	};
  
-+config CORESIGHT_TPDA
-+	tristate "CoreSight Trace, Profiling & Diagnostics Aggregator driver"
-+	help
-+	  This driver provides support for configuring aggregator. This is
-+	  primarily useful for pulling the data sets from one or more
-+	  attached monitors and pushing the resultant data out. Multiple
-+	  monitors are connected on different input ports of TPDA.
-+
-+	  To compile this driver as a module, choose M here: the module will be
-+	  called coresight-tpda.
- endif
-diff --git a/drivers/hwtracing/coresight/Makefile b/drivers/hwtracing/coresight/Makefile
-index 6bb9b1746bc7..1712d82e7260 100644
---- a/drivers/hwtracing/coresight/Makefile
-+++ b/drivers/hwtracing/coresight/Makefile
-@@ -26,5 +26,6 @@ obj-$(CONFIG_CORESIGHT_CATU) += coresight-catu.o
- obj-$(CONFIG_CORESIGHT_CTI) += coresight-cti.o
- obj-$(CONFIG_CORESIGHT_TRBE) += coresight-trbe.o
- obj-$(CONFIG_CORESIGHT_TPDM) += coresight-tpdm.o
-+obj-$(CONFIG_CORESIGHT_TPDA) += coresight-tpda.o
- coresight-cti-y := coresight-cti-core.o	coresight-cti-platform.o \
- 		   coresight-cti-sysfs.o
-diff --git a/drivers/hwtracing/coresight/coresight-tpda.c b/drivers/hwtracing/coresight/coresight-tpda.c
-new file mode 100644
-index 000000000000..126286e89679
---- /dev/null
-+++ b/drivers/hwtracing/coresight/coresight-tpda.c
-@@ -0,0 +1,201 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
-+ */
-+
-+#include <linux/amba/bus.h>
-+#include <linux/bitmap.h>
-+#include <linux/coresight.h>
-+#include <linux/device.h>
-+#include <linux/err.h>
-+#include <linux/fs.h>
-+#include <linux/io.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+
-+#include "coresight-priv.h"
-+#include "coresight-tpda.h"
-+#include "coresight-trace-id.h"
-+
-+DEFINE_CORESIGHT_DEVLIST(tpda_devs, "tpda");
-+
-+/* Settings pre enabling port control register */
-+static void tpda_enable_pre_port(struct tpda_drvdata *drvdata)
-+{
-+	u32 val;
-+
-+	val = readl_relaxed(drvdata->base + TPDA_CR);
-+	/* Bits 6 ~ 12 is for atid value */
-+	val |= (drvdata->atid << 6);
-+	writel_relaxed(val, drvdata->base + TPDA_CR);
-+}
-+
-+static void tpda_enable_port(struct tpda_drvdata *drvdata, int port)
-+{
-+	u32 val;
-+
-+	val = readl_relaxed(drvdata->base + TPDA_Pn_CR(port));
-+	/* Enable the port */
-+	val |= TPDA_Pn_CR_ENA;
-+	writel_relaxed(val, drvdata->base + TPDA_Pn_CR(port));
-+}
-+
-+static void _tpda_enable(struct tpda_drvdata *drvdata, int port)
-+{
-+	CS_UNLOCK(drvdata->base);
-+
-+	if (!drvdata->enable)
-+		tpda_enable_pre_port(drvdata);
-+
-+	tpda_enable_port(drvdata, port);
-+
-+	CS_LOCK(drvdata->base);
-+}
-+
-+static int tpda_enable(struct coresight_device *csdev, int inport, int outport)
-+{
-+	struct tpda_drvdata *drvdata = dev_get_drvdata(csdev->dev.parent);
-+
-+	mutex_lock(&drvdata->lock);
-+	_tpda_enable(drvdata, inport);
-+	drvdata->enable = true;
-+	mutex_unlock(&drvdata->lock);
-+
-+	dev_info(drvdata->dev, "TPDA inport %d enabled\n", inport);
-+	return 0;
-+}
-+
-+static void _tpda_disable(struct tpda_drvdata *drvdata, int port)
-+{
-+	u32 val;
-+
-+	CS_UNLOCK(drvdata->base);
-+
-+	val = readl_relaxed(drvdata->base + TPDA_Pn_CR(port));
-+	val &= ~TPDA_Pn_CR_ENA;
-+	writel_relaxed(val, drvdata->base + TPDA_Pn_CR(port));
-+
-+	CS_LOCK(drvdata->base);
-+}
-+
-+static void tpda_disable(struct coresight_device *csdev, int inport,
-+			   int outport)
-+{
-+	struct tpda_drvdata *drvdata = dev_get_drvdata(csdev->dev.parent);
-+
-+	mutex_lock(&drvdata->lock);
-+	_tpda_disable(drvdata, inport);
-+	drvdata->enable = false;
-+	mutex_unlock(&drvdata->lock);
-+
-+	dev_info(drvdata->dev, "TPDA inport %d disabled\n", inport);
-+}
-+
-+static const struct coresight_ops_link tpda_link_ops = {
-+	.enable		= tpda_enable,
-+	.disable	= tpda_disable,
-+};
-+
-+static const struct coresight_ops tpda_cs_ops = {
-+	.link_ops	= &tpda_link_ops,
-+};
-+
-+static int tpda_init_default_data(struct tpda_drvdata *drvdata)
-+{
-+	int atid;
-+	/*
-+	 * TPDA must has a unique atid. This atid can uniquely
-+	 * identify the TPDM trace source connect to the TPDA.
-+	 */
-+	atid = coresight_trace_id_get_system_id(coresight_get_trace_id_map());
-+	if (atid < 0)
-+		return atid;
-+
-+	drvdata->atid = atid;
-+	return 0;
-+}
-+
-+static int tpda_probe(struct amba_device *adev, const struct amba_id *id)
-+{
-+	int ret;
-+	struct device *dev = &adev->dev;
-+	struct coresight_platform_data *pdata;
-+	struct tpda_drvdata *drvdata;
-+	struct coresight_desc desc = { 0 };
-+
-+	pdata = coresight_get_platform_data(dev);
-+	if (IS_ERR(pdata))
-+		return PTR_ERR(pdata);
-+	adev->dev.platform_data = pdata;
-+
-+	drvdata = devm_kzalloc(dev, sizeof(*drvdata), GFP_KERNEL);
-+	if (!drvdata)
-+		return -ENOMEM;
-+
-+	drvdata->dev = &adev->dev;
-+	dev_set_drvdata(dev, drvdata);
-+
-+	drvdata->base = devm_ioremap_resource(dev, &adev->res);
-+	if (!drvdata->base)
-+		return -ENOMEM;
-+
-+	mutex_init(&drvdata->lock);
-+
-+	ret = tpda_init_default_data(drvdata);
-+	if (ret)
-+		return ret;
-+
-+	desc.name = coresight_alloc_device_name(&tpda_devs, dev);
-+	if (!desc.name)
-+		return -ENOMEM;
-+	desc.type = CORESIGHT_DEV_TYPE_LINK;
-+	desc.subtype.link_subtype = CORESIGHT_DEV_SUBTYPE_LINK_MERG;
-+	desc.ops = &tpda_cs_ops;
-+	desc.pdata = adev->dev.platform_data;
-+	desc.dev = &adev->dev;
-+	drvdata->csdev = coresight_register(&desc);
-+	if (IS_ERR(drvdata->csdev))
-+		return PTR_ERR(drvdata->csdev);
-+
-+	pm_runtime_put(&adev->dev);
-+
-+	dev_dbg(drvdata->dev, "TPDA initialized\n");
-+	return 0;
-+}
-+
-+static void __exit tpda_remove(struct amba_device *adev)
-+{
-+	struct tpda_drvdata *drvdata = dev_get_drvdata(&adev->dev);
-+
-+	coresight_unregister(drvdata->csdev);
-+}
-+
-+/*
-+ * Different TPDA has different periph id.
-+ * The difference is 0-7 bits' value. So ignore 0-7 bits.
-+ */
-+static struct amba_id tpda_ids[] = {
-+	{
-+		.id     = 0x000f0f00,
-+		.mask   = 0x000fff00,
-+	},
-+	{ 0, 0},
-+};
-+
-+static struct amba_driver tpda_driver = {
-+	.drv = {
-+		.name   = "coresight-tpda",
-+		.owner	= THIS_MODULE,
-+		.suppress_bind_attrs = true,
-+	},
-+	.probe          = tpda_probe,
-+	.remove		= tpda_remove,
-+	.id_table	= tpda_ids,
-+};
-+
-+module_amba_driver(tpda_driver);
-+
-+MODULE_LICENSE("GPL v2");
-+MODULE_DESCRIPTION("Trace, Profiling & Diagnostic Aggregator driver");
-diff --git a/drivers/hwtracing/coresight/coresight-tpda.h b/drivers/hwtracing/coresight/coresight-tpda.h
-new file mode 100644
-index 000000000000..6df1b72b3b76
---- /dev/null
-+++ b/drivers/hwtracing/coresight/coresight-tpda.h
-@@ -0,0 +1,33 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
-+ */
-+
-+#ifndef _CORESIGHT_CORESIGHT_TPDA_H
-+#define _CORESIGHT_CORESIGHT_TPDA_H
-+
-+#define TPDA_CR			(0x000)
-+#define TPDA_Pn_CR(n)		(0x004 + (n * 4))
-+/* Aggregator port enable bit */
-+#define TPDA_Pn_CR_ENA		BIT(0)
-+
-+#define TPDA_MAX_INPORTS	32
-+
-+/**
-+ * struct tpda_drvdata - specifics associated to an TPDA component
-+ * @base:       memory mapped base address for this component.
-+ * @dev:        The device entity associated to this component.
-+ * @csdev:      component vitals needed by the framework.
-+ * @lock:       lock for the enable value.
-+ * @enable:     enable status of the component.
-+ */
-+struct tpda_drvdata {
-+	void __iomem		*base;
-+	struct device		*dev;
-+	struct coresight_device	*csdev;
-+	struct mutex		lock;
-+	bool			enable;
-+	u32			atid;
-+};
-+
-+#endif  /* _CORESIGHT_CORESIGHT_TPDA_H */
+ 	timer {
 -- 
 2.17.1
 
