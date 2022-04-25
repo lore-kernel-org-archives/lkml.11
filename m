@@ -2,204 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCA22C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 07:58:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95174C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 07:58:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233778AbiDYIBt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 04:01:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49354 "EHLO
+        id S234834AbiDYIB4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 04:01:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241470AbiDYIBc (ORCPT
+        with ESMTP id S229746AbiDYIBn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 04:01:32 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D56172A707;
-        Mon, 25 Apr 2022 00:58:25 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id u7so9865765plg.13;
-        Mon, 25 Apr 2022 00:58:25 -0700 (PDT)
+        Mon, 25 Apr 2022 04:01:43 -0400
+Received: from mail-oo1-xc34.google.com (mail-oo1-xc34.google.com [IPv6:2607:f8b0:4864:20::c34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C808427CE7;
+        Mon, 25 Apr 2022 00:58:39 -0700 (PDT)
+Received: by mail-oo1-xc34.google.com with SMTP id i21-20020a4ad395000000b0033a4c45246dso2655733oos.12;
+        Mon, 25 Apr 2022 00:58:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=KDTbKI3K5FVIfCwkeglepXBfFcpQvboH+kkSLBKfWI8=;
-        b=JauSAsMc3TC5iDNvqXSoUs/bnDjLrOIXsjWZI39ZbcbZxKx2HoOXVtPizCAHsAfkTl
-         iNqwD3U1gk8iwWOyMzVcSUjp6pXlnQf95ahPsOX/wy5AOryKGgChcDWxX7AKNobQ/YU5
-         96CHwqSArkELk7JGm31XDXCuNTW9bg/l9GStxCiwhQ6AspNsOpzKSpySx/JnVjor79zS
-         vhrdlgYKY09HdnQUyacl/xDr8YFQhix40iEzwcpOgsSXREK7nyuq7kYreqYHIq1kc02e
-         SzmZgkY8rbk+0+TFwKHKsYFPBtLlHV2U0ZMoHfqYnLKx8BW9JL3fENAMxjuzy2GoTGK6
-         vulQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zR3SdtKlOp4Z4lFcN7vvrmY5zhl40lIVin8T1dOigGE=;
+        b=AguFV38TUhd52TAXg1m48mbU7nyWNJIoxXDddH/xHSjOHembF2jrBirIEDb07sbTEc
+         zi4a5f+Xgg3K6qAv1kOmEaJIxUjflem9hYgm6plSnCqu5+lWJn5/yda5dmesvjBhTECW
+         5J3b8P7FGI1OON059nf4vMOqa1m9RIQkmUC91ZJNzscJ63RpcS91MZ8C3ScxW3SzXYNc
+         FJiDgivH5lxMdytBsIDahN0vEp/a00dQg23rmFD/TOm0WfM2pc81rSrvzJSZbrb80CAP
+         Am+fsGMKIg2m4MZiH0Uf6E43d6ADzSg7Y88GkiKoprnXkK+XpY8O2JXaCpiba+GayBy9
+         0qGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=KDTbKI3K5FVIfCwkeglepXBfFcpQvboH+kkSLBKfWI8=;
-        b=UH/NRJTR82mGMkVhGY3+1G/7CMaLqaTE3AfBxkV/sruBB85C0MfYygogni1z96PHCQ
-         14DDekORdzlqOOPg3yjGVXdoWj/VbChXGMibCSdj183G9okmaAEZa1qBB7m0hddSeNjg
-         acRwFVl2RQg5XnyF2o85iz4QJTnbvJFamvIRjTV8OQ5PfYD0Rdac7lrK6QHnOoJq69bx
-         1gJSPaaPvR0BkSnYrbOAv1aM/qd9elHu9wNdyLwB67aLK5iUnFSbNCBj0kDSOc4s8E80
-         LQnEFKYYY2Bq2R5G+2W1KOA+TgaI1waQDRtrLn+Q3x8N1eW34QKm9oUJEnLkMEvIEIOX
-         /0GA==
-X-Gm-Message-State: AOAM532hEaElzed6gCk4IrI6xPBohQ9JiKhUq1qzwcSl3xqcwO6m0b32
-        R0q1rbpU0Fzl+jnboZlrjyUxpwPmz3c=
-X-Google-Smtp-Source: ABdhPJxQ6KTtMD8bj1IzxhJdoprHUsHnmaJsSnQFOT2UtgRmSXYSNyHcrEeDAVgoVnmR/nqrt0K3Mg==
-X-Received: by 2002:a17:90b:4d11:b0:1d2:a600:3014 with SMTP id mw17-20020a17090b4d1100b001d2a6003014mr30889198pjb.108.1650873504824;
-        Mon, 25 Apr 2022 00:58:24 -0700 (PDT)
-Received: from cyhuang-hp-elitebook-840-g3.rt ([2402:7500:56b:75be:d402:1333:c60b:f1a1])
-        by smtp.gmail.com with ESMTPSA id cm11-20020a17090afa0b00b001d9738fdf2asm2861903pjb.37.2022.04.25.00.58.20
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zR3SdtKlOp4Z4lFcN7vvrmY5zhl40lIVin8T1dOigGE=;
+        b=OagHhiTjFydsOK561WzYZ2CzEdR8F5EhWG2ce0+wvQ7iv7WsAEoBTxgMNx0E+s66or
+         H0dDQUGoVkXh6XWVtPAD3c5x8ENI8aH7L/ozAh28cqNi2d+/HKzuSP/xoYRyFfJVu+rP
+         pookQt9jMGrDFS7aTd5RZPjksFSDpxuNqKtX/vTAhpOMwz0wdTZt9zlV/nRX7Wt/3M9W
+         V9ahRzcrnDLnf59C04xk52Uz9OM8bJMZ/lU+SQ7TzexBb4H0dMjodYAwoNsk1zpx8VCx
+         0JExXC+afRStbIWp1t0kNqVhGlF4ck99nsJRJZcu6FeXxocGaXM8/l8MwXEhoTVgZRf1
+         rtWg==
+X-Gm-Message-State: AOAM5326x/d0+GMZTqOrrkJFAqhWcAwV3iloWodreSO57oEl2PBU6nYl
+        7UC3uKvIBdF3X8IDyp7PJmZIC+8YLsGEVhRkQhD4QQ==
+X-Google-Smtp-Source: ABdhPJwM8MWYFSjh0xlo73yHp0vTj5enQOHIpyFJxzRHx7ObNG2ap9LrYlyNJLeQWBzt8CrOI2+6vA==
+X-Received: by 2002:a4a:d984:0:b0:329:a95a:d492 with SMTP id k4-20020a4ad984000000b00329a95ad492mr5829472oou.61.1650873519031;
+        Mon, 25 Apr 2022 00:58:39 -0700 (PDT)
+Received: from C02FV47ZMD6T.corp.ebay.com ([2409:8a1e:6f32:c70:4860:8ac9:99a5:1188])
+        by smtp.googlemail.com with ESMTPSA id z82-20020aca3355000000b002ef73b018absm3439329oiz.9.2022.04.25.00.58.35
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 25 Apr 2022 00:58:24 -0700 (PDT)
-Date:   Mon, 25 Apr 2022 15:58:17 +0800
-From:   ChiYuan Huang <u0084500@gmail.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        ChiYuan Huang <cy_huang@richtek.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] regulator: richtek,rt4801: parse GPIOs per
- regulator
-Message-ID: <20220425075812.GA29439@cyhuang-hp-elitebook-840-g3.rt>
-References: <20220425072455.27356-1-krzysztof.kozlowski@linaro.org>
- <20220425072455.27356-3-krzysztof.kozlowski@linaro.org>
+        Mon, 25 Apr 2022 00:58:38 -0700 (PDT)
+From:   Jianlin Lv <iecedge@gmail.com>
+X-Google-Original-From: Jianlin Lv <jianlv@ebay.com>
+To:     bpf@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, quentin@isovalent.com, jean-philippe@linaro.org,
+        mauricio@kinvolk.io, ytcoode@gmail.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        jianlv@ebay.com, Jianlin Lv <iecedge@gmail.com>
+Subject: [PATCH bpf-next] bpftoo: Support user defined vmlinux path
+Date:   Mon, 25 Apr 2022 15:57:24 +0800
+Message-Id: <20220425075724.48540-1-jianlv@ebay.com>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220425072455.27356-3-krzysztof.kozlowski@linaro.org>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 09:24:55AM +0200, Krzysztof Kozlowski wrote:
-> Having one enable-gpios property for all regulators is discouraged and
-> instead, similarly to regulator core ena_gpiod feature, each GPIO should
-> be present in each regulator node.  Add support for parsing such GPIOs,
-> keeping backwards compatibility.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
->  drivers/regulator/rt4801-regulator.c | 49 +++++++++++++++++++++-------
->  1 file changed, 38 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/regulator/rt4801-regulator.c b/drivers/regulator/rt4801-regulator.c
-> index 7a87788d3f09..563d79196fdd 100644
-> --- a/drivers/regulator/rt4801-regulator.c
-> +++ b/drivers/regulator/rt4801-regulator.c
-> @@ -29,11 +29,33 @@
->  
->  struct rt4801_priv {
->  	struct device *dev;
-> -	struct gpio_descs *enable_gpios;
-> +	struct gpio_desc *enable_gpios[DSV_OUT_MAX];
->  	unsigned int enable_flag;
->  	unsigned int volt_sel[DSV_OUT_MAX];
->  };
->  
-> +static int rt4801_of_parse_cb(struct device_node *np,
-> +			      const struct regulator_desc *desc,
-> +			      struct regulator_config *config)
-> +{
-> +	struct rt4801_priv *priv = config->driver_data;
-> +	int id = desc->id;
-> +
-> +	if (priv->enable_gpios[id]) {
-> +		dev_warn(priv->dev, "duplicated enable-gpios property\n");
-> +		return 0;
-> +	}
-> +	priv->enable_gpios[id] = devm_fwnode_gpiod_get_index(priv->dev,
-> +							     of_fwnode_handle(np),
-> +							     "enable", 0,
-> +							     GPIOD_OUT_HIGH,
-> +							     "rt4801");
-> +	if (IS_ERR(priv->enable_gpios[id]))
-> +		priv->enable_gpios[id] = NULL;
-> +
-> +	return 0;
-> +}
-> +
->  static int rt4801_set_voltage_sel(struct regulator_dev *rdev, unsigned int selector)
->  {
->  	struct rt4801_priv *priv = rdev_get_drvdata(rdev);
-> @@ -63,15 +85,14 @@ static int rt4801_get_voltage_sel(struct regulator_dev *rdev)
->  static int rt4801_enable(struct regulator_dev *rdev)
->  {
->  	struct rt4801_priv *priv = rdev_get_drvdata(rdev);
-> -	struct gpio_descs *gpios = priv->enable_gpios;
->  	int id = rdev_get_id(rdev), ret;
->  
-> -	if (!gpios || gpios->ndescs <= id) {
-> +	if (!priv->enable_gpios[id]) {
->  		dev_warn(&rdev->dev, "no dedicated gpio can control\n");
->  		goto bypass_gpio;
->  	}
->  
-> -	gpiod_set_value(gpios->desc[id], 1);
-> +	gpiod_set_value(priv->enable_gpios[id], 1);
->  
->  bypass_gpio:
->  	ret = regmap_write(rdev->regmap, rdev->desc->vsel_reg, priv->volt_sel[id]);
-> @@ -85,15 +106,14 @@ static int rt4801_enable(struct regulator_dev *rdev)
->  static int rt4801_disable(struct regulator_dev *rdev)
->  {
->  	struct rt4801_priv *priv = rdev_get_drvdata(rdev);
-> -	struct gpio_descs *gpios = priv->enable_gpios;
->  	int id = rdev_get_id(rdev);
->  
-> -	if (!gpios || gpios->ndescs <= id) {
-> +	if (!priv->enable_gpios[id]) {
->  		dev_warn(&rdev->dev, "no dedicated gpio can control\n");
->  		goto bypass_gpio;
->  	}
->  
-> -	gpiod_set_value(gpios->desc[id], 0);
-> +	gpiod_set_value(priv->enable_gpios[id], 0);
->  
->  bypass_gpio:
->  	priv->enable_flag &= ~BIT(id);
-> @@ -122,6 +142,7 @@ static const struct regulator_desc rt4801_regulator_descs[] = {
->  		.name = "DSVP",
->  		.ops = &rt4801_regulator_ops,
->  		.of_match = of_match_ptr("DSVP"),
-> +		.of_parse_cb = rt4801_of_parse_cb,
->  		.type = REGULATOR_VOLTAGE,
->  		.id = DSV_OUT_POS,
->  		.min_uV = MIN_UV,
-> @@ -135,6 +156,7 @@ static const struct regulator_desc rt4801_regulator_descs[] = {
->  		.name = "DSVN",
->  		.ops = &rt4801_regulator_ops,
->  		.of_match = of_match_ptr("DSVN"),
-> +		.of_parse_cb = rt4801_of_parse_cb,
->  		.type = REGULATOR_VOLTAGE,
->  		.id = DSV_OUT_NEG,
->  		.min_uV = MIN_UV,
-> @@ -172,10 +194,15 @@ static int rt4801_probe(struct i2c_client *i2c)
->  		return PTR_ERR(regmap);
->  	}
->  
-> -	priv->enable_gpios = devm_gpiod_get_array_optional(&i2c->dev, "enable", GPIOD_OUT_HIGH);
-> -	if (IS_ERR(priv->enable_gpios)) {
-> -		dev_err(&i2c->dev, "Failed to get gpios\n");
-> -		return PTR_ERR(priv->enable_gpios);
-> +	for (i = 0; i < DSV_OUT_MAX; i++) {
-> +		priv->enable_gpios[i] = devm_gpiod_get_index_optional(&i2c->dev,
-> +								      "enable",
-> +								      i,
-> +								      GPIOD_OUT_HIGH);
-> +		if (IS_ERR(priv->enable_gpios[i])) {
-> +			dev_err(&i2c->dev, "Failed to get gpios\n");
-> +			return PTR_ERR(priv->enable_gpios[i]);
-> +		}
->  	}
-You can directly removed all about 'enable-gpios' in probe phase.
-Just keep of_parse_cb to get per regulator 'enable' gpio. 
+From: Jianlin Lv <iecedge@gmail.com>
 
-The others looks fine.
+Add EXTERNAL_PATH variable that define unconventional vmlinux path
 
-Best regards,
-ChiYuan Huang.
->  
->  	for (i = 0; i < DSV_OUT_MAX; i++) {
-> -- 
-> 2.32.0
-> 
+Signed-off-by: Jianlin Lv <iecedge@gmail.com>
+---
+When building Ubuntu-5.15.0 kernel, '../../../vmlinux' cannot locate
+compiled vmlinux image. Incorrect vmlinux generated vmlinux.h missing some
+structure definitions that broken compiling pipe.
+---
+ tools/bpf/bpftool/Makefile | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
+index c6d2c77d0252..fefa3b763eb7 100644
+--- a/tools/bpf/bpftool/Makefile
++++ b/tools/bpf/bpftool/Makefile
+@@ -160,6 +160,7 @@ $(OBJS): $(LIBBPF) $(LIBBPF_INTERNAL_HDRS)
+ VMLINUX_BTF_PATHS ?= $(if $(O),$(O)/vmlinux)				\
+ 		     $(if $(KBUILD_OUTPUT),$(KBUILD_OUTPUT)/vmlinux)	\
+ 		     ../../../vmlinux					\
++		     $(if $(EXTERNAL_PATH),$(EXTERNAL_PATH)/vmlinux)	\
+ 		     /sys/kernel/btf/vmlinux				\
+ 		     /boot/vmlinux-$(shell uname -r)
+ VMLINUX_BTF ?= $(abspath $(firstword $(wildcard $(VMLINUX_BTF_PATHS))))
+-- 
+2.25.1
+
