@@ -2,198 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC276C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:25:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B137C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:25:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243364AbiDYQ20 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 12:28:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38110 "EHLO
+        id S243402AbiDYQ2e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 12:28:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243497AbiDYQ1o (ORCPT
+        with ESMTP id S243495AbiDYQ1n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 12:27:44 -0400
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0005311F953;
+        Mon, 25 Apr 2022 12:27:43 -0400
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 499B611F95A;
         Mon, 25 Apr 2022 09:24:39 -0700 (PDT)
 Received: from toolbox.int.toradex.com ([81.221.85.15]) by mrelay.perfora.net
- (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id 0MIcLW-1nlDMm0OF6-002Gzw;
- Mon, 25 Apr 2022 18:24:24 +0200
+ (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id 0MUYKb-1nIJRE0KXL-00RGvb;
+ Mon, 25 Apr 2022 18:24:07 +0200
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
-Cc:     Denys Drozdov <denys.drozdov@toradex.com>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Denys Drozdov <denys.drozdov@toradex.com>,
         Fabio Estevam <festevam@gmail.com>,
         Frank Rowand <frowand.list@gmail.com>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Li Yang <leoyang.li@nxp.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Marek Vasut <marex@denx.de>,
+        Matthias Schiffer <matthias.schiffer@tq-group.com>,
+        Max Krummenacher <max.krummenacher@toradex.com>,
         NXP Linux Team <linux-imx@nxp.com>,
+        Olof Johansson <olof@lixom.net>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
         Rob Herring <robh+dt@kernel.org>,
         Russell King <linux@armlinux.org.uk>,
         Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 06/14] ARM: dts: imx6ull-colibri: update device trees to support overlays
-Date:   Mon, 25 Apr 2022 18:23:48 +0200
-Message-Id: <20220425162356.176665-7-marcel@ziswiler.com>
+        Shawn Guo <shawnguo@kernel.org>,
+        Tim Harvey <tharvey@gateworks.com>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, soc@kernel.org
+Subject: [PATCH v2 00/14] ARM: dts: imx6ull-colibri: device tree improvements
+Date:   Mon, 25 Apr 2022 18:23:42 +0200
+Message-Id: <20220425162356.176665-1-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220425162356.176665-1-marcel@ziswiler.com>
-References: <20220425162356.176665-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:+igbeOghPhe6M3gEizB8AVT7oSjjfiUdrze/kubBf24xhfoW15O
- O6mFkgRIAi+NMEP9ztA8Cx66mpJtVKPBVPOuuT5kONJVhezN+L+Zt9O8R/glThQLCLwKNIo
- uaKSMosEQoY68PsU0BXn5KR1buyrrUQZul/hHsTJjtXhomCdX72UcREW7Y+xmA1anfaRr+D
- 7mTxKOg/TerJ8JP1OyzqQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:t8g3efxgEBg=:BvN3l9h5fjZ7lUIsV5IsqF
- I7PJtrF3Pp51fJ93iVf9R5GjrH5oRFQaOBDotbK69D7qUQgZFGeooF8Nho3GnqYvUmG6FKlyH
- pII2mpnAnX+LQ5UX1Ku2wP43yF5zfr0ocxpKz/zoWn87uUnR/UT8aG2oy9OKixx58bLSIZqJ+
- XdXZT+Ms4ZQ5K5R9Rgxrhuupx0pbm/KWuaIE2RsmJdMZFAkwk0rsgBw9JWscery+rWArhluVi
- fyPKKpdL+DEUQY+uxJc5t0z8cyo4rzg1u5syFkx1DGEefcb05/ndUrZPXtmnl91aU2ql8RfjM
- IPBy97Tit7o2xJxcOfhL64RXSAzMQJ1KBvsBK2pk3G5kL1RywY10zcVHnBj/lCbBuUHT5eAQx
- GFj2PK5QA3rYk209qlmFgdLpeM/1aFO5uuDAItxJ24dnFPDqSKyz+GLkTvEvdaeEBUZZAZFGF
- UIhaz3JXlYcUKRcSFK79odOgUWGi+UUPthvbczuG4kY+Dhn2DyDRyF/T/M1+vFArp9flsU+Md
- vBl9FPf1YufcQWy2efiyLBRVP6uyzOytN2FZ+BItUt33TMJUWWzOvdv3xeXmivrexiL2Y9vbS
- MR/gtFTQsefdYYi6OW/x9IH/R2Z7cu9wsqgzX3VS7t2tqrgK5SHvAFPJ/RPoZWOF0RXcFD4l+
- ki1pgMOmO2obbAGWADTrNp3GzU06DDixphUtYlTSYpUqNrzsE7xB9JmonmuDHBftjc/sLalB/
- EBAssrKQSRa8rK9U
+X-Provags-ID: V03:K1:eGf8AHf/y2rPOEx6ITKWN/Lm8bjRyQ2/CVBjXTubcBaZawF+ST7
+ hPw8ZPIXlneemNmGEKTjRNGozzuZKjnFii5+A25nEhNgMbY0WEuntlyy1jl+8THdiE5freG
+ ZZRWIW/jkiYMOZ1BHlDp2NITsmjjJ7sPu8LFxRYSE85/PyL8b/E6nsekhFvkPXRCaYHItDc
+ bEi1hvKn7pMldbbbS4E+g==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:O2pXqmF82Xk=:iWjizIX+np9V8CmtU7EnpO
+ DBOu43A1mvZHRETSlOgdH+6nHOpn3Pl40OWDXFkCGrX0DuZMAMItQzE8nRHHlQZvmdgEiJJty
+ jsfCaiBVoP/kEifcovRJcwVp+1cybJoXeOkql4zlyDnQAkqLMrM8UgVF7alEH06+CmuO8VMVL
+ kxeeDoRqJf8p+1RO6dOL+2C9tl06qx+ow80hvJL5DeNJypxGQcvIjYk7O4a4jpwB3sZObAV17
+ oIdWaf5QSiN1XizI6MEO8WvyfNnwkzmYE4wHMVOzhzg0rzVPAIE5ZYfmgzeIeEuQx4qz0sBOc
+ 9YPcvLYsIzj++9qOspiykodDUyP5lTmTP2PHk6DR++QMhbR4H4Qr39oFqWmTVvq2qkcssckge
+ eq6MF8cNRBzqMZnRtbGR6PYIKOiJoaCdr+BPokGQzbi/W8gcXu2W7GCL9k87qa3UI70ZaTVyJ
+ RajFtbIIU8TL74IpXsmNW3NcGeNGKz9ZfS2bw+QjDE/SMC/ifBLzdQXgLRYA0ulqdiN+j0YUx
+ XDkeuDgTyoV9LMuvTvlr9WOtYCNiHRZmf01cI124HWWps3+oDZZr87SF1xPXqavRHl3l6GoRm
+ O/x4K/FEKb+NJs/P7UBs3b2V4uGi5kjOsm2GN0OZV6dcpDCil2d4/T52F0Ljp3Wto+rSLQQi9
+ XVg65mNqrr9A7o3mncRlU7ysFM0M9VaBwNOEZ/4a06Bsss9+YUkN5TQOc440SwsqqKmw=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Denys Drozdov <denys.drozdov@toradex.com>
+From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-Prepare in-tree device trees for out-of-tree device tree overlay support
-(eMMC SKU only).
 
-Relocate panel-dpi default to edt,et057090dhu (RGB 18bit VGA 640x480)
-to the module-level dtsi and remove it from the carrier board dtsi.
+This is a general update of the Colibri iMX6ULL device tree files.
 
-Keep backlight, resistive touch and Atmel maxtouch nodes enabled
-for both eMMC and NAND modules.
+The Toradex Colibri family is composed of a SoM that can be plugged on
+various carrier boards, with carrier boards allowing multiple optional
+accessories (e.g. display, camera, ...).
 
-Signed-off-by: Denys Drozdov <denys.drozdov@toradex.com>
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
----
+The device tree sources are structured into a SoM dtsi and a carrier dts
+which then includes the SoM dtsi. The SoM dtsi defines and enables the
+functionality self-contained on the SoM and prepares for the
+functionality provided by the carrier HW or accessories so that the
+carrier dts then can enable or amend nodes provided. Accessories are
+enabled in overlays depending on HW configuration.
 
-(no changes since v1)
+Please find the following colibri-imx6ull device trees improvements:
 
- .../arm/boot/dts/imx6ull-colibri-eval-v3.dtsi | 29 -----------------
- arch/arm/boot/dts/imx6ull-colibri.dtsi        | 31 ++++++++++++++++---
- 2 files changed, 27 insertions(+), 33 deletions(-)
+- MMC/SD
+The original Colibri specification only defined 3.3 volt TTL signaling
+and relied on external on-carrier pull-ups for the SD_DATA[0..3] lines.
+The latest carrier boards like Iris V2 on the other hand are now UHS-I
+compliant by leaving such external on-carrier pull-ups away relying on
+module- or even SoC-level ones which pull up to resp. signaling voltage.
+In such cases, the carrier board-level device tree may explicitly delete
+the no-1-8-v property to enable full UHS-I support.
+Also, fix SD/MMC regulator for the carrier boards using UHS-I modes.
 
-diff --git a/arch/arm/boot/dts/imx6ull-colibri-eval-v3.dtsi b/arch/arm/boot/dts/imx6ull-colibri-eval-v3.dtsi
-index ea086b305d22..3c07b4273e80 100644
---- a/arch/arm/boot/dts/imx6ull-colibri-eval-v3.dtsi
-+++ b/arch/arm/boot/dts/imx6ull-colibri-eval-v3.dtsi
-@@ -29,17 +29,6 @@ clk16m: clk16m {
- 		clock-frequency = <16000000>;
- 	};
- 
--	panel: panel {
--		compatible = "edt,et057090dhu";
--		backlight = <&bl>;
--		power-supply = <&reg_3v3>;
--
--		port {
--			panel_in: endpoint {
--				remote-endpoint = <&lcdif_out>;
--			};
--		};
--	};
- 
- 	reg_3v3: regulator-3v3 {
- 		compatible = "regulator-fixed";
-@@ -71,14 +60,6 @@ &adc1 {
- 	status = "okay";
- };
- 
--&bl {
--	brightness-levels = <0 4 8 16 32 64 128 255>;
--	default-brightness-level = <6>;
--	power-supply = <&reg_3v3>;
--	pwms = <&pwm4 0 5000000 1>;
--	status = "okay";
--};
--
- &ecspi1 {
- 	status = "okay";
- 
-@@ -107,16 +88,6 @@ m41t0m6: rtc@68 {
- 	};
- };
- 
--&lcdif {
--	status = "okay";
--
--	port {
--		lcdif_out: endpoint {
--			remote-endpoint = <&panel_in>;
--		};
--	};
--};
--
- /* PWM <A> */
- &pwm4 {
- 	status = "okay";
-diff --git a/arch/arm/boot/dts/imx6ull-colibri.dtsi b/arch/arm/boot/dts/imx6ull-colibri.dtsi
-index bd8736d90cbb..756cb4222805 100644
---- a/arch/arm/boot/dts/imx6ull-colibri.dtsi
-+++ b/arch/arm/boot/dts/imx6ull-colibri.dtsi
-@@ -11,12 +11,29 @@ aliases {
- 		ethernet1 = &fec1;
- 	};
- 
--	bl: backlight {
-+	backlight: backlight {
- 		compatible = "pwm-backlight";
-+		brightness-levels = <0 4 8 16 32 64 128 255>;
-+		default-brightness-level = <6>;
-+		enable-gpios = <&gpio1 11 GPIO_ACTIVE_HIGH>;
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&pinctrl_gpio_bl_on>;
--		enable-gpios = <&gpio1 11 GPIO_ACTIVE_HIGH>;
--		status = "disabled";
-+		power-supply = <&reg_3v3>;
-+		pwms = <&pwm4 0 5000000 1>;
-+		status = "okay";
-+	};
-+
-+	panel_dpi: panel-dpi {
-+		compatible = "edt,et057090dhu";
-+		backlight = <&backlight>;
-+		power-supply = <&reg_3v3>;
-+		status = "okay";
-+
-+		port {
-+			lcd_panel_in: endpoint {
-+				remote-endpoint = <&lcdif_out>;
-+			};
-+		};
- 	};
- 
- 	reg_module_3v3: regulator-module-3v3 {
-@@ -149,7 +166,7 @@ &i2c2 {
- 	scl-gpios = <&gpio1 30 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
- 	status = "okay";
- 
--	ad7879@2c {
-+	ad7879_ts: touchscreen@2c {
- 		compatible = "adi,ad7879-1";
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&pinctrl_snvs_ad7879_int>;
-@@ -170,6 +187,12 @@ &lcdif {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_lcdif_dat
- 		     &pinctrl_lcdif_ctrl>;
-+
-+	port {
-+		lcdif_out: endpoint {
-+			remote-endpoint = <&lcd_panel_in>;
-+		};
-+	};
- };
- 
- &pwm4 {
+- FEC
+Provide a proper phy-supply for the FEC, actually switched by the 50 Mhz
+RMII interface clock using a regulator-fixed-clock that is now properly
+stated. The reference commit for such regulator can be found at commit
+8959e5324485 ("regulator: fixed: add possibility to enable by clock").
+
+- I2C
+Switched on 22 kOhm pull-ups and lower the I2C frequency to 40 kHz to
+get more reliable communication.
+
+- Atmel Touchscreen
+The Toradex 7" Capacitive and 10" LVDS touch screens are Atmel MXT
+peripherals available on the I2C bus for touchscreen events. Add
+atmel_mxt_ts node to the module-level device tree. Also, provide pinmux
+configuration for the INT/RST inputs from SODIMM pins 106/107 for most
+carrier boards or an external touchscreen adapter inputs configured to
+SODIMM pins 28/30.
+
+Changes in v2:
+- Fixed pinctrl node names as suggested by Shawn.
+- Fixed long line as pointed out by Rob's bot.
+- Added V3 to Colibri Evaluation Board as done elsewhere.
+- Fix alphabetical node order as suggested by Shawn.
+- Dropped [PATCH v1 02/14] ARM: dts: imx6ull-colibri: fix vqmmc
+  regulator which already got applied by Shawn. Thanks!
+- New commit with pinctrl node name improvements as suggested by Shawn.
+
+Denys Drozdov (5):
+  ARM: dts: imx6ull-colibri: add touchscreen device nodes
+  ARM: dts: imx6ull-colibri: update device trees to support overlays
+  dt-bindings: arm: fsl: add toradex,colibri-imx6ull
+  ARM: dts: imx6ull-colibri: add support for toradex iris carrier boards
+  ARM: dts: imx6ull-colibri: add support for toradex aster carrier
+    boards
+
+Marcel Ziswiler (4):
+  ARM: dts: imx6ull-colibri: fix nand bch geometry
+  ARM: dts: imx6ull-colibri: add/update some comments
+  ARM: dts: imx6ull-colibri: move gpio-keys node to som dtsi
+  ARM: dts: imx6ull-colibri: improve pinctrl node names
+
+Max Krummenacher (1):
+  ARM: dts: imx6ull-colibri: change touch i2c parameters
+
+Oleksandr Suvorov (1):
+  ARM: dts: imx6ull-colibri: add gpio-line-names
+
+Philippe Schenker (3):
+  ARM: dts: imx6ull-colibri: use pull-down for adc pins
+  ARM: dts: imx6ull-colibri: add phy-supply to fec
+  ARM: dts: imx6ull-colibri: update usdhc1 pixmux and signaling
+
+ .../devicetree/bindings/arm/fsl.yaml          |  25 +-
+ arch/arm/boot/dts/Makefile                    |   9 +
+ arch/arm/boot/dts/imx6ull-colibri-aster.dts   |  20 ++
+ arch/arm/boot/dts/imx6ull-colibri-aster.dtsi  | 145 +++++++++
+ .../boot/dts/imx6ull-colibri-emmc-aster.dts   |  17 ++
+ .../boot/dts/imx6ull-colibri-emmc-iris-v2.dts |  17 ++
+ .../boot/dts/imx6ull-colibri-emmc-iris.dts    |  17 ++
+ .../dts/imx6ull-colibri-emmc-nonwifi.dtsi     |   8 +-
+ arch/arm/boot/dts/imx6ull-colibri-eval-v3.dts |   6 +-
+ .../arm/boot/dts/imx6ull-colibri-eval-v3.dtsi |  63 +---
+ arch/arm/boot/dts/imx6ull-colibri-iris-v2.dts |  28 ++
+ .../arm/boot/dts/imx6ull-colibri-iris-v2.dtsi |  27 ++
+ arch/arm/boot/dts/imx6ull-colibri-iris.dts    |  20 ++
+ arch/arm/boot/dts/imx6ull-colibri-iris.dtsi   | 132 ++++++++
+ .../arm/boot/dts/imx6ull-colibri-nonwifi.dtsi | 145 ++++++++-
+ .../boot/dts/imx6ull-colibri-wifi-aster.dts   |  20 ++
+ .../boot/dts/imx6ull-colibri-wifi-eval-v3.dts |   4 +-
+ .../boot/dts/imx6ull-colibri-wifi-iris-v2.dts |  28 ++
+ .../boot/dts/imx6ull-colibri-wifi-iris.dts    |  20 ++
+ arch/arm/boot/dts/imx6ull-colibri-wifi.dtsi   | 144 ++++++++-
+ arch/arm/boot/dts/imx6ull-colibri.dtsi        | 285 ++++++++++++------
+ 21 files changed, 1008 insertions(+), 172 deletions(-)
+ create mode 100644 arch/arm/boot/dts/imx6ull-colibri-aster.dts
+ create mode 100644 arch/arm/boot/dts/imx6ull-colibri-aster.dtsi
+ create mode 100644 arch/arm/boot/dts/imx6ull-colibri-emmc-aster.dts
+ create mode 100644 arch/arm/boot/dts/imx6ull-colibri-emmc-iris-v2.dts
+ create mode 100644 arch/arm/boot/dts/imx6ull-colibri-emmc-iris.dts
+ create mode 100644 arch/arm/boot/dts/imx6ull-colibri-iris-v2.dts
+ create mode 100644 arch/arm/boot/dts/imx6ull-colibri-iris-v2.dtsi
+ create mode 100644 arch/arm/boot/dts/imx6ull-colibri-iris.dts
+ create mode 100644 arch/arm/boot/dts/imx6ull-colibri-iris.dtsi
+ create mode 100644 arch/arm/boot/dts/imx6ull-colibri-wifi-aster.dts
+ create mode 100644 arch/arm/boot/dts/imx6ull-colibri-wifi-iris-v2.dts
+ create mode 100644 arch/arm/boot/dts/imx6ull-colibri-wifi-iris.dts
+
 -- 
 2.35.1
 
