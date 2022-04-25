@@ -2,118 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFA47C35275
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:22:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F18BC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:22:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237363AbiDYWZL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 18:25:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49628 "EHLO
+        id S238157AbiDYWZR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 18:25:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343626AbiDYVul (ORCPT
+        with ESMTP id S232405AbiDYVYF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 17:50:41 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E08C83AA52
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 14:47:35 -0700 (PDT)
-Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com [209.85.215.199])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Mon, 25 Apr 2022 17:24:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76AEC8BF5D;
+        Mon, 25 Apr 2022 14:21:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 6E9253F6F0
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 21:47:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1650923253;
-        bh=UO4wzxZajFtH3qcfy3dLF1bQAk44v43NDT+rmdRn5Yo=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=J5+97Ol7GprYEW2ZEzNG4XzYVNsOUW0hZWdsQzVB/duFtm7QztNyWaCuwFifRdVLS
-         UK1L5wsfM9Ng4KwhlUOM6ddLDISodBfm93unZoI892dJsJUI9OK76qgKASLecXZrIl
-         5xct1CynTk3pCa0/saQfmfmTeEuPUvvFJ39omJCB6zUfdh317D7D8oJL8sg2+gTRu5
-         zvxU6CqFHPfTPxzVPL7Yr8qVvVYIjp27l5LhfKkcRFx92VoQAZoiGANueJM+j7uut6
-         Z01+xXCiWe/4/Eu4Z42UtYTMKKty4G3LW01MvFO8wM3jPXKC2pKF4sYWBi/9RfCYM+
-         4vhJAozziJTUg==
-Received: by mail-pg1-f199.google.com with SMTP id c32-20020a631c60000000b0039cec64e9f1so9892384pgm.3
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 14:47:33 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UO4wzxZajFtH3qcfy3dLF1bQAk44v43NDT+rmdRn5Yo=;
-        b=ar62+iui4vkRrxXZcTKvEGCTvu1y+sW5aYlWXNswJTj51uWw9HaY/vutfgwyaoZRhd
-         luVeqNeZtRqmvld7XmAbNxeXKMPN344SejsGhF7Aut+08tOg+/ol36B08Si4KkX8BULC
-         wSHX9S55C473e4rP89/9+eWc8FQki1Jyo0rFjyK0tlIBvNdwl3lmltlm1pI6ovDtDqxi
-         +vmwJnYJQV34o63UpZhBqRuxQkAtN9iL1fyX6hpqsjAN2DPNnas29FiO5P8TBzOJhiPg
-         JgZ9fvr+e3abdCFoyWHktQFeb7D6/8g9NRwvkHBsoLU3S3GBkHapNrbUnQ+KiUauvJX+
-         KlBA==
-X-Gm-Message-State: AOAM532eLePYX2wQu6ceZqRRAEOHlMDfW1OF+/pwWyMv5K4KNqrZ7tbo
-        nf5mt2bCH3YLHy5WeIp1aHgag6uVThJf9Lg0nsM/Cibg3DjOQSOULzy2cNJRAvdCQ8x/ROoikrS
-        qugaGf4jk1IQE0Rl2tsE5BUOkpdt3rMa1vBiz1J/KxXuYAYigUo3s8cxbmA==
-X-Received: by 2002:a17:90b:886:b0:1d9:3a05:3f2a with SMTP id bj6-20020a17090b088600b001d93a053f2amr14051818pjb.53.1650923251837;
-        Mon, 25 Apr 2022 14:47:31 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw2rdYzYOX06hsXRuD35oezdKlAmuDxmoRYv+cEWg5RH4h591X/jJQypqGczm4ZFvbqbJKbrTN/oPcN6sjDAD4=
-X-Received: by 2002:a17:90b:886:b0:1d9:3a05:3f2a with SMTP id
- bj6-20020a17090b088600b001d93a053f2amr14051798pjb.53.1650923251590; Mon, 25
- Apr 2022 14:47:31 -0700 (PDT)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FCA161422;
+        Mon, 25 Apr 2022 21:21:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B989C385A7;
+        Mon, 25 Apr 2022 21:20:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650921659;
+        bh=yeW9+BBUV3mLk/jfmzfFnnmQesZ+9KRuhHEuOliabrk=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=E/JcjnDmi7uOq5bko2zU6SjHLd+HzINwHPRYwmO9Gp0hKeaMyU1dxx9ZmrEOsf7Zj
+         pIEW7sM6WK2FbIV/zrXyRju9itO4v7kfA4YUtVR7YRq0ogeDwPDsZSduI6gyqAynkM
+         6+hoAgKuLvu9CXOOLyq/V+VIIs6ASajy7LDcx8lpWHipD89wNms2zwFjMBIeYpahuu
+         cnMBtBCYdPAee6EVicQpPLLhoG8TccCTbBG/wetCvdki0dmUZOKfS/pyCP95jBMqkA
+         X6ioiWzvNJ2dRltuNo5uLSf+DExXSHn3aZg9HC1nCRXd7GCxkGFURSpczrBLiH8Qxo
+         K+k8Ys/6UzJhA==
+Received: by mail-yb1-f177.google.com with SMTP id r189so29435566ybr.6;
+        Mon, 25 Apr 2022 14:20:59 -0700 (PDT)
+X-Gm-Message-State: AOAM532D1L70MPCgiEa466nVhgk3bkILwVvwn1ckPI7QwS0DUNGpkOMK
+        90VxGDR8EQS8O2EalmgleKAGU0VajX5sNNFibSo=
+X-Google-Smtp-Source: ABdhPJwWKrStNu9Uj5Vqn7auM4uV4Q5j2aLQeQPBqYMe2nRVht9c4yaM2xOWTUMUx+yYi+q7fhM3ZxXsG5XCzei+6us=
+X-Received: by 2002:a05:6902:114c:b0:641:87a7:da90 with SMTP id
+ p12-20020a056902114c00b0064187a7da90mr18971886ybu.561.1650921658476; Mon, 25
+ Apr 2022 14:20:58 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220422054224.19527-1-matthew.ruffell@canonical.com> <CAEzrpqe=LD3DQcEeLXmmFuq7cX_dAQ6DOCuJYWBoZWKKTmoTzA@mail.gmail.com>
-In-Reply-To: <CAEzrpqe=LD3DQcEeLXmmFuq7cX_dAQ6DOCuJYWBoZWKKTmoTzA@mail.gmail.com>
-From:   Matthew Ruffell <matthew.ruffell@canonical.com>
-Date:   Tue, 26 Apr 2022 09:47:20 +1200
-Message-ID: <CAKAwkKt3yMOOW3NXcE91WkGr+8xj050CYP2pLoQVHt_2wXq=-w@mail.gmail.com>
-Subject: Re: [PROBLEM] nbd requests become stuck when devices watched by
- inotify emit udev uevent changes
-To:     Josef Bacik <josef@toxicpanda.com>
-Cc:     Jens Axboe <axboe@kernel.dk>,
-        linux-block <linux-block@vger.kernel.org>,
-        nbd <nbd@other.debian.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>
+References: <20220421194558.59667-1-david.sloan@eideticom.com>
+In-Reply-To: <20220421194558.59667-1-david.sloan@eideticom.com>
+From:   Song Liu <song@kernel.org>
+Date:   Mon, 25 Apr 2022 14:20:47 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW7B=n6HYSCJxfQbumO4-e5TacvUGbOXBMHfB-TvD0M7zA@mail.gmail.com>
+Message-ID: <CAPhsuW7B=n6HYSCJxfQbumO4-e5TacvUGbOXBMHfB-TvD0M7zA@mail.gmail.com>
+Subject: Re: [PATCH] md: Replace role magic numbers with defined constants
+To:     David Sloan <david.sloan@eideticom.com>
+Cc:     linux-raid <linux-raid@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Logan Gunthorpe <logang@deltatee.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Josef,
+On Thu, Apr 21, 2022 at 12:46 PM David Sloan <david.sloan@eideticom.com> wrote:
+>
+> There are several instances where magic numbers are used in md.c instead
+> of the defined constants in md_p.h. This patch set improves code
+> readability by replacing all occurrences of 0xffff, 0xfffe, and 0xfffd when
+> relating to md roles with their equivalent defined constant.
+>
+> Signed-off-by: David Sloan <david.sloan@eideticom.com>
+> Reviewed-by: Logan Gunthorpe <logang@deltatee.com>
 
-The pastebin has expired the link, and I can't access your patch.
-Seems to default to 1 day deletion.
+Thanks for the clean up!
 
-Could you please create a new paste or send the patch inline in this
-email thread?
+> ---
+>  drivers/md/md.c | 13 ++++++++-----
+>  1 file changed, 8 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/md/md.c b/drivers/md/md.c
+> index 309b3af906ad..b34b72fc5887 100644
+> --- a/drivers/md/md.c
+> +++ b/drivers/md/md.c
+> @@ -2645,11 +2645,12 @@ static bool does_sb_need_changing(struct mddev *mddev)
+>         rdev_for_each(rdev, mddev) {
+>                 role = le16_to_cpu(sb->dev_roles[rdev->desc_nr]);
+>                 /* Device activated? */
+> -               if (role == 0xffff && rdev->raid_disk >=0 &&
+> +               if (role == MD_DISK_ROLE_SPARE && rdev->raid_disk >= 0 &&
+>                     !test_bit(Faulty, &rdev->flags))
+>                         return true;
+>                 /* Device turned faulty? */
+> -               if (test_bit(Faulty, &rdev->flags) && (role < 0xfffd))
+> +               if (test_bit(Faulty, &rdev->flags) &&
+> +                   role < MD_DISK_ROLE_JOURNAL)
 
-I am more than happy to try the patch out.
+I changed this to role < MD_DISK_ROLE_MAX.
 
-Thank you for your analysis.
-Matthew
+Also made some minor style changes, and applied it to md-next.
 
-On Sat, Apr 23, 2022 at 3:24 AM Josef Bacik <josef@toxicpanda.com> wrote:
->
-> On Fri, Apr 22, 2022 at 1:42 AM Matthew Ruffell
-> <matthew.ruffell@canonical.com> wrote:
-> >
-> > Dear maintainers of the nbd subsystem,
-> >
-> > A user has come across an issue which causes the nbd module to hang after a
-> > disconnect where a write has been made to a qemu qcow image file, with qemu-nbd
-> > being the server.
-> >
->
-> Ok there's two problems here, but I want to make sure I have the right
-> fix for the hang first.  Can you apply this patch
->
-> https://paste.centos.org/view/b1a2d01a
->
-> and make sure the hang goes away?  Once that part is fixed I'll fix
-> the IO errors, this is just us racing with systemd while we teardown
-> the device and then we're triggering a partition read while the device
-> is going down and it's complaining loudly.  Before we would
-> set_capacity to 0 whenever we disconnected, but that causes problems
-> with file systems that may still have the device open.  However now we
-> only do this if the server does the CLEAR_SOCK ioctl, which clearly
-> can race with systemd poking the device, so I need to make it
-> set_capacity(0) when the last opener closes the device to prevent this
-> style of race.
->
-> Let me know if that patch fixes the hang, and then I'll work up
-> something for the capacity problem.  Thanks,
->
-> Josef
+Thanks,
+Song
+
+>                         return true;
+>         }
+
+[...]
