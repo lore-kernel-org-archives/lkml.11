@@ -2,221 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD638C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:22:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D56A4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:22:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234422AbiDYWZW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 18:25:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36524 "EHLO
+        id S234694AbiDYWZ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 18:25:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343643AbiDYWBs (ORCPT
+        with ESMTP id S1343611AbiDYVpe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 18:01:48 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D64C3298E;
-        Mon, 25 Apr 2022 14:58:42 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        Mon, 25 Apr 2022 17:45:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8CFD10C88A;
+        Mon, 25 Apr 2022 14:42:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 59D0A22246;
-        Mon, 25 Apr 2022 23:58:39 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1650923920;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DCsEa7zKkDqLZy+dB+iRWtTIDIbRaSE/8JLGg5kT/lA=;
-        b=B/vwdgRY9J8Xn903h4fqbxkT2zuHxf9NoV56Bh8CqE8Dl1vwTDZAOU1KeUM8lrBWj3aI4f
-        erzbaLdSRTNVVYNve2Netuuwp5dhYr5GymSXePHQ2Rp9z9X7vgzQhcxDny0aYJ1hqFbKSq
-        prT3Gz1uWzqH7Qd2crngmBYYeblCQ9Q=
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7163B61480;
+        Mon, 25 Apr 2022 21:42:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C289C385A7;
+        Mon, 25 Apr 2022 21:42:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650922947;
+        bh=nreQfjm+N9qOhwr5Z/uFXcKNU+5eXomO6oZib8laKZg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=qyGvmkis4NtIMuPisOOwB6nGpLl1CrkC66uKzbOFYEVssd/6RtOk2FkzUifqRL1zi
+         q9+7YfAa38802srg9wLvBixFw9fJUiEIURuTN0UP+VF4zMlkJFGuw9MohFkvxX7xim
+         vugpiJywGHPp+gh1s/DK/u/uA9eNbzlPB779kBBELWlq9mRHE/51g+8rTE6u8fhOcg
+         7GJZzsfA9k5GZ+//TVujEzlWJsBLvYQwonWDFOs2bTAW9tfDL6/V3NN+rtyNk7oaaM
+         wRxXhSLD6vMQYU8OheTOKOBVj9BCADbg/5AjXUyNICyP/MQ1uDclN0AlEIl8kgoe9k
+         WR0O9pA75GGAg==
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Chas Williams <3chas3@gmail.com>
+Cc:     linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>
+Subject: [PATCH 1/2] net: wan: atp: remove unused eeprom_delay()
+Date:   Mon, 25 Apr 2022 16:26:43 -0500
+Message-Id: <20220425212644.1659070-2-helgaas@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220425212644.1659070-1-helgaas@kernel.org>
+References: <20220425212644.1659070-1-helgaas@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 25 Apr 2022 23:58:39 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Li Yang <leoyang.li@nxp.com>, Shawn Guo <shawnguo@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>, linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] dt-bindings: interrupt-controller: fsl,ls-extirq:
- convert to YAML
-In-Reply-To: <658851ed-33fd-8e2b-7db7-ef1ca9e31c33@linaro.org>
-References: <20220425140214.32448-1-michael@walle.cc>
- <658851ed-33fd-8e2b-7db7-ef1ca9e31c33@linaro.org>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <83b596d0570c779c61c3c37c6f512679@walle.cc>
-X-Sender: michael@walle.cc
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-04-25 20:36, schrieb Krzysztof Kozlowski:
-> On 25/04/2022 16:02, Michael Walle wrote:
->> Convert the fsl,ls-extirq binding to the new YAML format.
->> 
-> 
-> (...)
-> 
->> diff --git 
->> a/Documentation/devicetree/bindings/interrupt-controller/fsl,ls-extirq.yaml 
->> b/Documentation/devicetree/bindings/interrupt-controller/fsl,ls-extirq.yaml
->> new file mode 100644
->> index 000000000000..39d120ad7549
->> --- /dev/null
->> +++ 
->> b/Documentation/devicetree/bindings/interrupt-controller/fsl,ls-extirq.yaml
->> @@ -0,0 +1,88 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: 
->> http://devicetree.org/schemas/interrupt-controller/fsl,ls-extirq.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Freescale Layerscape External Interrupt Controller
->> +
->> +maintainers:
->> +  - Shawn Guo <shawnguo@kernel.org>
->> +  - Li Yang <leoyang.li@nxp.com>
->> +
->> +description: |
->> +  Some Layerscape SOCs (LS1021A, LS1043A, LS1046A LS1088A, LS208xA,
->> +  LX216xA) support inverting the polarity of certain external 
->> interrupt
->> +  lines.
->> +
->> +allOf:
->> +  - $ref: /schemas/interrupt-controller.yaml#
-> 
-> I have doubts whether this is here applicable. See also Rob's comment:
-> https://lore.kernel.org/all/YjjJpxLWJ%2FYOe0OX@robh.at.kernel.org/
-> 
-> This device does not have children, so the interrupt-controller schema
-> should be probably skipped.
+From: Bjorn Helgaas <bhelgaas@google.com>
 
-ok.
+atp.h is included only by atp.c, which does not use eeprom_delay().  Remove
+the unused definition.
 
->> +
->> +properties:
->> +  compatible:
->> +    oneOf:
->> +      - enum:
->> +          - fsl,ls1021a-extirq
->> +          - fsl,ls1043a-extirq
->> +          - fsl,ls1088a-extirq
->> +      - items:
->> +          - enum:
->> +              - fsl,ls1046a-extirq
->> +          - const: fsl,ls1043a-extirq
->> +      - items:
->> +          - enum:
->> +              - fsl,ls2080a-extirq
->> +              - fsl,lx2160a-extirq
->> +          - const: fsl,ls1088a-extirq
->> +
->> +  '#interrupt-cells':
->> +    const: 2
->> +
->> +  '#address-cells':
->> +    const: 0
->> +
->> +  interrupt-controller: true
->> +
->> +  reg:
->> +    maxItems: 1
->> +    description:
->> +      Specifies the Interrupt Polarity Control Register (INTPCR) in 
->> the
->> +      SCFG or the External Interrupt Control Register (IRQCR) in the 
->> ISC.
->> +
->> +  interrupt-map:
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+---
+ drivers/net/ethernet/realtek/atp.h | 4 ----
+ 1 file changed, 4 deletions(-)
 
-btw.
+diff --git a/drivers/net/ethernet/realtek/atp.h b/drivers/net/ethernet/realtek/atp.h
+index 63f0d2d0e87b..b202184eddd4 100644
+--- a/drivers/net/ethernet/realtek/atp.h
++++ b/drivers/net/ethernet/realtek/atp.h
+@@ -255,10 +255,6 @@ static inline void write_word_mode0(short ioaddr, unsigned short value)
+ #define EE_DATA_WRITE	0x01	/* EEPROM chip data in. */
+ #define EE_DATA_READ	0x08	/* EEPROM chip data out. */
+ 
+-/* Delay between EEPROM clock transitions. */
+-#define eeprom_delay(ticks) \
+-do { int _i = 40; while (--_i > 0) { __SLOW_DOWN_IO; } } while (0)
+-
+ /* The EEPROM commands include the alway-set leading bit. */
+ #define EE_WRITE_CMD(offset)	(((5 << 6) + (offset)) << 17)
+ #define EE_READ(offset)		(((6 << 6) + (offset)) << 17)
+-- 
+2.25.1
 
-minItems: 12
-maxItems: 12
-
-Isn't working here, is that expected? The validator seem to get the 
-count
-of the elements of one tuple wrong.
-
-I.e.
-arch/arm64/boot/dts/freescale/fsl-ls2080a-rdb.dtb: 
-interrupt-controller@14: interrupt-map: [[0, 0, 1, 0, 0, 4, 1, 0], [1, 
-0, 1, 4, 2, 0, 1, 0], [2, 4, 3, 0, 1, 0, 3, 4], [4, 0, 1, 0, 4, 4, 5, 
-0], [1, 0, 5, 4, 6, 0, 1, 0], [6, 4, 7, 0, 1, 0, 7, 4], [8, 0, 1, 0, 8, 
-4, 9, 0], [1, 0, 9, 4, 10, 0, 1, 0], [10, 4, 11, 0, 1, 0, 11, 4]] is too 
-short
-
->> +    description: Specifies the mapping from external interrupts to 
->> GIC interrupts.
->> +
->> +  interrupt-map-mask:
->> +    items:
->> +      - const: 0xffffffff
-> 
-> This looks highly permissive mask and should be instead defined per
-> variant, for example (quickly looking at DTS):
-> 0x7 for ls1021
-> 0xf for ls1043a and ls1088a
-
-Just that I understand it correctly, the result of the AND with that
-mask is then looked up in the interrupt-map (the first entry there)?
-
-> You might need to correct the DTS. Some confirmation from someone with
-> datasheet would be good.
-
-According to their datasheets they have the following number of external
-IRQs:
-- ls1021a has 6,
-- ls1043a has 12,
-- ls1046a has 12,
-- ls1088a has 12,
-- ls2080a has 12,
-- lx2160a has 12.
-
-That is what I need to confirm, right?
-
-Is there a better way than the following snippet:
-
-properties:
-   interrupt-map-mask: true
-
-allOf:
-   - if:
-       properties:
-         compatible:
-           contains:
-             enum:
-               - fsl,ls1021a-extirq
-     then:
-       properties:
-         interrupt-map-mask:
-           items:
-             - const: 0x7
-             - const: 0
-   - if:
-       properties:
-         compatible:
-           contains:
-             enum:
-               - fsl,ls1043a-extirq
-               - fsl,ls1046a-extirq
-               - fsl,ls1088a-extirq
-               - fsl,ls2080a-extirq
-               - fsl,lx2160a-extirq
-     then:
-       properties:
-         interrupt-map-mask:
-           items:
-             - const: 0xf
-             - const: 0
-
--michael
