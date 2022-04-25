@@ -2,92 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DB31C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 07:08:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 040C0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 07:09:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234971AbiDYHLw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 03:11:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55850 "EHLO
+        id S239249AbiDYHMt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 03:12:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231663AbiDYHLt (ORCPT
+        with ESMTP id S240233AbiDYHMl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 03:11:49 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6211C13D0A;
-        Mon, 25 Apr 2022 00:08:45 -0700 (PDT)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kmwyk0JrjzGpLq;
-        Mon, 25 Apr 2022 15:05:50 +0800 (CST)
-Received: from localhost.localdomain (10.67.164.66) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 25 Apr 2022 15:08:24 +0800
-From:   Yicong Yang <yangyicong@hisilicon.com>
-To:     <bhelgaas@google.com>, <rafael@kernel.org>,
-        <linux-pci@vger.kernel.org>, <linux-acpi@vger.kernel.org>
-CC:     <lenb@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <yangyicong@hisilicon.com>, <linuxarm@huawei.com>
-Subject: [PATCH] PCI/ACPI: Always advertise ASPM support if CONFIG_PCIEASPM=y
-Date:   Mon, 25 Apr 2022 15:06:34 +0800
-Message-ID: <20220425070634.28227-1-yangyicong@hisilicon.com>
-X-Mailer: git-send-email 2.31.0
+        Mon, 25 Apr 2022 03:12:41 -0400
+Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 485FB13D0A
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 00:09:38 -0700 (PDT)
+Received: by mail-ed1-f54.google.com with SMTP id b24so17233533edu.10
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 00:09:38 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=sg9feMviCHdG94RDG+nWSdf+6RbZFSQkEE0emSIzP9E=;
+        b=uKtdW1FRllrb7mAaguFwj9w+rYS82rEV852QmAPnZ7js1wQKMwWYh5cCOuPycll5yq
+         HzLQnyIlnF6CQbqnwc8+yt09PSUrarWmqeMj09z0am08cUtaQd3sQVB6B0xG+ieXiHE3
+         siOVYCCXhTN1wOrwIi0sKDafxtMdBEH4WY6eObD19H7wSKcIHTmw5d3rk/Voc6gN/X2u
+         Wa/W4RUh1y5E5XECZP5cj5rmULcua73Jl2csapHq+0Z+Pi+diUVTWets4+5L1LAHZDZo
+         DAHFX92cjJhMpP39Yt4RZrc7dgqSnxju0KRwpvYIpaK4Vf2NiFoa0ZjpSo89qSWMV/bA
+         ctCA==
+X-Gm-Message-State: AOAM531GhgTHrPTgyEp+34fIgBnytr+jA+ZAuLzS8QewzeWwUWd2CICd
+        fvWiXwisNOHWnKg8ULFthKY=
+X-Google-Smtp-Source: ABdhPJxUenNccdhcW9gy2ncnDs0yZ9AYmoeoZp7shE8KbYuVh8zD5cu5muIk2pt5GAMG3j3TJuOWVQ==
+X-Received: by 2002:a05:6402:4306:b0:423:e52b:389 with SMTP id m6-20020a056402430600b00423e52b0389mr17492180edc.230.1650870576713;
+        Mon, 25 Apr 2022 00:09:36 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
+        by smtp.gmail.com with ESMTPSA id vr7-20020a170906bfe700b006e8325fe130sm3270370ejb.31.2022.04.25.00.09.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 Apr 2022 00:09:36 -0700 (PDT)
+Message-ID: <b2363c1a-89e3-0de2-fe2a-3b529c8fb3e4@kernel.org>
+Date:   Mon, 25 Apr 2022 09:09:35 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.164.66]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500009.china.huawei.com (7.192.105.203)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] tty: vt: consolemap: Add missing kfree() in
+ con_do_clear_unimap()
+Content-Language: en-US
+From:   Jiri Slaby <jirislaby@kernel.org>
+To:     =?UTF-8?B?6IGC5rGf56OK?= <niejianglei2021@163.com>,
+        gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org
+References: <20220303020630.460257-1-niejianglei2021@163.com>
+ <4a7fe3ca.68b6.17f6eacb952.Coremail.niejianglei2021@163.com>
+ <71d92931-ac01-be32-a7ef-9f533096ab49@kernel.org>
+In-Reply-To: <71d92931-ac01-be32-a7ef-9f533096ab49@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When we have CONFIG_PCIEASPM enabled it means OS can always support ASPM no
-matter user have disabled it through pcie_aspm=off or not. But currently we
-won't advertise ASPM support in _OSC negotiation if user disables it, which
-doesn't match the fact. This will also have side effects that other PCIe
-services like AER and hotplug will be disabled as ASPM support is required
-and we won't negotiate other services if ASPM support is absent.
+On 25. 04. 22, 8:59, Jiri Slaby wrote:
+> Hi,
+> 
+> On 09. 03. 22, 13:34, 聂江磊 wrote:
+>> I found this bug by using clang static analyse checkers. I found that 
+>> function con_release_unimap() is only called in this 
+>> file(drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c). There 
+>> are totally 5 times that con_release_unimap() is called
+>> (line 430, 466, 522, 599, 673) while con_release_unimap() is not 
+>> followed by kfree() only in line 522. So I think it is a bug
+>> and make this patch.
+>>
+>>
+>> At 2022-03-03 10:06:30, "Jianglei Nie" <niejianglei2021@163.com> wrote:
+>>> We should free p after con_release_unimap(p) like the call points of
+>>> con_release_unimap() do in the same file.
+> 
+> But this one does not free it on purpose, right? See below.
+> 
+>>> This patch adds the missing kfree() after con_release_unimap(p).
+>>>
+>>> Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+>>> ---
+>>> drivers/tty/vt/consolemap.c | 1 +
+>>> 1 file changed, 1 insertion(+)
+>>>
+>>> diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
+>>> index d815ac98b39e..5279c3d27720 100644
+>>> --- a/drivers/tty/vt/consolemap.c
+>>> +++ b/drivers/tty/vt/consolemap.c
+>>> @@ -520,6 +520,7 @@ static int con_do_clear_unimap(struct vc_data *vc)
+>>>         p->refcount++;
+>>>         p->sum = 0;
+>>>         con_release_unimap(p);
+>>> +        kfree(p);
+> 
+> You've just broken con_set_unimap(), or do I miss something?
 
-So this patch makes OS always advertising ASPM support if CONFIG_PCIEASPM=y.
-It intends no functional change to pcie_aspm=off as it will still mark
-aspm_disabled=1 and aspm_support_enabled=false, driver will check these
-status before configuring ASPM.
+No, you did not. The interface is terrible and deserves cleanup.
 
-Tested this patch with pcie_aspm=off:
-estuary:/$ dmesg | egrep -i "aspm|osc"
-[    0.000000] PCIe ASPM is disabled
-[    8.706961] acpi PNP0A08:00: _OSC: OS supports [ExtendedConfig ASPM
-ClockPM Segments MSI EDR HPX-Type3]
-[    8.726032] acpi PNP0A08:00: _OSC: platform does not support [LTR]
-[    8.742818] acpi PNP0A08:00: _OSC: OS now controls [PCIeHotplug PME
-AER PCIeCapability DPC]
-estuary:/sys/module/pcie_aspm/parameters$ cat policy
-[default] performance powersave powersupersave
-estuary:/sys/module/pcie_aspm/parameters$ echo powersave > policy
-bash: echo: write error: Operation not permitted
+I found this, likely related, syzkaller report in my INBOX:
+https://lore.kernel.org/all/000000000000ee58d305bbe9197a@google.com/
 
-Cc: Rafael J. Wysocki <rafael@kernel.org>
-Suggested-by: Bjorn Helgaas <bhelgaas@google.com>
-[https://lore.kernel.org/linux-pci/20220407154257.GA235990@bhelgaas/]
-Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
----
- drivers/acpi/pci_root.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Care to test the reproducer both with and without your change? Does your 
+patch fixes the issue. And if it does, could you add this to your patch:
+   Reported-by: syzbot+bcc922b19ccc64240b42@syzkaller.appspotmail.com
+? So that syzbot verifies the patch.
 
-diff --git a/drivers/acpi/pci_root.c b/drivers/acpi/pci_root.c
-index 6f9e75d14808..17e78582e633 100644
---- a/drivers/acpi/pci_root.c
-+++ b/drivers/acpi/pci_root.c
-@@ -393,7 +393,7 @@ static u32 calculate_support(void)
- 	support |= OSC_PCI_HPX_TYPE_3_SUPPORT;
- 	if (pci_ext_cfg_avail())
- 		support |= OSC_PCI_EXT_CONFIG_SUPPORT;
--	if (pcie_aspm_support_enabled())
-+	if (IS_ENABLED(CONFIG_PCIEASPM))
- 		support |= OSC_PCI_ASPM_SUPPORT | OSC_PCI_CLOCK_PM_SUPPORT;
- 	if (pci_msi_enabled())
- 		support |= OSC_PCI_MSI_SUPPORT;
+Once you do all this, I will re-review the patch and the code. The code 
+is really very hard to follow, so I cannot decide whether your patch is 
+correct or not ATM.
+
+And provided the above, I put a note to my TODO list to restructure the 
+code, so that people know what's going on there.
+
+thanks,
 -- 
-2.24.0
-
+js
