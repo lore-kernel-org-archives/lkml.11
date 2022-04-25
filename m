@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF73DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 04:04:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 380BDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 04:04:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240942AbiDYEHg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 00:07:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54196 "EHLO
+        id S240973AbiDYEHu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 00:07:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240892AbiDYEHD (ORCPT
+        with ESMTP id S240911AbiDYEHG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 00:07:03 -0400
+        Mon, 25 Apr 2022 00:07:06 -0400
 Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0826D3700D;
-        Sun, 24 Apr 2022 21:03:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 139DF37A09;
+        Sun, 24 Apr 2022 21:04:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650859437; x=1682395437;
+  t=1650859442; x=1682395442;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=8emm1CUrHYKdXLxQkeVp43NzaikB5bqfMsMDigY2spY=;
-  b=vRWYct8MtlR0nBbTNpIZELKmip/2b2tSep0SLgv6LQPwor1W/oVMNGRO
-   LRV8qPDZipMjbjDJi50BjsyOQSdPMv38fbekX1vo184ws0FQ0ler1kwZw
-   4vJ/XA/8+n/MRxQXDxCMJn1nVdgRR/e5p4uDjgehOhqngxtnsHeYhHfY3
-   g=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 24 Apr 2022 21:03:53 -0700
+  bh=Sis+KATqnd93VlGTIW/qXRsMNyQU/ETlDDCUlt+1KvQ=;
+  b=CTnVyLZglbfypjOpBODk6fL66MNGgJbFSec6Gx4dN9TCAH+P11OVKshi
+   oSMowMxo6+k4yF2E02k/muUxQ75j7R6BrLtOQNNAIGJIhpA+5NJyqZvrv
+   Dka2IYlDd2Hdr4ziboDp4JgcUNR4AvwY/khL4aJu6mURoKwnQZaOUkI4q
+   U=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 24 Apr 2022 21:04:01 -0700
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2022 21:03:53 -0700
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2022 21:04:01 -0700
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Sun, 24 Apr 2022 21:03:53 -0700
+ 15.2.986.22; Sun, 24 Apr 2022 21:04:00 -0700
 Received: from jinlmao-gv.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Sun, 24 Apr 2022 21:03:49 -0700
+ 15.2.986.22; Sun, 24 Apr 2022 21:03:57 -0700
 From:   Mao Jinlong <quic_jinlmao@quicinc.com>
 To:     Mathieu Poirier <mathieu.poirier@linaro.org>,
         Suzuki K Poulose <suzuki.poulose@arm.com>,
@@ -57,9 +57,9 @@ CC:     Mao Jinlong <quic_jinlmao@quicinc.com>,
         Hao Zhang <quic_hazha@quicinc.com>,
         <linux-arm-msm@vger.kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: [PATCH v6 06/10] docs: sysfs: coresight: Add sysfs ABI documentation for TPDM
-Date:   Mon, 25 Apr 2022 12:03:00 +0800
-Message-ID: <20220425040304.37487-7-quic_jinlmao@quicinc.com>
+Subject: [PATCH v6 08/10] dt-bindings: arm: Adds CoreSight TPDA hardware definitions
+Date:   Mon, 25 Apr 2022 12:03:02 +0800
+Message-ID: <20220425040304.37487-9-quic_jinlmao@quicinc.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220425040304.37487-1-quic_jinlmao@quicinc.com>
 References: <20220425040304.37487-1-quic_jinlmao@quicinc.com>
@@ -72,34 +72,142 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add API usage document for sysfs API in TPDM driver.
+Adds new coresight-tpda.yaml file describing the bindings required
+to define tpda in the device trees.
 
 Reviewed-by: Mike Leach <mike.leach@linaro.org>
+Signed-off-by: Tao Zhang <quic_taozha@quicinc.com>
 Signed-off-by: Mao Jinlong <quic_jinlmao@quicinc.com>
 ---
- .../ABI/testing/sysfs-bus-coresight-devices-tpdm    | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-coresight-devices-tpdm
+ .../bindings/arm/coresight-tpda.yaml          | 119 ++++++++++++++++++
+ 1 file changed, 119 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/arm/coresight-tpda.yaml
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-coresight-devices-tpdm b/Documentation/ABI/testing/sysfs-bus-coresight-devices-tpdm
+diff --git a/Documentation/devicetree/bindings/arm/coresight-tpda.yaml b/Documentation/devicetree/bindings/arm/coresight-tpda.yaml
 new file mode 100644
-index 000000000000..1ff52c6fa0c3
+index 000000000000..4948ac13e7f8
 --- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-coresight-devices-tpdm
-@@ -0,0 +1,13 @@
-+What:		/sys/bus/coresight/devices/<tpdm-name>/integration_test
-+Date:		April 2022
-+KernelVersion	5.18
-+Contact:	Jinlong Mao (QUIC) <quic_jinlmao@quicinc.com>, Tao Zhang (QUIC) <quic_taozha@quicinc.com>
-+Description:
-+		(Write) Run integration test for tpdm. Integration test
-+		will generate test data for tpdm. It can help to make
-+		sure that the trace path is enabled and the link configurations
-+		are fine.
++++ b/Documentation/devicetree/bindings/arm/coresight-tpda.yaml
+@@ -0,0 +1,119 @@
++# SPDX-License-Identifier: GPL-2.0-only or BSD-2-Clause
++# Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/arm/coresight-tpda.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+		value to this sysfs node:
-+		1 : Generate 64 bits data
-+		2 : Generate 32 bits data
++title: Trace, Profiling and Diagnostics Aggregator - TPDA
++
++description: |
++  TPDAs are responsible for packetization and timestamping of data sets
++  utilizing the MIPI STPv2 packet protocol. Pulling data sets from one or
++  more attached TPDM and pushing the resultant (packetized) data out a
++  master ATB interface. Performing an arbitrated ATB interleaving (funneling)
++  task for free-flowing data from TPDM (i.e. CMB and DSB data set flows).
++
++maintainers:
++  - Mao Jinlong <quic_jinlmao@quicinc.com>
++  - Tao Zhang <quic_taozha@quicinc.com>
++
++properties:
++  $nodename:
++    pattern: "^tpda(@[0-9a-f]+)$"
++  compatible:
++    items:
++      - const: qcom,coresight-tpda
++      - const: arm,primecell
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  clock-names:
++    items:
++      - const: apb_pclk
++
++  in-ports:
++    type: object
++    description: |
++      Input connections from TPDM to TPDA
++    $ref: /schemas/graph.yaml#/properties/ports
++
++    properties:
++      '#address-cells':
++        const: 1
++
++      '#size-cells':
++        const: 0
++
++    patternProperties:
++      "^port@[0-9a-f]+$":
++        type: object
++        required:
++          - reg
++
++    required:
++      - '#size-cells'
++      - '#address-cells'
++
++  out-ports:
++    type: object
++    description: |
++      Output connections from the TPDA to legacy CoreSight trace bus.
++    $ref: /schemas/graph.yaml#/properties/ports
++
++    properties:
++     port:
++       description:
++         Output connection from the TPDA to legacy CoreSight Trace bus.
++       $ref: /schemas/graph.yaml#/properties/port
++
++required:
++    - compatible
++    - reg
++    - clocks
++    - clock-names
++    - in-ports
++    - out-ports
++
++additionalProperties: false
++
++examples:
++  # minimum tpda definition.
++  - |
++    tpda@6004000 {
++       compatible = "qcom,coresight-tpda", "arm,primecell";
++       reg = <0x6004000 0x1000>;
++
++       qcom,tpda-atid = <65>;
++
++       clocks = <&aoss_qmp>;
++       clock-names = "apb_pclk";
++
++       in-ports {
++         #address-cells = <1>;
++         #size-cells = <0>;
++
++        port@0 {
++          reg = <0>;
++          tpda_qdss_0_in_tpdm_dcc: endpoint {
++            remote-endpoint =
++              <&tpdm_dcc_out_tpda_qdss_0>;
++            };
++        };
++      };
++
++       out-ports {
++         port {
++                 tpda_qdss_out_funnel_in0: endpoint {
++                    remote-endpoint =
++                    <&funnel_in0_in_tpda_qdss>;
++                  };
++          };
++       };
++    };
++
++...
 -- 
 2.17.1
 
