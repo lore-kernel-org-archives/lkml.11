@@ -2,121 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C663FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 12:42:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 689C5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 12:44:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241953AbiDYMpf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 08:45:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46096 "EHLO
+        id S242211AbiDYMrZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 08:47:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241947AbiDYMp2 (ORCPT
+        with ESMTP id S242195AbiDYMrR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 08:45:28 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 034C7DB0D6;
-        Mon, 25 Apr 2022 05:42:22 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C37B911FB;
-        Mon, 25 Apr 2022 05:42:21 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 5BFC73F5A1;
-        Mon, 25 Apr 2022 05:42:20 -0700 (PDT)
-From:   Robin Murphy <robin.murphy@arm.com>
-To:     joro@8bytes.org
-Cc:     baolu.lu@linux.intel.com, andreas.noever@gmail.com,
-        michael.jamet@intel.com, mika.westerberg@linux.intel.com,
-        YehezkelShB@gmail.com, iommu@lists.linux-foundation.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mario.limonciello@amd.com, hch@lst.de
-Subject: [PATCH v4 4/4] iommu/amd: Indicate whether DMA remap support is enabled
-Date:   Mon, 25 Apr 2022 13:42:05 +0100
-Message-Id: <ce7627fa1c596878ca6515dd9d4381a45b6ee38c.1650878781.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.35.3.dirty
-In-Reply-To: <cover.1650878781.git.robin.murphy@arm.com>
-References: <cover.1650878781.git.robin.murphy@arm.com>
+        Mon, 25 Apr 2022 08:47:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6F395DA6D9
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 05:44:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650890652;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=VCRRJvi0nBuRvSQkvgjPsxK/+2snqkLfcZ0Y3XDHbLM=;
+        b=PsOdKOzwgUPbjSwitTUGECXs5z3IIEjo+krlrcLbeS2C2njRlydpqSt3rHGDvtrF7R65aL
+        zoRR7nqdkf2dJbquLCOCV9Rpe7y38xH3YlZnG1rQ1FweN7NSrm7FWaNqci7SN0fHz/qoqy
+        BCfXx7OscbaAeCeMqS8DoL5JEtXq45c=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-654--m0OOzMeOMqIjHCnsHzOww-1; Mon, 25 Apr 2022 08:44:09 -0400
+X-MC-Unique: -m0OOzMeOMqIjHCnsHzOww-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id EC4FF3C01B83;
+        Mon, 25 Apr 2022 12:44:08 +0000 (UTC)
+Received: from localhost (unknown [10.39.192.116])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 9BA7F40FF70E;
+        Mon, 25 Apr 2022 12:44:08 +0000 (UTC)
+From:   Cornelia Huck <cohuck@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>, jasowang@redhat.com,
+        mst@redhat.com, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org
+Cc:     sgarzare@redhat.com, eperezma@redhat.com, lulu@redhat.com,
+        tglx@linutronix.de, peterz@infradead.org, paulmck@kernel.org,
+        maz@kernel.org, pasic@linux.ibm.com
+Subject: Re: [PATCH V3 7/9] virtio: allow to unbreak virtqueue
+In-Reply-To: <20220425024418.8415-8-jasowang@redhat.com>
+Organization: Red Hat GmbH
+References: <20220425024418.8415-1-jasowang@redhat.com>
+ <20220425024418.8415-8-jasowang@redhat.com>
+User-Agent: Notmuch/0.34 (https://notmuchmail.org)
+Date:   Mon, 25 Apr 2022 14:44:06 +0200
+Message-ID: <87v8ux72p5.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+On Mon, Apr 25 2022, Jason Wang <jasowang@redhat.com> wrote:
 
-Bit 1 of the IVFS IVInfo field indicates that IOMMU has been used for
-pre-boot DMA protection.
+> This patch allows the virtio_break_device() to accept a boolean value
+> then we can unbreak the virtqueue.
+>
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> ---
+>  drivers/char/virtio_console.c              | 2 +-
+>  drivers/crypto/virtio/virtio_crypto_core.c | 2 +-
+>  drivers/s390/virtio/virtio_ccw.c           | 4 ++--
+>  drivers/virtio/virtio_pci_common.c         | 2 +-
+>  drivers/virtio/virtio_ring.c               | 4 ++--
+>  include/linux/virtio.h                     | 2 +-
+>  6 files changed, 8 insertions(+), 8 deletions(-)
+>
+> diff --git a/drivers/char/virtio_console.c b/drivers/char/virtio_console.c
+> index e3c430539a17..afede977f7b3 100644
+> --- a/drivers/char/virtio_console.c
+> +++ b/drivers/char/virtio_console.c
+> @@ -1958,7 +1958,7 @@ static void virtcons_remove(struct virtio_device *vdev)
+>  	spin_unlock_irq(&pdrvdata_lock);
+>  
+>  	/* Device is going away, exit any polling for buffers */
+> -	virtio_break_device(vdev);
+> +	virtio_break_device(vdev, true);
+>  	if (use_multiport(portdev))
+>  		flush_work(&portdev->control_work);
+>  	else
+> diff --git a/drivers/crypto/virtio/virtio_crypto_core.c b/drivers/crypto/virtio/virtio_crypto_core.c
+> index c6f482db0bc0..fd17f3f2e958 100644
+> --- a/drivers/crypto/virtio/virtio_crypto_core.c
+> +++ b/drivers/crypto/virtio/virtio_crypto_core.c
+> @@ -215,7 +215,7 @@ static int virtcrypto_update_status(struct virtio_crypto *vcrypto)
+>  		dev_warn(&vcrypto->vdev->dev,
+>  				"Unknown status bits: 0x%x\n", status);
+>  
+> -		virtio_break_device(vcrypto->vdev);
+> +		virtio_break_device(vcrypto->vdev, true);
+>  		return -EPERM;
+>  	}
+>  
+> diff --git a/drivers/s390/virtio/virtio_ccw.c b/drivers/s390/virtio/virtio_ccw.c
+> index c19f07a82d62..9a963f5af5b5 100644
+> --- a/drivers/s390/virtio/virtio_ccw.c
+> +++ b/drivers/s390/virtio/virtio_ccw.c
+> @@ -1211,7 +1211,7 @@ static void virtio_ccw_remove(struct ccw_device *cdev)
+>  
+>  	if (vcdev && cdev->online) {
+>  		if (vcdev->device_lost)
+> -			virtio_break_device(&vcdev->vdev);
+> +			virtio_break_device(&vcdev->vdev, true);
+>  		unregister_virtio_device(&vcdev->vdev);
+>  		spin_lock_irqsave(get_ccwdev_lock(cdev), flags);
+>  		dev_set_drvdata(&cdev->dev, NULL);
+> @@ -1228,7 +1228,7 @@ static int virtio_ccw_offline(struct ccw_device *cdev)
+>  	if (!vcdev)
+>  		return 0;
+>  	if (vcdev->device_lost)
+> -		virtio_break_device(&vcdev->vdev);
+> +		virtio_break_device(&vcdev->vdev, true);
+>  	unregister_virtio_device(&vcdev->vdev);
+>  	spin_lock_irqsave(get_ccwdev_lock(cdev), flags);
+>  	dev_set_drvdata(&cdev->dev, NULL);
+> diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virtio/virtio_pci_common.c
+> index d724f676608b..39a711ddff30 100644
+> --- a/drivers/virtio/virtio_pci_common.c
+> +++ b/drivers/virtio/virtio_pci_common.c
+> @@ -583,7 +583,7 @@ static void virtio_pci_remove(struct pci_dev *pci_dev)
+>  	 * layers can abort any ongoing operation.
+>  	 */
+>  	if (!pci_device_is_present(pci_dev))
+> -		virtio_break_device(&vp_dev->vdev);
+> +		virtio_break_device(&vp_dev->vdev, true);
+>  
+>  	pci_disable_sriov(pci_dev);
+>  
+> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+> index cfb028ca238e..6da13495a70c 100644
+> --- a/drivers/virtio/virtio_ring.c
+> +++ b/drivers/virtio/virtio_ring.c
+> @@ -2382,7 +2382,7 @@ EXPORT_SYMBOL_GPL(virtqueue_is_broken);
+>   * This should prevent the device from being used, allowing drivers to
+>   * recover.  You may need to grab appropriate locks to flush.
+>   */
+> -void virtio_break_device(struct virtio_device *dev)
+> +void virtio_break_device(struct virtio_device *dev, bool broken)
 
-Export this capability to allow other places in the kernel to be able to
-check for it on AMD systems.
+I think we need to be careful to say when it is safe to unset 'broken'.
 
-Link: https://www.amd.com/system/files/TechDocs/48882_IOMMU.pdf
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
+The current callers set all queues to broken in case of surprise removal
+(ccw, pci), removal (console), or the device behaving badly
+(crypto). There's also code setting individual queues to broken. We do
+not want to undo any of these, unless the device has gone through a
+reset in the meanwhile. Maybe add:
 
-v4: No change
+"It is only safe to call this function to *remove* the broken flag for a
+device that is (re)transitioning to becoming usable; calling it that way
+during normal usage may have unpredictable consequences."
 
- drivers/iommu/amd/amd_iommu_types.h | 4 ++++
- drivers/iommu/amd/init.c            | 3 +++
- drivers/iommu/amd/iommu.c           | 2 ++
- 3 files changed, 9 insertions(+)
-
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 47108ed44fbb..72d0f5e2f651 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -407,6 +407,7 @@
- /* IOMMU IVINFO */
- #define IOMMU_IVINFO_OFFSET     36
- #define IOMMU_IVINFO_EFRSUP     BIT(0)
-+#define IOMMU_IVINFO_DMA_REMAP  BIT(1)
- 
- /* IOMMU Feature Reporting Field (for IVHD type 10h */
- #define IOMMU_FEAT_GASUP_SHIFT	6
-@@ -449,6 +450,9 @@ extern struct irq_remap_table **irq_lookup_table;
- /* Interrupt remapping feature used? */
- extern bool amd_iommu_irq_remap;
- 
-+/* IVRS indicates that pre-boot remapping was enabled */
-+extern bool amdr_ivrs_remap_support;
-+
- /* kmem_cache to get tables with 128 byte alignement */
- extern struct kmem_cache *amd_iommu_irq_cache;
- 
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index b4a798c7b347..0467918bf7fd 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -182,6 +182,7 @@ u32 amd_iommu_max_pasid __read_mostly = ~0;
- 
- bool amd_iommu_v2_present __read_mostly;
- static bool amd_iommu_pc_present __read_mostly;
-+bool amdr_ivrs_remap_support __read_mostly;
- 
- bool amd_iommu_force_isolation __read_mostly;
- 
-@@ -326,6 +327,8 @@ static void __init early_iommu_features_init(struct amd_iommu *iommu,
- {
- 	if (amd_iommu_ivinfo & IOMMU_IVINFO_EFRSUP)
- 		iommu->features = h->efr_reg;
-+	if (amd_iommu_ivinfo & IOMMU_IVINFO_DMA_REMAP)
-+		amdr_ivrs_remap_support = true;
- }
- 
- /* Access to l1 and l2 indexed register spaces */
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index a1ada7bff44e..991f10ce350e 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -2162,6 +2162,8 @@ static bool amd_iommu_capable(enum iommu_cap cap)
- 		return (irq_remapping_enabled == 1);
- 	case IOMMU_CAP_NOEXEC:
- 		return false;
-+	case IOMMU_CAP_PRE_BOOT_PROTECTION:
-+		return amdr_ivrs_remap_support;
- 	default:
- 		break;
- 	}
--- 
-2.35.3.dirty
+(Not sure how to word this; especially if we consider future usage of
+queue reset.)
 
