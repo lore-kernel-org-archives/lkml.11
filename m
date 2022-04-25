@@ -2,169 +2,393 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBD2CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:36:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B24FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:37:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231941AbiDYWj7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 18:39:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33340 "EHLO
+        id S234859AbiDYWke (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 18:40:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230484AbiDYWj5 (ORCPT
+        with ESMTP id S234711AbiDYWkb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 18:39:57 -0400
-Received: from mailout1.w2.samsung.com (mailout1.w2.samsung.com [211.189.100.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B77901EEF4
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 15:36:50 -0700 (PDT)
-Received: from uscas1p1.samsung.com (unknown [182.198.245.206])
-        by mailout1.w2.samsung.com (KnoxPortal) with ESMTP id 20220425223059usoutp0180058bb5497758d6c96c67edfaeb449d~pRFJzJZg42449424494usoutp01e;
-        Mon, 25 Apr 2022 22:30:59 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w2.samsung.com 20220425223059usoutp0180058bb5497758d6c96c67edfaeb449d~pRFJzJZg42449424494usoutp01e
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1650925859;
-        bh=CsbcO+p6CiS6d9aB1oojSVgJ8bcRlB7m2SpwxFhLZ+w=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=Ms79yjqZu0Z9XqSv/uUS/GzzP/ZoH5OTirpEAK1paMBNSHKJFP3ZAI5HX6pbXN6JN
-         0by9ULy74aKV7itzxlI6UGHi89IYU60YMCDfm/k68VBWSq1CeSRNO489bcXDxyytkE
-         mXK824lnFmaweU8IGQrJegX5Ie+RSnzSgXQojl90=
-Received: from ussmges3new.samsung.com (u112.gpu85.samsung.co.kr
-        [203.254.195.112]) by uscas1p1.samsung.com (KnoxPortal) with ESMTP id
-        20220425223058uscas1p1bcbfe155435028c3a9a27c76b3e25c6d~pRFJbb5gs1749317493uscas1p1a;
-        Mon, 25 Apr 2022 22:30:58 +0000 (GMT)
-Received: from uscas1p1.samsung.com ( [182.198.245.206]) by
-        ussmges3new.samsung.com (USCPEMTA) with SMTP id 3F.6F.09749.22127626; Mon,
-        25 Apr 2022 18:30:58 -0400 (EDT)
-Received: from ussmgxs1new.samsung.com (u89.gpu85.samsung.co.kr
-        [203.254.195.89]) by uscas1p1.samsung.com (KnoxPortal) with ESMTP id
-        20220425223058uscas1p10722f66722de23c644f8330da82fe1da~pRFI1fUX_1749317493uscas1p1Z;
-        Mon, 25 Apr 2022 22:30:58 +0000 (GMT)
-X-AuditID: cbfec370-a6bff70000002615-9d-626721221174
-Received: from SSI-EX3.ssi.samsung.com ( [105.128.2.146]) by
-        ussmgxs1new.samsung.com (USCPEXMTA) with SMTP id 32.5D.09702.12127626; Mon,
-        25 Apr 2022 18:30:58 -0400 (EDT)
-Received: from SSI-EX3.ssi.samsung.com (105.128.2.228) by
-        SSI-EX3.ssi.samsung.com (105.128.2.228) with Microsoft SMTP Server
-        (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
-        15.1.2375.7; Mon, 25 Apr 2022 15:30:57 -0700
-Received: from SSI-EX3.ssi.samsung.com ([105.128.5.228]) by
-        SSI-EX3.ssi.samsung.com ([105.128.5.228]) with mapi id 15.01.2375.007; Mon,
-        25 Apr 2022 15:30:57 -0700
-From:   Adam Manzanares <a.manzanares@samsung.com>
-To:     Davidlohr Bueso <dave@stgolabs.net>
-CC:     "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "mhocko@kernel.org" <mhocko@kernel.org>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "rientjes@google.com" <rientjes@google.com>,
-        "yosryahmed@google.com" <yosryahmed@google.com>,
-        "hannes@cmpxchg.org" <hannes@cmpxchg.org>,
-        "shakeelb@google.com" <shakeelb@google.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "tim.c.chen@linux.intel.com" <tim.c.chen@linux.intel.com>,
-        "roman.gushchin@linux.dev" <roman.gushchin@linux.dev>,
-        "gthelen@google.com" <gthelen@google.com>,
-        Heekwon Park <heekwon.p@samsung.com>,
-        Jongmin Gim <gim.jongmin@samsung.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/6] drivers/base/node: cleanup register_node()
-Thread-Topic: [PATCH 1/6] drivers/base/node: cleanup register_node()
-Thread-Index: AQHYUVRPCSx4CL5jbUm8oG94siTkjq0Buu6A
-Date:   Mon, 25 Apr 2022 22:30:57 +0000
-Message-ID: <20220425223050.GA147460@bgt-140510-bm01>
-In-Reply-To: <20220416053902.68517-2-dave@stgolabs.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [105.128.2.176]
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <C1D3122BB7B4C84AA59E81DD72B78789@ssi.samsung.com>
-Content-Transfer-Encoding: quoted-printable
+        Mon, 25 Apr 2022 18:40:31 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C61C02E9FF
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 15:37:25 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id d23-20020a17090a115700b001d2bde6c234so567603pje.1
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 15:37:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6QjDNMx4x7i1956NihfaFwjEAxdNAY9wkJLE6MA4bmU=;
+        b=f/8HeozoJplITK6b2a5eUAhCwQYKKi0ISTSi1cDgOTt+xdLLFSNXTNq/Cs2mYIeUIj
+         /BnbjsdB1ZeZtCvoI9PE+DS09cwW01zYkKGcTylwQyL35nCQgRDE6sTaNE8Kh5erqYy/
+         rf9gLIQWYTKfqXh+O1yjacaar91v8PM2LAp10=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6QjDNMx4x7i1956NihfaFwjEAxdNAY9wkJLE6MA4bmU=;
+        b=r8/nFeTSFkU1CRAPLGctoTTOcQ71Zb6ABzyQDYJiXSKfKEpxGpnKqmJQZbn22G6Vck
+         QPHeRaFuZi+EpuS8krrVzPBbKeqt0txI9mdOUuXkkYRBGUbVgugwO09ovYJW5vGZwx62
+         mIOp/2JikANdw5tfUaqPkcJ7LSDP/yizJp5g7wjWJc6THuxEiVfDuCspJf0S6uyb9a99
+         TcPbliov8Exsl+AKWgKDcv7j6FcPQ3iQnhHi/xJQRAx2LByI4qp20+T5yW7rSiZFI13H
+         nQbDR+Okpmyd55b9uCADlGxKwz4VlOjJiZOJwI1Hr0sw90LvFIUEviPf6f2315IuVWy8
+         zQ8A==
+X-Gm-Message-State: AOAM532XCt5YkIVX+gbIVEllhtAlNZ6J+0ANigRB5piTPQdYTmXOiLT+
+        ADV0D8eW2AQwDz6RYUypOQHffkYfJqibhZ8cSWs=
+X-Google-Smtp-Source: ABdhPJw2VDK5K80DSlS3faPGh2/z7aqv+lAAd98v2yq1oWYJohw33cblkJuFvCVhF3oL8FuPxvXQ3w==
+X-Received: by 2002:a17:902:cec5:b0:15d:1e53:6f1a with SMTP id d5-20020a170902cec500b0015d1e536f1amr5580218plg.2.1650926245268;
+        Mon, 25 Apr 2022 15:37:25 -0700 (PDT)
+Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:b820:7f63:f3dd:3da])
+        by smtp.gmail.com with ESMTPSA id t16-20020a632250000000b003aaf600a58esm7503566pgm.16.2022.04.25.15.37.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Apr 2022 15:37:24 -0700 (PDT)
+From:   Douglas Anderson <dianders@chromium.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Rob Clark <robdclark@chromium.org>, quic_kalyant@quicinc.com,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        linux-arm-msm@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] arm64: dts: qcom: sc7280: eDP for herobrine boards
+Date:   Mon, 25 Apr 2022 15:36:55 -0700
+Message-Id: <20220425153650.1.Iedd71976a78d53c301ce0134832de95a989c9195@changeid>
+X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrBKsWRmVeSWpSXmKPExsWy7djXc7pKiulJBuc3mVrMWb+GzeLFhnZG
-        i9U31zBarFs1kcVi9SZfi8u75rBZ3Fvzn9Xi9bdlzBZtSzYyWUxcI2px8NprRotrk+azWWzf
-        FenA63H4zXtmjwWbSj02repk89j0aRK7x4kZv1k8FjZMZfaYdzLQY+rseo/Pm+QCOKO4bFJS
-        czLLUov07RK4Mp6+b2Et6OasuPZ9JmsD41r2LkZODgkBE4kb37+zdTFycQgJrGSU6Fj7kxEk
-        ISTQyiRxdo8FTNHUlWtYIOJrGSX+r66GaPjIKDGv/Ss7RGIZo0TDE3EQm03AQOL38Y3MILaI
-        gLrEvLW3wYYyC+xnlfh9zBLEFhZwlri55yNUjYvE7PX7GCFsI4kNM5eAxVkEVCX6D34Dm88r
-        YCoxafUGVhCbU8Bc4vnpJrA4o4CYxPdTa5gg5otL3HoynwniaEGJRbP3MEPYYhL/dj1kg7AV
-        Je5/f8kOUa8jsWD3JzYI207iwJOlUHFtiWULXzND7BWUODnzCQtEr6TEwRU3WECelxCYzSlx
-        +8tvqISLxL6L/YwQtrTE1etTmSGK2hklPkzYxwrhTGCUuPP2J9QZ1hL/Oq+xT2BUmYXk8llI
-        rpqF5KpZSK6aheSqBYysqxjFS4uLc9NTi43zUsv1ihNzi0vz0vWS83M3MQIT3+l/hwt2MN66
-        9VHvECMTB+MhRgkOZiUR3qmqaUlCvCmJlVWpRfnxRaU5qcWHGKU5WJTEeZdlbkgUEkhPLEnN
-        Tk0tSC2CyTJxcEo1MBW/StmYqSb8XefN7qzVr5uKN62+x3nc+cOp+wv/PdNMleeI4JLp3cid
-        /z312OW/FyZPb0lPutR77UGNZL1n8YRXS+Q/ROh+nRlcd+AId1AWK/O66+mpoXprTvGsPpTx
-        xmnPyQXTny+YdCJW5ZJ+sP65+k172DqT9MJZzQ/ya0+NV+b0M5ZvVHS5NW+lsMepOf1TBHsv
-        M0nMnqtxqfqbRJj00p2fqr0rfOeu8ZWeGuB9JPd7z4JA1XDVpKzYnGv63OfPTDvm33s2RfXy
-        n+j3r2r1rs3RKQzxffnYqoyv7+gdqUdaZoXL1/2WaOpLnt/A0/frpHrv5LjTP53nuz5s29O6
-        wURq/WeXiQtE/A641CqxFGckGmoxFxUnAgCCCKTP6wMAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrBIsWRmVeSWpSXmKPExsWS2cA0SVdJMT3J4Mlzbos569ewWbzY0M5o
-        sfrmGkaLdasmslis3uRrcXnXHDaLe2v+s1q8/raM2aJtyUYmi4lrRC0OXnvNaHFt0nw2i+27
-        Ih14PQ6/ec/ssWBTqcemVZ1sHps+TWL3ODHjN4vHwoapzB7zTgZ6TJ1d7/F5k1wAZxSXTUpq
-        TmZZapG+XQJXxtP3LawF3ZwV177PZG1gXMvexcjJISFgIjF15RqWLkYuDiGB1YwS5xZPYYZw
-        PjJKnJ/8lxXCWcYo8Wz6GiaQFjYBA4nfxzcyg9giAuoS89beZgQpYhbYyyqx8l4nC0hCWMBZ
-        4uaej1BFLhKz1+9jhLCNJDbMXAIWZxFQleg/+A3sDl4BU4lJqzdAbdvOKPFuzyuwBk4Bc4nn
-        p5vAihgFxCS+n4K4gllAXOLWk/lMEE8ISCzZc54ZwhaVePn4HyuErShx//tLdoh6HYkFuz+x
-        Qdh2EgeeLIWKa0ssW/iaGeIIQYmTM5+wQPRKShxccYNlAqPELCTrZiEZNQvJqFlIRs1CMmoB
-        I+sqRvHS4uLc9Ipiw7zUcr3ixNzi0rx0veT83E2MwMRx+t/hyB2MR2991DvEyMTBeIhRgoNZ
-        SYR3qmpakhBvSmJlVWpRfnxRaU5q8SFGaQ4WJXFeIdeJ8UIC6YklqdmpqQWpRTBZJg5OqQYm
-        rx1+Myf0ia7nuyfQ8sTSiU/A7+SXlQ8iw1TvHH1WOmfK7Qf7Vto3bDrULc3Vef06u6rHz6S7
-        U//aGDPXdHiUfLFlXPB67UtB3kWXTpxcf2mp4CWGJxN3v2aPTdr6S9HKcJePdPSOTaFily3v
-        Gb5cqelwXnxzgn11/bOsG18v9jIyc+UGFnZ0zbf+af/M0/Tv7tcaJ+LOea2568P3om6Gm8mx
-        mW9mlGzesW7rqlnrk6cvXLJz/9X3z7U/7m1aVNu42vvH06Bp3/4lic5cVL5RTq94y/2TFlml
-        36+stPoe6qW8KXRZ2P1n15nafd7qTYnJ7lu88ptMoPebukXOVw+umRp6LCbcqS/mPt+BOqP9
-        5lxKLMUZiYZazEXFiQDmCv9riwMAAA==
-X-CMS-MailID: 20220425223058uscas1p10722f66722de23c644f8330da82fe1da
-CMS-TYPE: 301P
-X-CMS-RootMailID: 20220416053912uscas1p2df42c3e74997a1443a9a38450dae89a9
-References: <20220416053902.68517-1-dave@stgolabs.net>
-        <CGME20220416053912uscas1p2df42c3e74997a1443a9a38450dae89a9@uscas1p2.samsung.com>
-        <20220416053902.68517-2-dave@stgolabs.net>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 15, 2022 at 10:38:57PM -0700, Davidlohr Bueso wrote:
-> Trivially get rid of some unnecessary indentation.
->=20
-> Signed-off-by: Davidlohr Bueso <dave@stgolabs.net>
-> ---
->  drivers/base/node.c | 14 +++++++-------
->  1 file changed, 7 insertions(+), 7 deletions(-)
->=20
-> diff --git a/drivers/base/node.c b/drivers/base/node.c
-> index ec8bb24a5a22..6cdf25fd26c3 100644
-> --- a/drivers/base/node.c
-> +++ b/drivers/base/node.c
-> @@ -661,16 +661,16 @@ static int register_node(struct node *node, int num=
-)
->  	node->dev.bus =3D &node_subsys;
->  	node->dev.release =3D node_device_release;
->  	node->dev.groups =3D node_dev_groups;
-> -	error =3D device_register(&node->dev);
-> =20
-> -	if (error)
-> +	error =3D device_register(&node->dev);
-> +	if (error) {
->  		put_device(&node->dev);
-> -	else {
-> -		hugetlb_register_node(node);
-> -
-> -		compaction_register_node(node);
-> +		return error;
->  	}
-> -	return error;
-> +
-> +	hugetlb_register_node(node);
-> +	compaction_register_node(node);
-> +	return 0;
->  }
-> =20
->  /**
-> --=20
-> 2.26.2
->
+This change adds in eDP for herobrine boards, splitting up amongst the
+different files as makes sense. Rationale for the current split of
+things:
+* The eDP connector itself is on qcard. However, not all devices with
+  a qcard will use an eDP panel. Some might use MIPI and, presumably,
+  someone could build a device with qcard that had no display at all.
+* The qcard provides a PWM for backlight that goes to the eDP
+  connector. This PWM is also is provided to the board and it's
+  expected that it would be used as the backlight PWM even for
+  herobrine devices with MIPI displays.
+* It's currently assumed that all herobrine boards will have some sort
+  of display, either MIPI or eDP (but not both).
+* We will assume herobrine-rev1 has eDP. The schematics allow for a
+  MIPI panel to be hooked up but, aside from some testing, nobody is
+  doing this and most boards don't have all the parts stuffed for
+  it. The two panels would also share a PWM for backlight, which is
+  weird.
+* herobrine-villager and herobrine-hoglin (crd) also have eDP.
+* herobrine-hoglin (crd) has slightly different regulator setup for
+  the backlight. It's expected that this is unique to this board. See
+  comments in the dts file.
+* There are some regulators that are defined in the qcard schematic
+  but provided by the board like "vreg_edp_bl" and
+  "vreg_edp_3p3". While we could put references to these regulators
+  straight in the qcard.dtsi file, this would force someone using
+  qcard that didn't provide those regulators to provide a dummy or do
+  an ugly /delete-node/. Instead, we'll add references in
+  herobrine.dtsi.
 
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+---
+This patch most directly depends on ("arm64: dts: qcom: pm8350c: Add
+pwm support") [1] and it won't even compile without that. To be
+functional, of course, we also need the driver support for the PWM to
+land.
 
-Looks good.
+In order for this patch to function we also need Sankeerth's eDP
+series [2] to land.
 
-Reviewed by: Adam Manzanares <a.manzanares@samsung.com>=
+To be schema happy, this patch also relies on my patch to add
+regulators into the schema for the PHY an the eDP controller [3].
+Several other device tree files reference these supplies without being
+in the schema, though, so we'll have to decide whether to block on
+those bindings landing. It does sound as if the regulator names may
+not be exactly correct right now, though. :(
+
+In theory, I could break this patch up into separate patches adding
+the basic support to the qcard, then to herobrine.dtsi, and then one
+patch each for herobrine-r1, villager, and crd. Doing so didn't seem
+to make sense to me--I think it's easier to make sense of the change
+as one patch. However, if someone feels strongly that it should be
+broken up I'm happy to do so.
+
+I've managed to get the display on my herobrine-rev1 up and running on
+today's linuxnext (next-20220422) with this series. For whatever
+reason the eDP PHY wouldn't probe unless I hacked `fw_devlink=off` in
+the config. I don't believe that problem is related to this patch,
+though.
+
+[1] https://lore.kernel.org/r/1645509309-16142-4-git-send-email-quic_c_skakit@quicinc.com
+[2] https://lore.kernel.org/r/1650887072-16652-1-git-send-email-quic_sbillaka@quicinc.com/
+[3] https://lore.kernel.org/r/20220425210643.2420919-1-dianders@chromium.org
+
+ .../boot/dts/qcom/sc7280-herobrine-crd.dts    | 40 ++++++++++++++
+ .../qcom/sc7280-herobrine-herobrine-r1.dts    |  8 +++
+ .../dts/qcom/sc7280-herobrine-villager-r0.dts |  8 +++
+ .../arm64/boot/dts/qcom/sc7280-herobrine.dtsi | 30 +++++++++++
+ arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi    | 54 +++++++++++++++++++
+ 5 files changed, 140 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
+index b06f61e9b90b..a4ac33c4fd59 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
++++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
+@@ -12,6 +12,27 @@
+ / {
+ 	model = "Qualcomm Technologies, Inc. sc7280 CRD platform (rev5+)";
+ 	compatible = "google,hoglin", "qcom,sc7280";
++
++	/* FIXED REGULATORS */
++
++	/*
++	 * On most herobrine boards PPVAR_SYS directly provides VREG_EDP_BL.
++	 * However, on CRD there's an extra regulator in the way. Since this
++	 * is expected to be uncommon, we'll leave the "vreg_edp_bl" label
++	 * in the baseboard herobrine.dtsi point at "ppvar_sys" and then
++	 * make a "_crd" specific version here.
++	 */
++	vreg_edp_bl_crd: vreg-edp-bl-crd-regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "vreg_edp_bl_crd";
++
++		gpio = <&pm8350c_gpios 6 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++		pinctrl-names = "default";
++		pinctrl-0 = <&edp_bl_reg_en>;
++
++		vin-supply = <&ppvar_sys>;
++	};
+ };
+ 
+ /* ADDITIONS TO NODES DEFINED IN PARENT DEVICE TREE FILES */
+@@ -81,6 +102,14 @@ ap_ts: touchscreen@5c {
+ 	};
+ };
+ 
++&mdss_edp {
++	status = "okay";
++};
++
++&mdss_edp_phy {
++	status = "okay";
++};
++
+ /* For nvme */
+ &pcie1 {
+ 	status = "okay";
+@@ -91,6 +120,10 @@ &pcie1_phy {
+ 	status = "okay";
+ };
+ 
++&pm8350c_pwm_backlight {
++	power-supply = <&vreg_edp_bl_crd>;
++};
++
+ /* For eMMC */
+ &sdhc_1 {
+ 	status = "okay";
+@@ -121,6 +154,13 @@ &pm8350c_gpios {
+ 			  "PMIC_EDP_BL_EN",
+ 			  "PMIC_EDP_BL_PWM",
+ 			  "";
++
++	edp_bl_reg_en: edp-bl-reg-en {
++		pins = "gpio6";
++		function = "normal";
++		bias-disable;
++		qcom,drive-strength = <PMIC_GPIO_STRENGTH_LOW>;
++	};
+ };
+ 
+ &tlmm {
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts
+index 29c4ca095294..b69ca09d9bfb 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts
++++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts
+@@ -100,6 +100,14 @@ ap_ts: touchscreen@5c {
+ 	};
+ };
+ 
++&mdss_edp {
++	status = "okay";
++};
++
++&mdss_edp_phy {
++	status = "okay";
++};
++
+ /* For nvme */
+ &pcie1 {
+ 	status = "okay";
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0.dts
+index 6c2b9a14535a..d3d6ffad4eff 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0.dts
++++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0.dts
+@@ -58,6 +58,14 @@ &ap_sar_sensor1 {
+ 	status = "okay";
+ };
+ 
++&mdss_edp {
++	status = "okay";
++};
++
++&mdss_edp_phy {
++	status = "okay";
++};
++
+ /* For nvme */
+ &pcie1 {
+ 	status = "okay";
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+index d58045dd7334..769d440d1917 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+@@ -367,6 +367,14 @@ &vreg_l2c_1p8 {
+ 
+ /* ADDITIONS TO NODES DEFINED IN PARENT DEVICE TREE FILES */
+ 
++&edp_panel {
++	/*
++	 * Now that we've defined which power supply we give to qcard for
++	 * eDP we can hook it up in the panel node.
++	 */
++	power-supply = <&vreg_edp_3p3>;
++};
++
+ ap_sar_sensor_i2c: &i2c1 {
+ 	clock-frequency = <400000>;
+ 	status = "disabled";
+@@ -420,6 +428,14 @@ tpm@50 {
+ 	};
+ };
+ 
++&mdss {
++	status = "okay";
++};
++
++&mdss_mdp {
++	status = "okay";
++};
++
+ /* NVMe drive, enabled on a per-board basis */
+ &pcie1 {
+ 	pinctrl-names = "default";
+@@ -429,6 +445,20 @@ &pcie1 {
+ 	vddpe-3v3-supply = <&pp3300_ssd>;
+ };
+ 
++&pm8350c_pwm {
++	status = "okay";
++};
++
++&pm8350c_pwm_backlight {
++	status = "okay";
++
++	/*
++	 * Now that we've defined which power supply we give to qcard for
++	 * backlight we can hook it up in the panel node.
++	 */
++	power-supply = <&vreg_edp_bl>;
++};
++
+ &pmk8350_rtc {
+ 	status = "disabled";
+ };
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi b/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
+index b833ba1e8f4a..fbd9f9fa9d3a 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
+@@ -29,6 +29,16 @@ aliases {
+ 		serial0 = &uart5;
+ 		serial1 = &uart7;
+ 	};
++
++	pm8350c_pwm_backlight: backlight {
++		compatible = "pwm-backlight";
++		status = "disabled";
++
++		enable-gpios = <&pm8350c_gpios 7 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&pmic_edp_bl_en>;
++		pwms = <&pm8350c_pwm 3 65535>;
++	};
+ };
+ 
+ &apps_rsc {
+@@ -293,11 +303,50 @@ &ipa {
+ 	modem-init;
+ };
+ 
++/* NOTE: Not all Qcards have eDP connector stuffed */
++&mdss_edp {
++	vdda-0p9-supply = <&vdd_a_edp_0_0p9>;
++	vdda-1p2-supply = <&vdd_a_edp_0_1p2>;
++
++	aux-bus {
++		edp_panel: panel {
++			compatible = "edp-panel";
++
++			backlight = <&pm8350c_pwm_backlight>;
++
++			ports {
++				#address-cells = <1>;
++				#size-cells = <0>;
++				port@0 {
++					reg = <0>;
++					edp_panel_in: endpoint {
++						remote-endpoint = <&mdss_edp_out>;
++					};
++				};
++			};
++		};
++	};
++};
++
++&mdss_edp_out {
++	remote-endpoint = <&edp_panel_in>;
++};
++
++&mdss_edp_phy {
++	vdda-pll-supply = <&vdd_a_edp_0_0p9>;
++	vdda-phy-supply = <&vdd_a_edp_0_1p2>;
++};
++
+ &pcie1_phy {
+ 	vdda-phy-supply = <&vreg_l10c_0p88>;
+ 	vdda-pll-supply = <&vreg_l6b_1p2>;
+ };
+ 
++&pm8350c_pwm {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pmic_edp_bl_pwm>;
++};
++
+ &pmk8350_vadc {
+ 	pmk8350-die-temp@3 {
+ 		reg = <PMK8350_ADC7_DIE_TEMP>;
+@@ -383,6 +432,11 @@ &usb_2_hsphy {
+  * baseboard or board device tree, not here.
+  */
+ 
++/* No external pull for eDP HPD, so set the internal one. */
++&edp_hot_plug_det {
++	bias-pull-down;
++};
++
+ /*
+  * For ts_i2c
+  *
+-- 
+2.36.0.rc2.479.g8af0fa9b8e-goog
+
