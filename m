@@ -2,123 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69ACCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 20:05:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3A41C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 20:10:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245109AbiDYUIo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 16:08:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35978 "EHLO
+        id S245115AbiDYUNj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 16:13:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240903AbiDYUIj (ORCPT
+        with ESMTP id S241233AbiDYUNg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 16:08:39 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27A96101DA
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 13:05:34 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id d6so14701258ede.8
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 13:05:34 -0700 (PDT)
+        Mon, 25 Apr 2022 16:13:36 -0400
+Received: from mail-oa1-x2b.google.com (mail-oa1-x2b.google.com [IPv6:2001:4860:4864:20::2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC7AD1E3ED
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 13:10:30 -0700 (PDT)
+Received: by mail-oa1-x2b.google.com with SMTP id 586e51a60fabf-e922e68b0fso6176190fac.1
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 13:10:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Lb5AF8pOqBTQnb+ZwEbBUTl5TVNJNRrybvIcYoGIxmg=;
-        b=JZRgQQ5uFa+mDxsUi5f4rJzM1iIINQYPxxTxq1j6XqBlrBWUKwkoawWLXPRtlCJBJ3
-         TUxxSPXmmKAgUULv58luBSDMYVRpyqDPSR6xCXDSr8Uh8gj3G5SaTLDb5MSj6H6xB+02
-         vnPAYfBkyYp/DzbUQHKMuj/Pv2rJcu0MBvLW+jzTWgzLln9eH1Tqn1DvVGicK2vEODKl
-         OD6yd0Azokmi1sz7T5uW0DzjsxskwPuCGKX0iqK+4cBsiST3pxTd4uIkzGCjUsVhYIpU
-         NG/BOTF/DKqYzbFfZZDAnliFiKbcJgaEdQBgReF6ut/jNMHV1lgIGxhxaTKT5IHtZ04d
-         MD8A==
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=K7sT4j1j79zUgHhHLdRo7ZuD61k8VXDTntHyuzX/BXA=;
+        b=OUAaD5Us01krjFlnDs+151g4ok09UyRZuEIHUE1jPBEyR9mx/A7sAsmhjHf63EwNHq
+         tIGiZUlZHdnlAbywcerGTsEzOjmesGLQUY9f6NI+BrVAm9kyrLaCHdJc504J1oJXK0wM
+         YXgRd77RKxlXmiT+xTLg8ZVph4cRCjsfDql8w=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Lb5AF8pOqBTQnb+ZwEbBUTl5TVNJNRrybvIcYoGIxmg=;
-        b=b0MjrvYiyCjEKS48v486aP7b2oMBa43dg7ggM6Nb9Wt9BYzEw7ZRJBlVZgQQfVdses
-         zb/Kyf/Nx2ZgVvsCATuuaNt4N/yOpQNU4lMTVY0fiLIt0ctBkrhggfCaJTgpaXLmP/Wg
-         ozfbCeJLrHLwLWtBjVXbP56CN74ZPwqmVleNuGOcGJm4bMe3UksF+g/zJrKTkjPK9TtW
-         fyvmS1R5uC3JSuKQTENdLnr12mtjXUuRA1RUWQDgBHsW0+o+NDiRaddDofiR74Yd4tRW
-         sf+lCR4RoGPwNQ5BOXPJbIg9bSv681BlQzXtYNp1oTaKvmsWwmSCFei9T44Iyz0F+iFX
-         xAHA==
-X-Gm-Message-State: AOAM532hLCi3XD9eFJtJKBMK4T056CO6z79KGj0noU8WexT5M2V9yh5j
-        d6W7YMSK3oOP2fDJTlA39kOP3fjHPd8=
-X-Google-Smtp-Source: ABdhPJwQByRT76WrZmCsDWAUWn2odTnHictXVZQh3HjufCt8YiKfglc5EdGkXh2V2bRo+bAnIdnhMg==
-X-Received: by 2002:aa7:d651:0:b0:425:c3a4:2291 with SMTP id v17-20020aa7d651000000b00425c3a42291mr17599606edr.54.1650917132662;
-        Mon, 25 Apr 2022 13:05:32 -0700 (PDT)
-Received: from leap.localnet (host-79-50-86-254.retail.telecomitalia.it. [79.50.86.254])
-        by smtp.gmail.com with ESMTPSA id h23-20020a0564020e9700b00420fff23180sm4896431eda.41.2022.04.25.13.05.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 13:05:31 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Ira Weiny <ira.weiny@intel.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH] mm/highmem: VM_BUG_ON() if offset + len > PAGE_SIZE
-Date:   Mon, 25 Apr 2022 22:05:29 +0200
-Message-ID: <2701286.BEx9A2HvPv@leap>
-In-Reply-To: <YmbQluz5i95fkhn9@iweiny-desk3>
-References: <20220424104806.25396-1-fmdefrancesco@gmail.com> <8929547.CDJkKcVGEf@leap> <YmbQluz5i95fkhn9@iweiny-desk3>
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=K7sT4j1j79zUgHhHLdRo7ZuD61k8VXDTntHyuzX/BXA=;
+        b=SFqtRUANvmEJdJ4KcZo2XhTxyoHcphloO3fyUntKTZ/udRg9Hx5OKdzpu2drVoISVn
+         G3GwEw7+sXDaOgeeuQKNieCkk07QHCpl9YBlth2JnJu++8cJFSIJdTT6seVUIUN5qMP7
+         s0BqjWlf9sS6+StSH5bkRfPeYs8n/wiBCQo6rHqxXiIzaNqDibmWKBN9bvsvR1j5hg8Z
+         BGSqk81ANlXNy+ukA9odhBxAMCHPes9HTmwjN5o1Ng3szN8ThfpaXFyUY2f4PdrpkY2K
+         RKQkPC+JZ6/CNeoBgCZoJCf6NVxAJTzfeQ51+qjHpY2TVEUiMv/Her+8+zyp7Hllwlzt
+         OMYg==
+X-Gm-Message-State: AOAM530K+VKSNNGkUJepXi4W0kDEoKhKdUN8DWngnHHcISwFWZrGExcL
+        MU8jh1fCRdP7YPzu3MKXdjMAZTWchPku5puzLcHGVinvtlI=
+X-Google-Smtp-Source: ABdhPJwJ17fs8iCiZSEbXH7jLlKJyr/HpN9dSlTTmysq4gFTTyFY8Gf7w8AN4qbNPPUFTtheyeMgr9f/4ynX6qJHPkc=
+X-Received: by 2002:a05:6870:558e:b0:e1:db7c:26aa with SMTP id
+ n14-20020a056870558e00b000e1db7c26aamr8031779oao.63.1650917430300; Mon, 25
+ Apr 2022 13:10:30 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Mon, 25 Apr 2022 13:10:29 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20220425090947.3498897-1-lv.ruyi@zte.com.cn>
+References: <20220425090947.3498897-1-lv.ruyi@zte.com.cn>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Mon, 25 Apr 2022 13:10:29 -0700
+Message-ID: <CAE-0n50fs1fFQcwMCq_x_UG8ZJKprjcYKwcy1+1ckD--XE28+g@mail.gmail.com>
+Subject: Re: [PATCH] drm/msm/dpu: fix error check return value of irq_of_parse_and_map()
+To:     cgel.zte@gmail.com, robdclark@gmail.com, sean@poorly.run
+Cc:     quic_abhinavk@quicinc.com, airlied@linux.ie, daniel@ffwll.ch,
+        dmitry.baryshkov@linaro.org, bjorn.andersson@linaro.org,
+        angelogioacchino.delregno@somainline.org, tiny.windzz@gmail.com,
+        architt@codeaurora.org, jsanka@codeaurora.org,
+        skolluku@codeaurora.org, ryadav@codeaurora.org,
+        linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On luned=C3=AC 25 aprile 2022 18:47:18 CEST Ira Weiny wrote:
-> On Mon, Apr 25, 2022 at 03:47:38AM +0200, Fabio M. De Francesco wrote:
-> > On domenica 24 aprile 2022 12:48:06 CEST Fabio M. De Francesco wrote:
-> > > Call VM_BUG_ON() if offset + len > PAGE_SIZE.
-> > >=20
-> > > This is an RFC patch because I'm not sure if we actually need to=20
-> > BUG_ON(),
-> >=20
-> > Actually I considered VM_BUG_ON() for consistency with the other=20
-functions=20
-> > in highmem.h
-> >=20
-> > What about VM_WARN_ON_ONCE() here and also in memset_page?
->=20
-> For consistency leave this as a VM_BUG_ON[1]
->=20
-> I've been down a similar path[2] and there was a long discussion about=20
-it.[3]
->=20
-> In the end we settled on VM_BUG_ON.[4]
+Quoting cgel.zte@gmail.com (2022-04-25 02:09:47)
+> From: Lv Ruyi <lv.ruyi@zte.com.cn>
+>
+> The irq_of_parse_and_map() function returns 0 on failure, and does not
+> return a negative value anyhow, so never enter this conditional branch.
+>
+> Fixes: 25fdd5933e4c ("drm/msm: Add SDM845 DPU support")
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+> ---
 
-Thanks for your reply and for providing so many helpful links :)
+Question still stands why we can't use platform device APIs.
 
-I just read the ones related to VM_BUG_ON() (I don't have time for=20
-flush_dcache_page() today). Since the consensus for these kinds of issues=20
-is in favor of using VM_BUG_ON(), that's OK for me.
-
-I will send a "real" patch by tomorrow.
-
-Again, thanks,
-
-=46abio
-
-> As to the addition of flush_dcache_page().  There was a discussion here.
->=20
-> https://lore.kernel.org/lkml/CAHk-=3DwiKac4t-fOP_3fAf7nETfFLhT3ShmRmBq2J9=
-6y6jAr56Q@mail.gmail.com/
->=20
-> Ira
->=20
-> [1] https://lore.kernel.org/lkml/20210209205249.GB2975576@iweiny-DESK2.sc=
-=2Eintel.com/
->=20
-> [2] https://lore.kernel.org/lkml/20201209022250.GP1563847@iweiny-DESK2.sc=
-=2Eintel.com/
->=20
-> [3] https://lore.kernel.org/lkml/20201208213255.GO1563847@iweiny-DESK2.sc=
-=2Eintel.com/
->=20
-> [4] https://lore.kernel.org/lkml/20210210174928.3156073-1-ira.weiny@intel=
-=2Ecom/
-
-
-
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
