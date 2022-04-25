@@ -2,35 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E33D3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 11:13:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73658C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 11:13:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232217AbiDYLQJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 07:16:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43488 "EHLO
+        id S231582AbiDYLQS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 07:16:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241704AbiDYLPm (ORCPT
+        with ESMTP id S241713AbiDYLPm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 25 Apr 2022 07:15:42 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 310292A26E
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 04:12:11 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kn2Qd3VjxzhYlG;
-        Mon, 25 Apr 2022 19:11:53 +0800 (CST)
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3171C2A73C
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 04:12:13 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kn2Qm48YmzhYkj;
+        Mon, 25 Apr 2022 19:12:00 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
  (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 25 Apr
- 2022 19:12:08 +0800
+ 2022 19:12:11 +0800
 From:   Miaohe Lin <linmiaohe@huawei.com>
 To:     <akpm@linux-foundation.org>
 CC:     <ying.huang@intel.com>, <iamjoonsoo.kim@lge.com>, <hch@lst.de>,
         <osalvador@suse.de>, <linux-mm@kvack.org>,
         <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH v3 0/6] A few cleanup and fixup patches for vmscan
-Date:   Mon, 25 Apr 2022 19:12:26 +0800
-Message-ID: <20220425111232.23182-1-linmiaohe@huawei.com>
+Subject: [PATCH v3 6/6] mm/vmscan: use helper folio_is_file_lru()
+Date:   Mon, 25 Apr 2022 19:12:32 +0800
+Message-ID: <20220425111232.23182-7-linmiaohe@huawei.com>
 X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20220425111232.23182-1-linmiaohe@huawei.com>
+References: <20220425111232.23182-1-linmiaohe@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -42,43 +44,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi everyone,
-This series contains a few patches to remove obsolete comment, introduce
-helper to remove duplicated code and so no. Also we take all base pages
-of THP into account in rare race condition. More details can be found in
-the respective changelogs. Thanks!
+Use helper folio_is_file_lru() to check whether folio is file lru. Minor
+readability improvement.
 
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 ---
-v3:
-  patch 1/9: collect Reviewed-by tag and add a period in the comment.
-  patch 2/9: dropped
-  patch 3/9: use folio_putback_lru()
-  patch 4/9: dropped
-  patch 5/9: collect Reviewed-by tag
-  patch 7/9: splitted out to make it easier to move forward
-v2:
-  patch 1/9: drop code change and add a comment about MADV_FREE
-  patch 2/9: simplify the code further and change to goto keep_locked
-  patch 3/9: use folio, remove unneeded inline and break craze long lines
-  patch 5/9: activate swap-backed executable folios after first usage too
-  patch 9/9: new cleanup patch splitted from 5/9
-  Many thanks Huang Ying, Matthew Wilcox, Christoph Hellwig, Muchun Song
-  for review!
----
+ mm/vmscan.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Miaohe Lin (6):
-  mm/vmscan: add a comment about MADV_FREE pages check in
-    folio_check_dirty_writeback
-  mm/vmscan: introduce helper function reclaim_page_list()
-  mm/vmscan: activate swap-backed executable folios after first usage
-  mm/vmscan: take all base pages of THP into account when race with
-    speculative reference
-  mm/vmscan: remove obsolete comment in kswapd_run
-  mm/vmscan: use helper folio_is_file_lru()
-
- mm/vmscan.c | 64 +++++++++++++++++++++++++++--------------------------
- 1 file changed, 33 insertions(+), 31 deletions(-)
-
+diff --git a/mm/vmscan.c b/mm/vmscan.c
+index db3500bd5c7d..a2752e8fc879 100644
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -1424,7 +1424,7 @@ static enum page_references folio_check_references(struct folio *folio,
+ 	}
+ 
+ 	/* Reclaim if clean, defer dirty folios to writeback */
+-	if (referenced_folio && !folio_test_swapbacked(folio))
++	if (referenced_folio && folio_is_file_lru(folio))
+ 		return PAGEREF_RECLAIM_CLEAN;
+ 
+ 	return PAGEREF_RECLAIM;
 -- 
 2.23.0
 
