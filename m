@@ -2,103 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E86EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:34:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBD2CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:36:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234205AbiDYWh5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 18:37:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54228 "EHLO
+        id S231941AbiDYWj7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 18:39:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230484AbiDYWhx (ORCPT
+        with ESMTP id S230484AbiDYWj5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 18:37:53 -0400
-Received: from beige.elm.relay.mailchannels.net (beige.elm.relay.mailchannels.net [23.83.212.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AEAD110946
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 15:34:47 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|ian@linux.cowan.aero
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id A28286C12D5;
-        Mon, 25 Apr 2022 22:26:10 +0000 (UTC)
-Received: from pdx1-sub0-mail-a217.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id 149F46C1146;
-        Mon, 25 Apr 2022 22:26:10 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1650925570; a=rsa-sha256;
-        cv=none;
-        b=cNLdxrQFNCSzX0Kh8+qvgkdkGWRH2IG+0cYwyy9n2jsBJO4ZMx/8Iv8HTr7nbwNyaya85A
-        r1yuBa9pkBI1Pr8Ge+EBgkNWelHu+CuqIDchB/BJMczL/GdYlhUUn9iBVkBtME9wFGU2tZ
-        VRWNV1Iw9lvWVR/Xp96J3Yk2Rn+Ot6J3KhZIT7LXCd/dNN6hW6bKZSsPFlytLA/TEg4qR7
-        KIhGdm2b0mUUYQ9kbsf9nnlZqMcmGxQH/wqnpZKLE9O4BsdcaycF8pZN5TKk/ySHXKa2P2
-        lzC52vwWVq4FzJmgz1mGNpZnduIXtnjfjacOxOifvLrNcgysRFgLGCYHhB0ToQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1650925570;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=wLXv5J7QE2DrW/YnW3muD7xmI1tr1cHpAtIZou57L/A=;
-        b=00VaPip4zr6cBBRZfismsvG7iySApppSjavoCvGcJKFtu+YnLwULboHzXT5KrZ8oRm13tE
-        yIEn918MCTBBO93Ufe50vsg2u0nPnlKceSSfnC88m3Ad2LSZUSjlJta5mb6xnV++bfDAMc
-        qNQYwBYMaBgGYranDpxqT6hHFSF+bxYOwYTxQ2VoiPnr0uMKnb/AyzPMZQ5/026HGxQPvr
-        v0FbrzX4ZR0ISOjOAaZCdHwCMD7v/hS8jlOsZ2dDhgnyGelH1ZeBl5Z+lk6V9nTxfRLkj4
-        iZdFs85u0cgESNQIohWSW1f1c7rOKGhpCDCR5q21uFStTJ6gsXV1xoUa5hr0XQ==
-ARC-Authentication-Results: i=1;
-        rspamd-67b64f579b-fszmn;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=ian@linux.cowan.aero
-X-Sender-Id: dreamhost|x-authsender|ian@linux.cowan.aero
-Received: from pdx1-sub0-mail-a217.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.112.55.219 (trex/6.7.1);
-        Mon, 25 Apr 2022 22:26:10 +0000
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|ian@linux.cowan.aero
-X-MailChannels-Auth-Id: dreamhost
-X-Blushing-Slimy: 4af154266df1c3d9_1650925570373_3279931380
-X-MC-Loop-Signature: 1650925570373:1445528839
-X-MC-Ingress-Time: 1650925570372
-Received: from fedora (unknown [69.12.38.97])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: ian@linux.cowan.aero)
-        by pdx1-sub0-mail-a217.dreamhost.com (Postfix) with ESMTPSA id 4KnKNd3Z9xz1SW;
-        Mon, 25 Apr 2022 15:26:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.cowan.aero;
-        s=dreamhost; t=1650925569;
-        bh=wLXv5J7QE2DrW/YnW3muD7xmI1tr1cHpAtIZou57L/A=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=JqtrkpyseQ2u9cXuD2WJGgD1PtfOCn9JH3a4J5jvi/vqXQdvm3cJQwea8MDneR2ah
-         NPF6vRfnyXLI5BKMRhM/Rx3XC2Ji3u+JzFyABa10048woq7hWYkcREtZtbPf9fqjub
-         et1P+fVSK9dAGP8+RbWCLJwf0tAzE19MGwco5n8CEiWgGUlF7DQv3xPmpDAGEGIWhm
-         Q1+3QXzDqCl2rVvEkEYey8pOCWPPM2TuMKg93aYKrnEb0+YBXzvGPWGLOj6aBmi74H
-         +79gNE3iqJC+QikTquIyPAoXJ7SxZpN6RdbzXzEcgou/2Ut9Tw8L6QsAXXCk2KRJZZ
-         9TsuePDCEwq+Q==
-Date:   Mon, 25 Apr 2022 18:26:07 -0400
-From:   Ian Cowan <ian@linux.cowan.aero>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Sven Van Asbroeck <TheSven73@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: fieldbus: remove unnecessary double negation
-Message-ID: <Ymcf/0H0puiWjoxR@fedora>
-References: <20220425145440.146891-1-ian@linux.cowan.aero>
- <YmbClxXo5lwgHYxo@kroah.com>
+        Mon, 25 Apr 2022 18:39:57 -0400
+Received: from mailout1.w2.samsung.com (mailout1.w2.samsung.com [211.189.100.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B77901EEF4
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 15:36:50 -0700 (PDT)
+Received: from uscas1p1.samsung.com (unknown [182.198.245.206])
+        by mailout1.w2.samsung.com (KnoxPortal) with ESMTP id 20220425223059usoutp0180058bb5497758d6c96c67edfaeb449d~pRFJzJZg42449424494usoutp01e;
+        Mon, 25 Apr 2022 22:30:59 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w2.samsung.com 20220425223059usoutp0180058bb5497758d6c96c67edfaeb449d~pRFJzJZg42449424494usoutp01e
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1650925859;
+        bh=CsbcO+p6CiS6d9aB1oojSVgJ8bcRlB7m2SpwxFhLZ+w=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
+        b=Ms79yjqZu0Z9XqSv/uUS/GzzP/ZoH5OTirpEAK1paMBNSHKJFP3ZAI5HX6pbXN6JN
+         0by9ULy74aKV7itzxlI6UGHi89IYU60YMCDfm/k68VBWSq1CeSRNO489bcXDxyytkE
+         mXK824lnFmaweU8IGQrJegX5Ie+RSnzSgXQojl90=
+Received: from ussmges3new.samsung.com (u112.gpu85.samsung.co.kr
+        [203.254.195.112]) by uscas1p1.samsung.com (KnoxPortal) with ESMTP id
+        20220425223058uscas1p1bcbfe155435028c3a9a27c76b3e25c6d~pRFJbb5gs1749317493uscas1p1a;
+        Mon, 25 Apr 2022 22:30:58 +0000 (GMT)
+Received: from uscas1p1.samsung.com ( [182.198.245.206]) by
+        ussmges3new.samsung.com (USCPEMTA) with SMTP id 3F.6F.09749.22127626; Mon,
+        25 Apr 2022 18:30:58 -0400 (EDT)
+Received: from ussmgxs1new.samsung.com (u89.gpu85.samsung.co.kr
+        [203.254.195.89]) by uscas1p1.samsung.com (KnoxPortal) with ESMTP id
+        20220425223058uscas1p10722f66722de23c644f8330da82fe1da~pRFI1fUX_1749317493uscas1p1Z;
+        Mon, 25 Apr 2022 22:30:58 +0000 (GMT)
+X-AuditID: cbfec370-a6bff70000002615-9d-626721221174
+Received: from SSI-EX3.ssi.samsung.com ( [105.128.2.146]) by
+        ussmgxs1new.samsung.com (USCPEXMTA) with SMTP id 32.5D.09702.12127626; Mon,
+        25 Apr 2022 18:30:58 -0400 (EDT)
+Received: from SSI-EX3.ssi.samsung.com (105.128.2.228) by
+        SSI-EX3.ssi.samsung.com (105.128.2.228) with Microsoft SMTP Server
+        (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+        15.1.2375.7; Mon, 25 Apr 2022 15:30:57 -0700
+Received: from SSI-EX3.ssi.samsung.com ([105.128.5.228]) by
+        SSI-EX3.ssi.samsung.com ([105.128.5.228]) with mapi id 15.01.2375.007; Mon,
+        25 Apr 2022 15:30:57 -0700
+From:   Adam Manzanares <a.manzanares@samsung.com>
+To:     Davidlohr Bueso <dave@stgolabs.net>
+CC:     "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "mhocko@kernel.org" <mhocko@kernel.org>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "rientjes@google.com" <rientjes@google.com>,
+        "yosryahmed@google.com" <yosryahmed@google.com>,
+        "hannes@cmpxchg.org" <hannes@cmpxchg.org>,
+        "shakeelb@google.com" <shakeelb@google.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "tim.c.chen@linux.intel.com" <tim.c.chen@linux.intel.com>,
+        "roman.gushchin@linux.dev" <roman.gushchin@linux.dev>,
+        "gthelen@google.com" <gthelen@google.com>,
+        Heekwon Park <heekwon.p@samsung.com>,
+        Jongmin Gim <gim.jongmin@samsung.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/6] drivers/base/node: cleanup register_node()
+Thread-Topic: [PATCH 1/6] drivers/base/node: cleanup register_node()
+Thread-Index: AQHYUVRPCSx4CL5jbUm8oG94siTkjq0Buu6A
+Date:   Mon, 25 Apr 2022 22:30:57 +0000
+Message-ID: <20220425223050.GA147460@bgt-140510-bm01>
+In-Reply-To: <20220416053902.68517-2-dave@stgolabs.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [105.128.2.176]
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <C1D3122BB7B4C84AA59E81DD72B78789@ssi.samsung.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YmbClxXo5lwgHYxo@kroah.com>
+X-CFilter-Loop: Reflected
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrBKsWRmVeSWpSXmKPExsWy7djXc7pKiulJBuc3mVrMWb+GzeLFhnZG
+        i9U31zBarFs1kcVi9SZfi8u75rBZ3Fvzn9Xi9bdlzBZtSzYyWUxcI2px8NprRotrk+azWWzf
+        FenA63H4zXtmjwWbSj02repk89j0aRK7x4kZv1k8FjZMZfaYdzLQY+rseo/Pm+QCOKO4bFJS
+        czLLUov07RK4Mp6+b2Et6OasuPZ9JmsD41r2LkZODgkBE4kb37+zdTFycQgJrGSU6Fj7kxEk
+        ISTQyiRxdo8FTNHUlWtYIOJrGSX+r66GaPjIKDGv/Ss7RGIZo0TDE3EQm03AQOL38Y3MILaI
+        gLrEvLW3wYYyC+xnlfh9zBLEFhZwlri55yNUjYvE7PX7GCFsI4kNM5eAxVkEVCX6D34Dm88r
+        YCoxafUGVhCbU8Bc4vnpJrA4o4CYxPdTa5gg5otL3HoynwniaEGJRbP3MEPYYhL/dj1kg7AV
+        Je5/f8kOUa8jsWD3JzYI207iwJOlUHFtiWULXzND7BWUODnzCQtEr6TEwRU3WECelxCYzSlx
+        +8tvqISLxL6L/YwQtrTE1etTmSGK2hklPkzYxwrhTGCUuPP2J9QZ1hL/Oq+xT2BUmYXk8llI
+        rpqF5KpZSK6aheSqBYysqxjFS4uLc9NTi43zUsv1ihNzi0vz0vWS83M3MQIT3+l/hwt2MN66
+        9VHvECMTB+MhRgkOZiUR3qmqaUlCvCmJlVWpRfnxRaU5qcWHGKU5WJTEeZdlbkgUEkhPLEnN
+        Tk0tSC2CyTJxcEo1MBW/StmYqSb8XefN7qzVr5uKN62+x3nc+cOp+wv/PdNMleeI4JLp3cid
+        /z312OW/FyZPb0lPutR77UGNZL1n8YRXS+Q/ROh+nRlcd+AId1AWK/O66+mpoXprTvGsPpTx
+        xmnPyQXTny+YdCJW5ZJ+sP65+k172DqT9MJZzQ/ya0+NV+b0M5ZvVHS5NW+lsMepOf1TBHsv
+        M0nMnqtxqfqbRJj00p2fqr0rfOeu8ZWeGuB9JPd7z4JA1XDVpKzYnGv63OfPTDvm33s2RfXy
+        n+j3r2r1rs3RKQzxffnYqoyv7+gdqUdaZoXL1/2WaOpLnt/A0/frpHrv5LjTP53nuz5s29O6
+        wURq/WeXiQtE/A641CqxFGckGmoxFxUnAgCCCKTP6wMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrBIsWRmVeSWpSXmKPExsWS2cA0SVdJMT3J4Mlzbos569ewWbzY0M5o
+        sfrmGkaLdasmslis3uRrcXnXHDaLe2v+s1q8/raM2aJtyUYmi4lrRC0OXnvNaHFt0nw2i+27
+        Ih14PQ6/ec/ssWBTqcemVZ1sHps+TWL3ODHjN4vHwoapzB7zTgZ6TJ1d7/F5k1wAZxSXTUpq
+        TmZZapG+XQJXxtP3LawF3ZwV177PZG1gXMvexcjJISFgIjF15RqWLkYuDiGB1YwS5xZPYYZw
+        PjJKnJ/8lxXCWcYo8Wz6GiaQFjYBA4nfxzcyg9giAuoS89beZgQpYhbYyyqx8l4nC0hCWMBZ
+        4uaej1BFLhKz1+9jhLCNJDbMXAIWZxFQleg/+A3sDl4BU4lJqzdAbdvOKPFuzyuwBk4Bc4nn
+        p5vAihgFxCS+n4K4gllAXOLWk/lMEE8ISCzZc54ZwhaVePn4HyuErShx//tLdoh6HYkFuz+x
+        Qdh2EgeeLIWKa0ssW/iaGeIIQYmTM5+wQPRKShxccYNlAqPELCTrZiEZNQvJqFlIRs1CMmoB
+        I+sqRvHS4uLc9Ipiw7zUcr3ixNzi0rx0veT83E2MwMRx+t/hyB2MR2991DvEyMTBeIhRgoNZ
+        SYR3qmpakhBvSmJlVWpRfnxRaU5q8SFGaQ4WJXFeIdeJ8UIC6YklqdmpqQWpRTBZJg5OqQYm
+        rx1+Myf0ia7nuyfQ8sTSiU/A7+SXlQ8iw1TvHH1WOmfK7Qf7Vto3bDrULc3Vef06u6rHz6S7
+        U//aGDPXdHiUfLFlXPB67UtB3kWXTpxcf2mp4CWGJxN3v2aPTdr6S9HKcJePdPSOTaFily3v
+        Gb5cqelwXnxzgn11/bOsG18v9jIyc+UGFnZ0zbf+af/M0/Tv7tcaJ+LOea2568P3om6Gm8mx
+        mW9mlGzesW7rqlnrk6cvXLJz/9X3z7U/7m1aVNu42vvH06Bp3/4lic5cVL5RTq94y/2TFlml
+        36+stPoe6qW8KXRZ2P1n15nafd7qTYnJ7lu88ptMoPebukXOVw+umRp6LCbcqS/mPt+BOqP9
+        5lxKLMUZiYZazEXFiQDmCv9riwMAAA==
+X-CMS-MailID: 20220425223058uscas1p10722f66722de23c644f8330da82fe1da
+CMS-TYPE: 301P
+X-CMS-RootMailID: 20220416053912uscas1p2df42c3e74997a1443a9a38450dae89a9
+References: <20220416053902.68517-1-dave@stgolabs.net>
+        <CGME20220416053912uscas1p2df42c3e74997a1443a9a38450dae89a9@uscas1p2.samsung.com>
+        <20220416053902.68517-2-dave@stgolabs.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 05:47:35PM +0200, Greg Kroah-Hartman wrote:
-> This is a common pattern to turn any value into a boolean (0/1).  The
-> fact that this is a boolean to start with makes this change not affect
-> anything.  So you should say that in the changelog, the values are
-> obviously not negated.
-> 
+On Fri, Apr 15, 2022 at 10:38:57PM -0700, Davidlohr Bueso wrote:
+> Trivially get rid of some unnecessary indentation.
+>=20
+> Signed-off-by: Davidlohr Bueso <dave@stgolabs.net>
+> ---
+>  drivers/base/node.c | 14 +++++++-------
+>  1 file changed, 7 insertions(+), 7 deletions(-)
+>=20
+> diff --git a/drivers/base/node.c b/drivers/base/node.c
+> index ec8bb24a5a22..6cdf25fd26c3 100644
+> --- a/drivers/base/node.c
+> +++ b/drivers/base/node.c
+> @@ -661,16 +661,16 @@ static int register_node(struct node *node, int num=
+)
+>  	node->dev.bus =3D &node_subsys;
+>  	node->dev.release =3D node_device_release;
+>  	node->dev.groups =3D node_dev_groups;
+> -	error =3D device_register(&node->dev);
+> =20
+> -	if (error)
+> +	error =3D device_register(&node->dev);
+> +	if (error) {
+>  		put_device(&node->dev);
+> -	else {
+> -		hugetlb_register_node(node);
+> -
+> -		compaction_register_node(node);
+> +		return error;
+>  	}
+> -	return error;
+> +
+> +	hugetlb_register_node(node);
+> +	compaction_register_node(node);
+> +	return 0;
+>  }
+> =20
+>  /**
+> --=20
+> 2.26.2
+>
 
-I just resubmitted with that change.
 
-Thanks!
-Ian
+Looks good.
+
+Reviewed by: Adam Manzanares <a.manzanares@samsung.com>=
