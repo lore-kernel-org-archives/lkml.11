@@ -2,138 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 837BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 04:19:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E522C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 04:24:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241006AbiDYEWW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 00:22:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58856 "EHLO
+        id S241022AbiDYE1b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 00:27:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240876AbiDYEWS (ORCPT
+        with ESMTP id S240876AbiDYE1Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 00:22:18 -0400
-Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89BB018361;
-        Sun, 24 Apr 2022 21:19:13 -0700 (PDT)
-Received: by mail-qk1-x72c.google.com with SMTP id q75so9986891qke.6;
-        Sun, 24 Apr 2022 21:19:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=n9ZQHKz6biJiRkpy+CyyBSek4fjy21imjdDmRA8Vqgw=;
-        b=cmnAJJkP34bjVns2uO/86rkj5RTyiJm45vA+lAwj5O1/o0Y0+K/ZQz858LHcAhf/Wj
-         o33vdISVSpM7OTXmNjeVFiQpYuzIAYHFTIFr/IYykpp2p63xBZDt34cM8T6iFOltM7N8
-         BTBERl3etwNlD+7WAHI7TqcOWnntTf1hJQFhTL/j3Bi5MkhQ/TXngcZTR0s9OshoZPXm
-         opl0oTVWYCec68WYkUBR1YC+i11/f3aNqqKMbRxnS2w5mpyFYdu7LWtdLCtiaIerJMuz
-         ixhVtMKpJYI4FqxSKCKzcGJWRJb/98HN+0dlS3m8onn1Pv0gnODJbuUKWmbSuMFM8sXb
-         fDcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=n9ZQHKz6biJiRkpy+CyyBSek4fjy21imjdDmRA8Vqgw=;
-        b=FzTzXzfDOVo6KZWSvrVVJd7N1BnSky+E8rDcZPGUAOqoDnL2xO8qlgcu+Dfc5ZwGhk
-         PlBMZPdqDbT/btapAEVtwZdI8koUTD0s7Kq/GaSmau4J3coNwKtq6hry/sFEeIrs5LCt
-         Ev4GQN4Gvue/foWPINI+5fJXs3mKZaug4azUVrr7vFOFY1enjB0e+RTKZFlOX97m0I8g
-         wzBLYmTM+579t5KcOYvkXDdRe72lVAllMshkCrMX1eCsWDuqhduSQXjckwOZX0ntPkAh
-         FNViIbV8NB3RS57XZFKWrkeT6BZacEw2/TLZNJm+NJw5b/e4qko00n2BElcnzLij6aw+
-         L0Bg==
-X-Gm-Message-State: AOAM530MM6mwXT330QR99OYABeCH7+deLTWpsSMnvME1rTaGUcm0mMhY
-        RmjYMmFMdxxR+vMmwuYMAA==
-X-Google-Smtp-Source: ABdhPJxeI09oROlDGdyr6/aGBGZksem4gbPjLwqSs0XVQfJosORnc9e+ZOIM168DGIgRrzo9YgWVhA==
-X-Received: by 2002:a05:620a:13a5:b0:69e:e3b1:91a0 with SMTP id m5-20020a05620a13a500b0069ee3b191a0mr8995546qki.5.1650860352586;
-        Sun, 24 Apr 2022 21:19:12 -0700 (PDT)
-Received: from moria.home.lan (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
-        by smtp.gmail.com with ESMTPSA id c21-20020ac87dd5000000b002f36347ddabsm3300316qte.77.2022.04.24.21.19.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Apr 2022 21:19:11 -0700 (PDT)
-Date:   Mon, 25 Apr 2022 00:19:09 -0400
-From:   Kent Overstreet <kent.overstreet@gmail.com>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Joe Perches <joe@perches.com>, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org, hch@lst.de,
-        hannes@cmpxchg.org, akpm@linux-foundation.org,
-        linux-clk@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-input@vger.kernel.org, roman.gushchin@linux.dev
-Subject: Re: [PATCH v2 1/8] lib/printbuf: New data structure for
- heap-allocated strings
-Message-ID: <20220425041909.hcyirjphrkhxz6hx@moria.home.lan>
-References: <20220421234837.3629927-1-kent.overstreet@gmail.com>
- <20220421234837.3629927-7-kent.overstreet@gmail.com>
- <fcaf18ed6efaafa6ca7df79712d9d317645215f8.camel@perches.com>
- <YmYLEovwj9BqeZQA@casper.infradead.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YmYLEovwj9BqeZQA@casper.infradead.org>
+        Mon, 25 Apr 2022 00:27:25 -0400
+Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 31B56DF;
+        Sun, 24 Apr 2022 21:24:16 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [10.15.192.164])
+        by mail-app3 (Coremail) with SMTP id cC_KCgDHz3thImZikSbvAg--.24521S2;
+        Mon, 25 Apr 2022 12:24:05 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     linux-kernel@vger.kernel.org
+Cc:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH net] drivers: net: can: Fix deadlock in grcan_close()
+Date:   Mon, 25 Apr 2022 12:24:00 +0800
+Message-Id: <20220425042400.66517-1-duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: cC_KCgDHz3thImZikSbvAg--.24521S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7Kr4kXF45Xw1xWr4kWr4kJFb_yoW8Gw4xpw
+        47KFyfAFWvvr4UK3Z7Xw4kZF1rZ3WDWFWUJFy5Wws5Zwn3ZF15JF1rKa4UuF47KFyDKFsx
+        uF1rXrZ3CFs8GrJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUka1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
+        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
+        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j
+        6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
+        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v
+        1sIEY20_GFWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
+        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vI
+        r41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr
+        1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvE
+        x4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHUDUUUUU=
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgkLAVZdtZYwoQAFs9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 03:44:34AM +0100, Matthew Wilcox wrote:
-> On Sun, Apr 24, 2022 at 04:46:03PM -0700, Joe Perches wrote:
-> > > + * pr_human_readable_u64, pr_human_readable_s64: Print an integer with human
-> > > + * readable units.
-> > 
-> > Why not extend vsprintf for this using something like %pH[8|16|32|64] 
-> > or %pH[c|s|l|ll|uc|us|ul|ull] ?
-> 
-> The %pX extension we have is _cute_, but ultimately a bad idea.  It
-> centralises all kinds of unrelated things in vsprintf.c, eg bdev_name()
-> and clock() and ip_addr_string().
+There are deadlocks caused by del_timer_sync(&priv->hang_timer)
+and del_timer_sync(&priv->rr_timer) in grcan_close(), one of
+the deadlocks are shown below:
 
-And it's not remotely discoverable. I didn't realize we had bdev_name()
-available as a format string until just now or I would've been using it!
+   (Thread 1)              |      (Thread 2)
+                           | grcan_reset_timer()
+grcan_close()              |  mod_timer()
+ spin_lock_irqsave() //(1) |  (wait a time)
+ ...                       | grcan_initiate_running_reset()
+ del_timer_sync()          |  spin_lock_irqsave() //(2)
+ (wait timer to stop)      |  ...
 
-> Really, it's working around that we don't have something like Java's
-> StringBuffer (which I see both seq_buf and printbuf as attempting to
-> be).  So we have this primitive format string hack instead of exposing
-> methods like:
-> 
-> void dentry_string(struct strbuf *, struct dentry *);
+We hold priv->lock in position (1) of thread 1 and use
+del_timer_sync() to wait timer to stop, but timer handler
+also need priv->lock in position (2) of thread 2.
+As a result, grcan_close() will block forever.
 
-Exactly!
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irqsave(), which could let timer handler to obtain
+the needed lock.
 
-> as an example,
->                 if (unlikely(ino == dir->i_ino)) {
->                         EXT4_ERROR_INODE(dir, "'%pd' linked to parent dir",
->                                          dentry);
->                         return ERR_PTR(-EFSCORRUPTED);
->                 }
-> 
-> would become something like:
-> 
-> 		if (unlikely(ino == dir->i_ino)) {
-> 			struct strbuf strbuf;
-> 			strbuf_char(strbuf, '\'');
-> 			dentry_string(strbuf, dentry);
-> 			strbuf_string(strbuf, "' linked to parent dir");
-> 			EXT4_ERROR_INODE(dir, strbuf);
-> 			return ERR_PTR(-EFSCORRUPTED);
-> 		}
-> 
-> which isn't terribly nice, but C has sucky syntax for string
-> construction.  Other languages have done this better, including Rust.
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+---
+ drivers/net/can/grcan.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Over IRC just now you proposed "%p(%p)", dentry_name, dentry - I'm _really_
-liking this idea, especially if we can get glibc to take it.
+diff --git a/drivers/net/can/grcan.c b/drivers/net/can/grcan.c
+index d0c5a7a60da..1189057b5d6 100644
+--- a/drivers/net/can/grcan.c
++++ b/drivers/net/can/grcan.c
+@@ -1102,8 +1102,10 @@ static int grcan_close(struct net_device *dev)
+ 
+ 	priv->closing = true;
+ 	if (priv->need_txbug_workaround) {
++		spin_unlock_irqrestore(&priv->lock, flags);
+ 		del_timer_sync(&priv->hang_timer);
+ 		del_timer_sync(&priv->rr_timer);
++		spin_lock_irqsave(&priv->lock, flags);
+ 	}
+ 	netif_stop_queue(dev);
+ 	grcan_stop_hardware(dev);
+-- 
+2.17.1
 
-Then your ext4 example becomes just 
-
-	if (unlikely(ino == dir->i_ino)) {
-		EXT4_ERROR_INODE(dir, "'%p(%p)' linked to parent dir",
-				 dentry_name, dentry);
-		return ERR_PTR(-EFSCORRUPTED);
-	}
-
-And you can cscope to the pretty-printer! And dentry_name becomes just
-
-void dentry_name(struct printbuf *out, struct dentry *dentry)
-{
-	...
-}
-
-Which is quite a bit simpler than the current definition.
-
-Sweeeeeet.
