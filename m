@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B33F6C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9FC5C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 20:23:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245426AbiDYUZ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 16:25:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43198 "EHLO
+        id S245437AbiDYU0B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 16:26:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245337AbiDYUZ1 (ORCPT
+        with ESMTP id S245352AbiDYUZ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 16:25:27 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEA9812D228
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 13:21:46 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id i5so3425353wrc.13
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 13:21:46 -0700 (PDT)
+        Mon, 25 Apr 2022 16:25:28 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF11C12EB7B
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 13:21:48 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id q20so9963330wmq.1
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 13:21:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=X5cmGbysdlCxPOGBZlu+t3JbOARc2ikAJ1rgjSkwJRA=;
-        b=gkkLdFaSFOADuQpex7MgMLo3q4WHaUhNXEw9O3ZM6oZIBtP0PG69DqNLxD8Jq6s08D
-         Hu48yf7Gi3pH5BWFcQyuoQZ902YYQ6mZWKaKZmjIxbCZyZ1m7tga+Jn8FIv9sMtWi/bh
-         4FJIBHiGvi6IQXbEees57YriwC5I/0x44U2WGcgRdKXz0BEKxFg9wTsFzgKpYEPbSioT
-         Pc9PPxebTrrDxqz3S5W4S6AWq8r/vZRhthOlJu0v+YnP+Im6OVBXvPSrJ2Qg5SnsDDgY
-         7N2R3M+GhcEP0DqRgyvXpmMnkVXLPP3vLFje+GBGExtzvHQhdrv9DhRUJ/2/QntaeV3h
-         M2WQ==
+        bh=6pTbLIs8HmRuUEZw2l8zof3evoZumgxq0qJ8FLEkt80=;
+        b=4GK/d3gPCgypiIDHmldzPxN9FfPnHQRa8tYlmnH+bVJCjke/7A3hDMLb3GUhn5Ekg9
+         GptBKtbbazDwrf6OiQPONllxOzWbRlmQUGbGX9jziBBlYK0rlV3GR+SCbfg7b3OmOJG9
+         rSGCcnqT4vM9NRORzNDDJxhscK7EOJ9gYvUVpfj87srQYh9UOVFz+Ceo0Atclk/aRAtV
+         4iT6BZNwNeqSrI5Fikot46yHa4V5z8fQ7uuTOPCIfIrY9oKaEnokODI4QzWjRguirADu
+         /EsU9nJEMhciQ7lLGv/2mGL93sjd/UaxP9ACylFXXlyxvxjmJI4/HTkJRYkQZv96e+VL
+         Kp0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=X5cmGbysdlCxPOGBZlu+t3JbOARc2ikAJ1rgjSkwJRA=;
-        b=y9q4Ld3U934HkRhxbmEeOsPLw+oYyI7+/ubwsa21MMCg/hhptrZU1liTb2z/ATCdJF
-         AENu+K1pHerwNd734e4aYJejnPJ4nRG0y1sd8hD9jCsYx0Nfv8YSgBGsOb3Wgqhf3Zap
-         KYkNiHX3DPF9XDYy0vlB6fQpLOOciPTvLDPu2JGvYksF7uTRgeaqQbS8OUi3/7WtkMGO
-         B5UtbIoPFCJL29RR7oj4onCL+Qj3PudD0QXx5tRnVU5BjrOEr28lyTp3vtgS+igCljSK
-         D+MC4qC95bJDYjMz93zC+IEvJkFwr+FjnCAYSZg0QJ05JO9uNcu0tDfpyg3WIkv1o9Hj
-         1OtQ==
-X-Gm-Message-State: AOAM531omdahlYfnM8wTaaAwtfO5uxJ/ls8FuYzlb6vHjxtpw1bDrzaH
-        /3SIZoP4g+8gtXkmMoJ1xfFpFw==
-X-Google-Smtp-Source: ABdhPJx0ehWDWEpwXPfa0LsCViUZIZpEn0Nh5dIMf8V9qNJCHLboNq+t7FnAM3CEdE2QivxRKgTvGw==
-X-Received: by 2002:a5d:42c8:0:b0:20a:d91f:87b5 with SMTP id t8-20020a5d42c8000000b0020ad91f87b5mr6850064wrr.301.1650918104899;
-        Mon, 25 Apr 2022 13:21:44 -0700 (PDT)
+        bh=6pTbLIs8HmRuUEZw2l8zof3evoZumgxq0qJ8FLEkt80=;
+        b=LYjPCae2bxxl2PI1/ilBqPwasa9+pygP+ryfZ7eCSbc66xr2slHxnlrEwXDtr0ztPC
+         WHYAocS3DMzhmDDbkwbEZU/Se2fobdlHfkk/Hf6Xz7W94lp7DF31NXsv8womjdTsbgts
+         dwgy5yFG5o8XTJBg7NSw94Ss+GI/Ys70ztUoaaS+oNkkn6oyLYtXSVBIGui8SiPmTSG3
+         fLDucR7+MgZf5c+/ssBhlKNhZtHG3EyI02Cai/FZleesOmQO3/89bK8+cLcIPXoD2T4v
+         nR4mi+kq00VeBE9RXAaSUnFosEo1JnlFTwul8IfAQDam+lQ3EmEwv+3KgRNqvkLSKnad
+         pcow==
+X-Gm-Message-State: AOAM532wael+EYsWkQU9DSGxG1+PTgnrpNowvDb8bioXQucEpQ+xQ2Oi
+        jPN10VI0lsw/U+Dru8vY2ran0A==
+X-Google-Smtp-Source: ABdhPJyVWMDEP+ZyWuSe/3lpeOlr3fJqDF3K+08yShPMnLMyN1PX6AFBk0AxsCzv/SSNlKlsyQX67w==
+X-Received: by 2002:a05:600c:4fd2:b0:393:ef3f:1753 with SMTP id o18-20020a05600c4fd200b00393ef3f1753mr3412350wmq.179.1650918106818;
+        Mon, 25 Apr 2022 13:21:46 -0700 (PDT)
 Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id p3-20020a5d59a3000000b0020a9132d1fbsm11101003wrr.37.2022.04.25.13.21.44
+        by smtp.googlemail.com with ESMTPSA id p3-20020a5d59a3000000b0020a9132d1fbsm11101003wrr.37.2022.04.25.13.21.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 13:21:44 -0700 (PDT)
+        Mon, 25 Apr 2022 13:21:46 -0700 (PDT)
 From:   Corentin Labbe <clabbe@baylibre.com>
 To:     heiko@sntech.de, herbert@gondor.apana.org.au,
         krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org
@@ -55,9 +55,9 @@ Cc:     linux-crypto@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-rockchip@lists.infradead.org,
         Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH v6 18/33] crypto: rockchip: fix style issue
-Date:   Mon, 25 Apr 2022 20:21:04 +0000
-Message-Id: <20220425202119.3566743-19-clabbe@baylibre.com>
+Subject: [PATCH v6 20/33] crypto: rockchip: rename ablk functions to cipher
+Date:   Mon, 25 Apr 2022 20:21:06 +0000
+Message-Id: <20220425202119.3566743-21-clabbe@baylibre.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220425202119.3566743-1-clabbe@baylibre.com>
 References: <20220425202119.3566743-1-clabbe@baylibre.com>
@@ -67,57 +67,121 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch fixes some warning reported by checkpatch
+Some functions have still ablk in their name even if there are
+not handling ablk_cipher anymore.
+So let's rename them.
 
 Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
 ---
- drivers/crypto/rockchip/rk3288_crypto_ahash.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ .../crypto/rockchip/rk3288_crypto_skcipher.c  | 32 +++++++++----------
+ 1 file changed, 16 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/crypto/rockchip/rk3288_crypto_ahash.c b/drivers/crypto/rockchip/rk3288_crypto_ahash.c
-index 1fbab86c9238..fae779d73c84 100644
---- a/drivers/crypto/rockchip/rk3288_crypto_ahash.c
-+++ b/drivers/crypto/rockchip/rk3288_crypto_ahash.c
-@@ -336,7 +336,7 @@ static int rk_cra_hash_init(struct crypto_tfm *tfm)
+diff --git a/drivers/crypto/rockchip/rk3288_crypto_skcipher.c b/drivers/crypto/rockchip/rk3288_crypto_skcipher.c
+index 3bdb304aa794..d60c206e717d 100644
+--- a/drivers/crypto/rockchip/rk3288_crypto_skcipher.c
++++ b/drivers/crypto/rockchip/rk3288_crypto_skcipher.c
+@@ -273,7 +273,7 @@ static int rk_des3_ede_cbc_decrypt(struct skcipher_request *req)
+ 	return rk_handle_req(dev, req);
+ }
  
- 	/* for fallback */
- 	tctx->fallback_tfm = crypto_alloc_ahash(alg_name, 0,
--					       CRYPTO_ALG_NEED_FALLBACK);
-+						CRYPTO_ALG_NEED_FALLBACK);
- 	if (IS_ERR(tctx->fallback_tfm)) {
- 		dev_err(tctx->dev->dev, "Could not load fallback driver.\n");
- 		return PTR_ERR(tctx->fallback_tfm);
-@@ -394,8 +394,8 @@ struct rk_crypto_tmp rk_ahash_sha1 = {
- 				  .cra_init = rk_cra_hash_init,
- 				  .cra_exit = rk_cra_hash_exit,
- 				  .cra_module = THIS_MODULE,
--				  }
--			 }
-+			}
-+		}
- 	}
- };
- 
-@@ -424,8 +424,8 @@ struct rk_crypto_tmp rk_ahash_sha256 = {
- 				  .cra_init = rk_cra_hash_init,
- 				  .cra_exit = rk_cra_hash_exit,
- 				  .cra_module = THIS_MODULE,
--				  }
--			 }
-+			}
-+		}
- 	}
- };
- 
-@@ -454,7 +454,7 @@ struct rk_crypto_tmp rk_ahash_md5 = {
- 				  .cra_init = rk_cra_hash_init,
- 				  .cra_exit = rk_cra_hash_exit,
- 				  .cra_module = THIS_MODULE,
--				  }
+-static void rk_ablk_hw_init(struct rk_crypto_info *dev, struct skcipher_request *req)
++static void rk_cipher_hw_init(struct rk_crypto_info *dev, struct skcipher_request *req)
+ {
+ 	struct crypto_skcipher *cipher = crypto_skcipher_reqtfm(req);
+ 	struct crypto_tfm *tfm = crypto_skcipher_tfm(cipher);
+@@ -382,7 +382,7 @@ static int rk_cipher_run(struct crypto_engine *engine, void *async_req)
  			}
-+		}
- 	}
- };
+ 		}
+ 		err = 0;
+-		rk_ablk_hw_init(ctx->dev, areq);
++		rk_cipher_hw_init(ctx->dev, areq);
+ 		if (ivsize) {
+ 			if (ivsize == DES_BLOCK_SIZE)
+ 				memcpy_toio(ctx->dev->reg + RK_CRYPTO_TDES_IV_0, ivtouse, ivsize);
+@@ -448,7 +448,7 @@ static int rk_cipher_run(struct crypto_engine *engine, void *async_req)
+ 	return err;
+ }
+ 
+-static int rk_ablk_init_tfm(struct crypto_skcipher *tfm)
++static int rk_cipher_tfm_init(struct crypto_skcipher *tfm)
+ {
+ 	struct rk_cipher_ctx *ctx = crypto_skcipher_ctx(tfm);
+ 	struct skcipher_alg *alg = crypto_skcipher_alg(tfm);
+@@ -482,7 +482,7 @@ static int rk_ablk_init_tfm(struct crypto_skcipher *tfm)
+ 	return err;
+ }
+ 
+-static void rk_ablk_exit_tfm(struct crypto_skcipher *tfm)
++static void rk_cipher_tfm_exit(struct crypto_skcipher *tfm)
+ {
+ 	struct rk_cipher_ctx *ctx = crypto_skcipher_ctx(tfm);
+ 
+@@ -503,8 +503,8 @@ struct rk_crypto_tmp rk_ecb_aes_alg = {
+ 		.base.cra_alignmask	= 0x0f,
+ 		.base.cra_module	= THIS_MODULE,
+ 
+-		.init			= rk_ablk_init_tfm,
+-		.exit			= rk_ablk_exit_tfm,
++		.init			= rk_cipher_tfm_init,
++		.exit			= rk_cipher_tfm_exit,
+ 		.min_keysize		= AES_MIN_KEY_SIZE,
+ 		.max_keysize		= AES_MAX_KEY_SIZE,
+ 		.setkey			= rk_aes_setkey,
+@@ -525,8 +525,8 @@ struct rk_crypto_tmp rk_cbc_aes_alg = {
+ 		.base.cra_alignmask	= 0x0f,
+ 		.base.cra_module	= THIS_MODULE,
+ 
+-		.init			= rk_ablk_init_tfm,
+-		.exit			= rk_ablk_exit_tfm,
++		.init			= rk_cipher_tfm_init,
++		.exit			= rk_cipher_tfm_exit,
+ 		.min_keysize		= AES_MIN_KEY_SIZE,
+ 		.max_keysize		= AES_MAX_KEY_SIZE,
+ 		.ivsize			= AES_BLOCK_SIZE,
+@@ -548,8 +548,8 @@ struct rk_crypto_tmp rk_ecb_des_alg = {
+ 		.base.cra_alignmask	= 0x07,
+ 		.base.cra_module	= THIS_MODULE,
+ 
+-		.init			= rk_ablk_init_tfm,
+-		.exit			= rk_ablk_exit_tfm,
++		.init			= rk_cipher_tfm_init,
++		.exit			= rk_cipher_tfm_exit,
+ 		.min_keysize		= DES_KEY_SIZE,
+ 		.max_keysize		= DES_KEY_SIZE,
+ 		.setkey			= rk_des_setkey,
+@@ -570,8 +570,8 @@ struct rk_crypto_tmp rk_cbc_des_alg = {
+ 		.base.cra_alignmask	= 0x07,
+ 		.base.cra_module	= THIS_MODULE,
+ 
+-		.init			= rk_ablk_init_tfm,
+-		.exit			= rk_ablk_exit_tfm,
++		.init			= rk_cipher_tfm_init,
++		.exit			= rk_cipher_tfm_exit,
+ 		.min_keysize		= DES_KEY_SIZE,
+ 		.max_keysize		= DES_KEY_SIZE,
+ 		.ivsize			= DES_BLOCK_SIZE,
+@@ -593,8 +593,8 @@ struct rk_crypto_tmp rk_ecb_des3_ede_alg = {
+ 		.base.cra_alignmask	= 0x07,
+ 		.base.cra_module	= THIS_MODULE,
+ 
+-		.init			= rk_ablk_init_tfm,
+-		.exit			= rk_ablk_exit_tfm,
++		.init			= rk_cipher_tfm_init,
++		.exit			= rk_cipher_tfm_exit,
+ 		.min_keysize		= DES3_EDE_KEY_SIZE,
+ 		.max_keysize		= DES3_EDE_KEY_SIZE,
+ 		.setkey			= rk_tdes_setkey,
+@@ -615,8 +615,8 @@ struct rk_crypto_tmp rk_cbc_des3_ede_alg = {
+ 		.base.cra_alignmask	= 0x07,
+ 		.base.cra_module	= THIS_MODULE,
+ 
+-		.init			= rk_ablk_init_tfm,
+-		.exit			= rk_ablk_exit_tfm,
++		.init			= rk_cipher_tfm_init,
++		.exit			= rk_cipher_tfm_exit,
+ 		.min_keysize		= DES3_EDE_KEY_SIZE,
+ 		.max_keysize		= DES3_EDE_KEY_SIZE,
+ 		.ivsize			= DES_BLOCK_SIZE,
 -- 
 2.35.1
 
