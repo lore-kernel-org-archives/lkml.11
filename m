@@ -2,247 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FC2DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 07:53:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 848E5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 07:53:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241595AbiDYH4i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 03:56:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55636 "EHLO
+        id S241586AbiDYH4o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 03:56:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241529AbiDYH4N (ORCPT
+        with ESMTP id S241622AbiDYH4X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 03:56:13 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2085.outbound.protection.outlook.com [40.107.223.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AD79286E7;
-        Mon, 25 Apr 2022 00:51:20 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ebM5hmFDHG/LO6XNPOzrkGSL0A+uzNC7Zboa/5N8NwFja6YZUI1g/eOvoZmEF8Wv6byoxcNtJyQq94x+pfNT7N35m2G73VujiLQbBz1VEblkwbdqPAfC4tbtLT7Bm2NCxeBeUq3E5vPpOxPAOR4h8cZvLhpeTljfd/siAtflf7Fq5rfJ9fqcFJLn4mxUSVDBhZAph84L33+PjSrLZFG9pWHym407uLHuQvg5zdX0EYORNi6bGZ9xiF6FcdEDejUbjyc5qDCha1GSHXoxa43s2a78gC9Y6SzyutlM6LGcwfyLP/BEN5uQWMMhiPN43z6WxQyPqyUAZW8jJrcEbpqz6A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BzuCm4yVpVFKBkytQo9xgpMccstwcTJ5D7pBWDmy3Rs=;
- b=WPYH/T76mPGuIeetNi+/x2N0DMyBsbIGyh31AdserLCUV/HIcrVn0eH9T0PPjTinyI/tYXV98ns452NEtUF58B556A0tVd3KGGOCWfr7kTXUaD0jyd6kZaHxrHphrdSCbuGKYs/qFLCQA+/12Tv4+37NJsW1FH1xl8Cnhq4cyce0StG0O6H2yjUzS+wJcDT22dUcI+SL8eE4l6sbXY/FRFxGIHspzzSi7k6cNkmFNq+kEBz7aZD5Uy4OKrikxc4EFsNAexq9ghg3MpQLqvigfCd38EuO5k9CClzKRLWPQpcKDbERli6BmE30mYem7H2Uium+8lOVk3dYeKmOZTUhpA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BzuCm4yVpVFKBkytQo9xgpMccstwcTJ5D7pBWDmy3Rs=;
- b=apPNIfBF7emnTQKcW6cZHySyrGhAlToFcnQKWbSPvRtdFdTuwCg+Pr+fqDTiNciZa8KJUTbDQNgwgq/Se8cz7PArMxcJZbmZVPO3QI4g8FBbMv9gMmxQ4h2bcsEoxQy2vBKbo9f9cXWfaJ6EoMMxcS/ZbT23Utlsp4K8jRus8YPaOLViwU1QtL6GLt3gIBR5PW/hKTIiT9kWJsecucaw6/ByNGCKPXPdHOpkOcrtNMS99IfxvL5ZGbqnX+3TnhN39ePQVtgkvJ/S6XzqP96NfNop00khfzETRNlBJTqgEnQ+hslqQoG9eETAEsn2RuZMDYVcppDNw4QOku3wUC9YaA==
-Received: from BN8PR07CA0020.namprd07.prod.outlook.com (2603:10b6:408:ac::33)
- by MN2PR12MB2910.namprd12.prod.outlook.com (2603:10b6:208:af::27) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.15; Mon, 25 Apr
- 2022 07:51:18 +0000
-Received: from BN8NAM11FT049.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:ac:cafe::c1) by BN8PR07CA0020.outlook.office365.com
- (2603:10b6:408:ac::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14 via Frontend
- Transport; Mon, 25 Apr 2022 07:51:18 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.235) by
- BN8NAM11FT049.mail.protection.outlook.com (10.13.177.157) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5186.14 via Frontend Transport; Mon, 25 Apr 2022 07:51:18 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by DRHQMAIL107.nvidia.com
- (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Mon, 25 Apr
- 2022 07:51:17 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 25 Apr
- 2022 00:51:16 -0700
-Received: from amhetre.nvidia.com (10.127.8.9) by mail.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server id 15.2.986.22 via Frontend
- Transport; Mon, 25 Apr 2022 00:51:12 -0700
-From:   Ashish Mhetre <amhetre@nvidia.com>
-To:     <krzysztof.kozlowski@linaro.org>, <thierry.reding@gmail.com>,
-        <jonathanh@nvidia.com>, <digetx@gmail.com>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>,
-        <dmitry.osipenko@collabora.com>, <linux-kernel@vger.kernel.org>,
-        <linux-tegra@vger.kernel.org>, <devicetree@vger.kernel.org>
-CC:     <vdumpa@nvidia.com>, <Snikam@nvidia.com>,
-        Ashish Mhetre <amhetre@nvidia.com>
-Subject: [Patch v8 3/4] dt-bindings: memory: tegra: Update validation for reg and reg-names
-Date:   Mon, 25 Apr 2022 13:20:35 +0530
-Message-ID: <20220425075036.30098-4-amhetre@nvidia.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220425075036.30098-1-amhetre@nvidia.com>
-References: <20220425075036.30098-1-amhetre@nvidia.com>
-X-NVConfidentiality: public
+        Mon, 25 Apr 2022 03:56:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4793712AB4;
+        Mon, 25 Apr 2022 00:52:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 69E4C61331;
+        Mon, 25 Apr 2022 07:52:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14306C385A7;
+        Mon, 25 Apr 2022 07:52:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650873152;
+        bh=Fg1WqVAMNY8WOgqmVB7ITNAhO7ifkkAD/qCAn6UEtfQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=oSFXlItEEANiPoHLNWdCfffltXjAiNHs7oGX1UrOdmq0rypik/36SmrRxzp7VlX23
+         H1My8g+yi35giPVFpJD0Gm3ort/FjDvu2v1UR1hF1ly+rFnkZfnUSToQMRwZBX9UM0
+         iCXwgGFWFPsrvCfOemhTmyQotPmrQwaxBb6wHS4LOGdQ3BLrxpf61e9VZO6RiWPwnK
+         zelJ5GAEzCEG6/Vnm7mOjHeFztYvTr+lg596r2QGxCGMqb6K4QtF6gVVDWxo+iec+5
+         HcsNQ0ITXgV7z+V52LEbQP3gf4qMJffFW6LnL5gdIjFvpmJ9agE3x1TfJDaxThyosR
+         N8VK7aN8ON6iw==
+Date:   Mon, 25 Apr 2022 10:52:22 +0300
+From:   Mike Rapoport <rppt@kernel.org>
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc:     Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        David Hildenbrand <david@redhat.com>, x86@kernel.org,
+        linux-mm@kvack.org, linux-coco@lists.linux.dev,
+        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv5 01/12] x86/boot/: Centralize __pa()/__va() definitions
+Message-ID: <YmZTNqub6dYHb1iV@kernel.org>
+References: <20220425033934.68551-1-kirill.shutemov@linux.intel.com>
+ <20220425033934.68551-2-kirill.shutemov@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0213c8f6-f19a-432c-8f19-08da269061d2
-X-MS-TrafficTypeDiagnostic: MN2PR12MB2910:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR12MB2910FB1C11DFA82B1481158BCAF89@MN2PR12MB2910.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 03zQPxw407xxvDqjzapzj5ytf+9ed+jTYm/zKwotAlIKW2zK87Dh7V0WN1D1W92G3gOLbjVG64eQydd+NnhYklf67JB/w0ipKuSEOEkDpZgLGuR/jkuo+pengNJwyCe6ZMBubQVPm6ImelF2kCfLEWeiMIj21KUW3HxHKmu1GmFS9WUOMTPKkyFt8kXEBnKKmsF6C2eXJYeKwwRHhOzUi7dqhGbX28h9SVzpZERpu3H/WZukTDAxPCrQbotKFHu1I22x7aU02IxQ9QPz0imTKUCSaYkltSVQJges+1Cl4G/msT8xVglg1XVTcz/CnyCm5zqYEdSgBfgE/1aEeHQz2UEkFf3jQfe3msg2+ZDwCQHzBlU83wWl2iEcVLXhtR+ooW2ueORnbDZmjDZA4Dr8hFOwMILHwDKT6skQNZ/S4RH0QmIl+P8OfJywBf2g4SHNozXqeV273Pdz7nmiyhAVvwJzZy0EEzewdkoZ0ijgqT8t5sQxxL7oDbqgGFebVmXZ+198KCRK/GZaT5wK/3ZdEkkVec1mHst3kH5QHE6ebdWIzFnztgxeaUmwxBFa/KiESsNMqdiKb+ySakXZCkm3ke7+Y/tWmA/1LEpriDQtdxaa1HLLbdnRcBDz7s+fVtu82AWopkgrlDh7eo7m5wJGgL2DOKnADY6EHUAbDsz3RkXFC+zi/8P707J4ZwFT127oFfBAmz1yZo7HOGUFQnxVIGTCUTb8Csuiq7mY8af8NkQ=
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(40460700003)(316002)(336012)(82310400005)(107886003)(7696005)(508600001)(26005)(5660300002)(36756003)(83380400001)(36860700001)(8936002)(81166007)(86362001)(426003)(47076005)(2616005)(2906002)(1076003)(54906003)(8676002)(4326008)(6666004)(356005)(921005)(15650500001)(70586007)(186003)(110136005)(70206006)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Apr 2022 07:51:18.2963
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0213c8f6-f19a-432c-8f19-08da269061d2
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT049.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB2910
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220425033934.68551-2-kirill.shutemov@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From tegra186 onwards, memory controller support multiple channels.
-Reg items are updated with address and size of these channels.
-Tegra186 has overall 5 memory controller channels. Tegra194 and tegra234
-have overall 17 memory controller channels each.
-There is 1 reg item for memory controller stream-id registers.
-So update the reg minItems and maxItems accordingly in tegra186
-devicetree documentation. Also update validation for reg-names added for
-these corresponding reg items.
-ABI change due to new bindings is intended but backward compatibility is
-preserved in driver.
+On Mon, Apr 25, 2022 at 06:39:23AM +0300, Kirill A. Shutemov wrote:
+> Replace multiple __pa()/__va() definitions with a single one in misc.h.
+> 
+> Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 
-Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
----
- .../nvidia,tegra186-mc.yaml                   | 80 +++++++++++++++++--
- 1 file changed, 74 insertions(+), 6 deletions(-)
+Reviewed-by: Mike Rapoport <rppt@linux.ibm.com>
 
-diff --git a/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml b/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml
-index 13c4c82fd0d3..c7cfa6c2cd81 100644
---- a/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml
-+++ b/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml
-@@ -34,8 +34,12 @@ properties:
-           - nvidia,tegra234-mc
- 
-   reg:
--    minItems: 1
--    maxItems: 3
-+    minItems: 6
-+    maxItems: 18
-+
-+  reg-names:
-+    minItems: 6
-+    maxItems: 18
- 
-   interrupts:
-     items:
-@@ -142,7 +146,18 @@ allOf:
-     then:
-       properties:
-         reg:
--          maxItems: 1
-+          maxItems: 6
-+          description: 5 memory controller channels and 1 for stream-id registers
-+
-+        reg-names:
-+          maxItems: 6
-+          items:
-+            - const: sid
-+            - const: broadcast
-+            - const: ch0
-+            - const: ch1
-+            - const: ch2
-+            - const: ch3
- 
-   - if:
-       properties:
-@@ -151,7 +166,30 @@ allOf:
-     then:
-       properties:
-         reg:
--          minItems: 3
-+          minItems: 18
-+          description: 17 memory controller channels and 1 for stream-id registers
-+
-+        reg-names:
-+          minItems: 18
-+          items:
-+            - const: sid
-+            - const: broadcast
-+            - const: ch0
-+            - const: ch1
-+            - const: ch2
-+            - const: ch3
-+            - const: ch4
-+            - const: ch5
-+            - const: ch6
-+            - const: ch7
-+            - const: ch8
-+            - const: ch9
-+            - const: ch10
-+            - const: ch11
-+            - const: ch12
-+            - const: ch13
-+            - const: ch14
-+            - const: ch15
- 
-   - if:
-       properties:
-@@ -160,13 +198,37 @@ allOf:
-     then:
-       properties:
-         reg:
--          minItems: 3
-+          minItems: 18
-+          description: 17 memory controller channels and 1 for stream-id registers
-+
-+        reg-names:
-+          minItems: 18
-+          items:
-+            - const: sid
-+            - const: broadcast
-+            - const: ch0
-+            - const: ch1
-+            - const: ch2
-+            - const: ch3
-+            - const: ch4
-+            - const: ch5
-+            - const: ch6
-+            - const: ch7
-+            - const: ch8
-+            - const: ch9
-+            - const: ch10
-+            - const: ch11
-+            - const: ch12
-+            - const: ch13
-+            - const: ch14
-+            - const: ch15
- 
- additionalProperties: false
- 
- required:
-   - compatible
-   - reg
-+  - reg-names
-   - interrupts
-   - "#address-cells"
-   - "#size-cells"
-@@ -182,7 +244,13 @@ examples:
- 
-         memory-controller@2c00000 {
-             compatible = "nvidia,tegra186-mc";
--            reg = <0x0 0x02c00000 0x0 0xb0000>;
-+            reg = <0x0 0x02c00000 0x0 0x10000>,    /* MC-SID */
-+                  <0x0 0x02c10000 0x0 0x10000>,    /* Broadcast channel */
-+                  <0x0 0x02c20000 0x0 0x10000>,    /* MC0 */
-+                  <0x0 0x02c30000 0x0 0x10000>,    /* MC1 */
-+                  <0x0 0x02c40000 0x0 0x10000>,    /* MC2 */
-+                  <0x0 0x02c50000 0x0 0x10000>;    /* MC3 */
-+            reg-names = "sid", "broadcast", "ch0", "ch1", "ch2", "ch3";
-             interrupts = <GIC_SPI 223 IRQ_TYPE_LEVEL_HIGH>;
- 
-             #address-cells = <2>;
+> ---
+>  arch/x86/boot/compressed/ident_map_64.c | 8 --------
+>  arch/x86/boot/compressed/misc.h         | 9 +++++++++
+>  arch/x86/boot/compressed/sev.c          | 2 --
+>  3 files changed, 9 insertions(+), 10 deletions(-)
+> 
+> diff --git a/arch/x86/boot/compressed/ident_map_64.c b/arch/x86/boot/compressed/ident_map_64.c
+> index f7213d0943b8..fe523ee1a19f 100644
+> --- a/arch/x86/boot/compressed/ident_map_64.c
+> +++ b/arch/x86/boot/compressed/ident_map_64.c
+> @@ -8,14 +8,6 @@
+>   * Copyright (C)      2016  Kees Cook
+>   */
+>  
+> -/*
+> - * Since we're dealing with identity mappings, physical and virtual
+> - * addresses are the same, so override these defines which are ultimately
+> - * used by the headers in misc.h.
+> - */
+> -#define __pa(x)  ((unsigned long)(x))
+> -#define __va(x)  ((void *)((unsigned long)(x)))
+> -
+>  /* No PAGE_TABLE_ISOLATION support needed either: */
+>  #undef CONFIG_PAGE_TABLE_ISOLATION
+>  
+> diff --git a/arch/x86/boot/compressed/misc.h b/arch/x86/boot/compressed/misc.h
+> index ea71cf3d64e1..9f7154a30d37 100644
+> --- a/arch/x86/boot/compressed/misc.h
+> +++ b/arch/x86/boot/compressed/misc.h
+> @@ -19,6 +19,15 @@
+>  /* cpu_feature_enabled() cannot be used this early */
+>  #define USE_EARLY_PGTABLE_L5
+>  
+> +/*
+> + * Boot stub deals with identity mappings, physical and virtual addresses are
+> + * the same, so override these defines.
+> + *
+> + * <asm/page.h> will not define them if they are already defined.
+> + */
+> +#define __pa(x)  ((unsigned long)(x))
+> +#define __va(x)  ((void *)((unsigned long)(x)))
+> +
+>  #include <linux/linkage.h>
+>  #include <linux/screen_info.h>
+>  #include <linux/elf.h>
+> diff --git a/arch/x86/boot/compressed/sev.c b/arch/x86/boot/compressed/sev.c
+> index 28bcf04c022e..4dcea0bc4fe4 100644
+> --- a/arch/x86/boot/compressed/sev.c
+> +++ b/arch/x86/boot/compressed/sev.c
+> @@ -106,9 +106,7 @@ static enum es_result vc_read_mem(struct es_em_ctxt *ctxt,
+>  }
+>  
+>  #undef __init
+> -#undef __pa
+>  #define __init
+> -#define __pa(x)	((unsigned long)(x))
+>  
+>  #define __BOOT_COMPRESSED
+>  
+> -- 
+> 2.35.1
+> 
+
 -- 
-2.17.1
-
+Sincerely yours,
+Mike.
