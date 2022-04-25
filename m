@@ -2,123 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 837C2C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 23:54:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38274C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 23:54:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238644AbiDYX5L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 19:57:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34492 "EHLO
+        id S238919AbiDYX5S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 19:57:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238633AbiDYX5G (ORCPT
+        with ESMTP id S238666AbiDYX5G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 25 Apr 2022 19:57:06 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0C2F814A0
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 16:53:53 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id h9-20020a631209000000b0039cc31b22aeso10000879pgl.9
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 16:53:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=IxHNHx5wJBVm+rn+jgN7nIqGaCqRxbvwWyLEAglKnWI=;
-        b=BO1aKVrSqDD9Ar0XuW9GCnstLd6dqzKgozWJIYb2AWXq+i9HInlKJW+JM8QQ7DwNfq
-         BzCri9AGFee+/Cg03nTnxQknM85IOpD1VLlaks2DOYHxTnDc0GDUtxrn8jFmyoc7Iwya
-         LrB+PzlU7uNFxxEbFBLUDx5GqzUBM7Du2WHaUmp1uEqjJpahl6fY2OEUueuS+fJmFePz
-         a6GUInOaDxJD1otn6Q5byCPbTRs090t5DzYKPvMKlUexwbyBZUActCjMi/Rb70jJQGGo
-         AnZYlz5v/iyJreScwHMG3OgX0zXV7QcvUfaDMbRUc+hIMqqSyjWDHX4b1AwE+Ci//r06
-         uqfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=IxHNHx5wJBVm+rn+jgN7nIqGaCqRxbvwWyLEAglKnWI=;
-        b=GCp9Ptmy1193MfYusiScOI5ud+eFuJoZUe3EyhVwezk1VLoFhEyYEZnolX5FphWL15
-         sthghjo3FDxqogqbaE8eqMbingnhNamntFdXaq0WqiscbxxSvQxAFwncV7RgcVXZbfX4
-         wL202dZq8YXWlMpyDNTT+XnaYMpFMTjzo5FoxPPiPx6DL4fSQE4o+SNSE16TtgioR4fz
-         RtcKnVoVEwUFqdlHBQcGUAYnaMkrZWb9xGqeu5Fu2bsQg9B/Xm3a/ypL8k6L8ee1Dzi6
-         iHfxtsxtlamnHUAFCSEzUF3NBn0WsKlpO+RJrk/dXLFJg/ZkUkVzcz+5mcF94uhneH+g
-         977g==
-X-Gm-Message-State: AOAM530GnXHeSukf75edqTwmvNeLFk6+7j0IFJZh9aDj/UTs9kwg0Mp5
-        0oOjNc3G47cBvAnOZI+/hfqf04QzFNs=
-X-Google-Smtp-Source: ABdhPJy8VMFMNE9Q7UkBKYVM4qUrLDosnMII9dPPPSbr5WKYB/hKuYfHo0mtNOfXwW2DsxYsAqekF2bfA/Q=
-X-Received: from oupton3.c.googlers.com ([fda3:e722:ac3:cc00:24:72f4:c0a8:21eb])
- (user=oupton job=sendgmr) by 2002:a17:90a:9105:b0:1d2:9e98:7e1e with SMTP id
- k5-20020a17090a910500b001d29e987e1emr1694934pjo.0.1650930832927; Mon, 25 Apr
- 2022 16:53:52 -0700 (PDT)
-Date:   Mon, 25 Apr 2022 23:53:42 +0000
-In-Reply-To: <20220425235342.3210912-1-oupton@google.com>
-Message-Id: <20220425235342.3210912-6-oupton@google.com>
-Mime-Version: 1.0
-References: <20220425235342.3210912-1-oupton@google.com>
-X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
-Subject: [PATCH v3 5/5] KVM: arm64: Start trapping ID registers for 32 bit guests
-From:   Oliver Upton <oupton@google.com>
-To:     kvmarm@lists.cs.columbia.edu
-Cc:     kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, maz@kernel.org, james.morse@arm.com,
-        alexandru.elisei@arm.com, suzuki.poulose@arm.com,
-        reijiw@google.com, ricarkol@google.com,
-        Oliver Upton <oupton@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D99E08BE25
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 16:53:50 -0700 (PDT)
+Received: from epcas5p1.samsung.com (unknown [182.195.41.39])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220425235345epoutp028909471fe94f5fd94c02880ea7a17b1b~pSNat70oR0747307473epoutp02S
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 23:53:45 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220425235345epoutp028909471fe94f5fd94c02880ea7a17b1b~pSNat70oR0747307473epoutp02S
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1650930825;
+        bh=8DmheWAHiJOOBMIZdXyd/ayLZdS5Y+v68RlmlHShfDM=;
+        h=From:To:In-Reply-To:Subject:Date:References:From;
+        b=fyhL6p7Y+q43DRvLhWztzMWGG5N6Ho4L0sTJJyvFjzenMocv1q3iKoPNOWm0xqqE0
+         +p24h1YA0b9wc37sRCEDWiMFa72gARYlME8dIJVj9n4gD2a5eFZOH2jV/3vshTDWW4
+         nu6VLLtHV31d18KjWPGQyaMT4QBKNG01QRrRW4ts=
+Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
+        epcas5p4.samsung.com (KnoxPortal) with ESMTP id
+        20220425235344epcas5p4ba010c818708d47c2bc97d73dc6e2e93~pSNaT6DRX1935019350epcas5p4J;
+        Mon, 25 Apr 2022 23:53:44 +0000 (GMT)
+Received: from epsmges5p2new.samsung.com (unknown [182.195.38.176]) by
+        epsnrtp1.localdomain (Postfix) with ESMTP id 4KnMKd22wgz4x9Ps; Mon, 25 Apr
+        2022 23:53:41 +0000 (GMT)
+Received: from epcas5p1.samsung.com ( [182.195.41.39]) by
+        epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        6C.04.09827.58437626; Tue, 26 Apr 2022 08:53:41 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas5p4.samsung.com (KnoxPortal) with ESMTPA id
+        20220425235340epcas5p4d42c97211ed8adb2306e6e080f5aed7b~pSNWr55mN1934619346epcas5p4N;
+        Mon, 25 Apr 2022 23:53:40 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220425235340epsmtrp16f5aebcfaa717dce55a02fb9504889c4~pSNWrGsZ70882508825epsmtrp1R;
+        Mon, 25 Apr 2022 23:53:40 +0000 (GMT)
+X-AuditID: b6c32a4a-b3bff70000002663-ed-626734850e37
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        E8.33.08924.48437626; Tue, 26 Apr 2022 08:53:40 +0900 (KST)
+Received: from alimakhtar03 (unknown [107.122.12.5]) by epsmtip1.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220425235339epsmtip1149328d15e7609af0df63573ef10e74d~pSNVKPnHm2202522025epsmtip1q;
+        Mon, 25 Apr 2022 23:53:39 +0000 (GMT)
+From:   "Alim Akhtar" <alim.akhtar@samsung.com>
+To:     "'Krzysztof Kozlowski'" <krzysztof.kozlowski@linaro.org>,
+        "'Daniel Lezcano'" <daniel.lezcano@linaro.org>,
+        "'Thomas Gleixner'" <tglx@linutronix.de>,
+        "'Rob Herring'" <robh+dt@kernel.org>,
+        "'Krzysztof Kozlowski'" <krzysztof.kozlowski+dt@linaro.org>,
+        "'Michal Simek'" <michal.simek@xilinx.com>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-samsung-soc@vger.kernel.org>
+In-Reply-To: <20220424150333.75172-2-krzysztof.kozlowski@linaro.org>
+Subject: RE: [PATCH 2/3] dt-bindings: timer: samsung,exynos4210-mct: drop
+ unneeded minItems
+Date:   Tue, 26 Apr 2022 05:23:37 +0530
+Message-ID: <000001d858ff$b06a4950$113edbf0$@samsung.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQHaU87sAxE9nZdTqWTdS25GH65v5wE8VlalAnNF3y2s39qqgA==
+Content-Language: en-us
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrNJsWRmVeSWpSXmKPExsWy7bCmum6rSXqSweNZPBbzPstazD9yjtWi
+        78VDZou9r7eyW2x6fI3V4vKuOWwWM87vY7J49zLConXvEXaLzZumMjtweWxa1cnmcefaHjaP
+        d+fOsXtsXlLv8XmTnMfez79ZAtiism0yUhNTUosUUvOS81My89JtlbyD453jTc0MDHUNLS3M
+        lRTyEnNTbZVcfAJ03TJzgO5SUihLzCkFCgUkFhcr6dvZFOWXlqQqZOQXl9gqpRak5BSYFOgV
+        J+YWl+al6+WlllgZGhgYmQIVJmRnzJj/iamgh6diy63tTA2M+7m6GDk4JARMJH70VXcxcnEI
+        CexmlGhZ8YsFwvnEKHHs2T92COczo8Tlb0eYuxg5wTrWt32DSuxilDi77BcbSEJI4CWjRNvE
+        YhCbTUBXYsfiNjaQIhGBPcwS39etYgJJcAq4SNz9fZAdxBYWiJXYs60BrJlFQFXi6uZpYDW8
+        ApYSfeemskLYghInZz5hAbGZBeQltr+dA3WFgsTPp8vAakQEnCTezfrBBlEjLvHy6BGw6yQE
+        VnJIXJq1A6rBRWJW7ydGCFtY4tXxLewQtpTEy/42dkhgeEgs+iMFEc6QeLt8PVS5vcSBK3NY
+        QEqYBTQl1u/Sh1jFJ9H7+wkTRCevREebEES1qkTzu6ssELa0xMTublYI20Ni4+VdzJBwu8go
+        8bptHfMERoVZSL6cheTLWUi+mYWweQEjyypGydSC4tz01GLTAqO81HJ4fCfn525iBKdaLa8d
+        jA8ffNA7xMjEwXiIUYKDWUmEd6pqWpIQb0piZVVqUX58UWlOavEhRlNg0E9klhJNzgcm+7yS
+        eEMTSwMTMzMzE0tjM0Mlcd7T6RsShQTSE0tSs1NTC1KLYPqYODilGph2c7JsOWz149zL8/f+
+        h2gdmaGfvUST51fF5l3CDBfjpxe+CHzxXXJOHd/5SLVZ2zz97cWsHj50mzTN+un/ANZswWs7
+        y70Mz/Xw1bzlvRm0uG77i+YvP6p62Z3/JXNOOvL+oczbZ+uE76tf3qDylGnBSv8dQu9rL65i
+        j57tVvNUj5HBNf+Ed62p9pey/NeL9T2PvCgSmRe81Htl4aeF+ufaJCtNpOULb5vO2Ht6d8fj
+        TMNjb15afp/ZGXJbpV4t/b7hxBq1yvTEql91UlcfCl/Zp3DeIu/VUaOts6SLr+epLjJNeFcw
+        +4VhkUyBVVt3VodH0Im12gz7V2zdmjz3gJDatSca59VC9X6Fhctf+HVaiaU4I9FQi7moOBEA
+        rnouzD4EAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmpnkeLIzCtJLcpLzFFi42LZdlhJTrfFJD3JYNVjI4t5n2Ut5h85x2rR
+        9+Ihs8Xe11vZLTY9vsZqcXnXHDaLGef3MVm8exlh0br3CLvF5k1TmR24PDat6mTzuHNtD5vH
+        u3Pn2D02L6n3+LxJzmPv598sAWxRXDYpqTmZZalF+nYJXBkz5n9iKujhqdhyaztTA+N+ri5G
+        Tg4JAROJ9W3f2LsYuTiEBHYwSrzYfpMJIiEtcX3jBHYIW1hi5b/nUEXPGSW2LDvJCpJgE9CV
+        2LG4jQ0kISJwiFmi8cckZpCEkMBZRomex3YgNqeAi8Td3wfBJgkLREv0zF/EBmKzCKhKXN08
+        DWwbr4ClRN+5qawQtqDEyZlPWLoYOTiYBfQk2jYygoSZBeQltr+dwwxxkILEz6fLwMpFBJwk
+        3s36wQZRIy7x8ugR9gmMQrOQTJqFMGkWkkmzkHQsYGRZxSiZWlCcm55bbFhglJdarlecmFtc
+        mpeul5yfu4kRHFdaWjsY96z6oHeIkYmD8RCjBAezkgjvVNW0JCHelMTKqtSi/Pii0pzU4kOM
+        0hwsSuK8F7pOxgsJpCeWpGanphakFsFkmTg4pRqY6sIcNn1JMr+cv0S93nRRePkeRcuUVu9p
+        ffoc189drCt/+ffHHPNl3gv+LNa0SJttNGvf4/l5KZdkLzJ+3MQWn1TFx3Zuc7zX6dXfK2fM
+        c1l1RTSpq1Xz4YMLtXKhf2cdb7wmxsf6Mnyy+oyvR9Nvcf3NnnT24KqZMRUXn799kPfDLWFP
+        +1Wd+4F1xTpfl3Op7Nlu23L0Xei04zvOm2d8sIzulLeIMl7k/FvAXtRr/9Jk732X+q0ZFKKs
+        447lx/BddPXpXmYguDl/ff8UXiHhDVOW7rF+sCP2bkLmzkjmz8EXS3z1Dy6/+bBU/stiCak3
+        rZ7X8ixnmi7/9aCf/0760bM2bnFeO64snrEuhyWxX4mlOCPRUIu5qDgRAPtJUOYaAwAA
+X-CMS-MailID: 20220425235340epcas5p4d42c97211ed8adb2306e6e080f5aed7b
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+CMS-TYPE: 105P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220424150342epcas5p15d091f5063db79464c9e1e8ca3b55ef9
+References: <20220424150333.75172-1-krzysztof.kozlowski@linaro.org>
+        <CGME20220424150342epcas5p15d091f5063db79464c9e1e8ca3b55ef9@epcas5p1.samsung.com>
+        <20220424150333.75172-2-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To date KVM has not trapped ID register accesses from AArch32, meaning
-that guests get an unconstrained view of what hardware supports. This
-can be a serious problem because we try to base the guest's feature
-registers on values that are safe system-wide. Furthermore, KVM does not
-implement the latest ISA in the PMU and Debug architecture, so we
-constrain these fields to supported values.
+Hello Krzysztof
 
-Since KVM now correctly handles CP15 and CP10 register traps, we no
-longer need to clear HCR_EL2.TID3 for 32 bit guests and will instead
-emulate reads with their safe values.
+>-----Original Message-----
+>From: Krzysztof Kozlowski [mailto:krzysztof.kozlowski@linaro.org]
+>Sent: Sunday, April 24, 2022 8:34 PM
+>To: Daniel Lezcano <daniel.lezcano@linaro.org>; Thomas Gleixner
+><tglx@linutronix.de>; Rob Herring <robh+dt@kernel.org>; Krzysztof
+>Kozlowski <krzysztof.kozlowski+dt@linaro.org>; Alim Akhtar
+><alim.akhtar@samsung.com>; Michal Simek <michal.simek@xilinx.com>;
+>linux-kernel@vger.kernel.org; devicetree@vger.kernel.org; linux-arm-
+>kernel@lists.infradead.org; linux-samsung-soc@vger.kernel.org
+>Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>Subject: [PATCH 2/3] dt-bindings: timer: samsung,exynos4210-mct: drop
+>unneeded minItems
+>
+>There is no need to add minItems when it is equal to maxItems.
+>
+>Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>---
 
-Signed-off-by: Oliver Upton <oupton@google.com>
-Reviewed-by: Reiji Watanabe <reijiw@google.com>
----
- arch/arm64/include/asm/kvm_arm.h     | 3 ++-
- arch/arm64/include/asm/kvm_emulate.h | 7 -------
- 2 files changed, 2 insertions(+), 8 deletions(-)
+Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
 
-diff --git a/arch/arm64/include/asm/kvm_arm.h b/arch/arm64/include/asm/kvm_arm.h
-index 1767ded83888..b5de102928d8 100644
---- a/arch/arm64/include/asm/kvm_arm.h
-+++ b/arch/arm64/include/asm/kvm_arm.h
-@@ -80,11 +80,12 @@
-  * FMO:		Override CPSR.F and enable signaling with VF
-  * SWIO:	Turn set/way invalidates into set/way clean+invalidate
-  * PTW:		Take a stage2 fault if a stage1 walk steps in device memory
-+ * TID3:	Trap EL1 reads of group 3 ID registers
-  */
- #define HCR_GUEST_FLAGS (HCR_TSC | HCR_TSW | HCR_TWE | HCR_TWI | HCR_VM | \
- 			 HCR_BSU_IS | HCR_FB | HCR_TACR | \
- 			 HCR_AMO | HCR_SWIO | HCR_TIDCP | HCR_RW | HCR_TLOR | \
--			 HCR_FMO | HCR_IMO | HCR_PTW )
-+			 HCR_FMO | HCR_IMO | HCR_PTW | HCR_TID3 )
- #define HCR_VIRT_EXCP_MASK (HCR_VSE | HCR_VI | HCR_VF)
- #define HCR_HOST_NVHE_FLAGS (HCR_RW | HCR_API | HCR_APK | HCR_ATA)
- #define HCR_HOST_NVHE_PROTECTED_FLAGS (HCR_HOST_NVHE_FLAGS | HCR_TSC)
-diff --git a/arch/arm64/include/asm/kvm_emulate.h b/arch/arm64/include/asm/kvm_emulate.h
-index 7496deab025a..ab5c66b77bb0 100644
---- a/arch/arm64/include/asm/kvm_emulate.h
-+++ b/arch/arm64/include/asm/kvm_emulate.h
-@@ -86,13 +86,6 @@ static inline void vcpu_reset_hcr(struct kvm_vcpu *vcpu)
- 
- 	if (vcpu_el1_is_32bit(vcpu))
- 		vcpu->arch.hcr_el2 &= ~HCR_RW;
--	else
--		/*
--		 * TID3: trap feature register accesses that we virtualise.
--		 * For now this is conditional, since no AArch32 feature regs
--		 * are currently virtualised.
--		 */
--		vcpu->arch.hcr_el2 |= HCR_TID3;
- 
- 	if (cpus_have_const_cap(ARM64_MISMATCHED_CACHE_TYPE) ||
- 	    vcpu_el1_is_32bit(vcpu))
--- 
-2.36.0.rc2.479.g8af0fa9b8e-goog
+
+> .../devicetree/bindings/timer/samsung,exynos4210-mct.yaml        | 1 -
+> 1 file changed, 1 deletion(-)
+>
+>diff --git a/Documentation/devicetree/bindings/timer/samsung,exynos4210-
+>mct.yaml
+>b/Documentation/devicetree/bindings/timer/samsung,exynos4210-mct.yaml
+>index 1584944c7ac4..0e28d9bdb8cb 100644
+>--- a/Documentation/devicetree/bindings/timer/samsung,exynos4210-
+>mct.yaml
+>+++ b/Documentation/devicetree/bindings/timer/samsung,exynos4210-
+>mct.yaml
+>@@ -35,7 +35,6 @@ properties:
+>           - const: samsung,exynos4210-mct
+>
+>   clocks:
+>-    minItems: 2
+>     maxItems: 2
+>
+>   clock-names:
+>--
+>2.32.0
+
 
