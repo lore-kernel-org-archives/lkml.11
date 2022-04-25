@@ -2,57 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EF7DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 08:15:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8615BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 08:16:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234487AbiDYISp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 04:18:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35976 "EHLO
+        id S234221AbiDYITw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 04:19:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234606AbiDYIRo (ORCPT
+        with ESMTP id S234606AbiDYITY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 04:17:44 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 146A35BE7D
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 01:14:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=q1Nxh0xOI6aJnlQ0pRsJPsD5YeurmS4B93CsQe5uacU=; b=VefYGGJrBhq1La3xk9/3KGyGk9
-        lE3Si6pM001HhDSXmW9rijM2KMqxk9/L9IzCfP3KC+nLWKw9B0S0QHM9ybe2/PetAcW4VfpUoO/dV
-        Dn75eslFguXutnVu6cNLv3rbDiE+z3IXegk9dozRr958JoBLZ2Gwjg5PV0l36/MZORx49D2nwqZXf
-        7vdf+WC69bMnSCJPK0i04hmBJq6FbBe57gS3jQIzDUABM6e5vpyZVzSq5+TTYxoJjoXUoejEt2M4x
-        lgfI+KT/BpC57mMAgWgoC5nkTcgJTPcSLVbW8mjquE8AJO7Tz4N/O5inqI622KhpWnrmVSP/Tqzzb
-        TEdB3f9Q==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nitrI-008Usr-Pc; Mon, 25 Apr 2022 08:14:13 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id C200A980362; Mon, 25 Apr 2022 10:14:10 +0200 (CEST)
-Date:   Mon, 25 Apr 2022 10:14:10 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Cruz Zhao <CruzZhao@linux.alibaba.com>
-Cc:     mingo@redhat.com, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] sched/core: Skip sched_core_fork/free() when core
- sched is disabled
-Message-ID: <20220425081410.GA2731@worktop.programming.kicks-ass.net>
-References: <1650831454-101777-1-git-send-email-CruzZhao@linux.alibaba.com>
+        Mon, 25 Apr 2022 04:19:24 -0400
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD9665D64D
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 01:16:19 -0700 (PDT)
+Received: by mail-yb1-xb2c.google.com with SMTP id p65so25598832ybp.9
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 01:16:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GvlUCJWkTnh5l62OzSLwcVwwIZnTQuRAwqmMP5qNiQI=;
+        b=BTqz5xSnKN3FngdlGeXXOw/BMiUg1U8P3+QOKjn1KlBx/FS3glaq3yUW8qh/y1pCxk
+         meH5JNw7HEhR8Z0BBtXzsRUSvCzYlgj3kr9yOROOkBrRODs0+nWpgh2ZcKbZpY4MeDc0
+         O1OahTH89kEcdRiCGzLXZ2K+W65id0DDp4mSxGpmGISmNb9Rj80z8SW1e9NZuSaQpTME
+         6Z/Viea+Gted9vqIzb742TMmqkKoOKhWM625d+FrpuaoHKa8DnSHlYs9TCfrWYLmmk8l
+         hSoGOuYhLnlxHzeYiwwEw5g2wslNMwZKj45QiaqWtLi1XyurS7Lh59oEHpPpsFcRJkBA
+         ym5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GvlUCJWkTnh5l62OzSLwcVwwIZnTQuRAwqmMP5qNiQI=;
+        b=s7+sjcD1jNEZU8S+FH2iYFM0/ezPYWCNA937VzAMFjieI+B6ZLAcsdB8za32YXxuhc
+         CtWR+4V6IQNm55MfpFM5Pk2bNBcgRLPnPFarA0fFzoxsWDKN3MXg6PUY1woRWQuOoEQt
+         Ay77nqeExcn7VQATJ/GXFTIUS6bXexsHv5vcl1/BFViZA7RKdOAvTebMJEFNYpUEgNng
+         sdPeRxojhW7wCVgaJgFvfJTFxDFHmgMWPKwlc4WHv14pajAI4Ka1bhsjzvRite0hkMsN
+         IhGvmxuvRvShiBTrL+s7pBKFkdP6dP3a3kVa589bjVPTKjpIiOLViJh/atJkDzzAX1q2
+         Lb4A==
+X-Gm-Message-State: AOAM5329Ha9F7N61bEHhTxnIRxwRuxE3zPOEgglbwc0qlamT953XaPf2
+        DbPeeEyFwot9pubmLsibAWbmj2MEMT0XPj+POn/71A==
+X-Google-Smtp-Source: ABdhPJzrV4xDmIK6JSyrgmTEvKn1apowsdLUQITQN1TkjlgTxrowrrlE6LP+mtgQMdcEMz4DFucxLnvd6qgt9KjyZg8=
+X-Received: by 2002:a25:9b89:0:b0:63d:20e4:13e7 with SMTP id
+ v9-20020a259b89000000b0063d20e413e7mr15601411ybo.168.1650874578954; Mon, 25
+ Apr 2022 01:16:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1650831454-101777-1-git-send-email-CruzZhao@linux.alibaba.com>
+References: <20220424105949.50016-1-huangshaobo6@huawei.com> <20220425022456.44300-1-huangshaobo6@huawei.com>
+In-Reply-To: <20220425022456.44300-1-huangshaobo6@huawei.com>
+From:   Marco Elver <elver@google.com>
+Date:   Mon, 25 Apr 2022 10:15:43 +0200
+Message-ID: <CANpmjNO=Qo_wnZ2CH=GqPzyUwQ3jGq_Z9FNQt+Sc_=1ZMV2PfQ@mail.gmail.com>
+Subject: Re: [PATCH v3] kfence: enable check kfence canary on panic via boot param
+To:     Shaobo Huang <huangshaobo6@huawei.com>
+Cc:     glider@google.com, dvyukov@google.com, akpm@linux-foundation.org,
+        kasan-dev@googlegroups.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, young.liuyang@huawei.com,
+        zengweilin@huawei.com, chenzefeng2@huawei.com,
+        nixiaoming@huawei.com, wangbing6@huawei.com,
+        wangfangpeng1@huawei.com, zhongjubin@huawei.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 04:17:34AM +0800, Cruz Zhao wrote:
-> As __put_task_struct() and copy_process() are hot path functions,
-> the call of sched_core_fork/free() will bring overhead when core
-> sched is disabled, and we skip them in these cases.
+On Mon, 25 Apr 2022 at 04:25, 'Shaobo Huang' via kasan-dev
+<kasan-dev@googlegroups.com> wrote:
+>
+> From: huangshaobo <huangshaobo6@huawei.com>
+>
+> Out-of-bounds accesses that aren't caught by a guard page will result
+> in corruption of canary memory. In pathological cases, where an object
+> has certain alignment requirements, an out-of-bounds access might
+> never be caught by the guard page. Such corruptions, however, are only
+> detected on kfree() normally. If the bug causes the kernel to panic
+> before kfree(), KFENCE has no opportunity to report the issue. Such
+> corruptions may also indicate failing memory or other faults.
+>
+> To provide some more information in such cases, add the option to
+> check canary bytes on panic. This might help narrow the search for the
+> panic cause; but, due to only having the allocation stack trace, such
+> reports are difficult to use to diagnose an issue alone. In most
+> cases, such reports are inactionable, and is therefore an opt-in
+> feature (disabled by default).
+>
+> Suggested-by: chenzefeng <chenzefeng2@huawei.com>
+> Signed-off-by: huangshaobo <huangshaobo6@huawei.com>
 
-Only if you have profile data.. mostly these functions do whole lot of
-nothing.
+I missed one minor issue below (__read_mostly for param), but with
+that in place:
+
+Reviewed-by: Marco Elver <elver@google.com>
+
+> ---
+> v3:
+> - use Marco's description replace the commit message
+> - keep these includes sorted alphabetically
+> - "in panic" replaced with "on panic" in title and comments
+> - Blank line between /* === ... */ and function.
+> v2:
+> - it is only detected in panic.
+> - it is disabled by default.
+> - can only be enabled via boot parameter.
+> - the code is moved to the specified partition.
+>   https://lore.kernel.org/all/20220424105949.50016-1-huangshaobo6@huawei.com/
+> v1:
+>   https://lore.kernel.org/all/20220420104927.59056-1-huangshaobo6@huawei.com/
+> Thanks again Marco for the suggestion.
+> ---
+>  mm/kfence/core.c | 34 ++++++++++++++++++++++++++++++++++
+>  1 file changed, 34 insertions(+)
+>
+> diff --git a/mm/kfence/core.c b/mm/kfence/core.c
+> index 9b2b5f56f4ae..06232d51e021 100644
+> --- a/mm/kfence/core.c
+> +++ b/mm/kfence/core.c
+> @@ -21,6 +21,8 @@
+>  #include <linux/log2.h>
+>  #include <linux/memblock.h>
+>  #include <linux/moduleparam.h>
+> +#include <linux/notifier.h>
+> +#include <linux/panic_notifier.h>
+>  #include <linux/random.h>
+>  #include <linux/rcupdate.h>
+>  #include <linux/sched/clock.h>
+> @@ -99,6 +101,10 @@ module_param_named(skip_covered_thresh, kfence_skip_covered_thresh, ulong, 0644)
+>  static bool kfence_deferrable __read_mostly = IS_ENABLED(CONFIG_KFENCE_DEFERRABLE);
+>  module_param_named(deferrable, kfence_deferrable, bool, 0444);
+>
+> +/* If true, check all canary bytes on panic. */
+> +static bool kfence_check_on_panic;
+
+This should be __read_mostly, like the other params.
+
+Sorry for noticing this late.
+
+> +module_param_named(check_on_panic, kfence_check_on_panic, bool, 0444);
+> +
+
+Thanks,
+-- Marco
