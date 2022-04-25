@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD1F3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 13:29:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BF94C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 13:29:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242147AbiDYNcM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 09:32:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46992 "EHLO
+        id S242165AbiDYNcV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 09:32:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238708AbiDYNcC (ORCPT
+        with ESMTP id S242045AbiDYNcC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 25 Apr 2022 09:32:02 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D5C6403EE
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE1F240914
         for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 06:28:58 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1niylk-0001wf-9u; Mon, 25 Apr 2022 15:28:48 +0200
+        id 1niylk-0001wc-9v; Mon, 25 Apr 2022 15:28:48 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1niylj-0059q1-VR; Mon, 25 Apr 2022 15:28:46 +0200
+        id 1niylj-0059ps-Ne; Mon, 25 Apr 2022 15:28:46 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1niylh-003dV4-9v; Mon, 25 Apr 2022 15:28:45 +0200
+        id 1niylh-003dVY-By; Mon, 25 Apr 2022 15:28:45 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         Alexandre Torgue <alexandre.torgue@foss.st.com>,
@@ -38,10 +38,12 @@ Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v3 0/4] mainline Protonic PRTT1x boards 
-Date:   Mon, 25 Apr 2022 15:28:40 +0200
-Message-Id: <20220425132844.866743-1-o.rempel@pengutronix.de>
+Subject: [PATCH v3 3/4] ARM: dts: stm32: stm32mp15-pinctrl: add spi1-1 pinmux group
+Date:   Mon, 25 Apr 2022 15:28:43 +0200
+Message-Id: <20220425132844.866743-4-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220425132844.866743-1-o.rempel@pengutronix.de>
+References: <20220425132844.866743-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -52,38 +54,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-changes v3:
-- add silabs,wfx compatible
-- move spi pin configuration to stm32mp15-pinctrl.dtsi
-- move prtt1X compatible in alphabetical order
-- add watchdog and thermal nodes
+Add spi1-1 pingroup as preparation for Protonic PRTT1C board.
 
-changes v2:
-- cleanup mmc nodes
-- disabled dma for uart4 (this is console interface and it should work
-  as simple as possible)
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ arch/arm/boot/dts/stm32mp15-pinctrl.dtsi | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-Oleksij Rempel (4):
-  dt-bindings: arm: stm32: Add compatible strings for Protonic T1L
-    boards
-  dt-bindings: net: silabs,wfx: add prt,prtt1c-wfm200 antenna variant
-  ARM: dts: stm32: stm32mp15-pinctrl: add spi1-1 pinmux group
-  ARM: dts: stm32: add support for Protonic PRTT1x boards
-
- .../devicetree/bindings/arm/stm32/stm32.yaml  |   8 +
- .../staging/net/wireless/silabs,wfx.yaml      |   1 +
- arch/arm/boot/dts/Makefile                    |   3 +
- arch/arm/boot/dts/stm32mp15-pinctrl.dtsi      |  15 +
- arch/arm/boot/dts/stm32mp151a-prtt1a.dts      |  52 +++
- arch/arm/boot/dts/stm32mp151a-prtt1c.dts      | 304 ++++++++++++++++++
- arch/arm/boot/dts/stm32mp151a-prtt1l.dtsi     | 229 +++++++++++++
- arch/arm/boot/dts/stm32mp151a-prtt1s.dts      |  63 ++++
- 8 files changed, 675 insertions(+)
- create mode 100644 arch/arm/boot/dts/stm32mp151a-prtt1a.dts
- create mode 100644 arch/arm/boot/dts/stm32mp151a-prtt1c.dts
- create mode 100644 arch/arm/boot/dts/stm32mp151a-prtt1l.dtsi
- create mode 100644 arch/arm/boot/dts/stm32mp151a-prtt1s.dts
-
+diff --git a/arch/arm/boot/dts/stm32mp15-pinctrl.dtsi b/arch/arm/boot/dts/stm32mp15-pinctrl.dtsi
+index f0d66d8c6e3b..67a242b03813 100644
+--- a/arch/arm/boot/dts/stm32mp15-pinctrl.dtsi
++++ b/arch/arm/boot/dts/stm32mp15-pinctrl.dtsi
+@@ -2212,4 +2212,19 @@ pins2 {
+ 			bias-disable;
+ 		};
+ 	};
++
++	spi1_pins_b: spi1-1 {
++		pins1 {
++			pinmux = <STM32_PINMUX('A', 5, AF5)>, /* SPI1_SCK */
++				 <STM32_PINMUX('B', 5, AF5)>; /* SPI1_MOSI */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <1>;
++		};
++
++		pins2 {
++			pinmux = <STM32_PINMUX('A', 6, AF5)>; /* SPI1_MISO */
++			bias-disable;
++		};
++	};
+ };
 -- 
 2.30.2
 
