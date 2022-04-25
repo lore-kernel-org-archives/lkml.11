@@ -2,138 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F39DEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 09:53:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 511ECC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 09:54:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239966AbiDYJ4Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 05:56:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48870 "EHLO
+        id S238487AbiDYJ5K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 05:57:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232398AbiDYJ4C (ORCPT
+        with ESMTP id S238926AbiDYJ5E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 05:56:02 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C3EE3F886
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 02:52:23 -0700 (PDT)
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23P9PN9p019843;
-        Mon, 25 Apr 2022 04:52:11 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=PODMain02222019;
- bh=NFYRxNRFMgph5kuhS/kFHxiZIc8JuWC3fIicqgsvoqw=;
- b=jthua2KuL1MAJPBg7Hz+E4nZHxUeSqasfyxx5l/qlTU56YNZucP6HkwZ3quIvrYBk1Nq
- K3oBw5KD9CrFOrAhpgm8qIrsvO/PXfJ8oehG5yHL3rwMlnYYPHsihMdc8PMn8jayvzyC
- wXrVtSJfJNm3Gf+Dl9E0LRWj1eA//X0OjoRL6C65LHyMRKZkeHsYhqUqfCADC4PMKnOG
- LIF2z3YRMKaEdLeQUG6Iq/jLw6LhvjrOxbJgdtlGIWFrJk1UdATyerkMW7lmKW1aUhIV
- qrjiXoCjgk3/3rpL0mekJGGxLlqILH7H7l8fzXaAhHprpQGTHukpoEEdepJFtdJ1fBxk MA== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3fmev31rbk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 25 Apr 2022 04:52:11 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 25 Apr
- 2022 10:52:09 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
- Transport; Mon, 25 Apr 2022 10:52:09 +0100
-Received: from debianA11184.ad.cirrus.com (debianA11184.ad.cirrus.com [198.90.251.83])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 54717B16;
-        Mon, 25 Apr 2022 09:52:03 +0000 (UTC)
-From:   Richard Fitzgerald <rf@opensource.cirrus.com>
-To:     <broonie@kernel.org>
-CC:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
-        <patches@opensource.cirrus.com>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>
-Subject: [PATCH] firmware: cirrus: cs_dsp: Avoid padding bytes in cs_dsp_coeff_ctl
-Date:   Mon, 25 Apr 2022 10:51:59 +0100
-Message-ID: <20220425095159.3044527-1-rf@opensource.cirrus.com>
-X-Mailer: git-send-email 2.30.2
+        Mon, 25 Apr 2022 05:57:04 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDADC1AF1A;
+        Mon, 25 Apr 2022 02:53:59 -0700 (PDT)
+Received: from [IPV6:2a00:23c7:6883:e501:cf51:f3a2:10b5:accf] (unknown [IPv6:2a00:23c7:6883:e501:cf51:f3a2:10b5:accf])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: obbardc)
+        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 4A7021F44585;
+        Mon, 25 Apr 2022 10:53:58 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1650880438;
+        bh=VBMc9dIEE785nVs3jdcNupByvEPldz01DvtMEbOIyyI=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=ij1WYP9D2ZHcuq8b3qLpKQ8MV4gdm4BeswTuBmmjTbTDl+JrdaXXBC7VvxLR+xn2v
+         ddZrrI/HItZ//PKLh82rCb2AChunncCjLJcnpDZ6Xq1fPWecwwdsnTVIo8LjxDlbXg
+         Dyoxvup/DDgy/SYK4w+yrSbnayParbZl1VlrDQ+qCVhMAEXjK0Q1ve4fjNuLbrA8ah
+         a6TzaGR8kS7l+dO1Mb/n4H17zQUUulYa+S9GviBVmR/Rs+mVYHqqjf+BYp0+Hr0eBs
+         48g+6wJAAiI0MDcvEHTqt3lkUoXYqky3s3JYdv8UJiW/FC2mPjX1VeA+1LQ3R2ujsh
+         jyziZBWtRcL/g==
+Message-ID: <366fe755-6f07-499a-0b19-f046fd03c89a@collabora.com>
+Date:   Mon, 25 Apr 2022 10:53:55 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: OJnBY_xRTKz-Fg6o5MuUGyNJgsWreoGb
-X-Proofpoint-GUID: OJnBY_xRTKz-Fg6o5MuUGyNJgsWreoGb
-X-Proofpoint-Spam-Reason: safe
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 1/3] media: dt-bindings: media: rockchip-vdec: Add RK3328
+ compatible
+Content-Language: en-GB
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Johan Jonker <jbx6244@gmail.com>,
+        Alex Bee <knaerzche@gmail.com>,
+        Elaine Zhang <zhangqing@rock-chips.com>
+Cc:     linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, kernel@collabora.com
+References: <20220422133803.989256-1-chris.obbard@collabora.com>
+ <20220422133803.989256-2-chris.obbard@collabora.com>
+ <ff87d5cb-b0d4-95a2-90b0-7827a2a34d05@linaro.org>
+ <34819690-5cb7-bbce-a2f5-3f6e66661049@linaro.org>
+From:   Christopher Obbard <chris.obbard@collabora.com>
+In-Reply-To: <34819690-5cb7-bbce-a2f5-3f6e66661049@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Change the order of members in struct cs_dsp_coeff_ctl to avoid
-the compiler having to insert alignment padding bytes. On a x86_64
-build this saves 16 bytes per control.
 
-- Pointers are collected to the top of the struct (with the exception of
-  priv, as noted below), so that they are inherently aligned.
-- The set and enable bitflags are placed together so they can be merged.
-- priv is placed at the end of the struct - it is for use by the
-  client so it is helpful to make it stand out, and since the compiler
-  will always pad the struct size to an alignment multiple putting a
-  pointer last won't introduce any more padding.
-- struct cs_dsp_alg_region is placed at the end, right before priv, for
-  the same reasoning as priv.
+On 23/04/2022 18:31, Krzysztof Kozlowski wrote:
+> On 23/04/2022 13:10, Krzysztof Kozlowski wrote:
+>> On 22/04/2022 15:38, Christopher Obbard wrote:
+>>> Document the RK3328 compatible for rockchip-vdec.
+>>>
+>>> Signed-off-by: Christopher Obbard <chris.obbard@collabora.com>
+>>> ---
+>>>   Documentation/devicetree/bindings/media/rockchip,vdec.yaml | 1 +
+>>>   1 file changed, 1 insertion(+)
+>>
+>>
+>> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> 
+> I acked this but Johan pointed out that your intention was different and
+> missing patch context is quite important here. Please explain what
+> exactly you wanted in the patch? Now it looks actually wrong, so my ack
+> is not correct.
 
-Signed-off-by: Richard Fitzgerald <rf@opensource.cirrus.com>
----
- include/linux/firmware/cirrus/cs_dsp.h | 28 +++++++++++++-------------
- 1 file changed, 14 insertions(+), 14 deletions(-)
+Wow - I think i was in weekend mode and forgot to run dtbs_check ;-).
+It will be solved in v2. I have now added the check to my "pre 
+send-patch" review checklist.
 
-diff --git a/include/linux/firmware/cirrus/cs_dsp.h b/include/linux/firmware/cirrus/cs_dsp.h
-index 38b4da3ddfe4..30055706cce2 100644
---- a/include/linux/firmware/cirrus/cs_dsp.h
-+++ b/include/linux/firmware/cirrus/cs_dsp.h
-@@ -68,36 +68,36 @@ struct cs_dsp_alg_region {
- 
- /**
-  * struct cs_dsp_coeff_ctl - Describes a coefficient control
-+ * @list:		List node for internal use
-+ * @dsp:		DSP instance associated with this control
-+ * @cache:		Cached value of the control
-  * @fw_name:		Name of the firmware
-  * @subname:		Name of the control parsed from the WMFW
-  * @subname_len:	Length of subname
-- * @alg_region:		Logical region associated with this control
-- * @dsp:		DSP instance associated with this control
-- * @enabled:		Flag indicating whether control is enabled
-- * @list:		List node for internal use
-- * @cache:		Cached value of the control
-  * @offset:		Offset of control within alg_region in words
-  * @len:		Length of the cached value in bytes
-- * @set:		Flag indicating the value has been written by the user
-- * @flags:		Bitfield of WMFW_CTL_FLAG_ control flags defined in wmfw.h
-  * @type:		One of the WMFW_CTL_TYPE_ control types defined in wmfw.h
-+ * @flags:		Bitfield of WMFW_CTL_FLAG_ control flags defined in wmfw.h
-+ * @set:		Flag indicating the value has been written by the user
-+ * @enabled:		Flag indicating whether control is enabled
-+ * @alg_region:		Logical region associated with this control
-  * @priv:		For use by the client
-  */
- struct cs_dsp_coeff_ctl {
-+	struct list_head list;
-+	struct cs_dsp *dsp;
-+	void *cache;
- 	const char *fw_name;
- 	/* Subname is needed to match with firmware */
- 	const char *subname;
- 	unsigned int subname_len;
--	struct cs_dsp_alg_region alg_region;
--	struct cs_dsp *dsp;
--	unsigned int enabled:1;
--	struct list_head list;
--	void *cache;
- 	unsigned int offset;
- 	size_t len;
--	unsigned int set:1;
--	unsigned int flags;
- 	unsigned int type;
-+	unsigned int flags;
-+	unsigned int set:1;
-+	unsigned int enabled:1;
-+	struct cs_dsp_alg_region alg_region;
- 
- 	void *priv;
- };
--- 
-2.30.2
+Just out of interest, I didn't get a mail from Johan and I can't seem to 
+find it the archive either. Is that message in public as I'd like to 
+address any other concerns at the same time ?
 
+Cheers!
+Chris
