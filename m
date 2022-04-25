@@ -2,94 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40CD8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:23:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C410C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:23:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231923AbiDYW0E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 18:26:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57788 "EHLO
+        id S232202AbiDYW0I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 18:26:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343573AbiDYVgX (ORCPT
+        with ESMTP id S1343699AbiDYWO1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 17:36:23 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9F0F388E;
-        Mon, 25 Apr 2022 14:33:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=hYFXEchTbGOdJ3MTA3MM0r318Y2HGalUUBOLK/nlz3g=; b=eq+eJVNfAchZOCMK2PfLw/ViC4
-        FqqEtR0ntH8u4sABg3uXKzvzSDpJbJFYSRaUZ7vXwf0Wt4nKHa16GUlxeisFwlC14+0wbl2rRDEGI
-        c7pyUs0WMY/H3gTsBOaedbgbcWBU4XJYbe086I1KlLTecMOWJSRaGNjBcmjp9h4A9s5dZsbTJ5GPX
-        JSxoI6/Utt7I1IYXjf5VL/lCU2QChzUsSG1XKGufSOwDDEENPxk9prQnZw0qtAezg+I3yzk0KlT7R
-        tO1rXcxkOBAFOCC4hNvypTpH+HmUaBu//ebVJQyuwaKEyHaWdYhSikRhmVc4qPZ1bwRaU0+v69YOk
-        2eFnJhqQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58404)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nj6KT-0007oZ-Te; Mon, 25 Apr 2022 22:33:09 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nj6KQ-0006rn-LS; Mon, 25 Apr 2022 22:33:06 +0100
-Date:   Mon, 25 Apr 2022 22:33:06 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Ivan Bornyakov <i.bornyakov@metrotek.ru>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, system@metrotek.ru
-Subject: Re: [PATCH net-next RESEND] net: phy: marvell-88x2222: set proper
- phydev->port
-Message-ID: <YmcTkkNcDrtdcGTM@shell.armlinux.org.uk>
-References: <20220405150305.151573-1-i.bornyakov@metrotek.ru>
- <20220425041637.5946-1-i.bornyakov@metrotek.ru>
+        Mon, 25 Apr 2022 18:14:27 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80FBA15FF8;
+        Mon, 25 Apr 2022 15:11:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1650924682; x=1682460682;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=sywHcfn28HQ7JqHHuJZV2Q3L0mg+zIBKgL3xMCQboQo=;
+  b=hb3GOfuObgqPWF+UQRPiy4DNiDL0oWv/iY9RYNHImmDJVG+0Xy4gMNLj
+   MTyt50QLXkaYIIG4jO4bbQTWl3NCwiuMmzA/jW127IZnBJ9opiMs5HNWK
+   /E2JEbwOrtTY539mx+Z91rx0+tWD7mYM9uxekXPRO6E52VojzqucsPKho
+   k=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 25 Apr 2022 15:11:22 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 15:11:21 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 25 Apr 2022 15:11:21 -0700
+Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 25 Apr 2022 15:11:20 -0700
+From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
+To:     <dri-devel@lists.freedesktop.org>, <robdclark@gmail.com>,
+        <sean@poorly.run>, <swboyd@chromium.org>, <vkoul@kernel.org>,
+        <daniel@ffwll.ch>, <airlied@linux.ie>, <agross@kernel.org>,
+        <dmitry.baryshkov@linaro.org>, <bjorn.andersson@linaro.org>
+CC:     Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
+        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v1 2/2] drm/msm/dp: do not stop transmitting phy test pattern during DP phy compliance test
+Date:   Mon, 25 Apr 2022 15:11:03 -0700
+Message-ID: <1650924663-24892-3-git-send-email-quic_khsieh@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1650924663-24892-1-git-send-email-quic_khsieh@quicinc.com>
+References: <1650924663-24892-1-git-send-email-quic_khsieh@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220425041637.5946-1-i.bornyakov@metrotek.ru>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 07:16:37AM +0300, Ivan Bornyakov wrote:
-> phydev->port was not set and always reported as PORT_TP.
-> Set phydev->port according to inserted SFP module.
-> 
-> Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
-> ---
->  drivers/net/phy/marvell-88x2222.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/net/phy/marvell-88x2222.c b/drivers/net/phy/marvell-88x2222.c
-> index ec4f1407a78c..9f971b37ec35 100644
-> --- a/drivers/net/phy/marvell-88x2222.c
-> +++ b/drivers/net/phy/marvell-88x2222.c
-> @@ -603,6 +603,7 @@ static int mv2222_sfp_insert(void *upstream, const struct sfp_eeprom_id *id)
->  	dev = &phydev->mdio.dev;
->  
->  	sfp_parse_support(phydev->sfp_bus, id, sfp_supported);
-> +	phydev->port = sfp_parse_port(phydev->sfp_bus, id, sfp_supported);
->  	sfp_interface = sfp_select_interface(phydev->sfp_bus, sfp_supported);
->  
->  	dev_info(dev, "%s SFP module inserted\n", phy_modes(sfp_interface));
-> @@ -639,6 +640,7 @@ static void mv2222_sfp_remove(void *upstream)
->  
->  	priv->line_interface = PHY_INTERFACE_MODE_NA;
->  	linkmode_zero(priv->supported);
-> +	phydev->port = PORT_OTHER;
+At normal operation, transmit phy test pattern has to be terminated before
+DP controller switch to video ready state. However during phy compliance
+testing, transmit phy test pattern should not be terminated until end of
+compliance test which usually indicated by unplugged interrupt.
 
-Can this PHY be used in dual-media mode, auto-switching between copper
-and fibre? If so, is PORT_OTHER actually appropriate here, or should
-the old value be saved when the module is inserted and restored when
-it's removed?
+Fixes: 64e190e720a7 ("drm/msm/dp: DisplayPort PHY compliance tests fixup")
+Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+---
+ drivers/gpu/drm/msm/dp/dp_ctrl.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
+diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+index 193cc1a..f99e173 100644
+--- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
++++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+@@ -1699,8 +1699,6 @@ int dp_ctrl_on_link(struct dp_ctrl *dp_ctrl)
+ 		ctrl->link->link_params.rate,
+ 		ctrl->link->link_params.num_lanes, ctrl->dp_ctrl.pixel_rate);
+ 
+-	ctrl->link->phy_params.p_level = 0;
+-	ctrl->link->phy_params.v_level = 0;
+ 
+ 	rc = dp_ctrl_enable_mainlink_clocks(ctrl);
+ 	if (rc)
+@@ -1822,12 +1820,6 @@ int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl)
+ 		}
+ 	}
+ 
+-	if (!dp_ctrl_channel_eq_ok(ctrl))
+-		dp_ctrl_link_retrain(ctrl);
+-
+-	/* stop txing train pattern to end link training */
+-	dp_ctrl_clear_training_pattern(ctrl);
+-
+ 	ret = dp_ctrl_enable_stream_clocks(ctrl);
+ 	if (ret) {
+ 		DRM_ERROR("Failed to start pixel clocks. ret=%d\n", ret);
+@@ -1839,6 +1831,13 @@ int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl)
+ 		return 0;
+ 	}
+ 
++	if (!dp_ctrl_channel_eq_ok(ctrl)) {
++		dp_ctrl_link_retrain(ctrl);
++	}
++
++	/* stop txing train pattern to end link training */
++	dp_ctrl_clear_training_pattern(ctrl);
++
+ 	/*
+ 	 * Set up transfer unit values and set controller state to send
+ 	 * video.
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
+
