@@ -2,100 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07A5BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 07:32:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D107DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 07:34:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237065AbiDYHfk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 03:35:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59956 "EHLO
+        id S235798AbiDYHhN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 03:37:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239192AbiDYHf0 (ORCPT
+        with ESMTP id S229785AbiDYHhK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 03:35:26 -0400
-Received: from mail.meizu.com (edge07.meizu.com [112.91.151.210])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE66F1154
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 00:32:20 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail11.meizu.com
- (172.16.1.15) with Microsoft SMTP Server (TLS) id 14.3.487.0; Mon, 25 Apr
- 2022 15:32:20 +0800
-Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Mon, 25 Apr
- 2022 15:32:18 +0800
-From:   Haowen Bai <baihaowen@meizu.com>
-To:     <baihaowen@meizu.com>
-CC:     <linux-kernel@vger.kernel.org>
-Subject: [PATCH 2/2] doc/vm/page_owner.rst: Fix table display confusion
-Date:   Mon, 25 Apr 2022 15:32:11 +0800
-Message-ID: <1650871931-10015-3-git-send-email-baihaowen@meizu.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1650871931-10015-1-git-send-email-baihaowen@meizu.com>
-References: <1650871931-10015-1-git-send-email-baihaowen@meizu.com>
+        Mon, 25 Apr 2022 03:37:10 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F1D1DEBD
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 00:34:07 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KmxZL2yNhzfb7r;
+        Mon, 25 Apr 2022 15:33:14 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 25 Apr 2022 15:33:55 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 25 Apr
+ 2022 15:33:54 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        <linux-arm-kernel@lists.infradead.org>
+CC:     <arnd@arndb.de>, <robert.jarzmik@free.fr>
+Subject: [PATCH -next] ARM: pxa: pxa2xx-ac97-lib: fix return value check of platform_get_irq()
+Date:   Mon, 25 Apr 2022 15:45:59 +0800
+Message-ID: <20220425074559.2436002-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After make htmldocs, the table which is made of tab will
-display all by one line. so we make a standard table for STANDARD
-FORMAT SPECIFIERS description.
+platform_get_irq() returns negative error number on failure, fix the
+return value check in pxa2xx_ac97_hw_probe() and assign the error code
+to 'ret'.
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+Fixes: 2548e6c76ebf ("ARM: pxa: pxa2xx-ac97-lib: use IRQ resource")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
- Documentation/vm/page_owner.rst | 34 ++++++++++++++++++++--------------
- 1 file changed, 20 insertions(+), 14 deletions(-)
+ sound/arm/pxa2xx-ac97-lib.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/vm/page_owner.rst b/Documentation/vm/page_owner.rst
-index 422d5fa99e84..a8505e3a3044 100644
---- a/Documentation/vm/page_owner.rst
-+++ b/Documentation/vm/page_owner.rst
-@@ -174,22 +174,28 @@ STANDARD FORMAT SPECIFIERS
+diff --git a/sound/arm/pxa2xx-ac97-lib.c b/sound/arm/pxa2xx-ac97-lib.c
+index e55c0421718b..2ca33fd5a575 100644
+--- a/sound/arm/pxa2xx-ac97-lib.c
++++ b/sound/arm/pxa2xx-ac97-lib.c
+@@ -402,8 +402,10 @@ int pxa2xx_ac97_hw_probe(struct platform_device *dev)
+ 		goto err_clk2;
  
- For --sort option:
+ 	irq = platform_get_irq(dev, 0);
+-	if (!irq)
++	if (irq < 0) {
++		ret = irq;
+ 		goto err_irq;
++	}
  
--	KEY		LONG		DESCRIPTION
--	p		pid		process ID
--	tg		tgid		thread group ID
--	n		name		task command name
--	st		stacktrace	stack trace of the page allocation
--	T		txt		full text of block
--	ft		free_ts		timestamp of the page when it was released
--	at		alloc_ts	timestamp of the page when it was allocated
-+        ====            ==========      ============================================
-+        KEY             LONG            DESCRIPTION
-+        ====            ==========      ============================================
-+        p               pid             process ID
-+        tg              tgid            thread group ID
-+        n               name            task command name
-+        st              stacktrace      stack trace of the page allocation
-+        T               txt             full text of block
-+        ft              free_ts         timestamp of the page when it was released
-+        at              alloc_ts        timestamp of the page when it was allocated
-         ator            allocator       memory allocator for pages
-+        ====            ==========      ============================================
- 
- For --curl option:
- 
--	KEY		LONG		DESCRIPTION
--	p		pid		process ID
--	tg		tgid		thread group ID
--	n		name		task command name
--	f		free		whether the page has been released or not
--	st		stacktrace	stack trace of the page allocation
-+        ====            ===========     ============================================
-+        KEY             LONG            DESCRIPTION
-+        ====            ===========     ============================================
-+        p               pid             process ID
-+        tg              tgid            thread group ID
-+        n               name            task command name
-+        f               free            whether the page has been released or not
-+        st              stacktrace      stack trace of the page allocation
-         ator            allocator       memory allocator for pages
-+        ====            ===========     ============================================
+ 	ret = request_irq(irq, pxa2xx_ac97_irq, 0, "AC97", NULL);
+ 	if (ret < 0)
 -- 
-2.7.4
+2.25.1
 
