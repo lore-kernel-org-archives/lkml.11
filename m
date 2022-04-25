@@ -2,233 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9D6AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:10:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE21EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:12:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243246AbiDYQOB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 12:14:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40616 "EHLO
+        id S243253AbiDYQPb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 12:15:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240524AbiDYQN7 (ORCPT
+        with ESMTP id S240524AbiDYQP3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 12:13:59 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58B68457B3
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 09:10:55 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id bo5so15229187pfb.4
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 09:10:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=NzLTDT2IhgocKZKLBPfCzs7lhR1yZQjCwOZbx7KRLTg=;
-        b=oI8XT1uHa4eoJ1UFRSstq3A4sup6lW+z5ny8eV5YuU9ddf5Hn5HusrrlWreu+EajyX
-         jI54mZlCCYN/dGsY5Dtup97rdwNTxl3ccUwvJyc9nI5t7RC54BhQwx7UELHN8Dy/INos
-         nO2+4sygc8nbZEGl32gGnfCj0tdfej/fR4gDzlZTwJtp8/wdIxgIHP4Dnq0ubjqSp8vP
-         IiYmnKcoRsjpMr+1PDGTYU9066cv99ZvsLkLRiafv8K+gQ/U90isYTQyDyfOWwr1fN/q
-         AyNGq/6NKaM0W0zoO57gugdG6TNZveaJ+06AIzpeie3fFOMDNBpvUKiGs8/OzMPdK9aO
-         YtUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=NzLTDT2IhgocKZKLBPfCzs7lhR1yZQjCwOZbx7KRLTg=;
-        b=yu+FJNoySWZlJxmVGFtvwQ7bRqguSt6tvl7KFYBU2mhNy6+VG67eYKi/FkHI/lpPgS
-         4Np2CMVWXpH2uOifJmzSrQKIgxo6AQa9bAd65bfdYJo9Yc4rixddFvUQ6VmieOnPDH8/
-         j6thSpX+aMh6uWRBctgYO+Dv1I6UU7KqnuFHKc9DH/QYCWFENWZIswXaK65wUHzQVnLW
-         VK0J+aXkL7jHcWYoltaeVsLfdsgHilEcs+d3Frh3VN7rAr05PjuSLUHLr0ZuLH9z5XYn
-         3DNcM1x0dCRRTJMtjrmCoMYiYvplFrXHNBxHJtPqba4t+1D0BIRzzWGZhygDAAH0q+Z8
-         DBaA==
-X-Gm-Message-State: AOAM530zQh8Tk1c/W4gCnJNLtvGn8JPPZOY8FV9bcL+9HGsYywGxWpX3
-        u2Dyh5OtiZB/c8nEknmMLhvNxQ==
-X-Google-Smtp-Source: ABdhPJwd9GSMxJuQqx1QMLV21SmOrSHoXMBOl8ZXkog4xj/xIGIdt8EUgtEry3elVyU4mFmyODRv4A==
-X-Received: by 2002:a05:6a00:b4d:b0:509:1ed1:570e with SMTP id p13-20020a056a000b4d00b005091ed1570emr19518664pfo.19.1650903054831;
-        Mon, 25 Apr 2022 09:10:54 -0700 (PDT)
-Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
-        by smtp.gmail.com with ESMTPSA id bv1-20020a17090af18100b001d8ace370cbsm10826119pjb.54.2022.04.25.09.10.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 09:10:53 -0700 (PDT)
-Date:   Mon, 25 Apr 2022 10:10:51 -0600
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-To:     Shile Zhang <shile.zhang@linux.alibaba.com>
-Cc:     Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] coresight: etm4x: return 0 instead of using local ret
- variable
-Message-ID: <20220425161051.GA1917807@p14s>
-References: <20220422020239.37186-1-shile.zhang@linux.alibaba.com>
- <20220422154558.GA1713394@p14s>
- <b1654ab7-b783-ac59-ee94-13527135f406@linux.alibaba.com>
+        Mon, 25 Apr 2022 12:15:29 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2A712119EC1
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 09:12:24 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E5EF31FB;
+        Mon, 25 Apr 2022 09:12:23 -0700 (PDT)
+Received: from airbuntu (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5AD7B3F774;
+        Mon, 25 Apr 2022 09:12:22 -0700 (PDT)
+Date:   Mon, 25 Apr 2022 17:12:09 +0100
+From:   Qais Yousef <qais.yousef@arm.com>
+To:     Xuewen Yan <xuewen.yan94@gmail.com>
+Cc:     Xuewen Yan <xuewen.yan@unisoc.com>, dietmar.eggemann@arm.com,
+        lukasz.luba@arm.com, rafael@kernel.org, viresh.kumar@linaro.org,
+        mingo@redhat.com, peterz@infradead.org, vincent.guittot@linaro.org,
+        rostedt@goodmis.org, linux-kernel@vger.kernel.org,
+        di.shen@unisoc.com
+Subject: Re: [PATCH] sched: Take thermal pressure into account when determine
+ rt fits capacity
+Message-ID: <20220425161209.ydugtrs3b7gyy3kk@airbuntu>
+References: <20220407051932.4071-1-xuewen.yan@unisoc.com>
+ <20220420135127.o7ttm5tddwvwrp2a@airbuntu>
+ <CAB8ipk-tWjkeAbV=BDhNy04Yq6rdLf80x_7twuLV=HqT4nc1+w@mail.gmail.com>
+ <20220421161509.asz25zmh25eurgrk@airbuntu>
+ <CAB8ipk_rZnwDrMaY-zJxR3pByYWD1XOP2waCgU9DZzQNpCN2zA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <b1654ab7-b783-ac59-ee94-13527135f406@linux.alibaba.com>
+In-Reply-To: <CAB8ipk_rZnwDrMaY-zJxR3pByYWD1XOP2waCgU9DZzQNpCN2zA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 24, 2022 at 02:57:24PM +0800, Shile Zhang wrote:
+On 04/25/22 09:31, Xuewen Yan wrote:
+> On Fri, Apr 22, 2022 at 12:15 AM Qais Yousef <qais.yousef@arm.com> wrote:
+> > Is it okay to share what the capacities of the littles, mediums and bigs on
+> > your system? And how they change under worst case scenario thermal pressure?
+> > Only IF you have these numbers handy :-)
 > 
-> 
-> On 2022/4/22 23:45, Mathieu Poirier wrote:
-> > On Fri, Apr 22, 2022 at 10:02:39AM +0800, Shile Zhang wrote:
-> > > The function etm4_remove_dev() always return 0, and the former function
-> > > etm4_remove has been changed to void in commit 3fd269e74f2fe ("amba: Make
-> > > the remove callback return void"). But now its changed back to int type
-> > > for some reason, which is different to the stable branch linux-5.10.y.
-> > 
-> > Please spend time understanding why function etm4_remove_dev()'s return value
-> > has been changed back to an "int".  From there you will likely come to the
-> > conclusion that adding the above to the changelog doesn't make sense.
-> 
-> Sorry, I means "some reason" here actually I cannot find out why.
-> 
-> 1. From the git log of the file
-> `drivers/hwtracing/coresight/coresight-etm4x-core.c', only log of
-> etm4_remove changes to void in commit 3fd269e74f2fe. no any log record when
-> it change back to int.
-> 2. from the commit 'git log --pretty="%h %ci %cn %s"
-> drivers/hwtracing/coresight/coresight-etm4x-core.c'
-> ...
-> b8336ad947e19 2021-02-04 17:00:32 +0100 Greg Kroah-Hartman coresight: etm4x:
-> add AMBA id for Cortex-A55 and Cortex-A75
-> 3fd269e74f2fe 2021-02-02 14:25:50 +0100 Uwe Kleine-König amba: Make the
-> remove callback return void
-> ...
-> 
-> The commit 'b8336ad947e19' does not change the etm4_remove:
-> https://github.com/torvalds/linux/commit/b8336ad947e1913b9bb5cdf4f54b687654160d42
-> 
-> But the different between the commit 'b8336ad947e19' and '3fd269e74f2fe'
-> contains the changes of etm4_remove back to int, as following:
-> ---
-> ...
-> diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c
-> b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-> index 82787cba537d3..8c4b0c46c8f32 100644
-> --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
-> +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-> @@ -1680,7 +1680,7 @@ static void clear_etmdrvdata(void *info)
->         etmdrvdata[cpu] = NULL;
->  }
-> 
-> -static void etm4_remove(struct amba_device *adev)
-> +static int etm4_remove(struct amba_device *adev)
->  {
->         struct etmv4_drvdata *drvdata = dev_get_drvdata(&adev->dev);
-> 
-> @@ -1703,6 +1703,8 @@ static void etm4_remove(struct amba_device *adev)
->         cpus_read_unlock();
-> 
->         coresight_unregister(drvdata->csdev);
-> +
-> +       return 0;
->  }
-> 
->  static const struct amba_id etm4_ids[] = {
-> @@ -1711,6 +1713,8 @@ static const struct amba_id etm4_ids[] = {
->         CS_AMBA_ID(0x000bb95a),                 /* Cortex-A72 */
->         CS_AMBA_ID(0x000bb959),                 /* Cortex-A73 */
->         CS_AMBA_UCI_ID(0x000bb9da, uci_id_etm4),/* Cortex-A35 */
-> +       CS_AMBA_UCI_ID(0x000bbd05, uci_id_etm4),/* Cortex-A55 */
-> +       CS_AMBA_UCI_ID(0x000bbd0a, uci_id_etm4),/* Cortex-A75 */
->         CS_AMBA_UCI_ID(0x000bbd0c, uci_id_etm4),/* Neoverse N1 */
->         CS_AMBA_UCI_ID(0x000f0205, uci_id_etm4),/* Qualcomm Kryo */
->         CS_AMBA_UCI_ID(0x000f0211, uci_id_etm4),/* Qualcomm Kryo */
-> ...
-> ---
-> 
-> I really don't know how to check which commit change it back.
-> Could you please help to give me some guidance?
+> Okay, the little/mid/big cpu scale capacity is 350/930/1024, but the
+> cpu frequency point is discrete, the big core's high freq point may is
+> just a few more than the mid core's highest.
+> In this case, once the thermal decrease the scaling_max_freq, the
+> maximum frequency of the large core is easily lower than that of the
+> medium core.
+> Of course, the corner case is due to the frequency design of the soc
+> and  our thermal algorithm.
 
-Have a look at "git blame" - it is really useful to know what commit introduced a
-change.  In this case, and using coresight next (c86dd9869128), the command
-would be:
-
-$ git blame -L 2059,2059 drivers/hwtracing/coresight/coresight-etm4x-core.c
-
-That will tell you how function etm4_remove_dev() got to return an 'int' again.  
-
-But this is really about understanding the current code rather than trying to
-understand the history of it.  With commit 3fd269e74f2fe, Uwe was making amba
-remove callback functions return a 'void'.  And this is what we see here[1] in
-v5.10.112.  Note that etm4_remove() is the callback to the amba driver.
-
-In the mainline code, the amba callback function is now etm4_remove_amba() and
-still returns a 'void'.  Function etm4_remove() is now etm4_remove_dev() and is
-called by both etm4_remove_amba() and etm4_remove_platform_dev(), to avoid code
-duplication.
-
-The conclusion is that because etm4_remove_dev() no longer interfaces with the
-amba subsystem, its return value can be 'int'.  But in this case the return
-value is not used and as such can be changed to a 'void', regardless of commit
-3fd269e74f2fe. 
-
-Mathieu
-
-[1]. https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/drivers/hwtracing/coresight/coresight-etm4x-core.c?h=v5.10.112#n1585
+Okay, thanks for the info!
 
 > 
-> Thanks!
+> >
+> > Is it actually an indication of a potential other problem if you swing into
+> > capacity inversion in the bigs that often? I've seen a lot of systems where the
+> > difference between the meds and bigs is small. But frequent inversion could be
+> > suspicious still.
+> >
+> > Do the littles and the mediums experience any significant thermal pressure too?
 > 
+> In our platform, it's not.
+
+Good.
+
+> > It doesn't seem it'll cause a significant error, but still it seems to me this
+> > function wants the original capacity passed to it.
+> >
+> > There are similar questions to be asked since you modify sg_cpu->max. Every
+> > user needs to be audited if they're fine with this change or not.
+> >
+> > I'm not sure still what we are achieving here. You want to force schedutil not
+> > to request higher frequencies if thermal pressure is high? Should schedutil
+> > actually care? Shouldn't the cpufreq driver reject this request and pick the
+> > next best thing if it can't satisfy it? I could be missing something, I haven't
+> > looked that hard tbh :-)
 > 
-> > 
-> > > 
-> > > Just let it return void and return 0 directly in it's caller function
-> > > etm4_remove_platform_dev.
-> > 
-> > The only rational for this patch is that etm4_remove_dev() always returns '0'.
-> > And even if it was to return anything else, the return value it not checked.
-> > And even if the return value was checked, there is nothing to do about an error
-> > condition since the driver is being removed.
-> > 
-> > > 
-> > > Signed-off-by: Shile Zhang <shile.zhang@linux.alibaba.com>
-> > > ---
-> > > v2: re-work the commit log from Mathieu's suggestion.
-> > > v1: https://lore.kernel.org/linux-arm-kernel/20220421164217.GB1596562@p14s/T/
-> > > ---
-> > >   drivers/hwtracing/coresight/coresight-etm4x-core.c | 11 +++++------
-> > >   1 file changed, 5 insertions(+), 6 deletions(-)
-> > > 
-> > > diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-> > > index 7f416a12000eb..141f8209a152a 100644
-> > > --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
-> > > +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-> > > @@ -2104,7 +2104,7 @@ static void clear_etmdrvdata(void *info)
-> > >   	etmdrvdata[cpu] = NULL;
-> > >   }
-> > > -static int __exit etm4_remove_dev(struct etmv4_drvdata *drvdata)
-> > > +static void __exit etm4_remove_dev(struct etmv4_drvdata *drvdata)
-> > >   {
-> > >   	etm_perf_symlink(drvdata->csdev, false);
-> > >   	/*
-> > > @@ -2125,8 +2125,6 @@ static int __exit etm4_remove_dev(struct etmv4_drvdata *drvdata)
-> > >   	cscfg_unregister_csdev(drvdata->csdev);
-> > >   	coresight_unregister(drvdata->csdev);
-> > > -
-> > > -	return 0;
-> > >   }
-> > >   static void __exit etm4_remove_amba(struct amba_device *adev)
-> > > @@ -2139,13 +2137,14 @@ static void __exit etm4_remove_amba(struct amba_device *adev)
-> > >   static int __exit etm4_remove_platform_dev(struct platform_device *pdev)
-> > >   {
-> > > -	int ret = 0;
-> > >   	struct etmv4_drvdata *drvdata = dev_get_drvdata(&pdev->dev);
-> > >   	if (drvdata)
-> > > -		ret = etm4_remove_dev(drvdata);
-> > > +		etm4_remove_dev(drvdata);
-> > > +
-> > >   	pm_runtime_disable(&pdev->dev);
-> > > -	return ret;
-> > > +
-> > > +	return 0;
-> > >   }
-> > >   static const struct amba_id etm4_ids[] = {
-> > > -- 
-> > > 2.33.0.rc2
-> > > 
+> I changed this just want to make it more responsive to the real
+> capacity of the cpu, if it will cause other problems, maybe it would
+> be better not to change it.:)
+
+There are others who can give you a better opinion. But AFAICS we're not fixing
+anything but risking breaking other things. So I vote for not to change it :)
+
+> > It depends on the severity of the problem. The simplest thing I can suggest is
+> > to check if the cpu is in capacity inversion state, and if it is, then make
+> > rt_task_fits_capacity() return false always.
+> >
+> > If we need a generic solution to handle thermal pressure omitting OPPs, then
+> > the search needs to become more complex. The proposal in this patch is not
+> > adequate because tasks that want to run at capacity_orig_of(cpu) will wrongly
+> > omit some cpus because of any tiny thermal pressure. For example if the
+> > capacity_orig_of(medium_cpu) = 700, and uclamp_min for RT is set to 700, then
+> > any small thermal pressure on mediums will cause these tasks to run on big cpus
+> > only, which is not what we want. Especially if these big cpus can end up in
+> > capacity inversion later ;-)
+> >
+> > So if we want to handle this case, then we need to ensure the search returns
+> > false only if
+> >
+> >         1. Thermal pressure results in real OPP to be omitted.
+> >         2. Another CPU that can provide this performance level is available.
+> >
+> > Otherwise we should still fit it on this CPU because it'll give us the closest
+> > thing to what was requested.
+> >
+> > I can think of 2 ways to implement this, but none of them seem particularly
+> > pretty :-/
+> 
+> Maybe as Lukasz Luba said:
+> 
+> https://lore.kernel.org/all/ae98a861-8945-e630-8d4c-8112723d1007@arm.com/
+> 
+> > Let's meet in the middle:
+> > 1) use the thermal PELT signal in RT:
+> > capacity = capacity_orig_of(cpu) - thermal_load_avg(cpu_rq(cpu))
+> > 2) introduce a more configurable thermal_pressure shifter instead
+> > 'sched_thermal_decay_shift', which would allow not only to make the
+> > decaying longer, but also shorter when the platform already might do
+> > that, to not cause too much traffic.
+> 
+> But even if this is changed, there will still be the same problem, I
+> look forward to Lukasz's patch:)
+
+This will not address my concern unless I missed something.
+
+The best (simplest) way forward IMHO is to introduce a new function
+
+	bool cpu_in_capacity_inversion(int cpu);
+
+(feel free to pick another name) which will detect the scenario you're in. You
+can use this function then in rt_task_fits_capacity()
+
+	diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
+	index a32c46889af8..d48811a7e956 100644
+	--- a/kernel/sched/rt.c
+	+++ b/kernel/sched/rt.c
+	@@ -462,6 +462,9 @@ static inline bool rt_task_fits_capacity(struct task_struct *p, int cpu)
+		if (!static_branch_unlikely(&sched_asym_cpucapacity))
+			return true;
+
+	+       if (cpu_in_capacity_inversion(cpu))
+	+               return false;
+	+
+		min_cap = uclamp_eff_value(p, UCLAMP_MIN);
+		max_cap = uclamp_eff_value(p, UCLAMP_MAX);
+
+You'll probably need to do something similar in dl_task_fits_capacity().
+
+This might be a bit aggressive though as we'll steer away all RT tasks from
+this CPU (as long as there's another CPU that can fit it). I need to think more
+about it. But we could do something like this too
+
+	diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
+	index a32c46889af8..f2a34946a7ab 100644
+	--- a/kernel/sched/rt.c
+	+++ b/kernel/sched/rt.c
+	@@ -462,11 +462,14 @@ static inline bool rt_task_fits_capacity(struct task_struct *p, int cpu)
+		if (!static_branch_unlikely(&sched_asym_cpucapacity))
+			return true;
+	 
+	+       cpu_cap = capacity_orig_of(cpu);
+	+
+	+       if (cpu_in_capacity_inversion(cpu))
+	+               cpu_cap -= thermal_load_avg(cpu_rq(cpu));
+	+
+		min_cap = uclamp_eff_value(p, UCLAMP_MIN);
+		max_cap = uclamp_eff_value(p, UCLAMP_MAX);
+	 
+	-       cpu_cap = capacity_orig_of(cpu);
+	-
+		return cpu_cap >= min(min_cap, max_cap);
+	 }
+	 #else
+
+Thoughts?
+
+
+Thanks!
+
+--
+Qais Yousef
