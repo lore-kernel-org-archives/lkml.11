@@ -2,132 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E227C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 18:23:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41A1BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 18:24:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244385AbiDYS0a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 14:26:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41916 "EHLO
+        id S243733AbiDYS14 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 14:27:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243733AbiDYS0E (ORCPT
+        with ESMTP id S244406AbiDYS1p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 14:26:04 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5F76111CB4;
-        Mon, 25 Apr 2022 11:22:59 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id w16so10011781ejb.13;
-        Mon, 25 Apr 2022 11:22:59 -0700 (PDT)
+        Mon, 25 Apr 2022 14:27:45 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FBE1112466
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 11:24:41 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id x33so27731960lfu.1
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 11:24:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=gvu98N+OnM/luhCQReYWbF6uR2tYpArXdOPWVpsiRFE=;
-        b=NCfMAGpyr61KewdUdbjWyMKju/GFaW1uLf0R5mbdIzKkrnjW/iySxCT0jLufknsz6m
-         WMa0rxN3gY0PRUE6wq9FJgJY6gY1hzzgsvjiCm4l2HImfkBtpbgB5dZkri+HqoXpphAc
-         Zu84I2CTWl4pIsltG9rVZUUn7swSf3SN2ipyU4wIhlVPKPJjryqD/69jUF4JZQjBDTaR
-         QlBQRFO3XFSfMBFK3MVwKiHqIqujBYq66JK7Ybu1vmeKvP+zhwQqiWdZYKuCMMxkXceb
-         OYA37jHbQuXidZeqbyEA72LmccSSVwdpThdVCTJzTMNMmA1+bJr//QJl7xwjgeXZrpxM
-         rVdQ==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=u+Bm1DAFY3a8c577iEDG2hIjq68c814xK3d9uMwZmUM=;
+        b=YhgUKDTxWXPeGRi2+kquXswG35aUOTl/8oXm32nfH4U/Ixt2ZBAnHY0/swZ7jBoPol
+         sESc2sUaZk2B0yfa7VPQFAy3bJK7bM/mNma/RGSoqH68b7vWFTTPl2m8TOmkRAG2gkhD
+         jOuwFtQMVi+5h1WGEhRlen6K3pIR104qz8ZZkltxPfF0e6SsLNP9fC0jiG6wsOUTjwm8
+         uc7uAVbtUz4gd9Gr/dLx28JBzsBUf0319BUy7ZoIK4KQSE3n6njN/1/VxGwTOkVXEfV8
+         zm7DPKEiPVIDsLiPm98mqddIB7E0wRs2Y+zcBxclJxxXiOAGj0s9ncPQd6ksDt4F3Ih+
+         H7iw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=gvu98N+OnM/luhCQReYWbF6uR2tYpArXdOPWVpsiRFE=;
-        b=Nb4w68aR+fExecOomBiWGvrKGjYMZ48gN3SQt+wlwUz4ayZ3nN71O3AmHulgaNkTPy
-         CaEB3HHl8IxMq0cJzJndPonKY52V3+IZSybFrhombV4PcjLAEpmo3TmkuM64MzNppP+C
-         JmN2030jV/sLXuHIO/u7yM0R2tlZ2XXiGxjzOF79e61YOw8M8ALSfcPQYF4zx9AcgCZj
-         KR9UxtfkKfBqL+pgm84KkYkNIT0yAWkZwnpskEPFFCG4Vq1rOB2fnE7NqcN7CKWqEYTH
-         Y1jVLHM/eCQ8FJ0ypI0OpQ/jz2LLNs/tfq2CMW7whtnS67uTi0d6kSfywUC81SK+oAmo
-         RG5w==
-X-Gm-Message-State: AOAM533ifLPv9mDBmNeX7XTGDdd5mcX2SvbsBDflaPuACoFzvxFfoEtJ
-        w0wvXMpIE/DKxlDBMm7b35I=
-X-Google-Smtp-Source: ABdhPJxYeRdgw7s6UWLZspqRmHYG9DJMH7dAXUm9Tk3Tt7gyDGSAf5mgdfnntKNs12BqzpDn+zUiYg==
-X-Received: by 2002:a17:907:1686:b0:6f0:c0f:2773 with SMTP id hc6-20020a170907168600b006f00c0f2773mr17640149ejc.445.1650910978204;
-        Mon, 25 Apr 2022 11:22:58 -0700 (PDT)
-Received: from fedora.robimarko.hr (cpe-94-253-165-91.zg.cable.xnet.hr. [94.253.165.91])
-        by smtp.googlemail.com with ESMTPSA id h13-20020a170906590d00b006f39021e683sm1677210ejq.12.2022.04.25.11.22.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 11:22:57 -0700 (PDT)
-From:   Robert Marko <robimarko@gmail.com>
-To:     agross@kernel.org, bjorn.andersson@linaro.org,
-        mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, absahu@codeaurora.org,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Cc:     Robert Marko <robimarko@gmail.com>
-Subject: [PATCH 4/7] clk: qcom: ipq8074: fix NSS port frequency tables
-Date:   Mon, 25 Apr 2022 20:22:46 +0200
-Message-Id: <20220425182249.2753690-4-robimarko@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220425182249.2753690-1-robimarko@gmail.com>
-References: <20220425182249.2753690-1-robimarko@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=u+Bm1DAFY3a8c577iEDG2hIjq68c814xK3d9uMwZmUM=;
+        b=Fcj0M3iCcmLfYaCVtlnwO6qAonRE4HvuQaP71pedkPTUn7ol43bcUAikeRXsCeD3Vv
+         HMgKZ8y5FXq8yXvvHp1/jeWxnjd/WscW36hcVI0c9EkyjSSaHpovKDXy1L82Z06B0AfC
+         E2VhufmYMaoGf04PKzuQ3OWXjgWgmZ15kUbwVF+ryVfzMJQEyNrixb8YML/CVoZFpsjc
+         ARNG+UADNZu2eIPQ8OT/HL0KUGGfrTkoMOx+CSCRrYRrCPAIdyoHE+R/E1Z8MP6BQY26
+         SGW9iSfMK3W0IsmVNwM/d8elT1cR4EiwPNm3mPSCb/tZA9zT2wOdx4WFx3i9WUbmjOHw
+         FiNQ==
+X-Gm-Message-State: AOAM531LwIOYGrIm7UnJRHXOp5VRwGaOHu+hG6jBgC6ppdGC5NXJFt65
+        syc8tdDSNkSqsJXD85IN8Eg1TE1LyK7z4/JDO095Ob3v7QY=
+X-Google-Smtp-Source: ABdhPJxOcDZUVTz/YHvMTfvHtM7X3O1aySJYZAE8sk2pPu5R2svDimItoW/LQNuuJT2Yz0RxxEoyyr5plEP2rzhchdQ=
+X-Received: by 2002:ac2:4188:0:b0:471:96f4:c1d4 with SMTP id
+ z8-20020ac24188000000b0047196f4c1d4mr14006334lfh.626.1650911079102; Mon, 25
+ Apr 2022 11:24:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220424190811.1678416-1-masahiroy@kernel.org> <20220424190811.1678416-6-masahiroy@kernel.org>
+In-Reply-To: <20220424190811.1678416-6-masahiroy@kernel.org>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Mon, 25 Apr 2022 11:24:27 -0700
+Message-ID: <CAKwvOdm=m7uZC5p52RZTBQ7NpaRS+s_wBtC6K0M1CzQyOUjadA@mail.gmail.com>
+Subject: Re: [PATCH 05/27] modpost: retrieve the module dependency and CRCs in check_exports()
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Michal Marek <michal.lkml@markovi.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-NSS port 5 and 6 frequency tables are currently broken and are causing a
-wide ranges of issue like 1G not working at all on port 6 or port 5 being
-clocked with 312 instead of 125 MHz as UNIPHY1 gets selected.
+On Sun, Apr 24, 2022 at 12:09 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
+>
+> Do not repeat the similar code.
+>
+> It is simpler to do this in check_exports() instead of add_versions().
 
-So, update the frequency tables with the ones from the downstream QCA 5.4
-based kernel which has already fixed this.
+The 2 loops have been fused into 1. :)
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 
-Fixes: 7117a51ed303 ("clk: qcom: ipq8074: add NSS ethernet port clocks")
-Signed-off-by: Robert Marko <robimarko@gmail.com>
----
- drivers/clk/qcom/gcc-ipq8074.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+>
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> ---
+>
+>  scripts/mod/modpost.c | 16 ++++++----------
+>  1 file changed, 6 insertions(+), 10 deletions(-)
+>
+> diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+> index 969a081dba62..f9cbb6b6b7a5 100644
+> --- a/scripts/mod/modpost.c
+> +++ b/scripts/mod/modpost.c
+> @@ -2159,6 +2159,11 @@ static void check_exports(struct module *mod)
+>                               s->name, mod->name);
+>                         continue;
+>                 }
+> +
+> +               s->module = exp->module;
+> +               s->crc_valid = exp->crc_valid;
+> +               s->crc = exp->crc;
+> +
+>                 basename = strrchr(mod->name, '/');
+>                 if (basename)
+>                         basename++;
+> @@ -2251,16 +2256,7 @@ static void add_staging_flag(struct buffer *b, const char *name)
+>   **/
+>  static void add_versions(struct buffer *b, struct module *mod)
+>  {
+> -       struct symbol *s, *exp;
+> -
+> -       for (s = mod->unres; s; s = s->next) {
+> -               exp = find_symbol(s->name);
+> -               if (!exp || exp->module == mod)
+> -                       continue;
+> -               s->module = exp->module;
+> -               s->crc_valid = exp->crc_valid;
+> -               s->crc = exp->crc;
+> -       }
+> +       struct symbol *s;
+>
+>         if (!modversions)
+>                 return;
+> --
+> 2.32.0
+>
 
-diff --git a/drivers/clk/qcom/gcc-ipq8074.c b/drivers/clk/qcom/gcc-ipq8074.c
-index 969b38d4ba08..37af41d8b192 100644
---- a/drivers/clk/qcom/gcc-ipq8074.c
-+++ b/drivers/clk/qcom/gcc-ipq8074.c
-@@ -1788,8 +1788,10 @@ static struct clk_regmap_div nss_port4_tx_div_clk_src = {
- static const struct freq_tbl ftbl_nss_port5_rx_clk_src[] = {
- 	F(19200000, P_XO, 1, 0, 0),
- 	F(25000000, P_UNIPHY1_RX, 12.5, 0, 0),
-+	F(25000000, P_UNIPHY0_RX, 5, 0, 0),
- 	F(78125000, P_UNIPHY1_RX, 4, 0, 0),
- 	F(125000000, P_UNIPHY1_RX, 2.5, 0, 0),
-+	F(125000000, P_UNIPHY0_RX, 1, 0, 0),
- 	F(156250000, P_UNIPHY1_RX, 2, 0, 0),
- 	F(312500000, P_UNIPHY1_RX, 1, 0, 0),
- 	{ }
-@@ -1828,8 +1830,10 @@ static struct clk_regmap_div nss_port5_rx_div_clk_src = {
- static const struct freq_tbl ftbl_nss_port5_tx_clk_src[] = {
- 	F(19200000, P_XO, 1, 0, 0),
- 	F(25000000, P_UNIPHY1_TX, 12.5, 0, 0),
-+	F(25000000, P_UNIPHY0_TX, 5, 0, 0),
- 	F(78125000, P_UNIPHY1_TX, 4, 0, 0),
- 	F(125000000, P_UNIPHY1_TX, 2.5, 0, 0),
-+	F(125000000, P_UNIPHY0_TX, 1, 0, 0),
- 	F(156250000, P_UNIPHY1_TX, 2, 0, 0),
- 	F(312500000, P_UNIPHY1_TX, 1, 0, 0),
- 	{ }
-@@ -1867,8 +1871,10 @@ static struct clk_regmap_div nss_port5_tx_div_clk_src = {
- 
- static const struct freq_tbl ftbl_nss_port6_rx_clk_src[] = {
- 	F(19200000, P_XO, 1, 0, 0),
-+	F(25000000, P_UNIPHY2_RX, 5, 0, 0),
- 	F(25000000, P_UNIPHY2_RX, 12.5, 0, 0),
- 	F(78125000, P_UNIPHY2_RX, 4, 0, 0),
-+	F(125000000, P_UNIPHY2_RX, 1, 0, 0),
- 	F(125000000, P_UNIPHY2_RX, 2.5, 0, 0),
- 	F(156250000, P_UNIPHY2_RX, 2, 0, 0),
- 	F(312500000, P_UNIPHY2_RX, 1, 0, 0),
-@@ -1907,8 +1913,10 @@ static struct clk_regmap_div nss_port6_rx_div_clk_src = {
- 
- static const struct freq_tbl ftbl_nss_port6_tx_clk_src[] = {
- 	F(19200000, P_XO, 1, 0, 0),
-+	F(25000000, P_UNIPHY2_TX, 5, 0, 0),
- 	F(25000000, P_UNIPHY2_TX, 12.5, 0, 0),
- 	F(78125000, P_UNIPHY2_TX, 4, 0, 0),
-+	F(125000000, P_UNIPHY2_TX, 1, 0, 0),
- 	F(125000000, P_UNIPHY2_TX, 2.5, 0, 0),
- 	F(156250000, P_UNIPHY2_TX, 2, 0, 0),
- 	F(312500000, P_UNIPHY2_TX, 1, 0, 0),
+
 -- 
-2.35.1
-
+Thanks,
+~Nick Desaulniers
