@@ -2,116 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95B8FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:28:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77CE1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:29:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236085AbiDYWcA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 18:32:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42614 "EHLO
+        id S232141AbiDYWc6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 18:32:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229487AbiDYWbi (ORCPT
+        with ESMTP id S235146AbiDYWcr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 18:31:38 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68BD346B12
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 15:25:43 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id x33so28770464lfu.1
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 15:25:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=wt4SKBmA6dd3dzu1mZ1RfRyaYtR/x/4FZ2KdRLDFj/w=;
-        b=QPsZgMq9SXue2UQ1itdFFnFRHTYz99R6bWiozqdCJ1DjeRHUBuaeHMoDWqMeLVq3qC
-         6zn3z5PRQidDkoT5ynr71CckobSDuaaYq6OEtKwyqGFFWOuUpp0roRbuW0r0jNMuiB/2
-         WtLhur6/V+llbtlNayllEvd44XCctKoZNqefEgr2AYQ76gJT14Jt4QcFT05ek0xV0L+t
-         xvgxVSOC+uM0CVYFs83z6R4NRGJsdwzw/1KJyEx3Av94fRbvbrh7dlLzKPUHCsTvRvw6
-         Qu315gYD31FKrwGn9K31G/7i2o80qfMeKYMH6ksad9qF9sFX5yIjEaCog8xX+b4c55OZ
-         0BMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=wt4SKBmA6dd3dzu1mZ1RfRyaYtR/x/4FZ2KdRLDFj/w=;
-        b=ZmSgsO5oXviiEzKj2nu3pesDWHVpfv5MyVp/FwExBOzqED7nEvobHfCOmf+/Q+fT0D
-         cHsvmaadkBh1OwBEQ+sesGNxLRD0PQniBAB4xe8OF9KwGRDutSjgSJ6va1xdofKB1z2i
-         /tfOHfEm6b4xKJ30zeuWUcLrb4NaYiuYA5v8fQRMzg90K895ekbJWdqMTk9IrDN0ajy9
-         ZRGUuTLmJtc4uUwNB5MpbB2R1FQ9bxXV3FmCtZZ4vBbbxY8R5/n2pWgXBe6Y9W03KFYT
-         OXWXTZZs95rZhZmB3Vt/vdqWJj2Avzec0vSmzCZZ1IhnuKEcNDy3xClIrIrJYsePHdCW
-         VYzw==
-X-Gm-Message-State: AOAM532tqNGN8moDeaut4MuXWgtWrIJsD+QGrk9JVUSEuqvL4ZRzfEHQ
-        LyhhkfXUqjxN8dkpnveoNFNOQQ==
-X-Google-Smtp-Source: ABdhPJw0tFjZFuKCNqAzwmsqgFMUo+ArHGFhefQtAIvPI+U/f87C4DgCN1sMXpUvxSaY12lfIIyQ0A==
-X-Received: by 2002:ac2:5601:0:b0:472:11a6:8287 with SMTP id v1-20020ac25601000000b0047211a68287mr1724721lfd.440.1650925541873;
-        Mon, 25 Apr 2022 15:25:41 -0700 (PDT)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id s30-20020a195e1e000000b00471fa87b819sm1041159lfb.271.2022.04.25.15.25.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Apr 2022 15:25:41 -0700 (PDT)
-Message-ID: <53d24218-c04f-7157-bd62-997b7a970a5d@linaro.org>
-Date:   Tue, 26 Apr 2022 01:25:40 +0300
+        Mon, 25 Apr 2022 18:32:47 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DCA8C21;
+        Mon, 25 Apr 2022 15:28:26 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KnKRD5ksPz4xL5;
+        Tue, 26 Apr 2022 08:28:24 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1650925705;
+        bh=PoAwKcwE9MQNmrzG4V65dtzER/1e/XUchnDW3IGbI4U=;
+        h=Date:From:To:Cc:Subject:From;
+        b=geqAAuOWYinV3zT8p826NFGh6bt5gjqJ5isiq56yHdSIXrZypzhE4p3NyJuLMQEuH
+         4Gmxiyykocn3T62g2EnWyuUoINycmOXl1YY81PWPAc1Z7ANzLLSpUxD3KJqS7KPyjw
+         KznbjdbpNM02VQCB5+UP1W0veIae/fmljLhuRrVABSwFcxagA6jyIHrpOGIkHxff/2
+         3nQk3VJj6Iz2Stz3Ax34WzzoM5T7HSd3nUgolMTU8Roe8iXRqrEAnqD6Pd8TbJUJEw
+         x8N0Kd1Y3LKW1IuRoSJllEEkGIJ75/00bdYoakRaxxN0OD25LnCvuRP08En5//TDZC
+         UfT6kWsKqkyeA==
+Date:   Tue, 26 Apr 2022 08:28:24 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Camel Guo <camel.guo@axis.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: Fixes tag needs some work in the hwmon-staging tree
+Message-ID: <20220426082824.04f63d08@canb.auug.org.au>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v2] drm/msm/dp: fix error check return value of
- irq_of_parse_and_map()
-Content-Language: en-GB
-To:     cgel.zte@gmail.com
-Cc:     airlied@linux.ie, bjorn.andersson@linaro.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux@roeck-us.net, lv.ruyi@zte.com.cn, quic_abhinavk@quicinc.com,
-        quic_khsieh@quicinc.com, robdclark@gmail.com, sean@poorly.run,
-        swboyd@chromium.org, Zeal Robot <zealci@zte.com.cn>
-References: <0e6028f6-3fc1-2a27-0a45-0e024c632248@linaro.org>
- <20220424032418.3173632-1-lv.ruyi@zte.com.cn>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <20220424032418.3173632-1-lv.ruyi@zte.com.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_/uQD0hQhrqaoRsnVoqopBDKR";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 24/04/2022 06:24, cgel.zte@gmail.com wrote:
-> From: Lv Ruyi <lv.ruyi@zte.com.cn>
-> 
-> The irq_of_parse_and_map() function returns 0 on failure, and does not
-> return an negative value.
-> 
-> Fixes: 8ede2ecc3e5e ("drm/msm/dp: Add DP compliance tests on Snapdragon Chipsets")
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+--Sig_/uQD0hQhrqaoRsnVoqopBDKR
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Hi all,
 
-> ---
-> v2: don't print rc, and return -EINVAL rather than 0
-> ---
->   drivers/gpu/drm/msm/dp/dp_display.c | 7 +++----
->   1 file changed, 3 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-> index a42732b67349..c3566e6564b1 100644
-> --- a/drivers/gpu/drm/msm/dp/dp_display.c
-> +++ b/drivers/gpu/drm/msm/dp/dp_display.c
-> @@ -1239,10 +1239,9 @@ int dp_display_request_irq(struct msm_dp *dp_display)
->   	dp = container_of(dp_display, struct dp_display_private, dp_display);
->   
->   	dp->irq = irq_of_parse_and_map(dp->pdev->dev.of_node, 0);
-> -	if (dp->irq < 0) {
-> -		rc = dp->irq;
-> -		DRM_ERROR("failed to get irq: %d\n", rc);
-> -		return rc;
-> +	if (!dp->irq) {
-> +		DRM_ERROR("failed to get irq\n");
-> +		return -EINVAL;
->   	}
->   
->   	rc = devm_request_irq(&dp->pdev->dev, dp->irq,
+In commit
 
+  251a486d3a93 ("hwmon: (tmp401) Fix incorrect return value of tmp401_init_=
+client")
 
--- 
-With best wishes
-Dmitry
+Fixes tag
+
+  Fixes: c825ca044988 ("hwmon: (tmp401) Add support of three advanced featu=
+res")
+
+has these problem(s):
+
+  - Target SHA1 does not exist
+
+Maybe you meant
+
+Fixes: a7e1e934855c ("hwmon: (tmp401) Add support of three advanced feature=
+s")
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/uQD0hQhrqaoRsnVoqopBDKR
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJnIIgACgkQAVBC80lX
+0GwO/Qf7B6qCUY/Tps9S2Ari0Fz5BTIrzf+kheF7nK/HFsI4v1GtR7ZYonK6sH46
+zEzTldt7RPmVlJeFi52K5zbAg9/0+rkh79r7//diRcO6ATcLV+ADxmC+1bKt5new
+JX4tdM/VuTfvQlWvY9mttSJCiWboYK9hsBU/3a57YYdhMTAhtFDuXsjXkWR15Ab6
+yNcbCgjpf4L61rxUZWn6/YggWGuPh4S76K94keAxVYvrGQrnDK2CImCtM2IhriYG
+MJC7O0JxfbSncpK38KoapgKQ9fw+vpEpvMn7YBeRKfmcwZo82TrCZG+o5xnkqRFW
+YPzWTxl/gBL/D9Ed9OvR047y7735cQ==
+=rzjE
+-----END PGP SIGNATURE-----
+
+--Sig_/uQD0hQhrqaoRsnVoqopBDKR--
