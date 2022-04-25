@@ -2,119 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41A1BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 18:24:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7029C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 18:25:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243733AbiDYS14 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 14:27:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49444 "EHLO
+        id S240571AbiDYS25 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 14:28:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244406AbiDYS1p (ORCPT
+        with ESMTP id S244313AbiDYS2v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 14:27:45 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FBE1112466
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 11:24:41 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id x33so27731960lfu.1
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 11:24:40 -0700 (PDT)
+        Mon, 25 Apr 2022 14:28:51 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E192B93
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 11:25:46 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id v12so15285192wrv.10
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 11:25:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=u+Bm1DAFY3a8c577iEDG2hIjq68c814xK3d9uMwZmUM=;
-        b=YhgUKDTxWXPeGRi2+kquXswG35aUOTl/8oXm32nfH4U/Ixt2ZBAnHY0/swZ7jBoPol
-         sESc2sUaZk2B0yfa7VPQFAy3bJK7bM/mNma/RGSoqH68b7vWFTTPl2m8TOmkRAG2gkhD
-         jOuwFtQMVi+5h1WGEhRlen6K3pIR104qz8ZZkltxPfF0e6SsLNP9fC0jiG6wsOUTjwm8
-         uc7uAVbtUz4gd9Gr/dLx28JBzsBUf0319BUy7ZoIK4KQSE3n6njN/1/VxGwTOkVXEfV8
-         zm7DPKEiPVIDsLiPm98mqddIB7E0wRs2Y+zcBxclJxxXiOAGj0s9ncPQd6ksDt4F3Ih+
-         H7iw==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=QZoBPC8Nkhk5k104wkau4dObrEjdqxzPZb/mWYZPD08=;
+        b=wAIjqikbcmTsGb3Jai6rhk+RkX19w89yVPsullHUPhFvojJOeGVZ5RPdo2fpa4cvLo
+         dEnJik4nMtb5jPFSr0KDgxm1ffSMex169d1YJ0S5JrCyYu6CIjCM058TlVyExmX/ZV/u
+         ealkHg2TwTq4pVf3Xo+YlypEGJybfu+C1JX41+5Jc7qwBAi3j3z5rkafMuB0BmdcrK4Y
+         H17EPMVV75WfPiDsZa1u49FcAox6Dd8R0hNPzifJF1fr2/moXsV96Z6Ezo3kaiuLO2kU
+         fQ2aFtoV86ilqTJiO6IjC4+C6IFl1qiwLgY9WzcmChQ2FFTK/jxSW1ztpFFMt63SXWqg
+         TQWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=u+Bm1DAFY3a8c577iEDG2hIjq68c814xK3d9uMwZmUM=;
-        b=Fcj0M3iCcmLfYaCVtlnwO6qAonRE4HvuQaP71pedkPTUn7ol43bcUAikeRXsCeD3Vv
-         HMgKZ8y5FXq8yXvvHp1/jeWxnjd/WscW36hcVI0c9EkyjSSaHpovKDXy1L82Z06B0AfC
-         E2VhufmYMaoGf04PKzuQ3OWXjgWgmZ15kUbwVF+ryVfzMJQEyNrixb8YML/CVoZFpsjc
-         ARNG+UADNZu2eIPQ8OT/HL0KUGGfrTkoMOx+CSCRrYRrCPAIdyoHE+R/E1Z8MP6BQY26
-         SGW9iSfMK3W0IsmVNwM/d8elT1cR4EiwPNm3mPSCb/tZA9zT2wOdx4WFx3i9WUbmjOHw
-         FiNQ==
-X-Gm-Message-State: AOAM531LwIOYGrIm7UnJRHXOp5VRwGaOHu+hG6jBgC6ppdGC5NXJFt65
-        syc8tdDSNkSqsJXD85IN8Eg1TE1LyK7z4/JDO095Ob3v7QY=
-X-Google-Smtp-Source: ABdhPJxOcDZUVTz/YHvMTfvHtM7X3O1aySJYZAE8sk2pPu5R2svDimItoW/LQNuuJT2Yz0RxxEoyyr5plEP2rzhchdQ=
-X-Received: by 2002:ac2:4188:0:b0:471:96f4:c1d4 with SMTP id
- z8-20020ac24188000000b0047196f4c1d4mr14006334lfh.626.1650911079102; Mon, 25
- Apr 2022 11:24:39 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=QZoBPC8Nkhk5k104wkau4dObrEjdqxzPZb/mWYZPD08=;
+        b=baYpICYlK7ArkZRhv4RE9xPWaRgaCw3BEjNkShtBLf/BOcPYa2KEZ2mSMf4SL+yYLL
+         9LYRXsQtACmBOjDFLPtkJK+AQ34TCW3zsmKmAWXjJFcO/N9eFRdw+0dP6WRTRFzWmht5
+         CrbWTY3z9bjmQBhtXgjfa48OYYawU78sPhJ0F1vbucltX49ByiB2xflaM4ssRFSZIz3W
+         TzZDjhpEDRA8ZjqXHKW2X2cL+Jym4UvX96fV2ez1eXmxWjJGasJHSFhhRT1oedQv3X+8
+         Q+qUeE5KhNGYsWxY15saZjXiHBqtxkbn76NdJVXTyU7ok9X1t2K6dCiqzp8kk7WCrbQo
+         c35Q==
+X-Gm-Message-State: AOAM532b4NV2cz680j1g3YPn95IpjLWT8PNveoHkDWzW5DY64nptzMe0
+        7X1DT4Z74E9uToReVYiiwJOXSA==
+X-Google-Smtp-Source: ABdhPJx1RHb2igDyXFNSmlueXh7psE8Cvjcy5JGDZx5hzrA/yet6g0mYbEs1wL4zseEKQm6y6R1Tsw==
+X-Received: by 2002:a05:6000:144c:b0:20a:818d:e3c0 with SMTP id v12-20020a056000144c00b0020a818de3c0mr14907941wrx.584.1650911144763;
+        Mon, 25 Apr 2022 11:25:44 -0700 (PDT)
+Received: from [192.168.1.41] (176-182-171-101.abo.bbox.fr. [176.182.171.101])
+        by smtp.googlemail.com with ESMTPSA id k65-20020a1ca144000000b003929a64ab63sm12452187wme.38.2022.04.25.11.25.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 Apr 2022 11:25:44 -0700 (PDT)
+Message-ID: <9243faf3-69af-eef4-1e48-867f88cab5d6@linaro.org>
+Date:   Mon, 25 Apr 2022 20:25:43 +0200
 MIME-Version: 1.0
-References: <20220424190811.1678416-1-masahiroy@kernel.org> <20220424190811.1678416-6-masahiroy@kernel.org>
-In-Reply-To: <20220424190811.1678416-6-masahiroy@kernel.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Mon, 25 Apr 2022 11:24:27 -0700
-Message-ID: <CAKwvOdm=m7uZC5p52RZTBQ7NpaRS+s_wBtC6K0M1CzQyOUjadA@mail.gmail.com>
-Subject: Re: [PATCH 05/27] modpost: retrieve the module dependency and CRCs in check_exports()
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michal Marek <michal.lkml@markovi.net>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] thermal: broadcom: Fix potential NULL dereference in
+ sr_thermal_probe
+Content-Language: en-US
+To:     Zheng Yongjun <zhengyongjun3@huawei.com>, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     rafael@kernel.org, amitk@kernel.org, rui.zhang@intel.com
+References: <20220425092929.90412-1-zhengyongjun3@huawei.com>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+In-Reply-To: <20220425092929.90412-1-zhengyongjun3@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 24, 2022 at 12:09 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> Do not repeat the similar code.
->
-> It is simpler to do this in check_exports() instead of add_versions().
-
-The 2 loops have been fused into 1. :)
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-
->
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+On 25/04/2022 11:29, Zheng Yongjun wrote:
+> platform_get_resource() may return NULL, add proper check to
+> avoid potential NULL dereferencing.
+> 
+> Fixes: 250e211057c72 ("thermal: broadcom: Add Stingray thermal driver")
+> Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
 > ---
->
->  scripts/mod/modpost.c | 16 ++++++----------
->  1 file changed, 6 insertions(+), 10 deletions(-)
->
-> diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-> index 969a081dba62..f9cbb6b6b7a5 100644
-> --- a/scripts/mod/modpost.c
-> +++ b/scripts/mod/modpost.c
-> @@ -2159,6 +2159,11 @@ static void check_exports(struct module *mod)
->                               s->name, mod->name);
->                         continue;
->                 }
-> +
-> +               s->module = exp->module;
-> +               s->crc_valid = exp->crc_valid;
-> +               s->crc = exp->crc;
-> +
->                 basename = strrchr(mod->name, '/');
->                 if (basename)
->                         basename++;
-> @@ -2251,16 +2256,7 @@ static void add_staging_flag(struct buffer *b, const char *name)
->   **/
->  static void add_versions(struct buffer *b, struct module *mod)
->  {
-> -       struct symbol *s, *exp;
-> -
-> -       for (s = mod->unres; s; s = s->next) {
-> -               exp = find_symbol(s->name);
-> -               if (!exp || exp->module == mod)
-> -                       continue;
-> -               s->module = exp->module;
-> -               s->crc_valid = exp->crc_valid;
-> -               s->crc = exp->crc;
-> -       }
-> +       struct symbol *s;
->
->         if (!modversions)
->                 return;
-> --
-> 2.32.0
->
 
+Applied, thanks
 
 -- 
-Thanks,
-~Nick Desaulniers
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
