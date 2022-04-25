@@ -2,163 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88BECC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 09:30:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE171C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 09:36:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231576AbiDYJdS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 05:33:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55398 "EHLO
+        id S238069AbiDYJj2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 05:39:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240288AbiDYJcq (ORCPT
+        with ESMTP id S241564AbiDYJiS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 05:32:46 -0400
-Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6040525C54;
-        Mon, 25 Apr 2022 02:29:42 -0700 (PDT)
-Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-2f7c57ee6feso46807627b3.2;
-        Mon, 25 Apr 2022 02:29:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7DI/4yWN3y1GMnceS1NFP6W+fM0r79CNMIWUatbJf0I=;
-        b=GCZuUnp932JxImCO8yyc4Gc8wkN98T+o2cGsdEEVoxF899i6hRCXUz2OVFWzZcrvXj
-         76MEiMn2LB4F2TlZBPj1tpYKE1kWpUxpfMjGKbKEaKhvPn61cEgu+MTEtZuig9QuGO8D
-         /cbW5lAIiXLyzhZPP0MKrlG/LXT1vBPRYMD18sTaeN5Kk1qRD2vRnDNdyjpz7Gmr1Udb
-         UUgkkwngftahjHMpHyW8CdC42noowsLzEFVjhFvf7W+MglaDl1JpoMd+jWVHPMEkFhS4
-         iW2ZTI506E3XEKox9qIvbFG2L4CCcmZZMVYO8DC5FYdqtIJAyzaQjfDeHpyP2RL2H5WX
-         EhSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7DI/4yWN3y1GMnceS1NFP6W+fM0r79CNMIWUatbJf0I=;
-        b=BFNN0NZQNht4unU39S23zLc619E7B7esdNZxqIDn2pCIM/HnYBlBMBpKiy+cqj+JVG
-         TAKFNOCwL7RInnU6bkMD8s7wyjwPXxGr7R0Nq4h6qtjSS11kpddYj3yFNo6aeJbKweqY
-         DtmreEDeEGQ0R0GNBl0oAN+8EKxWohn8xjzaLqueDzkrRZfvbzNozab2vYv/Ni1z5roA
-         v4SbmOs3PKs4D8GrrjVRSvBbshyt71tai/dW5RAzoGjrz0mwcSYBl1q/pCXE2kRvY08K
-         l3DUfh12oTOwDsfijP+HQY/LpdEXDzxNQJGYhoqwt+7lnYPK0DH2bsCp60fj1gYfgFmN
-         SzaA==
-X-Gm-Message-State: AOAM533w2NHAHlyYiinh5lNzc54xbB+FH/mbSmjvePqF3CWiFu2sZpfo
-        +rWZllzCIAKsTr5rGVd2uP7qp/YfXdqJl/EdKNk=
-X-Google-Smtp-Source: ABdhPJzuYw9o/w71YlaAQBnSBo3Oq9wnJmCtC+7inm7LG9vm9W7JrUu2ex+pkxwWlm67/LgyDA1JRGeK+fregfJ01b4=
-X-Received: by 2002:a81:6a46:0:b0:2f4:dc3f:e8f8 with SMTP id
- f67-20020a816a46000000b002f4dc3fe8f8mr16106476ywc.292.1650878981595; Mon, 25
- Apr 2022 02:29:41 -0700 (PDT)
+        Mon, 25 Apr 2022 05:38:18 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4109027B31
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 02:32:29 -0700 (PDT)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23P87Shb023705;
+        Mon, 25 Apr 2022 09:32:24 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=uOxDMBWeLkg9WNZeIza4Ng+gLhOHcmfsuTeiM+dbGv4=;
+ b=QpWuA09OcWwa95NDnpakN3mTdRJq4wCbQlJ8F3MG614EtcvjHYHPJSI+XD+bs0EUS2lv
+ nG20LfkUUkljDqwVyqDvEP6FYwUfeO3H94yq5qK1UP1tI+NzzolE1pRbNX+wo5d1rUWY
+ WRk4pGZWwEK6/fHnHcdm9UMYawzWvHxm2Sazg/MryeLrhQmYxqCxY9CcQI5qeF7P7KkK
+ adGVW3+NvMqdt1+vwRhoCQnmxS7v0ma7yWhZcKjpjWZ/2Sbrk8LEJ99bTWIUSUAb/HYV
+ ciNpI6FGTdhVxWZ8GDNrQqvrS+pglMSQEO+2KQGfCtdVx2V1pA0RcdpGGXnRwO/+RxkQ nA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fmuh5vv2q-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 25 Apr 2022 09:32:24 +0000
+Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23P9WNJT010970;
+        Mon, 25 Apr 2022 09:32:23 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fmuh5vv22-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 25 Apr 2022 09:32:23 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23P9RLTB017445;
+        Mon, 25 Apr 2022 09:32:21 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma03ams.nl.ibm.com with ESMTP id 3fm938t49u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 25 Apr 2022 09:32:21 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23P9WIHZ58065256
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 25 Apr 2022 09:32:19 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E1A3A4C040;
+        Mon, 25 Apr 2022 09:32:18 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 104394C044;
+        Mon, 25 Apr 2022 09:32:16 +0000 (GMT)
+Received: from li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com (unknown [9.43.47.198])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Mon, 25 Apr 2022 09:32:15 +0000 (GMT)
+Date:   Mon, 25 Apr 2022 15:02:08 +0530
+From:   Jagdish Gediya <jvgediya@linux.ibm.com>
+To:     "ying.huang@intel.com" <ying.huang@intel.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        akpm@linux-foundation.org, baolin.wang@linux.alibaba.com,
+        dave.hansen@linux.intel.com, aneesh.kumar@linux.ibm.com,
+        shy828301@gmail.com, weixugc@google.com, gthelen@google.com,
+        dan.j.williams@intel.com
+Subject: Re: [PATCH v3 1/7] mm: demotion: Fix demotion targets sharing among
+ sources
+Message-ID: <YmZqmEyEcs3wwu2a@li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com>
+References: <20220422195516.10769-1-jvgediya@linux.ibm.com>
+ <20220422195516.10769-2-jvgediya@linux.ibm.com>
+ <bb4daddde2df1762dd0d6f2faac1d196a01d50be.camel@intel.com>
 MIME-Version: 1.0
-References: <20220421203555.29011-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220421203555.29011-4-prabhakar.mahadev-lad.rj@bp.renesas.com> <OS0PR01MB5922C8287D7EEAB3F9DB60C386F79@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-In-Reply-To: <OS0PR01MB5922C8287D7EEAB3F9DB60C386F79@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Mon, 25 Apr 2022 10:29:15 +0100
-Message-ID: <CA+V-a8uGhUMK11BXQX9e-+8bwaq9Gx_AGHBob1KTiT6Npb-8Rw@mail.gmail.com>
-Subject: Re: [PATCH 3/3] ASoC: sh: rz-ssi: Add a devres action to release the
- DMA channels
-To:     Biju Das <biju.das.jz@bp.renesas.com>
-Cc:     Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Pavel Machek <pavel@denx.de>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bb4daddde2df1762dd0d6f2faac1d196a01d50be.camel@intel.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 58Me0xLUKT-80JlZi4j6SGJUVlIKy24Y
+X-Proofpoint-GUID: _4klCVE2yRjutZrfd7aIDoXua3OnRyrf
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-25_05,2022-04-22_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxscore=0
+ phishscore=0 adultscore=0 bulkscore=0 spamscore=0 mlxlogscore=999
+ lowpriorityscore=0 malwarescore=0 priorityscore=1501 suspectscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204250040
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Biju,
+On Sun, Apr 24, 2022 at 11:25:50AM +0800, ying.huang@intel.com wrote:
+> > Subject: [PATCH v3 1/7] mm: demotion: Fix demotion targets sharing among sources
+> 
+> IMHO, this patch doesn't fix some bugs in the original code.  Instead,
+> it just enhances the original code.  For example, the subject could be,
 
-Thank you for the review.
+I think it is fixing a bug, there is a comment in the code which
+mentions that 'used_targets will become unavailable in future passes.
+This limits some opportunities for multiple source nodes to share a
+destination'. As per this comment, it was intended to share a node as
+demotion targets with some limits but the code limits not some but all
+such opportunities as no common node can be demotion targets for
+multiple source node as per current code.
 
-On Fri, Apr 22, 2022 at 7:52 AM Biju Das <biju.das.jz@bp.renesas.com> wrote:
->
-> Hi Lad Prabhakar,
->
-> Thanks for the patch.
->
-> > Subject: [PATCH 3/3] ASoC: sh: rz-ssi: Add a devres action to release the
-> > DMA channels
-> >
-> > DMA channels requested by rz_ssi_dma_request() in rz_ssi_probe() were never
-> > released in the error path apart from one place. This patch fixes this
-> > issue by adding a devres action to release the DMA channels and dropping
-> > the single rz_ssi_release_dma_channels() call which was placed in the error
-> > path in case devm_snd_soc_register_component() failed.
-> >
-> > Fixes: 26ac471c5354 ("ASoC: sh: rz-ssi: Add SSI DMAC support")
-> > Reported-by: Pavel Machek <pavel@denx.de>
-> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > ---
-> >  sound/soc/sh/rz-ssi.c | 12 ++++++++++--
-> >  1 file changed, 10 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/sound/soc/sh/rz-ssi.c b/sound/soc/sh/rz-ssi.c index
-> > d9a684e71ec3..f04da1bf5680 100644
-> > --- a/sound/soc/sh/rz-ssi.c
-> > +++ b/sound/soc/sh/rz-ssi.c
-> > @@ -912,6 +912,11 @@ static const struct snd_soc_component_driver
-> > rz_ssi_soc_component = {
-> >       .pcm_construct  = rz_ssi_pcm_new,
-> >  };
-> >
-> > +static void rz_ssi_release_dma_channels_action(void *data) {
-> > +     rz_ssi_release_dma_channels(data);
-> > +}
-> > +
-> >  static int rz_ssi_probe(struct platform_device *pdev)  {
-> >       struct rz_ssi_priv *ssi;
-> > @@ -966,6 +971,11 @@ static int rz_ssi_probe(struct platform_device *pdev)
-> >               dev_info(&pdev->dev, "DMA enabled");
-> >               ssi->playback.transfer = rz_ssi_dma_transfer;
-> >               ssi->capture.transfer = rz_ssi_dma_transfer;
-> > +
-> > +             ret = devm_add_action_or_reset(&pdev->dev,
-> > +                                            rz_ssi_release_dma_channels_action,
-> > ssi);
-> > +             if (ret)
-> > +                     return ret;
-> >       }
-> >
-> >       ssi->playback.priv = ssi;
-> > @@ -1027,8 +1037,6 @@ static int rz_ssi_probe(struct platform_device *pdev)
-> >                                             rz_ssi_soc_dai,
-> >                                             ARRAY_SIZE(rz_ssi_soc_dai));
-> >       if (ret < 0) {
-> > -             rz_ssi_release_dma_channels(ssi);
-> > -
->
-> Maybe we need to keep this as it is, otherwise DMA channel release will happen
-> after CLK disable and Reset assert. Ideally release the channel, disable the clock and assert
-> the reset.
->
-Ok will move this call to individual error paths.
-
-> Similarly, you may want to add "rz_ssi_release_dma_channels(ssi)" for error path related to
-> Pm_runtime_resume_get.
->
-yes this needs to go under all error paths except the pio chunk.
-
->
-> Also with this change there is unbalanced release_dma_channels() one from devres and other from remove.
->
-Agreed.
-
-Cheers,
-Prabhakar
-
-> Regards,
-> Biju
->
->
->
-> >               pm_runtime_put(ssi->dev);
-> >               pm_runtime_disable(ssi->dev);
-> >               reset_control_assert(ssi->rstc);
-> > --
-> > 2.17.1
->
+>   mm: demotion: support to share demotion targets among sources
+> 
+> Best Regards,
+> Huang, Ying
+> 
+> [snip]
+> 
+> 
+> 
