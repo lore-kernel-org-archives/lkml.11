@@ -2,107 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0172EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:23:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B485CC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:23:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234403AbiDYW0Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 18:26:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58712 "EHLO
+        id S235891AbiDYW03 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 18:26:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343507AbiDYV3P (ORCPT
+        with ESMTP id S1343614AbiDYVp7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 17:29:15 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D9F1220CE
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 14:26:08 -0700 (PDT)
-Received: from zn.tnic (p5de8eeb4.dip0.t-ipconnect.de [93.232.238.180])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id B81DA1EC04A6;
-        Mon, 25 Apr 2022 23:26:01 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1650921961;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VzCRn9yN2ByyCFR5QKv9+K8B8VcoQwcA3ZVz2Ifi7JQ=;
-        b=fNnh8YiUMApB0I9iM+V6r0nvmh8FA7oNdMa5U7S15/LCpqbI1/jM6tKwfyZ0aDGbo5ZAAv
-        UISb+73NpqVJqWCi+Fa1hLJKqxhd+c42n4JjVcHL1lptzDXi9IsAxaLj9BDartlz8vh+99
-        YmQB5O8tl20QGO/Fbc7aZfQyJMnzDYU=
-Date:   Mon, 25 Apr 2022 23:25:57 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Oleksandr <olekstysh@gmail.com>
-Cc:     Juergen Gross <jgross@suse.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        xen-devel@lists.xenproject.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Julien Grall <julien@xen.org>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>
-Subject: Re: [PATCH V1 3/6] xen/virtio: Add option to restrict memory access
- under Xen
-Message-ID: <YmcR5bfaYh1z7VUq@zn.tnic>
-References: <1650646263-22047-1-git-send-email-olekstysh@gmail.com>
- <1650646263-22047-4-git-send-email-olekstysh@gmail.com>
- <YmQsFb36UEH9BUnN@infradead.org>
- <6c5042fe-dafc-eb4f-c1fa-03b0faf252de@gmail.com>
- <abc5d23d-3d38-d198-4646-e886df2e83d4@suse.com>
- <YmZUpua3hkCPdbfx@infradead.org>
- <147f68f6-7d67-1884-bd14-5040639b3396@suse.com>
- <67c7460a-3001-35a6-8e5b-f367270b257a@gmail.com>
+        Mon, 25 Apr 2022 17:45:59 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9546210C88A
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 14:42:53 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id q14so19520824ljc.12
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 14:42:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=J0ON/l2oodv3sNlP+eHVo6ZPpiqCxnVVyYN++iumNjA=;
+        b=Fbz20CF4Jj2RaIdFgpKFZNrAzaKTxj2Uv1lUdUtavR82B8XjNHdJlqKRYFj8J5sYnH
+         2a+cy65W/7lJaACwuKUGno6crPpRa3JpDQ/3evU6c5XeZIM8JF/489oyyF9AR5CR/faW
+         UkPxO4Xj9bmhWF8R8j+SJ7JRENzCLryJSbSxQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=J0ON/l2oodv3sNlP+eHVo6ZPpiqCxnVVyYN++iumNjA=;
+        b=orlZYkrgB5brEsd5JkCWNGwlkEc6xTkR+RWP2sc/sF9hzdM8Fjor8xtNplzDB6yymJ
+         UfbGq66ls+mZzi35gXWJFbXFjiNHPyXUtD46vHjW4VD+xgoPPca8ksBa1yBDW9dwpFij
+         Pb7tsPwzthu0OO2qqgn9wcrqD77x1uBeUZpAhl9aV4A0ZV18WpBpDRChlbvgs4YBjpon
+         +QApG+yOPbFwQsCho1NM+dq6nkvYGxkbJlL79LjDJztpe+nmD06CxivnMh0uug9rLDXL
+         WC7acHWq0FwB3M62T/1JMev27zS5z9N4Ycad21mQ+KLrbx2RMXsmuwGSO+uxkFq4lV3B
+         gCUA==
+X-Gm-Message-State: AOAM532Fa7maIL4cSdnVRXv/IAkk1Jpb7GZl2xbnXN4i5+zN7DazY/Vo
+        CWXCIU/EIcGPVu8oQLQG54dkZaBUjWOsv9eF
+X-Google-Smtp-Source: ABdhPJzxqfSAE6HmSSWAytMBB+E4dsOvzwhDlC3V98AFQUrCuWuVaancY7eyB7SdQlb1VBryduC77w==
+X-Received: by 2002:a2e:5c81:0:b0:24b:7d:6ae7 with SMTP id q123-20020a2e5c81000000b0024b007d6ae7mr12727284ljb.76.1650922971566;
+        Mon, 25 Apr 2022 14:42:51 -0700 (PDT)
+Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com. [209.85.208.176])
+        by smtp.gmail.com with ESMTPSA id d6-20020a056512320600b0047196449b7fsm1530932lfe.92.2022.04.25.14.42.50
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 Apr 2022 14:42:50 -0700 (PDT)
+Received: by mail-lj1-f176.google.com with SMTP id c15so19511744ljr.9
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 14:42:50 -0700 (PDT)
+X-Received: by 2002:a2e:8245:0:b0:24b:48b1:a1ab with SMTP id
+ j5-20020a2e8245000000b0024b48b1a1abmr12172414ljh.152.1650922970684; Mon, 25
+ Apr 2022 14:42:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <67c7460a-3001-35a6-8e5b-f367270b257a@gmail.com>
+References: <CAHk-=whmtHMzjaVUF9bS+7vE_rrRctcCTvsAeB8fuLYcyYLN-g@mail.gmail.com>
+ <YmZvAUakbWnyQEqa@debian> <20220425142706.23e6bea1d5bfdd944e33bc96@linux-foundation.org>
+In-Reply-To: <20220425142706.23e6bea1d5bfdd944e33bc96@linux-foundation.org>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 25 Apr 2022 14:42:34 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wiR+dTAw7qRGRQ80B4oUZEithHd2J4ZfNjc5eGqY1mWwA@mail.gmail.com>
+Message-ID: <CAHk-=wiR+dTAw7qRGRQ80B4oUZEithHd2J4ZfNjc5eGqY1mWwA@mail.gmail.com>
+Subject: Re: Linux 5.18-rc4
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>, Song Liu <song@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 11:38:36PM +0300, Oleksandr wrote:
-> diff --git a/include/linux/cc_platform.h b/include/linux/cc_platform.h
-> index efd8205..d06bc7a 100644
-> --- a/include/linux/cc_platform.h
-> +++ b/include/linux/cc_platform.h
-> @@ -72,6 +72,19 @@ enum cc_attr {
->          * Examples include TDX guest & SEV.
->          */
->         CC_ATTR_GUEST_UNROLL_STRING_IO,
-> +
-> +       /**
-> +        * @CC_ATTR_GUEST_MEM_ACCESS_RESTRICTED: Restricted memory access to
-> +        *                                       Guest memory is active
-> +        *
-> +        * The platform/OS is running as a guest/virtual machine and uses
-> +        * the restricted access to its memory. This attribute is set if
-> either
-> +        * Guest memory encryption or restricted memory access using Xen
-> grant
-> +        * mappings is active.
-> +        *
-> +        * Examples include Xen guest and SEV.
+On Mon, Apr 25, 2022 at 2:27 PM Andrew Morton <akpm@linux-foundation.org> wrote:
+>
+> From: Andrew Morton <akpm@linux-foundation.org>
+> Subject: mm/nommu.c: provide vmalloc_huge() for CONFIG_MMU=n
 
-Wait, whaaat?
+Note, should already be fixed differently (with an alias) by
 
-The cc_platform* stuff is for *confidential computing* guests to check
-different platform aspects.
+  https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0fc74d820a012550be006ba82dd8f1e3fe6fa9f7
 
-From quickly skimming over this, this looks like a misuse to me.
+although when I looked at the random collection of vmalloc things it
+did make me go "hmm".
 
-Why can't you query this from the hypervisor just like you do your other
-querying about what is supported, etc? Hypercalls, CPUID, whatever...
+It might be a better long-term idea to only implement the very generic
+low-level function in mm/vmalloc.c and mm/nommu.c (ie the
+__vmalloc_node_range() function) and then move all the random wrapper
+functions into mm/util.c.
 
--- 
-Regards/Gruss,
-    Boris.
+Because right now we effectively duplicate all those wrapper
+functions, which is kind of ugly.
 
-https://people.kernel.org/tglx/notes-about-netiquette
+             Linus
