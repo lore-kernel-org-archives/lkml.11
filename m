@@ -2,108 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E489C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:24:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A7CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:24:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232650AbiDYW1o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 18:27:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34416 "EHLO
+        id S233373AbiDYW1v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 18:27:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343513AbiDYVaN (ORCPT
+        with ESMTP id S1343491AbiDYV1y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 17:30:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7699E23BE5
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 14:27:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 066D361479
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 21:27:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37757C385A7;
-        Mon, 25 Apr 2022 21:27:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1650922027;
-        bh=kqDjvm3xpzh6Yg4Lxl+rXD0rB2PmW1SLX1gSac7OA38=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SH8ca7bwli2JGengyW3Aaj2tn4GzTs25gN4kDLQXD31vIMD4zAdYYXe4RV1Hf+h5r
-         4uR7mFW6X/K2RZYuiuWmQo0DmBjI1GKuQNjTirwy0dumX98LE6YPvbvSHserq1ONbL
-         7NIYKtsUlaTtN2risNvZjBpIHyzz6tu8hL6EL+cg=
-Date:   Mon, 25 Apr 2022 14:27:06 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-mm@kvack.org, Song Liu <song@kernel.org>
-Subject: Re: Linux 5.18-rc4
-Message-Id: <20220425142706.23e6bea1d5bfdd944e33bc96@linux-foundation.org>
-In-Reply-To: <YmZvAUakbWnyQEqa@debian>
-References: <CAHk-=whmtHMzjaVUF9bS+7vE_rrRctcCTvsAeB8fuLYcyYLN-g@mail.gmail.com>
-        <YmZvAUakbWnyQEqa@debian>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Mon, 25 Apr 2022 17:27:54 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 095ED107700
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 14:24:48 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id p6so1061034pjm.1
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 14:24:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9RYuhCQRZSGGvQlvR3KQE72md5GMXY8uozyrhKpZbH4=;
+        b=76+cFpJlB2znElEluziuC+lYgS8j/y2ZEoL/3Ey3E/ltwLqQH/caL2CbKx/CjviqTf
+         VAaanrajTbqytcF+DAjxDxfemaieNsNjWEIwzrpenjDnuT3/Vvt91nO3RSOu+HURxpbK
+         xZGwSNJa/1fZh35VZAg66cOoBhCb5R93A36Y8b6aFV3V8SsN5YV4OJIqwVDg2rVMlhKQ
+         P3HvUczasvOvTuh312jNOy/Hb8K7vagFPrwqtDxTo+p3o4Vg6PlUrTa0KLpPggpj9dsW
+         X1tD8lce6FcfSlraB0XhUaoAIl5/WlVdnVLVivKxVON4WbD/O6yXfbjLvVxaLd5+EfZA
+         BhjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9RYuhCQRZSGGvQlvR3KQE72md5GMXY8uozyrhKpZbH4=;
+        b=p1D3tASo43xFYxapSyQWwwNKg6PcyZPTR85zfL2GQZuqKDpJxBc6+XUT9l2MEZXBdN
+         rBn3U2C5tMLqo0BYK61vXRp9o+YIThq8hs1GX9iCmnasdnJTZoeH9jVg/rq1RLF+MSDp
+         uvIBMeku2sD8oEgXfPipqjT1eXAngA4o7/w9qC3tqDZbF1oEq9bRtcgmzwTE1FgYDO9A
+         iyOOHoXT7iHJ/gxAtz8qrMWMQNno7J1akSWTuK80NVWXwJj32vHCLUzONPiMze6bu2uW
+         kDngoWUF0/aohzKXfcVMUU0CQJ1H8SV31bnz2x6LZmVnJo8p3woaeLlbfYFDZSt8JSxq
+         EgvA==
+X-Gm-Message-State: AOAM530XZF8KaikALqJM7cPl23Dbo5USFknnx5c7KQuXSArfbkcHDjOr
+        TxuIvt6tuNzkPieSRLBdvT8VY/QxmQxb9B3+gnNbew==
+X-Google-Smtp-Source: ABdhPJysD+6GxIKJGVU76kXWf16Gd4VaOx1Mwbkre+dhBbQ/oZx7AXi6WajOGSoOZadUd7bvIs6Q73h8n6Qn3HjHypQ=
+X-Received: by 2002:a17:90b:1d12:b0:1d9:8499:545d with SMTP id
+ on18-20020a17090b1d1200b001d98499545dmr5770592pjb.96.1650921888547; Mon, 25
+ Apr 2022 14:24:48 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220424051022.2619648-1-asmadeus@codewreck.org> <20220424051022.2619648-4-asmadeus@codewreck.org>
+In-Reply-To: <20220424051022.2619648-4-asmadeus@codewreck.org>
+From:   Quentin Monnet <quentin@isovalent.com>
+Date:   Mon, 25 Apr 2022 22:24:37 +0100
+Message-ID: <CACdoK4LH3b-n3j_9r4hbgAus1UiJkfMBOMxboTzSVWbqi+j4wg@mail.gmail.com>
+Subject: Re: [PATCH 3/4] tools/bpf: musl compat: replace nftw with FTW_ACTIONRETVAL
+To:     Dominique Martinet <asmadeus@codewreck.org>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        KP Singh <kpsingh@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Yonghong Song <yhs@fb.com>, Song Liu <songliubraving@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 25 Apr 2022 10:50:57 +0100 Sudip Mukherjee <sudipm.mukherjee@gmail.com> wrote:
+On Sun, 24 Apr 2022 at 06:11, Dominique Martinet <asmadeus@codewreck.org> wrote:
+>
+> musl nftw implementation does not support FTW_ACTIONRETVAL.
+>
+> There have been multiple attempts at pushing the feature in musl
+> upstream but it has been refused or ignored all the times:
+> https://www.openwall.com/lists/musl/2021/03/26/1
+> https://www.openwall.com/lists/musl/2022/01/22/1
+>
+> In this case we only care about /proc/<pid>/fd/<fd>, so it's not
+> too difficult to reimplement directly instead, and the new
+> implementation makes 'bpftool perf' slightly faster because it doesn't
+> needlessly stat/readdir unneeded directories (54ms -> 13ms on my machine)
+>
+> Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
 
-> Hi Linus,
-> 
-> On Sun, Apr 24, 2022 at 03:22:59PM -0700, Linus Torvalds wrote:
-> > Fairly slow and calm week - which makes me just suspect that the other
-> > shoe will drop at some point.
-> > 
-> > But maybe things are just going really well this release. It's bound
-> > to happen _occasionally_, after all.
-> 
-> My last night's mainline build failed for arm.
-> Build was with af2d861d4cd2 ("Linux 5.18-rc4").
-> 
-> imxrt_defconfig -> failed
-> lpc18xx_defconfig -> failed
-> mps2_defconfig -> failed
-> stm32_defconfig -> failed
-> vf610m4_defconfig -> failed
-> 
-> arm-linux-gnueabi-ld: mm/page_alloc.o: in function `alloc_large_system_hash':
-> page_alloc.c:(.init.text+0xe7c): undefined reference to `vmalloc_huge'
-
-Thanks.  oops.  We broke nommu.
-
-From: Andrew Morton <akpm@linux-foundation.org>
-Subject: mm/nommu.c: provide vmalloc_huge() for CONFIG_MMU=n
-
-Fixes: f2edd118d02dd ("page_alloc: use vmalloc_huge for large system hash")
-Reported-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Cc: Song Liu <song@kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
----
-
- mm/nommu.c |    6 ++++++
- 1 file changed, 6 insertions(+)
-
---- a/mm/nommu.c~a
-+++ a/mm/nommu.c
-@@ -226,6 +226,12 @@ void *vmalloc(unsigned long size)
- }
- EXPORT_SYMBOL(vmalloc);
- 
-+void *vmalloc_huge(unsigned long size, gfp_t gfp_mask)
-+{
-+	return vmalloc(size);
-+}
-+EXPORT_SYMBOL(vmalloc_huge);
-+
- /*
-  *	vzalloc - allocate virtually contiguous memory with zero fill
-  *
-_
-
-
-I don't see any point in copy-n-pasting the kerneldoc over.  Perhaps we
-should just delete all the copy-n-paste kerneldoc from nommu.c and say
-"go look at the MMU version of this function".
-
+Acked-by: Quentin Monnet <quentin@isovalent.com>
