@@ -2,103 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EAABC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 09:10:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C478C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 09:15:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241499AbiDYJN0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 05:13:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36052 "EHLO
+        id S240726AbiDYJPB convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 05:15:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241548AbiDYJNB (ORCPT
+        with ESMTP id S241575AbiDYJNb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 05:13:01 -0400
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D548C9B69;
-        Mon, 25 Apr 2022 02:09:58 -0700 (PDT)
-Received: by mail-qt1-x836.google.com with SMTP id fu34so9854893qtb.8;
-        Mon, 25 Apr 2022 02:09:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fxgLQ1soDdNo6GOHgPvluqBZIfBwx/V3C+hOxuZtNW8=;
-        b=BtwHxyPpct0J/94b6H6JFnfA626J0AL2B34MiNkgVl/GmKQdL0t7FSK6PAhiLi7Km6
-         h876ttC1XBP68qbB3vc4+a93XEN5R9ZwU/dKsbGptAD3v+11FS+3wniG62kH+RdmoDLV
-         zt79dPL4a8c0YUu3WvbCSchqL2EyqvClNf4zAlgruLcHdamP2Ll6euQm5p7yAKi7Sw1v
-         ZmGYY9bmlAHDsDAXexFR8zv64kfP9DKxxg5/uOZ9egdrB98PmSnG8LKTl2pX7fYdU+wR
-         a4tqIPxNnHfzca27KN5WaSkZCNc9OkxMXrTysh5MHJupPxFOXcAGmz2Dq4xmkElk+UDO
-         2Gvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fxgLQ1soDdNo6GOHgPvluqBZIfBwx/V3C+hOxuZtNW8=;
-        b=pVA0M82VWdSIBRcNek1JU8JYUA+Fnp9Wt5v9db4WikuviSI10BK436uV9qNxr4yCuB
-         L8YrZz76h4nrog6im5aKr1/psINAzjyF+aSX6BvaRtySy1nxNtaa63RSMY7WsI0wuGkR
-         zcghAzHRhT4FZI7Vf7OeAI5IPsL+OT0dk5B9OKD6mJD7vstVyUnE6Z1BIeViq25Cbj1W
-         /09bhMQdku9FCFJZlaXXnYKoNq9zT0duevQnpwyJ/PAi7JrOxBoEPbxu4bsdD+IQ+hqL
-         Gzxg2F0X4bbSKI8XfelhAwz3oJktaYg0wD9zEJWxNGESI/3sj3jPQ0A5V1ADrr8tS5f4
-         5hBw==
-X-Gm-Message-State: AOAM533tcAmOhoQiZdjw4qYgIe6V26T9l/7gECbODmrK7GtnrRH2LIlb
-        f5rVNZSXxrhktqQPXNRGwFzpP850GuI=
-X-Google-Smtp-Source: ABdhPJwBdVMVBLRA8VCjJ4w1pDSTXYa39d9cefp0lgq6pG4EAjTTfJBWbxdQxFOYYMlZhszBt2D22w==
-X-Received: by 2002:a05:622a:100a:b0:2f3:391c:3ce6 with SMTP id d10-20020a05622a100a00b002f3391c3ce6mr11187185qte.351.1650877797522;
-        Mon, 25 Apr 2022 02:09:57 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id y189-20020a37afc6000000b0069ede17247csm4799225qke.86.2022.04.25.02.09.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 02:09:57 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: lv.ruyi@zte.com.cn
-To:     robdclark@gmail.com, sean@poorly.run
-Cc:     quic_abhinavk@quicinc.com, airlied@linux.ie, daniel@ffwll.ch,
-        dmitry.baryshkov@linaro.org, swboyd@chromium.org,
-        bjorn.andersson@linaro.org,
-        angelogioacchino.delregno@somainline.org, tiny.windzz@gmail.com,
-        architt@codeaurora.org, jsanka@codeaurora.org,
-        skolluku@codeaurora.org, ryadav@codeaurora.org,
-        linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] drm/msm/dpu: fix error check return value of irq_of_parse_and_map()
-Date:   Mon, 25 Apr 2022 09:09:47 +0000
-Message-Id: <20220425090947.3498897-1-lv.ruyi@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Mon, 25 Apr 2022 05:13:31 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BA709CABA1
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 02:10:26 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-247-8RX-Qv7WN3KH32ORjUBsfg-1; Mon, 25 Apr 2022 10:10:23 +0100
+X-MC-Unique: 8RX-Qv7WN3KH32ORjUBsfg-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.32; Mon, 25 Apr 2022 10:10:23 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.033; Mon, 25 Apr 2022 10:10:23 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Guenter Roeck' <linux@roeck-us.net>,
+        Eddie James <eajames@linux.ibm.com>
+CC:     "linux-fsi@lists.ozlabs.org" <linux-fsi@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hwmon@vger.kernel.org" <linux-hwmon@vger.kernel.org>,
+        "jdelvare@suse.com" <jdelvare@suse.com>,
+        "joel@jms.id.au" <joel@jms.id.au>, "jk@ozlabs.org" <jk@ozlabs.org>,
+        "alistair@popple.id.au" <alistair@popple.id.au>
+Subject: RE: [PATCH 2/2] hwmon (occ): Retry for checksum failure
+Thread-Topic: [PATCH 2/2] hwmon (occ): Retry for checksum failure
+Thread-Index: AQHYV/9Rz6RE0zB8xEyMzjBr24t9/60AVjug
+Date:   Mon, 25 Apr 2022 09:10:22 +0000
+Message-ID: <44d4f10249064a28b6cc461e7cbdd402@AcuMS.aculab.com>
+References: <20220321153112.12199-1-eajames@linux.ibm.com>
+ <20220321153112.12199-3-eajames@linux.ibm.com>
+ <20220424171816.GA749761@roeck-us.net>
+In-Reply-To: <20220424171816.GA749761@roeck-us.net>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Guenter Roeck
+> Sent: 24 April 2022 18:18
+> 
+> On Mon, Mar 21, 2022 at 10:31:12AM -0500, Eddie James wrote:
+> > Due to the OCC communication design with a shared SRAM area,
+> > checkum errors are expected due to corrupted buffer from OCC
+> > communications with other system components. Therefore, retry
+> > the command twice in the event of a checksum failure.
+> >
+> > Signed-off-by: Eddie James <eajames@linux.ibm.com>
+> 
+> I assume this will be applied together with patch 1 of the series.
+> 
+> Acked-by: Guenter Roeck <linux@roeck-us.net>
+> 
+> Guenter
+> 
+> > ---
+> >  drivers/hwmon/occ/p9_sbe.c | 28 ++++++++++++++++++----------
+> >  1 file changed, 18 insertions(+), 10 deletions(-)
+> >
+> > diff --git a/drivers/hwmon/occ/p9_sbe.c b/drivers/hwmon/occ/p9_sbe.c
+> > index 49b13cc01073..7f4c3f979c54 100644
+> > --- a/drivers/hwmon/occ/p9_sbe.c
+> > +++ b/drivers/hwmon/occ/p9_sbe.c
+> > @@ -84,17 +84,25 @@ static int p9_sbe_occ_send_cmd(struct occ *occ, u8 *cmd, size_t len)
+> >  	struct p9_sbe_occ *ctx = to_p9_sbe_occ(occ);
+> >  	size_t resp_len = sizeof(*resp);
+> >  	int rc;
+> > -
+> > -	rc = fsi_occ_submit(ctx->sbe, cmd, len, resp, &resp_len);
+> > -	if (rc < 0) {
+> > -		if (resp_len) {
+> > -			if (p9_sbe_occ_save_ffdc(ctx, resp, resp_len))
+> > -				sysfs_notify(&occ->bus_dev->kobj, NULL,
+> > -					     bin_attr_ffdc.attr.name);
+> > +	int tries = 0;
+> > +
+> > +	do {
 
-The irq_of_parse_and_map() function returns 0 on failure, and does not
-return a negative value anyhow, so never enter this conditional branch.
+Why not use a for() loop?
 
-Fixes: 25fdd5933e4c ("drm/msm: Add SDM845 DPU support")
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
----
- drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+> > +		rc = fsi_occ_submit(ctx->sbe, cmd, len, resp, &resp_len);
+> > +		if (rc < 0) {
+> > +			if (resp_len) {
+> > +				if (p9_sbe_occ_save_ffdc(ctx, resp, resp_len))
+> > +					sysfs_notify(&occ->bus_dev->kobj, NULL,
+> > +						     bin_attr_ffdc.attr.name);
+> > +
+> > +				return rc;
+> > +			} else if (rc != -EBADE) {
+> > +				return rc;
+> > +			}
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-index e29796c4f27b..36eeeae7fe45 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-@@ -1187,9 +1187,9 @@ struct msm_kms *dpu_kms_init(struct drm_device *dev)
- 	dpu_kms = to_dpu_kms(priv->kms);
- 
- 	irq = irq_of_parse_and_map(dpu_kms->pdev->dev.of_node, 0);
--	if (irq < 0) {
--		DPU_ERROR("failed to get irq: %d\n", irq);
--		return ERR_PTR(irq);
-+	if (!irq) {
-+		DPU_ERROR("failed to get irq\n");
-+		return ERR_PTR(-EINVAL);
- 	}
- 	dpu_kms->base.irq = irq;
- 
--- 
-2.25.1
+No need for else after return.
+
+> > +			/* retry twice for checksum failures */
+> > +		} else {
+> > +			break;
+
+I'd break on the success path after testing (rc >= 0).
+Saves a level of indent.
+
+> >  		}
+> > -
+> > -		return rc;
+> > -	}
+> > +	} while (++tries < 3);
+> >
+> >  	switch (resp->return_status) {
+> >  	case OCC_RESP_CMD_IN_PRG:
+
+Probably end up with something like:
+	for (tries = 0; tries < 3; tries++) {
+		rc = ...;
+		if (rc >= 0)
+			break;
+		if (resp_len) {
+			...
+			return rc;
+		}
+		if (rc != -EBADE)
+			return rc;
+	}
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
