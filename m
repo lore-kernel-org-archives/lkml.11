@@ -2,127 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E4A9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 02:44:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97E07C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 02:44:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240402AbiDYCrk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 22:47:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33364 "EHLO
+        id S240417AbiDYCrr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 22:47:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240266AbiDYCri (ORCPT
+        with ESMTP id S240266AbiDYCrn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 22:47:38 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8094B68F84
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 19:44:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650854675;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=+8C7DSgyJWy1q7RA6Qw/esnyL/KKYx1eZrXFTjxxJkw=;
-        b=DzsPqbAuGAQhsI9XKqOscrzLIKTE8JGMij3SB6slwltWn/AzjyrtZFvYSZ/gTOxL//FabQ
-        TAowpDs1fmMiBaBFz8x39wPjmbpmaYQNgHqu/CR0T+erexS3Tnvn4BKkhALrtzsvgQUHUC
-        psop5+aV+hj9X37WuC5dANTAWuC1HU0=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-451-D2672sSbN1W4TolXNzqmZQ-1; Sun, 24 Apr 2022 22:44:32 -0400
-X-MC-Unique: D2672sSbN1W4TolXNzqmZQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7373C802819;
-        Mon, 25 Apr 2022 02:44:31 +0000 (UTC)
-Received: from localhost.localdomain (ovpn-13-160.pek2.redhat.com [10.72.13.160])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0A3AD7B7C;
-        Mon, 25 Apr 2022 02:44:20 +0000 (UTC)
-From:   Jason Wang <jasowang@redhat.com>
-To:     jasowang@redhat.com, mst@redhat.com, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-Cc:     sgarzare@redhat.com, eperezma@redhat.com, lulu@redhat.com,
-        tglx@linutronix.de, peterz@infradead.org, paulmck@kernel.org,
-        maz@kernel.org, pasic@linux.ibm.com, cohuck@redhat.com
-Subject: [PATCH V3 0/9] rework on the IRQ hardening of virtio
-Date:   Mon, 25 Apr 2022 10:44:09 +0800
-Message-Id: <20220425024418.8415-1-jasowang@redhat.com>
+        Sun, 24 Apr 2022 22:47:43 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 138F068F87;
+        Sun, 24 Apr 2022 19:44:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=5cqZcBN/6VFoY2Kiw77E9V9l0udJorJnVRNxt6POB6Y=; b=pIe19kOM7lwduX9PIpON6Gl3Sb
+        tYT/bmec/CDms8FQucEQp6BGZAPj/h3jUBLBkh0h3XXCKXO9c1KHZeplYXXTzPkIudQ39ORiAUt1N
+        BDgYk5dNJzeztVjkG2pEEedWZvlTrtkUFgbOqjalWHN4EJ36ksozrS4EeaTP70ABLfhLRM3erkfXj
+        uxEUuxKkBhom61Yus7fC7pKXE5CTkq32ISL4+6DCXYl0Aj7z6B89Xs0wZMj+zH3y+YZ8xVGwe9of6
+        B5fdfzAbcW4/J1UmME6cC0nkd6PsnNAkik1MjWGztykCGHMi/GWeEEqJn9diQEIk29exTmYH1X9+H
+        nABXy5rA==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nioiI-008N4t-Ir; Mon, 25 Apr 2022 02:44:34 +0000
+Date:   Mon, 25 Apr 2022 03:44:34 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Joe Perches <joe@perches.com>
+Cc:     Kent Overstreet <kent.overstreet@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, hch@lst.de, hannes@cmpxchg.org,
+        akpm@linux-foundation.org, linux-clk@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-input@vger.kernel.org,
+        roman.gushchin@linux.dev
+Subject: Re: [PATCH v2 1/8] lib/printbuf: New data structure for
+ heap-allocated strings
+Message-ID: <YmYLEovwj9BqeZQA@casper.infradead.org>
+References: <20220421234837.3629927-1-kent.overstreet@gmail.com>
+ <20220421234837.3629927-7-kent.overstreet@gmail.com>
+ <fcaf18ed6efaafa6ca7df79712d9d317645215f8.camel@perches.com>
 MIME-Version: 1.0
-Content-type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fcaf18ed6efaafa6ca7df79712d9d317645215f8.camel@perches.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi All:
+On Sun, Apr 24, 2022 at 04:46:03PM -0700, Joe Perches wrote:
+> > + * pr_human_readable_u64, pr_human_readable_s64: Print an integer with human
+> > + * readable units.
+> 
+> Why not extend vsprintf for this using something like %pH[8|16|32|64] 
+> or %pH[c|s|l|ll|uc|us|ul|ull] ?
 
-This is a rework on the IRQ hardening for virtio which is done
-previously by the following commits are reverted:
+The %pX extension we have is _cute_, but ultimately a bad idea.  It
+centralises all kinds of unrelated things in vsprintf.c, eg bdev_name()
+and clock() and ip_addr_string().
 
-9e35276a5344 ("virtio_pci: harden MSI-X interrupts")
-080cd7c3ac87 ("virtio-pci: harden INTX interrupts")
+Really, it's working around that we don't have something like Java's
+StringBuffer (which I see both seq_buf and printbuf as attempting to
+be).  So we have this primitive format string hack instead of exposing
+methods like:
 
-The reason is that it depends on the IRQF_NO_AUTOEN which may conflict
-with the assumption of the affinity managed IRQ that is used by some
-virtio drivers. And what's more, it is only done for virtio-pci but
-not other transports.
+void dentry_string(struct strbuf *, struct dentry *);
 
-In this rework, I try to implement a general virtio solution which
-borrows the idea of the INTX hardening by re-using per virtqueue
-boolean vq->broken and toggle it in virtio_device_ready() and
-virtio_reset_device(). Then we can simply reuse the existing checks in
-the vring_interrupt() and return early if the driver is not ready.
+as an example,
+                if (unlikely(ino == dir->i_ino)) {
+                        EXT4_ERROR_INODE(dir, "'%pd' linked to parent dir",
+                                         dentry);
+                        return ERR_PTR(-EFSCORRUPTED);
+                }
 
-Note that, I only did compile test on ccw and MMIO transport.
+would become something like:
 
-Please review.
+		if (unlikely(ino == dir->i_ino)) {
+			struct strbuf strbuf;
+			strbuf_char(strbuf, '\'');
+			dentry_string(strbuf, dentry);
+			strbuf_string(strbuf, "' linked to parent dir");
+			EXT4_ERROR_INODE(dir, strbuf);
+			return ERR_PTR(-EFSCORRUPTED);
+		}
 
-Changes since v1:
-
-- Use transport specific irq synchronization method when possible
-- Drop the module parameter and enable the hardening unconditonally
-- Tweak the barrier/ordering facilities used in the code
-- Reanme irq_soft_enabled to driver_ready
-- Avoid unnecssary IRQ synchornization (e.g during boot)
-
-Changes since V2:
-
-- add ccw and MMIO support
-- rename synchronize_vqs() to synchronize_cbs()
-- switch to re-use vq->broken instead of introducing new device
-  attributes for the future virtqueue reset support
-- remove unnecssary READ_ONCE()/WRITE_ONCE()
-- a new patch to remove device triggerable BUG_ON()
-- more tweaks on the comments
-
-Jason Wang (8):
-  virtio: use virtio_reset_device() when possible
-  virtio: introduce config op to synchronize vring callbacks
-  virtio-pci: implement synchronize_cbs()
-  virtio-mmio: implement synchronize_cbs()
-  virtio-ccw: implement synchronize_cbs()
-  virtio: allow to unbreak virtqueue
-  virtio: harden vring IRQ
-  virtio: use WARN_ON() to warning illegal status value
-
-Stefano Garzarella (1):
-  virtio: use virtio_device_ready() in virtio_device_restore()
-
- drivers/char/virtio_console.c              |  2 +-
- drivers/crypto/virtio/virtio_crypto_core.c |  2 +-
- drivers/s390/virtio/virtio_ccw.c           | 31 ++++++++++++++++--
- drivers/virtio/virtio.c                    | 24 ++++++++++----
- drivers/virtio/virtio_mmio.c               |  9 +++++
- drivers/virtio/virtio_pci_common.c         |  2 +-
- drivers/virtio/virtio_pci_common.h         |  2 ++
- drivers/virtio/virtio_pci_legacy.c         |  1 +
- drivers/virtio/virtio_pci_modern.c         |  2 ++
- drivers/virtio/virtio_ring.c               | 15 +++++----
- include/linux/virtio.h                     |  2 +-
- include/linux/virtio_config.h              | 38 +++++++++++++++++++++-
- 12 files changed, 110 insertions(+), 20 deletions(-)
-
--- 
-2.25.1
-
-
+which isn't terribly nice, but C has sucky syntax for string
+construction.  Other languages have done this better, including Rust.
