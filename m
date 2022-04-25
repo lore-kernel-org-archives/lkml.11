@@ -2,95 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95174C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 07:58:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9813CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 07:59:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234834AbiDYIB4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 04:01:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48646 "EHLO
+        id S231488AbiDYICI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 04:02:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229746AbiDYIBn (ORCPT
+        with ESMTP id S231339AbiDYIBn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 25 Apr 2022 04:01:43 -0400
-Received: from mail-oo1-xc34.google.com (mail-oo1-xc34.google.com [IPv6:2607:f8b0:4864:20::c34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C808427CE7;
-        Mon, 25 Apr 2022 00:58:39 -0700 (PDT)
-Received: by mail-oo1-xc34.google.com with SMTP id i21-20020a4ad395000000b0033a4c45246dso2655733oos.12;
-        Mon, 25 Apr 2022 00:58:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zR3SdtKlOp4Z4lFcN7vvrmY5zhl40lIVin8T1dOigGE=;
-        b=AguFV38TUhd52TAXg1m48mbU7nyWNJIoxXDddH/xHSjOHembF2jrBirIEDb07sbTEc
-         zi4a5f+Xgg3K6qAv1kOmEaJIxUjflem9hYgm6plSnCqu5+lWJn5/yda5dmesvjBhTECW
-         5J3b8P7FGI1OON059nf4vMOqa1m9RIQkmUC91ZJNzscJ63RpcS91MZ8C3ScxW3SzXYNc
-         FJiDgivH5lxMdytBsIDahN0vEp/a00dQg23rmFD/TOm0WfM2pc81rSrvzJSZbrb80CAP
-         Am+fsGMKIg2m4MZiH0Uf6E43d6ADzSg7Y88GkiKoprnXkK+XpY8O2JXaCpiba+GayBy9
-         0qGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zR3SdtKlOp4Z4lFcN7vvrmY5zhl40lIVin8T1dOigGE=;
-        b=OagHhiTjFydsOK561WzYZ2CzEdR8F5EhWG2ce0+wvQ7iv7WsAEoBTxgMNx0E+s66or
-         H0dDQUGoVkXh6XWVtPAD3c5x8ENI8aH7L/ozAh28cqNi2d+/HKzuSP/xoYRyFfJVu+rP
-         pookQt9jMGrDFS7aTd5RZPjksFSDpxuNqKtX/vTAhpOMwz0wdTZt9zlV/nRX7Wt/3M9W
-         V9ahRzcrnDLnf59C04xk52Uz9OM8bJMZ/lU+SQ7TzexBb4H0dMjodYAwoNsk1zpx8VCx
-         0JExXC+afRStbIWp1t0kNqVhGlF4ck99nsJRJZcu6FeXxocGaXM8/l8MwXEhoTVgZRf1
-         rtWg==
-X-Gm-Message-State: AOAM5326x/d0+GMZTqOrrkJFAqhWcAwV3iloWodreSO57oEl2PBU6nYl
-        7UC3uKvIBdF3X8IDyp7PJmZIC+8YLsGEVhRkQhD4QQ==
-X-Google-Smtp-Source: ABdhPJwM8MWYFSjh0xlo73yHp0vTj5enQOHIpyFJxzRHx7ObNG2ap9LrYlyNJLeQWBzt8CrOI2+6vA==
-X-Received: by 2002:a4a:d984:0:b0:329:a95a:d492 with SMTP id k4-20020a4ad984000000b00329a95ad492mr5829472oou.61.1650873519031;
-        Mon, 25 Apr 2022 00:58:39 -0700 (PDT)
-Received: from C02FV47ZMD6T.corp.ebay.com ([2409:8a1e:6f32:c70:4860:8ac9:99a5:1188])
-        by smtp.googlemail.com with ESMTPSA id z82-20020aca3355000000b002ef73b018absm3439329oiz.9.2022.04.25.00.58.35
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 25 Apr 2022 00:58:38 -0700 (PDT)
-From:   Jianlin Lv <iecedge@gmail.com>
-X-Google-Original-From: Jianlin Lv <jianlv@ebay.com>
-To:     bpf@vger.kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, quentin@isovalent.com, jean-philippe@linaro.org,
-        mauricio@kinvolk.io, ytcoode@gmail.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        jianlv@ebay.com, Jianlin Lv <iecedge@gmail.com>
-Subject: [PATCH bpf-next] bpftoo: Support user defined vmlinux path
-Date:   Mon, 25 Apr 2022 15:57:24 +0800
-Message-Id: <20220425075724.48540-1-jianlv@ebay.com>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 275D027CE8
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 00:58:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=bk7N8VtSWAvLQd3yMexQM6sFuFonXwjn/dFWlACLuw4=; b=KrNUg6E9jRh6S9p23phIwDD+A9
+        2yjbvoiMW3hXguiVED3XGeLI5RAp9z3c3rmBxo0F++ml3YQ8tcOKSZOhMELY6kv+Bo4zE7qjAcWtU
+        4e1Lurbi4qCxDhsiGkas5y6uhLAsCknOpNVtA8OPhC29Rp4ibbQQWk7Dx2gUkzdJLCazkHqGz7Izp
+        3JA0+CRtthmVp/yKRShz0BN0MuqCJ6vXAbzrTgeGDRw/XkPuzBc6ZO2k7jO4uF8Mglc5aF6PsTyYT
+        WrTKukboCsRrzIBFPXxbH/jQ1NFzu8tuncjK13ASp0sXfOTrrMx8nRWkxEyq52l9iDKiiOEFi2QRD
+        o9WfNkjA==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nitc6-008hbI-PT; Mon, 25 Apr 2022 07:58:30 +0000
+Date:   Mon, 25 Apr 2022 00:58:30 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Juergen Gross <jgross@suse.com>
+Cc:     Oleksandr <olekstysh@gmail.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        xen-devel@lists.xenproject.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Julien Grall <julien@xen.org>,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>
+Subject: Re: [PATCH V1 3/6] xen/virtio: Add option to restrict memory access
+ under Xen
+Message-ID: <YmZUpua3hkCPdbfx@infradead.org>
+References: <1650646263-22047-1-git-send-email-olekstysh@gmail.com>
+ <1650646263-22047-4-git-send-email-olekstysh@gmail.com>
+ <YmQsFb36UEH9BUnN@infradead.org>
+ <6c5042fe-dafc-eb4f-c1fa-03b0faf252de@gmail.com>
+ <abc5d23d-3d38-d198-4646-e886df2e83d4@suse.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <abc5d23d-3d38-d198-4646-e886df2e83d4@suse.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jianlin Lv <iecedge@gmail.com>
+On Mon, Apr 25, 2022 at 09:47:49AM +0200, Juergen Gross wrote:
+> > Would the Xen specific bits fit into Confidential Computing Platform
+> > checks? I will let Juergen/Boris comment on this.
+> 
+> I don't think cc_platform_has would be correct here. Xen certainly
+> provides more isolation between guests and dom0, but "Confidential
+> Computing" is basically orthogonal to that feature.
 
-Add EXTERNAL_PATH variable that define unconventional vmlinux path
-
-Signed-off-by: Jianlin Lv <iecedge@gmail.com>
----
-When building Ubuntu-5.15.0 kernel, '../../../vmlinux' cannot locate
-compiled vmlinux image. Incorrect vmlinux generated vmlinux.h missing some
-structure definitions that broken compiling pipe.
----
- tools/bpf/bpftool/Makefile | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
-index c6d2c77d0252..fefa3b763eb7 100644
---- a/tools/bpf/bpftool/Makefile
-+++ b/tools/bpf/bpftool/Makefile
-@@ -160,6 +160,7 @@ $(OBJS): $(LIBBPF) $(LIBBPF_INTERNAL_HDRS)
- VMLINUX_BTF_PATHS ?= $(if $(O),$(O)/vmlinux)				\
- 		     $(if $(KBUILD_OUTPUT),$(KBUILD_OUTPUT)/vmlinux)	\
- 		     ../../../vmlinux					\
-+		     $(if $(EXTERNAL_PATH),$(EXTERNAL_PATH)/vmlinux)	\
- 		     /sys/kernel/btf/vmlinux				\
- 		     /boot/vmlinux-$(shell uname -r)
- VMLINUX_BTF ?= $(abspath $(firstword $(wildcard $(VMLINUX_BTF_PATHS))))
--- 
-2.25.1
-
+The point of cc_platform_has is to remove all these open code checks.
+If a Xen hypervisor / dom0 can't access arbitrary guest memory for
+virtual I/O and we need special APIs for that it certainly false
+into the scope of cc_platform_has, even if the confientiality is
+rather limited.
