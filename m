@@ -2,123 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69CDCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 21:07:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F12CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 21:07:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245675AbiDYVKa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 17:10:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48336 "EHLO
+        id S245678AbiDYVKg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 17:10:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245583AbiDYVKU (ORCPT
+        with ESMTP id S245536AbiDYVKd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 17:10:20 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01EF264BF8
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 14:07:16 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id b12so13561754plg.4
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 14:07:15 -0700 (PDT)
+        Mon, 25 Apr 2022 17:10:33 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00D9B66F81
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 14:07:28 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id q12so14333577pgj.13
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 14:07:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=fYD/F2OSbA7Q4eCV40OrtxHiQtAfyrFTFEIn6t3W6f8=;
-        b=WvFR64qpnd4yCLm8ubU/W/DeKgWVe5sf1D05fbZmkSyTq8yGSG6v5hnDff1XSYazp6
-         83XXw1NiHbANd+TaAV+ZBDA2iYhNtL67l2+aocpmUGDCinB5/oxcsmHaIHzPCmL0lSdx
-         g5TTDnxbPbEk7GACTTB9R3BKu9hJsSL5XH2GA=
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2yfkLHIGendK7asqrB3cDu3rcvHBz4MAJahFLz57ZkQ=;
+        b=V4iT+hMJVcqcQiKtfpts5LIiBYKBt1Jhpp/0+ZFS86rofurh3eEgQJnex0pBwJ0njo
+         reGg6t4nGczMtMbw2LEwuA56ivqvdLjRRwrk0W4ANdeCyzOlOBrrk6dUFYAM7LRADDpD
+         E6FsQ0yfoB1o8CqmrKhTNNZ6rZ7xy/rYF6Nfs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=fYD/F2OSbA7Q4eCV40OrtxHiQtAfyrFTFEIn6t3W6f8=;
-        b=noLkxmtk/RSYGdCL4kYnpZKIvlXIZwB2qwFl+OQAXXfWuYtc9/2jFFklkQazZtLeb0
-         W+5Pj/vAlMbnt9ByWYJyepqT8HEELwD8hY5Lk2qOw2GfbEUnsfDZMyl6ckeqC1X9bMCH
-         n6x+G8EkFaDxa0lrzHChbrASAkxoWy83560RhFqhQS8Vr9RwxsNe2V8dVMAxN+Okhy2Q
-         FGyTO829Zu1CgEcpyIY1LdbLj2R2QbGOTVWfatKu2CmO+ojTbAQJdx7HqpZSvCZP1Xop
-         LO99CuqHjMxhsuCiQcIM7iX6QeP30BRhR4ZY7ZKnpHYaLQbNOVK0FiEMnluzmF+j/6EY
-         LTuA==
-X-Gm-Message-State: AOAM533c4w1kGkKUJ4ayZgk1Q1nRFAay8N/QYA7LHzhlD9zh3Cr58LtA
-        kfm4bK9H08OjyZ1Qt/m95k8N8Q==
-X-Google-Smtp-Source: ABdhPJyG9Xx7/t8cUKO2ub7bBhrSNggYmBrlKgygY827SF0gU8Mp7i0d+ErwAnNSiBQq7WdPpARN0w==
-X-Received: by 2002:a17:902:ed89:b0:15a:d3e:ada6 with SMTP id e9-20020a170902ed8900b0015a0d3eada6mr20094621plj.94.1650920835532;
-        Mon, 25 Apr 2022 14:07:15 -0700 (PDT)
-Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:b820:7f63:f3dd:3da])
-        by smtp.gmail.com with ESMTPSA id b20-20020a62a114000000b0050d231e08ffsm8523202pff.37.2022.04.25.14.07.13
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2yfkLHIGendK7asqrB3cDu3rcvHBz4MAJahFLz57ZkQ=;
+        b=2UVhqaKoudVQnNFICiCjBmy1/Oz64kQaUs9XQ7kE4Qsl7W6nC6NwJKwR0/APfxe/75
+         ka2VRVSavsaurbgAPmrJiB3j/8V3xvxULD9TR0ALaKpEHS9Ppk/tmRLlqjxeP2mluoku
+         OQyod8yU52p61/e+iwKsGWLUSUZOVzCbksezBU4JuBE9+YodcC4duSqhh+G2AF1F16NE
+         jPtSvKlo1nlNqP8aZpP3CY9aMYqzwDjxh4aKIgY4TEgXs/bcAjoToYMSUB91MPyLcb7q
+         dyU4IeDzMLEkRU2IlbRqd+AXy6SQxIvbVvFoXd/GBR/J4LgLUQF4omnJyLXrozUnyGd1
+         W7Nw==
+X-Gm-Message-State: AOAM533sh+Pb9lpYSb8ZoMWQgqRTU+0MFfLHSU7vX6eEgDme2m3hkUw3
+        wbsMBsCOfdjJ8yTqHj57P6a6Tg==
+X-Google-Smtp-Source: ABdhPJyb9GFRAJd41b6tfRbfDmjkrPPMtCMSDUzHsF8HzvtcmNI07PBkoIsL+OZ9etzob8tZql/62g==
+X-Received: by 2002:a63:475b:0:b0:3aa:436f:8812 with SMTP id w27-20020a63475b000000b003aa436f8812mr16652814pgk.607.1650920848531;
+        Mon, 25 Apr 2022 14:07:28 -0700 (PDT)
+Received: from smtp.gmail.com ([2620:15c:202:201:15d7:3f2:9d41:116f])
+        by smtp.gmail.com with ESMTPSA id k11-20020a056a00168b00b004f7e1555538sm12617373pfc.190.2022.04.25.14.07.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 14:07:15 -0700 (PDT)
-From:   Douglas Anderson <dianders@chromium.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Rob Clark <robdclark@chromium.org>
-Cc:     Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        linux-phy@lists.infradead.org, Stephen Boyd <swboyd@chromium.org>,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, quic_kalyant@quicinc.com,
-        Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Mon, 25 Apr 2022 14:07:28 -0700 (PDT)
+From:   Stephen Boyd <swboyd@chromium.org>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
         Douglas Anderson <dianders@chromium.org>,
-        Andy Gross <agross@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] dt-bindings: phy: List supplies for qcom,edp-phy
-Date:   Mon, 25 Apr 2022 14:06:43 -0700
-Message-Id: <20220425140619.2.Iae013f0ff4599294189f3a6e91376fad137bbabf@changeid>
+        Hsin-Yi Wang <hsinyi@chromium.org>
+Subject: [PATCH v2] Input: cros-ec-keyb: Only register keyboard if rows/columns exist
+Date:   Mon, 25 Apr 2022 14:07:26 -0700
+Message-Id: <20220425210726.3813477-1-swboyd@chromium.org>
 X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
-In-Reply-To: <20220425210643.2420919-1-dianders@chromium.org>
-References: <20220425210643.2420919-1-dianders@chromium.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We're supposed to list the supplies in the dt bindings but there are
-none in the eDP PHY bindings.
+If the device is a detachable, we may still probe this device because
+there are some button switches, e.g. volume buttons and power buttons,
+registered by this driver. Let's allow the device node to be missing row
+and column device properties to indicate that the keyboard matrix
+shouldn't be registered. This removes an input device on Trogdor devices
+such as Wormdingler that don't have a matrix keyboard, but still have
+power and volume buttons. That helps userspace understand there isn't
+a keyboard present when the detachable keyboard is disconnected.
 
-Looking at the driver in Linux, I can see that there seem to be two
-relevant supplies: "vdda-phy" and "vdda-pll". Let's add those to the
-bindings.
-
-NOTE: from looking at the Qualcomm datasheet for sc7280, it's not
-immediately clear how to figure out how to fill in these supplies. The
-only two eDP related supplies are simply described as "power for eDP
-0.9V circuits" and "power for eDP 1.2V circuits". From guessing and
-from comparing how a similar PHY is hooked up on other similar
-Qualcomm boards, I'll make the educated guess that the 1.2V supply
-goes to "vdda-phy" and the 0.9V supply goes to "vdda-pll" and I'll use
-that in the example here.
-
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Cc: Benson Leung <bleung@chromium.org>
+Cc: Guenter Roeck <groeck@chromium.org>
+Cc: Douglas Anderson <dianders@chromium.org>
+Cc: Hsin-Yi Wang <hsinyi@chromium.org>
+Signed-off-by: Stephen Boyd <swboyd@chromium.org>
 ---
 
- Documentation/devicetree/bindings/phy/qcom,edp-phy.yaml | 6 ++++++
- 1 file changed, 6 insertions(+)
+Changes from v1 (https://lore.kernel.org/r/20220413033334.1514008-1-swboyd@chromium.org):
+ * Use device_property_present
 
-diff --git a/Documentation/devicetree/bindings/phy/qcom,edp-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,edp-phy.yaml
-index a5850ff529f8..cf9e9b8011cb 100644
---- a/Documentation/devicetree/bindings/phy/qcom,edp-phy.yaml
-+++ b/Documentation/devicetree/bindings/phy/qcom,edp-phy.yaml
-@@ -41,6 +41,9 @@ properties:
-   "#phy-cells":
-     const: 0
+ drivers/input/keyboard/cros_ec_keyb.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/drivers/input/keyboard/cros_ec_keyb.c b/drivers/input/keyboard/cros_ec_keyb.c
+index 6534dfca60b4..ceb23e2e0d94 100644
+--- a/drivers/input/keyboard/cros_ec_keyb.c
++++ b/drivers/input/keyboard/cros_ec_keyb.c
+@@ -537,6 +537,15 @@ static int cros_ec_keyb_register_matrix(struct cros_ec_keyb *ckdev)
+ 	u32 key_pos;
+ 	unsigned int row, col, scancode, n_physmap;
  
-+  vdda-phy-supply: true
-+  vdda-pll-supply: true
++	/*
++	 * No rows and columns? There isn't a matrix but maybe there are
++	 * switches to register in cros_ec_keyb_register_bs() because this is a
++	 * detachable device.
++	 */
++	if (!device_property_present(dev, "keypad,num-rows") &&
++	    !device_property_present(dev, "keypad,num-cols"))
++		return 0;
 +
- required:
-   - compatible
-   - reg
-@@ -65,5 +68,8 @@ examples:
- 
-       #clock-cells = <1>;
-       #phy-cells = <0>;
-+
-+      vdda-phy-supply = <&vdd_a_edp_0_1p2>;
-+      vdda-pll-supply = <&vdd_a_edp_0_0p9>;
-     };
- ...
+ 	err = matrix_keypad_parse_properties(dev, &ckdev->rows, &ckdev->cols);
+ 	if (err)
+ 		return err;
+
+base-commit: 3123109284176b1532874591f7c81f3837bbdc17
 -- 
-2.36.0.rc2.479.g8af0fa9b8e-goog
+https://chromeos.dev
 
