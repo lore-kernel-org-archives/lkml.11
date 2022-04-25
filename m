@@ -2,180 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 333DCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 23:31:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25D04C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 23:31:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237812AbiDYXey (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 19:34:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40668 "EHLO
+        id S237912AbiDYXfC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 19:35:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231223AbiDYXew (ORCPT
+        with ESMTP id S237847AbiDYXfB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 19:34:52 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08F726A06A
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 16:31:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650929506; x=1682465506;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=0lhndJjDn/HqgkGA/clNmjLMRbgedTdtPzE+IXmrLsA=;
-  b=ZSullI0b5ugojomUjr5LBHDfrIf1jPrxuPVTuEdmSBvToKDCtxhe9bPp
-   RHi4ccvNd+Tzp9Ge+NpXKocNOYyWE58MK3V1APnw8rOPhRTk09LtgPUUW
-   Uch16Ofu+D2F7qf9+0GXi+S2bsq3l1IKLOY5Dl9+hSiMAv3eP3ld1E+Gp
-   vQcNktkEOmxiRTw9yleSMqGtnFMGlYz9ZwCM9J8ZZdfhAo1H6C/7ZQrQn
-   sDqfMzrxmXDixDINJbEnQXr5vSrFHchEErRGa0mJ5J35pGVcqMs+grPml
-   5r2iWvV/Hv2aDwZ37gNYAT8bSXX5sAhiMrZnemEswZ7kH80UDRpCwYZct
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="290534265"
-X-IronPort-AV: E=Sophos;i="5.90,289,1643702400"; 
-   d="scan'208";a="290534265"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 16:31:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,289,1643702400"; 
-   d="scan'208";a="616729829"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 25 Apr 2022 16:31:45 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nj8BE-000308-K4;
-        Mon, 25 Apr 2022 23:31:44 +0000
-Date:   Tue, 26 Apr 2022 07:30:43 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Haiyue Wang <haiyue.wang@intel.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: drivers/net/ethernet/intel/iavf/iavf_fdir.c:340:5: warning: format
- specifies type 'unsigned short' but the argument has type 'int'
-Message-ID: <202204260715.M6oOAjgw-lkp@intel.com>
+        Mon, 25 Apr 2022 19:35:01 -0400
+Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD5A86AA6B
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 16:31:54 -0700 (PDT)
+Received: by mail-oi1-x234.google.com with SMTP id e4so18936879oif.2
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 16:31:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=NMTL6L2VrzguuHoJj+eS47MoD+AdGFAgjBbMQT1LAfk=;
+        b=DsJPHn9qlvhjepUxbe1mS4y4tphW5Ixi0wICkYVkrvZjBzOlp4U0QpwZBvCZCJOCcH
+         X64tx2ZQl4sSrhMxuDciBCTq6RvjAPoN9ox7lUQRRD6OAMf1uzRhxRSdgfUpmEKJVo8P
+         NjDbGwEZ9WFD0E/8UJwM+lP1EbEJBD0JJiKas=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=NMTL6L2VrzguuHoJj+eS47MoD+AdGFAgjBbMQT1LAfk=;
+        b=2rG5cV62ub56u33edHFTRkPmEy/ty/+Z0lcL7ZgcuxqmIcEoGFPuvXODH7e5LfDqVd
+         yi1Bn1SHHHyf8ruYIhLUXHVuxHm3tLX5vSbOiApk0637EMnc5L01EkpGALQROvgS9JxX
+         MTyGrRaoYviG/9RgKs71BLKmPzA4ezhyfeBuAvK0BhR3RFpIE7KZGoTipO7OHRYAjMzT
+         xncEMp4nRTKkP1D0VNC1Oyg2AEvyNmY+ORCWhRYMM+DOO95cmRELKeIit3Iyegr54coC
+         BEg3aSetm2O09SEiq2ge5VDnSgxcmKI2IBNct+lHQ9dd8QhloIN62ZoBoC0gOFfgl04j
+         f68A==
+X-Gm-Message-State: AOAM532cdvkiRJlDhI9yVBWXkzGIAgYDGGix+CvC0QEE+1CkDEDGHuPg
+        5DGIyrEonBeW7idLI+T2GMTHWajdn/nFetaLMtbeCg==
+X-Google-Smtp-Source: ABdhPJyAqAt/Vs4U0AzeuQNzAdOSMhGGm8q3VNwihxuNmza3IIrOZ8hMP07I64/ydEqXYcAhOUYiz1eKsHnwvkf4mSQ=
+X-Received: by 2002:a05:6808:1296:b0:325:8fb:68f3 with SMTP id
+ a22-20020a056808129600b0032508fb68f3mr5568052oiw.193.1650929514075; Mon, 25
+ Apr 2022 16:31:54 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Mon, 25 Apr 2022 16:31:53 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+In-Reply-To: <20220425153650.1.Iedd71976a78d53c301ce0134832de95a989c9195@changeid>
+References: <20220425153650.1.Iedd71976a78d53c301ce0134832de95a989c9195@changeid>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Mon, 25 Apr 2022 16:31:53 -0700
+Message-ID: <CAE-0n52OdZLLRKot+eu4YN9Tu3p4Lau0NR0vTbwfGiHhBCmZQw@mail.gmail.com>
+Subject: Re: [PATCH] arm64: dts: qcom: sc7280: eDP for herobrine boards
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>
+Cc:     Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Rob Clark <robdclark@chromium.org>, quic_kalyant@quicinc.com,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        linux-arm-msm@vger.kernel.org, Andy Gross <agross@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Haiyue,
+Quoting Douglas Anderson (2022-04-25 15:36:55)
+> This change adds in eDP for herobrine boards, splitting up amongst the
 
-FYI, the error/warning still remains.
+Imperative mood please.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   d615b5416f8a1afeb82d13b238f8152c572d59c0
-commit: 527691bf0682d7ddcca77fc17dabd2fa090572ff iavf: Support IPv4 Flow Director filters
-date:   1 year, 1 month ago
-config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20220426/202204260715.M6oOAjgw-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 1cddcfdc3c683b393df1a5c9063252eb60e52818)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=527691bf0682d7ddcca77fc17dabd2fa090572ff
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 527691bf0682d7ddcca77fc17dabd2fa090572ff
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/net/ethernet/intel/iavf/
+ $ git grep "This patch" -- Documentation/process/
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Add eDP support to herobrine boards, splitting up ..
 
-All warnings (new ones prefixed by >>):
+> different files as makes sense. Rationale for the current split of
+> things:
+> * The eDP connector itself is on qcard. However, not all devices with
+>   a qcard will use an eDP panel. Some might use MIPI and, presumably,
+>   someone could build a device with qcard that had no display at all.
+> * The qcard provides a PWM for backlight that goes to the eDP
+>   connector. This PWM is also is provided to the board and it's
 
->> drivers/net/ethernet/intel/iavf/iavf_fdir.c:340:5: warning: format specifies type 'unsigned short' but the argument has type 'int' [-Wformat]
-                            ntohs(fltr->ip_data.dst_port),
-                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:118:33: note: expanded from macro 'dev_info'
-           _dev_info(dev, dev_fmt(fmt), ##__VA_ARGS__)
-                                  ~~~     ^~~~~~~~~~~
-   include/linux/byteorder/generic.h:142:18: note: expanded from macro 'ntohs'
-   #define ntohs(x) ___ntohs(x)
-                    ^~~~~~~~~~~
-   include/linux/byteorder/generic.h:137:21: note: expanded from macro '___ntohs'
-   #define ___ntohs(x) __be16_to_cpu(x)
-                       ^~~~~~~~~~~~~~~~
-   include/uapi/linux/byteorder/little_endian.h:42:26: note: expanded from macro '__be16_to_cpu'
-   #define __be16_to_cpu(x) __swab16((__force __u16)(__be16)(x))
-                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/uapi/linux/swab.h:105:2: note: expanded from macro '__swab16'
-           (__builtin_constant_p((__u16)(x)) ?     \
-           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/ethernet/intel/iavf/iavf_fdir.c:341:5: warning: format specifies type 'unsigned short' but the argument has type 'int' [-Wformat]
-                            ntohs(fltr->ip_data.src_port));
-                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:118:33: note: expanded from macro 'dev_info'
-           _dev_info(dev, dev_fmt(fmt), ##__VA_ARGS__)
-                                  ~~~     ^~~~~~~~~~~
-   include/linux/byteorder/generic.h:142:18: note: expanded from macro 'ntohs'
-   #define ntohs(x) ___ntohs(x)
-                    ^~~~~~~~~~~
-   include/linux/byteorder/generic.h:137:21: note: expanded from macro '___ntohs'
-   #define ___ntohs(x) __be16_to_cpu(x)
-                       ^~~~~~~~~~~~~~~~
-   include/uapi/linux/byteorder/little_endian.h:42:26: note: expanded from macro '__be16_to_cpu'
-   #define __be16_to_cpu(x) __swab16((__force __u16)(__be16)(x))
-                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/uapi/linux/swab.h:105:2: note: expanded from macro '__swab16'
-           (__builtin_constant_p((__u16)(x)) ?     \
-           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   2 warnings generated.
+s/also is/also/
 
+>   expected that it would be used as the backlight PWM even for
+>   herobrine devices with MIPI displays.
+[...]
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+> index d58045dd7334..769d440d1917 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+> @@ -367,6 +367,14 @@ &vreg_l2c_1p8 {
+>
+>  /* ADDITIONS TO NODES DEFINED IN PARENT DEVICE TREE FILES */
+>
+> +&edp_panel {
+> +       /*
+> +        * Now that we've defined which power supply we give to qcard for
+> +        * eDP we can hook it up in the panel node.
 
-vim +340 drivers/net/ethernet/intel/iavf/iavf_fdir.c
+I don't understand this comment. "Now" triggers my brain to think that
+something happened when this line was written. But maybe it means
+something was done earlier in the file? When is "now"? I don't really
+know. Maybe this is clearer:
 
-   316	
-   317	/**
-   318	 * iavf_print_fdir_fltr
-   319	 * @adapter: adapter structure
-   320	 * @fltr: Flow Director filter to print
-   321	 *
-   322	 * Print the Flow Director filter
-   323	 **/
-   324	void iavf_print_fdir_fltr(struct iavf_adapter *adapter, struct iavf_fdir_fltr *fltr)
-   325	{
-   326		const char *proto = iavf_fdir_flow_proto_name(fltr->flow_type);
-   327	
-   328		if (!proto)
-   329			return;
-   330	
-   331		switch (fltr->flow_type) {
-   332		case IAVF_FDIR_FLOW_IPV4_TCP:
-   333		case IAVF_FDIR_FLOW_IPV4_UDP:
-   334		case IAVF_FDIR_FLOW_IPV4_SCTP:
-   335			dev_info(&adapter->pdev->dev, "Rule ID: %u dst_ip: %pI4 src_ip %pI4 %s: dst_port %hu src_port %hu\n",
-   336				 fltr->loc,
-   337				 &fltr->ip_data.v4_addrs.dst_ip,
-   338				 &fltr->ip_data.v4_addrs.src_ip,
-   339				 proto,
- > 340				 ntohs(fltr->ip_data.dst_port),
-   341				 ntohs(fltr->ip_data.src_port));
-   342			break;
-   343		case IAVF_FDIR_FLOW_IPV4_AH:
-   344		case IAVF_FDIR_FLOW_IPV4_ESP:
-   345			dev_info(&adapter->pdev->dev, "Rule ID: %u dst_ip: %pI4 src_ip %pI4 %s: SPI %u\n",
-   346				 fltr->loc,
-   347				 &fltr->ip_data.v4_addrs.dst_ip,
-   348				 &fltr->ip_data.v4_addrs.src_ip,
-   349				 proto,
-   350				 ntohl(fltr->ip_data.spi));
-   351			break;
-   352		case IAVF_FDIR_FLOW_IPV4_OTHER:
-   353			dev_info(&adapter->pdev->dev, "Rule ID: %u dst_ip: %pI4 src_ip %pI4 proto: %u L4_bytes: 0x%x\n",
-   354				 fltr->loc,
-   355				 &fltr->ip_data.v4_addrs.dst_ip,
-   356				 &fltr->ip_data.v4_addrs.src_ip,
-   357				 fltr->ip_data.proto,
-   358				 ntohl(fltr->ip_data.l4_header));
-   359			break;
-   360		default:
-   361			break;
-   362		}
-   363	}
-   364	
+	/* Our board provides power to the qcard for the eDP panel. */
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> +        */
+> +       power-supply = <&vreg_edp_3p3>;
+> +};
+> +
+>  ap_sar_sensor_i2c: &i2c1 {
+>         clock-frequency = <400000>;
+>         status = "disabled";
+> @@ -429,6 +445,20 @@ &pcie1 {
+>         vddpe-3v3-supply = <&pp3300_ssd>;
+>  };
+>
+> +&pm8350c_pwm {
+> +       status = "okay";
+> +};
+> +
+> +&pm8350c_pwm_backlight {
+> +       status = "okay";
+> +
+> +       /*
+> +        * Now that we've defined which power supply we give to qcard for
+> +        * backlight we can hook it up in the panel node.
+
+Same comment.
+
+> +        */
+> +       power-supply = <&vreg_edp_bl>;
+> +};
+> +
