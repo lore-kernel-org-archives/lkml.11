@@ -2,136 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 929E2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:47:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7910EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:49:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243552AbiDYQuw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 12:50:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38932 "EHLO
+        id S240207AbiDYQwt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 12:52:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230217AbiDYQuu (ORCPT
+        with ESMTP id S243585AbiDYQwm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 12:50:50 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 774F81EAC3
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 09:47:46 -0700 (PDT)
+        Mon, 25 Apr 2022 12:52:42 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D69A724969;
+        Mon, 25 Apr 2022 09:49:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650905266; x=1682441266;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=a9BDJcnlrIQsrCXefta5uSMROAe8pIoioCGuS9ojEX0=;
-  b=RO3QuqbN+ocUJcgV4iFoa5ZDxYTKo0vTuWHaTB1pSTh2uLojxfpyRg5q
-   sKe0TQA9qSmPKnXPidBtpMebPqQCC6dKPoKE0tKTNQUPycyk/dpBwrdoE
-   /Pdtz2DoQdsNUluyHlY+sK7zA4gDEvdZ6sGencmsVg8oFb5/Dz6C6Ha6v
-   e2AqfZSoMOi0t10By+H8OSb/yPvh/vHrPNVD8DREwYe0oCllVztLdEgZ7
-   V4PPoeJibETE9+m5fYdg4e2FiMvO52Z7gndq/a2Dw/VDJYVxmyfRFlcDc
-   az0UR3RavlS2fsPLpBpeHenuegGMNOlepJ30MdgJxBQWqyu7Tge0A2T1D
+  t=1650905377; x=1682441377;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=x1VjlOLFf7+Iwtn5He+Gw098wHontYefP4lyjR1he+4=;
+  b=b9bi1/SdNNCgm03qImb79kNc92BtVmgknXpIjjRJuDxvy4oDjCTtqueq
+   gOBs0YVnAoorP14Igtzhn/qLLjuIKqG0fJnjx/u61CBaFAqtVw1o6zllf
+   1LEm4Zzv4NWjfZ9vcwOC+H/mv6jhSRLRNlcb1ULIgc9H0v8IF/9/r48mS
+   aH6mO9AT9N8/L2O+E/cOGtSkyszGaDrCGKORKKwAcyyK0+geK43PHoJ+Z
+   XhYJHbY0xu0VV+t6nZpCFvEain3xhqvXgRMGGgXPnwuyn6Fv1uFSFr2JR
+   Ul0E86yoKJxqAsGZnMqAsa/36nuPW/6jjAUL4ZDbjttyPBXULknzsSjRj
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="265106395"
+X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="264822399"
+X-IronPort-AV: E=Sophos;i="5.90,288,1643702400"; 
+   d="scan'208";a="264822399"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 09:49:37 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,289,1643702400"; 
-   d="scan'208";a="265106395"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 09:47:19 -0700
-X-IronPort-AV: E=Sophos;i="5.90,289,1643702400"; 
-   d="scan'208";a="649778889"
-Received: from kruparel-mobl1.amr.corp.intel.com (HELO localhost) ([10.213.188.223])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 09:47:19 -0700
-Date:   Mon, 25 Apr 2022 09:47:18 -0700
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH] mm/highmem: VM_BUG_ON() if offset + len > PAGE_SIZE
-Message-ID: <YmbQluz5i95fkhn9@iweiny-desk3>
-References: <20220424104806.25396-1-fmdefrancesco@gmail.com>
- <8929547.CDJkKcVGEf@leap>
+   d="scan'208";a="628115236"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by fmsmga004.fm.intel.com with ESMTP; 25 Apr 2022 09:49:36 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Mon, 25 Apr 2022 09:49:36 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Mon, 25 Apr 2022 09:49:35 -0700
+Received: from fmsmsx610.amr.corp.intel.com ([10.18.126.90]) by
+ fmsmsx610.amr.corp.intel.com ([10.18.126.90]) with mapi id 15.01.2308.027;
+ Mon, 25 Apr 2022 09:49:35 -0700
+From:   "Luck, Tony" <tony.luck@intel.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+CC:     "hdegoede@redhat.com" <hdegoede@redhat.com>,
+        "markgross@kernel.org" <markgross@kernel.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>,
+        "Joseph, Jithu" <jithu.joseph@intel.com>,
+        "Raj, Ashok" <ashok.raj@intel.com>,
+        "Williams, Dan J" <dan.j.williams@intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "platform-driver-x86@vger.kernel.org" 
+        <platform-driver-x86@vger.kernel.org>,
+        "patches@lists.linux.dev" <patches@lists.linux.dev>,
+        "Shankar, Ravi V" <ravi.v.shankar@intel.com>
+Subject: RE: [PATCH v4 09/10] trace: platform/x86/intel/ifs: Add trace point
+ to track Intel IFS operations
+Thread-Topic: [PATCH v4 09/10] trace: platform/x86/intel/ifs: Add trace point
+ to track Intel IFS operations
+Thread-Index: AQHYVoPmGcq84+Hs50ec7Nq4KoK2Oa0BMJaA//+oPOA=
+Date:   Mon, 25 Apr 2022 16:49:35 +0000
+Message-ID: <1752057af33e4eb28bcea0fd75e44048@intel.com>
+References: <20220419163859.2228874-1-tony.luck@intel.com>
+        <20220422200219.2843823-1-tony.luck@intel.com>
+        <20220422200219.2843823-10-tony.luck@intel.com>
+ <20220425105251.3f5e8021@gandalf.local.home>
+In-Reply-To: <20220425105251.3f5e8021@gandalf.local.home>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.6.401.20
+x-originating-ip: [10.1.200.100]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8929547.CDJkKcVGEf@leap>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 03:47:38AM +0200, Fabio M. De Francesco wrote:
-> On domenica 24 aprile 2022 12:48:06 CEST Fabio M. De Francesco wrote:
-> > Call VM_BUG_ON() if offset + len > PAGE_SIZE.
-> > 
-> > This is an RFC patch because I'm not sure if we actually need to 
-> BUG_ON(),
-> 
-> Actually I considered VM_BUG_ON() for consistency with the other functions 
-> in highmem.h
-> 
-> What about VM_WARN_ON_ONCE() here and also in memset_page?
-
-For consistency leave this as a VM_BUG_ON[1]
-
-I've been down a similar path[2] and there was a long discussion about it.[3]
-
-In the end we settled on VM_BUG_ON.[4]
-
-As to the addition of flush_dcache_page().  There was a discussion here.
-
-https://lore.kernel.org/lkml/CAHk-=wiKac4t-fOP_3fAf7nETfFLhT3ShmRmBq2J96y6jAr56Q@mail.gmail.com/
-
-Ira
-
-[1] https://lore.kernel.org/lkml/20210209205249.GB2975576@iweiny-DESK2.sc.intel.com/
-
-[2] https://lore.kernel.org/lkml/20201209022250.GP1563847@iweiny-DESK2.sc.intel.com/
-
-[3] https://lore.kernel.org/lkml/20201208213255.GO1563847@iweiny-DESK2.sc.intel.com/
-
-[4] https://lore.kernel.org/lkml/20210210174928.3156073-1-ira.weiny@intel.com/
-
-> 
-> Thanks,
-> 
-> Fabio
-> 
-> > so I'd like to know what Maintainers and other developers think about 
-> this
-> > proposal.
-> > 
-> > Please note that memset_page() uses VM_BUG_ON() to prevent the same 
-> issue.
-> > 
-> > Furthermore, I also cannot understand why memset_page() does not call
-> > flush_dcache_page() after memset() but I suppose that the different
-> > implementations of these two functions should be addressed in another 
-> RFC.
-> > 
-> > Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+> > Add tracing support which may be useful for debugging systems that fail=
+ to complete
+> > In Field Scan tests.
+> >
+> > Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+> > Signed-off-by: Tony Luck <tony.luck@intel.com>
 > > ---
-> >  include/linux/highmem.h | 2 ++
-> >  1 file changed, 2 insertions(+)
-> > 
-> > diff --git a/include/linux/highmem.h b/include/linux/highmem.h
-> > index c3d562b5f0c1..bdb16d5f8148 100644
-> > --- a/include/linux/highmem.h
-> > +++ b/include/linux/highmem.h
-> > @@ -349,6 +349,8 @@ static inline void memcpy_to_page(struct page *page, 
-> size_t offset,
-> >  static inline void memzero_page(struct page *page, size_t offset, size_t 
-> len)
-> >  {
-> >  	char *addr = kmap_local_page(page);
-> > +
-> > +	VM_BUG_ON(offset + len > PAGE_SIZE);
-> >  	memset(addr + offset, 0, len);
-> >  	flush_dcache_page(page);
-> >  	kunmap_local(addr);
-> > -- 
-> > 2.34.1
-> > 
-> > 
-> 
-> 
-> 
-> 
+> >  MAINTAINERS                              |  1 +
+> >  drivers/platform/x86/intel/ifs/runtest.c |  5 ++++
+> >  include/trace/events/intel_ifs.h         | 38 ++++++++++++++++++++++++
+>
+> From the tracing POV:
+>
+> Acked-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+
+Question for the future of this driver.  There are a couple more scan tools=
+ coming
+in the future. The interface is similar:
+
+	WRMSR to start a scan
+	RDMSR to get the results
+
+For this first one, I made the trace code do some user friendly decoding of=
+ the
+WRMSR value to just show the two interesting fields (start & stop).
+
+The future scan modes will have different fields.
+
+I see two paths:
+
+1) Create a new user friendly trace point for each new scan mode.
+2) Just provide a generic one that dumps both the 64-bit WRMSR and RDMSR va=
+lues.
+
+Q: Are trace points "expensive" in some way ... so better to just have one =
+than three?
+     Or are the cheap enough that decoding for the user is an OK thing?
+
+Thanks
+
+-Tony
+
+
