@@ -2,138 +2,312 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2164C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 11:51:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB0AFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 11:51:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235780AbiDYLye (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 07:54:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45326 "EHLO
+        id S238214AbiDYLyl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 07:54:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241936AbiDYLxH (ORCPT
+        with ESMTP id S237570AbiDYLyc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 07:53:07 -0400
-Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B21A17062
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 04:50:02 -0700 (PDT)
-Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220425114959epoutp04c5ad3da05c09d8f5772cc21f49a943bf~pIVe6fLEW0546705467epoutp04f
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 11:49:59 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220425114959epoutp04c5ad3da05c09d8f5772cc21f49a943bf~pIVe6fLEW0546705467epoutp04f
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1650887399;
-        bh=sUiGPdboIm0n9JE+a5AknBqOxrxP+deT9IxAdCX8Ms4=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=NewuoZaNh4rDjj79o19IFGSQdhfoXOs77QOMFepOPJrONT2iqZ/5Et2hP/1aqc97w
-         +oO4DCyOnKtp6gV1En64+kbsZal/HTu+pFr+ECdUp71ljmP+uDoMNYl2gkWEi7S6FV
-         hiw73WD9qlFNWTO7HSFWjQw6xrTw0PJZYsUsZU5U=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas2p2.samsung.com (KnoxPortal) with ESMTP id
-        20220425114957epcas2p21761ee232f813ced9bb3918adaabc32e~pIVdYSt1N2588525885epcas2p2T;
-        Mon, 25 Apr 2022 11:49:57 +0000 (GMT)
-Received: from epsmges2p1.samsung.com (unknown [182.195.36.97]) by
-        epsnrtp2.localdomain (Postfix) with ESMTP id 4Kn3GX1FwQz4x9Pt; Mon, 25 Apr
-        2022 11:49:56 +0000 (GMT)
-Received: from epcas2p3.samsung.com ( [182.195.41.55]) by
-        epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
-        9B.2B.10069.3EA86626; Mon, 25 Apr 2022 20:49:56 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas2p3.samsung.com (KnoxPortal) with ESMTPA id
-        20220425114955epcas2p331be3ef61616c06974e3e9c6448e6394~pIVbd-i0P1101611016epcas2p3J;
-        Mon, 25 Apr 2022 11:49:55 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220425114955epsmtrp2da15d0a72edce5f4129a3c766c208650~pIVbdQK1O2638226382epsmtrp25;
-        Mon, 25 Apr 2022 11:49:55 +0000 (GMT)
-X-AuditID: b6c32a45-a79ff70000002755-77-62668ae36052
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        6C.EC.08853.3EA86626; Mon, 25 Apr 2022 20:49:55 +0900 (KST)
-Received: from KORCO044084.dsn.sec.samsung.com (unknown [12.36.162.129]) by
-        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20220425114955epsmtip2c2d5a13b2848694da86a555403c60664~pIVbKrAql2780427804epsmtip2D;
-        Mon, 25 Apr 2022 11:49:55 +0000 (GMT)
-From:   Jeongtae Park <jtp.park@samsung.com>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Jeongtae Park <jeongtae.park@gmail.com>,
-        Dimitris Papastamos <dp@opensource.wolfsonmicro.com>,
-        Jeongtae Park <jtp.park@samsung.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] regmap: cache: set max_register with reg_stride
-Date:   Mon, 25 Apr 2022 20:46:11 +0900
-Message-Id: <20220425114613.15934-1-jtp.park@samsung.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 25 Apr 2022 07:54:32 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E08D418394;
+        Mon, 25 Apr 2022 04:51:27 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id m22-20020a05600c3b1600b00393ed50777aso1076759wms.3;
+        Mon, 25 Apr 2022 04:51:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=XJ/pT2oK5aPhAnt0SgjUeAgczn2W9M5zxLcGF72B8Ow=;
+        b=AaD9gBLpNwX1CRS6/prSSPX49MGWFfgb99EjowEbZifKSe8SWwM980/4rv1GG6S8B+
+         iaqDHPvKkaog9RnNZ73XefpATRi8Rp7BKEa7TS9UHk42JHLb5b9zm4Hi00odh3Ms4w1z
+         11OTmGD5pfyKegox7AxNLZMzrxxWLm0714etCyBefPkMajNRI8IguwWgPxwX72BnTWrv
+         duISK2k/mjpsCBklhJ5AkucGEkyWr0cVpEgFcg6VFzHKawb3MzYTcTNTIUrAPhOAGMve
+         WCupknfzQjWHgktNWPm8gdEYEFP+5pOhYMxBGUlBzVTo/g+0hgFYwoKg5RBI3M7bGkSe
+         QPOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=XJ/pT2oK5aPhAnt0SgjUeAgczn2W9M5zxLcGF72B8Ow=;
+        b=cqZZDX8qJOurPxaPOHUwTZ4Y832/0fiVZA8ZvGv3f2XFqLPfX8FD4fl3gioaGxBULu
+         SXqP8GODGJoxAJlFVhHC/b3h/vZXIoLXSu8hobA1rKS3GgCGiXdgtI5CqJv1RZcZ76F5
+         R3sgpMphCTIdiAYozof2p8saa1D+6h7M6Frvmt9SEU4ZWJonQMru6SQCDDgWgigSbodi
+         yDF7ddw+FrxbVST9bO6fNj3xxPMGUZwPD6v269y/wVrOh1yKYxmO/6qo//uauiKx29qF
+         Wx8CMCaZ1wZ5fb7YRPFAkWzurenzi9ffWnvWyULsxU5yQp5lXFbXFUVP4ST3mBJPcppF
+         W03g==
+X-Gm-Message-State: AOAM5339tSSCz+09wcw4UyvMs436XnRWGVgVkUviRK8HLlOx8ZuWSOq3
+        hARI5RZj6/eEMgdrfFN82m4=
+X-Google-Smtp-Source: ABdhPJzSevCSk4/IoLJw5MxkXl/zsUxFqNe/72jNMB4pW+h27l4BKkgPAH9YHi2yfaSRyw4p6QEnvQ==
+X-Received: by 2002:a1c:f604:0:b0:38c:8ffd:dbb6 with SMTP id w4-20020a1cf604000000b0038c8ffddbb6mr25572557wmc.43.1650887486373;
+        Mon, 25 Apr 2022 04:51:26 -0700 (PDT)
+Received: from [192.168.1.5] ([41.42.183.233])
+        by smtp.gmail.com with ESMTPSA id f11-20020a7bcc0b000000b0037e0c362b6dsm8645348wmh.31.2022.04.25.04.51.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 Apr 2022 04:51:25 -0700 (PDT)
+Message-ID: <78823e29-02b2-e052-e8bb-12bbe692db6a@gmail.com>
+Date:   Mon, 25 Apr 2022 13:51:23 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net-next v3 1/2] rtnetlink: add extack support in fdb del
+ handlers
+Content-Language: en-US
+To:     Julia Lawall <julia.lawall@inria.fr>
+Cc:     Nikolay Aleksandrov <razor@blackwall.org>, netdev@vger.kernel.org,
+        outreachy@lists.linux.dev, roopa@nvidia.com, jdenham@redhat.com,
+        sbrivio@redhat.com, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
+        alexandre.belloni@bootlin.com, shshaikh@marvell.com,
+        manishc@marvell.com, intel-wired-lan@lists.osuosl.org,
+        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
+        GR-Linux-NIC-Dev@marvell.com, bridge@lists.linux-foundation.org
+References: <cover.1650800975.git.eng.alaamohamedsoliman.am@gmail.com>
+ <c3a882e4fb6f9228f704ebe3c1fcace14ee6cdf2.1650800975.git.eng.alaamohamedsoliman.am@gmail.com>
+ <7c8367b6-95c7-ea39-fafe-72495f343625@blackwall.org>
+ <d89eefc2-664f-8537-d10e-6fdfbb6823ed@gmail.com>
+ <4bf69eef-7444-1238-0f4a-fb0fccda080c@blackwall.org>
+ <3bcb2d3d-8b8b-8a8f-1285-7277394b4e6b@gmail.com>
+ <alpine.DEB.2.22.394.2204250808280.2759@hadrien>
+From:   Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+In-Reply-To: <alpine.DEB.2.22.394.2204250808280.2759@hadrien>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmphk+LIzCtJLcpLzFFi42LZdljTXPdJV1qSwb+VzBZTHz5hs1h3bgaL
-        RfPi9WwWZ86+ZLU4svYqk8XlXXPYLOZ+mcrswO6xc9Zddo9NqzrZPPbPXcPu8XLibzaPvi2r
-        GD0+b5ILYIvKtslITUxJLVJIzUvOT8nMS7dV8g6Od443NTMw1DW0tDBXUshLzE21VXLxCdB1
-        y8wBukVJoSwxpxQoFJBYXKykb2dTlF9akqqQkV9cYquUWpCSU2BeoFecmFtcmpeul5daYmVo
-        YGBkClSYkJ2xduJPtoIZ7BXbXr9ibWDsYOti5OSQEDCROHHrNksXIxeHkMAORomuuxOgnE+M
-        Es3z/0I53xglnv55Dtfyv2ETK0RiL6NE68pT7BDOX0aJC/37mUCq2AS0JKbPbGAFsUUElCWu
-        ft8LNopZoJVJ4kvXRUaQhLCAg8STuRuZQWwWAVWJQ03HgZo5OHgFLCWOLvGC2CYvMfPSd3YQ
-        m1dAUOLkzCcsIDYzULx562xmkJkSAtfYJU7NfwZ1novEvCWL2SFsYYlXx7dA2VISn9/tharJ
-        l7jS/4YFormBUeL67ZlMEAljiS1zT4EdwSygKbF+lz6IKQH0wJFbUHv5JDoO/2WHCPNKdLQJ
-        QTQqScxbOo8ZwpaQuDR3CzNEiYfEhfWaIGEhgViJncda2Scwys9C8swsJM/MQli7gJF5FaNY
-        akFxbnpqsVGBITxSk/NzNzGCk6OW6w7GyW8/6B1iZOJgPMQowcGsJMI7VTUtSYg3JbGyKrUo
-        P76oNCe1+BCjKTB0JzJLiSbnA9NzXkm8oYmlgYmZmaG5kamBuZI4r1fKhkQhgfTEktTs1NSC
-        1CKYPiYOTqkGpqMC3+rmi6Z9M1FUVG6QXj93x1qRx/MeRjU//hQx+1mSypfMHZ1Vszn2qYd9
-        1F0wJ1vxdlalTVy2In9rffqjTJ4Pgvdfp0TbPSksEXxTNSv5y+ZwE5aMpFBb08NVL2ybluy3
-        +LrwjWPIpkQNvlDnsDbvM8Z3PxQFbpoSVDfn6PUaAZM5txxMvc2nPFh/zevt/7BfM5UbJQy0
-        Xuce7pn4JL9174b9VcIHQhYUPk9bXPjir9eqBeUKZbYcPDO2CuSsK78fce30m7tx6kH3Mzk9
-        Ev/w2V+xNt7+fGGP1Lx3L089DPzhkyJ4pfbwWxXRtisWT7UlVoT1P1k0zTrgykmP5tC+Ov5A
-        i5dHdDPFdNr5lViKMxINtZiLihMBsqLwARcEAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrELMWRmVeSWpSXmKPExsWy7bCSvO7jrrQkg4YzfBZTHz5hs1h3bgaL
-        RfPi9WwWZ86+ZLU4svYqk8XlXXPYLOZ+mcrswO6xc9Zddo9NqzrZPPbPXcPu8XLibzaPvi2r
-        GD0+b5ILYIvisklJzcksSy3St0vgylg78SdbwQz2im2vX7E2MHawdTFyckgImEj8b9jECmIL
-        CexmlFj4rAwiLiGxfMMLJghbWOJ+yxGgGi6gmt+MErNmnGQBSbAJaElMn9kA1iwioCxx9fte
-        sDizQCeTxJXOKBBbWMBB4sncjcwgNouAqsShpuNAQzk4eAUsJY4u8YKYLy8x89J3dhCbV0BQ
-        4uTMJ1Bj5CWat85mnsDINwtJahaS1AJGplWMkqkFxbnpucWGBYZ5qeV6xYm5xaV56XrJ+bmb
-        GMHBqqW5g3H7qg96hxiZOBgPMUpwMCuJ8E5VTUsS4k1JrKxKLcqPLyrNSS0+xCjNwaIkznuh
-        62S8kEB6YklqdmpqQWoRTJaJg1OqgUmNXSfoDl/VuQWGu0+8W28mm721cuWiYIuTTr+7Z/ae
-        X6/35Gx27o8ZuUwipk4xv/yXLLJl7Fj4KWNaxs1VnJ9FtS1mFfg2RX/0PdXF4PRPbZ1s/a1/
-        /BJttbNPR+8We7Gxtjjqee07kRk3FjtNF/PlShRyzX57V926zSTbTndv5nKT9d/Vk0r2T0ie
-        J2FoFnCiszp8XVXsvKW7fj5enqHeEeEnKhbEzXrM78j8KW/5Z62w+fpu/cNN8T/P+eTah6Zk
-        Pfu9NLiEa5PKR2PNx/+cJlt47WDeUH0lVaCmV2jGHtmzTG/ucj0vXd/Nm7FRMG0/64bPq7Qz
-        trgva5u2b/OWlMm/VufX5M2OKvIoilJiKc5INNRiLipOBAAjFfRyxQIAAA==
-X-CMS-MailID: 20220425114955epcas2p331be3ef61616c06974e3e9c6448e6394
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220425114955epcas2p331be3ef61616c06974e3e9c6448e6394
-References: <CGME20220425114955epcas2p331be3ef61616c06974e3e9c6448e6394@epcas2p3.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Current logic does not consider multi-stride cases,
-the max_register have to calculate with reg_stride
-because it is a kind of address range.
 
-Signed-off-by: Jeongtae Park <jtp.park@samsung.com>
----
- drivers/base/regmap/regcache.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+On ٢٥‏/٤‏/٢٠٢٢ ٠٨:١١, Julia Lawall wrote:
+>
+> On Sun, 24 Apr 2022, Alaa Mohamed wrote:
+>
+>> On ٢٤/٤/٢٠٢٢ ٢١:٥٥, Nikolay Aleksandrov wrote:
+>>> On 24/04/2022 22:49, Alaa Mohamed wrote:
+>>>> On ٢٤/٤/٢٠٢٢ ٢١:٠٢, Nikolay Aleksandrov wrote:
+>>>>> On 24/04/2022 15:09, Alaa Mohamed wrote:
+>>>>>> Add extack support to .ndo_fdb_del in netdevice.h and
+>>>>>> all related methods.
+>>>>>>
+>>>>>> Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+>>>>>> ---
+>>>>>> changes in V3:
+>>>>>>            fix errors reported by checkpatch.pl
+>>>>>> ---
+>>>>>>     drivers/net/ethernet/intel/ice/ice_main.c        | 4 ++--
+>>>>>>     drivers/net/ethernet/mscc/ocelot_net.c           | 4 ++--
+>>>>>>     drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c | 2 +-
+>>>>>>     drivers/net/macvlan.c                            | 2 +-
+>>>>>>     drivers/net/vxlan/vxlan_core.c                   | 2 +-
+>>>>>>     include/linux/netdevice.h                        | 2 +-
+>>>>>>     net/bridge/br_fdb.c                              | 2 +-
+>>>>>>     net/bridge/br_private.h                          | 2 +-
+>>>>>>     net/core/rtnetlink.c                             | 4 ++--
+>>>>>>     9 files changed, 12 insertions(+), 12 deletions(-)
+>>>>>>
+>>>>>> diff --git a/drivers/net/ethernet/intel/ice/ice_main.c
+>>>>>> b/drivers/net/ethernet/intel/ice/ice_main.c
+>>>>>> index d768925785ca..7b55d8d94803 100644
+>>>>>> --- a/drivers/net/ethernet/intel/ice/ice_main.c
+>>>>>> +++ b/drivers/net/ethernet/intel/ice/ice_main.c
+>>>>>> @@ -5678,10 +5678,10 @@ ice_fdb_add(struct ndmsg *ndm, struct nlattr
+>>>>>> __always_unused *tb[],
+>>>>>>     static int
+>>>>>>     ice_fdb_del(struct ndmsg *ndm, __always_unused struct nlattr *tb[],
+>>>>>>             struct net_device *dev, const unsigned char *addr,
+>>>>>> -        __always_unused u16 vid)
+>>>>>> +        __always_unused u16 vid, struct netlink_ext_ack *extack)
+>>>>>>     {
+>>>>>>         int err;
+>>>>>> -
+>>>>>> +
+>>>>> What's changed here?
+>>>> In the previous version, I removed the blank line after "int err;" and you
+>>>> said I shouldn't so I added blank line.
+>>>>
+>>> Yeah, my question is are you fixing a dos ending or something else?
+>>> The blank line is already there, what's wrong with it?
+>> No, I didn't.
+> OK, so what is the answer to the question about what changed?  It looks
+> like you remove a blank line and then add it back.  But that should not
+> show up as a difference when you generate the patch.
+>
+> When you answer a comment, please put a blank line before and after your
+> answer.  Otherwise it can be hard to see your answer when it is in the
+> middle of a larger patch.
+>
+>>> The point is it's not nice to mix style fixes and other changes, more so
+>>> if nothing is mentioned in the commit message.
+>> Got it, So, what should I do to fix it?
+> A series?  But it is not clear that any change is needed here at all.
+>
+> julia
 
-diff --git a/drivers/base/regmap/regcache.c b/drivers/base/regmap/regcache.c
-index f2469d3435ca..d0f5bc827978 100644
---- a/drivers/base/regmap/regcache.c
-+++ b/drivers/base/regmap/regcache.c
-@@ -183,8 +183,8 @@ int regcache_init(struct regmap *map, const struct regmap_config *config)
- 			return 0;
- 	}
- 
--	if (!map->max_register)
--		map->max_register = map->num_reg_defaults_raw;
-+	if (!map->max_register && map->num_reg_defaults_raw)
-+		map->max_register = (map->num_reg_defaults_raw  - 1) * map->reg_stride;
- 
- 	if (map->cache_ops->init) {
- 		dev_dbg(map->dev, "Initializing %s cache\n",
--- 
-2.25.1
+I understood but I mean how to create the patch without this but I will 
+google it , Thanks Julia.
 
+
+>
+>>>>>>         if (ndm->ndm_state & NUD_PERMANENT) {
+>>>>>>             netdev_err(dev, "FDB only supports static addresses\n");
+>>>>>>             return -EINVAL;
+>>>>>> diff --git a/drivers/net/ethernet/mscc/ocelot_net.c
+>>>>>> b/drivers/net/ethernet/mscc/ocelot_net.c
+>>>>>> index 247bc105bdd2..e07c64e3159c 100644
+>>>>>> --- a/drivers/net/ethernet/mscc/ocelot_net.c
+>>>>>> +++ b/drivers/net/ethernet/mscc/ocelot_net.c
+>>>>>> @@ -774,14 +774,14 @@ static int ocelot_port_fdb_add(struct ndmsg
+>>>>>> *ndm, struct nlattr *tb[],
+>>>>>>
+>>>>>>     static int ocelot_port_fdb_del(struct ndmsg *ndm, struct nlattr
+>>>>>> *tb[],
+>>>>>>                        struct net_device *dev,
+>>>>>> -                   const unsigned char *addr, u16 vid)
+>>>>>> +                   const unsigned char *addr, u16 vid, struct
+>>>>>> netlink_ext_ack *extack)
+>>>>>>     {
+>>>>>>         struct ocelot_port_private *priv = netdev_priv(dev);
+>>>>>>         struct ocelot_port *ocelot_port = &priv->port;
+>>>>>>         struct ocelot *ocelot = ocelot_port->ocelot;
+>>>>>>         int port = priv->chip_port;
+>>>>>>
+>>>>>> -    return ocelot_fdb_del(ocelot, port, addr, vid,
+>>>>>> ocelot_port->bridge);
+>>>>>> +    return ocelot_fdb_del(ocelot, port, addr, vid,
+>>>>>> ocelot_port->bridge, extack);
+>>>>>>     }
+>>>>>>
+>>>>>>     static int ocelot_port_fdb_dump(struct sk_buff *skb,
+>>>>>> diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
+>>>>>> b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
+>>>>>> index d320567b2cca..51fa23418f6a 100644
+>>>>>> --- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
+>>>>>> +++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
+>>>>>> @@ -368,7 +368,7 @@ static int qlcnic_set_mac(struct net_device
+>>>>>> *netdev, void *p)
+>>>>>>
+>>>>>>     static int qlcnic_fdb_del(struct ndmsg *ndm, struct nlattr *tb[],
+>>>>>>                 struct net_device *netdev,
+>>>>>> -            const unsigned char *addr, u16 vid)
+>>>>>> +            const unsigned char *addr, u16 vid, struct
+>>>>>> netlink_ext_ack *extack)
+>>>>>>     {
+>>>>>>         struct qlcnic_adapter *adapter = netdev_priv(netdev);
+>>>>>>         int err = -EOPNOTSUPP;
+>>>>>> diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
+>>>>>> index 069e8824c264..ffd34d9f7049 100644
+>>>>>> --- a/drivers/net/macvlan.c
+>>>>>> +++ b/drivers/net/macvlan.c
+>>>>>> @@ -1017,7 +1017,7 @@ static int macvlan_fdb_add(struct ndmsg *ndm,
+>>>>>> struct nlattr *tb[],
+>>>>>>
+>>>>>>     static int macvlan_fdb_del(struct ndmsg *ndm, struct nlattr *tb[],
+>>>>>>                    struct net_device *dev,
+>>>>>> -               const unsigned char *addr, u16 vid)
+>>>>>> +               const unsigned char *addr, u16 vid, struct
+>>>>>> netlink_ext_ack *extack)
+>>>>>>     {
+>>>>>>         struct macvlan_dev *vlan = netdev_priv(dev);
+>>>>>>         int err = -EINVAL;
+>>>>>> diff --git a/drivers/net/vxlan/vxlan_core.c
+>>>>>> b/drivers/net/vxlan/vxlan_core.c
+>>>>>> index de97ff98d36e..cf2f60037340 100644
+>>>>>> --- a/drivers/net/vxlan/vxlan_core.c
+>>>>>> +++ b/drivers/net/vxlan/vxlan_core.c
+>>>>>> @@ -1280,7 +1280,7 @@ int __vxlan_fdb_delete(struct vxlan_dev *vxlan,
+>>>>>>     /* Delete entry (via netlink) */
+>>>>>>     static int vxlan_fdb_delete(struct ndmsg *ndm, struct nlattr *tb[],
+>>>>>>                     struct net_device *dev,
+>>>>>> -                const unsigned char *addr, u16 vid)
+>>>>>> +                const unsigned char *addr, u16 vid, struct
+>>>>>> netlink_ext_ack *extack)
+>>>>>>     {
+>>>>>>         struct vxlan_dev *vxlan = netdev_priv(dev);
+>>>>>>         union vxlan_addr ip;
+>>>>>> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+>>>>>> index 28ea4f8269d4..d0d2a8f33c73 100644
+>>>>>> --- a/include/linux/netdevice.h
+>>>>>> +++ b/include/linux/netdevice.h
+>>>>>> @@ -1509,7 +1509,7 @@ struct net_device_ops {
+>>>>>>                                struct nlattr *tb[],
+>>>>>>                                struct net_device *dev,
+>>>>>>                                const unsigned char *addr,
+>>>>>> -                           u16 vid);
+>>>>>> +                           u16 vid, struct netlink_ext_ack *extack);
+>>>>>>         int            (*ndo_fdb_dump)(struct sk_buff *skb,
+>>>>>>                             struct netlink_callback *cb,
+>>>>>>                             struct net_device *dev,
+>>>>>> diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
+>>>>>> index 6ccda68bd473..5bfce2e9a553 100644
+>>>>>> --- a/net/bridge/br_fdb.c
+>>>>>> +++ b/net/bridge/br_fdb.c
+>>>>>> @@ -1110,7 +1110,7 @@ static int __br_fdb_delete(struct net_bridge
+>>>>>> *br,
+>>>>>>     /* Remove neighbor entry with RTM_DELNEIGH */
+>>>>>>     int br_fdb_delete(struct ndmsg *ndm, struct nlattr *tb[],
+>>>>>>               struct net_device *dev,
+>>>>>> -          const unsigned char *addr, u16 vid)
+>>>>>> +          const unsigned char *addr, u16 vid, struct netlink_ext_ack
+>>>>>> *extack)
+>>>>>>     {
+>>>>>>         struct net_bridge_vlan_group *vg;
+>>>>>>         struct net_bridge_port *p = NULL;
+>>>>>> diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+>>>>>> index 18ccc3d5d296..95348c1c9ce5 100644
+>>>>>> --- a/net/bridge/br_private.h
+>>>>>> +++ b/net/bridge/br_private.h
+>>>>>> @@ -780,7 +780,7 @@ void br_fdb_update(struct net_bridge *br, struct
+>>>>>> net_bridge_port *source,
+>>>>>>                const unsigned char *addr, u16 vid, unsigned long
+>>>>>> flags);
+>>>>>>
+>>>>>>     int br_fdb_delete(struct ndmsg *ndm, struct nlattr *tb[],
+>>>>>> -          struct net_device *dev, const unsigned char *addr, u16
+>>>>>> vid);
+>>>>>> +          struct net_device *dev, const unsigned char *addr, u16 vid,
+>>>>>> struct netlink_ext_ack *extack);
+>>>>> This is way too long (111 chars) and checkpatch should've complained
+>>>>> about it.
+>>>>> WARNING: line length of 111 exceeds 100 columns
+>>>>> #234: FILE: net/bridge/br_private.h:782:
+>>>>> +          struct net_device *dev, const unsigned char *addr, u16 vid,
+>>>>> struct netlink_ext_ack *extack);
+>>>> I will fix it.
+>>>>
+>>>>>>     int br_fdb_add(struct ndmsg *nlh, struct nlattr *tb[], struct
+>>>>>> net_device *dev,
+>>>>>>                const unsigned char *addr, u16 vid, u16 nlh_flags,
+>>>>>>                struct netlink_ext_ack *extack);
+>>>>>> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+>>>>>> index 4041b3e2e8ec..99b30ae58a47 100644
+>>>>>> --- a/net/core/rtnetlink.c
+>>>>>> +++ b/net/core/rtnetlink.c
+>>>>>> @@ -4223,7 +4223,7 @@ static int rtnl_fdb_del(struct sk_buff *skb,
+>>>>>> struct nlmsghdr *nlh,
+>>>>>>             const struct net_device_ops *ops = br_dev->netdev_ops;
+>>>>>>
+>>>>>>             if (ops->ndo_fdb_del)
+>>>>>> -            err = ops->ndo_fdb_del(ndm, tb, dev, addr, vid);
+>>>>>> +            err = ops->ndo_fdb_del(ndm, tb, dev, addr, vid, extack);
+>>>>>>
+>>>>>>             if (err)
+>>>>>>                 goto out;
+>>>>>> @@ -4235,7 +4235,7 @@ static int rtnl_fdb_del(struct sk_buff *skb,
+>>>>>> struct nlmsghdr *nlh,
+>>>>>>         if (ndm->ndm_flags & NTF_SELF) {
+>>>>>>             if (dev->netdev_ops->ndo_fdb_del)
+>>>>>>                 err = dev->netdev_ops->ndo_fdb_del(ndm, tb, dev, addr,
+>>>>>> -                               vid);
+>>>>>> +                               vid, extack);
+>>>>>>             else
+>>>>>>                 err = ndo_dflt_fdb_del(ndm, tb, dev, addr, vid);
+>>>>>>
+>>>>>> --
+>>>>>> 2.36.0
+>>>>>>
+> >
