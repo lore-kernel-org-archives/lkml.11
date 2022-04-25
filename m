@@ -2,174 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 345FFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:49:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3395C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:50:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243585AbiDYQw4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 12:52:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46976 "EHLO
+        id S243592AbiDYQx5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 12:53:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243582AbiDYQwv (ORCPT
+        with ESMTP id S232888AbiDYQxx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 12:52:51 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BD8324972
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 09:49:46 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id x18so21797175wrc.0
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 09:49:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ueXJpQvL2pfynfplxOLCcVOjZIcVvqpX+r8wn9uwNPI=;
-        b=DUfEXR7pB451R0llk/iDmWhUQZlHNJ4Q7zbGysozNMINnHO02Z1oMI/cNzFAgURFAA
-         QP2xDVa8DeLNMOZBzWIZoI2pQGQWvVHDA1Gm2oobaus+2DgI9SXWDtBp6k7M6efqB/D9
-         7SveUQi/xVbUVmcjj2fKMeoK6jsHUOxbCnX6wSrJcqGBv3IzZMi8rPa21fedfcjAi3sf
-         BoPIF6BKV4YCVRuM1ujSUan2bYvMfdFVKB0KPakipDEbrR3kN1vbw0HkV5sHPNenwlxb
-         qAlHUqg1UJXiGnsHH0uGwKyVX4RASGrJrxjo5oPm/gdJtGdhGmJ5mmovqxNDshBygKTJ
-         tIvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ueXJpQvL2pfynfplxOLCcVOjZIcVvqpX+r8wn9uwNPI=;
-        b=lYuATgffMnFIPVx7wkAafDz5bk8quxbaAc5bH/Zf44q/HOKVagRZ06zfjp1DnfXiCr
-         spRkce/CgpRFhoILWL357V9DzwYllcZ/OVk9fr301WfClUT/NlwDAPlsFluUR0wfAFSz
-         tP3Om1/mCdi7P71w8BY5T2sSNwwhhiFa4ogQ15YLAk//ew80Apj0K1y5iF8qwU/C6cZb
-         A0VvW01mSV+a6dkbNswc1UtK+jHr02rajzS1zzsiNuakFmWnvEw4QixXBB1HXsGpMLGW
-         ww8DgkUH6RDQRGHWNpZgc9e/pnBgvKFcNLScWRoCahIHmlaW0TsPAoeCo1Wr4VcB+Nnq
-         CRKA==
-X-Gm-Message-State: AOAM5308HJyGgaHrswsJdFBWjAGmtN1tQ06MDqpkCfHZPog1uWZSFvZc
-        8RCUBWJsf1f/L6pvcMSCgE2XGWc9MHgL6MzT0MABBw==
-X-Google-Smtp-Source: ABdhPJxDeJE4fGjOcrWIwHWHvs3dKEYgZvAE18I/sclof3Uaf4ZHltoT9ZtbMTMJXPqkLtDAAyGDNTrbHVEN1oFWqYI=
-X-Received: by 2002:adf:f30a:0:b0:20a:e193:6836 with SMTP id
- i10-20020adff30a000000b0020ae1936836mr1153087wro.654.1650905384423; Mon, 25
- Apr 2022 09:49:44 -0700 (PDT)
+        Mon, 25 Apr 2022 12:53:53 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F3DA8DE8F;
+        Mon, 25 Apr 2022 09:50:47 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BC45F1FB;
+        Mon, 25 Apr 2022 09:50:47 -0700 (PDT)
+Received: from lpieralisi (unknown [10.57.13.157])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AB9873F5A1;
+        Mon, 25 Apr 2022 09:50:44 -0700 (PDT)
+Date:   Mon, 25 Apr 2022 17:50:37 +0100
+From:   Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+To:     "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
+Cc:     KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Wei Hu <weh@microsoft.com>, Rob Herring <robh@kernel.org>,
+        Krzysztof Wilczynski <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        linux-hyperv@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/6] PCI: hv: Use vmbus_requestor to generate
+ transaction IDs for VMbus hardening
+Message-ID: <20220425165037.GA17718@lpieralisi>
+References: <20220419122325.10078-1-parri.andrea@gmail.com>
+ <20220419122325.10078-3-parri.andrea@gmail.com>
 MIME-Version: 1.0
-References: <20220422053401.208207-1-namhyung@kernel.org> <35121321.B44TWeBT9p@milian-workstation>
- <CAM9d7cjU6RGMStG4YOW5D50Sx4PRia2dfzcPKxb4JLh5Q668mw@mail.gmail.com> <5616892.dGzqbEiDyy@milian-workstation>
-In-Reply-To: <5616892.dGzqbEiDyy@milian-workstation>
-From:   Ian Rogers <irogers@google.com>
-Date:   Mon, 25 Apr 2022 09:49:31 -0700
-Message-ID: <CAP-5=fVKJ4dYRe288LhJ6B5A5aqkHYwF3VnK8CFv_0oiTvORqA@mail.gmail.com>
-Subject: Re: [RFC 0/4] perf record: Implement off-cpu profiling with BPF (v1)
-To:     Milian Wolff <milian.wolff@kdab.com>
-Cc:     Namhyung Kim <namhyung@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>, Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Song Liu <songliubraving@fb.com>, Hao Luo <haoluo@google.com>,
-        bpf <bpf@vger.kernel.org>,
-        linux-perf-users <linux-perf-users@vger.kernel.org>,
-        Blake Jones <blakejones@google.com>,
-        "michael@michaellarabel.com" <michael@michaellarabel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220419122325.10078-3-parri.andrea@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 5:42 AM Milian Wolff <milian.wolff@kdab.com> wrote:
->
-> On Freitag, 22. April 2022 17:01:15 CEST Namhyung Kim wrote:
-> > Hi Milian,
-> >
-> > On Fri, Apr 22, 2022 at 3:21 AM Milian Wolff <milian.wolff@kdab.com> wrote:
-> > > On Freitag, 22. April 2022 07:33:57 CEST Namhyung Kim wrote:
-> > > > Hello,
-> > > >
-> > > > This is the first version of off-cpu profiling support.  Together with
-> > > > (PMU-based) cpu profiling, it can show holistic view of the performance
-> > > > characteristics of your application or system.
-> > >
-> > > Hey Namhyung,
-> > >
-> > > this is awesome news! In hotspot, I've long done off-cpu profiling
-> > > manually by looking at the time between --switch-events. The downside is
-> > > that we also need to track the sched:sched_switch event to get a call
-> > > stack. But this approach also works with dwarf based unwinding, and also
-> > > includes kernel stacks.
-> >
-> > Thanks, I've also briefly thought about the switch event based off-cpu
-> > profiling as it doesn't require root.  But collecting call stacks is hard
-> > and I'd like to do it in kernel/bpf to reduce the overhead.
->
-> I'm all for reducing the overhead, I just wonder about the practicality. At
-> the very least, please make sure to note this limitation explicitly to end
-> users. As a preacher for perf, I have come across lots of people stumbling
-> over `perf record -g` not producing any sensible output because they are
-> simply not aware that this requires frame pointers which are basically non
-> existing on most "normal" distributions. Nowadays `man perf record` tries to
-> educate people, please do the same for the new `--off-cpu` switch.
+On Tue, Apr 19, 2022 at 02:23:21PM +0200, Andrea Parri (Microsoft) wrote:
+> Currently, pointers to guest memory are passed to Hyper-V as transaction
+> IDs in hv_pci.  In the face of errors or malicious behavior in Hyper-V,
+> hv_pci should not expose or trust the transaction IDs returned by
+> Hyper-V to be valid guest memory addresses.  Instead, use small integers
+> generated by vmbus_requestor as request (transaction) IDs.
+> 
+> Suggested-by: Michael Kelley <mikelley@microsoft.com>
+> Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+> ---
+>  drivers/pci/controller/pci-hyperv.c | 39 +++++++++++++++++++++--------
+>  1 file changed, 29 insertions(+), 10 deletions(-)
 
-I think documenting that off-cpu has a dependency on frame pointers
-makes sense. There has been work to make LBR work:
-https://lore.kernel.org/bpf/20210818012937.2522409-1-songliubraving@fb.com/
-DWARF unwinding is problematic and is probably something best kept in
-user land. There is also Intel's CET that may provide an alternate
-backtraces.
+Acked-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 
-More recent Intel and AMD cpus have techniques to turn memory
-locations into registers, an approach generally called memory
-renaming. There is some description here:
-https://www.agner.org/forum/viewtopic.php?t=41
-In LLVM there is a pass to promote memory locations into registers
-called mem2reg. Having the frame pointer as an extra register will
-help this pass as there will be 1 more register to replace something
-from memory. The memory renaming optimization is similar to mem2reg
-except done in the CPU's front-end. It would be interesting to see
-benchmark results on modern CPUs with and without omit-frame-pointer.
-My expectation is that the performance wins aren't as great, if any,
-as they used to be (cc-ed Michael Larabel as I Iove phoronix and it'd
-be awesome if someone could do an omit-frame-pointer shoot-out).
-
-> > > > With BPF, it can aggregate scheduling stats for interested tasks
-> > > > and/or states and convert the data into a form of perf sample records.
-> > > > I chose the bpf-output event which is a software event supposed to be
-> > > > consumed by BPF programs and renamed it as "offcpu-time".  So it
-> > > > requires no change on the perf report side except for setting sample
-> > > > types of bpf-output event.
-> > > >
-> > > > Basically it collects userspace callstack for tasks as it's what users
-> > > > want mostly.  Maybe we can add support for the kernel stacks but I'm
-> > > > afraid that it'd cause more overhead.  So the offcpu-time event will
-> > > > always have callchains regardless of the command line option, and it
-> > > > enables the children mode in perf report by default.
-> > >
-> > > Has anything changed wrt perf/bpf and user applications not compiled with
-> > > `- fno-omit-frame-pointer`? I.e. does this new utility only work for
-> > > specially compiled applications, or do we also get backtraces for
-> > > "normal" binaries that we can install through package managers?
-> >
-> > I am not aware of such changes, it still needs a frame pointer to get
-> > backtraces.
->
-> May I ask what kind of setup you are using this on? Do you use something like
-> Gentoo or yocto where you compile your whole system with `-fno-omit-frame-
-> pointer`? Because otherwise, any kind of off-cpu time in system libraries will
-> not be resolved properly, no?
-
-I agree with your point. Often in cloud environments binaries are
-static blobs linking in all their dependencies. This can aid
-deployment, bug compatibility, etc. Fwiw, all backtraces gathered in
-Google's profiling are frame pointer based. A large motivation for
-this is the security aspect of having a privileged application able to
-snapshot other threads stacks that happens with dwarf based unwinding.
-
-In summary, your point is that frame pointer based unwinding is
-largely broken on all major distributions today limiting the utility
-of off-CPU as it is here. I agree, memory renaming in hardware could
-hopefully mean that this isn't the case in distributions in the
-future. Even if it isn't there are alternate backtraces from sources
-like LBR and CET that mean we can fix this other ways.
-
-Thanks,
-Ian
-
-> Thanks
-> --
-> Milian Wolff | milian.wolff@kdab.com | Senior Software Engineer
-> KDAB (Deutschland) GmbH, a KDAB Group company
-> Tel: +49-30-521325470
-> KDAB - The Qt, C++ and OpenGL Experts
+> diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
+> index 88b3b56d05228..0252b4bbc8d15 100644
+> --- a/drivers/pci/controller/pci-hyperv.c
+> +++ b/drivers/pci/controller/pci-hyperv.c
+> @@ -91,6 +91,13 @@ static enum pci_protocol_version_t pci_protocol_versions[] = {
+>  /* space for 32bit serial number as string */
+>  #define SLOT_NAME_SIZE 11
+>  
+> +/*
+> + * Size of requestor for VMbus; the value is based on the observation
+> + * that having more than one request outstanding is 'rare', and so 64
+> + * should be generous in ensuring that we don't ever run out.
+> + */
+> +#define HV_PCI_RQSTOR_SIZE 64
+> +
+>  /*
+>   * Message Types
+>   */
+> @@ -1407,7 +1414,7 @@ static void hv_int_desc_free(struct hv_pci_dev *hpdev,
+>  	int_pkt->wslot.slot = hpdev->desc.win_slot.slot;
+>  	int_pkt->int_desc = *int_desc;
+>  	vmbus_sendpacket(hpdev->hbus->hdev->channel, int_pkt, sizeof(*int_pkt),
+> -			 (unsigned long)&ctxt.pkt, VM_PKT_DATA_INBAND, 0);
+> +			 0, VM_PKT_DATA_INBAND, 0);
+>  	kfree(int_desc);
+>  }
+>  
+> @@ -2649,7 +2656,7 @@ static void hv_eject_device_work(struct work_struct *work)
+>  	ejct_pkt->message_type.type = PCI_EJECTION_COMPLETE;
+>  	ejct_pkt->wslot.slot = hpdev->desc.win_slot.slot;
+>  	vmbus_sendpacket(hbus->hdev->channel, ejct_pkt,
+> -			 sizeof(*ejct_pkt), (unsigned long)&ctxt.pkt,
+> +			 sizeof(*ejct_pkt), 0,
+>  			 VM_PKT_DATA_INBAND, 0);
+>  
+>  	/* For the get_pcichild() in hv_pci_eject_device() */
+> @@ -2696,8 +2703,9 @@ static void hv_pci_onchannelcallback(void *context)
+>  	const int packet_size = 0x100;
+>  	int ret;
+>  	struct hv_pcibus_device *hbus = context;
+> +	struct vmbus_channel *chan = hbus->hdev->channel;
+>  	u32 bytes_recvd;
+> -	u64 req_id;
+> +	u64 req_id, req_addr;
+>  	struct vmpacket_descriptor *desc;
+>  	unsigned char *buffer;
+>  	int bufferlen = packet_size;
+> @@ -2715,8 +2723,8 @@ static void hv_pci_onchannelcallback(void *context)
+>  		return;
+>  
+>  	while (1) {
+> -		ret = vmbus_recvpacket_raw(hbus->hdev->channel, buffer,
+> -					   bufferlen, &bytes_recvd, &req_id);
+> +		ret = vmbus_recvpacket_raw(chan, buffer, bufferlen,
+> +					   &bytes_recvd, &req_id);
+>  
+>  		if (ret == -ENOBUFS) {
+>  			kfree(buffer);
+> @@ -2743,11 +2751,14 @@ static void hv_pci_onchannelcallback(void *context)
+>  		switch (desc->type) {
+>  		case VM_PKT_COMP:
+>  
+> -			/*
+> -			 * The host is trusted, and thus it's safe to interpret
+> -			 * this transaction ID as a pointer.
+> -			 */
+> -			comp_packet = (struct pci_packet *)req_id;
+> +			req_addr = chan->request_addr_callback(chan, req_id);
+> +			if (req_addr == VMBUS_RQST_ERROR) {
+> +				dev_err(&hbus->hdev->device,
+> +					"Invalid transaction ID %llx\n",
+> +					req_id);
+> +				break;
+> +			}
+> +			comp_packet = (struct pci_packet *)req_addr;
+>  			response = (struct pci_response *)buffer;
+>  			comp_packet->completion_func(comp_packet->compl_ctxt,
+>  						     response,
+> @@ -3428,6 +3439,10 @@ static int hv_pci_probe(struct hv_device *hdev,
+>  		goto free_dom;
+>  	}
+>  
+> +	hdev->channel->next_request_id_callback = vmbus_next_request_id;
+> +	hdev->channel->request_addr_callback = vmbus_request_addr;
+> +	hdev->channel->rqstor_size = HV_PCI_RQSTOR_SIZE;
+> +
+>  	ret = vmbus_open(hdev->channel, pci_ring_size, pci_ring_size, NULL, 0,
+>  			 hv_pci_onchannelcallback, hbus);
+>  	if (ret)
+> @@ -3758,6 +3773,10 @@ static int hv_pci_resume(struct hv_device *hdev)
+>  
+>  	hbus->state = hv_pcibus_init;
+>  
+> +	hdev->channel->next_request_id_callback = vmbus_next_request_id;
+> +	hdev->channel->request_addr_callback = vmbus_request_addr;
+> +	hdev->channel->rqstor_size = HV_PCI_RQSTOR_SIZE;
+> +
+>  	ret = vmbus_open(hdev->channel, pci_ring_size, pci_ring_size, NULL, 0,
+>  			 hv_pci_onchannelcallback, hbus);
+>  	if (ret)
+> -- 
+> 2.25.1
+> 
