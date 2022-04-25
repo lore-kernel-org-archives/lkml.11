@@ -2,313 +2,337 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F238BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 13:43:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26BE2C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 13:43:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237401AbiDYNqU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 09:46:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40036 "EHLO
+        id S242198AbiDYNq3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 09:46:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242236AbiDYNqQ (ORCPT
+        with ESMTP id S242191AbiDYNpo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 09:46:16 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A457A496AC
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 06:43:09 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id g9so13448611pgc.10
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 06:43:09 -0700 (PDT)
+        Mon, 25 Apr 2022 09:45:44 -0400
+Received: from mail-wm1-x349.google.com (mail-wm1-x349.google.com [IPv6:2a00:1450:4864:20::349])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AB7B4A3CF
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 06:42:35 -0700 (PDT)
+Received: by mail-wm1-x349.google.com with SMTP id c125-20020a1c3583000000b0038e3f6e871aso6750208wma.8
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 06:42:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=DmA69wy+os8Hg80rILXTGEh+ZOJNCDfLDcCt0b5+p1w=;
-        b=A3dgZxk6LvpH6SgaqTEtJlZ6k7P9KEh1Zsm46HjVAW6uX+dnHPKmUnJmlvbGHPK2VL
-         UravFU5ztBa4vJ5UOXc0l4PGH1ZXoh1GUPmmQdkmtZAfseUMOqbVKF+u+BSpDQqwkmC9
-         bYq9OuANb2IjhlNGswBXhDEnxvs/1zDpop4bE=
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=QDUkzkor6rIG/fum/ZEDdQx1WnuBoE/Wp/SxBYeFJMY=;
+        b=Zd7TBBwmHLJV4pk8yXPo4BcyqlnwcEU+4+5iRdnCjDv4TtBGJCnoM7A0pqMEm7XDfe
+         uh9CRKnSsA4xfsQvKZ8JC177PEGPoJdktdcExtcJ1HiFXZXaBJyBiahh1RYQmGIh/f/7
+         vPJuqbIWx2d5ovYIqUWUEBJJ60yRbrHKQKynkR/1aFMbsEhLaCd/0dS6+fH5EL3HXzxA
+         f29gwRM+djKCMYK9ZmhgSuCf+oinCEf9jqv+jSai8WkdNeNlnkiboUE8FcC97qwxdEzq
+         MWhIujifCihz26KX4AZeG3z1v29W0JxIYmTrufjldgt/hmlpvWJXfQWtb033Gof9+m6V
+         vPZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=DmA69wy+os8Hg80rILXTGEh+ZOJNCDfLDcCt0b5+p1w=;
-        b=2w14C2ipCRpfluiMDI7TbEUMzsep7Vnv6dZrl9ZhWAhzPYeBqdxj+VGsm7086cheO2
-         pU/gpZ7Tizy8zTXZpvHOPI8557/54mibu8+u+Jyp0y3DwcmrNsZWXFYW+ODgshDZj2x1
-         B6LMEU+RSiwLLqvD3xbyQh6N07N1ZfPQ/X8Z485DasB86Jf4dFemOeCWfNRS+khcVeAX
-         1i0cIjtI9Lq1tNX4hGwEJwiT7W0TqdiftjQ/rRu3yiOE2foCKlcqCQHoztJj2tbtoIws
-         +9r+aNGPMq9Ap6UWP7Bu8YhRj3MolCisAHlS0pCa1fkpbIYYVgmBpH4bAR/OQKwknzsP
-         59Mw==
-X-Gm-Message-State: AOAM533G1DAI2gTd82Z7z7exUyzBf0yhzq0jlApX2JT2WuVCR/EZOXft
-        +ErNfFVlUc6hlDxxRF6x9Wy6Hw==
-X-Google-Smtp-Source: ABdhPJwu2usPT+J7QDQaQyOF7WJsbtg197teEbqT6xJHKdpgL3T3CJ8lcy8fotxs4x862/bLH+ISoA==
-X-Received: by 2002:a05:6a00:1a49:b0:505:7ab3:e5c7 with SMTP id h9-20020a056a001a4900b005057ab3e5c7mr19050422pfv.62.1650894187656;
-        Mon, 25 Apr 2022 06:43:07 -0700 (PDT)
-Received: from localhost.localdomain ([183.83.137.38])
-        by smtp.gmail.com with ESMTPSA id c9-20020a63a409000000b0039912d50806sm9810089pgf.87.2022.04.25.06.43.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 06:43:07 -0700 (PDT)
-From:   Manoj Sai <abbaraju.manojsai@amarulasolutions.com>
-To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
-        Li Yang <leoyang.li@nxp.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Matteo Lisi <matteo.lisi@engicam.com>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-amarula@amarulasolutions.com,
-        Jagan Teki <jagan@amarulasolutions.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Rob Herring <robh@kernel.org>,
-        Suniel Mahesh <sunil@amarulasolutions.com>,
-        Michael Nazzareno Trimarchi <michael@amarulasolutions.com>,
-        Manoj Sai <abbaraju.manojsai@amarulasolutions.com>
-Subject: [PATCH v3 3/3] arm64: dts: imx8mp: Add Engicam i.Core MX8M Plus EDIMM2.2 Starter Kit.
-Date:   Mon, 25 Apr 2022 19:12:24 +0530
-Message-Id: <20220425134224.368908-3-abbaraju.manojsai@amarulasolutions.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220425134224.368908-1-abbaraju.manojsai@amarulasolutions.com>
-References: <20220418144907.327511-2-abbaraju.manojsai@amarulasolutions.com>
- <20220425134224.368908-1-abbaraju.manojsai@amarulasolutions.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=QDUkzkor6rIG/fum/ZEDdQx1WnuBoE/Wp/SxBYeFJMY=;
+        b=HtfEv51gk7/XheD7Dg2P3yTTUzM+LuH8312VwsKNu9Vulp9TWpjVUeGlvzEmv2CXli
+         YI4KptGMCGygaAM2ZCF+mA7rvEbKpB9KYmz9o+c9tCt5XHXpCxUPvK0+ALCtVArA82JS
+         afUTJPw2yrc2gDySYx0cZg5vGCenphODm8Y4H1RaU2+Mq7EVAxt9m7RIheVcWmJezYqX
+         xDlt9gjG7j4/EQiZjT+StqVeAoxvuwpD7TMxo76q8/yi3i0iwIoXsz92rI2UhhEjCaX8
+         DeVdYhxt3zG9UK7nOwV2Er1J2Kihw1lXJ1n4R3qmFAFBPKsizoZj0KNG8uKxXySj38UX
+         5moA==
+X-Gm-Message-State: AOAM5325pxXH2RnbzweUogly3y1EW3a+YJ9F23esscHRap4sLnIgFRmJ
+        /99ASjiSemVCuXdUAegTH0fFF07xfqiltnfHZL8=
+X-Google-Smtp-Source: ABdhPJx9+cCTjMDWkJ55eLyA4L1JsGnVW9FkRCc/bysbWyvvpCDnTEhIp7g5RwOMElR9R+YxdZ2drt5NiH4jlEc9Xvc=
+X-Received: from sene.c.googlers.com ([fda3:e722:ac3:cc00:28:9cb1:c0a8:27c4])
+ (user=sebastianene job=sendgmr) by 2002:a05:600c:19c6:b0:392:88e2:7426 with
+ SMTP id u6-20020a05600c19c600b0039288e27426mr16629002wmq.132.1650894153575;
+ Mon, 25 Apr 2022 06:42:33 -0700 (PDT)
+Date:   Mon, 25 Apr 2022 13:42:07 +0000
+In-Reply-To: <20220425134204.149042-1-sebastianene@google.com>
+Message-Id: <20220425134204.149042-3-sebastianene@google.com>
+Mime-Version: 1.0
+References: <20220425134204.149042-1-sebastianene@google.com>
+X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
+Subject: [PATCH v3 2/2] misc: Add a mechanism to detect stalls on guest vCPUs
+From:   Sebastian Ene <sebastianene@google.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Dragan Cvetic <dragan.cvetic@xilinx.com>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        maz@kernel.org, will@kernel.org, qperret@google.com,
+        Sebastian Ene <sebastianene@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Genaral features:
-- LCD 7" C.Touch
-- microSD slot
-- Ethernet 1Gb
-- Wifi/BT
-- 2x LVDS Full HD interfaces
-- 3x USB 2.0
-- 1x USB 3.0
-- HDMI Out
-- Plus PCIe
-- MIPI CSI
-- 2x CAN
-- Audio Out
+This driver creates per-cpu hrtimers which are required to do the
+periodic 'pet' operation. On a conventional watchdog-core driver, the
+userspace is responsible for delivering the 'pet' events by writing to
+the particular /dev/watchdogN node. In this case we require a strong
+thread affinity to be able to account for lost time on a per vCPU.
 
-i.Core MX8M Plus is an EDIMM SoM based on NXP i.MX8M Plus from Engicam.
+This part of the driver is the 'frontend' which is reponsible for
+delivering the periodic 'pet' events, configuring the virtual peripheral
+and listening for cpu hotplug events. The other part of the driver
+handles the peripheral emulation and this part accounts for lost time by
+looking at the /proc/{}/task/{}/stat entries and is located here:
+https://chromium-review.googlesource.com/c/chromiumos/platform/crosvm/+/3548817
 
-i.Core MX8M Plus needs to mount on top of this Evaluation board for
-creating complete i.Core MX8M Plus EDIMM2.2 Starter Kit.
-
-Add support for it.
-
-Signed-off-by: Manoj Sai <abbaraju.manojsai@amarulasolutions.com>
-Signed-off-by: Matteo Lisi <matteo.lisi@engicam.com>
-Reviewed-by: Jagan Teki <jagan@amarulasolutions.com>
+Signed-off-by: Sebastian Ene <sebastianene@google.com>
 ---
-Changes for v3:
-  - shorten the patch subject naming .
-  - updated the dts addition to Makefile as per alphabetical order .
-  - removed the always-on  property of usb1 Node .
-  - arranged the nodes as per alphabetical order .
-  - updated the pincontrol nodes as per alphabetical order .
+ drivers/misc/Kconfig  |  12 +++
+ drivers/misc/Makefile |   1 +
+ drivers/misc/vm-wdt.c | 207 ++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 220 insertions(+)
+ create mode 100644 drivers/misc/vm-wdt.c
 
-Changes for v2:
-  - corrected the naming convetion of nodes as per existing
-    sources and bindings.
-  - added the iomux to the end as per nxp convention.
----
- arch/arm64/boot/dts/freescale/Makefile        |   1 +
- .../freescale/imx8mp-icore-mx8mp-edimm2.2.dts | 175 ++++++++++++++++++
- 2 files changed, 176 insertions(+)
- create mode 100644 arch/arm64/boot/dts/freescale/imx8mp-icore-mx8mp-edimm2.2.dts
-
-diff --git a/arch/arm64/boot/dts/freescale/Makefile b/arch/arm64/boot/dts/freescale/Makefile
-index 851e6faf8c05..05e62541e1ed 100644
---- a/arch/arm64/boot/dts/freescale/Makefile
-+++ b/arch/arm64/boot/dts/freescale/Makefile
-@@ -79,6 +79,7 @@ dtb-$(CONFIG_ARCH_MXC) += imx8mn-tqma8mqnl-mba8mx.dtb
- dtb-$(CONFIG_ARCH_MXC) += imx8mn-var-som-symphony.dtb
- dtb-$(CONFIG_ARCH_MXC) += imx8mn-venice-gw7902.dtb
- dtb-$(CONFIG_ARCH_MXC) += imx8mp-evk.dtb
-+dtb-$(CONFIG_ARCH_MXC) += imx8mp-icore-mx8mp-edimm2.2.dtb
- dtb-$(CONFIG_ARCH_MXC) += imx8mp-phyboard-pollux-rdk.dtb
- dtb-$(CONFIG_ARCH_MXC) += imx8mp-venice-gw74xx.dtb
- dtb-$(CONFIG_ARCH_MXC) += imx8mp-verdin-nonwifi-dahlia.dtb
-diff --git a/arch/arm64/boot/dts/freescale/imx8mp-icore-mx8mp-edimm2.2.dts b/arch/arm64/boot/dts/freescale/imx8mp-icore-mx8mp-edimm2.2.dts
+diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
+index 2b9572a6d114..71c173e3f064 100644
+--- a/drivers/misc/Kconfig
++++ b/drivers/misc/Kconfig
+@@ -493,6 +493,18 @@ config OPEN_DICE
+ 
+ 	  If unsure, say N.
+ 
++config VM_WATCHDOG
++	tristate "Virtual Machine Watchdog"
++	select LOCKUP_DETECTOR
++	help
++	  Detect CPU locks on the virtual machine. This driver relies on the
++	  hrtimers which are CPU-binded to do the 'pet' operation. When a vCPU
++	  has to do a 'pet', it exists the guest through MMIO write and the
++	  backend driver takes into account the lost ticks for this particular
++	  CPU.
++	  To compile this driver as a module, choose M here: the
++	  module will be called vm-wdt.
++
+ source "drivers/misc/c2port/Kconfig"
+ source "drivers/misc/eeprom/Kconfig"
+ source "drivers/misc/cb710/Kconfig"
+diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
+index 2ec634354cf5..fa9d644da5db 100644
+--- a/drivers/misc/Makefile
++++ b/drivers/misc/Makefile
+@@ -59,3 +59,4 @@ obj-$(CONFIG_XILINX_SDFEC)	+= xilinx_sdfec.o
+ obj-$(CONFIG_HISI_HIKEY_USB)	+= hisi_hikey_usb.o
+ obj-$(CONFIG_UID_SYS_STATS)	+= uid_sys_stats.o
+ obj-$(CONFIG_OPEN_DICE)		+= open-dice.o
++obj-$(CONFIG_VM_WATCHDOG)	+= vm-wdt.o
+\ No newline at end of file
+diff --git a/drivers/misc/vm-wdt.c b/drivers/misc/vm-wdt.c
 new file mode 100644
-index 000000000000..70a701a624a6
+index 000000000000..0c4df2fefbb9
 --- /dev/null
-+++ b/arch/arm64/boot/dts/freescale/imx8mp-icore-mx8mp-edimm2.2.dts
-@@ -0,0 +1,175 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * Copyright (c) 2018 NXP
-+ * Copyright (c) 2019 Engicam srl
-+ * Copyright (c) 2020 Amarula Solutons(India)
-+ */
++++ b/drivers/misc/vm-wdt.c
+@@ -0,0 +1,207 @@
++// SPDX-License-Identifier: GPL-2.0
++//
++// Virtual watchdog driver.
++//  Copyright (C) Google, 2022
 +
-+/dts-v1/;
++#include <linux/cpu.h>
++#include <linux/init.h>
++#include <linux/io.h>
++#include <linux/kernel.h>
 +
-+#include "imx8mp.dtsi"
-+#include "imx8mp-icore-mx8mp.dtsi"
-+#include <dt-bindings/usb/pd.h>
++#include <linux/device.h>
++#include <linux/interrupt.h>
++#include <linux/module.h>
++#include <linux/nmi.h>
++#include <linux/of.h>
++#include <linux/of_device.h>
++#include <linux/param.h>
++#include <linux/percpu.h>
++#include <linux/platform_device.h>
++#include <linux/slab.h>
 +
-+/ {
-+	model = "Engicam i.Core MX8M Plus EDIMM2.2 Starter Kit";
-+	compatible = "engicam,icore-mx8mp-edimm2.2", "engicam,icore-mx8mp",
-+		     "fsl,imx8mp";
++#define DRV_NAME			"vm_wdt"
 +
-+	chosen {
-+		stdout-path = &uart2;
-+	};
++#define VMWDT_REG_STATUS		(0x00)
++#define VMWDT_REG_LOAD_CNT		(0x04)
++#define VMWDT_REG_CURRENT_CNT		(0x08)
++#define VMWDT_REG_CLOCK_FREQ_HZ		(0x0C)
++#define VMWDT_REG_LEN			(0x10)
 +
-+	reg_usb1_vbus: regulator-usb1 {
-+		compatible = "regulator-fixed";
-+		enable-active-high;
-+		gpio = <&gpio1 14 GPIO_ACTIVE_HIGH>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pinctrl_reg_usb1>;
-+		regulator-max-microvolt = <5000000>;
-+		regulator-min-microvolt = <5000000>;
-+		regulator-name = "usb1_host_vbus";
-+	};
++#define VMWDT_DEFAULT_CLOCK_HZ		(10)
++#define VMWDT_DEFAULT_TIMEOT_SEC	(8)
 +
-+	reg_usdhc2_vmmc: regulator-usdhc2 {
-+		compatible = "regulator-fixed";
-+		enable-active-high;
-+		gpio = <&gpio2 19 GPIO_ACTIVE_HIGH>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pinctrl_reg_usdhc2_vmmc>;
-+		regulator-max-microvolt = <3300000>;
-+		regulator-min-microvolt = <3300000>;
-+		regulator-name = "VSD_3V3";
-+	};
++struct vm_wdt_s {
++	void __iomem *membase;
++	u32 clock_freq;
++	u32 expiration_sec;
++	u32 ping_timeout_ms;
++	struct hrtimer per_cpu_hrtimer;
++	struct platform_device *dev;
 +};
 +
-+/* Ethernet */
-+&eqos {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_eqos>;
-+	phy-handle = <&ethphy0>;
-+	phy-mode = "rgmii-id";
-+	status = "okay";
++#define vmwdt_reg_write(wdt, reg, value)	\
++	iowrite32((value), (wdt)->membase + (reg))
++#define vmwdt_reg_read(wdt, reg)		\
++	io32read((wdt)->membase + (reg))
 +
-+	mdio {
-+		compatible = "snps,dwmac-mdio";
-+		#address-cells = <1>;
-+		#size-cells = <0>;
++static struct platform_device *virt_dev;
 +
-+		ethphy0: ethernet-phy@7 {
-+			compatible = "ethernet-phy-ieee802.3-c22";
-+			micrel,led-mode = <0>;
-+			reg = <7>;
-+		};
-+	};
++static enum hrtimer_restart vmwdt_timer_fn(struct hrtimer *hrtimer)
++{
++	struct vm_wdt_s *cpu_wdt;
++	u32 ticks;
++
++	cpu_wdt = container_of(hrtimer, struct vm_wdt_s, per_cpu_hrtimer);
++	ticks = cpu_wdt->clock_freq * cpu_wdt->expiration_sec;
++	vmwdt_reg_write(cpu_wdt, VMWDT_REG_LOAD_CNT, ticks);
++	hrtimer_forward_now(hrtimer, ms_to_ktime(cpu_wdt->ping_timeout_ms));
++
++	return HRTIMER_RESTART;
++}
++
++static void vmwdt_start(void *arg)
++{
++	u32 ticks;
++	struct vm_wdt_s *cpu_wdt = arg;
++	struct hrtimer *hrtimer = &cpu_wdt->per_cpu_hrtimer;
++
++	vmwdt_reg_write(cpu_wdt, VMWDT_REG_CLOCK_FREQ_HZ,
++			cpu_wdt->clock_freq);
++
++	/* Compute the number of ticks required for the watchdog counter
++	 * register based on the internal clock frequency and the watchdog
++	 * timeout given from the device tree.
++	 */
++	ticks = cpu_wdt->clock_freq * cpu_wdt->expiration_sec;
++	vmwdt_reg_write(cpu_wdt, VMWDT_REG_LOAD_CNT, ticks);
++
++	/* Enable the internal clock and start the watchdog */
++	vmwdt_reg_write(cpu_wdt, VMWDT_REG_STATUS, 1);
++
++	hrtimer_init(hrtimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
++	hrtimer->function = vmwdt_timer_fn;
++	hrtimer_start(hrtimer, ms_to_ktime(cpu_wdt->ping_timeout_ms),
++		      HRTIMER_MODE_REL_PINNED);
++}
++
++static void vmwdt_stop(void *arg)
++{
++	struct vm_wdt_s *cpu_wdt = arg;
++	struct hrtimer *hrtimer = &cpu_wdt->per_cpu_hrtimer;
++
++	hrtimer_cancel(hrtimer);
++
++	/* Disable the watchdog */
++	vmwdt_reg_write(cpu_wdt, VMWDT_REG_STATUS, 0);
++}
++
++static int start_watchdog_on_cpu(unsigned int cpu)
++{
++	struct vm_wdt_s *vm_wdt = platform_get_drvdata(virt_dev);
++
++	vmwdt_start(this_cpu_ptr(vm_wdt));
++	return 0;
++}
++
++static int stop_watchdog_on_cpu(unsigned int cpu)
++{
++	struct vm_wdt_s *vm_wdt = platform_get_drvdata(virt_dev);
++
++	vmwdt_stop(this_cpu_ptr(vm_wdt));
++	return 0;
++}
++
++static int vmwdt_probe(struct platform_device *dev)
++{
++	int cpu, ret, err;
++	void __iomem *membase;
++	struct resource *r;
++	struct vm_wdt_s *vm_wdt;
++	u32 wdt_clock, wdt_timeout_sec = 0;
++
++	r = platform_get_resource(dev, IORESOURCE_MEM, 0);
++	if (r == NULL)
++		return -ENOENT;
++
++	vm_wdt = alloc_percpu(typeof(struct vm_wdt_s));
++	if (!vm_wdt)
++		return -ENOMEM;
++
++	membase = ioremap(r->start, resource_size(r));
++	if (!membase) {
++		ret = -ENXIO;
++		goto err_withmem;
++	}
++
++	virt_dev = dev;
++	platform_set_drvdata(dev, vm_wdt);
++	if (of_property_read_u32(dev->dev.of_node, "clock", &wdt_clock))
++		wdt_clock = VMWDT_DEFAULT_CLOCK_HZ;
++
++	if (of_property_read_u32(dev->dev.of_node, "timeout-sec",
++				 &wdt_timeout_sec))
++		wdt_timeout_sec = VMWDT_DEFAULT_TIMEOT_SEC;
++
++	for_each_cpu_and(cpu, cpu_online_mask, &watchdog_cpumask) {
++		struct vm_wdt_s *cpu_wdt = per_cpu_ptr(vm_wdt, cpu);
++
++		cpu_wdt->membase = membase + cpu * VMWDT_REG_LEN;
++		cpu_wdt->clock_freq = wdt_clock;
++		cpu_wdt->expiration_sec = wdt_timeout_sec;
++		cpu_wdt->ping_timeout_ms = wdt_timeout_sec * MSEC_PER_SEC / 2;
++		smp_call_function_single(cpu, vmwdt_start, cpu_wdt, true);
++	}
++
++	err = cpuhp_setup_state_nocalls(CPUHP_AP_ONLINE_DYN,
++					"virt/watchdog:online",
++					start_watchdog_on_cpu,
++					stop_watchdog_on_cpu);
++	if (err < 0) {
++		pr_warn("could not be initialized");
++		ret = err;
++		goto err_withmem;
++	}
++
++	return 0;
++
++err_withmem:
++	free_percpu(vm_wdt);
++	return ret;
++}
++
++static int vmwdt_remove(struct platform_device *dev)
++{
++	int cpu;
++	struct vm_wdt_s *vm_wdt = platform_get_drvdata(dev);
++
++	for_each_cpu_and(cpu, cpu_online_mask, &watchdog_cpumask) {
++		struct vm_wdt_s *cpu_wdt = per_cpu_ptr(vm_wdt, cpu);
++
++		smp_call_function_single(cpu, vmwdt_stop, cpu_wdt, true);
++	}
++
++	free_percpu(vm_wdt);
++	return 0;
++}
++
++static const struct of_device_id vmwdt_of_match[] = {
++	{ .compatible = "qemu,vm-watchdog", },
++	{}
 +};
 +
-+/* console */
-+&uart2 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_uart2>;
-+	status = "okay";
++MODULE_DEVICE_TABLE(of, vm_watchdog_of_match);
++
++static struct platform_driver vmwdt_driver = {
++	.probe  = vmwdt_probe,
++	.remove = vmwdt_remove,
++	.driver = {
++		.name           = DRV_NAME,
++		.of_match_table = vmwdt_of_match,
++	},
 +};
 +
-+&usb3_phy0 {
-+	status = "okay";
-+};
++module_platform_driver(vmwdt_driver);
 +
-+&usb3_0 {
-+	status = "okay";
-+};
-+
-+&usb_dwc3_0 {
-+	dr_mode = "host";
-+	status = "okay";
-+};
-+
-+&usb3_phy1 {
-+	status = "okay";
-+};
-+
-+&usb3_1 {
-+	status = "okay";
-+};
-+
-+&usb_dwc3_1 {
-+	dr_mode = "host";
-+	status = "okay";
-+};
-+
-+/* SDCARD */
-+&usdhc2 {
-+	cd-gpios = <&gpio2 12 GPIO_ACTIVE_LOW>;
-+	bus-width = <4>;
-+	pinctrl-names = "default" ;
-+	pinctrl-0 = <&pinctrl_usdhc2>, <&pinctrl_usdhc2_gpio>;
-+	vmmc-supply = <&reg_usdhc2_vmmc>;
-+	status = "okay";
-+};
-+
-+&iomuxc {
-+	pinctrl_eqos: eqosgrp {
-+		fsl,pins = <
-+			MX8MP_IOMUXC_ENET_MDC__ENET_QOS_MDC				0x3
-+			MX8MP_IOMUXC_ENET_MDIO__ENET_QOS_MDIO				0x3
-+			MX8MP_IOMUXC_ENET_RD0__ENET_QOS_RGMII_RD0			0x91
-+			MX8MP_IOMUXC_ENET_RD1__ENET_QOS_RGMII_RD1			0x91
-+			MX8MP_IOMUXC_ENET_RD2__ENET_QOS_RGMII_RD2			0x91
-+			MX8MP_IOMUXC_ENET_RD3__ENET_QOS_RGMII_RD3			0x91
-+			MX8MP_IOMUXC_ENET_RXC__CCM_ENET_QOS_CLOCK_GENERATE_RX_CLK	0x91
-+			MX8MP_IOMUXC_ENET_RX_CTL__ENET_QOS_RGMII_RX_CTL			0x91
-+			MX8MP_IOMUXC_ENET_TD0__ENET_QOS_RGMII_TD0			0x1f
-+			MX8MP_IOMUXC_ENET_TD1__ENET_QOS_RGMII_TD1			0x1f
-+			MX8MP_IOMUXC_ENET_TD2__ENET_QOS_RGMII_TD2			0x1f
-+			MX8MP_IOMUXC_ENET_TD3__ENET_QOS_RGMII_TD3			0x1f
-+			MX8MP_IOMUXC_ENET_TX_CTL__ENET_QOS_RGMII_TX_CTL			0x1f
-+			MX8MP_IOMUXC_ENET_TXC__CCM_ENET_QOS_CLOCK_GENERATE_TX_CLK	0x1f
-+			MX8MP_IOMUXC_NAND_DATA01__GPIO3_IO07				0x19
-+		>;
-+	};
-+
-+	pinctrl_uart2: uart2grp {
-+		fsl,pins = <
-+			MX8MP_IOMUXC_UART2_RXD__UART2_DCE_RX	0x49
-+			MX8MP_IOMUXC_UART2_TXD__UART2_DCE_TX	0x49
-+		>;
-+	};
-+
-+	pinctrl_uart3: uart3grp {
-+		fsl,pins = <
-+			MX8MP_IOMUXC_UART3_RXD__UART3_DCE_RX	0x140
-+			MX8MP_IOMUXC_UART3_TXD__UART3_DCE_TX	0x140
-+			MX8MP_IOMUXC_SD1_STROBE__UART3_DCE_CTS	0x140
-+		>;
-+	};
-+
-+	pinctrl_usdhc2: usdhc2grp {
-+		fsl,pins = <
-+			MX8MP_IOMUXC_SD2_CLK__USDHC2_CLK	0x190
-+			MX8MP_IOMUXC_SD2_CMD__USDHC2_CMD	0x1d0
-+			MX8MP_IOMUXC_SD2_DATA0__USDHC2_DATA0	0x1d0
-+			MX8MP_IOMUXC_SD2_DATA1__USDHC2_DATA1	0x1d0
-+			MX8MP_IOMUXC_SD2_DATA2__USDHC2_DATA2	0x1d0
-+			MX8MP_IOMUXC_SD2_DATA3__USDHC2_DATA3	0x1d0
-+			MX8MP_IOMUXC_GPIO1_IO04__USDHC2_VSELECT	0xc1
-+		>;
-+	};
-+
-+	pinctrl_usdhc2_gpio: usdhc2gpiogrp {
-+		fsl,pins = <
-+			MX8MP_IOMUXC_SD2_CD_B__GPIO2_IO12	0x1c4
-+		>;
-+	};
-+
-+	pinctrl_reg_usb1: regusb1grp {
-+		fsl,pins = <
-+			MX8MP_IOMUXC_GPIO1_IO14__GPIO1_IO14	0x19
-+		>;
-+	};
-+
-+	pinctrl_reg_usdhc2_vmmc: regusdhc2vmmcgrp {
-+		fsl,pins = <
-+			MX8MP_IOMUXC_SD2_RESET_B__GPIO2_IO19	0x41
-+		>;
-+	};
-+};
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("Sebastian Ene <sebastianene@google.com>");
++MODULE_DESCRIPTION("Virtual watchdog driver");
 -- 
-2.25.1
+2.36.0.rc2.479.g8af0fa9b8e-goog
 
