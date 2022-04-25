@@ -2,110 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F347C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 11:46:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E3CBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 11:46:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241725AbiDYLtN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 07:49:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58292 "EHLO
+        id S241760AbiDYLtX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 07:49:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238987AbiDYLtG (ORCPT
+        with ESMTP id S241752AbiDYLtJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 07:49:06 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF83F289BC;
-        Mon, 25 Apr 2022 04:45:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650887137; x=1682423137;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=Qnj3SyhLLaXfmPzPA+zkwNWdJ+d+Aa4qqr65H2FSVXA=;
-  b=EAknslpBh/kGNGG0hYa6blq1cUrJXGaOAHHRrhCc/CoC/O1MGPMcK5Ig
-   I0omAsc+ntuz41YacnHcnMxzWRr+L0JZcwqivSGA/DZmIkplIcgxT7T9H
-   8DWQ1VIz4xrjosLiq2O4vkMPI74X9XuKpvqejeVusrEDnBC4foH7fFv1f
-   U=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 25 Apr 2022 04:45:36 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 04:45:36 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 25 Apr 2022 04:45:35 -0700
-Received: from sbillaka-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 25 Apr 2022 04:45:29 -0700
-From:   Sankeerth Billakanti <quic_sbillaka@quicinc.com>
-To:     <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <freedreno@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>
-CC:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        <robdclark@gmail.com>, <seanpaul@chromium.org>,
-        <swboyd@chromium.org>, <quic_kalyant@quicinc.com>,
-        <quic_abhinavk@quicinc.com>, <dianders@chromium.org>,
-        <quic_khsieh@quicinc.com>, <bjorn.andersson@linaro.org>,
-        <sean@poorly.run>, <airlied@linux.ie>, <daniel@ffwll.ch>,
-        <dmitry.baryshkov@linaro.org>, <quic_vproddut@quicinc.com>,
-        <quic_aravindh@quicinc.com>, <steev@kali.org>
-Subject: [PATCH v10 4/4] drm/msm/dp: Support the eDP modes given by panel
-Date:   Mon, 25 Apr 2022 17:14:32 +0530
-Message-ID: <1650887072-16652-5-git-send-email-quic_sbillaka@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1650887072-16652-1-git-send-email-quic_sbillaka@quicinc.com>
-References: <1650887072-16652-1-git-send-email-quic_sbillaka@quicinc.com>
+        Mon, 25 Apr 2022 07:49:09 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14932403DA;
+        Mon, 25 Apr 2022 04:45:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650887148; x=1682423148;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=rgiGyZX6H+3caT4Vfhz7ZAHWIv86hUhLawBSz9Mm5wg=;
+  b=HK28XE3MuWvA8Xcp2CUBHCTZAv/Yq68zzrIxwPy/TEh2LBywp/PnT8jH
+   kBqpeMz/Nn+cBNOnuKGh92/v+zKNS478m2S/7BRF/7XfirvfcjgJajfr4
+   eXpwxf/+G+mAaDXjaY0VnSUDl2cLiEBY0jnhjcRXELdk/Puqy8fh18CKR
+   7bzuOHMYkgGWkd/gvE0E8szt71cJyZmRRILWWSXXVxXixqYP4AGDPGTNZ
+   DmuYyH1IauBKWPTe3SV7Z0f1sWW7zWnIKFFduBsA/jvXgFnnBLylfsPNB
+   SYtvPqTwixS0mWLAqdFTJlzioayRKygXiavNuedrI2dUrbYcc6FFFLeSI
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10327"; a="264075334"
+X-IronPort-AV: E=Sophos;i="5.90,288,1643702400"; 
+   d="scan'208";a="264075334"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 04:45:46 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,288,1643702400"; 
+   d="scan'208";a="704526065"
+Received: from black.fi.intel.com (HELO black.fi.intel.com.) ([10.237.72.28])
+  by fmsmga001.fm.intel.com with ESMTP; 25 Apr 2022 04:45:44 -0700
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: [PATCH v1 0/2] acpi: Remove acpi_release_memory()
+Date:   Mon, 25 Apr 2022 14:45:42 +0300
+Message-Id: <20220425114544.37595-1-heikki.krogerus@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The eDP controller does not have a reliable way keep panel
-powered on to read the sink capabilities. So, the controller
-driver cannot validate if a mode can be supported by the
-source. We will rely on the panel driver to populate only
-the supported modes for now.
+Hi,
 
-Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
----
-Changes in v10:
-  - none 
+It seems there never were and there never will be actual devices that
+expose the UCSI ACPI mailbox interface. There are now PD controllers
+that support the UCSI interface, but they do not use the ACPI mailbox.
 
-Changes in v9:
-  - none
+So there is no point in mapping the mailbox with ioremap(), we can
+just use memremap(). That should make it possible to also remove the
+function acpi_release_memory(). That function was only there to make
+it possible to use ioremap() in the UCSI ACPI driver.
 
-Changes in v8:
-  - add the drm/msm/dp tag in the commit title
+thanks,
 
- drivers/gpu/drm/msm/dp/dp_display.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+Heikki Krogerus (2):
+  usb: typec: ucsi: acpi: Map the mailbox with memremap()
+  acpi: Remove the helper for deactivating memory region
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index fd1dddb9..637fb63 100644
---- a/drivers/gpu/drm/msm/dp/dp_display.c
-+++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -998,6 +998,14 @@ enum drm_mode_status dp_bridge_mode_valid(struct drm_bridge *bridge,
- 		return -EINVAL;
- 	}
- 
-+	/*
-+	 * The eDP controller currently does not have a reliable way of
-+	 * enabling panel power to read sink capabilities. So, we rely
-+	 * on the panel driver to populate only supported modes for now.
-+	 */
-+	if (dp->is_edp)
-+		return MODE_OK;
-+
- 	if ((dp->max_pclk_khz <= 0) ||
- 			(dp->max_pclk_khz > DP_MAX_PIXEL_CLK_KHZ) ||
- 			(mode->clock > dp->max_pclk_khz))
+ drivers/acpi/osl.c                 | 86 ------------------------------
+ drivers/usb/typec/ucsi/ucsi_acpi.c | 19 ++-----
+ include/linux/acpi.h               |  3 --
+ 3 files changed, 4 insertions(+), 104 deletions(-)
+
 -- 
-2.7.4
+2.35.1
 
