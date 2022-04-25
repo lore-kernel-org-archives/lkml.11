@@ -2,88 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9829CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 14:35:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AC3BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 14:35:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240826AbiDYOiW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 10:38:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36784 "EHLO
+        id S238704AbiDYOi3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 10:38:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235507AbiDYOiH (ORCPT
+        with ESMTP id S236898AbiDYOiE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 10:38:07 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D845E1E8;
-        Mon, 25 Apr 2022 07:35:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650897302; x=1682433302;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=fWXIa71NeGGWHMHlo+yI2o4Jp974jDRWwSIqgJF5Cjg=;
-  b=YnFXTJmHzTf7rCzyaAukeFh4Cyy0fU/Wx2OApKSd5rIkwfzSW0w5qHsa
-   6DzIjqvXEeHlErmzIA6Q7H+MxB4cmmsoIZoSjnqL0r1l/Olx8LJG9B5BO
-   ahl9xbn1+ZwntEnYcAnO/b0HU2yJfafod5G+PPBfQ5K+/BNXo4612lET2
-   eBMhz5xE60cR7moFIRcRlSoDBON/mgD919pOWTJG6wQDihSrJ52dIVcqg
-   49KoyBi2ggx2juEP4vv+0rjU/mRAXMkqylhfZuKFYwDURjcQu9MdfNimY
-   ym+WXc/ediULOEMQd9i8WpRFtk649hjPBm18G2vd3iS1tjcn6UG98sDcS
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="290401705"
-X-IronPort-AV: E=Sophos;i="5.90,288,1643702400"; 
-   d="scan'208";a="290401705"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 07:35:02 -0700
-X-IronPort-AV: E=Sophos;i="5.90,288,1643702400"; 
-   d="scan'208";a="595260898"
-Received: from silpixa00400314.ir.intel.com (HELO silpixa00400314) ([10.237.222.76])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 07:35:00 -0700
-Date:   Mon, 25 Apr 2022 15:34:53 +0100
-From:   Giovanni Cabiddu <giovanni.cabiddu@intel.com>
-To:     Haowen Bai <baihaowen@meizu.com>
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>, qat-linux@intel.com,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] crypto: qat - Fix unsigned function returning negative
- constant
-Message-ID: <YmaxfKXqYNOgGXYI@silpixa00400314>
-References: <1650790231-16894-1-git-send-email-baihaowen@meizu.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1650790231-16894-1-git-send-email-baihaowen@meizu.com>
-Organization: Intel Research and Development Ireland Ltd - Co. Reg. #308263 -
- Collinstown Industrial Park, Leixlip, County Kildare - Ireland
+        Mon, 25 Apr 2022 10:38:04 -0400
+Received: from mail.schwermer.no (mail.schwermer.no [49.12.228.226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D35D35255;
+        Mon, 25 Apr 2022 07:34:59 -0700 (PDT)
+X-Virus-Scanned: Yes
+From:   sven@svenschwermer.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=svenschwermer.de;
+        s=mail; t=1650897296;
+        bh=bCqpzZ7ENFdi2f0fLeph5m6zYDRJ0s1xvrInntYSd8w=;
+        h=From:To:Cc:Subject;
+        b=Uzu32iGLmRoJgIKniK9obUXGrGUH5nQjNTpMXM1KDCFtYeCu2HLk/3a1deAKb/1hd
+         aQ26gDuGquv6yoKqzSnsZYxcTPGYtVIHq2QSJ8WXMdVZTP8LszLoMf7q0UAwy2hii1
+         Idh1Kzfi6sn1LTCmj5B4M05jBm7NmgwJxbPr8Rr4+670AjiqUxb4F23F8i4p3uIplJ
+         p88M9PiamyIfrU90E15Xqucn/9FEcInb2p4ZhsfsuS3dz6S7MYcxsusr9i7PhGv1u6
+         eKGSVanRBg8+7/LgC23LZO8h5UxAsObDkx/ZPDUi4VExDzuiG0UdCwTXW6de/1sUpB
+         hLofhdaNhXPWw==
+To:     linux-usb@vger.kernel.org
+Cc:     Sven Schwermer <sven.schwermer@disruptive-technologies.com>,
+        linux-kernel@vger.kernel.org, johan@kernel.org
+Subject: [PATCH v3 1/2] usb: serial: option: Add Fibocom L610 modem
+Date:   Mon, 25 Apr 2022 16:34:49 +0200
+Message-Id: <20220425143450.44886-1-sven@svenschwermer.de>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 24, 2022 at 04:50:31PM +0800, Haowen Bai wrote:
-> The function qat_uclo_check_image_compat has an unsigned return type, but
-Nit, function names should have parenthesis: qat_uclo_check_image_compat()
-> returns a negative constant to indicate an error condition. So we change
-> unsigned to int.
-> 
-> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-Fixes: b4b7e67c917f ("crypto: qat - Intel(R) QAT ucode part of fw loader")
-Acked-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+From: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
 
-> ---
->  drivers/crypto/qat/qat_common/qat_uclo.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/crypto/qat/qat_common/qat_uclo.c b/drivers/crypto/qat/qat_common/qat_uclo.c
-> index 6356402a2c9e..4b6f37d6e85b 100644
-> --- a/drivers/crypto/qat/qat_common/qat_uclo.c
-> +++ b/drivers/crypto/qat/qat_common/qat_uclo.c
-> @@ -519,7 +519,7 @@ qat_uclo_map_chunk(char *buf, struct icp_qat_uof_filehdr *file_hdr,
->  	return NULL;
->  }
->  
-> -static unsigned int
-> +static int
->  qat_uclo_check_image_compat(struct icp_qat_uof_encap_obj *encap_uof_obj,
->  			    struct icp_qat_uof_image *image)
->  {
-> -- 
-> 2.7.4
-> 
+The L610 modem has 3 USB configurations that are configurable via the AT
+command AT+GTUSBMODE={31,32,33} which make the modem enumerate with the
+following interfaces, respectively:
+
+31: Modem + NV + MOS + Diag + LOG + AT + AT
+32: ECM + Modem + NV + MOS + Diag + LOG + AT + AT
+33: RNDIS + Modem + NV + MOS + Diag + LOG + AT + AT
+
+A detailed description of the USB configuration for each mode follows:
+
++GTUSBMODE: 31
+--------------
+T:  Bus=03 Lev=01 Prnt=01 Port=06 Cnt=04 Dev#=124 Spd=480  MxCh= 0
+D:  Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
+P:  Vendor=1782 ProdID=4d10 Rev= 0.00
+S:  Manufacturer=FIBOCOM
+S:  Product=L610
+C:* #Ifs= 7 Cfg#= 1 Atr=e0 MxPwr=400mA
+I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 1 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 2 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=83(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 4 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=85(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=05(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=06(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 6 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=87(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=07(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+
++GTUSBMODE: 32
+--------------
+T:  Bus=03 Lev=01 Prnt=01 Port=06 Cnt=04 Dev#=122 Spd=480  MxCh= 0
+D:  Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
+P:  Vendor=1782 ProdID=4d11 Rev= 0.00
+S:  Manufacturer=FIBOCOM
+S:  Product=L610
+C:* #Ifs= 9 Cfg#= 1 Atr=e0 MxPwr=400mA
+A:  FirstIf#= 0 IfCount= 2 Cls=02(comm.) Sub=06 Prot=00
+I:* If#= 0 Alt= 0 #EPs= 1 Cls=02(comm.) Sub=06 Prot=00 Driver=cdc_ether
+E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=32ms
+I:  If#= 1 Alt= 0 #EPs= 0 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
+I:* If#= 1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
+E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 2 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=83(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 4 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=85(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=05(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 6 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=87(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=06(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 7 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=88(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=07(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 8 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=89(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=08(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+
++GTUSBMODE: 33
+--------------
+T:  Bus=03 Lev=01 Prnt=01 Port=06 Cnt=04 Dev#=126 Spd=480  MxCh= 0
+D:  Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
+P:  Vendor=1782 ProdID=4d11 Rev= 0.00
+S:  Manufacturer=FIBOCOM
+S:  Product=L610
+C:* #Ifs= 9 Cfg#= 1 Atr=e0 MxPwr=400mA
+A:  FirstIf#= 0 IfCount= 2 Cls=e0(wlcon) Sub=01 Prot=03
+I:* If#= 0 Alt= 0 #EPs= 1 Cls=e0(wlcon) Sub=01 Prot=03 Driver=rndis_host
+E:  Ad=82(I) Atr=03(Int.) MxPS=   8 Ivl=4096ms
+I:* If#= 1 Alt= 0 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=rndis_host
+E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 2 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=83(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 4 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=85(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=05(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 6 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=87(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=06(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 7 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=88(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=07(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 8 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=89(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=08(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+
+Signed-off-by: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
+---
+V2 -> V3: Add this changelog
+V1 -> V2: Use USB_DEVICE_INTERFACE_CLASS, add comments
+
+ drivers/usb/serial/option.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/usb/serial/option.c b/drivers/usb/serial/option.c
+index e7755d9cfc61..e0af45e3a6f7 100644
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -2111,6 +2111,8 @@ static const struct usb_device_id option_ids[] = {
+ 	  .driver_info = RSVD(3) },
+ 	{ USB_DEVICE(0x1508, 0x1001),						/* Fibocom NL668 (IOT version) */
+ 	  .driver_info = RSVD(4) | RSVD(5) | RSVD(6) },
++	{ USB_DEVICE(0x1782, 0x4d10) },						/* Fibocom L610 (AT mode) */
++	{ USB_DEVICE_INTERFACE_CLASS(0x1782, 0x4d11, 0xff) },			/* Fibocom L610 (ECM/RNDIS mode) */
+ 	{ USB_DEVICE(0x2cb7, 0x0104),						/* Fibocom NL678 series */
+ 	  .driver_info = RSVD(4) | RSVD(5) },
+ 	{ USB_DEVICE_INTERFACE_CLASS(0x2cb7, 0x0105, 0xff),			/* Fibocom NL678 series */
+-- 
+2.36.0
+
