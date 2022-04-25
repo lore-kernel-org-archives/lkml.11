@@ -2,84 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECBA4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 08:59:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C5D4C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 09:00:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240317AbiDYJCJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 05:02:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35982 "EHLO
+        id S240556AbiDYJDD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 05:03:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232056AbiDYJCE (ORCPT
+        with ESMTP id S231272AbiDYJDB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 05:02:04 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EF0513E20;
-        Mon, 25 Apr 2022 01:59:01 -0700 (PDT)
-Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KmzQB4MQmz6801v;
-        Mon, 25 Apr 2022 16:56:18 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Mon, 25 Apr 2022 10:58:58 +0200
-Received: from [10.47.92.213] (10.47.92.213) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2375.24; Mon, 25 Apr
- 2022 09:58:57 +0100
-Message-ID: <d09faf74-a52e-8d93-cf26-08b43b12c564@huawei.com>
-Date:   Mon, 25 Apr 2022 09:58:56 +0100
+        Mon, 25 Apr 2022 05:03:01 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EF7713E0E;
+        Mon, 25 Apr 2022 01:59:55 -0700 (PDT)
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23P5rs67026768;
+        Mon, 25 Apr 2022 10:59:49 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : from : subject : to : cc : references : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=ZMtuKaWe+BL2NAy7gcgkV/ofmg3oFgDu9ItvjXw0Dss=;
+ b=75wL8opmHS3JmmtJd349aQQa17B+QQpNda5kDfJWtYZnwyg21twFy+5kGHWh76P1qXFN
+ dall7bYGGHvUdnPfQvm+250Ac5JY83CIOO0HwE9OsrONHG/yLUQTp2DExxxqFszVi76k
+ Zqx2qzxyuXdqp4ZUjeKdnxP+WFfFtdBq5ZQR0sVrPnuYdNsDsZ+BbasjFZ3I0LgJkOrE
+ KzGRGIsZK3DG0R7gFWhrOsVzprdYADBFzaVMGm14PSaRUZcaL1jIMerkOew8Iu6I4KnK
+ HbDTuGinZn9h2TSCn04CWEvZErvRr+8n5qcpURfEFnBv0dHUghABREVv34OsAKN5yQdQ 2w== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3fm6k9037v-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 25 Apr 2022 10:59:49 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 1E51E10002A;
+        Mon, 25 Apr 2022 10:59:47 +0200 (CEST)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 16E6221682F;
+        Mon, 25 Apr 2022 10:59:47 +0200 (CEST)
+Received: from [10.201.20.246] (10.75.127.51) by SFHDAG2NODE2.st.com
+ (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 25 Apr
+ 2022 10:59:46 +0200
+Message-ID: <c3e080e8-d070-ef90-cd8a-6d4bd41e32e0@foss.st.com>
+Date:   Mon, 25 Apr 2022 10:59:45 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH 1/4] scsi: core: constify pointer to scsi_host_template
-To:     Christoph Hellwig <hch@infradead.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-CC:     "Ewan D. Milne" <emilne@redhat.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        "Alim Akhtar" <alim.akhtar@samsung.com>,
-        Avri Altman <avri.altman@wdc.com>,
-        "Doug Gilbert" <dgilbert@interlog.com>,
-        <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <james.smart@broadcom.com>
-References: <20220408103027.311624-1-krzysztof.kozlowski@linaro.org>
- <2a88a992-641a-b3ff-fe39-7a61fff87cb6@huawei.com>
- <4c3be5b6-50ef-9e9a-6cee-9642df943342@linaro.org>
- <7b3885e3-dbae-ff0b-21dc-c28d635d950b@huawei.com>
- <c121430b1b5c8f5816b2b42b9178d00889260c90.camel@redhat.com>
- <b6af3fe8-db9a-b5dc-199f-21c05d7664a2@huawei.com>
- <Yl+wJ7xSHzWmR+bR@infradead.org>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <Yl+wJ7xSHzWmR+bR@infradead.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+From:   Arnaud POULIQUEN <arnaud.pouliquen@foss.st.com>
+Subject: Re: [PATCH V2 0/3] rpmsg and glink signaling API support
+To:     Deepak Kumar Singh <quic_deesin@quicinc.com>,
+        <bjorn.andersson@linaro.org>, <swboyd@chromium.org>,
+        <quic_clew@quicinc.com>, <mathieu.poirier@linaro.org>
+CC:     <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-remoteproc@vger.kernel.org>
+References: <1642534993-6552-1-git-send-email-quic_deesin@quicinc.com>
+ <5cde9477-d73c-03c4-4dc0-c63fa0f8c8d9@foss.st.com>
+Content-Language: en-US
+In-Reply-To: <5cde9477-d73c-03c4-4dc0-c63fa0f8c8d9@foss.st.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.92.213]
-X-ClientProxiedBy: lhreml702-chm.china.huawei.com (10.201.108.51) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+X-Originating-IP: [10.75.127.51]
+X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-25_05,2022-04-22_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20/04/2022 08:03, Christoph Hellwig wrote:
->> The standard flow is:
->>
->> shost = scsi_host_alloc(sht, )
->>
->> // modify shost, like
->> shost->cmd_per_lun = 5;
->>
->> scsi_add_host(shost)
->>
->> Is there some reason for which those two drivers can't follow that?
-> I think they should.  Method tables should not be mutable data.
-> .
+Hi,
 
-Hi Krzysztof,
+On 3/23/22 11:17, Arnaud POULIQUEN wrote:
+> Hi all,
+> 
+> On 1/18/22 20:43, Deepak Kumar Singh wrote:
+>> [Change from V1]
+>> Fixed most of the review comments in V1.
+> 
+> This implementation works for the glink transport,
+> But how to manage such flow control for other transport
+> layer?
+> From my POV it is important that it is also usable for
+> by transport backends which doe not have such signaling.
+> The idea here is not to implement in other backends yet, but
+> at least to determine how it could be handled to avoid that
+> tomorrow this has to be reworked. 
 
-Do you have any interest in going further with your work and trying to 
-change all SCSI driver instances of scsi_host_template to be const? I am 
-not sure if it has been attempted before...
+FYI, I've started some dev, trying to adapt the implementation to
+the virtio backend to move forward with this topic.
 
-Thanks,
-John
+It is only a POC for time being based on a new ROPMsg service for the
+flow control.
+
+Linux code is available here:
+https://github.com/arnopo/linux/commits/signalling
+
+openamp library associated code is available here:
+https://github.com/arnopo/open-amp/commits/flow_ctrl
+
+I hope to find some time next month to continue my dev and send patches
+to the mailing list. 
+
+Regards,
+Arnaud
+
+
+> 
+> More than that I wonder if the flow control could also be used
+> to solve the RPmsg protocol issue related to the channel
+> announcement [1][2]
+> 
+> [1] https://github.com/OpenAMP/open-amp/pull/160
+> [2] https://lore.kernel.org/lkml/20220316153001.662422-1-arnaud.pouliquen@foss.st.com/
+> 
+> Thanks,
+> Arnaud
+
+
+
+> 
+>>
+>> Deepak Kumar Singh (3):
+>>   rpmsg: core: Add signal API support
+>>   rpmsg: glink: Add support to handle signals command
+>>   rpmsg: char: Add TIOCMGET/TIOCMSET ioctl support
+>>
+>>  drivers/rpmsg/qcom_glink_native.c | 77 +++++++++++++++++++++++++++++++++++++++
+>>  drivers/rpmsg/rpmsg_char.c        | 47 ++++++++++++++++++++++--
+>>  drivers/rpmsg/rpmsg_core.c        | 21 +++++++++++
+>>  drivers/rpmsg/rpmsg_internal.h    |  2 +
+>>  include/linux/rpmsg.h             | 14 +++++++
+>>  5 files changed, 157 insertions(+), 4 deletions(-)
+>>
