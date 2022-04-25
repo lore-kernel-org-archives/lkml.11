@@ -2,118 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 544A1C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 14:59:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFA19C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 14:59:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242635AbiDYPCS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 11:02:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46192 "EHLO
+        id S242644AbiDYPCX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 11:02:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242633AbiDYPCP (ORCPT
+        with ESMTP id S232022AbiDYPCU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 11:02:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 543DC119ED4
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 07:59:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650898750;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=aVm3XyH4Eb2jKqWQvAzp0aH5DM2Lzwo7rp3slkzqeHQ=;
-        b=XRdkXCrNqkoLHbvVoefR947/QsqR5UJlvBHX85HufYTDNu0UiytWwAENhr4gNTD0wJI2HU
-        ckpAnJJuGk8Xi5ezlUrwjdsF4KUoWiRAjf3dqLv4EGJ/VK4AR9mkYkezExrsLvu5QnwCYe
-        6PQ8n6f9XK13v9XS4CH8SkXccf1m3Q4=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-675-vKj1gQFrOCGo-ysHu3sa4Q-1; Mon, 25 Apr 2022 10:59:06 -0400
-X-MC-Unique: vKj1gQFrOCGo-ysHu3sa4Q-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D93921E13795;
-        Mon, 25 Apr 2022 14:59:05 +0000 (UTC)
-Received: from fuller.cnet (ovpn-112-4.gru2.redhat.com [10.97.112.4])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 86206C27EBC;
-        Mon, 25 Apr 2022 14:59:05 +0000 (UTC)
-Received: by fuller.cnet (Postfix, from userid 1000)
-        id 3B9DE416F574; Mon, 25 Apr 2022 11:57:31 -0300 (-03)
-Date:   Mon, 25 Apr 2022 11:57:31 -0300
-From:   Marcelo Tosatti <mtosatti@redhat.com>
-To:     Christoph Lameter <cl@gentwo.de>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Aaron Tomlin <atomlin@redhat.com>, frederic@kernel.org,
-        tglx@linutronix.de, mingo@kernel.org, pauld@redhat.com,
-        neelx@redhat.com, oleksandr@natalenko.name,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [RFC PATCH v3] tick/sched: Ensure quiet_vmstat() is called when
- the idle tick was stopped too
-Message-ID: <Yma229h8meLFvCI1@fuller.cnet>
-References: <20220422193647.3808657-1-atomlin@redhat.com>
- <alpine.DEB.2.22.394.2204250919400.2367@gentwo.de>
- <20220425113909.u3smtztp66svlw4o@ava.usersys.com>
- <alpine.DEB.2.22.394.2204251406370.13839@gentwo.de>
- <20220425132700.GK2731@worktop.programming.kicks-ass.net>
- <alpine.DEB.2.22.394.2204251603570.25814@gentwo.de>
+        Mon, 25 Apr 2022 11:02:20 -0400
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28C4F11BEAE;
+        Mon, 25 Apr 2022 07:59:16 -0700 (PDT)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.94.2)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1nj0BG-0000pW-BT; Mon, 25 Apr 2022 16:59:14 +0200
+Date:   Mon, 25 Apr 2022 15:59:08 +0100
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     linux-block@vger.kernel.org, linux-efi@vger.kernel.org,
+        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Tom Rini <trini@konsulko.com>, Jens Axboe <axboe@kernel.dk>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Masahiro Yamada <masahiroy@kernel.org>
+Subject: [RFC PATCH 3/5] partitions/efi: add support for uImage.FIT
+ sub-partitions
+Message-ID: <Yma3PN/g+k+Rh1Un@makrotopia.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <alpine.DEB.2.22.394.2204251603570.25814@gentwo.de>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 04:06:04PM +0200, Christoph Lameter wrote:
-> On Mon, 25 Apr 2022, Peter Zijlstra wrote:
-> 
-> > > Folding the vmstat diffs *always* when entering idle prevents unnecessary
-> > > wakeups and processing in the future and also provides more accurate
-> > > counters for the VM allowing better decision to be made on reclaim.
-> >
-> > I'm thinking you're going to find a ton of regressions if you try it
-> > though; some workloads go idle *very* shortly, doing all this accounting
-> > is going to be counter-productive.
-> 
-> Well there is usually not much to do in terms of accounting. 
+Add new GUID allowing to parse uImage.FIT stored in a GPT partition
+and map filesystem sub-image as sub-partitions.
 
-static int refresh_cpu_vm_stats(bool do_pagesets)
-{
-        struct pglist_data *pgdat;
-        struct zone *zone;
-        int i;
-        int global_zone_diff[NR_VM_ZONE_STAT_ITEMS] = { 0, };
-        int global_node_diff[NR_VM_NODE_STAT_ITEMS] = { 0, };
-        int changes = 0;
+Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+---
+ block/partitions/efi.c | 9 +++++++++
+ block/partitions/efi.h | 3 +++
+ 2 files changed, 12 insertions(+)
 
-        for_each_populated_zone(zone) {
-                struct per_cpu_zonestat __percpu *pzstats = zone->per_cpu_zonestats;
-#ifdef CONFIG_NUMA
-                struct per_cpu_pages __percpu *pcp = zone->per_cpu_pageset;
-#endif
-
-                for (i = 0; i < NR_VM_ZONE_STAT_ITEMS; i++) {
-                        int v;
-
-                        v = this_cpu_xchg(pzstats->vm_stat_diff[i], 0);
-                        if (v) {
-
-This loop is quite heavy. Maybe reducing the data necessary to be read
-to a couple of cachelines would improve it considerably.
-
-> If there are
-> a lot of updates then it is worthwhile because if the numbers are off too
-> much then the VM has trouble assessing its own situation.
-> 
-> It may depend though on how long the idle periods are. Do we have
-> statistics on the duration? Always folding the vmstat deltas may also
-> increase the length of the idle periods.
-
-"Products such as the Intel® Optane™ SSD DC P4800X series have a read and write
-latency of 10 microseconds, compared with a write latency of about 220 
-microseconds for a typical NAND flash SSD."
-
+diff --git a/block/partitions/efi.c b/block/partitions/efi.c
+index 5e9be13a56a82a..9999da6f7f8056 100644
+--- a/block/partitions/efi.c
++++ b/block/partitions/efi.c
+@@ -716,6 +716,9 @@ int efi_partition(struct parsed_partitions *state)
+ 	gpt_entry *ptes = NULL;
+ 	u32 i;
+ 	unsigned ssz = queue_logical_block_size(state->disk->queue) / 512;
++#ifdef CONFIG_FIT_PARTITION
++	u32 extra_slot = 64;
++#endif
+ 
+ 	if (!find_valid_gpt(state, &gpt, &ptes) || !gpt || !ptes) {
+ 		kfree(gpt);
+@@ -749,6 +752,12 @@ int efi_partition(struct parsed_partitions *state)
+ 				ARRAY_SIZE(ptes[i].partition_name));
+ 		utf16_le_to_7bit(ptes[i].partition_name, label_max, info->volname);
+ 		state->parts[i + 1].has_info = true;
++#ifdef CONFIG_FIT_PARTITION
++		/* If this is a U-Boot FIT volume it may have subpartitions */
++		if (!efi_guidcmp(ptes[i].partition_type_guid, PARTITION_LINUX_FIT_GUID))
++			(void) parse_fit_partitions(state, start * ssz, size * ssz,
++						    &extra_slot, 127, 1);
++#endif
+ 	}
+ 	kfree(ptes);
+ 	kfree(gpt);
+diff --git a/block/partitions/efi.h b/block/partitions/efi.h
+index 84b9f36b9e4797..06c11f6ae3989c 100644
+--- a/block/partitions/efi.h
++++ b/block/partitions/efi.h
+@@ -51,6 +51,9 @@
+ #define PARTITION_LINUX_LVM_GUID \
+     EFI_GUID( 0xe6d6d379, 0xf507, 0x44c2, \
+               0xa2, 0x3c, 0x23, 0x8f, 0x2a, 0x3d, 0xf9, 0x28)
++#define PARTITION_LINUX_FIT_GUID \
++    EFI_GUID( 0xcae9be83, 0xb15f, 0x49cc, \
++              0x86, 0x3f, 0x08, 0x1b, 0x74, 0x4a, 0x2d, 0x93)
+ 
+ typedef struct _gpt_header {
+ 	__le64 signature;
+-- 
+2.36.0
 
