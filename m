@@ -2,99 +2,246 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 414B3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:22:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F9CFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:22:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235650AbiDYWZj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 18:25:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46348 "EHLO
+        id S230280AbiDYWZz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 18:25:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343562AbiDYVdZ (ORCPT
+        with ESMTP id S1343645AbiDYWCm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 17:33:25 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 369EE27153
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 14:30:20 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id m20so11435450ejj.10
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 14:30:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HHqpbgvhGzfWr0EyYRxzA6HfxhKAhFMAtOp9U0tnQsw=;
-        b=WWZIB1XrA4aY5urSbazaVEZIdf9VBxbccf2WK0voRgvR+yD07WDMYB/1jukoVIx2RX
-         H585UqT/CMzahEyJLmbRcPezjMaxqwAK5Nemldbkf3GwKcYSgGEojTcbLIogTmY5th+m
-         3flocOyBRkyw8jkmcSKEauCW7738RYVZOxvA0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HHqpbgvhGzfWr0EyYRxzA6HfxhKAhFMAtOp9U0tnQsw=;
-        b=ECvzyRj1VEhq2KhrY37xmfd1TrMmwZsXGNIfA8XpWtNbkmew0qHARFPMmDXWLbviF3
-         v2Ylu4x4KMtzJBPFq2RCWxJC8xenjDA3V2WAT6VuTP1FJgYqjhMPxbtntorg+8vSiY/D
-         gxFnsh53epmFl+i6o98U7mYecTwDHeZZ83oOeNHUaFODUturvrvh2nl4iKxjN68/IUsc
-         FiLN7Ob4PuU5eOp7cxhJwDBkTpX9GZei8HEqkWleIOhlehkgyooVfLQSVek+FDUTZDGN
-         lX/27QeNb3CzfSIc2xvgoXpc/O/XdISAqoGnfvElAVFmueirTBk1HOSFJ2Ylx7/cJTNG
-         s8qw==
-X-Gm-Message-State: AOAM532CeCLeNosYNyghlzTMrBHwOnWGsVfz9lNg+GJoufoTh/PU4W2P
-        R782EYq6FIEKZocnCtPNw9+tCoXEG1HJXowL
-X-Google-Smtp-Source: ABdhPJzGM/mSyGm9dNfjPK4EFO2SRDG8o2AyfxbSE56NzP5Ke7EBPikuGxxk9TPClKrwY7A61IyDLg==
-X-Received: by 2002:a17:907:62a9:b0:6da:7953:4df0 with SMTP id nd41-20020a17090762a900b006da79534df0mr18431236ejc.316.1650922218473;
-        Mon, 25 Apr 2022 14:30:18 -0700 (PDT)
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com. [209.85.221.45])
-        by smtp.gmail.com with ESMTPSA id g21-20020a056402115500b00413c824e422sm5035875edw.72.2022.04.25.14.30.17
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Apr 2022 14:30:17 -0700 (PDT)
-Received: by mail-wr1-f45.google.com with SMTP id e24so2822607wrc.9
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 14:30:17 -0700 (PDT)
-X-Received: by 2002:a05:6000:1acb:b0:20a:a4b0:dbc8 with SMTP id
- i11-20020a0560001acb00b0020aa4b0dbc8mr15378477wry.513.1650922217012; Mon, 25
- Apr 2022 14:30:17 -0700 (PDT)
+        Mon, 25 Apr 2022 18:02:42 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36BB63298E
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 14:59:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650923977; x=1682459977;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=K37orOMojrXs5qDL8WyLkZCi+08bdVnSS7jsmHDoBsc=;
+  b=XoYN+HJb31ugHdVs8F9xXo1yylc7ogr4zcJZsX0fNTrw6GHHU1meUkJj
+   tkMsT/vmgnNzTYZZR3mFFpDOQIX5O9zDfF/b4qV6uZdoB55GiEhuKM1K6
+   Vyj7LkD+P9SelVZGSbKOjccSNO3UUg0Hy9iBSnngVxdaMoJiV4phH3Cc3
+   dYh4i6sR9FyMf/lArdrWZUftkSaQeZ6uWxhs69u5YdXgYCTmHESzchPaG
+   T0vCZsKg31qwAhbOd8zwFlpUaL4QFyS2T9K4KxkGUhGRf+cKyI1WpJ/kM
+   ShZY7VfN3EloZd97sD+T3iumj4CzEuK5xlZC8EfrxuNZhpDop4hrRm9zp
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="328315383"
+X-IronPort-AV: E=Sophos;i="5.90,289,1643702400"; 
+   d="scan'208";a="328315383"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 14:59:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,289,1643702400"; 
+   d="scan'208";a="512829792"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 25 Apr 2022 14:59:34 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nj6k2-0002us-4m;
+        Mon, 25 Apr 2022 21:59:34 +0000
+Date:   Tue, 26 Apr 2022 05:59:17 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Janne Grunau <j@jannau.net>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Hector Martin <marcan@marcan.st>
+Subject: [asahilinux:pr/22 73/189] drivers/hid/hid-magicmouse.c:662:41:
+ warning: format specifies type 'unsigned short' but the argument has type
+ 'int'
+Message-ID: <202204260549.BK1ztC91-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220425210726.3813477-1-swboyd@chromium.org>
-In-Reply-To: <20220425210726.3813477-1-swboyd@chromium.org>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Mon, 25 Apr 2022 14:30:04 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=WT+=qMJxNiAniTrX+qonXDgESzUi00+QfN4NW=3rdp+Q@mail.gmail.com>
-Message-ID: <CAD=FV=WT+=qMJxNiAniTrX+qonXDgESzUi00+QfN4NW=3rdp+Q@mail.gmail.com>
-Subject: Re: [PATCH v2] Input: cros-ec-keyb: Only register keyboard if
- rows/columns exist
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>, patches@lists.linux.dev,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+tree:   https://github.com/AsahiLinux/linux pr/22
+head:   7ee315306d1a3b0da8cf2a53e7f55889d0e7f034
+commit: 03f2bf13a1adfe8af74f01c14af0943adef72470 [73/189] HID: magicmouse: add support for Macbook trackpads
+config: hexagon-randconfig-r041-20220425 (https://download.01.org/0day-ci/archive/20220426/202204260549.BK1ztC91-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 1cddcfdc3c683b393df1a5c9063252eb60e52818)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/AsahiLinux/linux/commit/03f2bf13a1adfe8af74f01c14af0943adef72470
+        git remote add asahilinux https://github.com/AsahiLinux/linux
+        git fetch --no-tags asahilinux pr/22
+        git checkout 03f2bf13a1adfe8af74f01c14af0943adef72470
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/hid/
 
-On Mon, Apr 25, 2022 at 2:07 PM Stephen Boyd <swboyd@chromium.org> wrote:
->
-> If the device is a detachable, we may still probe this device because
-> there are some button switches, e.g. volume buttons and power buttons,
-> registered by this driver. Let's allow the device node to be missing row
-> and column device properties to indicate that the keyboard matrix
-> shouldn't be registered. This removes an input device on Trogdor devices
-> such as Wormdingler that don't have a matrix keyboard, but still have
-> power and volume buttons. That helps userspace understand there isn't
-> a keyboard present when the detachable keyboard is disconnected.
->
-> Cc: Benson Leung <bleung@chromium.org>
-> Cc: Guenter Roeck <groeck@chromium.org>
-> Cc: Douglas Anderson <dianders@chromium.org>
-> Cc: Hsin-Yi Wang <hsinyi@chromium.org>
-> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-> ---
->
-> Changes from v1 (https://lore.kernel.org/r/20220413033334.1514008-1-swboyd@chromium.org):
->  * Use device_property_present
->
->  drivers/input/keyboard/cros_ec_keyb.c | 9 +++++++++
->  1 file changed, 9 insertions(+)
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
+All warnings (new ones prefixed by >>):
+
+>> drivers/hid/hid-magicmouse.c:662:41: warning: format specifies type 'unsigned short' but the argument has type 'int' [-Wformat]
+                   hid_dbg(hdev, "ev x:%04hx y:%04hx\n", le16_to_int(f->abs_x),
+                                       ~~~~~             ^~~~~~~~~~~~~~~~~~~~~
+                                       %04x
+   include/linux/hid.h:1218:30: note: expanded from macro 'hid_dbg'
+           dev_dbg(&(hid)->dev, fmt, ##__VA_ARGS__)
+                                ~~~    ^~~~~~~~~~~
+   include/linux/dev_printk.h:155:39: note: expanded from macro 'dev_dbg'
+           dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
+                                        ~~~     ^~~~~~~~~~~
+   include/linux/dynamic_debug.h:167:19: note: expanded from macro 'dynamic_dev_dbg'
+                              dev, fmt, ##__VA_ARGS__)
+                                   ~~~    ^~~~~~~~~~~
+   include/linux/dynamic_debug.h:152:56: note: expanded from macro '_dynamic_func_call'
+           __dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
+                                                                 ^~~~~~~~~~~
+   include/linux/dynamic_debug.h:134:15: note: expanded from macro '__dynamic_func_call'
+                   func(&id, ##__VA_ARGS__);               \
+                               ^~~~~~~~~~~
+   drivers/hid/hid-magicmouse.c:663:4: warning: format specifies type 'unsigned short' but the argument has type 'int' [-Wformat]
+                           le16_to_int(f->abs_y));
+                           ^~~~~~~~~~~~~~~~~~~~~
+   include/linux/hid.h:1218:30: note: expanded from macro 'hid_dbg'
+           dev_dbg(&(hid)->dev, fmt, ##__VA_ARGS__)
+                                ~~~    ^~~~~~~~~~~
+   include/linux/dev_printk.h:155:39: note: expanded from macro 'dev_dbg'
+           dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
+                                        ~~~     ^~~~~~~~~~~
+   include/linux/dynamic_debug.h:167:19: note: expanded from macro 'dynamic_dev_dbg'
+                              dev, fmt, ##__VA_ARGS__)
+                                   ~~~    ^~~~~~~~~~~
+   include/linux/dynamic_debug.h:152:56: note: expanded from macro '_dynamic_func_call'
+           __dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
+                                                                 ^~~~~~~~~~~
+   include/linux/dynamic_debug.h:134:15: note: expanded from macro '__dynamic_func_call'
+                   func(&id, ##__VA_ARGS__);               \
+                               ^~~~~~~~~~~
+   2 warnings generated.
+--
+   drivers/hid/hid-magicmouse.c:169: warning: Function parameter or member 'pos' not described in 'magicmouse_sc'
+   drivers/hid/hid-magicmouse.c:169: warning: Function parameter or member 'hdev' not described in 'magicmouse_sc'
+   drivers/hid/hid-magicmouse.c:169: warning: Function parameter or member 'work' not described in 'magicmouse_sc'
+   drivers/hid/hid-magicmouse.c:169: warning: Function parameter or member 'battery_timer' not described in 'magicmouse_sc'
+   drivers/hid/hid-magicmouse.c:169: warning: Function parameter or member 'input_ops' not described in 'magicmouse_sc'
+>> drivers/hid/hid-magicmouse.c:592: warning: expecting prototype for struct trackpad. Prototype was for struct tp_header instead
+
+
+vim +662 drivers/hid/hid-magicmouse.c
+
+   571	
+   572	/**
+   573	 * struct trackpad report
+   574	 *
+   575	 * @report_id:		reportid
+   576	 * @buttons:		HID Usage Buttons 3 1-bit reports
+   577	 * @num_fingers:	the number of fingers being reported in @fingers
+   578	 * @clicked:		same as @buttons
+   579	 */
+   580	struct tp_header {
+   581		// HID mouse report
+   582		u8 report_id;
+   583		u8 buttons;
+   584		u8 rel_x;
+   585		u8 rel_y;
+   586		u8 padding[4];
+   587		// HID vendor part, up to 1751 bytes
+   588		u8 unknown[22];
+   589		u8 num_fingers;
+   590		u8 clicked;
+   591		u8 unknown3[14];
+ > 592	};
+   593	
+   594	static inline int le16_to_int(__le16 x)
+   595	{
+   596		return (signed short)le16_to_cpu(x);
+   597	}
+   598	
+   599	static void report_finger_data(struct input_dev *input, int slot,
+   600				       const struct input_mt_pos *pos,
+   601				       const struct tp_finger *f)
+   602	{
+   603		input_mt_slot(input, slot);
+   604		input_mt_report_slot_state(input, MT_TOOL_FINGER, true);
+   605	
+   606		input_report_abs(input, ABS_MT_TOUCH_MAJOR,
+   607				 le16_to_int(f->touch_major) << 1);
+   608		input_report_abs(input, ABS_MT_TOUCH_MINOR,
+   609				 le16_to_int(f->touch_minor) << 1);
+   610		input_report_abs(input, ABS_MT_WIDTH_MAJOR,
+   611				 le16_to_int(f->tool_major) << 1);
+   612		input_report_abs(input, ABS_MT_WIDTH_MINOR,
+   613				 le16_to_int(f->tool_minor) << 1);
+   614		input_report_abs(input, ABS_MT_ORIENTATION,
+   615				 J314_TP_MAX_FINGER_ORIENTATION - le16_to_int(f->orientation));
+   616		input_report_abs(input, ABS_MT_PRESSURE, le16_to_int(f->pressure));
+   617		input_report_abs(input, ABS_MT_POSITION_X, pos->x);
+   618		input_report_abs(input, ABS_MT_POSITION_Y, pos->y);
+   619	}
+   620	
+   621	static int magicmouse_raw_event_spi(struct hid_device *hdev,
+   622			struct hid_report *report, u8 *data, int size)
+   623	{
+   624		struct magicmouse_sc *msc = hid_get_drvdata(hdev);
+   625		struct input_dev *input = msc->input;
+   626		struct tp_header *tp_hdr;
+   627		struct tp_finger *f;
+   628		int i, n;
+   629		u32 npoints;
+   630		const size_t hdr_sz = sizeof(struct tp_header);
+   631		const size_t touch_sz = sizeof(struct tp_finger);
+   632		u8 map_contacs[MAX_CONTACTS];
+   633	
+   634		// hid_warn(hdev, "%s\n", __func__);
+   635		// print_hex_dump_debug("appleft ev: ", DUMP_PREFIX_OFFSET, 16, 1, data,
+   636		// 		     size, false);
+   637	
+   638		if (data[0] != TRACKPAD2_USB_REPORT_ID)
+   639			return 0;
+   640	
+   641		/* Expect 46 bytes of prefix, and N * 30 bytes of touch data. */
+   642		if (size < hdr_sz || ((size - hdr_sz) % touch_sz) != 0)
+   643			return 0;
+   644	
+   645		tp_hdr = (struct tp_header *)data;
+   646	
+   647		npoints = (size - hdr_sz) / touch_sz;
+   648		if (npoints < tp_hdr->num_fingers || npoints > MAX_CONTACTS) {
+   649			hid_warn(hdev,
+   650				 "unexpected number of touches (%u) for "
+   651				 "report\n",
+   652				 npoints);
+   653			return 0;
+   654		}
+   655	
+   656		n = 0;
+   657		for (i = 0; i < tp_hdr->num_fingers; i++) {
+   658			f = (struct tp_finger *)(data + hdr_sz + i * touch_sz);
+   659			if (le16_to_int(f->touch_major) == 0)
+   660				continue;
+   661	
+ > 662			hid_dbg(hdev, "ev x:%04hx y:%04hx\n", le16_to_int(f->abs_x),
+   663				le16_to_int(f->abs_y));
+   664			msc->pos[n].x = le16_to_int(f->abs_x);
+   665			msc->pos[n].y = -le16_to_int(f->abs_y);
+   666			map_contacs[n] = i;
+   667			n++;
+   668		}
+   669	
+   670		input_mt_assign_slots(input, msc->tracking_ids, msc->pos, n, 0);
+   671	
+   672		for (i = 0; i < n; i++) {
+   673			int idx = map_contacs[i];
+   674			f = (struct tp_finger *)(data + hdr_sz + idx * touch_sz);
+   675			report_finger_data(input, msc->tracking_ids[i], &msc->pos[i], f);
+   676		}
+   677	
+   678		input_mt_sync_frame(input);
+   679		input_report_key(input, BTN_MOUSE, data[1] & 1);
+   680	
+   681		input_sync(input);
+   682		return 1;
+   683	}
+   684	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
