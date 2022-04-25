@@ -2,80 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D56A4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:22:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 600CBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:22:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234694AbiDYWZ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 18:25:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60898 "EHLO
+        id S234901AbiDYWZb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 18:25:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343611AbiDYVpe (ORCPT
+        with ESMTP id S1343694AbiDYWOV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 17:45:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8CFD10C88A;
-        Mon, 25 Apr 2022 14:42:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7163B61480;
-        Mon, 25 Apr 2022 21:42:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C289C385A7;
-        Mon, 25 Apr 2022 21:42:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650922947;
-        bh=nreQfjm+N9qOhwr5Z/uFXcKNU+5eXomO6oZib8laKZg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qyGvmkis4NtIMuPisOOwB6nGpLl1CrkC66uKzbOFYEVssd/6RtOk2FkzUifqRL1zi
-         q9+7YfAa38802srg9wLvBixFw9fJUiEIURuTN0UP+VF4zMlkJFGuw9MohFkvxX7xim
-         vugpiJywGHPp+gh1s/DK/u/uA9eNbzlPB779kBBELWlq9mRHE/51g+8rTE6u8fhOcg
-         7GJZzsfA9k5GZ+//TVujEzlWJsBLvYQwonWDFOs2bTAW9tfDL6/V3NN+rtyNk7oaaM
-         wRxXhSLD6vMQYU8OheTOKOBVj9BCADbg/5AjXUyNICyP/MQ1uDclN0AlEIl8kgoe9k
-         WR0O9pA75GGAg==
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Chas Williams <3chas3@gmail.com>
-Cc:     linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH 1/2] net: wan: atp: remove unused eeprom_delay()
-Date:   Mon, 25 Apr 2022 16:26:43 -0500
-Message-Id: <20220425212644.1659070-2-helgaas@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220425212644.1659070-1-helgaas@kernel.org>
-References: <20220425212644.1659070-1-helgaas@kernel.org>
+        Mon, 25 Apr 2022 18:14:21 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06EF1186FA;
+        Mon, 25 Apr 2022 15:11:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1650924677; x=1682460677;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=9DAkFREVAmGElI/xnJeeAibkaRmM8W0pRbwuuQ9OtNY=;
+  b=tx6hPExAUD+vrkfSXYKqM3UcjJDRemRTRBM1pURi0gFgyjXFffCxnEzs
+   2yx7QptOS2ODRwRjU/yKeqZvGehKt9drMrWVla3wr5YGiIMWouKoJGD7B
+   /nke8KhXvYv8TGnDYAgqVWEENbbAhE8pHHNtWaqnBpWkjZ8rsfuhBEvVA
+   g=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 25 Apr 2022 15:11:17 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 15:11:16 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 25 Apr 2022 15:11:15 -0700
+Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 25 Apr 2022 15:11:15 -0700
+From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
+To:     <dri-devel@lists.freedesktop.org>, <robdclark@gmail.com>,
+        <sean@poorly.run>, <swboyd@chromium.org>, <vkoul@kernel.org>,
+        <daniel@ffwll.ch>, <airlied@linux.ie>, <agross@kernel.org>,
+        <dmitry.baryshkov@linaro.org>, <bjorn.andersson@linaro.org>
+CC:     Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
+        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v1 0/2]  fix DP phy compliance test
+Date:   Mon, 25 Apr 2022 15:11:01 -0700
+Message-ID: <1650924663-24892-1-git-send-email-quic_khsieh@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bjorn Helgaas <bhelgaas@google.com>
+Current DP phy compliance test failed due to test pattern generation was
+terminated premature.
 
-atp.h is included only by atp.c, which does not use eeprom_delay().  Remove
-the unused definition.
+Kuogee Hsieh (2):
+  drm/msm/dp: reset DP controller before transmit phy test pattern
+  drm/msm/dp: do not stop transmitting phy test pattern during DP phy
+    compliance test
 
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
----
- drivers/net/ethernet/realtek/atp.h | 4 ----
- 1 file changed, 4 deletions(-)
+ drivers/gpu/drm/msm/dp/dp_ctrl.c | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/realtek/atp.h b/drivers/net/ethernet/realtek/atp.h
-index 63f0d2d0e87b..b202184eddd4 100644
---- a/drivers/net/ethernet/realtek/atp.h
-+++ b/drivers/net/ethernet/realtek/atp.h
-@@ -255,10 +255,6 @@ static inline void write_word_mode0(short ioaddr, unsigned short value)
- #define EE_DATA_WRITE	0x01	/* EEPROM chip data in. */
- #define EE_DATA_READ	0x08	/* EEPROM chip data out. */
- 
--/* Delay between EEPROM clock transitions. */
--#define eeprom_delay(ticks) \
--do { int _i = 40; while (--_i > 0) { __SLOW_DOWN_IO; } } while (0)
--
- /* The EEPROM commands include the alway-set leading bit. */
- #define EE_WRITE_CMD(offset)	(((5 << 6) + (offset)) << 17)
- #define EE_READ(offset)		(((6 << 6) + (offset)) << 17)
 -- 
-2.25.1
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
 
