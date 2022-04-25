@@ -2,145 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EC0AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 14:40:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54B40C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 14:41:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242472AbiDYOnz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 10:43:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59106 "EHLO
+        id S242519AbiDYOoT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 10:44:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242419AbiDYOny (ORCPT
+        with ESMTP id S232448AbiDYOoS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 10:43:54 -0400
-Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8037E1C93C;
-        Mon, 25 Apr 2022 07:40:49 -0700 (PDT)
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id C75B0121ADB;
-        Mon, 25 Apr 2022 14:40:44 +0000 (UTC)
-Received: from pdx1-sub0-mail-a217.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id CCCC6120E91;
-        Mon, 25 Apr 2022 14:40:43 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1650897643; a=rsa-sha256;
-        cv=none;
-        b=pzn09w4erkwNvrwR9LXn6lwlyZ9J99IwIRoCpO5e5B4KfStKgfhWHeu1lgFUFQ4bkQGpJW
-        wdXvG2WH+RaogjEAa5nwn3+YEFg0hUc+2libiPQsLb2m7HhBQ1rpkSO6nbfNNB3qTihrBy
-        4mH44qATtYZ1VXIiJEnu+QwToGOUy47akzSrO0vUppvk08znAKE4MXtMp3Q1/nzoQbpad+
-        rSOmlnAniMMFstheur7XibIyJPy73ESNh6ubCAW4TLbGeak1py4sM/b0qB1aO5mF35tcVP
-        9bQBk58I/M8GLTcCYLzgXvQyNwbxr8nhnyqSepY3ukKDWZZ8gEnP+fyjGqqEEA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1650897643;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:dkim-signature;
-        bh=s5AE6U1EnsQ1lOXAx7PW4d2cLdYTvCRln/x/datINi8=;
-        b=uzZOqqgxbLoOGHgaiQYiKHnkTUmNo/luOeYKivI/9hx9NS6yUKsWkbr7emdS0cdfkGF5jP
-        WB357sPxss2uGoAEsqerwv8dDHsIEZE+FmfF5AtY7xd0973ASa7XRHVTHyg+3HUuRKijmN
-        Qs3dUPLN72vptBUV+1vhvvGVVzR00VAVEv7lG+XvXdbIOBMI8XUCo8KtEH246Ug/ywJ9Xy
-        2BdEB5ubGe//jTeqOE62suqnbZ33fbtaXsyHJaID5QgF8cxQQlI9yIc8ND1iHZDcYGAw/J
-        i6/ynlVrIL3tcxdJ/dWpAxOvZmqwbDwhcFP7zUFzmOKJTQAXUrjvL4jm3IEI8A==
-ARC-Authentication-Results: i=1;
-        rspamd-67b64f579b-dkhm9;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=ian@linux.cowan.aero
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|ian@linux.cowan.aero
-X-MailChannels-Auth-Id: dreamhost
-X-Skirt-Oafish: 772a72b76a7ff4c9_1650897644185_2468377285
-X-MC-Loop-Signature: 1650897644185:3122545546
-X-MC-Ingress-Time: 1650897644185
-Received: from pdx1-sub0-mail-a217.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.112.55.255 (trex/6.7.1);
-        Mon, 25 Apr 2022 14:40:44 +0000
-Received: from localhost.localdomain (unknown [69.12.38.97])
+        Mon, 25 Apr 2022 10:44:18 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63EE8E0AA
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 07:41:12 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        (Authenticated sender: ian@linux.cowan.aero)
-        by pdx1-sub0-mail-a217.dreamhost.com (Postfix) with ESMTPSA id 4Kn73Z46qRz2d;
-        Mon, 25 Apr 2022 07:40:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.cowan.aero;
-        s=dreamhost; t=1650897643;
-        bh=s5AE6U1EnsQ1lOXAx7PW4d2cLdYTvCRln/x/datINi8=;
-        h=From:To:Cc:Subject:Date:Content-Transfer-Encoding;
-        b=60CnaySCcFNllPkqZb0ujrtLqTey6CLl+vSwXOGPi5LntkMcThyBaofV+KdrVQUTe
-         z+WfAylHlobJ45fZn/LTbHQ8DnbMR4yzUko1nV+pMgRysGWjmDB+N0JuuSBo4GF1QH
-         +XRCuX7TtA1sjVgJI+R7Cnbqz22KkqGsEQAQ7stnWkevTsFQpP8/TeCmiDi/z9CIeN
-         2/G3cHvaytG5C8GbEBU5mkb9EplsHBQ7oHzud0U7rnc4dKEjkIyNT6HQ2yCzjjiaTI
-         vBEhKThZWlLAtg3+L3Luj87xVcsjhubnkJ/D7avJDSFYHviB/Jqia8wl6M13+jIVUu
-         Oakig734dQWjg==
-From:   Ian Cowan <ian@linux.cowan.aero>
-To:     Corentin Labbe <clabbe@baylibre.com>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        mjpeg-users@lists.sourceforge.net, linux-media@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Ian Cowan <ian@linux.cowan.aero>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [PATCH v2 2/4] staging: media: zoran: setup videocodec header for debugging macros
-Date:   Mon, 25 Apr 2022 10:40:30 -0400
-Message-Id: <20220425144030.132898-1-ian@linux.cowan.aero>
-X-Mailer: git-send-email 2.35.1
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 2B2361F38C;
+        Mon, 25 Apr 2022 14:41:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1650897671; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7cAgZZ/fjpDuClebaor/bK3IOwJPy0/zwSND8kx073g=;
+        b=uazyMNT5anctgprmxTBq9n/rN3hocJs5qQVxLoSbqMNsv4PAWXNoDzlBg7N+l+QtYhAOAU
+        E5Gjqd8WZbzuo4muMKswY71Zu6hg222rddg9QPRi17qvuMQLPZjWhvEX4HYd0iO83ZbKn+
+        TYcGBI9cPP0ampz0M/8S7JoBVowNBKY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1650897671;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7cAgZZ/fjpDuClebaor/bK3IOwJPy0/zwSND8kx073g=;
+        b=JSJRuIs2/e9Sk9kwNLxGtkUbEggg/FsG4vbozUhEcNUg8ESbnovzoZF4qSmemvQx/Bzh6s
+        2PP4GA+SeJKmmzDw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id F390713AED;
+        Mon, 25 Apr 2022 14:41:10 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id ikvDOgazZmKuLAAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Mon, 25 Apr 2022 14:41:10 +0000
+Message-ID: <fa4b487e-f1c8-3545-5ac1-746e779060fd@suse.cz>
+Date:   Mon, 25 Apr 2022 16:41:10 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 03/23] mm/slab_common: remove CONFIG_NUMA ifdefs for
+ common kmalloc functions
+Content-Language: en-US
+To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Cc:     Marco Elver <elver@google.com>,
+        Matthew WilCox <willy@infradead.org>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+References: <20220414085727.643099-1-42.hyeyoo@gmail.com>
+ <20220414085727.643099-4-42.hyeyoo@gmail.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20220414085727.643099-4-42.hyeyoo@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds inline functions in the videocodec header file to convert the
-videocodec and videocodec_master structs to their respective contained
-zoran struct. This will be used to pass the zoran struct to the
-zrdev_XXX() macros defined in the zoran header.
+On 4/14/22 10:57, Hyeonggon Yoo wrote:
+> Now that slab_alloc_node() is available for SLAB when CONFIG_NUMA=n,
+> remove CONFIG_NUMA ifdefs for common kmalloc functions.
+> 
+> Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
 
-In the zoran header, the new include is added to ensure all variables
-can be completely defined with the zoran and videocodec includes where
-they are located.
-
-Signed-off-by: Ian Cowan <ian@linux.cowan.aero>
----
- drivers/staging/media/zoran/videocodec.h | 15 +++++++++++++++
- drivers/staging/media/zoran/zoran.h      |  1 +
- 2 files changed, 16 insertions(+)
-
-diff --git a/drivers/staging/media/zoran/videocodec.h b/drivers/staging/media/zoran/videocodec.h
-index 9dea348fee40..5e6057edd339 100644
---- a/drivers/staging/media/zoran/videocodec.h
-+++ b/drivers/staging/media/zoran/videocodec.h
-@@ -307,4 +307,19 @@ extern int videocodec_unregister(const struct videocodec *);
- 
- int videocodec_debugfs_show(struct seq_file *m);
- 
-+#include "zoran.h"
-+static inline struct zoran *videocodec_master_to_zoran(struct videocodec_master *master)
-+{
-+	struct zoran *zr = master->data;
-+
-+	return zr;
-+}
-+
-+static inline struct zoran *videocodec_to_zoran(struct videocodec *codec)
-+{
-+	struct videocodec_master *master = codec->master_data;
-+
-+	return videocodec_master_to_zoran(master);
-+}
-+
- #endif				/*ifndef __LINUX_VIDEOCODEC_H */
-diff --git a/drivers/staging/media/zoran/zoran.h b/drivers/staging/media/zoran/zoran.h
-index 42b86356c022..674658154e88 100644
---- a/drivers/staging/media/zoran/zoran.h
-+++ b/drivers/staging/media/zoran/zoran.h
-@@ -20,6 +20,7 @@
- 
- #include <linux/debugfs.h>
- #include <linux/dev_printk.h>
-+#include <linux/i2c-algo-bit.h>
- #include <media/v4l2-device.h>
- #include <media/v4l2-ctrls.h>
- #include <media/videobuf2-core.h>
--- 
-2.35.1
+Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
 
