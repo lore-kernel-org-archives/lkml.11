@@ -2,174 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9022C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 17:37:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B817C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 17:40:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240081AbiDYRki (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 13:40:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38096 "EHLO
+        id S240490AbiDYRns (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 13:43:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231847AbiDYRke (ORCPT
+        with ESMTP id S231847AbiDYRnr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 13:40:34 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 741398C7E3;
-        Mon, 25 Apr 2022 10:37:29 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id 15so5622891pgf.4;
-        Mon, 25 Apr 2022 10:37:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PjD/mfBFlz/AtrrL9x0Nf4kx8DWM5v1izBjt6/Kpab0=;
-        b=Hm4FE29UfoLbczENW+XUuxCsdMMB21yOePMZ4K7szKAY6zQSi9WbZ0m3noMmt3WdFf
-         qsTwr/PTWjYXoLhBldxZMfcLvy0xHaSk1DzPVavJ3Tv6LSbXOuuf1CgvMwZvjCSQ2ELT
-         MH1NMEW7Sd5Tp2B6vYcwVh14Mw5URoKlmENkbVYGpZjKa/Z1L3r+aj7/Z/lT6JfOd6hY
-         qdcC2pcp0KjvDNv/Hk9uUZXp09QkIJ0zvYRbQA63h5G2S8hoNgLuKcl6Cro30i752XtR
-         MA+eD4GRCz9X3sca2/MazGJVJXB9qFgSaVvnLp1dUkIbNk0Yqobk27DNZAMIs9wyVHzW
-         kMug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PjD/mfBFlz/AtrrL9x0Nf4kx8DWM5v1izBjt6/Kpab0=;
-        b=CfRQi9W6dtvRzaMuiOcqNXfJMdxxkvdkO+/+aS/WJCQE5ZLRWhHfOSegIU+fJBwjk3
-         wh94dvE8KxVgLw5lzPWp2edZhp9JfeEIox88WIpQrYXccvhv7YXIBAhZDMVll1wQPmmK
-         2O71mP3zV6HKZHI37iKFznhfsS2uSibEkKX4PpiHJEANkp6ihgVBDPFxUnMjBlBLZW5o
-         keOxrDiMbsDr4wp/wFkn8n7L/8aNSPyFexbDmndoDdbFyUSpLKDuGhvj0AecQkxHjUmQ
-         u2Zvl9aku92WcpA3hxyChMefT02yzZgyEJ/Vxe4rOZBYP1axTAxLYhSCuuZcV4iDTA95
-         v0ng==
-X-Gm-Message-State: AOAM532OCqkQH1sEy9mlrbavcT3gFHKKMltJoniLPKcBbzThuaVJ3GKa
-        +G3/ScpvrQXF+FexZNLzA7M=
-X-Google-Smtp-Source: ABdhPJzd1XOAwmlG/JRg8XpnkspvBtxjBREClAWoak8wuJRQq2EaPozR9A9EhbRPAaDnsVWD5jTavA==
-X-Received: by 2002:a63:8ac9:0:b0:3ab:dab:16b4 with SMTP id y192-20020a638ac9000000b003ab0dab16b4mr9077462pgd.129.1650908248880;
-        Mon, 25 Apr 2022 10:37:28 -0700 (PDT)
-Received: from localhost.localdomain (c-73-241-94-58.hsd1.ca.comcast.net. [73.241.94.58])
-        by smtp.gmail.com with ESMTPSA id c1-20020a17090ab28100b001cd4989fecfsm16218491pjr.27.2022.04.25.10.37.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 10:37:27 -0700 (PDT)
-From:   Ryan Lee <ryan.lee.analog@gmail.com>
-To:     lgirdwood@gmail.com, broonie@kernel.org, robh+dt@kernel.org,
-        krzk+dt@kernel.org, perex@perex.cz, tiwai@suse.com,
-        srinivas.kandagatla@linaro.org, ckeepax@opensource.cirrus.com,
-        tanureal@opensource.cirrus.com, cy_huang@richtek.com,
-        pierre-louis.bossart@linux.intel.com,
-        drhodes@opensource.cirrus.com, pbrobinson@gmail.com,
-        hdegoede@redhat.com, lukas.bulwahn@gmail.com, stephan@gerhold.net,
-        arnd@arndb.de, ryan.lee.analog@gmail.com,
-        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ryans.lee@analog.com
-Subject: [PATCH V3 1/2] ASoC: dt-bindings: max98396: add amplifier driver
-Date:   Mon, 25 Apr 2022 10:37:15 -0700
-Message-Id: <20220425173715.1827706-1-ryan.lee.analog@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 25 Apr 2022 13:43:47 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 011794091C
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 10:40:41 -0700 (PDT)
+Received: from mail-wr1-f51.google.com ([209.85.221.51]) by
+ mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MEFnP-1nZRnR0z4v-00ADuV for <linux-kernel@vger.kernel.org>; Mon, 25 Apr
+ 2022 19:40:40 +0200
+Received: by mail-wr1-f51.google.com with SMTP id w4so21883530wrg.12
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 10:40:40 -0700 (PDT)
+X-Gm-Message-State: AOAM533bwtOd6dHgrL3BRXJWQCUtTAjW9ApJVdgg4kSZ9aT+2W4j4NyC
+        hl0adqsDKZrMGtCgg7Vt4uaq8QGhibYUGOhDRdo=
+X-Google-Smtp-Source: ABdhPJxEGcTnLg0acH93I4QWcC8rrfHiYkXwGS05uktEcHZuF3rO3OtXZJdPMv9SgKwh/96ig0xApD10o9E5brovf4c=
+X-Received: by 2002:a5d:6da5:0:b0:20a:8805:6988 with SMTP id
+ u5-20020a5d6da5000000b0020a88056988mr14423462wrs.317.1650908439868; Mon, 25
+ Apr 2022 10:40:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <YmX7z+BirkA3VAfW@zx2c4.com> <CAK8P3a3Af5FBx-OnedHPrf28ikX4DZK1d0ERLsV+oKyBHyCXiw@mail.gmail.com>
+ <YmaJUvg6hmekvkXE@zx2c4.com> <CAK8P3a3FZeXzBJKyTEvmvw_DaHGQFf5rQKs=_wBW=GZ2+=rJ_Q@mail.gmail.com>
+ <Yma8OQ3zY3PzY87T@zx2c4.com> <CAK8P3a0Y3BFCkg8e-o5i6xPfb9WVQzOQOACXtrH1VmQJkSriDQ@mail.gmail.com>
+ <YmbD/oPIUBvJ/YjQ@zx2c4.com> <CAK8P3a1kRXQrmNg4eQw0-P+Fzz_AvFooLg3=nQNQKMRwvL9DWQ@mail.gmail.com>
+ <YmbUBZg/nGV7gLyy@zx2c4.com>
+In-Reply-To: <YmbUBZg/nGV7gLyy@zx2c4.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Mon, 25 Apr 2022 19:40:22 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1YNQG0xvC+tKPfFPSXuGESjwr5zz_Ubt3QwvY3_QjGdw@mail.gmail.com>
+Message-ID: <CAK8P3a1YNQG0xvC+tKPfFPSXuGESjwr5zz_Ubt3QwvY3_QjGdw@mail.gmail.com>
+Subject: Re: odd endianness toolchains for crosstool
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:l4Xh0gNzB6q4KmQxiX1rB70GO5dHZIuE+bwOWMU9guXAAdAPcaO
+ pIxhvf/AO3ooffA8E+tv7MMlW4qZJaP/5Nb3WSWRWjGsk5+avdjV7uADV7jj6ckrsRxu+rz
+ l1pF4A3Z9ilMeAuypUm+1M1Qd0qNSQOag6gFXh+v4iAsgebp5SqSKi6Ae0H/2WoxL/5sl/6
+ JUmYPICdVYHzkv1xEJ5Qg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:bInvcxNRIXY=:oFXG0hZdkX9jSs+xpW+M3A
+ BphSH3YwNRMDPz+u+CbtDCQzbaToMA9FSenBAMvDIklmVh8HK+2iB9W4+ZMcRalVVSzwucWjE
+ u02r3rmeYRNqL8fQ0+nXl24ZI0IqadAAT6L9ghYGlsZoTRNYmyy4cQ5jw+TlQizbe+f9klqF6
+ CdTyLMXzEwaDUyHV5YEnZ9ya2e9eafEQ9NXLtHu6DRC3kxaLF0TzYYuyCV7HSe6E+2Ih1eAT+
+ r9NFNBK69BaCkzN1vtds8X4jMfLI5+4wwthWwVl9SeBZAUegsu6KY3x00BVLOLqNP24CEa9st
+ vrOAtiVIQ5t6u4h/ZrPSlpXMrPsy3JKW0d/2g+o3z08B8GgmZuWzZ5TaLU7MKcbqAkA/2OwsS
+ Uqoqt0KGBBIiCCosT/RcPY3qL7o+Iqoj3MCqms51/d4zsVDU/Kdjqg2HAqcdJEc3+7JPfi1fW
+ TvnI9s2tel/LptOPBiZdv+iJ7Ka6qnT7+IiecyOn7w7wOYYwt94wX40TYddJOFSn53fBXjy9q
+ OEz4qO/dkYHEL8HWDZvmfoEgOLpZ0aDvyTfRFkAZME/aYEY9ITXFiZBq5maWUdiYB82cnzFEv
+ mYJsd008/Lz3O+pMsIwZhh79F0T188Ou3jtfEO0bVmesPvmXkYC4O7WK7rmHfIHJ8wNjyiccm
+ UrHEluzHuzlKOOuij6ntOVGQLTWVgAV5m45n4X59ECOW4mwUnLPfApfqIKSR4PSF7JW8=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ryan Lee <ryans.lee@analog.com>
+On Mon, Apr 25, 2022 at 7:01 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+> On Mon, Apr 25, 2022 at 06:15:07PM +0200, Arnd Bergmann wrote:
+> > On Mon, Apr 25, 2022 at 5:53 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+> >
+> > Ok, I see. For all I can tell, the toolchain I built already uses both
+> > --with-long-double-64
+> > and --enable-secureplt, as those seemt to be the default for Linux.
+>
+> For ppc32? I'm unable to produce working executables with the toolchain.
+> And looking at the target info, -msecure-plt is missing, while
+> -mlong-double-64 is there:
+>
+> $ ./powerpc-linux-gcc -Q --help=target | grep long-double
+>   -mlong-double-                        64
+> $ ./powerpc-linux-gcc -Q --help=target | grep msecure-plt
+>   -msecure-plt                          [disabled]
 
-This patch adds dt-bindings information for Analog Devices MAX98396
-and MAX98397 Smart Amplifier.
+Ah, my mistake, I looked at the distro provided compiler instead of my own :(
 
-Signed-off-by: Ryan Lee <ryans.lee@analog.com>
----
-  Changes from v1:
-    Fixed yamllint/dtschema/dtc warnings and errors
-  Changes from v2:
-    No change
+> For ppc64, I see the same. I'll try to look into it more though.
+>
+> > Regarding the the ELF ABI, I'm not sure how to check, but I think it
+> > only does ELFv1, which is the default for big-endian glibc.
+>
+> Yes, it only is doing ELFv1 right now. musl checks this in
+> <https://git.musl-libc.org/cgit/musl/tree/configure#n689> with this:
+>
+>     trycppif "_CALL_ELF == 2" "$t" || fail "$0: error: unsupported powerpc64 ABI"
 
- .../bindings/sound/adi,max98396.yaml          | 79 +++++++++++++++++++
- 1 file changed, 79 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/sound/adi,max98396.yaml
+Does it work if you pass -mabi=elfv2? This seems to be ignored here as well:
 
-diff --git a/Documentation/devicetree/bindings/sound/adi,max98396.yaml b/Documentation/devicetree/bindings/sound/adi,max98396.yaml
-new file mode 100644
-index 000000000000..ec4c10c2598a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/sound/adi,max98396.yaml
-@@ -0,0 +1,79 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/sound/adi,max98396.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Analog Devices MAX98396 Speaker Amplifier Device Tree Bindings
-+
-+maintainers:
-+  - Ryan Lee <ryans.lee@analog.com>
-+
-+description:
-+  The MAX98396 is a mono Class-DG speaker amplifier with I/V sense.
-+  The device provides a PCM interface for audio data and a standard
-+  I2C interface for control data communication.
-+  The MAX98397 is a variant of MAX98396 with wide input supply range.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - adi,max98396
-+      - adi,max98397
-+  reg:
-+    maxItems: 1
-+    description: I2C address of the device.
-+
-+  adi,vmon-slot-no:
-+    description: slot number of the voltage sense monitor
-+    $ref: "/schemas/types.yaml#/definitions/uint32"
-+    minimum: 0
-+    maximum: 15
-+    default: 0
-+
-+  adi,imon-slot-no:
-+    description: slot number of the current sense monitor
-+    $ref: "/schemas/types.yaml#/definitions/uint32"
-+    minimum: 0
-+    maximum: 15
-+    default: 0
-+
-+  adi,spkfb-slot-no:
-+    description: slot number of speaker DSP monitor
-+    $ref: "/schemas/types.yaml#/definitions/uint32"
-+    minimum: 0
-+    maximum: 15
-+    default: 0
-+
-+  adi,interleave-mode:
-+    description:
-+      For cases where a single combined channel for the I/V sense data
-+      is not sufficient, the device can also be configured to share
-+      a single data output channel on alternating frames.
-+      In this configuration, the current and voltage data will be frame
-+      interleaved on a single output channel.
-+    type: boolean
-+
-+  reset-gpios:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        max98396: amplifier@39 {
-+            compatible = "adi,max98396";
-+            reg = <0x39>;
-+            adi,vmon-slot-no = <0>;
-+            adi,imon-slot-no = <1>;
-+            reset-gpios = <&gpio 4 GPIO_ACTIVE_LOW>;
-+        };
-+    };
--- 
-2.25.1
+$ powerpc-linux-gcc  -mlittle-endian -mabi=elfv2 -xc -c /dev/null  -o /tmp/a.o
+$ file /tmp/a.o
+/tmp/a.o: ELF 32-bit LSB relocatable, PowerPC or cisco 4500, version 1
+(SYSV), not stripped
 
+        Arnd
