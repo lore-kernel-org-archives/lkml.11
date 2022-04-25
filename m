@@ -2,106 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54F83C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 13:31:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7042FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 13:33:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242109AbiDYNep (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 09:34:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53742 "EHLO
+        id S239279AbiDYNgT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 09:36:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242078AbiDYNee (ORCPT
+        with ESMTP id S229563AbiDYNgN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 09:34:34 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A44EFBA5;
-        Mon, 25 Apr 2022 06:31:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650893490; x=1682429490;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=LeeHzvwWWIhoJET4Iby9NAsLpM72fA5MdvAHRDjBpqQ=;
-  b=mRO0MNdsbOJI6HUbDPtpFlxZJSpWLWYEZQetSRdeJeA46CsInfy41C11
-   wo2TVI5MiSoNsV/Wfs+K6O0o4tTK0psb6rfH5xu3gttldeBV5g1+7fx5B
-   hdly0soWuDImL61DQQQFyDMjp7spVhVTwRS3slwm3rpA1ST0fX2QkwEWC
-   JNrv0jSQbMlGfbtAnlzgdBVeSkO3ymngfFXT/s7igoX9ypx8e339uy0FY
-   DgUwzGso//PuZmB13WQMY0xbYXSLkj9Fah/C3iBlOyMWkDVUxhpGkJPis
-   pPH1gtU6VlN2pL5/v9v2wdI/EBxRe1HAEL2kP8YTi1iskx7UDRrvH89bY
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10327"; a="247174639"
-X-IronPort-AV: E=Sophos;i="5.90,288,1643702400"; 
-   d="scan'208";a="247174639"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 06:31:30 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,288,1643702400"; 
-   d="scan'208";a="579286511"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
-  by orsmga008.jf.intel.com with ESMTP; 25 Apr 2022 06:31:28 -0700
-Date:   Mon, 25 Apr 2022 21:23:46 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Nava kishore Manne <nava.manne@xilinx.com>
-Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com,
-        michal.simek@xilinx.com, linux-fpga@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        git@xilinx.com
-Subject: Re: [PATCH v6 1/5] fpga: zynq: Fix incorrect variable type
-Message-ID: <20220425132346.GB367066@yilunxu-OptiPlex-7050>
-References: <20220423170235.2115479-1-nava.manne@xilinx.com>
- <20220423170235.2115479-2-nava.manne@xilinx.com>
+        Mon, 25 Apr 2022 09:36:13 -0400
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45F40C04
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 06:33:09 -0700 (PDT)
+Received: by mail-il1-x133.google.com with SMTP id d3so9304683ilr.10
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 06:33:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Gnjzt+1NzH4Eu2LF0ewfanCh28nJVLbVajLnqOyr7so=;
+        b=qXgKC+wGX6JUjSmbOLeCpcvFuKT0dg8qOs6PnXS15L5ncoNkRtCqiDgePn75kofNgm
+         2tCSFz+93T4dTrz5WENecqA044vqKd79ROI43d4bZZc4lYwpp1E6NtPVnFW/Nr856ujx
+         eat6iqRyEdXPWA3l2TbnFnebo8PX4ga3C+QuE80EqcZeEI1lw0U4OhFE2w/O6uododXg
+         0rfhGvGLA3PN9blzFmc5i9gJ6FrbEu0nqfBO7cwR94h5AUXuLo4iPSwDjkLR74tBNBdp
+         HNPvsRj8bOhtz/3WzQ42aQrJRE5GhZsW+JMGRBDC3ZoVy4CUUMyGjrgHcl6z91GHd5rQ
+         32JA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Gnjzt+1NzH4Eu2LF0ewfanCh28nJVLbVajLnqOyr7so=;
+        b=FEDMkqpEG0q3eB4nAtsYrmFcgPel+ls7OLOt/o58ECmRpj0BMxdLpnHtdofkPw7yNR
+         JEFYtXzhJbyH7Kf8t3kqndKWUrFFpvLKGU3cUEsGVEI1j5nyuid0WCsjFGF0fEXEoRVc
+         hpKfmYP/5WJEE4yVEKT8gqKHPp8v0GJQOTv3C05V12nNA9IkoaiqdZbAAgz6lpEGfur1
+         uvbSxnQmR4wZ6BjUhTJsHT1KJK9YSojuurHY2ykUwUbzzxR1m5kTseNzM6sJL9zPtVCL
+         Il+UrrF+zZLlDL5ttja3W1U92SQJ/knYdPdABP+etfvmR2nxibDCyncJf3F5uQjF/2XT
+         oAhg==
+X-Gm-Message-State: AOAM531ojZK7KauQjqygNbfhKWlJr/9jydtqHuUFKQOIrlb0ujUfyLFH
+        8FBPr/XzfsVlEPgGp7E8OzgDFClogXNemG74E45MaChws82gaQ==
+X-Google-Smtp-Source: ABdhPJwU2Z2Qn+3InewKbrhAehIeUwIOfVw1iC4HFdM8oHuC387OrrzP3I5kpiS4vu2DoaZ4MO/LLBVW0mIyLTs7XjE=
+X-Received: by 2002:a05:6e02:f52:b0:2ca:95e4:f4b5 with SMTP id
+ y18-20020a056e020f5200b002ca95e4f4b5mr5918655ilj.240.1650893588740; Mon, 25
+ Apr 2022 06:33:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220423170235.2115479-2-nava.manne@xilinx.com>
+References: <20220325132126.61949-1-zhangjiachen.jaycee@bytedance.com> <CAJfpeguESQm1KsQLyoMRTevLttV8N8NTGsb2tRbNS1AQ_pNAww@mail.gmail.com>
+In-Reply-To: <CAJfpeguESQm1KsQLyoMRTevLttV8N8NTGsb2tRbNS1AQ_pNAww@mail.gmail.com>
+From:   Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
+Date:   Mon, 25 Apr 2022 21:32:57 +0800
+Message-ID: <CAFQAk7ibzCn8OD84-nfg6_AePsKFTu9m7pXuQwcQP5OBp7ZCag@mail.gmail.com>
+Subject: Re: Re: [RFC PATCH] fuse: support cache revalidation in
+ writeback_cache mode
+To:     Miklos Szeredi <miklos@szeredi.hu>
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xie Yongji <xieyongji@bytedance.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 23, 2022 at 10:32:31PM +0530, Nava kishore Manne wrote:
-> zynq_fpga_has_sync () API is expecting "u8 *" but the
-> formal parameter that was passed is of type "const char *".
-> fix this issue by changing the buf type to "const char *"
-> 
-> Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
-> Acked-by: Xu Yilun <yilun.xu@intel.com>
+On Mon, Apr 25, 2022 at 8:41 PM Miklos Szeredi <miklos@szeredi.hu> wrote:
+>
+> On Fri, 25 Mar 2022 at 14:23, Jiachen Zhang
+> <zhangjiachen.jaycee@bytedance.com> wrote:
+> >
+> > Hi all,
+> >
+> > This RFC patch implements attr cache and data cache revalidation for
+> > fuse writeback_cache mode in kernel. Looking forward to any suggestions
+> > or comments on this feature.
+>
+> Quick question before going into the details:  could the cache
+> revalidation be done in the userspace filesystem instead, which would
+> set/clear FOPEN_KEEP_CACHE based on the result of the revalidation?
+>
+> Thanks,
+> Miklos
 
-Hi Nava:
+Hi, Miklos,
 
-There is a lkp bug report yet to be fixed. Please fix it.
+Thanks for replying. Yes, I believe we can also perform the
+revalidation in userspace, and we can invalidate the data cache with
+FOPEN_KEEP_CACHE cleared. But for now, there is no way we can
+invalidate attr cache (c/mtime and size)  in writeback mode.
+
+If it is more concise to implement most of the logic in userspace, do
+you think we should add a flag for attr cache just like what
+FOPEN_KEEP_CACHE does for data cache?
 
 Thanks,
-Yilun
-
-> ---
-> Changes for v2:
->                 -None.
-> Changes for v3:
->                - Changed arg buf type to "const char *" as suggested by Tom.
->                - update zynq_fpga_has_sync () API description to align with API
->                  functionality.
-> Changes for v4:
->                - None.
-> 
-> Changes for v5:
->                - Dropped the irrelevant doc update changes.
-> Changes for v6:
->                - None.
-> 
->  drivers/fpga/zynq-fpga.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/fpga/zynq-fpga.c b/drivers/fpga/zynq-fpga.c
-> index 426aa34c6a0d..6beaba9dfe97 100644
-> --- a/drivers/fpga/zynq-fpga.c
-> +++ b/drivers/fpga/zynq-fpga.c
-> @@ -239,7 +239,7 @@ static irqreturn_t zynq_fpga_isr(int irq, void *data)
->   * the correct byte order, and be dword aligned. The input is a Xilinx .bin
->   * file with every 32 bit quantity swapped.
->   */
-> -static bool zynq_fpga_has_sync(const u8 *buf, size_t count)
-> +static bool zynq_fpga_has_sync(const char *buf, size_t count)
->  {
->  	for (; count >= 4; buf += 4, count -= 4)
->  		if (buf[0] == 0x66 && buf[1] == 0x55 && buf[2] == 0x99 &&
-> -- 
-> 2.25.1
+Jiachen
