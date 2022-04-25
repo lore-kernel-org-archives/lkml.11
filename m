@@ -2,157 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33BF2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:30:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 821EEC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:30:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231768AbiDYWdD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 18:33:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51016 "EHLO
+        id S231373AbiDYWdJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 18:33:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235531AbiDYWcr (ORCPT
+        with ESMTP id S236200AbiDYWc4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 18:32:47 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 821635F4C
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 15:28:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650925727; x=1682461727;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=1ugjOgr21LoYin4+k0APKTjfPQTfZoLklmrGidKyQsk=;
-  b=QImM3OXY6yV3XkCZero2+mq/1tO0f7hnX5FdlB0/mm/1zvkjaAwjwZOE
-   gpvG41xbsFQ1wnEZh3T+Mn/XQ6nVuplJfMllS0KAWA3Qkh9/sNeNDz+UG
-   UI1MXkm5RQRXYNgpbiSZaRZynABcC+yP0+/sMA1wDVSvHDbIcYftzlGi6
-   92bmV72Zqgs/DJIN700LgzxmAY3cnw305EZD3yyf0c/y7O1/nnGHxPgCw
-   KY9U4Bwtz3P5P+blgBZ5FwazjsWEPfwW4HyyEFHgMePMuPJJWvU7fwsh4
-   //9O5ImlVsqAgPfe2aNpc8s15Xv/3bXg7pj0XPx993WrYUMyeTA1csMDr
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="262977222"
-X-IronPort-AV: E=Sophos;i="5.90,289,1643702400"; 
-   d="scan'208";a="262977222"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 15:28:46 -0700
-X-IronPort-AV: E=Sophos;i="5.90,289,1643702400"; 
-   d="scan'208";a="729945823"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 15:28:46 -0700
-Date:   Mon, 25 Apr 2022 15:32:23 -0700
-From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
-To:     Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc:     Dave Hansen <dave.hansen@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>,
-        Ravi V Shankar <ravi.v.shankar@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>, robin.murphy@arm.com,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        x86 <x86@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        iommu <iommu@lists.linux-foundation.org>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>, zhangfei.gao@linaro.org,
-        Thomas Gleixner <tglx@linutronix.de>, will@kernel.org,
-        jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
- allocation and free it on mm exit
-Message-ID: <20220425153223.62a02645@jacob-builder>
-In-Reply-To: <YmbIjnHtibY7n4Wb@myrica>
-References: <tencent_76E043C4D1B6A21A5253579A61034107EB06@qq.com>
-        <tencent_7477100F8A445C6CAFA8F13601A55134480A@qq.com>
-        <YmJ/WA6KAQU/xJjA@myrica>
-        <tencent_A4E83BA6071B2204B6F5D4E69A50D21C1A09@qq.com>
-        <YmLOznyBF0f7COYT@myrica>
-        <tencent_2922DAB6F3D5789A1CD3A21A843B4007ED09@qq.com>
-        <Yman5hLomw9/c+bi@myrica>
-        <76ec6342-0d7c-7c7b-c132-2892e4048fa1@intel.com>
-        <YmavoKkVu+hd+x0M@myrica>
-        <20220425083444.00af5674@jacob-builder>
-        <YmbIjnHtibY7n4Wb@myrica>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Mon, 25 Apr 2022 18:32:56 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CB3CA185;
+        Mon, 25 Apr 2022 15:29:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1650925781; x=1682461781;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=5Xh4n6qYzYGCgES5QzsoDE6tDwiLaiGMdlmL/LBrteY=;
+  b=uIw/yiLU0irgRBFt2jpaDY1yDhFSI/DbKSGCj2QG6BZuexvQ83h70q3l
+   0WPswGsaobE8vJ68/uAWysFuPxZbEu7y3sYdKSZsZTkrir/vDqSbWIr/s
+   iWFtweNMnss6kIgaU+Ey8iWA/WZ0LxhHmm0S0reE006y2/xk7er+DNz6p
+   I=;
+Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 25 Apr 2022 15:29:41 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 15:29:40 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 25 Apr 2022 15:29:40 -0700
+Received: from [10.110.33.26] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 25 Apr
+ 2022 15:29:39 -0700
+Message-ID: <07f1e701-f921-b06a-7492-63810a937322@quicinc.com>
+Date:   Mon, 25 Apr 2022 15:29:30 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH] drm/msm/dp: tear down main link at unplug handle
+ immediately
+Content-Language: en-US
+To:     Stephen Boyd <swboyd@chromium.org>, <agross@kernel.org>,
+        <airlied@linux.ie>, <bjorn.andersson@linaro.org>,
+        <daniel@ffwll.ch>, <dmitry.baryshkov@linaro.org>,
+        <robdclark@gmail.com>, <sean@poorly.run>, <vkoul@kernel.org>
+CC:     <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
+        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <1649970223-9522-1-git-send-email-quic_khsieh@quicinc.com>
+ <CAE-0n51rp73v6tod98TX3Y_q8TuOppJVdm9Te_9kSNyqyFuoog@mail.gmail.com>
+From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
+In-Reply-To: <CAE-0n51rp73v6tod98TX3Y_q8TuOppJVdm9Te_9kSNyqyFuoog@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jean-Philippe,
 
-On Mon, 25 Apr 2022 17:13:02 +0100, Jean-Philippe Brucker
-<jean-philippe@linaro.org> wrote:
+On 4/20/2022 3:38 PM, Stephen Boyd wrote:
+> Quoting Kuogee Hsieh (2022-04-14 14:03:43)
+>> Two stages are required to setup up main link to be ready to transmit
+>> video stream.
+>> Stage 1: dp_hpd_plug_handle() perform link training to set up main link
+>> stage 2: user space framework (msm_dp_display_enable()) to enable pixel
+>> clock and transfer main link to video ready state.
+>>
+>> At current implementation, when dongle unplugged dp_hdp_unplug_handle()
+>> has to wait until stage 2 completed before it can send link down uevent
+>> to user space framework to disable pixel clock followed by tearing down
+>> main link.  This introduce unnecessary latency if dongle unplugged happen
+>> after stage 1 and before stage 2. It also has possibility leave main link
+>> stay at ready state after dongle unplugged if framework does not response
+>> to link down uevent notification. This will prevent next dongle plug in
+>> from working. This scenario could possibly happen when dongle unplug while
+>> system in the middle of suspending.
+>>
+>> This patch allow unplug handle to tear down main link and notify
+>> framework link down immediately if dongle unplugged happen after
+>> stage 1 and before stage 2. With this approach, dp driver is much
+>> more resilient to any different scenarios. Also redundant both
+>> dp_connect_pending_timeout() and dp_disconnect_pending_timeout()
+>> are removed to reduce logic complexity.
+>>
+>> Fixes: 8ede2ecc3e5e ("drm/msm/dp: Add DP compliance tests on Snapdragon Chipsets")
+>> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+> Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+>
+> Some questions below but doesn't seem like it will hold up this patch.
+>
+>> diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+>> index 01453db..f5bd8f5 100644
+>> --- a/drivers/gpu/drm/msm/dp/dp_display.c
+>> +++ b/drivers/gpu/drm/msm/dp/dp_display.c
+>> @@ -615,24 +598,21 @@ static int dp_hpd_unplug_handle(struct dp_display_private *dp, u32 data)
+>>                  if (dp->link->sink_count == 0) {
+>>                          dp_display_host_phy_exit(dp);
+>>                  }
+>> +               dp_display_notify_disconnect(&dp->pdev->dev);
+>>                  mutex_unlock(&dp->event_mutex);
+>>                  return 0;
+>> -       }
+>> -
+>> -       if (state == ST_DISCONNECT_PENDING) {
+>> +       } else if (state == ST_DISCONNECT_PENDING) {
+>>                  mutex_unlock(&dp->event_mutex);
+>>                  return 0;
+>> -       }
+>> -
+>> -       if (state == ST_CONNECT_PENDING) {
+>> -               /* wait until CONNECTED */
+>> -               dp_add_event(dp, EV_HPD_UNPLUG_INT, 0, 1); /* delay = 1 */
+>> +       } else if (state == ST_CONNECT_PENDING) {
+> I take it that ST_CONNECT_PENDING is sort of like "userspace hasn't
+> handled the uevent yet and modeset hasn't been called but the link is
+> setup and now we want to tear it down". The state name may want to be
+> changed to something else.
+yes, how about change to  ST_MAINLINK_READY?
+>
+>> +               dp_ctrl_off_link(dp->ctrl);
+>> +               dp_display_host_phy_exit(dp);
+>> +               dp->hpd_state = ST_DISCONNECTED;
+>> +               dp_display_notify_disconnect(&dp->pdev->dev);
+>>                  mutex_unlock(&dp->event_mutex);
+>>                  return 0;
+>>          }
+>>
+>> -       dp->hpd_state = ST_DISCONNECT_PENDING;
+>> -
+>>          /* disable HPD plug interrupts */
+>>          dp_catalog_hpd_config_intr(dp->catalog, DP_DP_HPD_PLUG_INT_MASK, false);
+>>
+>> @@ -640,10 +620,13 @@ static int dp_hpd_unplug_handle(struct dp_display_private *dp, u32 data)
+>>           * We don't need separate work for disconnect as
+>>           * connect/attention interrupts are disabled
+>>           */
+>> -       dp_display_usbpd_disconnect_cb(&dp->pdev->dev);
+>> +       dp_display_notify_disconnect(&dp->pdev->dev);
+>>
+>> -       /* start sentinel checking in case of missing uevent */
+>> -       dp_add_event(dp, EV_DISCONNECT_PENDING_TIMEOUT, 0, DP_TIMEOUT_5_SECOND);
+>> +       if (state == ST_DISPLAY_OFF) {
+>> +               dp->hpd_state = ST_DISCONNECTED;
+>> +       } else {
+>> +               dp->hpd_state = ST_DISCONNECT_PENDING;
+>> +       }
+> Nitpick: No braces needed for single line if clauses.
+>
+>>          DRM_DEBUG_DP("hpd_state=%d\n", state);
+>>          /* signal the disconnect event early to ensure proper teardown */
+>> @@ -1529,8 +1480,11 @@ int msm_dp_display_enable(struct msm_dp *dp, struct drm_encoder *encoder)
+>>
+>>          mutex_lock(&dp_display->event_mutex);
+>>
+>> -       /* stop sentinel checking */
+>> -       dp_del_event(dp_display, EV_CONNECT_PENDING_TIMEOUT);
+>> +       state = dp_display->hpd_state;
+>> +       if (state != ST_DISPLAY_OFF && state != ST_CONNECT_PENDING) {
+> Is this to guard against userspace doing an atomic commit when the
+> display isn't connected? Is that even possible?
 
-> Hi Jacob,
-> 
-> On Mon, Apr 25, 2022 at 08:34:44AM -0700, Jacob Pan wrote:
-> > Hi Jean-Philippe,
-> > 
-> > On Mon, 25 Apr 2022 15:26:40 +0100, Jean-Philippe Brucker
-> > <jean-philippe@linaro.org> wrote:
-> >   
-> > > On Mon, Apr 25, 2022 at 07:18:36AM -0700, Dave Hansen wrote:  
-> > > > On 4/25/22 06:53, Jean-Philippe Brucker wrote:    
-> > > > > On Sat, Apr 23, 2022 at 07:13:39PM +0800, zhangfei.gao@foxmail.com
-> > > > > wrote:    
-> > > > >>>> On 5.17
-> > > > >>>> fops_release is called automatically, as well as
-> > > > >>>> iommu_sva_unbind_device. On 5.18-rc1.
-> > > > >>>> fops_release is not called, have to manually call close(fd)    
-> > > > >>> Right that's weird    
-> > > > >> Looks it is caused by the fix patch, via mmget, which may add
-> > > > >> refcount of fd.    
-> > > > > Yes indirectly I think: when the process mmaps the queue,
-> > > > > mmap_region() takes a reference to the uacce fd. That reference is
-> > > > > released either by explicit close() or munmap(), or by exit_mmap()
-> > > > > (which is triggered by mmput()). Since there is an mm->fd
-> > > > > dependency, we cannot add a fd->mm dependency, so no
-> > > > > mmget()/mmput() in bind()/unbind().
-> > > > > 
-> > > > > I guess we should go back to refcounted PASIDs instead, to avoid
-> > > > > freeing them until unbind().    
-> > > > 
-> > > > Yeah, this is a bit gnarly for -rc4.  Let's just make sure there's
-> > > > nothing else simple we can do.
-> > > > 
-> > > > How does the IOMMU hardware know that all activity to a given PASID
-> > > > is finished?  That activity should, today, be independent of an mm
-> > > > or a fd's lifetime.    
-> > > 
-> > > In the case of uacce, it's tied to the fd lifetime: opening an
-> > > accelerator queue calls iommu_sva_bind_device(), which sets up the
-> > > PASID context in the IOMMU. Closing the queue calls
-> > > iommu_sva_unbind_device() which destroys the PASID context (after the
-> > > device driver stopped all DMA for this PASID).
-> > >   
-> > For VT-d, it is essentially the same flow except managed by the
-> > individual drivers such as DSA.
-> > If free() happens before unbind(), we deactivate the PASIDs and suppress
-> > faults from the device. When the unbind finally comes, we finalize the
-> > PASID teardown. It seems we have a need for an intermediate state where
-> > PASID is "pending free"?  
-> 
-> Yes we do have that state, though I'm not sure we need to make it explicit
-> in the ioasid allocator.
-> 
-IMHO, making it explicit would fail ioasid_get() on a "pending free" PASID.
-Making free a one-way trip and prevent further complications.
+No, it used to guard follow scenario in timing order,
 
-> Could we move mm_pasid_drop() to __mmdrop() instead of __mmput()?  For Arm
-> we do need to hold the mm_count until unbind(), and mmgrab()/mmdrop() is
-> also part of Lu's rework [1].
-> 
-Yes, I would agree. IIRC, Fenghua's early patch was doing pasid drop
-in mmdrop. Maybe I missed something.
+1) plugin had been handled and mainlink is ready,
 
-> Thanks,
-> Jean
-> 
-> [1]
-> https://lore.kernel.org/linux-iommu/20220421052121.3464100-9-baolu.lu@linux.intel.com/
+2)  userspace hasn't handled the uevent yet and modeset hasn't been called
+
+3) unplugged happen, mainlink be teared down
+
+4) user space start to response to uevent  and try to enable display. 
+(it too late since mainlink had been teared down)
 
 
-Thanks,
-
-Jacob
+>> +               mutex_unlock(&dp_display->event_mutex);
+>> +               return rc;
+>> +       }
+>>
+>>          rc = dp_display_set_mode(dp, &dp_display->dp_mode);
+>>          if (rc) {
