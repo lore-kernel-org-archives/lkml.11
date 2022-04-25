@@ -2,185 +2,378 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B137C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:25:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12E79C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:25:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243402AbiDYQ2e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 12:28:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38074 "EHLO
+        id S236489AbiDYQ2n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 12:28:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243495AbiDYQ1n (ORCPT
+        with ESMTP id S243509AbiDYQ1s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 12:27:43 -0400
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 499B611F95A;
-        Mon, 25 Apr 2022 09:24:39 -0700 (PDT)
+        Mon, 25 Apr 2022 12:27:48 -0400
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 598CF11F95A;
+        Mon, 25 Apr 2022 09:24:44 -0700 (PDT)
 Received: from toolbox.int.toradex.com ([81.221.85.15]) by mrelay.perfora.net
- (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id 0MUYKb-1nIJRE0KXL-00RGvb;
- Mon, 25 Apr 2022 18:24:07 +0200
+ (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id 0M39Wb-1nz2j7463L-00srzL;
+ Mon, 25 Apr 2022 18:24:27 +0200
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
-Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Arnd Bergmann <arnd@arndb.de>,
+Cc:     Oleksandr Suvorov <oleksandr.suvorov@toradex.com>,
         Denys Drozdov <denys.drozdov@toradex.com>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
         Fabio Estevam <festevam@gmail.com>,
         Frank Rowand <frowand.list@gmail.com>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Li Yang <leoyang.li@nxp.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Marek Vasut <marex@denx.de>,
-        Matthias Schiffer <matthias.schiffer@tq-group.com>,
-        Max Krummenacher <max.krummenacher@toradex.com>,
         NXP Linux Team <linux-imx@nxp.com>,
-        Olof Johansson <olof@lixom.net>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
         Rob Herring <robh+dt@kernel.org>,
         Russell King <linux@armlinux.org.uk>,
         Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Tim Harvey <tharvey@gateworks.com>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, soc@kernel.org
-Subject: [PATCH v2 00/14] ARM: dts: imx6ull-colibri: device tree improvements
-Date:   Mon, 25 Apr 2022 18:23:42 +0200
-Message-Id: <20220425162356.176665-1-marcel@ziswiler.com>
+        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 07/14] ARM: dts: imx6ull-colibri: add gpio-line-names
+Date:   Mon, 25 Apr 2022 18:23:49 +0200
+Message-Id: <20220425162356.176665-8-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220425162356.176665-1-marcel@ziswiler.com>
+References: <20220425162356.176665-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:eGf8AHf/y2rPOEx6ITKWN/Lm8bjRyQ2/CVBjXTubcBaZawF+ST7
- hPw8ZPIXlneemNmGEKTjRNGozzuZKjnFii5+A25nEhNgMbY0WEuntlyy1jl+8THdiE5freG
- ZZRWIW/jkiYMOZ1BHlDp2NITsmjjJ7sPu8LFxRYSE85/PyL8b/E6nsekhFvkPXRCaYHItDc
- bEi1hvKn7pMldbbbS4E+g==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:O2pXqmF82Xk=:iWjizIX+np9V8CmtU7EnpO
- DBOu43A1mvZHRETSlOgdH+6nHOpn3Pl40OWDXFkCGrX0DuZMAMItQzE8nRHHlQZvmdgEiJJty
- jsfCaiBVoP/kEifcovRJcwVp+1cybJoXeOkql4zlyDnQAkqLMrM8UgVF7alEH06+CmuO8VMVL
- kxeeDoRqJf8p+1RO6dOL+2C9tl06qx+ow80hvJL5DeNJypxGQcvIjYk7O4a4jpwB3sZObAV17
- oIdWaf5QSiN1XizI6MEO8WvyfNnwkzmYE4wHMVOzhzg0rzVPAIE5ZYfmgzeIeEuQx4qz0sBOc
- 9YPcvLYsIzj++9qOspiykodDUyP5lTmTP2PHk6DR++QMhbR4H4Qr39oFqWmTVvq2qkcssckge
- eq6MF8cNRBzqMZnRtbGR6PYIKOiJoaCdr+BPokGQzbi/W8gcXu2W7GCL9k87qa3UI70ZaTVyJ
- RajFtbIIU8TL74IpXsmNW3NcGeNGKz9ZfS2bw+QjDE/SMC/ifBLzdQXgLRYA0ulqdiN+j0YUx
- XDkeuDgTyoV9LMuvTvlr9WOtYCNiHRZmf01cI124HWWps3+oDZZr87SF1xPXqavRHl3l6GoRm
- O/x4K/FEKb+NJs/P7UBs3b2V4uGi5kjOsm2GN0OZV6dcpDCil2d4/T52F0Ljp3Wto+rSLQQi9
- XVg65mNqrr9A7o3mncRlU7ysFM0M9VaBwNOEZ/4a06Bsss9+YUkN5TQOc440SwsqqKmw=
+X-Provags-ID: V03:K1:66p6PX5wNb2wKe+k/nkJom0jqdDprxuGWpoW1j6+9i8a/UBM3Bf
+ ovH4F+Vh82Q5+tUgzkfz60OKff+TJhCyzTKyr6hrVhwvyDqdWRGTbnJP7iwKlLQt9GKcssG
+ z5weaCT0PBCcQIqGmFaAqYBefaQ4QDIjD+H6JplNCcs75yIVLtBY/BUbu9DRXh3QAU+/NPQ
+ /mUpV08OH5tsj9eS2zE2g==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:S3yHckW9Wvw=:myicn4QsuBW6gSPTvp1HtE
+ pGhl0ziXwLqxQ9W9rymBzsMqrdXgvHUJtzLeCpnkhIMvtEkqYRU2aLNt6wnNfP44DUod0xyBl
+ wsZKGvrX6vD/E3eDP8AOjZ3/nrQQEpPkW8uSO9JtIgvII/l1kB3Meoxcg1ZuvtCLDI8t0gS8t
+ OZdt+UUsuL2hKgCKd6HqVVucA0kaQ0fZp4DkGojhZ8ZXrUWqQYWGfgDDfTTHtCV0XqR2/rPqR
+ czMGYR2Ot81AwCJVTV/K3gLrELpCr1OBOduX3F9b56ZyLUUrjj9ZDWyxEQds2MAwUPauOmqx5
+ 8gJYAdiUhclLaK8lachQfR/8NyjucbbkvkNJI2xQCYHYac0dsGHrA3Z+0RMGQBVHcgWFVPJj3
+ R8d/mx3fhQaQkZQ7c4GExbOuyc32iDJOCSGzfXc8fjagfYAyhKwpDawAl7LTRn0Qd43e+wEP0
+ D7AMgnpxqcAOgtDPL9+H4cPkXt8VyppJgbfV79/8ITyRUE9XQP7ItI9Hri3v9nzzOydHUpdmI
+ BCv2MWs9kL6j6sH4lVqCo+Perk4j3HFSAWjFzHUTQVobbh1l7TDNEkS4a8QAOg+vfUbARi3+c
+ bN5ClldTUKQJIs/y840qRlVqLhB0XjW/pC4nYvodrH6RsNTRqFqA8lr/G3C6WSnP5Ii+ZVgEB
+ pj+kiFeNXRqDySoF+v3uWd51xbXZPe/aqrguwPoR/hgXuPtef5utIR7z2KMiOO9G770rH1POZ
+ 81TuZe/FQ0zSgmlg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+From: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
 
+Add GPIO line names on module-level. Those are all GPIOs that a user
+might use on his custom carrier board. If more meaningful names are
+available on the carrier board, the user can overwrite the line names
+in the carrier board-level device tree.
 
-This is a general update of the Colibri iMX6ULL device tree files.
+Signed-off-by: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
+Signed-off-by: Denys Drozdov <denys.drozdov@toradex.com>
+Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+---
 
-The Toradex Colibri family is composed of a SoM that can be plugged on
-various carrier boards, with carrier boards allowing multiple optional
-accessories (e.g. display, camera, ...).
+(no changes since v1)
 
-The device tree sources are structured into a SoM dtsi and a carrier dts
-which then includes the SoM dtsi. The SoM dtsi defines and enables the
-functionality self-contained on the SoM and prepares for the
-functionality provided by the carrier HW or accessories so that the
-carrier dts then can enable or amend nodes provided. Accessories are
-enabled in overlays depending on HW configuration.
+ .../arm/boot/dts/imx6ull-colibri-nonwifi.dtsi | 137 ++++++++++++++++++
+ arch/arm/boot/dts/imx6ull-colibri-wifi.dtsi   | 136 +++++++++++++++++
+ 2 files changed, 273 insertions(+)
 
-Please find the following colibri-imx6ull device trees improvements:
-
-- MMC/SD
-The original Colibri specification only defined 3.3 volt TTL signaling
-and relied on external on-carrier pull-ups for the SD_DATA[0..3] lines.
-The latest carrier boards like Iris V2 on the other hand are now UHS-I
-compliant by leaving such external on-carrier pull-ups away relying on
-module- or even SoC-level ones which pull up to resp. signaling voltage.
-In such cases, the carrier board-level device tree may explicitly delete
-the no-1-8-v property to enable full UHS-I support.
-Also, fix SD/MMC regulator for the carrier boards using UHS-I modes.
-
-- FEC
-Provide a proper phy-supply for the FEC, actually switched by the 50 Mhz
-RMII interface clock using a regulator-fixed-clock that is now properly
-stated. The reference commit for such regulator can be found at commit
-8959e5324485 ("regulator: fixed: add possibility to enable by clock").
-
-- I2C
-Switched on 22 kOhm pull-ups and lower the I2C frequency to 40 kHz to
-get more reliable communication.
-
-- Atmel Touchscreen
-The Toradex 7" Capacitive and 10" LVDS touch screens are Atmel MXT
-peripherals available on the I2C bus for touchscreen events. Add
-atmel_mxt_ts node to the module-level device tree. Also, provide pinmux
-configuration for the INT/RST inputs from SODIMM pins 106/107 for most
-carrier boards or an external touchscreen adapter inputs configured to
-SODIMM pins 28/30.
-
-Changes in v2:
-- Fixed pinctrl node names as suggested by Shawn.
-- Fixed long line as pointed out by Rob's bot.
-- Added V3 to Colibri Evaluation Board as done elsewhere.
-- Fix alphabetical node order as suggested by Shawn.
-- Dropped [PATCH v1 02/14] ARM: dts: imx6ull-colibri: fix vqmmc
-  regulator which already got applied by Shawn. Thanks!
-- New commit with pinctrl node name improvements as suggested by Shawn.
-
-Denys Drozdov (5):
-  ARM: dts: imx6ull-colibri: add touchscreen device nodes
-  ARM: dts: imx6ull-colibri: update device trees to support overlays
-  dt-bindings: arm: fsl: add toradex,colibri-imx6ull
-  ARM: dts: imx6ull-colibri: add support for toradex iris carrier boards
-  ARM: dts: imx6ull-colibri: add support for toradex aster carrier
-    boards
-
-Marcel Ziswiler (4):
-  ARM: dts: imx6ull-colibri: fix nand bch geometry
-  ARM: dts: imx6ull-colibri: add/update some comments
-  ARM: dts: imx6ull-colibri: move gpio-keys node to som dtsi
-  ARM: dts: imx6ull-colibri: improve pinctrl node names
-
-Max Krummenacher (1):
-  ARM: dts: imx6ull-colibri: change touch i2c parameters
-
-Oleksandr Suvorov (1):
-  ARM: dts: imx6ull-colibri: add gpio-line-names
-
-Philippe Schenker (3):
-  ARM: dts: imx6ull-colibri: use pull-down for adc pins
-  ARM: dts: imx6ull-colibri: add phy-supply to fec
-  ARM: dts: imx6ull-colibri: update usdhc1 pixmux and signaling
-
- .../devicetree/bindings/arm/fsl.yaml          |  25 +-
- arch/arm/boot/dts/Makefile                    |   9 +
- arch/arm/boot/dts/imx6ull-colibri-aster.dts   |  20 ++
- arch/arm/boot/dts/imx6ull-colibri-aster.dtsi  | 145 +++++++++
- .../boot/dts/imx6ull-colibri-emmc-aster.dts   |  17 ++
- .../boot/dts/imx6ull-colibri-emmc-iris-v2.dts |  17 ++
- .../boot/dts/imx6ull-colibri-emmc-iris.dts    |  17 ++
- .../dts/imx6ull-colibri-emmc-nonwifi.dtsi     |   8 +-
- arch/arm/boot/dts/imx6ull-colibri-eval-v3.dts |   6 +-
- .../arm/boot/dts/imx6ull-colibri-eval-v3.dtsi |  63 +---
- arch/arm/boot/dts/imx6ull-colibri-iris-v2.dts |  28 ++
- .../arm/boot/dts/imx6ull-colibri-iris-v2.dtsi |  27 ++
- arch/arm/boot/dts/imx6ull-colibri-iris.dts    |  20 ++
- arch/arm/boot/dts/imx6ull-colibri-iris.dtsi   | 132 ++++++++
- .../arm/boot/dts/imx6ull-colibri-nonwifi.dtsi | 145 ++++++++-
- .../boot/dts/imx6ull-colibri-wifi-aster.dts   |  20 ++
- .../boot/dts/imx6ull-colibri-wifi-eval-v3.dts |   4 +-
- .../boot/dts/imx6ull-colibri-wifi-iris-v2.dts |  28 ++
- .../boot/dts/imx6ull-colibri-wifi-iris.dts    |  20 ++
- arch/arm/boot/dts/imx6ull-colibri-wifi.dtsi   | 144 ++++++++-
- arch/arm/boot/dts/imx6ull-colibri.dtsi        | 285 ++++++++++++------
- 21 files changed, 1008 insertions(+), 172 deletions(-)
- create mode 100644 arch/arm/boot/dts/imx6ull-colibri-aster.dts
- create mode 100644 arch/arm/boot/dts/imx6ull-colibri-aster.dtsi
- create mode 100644 arch/arm/boot/dts/imx6ull-colibri-emmc-aster.dts
- create mode 100644 arch/arm/boot/dts/imx6ull-colibri-emmc-iris-v2.dts
- create mode 100644 arch/arm/boot/dts/imx6ull-colibri-emmc-iris.dts
- create mode 100644 arch/arm/boot/dts/imx6ull-colibri-iris-v2.dts
- create mode 100644 arch/arm/boot/dts/imx6ull-colibri-iris-v2.dtsi
- create mode 100644 arch/arm/boot/dts/imx6ull-colibri-iris.dts
- create mode 100644 arch/arm/boot/dts/imx6ull-colibri-iris.dtsi
- create mode 100644 arch/arm/boot/dts/imx6ull-colibri-wifi-aster.dts
- create mode 100644 arch/arm/boot/dts/imx6ull-colibri-wifi-iris-v2.dts
- create mode 100644 arch/arm/boot/dts/imx6ull-colibri-wifi-iris.dts
-
+diff --git a/arch/arm/boot/dts/imx6ull-colibri-nonwifi.dtsi b/arch/arm/boot/dts/imx6ull-colibri-nonwifi.dtsi
+index 5e55a6c820bc..60f169227ad9 100644
+--- a/arch/arm/boot/dts/imx6ull-colibri-nonwifi.dtsi
++++ b/arch/arm/boot/dts/imx6ull-colibri-nonwifi.dtsi
+@@ -12,6 +12,143 @@ memory@80000000 {
+ 	};
+ };
+ 
++&gpio1 {
++	gpio-line-names = "SODIMM_8",
++			  "SODIMM_6",
++			  "SODIMM_129",
++			  "SODIMM_89",
++			  "SODIMM_19",
++			  "SODIMM_21",
++			  "UNUSABLE_SODIMM_180",
++			  "UNUSABLE_SODIMM_184",
++			  "SODIMM_4",
++			  "SODIMM_2",
++			  "SODIMM_106",
++			  "SODIMM_71",
++			  "SODIMM_23",
++			  "SODIMM_31",
++			  "SODIMM_99",
++			  "SODIMM_102",
++			  "SODIMM_33",
++			  "SODIMM_35",
++			  "SODIMM_25",
++			  "SODIMM_27",
++			  "SODIMM_36",
++			  "SODIMM_38",
++			  "SODIMM_32",
++			  "SODIMM_34",
++			  "SODIMM_135",
++			  "SODIMM_77",
++			  "SODIMM_100",
++			  "SODIMM_186",
++			  "SODIMM_196",
++			  "SODIMM_194";
++};
++
++&gpio2 {
++	gpio-line-names = "SODIMM_55",
++			  "SODIMM_63",
++			  "SODIMM_178",
++			  "SODIMM_188",
++			  "SODIMM_73",
++			  "SODIMM_30",
++			  "SODIMM_67",
++			  "SODIMM_104",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "SODIMM_190",
++			  "SODIMM_47",
++			  "SODIMM_192",
++			  "SODIMM_49",
++			  "SODIMM_51",
++			  "SODIMM_53";
++};
++
++&gpio3 {
++	gpio-line-names = "SODIMM_56",
++			  "SODIMM_44",
++			  "SODIMM_68",
++			  "SODIMM_82",
++			  "",
++			  "SODIMM_76",
++			  "SODIMM_70",
++			  "SODIMM_60",
++			  "SODIMM_58",
++			  "SODIMM_78",
++			  "SODIMM_72",
++			  "SODIMM_80",
++			  "SODIMM_46",
++			  "SODIMM_62",
++			  "SODIMM_48",
++			  "SODIMM_74",
++			  "SODIMM_50",
++			  "SODIMM_52",
++			  "SODIMM_54",
++			  "SODIMM_66",
++			  "SODIMM_64",
++			  "SODIMM_57",
++			  "SODIMM_61",
++			  "SODIMM_29",
++			  "SODIMM_37",
++			  "SODIMM_88",
++			  "SODIMM_86",
++			  "SODIMM_92",
++			  "SODIMM_90";
++};
++
++&gpio4 {
++	gpio-line-names = "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "SODIMM_59",
++			  "",
++			  "",
++			  "SODIMM_133",
++			  "",
++			  "SODIMM_28",
++			  "SODIMM_75",
++			  "SODIMM_96",
++			  "SODIMM_81",
++			  "SODIMM_94",
++			  "SODIMM_101",
++			  "SODIMM_103",
++			  "SODIMM_79",
++			  "SODIMM_97",
++			  "SODIMM_69",
++			  "SODIMM_98",
++			  "SODIMM_85",
++			  "SODIMM_65";
++};
++
++&gpio5 {
++	gpio-line-names = "SODIMM_43",
++			  "SODIMM_45",
++			  "SODIMM_137",
++			  "SODIMM_95",
++			  "SODIMM_107",
++			  "SODIMM_131",
++			  "SODIMM_93",
++			  "",
++			  "SODIMM_138",
++			  "",
++			  "SODIMM_105",
++			  "SODIMM_127";
++};
++
+ &iomuxc {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_gpio1 &pinctrl_gpio2 &pinctrl_gpio3
+diff --git a/arch/arm/boot/dts/imx6ull-colibri-wifi.dtsi b/arch/arm/boot/dts/imx6ull-colibri-wifi.dtsi
+index 6e8ddb07e11d..3c47cfa7afa5 100644
+--- a/arch/arm/boot/dts/imx6ull-colibri-wifi.dtsi
++++ b/arch/arm/boot/dts/imx6ull-colibri-wifi.dtsi
+@@ -23,6 +23,142 @@ &cpu0 {
+ 	clock-frequency = <792000000>;
+ };
+ 
++&gpio1 {
++	gpio-line-names = "SODIMM_8",
++			  "SODIMM_6",
++			  "SODIMM_129",
++			  "",
++			  "SODIMM_19",
++			  "SODIMM_21",
++			  "UNUSABLE_SODIMM_180",
++			  "UNUSABLE_SODIMM_184",
++			  "SODIMM_4",
++			  "SODIMM_2",
++			  "SODIMM_106",
++			  "SODIMM_71",
++			  "SODIMM_23",
++			  "SODIMM_31",
++			  "SODIMM_99",
++			  "SODIMM_102",
++			  "SODIMM_33",
++			  "SODIMM_35",
++			  "SODIMM_25",
++			  "SODIMM_27",
++			  "SODIMM_36",
++			  "SODIMM_38",
++			  "SODIMM_32",
++			  "SODIMM_34",
++			  "SODIMM_135",
++			  "SODIMM_77",
++			  "SODIMM_100",
++			  "SODIMM_186",
++			  "SODIMM_196",
++			  "SODIMM_194";
++};
++
++&gpio2 {
++	gpio-line-names = "SODIMM_55",
++			  "SODIMM_63",
++			  "SODIMM_178",
++			  "SODIMM_188",
++			  "SODIMM_73",
++			  "SODIMM_30",
++			  "SODIMM_67",
++			  "SODIMM_104",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "SODIMM_190",
++			  "SODIMM_47",
++			  "SODIMM_192",
++			  "SODIMM_49",
++			  "SODIMM_51",
++			  "SODIMM_53";
++};
++
++&gpio3 {
++	gpio-line-names = "SODIMM_56",
++			  "SODIMM_44",
++			  "SODIMM_68",
++			  "SODIMM_82",
++			  "",
++			  "SODIMM_76",
++			  "SODIMM_70",
++			  "SODIMM_60",
++			  "SODIMM_58",
++			  "SODIMM_78",
++			  "SODIMM_72",
++			  "SODIMM_80",
++			  "SODIMM_46",
++			  "SODIMM_62",
++			  "SODIMM_48",
++			  "SODIMM_74",
++			  "SODIMM_50",
++			  "SODIMM_52",
++			  "SODIMM_54",
++			  "SODIMM_66",
++			  "SODIMM_64",
++			  "SODIMM_57",
++			  "SODIMM_61",
++			  "SODIMM_29",
++			  "SODIMM_37",
++			  "SODIMM_88",
++			  "SODIMM_86",
++			  "SODIMM_92",
++			  "SODIMM_90";
++};
++
++&gpio4 {
++	gpio-line-names = "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "SODIMM_59",
++			  "",
++			  "",
++			  "SODIMM_133",
++			  "",
++			  "SODIMM_28",
++			  "SODIMM_75",
++			  "SODIMM_96",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "SODIMM_69",
++			  "SODIMM_98",
++			  "SODIMM_85",
++			  "SODIMM_65";
++};
++
++&gpio5 {
++	gpio-line-names = "SODIMM_43",
++			  "SODIMM_45",
++			  "SODIMM_137",
++			  "SODIMM_95",
++			  "SODIMM_107",
++			  "SODIMM_131",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "SODIMM_105";
++};
++
+ &iomuxc {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_gpio1 &pinctrl_gpio2 &pinctrl_gpio3
 -- 
 2.35.1
 
