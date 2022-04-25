@@ -2,180 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91B84C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 08:01:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44B42C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 08:01:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229656AbiDYIEn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 04:04:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52066 "EHLO
+        id S234718AbiDYIEw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 04:04:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235034AbiDYICl (ORCPT
+        with ESMTP id S231393AbiDYIEb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 04:02:41 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13D7C2FE6C
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 00:59:35 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id z19so4123811edx.9
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 00:59:35 -0700 (PDT)
+        Mon, 25 Apr 2022 04:04:31 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4024816584
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 01:01:27 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id i27so27990845ejd.9
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 01:01:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=rmQFdUllbHaIXvTF9BqWURgdXwe6MDDC4tLyjCYMhRs=;
-        b=FERFQB41XNDl23ARhaw4RmRKJDQBd3z1i9sKLaaqpjfwXMtWowdri0COVuWdGUsiQA
-         NBcuNXaQrJZFme9N+pKuuCWcS9cBPaQ3E2QmgYknFXWSSh/9diD2yjnoNHO+gsMjjX7s
-         h1wJUYwNFLUtJvMUm6Xo5Th5iGEvqCGTOibcgkXhSWAE+sAiHACw6Fusb8dShHa7608A
-         C0hUEKXNTfCopkSh1AtyLp02KUi8X1i3dmx9Ky7cAX0f3ZJcIedhJjSFUnF3m62FfQZb
-         GcY7wb1vcql3N6Ujiy81sknBVTIOoK1/PQZKjTMC4oRomTGnUum/dC3oeNn4385KeUkc
-         VFzA==
+        bh=vUPD6VhzeB7zQVubYjnWfebnf/uKU9eOqTOFGR1Ibsc=;
+        b=lvCvkXXeSMP0tsuNy/214D6eqt9aD4AP4kyhlANYk6wvP/lfyVKxMOKuupaMEawFHW
+         e7XYuzXCH6SetnjxuswZtomM+a4U9wp1eLRzOvM1OAiLy421XGtZFX4rL1lv2SUrfKZF
+         jt1BZzSupgtwCYaaUCoK/RDDfoxh3mgcvI0Wf7eDKK1BFOkHogXmTCxFCAtrx1AxgFo4
+         mWIIPYe2dC6JSucSpJd4VRVTlRQKGfSYrHMTMkGGaCm7m654XI9AMfJymeUr77hXZlOl
+         9AGSaTOp3dUUsc8xlE2F35q+P4+qHEMXPMzxAHJhFWjBCef0mzEh0UeZSu45AvV23xSa
+         3XiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=rmQFdUllbHaIXvTF9BqWURgdXwe6MDDC4tLyjCYMhRs=;
-        b=GCarA+21953FK4PSs0ojQZOHYCG3+cf/PUxjRLWV/7MAi3y16rd8+yctzkDNPsrzRJ
-         EOQb5scM6rl9ukk9u6GcVlBa1Jm35DNMKg+mVj6okigIsD+PBjFqrQZSPWHhfkYvepbO
-         qcM8LqcB2LmBPqdzvKOXPl7QdHSelrpFvVMsTvnPd0b9a+oEHsZr5HoURR8q7vzOtxYT
-         CMZtHtvOkkwcrOC4TMngUlb6NxyGwaBWS3hjMK4q/eSeGMENwPDci+awOkP8TLuBiw2j
-         GX1I1KKSuQ6SPQswhr+WDPa3tRItfDcUXw2BuXfaitnp165onoZUaZm1M0C1cQi+BiBH
-         C3RQ==
-X-Gm-Message-State: AOAM533UHTh8yzT4Jd2p4GjhZ/RiRQP1ZMEWUPr3ren+S0tXkuAUETfk
-        1j0+xOgfFs/qFlpmG+bqRFKRgg==
-X-Google-Smtp-Source: ABdhPJzn4cDDxnThKF/U8ABvLE3F0JvmqfaFRO7pOTaHwgeHEgObTl8f5lJSHr4Ocj+AgQifnNjOgA==
-X-Received: by 2002:a05:6402:42d4:b0:416:5cac:a9a0 with SMTP id i20-20020a05640242d400b004165caca9a0mr17658385edc.86.1650873573607;
-        Mon, 25 Apr 2022 00:59:33 -0700 (PDT)
+        bh=vUPD6VhzeB7zQVubYjnWfebnf/uKU9eOqTOFGR1Ibsc=;
+        b=4rilcZCPyoErIIl50Rkb2VjwfBm4xxtcghHxWh/F4w5yD22Q9oGFqGzwyTDYAzRTYn
+         pbe165gAs3PnKot0ybrtpEBg4dsTRXC5uUQhi+RB2GQV/4yetEpH8VbUvcfjEGPyBOhc
+         fjgIUshULv0g9wq0OQPPtUtFlCmp8b4wrcuNpw3s3PjV8S2UVysu3vCBRuY1D94psfu7
+         ZDg931JMJLCEiX8RWRpqSCExyaC3EmG0hnXF2n4kZZYpNe6rkGYKDl2OlEmyZeJIi26Q
+         /SaHqHLuNNm2cqAb/WhEGZ5t8DWtoRw5tx3OU5GncPHX26r7J75ww1tu0zteUQ4Zfbsy
+         pJPA==
+X-Gm-Message-State: AOAM530gknA0C3mbuZ/hroX0rcxWY3lKtN/AKZRNv88BNWlvDd1HPGzQ
+        LG9/i4C4wQe/mJH1OJtvZEgAiQ==
+X-Google-Smtp-Source: ABdhPJz/QT1MiqhW4PVFNiEaRMSLsnIjsG6Zz64ueE1ZdzHZK45v/bDUNqYA5+0xSFwuO/sBTSEO0w==
+X-Received: by 2002:a17:907:1b05:b0:6f0:18d8:7be0 with SMTP id mp5-20020a1709071b0500b006f018d87be0mr15148939ejc.561.1650873685852;
+        Mon, 25 Apr 2022 01:01:25 -0700 (PDT)
 Received: from [192.168.0.240] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id o2-20020a056402438200b0041fb0f2e155sm154517edc.20.2022.04.25.00.59.32
+        by smtp.gmail.com with ESMTPSA id g16-20020a170906521000b006d58773e992sm3351837ejm.188.2022.04.25.01.01.24
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Apr 2022 00:59:33 -0700 (PDT)
-Message-ID: <d7aefec5-a51d-00ba-10d6-79c90fbc8eb4@linaro.org>
-Date:   Mon, 25 Apr 2022 09:59:32 +0200
+        Mon, 25 Apr 2022 01:01:25 -0700 (PDT)
+Message-ID: <fe4b42c9-f747-145a-5fce-9be6fc3e19af@linaro.org>
+Date:   Mon, 25 Apr 2022 10:01:24 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH] drivers: nfc: nfcmrvl: reorder destructive operations in
- nfcmrvl_nci_unregister_dev to avoid bugs
+Subject: Re: [PATCH v3 2/2] regulator: richtek,rt4801: parse GPIOs per
+ regulator
 Content-Language: en-US
-To:     Duoming Zhou <duoming@zju.edu.cn>, linux-kernel@vger.kernel.org
-Cc:     netdev@vger.kernel.org, broonie@kernel.org,
-        akpm@linux-foundation.org, alexander.deucher@amd.com,
-        gregkh@linuxfoundation.org, davem@davemloft.net, linma@zju.edu.cn
-References: <20220425031002.56254-1-duoming@zju.edu.cn>
+To:     ChiYuan Huang <u0084500@gmail.com>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        ChiYuan Huang <cy_huang@richtek.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+References: <20220425072455.27356-1-krzysztof.kozlowski@linaro.org>
+ <20220425072455.27356-3-krzysztof.kozlowski@linaro.org>
+ <20220425075812.GA29439@cyhuang-hp-elitebook-840-g3.rt>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220425031002.56254-1-duoming@zju.edu.cn>
+In-Reply-To: <20220425075812.GA29439@cyhuang-hp-elitebook-840-g3.rt>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25/04/2022 05:10, Duoming Zhou wrote:
-> There are destructive operations such as nfcmrvl_fw_dnld_abort and
-> gpio_free in nfcmrvl_nci_unregister_dev. The resources such as firmware,
-> gpio and so on could be destructed while the upper layer functions such as
-> nfcmrvl_fw_dnld_start and nfcmrvl_nci_recv_frame is executing, which leads
-> to double-free, use-after-free and null-ptr-deref bugs.
+On 25/04/2022 09:58, ChiYuan Huang wrote:
+>>  
+>> -	priv->enable_gpios = devm_gpiod_get_array_optional(&i2c->dev, "enable", GPIOD_OUT_HIGH);
+>> -	if (IS_ERR(priv->enable_gpios)) {
+>> -		dev_err(&i2c->dev, "Failed to get gpios\n");
+>> -		return PTR_ERR(priv->enable_gpios);
+>> +	for (i = 0; i < DSV_OUT_MAX; i++) {
+>> +		priv->enable_gpios[i] = devm_gpiod_get_index_optional(&i2c->dev,
+>> +								      "enable",
+>> +								      i,
+>> +								      GPIOD_OUT_HIGH);
+>> +		if (IS_ERR(priv->enable_gpios[i])) {
+>> +			dev_err(&i2c->dev, "Failed to get gpios\n");
+>> +			return PTR_ERR(priv->enable_gpios[i]);
+>> +		}
+>>  	}
+> You can directly removed all about 'enable-gpios' in probe phase.
+> Just keep of_parse_cb to get per regulator 'enable' gpio. 
 
-You need to correct the subject prefix because it does not describe the
-subsystem (git log oneline --).
-
-> 
-> There are three situations that could lead to double-free bugs.
-> 
-> The first situation is shown below:
-> 
->    (Thread 1)                 |      (Thread 2)
-> nfcmrvl_fw_dnld_start         |
->  ...                          |  nfcmrvl_nci_unregister_dev
->  release_firmware()           |   nfcmrvl_fw_dnld_abort
->   kfree(fw) //(1)             |    fw_dnld_over
->                               |     release_firmware
->   ...                         |      kfree(fw) //(2)
->                               |     ...
-> 
-> The second situation is shown below:
-> 
->    (Thread 1)                 |      (Thread 2)
-> nfcmrvl_fw_dnld_start         |
->  ...                          |
->  mod_timer                    |
->  (wait a time)                |
->  fw_dnld_timeout              |  nfcmrvl_nci_unregister_dev
->    fw_dnld_over               |   nfcmrvl_fw_dnld_abort
->     release_firmware          |    fw_dnld_over
->      kfree(fw) //(1)          |     release_firmware
->      ...                      |      kfree(fw) //(2)
-> 
-> The third situation is shown below:
-> 
->        (Thread 1)               |       (Thread 2)
-> nfcmrvl_nci_recv_frame          |
->  if(..->fw_download_in_progress)|
->   nfcmrvl_fw_dnld_recv_frame    |
->    queue_work                   |
->                                 |
-> fw_dnld_rx_work                 | nfcmrvl_nci_unregister_dev
->  fw_dnld_over                   |  nfcmrvl_fw_dnld_abort
->   release_firmware              |   fw_dnld_over
->    kfree(fw) //(1)              |    release_firmware
->                                 |     kfree(fw) //(2)
-> 
-> The firmware struct is deallocated in position (1) and deallocated
-> in position (2) again.
-> 
-> The crash trace triggered by POC is like below:
-> 
-> [  122.640457] BUG: KASAN: double-free or invalid-free in fw_dnld_over+0x28/0xf0
-> [  122.640457] Call Trace:
-> [  122.640457]  <TASK>
-> [  122.640457]  kfree+0xb0/0x330
-> [  122.640457]  fw_dnld_over+0x28/0xf0
-> [  122.640457]  nfcmrvl_nci_unregister_dev+0x61/0x70
-> [  122.640457]  nci_uart_tty_close+0x87/0xd0
-> [  122.640457]  tty_ldisc_kill+0x3e/0x80
-> [  122.640457]  tty_ldisc_hangup+0x1b2/0x2c0
-> [  122.640457]  __tty_hangup.part.0+0x316/0x520
-> [  122.640457]  tty_release+0x200/0x670
-> [  122.640457]  __fput+0x110/0x410
-> [  122.640457]  task_work_run+0x86/0xd0
-> [  122.640457]  exit_to_user_mode_prepare+0x1aa/0x1b0
-> [  122.640457]  syscall_exit_to_user_mode+0x19/0x50
-> [  122.640457]  do_syscall_64+0x48/0x90
-> [  122.640457]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> [  122.640457] RIP: 0033:0x7f68433f6beb
-> 
-> What's more, there are also use-after-free and null-ptr-deref bugs
-> in nfcmrvl_fw_dnld_start. If we deallocate firmware struct, gpio or
-> set null to the members of priv->fw_dnld in nfcmrvl_nci_unregister_dev,
-> then, we dereference firmware, gpio or the members of priv->fw_dnld in
-> nfcmrvl_fw_dnld_start, the UAF or NPD bugs will happen.
-> 
-> This patch reorders destructive operations after nci_unregister_device
-> to avoid the double-free, UAF and NPD bugs, as nci_unregister_device
-> is well synchronized and won't return if there is a running routine.
-> This was mentioned in commit 3e3b5dfcd16a ("NFC: reorder the logic in
-> nfc_{un,}register_device").
-> 
-> Fixes: 3194c6870158 ("NFC: nfcmrvl: add firmware download support")
-> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-> Reviewed-by: Lin Ma <linma@zju.edu.cn>
-
-It's the first submission, how this review appeared?
-
-On the other hand, you already sent something similar, so is it a v2? I
-am sorry but this is very confusing. Looks like
-https://lore.kernel.org/all/20220425005718.33639-1-duoming@zju.edu.cn/
-but there is no changelog and commit description is different.
-
-Please read:
-https://elixir.bootlin.com/linux/v5.18-rc4/source/Documentation/process/submitting-patches.rst
-
-
-> ---
->  drivers/nfc/nfcmrvl/main.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
+We cannot, it would break the ABI and make the change backwards
+incompatible.
 
 
 Best regards,
