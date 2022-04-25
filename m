@@ -2,224 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29C98C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 08:55:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4865C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 08:55:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239855AbiDYI6U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 04:58:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54192 "EHLO
+        id S230257AbiDYI6z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 04:58:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240033AbiDYI5n (ORCPT
+        with ESMTP id S236727AbiDYI6j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 04:57:43 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE6CB860
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 01:54:34 -0700 (PDT)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23P7WthB002630;
-        Mon, 25 Apr 2022 08:54:27 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : from : to : cc : references : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=dCVPKYv5VNMsz/Nqd9o08lQyf9PDUaiErrxL1ARkM5c=;
- b=X5J+3Wd1J1/pI+ccqjVVy6ZH/MDhAWXFJO31Xv+d4Mv2i8DPWGm+TNDdRNamStr0ncTd
- izsHlPeF+8oKef5gC82si3dZw1MQ6H+4C6TPhkb3nWdKpe0HxEKRg9WBeugK/I1sxjqv
- yj2JwuR4LollCe5qWrHo06GE2z+Zf++uSGCb3h5dvPoHq+AYbB18WKXsnc60P52nC2l2
- eadpefUTsYw9klr7deRz2pJ/LP26sKKv3gU871DG1CFXaH1Rxu0lJFL7WatDEpsJy+HU
- lvhQYZyZHuSl6lo+oKVRSNvz85Avs7bTNm6Y0uTAbDEsSTBDp2YTir6eZFKURhbk3VaI 1w== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fnqbrhkmx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 25 Apr 2022 08:54:27 +0000
-Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23P8ldrr003350;
-        Mon, 25 Apr 2022 08:54:26 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fnqbrhkm5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 25 Apr 2022 08:54:26 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23P8nSs5032381;
-        Mon, 25 Apr 2022 08:54:24 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma01fra.de.ibm.com with ESMTP id 3fm938spq9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 25 Apr 2022 08:54:23 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23P8sLDg52625850
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 25 Apr 2022 08:54:21 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A2E2BA405B;
-        Mon, 25 Apr 2022 08:54:21 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 41539A4054;
-        Mon, 25 Apr 2022 08:54:17 +0000 (GMT)
-Received: from [9.43.95.32] (unknown [9.43.95.32])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 25 Apr 2022 08:54:16 +0000 (GMT)
-Message-ID: <2f716f45-f8c6-a078-6cfc-b4fb5ef74cd5@linux.ibm.com>
-Date:   Mon, 25 Apr 2022 14:24:15 +0530
+        Mon, 25 Apr 2022 04:58:39 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62EDF13DCA
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 01:55:32 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id dk23so4923203ejb.8
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 01:55:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=IcmGf7R5oIWNJUW6YdAgXljamJfNzgr+F6RCVbOHK3E=;
+        b=lnUMKK+1OUk9P/nASz5GkwqePWMvnfPG+lQJXZnZkCmVP4gQrMoFLGORFc2hEqvtZK
+         sAb2sZQC8Fdx16dteLPlaMVwYzc07q+My98+bFhcwvZ2Tc4T7zlDoq0YuBAr5W1MeCIW
+         4HghiKVjdKGLQp+/LutqOTTazYWT1v2za6tbR00yDrK036UXNGvWVe7auEC2ckESqqwh
+         Dhz9QIdvpTrJvAJ+AMtG21UdzhQVOK56D5HzpmwzLXsAzKxwunKrBjGFXE2VfsxRbUzv
+         cv7XDo2P/2VaJtvuBDJW9PSyA3dqjQ4w/LrPHrbvk3rc+IC4oI6yB0nDHKHRS+j+Ddif
+         hAOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=IcmGf7R5oIWNJUW6YdAgXljamJfNzgr+F6RCVbOHK3E=;
+        b=weI7jHRZgVBI2wHGsO0xio9w/IVPiTcV6id5wgRlzW0AHD2fHCr4A2WBEUPN6vKh3t
+         saXLeFiDCv/69lPgbYnRZQcX7SdwzKtQJo5ieboXsYj6xMI7oB/vMDw2Iyu2JI1lONdi
+         h8VFUd4XCOVU2bYSOTb19LkpHQnJDKJ8/cgTjGTS2MH6QcI/qfeSe2Tqm5wYpH8moJCS
+         1fm/p/ZyVZgIetElpwrOcVRCA5FIjvX1lXanlnvwgbOJGlPMdFMUMKT66cRmxDGIXTMo
+         USLD4e5emCOy45zsPbro6r/bTb5IybNgVAxKEZy5SgV91URQ/8PODjSFPHcTz4c75TcJ
+         GZGQ==
+X-Gm-Message-State: AOAM533a6q0URrfwc68l7kuhPOmksXl+gFidR/frfejiQfeEmbp6igAJ
+        GTLeztCubl1cn/WnC0XDHeShIA==
+X-Google-Smtp-Source: ABdhPJzVqoCmpWy0gNz3RLiWwx/wLVbIA8e6fPMteVvo0inali36p0hVI/pVtBzsJGwIy/owIIIRYw==
+X-Received: by 2002:a17:906:49d4:b0:6d6:e5ec:9a23 with SMTP id w20-20020a17090649d400b006d6e5ec9a23mr15443661ejv.79.1650876930923;
+        Mon, 25 Apr 2022 01:55:30 -0700 (PDT)
+Received: from [192.168.0.240] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id c5-20020a170906d18500b006ce371f09d4sm3368048ejz.57.2022.04.25.01.55.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 Apr 2022 01:55:30 -0700 (PDT)
+Message-ID: <7873f0fa-25c3-191f-5096-3ceb9afd50cc@linaro.org>
+Date:   Mon, 25 Apr 2022 10:55:29 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v2 0/5] mm: demotion: Introduce new node state
- N_DEMOTION_TARGETS
+ Thunderbird/91.7.0
+Subject: Re: [PATCH V4 01/14] dt-bindings: cpufreq: mediatek: Add MediaTek CCI
+ property
 Content-Language: en-US
-From:   Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>
-To:     "ying.huang@intel.com" <ying.huang@intel.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Wei Xu <weixugc@google.com>, Yang Shi <shy828301@gmail.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Davidlohr Bueso <dave@stgolabs.net>
-Cc:     Linux MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Greg Thelen <gthelen@google.com>,
-        MichalHocko <mhocko@kernel.org>,
-        Brice Goglin <brice.goglin@gmail.com>
-References: <CAAPL-u_pSWD6U0yQ8Ws+_Yfb_3ZEmNXJsYcRJjAFBkyDk=nq8g@mail.gmail.com>
- <ea73f6fda9cafdd0cb6ba8351139e6f4b47354a8.camel@intel.com>
- <CAAPL-u-aeceXFUNdok_GYb2aLhZa0zBBuSqHxFznQob3PbJt7Q@mail.gmail.com>
- <a80647053bba44623094995730e061f0e6129677.camel@intel.com>
- <CAAPL-u89Jxutu1VH0LnO5VGdMbkLvc2M9eapuwP-y9oG9QSsrA@mail.gmail.com>
- <610ccaad03f168440ce765ae5570634f3b77555e.camel@intel.com>
- <CAAPL-u9ktM82zAW_OVwqTmQsr-XC8XOPmAsjoiCLo18cxUWA=A@mail.gmail.com>
- <8e31c744a7712bb05dbf7ceb2accf1a35e60306a.camel@intel.com>
- <CAAPL-u9uP+FUh7Yn0ByOECo+EP32ZABnCvNPKQB9JCA68VHEqQ@mail.gmail.com>
- <78b5f4cfd86efda14c61d515e4db9424e811c5be.camel@intel.com>
- <YmKKwXa2XI/nwac0@li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com>
- <200e95cf36c1642512d99431014db8943fed715d.camel@intel.com>
- <8735i1zurt.fsf@linux.ibm.com>
- <ea9d01e16de655af85c0041c96964d83f59fb6d2.camel@intel.com>
- <c576a992-5a50-5dd3-644c-a45d4338fc85@linux.ibm.com>
-In-Reply-To: <c576a992-5a50-5dd3-644c-a45d4338fc85@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: UDs4WcZScv8QbXAcsoc__p8Qhwe0gbe8
-X-Proofpoint-GUID: QSYIHtWzkuqkKtx8Or5MBtdIJfmM3UPw
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-25_05,2022-04-22_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- mlxlogscore=999 mlxscore=0 bulkscore=0 priorityscore=1501
- lowpriorityscore=0 suspectscore=0 impostorscore=0 phishscore=0
- clxscore=1015 adultscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2202240000 definitions=main-2204250038
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, rafael@kernel.org,
+        viresh.kumar@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org,
+        matthias.bgg@gmail.com
+Cc:     jia-wei.chang@mediatek.com, roger.lu@mediatek.com,
+        hsinyi@google.com, khilman@baylibre.com,
+        angelogioacchino.delregno@collabora.com, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220422075239.16437-1-rex-bc.chen@mediatek.com>
+ <20220422075239.16437-2-rex-bc.chen@mediatek.com>
+ <f2e5a34b-ed02-91a1-bc7b-fecaa95e227e@linaro.org>
+ <811bf944-a230-ab9b-583a-840e57af8a1e@linaro.org>
+ <28f75ac2995b116af9b2accf760786d1d1798c93.camel@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <28f75ac2995b116af9b2accf760786d1d1798c93.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/25/22 1:39 PM, Aneesh Kumar K V wrote:
-> On 4/25/22 11:40 AM, ying.huang@intel.com wrote:
->> On Mon, 2022-04-25 at 09:20 +0530, Aneesh Kumar K.V wrote:
->>> "ying.huang@intel.com" <ying.huang@intel.com> writes:
+On 25/04/2022 08:19, Rex-BC Chen wrote:
+> On Fri, 2022-04-22 at 19:34 +0200, Krzysztof Kozlowski wrote:
+>> On 22/04/2022 19:26, Krzysztof Kozlowski wrote:
+>>> On 22/04/2022 09:52, Rex-BC Chen wrote:
+>>>> MediaTek Cache Coherent Interconnect (CCI) uses software devfreq
+>>>> module
+>>>> for scaling clock frequency and adjust voltage.
+>>>> The phandle could be linked between CPU and MediaTek CCI for some
+>>>> MediaTek SoCs, like MT8183 and MT8186.
+>>>> Therefore, we add this property in cpufreq-mediatek.txt.
+>>>>
+>>>> Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+>>>> ---
+>>>>  .../devicetree/bindings/cpufreq/cpufreq-mediatek.txt         | 5
+>>>> +++++
+>>>>  1 file changed, 5 insertions(+)
+>>>>
+>>>> diff --git a/Documentation/devicetree/bindings/cpufreq/cpufreq-
+>>>> mediatek.txt b/Documentation/devicetree/bindings/cpufreq/cpufreq-
+>>>> mediatek.txt
+>>>> index b8233ec91d3d..3387e1e2a2df 100644
+>>>> --- a/Documentation/devicetree/bindings/cpufreq/cpufreq-
+>>>> mediatek.txt
+>>>> +++ b/Documentation/devicetree/bindings/cpufreq/cpufreq-
+>>>> mediatek.txt
+>>>> @@ -20,6 +20,11 @@ Optional properties:
+>>>>  	       Vsram to fit SoC specific needs. When absent, the
+>>>> voltage scaling
+>>>>  	       flow is handled by hardware, hence no software "voltage
+>>>> tracking" is
+>>>>  	       needed.
+>>>> +- mediatek,cci:
+>>>> +	MediaTek Cache Coherent Interconnect (CCI) uses the software
+>>>> devfreq module to
+>>>> +	scale the clock frequency and adjust the voltage.
 >>>
->>>> Hi, All,
->>>>
->>>> On Fri, 2022-04-22 at 16:30 +0530, Jagdish Gediya wrote:
->>>>
->>>> [snip]
->>>>
->>>>> I think it is necessary to either have per node demotion targets
->>>>> configuration or the user space interface supported by this patch
->>>>> series. As we don't have clear consensus on how the user interface
->>>>> should look like, we can defer the per node demotion target set
->>>>> interface to future until the real need arises.
->>>>>
->>>>> Current patch series sets N_DEMOTION_TARGET from dax device kmem
->>>>> driver, it may be possible that some memory node desired as demotion
->>>>> target is not detected in the system from dax-device kmem probe path.
->>>>>
->>>>> It is also possible that some of the dax-devices are not preferred as
->>>>> demotion target e.g. HBM, for such devices, node shouldn't be set to
->>>>> N_DEMOTION_TARGETS. In future, Support should be added to distinguish
->>>>> such dax-devices and not mark them as N_DEMOTION_TARGETS from the
->>>>> kernel, but for now this user space interface will be useful to avoid
->>>>> such devices as demotion targets.
->>>>>
->>>>> We can add read only interface to view per node demotion targets
->>>>> from /sys/devices/system/node/nodeX/demotion_targets, remove
->>>>> duplicated /sys/kernel/mm/numa/demotion_target interface and instead
->>>>> make /sys/devices/system/node/demotion_targets writable.
->>>>>
->>>>> Huang, Wei, Yang,
->>>>> What do you suggest?
->>>>
->>>> We cannot remove a kernel ABI in practice.  So we need to make it right
->>>> at the first time.  Let's try to collect some information for the 
->>>> kernel
->>>> ABI definitation.
->>>>
->>>> The below is just a starting point, please add your requirements.
->>>>
->>>> 1. Jagdish has some machines with DRAM only NUMA nodes, but they don't
->>>> want to use that as the demotion targets.  But I don't think this is a
->>>> issue in practice for now, because demote-in-reclaim is disabled by
->>>> default.
+>>> Devfreq is a SW mechanism, it should not be part of bindings
+>>> description.
+> 
+> Hello Krzysztof,
+> 
+> The reason we want to get the "mediatek,cci":
+> We need to check the mediatek cci is ready and probed done.
+> Because cpufreq and mediatek cci are sharing the same regulator in
+> little core cpus.
+> Therefore, to prevent high frequency low voltage issue, we need to make
+> sure the mediatek cci is ready.
+> 
+> If mediatek cci is ready, cpufreq and mediatek cci will register the
+> same regulator and from regulator's implementation, if there are two
+> device using the same regulator, the framwork will make sure it's using
+> the max voltage.
+
+Thanks for explanation. The property should be described with what you
+said here. The property and description should match hardware, so there
+is no place for devfreq. Instead mention that power rail is shared or
+voltage regulators are common.
+
+However I am not sure if you solved your problem... see below:
+
+> For example:
+> mediatek cci set 1.2V originally. When cpufreq want to adjust lower
+> frequency adn set voltage to 1.0V.
+> The framework will remain using 1.2V to prevent crash of mediatek cci.
+
+No, regulator_set_voltage() for proc_reg says:
+"NOTE: If the regulator is shared between several devices then the lowest
+ request voltage that meets the system constraints will be used."
+
+Not the highest. So when your devfreq and cpufreq boots, calling
+regulator_set_voltage will still cause high frequency and low voltage.
+
+> 
+> Therefore, we need to confirm the mediatek cci is ready and register
+> the regulator.
+>
 >>>
->>> It is not just that the demotion can be disabled. We should be able to
->>> use demotion on a system where we can find DRAM only NUMA nodes. That
->>> cannot be achieved by /sys/kernel/mm/numa/demotion_enabled. It needs
->>> something similar to to N_DEMOTION_TARGETS
+>>>> +	For details, please refer to
+>>>> +	Documentation/devicetree/bindings/interconnect/mediatek,cci.yam
+>>>> l
 >>>
+>>> Since the file does not exist, I have troubles reviewing it. First
+>>> of
+>>> all, you already have "mediatek,cci-control" property in DT, so why
+>>> using different name?
+> 
+> I am not sure where is "mediatek,cci-control". I think this name is not
+> used before.
+> 
+
+Documentation/devicetree/bindings/net/mediatek-net.txt
+
+>>>
+>>> Second, it looks like you want to put devfreq into bindings instead
+>>> of
+>>> using proper interconnect bindings.
 >>
->> Can you show NUMA information of your machines with DRAM-only nodes and
->> PMEM nodes?  We can try to find the proper demotion order for the
->> system.  If you can not show it, we can defer N_DEMOTION_TARGETS until
->> the machine is available.
+>> Actually judging by the driver this looks like some
+>> device-boot-time-ordering, so I wonder whether this is a proper way
+>> to
+>> express it.
 > 
+> Yes, we need to get the mediatek cci node and let cpufreq and mediatek
+> cci link succefully. In that case, we can know the mediatek cci is
+> ready. And we can set the voltage using the regulator framwork.
 > 
-> Sure will find one such config. As you might have noticed this is very 
-> easy to have in a virtualization setup because the hypervisor can assign 
-> memory to a guest VM from a numa node that doesn't have CPU assigned to 
-> the same guest. This depends on the other guest VM instance config 
-> running on the system. So on any virtualization config that has got 
-> persistent memory attached, this can become an easy config to end up with.
-> 
-> 
+> [1]: 
+> https://patchwork.kernel.org/project/linux-mediatek/patch/20220422075239.16437-11-rex-bc.chen@mediatek.com/
 
-something like this
+Yes, I see the use case. I am not convinced yet whether this is proper
+approach...
 
-$ numactl -H
-available: 2 nodes (0-1)
-node 0 cpus: 0 1 2 3 4 5 6 7
-node 0 size: 14272 MB
-node 0 free: 13392 MB
-node 1 cpus:
-node 1 size: 2028 MB
-node 1 free: 1971 MB
-node distances:
-node   0   1
-   0:  10  40
-   1:  40  10
-$ cat /sys/bus/nd/devices/dax0.0/target_node
-2
-$
-# cd /sys/bus/dax/drivers/
-:/sys/bus/dax/drivers# ls
-device_dax  kmem
-:/sys/bus/dax/drivers# cd device_dax/
-:/sys/bus/dax/drivers/device_dax# echo dax0.0 > unbind
-:/sys/bus/dax/drivers/device_dax# echo dax0.0 >  ../kmem/new_id
-:/sys/bus/dax/drivers/device_dax# numactl -H
-available: 3 nodes (0-2)
-node 0 cpus: 0 1 2 3 4 5 6 7
-node 0 size: 14272 MB
-node 0 free: 13380 MB
-node 1 cpus:
-node 1 size: 2028 MB
-node 1 free: 1961 MB
-node 2 cpus:
-node 2 size: 0 MB
-node 2 free: 0 MB
-node distances:
-node   0   1   2
-   0:  10  40  80
-   1:  40  10  80
-   2:  80  80  10
-:/sys/bus/dax/drivers/device_dax#
 
+Best regards,
+Krzysztof
