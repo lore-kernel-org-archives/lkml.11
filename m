@@ -2,192 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97131C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 13:33:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B25DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 13:33:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242080AbiDYNgX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 09:36:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60848 "EHLO
+        id S242091AbiDYNfA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 09:35:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233143AbiDYNgP (ORCPT
+        with ESMTP id S242078AbiDYNe6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 09:36:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86711CE6;
-        Mon, 25 Apr 2022 06:33:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3B768B817CF;
-        Mon, 25 Apr 2022 13:33:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE98BC385AD;
-        Mon, 25 Apr 2022 13:33:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650893588;
-        bh=uUdOOm568rK7RuFDvgybG0cdg/NEgZ8We82vdTXHL6I=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=X6ZT7zsiyniAqHXRoBvDeDPxJOkZwjC+Q1PCXuiwmT8/CtHtG/GHhswgENI6vpZsn
-         Qo2hYa2v+Py4v0x0F6IBIgzffhoyoge8PrOA8wURB/9SSjQvCht9F8mTlEehD5ziut
-         f3wujf23LkadumwIApsgIWQv5VTnw8cHumTpJvtsjOi/ie3fHk3gcLMFPqgn2X8QeK
-         smskJHjQ78Rm4NsPAsDfFlyJDiXAaA/jafPThy/zgo3pq6/S2Ifm2nfhFS2P7C6UyG
-         tw5AOd6pUdIu65wMVXaSeC7GkOj/v4ezjZ0LZfSoawAxpG7dUMcScJi8G5TbxLb8rB
-         jMiIxRqaxc9EA==
-Received: by mail-yb1-f174.google.com with SMTP id h7so3706146ybj.1;
-        Mon, 25 Apr 2022 06:33:08 -0700 (PDT)
-X-Gm-Message-State: AOAM530SVyQw+20D7kY6LN/nW3/ZQyhvio1wHV8oUUjypwtAHz++rTuk
-        lq0+OqtAp+jWm5XJciqQhBjz7vYlhkMoN3pMbg==
-X-Google-Smtp-Source: ABdhPJx1LinCS1pOqWEkgprmbR0KqvlB+UwCup/pn2fKM40C2TTP+BRtcH8NDydUzPiPForDxp/bLl8r9BLHa4F/ckY=
-X-Received: by 2002:a25:c604:0:b0:645:d969:97a7 with SMTP id
- k4-20020a25c604000000b00645d96997a7mr12121163ybf.134.1650893587786; Mon, 25
- Apr 2022 06:33:07 -0700 (PDT)
+        Mon, 25 Apr 2022 09:34:58 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C509BDE
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 06:31:54 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id v1so14442766ljv.3
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 06:31:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ccosb5OLlMLmZzgxt/IQ3pX0ynIyPqTno6b0V3kf4QY=;
+        b=h7uireBSCGtFURN6YqTRU6eeR3CHZOnsJGdnJeqP6QwMQSj2SGyD6UbXohwPydwgpb
+         vmp6zbfchpXP81+EMOgnQ6MZBbHkyY+H4yQJgu97wVoKnngHY0EhbUDlsCHJWCWJOO55
+         ivlRGRKFNW6E+Wcrd419jbvv0nqOCS8FuzKv8YcVTHRAUJ1b4xfdBe+mJkWIk6FPRvLy
+         NXvWLG8SAvVKJJ0hmO9ASek+ULoemo+DFdWIJR+7SwMOvu6bmOAjjCB7A6VYeShtF2II
+         fBr7jitEgZWVGOD0KrQl+SLq9Cylu1iLDtOwjDbx64PfOPqPBDHlSZFYZ1M5Tpp9qfVm
+         00XA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ccosb5OLlMLmZzgxt/IQ3pX0ynIyPqTno6b0V3kf4QY=;
+        b=QKJlog7IOpNFoAcyUtqqsr1P7BXztNNEgjdzZqyib/atp1OMF0xO9aKl9qJq4vsd5S
+         0l0FvPbAbJz+dUgFMcdClFASLgm8VWbcSFxgPwAZb9uWZBlXGgoiQN+VyPe3vOxiOrm3
+         8B4WRAqqaoXXDL0P7Vro47TCKQ5C7LoeMQBHfJsa5/9BOJw8XYxoiogIOHGMHymKqoIL
+         WRkFVTcsfz8uw+EpLlS5UEuJ08sSUSHd+0ZvMo6ZmxqKJxBvwRCpw/D1MecEPMeN6oFL
+         Y9ihZWpcxh992Y1bl2PGiMfkIWewt/9Dg0eW3ZNpgeANNPdG7VoO0GPQJgV+q5tjgVuA
+         +78Q==
+X-Gm-Message-State: AOAM533ZCVzO4ofDcIl9IVRo+OEIexOV6JSN/I3E5onYN922kyg3SVA7
+        X9j2ugC9lVU3FLPeYOqhZLR7Dw==
+X-Google-Smtp-Source: ABdhPJwNvTMsZhVhg8b9FrfRFyxjyOQegcTFZsO1MwPyhBNFwitqNOpsc85qd0SqXs/hSiiuG2mNFA==
+X-Received: by 2002:a2e:701a:0:b0:24f:a7d:2b2c with SMTP id l26-20020a2e701a000000b0024f0a7d2b2cmr5702849ljc.51.1650893512260;
+        Mon, 25 Apr 2022 06:31:52 -0700 (PDT)
+Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
+        by smtp.gmail.com with ESMTPSA id v7-20020a196107000000b0046d05202c61sm1414553lfb.65.2022.04.25.06.31.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Apr 2022 06:31:51 -0700 (PDT)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     Johan Hovold <johan@kernel.org>, Rob Herring <robh+dt@kernel.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        devicetree@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>
+Subject: [PATCH v3] dt-bindings: gnss: Rewrite Mediatek bindings in YAML
+Date:   Mon, 25 Apr 2022 15:29:47 +0200
+Message-Id: <20220425132947.1311171-1-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220416020749.29010-1-nancy.lin@mediatek.com>
- <20220416020749.29010-12-nancy.lin@mediatek.com> <2cd07faf-e903-e55b-85c1-ce7a823ddb8b@gmail.com>
-In-Reply-To: <2cd07faf-e903-e55b-85c1-ce7a823ddb8b@gmail.com>
-From:   Chun-Kuang Hu <chunkuang.hu@kernel.org>
-Date:   Mon, 25 Apr 2022 21:32:56 +0800
-X-Gmail-Original-Message-ID: <CAAOTY_8Ei1e+Y==y+e7LoHBH3-SZEiz4M0SSqecRfWVMsLKH3Q@mail.gmail.com>
-Message-ID: <CAAOTY_8Ei1e+Y==y+e7LoHBH3-SZEiz4M0SSqecRfWVMsLKH3Q@mail.gmail.com>
-Subject: Re: [PATCH v17 11/21] drm/mediatek: add display merge start/stop API
- for cmdq support
-To:     Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     "Nancy.Lin" <nancy.lin@mediatek.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>, wim@linux-watchdog.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, linux@roeck-us.net,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "jason-jh . lin" <jason-jh.lin@mediatek.com>,
-        Yongqiang Niu <yongqiang.niu@mediatek.com>,
-        DTML <devicetree@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        llvm@lists.linux.dev, singo.chang@mediatek.com,
-        srv_heupstream <srv_heupstream@mediatek.com>,
-        Project_Global_Chrome_Upstream_Group 
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Matthias:
+This rewrites the Mediatek GNSS bindings in YAML.
 
-Matthias Brugger <matthias.bgg@gmail.com> =E6=96=BC 2022=E5=B9=B44=E6=9C=88=
-22=E6=97=A5 =E9=80=B1=E4=BA=94 =E4=B8=8B=E5=8D=887:48=E5=AF=AB=E9=81=93=EF=
-=BC=9A
->
->
->
-> On 16/04/2022 04:07, Nancy.Lin wrote:
-> > Add merge start/stop API for cmdq support. The ovl_adaptor merges
-> > are configured with each drm plane update. Need to enable/disable
-> > merge with cmdq making sure all the settings taken effect in the
-> > same vblank.
-> >
-> > Signed-off-by: Nancy.Lin <nancy.lin@mediatek.com>
-> > Reviewed-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
-> > Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@coll=
-abora.com>
-> > ---
-> >   drivers/gpu/drm/mediatek/mtk_disp_drv.h   |  2 ++
-> >   drivers/gpu/drm/mediatek/mtk_disp_merge.c | 20 +++++++++++++++++---
-> >   2 files changed, 19 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/drivers/gpu/drm/mediatek/mtk_disp_drv.h b/drivers/gpu/drm/=
-mediatek/mtk_disp_drv.h
-> > index 53aa988dde3b..43a412525b75 100644
-> > --- a/drivers/gpu/drm/mediatek/mtk_disp_drv.h
-> > +++ b/drivers/gpu/drm/mediatek/mtk_disp_drv.h
-> > @@ -66,6 +66,8 @@ void mtk_merge_stop(struct device *dev);
-> >   void mtk_merge_advance_config(struct device *dev, unsigned int l_w, u=
-nsigned int r_w,
-> >                             unsigned int h, unsigned int vrefresh, unsi=
-gned int bpc,
-> >                             struct cmdq_pkt *cmdq_pkt);
-> > +void mtk_merge_start_cmdq(struct device *dev, struct cmdq_pkt *cmdq_pk=
-t);
-> > +void mtk_merge_stop_cmdq(struct device *dev, struct cmdq_pkt *cmdq_pkt=
-);
-> >
-> >   void mtk_ovl_bgclr_in_on(struct device *dev);
-> >   void mtk_ovl_bgclr_in_off(struct device *dev);
-> > diff --git a/drivers/gpu/drm/mediatek/mtk_disp_merge.c b/drivers/gpu/dr=
-m/mediatek/mtk_disp_merge.c
-> > index 40da0555416d..c0d9b43b2a66 100644
-> > --- a/drivers/gpu/drm/mediatek/mtk_disp_merge.c
-> > +++ b/drivers/gpu/drm/mediatek/mtk_disp_merge.c
-> > @@ -67,17 +67,31 @@ struct mtk_disp_merge {
-> >   };
-> >
-> >   void mtk_merge_start(struct device *dev)
->
-> Probably not my call, but wouldn't it make sense to enhance mtk_merge_sta=
-rt to
-> pass 'struct cmdq_pkt *cmdq_pkt' directly instead of adding this 'adapter=
-'?
+Cc: devicetree@vger.kernel.org
+Cc: Krzysztof Kozlowski <krzk@kernel.org>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ChangeLog v2->v3:
+- Add the missed gnss-fix-gpios.
+- Move allOf to right before the properties.
+- Keep the description on timepulse-gpios because it documents
+  which pins are used on this chip.
+ChangeLog v1->v2:
+- New patch since Krzysztof pointed out there is really just
+  one more binding to convert, so why not.
+---
+ .../devicetree/bindings/gnss/mediatek.txt     | 35 -----------
+ .../devicetree/bindings/gnss/mediatek.yaml    | 59 +++++++++++++++++++
+ 2 files changed, 59 insertions(+), 35 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/gnss/mediatek.txt
+ create mode 100644 Documentation/devicetree/bindings/gnss/mediatek.yaml
 
-In [1], mtk_merge_start() should match the function prototype of
-mtk_ddp_comp_funcs.start, so keep the non-cmdq interface.
+diff --git a/Documentation/devicetree/bindings/gnss/mediatek.txt b/Documentation/devicetree/bindings/gnss/mediatek.txt
+deleted file mode 100644
+index 80cb802813c5..000000000000
+--- a/Documentation/devicetree/bindings/gnss/mediatek.txt
++++ /dev/null
+@@ -1,35 +0,0 @@
+-Mediatek-based GNSS Receiver DT binding
+-
+-Mediatek chipsets are used in GNSS-receiver modules produced by several
+-vendors and can use a UART interface.
+-
+-Please see Documentation/devicetree/bindings/gnss/gnss.txt for generic
+-properties.
+-
+-Required properties:
+-
+-- compatible	: Must be
+-
+-			"globaltop,pa6h"
+-
+-- vcc-supply	: Main voltage regulator (pin name: VCC)
+-
+-Optional properties:
+-
+-- current-speed		: Default UART baud rate
+-- gnss-fix-gpios	: GPIO used to determine device position fix state
+-			  (pin name: FIX, 3D_FIX)
+-- reset-gpios		: GPIO used to reset the device (pin name: RESET, NRESET)
+-- timepulse-gpios	: Time pulse GPIO (pin name: PPS1, 1PPS)
+-- vbackup-supply	: Backup voltage regulator (pin name: VBAT, VBACKUP)
+-
+-Example:
+-
+-serial@1234 {
+-	compatible = "ns16550a";
+-
+-	gnss {
+-		compatible = "globaltop,pa6h";
+-		vcc-supply = <&vcc_3v3>;
+-	};
+-};
+diff --git a/Documentation/devicetree/bindings/gnss/mediatek.yaml b/Documentation/devicetree/bindings/gnss/mediatek.yaml
+new file mode 100644
+index 000000000000..45cf01b27700
+--- /dev/null
++++ b/Documentation/devicetree/bindings/gnss/mediatek.yaml
+@@ -0,0 +1,59 @@
++# SPDX-License-Identifier: GPL-2.0
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/gnss/mediatek.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Mediatek GNSS Receiver Device Tree Bindings
++
++maintainers:
++  - Johan Hovold <johan@kernel.org>
++
++description:
++  Mediatek chipsets are used in GNSS-receiver modules produced by several
++  vendors and can use a UART interface.
++
++allOf:
++  - $ref: gnss-common.yaml#
++
++properties:
++  compatible:
++    const: globaltop,pa6h
++
++  vcc-supply:
++    description:
++      Main voltage regulator, pin name VCC.
++
++  reset-gpios:
++    maxItems: 1
++    description: An optional reset line, with names such as RESET or NRESET.
++      If the line is active low it should be flagged with GPIO_ACTIVE_LOW.
++
++  timepulse-gpios:
++    description: Comes with pin names such as PPS1 or 1PPS.
++
++  gnss-fix-gpios:
++    maxItems: 1
++    description: GPIO used to determine device position fix state, pin names
++      FIX or 3D_FIX.
++
++  vbackup-supply:
++    description:
++      Regulator providing backup voltage, pin names such as VBAT or VBACKUP.
++
++required:
++  - compatible
++  - vcc-supply
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    serial {
++        gnss {
++            compatible = "globaltop,pa6h";
++            vcc-supply = <&vcc_3v3>;
++            reset-gpios = <&gpio 1 GPIO_ACTIVE_LOW>;
++        };
++    };
+-- 
+2.35.1
 
-static const struct mtk_ddp_comp_funcs ddp_merge =3D {
- .clk_enable =3D mtk_merge_clk_enable,
- .clk_disable =3D mtk_merge_clk_disable,
- .start =3D mtk_merge_start,
- .stop =3D mtk_merge_stop,
- .config =3D mtk_merge_config,
-};
-
-[1] https://patchwork.kernel.org/project/linux-mediatek/patch/2022041909414=
-3.9561-5-jason-jh.lin@mediatek.com/
-
-Regards,
-Chun-Kuang.
-
->
-> In the end this is up to Chun-Kuang.
->
-> Regards,
-> Matthias
->
-> > +{
-> > +     mtk_merge_start_cmdq(dev, NULL);
-> > +}
-> > +
-> > +void mtk_merge_stop(struct device *dev)
-> >   {
-> >       struct mtk_disp_merge *priv =3D dev_get_drvdata(dev);
-> >
-> > -     writel(MERGE_EN, priv->regs + DISP_REG_MERGE_CTRL);
-> > +     mtk_merge_stop_cmdq(dev, NULL);
-> >   }
-> >
-> > -void mtk_merge_stop(struct device *dev)
-> > +void mtk_merge_start_cmdq(struct device *dev, struct cmdq_pkt *cmdq_pk=
-t)
-> > +{
-> > +     struct mtk_disp_merge *priv =3D dev_get_drvdata(dev);
-> > +
-> > +     mtk_ddp_write(cmdq_pkt, 1, &priv->cmdq_reg, priv->regs,
-> > +                   DISP_REG_MERGE_CTRL);
-> > +}
-> > +
-> > +void mtk_merge_stop_cmdq(struct device *dev, struct cmdq_pkt *cmdq_pkt=
-)
-> >   {
-> >       struct mtk_disp_merge *priv =3D dev_get_drvdata(dev);
-> >
-> > -     writel(0x0, priv->regs + DISP_REG_MERGE_CTRL);
-> > +     mtk_ddp_write(cmdq_pkt, 0, &priv->cmdq_reg, priv->regs,
-> > +                   DISP_REG_MERGE_CTRL);
-> >   }
-> >
-> >   static void mtk_merge_fifo_setting(struct mtk_disp_merge *priv,
