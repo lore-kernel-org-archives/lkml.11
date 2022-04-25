@@ -2,119 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3783C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 12:28:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21EDCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 12:29:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241807AbiDYMa7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 08:30:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34142 "EHLO
+        id S241981AbiDYMcI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 08:32:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242139AbiDYMaC (ORCPT
+        with ESMTP id S242000AbiDYMao (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 08:30:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B0E1B7EE;
-        Mon, 25 Apr 2022 05:25:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 25 Apr 2022 08:30:44 -0400
+Received: from proxmox1.postmarketos.org (proxmox1.postmarketos.org [213.239.216.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8BC5274868
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 05:27:38 -0700 (PDT)
+Received: from [192.168.0.33] (cpc78119-cwma10-2-0-cust590.7-3.cable.virginm.net [81.96.50.79])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 12115B81607;
-        Mon, 25 Apr 2022 12:25:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CF4DC385A4;
-        Mon, 25 Apr 2022 12:25:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650889507;
-        bh=6GrE4NWT57K7czTKp7ru4wzIZWD6o9ArIieCTvXxaTE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gz1V7yk8c6K7MiFjBSSxV6qtIy6DDMy+HAPCGj9Ixxl8JOX44rM2EQF8KscugLMyJ
-         BD2rViz7o/zR649dKviwIwUSg1U+hg84qvs0L4abD3hHR+AFZtZzipCD1+oKeIRTdi
-         h6L8q97SxDCW0Hj7Jrpj0CswJcXt+9DBtQ0mtDZllWjmgrsH669j5+GzW8F6Q4q7N4
-         nyeHoDGjle1jNO3OLOTdHYEym9AWzvJy/Ohsi6Hw8mB/0aTRmGaRT9LPK3ZJJrI3Mx
-         6dDyVYCUd+gC8tggiYxlH4q3GkRg42btwhdC3j524PNnSUv8aftrrZjDZKsIsim8Hv
-         zIw/NsAm+2mVQ==
-Date:   Mon, 25 Apr 2022 13:25:01 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Martin =?utf-8?Q?Povi=C5=A1er?= <povik@cutebit.org>
-Cc:     Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mark Kettenis <kettenis@openbsd.org>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>
-Subject: Re: [RFC PATCH 3/5] HACK: ASoC: Tolerate N-cpus-to-M-codecs links
-Message-ID: <YmaTHTKWAfM7FCcY@sirena.org.uk>
-References: <20220331000449.41062-1-povik+lin@cutebit.org>
- <20220331000449.41062-4-povik+lin@cutebit.org>
- <YkrkbBNYULLgeS5w@sirena.org.uk>
- <904EB8A1-5561-4555-8030-B85703E24F2E@cutebit.org>
+        by proxmox1.postmarketos.org (Postfix) with ESMTPSA id E0D111401AA;
+        Mon, 25 Apr 2022 12:27:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=postmarketos.org;
+        s=donut; t=1650889656;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=JvZasaRue4LULzli2YoizhY0uu4LfZQCutAOVvrO+Lk=;
+        b=jtcM6Z6fsk02UkmXstWVp6K+wBrCR3oZFZ84/iA/4c93TR3UAfA6CLNvsLjjKbXAt3TWOx
+        S7+eqWQ4rnlzNNTejHoH+ld0PmQCJN5TObro8dOtYlnrW2y/ERkmtG6nutBLG5ace+7vjB
+        5B93nYc2RPs9GSRhyrwmrfBQHcLej/0=
+Message-ID: <bf90c37b-0184-845c-dd6a-c2f4a038b075@postmarketos.org>
+Date:   Mon, 25 Apr 2022 13:27:35 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="b1F3yj0YVHTi5nws"
-Content-Disposition: inline
-In-Reply-To: <904EB8A1-5561-4555-8030-B85703E24F2E@cutebit.org>
-X-Cookie: An apple a day makes 365 apples a year.
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+From:   Caleb Connolly <kc@postmarketos.org>
+Subject: Re: linux-next: Fixes tags need some work in the pinctrl tree
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20220421091055.12d6465c@canb.auug.org.au>
+ <CACRpkdaD1G9J+jTJH4oGrcF_dinMjBjHCGMJqRZh8FC0dy+Xfw@mail.gmail.com>
+Content-Language: en-US
+In-Reply-To: <CACRpkdaD1G9J+jTJH4oGrcF_dinMjBjHCGMJqRZh8FC0dy+Xfw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi both,
 
---b1F3yj0YVHTi5nws
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Apologies, I made a silly mistake when submitting this series.
 
-On Fri, Apr 22, 2022 at 04:06:06PM +0200, Martin Povi=C5=A1er wrote:
-> > On 4. 4. 2022, at 14:28, Mark Brown <broonie@kernel.org> wrote:
+Patch 2 
+(https://lore.kernel.org/linux-rockchip/20220328005005.72492-3-kc@postmarketos.org/), 
+contains a fix which should have been squashed into patch one - the first hunk 
+of the diff, the bug is a bitwise compare to an enum which isn't bitwise:
 
-> > We need to figure out an interface for describing which CODEC/CPU
-> > combinations are connected to each other.  I'm not seeing a great way to
-> > do that right now, probably some side data table is going to be needed,
-> > or perhaps the CPU DAI drivers can be persuaded to only have one DAI
-> > actually register and claim to support more channels?  I'm not sure how
-> > a configuraiton like this is going to work at userspace level if the
-> > multiple CPU DAIs end up being visible...
+if (param == (PIN_CONFIG_OUTPUT | PIN_CONFIG_INPUT_ENABLE))
 
-> To understand the issue better: How could the multiple CPU DAIs be
-> visible from userspace?
+In hindsight, I think it was a mistake the add a Fixes tag to the first patch, 
+it doesn't fix a "bug" it just adds behaviour which arguably should have been 
+implemented in the patch it fixes.
 
-If you register two separate DAIs (well, links) with the API without
-doing anything else the API will just expose them to userspace as two
-separate things with no indication that they're related.
+The patch shouldn't be backported to stable as it will introduce a bug if ported 
+without the second patch (and as above, I don't think this series should be 
+backported at all). Could you let me know how to get this dropped from backporting?
 
-> What about this interim solution: In case of N-to-M links we put in
-> the most restrictive condition for checking capture/playback stream
-> validity: we check all of the CPU DAIs. Whatever ends up being the
-> proper solution later can only be less restrictive than this.
+Again, sorry for the hassle this has caused.
 
-That's not the issue here? =20
+Kind regards,
+Caleb
 
-> As a reminder what happens on the Macs: the platform driver drives
-> all the CPU-side I2S ports that belong to the link with the same data,
-> so the particular CPU/CODEC wiring doesn=E2=80=99t matter.
-
-Oh, that's not something I was aware of.  In that case this is the wrong
-API - you should be using DPCM to map one front end onto multiple back
-ends (Kirkwood does something similar IIRC, there will be other examples
-but that's probably the simplest).  The back ends probably don't really
-need to know that they're on the same physical bus (if indeed they are).
-
---b1F3yj0YVHTi5nws
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJmkx0ACgkQJNaLcl1U
-h9AXZQf/TTU2DnW1ZuWYtCiYoQytNm53DGhJatv03n1CX5CEQnTpF2SqtDQXWV7P
-FFaj07c+6IYGLOqLmA6TrABjGUoF5YgAmHBesHfS7uLK1pT/dz3c2wB8Dz3agqh5
-qSh562UKa7k6eXV17jANpgVJSBoWf/XjQTc031lOcsV1SPT6Z+if6WTBuXu+JGRt
-IBk9JY4WLK+c2eQUXKeaV2sPISK9CQObtHXr8CVBlgYuUIGnNTUarF19Vdoyq+2y
-QUsZDshFnfBtx/ArsyDMfgX9wO84Ids6rjPSe4pQ0WdRp+TsUiUk1useAx87UMd1
-JkINblZc68f3bqMDmN1HJoVYVFHa1g==
-=9iG+
------END PGP SIGNATURE-----
-
---b1F3yj0YVHTi5nws--
+On 22/04/2022 21:57, Linus Walleij wrote:
+> On Thu, Apr 21, 2022 at 1:11 AM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+> 
+>> In commit
+>>
+>>    6548c9dc711d ("pinctrl/rockchip: support deferring other gpio params")
+>>
+>> Fixes tags
+>>
+>>    Fixes: e7165b1d ("pinctrl/rockchip: add a queue for deferred pin output settings on probe")
+>>    Fixes: 59dd178e ("gpio/rockchip: fetch deferred output settings on probe")
+>>
+>> have these problem(s):
+>>
+>>    - SHA1 should be at least 12 digits long
+>>      This can be fixed for the future by setting core.abbrev to 12 (or
+>>      more) or (for git v2.11 or later) just making sure it is not set
+>>      (or set to "auto").
+> 
+> Fixed it up by rebasing, thanks!
+> 
+> Yours,
+> Linus Walleij
