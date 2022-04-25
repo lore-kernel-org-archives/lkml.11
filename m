@@ -2,113 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AF91C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:27:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 833BEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:28:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239080AbiDYQat (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 12:30:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40658 "EHLO
+        id S234871AbiDYQbV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 12:31:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243567AbiDYQaa (ORCPT
+        with ESMTP id S243584AbiDYQbL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 12:30:30 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC5A8A315;
-        Mon, 25 Apr 2022 09:26:10 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 9FD96210E4;
-        Mon, 25 Apr 2022 16:26:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1650903968; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VUB+heCNyeRFdPDI1DhMrxZcGuxVYUwZDE80GwpHJU8=;
-        b=pdXu4C9WWm9PwhxJ4kncFBH/N6LpW+See8N92WAtqIGuzAwMFB2MW2lwZkGZStmGNMJT/S
-        Oql8ZjWpYrf8ogzL8VQ3cIPkfW8AWk8h4BuJHKGZWzp0ignZcWNfNucjWTl9vFEEoDD+tN
-        dJo8wa5/oF7v9fgW10I9mAzX1xSkm/g=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1650903968;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VUB+heCNyeRFdPDI1DhMrxZcGuxVYUwZDE80GwpHJU8=;
-        b=kj1ovTZoxRmdmq25y5rwYeLhZBg+ACRAbP3a30Yt/bDVvCkDIQOoWuoBrgv7Mip8r98v41
-        2lUqmZqKseXVKkDg==
-Received: from quack3.suse.cz (unknown [10.100.224.230])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 8E7412C141;
-        Mon, 25 Apr 2022 16:26:08 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id 3825DA0620; Mon, 25 Apr 2022 18:26:08 +0200 (CEST)
-Date:   Mon, 25 Apr 2022 18:26:08 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     "yukuai (C)" <yukuai3@huawei.com>
-Cc:     Jan Kara <jack@suse.cz>, paolo.valente@linaro.org, axboe@kernel.dk,
-        tj@kernel.org, linux-block@vger.kernel.org,
-        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yi.zhang@huawei.com
-Subject: Re: [PATCH -next v2 2/5] block, bfq: add fake weight_counter for
- weight-raised queue
-Message-ID: <20220425162608.feya66a5amdnsr4e@quack3.lan>
-References: <20220416093753.3054696-1-yukuai3@huawei.com>
- <20220416093753.3054696-3-yukuai3@huawei.com>
- <20220425094856.qgkhba2klguduxot@quack3.lan>
- <a27b8c79-867f-9253-84db-1d39c964b3ed@huawei.com>
- <4048cc0c-adc8-8097-4a40-762137c4c282@huawei.com>
+        Mon, 25 Apr 2022 12:31:11 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9514A205F0
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 09:28:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=tA+eK39y5CiTUpYxk2j7KO7uCUuIxmeF7H9cyjhTkcA=; b=Fgo3HIfXCUniND86DHLGwGAHMm
+        GOjixI/0BWrd3lHxddAvmNaZTAp24+vq92edqFkNqi60FfqLGEWqn0AtschyjAiMEuyaUOUcxcDAu
+        HZG7secfuimD8ybgsMWkA8M7CpgeQ1a0NbcgAGoSg38kbCcICFUnoKGcsYyc/keM++o2Po3M8AxkA
+        RVLYzk9nubfYFSjdo5wTaZgbzeqh4NaoejzOxScTZN7bnmPjWvcxJugDuYZzi0+DbCJlaXgS1RVMz
+        TbUGmMEqEfzrfWLO60v2fomN/Pg8FLj7Yo/ACcPlsVi1jSdmPv6cuXaR+Fcw5ijkZ5paJ4brLwnWj
+        A7sYA4ZA==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nj1Z0-008Zwp-UO; Mon, 25 Apr 2022 16:27:51 +0000
+Message-ID: <f8103fcf-1a16-6247-6ec8-aef8a59d0a48@infradead.org>
+Date:   Mon, 25 Apr 2022 09:27:46 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <4048cc0c-adc8-8097-4a40-762137c4c282@huawei.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: isl7998x.c:undefined reference to `v4l2_fwnode_endpoint_parse'
+Content-Language: en-US
+To:     kernel test robot <lkp@intel.com>, Marek Vasut <marex@denx.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Michael Tretter <m.tretter@pengutronix.de>
+References: <202204252008.EH3XUAjp-lkp@intel.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <202204252008.EH3XUAjp-lkp@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 25-04-22 21:55:46, yukuai (C) wrote:
-> 在 2022/04/25 21:34, yukuai (C) 写道:
-> > 在 2022/04/25 17:48, Jan Kara 写道:
-> > > On Sat 16-04-22 17:37:50, Yu Kuai wrote:
-> > > > Weight-raised queue is not inserted to weights_tree, which makes it
-> > > > impossible to track how many queues have pending requests through
-> > > > weights_tree insertion and removel. This patch add fake weight_counter
-> > > > for weight-raised queue to do that.
-> > > > 
-> > > > Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-> > > 
-> > > This is a bit hacky. I was looking into a better place where to hook to
-> > > count entities in a bfq_group with requests and I think
-> > > bfq_add_bfqq_busy()
-> > > and bfq_del_bfqq_busy() are ideal for this. It also makes better sense
-> > > conceptually than hooking into weights tree handling.
-> > > 
-> > Hi,
-> > 
-> > bfq_del_bfqq_busy() will be called when all the reqs in the bfqq are
-> > dispatched, however there might still some reqs are't completed yet.
-> > 
-> > Here what we want to track is how many bfqqs have pending reqs,
-> > specifically if the bfqq have reqs are't complted.
-> > 
-> > Thus I think bfq_del_bfqq_busy() is not the right place to do that.
-> 
-> BTW, there is a counter 'dispatched' in bfqq, how about we rename it
-> to 'inflight', and inc when adding req to bfqq, dec the same as
-> 'dispatched' ?
-> 
-> This way we can count bfqq when adding 'inflight' from 0 to 1, and
-> stop when decreasing 'inflight' from 1 to 0.
 
-Well, but 'dispatched' is used in quite a few places and it would require
-quite some thinking to decide which impact using 'inflight' has there...
-But we also have 'bfqq->entity.allocated' which is number of requests in
-some state associated with bfqq and we could use that. But as I wrote in my
-previous email, I'm not convinced it is really necessary...
 
-								Honza
+On 4/25/22 05:30, kernel test robot wrote:
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> head:   af2d861d4cd2a4da5137f795ee3509e6f944a25b
+> commit: 51ef2be546e2e480e56fdb59fdeb9a4406e8d52e media: i2c: isl7998x: Add driver for Intersil ISL7998x
+> date:   8 weeks ago
+> config: riscv-randconfig-r026-20220425 (https://download.01.org/0day-ci/archive/20220425/202204252008.EH3XUAjp-lkp@intel.com/config)
+> compiler: riscv64-linux-gcc (GCC) 11.2.0
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=51ef2be546e2e480e56fdb59fdeb9a4406e8d52e
+>         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+>         git fetch --no-tags linus master
+>         git checkout 51ef2be546e2e480e56fdb59fdeb9a4406e8d52e
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All errors (new ones prefixed by >>):
+> 
+>    riscv64-linux-ld: drivers/media/i2c/isl7998x.o: in function `.L0 ':
+>>> isl7998x.c:(.text+0xa54): undefined reference to `v4l2_fwnode_endpoint_parse'
+
+for isl7998x.c:
+https://lore.kernel.org/all/20220330015652.5420-1-rdunlap@infradead.org/
+
+>    riscv64-linux-ld: net/core/sock.o: in function `.L1089':
+>    sock.c:(.text+0x5190): undefined reference to `__sk_defer_free_flush'
+> 
 
 -- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+~Randy
