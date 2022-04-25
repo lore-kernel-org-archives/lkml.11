@@ -2,67 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88F7CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 10:06:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BA2DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 10:07:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241493AbiDYKJ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 06:09:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47632 "EHLO
+        id S237613AbiDYKKi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 06:10:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241478AbiDYKIN (ORCPT
+        with ESMTP id S237747AbiDYKKA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 06:08:13 -0400
-Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 52A1E3586F
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 03:04:47 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mail.nfschina.com (Postfix) with ESMTP id 03D421E80D56;
-        Mon, 25 Apr 2022 18:01:40 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from mail.nfschina.com ([127.0.0.1])
-        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id iGzNYuuDUnyk; Mon, 25 Apr 2022 18:01:37 +0800 (CST)
-Received: from localhost.localdomain (unknown [61.152.154.55])
-        (Authenticated sender: renyu@nfschina.com)
-        by mail.nfschina.com (Postfix) with ESMTPA id 20A941E80CB5;
-        Mon, 25 Apr 2022 18:01:37 +0800 (CST)
-From:   Ren Yu <renyu@nfschina.com>
-To:     will@kernel.org
-Cc:     mark.rutland@arm.com, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, liqiong@nfschina.com,
-        yuzhe@nfschina.com, Ren Yu <renyu@nfschina.com>
-Subject: [PATCH] perf: check return value of armpmu_request_irq()
-Date:   Mon, 25 Apr 2022 18:04:36 +0800
-Message-Id: <20220425100436.4881-1-renyu@nfschina.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 25 Apr 2022 06:10:00 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C96CA3630F
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 03:06:42 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4831B1FB;
+        Mon, 25 Apr 2022 03:06:42 -0700 (PDT)
+Received: from bogus (unknown [10.57.11.83])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 63E843F73B;
+        Mon, 25 Apr 2022 03:06:40 -0700 (PDT)
+Date:   Mon, 25 Apr 2022 11:06:35 +0100
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Qing Wang <wangqing@vivo.com>
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        linux-kernel@vger.kernel.org, vincent.guittot@linaro.org,
+        peterz@infradead.org, dietmar.eggemann@arm.com
+Subject: Re: [PATCH V2] arm64: add SCHED_CLUSTER's dependency on ACPI
+Message-ID: <20220425100635.ig4dxvlflglfagpx@bogus>
+References: <1650855303-91388-1-git-send-email-wangqing@vivo.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1650855303-91388-1-git-send-email-wangqing@vivo.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When the function armpmu_request_irq() failed, goto err
+On Sun, Apr 24, 2022 at 07:55:01PM -0700, Qing Wang wrote:
+> From: Wang Qing <wangqing@vivo.com>
+> 
+> cluster sched_domain configured by cpu_topology[].cluster_sibling, 
+> which is set by cluster_id, cluster_id can only get from ACPI.
+> 
+> If the system does not enable ACPI, cluster_id is always -1, even enable
+> SCHED_CLUSTER is invalid, this is misleading. 
+> 
+> So we add SCHED_CLUSTER's dependency on ACPI here.
+>
 
-Signed-off-by: Ren Yu <renyu@nfschina.com>
----
- drivers/perf/arm_pmu_acpi.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Any reason why this can't be extended to support DT based systems via
+cpu-map in the device tree. IMO we almost have everything w.r.t topology
+in DT and no reason to deviate this feature between ACPI and DT.
 
-diff --git a/drivers/perf/arm_pmu_acpi.c b/drivers/perf/arm_pmu_acpi.c
-index f5c7a845cd7b..96ffadd654ff 100644
---- a/drivers/perf/arm_pmu_acpi.c
-+++ b/drivers/perf/arm_pmu_acpi.c
-@@ -159,7 +159,9 @@ static int arm_pmu_acpi_parse_irqs(void)
- 		 * them with their PMUs.
- 		 */
- 		per_cpu(pmu_irqs, cpu) = irq;
--		armpmu_request_irq(irq, cpu);
-+		err = armpmu_request_irq(irq, cpu);
-+		if (err)
-+			goto out_err;
- 	}
- 
- 	return 0;
 -- 
-2.25.1
-
+Regards,
+Sudeep
