@@ -2,110 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31A87C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:23:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 284BAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:23:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236598AbiDYW0u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 18:26:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32846 "EHLO
+        id S236705AbiDYW0y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 18:26:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343612AbiDYVph (ORCPT
+        with ESMTP id S1343578AbiDYVix (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 17:45:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B2FC10C88A;
-        Mon, 25 Apr 2022 14:42:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1614A61480;
-        Mon, 25 Apr 2022 21:42:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 440C0C385A7;
-        Mon, 25 Apr 2022 21:42:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650922951;
-        bh=VWIdJNxWRCfgar7Ib519tgDolGkr3hghcxrk47Iv2bY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JCSlFBhzffcdhcGYF80E592JT4Vy3+6VdVEPq/PczkwHKG8P7RqVakcZPxqd4lHXG
-         qZNPEwrFzs6Tme1DPl68z/svMz1LwtGg+snbuw3WLDDcpzPCO5AVNItJxnhrjeOKU7
-         HnDysQkUW12U+Av8FM2pFn5UN2+uWsllmoqtalc8OmwmEjtqJAYnrs7ndKltQmd1hC
-         0FJHcjKYcNmbxdl4YgTrgVliBx521EifMChH74OWoU5Eeqi3Ua8TjYMDnbCtx3UnyL
-         5qyn7+oekX737GRyF6B7hvIg2JM3AnpJnmQNwYZUKQA+Scdjcn+jhoUyXhhgi+rMDH
-         1VfQcIyAYWRog==
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Chas Williams <3chas3@gmail.com>
-Cc:     linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH 2/2] net: remove comments that mention obsolete __SLOW_DOWN_IO
-Date:   Mon, 25 Apr 2022 16:26:44 -0500
-Message-Id: <20220425212644.1659070-3-helgaas@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220425212644.1659070-1-helgaas@kernel.org>
-References: <20220425212644.1659070-1-helgaas@kernel.org>
+        Mon, 25 Apr 2022 17:38:53 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 058643878A;
+        Mon, 25 Apr 2022 14:35:47 -0700 (PDT)
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nj6Mz-0008B2-Gx; Mon, 25 Apr 2022 23:35:45 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nj6Mz-000Nev-21; Mon, 25 Apr 2022 23:35:45 +0200
+Subject: Re: [PATCH 1/4] tools/bpf/runqslower: musl compat: explicitly link
+ with libargp if found
+To:     Dominique Martinet <asmadeus@codewreck.org>, bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        KP Singh <kpsingh@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Yonghong Song <yhs@fb.com>, Song Liu <songliubraving@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>
+References: <20220424051022.2619648-1-asmadeus@codewreck.org>
+ <20220424051022.2619648-2-asmadeus@codewreck.org>
+ <YmT1GxK1HimY2Os9@codewreck.org>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <80728495-e1fe-21bb-9814-6251648f8359@iogearbox.net>
+Date:   Mon, 25 Apr 2022 23:35:41 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <YmT1GxK1HimY2Os9@codewreck.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.5/26523/Mon Apr 25 10:20:35 2022)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bjorn Helgaas <bhelgaas@google.com>
+On 4/24/22 8:58 AM, Dominique Martinet wrote:
+> Dominique Martinet wrote on Sun, Apr 24, 2022 at 02:10:19PM +0900:
+>> After having done this work I noticed runqslower is not actually
+>> installed, so ideally instead of all of this it'd make more sense to
+>> just not build it: would it make sense to take it out of the defaults
+>> build targets?
+>> I could just directly build the appropriate targets from tools/bpf
+>> directory with 'make bpftool bpf_dbg bpf_asm bpf_jit_disasm', but
+>> ideally I'd like to keep alpine's build script way of calling make from
+>> the tools parent directory, and 'make bpf' there is all or nothing.
+> 
+> Well, it turns out runqslower doesn't build if the current kernel or
+> vmlinux in tree don't have BTF enabled, so the current alpine builder
+> can't build it.
+> 
+> I've dropped this patch from my alpine MR[1] and built things directly
+> with make bpftool etc as suggested above, so my suggestion to make it
+> more easily buildable that way is probably the way to go?
+> [1] https://gitlab.alpinelinux.org/alpine/aports/-/merge_requests/33554
 
-The only remaining definitions of __SLOW_DOWN_IO (for alpha and ia64) do
-nothing, and the only mentions in networking are in comments.  Remove these
-mentions.
+Thanks for looking into this, Dominique! I slightly massaged patch 3 & 4
+and applied it to bpf-next tree.
 
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
----
- drivers/atm/nicstarmac.c                     | 5 -----
- drivers/net/ethernet/dec/tulip/winbond-840.c | 2 --
- drivers/net/ethernet/natsemi/natsemi.c       | 2 --
- 3 files changed, 9 deletions(-)
+I don't really mind about patch 1 & 2, though out of tools/bpf/ the only
+one you /really/ might want to package is bpftool. The other tools are on
+the legacy side of things and JIT disasm you can also get via bpftool anyway.
 
-diff --git a/drivers/atm/nicstarmac.c b/drivers/atm/nicstarmac.c
-index e0dda9062e6b..791f69a07ddf 100644
---- a/drivers/atm/nicstarmac.c
-+++ b/drivers/atm/nicstarmac.c
-@@ -14,11 +14,6 @@ typedef void __iomem *virt_addr_t;
- 
- #define CYCLE_DELAY 5
- 
--/*
--   This was the original definition
--#define osp_MicroDelay(microsec) \
--    do { int _i = 4*microsec; while (--_i > 0) { __SLOW_DOWN_IO; }} while (0)
--*/
- #define osp_MicroDelay(microsec) {unsigned long useconds = (microsec); \
-                                   udelay((useconds));}
- /*
-diff --git a/drivers/net/ethernet/dec/tulip/winbond-840.c b/drivers/net/ethernet/dec/tulip/winbond-840.c
-index 86b1d23eba83..1db19463fd46 100644
---- a/drivers/net/ethernet/dec/tulip/winbond-840.c
-+++ b/drivers/net/ethernet/dec/tulip/winbond-840.c
-@@ -474,8 +474,6 @@ static int w840_probe1(struct pci_dev *pdev, const struct pci_device_id *ent)
-    No extra delay is needed with 33Mhz PCI, but future 66Mhz access may need
-    a delay.  Note that pre-2.0.34 kernels had a cache-alignment bug that
-    made udelay() unreliable.
--   The old method of using an ISA access as a delay, __SLOW_DOWN_IO__, is
--   deprecated.
- */
- #define eeprom_delay(ee_addr)	ioread32(ee_addr)
- 
-diff --git a/drivers/net/ethernet/natsemi/natsemi.c b/drivers/net/ethernet/natsemi/natsemi.c
-index 82a22711ce45..50bca486a244 100644
---- a/drivers/net/ethernet/natsemi/natsemi.c
-+++ b/drivers/net/ethernet/natsemi/natsemi.c
-@@ -989,8 +989,6 @@ static int natsemi_probe1(struct pci_dev *pdev, const struct pci_device_id *ent)
-    No extra delay is needed with 33Mhz PCI, but future 66Mhz access may need
-    a delay.  Note that pre-2.0.34 kernels had a cache-alignment bug that
-    made udelay() unreliable.
--   The old method of using an ISA access as a delay, __SLOW_DOWN_IO__, is
--   deprecated.
- */
- #define eeprom_delay(ee_addr)	readl(ee_addr)
- 
--- 
-2.25.1
+Given this is not covered by BPF CI, are you planning to regularly check
+for musl compatibility before a new kernel is cut?
 
+Thanks,
+Daniel
