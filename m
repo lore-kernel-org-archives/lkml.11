@@ -2,104 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66B73C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 14:16:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65F37C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 14:17:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242406AbiDYOTu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 10:19:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49672 "EHLO
+        id S233510AbiDYOUC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 10:20:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242378AbiDYOTs (ORCPT
+        with ESMTP id S242400AbiDYOTy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 10:19:48 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE3CF1EEF6
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 07:16:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650896204; x=1682432204;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=AAEEDt7xXTl7wGJqN1W/OSkx+JBqKQDu+fVaYieXLSM=;
-  b=gefvwP6r1mZw50UfZMrTXr7xr5Y6X5vxgQesFgriQ/N3p+d3XzveoMZv
-   0Th/OJwNjY9nJZzcEoY6rD4K4rxRin2ZJ/cdbKd3K5EPrEca1vYu7k6mX
-   BYTPLyPsfvAuX31V7T4vacrR2mxECno70k2blLl3nWA3UwwLXibmf24dB
-   XsqnIp80cPTt3knafgtdAB6x8b8EL92UmrGUFBApy8d5wXsS4/9ioX1qH
-   GiTxeHcclVC/As2KziAJN8ZxvtNl2SiBlPVjBvW2qHP6KDL1izHPJF1IE
-   EYV8Ip+EMPTYEWcL+NFOWfhdG+iPdjXItfID9CyCbKNEAR3fr+pSv9Og2
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="265423517"
-X-IronPort-AV: E=Sophos;i="5.90,288,1643702400"; 
-   d="scan'208";a="265423517"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 07:16:44 -0700
-X-IronPort-AV: E=Sophos;i="5.90,288,1643702400"; 
-   d="scan'208";a="595254808"
-Received: from bjkrist-mobl.amr.corp.intel.com (HELO [10.212.88.70]) ([10.212.88.70])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 07:16:43 -0700
-Message-ID: <76ec6342-0d7c-7c7b-c132-2892e4048fa1@intel.com>
-Date:   Mon, 25 Apr 2022 07:18:36 -0700
+        Mon, 25 Apr 2022 10:19:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00D061EEEF;
+        Mon, 25 Apr 2022 07:16:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 82DCE61629;
+        Mon, 25 Apr 2022 14:16:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7BDBC385AB;
+        Mon, 25 Apr 2022 14:16:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650896208;
+        bh=sl7+gICL/6To7aybYTXAqEUn3cDWBkmHnHgbnanz89U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=EZL7gdL+TvkCz6FZoYPk5ad+fIH2rHBGhegNou64YfMO/i+2WGhmRFcomip3UwCmU
+         oLsAsxXu4l9Td0SK/5gAt1MpGWjWIaafOJxhgHI4eFPkFwH9aSQQBs/+8jUW4AYAev
+         FsFBjQvGQALKClZDInAuL9Nm2R85DwzrSqd/V7hc=
+Date:   Mon, 25 Apr 2022 16:16:45 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     sven@svenschwermer.de
+Cc:     linux-usb@vger.kernel.org,
+        Sven Schwermer <sven.schwermer@disruptive-technologies.com>,
+        linux-kernel@vger.kernel.org, johan@kernel.org
+Subject: Re: [PATCH v2 2/2] usb: serial: option: Add Fibocom MA510 modem
+Message-ID: <YmatTU33qHbt+4ie@kroah.com>
+References: <20220425131122.3686-1-sven@svenschwermer.de>
+ <20220425131122.3686-2-sven@svenschwermer.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
- allocation and free it on mm exit
-Content-Language: en-US
-To:     Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        "zhangfei.gao@foxmail.com" <zhangfei.gao@foxmail.com>
-Cc:     Fenghua Yu <fenghua.yu@intel.com>, Joerg Roedel <joro@8bytes.org>,
-        Ravi V Shankar <ravi.v.shankar@intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        x86 <x86@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        iommu <iommu@lists.linux-foundation.org>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>, will@kernel.org,
-        robin.murphy@arm.com, zhangfei.gao@linaro.org
-References: <tencent_A9458C6CEBAADD361DA765356477B00E920A@qq.com>
- <tencent_8B6D7835F62688B4CD069C0EFC41B308B407@qq.com>
- <YllADL6uMoLllzQo@fyu1.sc.intel.com> <YmA4pbgevqln/jSO@myrica>
- <tencent_76E043C4D1B6A21A5253579A61034107EB06@qq.com>
- <tencent_7477100F8A445C6CAFA8F13601A55134480A@qq.com>
- <YmJ/WA6KAQU/xJjA@myrica>
- <tencent_A4E83BA6071B2204B6F5D4E69A50D21C1A09@qq.com>
- <YmLOznyBF0f7COYT@myrica>
- <tencent_2922DAB6F3D5789A1CD3A21A843B4007ED09@qq.com>
- <Yman5hLomw9/c+bi@myrica>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <Yman5hLomw9/c+bi@myrica>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220425131122.3686-2-sven@svenschwermer.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/25/22 06:53, Jean-Philippe Brucker wrote:
-> On Sat, Apr 23, 2022 at 07:13:39PM +0800, zhangfei.gao@foxmail.com wrote:
->>>> On 5.17
->>>> fops_release is called automatically, as well as iommu_sva_unbind_device.
->>>> On 5.18-rc1.
->>>> fops_release is not called, have to manually call close(fd)
->>> Right that's weird
->> Looks it is caused by the fix patch, via mmget, which may add refcount of
->> fd.
-> Yes indirectly I think: when the process mmaps the queue, mmap_region()
-> takes a reference to the uacce fd. That reference is released either by
-> explicit close() or munmap(), or by exit_mmap() (which is triggered by
-> mmput()). Since there is an mm->fd dependency, we cannot add a fd->mm
-> dependency, so no mmget()/mmput() in bind()/unbind().
+On Mon, Apr 25, 2022 at 03:11:22PM +0200, sven@svenschwermer.de wrote:
+> From: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
 > 
-> I guess we should go back to refcounted PASIDs instead, to avoid freeing
-> them until unbind().
+> The MA510 modem has 3 USB configurations that are configurable via the AT
+> command AT+GTUSBMODE={30,31,32} which make the modem enumerate with the
+> following interfaces, respectively:
+> 
+> 30: Diag + QDSS + Modem + RMNET
+> 31: Diag + Modem + AT + ECM
+> 32: Modem + AT + ECM
+> 
+> The first configuration (30) reuses u-blox R410M's VID/PID with
+> identical interface configuration.
+> 
+> A detailed description of the USB configuration for each mode follows:
+> 
+> +GTUSBMODE: 30
+> --------------
+> T:  Bus=03 Lev=01 Prnt=01 Port=06 Cnt=04 Dev#= 19 Spd=480  MxCh= 0
+> D:  Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
+> P:  Vendor=05c6 ProdID=90b2 Rev= 0.00
+> S:  Manufacturer=Fibocom MA510 Modem
+> S:  Product=Fibocom MA510 Modem
+> S:  SerialNumber=55e2695b
+> C:* #Ifs= 4 Cfg#= 1 Atr=e0 MxPwr=500mA
+> I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+> E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> I:* If#= 1 Alt= 0 #EPs= 1 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
+> E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+> E:  Ad=83(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+> E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> I:* If#= 3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+> E:  Ad=85(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+> E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> 
+> +GTUSBMODE: 31
+> --------------
+> T:  Bus=03 Lev=01 Prnt=01 Port=06 Cnt=04 Dev#= 99 Spd=480  MxCh= 0
+> D:  Ver= 2.00 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
+> P:  Vendor=2cb7 ProdID=0106 Rev= 0.00
+> S:  Manufacturer=Fibocom MA510 Modem
+> S:  Product=Fibocom MA510 Modem
+> S:  SerialNumber=55e2695b
+> C:* #Ifs= 5 Cfg#= 1 Atr=e0 MxPwr=500mA
+> A:  FirstIf#= 3 IfCount= 2 Cls=02(comm.) Sub=00 Prot=00
+> I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+> E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> I:* If#= 1 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+> E:  Ad=82(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+> E:  Ad=83(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=fe Prot=ff Driver=option
+> E:  Ad=84(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+> E:  Ad=85(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> I:* If#= 3 Alt= 0 #EPs= 1 Cls=02(comm.) Sub=06 Prot=00 Driver=cdc_ether
+> E:  Ad=86(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+> I:  If#= 4 Alt= 0 #EPs= 0 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
+> I:* If#= 4 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
+> E:  Ad=87(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> 
+> +GTUSBMODE: 32
+> --------------
+> T:  Bus=03 Lev=01 Prnt=01 Port=06 Cnt=04 Dev#=100 Spd=480  MxCh= 0
+> D:  Ver= 2.00 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
+> P:  Vendor=2cb7 ProdID=010a Rev= 0.00
+> S:  Manufacturer=Fibocom MA510 Modem
+> S:  Product=Fibocom MA510 Modem
+> S:  SerialNumber=55e2695b
+> C:* #Ifs= 4 Cfg#= 1 Atr=e0 MxPwr=500mA
+> A:  FirstIf#= 2 IfCount= 2 Cls=02(comm.) Sub=00 Prot=00
+> I:* If#= 0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+> E:  Ad=81(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+> E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> I:* If#= 1 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=fe Prot=ff Driver=option
+> E:  Ad=83(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+> E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> I:* If#= 2 Alt= 0 #EPs= 1 Cls=02(comm.) Sub=06 Prot=00 Driver=cdc_ether
+> E:  Ad=85(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+> I:  If#= 3 Alt= 0 #EPs= 0 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
+> I:* If#= 3 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
+> E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+> 
+> Signed-off-by: Sven Schwermer <sven.schwermer@disruptive-technologies.com>
+> ---
+>  drivers/usb/serial/option.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/usb/serial/option.c b/drivers/usb/serial/option.c
+> index e0af45e3a6f7..d9c2eaf09901 100644
+> --- a/drivers/usb/serial/option.c
+> +++ b/drivers/usb/serial/option.c
+> @@ -2117,6 +2117,8 @@ static const struct usb_device_id option_ids[] = {
+>  	  .driver_info = RSVD(4) | RSVD(5) },
+>  	{ USB_DEVICE_INTERFACE_CLASS(0x2cb7, 0x0105, 0xff),			/* Fibocom NL678 series */
+>  	  .driver_info = RSVD(6) },
+> +	{ USB_DEVICE_INTERFACE_CLASS(0x2cb7, 0x0106, 0xff) },			/* Fibocom MA510 (ECM mode w/ diag intf.) */
+> +	{ USB_DEVICE_INTERFACE_CLASS(0x2cb7, 0x010a, 0xff) },			/* Fibocom MA510 (ECM mode) */
+>  	{ USB_DEVICE_AND_INTERFACE_INFO(0x2cb7, 0x010b, 0xff, 0xff, 0x30) },	/* Fibocom FG150 Diag */
+>  	{ USB_DEVICE_AND_INTERFACE_INFO(0x2cb7, 0x010b, 0xff, 0, 0) },		/* Fibocom FG150 AT */
+>  	{ USB_DEVICE_INTERFACE_CLASS(0x2cb7, 0x01a0, 0xff) },			/* Fibocom NL668-AM/NL652-EU (laptop MBIM) */
+> -- 
+> 2.36.0
+> 
 
-Yeah, this is a bit gnarly for -rc4.  Let's just make sure there's
-nothing else simple we can do.
+Hi,
 
-How does the IOMMU hardware know that all activity to a given PASID is
-finished?  That activity should, today, be independent of an mm or a
-fd's lifetime.
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
+
+You are receiving this message because of the following common error(s)
+as indicated below:
+
+- This looks like a new version of a previously submitted patch, but you
+  did not list below the --- line any changes from the previous version.
+  Please read the section entitled "The canonical patch format" in the
+  kernel file, Documentation/SubmittingPatches for what needs to be done
+  here to properly describe this.
+
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
+
+thanks,
+
+greg k-h's patch email bot
