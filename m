@@ -2,102 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD077C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 10:01:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D797C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 10:02:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235681AbiDYKEo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 06:04:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37500 "EHLO
+        id S241374AbiDYKFX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 06:05:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240866AbiDYKEG (ORCPT
+        with ESMTP id S239187AbiDYKFH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 06:04:06 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 212E5766B
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 03:01:02 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id q8so2680660plx.3
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 03:01:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=PApZnh3qRXman8Ophw4OOA7A/2sG8ifMcY3MbuoLa18=;
-        b=pcQbwIzZ8x74dXgdi7OBlsMWpxbq8EDM9028htUhVGWemcyFCvsSP1XLm4Wn9i+oum
-         LYJgF3S0BjrgnyvGmCAXpd7yTc86lesWt8fXZETMqA4vNYgT4yopSZROF+Y5hTMHNUlO
-         RpIVMVboBu8c4OUzgtL0HRmXSjqwwr/rek3H978V1531j83iVL3NH+6i0rqcIP3rvzrq
-         LhvLHDu5PFV8vdQZ645/tcvXcnIKr/zZW69GPJfX4z4ZUTBu7pxPkJPog+0edRvuJDyh
-         HJ9DzKY80rW+SPmGRxKuPilEu+gGfhj0caRZb+YfR/vWhRwZeNH/3OROVsQ1sUOwe2uS
-         10rg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=PApZnh3qRXman8Ophw4OOA7A/2sG8ifMcY3MbuoLa18=;
-        b=eDWh6p3dMoIXczYj9KY7Mgt/V8/8Fh1i5nXzJL7TcquIUkHY+E5jAkkvW0kOQvyuXR
-         bWfrl/oOn+LnrHzTHVtkXXiOm2f3ElskdXhmTuhbiG7vKzbB7bHRL/495jRvQwrqJj2g
-         to0e6QaOtUmmQ7oE4rNmF+ZJ2jaEz4jTPDHJkynGImx2a74KOrexD+Pyz/yPD7BUjZlA
-         C73nMNkmwseh3XylF27euw3fRTqaq4gmWW327yq/YxdsKv0vIFeHRuNXORq5unlsGHBb
-         vRfWc2hW7gk7QUuDXiBg5bo9gNJrYQ8K0Det7MjTldXJESIdVrdREq1FshiRs7JX1oJy
-         HThw==
-X-Gm-Message-State: AOAM532YrLNbkr1rRwTICZXnlDJ+wQY9je8uqNU4rRL6epeSfMye5LGU
-        N2AFD/HsGhZMU3xNect66fr+vg==
-X-Google-Smtp-Source: ABdhPJzQojLiY848HqAktLkmWjk+9Gu/+RD85Df6pBBCgMUEKyHRB6p3bOCBqDrMilhn2Wj8891rlw==
-X-Received: by 2002:a17:902:b586:b0:159:684:c522 with SMTP id a6-20020a170902b58600b001590684c522mr17046705pls.39.1650880861518;
-        Mon, 25 Apr 2022 03:01:01 -0700 (PDT)
-Received: from localhost ([122.171.250.232])
-        by smtp.gmail.com with ESMTPSA id bh3-20020a056a02020300b00378b62df320sm9207671pgb.73.2022.04.25.03.01.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 03:01:01 -0700 (PDT)
-Date:   Mon, 25 Apr 2022 15:30:58 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>
-Cc:     rafael@kernel.org, robh+dt@kernel.org, krzk+dt@kernel.org,
-        matthias.bgg@gmail.com, jia-wei.chang@mediatek.com,
-        roger.lu@mediatek.com, hsinyi@google.com, khilman@baylibre.com,
-        angelogioacchino.delregno@collabora.com, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-Subject: Re: [PATCH V4 07/14] cpufreq: mediatek: Add .get function
-Message-ID: <20220425100058.4kbvmpi63ygni6k5@vireshk-i7>
-References: <20220422075239.16437-1-rex-bc.chen@mediatek.com>
- <20220422075239.16437-8-rex-bc.chen@mediatek.com>
- <20220425053548.72w2jh2g6lpzgz6g@vireshk-i7>
- <64c690e8edf493ec0a4a14e0fdaad2d8e88e6da7.camel@mediatek.com>
+        Mon, 25 Apr 2022 06:05:07 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 759891CB2A;
+        Mon, 25 Apr 2022 03:02:02 -0700 (PDT)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23P7QCLO025750;
+        Mon, 25 Apr 2022 10:01:59 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=qevLnLIOvhhbayXaWXIfbnUI5mDlCrzfPutLUoLwDtY=;
+ b=rDohz94F4uxNz4BbHp9s0BfFqgM3wOSdDuyuU3+C67s95I5jHMjeC94q/ZlIbdUL8Bsx
+ QL3XTq8tN4uJE68nVGz7ioQzHNSRuhn6oGRdzM4302G/Y4i4AVIMlAhta6x8j042CUAY
+ m/I24fzh9stUZCf3NQ59Vqo6C9MOR6zxDVtKA2OVkFgze/93C4ON5xpL9wSlC5QpWrj/
+ OPeJLd9b0C03H36KOgVBctO35DEYIcsBmNoCPqIbinB4/TDtjcvpNFSmXvqekGPxau/7
+ V37Z2lEVPACzWFjGQ1Wjzem+1VuPy1dUJxzN13vK/fqzhSmfvyhxruDQPKnlPFQwuH27 3w== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fnq8k34e4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 25 Apr 2022 10:01:59 +0000
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23P9x7nw001111;
+        Mon, 25 Apr 2022 10:01:58 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fnq8k34d8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 25 Apr 2022 10:01:58 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23P9rsDA002104;
+        Mon, 25 Apr 2022 10:01:56 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma04ams.nl.ibm.com with ESMTP id 3fm938t5xk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 25 Apr 2022 10:01:56 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23PA1rAp43319572
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 25 Apr 2022 10:01:53 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0EE5C42041;
+        Mon, 25 Apr 2022 10:01:53 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9DD6A42045;
+        Mon, 25 Apr 2022 10:01:52 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 25 Apr 2022 10:01:52 +0000 (GMT)
+From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+To:     Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>
+Cc:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
+        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
+Subject: [PATCH v2 2/2] KVM: s390: selftest: Test suppression indication on key prot exception
+Date:   Mon, 25 Apr 2022 12:01:47 +0200
+Message-Id: <20220425100147.1755340-3-scgl@linux.ibm.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220425100147.1755340-1-scgl@linux.ibm.com>
+References: <20220425100147.1755340-1-scgl@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <64c690e8edf493ec0a4a14e0fdaad2d8e88e6da7.camel@mediatek.com>
-User-Agent: NeoMutt/20180716-391-311a52
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 1kaCC2R7GrN33q6ejhT2ceBGBaM6PGJG
+X-Proofpoint-GUID: Pnd6Od2VZiSgVPB7rr9Wp5c4a_7fZWAK
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-25_06,2022-04-22_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 malwarescore=0
+ priorityscore=1501 suspectscore=0 spamscore=0 lowpriorityscore=0
+ bulkscore=0 phishscore=0 adultscore=0 mlxscore=0 mlxlogscore=999
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204250040
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25-04-22, 17:34, Rex-BC Chen wrote:
-> We found that the pulses of cpu voltage could be observed when
-> frequency is fixed (scaling_max_freq == scaling_min_freq) if using
-> cpufreq_generic_get as '.get' callback in MT8186.
-> cpufreq framework will constantly (~ 1 sec) call 'update' if the policy
+Check that suppression is not indicated on injection of a key checked
+protection exception caused by a memop after it already modified guest
+memory, as that violates the definition of suppression.
 
-Which function gets called here in that case ? I would expect
-cpufreq_driver_target() to not make a call to MTK driver in that case, after it
-finds that new and old frequency are same (it will check the corresponding freq
-from cpufreq table).
+Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+---
+ tools/testing/selftests/kvm/s390x/memop.c | 43 ++++++++++++++++++++++-
+ 1 file changed, 42 insertions(+), 1 deletion(-)
 
-> frequency is NOT equal to hardware frequency in
-> cpufreq_verify_current_freq.
-> The problem is that there might be a tiny difference between the policy
-> frequency and the hardware frequency even they are very close.
-> e.g. policy frequency is 500,000,000 Hz however, hardware frequency is
-> 499,999,726 Hz for MT8186 opp15.
-> 
-> To prevent the voltage pulses, we currently use the software cached
-> values as you pointed out.
-> I wonder is it possible to add a tolerence for checking difference
-> between policy frequency and hardware frequency in cpufreq framework so
-> that we can use cpufreq_generic_get as callback without pulse issue.
-> Or any suggestion would be appreciated.
-
+diff --git a/tools/testing/selftests/kvm/s390x/memop.c b/tools/testing/selftests/kvm/s390x/memop.c
+index b04c2c1b3c30..ce176ad9f216 100644
+--- a/tools/testing/selftests/kvm/s390x/memop.c
++++ b/tools/testing/selftests/kvm/s390x/memop.c
+@@ -194,6 +194,7 @@ static int err_memop_ioctl(struct test_vcpu vcpu, struct kvm_s390_mem_op *ksmo)
+ #define SIDA_OFFSET(o) ._sida_offset = 1, .sida_offset = (o)
+ #define AR(a) ._ar = 1, .ar = (a)
+ #define KEY(a) .f_key = 1, .key = (a)
++#define INJECT .f_inject = 1
+ 
+ #define CHECK_N_DO(f, ...) ({ f(__VA_ARGS__, CHECK_ONLY); f(__VA_ARGS__); })
+ 
+@@ -430,9 +431,18 @@ static void test_copy_key_fetch_prot(void)
+ 	TEST_ASSERT(rv == 4, "Should result in protection exception");		\
+ })
+ 
++static void guest_error_key(void)
++{
++	GUEST_SYNC(STAGE_INITED);
++	set_storage_key_range(mem1, PAGE_SIZE, 0x18);
++	set_storage_key_range(mem1 + PAGE_SIZE, sizeof(mem1) - PAGE_SIZE, 0x98);
++	GUEST_SYNC(STAGE_SKEYS_SET);
++	GUEST_SYNC(STAGE_IDLED);
++}
++
+ static void test_errors_key(void)
+ {
+-	struct test_default t = test_default_init(guest_copy_key_fetch_prot);
++	struct test_default t = test_default_init(guest_error_key);
+ 
+ 	HOST_SYNC(t.vcpu, STAGE_INITED);
+ 	HOST_SYNC(t.vcpu, STAGE_SKEYS_SET);
+@@ -446,6 +456,36 @@ static void test_errors_key(void)
+ 	kvm_vm_free(t.kvm_vm);
+ }
+ 
++static void test_termination(void)
++{
++	struct test_default t = test_default_init(guest_error_key);
++	uint64_t prefix;
++	uint64_t teid;
++	uint64_t psw[2];
++
++	HOST_SYNC(t.vcpu, STAGE_INITED);
++	HOST_SYNC(t.vcpu, STAGE_SKEYS_SET);
++
++	/* vcpu, mismatching keys after first page */
++	ERR_PROT_MOP(t.vcpu, LOGICAL, WRITE, mem1, t.size, GADDR_V(mem1), KEY(1), INJECT);
++	/*
++	 * The memop injected a program exception and the test needs to check the
++	 * Translation-Exception Identification (TEID). It is necessary to run
++	 * the guest in order to be able to read the TEID from guest memory.
++	 * Set the guest program new PSW, so the guest state is not clobbered.
++	 */
++	prefix = t.run->s.regs.prefix;
++	psw[0] = t.run->psw_mask;
++	psw[1] = t.run->psw_addr;
++	MOP(t.vm, ABSOLUTE, WRITE, psw, sizeof(psw), GADDR(prefix + 464));
++	HOST_SYNC(t.vcpu, STAGE_IDLED);
++	MOP(t.vm, ABSOLUTE, READ, &teid, sizeof(teid), GADDR(prefix + 168));
++	/* Bits 56, 60, 61 form a code, 0 being the only one allowing for termination */
++	ASSERT_EQ(teid & 0x4c, 0);
++
++	kvm_vm_free(t.kvm_vm);
++}
++
+ static void test_errors_key_storage_prot_override(void)
+ {
+ 	struct test_default t = test_default_init(guest_copy_key_fetch_prot);
+@@ -668,6 +708,7 @@ int main(int argc, char *argv[])
+ 		test_copy_key_fetch_prot();
+ 		test_copy_key_fetch_prot_override();
+ 		test_errors_key();
++		test_termination();
+ 		test_errors_key_storage_prot_override();
+ 		test_errors_key_fetch_prot_override_not_enabled();
+ 		test_errors_key_fetch_prot_override_enabled();
 -- 
-viresh
+2.32.0
+
