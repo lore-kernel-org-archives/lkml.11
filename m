@@ -2,89 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97E07C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 02:44:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CC64C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 02:44:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240417AbiDYCrr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 22:47:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33612 "EHLO
+        id S240426AbiDYCr4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 22:47:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240266AbiDYCrn (ORCPT
+        with ESMTP id S240412AbiDYCrq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 22:47:43 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 138F068F87;
-        Sun, 24 Apr 2022 19:44:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=5cqZcBN/6VFoY2Kiw77E9V9l0udJorJnVRNxt6POB6Y=; b=pIe19kOM7lwduX9PIpON6Gl3Sb
-        tYT/bmec/CDms8FQucEQp6BGZAPj/h3jUBLBkh0h3XXCKXO9c1KHZeplYXXTzPkIudQ39ORiAUt1N
-        BDgYk5dNJzeztVjkG2pEEedWZvlTrtkUFgbOqjalWHN4EJ36ksozrS4EeaTP70ABLfhLRM3erkfXj
-        uxEUuxKkBhom61Yus7fC7pKXE5CTkq32ISL4+6DCXYl0Aj7z6B89Xs0wZMj+zH3y+YZ8xVGwe9of6
-        B5fdfzAbcW4/J1UmME6cC0nkd6PsnNAkik1MjWGztykCGHMi/GWeEEqJn9diQEIk29exTmYH1X9+H
-        nABXy5rA==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nioiI-008N4t-Ir; Mon, 25 Apr 2022 02:44:34 +0000
-Date:   Mon, 25 Apr 2022 03:44:34 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Joe Perches <joe@perches.com>
-Cc:     Kent Overstreet <kent.overstreet@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, hch@lst.de, hannes@cmpxchg.org,
-        akpm@linux-foundation.org, linux-clk@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-input@vger.kernel.org,
-        roman.gushchin@linux.dev
-Subject: Re: [PATCH v2 1/8] lib/printbuf: New data structure for
- heap-allocated strings
-Message-ID: <YmYLEovwj9BqeZQA@casper.infradead.org>
-References: <20220421234837.3629927-1-kent.overstreet@gmail.com>
- <20220421234837.3629927-7-kent.overstreet@gmail.com>
- <fcaf18ed6efaafa6ca7df79712d9d317645215f8.camel@perches.com>
+        Sun, 24 Apr 2022 22:47:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A164F68F8F
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 19:44:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650854683;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fz/K5MVrwYQcCpHC+g2ETqDjMuMbroKDJr5qSpPTTD4=;
+        b=G3oTJ5cG9HE1h+xCkXX0DW4UyVjeMy32P/W2660UzYz2tnUaaTzWq1kveLWr4TZ6h7yfff
+        UPzwDy25u4OiYu2hEHDgS9wGx/RB40SihFPXkhPXmBb6Y6VAo20fYUnjSGPYYSs+P8/N2t
+        sF8r0N0gmHlmFSOBadTrZy/zjjtOb7A=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-475-g1M8XoLtNRGGFhvYmd0nvA-1; Sun, 24 Apr 2022 22:44:42 -0400
+X-MC-Unique: g1M8XoLtNRGGFhvYmd0nvA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 252C585A5BE;
+        Mon, 25 Apr 2022 02:44:42 +0000 (UTC)
+Received: from localhost.localdomain (ovpn-13-160.pek2.redhat.com [10.72.13.160])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 502DB9E6F;
+        Mon, 25 Apr 2022 02:44:31 +0000 (UTC)
+From:   Jason Wang <jasowang@redhat.com>
+To:     jasowang@redhat.com, mst@redhat.com, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org
+Cc:     sgarzare@redhat.com, eperezma@redhat.com, lulu@redhat.com,
+        tglx@linutronix.de, peterz@infradead.org, paulmck@kernel.org,
+        maz@kernel.org, pasic@linux.ibm.com, cohuck@redhat.com
+Subject: [PATCH V3 1/9] virtio: use virtio_device_ready() in virtio_device_restore()
+Date:   Mon, 25 Apr 2022 10:44:10 +0800
+Message-Id: <20220425024418.8415-2-jasowang@redhat.com>
+In-Reply-To: <20220425024418.8415-1-jasowang@redhat.com>
+References: <20220425024418.8415-1-jasowang@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fcaf18ed6efaafa6ca7df79712d9d317645215f8.camel@perches.com>
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 24, 2022 at 04:46:03PM -0700, Joe Perches wrote:
-> > + * pr_human_readable_u64, pr_human_readable_s64: Print an integer with human
-> > + * readable units.
-> 
-> Why not extend vsprintf for this using something like %pH[8|16|32|64] 
-> or %pH[c|s|l|ll|uc|us|ul|ull] ?
+From: Stefano Garzarella <sgarzare@redhat.com>
 
-The %pX extension we have is _cute_, but ultimately a bad idea.  It
-centralises all kinds of unrelated things in vsprintf.c, eg bdev_name()
-and clock() and ip_addr_string().
+It will allow us to do extension on virtio_device_ready() without
+duplicating code.
 
-Really, it's working around that we don't have something like Java's
-StringBuffer (which I see both seq_buf and printbuf as attempting to
-be).  So we have this primitive format string hack instead of exposing
-methods like:
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: "Paul E. McKenney" <paulmck@kernel.org>
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: Halil Pasic <pasic@linux.ibm.com>
+Cc: Cornelia Huck <cohuck@redhat.com>
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+---
+ drivers/virtio/virtio.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-void dentry_string(struct strbuf *, struct dentry *);
+diff --git a/drivers/virtio/virtio.c b/drivers/virtio/virtio.c
+index 22f15f444f75..75c8d560bbd3 100644
+--- a/drivers/virtio/virtio.c
++++ b/drivers/virtio/virtio.c
+@@ -526,8 +526,9 @@ int virtio_device_restore(struct virtio_device *dev)
+ 			goto err;
+ 	}
+ 
+-	/* Finally, tell the device we're all set */
+-	virtio_add_status(dev, VIRTIO_CONFIG_S_DRIVER_OK);
++	/* If restore didn't do it, mark device DRIVER_OK ourselves. */
++	if (!(dev->config->get_status(dev) & VIRTIO_CONFIG_S_DRIVER_OK))
++		virtio_device_ready(dev);
+ 
+ 	virtio_config_enable(dev);
+ 
+-- 
+2.25.1
 
-as an example,
-                if (unlikely(ino == dir->i_ino)) {
-                        EXT4_ERROR_INODE(dir, "'%pd' linked to parent dir",
-                                         dentry);
-                        return ERR_PTR(-EFSCORRUPTED);
-                }
-
-would become something like:
-
-		if (unlikely(ino == dir->i_ino)) {
-			struct strbuf strbuf;
-			strbuf_char(strbuf, '\'');
-			dentry_string(strbuf, dentry);
-			strbuf_string(strbuf, "' linked to parent dir");
-			EXT4_ERROR_INODE(dir, strbuf);
-			return ERR_PTR(-EFSCORRUPTED);
-		}
-
-which isn't terribly nice, but C has sucky syntax for string
-construction.  Other languages have done this better, including Rust.
