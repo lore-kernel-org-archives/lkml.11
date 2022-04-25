@@ -2,114 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A607C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 08:48:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB52CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 08:48:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235607AbiDYIu4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 04:50:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36244 "EHLO
+        id S237506AbiDYIvY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 04:51:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232457AbiDYIut (ORCPT
+        with ESMTP id S237397AbiDYIvS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 04:50:49 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C94928BF24
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 01:47:44 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KmzCH37Jrzfb32;
-        Mon, 25 Apr 2022 16:46:51 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 25 Apr 2022 16:47:42 +0800
-Subject: Re: [PATCH v3 1/3] mm/swapfile: unuse_pte can map random data if swap
- read fails
-To:     David Hildenbrand <david@redhat.com>,
-        =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
-        <naoya.horiguchi@nec.com>
-CC:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "willy@infradead.org" <willy@infradead.org>,
-        "vbabka@suse.cz" <vbabka@suse.cz>,
-        "dhowells@redhat.com" <dhowells@redhat.com>,
-        "neilb@suse.de" <neilb@suse.de>,
-        "apopple@nvidia.com" <apopple@nvidia.com>,
-        "surenb@google.com" <surenb@google.com>,
-        "minchan@kernel.org" <minchan@kernel.org>,
-        "peterx@redhat.com" <peterx@redhat.com>,
-        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20220424091105.48374-1-linmiaohe@huawei.com>
- <20220424091105.48374-2-linmiaohe@huawei.com>
- <20220425010804.GA3746096@hori.linux.bs1.fc.nec.co.jp>
- <febd6309-b2a5-ef79-daa2-8000af09e291@redhat.com>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <3ab987be-614a-4757-4124-26bb09d3f160@huawei.com>
-Date:   Mon, 25 Apr 2022 16:47:41 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Mon, 25 Apr 2022 04:51:18 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7781D90CFA;
+        Mon, 25 Apr 2022 01:48:10 -0700 (PDT)
+X-UUID: 2e560d5a45c44bc8bbdbb1d4c8f693b3-20220425
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:7d832b6c-6a11-4cc6-9244-ef1b24255576,OB:0,LO
+        B:0,IP:0,URL:25,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,A
+        CTION:release,TS:5
+X-CID-META: VersionHash:faefae9,CLOUDID:c31d03f0-06b0-4305-bfbf-554bfc9d151a,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: 2e560d5a45c44bc8bbdbb1d4c8f693b3-20220425
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
+        (envelope-from <allen-kh.cheng@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1047185239; Mon, 25 Apr 2022 16:48:05 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Mon, 25 Apr 2022 16:48:04 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 25 Apr
+ 2022 16:48:03 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 25 Apr 2022 16:48:03 +0800
+From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski@canonical.com>
+CC:     Lala Lin <lala.lin@mediatek.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        "Chen-Yu Tsai" <wenst@chromium.org>,
+        Ryder Lee <ryder.lee@kernel.org>,
+        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Subject: [PATCH v2 1/1] dt-bindings: nvmem: mediatek: Convert mtk-efuse binding to YAML
+Date:   Mon, 25 Apr 2022 16:48:00 +0800
+Message-ID: <20220425084800.2021-2-allen-kh.cheng@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220425084800.2021-1-allen-kh.cheng@mediatek.com>
+References: <20220425084800.2021-1-allen-kh.cheng@mediatek.com>
 MIME-Version: 1.0
-In-Reply-To: <febd6309-b2a5-ef79-daa2-8000af09e291@redhat.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/25 15:45, David Hildenbrand wrote:
-> On 25.04.22 03:08, HORIGUCHI NAOYA(堀口 直也) wrote:
->> On Sun, Apr 24, 2022 at 05:11:03PM +0800, Miaohe Lin wrote:
->>> There is a bug in unuse_pte(): when swap page happens to be unreadable,
->>> page filled with random data is mapped into user address space.  In case
->>> of error, a special swap entry indicating swap read fails is set to the
->>> page table.  So the swapcache page can be freed and the user won't end up
->>> with a permanently mounted swap because a sector is bad.  And if the page
->>> is accessed later, the user process will be killed so that corrupted data
->>> is never consumed.  On the other hand, if the page is never accessed, the
->>> user won't even notice it.
->>>
->>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
->>> Acked-by: David Hildenbrand <david@redhat.com>
->>
->> Hi Miaohe,
->>
->> This bug sounds relatively serious to me, and it seems old, so is it worth
->> sending to -stable?
-> 
-> I'm not sure if this is worth -stable, but no strong opinion.
+Convert MediaTek eFuse devicetree binding to YAML.
 
-I have no strong opinion too. I'm just afraid someone might run into it. But swapoff is
-expected to be a rare operation anyway...
+Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+---
+ .../devicetree/bindings/nvmem/mtk,efuse.yaml  | 70 +++++++++++++++++++
+ .../devicetree/bindings/nvmem/mtk-efuse.txt   | 43 ------------
+ 2 files changed, 70 insertions(+), 43 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/nvmem/mtk,efuse.yaml
+ delete mode 100644 Documentation/devicetree/bindings/nvmem/mtk-efuse.txt
 
-> 
-> The do_swap_page() part was added in 2005:
-> 
-> commit b81074800b98ac50b64d4c8d34e8abf0fda5e3d1
-> Author: Kirill Korotaev <dev@sw.ru>
-> Date:   Mon May 16 21:53:50 2005 -0700
-> 
->     [PATCH] do_swap_page() can map random data if swap read fails
->     
->     There is a bug in do_swap_page(): when swap page happens to be unreadable,
->     page filled with random data is mapped into user address space.  The fix is
->     to check for PageUptodate and send SIGBUS in case of error.
->     
->     Signed-Off-By: Kirill Korotaev <dev@sw.ru>
->     Signed-Off-By: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
->     Acked-by: Hugh Dickins <hugh@veritas.com>
->     Signed-off-by: Andrew Morton <akpm@osdl.org>
->     Signed-off-by: Linus Torvalds <torvalds@osdl.org>
-> 
-> So the do_swap_page() part has been fixed for quite a while already.
+diff --git a/Documentation/devicetree/bindings/nvmem/mtk,efuse.yaml b/Documentation/devicetree/bindings/nvmem/mtk,efuse.yaml
+new file mode 100644
+index 000000000000..d056bc61dd5b
+--- /dev/null
++++ b/Documentation/devicetree/bindings/nvmem/mtk,efuse.yaml
+@@ -0,0 +1,70 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/nvmem/mtk,efuse.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: MediaTek eFuse device tree bindings
++
++maintainers:
++  - Lala Lin <lala.lin@mediatek.com>
++  - Allen-KH Cheng <allen-kh.cheng@mediatek.com>
++
++allOf:
++  - $ref: "nvmem.yaml#"
++
++properties:
++  compatible:
++    oneOf:
++      - enum:
++          - mediatek,mt8173-efuse
++          - mediatek,efuse
++      - items:
++          - enum:
++              - mediatek,mt7622-efuse
++              - mediatek,mt7623-efuse
++              - mediatek,mt8183-efuse
++              - mediatek,mt8192-efuse
++              - mediatek,mt8195-efuse
++              - mediatek,mt8516-efuse
++          - const: mediatek,efuse
++
++  reg:
++    maxItems: 1
++
++patternProperties:
++  "^.*@[0-9a-f]+$":
++    type: object
++
++    properties:
++      reg:
++        maxItems: 1
++        description:
++          Offset and size in bytes within the storage device.
++
++    required:
++      - reg
++
++    additionalProperties: false
++
++required:
++  - compatible
++  - reg
++
++unevaluatedProperties: false
++
++examples:
++  - |
++
++    efuse: efuse@10206000 {
++            compatible = "mediatek,mt8173-efuse";
++            reg	   = <0x10206000 0x1000>;
++            #address-cells = <1>;
++            #size-cells = <1>;
++
++            /* Data cells */
++            thermal_calibration: calib@528 {
++                reg = <0x528 0xc>;
++            };
++    };
++...
+diff --git a/Documentation/devicetree/bindings/nvmem/mtk-efuse.txt b/Documentation/devicetree/bindings/nvmem/mtk-efuse.txt
+deleted file mode 100644
+index 39d529599444..000000000000
+--- a/Documentation/devicetree/bindings/nvmem/mtk-efuse.txt
++++ /dev/null
+@@ -1,43 +0,0 @@
+-= Mediatek MTK-EFUSE device tree bindings =
+-
+-This binding is intended to represent MTK-EFUSE which is found in most Mediatek SOCs.
+-
+-Required properties:
+-- compatible: should be
+-	      "mediatek,mt7622-efuse", "mediatek,efuse": for MT7622
+-	      "mediatek,mt7623-efuse", "mediatek,efuse": for MT7623
+-	      "mediatek,mt8173-efuse" or "mediatek,efuse": for MT8173
+-	      "mediatek,mt8192-efuse", "mediatek,efuse": for MT8192
+-	      "mediatek,mt8195-efuse", "mediatek,efuse": for MT8195
+-	      "mediatek,mt8516-efuse", "mediatek,efuse": for MT8516
+-- reg: Should contain registers location and length
+-- bits: contain the bits range by offset and size
+-
+-= Data cells =
+-Are child nodes of MTK-EFUSE, bindings of which as described in
+-bindings/nvmem/nvmem.txt
+-
+-Example:
+-
+-	efuse: efuse@10206000 {
+-		compatible = "mediatek,mt8173-efuse";
+-		reg	   = <0 0x10206000 0 0x1000>;
+-		#address-cells = <1>;
+-		#size-cells = <1>;
+-
+-		/* Data cells */
+-		thermal_calibration: calib@528 {
+-			reg = <0x528 0xc>;
+-		};
+-	};
+-
+-= Data consumers =
+-Are device nodes which consume nvmem data cells.
+-
+-For example:
+-
+-	thermal {
+-		...
+-		nvmem-cells = <&thermal_calibration>;
+-		nvmem-cell-names = "calibration";
+-	};
+-- 
+2.18.0
 
-Does this mean only do_swap_page maps random data if swap read fails is observed from that time on?
-So this might not be worth -stable as it's never seen more than a decade?
-
-Thanks!
-
->
