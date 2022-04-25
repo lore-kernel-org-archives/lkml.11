@@ -2,109 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD10BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:24:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E489C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:24:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231205AbiDYW1g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 18:27:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38148 "EHLO
+        id S232650AbiDYW1o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 18:27:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343681AbiDYWKZ (ORCPT
+        with ESMTP id S1343513AbiDYVaN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 18:10:25 -0400
-Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A8181D33F;
-        Mon, 25 Apr 2022 15:07:16 -0700 (PDT)
-Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
+        Mon, 25 Apr 2022 17:30:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7699E23BE5
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 14:27:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: marex@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 6C6E6806B7;
-        Tue, 26 Apr 2022 00:07:14 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1650924434;
-        bh=3xdUpz0rxOpaFXzw5F0nSyIQaIXNBm7+paVzz99k0qk=;
-        h=Date:Subject:To:References:From:In-Reply-To:From;
-        b=QH0u//pMrhzlghzFLFFQUSLoTUPjS9kwA5AOm14Y6mj84GUj+/pSvTa6HAUNWMH3i
-         E6OyUUUl0+Jx7TdyYh9IKkBf9OUbzYQhewlQ9zikp5CZqQq+JivK4CkZfk4F/THr9b
-         jgLdExXdNzLJvAQM4tGKstaAklhCJdUtZHn2IAkyAjo4qvnM0rFYVCyqkwk0V6qw21
-         dQc6ITPuRK/dWI+cT2jIVWVQNXV8UY6DpNxKartwFKkJnxVLopj/Zl1OvlKcQfhKId
-         hc2pW/tTqN7EmA2FL8zIdUS/2s3+2hsEk6W/HtsQSgumfP2drMM/INNDvp6UiMgNkS
-         aqMqT/0qvR4Hw==
-Message-ID: <580a2c04-67ca-17f3-54ec-5b07ca46c254@denx.de>
-Date:   Tue, 26 Apr 2022 00:07:13 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] pinctrl: stm32: improve bank clocks management
-Content-Language: en-US
-To:     Fabien DESSENNE <fabien.dessenne@foss.st.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        linux-gpio@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220422143608.226580-1-fabien.dessenne@foss.st.com>
- <c48500cd-50be-1d70-2f2c-02c2dcede1eb@denx.de>
- <442677d2-7e9f-14f0-4b5a-1f98a8f40c8a@foss.st.com>
-From:   Marek Vasut <marex@denx.de>
-In-Reply-To: <442677d2-7e9f-14f0-4b5a-1f98a8f40c8a@foss.st.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.103.5 at phobos.denx.de
-X-Virus-Status: Clean
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 066D361479
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 21:27:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37757C385A7;
+        Mon, 25 Apr 2022 21:27:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1650922027;
+        bh=kqDjvm3xpzh6Yg4Lxl+rXD0rB2PmW1SLX1gSac7OA38=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SH8ca7bwli2JGengyW3Aaj2tn4GzTs25gN4kDLQXD31vIMD4zAdYYXe4RV1Hf+h5r
+         4uR7mFW6X/K2RZYuiuWmQo0DmBjI1GKuQNjTirwy0dumX98LE6YPvbvSHserq1ONbL
+         7NIYKtsUlaTtN2risNvZjBpIHyzz6tu8hL6EL+cg=
+Date:   Mon, 25 Apr 2022 14:27:06 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-mm@kvack.org, Song Liu <song@kernel.org>
+Subject: Re: Linux 5.18-rc4
+Message-Id: <20220425142706.23e6bea1d5bfdd944e33bc96@linux-foundation.org>
+In-Reply-To: <YmZvAUakbWnyQEqa@debian>
+References: <CAHk-=whmtHMzjaVUF9bS+7vE_rrRctcCTvsAeB8fuLYcyYLN-g@mail.gmail.com>
+        <YmZvAUakbWnyQEqa@debian>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/25/22 11:27, Fabien DESSENNE wrote:
-> Hi Marek
-> 
-> 
-> On 22/04/2022 18:26, Marek Vasut wrote:
->> On 4/22/22 16:36, Fabien Dessenne wrote:
->>> Instead of enabling/disabling the clock at each IO configuration update,
->>> just keep the clock enabled from the probe.
->>> This makes things simpler and more efficient (e.g. the time required to
->>> toggle an output IO is drastically decreased) without significantly
->>> increasing the power consumption.
->>
->> [...]
->>
->>>   static struct irq_domain *stm32_pctrl_get_irq_domain(struct 
->>> device_node *np)
->>> @@ -1575,6 +1537,10 @@ int stm32_pctl_probe(struct platform_device 
->>> *pdev)
->>>               ret = stm32_gpiolib_register_bank(pctl, child);
->>>               if (ret) {
->>>                   of_node_put(child);
->>> +
->>> +                for (i = 0; i < pctl->nbanks; i++)
->>> +                    clk_disable_unprepare(pctl->banks[i].clk);
->>> +
->>
->> There are clk_bulk_*() functions, maybe you can use those to get rid 
->> of these loops ?
-> 
-> This sounds goods, but checking more in details I see that moving to the 
-> 'bulk' implementation would require to move the clk information from the 
-> "struct stm32_gpio_bank *banks" member to its parent "struct 
-> stm32_pinctrl".
-> 
-> This would make the clk device information stored in a different 
-> structure from the other device-related information (base address, reset 
-> control, ...). It's better to keep all those information together in the 
-> same struct.
-> 
-> As another drawback we would loose access to 'clk' from any function 
-> that have 'bank' (or 'struct gpio_chip *chip') as input parameter (e.g. 
-> stm32_gpio_get() called from gpiolib).
-> 
-> So I really prefer to keep the current implementation.
+On Mon, 25 Apr 2022 10:50:57 +0100 Sudip Mukherjee <sudipm.mukherjee@gmail.com> wrote:
 
-All right, I agree.
+> Hi Linus,
+> 
+> On Sun, Apr 24, 2022 at 03:22:59PM -0700, Linus Torvalds wrote:
+> > Fairly slow and calm week - which makes me just suspect that the other
+> > shoe will drop at some point.
+> > 
+> > But maybe things are just going really well this release. It's bound
+> > to happen _occasionally_, after all.
+> 
+> My last night's mainline build failed for arm.
+> Build was with af2d861d4cd2 ("Linux 5.18-rc4").
+> 
+> imxrt_defconfig -> failed
+> lpc18xx_defconfig -> failed
+> mps2_defconfig -> failed
+> stm32_defconfig -> failed
+> vf610m4_defconfig -> failed
+> 
+> arm-linux-gnueabi-ld: mm/page_alloc.o: in function `alloc_large_system_hash':
+> page_alloc.c:(.init.text+0xe7c): undefined reference to `vmalloc_huge'
 
->> The rest looks good to me.
+Thanks.  oops.  We broke nommu.
 
-Reviewed-by: Marek Vasut <marex@denx.de>
+From: Andrew Morton <akpm@linux-foundation.org>
+Subject: mm/nommu.c: provide vmalloc_huge() for CONFIG_MMU=n
+
+Fixes: f2edd118d02dd ("page_alloc: use vmalloc_huge for large system hash")
+Reported-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc: Song Liu <song@kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+---
+
+ mm/nommu.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
+
+--- a/mm/nommu.c~a
++++ a/mm/nommu.c
+@@ -226,6 +226,12 @@ void *vmalloc(unsigned long size)
+ }
+ EXPORT_SYMBOL(vmalloc);
+ 
++void *vmalloc_huge(unsigned long size, gfp_t gfp_mask)
++{
++	return vmalloc(size);
++}
++EXPORT_SYMBOL(vmalloc_huge);
++
+ /*
+  *	vzalloc - allocate virtually contiguous memory with zero fill
+  *
+_
+
+
+I don't see any point in copy-n-pasting the kerneldoc over.  Perhaps we
+should just delete all the copy-n-paste kerneldoc from nommu.c and say
+"go look at the MMU version of this function".
+
