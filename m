@@ -2,86 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C690C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:21:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A58DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:22:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243345AbiDYQYq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 12:24:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54114 "EHLO
+        id S243343AbiDYQZa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 12:25:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237107AbiDYQYp (ORCPT
+        with ESMTP id S240823AbiDYQZ1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 12:24:45 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5DFBA6D857
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 09:21:40 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7CAA11FB;
-        Mon, 25 Apr 2022 09:21:39 -0700 (PDT)
-Received: from [192.168.178.6] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6F1EC3F774;
-        Mon, 25 Apr 2022 09:21:37 -0700 (PDT)
-Message-ID: <cfab5ffc-af96-8368-0aae-927a6be65472@arm.com>
-Date:   Mon, 25 Apr 2022 18:21:20 +0200
+        Mon, 25 Apr 2022 12:25:27 -0400
+Received: from mail-oa1-f53.google.com (mail-oa1-f53.google.com [209.85.160.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 671BB71A25;
+        Mon, 25 Apr 2022 09:22:22 -0700 (PDT)
+Received: by mail-oa1-f53.google.com with SMTP id 586e51a60fabf-e2442907a1so16580715fac.8;
+        Mon, 25 Apr 2022 09:22:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4CENEZKLdazSfBwTXd/Wd5rug0RnZCb0GE0cZM8DZsw=;
+        b=IdR/kSsBa2TuG8roUhmM4ijt85cZP2kVzQgEM4YpqdxA44Qcuo4q6IleFXGbDCzdX3
+         8d/fSRMiH6EEWD/q+31ScR5fDILWJuSWEYf/e+ZW0B1mMwUNGm6Y5Sk1XOCKy+oIzA+j
+         bIIC8a15VKLNfIA36840ch1iaoKCEuHzlwubvSwkBasoIyKCV3sOnS/d+foiwz98hnm3
+         RGYEZCjuPWmaKJMT2LUjMv6rHKTfFdIzwXnNj6y1UsY6FVnoJ+qqjZD1iGp8Gf+ZYYEY
+         HeFYa3S+VWpwA+Z/dHuqYvD9pTICCelpH/dMpD0XyBrg/ndDp8osEmnRfXt/QsZslWDd
+         l4gA==
+X-Gm-Message-State: AOAM533gqysl+HFiBhgLj0/kkCF8vHfuxJEloBMegFyNNgEJIQCV36hy
+        Cv+KwMx9vZ5AJo/Fagp1+g==
+X-Google-Smtp-Source: ABdhPJyI/nEGtLPHWlc0Symt/VRUWTe4lUKlOBu98Q75GPEnylf//TQhRgBUI583eoUOFky3f9Ezxw==
+X-Received: by 2002:a05:6870:ac06:b0:e9:cba:68cc with SMTP id kw6-20020a056870ac0600b000e90cba68ccmr5631933oab.144.1650903741623;
+        Mon, 25 Apr 2022 09:22:21 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id p17-20020a4a3651000000b0035d9b838f21sm4534439ooe.10.2022.04.25.09.22.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Apr 2022 09:22:21 -0700 (PDT)
+Received: (nullmailer pid 3999297 invoked by uid 1000);
+        Mon, 25 Apr 2022 16:22:20 -0000
+Date:   Mon, 25 Apr 2022 11:22:20 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Drew Fustini <dfustini@baylibre.com>
+Cc:     Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Nishanth Menon <nm@ti.com>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Dave Gerlach <d-gerlach@ti.com>,
+        Tony Lindgren <tony@atomide.com>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Keerthy <j-keerthy@ti.com>
+Subject: Re: [PATCH 1/2] dt-bindings: wkup-m3-ipc: Add ti,scale-data-fw
+ property
+Message-ID: <YmbKvN00F6vGawpE@robh.at.kernel.org>
+References: <20220425052806.484590-1-dfustini@baylibre.com>
+ <20220425052806.484590-2-dfustini@baylibre.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 2/2] sched/dl: Remove some comments and adjust code in
- push_dl_task
-Content-Language: en-US
-To:     Hao Jia <jiahao.os@bytedance.com>, mingo@redhat.com,
-        peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, rostedt@goodmis.org,
-        bsegall@google.com, mgorman@suse.de, bristot@redhat.com
-Cc:     linux-kernel@vger.kernel.org
-References: <20220422090944.52618-1-jiahao.os@bytedance.com>
- <20220422090944.52618-3-jiahao.os@bytedance.com>
-From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
-In-Reply-To: <20220422090944.52618-3-jiahao.os@bytedance.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220425052806.484590-2-dfustini@baylibre.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/04/2022 11:09, Hao Jia wrote:
-
-Nitpick: I would change the message slightly into something like:
-
-sched/deadline: Remove superfluous rq clock update in push_dl_task()
-
-> The change to call update_rq_clock() before activate_task()
-> commit 840d719604b0 ("sched/deadline: Update rq_clock of later_rq
-> when pushing a task") is no longer needed since commit f4904815f97a
-> ("sched/deadline: Fix double accounting of rq/running bw in push & pull")
-> removed the add_running_bw() before the activate_task().
+On Sun, Apr 24, 2022 at 10:28:05PM -0700, Drew Fustini wrote:
+> From: Dave Gerlach <d-gerlach@ti.com>
 > 
-> So we remove some comments that are no longer needed and update
-> rq clock in activate_task().
+> Add documentation for ti,scale-data-fw property to enable I2C PMIC
+> voltage scaling during deep sleep. The property contains the name of a
+> binary file for the CM3 firmware to load.
 > 
-> Signed-off-by: Hao Jia <jiahao.os@bytedance.com>
+> Based on previous work by Russ Dill.
+> 
+> Signed-off-by: Dave Gerlach <d-gerlach@ti.com>
+> Signed-off-by: Keerthy <j-keerthy@ti.com>
+> [dfustini: split from driver patch and convert to json-schema]
+> Signed-off-by: Drew Fustini <dfustini@baylibre.com>
 > ---
->  kernel/sched/deadline.c | 8 +-------
->  1 file changed, 1 insertion(+), 7 deletions(-)
+>  .../devicetree/bindings/soc/ti/wkup-m3-ipc.yaml       | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
 > 
-> diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
-> index fb4255ae0b2c..8eb694ed7ac1 100644
-> --- a/kernel/sched/deadline.c
-> +++ b/kernel/sched/deadline.c
-> @@ -2319,13 +2319,7 @@ static int push_dl_task(struct rq *rq)
+> diff --git a/Documentation/devicetree/bindings/soc/ti/wkup-m3-ipc.yaml b/Documentation/devicetree/bindings/soc/ti/wkup-m3-ipc.yaml
+> index 88d690de050c..d2c248d82384 100644
+> --- a/Documentation/devicetree/bindings/soc/ti/wkup-m3-ipc.yaml
+> +++ b/Documentation/devicetree/bindings/soc/ti/wkup-m3-ipc.yaml
+> @@ -40,6 +40,12 @@ description: |+
+>    override the pin's existing bias (pull-up/pull-down) and value (high/low) when
+>    IO isolation is active.
 >  
->  	deactivate_task(rq, next_task, 0);
->  	set_task_cpu(next_task, later_rq->cpu);
-> -
-> -	/*
-> -	 * Update the later_rq clock here, because the clock is used
-> -	 * by the cpufreq_update_util() inside __add_running_bw().
-> -	 */
-> -	update_rq_clock(later_rq);
-> -	activate_task(later_rq, next_task, ENQUEUE_NOCLOCK);
-> +	activate_task(later_rq, next_task, 0);
->  	ret = 1;
+> +  Support for I2C PMIC Voltage Scaling
+> +  ====================================
+> +  It is possible to pass the name of a binary file to load into the CM3 memory.
+> +  The binary data is the I2C sequences for the CM3 to send out to the PMIC
+> +  during low power mode entry.
+> +
+>  properties:
+>    compatible:
+>      enum:
+> @@ -67,6 +73,11 @@ properties:
+>        mbox_wkupm3 child node.
+>      maxItems: 1
 >  
->  	resched_curr(later_rq);
+> +  ti,scale-data-fw:
+> +    $ref: /schemas/types.yaml#/definitions/string
+> +    description:
+> +      Name of the firmware binary in /lib/firmware to copy to CM3 aux data
 
-Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+The location of firmware files is up to the OS.
+
+Is there other firmware? If not, 'firmware-name' is the somewhat 
+standard property for this.
+
+What's the default name?
+
+> +
+>    ti,vtt-gpio-pin:
+>      $ref: /schemas/types.yaml#/definitions/uint32
+>      description: GPIO pin connected to enable pin on VTT regulator
+> -- 
+> 2.32.0
+> 
+> 
