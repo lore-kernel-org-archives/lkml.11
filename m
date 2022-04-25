@@ -2,108 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F4215C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 07:57:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6669C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 07:57:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230340AbiDYH76 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 03:59:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51782 "EHLO
+        id S236188AbiDYIAL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 04:00:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241547AbiDYH4z (ORCPT
+        with ESMTP id S234359AbiDYH7M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 03:56:55 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A35422716
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 00:53:46 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id z99so17345585ede.5
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 00:53:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=OiK9CfJmGobcKXoR/dSPps5LgKGx0NOgsw4L8/dJuus=;
-        b=ExJdKICN8IBJk5lwYIf06MEy9FFprcu4zkW60YPGX6p5vrEl4y6eoYg//8OShTJ+EV
-         5BFiUh4ElVofGoJWGYwh6kAvauwtOVwvj1bDQ5fpxQnxbYMtLCsUEdQmRehE4BfbOeJO
-         I1lk1lxK2gfmG2JOlToGQc1nJE9kMgWwVwFFjuiYBYkEN/mrljIFDlkA6OMxU8B+ENxH
-         dNI7FczHVKl4YnTIdMlFeQ0rHuynNZ3HngnLGBF4KLOoY5HM6LObpbIyn39YSvbyh8Fk
-         64NwKlZRZ/m3/4z/hhD9OWrOHzRaF9f3kUGQgW/xlqw0/HzZ84G4/2AoqlLbTdzXAAhT
-         fE7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=OiK9CfJmGobcKXoR/dSPps5LgKGx0NOgsw4L8/dJuus=;
-        b=ZsawwNF3Bkd/U0dLBx7vfjBgknghmjyCuefxBHTs/hJg2RxetzEEN5q93w80f6xqWQ
-         EWb3wlpihGj3Agn2isyqFP6uaUZBNjhtQrrj9KQUqKMMiQ5GRJNhqf+yJrYdTcqtkYsE
-         3X1gQUEdt4iP1tbOk7Kn/nSyD/CEfLewp802GleerwSECq4crunsbqt9/caKbP99UVqI
-         JpVtr7JeyDItTaLhetwhUbD99TImpOoK30naoGm9HDvxmfai/sW3gt7pm8ubA4OISg1N
-         /QhoB6vTuSuPVG8eHGF5yNm/ACcr/RcNjxRw/2PCgUNdMB6QPt3v522Z/2C/mPLqmdmz
-         Kfeg==
-X-Gm-Message-State: AOAM530fl9IcQ6GzyaVzXtSUlK+WaWPcJ7JzkXXU8ddz1nLRpO9DiVev
-        hjjPORD3zi5esbh9R4hMr0ryeA==
-X-Google-Smtp-Source: ABdhPJztHTkEpB7MVHqX/Ny1SZCOSlStNRQ6mr3ZjdYNdrfB6wI15Hl3ZlezTmilaoywtLjJooZh9A==
-X-Received: by 2002:aa7:da43:0:b0:425:cd4c:e43f with SMTP id w3-20020aa7da43000000b00425cd4ce43fmr10883182eds.106.1650873225101;
-        Mon, 25 Apr 2022 00:53:45 -0700 (PDT)
-Received: from [192.168.0.239] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id t19-20020a508d53000000b00425c9fd2b10sm3129190edt.68.2022.04.25.00.53.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Apr 2022 00:53:44 -0700 (PDT)
-Message-ID: <5175fe30-0449-ac5f-7e37-53c07adc433a@linaro.org>
-Date:   Mon, 25 Apr 2022 09:53:43 +0200
+        Mon, 25 Apr 2022 03:59:12 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A28ACCE2
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 00:55:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650873359; x=1682409359;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=XQv8wyBFruRQaLwD5UI6qiGXru0gitI+QJEBT5NMidw=;
+  b=Tqdlu3nuVTEnNpl8BTYZy6aQr9Qa0HOYJB5BxkRQFOSOTh5yt1RURySQ
+   daTjIFYjWEsphHYXQrJeOaRZxrhgG+oWM84C16d/ojaxXzVCvfgsX0Ebd
+   /G8XzjL8mvPrcn1ItyHXppxzK8Y+RuCqIJye1gBf45hAMMn0IMXPE7FPN
+   JKD9ga1VJj2EjdnVCLWC9Zigb6F1s+VTEEFmgOe3YEJwnhq9GbhxJOcZQ
+   5Bg90rczVFcYk2nupfTqAXTwimz+E1qEg86bGate/VfV0Op2Y6rgCGxem
+   xn5xu4xs67cJAT8noA8j82jAMgwhg6mVxf6GfwMjj5HScnAt3ej+gkA4A
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10327"; a="264025372"
+X-IronPort-AV: E=Sophos;i="5.90,287,1643702400"; 
+   d="scan'208";a="264025372"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 00:55:59 -0700
+X-IronPort-AV: E=Sophos;i="5.90,287,1643702400"; 
+   d="scan'208";a="660037713"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 00:55:55 -0700
+Received: by lahna (sSMTP sendmail emulation); Mon, 25 Apr 2022 10:55:52 +0300
+Date:   Mon, 25 Apr 2022 10:55:52 +0300
+From:   "mika.westerberg@linux.intel.com" <mika.westerberg@linux.intel.com>
+To:     "Oleksandr Ocheretnyi -X (oocheret - GLOBALLOGIC INC at Cisco)" 
+        <oocheret@cisco.com>
+Cc:     "miquel.raynal@bootlin.com" <miquel.raynal@bootlin.com>,
+        "tudor.ambarus@microchip.com" <tudor.ambarus@microchip.com>,
+        "p.yadav@ti.com" <p.yadav@ti.com>,
+        "michael@walle.cc" <michael@walle.cc>,
+        "richard@nod.at" <richard@nod.at>,
+        "vigneshr@ti.com" <vigneshr@ti.com>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        "mauro.lima@eclypsium.com" <mauro.lima@eclypsium.com>,
+        "lee.jones@linaro.org" <lee.jones@linaro.org>,
+        "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>,
+        "xe-linux-external(mailer list)" <xe-linux-external@cisco.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: mtd: spi-nor: fatal issue during the mtd_erase() calls
+Message-ID: <YmZUCIE/ND82BlNh@lahna>
+References: <BYAPR11MB27570C5DC510D0F37FC106E4CDF69@BYAPR11MB2757.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 2/2] dt-bindings: watchdog: mediatek: Convert binding to
- YAML
-Content-Language: en-US
-To:     "allen-kh.cheng" <allen-kh.cheng@mediatek.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>, nfraprado@collabora.com
-Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        srv_heupstream@mediatek.com, Chen-Yu Tsai <wenst@chromium.org>,
-        Ryder Lee <ryder.lee@kernel.org>
-References: <20220422121017.23920-1-allen-kh.cheng@mediatek.com>
- <20220422121017.23920-3-allen-kh.cheng@mediatek.com>
- <e2e4ead0-d8eb-1302-93e9-f330807d811e@linaro.org>
- <b850f88f5044eb6cd57bec4fb864e5670618c9e7.camel@mediatek.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <b850f88f5044eb6cd57bec4fb864e5670618c9e7.camel@mediatek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BYAPR11MB27570C5DC510D0F37FC106E4CDF69@BYAPR11MB2757.namprd11.prod.outlook.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25/04/2022 09:37, allen-kh.cheng wrote:
+Hi,
 
->>> +examples:
->>> +  - |
->>> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
->>> +
->>> +    watchdog@10007000 {
->>> +        compatible = "mediatek,mt8183-wdt",
->>> +                     "mediatek,mt6589-wdt";
->>> +        mediatek,disable-extrst;
->>
->> Did you test your bindings? Does not look like. Please run
->> dt_binding_check (see writing-schema for instructions).
->>
+On Sat, Apr 23, 2022 at 10:32:28PM +0000, Oleksandr Ocheretnyi -X (oocheret - GLOBALLOGIC INC at Cisco) wrote:
+>    Hello guys,
 > 
-> Yes, I have run dt_binding_check.
+>    recently I've faced the fatal issue "mtdblock: erase of region ... on
+>    ... failed"
 > 
-> But example is from original binding txt file.
+>    working with MTD device (Micron n25q128a13) on recent kernels with
+>    version
 > 
-> Is it ok I can write a new expample?
+>    5.15.x and newer.
+> 
+>    Commit 094d3b9 ("mtd: spi-nor: Add USE_FSR flag for n25q* entries")
+>    adds
+> 
+>    SPINOR_OP_RDFSR opcode handling ability, however controller driver's
+>    side
+> 
+>    (i.e. intel-spi) cannot handle it properly in the intel_spi_hw_cycle()
+>    what causes
+> 
+>    a failures in the the spi_nor_fsr_ready() call what breaks some mtd
+>    callbacks.
+> 
+>    Are there any plans to implement this SPINOR_OP_RDFSR opcode handling
+> 
+>    on the intel controller side? Is there acceptable way to provide
+>    ENOTSUPP
+> 
+>    case response from controller driver side to spi-nor driver?
 
-Yes, please. Correct the example in the conversion so it is
-reasonable/proper.
+I think the Intel controller does support this internally but it does
+not expose this to the software. I wonder if in this case we can, like
+you suggest, return -ENOTSUPP and make micron_st_nor_ready() to handle
+that case?
 
-
-Best regards,
-Krzysztof
+SPI-NOR folks, what you do think?
