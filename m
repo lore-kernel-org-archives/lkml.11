@@ -2,117 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AD6DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 10:02:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99D60C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 10:03:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240551AbiDYKFr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 06:05:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40114 "EHLO
+        id S241415AbiDYKGM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 06:06:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240866AbiDYKFI (ORCPT
+        with ESMTP id S240786AbiDYKFo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 06:05:08 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B66431121;
-        Mon, 25 Apr 2022 03:02:02 -0700 (PDT)
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23P8bA8V017221;
-        Mon, 25 Apr 2022 10:01:58 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=yJ1zH/5or4oymVpE6MpywAGJV0sLnLwAeYGgNXujOL8=;
- b=dWVxAJAz+HE8ivoCl8W0bOjuORNpod8q4Qkj3TavutRtDVY1XxRbMLUkpG6HDeRZmkSs
- VrBQcKOF7A6ROkeOuhGQiCe7gbiM8vCBKepsyxTCN4S/ziyKhfKvcJTjR4FNvALYy7dq
- DoXl9Hea+zosN4de4+vd4Uxgr4f2abmg8miSuBYJrEFf3FXJGoCXSttU8bSj6r56FWan
- ggUDG5DJETjGhssmEFUmaaqbiHbaYv+bnwB0S98zDfMJrNt2YD/afAyCoAijgrop37BS
- LpJuRk+BdfXOZ/WjjRMAEHxGmI5RJ9I2aip5ZoB/AJ2nESmnvSXneimp4fBLfArlNVMI eA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fmtt75xkj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 25 Apr 2022 10:01:58 +0000
-Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23P9sQ43010172;
-        Mon, 25 Apr 2022 10:01:58 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fmtt75xju-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 25 Apr 2022 10:01:57 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23P9rKOR010822;
-        Mon, 25 Apr 2022 10:01:55 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma03ams.nl.ibm.com with ESMTP id 3fm938t5p7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 25 Apr 2022 10:01:55 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23PA1qB746858678
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 25 Apr 2022 10:01:52 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 215764203F;
-        Mon, 25 Apr 2022 10:01:52 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A56F742047;
-        Mon, 25 Apr 2022 10:01:51 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 25 Apr 2022 10:01:51 +0000 (GMT)
-From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-To:     Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>
-Cc:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
-        David Hildenbrand <david@redhat.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
-        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
-Subject: [PATCH v2 0/2] Dirtying, failing memop: don't indicate suppression
-Date:   Mon, 25 Apr 2022 12:01:45 +0200
-Message-Id: <20220425100147.1755340-1-scgl@linux.ibm.com>
-X-Mailer: git-send-email 2.32.0
+        Mon, 25 Apr 2022 06:05:44 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19E1D1F608
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 03:02:40 -0700 (PDT)
+Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
+        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23P6KC6N031455;
+        Mon, 25 Apr 2022 05:02:32 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=PODMain02222019;
+ bh=Z5YuVtU3yeCHJFHuOFw1Fh1OHZ3/W3ElUfaHLr4h05s=;
+ b=l4OG3GyWOl/B6u5h5xayNavv2H4ks7yNFVIJbeEK025Ym8trfsJHEmOzgnPEocHHapth
+ GOoFMazIiFFq7AMPSeWWw2afLJZzSXvHXGWZl0Pw4wqCmXiiMrCI5NohyuSK4jV+cx26
+ u0N9WXuxFiIX6xCSbBdc7dOcjn3wqL6O9Ckmh9qyviyd83fBSmZNIcCBblhcSWfwR5WG
+ oRqdgIbYx0qwp2hYp0yISRYaOAcqSp74Uim9FAdwrMS73Uh9xu9curbP/MoI1n+o0C3z
+ GYaNfq5Xu7uyRsEYDgmLO1L4aL43jzLwA+MzYSDSURvbfEUqyKiJI0Kmoy6KurDQzmoT 7A== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3fmev31rnd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 25 Apr 2022 05:02:32 -0500
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 25 Apr
+ 2022 11:02:30 +0100
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
+ Transport; Mon, 25 Apr 2022 11:02:30 +0100
+Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 577A7B16;
+        Mon, 25 Apr 2022 10:02:29 +0000 (UTC)
+Date:   Mon, 25 Apr 2022 10:02:29 +0000
+From:   Charles Keepax <ckeepax@opensource.cirrus.com>
+To:     Richard Fitzgerald <rf@opensource.cirrus.com>
+CC:     <broonie@kernel.org>, <alsa-devel@alsa-project.org>,
+        <linux-kernel@vger.kernel.org>, <patches@opensource.cirrus.com>
+Subject: Re: [PATCH] firmware: cirrus: cs_dsp: Avoid padding bytes in
+ cs_dsp_coeff_ctl
+Message-ID: <20220425100229.GU38351@ediswmail.ad.cirrus.com>
+References: <20220425095159.3044527-1-rf@opensource.cirrus.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 4VQjVuQ6EtulenyNeAdKeaZfUj349-xi
-X-Proofpoint-ORIG-GUID: IplMkzRrx3fmY94QmOmdYV35_zj0R7q5
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-25_05,2022-04-22_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- malwarescore=0 bulkscore=0 adultscore=0 mlxlogscore=739 mlxscore=0
- suspectscore=0 spamscore=0 clxscore=1015 phishscore=0 impostorscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204250040
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220425095159.3044527-1-rf@opensource.cirrus.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-Proofpoint-ORIG-GUID: FCrVFt3F1McrOxYFLs5iWCdjsCw45OTB
+X-Proofpoint-GUID: FCrVFt3F1McrOxYFLs5iWCdjsCw45OTB
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If a memop fails due to key checked protection, after already having
-written to the guest, don't indicate suppression to the guest, as that
-would imply that memory wasn't modified.
+On Mon, Apr 25, 2022 at 10:51:59AM +0100, Richard Fitzgerald wrote:
+> Change the order of members in struct cs_dsp_coeff_ctl to avoid
+> the compiler having to insert alignment padding bytes. On a x86_64
+> build this saves 16 bytes per control.
+> 
+> - Pointers are collected to the top of the struct (with the exception of
+>   priv, as noted below), so that they are inherently aligned.
+> - The set and enable bitflags are placed together so they can be merged.
+> - priv is placed at the end of the struct - it is for use by the
+>   client so it is helpful to make it stand out, and since the compiler
+>   will always pad the struct size to an alignment multiple putting a
+>   pointer last won't introduce any more padding.
+> - struct cs_dsp_alg_region is placed at the end, right before priv, for
+>   the same reasoning as priv.
+> 
+> Signed-off-by: Richard Fitzgerald <rf@opensource.cirrus.com>
+> ---
 
-This could be considered a fix to the code introducing storage key
-support, however this is a bug in KVM only if we emulate an
-instructions writing to an operand spanning multiple pages, which I
-don't believe we do.
+Reviewed-by: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-v1 -> v2
- * Reword commit message of patch 1
-
-Janis Schoetterl-Glausch (2):
-  KVM: s390: Don't indicate suppression on dirtying, failing memop
-  KVM: s390: selftest: Test suppression indication on key prot exception
-
- arch/s390/kvm/gaccess.c                   | 47 ++++++++++++++---------
- tools/testing/selftests/kvm/s390x/memop.c | 43 ++++++++++++++++++++-
- 2 files changed, 70 insertions(+), 20 deletions(-)
-
-
-base-commit: af2d861d4cd2a4da5137f795ee3509e6f944a25b
--- 
-2.32.0
-
+Thanks,
+Charles
