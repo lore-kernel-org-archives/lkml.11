@@ -2,105 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26759C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 15:55:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73C65C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 15:56:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243091AbiDYP67 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 11:58:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38378 "EHLO
+        id S243094AbiDYP7M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 11:59:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243089AbiDYP6w (ORCPT
+        with ESMTP id S243052AbiDYP7L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 11:58:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE86C3D487
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 08:55:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1D4C1B818A9
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 15:55:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65F74C385A4;
-        Mon, 25 Apr 2022 15:55:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650902140;
-        bh=ZW82ZLMbhdXSy8UotfQV6E6jNOl+p7+/+EOiVUC+rF4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oWKy/UZGQWW/XrYnC4BpASPtoFJ41o0ES40ise3BoWQQECDs0pei+PfcT8BfBYQ1l
-         ZX9tUANUnAygrpfRUigYf5VjSrszMir6eRzeb1os5HwVNg32fxWcREIfafzd4D+QVY
-         YBcLINEr1FKxahg3zVwMnnxfwdI7/amRvdIwsDbg=
-Date:   Mon, 25 Apr 2022 17:55:38 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Mike Rapoport <rppt@linux.ibm.com>
-Cc:     kernel test robot <lkp@intel.com>, llvm@lists.linux.dev,
-        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Mark-PK Tsai <mark-pk.tsai@mediatek.com>
-Subject: Re: [stable:linux-5.10.y 2705/5321] WARNING: modpost:
- vmlinux.o(.text+0x8cc4): Section mismatch in reference from the function
- __arm_ioremap_pfn_caller() to the function
- .meminit.text:memblock_is_map_memory()
-Message-ID: <YmbEempwznDkAJ84@kroah.com>
-References: <202204220723.zOZ7gZGT-lkp@intel.com>
- <YmKGohqgR21F1zpX@linux.ibm.com>
+        Mon, 25 Apr 2022 11:59:11 -0400
+Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 533083F31D;
+        Mon, 25 Apr 2022 08:56:07 -0700 (PDT)
+Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-e93ff05b23so3390699fac.9;
+        Mon, 25 Apr 2022 08:56:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WzWHzJwvI1YDOjifiK5zK9xLEEWNcPatflkVwV3CNuo=;
+        b=5bcLOFvpgJIbHkTPGUjTriBCtBJt9Sas59xoqTuqw7NPl7WxK3ZL8vPr/U/WRMnsV4
+         g9YEVFrX/EWdFoYlcYUM0ZiSuwLMkBxPiFLXAmZSUSPCAe4GLC/1Zp8ND+3+zZz5GnU3
+         AG893nalRydA2yys+QIP7UX3HMuWAves+W/AICuGlWPdFF4VR4DwFxxIlfi9wBaRppOQ
+         apfG2XZWbFKX6KMxwOIuo4WRAbcp0s0UzqMegvkui/rbvHHIWcOSrFOmVuH5EiBL9v9Y
+         kKvkc6zwVmSGaSp7Ab3D6ZCB/agu+oYIWsboaSW3OH2cGOME3dgGyi4qaLd0QbHf/iIu
+         QVPA==
+X-Gm-Message-State: AOAM532kYsNYsdQ7wBq5/71+XjzIHy1B39N0HwNE2j/hap1Xnc15e37j
+        5+XYrCleA9U8/jrKkBtglg==
+X-Google-Smtp-Source: ABdhPJyPQ8/QljI2VNCdMD5ZCs9UmxeOXcXs7325MEcBQ5fMSfUVDwchl6dRhxjgfuxnOxX9p2s6EA==
+X-Received: by 2002:a05:6870:961b:b0:e2:ffb9:f526 with SMTP id d27-20020a056870961b00b000e2ffb9f526mr11477742oaq.146.1650902166630;
+        Mon, 25 Apr 2022 08:56:06 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id lc23-20020a056871419700b000e70c74e060sm3330025oab.8.2022.04.25.08.56.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Apr 2022 08:56:06 -0700 (PDT)
+Received: (nullmailer pid 3956143 invoked by uid 1000);
+        Mon, 25 Apr 2022 15:56:04 -0000
+Date:   Mon, 25 Apr 2022 10:56:04 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     frowand.list@gmail.com
+Cc:     linux-kernel@vger.kernel.org, Jan Kiszka <jan.kiszka@siemens.com>,
+        Slawomir Stepien <slawomir.stepien@nokia.com>,
+        devicetree@vger.kernel.org, Slawomir Stepien <sst@poczta.fm>,
+        Rob Herring <robh+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        pantelis.antoniou@konsulko.com
+Subject: Re: [PATCH v4 1/2] of: overlay: rename variables to be consistent
+Message-ID: <YmbElDC2GBUNY1E+@robh.at.kernel.org>
+References: <20220420222505.928492-1-frowand.list@gmail.com>
+ <20220420222505.928492-2-frowand.list@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YmKGohqgR21F1zpX@linux.ibm.com>
+In-Reply-To: <20220420222505.928492-2-frowand.list@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 01:42:42PM +0300, Mike Rapoport wrote:
-> On Fri, Apr 22, 2022 at 07:37:19AM +0800, kernel test robot wrote:
-> > Hi Mike,
-> > 
-> > FYI, the error/warning still remains.
-> > 
-> > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.10.y
-> > head:   1052f9bce62982023737a95b7ff1ad26a5149af6
-> > commit: 8dd559d53b3b2de960ca1ec1359f5a9b4a12e181 [2705/5321] arm: ioremap: don't abuse pfn_valid() to check if pfn is in RAM
-> > config: arm-hackkit_defconfig (https://download.01.org/0day-ci/archive/20220422/202204220723.zOZ7gZGT-lkp@intel.com/config)
-> > compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5bd87350a5ae429baf8f373cb226a57b62f87280)
-> > reproduce (this is a W=1 build):
-> >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-> >         chmod +x ~/bin/make.cross
-> >         # install arm cross compiling tool for clang build
-> >         # apt-get install binutils-arm-linux-gnueabi
-> >         # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git/commit/?id=8dd559d53b3b2de960ca1ec1359f5a9b4a12e181
-> >         git remote add stable https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
-> >         git fetch --no-tags stable linux-5.10.y
-> >         git checkout 8dd559d53b3b2de960ca1ec1359f5a9b4a12e181
-> >         # save the config file
-> >         mkdir build_dir && cp config build_dir/.config
-> >         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
-> > 
-> > If you fix the issue, kindly add following tag as appropriate
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > 
-> > All warnings (new ones prefixed by >>, old ones prefixed by <<):
-> > 
-> > >> WARNING: modpost: vmlinux.o(.text+0x8cc4): Section mismatch in reference from the function __arm_ioremap_pfn_caller() to the function .meminit.text:memblock_is_map_memory()
-> > The function __arm_ioremap_pfn_caller() references
-> > the function __meminit memblock_is_map_memory().
-> > This is often because __arm_ioremap_pfn_caller lacks a __meminit
-> > annotation or the annotation of memblock_is_map_memory is wrong.
+On Wed, 20 Apr 2022 17:25:04 -0500, frowand.list@gmail.com wrote:
+> From: Frank Rowand <frank.rowand@sony.com>
 > 
-> In 5.10 the hackkit defconfig does not select ARCH_KEEP_MEMBLOCK which is
-> required for memblock_is_map_memory() to function after boot.
+> Variables change name across function calls when there is not a good
+> reason to do so.  Fix by changing "fdt" to "new_fdt" and "tree" to
+> "overlay_root".
 > 
-> In upstream kernels ARCH_KEEP_MEMBLOCK is always selected by ARM after
-> commit 5e545df3292f ("arm: remove CONFIG_ARCH_HAS_HOLES_MEMORYMODEL")
+> The name disparity was confusing when creating the following commit.
+> The name changes are in this separate commit to make review of the
+> following commmit less complex.
 > 
-> So the fix would be either to backport 5e545df3292f or unconditionally
-> select ARCH_KEEP_MEMBLOCK on ARM in 5.10.
+> Signed-off-by: Frank Rowand <frank.rowand@sony.com>
 > 
-> (the same applies to 5.4)
+> ---
+> Changes since v3:
+>    - none
 > 
-> Greg, what is your preference?
+> Changes since v2:
+>    - use new variable name "overlay_root" instead of new variable
+>      new "overlay_tree"
+> 
+>  drivers/of/overlay.c | 94 ++++++++++++++++++++++----------------------
+>  1 file changed, 47 insertions(+), 47 deletions(-)
+> 
 
-I'll defer to you all, but normally I prefer whatever is in Linus's
-tree.
-
-thanks,
-
-greg k-h
+Applied, thanks!
