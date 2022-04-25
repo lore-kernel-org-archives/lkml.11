@@ -2,54 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5244C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 17:16:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2022BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 17:16:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243846AbiDYRTT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 13:19:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38128 "EHLO
+        id S243825AbiDYRTt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 13:19:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243839AbiDYRTA (ORCPT
+        with ESMTP id S243885AbiDYRTg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 13:19:00 -0400
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 979F163F4
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 10:15:55 -0700 (PDT)
-Received: by mail-oi1-x22f.google.com with SMTP id r8so17846701oib.5
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 10:15:55 -0700 (PDT)
+        Mon, 25 Apr 2022 13:19:36 -0400
+Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9498286E3
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 10:16:10 -0700 (PDT)
+Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-e656032735so15500382fac.0
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 10:16:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=eclypsium.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=cuoU1kSVf8VEBS5kxyG+ti9eeLYydPT4J1CXt5LwLhU=;
-        b=WVNRKEKob2y9lFrXgNElxa26Uxh1XvllzgMqrT+R70+SAvu/khzVJ0sFW9Kny0Qa7N
-         jLVQLq9bTQ71s6VakMPFRKCHzlO8ZQ8mMVLzhNDI47Tsc6K6t3zkkwCNQe76Hs/qU+h5
-         pff6FNHYBVqwtXfDT2vS4howEmhCTaodjYQw7fzcHX4fgvsmvS2MLEoXGEWf8QrHMsop
-         kGxt72nAdiuqmo2bcyzM+I4DRQjwsBtp+Is15HwL9rka8zB2koeqRTkw+HAsvAlcMyfK
-         u6R0LRV4pUi4IWR8NROkxZ2EmmJAi1skJ5sO/+YxWmwC+pZ4xs3as8lXszeFy8RS3TMf
-         tmvA==
+        bh=qzwUVSRCTs7yF7NC9RaputFYAMnZCA1mZDnEg/SpEoc=;
+        b=DRhjerDdBI/0oOQFXmN1bF3llrdra9rWGkn4nBmO2KvVeB0kt07/vY4ECI/VgIUTxQ
+         sEEELkTAlRFpqnnphHIURXWHe5ayIwoUn290gBIKXtC72XqXx4eVZ2exM/MeQo3aMwLq
+         5TQBGmO5ZWIGihyIk5bNmzHyYQsuur11t33L3jm41ClHcfiTxNdWeR6CcS04NWp2+oNC
+         Vy6DkPYgyGo/rI4yQKqeUbZ7xe6KtAVzY/lsaFLXMegNf49MDK4RcnH29l49Z44BeMjE
+         sVxFRdiXIYpE6tHva/FHqq/TWZzN6osF+tqnTL42iOJvPOmzWE80X8BAjt8K8iEd4w4N
+         HXAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=cuoU1kSVf8VEBS5kxyG+ti9eeLYydPT4J1CXt5LwLhU=;
-        b=fO/ikhjXXbSb0Y9VtUk1pVSHD406osjQ50kDjMGMzbI/j1tk45w4zDHvrskMqdUqqv
-         /+QzUVGmVV+aX552xuJgkOAAkbTgJQWTMvf71FgUQGQfrEUDQV/MN/ERwP3ByqzhmLUp
-         jTjFTBFmLnSXXtX7ytCGdovnhz/9kb6lkWSe4gaBQh3o3dGceqg42/SQ8ELlkYoZhOf0
-         RGs0KxxAsuZfFkh8cMrXxjLQGHAe/Mvgl6dtPttaVYAaibAatvkh0dBUklmDe6l6rUmK
-         DLE0dJEzCH2x8Mg2tkRQ1qLTsxRje9FyQWXxa9cGSe2ELnpRVNougk47VqA2GMAXYIbf
-         s0ww==
-X-Gm-Message-State: AOAM533Za96mYdH0U+EO9bmeh45EXkdFT5v60hAne+WPjGXbf544uywu
-        8NaWl0MB2f08l3KHzPSeytCM/Db9ACY7Mdl5f8CvDCFSLyIOi6VOuvqZym09//BFZcm42tFtLSG
-        ShuTxEa6i68M/DK4jtw8Npiaob3FrHZupoZ9z/49Xe3nUKQBFV0gVgDPMNceqfVjvLW0SnVGpbf
-        qA2rgl9cP5JA2kJZqbFNpF2A==
-X-Google-Smtp-Source: ABdhPJwJqrLz4LvPdbpxTti+gZ2zpgNv7oGdv4vd7aYab8Kx1ulj4m3IkrTedE0A5L9UCyT5RbSlZA==
-X-Received: by 2002:a05:6808:1805:b0:323:a81:bdff with SMTP id bh5-20020a056808180500b003230a81bdffmr8671177oib.7.1650906954532;
-        Mon, 25 Apr 2022 10:15:54 -0700 (PDT)
+        bh=qzwUVSRCTs7yF7NC9RaputFYAMnZCA1mZDnEg/SpEoc=;
+        b=hJ9Q3nz3fAXJCJt155cY14d7V2ZONdXuQhFhXg2RLtoJ+1KFV+aWGmYJhlKSBU7Bx6
+         pYkthiqFrRsAoXEdCTq+mwDQsj8k3gwwe3x9WcyVm8NdQ52flpIOBXs/PCmmlGZwYc56
+         3tn+WyMLbcMKql0+MdYq8cruyTnRlgGTL1sjPhzYyCMIt1z1zZ0oVKxbrTVbWNqoKUcC
+         NIwH9FB7YafSiTVKGzCard5TgujrScEJJtIGUwR34ELH2AmOT8f6FffP2w1b+Jt2PIm2
+         GKa6sJoKYH6Stznk4X3DcL4Wm9Y0RqpL3eFPItVxk4OYEQXXOh8rBeqEW23d/smPy36H
+         G7Kw==
+X-Gm-Message-State: AOAM531K5/tz3UT6M23HnzHL7ItKbErWWRg99IscjYi6yiU2fgtrerhR
+        LgTazN9o3h2kJXhtxR3vWNENyzWi7ptUwqHCUE52dI5Sl72VyqQjexWF33N1wzo7fzh4bhoNn+g
+        t1lbR9C5w4ERNBvbPEnBzXEoD7vonzdFsdvJvVBiWWWRqL+VTnVrsJdeVQXrwW2E0quRb8OSvgF
+        vypUSmihtcuzGceHOo6XwYHg==
+X-Google-Smtp-Source: ABdhPJwbA+Mxla+CdrXZkNdzNcBLQ0nX8DluKtoxXNDB7ZKRkcFPHsqw5ahJLlGkdY1qBkKGVXMlzA==
+X-Received: by 2002:a05:6870:462a:b0:dd:f4f7:24be with SMTP id z42-20020a056870462a00b000ddf4f724bemr7488816oao.39.1650906969504;
+        Mon, 25 Apr 2022 10:16:09 -0700 (PDT)
 Received: from localhost ([181.97.174.128])
-        by smtp.gmail.com with ESMTPSA id j9-20020a056808056900b0032252797ea4sm4007238oig.6.2022.04.25.10.15.49
+        by smtp.gmail.com with ESMTPSA id z13-20020a4a9c8d000000b0035e6c882517sm1471792ooj.16.2022.04.25.10.16.04
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Apr 2022 10:15:54 -0700 (PDT)
+        Mon, 25 Apr 2022 10:16:09 -0700 (PDT)
 From:   Martin Fernandez <martin.fernandez@eclypsium.com>
 To:     linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
         platform-driver-x86@vger.kernel.org, linux-mm@kvack.org
@@ -61,9 +61,9 @@ Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         hughsient@gmail.com, alex.bazhaniuk@eclypsium.com,
         alison.schofield@intel.com, keescook@chromium.org,
         Martin Fernandez <martin.fernandez@eclypsium.com>
-Subject: [PATCH v7 2/8] mm/mmzone: Tag pg_data_t with crypto capabilities
-Date:   Mon, 25 Apr 2022 14:15:20 -0300
-Message-Id: <20220425171526.44925-3-martin.fernandez@eclypsium.com>
+Subject: [PATCH v7 4/8] x86/e820: Refactor __e820__range_update
+Date:   Mon, 25 Apr 2022 14:15:22 -0300
+Message-Id: <20220425171526.44925-5-martin.fernandez@eclypsium.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220425171526.44925-1-martin.fernandez@eclypsium.com>
 References: <20220425171526.44925-1-martin.fernandez@eclypsium.com>
@@ -73,44 +73,190 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a new member in the pg_data_t struct to tell whether the node
-corresponding to that pg_data_t is able to do hardware memory
-encryption.
-
-This will be read from sysfs.
+Refactor __e820__range_update with the introduction of
+e820_type_updater_data, indented to be used as the void pointer in the
+e820_entry_updater callbacks, and the implementation of the callbacks
+to perform the update of the type in a range of a e820_table.
 
 Signed-off-by: Martin Fernandez <martin.fernandez@eclypsium.com>
 ---
- include/linux/mmzone.h | 3 +++
- mm/page_alloc.c        | 1 +
- 2 files changed, 4 insertions(+)
+ arch/x86/kernel/e820.c | 146 +++++++++++++++++++++++++----------------
+ 1 file changed, 89 insertions(+), 57 deletions(-)
 
-diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
-index 46ffab808f03..89054af9e599 100644
---- a/include/linux/mmzone.h
-+++ b/include/linux/mmzone.h
-@@ -886,6 +886,9 @@ typedef struct pglist_data {
- 	struct task_struct *kcompactd;
- 	bool proactive_compact_trigger;
- #endif
-+
-+	bool crypto_capable;
-+
- 	/*
- 	 * This is a per-node reserve of pages that are not available
- 	 * to userspace allocations.
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 0e42038382c1..a244151045b4 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -7699,6 +7699,7 @@ static void __init free_area_init_node(int nid)
- 	pgdat->node_id = nid;
- 	pgdat->node_start_pfn = start_pfn;
- 	pgdat->per_cpu_nodestats = NULL;
-+	pgdat->crypto_capable = memblock_node_is_crypto_capable(nid);
+diff --git a/arch/x86/kernel/e820.c b/arch/x86/kernel/e820.c
+index 923585ab8377..763b8b20a1fd 100644
+--- a/arch/x86/kernel/e820.c
++++ b/arch/x86/kernel/e820.c
+@@ -607,80 +607,112 @@ __e820__handle_range_update(struct e820_table *table,
+ 	return updated_size;
+ }
  
- 	if (start_pfn != end_pfn) {
- 		pr_info("Initmem setup node %d [mem %#018Lx-%#018Lx]\n", nid,
+-static u64 __init
+-__e820__range_update(struct e820_table *table, u64 start, u64 size, enum e820_type old_type, enum e820_type new_type)
+-{
+-	u64 end;
+-	unsigned int i;
+-	u64 real_updated_size = 0;
+-
+-	BUG_ON(old_type == new_type);
+-
+-	if (size > (ULLONG_MAX - start))
+-		size = ULLONG_MAX - start;
++/**
++ * struct e820_type_updater_data - Helper type for
++ * __e820__range_update().
++ * @old_type: old_type parameter of __e820__range_update().
++ * @new_type: new_type parameter of __e820__range_update().
++ *
++ * This is intended to be used as the @data argument for the
++ * e820_entry_updater callbacks.
++ */
++struct e820_type_updater_data {
++	enum e820_type old_type;
++	enum e820_type new_type;
++};
+ 
+-	end = start + size;
+-	printk(KERN_DEBUG "e820: update [mem %#010Lx-%#010Lx] ", start, end - 1);
+-	e820_print_type(old_type);
+-	pr_cont(" ==> ");
+-	e820_print_type(new_type);
+-	pr_cont("\n");
++static bool __init type_updater__should_update(const struct e820_entry *entry,
++					       const void *data)
++{
++	const struct e820_type_updater_data *type_updater_data =
++		(const struct e820_type_updater_data *)data;
+ 
+-	for (i = 0; i < table->nr_entries; i++) {
+-		struct e820_entry *entry = &table->entries[i];
+-		u64 final_start, final_end;
+-		u64 entry_end;
++	return entry->type == type_updater_data->old_type;
++}
+ 
+-		if (entry->type != old_type)
+-			continue;
++static void __init type_updater__update(struct e820_entry *entry,
++					const void *data)
++{
++	const struct e820_type_updater_data *type_updater_data =
++		(const struct e820_type_updater_data *)data;
+ 
+-		entry_end = entry->addr + entry->size;
++	entry->type = type_updater_data->new_type;
++}
+ 
+-		/* Completely covered by new range? */
+-		if (entry->addr >= start && entry_end <= end) {
+-			entry->type = new_type;
+-			real_updated_size += entry->size;
+-			continue;
+-		}
++static void __init type_updater__new(struct e820_table *table, u64 new_start,
++				     u64 new_size,
++				     const struct e820_entry *original,
++				     const void *data)
++{
++	const struct e820_type_updater_data *type_updater_data =
++		(const struct e820_type_updater_data *)data;
+ 
+-		/* New range is completely covered? */
+-		if (entry->addr < start && entry_end > end) {
+-			__e820__range_add(table, start, size, new_type);
+-			__e820__range_add(table, end, entry_end - end, entry->type);
+-			entry->size = start - entry->addr;
+-			real_updated_size += size;
+-			continue;
+-		}
++	__e820__range_add(table, new_start, new_size,
++			  type_updater_data->new_type, original->crypto_capable);
++}
+ 
+-		/* Partially covered: */
+-		final_start = max(start, entry->addr);
+-		final_end = min(end, entry_end);
+-		if (final_start >= final_end)
+-			continue;
++static u64 __init __e820__range_update(struct e820_table *table, u64 start,
++				       u64 size, enum e820_type old_type,
++				       enum e820_type new_type)
++{
++	struct e820_entry_updater updater = {
++		.should_update = type_updater__should_update,
++		.update = type_updater__update,
++		.new = type_updater__new
++	};
+ 
+-		__e820__range_add(table, final_start, final_end - final_start, new_type);
++	struct e820_type_updater_data data = {
++		.old_type = old_type,
++		.new_type = new_type
++	};
+ 
+-		real_updated_size += final_end - final_start;
++	BUG_ON(old_type == new_type);
+ 
+-		/*
+-		 * Left range could be head or tail, so need to update
+-		 * its size first:
+-		 */
+-		entry->size -= final_end - final_start;
+-		if (entry->addr < final_start)
+-			continue;
++	printk(KERN_DEBUG "e820: update [mem %#018Lx-%#018Lx] ", start,
++	       start + size - 1);
++	e820_print_type(old_type);
++	pr_cont(" ==> ");
++	e820_print_type(new_type);
++	pr_cont("\n");
+ 
+-		entry->addr = final_end;
+-	}
+-	return real_updated_size;
++	return __e820__handle_range_update(table, start, size, &updater, &data);
+ }
+ 
+-u64 __init e820__range_update(u64 start, u64 size, enum e820_type old_type, enum e820_type new_type)
++/**
++ * e820__range_update() - Update the type of a given address range in
++ * e820_table.
++ * @start: Start of the range.
++ * @size: Size of the range.
++ * @old_type: Type that we want to change.
++ * @new_type: New type to replace @old_type.
++ *
++ * Update type of addresses in [@start, @start + @size) from @old_type
++ * to @new_type in e820_table.
++ *
++ * Return: The size updated.
++ */
++u64 __init e820__range_update(u64 start, u64 size, enum e820_type old_type,
++			      enum e820_type new_type)
+ {
+ 	return __e820__range_update(e820_table, start, size, old_type, new_type);
+ }
+ 
+-static u64 __init e820__range_update_kexec(u64 start, u64 size, enum e820_type old_type, enum e820_type  new_type)
++/**
++ * e820__range_update_kexec() - Update the type of a given address
++ * range in e820_table_kexec.
++ * @start: Start of the range.
++ * @size: Size of the range.
++ * @old_type: Type that we want to change.
++ * @new_type: New type to replace @old_type.
++ *
++ * Update type of addresses in [@start, @start + @size) from @old_type
++ * to @new_type in e820_table_kexec.
++ *
++ * Return: The size updated.
++ */
++static u64 __init e820__range_update_kexec(u64 start, u64 size,
++					   enum e820_type old_type,
++					   enum e820_type new_type)
+ {
+ 	return __e820__range_update(e820_table_kexec, start, size, old_type, new_type);
+ }
 -- 
 2.30.2
 
