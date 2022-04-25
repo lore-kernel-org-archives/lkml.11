@@ -2,227 +2,224 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FCA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 08:55:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29C98C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 08:55:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239369AbiDYI6R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 04:58:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54054 "EHLO
+        id S239855AbiDYI6U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 04:58:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239965AbiDYI5n (ORCPT
+        with ESMTP id S240033AbiDYI5n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 25 Apr 2022 04:57:43 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB0BEF5A;
-        Mon, 25 Apr 2022 01:54:32 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id DB8B0210E5;
-        Mon, 25 Apr 2022 08:54:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1650876870; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/4Xzadw6ONsr1NkImq8B2Up17ajpTuPobm04Tzf1iZA=;
-        b=YQE9CVpbFF4r0bx3MZvQcS4ZpjgquD1pPUvXSL6DWlzal1kM/qbDrYQTWyxAS5L6JdD9fB
-        O2VSsFSg6rDjowFIxeJnP1oxPByojOdW49J9LiKS/3VQpDX397wjFAnya8kGGuiEkwPXV/
-        N9cqVjQvNVmqzztn1dIh8h5FH8vXK+E=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1650876870;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/4Xzadw6ONsr1NkImq8B2Up17ajpTuPobm04Tzf1iZA=;
-        b=jeuSfuf6ULKMEKEfa1VADZfeNo51754Uw+Uceuer4lccqUOYn/YiZpCn7fbNnMdMVF8Shj
-        ZiuWCpkiMaY1yjAg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 7359413AED;
-        Mon, 25 Apr 2022 08:54:30 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id GvLpGsZhZmKOCgAAMHmgww
-        (envelope-from <tzimmermann@suse.de>); Mon, 25 Apr 2022 08:54:30 +0000
-Message-ID: <535ebbe4-605c-daf5-1afb-f5225e4bb3a8@suse.de>
-Date:   Mon, 25 Apr 2022 10:54:29 +0200
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE6CB860
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 01:54:34 -0700 (PDT)
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23P7WthB002630;
+        Mon, 25 Apr 2022 08:54:27 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : from : to : cc : references : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=dCVPKYv5VNMsz/Nqd9o08lQyf9PDUaiErrxL1ARkM5c=;
+ b=X5J+3Wd1J1/pI+ccqjVVy6ZH/MDhAWXFJO31Xv+d4Mv2i8DPWGm+TNDdRNamStr0ncTd
+ izsHlPeF+8oKef5gC82si3dZw1MQ6H+4C6TPhkb3nWdKpe0HxEKRg9WBeugK/I1sxjqv
+ yj2JwuR4LollCe5qWrHo06GE2z+Zf++uSGCb3h5dvPoHq+AYbB18WKXsnc60P52nC2l2
+ eadpefUTsYw9klr7deRz2pJ/LP26sKKv3gU871DG1CFXaH1Rxu0lJFL7WatDEpsJy+HU
+ lvhQYZyZHuSl6lo+oKVRSNvz85Avs7bTNm6Y0uTAbDEsSTBDp2YTir6eZFKURhbk3VaI 1w== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fnqbrhkmx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 25 Apr 2022 08:54:27 +0000
+Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23P8ldrr003350;
+        Mon, 25 Apr 2022 08:54:26 GMT
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fnqbrhkm5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 25 Apr 2022 08:54:26 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23P8nSs5032381;
+        Mon, 25 Apr 2022 08:54:24 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma01fra.de.ibm.com with ESMTP id 3fm938spq9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 25 Apr 2022 08:54:23 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23P8sLDg52625850
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 25 Apr 2022 08:54:21 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A2E2BA405B;
+        Mon, 25 Apr 2022 08:54:21 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 41539A4054;
+        Mon, 25 Apr 2022 08:54:17 +0000 (GMT)
+Received: from [9.43.95.32] (unknown [9.43.95.32])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 25 Apr 2022 08:54:16 +0000 (GMT)
+Message-ID: <2f716f45-f8c6-a078-6cfc-b4fb5ef74cd5@linux.ibm.com>
+Date:   Mon, 25 Apr 2022 14:24:15 +0530
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v3 0/5] Fix some race conditions that exists between fbmem
- and sysfb
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v2 0/5] mm: demotion: Introduce new node state
+ N_DEMOTION_TARGETS
 Content-Language: en-US
-To:     Javier Martinez Canillas <javierm@redhat.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        dri-devel@lists.freedesktop.org,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Borislav Petkov <bp@suse.de>,
-        Changcheng Deng <deng.changcheng@zte.com.cn>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Helge Deller <deller@gmx.de>, Johan Hovold <johan@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Miaoqian Lin <linmq006@gmail.com>,
-        Peter Jones <pjones@redhat.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Yizhuo Zhai <yzhai003@ucr.edu>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        linux-doc@vger.kernel.org, linux-fbdev@vger.kernel.org
-References: <20220420085303.100654-1-javierm@redhat.com>
-From:   Thomas Zimmermann <tzimmermann@suse.de>
-In-Reply-To: <20220420085303.100654-1-javierm@redhat.com>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------Rc95TRwpQQWj5pxD9yvjBCU3"
+From:   Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>
+To:     "ying.huang@intel.com" <ying.huang@intel.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Wei Xu <weixugc@google.com>, Yang Shi <shy828301@gmail.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Davidlohr Bueso <dave@stgolabs.net>
+Cc:     Linux MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Greg Thelen <gthelen@google.com>,
+        MichalHocko <mhocko@kernel.org>,
+        Brice Goglin <brice.goglin@gmail.com>
+References: <CAAPL-u_pSWD6U0yQ8Ws+_Yfb_3ZEmNXJsYcRJjAFBkyDk=nq8g@mail.gmail.com>
+ <ea73f6fda9cafdd0cb6ba8351139e6f4b47354a8.camel@intel.com>
+ <CAAPL-u-aeceXFUNdok_GYb2aLhZa0zBBuSqHxFznQob3PbJt7Q@mail.gmail.com>
+ <a80647053bba44623094995730e061f0e6129677.camel@intel.com>
+ <CAAPL-u89Jxutu1VH0LnO5VGdMbkLvc2M9eapuwP-y9oG9QSsrA@mail.gmail.com>
+ <610ccaad03f168440ce765ae5570634f3b77555e.camel@intel.com>
+ <CAAPL-u9ktM82zAW_OVwqTmQsr-XC8XOPmAsjoiCLo18cxUWA=A@mail.gmail.com>
+ <8e31c744a7712bb05dbf7ceb2accf1a35e60306a.camel@intel.com>
+ <CAAPL-u9uP+FUh7Yn0ByOECo+EP32ZABnCvNPKQB9JCA68VHEqQ@mail.gmail.com>
+ <78b5f4cfd86efda14c61d515e4db9424e811c5be.camel@intel.com>
+ <YmKKwXa2XI/nwac0@li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com>
+ <200e95cf36c1642512d99431014db8943fed715d.camel@intel.com>
+ <8735i1zurt.fsf@linux.ibm.com>
+ <ea9d01e16de655af85c0041c96964d83f59fb6d2.camel@intel.com>
+ <c576a992-5a50-5dd3-644c-a45d4338fc85@linux.ibm.com>
+In-Reply-To: <c576a992-5a50-5dd3-644c-a45d4338fc85@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: UDs4WcZScv8QbXAcsoc__p8Qhwe0gbe8
+X-Proofpoint-GUID: QSYIHtWzkuqkKtx8Or5MBtdIJfmM3UPw
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-25_05,2022-04-22_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ mlxlogscore=999 mlxscore=0 bulkscore=0 priorityscore=1501
+ lowpriorityscore=0 suspectscore=0 impostorscore=0 phishscore=0
+ clxscore=1015 adultscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2202240000 definitions=main-2204250038
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------Rc95TRwpQQWj5pxD9yvjBCU3
-Content-Type: multipart/mixed; boundary="------------ix4uCpa8tuHsKOBCkz4wJM0I";
- protected-headers="v1"
-From: Thomas Zimmermann <tzimmermann@suse.de>
-To: Javier Martinez Canillas <javierm@redhat.com>,
- linux-kernel@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Daniel Vetter <daniel.vetter@ffwll.ch>, dri-devel@lists.freedesktop.org,
- Alex Deucher <alexander.deucher@amd.com>, Borislav Petkov <bp@suse.de>,
- Changcheng Deng <deng.changcheng@zte.com.cn>, Daniel Vetter
- <daniel@ffwll.ch>, Hans de Goede <hdegoede@redhat.com>,
- Helge Deller <deller@gmx.de>, Johan Hovold <johan@kernel.org>,
- Jonathan Corbet <corbet@lwn.net>, Miaoqian Lin <linmq006@gmail.com>,
- Peter Jones <pjones@redhat.com>, Sam Ravnborg <sam@ravnborg.org>,
- Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
- Yizhuo Zhai <yzhai003@ucr.edu>, Zhen Lei <thunder.leizhen@huawei.com>,
- linux-doc@vger.kernel.org, linux-fbdev@vger.kernel.org
-Message-ID: <535ebbe4-605c-daf5-1afb-f5225e4bb3a8@suse.de>
-Subject: Re: [PATCH v3 0/5] Fix some race conditions that exists between fbmem
- and sysfb
-References: <20220420085303.100654-1-javierm@redhat.com>
-In-Reply-To: <20220420085303.100654-1-javierm@redhat.com>
+On 4/25/22 1:39 PM, Aneesh Kumar K V wrote:
+> On 4/25/22 11:40 AM, ying.huang@intel.com wrote:
+>> On Mon, 2022-04-25 at 09:20 +0530, Aneesh Kumar K.V wrote:
+>>> "ying.huang@intel.com" <ying.huang@intel.com> writes:
+>>>
+>>>> Hi, All,
+>>>>
+>>>> On Fri, 2022-04-22 at 16:30 +0530, Jagdish Gediya wrote:
+>>>>
+>>>> [snip]
+>>>>
+>>>>> I think it is necessary to either have per node demotion targets
+>>>>> configuration or the user space interface supported by this patch
+>>>>> series. As we don't have clear consensus on how the user interface
+>>>>> should look like, we can defer the per node demotion target set
+>>>>> interface to future until the real need arises.
+>>>>>
+>>>>> Current patch series sets N_DEMOTION_TARGET from dax device kmem
+>>>>> driver, it may be possible that some memory node desired as demotion
+>>>>> target is not detected in the system from dax-device kmem probe path.
+>>>>>
+>>>>> It is also possible that some of the dax-devices are not preferred as
+>>>>> demotion target e.g. HBM, for such devices, node shouldn't be set to
+>>>>> N_DEMOTION_TARGETS. In future, Support should be added to distinguish
+>>>>> such dax-devices and not mark them as N_DEMOTION_TARGETS from the
+>>>>> kernel, but for now this user space interface will be useful to avoid
+>>>>> such devices as demotion targets.
+>>>>>
+>>>>> We can add read only interface to view per node demotion targets
+>>>>> from /sys/devices/system/node/nodeX/demotion_targets, remove
+>>>>> duplicated /sys/kernel/mm/numa/demotion_target interface and instead
+>>>>> make /sys/devices/system/node/demotion_targets writable.
+>>>>>
+>>>>> Huang, Wei, Yang,
+>>>>> What do you suggest?
+>>>>
+>>>> We cannot remove a kernel ABI in practice.  So we need to make it right
+>>>> at the first time.  Let's try to collect some information for the 
+>>>> kernel
+>>>> ABI definitation.
+>>>>
+>>>> The below is just a starting point, please add your requirements.
+>>>>
+>>>> 1. Jagdish has some machines with DRAM only NUMA nodes, but they don't
+>>>> want to use that as the demotion targets.  But I don't think this is a
+>>>> issue in practice for now, because demote-in-reclaim is disabled by
+>>>> default.
+>>>
+>>> It is not just that the demotion can be disabled. We should be able to
+>>> use demotion on a system where we can find DRAM only NUMA nodes. That
+>>> cannot be achieved by /sys/kernel/mm/numa/demotion_enabled. It needs
+>>> something similar to to N_DEMOTION_TARGETS
+>>>
+>>
+>> Can you show NUMA information of your machines with DRAM-only nodes and
+>> PMEM nodes?  We can try to find the proper demotion order for the
+>> system.  If you can not show it, we can defer N_DEMOTION_TARGETS until
+>> the machine is available.
+> 
+> 
+> Sure will find one such config. As you might have noticed this is very 
+> easy to have in a virtualization setup because the hypervisor can assign 
+> memory to a guest VM from a numa node that doesn't have CPU assigned to 
+> the same guest. This depends on the other guest VM instance config 
+> running on the system. So on any virtualization config that has got 
+> persistent memory attached, this can become an easy config to end up with.
+> 
+> 
 
---------------ix4uCpa8tuHsKOBCkz4wJM0I
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
+something like this
 
-SGkNCg0KQW0gMjAuMDQuMjIgdW0gMTA6NTIgc2NocmllYiBKYXZpZXIgTWFydGluZXogQ2Fu
-aWxsYXM6DQo+IEhlbGxvLA0KPiANCj4gVGhlIHBhdGNoZXMgaW4gdGhpcyBzZXJpZXMgYXJl
-IG1vc3RseSBjaGFuZ2VzIHN1Z2dlc3RlZCBieSBEYW5pZWwgVmV0dGVyDQo+IHRvIGZpeCBz
-b21lIHJhY2UgY29uZGl0aW9ucyB0aGF0IGV4aXN0cyBiZXR3ZWVuIHRoZSBmYmRldiBjb3Jl
-IChmYm1lbSkNCj4gYW5kIHN5c2ZiIHdpdGggcmVnYXJkIHRvIGRldmljZSByZWdpc3RyYXRp
-b24gYW5kIHJlbW92YWwuDQo+IA0KPiBGb3IgZXhhbXBsZSwgaXQgaXMgY3VycmVudGx5IHBv
-c3NpYmxlIGZvciBzeXNmYiB0byByZWdpc3RlciBhIHBsYXRmb3JtDQo+IGRldmljZSBhZnRl
-ciBhIHJlYWwgRFJNIGRyaXZlciB3YXMgcmVnaXN0ZXJlZCBhbmQgcmVxdWVzdGVkIHRvIHJl
-bW92ZSB0aGUNCj4gY29uZmxpY3RpbmcgZnJhbWVidWZmZXJzLg0KPiANCj4gQSBzeW1wdG9t
-IG9mIHRoaXMgaXNzdWUsIHdhcyB3b3JrZWQgYXJvdW5kIHdpdGggYnkgY29tbWl0IGZiNTYx
-YmY5YWJkZQ0KPiAoImZiZGV2OiBQcmV2ZW50IHByb2JpbmcgZ2VuZXJpYyBkcml2ZXJzIGlm
-IGEgRkIgaXMgYWxyZWFkeSByZWdpc3RlcmVkIikNCj4gYnV0IHRoYXQncyByZWFsbHkgYSBo
-YWNrIGFuZCBzaG91bGQgYmUgcmV2ZXJ0ZWQuDQoNCkFzIEkgbWVudGlvbmVkIG9uIElSQywg
-SSB0aGluayB0aGlzIHNlcmllcyBzaG91bGQgYmUgbWVyZ2VkIGZvciB0aGUgDQpyZWFzb25z
-IEkgZ2l2ZSBpbiB0aGUgb3RoZXIgY29tbWVudHMuDQoNCj4gDQo+IFRoaXMgc2VyaWVzIGF0
-dGVtcHQgdG8gZml4IGl0IG1vcmUgcHJvcGVybHkgYW5kIHJldmVydCB0aGUgbWVudGlvbmVk
-IGhhY2suDQo+IFRoYXQgd2lsbCBhbHNvIHVuYmxvY2sgYSBwZW5kaW5nIHBhdGNoIHRvIG5v
-dCBtYWtlIHRoZSBudW1fcmVnaXN0ZXJlZF9mYg0KPiB2YXJpYWJsZSB2aXNpYmxlIHRvIGRy
-aXZlcnMgYW55bW9yZSwgc2luY2UgdGhhdCdzIGludGVybmFsIHRvIGZiZGV2IGNvcmUuDQoN
-CkhlcmUncyBhcyBmYXIgYXMgSSB1bmRlcnN0YW5kIHRoZSBwcm9ibGVtOg0KDQogIDEpIGJ1
-aWxkIERSTS9mYmRldiBhbmQgc3lzZmIgY29kZSBpbnRvIHRoZSBrZXJuZWwNCiAgMikgZHVy
-aW5nIGJvb3QsIGxvYWQgdGhlIERSTS9mYmRldiBtb2R1bGVzIGFuZCBoYXZlIHRoZW0gYWNx
-dWlyZSBJL08gDQpyYW5nZXMNCiAgMykgYWZ0ZXJ3YXJkcyBsb2FkIHN5c2ZiIGFuZCBoYXZl
-IGl0IHJlZ2lzdGVyIHBsYXRmb3JtIGRldmljZXMgZm9yIHRoZSANCmdlbmVyaWMgZnJhbWVi
-dWZmZXJzDQogIDQpIHRoZXNlIGRldmljZXMgbm93IGNvbmZsaWN0IHdpdGggdGhlIGFscmVh
-ZHktcmVnaXN0ZXJlZCBEUk0vZmJkZXYgDQpkZXZpY2VzDQoNCklmIHRoYXQgaXMgdGhlIHBy
-b2JsZW0gaGVyZSwgbGV0J3Mgc2ltcGx5IHNldCBhIHN5c2ZiX2Rpc2FibGUgZmxhZyBpbiAN
-CnN5c2ZiIGNvZGUgd2hlbiB0aGUgZmlyc3QgRFJNL2ZiZGV2IGRyaXZlciBmaXJzdCBsb2Fk
-cy4gV2l0aCB0aGUgZmxhZyANCnNldCwgc3lzZmIgd29uJ3QgY3JlYXRlIGFueSBwbGF0Zm9y
-bSBkZXZpY2VzLiBXZSBhc3N1bWUgdGhhdCB0aGVyZSBhcmUgDQpub3cgRFJNL2ZiZGV2IGRy
-aXZlcnMgZm9yIHRoZSBmcmFtZWJ1ZmZlcnMgYW5kIHN5c2ZiIHdvbid0IGJlIG5lZWRlZC4N
-Cg0KV2UgY2FuIHNldCB0aGUgZmxhZyBpbnRlcm5hbGx5IGZyb20gZHJtX2FwZXJ0dXJlX2Rl
-dGFjaF9kcml2ZXJzKCkgWzFdIA0KYW5kIGRvX3JlbW92ZV9jb25mbGljdGluZ19mcmFtZWJ1
-ZmZlcnMoKSBbMl0uDQoNCkJlc3QgcmVnYXJkcw0KVGhvbWFzDQoNClsxXSANCmh0dHBzOi8v
-ZWxpeGlyLmJvb3RsaW4uY29tL2xpbnV4L3Y1LjE3LjQvc291cmNlL2RyaXZlcnMvZ3B1L2Ry
-bS9kcm1fYXBlcnR1cmUuYyNMMjUzDQpbMl0gDQpodHRwczovL2VsaXhpci5ib290bGluLmNv
-bS9saW51eC92NS4xNy40L3NvdXJjZS9kcml2ZXJzL3ZpZGVvL2ZiZGV2L2NvcmUvZmJtZW0u
-YyNMMTU1OQ0KDQo+IA0KPiBQYXRjaCAjMSBpcyBqdXN0IGEgdHJpdmlhbCBwcmVwYXJhdG9y
-eSBjaGFuZ2UuDQo+IA0KPiBQYXRjaCAjMiBhZGQgc3lzZmJfZGlzYWJsZSgpIGFuZCBzeXNm
-Yl90cnlfdW5yZWdpc3RlcigpIGhlbHBlcnMgZm9yIGZibWVtDQo+IHRvIHVzZSB0aGVtLg0K
-PiANCj4gUGF0Y2ggIzMgY2hhbmdlcyBob3cgaXMgZGVhbHQgd2l0aCBjb25mbGljdGluZyBm
-cmFtZWJ1ZmZlcnMgdW5yZWdpc3RlcmluZywNCj4gcmF0aGVyIHRoYW4gaGF2aW5nIGEgdmFy
-aWFibGUgdG8gZGV0ZXJtaW5lIGlmIGEgbG9jayBzaG91bGQgYmUgdGFrZSwgaXQNCj4ganVz
-dCBkcm9wcyB0aGUgbG9jayBiZWZvcmUgdW5yZWdpc3RlcmluZyB0aGUgcGxhdGZvcm0gZGV2
-aWNlLg0KPiANCj4gUGF0Y2ggIzQgZml4ZXMgdGhlIG1lbnRpb25lZCByYWNlIGNvbmRpdGlv
-bnMgYW5kIGZpbmFsbHkgcGF0Y2ggIzUgaXMgdGhlDQo+IHJldmVydCBwYXRjaCB0aGF0IHdh
-cyBwb3N0ZWQgYnkgRGFuaWVsIGJlZm9yZSBidXQgaGUgZHJvcHBlZCBmcm9tIGhpcyBzZXQu
-DQo+IA0KPiBUaGUgcGF0Y2hlcyB3ZXJlIHRlc3RlZCBvbiBhIHJwaTQgdXNpbmcgZGlmZmVy
-ZW50IHZpZGVvIGNvbmZpZ3VyYXRpb25zOg0KPiAoc2ltcGxlZHJtIC0+IHZjNCBib3RoIGJ1
-aWx0aW4sIG9ubHkgdmM0IGJ1aWx0aW4sIG9ubHkgc2ltcGxlZHJtIGJ1aWx0aW4NCj4gYW5k
-IHNpbXBsZWRybSBidWlsdGluIHdpdGggdmM0IGJ1aWx0IGFzIGEgbW9kdWxlKS4NCj4gDQo+
-IEJlc3QgcmVnYXJkcywNCj4gSmF2aWVyDQo+IA0KPiBDaGFuZ2VzIGluIHYzOg0KPiAtIFJl
-YmFzZSBvbiB0b3Agb2YgbGF0ZXN0IGRybS1taXNjLW5leHQgYnJhbmNoLg0KPiANCj4gQ2hh
-bmdlcyBpbiB2MjoNCj4gLSBSZWJhc2Ugb24gdG9wIG9mIGxhdGVzdCBkcm0tbWlzYy1uZXh0
-IGFuZCBmaXggY29uZmxpY3RzIChEYW5pZWwgVmV0dGVyKS4NCj4gLSBBZGQga2VybmVsLWRv
-YyBjb21tZW50cyBhbmQgaW5jbHVkZSBpbiBvdGhlcl9pbnRlcmZhY2VzLnJzdCAoRGFuaWVs
-IFZldHRlcikuDQo+IC0gRXhwbGFpbiBpbiB0aGUgY29tbWl0IG1lc3NhZ2UgdGhhdCBmYm1l
-bSBoYXMgdG8gdW5yZWdpc3RlciB0aGUgZGV2aWNlDQo+ICAgIGFzIGZhbGxiYWNrIGlmIGEg
-ZHJpdmVyIHJlZ2lzdGVyZWQgdGhlIGRldmljZSBpdHNlbGYgKERhbmllbCBWZXR0ZXIpLg0K
-PiAtIEFsc28gZXhwbGFpbiB0aGF0IGZhbGxiYWNrIGluIGEgY29tbWVudCBpbiB0aGUgY29k
-ZSAoRGFuaWVsIFZldHRlcikuDQo+IC0gRG9uJ3QgZW5jb2RlIGluIGZibWVtIHRoZSBhc3N1
-bXB0aW9uIHRoYXQgc3lzZmIgd2lsbCBhbHdheXMgcmVnaXN0ZXINCj4gICAgcGxhdGZvcm0g
-ZGV2aWNlcyAoRGFuaWVsIFZldHRlcikuDQo+IC0gQWRkIGEgRklYTUUgY29tbWVudCBhYm91
-dCBkcml2ZXJzIHJlZ2lzdGVyaW5nIGRldmljZXMgKERhbmllbCBWZXR0ZXIpLg0KPiAtIERy
-b3AgUkZDIHByZWZpeCBzaW5jZSBwYXRjaGVzIHdlcmUgYWxyZWFkeSByZXZpZXdlZCBieSBE
-YW5pZWwgVmV0dGVyLg0KPiAtIEFkZCBEYW5pZWwgUmV2aWV3ZWQtYnkgdGFncyB0byB0aGUg
-cGF0Y2hlcy4NCj4gDQo+IERhbmllbCBWZXR0ZXIgKDEpOg0KPiAgICBSZXZlcnQgImZiZGV2
-OiBQcmV2ZW50IHByb2JpbmcgZ2VuZXJpYyBkcml2ZXJzIGlmIGEgRkIgaXMgYWxyZWFkeQ0K
-PiAgICAgIHJlZ2lzdGVyZWQiDQo+IA0KPiBKYXZpZXIgTWFydGluZXogQ2FuaWxsYXMgKDQp
-Og0KPiAgICBmaXJtd2FyZTogc3lzZmI6IE1ha2Ugc3lzZmJfY3JlYXRlX3NpbXBsZWZiKCkg
-cmV0dXJuIGEgcGRldiBwb2ludGVyDQo+ICAgIGZpcm13YXJlOiBzeXNmYjogQWRkIGhlbHBl
-cnMgdG8gdW5yZWdpc3RlciBhIHBkZXYgYW5kIGRpc2FibGUNCj4gICAgICByZWdpc3RyYXRp
-b24NCj4gICAgZmJkZXY6IFJlc3RhcnQgY29uZmxpY3RpbmcgZmIgcmVtb3ZhbCBsb29wIHdo
-ZW4gdW5yZWdpc3RlcmluZyBkZXZpY2VzDQo+ICAgIGZiZGV2OiBGaXggc29tZSByYWNlIGNv
-bmRpdGlvbnMgYmV0d2VlbiBmYm1lbSBhbmQgc3lzZmINCj4gDQo+ICAgLi4uL2RyaXZlci1h
-cGkvZmlybXdhcmUvb3RoZXJfaW50ZXJmYWNlcy5yc3QgIHwgIDYgKysNCj4gICBkcml2ZXJz
-L2Zpcm13YXJlL3N5c2ZiLmMgICAgICAgICAgICAgICAgICAgICAgfCA3NyArKysrKysrKysr
-KysrKysrKy0tDQo+ICAgZHJpdmVycy9maXJtd2FyZS9zeXNmYl9zaW1wbGVmYi5jICAgICAg
-ICAgICAgIHwgMTYgKystLQ0KPiAgIGRyaXZlcnMvdmlkZW8vZmJkZXYvY29yZS9mYm1lbS5j
-ICAgICAgICAgICAgICB8IDYyICsrKysrKysrKysrKy0tLQ0KPiAgIGRyaXZlcnMvdmlkZW8v
-ZmJkZXYvZWZpZmIuYyAgICAgICAgICAgICAgICAgICB8IDExIC0tLQ0KPiAgIGRyaXZlcnMv
-dmlkZW8vZmJkZXYvc2ltcGxlZmIuYyAgICAgICAgICAgICAgICB8IDExIC0tLQ0KPiAgIGlu
-Y2x1ZGUvbGludXgvZmIuaCAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAxIC0NCj4g
-ICBpbmNsdWRlL2xpbnV4L3N5c2ZiLmggICAgICAgICAgICAgICAgICAgICAgICAgfCAyOSAr
-KysrKy0tDQo+ICAgOCBmaWxlcyBjaGFuZ2VkLCAxNTggaW5zZXJ0aW9ucygrKSwgNTUgZGVs
-ZXRpb25zKC0pDQo+IA0KDQotLSANClRob21hcyBaaW1tZXJtYW5uDQpHcmFwaGljcyBEcml2
-ZXIgRGV2ZWxvcGVyDQpTVVNFIFNvZnR3YXJlIFNvbHV0aW9ucyBHZXJtYW55IEdtYkgNCk1h
-eGZlbGRzdHIuIDUsIDkwNDA5IE7DvHJuYmVyZywgR2VybWFueQ0KKEhSQiAzNjgwOSwgQUcg
-TsO8cm5iZXJnKQ0KR2VzY2jDpGZ0c2bDvGhyZXI6IEl2byBUb3Rldg0K
+$ numactl -H
+available: 2 nodes (0-1)
+node 0 cpus: 0 1 2 3 4 5 6 7
+node 0 size: 14272 MB
+node 0 free: 13392 MB
+node 1 cpus:
+node 1 size: 2028 MB
+node 1 free: 1971 MB
+node distances:
+node   0   1
+   0:  10  40
+   1:  40  10
+$ cat /sys/bus/nd/devices/dax0.0/target_node
+2
+$
+# cd /sys/bus/dax/drivers/
+:/sys/bus/dax/drivers# ls
+device_dax  kmem
+:/sys/bus/dax/drivers# cd device_dax/
+:/sys/bus/dax/drivers/device_dax# echo dax0.0 > unbind
+:/sys/bus/dax/drivers/device_dax# echo dax0.0 >  ../kmem/new_id
+:/sys/bus/dax/drivers/device_dax# numactl -H
+available: 3 nodes (0-2)
+node 0 cpus: 0 1 2 3 4 5 6 7
+node 0 size: 14272 MB
+node 0 free: 13380 MB
+node 1 cpus:
+node 1 size: 2028 MB
+node 1 free: 1961 MB
+node 2 cpus:
+node 2 size: 0 MB
+node 2 free: 0 MB
+node distances:
+node   0   1   2
+   0:  10  40  80
+   1:  40  10  80
+   2:  80  80  10
+:/sys/bus/dax/drivers/device_dax#
 
---------------ix4uCpa8tuHsKOBCkz4wJM0I--
-
---------------Rc95TRwpQQWj5pxD9yvjBCU3
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
-
------BEGIN PGP SIGNATURE-----
-
-wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmJmYcYFAwAAAAAACgkQlh/E3EQov+AP
-fBAAwj+zxf+d/jGDZGUcK1nkudhe+CNq3bSDDOd4wp0JJ+VC3X4oX9Sp6a6zJOGpSsL1NInqSO/y
-oikzH+INlFUFKbSMGvFBXLh09CjUSY5YIqLc6fx88tviFICU2FwmusbGEnT1U1xob/L4fW4SybED
-tORN2VBYegPKrcPfs5L+Ph5PNDt6z8oOLKu83PvCtHyRbLnnb4PylOxgnGpXb8FmQzVwviRn9mtI
-+yx4XnjaZ1jchYcT71XUHNmZx06BFSfXo05qqD56oD2GrD+6Css36Luxf/IKjTQVFCOU4qK9rjal
-2Esr8Hq0EwmAgmquEWa7ENm3ahJcXr09L5gyjubJK39PP39V6p1ZbT6P75RQlabvSWPIvgqxlH9v
-vEP5HVlcK+tcBcSkaws978Ea1kKbKqsgEsVuAa8vk5v/+Btu0x6qikjBraRPf86Ad8pZfV7aLIiL
-5xXD7dytYOhmxwBpcJDY+ZnY3E1p54I8ve/RZzg0pFvgdFvcKGoM8G8bQeChbz5n9P91Hln+idSb
-uVO7CixCMX4FQUgaagAFhlHTDHcnakmxIEeO60TzLbzeab2GCstgA8JfFErxsa6jvaKyGij0ZC2Q
-la6VaO6pOutVhqSw9JOTk7jBvZFpktuPKpJ7LEaSUZoC1wiBR+yHLFciFTuakD74CM4qyWRPAbbQ
-2rY=
-=X50l
------END PGP SIGNATURE-----
-
---------------Rc95TRwpQQWj5pxD9yvjBCU3--
