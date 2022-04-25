@@ -2,138 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39683C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 11:13:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27163C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 11:14:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231593AbiDYLQd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 07:16:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45442 "EHLO
+        id S241596AbiDYLR4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 07:17:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241707AbiDYLPm (ORCPT
+        with ESMTP id S241784AbiDYLRh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 07:15:42 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7AF92A275
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 04:12:11 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kn2Qk43fVzhYkZ;
-        Mon, 25 Apr 2022 19:11:58 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 25 Apr
- 2022 19:12:09 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>
-CC:     <ying.huang@intel.com>, <iamjoonsoo.kim@lge.com>, <hch@lst.de>,
-        <osalvador@suse.de>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH v3 2/6] mm/vmscan: introduce helper function reclaim_page_list()
-Date:   Mon, 25 Apr 2022 19:12:28 +0800
-Message-ID: <20220425111232.23182-3-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20220425111232.23182-1-linmiaohe@huawei.com>
-References: <20220425111232.23182-1-linmiaohe@huawei.com>
+        Mon, 25 Apr 2022 07:17:37 -0400
+Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 392F93137E;
+        Mon, 25 Apr 2022 04:14:32 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id 415491E80D78;
+        Mon, 25 Apr 2022 19:11:26 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id YXA5B4jbnLbT; Mon, 25 Apr 2022 19:11:23 +0800 (CST)
+Received: from [18.165.124.109] (unknown [101.228.255.56])
+        (Authenticated sender: yuzhe@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id 16C8A1E80D76;
+        Mon, 25 Apr 2022 19:11:23 +0800 (CST)
+Message-ID: <2822d906-6006-2530-eca8-f4c398a1357d@nfschina.com>
+Date:   Mon, 25 Apr 2022 19:14:28 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] batman-adv: remove unnecessary type castings
+To:     Sven Eckelmann <sven@narfation.org>
+Cc:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
+        davem@davemloft.net, kernel-janitors@vger.kernel.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        liqiong@nfschina.com, mareklindner@neomailbox.ch,
+        netdev@vger.kernel.org, pabeni@redhat.com, sw@simonwunderlich.de
+References: <3537486.13E77TLkhO@ripper>
+From:   yuzhe <yuzhe@nfschina.com>
+In-Reply-To: <3537486.13E77TLkhO@ripper>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce helper function reclaim_page_list() to eliminate the duplicated
-code of doing shrink_page_list() and putback_lru_page. Also We can separate
-node reclaim from node page list operation this way. No functional change
-intended.
+Hi,
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
----
- mm/vmscan.c | 50 +++++++++++++++++++++++++-------------------------
- 1 file changed, 25 insertions(+), 25 deletions(-)
+thanks for your reply, we have fixed our mail server. And I'll correct and resubmit my patch.
 
-diff --git a/mm/vmscan.c b/mm/vmscan.c
-index 913eb565140c..7dcc8cf4526f 100644
---- a/mm/vmscan.c
-+++ b/mm/vmscan.c
-@@ -2539,14 +2539,12 @@ static void shrink_active_list(unsigned long nr_to_scan,
- 			nr_deactivate, nr_rotated, sc->priority, file);
- }
- 
--unsigned long reclaim_pages(struct list_head *page_list)
-+static unsigned int reclaim_page_list(struct list_head *page_list,
-+				      struct pglist_data *pgdat)
- {
--	int nid = NUMA_NO_NODE;
--	unsigned int nr_reclaimed = 0;
--	LIST_HEAD(node_page_list);
- 	struct reclaim_stat dummy_stat;
--	struct page *page;
--	unsigned int noreclaim_flag;
-+	unsigned int nr_reclaimed;
-+	struct folio *folio;
- 	struct scan_control sc = {
- 		.gfp_mask = GFP_KERNEL,
- 		.may_writepage = 1,
-@@ -2555,6 +2553,24 @@ unsigned long reclaim_pages(struct list_head *page_list)
- 		.no_demotion = 1,
- 	};
- 
-+	nr_reclaimed = shrink_page_list(page_list, pgdat, &sc, &dummy_stat, false);
-+	while (!list_empty(page_list)) {
-+		folio = lru_to_folio(page_list);
-+		list_del(&folio->lru);
-+		folio_putback_lru(folio);
-+	}
-+
-+	return nr_reclaimed;
-+}
-+
-+unsigned long reclaim_pages(struct list_head *page_list)
-+{
-+	int nid = NUMA_NO_NODE;
-+	unsigned int nr_reclaimed = 0;
-+	LIST_HEAD(node_page_list);
-+	struct page *page;
-+	unsigned int noreclaim_flag;
-+
- 	noreclaim_flag = memalloc_noreclaim_save();
- 
- 	while (!list_empty(page_list)) {
-@@ -2570,28 +2586,12 @@ unsigned long reclaim_pages(struct list_head *page_list)
- 			continue;
- 		}
- 
--		nr_reclaimed += shrink_page_list(&node_page_list,
--						NODE_DATA(nid),
--						&sc, &dummy_stat, false);
--		while (!list_empty(&node_page_list)) {
--			page = lru_to_page(&node_page_list);
--			list_del(&page->lru);
--			putback_lru_page(page);
--		}
--
-+		nr_reclaimed += reclaim_page_list(&node_page_list, NODE_DATA(nid));
- 		nid = NUMA_NO_NODE;
- 	}
- 
--	if (!list_empty(&node_page_list)) {
--		nr_reclaimed += shrink_page_list(&node_page_list,
--						NODE_DATA(nid),
--						&sc, &dummy_stat, false);
--		while (!list_empty(&node_page_list)) {
--			page = lru_to_page(&node_page_list);
--			list_del(&page->lru);
--			putback_lru_page(page);
--		}
--	}
-+	if (!list_empty(&node_page_list))
-+		nr_reclaimed += reclaim_page_list(&node_page_list, NODE_DATA(nid));
- 
- 	memalloc_noreclaim_restore(noreclaim_flag);
- 
--- 
-2.23.0
+在 2022/4/22 15:55, Sven Eckelmann 写道:
 
+> Hi,
+>
+> we neither received your mail via the mailing list nor our private mail
+> servers. It seems your mail setup is broken:
+>
+>      Apr 21 15:48:37 dvalin postfix/smtpd[10256]: NOQUEUE: reject: RCPT from unknown[2400:dd01:100f:2:72e2:84ff:fe10:5f45]: 450 4.7.1 <ha.nfschina.com>: Helo command rejected: Host not found; from=<yuzhe@nfschina.com> to=<sven@narfation.org> proto=ESMTP helo=<ha.nfschina.co>
+>
+>
+> And when I test it myself, it is also not working:
+>
+>      $ dig @8.8.8.8 ha.nfschina.com
+>
+>      ; <<>> DiG 9.16.27-Debian <<>> @8.8.8.8 ha.nfschina.com
+>      ; (1 server found)
+>      ;; global options: +cmd
+>      ;; Got answer:
+>      ;; ->>HEADER<<- opcode: QUERY, status: NXDOMAIN, id: 39639
+>      ;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 1
+>      
+>      ;; OPT PSEUDOSECTION:
+>      ; EDNS: version: 0, flags:; udp: 512
+>      ;; QUESTION SECTION:
+>      ;ha.nfschina.com.               IN      A
+>      
+>      ;; AUTHORITY SECTION:
+>      nfschina.com.           600     IN      SOA     dns11.hichina.com. hostmaster.hichina.com. 2022011002 3600 1200 86400 600
+>
+>      ;; Query time: 328 msec
+>      ;; SERVER: 8.8.8.8#53(8.8.8.8)
+>      ;; WHEN: Fri Apr 22 09:51:56 CEST 2022
+>      ;; MSG SIZE  rcvd: 105
+>
+>
+> Please fix this before sending patches out.
+>
+>
+> But the kernel test bot already demonstrated why this patch is not a good
+> idea. You can improve it and resent it but I will not accept it in this form.
+>
+>
+> Kind regards,
+> 	Sven
