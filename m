@@ -2,185 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6708C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 11:47:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DBAAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 11:48:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241767AbiDYLu3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 07:50:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60034 "EHLO
+        id S240175AbiDYLvr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 07:51:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241762AbiDYLtJ (ORCPT
+        with ESMTP id S241859AbiDYLvZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 07:49:09 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0519403E9;
-        Mon, 25 Apr 2022 04:45:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650887150; x=1682423150;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=0uWssjamdHsdBJb0mJxNHp980sMj8oaZK4dFrIaGODA=;
-  b=O6fvJyLX/LoP7NVXhrlrrRvoULxfnINf9BTfFIO3U+mdX/rggeYr4wRp
-   mkUPJ/1Tps6z0Wo2zYnbhFhreGUBbG0PppiRQSFzfMYBpY2sp+s6mJ2Og
-   Ex8YEznGNE+1hzdv5DOpfT3hm2YAeXidhPecuNkd1LZ3q+YztKhG+ooMR
-   uRzQg1OAuiaHJbWSAFMJz/nNs50vzyeamXfeB7yFNrGF7uKoGZiGDnMto
-   LqKC8T5TXLvz9MjkXXwr/HkBDhmtqfRjYYJt598eXPMdc2X4yBccAOXR/
-   f8Cb6frdEo3CuswDlZXBGqBVgcWb1NWbMTbfLbXPlIRxuRaGcMAJ95297
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10327"; a="264075351"
-X-IronPort-AV: E=Sophos;i="5.90,288,1643702400"; 
-   d="scan'208";a="264075351"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 04:45:50 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,288,1643702400"; 
-   d="scan'208";a="704526088"
-Received: from black.fi.intel.com (HELO black.fi.intel.com.) ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 25 Apr 2022 04:45:48 -0700
-From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: [PATCH v1 2/2] acpi: Remove the helper for deactivating memory region
-Date:   Mon, 25 Apr 2022 14:45:44 +0300
-Message-Id: <20220425114544.37595-3-heikki.krogerus@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220425114544.37595-1-heikki.krogerus@linux.intel.com>
-References: <20220425114544.37595-1-heikki.krogerus@linux.intel.com>
+        Mon, 25 Apr 2022 07:51:25 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEA70419BA;
+        Mon, 25 Apr 2022 04:47:28 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id i5so1385357wrc.13;
+        Mon, 25 Apr 2022 04:47:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=zL3zAyFVSY3b9tOnPyfU+7HZbn2fwn34DVHclMTOxIM=;
+        b=LrsaqLT1q3SQ0uASZlNpLZwn2OT10CWeUnsTzofQWIG4W4bfOEmT13Q91UpjOLMq7s
+         lrpBPBf94SI7EbFNxbrX+Z/FunV8lwcQwOa8PswQHuORAvup4TEAo9xf7hVSakwwOPnA
+         GuyV9BEc3s+TJiupOCo9LTsOKC9C6/h//ZfyR20aJ+FFVWNNnmWzPtf364WCXaoPaiM5
+         lJvrTGrUjdYY83vBcra2zXLR6P5SmQ0YLe3A8WGIcfxftiwix3egfw7A3/HPPdM1/fDx
+         ZBTN1+CxT+TbhNO/G/yP80ZMrIydOgwnA8vEQlWD/vnscKXAi3LFneb72yKNQ2XFhKBZ
+         2N3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=zL3zAyFVSY3b9tOnPyfU+7HZbn2fwn34DVHclMTOxIM=;
+        b=XGOdm79+Txkp8Bm/ZtNaosl/Th6ULIPA+uOXtBvEcqXujxtMttB+uF2PGmkjrRnWd3
+         Jtz4rYhDiMM9LOj/WD3J3QkPamMjTkIXU+5wakZJFx/LASxkw8NZSgKk96JwadMGQvYa
+         Ic+OOqJ5u7d0miG/9+Kpd2afIJs4N48QnRfkh18Q8bdymJls+YjmK18RunWTmNbPnjEH
+         NkaAuK7zFZKQzED/+wcKLOuO221n49MGudmNNah8U0wELzITNXpmsFLoXYByx7YfXmku
+         JrQXD9ewklh3AXVeJIyqaocMq/qWx3szQJBHzEVBfGC6spSqsefs/caFRwaR9Nl6cVco
+         vmaw==
+X-Gm-Message-State: AOAM5320HPqZ17xZt35+8Iriaw1hg2HT15EvybCshFwsVui3xrjIlw9X
+        gaG+zL3Q1O2LG/OIe3U8Pdw=
+X-Google-Smtp-Source: ABdhPJyszTsPH0cgFDvwgEGg3ulNmRSFpWw0T28e1SHB0fW84CGCOgMtYS/1BwvzpMIoRdQ6c5PcsA==
+X-Received: by 2002:a5d:5228:0:b0:20a:d7e9:7ed8 with SMTP id i8-20020a5d5228000000b0020ad7e97ed8mr5654205wra.687.1650887247334;
+        Mon, 25 Apr 2022 04:47:27 -0700 (PDT)
+Received: from [192.168.1.5] ([41.42.183.233])
+        by smtp.gmail.com with ESMTPSA id f4-20020a7bc8c4000000b0038ebbe10c5esm11185583wml.25.2022.04.25.04.47.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 Apr 2022 04:47:26 -0700 (PDT)
+Message-ID: <1efd4c00-4c78-2330-cfb3-fe81493e7e68@gmail.com>
+Date:   Mon, 25 Apr 2022 13:47:21 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net-next v3 1/2] rtnetlink: add extack support in fdb del
+ handlers
+Content-Language: en-US
+To:     Nikolay Aleksandrov <razor@blackwall.org>, netdev@vger.kernel.org
+Cc:     outreachy@lists.linux.dev, roopa@nvidia.com, jdenham@redhat.com,
+        sbrivio@redhat.com, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
+        alexandre.belloni@bootlin.com, shshaikh@marvell.com,
+        manishc@marvell.com, intel-wired-lan@lists.osuosl.org,
+        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
+        GR-Linux-NIC-Dev@marvell.com, bridge@lists.linux-foundation.org
+References: <cover.1650800975.git.eng.alaamohamedsoliman.am@gmail.com>
+ <c3a882e4fb6f9228f704ebe3c1fcace14ee6cdf2.1650800975.git.eng.alaamohamedsoliman.am@gmail.com>
+ <7c8367b6-95c7-ea39-fafe-72495f343625@blackwall.org>
+ <d89eefc2-664f-8537-d10e-6fdfbb6823ed@gmail.com>
+ <4bf69eef-7444-1238-0f4a-fb0fccda080c@blackwall.org>
+ <3bcb2d3d-8b8b-8a8f-1285-7277394b4e6b@gmail.com>
+ <0f1e1250-920a-c7d1-900c-98ef3e0456d8@blackwall.org>
+From:   Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+In-Reply-To: <0f1e1250-920a-c7d1-900c-98ef3e0456d8@blackwall.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are no more users for acpi_release_memory().
 
-Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
----
- drivers/acpi/osl.c   | 86 --------------------------------------------
- include/linux/acpi.h |  3 --
- 2 files changed, 89 deletions(-)
+On ٢٤‏/٤‏/٢٠٢٢ ٢٣:٥٢, Nikolay Aleksandrov wrote:
+> On 4/25/22 00:09, Alaa Mohamed wrote:
+>>
+>> On ٢٤‏/٤‏/٢٠٢٢ ٢١:٥٥, Nikolay Aleksandrov wrote:
+>>> On 24/04/2022 22:49, Alaa Mohamed wrote:
+>>>> On ٢٤‏/٤‏/٢٠٢٢ ٢١:٠٢, Nikolay Aleksandrov wrote:
+>>>>> On 24/04/2022 15:09, Alaa Mohamed wrote:
+>>>>>> Add extack support to .ndo_fdb_del in netdevice.h and
+>>>>>> all related methods.
+>>>>>>
+>>>>>> Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+>>>>>> ---
+>>>>>> changes in V3:
+>>>>>>           fix errors reported by checkpatch.pl
+>>>>>> ---
+>>>>>>    drivers/net/ethernet/intel/ice/ice_main.c        | 4 ++--
+>>>>>>    drivers/net/ethernet/mscc/ocelot_net.c           | 4 ++--
+>>>>>>    drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c | 2 +-
+>>>>>>    drivers/net/macvlan.c                            | 2 +-
+>>>>>>    drivers/net/vxlan/vxlan_core.c                   | 2 +-
+>>>>>>    include/linux/netdevice.h                        | 2 +-
+>>>>>>    net/bridge/br_fdb.c                              | 2 +-
+>>>>>>    net/bridge/br_private.h                          | 2 +-
+>>>>>>    net/core/rtnetlink.c                             | 4 ++--
+>>>>>>    9 files changed, 12 insertions(+), 12 deletions(-)
+>>>>>>
+>>>>>> diff --git a/drivers/net/ethernet/intel/ice/ice_main.c 
+>>>>>> b/drivers/net/ethernet/intel/ice/ice_main.c
+>>>>>> index d768925785ca..7b55d8d94803 100644
+>>>>>> --- a/drivers/net/ethernet/intel/ice/ice_main.c
+>>>>>> +++ b/drivers/net/ethernet/intel/ice/ice_main.c
+>>>>>> @@ -5678,10 +5678,10 @@ ice_fdb_add(struct ndmsg *ndm, struct 
+>>>>>> nlattr __always_unused *tb[],
+>>>>>>    static int
+>>>>>>    ice_fdb_del(struct ndmsg *ndm, __always_unused struct nlattr 
+>>>>>> *tb[],
+>>>>>>            struct net_device *dev, const unsigned char *addr,
+>>>>>> -        __always_unused u16 vid)
+>>>>>> +        __always_unused u16 vid, struct netlink_ext_ack *extack)
+>>>>>>    {
+>>>>>>        int err;
+>>>>>> -
+>>>>>> +
+>>>>> What's changed here?
+>>>> In the previous version, I removed the blank line after "int err;" 
+>>>> and you said I shouldn't so I added blank line.
+>>>>
+>>> Yeah, my question is are you fixing a dos ending or something else?
+>>> The blank line is already there, what's wrong with it?
+>> No, I didn't.
+>>>
+>>> The point is it's not nice to mix style fixes and other changes, 
+>>> more so
+>>> if nothing is mentioned in the commit message.
+>> Got it, So, what should I do to fix it?
+>
+> Don't change that line? I mean I'm even surprised this made it in the 
+> patch. As I mentioned above, there is already a new line there so I'm 
+> not sure how you're removing it and adding it again. :)
+>
+> Cheers,
+>  Nik
 
-diff --git a/drivers/acpi/osl.c b/drivers/acpi/osl.c
-index 7a70c4bfc23c6..3269a888fb7a9 100644
---- a/drivers/acpi/osl.c
-+++ b/drivers/acpi/osl.c
-@@ -36,7 +36,6 @@
- #include <linux/io-64-nonatomic-lo-hi.h>
- 
- #include "acpica/accommon.h"
--#include "acpica/acnamesp.h"
- #include "internal.h"
- 
- /* Definitions for ACPI_DEBUG_PRINT() */
-@@ -1496,91 +1495,6 @@ int acpi_check_region(resource_size_t start, resource_size_t n,
- }
- EXPORT_SYMBOL(acpi_check_region);
- 
--static acpi_status acpi_deactivate_mem_region(acpi_handle handle, u32 level,
--					      void *_res, void **return_value)
--{
--	struct acpi_mem_space_context **mem_ctx;
--	union acpi_operand_object *handler_obj;
--	union acpi_operand_object *region_obj2;
--	union acpi_operand_object *region_obj;
--	struct resource *res = _res;
--	acpi_status status;
--
--	region_obj = acpi_ns_get_attached_object(handle);
--	if (!region_obj)
--		return AE_OK;
--
--	handler_obj = region_obj->region.handler;
--	if (!handler_obj)
--		return AE_OK;
--
--	if (region_obj->region.space_id != ACPI_ADR_SPACE_SYSTEM_MEMORY)
--		return AE_OK;
--
--	if (!(region_obj->region.flags & AOPOBJ_SETUP_COMPLETE))
--		return AE_OK;
--
--	region_obj2 = acpi_ns_get_secondary_object(region_obj);
--	if (!region_obj2)
--		return AE_OK;
--
--	mem_ctx = (void *)&region_obj2->extra.region_context;
--
--	if (!(mem_ctx[0]->address >= res->start &&
--	      mem_ctx[0]->address < res->end))
--		return AE_OK;
--
--	status = handler_obj->address_space.setup(region_obj,
--						  ACPI_REGION_DEACTIVATE,
--						  NULL, (void **)mem_ctx);
--	if (ACPI_SUCCESS(status))
--		region_obj->region.flags &= ~(AOPOBJ_SETUP_COMPLETE);
--
--	return status;
--}
--
--/**
-- * acpi_release_memory - Release any mappings done to a memory region
-- * @handle: Handle to namespace node
-- * @res: Memory resource
-- * @level: A level that terminates the search
-- *
-- * Walks through @handle and unmaps all SystemMemory Operation Regions that
-- * overlap with @res and that have already been activated (mapped).
-- *
-- * This is a helper that allows drivers to place special requirements on memory
-- * region that may overlap with operation regions, primarily allowing them to
-- * safely map the region as non-cached memory.
-- *
-- * The unmapped Operation Regions will be automatically remapped next time they
-- * are called, so the drivers do not need to do anything else.
-- */
--acpi_status acpi_release_memory(acpi_handle handle, struct resource *res,
--				u32 level)
--{
--	acpi_status status;
--
--	if (!(res->flags & IORESOURCE_MEM))
--		return AE_TYPE;
--
--	status = acpi_walk_namespace(ACPI_TYPE_REGION, handle, level,
--				     acpi_deactivate_mem_region, NULL,
--				     res, NULL);
--	if (ACPI_FAILURE(status))
--		return status;
--
--	/*
--	 * Wait for all of the mappings queued up for removal by
--	 * acpi_deactivate_mem_region() to actually go away.
--	 */
--	synchronize_rcu();
--	rcu_barrier();
--	flush_scheduled_work();
--
--	return AE_OK;
--}
--EXPORT_SYMBOL_GPL(acpi_release_memory);
--
- /*
-  * Let drivers know whether the resource checks are effective
-  */
-diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-index d7136d13aa442..fadda404bcc9b 100644
---- a/include/linux/acpi.h
-+++ b/include/linux/acpi.h
-@@ -520,9 +520,6 @@ int acpi_check_resource_conflict(const struct resource *res);
- int acpi_check_region(resource_size_t start, resource_size_t n,
- 		      const char *name);
- 
--acpi_status acpi_release_memory(acpi_handle handle, struct resource *res,
--				u32 level);
--
- int acpi_resources_are_enforced(void);
- 
- #ifdef CONFIG_HIBERNATION
--- 
-2.35.1
+
+Thanks Nik, I will fix this.
 
