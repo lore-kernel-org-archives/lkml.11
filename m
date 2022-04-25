@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97723C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 11:57:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2570CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 11:57:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239335AbiDYMAP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 08:00:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35530 "EHLO
+        id S236326AbiDYMA0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 08:00:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235907AbiDYL7b (ORCPT
+        with ESMTP id S236991AbiDYL7c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 07:59:31 -0400
+        Mon, 25 Apr 2022 07:59:32 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BA0A855A3
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 04:56:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 078E56422
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 04:56:28 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9A462ED1;
-        Mon, 25 Apr 2022 04:56:26 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C8A04113E;
+        Mon, 25 Apr 2022 04:56:22 -0700 (PDT)
 Received: from lakrids.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 5C54E3F73B;
-        Mon, 25 Apr 2022 04:56:25 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 7120A3F73B;
+        Mon, 25 Apr 2022 04:56:21 -0700 (PDT)
 From:   Mark Rutland <mark.rutland@arm.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     akpm@linux-foundation.org, alex.popov@linux.com,
         catalin.marinas@arm.com, keescook@chromium.org,
         linux-arm-kernel@lists.infradead.org, luto@kernel.org,
         mark.rutland@arm.com, will@kernel.org
-Subject: [PATCH 8/8] arm64: entry: use stackleak_erase_on_task_stack()
-Date:   Mon, 25 Apr 2022 12:56:03 +0100
-Message-Id: <20220425115603.781311-9-mark.rutland@arm.com>
+Subject: [PATCH 6/8] stackleak: remove redundant check
+Date:   Mon, 25 Apr 2022 12:56:01 +0100
+Message-Id: <20220425115603.781311-7-mark.rutland@arm.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220425115603.781311-1-mark.rutland@arm.com>
 References: <20220425115603.781311-1-mark.rutland@arm.com>
@@ -39,35 +39,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On arm64 we always call stackleak_erase() on a task stack, and never
-call it on another stack. We can avoid some redundant work by using
-stackleak_erase_on_task_stack(), telling the stackleak code that it's
-being called on a task stack.
+In __stackleak_erase() we check that the `erase_low` value derived from
+`current->lowest_stack` is above the lowest legitimate stack pointer
+value, but this is already enforced by stackleak_track_stack() when
+recording the lowest stack value.
+
+Remove the redundant check.
+
+There should be no functional change as a result of this patch.
 
 Signed-off-by: Mark Rutland <mark.rutland@arm.com>
 Cc: Alexander Popov <alex.popov@linux.com>
 Cc: Andrew Morton <akpm@linux-foundation.org>
 Cc: Andy Lutomirski <luto@kernel.org>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
 Cc: Kees Cook <keescook@chromium.org>
-Cc: Will Deacon <will@kernel.org>
 ---
- arch/arm64/kernel/entry.S | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/stackleak.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/arch/arm64/kernel/entry.S b/arch/arm64/kernel/entry.S
-index ede028dee81b0..5b82b92924005 100644
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -596,7 +596,7 @@ SYM_CODE_START_LOCAL(ret_to_user)
- 	ldr	x19, [tsk, #TSK_TI_FLAGS]	// re-check for single-step
- 	enable_step_tsk x19, x2
- #ifdef CONFIG_GCC_PLUGIN_STACKLEAK
--	bl	stackleak_erase
-+	bl	stackleak_erase_on_task_stack
- #endif
- 	kernel_exit 0
- SYM_CODE_END(ret_to_user)
+diff --git a/kernel/stackleak.c b/kernel/stackleak.c
+index f597d3323729d..ba346d46218f5 100644
+--- a/kernel/stackleak.c
++++ b/kernel/stackleak.c
+@@ -79,10 +79,6 @@ static __always_inline void __stackleak_erase(void)
+ 	unsigned int poison_count = 0;
+ 	const unsigned int depth = STACKLEAK_SEARCH_DEPTH / sizeof(unsigned long);
+ 
+-	/* Check that 'lowest_stack' value is sane */
+-	if (unlikely(erase_low - task_stack_low >= THREAD_SIZE))
+-		erase_low = task_stack_low;
+-
+ 	/* Search for the poison value in the kernel stack */
+ 	while (erase_low > task_stack_low && poison_count <= depth) {
+ 		if (*(unsigned long *)erase_low == STACKLEAK_POISON)
 -- 
 2.30.2
 
