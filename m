@@ -2,36 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63600C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 13:27:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2019C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 13:27:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238262AbiDYNaR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 09:30:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40720 "EHLO
+        id S242001AbiDYNa3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 09:30:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232474AbiDYNaK (ORCPT
+        with ESMTP id S233775AbiDYNaK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 25 Apr 2022 09:30:10 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BED30403F6
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 06:27:01 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Kn5PX0w8Yz1JBjg;
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C011340918
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 06:27:02 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kn5PX74BCzfb4V;
         Mon, 25 Apr 2022 21:26:08 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
  (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 25 Apr
- 2022 21:26:59 +0800
+ 2022 21:27:00 +0800
 From:   Miaohe Lin <linmiaohe@huawei.com>
 To:     <akpm@linux-foundation.org>, <mike.kravetz@oracle.com>,
         <naoya.horiguchi@nec.com>
 CC:     <ying.huang@intel.com>, <hch@lst.de>, <dhowells@redhat.com>,
         <cl@linux.com>, <david@redhat.com>, <linux-mm@kvack.org>,
         <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH v2 0/4] A few cleanup and fixup patches for migration
-Date:   Mon, 25 Apr 2022 21:27:19 +0800
-Message-ID: <20220425132723.34824-1-linmiaohe@huawei.com>
+Subject: [PATCH v2 2/4] mm/migration: remove unneeded lock page and PageMovable check
+Date:   Mon, 25 Apr 2022 21:27:21 +0800
+Message-ID: <20220425132723.34824-3-linmiaohe@huawei.com>
 X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20220425132723.34824-1-linmiaohe@huawei.com>
+References: <20220425132723.34824-1-linmiaohe@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -43,37 +45,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi everyone,
-This series contains a few patches to remove unneeded lock page and
-PageMovable check, reduce the rcu lock duration. Also we fix potential
-pte_unmap on an not mapped pte. More details can be found in the
-respective changelogs. Thanks!
+When non-lru movable page was freed from under us, __ClearPageMovable must
+have been done. Even if it's not done, ClearPageIsolated here won't hurt
+as page will be freed anyway. So we can thus remove unneeded lock page and
+PageMovable check here.
 
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
 ---
-v2:
-  collect Reviewed-by tag
-  make isolate_huge_page consistent with isolate_lru_page
-  add hugetlbfs variant of hugetlb_migration_entry_wait
-v1:
-  rebase [1] on mainline.
+ mm/migrate.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
-[1] https://lore.kernel.org/lkml/20220304093409.25829-2-linmiaohe@huawei.com/T/
----
-Miaohe Lin (4):
-  mm/migration: reduce the rcu lock duration
-  mm/migration: remove unneeded lock page and PageMovable check
-  mm/migration: return errno when isolate_huge_page failed
-  mm/migration: fix potential pte_unmap on an not mapped pte
-
- include/linux/hugetlb.h |  6 +++---
- include/linux/swapops.h | 12 ++++++++----
- mm/gup.c                |  2 +-
- mm/hugetlb.c            | 15 +++++++--------
- mm/memory-failure.c     |  2 +-
- mm/mempolicy.c          |  2 +-
- mm/migrate.c            | 39 +++++++++++++++++++++++++--------------
- 7 files changed, 46 insertions(+), 32 deletions(-)
-
+diff --git a/mm/migrate.c b/mm/migrate.c
+index b779646665fe..0fc4651b3e39 100644
+--- a/mm/migrate.c
++++ b/mm/migrate.c
+@@ -1093,12 +1093,8 @@ static int unmap_and_move(new_page_t get_new_page,
+ 		/* page was freed from under us. So we are done. */
+ 		ClearPageActive(page);
+ 		ClearPageUnevictable(page);
+-		if (unlikely(__PageMovable(page))) {
+-			lock_page(page);
+-			if (!PageMovable(page))
+-				ClearPageIsolated(page);
+-			unlock_page(page);
+-		}
++		if (unlikely(__PageMovable(page)))
++			ClearPageIsolated(page);
+ 		goto out;
+ 	}
+ 
 -- 
 2.23.0
 
