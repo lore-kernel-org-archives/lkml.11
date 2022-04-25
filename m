@@ -2,157 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2C43C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 12:27:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6442C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 12:27:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229623AbiDYMah (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 08:30:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36352 "EHLO
+        id S238533AbiDYMas (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 08:30:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241971AbiDYM2J (ORCPT
+        with ESMTP id S241900AbiDYMaU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 08:28:09 -0400
-Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2107.outbound.protection.outlook.com [40.107.255.107])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 810F064BD1;
-        Mon, 25 Apr 2022 05:22:50 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=N5pYIzW44HQtYPvPfwZiuA1oSblgGVJDj+iQu3AVOrylaNbdL085+TeTTpLdq/0Veo91UBgxpNEc5pd9rO0ii2NdB7WIwrKSPExOf6gAcGmz3ZNv7PlkjT91dKQJsJqtNTQvVnHK9xmtMyTCWR9FzbP/vJGND/TMe85cUTD0IDa4pT1HKTe4CVFanaesvJO+4mjgCPUS4OaOK3rpfwXYnIWbaac5e4mp/IER5/7Fl6HJwaPxw8pX1onTsISSlHnxwCT7biDD2SWm2hKf2+lPe6109CSKaZ5UYJr5BEDsrrUOTw1b4V7BWs8jP+KTPvjIkQ9Tr+uaqAbR0VamjAk1Nw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=oSSTaCRoFuoFRjyZ4RqHKYwxgulUdtKd1/oEIFavEiQ=;
- b=VAMFP8LEuQccp3In+2PvH5py5nwBVgs8C4DTDj8/ahODq6S6zkaBg7Lu8HVHSFjuK2YTPNHSyWbZoC8hPlgSEU25c8VhMoYgP0C4G/ivaF7QXy4420PiL8yzHklYHaxIxbr1+F0A3ZNn/VYwq2ASVlkULnDoGEdg5pEaGEKwC0BHP/gf2hfQ/wchiDpydiAHydAPZdStso76FhXOMCjShvqV5KddpQtLoMaP3tPkaqI/U4l/yNV4vPiHacK29zqMp+W9082g43UGpu0jAcbjshdmlBA3WTBD1ADvs3wcZiqKVDf104CjOUrRODcLYknnmVBb+NpR2uBVemhvBtH/xw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
- s=selector2-vivo0-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oSSTaCRoFuoFRjyZ4RqHKYwxgulUdtKd1/oEIFavEiQ=;
- b=SzWyiYfqr+v2dvhW0awhu1dKAcOPyysIuRGDNJ9V12Zyl8MTCyFhk/ZBYQbdhFYyEtVkpsutONLsnEgMDP7dn9IFVgaqsbMZylOOaW/QVU/QO7H+4hJiqrmgpvwOhtVcObyfvyps+wplTFIo0Zc3bdBLw+ogpbo/iGj9qKiTxZw=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from HK2PR06MB3492.apcprd06.prod.outlook.com (2603:1096:202:2f::10)
- by SG2PR06MB2508.apcprd06.prod.outlook.com (2603:1096:4:5f::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.15; Mon, 25 Apr
- 2022 12:22:47 +0000
-Received: from HK2PR06MB3492.apcprd06.prod.outlook.com
- ([fe80::88e1:dc04:6851:ad08]) by HK2PR06MB3492.apcprd06.prod.outlook.com
- ([fe80::88e1:dc04:6851:ad08%7]) with mapi id 15.20.5186.021; Mon, 25 Apr 2022
- 12:22:47 +0000
-From:   Guo Zhengkui <guozhengkui@vivo.com>
-To:     Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        David Heidelberg <david@ixit.cz>,
-        Lyude Paul <lyude@redhat.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Guo Zhengkui <guozhengkui@vivo.com>,
-        Xu Wang <vulab@iscas.ac.cn>,
-        linux-arm-msm@vger.kernel.org (open list:DRM DRIVER FOR MSM ADRENO GPU),
-        dri-devel@lists.freedesktop.org (open list:DRM DRIVER FOR MSM ADRENO
-        GPU),
-        freedreno@lists.freedesktop.org (open list:DRM DRIVER FOR MSM ADRENO
-        GPU), linux-kernel@vger.kernel.org (open list)
-Cc:     zhengkui_guo@outlook.com
-Subject: [PATCH] drm/msm: fix returnvar.cocci warning
-Date:   Mon, 25 Apr 2022 20:22:21 +0800
-Message-Id: <20220425122223.7415-1-guozhengkui@vivo.com>
-X-Mailer: git-send-email 2.20.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: HK2PR0401CA0009.apcprd04.prod.outlook.com
- (2603:1096:202:2::19) To HK2PR06MB3492.apcprd06.prod.outlook.com
- (2603:1096:202:2f::10)
+        Mon, 25 Apr 2022 08:30:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E63CD3B576
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 05:26:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9BD50B8121A
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 12:26:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D92CC385A4;
+        Mon, 25 Apr 2022 12:26:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650889576;
+        bh=CCfsBTA5tOM5okHwD5mr1fjJwZTvTnfyFRzdWo61CQo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kOsgTXh3qLqBYkKsEtDHorXameycdD9qsUjKa79ik/kQwpfkC1vWwwzY5xEpXl+qv
+         AIUv6JPKHd8EhWPZ4isMcJSZQLROYRnyQCIQfDa6HE1iJpg4UbW4ple1PgvAFyEWEq
+         lnkE43sf8WbQar3VAVMa186wn1OyEG38k6/5/qpndfahwQhSJy+dIZsOXA2m3CT+ro
+         JVA53pk4Gcb9yURRgRfRyMkJ8xt44sA+V0OVDYs45dcgumSHEjMhaRTJ29GQF9eV6w
+         qFEEoA/C5WcOwPlbdm8ggoIZ/lwz38A7hHoBsOFSUyz5HtzDw9075bfkvvRP+4VaOg
+         LH02Rq0fXRqpg==
+Date:   Mon, 25 Apr 2022 13:26:12 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Richard Fitzgerald <rf@opensource.cirrus.com>
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        patches@opensource.cirrus.com,
+        Simon Trimmer <simont@opensource.cirrus.com>
+Subject: Re: [PATCH 1/2] ASoC: soc.h: Introduce SOC_DOUBLE_R_S_EXT_TLV() macro
+Message-ID: <YmaTZEnMAsqtg2FO@sirena.org.uk>
+References: <20220422160112.3026542-1-rf@opensource.cirrus.com>
+ <20220422160112.3026542-2-rf@opensource.cirrus.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7c74186e-fabd-4770-80e8-08da26b64e71
-X-MS-TrafficTypeDiagnostic: SG2PR06MB2508:EE_
-X-Microsoft-Antispam-PRVS: <SG2PR06MB2508FC744C357606C71F43E9C7F89@SG2PR06MB2508.apcprd06.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: sUOE3h7tWc84LkADNVzWgieXHKYf8Nmy1fOLieQtQXtl7v6iL/Hq0ZfVCKLApxVGArNtJpmIugLvIieGSxmj2IN/lOqnh+FczW+akuAnH2ZlF2B8ez+lx3XHYwLVKfPcNENKMRi6ZJVzQLZLH2EvTvBOoLtFjdznqi/RqP2LaVtJYkWtcsOrfubJ+GIS7aRFl/T+Jvn3CQJ9+acx5BbQKHkziChc6/DVUbqo9XqCWK+VvB8lhOFH+QJEjnftHId1OoCnKZMh+V6v2gTsQzyCdmaRhPglrC3rwYXFX7nQ+U1Gc/AwQ5TY1AtBun1xwOJjWsrwYo/ZafF6qMcfGYAjzrohNH9JK7Npg19Irk/XX7CsEr1Ob8S9GyuwoujVbHBEeqr1gaoBeA9S9HNXpZKgc4Nn9B3RwFUkoFFdhMSMDgnV43rtFIUhQyvHnGR+XkX62WyTOfn+QGlGEnbb98mZQ0/+Z9/tDVatUff797IMUmfKxzssYV337LldzLRJaMjOI3zqZlEtRTA2twwWdNUa9XXYnqkOC9YgJJNoXaBZ1UxvLhst7kPYGbWya2pSSLVaOIXeboqK6D3sHexR7jHYZM6vhMP47BflON8razJPFV92cBX21Y8yUPUdDtkslH8KbUmQpWqPwGeZLXJVAwK6qSx1VQ8fFJUxhWCHUEJobFpQiGeCu/VqN53Hx15u7eIdQGd4a1jcjtRrHKIutMVNGmbetUNO9I5obWq15xIe75c=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK2PR06MB3492.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(26005)(6666004)(36756003)(6512007)(921005)(6506007)(508600001)(6486002)(83380400001)(52116002)(1076003)(2616005)(316002)(186003)(86362001)(4744005)(2906002)(8936002)(7416002)(5660300002)(4326008)(8676002)(66556008)(66946007)(66476007)(38100700002)(38350700002)(110136005);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?X/0vhP7D0AqawylAbBWJ0wlhSIQKr61NvtyWcy3AT17VOP8hn0oXcxl6z7Pl?=
- =?us-ascii?Q?C63eaYRIJ2fgR9iYZzsp58fFAMy5JLlSVuQDWx6MUBpswzD6VwSC0A4bcbOo?=
- =?us-ascii?Q?cAeroWVlvLJGG/eSAeNzDniNNAf8rElvRYHWQ80YEE4SgfqkyqTNmBldo+Az?=
- =?us-ascii?Q?MUQtJ1lzZphSJx+JJBLcgHxslzaqmDy/RLrYwli7uV82kj6UN/4/BwUjA/KX?=
- =?us-ascii?Q?qq1zcnJv3SMOLI8sD0qT1FcP5NhtFLYY/r0yr1nztA9DNQSYn3ODStluzqD6?=
- =?us-ascii?Q?1YDK4okVtDxPRHL+p34bmj+5+M1cd5NtVvGrs7FMPYlQrh0kSVnK1bwe4xPk?=
- =?us-ascii?Q?SXfHYHhKsEYCYdPpgEcpXpx57HMSkPV7tdqy2hyJzHJYFCza9J0S4E9S2C9n?=
- =?us-ascii?Q?2i8aSMMUFbiZjbzbb4LTQBfrfWUrv0y9Xx3dEfryQXxOoWYkhc9UHGiaJ/wD?=
- =?us-ascii?Q?Iuh5AqBI7fQhDWo9in5d8k1RFhS9L2vhDsSppSFku7zbgKkp2X+kUSGLGesh?=
- =?us-ascii?Q?cgJbC7auBZqlGin0TUObutzeEi4S0eTkvE079aE0f6jVE816Z4tC0ADzgGtn?=
- =?us-ascii?Q?WePZDuH4uXccoWEfAkn/eW52G/G4XdI2sU7gBuGh/ahKU8Fk+vNKPY6UEvvu?=
- =?us-ascii?Q?90G2LmF8CSj05oXj7zufcnP/6RiYvOdJaKfb+7rDnHh+PSCle5SMh8u+ZKAy?=
- =?us-ascii?Q?90jf122FysBG61vlnbOhi0G2EWCquLLGbVbRyTikCc2TgauIyw3CCkUh0zUf?=
- =?us-ascii?Q?7vJ1plFFLbcYTVXahH3wfOsXz5vEZc2+HwHW2w2YzXD1uvmkayr5r/9zizKD?=
- =?us-ascii?Q?/Ax9IIlazUH94lGevHv21Dn+jPqqIuoI7BOZmHBx38S3vxv8HICchP+V7UvG?=
- =?us-ascii?Q?i5ZuMV4th3WkRL6B8PX6uhInukn5mXPwWK7RQqd2coo99Fp/gKkwV0YZYEOo?=
- =?us-ascii?Q?i42zTsAmBESqGes2krTIMis5rbrOsVl0PfdnwLGlZPppsttJWq/GiYpWtF4w?=
- =?us-ascii?Q?l1E3xukohaD/hTWgr3Emqi2caLpHcTgok4e6x9hXXaieGuD7Zn2HmP59Pqnl?=
- =?us-ascii?Q?UO6Qi0pbpZUl/AuJn0MBruhKM5mVsnoUhprO6dDK+RwdZB0Q7pmkGvC55G2t?=
- =?us-ascii?Q?Ezs83/fPmIlZBPUXMvDGc4a+AdOA+n32Y7RMDWErjmE4WvykOU3+LF2aG5H7?=
- =?us-ascii?Q?V1uv6CCYlHMoWeh/F/9rw9rb8iOKQgpQ6Mtl5Y2pIeKpoXo107CR4GAaUus+?=
- =?us-ascii?Q?8jEl9tPIx5gfd8MF/u8IEJZPRV6vVeWlG5uJiyNeZdfwjcKGn1imzoaeUGFr?=
- =?us-ascii?Q?syzc+WDU2NavoobKYFL0Ub4EVcd37JZV/elStLroUF58ByardPy8QqRw5MKH?=
- =?us-ascii?Q?z43nh8PzbROTCVmn6FpZlFOkbkw5UXLhD9w//RDXiQy4Qz+9RUFwS8kG/TfZ?=
- =?us-ascii?Q?xcoj2ud+RV9keYq0GuEtbDSahjt36MHB+uQbiBPQmlTQ00rH9Cf+oee6YsqH?=
- =?us-ascii?Q?//Nkf35mnE4YTrt5hvbe9KfYNy3h56BPQSJ9ga0IRQ+Pstzac7REw0v6WCxY?=
- =?us-ascii?Q?2ZAm0+Z3R+pgcC6CxpguvWfBxDdlQgwkX7SAez54qdA133R3buYdtpYYmZll?=
- =?us-ascii?Q?z8v6eZiNhY+/sDwepsG8INEHxx9OB2mOw2iZ90YaLxzg0E3GROv5W3orhnQI?=
- =?us-ascii?Q?4n0/sWO7cikfr+14n8bGLN+PMpNgC4TWw8fplVqOl7tBjvyrsjOgTPzV4Yjd?=
- =?us-ascii?Q?3ZNkLftRFQ=3D=3D?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7c74186e-fabd-4770-80e8-08da26b64e71
-X-MS-Exchange-CrossTenant-AuthSource: HK2PR06MB3492.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Apr 2022 12:22:46.9717
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YYyuXrqdKmWUPbBVfcudchVQODM3BqNcdIcNNPNqMalB1fM4i+onfU3xDCMkv/Q81sCdiMk020beibI89uNwag==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SG2PR06MB2508
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="dUudKPHLHGWxXp+f"
+Content-Disposition: inline
+In-Reply-To: <20220422160112.3026542-2-rf@opensource.cirrus.com>
+X-Cookie: An apple a day makes 365 apples a year.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the following coccicheck warning:
-drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c:24:5-8: Unneeded variable:
-"ret". Return "0" on line 75.
 
-Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
----
- drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+--dUudKPHLHGWxXp+f
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c b/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c
-index 3cf476c55158..8ae66facc095 100644
---- a/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c
-+++ b/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c
-@@ -21,7 +21,6 @@ static int mdp4_hw_init(struct msm_kms *kms)
- 	struct drm_device *dev = mdp4_kms->dev;
- 	u32 dmap_cfg, vg_cfg;
- 	unsigned long clk;
--	int ret = 0;
- 
- 	pm_runtime_get_sync(dev->dev);
- 
-@@ -72,7 +71,7 @@ static int mdp4_hw_init(struct msm_kms *kms)
- 
- 	pm_runtime_put_sync(dev->dev);
- 
--	return ret;
-+	return 0;
- }
- 
- static void mdp4_enable_commit(struct msm_kms *kms)
--- 
-2.20.1
+On Fri, Apr 22, 2022 at 05:01:11PM +0100, Richard Fitzgerald wrote:
+> From: Simon Trimmer <simont@opensource.cirrus.com>
+>=20
+> A straightforward extension of the SOC_DOUBLE_R_S_TLV() macro that
+> allows the get and put functions to be customised.
+>=20
+> Signed-off-by: Simon Trimmer <simont@opensource.cirrus.com>
+> ---
 
+You've not provided a Signed-off-by for this so I can't do anything with
+it, please see Documentation/process/submitting-patches.rst for details
+on what this is and why it's important.
+
+--dUudKPHLHGWxXp+f
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJmk2MACgkQJNaLcl1U
+h9Bz7Af+Lf+FoJbAa0i8nRsGp/D2J5caATzoFfmsqnNeRpBfsFEkg05oAcUbaGXL
+9a8Enhi1C74R5eW+yhjZ2778l/iB/rI53TaQD96c9pn9wfLIkNpeP5YjVDZDJ/ki
+Pfz9GM04a8QYrqQhsAzjUGDdV6x8vBkRINdo9aq/vDmjvfcLRtbNweng3hziT8R9
+61W3AQOgE6pvufbsTJONUF7HZdbJCQAt327i2q1e4FRevEoM4yiQNJJIxWYQTJ0H
+mvb2bAW3SlZk7Yw42EULySeGI8xlxelerHKWsXdU/wti/fEUcaZzI44F+S4ncOu2
+AiBQjJY3fngU+FFvD+Fzf8DG9LI9SQ==
+=OCou
+-----END PGP SIGNATURE-----
+
+--dUudKPHLHGWxXp+f--
