@@ -2,208 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F74FC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 07:56:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AF19C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 07:56:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234123AbiDYH7Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 03:59:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53306 "EHLO
+        id S232021AbiDYH7a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 03:59:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241673AbiDYH4x (ORCPT
+        with ESMTP id S241534AbiDYH4N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 03:56:53 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EF71D44
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 00:53:26 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Mon, 25 Apr 2022 03:56:13 -0400
+Received: from ixit.cz (ip-94-112-206-30.net.upcbroadband.cz [94.112.206.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABBBDF1;
+        Mon, 25 Apr 2022 00:51:21 -0700 (PDT)
+Received: from [10.0.0.209] (_gateway [10.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id B2084210E3;
-        Mon, 25 Apr 2022 07:53:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1650873204; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
+        by ixit.cz (Postfix) with ESMTPSA id 150CE2007F;
+        Mon, 25 Apr 2022 09:51:18 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ixit.cz; s=dkim;
+        t=1650873079;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=6J/iNUKJLZU6UZVIYmW6fFp8/3H1kEij2Zec5To3N0Y=;
-        b=VK+MEYCddHzu2chMnuBog0HhHzDWTsWO0kmAh0n6rBNTGvYIU99i5py8YfvtmdmIpZ5PbH
-        5KfvHmprQjqkkoLetj6MvrWlmPP8TcW26ax/HStcwGdPPLBmtXufZm2f/LXkfuABmpJg8Q
-        MOvPo6hKLF5Ipdy1doBtgq7a38GHnEo=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 37F6513AED;
-        Mon, 25 Apr 2022 07:53:24 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id lC4uDHRTZmJKbAAAMHmgww
-        (envelope-from <jgross@suse.com>); Mon, 25 Apr 2022 07:53:24 +0000
-Message-ID: <22a6eb7e-f98c-ff15-f4dd-b2834ad345c8@suse.com>
-Date:   Mon, 25 Apr 2022 09:53:23 +0200
+        bh=dcuXepEWcmZJ35pGcNKVyIGil4yYREVIpbEFg/kZi+g=;
+        b=rjWtzKLvpN6OHY+zmwSG9ppUW1EHiMKywdm+jVLpsotohRX8y+lAAQh1ypi9rUC17NPrkq
+        VFLWrIMyb2QNyW0ZjHXttgfShXRWm0/LRljacl2H59pGiFgnOYuLCwubQOT+XSkS4F4vyW
+        WQjKq39QqP52FGmqHSyFTDDkuf1sfos=
+Message-ID: <a2892001-1658-9cec-65bd-d0ab1568e6f7@ixit.cz>
+Date:   Mon, 25 Apr 2022 09:51:18 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.0
-Subject: Re: [PATCH V1 3/6] xen/virtio: Add option to restrict memory access
- under Xen
+Subject: Re: [PATCH v2 2/3] dt-bindings: mailbox: qcom-ipcc: add missing
+ properties into example
 Content-Language: en-US
-To:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Oleksandr <olekstysh@gmail.com>,
-        Christoph Hellwig <hch@infradead.org>
-Cc:     xen-devel@lists.xenproject.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Julien Grall <julien@xen.org>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-References: <1650646263-22047-1-git-send-email-olekstysh@gmail.com>
- <1650646263-22047-4-git-send-email-olekstysh@gmail.com>
- <YmQsFb36UEH9BUnN@infradead.org>
- <6c5042fe-dafc-eb4f-c1fa-03b0faf252de@gmail.com>
- <e63bfa2c-6edb-f224-1d2a-0c69330492ad@oracle.com>
-From:   Juergen Gross <jgross@suse.com>
-In-Reply-To: <e63bfa2c-6edb-f224-1d2a-0c69330492ad@oracle.com>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------UMN1MmzbWRc84Fi7yZ5FDfaK"
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+References: <20220424131522.14185-1-david@ixit.cz>
+ <20220424131522.14185-2-david@ixit.cz>
+ <5bc96cbd-cc5a-9ddb-4756-9f94324f00a7@linaro.org>
+From:   David Heidelberg <david@ixit.cz>
+In-Reply-To: <5bc96cbd-cc5a-9ddb-4756-9f94324f00a7@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------UMN1MmzbWRc84Fi7yZ5FDfaK
-Content-Type: multipart/mixed; boundary="------------vBUQSUV9DXk8H0gwrYNEVMMz";
- protected-headers="v1"
-From: Juergen Gross <jgross@suse.com>
-To: Boris Ostrovsky <boris.ostrovsky@oracle.com>,
- Oleksandr <olekstysh@gmail.com>, Christoph Hellwig <hch@infradead.org>
-Cc: xen-devel@lists.xenproject.org, x86@kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- Dave Hansen <dave.hansen@linux.intel.com>, Andy Lutomirski
- <luto@kernel.org>, Peter Zijlstra <peterz@infradead.org>,
- Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
- Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>,
- Stefano Stabellini <sstabellini@kernel.org>, Julien Grall <julien@xen.org>,
- Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
- "Michael S. Tsirkin" <mst@redhat.com>
-Message-ID: <22a6eb7e-f98c-ff15-f4dd-b2834ad345c8@suse.com>
-Subject: Re: [PATCH V1 3/6] xen/virtio: Add option to restrict memory access
- under Xen
-References: <1650646263-22047-1-git-send-email-olekstysh@gmail.com>
- <1650646263-22047-4-git-send-email-olekstysh@gmail.com>
- <YmQsFb36UEH9BUnN@infradead.org>
- <6c5042fe-dafc-eb4f-c1fa-03b0faf252de@gmail.com>
- <e63bfa2c-6edb-f224-1d2a-0c69330492ad@oracle.com>
-In-Reply-To: <e63bfa2c-6edb-f224-1d2a-0c69330492ad@oracle.com>
+On 24/04/2022 16:43, Krzysztof Kozlowski wrote:
+> On 24/04/2022 15:15, David Heidelberg wrote:
+>> These missing required properties are needed for
+>> smp2p binding reference checks.
+>>
+>> Misc: adjusted examples properties formatting from dtsi.
+> I don't get the "misc:" comment. What is it about?
+I used same formatting as in dtsi where the node is used (cosmetic change).
+>
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Thanks
+>
+> Best regards,
+> Krzysztof
 
---------------vBUQSUV9DXk8H0gwrYNEVMMz
-Content-Type: multipart/mixed; boundary="------------CscnO1cb8JXTmYt8xaramFbd"
+-- 
+David Heidelberg
+Consultant Software Engineer
 
---------------CscnO1cb8JXTmYt8xaramFbd
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
+Signal: +420 608 26 33 76
+Matrix: @okias:matrix.org
 
-T24gMjQuMDQuMjIgMjA6MDgsIEJvcmlzIE9zdHJvdnNreSB3cm90ZToNCj4gDQo+IE9uIDQv
-MjQvMjIgMTI6NTMgUE0sIE9sZWtzYW5kciB3cm90ZToNCj4+DQo+PiBPbiAyMy4wNC4yMiAx
-OTo0MCwgQ2hyaXN0b3BoIEhlbGx3aWcgd3JvdGU6DQo+Pg0KPj4NCj4+DQo+Pg0KPj4+DQo+
-Pj4+ICsNCj4+Pj4gKyNpZmRlZiBDT05GSUdfQVJDSF9IQVNfUkVTVFJJQ1RFRF9WSVJUSU9f
-TUVNT1JZX0FDQ0VTUw0KPj4+PiAraW50IGFyY2hfaGFzX3Jlc3RyaWN0ZWRfdmlydGlvX21l
-bW9yeV9hY2Nlc3Modm9pZCkNCj4+Pj4gK3sNCj4+Pj4gK8KgwqDCoCByZXR1cm4gKHhlbl9o
-YXNfcmVzdHJpY3RlZF92aXJ0aW9fbWVtb3J5X2FjY2VzcygpIHx8DQo+Pj4+ICvCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgIGNjX3BsYXRmb3JtX2hhcyhDQ19BVFRSX0dVRVNUX01FTV9FTkNS
-WVBUKSk7DQo+Pj4+ICt9DQo+Pj4gU28gaW5zdGVhZCBvZiBoYXJkY29kaW5nIFhlbiBoZXJl
-LCB0aGlzIHNlZW1zIGxpa2UgYSBjYW5kaWRhdGUgZm9yDQo+Pj4gYW5vdGhlciBjY19wbGF0
-Zm9ybV9oYXMgZmxhZy4NCj4+DQo+Pg0KPj4gSSBoYXZlIGEgbGltaXRlZCBrbm93bGVkZ2Ug
-b2YgeDg2IGFuZCBYZW4gb24geDg2Lg0KPj4NCj4+IFdvdWxkIHRoZSBYZW4gc3BlY2lmaWMg
-Yml0cyBmaXQgaW50byBDb25maWRlbnRpYWwgQ29tcHV0aW5nIFBsYXRmb3JtIGNoZWNrcz8g
-SSANCj4+IHdpbGwgbGV0IEp1ZXJnZW4vQm9yaXMgY29tbWVudCBvbiB0aGlzLg0KPj4NCj4g
-DQo+IFRoaXMgaXMgdW5yZWxhdGVkIHRvIGNvbmZpZGVudGlhbCBzbyBJIGRvbid0IHRoaW5r
-IHdlIGNhbiBhZGQgYW5vdGhlciBDQ18gZmxhZy4NCj4gDQo+IA0KPiBXb3VsZCBhcmNoL3g4
-Ni9rZXJuZWwvY3B1L2h5cGVydmlzb3IuYyBiZSBhIGJldHRlciBob21lIGZvciB0aGlzPw0K
-DQpPciBhIGNhbGxiYWNrIGluIHN0cnVjdCBzdHJ1Y3QgeDg2X2h5cGVyX3J1bnRpbWUgbWF5
-YmU/DQoNCg0KSnVlcmdlbg0K
---------------CscnO1cb8JXTmYt8xaramFbd
-Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
-Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
-Content-Description: OpenPGP public key
-Content-Transfer-Encoding: quoted-printable
-
------BEGIN PGP PUBLIC KEY BLOCK-----
-
-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
-jR/i1DG86lem3iBDXzXsZDn8R38=3D
-=3D2wuH
------END PGP PUBLIC KEY BLOCK-----
-
---------------CscnO1cb8JXTmYt8xaramFbd--
-
---------------vBUQSUV9DXk8H0gwrYNEVMMz--
-
---------------UMN1MmzbWRc84Fi7yZ5FDfaK
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
-
------BEGIN PGP SIGNATURE-----
-
-wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmJmU3MFAwAAAAAACgkQsN6d1ii/Ey/e
-6wf/UlTnGioaYcmvwVrbHCMgdeIF87ezgg0eMIIROuAmVceVaVjdBTSC4AN4Aa3Z4flFUi80wC/q
-SZI7MKBolM6UwNTFybbyltBjRxGeVCDT00kzWiAZxIWCjWBVq16P1XkOJe/B1cLKkyFLRwCOkqEs
-f50IWV3DadHahPJSoygFSucX9PNybmD7N8sP/yKwIOVxIgnZ4NrghbPnhtF7WCCJkgYXzEW1yzd+
-wWIvBNMiZoAawYn7IUhj63lqjbFQYLnYxOY2VAcPwhXxMgSSuJVkzLlu/KIGuZbrwVqNi8qzSeTK
-Z4eWZo6AUCpQKIYWUxSy7ZtdljjRC/M7UE8M6AE/HA==
-=PvOM
------END PGP SIGNATURE-----
-
---------------UMN1MmzbWRc84Fi7yZ5FDfaK--
