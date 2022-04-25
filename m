@@ -2,121 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAF6DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 18:26:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD5BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 18:29:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244413AbiDYS3f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 14:29:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56440 "EHLO
+        id S237413AbiDYScQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 14:32:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244399AbiDYS3c (ORCPT
+        with ESMTP id S244280AbiDYScN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 14:29:32 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2092F27145
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 11:26:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650911188; x=1682447188;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=jzQ9R7uQvM7Ar4hkHhfKsohSU59ehFv4fTDdCMY0mMA=;
-  b=IM7auPJrb5DqaMnlK3lM4kvYadLEwSBewVFKsGGp+uY3htCCP0BGzYU+
-   So4WXz511bQGz9wgsfn1NV5pRKvWAYFIpl8OcIBMT5BsW/ju9Jz9F3IAa
-   gxn6/Rjigypdz5ybbLsCagkRTrFJOaX7HD1nKOwrio1GGyaaH5IIw0IOn
-   qncYNP6LlnItFAKpKRT38A64k/N64GbhcM3WoHNtGUuptxlDp5+4mbVHH
-   kiN8kUqg1mQJxhSmURdLlN2xPO6M+6jgLKkVkdNPcse68gerh1azcQfeb
-   blE2L8+8qsV9eiIwr78U9sfVIW8DEe4c72lMltjJFmpuZyhOLMoJA5KYw
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="328269768"
-X-IronPort-AV: E=Sophos;i="5.90,289,1643702400"; 
-   d="scan'208";a="328269768"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 11:26:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,289,1643702400"; 
-   d="scan'208";a="677346229"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 25 Apr 2022 11:26:24 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nj3Pk-0002lK-6v;
-        Mon, 25 Apr 2022 18:26:24 +0000
-Date:   Tue, 26 Apr 2022 02:25:46 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     cgel.zte@gmail.com, dan.j.williams@intel.com
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        vishal.l.verma@intel.com, dave.jiang@intel.com,
-        nvdimm@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] device-dax: use kobj_to_dev()
-Message-ID: <202204260238.kDqgLOsU-lkp@intel.com>
-References: <20220425105307.3515215-1-chi.minghao@zte.com.cn>
+        Mon, 25 Apr 2022 14:32:13 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 147D11C934;
+        Mon, 25 Apr 2022 11:29:08 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id w16so10041738ejb.13;
+        Mon, 25 Apr 2022 11:29:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=cnGqac5cphPPsi4AaO7yleP8x5MKmYW3cYfiBMddgYY=;
+        b=R6ssH73p6eSp/7J85Re0lJY2ynrIY41nEURYuXkx75RXn+j17ioAZ/UeNGD4Cdk/rB
+         VOWVBJdMReO623a+2NkqP8SJrDLmKMdxj9aDUz+aN5HQSSU2mBV/NoD8uXIpE3N3hJ8K
+         a/aZtBGnMJtyoVltYqihHwkoC4Ikv6TpZzCL3Gh6hAzuhrzAiAnmHqN/4HlyX0RNR5cy
+         pXYg64B3mX2SKNm5/1SKPJCNnOgkGXk7+xNnQfPOu1JD6e6yCRfZ8IOROkhQHKPFZ5iL
+         SJz/8jWbFKFwNyV/4qyHv06/UBn9hhkTDubgVgX8Hl+rMlEClYfHytzuEaPUqsXssLr0
+         nijA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=cnGqac5cphPPsi4AaO7yleP8x5MKmYW3cYfiBMddgYY=;
+        b=uZzsA2BsbOWH6fvvwkf15Q2kCCevR21SqX+azpw3FhyyMJv2sLZRnqESRA5SFse8ca
+         35pWJ7wBCoqbeSBCIpJPnBBD/Fg9vtp7GmBprb8c+x696WD6ww/jhchvrf5xO/nR828Z
+         a2xuDsl89g4Ry871BaI5yg9Pv3MGQRIsL1LkzglZNt4NUnatu1gwZ2SA+YDePSlfSslb
+         6NkSNOwPKba+Gvc41YY4QUpjDuyIYcW+GASWBRtIQywLjgOOgEZvrTgqFQzWe255jCTf
+         lLFzQzoSzOLRErpjDjc4IJTrrrssTk3I5ZJxObtOm4o9O7QYJaavcVbkPI8ciBaM5flB
+         C3HA==
+X-Gm-Message-State: AOAM5316DkpW9Ao+5UPSpbcz6E4pFGWQKGbN7Myy37i42ETVsQuRfRy2
+        rxp1MH1abibPIn5QmXeVPeo=
+X-Google-Smtp-Source: ABdhPJyxKYOtD1tDbGljJy2g+SFIK6ZxkIi3uWh1VZe8ukKU5XkDM9/cASplidcAlVSpbjPBnElzlw==
+X-Received: by 2002:a17:907:8b13:b0:6f3:9216:b73e with SMTP id sz19-20020a1709078b1300b006f39216b73emr7129028ejc.188.1650911346630;
+        Mon, 25 Apr 2022 11:29:06 -0700 (PDT)
+Received: from leap.localnet (host-79-50-86-254.retail.telecomitalia.it. [79.50.86.254])
+        by smtp.gmail.com with ESMTPSA id o18-20020a1709064f9200b006e7f229b332sm3832867eju.36.2022.04.25.11.29.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Apr 2022 11:29:05 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Tsuchiya Yuto <kitakar@gmail.com>,
+        Martiros Shakhzadyan <vrzh@vrzh.net>,
+        Hans de Goede <hdegoede@redhat.com>,
+        linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org, Ira Weiny <ira.weiny@intel.com>,
+        outreachy@lists.linux.dev
+Subject: Re: [PATCH] staging: media: atomisp: Use kmap_local_page() in hmm_store()
+Date:   Mon, 25 Apr 2022 20:29:03 +0200
+Message-ID: <2181693.iZASKD2KPV@leap>
+In-Reply-To: <20220413225531.9425-1-fmdefrancesco@gmail.com>
+References: <20220413225531.9425-1-fmdefrancesco@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220425105307.3515215-1-chi.minghao@zte.com.cn>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On gioved=C3=AC 14 aprile 2022 00:55:31 CEST Fabio M. De Francesco wrote:
+> The use of kmap() is being deprecated in favor of kmap_local_page()
+> where it is feasible. The same is true for kmap_atomic().
+>=20
+> In file pci/hmm/hmm.c, function hmm_store() test if we are in atomic
+> context and, if so, it calls kmap_atomic(), if not, it calls kmap().
+>=20
+> First of all, in_atomic() shouldn't be used in drivers. This macro
+> cannot always detect atomic context; in particular, it cannot know
+> about held spinlocks in non-preemptible kernels.
+>=20
+> Notwithstanding what it is said above, this code doesn't need to care
+> whether or not it is executing in atomic context. It can simply use
+> kmap_local_page() / kunmap_local() that can instead do the mapping /
+> unmapping regardless of the context.
+>=20
+> With kmap_local_page(), the mapping is per thread, CPU local and not
+> globally visible. Therefore, hmm_store()() is a function where the use
+> of kmap_local_page() in place of both kmap() and kmap_atomic() is
+> correctly suited.
+>=20
+> Convert the calls of kmap() / kunmap() and kmap_atomic() /
+> kunmap_atomic() to kmap_local_page() / kunmap_local() and drop the
+> unnecessary tests which test if the code is in atomic context.
+>=20
+> Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+> ---
+>  drivers/staging/media/atomisp/pci/hmm/hmm.c | 14 ++------------
+>  1 file changed, 2 insertions(+), 12 deletions(-)
 
-Thank you for the patch! Yet something to improve:
+Hi Mauro,
 
-[auto build test ERROR on linus/master]
-[also build test ERROR on v5.18-rc4 next-20220422]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+I'm writing for just a gentle ping for this and two other staging/atomisp/=
+=20
+patches that still seem to be waiting to be applied.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/cgel-zte-gmail-com/device-dax-use-kobj_to_dev/20220425-185400
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git af2d861d4cd2a4da5137f795ee3509e6f944a25b
-config: hexagon-randconfig-r041-20220425 (https://download.01.org/0day-ci/archive/20220426/202204260238.kDqgLOsU-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 1cddcfdc3c683b393df1a5c9063252eb60e52818)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/83eff180ded41da8e042373de81fa823835a1be0
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review cgel-zte-gmail-com/device-dax-use-kobj_to_dev/20220425-185400
-        git checkout 83eff180ded41da8e042373de81fa823835a1be0
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/
+In the meantime I would like to remind you that Hans de Goede has=20
+successfully tested this patch and the other two on both the front and back=
+=20
+cams of a chuwi hi8 tablet.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Please let me know if there is anything else that is required to be done in=
+=20
+order to accept the three patches.
 
-All errors (new ones prefixed by >>):
+Thanks,
 
->> drivers/dax/bus.c:515:40: error: expected ';' at end of declaration
-           struct device *dev = kobj_to_dev(kobj)
-                                                 ^
-                                                 ;
-   1 error generated.
+=46abio M. De Francesco
 
 
-vim +515 drivers/dax/bus.c
-
-   511	
-   512	static umode_t dax_region_visible(struct kobject *kobj, struct attribute *a,
-   513			int n)
-   514	{
- > 515		struct device *dev = kobj_to_dev(kobj)
-   516		struct dax_region *dax_region = dev_get_drvdata(dev);
-   517	
-   518		if (is_static(dax_region))
-   519			if (a == &dev_attr_available_size.attr
-   520					|| a == &dev_attr_create.attr
-   521					|| a == &dev_attr_seed.attr
-   522					|| a == &dev_attr_delete.attr)
-   523				return 0;
-   524		return a->mode;
-   525	}
-   526	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
