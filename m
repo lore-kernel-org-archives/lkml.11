@@ -2,125 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D81A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 02:58:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFED8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 03:01:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240532AbiDYDBa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Apr 2022 23:01:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44376 "EHLO
+        id S240522AbiDYDEN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Apr 2022 23:04:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240514AbiDYDBS (ORCPT
+        with ESMTP id S229577AbiDYDEK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Apr 2022 23:01:18 -0400
-Received: from out203-205-221-210.mail.qq.com (out203-205-221-210.mail.qq.com [203.205.221.210])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C739B84ED6
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Apr 2022 19:58:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1650855488;
-        bh=HucfxWg7WLzKK33ibHuCmIEtwQY3NwivHh2WljaMSPk=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=QZdi3CdCyKj1C4fVLcPcm4rK4IBLJ0vsJp5yBIiUw9Td4uqxZdbVvLk5ANwrG7ucN
-         5H07mqKtK089BFQ2c+FeO1RAgoICcN5A/5yAUVZfOyeQZ6nAYO0WGrD3dtiwUqiTO3
-         vQup7Se/15B7oorh7+kshRjaW9lorhNF5k8AXvOw=
-Received: from [10.27.0.6] ([94.177.118.128])
-        by newxmesmtplogicsvrsza8.qq.com (NewEsmtp) with SMTP
-        id E7715EE1; Mon, 25 Apr 2022 10:57:55 +0800
-X-QQ-mid: xmsmtpt1650855475te67wfj42
-Message-ID: <tencent_5151C34BC7D86055C4C7768C1A4653505A06@qq.com>
-X-QQ-XMAILINFO: MQ+wLuVvI2LQC/KJV6LaTwBj061LhYfOrByOSpey+K3S1udv28bAJjd5Bdllfd
-         pNb7IEi0EY/cpHk10CYCm+d4cYqiCLcqqx/UcZ9XIVctITwZhcaxrq4AXXKFmiHMzFmtOaxWriNQ
-         4hCNKjJs4cvj9qjSwWboYISnOiamhpm3yGXZ+WAmnQqWDDu5uS8Y7eYFmxHJwuwcHHM4B6Qaz2mI
-         wWuVLmL0i/W/vSNlo3/tQiiviDuSL2NxALnbXwUkBqHNAuxFAEjZnZZYRF5kfCz9bvnys4jlOYBs
-         bMlE2272nyI0aVjUA4mnUxCdHyImXVnpX+fzFlSwpcGJHmuVPt4j5WEfL7Ybo1XI4WBnq0Bn3lV4
-         iE6jqCw3iMWqKMtshFuaHGNoUP5Uetko1WTX/8KW49AOaE9ix1IUdW2q7EP8sxF3iC+IRoCgTZ6t
-         3YWYr6gLxB6mwTgHj/j7aQrqNhECc1f0hGC5xfxUVPTTvnRDXgLi8Y8qE9/eIHoWC56ibR9x/W/I
-         zTOkiWDLBTv0L5Ba+/J/ZF3GrVEuBYuoHZSsWYASi4WTqhFmT/wBikEosE422A4nweHtC7ao5Gqc
-         6eHmokCHPzg4hk0QMnGLXm7jD/Xj8ey9dgYk6UC8Uq3CPMxaDNl1LpTXeDVxxWsTjcILOZKuo2xp
-         F8pvRpJDYBHcV7xhV8+OxlftqHtBYLJoGQKeFnLRufsIcTLkw/yR6LFWtLZkitCdUEF0Fa3JmEeT
-         m6wjurCIXKFXX1wQOMsa+yb/OcBI0a+/VnCxpH0gWGLg84Aa7qAN4Y0C1CVwRIiX5CJE9Y+jHRxv
-         h244I2/fM5O5tmDQ3142Jof8BbQa69HKjH8fmK8bdFk/g3BNNOrK54rWxGiId5ajoz4cy3UuCiqs
-         mRjBozcKxwJifU8C3We0p/Xkouf5HGrEi4elXPN5nNbrYRzFmUkMyI2YPSE9oMzXcF5S934HkO
-Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
- allocation and free it on mm exit
-To:     Dave Hansen <dave.hansen@intel.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc:     Joerg Roedel <joro@8bytes.org>, Fenghua Yu <fenghua.yu@intel.com>,
-        Ravi V Shankar <ravi.v.shankar@intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        x86 <x86@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        iommu <iommu@lists.linux-foundation.org>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        zhangfei <zhangfei.gao@linaro.org>
-References: <20220207230254.3342514-6-fenghua.yu@intel.com>
- <Ygt4h0PgYzKOiB38@8bytes.org>
- <tencent_F6830A1196DB4C6A904D7C691F0D961D1108@qq.com>
- <56ed509d-a7cf-1fde-676c-a28eb204989b@intel.com>
- <tencent_9920B633D50E9B80D3A41A723BCE06972309@qq.com>
- <f439dde5-0eaa-52e4-9cf7-2ed1f62ea07f@intel.com>
- <tencent_F73C11A7DBAC6AF24D3369DF0DCA1D7E8308@qq.com>
- <a139dbad-2f42-913b-677c-ef35f1eebfed@intel.com>
- <tencent_B683AC1146DB6A6ABB4D73697C0D6A1D7608@qq.com>
- <41ed3405-66d9-0cde-fc01-b3eacb85a081@intel.com> <YlWWavIDMNpbD3Ye@larix>
- <8b1e40c9-b2e8-7b73-d9ad-2c6a5a167370@intel.com>
-From:   "zhangfei.gao@foxmail.com" <zhangfei.gao@foxmail.com>
-X-OQ-MSGID: <6daae664-fad2-fe1f-0c22-b8c8aceab841@foxmail.com>
-Date:   Mon, 25 Apr 2022 10:57:52 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Sun, 24 Apr 2022 23:04:10 -0400
+Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F7B61B7BD;
+        Sun, 24 Apr 2022 20:01:06 -0700 (PDT)
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id 6E6E2C13B4;
+        Mon, 25 Apr 2022 03:01:05 +0000 (UTC)
+Received: from pdx1-sub0-mail-a217.dreamhost.com (unknown [127.0.0.6])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id 98D18C15B2;
+        Mon, 25 Apr 2022 03:01:04 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1650855664; a=rsa-sha256;
+        cv=none;
+        b=H9YMoe/idniQ4oRp9Q6cTnJUHzUf0nEAmLqRz2/zJNVBcVjQc9fxBRsxt3XyEVjIpUykph
+        Xj2yFner+wwkb+0WOAOeg7gk9L5h4VA6J5boQEulI8eu0TA7iX8KGJKVqLnzsorqNq+rug
+        rCRG9ZbQ5eG/n2DNmBnPPUXkHY/oHAhg5LawAAUg2lYfbGNgjhQ4XvDg4pUyRR4OPzYYIn
+        Crb+SuSn7dT/pvYYF9dSiaOvLcnpv3n6ZG0lQyqVolnXSKQcm+3wVbUJ1sAc0rAcmyLgA9
+        Dr75+tGuzymOuOnyU2wnUHdjNWVoqB8TEYI4akknfAMTQO2ussSSNF1OriAoAA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+        s=arc-2022; t=1650855664;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:dkim-signature;
+        bh=FnZ8llSJWkl2FqoEfQdnZQWLmuu+j68/tH7/8sZn3UY=;
+        b=TGbEm/JiTeLA8E2OINRL3m+y2CBEOvCQON2tx/bLEzyDbnXed+rFINuJto6L/S1IQ6Z68w
+        ke8TbjiObgPLkx6mLshRa4O4JSlzhREvJePtRtd8A42Ii04TjDc10tMB7+T2L0KT95Xx02
+        OXALCw0CWNkSgZ3szMyf3EzXzUP2nC/qogAgsqqusDbZiG/tYqejf+YM47chcfF247N+ug
+        d1UBtB8hWGRAulLVROZkkp8VT7QOZBAZ7xgaFQu9+PH2H7fM/vPPDbNodTb0l/65x1ObMa
+        PNvrsbbxTk1zkwz67BmxCyNwF6Oeb07cP932woFb1vhDjlbKWSzLa/Hwx2oDkA==
+ARC-Authentication-Results: i=1;
+        rspamd-6dfbdcb948-4k72z;
+        auth=pass smtp.auth=dreamhost smtp.mailfrom=ian@linux.cowan.aero
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|ian@linux.cowan.aero
+X-MailChannels-Auth-Id: dreamhost
+X-Bottle-Arch: 39d2fbac15c5e251_1650855665044_2609463641
+X-MC-Loop-Signature: 1650855665043:2074948883
+X-MC-Ingress-Time: 1650855665043
+Received: from pdx1-sub0-mail-a217.dreamhost.com (pop.dreamhost.com
+ [64.90.62.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+        by 100.116.106.102 (trex/6.7.1);
+        Mon, 25 Apr 2022 03:01:05 +0000
+Received: from localhost.localdomain (unknown [69.12.38.97])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: ian@linux.cowan.aero)
+        by pdx1-sub0-mail-a217.dreamhost.com (Postfix) with ESMTPSA id 4KmqXH3M74z2n;
+        Sun, 24 Apr 2022 20:01:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.cowan.aero;
+        s=dreamhost; t=1650855664;
+        bh=FnZ8llSJWkl2FqoEfQdnZQWLmuu+j68/tH7/8sZn3UY=;
+        h=From:To:Cc:Subject:Date:Content-Transfer-Encoding;
+        b=siVSzLaEaaqZT/RAhNBylm4r5vV8JuOFCeG1sURL8AdbRiCzRrK+19KSq7aL2ienI
+         3a+BxU0wc2KXC6txjBN5UmMk4ot26YrxYU4EL6oytvRs1fWsMvrB171iaHD9q+aPcA
+         +Q/IdORkxLg8eufTGAuLMx/fc875DeZ+NJswTiZtbgAG+jba5bvXl6CVZgsor1QOzt
+         SPQHNV+e6q0i2gCyQi7FTnDZ5icniPzYtPMo7c15BVZMAgPTp6NhnFiocbiMPe+Sp6
+         5y63n74rjw1vH7P3Ii8W71f6xBaRXJyF17Uzi7OVKLuQHoS7FROATvetQUueOeKyAz
+         SLU7UvPGcJlVg==
+From:   Ian Cowan <ian@linux.cowan.aero>
+To:     Marcel Holtmann <marcel@holtmann.org>
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ian Cowan <ian@linux.cowan.aero>
+Subject: [PATCH] drivers: net: bluetooth: centralize function exit and print error
+Date:   Sun, 24 Apr 2022 23:00:53 -0400
+Message-Id: <20220425030053.517168-1-ian@linux.cowan.aero>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-In-Reply-To: <8b1e40c9-b2e8-7b73-d9ad-2c6a5a167370@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Dave
+Centralize the return for this one function, and this will add the error
+being printed if it occurs earlier in the function. The same thing will
+be returned with the logic, so the only thing that will differ is an
+extra debugging output for an error.
 
-On 2022/4/12 下午11:35, Dave Hansen wrote:
-> On 4/12/22 08:10, Jean-Philippe Brucker wrote:
->>> I wonder if the Intel and ARM IOMMU code differ in the way they keep
->>> references to the mm, or if this affects Intel as well, but we just
->>> haven't tested the code enough.
->> The Arm code was written expecting the PASID to be freed on unbind(), not
->> mm exit. I missed the change of behavior, sorry (I thought your plan was
->> to extend PASID lifetime, not shorten it?) but as is it seems very broken.
->> For example in the iommu_sva_unbind_device(), we have
->> arm_smmu_mmu_notifier_put() clearing the PASID table entry for
->> "mm->pasid", which is going to end badly if the PASID has been cleared or
->> reallocated. We can't clear the PASID entry in mm exit because at that
->> point the device may still be issuing DMA for that PASID and we need to
->> quiesce the entry rather than deactivate it.
-> I think we ended up flipping some of this around on the Intel side.
-> Instead of having to quiesce the device on mm exit, we don't let the mm
-> exit until the device is done.
->
-> When you program the pasid into the device, it's a lot like when you
-> create a thread.  We bump the reference count on the mm when we program
-> the page table pointer into a CPU.  We drop the thread's reference to
-> the mm when the thread exits and will no longer be using the page tables.
->
-> Same thing with pasids.  We bump the refcount on the mm when the pasid
-> is programmed into the device.  Once the device is done with the mm, we
-> drop the mm.
->
-> Basically, instead of recounting the pasid itself, we just refcount the mm.
-This has issue, since refcount the mm will block  fops_release to be 
-called, where unbind may really happen.
+Signed-off-by: Ian Cowan <ian@linux.cowan.aero>
+---
+ net/bluetooth/6lowpan.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-For example, user driver are ended unexpectedly,
-usually system will end all applications via close fd -> fops_release -> 
-unbind may happen here.
-Now mmget is called, fops_release -> unbind has NO chance to be called, 
-so ioasid can NOT be freed.
-
-Thanks
+diff --git a/net/bluetooth/6lowpan.c b/net/bluetooth/6lowpan.c
+index 215af9b3b589..15928e9ce088 100644
+--- a/net/bluetooth/6lowpan.c
++++ b/net/bluetooth/6lowpan.c
+@@ -516,7 +516,7 @@ static netdev_tx_t bt_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 	err = setup_header(skb, netdev, &addr, &addr_type);
+ 	if (err < 0) {
+ 		kfree_skb(skb);
+-		return NET_XMIT_DROP;
++		goto output_error_ret;
+ 	}
+ 
+ 	if (err) {
+@@ -537,6 +537,7 @@ static netdev_tx_t bt_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 
+ 	dev_kfree_skb(skb);
+ 
++output_error_ret:
+ 	if (err)
+ 		BT_DBG("ERROR: xmit failed (%d)", err);
+ 
+-- 
+2.35.1
 
