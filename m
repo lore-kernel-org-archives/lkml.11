@@ -2,84 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4242AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 14:26:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA777C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 14:27:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242422AbiDYO3U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 10:29:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55598 "EHLO
+        id S232941AbiDYOaQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 10:30:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232941AbiDYO3N (ORCPT
+        with ESMTP id S229742AbiDYOaN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 10:29:13 -0400
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5035319284
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 07:26:08 -0700 (PDT)
-Received: by mail-io1-xd31.google.com with SMTP id g21so15979200iom.13
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 07:26:08 -0700 (PDT)
+        Mon, 25 Apr 2022 10:30:13 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC59210CA
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 07:27:08 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id y21so11733651edo.2
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 07:27:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Y5wBcOfazqbglU7XX1dJt4fZzKnlLY04C3llpIX2pRs=;
-        b=FkNXvsGXHZhlPP2iAD7uLQFqxU2NG+MkhcJD7H7ESYyMwmnBCFTYQ+NfMNZsK7Sypn
-         GRnki9xT4QEzQtmYi9m7Mxx7dGOMztlxGcPJqL4HKgLpxk+v1ZCeb9qlxQ1BRsXD7A/0
-         0Wm404//Vh0R5hDYCFXpynyppgGIroBFEBMFw=
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=m51cNS74FiKcfMwaHkcE4/8logZlIaN7nu3DxMWpYFk=;
+        b=R29BxhkRm53cZToxZnIGPbkKoyKLg1qgnyCzPKA444ALfVoJ7nYD6hgEJrJI1YW1OR
+         YX/0osV0xmbfAaHMBN4FWmW/YiPkteEVJeUUq6DGuHZJpuNxUiwkgwKhDt1Zhx5qzS1f
+         6RD7YcDdD/3om+/nZjd5xrNMGXw1ow+dFZ3mZj7UB42LISvqUxunFX3cTsq8kIaxI7XH
+         ZQiY12scA00wjkQYpdBJNrQb2H944Igr0xQ5LeLmDxMLt695g1H0YfwOXzjg4nrCaqp+
+         CiFg9M+I+wL3zJiJXPqpzjkEFeb744eRQ8czq4nv+EwzFGMh6AfDUq5GsiXPsOFRKS0z
+         rn+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Y5wBcOfazqbglU7XX1dJt4fZzKnlLY04C3llpIX2pRs=;
-        b=Tc6dFi+eDIfRqi+kZnJ6pyuCxlfsLRbOWDIGseZpq00ZHWqu9lB4yllVc0WpEoQue8
-         Mj0ryuyI1LUhOhRIgQwzpnbjJxrp/tjWQ1qhDzqO2elveo7BEqhg/k4y+RGDCnU44/JE
-         jysNhsGKjCdx8M5OalWzghJn2TA/+6Harda5POoBKG3dlfOck1n2D7tpmjv/PFvMCuhs
-         gHn3hnYo/wUBVxSR1PfFcMkODqppVHT+FB7tBeEf208y/SnJ3g+THUmovimPHcaTRYYi
-         j0NNNf6mHrzaheFScvsbZqDEVWIsDpz0yJx1Nb65bbeuZfVECBtjYzIqL8LTaANJocGV
-         u5YA==
-X-Gm-Message-State: AOAM533/a8hYt23Vu8lZwRWKKmYzvhkCS/ExXYI+foFWWL7tstz8gQHx
-        gf87/YHTg+6U3m2ix2d16R/DmTjyTrri9w==
-X-Google-Smtp-Source: ABdhPJz1GlbD4jJcDwHaCDL32bx5zqfKkG5eIjqaeobQ72MW4LyenSfQL69TR5/qzzopE6aHcr5jnA==
-X-Received: by 2002:a05:6638:204e:b0:323:e3b1:1c2c with SMTP id t14-20020a056638204e00b00323e3b11c2cmr7777096jaj.222.1650896767753;
-        Mon, 25 Apr 2022 07:26:07 -0700 (PDT)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id c15-20020a5d8b4f000000b00648f75d0289sm7516486iot.6.2022.04.25.07.26.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Apr 2022 07:26:07 -0700 (PDT)
-Subject: Re: [PATCH] usb: gadget: mv_udc_core: clean up comments
-To:     Tom Rix <trix@redhat.com>, balbi@kernel.org,
-        gregkh@linuxfoundation.org, jakobkoschel@gmail.com,
-        christophe.jaillet@wanadoo.fr, peter.chen@kernel.or,
-        johan@kernel.org
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220425131749.1185511-1-trix@redhat.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <ed5a845c-d338-d6b3-dcbf-3ae31fe50991@linuxfoundation.org>
-Date:   Mon, 25 Apr 2022 08:26:06 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=m51cNS74FiKcfMwaHkcE4/8logZlIaN7nu3DxMWpYFk=;
+        b=n8Wvh9kccqw2aF6SDFEkZ87zTMIYjdOPoBMBn1ZKrNHG3KJVeWedlFZNR3nseOClvg
+         mCM+q62MkAc9xST29Hi2fJmUSPOYzuSAWKqhplg08TOJSaN+aKMubZ/tEeQ+qioU0Sp2
+         cbRbYIoDV7Lo3/OLF4MRjHZ/vB14fFILsQsCMsWoHG/sVpQia9Kc/LhEijOxeRn3Cw/t
+         LzLVIql7gatjUiFhYt516qYIHRvggUQ4qRNUEDIIwJ+AhAbN61g2eJPnZuOjf6/2O0Ar
+         Fdg7eFJYVFoOZ3JHmEq85CenfE/ErrMLc3QXrMLBH+pQWm61MGQHnbm6ib0yuDLVdNcL
+         RB9g==
+X-Gm-Message-State: AOAM531L0CIBKgGFGy7WMRrG5W6cwRqYSgt4+5fx3lZTmg9rwugcrilw
+        qrtzs5K9PbQPjMOOvO6RM049RA==
+X-Google-Smtp-Source: ABdhPJyUG4cXI41631ctvg+/Z5UfjkEVnIEG1qY2UB6sVxyeDbyoRqzpV/Mr2gsARD3h7gAB8E9lnw==
+X-Received: by 2002:a05:6402:430b:b0:425:f580:ec72 with SMTP id m11-20020a056402430b00b00425f580ec72mr1537433edc.194.1650896827296;
+        Mon, 25 Apr 2022 07:27:07 -0700 (PDT)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
+        by smtp.gmail.com with ESMTPSA id h13-20020a170906590d00b006f39021e683sm1490192ejq.12.2022.04.25.07.27.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Apr 2022 07:27:06 -0700 (PDT)
+Date:   Mon, 25 Apr 2022 15:26:40 +0100
+From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     "zhangfei.gao@foxmail.com" <zhangfei.gao@foxmail.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Ravi V Shankar <ravi.v.shankar@intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        x86 <x86@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        iommu <iommu@lists.linux-foundation.org>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>, will@kernel.org,
+        robin.murphy@arm.com, zhangfei.gao@linaro.org
+Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
+ allocation and free it on mm exit
+Message-ID: <YmavoKkVu+hd+x0M@myrica>
+References: <YllADL6uMoLllzQo@fyu1.sc.intel.com>
+ <YmA4pbgevqln/jSO@myrica>
+ <tencent_76E043C4D1B6A21A5253579A61034107EB06@qq.com>
+ <tencent_7477100F8A445C6CAFA8F13601A55134480A@qq.com>
+ <YmJ/WA6KAQU/xJjA@myrica>
+ <tencent_A4E83BA6071B2204B6F5D4E69A50D21C1A09@qq.com>
+ <YmLOznyBF0f7COYT@myrica>
+ <tencent_2922DAB6F3D5789A1CD3A21A843B4007ED09@qq.com>
+ <Yman5hLomw9/c+bi@myrica>
+ <76ec6342-0d7c-7c7b-c132-2892e4048fa1@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20220425131749.1185511-1-trix@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <76ec6342-0d7c-7c7b-c132-2892e4048fa1@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/25/22 7:17 AM, Tom Rix wrote:
-> Spelling replacements
-> occure occur
-> reqest to request
-> acces to access
+On Mon, Apr 25, 2022 at 07:18:36AM -0700, Dave Hansen wrote:
+> On 4/25/22 06:53, Jean-Philippe Brucker wrote:
+> > On Sat, Apr 23, 2022 at 07:13:39PM +0800, zhangfei.gao@foxmail.com wrote:
+> >>>> On 5.17
+> >>>> fops_release is called automatically, as well as iommu_sva_unbind_device.
+> >>>> On 5.18-rc1.
+> >>>> fops_release is not called, have to manually call close(fd)
+> >>> Right that's weird
+> >> Looks it is caused by the fix patch, via mmget, which may add refcount of
+> >> fd.
+> > Yes indirectly I think: when the process mmaps the queue, mmap_region()
+> > takes a reference to the uacce fd. That reference is released either by
+> > explicit close() or munmap(), or by exit_mmap() (which is triggered by
+> > mmput()). Since there is an mm->fd dependency, we cannot add a fd->mm
+> > dependency, so no mmget()/mmput() in bind()/unbind().
+> > 
+> > I guess we should go back to refcounted PASIDs instead, to avoid freeing
+> > them until unbind().
 > 
-> Signed-off-by: Tom Rix <trix@redhat.com>
-> ---
+> Yeah, this is a bit gnarly for -rc4.  Let's just make sure there's
+> nothing else simple we can do.
+> 
+> How does the IOMMU hardware know that all activity to a given PASID is
+> finished?  That activity should, today, be independent of an mm or a
+> fd's lifetime.
 
-I get that this is a trivial spelling patch - however a proper
-commit log is still imortant. Please write a proper one and
-include some information on how your found these.
+In the case of uacce, it's tied to the fd lifetime: opening an accelerator
+queue calls iommu_sva_bind_device(), which sets up the PASID context in
+the IOMMU. Closing the queue calls iommu_sva_unbind_device() which
+destroys the PASID context (after the device driver stopped all DMA for
+this PASID).
 
-thanks,
--- Shuah
+Thanks,
+Jean
