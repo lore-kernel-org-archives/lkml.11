@@ -2,126 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCBD3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 07:59:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A40B3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 08:01:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232835AbiDYICP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 04:02:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48554 "EHLO
+        id S232875AbiDYIEe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 04:04:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235905AbiDYIBW (ORCPT
+        with ESMTP id S241525AbiDYIEZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 04:01:22 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79BDB27B39
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 00:58:14 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id m15-20020a7bca4f000000b0038fdc1394b1so11942876wml.2
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 00:58:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=+bRYkBAn8sJsc8S2sn1YixNkNlBLK97NL9Q4uOqNbl8=;
-        b=x6WtLuYWYuF97BgnCNc9JW0y/6GvCi2/ay6eRQNC9ttlaB8lhAbKfcDwpy37nGsXY4
-         2U6CQsQLXByP3D/B9vOuWvUgDAsCSFYbYPXCwvL0xFnCOSkatlifKdOKSsXwQy2VEqr6
-         uwvUOcmk9sRh5M4iDm2ZsIgYhTzI/OCPB34c4gyy9vY9ihgO5c5Laq0ok43mVDSm1rzd
-         wSkV5jUxyDGp3P0yRMLK30v1vOxg347tCfv3GQw6g5pVKg1mCVOWdmMVukOoPKLxKHhP
-         9v2SUzF3Z1V1X/7iQulzKuMe4S9FHgR1s8YnKIxrFi9zY2EBlDDxcX/ffnWQ1NJa3dmi
-         yL2w==
+        Mon, 25 Apr 2022 04:04:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1BED916592
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 01:01:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650873681;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=VkFL9MtFyT2jXWP8u3N7pMFr8N/9sIoY1jitbMrwBaU=;
+        b=H9DsJAvroYqx0MR3rT3DywpuY6i1Oa0D6l/YjhWGsfhqk5tEBKsFxhQhdp5p335jKZfs5Z
+        XOyvkothtOB3/Y1UDzJ8ddZjs2BvQ5hIKLRccx3JaO/Hh2DaFblalQ3xc6TdITYugKpP36
+        Yzi8/ALdwQmx09l1Nk95bBQqOXlGQG8=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-39-lghXcPsgOWygJsRWlyaemQ-1; Mon, 25 Apr 2022 04:01:18 -0400
+X-MC-Unique: lghXcPsgOWygJsRWlyaemQ-1
+Received: by mail-wr1-f70.google.com with SMTP id v13-20020adfc5cd000000b0020ad3580cd0so713368wrg.10
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 01:01:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=+bRYkBAn8sJsc8S2sn1YixNkNlBLK97NL9Q4uOqNbl8=;
-        b=Dd0OyxDcQbNg4dndZGyiCyFgM6MVOfnXgXWflPuXCdjGQ0VdbU0zR7KB/SzRLB5Vf8
-         JEFWvkUoG4iod8iDxHBrIGyBJ12BmtSND7GJ+LPS6xw9hH8v+luYXTy0HuaPD2/86f0s
-         /ArtAJvCTE5P9UP9erLoRCyLhMZMjQ9RnumJWXTltGmehyW7Xd0JB5xIXIHr+Xf3Pz9E
-         JP6eLERsh7Wl5I3vpa+kbFeJ7Yh0w27g1qfMs0+X73oK/A19EqxN8xrBZkFC5Tuc43fB
-         RQ4BDT068VAO1cRIXcsdiFQZo9IaemNd3WArw+RlF1KRuH3wLKFJWi5prJa7D6HyYln+
-         EBmA==
-X-Gm-Message-State: AOAM532OB7odmbRrn4TIeDiryRTgLC3W3SSGUB5adgtTIlOqRrTmjkZd
-        zWdJ0YjMAXujBxQ21RAe770gnw==
-X-Google-Smtp-Source: ABdhPJylAV5y97CjPKk6ZjamGuPD2bl7abNODAPfaYuKP1LaIVk/UKUAWnSA93i5CUWcJx8BlG2U6Q==
-X-Received: by 2002:a1c:2542:0:b0:38e:b64c:6afb with SMTP id l63-20020a1c2542000000b0038eb64c6afbmr15255147wml.65.1650873492893;
-        Mon, 25 Apr 2022 00:58:12 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id p125-20020a1c2983000000b0038e6c62f527sm9572862wmp.14.2022.04.25.00.58.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 00:58:12 -0700 (PDT)
-Date:   Mon, 25 Apr 2022 08:58:10 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Peter Rosin <peda@axentia.se>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Drop undocumented i.MX iomuxc-gpr bindings
- in examples
-Message-ID: <YmZUko/EQkKl6Npl@google.com>
-References: <20220422192121.2592030-1-robh@kernel.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=VkFL9MtFyT2jXWP8u3N7pMFr8N/9sIoY1jitbMrwBaU=;
+        b=2Bb4k/TGefOH/TC0wSQ8JhHbNHzpOyxZRZUNuZEk/Rmv7kPmNSeHrGG0EWSC0AaO1M
+         HTJCGa4SvC5kQrOQoImnjdUb1pCfza1wBhXf57czkPoLn5GUv1BIR1hdwBZmyxLA0S6A
+         NpsH4LPfl/kddzszSg7D9uz+0HDM1ANY07WYo00YQl8QBvTBzWkZZG3pptLsPRqjMLhx
+         3vEFdazPY4a5aBM16yDlWwLQ0JgGEJ9/Pwfox4ODs7Qcb6uob74HX9vuj/eU8yslwKJ9
+         g11Q5j662cQDqD9/7Xe+3bNiqHnmGGWk0/LoMywcEYYPyCCt5Nc6KrBKp0xWCTbFieP9
+         gmkA==
+X-Gm-Message-State: AOAM533ztR2UhnSMXwdFi1F7BeF0zlFEO4rk/ezrzqFVZjxSVjeErGE/
+        OV0I+ZC10nWaJmw5aXZWncPchAH4p2nXeu9ASg4QGfvUGKVTZmN6wnfNQkm5Gb2egvtkaZQiBXH
+        3KnzgywbFKhOhy1vDSXxcV8/j
+X-Received: by 2002:a5d:48cc:0:b0:206:d17:10aa with SMTP id p12-20020a5d48cc000000b002060d1710aamr13450860wrs.460.1650873677002;
+        Mon, 25 Apr 2022 01:01:17 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz3U6o+KLtF6TTm6TP8Ie2A4MlAJBrMQWQjM0y9V7eVJ1bBnn+UdwsTUpos/soo1CkyUGZC7w==
+X-Received: by 2002:a5d:48cc:0:b0:206:d17:10aa with SMTP id p12-20020a5d48cc000000b002060d1710aamr13450834wrs.460.1650873676659;
+        Mon, 25 Apr 2022 01:01:16 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c700:fc00:490d:ed6a:8b22:223a? (p200300cbc700fc00490ded6a8b22223a.dip0.t-ipconnect.de. [2003:cb:c700:fc00:490d:ed6a:8b22:223a])
+        by smtp.gmail.com with ESMTPSA id c13-20020adfa30d000000b0020adc82de11sm1755331wrb.26.2022.04.25.01.01.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 Apr 2022 01:01:08 -0700 (PDT)
+Message-ID: <a64b1987-1f98-db78-c0e4-189690d7a45d@redhat.com>
+Date:   Mon, 25 Apr 2022 10:01:06 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH v3 1/3] mm/swapfile: unuse_pte can map random data if swap
+ read fails
+Content-Language: en-US
+To:     "ying.huang@intel.com" <ying.huang@intel.com>,
+        Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org
+Cc:     willy@infradead.org, vbabka@suse.cz, dhowells@redhat.com,
+        neilb@suse.de, apopple@nvidia.com, surenb@google.com,
+        minchan@kernel.org, peterx@redhat.com, sfr@canb.auug.org.au,
+        naoya.horiguchi@nec.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, Tim C Chen <tim.c.chen@intel.com>
+References: <20220424091105.48374-1-linmiaohe@huawei.com>
+ <20220424091105.48374-2-linmiaohe@huawei.com>
+ <8aeebc2f0b2a251d3d70402cd0edf063ba911013.camel@intel.com>
+ <f88412b4-83db-e594-fc48-2f4b8b9f3be8@redhat.com>
+ <6c6694965fa3e6d85d78d56703090f227a55bb83.camel@intel.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <6c6694965fa3e6d85d78d56703090f227a55bb83.camel@intel.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220422192121.2592030-1-robh@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 22 Apr 2022, Rob Herring wrote:
-
-> The i.MX iomuxc-gpr bindings are undocumented and a mess. Drop their use
-> from the examples.
+On 25.04.22 09:55, ying.huang@intel.com wrote:
+> On Mon, 2022-04-25 at 09:49 +0200, David Hildenbrand wrote:
+>> On 25.04.22 09:41, ying.huang@intel.com wrote:
+>>> Hi, Miaohe,
+>>>
+>>> On Sun, 2022-04-24 at 17:11 +0800, Miaohe Lin wrote:
+>>>> There is a bug in unuse_pte(): when swap page happens to be unreadable,
+>>>> page filled with random data is mapped into user address space.  In case
+>>>> of error, a special swap entry indicating swap read fails is set to the
+>>>> page table.  So the swapcache page can be freed and the user won't end up
+>>>> with a permanently mounted swap because a sector is bad.  And if the page
+>>>> is accessed later, the user process will be killed so that corrupted data
+>>>> is never consumed.  On the other hand, if the page is never accessed, the
+>>>> user won't even notice it.
+>>>>
+>>>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+>>>> Acked-by: David Hildenbrand <david@redhat.com>
+>>>> ---
+>>>>  include/linux/swap.h    |  7 ++++++-
+>>>>  include/linux/swapops.h | 10 ++++++++++
+>>>>  mm/memory.c             |  5 ++++-
+>>>>  mm/swapfile.c           | 11 +++++++++++
+>>>>  4 files changed, 31 insertions(+), 2 deletions(-)
+>>>>
+>>>> diff --git a/include/linux/swap.h b/include/linux/swap.h
+>>>> index 5553189d0215..b82c196d8867 100644
+>>>> --- a/include/linux/swap.h
+>>>> +++ b/include/linux/swap.h
+>>>> @@ -55,6 +55,10 @@ static inline int current_is_kswapd(void)
+>>>>   * actions on faults.
+>>>>   */
+>>>>
+>>>> +#define SWP_SWAPIN_ERROR_NUM 1
+>>>> +#define SWP_SWAPIN_ERROR     (MAX_SWAPFILES + SWP_HWPOISON_NUM + \
+>>>> +			     SWP_MIGRATION_NUM + SWP_DEVICE_NUM + \
+>>>> +			     SWP_PTE_MARKER_NUM)
+>>>>
+>>>>
+>>>
+>>> It appears wasteful to use another swap device number. 
+>>
+>> Do we really care?
+>>
+>> We currently use 5 bits for swap types, so we have a total of 32.
+>>
+>> SWP_HWPOISON_NUM -> 1
+>> SWP_MIGRATION_NUM -> 3
+>> SWP_PTE_MARKER_NUM -> 1
+>> SWP_DEVICE_NUM -> 4
+>> SWP_SWAPIN_ERROR_NUM -> 1
+>>
+>> Which would leave us with 32 - 10 = 22 swap devices. IMHO that's plenty
+>> for real life scenarios.
 > 
-> The problem with the binding beyond the just random variations is that
-> the iomuxc-gpr is not a separate block, but registers within the iomuxc
-> block containing random leftover controls. As a separate DT node, it
-> creates nodes with overlapping memory addresses.
-> 
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
->  Documentation/devicetree/bindings/mfd/syscon.yaml  | 8 --------
->  Documentation/devicetree/bindings/mux/reg-mux.yaml | 1 -
->  2 files changed, 9 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/mfd/syscon.yaml b/Documentation/devicetree/bindings/mfd/syscon.yaml
-> index 13baa452cc9d..fb784045013f 100644
-> --- a/Documentation/devicetree/bindings/mfd/syscon.yaml
-> +++ b/Documentation/devicetree/bindings/mfd/syscon.yaml
-> @@ -100,12 +100,4 @@ examples:
->          compatible = "allwinner,sun8i-h3-system-controller", "syscon";
->          reg = <0x01c00000 0x1000>;
->      };
-> -
-> -  - |
-> -    gpr: iomuxc-gpr@20e0000 {
-> -        compatible = "fsl,imx6q-iomuxc-gpr", "syscon";
-> -        reg = <0x020e0000 0x38>;
-> -        hwlocks = <&hwlock1 1>;
-> -    };
-> -
->  ...
-> diff --git a/Documentation/devicetree/bindings/mux/reg-mux.yaml b/Documentation/devicetree/bindings/mux/reg-mux.yaml
-> index 60d5746eb39d..df4db96b5391 100644
-> --- a/Documentation/devicetree/bindings/mux/reg-mux.yaml
-> +++ b/Documentation/devicetree/bindings/mux/reg-mux.yaml
-> @@ -96,7 +96,6 @@ examples:
->  
->      #include <dt-bindings/mux/mux.h>
->      syscon@1000 {
-> -        compatible = "fsl,imx7d-iomuxc-gpr", "fsl,imx6q-iomuxc-gpr", "syscon", "simple-mfd";
->          reg = <0x1000 0x100>;
+> Creating multiple swap partitions on one disk can improve the
+> scalability of swap subsystem, although we usually don't have so many
+> disks for swap. 
 
-Is leaving no compatible the correct solution here?
-
-Do we have another (working) platform that we can use in its place?
-
-Does it make sense to leave the "syscon" and "simple-mfd" entries?
-
->          mux2: mux-controller {
+Exactly, and IMHO if we have 22 or 23 doesn't make a real difference
+here ...
 
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Thanks,
+
+David / dhildenb
+
