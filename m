@@ -2,128 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 487DAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 07:57:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCA22C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 07:58:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231728AbiDYIAV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 04:00:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41178 "EHLO
+        id S233778AbiDYIBt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 04:01:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234298AbiDYH7M (ORCPT
+        with ESMTP id S241470AbiDYIBc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 03:59:12 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 390AFCD2
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 00:55:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650873359; x=1682409359;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=n+/wbTwudVU2aA3nzC/xFgJqQskv98VvTFPXw2JV4mQ=;
-  b=UBtBpH0K/GUlICOaqLI+e74cpEsRkf6NGMzvCjs9gsyGj6joRUQrH8vc
-   h4xD9FinqA3D3Yz4LAH6gLIv0CQidNA/gEEwuxqLE+IpyHjf2bDgYP2OV
-   7yvPPKJUUNamlx6j5aMnacBz1745G1ASnSeSn02MzuPvLDXYfIyFIYVVC
-   Rc21vSbsohC7LgO2f77g6+KWaDQ1r4Ijck3nWjl6NO44l8KOYp0Cxa+Pm
-   8aV+r8a/H+mqrVqOEpEDpGQzwuBdpito0j9qgApHYJZMb7q/xORDPACdf
-   wa/7xu/loEJiNgBOC2CBJg/l330B8E/rgTtNTyiCoIWLuMwB40cUUrhsS
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10327"; a="351622192"
-X-IronPort-AV: E=Sophos;i="5.90,287,1643702400"; 
-   d="scan'208";a="351622192"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 00:55:58 -0700
-X-IronPort-AV: E=Sophos;i="5.90,287,1643702400"; 
-   d="scan'208";a="579152268"
-Received: from wupeng-mobl.ccr.corp.intel.com ([10.254.215.115])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 00:55:54 -0700
-Message-ID: <6c6694965fa3e6d85d78d56703090f227a55bb83.camel@intel.com>
-Subject: Re: [PATCH v3 1/3] mm/swapfile: unuse_pte can map random data if
- swap read fails
-From:   "ying.huang@intel.com" <ying.huang@intel.com>
-To:     David Hildenbrand <david@redhat.com>,
-        Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org
-Cc:     willy@infradead.org, vbabka@suse.cz, dhowells@redhat.com,
-        neilb@suse.de, apopple@nvidia.com, surenb@google.com,
-        minchan@kernel.org, peterx@redhat.com, sfr@canb.auug.org.au,
-        naoya.horiguchi@nec.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, Tim C Chen <tim.c.chen@intel.com>
-Date:   Mon, 25 Apr 2022 15:55:51 +0800
-In-Reply-To: <f88412b4-83db-e594-fc48-2f4b8b9f3be8@redhat.com>
-References: <20220424091105.48374-1-linmiaohe@huawei.com>
-         <20220424091105.48374-2-linmiaohe@huawei.com>
-         <8aeebc2f0b2a251d3d70402cd0edf063ba911013.camel@intel.com>
-         <f88412b4-83db-e594-fc48-2f4b8b9f3be8@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        Mon, 25 Apr 2022 04:01:32 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D56172A707;
+        Mon, 25 Apr 2022 00:58:25 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id u7so9865765plg.13;
+        Mon, 25 Apr 2022 00:58:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=KDTbKI3K5FVIfCwkeglepXBfFcpQvboH+kkSLBKfWI8=;
+        b=JauSAsMc3TC5iDNvqXSoUs/bnDjLrOIXsjWZI39ZbcbZxKx2HoOXVtPizCAHsAfkTl
+         iNqwD3U1gk8iwWOyMzVcSUjp6pXlnQf95ahPsOX/wy5AOryKGgChcDWxX7AKNobQ/YU5
+         96CHwqSArkELk7JGm31XDXCuNTW9bg/l9GStxCiwhQ6AspNsOpzKSpySx/JnVjor79zS
+         vhrdlgYKY09HdnQUyacl/xDr8YFQhix40iEzwcpOgsSXREK7nyuq7kYreqYHIq1kc02e
+         SzmZgkY8rbk+0+TFwKHKsYFPBtLlHV2U0ZMoHfqYnLKx8BW9JL3fENAMxjuzy2GoTGK6
+         vulQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=KDTbKI3K5FVIfCwkeglepXBfFcpQvboH+kkSLBKfWI8=;
+        b=UH/NRJTR82mGMkVhGY3+1G/7CMaLqaTE3AfBxkV/sruBB85C0MfYygogni1z96PHCQ
+         14DDekORdzlqOOPg3yjGVXdoWj/VbChXGMibCSdj183G9okmaAEZa1qBB7m0hddSeNjg
+         acRwFVl2RQg5XnyF2o85iz4QJTnbvJFamvIRjTV8OQ5PfYD0Rdac7lrK6QHnOoJq69bx
+         1gJSPaaPvR0BkSnYrbOAv1aM/qd9elHu9wNdyLwB67aLK5iUnFSbNCBj0kDSOc4s8E80
+         LQnEFKYYY2Bq2R5G+2W1KOA+TgaI1waQDRtrLn+Q3x8N1eW34QKm9oUJEnLkMEvIEIOX
+         /0GA==
+X-Gm-Message-State: AOAM532hEaElzed6gCk4IrI6xPBohQ9JiKhUq1qzwcSl3xqcwO6m0b32
+        R0q1rbpU0Fzl+jnboZlrjyUxpwPmz3c=
+X-Google-Smtp-Source: ABdhPJxQ6KTtMD8bj1IzxhJdoprHUsHnmaJsSnQFOT2UtgRmSXYSNyHcrEeDAVgoVnmR/nqrt0K3Mg==
+X-Received: by 2002:a17:90b:4d11:b0:1d2:a600:3014 with SMTP id mw17-20020a17090b4d1100b001d2a6003014mr30889198pjb.108.1650873504824;
+        Mon, 25 Apr 2022 00:58:24 -0700 (PDT)
+Received: from cyhuang-hp-elitebook-840-g3.rt ([2402:7500:56b:75be:d402:1333:c60b:f1a1])
+        by smtp.gmail.com with ESMTPSA id cm11-20020a17090afa0b00b001d9738fdf2asm2861903pjb.37.2022.04.25.00.58.20
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 25 Apr 2022 00:58:24 -0700 (PDT)
+Date:   Mon, 25 Apr 2022 15:58:17 +0800
+From:   ChiYuan Huang <u0084500@gmail.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        ChiYuan Huang <cy_huang@richtek.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] regulator: richtek,rt4801: parse GPIOs per
+ regulator
+Message-ID: <20220425075812.GA29439@cyhuang-hp-elitebook-840-g3.rt>
+References: <20220425072455.27356-1-krzysztof.kozlowski@linaro.org>
+ <20220425072455.27356-3-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220425072455.27356-3-krzysztof.kozlowski@linaro.org>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-04-25 at 09:49 +0200, David Hildenbrand wrote:
-> On 25.04.22 09:41, ying.huang@intel.com wrote:
-> > Hi, Miaohe,
-> > 
-> > On Sun, 2022-04-24 at 17:11 +0800, Miaohe Lin wrote:
-> > > There is a bug in unuse_pte(): when swap page happens to be unreadable,
-> > > page filled with random data is mapped into user address space.  In case
-> > > of error, a special swap entry indicating swap read fails is set to the
-> > > page table.  So the swapcache page can be freed and the user won't end up
-> > > with a permanently mounted swap because a sector is bad.  And if the page
-> > > is accessed later, the user process will be killed so that corrupted data
-> > > is never consumed.  On the other hand, if the page is never accessed, the
-> > > user won't even notice it.
-> > > 
-> > > Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> > > Acked-by: David Hildenbrand <david@redhat.com>
-> > > ---
-> > >  include/linux/swap.h    |  7 ++++++-
-> > >  include/linux/swapops.h | 10 ++++++++++
-> > >  mm/memory.c             |  5 ++++-
-> > >  mm/swapfile.c           | 11 +++++++++++
-> > >  4 files changed, 31 insertions(+), 2 deletions(-)
-> > > 
-> > > diff --git a/include/linux/swap.h b/include/linux/swap.h
-> > > index 5553189d0215..b82c196d8867 100644
-> > > --- a/include/linux/swap.h
-> > > +++ b/include/linux/swap.h
-> > > @@ -55,6 +55,10 @@ static inline int current_is_kswapd(void)
-> > >   * actions on faults.
-> > >   */
-> > > 
-> > > +#define SWP_SWAPIN_ERROR_NUM 1
-> > > +#define SWP_SWAPIN_ERROR     (MAX_SWAPFILES + SWP_HWPOISON_NUM + \
-> > > +			     SWP_MIGRATION_NUM + SWP_DEVICE_NUM + \
-> > > +			     SWP_PTE_MARKER_NUM)
-> > > 
-> > > 
-> > 
-> > It appears wasteful to use another swap device number. 
+On Mon, Apr 25, 2022 at 09:24:55AM +0200, Krzysztof Kozlowski wrote:
+> Having one enable-gpios property for all regulators is discouraged and
+> instead, similarly to regulator core ena_gpiod feature, each GPIO should
+> be present in each regulator node.  Add support for parsing such GPIOs,
+> keeping backwards compatibility.
 > 
-> Do we really care?
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  drivers/regulator/rt4801-regulator.c | 49 +++++++++++++++++++++-------
+>  1 file changed, 38 insertions(+), 11 deletions(-)
 > 
-> We currently use 5 bits for swap types, so we have a total of 32.
+> diff --git a/drivers/regulator/rt4801-regulator.c b/drivers/regulator/rt4801-regulator.c
+> index 7a87788d3f09..563d79196fdd 100644
+> --- a/drivers/regulator/rt4801-regulator.c
+> +++ b/drivers/regulator/rt4801-regulator.c
+> @@ -29,11 +29,33 @@
+>  
+>  struct rt4801_priv {
+>  	struct device *dev;
+> -	struct gpio_descs *enable_gpios;
+> +	struct gpio_desc *enable_gpios[DSV_OUT_MAX];
+>  	unsigned int enable_flag;
+>  	unsigned int volt_sel[DSV_OUT_MAX];
+>  };
+>  
+> +static int rt4801_of_parse_cb(struct device_node *np,
+> +			      const struct regulator_desc *desc,
+> +			      struct regulator_config *config)
+> +{
+> +	struct rt4801_priv *priv = config->driver_data;
+> +	int id = desc->id;
+> +
+> +	if (priv->enable_gpios[id]) {
+> +		dev_warn(priv->dev, "duplicated enable-gpios property\n");
+> +		return 0;
+> +	}
+> +	priv->enable_gpios[id] = devm_fwnode_gpiod_get_index(priv->dev,
+> +							     of_fwnode_handle(np),
+> +							     "enable", 0,
+> +							     GPIOD_OUT_HIGH,
+> +							     "rt4801");
+> +	if (IS_ERR(priv->enable_gpios[id]))
+> +		priv->enable_gpios[id] = NULL;
+> +
+> +	return 0;
+> +}
+> +
+>  static int rt4801_set_voltage_sel(struct regulator_dev *rdev, unsigned int selector)
+>  {
+>  	struct rt4801_priv *priv = rdev_get_drvdata(rdev);
+> @@ -63,15 +85,14 @@ static int rt4801_get_voltage_sel(struct regulator_dev *rdev)
+>  static int rt4801_enable(struct regulator_dev *rdev)
+>  {
+>  	struct rt4801_priv *priv = rdev_get_drvdata(rdev);
+> -	struct gpio_descs *gpios = priv->enable_gpios;
+>  	int id = rdev_get_id(rdev), ret;
+>  
+> -	if (!gpios || gpios->ndescs <= id) {
+> +	if (!priv->enable_gpios[id]) {
+>  		dev_warn(&rdev->dev, "no dedicated gpio can control\n");
+>  		goto bypass_gpio;
+>  	}
+>  
+> -	gpiod_set_value(gpios->desc[id], 1);
+> +	gpiod_set_value(priv->enable_gpios[id], 1);
+>  
+>  bypass_gpio:
+>  	ret = regmap_write(rdev->regmap, rdev->desc->vsel_reg, priv->volt_sel[id]);
+> @@ -85,15 +106,14 @@ static int rt4801_enable(struct regulator_dev *rdev)
+>  static int rt4801_disable(struct regulator_dev *rdev)
+>  {
+>  	struct rt4801_priv *priv = rdev_get_drvdata(rdev);
+> -	struct gpio_descs *gpios = priv->enable_gpios;
+>  	int id = rdev_get_id(rdev);
+>  
+> -	if (!gpios || gpios->ndescs <= id) {
+> +	if (!priv->enable_gpios[id]) {
+>  		dev_warn(&rdev->dev, "no dedicated gpio can control\n");
+>  		goto bypass_gpio;
+>  	}
+>  
+> -	gpiod_set_value(gpios->desc[id], 0);
+> +	gpiod_set_value(priv->enable_gpios[id], 0);
+>  
+>  bypass_gpio:
+>  	priv->enable_flag &= ~BIT(id);
+> @@ -122,6 +142,7 @@ static const struct regulator_desc rt4801_regulator_descs[] = {
+>  		.name = "DSVP",
+>  		.ops = &rt4801_regulator_ops,
+>  		.of_match = of_match_ptr("DSVP"),
+> +		.of_parse_cb = rt4801_of_parse_cb,
+>  		.type = REGULATOR_VOLTAGE,
+>  		.id = DSV_OUT_POS,
+>  		.min_uV = MIN_UV,
+> @@ -135,6 +156,7 @@ static const struct regulator_desc rt4801_regulator_descs[] = {
+>  		.name = "DSVN",
+>  		.ops = &rt4801_regulator_ops,
+>  		.of_match = of_match_ptr("DSVN"),
+> +		.of_parse_cb = rt4801_of_parse_cb,
+>  		.type = REGULATOR_VOLTAGE,
+>  		.id = DSV_OUT_NEG,
+>  		.min_uV = MIN_UV,
+> @@ -172,10 +194,15 @@ static int rt4801_probe(struct i2c_client *i2c)
+>  		return PTR_ERR(regmap);
+>  	}
+>  
+> -	priv->enable_gpios = devm_gpiod_get_array_optional(&i2c->dev, "enable", GPIOD_OUT_HIGH);
+> -	if (IS_ERR(priv->enable_gpios)) {
+> -		dev_err(&i2c->dev, "Failed to get gpios\n");
+> -		return PTR_ERR(priv->enable_gpios);
+> +	for (i = 0; i < DSV_OUT_MAX; i++) {
+> +		priv->enable_gpios[i] = devm_gpiod_get_index_optional(&i2c->dev,
+> +								      "enable",
+> +								      i,
+> +								      GPIOD_OUT_HIGH);
+> +		if (IS_ERR(priv->enable_gpios[i])) {
+> +			dev_err(&i2c->dev, "Failed to get gpios\n");
+> +			return PTR_ERR(priv->enable_gpios[i]);
+> +		}
+>  	}
+You can directly removed all about 'enable-gpios' in probe phase.
+Just keep of_parse_cb to get per regulator 'enable' gpio. 
+
+The others looks fine.
+
+Best regards,
+ChiYuan Huang.
+>  
+>  	for (i = 0; i < DSV_OUT_MAX; i++) {
+> -- 
+> 2.32.0
 > 
-> SWP_HWPOISON_NUM -> 1
-> SWP_MIGRATION_NUM -> 3
-> SWP_PTE_MARKER_NUM -> 1
-> SWP_DEVICE_NUM -> 4
-> SWP_SWAPIN_ERROR_NUM -> 1
-> 
-> Which would leave us with 32 - 10 = 22 swap devices. IMHO that's plenty
-> for real life scenarios.
-
-Creating multiple swap partitions on one disk can improve the
-scalability of swap subsystem, although we usually don't have so many
-disks for swap. 
-
-> I'd prefer reworking this when we really run into trouble (and we could
-> think about using more bits for applicable architectures then, for
-> select 64bit architectures it might be fairly easily possible).
-
-Best Regards,
-Huang, Ying
-
-
