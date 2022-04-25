@@ -2,95 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F7F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 10:48:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99065C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 10:50:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241217AbiDYKvx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 06:51:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38936 "EHLO
+        id S241506AbiDYKxW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 06:53:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233781AbiDYKvt (ORCPT
+        with ESMTP id S230111AbiDYKxR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 06:51:49 -0400
-X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 25 Apr 2022 03:48:43 PDT
-Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DE3063CC
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 03:48:40 -0700 (PDT)
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20220425104733c4677b3423d2a9cbb7
-        for <linux-kernel@vger.kernel.org>;
-        Mon, 25 Apr 2022 12:47:33 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=ibveypy2TT2i4YuSJ92muBFUBKsW8Al9oyDzThK4kpU=;
- b=GGDFW8jUESh9CAa2Qw8xzLTbXEizho7aK/UrtUKNjeFNF7EAUDMsWThmC5UvVBz5wrD287
- hg0Hxt4dF6mTBffFhnoZc1NFP/bUDtzKYNMciuhn7pRHLcJ/ymWDWckgUmdHOp8n9CJV1GMl
- dWoqMP0OFeJrZByN2WdphYPd6CnoI=;
-From:   "D. Starke" <daniel.starke@siemens.com>
-To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Starke <daniel.starke@siemens.com>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH 1/1] tty: n_gsm: fix sometimes uninitialized warning in gsm_dlci_modem_output()
-Date:   Mon, 25 Apr 2022 03:47:26 -0700
-Message-Id: <20220425104726.7986-1-daniel.starke@siemens.com>
+        Mon, 25 Apr 2022 06:53:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3DA56EC70;
+        Mon, 25 Apr 2022 03:50:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 25D6160FBD;
+        Mon, 25 Apr 2022 10:50:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 710B5C385A7;
+        Mon, 25 Apr 2022 10:50:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650883812;
+        bh=x7KizP5ueeJ9w8gJMouIeEWvRj0UVLY4YnSVJ7SItgo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=rL2QUstj40f8mUZcOfy7vS+ydP4ciWvPKuGt4oSDOSjMeK1nQUK88cxZjtbY8pr+9
+         Pi7+Q4VlooMAW+hiVsY0Zpp5bzQhIhq6S/XXuOACx+ruFGbM/NAjH2F42W1Lhg0Sv8
+         eOeOyBNO0WylpIHwsWEIPrkgdObKEclNF6hNARtWLCgs2dMABx7giuVIDxjyJ/baxr
+         pTBsBn5vVqE+zWoMKrpt2+pA3YhbAnWMEEFJUvcc3F/vy4dSaghp3XnI6Cg/JRcZBO
+         6k9HOAHfJRw3r9CojmbgwIlVZuHzmOro+VfETCc47qf5wMG/SHUvYS9U3IBIWG7I8O
+         W6qv1AtCrAXHA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5547CEAC09C;
+        Mon, 25 Apr 2022 10:50:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-314044:519-21489:flowmailer
+Subject: Re: [PATCH net 0/3] ip_gre, ip6_gre: o_seqno fixes
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165088381234.11295.8950748121825886947.git-patchwork-notify@kernel.org>
+Date:   Mon, 25 Apr 2022 10:50:12 +0000
+References: <cover.1650575919.git.peilin.ye@bytedance.com>
+In-Reply-To: <cover.1650575919.git.peilin.ye@bytedance.com>
+To:     Peilin Ye <yepeilin.cs@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, pabeni@redhat.com, peilin.ye@bytedance.com,
+        xeb@mail.ru, u9012063@gmail.com, daniel@iogearbox.net,
+        cong.wang@bytedance.com, eric.dumazet@gmail.com, ast@kernel.org,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+Hello:
 
-'size' may be used uninitialized in gsm_dlci_modem_output() if called with
-an adaption that is neither 1 nor 2. The function is currently only called
-by gsm_modem_upd_via_data() and only for adaption 2.
-Properly handle every invalid case by returning -EINVAL to silence the
-compiler warning and avoid future regressions.
+This series was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Fixes: c19ffe00fed6 ("tty: n_gsm: fix invalid use of MSC in advanced option")
-Cc: stable@vger.kernel.org
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
----
- drivers/tty/n_gsm.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+On Thu, 21 Apr 2022 15:06:39 -0700 you wrote:
+> From: Peilin Ye <peilin.ye@bytedance.com>
+> 
+> Hi all,
+> 
+> As pointed out [1] by Jakub Kicinski, currently using TUNNEL_SEQ in
+> collect_md mode is racy for [IP6]GRE[TAP] devices, since they (typically,
+> e.g. if created using "ip") use lockless TX.
+> 
+> [...]
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 8652308c187f..a38b922bcbc1 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -932,18 +932,21 @@ static int gsm_dlci_modem_output(struct gsm_mux *gsm, struct gsm_dlci *dlci,
- {
- 	u8 *dp = NULL;
- 	struct gsm_msg *msg;
--	int size;
-+	int size = 0;
- 
- 	/* for modem bits without break data */
--	if (dlci->adaption == 1) {
--		size = 0;
--	} else if (dlci->adaption == 2) {
--		size = 1;
-+	switch (dlci->adaption) {
-+	case 1: /* Unstructured */
-+		break;
-+	case 2: /* Unstructured with modem bits. */
-+		size++;
- 		if (brk > 0)
- 			size++;
--	} else {
-+		break;
-+	default:
- 		pr_err("%s: unsupported adaption %d\n", __func__,
- 		       dlci->adaption);
-+		return -EINVAL;
- 	}
- 
- 	msg = gsm_data_alloc(gsm, dlci->addr, size, gsm->ftype);
+Here is the summary with links:
+  - [net,1/3] ip_gre: Make o_seqno start from 0 in native mode
+    https://git.kernel.org/netdev/net/c/ff827beb706e
+  - [net,2/3] ip6_gre: Make o_seqno start from 0 in native mode
+    https://git.kernel.org/netdev/net/c/fde98ae91f79
+  - [net,3/3] ip_gre, ip6_gre: Fix race condition on o_seqno in collect_md mode
+    https://git.kernel.org/netdev/net/c/31c417c948d7
+
+You are awesome, thank you!
 -- 
-2.25.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
