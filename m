@@ -2,81 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3A41C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 20:10:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77EEFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 20:11:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245115AbiDYUNj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 16:13:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53280 "EHLO
+        id S245137AbiDYUO0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 16:14:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241233AbiDYUNg (ORCPT
+        with ESMTP id S233598AbiDYUOW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 16:13:36 -0400
-Received: from mail-oa1-x2b.google.com (mail-oa1-x2b.google.com [IPv6:2001:4860:4864:20::2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC7AD1E3ED
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 13:10:30 -0700 (PDT)
-Received: by mail-oa1-x2b.google.com with SMTP id 586e51a60fabf-e922e68b0fso6176190fac.1
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 13:10:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=K7sT4j1j79zUgHhHLdRo7ZuD61k8VXDTntHyuzX/BXA=;
-        b=OUAaD5Us01krjFlnDs+151g4ok09UyRZuEIHUE1jPBEyR9mx/A7sAsmhjHf63EwNHq
-         tIGiZUlZHdnlAbywcerGTsEzOjmesGLQUY9f6NI+BrVAm9kyrLaCHdJc504J1oJXK0wM
-         YXgRd77RKxlXmiT+xTLg8ZVph4cRCjsfDql8w=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=K7sT4j1j79zUgHhHLdRo7ZuD61k8VXDTntHyuzX/BXA=;
-        b=SFqtRUANvmEJdJ4KcZo2XhTxyoHcphloO3fyUntKTZ/udRg9Hx5OKdzpu2drVoISVn
-         G3GwEw7+sXDaOgeeuQKNieCkk07QHCpl9YBlth2JnJu++8cJFSIJdTT6seVUIUN5qMP7
-         s0BqjWlf9sS6+StSH5bkRfPeYs8n/wiBCQo6rHqxXiIzaNqDibmWKBN9bvsvR1j5hg8Z
-         BGSqk81ANlXNy+ukA9odhBxAMCHPes9HTmwjN5o1Ng3szN8ThfpaXFyUY2f4PdrpkY2K
-         RKQkPC+JZ6/CNeoBgCZoJCf6NVxAJTzfeQ51+qjHpY2TVEUiMv/Her+8+zyp7Hllwlzt
-         OMYg==
-X-Gm-Message-State: AOAM530K+VKSNNGkUJepXi4W0kDEoKhKdUN8DWngnHHcISwFWZrGExcL
-        MU8jh1fCRdP7YPzu3MKXdjMAZTWchPku5puzLcHGVinvtlI=
-X-Google-Smtp-Source: ABdhPJwJ17fs8iCiZSEbXH7jLlKJyr/HpN9dSlTTmysq4gFTTyFY8Gf7w8AN4qbNPPUFTtheyeMgr9f/4ynX6qJHPkc=
-X-Received: by 2002:a05:6870:558e:b0:e1:db7c:26aa with SMTP id
- n14-20020a056870558e00b000e1db7c26aamr8031779oao.63.1650917430300; Mon, 25
- Apr 2022 13:10:30 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Mon, 25 Apr 2022 13:10:29 -0700
+        Mon, 25 Apr 2022 16:14:22 -0400
+X-Greylist: delayed 1470 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 25 Apr 2022 13:11:17 PDT
+Received: from gateway20.websitewelcome.com (gateway20.websitewelcome.com [192.185.66.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F2ABEB158
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 13:11:17 -0700 (PDT)
+Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
+        by gateway20.websitewelcome.com (Postfix) with ESMTP id 144B6400D1072
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 14:46:43 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id j4fTnXLkRdx86j4fTnAKh8; Mon, 25 Apr 2022 14:46:43 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=gAUg/R/cVeWAnFANt9sHBSNVGqmO70rdsDy45wJTsaU=; b=nXjSnH2+B4oYCJA///AAVW2NW8
+        r4dPkUjzzfe5pFyYIsoCRBMLDuIqZiFDdS5xObDi78AZXva1lu/ggOV88cwZXwl66sIiTkHrbz3LO
+        eDzD1RJniTpUTwGwp2cJmllIRyoHCREO3oWmuIVVHcTMBzSatuT+r1cBj746FvoVFii8NNk+WQlZN
+        ErkF4Rmdr3IEqIs8jHPDKMeMmW7T9VwpVWrAvsezIR9lOql2dA87aUs5yYE+l5BKxZVHAV1GzK4qR
+        TLo3ytG37WxNYuGZtJLlxTQ2SoYZ+61vCIPZu5OdQTZYe2UoIfU86IO00ok+fB2ohDRXoo87J9Udq
+        nesJsk1A==;
+Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:43822 helo=[192.168.15.9])
+        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1nj4fQ-001AN9-N1; Mon, 25 Apr 2022 14:46:40 -0500
+Message-ID: <3ee366a7-e61f-e513-aa2f-12e8d5316f3c@embeddedor.com>
+Date:   Mon, 25 Apr 2022 14:55:22 -0500
 MIME-Version: 1.0
-In-Reply-To: <20220425090947.3498897-1-lv.ruyi@zte.com.cn>
-References: <20220425090947.3498897-1-lv.ruyi@zte.com.cn>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Mon, 25 Apr 2022 13:10:29 -0700
-Message-ID: <CAE-0n50fs1fFQcwMCq_x_UG8ZJKprjcYKwcy1+1ckD--XE28+g@mail.gmail.com>
-Subject: Re: [PATCH] drm/msm/dpu: fix error check return value of irq_of_parse_and_map()
-To:     cgel.zte@gmail.com, robdclark@gmail.com, sean@poorly.run
-Cc:     quic_abhinavk@quicinc.com, airlied@linux.ie, daniel@ffwll.ch,
-        dmitry.baryshkov@linaro.org, bjorn.andersson@linaro.org,
-        angelogioacchino.delregno@somainline.org, tiny.windzz@gmail.com,
-        architt@codeaurora.org, jsanka@codeaurora.org,
-        skolluku@codeaurora.org, ryadav@codeaurora.org,
-        linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC 1/1] drivers/dma/*: replace tasklets with workqueue
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzk@kernel.org>,
+        Allen Pais <apais@linux.microsoft.com>,
+        olivier.dautricourt@orolia.com, sr@denx.de, vkoul@kernel.org
+Cc:     keescook@chromium.org, linux-hardening@vger.kernel.org,
+        ludovic.desroches@microchip.com, tudor.ambarus@microchip.com,
+        f.fainelli@gmail.com, rjui@broadcom.com, sbranden@broadcom.com,
+        bcm-kernel-feedback-list@broadcom.com, nsaenz@kernel.org,
+        paul@crapouillou.net, Eugeniy.Paltsev@synopsys.com,
+        gustavo.pimentel@synopsys.com, vireshk@kernel.org,
+        andriy.shevchenko@linux.intel.com, leoyang.li@nxp.com,
+        zw@zh-kernel.org, wangzhou1@hisilicon.com, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, sean.wang@mediatek.com,
+        matthias.bgg@gmail.com, afaerber@suse.de, mani@kernel.org,
+        logang@deltatee.com, sanju.mehta@amd.com, daniel@zonque.org,
+        haojian.zhuang@gmail.com, robert.jarzmik@free.fr,
+        agross@kernel.org, bjorn.andersson@linaro.org,
+        krzysztof.kozlowski@linaro.org, green.wan@sifive.com,
+        orsonzhai@gmail.com, baolin.wang7@gmail.com, zhang.lyra@gmail.com,
+        patrice.chotard@foss.st.com, linus.walleij@linaro.org,
+        wens@csie.org, jernej.skrabec@gmail.com, samuel@sholland.org,
+        dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220419211658.11403-1-apais@linux.microsoft.com>
+ <20220419211658.11403-2-apais@linux.microsoft.com>
+ <353023ba-d506-5d45-be68-df2025074ed6@kernel.org>
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+In-Reply-To: <353023ba-d506-5d45-be68-df2025074ed6@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 187.162.31.110
+X-Source-L: No
+X-Exim-ID: 1nj4fQ-001AN9-N1
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.9]) [187.162.31.110]:43822
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 1
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting cgel.zte@gmail.com (2022-04-25 02:09:47)
-> From: Lv Ruyi <lv.ruyi@zte.com.cn>
->
-> The irq_of_parse_and_map() function returns 0 on failure, and does not
-> return a negative value anyhow, so never enter this conditional branch.
->
-> Fixes: 25fdd5933e4c ("drm/msm: Add SDM845 DPU support")
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-> ---
 
-Question still stands why we can't use platform device APIs.
 
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+On 4/25/22 10:56, Krzysztof Kozlowski wrote:
+> On 19/04/2022 23:16, Allen Pais wrote:
+>> The tasklet is an old API which will be deprecated, workqueue API
+>> cab be used instead of them.
+>>
+> 
+> Thank you for your patch. There is something to discuss/improve.
+> 
+>> This patch replaces the tasklet usage in drivers/dma/* with a
+>> simple work.
+> 
+> Minor nits:
+> 
+> 1. Don't use "this patch".
+> https://elixir.bootlin.com/linux/v5.17.1/source/Documentation/process/submitting-patches.rst#L95
+> 2. Use subject prefix matching subsystem (git log --oneline)
+> 
+>>
+>> Github: https://github.com/KSPP/linux/issues/94
+> 
+> 3. No external references to some issue management systems, change-ids
+> etc. Lore link could work, but it's not relevant here, I guess.
+
+I think the link to the KSPP issue tracker should stay. If something,
+just changing 'Github:' to 'Link:'
+
+The KSPP has been an active _upstream_ project for about 7 years now,
+and the issue tracker is publicly available. :) So it's not like a random
+link to a random project. This also help us to automatically keep track
+of the patches sent out to address a particular issue that we want to
+have resolved upstream. So please, keep the link in the changelog text,
+it's useful. :)
+
+Thanks
+--
+Gustavo
