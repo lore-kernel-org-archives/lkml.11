@@ -2,146 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B45CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:01:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9070EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:01:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243181AbiDYQEZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 12:04:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59760 "EHLO
+        id S237559AbiDYQE3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 12:04:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243147AbiDYQEU (ORCPT
+        with ESMTP id S243154AbiDYQEV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 12:04:20 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4EAB101FB;
-        Mon, 25 Apr 2022 09:01:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650902476; x=1682438476;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=BN5wLRGjtLKhwO/YI3QqYiT0K0JR0D0zC9Y19zaVu+w=;
-  b=qFYqaMsPXXNP9Cr44nM7HF05zNr5lMWPp+cWSGN0wbZqUhRV49+KBC2t
-   7h4clUUyZPtJVh5k43U7ezM4pXRuvWx1NekU03LW59skrpOvNwaVUcOrl
-   n0UrbNnY/d8s34wc2A+vKQ/3hMA5bMC/ckLlbdOEt9RuiKYxOGPsEg31n
-   Y=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 25 Apr 2022 09:01:15 -0700
-X-QCInternal: smtphost
-Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 25 Apr 2022 09:01:14 -0700
-X-QCInternal: smtphost
-Received: from c-sbhanu-linux.qualcomm.com ([10.242.50.201])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 25 Apr 2022 21:30:51 +0530
-Received: by c-sbhanu-linux.qualcomm.com (Postfix, from userid 2344807)
-        id A34A0C07; Mon, 25 Apr 2022 21:30:49 +0530 (IST)
-From:   Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
-To:     adrian.hunter@intel.com, ulf.hansson@linaro.org,
-        wsa+renesas@sang-engineering.com, yoshihiro.shimoda.uh@renesas.com,
-        linus.walleij@linaro.org, digetx@gmail.com,
-        briannorris@chromium.org, quic_riteshh@quicinc.com
-Cc:     linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        quic_asutoshd@quicinc.com, quic_rampraka@quicinc.com,
-        quic_pragalla@quicinc.com, quic_sartgarg@quicinc.com,
-        quic_nitirawa@quicinc.com, quic_sayalil@quicinc.com,
-        Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>,
-        Liangliang Lu <quic_luliang@quicinc.com>,
-        "Bao D . Nguyen" <quic_nguyenb@quicinc.com>
-Subject: [PATCH V5 3/5] mmc: debugfs: Add debug fs entry for mmc driver
-Date:   Mon, 25 Apr 2022 21:30:41 +0530
-Message-Id: <1650902443-26357-4-git-send-email-quic_c_sbhanu@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1650902443-26357-1-git-send-email-quic_c_sbhanu@quicinc.com>
-References: <1650902443-26357-1-git-send-email-quic_c_sbhanu@quicinc.com>
+        Mon, 25 Apr 2022 12:04:21 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4493C04;
+        Mon, 25 Apr 2022 09:01:17 -0700 (PDT)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23PEi8YO010487;
+        Mon, 25 Apr 2022 16:01:07 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=iyWauJF4sU09pTSXE8+mZF3uWlo6ve7aMHz+vKbaUHo=;
+ b=sDA7p/T0W1u3rSpllEdfSmSGIzoi0dMLWiylA4O0iBydpPupCenQRbZtepideKAt1Nv1
+ s6XLiOXIKLXk2Fq511ArRwtlItPPxUTA7yBqM/K5DA4d7/OrtxxOT4dZaegaEWbB7Zek
+ m4/4evTSVvStmqPE0PN0EGSycLUwRx3RgtSIFBN7Utk9S/nVF3U7fBUdxhRlgVMVnHe6
+ qI62Zv8cmd35TkNlijtWBVQmkq0cyDfLdfq+K1qgvozc2Jdye4N4MtJB+3mUMcfGgQzJ
+ gWJV8eP9ZqEbWIWlYuGs7Gs+NJxr7uODJqOMRvw029PfgMGS5M8Z/ZucJbDosnF5c82+ Kw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fnwng1wun-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 25 Apr 2022 16:01:07 +0000
+Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23PFtr4m004170;
+        Mon, 25 Apr 2022 16:01:06 GMT
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fnwng1wt7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 25 Apr 2022 16:01:06 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23PFsolp025774;
+        Mon, 25 Apr 2022 16:01:04 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma04fra.de.ibm.com with ESMTP id 3fm938t5jx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 25 Apr 2022 16:01:04 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23PG11F446334274
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 25 Apr 2022 16:01:01 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6DF184C04A;
+        Mon, 25 Apr 2022 16:01:01 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D1D484C050;
+        Mon, 25 Apr 2022 16:01:00 +0000 (GMT)
+Received: from [9.171.39.215] (unknown [9.171.39.215])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 25 Apr 2022 16:01:00 +0000 (GMT)
+Message-ID: <f54b2c71-dfd9-1f47-d75d-f58bbc6c6764@linux.ibm.com>
+Date:   Mon, 25 Apr 2022 18:01:00 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 1/2] KVM: s390: Don't indicate suppression on dirtying,
+ failing memop
+Content-Language: en-US
+To:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>
+Cc:     David Hildenbrand <david@redhat.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
+        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
+References: <20220425100147.1755340-1-scgl@linux.ibm.com>
+ <20220425100147.1755340-2-scgl@linux.ibm.com>
+From:   Christian Borntraeger <borntraeger@linux.ibm.com>
+In-Reply-To: <20220425100147.1755340-2-scgl@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Aoft7KSa4AuBqsnOxP8UMbEBU3zftJhm
+X-Proofpoint-ORIG-GUID: l3VVguq1cWdGVVsC6pM2qzzsAxXxd1mb
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-25_08,2022-04-25_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ bulkscore=0 adultscore=0 mlxlogscore=659 suspectscore=0 malwarescore=0
+ spamscore=0 phishscore=0 priorityscore=1501 clxscore=1011 mlxscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204250068
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add debug fs entry to query eMMC and SD card errors statistics
+Am 25.04.22 um 12:01 schrieb Janis Schoetterl-Glausch:
+> If user space uses a memop to emulate an instruction and that
+> memop fails, the execution of the instruction ends.
+> Instruction execution can end in different ways, one of which is
+> suppression, which requires that the instruction execute like a no-op.
+> A writing memop that spans multiple pages and fails due to key
+> protection can modified guest memory, as a result, the likely
+> correct ending is termination. Therefore do not indicate a
+> suppressing instruction ending in this case.
+> 
+> Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+> ---
+>   arch/s390/kvm/gaccess.c | 47 ++++++++++++++++++++++++-----------------
+>   1 file changed, 28 insertions(+), 19 deletions(-)
 
-Signed-off-by: Liangliang Lu <quic_luliang@quicinc.com>
-Signed-off-by: Sayali Lokhande <quic_sayalil@quicinc.com>
-Signed-off-by: Bao D. Nguyen <quic_nguyenb@quicinc.com>
-Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
----
- drivers/mmc/core/debugfs.c | 56 ++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 56 insertions(+)
 
-diff --git a/drivers/mmc/core/debugfs.c b/drivers/mmc/core/debugfs.c
-index 3fdbc80..6aa5a60 100644
---- a/drivers/mmc/core/debugfs.c
-+++ b/drivers/mmc/core/debugfs.c
-@@ -223,6 +223,59 @@ static int mmc_clock_opt_set(void *data, u64 val)
- DEFINE_DEBUGFS_ATTRIBUTE(mmc_clock_fops, mmc_clock_opt_get, mmc_clock_opt_set,
- 	"%llu\n");
- 
-+static int mmc_err_stats_show(struct seq_file *file, void *data)
-+{
-+	struct mmc_host *host = (struct mmc_host *)file->private;
-+	const char *desc[MMC_ERR_MAX] = {
-+		[MMC_ERR_CMD_TIMEOUT] = "Command Timeout Occurred",
-+		[MMC_ERR_CMD_CRC] = "Command CRC Errors Occurred",
-+		[MMC_ERR_DAT_TIMEOUT] = "Data Timeout Occurred",
-+		[MMC_ERR_DAT_CRC] = "Data CRC Errors Occurred",
-+		[MMC_ERR_AUTO_CMD] = "Auto-Cmd Error Occurred",
-+		[MMC_ERR_ADMA] = "ADMA Error Occurred",
-+		[MMC_ERR_TUNING] = "Tuning Error Occurred",
-+		[MMC_ERR_CMDQ_RED] = "CMDQ RED Errors",
-+		[MMC_ERR_CMDQ_GCE] = "CMDQ GCE Errors",
-+		[MMC_ERR_CMDQ_ICCE] = "CMDQ ICCE Errors",
-+		[MMC_ERR_REQ_TIMEOUT] = "Request Timedout",
-+		[MMC_ERR_CMDQ_REQ_TIMEOUT] = "CMDQ Request Timedout",
-+		[MMC_ERR_ICE_CFG] = "ICE Config Errors",
-+		[MMC_ERR_CTRL_TIMEOUT] = "Controller Timedout errors",
-+		[MMC_ERR_UNEXPECTED_IRQ] = "Unexpected IRQ errors",
-+	};
-+	int i;
-+
-+	for (i = 0; i < MMC_ERR_MAX; i++) {
-+		if (desc[i])
-+			seq_printf(file, "# %s:\t %d\n",
-+					desc[i], host->err_stats[i]);
-+	}
-+
-+	return 0;
-+}
-+
-+static int mmc_err_stats_open(struct inode *inode, struct file *file)
-+{
-+	return single_open(file, mmc_err_stats_show, inode->i_private);
-+}
-+
-+static ssize_t mmc_err_stats_write(struct file *filp, const char __user *ubuf,
-+				   size_t cnt, loff_t *ppos)
-+{
-+	struct mmc_host *host = filp->f_mapping->host->i_private;
-+
-+	pr_debug("%s: Resetting MMC error statistics\n", __func__);
-+	memset(host->err_stats, 0, sizeof(host->err_stats));
-+
-+	return cnt;
-+}
-+
-+static const struct file_operations mmc_err_stats_fops = {
-+	.open	= mmc_err_stats_open,
-+	.read	= seq_read,
-+	.write	= mmc_err_stats_write,
-+};
-+
- void mmc_add_host_debugfs(struct mmc_host *host)
- {
- 	struct dentry *root;
-@@ -236,6 +289,9 @@ void mmc_add_host_debugfs(struct mmc_host *host)
- 	debugfs_create_file_unsafe("clock", S_IRUSR | S_IWUSR, root, host,
- 				   &mmc_clock_fops);
- 
-+	debugfs_create_file("err_stats", 0600, root, host,
-+			    &mmc_err_stats_fops);
-+
- #ifdef CONFIG_FAIL_MMC_REQUEST
- 	if (fail_request)
- 		setup_fault_attr(&fail_default_attr, fail_request);
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
-of Code Aurora Forum, hosted by The Linux Foundation
+
+Reviewed-by: Christian Borntraeger <borntraeger@linux.ibm.com>
 
