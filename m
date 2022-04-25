@@ -2,266 +2,270 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBB4EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:32:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 735CCC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:34:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243439AbiDYQfq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 12:35:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41062 "EHLO
+        id S243466AbiDYQhS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 12:37:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238415AbiDYQfm (ORCPT
+        with ESMTP id S232384AbiDYQhQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 12:35:42 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3544DB2E5
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 09:32:37 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id h12so23968719plf.12
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 09:32:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=SU4snmKXWtmqMgmf+YL3GPUxwYJ/zeZEVVxVgsxU6BE=;
-        b=DCphld+PNkslqfr0tqpWckkYRCBJBfYn1HxPjNMV1cHZDuajJJl4THSXprXdfBDtQE
-         HcKfKXDcbhVLFrF3RSseNXymTVK91tNXvqB0gc3m9b8oVl4g08XpB4HIC9h1dRwf2GZ8
-         8QzModH5f1x4WvTDtAJJpax3uYDfRR/l9aTpGzyG+J01RDwOyCAmM+RkuezhIhcwnuvi
-         RqnR+2vNVNn+Ksxxw3eff7sW8O/IXbjSuKfSoYrTzNxWPcYAnwzpPxRLVhewJ4KEA1HW
-         5dgPgSQUf5VZMxPrkOtFMYY0774IXB1uwyCby7sJbVHS64x+Iya99TRZdI2x/vXvsufe
-         +wXQ==
+        Mon, 25 Apr 2022 12:37:16 -0400
+Received: from mail-oo1-f50.google.com (mail-oo1-f50.google.com [209.85.161.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84D9ADE92F;
+        Mon, 25 Apr 2022 09:34:11 -0700 (PDT)
+Received: by mail-oo1-f50.google.com with SMTP id x22-20020a4aca96000000b00338fbaf797bso2884396ooq.10;
+        Mon, 25 Apr 2022 09:34:11 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=SU4snmKXWtmqMgmf+YL3GPUxwYJ/zeZEVVxVgsxU6BE=;
-        b=CWVfUPDHbdiM9dksKea051x1jOde/KLefmDOjN3lUg8r782QeinZqloGJ8xHXyb/Zg
-         2MIV7BuYSCMau8i/bccNqeyqrqCW2FlgCOgJMC5XAV9HAu5D6D/A8Y6ypBgrFpIwYV0V
-         jR6RV7TbKJ6hyTBL4sp3vpqelxMGHEeFW7US9Cchfskt5XN3SofWiz6bRrx8a4vcDE/8
-         obwItJ5Irfmjyp5pGn4oYmn/VJ/vFjODJYfek2T9UJFjmqeWph7/CWiVQr1h7Ad3R6wn
-         oHyyoyCkobTiHc4HOpu2O+i3Iss/KFxk/WLCTelMESmX2YPN9uWGxT5qknafNVbjv0H7
-         h9Iw==
-X-Gm-Message-State: AOAM533pEBjPfK6mNqR3AxWtKSYMbnYu9E5MFgaucQKFdcOlSzC/NgE0
-        Xu13IHwtFb+PNCc+5ZHx2NPgaQ==
-X-Google-Smtp-Source: ABdhPJxDv9chIy+dHhAv0Uji/MbNlmLCS9A+a4nNPRo5jf8fX4zUUo491fyAtNCvtcFV4xzQ0BA2Fw==
-X-Received: by 2002:a17:902:b586:b0:159:684:c522 with SMTP id a6-20020a170902b58600b001590684c522mr18713198pls.39.1650904357139;
-        Mon, 25 Apr 2022 09:32:37 -0700 (PDT)
-Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id x36-20020a056a000be400b0050a40b8290dsm11775416pfu.54.2022.04.25.09.32.36
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=1loEjRTP/Q6tR950lkPpHaLcFJYgRPsFYzQY0su75F8=;
+        b=ALsyO5G0xdI9zR41jbhvGKtYcsXvj/e15vOg7NjVF2Dgt2C9R/0+z7M8BzqD0qfsM2
+         eVUI2Nytc5npkKkEdQWbCZJaTzY57Qpv4LjcEtM8DKy3DeF8dPZCsBuGFd9s3lI3w+X+
+         RdX5Xfin1mqosJKI07UvFwPpCHU7sZzCsc3KRp5hMoLmgBDGH4Ttz37VCDvoAuqCQN2c
+         M9kBFITX2Rm+Ji+uPLiXV0PE3ai64DZQLP43bKhZZx76RAQQycXz+kSA8AYn6JSJegtn
+         BOWmMdWLYe5wa3HY8NM429JGtkjRDZ5ZqV0h08ao11KRzaYmk/4S76N7ea1VE7NAQW4e
+         e13g==
+X-Gm-Message-State: AOAM531Ven9Zy+I0n2HI4EeJldAse71q609xlftQN5e0efcKi5iYsUk4
+        280wlGRXG0U+jupSOx+wXA==
+X-Google-Smtp-Source: ABdhPJzPAsEnmHRb12a7tBkVVEyHXJ2dEIu3UFJdjKhTaOJtwR20kd5qtparR6MVwRfloGCKxeNKgg==
+X-Received: by 2002:a4a:92d4:0:b0:33a:3d7d:fe5 with SMTP id j20-20020a4a92d4000000b0033a3d7d0fe5mr6675192ooh.83.1650904450714;
+        Mon, 25 Apr 2022 09:34:10 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id bk35-20020a0568081a2300b003226178fe7bsm3964854oib.33.2022.04.25.09.34.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 09:32:36 -0700 (PDT)
-Date:   Mon, 25 Apr 2022 09:32:34 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Wells Lu <wellslutw@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, p.zabel@pengutronix.de,
-        pabeni@redhat.com, krzk+dt@kernel.org, roopa@nvidia.com,
-        andrew@lunn.ch, edumazet@google.com, wells.lu@sunplus.com
-Subject: Re: [PATCH net-next v9 2/2] net: ethernet: Add driver for Sunplus
- SP7021
-Message-ID: <20220425093234.0ab232ff@hermes.local>
-In-Reply-To: <1650882640-7106-3-git-send-email-wellslutw@gmail.com>
-References: <1650882640-7106-1-git-send-email-wellslutw@gmail.com>
-        <1650882640-7106-3-git-send-email-wellslutw@gmail.com>
+        Mon, 25 Apr 2022 09:34:10 -0700 (PDT)
+Received: (nullmailer pid 4018960 invoked by uid 1000);
+        Mon, 25 Apr 2022 16:34:09 -0000
+Date:   Mon, 25 Apr 2022 11:34:09 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>
+Cc:     krzysztof.kozlowski+dt@linaro.org, chunkuang.hu@kernel.org,
+        p.zabel@pengutronix.de, airlied@linux.ie, matthias.bgg@gmail.com,
+        angelogioacchino.delregno@collabora.com, jason-jh.lin@mediatek.com,
+        nancy.lin@mediatek.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+Subject: Re: [PATCH 5/5] dt-bindings: mediatek: add ethdr definition for
+ mt8195
+Message-ID: <YmbNgQ+t/mUrLhis@robh.at.kernel.org>
+References: <20220419033237.23405-1-rex-bc.chen@mediatek.com>
+ <20220419033237.23405-6-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220419033237.23405-6-rex-bc.chen@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 25 Apr 2022 18:30:40 +0800
-Wells Lu <wellslutw@gmail.com> wrote:
+On Tue, Apr 19, 2022 at 11:32:37AM +0800, Rex-BC Chen wrote:
+> From: "Nancy.Lin" <nancy.lin@mediatek.com>
+> 
+> Add vdosys1 ETHDR definition.
+> 
+> Signed-off-by: Nancy.Lin <nancy.lin@mediatek.com>
+> Reviewed-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> ---
+>  .../display/mediatek/mediatek,ethdr.yaml      | 158 ++++++++++++++++++
+>  1 file changed, 158 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.yaml
+> new file mode 100644
+> index 000000000000..e8303c28a361
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.yaml
+> @@ -0,0 +1,158 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/display/mediatek/mediatek,ethdr.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: MediaTek Ethdr Device Tree Bindings
+> +
+> +maintainers:
+> +  - Chun-Kuang Hu <chunkuang.hu@kernel.org>
+> +  - Philipp Zabel <p.zabel@pengutronix.de>
+> +
+> +description: |
+
+No need for '|' unless you have formatting to preserve.
+
+> +  ETHDR is designed for HDR video and graphics conversion in the external display path.
+> +  It handles multiple HDR input types and performs tone mapping, color space/color
+> +  format conversion, and then combine different layers, output the required HDR or
+> +  SDR signal to the subsequent display path. This engine is composed of two video
+> +  frontends, two graphic frontends, one video backend and a mixer. ETHDR has two
+> +  DMA function blocks, DS and ADL. These two function blocks read the pre-programmed
+> +  registers from DRAM and set them to HW in the v-blanking period.
+> +
+> +properties:
+> +  compatible:
+> +    items:
+> +      - const: mediatek,mt8195-disp-ethdr
+
+blank line between DT properties.
+
+> +  reg:
+> +    maxItems: 7
+> +  reg-names:
+> +    items:
+> +      - const: mixer
+> +      - const: vdo_fe0
+> +      - const: vdo_fe1
+> +      - const: gfx_fe0
+> +      - const: gfx_fe1
+> +      - const: vdo_be
+> +      - const: adl_ds
+> +  interrupts:
+> +    minItems: 1
+
+maxItems: 1
+
+> +  iommus:
+> +    description: The compatible property is DMA function blocks.
+> +      Should point to the respective IOMMU block with master port as argument,
+> +      see Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml for
+> +      details.
+> +    minItems: 1
+> +    maxItems: 2
+> +  clocks:
+> +    items:
+> +      - description: mixer clock
+> +      - description: video frontend 0 clock
+> +      - description: video frontend 1 clock
+> +      - description: graphic frontend 0 clock
+> +      - description: graphic frontend 1 clock
+> +      - description: video backend clock
+> +      - description: autodownload and menuload clock
+> +      - description: video frontend 0 async clock
+> +      - description: video frontend 1 async clock
+> +      - description: graphic frontend 0 async clock
+> +      - description: graphic frontend 1 async clock
+> +      - description: video backend async clock
+> +      - description: ethdr top clock
+> +  clock-names:
+> +    items:
+> +      - const: mixer
+> +      - const: vdo_fe0
+> +      - const: vdo_fe1
+> +      - const: gfx_fe0
+> +      - const: gfx_fe1
+> +      - const: vdo_be
+> +      - const: adl_ds
+> +      - const: vdo_fe0_async
+> +      - const: vdo_fe1_async
+> +      - const: gfx_fe0_async
+> +      - const: gfx_fe1_async
+> +      - const: vdo_be_async
+> +      - const: ethdr_top
+> +  power-domains:
+> +    maxItems: 1
+> +  resets:
+> +    maxItems: 5
+
+Need to define what they are and order.
+
+> +  mediatek,gce-client-reg:
+> +    $ref: /schemas/types.yaml#/definitions/phandle-array
+> +    description: The register of display function block to be set by gce.
+> +      There are 4 arguments in this property, gce node, subsys id, offset and
+> +      register size. The subsys id is defined in the gce header of each chips
+> +      include/include/dt-bindings/gce/<chip>-gce.h, mapping to the register of
+> +      display function block.
+
+Need to define each cell:
+
+minItems: ??
+maxItems: ??
+items:
+  items:
+    - description: gce node
+    - description: ...
+    ...
+
+Seems odd this property is optional...
 
 > +
-> +int spl2sw_rx_poll(struct napi_struct *napi, int budget)
-> +{
-> +	struct spl2sw_common *comm = container_of(napi, struct spl2sw_common, rx_napi);
-> +	struct spl2sw_mac_desc *desc, *h_desc;
-> +	struct net_device_stats *stats;
-> +	struct sk_buff *skb, *new_skb;
-> +	struct spl2sw_skb_info *sinfo;
-> +	int budget_left = budget;
-> +	u32 rx_pos, pkg_len;
-> +	u32 num, rx_count;
-> +	s32 queue;
-> +	u32 mask;
-> +	int port;
-> +	u32 cmd;
+> +required:
+> +  - compatible
+> +  - reg
+> +  - clocks
+> +  - clock-names
+> +  - interrupts
+> +  - power-domains
 > +
-> +	/* Process high-priority queue and then low-priority queue. */
-> +	for (queue = 0; queue < RX_DESC_QUEUE_NUM; queue++) {
-> +		rx_pos = comm->rx_pos[queue];
-> +		rx_count = comm->rx_desc_num[queue];
+> +additionalProperties: false
 > +
-> +		for (num = 0; num < rx_count && budget_left; num++) {
-> +			sinfo = comm->rx_skb_info[queue] + rx_pos;
-> +			desc = comm->rx_desc[queue] + rx_pos;
-> +			cmd = desc->cmd1;
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    #include <dt-bindings/clock/mt8195-clk.h>
+> +    #include <dt-bindings/gce/mt8195-gce.h>
+> +    #include <dt-bindings/memory/mt8195-memory-port.h>
+> +    #include <dt-bindings/power/mt8195-power.h>
+> +    #include <dt-bindings/reset/mt8195-resets.h>
 > +
-> +			if (cmd & RXD_OWN)
-> +				break;
+> +    soc {
+> +        #address-cells = <2>;
+> +        #size-cells = <2>;
 > +
-> +			port = FIELD_GET(RXD_PKT_SP, cmd);
-> +			if (port < MAX_NETDEV_NUM && comm->ndev[port])
-> +				stats = &comm->ndev[port]->stats;
-> +			else
-> +				goto spl2sw_rx_poll_rec_err;
+> +        disp_ethdr@1c114000 {
+> +                compatible = "mediatek,mt8195-disp-ethdr";
+> +                reg = <0 0x1c114000 0 0x1000>,
+> +                      <0 0x1c115000 0 0x1000>,
+> +                      <0 0x1c117000 0 0x1000>,
+> +                      <0 0x1c119000 0 0x1000>,
+> +                      <0 0x1c11a000 0 0x1000>,
+> +                      <0 0x1c11b000 0 0x1000>,
+> +                      <0 0x1c11b000 0 0x1000>;
+> +                reg-names = "mixer", "vdo_fe0", "vdo_fe1", "gfx_fe0", "gfx_fe1",
+> +                            "vdo_be", "adl_ds";
+> +                mediatek,gce-client-reg = <&gce0 SUBSYS_1c11XXXX 0x4000 0x1000>,
+> +                                          <&gce0 SUBSYS_1c11XXXX 0x5000 0x1000>,
+> +                                          <&gce0 SUBSYS_1c11XXXX 0x7000 0x1000>,
+> +                                          <&gce0 SUBSYS_1c11XXXX 0x9000 0x1000>,
+> +                                          <&gce0 SUBSYS_1c11XXXX 0xa000 0x1000>,
+> +                                          <&gce0 SUBSYS_1c11XXXX 0xb000 0x1000>,
+> +                                          <&gce0 SUBSYS_1c11XXXX 0xc000 0x1000>;
+> +                clocks = <&vdosys1 CLK_VDO1_DISP_MIXER>,
+> +                         <&vdosys1 CLK_VDO1_HDR_VDO_FE0>,
+> +                         <&vdosys1 CLK_VDO1_HDR_VDO_FE1>,
+> +                         <&vdosys1 CLK_VDO1_HDR_GFX_FE0>,
+> +                         <&vdosys1 CLK_VDO1_HDR_GFX_FE1>,
+> +                         <&vdosys1 CLK_VDO1_HDR_VDO_BE>,
+> +                         <&vdosys1 CLK_VDO1_26M_SLOW>,
+> +                         <&vdosys1 CLK_VDO1_HDR_VDO_FE0_DL_ASYNC>,
+> +                         <&vdosys1 CLK_VDO1_HDR_VDO_FE1_DL_ASYNC>,
+> +                         <&vdosys1 CLK_VDO1_HDR_GFX_FE0_DL_ASYNC>,
+> +                         <&vdosys1 CLK_VDO1_HDR_GFX_FE1_DL_ASYNC>,
+> +                         <&vdosys1 CLK_VDO1_HDR_VDO_BE_DL_ASYNC>,
+> +                         <&topckgen CLK_TOP_ETHDR>;
+> +                clock-names = "mixer", "vdo_fe0", "vdo_fe1", "gfx_fe0", "gfx_fe1",
+> +                              "vdo_be", "adl_ds", "vdo_fe0_async", "vdo_fe1_async",
+> +                              "gfx_fe0_async", "gfx_fe1_async","vdo_be_async",
+> +                              "ethdr_top";
+> +                power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS1>;
+> +                iommus = <&iommu_vpp M4U_PORT_L3_HDR_DS>,
+> +                         <&iommu_vpp M4U_PORT_L3_HDR_ADL>;
+> +                interrupts = <GIC_SPI 517 IRQ_TYPE_LEVEL_HIGH 0>; /* disp mixer */
+> +                resets = <&vdosys1 MT8195_VDOSYS1_SW1_RST_B_HDR_VDO_FE0_DL_ASYNC>,
+> +                         <&vdosys1 MT8195_VDOSYS1_SW1_RST_B_HDR_VDO_FE1_DL_ASYNC>,
+> +                         <&vdosys1 MT8195_VDOSYS1_SW1_RST_B_HDR_GFX_FE0_DL_ASYNC>,
+> +                         <&vdosys1 MT8195_VDOSYS1_SW1_RST_B_HDR_GFX_FE1_DL_ASYNC>,
+> +                         <&vdosys1 MT8195_VDOSYS1_SW1_RST_B_HDR_VDO_BE_DL_ASYNC>;
+> +        };
+> +    };
 > +
-> +			pkg_len = FIELD_GET(RXD_PKT_LEN, cmd);
-> +			if (unlikely((cmd & RXD_ERR_CODE) || pkg_len < ETH_ZLEN + 4)) {
-> +				stats->rx_length_errors++;
-> +				stats->rx_dropped++;
-> +				goto spl2sw_rx_poll_rec_err;
-> +			}
-> +
-> +			dma_unmap_single(&comm->pdev->dev, sinfo->mapping,
-> +					 comm->rx_desc_buff_size, DMA_FROM_DEVICE);
-> +
-> +			skb = sinfo->skb;
-> +			skb_put(skb, pkg_len - 4); /* Minus FCS */
-> +			skb->ip_summed = CHECKSUM_NONE;
-> +			skb->protocol = eth_type_trans(skb, comm->ndev[port]);
-> +			netif_receive_skb(skb);
-> +
-> +			stats->rx_packets++;
-> +			stats->rx_bytes += skb->len;
-> +
-> +			/* Allocate a new skb for receiving. */
-> +			new_skb = netdev_alloc_skb(NULL, comm->rx_desc_buff_size);
-> +			if (unlikely(!new_skb)) {
-> +				desc->cmd2 = (rx_pos == comm->rx_desc_num[queue] - 1) ?
-> +					     RXD_EOR : 0;
-> +				sinfo->skb = NULL;
-> +				sinfo->mapping = 0;
-> +				desc->addr1 = 0;
-> +				goto spl2sw_rx_poll_alloc_err;
-> +			}
-> +
-> +			sinfo->mapping = dma_map_single(&comm->pdev->dev, new_skb->data,
-> +							comm->rx_desc_buff_size,
-> +							DMA_FROM_DEVICE);
-> +			if (dma_mapping_error(&comm->pdev->dev, sinfo->mapping)) {
-> +				dev_kfree_skb_irq(new_skb);
-> +				desc->cmd2 = (rx_pos == comm->rx_desc_num[queue] - 1) ?
-> +					     RXD_EOR : 0;
-> +				sinfo->skb = NULL;
-> +				sinfo->mapping = 0;
-> +				desc->addr1 = 0;
-> +				goto spl2sw_rx_poll_alloc_err;
-> +			}
-> +
-> +			sinfo->skb = new_skb;
-> +			desc->addr1 = sinfo->mapping;
-> +
-> +spl2sw_rx_poll_rec_err:
-> +			desc->cmd2 = (rx_pos == comm->rx_desc_num[queue] - 1) ?
-> +				     RXD_EOR | comm->rx_desc_buff_size :
-> +				     comm->rx_desc_buff_size;
-> +
-> +			wmb();	/* Set RXD_OWN after other fields are effective. */
-> +			desc->cmd1 = RXD_OWN;
-> +
-> +spl2sw_rx_poll_alloc_err:
-> +			/* Move rx_pos to next position */
-> +			rx_pos = ((rx_pos + 1) == comm->rx_desc_num[queue]) ? 0 : rx_pos + 1;
-> +
-> +			budget_left--;
-> +
-> +			/* If there are packets in high-priority queue,
-> +			 * stop processing low-priority queue.
-> +			 */
-> +			if (queue == 1 && !(h_desc->cmd1 & RXD_OWN))
-> +				break;
-> +		}
-> +
-> +		comm->rx_pos[queue] = rx_pos;
-> +
-> +		/* Save pointer to last rx descriptor of high-priority queue. */
-> +		if (queue == 0)
-> +			h_desc = comm->rx_desc[queue] + rx_pos;
-> +	}
-> +
-> +	wmb();	/* make sure settings are effective. */
-> +	mask = readl(comm->l2sw_reg_base + L2SW_SW_INT_MASK_0);
-> +	mask &= ~MAC_INT_RX;
-> +	writel(mask, comm->l2sw_reg_base + L2SW_SW_INT_MASK_0);
-> +
-> +	napi_complete(napi);
-> +	return 0;
-> +}
-> +
-> +int spl2sw_tx_poll(struct napi_struct *napi, int budget)
-> +{
-> +	struct spl2sw_common *comm = container_of(napi, struct spl2sw_common, tx_napi);
-> +	struct spl2sw_skb_info *skbinfo;
-> +	struct net_device_stats *stats;
-> +	int budget_left = budget;
-> +	u32 tx_done_pos;
-> +	u32 mask;
-> +	u32 cmd;
-> +	int i;
-> +
-> +	spin_lock(&comm->tx_lock);
-> +
-> +	tx_done_pos = comm->tx_done_pos;
-> +	while (((tx_done_pos != comm->tx_pos) || (comm->tx_desc_full == 1)) && budget_left) {
-> +		cmd = comm->tx_desc[tx_done_pos].cmd1;
-> +		if (cmd & TXD_OWN)
-> +			break;
-> +
-> +		skbinfo = &comm->tx_temp_skb_info[tx_done_pos];
-> +		if (unlikely(!skbinfo->skb))
-> +			goto spl2sw_tx_poll_next;
-> +
-> +		i = ffs(FIELD_GET(TXD_VLAN, cmd)) - 1;
-> +		if (i < MAX_NETDEV_NUM && comm->ndev[i])
-> +			stats = &comm->ndev[i]->stats;
-> +		else
-> +			goto spl2sw_tx_poll_unmap;
-> +
-> +		if (unlikely(cmd & (TXD_ERR_CODE))) {
-> +			stats->tx_errors++;
-> +		} else {
-> +			stats->tx_packets++;
-> +			stats->tx_bytes += skbinfo->len;
-> +		}
-> +
-> +spl2sw_tx_poll_unmap:
-> +		dma_unmap_single(&comm->pdev->dev, skbinfo->mapping, skbinfo->len,
-> +				 DMA_TO_DEVICE);
-> +		skbinfo->mapping = 0;
-> +		dev_kfree_skb_irq(skbinfo->skb);
-> +		skbinfo->skb = NULL;
-> +
-> +spl2sw_tx_poll_next:
-> +		/* Move tx_done_pos to next position */
-> +		tx_done_pos = ((tx_done_pos + 1) == TX_DESC_NUM) ? 0 : tx_done_pos + 1;
-> +
-> +		if (comm->tx_desc_full == 1)
-> +			comm->tx_desc_full = 0;
-> +
-> +		budget_left--;
-> +	}
-> +
-> +	comm->tx_done_pos = tx_done_pos;
-> +	if (!comm->tx_desc_full)
-> +		for (i = 0; i < MAX_NETDEV_NUM; i++)
-> +			if (comm->ndev[i])
-> +				if (netif_queue_stopped(comm->ndev[i]))
-> +					netif_wake_queue(comm->ndev[i]);
-> +
-> +	spin_unlock(&comm->tx_lock);
-> +
-> +	wmb();			/* make sure settings are effective. */
-> +	mask = readl(comm->l2sw_reg_base + L2SW_SW_INT_MASK_0);
-> +	mask &= ~MAC_INT_TX;
-> +	writel(mask, comm->l2sw_reg_base + L2SW_SW_INT_MASK_0);
-> +
-> +	napi_complete(napi);
-> +	return 0;
-> +}
-
-This doesn't look like it is doing NAPI properly.
-
-The driver is supposed to return the amount of packets processed.
-If budget is used, it should return budget.
+> +...
+> -- 
+> 2.18.0
+> 
+> 
