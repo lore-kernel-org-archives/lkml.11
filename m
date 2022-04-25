@@ -2,194 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B25DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 13:33:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C923BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 13:33:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242091AbiDYNfA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 09:35:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55642 "EHLO
+        id S242106AbiDYNg3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 09:36:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242078AbiDYNe6 (ORCPT
+        with ESMTP id S242078AbiDYNgX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 09:34:58 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C509BDE
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 06:31:54 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id v1so14442766ljv.3
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 06:31:54 -0700 (PDT)
+        Mon, 25 Apr 2022 09:36:23 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 482FE1135
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 06:33:19 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id f38so27061000ybi.3
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 06:33:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ccosb5OLlMLmZzgxt/IQ3pX0ynIyPqTno6b0V3kf4QY=;
-        b=h7uireBSCGtFURN6YqTRU6eeR3CHZOnsJGdnJeqP6QwMQSj2SGyD6UbXohwPydwgpb
-         vmp6zbfchpXP81+EMOgnQ6MZBbHkyY+H4yQJgu97wVoKnngHY0EhbUDlsCHJWCWJOO55
-         ivlRGRKFNW6E+Wcrd419jbvv0nqOCS8FuzKv8YcVTHRAUJ1b4xfdBe+mJkWIk6FPRvLy
-         NXvWLG8SAvVKJJ0hmO9ASek+ULoemo+DFdWIJR+7SwMOvu6bmOAjjCB7A6VYeShtF2II
-         fBr7jitEgZWVGOD0KrQl+SLq9Cylu1iLDtOwjDbx64PfOPqPBDHlSZFYZ1M5Tpp9qfVm
-         00XA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tnGDk2mXj8ducKZ6TjV0CCxMODc0uQNA4u/k6GAYohE=;
+        b=Ru6CMFDL+759FDN0Z+W8VThj6ZOWjiqunT3Ldu7hr9+T/EwHJ2ill2Bu8QHwYvuSAJ
+         7dKDDU5+92cjc7riK3wLgypUn1DzhEiOL9atp+b4uHycuIbPimmCeKShAzX3/lEkWClR
+         Dw2NBC/VWTnBFQz+EwaDuGAPMCRx5eDKSvbaXRIiTCMVvdOcx71g4s8y03U9A5Yqfk9a
+         x5hIjscu80Kro5O/30lo0/Sc7GCIThTycK8Ke4jCFwjwWctzEXd4/X3ORRR8i9V61+nl
+         ueObE4uewQRN9FEHR07RR5YAM4Y118mzN8MbKAPq/riqju6hAdF621UPSpiO9WZo8tWU
+         VXLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ccosb5OLlMLmZzgxt/IQ3pX0ynIyPqTno6b0V3kf4QY=;
-        b=QKJlog7IOpNFoAcyUtqqsr1P7BXztNNEgjdzZqyib/atp1OMF0xO9aKl9qJq4vsd5S
-         0l0FvPbAbJz+dUgFMcdClFASLgm8VWbcSFxgPwAZb9uWZBlXGgoiQN+VyPe3vOxiOrm3
-         8B4WRAqqaoXXDL0P7Vro47TCKQ5C7LoeMQBHfJsa5/9BOJw8XYxoiogIOHGMHymKqoIL
-         WRkFVTcsfz8uw+EpLlS5UEuJ08sSUSHd+0ZvMo6ZmxqKJxBvwRCpw/D1MecEPMeN6oFL
-         Y9ihZWpcxh992Y1bl2PGiMfkIWewt/9Dg0eW3ZNpgeANNPdG7VoO0GPQJgV+q5tjgVuA
-         +78Q==
-X-Gm-Message-State: AOAM533ZCVzO4ofDcIl9IVRo+OEIexOV6JSN/I3E5onYN922kyg3SVA7
-        X9j2ugC9lVU3FLPeYOqhZLR7Dw==
-X-Google-Smtp-Source: ABdhPJwNvTMsZhVhg8b9FrfRFyxjyOQegcTFZsO1MwPyhBNFwitqNOpsc85qd0SqXs/hSiiuG2mNFA==
-X-Received: by 2002:a2e:701a:0:b0:24f:a7d:2b2c with SMTP id l26-20020a2e701a000000b0024f0a7d2b2cmr5702849ljc.51.1650893512260;
-        Mon, 25 Apr 2022 06:31:52 -0700 (PDT)
-Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
-        by smtp.gmail.com with ESMTPSA id v7-20020a196107000000b0046d05202c61sm1414553lfb.65.2022.04.25.06.31.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 06:31:51 -0700 (PDT)
-From:   Linus Walleij <linus.walleij@linaro.org>
-To:     Johan Hovold <johan@kernel.org>, Rob Herring <robh+dt@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        devicetree@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [PATCH v3] dt-bindings: gnss: Rewrite Mediatek bindings in YAML
-Date:   Mon, 25 Apr 2022 15:29:47 +0200
-Message-Id: <20220425132947.1311171-1-linus.walleij@linaro.org>
-X-Mailer: git-send-email 2.35.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tnGDk2mXj8ducKZ6TjV0CCxMODc0uQNA4u/k6GAYohE=;
+        b=E95C2rFsiNNjvEkQ7tkFSgoV6h6hhBAGq8FEatsDtt/G67XrF7hcDpzTVJpEnRwEGF
+         vr2kHI+tLKETAwxZ3eMKtty3RMz5KirmfeJFxzio1RX0p3ZjGGNQBr6II79Mngv9eNN5
+         zRaFHo9Y8jeYR7hGYnncSI1HmX6iohvEtrTlZlIFk6vrT4EsPaKgPtE/x8A8+I11YY6b
+         1hyJC9lEscOK48ksXAfbijZAz7T1EviNTWb0NP2c5op2xE/1rvbeF88eF+iihAEugnyZ
+         LdIHnd/1ubjCxqQlixufdgdCrHVGJMk8SlosNq1ACqMWKjjHTMjIOGgYmX+yYB9q6M83
+         448Q==
+X-Gm-Message-State: AOAM533aD/MOaTPyG8S/ijgwsgl/yIordy9/n+DUNhTUELVFLy9Tjgiy
+        EJtspjWYefisM/gJyRgSgb6u4K7exDiEzrn1qWI/54eSWbc=
+X-Google-Smtp-Source: ABdhPJxT1xHvYnJnmKXomu4Hq7g2Z8f4tfldPU9/2l3zAc4G9If5Or8Dwfh4kiaoWtqonKY9HjM1w65uQiZFxTj56RY=
+X-Received: by 2002:a25:aa94:0:b0:648:62f2:ef4e with SMTP id
+ t20-20020a25aa94000000b0064862f2ef4emr4562504ybi.626.1650893598522; Mon, 25
+ Apr 2022 06:33:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220421091055.12d6465c@canb.auug.org.au> <CACRpkdaD1G9J+jTJH4oGrcF_dinMjBjHCGMJqRZh8FC0dy+Xfw@mail.gmail.com>
+ <bf90c37b-0184-845c-dd6a-c2f4a038b075@postmarketos.org>
+In-Reply-To: <bf90c37b-0184-845c-dd6a-c2f4a038b075@postmarketos.org>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Mon, 25 Apr 2022 15:33:06 +0200
+Message-ID: <CACRpkday2DXDNJJJ7srC5-Fj_d9iiqX-nqY9np1TnsBsOG6sCg@mail.gmail.com>
+Subject: Re: linux-next: Fixes tags need some work in the pinctrl tree
+To:     Caleb Connolly <kc@postmarketos.org>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This rewrites the Mediatek GNSS bindings in YAML.
+On Mon, Apr 25, 2022 at 2:27 PM Caleb Connolly <kc@postmarketos.org> wrote:
 
-Cc: devicetree@vger.kernel.org
-Cc: Krzysztof Kozlowski <krzk@kernel.org>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
-ChangeLog v2->v3:
-- Add the missed gnss-fix-gpios.
-- Move allOf to right before the properties.
-- Keep the description on timepulse-gpios because it documents
-  which pins are used on this chip.
-ChangeLog v1->v2:
-- New patch since Krzysztof pointed out there is really just
-  one more binding to convert, so why not.
----
- .../devicetree/bindings/gnss/mediatek.txt     | 35 -----------
- .../devicetree/bindings/gnss/mediatek.yaml    | 59 +++++++++++++++++++
- 2 files changed, 59 insertions(+), 35 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/gnss/mediatek.txt
- create mode 100644 Documentation/devicetree/bindings/gnss/mediatek.yaml
+> The patch shouldn't be backported to stable as it will introduce a bug if ported
+> without the second patch (and as above, I don't think this series should be
+> backported at all). Could you let me know how to get this dropped from backporting?
 
-diff --git a/Documentation/devicetree/bindings/gnss/mediatek.txt b/Documentation/devicetree/bindings/gnss/mediatek.txt
-deleted file mode 100644
-index 80cb802813c5..000000000000
---- a/Documentation/devicetree/bindings/gnss/mediatek.txt
-+++ /dev/null
-@@ -1,35 +0,0 @@
--Mediatek-based GNSS Receiver DT binding
--
--Mediatek chipsets are used in GNSS-receiver modules produced by several
--vendors and can use a UART interface.
--
--Please see Documentation/devicetree/bindings/gnss/gnss.txt for generic
--properties.
--
--Required properties:
--
--- compatible	: Must be
--
--			"globaltop,pa6h"
--
--- vcc-supply	: Main voltage regulator (pin name: VCC)
--
--Optional properties:
--
--- current-speed		: Default UART baud rate
--- gnss-fix-gpios	: GPIO used to determine device position fix state
--			  (pin name: FIX, 3D_FIX)
--- reset-gpios		: GPIO used to reset the device (pin name: RESET, NRESET)
--- timepulse-gpios	: Time pulse GPIO (pin name: PPS1, 1PPS)
--- vbackup-supply	: Backup voltage regulator (pin name: VBAT, VBACKUP)
--
--Example:
--
--serial@1234 {
--	compatible = "ns16550a";
--
--	gnss {
--		compatible = "globaltop,pa6h";
--		vcc-supply = <&vcc_3v3>;
--	};
--};
-diff --git a/Documentation/devicetree/bindings/gnss/mediatek.yaml b/Documentation/devicetree/bindings/gnss/mediatek.yaml
-new file mode 100644
-index 000000000000..45cf01b27700
---- /dev/null
-+++ b/Documentation/devicetree/bindings/gnss/mediatek.yaml
-@@ -0,0 +1,59 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/gnss/mediatek.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Mediatek GNSS Receiver Device Tree Bindings
-+
-+maintainers:
-+  - Johan Hovold <johan@kernel.org>
-+
-+description:
-+  Mediatek chipsets are used in GNSS-receiver modules produced by several
-+  vendors and can use a UART interface.
-+
-+allOf:
-+  - $ref: gnss-common.yaml#
-+
-+properties:
-+  compatible:
-+    const: globaltop,pa6h
-+
-+  vcc-supply:
-+    description:
-+      Main voltage regulator, pin name VCC.
-+
-+  reset-gpios:
-+    maxItems: 1
-+    description: An optional reset line, with names such as RESET or NRESET.
-+      If the line is active low it should be flagged with GPIO_ACTIVE_LOW.
-+
-+  timepulse-gpios:
-+    description: Comes with pin names such as PPS1 or 1PPS.
-+
-+  gnss-fix-gpios:
-+    maxItems: 1
-+    description: GPIO used to determine device position fix state, pin names
-+      FIX or 3D_FIX.
-+
-+  vbackup-supply:
-+    description:
-+      Regulator providing backup voltage, pin names such as VBAT or VBACKUP.
-+
-+required:
-+  - compatible
-+  - vcc-supply
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    serial {
-+        gnss {
-+            compatible = "globaltop,pa6h";
-+            vcc-supply = <&vcc_3v3>;
-+            reset-gpios = <&gpio 1 GPIO_ACTIVE_LOW>;
-+        };
-+    };
--- 
-2.35.1
+If Greg or Sasha etc propose the patch for stable (which will not happen
+automatically unless you explicitly add Cc: stable@vger.kernel.org)
+they send out a proposal "I will add this patch to stable", with CC to the
+author, and then you can say you don't want it backported.
 
+Many Fixes:-tagged patches do not get picked up for stable, it is not
+what the tag means, if you want things to be picked for stable, the
+rule is Cc: stable@, it's just that sometimes the stable maintainers
+(and an AI!) pick some Fixes: patches anyways.
+
+Yours,
+Linus Walleij
