@@ -2,81 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A8C9C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:21:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8FF4C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:21:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235109AbiDYWYm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 18:24:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37494 "EHLO
+        id S235654AbiDYWYr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 18:24:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343644AbiDYWCC (ORCPT
+        with ESMTP id S1343684AbiDYWLi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 18:02:02 -0400
-Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B727A3298E;
-        Mon, 25 Apr 2022 14:58:57 -0700 (PDT)
-Received: by mail-oi1-f174.google.com with SMTP id r85so18697902oie.7;
-        Mon, 25 Apr 2022 14:58:57 -0700 (PDT)
+        Mon, 25 Apr 2022 18:11:38 -0400
+Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF1291D33F;
+        Mon, 25 Apr 2022 15:08:32 -0700 (PDT)
+Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-e656032735so16313938fac.0;
+        Mon, 25 Apr 2022 15:08:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=giYEePQGwfyo/twGmZzP8uZHE1niv7Jue0jlfyNBG/w=;
-        b=iR9haEPnoDiiq0N/p9KzUVlr2hzsBKtv3XMA6Q3WlAR89IE/49doHEIKCuGo2GGf+d
-         207bnxSGrZx/k0YPDeTv/9X/6AdFEt6npbZ05dakhZ/d61sfqNcZbjRr6xuwqj93OghR
-         AhnV8lLKse8CyvFPfUZMF185GWAwnfZ/gOgr5I5CNioXiovwzY0pkA7ZRprrThgEdbpg
-         ujlPQHCsFkVm3Nq6lwF9nzgliXC68GNtS3GQuCHAQgWpPkOFBnrtyfo22wUfPMCTuhle
-         jA1N1AGlL2DHQGHltecG9YHQQMAyDsDcsY34DZe+2AVv+GRF4wkCt+s2/ls2mYmIMhYJ
-         nwHw==
-X-Gm-Message-State: AOAM5307F4V8fEX7CdIZRJlNB2y2GZxneO9w7HwgR+PAx54cM9Z1hg5o
-        xDWvoqwcG8Aqi6+k6ibtLA==
-X-Google-Smtp-Source: ABdhPJw07VATwV9Pi6FNS0BWGKvJTnXzmA3vvTfsUF3ThnLFDbsVteQpIwHVnR4kBKSYrwLDl8g+AA==
-X-Received: by 2002:aca:6c5:0:b0:325:5bce:bbc1 with SMTP id 188-20020aca06c5000000b003255bcebbc1mr84990oig.221.1650923937051;
-        Mon, 25 Apr 2022 14:58:57 -0700 (PDT)
+        bh=4Vl1OROUqlthzjOaEFjMsGx8YqO64AcME2u3EpueJzI=;
+        b=i9TuOkhlARCl9aQMcUo2cNwDgMZDh+roFOsuc9+UA7BQeZkh41lb1lBUtGC35vjgMW
+         FuRxctK2JgC9Pg85sJLT4FBqblKCSurU3VKs271n64sJlyWAonGOrAzWIYM2Nm+ZsgjY
+         6EiwHlGAmaRxE6gh9pnRQVIG43XEdCfm+CSF+0TXt4lfmVQLg75deWD7EH3YAivM1xr3
+         yN5GBlWk1Jk8CuNbV88/eIakMz88QXrvhXQ7s9xPoCLpnAVt64MLoXvnqpPyRWnykBg9
+         OUK5dJjH0+O9JLjNtx7HIY2ShzOWha13u/V0VlOmpayDouzOwmBErwugsfJWLxORflaj
+         75qQ==
+X-Gm-Message-State: AOAM5320+DfbHHmqYHfikhGkbkeJOfbPoGaP/T8qAoNlPLPWw4h3mU0E
+        SOhFyiX2S8BcTjWuMZaM5h2D2VD8zA==
+X-Google-Smtp-Source: ABdhPJyEkoJ3W+F7gZoppYO+zKCee+EKuyTwdZtAmqesCu0jqESilGtI7Ik+vQ0WiitU87F9sIdNGA==
+X-Received: by 2002:a05:6870:9596:b0:d6:d3ea:1d92 with SMTP id k22-20020a056870959600b000d6d3ea1d92mr8110457oao.6.1650924511817;
+        Mon, 25 Apr 2022 15:08:31 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id c25-20020a0568301af900b0060579b0abe2sm4225067otd.61.2022.04.25.14.58.56
+        by smtp.gmail.com with ESMTPSA id g1-20020a056870340100b000e686d1386bsm161602oah.5.2022.04.25.15.08.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 14:58:56 -0700 (PDT)
-Received: (nullmailer pid 367439 invoked by uid 1000);
-        Mon, 25 Apr 2022 21:58:55 -0000
-Date:   Mon, 25 Apr 2022 16:58:55 -0500
+        Mon, 25 Apr 2022 15:08:31 -0700 (PDT)
+Received: (nullmailer pid 383119 invoked by uid 1000);
+        Mon, 25 Apr 2022 22:08:30 -0000
+Date:   Mon, 25 Apr 2022 17:08:30 -0500
 From:   Rob Herring <robh@kernel.org>
-To:     Fabio Baltieri <fabiobaltieri@chromium.org>
-Cc:     Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        chrome-platform@lists.linux.dev, linux-pwm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 3/4] dt-bindings: update google,cros-ec-pwm
- documentation
-Message-ID: <YmcZn8mWQveT5HzT@robh.at.kernel.org>
-References: <20220420141556.681212-1-fabiobaltieri@chromium.org>
- <20220420141556.681212-4-fabiobaltieri@chromium.org>
+To:     Andrea Merello <andrea.merello@gmail.com>
+Cc:     jic23@kernel.org, mchehab+huawei@kernel.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, lars@metafoo.de,
+        andy.shevchenko@gmail.com, matt.ranostay@konsulko.com,
+        ardeleanalex@gmail.com, jacopo@jmondi.org,
+        Andrea Merello <andrea.merello@iit.it>
+Subject: Re: [v4 11/14] dt-bindings: iio: imu: add documentation for Bosch
+ BNO055 bindings
+Message-ID: <Ymcb3sODr0j6zFHF@robh.at.kernel.org>
+References: <20220415130005.85879-1-andrea.merello@gmail.com>
+ <20220415130005.85879-12-andrea.merello@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220420141556.681212-4-fabiobaltieri@chromium.org>
+In-Reply-To: <20220415130005.85879-12-andrea.merello@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 02:15:55PM +0000, Fabio Baltieri wrote:
-> Update google,cros-ec-pwm node documentation to mention the
-> google,cros-ec-pwm-type compatible.
+On Fri, Apr 15, 2022 at 03:00:02PM +0200, Andrea Merello wrote:
+> From: Andrea Merello <andrea.merello@iit.it>
 
-It would be good if the subject provided some clue what the update is. 
-Every change is an update. And all bindings are 'documentation' so 
-that can be dropped.
+For the subject:
+
+dt-bindings: iio/imu: Add Bosch BNO055
 
 > 
-> Signed-off-by: Fabio Baltieri <fabiobaltieri@chromium.org>
+> Introduce new documentation file for the Bosch BNO055 IMU
+> 
+> Signed-off-by: Andrea Merello <andrea.merello@iit.it>
 > ---
->  .../devicetree/bindings/pwm/google,cros-ec-pwm.yaml      | 9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
+>  .../bindings/iio/imu/bosch,bno055.yaml        | 59 +++++++++++++++++++
+>  1 file changed, 59 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/imu/bosch,bno055.yaml
 
-In any case,
+With the subject fixed:
 
 Reviewed-by: Rob Herring <robh@kernel.org>
-
