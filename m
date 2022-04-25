@@ -2,110 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6AE1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 20:14:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C035C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 20:15:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244552AbiDYUR1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 16:17:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39726 "EHLO
+        id S245156AbiDYUTC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 16:19:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242284AbiDYURX (ORCPT
+        with ESMTP id S242284AbiDYUTA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 16:17:23 -0400
-X-Greylist: delayed 516 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 25 Apr 2022 13:14:17 PDT
-Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [IPv6:2001:67c:2050:0:465::102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21D331240E2
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 13:14:16 -0700 (PDT)
-Received: from smtp202.mailbox.org (smtp202.mailbox.org [80.241.60.245])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4KnGGV3KQxz9sQq;
-        Mon, 25 Apr 2022 22:05:38 +0200 (CEST)
-Message-ID: <6c52dc89-015a-9c51-9568-778ccb8c2dd9@hauke-m.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hauke-m.de; s=MBO0001;
-        t=1650917136;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=38IMGApEWMDQRzOu9Up92LzBejF2/6NEUKrWMdbx4cI=;
-        b=EQNXJJULaE/lP/xYon/esS8BNihN8LpOs2J1cknYX2/AEY5M4BSrpqhcaXWtoEzj+KZQBf
-        Gf/ViTcF+7fnvHnKnIPc/kf5hO7JwwR60PNyzyE4tFppH4mSX4m/dJl9x/vZfE49OAnHG6
-        IOL4aMPW4gOdM54duSST9DhK/n7JvxsvcA7LcVdhPze2bxKvFhw6lVlqlwTnDDwcl0ho/h
-        pKnkgc+uiaRKKKSY5Pl05lKZekQGRNf4Rcy12iHO9y5OqExeOdK+vBWHb+R21THynA8xGV
-        SROjM86sw94+neuYkknMylIz7+XGD/NMAL8qalPe38ipPW+pJFNfduUyzfxf8g==
-Date:   Mon, 25 Apr 2022 22:05:32 +0200
+        Mon, 25 Apr 2022 16:19:00 -0400
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 717A320BEF
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 13:15:55 -0700 (PDT)
+Received: by mail-yb1-xb2b.google.com with SMTP id y2so10240305ybi.7
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 13:15:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zNNCkvh8dcc6hUGxKVprGL47ZUmLyygiOa73jLPnlLg=;
+        b=jLNnkzTL5R0lZLMYhpEDo1Q7NZUxdIfaMwzaJzpsZMqg0QgMjX0bok4gRVUsWAIwYS
+         bd34/nPLwF6v4t16ZR4x2DTuFrrY8csWIufWjB19v6bouk3Tth9siRfS2EOds71gT42O
+         rxYUga+YLd7iofncKdbSlJaBSZEVnsSyph5L4/6wqA8qHQf8CcF/aTg812wgF5HN5IZ/
+         Q6W61gOIAyv3FjtLweV+AufRF1Cdtv3JGzrtCbWd5U98jn8bbfx1iLqkHTvnBxdcyKb4
+         fQ12X7EgHyuUHPLw0qlIRXwAhZqJ038oK0CHIzzHrjHfvObXgHuZyKH2oxn8Labud2Ji
+         Ga5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zNNCkvh8dcc6hUGxKVprGL47ZUmLyygiOa73jLPnlLg=;
+        b=0am4PW9YXkSkkEDG4RpRvk8KxWrH1iay7PTyjNlC4jymF6tDO4O11gbR+z7t69QMuY
+         908g+/GKGdn07NpnHGmSkij7P3qmstqezVNAyhHbkrixsMY9bORJmNLPFooC+RWOuNHn
+         Rigrx4jfKJjPIMx8tuvS2tJHjeIBi6YqAEL3eMVegV2SxEwWPl4QfX/4HSsAYEWQ7ijJ
+         2tvcmFXgXJR3+Xwhy/2Otdzp1819ohdUhmayqZqyPZOcCieWtlMwRehrZ2WDhA1zGA3y
+         XZnMOlZTSEtRjb4ZinA9MFPWsowcaneCWfc996+IrrsFQzc6I0RZXk77cPIber9TN5So
+         HI+g==
+X-Gm-Message-State: AOAM5300+5BBkAqAkGmpgySpenR8F0OhlNkD7Lyv7Ttd/jMHs/l+XeGd
+        UZtSok2V0SiLBpTufiL/E4/qAm4oApk4si49zN5m+w==
+X-Google-Smtp-Source: ABdhPJxTefhTsWUQiB1iBqYOVZdlEBrHq9xcBRO/3+BEyVu/xCOhggCNj9IiQFyaIzKUyZjw0RZLzJFEwz/8qbCmQAw=
+X-Received: by 2002:a25:a12a:0:b0:644:e94e:5844 with SMTP id
+ z39-20020a25a12a000000b00644e94e5844mr17430478ybh.492.1650917754756; Mon, 25
+ Apr 2022 13:15:54 -0700 (PDT)
 MIME-Version: 1.0
-Subject: Re: [PATCH net] net: dsa: lantiq_gswip: Don't set
- GSWIP_MII_CFG_RMII_CLK
-Content-Language: en-US
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, stable@vger.kernel.org,
-        Jan Hoffmann <jan@3e8.eu>
-References: <20220425152027.2220750-1-martin.blumenstingl@googlemail.com>
-From:   Hauke Mehrtens <hauke@hauke-m.de>
-In-Reply-To: <20220425152027.2220750-1-martin.blumenstingl@googlemail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220423221623.1074556-1-huobean@gmail.com> <20220423221623.1074556-3-huobean@gmail.com>
+ <CACRpkdahf5QhUJ-vG6Qs7i0VYbSS02zBrQOtN8EVFu9SyHZA1Q@mail.gmail.com> <89845bec6c827d7012cda916ee50b16c8eb08755.camel@gmail.com>
+In-Reply-To: <89845bec6c827d7012cda916ee50b16c8eb08755.camel@gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Mon, 25 Apr 2022 22:15:43 +0200
+Message-ID: <CACRpkdbM_qhwmFhwJNx0J_r2jUHoSsE6B=bKhGwKG=dXtX7uEg@mail.gmail.com>
+Subject: Re: [PATCH v1 2/2] mmc: core: Allows to override the timeout value
+ for ioctl() path
+To:     Bean Huo <huobean@gmail.com>
+Cc:     ulf.hansson@linaro.org, adrian.hunter@intel.com,
+        linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        beanhuo@micron.com, stable <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/25/22 17:20, Martin Blumenstingl wrote:
-> Commit 4b5923249b8fa4 ("net: dsa: lantiq_gswip: Configure all remaining
-> GSWIP_MII_CFG bits") added all known bits in the GSWIP_MII_CFGp
-> register. It helped bring this register into a well-defined state so the
-> driver has to rely less on the bootloader to do things right.
-> Unfortunately it also sets the GSWIP_MII_CFG_RMII_CLK bit without any
-> possibility to configure it. Upon further testing it turns out that all
-> boards which are supported by the GSWIP driver in OpenWrt which use an
-> RMII PHY have a dedicated oscillator on the board which provides the
-> 50MHz RMII reference clock.
-> 
-> Don't set the GSWIP_MII_CFG_RMII_CLK bit (but keep the code which always
-> clears it) to fix support for the Fritz!Box 7362 SL in OpenWrt. This is
-> a board with two Atheros AR8030 RMII PHYs. With the "RMII clock" bit set
-> the MAC also generates the RMII reference clock whose signal then
-> conflicts with the signal from the oscillator on the board. This results
-> in a constant cycle of the PHY detecting link up/down (and as a result
-> of that: the two ports using the AR8030 PHYs are not working).
-> 
-> At the time of writing this patch there's no known board where the MAC
-> (GSWIP) has to generate the RMII reference clock. If needed this can be
-> implemented in future by providing a device-tree flag so the
-> GSWIP_MII_CFG_RMII_CLK bit can be toggled per port.
-> 
-> Fixes: 4b5923249b8fa4 ("net: dsa: lantiq_gswip: Configure all remaining GSWIP_MII_CFG bits")
-> Cc: stable@vger.kernel.org
-> Tested-by: Jan Hoffmann <jan@3e8.eu>
-> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+On Mon, Apr 25, 2022 at 10:02 PM Bean Huo <huobean@gmail.com> wrote:
 
-Acked-by: Hauke Mehrtens <hauke@hauke-m.de>
+> I think the current solution is the most flexible way, if the customer
+> wants to override the kernel default timeout, they know how to initiate
+> the correct timeout value in ioctl() based on their specific
+> hardware/software system. I don't know how to convince every maintainer
+> and reviewer if we don't want to give this permission or want to
+> maintain a unified timeout value in the kernel driver. Given that we
+> already have eMMC ioctl() support, and we've opened the door to allow
+> users to specify specific cmd_timeout_ms in struct mmc_ioc_cmd{},
+> please consider my change.
 
-Looks like Linux does not have a standard device tree flag to indicate 
-that MAC should provide the RMII clock. Deactivating it is probably a 
-good solution.
+The patch is fine, I'm just saying we should put another patch on
+top that defines a RPMB default timeout and set it to something
+high, such as a minute.
 
-> ---
->   drivers/net/dsa/lantiq_gswip.c | 3 ---
->   1 file changed, 3 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
-> index a416240d001b..12c15da55664 100644
-> --- a/drivers/net/dsa/lantiq_gswip.c
-> +++ b/drivers/net/dsa/lantiq_gswip.c
-> @@ -1681,9 +1681,6 @@ static void gswip_phylink_mac_config(struct dsa_switch *ds, int port,
->   		break;
->   	case PHY_INTERFACE_MODE_RMII:
->   		miicfg |= GSWIP_MII_CFG_MODE_RMIIM;
-> -
-> -		/* Configure the RMII clock as output: */
-> -		miicfg |= GSWIP_MII_CFG_RMII_CLK;
->   		break;
->   	case PHY_INTERFACE_MODE_RGMII:
->   	case PHY_INTERFACE_MODE_RGMII_ID:
-
+Yours,
+Linus Walleij
