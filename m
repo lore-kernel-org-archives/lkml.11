@@ -2,202 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A69BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:25:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 164A3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:25:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243459AbiDYQ2V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 12:28:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37638 "EHLO
+        id S243550AbiDYQ2F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 12:28:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243473AbiDYQ1i (ORCPT
+        with ESMTP id S243380AbiDYQ1S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 12:27:38 -0400
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EFF312010E;
-        Mon, 25 Apr 2022 09:24:34 -0700 (PDT)
-Received: from toolbox.int.toradex.com ([81.221.85.15]) by mrelay.perfora.net
- (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id 0MhBdX-1nW2xY1deD-00MIqv;
- Mon, 25 Apr 2022 18:24:21 +0200
-From:   Marcel Ziswiler <marcel@ziswiler.com>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     Philippe Schenker <philippe.schenker@toradex.com>,
-        Denys Drozdov <denys.drozdov@toradex.com>,
-        Andrejs Cainikovs <andrejs.cainikovs@toradex.com>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 05/14] ARM: dts: imx6ull-colibri: update usdhc1 pixmux and signaling
-Date:   Mon, 25 Apr 2022 18:23:47 +0200
-Message-Id: <20220425162356.176665-6-marcel@ziswiler.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220425162356.176665-1-marcel@ziswiler.com>
-References: <20220425162356.176665-1-marcel@ziswiler.com>
+        Mon, 25 Apr 2022 12:27:18 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E54711F961;
+        Mon, 25 Apr 2022 09:24:13 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id y21so12184591edo.2;
+        Mon, 25 Apr 2022 09:24:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=+Zl4c5jLaRcNs7un+USLcaMW4MzMPWj/KhoSlyRdffo=;
+        b=DM1uNsyJDZ+YgMjVkHr9YjLJab0jghTM741FuQr/9hLhPA6kee/3ke59nLooPT2INj
+         0loV0sdVLbwcaGE7MLXtL64v/l5Kxem/2ahz2vGfyBbmDg0i2FYBfRltqm69yVv0qhro
+         98UZqEWGfQDVfdREl1TQT9ly6FZ0um5jkzcuI8oflWfmc1aYQt8RGhDLuzre8a4Lmibh
+         Ytr6M1z2WQYLWG3Bum+WGjcHeG3XBNAmLVcnvJDo9VyTLghHo0U/wU61dxkqDAPkhqEG
+         2TEi0WF2J5pcD2TFal2xICG7VKHp5LwoVcTa7BaZB12sYIMcWvnDJ7sMm+wYrVzOYJsz
+         KqSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=+Zl4c5jLaRcNs7un+USLcaMW4MzMPWj/KhoSlyRdffo=;
+        b=5rjfUGivumFkBn5UX+s8zhpL6wSO53ISC+8x8D+s8cpIs74HkHpSn0Hvx7lkddb4hG
+         +ZpoZJd3yyR4PA7T0HsLzkl8XtyD7v7C/9beDAbxChnq55ajLaxMml1lHu889/8M3ehO
+         nkT784VMSbjCllKXSBBKT4XoiY2J0quV3rB6a+EBjq9eL5X4ZEkPdTTgLiPWWnwqbULf
+         WdomEtzoz5AurRwpr2kuGBmMj+wV3PVnp6irAUTvNvNhLJsLk6v14zJp34+hRLWJy/d9
+         QamCtkqQvTZY/qYFBxfFUw68m1Yj7DkKGPBvT7rRTDjJJgbT10Hsp/6KBMlhFDvKG/Hr
+         qi9A==
+X-Gm-Message-State: AOAM532Q/I8vyAtScXOgvWBjuzsSKFdKzBuyNxRKBZcaMdYTVgFlJJrV
+        oaEtiPx3+RkngPdCVCjbkCE=
+X-Google-Smtp-Source: ABdhPJw0kQrnedcs+J68OcUUWPs+98m3RHnEnwndKP9hsiRpV/ZQk/hECQHKL1DmrKownzsXBQ1Ssg==
+X-Received: by 2002:a05:6402:3486:b0:425:f2c6:9695 with SMTP id v6-20020a056402348600b00425f2c69695mr2903431edc.2.1650903852053;
+        Mon, 25 Apr 2022 09:24:12 -0700 (PDT)
+Received: from localhost.localdomain (host-79-50-86-254.retail.telecomitalia.it. [79.50.86.254])
+        by smtp.gmail.com with ESMTPSA id s12-20020a1709062ecc00b006e8558c9a5csm3784122eji.94.2022.04.25.09.24.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Apr 2022 09:24:10 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Ira Weiny <ira.weiny@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        linux-doc@vger.kernel.org, outreachy@lists.linux.dev
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: [PATCH v2 3/4] Documentation/vm: Move section from highmem.rst to highmem.h
+Date:   Mon, 25 Apr 2022 18:23:59 +0200
+Message-Id: <20220425162400.11334-4-fmdefrancesco@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220425162400.11334-1-fmdefrancesco@gmail.com>
+References: <20220425162400.11334-1-fmdefrancesco@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:jirVTnUYpdwujfn+5jPySQnJyzKNTOO5efbk0ZJLpEP6pqohgqi
- sHYfDFjcDoTJA1u4hUAYuVmoUVPn57fUKTHzXhHhvvSg29eyupyU/iNKorpjhdX1bf64h7j
- CvbmNw1fVgJzENnAmzhgsScpU9+M1J/ful4rmSeC266QKJ8mOtJ9F5pRn1huddCv6JtYETO
- 52g8VxYrqRMEJNztJawqA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:jjpJSo0kxAw=:t4G94iIIJlDsY6gGkRrKYU
- fv6j2xmquzS7UANO8Awelm41xEicz+jG2/1fLyhG4/jDNqHGmpjSasMas0ry/AMm6MD9xtf47
- eAVRSkG3FxVPwE9s+0FciWSOZap1dbcwKOlhN1/Tg8+IQP17XmT4RBW3X177gUcxupdBZ7dCH
- w8DjMSDVKgZLVsOaJmWLJrl7cEVW2LpZ1qQIrnRz4gntmbyfdmcBr3Tu6vT5nUJNom+jPsL3S
- XnT7Bg3d2Yy9bYtKPCMvLGNqVKb0Ua7NfWvnvr/cFTh0wFi7YEYyCdkNDIzUTYbbcloq4BFSS
- tdkiDcPPkvJBVrdtOLcVBf2hvkh7/zklSHKdcFt+HNyzkLU2+Tc1aG/DD8H2jqUgpuUsSNbeU
- ekF8S4yW+h40wgjMrcf6UQN5ZoosYRiF/MTpkcNt81MSpJ4XiKU4AQ0fjhStX/9xFgW1haFM4
- DFQoEEh7h/Bd9vDUIvZHcFHWL+cmvXn3qxlfjo2rWJb0AVERQaNgBqeZjRVTWI/bmjAuaT9bk
- VhwjbWJ9ovnavuyG+ZJF5lr3FDLCiFA8ihafzYrHOZYd/nT9KDXSvunjC87STDzByOE0UMezD
- j3oS/ena42PNmDiQZVEtjsLbfWA8d5/lrZ6ubw4ubT5DZ78Kfrddjp4N3VbCuPD8NVxswYHAS
- e9wwAKHqEGmq9S7a25MmVy6RDIql37CmWswhKrS7QcoylDEpMU+iVoY3StV8517FGY/fOvTr3
- KWhPHIBNRXLxtZTY
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Philippe Schenker <philippe.schenker@toradex.com>
+The use of kmap_atomic() is new code is being deprecated in favor of
+kmap_local_page(). For this reason the "Using kmap_atomic" section in
+highmem.rst is obsolete and unnecessary, but it can still help developers
+if it were moved to kdocs in highmem.h.
 
-Due to many carrier boards pulling the usdhc1 signals up to 3.3 volt we
-need to disable 1.8 volt signaling. Adding the no-1-8-v property
-basically disables UHS-I modes by default.
+Therefore, move the relevant parts of this section from highmem.rst and
+merge them with the kdocs in highmem.h.
 
-Also pull-up the command and data lines to the +V3.3_1.8_SD rail and
-set them to the 200 MHz speed grade (e.g. pinmux bits 7-6: meaning 11
-SPEED_3_max_200MHz).
-
-Explicitly specify a bus-width of <4> in the module-level device tree
-include file and drop the no-1-8-v property from the carrier boards
-device trees.
-
-Signed-off-by: Philippe Schenker <philippe.schenker@toradex.com>
-Signed-off-by: Denys Drozdov <denys.drozdov@toradex.com>
-Signed-off-by: Andrejs Cainikovs <andrejs.cainikovs@toradex.com>
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Matthew Wilcox <willy@infradead.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Suggested-by: Ira Weiny <ira.weiny@intel.com>
+Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
 ---
+ Documentation/vm/highmem.rst | 35 -----------------------------------
+ include/linux/highmem.h      | 31 +++++++++++++++++++++++++++++++
+ 2 files changed, 31 insertions(+), 35 deletions(-)
 
-(no changes since v1)
-
- .../arm/boot/dts/imx6ull-colibri-eval-v3.dtsi | 14 --------
- arch/arm/boot/dts/imx6ull-colibri.dtsi        | 36 ++++++++++++-------
- 2 files changed, 24 insertions(+), 26 deletions(-)
-
-diff --git a/arch/arm/boot/dts/imx6ull-colibri-eval-v3.dtsi b/arch/arm/boot/dts/imx6ull-colibri-eval-v3.dtsi
-index a78849fd2afa..ea086b305d22 100644
---- a/arch/arm/boot/dts/imx6ull-colibri-eval-v3.dtsi
-+++ b/arch/arm/boot/dts/imx6ull-colibri-eval-v3.dtsi
-@@ -159,20 +159,6 @@ &usbotg2 {
- };
+diff --git a/Documentation/vm/highmem.rst b/Documentation/vm/highmem.rst
+index ccff08a8211d..e05bf5524174 100644
+--- a/Documentation/vm/highmem.rst
++++ b/Documentation/vm/highmem.rst
+@@ -72,41 +72,6 @@ The kernel contains several ways of creating temporary mappings:
+   It may be assumed that k[un]map_atomic() won't fail.
  
- &usdhc1 {
--	pinctrl-names = "default", "state_100mhz", "state_200mhz", "sleep";
--	pinctrl-0 = <&pinctrl_usdhc1 &pinctrl_snvs_usdhc1_cd>;
--	pinctrl-1 = <&pinctrl_usdhc1_100mhz &pinctrl_snvs_usdhc1_cd>;
--	pinctrl-2 = <&pinctrl_usdhc1_200mhz &pinctrl_snvs_usdhc1_cd>;
--	pinctrl-3 = <&pinctrl_usdhc1 &pinctrl_snvs_usdhc1_sleep_cd>;
--	cd-gpios = <&gpio5 0 GPIO_ACTIVE_LOW>;
--	disable-wp;
--	wakeup-source;
--	keep-power-in-suspend;
- 	vmmc-supply = <&reg_3v3>;
--	vqmmc-supply = <&reg_sd1_vmmc>;
--	sd-uhs-sdr12;
--	sd-uhs-sdr25;
--	sd-uhs-sdr50;
--	sd-uhs-sdr104;
- 	status = "okay";
- };
-diff --git a/arch/arm/boot/dts/imx6ull-colibri.dtsi b/arch/arm/boot/dts/imx6ull-colibri.dtsi
-index 8b5cbe9132a2..bd8736d90cbb 100644
---- a/arch/arm/boot/dts/imx6ull-colibri.dtsi
-+++ b/arch/arm/boot/dts/imx6ull-colibri.dtsi
-@@ -35,7 +35,7 @@ reg_module_3v3_avdd: regulator-module-3v3-avdd {
- 		regulator-max-microvolt = <3300000>;
- 	};
  
--	reg_sd1_vmmc: regulator-sd1-vmmc {
-+	reg_sd1_vqmmc: regulator-sd1-vqmmc {
- 		compatible = "regulator-gpio";
- 		gpios = <&gpio5 9 GPIO_ACTIVE_HIGH>;
- 		pinctrl-names = "default";
-@@ -232,9 +232,21 @@ &usbotg2 {
- };
+-Using kmap_atomic
+-=================
+-
+-When and where to use kmap_atomic() is straightforward.  It is used when code
+-wants to access the contents of a page that might be allocated from high memory
+-(see __GFP_HIGHMEM), for example a page in the pagecache.  The API has two
+-functions, and they can be used in a manner similar to the following::
+-
+-	/* Find the page of interest. */
+-	struct page *page = find_get_page(mapping, offset);
+-
+-	/* Gain access to the contents of that page. */
+-	void *vaddr = kmap_atomic(page);
+-
+-	/* Do something to the contents of that page. */
+-	memset(vaddr, 0, PAGE_SIZE);
+-
+-	/* Unmap that page. */
+-	kunmap_atomic(vaddr);
+-
+-Note that the kunmap_atomic() call takes the result of the kmap_atomic() call
+-not the argument.
+-
+-If you need to map two pages because you want to copy from one page to
+-another you need to keep the kmap_atomic calls strictly nested, like::
+-
+-	vaddr1 = kmap_atomic(page1);
+-	vaddr2 = kmap_atomic(page2);
+-
+-	memcpy(vaddr1, vaddr2, PAGE_SIZE);
+-
+-	kunmap_atomic(vaddr2);
+-	kunmap_atomic(vaddr1);
+-
+-
+ Cost of Temporary Mappings
+ ==========================
  
- &usdhc1 {
-+	pinctrl-names = "default", "state_100mhz", "state_200mhz", "sleep";
-+	pinctrl-0 = <&pinctrl_usdhc1 &pinctrl_snvs_usdhc1_cd>;
-+	pinctrl-1 = <&pinctrl_usdhc1_100mhz &pinctrl_snvs_usdhc1_cd>;
-+	pinctrl-2 = <&pinctrl_usdhc1_200mhz &pinctrl_snvs_usdhc1_cd>;
-+	pinctrl-3 = <&pinctrl_usdhc1 &pinctrl_snvs_usdhc1_sleep_cd>;
- 	assigned-clocks = <&clks IMX6UL_CLK_USDHC1_SEL>, <&clks IMX6UL_CLK_USDHC1>;
- 	assigned-clock-parents = <&clks IMX6UL_CLK_PLL2_PFD2>;
- 	assigned-clock-rates = <0>, <198000000>;
-+	bus-width = <4>;
-+	cd-gpios = <&gpio5 0 GPIO_ACTIVE_LOW>;
-+	disable-wp;
-+	keep-power-in-suspend;
-+	no-1-8-v;
-+	vqmmc-supply = <&reg_sd1_vqmmc>;
-+	wakeup-source;
- };
+diff --git a/include/linux/highmem.h b/include/linux/highmem.h
+index 3456dc1d38db..6b2d59e025c5 100644
+--- a/include/linux/highmem.h
++++ b/include/linux/highmem.h
+@@ -142,6 +142,37 @@ static inline void *kmap_local_folio(struct folio *folio, size_t offset);
+  * and preemption.
+  *
+  * Do not use in new code. Use kmap_local_page() instead.
++ *
++ * It is used in atomic context when code wants to access the contents of a
++ * page that might be allocated from high memory (see __GFP_HIGHMEM), for
++ * example a page in the pagecache.  The API has two functions, and they
++ * can be used in a manner similar to the following:
++ *
++ * -- Find the page of interest. --
++ * struct page *page = find_get_page(mapping, offset);
++ *
++ * -- Gain access to the contents of that page. --
++ * void *vaddr = kmap_atomic(page);
++ *
++ * -- Do something to the contents of that page. --
++ * memset(vaddr, 0, PAGE_SIZE);
++ *
++ * -- Unmap that page. --
++ * kunmap_atomic(vaddr);
++ *
++ * Note that the kunmap_atomic() call takes the result of the kmap_atomic()
++ * call, not the argument.
++ *
++ * If you need to map two pages because you want to copy from one page to
++ * another you need to keep the kmap_atomic calls strictly nested, like:
++ *
++ * vaddr1 = kmap_atomic(page1);
++ * vaddr2 = kmap_atomic(page2);
++ *
++ * memcpy(vaddr1, vaddr2, PAGE_SIZE);
++ *
++ * kunmap_atomic(vaddr2);
++ * kunmap_atomic(vaddr1);
+  */
+ static inline void *kmap_atomic(struct page *page);
  
- &wdog1 {
-@@ -550,8 +562,8 @@ MX6UL_PAD_GPIO1_IO02__GPIO1_IO02	0x10b0 /* SODIMM 129 */
- 
- 	pinctrl_usdhc1: usdhc1-grp {
- 		fsl,pins = <
--			MX6UL_PAD_SD1_CLK__USDHC1_CLK		0x17059 /* SODIMM 47 */
--			MX6UL_PAD_SD1_CMD__USDHC1_CMD		0x10059 /* SODIMM 190 */
-+			MX6UL_PAD_SD1_CLK__USDHC1_CLK		0x10059 /* SODIMM 47 */
-+			MX6UL_PAD_SD1_CMD__USDHC1_CMD		0x17059 /* SODIMM 190 */
- 			MX6UL_PAD_SD1_DATA0__USDHC1_DATA0	0x17059 /* SODIMM 192 */
- 			MX6UL_PAD_SD1_DATA1__USDHC1_DATA1	0x17059 /* SODIMM 49 */
- 			MX6UL_PAD_SD1_DATA2__USDHC1_DATA2	0x17059 /* SODIMM 51 */
-@@ -561,8 +573,8 @@ MX6UL_PAD_SD1_DATA3__USDHC1_DATA3	0x17059 /* SODIMM 53 */
- 
- 	pinctrl_usdhc1_100mhz: usdhc1-100mhz-grp {
- 		fsl,pins = <
--			MX6UL_PAD_SD1_CLK__USDHC1_CLK		0x170b9
--			MX6UL_PAD_SD1_CMD__USDHC1_CMD		0x100b9
-+			MX6UL_PAD_SD1_CLK__USDHC1_CLK		0x100b9
-+			MX6UL_PAD_SD1_CMD__USDHC1_CMD		0x170b9
- 			MX6UL_PAD_SD1_DATA0__USDHC1_DATA0	0x170b9
- 			MX6UL_PAD_SD1_DATA1__USDHC1_DATA1	0x170b9
- 			MX6UL_PAD_SD1_DATA2__USDHC1_DATA2	0x170b9
-@@ -572,12 +584,12 @@ MX6UL_PAD_SD1_DATA3__USDHC1_DATA3	0x170b9
- 
- 	pinctrl_usdhc1_200mhz: usdhc1-200mhz-grp {
- 		fsl,pins = <
--			MX6UL_PAD_SD1_CLK__USDHC1_CLK		0x170f9
--			MX6UL_PAD_SD1_CMD__USDHC1_CMD		0x100f9
--			MX6UL_PAD_SD1_DATA0__USDHC1_DATA0	0x170b9
--			MX6UL_PAD_SD1_DATA1__USDHC1_DATA1	0x170b9
--			MX6UL_PAD_SD1_DATA2__USDHC1_DATA2	0x170b9
--			MX6UL_PAD_SD1_DATA3__USDHC1_DATA3	0x170b9
-+			MX6UL_PAD_SD1_CLK__USDHC1_CLK		0x100f9
-+			MX6UL_PAD_SD1_CMD__USDHC1_CMD		0x170f9
-+			MX6UL_PAD_SD1_DATA0__USDHC1_DATA0	0x170f9
-+			MX6UL_PAD_SD1_DATA1__USDHC1_DATA1	0x170f9
-+			MX6UL_PAD_SD1_DATA2__USDHC1_DATA2	0x170f9
-+			MX6UL_PAD_SD1_DATA3__USDHC1_DATA3	0x170f9
- 		>;
- 	};
- 
-@@ -588,7 +600,7 @@ MX6UL_PAD_CSI_DATA01__USDHC2_DATA1	0x17069
- 			MX6UL_PAD_CSI_DATA02__USDHC2_DATA2	0x17069
- 			MX6UL_PAD_CSI_DATA03__USDHC2_DATA3	0x17069
- 			MX6UL_PAD_CSI_HSYNC__USDHC2_CMD		0x17069
--			MX6UL_PAD_CSI_VSYNC__USDHC2_CLK		0x17069
-+			MX6UL_PAD_CSI_VSYNC__USDHC2_CLK		0x10069
- 
- 			MX6UL_PAD_GPIO1_IO03__OSC32K_32K_OUT	0x10
- 		>;
 -- 
-2.35.1
+2.34.1
 
