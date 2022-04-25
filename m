@@ -2,152 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAE60C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 13:27:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DBA3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 13:28:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242038AbiDYNa4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 09:30:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40756 "EHLO
+        id S231530AbiDYNbE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 09:31:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238432AbiDYNaL (ORCPT
+        with ESMTP id S242010AbiDYNaT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 09:30:11 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07D0940928
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 06:27:03 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kn5QG2w2vzhYnQ;
-        Mon, 25 Apr 2022 21:26:46 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 25 Apr
- 2022 21:27:01 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>, <mike.kravetz@oracle.com>,
-        <naoya.horiguchi@nec.com>
-CC:     <ying.huang@intel.com>, <hch@lst.de>, <dhowells@redhat.com>,
-        <cl@linux.com>, <david@redhat.com>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH v2 4/4] mm/migration: fix potential pte_unmap on an not mapped pte
-Date:   Mon, 25 Apr 2022 21:27:23 +0800
-Message-ID: <20220425132723.34824-5-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20220425132723.34824-1-linmiaohe@huawei.com>
-References: <20220425132723.34824-1-linmiaohe@huawei.com>
+        Mon, 25 Apr 2022 09:30:19 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B17D04091E
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 06:27:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=H7R9p0jqKi7IyAfu9QDTZpmTUdknj0kaCCRV1aoBUQk=; b=hf1suSMghz2ceMZPIZYlFREg21
+        DyAubvSopa9rdwlzusFAfK1XFLaHcgnbfLL5klVqhUEq+S5TSEYikXChvvwGMmG2wQNiXjbiUoO0X
+        TH1YgHxX3+UBU6m79HgHi4tzAXHToH9njB0IeZeU997ZydzYx0EUEodScuxmfGqjKzNcrnrBnSFza
+        dyiCroLwfiwNLQ5tG1Z/D4KTxbMN0b5TPCdr2yGr2kO5AhZrjTrv4SQAA6BnDzjXhD3RO+T/E5Vw8
+        lwk460VchNXCm6R+0+GhLFcQtpoZKC+WPcn+vCM8H5mE7UeLUrPK2qgHM8b6ElVMXrdLTPMpodEVy
+        f4ldO+FQ==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1niyk2-008YA6-3M; Mon, 25 Apr 2022 13:27:02 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 50130980C1C; Mon, 25 Apr 2022 15:27:00 +0200 (CEST)
+Date:   Mon, 25 Apr 2022 15:27:00 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Christoph Lameter <cl@gentwo.de>
+Cc:     Aaron Tomlin <atomlin@redhat.com>, frederic@kernel.org,
+        mtosatti@redhat.com, tglx@linutronix.de, mingo@kernel.org,
+        pauld@redhat.com, neelx@redhat.com, oleksandr@natalenko.name,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [RFC PATCH v3] tick/sched: Ensure quiet_vmstat() is called when
+ the idle tick was stopped too
+Message-ID: <20220425132700.GK2731@worktop.programming.kicks-ass.net>
+References: <20220422193647.3808657-1-atomlin@redhat.com>
+ <alpine.DEB.2.22.394.2204250919400.2367@gentwo.de>
+ <20220425113909.u3smtztp66svlw4o@ava.usersys.com>
+ <alpine.DEB.2.22.394.2204251406370.13839@gentwo.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.22.394.2204251406370.13839@gentwo.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-__migration_entry_wait and migration_entry_wait_on_locked assume pte is
-always mapped from caller. But this is not the case when it's called from
-migration_entry_wait_huge and follow_huge_pmd. Add a hugetlbfs variant that
-calls hugetlb_migration_entry_wait(ptep == NULL) to fix this issue.
+On Mon, Apr 25, 2022 at 02:09:06PM +0200, Christoph Lameter wrote:
+> On Mon, 25 Apr 2022, Aaron Tomlin wrote:
+> 
+> > Yes, in the context of nohz, this patch should ensure it, if required, when
+> > the idle tick is to be stopped.
+> 
+> What I said was that it is generally useful. Even in the non NOHZ case.
+> 
+> Folding the vmstat diffs *always* when entering idle prevents unnecessary
+> wakeups and processing in the future and also provides more accurate
+> counters for the VM allowing better decision to be made on reclaim.
 
-Fixes: 30dad30922cc ("mm: migration: add migrate_entry_wait_huge()")
-Suggested-by: David Hildenbrand <david@redhat.com>
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
----
- include/linux/swapops.h | 12 ++++++++----
- mm/hugetlb.c            |  4 ++--
- mm/migrate.c            | 23 +++++++++++++++++++----
- 3 files changed, 29 insertions(+), 10 deletions(-)
-
-diff --git a/include/linux/swapops.h b/include/linux/swapops.h
-index 30cded849ee4..862e5a2053b1 100644
---- a/include/linux/swapops.h
-+++ b/include/linux/swapops.h
-@@ -244,8 +244,10 @@ extern void __migration_entry_wait(struct mm_struct *mm, pte_t *ptep,
- 					spinlock_t *ptl);
- extern void migration_entry_wait(struct mm_struct *mm, pmd_t *pmd,
- 					unsigned long address);
--extern void migration_entry_wait_huge(struct vm_area_struct *vma,
--		struct mm_struct *mm, pte_t *pte);
-+#ifdef CONFIG_HUGETLB_PAGE
-+extern void __migration_entry_wait_huge(pte_t *ptep, spinlock_t *ptl);
-+extern void migration_entry_wait_huge(struct vm_area_struct *vma, pte_t *pte);
-+#endif
- #else
- static inline swp_entry_t make_readable_migration_entry(pgoff_t offset)
- {
-@@ -271,8 +273,10 @@ static inline void __migration_entry_wait(struct mm_struct *mm, pte_t *ptep,
- 					spinlock_t *ptl) { }
- static inline void migration_entry_wait(struct mm_struct *mm, pmd_t *pmd,
- 					 unsigned long address) { }
--static inline void migration_entry_wait_huge(struct vm_area_struct *vma,
--		struct mm_struct *mm, pte_t *pte) { }
-+#ifdef CONFIG_HUGETLB_PAGE
-+static inline void __migration_entry_wait_huge(pte_t *ptep, spinlock_t *ptl) { }
-+static inline void migration_entry_wait_huge(struct vm_area_struct *vma, pte_t *pte) { }
-+#endif
- static inline int is_writable_migration_entry(swp_entry_t entry)
- {
- 	return 0;
-diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index 098f81e8550d..994361ec75e0 100644
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -5689,7 +5689,7 @@ vm_fault_t hugetlb_fault(struct mm_struct *mm, struct vm_area_struct *vma,
- 		 */
- 		entry = huge_ptep_get(ptep);
- 		if (unlikely(is_hugetlb_entry_migration(entry))) {
--			migration_entry_wait_huge(vma, mm, ptep);
-+			migration_entry_wait_huge(vma, ptep);
- 			return 0;
- 		} else if (unlikely(is_hugetlb_entry_hwpoisoned(entry)))
- 			return VM_FAULT_HWPOISON_LARGE |
-@@ -6907,7 +6907,7 @@ follow_huge_pmd(struct mm_struct *mm, unsigned long address,
- 	} else {
- 		if (is_hugetlb_entry_migration(pte)) {
- 			spin_unlock(ptl);
--			__migration_entry_wait(mm, (pte_t *)pmd, ptl);
-+			__migration_entry_wait_huge((pte_t *)pmd, ptl);
- 			goto retry;
- 		}
- 		/*
-diff --git a/mm/migrate.c b/mm/migrate.c
-index c937a496239b..7b31d0b06977 100644
---- a/mm/migrate.c
-+++ b/mm/migrate.c
-@@ -315,13 +315,28 @@ void migration_entry_wait(struct mm_struct *mm, pmd_t *pmd,
- 	__migration_entry_wait(mm, ptep, ptl);
- }
- 
--void migration_entry_wait_huge(struct vm_area_struct *vma,
--		struct mm_struct *mm, pte_t *pte)
-+#ifdef CONFIG_HUGETLB_PAGE
-+void __migration_entry_wait_huge(pte_t *ptep, spinlock_t *ptl)
- {
--	spinlock_t *ptl = huge_pte_lockptr(hstate_vma(vma), mm, pte);
--	__migration_entry_wait(mm, pte, ptl);
-+	pte_t pte;
-+
-+	spin_lock(ptl);
-+	pte = huge_ptep_get(ptep);
-+
-+	if (unlikely(!is_hugetlb_entry_migration(pte)))
-+		spin_unlock(ptl);
-+	else
-+		migration_entry_wait_on_locked(pte_to_swp_entry(pte), NULL, ptl);
- }
- 
-+void migration_entry_wait_huge(struct vm_area_struct *vma, pte_t *pte)
-+{
-+	spinlock_t *ptl = huge_pte_lockptr(hstate_vma(vma), vma->vm_mm, pte);
-+
-+	__migration_entry_wait_huge(pte, ptl);
-+}
-+#endif
-+
- #ifdef CONFIG_ARCH_ENABLE_THP_MIGRATION
- void pmd_migration_entry_wait(struct mm_struct *mm, pmd_t *pmd)
- {
--- 
-2.23.0
-
+I'm thinking you're going to find a ton of regressions if you try it
+though; some workloads go idle *very* shortly, doing all this accounting
+is going to be counter-productive.
