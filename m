@@ -2,103 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4633C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:14:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65621C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:14:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243295AbiDYQR3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 12:17:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54722 "EHLO
+        id S243303AbiDYQRb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 12:17:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243288AbiDYQR0 (ORCPT
+        with ESMTP id S230324AbiDYQR1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 12:17:26 -0400
-Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92F7311F611
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 09:14:20 -0700 (PDT)
-Received: by mail-io1-xd2b.google.com with SMTP id y85so16403683iof.3
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 09:14:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ssvMxEnSf8Abrb4Q0sbcMxRw0VW47mziY0ir9WsjUiY=;
-        b=rdSIv8F4IyCtcjNP1ZDImRtkXJpc90T6m82UbT8VJmvEHYwwMqS1YO8ja2JYfmut8q
-         zgvazqVDXSKt4NozVdkoITXWFxnXxAgWlNsIw7GWWXcVuW+zGb88UZp/hPyIVOCLkV3U
-         28UAN3emaodZP32790gYfTY4E/+wom8k3qDa/NZKfoM0hfTqk1QvYN2Ff5/QuXAtnLdR
-         DxWDYe8QxfYphIsAWsyWzr0t9ZOY8xzf3S5QCFuM+u93x85QKF4JFu3iqyLiPahSEGU0
-         UR/jXdyPM3K6Eq4sr4DGkq/qq6YUsc46pvRmlotDetdTOpI4nwAd0WoTwg63anAY7rHa
-         SgbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ssvMxEnSf8Abrb4Q0sbcMxRw0VW47mziY0ir9WsjUiY=;
-        b=LOxEFfb8C2gySvSnJvF6Ox4F+goOSS9RTgJsBiBBSHrQidmqKkoxfklMs/R6ftOfHC
-         MXhE44OLqeRx7LCLyQHZFKx907WjGjv/Wsq1drE7uRhMvyT+OepbeKo3Ds3NH0fvQD6E
-         hpN5kVmycpLagDyykYVMJUEBXG3LWuZ3kaEfvduPR4TepnpJALj/gRrlw1q77aU+5AGc
-         Rx1FZI1OBE9lDXcoAaMp3XMzoTrEJQQh+bcRa7xCdHeboM+YU4RwPWIZAaYIE1zPGC04
-         K7oRbNqkr1/je27Hnafb/OlLjSWJmWPYp8PAOH51Wy4vOe8IYs/dSVxDfQ/PRk5g3bWB
-         7z8w==
-X-Gm-Message-State: AOAM5301E8uqsx+9TWejKDVvpPRB89pNr7gGLpk94vAkQ+S9/tyODS8Z
-        gzTJI7UlGFdL7DYchemUzInh/cS6JjRu0HPcMU/FiA==
-X-Google-Smtp-Source: ABdhPJwHwhHCFix6yfeXZwbsDXszZ/FXhdzTN89sEtbPiY/UyQK2PM4Z1FoeFd47bS78B8+uV6hrWZr0zMsEM/SejxY=
-X-Received: by 2002:a05:6602:2e0d:b0:64f:8bfd:a83 with SMTP id
- o13-20020a0566022e0d00b0064f8bfd0a83mr7321644iow.200.1650903259819; Mon, 25
- Apr 2022 09:14:19 -0700 (PDT)
+        Mon, 25 Apr 2022 12:17:27 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDC4311D237
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 09:14:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650903262; x=1682439262;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=WBn5aaEUhHvrn0ap/cb1ti0T5AJm6Qpd5cGnOkTMLus=;
+  b=Wq7LSPMmD8q+8CbjJvxb/+oOkmicsT6TR9amE0w9eTr5aygHfc49wjcG
+   mvA8wM0evllfk+JS6Cha97DKwK0LDfxkcK5HrD6gNum7CFYqMNsWmbf/w
+   99eMGZ7xC6OvXZOYo3dURGk2Cb0y6fwPcxeqn8UBQs3ZTN8j7WVmEwsX9
+   nNBF8bSKlezaL0oHGXBH0NaFMrR8QeTrDQ7PLLOZOhgP2UhydrjMLaQDf
+   gp66kqk8KG0QYE4tyWPy+nM2oymC5C86X6Swqj54eE+UWEqCgjS/zGXnM
+   woWW1h7L4CSFxzosDFU/f9fUhU6RIg8OsKUA9ZJwWpRJzl659lVrkzwqG
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="252661756"
+X-IronPort-AV: E=Sophos;i="5.90,288,1643702400"; 
+   d="scan'208";a="252661756"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 09:14:22 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,288,1643702400"; 
+   d="scan'208";a="649766444"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 25 Apr 2022 09:14:21 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nj1Lw-0002g6-Je;
+        Mon, 25 Apr 2022 16:14:20 +0000
+Date:   Tue, 26 Apr 2022 00:13:30 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-maple 26/44]
+ output.c:undefined reference to `__fscache_begin_write_operation'
+Message-ID: <202204260017.dkV0wVa6-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220415001321.252848-1-jmeurin@google.com> <20220421234244.2172003-1-jmeurin@google.com>
- <20220425104201.173e65fa@xps13>
-In-Reply-To: <20220425104201.173e65fa@xps13>
-From:   Jean-Marc Eurin <jmeurin@google.com>
-Date:   Mon, 25 Apr 2022 09:14:08 -0700
-Message-ID: <CAL3wywVS0EyBNQ_vp+TDdxO1=x4PgTZoyzGJ8-5qXzhCd0uOcw@mail.gmail.com>
-Subject: Re: [PATCH v4 0/3] mtd: mtdoops: Add timestamp to the dumped oops header.
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Miquel,
+tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-maple
+head:   931e50676c6598d0eda1954ead465519ff91874d
+commit: 1cdfbd29bdd34acf57d11846369b44dbab7b4d3a [26/44] netfs: Dispatch write requests to process a writeback slice
+config: csky-randconfig-r011-20220425 (https://download.01.org/0day-ci/archive/20220426/202204260017.dkV0wVa6-lkp@intel.com/config)
+compiler: csky-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/1cdfbd29bdd34acf57d11846369b44dbab7b4d3a
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-maple
+        git checkout 1cdfbd29bdd34acf57d11846369b44dbab7b4d3a
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=csky SHELL=/bin/bash
 
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-On Mon, Apr 25, 2022 at 1:42 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
->
-> Hi Jean-Marc,
->
-> jmeurin@google.com wrote on Thu, 21 Apr 2022 16:42:41 -0700:
->
-> > The current header consists of 2 32-bit values which makes it difficult
-> > and error prone to expand. This creates a structure for the header.
-> >
-> > Some oops only have time relative to boot, this adds an absolute timestamp.
-> >
-> > Changelog since v3:
-> >   Fix the printk format for sizeof to %zu.
-> >
-> > Changelog since v2:
-> > - Add a timestamp to the header.
-> >
-> > Changelog since v1:
-> > - Create a header structure to simplify code.
-> > - Patches in series.
-> > - Patch prefix.
-> >
-> > Jean-Marc Eurin (3):
-> >   mtd: mtdoops: Fix the size of the header read buffer.
-> >   mtd: mtdoops: Create a header structure for the saved mtdoops.
-> >   mtd: mtdoops: Add a timestamp to the mtdoops header.
->
-> Looks like the last patch was not sent to the list?
->
+All errors (new ones prefixed by >>):
 
-I'm not sure what happened.  I've just sent it and then noticed that
-the mail threading is wrong.  Let me know if you want me to resend the
-full thread.
+   csky-linux-ld: fs/netfs/output.o: in function `netfs_set_up_write_to_cache':
+>> output.c:(.text+0x932): undefined reference to `__fscache_begin_write_operation'
+>> csky-linux-ld: output.c:(.text+0x96c): undefined reference to `__fscache_begin_write_operation'
 
-I'm really sorry about that :-( and thanks for all your help.
-
-Jean-Marc
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
