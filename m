@@ -2,92 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 606BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 09:50:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DB4CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 09:51:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240693AbiDYJxm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 05:53:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44884 "EHLO
+        id S236335AbiDYJy3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 05:54:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239935AbiDYJx0 (ORCPT
+        with ESMTP id S237519AbiDYJyG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 05:53:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED9053ED2C;
-        Mon, 25 Apr 2022 02:50:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A646B811F3;
-        Mon, 25 Apr 2022 09:50:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3C9B3C385A4;
-        Mon, 25 Apr 2022 09:50:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650880213;
-        bh=QHVJvRA1U4eyuchr2l0VzwZ/Ky+RUlBl3UeP3kD6evM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=cZ2m59UWtqCJ7uTiFr70K7K/0Mm+61Bzpbm2mWz6KyhOJR4Dut/mtpDn2tXxV5Juo
-         IYLpQc3gdGmK/hHspeoo535hvs9pXeq44d7sqKu1QFeK/0H1owpFULTUrg7X1j/oW2
-         EsnZCU4hY4T5Tz5dFxp6i4pP8flroVm9YjogdXuGwkyyjhorWeDmmsUZnmwWDDwnOy
-         6fjZxQbBPReSXDzpEYshxcUKFg1DAgc2Y5pqP2f5VWB9oARzIyK2N8oWRaWSAb+Naw
-         DoMnC8Izvt2PP43W45KlPINh52FHPCvyXAtbqfIaQfagxvg50RqVpmMgaXdgEiWu1I
-         OH/7sRubx+dOg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1EB49E85D90;
-        Mon, 25 Apr 2022 09:50:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Mon, 25 Apr 2022 05:54:06 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAAEF3FDA7
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 02:51:01 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id u3so20017342wrg.3
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 02:51:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=JVRowZf7Y6lrQhVcOg9o/xME5QnsN42CZSfKjMBpsVY=;
+        b=AWblNvq5Vx8bJ2t3TobVYKoX3WPueHB8vpiAy+dfkpcOkIQTNoUMsRUaV3dE+EzTyp
+         1iUFBD5joI4TL1RPx1QYh0IaM+lWrrBAcM7glXzAdYGZ9LYm3eL4/ECGObXO4fiLYCUu
+         VkiNOmsHAAtqx+4hS+4DU6/4mk5y5VU04mVtfybkGAasaSSiP2SgrMXgNnUo8k++4cj7
+         S8SQJ1goIJTzkjpWexFH4JeyZFz8JX5zMcWdx22m9s+6gL8wE4FLjAMQXdbYSRZhueEr
+         SDrRHp1j5XfaeT6nbX1v/L47wWP/Uxip6iM+SBQ8EZMZEDJ/vsTMccNu/xQTRzbX6di4
+         SMhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=JVRowZf7Y6lrQhVcOg9o/xME5QnsN42CZSfKjMBpsVY=;
+        b=mnREsw2HmlyppCTVoidRoc4/e+xIUBryZTuNkpsirdRHMTQ6J9ZGbnpV562/+32JtN
+         OPl7sHItRooeYCERfZVOQsUXyM390WwVjg8dwUdZoSmuW/PHD8CSMhKc+oIA1J8tWot0
+         4EAiGw6Nupo6q1Fofam0SX1GXATYu7p/KtoJ88X/c/R2rrFb4tYZ14Qa6xnR+RxvtUkl
+         govE+27+ZZhITnQqbPdBAmPeGAQa1oL0FbL1b10S4STn4iih40CGp6p2ogI83meadqq7
+         +2xf4shvwNcwmnqKJ5NmcR+E6MvGOJhupTgj7UeLyvN9BolRjV+4EgFiHNUEp3plP2Uj
+         BjEQ==
+X-Gm-Message-State: AOAM532k7J8KcBmJPLR+DDl4zcElLINYwtdDJqP8ILh+9MMCwNt0S75v
+        jKPVatLcWqXMCL30hRamFYA=
+X-Google-Smtp-Source: ABdhPJxmm/Mx+A7bBbPnwj5NepOH7XAXLalTSTTHWEpgUPro0+lSCgHw5J65b7YjaQSme3tO+vXj/Q==
+X-Received: by 2002:adf:d0d2:0:b0:20a:d81e:cb23 with SMTP id z18-20020adfd0d2000000b0020ad81ecb23mr5531373wrh.656.1650880260196;
+        Mon, 25 Apr 2022 02:51:00 -0700 (PDT)
+Received: from debian (host-78-145-97-89.as13285.net. [78.145.97.89])
+        by smtp.gmail.com with ESMTPSA id p6-20020a05600c358600b00393eaf94077sm3394482wmq.8.2022.04.25.02.50.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Apr 2022 02:50:59 -0700 (PDT)
+Date:   Mon, 25 Apr 2022 10:50:57 +0100
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org
+Subject: Re: Linux 5.18-rc4
+Message-ID: <YmZvAUakbWnyQEqa@debian>
+References: <CAHk-=whmtHMzjaVUF9bS+7vE_rrRctcCTvsAeB8fuLYcyYLN-g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/6] net: hns3: add some fixes for -net
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165088021312.12536.3233883953657719820.git-patchwork-notify@kernel.org>
-Date:   Mon, 25 Apr 2022 09:50:13 +0000
-References: <20220424125725.43232-1-huangguangbin2@huawei.com>
-In-Reply-To: <20220424125725.43232-1-huangguangbin2@huawei.com>
-To:     Guangbin Huang <huangguangbin2@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lipeng321@huawei.com,
-        chenhao288@hisilicon.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=whmtHMzjaVUF9bS+7vE_rrRctcCTvsAeB8fuLYcyYLN-g@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Hi Linus,
 
-This series was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Sun, 24 Apr 2022 20:57:19 +0800 you wrote:
-> This series adds some fixes for the HNS3 ethernet driver.
+On Sun, Apr 24, 2022 at 03:22:59PM -0700, Linus Torvalds wrote:
+> Fairly slow and calm week - which makes me just suspect that the other
+> shoe will drop at some point.
 > 
-> Hao Chen (1):
->   net: hns3: align the debugfs output to the left
-> 
-> Jian Shen (3):
->   net: hns3: clear inited state and stop client after failed to register
->     netdev
->   net: hns3: add validity check for message data length
->   net: hns3: add return value for mailbox handling in PF
-> 
-> [...]
+> But maybe things are just going really well this release. It's bound
+> to happen _occasionally_, after all.
 
-Here is the summary with links:
-  - [net,1/6] net: hns3: clear inited state and stop client after failed to register netdev
-    https://git.kernel.org/netdev/net/c/e98365afc1e9
-  - [net,2/6] net: hns3: align the debugfs output to the left
-    https://git.kernel.org/netdev/net/c/1ec1968e4e43
-  - [net,3/6] net: hns3: fix error log of tx/rx tqps stats
-    https://git.kernel.org/netdev/net/c/123521b6b260
-  - [net,4/6] net: hns3: modify the return code of hclge_get_ring_chain_from_mbx
-    https://git.kernel.org/netdev/net/c/48009e997297
-  - [net,5/6] net: hns3: add validity check for message data length
-    https://git.kernel.org/netdev/net/c/7d413735cb18
-  - [net,6/6] net: hns3: add return value for mailbox handling in PF
-    https://git.kernel.org/netdev/net/c/c59d60629684
+My last night's mainline build failed for arm.
+Build was with af2d861d4cd2 ("Linux 5.18-rc4").
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+imxrt_defconfig -> failed
+lpc18xx_defconfig -> failed
+mps2_defconfig -> failed
+stm32_defconfig -> failed
+vf610m4_defconfig -> failed
+
+arm-linux-gnueabi-ld: mm/page_alloc.o: in function `alloc_large_system_hash':
+page_alloc.c:(.init.text+0xe7c): undefined reference to `vmalloc_huge'
 
 
+--
+Regards
+Sudip
