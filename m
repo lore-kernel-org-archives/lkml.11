@@ -2,174 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34060C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 13:45:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99F00C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 13:47:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242217AbiDYNsP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 09:48:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48268 "EHLO
+        id S242093AbiDYNuF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 09:50:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236060AbiDYNsM (ORCPT
+        with ESMTP id S230034AbiDYNuB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 09:48:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3252FBF45
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 06:45:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650894307;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kjKl7LXWSDD258DvkdJkTnbtgI9iQSku/0RIww7gifA=;
-        b=fyTZyjR8AEaMDLeealqB+Tdiehw45HT9EkDV/fLbSu93qEDSoLxhsKGK7E4C8iXwNZ++rU
-        SUq8FijOIOVW2oDX2ZSiucvU3tCT0EkCobHYoKi4MmkqvFwpBejnwr/K2gqH/tygDUjS/C
-        R0ONn9yfYVCwue2zzJSD8ZcP6hpvms4=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-18-9DhRiqNoO_yFnzlcQBpyAg-1; Mon, 25 Apr 2022 09:45:05 -0400
-X-MC-Unique: 9DhRiqNoO_yFnzlcQBpyAg-1
-Received: by mail-wr1-f69.google.com with SMTP id e21-20020adfa455000000b0020ae075cf35so406420wra.11
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 06:45:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=kjKl7LXWSDD258DvkdJkTnbtgI9iQSku/0RIww7gifA=;
-        b=MWE/AOl3U+LaELwuDk8Js30JPFSPefuf34FODVufjx5Un3jH8YgXiTSIyTHMMcVCCS
-         SuQGm1VjE/vJjEAdZ5dMsBUDTSRCCdRjuHPk18MUIZtyyNQDzb9HnefjChV+rud1RU1+
-         yJ81TYuBCb4IExNrk3MPEE8D3P19GEE6oWt9BDS79Ezltld4PEzvgpXuYAC7I3e0Mzdw
-         bQnpYANnkJutI/z815+sVCTH3vPgER06tVj9CbjxsSbAh1JvzUBULTC2dLP8g/94+E8Y
-         8atR0wSuabi2fL81I4Zx31joCrR3BVH6hyYikHAaKGha8UoCfFZXjWEAQgR6hZculMPP
-         1MGg==
-X-Gm-Message-State: AOAM531tArh2qMFIkSC7oxPhQD5RpHxCkq1UQ9pl6kLvR+j2+uf3kgl+
-        0etVQM4bpzJgwQxUhswy7Nd8ZbW3jdyOv4+VLgeKj5hr9Ustbf0j3xsKwxLdCvgKtVXVlwXEF1E
-        nu1KBW9vI8XS/7ZVztMGRYlIa
-X-Received: by 2002:a1c:35c7:0:b0:38e:4c59:6788 with SMTP id c190-20020a1c35c7000000b0038e4c596788mr1346038wma.1.1650894304194;
-        Mon, 25 Apr 2022 06:45:04 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwkcdgm9Qu/INbawQ6bTu6jiAyghqOn6SgQHz2C+CRn/opFLVzJwiujddaOhsPHzma7sLYcFQ==
-X-Received: by 2002:a1c:35c7:0:b0:38e:4c59:6788 with SMTP id c190-20020a1c35c7000000b0038e4c596788mr1346033wma.1.1650894303862;
-        Mon, 25 Apr 2022 06:45:03 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c700:fc00:490d:ed6a:8b22:223a? (p200300cbc700fc00490ded6a8b22223a.dip0.t-ipconnect.de. [2003:cb:c700:fc00:490d:ed6a:8b22:223a])
-        by smtp.gmail.com with ESMTPSA id m1-20020a1ca301000000b003929c4bf250sm11859636wme.13.2022.04.25.06.45.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Apr 2022 06:45:03 -0700 (PDT)
-Message-ID: <a72036bf-0708-c1bc-2511-64513a130271@redhat.com>
-Date:   Mon, 25 Apr 2022 15:45:02 +0200
+        Mon, 25 Apr 2022 09:50:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E406C13DF7;
+        Mon, 25 Apr 2022 06:46:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 85D67615BA;
+        Mon, 25 Apr 2022 13:46:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35886C385A4;
+        Mon, 25 Apr 2022 13:46:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650894415;
+        bh=cnaPGcH4wGvOkYGwNrD3V8c2ZplgPQyr3KVOqiR+sJ8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=jA1s0kuSSuLQE2bT8lYq2PPV04y02D7wZ8T7PdJUl0+pIvcQzNQnEkHrKO/VLIdgb
+         2m1RDD1iU6fclgB2yt1Cje9fNi0pxMXo9Afs/v7KguWBId5ui/5gXhFdyMHHH8XIRQ
+         bOftIFstCxWmSjJHS3lBhWNxeu4gXmX0XXBJbCx4vqu2bqlpY3wW9SyWSPVIMDLzeT
+         BX2eE8JH6eajiA+UVHxwl22jmU3zQixvCowQ3xKibegjrsmrkShuAPa1Y4rNBOa55o
+         S2JjJmmeYwllM2K1/vcfweK03kM9wQnTiueeD9g3slFnmadjGloilFczuOGhiju7TU
+         mzZXT8lv+7Cdw==
+Date:   Mon, 25 Apr 2022 14:46:49 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Martin =?utf-8?Q?Povi=C5=A1er?= <povik@cutebit.org>
+Cc:     Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mark Kettenis <kettenis@openbsd.org>,
+        Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>
+Subject: Re: [RFC PATCH 3/5] HACK: ASoC: Tolerate N-cpus-to-M-codecs links
+Message-ID: <YmamSZKNtNai7KyM@sirena.org.uk>
+References: <20220331000449.41062-1-povik+lin@cutebit.org>
+ <20220331000449.41062-4-povik+lin@cutebit.org>
+ <YkrkbBNYULLgeS5w@sirena.org.uk>
+ <904EB8A1-5561-4555-8030-B85703E24F2E@cutebit.org>
+ <YmaTHTKWAfM7FCcY@sirena.org.uk>
+ <9F8BCBA8-5EE3-4F87-9518-91CB7AB4E077@cutebit.org>
+ <YmaaPa8A03rWV7HE@sirena.org.uk>
+ <4CF6B0A7-F218-4798-BB21-18D563309D5C@cutebit.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH v3 3/5] memblock tests: update style of comments for
- memblock_remove_*() functions
-Content-Language: en-US
-To:     Rebecca Mckeever <remckee0@gmail.com>, outreachy@lists.linux.dev
-Cc:     Mike Rapoport <rppt@kernel.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-References: <cover.1650633253.git.remckee0@gmail.com>
- <3b83322c070bdd43a33c336d135f485244f107d3.1650633253.git.remckee0@gmail.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <3b83322c070bdd43a33c336d135f485244f107d3.1650633253.git.remckee0@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="V5YMDCcjWGsw/lIg"
+Content-Disposition: inline
+In-Reply-To: <4CF6B0A7-F218-4798-BB21-18D563309D5C@cutebit.org>
+X-Cookie: An apple a day makes 365 apples a year.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22.04.22 15:33, Rebecca Mckeever wrote:
-> Update comments in memblock_remove_*() functions to match the style used
-> in tests/alloc_*.c by rewording to make the expected outcome more apparent
-> and, if more than one memblock is involved, adding a visual of the
-> memory blocks.
-> 
-> If the comment has an extra column of spaces, remove the extra space at
-> the beginning of each line for consistency and to conform to Linux kernel
-> coding style.
-> 
-> Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
-> ---
->  tools/testing/memblock/tests/basic_api.c | 101 +++++++++++++++++------
->  1 file changed, 75 insertions(+), 26 deletions(-)
-> 
-> diff --git a/tools/testing/memblock/tests/basic_api.c b/tools/testing/memblock/tests/basic_api.c
-> index 75cd7479ee54..08847dc5065e 100644
-> --- a/tools/testing/memblock/tests/basic_api.c
-> +++ b/tools/testing/memblock/tests/basic_api.c
-> @@ -550,14 +550,21 @@ static int memblock_reserve_checks(void)
->  	return 0;
->  }
->  
-> - /*
-> -  * A simple test that tries to remove the first entry of the array of
-> -  * available memory regions. By "removing" a region we mean overwriting it
-> -  * with the next region in memblock.memory. To check this is the case, the
-> -  * test adds two memory blocks and verifies that the value of the latter
-> -  * was used to erase r1 region.  It also checks if the region counter and
-> -  * total size were updated to expected values.
-> -  */
-> +/*
-> + * A simple test that tries to remove the first entry of the array of
-> + * with the next region in memblock.memory:
 
-I failed to parse this sentence "of the array of with".
+--V5YMDCcjWGsw/lIg
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> + *
-> + *  |  ......          +----------------+  |
-> + *  |  : r1 :          |       r2       |  |
-> + *  +--+----+----------+----------------+--+
-> + *                     ^
-> + *                     |
-> + *                     rgn.base
-> + *
-> + * Expect to add two memory blocks r1 and r2 and then remove r1 region
-> + * so that r2 is the first available region. The region counter and
-> + * total size are updated.
-> + */
->  static int memblock_remove_simple_check(void)
->  {
->  	struct memblock_region *rgn;
-> @@ -587,11 +594,22 @@ static int memblock_remove_simple_check(void)
->  	return 0;
->  }
->  
-> - /*
-> -  * A test that tries to remove a region that was not registered as available
-> -  * memory (i.e. has no corresponding entry in memblock.memory). It verifies
-> -  * that array, regions counter and total size were not modified.
-> -  */
-> +/*
-> + * A test that tries to remove a region that was not registered as available
-> + * memory (i.e. has no corresponding entry in memblock.memory):
-> + *
-> + *                     +----------------+
-> + *                     |       r2       |
-> + *                     +----------------+
-> + *  |  +----+                              |
-> + *  |  | r1 |                              |
-> + *  +--+----+------------------------------+
-> + *     ^
-> + *     |
-> + *     rgn.base
-> + *
-> + * Expect the array, regions counter and total size to not be modified.
-> + */
->  static int memblock_remove_absent_check(void)
->  {
->  	struct memblock_region *rgn;
-> @@ -622,10 +640,21 @@ static int memblock_remove_absent_check(void)
->  
->  /*
->   * A test that tries to remove a region which overlaps with the beginning of
+On Mon, Apr 25, 2022 at 03:11:14PM +0200, Martin Povi=C5=A1er wrote:
+> > On 25. 4. 2022, at 14:55, Mark Brown <broonie@kernel.org> wrote:
 
-Wonder if it makes sense to mention r2 here. ("a region r2 ...") -- to
-be precise, to always reference r1 and r2 accordingly instead of e.g.,
-"the first entry". Same applies to the other function documentation you
-touch in this patch.
+> > I am surprised that doesn't otherwise explode TBH - at the very least
+> > I'd expect it to show two PCMs to userspace which if I'm understanding
+> > your description correctly isn't really what's going on.
 
--- 
-Thanks,
+> I fill in a single snd_soc_dai_link, it exposes a single PCM and works
+> like a charm. That is as long as I patch the playback/capture check in
+> question.
 
-David / dhildenb
+> I read that to be the clear intention of ASoC code: a DAI link becomes
+> one snd_soc_pcm_runtime.
 
+Yes, so long as you boil it down to a single link it works fine but the
+bit on top of the binding where you tie the two CPU DAIs to what is
+actually exposed is all in code.  The reason this stuff isn't filled in
+is that connecting the thing that applications see to the physical links
+isn't at all obvious and needs at least some driver sitting in the
+middle to make the links - I'd imagine there's a DSP sitting there which
+probably has quite a bit of flexability about how the various hardware
+components available are actually related.  This makes figuring out what
+to do with the relationship between the multiple CPU DAIs hard.
+
+--V5YMDCcjWGsw/lIg
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJmpkkACgkQJNaLcl1U
+h9C/GQf+OjJGWvlH5dhjAe5s8YfzoSM40Z2KmKGWDIcK8eWx0PFyUNUbga/WyQfu
+/DZp541i+iDNis3n38axj/4MJkr6Fv79zkvqkXcDoJRwvHPN4pUnWuayW4R9dzOD
+RCziMyqgTtA4L9aCBI3OW6j6iDy5giYhk1ZGom2XGghdavCGptkPmXnWebvjTP1u
+86P8dTNBR5iyhFdxG6ZQXgGOoj+HDKc7wd8GeKmUErNfgDPJhLKe4+2CPyX/l8cp
+7yO9I0+h4S/GIOyCjybXqlEfCKLSYk6S7rf+grBcXOfQlb+AUo27WCSS1E2AvH/P
+/5nrS6m379X9QqI4rhcsEJOfwZo+1w==
+=/H/Q
+-----END PGP SIGNATURE-----
+
+--V5YMDCcjWGsw/lIg--
