@@ -2,147 +2,224 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42B39C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 19:38:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D7CCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 19:39:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244999AbiDYTlD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 15:41:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49594 "EHLO
+        id S244260AbiDYTmR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 15:42:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244983AbiDYTk7 (ORCPT
+        with ESMTP id S234957AbiDYTmQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 15:40:59 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1891D112447;
-        Mon, 25 Apr 2022 12:37:53 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id i38so9954765ybj.13;
-        Mon, 25 Apr 2022 12:37:53 -0700 (PDT)
+        Mon, 25 Apr 2022 15:42:16 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99DDF112D8A
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 12:39:11 -0700 (PDT)
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23PJORtc023432;
+        Mon, 25 Apr 2022 19:38:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-id : content-transfer-encoding : mime-version; s=corp-2021-07-09;
+ bh=B8WDidiInKXoMa0NQYdlTGdwMS9bAhhkpIyWi25WW1U=;
+ b=zHeOLNEsDrfisNxXa8P3vIPX0EQ2w8vG7UinvEdxYXwupZ/WveRNN8TqBHBnDHXhCNpZ
+ RoieJIlal3Wit4liJ/otpzObzeoO0R6TIfy1It9vUaaaqud3AC4/qwxe8zBKbFu8a0y0
+ 4Kk+sVq9xfC0MJ1nFuB7LklDNgsGgW5rQB/rNVqptrX4SzaAlzspwAM7R1gziA2WyhMQ
+ rU5uVjmHplbal6sl0DC673cf6/wHGUughZmu5syqWN+JxuWg1iloiO0l+/HhQu9pmAK/
+ vMSoSr9VfEnruikxFilY6sA/Uo7hbajwxk4aU455TZUZ7Kv2E1SSpK5lgKwEw1qDvUGx 6Q== 
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3fmb0yv31k-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 25 Apr 2022 19:38:47 +0000
+Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 23PJaQKC025517;
+        Mon, 25 Apr 2022 19:38:46 GMT
+Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2104.outbound.protection.outlook.com [104.47.58.104])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3fm7w21hj7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 25 Apr 2022 19:38:46 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=giF0QNIkg+xeRV9MErpaMRa4KzfSUeZU5pPpOR2x7/eUnOZxfb2LAYc/ET3I2qsg0TGqK3PKLCTV7kqGEZExlR3asZav0Q1SwY4aiKyQo/QrfLPmj+A7QLd8EYr9qIUH9BS3DUi5QVPt+97t5ddJPp+ysD6vdoDIfx1faNLZaa3CkEii/6JoAK7HbfTtIVQmc+xWNNiP//67FXNtvHZnBPvYecXTdgZiTYcm+OIQD6X5ZU/V1SP7nv4xipQZGuMzHeaEY1VTYcPz9I51/9vTjg5YADrOGtrhUX8Y6+mHvaz4FU5lRXc8JIZIlAz45tCcCVbncykpC8Yuw5jwEl5J4g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=B8WDidiInKXoMa0NQYdlTGdwMS9bAhhkpIyWi25WW1U=;
+ b=NZVRxObxkhmsG2XE4agqhiEoYB8uK5VYRRwDs85e5yarsah1nTcPwGtBHD2RTY+mmJGY8dzrBt9acG/ghEnCPxzojhttTiDVTPB68mXY7oX4iXOFZ4gKFhG1l0r05qvAKRjfmDii2j80p5oe+H0Th9WjF8VIrSWCCn/4yZaqBC6piU4jJvtHdYatuPVhW/OWXZblN6Q5rY/DfYEabHVz0xtUIdRFdE+nn1k9HZ20SqOCK+Fjub22NqTGxLMfxYravROx1rOVKc0bA78kUodRQSWUSFieffGjsa/OnrFsA3G16EsANqELIosRnGE62OqENjDQ2m8JjDMFJV/RoGaY/Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Sv8hAStxtYZLA7ttjMHDmBWNkg9R0he6yilL9E/on7U=;
-        b=Rm3XivQgs/+qfHTgBRxz6EnqsR5YnGqXNq6SpUmHifFzrPauwn6vlgLyAEZRxGkVne
-         NUaFb6Sw7lnrNY59Nk0EjE1hAHqwuQPTmDo19XR5IhO9RnkLG4gEUzH50njFyZm9sc/f
-         jvwRM/jT2L4tq7uFD9+qrAOKMFp1CSeZaenkXELOGulEVO6y8F3JIEPpR/CxTkQAkYQC
-         Bn8QW/c2vyY6sgOjIsJil8UIhvRGlwr0XIW0Eh+tA2qHxqrdyFdT0uTnK1X2ShxEq2zh
-         le/736GlWszQIlmHgbntrvfmZVq9ZvbRkwcHcQlj4cvpTv5jCIiCYxxyl4ELBG6OhXzW
-         jxdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Sv8hAStxtYZLA7ttjMHDmBWNkg9R0he6yilL9E/on7U=;
-        b=r8CdvhKtDiIBp0d9co1ctSN25OpHKc4SdS4bV21llex/ZuNq/A9X93WEg8iNztEDvB
-         OeO8x+lSlv3WpFNMbGKtj/ZpaSztkb+4IiEQAI01k9iug5af8oh+FbQCG+8bib61L48S
-         Rywa+LyaY3gGPxXg5uY52XicztoDsDHHYjZlxPTKEBrGzWbSKoO/neJZ+9xy4/ynDXCT
-         /1+xNAD1DJ6pPWkT5l7CFHSowj4SVCB5qi9Df1LAuEY65b8YKFSjtb6GmZGamXJQUyxE
-         TTzOmLcF1lb4qSKOs+ywM37xRd55DmB8MFnq5d2w4/y1VFGum5dghC18Fvuhc2b3zcp/
-         4IKw==
-X-Gm-Message-State: AOAM532MJBO4w7SvUnOfjLHPZ3KKtJPiYqfBGTs+YO74aJHYbAWV8aQh
-        iga5EXQ8+JKnMjiPFVRqVB67gKmL0J3eErSQN70=
-X-Google-Smtp-Source: ABdhPJx+MAl3lvFKD1Qba4L7n1K5/ljEL1sT3HVJgvt1iDEvua5oqXeT4ma4s6OJVaASqyJ8hlGCcxr5ZDsfp4axFO8=
-X-Received: by 2002:a25:af14:0:b0:645:36f1:c584 with SMTP id
- a20-20020a25af14000000b0064536f1c584mr17794206ybh.366.1650915472252; Mon, 25
- Apr 2022 12:37:52 -0700 (PDT)
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=B8WDidiInKXoMa0NQYdlTGdwMS9bAhhkpIyWi25WW1U=;
+ b=hfpZ3VlUp4NUldyX6Jdc8LIXVuG6CpsFAKx5krh+QNGXO7mT0YVlAVkhzSNufsAXMzaoZokiBWKBc4yJGUpFVEncIWJKMoPbXqk4+P/s8hWW0TwC1wH/UjsHEV8pOFnAnzajyRCrZAUlwnnKCdLhhxxOEQUUy0y3ar7MCNmX4mQ=
+Received: from BYAPR10MB2629.namprd10.prod.outlook.com (2603:10b6:a02:b7::24)
+ by BN6PR10MB2001.namprd10.prod.outlook.com (2603:10b6:404:101::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.15; Mon, 25 Apr
+ 2022 19:38:44 +0000
+Received: from BYAPR10MB2629.namprd10.prod.outlook.com
+ ([fe80::69a4:385a:1e8a:453]) by BYAPR10MB2629.namprd10.prod.outlook.com
+ ([fe80::69a4:385a:1e8a:453%3]) with mapi id 15.20.5186.021; Mon, 25 Apr 2022
+ 19:38:44 +0000
+From:   Prakash Sangappa <prakash.sangappa@oracle.com>
+To:     LKML <linux-kernel@vger.kernel.org>
+CC:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH] ipc: Update semtimedop() to use hrtimer
+Thread-Topic: [PATCH] ipc: Update semtimedop() to use hrtimer
+Thread-Index: AQHYU5ANovQbEo/TBUSYkrXc/cSry60BEQMA
+Date:   Mon, 25 Apr 2022 19:38:44 +0000
+Message-ID: <8603345D-9AAD-43FF-B1DF-941BDA799DF5@oracle.com>
+References: <1650333099-27214-1-git-send-email-prakash.sangappa@oracle.com>
+In-Reply-To: <1650333099-27214-1-git-send-email-prakash.sangappa@oracle.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3654.120.0.1.13)
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 78294ef6-48c3-4ea6-01db-08da26f335bc
+x-ms-traffictypediagnostic: BN6PR10MB2001:EE_
+x-microsoft-antispam-prvs: <BN6PR10MB20010F99AB76CD032F46569DE4F89@BN6PR10MB2001.namprd10.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: jsv/Atk4DjlIQXmsi5QQVDnhj4o2xgxJkf79bdOTLA+hM3WWA3PFGlYKVoFg/R3VwRRfiiSxxQ3BNs+HEJ9+WASh+RSOlMW/4wSlSU1v5/eakUqW9g7RBRnITh7dyrJmwdoaXC81KTB+GV0yyTHku5ohT1qNLVy8hWmh4YBD1uNIUqAbvm1jTz6ET84IUyqPaQkx5DTd4bmPWduEnyYaDjnD2lM2iQGpUmEb5A5MR5F5A019QXVbB26M3lr2brBgBHol1GTwiAaKKj9O9D15UusysAez/adIuUC0ipWSQ09Algy0MzD9Z7dJs7CTHFzXIU8Op2TN3rYKevlfYa9xkTJ4u94MUs8aJC4TnxANKqRK9nF7Pxe8jD8hSr5Atsph/NMiylC/nPpp5Y30TZfinY9SYo3yLVmzalyrXGQLG79RDVFIPsA/EoTzF+l6HFkFPEj8Ib5GSnyn4//HgJ5HZ0z6VCi7Wo6sCwTnUNlCx1G0D5yi62p/ixyzzRZjHzsiCZXJIOX8JkxhEOqHTk991VKtEkgkyhotI5DHDYpru2+igjjDoGJERfpq9cvgscyV68t4f6BxyciYGQbjQw3sYM5ltrACrC5+zJSkxXSyFn9i6MjbUO/aRroq+E+tcJM24s80qvSvGIKoCt1qVu5ZbjfGiRBMaAH3w9xl7drtrrzACJ1g1r51xy2rITWGQBbLCqTlDm8Gwurb5GfD/XbMsPARPZHX3WqljwHG61uc/Ls=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR10MB2629.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(316002)(66556008)(66946007)(66446008)(64756008)(71200400001)(76116006)(66476007)(91956017)(6486002)(54906003)(38070700005)(83380400001)(86362001)(6916009)(38100700002)(122000001)(508600001)(6506007)(186003)(6512007)(53546011)(2616005)(33656002)(2906002)(5660300002)(36756003)(44832011)(8936002)(8676002)(4326008)(45980500001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 2
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?D7+arGn8dH/ftqPRlJVIy8swvKMdesN7sX0mEDPUV0gIG1tOOszPcoR3ui+l?=
+ =?us-ascii?Q?T/AIGJZvxnFnJ6eSkWUXF7eATrW2m5qWwhLapl74/IfLKkQQyyJXVjaegF2B?=
+ =?us-ascii?Q?mAaNwUJ2pwi7NX6empC/l0JalzCGRghrwLY08mCgT+0lIKHyWnuazIT98KKH?=
+ =?us-ascii?Q?h8SV9l22AxUgrLIW33UZp3aCTByGvsn50GI6fAJM1SOVLf4ImeqccESMB/in?=
+ =?us-ascii?Q?sg5/g2BjOSAOaL/u0uZsGhQ5IF1CbBrxLE5lwdnH3Ensgp0BNwOdyGeWbtY/?=
+ =?us-ascii?Q?FXYekx3avoGdS3mFZgptSZ1a9cynjYJ7he64hMIerzgrt36jdkMJNBqt1w9i?=
+ =?us-ascii?Q?wtUG0y9M/+lXQ73XPNKEPXlbW8RHlifdbea5s2CQNdsdtbvEyMjxB/SDbEiK?=
+ =?us-ascii?Q?BCrx16l/X9sAqEl7tLAsufRbcPBdB+3PBgGHd+lbpNLnvTJnE9Wxo3pfq8i8?=
+ =?us-ascii?Q?nRQJcS5kxoDtEXihZmtNaL1NOjczVop2y3jKopUix1fwrCFcRn05klLlVH2t?=
+ =?us-ascii?Q?+PR/pa6yf96T8PkatkUzAgCwymUC68PMbCu78QFN74f5CF3XyPcw/9FxXwS0?=
+ =?us-ascii?Q?dVRjos+ycIoR38/bx+bDj00ZkrDgPlpVBesA1Zw95IYgWdtog9hkDQstlBvr?=
+ =?us-ascii?Q?PYWQ068Gj6NYLvMm7khZzWfswSqjZwG7k9F/N7AnQJBZD0NTQzckWziLs7EY?=
+ =?us-ascii?Q?hMTXh/zwo/8NGOK4zyzCzzJfgOajJoqy3ov9ko0dQOLFCYdEbzz9H7lXgB3Y?=
+ =?us-ascii?Q?h9EMsQU9DtO4gMmnm+NXsRj2LZzii1iBNKPQZPQrUhbuBPhKZlw0S4fyHSBw?=
+ =?us-ascii?Q?tGBAN97AhcuNFEOprePj7QzKksKSEBBAbNFTIQS/p1vdfpKgTuHdYFrDfnil?=
+ =?us-ascii?Q?cLNUZIScChlSek2HKUMEyOOtQLNcrbmAsCPQiVao0FQst9/1h12YzQG6BXUs?=
+ =?us-ascii?Q?KpM6F7DfNitLMgwUw1kg4joDxqb2eRDakpJzSgQiHQkl2RLO/t12gb/UC+Fk?=
+ =?us-ascii?Q?6K/ttC02e6HJ/1U7r9lN1Uyfm2f9/BTgPewEhfjue/dl3uOKwoqb7TyYvg7f?=
+ =?us-ascii?Q?twfneF/+vqDJbNJfsPvv2ivn4IgWqs6H14FL2qhub62W7i3r/1xwsUBvBH61?=
+ =?us-ascii?Q?UG1PM/tPYjsirX4S8K1eYVmsn93EX+Awgfu6OnIWKz6/uahgFqo6wT1BNRhs?=
+ =?us-ascii?Q?DfxSjb1g9zAI4NKMZsk9o26kKbt0/nWinulJtwE2MiHlVhxn5oXda7mQN6+I?=
+ =?us-ascii?Q?wAxF5bGNvySZXpEI4+G5bG3qpdhyuzGos3YZHhMOBTE7BABs7UAQ3pGJFQyC?=
+ =?us-ascii?Q?ypGnysd45kEdq41qaolHPzqJ4o5hM3sf+9DKsoYmrb0p5iVnby+nRxxIjyjW?=
+ =?us-ascii?Q?8vfA+aWj73PkI9re+EpEW7KCl53wllJYmCA9l21wAa845+OinKk0tsRfJw8f?=
+ =?us-ascii?Q?x5c12uBNDltPyPz3sokW++Mk9XG89CcpHGFGdge7R6irvpr++UkT91FKRjQN?=
+ =?us-ascii?Q?mOTvwzXseKggPsG87PCn0YIgeJfYPlqX/61J6G2d2J1QCl0dnUYQq085CKB3?=
+ =?us-ascii?Q?7HzgnoxKbjV7Tc4wugsW3wFOvYmaYQRcfQpV8r/7Pjpkw1A/CE953ClHoy3Q?=
+ =?us-ascii?Q?hRWEvXpONR2xyln9gtmE+mGU35cjYoy+3YRdo0h3GkNmhRI7whymYUQyY0qn?=
+ =?us-ascii?Q?QixwcWxYdoJfyNNDRSWpuwZnQRG4Suuh2BeVtn+4psYnB5GpioZOv5E06rzp?=
+ =?us-ascii?Q?EAcXMBKK0Vl9ZeiG/7OsQOhmuzzNL7NQgGaKBRYvjKfDSgzjYkB/5blLSNUz?=
+x-ms-exchange-antispam-messagedata-1: YTvtJ4rsAYRkcg==
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <CC465C0ED11BCD4AB8120972E78F2EA1@namprd10.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20220422170920.401914-1-sebastian.reichel@collabora.com>
- <20220422170920.401914-19-sebastian.reichel@collabora.com>
- <36551341-60f5-8b61-59d1-176ece8204d6@arm.com> <20220425181407.lknemxqooz7yidcz@mercury.elektranox.org>
-In-Reply-To: <20220425181407.lknemxqooz7yidcz@mercury.elektranox.org>
-From:   Peter Geis <pgwipeout@gmail.com>
-Date:   Mon, 25 Apr 2022 15:37:41 -0400
-Message-ID: <CAMdYzYr4ZNDzLGn-ArT4dW+F5c598rsWpACNMpuJRMY7a0yb=A@mail.gmail.com>
-Subject: Re: [PATCHv1 18/19] arm64: dts: rockchip: Add base DT for rk3588 SoC
-To:     Sebastian Reichel <sebastian.reichel@collabora.com>
-Cc:     Robin Murphy <robin.murphy@arm.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
-        linux-mmc@vger.kernel.org,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        arm-mail-list <linux-arm-kernel@lists.infradead.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        kernel@lists.collabora.co.uk,
-        Kever Yang <kever.yang@rock-chips.com>, kernel@collabora.com,
-        Yifeng Zhao <yifeng.zhao@rock-chips.com>,
-        Elaine Zhang <zhangqing@rock-chips.com>,
-        Sugar Zhang <sugar.zhang@rock-chips.com>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR10MB2629.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 78294ef6-48c3-4ea6-01db-08da26f335bc
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Apr 2022 19:38:44.6143
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 87opIjgdwhdvtiNXACzri9gOOLLTWKoOnP7Z5jFsv9oxiVNiMRfLxhXkMwbzE5ouVWsH4Ys4ZFoZBHYPQ99nQHGGca/NrrSPOo1oAQqguX4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR10MB2001
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.858
+ definitions=2022-04-25_08:2022-04-25,2022-04-25 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 suspectscore=0
+ malwarescore=0 spamscore=0 phishscore=0 bulkscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204250087
+X-Proofpoint-ORIG-GUID: 3xeX-rexunNsV9ezazEdP-NwRfxBeUcu
+X-Proofpoint-GUID: 3xeX-rexunNsV9ezazEdP-NwRfxBeUcu
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 2:14 PM Sebastian Reichel
-<sebastian.reichel@collabora.com> wrote:
->
-> Hi,
->
-> Thanks for having a look.
->
-> On Fri, Apr 22, 2022 at 07:16:13PM +0100, Robin Murphy wrote:
-> > On 2022-04-22 18:09, Sebastian Reichel wrote:
-> > > ...
-> > > +           cpu_l0: cpu@0 {
-> > > +                   device_type = "cpu";
-> > > +                   compatible = "arm,cortex-a55";
-> > > +                   reg = <0x0>;
-> > > +                   enable-method = "psci";
-> > > +                   capacity-dmips-mhz = <530>;
-> > > +                   clocks = <&scmi_clk SCMI_CLK_CPUL>;
-> > > +                   i-cache-size = <32768>;
-> > > +                   i-cache-line-size = <64>;
-> > > +                   i-cache-sets = <128>;
-> > > +                   d-cache-size = <32768>;
-> > > +                   d-cache-line-size = <64>;
-> > > +                   d-cache-sets = <128>;
-> > > +                   next-level-cache = <&l2_cache_l0>;
-> > > +                   #cooling-cells = <2>;
-> > > +                   dynamic-power-coefficient = <228>;
-> > > +           };
-> >
-> > Is there any particular reason for not including more of the CPUs?
->
-> Yes, see below.
->
-> > > +           its: interrupt-controller@fe640000 {
-> > > +                   compatible = "arm,gic-v3-its";
-> > > +                   msi-controller;
-> > > +                   #msi-cells = <1>;
-> > > +                   reg = <0x0 0xfe640000 0x0 0x20000>;
-> > > +           };
-> > > +   };
-> >
-> > Does the ITS (and other bits related to GIC memory accesses) actually work,
-> > or will we have more of the same issues as RK356x?
->
-> The GIC in RK3588 is has the same shareability limitation as the RK356x,
-> but fixed the 32bit limitation. That's why I just added the boot cpu core
-> for now; adding any other cpu core breaks the boot without the downstream
-> shareability patch and I'm still investigating.
 
-There's no way to avoid this issue unfortunately.
-See my awful hacked together patch:
-https://gitlab.com/pine64-org/quartz-bsp/linux-next/-/commit/8b34fd2a74321f8f5d7731b63eee0f9e03d1393b
 
-Considering the ITS exists pretty much just for MSIs, and my PCIe
-series introduces support for legacy interrupts, you may get away with
-doing the mbi-alias currently implemented in rk356x.
-Note, there are *some* compatibility issues with mbi-alias MSIs,
-particularly with high IRQ cards like the Intel x520.
+> On Apr 18, 2022, at 6:51 PM, Prakash Sangappa <prakash.sangappa@oracle.co=
+m> wrote:
+>=20
+> semtimedop() should be converted to use hrtimer like it has been
+> done for most of the system calls with timeouts. This system call
+> already takes a struct timespec as an argument and can therefore
+> provide finer granularity timed wait.
+>=20
+> Signed-off-by: Prakash Sangappa <prakash.sangappa@oracle.com>
 
->
-> -- Sebastian
-> _______________________________________________
-> Linux-rockchip mailing list
-> Linux-rockchip@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-rockchip
+Can I get a review of this patch?
+Note this patch has been added to Andrew's mm tree.
+
+
+> ---
+> ipc/sem.c | 15 +++++++++++----
+> 1 file changed, 11 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/ipc/sem.c b/ipc/sem.c
+> index 0dbdb98..6cd1a1b8 100644
+> --- a/ipc/sem.c
+> +++ b/ipc/sem.c
+> @@ -1995,7 +1995,10 @@ long __do_semtimedop(int semid, struct sembuf *sop=
+s,
+> 	int max, locknum;
+> 	bool undos =3D false, alter =3D false, dupsop =3D false;
+> 	struct sem_queue queue;
+> -	unsigned long dup =3D 0, jiffies_left =3D 0;
+> +	unsigned long dup =3D 0;
+> +	ktime_t expires;
+> +	int timed_out =3D 0;
+> +	struct timespec64 end_time;
+>=20
+> 	if (nsops < 1 || semid < 0)
+> 		return -EINVAL;
+> @@ -2008,7 +2011,9 @@ long __do_semtimedop(int semid, struct sembuf *sops=
+,
+> 			error =3D -EINVAL;
+> 			goto out;
+> 		}
+> -		jiffies_left =3D timespec64_to_jiffies(timeout);
+> +		ktime_get_ts64(&end_time);
+> +		end_time =3D timespec64_add_safe(end_time, *timeout);
+> +		expires =3D timespec64_to_ktime(end_time);
+> 	}
+>=20
+>=20
+> @@ -2167,7 +2172,9 @@ long __do_semtimedop(int semid, struct sembuf *sops=
+,
+> 		rcu_read_unlock();
+>=20
+> 		if (timeout)
+> -			jiffies_left =3D schedule_timeout(jiffies_left);
+> +			timed_out =3D !schedule_hrtimeout_range(&expires,
+> +						current->timer_slack_ns,
+> +						HRTIMER_MODE_ABS);
+> 		else
+> 			schedule();
+>=20
+> @@ -2210,7 +2217,7 @@ long __do_semtimedop(int semid, struct sembuf *sops=
+,
+> 		/*
+> 		 * If an interrupt occurred we have to clean up the queue.
+> 		 */
+> -		if (timeout && jiffies_left =3D=3D 0)
+> +		if (timeout && timed_out)
+> 			error =3D -EAGAIN;
+> 	} while (error =3D=3D -EINTR && !signal_pending(current)); /* spurious *=
+/
+>=20
+> --=20
+> 2.7.4
+>=20
+
