@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7240C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 11:13:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39683C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 11:13:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237632AbiDYLQX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 07:16:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43494 "EHLO
+        id S231593AbiDYLQd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 07:16:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241572AbiDYLPm (ORCPT
+        with ESMTP id S241707AbiDYLPm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 25 Apr 2022 07:15:42 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30EDB2A737
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 04:12:13 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Kn2Q01JDsz1JBfc;
-        Mon, 25 Apr 2022 19:11:20 +0800 (CST)
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7AF92A275
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 04:12:11 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kn2Qk43fVzhYkZ;
+        Mon, 25 Apr 2022 19:11:58 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
  (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 25 Apr
- 2022 19:12:11 +0800
+ 2022 19:12:09 +0800
 From:   Miaohe Lin <linmiaohe@huawei.com>
 To:     <akpm@linux-foundation.org>
 CC:     <ying.huang@intel.com>, <iamjoonsoo.kim@lge.com>, <hch@lst.de>,
         <osalvador@suse.de>, <linux-mm@kvack.org>,
         <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH v3 5/6] mm/vmscan: remove obsolete comment in kswapd_run
-Date:   Mon, 25 Apr 2022 19:12:31 +0800
-Message-ID: <20220425111232.23182-6-linmiaohe@huawei.com>
+Subject: [PATCH v3 2/6] mm/vmscan: introduce helper function reclaim_page_list()
+Date:   Mon, 25 Apr 2022 19:12:28 +0800
+Message-ID: <20220425111232.23182-3-linmiaohe@huawei.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20220425111232.23182-1-linmiaohe@huawei.com>
 References: <20220425111232.23182-1-linmiaohe@huawei.com>
@@ -44,27 +44,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit 6b700b5b3c59 ("mm/vmscan.c: remove cpu online notification
-for now"), cpu online notification is removed. So kswapd won't move to
-proper cpus if cpus are hot-added. Remove this obsolete comment.
+Introduce helper function reclaim_page_list() to eliminate the duplicated
+code of doing shrink_page_list() and putback_lru_page. Also We can separate
+node reclaim from node page list operation this way. No functional change
+intended.
 
 Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 ---
- mm/vmscan.c | 1 -
- 1 file changed, 1 deletion(-)
+ mm/vmscan.c | 50 +++++++++++++++++++++++++-------------------------
+ 1 file changed, 25 insertions(+), 25 deletions(-)
 
 diff --git a/mm/vmscan.c b/mm/vmscan.c
-index 10ba16fdd748..db3500bd5c7d 100644
+index 913eb565140c..7dcc8cf4526f 100644
 --- a/mm/vmscan.c
 +++ b/mm/vmscan.c
-@@ -4572,7 +4572,6 @@ unsigned long shrink_all_memory(unsigned long nr_to_reclaim)
+@@ -2539,14 +2539,12 @@ static void shrink_active_list(unsigned long nr_to_scan,
+ 			nr_deactivate, nr_rotated, sc->priority, file);
+ }
  
- /*
-  * This kswapd start function will be called by init and node-hot-add.
-- * On node-hot-add, kswapd will moved to proper cpus if cpus are hot-added.
-  */
- void kswapd_run(int nid)
+-unsigned long reclaim_pages(struct list_head *page_list)
++static unsigned int reclaim_page_list(struct list_head *page_list,
++				      struct pglist_data *pgdat)
  {
+-	int nid = NUMA_NO_NODE;
+-	unsigned int nr_reclaimed = 0;
+-	LIST_HEAD(node_page_list);
+ 	struct reclaim_stat dummy_stat;
+-	struct page *page;
+-	unsigned int noreclaim_flag;
++	unsigned int nr_reclaimed;
++	struct folio *folio;
+ 	struct scan_control sc = {
+ 		.gfp_mask = GFP_KERNEL,
+ 		.may_writepage = 1,
+@@ -2555,6 +2553,24 @@ unsigned long reclaim_pages(struct list_head *page_list)
+ 		.no_demotion = 1,
+ 	};
+ 
++	nr_reclaimed = shrink_page_list(page_list, pgdat, &sc, &dummy_stat, false);
++	while (!list_empty(page_list)) {
++		folio = lru_to_folio(page_list);
++		list_del(&folio->lru);
++		folio_putback_lru(folio);
++	}
++
++	return nr_reclaimed;
++}
++
++unsigned long reclaim_pages(struct list_head *page_list)
++{
++	int nid = NUMA_NO_NODE;
++	unsigned int nr_reclaimed = 0;
++	LIST_HEAD(node_page_list);
++	struct page *page;
++	unsigned int noreclaim_flag;
++
+ 	noreclaim_flag = memalloc_noreclaim_save();
+ 
+ 	while (!list_empty(page_list)) {
+@@ -2570,28 +2586,12 @@ unsigned long reclaim_pages(struct list_head *page_list)
+ 			continue;
+ 		}
+ 
+-		nr_reclaimed += shrink_page_list(&node_page_list,
+-						NODE_DATA(nid),
+-						&sc, &dummy_stat, false);
+-		while (!list_empty(&node_page_list)) {
+-			page = lru_to_page(&node_page_list);
+-			list_del(&page->lru);
+-			putback_lru_page(page);
+-		}
+-
++		nr_reclaimed += reclaim_page_list(&node_page_list, NODE_DATA(nid));
+ 		nid = NUMA_NO_NODE;
+ 	}
+ 
+-	if (!list_empty(&node_page_list)) {
+-		nr_reclaimed += shrink_page_list(&node_page_list,
+-						NODE_DATA(nid),
+-						&sc, &dummy_stat, false);
+-		while (!list_empty(&node_page_list)) {
+-			page = lru_to_page(&node_page_list);
+-			list_del(&page->lru);
+-			putback_lru_page(page);
+-		}
+-	}
++	if (!list_empty(&node_page_list))
++		nr_reclaimed += reclaim_page_list(&node_page_list, NODE_DATA(nid));
+ 
+ 	memalloc_noreclaim_restore(noreclaim_flag);
+ 
 -- 
 2.23.0
 
