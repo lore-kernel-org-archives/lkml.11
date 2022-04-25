@@ -2,112 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99F00C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 13:47:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB637C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 13:47:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242093AbiDYNuF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 09:50:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54544 "EHLO
+        id S238597AbiDYNu3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 09:50:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230034AbiDYNuB (ORCPT
+        with ESMTP id S230034AbiDYNu1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 09:50:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E406C13DF7;
-        Mon, 25 Apr 2022 06:46:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 25 Apr 2022 09:50:27 -0400
+Received: from ixit.cz (ip-94-112-206-30.net.upcbroadband.cz [94.112.206.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6EB149F92;
+        Mon, 25 Apr 2022 06:47:21 -0700 (PDT)
+Received: from newone.lan (_gateway [10.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 85D67615BA;
-        Mon, 25 Apr 2022 13:46:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35886C385A4;
-        Mon, 25 Apr 2022 13:46:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650894415;
-        bh=cnaPGcH4wGvOkYGwNrD3V8c2ZplgPQyr3KVOqiR+sJ8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jA1s0kuSSuLQE2bT8lYq2PPV04y02D7wZ8T7PdJUl0+pIvcQzNQnEkHrKO/VLIdgb
-         2m1RDD1iU6fclgB2yt1Cje9fNi0pxMXo9Afs/v7KguWBId5ui/5gXhFdyMHHH8XIRQ
-         bOftIFstCxWmSjJHS3lBhWNxeu4gXmX0XXBJbCx4vqu2bqlpY3wW9SyWSPVIMDLzeT
-         BX2eE8JH6eajiA+UVHxwl22jmU3zQixvCowQ3xKibegjrsmrkShuAPa1Y4rNBOa55o
-         S2JjJmmeYwllM2K1/vcfweK03kM9wQnTiueeD9g3slFnmadjGloilFczuOGhiju7TU
-         mzZXT8lv+7Cdw==
-Date:   Mon, 25 Apr 2022 14:46:49 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Martin =?utf-8?Q?Povi=C5=A1er?= <povik@cutebit.org>
-Cc:     Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
+        by ixit.cz (Postfix) with ESMTPSA id B8BD82007F;
+        Mon, 25 Apr 2022 15:47:18 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ixit.cz; s=dkim;
+        t=1650894438;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=nBusD0JLQsF2NHhbTW59axXiZRAd0PqNZWGXhfmIbfk=;
+        b=RWpLA1nU6NpIJZ/dTaDIG2dtr3j7rO+PXJ5puEiCezRh2gckTBUnLiPycToTNPknKugXuq
+        QlW09h+Gw+xjcOPIpb66muM2Fbthrzu7p3/QbRC8t4OUV04qj5ukx3SlMoTq36IVcnY6Z6
+        2jtV0dQ73xQn/FZtH3EkP2oCVS45W5k=
+From:   David Heidelberg <david@ixit.cz>
+To:     Manivannan Sadhasivam <mani@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mark Kettenis <kettenis@openbsd.org>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>
-Subject: Re: [RFC PATCH 3/5] HACK: ASoC: Tolerate N-cpus-to-M-codecs links
-Message-ID: <YmamSZKNtNai7KyM@sirena.org.uk>
-References: <20220331000449.41062-1-povik+lin@cutebit.org>
- <20220331000449.41062-4-povik+lin@cutebit.org>
- <YkrkbBNYULLgeS5w@sirena.org.uk>
- <904EB8A1-5561-4555-8030-B85703E24F2E@cutebit.org>
- <YmaTHTKWAfM7FCcY@sirena.org.uk>
- <9F8BCBA8-5EE3-4F87-9518-91CB7AB4E077@cutebit.org>
- <YmaaPa8A03rWV7HE@sirena.org.uk>
- <4CF6B0A7-F218-4798-BB21-18D563309D5C@cutebit.org>
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     David Heidelberg <david@ixit.cz>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: [PATCH v3 1/2] dt-bindings: mailbox: qcom-ipcc: add missing compatible for SM8450
+Date:   Mon, 25 Apr 2022 15:47:15 +0200
+Message-Id: <20220425134717.55418-1-david@ixit.cz>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="V5YMDCcjWGsw/lIg"
-Content-Disposition: inline
-In-Reply-To: <4CF6B0A7-F218-4798-BB21-18D563309D5C@cutebit.org>
-X-Cookie: An apple a day makes 365 apples a year.
+Content-Transfer-Encoding: 8bit
+X-Spam: Yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Adds forgotten compatible and update SPDX header.
 
---V5YMDCcjWGsw/lIg
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: David Heidelberg <david@ixit.cz>
+---
+ Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-On Mon, Apr 25, 2022 at 03:11:14PM +0200, Martin Povi=C5=A1er wrote:
-> > On 25. 4. 2022, at 14:55, Mark Brown <broonie@kernel.org> wrote:
+diff --git a/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml b/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml
+index 866efb278813..825d29367737 100644
+--- a/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml
++++ b/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml
+@@ -1,4 +1,4 @@
+-# SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+ %YAML 1.2
+ ---
+ $id: http://devicetree.org/schemas/mailbox/qcom-ipcc.yaml#
+@@ -27,6 +27,7 @@ properties:
+           - qcom,sm6350-ipcc
+           - qcom,sm8250-ipcc
+           - qcom,sm8350-ipcc
++          - qcom,sm8450-ipcc
+           - qcom,sc7280-ipcc
+       - const: qcom,ipcc
+ 
+-- 
+2.35.1
 
-> > I am surprised that doesn't otherwise explode TBH - at the very least
-> > I'd expect it to show two PCMs to userspace which if I'm understanding
-> > your description correctly isn't really what's going on.
-
-> I fill in a single snd_soc_dai_link, it exposes a single PCM and works
-> like a charm. That is as long as I patch the playback/capture check in
-> question.
-
-> I read that to be the clear intention of ASoC code: a DAI link becomes
-> one snd_soc_pcm_runtime.
-
-Yes, so long as you boil it down to a single link it works fine but the
-bit on top of the binding where you tie the two CPU DAIs to what is
-actually exposed is all in code.  The reason this stuff isn't filled in
-is that connecting the thing that applications see to the physical links
-isn't at all obvious and needs at least some driver sitting in the
-middle to make the links - I'd imagine there's a DSP sitting there which
-probably has quite a bit of flexability about how the various hardware
-components available are actually related.  This makes figuring out what
-to do with the relationship between the multiple CPU DAIs hard.
-
---V5YMDCcjWGsw/lIg
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJmpkkACgkQJNaLcl1U
-h9C/GQf+OjJGWvlH5dhjAe5s8YfzoSM40Z2KmKGWDIcK8eWx0PFyUNUbga/WyQfu
-/DZp541i+iDNis3n38axj/4MJkr6Fv79zkvqkXcDoJRwvHPN4pUnWuayW4R9dzOD
-RCziMyqgTtA4L9aCBI3OW6j6iDy5giYhk1ZGom2XGghdavCGptkPmXnWebvjTP1u
-86P8dTNBR5iyhFdxG6ZQXgGOoj+HDKc7wd8GeKmUErNfgDPJhLKe4+2CPyX/l8cp
-7yO9I0+h4S/GIOyCjybXqlEfCKLSYk6S7rf+grBcXOfQlb+AUo27WCSS1E2AvH/P
-/5nrS6m379X9QqI4rhcsEJOfwZo+1w==
-=/H/Q
------END PGP SIGNATURE-----
-
---V5YMDCcjWGsw/lIg--
