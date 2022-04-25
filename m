@@ -2,195 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55598C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:25:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC276C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:25:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243461AbiDYQ2L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 12:28:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36560 "EHLO
+        id S243364AbiDYQ20 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 12:28:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243387AbiDYQ1V (ORCPT
+        with ESMTP id S243497AbiDYQ1o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 12:27:21 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3112E11F95D;
-        Mon, 25 Apr 2022 09:24:16 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id be20so10736408edb.12;
-        Mon, 25 Apr 2022 09:24:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=OJGoiJNwFDmzE6NZyaviRL0fEUXeK4n13JnNeBVTnoY=;
-        b=QrnfVKZSrkyH0G9YYMJPjxqtJnZgqF/lOhQXKE7zaCAFKC6qv5NSrjPyHaXqTJAZcW
-         knqvwYiRlh98S5V0plazvm/ZeOB8qzt7fl7aiNx6KCjPlp2XxVaWAkp1IowiMcIcM5aS
-         7F6SQn2iFoTugdkx7DA8fRRhxVwoKFs33mZcfYcwx1L+OYTkDovymxDUJTrjBC24RUOI
-         uPdArrtUPZb5Y9CNHGTsZe79B/yBWRFv6LX8v/2x4F9XaGd9in2xLIqW9F0CNcJHTb+I
-         BVCEb2Cqq5TZhFrggaTPl03M3QlJHonYVLLz1IQ45gvxBN6aFPG7maFIRlPRpgObn/VF
-         yw4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=OJGoiJNwFDmzE6NZyaviRL0fEUXeK4n13JnNeBVTnoY=;
-        b=i1FDUusplzhp124H/gI1HZWMYambhuxyrZgMLrLXDyUsd9DWaKTTxCMQx2unGvA/cw
-         8+Y11ShuNlQbaQm3uez22c7UaFs2qDr/rn8F2YbpX4PcO1Kg/aMLP9fYcFbCalXlvSIS
-         8FMOWQw2Ut/k5sl8vffowytDLTPLSMm0e+NQJXJgbHsWzy+abhHnWvtrcmbrH+urII/P
-         65+pevDZ+xb5w+Vvnz4epUOax/C1AfDSAr8sbSt4NTIidbgHRpoBmeXwOp0HW7px6Vom
-         LzpRqpd8GxzjePosh3QyZi77XgqH9k964Aa39W3tqymD9GmSLwetYxW5iHp+nH8cBNaa
-         VAFQ==
-X-Gm-Message-State: AOAM533eREbX2pJsJNklk0Asar6r/vexUk9IlXSo8WDtOBg7lzQHzeOv
-        HQ9kZ53HT8dNMGyD3wEFJl8=
-X-Google-Smtp-Source: ABdhPJw9+DlfQBDaEvdFlPBGZF1PZTZcAcH6T54OGUFmHhZAoP3YHxD8OhDfKdcHl4Ub53GqIh/5nA==
-X-Received: by 2002:aa7:d916:0:b0:425:d75f:ae68 with SMTP id a22-20020aa7d916000000b00425d75fae68mr10832913edr.270.1650903854728;
-        Mon, 25 Apr 2022 09:24:14 -0700 (PDT)
-Received: from localhost.localdomain (host-79-50-86-254.retail.telecomitalia.it. [79.50.86.254])
-        by smtp.gmail.com with ESMTPSA id s12-20020a1709062ecc00b006e8558c9a5csm3784122eji.94.2022.04.25.09.24.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 09:24:13 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Ira Weiny <ira.weiny@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        linux-doc@vger.kernel.org, outreachy@lists.linux.dev
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: [PATCH v2 4/4] Documentation/vm: Rework "Temporary Virtual Mappings" section
-Date:   Mon, 25 Apr 2022 18:24:00 +0200
-Message-Id: <20220425162400.11334-5-fmdefrancesco@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220425162400.11334-1-fmdefrancesco@gmail.com>
-References: <20220425162400.11334-1-fmdefrancesco@gmail.com>
+        Mon, 25 Apr 2022 12:27:44 -0400
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0005311F953;
+        Mon, 25 Apr 2022 09:24:39 -0700 (PDT)
+Received: from toolbox.int.toradex.com ([81.221.85.15]) by mrelay.perfora.net
+ (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id 0MIcLW-1nlDMm0OF6-002Gzw;
+ Mon, 25 Apr 2022 18:24:24 +0200
+From:   Marcel Ziswiler <marcel@ziswiler.com>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     Denys Drozdov <denys.drozdov@toradex.com>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 06/14] ARM: dts: imx6ull-colibri: update device trees to support overlays
+Date:   Mon, 25 Apr 2022 18:23:48 +0200
+Message-Id: <20220425162356.176665-7-marcel@ziswiler.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220425162356.176665-1-marcel@ziswiler.com>
+References: <20220425162356.176665-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:+igbeOghPhe6M3gEizB8AVT7oSjjfiUdrze/kubBf24xhfoW15O
+ O6mFkgRIAi+NMEP9ztA8Cx66mpJtVKPBVPOuuT5kONJVhezN+L+Zt9O8R/glThQLCLwKNIo
+ uaKSMosEQoY68PsU0BXn5KR1buyrrUQZul/hHsTJjtXhomCdX72UcREW7Y+xmA1anfaRr+D
+ 7mTxKOg/TerJ8JP1OyzqQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:t8g3efxgEBg=:BvN3l9h5fjZ7lUIsV5IsqF
+ I7PJtrF3Pp51fJ93iVf9R5GjrH5oRFQaOBDotbK69D7qUQgZFGeooF8Nho3GnqYvUmG6FKlyH
+ pII2mpnAnX+LQ5UX1Ku2wP43yF5zfr0ocxpKz/zoWn87uUnR/UT8aG2oy9OKixx58bLSIZqJ+
+ XdXZT+Ms4ZQ5K5R9Rgxrhuupx0pbm/KWuaIE2RsmJdMZFAkwk0rsgBw9JWscery+rWArhluVi
+ fyPKKpdL+DEUQY+uxJc5t0z8cyo4rzg1u5syFkx1DGEefcb05/ndUrZPXtmnl91aU2ql8RfjM
+ IPBy97Tit7o2xJxcOfhL64RXSAzMQJ1KBvsBK2pk3G5kL1RywY10zcVHnBj/lCbBuUHT5eAQx
+ GFj2PK5QA3rYk209qlmFgdLpeM/1aFO5uuDAItxJ24dnFPDqSKyz+GLkTvEvdaeEBUZZAZFGF
+ UIhaz3JXlYcUKRcSFK79odOgUWGi+UUPthvbczuG4kY+Dhn2DyDRyF/T/M1+vFArp9flsU+Md
+ vBl9FPf1YufcQWy2efiyLBRVP6uyzOytN2FZ+BItUt33TMJUWWzOvdv3xeXmivrexiL2Y9vbS
+ MR/gtFTQsefdYYi6OW/x9IH/R2Z7cu9wsqgzX3VS7t2tqrgK5SHvAFPJ/RPoZWOF0RXcFD4l+
+ ki1pgMOmO2obbAGWADTrNp3GzU06DDixphUtYlTSYpUqNrzsE7xB9JmonmuDHBftjc/sLalB/
+ EBAssrKQSRa8rK9U
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Extend and rework the "Temporary Virtual Mappings" section of the highmem.rst
-documentation.
+From: Denys Drozdov <denys.drozdov@toradex.com>
 
-Despite the local kmaps were introduced by Thomas Gleixner in October 2020,
-documentation was still missing information about them. These additions rely
-largely on Gleixner's patches, Jonathan Corbet's LWN articles, comments by
-Ira Weiny and Matthew Wilcox, and in-code comments from
-./include/linux/highmem.h.
+Prepare in-tree device trees for out-of-tree device tree overlay support
+(eMMC SKU only).
 
-1) Add a paragraph to document kmap_local_page().
-2) Reorder the list of functions by decreasing order of preference of
-use.
-3) Rework part of the kmap() entry in list.
+Relocate panel-dpi default to edt,et057090dhu (RGB 18bit VGA 640x480)
+to the module-level dtsi and remove it from the carrier board dtsi.
 
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Matthew Wilcox <willy@infradead.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Suggested-by: Ira Weiny <ira.weiny@intel.com>
-Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+Keep backlight, resistive touch and Atmel maxtouch nodes enabled
+for both eMMC and NAND modules.
+
+Signed-off-by: Denys Drozdov <denys.drozdov@toradex.com>
+Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 ---
- Documentation/vm/highmem.rst | 73 ++++++++++++++++++++++++++++++------
- 1 file changed, 62 insertions(+), 11 deletions(-)
 
-diff --git a/Documentation/vm/highmem.rst b/Documentation/vm/highmem.rst
-index e05bf5524174..b09f1f9a81f2 100644
---- a/Documentation/vm/highmem.rst
-+++ b/Documentation/vm/highmem.rst
-@@ -50,26 +50,77 @@ space when they use mm context tags.
- Temporary Virtual Mappings
- ==========================
+(no changes since v1)
+
+ .../arm/boot/dts/imx6ull-colibri-eval-v3.dtsi | 29 -----------------
+ arch/arm/boot/dts/imx6ull-colibri.dtsi        | 31 ++++++++++++++++---
+ 2 files changed, 27 insertions(+), 33 deletions(-)
+
+diff --git a/arch/arm/boot/dts/imx6ull-colibri-eval-v3.dtsi b/arch/arm/boot/dts/imx6ull-colibri-eval-v3.dtsi
+index ea086b305d22..3c07b4273e80 100644
+--- a/arch/arm/boot/dts/imx6ull-colibri-eval-v3.dtsi
++++ b/arch/arm/boot/dts/imx6ull-colibri-eval-v3.dtsi
+@@ -29,17 +29,6 @@ clk16m: clk16m {
+ 		clock-frequency = <16000000>;
+ 	};
  
--The kernel contains several ways of creating temporary mappings:
-+The kernel contains several ways of creating temporary mappings. The following
-+list shows them in order of preference of use.
+-	panel: panel {
+-		compatible = "edt,et057090dhu";
+-		backlight = <&bl>;
+-		power-supply = <&reg_3v3>;
+-
+-		port {
+-			panel_in: endpoint {
+-				remote-endpoint = <&lcdif_out>;
+-			};
+-		};
+-	};
  
--* vmap().  This can be used to make a long duration mapping of multiple
--  physical pages into a contiguous virtual space.  It needs global
--  synchronization to unmap.
-+* kmap_local_page().  This function is used to require short term mappings.
-+  It can be invoked from any context (including interrupts) but the mappings
-+  can only be used in the context which acquired them.
-+
-+  This function should be preferred, where feasible, over all the others.
+ 	reg_3v3: regulator-3v3 {
+ 		compatible = "regulator-fixed";
+@@ -71,14 +60,6 @@ &adc1 {
+ 	status = "okay";
+ };
  
--* kmap().  This permits a short duration mapping of a single page.  It needs
--  global synchronization, but is amortized somewhat.  It is also prone to
--  deadlocks when using in a nested fashion, and so it is not recommended for
--  new code.
-+  These mappings are per thread, CPU local (i.e., migration from one CPU to
-+  another is disabled - this is why they are called "local"), but they don't
-+  disable preemption. It's valid to take pagefaults in a local kmap region,
-+  unless the context in which the local mapping is acquired does not allow
-+  it for other reasons.
-+
-+  kmap_local_page() always returns a valid virtual address and it is assumed
-+  that kunmap_local() will never fail.
-+
-+  If a task holding local kmaps is preempted, the maps are removed on context
-+  switch and restored when the task comes back on the CPU. As the maps are
-+  strictly CPU local, it is guaranteed that the task stays on the CPU and
-+  that the CPU cannot be unplugged until the local kmaps are released.
-+
-+  Nesting kmap_local_page() and kmap_atomic() mappings is allowed to a certain
-+  extent (up to KMAP_TYPE_NR) but their invocations have to be strictly ordered
-+  because the map implementation is stack based. See kmap_local_page () kdocs
-+  (included in the "Functions" section) for details on how to manage nested
-+  mappings.
+-&bl {
+-	brightness-levels = <0 4 8 16 32 64 128 255>;
+-	default-brightness-level = <6>;
+-	power-supply = <&reg_3v3>;
+-	pwms = <&pwm4 0 5000000 1>;
+-	status = "okay";
+-};
+-
+ &ecspi1 {
+ 	status = "okay";
  
- * kmap_atomic().  This permits a very short duration mapping of a single
-   page.  Since the mapping is restricted to the CPU that issued it, it
-   performs well, but the issuing task is therefore required to stay on that
-   CPU until it has finished, lest some other task displace its mappings.
+@@ -107,16 +88,6 @@ m41t0m6: rtc@68 {
+ 	};
+ };
  
--  kmap_atomic() may also be used by interrupt contexts, since it is does not
--  sleep and the caller may not sleep until after kunmap_atomic() is called.
-+  kmap_atomic() may also be used by interrupt contexts, since it does not
-+  sleep and the callers too may not sleep until after kunmap_atomic() is
-+  called.
-+
-+  Each call of kmap_atomic() in the kernel creates a non-preemptible section
-+  and disable pagefaults. This could be a source of unwanted latency, so it
-+  should be only used if it is absolutely required, otherwise kmap_local_page()
-+  should be used where it is feasible.
+-&lcdif {
+-	status = "okay";
+-
+-	port {
+-		lcdif_out: endpoint {
+-			remote-endpoint = <&panel_in>;
+-		};
+-	};
+-};
+-
+ /* PWM <A> */
+ &pwm4 {
+ 	status = "okay";
+diff --git a/arch/arm/boot/dts/imx6ull-colibri.dtsi b/arch/arm/boot/dts/imx6ull-colibri.dtsi
+index bd8736d90cbb..756cb4222805 100644
+--- a/arch/arm/boot/dts/imx6ull-colibri.dtsi
++++ b/arch/arm/boot/dts/imx6ull-colibri.dtsi
+@@ -11,12 +11,29 @@ aliases {
+ 		ethernet1 = &fec1;
+ 	};
  
--  It may be assumed that k[un]map_atomic() won't fail.
-+  It is assumed that k[un]map_atomic() won't fail.
+-	bl: backlight {
++	backlight: backlight {
+ 		compatible = "pwm-backlight";
++		brightness-levels = <0 4 8 16 32 64 128 255>;
++		default-brightness-level = <6>;
++		enable-gpios = <&gpio1 11 GPIO_ACTIVE_HIGH>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&pinctrl_gpio_bl_on>;
+-		enable-gpios = <&gpio1 11 GPIO_ACTIVE_HIGH>;
+-		status = "disabled";
++		power-supply = <&reg_3v3>;
++		pwms = <&pwm4 0 5000000 1>;
++		status = "okay";
++	};
 +
-+* kmap().  This should be used to make short duration mapping of a single
-+  page with no restrictions on preemption or migration. It comes with an
-+  overhead as mapping space is restricted and protected by a global lock
-+  for synchronization. When mapping is no longer needed, the address that
-+  the page was mapped to must be released with kunmap().
++	panel_dpi: panel-dpi {
++		compatible = "edt,et057090dhu";
++		backlight = <&backlight>;
++		power-supply = <&reg_3v3>;
++		status = "okay";
 +
-+  Mapping changes must be propagated across all the CPUs. kmap() also
-+  requires global TLB invalidation when the kmap's pool wraps and it might
-+  block when the mapping space is fully utilized until a slot becomes
-+  available. Therefore, kmap() is only callable from preemptible context.
-+
-+  All the above work is necessary if a mapping must last for a relatively
-+  long time but the bulk of high-memory mappings in the kernel are
-+  short-lived and only used in one place. This means that the cost of
-+  kmap() is mostly wasted in such cases. kmap() was not intended for long
-+  term mappings but it has morphed in that direction and its use is
-+  strongly discouraged in newer code and the set of the preceding functions
-+  should be preferred.
-+
-+  On 64-bit systems, calls to kmap_local_page(), kmap_atomic() and kmap() have
-+  no real work to do because a 64-bit address space is more than sufficient to
-+  address all the physical memory whose pages are permanently mapped.
-+
-+* vmap().  This can be used to make a long duration mapping of multiple
-+  physical pages into a contiguous virtual space.  It needs global
-+  synchronization to unmap.
++		port {
++			lcd_panel_in: endpoint {
++				remote-endpoint = <&lcdif_out>;
++			};
++		};
+ 	};
  
+ 	reg_module_3v3: regulator-module-3v3 {
+@@ -149,7 +166,7 @@ &i2c2 {
+ 	scl-gpios = <&gpio1 30 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+ 	status = "okay";
  
- Cost of Temporary Mappings
+-	ad7879@2c {
++	ad7879_ts: touchscreen@2c {
+ 		compatible = "adi,ad7879-1";
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&pinctrl_snvs_ad7879_int>;
+@@ -170,6 +187,12 @@ &lcdif {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_lcdif_dat
+ 		     &pinctrl_lcdif_ctrl>;
++
++	port {
++		lcdif_out: endpoint {
++			remote-endpoint = <&lcd_panel_in>;
++		};
++	};
+ };
+ 
+ &pwm4 {
 -- 
-2.34.1
+2.35.1
 
