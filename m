@@ -2,85 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F96DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 19:37:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 156BFC43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 19:37:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244975AbiDYTkt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 15:40:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48806 "EHLO
+        id S244990AbiDYTk7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 15:40:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236023AbiDYTks (ORCPT
+        with ESMTP id S236023AbiDYTk4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 15:40:48 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1A8B111153
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 12:37:43 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650915462;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=kmfq8fzVoEHC3SLS8iOyzMnfjBRDrka13gMWgVL1LSo=;
-        b=XHzJHtJAhv5AM/TDaBJdYPi+iUnnHuIlPazyyRW5+P1oAN/MIgmHiVO9Vy/b2yK43im1o3
-        3w0/mq/K3uvDuVs2pIkUWkgA1puDPY1xDejfLrgZy73KVOvgrF3YyDstlp+b0S/aYRi7VI
-        4vH3MFFG7hKP05o2fwwM5NMXRS5yVEOGNgI/aIteuNwsI0Z7xLGATgf106+Y72E9YbqMs+
-        RmgUPcrCn0p2vF53qg3+ZjsLRS1SN1SwFaI13x+/bvF4FMU6wbcyPl6tiI2FWiD46WTYQv
-        3OQ6r/58Wt3lSlrDOT0y0sJEbxGY/BHhjvjkfUMj0gEtTIsTMjy5Y5Wzm+Q5Bg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650915462;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=kmfq8fzVoEHC3SLS8iOyzMnfjBRDrka13gMWgVL1LSo=;
-        b=lh5hgOI59S4pn6X/KYSmqpxbOYHkPq0C7iK5XCXqJ6CuvBZm07XAQzRDWVxwVq4UHf0FBa
-        nLrieppdwqWn0eCg==
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        Mukesh Ojha <quic_mojha@quicinc.com>,
-        linux-kernel@vger.kernel.org
-Cc:     sboyd@kernel.org, rafael@kernel.org, gregkh@linuxfoundation.org,
-        Kees Cook <keescook@chromium.org>
-Subject: Re: [PATCH v2 ] devcoredump : Serialize devcd_del work
-In-Reply-To: <8186de033c87f0cdec296ae272a72c5b9a2880a3.camel@sipsolutions.net>
-References: <87levt14kn.ffs@tglx>
- <8186de033c87f0cdec296ae272a72c5b9a2880a3.camel@sipsolutions.net>
-Date:   Mon, 25 Apr 2022 21:37:41 +0200
-Message-ID: <878rrt0xa2.ffs@tglx>
+        Mon, 25 Apr 2022 15:40:56 -0400
+Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05008112475
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 12:37:52 -0700 (PDT)
+Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-e67799d278so13372328fac.11
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 12:37:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=+tFs7ION8k6rJZ6DwXGIjgaEiJUb+ToaKYRNi5Y8Jzg=;
+        b=GlMx3gxY4kIuC/DtJDnlAjQ3SStQfgm7BENn/BM3AIEGbIHk0gCPdTQKRZdDxUMwsm
+         X7lph7uQxenjcrWO7wA+pj+7jIqVM83fLvxxtNllUubzEvVDgmXvXIsSIJLxIGseAoBo
+         EQ/l2yBtqwzPSbu4HY0ZiMRvcvoPVjctk12yY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=+tFs7ION8k6rJZ6DwXGIjgaEiJUb+ToaKYRNi5Y8Jzg=;
+        b=otHvQsAxPWaI18kUvR2ujb9RfEgyiL8LBz+Blq87DtEqHPF1rdRLRNAe89vZE6lOb+
+         4ikkrOQz+/iSO8tjZiOf7IZgZBndKIenFsPFRYnDbZHb6yhzyruh/+n/hHZ3FQz4s/YD
+         n16bp+EX4xf65krGg7h2akoBXw6c63yvl6zV9PGJC0/+ynhN+9+Fmn0FXY454WaeHQM1
+         RRl7wKGc0Knm0lGsLcwO2YmPPEs1yltw9oDDirCGoB1J1iyEMu248wB9CnvlAUKRZw+Z
+         SI9yAsIU4fDNYANJEsJyWuby/jwNwD/xWeRFa+xXT2wsSYr5XmjOKPCuiKsmIUDa4HZj
+         YA5Q==
+X-Gm-Message-State: AOAM532laGfbhJvnlQ0zq/W35GraEDZtJs21+pL1fICCr7AAwlXJCybJ
+        My95sMovCQ49fkdAnzni6aFLiQ==
+X-Google-Smtp-Source: ABdhPJwNIZUlY03DLtWaLGhX3UZynCY3VqiZhp8eCGDD32jhqtQHrBwMzy0PwyMo9BZNmfQbL3mYXw==
+X-Received: by 2002:a05:6870:889f:b0:de:44c7:5a38 with SMTP id m31-20020a056870889f00b000de44c75a38mr11984079oam.83.1650915470584;
+        Mon, 25 Apr 2022 12:37:50 -0700 (PDT)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id bi23-20020a056808189700b00325262c9500sm1798450oib.45.2022.04.25.12.37.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 Apr 2022 12:37:50 -0700 (PDT)
+Subject: Re: [PATCH RESEND] selftests/damon: add damon to selftests root
+ Makefile
+To:     David Rientjes <rientjes@google.com>,
+        Yuanchu Xie <yuanchu@google.com>
+Cc:     Shuah Khan <shuah@kernel.org>, Markus Boehme <markubo@amazon.de>,
+        SeongJae Park <sj@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220418202017.3583638-1-yuanchu@google.com>
+ <93c3f9b4-7e14-858b-bf6c-23e4f3bec232@google.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <31edb348-d802-0ee5-c13d-a9ef17b2ea8a@linuxfoundation.org>
+Date:   Mon, 25 Apr 2022 13:37:49 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <93c3f9b4-7e14-858b-bf6c-23e4f3bec232@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Cc+: Kees
+On 4/24/22 1:35 PM, David Rientjes wrote:
+> On Mon, 18 Apr 2022, Yuanchu Xie wrote:
+> 
+>> Currently the damon selftests are not built with the rest of the
+>> selftests. We add damon to the list of targets.
+>>
+>> Fixes: b348eb7abd09 ("mm/damon: add user space selftests")
+>> Reviewed-by: SeongJae Park <sj@kernel.org>
+>> Signed-off-by: Yuanchu Xie <yuanchu@google.com>
+> 
+> Acked-by: David Rientjes <rientjes@google.com>
+> 
 
-On Mon, Apr 25 2022 at 19:19, Johannes Berg wrote:
-> On Mon, 2022-04-25 at 19:00 +0200, Thomas Gleixner wrote:
->> 
->> Johannes, can you please explain whether this immediate flush in
->> disabled_store() is really required and if so, why?
->> 
-> I don't really know, as I remember that requirement (or maybe even code,
-> not sure) came from Kees, who needed the lockdown.
->
-> Given the use case (ChromeOS?) I'm not sure I see a need to flush all of
-> them, since I guess a typical system would set the lockdown early in
-> boot and hopefully not have a crash-dump around already.
->
-> That said, I don't think the diagram you made works - fn() during the
-> iteration is guaranteed to be invoked with a reference of its own, so
-> the put_device() there can't be the last reference, only as fn() returns
-> you'd put the last reference *there*, freeing it.
+Thank you. Applied to linux-kselftest next for 5.19-rc1.
 
-Bah, you are right, it's magically protected by the klist ref, which
-prevents devcd from going away. Damned obvious.
-
-This really needs comments why this all can magically "work".
-
-Thanks,
-
-        tglx
-
-
-
-
+thanks,
+-- Shuah
