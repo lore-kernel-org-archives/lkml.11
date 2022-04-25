@@ -2,79 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB7A1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 06:49:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBCD7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 06:50:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235670AbiDYGwO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 02:52:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60306 "EHLO
+        id S232470AbiDYGxw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 02:53:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235613AbiDYGwK (ORCPT
+        with ESMTP id S231721AbiDYGxu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 02:52:10 -0400
-Received: from mx1.riseup.net (mx1.riseup.net [198.252.153.129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 319646D195;
-        Sun, 24 Apr 2022 23:49:07 -0700 (PDT)
-Received: from fews1.riseup.net (fews1-pn.riseup.net [10.0.1.83])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
-         client-signature RSA-PSS (2048 bits) client-digest SHA256)
-        (Client CN "mail.riseup.net", Issuer "R3" (not verified))
-        by mx1.riseup.net (Postfix) with ESMTPS id 4KmwbQ5KRkzDsMn;
-        Sun, 24 Apr 2022 23:49:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
-        t=1650869346; bh=X9r/gViEyERj3QdfbSpzf1vJ7D4I2koJWoEPclEgUyk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=hU6Ht86PcVkEicT6g8dKFu+l8SWsrHNnWP11RbVrMgjVeoPwQpyObmWKp7VR80cx7
-         zvUw5BItgetPee1YlfEBnZrP+hNxkOuiuHMENK2I4f69QQgVJwBR4Xhw9VHU59qN8A
-         aTBAPqZS+yXt3s8VyJM8MLTSuR/W7d8INu9OutKA=
-X-Riseup-User-ID: B99F5AF868D304E13E026E41E8363AE8632B12E80FB7D65A24F398B2BFEA6E64
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-         by fews1.riseup.net (Postfix) with ESMTPSA id 4KmwbN3mNBz5vTc;
-        Sun, 24 Apr 2022 23:49:04 -0700 (PDT)
-From:   Dang Huynh <danct12@riseup.net>
-To:     Dang Huynh <danct12@riseup.net>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] arm64: dts: mediatek: pumpkin: Remove input-name property
-Date:   Mon, 25 Apr 2022 13:48:51 +0700
-Message-Id: <20220425064850.246228-1-danct12@riseup.net>
+        Mon, 25 Apr 2022 02:53:50 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC9D372E0E;
+        Sun, 24 Apr 2022 23:50:45 -0700 (PDT)
+Received: from mail-wr1-f51.google.com ([209.85.221.51]) by
+ mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MuF4v-1o1vTi2ySb-00uXUa; Mon, 25 Apr 2022 08:50:43 +0200
+Received: by mail-wr1-f51.google.com with SMTP id x18so19417170wrc.0;
+        Sun, 24 Apr 2022 23:50:43 -0700 (PDT)
+X-Gm-Message-State: AOAM531qquoFZpNNmgpU9hlQVwGxWR2i/DYAjGaEIEGAqHWxb/uINC+k
+        oNd9BmePSv7vkaBHsPhVG6MwqRu0sslqBhxGo30=
+X-Google-Smtp-Source: ABdhPJxPmwV5WfcLnmUcvdXXaS8GyG1IsSnRTeCouUj2lCvJavpxFpqEWw5tHbS8gyEonBI8l0BcoD/6n15ffRVK4JY=
+X-Received: by 2002:a5d:49cb:0:b0:20a:cee3:54fc with SMTP id
+ t11-20020a5d49cb000000b0020acee354fcmr8897626wrs.12.1650869443104; Sun, 24
+ Apr 2022 23:50:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220422151725.1336997-1-mailhol.vincent@wanadoo.fr>
+ <YmXMiTXEvFXZ/swU@dev-arch.thelio-3990X> <CAMZ6Rq+3XOze01dZZRTe+V44N2uo5J_=rtd9bKH7d7Fq9sNxVw@mail.gmail.com>
+In-Reply-To: <CAMZ6Rq+3XOze01dZZRTe+V44N2uo5J_=rtd9bKH7d7Fq9sNxVw@mail.gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Mon, 25 Apr 2022 08:50:26 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a31WAyh_vLqNwvv2GMcZ8SQp7gC=OV8c=Nc9pBtOSR8-g@mail.gmail.com>
+Message-ID: <CAK8P3a31WAyh_vLqNwvv2GMcZ8SQp7gC=OV8c=Nc9pBtOSR8-g@mail.gmail.com>
+Subject: Re: [PATCH] checksyscalls: ignore -Wunused-macros
+To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        clang-built-linux <llvm@lists.linux.dev>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linux API <linux-api@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:UaCMRLV59oKpIUu2ubDKLDGAgKT/RVqgR8o7Sf6wAJ/o26k9drx
+ WATwG6fvMDAyx288U/tjPp5okwmDteAFpSxMDG3S1dSCJ5yDePznIVqIXpkC1FmgOAbevrJ
+ dnLwwIGZh5sxeHIDpm//TWSO85V5MYVnMfN/KpK9+LswndgTOQWNueoxackeKNH4IRWfahd
+ PF+b8jqKnmbCSW3e9MS1w==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:jMQQiCIRwX8=:wKorjLd+Zoo+h0Kv890um+
+ WjBeDynLgYmGe5x5ReBXQO/w+F6WshAK6vXNlK2/UHeiG2nSjluBH4X28x1VmPEBy1O7I7N2a
+ lO+Vuy2EisyyRIBhUpNXHzKPlSA/A3SLHyHHbcyjj8hRTgtmoEag9iBWhk7VY0/dtq9CDFWrM
+ OkORDMPW4IQOlVts47wjV6tfd5wG1LWaixW4OacmFxnT/Ewy/KZvXD/q2tl0fQwCROTbZxqhe
+ VWsshz0zFqevDI4t073M1FcDhcmgbWFwPd4IgiEQCQm4Onv7CdnLcTg66ktXZFVVoLR4JzuPz
+ K5WaJQBmjS4U/efocBwYW8JFKsZ22e6uHN/yhN3n9QPVdehhYseod24oRuj0gfPaIN1iW0r5j
+ 8tTb/v0wwDHgaWF4KAeJLyC+OIQw96RqIXEyf3pYeX0miTjy5afPvPEHj5U/vgiMRNTRIIjG3
+ 2JxWK2eOJkmstit8OSIf4ACG0lqUWa4yYvdlsf5Ez5D34qEjCTkOM6SHsi9Ctu8ekwRI38Hd/
+ ae83ypvhaCCKF0YakZoa2IsaquRVxLEy/bSiYZtzrnd8tf4REGpMZ4+EU9x0VuqhNX232HTbN
+ jhUDMR+2ALf9pEX+chA+E3kDW7c5r2lFORRDtvevKEk2au1baecut64vtft05qnr9A2ZqD1e0
+ aUbltgMrAFl+na9BpQnOc8aR+98v4rlCFvVbPLU7LpTGvMnK3V3m1/lMCQHCEROxymnxjYUC3
+ wu2K6A09ax/MqZGP7oaOjZItUaKdbGRdmxGVYzOU1VLC3rcsPh7u1chG+UxhJh5QBHUC/B8ka
+ xScis/z4WdVg1FTv0S6ay5gV6rqYyeZBEu5q43QI1nrIPRkD+4=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This property doesn't seem to exist in the documentation nor
-in source code, but for some reason it is defined in a bunch
-of device trees.
+On Mon, Apr 25, 2022 at 8:17 AM Vincent MAILHOL
+<mailhol.vincent@wanadoo.fr> wrote:
+> On Mon. 25 Apr 2022 at 07:17, Nathan Chancellor <nathan@kernel.org> wrote:
+> > Hi Vincent,
+> >
+> > On Sat, Apr 23, 2022 at 12:17:25AM +0900, Vincent Mailhol wrote:
+> > > The macros defined in this file are for testing only and are purposely
+> > > not used. When compiled with W=2, both gcc and clang yield some
+> > > -Wunused-macros warnings. Ignore them.
+> > >
+> > > Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+> >
+> > The change itself looks fine but a couple of comments:
+> >
+> > 1. Nick and I do not pick up patches, we rely on others to do so.
+> >    Additionally, this is not really something within our domain, despite
+> >    what get_maintainer.pl might say. This change should be sent to
+> >    either
+> >
+> >    Masahiro Yamada <masahiroy@kernel.org>
+> >    linux-kbuild@vger.kernel.org
+> >
+> >    or
+> >
+> >    Andrew Morton <akpm@linux-foundation.org>
+> >
+> >    so that it can be applied by one of them.
+>
+> Ack. As you pointed out, I indeed just followed get_maintainer.pl.
+> I will resend a v2 to the people you pointed out (and exclude you).
+>
+> > 2. I am not sure that silencing warnings from W=2 is that useful, as
+> >    they are unlikely to be real issues. Not to discourage you by any
+> >    means but it might be more useful to focus on cleaning up warnings
+> >    from W=1 and getting those promoted to regular build warnings.
+>
+> Normally I agree, but there is one reason to fix this W=2: this
+> warning appears when building other files.
+>
+> Example:
+> | $ make W=2 drivers/net/dummy.o
+> |   CALL    scripts/checksyscalls.sh
+> | <stdin>:21: warning: macro "__IGNORE_stat64" is not used [-Wunused-macros]
+> | <stdin>:22: warning: macro "__IGNORE_lstat64" is not used [-Wunused-macros]
+> | <stdin>:75: warning: macro "__IGNORE_llseek" is not used [-Wunused-macros]
+> | <stdin>:159: warning: macro "__IGNORE_madvise1" is not used [-Wunused-macros]
+> (rest of the output redacted).
+>
+> When I run W=2, I want to only see the warnings of the file I am
+> working on. So I find it useful to fix the W=2 warnings which
+> show up when building other files to not get spammed by
+> irrelevant issues and to simplify the triage.
+>
+> My initial message lacked the rationale. I will add additional
+> explanations in the v2 of this patch.
 
-Signed-off-by: Dang Huynh <danct12@riseup.net>
----
-This patch is a split of this treewide patch [1] to ease the 
-maintainers. 
+I agree this is worth fixing if we want to make W=2 have any meaning at all.
 
-[1]: https://patchwork.kernel.org/patch/12633497/
+Your approach is probably fine. We could try to improve this by comparing
+against the list from include/uapi/asm-generic/unistd.h instead of the i386
+list. I suppose that would involve rewriting the script into a simpler one,
+but I'm not sure if anyone has an interest in working on this.
 
- arch/arm64/boot/dts/mediatek/pumpkin-common.dtsi | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/arch/arm64/boot/dts/mediatek/pumpkin-common.dtsi b/arch/arm64/boot/dts/mediatek/pumpkin-common.dtsi
-index fcddec14738d..7a717f926929 100644
---- a/arch/arm64/boot/dts/mediatek/pumpkin-common.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/pumpkin-common.dtsi
-@@ -25,7 +25,6 @@ optee: optee@4fd00000 {
- 
- 	gpio-keys {
- 		compatible = "gpio-keys";
--		input-name = "gpio-keys";
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&gpio_keys_default>;
- 
--- 
-2.36.0
-
+       Arnd
