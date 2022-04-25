@@ -2,111 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E1C9C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 07:38:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D6D4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 07:39:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239680AbiDYHlh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 03:41:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46058 "EHLO
+        id S238138AbiDYHmX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 03:42:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238869AbiDYHlT (ORCPT
+        with ESMTP id S232692AbiDYHmS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 03:41:19 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 85DF212ACE
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 00:38:16 -0700 (PDT)
+        Mon, 25 Apr 2022 03:42:18 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1CA071CFEC
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 00:39:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650872295;
+        s=mimecast20190719; t=1650872354;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=D4+EWp9YScvG0/opJ/baqbMoZiCpKGj3I6/h6CC0ZAI=;
-        b=QwKT+GN3wCRoZHpAz4fJNodwCQig0Qb2WES9Q4dCrL925MYg2vp/N/8OV0ZRa9Ag1caUX2
-        jSTRS8pQ70o+n69OVK8mDNQRWFbo/dQXatqcbgGOeGnKcVD7qzpcAlNjzTSXB3I4bRVtU3
-        6QzGHKzAto2+NpNUfEgMqIHvCVi8P18=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=JYIpSctnaXqJRrJZY7KOLeHqatclb2EJy7kwxJNXcEA=;
+        b=IyKM/hBr8A6e6AZR8Hkrfb/MtPj8v4zdrULVxMFwzp9SDCSmQS0aO0kUnpOgHXyybY4dTV
+        wdXc1E9ATUSHWmsa4t1PbQkpOgALe/Uw02ZWBnSn5uF33Lm6A2J1Rqyec1vzPHL5i6IhEu
+        XEsG1TsV25LlNx+WaW94YfPxleiqiQQ=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-473-sWGJKalkPl6wkzxmadEVYg-1; Mon, 25 Apr 2022 03:38:14 -0400
-X-MC-Unique: sWGJKalkPl6wkzxmadEVYg-1
-Received: by mail-wm1-f70.google.com with SMTP id c125-20020a1c3583000000b0038e3f6e871aso6406788wma.8
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 00:38:13 -0700 (PDT)
+ us-mta-116-UYDry00NNgKJYPonTEWswA-1; Mon, 25 Apr 2022 03:39:12 -0400
+X-MC-Unique: UYDry00NNgKJYPonTEWswA-1
+Received: by mail-wm1-f72.google.com with SMTP id i131-20020a1c3b89000000b00392b57fbdaaso6396924wma.0
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 00:39:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:organization:in-reply-to
          :content-transfer-encoding;
-        bh=D4+EWp9YScvG0/opJ/baqbMoZiCpKGj3I6/h6CC0ZAI=;
-        b=Qm6d1+rt3hqBMXKbfI4X28kqlg0mP6/9+7APWoIcMKYXqQ/lyiMT/CLq6jJPS8dJ9M
-         zIMSOorxwCwSgYLw0uCk8DuUYBYQk0XODGXy9GQEUGcJ/o0Kpg4uWzhoKFkqgyVkTMct
-         hdDhTi04jnwMPMaSn0x99f6FPvO3UksK57FkvNtb3WRBUyIODC6MsjXq9aMY1RbYTwdC
-         f6XLW1yUYUPBgor8sICCjUCZlqTZv3+NMPdrYCTPREd9yPrjUVFZXa48zpcK5mJ+/Tme
-         MLC2D79JzVsGOUC6WfygfBU26anUaS/3FMvUrLPY14DFkTr9WPY4r3TA20F8rq0w2Vcu
-         Tj9g==
-X-Gm-Message-State: AOAM531/ZtdWOXkftLjD6m4OauAkuhtgHm5dB7HWV1ea9ct5PMxnlSOd
-        EzfktyxJltyGwfqdz07PmTmNH0pr9vCieRVMS0/21NyLm2TMCHxiNgvjWPYpcNfYl0zyoJXlgtc
-        iEp3ln5M6HJ8tGNSUuU5E1hOS
-X-Received: by 2002:a05:600c:1c90:b0:393:e5b9:b567 with SMTP id k16-20020a05600c1c9000b00393e5b9b567mr8792579wms.27.1650872292386;
-        Mon, 25 Apr 2022 00:38:12 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyGrMqdIG1qplpHlWo0bNbUMWHaIb+N0Tidl5Idj4Oc/xX/CaDQW7fkXG1PkG7Hd/M5o1cGWw==
-X-Received: by 2002:a05:600c:1c90:b0:393:e5b9:b567 with SMTP id k16-20020a05600c1c9000b00393e5b9b567mr8792555wms.27.1650872292152;
-        Mon, 25 Apr 2022 00:38:12 -0700 (PDT)
+        bh=JYIpSctnaXqJRrJZY7KOLeHqatclb2EJy7kwxJNXcEA=;
+        b=dPtm0HElE/MY0C4Ca2VXDucPv44DWQLatFTAFyHBdM1yHKyfSo6AfCzF777QlfJ8z/
+         xr08U3au6de8fjA+mdLwcO73zJMFm3TkmlZf4gXwc+1N0DqoQg6Dh8ayDZAtkE79xis4
+         w1LGxmOcRmKqHur2qz0Sdn0L5mNYI0TOhRwTAGHZNWiZy5TQern49J6u5CDClN6MGn/j
+         ZrnOhjp+ouLCDJLuyKPUiAzhAZh7Uh6a8as4rTvu7bKT7Vxcfbn2Oc+gPjCgc2soaIPE
+         +8pBLgTkjIWxwF1GTa1GMT+F5HIOWSJncLDBk+tMXLYnbEW5G3hQxTvdMlucYJM4SgkI
+         UObQ==
+X-Gm-Message-State: AOAM533YeJ6wzdnAk3de3e054M8xkx8nvBv1a8uU3wNJB55PN47yGNnO
+        tSe6XzF/gNRusBVIBpI35mJ9lqW2R4Fl3dXb4rdSeSS+UAf0So9+P3oYozluD8VH76oHp7L7Pop
+        MYejq7SdYtOBo0x+FXiN4Oh19
+X-Received: by 2002:a5d:6843:0:b0:20a:def2:5545 with SMTP id o3-20020a5d6843000000b0020adef25545mr1252117wrw.89.1650872351758;
+        Mon, 25 Apr 2022 00:39:11 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyj70WP2fyKeHfPoCu95Q+61xddwrribEw7PcH9kHB3qmPDdktTVAhutfLF8c9SCnQEime/Sg==
+X-Received: by 2002:a5d:6843:0:b0:20a:def2:5545 with SMTP id o3-20020a5d6843000000b0020adef25545mr1252092wrw.89.1650872351517;
+        Mon, 25 Apr 2022 00:39:11 -0700 (PDT)
 Received: from ?IPV6:2003:cb:c700:fc00:490d:ed6a:8b22:223a? (p200300cbc700fc00490ded6a8b22223a.dip0.t-ipconnect.de. [2003:cb:c700:fc00:490d:ed6a:8b22:223a])
-        by smtp.gmail.com with ESMTPSA id y6-20020a056000168600b0020a96d2cf8fsm9498136wrd.60.2022.04.25.00.37.58
+        by smtp.gmail.com with ESMTPSA id y9-20020a05600015c900b0020adb0e106asm2756818wry.93.2022.04.25.00.39.10
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Apr 2022 00:38:09 -0700 (PDT)
-Message-ID: <f8ee624f-d1f0-342e-227b-8ffa9d133ba1@redhat.com>
-Date:   Mon, 25 Apr 2022 09:37:52 +0200
+        Mon, 25 Apr 2022 00:39:10 -0700 (PDT)
+Message-ID: <fcf69d7c-dded-666c-def1-4ce9f58ed852@redhat.com>
+Date:   Mon, 25 Apr 2022 09:39:09 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.6.2
-Subject: Re: [PATCHv5 01/12] x86/boot/: Centralize __pa()/__va() definitions
+Subject: Re: [PATCH v3 2/3] mm/swapfile: Fix lost swap bits in unuse_pte()
 Content-Language: en-US
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Ard Biesheuvel <ardb@kernel.org>
-Cc:     Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Dario Faggioli <dfaggioli@suse.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Mike Rapoport <rppt@kernel.org>, x86@kernel.org,
-        linux-mm@kvack.org, linux-coco@lists.linux.dev,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220425033934.68551-1-kirill.shutemov@linux.intel.com>
- <20220425033934.68551-2-kirill.shutemov@linux.intel.com>
+To:     Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org
+Cc:     willy@infradead.org, vbabka@suse.cz, dhowells@redhat.com,
+        neilb@suse.de, apopple@nvidia.com, surenb@google.com,
+        minchan@kernel.org, peterx@redhat.com, sfr@canb.auug.org.au,
+        naoya.horiguchi@nec.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+References: <20220424091105.48374-1-linmiaohe@huawei.com>
+ <20220424091105.48374-3-linmiaohe@huawei.com>
 From:   David Hildenbrand <david@redhat.com>
 Organization: Red Hat
-In-Reply-To: <20220425033934.68551-2-kirill.shutemov@linux.intel.com>
+In-Reply-To: <20220424091105.48374-3-linmiaohe@huawei.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25.04.22 05:39, Kirill A. Shutemov wrote:
-> Replace multiple __pa()/__va() definitions with a single one in misc.h.
+On 24.04.22 11:11, Miaohe Lin wrote:
+> This is observed by code review only but not any real report.
 > 
-> Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+> When we turn off swapping we could have lost the bits stored in the swap
+> ptes. The new rmap-exclusive bit is fine since that turned into a page
+> flag, but not for soft-dirty and uffd-wp. Add them.
+> 
+> Suggested-by: Peter Xu <peterx@redhat.com>
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 > ---
->
+>  mm/swapfile.c | 10 +++++++---
+>  1 file changed, 7 insertions(+), 3 deletions(-)
+> 
+> diff --git a/mm/swapfile.c b/mm/swapfile.c
+> index 95b63f69f388..522a0eb16bf1 100644
+> --- a/mm/swapfile.c
+> +++ b/mm/swapfile.c
+> @@ -1783,7 +1783,7 @@ static int unuse_pte(struct vm_area_struct *vma, pmd_t *pmd,
+>  {
+>  	struct page *swapcache;
+>  	spinlock_t *ptl;
+> -	pte_t *pte;
+> +	pte_t *pte, new_pte;
+>  	int ret = 1;
+>  
+>  	swapcache = page;
+> @@ -1832,8 +1832,12 @@ static int unuse_pte(struct vm_area_struct *vma, pmd_t *pmd,
+>  		page_add_new_anon_rmap(page, vma, addr);
+>  		lru_cache_add_inactive_or_unevictable(page, vma);
+>  	}
+> -	set_pte_at(vma->vm_mm, addr, pte,
+> -		   pte_mkold(mk_pte(page, vma->vm_page_prot)));
+> +	new_pte = pte_mkold(mk_pte(page, vma->vm_page_prot));
+> +	if (pte_swp_soft_dirty(*pte))
+> +		new_pte = pte_mksoft_dirty(new_pte);
+> +	if (pte_swp_uffd_wp(*pte))
+> +		new_pte = pte_mkuffd_wp(new_pte);
+> +	set_pte_at(vma->vm_mm, addr, pte, new_pte);
+>  	swap_free(entry);
+>  out:
+>  	pte_unmap_unlock(pte, ptl);
 
 Reviewed-by: David Hildenbrand <david@redhat.com>
-
 
 -- 
 Thanks,
