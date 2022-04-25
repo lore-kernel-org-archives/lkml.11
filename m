@@ -2,75 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA9ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:03:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B635C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:04:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242718AbiDYQG3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 12:06:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41068 "EHLO
+        id S237662AbiDYQHE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 12:07:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230306AbiDYQG1 (ORCPT
+        with ESMTP id S237228AbiDYQHC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 12:06:27 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FAAA10FF7
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 09:03:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650902603; x=1682438603;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=l670SSouoyuWT8a8f0xfOswkjRBp17Vt1prtNQUoRJ4=;
-  b=GM6+wdmnZvK9Y91z5dKMUX43G3PBhyIkTsbK5IyWMrIUf069+zyehN3j
-   hHK470ie4no5irdlMsHQ0tfdEsUc9EEO1EpSWgZV639n4RyMIe/qfy3Qv
-   sRlVawPSjoF0DkLWkU3oO6KI2AVO5OQma22esM/hEcIO98z7OKcHzYdwG
-   VCLKw/gvtWKeVLp1XKTl7DiCAqsHssMOZ3AXdKMfcuXEeC6FOaeQ3hEHe
-   XPgO5XBTCdxA656b9Pteeet3JJ3xFmj6nOPJGBC5s/Iw7Y79w5akQ/rKI
-   IAVwcZAMmx0B6f2elecZ2K13PAi8vr9QEcFWjRkdbkTXdyuCwAajpeAE+
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="252657608"
-X-IronPort-AV: E=Sophos;i="5.90,288,1643702400"; 
-   d="scan'208";a="252657608"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 09:03:22 -0700
-X-IronPort-AV: E=Sophos;i="5.90,288,1643702400"; 
-   d="scan'208";a="595298684"
-Received: from bjkrist-mobl.amr.corp.intel.com (HELO [10.212.88.70]) ([10.212.88.70])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 09:03:21 -0700
-Message-ID: <7558ae3d-a1fa-6c11-cccd-ad0f65cde25b@intel.com>
-Date:   Mon, 25 Apr 2022 09:05:17 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] x86/traps: add CONFIG_BUG to the use of __warn()
-Content-Language: en-US
-To:     Stephen Zhang <starzhangzsd@gmail.com>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org
-Cc:     hpa@zytor.com, peterz@infradead.org, laijs@linux.alibaba.com,
-        lihuafei1@huawei.com, fenghua.yu@intel.com,
-        chang.seok.bae@intel.com, zhangshida@kylinos.cn,
-        linux-kernel@vger.kernel.org
-References: <20220425055935.458583-1-starzhangzsd@gmail.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <20220425055935.458583-1-starzhangzsd@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Mon, 25 Apr 2022 12:07:02 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51ADA2AC66;
+        Mon, 25 Apr 2022 09:03:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1650902637; x=1682438637;
+  h=from:to:cc:subject:date:message-id;
+  bh=hrOoewtJhmgZVFNviaA6Slr7SEW6ryGKzcMbCayfMvQ=;
+  b=GJiaGkaM8dAn0LCedjg76oynHLGAspzQVQz4GPYf5ZClSMJKrhlsNqjd
+   zoi+PPkA2GbhD0x50cvfIFhrmVLAromMjvpSayNIf8/vGrkLsOFwiU4Ur
+   fAM1cghFIXPu2DPJvyf+x3svd14aGzb9/HCK5+CbWdMJuKu3vsQLUGGJx
+   Q=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 25 Apr 2022 09:03:57 -0700
+X-QCInternal: smtphost
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 25 Apr 2022 09:03:55 -0700
+X-QCInternal: smtphost
+Received: from c-sbhanu-linux.qualcomm.com ([10.242.50.201])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 25 Apr 2022 21:33:53 +0530
+Received: by c-sbhanu-linux.qualcomm.com (Postfix, from userid 2344807)
+        id 58808BD1; Mon, 25 Apr 2022 21:33:52 +0530 (IST)
+From:   Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
+To:     adrian.hunter@intel.com, ulf.hansson@linaro.org,
+        wsa+renesas@sang-engineering.com, yoshihiro.shimoda.uh@renesas.com,
+        linus.walleij@linaro.org, digetx@gmail.com,
+        briannorris@chromium.org, quic_riteshh@quicinc.com
+Cc:     linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        quic_asutoshd@quicinc.com, quic_rampraka@quicinc.com,
+        quic_pragalla@quicinc.com, quic_sartgarg@quicinc.com,
+        quic_nitirawa@quicinc.com, quic_sayalil@quicinc.com,
+        Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>,
+        Liangliang Lu <quic_luliang@quicinc.com>,
+        "Bao D . Nguyen" <quic_nguyenb@quicinc.com>
+Subject: [PATCH V5 1/5] mmc: core: Capture eMMC and SD card errors
+Date:   Mon, 25 Apr 2022 21:33:46 +0530
+Message-Id: <1650902626-4870-1-git-send-email-quic_c_sbhanu@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/24/22 22:59, Stephen Zhang wrote:
-> --- a/arch/x86/kernel/traps.c
-> +++ b/arch/x86/kernel/traps.c
-> @@ -246,7 +246,9 @@ DEFINE_IDTENTRY_ERRORCODE(exc_control_protection)
->  	pr_err("Missing ENDBR: %pS\n", (void *)instruction_pointer(regs));
->  	if (!ibt_fatal) {
->  		printk(KERN_DEFAULT CUT_HERE);
-> +#ifdef CONFIG_BUG
->  		__warn(__FILE__, __LINE__, (void *)regs->ip, TAINT_WARN, regs, NULL);
-> +#endif
+Add changes to capture eMMC and SD card errors.
+This is useful for debug and testing.
 
-This really should be done with an #ifdef'd stub in in bug.h, not an
-#ifdef at every call site.  I assume there was a good reason for not
-using the normal WARN*() macros.
+Signed-off-by: Liangliang Lu <quic_luliang@quicinc.com>
+Signed-off-by: Sayali Lokhande <quic_sayalil@quicinc.com>
+Signed-off-by: Bao D. Nguyen <quic_nguyenb@quicinc.com>
+Signed-off-by: Ram Prakash Gupta <quic_rampraka@quicinc.com>
+Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
+---
+ drivers/mmc/core/core.c  |  6 ++++++
+ include/linux/mmc/host.h | 26 ++++++++++++++++++++++++++
+ 2 files changed, 32 insertions(+)
+
+diff --git a/drivers/mmc/core/core.c b/drivers/mmc/core/core.c
+index 8cc2b74..6d086e9 100644
+--- a/drivers/mmc/core/core.c
++++ b/drivers/mmc/core/core.c
+@@ -2247,6 +2247,12 @@ void mmc_rescan(struct work_struct *work)
+ 		if (freqs[i] <= host->f_min)
+ 			break;
+ 	}
++
++	/*
++	 * Ignore the command timeout errors observed during
++	 * the card init as those are excepted.
++	 */
++	host->err_stats[MMC_ERR_CMD_TIMEOUT] = 0;
+ 	mmc_release_host(host);
+ 
+  out:
+diff --git a/include/linux/mmc/host.h b/include/linux/mmc/host.h
+index c193c50..eb8bc5b 100644
+--- a/include/linux/mmc/host.h
++++ b/include/linux/mmc/host.h
+@@ -93,6 +93,25 @@ struct mmc_clk_phase_map {
+ 
+ struct mmc_host;
+ 
++enum mmc_err_stat {
++	MMC_ERR_CMD_TIMEOUT,
++	MMC_ERR_CMD_CRC,
++	MMC_ERR_DAT_TIMEOUT,
++	MMC_ERR_DAT_CRC,
++	MMC_ERR_AUTO_CMD,
++	MMC_ERR_ADMA,
++	MMC_ERR_TUNING,
++	MMC_ERR_CMDQ_RED,
++	MMC_ERR_CMDQ_GCE,
++	MMC_ERR_CMDQ_ICCE,
++	MMC_ERR_REQ_TIMEOUT,
++	MMC_ERR_CMDQ_REQ_TIMEOUT,
++	MMC_ERR_ICE_CFG,
++	MMC_ERR_CTRL_TIMEOUT,
++	MMC_ERR_UNEXPECTED_IRQ,
++	MMC_ERR_MAX,
++};
++
+ struct mmc_host_ops {
+ 	/*
+ 	 * It is optional for the host to implement pre_req and post_req in
+@@ -501,6 +520,7 @@ struct mmc_host {
+ 	/* Host Software Queue support */
+ 	bool			hsq_enabled;
+ 
++	u32			err_stats[MMC_ERR_MAX];
+ 	unsigned long		private[] ____cacheline_aligned;
+ };
+ 
+@@ -635,6 +655,12 @@ static inline enum dma_data_direction mmc_get_dma_dir(struct mmc_data *data)
+ 	return data->flags & MMC_DATA_WRITE ? DMA_TO_DEVICE : DMA_FROM_DEVICE;
+ }
+ 
++static inline void mmc_debugfs_err_stats_inc(struct mmc_host *host,
++					     enum mmc_err_stat stat)
++{
++	host->err_stats[stat] += 1;
++}
++
+ int mmc_send_tuning(struct mmc_host *host, u32 opcode, int *cmd_error);
+ int mmc_send_abort_tuning(struct mmc_host *host, u32 opcode);
+ int mmc_get_ext_csd(struct mmc_card *card, u8 **new_ext_csd);
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
+of Code Aurora Forum, hosted by The Linux Foundation
+
