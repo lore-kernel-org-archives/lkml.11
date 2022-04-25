@@ -2,179 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1553AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 11:56:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DBD3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 11:56:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236892AbiDYL7s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 07:59:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35110 "EHLO
+        id S238661AbiDYL7v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 07:59:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236349AbiDYL7Z (ORCPT
+        with ESMTP id S235918AbiDYL7X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 07:59:25 -0400
+        Mon, 25 Apr 2022 07:59:23 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D04051028
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 04:56:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 143F965DF
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 04:56:16 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B6DEAED1;
-        Mon, 25 Apr 2022 04:56:20 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CDAC51FB;
+        Mon, 25 Apr 2022 04:56:10 -0700 (PDT)
 Received: from lakrids.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 7826C3F73B;
-        Mon, 25 Apr 2022 04:56:19 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 93A383F73B;
+        Mon, 25 Apr 2022 04:56:09 -0700 (PDT)
 From:   Mark Rutland <mark.rutland@arm.com>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 Cc:     akpm@linux-foundation.org, alex.popov@linux.com,
-        catalin.marinas@arm.com, keescook@chromium.org,
-        linux-arm-kernel@lists.infradead.org, luto@kernel.org,
+        catalin.marinas@arm.com, keescook@chromium.org, luto@kernel.org,
         mark.rutland@arm.com, will@kernel.org
-Subject: [PATCH 5/8] stackleak: rework stack high bound handling
-Date:   Mon, 25 Apr 2022 12:56:00 +0100
-Message-Id: <20220425115603.781311-6-mark.rutland@arm.com>
+Subject: [PATCH 0/8] stackleak: fixes and rework
+Date:   Mon, 25 Apr 2022 12:55:55 +0100
+Message-Id: <20220425115603.781311-1-mark.rutland@arm.com>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220425115603.781311-1-mark.rutland@arm.com>
-References: <20220425115603.781311-1-mark.rutland@arm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Prior to returning to userpace, we reset current->lowest_stack to a
-reasonable high bound. Currently we do this by subtracting the arbitrary
-value `THREAD_SIZE/64` from the top of the stack, for reasons lost to
-history.
+This series reworks the stackleak code. The first patch fixes some
+latent issues on arm64, and the subsequent patches improve the code to
+improve clarity and permit better code generation.
 
-Looking at configurations today:
+I started working on this as a tangent from rework to arm64's stacktrace
+code. Looking at users of the `on_*_stack()` helpers I noticed that the
+assembly generated for stackleak was particularly awful as it performed
+a lot of redundant work and also called instrumentable code, which isn't
+sound.
 
-* On i386 where THREAD_SIZE is 8K, the bound will be 128 bytes. The
-  pt_regs at the top of the stack is 68 bytes (with 0 to 16 bytes of
-  padding above), and so this covers an additional portion of 44 to 60
-  bytes.
+The first patch fixes the major issues on arm64, and is Cc'd to stable
+for backporting.
 
-* On x86_64 where THREAD_SIZE is at least 16K (up to 32K with KASAN) the
-  bound will be at least 256 bytes (up to 512 with KASAN). The pt_regs
-  at the top of the stack is 168 bytes, and so this cover an additional
-  88 bytes of stack (up to 344 with KASAN).
+The second patch is a trivial optimization for when stackleak is
+dynamically disabled.
 
-* On arm64 where THREAD_SIZE is at least 16K (up to 64K with 64K pages
-  and VMAP_STACK), the bound will be at least 256 bytes (up to 1024 with
-  KASAN). The pt_regs at the top of the stack is 336 bytes, so this can
-  fall within the pt_regs, or can cover an additional 688 bytes of
-  stack.
+The subsequent patches rework the way stackleak manipulates the stack
+boundary values. This is partically for clarity (e.g. with separate
+'low' and 'high' boundary variables), and also permits the compiler to
+generate more optimal assembly by generating the high and low bounds
+from the same base.
 
-Clearly the `THREAD_SIZE/64` value doesn't make much sense -- in the
-worst case, this will cause more than 600 bytes of stack to be erased
-for every syscall, even if actual stack usage were substantially
-smaller.
+Patch 5 changes the way that `current->lowest_stack` is reset prior to
+return to userspace. The existing code uses an undocumented offset
+relative to the top of the stack which doesn't make much sense (as thie
+sometimes falls within the task's pt_regs, or sometimes adds 600+ bytes
+to erase upon the next exit to userspace). For now I've removed the
+offset entirely.
 
-This patches makes this slightly less nonsensical by consistently
-resetting current->lowest_stack to the base of the task pt_regs. For
-clarity and for consistency with the handling of the low bound, the
-generation of the high bound is split into a helper with commentary
-explaining why.
+Patch 7 adds stackleak_erase_on_task_stack() and
+stackleak_erase_off_task_stack() that can be used when a caller knows
+they're always on or off the task stack respectively, avoiding redundant
+logic to check this and generate the high boundary value. On arm64 we
+always call stackleak_erase() while on the task stack, so this is used
+in patch 8.
 
-Since the pt_regs at the top of the stack will be clobbered upon the
-next exception entry, we don't need to poison these at exception exit.
-By using task_pt_regs() as the high stack boundary instead of
-current_top_of_stack() we avoid some redundant poisoning, and the
-compiler can share the address generation between the poisoning and
-restting of `current->lowest_stack`, making the generated code more
-optimal.
+Testing the series on arm64 with a QEMU HVF VM on an M1 Macbook Pro with
+a few microbenchmarks shows a small but measureable improvement when
+stackleak is enabled (relative to v5.18-rc1):
 
-It's not clear to me whether the existing `THREAD_SIZE/64` offset was a
-dodgy heuristic to skip the pt_regs, or whether it was attempting to
-minimize the number of times stackleak_check_stack() would have to
-update `current->lowest_stack` when stack usage was shallow at the cost
-of unconditionally poisoning a small portion of the stack for every exit
-to userspace.
+* Calling getpid 1^22 times in a loop (avg 50 runs)
+  
+  Before: 0.652099387 seconds ( +-  0.13% )
+  After:  0.641005661 seconds ( +-  0.13% )
 
-For now I've simply removed the offset, and if we need/want to minimize
-updates for shallow stack usage it should be easy to add a better
-heuristic atop, with appropriate commentary so we know what's going on.
+  ~1.7% time decrease
 
-Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-Cc: Alexander Popov <alex.popov@linux.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Andy Lutomirski <luto@kernel.org>
-Cc: Kees Cook <keescook@chromium.org>
----
- include/linux/stackleak.h | 14 ++++++++++++++
- kernel/stackleak.c        | 19 ++++++++++++++-----
- 2 files changed, 28 insertions(+), 5 deletions(-)
+* perf bench sched pipe (single run)
 
-diff --git a/include/linux/stackleak.h b/include/linux/stackleak.h
-index 67430faa5c518..467661aeb4136 100644
---- a/include/linux/stackleak.h
-+++ b/include/linux/stackleak.h
-@@ -28,6 +28,20 @@ stackleak_task_low_bound(const struct task_struct *tsk)
- 	return (unsigned long)end_of_stack(tsk) + sizeof(unsigned long);
- }
- 
-+/*
-+ * The address immediately after the highest address on tsk's stack which we
-+ * can plausibly erase.
-+ */
-+static __always_inline unsigned long
-+stackleak_task_high_bound(const struct task_struct *tsk)
-+{
-+	/*
-+	 * The task's pt_regs lives at the top of the task stack and will be
-+	 * overwritten by exception entry, so there's no need to erase them.
-+	 */
-+	return (unsigned long)task_pt_regs(tsk);
-+}
-+
- static inline void stackleak_task_init(struct task_struct *t)
- {
- 	t->lowest_stack = stackleak_task_low_bound(t);
-diff --git a/kernel/stackleak.c b/kernel/stackleak.c
-index 8fbc1e4c21435..f597d3323729d 100644
---- a/kernel/stackleak.c
-+++ b/kernel/stackleak.c
-@@ -73,6 +73,7 @@ late_initcall(stackleak_sysctls_init);
- static __always_inline void __stackleak_erase(void)
- {
- 	const unsigned long task_stack_low = stackleak_task_low_bound(current);
-+	const unsigned long task_stack_high = stackleak_task_high_bound(current);
- 	unsigned long erase_low = current->lowest_stack;
- 	unsigned long erase_high;
- 	unsigned int poison_count = 0;
-@@ -97,14 +98,22 @@ static __always_inline void __stackleak_erase(void)
- #endif
- 
- 	/*
--	 * Now write the poison value to the kernel stack between 'erase_low'
--	 * and 'erase_high'. We assume that the stack pointer doesn't change
--	 * when we write poison.
-+	 * Write poison to the task's stack between 'erase_low' and
-+	 * 'erase_high'.
-+	 *
-+	 * If we're running on a different stack (e.g. an entry trampoline
-+	 * stack) we can erase everything below the pt_regs at the top of the
-+	 * task stack.
-+	 *
-+	 * If we're running on the task stack itself, we must not clobber any
-+	 * stack used by this function and its caller. We assume that this
-+	 * function has a fixed-size stack frame, and the current stack pointer
-+	 * doesn't change while we write poison.
- 	 */
- 	if (on_thread_stack())
- 		erase_high = current_stack_pointer;
- 	else
--		erase_high = current_top_of_stack();
-+		erase_high = task_stack_high;
- 
- 	while (erase_low < erase_high) {
- 		*(unsigned long *)erase_low = STACKLEAK_POISON;
-@@ -112,7 +121,7 @@ static __always_inline void __stackleak_erase(void)
- 	}
- 
- 	/* Reset the 'lowest_stack' value for the next syscall */
--	current->lowest_stack = current_top_of_stack() - THREAD_SIZE/64;
-+	current->lowest_stack = task_stack_high;
- }
- 
- asmlinkage void noinstr stackleak_erase(void)
+  Before: 2.138 seconds total
+  After:  2.118 seconds total
+
+  ~0.93% time decrease
+
+I also tested "perf bench sched messaging" but the noise outweighed the
+difference.
+
+While the improvement is small, I think the improvement to clarity and
+code generation is a win regardless.
+
+Thanks,
+Mark.
+
+Mark Rutland (8):
+  arm64: stackleak: fix current_top_of_stack()
+  stackleak: move skip_erasing() check earlier
+  stackleak: rework stack low bound handling
+  stackleak: clarify variable names
+  stackleak: rework stack high bound handling
+  stackleak: remove redundant check
+  stackleak: add on/off stack variants
+  arm64: entry: use stackleak_erase_on_task_stack()
+
+ arch/arm64/include/asm/processor.h | 10 ++-
+ arch/arm64/kernel/entry.S          |  2 +-
+ include/linux/stackleak.h          | 29 ++++++++-
+ kernel/stackleak.c                 | 99 ++++++++++++++++++++----------
+ 4 files changed, 98 insertions(+), 42 deletions(-)
+
 -- 
 2.30.2
 
