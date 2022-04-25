@@ -2,65 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5896C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 15:39:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3D9DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 15:39:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242944AbiDYPmL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 11:42:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56750 "EHLO
+        id S238673AbiDYPmy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 11:42:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240526AbiDYPmH (ORCPT
+        with ESMTP id S242976AbiDYPmq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 11:42:07 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8287C23168;
-        Mon, 25 Apr 2022 08:39:01 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id r13so30408869ejd.5;
-        Mon, 25 Apr 2022 08:39:01 -0700 (PDT)
+        Mon, 25 Apr 2022 11:42:46 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 848DE4476C;
+        Mon, 25 Apr 2022 08:39:42 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id z99so18901709ede.5;
+        Mon, 25 Apr 2022 08:39:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=pYmQqIYD75N8SfHaj0AHYF+l6GG1We6pvmxz4RUic0U=;
-        b=HcSKLFcQ39VMWJjtBZOifOr7HgnGBAnQ/2K6mqcHILLQHQEUof1EcH0ST5RP2UyCJW
-         sPlugYviZSHSzfhUOdEgns1D2XbP9ik5vVLAa8eQyh+ujOu3Lu7vfKwOvBGFzAgZvNbU
-         IVSox7dVLyL/HoeY3CNQ+eVnLotEv6w2ejPCurmWyENlL9f+Jtx40Z/cAX0ihd6LUeJH
-         4LTCpaJ6ib1GjFQ1g7nKC9zvclPmJkQy1D4af2UW1r3iG3PFl9M5GO8Qtswn7ipHZde0
-         YxEIzYVmsQWrtVf2akEMf6LfzlFWMJknvrruua5q5qcfAX/sW+18ZYvIuUX6M5J1ojo/
-         O5aw==
+        bh=T01Vsboe7BIJvmOZnpFBnqjbW+9iDm8fcl2QrWQykBc=;
+        b=kPM/SNHsAbBB6TPmDqMIcF3+pw23OqniiDoKpyCh8WM3av7/TyIAZaj6mkSAGUIcjv
+         wFg+zJ5PJZ+OWSTcT08+l6llF1V5IgIUQ9t9PmYB8P1utoqI0nFy9Sdd2k3AgNv1l1FZ
+         QMAzyQq1xVzv7dZo/YM6MGJvSX6DHz7za/D8I82l0lzgoEB/wX1qUpMZ5UpQ7sSIAkay
+         eN5yzepL0YRYBfLDwIPqUdkAGkJswqyaldV+jhNmHzLZbiOEdgabkRZ5U26w8TJcEOHl
+         KWg4YZcX1tRWUsPoJozBH5dm9g0k5T0XGeJWULpmf/oYCe3yRJQ/UT3aBDA/kFoxJykM
+         xorg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=pYmQqIYD75N8SfHaj0AHYF+l6GG1We6pvmxz4RUic0U=;
-        b=pr1u17HYRbqbbqqpvhhP4IUD7sUa3dNhkz2DwHVs94G06h/hJZ97VIDtOw76Dl6FXI
-         XBCvZ9GrcImxDl68oz0qOMUf7faJUv/7QEd4RiflWYi4jN05rMAs5WdZpzL8XTZp4kW8
-         93GKfG9vrI+Glzyyy0RyvKN3sgbpt0ITvLB6FXYeNtHwKKJ8hX/xQq5b67/evhaP8GY0
-         FNny50IkL7tR0ilTbucPJAcKN7rAnwq12Iqjw0WdYcLSzohSTES40tRthEnWTrLt7V0X
-         RR5MNucsU62z+R+MNQNTJsud2v894c6qN6iSiypKGMSWrCB8QGfOXqYruIsNPFYDC2Ye
-         +i2Q==
-X-Gm-Message-State: AOAM530PQST24InvL1lRiMtHVafP06hCV9FW9CcnCADKZZjJRtycY20U
-        K1D3/IQF97t/Jys/AbrO73Q=
-X-Google-Smtp-Source: ABdhPJwwSkqiGf16KxdNekflI3QJP2lMS26OvuOMJjFrLD26JHb5D0s3BuIki9ZRVb340m/EuLrD8Q==
-X-Received: by 2002:a17:907:2daa:b0:6da:924e:955 with SMTP id gt42-20020a1709072daa00b006da924e0955mr16948119ejc.1.1650901139986;
-        Mon, 25 Apr 2022 08:38:59 -0700 (PDT)
+        bh=T01Vsboe7BIJvmOZnpFBnqjbW+9iDm8fcl2QrWQykBc=;
+        b=dg2TK1V3l+BNwoVp5HBqGyGgPqT/nie4YyEFxcgBZ5L9iNnU/wBr+2AKRr6sepWaqd
+         7T0gAzLbH/A+1U8RsROhdR2QZikL7ZjL2BikvGC8leIX/biU2JDMvpyF7JsCTka1aNle
+         apd/9DwCmN2USNA/o4Z1sJAn9jM48mxzpZ4uUwW/gRSsEvZHWJRdvauj2+N6mu5IFEOu
+         GqJ2Or9C8QgBoX9S6wzCcCAG9cvtUu4xrjzd2kK9XxJjVJWlT8sM1aODXD6D+gxY/Zqh
+         x8tLaZEutP5FkxXf3f8Agy11wu5LJ4WvI4MkjEu+MGkIQdqZVijaqwmzwt78LoOCihiH
+         1vRg==
+X-Gm-Message-State: AOAM530H1/G4B2SJVcPgxYHbU2TFDpC2588V3FV6ywNOMSCu9Y73oNnK
+        PYQc2pRISlZ18ylEo+l80R4=
+X-Google-Smtp-Source: ABdhPJzIyVAdyqYhswiICra1oKeo5UKFm4s/D+QpyQPj+7Teup4JNUsf36N9FoOwox9FncoffG3lOQ==
+X-Received: by 2002:a05:6402:909:b0:416:6f3c:5c1d with SMTP id g9-20020a056402090900b004166f3c5c1dmr19408479edz.108.1650901181156;
+        Mon, 25 Apr 2022 08:39:41 -0700 (PDT)
 Received: from kista.localnet (cpe-86-58-32-107.static.triera.net. [86.58.32.107])
-        by smtp.gmail.com with ESMTPSA id s1-20020a056402036100b004240a3fc6b4sm4838063edw.82.2022.04.25.08.38.59
+        by smtp.gmail.com with ESMTPSA id g6-20020a056402090600b0041d8c2f9e61sm4826215edz.31.2022.04.25.08.39.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 08:38:59 -0700 (PDT)
+        Mon, 25 Apr 2022 08:39:40 -0700 (PDT)
 From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
-To:     Dang Huynh <danct12@riseup.net>, Dang Huynh <danct12@riseup.net>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Samuel Holland <samuel@sholland.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ARM: dts: sunxi: nanopi: Remove input-name property
-Date:   Mon, 25 Apr 2022 17:38:58 +0200
-Message-ID: <3427349.iIbC2pHGDl@kista>
-In-Reply-To: <20220425064231.243482-1-danct12@riseup.net>
-References: <20220425064231.243482-1-danct12@riseup.net>
+To:     tiny.windzz@gmail.com, rafael@kernel.org, viresh.kumar@linaro.org,
+        wens@csie.org, samuel@sholland.org, mripard@kernel.org,
+        Xiaobing Luo <luoxiaobing0926@gmail.com>
+Cc:     linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Xiaobing Luo <luoxiaobing0926@gmail.com>
+Subject: Re: [PATCH v3] cpufreq: fix memory leak in sun50i_cpufreq_nvmem_probe
+Date:   Mon, 25 Apr 2022 17:39:39 +0200
+Message-ID: <3099618.5fSG56mABF@kista>
+In-Reply-To: <20220425113009.2182485-1-luoxiaobing0926@gmail.com>
+References: <20220425113009.2182485-1-luoxiaobing0926@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7Bit
 Content-Type: text/plain; charset="us-ascii"
@@ -68,40 +67,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dne ponedeljek, 25. april 2022 ob 08:42:32 CEST je Dang Huynh napisal(a):
-> This property doesn't seem to exist in the documentation nor
-> in source code, but for some reason it is defined in a bunch
-> of device trees.
+Dne ponedeljek, 25. april 2022 ob 13:30:09 CEST je Xiaobing Luo napisal(a):
+> --------------------------------------------
+> unreferenced object 0xffff000010742a00 (size 128):
+>   comm "swapper/0", pid 1, jiffies 4294902015 (age 1187.652s)
+>   hex dump (first 32 bytes):
+>     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>   backtrace:
+>     [<00000000b4dfebaa>] __kmalloc+0x338/0x474
+>     [<00000000d6e716db>] sun50i_cpufreq_nvmem_probe+0xc4/0x36c
+>     [<000000007d6082a0>] platform_probe+0x98/0x11c
+>     [<00000000c990f549>] really_probe+0x234/0x5a0
+>     [<000000002d9fecc6>] __driver_probe_device+0x194/0x224
+>     [<00000000cf0b94fa>] driver_probe_device+0x64/0x13c
+>     [<00000000f238e4cf>] __device_attach_driver+0xf8/0x180
+>     [<000000006720e418>] bus_for_each_drv+0xf8/0x160
+>     [<00000000df4f14f6>] __device_attach+0x174/0x29c
+>     [<00000000782002fb>] device_initial_probe+0x20/0x30
+>     [<00000000c2681b06>] bus_probe_device+0xfc/0x110
+>     [<00000000964cf3bd>] device_add+0x5f0/0xcd0
+>     [<000000004b9264e3>] platform_device_add+0x198/0x390
+>     [<00000000fa82a9d0>] platform_device_register_full+0x178/0x210
+>     [<000000009a5daf13>] sun50i_cpufreq_init+0xf8/0x168
+>     [<000000000377cc7c>] do_one_initcall+0xe4/0x570
+> --------------------------------------------
 > 
-> Signed-off-by: Dang Huynh <danct12@riseup.net>
+> if sun50i_cpufreq_get_efuse failed, then opp_tables leak.
+> 
+> Fixes: f328584f7bff ("cpufreq: Add sun50i nvmem based CPU scaling driver")
+> Signed-off-by: Xiaobing Luo <luoxiaobing0926@gmail.com>
 
-Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+This patch was already applied (v2).
 
 Best regards,
 Jernej
 
 > ---
-> This patch is a split of this treewide patch [1] to ease the 
-> maintainers. 
+>  drivers/cpufreq/sun50i-cpufreq-nvmem.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 > 
-> [1]: https://patchwork.kernel.org/patch/12633497/
-> 
->  arch/arm/boot/dts/sun8i-h3-nanopi.dtsi | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/arch/arm/boot/dts/sun8i-h3-nanopi.dtsi b/arch/arm/boot/dts/
-sun8i-h3-nanopi.dtsi
-> index fc45d5aaa67f..a9f749f49beb 100644
-> --- a/arch/arm/boot/dts/sun8i-h3-nanopi.dtsi
-> +++ b/arch/arm/boot/dts/sun8i-h3-nanopi.dtsi
-> @@ -75,7 +75,6 @@ led-1 {
+> diff --git a/drivers/cpufreq/sun50i-cpufreq-nvmem.c b/drivers/cpufreq/sun50i-
+cpufreq-nvmem.c
+> index 2deed8d8773f..75e1bf3a08f7 100644
+> --- a/drivers/cpufreq/sun50i-cpufreq-nvmem.c
+> +++ b/drivers/cpufreq/sun50i-cpufreq-nvmem.c
+> @@ -98,8 +98,10 @@ static int sun50i_cpufreq_nvmem_probe(struct 
+platform_device *pdev)
+>  		return -ENOMEM;
 >  
->  	r_gpio_keys {
->  		compatible = "gpio-keys";
-> -		input-name = "k1";
+>  	ret = sun50i_cpufreq_get_efuse(&speed);
+> -	if (ret)
+> +	if (ret) {
+> +		kfree(opp_tables);
+>  		return ret;
+> +	}
 >  
->  		k1 {
->  			label = "k1";
+>  	snprintf(name, MAX_NAME_LEN, "speed%d", speed);
+>  
 > -- 
 > 2.36.0
 > 
