@@ -2,106 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89D2EC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 12:48:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03123C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 12:49:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232852AbiDYMvi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 08:51:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37266 "EHLO
+        id S234126AbiDYMws (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 08:52:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232346AbiDYMvf (ORCPT
+        with ESMTP id S233926AbiDYMwa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 08:51:35 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 88A80FAF7F
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 05:48:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650890910;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=N3u12wuLEP305W7IcqSlnc/KS4m0t+UufQFeHSMO7Og=;
-        b=P1Tyrdse5a7cgQMSjko/IXTmc2mebZLuig6JnYbgAj384vA+dVPV6eAb1ASe6le6WlIPKG
-        Pgn7zsTlkmZDS8qAoG6i/Y8J3ODvb5+wD9evf972zps6mRFm0RPG4eixd0xzCVgsCOKjit
-        cbq8JGflr5/k3gJARyF8p9wE0s9YmPo=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-35-FVBNLz_pMsWSqAlIrr3jIA-1; Mon, 25 Apr 2022 08:48:27 -0400
-X-MC-Unique: FVBNLz_pMsWSqAlIrr3jIA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2F55285A5BC;
-        Mon, 25 Apr 2022 12:48:27 +0000 (UTC)
-Received: from file01.intranet.prod.int.rdu2.redhat.com (file01.intranet.prod.int.rdu2.redhat.com [10.11.5.7])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2566140C1241;
-        Mon, 25 Apr 2022 12:48:27 +0000 (UTC)
-Received: from file01.intranet.prod.int.rdu2.redhat.com (localhost [127.0.0.1])
-        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4) with ESMTP id 23PCmRVk003883;
-        Mon, 25 Apr 2022 08:48:27 -0400
-Received: from localhost (mpatocka@localhost)
-        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4/Submit) with ESMTP id 23PCmRVa003879;
-        Mon, 25 Apr 2022 08:48:27 -0400
-X-Authentication-Warning: file01.intranet.prod.int.rdu2.redhat.com: mpatocka owned process doing -bs
-Date:   Mon, 25 Apr 2022 08:48:27 -0400 (EDT)
-From:   Mikulas Patocka <mpatocka@redhat.com>
-X-X-Sender: mpatocka@file01.intranet.prod.int.rdu2.redhat.com
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-cc:     Alasdair Kergon <agk@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>, dm-devel@redhat.com,
-        Milan Broz <gmazyland@gmail.com>, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] dm integrity: fix error code in dm_integrity_ctr()
-In-Reply-To: <YmaMgPr8bM/0PFUi@kili>
-Message-ID: <alpine.LRH.2.02.2204250846510.1699@file01.intranet.prod.int.rdu2.redhat.com>
-References: <YmaMgPr8bM/0PFUi@kili>
-User-Agent: Alpine 2.02 (LRH 1266 2009-07-14)
+        Mon, 25 Apr 2022 08:52:30 -0400
+Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C29E2BC0F;
+        Mon, 25 Apr 2022 05:49:26 -0700 (PDT)
+Received: by mail-qk1-f173.google.com with SMTP id e128so10631075qkd.7;
+        Mon, 25 Apr 2022 05:49:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NPorSfLzynlTTFLcIqwhfwbS6R4JDxHEiU+bfxItonI=;
+        b=ew61U+SbG4M6uq31+iG2W40+tE5/fOOF3O9jude92R40tV4JFekVTqOI6qs/F21GW7
+         736WZq8TEwrxI3XD4Aw678MJBuIsUNZx2KfFCkEuVGqcqvU6ZGR7RIG6x81Nejn1FImr
+         Hf5sxDKFbyxJsn6BtlfNO+Xeso8XzVkDWJUiutYAE0CzllknoPCfCq3jYcyscHSfYBx/
+         hKBnANTxpV0DBF9hm3f12ZAFvVmpVbDH4hpwq29LZQxFCeaXBrR0HGtuYD1gvcIpq5sf
+         7ErLtz17MvvxRc5o/y2xJTPe+8zdQfDR89+JQGiDBDBxqyziIo5so6JEvLtG2TGk0GQC
+         NZ3g==
+X-Gm-Message-State: AOAM532icnQOw2P/vpCEeSRxqttIv8NKJ+3FwIwTfGD0xpewvRloeoiX
+        vRvXogZfaYohNZgHcpLgn0D5N7tDJxzxcA==
+X-Google-Smtp-Source: ABdhPJyVoVZ4MbalF6jLAYP3M1LzuKx0Wmp8oF0R6/sNDgSq3hwkPqMCV26FFEsOJGMcc8fxNp460g==
+X-Received: by 2002:a05:620a:7eb:b0:69c:7933:b405 with SMTP id k11-20020a05620a07eb00b0069c7933b405mr9828582qkk.602.1650890965493;
+        Mon, 25 Apr 2022 05:49:25 -0700 (PDT)
+Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com. [209.85.219.174])
+        by smtp.gmail.com with ESMTPSA id x24-20020ac87318000000b002f1fc5fcaedsm5774780qto.68.2022.04.25.05.49.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 Apr 2022 05:49:24 -0700 (PDT)
+Received: by mail-yb1-f174.google.com with SMTP id v59so13909280ybi.12;
+        Mon, 25 Apr 2022 05:49:24 -0700 (PDT)
+X-Received: by 2002:a25:8087:0:b0:641:dd06:577d with SMTP id
+ n7-20020a258087000000b00641dd06577dmr15589591ybk.207.1650890964362; Mon, 25
+ Apr 2022 05:49:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+References: <20220421203555.29011-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20220421203555.29011-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20220421203555.29011-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 25 Apr 2022 14:49:12 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdX4_PKsGGRj6yGhDGfaRD-6PqiJeCnKq0yUicfMutOP4g@mail.gmail.com>
+Message-ID: <CAMuHMdX4_PKsGGRj6yGhDGfaRD-6PqiJeCnKq0yUicfMutOP4g@mail.gmail.com>
+Subject: Re: [PATCH 1/3] ASoC: sh: rz-ssi: Drop unused macros
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Mark Brown <broonie@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Pavel Machek <pavel@denx.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks for finding it.
+Hi Prabhakar,
 
+On Fri, Apr 22, 2022 at 7:32 PM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> Drop unused macros SSIFSR_TDC and SSIFSR_RDC.
+>
+> Reported-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-On Mon, 25 Apr 2022, Dan Carpenter wrote:
+Thanks for your patch!
 
-> The "r" variable shadows an earlier "r" that has function scope.  It
-> means that we accidentally return success instead of an error code.
-> Smatch has a warning for this:
-> 
-> 	drivers/md/dm-integrity.c:4503 dm_integrity_ctr()
-> 	warn: missing error code 'r'
-> 
-> Fixes: 7eada909bfd7 ("dm: add integrity target")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+What does this fix?
+Is the real issue that there are 32 FIFO entries, and the TDC and RDC
+fields are 6 bits wide, while the mask uses 0x1f instead of 0x3f?
 
-add:
+> --- a/sound/soc/sh/rz-ssi.c
+> +++ b/sound/soc/sh/rz-ssi.c
+> @@ -59,9 +59,7 @@
+>  #define SSIFSR_RDC_MASK                0x3f
+>  #define SSIFSR_RDC_SHIFT       8
+>
+> -#define SSIFSR_TDC(x)          (((x) & 0x1f) << 24)
+>  #define SSIFSR_TDE             BIT(16)
+> -#define SSIFSR_RDC(x)          (((x) & 0x1f) << 8)
+>  #define SSIFSR_RDF             BIT(0)
+>
+>  #define SSIOFR_LRCONT          BIT(8)
 
-Cc: stable@vger.kernel.org
-Reviewed-by: Mikulas Patocka <mpatocka@redhat.com>
+Gr{oetje,eeting}s,
 
-> ---
->  drivers/md/dm-integrity.c | 2 --
->  1 file changed, 2 deletions(-)
-> 
-> diff --git a/drivers/md/dm-integrity.c b/drivers/md/dm-integrity.c
-> index 36ae30b73a6e..3d5a0ce123c9 100644
-> --- a/drivers/md/dm-integrity.c
-> +++ b/drivers/md/dm-integrity.c
-> @@ -4494,8 +4494,6 @@ static int dm_integrity_ctr(struct dm_target *ti, unsigned argc, char **argv)
->  	}
->  
->  	if (should_write_sb) {
-> -		int r;
-> -
->  		init_journal(ic, 0, ic->journal_sections, 0);
->  		r = dm_integrity_failed(ic);
->  		if (unlikely(r)) {
-> -- 
-> 2.35.1
-> 
+                        Geert
 
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
