@@ -2,318 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D78FEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:51:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45791C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 16:51:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243617AbiDYQyU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 12:54:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51890 "EHLO
+        id S243620AbiDYQyr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 12:54:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243606AbiDYQyR (ORCPT
+        with ESMTP id S238170AbiDYQyp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 12:54:17 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE08A1A042;
-        Mon, 25 Apr 2022 09:51:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650905472; x=1682441472;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=sNT4x+GZpx5jtw0CJ7/oLIIw/S8KoYk0ZT6jquEq14Q=;
-  b=mDk/QCs5kOr4Sub3BlOs4mfbxZfxivm+6grZykV9yrF4vAz99y/Q6nlR
-   xvaaNqVyforYioxCh3BWDdW2vWSWQg1KuwC5DG3WXmZm6U5zFgffnYVnw
-   70C8MP2c0Uw5ZBas0lMewUJ4RK8ENbCIHDAsrihAqnxh61Jk5m6f48gpG
-   nd/Gyuder5n+YYIBo02cxUONsD+dugJ9b6l8gzjI5/88wNcjs+Xsdyj2Z
-   3FOivgVTgojdMMi/7S6OFGV6h2GrKMI9puCYfUkm4i178Sd48cW6NKGcE
-   v6Al50rOExGg37br6TE5V5hSlrJuWY9bdI3yRLklaffbl/58sZkw5b/bA
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="351749907"
-X-IronPort-AV: E=Sophos;i="5.90,289,1643702400"; 
-   d="scan'208";a="351749907"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 09:51:12 -0700
-X-IronPort-AV: E=Sophos;i="5.90,289,1643702400"; 
-   d="scan'208";a="579375156"
-Received: from kruparel-mobl1.amr.corp.intel.com (HELO localhost) ([10.213.188.223])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 09:51:11 -0700
-Date:   Mon, 25 Apr 2022 09:51:10 -0700
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        linux-doc@vger.kernel.org, outreachy@lists.linux.dev,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH 4/4] Documentation/vm: Rework "Temporary Virtual Mappings"
-Message-ID: <YmbRfjGi12P4eX5F@iweiny-desk3>
-References: <20220421180200.16901-1-fmdefrancesco@gmail.com>
- <20220421180200.16901-5-fmdefrancesco@gmail.com>
- <YmXyhH7wAJo274WB@iweiny-desk3>
- <1894872.PYKUYFuaPT@leap>
+        Mon, 25 Apr 2022 12:54:45 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C6E461A042;
+        Mon, 25 Apr 2022 09:51:40 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 942261FB;
+        Mon, 25 Apr 2022 09:51:40 -0700 (PDT)
+Received: from lpieralisi (unknown [10.57.13.157])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D0CFB3F5A1;
+        Mon, 25 Apr 2022 09:51:37 -0700 (PDT)
+Date:   Mon, 25 Apr 2022 17:51:34 +0100
+From:   Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+To:     "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
+Cc:     KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Wei Hu <weh@microsoft.com>, Rob Herring <robh@kernel.org>,
+        Krzysztof Wilczynski <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        linux-hyperv@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 6/6] PCI: hv: Fix synchronization between channel
+ callback and hv_compose_msi_msg()
+Message-ID: <20220425165134.GB17718@lpieralisi>
+References: <20220419122325.10078-1-parri.andrea@gmail.com>
+ <20220419122325.10078-7-parri.andrea@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1894872.PYKUYFuaPT@leap>
+In-Reply-To: <20220419122325.10078-7-parri.andrea@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 03:42:46AM +0200, Fabio M. De Francesco wrote:
-> On lunedì 25 aprile 2022 02:59:48 CEST Ira Weiny wrote:
-> > On Thu, Apr 21, 2022 at 08:02:00PM +0200, Fabio M. De Francesco wrote:
-> > > Extend and rework the "Temporary Virtual Mappings" section of the 
-> highmem.rst
-> > > documentation.
-> > > 
-> > > Despite the local kmaps were introduced by Thomas Gleixner in October 
-> 2020,
-> > > documentation was still missing information about them. These additions 
-> rely
-> > > largely on Gleixner's patches, Jonathan Corbet's LWN articles, comments 
-> by
-> > > Ira Weiny and Matthew Wilcox, and in-code comments from
-> > > ./include/linux/highmem.h.
-> > > 
-> > > 1) Add a paragraph to document kmap_local_page().
-> > > 2) Reorder the list of functions by decreasing order of preference of
-> > > use.
-> > > 3) Rework part of the kmap() entry in list.
-> > > 
-> > > Cc: Jonathan Corbet <corbet@lwn.net>
-> > > Cc: Thomas Gleixner <tglx@linutronix.de>
-> > > Cc: Ira Weiny <ira.weiny@intel.com>
-> > > Cc: Matthew Wilcox <willy@infradead.org>
-> > > Cc: Peter Zijlstra <peterz@infradead.org>
-> > > Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
-> > > ---
-> > >  Documentation/vm/highmem.rst | 71 ++++++++++++++++++++++++++++++------
-> > >  1 file changed, 60 insertions(+), 11 deletions(-)
-> > > 
-> > > diff --git a/Documentation/vm/highmem.rst b/Documentation/vm/
-> highmem.rst
-> > > index e05bf5524174..960f61e7a552 100644
-> > > --- a/Documentation/vm/highmem.rst
-> > > +++ b/Documentation/vm/highmem.rst
-> > > @@ -50,26 +50,75 @@ space when they use mm context tags.
-> > >  Temporary Virtual Mappings
-> > >  ==========================
-> > >  
-> > > -The kernel contains several ways of creating temporary mappings:
-> > > +The kernel contains several ways of creating temporary mappings. The 
-> following
-> > > +list shows them in order of preference of use.
-> > >  
-> > > -* vmap().  This can be used to make a long duration mapping of 
-> multiple
-> > > -  physical pages into a contiguous virtual space.  It needs global
-> > > -  synchronization to unmap.
-> > > +* kmap_local_page().  This function is used to require short term 
-> mappings.
-> > > +  It can be invoked from any context (including interrupts) but the 
-> mappings
-> > > +  can only be used in the context which acquired them.
-> > > +
-> > > +  This function should be preferred, where feasible, over all the 
-> others.
-> > >  
-> > > -* kmap().  This permits a short duration mapping of a single page.  It 
-> needs
-> > > -  global synchronization, but is amortized somewhat.  It is also prone 
-> to
-> > > -  deadlocks when using in a nested fashion, and so it is not 
-> recommended for
-> > > -  new code.
-> > > +  These mappings are per thread, CPU local (i.e., migration from one 
-> CPU to
-> > > +  another is disabled - this is why they are called "local"), but they 
-> don't
-> > > +  disable preemption. It's valid to take pagefaults in a local kmap 
-> region,
-> > > +  unless the context in which the local mapping is acquired does not 
-> allow
-> > > +  it for other reasons.
-> > > +
-> > > +  It is assumed that kmap_local_page() always returns the virtual 
-> address
-> > 
-> > kmap_local_page() does return a kernel virtual address.  Why 'assume' 
-> this?
-> > 
-> > Do you mean it returns an address in the direct map?
-> > 
-> > > +  of the mapping, therefore they won't ever fail.
-> > 
-> > I don't think that returning a virtual address has anything to do with 
-> the
-> > assumption they will not fail.
-> > 
-> > Why do you say this?
+On Tue, Apr 19, 2022 at 02:23:25PM +0200, Andrea Parri (Microsoft) wrote:
+> Dexuan wrote:
 > 
-> Oh, sorry! I didn't mean to say this. What I wrote is _not_ what I meant. 
-> My intention was to say the same that you may read below about 
-> k[un]map_atomic().
+>   "[...]  when we disable AccelNet, the host PCI VSP driver sends a
+>    PCI_EJECT message first, and the channel callback may set
+>    hpdev->state to hv_pcichild_ejecting on a different CPU.  This can
+>    cause hv_compose_msi_msg() to exit from the loop and 'return', and
+>    the on-stack variable 'ctxt' is invalid.  Now, if the response
+>    message from the host arrives, the channel callback will try to
+>    access the invalid 'ctxt' variable, and this may cause a crash."
 > 
-> This sentence should have been:
+> Schematically:
 > 
-> + It always returns a valid virtual address. It is assumed that
-> + k[un]map_local() won't ever fail.
+>   Hyper-V sends PCI_EJECT msg
+>     hv_pci_onchannelcallback()
+>       state = hv_pcichild_ejecting
+>                                        hv_compose_msi_msg()
+>                                          alloc and init comp_pkt
+>                                          state == hv_pcichild_ejecting
+>   Hyper-V sends VM_PKT_COMP msg
+>     hv_pci_onchannelcallback()
+>       retrieve address of comp_pkt
+>                                          'free' comp_pkt and return
+>       comp_pkt->completion_func()
 > 
-> Is this rewording correct?
+> Dexuan also showed how the crash can be triggered after introducing
+> suitable delays in the driver code, thus validating the 'assumption'
+> that the host can still normally respond to the guest's compose_msi
+> request after the host has started to eject the PCI device.
 > 
-> It's not my first time I make these kinds of silly mistakes when copy-
-> pasting lines and then rework or merge with other text that was already 
-> there. Recently I've made a couple of these kinds of mistakes.
+> Fix the synchronization by leveraging the requestor lock as follows:
 > 
-> I'd better read twice (maybe thrice) what I write before sending :(
+>   - Before 'return'-ing in hv_compose_msi_msg(), remove the ID (while
+>     holding the requestor lock) associated to the completion packet.
+> 
+>   - Retrieve the address *and call ->completion_func() within a same
+>     (requestor) critical section in hv_pci_onchannelcallback().
+> 
+> Reported-by: Wei Hu <weh@microsoft.com>
+> Reported-by: Dexuan Cui <decui@microsoft.com>
+> Suggested-by: Michael Kelley <mikelley@microsoft.com>
+> Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+> Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+> ---
+> v1 included:
+> 
+> Fixes: de0aa7b2f97d3 ("PCI: hv: Fix 2 hang issues in hv_compose_msi_msg()")
+> 
+> as a reference, but not a reference for the stable-kernel bots.
+> The back-port would depend on the entire series which, in turn,
+> shouldn't be backported to commits preceding bf5fd8cae3c8f.
+> 
+>  drivers/pci/controller/pci-hyperv.c | 33 +++++++++++++++++++++++------
+>  1 file changed, 27 insertions(+), 6 deletions(-)
 
-NP  That is part of the reason we have reviews.
+Acked-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 
-> 
-> > 
-> > > +
-> > > +  If a task holding local kmaps is preempted, the maps are removed on 
-> context
-> > > +  switch and restored when the task comes back on the CPU. As the maps 
-> are
-> > > +  strictly CPU local, it is guaranteed that the task stays on the CPU 
-> and
-> > > +  that the CPU cannot be unplugged until the local kmaps are released.
-> > > +
-> > > +  Nesting kmap_local_page() and kmap_atomic() mappings is allowed to a 
-> certain
-> > > +  extent (up to KMAP_TYPE_NR) but their invocations have to be 
-> strictly ordered
-> > > +  because the map implementation is stack based.
-> > 
-> > I think I would reference the kmap_local_page()
-> 
-> I suppose you are talking about the kdocs comments in code. If so, please 
-> remember that the kmap_local_page() kdocs have already been included in  
-> highmem.rst.
-
-Yes exactly.
-
-> 
-> Am I misunderstanding what you write?
-
-I was just suggesting that the above could add.
-
-'See kmal_local_page() kdoc for ordering details.'
-
-To make sure that people understand those details and you don't have to rewrite
-the kdoc stuff here.
-
-> 
-> > for more details on the
-> > ordering because there have been some conversions I've done which were
-> > complicated by this.
-> > 
-> > >  
-> > >  * kmap_atomic().  This permits a very short duration mapping of a 
-> single
-> > >    page.  Since the mapping is restricted to the CPU that issued it, it
-> > >    performs well, but the issuing task is therefore required to stay on 
-> that
-> > >    CPU until it has finished, lest some other task displace its 
-> mappings.
-> > >  
-> > > -  kmap_atomic() may also be used by interrupt contexts, since it is 
-> does not
-> > > -  sleep and the caller may not sleep until after kunmap_atomic() is 
-> called.
-> > > +  kmap_atomic() may also be used by interrupt contexts, since it does 
-> not
-> > > +  sleep and the callers too may not sleep until after kunmap_atomic() 
-> is
-> > > +  called.
-> > > +
-> > > +  Each call of kmap_atomic() in the kernel creates a non-preemptible 
-> section
-> > > +  and disable pagefaults. This could be a source of unwanted latency, 
-> so it
-> > > +  should be only used if it is absolutely required, otherwise 
-> kmap_local_page()
-> > > +  should be used where it is feasible.
-> > >  
-> > > -  It may be assumed that k[un]map_atomic() won't fail.
-> > > +  It is assumed that k[un]map_atomic() won't fail.
-> > > +
-> > > +* kmap().  This should be used to make short duration mapping of a 
-> single
-> > > +  page with no restrictions on preemption or migration. It comes with 
-> an
-> > > +  overhead as mapping space is restricted and protected by a global 
-> lock
-> > > +  for synchronization. When mapping is no more needed, the address 
-> that
-> >                                          ^^^^^^^^
-> > 					 no longer
-> 
-> Yes, correct. I'll fix it.
-> 
-> > > +  the page was mapped to must be released with kunmap().
-> > > +
-> > > +  Mapping changes must be propagated across all the CPUs. kmap() also
-> > > +  requires global TLB invalidation when the kmap's pool wraps and it 
-> might
-> > > +  block when the mapping space is fully utilized until a slot becomes
-> > > +  available. Therefore, kmap() is only callable from preemptible 
-> context.
-> > > +
-> > > +  All the above work is necessary if a mapping must last for a 
-> relatively
-> > > +  long time but the bulk of high-memory mappings in the kernel are
-> > > +  short-lived and only used in one place. This means that the cost of
-> > > +  kmap() is mostly wasted in such cases. kmap() was not intended for 
-> long
-> > > +  term mappings but it has morphed in that direction and its use is
-> > > +  strongly discouraged in newer code and the set of the preceding 
-> functions
-> > > +  should be preferred.
-> > 
-> > Nice!
-> 
-> Now that I have your reviews for all the four patches of this series I'll 
-> send next version on Monday.
-> 
-> Thanks you so much,
-
-Thank you!
-Ira
-
-> 
-> Fabio
-> 
-> > 
-> > Ira
-> > 
-> > > +
-> > > +  On 64-bit systems, calls to kmap_local_page(), kmap_atomic() and 
-> kmap() have
-> > > +  no real work to do because a 64-bit address space is more than 
-> sufficient to
-> > > +  address all the physical memory whose pages are permanently mapped.
-> > > +
-> > > +* vmap().  This can be used to make a long duration mapping of 
-> multiple
-> > > +  physical pages into a contiguous virtual space.  It needs global
-> > > +  synchronization to unmap.
-> > >  
-> > >  
-> > >  Cost of Temporary Mappings
-> > > -- 
-> > > 2.34.1
-> > > 
-> > 
-> 
-> 
-> 
+> diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
+> index 0252b4bbc8d15..59f0197b94c78 100644
+> --- a/drivers/pci/controller/pci-hyperv.c
+> +++ b/drivers/pci/controller/pci-hyperv.c
+> @@ -1695,7 +1695,7 @@ static void hv_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
+>  			struct pci_create_interrupt3 v3;
+>  		} int_pkts;
+>  	} __packed ctxt;
+> -
+> +	u64 trans_id;
+>  	u32 size;
+>  	int ret;
+>  
+> @@ -1757,10 +1757,10 @@ static void hv_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
+>  		goto free_int_desc;
+>  	}
+>  
+> -	ret = vmbus_sendpacket(hpdev->hbus->hdev->channel, &ctxt.int_pkts,
+> -			       size, (unsigned long)&ctxt.pci_pkt,
+> -			       VM_PKT_DATA_INBAND,
+> -			       VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED);
+> +	ret = vmbus_sendpacket_getid(hpdev->hbus->hdev->channel, &ctxt.int_pkts,
+> +				     size, (unsigned long)&ctxt.pci_pkt,
+> +				     &trans_id, VM_PKT_DATA_INBAND,
+> +				     VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED);
+>  	if (ret) {
+>  		dev_err(&hbus->hdev->device,
+>  			"Sending request for interrupt failed: 0x%x",
+> @@ -1839,6 +1839,15 @@ static void hv_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
+>  
+>  enable_tasklet:
+>  	tasklet_enable(&channel->callback_event);
+> +	/*
+> +	 * The completion packet on the stack becomes invalid after 'return';
+> +	 * remove the ID from the VMbus requestor if the identifier is still
+> +	 * mapped to/associated with the packet.  (The identifier could have
+> +	 * been 're-used', i.e., already removed and (re-)mapped.)
+> +	 *
+> +	 * Cf. hv_pci_onchannelcallback().
+> +	 */
+> +	vmbus_request_addr_match(channel, trans_id, (unsigned long)&ctxt.pci_pkt);
+>  free_int_desc:
+>  	kfree(int_desc);
+>  drop_reference:
+> @@ -2717,6 +2726,7 @@ static void hv_pci_onchannelcallback(void *context)
+>  	struct pci_dev_inval_block *inval;
+>  	struct pci_dev_incoming *dev_message;
+>  	struct hv_pci_dev *hpdev;
+> +	unsigned long flags;
+>  
+>  	buffer = kmalloc(bufferlen, GFP_ATOMIC);
+>  	if (!buffer)
+> @@ -2751,8 +2761,11 @@ static void hv_pci_onchannelcallback(void *context)
+>  		switch (desc->type) {
+>  		case VM_PKT_COMP:
+>  
+> -			req_addr = chan->request_addr_callback(chan, req_id);
+> +			lock_requestor(chan, flags);
+> +			req_addr = __vmbus_request_addr_match(chan, req_id,
+> +							      VMBUS_RQST_ADDR_ANY);
+>  			if (req_addr == VMBUS_RQST_ERROR) {
+> +				unlock_requestor(chan, flags);
+>  				dev_err(&hbus->hdev->device,
+>  					"Invalid transaction ID %llx\n",
+>  					req_id);
+> @@ -2760,9 +2773,17 @@ static void hv_pci_onchannelcallback(void *context)
+>  			}
+>  			comp_packet = (struct pci_packet *)req_addr;
+>  			response = (struct pci_response *)buffer;
+> +			/*
+> +			 * Call ->completion_func() within the critical section to make
+> +			 * sure that the packet pointer is still valid during the call:
+> +			 * here 'valid' means that there's a task still waiting for the
+> +			 * completion, and that the packet data is still on the waiting
+> +			 * task's stack.  Cf. hv_compose_msi_msg().
+> +			 */
+>  			comp_packet->completion_func(comp_packet->compl_ctxt,
+>  						     response,
+>  						     bytes_recvd);
+> +			unlock_requestor(chan, flags);
+>  			break;
+>  
+>  		case VM_PKT_DATA_INBAND:
+> -- 
+> 2.25.1
 > 
