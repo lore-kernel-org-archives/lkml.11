@@ -2,189 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 821EEC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:30:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF885C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 22:32:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231373AbiDYWdJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 18:33:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52136 "EHLO
+        id S233407AbiDYWfc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 18:35:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236200AbiDYWc4 (ORCPT
+        with ESMTP id S231377AbiDYWf2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 18:32:56 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CB3CA185;
-        Mon, 25 Apr 2022 15:29:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650925781; x=1682461781;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=5Xh4n6qYzYGCgES5QzsoDE6tDwiLaiGMdlmL/LBrteY=;
-  b=uIw/yiLU0irgRBFt2jpaDY1yDhFSI/DbKSGCj2QG6BZuexvQ83h70q3l
-   0WPswGsaobE8vJ68/uAWysFuPxZbEu7y3sYdKSZsZTkrir/vDqSbWIr/s
-   iWFtweNMnss6kIgaU+Ey8iWA/WZ0LxhHmm0S0reE006y2/xk7er+DNz6p
-   I=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 25 Apr 2022 15:29:41 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 15:29:40 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 25 Apr 2022 15:29:40 -0700
-Received: from [10.110.33.26] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 25 Apr
- 2022 15:29:39 -0700
-Message-ID: <07f1e701-f921-b06a-7492-63810a937322@quicinc.com>
-Date:   Mon, 25 Apr 2022 15:29:30 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] drm/msm/dp: tear down main link at unplug handle
- immediately
+        Mon, 25 Apr 2022 18:35:28 -0400
+X-Greylist: delayed 76 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 25 Apr 2022 15:32:20 PDT
+Received: from mailout1.w2.samsung.com (mailout1.w2.samsung.com [211.189.100.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE105D5E9C
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 15:32:20 -0700 (PDT)
+Received: from uscas1p1.samsung.com (unknown [182.198.245.206])
+        by mailout1.w2.samsung.com (KnoxPortal) with ESMTP id 20220425223219usoutp013549bffb0b871c7ece6fefc277a8fc8d~pRGUjbSkH3194031940usoutp01v;
+        Mon, 25 Apr 2022 22:32:19 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w2.samsung.com 20220425223219usoutp013549bffb0b871c7ece6fefc277a8fc8d~pRGUjbSkH3194031940usoutp01v
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1650925939;
+        bh=lUAxorIG3xx22FZeCKViHdal4uXa3obuhG1AtQNjNUA=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
+        b=Z+LK/Mp1cS5Oi0ld7U+6fhQEkKnu0UJASw7/CO/2P/2uNC6feWm9XmvX9ZUcLs1qB
+         ayW6c+eHx+qx37WHERRuw3Hcl7Zu4W/aXUAVwxUUgvPsN4udqrimiNvotQvEnismaB
+         mmrGMP6WozpeLvPwVfAuNRRPLGlKwoeQxVHCLu08=
+Received: from ussmges2new.samsung.com (u111.gpu85.samsung.co.kr
+        [203.254.195.111]) by uscas1p1.samsung.com (KnoxPortal) with ESMTP id
+        20220425223219uscas1p101cc13ac23e68788ee44d1254d088d44~pRGUTSpti1843318433uscas1p1Z;
+        Mon, 25 Apr 2022 22:32:19 +0000 (GMT)
+Received: from uscas1p1.samsung.com ( [182.198.245.206]) by
+        ussmges2new.samsung.com (USCPEMTA) with SMTP id D1.A5.09642.37127626; Mon,
+        25 Apr 2022 18:32:19 -0400 (EDT)
+Received: from ussmgxs3new.samsung.com (u92.gpu85.samsung.co.kr
+        [203.254.195.92]) by uscas1p1.samsung.com (KnoxPortal) with ESMTP id
+        20220425223218uscas1p1df8f7f2bc2fb34585b983833172d37f0~pRGT58O2L2651726517uscas1p19;
+        Mon, 25 Apr 2022 22:32:18 +0000 (GMT)
+X-AuditID: cbfec36f-c15ff700000025aa-9c-62672173d603
+Received: from SSI-EX3.ssi.samsung.com ( [105.128.2.146]) by
+        ussmgxs3new.samsung.com (USCPEXMTA) with SMTP id A4.1D.09665.27127626; Mon,
+        25 Apr 2022 18:32:18 -0400 (EDT)
+Received: from SSI-EX3.ssi.samsung.com (105.128.2.228) by
+        SSI-EX3.ssi.samsung.com (105.128.2.228) with Microsoft SMTP Server
+        (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+        15.1.2375.7; Mon, 25 Apr 2022 15:32:18 -0700
+Received: from SSI-EX3.ssi.samsung.com ([105.128.5.228]) by
+        SSI-EX3.ssi.samsung.com ([105.128.5.228]) with mapi id 15.01.2375.007; Mon,
+        25 Apr 2022 15:32:18 -0700
+From:   Adam Manzanares <a.manzanares@samsung.com>
+To:     Davidlohr Bueso <dave@stgolabs.net>
+CC:     "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "mhocko@kernel.org" <mhocko@kernel.org>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "rientjes@google.com" <rientjes@google.com>,
+        "yosryahmed@google.com" <yosryahmed@google.com>,
+        "hannes@cmpxchg.org" <hannes@cmpxchg.org>,
+        "shakeelb@google.com" <shakeelb@google.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "tim.c.chen@linux.intel.com" <tim.c.chen@linux.intel.com>,
+        "roman.gushchin@linux.dev" <roman.gushchin@linux.dev>,
+        "gthelen@google.com" <gthelen@google.com>,
+        Heekwon Park <heekwon.p@samsung.com>,
+        Jongmin Gim <gim.jongmin@samsung.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/6] mm/vmscan: use node_is_toptier helper in
+ node_reclaim
+Thread-Topic: [PATCH 2/6] mm/vmscan: use node_is_toptier helper in
+        node_reclaim
+Thread-Index: AQHYUVRPhFduil0j7kuBgiP9pteKmq0Bu1OA
+Date:   Mon, 25 Apr 2022 22:32:17 +0000
+Message-ID: <20220425223217.GB147460@bgt-140510-bm01>
+In-Reply-To: <20220416053902.68517-3-dave@stgolabs.net>
+Accept-Language: en-US
 Content-Language: en-US
-To:     Stephen Boyd <swboyd@chromium.org>, <agross@kernel.org>,
-        <airlied@linux.ie>, <bjorn.andersson@linaro.org>,
-        <daniel@ffwll.ch>, <dmitry.baryshkov@linaro.org>,
-        <robdclark@gmail.com>, <sean@poorly.run>, <vkoul@kernel.org>
-CC:     <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
-        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <1649970223-9522-1-git-send-email-quic_khsieh@quicinc.com>
- <CAE-0n51rp73v6tod98TX3Y_q8TuOppJVdm9Te_9kSNyqyFuoog@mail.gmail.com>
-From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
-In-Reply-To: <CAE-0n51rp73v6tod98TX3Y_q8TuOppJVdm9Te_9kSNyqyFuoog@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [105.128.2.176]
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <20BE6FE238A73040961B01F8E3D668AB@ssi.samsung.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-CFilter-Loop: Reflected
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrBKsWRmVeSWpSXmKPExsWy7djXc7rFiulJBuvaeSzmrF/DZvFiQzuj
+        xeqbaxgt1q2ayGKxepOvxeVdc9gs7q35z2rx+tsyZou2JRuZLCauEbU4eO01o8W1SfPZLLbv
+        inTg9Tj85j2zx4JNpR6bVnWyeWz6NInd48SM3yweCxumMnvMOxnoMXV2vcfnTXIBnFFcNimp
+        OZllqUX6dglcGZ8eVxQcYK/Yf+M1ewNjD1sXIyeHhICJRGfvWSCbi0NIYCWjxNXmUywgCSGB
+        ViaJA28EYIr+nzjHClG0llFi9cX37BBFHxklNuyrgUgsY5SYe2sJ2Fg2AQOJ38c3MoPYIgLq
+        EvPW3mYEsZkF9rNK/D5mCWILCwRI9F2fzgpREyixet5fNgjbSOLetLdgvSwCqhLPJhwEi/MK
+        mEocmDiLCcTmFDCX+HriE5jNKCAm8f3UGiaI+eISt57MZ4K4WlBi0ew9zBC2mMS/XQ+hXlaU
+        uP/9JTtEvY7Egt2f2CBsO4mDL9ezQtjaEssWvmaG2CsocXLmExaIXkmJgytusIA8LCEwm1Pi
+        woaP7BAJF4mXL59DFUlLTF9zGaqonVHiw4R9rBDOBEaJO29/Qp1hLfGv8xr7BEaVWUgun4Xk
+        qllIrpqF5KpZSK5awMi6ilG8tLg4Nz212CgvtVyvODG3uDQvXS85P3cTIzDxnf53OH8H4/Vb
+        H/UOMTJxMB5ilOBgVhLhnaqaliTEm5JYWZValB9fVJqTWnyIUZqDRUmcd1nmhkQhgfTEktTs
+        1NSC1CKYLBMHp1QDU+ab61pT857ndy57+PnYwmvtObc377UuqXpt8fyn986XwZzhd97HH5yz
+        yCrszamdTRsy57Db3z36/dLiqa9DDJ2XZ11cf832urTnsr95VQun1x4NT9+Yx15xMFHqyVOm
+        nRluP7R8JybI9XhY7F560MlKaXLV7SvLVYy7XWRbP9y/XSG/bOqnnprNCnyvrQ6fODBhLbPn
+        S7H/Juxzp98LOVW4ZYe/epvJzycTnj30esW8Q2zqziKb/jrhnxsc72UxJXjqFf5xs5E7uX/e
+        j48TV7XpW0odTz+xdrGP2gze1nx13u02NV7l3wL2nzCSuTzRP9rR6QR/w+Smj4IfOv24b+95
+        cuKAiknMyceCjlURq88qsRRnJBpqMRcVJwIAe6M1TesDAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrOIsWRmVeSWpSXmKPExsWS2cA0SbdIMT3JYPcuPYs569ewWbzY0M5o
+        sfrmGkaLdasmslis3uRrcXnXHDaLe2v+s1q8/raM2aJtyUYmi4lrRC0OXnvNaHFt0nw2i+27
+        Ih14PQ6/ec/ssWBTqcemVZ1sHps+TWL3ODHjN4vHwoapzB7zTgZ6TJ1d7/F5k1wAZxSXTUpq
+        TmZZapG+XQJXxqfHFQUH2Cv233jN3sDYw9bFyMkhIWAi8f/EOdYuRi4OIYHVjBLXLr1ngXA+
+        MkpM+7OFCcJZxihx5WgnM0gLm4CBxO/jG8FsEQF1iXlrbzOCFDEL7GWVWHmvkwUkISzgJ3Hp
+        6w92iKJAif/7H7FA2EYS96a9BWtmEVCVeDbhINgdvAKmEgcmzoLatp1RYs/Xw4wgCU4Bc4mv
+        Jz4xgdiMAmIS30+tAbOZBcQlbj2ZzwTxhIDEkj3nmSFsUYmXj/+xQtiKEve/v2SHqNeRWLD7
+        ExuEbSdx8OV6VghbW2LZwtfMEEcISpyc+YQFoldS4uCKGywTGCVmIVk3C8moWUhGzUIyahaS
+        UQsYWVcxipcWF+emVxQb56WW6xUn5haX5qXrJefnbmIEpo3T/w7H7GC8d+uj3iFGJg7GQ4wS
+        HMxKIrxTVdOShHhTEiurUovy44tKc1KLDzFKc7AoifN6xE6MFxJITyxJzU5NLUgtgskycXBK
+        NTBVbDvI9nata9DTWaKLXCtfzVfge/+CX/2B3vwF77qOT5VnFVhS2ls+iUNCPmLCw5csCld+
+        TZvQOcd7Q2uD8J08Lj3pOnUjLQvbSSovD+suTlhceqoqvPQG56zsNU09okdu3t+S/rf+W5Q3
+        30Quh3MFZ3/Gn/y7k/tMXrG2q2rJx/CiL0d97kuqCS9xmCKQmLW65PMx0dmJ4Tfe/5metmv6
+        PD4LpmMmfmu6W9e57TxRc07UMjJhb+vq6JNsUpq7Zy+Yxi4R4cx9XH992M6aA5+/efleuSqd
+        tXFWTbins1tid/y2AC7BhJ+1Ac9CT29byBxtEr/B8fakePsNkUmv8sQ+b2F5xr7v6wP9ZMal
+        ATxKLMUZiYZazEXFiQBwB9nKigMAAA==
+X-CMS-MailID: 20220425223218uscas1p1df8f7f2bc2fb34585b983833172d37f0
+CMS-TYPE: 301P
+X-CMS-RootMailID: 20220416053914uscas1p1552442654a37adcda208d5fec86ec1de
+References: <20220416053902.68517-1-dave@stgolabs.net>
+        <CGME20220416053914uscas1p1552442654a37adcda208d5fec86ec1de@uscas1p1.samsung.com>
+        <20220416053902.68517-3-dave@stgolabs.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 4/20/2022 3:38 PM, Stephen Boyd wrote:
-> Quoting Kuogee Hsieh (2022-04-14 14:03:43)
->> Two stages are required to setup up main link to be ready to transmit
->> video stream.
->> Stage 1: dp_hpd_plug_handle() perform link training to set up main link
->> stage 2: user space framework (msm_dp_display_enable()) to enable pixel
->> clock and transfer main link to video ready state.
->>
->> At current implementation, when dongle unplugged dp_hdp_unplug_handle()
->> has to wait until stage 2 completed before it can send link down uevent
->> to user space framework to disable pixel clock followed by tearing down
->> main link.  This introduce unnecessary latency if dongle unplugged happen
->> after stage 1 and before stage 2. It also has possibility leave main link
->> stay at ready state after dongle unplugged if framework does not response
->> to link down uevent notification. This will prevent next dongle plug in
->> from working. This scenario could possibly happen when dongle unplug while
->> system in the middle of suspending.
->>
->> This patch allow unplug handle to tear down main link and notify
->> framework link down immediately if dongle unplugged happen after
->> stage 1 and before stage 2. With this approach, dp driver is much
->> more resilient to any different scenarios. Also redundant both
->> dp_connect_pending_timeout() and dp_disconnect_pending_timeout()
->> are removed to reduce logic complexity.
->>
->> Fixes: 8ede2ecc3e5e ("drm/msm/dp: Add DP compliance tests on Snapdragon Chipsets")
->> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-> Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+On Fri, Apr 15, 2022 at 10:38:58PM -0700, Davidlohr Bueso wrote:
+> We have helpers for a reason.
+>=20
+> Signed-off-by: Davidlohr Bueso <dave@stgolabs.net>
+> ---
+>  mm/vmscan.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/mm/vmscan.c b/mm/vmscan.c
+> index 1678802e03e7..cb583fcbf5bf 100644
+> --- a/mm/vmscan.c
+> +++ b/mm/vmscan.c
+> @@ -4750,7 +4750,7 @@ int node_reclaim(struct pglist_data *pgdat, gfp_t g=
+fp_mask, unsigned int order)
+>  	 * over remote processors and spread off node memory allocations
+>  	 * as wide as possible.
+>  	 */
+> -	if (node_state(pgdat->node_id, N_CPU) && pgdat->node_id !=3D numa_node_=
+id())
+> +	if (node_is_toptier(pgdat->node_id) && pgdat->node_id !=3D numa_node_id=
+())
+>  		return NODE_RECLAIM_NOSCAN;
+> =20
+>  	if (test_and_set_bit(PGDAT_RECLAIM_LOCKED, &pgdat->flags))
+> --=20
+> 2.26.2
 >
-> Some questions below but doesn't seem like it will hold up this patch.
->
->> diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
->> index 01453db..f5bd8f5 100644
->> --- a/drivers/gpu/drm/msm/dp/dp_display.c
->> +++ b/drivers/gpu/drm/msm/dp/dp_display.c
->> @@ -615,24 +598,21 @@ static int dp_hpd_unplug_handle(struct dp_display_private *dp, u32 data)
->>                  if (dp->link->sink_count == 0) {
->>                          dp_display_host_phy_exit(dp);
->>                  }
->> +               dp_display_notify_disconnect(&dp->pdev->dev);
->>                  mutex_unlock(&dp->event_mutex);
->>                  return 0;
->> -       }
->> -
->> -       if (state == ST_DISCONNECT_PENDING) {
->> +       } else if (state == ST_DISCONNECT_PENDING) {
->>                  mutex_unlock(&dp->event_mutex);
->>                  return 0;
->> -       }
->> -
->> -       if (state == ST_CONNECT_PENDING) {
->> -               /* wait until CONNECTED */
->> -               dp_add_event(dp, EV_HPD_UNPLUG_INT, 0, 1); /* delay = 1 */
->> +       } else if (state == ST_CONNECT_PENDING) {
-> I take it that ST_CONNECT_PENDING is sort of like "userspace hasn't
-> handled the uevent yet and modeset hasn't been called but the link is
-> setup and now we want to tear it down". The state name may want to be
-> changed to something else.
-yes, how about change to  ST_MAINLINK_READY?
->
->> +               dp_ctrl_off_link(dp->ctrl);
->> +               dp_display_host_phy_exit(dp);
->> +               dp->hpd_state = ST_DISCONNECTED;
->> +               dp_display_notify_disconnect(&dp->pdev->dev);
->>                  mutex_unlock(&dp->event_mutex);
->>                  return 0;
->>          }
->>
->> -       dp->hpd_state = ST_DISCONNECT_PENDING;
->> -
->>          /* disable HPD plug interrupts */
->>          dp_catalog_hpd_config_intr(dp->catalog, DP_DP_HPD_PLUG_INT_MASK, false);
->>
->> @@ -640,10 +620,13 @@ static int dp_hpd_unplug_handle(struct dp_display_private *dp, u32 data)
->>           * We don't need separate work for disconnect as
->>           * connect/attention interrupts are disabled
->>           */
->> -       dp_display_usbpd_disconnect_cb(&dp->pdev->dev);
->> +       dp_display_notify_disconnect(&dp->pdev->dev);
->>
->> -       /* start sentinel checking in case of missing uevent */
->> -       dp_add_event(dp, EV_DISCONNECT_PENDING_TIMEOUT, 0, DP_TIMEOUT_5_SECOND);
->> +       if (state == ST_DISPLAY_OFF) {
->> +               dp->hpd_state = ST_DISCONNECTED;
->> +       } else {
->> +               dp->hpd_state = ST_DISCONNECT_PENDING;
->> +       }
-> Nitpick: No braces needed for single line if clauses.
->
->>          DRM_DEBUG_DP("hpd_state=%d\n", state);
->>          /* signal the disconnect event early to ensure proper teardown */
->> @@ -1529,8 +1480,11 @@ int msm_dp_display_enable(struct msm_dp *dp, struct drm_encoder *encoder)
->>
->>          mutex_lock(&dp_display->event_mutex);
->>
->> -       /* stop sentinel checking */
->> -       dp_del_event(dp_display, EV_CONNECT_PENDING_TIMEOUT);
->> +       state = dp_display->hpd_state;
->> +       if (state != ST_DISPLAY_OFF && state != ST_CONNECT_PENDING) {
-> Is this to guard against userspace doing an atomic commit when the
-> display isn't connected? Is that even possible?
-
-No, it used to guard follow scenario in timing order,
-
-1) plugin had been handled and mainlink is ready,
-
-2)  userspace hasn't handled the uevent yet and modeset hasn't been called
-
-3) unplugged happen, mainlink be teared down
-
-4) user space start to response to uevent  and try to enable display. 
-(it too late since mainlink had been teared down)
 
 
->> +               mutex_unlock(&dp_display->event_mutex);
->> +               return rc;
->> +       }
->>
->>          rc = dp_display_set_mode(dp, &dp_display->dp_mode);
->>          if (rc) {
+Looks good.
+
+Reviewed by: Adam Manzanares <a.manzanares@samsung.com>=
