@@ -2,137 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B139C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39761C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 09:15:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241540AbiDYJOs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 05:14:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36960 "EHLO
+        id S241274AbiDYJQA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 05:16:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241542AbiDYJN1 (ORCPT
+        with ESMTP id S238730AbiDYJPp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 05:13:27 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 087B1CABA1
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 02:10:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=PtVe1iWNOkZD3Ag5Tlk3rDK+4QAZNviMZC3dxAtlGFo=; b=aznWSDaNcHkD33pKTbQmzvEZ/M
-        cXqQoVoIidAAIe749nz4SYc0dC+6D1VZQ7RGyE8lRwQu1QwVQQPoh3M1YEn1w15EZwnqh+AmSFiCd
-        dZTBSdu7wpMx4lLTjgY+jEkpKFFJyuEh/dHPMcKzFw/uqKz5XuKjZrN0VfMs5yZebbLWdE2xtMvu8
-        9B5mFp8aCwfg0X5Zfj8uEE/hHv6qzvEM/1vJsEVpHHjE1wjfIAupVSV/tkpima8ClqAhjQurH+R7C
-        uNndpERWY2S3MtJv1T4L06vEM9LQw+YmYHMu9Pm1y8eQpKmTF6SJ/TFw1n33rM2zZkvzQTJMebGlI
-        hzGT7n5w==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1niujO-008VVz-Aj; Mon, 25 Apr 2022 09:10:06 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id DF208980BF1; Mon, 25 Apr 2022 11:10:05 +0200 (CEST)
-Date:   Mon, 25 Apr 2022 11:10:05 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Donghai Qiao <dqiao@redhat.com>
-Cc:     akpm@linux-foundation.org, sfr@canb.auug.org.au, arnd@arndb.de,
-        heying24@huawei.com, andriy.shevchenko@linux.intel.com,
-        axboe@kernel.dk, rdunlap@infradead.org, tglx@linutronix.de,
-        gor@linux.ibm.com, donghai.w.qiao@gmail.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 03/11] smp: eliminate SCF_WAIT and SCF_RUN_LOCAL
-Message-ID: <20220425091005.GE2731@worktop.programming.kicks-ass.net>
-References: <20220422200040.93813-1-dqiao@redhat.com>
- <20220422200040.93813-4-dqiao@redhat.com>
+        Mon, 25 Apr 2022 05:15:45 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3092ADF2C;
+        Mon, 25 Apr 2022 02:12:41 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AA9821FB;
+        Mon, 25 Apr 2022 02:12:40 -0700 (PDT)
+Received: from [10.57.13.137] (unknown [10.57.13.137])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0139C3F73B;
+        Mon, 25 Apr 2022 02:12:37 -0700 (PDT)
+Message-ID: <322009d2-330c-22d4-4075-eca2042f64e1@arm.com>
+Date:   Mon, 25 Apr 2022 10:12:36 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220422200040.93813-4-dqiao@redhat.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 2/3] perf: arm-spe: Fix SPE events with phys addresses
+Content-Language: en-US
+To:     Leo Yan <leo.yan@linaro.org>, Timothy Hayes <timothy.hayes@arm.com>
+Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        acme@kernel.org, John Garry <john.garry@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+References: <20220421165205.117662-1-timothy.hayes@arm.com>
+ <20220421165205.117662-3-timothy.hayes@arm.com>
+ <20220424125951.GD978927@leoy-ThinkPad-X240s>
+From:   James Clark <james.clark@arm.com>
+In-Reply-To: <20220424125951.GD978927@leoy-ThinkPad-X240s>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 04:00:32PM -0400, Donghai Qiao wrote:
-> The commit a32a4d8a815c ("smp: Run functions concurrently in
-> smp_call_function_many_cond()") was to improve the concurrent
-> of the cross call execution between local and remote. The change
-> in smp_call_function_many_cond() did what was intended, but the
-> new macro SCF_WAIT and SCF_RUN_LOCAL and the code around them
-> to handle local call were not unnecessary because the modified
-> function smp_call_function_many() was able to handle the local
-> cross call. So these two macros can be eliminated and the code
-> implemented around that can be removed as well.
-
-Maybe I've not had enough wake-up-juice, but I can't parse the above,
-what?!
 
 
-> @@ -787,23 +787,13 @@ int smp_call_function_any(const struct cpumask *mask,
->  }
->  EXPORT_SYMBOL_GPL(smp_call_function_any);
->  
-> -/*
-> - * Flags to be used as scf_flags argument of smp_call_function_many_cond().
-> - *
-> - * %SCF_WAIT:		Wait until function execution is completed
-> - * %SCF_RUN_LOCAL:	Run also locally if local cpu is set in cpumask
-> - */
-> -#define SCF_WAIT	(1U << 0)
-> -#define SCF_RUN_LOCAL	(1U << 1)
-> -
->  static void smp_call_function_many_cond(const struct cpumask *mask,
->  					smp_call_func_t func, void *info,
-> -					unsigned int scf_flags,
-> +					bool wait,
->  					smp_cond_func_t cond_func)
->  {
->  	int cpu, last_cpu, this_cpu = smp_processor_id();
->  	struct call_function_data *cfd;
-> -	bool wait = scf_flags & SCF_WAIT;
->  	bool run_remote = false;
->  	bool run_local = false;
->  	int nr_cpus = 0;
-> @@ -829,14 +819,14 @@ static void smp_call_function_many_cond(const struct cpumask *mask,
->  	WARN_ON_ONCE(!in_task());
->  
->  	/* Check if we need local execution. */
-> -	if ((scf_flags & SCF_RUN_LOCAL) && cpumask_test_cpu(this_cpu, mask))
-> +	if (cpumask_test_cpu(this_cpu, mask))
->  		run_local = true;
->  
->  	/* Check if we need remote execution, i.e., any CPU excluding this one. */
->  	cpu = cpumask_first_and(mask, cpu_online_mask);
->  	if (cpu == this_cpu)
->  		cpu = cpumask_next_and(cpu, mask, cpu_online_mask);
-> -	if (cpu < nr_cpu_ids)
-> +	if ((unsigned int)cpu < nr_cpu_ids)
->  		run_remote = true;
->  
->  	if (run_remote) {
-> @@ -911,12 +901,8 @@ static void smp_call_function_many_cond(const struct cpumask *mask,
->   * @mask: The set of cpus to run on (only runs on online subset).
->   * @func: The function to run. This must be fast and non-blocking.
->   * @info: An arbitrary pointer to pass to the function.
-> - * @wait: Bitmask that controls the operation. If %SCF_WAIT is set, wait
-> - *        (atomically) until function has completed on other CPUs. If
-> - *        %SCF_RUN_LOCAL is set, the function will also be run locally
-> - *        if the local CPU is set in the @cpumask.
-> - *
-> - * If @wait is true, then returns once @func has returned.
-> + * @wait: If wait is true, the call will not return until func()
-> + *        has completed on other CPUs.
->   *
->   * You must not call this function with disabled interrupts or from a
->   * hardware interrupt handler or from a bottom half handler. Preemption
-> @@ -925,7 +911,7 @@ static void smp_call_function_many_cond(const struct cpumask *mask,
->  void smp_call_function_many(const struct cpumask *mask,
->  			    smp_call_func_t func, void *info, bool wait)
->  {
-> -	smp_call_function_many_cond(mask, func, info, wait * SCF_WAIT, NULL);
-> +	smp_call_function_many_cond(mask, func, info, wait, NULL);
->  }
->  EXPORT_SYMBOL(smp_call_function_many);
+On 24/04/2022 13:59, Leo Yan wrote:
+> Hi Timothy,
+> 
+> On Thu, Apr 21, 2022 at 05:52:04PM +0100, Timothy Hayes wrote:
+>> This patch corrects a bug whereby SPE collection is invoked with
+>> pa_enable=1 but synthesized events fail to show physical addresses.
+>>
+>> Signed-off-by: Timothy Hayes <timothy.hayes@arm.com>
+>> ---
+>>  tools/perf/arch/arm64/util/arm-spe.c | 10 ++++++++++
+>>  tools/perf/util/arm-spe.c            |  3 ++-
+>>  2 files changed, 12 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/tools/perf/arch/arm64/util/arm-spe.c b/tools/perf/arch/arm64/util/arm-spe.c
+>> index af4d63af8072..e8b577d33e53 100644
+>> --- a/tools/perf/arch/arm64/util/arm-spe.c
+>> +++ b/tools/perf/arch/arm64/util/arm-spe.c
+>> @@ -148,6 +148,7 @@ static int arm_spe_recording_options(struct auxtrace_record *itr,
+>>  	bool privileged = perf_event_paranoid_check(-1);
+>>  	struct evsel *tracking_evsel;
+>>  	int err;
+>> +	u64 bit;
+>>  
+>>  	sper->evlist = evlist;
+>>  
+>> @@ -245,6 +246,15 @@ static int arm_spe_recording_options(struct auxtrace_record *itr,
+>>  	 */
+>>  	evsel__set_sample_bit(arm_spe_evsel, DATA_SRC);
+>>  
+>> +	/*
+>> +	 * The PHYS_ADDR flag does not affect the driver behaviour, it is used to
+>> +	 * inform that the resulting output's SPE samples contain physical addresses
+>> +	 * where applicable.
+>> +	 */
+>> +	bit = perf_pmu__format_bits(&arm_spe_pmu->format, "pa_enable");
+>> +	if (arm_spe_evsel->core.attr.config & bit)
+>> +		evsel__set_sample_bit(arm_spe_evsel, PHYS_ADDR);
+>> +
+>>  	/* Add dummy event to keep tracking */
+>>  	err = parse_events(evlist, "dummy:u", NULL);
+>>  	if (err)
+>> diff --git a/tools/perf/util/arm-spe.c b/tools/perf/util/arm-spe.c
+>> index 151cc38a171c..1a80151baed9 100644
+>> --- a/tools/perf/util/arm-spe.c
+>> +++ b/tools/perf/util/arm-spe.c
+>> @@ -1033,7 +1033,8 @@ arm_spe_synth_events(struct arm_spe *spe, struct perf_session *session)
+>>  	memset(&attr, 0, sizeof(struct perf_event_attr));
+>>  	attr.size = sizeof(struct perf_event_attr);
+>>  	attr.type = PERF_TYPE_HARDWARE;
+>> -	attr.sample_type = evsel->core.attr.sample_type & PERF_SAMPLE_MASK;
+>> +	attr.sample_type = evsel->core.attr.sample_type &
+>> +				(PERF_SAMPLE_MASK | PERF_SAMPLE_PHYS_ADDR);
+> 
+> I verified this patch and I can confirm the physical address can be
+> dumped successfully.
+> 
+> I have a more general question, seems to me, we need to change the
+> macro PERF_SAMPLE_MASK in the file util/event.h as below, so
+> here doesn't need to 'or' the flag PERF_SAMPLE_PHYS_ADDR anymore.
+> 
+> @Arnaldo, @Jiri, could you confirm if this is the right way to move
+> forward?  I am not sure why PERF_SAMPLE_MASK doesn't contain the bit
+> PERF_SAMPLE_PHYS_ADDR in current code.
 
-This changes the semantics of smp_call_function_many(), before this, if
-self was in the mask it wouldn't call @func, now it will.
+I think there is a reason that PERF_SAMPLE_MASK is a subset of all the
+bits. This comment below suggests it. Is it so the mask only includes fields
+that are 64bits? That makes the __evsel__sample_size() function a simple
+multiplication of a count of all the fields that are 64bits.
 
-I appreciate you want to clean that up, but you can't do that without
-auditing all callers.
+  static int
+  perf_event__check_size(union perf_event *event, unsigned int sample_size)
+  {
+	/*
+	 * The evsel's sample_size is based on PERF_SAMPLE_MASK which includes
+	 * up to PERF_SAMPLE_PERIOD.  After that overflow() must be used to
+	 * check the format does not go past the end of the event.
+	 */
+	if (sample_size + sizeof(event->header) > event->header.size)
+		return -EFAULT;
+
+	return 0;
+  }
+
+Having said that, the mask was updated once to add PERF_SAMPLE_IDENTIFIER to
+it, so that comment is slightly out of date now.
+
+
+> 
+> diff --git a/tools/perf/util/event.h b/tools/perf/util/event.h
+> index cdd72e05fd28..c905ac32ebad 100644
+> --- a/tools/perf/util/event.h
+> +++ b/tools/perf/util/event.h
+> @@ -39,7 +39,7 @@ struct perf_event_attr;
+>          PERF_SAMPLE_TIME | PERF_SAMPLE_ADDR |          \
+>         PERF_SAMPLE_ID | PERF_SAMPLE_STREAM_ID |        \
+>          PERF_SAMPLE_CPU | PERF_SAMPLE_PERIOD |         \
+> -        PERF_SAMPLE_IDENTIFIER)
+> +        PERF_SAMPLE_IDENTIFIER | PERF_SAMPLE_PHYS_ADDR)
+> 
+> Thanks,
+> Leo
+> 
+>>  	attr.sample_type |= PERF_SAMPLE_IP | PERF_SAMPLE_TID |
+>>  			    PERF_SAMPLE_PERIOD | PERF_SAMPLE_DATA_SRC |
+>>  			    PERF_SAMPLE_WEIGHT | PERF_SAMPLE_ADDR;
+>> -- 
+>> 2.25.1
+>>
