@@ -2,70 +2,255 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42205C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 11:33:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E8F6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Apr 2022 11:34:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236530AbiDYLgh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 07:36:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53628 "EHLO
+        id S238505AbiDYLh0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 07:37:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbiDYLge (ORCPT
+        with ESMTP id S231455AbiDYLhX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 07:36:34 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF7E4FE5
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 04:33:30 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kn2vK3cXLzhYm4;
-        Mon, 25 Apr 2022 19:33:17 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+        Mon, 25 Apr 2022 07:37:23 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEB0EFE5
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 04:34:18 -0700 (PDT)
+Received: from kwepemi500024.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kn2w93PKFzhYjF;
+        Mon, 25 Apr 2022 19:34:01 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi500024.china.huawei.com (7.221.188.100) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 25 Apr 2022 19:33:28 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 25 Apr
- 2022 19:33:28 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <iommu@lists.linux-foundation.org>,
-        <linux-arm-kernel@lists.infradead.org>
-CC:     <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>
-Subject: [PATCH] iommu/arm-smmu-v3: check return value after calling platform_get_resource()
-Date:   Mon, 25 Apr 2022 19:45:25 +0800
-Message-ID: <20220425114525.2651143-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+ 15.1.2375.24; Mon, 25 Apr 2022 19:34:16 +0800
+Received: from [10.174.179.234] (10.174.179.234) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 25 Apr 2022 19:34:15 +0800
+Message-ID: <8ce3eb46-2b18-e268-1013-d713c4c8f90b@huawei.com>
+Date:   Mon, 25 Apr 2022 19:34:14 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500007.china.huawei.com (7.185.36.183)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH -next v5 3/5] mm: page_table_check: add hooks to public
+ helpers
+To:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+CC:     <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-riscv@lists.infradead.org>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Guohanjun <guohanjun@huawei.com>
+References: <20220421082042.1167967-1-tongtiangen@huawei.com>
+ <20220421082042.1167967-4-tongtiangen@huawei.com>
+ <7fc56f41-a3c2-76be-7a20-dda392f3c4fc@arm.com>
+ <eaf17cfc-880e-2181-b253-d520781c428f@huawei.com>
+ <0f4de9db-1e36-b9d8-bd94-6e3ec3842940@arm.com>
+From:   Tong Tiangen <tongtiangen@huawei.com>
+In-Reply-To: <0f4de9db-1e36-b9d8-bd94-6e3ec3842940@arm.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.234]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It will cause null-ptr-deref if platform_get_resource() returns NULL,
-we need check the return value.
 
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 ++
- 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 627a3ed5ee8f..88817a3376ef 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -3770,6 +3770,8 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 
- 	/* Base address */
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!res)
-+		return -EINVAL;
- 	if (resource_size(res) < arm_smmu_resource_size(smmu)) {
- 		dev_err(dev, "MMIO region too small (%pr)\n", res);
- 		return -EINVAL;
--- 
-2.25.1
+在 2022/4/25 13:52, Anshuman Khandual 写道:
+> 
+> 
+> On 4/24/22 09:40, Tong Tiangen wrote:
+>>
+>>
+>> 在 2022/4/22 14:05, Anshuman Khandual 写道:
+>>>
+>>>
+>>> On 4/21/22 13:50, Tong Tiangen wrote:
+>>>> Move ptep_clear() to the include/linux/pgtable.h and add page table check
+>>>> relate hooks to some helpers, it's prepare for support page table check
+>>>> feature on new architecture.
+>>>
+>>> Could instrumenting generic page table helpers (fallback instances when its
+>>> corresponding __HAVE_ARCH_XXX is not defined on the platform), might add all
+>>> the page table check hooks into paths on platforms which have not subscribed
+>>> ARCH_SUPPORTS_PAGE_TABLE_CHECK in the first place ? Although these looks have
+>>> !CONFIG_PAGE_TABLE_CHECK fallback stubs in the header, hence a build problem
+>>> gets avoided.
+>>
+>> Right, build problems are avoided by fallback stubs in the header file.
+> 
+> Although there might not be a build problem as such, but should non subscribing
+> platforms get their page table helpers instrumented with page table check hooks
+> in the first place ? The commit message should address these questions.
+> 
+Add description in commit message to explain that:
+Non subscription platforms will call a fallback ptc stubs when getting 
+their page table helpers[1] in include/linux/pgtable.h.
 
+[1] 
+ptep_clear/ptep_get_and_clear/pmdp_huge_get_and_clear/pudp_huge_get_and_clear
+
+Am i right? :)
+
+Thanks,
+Tong.
+>>
+>>>
+>>>>
+>>>> Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
+>>>> Acked-by: Pasha Tatashin <pasha.tatashin@soleen.com>
+>>>> ---
+>>>>    arch/x86/include/asm/pgtable.h | 10 ----------
+>>>>    include/linux/pgtable.h        | 26 ++++++++++++++++++--------
+>>>>    2 files changed, 18 insertions(+), 18 deletions(-)
+>>>>
+>>>> diff --git a/arch/x86/include/asm/pgtable.h b/arch/x86/include/asm/pgtable.h
+>>>> index 564abe42b0f7..51cd39858f81 100644
+>>>> --- a/arch/x86/include/asm/pgtable.h
+>>>> +++ b/arch/x86/include/asm/pgtable.h
+>>>> @@ -1073,16 +1073,6 @@ static inline pte_t ptep_get_and_clear_full(struct mm_struct *mm,
+>>>>        return pte;
+>>>>    }
+>>>>    -#define __HAVE_ARCH_PTEP_CLEAR
+>>>
+>>> AFICS X86 is the only platform subscribing __HAVE_ARCH_PTEP_CLEAR. Hence if
+>>> this is getting dropped for generic ptep_clear(), then no need to add back
+>>> #ifnded __HAVE_ARCH_PTEP_CLEAR construct. Generic ptep_clear() is the only
+>>> definition for all platforms ?
+>>>
+>>> Also if this patch is trying to drop off __HAVE_ARCH_PTEP_CLEAR along with
+>>> other page table check related changes, it needs to be done via a separate
+>>> patch instead.
+>>
+>> Agreed.
+>> IMO, this fix can be patched later.
+>>
+>>>
+>>>> -static inline void ptep_clear(struct mm_struct *mm, unsigned long addr,
+>>>> -                  pte_t *ptep)
+>>>> -{
+>>>> -    if (IS_ENABLED(CONFIG_PAGE_TABLE_CHECK))
+>>>> -        ptep_get_and_clear(mm, addr, ptep);
+>>>> -    else
+>>>> -        pte_clear(mm, addr, ptep);
+>>>> -}
+>>>> -
+>>>>    #define __HAVE_ARCH_PTEP_SET_WRPROTECT
+>>>>    static inline void ptep_set_wrprotect(struct mm_struct *mm,
+>>>>                          unsigned long addr, pte_t *ptep)
+>>>> diff --git a/include/linux/pgtable.h b/include/linux/pgtable.h
+>>>> index 49ab8ee2d6d7..10d2d91edf20 100644
+>>>> --- a/include/linux/pgtable.h
+>>>> +++ b/include/linux/pgtable.h
+>>>> @@ -12,6 +12,7 @@
+>>>>    #include <linux/bug.h>
+>>>>    #include <linux/errno.h>
+>>>>    #include <asm-generic/pgtable_uffd.h>
+>>>> +#include <linux/page_table_check.h>
+>>>>      #if 5 - defined(__PAGETABLE_P4D_FOLDED) - defined(__PAGETABLE_PUD_FOLDED) - \
+>>>>        defined(__PAGETABLE_PMD_FOLDED) != CONFIG_PGTABLE_LEVELS
+>>>> @@ -272,14 +273,6 @@ static inline bool arch_has_hw_pte_young(void)
+>>>>    }
+>>>>    #endif
+>>>>    -#ifndef __HAVE_ARCH_PTEP_CLEAR
+>>>> -static inline void ptep_clear(struct mm_struct *mm, unsigned long addr,
+>>>> -                  pte_t *ptep)
+>>>> -{
+>>>> -    pte_clear(mm, addr, ptep);
+>>>> -}
+>>>> -#endif
+>>>> -
+>>>>    #ifndef __HAVE_ARCH_PTEP_GET_AND_CLEAR
+>>>>    static inline pte_t ptep_get_and_clear(struct mm_struct *mm,
+>>>>                           unsigned long address,
+>>>> @@ -287,10 +280,22 @@ static inline pte_t ptep_get_and_clear(struct mm_struct *mm,
+>>>>    {
+>>>>        pte_t pte = *ptep;
+>>>>        pte_clear(mm, address, ptep);
+>>>> +    page_table_check_pte_clear(mm, address, pte);
+>>>>        return pte;
+>>>>    }
+>>>>    #endif
+>>>>    +#ifndef __HAVE_ARCH_PTEP_CLEAR
+>>>> +static inline void ptep_clear(struct mm_struct *mm, unsigned long addr,
+>>>> +                  pte_t *ptep)
+>>>> +{
+>>>> +    if (IS_ENABLED(CONFIG_PAGE_TABLE_CHECK))
+>>>> +        ptep_get_and_clear(mm, addr, ptep);
+>>>> +    else
+>>>> +        pte_clear(mm, addr, ptep);
+>>>
+>>> Could not this be reworked to avoid IS_ENABLED() ? This is confusing. If the page
+>>> table hooks can be added to all potential page table paths via generic helpers,
+>>> irrespective of CONFIG_PAGE_TABLE_CHECK option, there is no rationale for doing
+>>> a IS_ENABLED() check here.
+>>>
+>>
+>>  From the perspective of code logic, we need to check the pte before being cleared. Whether pte check is required depends on IS_ENABLED().
+>>
+>> Are there any suggestions for better implementation?
+> 
+> But other generic page table helpers already have page table check hooks
+> instrumented without IS_ENABLED() checks, then why this is any different.
+> 
+Maybe i understand what you said, the more reasonable implement is:
+
+static inline pte_t ptep_get_and_clear(struct mm_struct *mm, unsigned 
+long address, pte_t *ptep)
+  {
+  	pte_t pte = *ptep;
+  	pte_clear(mm, address, ptep);
+	page_table_check_pte_clear(mm, address, pte);
+  	return pte;
+  }
+
+static inline void ptep_clear(struct mm_struct *mm, unsigned long addr, 
+pte_t *ptep)
+{
+	ptep_get_and_clear(mm, address, ptep);
+}
+
+>>
+>> Thank you,
+>> Tong.
+>>
+>>>> +}
+>>>> +#endif
+>>>> +
+>>>>    #ifndef __HAVE_ARCH_PTEP_GET
+>>>>    static inline pte_t ptep_get(pte_t *ptep)
+>>>>    {
+>>>> @@ -360,7 +365,10 @@ static inline pmd_t pmdp_huge_get_and_clear(struct mm_struct *mm,
+>>>>                            pmd_t *pmdp)
+>>>>    {
+>>>>        pmd_t pmd = *pmdp;
+>>>> +
+>>>>        pmd_clear(pmdp);
+>>>> +    page_table_check_pmd_clear(mm, address, pmd);
+>>>> +
+>>>>        return pmd;
+>>>>    }
+>>>>    #endif /* __HAVE_ARCH_PMDP_HUGE_GET_AND_CLEAR */
+>>>> @@ -372,6 +380,8 @@ static inline pud_t pudp_huge_get_and_clear(struct mm_struct *mm,
+>>>>        pud_t pud = *pudp;
+>>>>          pud_clear(pudp);
+>>>> +    page_table_check_pud_clear(mm, address, pud);
+>>>> +
+>>>>        return pud;
+>>>>    }
+>>>>    #endif /* __HAVE_ARCH_PUDP_HUGE_GET_AND_CLEAR */
+>>> .
+> .
