@@ -2,91 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BFC8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:20:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 835DBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:21:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344583AbiDZIXY (ORCPT
+        id S1344634AbiDZIXx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:23:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50230 "EHLO
+        Tue, 26 Apr 2022 04:23:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344572AbiDZIXV (ORCPT
+        with ESMTP id S1344584AbiDZIXd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:23:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4ACE638193
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 01:20:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650961213;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=aNhaa4dZuwIsZ3bau/gdwYP34lare5fShqR6oe9C3Es=;
-        b=DGvdOV8vBaOlcjy7sIvGds6ivaELNJGoK5J3jooTQItrSkjokA56Njbf8AwtM45RzplvzH
-        ggcy7cchWL864/ZPYInvSMBHWxQvWenJPebMcyX2F3Tw095YBIfP4nLqstTOSJ8/F8jcaX
-        H/9rXKbj8hQJJ0LE80j5fgHTtfQziDg=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-466-TFfwwowKMQGeuFJuuGYKyw-1; Tue, 26 Apr 2022 04:20:11 -0400
-X-MC-Unique: TFfwwowKMQGeuFJuuGYKyw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1DAB029ABA02;
-        Tue, 26 Apr 2022 08:20:11 +0000 (UTC)
-Received: from rotkaeppchen (unknown [10.39.193.220])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0A5B840D0160;
-        Tue, 26 Apr 2022 08:20:09 +0000 (UTC)
-Date:   Tue, 26 Apr 2022 10:20:08 +0200
-From:   Philipp Rudo <prudo@redhat.com>
-To:     lizhe <sensor1010@163.com>
-Cc:     "Baoquan He" <bhe@redhat.com>, dyoung@redhat.com,
-        vgoyal@redhat.com, kexec@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] kernel/crash_core.c: No judgment required
-Message-ID: <20220426102008.39718e00@rotkaeppchen>
-In-Reply-To: <20220426101718.765686a9@rotkaeppchen>
-References: <20211210032003.16278-1-sensor1010@163.com>
-        <20211214173242.192f47e8@rhtmp>
-        <YmX7EW4Gs+c1ZueQ@MiWiFi-R3L-srv>
-        <62058381.3b6e.1805f62c8f4.Coremail.sensor1010@163.com>
-        <20220426101718.765686a9@rotkaeppchen>
-Organization: Red Hat inc.
+        Tue, 26 Apr 2022 04:23:33 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F5D39BA6;
+        Tue, 26 Apr 2022 01:20:24 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id iq2-20020a17090afb4200b001d93cf33ae9so1581044pjb.5;
+        Tue, 26 Apr 2022 01:20:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=HTkhVCwB81oItW36nLwVzqqoPPJpYzHgpYIkMsBEsWk=;
+        b=qde4ACVjiYLawr37T6PT5dksdblUsoa1GgAxmw56O26epijv0fY5S/aos5REMDWYCG
+         JfIuyZni5momoXAwCnCqNE+ZEUOtQaLV19GuctsTU4aLJGXnT/qF3KC6QbqbvAKrPHJe
+         XMXKNSxyAd8FVND+DY1oRO3ry5GQH9u5BJSCMrmatwAusRSHP1C0raAXQS+DFn6Yrs38
+         3KrwPVzaaNMQhUgyC9dmAOVYb9nTfvd8zFFHDNuWfkjdt7/PpwasisaDSz/1t9OeczwD
+         1MyxnHDs6zYoDccHszD7bPBNvEFOkwPT13kdjB6QdIFe61KwUWd5WPYP9h8vt8FzIu9N
+         tAJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=HTkhVCwB81oItW36nLwVzqqoPPJpYzHgpYIkMsBEsWk=;
+        b=hCysq6tAqzlEGxUpOsCvso2DS+MUTBkxVy9xJZFmMqDdbY74uK7sogsa5+OBXl4kRs
+         qHlvNV9MBQ+4n1cSHeoZ7/AEyfQpBWuco0HZsXehC8fk7lrOXy5JzocQeNxqPX5nFWH1
+         /Xo5WYKxn9t8fDdMcTwqf98LKRviYF0IWXLSSLqBcX5zp9Ht4nvbxwMxwJVyasK1uVT6
+         tewF2tJqYTGfhbbvSpVX9MNa7HuRHQobZybKfioChPfAzN4fXYslKsYNWeiaSqtgrlt/
+         KQKJ0wEtPFgV6wwoCX959T/QQcLayU5MHNYzf6xVk2AjTSV+aeJInhI26u/q5OizY92T
+         YAUA==
+X-Gm-Message-State: AOAM533U+F8WWSG2tPHc1BiOw0VCJikibwyAEM/H2g0S3vmXQkv4dT31
+        iLdXhRnwPl2054yDr6crhlI=
+X-Google-Smtp-Source: ABdhPJwXqDMtVIFw0QkmLuBxcx6aLiJkCFN1IFwubZCd4py0WHhuQkHE3qlR2hKfthPTTcPsxfFYHw==
+X-Received: by 2002:a17:90b:4c47:b0:1d9:88b2:1995 with SMTP id np7-20020a17090b4c4700b001d988b21995mr7575724pjb.80.1650961224288;
+        Tue, 26 Apr 2022 01:20:24 -0700 (PDT)
+Received: from [192.168.2.225] (93.179.119.173.16clouds.com. [93.179.119.173])
+        by smtp.gmail.com with ESMTPSA id 132-20020a62168a000000b004f40e8b3133sm14947128pfw.188.2022.04.26.01.20.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Apr 2022 01:20:23 -0700 (PDT)
+Message-ID: <73d2f4cb-9f38-ac33-b4c0-c4d3b465bf8b@gmail.com>
+Date:   Tue, 26 Apr 2022 16:20:17 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 1/2] docs/zh_CN: sync with original text
+ Documentation/vm/page_owner.rst
+Content-Language: en-US
+To:     baihaowen <baihaowen@meizu.com>, siyanteng01@gmail.com
+Cc:     alexs@kernel.org, corbet@lwn.net, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, siyanteng@loongson.cn
+References: <CAEensMzuQ0uAw8_5Xb7u1n685au=DpaJyPevGCT8GCG7xS42ow@mail.gmail.com>
+ <1650424016-7225-1-git-send-email-baihaowen@meizu.com>
+ <1650424016-7225-2-git-send-email-baihaowen@meizu.com>
+ <30d2f96e-99e1-2976-a294-8e112166afff@gmail.com>
+ <049ccac8-c394-0cdc-c2ed-4ea91cab6439@meizu.com>
+ <c498b2a7-8f0e-4f6d-10ba-49c4c7794ff9@gmail.com>
+ <0be9fe6a-b01e-b355-9283-6ad8372932d6@meizu.com>
+From:   Alex Shi <seakeel@gmail.com>
+In-Reply-To: <0be9fe6a-b01e-b355-9283-6ad8372932d6@meizu.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
 
-On Tue, 26 Apr 2022 10:17:18 +0200
-Philipp Rudo <prudo@redhat.com> wrote:
 
-> Hi lizhe,
+On 4/25/22 09:17, baihaowen wrote:
+> 在 4/24/22 11:16 AM, Alex Shi 写道:
+>>
+>> On 4/24/22 10:56, baihaowen wrote:
+>>>>> +        ======          ==========      ==================
+>>> hi, Alex
+>>> I can apply local.
+>>> ➜  linux-next git:(heads/next-20220421) ✗ git am doc_pageonwer_patches/0001-docs-zh_CN-sync-with-original-text-Documentation-vm-.patch
+>>> 应用：docs/zh_CN: sync with original text Documentation/vm/page_owner.rst
+>>> ➜  linux-next git:(heads/next-20220421) ✗ git am doc_pageonwer_patches/0002-doc-vm-page_owner.rst-Fix-table-display-confusion.patch   
+>>> 应用：doc/vm/page_owner.rst: Fix table display confusion
+>>>
+>>> I think git send-email will change format by my select. I'll try to resend.
+>> Send to yourself only then get it from your email client and try applying. 
+>>
+>> Thanks
+>> Alex
+> Hi Alex
 > 
-> On Mon, 25 Apr 2022 14:22:31 +0800 (CST)
-> lizhe  <sensor1010@163.com> wrote:
+> Could you tell me how do you do when you get a patch from email ?
 > 
-> > HI :
-> > 
-> > 
-> > I found the problem at the first time and gave the solution,
-> > 
-> > 
-> > 
-> > 
-> > Pphilipp Rudo just saw the solution to the problem and gave an explanation.
-> > the author of this patch should only be me  
-> 
-> right, I only commented on the patch you sent.
-> 
-> Could you please update the commit message and send a v2.
+> I get my patch from email and then copy-patse to a new file, then git am xx.patch.
+
+Don't do it. copy usually mess the format of patch.
+
+Saving the patch email from many kind of email-clients as raw file, like thunderbird etc.
+Then using 'git am xxx.patch'. It will work. In fact, git can handle the plain email patch well.
 
 
-should have checked the rest of my mails first...
-
+> It will notice 补丁格式检测失败。
+> 
