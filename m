@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C8F6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:03:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CED13C43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:03:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343969AbiDZTGk (ORCPT
+        id S1351380AbiDZTGq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 15:06:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41852 "EHLO
+        Tue, 26 Apr 2022 15:06:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352919AbiDZTFj (ORCPT
+        with ESMTP id S231888AbiDZTFj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 15:05:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FEDD1569F6;
-        Tue, 26 Apr 2022 12:02:24 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58B791999DA;
+        Tue, 26 Apr 2022 12:02:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BCD94619BD;
-        Tue, 26 Apr 2022 19:02:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D870C385AA;
-        Tue, 26 Apr 2022 19:02:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 78E85619BA;
+        Tue, 26 Apr 2022 19:02:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C030AC385A0;
+        Tue, 26 Apr 2022 19:02:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650999743;
-        bh=CNOrExejcAtrT2uI/EvTsxM/o0aOOv5V/6eM/dQIZFk=;
+        s=k20201202; t=1650999741;
+        bh=U7F8eZYEpVTSmb/J39TUf2NGEuMLVkqIGrd2moRZY9U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u9cGiYiZwBChnkJ3kOX/SI/zzzEVW15bkVo2Aod4gUlDgLioT+ttIsJbrmhsjMzRY
-         QKRZGJe0NLBMCY4gRpSpt+AgHZkee7sUNPTXWPcnc7J0klLpEK2IOu4uZq3Aa42Riz
-         gQ/h3nO2cEQqCIIoBljHyP+vxajmJ47bUjD2F0reUIwToFVa9f1VzvABa/1oY7oy2f
-         X5H8DyxSCrgVAG4ZgfDNtv1usbIn4DEyUiZTKriYKrEKJXIkTmgGguhUewwh6/6VhH
-         bbu9gtNoC7kYVVkrMPj9zyyRBEPFgsG/xSmRuvwH785WyoxbrlS9pTJ8f6wMezQCnf
-         vg2AqAxAFGt1Q==
+        b=cGQOmQMxx7Pw5tUvQcpavoqFSb7JzzQGpnvrnuOMjbnibD6CHtnKw8GQ/hFPito0o
+         DdERkirtpFao94lIUB0p6bMHJnHWqhk1dac8IkqAdRDxUlocLXrIYI6s0De237KjOC
+         yuweR8LSrbPczK/elK8TPuE68iiNwu4Tp7p71b4vyT6kSWXJQKy72TcZ+rB2aet9Hl
+         Ca8fg1NfhOTqnKszLz7H6tJs/2YVyQd04QIAY7VLJyzBll4aRdM6HFQK39/cya+aiU
+         0Ws43IzjIrLEqH8tjgkDkrmfoXnv98R7CVjY36szkHziln8QBV3+pXi7DWRTlPF7jn
+         Vnb8WSNYNu4sw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peilin Ye <peilin.ye@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 07/15] ip6_gre: Avoid updating tunnel->tun_hlen in __gre6_xmit()
-Date:   Tue, 26 Apr 2022 15:02:06 -0400
-Message-Id: <20220426190216.2351413-7-sashal@kernel.org>
+Cc:     Duoming Zhou <duoming@zju.edu.cn>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, chris@zankel.net,
+        jirislaby@kernel.org, gregkh@linuxfoundation.org, dsterba@suse.com,
+        borntraeger@linux.ibm.com, linux-xtensa@linux-xtensa.org
+Subject: [PATCH AUTOSEL 5.15 04/15] arch: xtensa: platforms: Fix deadlock in rs_close()
+Date:   Tue, 26 Apr 2022 15:02:03 -0400
+Message-Id: <20220426190216.2351413-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220426190216.2351413-1-sashal@kernel.org>
 References: <20220426190216.2351413-1-sashal@kernel.org>
@@ -55,46 +54,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit f40c064e933d7787ca7411b699504d7a2664c1f5 ]
+[ Upstream commit eb5adc70754d26a260f8b42d39db42da0d0af500 ]
 
-Do not update tunnel->tun_hlen in data plane code.  Use a local variable
-instead, just like "tunnel_hlen" in net/ipv4/ip_gre.c:gre_fb_xmit().
+There is a deadlock in rs_close(), which is shown
+below:
 
-Co-developed-by: Cong Wang <cong.wang@bytedance.com>
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+   (Thread 1)              |      (Thread 2)
+                           | rs_open()
+rs_close()                 |  mod_timer()
+ spin_lock_bh() //(1)      |  (wait a time)
+ ...                       | rs_poll()
+ del_timer_sync()          |  spin_lock() //(2)
+ (wait timer to stop)      |  ...
+
+We hold timer_lock in position (1) of thread 1 and
+use del_timer_sync() to wait timer to stop, but timer handler
+also need timer_lock in position (2) of thread 2.
+As a result, rs_close() will block forever.
+
+This patch deletes the redundant timer_lock in order to
+prevent the deadlock. Because there is no race condition
+between rs_close, rs_open and rs_poll.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Message-Id: <20220407154430.22387-1-duoming@zju.edu.cn>
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/ip6_gre.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ arch/xtensa/platforms/iss/console.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
-diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
-index 466a5610e3ca..288720838329 100644
---- a/net/ipv6/ip6_gre.c
-+++ b/net/ipv6/ip6_gre.c
-@@ -743,6 +743,7 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
- 		struct ip_tunnel_info *tun_info;
- 		const struct ip_tunnel_key *key;
- 		__be16 flags;
-+		int tun_hlen;
+diff --git a/arch/xtensa/platforms/iss/console.c b/arch/xtensa/platforms/iss/console.c
+index 81d7c7e8f7e9..10b79d3c74e0 100644
+--- a/arch/xtensa/platforms/iss/console.c
++++ b/arch/xtensa/platforms/iss/console.c
+@@ -36,24 +36,19 @@ static void rs_poll(struct timer_list *);
+ static struct tty_driver *serial_driver;
+ static struct tty_port serial_port;
+ static DEFINE_TIMER(serial_timer, rs_poll);
+-static DEFINE_SPINLOCK(timer_lock);
  
- 		tun_info = skb_tunnel_info_txcheck(skb);
- 		if (IS_ERR(tun_info) ||
-@@ -760,9 +761,9 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
- 		dsfield = key->tos;
- 		flags = key->tun_flags &
- 			(TUNNEL_CSUM | TUNNEL_KEY | TUNNEL_SEQ);
--		tunnel->tun_hlen = gre_calc_hlen(flags);
-+		tun_hlen = gre_calc_hlen(flags);
+ static int rs_open(struct tty_struct *tty, struct file * filp)
+ {
+-	spin_lock_bh(&timer_lock);
+ 	if (tty->count == 1)
+ 		mod_timer(&serial_timer, jiffies + SERIAL_TIMER_VALUE);
+-	spin_unlock_bh(&timer_lock);
  
--		gre_build_header(skb, tunnel->tun_hlen,
-+		gre_build_header(skb, tun_hlen,
- 				 flags, protocol,
- 				 tunnel_id_to_key32(tun_info->key.tun_id),
- 				 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++)
+ 	return 0;
+ }
+ 
+ static void rs_close(struct tty_struct *tty, struct file * filp)
+ {
+-	spin_lock_bh(&timer_lock);
+ 	if (tty->count == 1)
+ 		del_timer_sync(&serial_timer);
+-	spin_unlock_bh(&timer_lock);
+ }
+ 
+ 
+@@ -73,8 +68,6 @@ static void rs_poll(struct timer_list *unused)
+ 	int rd = 1;
+ 	unsigned char c;
+ 
+-	spin_lock(&timer_lock);
+-
+ 	while (simc_poll(0)) {
+ 		rd = simc_read(0, &c, 1);
+ 		if (rd <= 0)
+@@ -87,7 +80,6 @@ static void rs_poll(struct timer_list *unused)
+ 		tty_flip_buffer_push(port);
+ 	if (rd)
+ 		mod_timer(&serial_timer, jiffies + SERIAL_TIMER_VALUE);
+-	spin_unlock(&timer_lock);
+ }
+ 
+ 
 -- 
 2.35.1
 
