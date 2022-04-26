@@ -2,73 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5E86C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:32:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FC40C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:33:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232638AbiDZKfx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 06:35:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33490 "EHLO
+        id S1347098AbiDZKgS (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 06:36:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349121AbiDZKfA (ORCPT
+        with ESMTP id S1349175AbiDZKgH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 06:35:00 -0400
-Received: from nksmu.kylinos.cn (mailgw.kylinos.cn [123.150.8.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBC061117A
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 03:13:28 -0700 (PDT)
-X-UUID: 707c944599604674ad2c3d7813f3f551-20220426
-X-GW-Reason: 11101
-X-Policy-Incident: 5pS25Lu25Lq66LaF6L+HMTDkurrpnIDopoHlrqHmoLg=
-X-Content-Feature: ica/max.line-size 106
-        audit/email.address 1
-        meta/cnt.alert 1
-X-UUID: 707c944599604674ad2c3d7813f3f551-20220426
-Received: from cs2c.com.cn [(172.17.111.24)] by nksmu.kylinos.cn
-        (envelope-from <oushixiong@kylinos.cn>)
-        (Generic MTA)
-        with ESMTP id 707285290; Tue, 26 Apr 2022 18:04:59 +0800
-X-ns-mid: postfix-6267C422-7868788235
-Received: from localhost.localdomain (unknown [172.20.108.97])
-        by cs2c.com.cn (NSMail) with ESMTPA id 6D4DB383B46C;
-        Tue, 26 Apr 2022 10:06:26 +0000 (UTC)
-From:   oushixiong <oushixiong@kylinos.cn>
-To:     Alex Deucher <alexander.deucher@amd.com>
-Cc:     =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Xinhui.Pan@amd.com, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        John Clements <john.clements@amd.com>,
-        Hawking Zhang <Hawking.Zhang@amd.com>,
-        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
-        Fangzhi Zuo <Jerry.Zuo@amd.com>, Jiawei Gu <Jiawei.Gu@amd.com>,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, oushixiong <oushixiong@kylinos.cn>
-Subject: [PATCH] drm/amd: Fix spelling typo in comment
-Date:   Tue, 26 Apr 2022 18:06:16 +0800
-Message-Id: <20220426100616.1411209-1-oushixiong@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
+        Tue, 26 Apr 2022 06:36:07 -0400
+Received: from mxout02.lancloud.ru (mxout02.lancloud.ru [45.84.86.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADEE613CF2;
+        Tue, 26 Apr 2022 03:17:21 -0700 (PDT)
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout02.lancloud.ru 8F9C620C0892
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [PATCH v2 2/3] ASoC: sh: rz-ssi: Propagate error codes returned
+ from platform_get_irq_byname()
+To:     "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+CC:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Mark Brown <broonie@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        alsa-devel <alsa-devel@alsa-project.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Pavel Machek <pavel@denx.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+References: <20220426074922.13319-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220426074922.13319-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <5bb82736-50bc-eafd-7d68-df1ed966d572@omp.ru>
+ <CA+V-a8s=7nDHEE=kcdqcyM5SurY9KwteNwnc7PZ4xiqGQFvY=g@mail.gmail.com>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <fb6b6a4c-d184-8c26-ac25-4afbacf3d534@omp.ru>
+Date:   Tue, 26 Apr 2022 13:17:18 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CA+V-a8s=7nDHEE=kcdqcyM5SurY9KwteNwnc7PZ4xiqGQFvY=g@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Signed-off-by: oushixiong <oushixiong@kylinos.cn>
----
- drivers/gpu/drm/amd/include/atomfirmware.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 4/26/22 12:55 PM, Lad, Prabhakar wrote:
 
-diff --git a/drivers/gpu/drm/amd/include/atomfirmware.h b/drivers/gpu/drm/amd/include/atomfirmware.h
-index 7bd763361d6e..b7a1e2116e7e 100644
---- a/drivers/gpu/drm/amd/include/atomfirmware.h
-+++ b/drivers/gpu/drm/amd/include/atomfirmware.h
-@@ -3,7 +3,7 @@
- *  File Name      atomfirmware.h
- *  Project        This is an interface header file between atombios and OS GPU drivers for SoC15 products
- *
--*  Description    header file of general definitions for OS nd pre-OS video drivers
-+*  Description    header file of general definitions for OS and pre-OS video drivers
- *
- *  Copyright 2014 Advanced Micro Devices, Inc.
- *
--- 
-2.25.1
+[...]
+>>> Propagate error codes returned from platform_get_irq_byname() instead of
+>>> returning -ENODEV. platform_get_irq_byname() may return -EPROBE_DEFER, to
+>>> handle such cases propagate the error codes.
+>>>
+>>> While at it drop the dev_err_probe() messages as platform_get_irq_byname()
+>>> already does this for us in case of error.
+>>>
+>>> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+>>> ---
+>>> v1->v2
+>>> * No change
+>>> ---
+>>>  sound/soc/sh/rz-ssi.c | 9 +++------
+>>>  1 file changed, 3 insertions(+), 6 deletions(-)
+>>>
+>>> diff --git a/sound/soc/sh/rz-ssi.c b/sound/soc/sh/rz-ssi.c
+>>> index cec458b8c507..d9a684e71ec3 100644
+>>> --- a/sound/soc/sh/rz-ssi.c
+>>> +++ b/sound/soc/sh/rz-ssi.c
+>>> @@ -977,8 +977,7 @@ static int rz_ssi_probe(struct platform_device *pdev)
+>>>       /* Error Interrupt */
+>>>       ssi->irq_int = platform_get_irq_byname(pdev, "int_req");
+>>>       if (ssi->irq_int < 0)
+>>> -             return dev_err_probe(&pdev->dev, -ENODEV,
+>>> -                                  "Unable to get SSI int_req IRQ\n");
+>>> +             return ssi->irq_int;
+>>
+>>    Why not:
+>>
+>>                 return dev_err_probe(&pdev->dev, ssi->irq_int,
+>>                                      "Unable to get SSI int_req IRQ\n");
+>>
+> That is because platform_get_irq_byname() already does this for us [0]
+> (also mentioned in the commit message). In case I keep the
+> dev_err_probe() I'll get two prints for each error.
+> 
+> [0] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/base/platform.c?h=v5.18-rc4#n471
 
+   Ah! Sorry, didn't read your commit log... :-/
+   More shame on me as it was me who added dev_err_probe() call there! :-) 
+
+> Cheers,
+> Prabhakar
+
+[...]
+
+MBR, Sergey
