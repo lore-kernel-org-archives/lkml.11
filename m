@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D381C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:37:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3982C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:37:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345235AbiDZIkv (ORCPT
+        id S1345242AbiDZIlB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:40:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39896 "EHLO
+        Tue, 26 Apr 2022 04:41:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345051AbiDZIeB (ORCPT
+        with ESMTP id S1345022AbiDZId7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:34:01 -0400
+        Tue, 26 Apr 2022 04:33:59 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B74FE4926F;
-        Tue, 26 Apr 2022 01:25:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 694373BBF4;
+        Tue, 26 Apr 2022 01:25:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4D837B81CED;
-        Tue, 26 Apr 2022 08:25:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADDEEC385A4;
-        Tue, 26 Apr 2022 08:25:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7635EB81CFA;
+        Tue, 26 Apr 2022 08:25:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C162DC385A0;
+        Tue, 26 Apr 2022 08:25:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961551;
-        bh=oSuHjYnc4bLA0y6cCDQh0oUNf9sfa5dJvwoq7Lyr2UE=;
+        s=korg; t=1650961545;
+        bh=K/69QxVv7T4FTeKHdSZVJbXT07k+FI7rMWMGgv0/yCs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vwjAw6JDXZNe5uljzMhPsnNsv7lgDmyYI74YClPx44HsXHuC4EGNQPyLtcKiOArLl
-         RyxHAbpITkVjcxmpbUJ75ddhpZvE35Hk72GgYWw2ZfDteDyaKF9yCGt50vOlapEsBp
-         tR5FexyHA8av5q9e437xWRhXB2vT+uk3d4gAN0Mg=
+        b=ahBUvQFU8Djx1IXRbGVXaLQXlwLdyuPu7f6q4M953GijxiG+U+FZNSpROcSyb+36r
+         UMVHq8XPgi98Qmk2Is5UeZCtq++jp9cUMumKk/E3Sm+DR4bE0hBmxvHGGgm5cK39VN
+         C3YFgkiBzvsjFmL3fc8Qqj7jwJbetxaoY31J56wM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, lee.jones@linaro.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "stable@vger.kernel.org, Dan Carpenter" <dan.carpenter@oracle.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [PATCH 4.14 33/43] staging: ion: Prevent incorrect reference counting behavour
-Date:   Tue, 26 Apr 2022 10:21:15 +0200
-Message-Id: <20220426081735.492914608@linuxfoundation.org>
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        stable@kernel.org
+Subject: [PATCH 4.14 31/43] ext4: fix overhead calculation to account for the reserved gdt blocks
+Date:   Tue, 26 Apr 2022 10:21:13 +0200
+Message-Id: <20220426081735.434788860@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081734.509314186@linuxfoundation.org>
 References: <20220426081734.509314186@linuxfoundation.org>
@@ -50,28 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Theodore Ts'o <tytso@mit.edu>
 
-Supply additional check in order to prevent unexpected results.
+commit 10b01ee92df52c8d7200afead4d5e5f55a5c58b1 upstream.
 
-Fixes: b892bf75b2034 ("ion: Switch ion to use dma-buf")
-Suggested-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
+The kernel calculation was underestimating the overhead by not taking
+into account the reserved gdt blocks.  With this change, the overhead
+calculated by the kernel matches the overhead calculation in mke2fs.
+
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/staging/android/ion/ion.c |    3 +++
- 1 file changed, 3 insertions(+)
+ fs/ext4/super.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/staging/android/ion/ion.c
-+++ b/drivers/staging/android/ion/ion.c
-@@ -160,6 +160,9 @@ static void *ion_buffer_kmap_get(struct
- 	void *vaddr;
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -3366,9 +3366,11 @@ static int count_overhead(struct super_b
+ 	ext4_fsblk_t		first_block, last_block, b;
+ 	ext4_group_t		i, ngroups = ext4_get_groups_count(sb);
+ 	int			s, j, count = 0;
++	int			has_super = ext4_bg_has_super(sb, grp);
  
- 	if (buffer->kmap_cnt) {
-+		if (buffer->kmap_cnt == INT_MAX)
-+			return ERR_PTR(-EOVERFLOW);
-+
- 		buffer->kmap_cnt++;
- 		return buffer->vaddr;
- 	}
+ 	if (!ext4_has_feature_bigalloc(sb))
+-		return (ext4_bg_has_super(sb, grp) + ext4_bg_num_gdb(sb, grp) +
++		return (has_super + ext4_bg_num_gdb(sb, grp) +
++			(has_super ? le16_to_cpu(sbi->s_es->s_reserved_gdt_blocks) : 0) +
+ 			sbi->s_itb_per_group + 2);
+ 
+ 	first_block = le32_to_cpu(sbi->s_es->s_first_data_block) +
 
 
