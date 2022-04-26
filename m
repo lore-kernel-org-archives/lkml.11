@@ -2,104 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDFC3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 18:16:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5817C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 18:17:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353673AbiDZSTx (ORCPT
+        id S1350287AbiDZSUv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 14:19:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54960 "EHLO
+        Tue, 26 Apr 2022 14:20:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350866AbiDZSTt (ORCPT
+        with ESMTP id S242823AbiDZSUt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 14:19:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4E74BCA0CF
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 11:16:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650997000;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fVgIa5VojhJQmFpaigVxKBbsCXWJBMH1RAn1ujk7PRM=;
-        b=Y/CAdBTN2Hicvj2JmArRC6JY6tMboGaTyDUzpSjPjrqMrviu6aOHYwuhwsLEQ1y0BDIl7K
-        JI1bLmAFN1G+s1nt5ruMKZ/wPw0xIfj4AMlNetNDp+CujmrJDKyuD2cA6H9StILRTzmlMI
-        NP16v1GBTH/3BupP1H33ryUx6vSLCCI=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-20-S3SjU1AaMBGxIfhhMs5uFA-1; Tue, 26 Apr 2022 14:16:39 -0400
-X-MC-Unique: S3SjU1AaMBGxIfhhMs5uFA-1
-Received: by mail-qt1-f200.google.com with SMTP id x10-20020ac8700a000000b002c3ef8fc44cso10457436qtm.8
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 11:16:38 -0700 (PDT)
+        Tue, 26 Apr 2022 14:20:49 -0400
+Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com [209.85.167.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF9810FF1E;
+        Tue, 26 Apr 2022 11:17:41 -0700 (PDT)
+Received: by mail-oi1-f179.google.com with SMTP id e189so21593068oia.8;
+        Tue, 26 Apr 2022 11:17:41 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=fVgIa5VojhJQmFpaigVxKBbsCXWJBMH1RAn1ujk7PRM=;
-        b=VhdVDeVNRiDCTmSpvN5ZoEZkaKLWDy3zIaEpg4i2kr1hUJKi2t7phuxEHnJslogzN1
-         koHG2rCZoDfKipeleXqITbONYaLqrv1EQcGZKpnei2uNwYN7fZ3O88fxuM17+WHGE4NG
-         D3u8d+r5L/tUKCvPz5sKOCTgxA2aGL9yd0AalDrc8XwQR7AlwJHGJzBYhKbigx5hG2SG
-         SGM9UX9ceSfXEq/E2q2zrMLpHlhma7yfNVk+wbNeZzd/vmCPBwZ9DVYUcMO702FmRhb5
-         O5NJ5R2/BxGtHS2kw5nXCB2vIo5hOY98DvBV98KyE/DUBKNXvuuHOY4FVDdrhIQ0yG9x
-         +yXw==
-X-Gm-Message-State: AOAM533seT6w1zBe87tEQyHikkkkkdobKXV0ZdQv2Q2lk+3PVi4Lsyhr
-        gEiMc57BMJhr4J5ploLEVVH9sNm1US7UoxZzxJTsl50raRmJ20xMW3LsHBLdEeOIWjZbSEB4gPG
-        70p6n6PxROdGTv2yDSxSb1xWJ
-X-Received: by 2002:a37:8d46:0:b0:69e:6b77:f4c9 with SMTP id p67-20020a378d46000000b0069e6b77f4c9mr14005920qkd.96.1650996998485;
-        Tue, 26 Apr 2022 11:16:38 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzerrK0bIUs13gQCY8RmGVefmuG6cHRoTRh0nUnFq7Yi9W2qY/3jruZ+Z2t3dFRiI2Xbx2aAg==
-X-Received: by 2002:a37:8d46:0:b0:69e:6b77:f4c9 with SMTP id p67-20020a378d46000000b0069e6b77f4c9mr14005906qkd.96.1650996998279;
-        Tue, 26 Apr 2022 11:16:38 -0700 (PDT)
-Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id m4-20020ac85b04000000b002f363eccb2csm5954200qtw.89.2022.04.26.11.16.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Apr 2022 11:16:37 -0700 (PDT)
-Subject: Re: [PATCH] tty: n_gsm: return -EINVAL when adaption is not supported
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     jirislaby@kernel.org, nathan@kernel.org, ndesaulniers@google.com,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-References: <20220426120554.1120585-1-trix@redhat.com>
- <Ymfhtv5b9M33AQuc@kroah.com>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <4789ae7a-64a2-566b-d445-b8433d3f867a@redhat.com>
-Date:   Tue, 26 Apr 2022 11:16:35 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=CB/Ylur2MfTUL54h1HXtuBMWo5JMW5NkG1ljhszE54U=;
+        b=y0Sbnk4leMTGtNlKHqJCtjXvW9hrJOBIYw/PNadfmK6ybjoqVIUGB6zpL8p7h92HeS
+         704khUiJqtaZhWgtXZkHQxhW/578Ht3Oa2eWKimN0UyY51yKqYctSXMQL8EQkb+w1Ty6
+         ZoZp7ujCSJWXs+iTltehk+6GmV9GCUOFYabe0kzW2Lmo3kg+V8+bNBvE4Yu7RDxHvPF/
+         IY7BlwF/DjmJJbV0NfWhXPFq05IogL9MerUp1PwthB26hJ2A6dduTdELSfQ+j2jymmGf
+         maLVbQB+ZpvIsQu7c6xT5blneLE39tJIVxzFQH+yG9YRcI7P71QZ4XqNt+EN1S4KZ90I
+         kFJg==
+X-Gm-Message-State: AOAM533k3VB+UB1HE3w7LBSqEIJWp3UWbZxVG/BkhoBGpv6cLRqQVagz
+        v67E16xiREHUrGNhEicTG1iHiHmr1g==
+X-Google-Smtp-Source: ABdhPJwHTxECFuE7IdvpuMgxCNsyBH85CjGrMYHLZK+phE73v8SGX403eziLFOPf9ZETwBVzt9B2bA==
+X-Received: by 2002:a05:6808:14ca:b0:324:a58:80f3 with SMTP id f10-20020a05680814ca00b003240a5880f3mr10415044oiw.44.1650997060963;
+        Tue, 26 Apr 2022 11:17:40 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id a14-20020a544e0e000000b002f9c00dc626sm5008250oiy.28.2022.04.26.11.17.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 11:17:40 -0700 (PDT)
+Received: (nullmailer pid 2293135 invoked by uid 1000);
+        Tue, 26 Apr 2022 18:17:39 -0000
+Date:   Tue, 26 Apr 2022 13:17:39 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: soc: qcom,rpmh-rsc: simplify qcom,tcs-config
+Message-ID: <Ymg3QxBug4tSLee2@robh.at.kernel.org>
+References: <20220426110757.80603-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <Ymfhtv5b9M33AQuc@kroah.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220426110757.80603-1-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, 26 Apr 2022 13:07:57 +0200, Krzysztof Kozlowski wrote:
+> The schema for "qcom,tcs-config" property can be a little bit simpler,
+> without the need of defining each item.  Also move the description of
+> each part of "qcom,tcs-config" tupple to the tupple items description.
+> 
+> Suggested-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  .../bindings/soc/qcom/qcom,rpmh-rsc.yaml      | 33 +++++++------------
+>  1 file changed, 11 insertions(+), 22 deletions(-)
+> 
 
-On 4/26/22 5:12 AM, Greg KH wrote:
-> On Tue, Apr 26, 2022 at 08:05:54AM -0400, Tom Rix wrote:
->> The clang build fails with
->> n_gsm.c:940:13: error: variable 'size' is used uninitialized whenever 'if' condition is false [-Werror,-Wsometimes-uninitialized]
->>          } else if (dlci->adaption == 2) {
->>                     ^~~~~~~~~~~~~~~~~~~
->>
->> The else should return an error, so return -EINVAL.
->>
->> Signed-off-by: Tom Rix <trix@redhat.com>
-> What commit id does this fix?  Any reason you didn't cc: the author of
-> the recent changes to this code?
-Sorry missed this part.
-> Is this the same issue that 0-day reported?
-
-Maybe, it was part of next's update today.  Where is 0-day reported ?
-
-Tom
-
->
-> thanks,
->
-> greg k-h
->
-
+Reviewed-by: Rob Herring <robh@kernel.org>
