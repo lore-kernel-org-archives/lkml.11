@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00FE0C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:48:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CF06C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:49:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353402AbiDZQwB (ORCPT
+        id S1345607AbiDZQwG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 12:52:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43280 "EHLO
+        Tue, 26 Apr 2022 12:52:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353352AbiDZQu7 (ORCPT
+        with ESMTP id S1353368AbiDZQvB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 12:50:59 -0400
-Received: from mail-ej1-x649.google.com (mail-ej1-x649.google.com [IPv6:2a00:1450:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2110048331
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:45:55 -0700 (PDT)
-Received: by mail-ej1-x649.google.com with SMTP id sa27-20020a1709076d1b00b006e8b357a2e7so9327244ejc.14
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:45:55 -0700 (PDT)
+        Tue, 26 Apr 2022 12:51:01 -0400
+Received: from mail-ej1-x64a.google.com (mail-ej1-x64a.google.com [IPv6:2a00:1450:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CA11483A7
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:46:11 -0700 (PDT)
+Received: by mail-ej1-x64a.google.com with SMTP id hp17-20020a1709073e1100b006ef69a535c3so9361546ejc.10
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:46:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=UzBVkSVOyNRYl4KHuto6hQklAwc82x2pMcEIZC5XiS8=;
-        b=owv8rcv7uy/IjMK2oDHnzdeRikUPc32v+DR6vPabqmMBgOdq0UhvmmpjftMy8ytPNt
-         HM3P5/DQ+pT5uKlWjCFQLCWuI9NAXILUzfH3+gwTr92gjb0OskwwBjPetTXSTIPD/6OL
-         3KUV5a7F0Rw16/K17cTVV6HnNmzJ94eEPwwrT81RmiU5XvUiR8m/dPbUUMv64bYcnrfS
-         8JLEMyNSW8k05BHKUBKubnloTQr7UOc9bvvDZfi1MjSOdb0FNIpfyPVgIpYfdedOBZYB
-         K6n0Di2ypZYYijr3xtes9AkKQrrbDkPvtqX7ow2f4ddywq7YCN1BIaM7a/np99bjjIjy
-         k1tg==
+        bh=SGOwGjYq/2PwacKh0/9At0yFevcHrzg9FDlShmi+vnk=;
+        b=fSZ4zfvDJJmqaIzU1XL0WfStwXr6OPa8V+ga0qTz0UlsIHyG9I6Fr6ZEbs9vmLiuhO
+         ClbMCWmC+tznTOah7YoL3txE0BplWerCcj5Pt/KeycPvVB+sF+pTOE13LG7aV8CaSZd6
+         CtB276fuSEgHwCIg/10uWG7rSCD98aAcUKoO+LU4U8ks8bUI5/GdxxpoNac4ZhTkb0E1
+         grtFS0KyEl74V0H8NCr4jzX10gmxpamQ+wZyHKObaL9HWxab3p+XWx1x2TN57EUQX6a4
+         MV6fXbcDTcGpFO2Dt7YM5K3PDMZSDsLSt5fDbOOZGvHfv6pU1T6bZgqLE57A40M5bQwM
+         0uLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=UzBVkSVOyNRYl4KHuto6hQklAwc82x2pMcEIZC5XiS8=;
-        b=UI9xdGGYqsUHW/N+TBTrdbzEHGnF6f/FBglyFP3+tQegLU9uzQ7dCBrfnDJXnE1aoO
-         VX+1pEV+JJmWR6PxahKYuASVhgLsKLoGyf+tizs5OkoqW1wqqN5rNxLvMHrIX6+mmqIN
-         KKMci27H5Ak5g/XX6X6450KI8PDOzFRfL3yOrE69ZMPu5D6TULiofs/CMJliulDI5UMe
-         KUOXjYk/xRfkK9PFr6MzO2KK/AOxG5+4z7Ry57JR9dkRPF/pPD9mGYGQ5sjxrfKPUcyD
-         jMKyRAAn3cDFQmB3Wdgw+jLcJbaeVk+tCZUTS1C3aFR6KEZZql4+UXQbV9y/tt0jOt6O
-         oSYA==
-X-Gm-Message-State: AOAM530RjUvi46TQDPvm8N3hk9sZHtcBIml127apYEfTDd3/USr1v8DW
-        NCyBQg3uXKilTyLkvDIPinMxRF/a4rI=
-X-Google-Smtp-Source: ABdhPJyuq9+TYZNExRenypS/KX++WGny+sO+6oBDx1c907ZTGsidHormgyYiaYHSTUT0xaavjbt6mR9vHwU=
+        bh=SGOwGjYq/2PwacKh0/9At0yFevcHrzg9FDlShmi+vnk=;
+        b=pbwXyN7tnReibsJKqwWs52IdzKC83Dxm8jxPAadEOgdnDffY2RwgUXZaTZhGqby4yN
+         /jBrj4u6nGC983Gz83EFUZLIryUJpUsKnApXUOv6yeXPkvrD6L+FYvbOWpGFRVhAjLHl
+         c8YVIHshObi7zHcYwx8WYWbZTtNe5HFIBO+U0Rg7RDptm7AZWCHXxsZtONW7LXhKnZ/O
+         indwk2WIIofKI4YXRNRpMMx/DRTTBJ6cudzR7fQqatol5udFBxiQJxg89f3dMmdZ0Ilr
+         /SABi3wZghp8318AGpv+cb8ilXlYSFeLx1RDxO1oNu5DhfasVyCFAmB8LZcMJBEOlJ9/
+         s0RQ==
+X-Gm-Message-State: AOAM531nSPw5BC7xWpFhS0so7NCJqOt8fLrtYyzJ35PDHozz6cUtdfnB
+        1QV3P0TmVXlucFY8rKDjyhvBsxT0dlo=
+X-Google-Smtp-Source: ABdhPJw9NptsR6xC76SX+4t0lKzp8AK1gzotC/X9LsmKWQ/MoVeg5tjW3Iafs+1NkdThy9tu1emAPZFww8w=
 X-Received: from glider.muc.corp.google.com ([2a00:79e0:15:13:d580:abeb:bf6d:5726])
- (user=glider job=sendgmr) by 2002:a05:6402:54:b0:419:9b58:e305 with SMTP id
- f20-20020a056402005400b004199b58e305mr25365353edu.158.1650991553606; Tue, 26
- Apr 2022 09:45:53 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 18:43:05 +0200
+ (user=glider job=sendgmr) by 2002:a05:6402:84a:b0:423:fe99:8c53 with SMTP id
+ b10-20020a056402084a00b00423fe998c53mr25385277edz.195.1650991569448; Tue, 26
+ Apr 2022 09:46:09 -0700 (PDT)
+Date:   Tue, 26 Apr 2022 18:43:11 +0200
 In-Reply-To: <20220426164315.625149-1-glider@google.com>
-Message-Id: <20220426164315.625149-37-glider@google.com>
+Message-Id: <20220426164315.625149-43-glider@google.com>
 Mime-Version: 1.0
 References: <20220426164315.625149-1-glider@google.com>
 X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
-Subject: [PATCH v3 36/46] objtool: kmsan: list KMSAN API functions as uaccess-safe
+Subject: [PATCH v3 42/46] x86: kmsan: sync metadata pages on page fault
 From:   Alexander Potapenko <glider@google.com>
 To:     glider@google.com
 Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
@@ -91,67 +91,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-KMSAN inserts API function calls in a lot of places (function entries
-and exits, local variables, memory accesses), so they may get called
-from the uaccess regions as well.
-
-KMSAN API functions are used to update the metadata (shadow/origin pages)
-for kernel memory accesses. The metadata pages for kernel pointers are
-also located in the kernel memory, so touching them is not a problem.
-For userspace pointers, no metadata is allocated.
-
-If an API function is supposed to read or modify the metadata, it does so
-for kernel pointers and ignores userspace pointers.
-If an API function is supposed to return a pair of metadata pointers for
-the instrumentation to use (like all __msan_metadata_ptr_for_TYPE_SIZE()
-functions do), it returns the allocated metadata for kernel pointers and
-special dummy buffers residing in the kernel memory for userspace
-pointers.
-
-As a result, none of KMSAN API functions perform userspace accesses, but
-since they might be called from UACCESS regions they use
-user_access_save/restore().
+KMSAN assumes shadow and origin pages for every allocated page are
+accessible. For pages between [VMALLOC_START, VMALLOC_END] those metadata
+pages start at KMSAN_VMALLOC_SHADOW_START and
+KMSAN_VMALLOC_ORIGIN_START, therefore we must sync a bigger memory
+region.
 
 Signed-off-by: Alexander Potapenko <glider@google.com>
----
-v3:
- -- updated the patch description
 
-Link: https://linux-review.googlesource.com/id/I242bc9816273fecad4ea3d977393784396bb3c35
 ---
- tools/objtool/check.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
 
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index bd0c2c828940a..44825a96adc7c 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -1008,6 +1008,25 @@ static const char *uaccess_safe_builtin[] = {
- 	"__sanitizer_cov_trace_cmp4",
- 	"__sanitizer_cov_trace_cmp8",
- 	"__sanitizer_cov_trace_switch",
-+	/* KMSAN */
-+	"kmsan_copy_to_user",
-+	"kmsan_report",
-+	"kmsan_unpoison_memory",
-+	"__msan_chain_origin",
-+	"__msan_get_context_state",
-+	"__msan_instrument_asm_store",
-+	"__msan_metadata_ptr_for_load_1",
-+	"__msan_metadata_ptr_for_load_2",
-+	"__msan_metadata_ptr_for_load_4",
-+	"__msan_metadata_ptr_for_load_8",
-+	"__msan_metadata_ptr_for_load_n",
-+	"__msan_metadata_ptr_for_store_1",
-+	"__msan_metadata_ptr_for_store_2",
-+	"__msan_metadata_ptr_for_store_4",
-+	"__msan_metadata_ptr_for_store_8",
-+	"__msan_metadata_ptr_for_store_n",
-+	"__msan_poison_alloca",
-+	"__msan_warning",
- 	/* UBSAN */
- 	"ubsan_type_mismatch_common",
- 	"__ubsan_handle_type_mismatch",
+v2:
+ -- addressed reports from kernel test robot <lkp@intel.com>
+
+Link: https://linux-review.googlesource.com/id/Ia5bd541e54f1ecc11b86666c3ec87c62ac0bdfb8
+---
+ arch/x86/mm/fault.c | 23 ++++++++++++++++++++++-
+ 1 file changed, 22 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
+index d0074c6ed31a3..f2250a32a10ca 100644
+--- a/arch/x86/mm/fault.c
++++ b/arch/x86/mm/fault.c
+@@ -260,7 +260,7 @@ static noinline int vmalloc_fault(unsigned long address)
+ }
+ NOKPROBE_SYMBOL(vmalloc_fault);
+ 
+-void arch_sync_kernel_mappings(unsigned long start, unsigned long end)
++static void __arch_sync_kernel_mappings(unsigned long start, unsigned long end)
+ {
+ 	unsigned long addr;
+ 
+@@ -284,6 +284,27 @@ void arch_sync_kernel_mappings(unsigned long start, unsigned long end)
+ 	}
+ }
+ 
++void arch_sync_kernel_mappings(unsigned long start, unsigned long end)
++{
++	__arch_sync_kernel_mappings(start, end);
++#ifdef CONFIG_KMSAN
++	/*
++	 * KMSAN maintains two additional metadata page mappings for the
++	 * [VMALLOC_START, VMALLOC_END) range. These mappings start at
++	 * KMSAN_VMALLOC_SHADOW_START and KMSAN_VMALLOC_ORIGIN_START and
++	 * have to be synced together with the vmalloc memory mapping.
++	 */
++	if (start >= VMALLOC_START && end < VMALLOC_END) {
++		__arch_sync_kernel_mappings(
++			start - VMALLOC_START + KMSAN_VMALLOC_SHADOW_START,
++			end - VMALLOC_START + KMSAN_VMALLOC_SHADOW_START);
++		__arch_sync_kernel_mappings(
++			start - VMALLOC_START + KMSAN_VMALLOC_ORIGIN_START,
++			end - VMALLOC_START + KMSAN_VMALLOC_ORIGIN_START);
++	}
++#endif
++}
++
+ static bool low_pfn(unsigned long pfn)
+ {
+ 	return pfn < max_low_pfn;
 -- 
 2.36.0.rc2.479.g8af0fa9b8e-goog
 
