@@ -2,119 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75110C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 20:34:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBF9AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 20:34:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355052AbiDZUhW (ORCPT
+        id S1355069AbiDZUh3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 16:37:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47806 "EHLO
+        Tue, 26 Apr 2022 16:37:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355030AbiDZUhK (ORCPT
+        with ESMTP id S1355047AbiDZUhW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 16:37:10 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 915431A8C22
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 13:34:01 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id 17so35401lji.1
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 13:34:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=aU1nfmW7ZgdT9Qa1tRExDdIJcvLzr/71e6MMUKD+f14=;
-        b=L+04/VSvu1o2iLCXuaCNLPQgteB9nxjsaUItY80e35KA07eJCca0YXvYS8yXsehgAp
-         gJwV1fDjZTTu27Nk2EVmh0GDdfERG/5DXk0qeuBgd2nFP0RDyeiTP1b0WfMuEAvcfEHQ
-         tNSJqHRlQoAbQ+NR67QcpnTTT87zUPLTpmtpq5HgLEtmx0wlgRbbTaHwoTamu+Pq5W4W
-         D27sEwR9kh+F0dh9lSZY4JSbb48iY4yOWiVIi/NMXsJh73r5t6XBQDJqfwbqLXCJk0Df
-         uO9Z362RUBuDni5ds34LO1tG4fWsrgPKCw55j+7XUDm1gmZr9P4WjsNLa10eqM/3ZJwp
-         vn7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aU1nfmW7ZgdT9Qa1tRExDdIJcvLzr/71e6MMUKD+f14=;
-        b=8A1QsZJdp6V26RL+RKi2ZGzcI0VDobVMLzYjbJVnwPyPeA6JdGVu3cLQ6Twq5fd0RZ
-         BBjjyPVv3S1sDgHaJdi85KRxeYxA6sLdmAnpNAB/9aLvLhEPZF6+LfGF07DjwZY9/R5x
-         tg++sQhbRrLnxtu0zYs5WsaMZWfDnGOrP3nOxY0WyCHYXgeBixiAaI2BC/IgV6nd3y5w
-         syp20DDo27MRX0eKtO2xQ3bOXOxYqXECCH4a46SL5t6sexo87ZcLopA8h95VI8cXo+bY
-         nehqev33NLAu8rt8KR+1GuZsYEj6PAd1g5jHzZ1PPGS7HnvpxDtnyR+Vwuqm3o1sTID8
-         JtHQ==
-X-Gm-Message-State: AOAM532lskWcggTGkhG72jcbo7VtU+Q2xmURwesSc5YBoXu9RZ0+HIvj
-        cxkyynI8f48xZbvTMCQlUeb6GV7LFerKJZ0KwKfOdA==
-X-Google-Smtp-Source: ABdhPJx5KH4AYYyWahlSyUhGXyJBSiXHd1WrZoegFj2ZOcMkv0OyCYrGoJDFZHDu/w6tvACgKascP5gl/cHc/KfjvDQ=
-X-Received: by 2002:a2e:97c7:0:b0:24f:5a7:f398 with SMTP id
- m7-20020a2e97c7000000b0024f05a7f398mr11417653ljj.231.1651005239369; Tue, 26
- Apr 2022 13:33:59 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220325233125.413634-1-vipinsh@google.com> <CALzav=e6W2VSp=btmqTpQJ=3bH+Bw3D8sLApkTTvMMKAnw_LAw@mail.gmail.com>
- <CAHVum0dOfJ5HuscNq0tA6BnUJK34v4CPCTkD4piHc7FObZOsng@mail.gmail.com>
- <b754fa0a-4f9e-1ea5-6c77-f2410b7f8456@redhat.com> <CAHVum0d=WoqxZ4vUYY37jeQL1yLdiwbYjPSPFAa1meM5LUBDQQ@mail.gmail.com>
- <CAHVum0eF=CmqXabrJS7rsVxhQLKA7v8iG1SjThcEJ=_zAUhRsg@mail.gmail.com>
-In-Reply-To: <CAHVum0eF=CmqXabrJS7rsVxhQLKA7v8iG1SjThcEJ=_zAUhRsg@mail.gmail.com>
-From:   Vipin Sharma <vipinsh@google.com>
-Date:   Tue, 26 Apr 2022 13:33:23 -0700
-Message-ID: <CAHVum0dF8w6ang3gN2w4W3tg2M08TXNpNfWNcDER5RfaxPE3oQ@mail.gmail.com>
-Subject: Re: [PATCH] KVM: x86/mmu: Speed up slot_rmap_walk_next for sparsely
- populated rmaps
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     David Matlack <dmatlack@google.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm list <kvm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 26 Apr 2022 16:37:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDAA01A8C10
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 13:34:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8C67AB82325
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 20:34:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8AB7C385A0;
+        Tue, 26 Apr 2022 20:34:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1651005242;
+        bh=1nLv2uonWidEFj1pcSTMshyTONddZm1b5bjnp+01fFQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Gf0gHdt2okkMpp8c3Tx2/ENbPLTud5mAngEc563OHINdGlX00/CeEy71BKhr5D90G
+         RVheA6Z6zLvlXxnCmGuoIWUPr0FbXthZk67HezG33K0HZY7ZRy/J3qJoUWlSdqGUs/
+         7trds2YehtZeWFn+DTjtjNLZSzjGuplwtaWt1Xh0=
+Date:   Tue, 26 Apr 2022 13:34:01 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     liusongtang <liusongtang@huawei.com>
+Cc:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        <nixiaoming@huawei.com>, <young.liuyang@huawei.com>,
+        <wangkefeng@huawei.com>
+Subject: Re: [PATCH] mm/mprotect: reduce Committed_AS if memory protection
+ is changed to PROT_NONE
+Message-Id: <20220426133401.9404190c5a5c6ff58b694c59@linux-foundation.org>
+In-Reply-To: <20220426112705.3323-1-liusongtang@huawei.com>
+References: <20220426112705.3323-1-liusongtang@huawei.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 18, 2022 at 9:29 AM Vipin Sharma <vipinsh@google.com> wrote:
->
-> On Fri, Apr 8, 2022 at 12:31 PM Vipin Sharma <vipinsh@google.com> wrote:
-> >
-> > On Sun, Mar 27, 2022 at 3:41 AM Paolo Bonzini <pbonzini@redhat.com> wrote:
-> > >
-> > > On 3/26/22 01:31, Vipin Sharma wrote:
-> > > >>> -static void slot_rmap_walk_next(struct slot_rmap_walk_iterator *iterator)
-> > > >>> +static noinline void
-> > > >>
-> > > >> What is the reason to add noinline?
-> > > >
-> > > > My understanding is that since this method is called from
-> > > > __always_inline methods, noinline will avoid gcc inlining the
-> > > > slot_rmap_walk_next in those functions and generate smaller code.
-> > > >
-> > >
-> > > Iterators are written in such a way that it's way more beneficial to
-> > > inline them.  After inlining, compilers replace the aggregates (in this
-> > > case, struct slot_rmap_walk_iterator) with one variable per field and
-> > > that in turn enables a lot of optimizations, so the iterators should
-> > > actually be always_inline if anything.
-> > >
-> > > For the same reason I'd guess the effect on the generated code should be
-> > > small (next time please include the output of "size mmu.o"), but should
-> > > still be there.  I'll do a quick check of the generated code and apply
-> > > the patch.
-> > >
-> > > Paolo
-> > >
-> >
-> > Let me know if you are still planning to modify the current patch by
-> > removing "noinline" and merge or if you prefer a v2 without noinline.
->
-> Hi Paolo,
->
-> Any update on this patch?
->
+On Tue, 26 Apr 2022 19:27:05 +0800 liusongtang <liusongtang@huawei.com> wrote:
 
-Hi Paolo,
+> If PROT_WRITE is set, the size of vm area will be added to Committed_AS.
+> However, if memory protection is changed to PROT_NONE,
+> the corresponding physical memory will not be used, but Committed_AS still
+> count the size of the PROT_NONE memory.
+> 
+> This patch reduce Committed_AS and free the corresponding memory if
+> memory protection is changed to PROT_NONE.
+> 
+> ...
+>
+> --- a/mm/mprotect.c
+> +++ b/mm/mprotect.c
+> @@ -497,6 +497,12 @@ mprotect_fixup(struct vm_area_struct *vma, struct vm_area_struct **pprev,
+>  	}
+>  
+>  success:
+> +	if ((newflags & (VM_READ | VM_WRITE | VM_EXEC | VM_LOCKED | VM_ACCOUNT)) == VM_ACCOUNT) {
+> +		zap_page_range(vma, start, end - start);
+> +		newflags &= ~VM_ACCOUNT;
+> +		vm_unacct_memory((end - start) >> PAGE_SHIFT);
+> +	}
+> +
+>  	/*
+>  	 * vm_flags and vm_page_prot are protected by the mmap_lock
+>  	 * held in write mode.
 
-Still waiting for your response on this patch :)
-Please let me know if you prefer v2 (without noinline) or you will
-merge this patch without noinline from your side. If there is any
-concern or feedback which I can address please let me know.
-
-Thanks
-Vipin Sharma
+Surprised.  If userspace does mprotect(addr, len.  PROT_NONE) then
+mprotect(addr, len.  PROT_READ), what is now at *addr?  Zeroes?
