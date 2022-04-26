@@ -2,94 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DB2DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:33:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86D62C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:33:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349120AbiDZKgz (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 06:36:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57428 "EHLO
+        id S242157AbiDZKg7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 06:36:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349228AbiDZKgm (ORCPT
+        with ESMTP id S1345643AbiDZKgo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 06:36:42 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 120E21B7A9;
-        Tue, 26 Apr 2022 03:19:05 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id y3so14684114ejo.12;
-        Tue, 26 Apr 2022 03:19:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AdKMYq1x4eFZR1761jMnOKfmipBzzsQvF9m6fKna6z4=;
-        b=lDscyfKc/f26HqBYW5qPexzS57/2t5Fem/L8v0LNCuw3VArs/RHcMQrMTFpcDATVix
-         Oxj3ZqfbTTcftOa/bvwgxeQwqYmqYMEvnZn1xFceiYAlXSzVwexcm028oXwPeHm5Cn5b
-         dEki/D9koY1Vi4+3+idJLeArTzRzvb0LbS9P51sH8du51bsi2F2UzbaK5tlQunizK5D+
-         N+Xui1PR8XJXTxpFL/dZZDYt0uIZ9XC+kXT7UyFLixcO+VIUTD23OHFX/VUuGHw1Srj1
-         si8LK/h7EJuYJDyI5tSOwf0eLojJAtVXFae4YC/9MgFpXCmt6mOC864rcTVx8H0W4p1p
-         xsLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AdKMYq1x4eFZR1761jMnOKfmipBzzsQvF9m6fKna6z4=;
-        b=U65/fn08k3+jKExKJYdfZt46YNr8Xqd+bqMBDY0wYO7L4ovcSHjrE5v+RvLPMHb4ec
-         irlEGNsq4Tjv53kq6VYMHXVI1kH2IW3qw9TxBiR1qFS+9AO32ebOLUVFpAjFbV9PMzLA
-         SYk76gveM1aHJC/uPq4KN+sA/jDsNuG2FbBCGU+xYKhbSfekyephYh736VmMHCifSY0S
-         ixZI4tbtUAMUUQn+M3kRgS8h6FmMPJ2kJaGmq9ubj5Vy4o8+wAZO1LrgMTcuJzK0lHZf
-         CFiE3H5DnCmpOZMnKXNUI9z2TNWi1mjKHGTyZPnKp3U+UEpyFbSI0kqSwXogA5c4gzEW
-         057w==
-X-Gm-Message-State: AOAM532Muo7oBxkFcrIOWRuvj9DyUa7hSAXN2ymKiljAPJBGlVjViil0
-        VNtL8+eYg7GmmlEuzncwZJxQNS/uiF7xiWf6fqhGpMDNSefSBUvZ
-X-Google-Smtp-Source: ABdhPJy6Fr2BpVUt3mvcrY4bs3C/CkFzU6RtNNJwhEBMQKR0W447JOKmPFzBbOYfjrz+WVHPvs44GCfQnmXxiqqLsUI=
-X-Received: by 2002:a17:907:628e:b0:6d9:c6fa:6168 with SMTP id
- nd14-20020a170907628e00b006d9c6fa6168mr20282272ejc.132.1650968343655; Tue, 26
- Apr 2022 03:19:03 -0700 (PDT)
+        Tue, 26 Apr 2022 06:36:44 -0400
+Received: from ixit.cz (ip-94-112-206-30.net.upcbroadband.cz [94.112.206.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 550A212096;
+        Tue, 26 Apr 2022 03:19:17 -0700 (PDT)
+Received: from newone.lan (_gateway [10.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ixit.cz (Postfix) with ESMTPSA id 4677924CD1;
+        Tue, 26 Apr 2022 12:19:15 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ixit.cz; s=dkim;
+        t=1650968355;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gMico/kd/KLGo7kE0Bi8wMvNY3EFFukpNPtGHdicAV8=;
+        b=wXd6SlQ5CH5SoBjd0JNA7xfo3IwCPjZ5M9tTzYhEL7WPRGVaqcexKGmw1Z5EeoMvhmG62x
+        +tVH2HdkXNJq/b9B26AdqQA7iQDWxPYTCDCp1o/yIMuH9o8nKKj0skyyMbhgcJvgwNvreS
+        CkalUN1dO5sY3faHagUpk2uBBzlgppI=
+From:   David Heidelberg <david@ixit.cz>
+To:     Manivannan Sadhasivam <mani@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     David Heidelberg <david@ixit.cz>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: [PATCH v4 2/2] dt-bindings: mailbox: qcom-ipcc: add missing properties into example
+Date:   Tue, 26 Apr 2022 12:18:37 +0200
+Message-Id: <20220426101837.16201-2-david@ixit.cz>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220426101837.16201-1-david@ixit.cz>
+References: <20220426101837.16201-1-david@ixit.cz>
 MIME-Version: 1.0
-References: <20220425121340.1362-1-heikki.krogerus@linux.intel.com> <20220425121340.1362-2-heikki.krogerus@linux.intel.com>
-In-Reply-To: <20220425121340.1362-2-heikki.krogerus@linux.intel.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 26 Apr 2022 12:18:24 +0200
-Message-ID: <CAHp75Vdch3shuX6D6YU8=JrFLKq4h_WNYAQPd_bj-hmV6QoQkg@mail.gmail.com>
-Subject: Re: [PATCH v1 1/2] usb: core: acpi: Use the sysdev pointer instead of
- controller device
-To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Mathias Nyman <mathias.nyman@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        USB <linux-usb@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 3:41 PM Heikki Krogerus
-<heikki.krogerus@linux.intel.com> wrote:
->
-> The controller device (hcd) does not always have the ACPI
-> companion assigned to it at all. We can not rely on it when
-> finding the ACPI companion for the root hub. Instead we need
-> to use the sysdev pointer here.
+These missing required properties are needed for
+smp2p binding reference checks.
 
-...
+Also includes cosmetic change to the example formatting.
 
->         if (!udev->parent) {
->                 /* root hub is only child (_ADR=0) under its parent, the HC */
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: David Heidelberg <david@ixit.cz>
+---
+v3:
+ - add Krzysztof R-b
+---
+ .../devicetree/bindings/mailbox/qcom-ipcc.yaml        | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-I believe the comment can be amended now to point out that we use the
-physical device representing the parent of this child, and not
-(always) a direct parent of the device in terms of Linux device model.
-
-> -               adev = ACPI_COMPANION(udev->dev.parent);
-> +               adev = ACPI_COMPANION(udev->bus->sysdev);
->                 return acpi_find_child_device(adev, 0, false);
->         }
-
-
+diff --git a/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml b/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml
+index c57dd423e98c..50f9aa72c670 100644
+--- a/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml
++++ b/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml
+@@ -76,9 +76,14 @@ examples:
+ 
+         smp2p-modem {
+                 compatible = "qcom,smp2p";
+-                interrupts-extended = <&ipcc_mproc IPCC_CLIENT_MPSS
+-                                IPCC_MPROC_SIGNAL_SMP2P IRQ_TYPE_EDGE_RISING>;
+-                mboxes = <&ipcc_mproc IPCC_CLIENT_MPSS IPCC_MPROC_SIGNAL_SMP2P>;
++                qcom,smem = <443>, <429>;
++                interrupts-extended = <&ipcc IPCC_CLIENT_LPASS
++                                             IPCC_MPROC_SIGNAL_SMP2P
++                                             IRQ_TYPE_EDGE_RISING>;
++                mboxes = <&ipcc IPCC_CLIENT_LPASS
++                                IPCC_MPROC_SIGNAL_SMP2P>;
+ 
++                qcom,local-pid = <0>;
++                qcom,remote-pid = <2>;
+                 /* Other SMP2P fields */
+         };
 -- 
-With Best Regards,
-Andy Shevchenko
+2.35.1
+
