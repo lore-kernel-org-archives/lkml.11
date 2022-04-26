@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3EEBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:28:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEEA2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:28:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245530AbiDZIbJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:31:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36178 "EHLO
+        id S230256AbiDZIbS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:31:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344911AbiDZI3E (ORCPT
+        with ESMTP id S1344916AbiDZI3E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:29:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DB74136E2D;
-        Tue, 26 Apr 2022 01:24:31 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D5E1137D87;
+        Tue, 26 Apr 2022 01:24:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C47FDB81CFE;
-        Tue, 26 Apr 2022 08:24:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6A58C385A0;
-        Tue, 26 Apr 2022 08:24:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EFDE96179E;
+        Tue, 26 Apr 2022 08:24:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0619AC385AE;
+        Tue, 26 Apr 2022 08:24:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961468;
-        bh=0ezynSW+qWhDxjKoqYRKJ3NXElJ577uMaunC0bZhw34=;
+        s=korg; t=1650961474;
+        bh=yx8av04Y5xxLJJnNv+WtjSdUDUvPluHDdTSScXGxX4s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f3/tpt7frJLUMaK1Mt8ldeHsxobz7kSzSPzTZLBpTtMI7IutRdgNVwVrYVgFJFP/u
-         qj2zQ/wArDQPPEyD8P5G3o3Oy16b3OU+1jxMO9b/wpsXBFjJf3vZ0EuJV8eERQvHnv
-         AM7JZEGDMSqObiNN/8zgaunb+ry7UMCW/BoZOANY=
+        b=twvjfrEF3vcrk333shd08mC+4snDPTQRT7v9PpgMqm+YLem/2BgKlTNLg2Tw0pJG9
+         KLQWVU1R5DVGV030gFFEkH5V+HHJum9iKiyZNJMDFB649UiY2+7m0cGDhdi/SGOu5u
+         qbrYj1FmSW75kphnr0deoimbiS5aVKbC480AeACU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tomas Melin <tomas.melin@vaisala.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 20/43] net: macb: Restart tx only if queue pointer is lagging
-Date:   Tue, 26 Apr 2022 10:21:02 +0200
-Message-Id: <20220426081735.114036830@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Subject: [PATCH 4.14 22/43] ata: pata_marvell: Check the bmdma_addr beforing reading
+Date:   Tue, 26 Apr 2022 10:21:04 +0200
+Message-Id: <20220426081735.173804032@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081734.509314186@linuxfoundation.org>
 References: <20220426081734.509314186@linuxfoundation.org>
@@ -50,64 +48,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tomas Melin <tomas.melin@vaisala.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 5ad7f18cd82cee8e773d40cc7a1465a526f2615c ]
+commit aafa9f958342db36c17ac2a7f1b841032c96feb4 upstream.
 
-commit 4298388574da ("net: macb: restart tx after tx used bit read")
-added support for restarting transmission. Restarting tx does not work
-in case controller asserts TXUBR interrupt and TQBP is already at the end
-of the tx queue. In that situation, restarting tx will immediately cause
-assertion of another TXUBR interrupt. The driver will end up in an infinite
-interrupt loop which it cannot break out of.
+Before detecting the cable type on the dma bar, the driver should check
+whether the 'bmdma_addr' is zero, which means the adapter does not
+support DMA, otherwise we will get the following error:
 
-For cases where TQBP is at the end of the tx queue, instead
-only clear TX_USED interrupt. As more data gets pushed to the queue,
-transmission will resume.
+[    5.146634] Bad IO access at port 0x1 (return inb(port))
+[    5.147206] WARNING: CPU: 2 PID: 303 at lib/iomap.c:44 ioread8+0x4a/0x60
+[    5.150856] RIP: 0010:ioread8+0x4a/0x60
+[    5.160238] Call Trace:
+[    5.160470]  <TASK>
+[    5.160674]  marvell_cable_detect+0x6e/0xc0 [pata_marvell]
+[    5.161728]  ata_eh_recover+0x3520/0x6cc0
+[    5.168075]  ata_do_eh+0x49/0x3c0
 
-This issue was observed on a Xilinx Zynq-7000 based board.
-During stress test of the network interface,
-driver would get stuck on interrupt loop within seconds or minutes
-causing CPU to stall.
-
-Signed-off-by: Tomas Melin <tomas.melin@vaisala.com>
-Tested-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Link: https://lore.kernel.org/r/20220407161659.14532-1-tomas.melin@vaisala.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/cadence/macb_main.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/ata/pata_marvell.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 045ab0ec5ca2..456d84cbcc6b 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -1265,6 +1265,7 @@ static void macb_tx_restart(struct macb_queue *queue)
- 	unsigned int head = queue->tx_head;
- 	unsigned int tail = queue->tx_tail;
- 	struct macb *bp = queue->bp;
-+	unsigned int head_idx, tbqp;
- 
- 	if (bp->caps & MACB_CAPS_ISR_CLEAR_ON_WRITE)
- 		queue_writel(queue, ISR, MACB_BIT(TXUBR));
-@@ -1272,6 +1273,13 @@ static void macb_tx_restart(struct macb_queue *queue)
- 	if (head == tail)
- 		return;
- 
-+	tbqp = queue_readl(queue, TBQP) / macb_dma_desc_get_size(bp);
-+	tbqp = macb_adj_dma_desc_idx(bp, macb_tx_ring_wrap(bp, tbqp));
-+	head_idx = macb_adj_dma_desc_idx(bp, macb_tx_ring_wrap(bp, head));
-+
-+	if (tbqp == head_idx)
-+		return;
-+
- 	macb_writel(bp, NCR, macb_readl(bp, NCR) | MACB_BIT(TSTART));
- }
- 
--- 
-2.35.1
-
+--- a/drivers/ata/pata_marvell.c
++++ b/drivers/ata/pata_marvell.c
+@@ -82,6 +82,8 @@ static int marvell_cable_detect(struct a
+ 	switch(ap->port_no)
+ 	{
+ 	case 0:
++		if (!ap->ioaddr.bmdma_addr)
++			return ATA_CBL_PATA_UNK;
+ 		if (ioread8(ap->ioaddr.bmdma_addr + 1) & 1)
+ 			return ATA_CBL_PATA40;
+ 		return ATA_CBL_PATA80;
 
 
