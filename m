@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 614C2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:19:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5384EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:19:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345876AbiDZJW4 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:22:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46036 "EHLO
+        id S238950AbiDZJXC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:23:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345714AbiDZI5o (ORCPT
+        with ESMTP id S1345836AbiDZI5o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:57:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6678B6425;
-        Tue, 26 Apr 2022 01:42:31 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83900255;
+        Tue, 26 Apr 2022 01:42:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 05BFE604F5;
-        Tue, 26 Apr 2022 08:42:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14D20C385AC;
-        Tue, 26 Apr 2022 08:42:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4658AB81CFA;
+        Tue, 26 Apr 2022 08:42:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87E13C385A0;
+        Tue, 26 Apr 2022 08:42:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962550;
-        bh=uM7454b4WHtaSh+zB7AnS37DDl6s9mS+Cm6hrktUsBM=;
+        s=korg; t=1650962556;
+        bh=m88EaHGaWG+yaFFMZJp6vGUHRl983e7S1YXxudfwUVM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uJeRbOdfBgpvHydIPTYhNlU8VN1PtKv0fqh/ZyusYZDg/ejaIvK2v8zz1ghX7WHxf
-         BKzKE2Ke7Dd2b1CtIhUDNJdKeuGnhCgNKkxj1b6LxOwmqDC4obZGmHhU3bWFGwNTVC
-         fe/LfVl8m9EyiFVEnHMfiJImUreApJbRLnPjhq/s=
+        b=KcgNivbaUgCcODlZLSTcGUdbTEVLszLuko+uAeH/fms8CBzz7kM8HFwP6BJIU0mLZ
+         XruQDm+Ym6bTNZ1VAIQQbMekExuOsT6KJRViNY8PwjY54I+Qa1xhM7x1ayuHeaPMSX
+         hUkWXoHH6JJi1MQuuikQa095qAV+9zDS1+bi24r8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tim Crawford <tcrawford@system76.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.17 010/146] ALSA: hda/realtek: Add quirk for Clevo NP70PNP
-Date:   Tue, 26 Apr 2022 10:20:05 +0200
-Message-Id: <20220426081750.353875412@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 012/146] ASoC: topology: Correct error handling in soc_tplg_dapm_widget_create()
+Date:   Tue, 26 Apr 2022 10:20:07 +0200
+Message-Id: <20220426081750.408766325@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -49,30 +52,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tim Crawford <tcrawford@system76.com>
+From: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
 
-commit 86222af07abf1f5f07a5873cc399c29ab8a9b8b8 upstream.
+[ Upstream commit 9c363532413cda3e2c6dfa10e5cca7cd221877a0 ]
 
-Fixes headset detection on Clevo NP70PNP.
+Academic correction of error handling:
+In case the allocation of kc or kcontrol_type fails the correct label to
+jump is hdr_err since the template.sname has been also allocated at this
+point.
 
-Signed-off-by: Tim Crawford <tcrawford@system76.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220421170412.3697-1-tcrawford@system76.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: d29d41e28eea6 ("ASoC: topology: Add support for multiple kcontrol types to a widget")
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220331114957.519-1-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ sound/soc/soc-topology.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -9116,6 +9116,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x1558, 0x8562, "Clevo NH[57][0-9]RZ[Q]", ALC269_FIXUP_DMIC),
- 	SND_PCI_QUIRK(0x1558, 0x8668, "Clevo NP50B[BE]", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x866d, "Clevo NP5[05]PN[HJK]", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
-+	SND_PCI_QUIRK(0x1558, 0x867c, "Clevo NP7[01]PNP", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x867d, "Clevo NP7[01]PN[HJK]", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x8680, "Clevo NJ50LU", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x8686, "Clevo NH50[CZ]U", ALC256_FIXUP_MIC_NO_PRESENCE_AND_RESUME),
+diff --git a/sound/soc/soc-topology.c b/sound/soc/soc-topology.c
+index cb24805668bd..f413238117af 100644
+--- a/sound/soc/soc-topology.c
++++ b/sound/soc/soc-topology.c
+@@ -1479,12 +1479,12 @@ static int soc_tplg_dapm_widget_create(struct soc_tplg *tplg,
+ 	template.num_kcontrols = le32_to_cpu(w->num_kcontrols);
+ 	kc = devm_kcalloc(tplg->dev, le32_to_cpu(w->num_kcontrols), sizeof(*kc), GFP_KERNEL);
+ 	if (!kc)
+-		goto err;
++		goto hdr_err;
+ 
+ 	kcontrol_type = devm_kcalloc(tplg->dev, le32_to_cpu(w->num_kcontrols), sizeof(unsigned int),
+ 				     GFP_KERNEL);
+ 	if (!kcontrol_type)
+-		goto err;
++		goto hdr_err;
+ 
+ 	for (i = 0; i < le32_to_cpu(w->num_kcontrols); i++) {
+ 		control_hdr = (struct snd_soc_tplg_ctl_hdr *)tplg->pos;
+-- 
+2.35.1
+
 
 
