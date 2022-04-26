@@ -2,83 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BB89C47082
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21110C47080
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:37:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348794AbiDZJkk (ORCPT
+        id S1348591AbiDZJkW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:40:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60482 "EHLO
+        Tue, 26 Apr 2022 05:40:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347189AbiDZJOC (ORCPT
+        with ESMTP id S1347384AbiDZJKs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:14:02 -0400
-Received: from nksmu.kylinos.cn (mailgw.kylinos.cn [123.150.8.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB034183FB1
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 01:50:19 -0700 (PDT)
-X-UUID: a86d9c48cb624fe087b56add348e97a3-20220426
-X-UUID: a86d9c48cb624fe087b56add348e97a3-20220426
-Received: from cs2c.com.cn [(172.17.111.24)] by nksmu.kylinos.cn
-        (envelope-from <lizhenneng@kylinos.cn>)
-        (Generic MTA)
-        with ESMTP id 923068118; Tue, 26 Apr 2022 16:48:37 +0800
-X-ns-mid: postfix-6267B23C-7950086977
-Received: from localhost.localdomain (unknown [172.20.108.41])
-        by cs2c.com.cn (NSMail) with ESMTPA id 8C844383B46C;
-        Tue, 26 Apr 2022 08:50:04 +0000 (UTC)
-From:   Zhenneng Li <lizhenneng@kylinos.cn>
-To:     Alex Deucher <alexander.deucher@amd.com>
-Cc:     =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Xinhui.Pan@amd.com, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Zhenneng Li <lizhenneng@kylinos.cn>
-Subject: [PATCH] gpu/drm/radeon: Fix typo in comments
-Date:   Tue, 26 Apr 2022 16:49:59 +0800
-Message-Id: <20220426084959.3345358-1-lizhenneng@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
+        Tue, 26 Apr 2022 05:10:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88DD017F125;
+        Tue, 26 Apr 2022 01:49:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D9DF860C42;
+        Tue, 26 Apr 2022 08:49:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D20F2C385A0;
+        Tue, 26 Apr 2022 08:49:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650962980;
+        bh=zMT2bqha3hiEmZn2PZkK+h5nbupE7FfoSqKxXILC13g=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Uyg46sB0JVQAABr512IcMJpXW6VHdiYSeYFU77JyriJ6/KYFs0j22A+Oe7BpmMDxk
+         +3AqSQbwdl0sutS/KoC2XK/yHW0en1TGWA29sO38L2ZpWRp1753Z+pfGpo6KQaSQgG
+         WhUMOt4SeAM+2Zkb7H6roKM2Mae6CWjmvsoiFY/w=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Pavel Begunkov <asml.silence@gmail.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.17 145/146] io_uring: fix leaks on IOPOLL and CQE_SKIP
+Date:   Tue, 26 Apr 2022 10:22:20 +0200
+Message-Id: <20220426081754.135044907@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
+References: <20220426081750.051179617@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Signed-off-by: Zhenneng Li <lizhenneng@kylinos.cn>
----
- drivers/gpu/drm/radeon/atombios.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+From: Pavel Begunkov <asml.silence@gmail.com>
 
-diff --git a/drivers/gpu/drm/radeon/atombios.h b/drivers/gpu/drm/radeon/atombios.h
-index bd5dc09e860f..6ccc9f31689f 100644
---- a/drivers/gpu/drm/radeon/atombios.h
-+++ b/drivers/gpu/drm/radeon/atombios.h
-@@ -3599,7 +3599,7 @@ typedef struct  _ATOM_LCD_RTS_RECORD
-   UCHAR     ucRTSValue;
- }ATOM_LCD_RTS_RECORD;
+commit c0713540f6d55c53dca65baaead55a5a8b20552d upstream.
+
+If all completed requests in io_do_iopoll() were marked with
+REQ_F_CQE_SKIP, we'll not only skip CQE posting but also
+io_free_batch_list() leaking memory and resources.
+
+Move @nr_events increment before REQ_F_CQE_SKIP check. We'll potentially
+return the value greater than the real one, but iopolling will deal with
+it and the userspace will re-iopoll if needed. In anyway, I don't think
+there are many use cases for REQ_F_CQE_SKIP + IOPOLL.
+
+Fixes: 83a13a4181b0e ("io_uring: tweak iopoll CQE_SKIP event counting")
+Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+Link: https://lore.kernel.org/r/5072fc8693fbfd595f89e5d4305bfcfd5d2f0a64.1650186611.git.asml.silence@gmail.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/io_uring.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -2612,11 +2612,10 @@ static int io_do_iopoll(struct io_ring_c
+ 		/* order with io_complete_rw_iopoll(), e.g. ->result updates */
+ 		if (!smp_load_acquire(&req->iopoll_completed))
+ 			break;
++		nr_events++;
+ 		if (unlikely(req->flags & REQ_F_CQE_SKIP))
+ 			continue;
+-
+ 		__io_fill_cqe(ctx, req->user_data, req->result, io_put_kbuf(req));
+-		nr_events++;
+ 	}
  
--//!! If the record below exits, it shoud always be the first record for easy use in command table!!! 
-+//!! If the record below exits, it should always be the first record for easy use in command table!!!
- // The record below is only used when LVDS_Info is present. From ATOM_LVDS_INFO_V12, use ucLCDPanel_SpecialHandlingCap instead.
- typedef struct  _ATOM_LCD_MODE_CONTROL_CAP
- {
-@@ -3823,7 +3823,7 @@ typedef struct _ATOM_DPCD_INFO
- // Note1: This table is filled by SetBiosReservationStartInFB in CoreCommSubs.asm
- //        at running time.   
- // note2: From RV770, the memory is more than 32bit addressable, so we will change 
--//        ucTableFormatRevision=1,ucTableContentRevision=4, the strcuture remains 
-+//        ucTableFormatRevision=1,ucTableContentRevision=4, the structure remains
- //        exactly same as 1.1 and 1.2 (1.3 is never in use), but ulStartAddrUsedByFirmware 
- //        (in offset to start of memory address) is KB aligned instead of byte aligend.
- /***********************************************************************************/	
-@@ -3858,7 +3858,7 @@ typedef struct _ATOM_VRAM_USAGE_BY_FIRMWARE
-   ATOM_FIRMWARE_VRAM_RESERVE_INFO	asFirmwareVramReserveInfo[ATOM_MAX_FIRMWARE_VRAM_USAGE_INFO];
- }ATOM_VRAM_USAGE_BY_FIRMWARE;
- 
--// change verion to 1.5, when allow driver to allocate the vram area for command table access. 
-+// change version to 1.5, when allow driver to allocate the vram area for command table access.
- typedef struct _ATOM_FIRMWARE_VRAM_RESERVE_INFO_V1_5
- {
-   ULONG   ulStartAddrUsedByFirmware;
--- 
-2.25.1
+ 	if (unlikely(!nr_events))
+
 
