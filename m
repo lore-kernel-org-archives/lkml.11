@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 640FEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:37:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E27A9C46467
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:37:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348449AbiDZJjw (ORCPT
+        id S1348366AbiDZJjg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:39:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41544 "EHLO
+        Tue, 26 Apr 2022 05:39:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346055AbiDZJGn (ORCPT
+        with ESMTP id S1346950AbiDZJJ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:06:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D9A116FAFF;
-        Tue, 26 Apr 2022 01:48:04 -0700 (PDT)
+        Tue, 26 Apr 2022 05:09:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B22417B9B5;
+        Tue, 26 Apr 2022 01:49:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5D8A2B81A2F;
-        Tue, 26 Apr 2022 08:48:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFFAEC385A0;
-        Tue, 26 Apr 2022 08:48:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E25460C42;
+        Tue, 26 Apr 2022 08:49:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55D69C385A4;
+        Tue, 26 Apr 2022 08:49:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962882;
-        bh=IDqgRNBwGIvtMsmr6/N2J6hYIoYbX/xHkHR82tNbfo8=;
+        s=korg; t=1650962967;
+        bh=bZ0Xe/AYFJWiHqb195AYspAhCa1rCBvLLVFu9aa1DhM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xdsDPAN3arpduJxkTQQA9t2g+N822NjgwiCjL7ApuBtz9HL4E9TDqUeYPOmAAUG9v
-         YeCdqUlZi6bU9mtCh7Hsq+aFHbWInyh8zeSRVmrPDveWpSBkVg54mxfsgpuBKaelTU
-         /dKjYo0daGnmO8oeB0SMKdBV+lRExIcl6P07u5Yo=
+        b=DeebPXnqML4U6FwiK3QYj6Ct4O6G1Gb1+qwSxb02/7+Wi0diExv8gwK9+HQZlDMP4
+         8N+9c7XIjQK6AlNZaYc5jiJMBNzH34AWpUIVoIDDO/m75+fn5LDVD0IQgIMpjG+F9a
+         WxZmp+lHsO44+q4UF/w7ROfKoxXY+oEMA4JV1ZKI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Shreeya Patel <shreeya.patel@collabora.com>,
-        =?UTF-8?q?Samuel=20=C4=8Cavoj?= <samuel@cavoj.net>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        lukeluk498@gmail.com, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.17 120/146] gpio: Request interrupts after IRQ is initialized
-Date:   Tue, 26 Apr 2022 10:21:55 +0200
-Message-Id: <20220426081753.429847995@linuxfoundation.org>
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 098/146] drm/radeon: fix logic inversion in radeon_sync_resv
+Date:   Tue, 26 Apr 2022 10:21:33 +0200
+Message-Id: <20220426081752.811178065@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -55,70 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+From: Christian König <christian.koenig@amd.com>
 
-commit 06fb4ecfeac7e00d6704fa5ed19299f2fefb3cc9 upstream.
+[ Upstream commit 022074918042465668db9b0f768e2260b1e39c59 ]
 
-Commit 5467801f1fcb ("gpio: Restrict usage of GPIO chip irq members
-before initialization") attempted to fix a race condition that lead to a
-NULL pointer, but in the process caused a regression for _AEI/_EVT
-declared GPIOs.
+Shared is the opposite of write/exclusive.
 
-This manifests in messages showing deferred probing while trying to
-allocate IRQs like so:
-
-  amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x0000 to IRQ, err -517
-  amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x002C to IRQ, err -517
-  amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x003D to IRQ, err -517
-  [ .. more of the same .. ]
-
-The code for walking _AEI doesn't handle deferred probing and so this
-leads to non-functional GPIO interrupts.
-
-Fix this issue by moving the call to `acpi_gpiochip_request_interrupts`
-to occur after gc->irc.initialized is set.
-
-Fixes: 5467801f1fcb ("gpio: Restrict usage of GPIO chip irq members before initialization")
-Link: https://lore.kernel.org/linux-gpio/BL1PR12MB51577A77F000A008AA694675E2EF9@BL1PR12MB5157.namprd12.prod.outlook.com/
-Link: https://bugzilla.suse.com/show_bug.cgi?id=1198697
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215850
-Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1979
-Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1976
-Reported-by: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Reviewed-by: Shreeya Patel <shreeya.patel@collabora.com>
-Tested-By: Samuel Čavoj <samuel@cavoj.net>
-Tested-By: lukeluk498@gmail.com Link:
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-and-tested-by: Takashi Iwai <tiwai@suse.de>
-Cc: Shreeya Patel <shreeya.patel@collabora.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Christian König <christian.koenig@amd.com>
+Fixes: 0597ca7b43e4 ("drm/radeon: use new iterator in radeon_sync_resv")
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1970
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220412093626.608767-1-christian.koenig@amd.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpio/gpiolib.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/radeon/radeon_sync.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/gpio/gpiolib.c
-+++ b/drivers/gpio/gpiolib.c
-@@ -1601,8 +1601,6 @@ static int gpiochip_add_irqchip(struct g
+diff --git a/drivers/gpu/drm/radeon/radeon_sync.c b/drivers/gpu/drm/radeon/radeon_sync.c
+index b991ba1bcd51..f63efd8d5e52 100644
+--- a/drivers/gpu/drm/radeon/radeon_sync.c
++++ b/drivers/gpu/drm/radeon/radeon_sync.c
+@@ -96,7 +96,7 @@ int radeon_sync_resv(struct radeon_device *rdev,
+ 	struct dma_fence *f;
+ 	int r = 0;
  
- 	gpiochip_set_irq_hooks(gc);
- 
--	acpi_gpiochip_request_interrupts(gc);
--
- 	/*
- 	 * Using barrier() here to prevent compiler from reordering
- 	 * gc->irq.initialized before initialization of above
-@@ -1612,6 +1610,8 @@ static int gpiochip_add_irqchip(struct g
- 
- 	gc->irq.initialized = true;
- 
-+	acpi_gpiochip_request_interrupts(gc);
-+
- 	return 0;
- }
- 
+-	dma_resv_for_each_fence(&cursor, resv, shared, f) {
++	dma_resv_for_each_fence(&cursor, resv, !shared, f) {
+ 		fence = to_radeon_fence(f);
+ 		if (fence && fence->rdev == rdev)
+ 			radeon_sync_fence(sync, fence);
+-- 
+2.35.1
+
 
 
