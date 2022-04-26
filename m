@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEEA2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:28:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D30BBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:28:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230256AbiDZIbS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:31:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38480 "EHLO
+        id S1344857AbiDZIbX (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:31:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344916AbiDZI3E (ORCPT
+        with ESMTP id S1344890AbiDZI3D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:29:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D5E1137D87;
-        Tue, 26 Apr 2022 01:24:35 -0700 (PDT)
+        Tue, 26 Apr 2022 04:29:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27DA642A1C;
+        Tue, 26 Apr 2022 01:24:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EFDE96179E;
-        Tue, 26 Apr 2022 08:24:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0619AC385AE;
-        Tue, 26 Apr 2022 08:24:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D8F3C61778;
+        Tue, 26 Apr 2022 08:24:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E651DC385A4;
+        Tue, 26 Apr 2022 08:24:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961474;
-        bh=yx8av04Y5xxLJJnNv+WtjSdUDUvPluHDdTSScXGxX4s=;
+        s=korg; t=1650961465;
+        bh=Cg6uVNnAnKhZwmZtm1NgSHIhtNMaNG4XByu/JiDv5a0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=twvjfrEF3vcrk333shd08mC+4snDPTQRT7v9PpgMqm+YLem/2BgKlTNLg2Tw0pJG9
-         KLQWVU1R5DVGV030gFFEkH5V+HHJum9iKiyZNJMDFB649UiY2+7m0cGDhdi/SGOu5u
-         qbrYj1FmSW75kphnr0deoimbiS5aVKbC480AeACU=
+        b=rB3RqsrhHu/GF0SrFAXEUrkTi3HQ0woM8pfCdLYsPrle3T6D0gjdTER4/D+tfHuh5
+         EbTrZnz0sBdk6x32z737MED5yqIDOUsNxgtlTYPLrxjWKLAY43GKHhWtGU1AmKVd2A
+         j6AvXnshuuvN8s1Brh0jJKgsd4M4j/wNmy2cUSA8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Subject: [PATCH 4.14 22/43] ata: pata_marvell: Check the bmdma_addr beforing reading
-Date:   Tue, 26 Apr 2022 10:21:04 +0200
-Message-Id: <20220426081735.173804032@linuxfoundation.org>
+        stable@vger.kernel.org, Xiongwei Song <sxwjean@gmail.com>,
+        Arthur Marsh <arthur.marsh@internode.on.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Khem Raj <raj.khem@gmail.com>
+Subject: [PATCH 4.14 02/43] mm: page_alloc: fix building error on -Werror=array-compare
+Date:   Tue, 26 Apr 2022 10:20:44 +0200
+Message-Id: <20220426081734.585462414@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081734.509314186@linuxfoundation.org>
 References: <20220426081734.509314186@linuxfoundation.org>
@@ -48,40 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Xiongwei Song <sxwjean@gmail.com>
 
-commit aafa9f958342db36c17ac2a7f1b841032c96feb4 upstream.
+commit ca831f29f8f25c97182e726429b38c0802200c8f upstream.
 
-Before detecting the cable type on the dma bar, the driver should check
-whether the 'bmdma_addr' is zero, which means the adapter does not
-support DMA, otherwise we will get the following error:
+Arthur Marsh reported we would hit the error below when building kernel
+with gcc-12:
 
-[    5.146634] Bad IO access at port 0x1 (return inb(port))
-[    5.147206] WARNING: CPU: 2 PID: 303 at lib/iomap.c:44 ioread8+0x4a/0x60
-[    5.150856] RIP: 0010:ioread8+0x4a/0x60
-[    5.160238] Call Trace:
-[    5.160470]  <TASK>
-[    5.160674]  marvell_cable_detect+0x6e/0xc0 [pata_marvell]
-[    5.161728]  ata_eh_recover+0x3520/0x6cc0
-[    5.168075]  ata_do_eh+0x49/0x3c0
+  CC      mm/page_alloc.o
+  mm/page_alloc.c: In function `mem_init_print_info':
+  mm/page_alloc.c:8173:27: error: comparison between two arrays [-Werror=array-compare]
+   8173 |                 if (start <= pos && pos < end && size > adj) \
+        |
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+In C++20, the comparision between arrays should be warned.
+
+Link: https://lkml.kernel.org/r/20211125130928.32465-1-sxwjean@me.com
+Signed-off-by: Xiongwei Song <sxwjean@gmail.com>
+Reported-by: Arthur Marsh <arthur.marsh@internode.on.net>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Khem Raj <raj.khem@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/ata/pata_marvell.c |    2 ++
- 1 file changed, 2 insertions(+)
+ mm/page_alloc.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/ata/pata_marvell.c
-+++ b/drivers/ata/pata_marvell.c
-@@ -82,6 +82,8 @@ static int marvell_cable_detect(struct a
- 	switch(ap->port_no)
- 	{
- 	case 0:
-+		if (!ap->ioaddr.bmdma_addr)
-+			return ATA_CBL_PATA_UNK;
- 		if (ioread8(ap->ioaddr.bmdma_addr + 1) & 1)
- 			return ATA_CBL_PATA40;
- 		return ATA_CBL_PATA80;
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -6737,7 +6737,7 @@ void __init mem_init_print_info(const ch
+ 	 */
+ #define adj_init_size(start, end, size, pos, adj) \
+ 	do { \
+-		if (start <= pos && pos < end && size > adj) \
++		if (&start[0] <= &pos[0] && &pos[0] < &end[0] && size > adj) \
+ 			size -= adj; \
+ 	} while (0)
+ 
 
 
