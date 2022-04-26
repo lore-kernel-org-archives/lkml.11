@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF32FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:30:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A46FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:32:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236939AbiDZJdu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:33:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57334 "EHLO
+        id S1347394AbiDZJdy (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:33:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347478AbiDZJFw (ORCPT
+        with ESMTP id S1347864AbiDZJGT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:05:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF70012EB57;
-        Tue, 26 Apr 2022 01:44:44 -0700 (PDT)
+        Tue, 26 Apr 2022 05:06:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A65C6167F35;
+        Tue, 26 Apr 2022 01:46:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 25E506133B;
-        Tue, 26 Apr 2022 08:44:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30857C385A4;
-        Tue, 26 Apr 2022 08:44:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2BC14B81CB3;
+        Tue, 26 Apr 2022 08:46:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93679C385A0;
+        Tue, 26 Apr 2022 08:46:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962683;
-        bh=dUgrE0Q2YjSUlSX2gm0emK+Zp2F+VoehNPHJ2f4rLFc=;
+        s=korg; t=1650962780;
+        bh=ZCI+Z/fhFeIR7DPzLPNHVclofRd5T2YSEHC7i8xxUkE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zZTBY5r7NygjDBbcGUrzayivRGNecJZz5bye9/9H923VR89T9kJnESWxfRGFFXLxg
-         eaIQ9ITCWi4LSBnM2T5lB2HXepC6JRJzBMZeOi0KwprP6lFTse9C9aZpWNBVdSu2D3
-         mkgAZ5anutknTy0OuhEuzNn2XxUViqtiynfzjRxQ=
+        b=pVc6BEgDm8awxuSqcRRrQgDQaS+yz6IyffJGauLSrA/QM/EvmVxZfmZzGTqIg7hTX
+         vbhdk6Nx7hZWM2RmUQ8prGMgRhUyusiTC5Fgai7VTjBE17YYEZKuD92+jYzTnRi4En
+         Ya3CLeGRxjJw/i3+YPKeYTstL6R+fPU7SITQCN2E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 017/146] dmaengine: imx-sdma: Fix error checking in sdma_event_remap
-Date:   Tue, 26 Apr 2022 10:20:12 +0200
-Message-Id: <20220426081750.549561193@linuxfoundation.org>
+        stable@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Keith Busch <kbusch@kernel.org>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 086/146] nvme-pci: disable namespace identifiers for Qemu controllers
+Date:   Tue, 26 Apr 2022 10:21:21 +0200
+Message-Id: <20220426081752.477370260@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -48,44 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Christoph Hellwig <hch@lst.de>
 
-[ Upstream commit 7104b9cb35a33ad803a1adbbfa50569b008faf15 ]
+[ Upstream commit 66dd346b84d79fde20832ed691a54f4881eac20d ]
 
-of_parse_phandle() returns NULL on errors, rather than error
-pointers. Using NULL check on grp_np to fix this.
+Qemu unconditionally reports a UUID, which depending on the qemu version
+is either all-null (which is incorrect but harmless) or contains a single
+bit set for all controllers.  In addition it can also optionally report
+a eui64 which needs to be manually set.  Disable namespace identifiers
+for Qemu controlles entirely even if in some cases they could be set
+correctly through manual intervention.
 
-Fixes: d078cd1b4185 ("dmaengine: imx-sdma: Add imx6sx platform support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220308064952.15743-1-linmq006@gmail.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Reported-by: Luis Chamberlain <mcgrof@kernel.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Keith Busch <kbusch@kernel.org>
+Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/imx-sdma.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/nvme/host/pci.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/dma/imx-sdma.c b/drivers/dma/imx-sdma.c
-index 75ec0754d4ad..0be1171610af 100644
---- a/drivers/dma/imx-sdma.c
-+++ b/drivers/dma/imx-sdma.c
-@@ -1869,7 +1869,7 @@ static int sdma_event_remap(struct sdma_engine *sdma)
- 	u32 reg, val, shift, num_map, i;
- 	int ret = 0;
- 
--	if (IS_ERR(np) || IS_ERR(gpr_np))
-+	if (IS_ERR(np) || !gpr_np)
- 		goto out;
- 
- 	event_remap = of_find_property(np, propname, NULL);
-@@ -1917,7 +1917,7 @@ static int sdma_event_remap(struct sdma_engine *sdma)
- 	}
- 
- out:
--	if (!IS_ERR(gpr_np))
-+	if (gpr_np)
- 		of_node_put(gpr_np);
- 
- 	return ret;
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index 6be611f49a45..e4b79bee6206 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -3405,7 +3405,10 @@ static const struct pci_device_id nvme_id_table[] = {
+ 		.driver_data = NVME_QUIRK_IGNORE_DEV_SUBNQN, },
+ 	{ PCI_VDEVICE(INTEL, 0x5845),	/* Qemu emulated controller */
+ 		.driver_data = NVME_QUIRK_IDENTIFY_CNS |
+-				NVME_QUIRK_DISABLE_WRITE_ZEROES, },
++				NVME_QUIRK_DISABLE_WRITE_ZEROES |
++				NVME_QUIRK_BOGUS_NID, },
++	{ PCI_VDEVICE(REDHAT, 0x0010),	/* Qemu emulated controller */
++		.driver_data = NVME_QUIRK_BOGUS_NID, },
+ 	{ PCI_DEVICE(0x126f, 0x2263),	/* Silicon Motion unidentified */
+ 		.driver_data = NVME_QUIRK_NO_NS_DESC_LIST, },
+ 	{ PCI_DEVICE(0x1bb1, 0x0100),   /* Seagate Nytro Flash Storage */
 -- 
 2.35.1
 
