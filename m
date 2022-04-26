@@ -2,203 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00687C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 12:59:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C243C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 13:00:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350614AbiDZNDE (ORCPT
+        id S1350617AbiDZNDH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 09:03:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48798 "EHLO
+        Tue, 26 Apr 2022 09:03:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350475AbiDZNCG (ORCPT
+        with ESMTP id S1350446AbiDZNB5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 09:02:06 -0400
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18F5A17FBFB
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 05:58:56 -0700 (PDT)
-Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id C04C360002;
-        Tue, 26 Apr 2022 12:58:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1650977935;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=MmNlrwxgVACEPEt4O51tRww2XVIR+lteYS+yFSp3aDQ=;
-        b=EHkcRmQgB3EfJEiP/knliMfCelqvkxz/iDJKNO+N4asEOn7ACFMcfuR4hvBcx3LDrs4K8R
-        k7ix6ofIQbd1jEBOGxRp7SsChvwMJWH8XGM/+pVNkWnYgkrql+mYueMp27MJG2v1r6td95
-        9nIOsvFzzqupgcICt0zc00yKE7MbkupIQ9jPekXb10ZPZXlCucNFwhKHN1ROJ7L5HB9L/L
-        Yil79Hss0mh0BPixtclpGtL8J9KNsIclPjl2/ZPWfvOssfQWAW2+FCHuvfLjUZ3vP5Z04p
-        PR/4B2yFEhkVKyQ4C3lgiUll3ctNL+N+HS/EpQZK5SgsWOAtqDXN5oEhKCYihA==
-Date:   Tue, 26 Apr 2022 14:58:47 +0200
-From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-To:     Maxime Ripard <maxime@cerno.tech>
-Cc:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Jagan Teki <jagan@amarulasolutions.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Rob Clark <robdclark@gmail.com>, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robert Foss <robert.foss@linaro.org>
-Subject: Re: [PATCH 2/2] Revert "drm: of: Lookup if child node has panel or
- bridge"
-Message-ID: <Ymfshx4AxRslupL4@aptenodytes>
-References: <20220420231230.58499-1-bjorn.andersson@linaro.org>
- <20220420231230.58499-2-bjorn.andersson@linaro.org>
- <CAMty3ZAw7DUSnBePC05qC8Gn6ESKiu+FHw4a-HPPc05VX1hqhg@mail.gmail.com>
- <20220421082358.ivpmtak3ednvddrc@houat>
- <YmEdAVwZuA7Wo1Ch@aptenodytes>
- <YmelPCcWCCjALtRU@aptenodytes>
- <YmfYi5G7hMKLAH3T@pendragon.ideasonboard.com>
- <YmfoiD0r8MD/kr1N@aptenodytes>
- <20220426125401.yyrhg6aeafdjw4ad@houat>
+        Tue, 26 Apr 2022 09:01:57 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3379617F130;
+        Tue, 26 Apr 2022 05:58:47 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: nicolas)
+        with ESMTPSA id DCF2E1F439A0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1650977922;
+        bh=OT93d1YFbCsPl7b/q8Q9Ng7KBwuAX7su/L0Pt2JnS6E=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=cBZN0vuWa0CQYiFTtznCmJ69cnWWpBJjUsOTglusEeiqSVayUvm4THtei/qrnz+XU
+         sxKfjpwT+fa/HTO2lmpV7wL724s3r+9mMdahR1qJH2P8t1iXck7NuGbaxaJly5vKqm
+         +CnjtVkTT3iaegGldibqCE7Vq/khasZDDfEUwlJxfHfFV8bcR5uN90Z9I3HPpzsrwr
+         H5DMc5649WTvQ9vq9OrnHgzL20sr2Z3Y9i6F2AjFq/IVQ6dGlbdqjLCg5i3ua4vQp1
+         94j5HRwXA2ySzWD6Zqm1P5Cu2nEMfyBeoAfYWvwy7OQ8HM7PJJY/Mr1lI+iWwHPo40
+         nEC1lF3RULBxw==
+From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
+To:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     nicolas@ndufresne.ca, linux-media@vger.kernel.org,
+        Sebastian Fricke <sebastian.fricke@collabora.com>,
+        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v4 24/24] media: hantro: Enable HOLD_CAPTURE_BUF for H.264
+Date:   Tue, 26 Apr 2022 08:57:50 -0400
+Message-Id: <20220426125751.108293-25-nicolas.dufresne@collabora.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220426125751.108293-1-nicolas.dufresne@collabora.com>
+References: <20220426125751.108293-1-nicolas.dufresne@collabora.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="YbpWSnC7kIEH40Lk"
-Content-Disposition: inline
-In-Reply-To: <20220426125401.yyrhg6aeafdjw4ad@houat>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+This is needed to optimize field decoding. Each field will be
+decoded into the same capture buffer. To be able to queue multiple
+buffers, we need to be able to ask the driver to hold the capture
+buffer.
 
---YbpWSnC7kIEH40Lk
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Reviewed-by: Sebastian Fricke <sebastian.fricke@collabora.com>
+---
+ drivers/staging/media/hantro/hantro_v4l2.c | 25 ++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
-On Tue 26 Apr 22, 14:54, Maxime Ripard wrote:
-> On Tue, Apr 26, 2022 at 02:41:44PM +0200, Paul Kocialkowski wrote:
-> > On Tue 26 Apr 22, 14:33, Laurent Pinchart wrote:
-> > > On Tue, Apr 26, 2022 at 09:54:36AM +0200, Paul Kocialkowski wrote:
-> > > > On Thu 21 Apr 22, 10:59, Paul Kocialkowski wrote:
-> > > > > On Thu 21 Apr 22, 10:23, Maxime Ripard wrote:
-> > > > > > On Thu, Apr 21, 2022 at 01:15:54PM +0530, Jagan Teki wrote:
-> > > > > > > + Linus
-> > > > > > > + Marek
-> > > > > > > + Laurent
-> > > > > > > + Robert
-> > > > > > >=20
-> > > > > > > On Thu, Apr 21, 2022 at 4:40 AM Bjorn Andersson wrote:
-> > > > > > > >
-> > > > > > > > Commit '80253168dbfd ("drm: of: Lookup if child node has pa=
-nel or
-> > > > > > > > bridge")' attempted to simplify the case of expressing a si=
-mple panel
-> > > > > > > > under a DSI controller, by assuming that the first non-grap=
-h child node
-> > > > > > > > was a panel or bridge.
-> > > > > > > >
-> > > > > > > > Unfortunately for non-trivial cases the first child node mi=
-ght not be a
-> > > > > > > > panel or bridge.  Examples of this can be a aux-bus in the =
-case of
-> > > > > > > > DisplayPort, or an opp-table represented before the panel n=
-ode.
-> > > > > > > >
-> > > > > > > > In these cases the reverted commit prevents the caller from=
- ever finding
-> > > > > > > > a reference to the panel.
-> > > > > > > >
-> > > > > > > > This reverts commit '80253168dbfd ("drm: of: Lookup if chil=
-d node has
-> > > > > > > > panel or bridge")', in favor of using an explicit graph ref=
-erence to the
-> > > > > > > > panel in the trivial case as well.
-> > > > > > >=20
-> > > > > > > This eventually breaks many child-based devm_drm_of_get_bridge
-> > > > > > > switched drivers.  Do you have any suggestions on how to proc=
-eed to
-> > > > > > > succeed in those use cases as well?
-> > > > > >=20
-> > > > > > I guess we could create a new helper for those, like
-> > > > > > devm_drm_of_get_bridge_with_panel, or something.
-> > > > >=20
-> > > > > Oh wow I feel stupid for not thinking about that.
-> > > > >=20
-> > > > > Yeah I agree that it seems like the best option.
-> > > >=20
-> > > > Should I prepare a patch with such a new helper?
-> > > >=20
-> > > > The idea would be to keep drm_of_find_panel_or_bridge only for the =
-of graph
-> > > > case and add one for the child node case, maybe:
-> > > > drm_of_find_child_panel_or_bridge.
-> > > >=20
-> > > > I really don't have a clear idea of which driver would need to be s=
-witched
-> > > > over though. Could someone (Jagan?) let me know where it would be n=
-eeded?
-> > > >=20
-> > > > Are there cases where we could both expect of graph and child node?
-> > > > (i.e. does the new helper also need to try via of graph?)
-> > >=20
-> > > I still think we should use OF graph uncondtionally, even in the DSI
-> > > case. We need to ensure backward-compatibility, but I'd like new
-> > > bindings (and thus new drivers) to always use OF graph.
-> >=20
-> > I just went over the thread on "drm: of: Improve error handling in brid=
-ge/panel
-> > detection" again and I'm no longer sure there's actually still an issue=
- that
-> > stands, with the fix that allows returning -ENODEV when possible.
-> >=20
-> > The remaining issue that was brought up was with a connector node, but =
-it should
-> > be up to the driver to detect that and avoid calling drm_of_find_panel_=
-or_bridge
-> > in such situations.
-> >=20
-> > So with that in mind it feels like the child node approach can be viable
-> > (and integrated in the same helper).
-> >=20
-> > We might still want to favor an explicit OF graph approach, but note th=
-at
-> > dsi-controller.yaml also specifies extra properties that are specific to
-> > MIPI DSI and I'm not sure there are equivalent definitions for the OF g=
-raph
-> > approach.
-> >=20
-> > What do you think?
->=20
-> I don't think Laurent's point was to move the child node away from its
-> DSI controller, that part doesn't make much sense. The panel or bridge
-> is still accessed through the DSI bus, so it very much belongs there.
->=20
-> What he meant I think was that we mandate the OF graph for all panels,
-> so for panels/bridges controlled through DCS, you would still list the
-> output through the graph.
+diff --git a/drivers/staging/media/hantro/hantro_v4l2.c b/drivers/staging/media/hantro/hantro_v4l2.c
+index 67148ba346f5..50d636678ff3 100644
+--- a/drivers/staging/media/hantro/hantro_v4l2.c
++++ b/drivers/staging/media/hantro/hantro_v4l2.c
+@@ -409,6 +409,30 @@ hantro_update_requires_request(struct hantro_ctx *ctx, u32 fourcc)
+ 	}
+ }
+ 
++static void
++hantro_update_requires_hold_capture_buf(struct hantro_ctx *ctx, u32 fourcc)
++{
++	struct vb2_queue *vq;
++
++	vq = v4l2_m2m_get_vq(ctx->fh.m2m_ctx,
++			     V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
++
++	switch (fourcc) {
++	case V4L2_PIX_FMT_JPEG:
++	case V4L2_PIX_FMT_MPEG2_SLICE:
++	case V4L2_PIX_FMT_VP8_FRAME:
++	case V4L2_PIX_FMT_HEVC_SLICE:
++	case V4L2_PIX_FMT_VP9_FRAME:
++		vq->subsystem_flags &= ~(VB2_V4L2_FL_SUPPORTS_M2M_HOLD_CAPTURE_BUF);
++		break;
++	case V4L2_PIX_FMT_H264_SLICE:
++		vq->subsystem_flags |= VB2_V4L2_FL_SUPPORTS_M2M_HOLD_CAPTURE_BUF;
++		break;
++	default:
++		break;
++	}
++}
++
+ static int hantro_set_fmt_out(struct hantro_ctx *ctx,
+ 			      struct v4l2_pix_format_mplane *pix_mp)
+ {
+@@ -472,6 +496,7 @@ static int hantro_set_fmt_out(struct hantro_ctx *ctx,
+ 	ctx->dst_fmt.quantization = pix_mp->quantization;
+ 
+ 	hantro_update_requires_request(ctx, pix_mp->pixelformat);
++	hantro_update_requires_hold_capture_buf(ctx, pix_mp->pixelformat);
+ 
+ 	vpu_debug(0, "OUTPUT codec mode: %d\n", ctx->vpu_src_fmt->codec_mode);
+ 	vpu_debug(0, "fmt - w: %d, h: %d\n",
+-- 
+2.34.1
 
-Oh okay that makes sense, thanks.
-
-Cheers,
-
-Paul
-
---=20
-Paul Kocialkowski, Bootlin
-Embedded Linux and kernel engineering
-https://bootlin.com
-
---YbpWSnC7kIEH40Lk
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEJZpWjZeIetVBefti3cLmz3+fv9EFAmJn7IcACgkQ3cLmz3+f
-v9Gz8wf+MEkBx//EDT9WbMz6ywe9d7BVQzxaz0bYBK4m1VWbwOuPwteqDdjPMU3Z
-23Ah2g6EmUUnPskNEc2lLvR6cy3GTuZfpTJtRM2NDBj8jnbB/+K5BkjAhdApRSIE
-fsCPnTeQfeVBBdUGKHEphr5b5epx2JNKlrgYFqeeAfT5ppw14FBqgZyIJm3t17YX
-Hkibw0numAyvLO6KNpabLlFoEDgo8aNCgd3396xKKKFN85f/M/kL61+FchCbC+Ku
-V6ZV6ZDirakQC4DMJQuhMzgpkcDk6O78Ejfk3WulcJ053QqNJ6HVdLCmVdmygQd2
-eJbHUb5ZoE01bCsosQj9l38RftT6bg==
-=VL5e
------END PGP SIGNATURE-----
-
---YbpWSnC7kIEH40Lk--
