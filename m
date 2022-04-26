@@ -2,87 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE1C7C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:39:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF142C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:39:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345459AbiDZImU (ORCPT
+        id S1345474AbiDZIm0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:42:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34170 "EHLO
+        Tue, 26 Apr 2022 04:42:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345463AbiDZIei (ORCPT
+        with ESMTP id S1345499AbiDZIek (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:34:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB90C762BC;
-        Tue, 26 Apr 2022 01:27:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 08D31617AE;
-        Tue, 26 Apr 2022 08:27:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1591EC385A4;
-        Tue, 26 Apr 2022 08:27:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961645;
-        bh=yx8av04Y5xxLJJnNv+WtjSdUDUvPluHDdTSScXGxX4s=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DpQErN2DhSeYA6wcJ6KvCvBZiR4SFgjy2gLUn22zwV+uxYOrKeMEZe8tYxrXQaNlk
-         Exow5PpkFamT+kX0LtN18+LxRzUwjGhTeydH1t+akvvmyKYIELgPUFCjtScfJrVNF9
-         zCD158MiESEYvgRJZx2lDUsjwLe99ITPRR1NMNcQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Subject: [PATCH 4.19 29/53] ata: pata_marvell: Check the bmdma_addr beforing reading
-Date:   Tue, 26 Apr 2022 10:21:09 +0200
-Message-Id: <20220426081736.502980807@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081735.651926456@linuxfoundation.org>
-References: <20220426081735.651926456@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 26 Apr 2022 04:34:40 -0400
+Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6281078933;
+        Tue, 26 Apr 2022 01:27:31 -0700 (PDT)
+Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-e93ff05b23so5549026fac.9;
+        Tue, 26 Apr 2022 01:27:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=JyWiIRUPQ2EQSPq1mXaopILM4bH8C27NOUyoSKH0Kx0=;
+        b=GnmfzeNbJetLPcgOVIDW167P97CHVrHZEtM+M2S9wFPQjOUEmoHfTfmzpCm2EjZM0K
+         whuvCP9KJpqrXXQUmXikaAC0v8o2lDEi0kjrpgfsFM3y98aKviiAn+MXpe1N3OdOLlRG
+         xl2/UNLA28EBEjDv7j1N04M6Lt+6ZzTPZc265ucTjKj83saennVZrRWbCx5e8sLGMeVx
+         ygCiGroytXMSHv5y6S0AgYw5vDoXwxPkQA4ow2axQs7VAndznkVgZEmwZpgpfWs6aUQR
+         JpArsopYmKPWSPsnzCHLU1XfQePgiqgCJbV3ZMQU1Qw+qjqnQsUghQM+vF4LFb02MSSr
+         4QYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=JyWiIRUPQ2EQSPq1mXaopILM4bH8C27NOUyoSKH0Kx0=;
+        b=SN9wRxAJAO89dU1lPsl1tsqJLkGIoBzbtlKR7C1XwD7eTb4SxFbhJUd1ZjJRvqRDZh
+         3AxfzV8kcmFqcSZlcVIZJzqFpqYlClPulAPGkF+j36pjRuvEZIDBnRsT4H+Nr7lfZai1
+         TvShU8w8+Thwj98I4BYnLsfwFkPZo3wBFCI6PK4ztHNQfgbOx+dPqzMSobF4wQoTuMBr
+         GBg3Y460hdmcQ/1t9jjsjdrJlSY0GlYbDmph0GSOruC/sXO9y7NSm/76qb8tfCPo5ggF
+         Q1EiWBdMoBELRsDdAWvgTYrFiS/DcTp4ZAgsBXU+m7mFhUQVI0lglItqNmZRkOI/eVzT
+         Wqyg==
+X-Gm-Message-State: AOAM533Mc7McIkChWqLPZYlWcSm/9k4pux+E+C+ifj4wiVGcxx1lgewD
+        cC0ncf2SdwSB7NECy5dZ6EC+lWFrWAQ=
+X-Google-Smtp-Source: ABdhPJxI6qYl36Xp+qPV11OmVb8RL5z0QIOZJOtq0tjrrNmAI9DxIvRi55kIn0SC5Jq7y7Xi1v4n/w==
+X-Received: by 2002:a05:6870:5a5:b0:e2:896a:80c with SMTP id m37-20020a05687005a500b000e2896a080cmr8381464oap.131.1650961651221;
+        Tue, 26 Apr 2022 01:27:31 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id j9-20020a056808056900b0032252797ea4sm4718739oig.6.2022.04.26.01.27.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Apr 2022 01:27:30 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <aaccd71a-64f7-7d8f-f5a7-41164ad80f1e@roeck-us.net>
+Date:   Tue, 26 Apr 2022 01:27:28 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v4 4/4] watchdog: iTCO_wdg: Make code more clearly with
+ macro definition
+Content-Language: en-US
+To:     "liuxp11@chinatelecom.cn" <liuxp11@chinatelecom.cn>,
+        wim <wim@linux-watchdog.org>, Tzung-Bi Shih <tzungbi@kernel.org>
+Cc:     linux-watchdog <linux-watchdog@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+References: <1650957029-910-1-git-send-email-liuxp11@chinatelecom.cn>
+ <1650957029-910-5-git-send-email-liuxp11@chinatelecom.cn>
+ <9f991b4d-8f02-6c07-a8b6-2861837a0224@roeck-us.net>
+ <2022042616173226700718@chinatelecom.cn>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <2022042616173226700718@chinatelecom.cn>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+On 4/26/22 01:17, liuxp11@chinatelecom.cn wrote:
+>     On 4/26/22 00:10, Liu Xinpeng wrote:
+>      > Using SET_NOIRQ_SYSTEM_SLEEP_PM_OPS reduces redundant code.
+>      >
+>      > Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
+>      > Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
+>      > ---
+>      >   drivers/watchdog/iTCO_wdt.c | 12 ++++--------
+>      >   1 file changed, 4 insertions(+), 8 deletions(-)
+>      >
+>      > diff --git a/drivers/watchdog/iTCO_wdt.c b/drivers/watchdog/iTCO_wdt.c
+>      > index 3f2f4343644f..8d24cf4f4ca3 100644
+>      > --- a/drivers/watchdog/iTCO_wdt.c
+>      > +++ b/drivers/watchdog/iTCO_wdt.c
+>      > @@ -635,22 +635,18 @@ static int iTCO_wdt_resume_noirq(struct device *dev)
+>      >
+>      >   return 0;
+>      >   }
+>      > +#endif /* CONFIG_PM_SLEEP */
+>      >
+>      >   static const struct dev_pm_ops iTCO_wdt_pm = {
+>      > - .suspend_noirq = iTCO_wdt_suspend_noirq,
+>      > - .resume_noirq = iTCO_wdt_resume_noirq,
+>      > + SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(iTCO_wdt_suspend_noirq,
+>      > +       iTCO_wdt_resume_noirq)
+>      >   };
+>      >
+>      > -#define ITCO_WDT_PM_OPS (&iTCO_wdt_pm)
+>      > -#else
+>      > -#define ITCO_WDT_PM_OPS NULL
+>      > -#endif /* CONFIG_PM_SLEEP */
+>      > -
+>      >   static struct platform_driver iTCO_wdt_driver = {
+>      >   .probe          = iTCO_wdt_probe,
+>      >   .driver         = {
+>      >   .name   = DRV_NAME,
+>      > - .pm     = ITCO_WDT_PM_OPS,
+>      > + .pm     = &iTCO_wdt_pm,
+>      >   },
+>      >   };
+>      >
+>     Sorry, I fail to see how this is an improvement.
+> 
+>     Guenter
+>     --->
+>     #define NOIRQ_SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn) \
+>              .suspend_noirq = pm_sleep_ptr(suspend_fn), \
+>              .resume_noirq = pm_sleep_ptr(resume_fn), \
+>              .freeze_noirq = pm_sleep_ptr(suspend_fn), \
+>              .thaw_noirq = pm_sleep_ptr(resume_fn), \
+>              .poweroff_noirq = pm_sleep_ptr(suspend_fn), \
+>              .restore_noirq = pm_sleep_ptr(resume_fn),
+> 
+>     NOIRQ_SYSTEM_SLEEP_PM_OPS, defined for CONFIG_PM_SLEEP, will
+>       point ->suspend_noirq, ->freeze_noirq and ->poweroff_noirq to the same
+>       function. Vice versa happens for ->resume_noirq, ->thaw_noirq and ->restore_noirq.
+>       (commit 020af89a41c41fd2c92d0da524968dfaba6269f0)
+> 
+>     Some power management occasion needs freeze_noirq/thaw_noirq /poweroff_noirq /restore_noirq.
+> 
 
-commit aafa9f958342db36c17ac2a7f1b841032c96feb4 upstream.
+That isn't what the commit description and subject say. Change description
+and subject to describe what is actually done, use __maybe_unused instead
+of #ifdef as suggested, and do not invent Reviewed-by: tags.
 
-Before detecting the cable type on the dma bar, the driver should check
-whether the 'bmdma_addr' is zero, which means the adapter does not
-support DMA, otherwise we will get the following error:
+Also, this is an independent change, and should not be sent together
+with the other patches.
 
-[    5.146634] Bad IO access at port 0x1 (return inb(port))
-[    5.147206] WARNING: CPU: 2 PID: 303 at lib/iomap.c:44 ioread8+0x4a/0x60
-[    5.150856] RIP: 0010:ioread8+0x4a/0x60
-[    5.160238] Call Trace:
-[    5.160470]  <TASK>
-[    5.160674]  marvell_cable_detect+0x6e/0xc0 [pata_marvell]
-[    5.161728]  ata_eh_recover+0x3520/0x6cc0
-[    5.168075]  ata_do_eh+0x49/0x3c0
-
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/ata/pata_marvell.c |    2 ++
- 1 file changed, 2 insertions(+)
-
---- a/drivers/ata/pata_marvell.c
-+++ b/drivers/ata/pata_marvell.c
-@@ -82,6 +82,8 @@ static int marvell_cable_detect(struct a
- 	switch(ap->port_no)
- 	{
- 	case 0:
-+		if (!ap->ioaddr.bmdma_addr)
-+			return ATA_CBL_PATA_UNK;
- 		if (ioread8(ap->ioaddr.bmdma_addr + 1) & 1)
- 			return ATA_CBL_PATA40;
- 		return ATA_CBL_PATA80;
-
-
+Guenter
