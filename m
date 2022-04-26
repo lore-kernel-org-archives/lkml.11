@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8E83C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:32:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E12AC43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:32:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347745AbiDZJeD (ORCPT
+        id S1347845AbiDZJeX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:34:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54960 "EHLO
+        Tue, 26 Apr 2022 05:34:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347868AbiDZJGT (ORCPT
+        with ESMTP id S1347101AbiDZJFP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:06:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 889B2169413;
-        Tue, 26 Apr 2022 01:46:29 -0700 (PDT)
+        Tue, 26 Apr 2022 05:05:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD1B9FC41B;
+        Tue, 26 Apr 2022 01:44:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2057AB81CB3;
-        Tue, 26 Apr 2022 08:46:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8950EC385A0;
-        Tue, 26 Apr 2022 08:46:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E877D60EC3;
+        Tue, 26 Apr 2022 08:44:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06B6BC385AC;
+        Tue, 26 Apr 2022 08:44:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962786;
-        bh=rq5FHE9UfEIhmfpoeDO2X6VA78krI4zQucUGitHhanY=;
+        s=korg; t=1650962648;
+        bh=6XUd9kPN56YUg9VaXhuKM1HVFut7iIMOVAlX9l/yiZU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PpS5chCj2hzqkDCGtJFe+7wimUE4h3m0xjucToK8NUW3Tr+KIriCtJU1L1X11QFfa
-         IobXDFnq+6dVXeBtHVwK+KqPdfortIB7SpcA5fiObFVScE8A1+KRHsR0113Efdoh5b
-         1JBVIXsrbWexYltkBRGV+QhUCxVEmqS8plwm2uz8=
+        b=M5H3jVQc2c1TyJRBSrq9yVehUVszstYbHmlpQKzwRi4MXan04HEXXPl7/lunejNck
+         RADmnfg0zhXVrZ7B2m4rzKytE/+fqWa+duyXlAR/zJbnoo75s76NeJ+ynm+6sbwjqt
+         xsHc5tx6XvMuixiuhqRx4EL6jHaKTcTOMaM9bV/E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
-        Borislav Petkov <bp@suse.de>,
-        Michal Simek <michal.simek@xilinx.com>
-Subject: [PATCH 5.17 088/146] EDAC/synopsys: Read the error count from the correct register
-Date:   Tue, 26 Apr 2022 10:21:23 +0200
-Message-Id: <20220426081752.532823717@linuxfoundation.org>
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 042/146] net: mscc: ocelot: fix broken IP multicast flooding
+Date:   Tue, 26 Apr 2022 10:20:37 +0200
+Message-Id: <20220426081751.251746086@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -51,61 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-commit e2932d1f6f055b2af2114c7e64a26dc1b5593d0c upstream.
+[ Upstream commit 4cf35a2b627a020fe1a6b6fc7a6a12394644e474 ]
 
-Currently, the error count is read wrongly from the status register. Read
-the count from the proper error count register (ERRCNT).
+When the user runs:
+bridge link set dev $br_port mcast_flood on
 
-  [ bp: Massage. ]
+this command should affect not only L2 multicast, but also IPv4 and IPv6
+multicast.
 
-Fixes: b500b4a029d5 ("EDAC, synopsys: Add ECC support for ZynqMP DDR controller")
-Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Acked-by: Michal Simek <michal.simek@xilinx.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220414102813.4468-1-shubhrajyoti.datta@xilinx.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+In the Ocelot switch, unknown multicast gets flooded according to
+different PGIDs according to its type, and PGID_MC only handles L2
+multicast. Therefore, by leaving PGID_MCIPV4 and PGID_MCIPV6 at their
+default value of 0, unknown IP multicast traffic is never flooded.
+
+Fixes: 421741ea5672 ("net: mscc: ocelot: offload bridge port flags to device")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Link: https://lore.kernel.org/r/20220415151950.219660-1-vladimir.oltean@nxp.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/edac/synopsys_edac.c |   16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/mscc/ocelot.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/edac/synopsys_edac.c
-+++ b/drivers/edac/synopsys_edac.c
-@@ -164,6 +164,11 @@
- #define ECC_STAT_CECNT_SHIFT		8
- #define ECC_STAT_BITNUM_MASK		0x7F
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index fd3ceb74620d..a314040c1a6a 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -2508,6 +2508,8 @@ static void ocelot_port_set_mcast_flood(struct ocelot *ocelot, int port,
+ 		val = BIT(port);
  
-+/* ECC error count register definitions */
-+#define ECC_ERRCNT_UECNT_MASK		0xFFFF0000
-+#define ECC_ERRCNT_UECNT_SHIFT		16
-+#define ECC_ERRCNT_CECNT_MASK		0xFFFF
-+
- /* DDR QOS Interrupt register definitions */
- #define DDR_QOS_IRQ_STAT_OFST		0x20200
- #define DDR_QOSUE_MASK			0x4
-@@ -423,15 +428,16 @@ static int zynqmp_get_error_info(struct
- 	base = priv->baseaddr;
- 	p = &priv->stat;
+ 	ocelot_rmw_rix(ocelot, val, BIT(port), ANA_PGID_PGID, PGID_MC);
++	ocelot_rmw_rix(ocelot, val, BIT(port), ANA_PGID_PGID, PGID_MCIPV4);
++	ocelot_rmw_rix(ocelot, val, BIT(port), ANA_PGID_PGID, PGID_MCIPV6);
+ }
  
-+	regval = readl(base + ECC_ERRCNT_OFST);
-+	p->ce_cnt = regval & ECC_ERRCNT_CECNT_MASK;
-+	p->ue_cnt = (regval & ECC_ERRCNT_UECNT_MASK) >> ECC_ERRCNT_UECNT_SHIFT;
-+	if (!p->ce_cnt)
-+		goto ue_err;
-+
- 	regval = readl(base + ECC_STAT_OFST);
- 	if (!regval)
- 		return 1;
- 
--	p->ce_cnt = (regval & ECC_STAT_CECNT_MASK) >> ECC_STAT_CECNT_SHIFT;
--	p->ue_cnt = (regval & ECC_STAT_UECNT_MASK) >> ECC_STAT_UECNT_SHIFT;
--	if (!p->ce_cnt)
--		goto ue_err;
--
- 	p->ceinfo.bitpos = (regval & ECC_STAT_BITNUM_MASK);
- 
- 	regval = readl(base + ECC_CEADDR0_OFST);
+ static void ocelot_port_set_bcast_flood(struct ocelot *ocelot, int port,
+-- 
+2.35.1
+
 
 
