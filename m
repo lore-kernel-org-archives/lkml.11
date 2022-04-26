@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF20AC4167E
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:27:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8C48C3527D
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:27:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348008AbiDZJaN (ORCPT
+        id S1347462AbiDZJ1q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:30:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51282 "EHLO
+        Tue, 26 Apr 2022 05:27:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347645AbiDZJGA (ORCPT
+        with ESMTP id S1347175AbiDZJFS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:06:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9FBB15B95B;
-        Tue, 26 Apr 2022 01:45:13 -0700 (PDT)
+        Tue, 26 Apr 2022 05:05:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1528A7B138;
+        Tue, 26 Apr 2022 01:44:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 39B1B61344;
-        Tue, 26 Apr 2022 08:45:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D7FBC385A4;
-        Tue, 26 Apr 2022 08:45:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 70C0CB81A2F;
+        Tue, 26 Apr 2022 08:44:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6101C385A0;
+        Tue, 26 Apr 2022 08:44:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962712;
-        bh=Ppg4K5rXXT1fBHaPj0LOmFveIGcPWCF4xXq+qRCLGQU=;
+        s=korg; t=1650962651;
+        bh=YT0TQpCJuFryPx3YwctFYZLSB1ycbxSfcqaPeBl/pbI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RmySi+RxRHvUQEvwvBf2jFVyMc5imgwSf0U4P6/ALJOKtPr/DI26E8HrFmytO1W4s
-         GRrK0Gl4/60lJ5lYg2aMKPuoE9yh8Td/8Ap6FGFTxrc0HkQEfu/NpbkymyYVgctG1r
-         1sSjS7+5huGlyFIu1RLHj/GGx0WCR6CFYpNZd/l4=
+        b=lH+SQ90JYrKvWjRIUywAqgCZepPlVOxkN4UyHPSt3RYNlwLY2saStTSyy/gGtJkL+
+         0pTOLlVwZ8WfDOG+szr+AKGH/0jgf4iCCbwHidmH7v7IViZUaHaXsJXG7kQfkmu1vR
+         +S+yXCd8nsD2WlR6M/CHXzKeDVecz7GUy6cFaHaE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+cf4cf13056f85dec2c40@syzkaller.appspotmail.com,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 057/146] XArray: Disallow sibling entries of nodes
-Date:   Tue, 26 Apr 2022 10:20:52 +0200
-Message-Id: <20220426081751.671208688@linuxfoundation.org>
+        stable@vger.kernel.org, Tony Zhu <tony.zhu@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 016/146] dmaengine: idxd: fix device cleanup on disable
+Date:   Tue, 26 Apr 2022 10:20:11 +0200
+Message-Id: <20220426081750.522108976@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -51,58 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthew Wilcox (Oracle) <willy@infradead.org>
+From: Dave Jiang <dave.jiang@intel.com>
 
-[ Upstream commit 63b1898fffcd8bd81905b95104ecc52b45a97e21 ]
+[ Upstream commit 12e45e89556d7a532120f976081e9e7582addd2b ]
 
-There is a race between xas_split() and xas_load() which can result in
-the wrong page being returned, and thus data corruption.  Fortunately,
-it's hard to hit (syzbot took three months to find it) and often guarded
-with VM_BUG_ON().
+There are certain parts of WQ that needs to be cleaned up even after WQ is
+disabled during the device disable. Those are the unchangeable parts for a
+WQ when the device is still enabled. Move the cleanup outside of WQ state
+check. Remove idxd_wq_disable_cleanup() inside idxd_wq_device_reset_cleanup()
+since only the unchangeable parts need to be cleared.
 
-The anatomy of this race is:
-
-thread A			thread B
-order-9 page is stored at index 0x200
-				lookup of page at index 0x274
-page split starts
-				load of sibling entry at offset 9
-stores nodes at offsets 8-15
-				load of entry at offset 8
-
-The entry at offset 8 turns out to be a node, and so we descend into it,
-and load the page at index 0x234 instead of 0x274.  This is hard to fix
-on the split side; we could replace the entire node that contains the
-order-9 page instead of replacing the eight entries.  Fixing it on
-the lookup side is easier; just disallow sibling entries that point
-to nodes.  This cannot ever be a useful thing as the descent would not
-know the correct offset to use within the new node.
-
-The test suite continues to pass, but I have not added a new test for
-this bug.
-
-Reported-by: syzbot+cf4cf13056f85dec2c40@syzkaller.appspotmail.com
-Tested-by: syzbot+cf4cf13056f85dec2c40@syzkaller.appspotmail.com
-Fixes: 6b24ca4a1a8d ("mm: Use multi-index entries in the page cache")
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Fixes: 0f225705cf65 ("dmaengine: idxd: fix wq settings post wq disable")
+Reported-by: Tony Zhu <tony.zhu@intel.com>
+Tested-by: Tony Zhu <tony.zhu@intel.com>
+Signed-off-by: Dave Jiang <dave.jiang@intel.com>
+Link: https://lore.kernel.org/r/164919561905.1455025.13542366389944678346.stgit@djiang5-desk3.ch.intel.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/xarray.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/dma/idxd/device.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/lib/xarray.c b/lib/xarray.c
-index 88ca87435e3d..32e1669d5b64 100644
---- a/lib/xarray.c
-+++ b/lib/xarray.c
-@@ -207,6 +207,8 @@ static void *xas_descend(struct xa_state *xas, struct xa_node *node)
- 	if (xa_is_sibling(entry)) {
- 		offset = xa_to_sibling(entry);
- 		entry = xa_entry(xas->xa, node, offset);
-+		if (node->shift && xa_is_node(entry))
-+			entry = XA_RETRY_ENTRY;
- 	}
+diff --git a/drivers/dma/idxd/device.c b/drivers/dma/idxd/device.c
+index 3061fe857d69..5a0535a0f850 100644
+--- a/drivers/dma/idxd/device.c
++++ b/drivers/dma/idxd/device.c
+@@ -373,7 +373,6 @@ static void idxd_wq_device_reset_cleanup(struct idxd_wq *wq)
+ {
+ 	lockdep_assert_held(&wq->wq_lock);
  
- 	xas->xa_offset = offset;
+-	idxd_wq_disable_cleanup(wq);
+ 	wq->size = 0;
+ 	wq->group = NULL;
+ }
+@@ -701,9 +700,9 @@ static void idxd_device_wqs_clear_state(struct idxd_device *idxd)
+ 
+ 		if (wq->state == IDXD_WQ_ENABLED) {
+ 			idxd_wq_disable_cleanup(wq);
+-			idxd_wq_device_reset_cleanup(wq);
+ 			wq->state = IDXD_WQ_DISABLED;
+ 		}
++		idxd_wq_device_reset_cleanup(wq);
+ 	}
+ }
+ 
 -- 
 2.35.1
 
