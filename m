@@ -2,120 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE2BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 15:52:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F20AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 15:52:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352583AbiDZPxn (ORCPT
+        id S1352637AbiDZPz6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 11:53:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53104 "EHLO
+        Tue, 26 Apr 2022 11:55:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352552AbiDZPxd (ORCPT
+        with ESMTP id S1352633AbiDZPzz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 11:53:33 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34C3A1572F;
-        Tue, 26 Apr 2022 08:50:23 -0700 (PDT)
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23QEC92k013343;
-        Tue, 26 Apr 2022 15:50:00 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=KI5N6+PYpu61hG9fQctRxXILuP78+G0I85VQgAon75g=;
- b=X/5L4p4Gk3blHJrIdHi7kVjGjO8EXb1XcnFQ/Xk1HpQTVklYGRUDDSSrKsQtKomD4MOR
- jFMZ1k4JEupluPMhmebrk1DHGHXiHS90QcU1tUiGwmS4eSRP+1QBMLo83fEdp5z/2gzb
- KV5eQHBtUrvCufddMExtixgzou8RKil9w1Q++gpr33cGu66BmvY6rRdHvvw6xYnVwBi/
- A5j8Ui10lV3nRJfAEoTg6p085+6/7pL5XGf7h/9RCRc2j0vjhl1N61809l7utVKEcU93
- pWuu7qtPDlhRlVJvN+iHWAVAmg7EIp1QhCSis88siK/+sVtVUq0CBHQSL0CGtgp5ZDkW Vw== 
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fpj9rjb4p-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 26 Apr 2022 15:49:59 +0000
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23QFgQSA002403;
-        Tue, 26 Apr 2022 15:49:59 GMT
-Received: from b03cxnp08028.gho.boulder.ibm.com (b03cxnp08028.gho.boulder.ibm.com [9.17.130.20])
-        by ppma04dal.us.ibm.com with ESMTP id 3fm93a3fx9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 26 Apr 2022 15:49:58 +0000
-Received: from b03ledav005.gho.boulder.ibm.com (b03ledav005.gho.boulder.ibm.com [9.17.130.236])
-        by b03cxnp08028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23QFnvDb18809158
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 26 Apr 2022 15:49:57 GMT
-Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CB50ABE059;
-        Tue, 26 Apr 2022 15:49:57 +0000 (GMT)
-Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6324DBE061;
-        Tue, 26 Apr 2022 15:49:57 +0000 (GMT)
-Received: from v0005c16.aus.stglabs.ibm.com (unknown [9.211.82.59])
-        by b03ledav005.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Tue, 26 Apr 2022 15:49:57 +0000 (GMT)
-From:   Eddie James <eajames@linux.ibm.com>
-To:     linux-fsi@lists.ozlabs.org
-Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jdelvare@suse.com, linux@roeck-us.net, joel@jms.id.au,
-        jk@ozlabs.org, David.Laight@ACULAB.COM
-Subject: [PATCH v2 1/2] fsi: occ: Fix checksum failure mode
-Date:   Tue, 26 Apr 2022 10:49:55 -0500
-Message-Id: <20220426154956.27205-2-eajames@linux.ibm.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220426154956.27205-1-eajames@linux.ibm.com>
-References: <20220426154956.27205-1-eajames@linux.ibm.com>
+        Tue, 26 Apr 2022 11:55:55 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B68474DED;
+        Tue, 26 Apr 2022 08:52:47 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id b12so15844769plg.4;
+        Tue, 26 Apr 2022 08:52:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GC7DL53ai6k3NGlh2GS+CUKAHaq0iiM5lF16d5uI1v8=;
+        b=HjsRLxrVtAKkoXCItST1hFzeyRKLJdMwwGTDD1KhKkHSp9U9y5kpKCLSfd7wMxX0Wy
+         gPeOc0mTaTm5Wgz786M7UZjpZTkjdVxM+UA2cC/eAoZLDIAABa3MJVe1rm/kpv85TtgD
+         3oZfZ331K0YC8NS26H6THAeZKI/bq0FmOIuMAWtQOQs1ZTUm2a2PqBsD/TDYLB0Sxvoa
+         tLH13vv7DUIUcg5Tg+EPNKgtfxR4bIu28DcVgPUi7BuNd0vwHa57NFwbeOZNUtMjCDEN
+         AssUR8EWhtheGo9umFo7IiAMRrQztNiXtorp/cTgg6QiCcak3zOC5t8e7yz6FLJTkUrp
+         t6Gw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=GC7DL53ai6k3NGlh2GS+CUKAHaq0iiM5lF16d5uI1v8=;
+        b=z32zwswefSS/qE2NAqIcbqnaVzNH2Jzdi6YMEk+g/VzarrfLhcEWd4WjrB3s8cbBwN
+         WKenbNXgULY+zevf3doA0c/dxY4r9+kh+bIGt2AemaBm2auGZlSPGBTJP2ANIV/BvOIq
+         fnFfroLO8aKsgt8dbIn58IIDtV2myYuVF92UiVqKc3UynPGNrw4CFGIu5IGbHEgDpg6I
+         KKd/NobAzo0aNIUBV/Ra+ywORBo5MF01CM4p3FCrp5XRNeVvCKPUWD+patlo69nmhpPq
+         DdJdqH/nVVmD5YHunDsdt17uBhdl2zHooiRzOw/65Ku6ZcIxw1eoPiMvBBduMOGWcC4i
+         P0fg==
+X-Gm-Message-State: AOAM532ILt+iazsKAq6fqMBKK8TucdMybPWbY8Gk7cs9rpEeFdFk1exj
+        lgoD8LREgIOq3qiJ44+1PxI=
+X-Google-Smtp-Source: ABdhPJx1srVR9TBBVXc+NkJTALo2Bg9NrDLgeyjKGSuPMtZpd7O2FF5aF1WXzRnW91TsfavQDbZ3uw==
+X-Received: by 2002:a17:903:1248:b0:151:9708:d586 with SMTP id u8-20020a170903124800b001519708d586mr24057168plh.15.1650988366668;
+        Tue, 26 Apr 2022 08:52:46 -0700 (PDT)
+Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
+        by smtp.gmail.com with ESMTPSA id g10-20020a17090ace8a00b001cd4989ff64sm3515376pju.43.2022.04.26.08.52.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 08:52:45 -0700 (PDT)
+Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Cc:     linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Subject: [RFC PATCH] kbuild: call checksyscalls.sh and check-atomics.sh only if prerequisites change
+Date:   Wed, 27 Apr 2022 00:52:29 +0900
+Message-Id: <20220426155229.436681-1-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: d0Ps6vKalp90tN-sNaKjus9ifR3ytqQu
-X-Proofpoint-ORIG-GUID: d0Ps6vKalp90tN-sNaKjus9ifR3ytqQu
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-26_04,2022-04-26_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 lowpriorityscore=0
- suspectscore=0 malwarescore=0 mlxlogscore=999 spamscore=0 phishscore=0
- impostorscore=0 clxscore=1015 adultscore=0 bulkscore=0 priorityscore=1501
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2204260099
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Change the checksum errno to something different than the errno
-used for a bad SBE message. In addition, don't set the user's
-response length to the data length in this case, since it's not
-SBE FFDC.
+Currently, checksyscalls.sh and check-atomics.sh are executed
+unconditionally. Most developers will not modify the files being
+checked by those scripts and thus do not need to execute these again
+for each iterative make. Change Kbuild target so that those two
+scripts get executed only if the prerequisite are modified.
 
-Signed-off-by: Eddie James <eajames@linux.ibm.com>
+In order to implement this we:
+
+  1. use the if_change macro instead of cmd. c.f. [1]
+
+  2. create two dot files: scripts/.checksyscalls and
+  scripts/atomic/.check-atomics to keep track of whether the script
+  were already executed or not. Otherwise, the prerequisite would
+  always be considered as newer than the target (c.f. output "due to
+  target missing" of make V=2).
+
+  3. modify the CLEAN_FILES target of the root Makefile to removed the
+  two temporary dot files created in 2.
+
+We also added an additional dependency to include/linux/atomic/* for
+check-atomics.sh to make sure that the script gets executed again if
+the header are modified. check-atomics.sh already has a dependency
+toward include/generated/asm-offsets.h and so no additional
+dependencies were added.
+
+[1] https://www.kernel.org/doc/html/latest/kbuild/makefiles.html#command-change-detection
+
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 ---
- drivers/fsi/fsi-occ.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+Sending this as RFC because I am not an expert of Kbuild. The use of
+the dot files was my best shot at tackling this issue. Maybe there is
+a smarter way which I just missed?
 
-diff --git a/drivers/fsi/fsi-occ.c b/drivers/fsi/fsi-occ.c
-index c9cc75fbdfb9..3d04e8baecbb 100644
---- a/drivers/fsi/fsi-occ.c
-+++ b/drivers/fsi/fsi-occ.c
-@@ -246,7 +246,7 @@ static int occ_verify_checksum(struct occ *occ, struct occ_response *resp,
- 	if (checksum != checksum_resp) {
- 		dev_err(occ->dev, "Bad checksum: %04x!=%04x\n", checksum,
- 			checksum_resp);
--		return -EBADMSG;
-+		return -EBADE;
- 	}
+If I receive no comments for the next two weeks, I will resend this
+patch without the RFC tag.
+---
+ Kbuild   | 14 ++++++++------
+ Makefile |  3 ++-
+ 2 files changed, 10 insertions(+), 7 deletions(-)
+
+diff --git a/Kbuild b/Kbuild
+index fa441b98c9f6..d579f4971aa3 100644
+--- a/Kbuild
++++ b/Kbuild
+@@ -39,21 +39,23 @@ $(offsets-file): arch/$(SRCARCH)/kernel/asm-offsets.s FORCE
+ #####
+ # Check for missing system calls
  
- 	return 0;
-@@ -575,8 +575,11 @@ int fsi_occ_submit(struct device *dev, const void *request, size_t req_len,
- 	dev_dbg(dev, "resp_status=%02x resp_data_len=%d\n",
- 		resp->return_status, resp_data_length);
+-always-y += missing-syscalls
++always-y += scripts/.missing-syscalls
  
--	occ->client_response_size = resp_data_length + 7;
- 	rc = occ_verify_checksum(occ, resp, resp_data_length);
-+	if (rc)
-+		goto done;
-+
-+	occ->client_response_size = resp_data_length + 7;
+ quiet_cmd_syscalls = CALL    $<
+       cmd_syscalls = $(CONFIG_SHELL) $< $(CC) $(c_flags) $(missing_syscalls_flags)
  
-  done:
- 	*resp_len = occ->client_response_size;
+-missing-syscalls: scripts/checksyscalls.sh $(offsets-file) FORCE
+-	$(call cmd,syscalls)
++scripts/.missing-syscalls: scripts/checksyscalls.sh $(offsets-file) FORCE
++	$(call if_changed,syscalls)
++	@touch $@
+ 
+ #####
+ # Check atomic headers are up-to-date
+ 
+-always-y += old-atomics
++always-y += scripts/atomic/.old-atomics
+ 
+ quiet_cmd_atomics = CALL    $<
+       cmd_atomics = $(CONFIG_SHELL) $<
+ 
+-old-atomics: scripts/atomic/check-atomics.sh FORCE
+-	$(call cmd,atomics)
++scripts/atomic/.old-atomics: scripts/atomic/check-atomics.sh $(wildcard include/linux/atomic/*) FORCE
++	$(call if_changed,atomics)
++	@touch $@
+diff --git a/Makefile b/Makefile
+index fa5112a0ec1b..b18af9d4248a 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1483,7 +1483,8 @@ endif # CONFIG_MODULES
+ # Directories & files removed with 'make clean'
+ CLEAN_FILES += include/ksym vmlinux.symvers modules-only.symvers \
+ 	       modules.builtin modules.builtin.modinfo modules.nsdeps \
+-	       compile_commands.json .thinlto-cache
++	       compile_commands.json .thinlto-cache \
++	       scripts/.missing-syscalls scripts/atomic/.old-atomics
+ 
+ # Directories & files removed with 'make mrproper'
+ MRPROPER_FILES += include/config include/generated          \
 -- 
-2.27.0
+2.35.1
 
