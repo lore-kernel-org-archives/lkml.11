@@ -2,190 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F408C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 13:20:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AE64C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 13:21:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350852AbiDZNXb (ORCPT
+        id S1349979AbiDZNYU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 09:23:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50708 "EHLO
+        Tue, 26 Apr 2022 09:24:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350857AbiDZNXW (ORCPT
+        with ESMTP id S230226AbiDZNYR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 09:23:22 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 793C2193E2
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 06:20:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650979210; x=1682515210;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=1V0/3lCFUFvYH380s9fH3oZRP3EJgrr3lCquxLUB5Gk=;
-  b=aAjyljVbxdJRx/r+2usIbuyabAKxVzo8CLHU4ZfwXPzRLLezb2foEfXX
-   d7z9ftySVzcNoRWC/5kBQgovtRp23n1iTPpyxIxIgHjAobpsboYnreu8E
-   zxYqdGWm9T1XfsdFwxyi1OXRsWW5zzQOeZJDPv6mkyyCHw4FshzcQ6WTs
-   lxaNULxR+3iomtg+WJQz8fc3noexDbw/ZpCG4Zi9MJb9ViJbLcVPvdLKr
-   mWfVA5Qz7v3Q5WElNIixxNqOCHzwYdpVvlUJUlKWV7qVbbUHsTJWZCrsC
-   Pp7VMtzajg0BR31eZKw9onyIUEIIpAxwHmbULNHH2mUxzjC8o6POuH66B
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="264419775"
-X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
-   d="scan'208";a="264419775"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 06:19:55 -0700
-X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
-   d="scan'208";a="558306664"
-Received: from liuyujie-mobl.ccr.corp.intel.com ([10.249.168.137])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 06:19:53 -0700
-From:   Yujie Liu <yujie.liu@intel.com>
-To:     Philip Li <philip.li@intel.com>
-Cc:     lkp-devops@eclists.intel.com, Yujie Liu <yujie.liu@intel.com>,
-        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH lkp-cloud] spec/kbuild_bisect_queue: update kismet error id format and reproduce command
-Date:   Tue, 26 Apr 2022 21:19:51 +0800
-Message-Id: <20220426131951.2636-1-yujie.liu@intel.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 26 Apr 2022 09:24:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF0E12AE3B;
+        Tue, 26 Apr 2022 06:21:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5962EB81FD1;
+        Tue, 26 Apr 2022 13:21:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFFFDC385AA;
+        Tue, 26 Apr 2022 13:21:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650979266;
+        bh=hw2OdPlDK9lTbP803YMLGXahK+IAG253KwqouXqDKQk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mPJO7c2n3vKRvA7OW2hhQ7yai4/fgi7Cjw9hrsNJmo/upGtAJTW7IBO6nECxLczQp
+         2iUOFOgCp22fNi+7Bat2fCf8k1rNIbEfrNahaJb77pOhVHIFHjdCn7CJIpt9ILfGTH
+         GJJz34GqG2znqCh43Um1JwstiUo/vcxsbpZ8XevTVINYUdEdUG9uag+fH/pirDzEJm
+         Bv6BjVPoMwvIUGYO40dLy/QKRP+VdHejFfo3hQUbVaAdBSYWr2NJIAXkGu1OuH6zD6
+         TRl/3lhuvKMH9av4Eq8fIMgtNdKa9YnaKlSUcsheMTAU4vVbykC0zFzCRvhduKe86F
+         BwwMq69zrK8Qw==
+Date:   Tue, 26 Apr 2022 16:20:55 +0300
+From:   Mike Rapoport <rppt@kernel.org>
+To:     Martin Fernandez <martin.fernandez@eclypsium.com>
+Cc:     linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, linux-mm@kvack.org,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        ardb@kernel.org, dvhart@infradead.org, andy@infradead.org,
+        gregkh@linuxfoundation.org, rafael@kernel.org,
+        akpm@linux-foundation.org, daniel.gutson@eclypsium.com,
+        hughsient@gmail.com, alex.bazhaniuk@eclypsium.com,
+        alison.schofield@intel.com, keescook@chromium.org
+Subject: Re: [PATCH v7 1/8] mm/memblock: Tag memblocks with crypto
+ capabilities
+Message-ID: <Ymfxt/ccab3DQENo@kernel.org>
+References: <20220425171526.44925-1-martin.fernandez@eclypsium.com>
+ <20220425171526.44925-2-martin.fernandez@eclypsium.com>
+ <YmeM5fklUssR/74e@kernel.org>
+ <CAKgze5YwTD3neYjKNZzLz6DLWxpGPohGCDGT6oJn-KUdAxyCfg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKgze5YwTD3neYjKNZzLz6DLWxpGPohGCDGT6oJn-KUdAxyCfg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-$ rake spec-slow spec=3Dkbuild_bisect_kismet debug=3D1 code=3D1 C_ROOT=3D/h=
-ome/jenkins/rake-spec-test/kernel-tests
-start spec
+On Tue, Apr 26, 2022 at 09:59:04AM -0300, Martin Fernandez wrote:
+> On 4/26/22, Mike Rapoport <rppt@kernel.org> wrote:
+> > On Mon, Apr 25, 2022 at 02:15:19PM -0300, Martin Fernandez wrote:
+> >> Add the capability to mark regions of the memory memory_type able of
+> >> hardware memory encryption.
+> >>
+> >> Also add the capability to query if all regions of a memory node are
+> >> able to do hardware memory encryption to call it when initializing the
+> >> nodes. Warn the user if a node has both encryptable and
+> >> non-encryptable regions.
+> >>
+> >> Signed-off-by: Martin Fernandez <martin.fernandez@eclypsium.com>
+> >> ---
+> >>  include/linux/memblock.h |  5 ++++
+> >>  mm/memblock.c            | 62 ++++++++++++++++++++++++++++++++++++++++
+> >>  2 files changed, 67 insertions(+)
+> >>
+> >> diff --git a/include/linux/memblock.h b/include/linux/memblock.h
+> >> index 50ad19662a32..00c4f1a20335 100644
+> >> --- a/include/linux/memblock.h
+> >> +++ b/include/linux/memblock.h
+> >> @@ -40,6 +40,7 @@ extern unsigned long long max_possible_pfn;
+> >>   * via a driver, and never indicated in the firmware-provided memory map
+> >> as
+> >>   * system RAM. This corresponds to IORESOURCE_SYSRAM_DRIVER_MANAGED in
+> >> the
+> >>   * kernel resource tree.
+> >> + * @MEMBLOCK_CRYPTO_CAPABLE: capable of hardware encryption
+> >>   */
+> >>  enum memblock_flags {
+> >>  	MEMBLOCK_NONE		= 0x0,	/* No special request */
+> >> @@ -47,6 +48,7 @@ enum memblock_flags {
+> >>  	MEMBLOCK_MIRROR		= 0x2,	/* mirrored region */
+> >>  	MEMBLOCK_NOMAP		= 0x4,	/* don't add to kernel direct mapping */
+> >>  	MEMBLOCK_DRIVER_MANAGED = 0x8,	/* always detected via a driver */
+> >> +	MEMBLOCK_CRYPTO_CAPABLE = 0x10,	/* capable of hardware encryption */
+> >>  };
+> >>
+> >>  /**
+> >> @@ -120,6 +122,9 @@ int memblock_physmem_add(phys_addr_t base, phys_addr_t
+> >> size);
+> >>  void memblock_trim_memory(phys_addr_t align);
+> >>  bool memblock_overlaps_region(struct memblock_type *type,
+> >>  			      phys_addr_t base, phys_addr_t size);
+> >> +bool memblock_node_is_crypto_capable(int nid);
+> >> +int memblock_mark_crypto_capable(phys_addr_t base, phys_addr_t size);
+> >> +int memblock_clear_crypto_capable(phys_addr_t base, phys_addr_t size);
+> >>  int memblock_mark_hotplug(phys_addr_t base, phys_addr_t size);
+> >>  int memblock_clear_hotplug(phys_addr_t base, phys_addr_t size);
+> >>  int memblock_mark_mirror(phys_addr_t base, phys_addr_t size);
+> >> diff --git a/mm/memblock.c b/mm/memblock.c
+> >> index e4f03a6e8e56..fe62f81572e6 100644
+> >> --- a/mm/memblock.c
+> >> +++ b/mm/memblock.c
+> >> @@ -191,6 +191,40 @@ bool __init_memblock memblock_overlaps_region(struct
+> >> memblock_type *type,
+> >>  	return i < type->cnt;
+> >>  }
+> >>
+> >> +/**
+> >> + * memblock_node_is_crypto_capable - get if whole node is capable
+> >> + * of encryption
+> >> + * @nid: number of node
+> >> + *
+> >> + * Iterate over all memory memblock_type and find if all regions under
+> >> + * node @nid are capable of hardware encryption.
+> >> + *
+> >> + * Return:
+> >> + * true if every region in memory memblock_type is capable of
+> >
+> > I'd s/in memory memblock_type/in @nid
+> >
+> 
+> Good, thanks.
+> 
+> >> + * encryption, false otherwise.
+> >> + */
+> >> +bool __init_memblock memblock_node_is_crypto_capable(int nid)
+> >> +{
+> >> +	struct memblock_region *region;
+> >> +	int crypto_capables = 0;
+> >> +	int not_crypto_capables = 0;
+> >> +
+> >> +	for_each_mem_region(region) {
+> >> +		if (memblock_get_region_node(region) == nid) {
+> >> +			if (region->flags & MEMBLOCK_CRYPTO_CAPABLE)
+> >> +				crypto_capables++;
+> >> +			else
+> >> +				not_crypto_capables++;
+> >> +		}
+> >> +	}
+> >> +
+> >> +	if (crypto_capables > 0 && not_crypto_capables > 0)
+> >> +		pr_warn("Node %d has %d regions that are encryptable and %d regions
+> >> that aren't",
+> >> +			nid, not_crypto_capables, crypto_capables);
+> >> +
+> >> +	return not_crypto_capables == 0;
+> >
+> > This will return true for memoryless nodes as well. Do you mean to consider
+> > them as capable of encryption?
+> >
+> 
+> Not really, I didn't think about that to be honest. I don't think it's
+> a good idea to consider them as capable, right?
 
-/usr/bin/ruby2.5 -I/var/lib/gems/2.5.0/gems/rspec-support-3.11.0/lib:/var/l=
-ib/gems/2.5.0/gems/rspec-core-3.11.0/lib /var/lib/gems/2.5.0/gems/rspec-cor=
-e-3.11.0/exe/rspec --pattern spec/\*\*\{,/\*/\*\*\}/kbuild_bisect_kismet_sp=
-ec.rb --tag speed:slow
-Run options: include {:speed=3D>"slow"}
-/tmp/qa-20220426-21054-w5d450
-latest: Pulling from kbuild
-Digest: sha256:c1bc7056e6b210b81791496bf7987b64edfd12b4d300252edda8f54446c5=
-7334
-Status: Image is up to date for lkp-server:5000/kbuild:latest
-lkp-server:5000/kbuild:latest
-.
+I think capable of encryption would mean
 
-Finished in 57 minutes 34 seconds (files took 1.12 seconds to load)
-1 example, 0 failures
+	crypto_capables && !not_crypto_capables 
 
-the final content of report mail is:
-
-CC: kbuild-all@lists.01.org
-BCC: lkp@intel.com
-CC: linux-kernel@vger.kernel.org
-TO: Artur Rojek <contact@artur-rojek.eu>
-CC: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git =
-master
-head:   d615b5416f8a1afeb82d13b238f8152c572d59c0
-commit: 2c2b364fddd551f0da98953618e264c098dfa140 Input: joystick - add ADC =
-attached joystick driver.
-date:   1 year, 7 months ago
-:::::: branch date: 18 hours ago
-:::::: commit date: 1 year, 7 months ago
-reproduce:
-  download attached .config.gz and extract .config to linux source tree
-  run "make ARCH=3Dx86_64 olddefconfig"
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-kismet warnings: (new ones prefixed by >>)
->> WARNING: unmet direct dependencies detected, selectee: CONFIG_IIO_BUFFER=
-_CB, selector: CONFIG_JOYSTICK_ADC
-
-   WARNING: unmet direct dependencies detected for IIO_BUFFER_CB
-     Depends on [n]: IIO [=3Dy] && IIO_BUFFER [=3Dn]
-     Selected by [y]:
-     - JOYSTICK_ADC [=3Dy] && !UML && INPUT [=3Dy] && INPUT_JOYSTICK [=3Dy]=
- && IIO [=3Dy]
-
---
-0-DAY CI Kernel Test Service
-https://01.org/lkp
-
---RWj8+mpoThLpL0oB
-Content-Type: application/gzip
-Content-Disposition: attachment; filename=3D".config.gz"
-Content-Transfer-Encoding: base64
-...
-
-Link: https://jira.devtools.intel.com/browse/ZDAYCI-15410
-Signed-off-by: Yujie Liu <yujie.liu@intel.com>
----
- ...d-selectee:CONFIG_IIO_BUFFER_CB-selector:CONFIG_JOYSTICK_ADC | 1 +
- ...-udd-x86_64-CONFIG_IIO_BUFFER_CB-CONFIG_JOYSTICK_ADC-.config | 1 -
- spec/kbuild_bisect_queue/kbuild_bisect_kismet_spec.rb           | 2 +-
- 3 files changed, 2 insertions(+), 2 deletions(-)
- create mode 100644 spec/kbuild_bisect_queue/kbuild/bisect-queue/2c2b364fdd=
-d551f0da98953618e264c098dfa140:gcc-11:x86_64-allnoconfig/.reduce_errors/WAR=
-NING:unmet-direct-dependencies-detected-selectee:CONFIG_IIO_BUFFER_CB-selec=
-tor:CONFIG_JOYSTICK_ADC
- delete mode 100644 spec/kbuild_bisect_queue/kbuild/bisect-queue/2c2b364fdd=
-d551f0da98953618e264c098dfa140:gcc-11:x86_64-allnoconfig/.reduce_errors/x86=
-_64-CONFIG_IIO_BUFFER_CB-CONFIG_JOYSTICK_ADC-UNMET_ALARM-True-kismet-test-c=
-ases-udd-x86_64-CONFIG_IIO_BUFFER_CB-CONFIG_JOYSTICK_ADC-.config
-
-diff --git a/spec/kbuild_bisect_queue/kbuild/bisect-queue/2c2b364fddd551f0d=
-a98953618e264c098dfa140:gcc-11:x86_64-allnoconfig/.reduce_errors/WARNING:un=
-met-direct-dependencies-detected-selectee:CONFIG_IIO_BUFFER_CB-selector:CON=
-FIG_JOYSTICK_ADC b/spec/kbuild_bisect_queue/kbuild/bisect-queue/2c2b364fddd=
-551f0da98953618e264c098dfa140:gcc-11:x86_64-allnoconfig/.reduce_errors/WARN=
-ING:unmet-direct-dependencies-detected-selectee:CONFIG_IIO_BUFFER_CB-select=
-or:CONFIG_JOYSTICK_ADC
-new file mode 100644
-index 0000000..64e3ea7
---- /dev/null
-+++ b/spec/kbuild_bisect_queue/kbuild/bisect-queue/2c2b364fddd551f0da989536=
-18e264c098dfa140:gcc-11:x86_64-allnoconfig/.reduce_errors/WARNING:unmet-dir=
-ect-dependencies-detected-selectee:CONFIG_IIO_BUFFER_CB-selector:CONFIG_JOY=
-STICK_ADC
-@@ -0,0 +1 @@
-+WARNING: unmet direct dependencies detected, selectee: CONFIG_IIO_BUFFER_C=
-B, selector: CONFIG_JOYSTICK_ADC
-diff --git a/spec/kbuild_bisect_queue/kbuild/bisect-queue/2c2b364fddd551f0d=
-a98953618e264c098dfa140:gcc-11:x86_64-allnoconfig/.reduce_errors/x86_64-CON=
-FIG_IIO_BUFFER_CB-CONFIG_JOYSTICK_ADC-UNMET_ALARM-True-kismet-test-cases-ud=
-d-x86_64-CONFIG_IIO_BUFFER_CB-CONFIG_JOYSTICK_ADC-.config b/spec/kbuild_bis=
-ect_queue/kbuild/bisect-queue/2c2b364fddd551f0da98953618e264c098dfa140:gcc-=
-11:x86_64-allnoconfig/.reduce_errors/x86_64-CONFIG_IIO_BUFFER_CB-CONFIG_JOY=
-STICK_ADC-UNMET_ALARM-True-kismet-test-cases-udd-x86_64-CONFIG_IIO_BUFFER_C=
-B-CONFIG_JOYSTICK_ADC-.config
-deleted file mode 100644
-index ec7df3e..0000000
---- a/spec/kbuild_bisect_queue/kbuild/bisect-queue/2c2b364fddd551f0da989536=
-18e264c098dfa140:gcc-11:x86_64-allnoconfig/.reduce_errors/x86_64-CONFIG_IIO=
-_BUFFER_CB-CONFIG_JOYSTICK_ADC-UNMET_ALARM-True-kismet-test-cases-udd-x86_6=
-4-CONFIG_IIO_BUFFER_CB-CONFIG_JOYSTICK_ADC-.config
-+++ /dev/null
-@@ -1 +0,0 @@
--x86_64,CONFIG_IIO_BUFFER_CB,CONFIG_JOYSTICK_ADC,0,0,UNMET_ALARM,True,kisme=
-t-test-cases/udd-x86_64-CONFIG_IIO_BUFFER_CB-CONFIG_JOYSTICK_ADC-0-0.config=
-=0D
-diff --git a/spec/kbuild_bisect_queue/kbuild_bisect_kismet_spec.rb b/spec/k=
-build_bisect_queue/kbuild_bisect_kismet_spec.rb
-index 000233b..736bfc6 100644
---- a/spec/kbuild_bisect_queue/kbuild_bisect_kismet_spec.rb
-+++ b/spec/kbuild_bisect_queue/kbuild_bisect_kismet_spec.rb
-@@ -7,7 +7,7 @@ describe 'kbuild_worker', speed: 'slow' do
-                     commit: '2c2b364fddd551f0da98953618e264c098dfa140',
-                     first_bad_branch: 'linus/master',
-                     first_bad_commit: '2c2b364fddd551f0da98953618e264c098d=
-fa140',
--                    reproduce_command: 'kismet --linux-ksrc=3Dlinux -a=3Dx=
-86_64' }]
-+                    reproduce_command: 'make ARCH=3Dx86_64 olddefconfig' }]
-=20
-   define_kbuild_bisect_queue_spec('bisect_kismet', 'kbuild_bisect_queue', =
-test_options)
- end
---=20
-2.25.1
-
+-- 
+Sincerely yours,
+Mike.
