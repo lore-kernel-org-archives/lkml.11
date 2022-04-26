@@ -2,132 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDF48C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 18:16:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDFC3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 18:16:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351467AbiDZST3 (ORCPT
+        id S1353673AbiDZSTx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 14:19:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53708 "EHLO
+        Tue, 26 Apr 2022 14:19:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350866AbiDZSTX (ORCPT
+        with ESMTP id S1350866AbiDZSTt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 14:19:23 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F0E39137B
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 11:16:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650996975; x=1682532975;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=JW9g477eFo5T/YbxZ6fEAgD7lLOuo7kBu55PzoCbgHs=;
-  b=flZjjGfVqf/CNGu9/WF30IlVTpds0c+zeOkgw1+lCSVwcmix+6pDPsFu
-   50oi0EQCwE3DdSXB+oOeP1ADOr1E/edD+2Pagp3FFPXRn4F3txGyC2bny
-   gkkjR/lGcpLoDjimpnn+moZp+pmJBzAz3OEOvzMnNvA+m1sBmOFQ4mTVP
-   lJoMu72y4+0msaQug4LAGChki6TPR1IAS05L4NkhtFqkDPLh1fAUQx6ur
-   iCrh/aBtey7Xs5e9sW90mRkaHRVN7VMfRfy4AOuAzuUGBzpiFqrh743eY
-   /u5gOMAfTR2hrPU9laO41nbAopL8lIbj8pwS8EtTThE7Bjdroiwsio4n8
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="265484311"
-X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
-   d="scan'208";a="265484311"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 11:16:14 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
-   d="scan'208";a="617124827"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 26 Apr 2022 11:16:11 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1njPjP-0003so-Aj;
-        Tue, 26 Apr 2022 18:16:11 +0000
-Date:   Wed, 27 Apr 2022 02:15:30 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Qing Wang <wangqing@vivo.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        Wang Qing <wangqing@vivo.com>
-Subject: Re: [PATCH V2 2/2] arm64: Add complex scheduler level for arm64
-Message-ID: <202204270201.FkymxKhn-lkp@intel.com>
-References: <1650628289-67716-3-git-send-email-wangqing@vivo.com>
+        Tue, 26 Apr 2022 14:19:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4E74BCA0CF
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 11:16:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650997000;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fVgIa5VojhJQmFpaigVxKBbsCXWJBMH1RAn1ujk7PRM=;
+        b=Y/CAdBTN2Hicvj2JmArRC6JY6tMboGaTyDUzpSjPjrqMrviu6aOHYwuhwsLEQ1y0BDIl7K
+        JI1bLmAFN1G+s1nt5ruMKZ/wPw0xIfj4AMlNetNDp+CujmrJDKyuD2cA6H9StILRTzmlMI
+        NP16v1GBTH/3BupP1H33ryUx6vSLCCI=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-20-S3SjU1AaMBGxIfhhMs5uFA-1; Tue, 26 Apr 2022 14:16:39 -0400
+X-MC-Unique: S3SjU1AaMBGxIfhhMs5uFA-1
+Received: by mail-qt1-f200.google.com with SMTP id x10-20020ac8700a000000b002c3ef8fc44cso10457436qtm.8
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 11:16:38 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=fVgIa5VojhJQmFpaigVxKBbsCXWJBMH1RAn1ujk7PRM=;
+        b=VhdVDeVNRiDCTmSpvN5ZoEZkaKLWDy3zIaEpg4i2kr1hUJKi2t7phuxEHnJslogzN1
+         koHG2rCZoDfKipeleXqITbONYaLqrv1EQcGZKpnei2uNwYN7fZ3O88fxuM17+WHGE4NG
+         D3u8d+r5L/tUKCvPz5sKOCTgxA2aGL9yd0AalDrc8XwQR7AlwJHGJzBYhKbigx5hG2SG
+         SGM9UX9ceSfXEq/E2q2zrMLpHlhma7yfNVk+wbNeZzd/vmCPBwZ9DVYUcMO702FmRhb5
+         O5NJ5R2/BxGtHS2kw5nXCB2vIo5hOY98DvBV98KyE/DUBKNXvuuHOY4FVDdrhIQ0yG9x
+         +yXw==
+X-Gm-Message-State: AOAM533seT6w1zBe87tEQyHikkkkkdobKXV0ZdQv2Q2lk+3PVi4Lsyhr
+        gEiMc57BMJhr4J5ploLEVVH9sNm1US7UoxZzxJTsl50raRmJ20xMW3LsHBLdEeOIWjZbSEB4gPG
+        70p6n6PxROdGTv2yDSxSb1xWJ
+X-Received: by 2002:a37:8d46:0:b0:69e:6b77:f4c9 with SMTP id p67-20020a378d46000000b0069e6b77f4c9mr14005920qkd.96.1650996998485;
+        Tue, 26 Apr 2022 11:16:38 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzerrK0bIUs13gQCY8RmGVefmuG6cHRoTRh0nUnFq7Yi9W2qY/3jruZ+Z2t3dFRiI2Xbx2aAg==
+X-Received: by 2002:a37:8d46:0:b0:69e:6b77:f4c9 with SMTP id p67-20020a378d46000000b0069e6b77f4c9mr14005906qkd.96.1650996998279;
+        Tue, 26 Apr 2022 11:16:38 -0700 (PDT)
+Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id m4-20020ac85b04000000b002f363eccb2csm5954200qtw.89.2022.04.26.11.16.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Apr 2022 11:16:37 -0700 (PDT)
+Subject: Re: [PATCH] tty: n_gsm: return -EINVAL when adaption is not supported
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     jirislaby@kernel.org, nathan@kernel.org, ndesaulniers@google.com,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+References: <20220426120554.1120585-1-trix@redhat.com>
+ <Ymfhtv5b9M33AQuc@kroah.com>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <4789ae7a-64a2-566b-d445-b8433d3f867a@redhat.com>
+Date:   Tue, 26 Apr 2022 11:16:35 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1650628289-67716-3-git-send-email-wangqing@vivo.com>
+In-Reply-To: <Ymfhtv5b9M33AQuc@kroah.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Qing,
 
-Thank you for the patch! Yet something to improve:
+On 4/26/22 5:12 AM, Greg KH wrote:
+> On Tue, Apr 26, 2022 at 08:05:54AM -0400, Tom Rix wrote:
+>> The clang build fails with
+>> n_gsm.c:940:13: error: variable 'size' is used uninitialized whenever 'if' condition is false [-Werror,-Wsometimes-uninitialized]
+>>          } else if (dlci->adaption == 2) {
+>>                     ^~~~~~~~~~~~~~~~~~~
+>>
+>> The else should return an error, so return -EINVAL.
+>>
+>> Signed-off-by: Tom Rix <trix@redhat.com>
+> What commit id does this fix?  Any reason you didn't cc: the author of
+> the recent changes to this code?
+Sorry missed this part.
+> Is this the same issue that 0-day reported?
 
-[auto build test ERROR on arm64/for-next/core]
-[also build test ERROR on driver-core/driver-core-testing linus/master arm-perf/for-next/perf v5.18-rc4 next-20220422]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Maybe, it was part of next's update today.  Where is 0-day reported ?
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Qing-Wang/Add-complex-scheduler-level-for-arm64/20220422-201107
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-next/core
-config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20220427/202204270201.FkymxKhn-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 1cddcfdc3c683b393df1a5c9063252eb60e52818)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://github.com/intel-lab-lkp/linux/commit/3b18155ccd99fb790e719fa432366dfdb97ab57c
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Qing-Wang/Add-complex-scheduler-level-for-arm64/20220422-201107
-        git checkout 3b18155ccd99fb790e719fa432366dfdb97ab57c
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash
+Tom
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+>
+> thanks,
+>
+> greg k-h
+>
 
-All errors (new ones prefixed by >>):
-
->> arch/arm64/kernel/smp.c:752:4: error: use of undeclared identifier 'arm64_complex_mask'
-           { arm64_complex_mask, arm64_complex_flags, SD_INIT_NAME(CPL) },
-             ^
->> arch/arm64/kernel/smp.c:752:24: error: use of undeclared identifier 'arm64_complex_flags'
-           { arm64_complex_mask, arm64_complex_flags, SD_INIT_NAME(CPL) },
-                                 ^
-   2 errors generated.
-
-
-vim +/arm64_complex_mask +752 arch/arm64/kernel/smp.c
-
-   746	
-   747	static struct sched_domain_topology_level arm64_topology[] = {
-   748	#ifdef CONFIG_SCHED_SMT
-   749		{ cpu_smt_mask, cpu_smt_flags, SD_INIT_NAME(SMT) },
-   750	#endif
-   751	#ifdef CONFIG_SCHED_COMPLEX
- > 752		{ arm64_complex_mask, arm64_complex_flags, SD_INIT_NAME(CPL) },
-   753	#endif
-   754	#ifdef CONFIG_SCHED_CLUSTER
-   755		{ cpu_clustergroup_mask, cpu_cluster_flags, SD_INIT_NAME(CLS) },
-   756	#endif
-   757	#ifdef CONFIG_SCHED_MC
-   758		{ cpu_coregroup_mask, cpu_core_flags, SD_INIT_NAME(MC) },
-   759	#endif
-   760		{ cpu_cpu_mask, SD_INIT_NAME(DIE) },
-   761		{ NULL, },
-   762	};
-   763	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
