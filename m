@@ -2,142 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8D68C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 06:20:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABCA8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 06:22:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240387AbiDZGXf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 02:23:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34332 "EHLO
+        id S245061AbiDZGZl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 02:25:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245061AbiDZGXb (ORCPT
+        with ESMTP id S233942AbiDZGZi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 02:23:31 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2052.outbound.protection.outlook.com [40.107.243.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 926E1FA432;
-        Mon, 25 Apr 2022 23:20:21 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=V27yDkLUD/0qiqufsgYswpOwBb42bCEFcJlgPd3Sl2Xy3QpEU9WFD9wj6XKez+dMjHl+8yVQArZFkfjsQ/TLvoNCXY3UDOmJQ5O0fP6v/DLPX3dRmRBG6e68xA/KrmMM7vowoy0dGlCu3cPhqB64PzBRC/zoOWdSlwvVcJKPW0ppMz10lT9vL8lqOS361q4qS/t+3d9zUCuCC7nsHJjXZ+hInOhCDBgR+b5Kcdf1quby61l5bok23bMi3hBbPPIcsUNbYcB+M7g7Whbf/inic6yQHhJskORTErpX1Ysaq5b/JFBX2zpJyiXYerIZIJXQLGTze0cA623h4+3wWiQ+tg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=C6GvL43A/cMO4/OqFEJ/GXhg01b37CuZIDgh3vbCZKQ=;
- b=YqR1Yw4FRDUYixiBPzXFKfCghVMZMyEVDiuNYhkKM9NhhWSGQEOqmp9l3/rxqV9ji4inSZWnH0YjrTtISC4lOMcEbwpfCjpXe972w54JjZH8qtKhhsIu3GW8TGzB5giaUs3n69ySInjifswfUfFkt1rt2LjtU59PZqySwBncdso2DwCCazdQ6876e8VCQ9ssTXFflgXhsWX+rjGjyFtMHFO+s7xy0t2fznQbh54Dgaa4Kggpc44/TFABlKjIWuq4HKxNBG5ePRLSZCVHLXW7OgecPkPe6hzFdffGmoAal5v1GY+em1/OOx0wxFtao3KD8Er54ajUhJPvUCJStCFJpA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=C6GvL43A/cMO4/OqFEJ/GXhg01b37CuZIDgh3vbCZKQ=;
- b=qoRAMUypfSbo7MPBDGFmBc+515I9gtAwmto3n9pTNT8xOHUAIJY6GSPwu+S7MsjUcFxYSqvW7sXMP4zNioG4mTM1MKp0xWMxayAyfvY9BWg2AvccbXTdNnSG4OLcL7ZN5MQ6inVwai9RXrPMKAoJs4gSNrFEEDeppBuxGouj3etuo136zJzSf/FnyPl48rh7ea71l3OaNxhyzPE1FEXOMg6uYxNoj44wQG0C+Ljcn/JdzJegLlqJeKl31BevbfsrM14YfbM73V6kvnQmQZoSDfzWdfVpFnf0JPyTEix4DJ9w49lqQb+Wf5x0yb4YmkH8G7UIhxI6+9wlVYUxYTSkVw==
-Received: from MW2PR12MB4667.namprd12.prod.outlook.com (2603:10b6:302:12::28)
- by BY5PR12MB3668.namprd12.prod.outlook.com (2603:10b6:a03:194::25) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.13; Tue, 26 Apr
- 2022 06:20:19 +0000
-Received: from MW2PR12MB4667.namprd12.prod.outlook.com
- ([fe80::a90b:9df2:370c:e76b]) by MW2PR12MB4667.namprd12.prod.outlook.com
- ([fe80::a90b:9df2:370c:e76b%3]) with mapi id 15.20.5186.021; Tue, 26 Apr 2022
- 06:20:19 +0000
-From:   Chaitanya Kulkarni <chaitanyak@nvidia.com>
-To:     Yu Kuai <yukuai3@huawei.com>
-CC:     "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "shinichiro.kawasaki@wdc.com" <shinichiro.kawasaki@wdc.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        "yi.zhang@huawei.com" <yi.zhang@huawei.com>,
-        "chaitanya.kulkarni@wdc.com" <chaitanya.kulkarni@wdc.com>
-Subject: Re: [PATCH] null-blk: save memory footprint for struct nullb_cmd
-Thread-Topic: [PATCH] null-blk: save memory footprint for struct nullb_cmd
-Thread-Index: AQHYWRJfc6q9UMjEXESR9nddsnwuda0BuUKA
-Date:   Tue, 26 Apr 2022 06:20:19 +0000
-Message-ID: <3662c725-a919-443a-9ab8-dc536cb5c03b@nvidia.com>
-References: <20220426022133.3999006-1-yukuai3@huawei.com>
-In-Reply-To: <20220426022133.3999006-1-yukuai3@huawei.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d31eb8cd-af42-4417-033f-08da274cd69c
-x-ms-traffictypediagnostic: BY5PR12MB3668:EE_
-x-microsoft-antispam-prvs: <BY5PR12MB36686390C781FBCDBBCC67CBA3FB9@BY5PR12MB3668.namprd12.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: O9nR23tPeNHsHxdlNFImiMXzCcou5w51sdOUxB+TLXh3mPuhetShgpRqM/hRP2wOhDUVOEBkpKc5gfjy9vrR6+sXw0AdRSPk1NsW0Oi4k0ADk57jfJAz4t+IY31uH5K+sxVAaRX1o3yXRa29uaEL+760QVfUeYzACpalHlZ+sgeZI7OPgiH2oJvwVl4GK8S8Dhsvliw7lEmgSU7vcNiMc4buZ75fk6TzFxEdW2raS5ofgOAGUKi3LOkvkkA/pBdpQTdGfg1CWvFogjDGQkyq5zYr2taZEx0fmYBLX+pR1sTW6QExbktj67mOohKdtbC/9EXwkULd8NrdVFP9GeTMjNhCNfQGfvEu8ETb9a9pbIvDYXmF0tg8RzF+HzSLtNE4lJ7tKrVPEG6uDtA1czajYjIWCrt8IK3Tu/lFAgZBygS8FyCf6oBcJnZAIiNJbyd5JoJhEPXWUQsT2USCDuUawzsTUB/eoyS7ot/sMou9e4GZQjq9Ech6tELOl1oNzpglbfB3RMrgsHq5V7Qp5sU12tAtZQ08pUHFoJeOHbHebII/CbCMqoOTeRg6qI0gKqU3mChvtiUWUkzC9JqNieYmo31kIhfnCEA54NeOF7ooX6hrNTDqJ0uRTsO18Y/fY/oj6hfZ0QGckXD0BxKp7EK4/4YVmeL2jTy5IDl+OKBJvSSGpzwB2DRgT8XxLrTc5sKZsGl7qfXVGevEbv2SwWymkvCLU7ebLZ5prjVNavVKW+pRSacOJVyD5KlE0aMRLxHttUQkp4Rd4nljPy84wW5Epg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW2PR12MB4667.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(54906003)(5660300002)(122000001)(36756003)(38070700005)(66446008)(2906002)(316002)(2616005)(4744005)(38100700002)(6916009)(31686004)(4326008)(8676002)(66946007)(91956017)(66476007)(76116006)(66556008)(186003)(64756008)(86362001)(53546011)(31696002)(6512007)(71200400001)(8936002)(6486002)(508600001)(6506007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 2
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?c3l2V2J0czBOeWNpZ1k3YUFvV1I1dHNST0I5NklLS3lSSi9Kb09CNUh4aDFj?=
- =?utf-8?B?elBmQzVHMlJKeGczUkJ3d1ZWVk9MYW9COUxlQmE2NHJpL052WWhYNkdiNkx4?=
- =?utf-8?B?OWtqcGFBU245ZS8wWWVSSEFuZld4WmVzR1NpZk5ndE11Mmx5ck1OYjl0bmVs?=
- =?utf-8?B?dkJFM2d0Q2dRc2lSdTlGY0FBMlZBdHdzRHFoVnhxV2RaZm1KM1dVbzIrQWc4?=
- =?utf-8?B?RkxGVVNpQUxyL2R4REoxZVlEQmpzK2VLOE1tVVZPZSs4Vmdvb1liM1FxNXFy?=
- =?utf-8?B?UCtjMURCQlVVSkFqNnVCYWx1Ry9VVXFTUWtSSnRpTXY3NDlLdVJkTjEyT091?=
- =?utf-8?B?TTlrZDZQbWI1WGx6MmptRXJ1S1dsa0E0S1kxMG0vSDFSNlNkV2lnQXlKWUhC?=
- =?utf-8?B?RnJMTmhoVUw4ck53UmZ6dVZRRC9EREhCbEFXQzhzOUhJbUZrYWFQLzNMNHV1?=
- =?utf-8?B?dlh6OHFHTi9wTUQvL1NwZ2l6NWZmT1BaRUZXdk93RXhGM2FKNlF6OXpTeXJx?=
- =?utf-8?B?ZTlkanIyOUNiUVFJcjNUOFlEWjMrRmxSdFhqN0lEd0NUVy9vazdnY0pHUGNs?=
- =?utf-8?B?eThwUGVuQURaLzJsMzJNbVorLzFJMXZ0UEh3b3M1RDkrRG1XV3hIL1FUQnRJ?=
- =?utf-8?B?aS9QdFM3OUVTWUd0SjR4L0gxaEdxZ1Z5cXRNaEhwMEUxWFEyNDd4aW56U0lo?=
- =?utf-8?B?RDBmblI2d2htZ1BzdHg2b24wZDc0M1Y3dFdTcjhsTWRHdEZsRnZkRFRaWVlC?=
- =?utf-8?B?dEFTL08ybG9DbUhmU3RkTUZFNXlaSVVrNG9QY08vOUE0S2dHZjBlN3k1b2hL?=
- =?utf-8?B?ZjVxUGlsOWZheUQwQzdSZkwvamp2bjlXQTQzWE9EVnRPdHlxc2EramY0cno2?=
- =?utf-8?B?M1A4Vy9QQlROOHFMMUtsNnYzQnFjdzZ6NTZRR2Qxa0RjcGVtcWgyYVNNUkQz?=
- =?utf-8?B?MjZJdUJLb2IvYmtqQXlPSkRjUnZLajlJYjdEZ21ISnRNam40QVZZS1k0RWQ4?=
- =?utf-8?B?M25ISEp3dzM4Vi95WnA3YXc2M2dlOUE5c0dma250WUtCeCtWeVN1cjAyN1ow?=
- =?utf-8?B?ZVIrZVJrUFBSb1hJMDRacU0wYnRNbmxEMTBwS0NPclFza2FPNTdkUGpCUnA5?=
- =?utf-8?B?RkkxRjZXWDAxdkJpNkQ5SG0rUVYraVljUFlRU0JUMmpteGQrS2FUNEJ5ZjRI?=
- =?utf-8?B?ZHk1ZDVoKzRFT0gxRTUrRHZ2ZmdpOEs4bXAwM0ZmNmtPNVhiTG8xOGIzcUFs?=
- =?utf-8?B?b0RCUkFPZXRXNzJ1U0RMYjFvZDFPenZ0U1BhQzFJdkJueUpuMy8wSXJjUVh6?=
- =?utf-8?B?K0pZMHpXMU53b0lQbTRYMjBOVlVjSjRKdW1Ya0RSN1lkTER0RlVqNFJ4c05k?=
- =?utf-8?B?ZkMzVkd6UVJVRnNNdjYxRFhHZlZaaWJrcWpLR0FNZGJDVzVtdmRxUFBsRzhy?=
- =?utf-8?B?T2o3UVVsUmh6WGl2Z0VhMWNyS2Z0bHZDb0dPQjBOQ1NOditCVnlZRy9Ra2lU?=
- =?utf-8?B?OGtLdDdGbzV1VjZ5OUFETG4rYjBGbk1pNGxwMExtYlVJWTFZbUUwQUNrRlcy?=
- =?utf-8?B?a2pFM2taYUkzcjFiTStINTJHeTBveDB0bUlMczRYV2docy85VXJaUXlLTlpK?=
- =?utf-8?B?N0srRkpRUGNzWUZTOUpJcytISGNINzhheUJLRkRmRkNJQkVtVXdrRElEKzUz?=
- =?utf-8?B?eEVSL3lPN1ZMZ0NsVzFMTkJQOUFSeEI0ekRJblB4akxDTXhMeityTU9wV0xw?=
- =?utf-8?B?UjBraktUbWxwVFV0bk9aQmhIdnZEWHFLNUVJckgrS1ZOS0lKVU11NGdpUnhx?=
- =?utf-8?B?T2haMTFBdnFqdE5XYVhHbXlDTFFXb1FEMXZ0c2xQcGtVblNTTUQwbjhpck0z?=
- =?utf-8?B?bzZHMFJrdHllWFAvVU1RY21GTnd5YW5mN05MMExjYjBJL3ZDODI0NFNaMDlL?=
- =?utf-8?B?R0VoK3dsQjFtRDM5aFYzeGVESGxVRXBrN2ZEV0pHeXRDVXJjNmNrZUhDaDdK?=
- =?utf-8?B?U2N2NkVyMEZTRXdieVlkRG1Ea3VQRjhIWXQ5OGZCdFpxVTlFcmVVWDJaemo0?=
- =?utf-8?B?c1Fyc1dJTk1ta2VZUVBNQmhkUktsVmUvbE9VbnRwY3crb0FZeVNCKzI0Zkw2?=
- =?utf-8?B?Mm40eUc0dFh0cXZLMHZORjJQeUx6eVN1UjFlVG9SWEZRRFhtVEVvdlNDdFlD?=
- =?utf-8?B?K3JLRTdvQW90QmpIUzh3Zk1SNDdaT05MYnRqS2JYNHljVFNMVnVYSFUzaXd4?=
- =?utf-8?B?UmU3WlBpdXkwanJZREtOWkgvL212N0krRjgxbm9zenI4dlNLQWtodmlsc0xh?=
- =?utf-8?B?ZVdvRS9pdGs5WWFRTUQxaHVoM0dtejMvQVhVbUJlRmtOc0JuU0hJOEJheWlm?=
- =?utf-8?Q?3EcnGL7DKaV9UvfvSQ3MHeRwDsVxu/QIej40qfjtXBqFG?=
-x-ms-exchange-antispam-messagedata-1: MFpWTHkfKQujpQ==
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <07D3DCD14D575343AA02B3D670EBF5D0@namprd12.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        Tue, 26 Apr 2022 02:25:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C69E81229E3
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 23:22:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 62A7F612D1
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 06:22:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C050AC385A4
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 06:22:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650954150;
+        bh=GrOAZVVQ/R3qESFmB6K9j+YKkA1RomF1reYz1F8tQ1c=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=vRiwGaJcIYAp4A9L5NVO2Sr01XH/RAu89Cp29Al/eSRhVrFBOGTIIkbUzg5Wx2U8x
+         qgBQ3iWrQKhPcaSgJcv9wvsCK1+h9p9qnZVbgO2c5Vy3kf9wfh/MEFlkZl124BH0hZ
+         z44FeyAQ/jc4pZcbuk3KsJOb9Jh6erVsE9fRhXgkZImJvxb9aXURn5l3LJJYQ4L8Bn
+         gLhRhDGJj3RmiSpWqGUa+en1V5mHSgq2LtgP0Hc7EeWlp8/gOSOOoHD3ev2oSCY2Zu
+         7oOJhr7hrNjjyCkQIUAXZ34bytR2mQHI9XDLl+1IzENXUsisfNcBsRX+RuE6Rw0YXu
+         S+PoKe06X9D0Q==
+Received: by mail-vs1-f52.google.com with SMTP id d2so9495117vsd.12
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 23:22:30 -0700 (PDT)
+X-Gm-Message-State: AOAM532dXzTRHBBbg3nevwlaPRRbLYFZAXuZE1UxB+jSLterlj3/L4nA
+        v5EnDYJVejfU5p79yMtH+R3ptNhRED3sYCkOQqc=
+X-Google-Smtp-Source: ABdhPJxHM08tDWKEqh3dfn41b7uQsUekJkJTEgUx6ZJGzh9kexwGAqDOrHpx93X8d/uQE0QcgAMW5+M3iuIkTRQgy1M=
+X-Received: by 2002:a05:6102:150f:b0:32c:e4f2:77b4 with SMTP id
+ f15-20020a056102150f00b0032ce4f277b4mr442485vsv.51.1650954149754; Mon, 25 Apr
+ 2022 23:22:29 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MW2PR12MB4667.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d31eb8cd-af42-4417-033f-08da274cd69c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Apr 2022 06:20:19.7267
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: kkxXsmrBBBFft2KgkKhJbjcmJlGGwrIBz4HrFuQgv9iOmy6NlYqGnwmTUCdISpYi2Oo8oxwknVVNDtIrAqcFVw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3668
+References: <20220426015751.88582-1-lihuafei1@huawei.com>
+In-Reply-To: <20220426015751.88582-1-lihuafei1@huawei.com>
+From:   Guo Ren <guoren@kernel.org>
+Date:   Tue, 26 Apr 2022 14:22:18 +0800
+X-Gmail-Original-Message-ID: <CAJF2gTR6hL1DfaGpPqfVwtmCHaVYK1nz_-W-h_mye34UjeeAcg@mail.gmail.com>
+Message-ID: <CAJF2gTR6hL1DfaGpPqfVwtmCHaVYK1nz_-W-h_mye34UjeeAcg@mail.gmail.com>
+Subject: Re: [PATCH 1/2] riscv: ftrace: Fix the comments about the number of
+ ftrace instruction
+To:     Li Huafei <lihuafei1@huawei.com>
+Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        David Miller <davem@davemloft.net>, jszhang@kernel.org,
+        Peter Zijlstra <peterz@infradead.org>, liaochang1@huawei.com,
+        =?UTF-8?Q?Patrick_St=C3=A4hlin?= <me@packi.ch>,
+        Pekka Enberg <penberg@kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gNC8yNS8yMiAxOToyMSwgWXUgS3VhaSB3cm90ZToNCj4gVG90YWwgMTYgYnl0ZXMgY2FuIGJl
-IHNhdmVkIGluIHR3byB3YXlzOg0KPiANCj4gMSkgVGhlIGZpZWxkICdiaW8nIHdpbGwgb25seSBi
-ZSB1c2VkIGluIGJpbyBiYXNlZCBtb2RlLCBhbmQgdGhlIGZpZWxkDQo+ICAgICAncnEnIHdpbGwg
-b25seSBiZSB1c2VkIGluIG1xIG1vZGUuIFNpbmNlIHRoZXkgd29uJ3QgYmUgdXNlZCBpbiB0aGUN
-Cj4gICAgIHNhbWUgdGltZSwgZGVjbGFyZSBhIHVuaW9uIGZvciB0aGVtLg0KPiAyKSBUaGUgZmll
-bGQgJ2Jvb2wgZmFrZV90aW1lb3V0JyBjYW4gYmUgcGxhY2VkIGluIHRoZSBob2xlIGFmdGVyIHRo
-ZQ0KPiAgICAgZmllbGQgJ2Vycm9yJy4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IFl1IEt1YWkgPHl1
-a3VhaTNAaHVhd2VpLmNvbT4NCj4gLS0tDQoNCg0KTG9va3MgZ29vZC4NCg0KUmV2aWV3ZWQtYnk6
-IENoYWl0YW55YSBLdWxrYXJuaSA8a2NoQG52aWRpYS5jb20+DQoNCi1jaw0KDQoNCg==
+On Tue, Apr 26, 2022 at 9:59 AM Li Huafei <lihuafei1@huawei.com> wrote:
+>
+> When DYNAMIC_FTRACE is enabled, we put four instructions in front of the
+> function for ftrace use, not five.
+>
+> Signed-off-by: Li Huafei <lihuafei1@huawei.com>
+> ---
+>  arch/riscv/kernel/ftrace.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/arch/riscv/kernel/ftrace.c b/arch/riscv/kernel/ftrace.c
+> index 4716f4cdc038..63f457650fa4 100644
+> --- a/arch/riscv/kernel/ftrace.c
+> +++ b/arch/riscv/kernel/ftrace.c
+> @@ -73,7 +73,7 @@ static int __ftrace_modify_call(unsigned long hook_pos, unsigned long target,
+>  }
+>
+>  /*
+> - * Put 5 instructions with 16 bytes at the front of function within
+> + * Put 4 instructions with 16 bytes at the front of function within
+Yeah, 5 instructions are for mcount, -fpatchable-function-entry=8
+cause 8 16bit instructions.
+
+Fixes: afc76b8b8011 ("riscv: Using PATCHABLE_FUNCTION_ENTRY instead of MCOUNT")
+
+I recommend just delete "4 instructions with"
+- * Put 5 instructions with 16 bytes at the front of function within
+- * patchable function entry nops' area.
++ * Put 16 bytes at the front of the function within the patchable
++ * function entry nops' area.
+
+>   * patchable function entry nops' area.
+>   *
+>   * 0: REG_S  ra, -SZREG(sp)
+> --
+> 2.17.1
+>
+
+
+-- 
+Best Regards
+ Guo Ren
+
+ML: https://lore.kernel.org/linux-csky/
