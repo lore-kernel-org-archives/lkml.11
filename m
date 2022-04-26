@@ -2,101 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98F86C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 17:36:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EBACC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 17:38:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351257AbiDZRkB (ORCPT
+        id S1351687AbiDZRlE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 13:40:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42604 "EHLO
+        Tue, 26 Apr 2022 13:41:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232694AbiDZRj7 (ORCPT
+        with ESMTP id S232694AbiDZRlA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 13:39:59 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E88EAB53E8;
-        Tue, 26 Apr 2022 10:36:51 -0700 (PDT)
+        Tue, 26 Apr 2022 13:41:00 -0400
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF6FD12D95D
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 10:37:50 -0700 (PDT)
+Received: by mail-yb1-xb2d.google.com with SMTP id d12so15059043ybc.4
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 10:37:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650994611; x=1682530611;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=LfeU+qR1LVCLWLHBR/AmkPZiH2YFo20bzm5nVGPB3CI=;
-  b=jMhV7g5itxKnp+Qufeya3OFLGqUSH/1uf1qGIXgqERqGBBPCYvJ0a6Zz
-   bkrOk9TBvefTEow2nSWqcaT6sDBdSxm636aI8+NSuUlbKc/0koh0Illpl
-   cfRX4MFycnfuXKNRSa0YB0EP0g/7CqigNSeZOEjxnZntw8dMTPsq0y3v7
-   I=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 26 Apr 2022 10:36:51 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 10:36:51 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 26 Apr 2022 10:36:50 -0700
-Received: from [10.111.160.161] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 26 Apr
- 2022 10:36:47 -0700
-Message-ID: <244db806-7afc-e8e9-a855-c592e0af8c44@quicinc.com>
-Date:   Tue, 26 Apr 2022 10:36:45 -0700
+        d=eclypsium.com; s=google;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc;
+        bh=tH/YgBif6d6yzwmumvRLfWV+AljH646yqRcC2C5Xmag=;
+        b=El35gwLQGL+3kGJERF8gp0inRfDgb8jqvTTV/IGHhywPc7DF/bR5K5hk5LRBmn1uqL
+         vGL5Go4qrIdBIKDY8qV3+z0bU1A1YLWT/DGoTiV8/NEKbUTdllXwl4YUrLR5cDoSNiix
+         5BzO3+o/yqTvkpGlQY7PjxOnAsG7WJJcl0Gcbc1k0C4vcro8NNETJPFo+773PN0ej84I
+         tAcTq/yj0TWaXXih9rfMtTD+Cza2WtiLwjJjP25UximL75DGVuC/RNDWBH753+8WnBvl
+         Ed7gzIkSgtuYjGN5NS5T+PNWhUGjiUbr2uPDA3lVTxp+/SiawFEhTZJTa5VOUnz4toOV
+         yGpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to:cc;
+        bh=tH/YgBif6d6yzwmumvRLfWV+AljH646yqRcC2C5Xmag=;
+        b=X7zLYSAZT/EWjar5F7vHkh0PQNWor2PadgrhsxRwZrk7DViT6N0hNT1PGx2bSV3+KC
+         hF1yiElziM6uvwudj7uw9NbuLOvNmcnhYKI0YOdjaK46mUXgVQkO4+EwnvzQPqOWmiR+
+         0p/qXaDJMeph878wrAInClqjHVJSYKbmNhgUl7LZymr19f5KC98fFL3mOgypCNYDHAgz
+         7UdXZ6NbfDQaJSN+a/UzUbguU1LzItCgPN1n/5pyOQKa1VbHJ+nNfKwK6969ggRhGtdZ
+         C1kn5NtdJelqhLVgoSpFO+hpe9MAKbgt7RRJlYU3qtbr1dqT0Gfb6DTddiFK9HdhFa3Y
+         5AWw==
+X-Gm-Message-State: AOAM531UpEh0NL0a69etk5S/i/ibNs9iADwGgeVvy+w/SS8ZjXqdisnZ
+        7DwvdgNvjn1N8TFlhvKstANYw1YrVLGrx7GT1shZOA==
+X-Google-Smtp-Source: ABdhPJz1HJ1Wqfc/OMXGlEWodjJTdhl+j6KWkOff8Bx0FMZco18xRQS2BiQyyC+zw/RofYtnfxABe28XP3iE3H3aNyo=
+X-Received: by 2002:a05:6902:150c:b0:648:94be:2c7e with SMTP id
+ q12-20020a056902150c00b0064894be2c7emr7100545ybu.601.1650994670167; Tue, 26
+ Apr 2022 10:37:50 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH v2] drm/msm/dp: remove fail safe mode related code
-Content-Language: en-US
-To:     Stephen Boyd <swboyd@chromium.org>,
-        Kuogee Hsieh <quic_khsieh@quicinc.com>, <agross@kernel.org>,
-        <airlied@linux.ie>, <bjorn.andersson@linaro.org>,
-        <daniel@ffwll.ch>, <dmitry.baryshkov@linaro.org>,
-        <robdclark@gmail.com>, <sean@poorly.run>, <vkoul@kernel.org>
-CC:     <quic_aravindh@quicinc.com>, <quic_sbillaka@quicinc.com>,
-        <freedreno@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <1650952595-27783-1-git-send-email-quic_khsieh@quicinc.com>
- <CAE-0n53kv+NPJ-4Cpjy_FeJT5xOo7fLNz24fyGUcjy6ucccjbQ@mail.gmail.com>
-From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
-In-Reply-To: <CAE-0n53kv+NPJ-4Cpjy_FeJT5xOo7fLNz24fyGUcjy6ucccjbQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Received: by 2002:a81:10a:0:0:0:0:0 with HTTP; Tue, 26 Apr 2022 10:37:49 -0700 (PDT)
+In-Reply-To: <a02186b9-b72c-1484-2973-c59272ae0a7e@intel.com>
+References: <20220425171526.44925-1-martin.fernandez@eclypsium.com>
+ <20220425171526.44925-6-martin.fernandez@eclypsium.com> <a02186b9-b72c-1484-2973-c59272ae0a7e@intel.com>
+From:   Martin Fernandez <martin.fernandez@eclypsium.com>
+Date:   Tue, 26 Apr 2022 14:37:49 -0300
+Message-ID: <CAKgze5Y1bKUAqPHEY71y_puTmuV2K02qjt0qzwO-KA3SYio0Tw@mail.gmail.com>
+Subject: Re: [PATCH v7 5/8] x86/e820: Refactor e820__range_remove
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, linux-mm@kvack.org,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        ardb@kernel.org, dvhart@infradead.org, andy@infradead.org,
+        gregkh@linuxfoundation.org, rafael@kernel.org, rppt@kernel.org,
+        akpm@linux-foundation.org, daniel.gutson@eclypsium.com,
+        hughsient@gmail.com, alex.bazhaniuk@eclypsium.com,
+        alison.schofield@intel.com, keescook@chromium.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 4/26/22, Dave Hansen <dave.hansen@intel.com> wrote:
+> On 4/25/22 10:15, Martin Fernandez wrote:
+>> +/**
+>> + * e820__range_remove() - Remove an address range from e820_table.
+>> + * @start: Start of the address range.
+>> + * @size: Size of the address range.
+>> + * @old_type: Type of the entries that we want to remove.
+>> + * @check_type: Bool to decide if ignore @old_type or not.
+>> + *
+>> + * Remove [@start, @start + @size) from e820_table. If @check_type is
+>> + * true remove only entries with type @old_type.
+>> + *
+>> + * Return: The size removed.
+>> + */
+>
+> The refactoring looks promising.  But, there's a *LOT* of kerneldoc
+> noise, like:
+>
+>> + * @table: Target e820_table.
+>> + * @start: Start of the range.
+>> + * @size: Size of the range.
+>
+> and this:
+>
+>> + * struct e820_type_updater_data - Helper type for
+>> + * __e820__range_update().
+>> + * @old_type: old_type parameter of __e820__range_update().
+>> + * @new_type: new_type parameter of __e820__range_update().
+>
+> Those are just a pure waste of bytes.  I suspect some more judicious
+> function comments would also make the diffstat look more palatable.
+>
 
+I can get rid off of the kerneldocs and just put normal comments for some
+functions that really need them.
 
-On 4/25/2022 11:00 PM, Stephen Boyd wrote:
-> Quoting Kuogee Hsieh (2022-04-25 22:56:35)
->> Current DP driver implementation has adding safe mode done at
->> dp_hpd_plug_handle() which is expected to be executed under event
->> thread context.
->>
->> However there is possible circular locking happen (see blow stack trace)
->> after edp driver call dp_hpd_plug_handle() from dp_bridge_enable() which
->> is executed under drm_thread context.
->>
->> After review all possibilities methods and as discussed on
->> https://patchwork.freedesktop.org/patch/483155/, supporting EDID
->> compliance tests in the driver is quite hacky. As seen with other
->> vendor drivers, supporting these will be much easier with IGT. Hence
->> removing all the related fail safe code for it so that no possibility
->> of circular lock will happen.
-> [...]
->>
->> Changes in v2:
->> -- re text commit title
->> -- remove all fail safe mode
->>
->> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-> 
-> Should add some Fixes tags here, probably for the first introduction of
-> this logic and the one that moved stuff around to try to avoid the
-> lockdep warning.
+> Also, in general, the naming is a bit verbose.  You might want to trim
+> some of those names down, like:
+>
+>> +static bool __init crypto_updater__should_update(const struct e820_entry
+>> *entry,
+>> +						 const void *data)
+>> +{
+>> +	const struct e820_crypto_updater_data *crypto_updater_data =
+>> +		(const struct e820_crypto_updater_data *)data;
+>
 
-Fixes: 8b2c181 ("drm/msm/dp: add fail safe mode outside of event_mutex 
-context")
+Yes I agree on this. Do you have any suggestions for these kind of
+functions? I want to explicitly state that these functions are in some of
+namespace and are different of the other ones.
+
+In the end I don't think this is very harmful since these functions are one-time
+used (in a single place), is not the case that you have to use them everywhere..
+
+> Those are just some high-level comments.  This also needs some really
+> careful review of the refactoring to make sure that it doesn't break any
+> of the existing e820 users.
+>
+
+I'm glad to hear more people's thoughts on this. Thanks for the feedback.
