@@ -2,109 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 479BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 04:10:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EC9BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 04:12:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241515AbiDZEN0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 00:13:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36204 "EHLO
+        id S244000AbiDZEPD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 00:15:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243948AbiDZENW (ORCPT
+        with ESMTP id S233578AbiDZEO5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 00:13:22 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F18761080;
-        Mon, 25 Apr 2022 21:10:15 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KnT1P2SRFzhYqg;
-        Tue, 26 Apr 2022 12:10:01 +0800 (CST)
-Received: from [10.67.110.173] (10.67.110.173) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Apr 2022 12:10:13 +0800
-Message-ID: <853635d6-9e74-c3dc-f6dc-d4166616c8e5@huawei.com>
-Date:   Tue, 26 Apr 2022 12:10:13 +0800
+        Tue, 26 Apr 2022 00:14:57 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E4AB17E0D;
+        Mon, 25 Apr 2022 21:11:51 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id z5-20020a17090a468500b001d2bc2743c4so1410415pjf.0;
+        Mon, 25 Apr 2022 21:11:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=OWU8+twW9giLtmk/iNr6dFXjwBEnrNERsI1cDtyJELo=;
+        b=Pb0oKk+f0UKZsOhdIYj46gfTuzMy/j62lRgTH5APFo6G4hNDveMIzNLZEDNBrjgw8F
+         B9PcEgueZ+19RK3ihQ7pUkUpTwvv5l6WQ0nBgzyATC4Cvpgi1tmD2qr4Un4LTm9nd5Tb
+         s8JuPGhBRe4CGJ2W25I3ygjozjWXHCAI3knPwMf8Rd/WQVSuZtYLPr1fZMscloCTSwz9
+         9wS26K5CTtROqmiMOyqi1g4VM98l1Dcm7BCv7su6FWd4daoPNcSrlh/PhNUZgWdba2sb
+         ayQp28wb6H68ZE/CqZ2oNslfOIl2YiW9Ggx9v8VUoUdSNDeg6w3E39nNMv/Jw4+M32vq
+         awYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=OWU8+twW9giLtmk/iNr6dFXjwBEnrNERsI1cDtyJELo=;
+        b=gPYb3qygOSnffzM9Mo/QLD5Zc1fIyhZi9/01AO4YRlhG40lzjAXjIg69cheDZXKOu8
+         Qg8dUkxhWvH+LMtO45lK29prZTVQuQAqVlS07AHCLt4s1KU0kVgOHVETEakH0eln2Q3K
+         bu8q1tnXtoBQRl1hqbsGXmJ2GtXMmoutbwZKIYYUWNcsOT4O1SQexyBCcsGB9pr38BTP
+         kBbAiavFBxvMfwSe77QA4RMGWtieHqw+6e0in70A4Yh+W9UJE92STdyq8rLcR5DB85Ew
+         0Yp7ggn48uKEeMj2/80jyruxfAwd+FF1FAl0fBZmJmxS7+FavPW4WoqMozGPM9PvVqLB
+         F0bQ==
+X-Gm-Message-State: AOAM533hBYq1APPGfodApDgcIRJbYiX5kq28+WZ9DDRgOdQd/572tCgz
+        MGVrn48W6HXQY9D/w+otzsc=
+X-Google-Smtp-Source: ABdhPJwO4XEQSwlpF2K+qcWKLQEIuOQgGeS0iZE1F9fQMv7DaI3Nih8dmbnu7D+9NuKLa8lGdjJDQg==
+X-Received: by 2002:a17:90b:4c85:b0:1d4:bc0b:90eb with SMTP id my5-20020a17090b4c8500b001d4bc0b90ebmr24607284pjb.171.1650946311004;
+        Mon, 25 Apr 2022 21:11:51 -0700 (PDT)
+Received: from MBP-98dd607d3435.dhcp.thefacebook.com ([2620:10d:c090:400::5:438a])
+        by smtp.gmail.com with ESMTPSA id p27-20020a056a000a1b00b004f3f63e3cf2sm14932823pfh.58.2022.04.25.21.11.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Apr 2022 21:11:50 -0700 (PDT)
+Date:   Mon, 25 Apr 2022 21:11:47 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [RFC bpf-next v4 3/7] error-inject: add new type that carries if
+ the function is non sleepable
+Message-ID: <20220426041147.gwnxhcjftl2kaz6g@MBP-98dd607d3435.dhcp.thefacebook.com>
+References: <20220421140740.459558-1-benjamin.tissoires@redhat.com>
+ <20220421140740.459558-4-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: How to list keys used for kexec
-Content-Language: en-US
-To:     =?UTF-8?Q?Michal_Such=c3=a1nek?= <msuchanek@suse.de>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>
-References: <20220414175930.GM163591@kunlun.suse.cz>
-From:   "Guozihua (Scott)" <guozihua@huawei.com>
-In-Reply-To: <20220414175930.GM163591@kunlun.suse.cz>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.110.173]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500024.china.huawei.com (7.185.36.203)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220421140740.459558-4-benjamin.tissoires@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/15 1:59, Michal Suchánek wrote:
-> Hello,
+On Thu, Apr 21, 2022 at 04:07:36PM +0200, Benjamin Tissoires wrote:
+> When using error-injection function through bpf to change the return
+> code, we need to know if the function is sleepable or not.
 > 
-> apparently modules are verified by keys from 'secondary' keyring on all
-> platforms.
+> Currently the code assumes that all error-inject functions are sleepable,
+> except for a few selected of them, hardcoded in kernel/bpf/verifier.c
 > 
-> If you happen to know that it's this particular keyring, and know how
-> to list keyrings recursively you can find the keys that are used for
-> verifying modules.
+> Add a new flag to error-inject so we can code that information where the
+> function is declared.
 > 
-> However, for kexec we have
+> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 > 
->   - primary keyring on aarch64
->   - platform keyring on s390
->   - secondary AND platform keyring on x86
+> ---
 > 
-> How is a user supposed to know which keys are used for kexec image
-> verification?
-> 
-> There is an implicit keyring that is ad-hoc constructed by the code that
-> does the kexec verification but there is no key list observable from
-> userspace that corresponds to this ad-hoc keyring only known to the kexec
-> code.
-> 
-> Can the kernel make the information which keys are used for what purpose
-> available to the user?
-> 
-> Thanks
-> 
-> Michal
-> 
-> .
+> new in v4:
+> - another approach would be to define a new kfunc_set, and register
+>   it with btf. But in that case, what program type would we use?
+>   BPF_PROG_TYPE_UNSPEC?
+> - also note that maybe we should consider all of the functions
+>   non-sleepable and only mark some as sleepable. IMO it makes more
+>   sense to be more restrictive by default.
 
-Hi Michal
+I think the approach in this patch is fine.
+We didn't have issues with check_non_sleepable_error_inject() so far,
+so I wouldn't start refactoring it.
 
-I'll try my best to understand and answer your question.
+> ---
+>  include/asm-generic/error-injection.h |  1 +
+>  kernel/bpf/verifier.c                 | 10 ++++++++--
+>  lib/error-inject.c                    |  2 ++
+>  3 files changed, 11 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/asm-generic/error-injection.h b/include/asm-generic/error-injection.h
+> index fbca56bd9cbc..5974942353a6 100644
+> --- a/include/asm-generic/error-injection.h
+> +++ b/include/asm-generic/error-injection.h
+> @@ -9,6 +9,7 @@ enum {
+>  	EI_ETYPE_ERRNO,		/* Return -ERRNO if failure */
+>  	EI_ETYPE_ERRNO_NULL,	/* Return -ERRNO or NULL if failure */
+>  	EI_ETYPE_TRUE,		/* Return true if failure */
+> +	EI_ETYPE_NS_ERRNO,	/* Return -ERRNO if failure and tag the function as non-sleepable */
 
-First of all, the "key" you mentioned here is actually certificate. And 
-there are no way for the kernel to know "which certificate is used for 
-what purpose" but to get a hint from the certificate's extension, if 
-they exist. However, the extension only points out what this certificate 
-should be used for, but not exactly what it is actually used for.
+>  };
+>  
+>  struct error_injection_entry {
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 0f339f9058f3..45c8feea6478 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -14085,6 +14085,11 @@ static int check_non_sleepable_error_inject(u32 btf_id)
+>  	return btf_id_set_contains(&btf_non_sleepable_error_inject, btf_id);
+>  }
+>  
+> +static int is_non_sleepable_error_inject(unsigned long addr)
+> +{
+> +	return get_injectable_error_type(addr) == EI_ETYPE_NS_ERRNO;
 
-Secondly, the verification process requires the module (kernel image in 
-this question) to contain information on which certificate should be 
-used to verify itself. The signature provided by the module is in PKCS#7 
-format which contains a list of certificates for the verifier to 
-construct a "chain of trust". Each certificates contains information 
-pointing to the certificate of it's issuer, and eventually to one of the 
-certificate stored in one of the keyrings you mentioned.
+It's a linear search. Probably ok. But would be good to double check
+that we're not calling it a lot.
 
-All in all, certificates in these keyrings you mentioned can be used for 
-various purpose, and it's the responsibility for the modules being 
-verified to provide information stating which certificate should be used 
-for verification. Thus, the best way to find out which key is used for 
-kexec is to look at key used to sign the kernel image.
-
--- 
-Best
-GUO Zihua
+> +}
+> +
+>  int bpf_check_attach_target(struct bpf_verifier_log *log,
+>  			    const struct bpf_prog *prog,
+>  			    const struct bpf_prog *tgt_prog,
+> @@ -14281,8 +14286,9 @@ int bpf_check_attach_target(struct bpf_verifier_log *log,
+>  				/* fentry/fexit/fmod_ret progs can be sleepable only if they are
+>  				 * attached to ALLOW_ERROR_INJECTION and are not in denylist.
+>  				 */
+> -				if (!check_non_sleepable_error_inject(btf_id) &&
+> -				    within_error_injection_list(addr))
+> +				if (within_error_injection_list(addr) &&
+> +				    !check_non_sleepable_error_inject(btf_id) &&
+> +				    !is_non_sleepable_error_inject(addr))
+>  					ret = 0;
+>  				break;
+>  			case BPF_PROG_TYPE_LSM:
+> diff --git a/lib/error-inject.c b/lib/error-inject.c
+> index 2ff5ef689d72..560c3b18f439 100644
+> --- a/lib/error-inject.c
+> +++ b/lib/error-inject.c
+> @@ -183,6 +183,8 @@ static const char *error_type_string(int etype)
+>  		return "ERRNO_NULL";
+>  	case EI_ETYPE_TRUE:
+>  		return "TRUE";
+> +	case EI_ETYPE_NS_ERRNO:
+> +		return "NS_ERRNO";
+>  	default:
+>  		return "(unknown)";
+>  	}
+> -- 
+> 2.35.1
+> 
