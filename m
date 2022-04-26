@@ -2,219 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68209C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 12:54:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86B0BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 12:55:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350277AbiDZM6D (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 08:58:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57162 "EHLO
+        id S244153AbiDZM6H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 08:58:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350266AbiDZM4q (ORCPT
+        with ESMTP id S1350247AbiDZM5o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 08:56:46 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7023117D48D;
-        Tue, 26 Apr 2022 05:53:38 -0700 (PDT)
-Received: from kwepemi100023.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KnhdJ1r9yzhYmK;
-        Tue, 26 Apr 2022 20:53:24 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- kwepemi100023.china.huawei.com (7.221.188.59) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Apr 2022 20:53:36 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
- (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
+        Tue, 26 Apr 2022 08:57:44 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B7BF17D4BD;
+        Tue, 26 Apr 2022 05:54:36 -0700 (PDT)
+Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KnhYQ336PzCsMD;
+        Tue, 26 Apr 2022 20:50:02 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by dggpeml500020.china.huawei.com
+ (7.185.36.88) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 26 Apr
- 2022 20:53:35 +0800
-From:   Yu Kuai <yukuai3@huawei.com>
-To:     <josef@toxicpanda.com>, <axboe@kernel.dk>, <ming.lei@redhat.com>
-CC:     <linux-block@vger.kernel.org>, <nbd@other.debian.org>,
-        <linux-kernel@vger.kernel.org>, <yukuai3@huawei.com>,
-        <yi.zhang@huawei.com>
-Subject: [PATCH -next 6/6] nbd: use pr_err to output error message
-Date:   Tue, 26 Apr 2022 21:07:46 +0800
-Message-ID: <20220426130746.885140-7-yukuai3@huawei.com>
+ 2022 20:54:33 +0800
+From:   Baokun Li <libaokun1@huawei.com>
+To:     <linux-ext4@vger.kernel.org>
+CC:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>, <jack@suse.cz>,
+        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>,
+        <yebin10@huawei.com>, <yukuai3@huawei.com>, <libaokun1@huawei.com>,
+        <stable@vger.kernel.org>, Hulk Robot <hulkci@huawei.com>
+Subject: [PATCH] ext4: fix race condition between ext4_write and ext4_convert_inline_data
+Date:   Tue, 26 Apr 2022 21:08:47 +0800
+Message-ID: <20220426130847.885833-1-libaokun1@huawei.com>
 X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220426130746.885140-1-yukuai3@huawei.com>
-References: <20220426130746.885140-1-yukuai3@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
 X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600009.china.huawei.com (7.193.23.164)
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpeml500020.china.huawei.com (7.185.36.88)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of using the long printk(KERN_ERR "nbd: ...") to
-output error message, defining pr_fmt and using
-the short pr_err("") to do that. The replacemen is done
-by using the following command:
+Hulk Robot reported a BUG_ON:
+ ==================================================================
+ EXT4-fs error (device loop3): ext4_mb_generate_buddy:805: group 0,
+ block bitmap and bg descriptor inconsistent: 25 vs 31513 free clusters
+ kernel BUG at fs/ext4/ext4_jbd2.c:53!
+ invalid opcode: 0000 [#1] SMP KASAN PTI
+ CPU: 0 PID: 25371 Comm: syz-executor.3 Not tainted 5.10.0+ #1
+ RIP: 0010:ext4_put_nojournal fs/ext4/ext4_jbd2.c:53 [inline]
+ RIP: 0010:__ext4_journal_stop+0x10e/0x110 fs/ext4/ext4_jbd2.c:116
+ [...]
+ Call Trace:
+  ext4_write_inline_data_end+0x59a/0x730 fs/ext4/inline.c:795
+  generic_perform_write+0x279/0x3c0 mm/filemap.c:3344
+  ext4_buffered_write_iter+0x2e3/0x3d0 fs/ext4/file.c:270
+  ext4_file_write_iter+0x30a/0x11c0 fs/ext4/file.c:520
+  do_iter_readv_writev+0x339/0x3c0 fs/read_write.c:732
+  do_iter_write+0x107/0x430 fs/read_write.c:861
+  vfs_writev fs/read_write.c:934 [inline]
+  do_pwritev+0x1e5/0x380 fs/read_write.c:1031
+ [...]
+ ==================================================================
 
-  sed -i 's/printk(KERN_ERR "nbd: /pr_err("/g' \
-		  drivers/block/nbd.c
+Above issue may happen as follows:
+           cpu1                     cpu2
+__________________________|__________________________
+do_pwritev
+ vfs_writev
+  do_iter_write
+   ext4_file_write_iter
+    ext4_buffered_write_iter
+     generic_perform_write
+      ext4_da_write_begin
+                           vfs_fallocate
+                            ext4_fallocate
+                             ext4_convert_inline_data
+                              ext4_convert_inline_data_nolock
+                               ext4_destroy_inline_data_nolock
+                                clear EXT4_STATE_MAY_INLINE_DATA
+                               ext4_map_blocks
+                                ext4_ext_map_blocks
+                                 ext4_mb_new_blocks
+                                  ext4_mb_regular_allocator
+                                   ext4_mb_good_group_nolock
+                                    ext4_mb_init_group
+                                     ext4_mb_init_cache
+                                      ext4_mb_generate_buddy  --> error
+       ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA)
+                                ext4_restore_inline_data
+                                 set EXT4_STATE_MAY_INLINE_DATA
+       ext4_block_write_begin
+      ext4_da_write_end
+       ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA)
+       ext4_write_inline_data_end
+        handle=NULL
+        ext4_journal_stop(handle)
+         __ext4_journal_stop
+          ext4_put_nojournal(handle)
+           ref_cnt = (unsigned long)handle
+           BUG_ON(ref_cnt == 0)  ---> BUG_ON
 
-Signed-off-by: Hou Tao <houtao1@huawei.com>
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+The lock held by ext4_convert_inline_data is xattr_sem, but the lock
+held by generic_perform_write is i_rwsem. Therefore, the two locks can
+be concurrent. To solve above issue, we just add inode_lock in
+ext4_convert_inline_data.
+
+Fixes: 0c8d414f163f ("ext4: let fallocate handle inline data correctly")
+Cc: stable@vger.kernel.org
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
 ---
- drivers/block/nbd.c | 36 ++++++++++++++++++------------------
- 1 file changed, 18 insertions(+), 18 deletions(-)
+ fs/ext4/inline.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
-index 566aabcaff51..8d15a9d929c7 100644
---- a/drivers/block/nbd.c
-+++ b/drivers/block/nbd.c
-@@ -1930,16 +1930,16 @@ static int nbd_genl_connect(struct sk_buff *skb, struct genl_info *info)
- 		 * MKDEV() expect that the max bits of first_minor is 20.
- 		 */
- 		if (index < 0 || index > MINORMASK >> part_shift) {
--			printk(KERN_ERR "nbd: illegal input index %d\n", index);
-+			pr_err("illegal input index %d\n", index);
- 			return -EINVAL;
- 		}
- 	}
- 	if (!info->attrs[NBD_ATTR_SOCKETS]) {
--		printk(KERN_ERR "nbd: must specify at least one socket\n");
-+		pr_err("must specify at least one socket\n");
- 		return -EINVAL;
- 	}
- 	if (!info->attrs[NBD_ATTR_SIZE_BYTES]) {
--		printk(KERN_ERR "nbd: must specify a size in bytes for the device\n");
-+		pr_err("must specify a size in bytes for the device\n");
- 		return -EINVAL;
- 	}
- again:
-@@ -1975,7 +1975,7 @@ static int nbd_genl_connect(struct sk_buff *skb, struct genl_info *info)
- 		nbd_put(nbd);
- 		if (index == -1)
- 			goto again;
--		printk(KERN_ERR "nbd: nbd%d already in use\n", index);
-+		pr_err("nbd%d already in use\n", index);
- 		return -EBUSY;
- 	}
- 	if (WARN_ON(nbd->config)) {
-@@ -1987,7 +1987,7 @@ static int nbd_genl_connect(struct sk_buff *skb, struct genl_info *info)
- 	if (IS_ERR(config)) {
- 		mutex_unlock(&nbd->config_lock);
- 		nbd_put(nbd);
--		printk(KERN_ERR "nbd: couldn't allocate config\n");
-+		pr_err("couldn't allocate config\n");
- 		return PTR_ERR(config);
- 	}
- 	nbd->config = config;
-@@ -2043,7 +2043,7 @@ static int nbd_genl_connect(struct sk_buff *skb, struct genl_info *info)
- 			struct nlattr *socks[NBD_SOCK_MAX+1];
- 
- 			if (nla_type(attr) != NBD_SOCK_ITEM) {
--				printk(KERN_ERR "nbd: socks must be embedded in a SOCK_ITEM attr\n");
-+				pr_err("socks must be embedded in a SOCK_ITEM attr\n");
- 				ret = -EINVAL;
- 				goto out;
- 			}
-@@ -2052,7 +2052,7 @@ static int nbd_genl_connect(struct sk_buff *skb, struct genl_info *info)
- 							  nbd_sock_policy,
- 							  info->extack);
- 			if (ret != 0) {
--				printk(KERN_ERR "nbd: error processing sock list\n");
-+				pr_err("error processing sock list\n");
- 				ret = -EINVAL;
- 				goto out;
- 			}
-@@ -2123,7 +2123,7 @@ static int nbd_genl_disconnect(struct sk_buff *skb, struct genl_info *info)
- 		return -EPERM;
- 
- 	if (!info->attrs[NBD_ATTR_INDEX]) {
--		printk(KERN_ERR "nbd: must specify an index to disconnect\n");
-+		pr_err("must specify an index to disconnect\n");
- 		return -EINVAL;
- 	}
- 	index = nla_get_u32(info->attrs[NBD_ATTR_INDEX]);
-@@ -2131,13 +2131,13 @@ static int nbd_genl_disconnect(struct sk_buff *skb, struct genl_info *info)
- 	nbd = idr_find(&nbd_index_idr, index);
- 	if (!nbd) {
- 		mutex_unlock(&nbd_index_mutex);
--		printk(KERN_ERR "nbd: couldn't find device at index %d\n",
-+		pr_err("couldn't find device at index %d\n",
- 		       index);
- 		return -EINVAL;
- 	}
- 	if (!refcount_inc_not_zero(&nbd->refs)) {
- 		mutex_unlock(&nbd_index_mutex);
--		printk(KERN_ERR "nbd: device at index %d is going down\n",
-+		pr_err("device at index %d is going down\n",
- 		       index);
- 		return -EINVAL;
- 	}
-@@ -2163,7 +2163,7 @@ static int nbd_genl_reconfigure(struct sk_buff *skb, struct genl_info *info)
- 		return -EPERM;
- 
- 	if (!info->attrs[NBD_ATTR_INDEX]) {
--		printk(KERN_ERR "nbd: must specify a device to reconfigure\n");
-+		pr_err("must specify a device to reconfigure\n");
- 		return -EINVAL;
- 	}
- 	index = nla_get_u32(info->attrs[NBD_ATTR_INDEX]);
-@@ -2171,7 +2171,7 @@ static int nbd_genl_reconfigure(struct sk_buff *skb, struct genl_info *info)
- 	nbd = idr_find(&nbd_index_idr, index);
- 	if (!nbd) {
- 		mutex_unlock(&nbd_index_mutex);
--		printk(KERN_ERR "nbd: couldn't find a device at index %d\n",
-+		pr_err("couldn't find a device at index %d\n",
- 		       index);
- 		return -EINVAL;
- 	}
-@@ -2193,7 +2193,7 @@ static int nbd_genl_reconfigure(struct sk_buff *skb, struct genl_info *info)
- 	}
- 	if (!refcount_inc_not_zero(&nbd->refs)) {
- 		mutex_unlock(&nbd_index_mutex);
--		printk(KERN_ERR "nbd: device at index %d is going down\n",
-+		pr_err("device at index %d is going down\n",
- 		       index);
- 		return -EINVAL;
- 	}
-@@ -2258,7 +2258,7 @@ static int nbd_genl_reconfigure(struct sk_buff *skb, struct genl_info *info)
- 			struct nlattr *socks[NBD_SOCK_MAX+1];
- 
- 			if (nla_type(attr) != NBD_SOCK_ITEM) {
--				printk(KERN_ERR "nbd: socks must be embedded in a SOCK_ITEM attr\n");
-+				pr_err("socks must be embedded in a SOCK_ITEM attr\n");
- 				ret = -EINVAL;
- 				goto out;
- 			}
-@@ -2267,7 +2267,7 @@ static int nbd_genl_reconfigure(struct sk_buff *skb, struct genl_info *info)
- 							  nbd_sock_policy,
- 							  info->extack);
- 			if (ret != 0) {
--				printk(KERN_ERR "nbd: error processing sock list\n");
-+				pr_err("error processing sock list\n");
- 				ret = -EINVAL;
- 				goto out;
- 			}
-@@ -2484,7 +2484,7 @@ static int __init nbd_init(void)
- 	BUILD_BUG_ON(sizeof(struct nbd_request) != 28);
- 
- 	if (max_part < 0) {
--		printk(KERN_ERR "nbd: max_part must be >= 0\n");
-+		pr_err("max_part must be >= 0\n");
- 		return -EINVAL;
+diff --git a/fs/ext4/inline.c b/fs/ext4/inline.c
+index 9c076262770d..3d45ffe8c657 100644
+--- a/fs/ext4/inline.c
++++ b/fs/ext4/inline.c
+@@ -2020,10 +2020,12 @@ int ext4_convert_inline_data(struct inode *inode)
+ 		goto out_free;
  	}
  
-@@ -2563,10 +2563,10 @@ static void __exit nbd_cleanup(void)
- 		nbd = list_first_entry(&del_list, struct nbd_device, list);
- 		list_del_init(&nbd->list);
- 		if (refcount_read(&nbd->config_refs))
--			printk(KERN_ERR "nbd: possibly leaking nbd_config (ref %d)\n",
-+			pr_err("possibly leaking nbd_config (ref %d)\n",
- 					refcount_read(&nbd->config_refs));
- 		if (refcount_read(&nbd->refs) != 1)
--			printk(KERN_ERR "nbd: possibly leaking a device\n");
-+			pr_err("possibly leaking a device\n");
- 		nbd_put(nbd);
- 	}
- 
++	inode_lock(inode);
+ 	ext4_write_lock_xattr(inode, &no_expand);
+ 	if (ext4_has_inline_data(inode))
+ 		error = ext4_convert_inline_data_nolock(handle, inode, &iloc);
+ 	ext4_write_unlock_xattr(inode, &no_expand);
++	inode_unlock(inode);
+ 	ext4_journal_stop(handle);
+ out_free:
+ 	brelse(iloc.bh);
 -- 
 2.31.1
 
