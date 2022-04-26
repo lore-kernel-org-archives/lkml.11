@@ -2,113 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B84CC4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8673C35296
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:42:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346653AbiDZIpQ (ORCPT
+        id S1347158AbiDZIpy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:45:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59638 "EHLO
+        Tue, 26 Apr 2022 04:45:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345512AbiDZIjL (ORCPT
+        with ESMTP id S1345739AbiDZIj1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:39:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3D043FBD7;
-        Tue, 26 Apr 2022 01:30:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 26 Apr 2022 04:39:27 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 050C3403CF;
+        Tue, 26 Apr 2022 01:30:50 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80736B81CAF;
-        Tue, 26 Apr 2022 08:30:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3635C385A0;
-        Tue, 26 Apr 2022 08:29:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961800;
-        bh=GdhV+M7q++CPNc+w2fY6C6AGEQb4sYzOfXOJmXL+AZM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WmpSpAeKPnT/1Dyg7jtgepPjO46ObVgwHBKgfmFo+qoDCTHf/pGixKezmKBZ9dc1J
-         MnmUl8N7ywU5jmbw3666FR1cvtzMSkFyeKlw8UJs0BKiRrH8Kvp9l/0KOHlvOyDQeh
-         HBUyd04gu9E6d+Rp/eUgfPMwh4jIEEzyvzBDl5og=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tomas Melin <tomas.melin@vaisala.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 33/62] net: macb: Restart tx only if queue pointer is lagging
-Date:   Tue, 26 Apr 2022 10:21:13 +0200
-Message-Id: <20220426081738.175168427@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
-References: <20220426081737.209637816@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KnZpJ590lz4ySW;
+        Tue, 26 Apr 2022 18:30:48 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1650961849;
+        bh=czivHZ+lHH63w67c3ZACNKHQwiMOwH0QCqtUPgwwvkY=;
+        h=Date:From:To:Cc:Subject:From;
+        b=O0ddEM8aWOARzU3HQ4thaICH0oW6pKC0o1Wx3m353ZeRhbk4GF520x/4x0+CblV7u
+         U5VQ09sni2bDzd4CCUzCX4aHTD7mt7hZIC1xsB9aTe3sDVqlyz2mydn0GrjFxREaVB
+         EZwS1avtkOEcfxCE9WHDT9NTBsILOVa2kbwhbRZaFZJCxXpZMtqEatWeis156gdTYQ
+         guzV2la6qSMbaTFZBz7uWLWlLBdtL3wHy8p4J78ax3pYhO5+rdn4WxIe/sQSb0JbVL
+         mpKpK5aBFpaYJpMRXNvnQCzbFk4/HU/taJLoXO+rSxG+zyvR0WopkAYGnuU12eQlRs
+         VFTsRznQpyabw==
+Date:   Tue, 26 Apr 2022 18:30:48 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Mark Brown <broonie@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>
+Cc:     Amadeusz =?UTF-8?B?U8WCYXdpxYRza2k=?= 
+        <amadeuszx.slawinski@linux.intel.com>,
+        Cezary Rojewski <cezary.rojewski@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the sound-asoc tree
+Message-ID: <20220426183048.5f1cb899@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_//xfg1wYZ3AWTI/N/W5SjHei";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tomas Melin <tomas.melin@vaisala.com>
+--Sig_//xfg1wYZ3AWTI/N/W5SjHei
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-[ Upstream commit 5ad7f18cd82cee8e773d40cc7a1465a526f2615c ]
+Hi all,
 
-commit 4298388574da ("net: macb: restart tx after tx used bit read")
-added support for restarting transmission. Restarting tx does not work
-in case controller asserts TXUBR interrupt and TQBP is already at the end
-of the tx queue. In that situation, restarting tx will immediately cause
-assertion of another TXUBR interrupt. The driver will end up in an infinite
-interrupt loop which it cannot break out of.
+After merging the sound-asoc tree, today's linux-next build (powerpc
+allyesconfig) failed like this:
 
-For cases where TQBP is at the end of the tx queue, instead
-only clear TX_USED interrupt. As more data gets pushed to the queue,
-transmission will resume.
+sound/soc/intel/avs/path.c: In function 'avs_copier_create':
+sound/soc/intel/avs/path.c:186:31: error: invalid use of undefined type 'st=
+ruct nhlt_specific_cfg'
+  186 |                 data =3D ep_blob->caps;
+      |                               ^~
+sound/soc/intel/avs/path.c:187:36: error: invalid use of undefined type 'st=
+ruct nhlt_specific_cfg'
+  187 |                 data_size =3D ep_blob->size;
+      |                                    ^~
+sound/soc/intel/avs/path.c:210:31: error: invalid use of undefined type 'st=
+ruct nhlt_specific_cfg'
+  210 |                 data =3D ep_blob->caps;
+      |                               ^~
+sound/soc/intel/avs/path.c:211:36: error: invalid use of undefined type 'st=
+ruct nhlt_specific_cfg'
+  211 |                 data_size =3D ep_blob->size;
+      |                                    ^~
 
-This issue was observed on a Xilinx Zynq-7000 based board.
-During stress test of the network interface,
-driver would get stuck on interrupt loop within seconds or minutes
-causing CPU to stall.
+Caused by commit
 
-Signed-off-by: Tomas Melin <tomas.melin@vaisala.com>
-Tested-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Link: https://lore.kernel.org/r/20220407161659.14532-1-tomas.melin@vaisala.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+  274d79e51875 ("ASoC: Intel: avs: Configure modules according to their typ=
+e")
+
+I have applied the following patch for today:
+
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Tue, 26 Apr 2022 17:49:37 +1000
+Subject: [PATCH] fixup for "ASoC: Intel: avs: Configure modules according t=
+o their type"
+
+Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
 ---
- drivers/net/ethernet/cadence/macb_main.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ sound/soc/intel/avs/path.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 480d2ca369e6..002a374f197b 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -1378,6 +1378,7 @@ static void macb_tx_restart(struct macb_queue *queue)
- 	unsigned int head = queue->tx_head;
- 	unsigned int tail = queue->tx_tail;
- 	struct macb *bp = queue->bp;
-+	unsigned int head_idx, tbqp;
- 
- 	if (bp->caps & MACB_CAPS_ISR_CLEAR_ON_WRITE)
- 		queue_writel(queue, ISR, MACB_BIT(TXUBR));
-@@ -1385,6 +1386,13 @@ static void macb_tx_restart(struct macb_queue *queue)
- 	if (head == tail)
- 		return;
- 
-+	tbqp = queue_readl(queue, TBQP) / macb_dma_desc_get_size(bp);
-+	tbqp = macb_adj_dma_desc_idx(bp, macb_tx_ring_wrap(bp, tbqp));
-+	head_idx = macb_adj_dma_desc_idx(bp, macb_tx_ring_wrap(bp, head));
-+
-+	if (tbqp == head_idx)
-+		return;
-+
- 	macb_writel(bp, NCR, macb_readl(bp, NCR) | MACB_BIT(TSTART));
- }
- 
--- 
+diff --git a/sound/soc/intel/avs/path.c b/sound/soc/intel/avs/path.c
+index 3d46dd5e5bc4..6f47ac44de87 100644
+--- a/sound/soc/intel/avs/path.c
++++ b/sound/soc/intel/avs/path.c
+@@ -9,6 +9,7 @@
+ #include <sound/intel-nhlt.h>
+ #include <sound/pcm_params.h>
+ #include <sound/soc.h>
++#include <sound/intel-nhlt.h>
+ #include "avs.h"
+ #include "path.h"
+ #include "topology.h"
+--=20
 2.35.1
 
+--=20
+Cheers,
+Stephen Rothwell
 
+--Sig_//xfg1wYZ3AWTI/N/W5SjHei
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJnrbgACgkQAVBC80lX
+0GwRlwgAhchvrLBL9nPU25RzDVnerN3LCUd0syA1/9xlw4aig7ZRj7V7+XuBKKr0
+oIbDDP6EjODXIz+LeypGGMDcBD5wzpaDtedCY6mdV8nrsGK7DYmnv1lLW4uPF4GC
+G1BWKzvyAavdjscXRLBLOPgebYUV/NI9SQyf2jhmr9yWolcFw5SfRK7kH0+ra92+
+7R5NH6IU1i//3fty567PSYauKeVTB2/5GCl7ISO/hsYiLvu8QPo9ssTwJ35M6cl6
+AlhmH5ZjaFsWxd+D7niu7Vxyyu2G6x7ZjEtHxR2soXrdclRpQazwVBPJvo/5kU+u
+matStPxcUJmx2AwqEsHGrf5tNF55fA==
+=zCsj
+-----END PGP SIGNATURE-----
+
+--Sig_//xfg1wYZ3AWTI/N/W5SjHei--
