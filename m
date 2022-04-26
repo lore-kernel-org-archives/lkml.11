@@ -2,104 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2832EC35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF502C4707A
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:52:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345167AbiDZIzY (ORCPT
+        id S1346061AbiDZIyF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:55:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57510 "EHLO
+        Tue, 26 Apr 2022 04:54:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345526AbiDZIl6 (ORCPT
+        with ESMTP id S1345830AbiDZIjg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:41:58 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F24CE158F85;
-        Tue, 26 Apr 2022 01:33:08 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id a11so6094040pff.1;
-        Tue, 26 Apr 2022 01:33:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XPCJZevhs8brMYhtAZr8BdWat46UoHpJViKaKdpMRuU=;
-        b=c7vbIQntGD0977Uznsb+oxAGZUTT0lMxHbhYk9ny8G4wzPWoOrh53GXQ7s4xzFZ01f
-         eV0kK1RejcGO0tYo7DEZ52ThTAGY9v/Rn7YkIOOjjb+l4n/m4yXBHk+i2OSF6CJOE05j
-         AP6sQcmEG+dNc5HAV+8T/fhQ04peAYAEmXUtGXR2sFsqht4dGf6d2hvFcP57oLDKrHtF
-         ypxCGEdR4zAJtJ2XsdqDsaxHSk8NB7yXLSvEXdabkat45dZjVGA7w3zbhnUhc0pAc/ue
-         3xOx5leNCKMNmR4tX0M/m9umZl8/caTns2y5uwlnCP8z6sBZhZcZ1cnrjoFBw7+tX/xJ
-         i3eg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XPCJZevhs8brMYhtAZr8BdWat46UoHpJViKaKdpMRuU=;
-        b=5TPBfeZOtYn3Pa5rmID0KaDinKVJU0+LiDcqz0s9oWdPrLqNYcBBZ+uN/p4QIgvp/k
-         ryis3OzA7QC0Lzt8L51LBgm5kJy9gW0UGu72IdpSxLKBxlW+JPUpyOFTe3nfiHDFO0pw
-         +wFwi3/NUmkNLmfsV62BSDOsGEGOzFiV8SKgcz4v85dTTKy1SufD6M6i8rHCtmFvuEjs
-         88nSk9rVeSUrGc8AXkfwg/qQ+Vjih9cMISEgb25822dZmX7VSGxQzlvrD0rZnivGd2Ht
-         ezewvs5Ua0hl2AGRgRYtaaj5Be9FBNGYDcdg0XWK97vyNsIkLeXVKWQMExkB+AWFBH4p
-         T7PQ==
-X-Gm-Message-State: AOAM530v5y2M2gQN9HFwBHOl9uSeADMIkbPAKPu0MJ3iU6zXdGuCiTJi
-        +RFptWlvad6FP9AwkKu9o1E=
-X-Google-Smtp-Source: ABdhPJwD7n+yUCkn32g7caIxVGOr7/fDkuZD+briKdFO0oetqszHzCrrrJwMEBKW3GVoFDHbDd5kWw==
-X-Received: by 2002:a05:6a00:1687:b0:4e1:45d:3ded with SMTP id k7-20020a056a00168700b004e1045d3dedmr23359483pfc.0.1650961988373;
-        Tue, 26 Apr 2022 01:33:08 -0700 (PDT)
-Received: from localhost.localdomain ([103.197.71.140])
-        by smtp.gmail.com with ESMTPSA id f187-20020a6251c4000000b005058e59604csm14317884pfb.217.2022.04.26.01.33.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 01:33:07 -0700 (PDT)
-From:   Stephen Zhang <starzhangzsd@gmail.com>
-To:     tsbogend@alpha.franken.de, liam.howlett@oracle.com,
-        ebiederm@xmission.com, dbueso@suse.de, alobakin@pm.me,
-        f.fainelli@gmail.com
-Cc:     zhangshida@kylinos.cn, starzhangzsd@gmail.com,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org
-Subject: [PATCH] arch/mips/kernel/traps: add CONFIG_MIPS_FP_SUPPORT when using handle_fpe
-Date:   Tue, 26 Apr 2022 16:32:59 +0800
-Message-Id: <20220426083259.526685-1-starzhangzsd@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 26 Apr 2022 04:39:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91B04793A0;
+        Tue, 26 Apr 2022 01:32:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D78C617D2;
+        Tue, 26 Apr 2022 08:32:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36871C385A0;
+        Tue, 26 Apr 2022 08:32:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650961920;
+        bh=tRbye1fxfoP+AzMBZoQEW1nrxP5cNRSw6FqxdHBimmw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=uKRfmjNWLtkW+bIHG2DYId9WGSB7mtQ1MiiKFhixiZJAa42GEf43ZgFVGnJij+47I
+         EeXd1nCEYuMA1eJfKteTn+W5H4xvRZzhQ9o2LL1hlk7SYSjWvXHh9Qmi9YrVcA1G+8
+         hjAFMYPQcKa+JkYU6q1AFUPzmBmRGj2tW7Pg/m9g=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 13/86] dmaengine: imx-sdma: Fix error checking in sdma_event_remap
+Date:   Tue, 26 Apr 2022 10:20:41 +0200
+Message-Id: <20220426081741.588957639@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
+References: <20220426081741.202366502@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shida Zhang <zhangshida@kylinos.cn>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-handle_fpe gets defined when CONFIG_MIPS_FP_SUPPORT is defined. So add
-CONFIG_MIPS_FP_SUPPORT when using handle_fpe.
+[ Upstream commit 7104b9cb35a33ad803a1adbbfa50569b008faf15 ]
 
-Signed-off-by: Shida Zhang <zhangshida@kylinos.cn>
+of_parse_phandle() returns NULL on errors, rather than error
+pointers. Using NULL check on grp_np to fix this.
+
+Fixes: d078cd1b4185 ("dmaengine: imx-sdma: Add imx6sx platform support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220308064952.15743-1-linmq006@gmail.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/kernel/traps.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/dma/imx-sdma.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/mips/kernel/traps.c b/arch/mips/kernel/traps.c
-index 246c6a6b0261..ef9792261f91 100644
---- a/arch/mips/kernel/traps.c
-+++ b/arch/mips/kernel/traps.c
-@@ -90,7 +90,9 @@ extern asmlinkage void handle_cpu(void);
- extern asmlinkage void handle_ov(void);
- extern asmlinkage void handle_tr(void);
- extern asmlinkage void handle_msa_fpe(void);
-+#ifdef CONFIG_MIPS_FP_SUPPORT
- extern asmlinkage void handle_fpe(void);
-+#endif
- extern asmlinkage void handle_ftlb(void);
- extern asmlinkage void handle_gsexc(void);
- extern asmlinkage void handle_msa(void);
-@@ -2489,8 +2491,10 @@ void __init trap_init(void)
- 	if (board_nmi_handler_setup)
- 		board_nmi_handler_setup();
+diff --git a/drivers/dma/imx-sdma.c b/drivers/dma/imx-sdma.c
+index 306f93e4b26a..792c91cd1608 100644
+--- a/drivers/dma/imx-sdma.c
++++ b/drivers/dma/imx-sdma.c
+@@ -1789,7 +1789,7 @@ static int sdma_event_remap(struct sdma_engine *sdma)
+ 	u32 reg, val, shift, num_map, i;
+ 	int ret = 0;
  
-+#ifdef CONFIG_MIPS_FP_SUPPORT
- 	if (cpu_has_fpu && !cpu_has_nofpuex)
- 		set_except_vector(EXCCODE_FPE, handle_fpe);
-+#endif
+-	if (IS_ERR(np) || IS_ERR(gpr_np))
++	if (IS_ERR(np) || !gpr_np)
+ 		goto out;
  
- 	if (cpu_has_ftlbparex)
- 		set_except_vector(MIPS_EXCCODE_TLBPAR, handle_ftlb);
+ 	event_remap = of_find_property(np, propname, NULL);
+@@ -1837,7 +1837,7 @@ static int sdma_event_remap(struct sdma_engine *sdma)
+ 	}
+ 
+ out:
+-	if (!IS_ERR(gpr_np))
++	if (gpr_np)
+ 		of_node_put(gpr_np);
+ 
+ 	return ret;
 -- 
-2.30.2
+2.35.1
+
+
 
