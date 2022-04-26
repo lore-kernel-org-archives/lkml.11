@@ -2,267 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E2D5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:25:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 306CBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:27:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348694AbiDZK2s (ORCPT
+        id S1348858AbiDZK35 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 06:28:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44324 "EHLO
+        Tue, 26 Apr 2022 06:29:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348845AbiDZK2I (ORCPT
+        with ESMTP id S1349233AbiDZK3k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 06:28:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D642D5DE71;
-        Tue, 26 Apr 2022 03:01:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 881C8B81D47;
-        Tue, 26 Apr 2022 10:01:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F1A3C385A4;
-        Tue, 26 Apr 2022 10:01:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650967273;
-        bh=QpZImYLme4EiJQq5ruNv0+OY+uzOjs/YbCXzxSFuCCo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XKRPriipnaberwU9XSsnbL9pNV4ANaq+YXwnl9ySmbeIqkTfRIb2jpiFpD4uWot2R
-         tB1wUMnRCjynWi+JXceE/PNc+TrDbWbmflCL0UrHavtT2L50BoLaW8mMaeJeWsga/d
-         6aLwp/D1cGHrspOxDGgRGjAI0PtOnWSAjNayyLJ63WuWefF8bgZSUYZvYFPPxql1rK
-         HESeX36K64XFebZRbpzB8Q17WKPC6W2dlhQaLDBGWtJccR0IpOmmf337IdHMt/G12t
-         +PKM90yqiNd9Z8SX7I4DEUpJnHI02wQuIopVHv15F2G4GHzsyz/bdFDgTSaHZ140ci
-         +sdwCrASZcyug==
-Date:   Tue, 26 Apr 2022 19:01:08 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Jiri Olsa <olsajiri@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: Re: [PATCHv2 bpf-next 1/4] kallsyms: Add kallsyms_lookup_names
- function
-Message-Id: <20220426190108.d9c76f5ccff52e27dbef21af@kernel.org>
-In-Reply-To: <YmJPcU9dahEatb0f@krava>
-References: <20220418124834.829064-1-jolsa@kernel.org>
-        <20220418124834.829064-2-jolsa@kernel.org>
-        <20220418233546.dfe0a1be12193c26b05cdd93@kernel.org>
-        <Yl5yHVOJpCYr+T3r@krava>
-        <YmJPcU9dahEatb0f@krava>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Tue, 26 Apr 2022 06:29:40 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA4AD954BB
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 03:04:15 -0700 (PDT)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23Q8MC0f012876;
+        Tue, 26 Apr 2022 10:04:06 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=MIfTqTubI3eUOBVRbakpYFXdix2XEmWeLsX8jRsOeLc=;
+ b=pgS4TjHWCePl0HOOc0/JRy1u2HVLfouFSHSnzQgZUPwrU6duLuweoIwnuTywI/MKPCbu
+ WJ2s52BuDbvJWFQRCpD8qmg2T2ZSDpRGbL8xCT+VEiTWvwb5RjZ61tlwDd/d6iBzpDJg
+ 5T329UoDhkFo2WmSN99zUiHhcx5NA4KEiX6jOPV66oZICvG3E+Q4be24Yp2dKJ8U3+89
+ cWgOle/Hh5u6IsXHAzYCzS27c+CZzOGO0S8qmgq7ZtJllu/1yT5XiPlXvFt9ScUXesZT
+ MZlTt9D5A/4yqfRC6wVrCKS0vOIHreOeThwPJBQvaoTqt4br/M3bSLsfbtRyx4azfiQS dQ== 
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fp8eepvdr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 26 Apr 2022 10:04:06 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23Q9wwZA023777;
+        Tue, 26 Apr 2022 10:04:04 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma04fra.de.ibm.com with ESMTP id 3fm938u8x7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 26 Apr 2022 10:04:04 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23QA41V828705218
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 26 Apr 2022 10:04:02 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C464611C050;
+        Tue, 26 Apr 2022 10:04:01 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id AC97B11C04A;
+        Tue, 26 Apr 2022 10:03:59 +0000 (GMT)
+Received: from li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com (unknown [9.43.82.112])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Tue, 26 Apr 2022 10:03:59 +0000 (GMT)
+Date:   Tue, 26 Apr 2022 15:33:52 +0530
+From:   Jagdish Gediya <jvgediya@linux.ibm.com>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        ying.huang@intel.com, dave.hansen@intel.com,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Richard Fitzgerald <rf@opensource.cirrus.com>
+Subject: Re: [PATCH v2] lib/kstrtox.c: Add "false"/"true" support to
+ kstrtobool
+Message-ID: <YmfDiO6KSRzo8C6e@li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com>
+References: <20220426064001.14241-1-jvgediya@linux.ibm.com>
+ <Yme97bRH3hLcqGfC@alley>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yme97bRH3hLcqGfC@alley>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: HDRg4Mgq9WKwq5rvOyFEnyiO-EWJka0A
+X-Proofpoint-ORIG-GUID: HDRg4Mgq9WKwq5rvOyFEnyiO-EWJka0A
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-26_02,2022-04-25_03,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ adultscore=0 suspectscore=0 spamscore=0 mlxscore=0 bulkscore=0
+ phishscore=0 clxscore=1015 mlxlogscore=999 lowpriorityscore=0
+ impostorscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2202240000 definitions=main-2204260062
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jiri,
-
-Sorry for replying late.
-
-On Fri, 22 Apr 2022 08:47:13 +0200
-Jiri Olsa <olsajiri@gmail.com> wrote:
-
-> On Tue, Apr 19, 2022 at 10:26:05AM +0200, Jiri Olsa wrote:
+On Tue, Apr 26, 2022 at 11:39:57AM +0200, Petr Mladek wrote:
+> On Tue 2022-04-26 12:10:01, Jagdish Gediya wrote:
+> > At many places in kernel, It is necessary to convert sysfs input
+> > to corrosponding bool value e.g. "false" or "0" need to be converted
+> > to bool false, "true" or "1" need to be converted to bool true,
+> > places where such conversion is needed currently check the input
+> > string manually, kstrtobool can be utilized at such places but
+> > currently kstrtobool doesn't have support to "false"/"true".
+> >
+> > Add "false"/"true" support to kstrtobool while string conversion
+> > to bool. Modify existing manual sysfs conversions to use kstrtobool().
 > 
-> SNIP
+> It looks reasonable. I would just do it slightly other way, see
+> below.
 > 
-> > > > +static int kallsyms_callback(void *data, const char *name,
-> > > > +			     struct module *mod, unsigned long addr)
-> > > > +{
-> > > > +	struct kallsyms_data *args = data;
-> > > > +
-> > > > +	if (!bsearch(&name, args->syms, args->cnt, sizeof(*args->syms), symbols_cmp))
-> > > > +		return 0;
-> > > > +
-> > > > +	addr = ftrace_location(addr);
-> > > > +	if (!addr)
-> > > > +		return 0;
-> > > 
-> > > Ooops, wait. Did you do this last version? I missed this point.
-> > > This changes the meanings of the kernel function.
+> > This patch doesn't have any functionality change.
+> 
+> This is not true. All kstrtobool() callers will react differently
+> on the "true"/"false" input.
+
+how? Is it related to performance as more characters are compared?
+otherwise semantic wise they will get the expected response, correct?
+
+> > Cc: Andrew Morton <akpm@linux-foundation.org>
+> > Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > Cc: Richard Fitzgerald <rf@opensource.cirrus.com>
+> > Cc: Petr Mladek <pmladek@suse.com>
+> > Signed-off-by: Jagdish Gediya <jvgediya@linux.ibm.com>
+> > ---
+> > change in v2:
+> > Modified kstrtobool to handle "false"/"true". Removed
+> > new function sysfs_strbool introduced in v1.
 > > 
-> > yes, it was there before ;-) and you're right.. so some archs can
-> > return different address, I did not realize that
+> >  lib/kstrtox.c   | 7 +++++++
+> >  mm/migrate.c    | 6 +-----
+> >  mm/swap_state.c | 6 +-----
+> >  3 files changed, 9 insertions(+), 10 deletions(-)
 > > 
-> > > 
-> > > > +
-> > > > +	args->addrs[args->found++] = addr;
-> > > > +	return args->found == args->cnt ? 1 : 0;
-> > > > +}
-> > > > +
-> > > > +/**
-> > > > + * kallsyms_lookup_names - Lookup addresses for array of symbols
-> > > 
-> > > More correctly "Lookup 'ftraced' addresses for array of sorted symbols", right?
-> > > 
-> > > I'm not sure, we can call it as a 'kallsyms' API, since this is using
-> > > kallsyms but doesn't return symbol address, but ftrace address.
-> > > I think this name misleads user to expect returning symbol address.
-> > > 
-> > > > + *
-> > > > + * @syms: array of symbols pointers symbols to resolve, must be
-> > > > + * alphabetically sorted
-> > > > + * @cnt: number of symbols/addresses in @syms/@addrs arrays
-> > > > + * @addrs: array for storing resulting addresses
-> > > > + *
-> > > > + * This function looks up addresses for array of symbols provided in
-> > > > + * @syms array (must be alphabetically sorted) and stores them in
-> > > > + * @addrs array, which needs to be big enough to store at least @cnt
-> > > > + * addresses.
-> > > 
-> > > Hmm, sorry I changed my mind. I rather like to expose kallsyms_on_each_symbol()
-> > > and provide this API from fprobe or ftrace, because this returns ftrace address
-> > > and thus this is only used from fprobe.
-> > 
-> > ok, so how about:
-> > 
-> >   int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt, unsigned long *addrs);
+> > diff --git a/lib/kstrtox.c b/lib/kstrtox.c
+> > index 886510d248e5..3a5e29557838 100644
+> > --- a/lib/kstrtox.c
+> > +++ b/lib/kstrtox.c
+> > @@ -377,6 +377,13 @@ int kstrtobool(const char *s, bool *res)
+> >  		}
+> >  		break;
+> >  	default:
+> > +		if (!strncmp(s, "true", 4)) {
+> > +			*res = true;
+> > +			return 0;
+> > +		} else if (!strncmp(s, "false", 5)) {
+> > +			*res = false;
+> > +			return 0;
 > 
-> quick question.. is it ok if it stays in kalsyms.c object?
+> It should be enough to check the first letter like we do in
+> the other cases. I mean to set true when s[0] is 'T' or 't'
+> and false when s[0] is 'F' or 'f'.
 
-I think if this is for the ftrace API, I think it should be in the ftrace.c, and
-it can remove unneeded #ifdefs in C code.
+For "on" and "off", 2 characters are matched, so is it good enough
+to compare only single character for strings "true" and "false"?
 
-> 
-> so we don't need to expose kallsyms_on_each_symbol,
-> and it stays in 'kalsyms' place
-
-We don't need to expose it to modules, but just make it into a global scope.
-I don't think that doesn't cause a problem.
-
-Thank you,
-
-> 
-> jirka
+> Also please update comment above the function definition.
 > 
 > 
+> > +		}
+> >  		break;
+> >  	}
+> >  
 > 
-> diff --git a/include/linux/kallsyms.h b/include/linux/kallsyms.h
-> index ce1bd2fbf23e..177e0b13c8c5 100644
-> --- a/include/linux/kallsyms.h
-> +++ b/include/linux/kallsyms.h
-> @@ -72,6 +72,7 @@ int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct module *,
->  #ifdef CONFIG_KALLSYMS
->  /* Lookup the address for a symbol. Returns 0 if not found. */
->  unsigned long kallsyms_lookup_name(const char *name);
-> +int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt, unsigned long *addrs);
->  
->  extern int kallsyms_lookup_size_offset(unsigned long addr,
->  				  unsigned long *symbolsize,
-> @@ -103,6 +104,11 @@ static inline unsigned long kallsyms_lookup_name(const char *name)
->  	return 0;
->  }
->  
-> +static inline int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt, unsigned long *addrs);
-> +{
-> +	return -ERANGE;
-> +}
-> +
->  static inline int kallsyms_lookup_size_offset(unsigned long addr,
->  					      unsigned long *symbolsize,
->  					      unsigned long *offset)
-> diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
-> index 79f2eb617a62..1e7136a765a9 100644
-> --- a/kernel/kallsyms.c
-> +++ b/kernel/kallsyms.c
-> @@ -29,6 +29,7 @@
->  #include <linux/compiler.h>
->  #include <linux/module.h>
->  #include <linux/kernel.h>
-> +#include <linux/bsearch.h>
->  
->  /*
->   * These will be re-linked against their real values
-> @@ -228,7 +229,7 @@ unsigned long kallsyms_lookup_name(const char *name)
->  	return module_kallsyms_lookup_name(name);
->  }
->  
-> -#ifdef CONFIG_LIVEPATCH
-> +#if defined(CONFIG_LIVEPATCH) || defined(CONFIG_FPROBE)
->  /*
->   * Iterate over all symbols in vmlinux.  For symbols from modules use
->   * module_kallsyms_on_each_symbol instead.
-> @@ -572,6 +573,73 @@ int sprint_backtrace_build_id(char *buffer, unsigned long address)
->  	return __sprint_symbol(buffer, address, -1, 1, 1);
->  }
->  
-> +#ifdef CONFIG_FPROBE
-> +static int symbols_cmp(const void *a, const void *b)
-> +{
-> +	const char **str_a = (const char **) a;
-> +	const char **str_b = (const char **) b;
-> +
-> +	return strcmp(*str_a, *str_b);
-> +}
-> +
-> +struct kallsyms_data {
-> +	unsigned long *addrs;
-> +	const char **syms;
-> +	size_t cnt;
-> +	size_t found;
-> +};
-> +
-> +static int kallsyms_callback(void *data, const char *name,
-> +			     struct module *mod, unsigned long addr)
-> +{
-> +	struct kallsyms_data *args = data;
-> +
-> +	if (!bsearch(&name, args->syms, args->cnt, sizeof(*args->syms), symbols_cmp))
-> +		return 0;
-> +
-> +	addr = ftrace_location(addr);
-> +	if (!addr)
-> +		return 0;
-> +
-> +	args->addrs[args->found++] = addr;
-> +	return args->found == args->cnt ? 1 : 0;
-> +}
-> +
-> +/**
-> + * ftrace_lookup_symbols - Lookup addresses for array of symbols
-> + *
-> + * @sorted_syms: array of symbols pointers symbols to resolve,
-> + * must be alphabetically sorted
-> + * @cnt: number of symbols/addresses in @syms/@addrs arrays
-> + * @addrs: array for storing resulting addresses
-> + *
-> + * This function looks up addresses for array of symbols provided in
-> + * @syms array (must be alphabetically sorted) and stores them in
-> + * @addrs array, which needs to be big enough to store at least @cnt
-> + * addresses.
-> + *
-> + * This function returns 0 if all provided symbols are found,
-> + * -ESRCH otherwise.
-> + */
-> +int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt, unsigned long *addrs)
-> +{
-> +	struct kallsyms_data args;
-> +
-> +	args.addrs = addrs;
-> +	args.syms = sorted_syms;
-> +	args.cnt = cnt;
-> +	args.found = 0;
-> +	kallsyms_on_each_symbol(kallsyms_callback, &args);
-> +
-> +	return args.found == args.cnt ? 0 : -ESRCH;
-> +}
-> +#else
-> +int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt, unsigned long *addrs)
-> +{
-> +	return -ERANGE;
-> +}
-> +#endif /* CONFIG_FPROBE */
-> +
->  /* To avoid using get_symbol_offset for every symbol, we carry prefix along. */
->  struct kallsym_iter {
->  	loff_t pos;
-
-
--- 
-Masami Hiramatsu <mhiramat@kernel.org>
+> Best Regards,
+> Petr
+> 
