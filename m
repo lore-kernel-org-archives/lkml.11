@@ -2,51 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F15AAC3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF20AC4167E
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:27:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348091AbiDZJac (ORCPT
+        id S1348008AbiDZJaN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:30:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38472 "EHLO
+        Tue, 26 Apr 2022 05:30:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347741AbiDZJGH (ORCPT
+        with ESMTP id S1347645AbiDZJGA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:06:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B7BB11168;
-        Tue, 26 Apr 2022 01:45:36 -0700 (PDT)
+        Tue, 26 Apr 2022 05:06:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9FBB15B95B;
+        Tue, 26 Apr 2022 01:45:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B3566B81CF0;
-        Tue, 26 Apr 2022 08:45:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0F37C385A0;
-        Tue, 26 Apr 2022 08:45:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 39B1B61344;
+        Tue, 26 Apr 2022 08:45:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D7FBC385A4;
+        Tue, 26 Apr 2022 08:45:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962733;
-        bh=VZzwy19iC7YJm1kTY0EyD2FLrXjSzogP6pPLimC+ZCM=;
+        s=korg; t=1650962712;
+        bh=Ppg4K5rXXT1fBHaPj0LOmFveIGcPWCF4xXq+qRCLGQU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZYErXwP4/gE/4laXU2tfZbFgHJkWYAqCUgwgSDnXfR+8oOdbrmUnYnEQxVaU+KSKM
-         z/cUxaUTFOR4fqLZFCf1DtGPkRBIaH8QHTYOR66gx0zcvXdrCqnOAGQuGwlwpTX4DO
-         zL16jjCI4H8mGbF0jKm1HU4VImL7ffnHzHtM8028=
+        b=RmySi+RxRHvUQEvwvBf2jFVyMc5imgwSf0U4P6/ALJOKtPr/DI26E8HrFmytO1W4s
+         GRrK0Gl4/60lJ5lYg2aMKPuoE9yh8Td/8Ap6FGFTxrc0HkQEfu/NpbkymyYVgctG1r
+         1sSjS7+5huGlyFIu1RLHj/GGx0WCR6CFYpNZd/l4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
-        Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Shayne Chen <shayne.chen@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        stable@vger.kernel.org,
+        syzbot+cf4cf13056f85dec2c40@syzkaller.appspotmail.com,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 072/146] mt76: Fix undefined behavior due to shift overflowing the constant
-Date:   Tue, 26 Apr 2022 10:21:07 +0200
-Message-Id: <20220426081752.085899297@linuxfoundation.org>
+Subject: [PATCH 5.17 057/146] XArray: Disallow sibling entries of nodes
+Date:   Tue, 26 Apr 2022 10:20:52 +0200
+Message-Id: <20220426081751.671208688@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -58,51 +51,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Matthew Wilcox (Oracle) <willy@infradead.org>
 
-[ Upstream commit dbc2b1764734857d68425468ffa8486e97ab89df ]
+[ Upstream commit 63b1898fffcd8bd81905b95104ecc52b45a97e21 ]
 
-Fix:
+There is a race between xas_split() and xas_load() which can result in
+the wrong page being returned, and thus data corruption.  Fortunately,
+it's hard to hit (syzbot took three months to find it) and often guarded
+with VM_BUG_ON().
 
-  drivers/net/wireless/mediatek/mt76/mt76x2/pci.c: In function ‘mt76x2e_probe’:
-  ././include/linux/compiler_types.h:352:38: error: call to ‘__compiletime_assert_946’ \
-	declared with attribute error: FIELD_PREP: mask is not constant
-    _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+The anatomy of this race is:
 
-See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
-details as to why it triggers with older gccs only.
+thread A			thread B
+order-9 page is stored at index 0x200
+				lookup of page at index 0x274
+page split starts
+				load of sibling entry at offset 9
+stores nodes at offsets 8-15
+				load of entry at offset 8
 
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: Felix Fietkau <nbd@nbd.name>
-Cc: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-Cc: Ryder Lee <ryder.lee@mediatek.com>
-Cc: Shayne Chen <shayne.chen@mediatek.com>
-Cc: Sean Wang <sean.wang@mediatek.com>
-Cc: Kalle Valo <kvalo@kernel.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: linux-wireless@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220405151517.29753-9-bp@alien8.de
+The entry at offset 8 turns out to be a node, and so we descend into it,
+and load the page at index 0x234 instead of 0x274.  This is hard to fix
+on the split side; we could replace the entire node that contains the
+order-9 page instead of replacing the eight entries.  Fixing it on
+the lookup side is easier; just disallow sibling entries that point
+to nodes.  This cannot ever be a useful thing as the descent would not
+know the correct offset to use within the new node.
+
+The test suite continues to pass, but I have not added a new test for
+this bug.
+
+Reported-by: syzbot+cf4cf13056f85dec2c40@syzkaller.appspotmail.com
+Tested-by: syzbot+cf4cf13056f85dec2c40@syzkaller.appspotmail.com
+Fixes: 6b24ca4a1a8d ("mm: Use multi-index entries in the page cache")
+Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt76x2/pci.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ lib/xarray.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c b/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
-index 8a22ee581674..df85ebc6e1df 100644
---- a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
-@@ -80,7 +80,7 @@ mt76x2e_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	mt76_rmw_field(dev, 0x15a10, 0x1f << 16, 0x9);
+diff --git a/lib/xarray.c b/lib/xarray.c
+index 88ca87435e3d..32e1669d5b64 100644
+--- a/lib/xarray.c
++++ b/lib/xarray.c
+@@ -207,6 +207,8 @@ static void *xas_descend(struct xa_state *xas, struct xa_node *node)
+ 	if (xa_is_sibling(entry)) {
+ 		offset = xa_to_sibling(entry);
+ 		entry = xa_entry(xas->xa, node, offset);
++		if (node->shift && xa_is_node(entry))
++			entry = XA_RETRY_ENTRY;
+ 	}
  
- 	/* RG_SSUSB_G1_CDR_BIC_LTR = 0xf */
--	mt76_rmw_field(dev, 0x15a0c, 0xf << 28, 0xf);
-+	mt76_rmw_field(dev, 0x15a0c, 0xfU << 28, 0xf);
- 
- 	/* RG_SSUSB_CDR_BR_PE1D = 0x3 */
- 	mt76_rmw_field(dev, 0x15c58, 0x3 << 6, 0x3);
+ 	xas->xa_offset = offset;
 -- 
 2.35.1
 
