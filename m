@@ -2,99 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 519E6C35294
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBE2FC47080
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:12:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347618AbiDZJOs (ORCPT
+        id S1348033AbiDZJPG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:14:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52180 "EHLO
+        Tue, 26 Apr 2022 05:15:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347249AbiDZIvP (ORCPT
+        with ESMTP id S1347071AbiDZIvF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:51:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 21C5A11095F
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 01:39:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650962399;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=iDe4GeW+sgo3wBzL48yLmlazZisZ7asxKfRKJCrYQo4=;
-        b=CCzp2rnjTWsIQshqPJMBJbH2DekmkTz4k6atASbfPogqMXBKeM9qT1tHtk7to/hppXiWa8
-        pPTu2JD5hkli/3FS59hMh+cs2J++eItbKXVGt+Favo0WEG5iEz2G4yar3qAHTIh3xSZDaD
-        PlXj8iMouSB4jehza8+Z6uT70NbGwOs=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-655-DjBUPTttMNWsheLIp98nKQ-1; Tue, 26 Apr 2022 04:39:55 -0400
-X-MC-Unique: DjBUPTttMNWsheLIp98nKQ-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 26 Apr 2022 04:51:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB271174417;
+        Tue, 26 Apr 2022 01:39:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 449C038337E0;
-        Tue, 26 Apr 2022 08:39:55 +0000 (UTC)
-Received: from rotkaeppchen (unknown [10.39.193.220])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4702441617F;
-        Tue, 26 Apr 2022 08:39:54 +0000 (UTC)
-Date:   Tue, 26 Apr 2022 10:39:52 +0200
-From:   Philipp Rudo <prudo@redhat.com>
-To:     lizhe <sensor1010@163.com>
-Cc:     bhe@redhat.com, vgoyal@redhat.com, dyoung@redhat.com,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] kernel/crash_core.c : Remove redundant checks for
- ck_cmdline is NULL
-Message-ID: <20220426103952.0a080eb8@rotkaeppchen>
-In-Reply-To: <20220425153857.21922-1-sensor1010@163.com>
-References: <20220425153857.21922-1-sensor1010@163.com>
-Organization: Red Hat inc.
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 17CEB60C35;
+        Tue, 26 Apr 2022 08:39:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26DF0C385AC;
+        Tue, 26 Apr 2022 08:39:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650962367;
+        bh=CbTfT1XzeXL3nlleuSn+43H8lHVRa+ZsvFPNosQYhUA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=dVKOdN15RJkJKoa/3pgORJAUTHg35X41ctLaVDIQ5JWYO/Jn64O6xEB8muTmv3PRj
+         p5ctI5pWElrQ9v38fF65dh+ki95w5pprVGgv4Or+crdL7a97fLpM19zs2FNIdDu8Tf
+         mkNnja8vhw5XA8GGHcfM6cv03Ktlo5LS3aNjq5PI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Manish Rangankar <mrangankar@marvell.com>,
+        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 071/124] scsi: qedi: Fix failed disconnect handling
+Date:   Tue, 26 Apr 2022 10:21:12 +0200
+Message-Id: <20220426081749.319969116@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
+References: <20220426081747.286685339@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi lizhe,
+From: Mike Christie <michael.christie@oracle.com>
 
-On Mon, 25 Apr 2022 08:38:57 -0700
-lizhe <sensor1010@163.com> wrote:
+[ Upstream commit 857b06527f707f5df634b854898a191b5c1d0272 ]
 
->  When ck_cmdline is NULL, the only caller of get_last_crashkernel()
->  has already done non-NULL check(see __parse_crashkernel()),
->  so it doesn't make any sense to make a check here
+We set the qedi_ep state to EP_STATE_OFLDCONN_START when the ep is
+created. Then in qedi_set_path we kick off the offload work. If userspace
+times out the connection and calls ep_disconnect, qedi will only flush the
+offload work if the qedi_ep state has transitioned away from
+EP_STATE_OFLDCONN_START. If we can't connect we will not have transitioned
+state and will leave the offload work running, and we will free the qedi_ep
+from under it.
 
-sorry, but I still don't like the description. What I don't understand
-in particular is why you are mentioning the caller (__parse_crashkernel)
-here. ck_cmdline is a local variable to get_last_crashkernel. So the
-caller cannot perform any check on the variable but only the return
-value of the function. So the patch description should describe why we
-can remove the additional return NULL without changing the behavior of
-the function.
+This patch just has us init the work when we create the ep, then always
+flush it.
 
-Thanks
-Philipp
+Link: https://lore.kernel.org/r/20220408001314.5014-10-michael.christie@oracle.com
+Tested-by: Manish Rangankar <mrangankar@marvell.com>
+Reviewed-by: Lee Duncan <lduncan@suse.com>
+Reviewed-by: Chris Leech <cleech@redhat.com>
+Acked-by: Manish Rangankar <mrangankar@marvell.com>
+Signed-off-by: Mike Christie <michael.christie@oracle.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/scsi/qedi/qedi_iscsi.c | 69 +++++++++++++++++-----------------
+ 1 file changed, 34 insertions(+), 35 deletions(-)
 
-> Signed-off-by: lizhe <sensor1010@163.com>
-> ---
->  kernel/crash_core.c | 3 ---
->  1 file changed, 3 deletions(-)
-> 
-> diff --git a/kernel/crash_core.c b/kernel/crash_core.c
-> index 256cf6db573c..c232f01a2c54 100644
-> --- a/kernel/crash_core.c
-> +++ b/kernel/crash_core.c
-> @@ -222,9 +222,6 @@ static __init char *get_last_crashkernel(char *cmdline,
->  		p = strstr(p+1, name);
->  	}
->  
-> -	if (!ck_cmdline)
-> -		return NULL;
-> -
->  	return ck_cmdline;
->  }
->  
+diff --git a/drivers/scsi/qedi/qedi_iscsi.c b/drivers/scsi/qedi/qedi_iscsi.c
+index c5260429c637..04b40a6c1aff 100644
+--- a/drivers/scsi/qedi/qedi_iscsi.c
++++ b/drivers/scsi/qedi/qedi_iscsi.c
+@@ -859,6 +859,37 @@ static int qedi_task_xmit(struct iscsi_task *task)
+ 	return qedi_iscsi_send_ioreq(task);
+ }
+ 
++static void qedi_offload_work(struct work_struct *work)
++{
++	struct qedi_endpoint *qedi_ep =
++		container_of(work, struct qedi_endpoint, offload_work);
++	struct qedi_ctx *qedi;
++	int wait_delay = 5 * HZ;
++	int ret;
++
++	qedi = qedi_ep->qedi;
++
++	ret = qedi_iscsi_offload_conn(qedi_ep);
++	if (ret) {
++		QEDI_ERR(&qedi->dbg_ctx,
++			 "offload error: iscsi_cid=%u, qedi_ep=%p, ret=%d\n",
++			 qedi_ep->iscsi_cid, qedi_ep, ret);
++		qedi_ep->state = EP_STATE_OFLDCONN_FAILED;
++		return;
++	}
++
++	ret = wait_event_interruptible_timeout(qedi_ep->tcp_ofld_wait,
++					       (qedi_ep->state ==
++					       EP_STATE_OFLDCONN_COMPL),
++					       wait_delay);
++	if (ret <= 0 || qedi_ep->state != EP_STATE_OFLDCONN_COMPL) {
++		qedi_ep->state = EP_STATE_OFLDCONN_FAILED;
++		QEDI_ERR(&qedi->dbg_ctx,
++			 "Offload conn TIMEOUT iscsi_cid=%u, qedi_ep=%p\n",
++			 qedi_ep->iscsi_cid, qedi_ep);
++	}
++}
++
+ static struct iscsi_endpoint *
+ qedi_ep_connect(struct Scsi_Host *shost, struct sockaddr *dst_addr,
+ 		int non_blocking)
+@@ -907,6 +938,7 @@ qedi_ep_connect(struct Scsi_Host *shost, struct sockaddr *dst_addr,
+ 	}
+ 	qedi_ep = ep->dd_data;
+ 	memset(qedi_ep, 0, sizeof(struct qedi_endpoint));
++	INIT_WORK(&qedi_ep->offload_work, qedi_offload_work);
+ 	qedi_ep->state = EP_STATE_IDLE;
+ 	qedi_ep->iscsi_cid = (u32)-1;
+ 	qedi_ep->qedi = qedi;
+@@ -1055,12 +1087,11 @@ static void qedi_ep_disconnect(struct iscsi_endpoint *ep)
+ 	qedi_ep = ep->dd_data;
+ 	qedi = qedi_ep->qedi;
+ 
++	flush_work(&qedi_ep->offload_work);
++
+ 	if (qedi_ep->state == EP_STATE_OFLDCONN_START)
+ 		goto ep_exit_recover;
+ 
+-	if (qedi_ep->state != EP_STATE_OFLDCONN_NONE)
+-		flush_work(&qedi_ep->offload_work);
+-
+ 	if (qedi_ep->conn) {
+ 		qedi_conn = qedi_ep->conn;
+ 		abrt_conn = qedi_conn->abrt_conn;
+@@ -1234,37 +1265,6 @@ static int qedi_data_avail(struct qedi_ctx *qedi, u16 vlanid)
+ 	return rc;
+ }
+ 
+-static void qedi_offload_work(struct work_struct *work)
+-{
+-	struct qedi_endpoint *qedi_ep =
+-		container_of(work, struct qedi_endpoint, offload_work);
+-	struct qedi_ctx *qedi;
+-	int wait_delay = 5 * HZ;
+-	int ret;
+-
+-	qedi = qedi_ep->qedi;
+-
+-	ret = qedi_iscsi_offload_conn(qedi_ep);
+-	if (ret) {
+-		QEDI_ERR(&qedi->dbg_ctx,
+-			 "offload error: iscsi_cid=%u, qedi_ep=%p, ret=%d\n",
+-			 qedi_ep->iscsi_cid, qedi_ep, ret);
+-		qedi_ep->state = EP_STATE_OFLDCONN_FAILED;
+-		return;
+-	}
+-
+-	ret = wait_event_interruptible_timeout(qedi_ep->tcp_ofld_wait,
+-					       (qedi_ep->state ==
+-					       EP_STATE_OFLDCONN_COMPL),
+-					       wait_delay);
+-	if ((ret <= 0) || (qedi_ep->state != EP_STATE_OFLDCONN_COMPL)) {
+-		qedi_ep->state = EP_STATE_OFLDCONN_FAILED;
+-		QEDI_ERR(&qedi->dbg_ctx,
+-			 "Offload conn TIMEOUT iscsi_cid=%u, qedi_ep=%p\n",
+-			 qedi_ep->iscsi_cid, qedi_ep);
+-	}
+-}
+-
+ static int qedi_set_path(struct Scsi_Host *shost, struct iscsi_path *path_data)
+ {
+ 	struct qedi_ctx *qedi;
+@@ -1380,7 +1380,6 @@ static int qedi_set_path(struct Scsi_Host *shost, struct iscsi_path *path_data)
+ 			  qedi_ep->dst_addr, qedi_ep->dst_port);
+ 	}
+ 
+-	INIT_WORK(&qedi_ep->offload_work, qedi_offload_work);
+ 	queue_work(qedi->offload_thread, &qedi_ep->offload_work);
+ 
+ 	ret = 0;
+-- 
+2.35.1
+
+
 
