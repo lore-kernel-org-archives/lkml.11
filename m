@@ -2,81 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33323C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 11:06:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A03B6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 11:08:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349483AbiDZLJM (ORCPT
+        id S1349390AbiDZLLP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 07:09:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55124 "EHLO
+        Tue, 26 Apr 2022 07:11:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349440AbiDZLI6 (ORCPT
+        with ESMTP id S1345570AbiDZLLK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 07:08:58 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC8111D32B;
-        Tue, 26 Apr 2022 04:05:49 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id l7so35345268ejn.2;
-        Tue, 26 Apr 2022 04:05:49 -0700 (PDT)
+        Tue, 26 Apr 2022 07:11:10 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A461D2AC60
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 04:08:02 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id dk23so11991927ejb.8
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 04:08:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=79YMmecniTibmsg7vJUZ+X02gOTamrh9pEXoc3ztOsI=;
-        b=hY0PvQxd52o7a5RL31zKEanI+5zD/Fj9OoIs4H6V5NWMRkRiT1TpyIYgPDC5ye0iex
-         3KCoVhqSsB18fDNYKGTUFgHpV7hXi5JA3Mv7P+azG2oJRnC+8+dhs2CW6JIv6PX0SuqF
-         v6RKAAEjL+SrJxw2it8Vi6xS/ZfZjOw0jKtQTCnxW+kAiLfw1J5iLd4hFWhE6gjSLG3T
-         y6xgxZcl9oS8AS+fsdX8AIjapy5pvT/6K1BWGKl8H1QM9nYY+SJWasrAgO3a/5YxF+jB
-         hdz7Ns/vueqCI1LPdNAknCRvQptVODT2tJgM0a2Pb+ku3wag6GKsKfM7l6eAm1YZafTL
-         rmow==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ned8K4/DJ2jNNS3XJQ8BysZeLMLkezd228hF2G2kCNA=;
+        b=bTzMeiMzvnJ3igj9/EPAnoT0quEcrRMVvqCDZt7cjChZ8FiuQ/qBSYrjp5PYDLkLWo
+         2SJmgwBnp3mw5dAZs3zQSAePI4r7nI080cK0vfhJ3h28Zfn+UsLBULlJWOrEuVhD26ci
+         49c9pisJKDnip5uKtRqycy+80CjOB5TToP62ADTblfIuz9SA/WTd8MxWS3Z34gmYNVAe
+         iRiC4jlHpBdMH+/xinuSSb9HR7euPV9h50b9bRRjIsYEsg22s4dS0MyLr5CfNNV20zln
+         UngdE00lUseRPe1/B7XlCPMjANoQWsZaxUo9eLKc4jjKssCl6xY5k6OQDaJgxbjZxsU3
+         jseQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=79YMmecniTibmsg7vJUZ+X02gOTamrh9pEXoc3ztOsI=;
-        b=EfucEZDEDj/43+xSUe0Fg1qiXxGHYz/s9Lx3vP9bly0mAbwxtWshrLaCfQYAHC4b0M
-         4X7k0PHu8ejeC59Cjru5LPGmrY6f1v4M8HWCWNu4sa1+/6Ru2JgIkXde1Hw8EbUBssed
-         ANtG0v+bB4dHvO0gAGMbCxNDH4VouEWB8O35zmgjmo1YZRLDwg2SQGpGddz4adnG/eH3
-         hAM4drgcUdlE50RqFdVLfmvQgiZp4+syLTglYO6X0HaxCDOSyLWVgsINMO0q5IVMo/3a
-         8PaT4Hyv/2hEPnn7qeAAM6lT53AhtMocHFzjMJKgLsnTPRZjaOZTMBfH4Svvi2vzUQhp
-         tGwg==
-X-Gm-Message-State: AOAM533sHI75sSzc5hqogQ+cMOrwUocQ3QBfH3kmid0gU7uny5Bi5tbX
-        P2VUs6BDAIpTuEMmj/6Hcg9ZLIQW4CCevhKGULpv8bKPKkpJdleU
-X-Google-Smtp-Source: ABdhPJz3Oc8Ec1tbl53rBwwgD516RimSL1NBRvi8E0BMh5xN1s4Dc6m2buU3rqxfklIbnxa7LxSwiNS6I+s/809+134=
-X-Received: by 2002:a17:907:7d8c:b0:6f2:476d:fde4 with SMTP id
- oz12-20020a1709077d8c00b006f2476dfde4mr19708272ejc.497.1650971148564; Tue, 26
- Apr 2022 04:05:48 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ned8K4/DJ2jNNS3XJQ8BysZeLMLkezd228hF2G2kCNA=;
+        b=dAXYcE9KOfuLzSi+P+gJ/XCFJ6JALYkkMvWD2cNs47rqdqsgL7+evFv1CU7EFDWELy
+         etZY+qMbaBkjHOyVpYTDsiUnJSiVLk+PceCBtnF+DzE0s5yETCth9SFDeFCuMwMmFc9S
+         okvQf3Ahqe0DZZNQX7IpTDW46CQ4GbodfTBau/R9b2zaiT2s5EO7JkyImFb3akDQ3IvN
+         dV7u7B0FTAnOR/bscipRtgzyHlMqSlTFHAg1uAEG/xFue044cr6xO9kMiqoKXTwcQ33q
+         cAEgaE9pdc86nVn7UZi3V/2ERUIFJ4vzWy0kPn16XGWFmzxCOFcXPj8/48SypX0MDBlC
+         anfg==
+X-Gm-Message-State: AOAM531Bu0b5t1WwL9txhPC8XPxkxVyqTT5tzUlNd8okeJ69gGB0PJVd
+        nOHZmdqJWKNcz6o9yqQZDV1i9w==
+X-Google-Smtp-Source: ABdhPJza9w19lgcQbzmc9lPFuOGcElTa3Uz0iMCiD7XPluXEE1inm+3i4eVNdXCAWTodwZoCvhYasQ==
+X-Received: by 2002:a17:907:c07:b0:6f3:a3b2:9582 with SMTP id ga7-20020a1709070c0700b006f3a3b29582mr6148248ejc.91.1650971281249;
+        Tue, 26 Apr 2022 04:08:01 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id n16-20020a05640204d000b0042062f9f0e1sm5926033edw.15.2022.04.26.04.07.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 04:08:00 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH] dt-bindings: soc: qcom,rpmh-rsc: simplify qcom,tcs-config
+Date:   Tue, 26 Apr 2022 13:07:57 +0200
+Message-Id: <20220426110757.80603-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <20220420211105.14654-1-jagathjog1996@gmail.com> <CAHp75VdyPekY7t8Y4-nyVXNt7wFZKB+yL2i6MNe1WLez178a6Q@mail.gmail.com>
-In-Reply-To: <CAHp75VdyPekY7t8Y4-nyVXNt7wFZKB+yL2i6MNe1WLez178a6Q@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 26 Apr 2022 13:05:11 +0200
-Message-ID: <CAHp75VfCxD13X4RdL0ZtiB_MXODck9votoek2s3sUc457AXOrA@mail.gmail.com>
-Subject: Re: [PATCH v4 0/9] iio: accel: bma400: Add buffer, step and activity/inactivity
-To:     Jagath Jog J <jagathjog1996@gmail.com>
-Cc:     Dan Robertson <dan@dlrobertson.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 1:04 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
->
-> On Wed, Apr 20, 2022 at 11:11 PM Jagath Jog J <jagathjog1996@gmail.com> wrote:
-> >
-> > This patch series adds trigger buffer support with data ready interrupt,
-> > separate channel for step counter, an event for step change interrupt,
-> > activity recognition and activity/inactivity event support.
->
-> You forgot to add tags from the previous round of review, please be
-> respectful to reviewers.
+The schema for "qcom,tcs-config" property can be a little bit simpler,
+without the need of defining each item.  Also move the description of
+each part of "qcom,tcs-config" tupple to the tupple items description.
 
-That said, send a new version with properly added tags for what it was given.
+Suggested-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ .../bindings/soc/qcom/qcom,rpmh-rsc.yaml      | 33 +++++++------------
+ 1 file changed, 11 insertions(+), 22 deletions(-)
 
+diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,rpmh-rsc.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,rpmh-rsc.yaml
+index f5ecf4a8c377..4a50f1d27724 100644
+--- a/Documentation/devicetree/bindings/soc/qcom/qcom,rpmh-rsc.yaml
++++ b/Documentation/devicetree/bindings/soc/qcom/qcom,rpmh-rsc.yaml
+@@ -65,33 +65,22 @@ properties:
+ 
+   qcom,tcs-config:
+     $ref: /schemas/types.yaml#/definitions/uint32-matrix
++    minItems: 4
++    maxItems: 4
+     items:
+-      - items:
+-          - description: TCS type
+-            enum: [ 0, 1, 2, 3 ]
+-          - description: Number of TCS
+-      - items:
+-          - description: TCS type
+-            enum: [ 0, 1, 2, 3 ]
+-          - description: Number of TCS
+-      - items:
+-          - description: TCS type
+-            enum: [ 0, 1, 2, 3]
+-          - description: Numbe r of TCS
+-      - items:
+-          - description: TCS type
+-            enum: [ 0, 1, 2, 3 ]
+-          - description: Number of TCS
++      items:
++        - description: |
++            TCS type::
++             - ACTIVE_TCS
++             - SLEEP_TCS
++             - WAKE_TCS
++             - CONTROL_TCS
++          enum: [ 0, 1, 2, 3 ]
++        - description: Number of TCS
+     description: |
+       The tuple defining the configuration of TCS. Must have two cells which
+       describe each TCS type.  The order of the TCS must match the hardware
+       configuration.
+-      Cell 1 (TCS Type):: TCS types to be specified::
+-       - ACTIVE_TCS
+-       - SLEEP_TCS
+-       - WAKE_TCS
+-       - CONTROL_TCS
+-      Cell 2 (Number of TCS):: <u32>
+ 
+   qcom,tcs-offset:
+     $ref: /schemas/types.yaml#/definitions/uint32
 -- 
-With Best Regards,
-Andy Shevchenko
+2.32.0
+
