@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98A58C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:23:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 533E3C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:23:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347708AbiDZJYi (ORCPT
+        id S1347861AbiDZJYz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:24:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56192 "EHLO
+        Tue, 26 Apr 2022 05:24:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345700AbiDZI5o (ORCPT
+        with ESMTP id S1346666AbiDZJBJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:57:44 -0400
+        Tue, 26 Apr 2022 05:01:09 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2762564C4;
-        Tue, 26 Apr 2022 01:42:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1B2440901;
+        Tue, 26 Apr 2022 01:43:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D1A12B81CED;
-        Tue, 26 Apr 2022 08:42:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3511CC385A0;
-        Tue, 26 Apr 2022 08:42:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B413B81CED;
+        Tue, 26 Apr 2022 08:43:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0335C385A4;
+        Tue, 26 Apr 2022 08:43:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962564;
-        bh=J+4i1vcd5/XjbgPWY6oEshrMLJ1WCfrhyL0vvFwQMNU=;
+        s=korg; t=1650962600;
+        bh=vODgJ8/N38n2QubethSt6gI2SLcVIqnaSD0Dgq0Gjfc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Da4WgEYiKXmnPFimqfHP0eQYS+QLQ3jfYEgt7pPOBicZBL1tIXBo4yZyvE0oDx6ii
-         Cck24CtF1hVAJdRwshG+zW4RGh7h0eWfopREq2APsZrYbhFc4/DEKtahumjXhbJcSN
-         eTVkG604nLAQsFJfjhe4OWNgR0mLsvgX4q2vUWN8=
+        b=L6vz74UXmwqhC1whxyDdyd+8PTlSm1wZw4weywrXzh/EixhCcgO1MvtYCu1KGQ4GY
+         fR9P1JCiOSQewtnj/8XL/bLZlwi3OA809dNYgGonfxLRFgAEUbr0YqGeKbcJ1c1bve
+         AzreD7b2SrvFzdETS2O2aJP+BR4bQDz3fMn18Guc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
-        Khazhismel Kumykov <khazhy@google.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.17 004/146] block/compat_ioctl: fix range check in BLKGETSIZE
-Date:   Tue, 26 Apr 2022 10:19:59 +0200
-Message-Id: <20220426081750.184589989@linuxfoundation.org>
+        stable@vger.kernel.org, Grzegorz Nitka <grzegorz.nitka@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@intel.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 027/146] ice: allow creating VFs for !CONFIG_NET_SWITCHDEV
+Date:   Tue, 26 Apr 2022 10:20:22 +0200
+Message-Id: <20220426081750.831045448@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -51,36 +53,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Khazhismel Kumykov <khazhy@google.com>
+From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 
-commit ccf16413e520164eb718cf8b22a30438da80ff23 upstream.
+[ Upstream commit aacca7a83b9753c562395ef328352dfd8c003c59 ]
 
-kernel ulong and compat_ulong_t may not be same width. Use type directly
-to eliminate mismatches.
+Currently for !CONFIG_NET_SWITCHDEV kernel builds it is not possible to
+create VFs properly as call to ice_eswitch_configure() returns
+-EOPNOTSUPP for us. This is because CONFIG_ICE_SWITCHDEV depends on
+CONFIG_NET_SWITCHDEV.
 
-This would result in truncation rather than EFBIG for 32bit mode for
-large disks.
+Change the ice_eswitch_configure() implementation for
+!CONFIG_ICE_SWITCHDEV to return 0 instead -EOPNOTSUPP and let
+ice_ena_vfs() finish its work properly.
 
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Khazhismel Kumykov <khazhy@google.com>
-Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
-Link: https://lore.kernel.org/r/20220414224056.2875681-1-khazhy@google.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC: Grzegorz Nitka <grzegorz.nitka@intel.com>
+Fixes: 1a1c40df2e80 ("ice: set and release switchdev environment")
+Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Signed-off-by: Michal Swiatkowski <michal.swiatkowski@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/ioctl.c |    2 +-
+ drivers/net/ethernet/intel/ice/ice_eswitch.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/block/ioctl.c
-+++ b/block/ioctl.c
-@@ -629,7 +629,7 @@ long compat_blkdev_ioctl(struct file *fi
- 		return compat_put_long(argp,
- 			(bdev->bd_disk->bdi->ra_pages * PAGE_SIZE) / 512);
- 	case BLKGETSIZE:
--		if (bdev_nr_sectors(bdev) > ~0UL)
-+		if (bdev_nr_sectors(bdev) > ~(compat_ulong_t)0)
- 			return -EFBIG;
- 		return compat_put_ulong(argp, bdev_nr_sectors(bdev));
+diff --git a/drivers/net/ethernet/intel/ice/ice_eswitch.h b/drivers/net/ethernet/intel/ice/ice_eswitch.h
+index bd58d9d2e565..6a413331572b 100644
+--- a/drivers/net/ethernet/intel/ice/ice_eswitch.h
++++ b/drivers/net/ethernet/intel/ice/ice_eswitch.h
+@@ -52,7 +52,7 @@ static inline void ice_eswitch_update_repr(struct ice_vsi *vsi) { }
  
+ static inline int ice_eswitch_configure(struct ice_pf *pf)
+ {
+-	return -EOPNOTSUPP;
++	return 0;
+ }
+ 
+ static inline int ice_eswitch_rebuild(struct ice_pf *pf)
+-- 
+2.35.1
+
 
 
