@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47426C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:34:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDBB6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:34:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347477AbiDZJhR (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:37:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36994 "EHLO
+        id S242513AbiDZJhW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:37:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347914AbiDZJGW (ORCPT
+        with ESMTP id S1347921AbiDZJGX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:06:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29C68B7163;
-        Tue, 26 Apr 2022 01:47:16 -0700 (PDT)
+        Tue, 26 Apr 2022 05:06:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A670B7167;
+        Tue, 26 Apr 2022 01:47:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D896CB81A2F;
-        Tue, 26 Apr 2022 08:47:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43000C385A4;
-        Tue, 26 Apr 2022 08:47:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 262DF60C43;
+        Tue, 26 Apr 2022 08:47:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BBB1C385A0;
+        Tue, 26 Apr 2022 08:47:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962833;
-        bh=j2fWnchsZdK99kusfeZuzP3ZMiYvZ++rKX4EyqUwgpo=;
+        s=korg; t=1650962836;
+        bh=FiNgDFGWAyrFzolu5MZDpumZHpbum9k6LqD0J0lX34Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gb0yMholBiIrpCqKRS4FDthriJ/3x33ZU24qrM0Mgy5nUVxXVIjsKhFX7vH6fm6yy
-         FnjE8zTgE5XHb6LjdlT/y5SQhYqwkdIqVpZQc1wmr5mqnd5DEWCyG6+q5J0bAx5uo6
-         y06NsctBDrDO63mAzLLCLYgXrar2AXV7Od7DuAgs=
+        b=rDZYR+gpdATb8Va/CvjDwmV2FIdbSR7sKD+ygNZppxIDjFDRIM2f0zrj4U+7ibFem
+         y9bY670VQg5PuXSJRVq2Wxw2Mnm9eQPCDCGtGG/S3slScb4hTRYDayxsIywAsctG3T
+         Dw9aGIxTqXmu5z/OBShwC8x5B1dhrjFH/KuxODOs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaoke Wang <xkernel.wang@foxmail.com>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Rob Clark <robdclark@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 065/146] drm/msm/disp: check the return value of kzalloc()
-Date:   Tue, 26 Apr 2022 10:21:00 +0200
-Message-Id: <20220426081751.893023858@linuxfoundation.org>
+        stable@vger.kernel.org, Qian Cai <quic_qiancai@quicinc.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 056/146] arm64: mm: fix p?d_leaf()
+Date:   Tue, 26 Apr 2022 10:20:51 +0200
+Message-Id: <20220426081751.643715032@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -51,36 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+From: Muchun Song <songmuchun@bytedance.com>
 
-[ Upstream commit f75e582b0c3ee8f0bddc2248cc8b9175f29c5937 ]
+[ Upstream commit 23bc8f69f0eceecbb87c3801d2e48827d2dca92b ]
 
-kzalloc() is a memory allocation function which can return NULL when
-some internal memory errors happen. So it is better to check it to
-prevent potential wrong memory access.
+The pmd_leaf() is used to test a leaf mapped PMD, however, it misses
+the PROT_NONE mapped PMD on arm64.  Fix it.  A real world issue [1]
+caused by this was reported by Qian Cai. Also fix pud_leaf().
 
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Link: https://lore.kernel.org/r/tencent_B3E19486FF39415098B572B7397C2936C309@qq.com
-Signed-off-by: Rob Clark <robdclark@chromium.org>
+Link: https://patchwork.kernel.org/comment/24798260/ [1]
+Fixes: 8aa82df3c123 ("arm64: mm: add p?d_leaf() definitions")
+Reported-by: Qian Cai <quic_qiancai@quicinc.com>
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+Link: https://lore.kernel.org/r/20220422060033.48711-1-songmuchun@bytedance.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/msm_disp_snapshot_util.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm64/include/asm/pgtable.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/msm_disp_snapshot_util.c b/drivers/gpu/drm/msm/disp/msm_disp_snapshot_util.c
-index 5d2ff6791058..acfe1b31e079 100644
---- a/drivers/gpu/drm/msm/disp/msm_disp_snapshot_util.c
-+++ b/drivers/gpu/drm/msm/disp/msm_disp_snapshot_util.c
-@@ -176,6 +176,8 @@ void msm_disp_snapshot_add_block(struct msm_disp_state *disp_state, u32 len,
- 	va_list va;
+diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pgtable.h
+index 94e147e5456c..dff2b483ea50 100644
+--- a/arch/arm64/include/asm/pgtable.h
++++ b/arch/arm64/include/asm/pgtable.h
+@@ -535,7 +535,7 @@ extern pgprot_t phys_mem_access_prot(struct file *file, unsigned long pfn,
+ 				 PMD_TYPE_TABLE)
+ #define pmd_sect(pmd)		((pmd_val(pmd) & PMD_TYPE_MASK) == \
+ 				 PMD_TYPE_SECT)
+-#define pmd_leaf(pmd)		pmd_sect(pmd)
++#define pmd_leaf(pmd)		(pmd_present(pmd) && !pmd_table(pmd))
+ #define pmd_bad(pmd)		(!pmd_table(pmd))
  
- 	new_blk = kzalloc(sizeof(struct msm_disp_state_block), GFP_KERNEL);
-+	if (!new_blk)
-+		return;
+ #define pmd_leaf_size(pmd)	(pmd_cont(pmd) ? CONT_PMD_SIZE : PMD_SIZE)
+@@ -625,7 +625,7 @@ static inline unsigned long pmd_page_vaddr(pmd_t pmd)
+ #define pud_none(pud)		(!pud_val(pud))
+ #define pud_bad(pud)		(!pud_table(pud))
+ #define pud_present(pud)	pte_present(pud_pte(pud))
+-#define pud_leaf(pud)		pud_sect(pud)
++#define pud_leaf(pud)		(pud_present(pud) && !pud_table(pud))
+ #define pud_valid(pud)		pte_valid(pud_pte(pud))
  
- 	va_start(va, fmt);
- 
+ static inline void set_pud(pud_t *pudp, pud_t pud)
 -- 
 2.35.1
 
