@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52E99C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:33:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B747C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:33:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347804AbiDZJgs (ORCPT
+        id S1347825AbiDZJgy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:36:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40744 "EHLO
+        Tue, 26 Apr 2022 05:36:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347927AbiDZJGX (ORCPT
+        with ESMTP id S1345995AbiDZJGm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:06:23 -0400
+        Tue, 26 Apr 2022 05:06:42 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 587CBB82DF;
-        Tue, 26 Apr 2022 01:47:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 167F2149292;
+        Tue, 26 Apr 2022 01:47:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E93C7B81A2F;
-        Tue, 26 Apr 2022 08:47:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39A52C385A0;
-        Tue, 26 Apr 2022 08:47:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C61D4B81CB3;
+        Tue, 26 Apr 2022 08:47:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0FD9C385AC;
+        Tue, 26 Apr 2022 08:47:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962842;
-        bh=pPUGC2QOI+p+xw95cth8tUH43wg/hfGzB4GQieCVmOY=;
+        s=korg; t=1650962873;
+        bh=GWcUtf3UQVYWNlTxcZ+Z1ItyTx0lhByWckaw0QEi8uk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TjaybJkubdRaXsHzGYy6A9HRzKUKMJ+ZTu1EP7UwPABgf1wCHqEhDrTsM6K601WKU
-         jAGOhL8PkYIgTvCo2n1D2dpNJudbVnnna96wdrtDEBRRrJy33/bKncCO70rMr5vp2/
-         oVSK3r/EN8/cnwGoMiGispCMsZCSIaIhK7SBkauU=
+        b=Qxwa4gNDNknbrQJiVHwvQzV8ALQRTxEnEgj450Gfec/AByqkGfTa0TcZF3zqastLd
+         8vko0pvDtN0Fl0tV22LbeAoVUAbs2oeyssbsUWJ/0I+GRDBzAaK/TaFvryrqzOzrk5
+         uhYJZoVpSBuN0DWWm45XMb3Jb1lQfdB1VfzclbvI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Maxime Ripard <maxime@cerno.tech>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 108/146] drm/vc4: Use pm_runtime_resume_and_get to fix pm_runtime_get_sync() usage
-Date:   Tue, 26 Apr 2022 10:21:43 +0200
-Message-Id: <20220426081753.093144757@linuxfoundation.org>
+Subject: [PATCH 5.17 100/146] Input: omap4-keypad - fix pm_runtime_get_sync() error checking
+Date:   Tue, 26 Apr 2022 10:21:35 +0200
+Message-Id: <20220426081752.870570114@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -52,37 +52,34 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 3d0b93d92a2790337aa9d18cb332d02356a24126 ]
+[ Upstream commit 81022a170462d38ea10612cb67e8e2c529d58abe ]
 
 If the device is already in a runtime PM enabled state
-pm_runtime_get_sync() will return 1.
+pm_runtime_get_sync() will return 1, so a test for negative
+value should be used to check for errors.
 
-Also, we need to call pm_runtime_put_noidle() when pm_runtime_get_sync()
-fails, so use pm_runtime_resume_and_get() instead. this function
-will handle this.
-
-Fixes: 4078f5757144 ("drm/vc4: Add DSI driver")
+Fixes: f77621cc640a ("Input: omap-keypad - dynamically handle register offsets")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220420135008.2757-1-linmq006@gmail.com
+Link: https://lore.kernel.org/r/20220412070131.19848-1-linmq006@gmail.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_dsi.c | 2 +-
+ drivers/input/keyboard/omap4-keypad.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
-index 9300d3354c51..64dfefeb03f5 100644
---- a/drivers/gpu/drm/vc4/vc4_dsi.c
-+++ b/drivers/gpu/drm/vc4/vc4_dsi.c
-@@ -846,7 +846,7 @@ static void vc4_dsi_encoder_enable(struct drm_encoder *encoder)
- 	unsigned long phy_clock;
- 	int ret;
- 
--	ret = pm_runtime_get_sync(dev);
-+	ret = pm_runtime_resume_and_get(dev);
- 	if (ret) {
- 		DRM_ERROR("Failed to runtime PM enable on DSI%d\n", dsi->variant->port);
- 		return;
+diff --git a/drivers/input/keyboard/omap4-keypad.c b/drivers/input/keyboard/omap4-keypad.c
+index 43375b38ee59..8a7ce41b8c56 100644
+--- a/drivers/input/keyboard/omap4-keypad.c
++++ b/drivers/input/keyboard/omap4-keypad.c
+@@ -393,7 +393,7 @@ static int omap4_keypad_probe(struct platform_device *pdev)
+ 	 * revision register.
+ 	 */
+ 	error = pm_runtime_get_sync(dev);
+-	if (error) {
++	if (error < 0) {
+ 		dev_err(dev, "pm_runtime_get_sync() failed\n");
+ 		pm_runtime_put_noidle(dev);
+ 		return error;
 -- 
 2.35.1
 
