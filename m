@@ -2,46 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28C16C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:32:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AF5CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:32:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346816AbiDZJfl (ORCPT
+        id S1347101AbiDZJfq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:35:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57760 "EHLO
+        Tue, 26 Apr 2022 05:35:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347901AbiDZJGV (ORCPT
+        with ESMTP id S1347935AbiDZJGY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:06:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA6FFAD129;
-        Tue, 26 Apr 2022 01:46:55 -0700 (PDT)
+        Tue, 26 Apr 2022 05:06:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F81BBAB88;
+        Tue, 26 Apr 2022 01:47:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 77D7E604F5;
-        Tue, 26 Apr 2022 08:46:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CCACC385A0;
-        Tue, 26 Apr 2022 08:46:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1981FB81A2F;
+        Tue, 26 Apr 2022 08:47:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47128C385A0;
+        Tue, 26 Apr 2022 08:47:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962814;
-        bh=kh1oM6zhDY2AfxWFZwSmhLWkWY21yY0iNrd9a3v9HKw=;
+        s=korg; t=1650962857;
+        bh=6u3Lw04ae7BNxpRscauU4CwkkTx3Rv+lfvEmnyV8btA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=okTw30RaZZRt0gaMVkGIa0DNkHILQDa1KALlLXbDtVCTJD1F4xrcR/6dwxZtyOwYg
-         jG7DBU3vKi0rU6/AvHHtNmJLJ/XI3/gJWdclayWqM2wcdZ9VMDGeurOQCFPrylYwDT
-         HE7TM22FnyoPNYJ4CzXa7AeGjRS1xZmJsl1JkuFg=
+        b=1hEcCaKkSBnLUX/rybJP42RQV55GSm+DkG1iQz9xdQ1tjcLOKlJJb/vjrI69BHzU4
+         Vhfj3ytvWq4lcvpopNX5YgT3wkaojKW6G+R3d2RNwkr/1jkmFKFcp55q1qHhtlLjQ3
+         z1VztyxDRAG+2ey9kJgRuNfqPyZv+2lqaloK2d7M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Kevin Groeneveld <kgroeneveld@lenbrook.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 5.17 096/146] dmaengine: imx-sdma: fix init of uart scripts
-Date:   Tue, 26 Apr 2022 10:21:31 +0200
-Message-Id: <20220426081752.756427771@linuxfoundation.org>
+        stable@vger.kernel.org, James Clark <james.clark@arm.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        German Gomez <german.gomez@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ravi Bangoria <ravi.bangoria@linux.ibm.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 113/146] perf report: Set PERF_SAMPLE_DATA_SRC bit for Arm SPE event
+Date:   Tue, 26 Apr 2022 10:21:48 +0200
+Message-Id: <20220426081753.230607369@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -53,103 +58,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kevin Groeneveld <kgroeneveld@lenbrook.com>
+From: Leo Yan <leo.yan@linaro.org>
 
-commit a3ae97f4c87d9570e7e9a3e3324c443757f6e29a upstream.
+[ Upstream commit ccb17caecfbd542f49a2a79ae088136ba8bfb794 ]
 
-Commit b98ce2f4e32b ("dmaengine: imx-sdma: add uart rom script") broke
-uart rx on imx5 when using sdma firmware from older Freescale 2.6.35
-kernel. In this case reading addr->uartXX_2_mcu_addr was going out of
-bounds of the firmware memory and corrupting the uart script addresses.
+Since commit bb30acae4c4dacfa ("perf report: Bail out --mem-mode if mem
+info is not available") "perf mem report" and "perf report --mem-mode"
+don't report result if the PERF_SAMPLE_DATA_SRC bit is missed in sample
+type.
 
-Simply adding a bounds check before accessing addr->uartXX_2_mcu_addr
-does not work as the uartXX_2_mcu_addr members are now beyond the size
-of the older firmware and the uart addresses would never be populated
-in that case. There are other ways to fix this but overall the logic
-seems clearer to me to revert the uartXX_2_mcu_ram_addr structure
-entries back to uartXX_2_mcu_addr, change the newer entries to
-uartXX_2_mcu_rom_addr and update the logic accordingly.
+The commit ffab487052054162 ("perf: arm-spe: Fix perf report
+--mem-mode") partially fixes the issue.  It adds PERF_SAMPLE_DATA_SRC
+bit for Arm SPE event, this allows the perf data file generated by
+kernel v5.18-rc1 or later version can be reported properly.
 
-I have tested this patch on:
-1. An i.MX53 system with sdma firmware from Freescale 2.6.35 kernel.
-   Without this patch uart rx is broken in this scenario, with the
-   patch uart rx is restored.
-2. An i.MX6D system with no external sdma firmware. uart is okay with
-   or without this patch.
-3. An i.MX8MM system using current sdma-imx7d.bin firmware from
-   linux-firmware. uart is okay with or without this patch and I
-   confirmed the rom version of the uart script is being used which was
-   the intention and reason for commit b98ce2f4e32b ("dmaengine:
-   imx-sdma: add uart rom script") in the first place.
+On the other hand, perf tool still fails to be backward compatibility
+for a data file recorded by an older version's perf which contains Arm
+SPE trace data.  This patch is a workaround in reporting phase, when
+detects ARM SPE PMU event and without PERF_SAMPLE_DATA_SRC bit, it will
+force to set the bit in the sample type and give a warning info.
 
-Fixes: b98ce2f4e32b ("dmaengine: imx-sdma: add uart rom script")
-Cc: stable@vger.kernel.org
-Signed-off-by: Kevin Groeneveld <kgroeneveld@lenbrook.com>
-Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
-Reviewed-by: Fabio Estevam <festevam@gmail.com>
-Acked-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Link: https://lore.kernel.org/r/20220410223118.15086-1-kgroeneveld@lenbrook.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: bb30acae4c4dacfa ("perf report: Bail out --mem-mode if mem info is not available")
+Reviewed-by: James Clark <james.clark@arm.com>
+Signed-off-by: Leo Yan <leo.yan@linaro.org>
+Tested-by: German Gomez <german.gomez@arm.com>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Ravi Bangoria <ravi.bangoria@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220414123201.842754-1-leo.yan@linaro.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/imx-sdma.c |   28 ++++++++++++++--------------
- 1 file changed, 14 insertions(+), 14 deletions(-)
+ tools/perf/builtin-report.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
---- a/drivers/dma/imx-sdma.c
-+++ b/drivers/dma/imx-sdma.c
-@@ -198,12 +198,12 @@ struct sdma_script_start_addrs {
- 	s32 per_2_firi_addr;
- 	s32 mcu_2_firi_addr;
- 	s32 uart_2_per_addr;
--	s32 uart_2_mcu_ram_addr;
-+	s32 uart_2_mcu_addr;
- 	s32 per_2_app_addr;
- 	s32 mcu_2_app_addr;
- 	s32 per_2_per_addr;
- 	s32 uartsh_2_per_addr;
--	s32 uartsh_2_mcu_ram_addr;
-+	s32 uartsh_2_mcu_addr;
- 	s32 per_2_shp_addr;
- 	s32 mcu_2_shp_addr;
- 	s32 ata_2_mcu_addr;
-@@ -232,8 +232,8 @@ struct sdma_script_start_addrs {
- 	s32 mcu_2_ecspi_addr;
- 	s32 mcu_2_sai_addr;
- 	s32 sai_2_mcu_addr;
--	s32 uart_2_mcu_addr;
--	s32 uartsh_2_mcu_addr;
-+	s32 uart_2_mcu_rom_addr;
-+	s32 uartsh_2_mcu_rom_addr;
- 	/* End of v3 array */
- 	s32 mcu_2_zqspi_addr;
- 	/* End of v4 array */
-@@ -1780,17 +1780,17 @@ static void sdma_add_scripts(struct sdma
- 			saddr_arr[i] = addr_arr[i];
+diff --git a/tools/perf/builtin-report.c b/tools/perf/builtin-report.c
+index 1dd92d8c9279..a6bb35b0af9f 100644
+--- a/tools/perf/builtin-report.c
++++ b/tools/perf/builtin-report.c
+@@ -349,6 +349,7 @@ static int report__setup_sample_type(struct report *rep)
+ 	struct perf_session *session = rep->session;
+ 	u64 sample_type = evlist__combined_sample_type(session->evlist);
+ 	bool is_pipe = perf_data__is_pipe(session->data);
++	struct evsel *evsel;
  
- 	/*
--	 * get uart_2_mcu_addr/uartsh_2_mcu_addr rom script specially because
--	 * they are now replaced by uart_2_mcu_ram_addr/uartsh_2_mcu_ram_addr
--	 * to be compatible with legacy freescale/nxp sdma firmware, and they
--	 * are located in the bottom part of sdma_script_start_addrs which are
--	 * beyond the SDMA_SCRIPT_ADDRS_ARRAY_SIZE_V1.
-+	 * For compatibility with NXP internal legacy kernel before 4.19 which
-+	 * is based on uart ram script and mainline kernel based on uart rom
-+	 * script, both uart ram/rom scripts are present in newer sdma
-+	 * firmware. Use the rom versions if they are present (V3 or newer).
- 	 */
--	if (addr->uart_2_mcu_addr)
--		sdma->script_addrs->uart_2_mcu_addr = addr->uart_2_mcu_addr;
--	if (addr->uartsh_2_mcu_addr)
--		sdma->script_addrs->uartsh_2_mcu_addr = addr->uartsh_2_mcu_addr;
--
-+	if (sdma->script_number >= SDMA_SCRIPT_ADDRS_ARRAY_SIZE_V3) {
-+		if (addr->uart_2_mcu_rom_addr)
-+			sdma->script_addrs->uart_2_mcu_addr = addr->uart_2_mcu_rom_addr;
-+		if (addr->uartsh_2_mcu_rom_addr)
-+			sdma->script_addrs->uartsh_2_mcu_addr = addr->uartsh_2_mcu_rom_addr;
-+	}
- }
+ 	if (session->itrace_synth_opts->callchain ||
+ 	    session->itrace_synth_opts->add_callchain ||
+@@ -403,6 +404,19 @@ static int report__setup_sample_type(struct report *rep)
+ 	}
  
- static void sdma_load_firmware(const struct firmware *fw, void *context)
+ 	if (sort__mode == SORT_MODE__MEMORY) {
++		/*
++		 * FIXUP: prior to kernel 5.18, Arm SPE missed to set
++		 * PERF_SAMPLE_DATA_SRC bit in sample type.  For backward
++		 * compatibility, set the bit if it's an old perf data file.
++		 */
++		evlist__for_each_entry(session->evlist, evsel) {
++			if (strstr(evsel->name, "arm_spe") &&
++				!(sample_type & PERF_SAMPLE_DATA_SRC)) {
++				evsel->core.attr.sample_type |= PERF_SAMPLE_DATA_SRC;
++				sample_type |= PERF_SAMPLE_DATA_SRC;
++			}
++		}
++
+ 		if (!is_pipe && !(sample_type & PERF_SAMPLE_DATA_SRC)) {
+ 			ui__error("Selected --mem-mode but no mem data. "
+ 				  "Did you call perf record without -d?\n");
+-- 
+2.35.1
+
 
 
