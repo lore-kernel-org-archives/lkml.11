@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E54D4C35294
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:07:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0547FC35296
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:07:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347176AbiDZJKK (ORCPT
+        id S1347251AbiDZJKS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:10:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52046 "EHLO
+        Tue, 26 Apr 2022 05:10:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346672AbiDZIuP (ORCPT
+        with ESMTP id S1346695AbiDZIuQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:50:15 -0400
+        Tue, 26 Apr 2022 04:50:16 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ADA116FAC0;
-        Tue, 26 Apr 2022 01:38:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 273A916FADE;
+        Tue, 26 Apr 2022 01:38:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 18F5960C5D;
-        Tue, 26 Apr 2022 08:38:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2126FC385A0;
-        Tue, 26 Apr 2022 08:38:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 911EF60C2B;
+        Tue, 26 Apr 2022 08:38:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E7A5C385B1;
+        Tue, 26 Apr 2022 08:38:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962315;
-        bh=PppC3vam2C5Yu3j4i8ueQKhK2ayOhbdqrydENy51b+I=;
+        s=korg; t=1650962322;
+        bh=Bzgv5WqWQfy17psL16EYWYKGoHPWRb79U3suFi4PhDg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AWQSArJuUC+LR9udJloKwU+6zNCZ/0Pf9/dqXnV0Sxh3gluzc+6apWG94EFlHimXL
-         /On8s+/MIPxMnQkIr8wjEY140aJF0G1cRch8lPqsPjQH/YhwspoNrG1x88nGNxp5k3
-         TK/sqTwn49MTD/8HapumlagEQZZB/QGZ0tuOakBg=
+        b=iiWjWcdIlIPcHkIaCMfZ/GVVe43xRDta37+kg7C82rRq3PssjAYJCjkGovI0IhN5v
+         noxqYYMYhAz9C4BDK9IWK9KXElQeRVJQkYxb0yDiA9Sy74hRzaNcLtv37T6Xq5IZ6W
+         RQ4V7GpBgcFfd2VaTuGXF6wpg4m4h5jinABLdMNQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sameer Pujar <spujar@nvidia.com>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Thierry Reding <treding@nvidia.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 055/124] reset: tegra-bpmp: Restore Handle errors in BPMP response
-Date:   Tue, 26 Apr 2022 10:20:56 +0200
-Message-Id: <20220426081748.865821423@linuxfoundation.org>
+        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 057/124] ALSA: usb-audio: Fix undefined behavior due to shift overflowing the constant
+Date:   Tue, 26 Apr 2022 10:20:58 +0200
+Message-Id: <20220426081748.922713856@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -52,56 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sameer Pujar <spujar@nvidia.com>
+From: Borislav Petkov <bp@suse.de>
 
-[ Upstream commit d1da1052ffad63aa5181b69f20a6952e31f339c2 ]
+[ Upstream commit 1ef8715975de8bd481abbd0839ed4f49d9e5b0ff ]
 
-This reverts following commit 69125b4b9440 ("reset: tegra-bpmp: Revert
-Handle errors in BPMP response").
+Fix:
 
-The Tegra194 HDA reset failure is fixed by commit d278dc9151a0 ("ALSA:
-hda/tegra: Fix Tegra194 HDA reset failure"). The temporary revert of
-original commit c045ceb5a145 ("reset: tegra-bpmp: Handle errors in BPMP
-response") can be removed now.
+  sound/usb/midi.c: In function ‘snd_usbmidi_out_endpoint_create’:
+  sound/usb/midi.c:1389:2: error: case label does not reduce to an integer constant
+    case USB_ID(0xfc08, 0x0101): /* Unknown vendor Cable */
+    ^~~~
 
-Signed-off-by: Sameer Pujar <spujar@nvidia.com>
-Tested-by: Jon Hunter <jonathanh@nvidia.com>
-Reviewed-by: Jon Hunter <jonathanh@nvidia.com>
-Acked-by: Thierry Reding <treding@nvidia.com>
-Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
-Link: https://lore.kernel.org/r/1641995806-15245-1-git-send-email-spujar@nvidia.com
+See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
+details as to why it triggers with older gccs only.
+
+[ A slight correction with parentheses around the argument by tiwai ]
+
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220405151517.29753-3-bp@alien8.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/reset/tegra/reset-bpmp.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ sound/usb/usbaudio.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/reset/tegra/reset-bpmp.c b/drivers/reset/tegra/reset-bpmp.c
-index 24d3395964cc..4c5bba52b105 100644
---- a/drivers/reset/tegra/reset-bpmp.c
-+++ b/drivers/reset/tegra/reset-bpmp.c
-@@ -20,6 +20,7 @@ static int tegra_bpmp_reset_common(struct reset_controller_dev *rstc,
- 	struct tegra_bpmp *bpmp = to_tegra_bpmp(rstc);
- 	struct mrq_reset_request request;
- 	struct tegra_bpmp_message msg;
-+	int err;
+diff --git a/sound/usb/usbaudio.h b/sound/usb/usbaudio.h
+index 167834133b9b..b8359a0aa008 100644
+--- a/sound/usb/usbaudio.h
++++ b/sound/usb/usbaudio.h
+@@ -8,7 +8,7 @@
+  */
  
- 	memset(&request, 0, sizeof(request));
- 	request.cmd = command;
-@@ -30,7 +31,13 @@ static int tegra_bpmp_reset_common(struct reset_controller_dev *rstc,
- 	msg.tx.data = &request;
- 	msg.tx.size = sizeof(request);
+ /* handling of USB vendor/product ID pairs as 32-bit numbers */
+-#define USB_ID(vendor, product) (((vendor) << 16) | (product))
++#define USB_ID(vendor, product) (((unsigned int)(vendor) << 16) | (product))
+ #define USB_ID_VENDOR(id) ((id) >> 16)
+ #define USB_ID_PRODUCT(id) ((u16)(id))
  
--	return tegra_bpmp_transfer(bpmp, &msg);
-+	err = tegra_bpmp_transfer(bpmp, &msg);
-+	if (err)
-+		return err;
-+	if (msg.rx.ret)
-+		return -EINVAL;
-+
-+	return 0;
- }
- 
- static int tegra_bpmp_reset_module(struct reset_controller_dev *rstc,
 -- 
 2.35.1
 
