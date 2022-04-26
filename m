@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5B59C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:39:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01CDDC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:39:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345074AbiDZImt (ORCPT
+        id S1345608AbiDZImy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:42:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60538 "EHLO
+        Tue, 26 Apr 2022 04:42:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345639AbiDZIev (ORCPT
+        with ESMTP id S1345119AbiDZIfR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:34:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30E7A7B111;
-        Tue, 26 Apr 2022 01:27:59 -0700 (PDT)
+        Tue, 26 Apr 2022 04:35:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FDD681182;
+        Tue, 26 Apr 2022 01:28:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C0BB86185C;
-        Tue, 26 Apr 2022 08:27:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF145C385A4;
-        Tue, 26 Apr 2022 08:27:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 002C1B81CF7;
+        Tue, 26 Apr 2022 08:28:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BA10C385A4;
+        Tue, 26 Apr 2022 08:28:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961678;
-        bh=GYRN8gEHNluHJetTN7qwHBSbp5xnHOcjNQsr6hRA2LE=;
+        s=korg; t=1650961716;
+        bh=06XDKZ6eGspf8eNJ01Fmut9oFMZHv1vvkWCZjqwZm/w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ui3knCezcZnfSYd8N96MA3f1A0ifNWB9dkucJ7yjp9TVGGMuVMygGIDASiHX9ULhR
-         x5QdhpZFHr5EWTUMEbtRjHEbLikzb2CUuEvp8s+2pWnDL7MkeWl7dSrjEUBkNIcZTA
-         14in1qdm4v3uJZGCT03BZOcZiV2KbQHnFkd85b88=
+        b=wgqfPa/Ng2e7Dsuk9tL7T0e3CSeZpgUQzsg/DzcJDUwrrGkcktea5lTjQTrT8T6a/
+         HJ8LE2wagjydPQ8umfTAhHI+TCnlGNtoouuEbtTycpGFTDx9o6vdSAgyx6PqBsA6Y6
+         Rlaa2SZP1BPzez/NmdKX1xZ4Kh5xS5KR7OjshGWc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 4.19 30/53] dma: at_xdmac: fix a missing check on list iterator
-Date:   Tue, 26 Apr 2022 10:21:10 +0200
-Message-Id: <20220426081736.533147335@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sergey Matyukevich <sergey.matyukevich@synopsys.com>,
+        Vineet Gupta <vgupta@kernel.org>
+Subject: [PATCH 4.19 37/53] ARC: entry: fix syscall_trace_exit argument
+Date:   Tue, 26 Apr 2022 10:21:17 +0200
+Message-Id: <20220426081736.735615790@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081735.651926456@linuxfoundation.org>
 References: <20220426081735.651926456@linuxfoundation.org>
@@ -49,57 +50,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Sergey Matyukevich <sergey.matyukevich@synopsys.com>
 
-commit 206680c4e46b62fd8909385e0874a36952595b85 upstream.
+commit b1c6ecfdd06907554518ec384ce8e99889d15193 upstream.
 
-The bug is here:
-	__func__, desc, &desc->tx_dma_desc.phys, ret, cookie, residue);
+Function syscall_trace_exit expects pointer to pt_regs. However
+r0 is also used to keep syscall return value. Restore pointer
+to pt_regs before calling syscall_trace_exit.
 
-The list iterator 'desc' will point to a bogus position containing
-HEAD if the list is empty or no element is found. To avoid dev_dbg()
-prints a invalid address, use a new variable 'iter' as the list
-iterator, while use the origin variable 'desc' as a dedicated
-pointer to point to the found element.
-
-Cc: stable@vger.kernel.org
-Fixes: 82e2424635f4c ("dmaengine: xdmac: fix print warning on dma_addr_t variable")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Link: https://lore.kernel.org/r/20220327061154.4867-1-xiam0nd.tong@gmail.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Sergey Matyukevich <sergey.matyukevich@synopsys.com>
+Signed-off-by: Vineet Gupta <vgupta@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/dma/at_xdmac.c |   12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ arch/arc/kernel/entry.S |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/dma/at_xdmac.c
-+++ b/drivers/dma/at_xdmac.c
-@@ -1390,7 +1390,7 @@ at_xdmac_tx_status(struct dma_chan *chan
- {
- 	struct at_xdmac_chan	*atchan = to_at_xdmac_chan(chan);
- 	struct at_xdmac		*atxdmac = to_at_xdmac(atchan->chan.device);
--	struct at_xdmac_desc	*desc, *_desc;
-+	struct at_xdmac_desc	*desc, *_desc, *iter;
- 	struct list_head	*descs_list;
- 	enum dma_status		ret;
- 	int			residue, retry;
-@@ -1505,11 +1505,13 @@ at_xdmac_tx_status(struct dma_chan *chan
- 	 * microblock.
- 	 */
- 	descs_list = &desc->descs_list;
--	list_for_each_entry_safe(desc, _desc, descs_list, desc_node) {
--		dwidth = at_xdmac_get_dwidth(desc->lld.mbr_cfg);
--		residue -= (desc->lld.mbr_ubc & 0xffffff) << dwidth;
--		if ((desc->lld.mbr_nda & 0xfffffffc) == cur_nda)
-+	list_for_each_entry_safe(iter, _desc, descs_list, desc_node) {
-+		dwidth = at_xdmac_get_dwidth(iter->lld.mbr_cfg);
-+		residue -= (iter->lld.mbr_ubc & 0xffffff) << dwidth;
-+		if ((iter->lld.mbr_nda & 0xfffffffc) == cur_nda) {
-+			desc = iter;
- 			break;
-+		}
- 	}
- 	residue += cur_ubc << dwidth;
+--- a/arch/arc/kernel/entry.S
++++ b/arch/arc/kernel/entry.S
+@@ -191,6 +191,7 @@ tracesys_exit:
+ 	st  r0, [sp, PT_r0]     ; sys call return value in pt_regs
  
+ 	;POST Sys Call Ptrace Hook
++	mov r0, sp		; pt_regs needed
+ 	bl  @syscall_trace_exit
+ 	b   ret_from_exception ; NOT ret_from_system_call at is saves r0 which
+ 	; we'd done before calling post hook above
 
 
