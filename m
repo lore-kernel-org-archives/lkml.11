@@ -2,51 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AE30C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:03:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9F02C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:03:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353959AbiDZTGd (ORCPT
+        id S1353979AbiDZTGg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 15:06:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41260 "EHLO
+        Tue, 26 Apr 2022 15:06:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353721AbiDZTFZ (ORCPT
+        with ESMTP id S1353745AbiDZTFc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 15:05:25 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A1A019916B;
-        Tue, 26 Apr 2022 12:02:16 -0700 (PDT)
+        Tue, 26 Apr 2022 15:05:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ADBE199835;
+        Tue, 26 Apr 2022 12:02:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E2081CE20E6;
-        Tue, 26 Apr 2022 19:02:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C037C385AD;
-        Tue, 26 Apr 2022 19:02:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 16A8E619D7;
+        Tue, 26 Apr 2022 19:02:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F6D7C385A0;
+        Tue, 26 Apr 2022 19:02:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650999733;
-        bh=YZK3UpV4c8YazR2b40tUH2JL2rStNLtVLCBp2JIEX9I=;
+        s=k20201202; t=1650999739;
+        bh=qoLkNOpHDZegcIXVQDcuYOHTdqmMBOW+KEJuAQFdY5g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=psI4ufPmRjvssMHDR8sQGb+qstnhcfHREQPlnR9TZRoo5yMlzaPhx6HCHxW3MgwDB
-         OcDKC8Z9SVqZ4BLqPchYRRNScGxikP7dm7bml9YY+iiAvkVEx5r33FRNftJ+KGWXW9
-         ELbZJkcrtsQf8fB7fKdLYIqnsVuIg82ioyQFW93JgOTT4ZWtAo1s1MPAe7+2QIdeYM
-         Ady4qUxfT1JtVYJGLcHQLDLa4f/8R2l9hSYHQFjWm7VOQamgiRMd0RFXkkxq0dY16r
-         jyeZPD94yTMhjtBUZSj/cNf41mXXl4bMXwFRGyc3hJzZ2AP5vqdSjm16OoUJ9vOlXQ
-         w7hJo8iBiCXMQ==
+        b=G7i7bkNhzmC2kEKiSftFsC4BAHkYztNYlHLl3SqLy47gYHEAZYZZTtLOHWZAA4dMF
+         FRbtXd+PNf+hYwuhmgs3UO4I1SRpkf/wBsgCfeukfLgK+i2rPtu6dRrQbO+lSLmFCa
+         cjhuCHIBsxQ2llRzrGYVIBOAWiKnsOG8auWjbpIs32irOtrK4YTV657aJ5evRrgboi
+         pknlBV2ADK2eQBF0XvkvQeLbGn3mSwdLDFiXCZ2JkYUw/69w0sZrPCuQHOKwSz5Izy
+         /SRRgZNmvKtodNGC8PEmb3+t9g/MZH3TSyGh4kXLndcdJ5xOTXyrsB9Ac1HacXYNvL
+         ipiOVU16ukebw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sidhartha Kumar <sidhartha.kumar@oracle.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
-        linux-mm@kvack.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 21/22] selftest/vm: verify mmap addr in mremap_test
-Date:   Tue, 26 Apr 2022 15:01:44 -0400
-Message-Id: <20220426190145.2351135-21-sashal@kernel.org>
+Cc:     Zheyu Ma <zheyuma97@gmail.com>, Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, ckeepax@opensource.cirrus.com,
+        u.kleine-koenig@pengutronix.de, patches@opensource.cirrus.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.15 02/15] ASoC: wm8731: Disable the regulator when probing fails
+Date:   Tue, 26 Apr 2022 15:02:01 -0400
+Message-Id: <20220426190216.2351413-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220426190145.2351135-1-sashal@kernel.org>
-References: <20220426190145.2351135-1-sashal@kernel.org>
+In-Reply-To: <20220426190216.2351413-1-sashal@kernel.org>
+References: <20220426190216.2351413-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,107 +54,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sidhartha Kumar <sidhartha.kumar@oracle.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 9c85a9bae267f6b5e5e374d0d023bbbe9db096d3 ]
+[ Upstream commit 92ccbf17eeacf510cf1eed9c252d9332ca24f02d ]
 
-Avoid calling mmap with requested addresses that are less than the
-system's mmap_min_addr.  When run as root, mmap returns EACCES when
-trying to map addresses < mmap_min_addr.  This is not one of the error
-codes for the condition to retry the mmap in the test.
+When the driver fails during probing, the driver should disable the
+regulator, not just handle it in wm8731_hw_init().
 
-Rather than arbitrarily retrying on EACCES, don't attempt an mmap until
-addr > vm.mmap_min_addr.
+The following log reveals it:
 
-Add a munmap call after an alignment check as the mappings are retained
-after the retry and can reach the vm.max_map_count sysctl.
+[   17.812483] WARNING: CPU: 1 PID: 364 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
+[   17.815958] RIP: 0010:_regulator_put+0x3ec/0x4e0
+[   17.824467] Call Trace:
+[   17.824774]  <TASK>
+[   17.825040]  regulator_bulk_free+0x82/0xe0
+[   17.825514]  devres_release_group+0x319/0x3d0
+[   17.825882]  i2c_device_probe+0x766/0x940
+[   17.829198]  i2c_register_driver+0xb5/0x130
 
-Link: https://lkml.kernel.org/r/20220420215721.4868-1-sidhartha.kumar@oracle.com
-Signed-off-by: Sidhartha Kumar <sidhartha.kumar@oracle.com>
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Link: https://lore.kernel.org/r/20220405121038.4094051-1-zheyuma97@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/vm/mremap_test.c | 41 +++++++++++++++++++++++-
- 1 file changed, 40 insertions(+), 1 deletion(-)
+ sound/soc/codecs/wm8731.c | 19 +++++++++++--------
+ 1 file changed, 11 insertions(+), 8 deletions(-)
 
-diff --git a/tools/testing/selftests/vm/mremap_test.c b/tools/testing/selftests/vm/mremap_test.c
-index 7c0b0617b9f8..9a518fee6306 100644
---- a/tools/testing/selftests/vm/mremap_test.c
-+++ b/tools/testing/selftests/vm/mremap_test.c
-@@ -6,6 +6,7 @@
+diff --git a/sound/soc/codecs/wm8731.c b/sound/soc/codecs/wm8731.c
+index dcee7b2bd3d7..859ebcec8383 100644
+--- a/sound/soc/codecs/wm8731.c
++++ b/sound/soc/codecs/wm8731.c
+@@ -602,7 +602,7 @@ static int wm8731_hw_init(struct device *dev, struct wm8731_priv *wm8731)
+ 	ret = wm8731_reset(wm8731->regmap);
+ 	if (ret < 0) {
+ 		dev_err(dev, "Failed to issue reset: %d\n", ret);
+-		goto err_regulator_enable;
++		goto err;
+ 	}
  
- #include <errno.h>
- #include <stdlib.h>
-+#include <stdio.h>
- #include <string.h>
- #include <sys/mman.h>
- #include <time.h>
-@@ -63,6 +64,35 @@ enum {
- 	.expect_failure = should_fail				\
+ 	/* Clear POWEROFF, keep everything else disabled */
+@@ -619,10 +619,7 @@ static int wm8731_hw_init(struct device *dev, struct wm8731_priv *wm8731)
+ 
+ 	regcache_mark_dirty(wm8731->regmap);
+ 
+-err_regulator_enable:
+-	/* Regulators will be enabled by bias management */
+-	regulator_bulk_disable(ARRAY_SIZE(wm8731->supplies), wm8731->supplies);
+-
++err:
+ 	return ret;
  }
  
-+/* Returns mmap_min_addr sysctl tunable from procfs */
-+static unsigned long long get_mmap_min_addr(void)
-+{
-+	FILE *fp;
-+	int n_matched;
-+	static unsigned long long addr;
-+
-+	if (addr)
-+		return addr;
-+
-+	fp = fopen("/proc/sys/vm/mmap_min_addr", "r");
-+	if (fp == NULL) {
-+		ksft_print_msg("Failed to open /proc/sys/vm/mmap_min_addr: %s\n",
-+			strerror(errno));
-+		exit(KSFT_SKIP);
-+	}
-+
-+	n_matched = fscanf(fp, "%llu", &addr);
-+	if (n_matched != 1) {
-+		ksft_print_msg("Failed to read /proc/sys/vm/mmap_min_addr: %s\n",
-+			strerror(errno));
-+		fclose(fp);
-+		exit(KSFT_SKIP);
-+	}
-+
-+	fclose(fp);
-+	return addr;
-+}
-+
- /*
-  * Returns the start address of the mapping on success, else returns
-  * NULL on failure.
-@@ -71,8 +101,15 @@ static void *get_source_mapping(struct config c)
- {
- 	unsigned long long addr = 0ULL;
- 	void *src_addr = NULL;
-+	unsigned long long mmap_min_addr;
-+
-+	mmap_min_addr = get_mmap_min_addr();
-+
- retry:
- 	addr += c.src_alignment;
-+	if (addr < mmap_min_addr)
-+		goto retry;
-+
- 	src_addr = mmap((void *) addr, c.region_size, PROT_READ | PROT_WRITE,
- 			MAP_FIXED_NOREPLACE | MAP_ANONYMOUS | MAP_SHARED,
- 			-1, 0);
-@@ -90,8 +127,10 @@ static void *get_source_mapping(struct config c)
- 	 * alignment in the tests.
- 	 */
- 	if (((unsigned long long) src_addr & (c.src_alignment - 1)) ||
--			!((unsigned long long) src_addr & c.src_alignment))
-+			!((unsigned long long) src_addr & c.src_alignment)) {
-+		munmap(src_addr, c.region_size);
- 		goto retry;
-+	}
+@@ -766,21 +763,27 @@ static int wm8731_i2c_probe(struct i2c_client *i2c,
+ 		ret = PTR_ERR(wm8731->regmap);
+ 		dev_err(&i2c->dev, "Failed to allocate register map: %d\n",
+ 			ret);
+-		return ret;
++		goto err_regulator_enable;
+ 	}
  
- 	if (!src_addr)
- 		goto error;
+ 	ret = wm8731_hw_init(&i2c->dev, wm8731);
+ 	if (ret != 0)
+-		return ret;
++		goto err_regulator_enable;
+ 
+ 	ret = devm_snd_soc_register_component(&i2c->dev,
+ 			&soc_component_dev_wm8731, &wm8731_dai, 1);
+ 	if (ret != 0) {
+ 		dev_err(&i2c->dev, "Failed to register CODEC: %d\n", ret);
+-		return ret;
++		goto err_regulator_enable;
+ 	}
+ 
+ 	return 0;
++
++err_regulator_enable:
++	/* Regulators will be enabled by bias management */
++	regulator_bulk_disable(ARRAY_SIZE(wm8731->supplies), wm8731->supplies);
++
++	return ret;
+ }
+ 
+ static int wm8731_i2c_remove(struct i2c_client *client)
 -- 
 2.35.1
 
