@@ -2,254 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 872F0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 12:07:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94D71C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 12:08:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349765AbiDZMKw (ORCPT
+        id S1349769AbiDZML2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 08:10:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37122 "EHLO
+        Tue, 26 Apr 2022 08:11:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346373AbiDZMKu (ORCPT
+        with ESMTP id S1345487AbiDZML0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 08:10:50 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F67311D211
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 05:07:43 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 38BEA210F3;
-        Tue, 26 Apr 2022 12:07:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1650974862; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=WZQnQfmwOyegbMQMpAkJQ4Cy43WxFPI7uoVWnPe4dQ0=;
-        b=MvlBzeEDyX7s+Vk+Urtv4h2bJYWWH/Op4mM1QbV6EB4Wn0XEgONdFeCHNMAg9qTk+fQ7Y8
-        50bcIXJ+Zmz6jvDpFNGhIQi25TtuZAtebtUO2Vd9TsCNOtcliS8a2NTyY9IgoTxMVxbHZ4
-        WcoJvYtsSNGBXD90wdq2andryF7ym/Q=
-Received: from suse.cz (unknown [10.100.224.162])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id D5F352C141;
-        Tue, 26 Apr 2022 12:07:41 +0000 (UTC)
-Date:   Tue, 26 Apr 2022 14:07:38 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH printk v5 1/1] printk: extend console_lock for
- per-console locking
-Message-ID: <Ymfgis0EAw0Oxoa5@alley>
-References: <20220421212250.565456-1-john.ogness@linutronix.de>
- <20220421212250.565456-15-john.ogness@linutronix.de>
- <878rrs6ft7.fsf@jogness.linutronix.de>
+        Tue, 26 Apr 2022 08:11:26 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D42915044E
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 05:08:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=oFju6382BGkZeSCzVjUNRKIZ/1PRe5wDyUSMoe2X2bs=; b=cixsBX/RRpllrTZFRx1hr8Maiv
+        jF26zQymv/PfTCKgTN5mjT82DB8Ld0x3Yp2anTkssEu/bJMNsbpNaQ56kzjKX/dzVoVFowtIvisZm
+        fl5rRr73u46yD7NTvbo/sdJN0pLkGxLdFEFLadtsmrA7b+glmX2Ryh3WM/QzPIeX/6uLV4KF8jsDS
+        LwckdvOcKbqxohtL7SQkd81G91wQhHczN/eEpfCgaYl7K9qQvzt8+j/gXVtSlwDddErTa/DScdztB
+        Dak/2i/zPGSKpjCVgKjE/qjhaZ2YCJuA/CE5Ygdxwa41o4UjMyIYOqT6O3b9aXQw0o6M4NrMqKuYS
+        nvZSyAUw==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1njJzE-009c41-AM; Tue, 26 Apr 2022 12:08:08 +0000
+Date:   Tue, 26 Apr 2022 13:08:08 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Wan Jiabing <wanjiabing@vivo.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        David Howells <dhowells@redhat.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, Julia Lawall <Julia.Lawall@inria.fr>
+Subject: Re: [PATCH] mm/filemap: Fix NULL pointer dereference in
+ pagecache_get_page
+Message-ID: <YmfgqKcMmstgfz+0@casper.infradead.org>
+References: <20220426082549.590899-1-wanjiabing@vivo.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <878rrs6ft7.fsf@jogness.linutronix.de>
+In-Reply-To: <20220426082549.590899-1-wanjiabing@vivo.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 2022-04-25 23:04:28, John Ogness wrote:
-> Currently threaded console printers synchronize against each
-> other using console_lock(). However, different console drivers
-> are unrelated and do not require any synchronization between
-> each other. Removing the synchronization between the threaded
-> console printers will allow each console to print at its own
-> speed.
-> 
-> But the threaded consoles printers do still need to synchronize
-> against console_lock() callers. Introduce a per-console mutex
-> and a new console boolean field @blocked to provide this
-> synchronization.
-> 
-> console_lock() is modified so that it must acquire the mutex
-> of each console in order to set the @blocked field. Console
-> printing threads will acquire their mutex while printing a
-> record. If @blocked was set, the thread will go back to sleep
-> instead of printing.
-> 
-> The reason for the @blocked boolean field is so that
-> console_lock() callers do not need to acquire multiple console
-> mutexes simultaneously, which would introduce unnecessary
-> complexity due to nested mutex locking. Also, a new field
-> was chosen instead of adding a new @flags value so that the
-> blocked status could be checked without concern of reading
-> inconsistent values due to @flags updates from other contexts.
-> 
-> Threaded console printers also need to synchronize against
-> console_trylock() callers. Since console_trylock() may be
-> called from any context, the per-console mutex cannot be used
-> for this synchronization. (mutex_trylock() cannot be called
-> from atomic contexts.) Introduce a global atomic counter to
-> identify if any threaded printers are active. The threaded
-> printers will also check the atomic counter to identify if the
-> console has been locked by another task via console_trylock().
-> 
-> Note that @console_sem is still used to provide synchronization
-> between console_lock() and console_trylock() callers.
-> 
-> A locking overview for console_lock(), console_trylock(), and the
-> threaded printers is as follows (pseudo code):
-> 
-> console_lock()
-> {
->         down(&console_sem);
->         for_each_console(con) {
->                 mutex_lock(&con->lock);
->                 con->blocked = true;
->                 mutex_unlock(&con->lock);
->         }
->         /* console_lock acquired */
-> }
-> 
-> console_trylock()
-> {
->         if (down_trylock(&console_sem) == 0) {
->                 if (atomic_cmpxchg(&console_kthreads_active, 0, -1) == 0) {
->                         /* console_lock acquired */
->                 }
->         }
-> }
-> 
-> threaded_printer()
-> {
->         mutex_lock(&con->lock);
->         if (!con->blocked) {
-> 		/* console_lock() callers blocked */
-> 
->                 if (atomic_inc_unless_negative(&console_kthreads_active)) {
->                         /* console_trylock() callers blocked */
-> 
->                         con->write();
-> 
->                         atomic_dec(&console_lock_count);
->                 }
->         }
->         mutex_unlock(&con->lock);
-> }
-> 
-> The console owner and waiter logic now only applies between contexts
-> that have taken the console_lock via console_trylock(). Threaded
-> printers never take the console_lock, so they do not have a
-> console_lock to handover. Tasks that have used console_lock() will
-> block the threaded printers using a mutex and if the console_lock
-> is handed over to an atomic context, it would be unable to unblock
-> the threaded printers. However, the console_trylock() case is
-> really the only scenario that is interesting for handovers anyway.
-> 
-> @panic_console_dropped must change to atomic_t since it is no longer
-> protected exclusively by the console_lock.
-> 
-> Since threaded printers remain asleep if they see that the console
-> is locked, they now must be explicitly woken in __console_unlock().
-> This means wake_up_klogd() calls following a console_unlock() are
-> no longer necessary and are removed.
-> 
-> Also note that threaded printers no longer need to check
-> @console_suspended. The check for the @blocked field implicitly
-> covers the suspended console case.
-> 
-> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+On Tue, Apr 26, 2022 at 04:25:48PM +0800, Wan Jiabing wrote:
+> Fix following coccicheck error:
+> mm/folio-compat.c:128:17-21: ERROR: folio is NULL but dereferenced.
+>  	folio = __filemap_get_folio(mapping, index, fgp_flags, gfp);
+> -	if ((fgp_flags & FGP_HEAD) || !folio || xa_is_value(folio))
+> +	if (!folio)
+> +		return NULL;
+> +	if ((fgp_flags & FGP_HEAD) || xa_is_value(folio))
+>  		return &folio->page;
 
-Nice, it it better than v4. I am going to push this for linux-next.
-
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-
-See below a comment about the possible future direction.
-
-> ---
-> 
->  Changes since v4 of this patch:
-> 
->  - Use new @blocked field instead of CON_THD_BLOCKED flag.
-> 
->  - Remove console_flags_set()/console_flags_clear() macros for
->    updating @flags (and remove their race comments).
-> 
->  - For printer_should_wake() and printk_kthread_func(), check
->    @blocked before checking @flags.
-> 
->  - Update commit message and comments appropriately.
-
-Excellent work!
-
-> --- a/kernel/printk/printk.c
-> +++ b/kernel/printk/printk.c
-> @@ -3665,15 +3802,27 @@ static int printk_kthread_func(void *data)
->  		if (error)
->  			continue;
->  
-> -		console_lock();
-> +		error = mutex_lock_interruptible(&con->lock);
-> +		if (error)
-> +			continue;
->  
-> -		if (console_suspended) {
-> -			up_console_sem();
-> +		if (con->blocked ||
-> +		    !console_kthread_printing_tryenter()) {
-
-It is great that you moved both conditions. I have just realized how
-much information and functionality is accumulated here:
-
-    + "con->blocked" is set when anyone else took @console_sem via
-      console_lock() or when the console is suspended.
-
-    + console_kthread_printing_tryenter() has two functions. It fails
-      when anyone else took @console_sem via console_trylock().
-      Also it blocks console_trylock(). Note that console_lock() is
-      blocked because it has to wait for con->lock.
-
-I missed the trylock part when proposed the more safe API in the other
-thread, see https://lore.kernel.org/r/YmKnp3Ccu7laW3E4@alley
-
-The safe single console lock would need to do something like:
-
-/*
- * Safe way to take con->lock. It makes sure that @console_sem is
- * not taken and blocks anyone from taking @console_sem.
- */
-void single_console_lock(struct console *con)
-{
-try_again:
-	error = wait_event_interruptible(con->lock_wait,
-			(!con->blocked &&
-			 !console_kthreads_atomically_blocked()));
-
-	/* Spurious wakeup */
-	if (error)
-		goto try_again;
-
-	mutex_lock(&con->lock);
-
-	/*
-	 * Check is the console is blocked by @console_sem taken via
-	 * console_lock() or if it is suspended.
-	 */
-	if (con->blocked) {
-		mutex_unlock(@con->lock); 
-		goto try_again;
-	}
-
-	/*
-	 * Try to block console_trylock(). Otherwise, we are blocked by
-	 * @console_set taken via console_trylock().
-	 */
-	if (!console_kthread_printing_tryenter()) {
-		mutex_unlock(@con->lock); 
-		goto try_again;
-	}
-
-	/*
-	 * Eureka! We own @con->lock and both console_lock() and
-	 * console_trylock() are blocked.
-	 */
-}
-
-Best Regards,
-Petr
+That doesn't dereference the folio.  Coccicheck is wrong.
