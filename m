@@ -2,33 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C546AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:10:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00D05C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:10:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348485AbiDZKNI (ORCPT
+        id S1348556AbiDZKNM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 06:13:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44540 "EHLO
+        Tue, 26 Apr 2022 06:13:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237461AbiDZKMr (ORCPT
+        with ESMTP id S1345152AbiDZKMr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 06:12:47 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2520F2215CE
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 02:35:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1407621E0BC
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 02:35:24 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CF9DF143D;
-        Tue, 26 Apr 2022 02:35:29 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CD8A3ED1;
+        Tue, 26 Apr 2022 02:35:23 -0700 (PDT)
 Received: from localhost.localdomain (unknown [10.57.41.198])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 5AA693F73B;
-        Tue, 26 Apr 2022 02:35:28 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 1BFC83F73B;
+        Tue, 26 Apr 2022 02:35:21 -0700 (PDT)
 From:   Vincent Donnefort <vincent.donnefort@arm.com>
 To:     peterz@infradead.org, mingo@redhat.com, vincent.guittot@linaro.org
 Cc:     linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
-        morten.rasmussen@arm.com, chris.redpath@arm.com, qperret@google.com
-Subject: [PATCH v6 4/7] sched/fair: Rename select_idle_mask to select_rq_mask
-Date:   Tue, 26 Apr 2022 10:35:03 +0100
-Message-Id: <20220426093506.3415588-5-vincent.donnefort@arm.com>
+        morten.rasmussen@arm.com, chris.redpath@arm.com,
+        qperret@google.com, Vincent Donnefort <vincent.donnefort@arm.com>
+Subject: [PATCH v6 1/7] sched/fair: Provide u64 read for 32-bits arch helper
+Date:   Tue, 26 Apr 2022 10:35:00 +0100
+Message-Id: <20220426093506.3415588-2-vincent.donnefort@arm.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220426093506.3415588-1-vincent.donnefort@arm.com>
 References: <20220426093506.3415588-1-vincent.donnefort@arm.com>
@@ -38,71 +39,213 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Introducing macro helpers u64_u32_{store,load}() to factorize lockless
+accesses to u64 variables for 32-bits architectures.
 
-Decouple the name of the per-cpu cpumask select_idle_mask from its usage
-in select_idle_[cpu/capacity]() of the CFS run-queue selection
-(select_task_rq_fair()).
+Users are for now cfs_rq.min_vruntime and sched_avg.last_update_time. To
+accommodate the later where the copy lies outside of the structure
+(cfs_rq.last_udpate_time_copy instead of sched_avg.last_update_time_copy),
+use the _copy() version of those helpers.
 
-This is to support the reuse of this cpumask in the Energy Aware
-Scheduling (EAS) path (find_energy_efficient_cpu()) of the CFS run-queue
-selection.
+Those new helpers encapsulate smp_rmb() and smp_wmb() synchronization and
+therefore, have a small penalty in set_task_rq_fair() and init_cfs_rq().
 
-Signed-off-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Signed-off-by: Vincent Donnefort <vincent.donnefort@arm.com>
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index a62d25ec5b0d..f3f5540bae9e 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -9456,7 +9456,7 @@ static struct kmem_cache *task_group_cache __read_mostly;
- #endif
- 
- DECLARE_PER_CPU(cpumask_var_t, load_balance_mask);
--DECLARE_PER_CPU(cpumask_var_t, select_idle_mask);
-+DECLARE_PER_CPU(cpumask_var_t, select_rq_mask);
- 
- void __init sched_init(void)
- {
-@@ -9505,7 +9505,7 @@ void __init sched_init(void)
- 	for_each_possible_cpu(i) {
- 		per_cpu(load_balance_mask, i) = (cpumask_var_t)kzalloc_node(
- 			cpumask_size(), GFP_KERNEL, cpu_to_node(i));
--		per_cpu(select_idle_mask, i) = (cpumask_var_t)kzalloc_node(
-+		per_cpu(select_rq_mask, i) = (cpumask_var_t)kzalloc_node(
- 			cpumask_size(), GFP_KERNEL, cpu_to_node(i));
- 	}
- #endif /* CONFIG_CPUMASK_OFFSTACK */
 diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 5da167776564..f67e036c9ccd 100644
+index 4c420124b5d6..abd1feeec0c2 100644
 --- a/kernel/sched/fair.c
 +++ b/kernel/sched/fair.c
-@@ -5841,7 +5841,7 @@ static void dequeue_task_fair(struct rq *rq, struct task_struct *p, int flags)
+@@ -600,11 +600,8 @@ static void update_min_vruntime(struct cfs_rq *cfs_rq)
+ 	}
  
- /* Working cpumask for: load_balance, load_balance_newidle. */
- DEFINE_PER_CPU(cpumask_var_t, load_balance_mask);
--DEFINE_PER_CPU(cpumask_var_t, select_idle_mask);
-+DEFINE_PER_CPU(cpumask_var_t, select_rq_mask);
+ 	/* ensure we never gain time by being placed backwards. */
+-	cfs_rq->min_vruntime = max_vruntime(cfs_rq->min_vruntime, vruntime);
+-#ifndef CONFIG_64BIT
+-	smp_wmb();
+-	cfs_rq->min_vruntime_copy = cfs_rq->min_vruntime;
+-#endif
++	u64_u32_store(cfs_rq->min_vruntime,
++		      max_vruntime(cfs_rq->min_vruntime, vruntime));
+ }
  
- #ifdef CONFIG_NO_HZ_COMMON
+ static inline bool __entity_less(struct rb_node *a, const struct rb_node *b)
+@@ -3301,6 +3298,11 @@ static inline void cfs_rq_util_change(struct cfs_rq *cfs_rq, int flags)
+ }
  
-@@ -6331,7 +6331,7 @@ static inline int select_idle_smt(struct task_struct *p, struct sched_domain *sd
-  */
- static int select_idle_cpu(struct task_struct *p, struct sched_domain *sd, bool has_idle_core, int target)
+ #ifdef CONFIG_SMP
++static inline u64 cfs_rq_last_update_time(struct cfs_rq *cfs_rq)
++{
++	return u64_u32_load_copy(cfs_rq->avg.last_update_time,
++				 cfs_rq->last_update_time_copy);
++}
+ #ifdef CONFIG_FAIR_GROUP_SCHED
+ /*
+  * Because list_add_leaf_cfs_rq always places a child cfs_rq on the list
+@@ -3411,27 +3413,9 @@ void set_task_rq_fair(struct sched_entity *se,
+ 	if (!(se->avg.last_update_time && prev))
+ 		return;
+ 
+-#ifndef CONFIG_64BIT
+-	{
+-		u64 p_last_update_time_copy;
+-		u64 n_last_update_time_copy;
+-
+-		do {
+-			p_last_update_time_copy = prev->load_last_update_time_copy;
+-			n_last_update_time_copy = next->load_last_update_time_copy;
+-
+-			smp_rmb();
++	p_last_update_time = cfs_rq_last_update_time(prev);
++	n_last_update_time = cfs_rq_last_update_time(next);
+ 
+-			p_last_update_time = prev->avg.last_update_time;
+-			n_last_update_time = next->avg.last_update_time;
+-
+-		} while (p_last_update_time != p_last_update_time_copy ||
+-			 n_last_update_time != n_last_update_time_copy);
+-	}
+-#else
+-	p_last_update_time = prev->avg.last_update_time;
+-	n_last_update_time = next->avg.last_update_time;
+-#endif
+ 	__update_load_avg_blocked_se(p_last_update_time, se);
+ 	se->avg.last_update_time = n_last_update_time;
+ }
+@@ -3786,8 +3770,9 @@ update_cfs_rq_load_avg(u64 now, struct cfs_rq *cfs_rq)
+ 	decayed |= __update_load_avg_cfs_rq(now, cfs_rq);
+ 
+ #ifndef CONFIG_64BIT
+-	smp_wmb();
+-	cfs_rq->load_last_update_time_copy = sa->last_update_time;
++	u64_u32_store_copy(sa->last_update_time,
++			   cfs_rq->last_update_time_copy,
++			   sa->last_update_time);
+ #endif
+ 
+ 	return decayed;
+@@ -3921,27 +3906,6 @@ static inline void update_load_avg(struct cfs_rq *cfs_rq, struct sched_entity *s
+ 	}
+ }
+ 
+-#ifndef CONFIG_64BIT
+-static inline u64 cfs_rq_last_update_time(struct cfs_rq *cfs_rq)
+-{
+-	u64 last_update_time_copy;
+-	u64 last_update_time;
+-
+-	do {
+-		last_update_time_copy = cfs_rq->load_last_update_time_copy;
+-		smp_rmb();
+-		last_update_time = cfs_rq->avg.last_update_time;
+-	} while (last_update_time != last_update_time_copy);
+-
+-	return last_update_time;
+-}
+-#else
+-static inline u64 cfs_rq_last_update_time(struct cfs_rq *cfs_rq)
+-{
+-	return cfs_rq->avg.last_update_time;
+-}
+-#endif
+-
+ /*
+  * Synchronize entity load avg of dequeued entity without locking
+  * the previous rq.
+@@ -6991,21 +6955,8 @@ static void migrate_task_rq_fair(struct task_struct *p, int new_cpu)
+ 	if (READ_ONCE(p->__state) == TASK_WAKING) {
+ 		struct sched_entity *se = &p->se;
+ 		struct cfs_rq *cfs_rq = cfs_rq_of(se);
+-		u64 min_vruntime;
+ 
+-#ifndef CONFIG_64BIT
+-		u64 min_vruntime_copy;
+-
+-		do {
+-			min_vruntime_copy = cfs_rq->min_vruntime_copy;
+-			smp_rmb();
+-			min_vruntime = cfs_rq->min_vruntime;
+-		} while (min_vruntime != min_vruntime_copy);
+-#else
+-		min_vruntime = cfs_rq->min_vruntime;
+-#endif
+-
+-		se->vruntime -= min_vruntime;
++		se->vruntime -= u64_u32_load(cfs_rq->min_vruntime);
+ 	}
+ 
+ 	if (p->on_rq == TASK_ON_RQ_MIGRATING) {
+@@ -11453,10 +11404,7 @@ static void set_next_task_fair(struct rq *rq, struct task_struct *p, bool first)
+ void init_cfs_rq(struct cfs_rq *cfs_rq)
  {
--	struct cpumask *cpus = this_cpu_cpumask_var_ptr(select_idle_mask);
-+	struct cpumask *cpus = this_cpu_cpumask_var_ptr(select_rq_mask);
- 	int i, cpu, idle_cpu = -1, nr = INT_MAX;
- 	struct rq *this_rq = this_rq();
- 	int this = smp_processor_id();
-@@ -6417,7 +6417,7 @@ select_idle_capacity(struct task_struct *p, struct sched_domain *sd, int target)
- 	int cpu, best_cpu = -1;
- 	struct cpumask *cpus;
+ 	cfs_rq->tasks_timeline = RB_ROOT_CACHED;
+-	cfs_rq->min_vruntime = (u64)(-(1LL << 20));
+-#ifndef CONFIG_64BIT
+-	cfs_rq->min_vruntime_copy = cfs_rq->min_vruntime;
+-#endif
++	u64_u32_store(cfs_rq->min_vruntime, (u64)(-(1LL << 20)));
+ #ifdef CONFIG_SMP
+ 	raw_spin_lock_init(&cfs_rq->removed.lock);
+ #endif
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index 762be73972bd..e2cf6e48b165 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -513,6 +513,45 @@ struct cfs_bandwidth { };
  
--	cpus = this_cpu_cpumask_var_ptr(select_idle_mask);
-+	cpus = this_cpu_cpumask_var_ptr(select_rq_mask);
- 	cpumask_and(cpus, sched_domain_span(sd), p->cpus_ptr);
+ #endif	/* CONFIG_CGROUP_SCHED */
  
- 	task_util = uclamp_task_util(p);
++/*
++ * u64_u32_load/u64_u32_store
++ *
++ * Use a copy of a u64 value to protect against data race. This is only
++ * applicable for 32-bits architectures.
++ */
++#ifdef CONFIG_64BIT
++# define u64_u32_load_copy(var, copy)       var
++# define u64_u32_store_copy(var, copy, val) (var = val)
++#else
++# define u64_u32_load_copy(var, copy)					\
++({									\
++	u64 __val, __val_copy;						\
++	do {								\
++		__val_copy = copy;					\
++		/*							\
++		 * paired with u64_u32_store, ordering access		\
++		 * to var and copy.					\
++		 */							\
++		smp_rmb();						\
++		__val = var;						\
++	} while (__val != __val_copy);					\
++	__val;								\
++})
++# define u64_u32_store_copy(var, copy, val)				\
++do {									\
++	typeof(val) __val = (val);					\
++	var = __val;							\
++	/*								\
++	 * paired with u64_u32_load, ordering access to var and		\
++	 * copy.							\
++	 */								\
++	smp_wmb();							\
++	copy = __val;							\
++} while (0)
++#endif
++# define u64_u32_load(var)      u64_u32_load_copy(var, var##_copy)
++# define u64_u32_store(var, val) u64_u32_store_copy(var, var##_copy, val)
++
+ /* CFS-related fields in a runqueue */
+ struct cfs_rq {
+ 	struct load_weight	load;
+@@ -553,7 +592,7 @@ struct cfs_rq {
+ 	 */
+ 	struct sched_avg	avg;
+ #ifndef CONFIG_64BIT
+-	u64			load_last_update_time_copy;
++	u64			last_update_time_copy;
+ #endif
+ 	struct {
+ 		raw_spinlock_t	lock ____cacheline_aligned;
 -- 
 2.25.1
 
