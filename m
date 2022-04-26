@@ -2,75 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F328C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 06:46:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E9DDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 06:47:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343516AbiDZGtg (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 02:49:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44270 "EHLO
+        id S240678AbiDZGuo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 02:50:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237092AbiDZGtf (ORCPT
+        with ESMTP id S231560AbiDZGum (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 02:49:35 -0400
-Received: from mail.meizu.com (edge07.meizu.com [112.91.151.210])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3F2D186FD;
-        Mon, 25 Apr 2022 23:46:27 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail11.meizu.com
- (172.16.1.15) with Microsoft SMTP Server (TLS) id 14.3.487.0; Tue, 26 Apr
- 2022 14:46:27 +0800
-Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Tue, 26 Apr
- 2022 14:46:25 +0800
-From:   Haowen Bai <baihaowen@meizu.com>
-To:     <kjain@linux.ibm.com>
-CC:     <baihaowen@meizu.com>, <benh@kernel.crashing.org>,
-        <linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>, <mpe@ellerman.id.au>,
-        <paulus@samba.org>, <shuah@kernel.org>
-Subject: [PATCH V2] selftests/powerpc/pmu: Fix unsigned function returning negative constant
-Date:   Tue, 26 Apr 2022 14:46:23 +0800
-Message-ID: <1650955583-29581-1-git-send-email-baihaowen@meizu.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <0e4b0f8e-6c45-8d14-303f-2168f5004a12@linux.ibm.com>
-References: <0e4b0f8e-6c45-8d14-303f-2168f5004a12@linux.ibm.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
+        Tue, 26 Apr 2022 02:50:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3FB5237E3
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 23:47:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 822B261347
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 06:47:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5388CC385A0;
+        Tue, 26 Apr 2022 06:47:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650955654;
+        bh=XH7q6MHWA3rgijXbIu3rZDrO4X+yfP3UQJasn1WX37I=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=sAA5HHA5tnJNMKDa2GKNi2FCIjdCp96jJouQ1lUlrOAdy5/yWCSbDVjYuSRKPoQUT
+         YLZN6MKj2Gsg3ZIPnnp2gmaDngeqUVW5aykR7g3JXEBfn9SXCpR9++yCyb4M/cYom0
+         f6PeeKKpmpcKxlkfc/aMJCOgdSOQwozyr9hxNAUYMQiotF86G+lEmelCTscic6w3tP
+         YbSafvWK/qVAFny23rcgzpY6dQTJ/Z0RRYHye326zvGXjaxdi4RC5ZR5ZB28jYGk3W
+         WbPg0fccxouXEPqPHodbNO7mDi9hg/WwyzZg+R1q5P0X/o0TMPziV5ExiH+/8ae5Gt
+         +TlJAVSgBCDcw==
+Date:   Tue, 26 Apr 2022 15:47:30 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: Re: [linux-stable-rc:queue/4.19 3886/9999]
+ arch/ia64/kernel/kprobes.c:414:24: error: implicit declaration of function
+ '__kretprobe_trampoline_handler'; did you mean 'kretprobe_trampoline'?
+Message-Id: <20220426154730.3b5b934990faf267176dcf7c@kernel.org>
+In-Reply-To: <YmbEU4t57gEJAdi8@kroah.com>
+References: <202204130102.JZPa6KCQ-lkp@intel.com>
+        <20220422221312.f1bc4222cd2eb871ff066e24@kernel.org>
+        <YmbEU4t57gEJAdi8@kroah.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The function __perf_reg_mask has an unsigned return type, but returns a
-negative constant to indicate an error condition. So we change unsigned
-to int.
+On Mon, 25 Apr 2022 17:54:59 +0200
+Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
 
-Fixes: 5f6c3061af7c ("selftests/powerpc/pmu: Add utility functions to post
-process the mmap buffer")
+> On Fri, Apr 22, 2022 at 10:13:12PM +0900, Masami Hiramatsu wrote:
+> > Hi Greg,
+> > 
+> > Can you revert/drop this patch from 4.19 stable tree?
+> 
+> Can you please send a revert as I do not know what commit you are
+> referring to exactly.
+> 
+> > This patch is a part of bigger series, which introduces a generic
+> > arch-independent kretprobe trampoline handler, but that is not for the
+> > stable tree.
+> > 
+> > Also, the commit f5f96e3643dc33d6117cf7047e73512046e4858b is in the 4.19
+> > stable tree, which fixes this commit. Thus that must be removed too.
+> 
+> Same for this, can you send a revert?
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
----
-V1->V2: add fix tag.
+OK, let me send it.
 
- tools/testing/selftests/powerpc/pmu/sampling_tests/misc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks!
 
-diff --git a/tools/testing/selftests/powerpc/pmu/sampling_tests/misc.c b/tools/testing/selftests/powerpc/pmu/sampling_tests/misc.c
-index fca054bbc094..c01a31d5f4ee 100644
---- a/tools/testing/selftests/powerpc/pmu/sampling_tests/misc.c
-+++ b/tools/testing/selftests/powerpc/pmu/sampling_tests/misc.c
-@@ -274,7 +274,7 @@ u64 *get_intr_regs(struct event *event, void *sample_buff)
- 	return intr_regs;
- }
- 
--static const unsigned int __perf_reg_mask(const char *register_name)
-+static const int __perf_reg_mask(const char *register_name)
- {
- 	if (!strcmp(register_name, "R0"))
- 		return 0;
+> 
+> thanks,
+> 
+> greg k-h
+
+
 -- 
-2.7.4
-
+Masami Hiramatsu <mhiramat@kernel.org>
