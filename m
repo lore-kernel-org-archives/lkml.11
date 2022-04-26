@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B51E5C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:32:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 188ECC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:32:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345077AbiDZIfS (ORCPT
+        id S1345210AbiDZIfV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:35:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60530 "EHLO
+        Tue, 26 Apr 2022 04:35:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344928AbiDZIdb (ORCPT
+        with ESMTP id S1344967AbiDZId3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:33:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 609F3434A0;
-        Tue, 26 Apr 2022 01:25:37 -0700 (PDT)
+        Tue, 26 Apr 2022 04:33:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 945773B29D;
+        Tue, 26 Apr 2022 01:25:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EF9C061722;
-        Tue, 26 Apr 2022 08:25:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B978C385AF;
-        Tue, 26 Apr 2022 08:25:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E29EFB81CED;
+        Tue, 26 Apr 2022 08:25:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48BA9C385A0;
+        Tue, 26 Apr 2022 08:25:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961536;
-        bh=06XDKZ6eGspf8eNJ01Fmut9oFMZHv1vvkWCZjqwZm/w=;
+        s=korg; t=1650961533;
+        bh=gN5nUZWsmI0sLwLRByFcKqkPXVyzdhofgYRrDnoHunU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tHuJFSI0CL3z3Dj+IY2K3Vk3/46atQnTAL3ZB09zxlIulXG7OLbqFY0Z/12GKsXpi
-         +btGX4oq9GHHzCZeaBMa1h94DWtu3yUtB6gUx3Q4RIqNcnu0Zzf8G1WOr4RmkFDMvx
-         1bDB15XzA3Xn25E7bieU8X3QUtNyvb8LzSctJfy0=
+        b=ER0lNZjyLwLRjdk5Y/tqsLLiQWDvIQ2m0cFvLo+na+8bsQ6ptoDmG10RgQI8gJvMI
+         SvbfppKPzaZ2sMbBXrdmAAhp5uT2ngNb5lIwO7pSHVXLyKfABFZUPA2ZIIjLs19zRh
+         bjFQcj+SdfqDHs2PWli8NgweW9dFc2pSPTMIU9LQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sergey Matyukevich <sergey.matyukevich@synopsys.com>,
-        Vineet Gupta <vgupta@kernel.org>
-Subject: [PATCH 4.14 28/43] ARC: entry: fix syscall_trace_exit argument
-Date:   Tue, 26 Apr 2022 10:21:10 +0200
-Message-Id: <20220426081735.347616252@linuxfoundation.org>
+        Marek Vasut <marex@denx.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 43/43] Revert "net: micrel: fix KS8851_MLL Kconfig"
+Date:   Tue, 26 Apr 2022 10:21:25 +0200
+Message-Id: <20220426081735.792458579@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081734.509314186@linuxfoundation.org>
 References: <20220426081734.509314186@linuxfoundation.org>
@@ -50,31 +53,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Matyukevich <sergey.matyukevich@synopsys.com>
+From: Marek Vasut <marex@denx.de>
 
-commit b1c6ecfdd06907554518ec384ce8e99889d15193 upstream.
+This reverts commit 84ddee4ea320411fa038d4f1fd9a0161f989b482 which is
+commit c3efcedd272aa6dd5929e20cf902a52ddaa1197a upstream.
 
-Function syscall_trace_exit expects pointer to pt_regs. However
-r0 is also used to keep syscall return value. Restore pointer
-to pt_regs before calling syscall_trace_exit.
+The upstream commit c3efcedd272a ("net: micrel: fix KS8851_MLL Kconfig")
+depends on e5f31552674e ("ethernet: fix PTP_1588_CLOCK dependencies")
+which is not part of Linux 4.14.y . Revert the aforementioned commit to
+prevent breakage in 4.14.y .
 
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Randy Dunlap <rdunlap@infradead.org>
+Cc: Sasha Levin <sashal@kernel.org>
 Cc: <stable@vger.kernel.org>
-Signed-off-by: Sergey Matyukevich <sergey.matyukevich@synopsys.com>
-Signed-off-by: Vineet Gupta <vgupta@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arc/kernel/entry.S |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/micrel/Kconfig |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/arch/arc/kernel/entry.S
-+++ b/arch/arc/kernel/entry.S
-@@ -191,6 +191,7 @@ tracesys_exit:
- 	st  r0, [sp, PT_r0]     ; sys call return value in pt_regs
- 
- 	;POST Sys Call Ptrace Hook
-+	mov r0, sp		; pt_regs needed
- 	bl  @syscall_trace_exit
- 	b   ret_from_exception ; NOT ret_from_system_call at is saves r0 which
- 	; we'd done before calling post hook above
+--- a/drivers/net/ethernet/micrel/Kconfig
++++ b/drivers/net/ethernet/micrel/Kconfig
+@@ -45,7 +45,6 @@ config KS8851
+ config KS8851_MLL
+ 	tristate "Micrel KS8851 MLL"
+ 	depends on HAS_IOMEM
+-	depends on PTP_1588_CLOCK_OPTIONAL
+ 	select MII
+ 	---help---
+ 	  This platform driver is for Micrel KS8851 Address/data bus
 
 
