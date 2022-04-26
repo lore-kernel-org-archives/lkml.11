@@ -2,77 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C5C6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:50:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17B25C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:50:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242370AbiDZIxG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:53:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58422 "EHLO
+        id S244572AbiDZIxS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:53:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345609AbiDZIjR (ORCPT
+        with ESMTP id S1345332AbiDZIim (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:39:17 -0400
-Received: from mail.meizu.com (edge05.meizu.com [157.122.146.251])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D62983BA5E;
-        Tue, 26 Apr 2022 01:30:25 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail12.meizu.com
- (172.16.1.108) with Microsoft SMTP Server (TLS) id 14.3.487.0; Tue, 26 Apr
- 2022 16:30:23 +0800
-Received: from [172.16.137.70] (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Tue, 26 Apr
- 2022 16:30:23 +0800
-Message-ID: <89f61153-1ef6-df1b-1bf6-90ba853b080b@meizu.com>
-Date:   Tue, 26 Apr 2022 16:30:23 +0800
+        Tue, 26 Apr 2022 04:38:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5C27939C7;
+        Tue, 26 Apr 2022 01:29:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7459F6183D;
+        Tue, 26 Apr 2022 08:29:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80788C385A4;
+        Tue, 26 Apr 2022 08:29:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650961773;
+        bh=kJ2xY2WZgC5zmpjwAqT8+oSDGHDnpl9nTFmzZW9q5wU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=IBwW2xxIss/1imXiwKwtHV6rxQqKQR9wkQFcXVP+CFwqFbVKgbwNdvIV4qtnA4MPI
+         vWa0Mwbew/BhZt8dGNgf+KzjfiVs3ZJt8Mv+IPyPfGPsdrsqdnuTa2jwargXAwtPFx
+         v0XZBSMAVQampl8fiRshCtIchkjGbROdEg/RVv5k=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 25/62] platform/x86: samsung-laptop: Fix an unsigned comparison which can never be negative
+Date:   Tue, 26 Apr 2022 10:21:05 +0200
+Message-Id: <20220426081737.949185157@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
+References: <20220426081737.209637816@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 1/2] docs/zh_CN: sync with original text
- Documentation/vm/page_owner.rst
-To:     Alex Shi <seakeel@gmail.com>, <siyanteng01@gmail.com>
-CC:     <alexs@kernel.org>, <corbet@lwn.net>, <linux-doc@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <siyanteng@loongson.cn>
-References: <CAEensMzuQ0uAw8_5Xb7u1n685au=DpaJyPevGCT8GCG7xS42ow@mail.gmail.com>
- <1650424016-7225-1-git-send-email-baihaowen@meizu.com>
- <1650424016-7225-2-git-send-email-baihaowen@meizu.com>
- <30d2f96e-99e1-2976-a294-8e112166afff@gmail.com>
- <049ccac8-c394-0cdc-c2ed-4ea91cab6439@meizu.com>
- <c498b2a7-8f0e-4f6d-10ba-49c4c7794ff9@gmail.com>
- <0be9fe6a-b01e-b355-9283-6ad8372932d6@meizu.com>
- <73d2f4cb-9f38-ac33-b4c0-c4d3b465bf8b@gmail.com>
- <68b68f35-86e5-3f3b-ffd0-bea9c952fc66@meizu.com>
- <3f93bb0d-5658-f269-f8cc-d0a964ffb68b@gmail.com>
-From:   baihaowen <baihaowen@meizu.com>
-In-Reply-To: <3f93bb0d-5658-f269-f8cc-d0a964ffb68b@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-在 4/26/22 4:29 PM, Alex Shi 写道:
->
->
-> On 4/26/22 16:23, baihaowen wrote:
->>> Saving the patch email from many kind of email-clients as raw file, like thunderbird etc.
->>> Then using 'git am xxx.patch'. It will work. In fact, git can handle the plain email patch well.
->>>
->>>
->>>> It will notice 补丁格式检测失败。
->>>>
->> hi, Alex
->> I have sent you an available patch set, plz try to apply.
->
->
-> Did you try your post by yourself? :)
->
->
->> -- Haowen Bai
-YES.
+From: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 
+[ Upstream commit 0284d4d1be753f648f28b77bdfbe6a959212af5c ]
+
+Eliminate the follow smatch warnings:
+
+drivers/platform/x86/samsung-laptop.c:1124 kbd_led_set() warn: unsigned
+'value' is never less than zero.
+
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Link: https://lore.kernel.org/r/20220322061830.105579-1-jiapeng.chong@linux.alibaba.com
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/platform/x86/samsung-laptop.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/drivers/platform/x86/samsung-laptop.c b/drivers/platform/x86/samsung-laptop.c
+index 9b6a93ff41ff..91e468fcaf7c 100644
+--- a/drivers/platform/x86/samsung-laptop.c
++++ b/drivers/platform/x86/samsung-laptop.c
+@@ -1121,8 +1121,6 @@ static void kbd_led_set(struct led_classdev *led_cdev,
+ 
+ 	if (value > samsung->kbd_led.max_brightness)
+ 		value = samsung->kbd_led.max_brightness;
+-	else if (value < 0)
+-		value = 0;
+ 
+ 	samsung->kbd_led_wk = value;
+ 	queue_work(samsung->led_workqueue, &samsung->kbd_led_work);
 -- 
-Haowen Bai
+2.35.1
+
+
 
