@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46103C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:39:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8057C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:39:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230111AbiDZImF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:42:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60106 "EHLO
+        id S1345366AbiDZImH (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:42:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345320AbiDZIea (ORCPT
+        with ESMTP id S1345404AbiDZIee (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:34:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AAF774877;
-        Tue, 26 Apr 2022 01:27:04 -0700 (PDT)
+        Tue, 26 Apr 2022 04:34:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4693975639;
+        Tue, 26 Apr 2022 01:27:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D5048B81CED;
-        Tue, 26 Apr 2022 08:27:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E345C385A0;
-        Tue, 26 Apr 2022 08:27:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C9876183D;
+        Tue, 26 Apr 2022 08:27:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49C24C385A0;
+        Tue, 26 Apr 2022 08:27:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961621;
-        bh=MSOqXNS4Azyxzhiu/r4xu6CEimlb/9BkCfsl0L7K9oc=;
+        s=korg; t=1650961633;
+        bh=VnNt+lQjQuyBewEAaSPyCFBNdDp09ubrmGiGR23S988=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VAfyPzJqCNb7FkT2N8Jj9NwE2C3F4neXJUhpxNPhp07t4EtKcNOKuuSNcpKU6PN1B
-         GvYBLOsiPIxtokqh4T5Ow3CpRRAGn6dSp/Xq+eyH92rF6D6jfoLDT1uj4dX4VQ2gow
-         dU/Unl/+wt/+mP9ddSrwq1goXlDXbWDNI8Hm+1dc=
+        b=e8JfsNR5yNbjZnxZ6J3tQ1E4XVHtTdN1Nql2NW7jRcakuvRmoVsOk4x1+NL5AfLow
+         gzPRgKlaGNcOi9tfUtN+XzghTUA9FpcBWJmWpVTFtiY0frpq1m6eUrJbwwAx9guW0+
+         fS3QLCPS64p7+kF5ayGYlUft1FjF/aWUu2kenBGE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Zanussi <zanussi@kernel.org>,
-        Daniel Bristot de Oliveira <bristot@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 4.19 03/53] tracing: Dump stacktrace trigger to the corresponding instance
-Date:   Tue, 26 Apr 2022 10:20:43 +0200
-Message-Id: <20220426081735.755621847@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+70e777a39907d6d5fd0a@syzkaller.appspotmail.com,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 4.19 07/53] ALSA: usb-audio: Clear MIDI port active flag after draining
+Date:   Tue, 26 Apr 2022 10:20:47 +0200
+Message-Id: <20220426081735.871761625@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081735.651926456@linuxfoundation.org>
 References: <20220426081735.651926456@linuxfoundation.org>
@@ -49,47 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Bristot de Oliveira <bristot@kernel.org>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit ce33c845b030c9cf768370c951bc699470b09fa7 upstream.
+commit 0665886ad1392e6b5bae85d7a6ccbed48dca1522 upstream.
 
-The stacktrace event trigger is not dumping the stacktrace to the instance
-where it was enabled, but to the global "instance."
+When a rawmidi output stream is closed, it calls the drain at first,
+then does trigger-off only when the drain returns -ERESTARTSYS as a
+fallback.  It implies that each driver should turn off the stream
+properly after the drain.  Meanwhile, USB-audio MIDI interface didn't
+change the port->active flag after the drain.  This may leave the
+output work picking up the port that is closed right now, which
+eventually leads to a use-after-free for the already released rawmidi
+object.
 
-Use the private_data, pointing to the trigger file, to figure out the
-corresponding trace instance, and use it in the trigger action, like
-snapshot_trigger does.
+This patch fixes the bug by properly clearing the port->active flag
+after the output drain.
 
-Link: https://lkml.kernel.org/r/afbb0b4f18ba92c276865bc97204d438473f4ebc.1645396236.git.bristot@kernel.org
-
-Cc: stable@vger.kernel.org
-Fixes: ae63b31e4d0e2 ("tracing: Separate out trace events from global variables")
-Reviewed-by: Tom Zanussi <zanussi@kernel.org>
-Tested-by: Tom Zanussi <zanussi@kernel.org>
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Reported-by: syzbot+70e777a39907d6d5fd0a@syzkaller.appspotmail.com
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/00000000000011555605dceaff03@google.com
+Link: https://lore.kernel.org/r/20220420130247.22062-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace_events_trigger.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ sound/usb/midi.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/kernel/trace/trace_events_trigger.c
-+++ b/kernel/trace/trace_events_trigger.c
-@@ -1212,7 +1212,14 @@ static void
- stacktrace_trigger(struct event_trigger_data *data, void *rec,
- 		   struct ring_buffer_event *event)
- {
--	trace_dump_stack(STACK_SKIP);
-+	struct trace_event_file *file = data->private_data;
-+	unsigned long flags;
-+
-+	if (file) {
-+		local_save_flags(flags);
-+		__trace_stack(file->tr, flags, STACK_SKIP, preempt_count());
-+	} else
-+		trace_dump_stack(STACK_SKIP);
+--- a/sound/usb/midi.c
++++ b/sound/usb/midi.c
+@@ -1211,6 +1211,7 @@ static void snd_usbmidi_output_drain(str
+ 		} while (drain_urbs && timeout);
+ 		finish_wait(&ep->drain_wait, &wait);
+ 	}
++	port->active = 0;
+ 	spin_unlock_irq(&ep->buffer_lock);
  }
  
- static void
 
 
