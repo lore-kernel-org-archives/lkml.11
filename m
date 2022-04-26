@@ -2,257 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D48FCC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:32:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5E86C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:32:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349113AbiDZKfq (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 06:35:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57678 "EHLO
+        id S232638AbiDZKfx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 06:35:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349169AbiDZKfW (ORCPT
+        with ESMTP id S1349121AbiDZKfA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 06:35:22 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76807BC80;
-        Tue, 26 Apr 2022 03:15:54 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id bv19so35046021ejb.6;
-        Tue, 26 Apr 2022 03:15:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Q3Y2xFiZZM73aQbd0fWB6wOUMQq6/t+7deOrBNRhpAo=;
-        b=L0JvI+hwzslb7KKVSWtMbcFSetgyuHbkwLbRyMxEENT6QJ+aSWwO2YG51X3qnGcv/Y
-         /d/Q6vSYhVwvUVLG3dPZbFsDQL1fwYeNw/jlAUUuF6sjHW08dWfI8/0Kk6WjrmeX8sgP
-         XEJalN/f+v2PU6g2LnOVTridPXqmUoZG2CFSk+GokxNEco2+pRcAjnHCZil8rEpATQIP
-         NupWyqdlD5+F7+jCFBaLO3GkQWf0jYMUq5ZvhTYTnGgqx2MYEHhYUKpgdLIm8o7e10kT
-         wRUek3rToTfanY01ncLCh9/98lWMw+ZqTmfjeLkm6+DfKlRVgeKp+H1UX6y2AwI7NNkX
-         NDAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Q3Y2xFiZZM73aQbd0fWB6wOUMQq6/t+7deOrBNRhpAo=;
-        b=HyJUwYTl/34QwMHUpaRftAIJWwHevrEsSjvvwpir4gC8c7Ka+t8Kic+JzH37Bw23hw
-         lVdxUUiJ/ACcHh6kMmV15UUOAjUguejuw2WUfKPQAqVcoGKP6I+71CwF7Rhutk8C+qKH
-         cv+pCTCBbcy/rSItCCyD4/RTgVrq76ZPMoXZlskVFzkZnpEf/1RSWNUlO63aLGAGpJQQ
-         JR+qce83EQt9t7TjM9wouLXCSsAkp9w0hViGO5UGqJdl4m8JJ1HoBIeW5fzSC4TF8ifn
-         Nr8ocwZfFxNGu594aXD0Jr9LO0eo3Zt52BIkpaXYo6GLOaXKtJ3tcgjYOnDKPs+ikHo+
-         MFsA==
-X-Gm-Message-State: AOAM531cZsPmregWjh1dZ0EuEspjKlbLiMD/MRpfDpaTdNUMSnYdWa/L
-        /YTN9aeRg+w3mONgG0OAajFuz2mjIvHVfe2Q8Mk=
-X-Google-Smtp-Source: ABdhPJx+imrat0Zla/qc8W6CK7Tbr/jceeZWxvAY6UNQhFT3P/lC6vjpbSbUKrsLvZi6tatpbMkn9a7w0LbrUygEvi4=
-X-Received: by 2002:a17:907:7d8c:b0:6f2:476d:fde4 with SMTP id
- oz12-20020a1709077d8c00b006f2476dfde4mr19519158ejc.497.1650968152522; Tue, 26
- Apr 2022 03:15:52 -0700 (PDT)
+        Tue, 26 Apr 2022 06:35:00 -0400
+Received: from nksmu.kylinos.cn (mailgw.kylinos.cn [123.150.8.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBC061117A
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 03:13:28 -0700 (PDT)
+X-UUID: 707c944599604674ad2c3d7813f3f551-20220426
+X-GW-Reason: 11101
+X-Policy-Incident: 5pS25Lu25Lq66LaF6L+HMTDkurrpnIDopoHlrqHmoLg=
+X-Content-Feature: ica/max.line-size 106
+        audit/email.address 1
+        meta/cnt.alert 1
+X-UUID: 707c944599604674ad2c3d7813f3f551-20220426
+Received: from cs2c.com.cn [(172.17.111.24)] by nksmu.kylinos.cn
+        (envelope-from <oushixiong@kylinos.cn>)
+        (Generic MTA)
+        with ESMTP id 707285290; Tue, 26 Apr 2022 18:04:59 +0800
+X-ns-mid: postfix-6267C422-7868788235
+Received: from localhost.localdomain (unknown [172.20.108.97])
+        by cs2c.com.cn (NSMail) with ESMTPA id 6D4DB383B46C;
+        Tue, 26 Apr 2022 10:06:26 +0000 (UTC)
+From:   oushixiong <oushixiong@kylinos.cn>
+To:     Alex Deucher <alexander.deucher@amd.com>
+Cc:     =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Xinhui.Pan@amd.com, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        John Clements <john.clements@amd.com>,
+        Hawking Zhang <Hawking.Zhang@amd.com>,
+        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
+        Fangzhi Zuo <Jerry.Zuo@amd.com>, Jiawei Gu <Jiawei.Gu@amd.com>,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, oushixiong <oushixiong@kylinos.cn>
+Subject: [PATCH] drm/amd: Fix spelling typo in comment
+Date:   Tue, 26 Apr 2022 18:06:16 +0800
+Message-Id: <20220426100616.1411209-1-oushixiong@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220422222351.1297276-1-bjorn.andersson@linaro.org> <20220422222351.1297276-2-bjorn.andersson@linaro.org>
-In-Reply-To: <20220422222351.1297276-2-bjorn.andersson@linaro.org>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 26 Apr 2022 12:15:13 +0200
-Message-ID: <CAHp75VdT7FYpoxV8RD6J-ujHuDnj0GWswDx6wCyCyz9cozkQ7Q@mail.gmail.com>
-Subject: Re: [PATCH v5 1/7] device property: Add helper to match multiple connections
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        USB <linux-usb@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 23, 2022 at 1:25 AM Bjorn Andersson
-<bjorn.andersson@linaro.org> wrote:
->
-> In some cases multiple connections with the same connection id
-> needs to be resolved from a fwnode graph.
->
-> One such example is when separate hardware is used for performing muxing
-> and/or orientation switching of the SuperSpeed and SBU lines in a USB
-> Type-C connector. In this case the connector needs to belong to a graph
-> with multiple matching remote endpoints, and the Type-C controller needs
-> to be able to resolve them both.
->
-> Add a new API that allows this kind of lookup.
+Signed-off-by: oushixiong <oushixiong@kylinos.cn>
+---
+ drivers/gpu/drm/amd/include/atomfirmware.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-LGTM now,
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-thanks!
-
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> ---
->
-> Changes since v4:
-> - Added "Add" to patch subject
-> - Added "(Optional)" kernel-doc of fwnode_connection_find_matches()
->
->  drivers/base/property.c  | 109 +++++++++++++++++++++++++++++++++++++++
->  include/linux/property.h |   5 ++
->  2 files changed, 114 insertions(+)
->
-> diff --git a/drivers/base/property.c b/drivers/base/property.c
-> index 36401cfe432c..babab8cec7a0 100644
-> --- a/drivers/base/property.c
-> +++ b/drivers/base/property.c
-> @@ -1201,6 +1201,40 @@ fwnode_graph_devcon_match(struct fwnode_handle *fwnode, const char *con_id,
->         return NULL;
->  }
->
-> +static unsigned int fwnode_graph_devcon_matches(struct fwnode_handle *fwnode,
-> +                                               const char *con_id, void *data,
-> +                                               devcon_match_fn_t match,
-> +                                               void **matches,
-> +                                               unsigned int matches_len)
-> +{
-> +       struct fwnode_handle *node;
-> +       struct fwnode_handle *ep;
-> +       unsigned int count = 0;
-> +       void *ret;
-> +
-> +       fwnode_graph_for_each_endpoint(fwnode, ep) {
-> +               if (matches && count >= matches_len) {
-> +                       fwnode_handle_put(ep);
-> +                       break;
-> +               }
-> +
-> +               node = fwnode_graph_get_remote_port_parent(ep);
-> +               if (!fwnode_device_is_available(node)) {
-> +                       fwnode_handle_put(node);
-> +                       continue;
-> +               }
-> +
-> +               ret = match(node, con_id, data);
-> +               fwnode_handle_put(node);
-> +               if (ret) {
-> +                       if (matches)
-> +                               matches[count] = ret;
-> +                       count++;
-> +               }
-> +       }
-> +       return count;
-> +}
-> +
->  static void *
->  fwnode_devcon_match(struct fwnode_handle *fwnode, const char *con_id,
->                     void *data, devcon_match_fn_t match)
-> @@ -1223,6 +1257,37 @@ fwnode_devcon_match(struct fwnode_handle *fwnode, const char *con_id,
->         return NULL;
->  }
->
-> +static unsigned int fwnode_devcon_matches(struct fwnode_handle *fwnode,
-> +                                         const char *con_id, void *data,
-> +                                         devcon_match_fn_t match,
-> +                                         void **matches,
-> +                                         unsigned int matches_len)
-> +{
-> +       struct fwnode_handle *node;
-> +       unsigned int count = 0;
-> +       unsigned int i;
-> +       void *ret;
-> +
-> +       for (i = 0; ; i++) {
-> +               if (matches && count >= matches_len)
-> +                       break;
-> +
-> +               node = fwnode_find_reference(fwnode, con_id, i);
-> +               if (IS_ERR(node))
-> +                       break;
-> +
-> +               ret = match(node, NULL, data);
-> +               fwnode_handle_put(node);
-> +               if (ret) {
-> +                       if (matches)
-> +                               matches[count] = ret;
-> +                       count++;
-> +               }
-> +       }
-> +
-> +       return count;
-> +}
-> +
->  /**
->   * fwnode_connection_find_match - Find connection from a device node
->   * @fwnode: Device node with the connection
-> @@ -1250,3 +1315,47 @@ void *fwnode_connection_find_match(struct fwnode_handle *fwnode,
->         return fwnode_devcon_match(fwnode, con_id, data, match);
->  }
->  EXPORT_SYMBOL_GPL(fwnode_connection_find_match);
-> +
-> +/**
-> + * fwnode_connection_find_matches - Find connections from a device node
-> + * @fwnode: Device node with the connection
-> + * @con_id: Identifier for the connection
-> + * @data: Data for the match function
-> + * @match: Function to check and convert the connection description
-> + * @matches: (Optional) array of pointers to fill with matches
-> + * @matches_len: Length of @matches
-> + *
-> + * Find up to @matches_len connections with unique identifier @con_id between
-> + * @fwnode and other device nodes. @match will be used to convert the
-> + * connection description to data the caller is expecting to be returned
-> + * through the @matches array.
-> + * If @matches is NULL @matches_len is ignored and the total number of resolved
-> + * matches is returned.
-> + *
-> + * Return: Number of matches resolved, or negative errno.
-> + */
-> +int fwnode_connection_find_matches(struct fwnode_handle *fwnode,
-> +                                  const char *con_id, void *data,
-> +                                  devcon_match_fn_t match,
-> +                                  void **matches, unsigned int matches_len)
-> +{
-> +       unsigned int count_graph;
-> +       unsigned int count_ref;
-> +
-> +       if (!fwnode || !match)
-> +               return -EINVAL;
-> +
-> +       count_graph = fwnode_graph_devcon_matches(fwnode, con_id, data, match,
-> +                                                 matches, matches_len);
-> +
-> +       if (matches) {
-> +               matches += count_graph;
-> +               matches_len -= count_graph;
-> +       }
-> +
-> +       count_ref = fwnode_devcon_matches(fwnode, con_id, data, match,
-> +                                         matches, matches_len);
-> +
-> +       return count_graph + count_ref;
-> +}
-> +EXPORT_SYMBOL_GPL(fwnode_connection_find_matches);
-> diff --git a/include/linux/property.h b/include/linux/property.h
-> index fc24d45632eb..a5b429d623f6 100644
-> --- a/include/linux/property.h
-> +++ b/include/linux/property.h
-> @@ -451,6 +451,11 @@ static inline void *device_connection_find_match(struct device *dev,
->         return fwnode_connection_find_match(dev_fwnode(dev), con_id, data, match);
->  }
->
-> +int fwnode_connection_find_matches(struct fwnode_handle *fwnode,
-> +                                  const char *con_id, void *data,
-> +                                  devcon_match_fn_t match,
-> +                                  void **matches, unsigned int matches_len);
-> +
->  /* -------------------------------------------------------------------------- */
->  /* Software fwnode support - when HW description is incomplete or missing */
->
-> --
-> 2.35.1
->
-
-
+diff --git a/drivers/gpu/drm/amd/include/atomfirmware.h b/drivers/gpu/drm/amd/include/atomfirmware.h
+index 7bd763361d6e..b7a1e2116e7e 100644
+--- a/drivers/gpu/drm/amd/include/atomfirmware.h
++++ b/drivers/gpu/drm/amd/include/atomfirmware.h
+@@ -3,7 +3,7 @@
+ *  File Name      atomfirmware.h
+ *  Project        This is an interface header file between atombios and OS GPU drivers for SoC15 products
+ *
+-*  Description    header file of general definitions for OS nd pre-OS video drivers
++*  Description    header file of general definitions for OS and pre-OS video drivers
+ *
+ *  Copyright 2014 Advanced Micro Devices, Inc.
+ *
 -- 
-With Best Regards,
-Andy Shevchenko
+2.25.1
+
