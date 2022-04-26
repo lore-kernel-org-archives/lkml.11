@@ -2,103 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D160CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:24:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B308C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:24:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344750AbiDZI1H (ORCPT
+        id S1344659AbiDZI1V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:27:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36296 "EHLO
+        Tue, 26 Apr 2022 04:27:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344703AbiDZI0m (ORCPT
+        with ESMTP id S1344067AbiDZI0n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:26:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 033393B00E;
-        Tue, 26 Apr 2022 01:23:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D1C3617EB;
-        Tue, 26 Apr 2022 08:23:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C082C385A0;
-        Tue, 26 Apr 2022 08:23:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961387;
-        bh=MW5lMW83cKFuQ+PDyPpfF+4pUD4lBgubfgXNxkDATPk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A74IZsOLAVx/bbb/zohFrb8fTVkmFnveSjgn3vM27/pKbzzn8j8fNSklGW7Fd0CfI
-         UhloUkixKaSOu1aWoPbcGizU75tjAvLerbdYJmmfqoxsyNrfqrAUT7bP+3rDm7xUXp
-         SkUlU9mdq1QDJbTTPuUzvegjCMelSDUS6ADGImLk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        James Hutchinson <jahutchinson99@googlemail.com>,
-        Dima Ruinskiy <dima.ruinskiy@intel.com>,
-        Sasha Neftin <sasha.neftin@intel.com>,
-        Naama Meir <naamax.meir@linux.intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 4.9 19/24] e1000e: Fix possible overflow in LTR decoding
-Date:   Tue, 26 Apr 2022 10:21:13 +0200
-Message-Id: <20220426081731.940521770@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081731.370823950@linuxfoundation.org>
-References: <20220426081731.370823950@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 26 Apr 2022 04:26:43 -0400
+Received: from mail.meizu.com (unknown [14.29.68.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9321E3B3F3;
+        Tue, 26 Apr 2022 01:23:10 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
+ (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Tue, 26 Apr
+ 2022 16:23:08 +0800
+Received: from [172.16.137.70] (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Tue, 26 Apr
+ 2022 16:23:07 +0800
+Message-ID: <68b68f35-86e5-3f3b-ffd0-bea9c952fc66@meizu.com>
+Date:   Tue, 26 Apr 2022 16:23:07 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 1/2] docs/zh_CN: sync with original text
+ Documentation/vm/page_owner.rst
+To:     Alex Shi <seakeel@gmail.com>, <siyanteng01@gmail.com>
+CC:     <alexs@kernel.org>, <corbet@lwn.net>, <linux-doc@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <siyanteng@loongson.cn>
+References: <CAEensMzuQ0uAw8_5Xb7u1n685au=DpaJyPevGCT8GCG7xS42ow@mail.gmail.com>
+ <1650424016-7225-1-git-send-email-baihaowen@meizu.com>
+ <1650424016-7225-2-git-send-email-baihaowen@meizu.com>
+ <30d2f96e-99e1-2976-a294-8e112166afff@gmail.com>
+ <049ccac8-c394-0cdc-c2ed-4ea91cab6439@meizu.com>
+ <c498b2a7-8f0e-4f6d-10ba-49c4c7794ff9@gmail.com>
+ <0be9fe6a-b01e-b355-9283-6ad8372932d6@meizu.com>
+ <73d2f4cb-9f38-ac33-b4c0-c4d3b465bf8b@gmail.com>
+From:   baihaowen <baihaowen@meizu.com>
+In-Reply-To: <73d2f4cb-9f38-ac33-b4c0-c4d3b465bf8b@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+在 4/26/22 4:20 PM, Alex Shi 写道:
+>
+> On 4/25/22 09:17, baihaowen wrote:
+>> 在 4/24/22 11:16 AM, Alex Shi 写道:
+>>> On 4/24/22 10:56, baihaowen wrote:
+>>>>>> +        ======          ==========      ==================
+>>>> hi, Alex
+>>>> I can apply local.
+>>>> ➜  linux-next git:(heads/next-20220421) ✗ git am doc_pageonwer_patches/0001-docs-zh_CN-sync-with-original-text-Documentation-vm-.patch
+>>>> 应用：docs/zh_CN: sync with original text Documentation/vm/page_owner.rst
+>>>> ➜  linux-next git:(heads/next-20220421) ✗ git am doc_pageonwer_patches/0002-doc-vm-page_owner.rst-Fix-table-display-confusion.patch   
+>>>> 应用：doc/vm/page_owner.rst: Fix table display confusion
+>>>>
+>>>> I think git send-email will change format by my select. I'll try to resend.
+>>> Send to yourself only then get it from your email client and try applying. 
+>>>
+>>> Thanks
+>>> Alex
+>> Hi Alex
+>>
+>> Could you tell me how do you do when you get a patch from email ?
+>>
+>> I get my patch from email and then copy-patse to a new file, then git am xx.patch.
+> Don't do it. copy usually mess the format of patch.
+>
+> Saving the patch email from many kind of email-clients as raw file, like thunderbird etc.
+> Then using 'git am xxx.patch'. It will work. In fact, git can handle the plain email patch well.
+>
+>
+>> It will notice 补丁格式检测失败。
+>>
+hi, Alex
+I have sent you an available patch set, plz try to apply.
 
-commit 04ebaa1cfddae5f240cc7404f009133bb0389a47 upstream.
-
-When we decode the latency and the max_latency, u16 value may not fit
-the required size and could lead to the wrong LTR representation.
-
-Scaling is represented as:
-scale 0 - 1         (2^(5*0)) = 2^0
-scale 1 - 32        (2^(5 *1))= 2^5
-scale 2 - 1024      (2^(5 *2)) =2^10
-scale 3 - 32768     (2^(5 *3)) =2^15
-scale 4 - 1048576   (2^(5 *4)) = 2^20
-scale 5 - 33554432  (2^(5 *4)) = 2^25
-scale 4 and scale 5 required 20 and 25 bits respectively.
-scale 6 reserved.
-
-Replace the u16 type with the u32 type and allow corrected LTR
-representation.
-
-Cc: stable@vger.kernel.org
-Fixes: 44a13a5d99c7 ("e1000e: Fix the max snoop/no-snoop latency for 10M")
-Reported-by: James Hutchinson <jahutchinson99@googlemail.com>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215689
-Suggested-by: Dima Ruinskiy <dima.ruinskiy@intel.com>
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Naama Meir <naamax.meir@linux.intel.com>
-Tested-by: James Hutchinson <jahutchinson99@googlemail.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/ethernet/intel/e1000e/ich8lan.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
---- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
-+++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-@@ -1010,8 +1010,8 @@ static s32 e1000_platform_pm_pch_lpt(str
- {
- 	u32 reg = link << (E1000_LTRV_REQ_SHIFT + E1000_LTRV_NOSNOOP_SHIFT) |
- 	    link << E1000_LTRV_REQ_SHIFT | E1000_LTRV_SEND;
--	u16 max_ltr_enc_d = 0;	/* maximum LTR decoded by platform */
--	u16 lat_enc_d = 0;	/* latency decoded */
-+	u32 max_ltr_enc_d = 0;	/* maximum LTR decoded by platform */
-+	u32 lat_enc_d = 0;	/* latency decoded */
- 	u16 lat_enc = 0;	/* latency encoded */
- 
- 	if (link) {
-
+-- 
+Haowen Bai
 
