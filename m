@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E21C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:39:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CDECC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:39:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345586AbiDZImd (ORCPT
+        id S1345594AbiDZImf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:42:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39904 "EHLO
+        Tue, 26 Apr 2022 04:42:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345529AbiDZIen (ORCPT
+        with ESMTP id S1345539AbiDZIen (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:34:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4D7878FD8;
-        Tue, 26 Apr 2022 01:27:36 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FC3D78FE9;
+        Tue, 26 Apr 2022 01:27:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 89850B81A2F;
-        Tue, 26 Apr 2022 08:27:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 068A4C385A0;
-        Tue, 26 Apr 2022 08:27:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 167CC617AE;
+        Tue, 26 Apr 2022 08:27:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CA9AC385A4;
+        Tue, 26 Apr 2022 08:27:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961654;
-        bh=IJ+nbtrDHGWw4Lcw0tSqjxDYcCIa1vJufjN0F60rhA4=;
+        s=korg; t=1650961657;
+        bh=rXwXAidvJq3nMv+8q5ENQBIe/PH5KIoFhtL2h7Zp24k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jnogcxvw8uO6CpRKwshHvBwGPF04EyiPOmywK0lB2IZ79ktK+DAAIKYiew07fPnMG
-         uaq550Ug8/aHPqk6/RT1zFGXvY4kWtlOiaskgNW+7iF0iJ0GYs7vl56+86MVfH2DRs
-         SjyKy6hwgACh3/ZKAXn1nGOMPrwhvwYX0TlFyiqE=
+        b=nrS9RghNiCzeqdSiD3mZOwVeJgb+kSRzSoFYLUdqOrEzJm8YS3u1mNl1uhqBC/qEs
+         Pfe2tdLfRsN12sSTrPhFifbfqbgLk1thM9GIut+sDgVjy6QdQoIXEK9O3NWt3FLi2Y
+         ROfBeoB5O8X5272acS3i9SEtuAUfxnD3s9PJZWgY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+7a806094edd5d07ba029@syzkaller.appspotmail.com,
-        Tadeusz Struk <tadeusz.struk@linaro.org>,
-        Theodore Tso <tytso@mit.edu>, stable@kernel.org
-Subject: [PATCH 4.19 40/53] ext4: limit length to bitmap_maxbytes - blocksize in punch_hole
-Date:   Tue, 26 Apr 2022 10:21:20 +0200
-Message-Id: <20220426081736.823404701@linuxfoundation.org>
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        stable@kernel.org
+Subject: [PATCH 4.19 41/53] ext4: fix overhead calculation to account for the reserved gdt blocks
+Date:   Tue, 26 Apr 2022 10:21:21 +0200
+Message-Id: <20220426081736.852399741@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081735.651926456@linuxfoundation.org>
 References: <20220426081735.651926456@linuxfoundation.org>
@@ -51,60 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tadeusz Struk <tadeusz.struk@linaro.org>
+From: Theodore Ts'o <tytso@mit.edu>
 
-commit 2da376228a2427501feb9d15815a45dbdbdd753e upstream.
+commit 10b01ee92df52c8d7200afead4d5e5f55a5c58b1 upstream.
 
-Syzbot found an issue [1] in ext4_fallocate().
-The C reproducer [2] calls fallocate(), passing size 0xffeffeff000ul,
-and offset 0x1000000ul, which, when added together exceed the
-bitmap_maxbytes for the inode. This triggers a BUG in
-ext4_ind_remove_space(). According to the comments in this function
-the 'end' parameter needs to be one block after the last block to be
-removed. In the case when the BUG is triggered it points to the last
-block. Modify the ext4_punch_hole() function and add constraint that
-caps the length to satisfy the one before laster block requirement.
+The kernel calculation was underestimating the overhead by not taking
+into account the reserved gdt blocks.  With this change, the overhead
+calculated by the kernel matches the overhead calculation in mke2fs.
 
-LINK: [1] https://syzkaller.appspot.com/bug?id=b80bd9cf348aac724a4f4dff251800106d721331
-LINK: [2] https://syzkaller.appspot.com/text?tag=ReproC&x=14ba0238700000
-
-Fixes: a4bb6b64e39a ("ext4: enable "punch hole" functionality")
-Reported-by: syzbot+7a806094edd5d07ba029@syzkaller.appspotmail.com
-Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
-Link: https://lore.kernel.org/r/20220331200515.153214-1-tadeusz.struk@linaro.org
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Cc: stable@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/inode.c |   11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ fs/ext4/super.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/fs/ext4/inode.c
-+++ b/fs/ext4/inode.c
-@@ -4314,7 +4314,8 @@ int ext4_punch_hole(struct inode *inode,
- 	struct super_block *sb = inode->i_sb;
- 	ext4_lblk_t first_block, stop_block;
- 	struct address_space *mapping = inode->i_mapping;
--	loff_t first_block_offset, last_block_offset;
-+	loff_t first_block_offset, last_block_offset, max_length;
-+	struct ext4_sb_info *sbi = EXT4_SB(inode->i_sb);
- 	handle_t *handle;
- 	unsigned int credits;
- 	int ret = 0;
-@@ -4360,6 +4361,14 @@ int ext4_punch_hole(struct inode *inode,
- 		   offset;
- 	}
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -3440,9 +3440,11 @@ static int count_overhead(struct super_b
+ 	ext4_fsblk_t		first_block, last_block, b;
+ 	ext4_group_t		i, ngroups = ext4_get_groups_count(sb);
+ 	int			s, j, count = 0;
++	int			has_super = ext4_bg_has_super(sb, grp);
  
-+	/*
-+	 * For punch hole the length + offset needs to be within one block
-+	 * before last range. Adjust the length if it goes beyond that limit.
-+	 */
-+	max_length = sbi->s_bitmap_maxbytes - inode->i_sb->s_blocksize;
-+	if (offset + length > max_length)
-+		length = max_length - offset;
-+
- 	if (offset & (sb->s_blocksize - 1) ||
- 	    (offset + length) & (sb->s_blocksize - 1)) {
- 		/*
+ 	if (!ext4_has_feature_bigalloc(sb))
+-		return (ext4_bg_has_super(sb, grp) + ext4_bg_num_gdb(sb, grp) +
++		return (has_super + ext4_bg_num_gdb(sb, grp) +
++			(has_super ? le16_to_cpu(sbi->s_es->s_reserved_gdt_blocks) : 0) +
+ 			sbi->s_itb_per_group + 2);
+ 
+ 	first_block = le32_to_cpu(sbi->s_es->s_first_data_block) +
 
 
