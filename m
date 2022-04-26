@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E062C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:04:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98DF6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:04:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353946AbiDZTHL (ORCPT
+        id S1351830AbiDZTHQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 15:07:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41778 "EHLO
+        Tue, 26 Apr 2022 15:07:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353770AbiDZTFk (ORCPT
+        with ESMTP id S1353743AbiDZTFk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 15:05:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CD2419981E;
-        Tue, 26 Apr 2022 12:02:25 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A45E19983D;
+        Tue, 26 Apr 2022 12:02:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EF014B82252;
-        Tue, 26 Apr 2022 19:02:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DD5CC385A0;
-        Tue, 26 Apr 2022 19:02:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E1A79B8224F;
+        Tue, 26 Apr 2022 19:02:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85FACC385A4;
+        Tue, 26 Apr 2022 19:02:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650999742;
-        bh=9NY7USzhuSlp779ziJCCibr/+WvkaizSECqK6XQIv0w=;
+        s=k20201202; t=1650999745;
+        bh=aEDMA/3oe/qWVXNiG9wL+UoIZG5uPLMm54IzJ4kwM5c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UILMLzfXJhWbX3YQIfNVPVEMHKMJgp91vhXSYXm/7qnsu7+9XoGB9wEVHFwtaqnyx
-         eWUcxR79bdaBRTyONPkVy1E3z097XRzWecCamMIZ9GwKPHynzGTVG9NZ/uhZW9QbuJ
-         PhcRMJ58mRvJTDjoWKik6ZMrH4LmCv3p9lRWtsTCfqmMOXzwcpMqieS9rESC4KdZDR
-         ShqCPQuS3lZqjMtr47x7XhHbEPntjKRcpouQobllZMqp0H6hGDPjE+ZBdArYKovLxo
-         KpPXL3M8jG58IY0ludU/Xzl6/Cxd7h4maARMhQAKd4VS8lPW3G/s9q+UnZpg5WGnG2
-         LH8M3noefuNpA==
+        b=ZIwc0igcO5PA+8R3c9mUICZEi+bYBHFT0IumQz4PY2HTxa4io2l8EGklo8NyNa69L
+         D6sk1nqXBNyP8VrLddqeZ8wPhsPjG/Lj9kn854dUM8yEchvY3d0g11BVtGgMMED7m3
+         GZc33OhJUeTAtBaNqyDahptAqk1KvMmeKMqAsFxSAbQ9srGth3x+oVBvPFAfDBRiXZ
+         ZwRIvpuVmT0fL2eQqX3ed2x6otVS7M246g+DZI+z3gGKg1iDz9x2C0tZJbPXRTKy5H
+         5XMeqjylV2GLKoxhXUDBnvGCrZAUx42JgkmjCfJ4Z9mJhQf6un+z16T3A6EJ0c23ur
+         ISQf1vTAy4rmw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Namjae Jeon <linkinjeon@kernel.org>,
-        Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>, sfrench@samba.org,
-        hyc.lee@gmail.com, linux-cifs@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 06/15] ksmbd: set fixed sector size to FS_SECTOR_SIZE_INFORMATION
-Date:   Tue, 26 Apr 2022 15:02:05 -0400
-Message-Id: <20220426190216.2351413-6-sashal@kernel.org>
+Cc:     Mikulas Patocka <mpatocka@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, jpoimboe@redhat.com, peterz@infradead.org
+Subject: [PATCH AUTOSEL 5.15 09/15] x86: __memcpy_flushcache: fix wrong alignment if size > 2^32
+Date:   Tue, 26 Apr 2022 15:02:08 -0400
+Message-Id: <20220426190216.2351413-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220426190216.2351413-1-sashal@kernel.org>
 References: <20220426190216.2351413-1-sashal@kernel.org>
@@ -53,64 +54,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Namjae Jeon <linkinjeon@kernel.org>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-[ Upstream commit 02655a70b7cc0f534531ee65fa72692f4d31a944 ]
+[ Upstream commit a6823e4e360fe975bd3da4ab156df7c74c8b07f3 ]
 
-Currently ksmbd is using ->f_bsize from vfs_statfs() as sector size.
-If fat/exfat is a local share, ->f_bsize is a cluster size that is too
-large to be used as a sector size. Sector sizes larger than 4K cause
-problem occurs when mounting an iso file through windows client.
+The first "if" condition in __memcpy_flushcache is supposed to align the
+"dest" variable to 8 bytes and copy data up to this alignment.  However,
+this condition may misbehave if "size" is greater than 4GiB.
 
-The error message can be obtained using Mount-DiskImage command,
- the error is:
-"Mount-DiskImage : The sector size of the physical disk on which the
-virtual disk resides is not supported."
+The statement min_t(unsigned, size, ALIGN(dest, 8) - dest); casts both
+arguments to unsigned int and selects the smaller one.  However, the
+cast truncates high bits in "size" and it results in misbehavior.
 
-This patch reports fixed 4KB sector size if ->s_blocksize is bigger
-than 4KB.
+For example:
 
-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+	suppose that size == 0x100000001, dest == 0x200000002
+	min_t(unsigned, size, ALIGN(dest, 8) - dest) == min_t(0x1, 0xe) == 0x1;
+	...
+	dest += 0x1;
+
+so we copy just one byte "and" dest remains unaligned.
+
+This patch fixes the bug by replacing unsigned with size_t.
+
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ksmbd/smb2pdu.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ arch/x86/lib/usercopy_64.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/ksmbd/smb2pdu.c b/fs/ksmbd/smb2pdu.c
-index a9fdb47c2791..1ed3046dd5b3 100644
---- a/fs/ksmbd/smb2pdu.c
-+++ b/fs/ksmbd/smb2pdu.c
-@@ -11,6 +11,7 @@
- #include <linux/statfs.h>
- #include <linux/ethtool.h>
- #include <linux/falloc.h>
-+#include <linux/mount.h>
+diff --git a/arch/x86/lib/usercopy_64.c b/arch/x86/lib/usercopy_64.c
+index 508c81e97ab1..f1c0befb62df 100644
+--- a/arch/x86/lib/usercopy_64.c
++++ b/arch/x86/lib/usercopy_64.c
+@@ -121,7 +121,7 @@ void __memcpy_flushcache(void *_dst, const void *_src, size_t size)
  
- #include "glob.h"
- #include "smb2pdu.h"
-@@ -4997,15 +4998,17 @@ static int smb2_get_info_filesystem(struct ksmbd_work *work,
- 	case FS_SECTOR_SIZE_INFORMATION:
- 	{
- 		struct smb3_fs_ss_info *info;
-+		unsigned int sector_size =
-+			min_t(unsigned int, path.mnt->mnt_sb->s_blocksize, 4096);
+ 	/* cache copy and flush to align dest */
+ 	if (!IS_ALIGNED(dest, 8)) {
+-		unsigned len = min_t(unsigned, size, ALIGN(dest, 8) - dest);
++		size_t len = min_t(size_t, size, ALIGN(dest, 8) - dest);
  
- 		info = (struct smb3_fs_ss_info *)(rsp->Buffer);
- 
--		info->LogicalBytesPerSector = cpu_to_le32(stfs.f_bsize);
-+		info->LogicalBytesPerSector = cpu_to_le32(sector_size);
- 		info->PhysicalBytesPerSectorForAtomicity =
--				cpu_to_le32(stfs.f_bsize);
--		info->PhysicalBytesPerSectorForPerf = cpu_to_le32(stfs.f_bsize);
-+				cpu_to_le32(sector_size);
-+		info->PhysicalBytesPerSectorForPerf = cpu_to_le32(sector_size);
- 		info->FSEffPhysicalBytesPerSectorForAtomicity =
--				cpu_to_le32(stfs.f_bsize);
-+				cpu_to_le32(sector_size);
- 		info->Flags = cpu_to_le32(SSINFO_FLAGS_ALIGNED_DEVICE |
- 				    SSINFO_FLAGS_PARTITION_ALIGNED_ON_DEVICE);
- 		info->ByteOffsetForSectorAlignment = 0;
+ 		memcpy((void *) dest, (void *) source, len);
+ 		clean_cache_range((void *) dest, len);
 -- 
 2.35.1
 
