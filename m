@@ -2,132 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47A1BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:32:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 293ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:32:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349142AbiDZKfc (ORCPT
+        id S1349123AbiDZKfh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 06:35:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33596 "EHLO
+        Tue, 26 Apr 2022 06:35:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349166AbiDZKfD (ORCPT
+        with ESMTP id S1349145AbiDZKfD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 06:35:03 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95C166E8C4;
-        Tue, 26 Apr 2022 03:14:12 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id k23so35056037ejd.3;
-        Tue, 26 Apr 2022 03:14:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Qz5RSrvROhmFAod9m9cY+vK4Aq4/SnLehvmOeU3zDWU=;
-        b=FdIHPCZX9WaSrko7Vtgn0upm4gBnH3l+alc3Mv7C6n9LfwIOWhalo/qHnkWrdcYlCA
-         Ebz1HuvGorUIYnEBFx/4ij4iH94sEHzt3mGW3hATFqf/GtnUzKJ0Vy1Wy9/jmYeIkoTi
-         xI5S9ecpF4mZDUoHnqQeNYOuZsaJS6M8Eh0K33Y7ele3goZfXb5t3h21g4BV4cAYu6gN
-         MMj+fubyXcxVHOb91Gi+f7zdsCSQr5y9xznKq4e/7ZUrpriZVkWdaYagecOz0R6alge8
-         LsiucjraPi8zSQ6g28qksOCfWMaTMu7EGiZgkzNjo35rOHKXyqRxhELIjtMFy7GSmsf0
-         C7hA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Qz5RSrvROhmFAod9m9cY+vK4Aq4/SnLehvmOeU3zDWU=;
-        b=fA+o1X8ZUCLaxgQ7Cg+B0tMmtBpBSHPFLNQ2cWmpE6pYQiiWXa0LXeJJTuDhLLcC0/
-         X6x5kyHbx6/2pTDLNgl1Z4E25azDSeHEWQcBVKl/BPVv3Y/6DcMCzP7WM5li//zBCYu5
-         KKo9RtlH405G00oQf4tVSZdl1ARri+dHIJRTcf5yuxp/x+0PKLAn6Ggt8DGE/3tFLEea
-         6xNCfD7vYC/m2gElX27xYHxj8mR1b0+ljOrxU7Ce0dQanLo/I/q3QIJYgrZFmrTLsGSt
-         ioYBvRhCV2dHdD1rXHVZlD3AEcpLBsqtVOsV/W8meCJxkFuuMnhJmF/82SQfTaV01s39
-         VuzQ==
-X-Gm-Message-State: AOAM531m+bihXc6kb/KpdUzfGL6aOxB5mxoM09Mtj8nK9bFwviTp3Ivd
-        cGivyxT1QFSnyGTN784+Nf/FDkvCNZ1PuEWFg4A=
-X-Google-Smtp-Source: ABdhPJyqN1ZErxhsIK+txK0CUqN74jbit9o4azskJha+4UbYysFNAN2+1c40MFg3TvTzg64L+uzyvh0W1rJma7dE+RY=
-X-Received: by 2002:a17:906:3ce9:b0:6ef:a8aa:ab46 with SMTP id
- d9-20020a1709063ce900b006efa8aaab46mr20132385ejh.579.1650968051046; Tue, 26
- Apr 2022 03:14:11 -0700 (PDT)
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F22212AC5;
+        Tue, 26 Apr 2022 03:14:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650968040; x=1682504040;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=s3e2Mol8Q7Ae9bok6W3oQgnE6nys4q61z67ZOj7oV0U=;
+  b=RT02AiyiT1j3tEeCXpMRciNCpW9TzMErKMQqz+9xyUEqETnrvbLQhcbL
+   v7OnO8Ghr3xI8pnmAZSn9uXLWFJs2f7JTLxNlvPrLHd3lfeCe2X0EPR99
+   6hPoPS/SIlhuPxNywcPoOalXi6J1ELaOU+Qhs+GVotHCZkX3aI2MiUE23
+   x3wMV9NXnDpS8YUhXDo0/yHircDRjMFq7Kxfl1kqB04RFKAAEahDAcsg+
+   ZzgVbWCx06iWsRYl+6ev2rUSPELK3wUvdek4U+sy/UqxOKsfGARQClt54
+   e3X1AXdgiLBsbuTizpe9QVHY20WI3r13Vfpt+4t8bzDwzK2XcDsZndb7D
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="328471148"
+X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
+   d="scan'208";a="328471148"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 03:13:59 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
+   d="scan'208";a="595693115"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 26 Apr 2022 03:13:56 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1njICh-0003Py-RN;
+        Tue, 26 Apr 2022 10:13:55 +0000
+Date:   Tue, 26 Apr 2022 18:12:58 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Cai Huoqing <cai.huoqing@linux.dev>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org
+Subject: Re: [PATCH v2 4/4] drm/nvdla/uapi: Add UAPI of NVDLA driver
+Message-ID: <202204261827.CMHZCsOI-lkp@intel.com>
+References: <20220426060808.78225-5-cai.huoqing@linux.dev>
 MIME-Version: 1.0
-References: <20220422222351.1297276-1-bjorn.andersson@linaro.org> <20220422222351.1297276-4-bjorn.andersson@linaro.org>
-In-Reply-To: <20220422222351.1297276-4-bjorn.andersson@linaro.org>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 26 Apr 2022 12:13:31 +0200
-Message-ID: <CAHp75VcYJYYUQxb6xhFiP_aG389ifte0RRBNN+M7tq3N9-nS1A@mail.gmail.com>
-Subject: Re: [PATCH v5 3/7] usb: typec: mux: Check dev_set_name() return value
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        USB <linux-usb@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220426060808.78225-5-cai.huoqing@linux.dev>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 23, 2022 at 1:25 AM Bjorn Andersson
-<bjorn.andersson@linaro.org> wrote:
->
-> It's possible that dev_set_name() returns -ENOMEM, catch and handle this.
+Hi Cai,
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+I love your patch! Yet something to improve:
 
-> Fixes: 3370db35193b ("usb: typec: Registering real device entries for the muxes")
-> Reported-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> ---
->
-> Changes since v4:
-> - Added Fixes tag
->
->  drivers/usb/typec/mux.c | 14 ++++++++++----
->  1 file changed, 10 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/usb/typec/mux.c b/drivers/usb/typec/mux.c
-> index c8340de0ed49..d2aaf294b649 100644
-> --- a/drivers/usb/typec/mux.c
-> +++ b/drivers/usb/typec/mux.c
-> @@ -131,8 +131,11 @@ typec_switch_register(struct device *parent,
->         sw->dev.class = &typec_mux_class;
->         sw->dev.type = &typec_switch_dev_type;
->         sw->dev.driver_data = desc->drvdata;
-> -       dev_set_name(&sw->dev, "%s-switch",
-> -                    desc->name ? desc->name : dev_name(parent));
-> +       ret = dev_set_name(&sw->dev, "%s-switch", desc->name ? desc->name : dev_name(parent));
-> +       if (ret) {
-> +               put_device(&sw->dev);
-> +               return ERR_PTR(ret);
-> +       }
->
->         ret = device_add(&sw->dev);
->         if (ret) {
-> @@ -338,8 +341,11 @@ typec_mux_register(struct device *parent, const struct typec_mux_desc *desc)
->         mux->dev.class = &typec_mux_class;
->         mux->dev.type = &typec_mux_dev_type;
->         mux->dev.driver_data = desc->drvdata;
-> -       dev_set_name(&mux->dev, "%s-mux",
-> -                    desc->name ? desc->name : dev_name(parent));
-> +       ret = dev_set_name(&mux->dev, "%s-mux", desc->name ? desc->name : dev_name(parent));
-> +       if (ret) {
-> +               put_device(&mux->dev);
-> +               return ERR_PTR(ret);
-> +       }
->
->         ret = device_add(&mux->dev);
->         if (ret) {
-> --
-> 2.35.1
->
+[auto build test ERROR on drm/drm-next]
+[also build test ERROR on linus/master linux/master v5.18-rc4 next-20220422]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
+url:    https://github.com/intel-lab-lkp/linux/commits/Cai-Huoqing/drm-nvdla-Add-driver-support-for-NVDLA/20220426-141148
+base:   git://anongit.freedesktop.org/drm/drm drm-next
+config: i386-randconfig-a003-20220425 (https://download.01.org/0day-ci/archive/20220426/202204261827.CMHZCsOI-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 1cddcfdc3c683b393df1a5c9063252eb60e52818)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/a54587f7637b8ee11ad624794af3b409e6306e07
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Cai-Huoqing/drm-nvdla-Add-driver-support-for-NVDLA/20220426-141148
+        git checkout a54587f7637b8ee11ad624794af3b409e6306e07
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 prepare
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> error: include/uapi/drm/nvdla_drm.h: missing "WITH Linux-syscall-note" for SPDX-License-Identifier
+   make[2]: *** [scripts/Makefile.headersinst:63: usr/include/drm/nvdla_drm.h] Error 1
+   make[2]: Target '__headers' not remade because of errors.
+   make[1]: *** [Makefile:1280: headers] Error 2
+   make[1]: Target 'prepare' not remade because of errors.
+   make: *** [Makefile:219: __sub-make] Error 2
+   make: Target 'prepare' not remade because of errors.
 
 -- 
-With Best Regards,
-Andy Shevchenko
+0-DAY CI Kernel Test Service
+https://01.org/lkp
