@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3FC7C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:51:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A61AC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:52:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346266AbiDZIyf (ORCPT
+        id S1346303AbiDZIyi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:54:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59360 "EHLO
+        Tue, 26 Apr 2022 04:54:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345538AbiDZIkr (ORCPT
+        with ESMTP id S1345409AbiDZIky (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:40:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7542155711;
-        Tue, 26 Apr 2022 01:32:51 -0700 (PDT)
+        Tue, 26 Apr 2022 04:40:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84579156E19;
+        Tue, 26 Apr 2022 01:32:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 930B9617D2;
-        Tue, 26 Apr 2022 08:32:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DC62C385A0;
-        Tue, 26 Apr 2022 08:32:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 36017B81CF9;
+        Tue, 26 Apr 2022 08:32:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F59BC385A4;
+        Tue, 26 Apr 2022 08:32:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961969;
-        bh=xE7E+TojZIIQlgWoWbhVcfx6tcCfv5XifeXacFZ7gA8=;
+        s=korg; t=1650961971;
+        bh=FNUxyha6533HUnq5rVuZcQa26iropGAM7TaqeG2OOHw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SS8NzCgqwdrGJ7nmpNZOMFmUQwg7MWt6dITv6ESpqzKfHBhYAu6egoas5lu7m0MSw
-         7BoyIp3HuY18MlSbIEZoTzverWIJ6oFPXWswxlK/t9aWb9j9hAmgR9V+mpkae+ruj/
-         e4/o/sW2Z4tshoRMeamWFdJdlIpeRwLGAWe0uIXk=
+        b=lr4CSqfKlOabWHoGcyZCQjHTGPscPT1MbZ9ody/vn8QJUzF9Z2lqZ/iwdTt1ToGbe
+         13zzgLhZMiwEET6nbBmrf2UtNfyu+UvY2O1JIzw/UcW67YQVBGAiOgAnb2TQ+SLVIQ
+         fIaAIMZ6UG3CjuxkJHZs5PVVikuJ0fAAu5rGd1XY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kevin Hao <haokexin@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 28/86] net: stmmac: Use readl_poll_timeout_atomic() in atomic state
-Date:   Tue, 26 Apr 2022 10:20:56 +0200
-Message-Id: <20220426081742.020829413@linuxfoundation.org>
+        stable@vger.kernel.org, Bernice Zhang <bernice.zhang@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 29/86] dmaengine: idxd: add RO check for wq max_batch_size write
+Date:   Tue, 26 Apr 2022 10:20:57 +0200
+Message-Id: <20220426081742.049499318@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
 References: <20220426081741.202366502@linuxfoundation.org>
@@ -50,72 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kevin Hao <haokexin@gmail.com>
+From: Dave Jiang <dave.jiang@intel.com>
 
-[ Upstream commit 234901de2bc6847eaa0aeb4aba62c31ffb8d3ad6 ]
+[ Upstream commit 66903461ffed0b66fc3e0200082d4e09365aacdc ]
 
-The init_systime() may be invoked in atomic state. We have observed the
-following call trace when running "phc_ctl /dev/ptp0 set" on a Intel
-Agilex board.
-  BUG: sleeping function called from invalid context at drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c:74
-  in_atomic(): 1, irqs_disabled(): 128, non_block: 0, pid: 381, name: phc_ctl
-  preempt_count: 1, expected: 0
-  RCU nest depth: 0, expected: 0
-  Preemption disabled at:
-  [<ffff80000892ef78>] stmmac_set_time+0x34/0x8c
-  CPU: 2 PID: 381 Comm: phc_ctl Not tainted 5.18.0-rc2-next-20220414-yocto-standard+ #567
-  Hardware name: SoCFPGA Agilex SoCDK (DT)
-  Call trace:
-   dump_backtrace.part.0+0xc4/0xd0
-   show_stack+0x24/0x40
-   dump_stack_lvl+0x7c/0xa0
-   dump_stack+0x18/0x34
-   __might_resched+0x154/0x1c0
-   __might_sleep+0x58/0x90
-   init_systime+0x78/0x120
-   stmmac_set_time+0x64/0x8c
-   ptp_clock_settime+0x60/0x9c
-   pc_clock_settime+0x6c/0xc0
-   __arm64_sys_clock_settime+0x88/0xf0
-   invoke_syscall+0x5c/0x130
-   el0_svc_common.constprop.0+0x4c/0x100
-   do_el0_svc+0x7c/0xa0
-   el0_svc+0x58/0xcc
-   el0t_64_sync_handler+0xa4/0x130
-   el0t_64_sync+0x18c/0x190
+Block wq_max_batch_size_store() when the device is configured as read-only
+and not configurable.
 
-So we should use readl_poll_timeout_atomic() here instead of
-readl_poll_timeout().
-
-Also adjust the delay time to 10us to fix a "__bad_udelay" build error
-reported by "kernel test robot <lkp@intel.com>". I have tested this on
-Intel Agilex and NXP S32G boards, there is no delay needed at all.
-So the 10us delay should be long enough for most cases.
-
-Fixes: ff8ed737860e ("net: stmmac: use readl_poll_timeout() function in init_systime()")
-Signed-off-by: Kevin Hao <haokexin@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: e7184b159dd3 ("dmaengine: idxd: add support for configurable max wq batch size")
+Reported-by: Bernice Zhang <bernice.zhang@intel.com>
+Tested-by: Bernice Zhang <bernice.zhang@intel.com>
+Signed-off-by: Dave Jiang <dave.jiang@intel.com>
+Link: https://lore.kernel.org/r/164971493551.2201159.1942042593642155209.stgit@djiang5-desk3.ch.intel.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/dma/idxd/sysfs.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
-index 07b1b8374cd2..53efcc9c40e2 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
-@@ -68,9 +68,9 @@ static int init_systime(void __iomem *ioaddr, u32 sec, u32 nsec)
- 	writel(value, ioaddr + PTP_TCR);
+diff --git a/drivers/dma/idxd/sysfs.c b/drivers/dma/idxd/sysfs.c
+index 7b41cdff1a2c..5bf4b4be64e4 100644
+--- a/drivers/dma/idxd/sysfs.c
++++ b/drivers/dma/idxd/sysfs.c
+@@ -1132,6 +1132,9 @@ static ssize_t wq_max_batch_size_store(struct device *dev, struct device_attribu
+ 	u64 batch_size;
+ 	int rc;
  
- 	/* wait for present system time initialize to complete */
--	return readl_poll_timeout(ioaddr + PTP_TCR, value,
-+	return readl_poll_timeout_atomic(ioaddr + PTP_TCR, value,
- 				 !(value & PTP_TCR_TSINIT),
--				 10000, 100000);
-+				 10, 100000);
- }
++	if (!test_bit(IDXD_FLAG_CONFIGURABLE, &idxd->flags))
++		return -EPERM;
++
+ 	if (wq->state != IDXD_WQ_DISABLED)
+ 		return -EPERM;
  
- static int config_addend(void __iomem *ioaddr, u32 addend)
 -- 
 2.35.1
 
