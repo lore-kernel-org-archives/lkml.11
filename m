@@ -2,218 +2,266 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E63C2C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 17:21:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEEB0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 17:21:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346045AbiDZRY1 (ORCPT
+        id S1347483AbiDZRYf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 13:24:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36596 "EHLO
+        Tue, 26 Apr 2022 13:24:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232258AbiDZRXz (ORCPT
+        with ESMTP id S1347335AbiDZRYV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 13:23:55 -0400
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0313D38187
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 10:20:47 -0700 (PDT)
-Received: by mail-io1-xd2e.google.com with SMTP id z26so2714173iot.8
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 10:20:46 -0700 (PDT)
+        Tue, 26 Apr 2022 13:24:21 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA1B73AA43
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 10:21:12 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2f4e758e54bso110688447b3.3
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 10:21:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=2xt2bp7x87CoZowz/+tBHRcsZ+XY0BlT50TGFgS7h/w=;
-        b=gxmHxPn7Dnw01zE08iDHw8bZRVqwGe4ygKYL0Se9OrUFYZ5iNeCJn462eOg/lu2+pP
-         Y/t5JIKwQ5s1as6hEseYYolITNW45/TWsHDkoLBryBQWOaQjP8Jfudwh+Mji5W060Rnj
-         3J72fIn4ofNg/fUPRWth3Jm+hSTV7DOio/5M0=
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=PI6P4hVmL5VSlNStDa8yoRCKf8zCtm5J26ICwUjLazU=;
+        b=nmszqekbq0eqmAOrxhoxhpOUtjONopanoK4BLzf6Y7SO0MdbDpxoPMN7TldeHuYxU1
+         FAcxQslQWcISEhOLRyXucSQvrVGbNevk/n9eGT7cC0ffdZLPqDnqWVJIe+Li9DrIsc65
+         Ip3Upkx2bX5Bn8uFUpWeoJklm9//BrntC9OYtGHiowTnSikOduUyBEq67k2Pdfdd3hrW
+         +JSXGuRf1XPyXek3iJppsuE/1YIxw+L9FcPhOf6A9WZGIkG+vwrYyMyP5udv4FKGosh2
+         d5Ve8EwwsNt7sA1X4j0zlzgBiI5lO1ZC4ydpfkbf8CtwIMqSFXtPfocTcYO4s4ezzpbW
+         VlWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=2xt2bp7x87CoZowz/+tBHRcsZ+XY0BlT50TGFgS7h/w=;
-        b=JChJZvV7h/4vKslNuLsuvz5dBrsDEJ/pvBjY1jKA+uejYChJHow2K8dCFv0717Msr1
-         tqcv/80B35tCgiWB+RDqN2waIldb8G/u7iL+56vSuuqXG56DzW4DFFyZ1c6Ya49tqOSM
-         ELZocmpDx2c25YsBkGFLMzAH4XvUKIGo1uUX8PuFmo7nBbCw6nRPv2Ec5AgVWJ3ocoz6
-         0ehk3++eFhI0kvI+fHxk7h7EQMncSw/r9BpPNeFepvnuXSp7KRZ1l0qk0KMzCcfsz/Mp
-         SsE3geRE1ATJKc/njKNT27K7egqxMrCiCau0wntvt5kGohIeX3vgDjMTEw10xnHdVRWs
-         TjCQ==
-X-Gm-Message-State: AOAM530seyymlEMASlCOWWitC3H2z1LoUp054FZD91lXnxp0S/cRm32L
-        +OdaWTjMvUOhBJ0tANROTlw/Z1ewhoWzsk3FutG4qg==
-X-Google-Smtp-Source: ABdhPJzYtrBwwIY+ZQ3w19qLj2iDwJPTNb8XnvRMTDIdR5OR5ZXdNBv6tcNrZDkwYKk98HmYG9ELvr1Z+mAZQgL/8Uw=
-X-Received: by 2002:a05:6602:1406:b0:649:d35b:4bbb with SMTP id
- t6-20020a056602140600b00649d35b4bbbmr10101251iov.23.1650993646158; Tue, 26
- Apr 2022 10:20:46 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220418231746.2464800-1-grundler@chromium.org>
- <CANEJEGtaFCRhVBaVtHrQiJvwsuBk3f_4RNTg87CWERHt+453KA@mail.gmail.com> <23cbe4be-7ced-62da-8fdb-366b726fe10f@marvell.com>
-In-Reply-To: <23cbe4be-7ced-62da-8fdb-366b726fe10f@marvell.com>
-From:   Grant Grundler <grundler@chromium.org>
-Date:   Tue, 26 Apr 2022 10:20:35 -0700
-Message-ID: <CANEJEGtVFE8awJz3j9j7T2BseJ5qMd_7er7WbdPQNgrdz9F5dg@mail.gmail.com>
-Subject: Re: [EXT] Re: [PATCH 0/5] net: atlantic: more fuzzing fixes
-To:     Igor Russkikh <irusskikh@marvell.com>
-Cc:     Grant Grundler <grundler@chromium.org>,
-        Dmitry Bezrukov <dbezrukov@marvell.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Aashay Shringarpure <aashay@google.com>,
-        Yi Chou <yich@google.com>,
-        Shervin Oloumi <enlightened@google.com>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=PI6P4hVmL5VSlNStDa8yoRCKf8zCtm5J26ICwUjLazU=;
+        b=PE8VuswByA4ahchQ7TqB1NM8IkegVssOoWyjx3pRHlQqPIF9HZY1fAq7snsspkKQMf
+         L4nIAuKagTmzWkNFJkgBHVkOFg7v+shJGsCAJt4Dj12/p9/QNT2ezjaV07ORlDbYH3w6
+         4MXSXMQpIhsjl1U3PY+GFS39khXg8Z1RAT6BvGESaxLnjQkYxWGMMGcpo5lgl7MU2kTE
+         Yyj8PIxhI9R2Xu3GOmZmYrZE2Ar+EralpBrwjhhhFMGqirUdGO/NP665EpSzR4DKncEO
+         yiwNXiFJbLNE/CACO6V+/jLKZmTL516LshV5KlbS8tanLB9foeoYm307DXKe+QMlvyVh
+         UmbA==
+X-Gm-Message-State: AOAM530jKT4Jhh5vyrolCAn2iYlHenybkdJ/q5bb7O+9DXFMP7NB1OsS
+        LLFjDohNPwN74QUDEpWCNpQI+A9Z3w+E
+X-Google-Smtp-Source: ABdhPJxATiLz5ywsTWoQ7JirGS+mZuGjN5/d7L930okabHwvzFCdATmA+VcGAs6znkMpr/Vyp7vGVBotprXt
+X-Received: from rajat2.mtv.corp.google.com ([2620:15c:202:201:ce74:273e:a60f:b750])
+ (user=rajatja job=sendgmr) by 2002:a81:2305:0:b0:2f7:dadb:2162 with SMTP id
+ j5-20020a812305000000b002f7dadb2162mr11938019ywj.42.1650993671724; Tue, 26
+ Apr 2022 10:21:11 -0700 (PDT)
+Date:   Tue, 26 Apr 2022 10:21:05 -0700
+In-Reply-To: <20220426172105.3663170-1-rajatja@google.com>
+Message-Id: <20220426172105.3663170-2-rajatja@google.com>
+Mime-Version: 1.0
+References: <20220426172105.3663170-1-rajatja@google.com>
+X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
+Subject: [PATCH v7 2/2] PCI: Rename pci_dev->untrusted to pci_dev->untrusted_dma
+From:   Rajat Jain <rajatja@google.com>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, linux-pci@vger.kernel.org,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Rajat Jain <rajatxjain@gmail.com>,
+        Dmitry Torokhov <dtor@google.com>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Pavel Machek <pavel@denx.de>,
+        "Oliver O'Halloran" <oohall@gmail.com>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        iommu@lists.linux-foundation.org
+Cc:     Rajat Jain <rajatja@google.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[reply-all again since I forgot to tell gmail to post this as "plain
-text"...grrh... so much for AI figuring this stuff out.]
+Rename the field to make it more clear, that the device can execute DMA
+attacks on the system, and thus the system may need protection from
+such attacks from this device.
 
+No functional change intended.
 
-On Tue, Apr 26, 2022 at 9:00 AM Igor Russkikh <irusskikh@marvell.com> wrote=
-:
->
-> Hi Grant,
->
-> Sorry for the delay, I was on vacation.
-> Thanks for working on this.
+Signed-off-by: Rajat Jain <rajatja@google.com>
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+---
+v7: Added Lu Baolu's "Reviewed by" tag.
+v6: No change in this patch, rebased on top of changes in other patch.
+v5: Use "untrusted_dma" as property name, based on feedback.
+    Reorder the patches in the series.
+v4: Initial version, created based on comments on other patch
 
-Hi Igor!
-Very welcome! And yes, I was starting to wonder... but I'm now glad
-that you didn't review them before you got back. These patches are no
-reason to ruin a perfectly good vacation. :)
+ drivers/iommu/dma-iommu.c   | 6 +++---
+ drivers/iommu/intel/iommu.c | 2 +-
+ drivers/iommu/iommu.c       | 2 +-
+ drivers/pci/ats.c           | 2 +-
+ drivers/pci/pci-acpi.c      | 2 +-
+ drivers/pci/pci.c           | 2 +-
+ drivers/pci/probe.c         | 8 ++++----
+ drivers/pci/quirks.c        | 2 +-
+ include/linux/pci.h         | 5 +++--
+ 9 files changed, 16 insertions(+), 15 deletions(-)
 
-> I'm adding here Dmitrii, to help me review the patches.
-> Dmitrii, here is a full series:
->
-> https://patchwork.kernel.org/project/netdevbpf/cover/20220418231746.24648=
-00-1-grundler@chromium.org/
->
-> Grant, I've reviewed and also quite OK with patches 1-4.
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 09f6e1c0f9c0..aeee4be7614d 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -497,14 +497,14 @@ static int iova_reserve_iommu_regions(struct device *dev,
+ 	return ret;
+ }
+ 
+-static bool dev_is_untrusted(struct device *dev)
++static bool dev_has_untrusted_dma(struct device *dev)
+ {
+-	return dev_is_pci(dev) && to_pci_dev(dev)->untrusted;
++	return dev_is_pci(dev) && to_pci_dev(dev)->untrusted_dma;
+ }
+ 
+ static bool dev_use_swiotlb(struct device *dev)
+ {
+-	return IS_ENABLED(CONFIG_SWIOTLB) && dev_is_untrusted(dev);
++	return IS_ENABLED(CONFIG_SWIOTLB) && dev_has_untrusted_dma(dev);
+ }
+ 
+ /**
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index df5c62ecf942..b88f47391140 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4843,7 +4843,7 @@ static bool intel_iommu_is_attach_deferred(struct device *dev)
+  */
+ static bool risky_device(struct pci_dev *pdev)
+ {
+-	if (pdev->untrusted) {
++	if (pdev->untrusted_dma) {
+ 		pci_info(pdev,
+ 			 "Skipping IOMMU quirk for dev [%04X:%04X] on untrusted PCI link\n",
+ 			 pdev->vendor, pdev->device);
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index f2c45b85b9fc..d8d3133e2947 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1525,7 +1525,7 @@ static int iommu_get_def_domain_type(struct device *dev)
+ {
+ 	const struct iommu_ops *ops = dev_iommu_ops(dev);
+ 
+-	if (dev_is_pci(dev) && to_pci_dev(dev)->untrusted)
++	if (dev_is_pci(dev) && to_pci_dev(dev)->untrusted_dma)
+ 		return IOMMU_DOMAIN_DMA;
+ 
+ 	if (ops->def_domain_type)
+diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+index c967ad6e2626..477c16ba9341 100644
+--- a/drivers/pci/ats.c
++++ b/drivers/pci/ats.c
+@@ -42,7 +42,7 @@ bool pci_ats_supported(struct pci_dev *dev)
+ 	if (!dev->ats_cap)
+ 		return false;
+ 
+-	return (dev->untrusted == 0);
++	return (dev->untrusted_dma == 0);
+ }
+ EXPORT_SYMBOL_GPL(pci_ats_supported);
+ 
+diff --git a/drivers/pci/pci-acpi.c b/drivers/pci/pci-acpi.c
+index 8cb4725d41fa..bf04e873c96a 100644
+--- a/drivers/pci/pci-acpi.c
++++ b/drivers/pci/pci-acpi.c
+@@ -1396,7 +1396,7 @@ void pci_acpi_setup(struct device *dev, struct acpi_device *adev)
+ 
+ 	pci_acpi_optimize_delay(pci_dev, adev->handle);
+ 	pci_acpi_set_external_facing(pci_dev);
+-	pci_dev->untrusted |= pci_dev_has_dma_property(pci_dev);
++	pci_dev->untrusted_dma |= pci_dev_has_dma_property(pci_dev);
+ 	pci_acpi_add_edr_notifier(pci_dev);
+ 
+ 	pci_acpi_add_pm_notifier(adev, pci_dev);
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index 9ecce435fb3f..1fb0eb8646c8 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -958,7 +958,7 @@ static void pci_std_enable_acs(struct pci_dev *dev)
+ 	ctrl |= (cap & PCI_ACS_UF);
+ 
+ 	/* Enable Translation Blocking for external devices and noats */
+-	if (pci_ats_disabled() || dev->external_facing || dev->untrusted)
++	if (pci_ats_disabled() || dev->external_facing || dev->untrusted_dma)
+ 		ctrl |= (cap & PCI_ACS_TB);
+ 
+ 	pci_write_config_word(dev, pos + PCI_ACS_CTRL, ctrl);
+diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+index 17a969942d37..d2a9b26fcede 100644
+--- a/drivers/pci/probe.c
++++ b/drivers/pci/probe.c
+@@ -1587,7 +1587,7 @@ static void set_pcie_thunderbolt(struct pci_dev *dev)
+ 		dev->is_thunderbolt = 1;
+ }
+ 
+-static void set_pcie_untrusted(struct pci_dev *dev)
++static void pci_set_untrusted_dma(struct pci_dev *dev)
+ {
+ 	struct pci_dev *parent;
+ 
+@@ -1596,8 +1596,8 @@ static void set_pcie_untrusted(struct pci_dev *dev)
+ 	 * untrusted as well.
+ 	 */
+ 	parent = pci_upstream_bridge(dev);
+-	if (parent && (parent->untrusted || parent->external_facing))
+-		dev->untrusted = true;
++	if (parent && (parent->untrusted_dma || parent->external_facing))
++		dev->untrusted_dma = true;
+ }
+ 
+ static void pci_set_removable(struct pci_dev *dev)
+@@ -1862,7 +1862,7 @@ int pci_setup_device(struct pci_dev *dev)
+ 	/* Need to have dev->cfg_size ready */
+ 	set_pcie_thunderbolt(dev);
+ 
+-	set_pcie_untrusted(dev);
++	pci_set_untrusted_dma(dev);
+ 
+ 	/* "Unknown power state" */
+ 	dev->current_state = PCI_UNKNOWN;
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index 41aeaa235132..583d35968413 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -5135,7 +5135,7 @@ static int pci_quirk_enable_intel_spt_pch_acs(struct pci_dev *dev)
+ 	ctrl |= (cap & PCI_ACS_CR);
+ 	ctrl |= (cap & PCI_ACS_UF);
+ 
+-	if (pci_ats_disabled() || dev->external_facing || dev->untrusted)
++	if (pci_ats_disabled() || dev->external_facing || dev->untrusted_dma)
+ 		ctrl |= (cap & PCI_ACS_TB);
+ 
+ 	pci_write_config_dword(dev, pos + INTEL_SPT_ACS_CTRL, ctrl);
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 60adf42460ab..2453a794bdb2 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -444,13 +444,14 @@ struct pci_dev {
+ 	unsigned int	shpc_managed:1;		/* SHPC owned by shpchp */
+ 	unsigned int	is_thunderbolt:1;	/* Thunderbolt controller */
+ 	/*
+-	 * Devices marked being untrusted are the ones that can potentially
++	 * Devices marked with untrusted_dma are the ones that can potentially
+ 	 * execute DMA attacks and similar. They are typically connected
+ 	 * through external ports such as Thunderbolt but not limited to
+ 	 * that. When an IOMMU is enabled they should be getting full
+ 	 * mappings to make sure they cannot access arbitrary memory.
+ 	 */
+-	unsigned int	untrusted:1;
++	unsigned int	untrusted_dma:1;
++
+ 	/*
+ 	 * Info from the platform, e.g., ACPI or device tree, may mark a
+ 	 * device as "external-facing".  An external-facing device is
+-- 
+2.36.0.rc2.479.g8af0fa9b8e-goog
 
-Excellent! \o/
-
-
-> For patch 5 - why do you think we need these extra comparisons with softw=
-are head/tail?
-
-The ChromeOS security team (CC'd) believes the driver needs to verify
-"expected behavior". In other words, the driver expects the device to
-provide new values of tail index which are between [tail,head)
-("available to fill").
-
-Your question makes me chuckle because I asked exactly the same
-question. :D Everyone agrees it is a minimum requirement to verify the
-index was "in bounds". And I agree it's prudent to verify the device
-is "well behaved" where we can. I haven't looked at the code enough to
-know what could go wrong if, for example, the tail index is
-decremented instead of incremented or a "next fragment" index falls in
-the "available to fill" range.
-
-However, I didn't run the fuzzer and, for now, I'm taking the ChromeOS
-security team's word that this check is needed. If you (or Dmitrii)
-feel strongly the driver can handle malicious or firmware bugs in
-other ways, I'm not offended if you decline this patch. However, I
-would be curious what those other mechanisms are.
-
-> From what I see in logic, only the size limiting check is enough there..
->
-> Other extra checks are tricky and non intuitive..
-
-Yes, somewhat tricky in the code but conceptually simple: For the RX
-buffer ring, IIUC, [head,tail) is "CPU to process" and [tail, head) is
-"available to fill". New tail values should always be in the latter
-range.
-
-The trickiness comes in because this is a ring buffer and [tail, head)
-it is equally likely that head =3D< tail  or head > tail numerically.
-
-If you like, feel free to add comments explaining the ring behavior or
-ask me to add such a comment (and repost #5). I'm a big fan of
-documenting non-intuitive things in the code. That way the next person
-to look at the code can verify the code and the IO device do what the
-comment claims.
-
-On the RX buffer ring, I'm also wondering if there is a race condition
-such that the driver uses stale values of the tail pointer when
-walking the RX fragment lists and validating index values. Aashay
-assures me this race condition is not possible and I am convinced this
-is true for the TX buffer ring where the driver is the "producer"
-(tells the device what is in the TX ring). I still have to review the
-RX buffer handling code more and will continue the conversation with
-him until we agree.
-
-cheers,
-grant
-
->
-> Regards,
->   Igor
->
-> On 4/21/2022 9:53 PM, Grant Grundler wrote:
-> > External Email
-> >
-> > ----------------------------------------------------------------------
-> > Igor,
-> > Will you have a chance to comment on this in the near future?
-> > Should someone else review/integrate these patches?
-> >
-> > I'm asking since I've seen no comments in the past three days.
-> >
-> > cheers,
-> > grant
-> >
-> >
-> > On Mon, Apr 18, 2022 at 4:17 PM Grant Grundler <grundler@chromium.org>
-> > wrote:
-> >>
-> >> The Chrome OS fuzzing team posted a "Fuzzing" report for atlantic driv=
-er
-> >> in Q4 2021 using Chrome OS v5.4 kernel and "Cable Matters
-> >> Thunderbolt 3 to 10 Gb Ethernet" (b0 version):
-> >>
-> >> https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__docs.google.com=
-_document_d_e_2PACX-2D1vT4oCGNhhy-5FAuUqpu6NGnW0N9HF-5Fjxf2kS7raOpOlNRqJNiT=
-HAtjiHRthXYSeXIRTgfeVvsEt0qK9qK_pub&d=3DDwIBaQ&c=3DnKjWec2b6R0mOyPaz7xtfQ&r=
-=3D3kUjVPjrPMvlbd3rzgP63W0eewvCq4D-kzQRqaXHOqU&m=3DQoxR8WoQQ-hpWu_tThQydP3-=
-6zkRWACvRmj_7aY1qo2FG6DdPdI86vAYrfKQFMHX&s=3D620jqeSvQrGg6aotI35cWwQpjaL94s=
-7TFeFh2cYSyvA&e=3D
-> >>
-> >> It essentially describes four problems:
-> >> 1) validate rxd_wb->next_desc_ptr before populating buff->next
-> >> 2) "frag[0] not initialized" case in aq_ring_rx_clean()
-> >> 3) limit iterations handling fragments in aq_ring_rx_clean()
-> >> 4) validate hw_head_ in hw_atl_b0_hw_ring_tx_head_update()
-> >>
-> >> I've added one "clean up" contribution:
-> >>     "net: atlantic: reduce scope of is_rsc_complete"
-> >>
-> >> I tested the "original" patches using chromeos-v5.4 kernel branch:
-> >>
-> >> https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__chromium-2Drevi=
-ew.googlesource.com_q_hashtag-3Apcinet-2Datlantic-2D2022q1-2B-28status-3Aop=
-en-2520OR-2520status-3Amerged-29&d=3DDwIBaQ&c=3DnKjWec2b6R0mOyPaz7xtfQ&r=3D=
-3kUjVPjrPMvlbd3rzgP63W0eewvCq4D-kzQRqaXHOqU&m=3DQoxR8WoQQ-hpWu_tThQydP3-6zk=
-RWACvRmj_7aY1qo2FG6DdPdI86vAYrfKQFMHX&s=3D1a1YwJqrY-be2oDgGAG5oOyZDnqIok_2p=
-5G-N8djo2I&e=3D
-> >>
-> >> The fuzzing team will retest using the chromeos-v5.4 patches and the b=
-0
-> >> HW.
-> >>
-> >> I've forward ported those patches to 5.18-rc2 and compiled them but am
-> >> currently unable to test them on 5.18-rc2 kernel (logistics problems).
-> >>
-> >> I'm confident in all but the last patch:
-> >>    "net: atlantic: verify hw_head_ is reasonable"
-> >>
-> >> Please verify I'm not confusing how ring->sw_head and ring->sw_tail
-> >> are used in hw_atl_b0_hw_ring_tx_head_update().
-> >>
-> >> Credit largely goes to Chrome OS Fuzzing team members:
-> >>     Aashay Shringarpure, Yi Chou, Shervin Oloumi
-> >>
-> >> cheers,
-> >> grant
