@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3AE2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:34:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52E6DC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:34:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347956AbiDZJiA (ORCPT
+        id S1344605AbiDZJiD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:38:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55038 "EHLO
+        Tue, 26 Apr 2022 05:38:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346270AbiDZJH3 (ORCPT
+        with ESMTP id S1346280AbiDZJH3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 05:07:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33382175F9C;
-        Tue, 26 Apr 2022 01:48:30 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01F9ACA0D7;
+        Tue, 26 Apr 2022 01:48:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C488160C42;
-        Tue, 26 Apr 2022 08:48:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB1ECC385A0;
-        Tue, 26 Apr 2022 08:48:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B14F5B81D0A;
+        Tue, 26 Apr 2022 08:48:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDB37C385A0;
+        Tue, 26 Apr 2022 08:48:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962909;
-        bh=A56fKUb9QhTkuY0ANZnth/JLehVBCPkqJ2mcbTQY0F4=;
+        s=korg; t=1650962912;
+        bh=dTrkoAicnKNbR8OoKD9QRqhGbzc5PwsgGK9Ouyr9B7M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wrCououv+o3ZOuPDhwyfBWVqnnkooVj/ZEUKFogRHUdDSP4iZUmal0qMljkBILk7u
-         cSO/Kxbr7CWUk9P+mGMJ6cOLdS/BI1vACYNoSljgmIezr1IHu6VC1I7H9yI2ISp0Vu
-         VnhQOyY3Yb+IFQjgnWjQOGOZ43i6ib/LZoyp9W/E=
+        b=wALMeqXus2Z04YUG1AhB9X/AGLzp18hM5tVNhD8GYAyJlqEGHStxb0xfR8uEPbdpc
+         P53UcnmQPhyclO2+xYXhgtrTCfXd3bRQnTuqI8WNcAkjM4HtJDN1M8MPShwBoGiteB
+         Sy0kED6HcevFT/bKP/Rod8oXiaT2wI9Qh7wkKVv4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dongli Cao <caodongli@kingsoft.com>,
-        Like Xu <likexu@tencent.com>,
-        Yanan Wang <wangyanan55@huawei.com>,
-        Jim Mattson <jmattson@google.com>,
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
         Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.17 128/146] KVM: x86/pmu: Update AMD PMC sample period to fix guest NMI-watchdog
-Date:   Tue, 26 Apr 2022 10:22:03 +0200
-Message-Id: <20220426081753.660138313@linuxfoundation.org>
+Subject: [PATCH 5.17 129/146] KVM: x86: Dont re-acquire SRCU lock in complete_emulated_io()
+Date:   Tue, 26 Apr 2022 10:22:04 +0200
+Message-Id: <20220426081753.688082335@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -52,87 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
+From: Sean Christopherson <seanjc@google.com>
 
-commit 75189d1de1b377e580ebd2d2c55914631eac9c64 upstream.
+commit 2d08935682ac5f6bfb70f7e6844ec27d4a245fa4 upstream.
 
-NMI-watchdog is one of the favorite features of kernel developers,
-but it does not work in AMD guest even with vPMU enabled and worse,
-the system misrepresents this capability via /proc.
+Don't re-acquire SRCU in complete_emulated_io() now that KVM acquires the
+lock in kvm_arch_vcpu_ioctl_run().  More importantly, don't overwrite
+vcpu->srcu_idx.  If the index acquired by complete_emulated_io() differs
+from the one acquired by kvm_arch_vcpu_ioctl_run(), KVM will effectively
+leak a lock and hang if/when synchronize_srcu() is invoked for the
+relevant grace period.
 
-This is a PMC emulation error. KVM does not pass the latest valid
-value to perf_event in time when guest NMI-watchdog is running, thus
-the perf_event corresponding to the watchdog counter will enter the
-old state at some point after the first guest NMI injection, forcing
-the hardware register PMC0 to be constantly written to 0x800000000001.
-
-Meanwhile, the running counter should accurately reflect its new value
-based on the latest coordinated pmc->counter (from vPMC's point of view)
-rather than the value written directly by the guest.
-
-Fixes: 168d918f2643 ("KVM: x86: Adjust counter sample period after a wrmsr")
-Reported-by: Dongli Cao <caodongli@kingsoft.com>
-Signed-off-by: Like Xu <likexu@tencent.com>
-Reviewed-by: Yanan Wang <wangyanan55@huawei.com>
-Tested-by: Yanan Wang <wangyanan55@huawei.com>
-Reviewed-by: Jim Mattson <jmattson@google.com>
-Message-Id: <20220409015226.38619-1-likexu@tencent.com>
+Fixes: 8d25b7beca7e ("KVM: x86: pull kvm->srcu read-side to kvm_arch_vcpu_ioctl_run")
 Cc: stable@vger.kernel.org
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Message-Id: <20220415004343.2203171-2-seanjc@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/pmu.h           |    9 +++++++++
- arch/x86/kvm/svm/pmu.c       |    1 +
- arch/x86/kvm/vmx/pmu_intel.c |    8 ++------
- 3 files changed, 12 insertions(+), 6 deletions(-)
+ arch/x86/kvm/x86.c |    7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
---- a/arch/x86/kvm/pmu.h
-+++ b/arch/x86/kvm/pmu.h
-@@ -140,6 +140,15 @@ static inline u64 get_sample_period(stru
- 	return sample_period;
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -10296,12 +10296,7 @@ static int vcpu_run(struct kvm_vcpu *vcp
+ 
+ static inline int complete_emulated_io(struct kvm_vcpu *vcpu)
+ {
+-	int r;
+-
+-	vcpu->srcu_idx = srcu_read_lock(&vcpu->kvm->srcu);
+-	r = kvm_emulate_instruction(vcpu, EMULTYPE_NO_DECODE);
+-	srcu_read_unlock(&vcpu->kvm->srcu, vcpu->srcu_idx);
+-	return r;
++	return kvm_emulate_instruction(vcpu, EMULTYPE_NO_DECODE);
  }
  
-+static inline void pmc_update_sample_period(struct kvm_pmc *pmc)
-+{
-+	if (!pmc->perf_event || pmc->is_paused)
-+		return;
-+
-+	perf_event_period(pmc->perf_event,
-+			  get_sample_period(pmc, pmc->counter));
-+}
-+
- void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel);
- void reprogram_fixed_counter(struct kvm_pmc *pmc, u8 ctrl, int fixed_idx);
- void reprogram_counter(struct kvm_pmu *pmu, int pmc_idx);
---- a/arch/x86/kvm/svm/pmu.c
-+++ b/arch/x86/kvm/svm/pmu.c
-@@ -257,6 +257,7 @@ static int amd_pmu_set_msr(struct kvm_vc
- 	pmc = get_gp_pmc_amd(pmu, msr, PMU_TYPE_COUNTER);
- 	if (pmc) {
- 		pmc->counter += data - pmc_read_counter(pmc);
-+		pmc_update_sample_period(pmc);
- 		return 0;
- 	}
- 	/* MSR_EVNTSELn */
---- a/arch/x86/kvm/vmx/pmu_intel.c
-+++ b/arch/x86/kvm/vmx/pmu_intel.c
-@@ -431,15 +431,11 @@ static int intel_pmu_set_msr(struct kvm_
- 			    !(msr & MSR_PMC_FULL_WIDTH_BIT))
- 				data = (s64)(s32)data;
- 			pmc->counter += data - pmc_read_counter(pmc);
--			if (pmc->perf_event && !pmc->is_paused)
--				perf_event_period(pmc->perf_event,
--						  get_sample_period(pmc, data));
-+			pmc_update_sample_period(pmc);
- 			return 0;
- 		} else if ((pmc = get_fixed_pmc(pmu, msr))) {
- 			pmc->counter += data - pmc_read_counter(pmc);
--			if (pmc->perf_event && !pmc->is_paused)
--				perf_event_period(pmc->perf_event,
--						  get_sample_period(pmc, data));
-+			pmc_update_sample_period(pmc);
- 			return 0;
- 		} else if ((pmc = get_gp_pmc(pmu, msr, MSR_P6_EVNTSEL0))) {
- 			if (data == pmc->eventsel)
+ static int complete_emulated_pio(struct kvm_vcpu *vcpu)
 
 
