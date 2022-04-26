@@ -2,155 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4194C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 14:58:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FC1EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 14:58:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351005AbiDZPBm (ORCPT
+        id S1351870AbiDZPBv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 11:01:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39932 "EHLO
+        Tue, 26 Apr 2022 11:01:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351834AbiDZPBh (ORCPT
+        with ESMTP id S1351834AbiDZPBo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 11:01:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4185FB1A8B
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 07:58:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650985108;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=GoYuxuTr0wU4xOtdPoGRbWQ9hkISKKeNkUzuaQojQ8I=;
-        b=PH8COKyuOdLgU9veiYu1PdqBavwXURrSeIn398oB0scnUs3Fus0EHM3opa5xQ3sWi/2aeP
-        awotIW9PKUvvlvWeUEPoW/M3A6uCZNgHRkYcWhWinNF55oTnusQ3BEoWT17UYoBfJNRcE0
-        RMKejB+tsVVSpl0LxMj8oqWzHkj33Gc=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-139-VXxt-ww9N8qv-QtWSacfcQ-1; Tue, 26 Apr 2022 10:58:23 -0400
-X-MC-Unique: VXxt-ww9N8qv-QtWSacfcQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4B2F0101AA45;
-        Tue, 26 Apr 2022 14:58:22 +0000 (UTC)
-Received: from [10.18.17.215] (dhcp-17-215.bos.redhat.com [10.18.17.215])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BA44C15230A0;
-        Tue, 26 Apr 2022 14:58:21 +0000 (UTC)
-Message-ID: <be293d58-1084-b586-2267-6a1e6a400762@redhat.com>
-Date:   Tue, 26 Apr 2022 10:58:21 -0400
+        Tue, 26 Apr 2022 11:01:44 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DCA5B1A9B;
+        Tue, 26 Apr 2022 07:58:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1650985071;
+        bh=KLCjLhfQTgA0oKxUS8a8HV/nxwOxtsyC4o79WkTfje8=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=IIcY48H9YK8/QDBNpiRiNIjM5ijvX9dPgdmCPggiTIq7XwNedhwHy18OxeYmKHEoF
+         aTWxmr4FQ9c9f1+BSP3KA3mTvOPXFvrXnR56rwSg8opVpkVDmlW5t7ss7YGXvUhPii
+         MK5BlLt3w1SEQLCrqBWvI62kQpytjOvDD7ZZPMaA=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [80.245.77.37] ([80.245.77.37]) by web-mail.gmx.net
+ (3c-app-gmx-bs69.server.lan [172.19.170.214]) (via HTTP); Tue, 26 Apr 2022
+ 16:57:50 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2] cgroup/cpuset: Remove cpus_allowed/mems_allowed setup
- in cpuset_init_smp()
-Content-Language: en-US
-To:     Feng Tang <feng.tang@intel.com>
-Cc:     Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>, cgroups@vger.kernel.org,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Dave Hansen <dave.hansen@intel.com>, ying.huang@intel.com,
-        stable@vger.kernel.org
-References: <20220425155505.1292896-1-longman@redhat.com>
- <20220426032337.GA84190@shbuild999.sh.intel.com>
-From:   Waiman Long <longman@redhat.com>
-In-Reply-To: <20220426032337.GA84190@shbuild999.sh.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+Message-ID: <trinity-8ceec42c-8705-4808-b37b-9e9849ba774e-1650985070928@3c-app-gmx-bs69>
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     Frank Wunderlich <linux@fw-web.de>
+Cc:     linux-mediatek@lists.infradead.org,
+        linux-rockchip@lists.infradead.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Aw: [RFC v1 3/3] arm64: dts: rockchip: Add mt7531 dsa node to
+ BPI-R2-Pro board
+Content-Type: text/plain; charset=UTF-8
+Date:   Tue, 26 Apr 2022 16:57:50 +0200
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <20220426134924.30372-4-linux@fw-web.de>
+References: <20220426134924.30372-1-linux@fw-web.de>
+ <20220426134924.30372-4-linux@fw-web.de>
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:wBW5QJYpMHdq3PrMhGinR1AdioQG5dT+v1AUhYrsDygj5o2ETBmB7lzitdogghO9fUJ34
+ 7C+S+3eGXblSF48OoeX01rSKkoLZx+5zlIPitqd/reCb/PRwuR3znVtcbV6WiXGQw9fKCED9pXjl
+ Yqa7X5QsU8EBNE1dsh3kVNkMGRtDKOoHGLkrRf7GTn8z0SY+JQ6juNUXpn1GZl+laWiX/FtsqqgA
+ Ye27fCi0B2ZSew4gY/X1gzmzAfDOgUNCH3qY9mTUMWRxlDCIDxa1Wg084wN8Bg56b4e0IO/LVl4D
+ Qc=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:41kc6tKK5sg=:EDOaU6bOsIT1ZaYJ+7rZT4
+ ul8RUcVdFNTJTPhR0EmciMDWP/g6o5NGLfUZmDgSUNOU8LhvXxvfMQVPT8xvM5No8QyQIbn8p
+ WMKpXo9jDASBQp5oAj0e+GrzTnpb5vgLTshGaXlYY3HoKQ8wAfMaejoi/1ZxTv84/iGtHUGSY
+ /G6B35z0oyXoPDsU1l56EIMFgjGcCm183owIWmaTlTRBwLA0GVTzC4JsHMyxRP1gfzIxj22B8
+ O/D50GXl1IFfPc01KMVhe04uv3tzA6QtQQVgtRFqxnXtllj2fRbmUos/0Fm/ann/0wlOpOAtZ
+ EqUzTxAlRXhQdKgIpYjjYkzfiMcAbUs+oIVACxTJcUBBzzCygQQPs5nhdvhf0E7TZaOjV7oTG
+ RXa/eCwTZCoXO/XYcyAZC86TrMQ2sfzX2WRS0uiiEMEUzJt8xYokLe4p79IjT8zZa87WinMsl
+ QyFLU1u8cGd1nm5XZ/St9Ujq5DnuhwN67mNGTj+ieasHZSPWubsLPAHfmFtAwIG37FKgvckQn
+ KkRLuySR8bhQ99HM8D1hiPo3RvV3NsbQxWxb311FPu0Eh6OSNrZbUE3bxgTHx+HKnDxcV3f35
+ tVlt1abs3yLoH4Z3CbvTXV8g8mzJCPirOCEwhH0yv/EtSa+8tmhEsUTZ6TyZaKWp7E8j4+dFv
+ CABs6rKSUkmCf6VeZozZk0q83zD29Nep3MjfI1n60J2xSBoq0WVp0ATaLKsXCgso9g5LsjY0a
+ z251OrYA/UMD62CBfDskbdcjm/W52tCy/N+3PGEqj/65yPZIeG6Xj8rVvf9/LFDVKHFIN0y5l
+ wmiNiYq
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/25/22 23:23, Feng Tang wrote:
-> Hi Waiman,
->
-> On Mon, Apr 25, 2022 at 11:55:05AM -0400, Waiman Long wrote:
->> There are 3 places where the cpu and node masks of the top cpuset can
->> be initialized in the order they are executed:
->>   1) start_kernel -> cpuset_init()
->>   2) start_kernel -> cgroup_init() -> cpuset_bind()
->>   3) kernel_init_freeable() -> do_basic_setup() -> cpuset_init_smp()
->>
->> The first cpuset_init() function just sets all the bits in the masks.
->> The last one executed is cpuset_init_smp() which sets up cpu and node
->> masks suitable for v1, but not v2.  cpuset_bind() does the right setup
->> for both v1 and v2.
->>
->> For systems with cgroup v2 setup, cpuset_bind() is called once. For
->> systems with cgroup v1 setup, cpuset_bind() is called twice. It is
->> first called before cpuset_init_smp() in cgroup v2 mode.  Then it is
->> called again when cgroup v1 filesystem is mounted in v1 mode after
->> cpuset_init_smp().
->>
->>    [    2.609781] cpuset_bind() called - v2 = 1
->>    [    3.079473] cpuset_init_smp() called
->>    [    7.103710] cpuset_bind() called - v2 = 0
-> I run some test, on a server with centOS, this did happen that
-> cpuset_bind() is called twice, first as v2 during kernel boot,
-> and then as v1 post-boot.
->
-> However on a QEMU running with a basic debian rootfs image,
-> the second  call of cpuset_bind() didn't happen.
+> Gesendet: Dienstag, 26. April 2022 um 15:49 Uhr
+> Von: "Frank Wunderlich" <linux@fw-web.de>
 
-The first time cpuset_bind() is called in cgroup_init(), the kernel 
-doesn't know if userspace is going to mount v1 or v2 cgroup. By default, 
-it is assumed to be v2. However, if userspace mounts the cgroup v1 
-filesystem for cpuset, cpuset_bind() will be run at this point by 
-rebind_subsystem() to set up cgroup v1 environment and 
-cpus_allowed/mems_allowed will be correctly set at this point. Mounting 
-the cgroup v2 filesystem, however, does not cause rebind_subsystem() to 
-run and hence cpuset_bind() is not called again.
+> +&mdio0 {
+> +	#address-cells = <1>;
+> +	#size-cells = <0>;
+> +
+> +	switch@0 {
+> +		compatible = "mediatek,mt7531";
+> +		reg = <0>;
+> +		status = "disabled";
 
-Is the QEMU setup not mounting any cgroup filesystem at all? If so, does 
-it matter whether v1 or v2 setup is used?
+seems i had missed to delete this, but it looks like it was ignored as switch was probed
 
->> As a result, cpu and memory node hot add may fail to update the cpu and
->> node masks of the top cpuset to include the newly added cpu or node in
->> a cgroup v2 environment.
->>
->> smp_init() is called after the first two init functions.  So we don't
->> have a complete list of active cpus and memory nodes until later in
->> cpuset_init_smp() which is the right time to set up effective_cpus
->> and effective_mems.
->>
->> To fix this problem, the potentially incorrect cpus_allowed &
->> mems_allowed setup in cpuset_init_smp() are removed.  For cgroup v2
->> systems, the initial cpuset_bind() call will set them up correctly.
->> For cgroup v1 systems, the second call to cpuset_bind() will do the
->> right setup.
->>
->> cc: stable@vger.kernel.org
->> Signed-off-by: Waiman Long <longman@redhat.com>
->> ---
->>   kernel/cgroup/cpuset.c | 5 +++--
->>   1 file changed, 3 insertions(+), 2 deletions(-)
->>
->> diff --git a/kernel/cgroup/cpuset.c b/kernel/cgroup/cpuset.c
->> index 9390bfd9f1cd..6bd8f5ef40fe 100644
->> --- a/kernel/cgroup/cpuset.c
->> +++ b/kernel/cgroup/cpuset.c
->> @@ -3390,8 +3390,9 @@ static struct notifier_block cpuset_track_online_nodes_nb = {
->>    */
->>   void __init cpuset_init_smp(void)
->>   {
->> -	cpumask_copy(top_cpuset.cpus_allowed, cpu_active_mask);
->> -	top_cpuset.mems_allowed = node_states[N_MEMORY];
-> So can we keep line
->    cpumask_copy(top_cpuset.cpus_allowed, cpu_active_mask);
->
-> and only remove line
->         top_cpuset.mems_allowed = node_states[N_MEMORY];
-> ?
-
-That may cause cpusets.cpu to be set incorrectly for systems using 
-cgroup v2. What is really important is that effective_cpus and 
-effective_mems are set correctly.
-
-Cheers,
-Longman
+> +		ports {
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
 
