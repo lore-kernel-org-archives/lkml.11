@@ -2,308 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB676C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:51:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCA3CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:52:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240760AbiDZHyt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 03:54:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55266 "EHLO
+        id S234929AbiDZHzS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 03:55:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242699AbiDZHyr (ORCPT
+        with ESMTP id S243960AbiDZHzJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 03:54:47 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AECC0A1AC;
-        Tue, 26 Apr 2022 00:51:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650959500; x=1682495500;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=AF4hNHwrM38viZOG6GKR5ftamlJBG8twUEdWLdAN5HQ=;
-  b=FaiI3cR+eDnrL67PAVSBE7wjzTKxb0FQgwOqhvDId8WmFXXifMTxOBuG
-   dSDYLK/Dre8yeLeQ/xUBL3WQN3vYZqNkCH5VIpZI0+/4fmm62W4p+Y4QI
-   uTXkiry+mkhnZstGrkMATOmh6FDhqQyTs4UYOPGqJEBctrWDnqQ3JQRTa
-   WFHnmGtblJmeH9B3mwIW5WPUIPNMwi1rQfSD+3vD0fZEJb73trk7qqas8
-   IOB2GWBvGtuU60ctlWs1VP92kre1jmRYPL5ZKXqjicF7fCniL3P78cY/0
-   YmRGUpYt+/yDUPyqK3QQ8s94PEcoRtnapGu0h+7/k7SzYQwZaHF32cRFS
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="325977114"
-X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
-   d="scan'208";a="325977114"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 00:51:40 -0700
-X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
-   d="scan'208";a="558170957"
-Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.58.98])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 00:51:35 -0700
-Message-ID: <d643e80e-a7a7-818f-5d75-09d198e1a5b3@intel.com>
-Date:   Tue, 26 Apr 2022 10:51:31 +0300
+        Tue, 26 Apr 2022 03:55:09 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AB6B6479
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 00:52:01 -0700 (PDT)
+Received: from kwepemi500020.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KnYxG5z5HzhYs7;
+        Tue, 26 Apr 2022 15:51:46 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi500020.china.huawei.com (7.221.188.8) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 26 Apr 2022 15:51:59 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 26 Apr 2022 15:51:57 +0800
+From:   Tong Tiangen <tongtiangen@huawei.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+CC:     <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-riscv@lists.infradead.org>,
+        Tong Tiangen <tongtiangen@huawei.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Guohanjun <guohanjun@huawei.com>
+Subject: [PATCH -next v6 0/6]mm: page_table_check: add support on arm64 and riscv 
+Date:   Tue, 26 Apr 2022 08:10:30 +0000
+Message-ID: <20220426081036.1374452-1-tongtiangen@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.7.0
-Subject: Re: [PATCH V5 2/5] mmc: sdhci: Capture eMMC and SD card errors
-Content-Language: en-US
-To:     Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>,
-        ulf.hansson@linaro.org, wsa+renesas@sang-engineering.com,
-        yoshihiro.shimoda.uh@renesas.com, linus.walleij@linaro.org,
-        digetx@gmail.com, briannorris@chromium.org,
-        quic_riteshh@quicinc.com
-Cc:     linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        quic_asutoshd@quicinc.com, quic_rampraka@quicinc.com,
-        quic_pragalla@quicinc.com, quic_sartgarg@quicinc.com,
-        quic_nitirawa@quicinc.com, quic_sayalil@quicinc.com,
-        Liangliang Lu <quic_luliang@quicinc.com>,
-        "Bao D . Nguyen" <quic_nguyenb@quicinc.com>
-References: <1650902443-26357-1-git-send-email-quic_c_sbhanu@quicinc.com>
- <1650902443-26357-3-git-send-email-quic_c_sbhanu@quicinc.com>
-From:   Adrian Hunter <adrian.hunter@intel.com>
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
- Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-In-Reply-To: <1650902443-26357-3-git-send-email-quic_c_sbhanu@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25/04/22 19:00, Shaik Sajida Bhanu wrote:
-> Add changes to capture eMMC and SD card errors.
-> This is useful for debug and testing.
-> 
-> Signed-off-by: Liangliang Lu <quic_luliang@quicinc.com>
-> Signed-off-by: Sayali Lokhande <quic_sayalil@quicinc.com>
-> Signed-off-by: Bao D. Nguyen <quic_nguyenb@quicinc.com>
-> Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
+Page table check performs extra verifications at the time when new
+pages become accessible from the userspace by getting their page
+table entries (PTEs PMDs etc.) added into the table. It is supported
+on X86[1].
 
-Looks good.  A couple of minor comments.
+This patchset made some simple changes and make it easier to support
+new architecture, then we support this feature on ARM64 and RISCV.
 
-> ---
->  drivers/mmc/host/sdhci.c | 54 ++++++++++++++++++++++++++++++++++++------------
->  drivers/mmc/host/sdhci.h |  3 +++
->  include/linux/mmc/mmc.h  |  6 ++++++
->  3 files changed, 50 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/mmc/host/sdhci.c b/drivers/mmc/host/sdhci.c
-> index 2215202..1cda28ba 100644
-> --- a/drivers/mmc/host/sdhci.c
-> +++ b/drivers/mmc/host/sdhci.c
-> @@ -224,6 +224,7 @@ void sdhci_reset(struct sdhci_host *host, u8 mask)
->  		if (timedout) {
->  			pr_err("%s: Reset 0x%x never completed.\n",
->  				mmc_hostname(host->mmc), (int)mask);
-> +			sdhci_err_stats_inc(host, CTRL_TIMEOUT);
->  			sdhci_dumpregs(host);
->  			return;
->  		}
-> @@ -1716,6 +1717,7 @@ static bool sdhci_send_command_retry(struct sdhci_host *host,
->  		if (!timeout--) {
->  			pr_err("%s: Controller never released inhibit bit(s).\n",
->  			       mmc_hostname(host->mmc));
-> +			sdhci_err_stats_inc(host, CTRL_TIMEOUT);
->  			sdhci_dumpregs(host);
->  			cmd->error = -EIO;
->  			return false;
-> @@ -1965,6 +1967,7 @@ void sdhci_enable_clk(struct sdhci_host *host, u16 clk)
->  		if (timedout) {
->  			pr_err("%s: Internal clock never stabilised.\n",
->  			       mmc_hostname(host->mmc));
-> +			sdhci_err_stats_inc(host, CTRL_TIMEOUT);
->  			sdhci_dumpregs(host);
->  			return;
->  		}
-> @@ -1987,6 +1990,7 @@ void sdhci_enable_clk(struct sdhci_host *host, u16 clk)
->  			if (timedout) {
->  				pr_err("%s: PLL clock never stabilised.\n",
->  				       mmc_hostname(host->mmc));
-> +				sdhci_err_stats_inc(host, CTRL_TIMEOUT);
->  				sdhci_dumpregs(host);
->  				return;
->  			}
-> @@ -3161,6 +3165,7 @@ static void sdhci_timeout_timer(struct timer_list *t)
->  	if (host->cmd && !sdhci_data_line_cmd(host->cmd)) {
->  		pr_err("%s: Timeout waiting for hardware cmd interrupt.\n",
->  		       mmc_hostname(host->mmc));
-> +		sdhci_err_stats_inc(host, REQ_TIMEOUT);
->  		sdhci_dumpregs(host);
->  
->  		host->cmd->error = -ETIMEDOUT;
-> @@ -3183,6 +3188,7 @@ static void sdhci_timeout_data_timer(struct timer_list *t)
->  	    (host->cmd && sdhci_data_line_cmd(host->cmd))) {
->  		pr_err("%s: Timeout waiting for hardware interrupt.\n",
->  		       mmc_hostname(host->mmc));
-> +		sdhci_err_stats_inc(host, REQ_TIMEOUT);
->  		sdhci_dumpregs(host);
->  
->  		if (host->data) {
-> @@ -3234,17 +3240,21 @@ static void sdhci_cmd_irq(struct sdhci_host *host, u32 intmask, u32 *intmask_p)
->  			return;
->  		pr_err("%s: Got command interrupt 0x%08x even though no command operation was in progress.\n",
->  		       mmc_hostname(host->mmc), (unsigned)intmask);
-> +		sdhci_err_stats_inc(host, UNEXPECTED_IRQ);
->  		sdhci_dumpregs(host);
->  		return;
->  	}
->  
->  	if (intmask & (SDHCI_INT_TIMEOUT | SDHCI_INT_CRC |
->  		       SDHCI_INT_END_BIT | SDHCI_INT_INDEX)) {
-> -		if (intmask & SDHCI_INT_TIMEOUT)
-> +		if (intmask & SDHCI_INT_TIMEOUT) {
->  			host->cmd->error = -ETIMEDOUT;
-> -		else
-> +			sdhci_err_stats_inc(host, CMD_TIMEOUT);
-> +		} else {
->  			host->cmd->error = -EILSEQ;
-> -
-> +			if (!mmc_op_tuning(host->cmd->opcode))
-> +				sdhci_err_stats_inc(host, CMD_CRC);
-> +		}
->  		/* Treat data command CRC error the same as data CRC error */
->  		if (host->cmd->data &&
->  		    (intmask & (SDHCI_INT_CRC | SDHCI_INT_TIMEOUT)) ==
-> @@ -3266,6 +3276,8 @@ static void sdhci_cmd_irq(struct sdhci_host *host, u32 intmask, u32 *intmask_p)
->  			  -ETIMEDOUT :
->  			  -EILSEQ;
->  
-> +		sdhci_err_stats_inc(host, AUTO_CMD);
-> +
->  		if (sdhci_auto_cmd23(host, mrq)) {
->  			mrq->sbc->error = err;
->  			__sdhci_finish_mrq(host, mrq);
-> @@ -3342,6 +3354,7 @@ static void sdhci_data_irq(struct sdhci_host *host, u32 intmask)
->  			if (intmask & SDHCI_INT_DATA_TIMEOUT) {
->  				host->data_cmd = NULL;
->  				data_cmd->error = -ETIMEDOUT;
-> +				sdhci_err_stats_inc(host, CMD_TIMEOUT);
->  				__sdhci_finish_mrq(host, data_cmd->mrq);
->  				return;
->  			}
-> @@ -3370,23 +3383,29 @@ static void sdhci_data_irq(struct sdhci_host *host, u32 intmask)
->  
->  		pr_err("%s: Got data interrupt 0x%08x even though no data operation was in progress.\n",
->  		       mmc_hostname(host->mmc), (unsigned)intmask);
-> +		sdhci_err_stats_inc(host, UNEXPECTED_IRQ);
->  		sdhci_dumpregs(host);
->  
->  		return;
->  	}
->  
-> -	if (intmask & SDHCI_INT_DATA_TIMEOUT)
-> +	if (intmask & SDHCI_INT_DATA_TIMEOUT) {
->  		host->data->error = -ETIMEDOUT;
-> -	else if (intmask & SDHCI_INT_DATA_END_BIT)
-> +		sdhci_err_stats_inc(host, DAT_TIMEOUT);
-> +	} else if (intmask & SDHCI_INT_DATA_END_BIT)
->  		host->data->error = -EILSEQ;
+[1]https://lore.kernel.org/lkml/20211123214814.3756047-1-pasha.tatashin@soleen.com/
 
-Seems to be missing here:
+v5 -> v6:
+ According to Anshuman's suggestion, optimized partial implementation and
+ commit message:
+ 1. Remove redundant IS_ENABLED() in ptep_clear().
+ 2. Remove redundant __HAVE_ARCH_PTEP_CLEAR usage in pgtable.h.
+ 3. Remove redundant __ptep_get_and_clear() on arm64 and riscv.
 
-		sdhci_err_stats_inc(host, DAT_CRC);
+v4 -> v5:
+ According to Anshuman's suggestion, using PxD_SIZE instead of
+ PxD_PAGE_SIZE in mm/page_table_check.c and it is checked by Pasha.
 
-Also it would be nice to have braces {} on all arms of if-else-if
-Can use checkpatch.pl --strict to see where
+v3 -> v4:
+ Adapt to next-20220414
 
->  	else if ((intmask & SDHCI_INT_DATA_CRC) &&
->  		SDHCI_GET_CMD(sdhci_readw(host, SDHCI_COMMAND))
-> -			!= MMC_BUS_TEST_R)
-> +			!= MMC_BUS_TEST_R) {
->  		host->data->error = -EILSEQ;
-> +		if (!mmc_op_tuning(host->cmd->opcode))
-> +			sdhci_err_stats_inc(host, DAT_CRC);
-> +	}
->  	else if (intmask & SDHCI_INT_ADMA_ERROR) {
->  		pr_err("%s: ADMA error: 0x%08x\n", mmc_hostname(host->mmc),
->  		       intmask);
->  		sdhci_adma_show_error(host);
-> +		sdhci_err_stats_inc(host, ADMA);
->  		host->data->error = -EIO;
->  		if (host->ops->adma_workaround)
->  			host->ops->adma_workaround(host, intmask);
-> @@ -3584,6 +3603,7 @@ static irqreturn_t sdhci_irq(int irq, void *dev_id)
->  	if (unexpected) {
->  		pr_err("%s: Unexpected interrupt 0x%08x.\n",
->  			   mmc_hostname(host->mmc), unexpected);
-> +		sdhci_err_stats_inc(host, UNEXPECTED_IRQ);
->  		sdhci_dumpregs(host);
->  	}
->  
-> @@ -3905,20 +3925,27 @@ bool sdhci_cqe_irq(struct sdhci_host *host, u32 intmask, int *cmd_error,
->  	if (!host->cqe_on)
->  		return false;
->  
-> -	if (intmask & (SDHCI_INT_INDEX | SDHCI_INT_END_BIT | SDHCI_INT_CRC))
-> +	if (intmask & (SDHCI_INT_INDEX | SDHCI_INT_END_BIT | SDHCI_INT_CRC)) {
->  		*cmd_error = -EILSEQ;
-> -	else if (intmask & SDHCI_INT_TIMEOUT)
-> +		if (!mmc_op_tuning(host->cmd->opcode))
-> +			sdhci_err_stats_inc(host, CMD_CRC);
-> +	} else if (intmask & SDHCI_INT_TIMEOUT) {
->  		*cmd_error = -ETIMEDOUT;
-> -	else
-> +		sdhci_err_stats_inc(host, CMD_TIMEOUT);
-> +	} else
->  		*cmd_error = 0;
->  
-> -	if (intmask & (SDHCI_INT_DATA_END_BIT | SDHCI_INT_DATA_CRC))
-> +	if (intmask & (SDHCI_INT_DATA_END_BIT | SDHCI_INT_DATA_CRC)) {
->  		*data_error = -EILSEQ;
-> -	else if (intmask & SDHCI_INT_DATA_TIMEOUT)
-> +		if (!mmc_op_tuning(host->cmd->opcode))
-> +			sdhci_err_stats_inc(host, DAT_CRC);
-> +	} else if (intmask & SDHCI_INT_DATA_TIMEOUT) {
->  		*data_error = -ETIMEDOUT;
-> -	else if (intmask & SDHCI_INT_ADMA_ERROR)
-> +		sdhci_err_stats_inc(host, DAT_TIMEOUT);
-> +	} else if (intmask & SDHCI_INT_ADMA_ERROR) {
->  		*data_error = -EIO;
-> -	else
-> +		sdhci_err_stats_inc(host, ADMA);
-> +	} else
->  		*data_error = 0;
->  
->  	/* Clear selected interrupts. */
-> @@ -3934,6 +3961,7 @@ bool sdhci_cqe_irq(struct sdhci_host *host, u32 intmask, int *cmd_error,
->  		sdhci_writel(host, intmask, SDHCI_INT_STATUS);
->  		pr_err("%s: CQE: Unexpected interrupt 0x%08x.\n",
->  		       mmc_hostname(host->mmc), intmask);
-> +		sdhci_err_stats_inc(host, UNEXPECTED_IRQ);
->  		sdhci_dumpregs(host);
->  	}
->  
-> diff --git a/drivers/mmc/host/sdhci.h b/drivers/mmc/host/sdhci.h
-> index d7929d7..95a08f0 100644
-> --- a/drivers/mmc/host/sdhci.h
-> +++ b/drivers/mmc/host/sdhci.h
-> @@ -356,6 +356,9 @@ struct sdhci_adma2_64_desc {
->   */
->  #define MMC_CMD_TRANSFER_TIME	(10 * NSEC_PER_MSEC) /* max 10 ms */
->  
-> +#define sdhci_err_stats_inc(host, err_name) \
-> +	mmc_debugfs_err_stats_inc((host)->mmc, MMC_ERR_##err_name)
-> +
->  enum sdhci_cookie {
->  	COOKIE_UNMAPPED,
->  	COOKIE_PRE_MAPPED,	/* mapped by sdhci_pre_req() */
-> diff --git a/include/linux/mmc/mmc.h b/include/linux/mmc/mmc.h
-> index d9a65c6..9c50bc4 100644
-> --- a/include/linux/mmc/mmc.h
-> +++ b/include/linux/mmc/mmc.h
-> @@ -99,6 +99,12 @@ static inline bool mmc_op_multi(u32 opcode)
->  	       opcode == MMC_READ_MULTIPLE_BLOCK;
->  }
->  
-> +static inline bool mmc_op_tuning(u32 opcode)
-> +{
-> +	return opcode == MMC_SEND_TUNING_BLOCK ||
-> +			opcode == MMC_SEND_TUNING_BLOCK_HS200;
-> +}
-> +
->  /*
->   * MMC_SWITCH argument format:
->   *
+v2 -> v3:
+ Modify ptep_clear() in include/linux/pgtable.h, using IS_ENABLED according
+ to the suggestions of Pasha.
 
-There does not seem to be any:
+v1 -> v2:
+ 1. Fix arm64's pte/pmd/pud_user_accessible_page() according to the
+    suggestions of Catalin.
+ 2. Also fix riscv's pte_pmd_pud_user_accessible_page().
 
-	sdhci_err_stats_inc(host, TUNING);
+Kefeng Wang (2):
+  mm: page_table_check: move pxx_user_accessible_page into x86
+  arm64/mm: Enable ARCH_SUPPORTS_PAGE_TABLE_CHECK
 
-MMC_ERR_TUNING does not seem to get used.
+Tong Tiangen (4):
+  mm: page_table_check: using PxD_SIZE instead of PxD_PAGE_SIZE
+  mm: page_table_check: add hooks to public helpers
+  mm: remove __HAVE_ARCH_PTEP_CLEAR in pgtable.h
+  riscv/mm: Enable ARCH_SUPPORTS_PAGE_TABLE_CHECK
+
+ arch/arm64/Kconfig               |  1 +
+ arch/arm64/include/asm/pgtable.h | 59 +++++++++++++++++++++++---
+ arch/riscv/Kconfig               |  1 +
+ arch/riscv/include/asm/pgtable.h | 71 +++++++++++++++++++++++++++++---
+ arch/x86/include/asm/pgtable.h   | 27 +++++++-----
+ include/linux/pgtable.h          | 21 ++++++----
+ mm/page_table_check.c            | 25 ++---------
+ 7 files changed, 155 insertions(+), 50 deletions(-)
+
+-- 
+2.25.1
+
