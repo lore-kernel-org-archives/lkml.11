@@ -2,88 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 583B5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:23:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A30A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:24:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346911AbiDZJ0w (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:26:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44740 "EHLO
+        id S237082AbiDZJ1F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:27:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346714AbiDZJBK (ORCPT
+        with ESMTP id S1346732AbiDZJBL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:01:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFABF7DAAF;
-        Tue, 26 Apr 2022 01:43:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D3FC60A56;
-        Tue, 26 Apr 2022 08:43:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7411FC385AC;
-        Tue, 26 Apr 2022 08:43:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962605;
-        bh=dMzO9NbcYCk4F9iz1CCQtjpG4YJv/4z7OV6cEnqqQAs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZE8chdlzUcDBA5OxvaLbVZNLJ8yaKoXSRF7Vs267gZpFDl+m37RgVvsV5+LHx6kF0
-         nT3MO8L4azSoy5ao0q7CwKP9t1xVRctHMXs1wIa4YY5WPxAwIQZzmwLv440vYnv0XP
-         tdpBlvOHMOeranW3WSZRe9Ymiyu1rIFiqRxmAM7o=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jianglei Nie <niejianglei2021@163.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH 5.17 029/146] ice: Fix memory leak in ice_get_orom_civd_data()
-Date:   Tue, 26 Apr 2022 10:20:24 +0200
-Message-Id: <20220426081750.886273697@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
-References: <20220426081750.051179617@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 26 Apr 2022 05:01:11 -0400
+Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.222])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 55C6C78FE6;
+        Tue, 26 Apr 2022 01:43:29 -0700 (PDT)
+HMM_SOURCE_IP: 172.18.0.48:58142.1056067529
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-202.80.192.39 (unknown [172.18.0.48])
+        by chinatelecom.cn (HERMES) with SMTP id AF1122800B7;
+        Tue, 26 Apr 2022 16:43:24 +0800 (CST)
+X-189-SAVE-TO-SEND: +liuxp11@chinatelecom.cn
+Received: from  ([172.18.0.48])
+        by app0024 with ESMTP id 3abfba636edf49a1a199d8e1085c7956 for wim@linux-watchdog.org;
+        Tue, 26 Apr 2022 16:43:27 CST
+X-Transaction-ID: 3abfba636edf49a1a199d8e1085c7956
+X-Real-From: liuxp11@chinatelecom.cn
+X-Receive-IP: 172.18.0.48
+X-MEDUSA-Status: 0
+Sender: liuxp11@chinatelecom.cn
+From:   Liu Xinpeng <liuxp11@chinatelecom.cn>
+To:     wim@linux-watchdog.org, linux@roeck-us.net, tzungbi@kernel.org
+Cc:     linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Liu Xinpeng <liuxp11@chinatelecom.cn>
+Subject: [PATCH v5] watchdog: wdat_wdg: Using the existed function to check parameter timeout
+Date:   Tue, 26 Apr 2022 16:43:09 +0800
+Message-Id: <1650962589-1992-1-git-send-email-liuxp11@chinatelecom.cn>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jianglei Nie <niejianglei2021@163.com>
+Context: If max_hw_heartbeat_ms is provided, the configured maximum timeout
+is not limited by it. The limit check in this driver therefore doesn't make
+much sense. Similar, the watchdog core ensures that minimum timeout limits
+are met if min_hw_heartbeat_ms is set. Using watchdog_timeout_invalid()
+makes more sense because it takes this into account.
 
-[ Upstream commit 7c8881b77908a51814a050da408c89f1a25b7fb7 ]
-
-A memory chunk was allocated for orom_data in ice_get_orom_civd_data()
-by vzmalloc(). But when ice_read_flash_module() fails, the allocated
-memory is not freed, which will lead to a memory leak.
-
-We can fix it by freeing the orom_data when ce_read_flash_module() fails.
-
-Fixes: af18d8866c80 ("ice: reduce time to read Option ROM CIVD data")
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
 ---
- drivers/net/ethernet/intel/ice/ice_nvm.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/watchdog/wdat_wdt.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_nvm.c b/drivers/net/ethernet/intel/ice/ice_nvm.c
-index 4eb0599714f4..13cdb5ea594d 100644
---- a/drivers/net/ethernet/intel/ice/ice_nvm.c
-+++ b/drivers/net/ethernet/intel/ice/ice_nvm.c
-@@ -641,6 +641,7 @@ ice_get_orom_civd_data(struct ice_hw *hw, enum ice_bank_select bank,
- 	status = ice_read_flash_module(hw, bank, ICE_SR_1ST_OROM_BANK_PTR, 0,
- 				       orom_data, hw->flash.banks.orom_size);
- 	if (status) {
-+		vfree(orom_data);
- 		ice_debug(hw, ICE_DBG_NVM, "Unable to read Option ROM data\n");
- 		return status;
- 	}
+diff --git a/drivers/watchdog/wdat_wdt.c b/drivers/watchdog/wdat_wdt.c
+index 195c8c004b69..9db01d165310 100644
+--- a/drivers/watchdog/wdat_wdt.c
++++ b/drivers/watchdog/wdat_wdt.c
+@@ -55,6 +55,7 @@ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+ 		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
+ 
+ #define WDAT_DEFAULT_TIMEOUT	30
++#define WDAT_MIN_TIMEOUT     1
+ 
+ static int timeout = WDAT_DEFAULT_TIMEOUT;
+ module_param(timeout, int, 0);
+@@ -344,6 +345,7 @@ static int wdat_wdt_probe(struct platform_device *pdev)
+ 	wdat->period = tbl->timer_period;
+ 	wdat->wdd.min_hw_heartbeat_ms = wdat->period * tbl->min_count;
+ 	wdat->wdd.max_hw_heartbeat_ms = wdat->period * tbl->max_count;
++	wdat->wdd.min_timeout = WDAT_MIN_TIMEOUT;
+ 	wdat->stopped_in_sleep = tbl->flags & ACPI_WDAT_STOPPED;
+ 	wdat->wdd.info = &wdat_wdt_info;
+ 	wdat->wdd.ops = &wdat_wdt_ops;
+@@ -450,8 +452,7 @@ static int wdat_wdt_probe(struct platform_device *pdev)
+ 	 * watchdog properly after it has opened the device. In some cases
+ 	 * the BIOS default is too short and causes immediate reboot.
+ 	 */
+-	if (timeout * 1000 < wdat->wdd.min_hw_heartbeat_ms ||
+-	    timeout * 1000 > wdat->wdd.max_hw_heartbeat_ms) {
++	if (watchdog_timeout_invalid(&wdat->wdd, timeout)) {
+ 		dev_warn(dev, "Invalid timeout %d given, using %d\n",
+ 			 timeout, WDAT_DEFAULT_TIMEOUT);
+ 		timeout = WDAT_DEFAULT_TIMEOUT;
 -- 
-2.35.1
-
-
+2.23.0
 
