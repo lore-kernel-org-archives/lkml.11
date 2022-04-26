@@ -2,94 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1096BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:29:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56F33C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:29:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237671AbiDZJcZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:32:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54962 "EHLO
+        id S1344694AbiDZJca (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:32:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347767AbiDZJGI (ORCPT
+        with ESMTP id S1347777AbiDZJGK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:06:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE38513D29;
-        Tue, 26 Apr 2022 01:45:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 87908B81CF0;
-        Tue, 26 Apr 2022 08:45:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEFEDC385A0;
-        Tue, 26 Apr 2022 08:45:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962739;
-        bh=qmlk7RokZF/lJHMgXkXxFzwtYZ21SxX7MjgtQRqnqr8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q2WrfombuunFMNtAcAi/uXHHonWNxbOkG5LFd/bKtIvsF5+NHmUNUfn6eLDOZC2zC
-         4OovvkB2cZB19AoyARO9O9pN5f9kcj4QD8oW+oaICKPlptFPXd1BkmlqpzAy4UqHoY
-         EMM1B/rgV5q8KOTC6U+i8vzcchZjOl0rJ3zqcra8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Lv Ruyi <lv.ruyi@zte.com.cn>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 074/146] dpaa_eth: Fix missing of_node_put in dpaa_get_ts_info()
-Date:   Tue, 26 Apr 2022 10:21:09 +0200
-Message-Id: <20220426081752.142173937@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
-References: <20220426081750.051179617@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 26 Apr 2022 05:06:10 -0400
+Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E93718B2E;
+        Tue, 26 Apr 2022 01:45:44 -0700 (PDT)
+Received: by mail-qv1-xf2f.google.com with SMTP id q13so4669870qvk.3;
+        Tue, 26 Apr 2022 01:45:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=jms.id.au; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=s8JC263FgFy3jyxA285+ySjFZq/wFTiKMNVDc/5kVhk=;
+        b=nt1HXhudCOieSH/ymuSaNTnhqUd/Yn/oVUEEYb3qthVUMbdwFvIw1v0rc1C1Tp+WPw
+         UJWxenWHUbFlqtiaar8qbKkHXa6imluukeApPMlTrfLlhVpvNewvoHvuIml4/HByW/yT
+         SbUZp/GU+AxFM2GbY9mOu3wrneuQnRKWo1rNg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=s8JC263FgFy3jyxA285+ySjFZq/wFTiKMNVDc/5kVhk=;
+        b=A7006gB/6uliZT16r9BmaNo704b/t6cFMbHSqFSeZSY2xZ67WboSGS6bTNtSV2NsT6
+         /zMFp+spygDQ9c1VnvRwbXDI4Lja8Og4y7OKuRKs126Lp+RB48VcZvgdu3bi4j5L1dka
+         S+A84qGNhmCAamq+UDihY8q7W/picAo2v4vABIr/HW4g1dBpoBt3FWMcHcupp88gNVvR
+         gpgwuJ1XZzKnZYnlrH5LKmNabsURZJPu+iWfXAWqtzfb1LG0Ty4b3QYdjazKrTVRFzDE
+         y07kqCfWI1SSTR0UKoIBibEq1l5gU0va4F18nkqKV4VgbsUN89YRUeFtDiM75EsI7bZy
+         iUDQ==
+X-Gm-Message-State: AOAM532JRvuIN5iKnS5id8qLkOKdWsZ9awQAkf+hUIcD9o3WUG32A8EQ
+        vHfatmv0uzzoo1U1sQcNhKvBzg8lNewzXOhzTAk=
+X-Google-Smtp-Source: ABdhPJy/a7R5QcfkDGNvXevfex9gGYiGDw8Vgm3NWqkPXA+VHo8PUgOW+SRHNkzWV1ncHmUfOz8hiw4ynmpzy6AWqSo=
+X-Received: by 2002:ad4:53c5:0:b0:42d:7bb4:a8e8 with SMTP id
+ k5-20020ad453c5000000b0042d7bb4a8e8mr15201215qvv.8.1650962743952; Tue, 26 Apr
+ 2022 01:45:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220426071848.11619-1-zev@bewilderbeest.net> <YmetYjSKFs+WWwYz@hatter.bewilderbeest.net>
+In-Reply-To: <YmetYjSKFs+WWwYz@hatter.bewilderbeest.net>
+From:   Joel Stanley <joel@jms.id.au>
+Date:   Tue, 26 Apr 2022 08:45:32 +0000
+Message-ID: <CACPK8Xf2a2tC-u_9CjLVoh9iJmUdOKveLfjy1UNKQbqYPr0Zhw@mail.gmail.com>
+Subject: Re: [PATCH v3 0/6] hwmon: (nct6775) Convert to regmap, add i2c support
+To:     Zev Weiss <zev@bewilderbeest.net>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org,
+        devicetree <devicetree@vger.kernel.org>, webmaster@kernel.org,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Rob Herring <robh+dt@kernel.org>,
+        Renze Nicolai <renze@rnplus.nl>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+On Tue, 26 Apr 2022 at 08:29, Zev Weiss <zev@bewilderbeest.net> wrote:
+>
+> [Adding korg webmaster re: list infrastructure]
+>
+> On Tue, Apr 26, 2022 at 12:18:42AM PDT, Zev Weiss wrote:
+> >Hello,
+> >
+> >This is v3 of my effort to add i2c support to the nct6775 hwmon
+> >driver.
+> >
+> >Changes since v2 [0]:
+> > ...
+> > - Renamed drivers and Kconfig symbols to keep existing platform
+> >   driver as "nct6775" (SENSORS_NCT6775) and the core module as
+> >   "nct6775-core" (SENSORS_NCT6775_CORE) [Guenter]
+>
+> Unfortunately while this was a simple enough change to make (a few 'git
+> mv' commands and a handful of actual text changes), it ballooned the
+> size of the diff for patch 5 to the point that vger bounced it for
+> exceeding the 100K message-size limit.  As far as I can tell it looks
+> like it went through elsewhere, but does leave a bit of a gap in the
+> public list archives -- please let me know if there's anything I should
+> try in terms of re-sending it.  (The only combination of 'git
+> format-patch' flags I've been able to find that gets it back down to
+> approximately its previous size is '-B -D', which isn't so useful for
+> actually applying.)
 
-[ Upstream commit 1a7eb80d170c28be2928433702256fe2a0bd1e0f ]
+FWIW, I moderated it through to the openbmc list, which is on lore:
 
-Both of of_get_parent() and of_parse_phandle() return node pointer with
-refcount incremented, use of_node_put() on it to decrease refcount
-when done.
+ https://lore.kernel.org/openbmc/YmetYjSKFs+WWwYz@hatter.bewilderbeest.net/
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+So the series can be fetched with eg. b4.
 
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
-index 763d2c7b5fb1..5750f9a56393 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
-@@ -489,11 +489,15 @@ static int dpaa_get_ts_info(struct net_device *net_dev,
- 	info->phc_index = -1;
- 
- 	fman_node = of_get_parent(mac_node);
--	if (fman_node)
-+	if (fman_node) {
- 		ptp_node = of_parse_phandle(fman_node, "ptimer-handle", 0);
-+		of_node_put(fman_node);
-+	}
- 
--	if (ptp_node)
-+	if (ptp_node) {
- 		ptp_dev = of_find_device_by_node(ptp_node);
-+		of_node_put(ptp_node);
-+	}
- 
- 	if (ptp_dev)
- 		ptp = platform_get_drvdata(ptp_dev);
--- 
-2.35.1
+Aside from the mega-diff in patch 5 the changes look good to me (If
+you can think of a way that makes patch 5 easier to review then let me
+know).
 
+Reviewed-by: Joel Stanley <joel@jms.id.au>
 
-
+>
+> I'm not sure how critical a limit that 100K is, or if it's something we
+> might consider raising a bit?
+>
+>
+> Thanks,
+> Zev
+>
