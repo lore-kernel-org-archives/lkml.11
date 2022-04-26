@@ -2,137 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9A29C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:01:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61B1CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:01:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344403AbiDZIDu (ORCPT
+        id S1344442AbiDZIEd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:03:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33652 "EHLO
+        Tue, 26 Apr 2022 04:04:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344194AbiDZIDq (ORCPT
+        with ESMTP id S1344439AbiDZIE2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:03:46 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A07415A06
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 01:00:37 -0700 (PDT)
-Received: from kwepemi500001.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KnZ4S0gwTzGpS7;
-        Tue, 26 Apr 2022 15:58:00 +0800 (CST)
-Received: from kwepemm600010.china.huawei.com (7.193.23.86) by
- kwepemi500001.china.huawei.com (7.221.188.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Apr 2022 16:00:35 +0800
-Received: from [10.67.110.237] (10.67.110.237) by
- kwepemm600010.china.huawei.com (7.193.23.86) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Apr 2022 16:00:35 +0800
-Subject: Re: [PATCH] tracing: Reset the function filter after completing
- trampoline/graph selftest
-To:     Steven Rostedt <rostedt@goodmis.org>
-CC:     <jolsa@redhat.com>, <mingo@redhat.com>,
-        <linux-kernel@vger.kernel.org>
-References: <20220418073958.104029-1-lihuafei1@huawei.com>
- <20220425185859.29e8f9d8@gandalf.local.home>
-From:   Li Huafei <lihuafei1@huawei.com>
-Message-ID: <ee4bc477-0131-367b-9a1f-c2cb5af5c316@huawei.com>
-Date:   Tue, 26 Apr 2022 16:00:35 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
+        Tue, 26 Apr 2022 04:04:28 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F1A62B276
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 01:01:22 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id bg9so15435681pgb.9
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 01:01:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:to:cc:references
+         :from:in-reply-to:content-transfer-encoding;
+        bh=CpbYiZTHnwewn5sjBjCJlKHhBG8O2Ahjo4oP3supZQY=;
+        b=z+Ln5SsHrTF76ON2n9YTuZV7Cm0HZEgui1C8BpK898e7rRAKZSTOlA3nEq1/czEvpp
+         iyMaLNrtV/uX1dW6tz5WhKIltKLWirG52x2m/a5YIuP+0HBFDoMkjCXPJtLoFGYg9XBT
+         wCttC6k/FqspReFX6gwagI817Zoudedv/TlOfSpjRpzqORjafBNUz4zd9+9NWsoqirZ5
+         rZdh/5XWf0u98mtLQZwE9UN0MH2qGB0jwsonuGnFzKGk/nuEn3DaX2AHasLcj2NtiRXV
+         CUbVTDhxLuUwQW94rCjIG8/EvHKum1L6U5etKL84d+7meHR9MMGfk6MUXwVJ+AuNP+sV
+         g7Zg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :to:cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=CpbYiZTHnwewn5sjBjCJlKHhBG8O2Ahjo4oP3supZQY=;
+        b=ZNLGESwFeAiVpT6WcF3a1dRqOgtuzse8Grn5ystGbw87O9calIyTYPeResWjP0cWzp
+         2szbcMMl5+X0wLkFDIOhUvVZdsxRwsuBSVEOFnvsrQFsNXJo6onKr7C7/2ebxliWDT/k
+         6qlEbjIUFxi8MDTdFHfyQJo+Iq+ctIQ4QdjgmayBRigwAF2IQ955u75QuSlvsa+EOgR6
+         AM0tDpAmIC5RSFrMNzh3hMnCIS4GKlp5UmghtaeqP5s70BFSKo5pMxrw8coWwiOTGDoi
+         wMYkBYxlC9QfMc2rqXfRhbVyDEqi1bNjgRh7HaFoXlXdh2Id/1yA86s8rjGb7juYqghP
+         TJxA==
+X-Gm-Message-State: AOAM530GRi3+GNxvDzHNgGt0yFyu0VnhQVaipsHvfbzfL8FM8bQO1yZN
+        YiXPkekjC1MNScMajteZwQ/QRk6eVwmRgA==
+X-Google-Smtp-Source: ABdhPJzwiD0aEmzQ0IkwdSSQ727/jdobhPiu04xMHVi1cox3sOSOu60togsoamWf4Fa/rm2vPckKog==
+X-Received: by 2002:a63:8ac1:0:b0:3ab:199:cbdf with SMTP id y184-20020a638ac1000000b003ab0199cbdfmr11802830pgd.466.1650960081685;
+        Tue, 26 Apr 2022 01:01:21 -0700 (PDT)
+Received: from ?IPV6:240e:390:e6b:6b80:8cf7:55d1:6061:4a81? ([240e:390:e6b:6b80:8cf7:55d1:6061:4a81])
+        by smtp.gmail.com with ESMTPSA id b17-20020a056a000a9100b004e1b7cdb8fdsm15496440pfl.70.2022.04.26.01.01.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Apr 2022 01:01:21 -0700 (PDT)
+Message-ID: <10afde23-7ef9-1733-f2ce-a697fcab24f2@bytedance.com>
+Date:   Tue, 26 Apr 2022 16:01:13 +0800
 MIME-Version: 1.0
-In-Reply-To: <20220425185859.29e8f9d8@gandalf.local.home>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Originating-IP: [10.67.110.237]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600010.china.huawei.com (7.193.23.86)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.8.1
+Subject: Re: [External] Re: [PATCH v2 2/2] sched/dl: Remove some comments and
+ adjust code in push_dl_task
+To:     Dietmar Eggemann <dietmar.eggemann@arm.com>, mingo@redhat.com,
+        peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, rostedt@goodmis.org,
+        bsegall@google.com, mgorman@suse.de, bristot@redhat.com
+Cc:     linux-kernel@vger.kernel.org
+References: <20220422090944.52618-1-jiahao.os@bytedance.com>
+ <20220422090944.52618-3-jiahao.os@bytedance.com>
+ <cfab5ffc-af96-8368-0aae-927a6be65472@arm.com>
+From:   Hao Jia <jiahao.os@bytedance.com>
+In-Reply-To: <cfab5ffc-af96-8368-0aae-927a6be65472@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Steve,
 
-On 2022/4/26 6:58, Steven Rostedt wrote:
-> On Mon, 18 Apr 2022 15:39:58 +0800
-> Li Huafei <lihuafei1@huawei.com> wrote:
->
->> The direct trampoline and graph coexistence test sets global_ops to
->> trace only 'trace_selftest_dynamic_test_func', but does not reset it
->> after the test is completed, resulting in the function filter being set
->> already after the system starts. Although it can be reset through the
->> tracefs interface, it is more or less confusing to the user, and we
->> should reset it to trace all functions after the trampoline/graph test
->> completes.
+
+On 2022/4/26 Dietmar Eggemann wrote:
+> On 22/04/2022 11:09, Hao Jia wrote:
+> 
+> Nitpick: I would change the message slightly into something like:
+> 
+> sched/deadline: Remove superfluous rq clock update in push_dl_task()
+> 
+
+I will do it in patch v3.
+Thanks.
+
+
+>> The change to call update_rq_clock() before activate_task()
+>> commit 840d719604b0 ("sched/deadline: Update rq_clock of later_rq
+>> when pushing a task") is no longer needed since commit f4904815f97a
+>> ("sched/deadline: Fix double accounting of rq/running bw in push & pull")
+>> removed the add_running_bw() before the activate_task().
 >>
->> Fixes: 130c08065848 ("tracing: Add trampoline/graph selftest")
->> Signed-off-by: Li Huafei <lihuafei1@huawei.com>
+>> So we remove some comments that are no longer needed and update
+>> rq clock in activate_task().
+>>
+>> Signed-off-by: Hao Jia <jiahao.os@bytedance.com>
 >> ---
->>   kernel/trace/trace_selftest.c | 12 ++++++++----
->>   1 file changed, 8 insertions(+), 4 deletions(-)
+>>   kernel/sched/deadline.c | 8 +-------
+>>   1 file changed, 1 insertion(+), 7 deletions(-)
 >>
->> diff --git a/kernel/trace/trace_selftest.c b/kernel/trace/trace_selftest.c
->> index abcadbe933bb..e89f72571f8e 100644
->> --- a/kernel/trace/trace_selftest.c
->> +++ b/kernel/trace/trace_selftest.c
->> @@ -866,12 +866,12 @@ trace_selftest_startup_function_graph(struct tracer *trace,
->>   	ret = register_ftrace_direct((unsigned long) DYN_FTRACE_TEST_NAME,
->>   				     (unsigned long) trace_direct_tramp);
->>   	if (ret)
->> -		goto out;
->> +		goto reset_filter;
+>> diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
+>> index fb4255ae0b2c..8eb694ed7ac1 100644
+>> --- a/kernel/sched/deadline.c
+>> +++ b/kernel/sched/deadline.c
+>> @@ -2319,13 +2319,7 @@ static int push_dl_task(struct rq *rq)
 >>   
->>   	ret = register_ftrace_graph(&fgraph_ops);
->>   	if (ret) {
->>   		warn_failed_init_tracer(trace, ret);
->> -		goto out;
->> +		goto reset_filter;
->>   	}
+>>   	deactivate_task(rq, next_task, 0);
+>>   	set_task_cpu(next_task, later_rq->cpu);
+>> -
+>> -	/*
+>> -	 * Update the later_rq clock here, because the clock is used
+>> -	 * by the cpufreq_update_util() inside __add_running_bw().
+>> -	 */
+>> -	update_rq_clock(later_rq);
+>> -	activate_task(later_rq, next_task, ENQUEUE_NOCLOCK);
+>> +	activate_task(later_rq, next_task, 0);
+>>   	ret = 1;
 >>   
->>   	DYN_FTRACE_TEST_NAME();
->> @@ -887,14 +887,18 @@ trace_selftest_startup_function_graph(struct tracer *trace,
->>   	ret = unregister_ftrace_direct((unsigned long) DYN_FTRACE_TEST_NAME,
->>   				       (unsigned long) trace_direct_tramp);
->>   	if (ret)
->> -		goto out;
->> +		goto reset_filter;
->>   
->>   	tracing_start();
->>   
->>   	if (!ret && !count) {
->>   		ret = -1;
->> -		goto out;
->> +		goto reset_filter;
-> No need for all the 'goto reset_filter', if this function fails, then the
-> tracer is disabled, and there's no reason to clear the filter. In fact, it
-Thank you for the review. I see that we will disable function_graph tracer:
-
-      /* Stop it if we failed */
-      if (ret)
-            ftrace_graph_stop();
-
-But there is no function tracer disabled. Am I missing something that 
-would disable the function tracer?
-
-
-> may cause a crash (because something bad happened).
-
-Yes, so should we kill ftrace when the function_graph test fails?
-
-Thanks,
-Huafei
-
->
-> -- Steve
->
->
->>   	}
->> +
->> +reset_filter:
->> +	/* Enable tracing on all functions again */
->> +	ftrace_set_global_filter(NULL, 0, 1);
->>   #endif
->>   
->>   	/* Don't test dynamic tracing, the function tracer already did */
-> .
+>>   	resched_curr(later_rq);
+> 
+> Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
