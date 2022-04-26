@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99F5AC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3B55C4707E
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:42:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346812AbiDZIpX (ORCPT
+        id S1346934AbiDZIpd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:45:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59644 "EHLO
+        Tue, 26 Apr 2022 04:45:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345403AbiDZIjB (ORCPT
+        with ESMTP id S1345400AbiDZIjB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:39:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 482C93B2B1;
-        Tue, 26 Apr 2022 01:29:42 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72E7D7DAA6;
+        Tue, 26 Apr 2022 01:29:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F03A2B81CFA;
-        Tue, 26 Apr 2022 08:29:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7083FC385AC;
-        Tue, 26 Apr 2022 08:29:39 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BEC84CE1BB0;
+        Tue, 26 Apr 2022 08:29:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88B91C385AC;
+        Tue, 26 Apr 2022 08:29:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961779;
-        bh=288k9DnEcV4ejGaEJ796PXFMibFI/0Co3swJzfncqIU=;
+        s=korg; t=1650961777;
+        bh=cX1TogmjffYuRvjQ4kdQaH9bhy7dD4rK6n7EXly9OUI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P2P1xhQ43+RlD3eG5M+K/dHIzAmsv8r3kTGR7HQiyvRHDZr3SMgiGyhf79W1y1b1e
-         6QLgEVJmui2eCSinBMu48R1vLrRH7ivbf9W9nrT4q7lH7R/Tx/20alkaCEKWnDNX/E
-         aNFRtN5k0KFc0R18yzbbEjpXqbNOId1MwLW1uvR8=
+        b=EZhozlQyaBWKQpAuxKv3CKGVtnNG1lAzn/W9eZAXXUcfUezZiDd5TCRyeAaDEx+KX
+         Ge+RVhKTfE+FpnmQI6aCVENBCdBvKzaSQuG7rSE7eAAJDZ1fddjX0gVJoEdy3VOHc3
+         8dKuNz9lF6IQ5/BOvTKWVL/jcCZTVHycXDbR1mqs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hongbin Wang <wh_bin@126.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 27/62] vxlan: fix error return code in vxlan_fdb_append
-Date:   Tue, 26 Apr 2022 10:21:07 +0200
-Message-Id: <20220426081738.005147557@linuxfoundation.org>
+        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 26/62] ALSA: usb-audio: Fix undefined behavior due to shift overflowing the constant
+Date:   Tue, 26 Apr 2022 10:21:06 +0200
+Message-Id: <20220426081737.977121538@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
 References: <20220426081737.209637816@linuxfoundation.org>
@@ -50,38 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hongbin Wang <wh_bin@126.com>
+From: Borislav Petkov <bp@suse.de>
 
-[ Upstream commit 7cea5560bf656b84f9ed01c0cc829d4eecd0640b ]
+[ Upstream commit 1ef8715975de8bd481abbd0839ed4f49d9e5b0ff ]
 
-When kmalloc and dst_cache_init failed,
-should return ENOMEM rather than ENOBUFS.
+Fix:
 
-Signed-off-by: Hongbin Wang <wh_bin@126.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+  sound/usb/midi.c: In function ‘snd_usbmidi_out_endpoint_create’:
+  sound/usb/midi.c:1389:2: error: case label does not reduce to an integer constant
+    case USB_ID(0xfc08, 0x0101): /* Unknown vendor Cable */
+    ^~~~
+
+See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
+details as to why it triggers with older gccs only.
+
+[ A slight correction with parentheses around the argument by tiwai ]
+
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220405151517.29753-3-bp@alien8.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/vxlan.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/usb/usbaudio.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index c5991e31c557..f4869b1836f3 100644
---- a/drivers/net/vxlan.c
-+++ b/drivers/net/vxlan.c
-@@ -679,11 +679,11 @@ static int vxlan_fdb_append(struct vxlan_fdb *f,
+diff --git a/sound/usb/usbaudio.h b/sound/usb/usbaudio.h
+index ff97fdcf63bd..b1959e04cbb1 100644
+--- a/sound/usb/usbaudio.h
++++ b/sound/usb/usbaudio.h
+@@ -8,7 +8,7 @@
+  */
  
- 	rd = kmalloc(sizeof(*rd), GFP_ATOMIC);
- 	if (rd == NULL)
--		return -ENOBUFS;
-+		return -ENOMEM;
+ /* handling of USB vendor/product ID pairs as 32-bit numbers */
+-#define USB_ID(vendor, product) (((vendor) << 16) | (product))
++#define USB_ID(vendor, product) (((unsigned int)(vendor) << 16) | (product))
+ #define USB_ID_VENDOR(id) ((id) >> 16)
+ #define USB_ID_PRODUCT(id) ((u16)(id))
  
- 	if (dst_cache_init(&rd->dst_cache, GFP_ATOMIC)) {
- 		kfree(rd);
--		return -ENOBUFS;
-+		return -ENOMEM;
- 	}
- 
- 	rd->remote_ip = *ip;
 -- 
 2.35.1
 
