@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84912C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:02:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A38AC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:02:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353733AbiDZTF1 (ORCPT
+        id S1353760AbiDZTFc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 15:05:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40144 "EHLO
+        Tue, 26 Apr 2022 15:05:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351872AbiDZTFL (ORCPT
+        with ESMTP id S1352553AbiDZTFM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 15:05:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38215199168;
+        Tue, 26 Apr 2022 15:05:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9CED19916B;
         Tue, 26 Apr 2022 12:02:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B98CFB8224A;
-        Tue, 26 Apr 2022 19:02:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64AA5C385C3;
-        Tue, 26 Apr 2022 19:02:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F081619B9;
+        Tue, 26 Apr 2022 19:02:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2698C385A4;
+        Tue, 26 Apr 2022 19:02:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650999720;
-        bh=fl/SlIFa21XcUiuyoHk/hrTxohmhSV+w9p9Ll/WaPjQ=;
+        s=k20201202; t=1650999723;
+        bh=U7F8eZYEpVTSmb/J39TUf2NGEuMLVkqIGrd2moRZY9U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AhVp68IdmPZMMNbrsRIyz74xyLu7820rj2nWY5EpnXBAsUky9DumGMw+C7L+RFpBs
-         pgIAeHhR0XSpkaw6j3aNuZUjAiqaS/p/VHBEvSqbCW+ISuu7qKdjU/qQoRU070Jm75
-         gaeJCyXQxgKzEp8WQC2hQPKCBnYpFF601luHPDbL/ASaVtntOwz3Hgd4bb43+e7XW9
-         XIx0Z+aJoPVQD6IphISS5m25W+vu22oAUUEFBNuu9FHYWHVSy5/kl32pPuNxLXFrAG
-         99C8wB5uGWCl2eaor9pO5kZnzURSt0FqX95URXELFD3oxdTQMo/e+wPcxV9CUJ9OXL
-         z2mLa0Af50/nw==
+        b=n3CXmT3zD6FMP0xdzpTson6eupiio3AGrL7iHp1R1GCMOk6Ntqk5bKoh+JFg5xtCS
+         kMsIBXZCLW5qELnXRG3ee428aWk+piwpjvQ4kpJ5jDRsCsZdM7jDCtG1CajeLasMRg
+         K4hQRzFiN2BI1X2H4DVvHVlO2KKfTTRo9lMTiKaDBMgmW+0MZfY51a+jcmKL/ixVwy
+         fEEKoZ3l7EF1mdOnAjxxlJEqLGIpCWOyeU8r4XO/U1JwGY/OAjRK8MvL65Z19z/imz
+         oR7xHn91XDhlFrxsE60Qa9ogbEWJE1Z9T8lBHreWDyIZwoOZn1o1xRLktPj/uOW8XL
+         OWJyEmaSoB/Vg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, y.oudjana@protonmail.com,
-        linux-input@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 07/22] Input: cypress-sf - register a callback to disable the regulators
-Date:   Tue, 26 Apr 2022 15:01:30 -0400
-Message-Id: <20220426190145.2351135-7-sashal@kernel.org>
+Cc:     Duoming Zhou <duoming@zju.edu.cn>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, chris@zankel.net,
+        jirislaby@kernel.org, gregkh@linuxfoundation.org, dsterba@suse.com,
+        borntraeger@linux.ibm.com, linux-xtensa@linux-xtensa.org
+Subject: [PATCH AUTOSEL 5.17 09/22] arch: xtensa: platforms: Fix deadlock in rs_close()
+Date:   Tue, 26 Apr 2022 15:01:32 -0400
+Message-Id: <20220426190145.2351135-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220426190145.2351135-1-sashal@kernel.org>
 References: <20220426190145.2351135-1-sashal@kernel.org>
@@ -53,64 +54,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit fd0a4b39870d49ff15f6966470185409e261f20f ]
+[ Upstream commit eb5adc70754d26a260f8b42d39db42da0d0af500 ]
 
-When the driver fails to probe, we will get the following splat:
+There is a deadlock in rs_close(), which is shown
+below:
 
-[   19.311970] ------------[ cut here ]------------
-[   19.312566] WARNING: CPU: 3 PID: 375 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
-[   19.317591] RIP: 0010:_regulator_put+0x3ec/0x4e0
-[   19.328831] Call Trace:
-[   19.329112]  <TASK>
-[   19.329369]  regulator_bulk_free+0x82/0xe0
-[   19.329860]  devres_release_group+0x319/0x3d0
-[   19.330357]  i2c_device_probe+0x766/0x940
+   (Thread 1)              |      (Thread 2)
+                           | rs_open()
+rs_close()                 |  mod_timer()
+ spin_lock_bh() //(1)      |  (wait a time)
+ ...                       | rs_poll()
+ del_timer_sync()          |  spin_lock() //(2)
+ (wait timer to stop)      |  ...
 
-Fix this by adding a callback that will deal with the disabling when the
-driver fails to probe.
+We hold timer_lock in position (1) of thread 1 and
+use del_timer_sync() to wait timer to stop, but timer handler
+also need timer_lock in position (2) of thread 2.
+As a result, rs_close() will block forever.
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Link: https://lore.kernel.org/r/20220409022629.3493557-1-zheyuma97@gmail.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+This patch deletes the redundant timer_lock in order to
+prevent the deadlock. Because there is no race condition
+between rs_close, rs_open and rs_poll.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Message-Id: <20220407154430.22387-1-duoming@zju.edu.cn>
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/input/keyboard/cypress-sf.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ arch/xtensa/platforms/iss/console.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
-diff --git a/drivers/input/keyboard/cypress-sf.c b/drivers/input/keyboard/cypress-sf.c
-index c28996028e80..9a23eed6a4f4 100644
---- a/drivers/input/keyboard/cypress-sf.c
-+++ b/drivers/input/keyboard/cypress-sf.c
-@@ -61,6 +61,14 @@ static irqreturn_t cypress_sf_irq_handler(int irq, void *devid)
- 	return IRQ_HANDLED;
+diff --git a/arch/xtensa/platforms/iss/console.c b/arch/xtensa/platforms/iss/console.c
+index 81d7c7e8f7e9..10b79d3c74e0 100644
+--- a/arch/xtensa/platforms/iss/console.c
++++ b/arch/xtensa/platforms/iss/console.c
+@@ -36,24 +36,19 @@ static void rs_poll(struct timer_list *);
+ static struct tty_driver *serial_driver;
+ static struct tty_port serial_port;
+ static DEFINE_TIMER(serial_timer, rs_poll);
+-static DEFINE_SPINLOCK(timer_lock);
+ 
+ static int rs_open(struct tty_struct *tty, struct file * filp)
+ {
+-	spin_lock_bh(&timer_lock);
+ 	if (tty->count == 1)
+ 		mod_timer(&serial_timer, jiffies + SERIAL_TIMER_VALUE);
+-	spin_unlock_bh(&timer_lock);
+ 
+ 	return 0;
  }
  
-+static void cypress_sf_disable_regulators(void *arg)
-+{
-+	struct cypress_sf_data *touchkey = arg;
-+
-+	regulator_bulk_disable(ARRAY_SIZE(touchkey->regulators),
-+			       touchkey->regulators);
-+}
-+
- static int cypress_sf_probe(struct i2c_client *client)
+ static void rs_close(struct tty_struct *tty, struct file * filp)
  {
- 	struct cypress_sf_data *touchkey;
-@@ -121,6 +129,12 @@ static int cypress_sf_probe(struct i2c_client *client)
- 		return error;
- 	}
+-	spin_lock_bh(&timer_lock);
+ 	if (tty->count == 1)
+ 		del_timer_sync(&serial_timer);
+-	spin_unlock_bh(&timer_lock);
+ }
  
-+	error = devm_add_action_or_reset(&client->dev,
-+					 cypress_sf_disable_regulators,
-+					 touchkey);
-+	if (error)
-+		return error;
-+
- 	touchkey->input_dev = devm_input_allocate_device(&client->dev);
- 	if (!touchkey->input_dev) {
- 		dev_err(&client->dev, "Failed to allocate input device\n");
+ 
+@@ -73,8 +68,6 @@ static void rs_poll(struct timer_list *unused)
+ 	int rd = 1;
+ 	unsigned char c;
+ 
+-	spin_lock(&timer_lock);
+-
+ 	while (simc_poll(0)) {
+ 		rd = simc_read(0, &c, 1);
+ 		if (rd <= 0)
+@@ -87,7 +80,6 @@ static void rs_poll(struct timer_list *unused)
+ 		tty_flip_buffer_push(port);
+ 	if (rd)
+ 		mod_timer(&serial_timer, jiffies + SERIAL_TIMER_VALUE);
+-	spin_unlock(&timer_lock);
+ }
+ 
+ 
 -- 
 2.35.1
 
