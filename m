@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 677BBC3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F78DC3527C
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:58:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346866AbiDZJBY (ORCPT
+        id S1346908AbiDZJBd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:01:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60370 "EHLO
+        Tue, 26 Apr 2022 05:01:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346906AbiDZIp3 (ORCPT
+        with ESMTP id S1346899AbiDZIp3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:45:29 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16EDCE0F1;
-        Tue, 26 Apr 2022 01:36:33 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F93611C3D;
+        Tue, 26 Apr 2022 01:36:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 781CDCE1BB4;
-        Tue, 26 Apr 2022 08:36:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5029EC385A4;
-        Tue, 26 Apr 2022 08:36:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C85E617E7;
+        Tue, 26 Apr 2022 08:36:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27257C385AC;
+        Tue, 26 Apr 2022 08:36:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962189;
-        bh=e766lgzO81TnmAlucJg6mez/beyPjY8tXcsTVqwGVK4=;
+        s=korg; t=1650962186;
+        bh=NVsQUUF/tJdoP9yIQoTGPFAQXLh4WYEGBYuFJEQX1SE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WqpxVZqq+4ufpNlFMs5aFqz9j0Z2YvXm/3saL8VkkIJwktRY62D6VTjfQ+3nM1sI8
-         bDx4a4OVVWKwnbJxFO0nimRC+pUWTkBNM8nsTpwpOci0eS4NN0+UJ63y0BnYrctcUF
-         X8vO2g4FgOTHCpKZOQ4kn8uiQYBfsB1idsqPhERY=
+        b=OrL9imO4aqcB3y8aNIZSDL4nxv4eP61jJusEIl6osKeQ1uuLBDK3tBt8LVYviTCK+
+         0ePvMCmRJDinbAXnsiDHusjc5EN51tVREqjR5FHq7Yxgf0XXy7UQExsOb8EDAKd903
+         MqvmpzSztLWCRdYbXD8Dpy2A91D2MYEmr5dhwjz8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tim Crawford <tcrawford@system76.com>,
+        stable@vger.kernel.org,
+        syzbot+70e777a39907d6d5fd0a@syzkaller.appspotmail.com,
         Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 016/124] ALSA: hda/realtek: Add quirk for Clevo NP70PNP
-Date:   Tue, 26 Apr 2022 10:20:17 +0200
-Message-Id: <20220426081747.763965949@linuxfoundation.org>
+Subject: [PATCH 5.15 015/124] ALSA: usb-audio: Clear MIDI port active flag after draining
+Date:   Tue, 26 Apr 2022 10:20:16 +0200
+Message-Id: <20220426081747.734351104@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -49,30 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tim Crawford <tcrawford@system76.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit 86222af07abf1f5f07a5873cc399c29ab8a9b8b8 upstream.
+commit 0665886ad1392e6b5bae85d7a6ccbed48dca1522 upstream.
 
-Fixes headset detection on Clevo NP70PNP.
+When a rawmidi output stream is closed, it calls the drain at first,
+then does trigger-off only when the drain returns -ERESTARTSYS as a
+fallback.  It implies that each driver should turn off the stream
+properly after the drain.  Meanwhile, USB-audio MIDI interface didn't
+change the port->active flag after the drain.  This may leave the
+output work picking up the port that is closed right now, which
+eventually leads to a use-after-free for the already released rawmidi
+object.
 
-Signed-off-by: Tim Crawford <tcrawford@system76.com>
+This patch fixes the bug by properly clearing the port->active flag
+after the output drain.
+
+Reported-by: syzbot+70e777a39907d6d5fd0a@syzkaller.appspotmail.com
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220421170412.3697-1-tcrawford@system76.com
+Link: https://lore.kernel.org/r/00000000000011555605dceaff03@google.com
+Link: https://lore.kernel.org/r/20220420130247.22062-1-tiwai@suse.de
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
+ sound/usb/midi.c |    1 +
  1 file changed, 1 insertion(+)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -8962,6 +8962,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x1558, 0x8562, "Clevo NH[57][0-9]RZ[Q]", ALC269_FIXUP_DMIC),
- 	SND_PCI_QUIRK(0x1558, 0x8668, "Clevo NP50B[BE]", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x866d, "Clevo NP5[05]PN[HJK]", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
-+	SND_PCI_QUIRK(0x1558, 0x867c, "Clevo NP7[01]PNP", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x867d, "Clevo NP7[01]PN[HJK]", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x8680, "Clevo NJ50LU", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x8686, "Clevo NH50[CZ]U", ALC256_FIXUP_MIC_NO_PRESENCE_AND_RESUME),
+--- a/sound/usb/midi.c
++++ b/sound/usb/midi.c
+@@ -1194,6 +1194,7 @@ static void snd_usbmidi_output_drain(str
+ 		} while (drain_urbs && timeout);
+ 		finish_wait(&ep->drain_wait, &wait);
+ 	}
++	port->active = 0;
+ 	spin_unlock_irq(&ep->buffer_lock);
+ }
+ 
 
 
