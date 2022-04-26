@@ -2,172 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42DCCC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:33:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9789AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:33:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347558AbiDZJgK (ORCPT
+        id S1347611AbiDZJgP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:36:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51282 "EHLO
+        Tue, 26 Apr 2022 05:36:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244323AbiDZJGY (ORCPT
+        with ESMTP id S1345977AbiDZJG3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:06:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A540FC8488;
-        Tue, 26 Apr 2022 01:47:43 -0700 (PDT)
+        Tue, 26 Apr 2022 05:06:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 125A8149285
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 01:47:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3ADE6B81CB3;
-        Tue, 26 Apr 2022 08:47:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9384C385A0;
-        Tue, 26 Apr 2022 08:47:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962861;
-        bh=yij2d1Ux7ctNvj7P7J9HDGOnvtH6jjc+nI7oka++9FQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xsrD4euY7v+y4w5W0N3BR2eTFTPkp/G+emBM/GpECuDFv/wSKnK7nPFUxunMUN896
-         IgujwGhRiiB+6I2wtoyVaG97h/VfuY5gEouShsnoOn2OX97rKhaQd+OjFrc0S+ne4b
-         JnGzCwyqgYRgGB4eMiOr0SC/ouWR1wmYVoU7NLXg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Seth Forshee <sforshee@digitalocean.com>,
-        Christoph Hellwig <hch@lst.de>, regressions@lists.linux.dev,
-        "Christian Brauner (Microsoft)" <brauner@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.17 114/146] fs: fix acl translation
-Date:   Tue, 26 Apr 2022 10:21:49 +0200
-Message-Id: <20220426081753.258552761@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
-References: <20220426081750.051179617@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A278F60C43
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 08:47:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 349B1C385A4;
+        Tue, 26 Apr 2022 08:47:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650962875;
+        bh=KGgpr/qE7e8i8/TT4uGx7oI4jKojK9A+0qh5p9W935o=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XPm+F8ILe2J5PO9S7QNt8NoVYK46NXEXjJXFkTMjtiMqb48KhwwqQ1aC/A5cxsNOm
+         2oXPAWVHvM+dO335YOYApv0pB7ebxVtqIYIwVrUkjeSw5+kVS9oaJe1izMMt6aRwhm
+         vHHJK4TvopkQXA06q+W29TSiB0KQjd7akaGA8w+iM4AHnqgrgvXUND4K5gTSOFL51D
+         Wzcyng+vvFfCo8QKBzlzvP41NDLiZAXKUut/0TX+CAMVcLo+rtlhJCWabZA1ws/aSO
+         xgl84i4K+H2w5kxKo8W/Og1YvVHGSpIe/1c692FSE4h/yB0H5g0omcxZYWPGKd95ad
+         2tKtL3y7m3uPw==
+Date:   Tue, 26 Apr 2022 17:47:49 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Wang ShaoBo <bobo.shaobowang@huawei.com>,
+        cj.chengjian@huawei.com, huawei.libin@huawei.com,
+        xiexiuqi@huawei.com, liwei391@huawei.com,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        catalin.marinas@arm.com, will@kernel.org, zengshun.wu@outlook.com,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Subject: Re: [RFC PATCH -next v2 3/4] arm64/ftrace: support dynamically
+ allocated trampolines
+Message-Id: <20220426174749.b5372c5769af7bf901649a05@kernel.org>
+In-Reply-To: <YmLlmaXF00hPkOID@lakrids>
+References: <20220316100132.244849-1-bobo.shaobowang@huawei.com>
+        <20220316100132.244849-4-bobo.shaobowang@huawei.com>
+        <YmFXrBG5AmX3+4f8@lakrids>
+        <20220421100639.03c0d123@gandalf.local.home>
+        <YmF0xYpTMoWOIl00@lakrids>
+        <20220421114201.21228eeb@gandalf.local.home>
+        <YmGF/OpIhAF8YeVq@lakrids>
+        <20220421130648.56b21951@gandalf.local.home>
+        <YmJ/l4vJoEpFt68l@FVFF77S0Q05N>
+        <20220422114541.34d71ad9@gandalf.local.home>
+        <YmLlmaXF00hPkOID@lakrids>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Brauner <brauner@kernel.org>
+Hi Mark,
 
-commit 705191b03d507744c7e097f78d583621c14988ac upstream.
+On Fri, 22 Apr 2022 18:27:53 +0100
+Mark Rutland <mark.rutland@arm.com> wrote:
 
-Last cycle we extended the idmapped mounts infrastructure to support
-idmapped mounts of idmapped filesystems (No such filesystem yet exist.).
-Since then, the meaning of an idmapped mount is a mount whose idmapping
-is different from the filesystems idmapping.
+> On Fri, Apr 22, 2022 at 11:45:41AM -0400, Steven Rostedt wrote:
+> > On Fri, 22 Apr 2022 11:12:39 +0100
+> > Mark Rutland <mark.rutland@arm.com> wrote:
+> > 
+> > > As an aside, I'd also love to remove the REGS/!REGs distinction, and always
+> > > save a minimum amount of state (like ARGS, but never saving a full pt_regs),
+> > > since on arm64 the extra state stored for the REGS case isn't useful (and we
+> > > can't reliably capture all of the pt_regs state anyway, so bits of it are made
+> > > up or not filled in).
+> > 
+> > Note, the reason for the addition of REGS was a requirement of kprobes.
+> > Because before ftrace, kprobes would be triggered at the start of a
+> > function by a breakpoint that would load in all the regs. And for backward
+> > compatibility, Masami wanted to make sure that kprobes coming from ftrace
+> > had all the regs just like it had when coming from a breakpoint.
 
-While doing that work we missed to adapt the acl translation helpers.
-They still assume that checking for the identity mapping is enough.  But
-they need to use the no_idmapping() helper instead.
+Yes. Since this kprobes->ftrace conversion is done by kprobes transparently,
+user doesn't know their kprobe handler is called from sw break or ftrace.
 
-Note, POSIX ACLs are always translated right at the userspace-kernel
-boundary using the caller's current idmapping and the initial idmapping.
-The order depends on whether we're coming from or going to userspace.
-The filesystem's idmapping doesn't matter at the border.
+> > 
+> > IIUC, kprobes is the only reason we have the "regs" variant (all other use
+> > cases could get by with the ARGS version).
+> 
+> I see. FWIW, we don't have KPROBES_ON_FTRACE on arm64.
 
-Consequently, if a non-idmapped mount is passed we need to make sure to
-always pass the initial idmapping as the mount's idmapping and not the
-filesystem idmapping.  Since it's irrelevant here it would yield invalid
-ids and prevent setting acls for filesystems that are mountable in a
-userns and support posix acls (tmpfs and fuse).
+Right. Since x86 fentry puts the entry on function address, I need such
+compatibility.
 
-I verified the regression reported in [1] and verified that this patch
-fixes it.  A regression test will be added to xfstests in parallel.
+But on arm64, ftrace leads some preparation instructions, kprobes can put
+the sw break on the function address there. And may not need to put the
+kprobes on it. So it depends on arch. I would like to keep the kprobes 
+available at the function address so that it can trace any registers.
+(like debugger usage)
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215849 [1]
-Fixes: bd303368b776 ("fs: support mapped mounts of mapped filesystems")
-Cc: Seth Forshee <sforshee@digitalocean.com>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: <stable@vger.kernel.org> # 5.17
-Cc: <regressions@lists.linux.dev>
-Signed-off-by: Christian Brauner (Microsoft) <brauner@kernel.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- fs/posix_acl.c                  |   10 ++++++++++
- fs/xattr.c                      |    6 ++++--
- include/linux/posix_acl_xattr.h |    4 ++++
- 3 files changed, 18 insertions(+), 2 deletions(-)
+> Also, the same problems apply to KRETPROBES: the synthetic `pstate`
+> value is bogus and we don't fill in other bits of the regs (e.g. the PMR
+> value), so it's not a "real" pt_regs, and things like
+> interrupts_enabled(regs) won't work correctly.
 
---- a/fs/posix_acl.c
-+++ b/fs/posix_acl.c
-@@ -759,9 +759,14 @@ static void posix_acl_fix_xattr_userns(
- }
- 
- void posix_acl_fix_xattr_from_user(struct user_namespace *mnt_userns,
-+				   struct inode *inode,
- 				   void *value, size_t size)
- {
- 	struct user_namespace *user_ns = current_user_ns();
-+
-+	/* Leave ids untouched on non-idmapped mounts. */
-+	if (no_idmapping(mnt_userns, i_user_ns(inode)))
-+		mnt_userns = &init_user_ns;
- 	if ((user_ns == &init_user_ns) && (mnt_userns == &init_user_ns))
- 		return;
- 	posix_acl_fix_xattr_userns(&init_user_ns, user_ns, mnt_userns, value,
-@@ -769,9 +774,14 @@ void posix_acl_fix_xattr_from_user(struc
- }
- 
- void posix_acl_fix_xattr_to_user(struct user_namespace *mnt_userns,
-+				 struct inode *inode,
- 				 void *value, size_t size)
- {
- 	struct user_namespace *user_ns = current_user_ns();
-+
-+	/* Leave ids untouched on non-idmapped mounts. */
-+	if (no_idmapping(mnt_userns, i_user_ns(inode)))
-+		mnt_userns = &init_user_ns;
- 	if ((user_ns == &init_user_ns) && (mnt_userns == &init_user_ns))
- 		return;
- 	posix_acl_fix_xattr_userns(user_ns, &init_user_ns, mnt_userns, value,
---- a/fs/xattr.c
-+++ b/fs/xattr.c
-@@ -569,7 +569,8 @@ setxattr(struct user_namespace *mnt_user
- 		}
- 		if ((strcmp(kname, XATTR_NAME_POSIX_ACL_ACCESS) == 0) ||
- 		    (strcmp(kname, XATTR_NAME_POSIX_ACL_DEFAULT) == 0))
--			posix_acl_fix_xattr_from_user(mnt_userns, kvalue, size);
-+			posix_acl_fix_xattr_from_user(mnt_userns, d_inode(d),
-+						      kvalue, size);
- 	}
- 
- 	error = vfs_setxattr(mnt_userns, d, kname, kvalue, size, flags);
-@@ -667,7 +668,8 @@ getxattr(struct user_namespace *mnt_user
- 	if (error > 0) {
- 		if ((strcmp(kname, XATTR_NAME_POSIX_ACL_ACCESS) == 0) ||
- 		    (strcmp(kname, XATTR_NAME_POSIX_ACL_DEFAULT) == 0))
--			posix_acl_fix_xattr_to_user(mnt_userns, kvalue, error);
-+			posix_acl_fix_xattr_to_user(mnt_userns, d_inode(d),
-+						    kvalue, error);
- 		if (size && copy_to_user(value, kvalue, error))
- 			error = -EFAULT;
- 	} else if (error == -ERANGE && size >= XATTR_SIZE_MAX) {
---- a/include/linux/posix_acl_xattr.h
-+++ b/include/linux/posix_acl_xattr.h
-@@ -34,15 +34,19 @@ posix_acl_xattr_count(size_t size)
- 
- #ifdef CONFIG_FS_POSIX_ACL
- void posix_acl_fix_xattr_from_user(struct user_namespace *mnt_userns,
-+				   struct inode *inode,
- 				   void *value, size_t size);
- void posix_acl_fix_xattr_to_user(struct user_namespace *mnt_userns,
-+				   struct inode *inode,
- 				 void *value, size_t size);
- #else
- static inline void posix_acl_fix_xattr_from_user(struct user_namespace *mnt_userns,
-+						 struct inode *inode,
- 						 void *value, size_t size)
- {
- }
- static inline void posix_acl_fix_xattr_to_user(struct user_namespace *mnt_userns,
-+					       struct inode *inode,
- 					       void *value, size_t size)
- {
- }
+Would you mean the process which kprobes_save/restore_local_irqflag() does?
+Is the regs->pstate saved correctly in sw break or ftrace? (sorry, I missed
+the context)
 
+> In addition, as
+> KRETPROBES only hooks function entry/exit and x9-x17 + x19-x28 are
+> meaningless at those times, no-one's going to care what they contain
+> anyway.
 
+It depends on what bug they are trying to trace. C source level bug
+will not need such information, but assembly level bug (or compiler
+level bug) may need such registers. Anyway, this also depends on user.
+I just won't like limit the usage.
+
+> The state we can correctly snapshot (and that would be useful)
+> is the same as ARGS.
+> 
+> It'd be nice if KRETPROBES could just use ARGS, but a standard KPROBE
+> that traps could provide regs (since it actually gets "real" regs, and
+> within a function the other GPRs could be important).
+
+Here, the KRETPROBES means the exit handler, or including entry handler?
+Since kretprobes uses a standard kprobe to trap the function entry.
+
+If you talk about fprobes (ftrace probe interface), it will only use the
+ftrace. Thus your idea is acceptable for it (because fprobe is different
+from kprobes *).
+
+* Of course we have to talk with BPF people so that they will only access
+ARGS from BPF program on fprobes.
+
+Thank you,
+
+-- 
+Masami Hiramatsu <mhiramat@kernel.org>
