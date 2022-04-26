@@ -2,174 +2,354 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30494C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:43:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E536AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:44:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353106AbiDZQrC (ORCPT
+        id S1353112AbiDZQrc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 12:47:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35910 "EHLO
+        Tue, 26 Apr 2022 12:47:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235613AbiDZQqy (ORCPT
+        with ESMTP id S1353094AbiDZQra (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 12:46:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 09C7747058
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:43:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650991425;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=AmBHiCcZSCU3IlknPjgefbwYr8sHQGYFZPAAiy3Pw/w=;
-        b=CO39FZ+riuJ7CdsmMSHizVyCgpAFYmiYBr9ZoENaZ9K5IYuc144d39GNsmUkzYHeL9mfp2
-        ysOguD+sOEku0jW1UiGhIsHNniu/tyVkByJnsvrvwTVu8G3dtd2cQmjiRhT7pz7qTKGbLy
-        RtUiSeL5ZO39BFrJz6BYBIFZadqEfkQ=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-593-nVqbNw8bOQOqMf_rBX8FTQ-1; Tue, 26 Apr 2022 12:43:43 -0400
-X-MC-Unique: nVqbNw8bOQOqMf_rBX8FTQ-1
-Received: by mail-wm1-f69.google.com with SMTP id g9-20020a1c4e09000000b0038f20d94f01so1477076wmh.8
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:43:43 -0700 (PDT)
+        Tue, 26 Apr 2022 12:47:30 -0400
+Received: from mail-ed1-x54a.google.com (mail-ed1-x54a.google.com [IPv6:2a00:1450:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4B401749E3
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:44:21 -0700 (PDT)
+Received: by mail-ed1-x54a.google.com with SMTP id h7-20020a056402094700b00425a52983dfso8254148edz.8
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:44:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=1G8xzyhN/6cC/oSos2efdoQedsBkWbUJY6WrTftKsiQ=;
+        b=H02YMRXjzxy5RjuHuT2YjDfAZIX+tEOSvPyjkJKaXu5+ulq0TbgcmXLetjFPWcy13D
+         uiGMyv/a2fbcqRRKCOf96o+hQg31oHSKQ84VhPuHBU2YX+cUZPDefn41wYo4uuxZUfUe
+         eypPtslL+veHDE2Q/+unvc//ms3IZf8ngdSTrLGQPC/Ww6cyqjGmHWRMhUIK9r3YrzHp
+         DN3ROSkVsjatoSoHdePG9JGyAy6z9dsfpEOYq+xoLMQgSlj+C/SCSAEmCfelgKCY9ZeZ
+         c8GIM8E5AWSvmzgmztZcSLLIZnHCAwsFVe3YWHqFg5H5moRwDe98SyqV2dntakeZ1ntu
+         WNZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=AmBHiCcZSCU3IlknPjgefbwYr8sHQGYFZPAAiy3Pw/w=;
-        b=UU0pTSTk1Ncs4mEYE55RWuo+Og6q92u2VIoWiZgNrAQkZ7hcwb95lv1s3+AI1jgpy5
-         PQlUbpdcToJDSOpy1mHDC6eDNvAZnZ1tU483oLjNkdslDe+bH/cXBC+U9zitPFL9XURg
-         SWNKAAaId0SK+sZYXEjNrvLRrYhVuItq+O6zCdvUtofI//DhpDk3/wZxmS+9fMg7I2cO
-         VPT4jUuMJtMaenY2frHfCQfp3iJA8+9boDQ70kKBzhz8mNQeuVmZOa2JRoneD/g+yeZR
-         myPp0R2LFWxJMtsphzNfaq/jYGp972t2ry9BnaKtkAGWU8R6ce8TvI4cpxHWDryZzr3e
-         rOYA==
-X-Gm-Message-State: AOAM532F2+uT23mnJBKTJKtD2joHl6omHNeYYkf5msrWR5PCPWtzTMga
-        OkO1DX5Vmnx+nTg5nr64QeZQndDiXfz1Pt8pUvuByb87YgoJnBrM9T/s+6AcObh6dL++umo8WlF
-        J+Ol/k3UhuMtHp0HhIayBaUiL
-X-Received: by 2002:a05:6000:1789:b0:20a:9f94:1620 with SMTP id e9-20020a056000178900b0020a9f941620mr19657174wrg.640.1650991422037;
-        Tue, 26 Apr 2022 09:43:42 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyfz8Pkmw51eFwJVdP+dK0w5CxNhoIuOiCngJvaJLdcwbMbc4dFPtCwPPtxxnWRU6Y78qqrvw==
-X-Received: by 2002:a05:6000:1789:b0:20a:9f94:1620 with SMTP id e9-20020a056000178900b0020a9f941620mr19657161wrg.640.1650991421834;
-        Tue, 26 Apr 2022 09:43:41 -0700 (PDT)
-Received: from redhat.com ([2.53.22.137])
-        by smtp.gmail.com with ESMTPSA id z6-20020a05600c0a0600b00393d831bf15sm10346194wmp.46.2022.04.26.09.43.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 09:43:41 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 12:43:36 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Cornelia Huck <cohuck@redhat.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, sgarzare@redhat.com,
-        eperezma@redhat.com, lulu@redhat.com, tglx@linutronix.de,
-        peterz@infradead.org, paulmck@kernel.org, maz@kernel.org
-Subject: Re: [PATCH V3 6/9] virtio-ccw: implement synchronize_cbs()
-Message-ID: <20220426124243-mutt-send-email-mst@kernel.org>
-References: <20220425040512-mutt-send-email-mst@kernel.org>
- <87a6c98rwf.fsf@redhat.com>
- <20220425095742-mutt-send-email-mst@kernel.org>
- <20220426042911.544477f9.pasic@linux.ibm.com>
- <20220425233434-mutt-send-email-mst@kernel.org>
- <20220425233604-mutt-send-email-mst@kernel.org>
- <ba0c3977-c471-3275-2327-c5910cdd506a@redhat.com>
- <20220425235134-mutt-send-email-mst@kernel.org>
- <20220425235415-mutt-send-email-mst@kernel.org>
- <87o80n7soq.fsf@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87o80n7soq.fsf@redhat.com>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=1G8xzyhN/6cC/oSos2efdoQedsBkWbUJY6WrTftKsiQ=;
+        b=y5Y35ZrwYvzA8W/hJWx6nEX4+LF0BSPChyzq3ayiEyYg513aaUm1jjHhXu5o/VknIe
+         V71+nCo9ujd2RD1+7v1h4z3PhGBrp4DRFZD9R9Jx5CPfvdkpTq/pofHE82Xffy4b3Rj+
+         8Z+pGVsYxo/7dy6CLbsr9klGyGDYUl9qhXYOOHWd8wOh36/gPRpMos7iOvqNCPc7KSCj
+         F396WuqeKMvb4zj/YOoY7cN2zAYvnxQ9/YcoW7fFtldkcR3Ykgdfo2EhFb3J88B98o7E
+         KjBLtSd4yG1V/pcX75a/Ey1gXIaZICpD//wJo5Hyt6TS4VuIDhc67K77pBNS+Ni5KmNV
+         0oRA==
+X-Gm-Message-State: AOAM530v0wDymtBNq7ZpIzsfYGozk2AxeOI/6rv+jOsQsmqAm0ryY9py
+        TnVJqJdQZTt8t7J0Du/e+MhDocKfnoE=
+X-Google-Smtp-Source: ABdhPJyG9Bwm26XnDyzw19Wz/Alkzd4tUQQg9l7XaVFBhPlMBLSMTQPUQnAIxNdVAd2sg+QqWCxTIcZwY6M=
+X-Received: from glider.muc.corp.google.com ([2a00:79e0:15:13:d580:abeb:bf6d:5726])
+ (user=glider job=sendgmr) by 2002:aa7:cb93:0:b0:415:d57a:4603 with SMTP id
+ r19-20020aa7cb93000000b00415d57a4603mr25274990edt.62.1650991460014; Tue, 26
+ Apr 2022 09:44:20 -0700 (PDT)
+Date:   Tue, 26 Apr 2022 18:42:29 +0200
+Message-Id: <20220426164315.625149-1-glider@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
+Subject: [PATCH v3 00/46] Add KernelMemorySanitizer infrastructure
+From:   Alexander Potapenko <glider@google.com>
+To:     glider@google.com
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Christoph Hellwig <hch@lst.de>,
+        Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Kees Cook <keescook@chromium.org>,
+        Marco Elver <elver@google.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>, kasan-dev@googlegroups.com,
+        linux-mm@kvack.org, linux-arch@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 05:47:17PM +0200, Cornelia Huck wrote:
-> On Mon, Apr 25 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> 
-> > On Mon, Apr 25, 2022 at 11:53:24PM -0400, Michael S. Tsirkin wrote:
-> >> On Tue, Apr 26, 2022 at 11:42:45AM +0800, Jason Wang wrote:
-> >> > 
-> >> > 在 2022/4/26 11:38, Michael S. Tsirkin 写道:
-> >> > > On Mon, Apr 25, 2022 at 11:35:41PM -0400, Michael S. Tsirkin wrote:
-> >> > > > On Tue, Apr 26, 2022 at 04:29:11AM +0200, Halil Pasic wrote:
-> >> > > > > On Mon, 25 Apr 2022 09:59:55 -0400
-> >> > > > > "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> >> > > > > 
-> >> > > > > > On Mon, Apr 25, 2022 at 10:54:24AM +0200, Cornelia Huck wrote:
-> >> > > > > > > On Mon, Apr 25 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> >> > > > > > > > On Mon, Apr 25, 2022 at 10:44:15AM +0800, Jason Wang wrote:
-> >> > > > > > > > > This patch tries to implement the synchronize_cbs() for ccw. For the
-> >> > > > > > > > > vring_interrupt() that is called via virtio_airq_handler(), the
-> >> > > > > > > > > synchronization is simply done via the airq_info's lock. For the
-> >> > > > > > > > > vring_interrupt() that is called via virtio_ccw_int_handler(), a per
-> >> > > > > > > > > device spinlock for irq is introduced ans used in the synchronization
-> >> > > > > > > > > method.
-> >> > > > > > > > > 
-> >> > > > > > > > > Cc: Thomas Gleixner <tglx@linutronix.de>
-> >> > > > > > > > > Cc: Peter Zijlstra <peterz@infradead.org>
-> >> > > > > > > > > Cc: "Paul E. McKenney" <paulmck@kernel.org>
-> >> > > > > > > > > Cc: Marc Zyngier <maz@kernel.org>
-> >> > > > > > > > > Cc: Halil Pasic <pasic@linux.ibm.com>
-> >> > > > > > > > > Cc: Cornelia Huck <cohuck@redhat.com>
-> >> > > > > > > > > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> >> > > > > > > > 
-> >> > > > > > > > This is the only one that is giving me pause. Halil, Cornelia,
-> >> > > > > > > > should we be concerned about the performance impact here?
-> >> > > > > > > > Any chance it can be tested?
-> >> > > > > > > We can have a bunch of devices using the same airq structure, and the
-> >> > > > > > > sync cb creates a choke point, same as registering/unregistering.
-> >> > > > > > BTW can callbacks for multiple VQs run on multiple CPUs at the moment?
-> >> > > > > I'm not sure I understand the question.
-> >> > > > > 
-> >> > > > > I do think we can have multiple CPUs that are executing some portion of
-> >> > > > > virtio_ccw_int_handler(). So I guess the answer is yes. Connie what do you think?
-> >> > > > > 
-> >> > > > > On the other hand we could also end up serializing synchronize_cbs()
-> >> > > > > calls for different devices if they happen to use the same airq_info. But
-> >> > > > > this probably was not your question
-> >> > > > 
-> >> > > > I am less concerned about  synchronize_cbs being slow and more about
-> >> > > > the slowdown in interrupt processing itself.
-> >> > > > 
-> >> > > > > > this patch serializes them on a spinlock.
-> >> > > > > > 
-> >> > > > > Those could then pile up on the newly introduced spinlock.
-> 
-> How bad would that be in practice? IIUC, we hit on the spinlock when
-> - doing synchronize_cbs (should be rare)
-> - processing queue interrupts for devices using per-device indicators
->   (which is the non-preferred path, which I would basically only expect
->   when running on an ancient or non-standard hypervisor)
+KernelMemorySanitizer (KMSAN) is a detector of errors related to uses of
+uninitialized memory. It relies on compile-time Clang instrumentation
+(similar to MSan in the userspace [1]) and tracks the state of every bit
+of kernel memory, being able to report an error if uninitialized value is
+used in a condition, dereferenced, or escapes to userspace, USB or DMA.
 
-this one is my concern. I am worried serializing everything on a single lock
-will drastically regress performance here.
+KMSAN has reported more than 300 bugs in the past few years (recently
+fixed bugs: [2]), most of them with the help of syzkaller. Such bugs
+keep getting introduced into the kernel despite new compiler warnings and
+other analyses (the 5.16 cycle already resulted in several KMSAN-reported
+bugs, e.g. [3]). Mitigations like total stack and heap initialization are
+unfortunately very far from being deployable.
+
+The proposed patchset contains KMSAN runtime implementation together with
+small changes to other subsystems needed to make KMSAN work.
+
+The latter changes fall into several categories:
+
+1. Changes and refactorings of existing code required to add KMSAN:
+ - [1/46] x86: add missing include to sparsemem.h
+ - [2/46] stackdepot: reserve 5 extra bits in depot_stack_handle_t
+ - [3/46] kasan: common: adapt to the new prototype of __stack_depot_save()
+ - [4/46] instrumented.h: allow instrumenting both sides of copy_from_user()
+ - [5/46] x86: asm: instrument usercopy in get_user() and __put_user_size()
+ - [6/46] asm-generic: instrument usercopy in cacheflush.h
+ - [11/46] libnvdimm/pfn_dev: increase MAX_STRUCT_PAGE_SIZE
+
+2. KMSAN-related declarations in generic code, KMSAN runtime library,
+   docs and configs:
+ - [7/46] kmsan: add ReST documentation
+ - [8/46] kmsan: introduce __no_sanitize_memory and __no_kmsan_checks
+ - [10/46] x86: kmsan: pgtable: reduce vmalloc space
+ - [12/46] kmsan: add KMSAN runtime core
+ - [15/46] MAINTAINERS: add entry for KMSAN
+ - [29/46] kmsan: add tests for KMSAN
+ - [36/46] objtool: kmsan: list KMSAN API functions as uaccess-safe
+ - [41/46] x86: kmsan: use __msan_ string functions where possible.
+ - [46/46] x86: kmsan: enable KMSAN builds for x86
+
+3. Adding hooks from different subsystems to notify KMSAN about memory
+   state changes:
+ - [16/46] kmsan: mm: maintain KMSAN metadata for page operations
+ - [17/46] kmsan: mm: call KMSAN hooks from SLUB code
+ - [18/46] kmsan: handle task creation and exiting
+ - [19/46] kmsan: init: call KMSAN initialization routines
+ - [20/46] instrumented.h: add KMSAN support
+ - [22/46] kmsan: add iomap support
+ - [23/46] Input: libps2: mark data received in __ps2_command() as initialized
+ - [24/46] kmsan: dma: unpoison DMA mappings
+ - [40/46] x86: kmsan: handle open-coded assembly in lib/iomem.c
+ - [42/46] x86: kmsan: sync metadata pages on page fault
+
+4. Changes that prevent false reports by explicitly initializing memory,
+   disabling optimized code that may trick KMSAN, selectively skipping
+   instrumentation:
+ - [13/46] kmsan: implement kmsan_init(), initialize READ_ONCE_NOCHECK()
+ - [14/46] kmsan: disable instrumentation of unsupported common kernel code
+ - [21/46] kmsan: unpoison @tlb in arch_tlb_gather_mmu()
+ - [25/46] kmsan: virtio: check/unpoison scatterlist in vring_map_one_sg()
+ - [26/46] kmsan: handle memory sent to/from USB
+ - [30/46] kmsan: disable strscpy() optimization under KMSAN
+ - [31/46] crypto: kmsan: disable accelerated configs under KMSAN
+ - [32/46] kmsan: disable physical page merging in biovec
+ - [33/46] kmsan: block: skip bio block merging logic for KMSAN
+ - [34/46] kmsan: kcov: unpoison area->list in kcov_remote_area_put()
+ - [35/46] security: kmsan: fix interoperability with auto-initialization
+ - [37/46] x86: kmsan: make READ_ONCE_TASK_STACK() return initialized values
+ - [38/46] x86: kmsan: disable instrumentation of unsupported code
+ - [39/46] x86: kmsan: skip shadow checks in __switch_to()
+ - [43/46] x86: kasan: kmsan: support CONFIG_GENERIC_CSUM on x86, enable it for KASAN/KMSAN
+ - [44/46] x86: fs: kmsan: disable CONFIG_DCACHE_WORD_ACCESS
+
+5. Noinstr handling:
+ - [9/46] kmsan: mark noinstr as __no_sanitize_memory
+ - [27/46] kmsan: instrumentation.h: add instrumentation_begin_with_regs()
+ - [28/46] kmsan: entry: handle register passing from uninstrumented code
+ - [45/46] x86: kmsan: handle register passing from uninstrumented code
+
+This patchset allows one to boot and run a defconfig+KMSAN kernel on a
+QEMU without known false positives. It however doesn't guarantee there
+are no false positives in drivers of certain devices or less tested
+subsystems, although KMSAN is actively tested on syzbot with a large
+config.
+
+The patchset was generated relative to Linux v5.18-rc4. The most
+up-to-date KMSAN tree currently resides at
+https://github.com/google/kmsan/.
+One may find it handy to review these patches in Gerrit:
+https://linux-review.googlesource.com/c/linux/kernel/git/torvalds/linux/+/12604/25
+
+A huge thanks goes to the reviewers of the RFC patch series sent to LKML
+in 2020
+(https://lore.kernel.org/all/20200325161249.55095-1-glider@google.com/).
+
+[1] https://clang.llvm.org/docs/MemorySanitizer.html
+[2] https://syzkaller.appspot.com/upstream/fixed?manager=ci-upstream-kmsan-gce
+[3] https://lore.kernel.org/all/20211126124746.761278-1-glider@google.com/
 
 
-> - configuration change interrupts (should be rare)
-> - during setup, reset, etc. (should not be a concern)
-> 
-> >> > > > > 
-> >> > > > > Regards,
-> >> > > > > Halil
-> >> > > > Hmm yea ... not good.
-> >> > > Is there any other way to synchronize with all callbacks?
-> >> > 
-> >> > 
-> >> > Maybe using rwlock as airq handler?
-> >> > 
-> >> > Thanks
-> >> > 
-> >> 
-> >> rwlock is still a shared cacheline bouncing between CPUs and
-> >> a bunch of ordering instructions.
-> >> Maybe something per-cpu + some IPIs to run things on all CPUs instead?
-> >
-> > ... and I think classic and device interrupts are different enough
-> > here ...
-> 
-> You mean classic (per-device) and adapter interrupts, right?
+Alexander Potapenko (45):
+  stackdepot: reserve 5 extra bits in depot_stack_handle_t
+  kasan: common: adapt to the new prototype of __stack_depot_save()
+  instrumented.h: allow instrumenting both sides of copy_from_user()
+  x86: asm: instrument usercopy in get_user() and __put_user_size()
+  asm-generic: instrument usercopy in cacheflush.h
+  kmsan: add ReST documentation
+  kmsan: introduce __no_sanitize_memory and __no_kmsan_checks
+  kmsan: mark noinstr as __no_sanitize_memory
+  x86: kmsan: pgtable: reduce vmalloc space
+  libnvdimm/pfn_dev: increase MAX_STRUCT_PAGE_SIZE
+  kmsan: add KMSAN runtime core
+  kmsan: implement kmsan_init(), initialize READ_ONCE_NOCHECK()
+  kmsan: disable instrumentation of unsupported common kernel code
+  MAINTAINERS: add entry for KMSAN
+  kmsan: mm: maintain KMSAN metadata for page operations
+  kmsan: mm: call KMSAN hooks from SLUB code
+  kmsan: handle task creation and exiting
+  kmsan: init: call KMSAN initialization routines
+  instrumented.h: add KMSAN support
+  kmsan: unpoison @tlb in arch_tlb_gather_mmu()
+  kmsan: add iomap support
+  Input: libps2: mark data received in __ps2_command() as initialized
+  kmsan: dma: unpoison DMA mappings
+  kmsan: virtio: check/unpoison scatterlist in vring_map_one_sg()
+  kmsan: handle memory sent to/from USB
+  kmsan: instrumentation.h: add instrumentation_begin_with_regs()
+  kmsan: entry: handle register passing from uninstrumented code
+  kmsan: add tests for KMSAN
+  kmsan: disable strscpy() optimization under KMSAN
+  crypto: kmsan: disable accelerated configs under KMSAN
+  kmsan: disable physical page merging in biovec
+  kmsan: block: skip bio block merging logic for KMSAN
+  kmsan: kcov: unpoison area->list in kcov_remote_area_put()
+  security: kmsan: fix interoperability with auto-initialization
+  objtool: kmsan: list KMSAN API functions as uaccess-safe
+  x86: kmsan: make READ_ONCE_TASK_STACK() return initialized values
+  x86: kmsan: disable instrumentation of unsupported code
+  x86: kmsan: skip shadow checks in __switch_to()
+  x86: kmsan: handle open-coded assembly in lib/iomem.c
+  x86: kmsan: use __msan_ string functions where possible.
+  x86: kmsan: sync metadata pages on page fault
+  x86: kasan: kmsan: support CONFIG_GENERIC_CSUM on x86, enable it for
+    KASAN/KMSAN
+  x86: fs: kmsan: disable CONFIG_DCACHE_WORD_ACCESS
+  x86: kmsan: handle register passing from uninstrumented code
+  x86: kmsan: enable KMSAN builds for x86
+
+Dmitry Vyukov (1):
+  x86: add missing include to sparsemem.h
+
+ Documentation/dev-tools/index.rst       |   1 +
+ Documentation/dev-tools/kmsan.rst       | 414 ++++++++++++++++++
+ MAINTAINERS                             |  12 +
+ Makefile                                |   1 +
+ arch/x86/Kconfig                        |   9 +-
+ arch/x86/boot/Makefile                  |   1 +
+ arch/x86/boot/compressed/Makefile       |   1 +
+ arch/x86/entry/common.c                 |   3 +-
+ arch/x86/entry/vdso/Makefile            |   3 +
+ arch/x86/include/asm/checksum.h         |  16 +-
+ arch/x86/include/asm/idtentry.h         |  10 +-
+ arch/x86/include/asm/page_64.h          |  13 +
+ arch/x86/include/asm/pgtable_64_types.h |  41 +-
+ arch/x86/include/asm/sparsemem.h        |   2 +
+ arch/x86/include/asm/string_64.h        |  23 +-
+ arch/x86/include/asm/uaccess.h          |   7 +
+ arch/x86/include/asm/unwind.h           |  23 +-
+ arch/x86/kernel/Makefile                |   2 +
+ arch/x86/kernel/cpu/Makefile            |   1 +
+ arch/x86/kernel/cpu/mce/core.c          |   2 +-
+ arch/x86/kernel/kvm.c                   |   2 +-
+ arch/x86/kernel/nmi.c                   |   2 +-
+ arch/x86/kernel/process_64.c            |   1 +
+ arch/x86/kernel/sev.c                   |   4 +-
+ arch/x86/kernel/traps.c                 |  14 +-
+ arch/x86/lib/Makefile                   |   2 +
+ arch/x86/lib/iomem.c                    |   5 +
+ arch/x86/mm/Makefile                    |   2 +
+ arch/x86/mm/fault.c                     |  25 +-
+ arch/x86/mm/init_64.c                   |   2 +-
+ arch/x86/mm/ioremap.c                   |   3 +
+ arch/x86/realmode/rm/Makefile           |   1 +
+ block/bio.c                             |   2 +
+ block/blk.h                             |   7 +
+ crypto/Kconfig                          |  30 ++
+ drivers/firmware/efi/libstub/Makefile   |   1 +
+ drivers/input/serio/libps2.c            |   5 +-
+ drivers/net/Kconfig                     |   1 +
+ drivers/nvdimm/nd.h                     |   2 +-
+ drivers/nvdimm/pfn_devs.c               |   2 +-
+ drivers/usb/core/urb.c                  |   2 +
+ drivers/virtio/virtio_ring.c            |  10 +-
+ include/asm-generic/cacheflush.h        |   9 +-
+ include/asm-generic/rwonce.h            |   5 +-
+ include/linux/compiler-clang.h          |  23 +
+ include/linux/compiler-gcc.h            |   6 +
+ include/linux/compiler_types.h          |   3 +-
+ include/linux/fortify-string.h          |   2 +
+ include/linux/highmem.h                 |   3 +
+ include/linux/instrumentation.h         |   6 +
+ include/linux/instrumented.h            |  26 +-
+ include/linux/kmsan-checks.h            | 123 ++++++
+ include/linux/kmsan.h                   | 359 ++++++++++++++++
+ include/linux/mm_types.h                |  12 +
+ include/linux/sched.h                   |   5 +
+ include/linux/stackdepot.h              |   8 +
+ include/linux/uaccess.h                 |  19 +-
+ init/main.c                             |   3 +
+ kernel/Makefile                         |   1 +
+ kernel/dma/mapping.c                    |   9 +-
+ kernel/entry/common.c                   |  22 +-
+ kernel/exit.c                           |   2 +
+ kernel/fork.c                           |   2 +
+ kernel/kcov.c                           |   7 +
+ kernel/locking/Makefile                 |   3 +-
+ lib/Kconfig.debug                       |   1 +
+ lib/Kconfig.kmsan                       |  39 ++
+ lib/Makefile                            |   3 +
+ lib/iomap.c                             |  40 ++
+ lib/iov_iter.c                          |   9 +-
+ lib/stackdepot.c                        |  29 +-
+ lib/string.c                            |   8 +
+ lib/usercopy.c                          |   3 +-
+ mm/Makefile                             |   1 +
+ mm/internal.h                           |   6 +
+ mm/kasan/common.c                       |   2 +-
+ mm/kmsan/Makefile                       |  26 ++
+ mm/kmsan/annotations.c                  |  28 ++
+ mm/kmsan/core.c                         | 468 +++++++++++++++++++++
+ mm/kmsan/hooks.c                        | 384 +++++++++++++++++
+ mm/kmsan/init.c                         | 240 +++++++++++
+ mm/kmsan/instrumentation.c              | 267 ++++++++++++
+ mm/kmsan/kmsan.h                        | 188 +++++++++
+ mm/kmsan/kmsan_test.c                   | 536 ++++++++++++++++++++++++
+ mm/kmsan/report.c                       | 211 ++++++++++
+ mm/kmsan/shadow.c                       | 336 +++++++++++++++
+ mm/memory.c                             |   2 +
+ mm/mmu_gather.c                         |  10 +
+ mm/page_alloc.c                         |  18 +
+ mm/slab.h                               |   1 +
+ mm/slub.c                               |  21 +-
+ mm/vmalloc.c                            |  20 +-
+ scripts/Makefile.kmsan                  |   1 +
+ scripts/Makefile.lib                    |   9 +
+ security/Kconfig.hardening              |   4 +
+ tools/objtool/check.c                   |  19 +
+ 96 files changed, 4211 insertions(+), 87 deletions(-)
+ create mode 100644 Documentation/dev-tools/kmsan.rst
+ create mode 100644 include/linux/kmsan-checks.h
+ create mode 100644 include/linux/kmsan.h
+ create mode 100644 lib/Kconfig.kmsan
+ create mode 100644 mm/kmsan/Makefile
+ create mode 100644 mm/kmsan/annotations.c
+ create mode 100644 mm/kmsan/core.c
+ create mode 100644 mm/kmsan/hooks.c
+ create mode 100644 mm/kmsan/init.c
+ create mode 100644 mm/kmsan/instrumentation.c
+ create mode 100644 mm/kmsan/kmsan.h
+ create mode 100644 mm/kmsan/kmsan_test.c
+ create mode 100644 mm/kmsan/report.c
+ create mode 100644 mm/kmsan/shadow.c
+ create mode 100644 scripts/Makefile.kmsan
+
+-- 
+2.36.0.rc2.479.g8af0fa9b8e-goog
 
