@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A360BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 20:39:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EE7BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 20:39:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355091AbiDZUmL (ORCPT
+        id S1355096AbiDZUmO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 16:42:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38890 "EHLO
+        Tue, 26 Apr 2022 16:42:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355071AbiDZUmE (ORCPT
+        with ESMTP id S1355076AbiDZUmF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 16:42:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF30C7A9B5
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 13:38:54 -0700 (PDT)
+        Tue, 26 Apr 2022 16:42:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46B177C159
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 13:38:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B3DCAB82327
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 20:38:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E726FC385AF;
-        Tue, 26 Apr 2022 20:38:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D7C3C61460
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 20:38:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1F68C385C1;
+        Tue, 26 Apr 2022 20:38:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651005531;
-        bh=HHKeB02EgCdGBUKl47/DzUNIx/8bb6mqSCa+8N53rZQ=;
+        s=k20201202; t=1651005536;
+        bh=EJTLlpRlUCkEhKFM6MungmBPQeFMLPhClXDK/efWxik=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qk42HV6BFB3rbtCUB0gZoaOgEHm2n/PzxA7mbTRQdb+6IXCrRCSIU8hs23vE3A0Eh
-         8hLcjBP4FM4RstTEKPg+EX64pqapRr1LRpRt4x5QrWboE46evIra21scwK3jlSAeeV
-         af6ur9taHVDHjUlk4kol/MjKP01cl8GvcwNmhvQdY1agWS5hYKr/bpWkQLtnpxNem2
-         D81bb7JC8sc+pvEhmX+ocrHA+iBIODe2P/GszZPjc7JMR7mHBfvDJ2LO8INUUGf0gL
-         Uyc3+jl8Fay45kn08CSiuVOenaOszzpi64Ps0x7igL2YY9FAawqc6Nu3qouAm+QV7g
-         vXk1L8doaCtBw==
+        b=GRwDexlP/87pblyKCM6WAN/LSZPIQ/UBs4lFHVo6lWOaQssnenqG8+L1+WbOTXozY
+         3SAtRV65+WGruiUFbP62mEBDmt8wqPgSR2kZIIKZ0kfn/Kx05DdtfdMW9Uem3rDTAu
+         wwZtAbLSrzZhQWYR3u1pFlIwKp7wu56aJlmzWRntcdo3D9x72CsjGYlXDbAwfe1HiS
+         lcOm0YeRxKvsJ9a0VsdyXn9aQpDbru6GZ00oZBP3iDtkn6UNqyF2FCy1l5+xj7PKG/
+         yv5+W0UfjF5halkZSnDOYu1zIQulZCwM9slHj3vT9D64tDiol3YfDrt4j3YVUZgzYM
+         bllirWCyIpNzg==
 From:   sj@kernel.org
 To:     akpm@linux-foundation.org
 Cc:     linux-damon@amazon.com, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org, SeongJae Park <sj@kernel.org>
-Subject: [PATCH 1/4] mm/damon/core: add a function for damon_operations registration checks
-Date:   Tue, 26 Apr 2022 20:38:40 +0000
-Message-Id: <20220426203843.45238-2-sj@kernel.org>
+Subject: [PATCH 4/4] Docs/{ABI,admin-guide}/damon: document 'avail_operations' sysfs file
+Date:   Tue, 26 Apr 2022 20:38:43 +0000
+Message-Id: <20220426203843.45238-5-sj@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220426203843.45238-1-sj@kernel.org>
 References: <20220426203843.45238-1-sj@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -51,87 +52,85 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: SeongJae Park <sj@kernel.org>
 
-To know if a specific 'damon_operations' is registered, users need to
-check the kernel config or try 'damon_select_ops()' with the ops of the
-question, and then see if it successes.  In the latter case, the user
-should also revert the change.  To make the process simple and
-convenient, this commit adds a function for checking if a specific
-'damon_operations' is registered or not.
+This commit updates the DAMON ABI and usage documents for the new sysfs
+file, 'avail_operations'.
 
 Signed-off-by: SeongJae Park <sj@kernel.org>
 ---
- include/linux/damon.h |  1 +
- mm/damon/core.c       | 24 +++++++++++++++++++++---
- 2 files changed, 22 insertions(+), 3 deletions(-)
+ .../ABI/testing/sysfs-kernel-mm-damon          | 10 +++++++++-
+ Documentation/admin-guide/mm/damon/usage.rst   | 18 ++++++++++++------
+ 2 files changed, 21 insertions(+), 7 deletions(-)
 
-diff --git a/include/linux/damon.h b/include/linux/damon.h
-index f23cbfa4248d..73ff0e2d2a4d 100644
---- a/include/linux/damon.h
-+++ b/include/linux/damon.h
-@@ -509,6 +509,7 @@ int damon_set_attrs(struct damon_ctx *ctx, unsigned long sample_int,
- int damon_set_schemes(struct damon_ctx *ctx,
- 			struct damos **schemes, ssize_t nr_schemes);
- int damon_nr_running_ctxs(void);
-+bool damon_is_registered_ops(enum damon_ops_id id);
- int damon_register_ops(struct damon_operations *ops);
- int damon_select_ops(struct damon_ctx *ctx, enum damon_ops_id id);
+diff --git a/Documentation/ABI/testing/sysfs-kernel-mm-damon b/Documentation/ABI/testing/sysfs-kernel-mm-damon
+index 9e282065cbcf..d724b8a12228 100644
+--- a/Documentation/ABI/testing/sysfs-kernel-mm-damon
++++ b/Documentation/ABI/testing/sysfs-kernel-mm-damon
+@@ -40,6 +40,12 @@ Description:	Writing a number 'N' to this file creates the number of
+ 		directories for controlling each DAMON context named '0' to
+ 		'N-1' under the contexts/ directory.
  
-diff --git a/mm/damon/core.c b/mm/damon/core.c
-index ca6124eb6516..5c1331f93c2e 100644
---- a/mm/damon/core.c
-+++ b/mm/damon/core.c
-@@ -30,7 +30,7 @@ static DEFINE_MUTEX(damon_ops_lock);
- static struct damon_operations damon_registered_ops[NR_DAMON_OPS];
- 
- /* Should be called under damon_ops_lock with id smaller than NR_DAMON_OPS */
--static bool damon_registered_ops_id(enum damon_ops_id id)
-+static bool __damon_is_registered_ops(enum damon_ops_id id)
- {
- 	struct damon_operations empty_ops = {};
- 
-@@ -39,6 +39,24 @@ static bool damon_registered_ops_id(enum damon_ops_id id)
- 	return true;
- }
- 
-+/**
-+ * damon_is_registered_ops() - Check if a given damon_operations is registered.
-+ * @id:	Id of the damon_operations to check if registered.
-+ *
-+ * Return: true if the ops is set, false otherwise.
-+ */
-+bool damon_is_registered_ops(enum damon_ops_id id)
-+{
-+	bool registered;
++What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/avail_operations
++Date:		Apr 2022
++Contact:	SeongJae Park <sj@kernel.org>
++Description:	Reading this file returns the available monitoring operations
++		sets on the currently running kernel.
 +
-+	if (id >= NR_DAMON_OPS)
-+		return false;
-+	mutex_lock(&damon_ops_lock);
-+	registered = __damon_is_registered_ops(id);
-+	mutex_unlock(&damon_ops_lock);
-+	return registered;
-+}
-+
- /**
-  * damon_register_ops() - Register a monitoring operations set to DAMON.
-  * @ops:	monitoring operations set to register.
-@@ -56,7 +74,7 @@ int damon_register_ops(struct damon_operations *ops)
- 		return -EINVAL;
- 	mutex_lock(&damon_ops_lock);
- 	/* Fail for already registered ops */
--	if (damon_registered_ops_id(ops->id)) {
-+	if (__damon_is_registered_ops(ops->id)) {
- 		err = -EINVAL;
- 		goto out;
- 	}
-@@ -84,7 +102,7 @@ int damon_select_ops(struct damon_ctx *ctx, enum damon_ops_id id)
- 		return -EINVAL;
+ What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/operations
+ Date:		Mar 2022
+ Contact:	SeongJae Park <sj@kernel.org>
+@@ -47,7 +53,9 @@ Description:	Writing a keyword for a monitoring operations set ('vaddr' for
+ 		virtual address spaces monitoring, and 'paddr' for the physical
+ 		address space monitoring) to this file makes the context to use
+ 		the operations set.  Reading the file returns the keyword for
+-		the operations set the context is set to use.
++		the operations set the context is set to use.  Note that only
++		the operations sets that listed in 'avail_operations' file are
++		valid inputs.
  
- 	mutex_lock(&damon_ops_lock);
--	if (!damon_registered_ops_id(id))
-+	if (!__damon_is_registered_ops(id))
- 		err = -EINVAL;
- 	else
- 		ctx->ops = damon_registered_ops[id];
+ What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/monitoring_attrs/intervals/sample_us
+ Date:		Mar 2022
+diff --git a/Documentation/admin-guide/mm/damon/usage.rst b/Documentation/admin-guide/mm/damon/usage.rst
+index 592ea9a50881..af6ffaea567b 100644
+--- a/Documentation/admin-guide/mm/damon/usage.rst
++++ b/Documentation/admin-guide/mm/damon/usage.rst
+@@ -68,7 +68,7 @@ comma (","). ::
+     │ kdamonds/nr_kdamonds
+     │ │ 0/state,pid
+     │ │ │ contexts/nr_contexts
+-    │ │ │ │ 0/operations
++    │ │ │ │ 0/avail_operations,operations
+     │ │ │ │ │ monitoring_attrs/
+     │ │ │ │ │ │ intervals/sample_us,aggr_us,update_us
+     │ │ │ │ │ │ nr_regions/min,max
+@@ -143,17 +143,23 @@ be written to the file.
+ contexts/<N>/
+ -------------
+ 
+-In each context directory, one file (``operations``) and three directories
+-(``monitoring_attrs``, ``targets``, and ``schemes``) exist.
++In each context directory, two files (``avail_operations`` and ``operations``)
++and three directories (``monitoring_attrs``, ``targets``, and ``schemes``)
++exist.
+ 
+ DAMON supports multiple types of monitoring operations, including those for
+-virtual address space and the physical address space.  You can set and get what
+-type of monitoring operations DAMON will use for the context by writing one of
+-below keywords to, and reading from the file.
++virtual address space and the physical address space.  You can get the list of
++available monitoring operations set on the currently running kernel by reading
++``avail_operations`` file.  Based on the kernel configuration, the file will
++list some or all of below keywords.
+ 
+  - vaddr: Monitor virtual address spaces of specific processes
+  - paddr: Monitor the physical address space of the system
+ 
++You can set and get what type of monitoring operations DAMON will use for the
++context by writing one of the keywords listed in ``avail_operations`` file and
++reading from the ``operations`` file.
++
+ contexts/<N>/monitoring_attrs/
+ ------------------------------
+ 
 -- 
 2.25.1
 
