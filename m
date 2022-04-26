@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B22DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:28:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9A6BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:28:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231426AbiDZIbo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:31:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36344 "EHLO
+        id S1344934AbiDZIbs (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:31:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239180AbiDZI3Q (ORCPT
+        with ESMTP id S1344969AbiDZI3H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:29:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF28E3AA48;
-        Tue, 26 Apr 2022 01:24:41 -0700 (PDT)
+        Tue, 26 Apr 2022 04:29:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BCDF3A5C6;
+        Tue, 26 Apr 2022 01:24:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 25BDC61776;
-        Tue, 26 Apr 2022 08:24:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1623DC385A0;
-        Tue, 26 Apr 2022 08:24:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C574DB81CF6;
+        Tue, 26 Apr 2022 08:24:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3062FC385A4;
+        Tue, 26 Apr 2022 08:24:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961480;
-        bh=XOebLSvaZWmiWP1AJ5v3UtPKfIYko/HEBYFcseh+p9g=;
+        s=korg; t=1650961477;
+        bh=GYRN8gEHNluHJetTN7qwHBSbp5xnHOcjNQsr6hRA2LE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nzjeMiS4RBdYbyc1jhd/gzntPA60UdxwG3xOf1Hr+TozYHoHvrfh3xta7JZpjOMpb
-         xLTVNTS7AhA7GXsU5e7zNzR2I9oG65GiWUQ9xoXXeVQt7xL3GnyzwHn6nXOuA59j21
-         SC9kmquE2qq6sOFy5ZQypfaFzKkTeiLcXY60QAWA=
+        b=juG99kQaKkVvECZjiFvDTqyxooE8tbLnzIu853S1TRlsDzXtaKEpQJSN3Q6+cH6xm
+         P6XA2AXuBc343QVVFu5mJttjIBFIiG+dTVP27NHSh+caksRxQoXVOjDHy8F4A7FGwI
+         sYDMDYtmyg42aBTDjx50qbC1RaMP7t2ZWQxRyAPg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
-        Madhavan Srinivasan <maddy@linux.vnet.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 24/43] powerpc/perf: Fix power9 event alternatives
-Date:   Tue, 26 Apr 2022 10:21:06 +0200
-Message-Id: <20220426081735.231873391@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 4.14 23/43] dma: at_xdmac: fix a missing check on list iterator
+Date:   Tue, 26 Apr 2022 10:21:05 +0200
+Message-Id: <20220426081735.203132279@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081734.509314186@linuxfoundation.org>
 References: <20220426081734.509314186@linuxfoundation.org>
@@ -51,90 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-[ Upstream commit 0dcad700bb2776e3886fe0a645a4bf13b1e747cd ]
+commit 206680c4e46b62fd8909385e0874a36952595b85 upstream.
 
-When scheduling a group of events, there are constraint checks done to
-make sure all events can go in a group. Example, one of the criteria is
-that events in a group cannot use the same PMC. But platform specific
-PMU supports alternative event for some of the event codes. During
-perf_event_open(), if any event group doesn't match constraint check
-criteria, further lookup is done to find alternative event.
+The bug is here:
+	__func__, desc, &desc->tx_dma_desc.phys, ret, cookie, residue);
 
-By current design, the array of alternatives events in PMU code is
-expected to be sorted by column 0. This is because in
-find_alternative() the return criteria is based on event code
-comparison. ie. "event < ev_alt[i][0])". This optimisation is there
-since find_alternative() can be called multiple times. In power9 PMU
-code, the alternative event array is not sorted properly and hence there
-is breakage in finding alternative events.
+The list iterator 'desc' will point to a bogus position containing
+HEAD if the list is empty or no element is found. To avoid dev_dbg()
+prints a invalid address, use a new variable 'iter' as the list
+iterator, while use the origin variable 'desc' as a dedicated
+pointer to point to the found element.
 
-To work with existing logic, fix the alternative event array to be
-sorted by column 0 for power9-pmu.c
-
-Results:
-
-With alternative events, multiplexing can be avoided. That is, for
-example, in power9 PM_LD_MISS_L1 (0x3e054) has alternative event,
-PM_LD_MISS_L1_ALT (0x400f0). This is an identical event which can be
-programmed in a different PMC.
-
-Before:
-
- # perf stat -e r3e054,r300fc
-
- Performance counter stats for 'system wide':
-
-           1057860      r3e054              (50.21%)
-               379      r300fc              (49.79%)
-
-       0.944329741 seconds time elapsed
-
-Since both the events are using PMC3 in this case, they are
-multiplexed here.
-
-After:
-
- # perf stat -e r3e054,r300fc
-
- Performance counter stats for 'system wide':
-
-           1006948      r3e054
-               182      r300fc
-
-Fixes: 91e0bd1e6251 ("powerpc/perf: Add PM_LD_MISS_L1 and PM_BR_2PATH to power9 event list")
-Signed-off-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
-Reviewed-by: Madhavan Srinivasan <maddy@linux.vnet.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220419114828.89843-1-atrajeev@linux.vnet.ibm.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Fixes: 82e2424635f4c ("dmaengine: xdmac: fix print warning on dma_addr_t variable")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Link: https://lore.kernel.org/r/20220327061154.4867-1-xiam0nd.tong@gmail.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/perf/power9-pmu.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/dma/at_xdmac.c |   12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/arch/powerpc/perf/power9-pmu.c b/arch/powerpc/perf/power9-pmu.c
-index efb19b089023..75d3a10e20fe 100644
---- a/arch/powerpc/perf/power9-pmu.c
-+++ b/arch/powerpc/perf/power9-pmu.c
-@@ -107,11 +107,11 @@ extern struct attribute_group isa207_pmu_format_group;
+--- a/drivers/dma/at_xdmac.c
++++ b/drivers/dma/at_xdmac.c
+@@ -1390,7 +1390,7 @@ at_xdmac_tx_status(struct dma_chan *chan
+ {
+ 	struct at_xdmac_chan	*atchan = to_at_xdmac_chan(chan);
+ 	struct at_xdmac		*atxdmac = to_at_xdmac(atchan->chan.device);
+-	struct at_xdmac_desc	*desc, *_desc;
++	struct at_xdmac_desc	*desc, *_desc, *iter;
+ 	struct list_head	*descs_list;
+ 	enum dma_status		ret;
+ 	int			residue, retry;
+@@ -1505,11 +1505,13 @@ at_xdmac_tx_status(struct dma_chan *chan
+ 	 * microblock.
+ 	 */
+ 	descs_list = &desc->descs_list;
+-	list_for_each_entry_safe(desc, _desc, descs_list, desc_node) {
+-		dwidth = at_xdmac_get_dwidth(desc->lld.mbr_cfg);
+-		residue -= (desc->lld.mbr_ubc & 0xffffff) << dwidth;
+-		if ((desc->lld.mbr_nda & 0xfffffffc) == cur_nda)
++	list_for_each_entry_safe(iter, _desc, descs_list, desc_node) {
++		dwidth = at_xdmac_get_dwidth(iter->lld.mbr_cfg);
++		residue -= (iter->lld.mbr_ubc & 0xffffff) << dwidth;
++		if ((iter->lld.mbr_nda & 0xfffffffc) == cur_nda) {
++			desc = iter;
+ 			break;
++		}
+ 	}
+ 	residue += cur_ubc << dwidth;
  
- /* Table of alternatives, sorted by column 0 */
- static const unsigned int power9_event_alternatives[][MAX_ALT] = {
--	{ PM_INST_DISP,			PM_INST_DISP_ALT },
--	{ PM_RUN_CYC_ALT,		PM_RUN_CYC },
--	{ PM_RUN_INST_CMPL_ALT,		PM_RUN_INST_CMPL },
--	{ PM_LD_MISS_L1,		PM_LD_MISS_L1_ALT },
- 	{ PM_BR_2PATH,			PM_BR_2PATH_ALT },
-+	{ PM_INST_DISP,			PM_INST_DISP_ALT },
-+	{ PM_RUN_CYC_ALT,               PM_RUN_CYC },
-+	{ PM_LD_MISS_L1,                PM_LD_MISS_L1_ALT },
-+	{ PM_RUN_INST_CMPL_ALT,         PM_RUN_INST_CMPL },
- };
- 
- static int power9_get_alternatives(u64 event, unsigned int flags, u64 alt[])
--- 
-2.35.1
-
 
 
