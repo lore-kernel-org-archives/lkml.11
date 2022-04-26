@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C302C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:55:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B24EBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:58:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244194AbiDZI6h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:58:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60668 "EHLO
+        id S1345942AbiDZI6x (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:58:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346633AbiDZIpP (ORCPT
+        with ESMTP id S1346674AbiDZIpR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:45:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60C38C614F;
-        Tue, 26 Apr 2022 01:35:13 -0700 (PDT)
+        Tue, 26 Apr 2022 04:45:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65A1CA18D;
+        Tue, 26 Apr 2022 01:35:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B6B4DB81CF9;
-        Tue, 26 Apr 2022 08:35:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2339C385B0;
-        Tue, 26 Apr 2022 08:35:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 388F861899;
+        Tue, 26 Apr 2022 08:35:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48AD5C385A4;
+        Tue, 26 Apr 2022 08:35:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962110;
-        bh=prg0ccc8WbVoA8h1qxxeQBwEqiYeIiTWEWcYDLRAoTY=;
+        s=korg; t=1650962118;
+        bh=l81742xI3Ylbe0ksZLNhZOvPHz47hhqQju7fLSizQAU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uPp6FGICWaEjfxhOi/GULFYHYLw7Kz4CfAltAYHm8WwR+uCqPGboPLKvEb+ZRv4lO
-         C9+rVOyPsDGSptqYS1tofQ8XiKKBELET3pqpzwmTGsvwimiMP5fZloNz/XrF+o6+JO
-         OLrjquQiuTJCYDcodF7DufWHvNb24YBgtw5PwTzI=
+        b=PI7ohQxsEuNsoD38030JiAzgOtMMqh5zWJ9axWO0ghJawdsrtDPJ5KhVG7cjcxC9w
+         3rRRAXxHhnmqfAUkWcVU4uUrI4qoAA7LtRzC3S4IvCOCWaz8/dCHyOleBmjdmocppg
+         WOYl0WMJEbJAAn+yBlWbVTlTlpCa2qn3rv9hMybA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Darrick J. Wong" <djwong@kernel.org>,
-        Theodore Tso <tytso@mit.edu>, stable@kernel.org
-Subject: [PATCH 5.10 74/86] ext4: fix fallocate to use file_modified to update permissions consistently
-Date:   Tue, 26 Apr 2022 10:21:42 +0200
-Message-Id: <20220426081743.345737451@linuxfoundation.org>
+        stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
+        stable@kernel.org
+Subject: [PATCH 5.10 76/86] ext4: fix use-after-free in ext4_search_dir
+Date:   Tue, 26 Apr 2022 10:21:44 +0200
+Message-Id: <20220426081743.403331226@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
 References: <20220426081741.202366502@linuxfoundation.org>
@@ -48,170 +50,125 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Darrick J. Wong <djwong@kernel.org>
+From: Ye Bin <yebin10@huawei.com>
 
-commit ad5cd4f4ee4d5fcdb1bfb7a0c073072961e70783 upstream.
+commit c186f0887fe7061a35cebef024550ec33ef8fbd8 upstream.
 
-Since the initial introduction of (posix) fallocate back at the turn of
-the century, it has been possible to use this syscall to change the
-user-visible contents of files.  This can happen by extending the file
-size during a preallocation, or through any of the newer modes (punch,
-zero, collapse, insert range).  Because the call can be used to change
-file contents, we should treat it like we do any other modification to a
-file -- update the mtime, and drop set[ug]id privileges/capabilities.
+We got issue as follows:
+EXT4-fs (loop0): mounted filesystem without journal. Opts: ,errors=continue
+==================================================================
+BUG: KASAN: use-after-free in ext4_search_dir fs/ext4/namei.c:1394 [inline]
+BUG: KASAN: use-after-free in search_dirblock fs/ext4/namei.c:1199 [inline]
+BUG: KASAN: use-after-free in __ext4_find_entry+0xdca/0x1210 fs/ext4/namei.c:1553
+Read of size 1 at addr ffff8881317c3005 by task syz-executor117/2331
 
-The VFS function file_modified() does all this for us if pass it a
-locked inode, so let's make fallocate drop permissions correctly.
+CPU: 1 PID: 2331 Comm: syz-executor117 Not tainted 5.10.0+ #1
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+Call Trace:
+ __dump_stack lib/dump_stack.c:83 [inline]
+ dump_stack+0x144/0x187 lib/dump_stack.c:124
+ print_address_description+0x7d/0x630 mm/kasan/report.c:387
+ __kasan_report+0x132/0x190 mm/kasan/report.c:547
+ kasan_report+0x47/0x60 mm/kasan/report.c:564
+ ext4_search_dir fs/ext4/namei.c:1394 [inline]
+ search_dirblock fs/ext4/namei.c:1199 [inline]
+ __ext4_find_entry+0xdca/0x1210 fs/ext4/namei.c:1553
+ ext4_lookup_entry fs/ext4/namei.c:1622 [inline]
+ ext4_lookup+0xb8/0x3a0 fs/ext4/namei.c:1690
+ __lookup_hash+0xc5/0x190 fs/namei.c:1451
+ do_rmdir+0x19e/0x310 fs/namei.c:3760
+ do_syscall_64+0x33/0x40 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x445e59
+Code: 4d c7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 1b c7 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fff2277fac8 EFLAGS: 00000246 ORIG_RAX: 0000000000000054
+RAX: ffffffffffffffda RBX: 0000000000400280 RCX: 0000000000445e59
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 00000000200000c0
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000002
+R10: 00007fff2277f990 R11: 0000000000000246 R12: 0000000000000000
+R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
 
-Signed-off-by: Darrick J. Wong <djwong@kernel.org>
-Link: https://lore.kernel.org/r/20220308185043.GA117678@magnolia
+The buggy address belongs to the page:
+page:0000000048cd3304 refcount:0 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x1317c3
+flags: 0x200000000000000()
+raw: 0200000000000000 ffffea0004526588 ffffea0004528088 0000000000000000
+raw: 0000000000000001 0000000000000000 00000000ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff8881317c2f00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff8881317c2f80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>ffff8881317c3000: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+                   ^
+ ffff8881317c3080: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff8881317c3100: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+==================================================================
+
+ext4_search_dir:
+  ...
+  de = (struct ext4_dir_entry_2 *)search_buf;
+  dlimit = search_buf + buf_size;
+  while ((char *) de < dlimit) {
+  ...
+    if ((char *) de + de->name_len <= dlimit &&
+	 ext4_match(dir, fname, de)) {
+	    ...
+    }
+  ...
+    de_len = ext4_rec_len_from_disk(de->rec_len, dir->i_sb->s_blocksize);
+    if (de_len <= 0)
+      return -1;
+    offset += de_len;
+    de = (struct ext4_dir_entry_2 *) ((char *) de + de_len);
+  }
+
+Assume:
+de=0xffff8881317c2fff
+dlimit=0x0xffff8881317c3000
+
+If read 'de->name_len' which address is 0xffff8881317c3005, obviously is
+out of range, then will trigger use-after-free.
+To solve this issue, 'dlimit' must reserve 8 bytes, as we will read
+'de->name_len' to judge if '(char *) de + de->name_len' out of range.
+
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220324064816.1209985-1-yebin10@huawei.com
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Cc: stable@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/ext4.h    |    2 +-
- fs/ext4/extents.c |   32 +++++++++++++++++++++++++-------
- fs/ext4/inode.c   |    7 ++++++-
- 3 files changed, 32 insertions(+), 9 deletions(-)
+ fs/ext4/ext4.h  |    4 ++++
+ fs/ext4/namei.c |    4 ++--
+ 2 files changed, 6 insertions(+), 2 deletions(-)
 
 --- a/fs/ext4/ext4.h
 +++ b/fs/ext4/ext4.h
-@@ -2870,7 +2870,7 @@ extern int ext4_inode_attach_jinode(stru
- extern int ext4_can_truncate(struct inode *inode);
- extern int ext4_truncate(struct inode *);
- extern int ext4_break_layouts(struct inode *);
--extern int ext4_punch_hole(struct inode *inode, loff_t offset, loff_t length);
-+extern int ext4_punch_hole(struct file *file, loff_t offset, loff_t length);
- extern void ext4_set_inode_flags(struct inode *, bool init);
- extern int ext4_alloc_da_blocks(struct inode *inode);
- extern void ext4_set_aops(struct inode *inode);
---- a/fs/ext4/extents.c
-+++ b/fs/ext4/extents.c
-@@ -4498,9 +4498,9 @@ retry:
- 	return ret > 0 ? ret2 : ret;
- }
- 
--static int ext4_collapse_range(struct inode *inode, loff_t offset, loff_t len);
-+static int ext4_collapse_range(struct file *file, loff_t offset, loff_t len);
- 
--static int ext4_insert_range(struct inode *inode, loff_t offset, loff_t len);
-+static int ext4_insert_range(struct file *file, loff_t offset, loff_t len);
- 
- static long ext4_zero_range(struct file *file, loff_t offset,
- 			    loff_t len, int mode)
-@@ -4571,6 +4571,10 @@ static long ext4_zero_range(struct file
- 	/* Wait all existing dio workers, newcomers will block on i_mutex */
- 	inode_dio_wait(inode);
- 
-+	ret = file_modified(file);
-+	if (ret)
-+		goto out_mutex;
-+
- 	/* Preallocate the range including the unaligned edges */
- 	if (partial_begin || partial_end) {
- 		ret = ext4_alloc_file_blocks(file,
-@@ -4689,7 +4693,7 @@ long ext4_fallocate(struct file *file, i
- 	ext4_fc_start_update(inode);
- 
- 	if (mode & FALLOC_FL_PUNCH_HOLE) {
--		ret = ext4_punch_hole(inode, offset, len);
-+		ret = ext4_punch_hole(file, offset, len);
- 		goto exit;
- 	}
- 
-@@ -4698,12 +4702,12 @@ long ext4_fallocate(struct file *file, i
- 		goto exit;
- 
- 	if (mode & FALLOC_FL_COLLAPSE_RANGE) {
--		ret = ext4_collapse_range(inode, offset, len);
-+		ret = ext4_collapse_range(file, offset, len);
- 		goto exit;
- 	}
- 
- 	if (mode & FALLOC_FL_INSERT_RANGE) {
--		ret = ext4_insert_range(inode, offset, len);
-+		ret = ext4_insert_range(file, offset, len);
- 		goto exit;
- 	}
- 
-@@ -4739,6 +4743,10 @@ long ext4_fallocate(struct file *file, i
- 	/* Wait all existing dio workers, newcomers will block on i_mutex */
- 	inode_dio_wait(inode);
- 
-+	ret = file_modified(file);
-+	if (ret)
-+		goto out;
-+
- 	ret = ext4_alloc_file_blocks(file, lblk, max_blocks, new_size, flags);
- 	if (ret)
- 		goto out;
-@@ -5241,8 +5249,9 @@ out:
-  * This implements the fallocate's collapse range functionality for ext4
-  * Returns: 0 and non-zero on error.
+@@ -2159,6 +2159,10 @@ static inline int ext4_forced_shutdown(s
+  * Structure of a directory entry
   */
--static int ext4_collapse_range(struct inode *inode, loff_t offset, loff_t len)
-+static int ext4_collapse_range(struct file *file, loff_t offset, loff_t len)
- {
-+	struct inode *inode = file_inode(file);
- 	struct super_block *sb = inode->i_sb;
- 	ext4_lblk_t punch_start, punch_stop;
- 	handle_t *handle;
-@@ -5293,6 +5302,10 @@ static int ext4_collapse_range(struct in
- 	/* Wait for existing dio to complete */
- 	inode_dio_wait(inode);
+ #define EXT4_NAME_LEN 255
++/*
++ * Base length of the ext4 directory entry excluding the name length
++ */
++#define EXT4_BASE_DIR_LEN (sizeof(struct ext4_dir_entry_2) - EXT4_NAME_LEN)
  
-+	ret = file_modified(file);
-+	if (ret)
-+		goto out_mutex;
-+
- 	/*
- 	 * Prevent page faults from reinstantiating pages we have released from
- 	 * page cache.
-@@ -5387,8 +5400,9 @@ out_mutex:
-  * by len bytes.
-  * Returns 0 on success, error otherwise.
-  */
--static int ext4_insert_range(struct inode *inode, loff_t offset, loff_t len)
-+static int ext4_insert_range(struct file *file, loff_t offset, loff_t len)
- {
-+	struct inode *inode = file_inode(file);
- 	struct super_block *sb = inode->i_sb;
- 	handle_t *handle;
- 	struct ext4_ext_path *path;
-@@ -5444,6 +5458,10 @@ static int ext4_insert_range(struct inod
- 	/* Wait for existing dio to complete */
- 	inode_dio_wait(inode);
+ struct ext4_dir_entry {
+ 	__le32	inode;			/* Inode number */
+--- a/fs/ext4/namei.c
++++ b/fs/ext4/namei.c
+@@ -1388,10 +1388,10 @@ int ext4_search_dir(struct buffer_head *
  
-+	ret = file_modified(file);
-+	if (ret)
-+		goto out_mutex;
-+
- 	/*
- 	 * Prevent page faults from reinstantiating pages we have released from
- 	 * page cache.
---- a/fs/ext4/inode.c
-+++ b/fs/ext4/inode.c
-@@ -4028,8 +4028,9 @@ int ext4_break_layouts(struct inode *ino
-  * Returns: 0 on success or negative on failure
-  */
- 
--int ext4_punch_hole(struct inode *inode, loff_t offset, loff_t length)
-+int ext4_punch_hole(struct file *file, loff_t offset, loff_t length)
- {
-+	struct inode *inode = file_inode(file);
- 	struct super_block *sb = inode->i_sb;
- 	ext4_lblk_t first_block, stop_block;
- 	struct address_space *mapping = inode->i_mapping;
-@@ -4091,6 +4092,10 @@ int ext4_punch_hole(struct inode *inode,
- 	/* Wait all existing dio workers, newcomers will block on i_mutex */
- 	inode_dio_wait(inode);
- 
-+	ret = file_modified(file);
-+	if (ret)
-+		goto out_mutex;
-+
- 	/*
- 	 * Prevent page faults from reinstantiating pages we have released from
- 	 * page cache.
+ 	de = (struct ext4_dir_entry_2 *)search_buf;
+ 	dlimit = search_buf + buf_size;
+-	while ((char *) de < dlimit) {
++	while ((char *) de < dlimit - EXT4_BASE_DIR_LEN) {
+ 		/* this code is executed quadratically often */
+ 		/* do minimal checking `by hand' */
+-		if ((char *) de + de->name_len <= dlimit &&
++		if (de->name + de->name_len <= dlimit &&
+ 		    ext4_match(dir, fname, de)) {
+ 			/* found a match - just to be sure, do
+ 			 * a full check */
 
 
