@@ -2,101 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9E16C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 21:32:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E9D1C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 21:32:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355515AbiDZVfY (ORCPT
+        id S1355517AbiDZVfq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 17:35:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46444 "EHLO
+        Tue, 26 Apr 2022 17:35:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355466AbiDZVfW (ORCPT
+        with ESMTP id S1355527AbiDZVfd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 17:35:22 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD95942A0A
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 14:32:10 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id gh6so14584270ejb.0
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 14:32:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sTyKSDm8OUEDphbP/fy4/ucOerWUVhiZWBgtnRYZdZw=;
-        b=hrSd0P29IeYe6JLT8G7WLSBdSI48pYOP7RhBuJIBtv4ClnQVYjjErhR34j0o200+qB
-         ZmfPY98iMRNovl+NLZxfdhxJ3/MvNXFHB9ii9TPtVwPFc2KOg2+t3+AWecp78bb59SEs
-         k3gJZOBTeyKxuzsujMgaNfukSda0/QDU6ee1ATJySsYy756ykIh1JNgCMhQSoJ7YcWWt
-         HWPhI/N31gng2lgoFCDipErbgkUNhhm/+YP2rVyQEZ2EWRJ4dWojw4VULFeC+PxD9Ea9
-         plVLdr1s5D3D0Lvs+uEbKotSgi+iVq5gk3V/rOO7Ay5N2JH0Bv9lyryuC7Tr0dznWNXf
-         IQOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sTyKSDm8OUEDphbP/fy4/ucOerWUVhiZWBgtnRYZdZw=;
-        b=DxMEJUu3AmmjKXzi6GkewVrtFBGrqJwG5bQGjrksUO0ov/jtzjuwSVjukqDdZ7NmbK
-         kVsrNzKdgblB0eDgTIDG9vptUA8sy9UOkqGd5LOnln7RsZyezDgpBWzPeThIR6G03k+s
-         jqs8WH0/pcZ9RIePJRlHNkwVfHPwiTVcmwAJImOr5UefwVGmrCWjzixA6Xt6cCfayT4J
-         jH0A8PwQ+5cvUwzNy7NjkybPaJ/lDPXBP7FTGma1ooTkY4PmdwVHknwBfhrrp1piynoS
-         vkBxnvL1Q2ZBmj+3o8Cln8cXw5y/eOry/r/WF4yGEsKEadyyNf7Vw3w+ejPiFdAtGd23
-         D7oQ==
-X-Gm-Message-State: AOAM530EGmtWSSsWOrVu2FEGBmnbuwCxdj8LBFQlyXWcWbQRxpQnTuvd
-        wPsjvtP7EEluwi6myM4yhV8cgNXYb8JOdzr/72mdsw==
-X-Google-Smtp-Source: ABdhPJzOjBqpk5z5nirWqeoop1JfQFBvXl7jX0YyAMqDGlb2b78LJN0qWVUBzbGca1ofOWWZotLWJ7fP4Y1aIixJzhE=
-X-Received: by 2002:a17:907:eab:b0:6da:8ec5:d386 with SMTP id
- ho43-20020a1709070eab00b006da8ec5d386mr23479103ejc.668.1651008729111; Tue, 26
- Apr 2022 14:32:09 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220402043530.923747-1-davidgow@google.com> <20220402043530.923747-2-davidgow@google.com>
-In-Reply-To: <20220402043530.923747-2-davidgow@google.com>
-From:   Brendan Higgins <brendanhiggins@google.com>
-Date:   Tue, 26 Apr 2022 17:31:57 -0400
-Message-ID: <CAFd5g46UfmrE-D9PKfGJsgZBnCUi9-Z82tu1=4ZQzCCj0VcQCw@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] kunit: Rework kunit_resource allocation policy
-To:     David Gow <davidgow@google.com>
-Cc:     Daniel Latypov <dlatypov@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
+        Tue, 26 Apr 2022 17:35:33 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E3547541;
+        Tue, 26 Apr 2022 14:32:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1651008719;
+        bh=4y7a+bBwn4/79Epm4BmNa0CGyOh0yDIBQXKqeowWuy0=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=PfoUYFISApB2yTYv8FbqQEKSYpktQUDodGhZIfSK5HFLrVjfOP0wp3nZasFIdikxo
+         HXzDfRSFVf+HdF4OeoewBdWcJFqyILUXao6wLm4/aJoGl5zEvhUQK4WQuOmgK8lrEK
+         ppWURzPaEV9kUP895Lb8dxdYFFXOJE0+WhNvxfEk=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from esprimo-mx.users.agdsn.de ([141.30.226.129]) by mail.gmx.net
+ (mrgmx105 [212.227.17.168]) with ESMTPSA (Nemesis) id
+ 1MrQEx-1oGIye2IER-00oYam; Tue, 26 Apr 2022 23:31:59 +0200
+From:   Armin Wolf <W_Armin@gmx.de>
+To:     pali@kernel.org
+Cc:     jdelvare@suse.com, linux@roeck-us.net, linux-hwmon@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Subject: [PATCH v2 2/3] hwmon: (dell-smm) Cleanup init code
+Date:   Tue, 26 Apr 2022 23:31:53 +0200
+Message-Id: <20220426213154.724708-3-W_Armin@gmx.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220426213154.724708-1-W_Armin@gmx.de>
+References: <20220426213154.724708-1-W_Armin@gmx.de>
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:+JjRYaQ1wf4drNrV3gpAZdx6dXsyvQ7a53cqXy8CHhEYlXiceAX
+ B//clXO+aANIYU5MJ6kArIoGHoMrbzNPxWzwXFDTx4qRtfQaT1/0HDmV7FIMncsJVOSej0y
+ DO9KrY0ulEtKrjYEWgKyUoRnOwloZoqZv8ioL9W2ReTa2gIxxPDc9IVvfSyKGEFIqbwiEyh
+ hMaoXGMZal6CFbz17ewQw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:CZRFBoBFI3E=:FDqNUMi+CQuDZFnvk0l8BA
+ PIAO8d/4+ZHPhoWWe4ZiqAhlxCb1icaOwbPW8cQdQ1A2NJGOFPprAQufg+E6eXBmUTk7e04ze
+ k5Pe1d6enn2w0UUNYy21R1SwwQJGpMp5IPa83plZVDBxyzeo2tkuhioqUAaa78jVA8xbX88h2
+ jUXvH64IBykZ0/91s+3qdw3ZX6nFGBmjq5rjoxgQqwlon27fZpUbiulE42QhE4vVjVXznCesc
+ blAhVYQbxnaAk5FWpedpxdj7RwLT9NARQ6Ij2lrS8tE14qMx5R2oHP87YIhGx/aLzBRA9YwUV
+ nb+entTcscoaK7PKCqE2Bx6XOX8CKoAyTFR7H8hP0x7xnrkXFYiWKHZVHe1qR5zl6hEEc64Ey
+ oirtqnpEoVXZzl6y6JGh9c1F42gGA66B1+LG2ovWdjhGwSzuQ7F15C9+JxjOGfHGoT8GYNEPQ
+ UnjWmJyh2A+dMPs0oHSs2QZ/ktW6rPjxWMTbV3oNx1WaWUb/ioA594l/bnsso3FqUxdK+aYww
+ N2N18fqqSlcHufgKSWTMlULp8EHrAym1xrVSJvpvc7ChFmqt/HuJcjVToPZMLIJxZnmwo/2VE
+ E8WN/BldB6zcmI2hMDELJ0EZotfrqH2FcqdHKjSARVwcKmaA2xrfme1yrLrL/qyE+QetbUzOF
+ VDrUTHzY1FmX9cscnd33Ply6XkHamniHBJnSIK2VQWIaFBJmzJu2K7FXK6jEgIC2wsC4Fp2+D
+ AgdFNcw3z+J9733FnU/bMYZeL0GcoXd++M1CL3f3VA1EzkHJo7lw8uYm/xr8r9GPgq2RPdEJp
+ 9qINGXUWsz3lK2mTJPAfzvDxuj06zGQoEe++OJBLIrft/EZoGO5T68eIhJFiC2uqzqGlimSuE
+ lcodqKeE49+uXgGPrVOb+qvYceS381PIrrkWLC8LbMISTgHrHDLDZToKY4kgK4n+UDbrPuUDg
+ aWYRh4H+XlgZSukuk3JQDbXNIIaXS1KjjYfXuTTFaCHrQHnhwNfOWYrMmrCfo4smsLropPZFT
+ bs7BXr7g9nSU5ybK/lEeWezcK6C/Po32RsTZiuSTMYTPecvW6JSmYp24l39OHMtw5P5+IVxdD
+ KH0gnJl6qrurXE=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 2, 2022 at 12:35 AM 'David Gow' via KUnit Development
-<kunit-dev@googlegroups.com> wrote:
->
-> KUnit's test-managed resources can be created in two ways:
-> - Using the kunit_add_resource() family of functions, which accept a
->   struct kunit_resource pointer, typically allocated statically or on
->   the stack during the test.
-> - Using the kunit_alloc_resource() family of functions, which allocate a
->   struct kunit_resource using kzalloc() behind the scenes.
->
-> Both of these families of functions accept a 'free' function to be
-> called when the resource is finally disposed of.
->
-> At present, KUnit will kfree() the resource if this 'free' function is
-> specified, and will not if it is NULL. However, this can lead
-> kunit_alloc_resource() to leak memory (if no 'free' function is passed
-> in), or kunit_add_resource() to incorrectly kfree() memory which was
-> allocated by some other means (on the stack, as part of a larger
-> allocation, etc), if a 'free' function is provided.
->
-> Instead, always kfree() if the resource was allocated with
-> kunit_alloc_resource(), and never kfree() if it was passed into
-> kunit_add_resource() by the user. (If the user of kunit_add_resource()
-> wishes the resource be kfree()ed, they can call kfree() on the resource
-> from within the 'free' function.
->
-> This is implemented by adding a 'should_free' member to
-> struct kunit_resource and setting it appropriately. To facilitate this,
-> the various resource add/alloc functions have been refactored somewhat,
-> making them all call a __kunit_add_resource() helper after setting the
-> 'should_free' member appropriately. In the process, all other functions
-> have been made static inline functions.
->
-> Signed-off-by: David Gow <davidgow@google.com>
-> Tested-by: Daniel Latypov <dlatypov@google.com>
+The default values for i8k_fan_mult and i8k_fan_max
+should be assigend only if the values specified as
+module params or in DMI are invalid/missing.
 
-Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
+Signed-off-by: Armin Wolf <W_Armin@gmx.de>
+=2D--
+ drivers/hwmon/dell-smm-hwmon.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/hwmon/dell-smm-hwmon.c b/drivers/hwmon/dell-smm-hwmon=
+.c
+index 202ee884de9e..f13902414615 100644
+=2D-- a/drivers/hwmon/dell-smm-hwmon.c
++++ b/drivers/hwmon/dell-smm-hwmon.c
+@@ -1373,8 +1373,6 @@ static int __init dell_smm_probe(struct platform_dev=
+ice *pdev)
+ 		return -ENOMEM;
+
+ 	mutex_init(&data->i8k_mutex);
+-	data->i8k_fan_mult =3D I8K_FAN_MULT;
+-	data->i8k_fan_max =3D I8K_FAN_HIGH;
+ 	platform_set_drvdata(pdev, data);
+
+ 	if (dmi_check_system(i8k_blacklist_fan_support_dmi_table)) {
+@@ -1409,7 +1407,9 @@ static int __init dell_smm_probe(struct platform_dev=
+ice *pdev)
+ 			fan_max =3D conf->fan_max;
+ 	}
+
+-	data->i8k_fan_max =3D fan_max ? : I8K_FAN_HIGH;	/* Must not be 0 */
++	/* All options must not be 0 */
++	data->i8k_fan_mult =3D fan_mult ? : I8K_FAN_MULT;
++	data->i8k_fan_max =3D fan_max ? : I8K_FAN_HIGH;
+ 	data->i8k_pwm_mult =3D DIV_ROUND_UP(255, data->i8k_fan_max);
+
+ 	fan_control =3D dmi_first_match(i8k_whitelist_fan_control);
+@@ -1421,9 +1421,6 @@ static int __init dell_smm_probe(struct platform_dev=
+ice *pdev)
+ 		dev_info(&pdev->dev, "enabling support for setting automatic/manual fan=
+ control\n");
+ 	}
+
+-	if (fan_mult)
+-		data->i8k_fan_mult =3D fan_mult;
+-
+ 	ret =3D dell_smm_init_hwmon(&pdev->dev);
+ 	if (ret)
+ 		return ret;
+=2D-
+2.30.2
+
