@@ -2,42 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24673C3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 640FEC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:37:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348415AbiDZJjp (ORCPT
+        id S1348449AbiDZJjw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:39:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52798 "EHLO
+        Tue, 26 Apr 2022 05:39:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347047AbiDZJJq (ORCPT
+        with ESMTP id S1346055AbiDZJGn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:09:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5B8617D4AC;
-        Tue, 26 Apr 2022 01:49:33 -0700 (PDT)
+        Tue, 26 Apr 2022 05:06:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D9A116FAFF;
+        Tue, 26 Apr 2022 01:48:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B38C61408;
-        Tue, 26 Apr 2022 08:49:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DA17C385A4;
-        Tue, 26 Apr 2022 08:49:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5D8A2B81A2F;
+        Tue, 26 Apr 2022 08:48:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFFAEC385A0;
+        Tue, 26 Apr 2022 08:48:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962970;
-        bh=JW1TDYK1LrQuzyBvKDA2RhxOyDnOpK7xVeQCCKUpyHw=;
+        s=korg; t=1650962882;
+        bh=IDqgRNBwGIvtMsmr6/N2J6hYIoYbX/xHkHR82tNbfo8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZOMzYYHweDOUE5UxAmLzbUNg4mATC/YlbULuqJUHH7hZc7ITpvYfGxsZMg6Jz1I8c
-         OuuPy8ZcI7vqKki12YK0uscdUOYEN30K0T1Ok7r2Uig+2hZNEwt0vwx2l9BH51FYUK
-         hQK88zFD1IzM/VOVHuZ/KcLjqPX29REmgA/fDSN0=
+        b=xdsDPAN3arpduJxkTQQA9t2g+N822NjgwiCjL7ApuBtz9HL4E9TDqUeYPOmAAUG9v
+         YeCdqUlZi6bU9mtCh7Hsq+aFHbWInyh8zeSRVmrPDveWpSBkVg54mxfsgpuBKaelTU
+         /dKjYo0daGnmO8oeB0SMKdBV+lRExIcl6P07u5Yo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
-        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 5.17 142/146] jbd2: fix a potential race while discarding reserved buffers after an abort
-Date:   Tue, 26 Apr 2022 10:22:17 +0200
-Message-Id: <20220426081754.049154511@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Shreeya Patel <shreeya.patel@collabora.com>,
+        =?UTF-8?q?Samuel=20=C4=8Cavoj?= <samuel@cavoj.net>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        lukeluk498@gmail.com, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.17 120/146] gpio: Request interrupts after IRQ is initialized
+Date:   Tue, 26 Apr 2022 10:21:55 +0200
+Message-Id: <20220426081753.429847995@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -49,116 +55,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Bin <yebin10@huawei.com>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-commit 23e3d7f7061f8682c751c46512718f47580ad8f0 upstream.
+commit 06fb4ecfeac7e00d6704fa5ed19299f2fefb3cc9 upstream.
 
-we got issue as follows:
-[   72.796117] EXT4-fs error (device sda): ext4_journal_check_start:83: comm fallocate: Detected aborted journal
-[   72.826847] EXT4-fs (sda): Remounting filesystem read-only
-fallocate: fallocate failed: Read-only file system
-[   74.791830] jbd2_journal_commit_transaction: jh=0xffff9cfefe725d90 bh=0x0000000000000000 end delay
-[   74.793597] ------------[ cut here ]------------
-[   74.794203] kernel BUG at fs/jbd2/transaction.c:2063!
-[   74.794886] invalid opcode: 0000 [#1] PREEMPT SMP PTI
-[   74.795533] CPU: 4 PID: 2260 Comm: jbd2/sda-8 Not tainted 5.17.0-rc8-next-20220315-dirty #150
-[   74.798327] RIP: 0010:__jbd2_journal_unfile_buffer+0x3e/0x60
-[   74.801971] RSP: 0018:ffffa828c24a3cb8 EFLAGS: 00010202
-[   74.802694] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-[   74.803601] RDX: 0000000000000001 RSI: ffff9cfefe725d90 RDI: ffff9cfefe725d90
-[   74.804554] RBP: ffff9cfefe725d90 R08: 0000000000000000 R09: ffffa828c24a3b20
-[   74.805471] R10: 0000000000000001 R11: 0000000000000001 R12: ffff9cfefe725d90
-[   74.806385] R13: ffff9cfefe725d98 R14: 0000000000000000 R15: ffff9cfe833a4d00
-[   74.807301] FS:  0000000000000000(0000) GS:ffff9d01afb00000(0000) knlGS:0000000000000000
-[   74.808338] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   74.809084] CR2: 00007f2b81bf4000 CR3: 0000000100056000 CR4: 00000000000006e0
-[   74.810047] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[   74.810981] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[   74.811897] Call Trace:
-[   74.812241]  <TASK>
-[   74.812566]  __jbd2_journal_refile_buffer+0x12f/0x180
-[   74.813246]  jbd2_journal_refile_buffer+0x4c/0xa0
-[   74.813869]  jbd2_journal_commit_transaction.cold+0xa1/0x148
-[   74.817550]  kjournald2+0xf8/0x3e0
-[   74.819056]  kthread+0x153/0x1c0
-[   74.819963]  ret_from_fork+0x22/0x30
+Commit 5467801f1fcb ("gpio: Restrict usage of GPIO chip irq members
+before initialization") attempted to fix a race condition that lead to a
+NULL pointer, but in the process caused a regression for _AEI/_EVT
+declared GPIOs.
 
-Above issue may happen as follows:
-        write                   truncate                   kjournald2
-generic_perform_write
- ext4_write_begin
-  ext4_walk_page_buffers
-   do_journal_get_write_access ->add BJ_Reserved list
- ext4_journalled_write_end
-  ext4_walk_page_buffers
-   write_end_fn
-    ext4_handle_dirty_metadata
-                ***************JBD2 ABORT**************
-     jbd2_journal_dirty_metadata
- -> return -EROFS, jh in reserved_list
-                                                   jbd2_journal_commit_transaction
-                                                    while (commit_transaction->t_reserved_list)
-                                                      jh = commit_transaction->t_reserved_list;
-                        truncate_pagecache_range
-                         do_invalidatepage
-			  ext4_journalled_invalidatepage
-			   jbd2_journal_invalidatepage
-			    journal_unmap_buffer
-			     __dispose_buffer
-			      __jbd2_journal_unfile_buffer
-			       jbd2_journal_put_journal_head ->put last ref_count
-			        __journal_remove_journal_head
-				 bh->b_private = NULL;
-				 jh->b_bh = NULL;
-				                      jbd2_journal_refile_buffer(journal, jh);
-							bh = jh2bh(jh);
-							->bh is NULL, later will trigger null-ptr-deref
-				 journal_free_journal_head(jh);
+This manifests in messages showing deferred probing while trying to
+allocate IRQs like so:
 
-After commit 96f1e0974575, we no longer hold the j_state_lock while
-iterating over the list of reserved handles in
-jbd2_journal_commit_transaction().  This potentially allows the
-journal_head to be freed by journal_unmap_buffer while the commit
-codepath is also trying to free the BJ_Reserved buffers.  Keeping
-j_state_lock held while trying extends hold time of the lock
-minimally, and solves this issue.
+  amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x0000 to IRQ, err -517
+  amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x002C to IRQ, err -517
+  amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x003D to IRQ, err -517
+  [ .. more of the same .. ]
 
-Fixes: 96f1e0974575("jbd2: avoid long hold times of j_state_lock while committing a transaction")
-Signed-off-by: Ye Bin <yebin10@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220317142137.1821590-1-yebin10@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+The code for walking _AEI doesn't handle deferred probing and so this
+leads to non-functional GPIO interrupts.
+
+Fix this issue by moving the call to `acpi_gpiochip_request_interrupts`
+to occur after gc->irc.initialized is set.
+
+Fixes: 5467801f1fcb ("gpio: Restrict usage of GPIO chip irq members before initialization")
+Link: https://lore.kernel.org/linux-gpio/BL1PR12MB51577A77F000A008AA694675E2EF9@BL1PR12MB5157.namprd12.prod.outlook.com/
+Link: https://bugzilla.suse.com/show_bug.cgi?id=1198697
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215850
+Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1979
+Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1976
+Reported-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Reviewed-by: Shreeya Patel <shreeya.patel@collabora.com>
+Tested-By: Samuel Čavoj <samuel@cavoj.net>
+Tested-By: lukeluk498@gmail.com Link:
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-and-tested-by: Takashi Iwai <tiwai@suse.de>
+Cc: Shreeya Patel <shreeya.patel@collabora.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/jbd2/commit.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/gpio/gpiolib.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/fs/jbd2/commit.c
-+++ b/fs/jbd2/commit.c
-@@ -488,7 +488,6 @@ void jbd2_journal_commit_transaction(jou
- 	jbd2_journal_wait_updates(journal);
+--- a/drivers/gpio/gpiolib.c
++++ b/drivers/gpio/gpiolib.c
+@@ -1601,8 +1601,6 @@ static int gpiochip_add_irqchip(struct g
  
- 	commit_transaction->t_state = T_SWITCH;
--	write_unlock(&journal->j_state_lock);
+ 	gpiochip_set_irq_hooks(gc);
  
- 	J_ASSERT (atomic_read(&commit_transaction->t_outstanding_credits) <=
- 			journal->j_max_transaction_buffers);
-@@ -508,6 +507,8 @@ void jbd2_journal_commit_transaction(jou
- 	 * has reserved.  This is consistent with the existing behaviour
- 	 * that multiple jbd2_journal_get_write_access() calls to the same
- 	 * buffer are perfectly permissible.
-+	 * We use journal->j_state_lock here to serialize processing of
-+	 * t_reserved_list with eviction of buffers from journal_unmap_buffer().
- 	 */
- 	while (commit_transaction->t_reserved_list) {
- 		jh = commit_transaction->t_reserved_list;
-@@ -527,6 +528,7 @@ void jbd2_journal_commit_transaction(jou
- 		jbd2_journal_refile_buffer(journal, jh);
- 	}
- 
-+	write_unlock(&journal->j_state_lock);
+-	acpi_gpiochip_request_interrupts(gc);
+-
  	/*
- 	 * Now try to drop any written-back buffers from the journal's
- 	 * checkpoint lists.  We do this *before* commit because it potentially
+ 	 * Using barrier() here to prevent compiler from reordering
+ 	 * gc->irq.initialized before initialization of above
+@@ -1612,6 +1610,8 @@ static int gpiochip_add_irqchip(struct g
+ 
+ 	gc->irq.initialized = true;
+ 
++	acpi_gpiochip_request_interrupts(gc);
++
+ 	return 0;
+ }
+ 
 
 
