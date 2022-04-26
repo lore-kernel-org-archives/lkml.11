@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D4C4C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 771AEC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:58:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346434AbiDZJAh (ORCPT
+        id S1346549AbiDZJAs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:00:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56742 "EHLO
+        Tue, 26 Apr 2022 05:00:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346891AbiDZIp2 (ORCPT
+        with ESMTP id S1346970AbiDZIpl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:45:28 -0400
+        Tue, 26 Apr 2022 04:45:41 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90F3965DC;
-        Tue, 26 Apr 2022 01:36:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 338A03B547;
+        Tue, 26 Apr 2022 01:37:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D440617E7;
-        Tue, 26 Apr 2022 08:36:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 236A3C385A0;
-        Tue, 26 Apr 2022 08:36:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 486556185A;
+        Tue, 26 Apr 2022 08:37:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A74CC385A0;
+        Tue, 26 Apr 2022 08:37:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962177;
-        bh=F9IihVuh+cy8kK9Rt7DkAAR8plTl6SHz8WpoM3/HKzM=;
+        s=korg; t=1650962221;
+        bh=Fu+nhyd4Ftx9wFwzYrhYVHcQbXFxR67KTnPhaztFH/o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TCtTMfd8qH6Mry8nL+vY/wtzFxiPsiHk3BdqPgBZ8esHQRFJlMzCDIKeOMENTydZv
-         12ZQCNsyqSsc6WTjSHf3wSDOP1Yg5h5zaiiPAbyeXE1cJFHF+pWSWzQgUA55NCnN4A
-         OPf/ZrT/jCfH14NChINhb3Jb8o0H7/yMyNxhKTk4=
+        b=ioOlcu4Yon0HLvaqfsX1toHtpwWb/RQrqy7tQlZxMfR11kPNlvZSrAjBBv8Jj8mN6
+         BQmvtEVpWh06MmOplCeCto83fh8BYWkW9tEJ1ixmLPCN6badU2ZRIatAJpvYEBFNuB
+         K86FcLKdWGlK9BUSMCFsOdwXCm7QQ9Nk0sUEqEqc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+c6fd14145e2f62ca0784@syzkaller.appspotmail.com,
-        Bob Peterson <rpeterso@redhat.com>,
-        Andreas Gruenbacher <agruenba@redhat.com>
-Subject: [PATCH 5.15 012/124] gfs2: assign rgrp glock before compute_bitstructs
-Date:   Tue, 26 Apr 2022 10:20:13 +0200
-Message-Id: <20220426081747.648707539@linuxfoundation.org>
+        stable@vger.kernel.org, Herve Codina <herve.codina@bootlin.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 025/124] dmaengine: dw-edma: Fix unaligned 64bit access
+Date:   Tue, 26 Apr 2022 10:20:26 +0200
+Message-Id: <20220426081748.020932246@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -51,62 +49,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bob Peterson <rpeterso@redhat.com>
+From: Herve Codina <herve.codina@bootlin.com>
 
-commit 428f651cb80b227af47fc302e4931791f2fb4741 upstream.
+[ Upstream commit 8fc5133d6d4da65cad6b73152fc714ad3d7f91c1 ]
 
-Before this patch, function read_rindex_entry called compute_bitstructs
-before it allocated a glock for the rgrp. But if compute_bitstructs found
-a problem with the rgrp, it called gfs2_consist_rgrpd, and that called
-gfs2_dump_glock for rgd->rd_gl which had not yet been assigned.
+On some arch (ie aarch64 iMX8MM) unaligned PCIe accesses are
+not allowed and lead to a kernel Oops.
+  [ 1911.668835] Unable to handle kernel paging request at virtual address ffff80001bc00a8c
+  [ 1911.668841] Mem abort info:
+  [ 1911.668844]   ESR = 0x96000061
+  [ 1911.668847]   EC = 0x25: DABT (current EL), IL = 32 bits
+  [ 1911.668850]   SET = 0, FnV = 0
+  [ 1911.668852]   EA = 0, S1PTW = 0
+  [ 1911.668853] Data abort info:
+  [ 1911.668855]   ISV = 0, ISS = 0x00000061
+  [ 1911.668857]   CM = 0, WnR = 1
+  [ 1911.668861] swapper pgtable: 4k pages, 48-bit VAs, pgdp=0000000040ff4000
+  [ 1911.668864] [ffff80001bc00a8c] pgd=00000000bffff003, pud=00000000bfffe003, pmd=0068000018400705
+  [ 1911.668872] Internal error: Oops: 96000061 [#1] PREEMPT SMP
+  ...
 
-read_rindex_entry
-   compute_bitstructs
-      gfs2_consist_rgrpd
-         gfs2_dump_glock <---------rgd->rd_gl was not set.
+The llp register present in the channel group registers is not
+aligned on 64bit.
 
-This patch changes read_rindex_entry so it assigns an rgrp glock before
-calling compute_bitstructs so gfs2_dump_glock does not reference an
-unassigned pointer. If an error is discovered, the glock must also be
-put, so a new goto and label were added.
+Fix unaligned 64bit access using two 32bit accesses
 
-Reported-by: syzbot+c6fd14145e2f62ca0784@syzkaller.appspotmail.com
-Signed-off-by: Bob Peterson <rpeterso@redhat.com>
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 04e0a39fc10f ("dmaengine: dw-edma: Add writeq() and readq() for 64 bits architectures")
+Signed-off-by: Herve Codina <herve.codina@bootlin.com>
+Link: https://lore.kernel.org/r/20220225120252.309404-1-herve.codina@bootlin.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/gfs2/rgrp.c |    9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/dma/dw-edma/dw-edma-v0-core.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/fs/gfs2/rgrp.c
-+++ b/fs/gfs2/rgrp.c
-@@ -923,15 +923,15 @@ static int read_rindex_entry(struct gfs2
- 	spin_lock_init(&rgd->rd_rsspin);
- 	mutex_init(&rgd->rd_mutex);
- 
--	error = compute_bitstructs(rgd);
--	if (error)
--		goto fail;
--
- 	error = gfs2_glock_get(sdp, rgd->rd_addr,
- 			       &gfs2_rgrp_glops, CREATE, &rgd->rd_gl);
- 	if (error)
- 		goto fail;
- 
-+	error = compute_bitstructs(rgd);
-+	if (error)
-+		goto fail_glock;
-+
- 	rgd->rd_rgl = (struct gfs2_rgrp_lvb *)rgd->rd_gl->gl_lksb.sb_lvbptr;
- 	rgd->rd_flags &= ~(GFS2_RDF_UPTODATE | GFS2_RDF_PREFERRED);
- 	if (rgd->rd_data > sdp->sd_max_rg_data)
-@@ -945,6 +945,7 @@ static int read_rindex_entry(struct gfs2
- 	}
- 
- 	error = 0; /* someone else read in the rgrp; free it and ignore it */
-+fail_glock:
- 	gfs2_glock_put(rgd->rd_gl);
- 
- fail:
+diff --git a/drivers/dma/dw-edma/dw-edma-v0-core.c b/drivers/dma/dw-edma/dw-edma-v0-core.c
+index 329fc2e57b70..b5b8f8181e77 100644
+--- a/drivers/dma/dw-edma/dw-edma-v0-core.c
++++ b/drivers/dma/dw-edma/dw-edma-v0-core.c
+@@ -415,8 +415,11 @@ void dw_edma_v0_core_start(struct dw_edma_chunk *chunk, bool first)
+ 			  (DW_EDMA_V0_CCS | DW_EDMA_V0_LLE));
+ 		/* Linked list */
+ 		#ifdef CONFIG_64BIT
+-			SET_CH_64(dw, chan->dir, chan->id, llp.reg,
+-				  chunk->ll_region.paddr);
++			/* llp is not aligned on 64bit -> keep 32bit accesses */
++			SET_CH_32(dw, chan->dir, chan->id, llp.lsb,
++				  lower_32_bits(chunk->ll_region.paddr));
++			SET_CH_32(dw, chan->dir, chan->id, llp.msb,
++				  upper_32_bits(chunk->ll_region.paddr));
+ 		#else /* CONFIG_64BIT */
+ 			SET_CH_32(dw, chan->dir, chan->id, llp.lsb,
+ 				  lower_32_bits(chunk->ll_region.paddr));
+-- 
+2.35.1
+
 
 
