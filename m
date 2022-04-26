@@ -2,70 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD3F1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 14:51:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC7F1C43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 14:53:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351769AbiDZOyS (ORCPT
+        id S1351755AbiDZO5A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 10:54:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41038 "EHLO
+        Tue, 26 Apr 2022 10:57:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243885AbiDZOyR (ORCPT
+        with ESMTP id S1347580AbiDZO45 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 10:54:17 -0400
-Received: from abedmanico.biharhotel.com (abedmanico.biharhotel.com [194.31.98.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C74C33FBF5
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 07:51:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; s=dkim; d=biharhotel.com;
- h=Reply-To:From:To:Subject:Date:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding; i=mar.veg@biharhotel.com;
- bh=1dWi+UzZAOpqN+E1Lcs0ZpdTUIU=;
- b=fJGj3cO/rFAXwXDl9kkSXbdRBJvmrb6yKt8wdlaHD24Z1Z2UTVo12AKjKtFh+oFxGRM9nu2g1H2t
-   JhgAnNp4A4FDAmsJLmmEgh673keelkuCv/utQPAO8TmgVGfc8qa8H4veEmC5nq1jsQWWBkgQWuvx
-   clMrSvCI+lgKnNz6Sp7DUP8j/wNLjfmsPNoK+qxivQzQ/B/z8GHBxQ2gVbss5HwTplO00huRZHNY
-   URXlf8xkM5s8XQKXpo7H5NulWoil8O9VvxqSa031FCgtnQPBznZEEDGI3kTVit/HmZuoFQKIVbvb
-   N2YPDm0QxqMmli21zVk89iA9LnY9QO/q/bzFIQ==
-DomainKey-Signature: a=rsa-sha1; c=nofws; q=dns; s=dkim; d=biharhotel.com;
- b=TlRgitjoVez1PxfEMEOWEoSt4nE7oQVDeW1lV5gbWpyInl09qkFyuCnUBX6cNB0wJR/9ymCEFlrZ
-   mp74YCC1V3hLhslzeg/SIT7wbNAmryA6O2WnNFZ+SA7GaEKSu3Dg5cm7tSeNjAmYN8IYfh9ihmhz
-   +YxwEmYGfwGSrdN0zV4tQu7ORj0S+lpOr6GX3MrRRgML5FG+8uNk34nTrQtmMa4RABUWCXMQ6UBy
-   PDaM+m0tE/EzMVcB6zaO7mHG4XOKy9SI9QAdnAWbeB7hfGufgg/hNjT+a5JZ4MkRyHQ8LB03XwsN
-   1dvnfkqnb0EfOu/yetfCVDetw8U8zyOlxhkfyA==;
-Reply-To: bradleywrubel@scotts-foundation.org
-From:   "MACKENZIE SCOTT (Scott Foundation)" <mar.veg@biharhotel.com>
-To:     linux-kernel@vger.kernel.org
-Subject: CONGRATULATIONS...
-Date:   26 Apr 2022 16:21:52 +0200
-Message-ID: <20220426162152.ED22B8116CD02A22@biharhotel.com>
-MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+        Tue, 26 Apr 2022 10:56:57 -0400
+Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D72ED633B8;
+        Tue, 26 Apr 2022 07:53:45 -0700 (PDT)
+HMM_SOURCE_IP: 172.18.0.48:49914.31750849
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-202.80.192.38 (unknown [172.18.0.48])
+        by chinatelecom.cn (HERMES) with SMTP id CE2F7280091;
+        Tue, 26 Apr 2022 22:53:42 +0800 (CST)
+X-189-SAVE-TO-SEND: +liuxp11@chinatelecom.cn
+Received: from  ([172.18.0.48])
+        by app0024 with ESMTP id 3bdb8612d35d4f2d9b7ec4c39eb6d419 for wim@linux-watchdog.org;
+        Tue, 26 Apr 2022 22:53:43 CST
+X-Transaction-ID: 3bdb8612d35d4f2d9b7ec4c39eb6d419
+X-Real-From: liuxp11@chinatelecom.cn
+X-Receive-IP: 172.18.0.48
+X-MEDUSA-Status: 0
+Sender: liuxp11@chinatelecom.cn
+From:   Liu Xinpeng <liuxp11@chinatelecom.cn>
+To:     wim@linux-watchdog.org, linux@roeck-us.net, tzungbi@kernel.org
+Cc:     linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Liu Xinpeng <liuxp11@chinatelecom.cn>
+Subject: [PATCH v8 2/3] watchdog: wdat_wdt: Stop watchdog when rebooting the system
+Date:   Tue, 26 Apr 2022 22:53:29 +0800
+Message-Id: <1650984810-6247-3-git-send-email-liuxp11@chinatelecom.cn>
+X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1650984810-6247-1-git-send-email-liuxp11@chinatelecom.cn>
+References: <1650984810-6247-1-git-send-email-liuxp11@chinatelecom.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Executing reboot command several times on the machine "Dell
+PowerEdge R740", UEFI security detection stopped machine
+with the following prompt:
 
-I'm Mackenzie Scott, Ex-wife to Jeff Bezos (Amazon Founder and=20
-CEO). I'm donating $4 billion to charities, churches, individuals,=20
-colleges and businesses across the Globe from Scott's Foundation to=20
-provide immediate support to people and businesses suffering=20
-economically from the impact of COVID-19 pandemic and the ongoing=20
-war in Ukraine. Your email emerged as one of the lucky winners=20
-after an electronically conducted ballot process.
+UEFI0082: The system was reset due to a timeout from the watchdog
+timer. Check the System Event Log (SEL) or crash dumps from
+Operating Sysstem to identify the source that triggered the
+watchdog timer reset. Update the firmware or driver for the
+identified device.
 
-I have a donation grant worth $8,500,000.00 Dollars for you. You=20
-are to contact Mr. BRADLEY WRUBEL for more information if you're=20
-interested.
+iDRAC has warning event: "The watchdog timer reset the system".
 
-MR. BRADLEY WRUBEL
-bradleywrubel@scotts-foundation.org
+This patch fixes this issue by adding the reboot notifier.
 
-Congratulations.
+Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
+---
+ drivers/watchdog/wdat_wdt.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Yours Sincerely
-Mackenzie Scott
-The Scott Foundation
-P.O. Box 1513
-Los Gatos, CA 95031-1513
-USA.
+diff --git a/drivers/watchdog/wdat_wdt.c b/drivers/watchdog/wdat_wdt.c
+index df0865a61a70..6f36a653767b 100644
+--- a/drivers/watchdog/wdat_wdt.c
++++ b/drivers/watchdog/wdat_wdt.c
+@@ -462,6 +462,7 @@ static int wdat_wdt_probe(struct platform_device *pdev)
+ 		return ret;
+ 
+ 	watchdog_set_nowayout(&wdat->wdd, nowayout);
++	watchdog_stop_on_reboot(&wdat->wdd);
+ 	return devm_watchdog_register_device(dev, &wdat->wdd);
+ }
+ 
+-- 
+2.23.0
+
