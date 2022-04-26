@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D102EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:49:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E02A1C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:49:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353479AbiDZQwW (ORCPT
+        id S1353484AbiDZQw0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 12:52:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45470 "EHLO
+        Tue, 26 Apr 2022 12:52:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353219AbiDZQu7 (ORCPT
+        with ESMTP id S1353253AbiDZQvZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 12:50:59 -0400
-Received: from mail-ed1-x549.google.com (mail-ed1-x549.google.com [IPv6:2a00:1450:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 972D44832B
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:45:52 -0700 (PDT)
-Received: by mail-ed1-x549.google.com with SMTP id cf16-20020a0564020b9000b00425d543c75dso4625358edb.11
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:45:52 -0700 (PDT)
+        Tue, 26 Apr 2022 12:51:25 -0400
+Received: from mail-ej1-x64a.google.com (mail-ej1-x64a.google.com [IPv6:2a00:1450:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D9A5488AB
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:46:16 -0700 (PDT)
+Received: by mail-ej1-x64a.google.com with SMTP id hr35-20020a1709073fa300b006f3647cd980so5655265ejc.5
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:46:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=qfycs5WHoOJISCgVkz4aOXJI06Vi4G56am9I/vqcS5Q=;
-        b=fRwDF91Cl56NtYnfVRrrwWq+ACk34XnpCPgWDJNhxkPf0+jyG4t7SUqyZkxziScoD6
-         nlS+/T0kxR6PQ7wQlPhgkRdK+OAhXkwXjvWT5GdxHtziDcUCsqgfbLBiAQg7R4lxOA+S
-         b1h3WJe9vuCUveQdnRjvIleLSdoXjd5T81AR3B/d6sysyhegK2IbBH7cJDKBoPbngE01
-         jvw+rllOIeEdhzy+uxIADb7nx6kl7sAhRpV9EXPjMlnyR573JuNml4rWiL8PIe9a6qEW
-         epw0ifH48szv7cq73qPvPsJ2sXpbRFaPAhln/IK2M8zSSWNmDvdbyCHkb2G+fh3x7wwt
-         zbNQ==
+        bh=qZO+Ar5AUQjZ17sp8HnLfJ3bnZDmnQ4HtehVjR2RSag=;
+        b=Pt5+odsaPLVLA+BIkFaOGZ5z3uWJenSne3f73BJt4PbanWkfmtsct7CN0wAO2xN5gU
+         Yhaxk8FOCzZhswyeeTNVL8OMhm9c/T3iPCztTqmlZxSpLpgMOs6YXH5MZ/fx+97iCGvz
+         zddbne3cp5tk6W6voA6FNsecjeKs0yW1DQ4Tz30W1QM+yA9fVauckWd7D4HpMMiv8n/u
+         VNAOuyzoM5s6YO+8DH4/mHKvxm5uilD1LTm5hSJS1BnACQmJdUQmedoVo1JHnrQYqad/
+         JlxuIlepoOSV3NlP0UfaMmhcA4Fr+PZ2URCMg+I0v/ZRX2C/u5IO3EAmXGa2X6k+fRQb
+         I4UQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=qfycs5WHoOJISCgVkz4aOXJI06Vi4G56am9I/vqcS5Q=;
-        b=oDu0iONaHPE/onrD7cf4x+iTm6TJkajUF6zI68YuEERd6hAxrpA/Crm829twaOpPD6
-         10fpczJz/W4AHE7/BdAfjH/DeHPT3qTHGErihK8nN1eQHoiez8WgEYVAwA302Lj3SjdP
-         zSO/bgjU/oEdU1AIJVPsj9J3NGxrEYrUPV51CvKK5GkVxFbORBAjtMjR1HmvVU9aRNhW
-         cPsbmPB5I1rppDDdt1Ap6fpUFL7ShJo9bt7OiIC/cql+em3kNamEmYflt2BPgFQfh74Z
-         /2AjZjEHAvqbdhwKEehUqE6wy2ZA3GuSD7pL+4EddysMVTaD+oMmUASWGvpb5SqA4csH
-         hXaw==
-X-Gm-Message-State: AOAM531EykexQRiwTrkBEDQ7jY8UTJ2paqQW2nkIal1f62WaqO5DDGL7
-        3Tq/WysNiZvbNjGupowhz7qZgA3cNsQ=
-X-Google-Smtp-Source: ABdhPJyO5IzITq1Md/msOkFe5QpCMXnvVTw7Eg5gyXSwTxjpxMvbx88JMdeRNdS+uJ66Z5Deghmk2VEGLtk=
+        bh=qZO+Ar5AUQjZ17sp8HnLfJ3bnZDmnQ4HtehVjR2RSag=;
+        b=PvvQOkeWxb6tin1r/OdBpIQ8hVIbIwFgBKLY/n662Oo1Yc2gzkT3RFavBCrcUDflLs
+         To1X4x/SsydH6Gjq4FDxgOoM7VqwnFsKE92qeV1cla2+rLg0szhkMHP461cEk36yD6ck
+         TFM8yhVnJC1HPGjZePU2ds4uXwzpo5psB26UvrvZmakkP7hLnlkT/0uBFeQ3c3deJrFi
+         E2LDgaPSxmWx4JfBwiy8atnQY9a6ykOa4FT6CRl3yZ1uo6IwzOvjtkmzv+Rwq9TvxZPC
+         3YZhoFaRJADOVgggx8HQ+eTvA64+eAD/kYhejvkot2bEKIdmS94vZAYYzE9trd0JGX2p
+         3ynA==
+X-Gm-Message-State: AOAM533z3HeKgR6SbeNYFBG0MBPxRSsc9rRYE5TAiZBaOqNqPc/iHBBY
+        KGTB7bXjAeFsaSx1+M5g0tTlTV2vNes=
+X-Google-Smtp-Source: ABdhPJwC/1Ho3LFpscyKKysPm+tD7uHD3uvu1NdPCEt5vju65j1NkGkMRTYyimkaio71xSi48PC422JlIc4=
 X-Received: from glider.muc.corp.google.com ([2a00:79e0:15:13:d580:abeb:bf6d:5726])
- (user=glider job=sendgmr) by 2002:a17:906:a08b:b0:6b9:2e20:f139 with SMTP id
- q11-20020a170906a08b00b006b92e20f139mr23252089ejy.463.1650991550999; Tue, 26
- Apr 2022 09:45:50 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 18:43:04 +0200
+ (user=glider job=sendgmr) by 2002:a05:6402:2689:b0:422:15c4:e17e with SMTP id
+ w9-20020a056402268900b0042215c4e17emr26075746edd.33.1650991574553; Tue, 26
+ Apr 2022 09:46:14 -0700 (PDT)
+Date:   Tue, 26 Apr 2022 18:43:13 +0200
 In-Reply-To: <20220426164315.625149-1-glider@google.com>
-Message-Id: <20220426164315.625149-36-glider@google.com>
+Message-Id: <20220426164315.625149-45-glider@google.com>
 Mime-Version: 1.0
 References: <20220426164315.625149-1-glider@google.com>
 X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
-Subject: [PATCH v3 35/46] security: kmsan: fix interoperability with auto-initialization
+Subject: [PATCH v3 44/46] x86: fs: kmsan: disable CONFIG_DCACHE_WORD_ACCESS
 From:   Alexander Potapenko <glider@google.com>
 To:     glider@google.com
 Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
@@ -85,86 +85,41 @@ Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
         Vegard Nossum <vegard.nossum@oracle.com>,
         Vlastimil Babka <vbabka@suse.cz>, kasan-dev@googlegroups.com,
         linux-mm@kvack.org, linux-arch@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        linux-kernel@vger.kernel.org,
+        Andrey Konovalov <andreyknvl@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Heap and stack initialization is great, but not when we are trying
-uses of uninitialized memory. When the kernel is built with KMSAN,
-having kernel memory initialization enabled may introduce false
-negatives.
+dentry_string_cmp() calls read_word_at_a_time(), which might read
+uninitialized bytes to optimize string comparisons.
+Disabling CONFIG_DCACHE_WORD_ACCESS should prohibit this optimization,
+as well as (probably) similar ones.
 
-We disable CONFIG_INIT_STACK_ALL_PATTERN and CONFIG_INIT_STACK_ALL_ZERO
-under CONFIG_KMSAN, making it impossible to auto-initialize stack
-variables in KMSAN builds. We also disable CONFIG_INIT_ON_ALLOC_DEFAULT_ON
-and CONFIG_INIT_ON_FREE_DEFAULT_ON to prevent accidental use of heap
-auto-initialization.
-
-We however still let the users enable heap auto-initialization at
-boot-time (by setting init_on_alloc=1 or init_on_free=1), in which case
-a warning is printed.
-
+Suggested-by: Andrey Konovalov <andreyknvl@gmail.com>
 Signed-off-by: Alexander Potapenko <glider@google.com>
 ---
-Link: https://linux-review.googlesource.com/id/I86608dd867018683a14ae1870f1928ad925f42e9
+Link: https://linux-review.googlesource.com/id/I4c0073224ac2897cafb8c037362c49dda9cfa133
 ---
- mm/page_alloc.c            | 4 ++++
- security/Kconfig.hardening | 4 ++++
- 2 files changed, 8 insertions(+)
+ arch/x86/Kconfig | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 35b1fedb2f09c..4c89729cac7ac 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -849,6 +849,10 @@ void init_mem_debugging_and_hardening(void)
- 	else
- 		static_branch_disable(&init_on_free);
- 
-+	if (IS_ENABLED(CONFIG_KMSAN) &&
-+	    (_init_on_alloc_enabled_early || _init_on_free_enabled_early))
-+		pr_info("mem auto-init: please make sure init_on_alloc and init_on_free are disabled when running KMSAN\n");
-+
- #ifdef CONFIG_DEBUG_PAGEALLOC
- 	if (!debug_pagealloc_enabled())
- 		return;
-diff --git a/security/Kconfig.hardening b/security/Kconfig.hardening
-index ded4d7c0d1322..d6cce64899d13 100644
---- a/security/Kconfig.hardening
-+++ b/security/Kconfig.hardening
-@@ -106,6 +106,7 @@ choice
- 	config INIT_STACK_ALL_PATTERN
- 		bool "pattern-init everything (strongest)"
- 		depends on CC_HAS_AUTO_VAR_INIT_PATTERN
-+		depends on !KMSAN
- 		help
- 		  Initializes everything on the stack (including padding)
- 		  with a specific debug value. This is intended to eliminate
-@@ -124,6 +125,7 @@ choice
- 	config INIT_STACK_ALL_ZERO
- 		bool "zero-init everything (strongest and safest)"
- 		depends on CC_HAS_AUTO_VAR_INIT_ZERO
-+		depends on !KMSAN
- 		help
- 		  Initializes everything on the stack (including padding)
- 		  with a zero value. This is intended to eliminate all
-@@ -218,6 +220,7 @@ config STACKLEAK_RUNTIME_DISABLE
- 
- config INIT_ON_ALLOC_DEFAULT_ON
- 	bool "Enable heap memory zeroing on allocation by default"
-+	depends on !KMSAN
- 	help
- 	  This has the effect of setting "init_on_alloc=1" on the kernel
- 	  command line. This can be disabled with "init_on_alloc=0".
-@@ -230,6 +233,7 @@ config INIT_ON_ALLOC_DEFAULT_ON
- 
- config INIT_ON_FREE_DEFAULT_ON
- 	bool "Enable heap memory zeroing on free by default"
-+	depends on !KMSAN
- 	help
- 	  This has the effect of setting "init_on_free=1" on the kernel
- 	  command line. This can be disabled with "init_on_free=0".
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index ee5e6fd65bf1d..3209073f96415 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -128,7 +128,9 @@ config X86
+ 	select CLKEVT_I8253
+ 	select CLOCKSOURCE_VALIDATE_LAST_CYCLE
+ 	select CLOCKSOURCE_WATCHDOG
+-	select DCACHE_WORD_ACCESS
++	# Word-size accesses may read uninitialized data past the trailing \0
++	# in strings and cause false KMSAN reports.
++	select DCACHE_WORD_ACCESS		if !KMSAN
+ 	select DYNAMIC_SIGFRAME
+ 	select EDAC_ATOMIC_SCRUB
+ 	select EDAC_SUPPORT
 -- 
 2.36.0.rc2.479.g8af0fa9b8e-goog
 
