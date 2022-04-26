@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB313C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:43:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AEC8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:43:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230221AbiDZIqs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:46:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59366 "EHLO
+        id S233688AbiDZIq4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:46:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345786AbiDZIjb (ORCPT
+        with ESMTP id S1345776AbiDZIja (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:39:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF3124F9C6;
-        Tue, 26 Apr 2022 01:31:06 -0700 (PDT)
+        Tue, 26 Apr 2022 04:39:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E03C43ACC;
+        Tue, 26 Apr 2022 01:30:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 83724B81A2F;
-        Tue, 26 Apr 2022 08:31:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA3EAC385AC;
-        Tue, 26 Apr 2022 08:31:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C45F3B81CFE;
+        Tue, 26 Apr 2022 08:30:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C932C385A4;
+        Tue, 26 Apr 2022 08:30:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961864;
-        bh=EipAMTZF5YuchwXSMNVNeqbz16e87WfypAJBaEy8V9A=;
+        s=korg; t=1650961855;
+        bh=xKcfEQLZP4ng3tKkmzffDxMLQagT/P/DUqC3xhoJ16E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T7r/quVIQRGUGAC+Qq7U6cWvhc8/X9B0LKoTwAXJsGaA6tNWzzroBfifb7o5fDYL7
-         c0tid83QTjRzndNyQrGFpgH6AZOeNBbPQHtth02VZ5vjRxvWuFnbK/h/wrnydtJXjZ
-         mDDNtazYbgskRCqkBeaK4+I9IBy93Io4LgjOUOzM=
+        b=hfQzVU90T2o2SUUKa06+9ZFm1nnd2Lmq2x81Kw64TgGLoJq5Tie5ipneKkLkYE72P
+         7OOLM3X8TRCjr198lNFk1zxmb183qUfingkGn1StrBxHgda7Ti/guJYkKuGCFlL/zM
+         34b6T+lIRdijeewxe4jUY0BFHwl7eTONN0EsFxR0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        stable@kernel.org
-Subject: [PATCH 5.4 57/62] ext4: force overhead calculation if the s_overhead_cluster makes no sense
-Date:   Tue, 26 Apr 2022 10:21:37 +0200
-Message-Id: <20220426081738.856257915@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+7a806094edd5d07ba029@syzkaller.appspotmail.com,
+        Tadeusz Struk <tadeusz.struk@linaro.org>,
+        Theodore Tso <tytso@mit.edu>, stable@kernel.org
+Subject: [PATCH 5.4 54/62] ext4: limit length to bitmap_maxbytes - blocksize in punch_hole
+Date:   Tue, 26 Apr 2022 10:21:34 +0200
+Message-Id: <20220426081738.770345294@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
 References: <20220426081737.209637816@linuxfoundation.org>
@@ -48,44 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Theodore Ts'o <tytso@mit.edu>
+From: Tadeusz Struk <tadeusz.struk@linaro.org>
 
-commit 85d825dbf4899a69407338bae462a59aa9a37326 upstream.
+commit 2da376228a2427501feb9d15815a45dbdbdd753e upstream.
 
-If the file system does not use bigalloc, calculating the overhead is
-cheap, so force the recalculation of the overhead so we don't have to
-trust the precalculated overhead in the superblock.
+Syzbot found an issue [1] in ext4_fallocate().
+The C reproducer [2] calls fallocate(), passing size 0xffeffeff000ul,
+and offset 0x1000000ul, which, when added together exceed the
+bitmap_maxbytes for the inode. This triggers a BUG in
+ext4_ind_remove_space(). According to the comments in this function
+the 'end' parameter needs to be one block after the last block to be
+removed. In the case when the BUG is triggered it points to the last
+block. Modify the ext4_punch_hole() function and add constraint that
+caps the length to satisfy the one before laster block requirement.
 
+LINK: [1] https://syzkaller.appspot.com/bug?id=b80bd9cf348aac724a4f4dff251800106d721331
+LINK: [2] https://syzkaller.appspot.com/text?tag=ReproC&x=14ba0238700000
+
+Fixes: a4bb6b64e39a ("ext4: enable "punch hole" functionality")
+Reported-by: syzbot+7a806094edd5d07ba029@syzkaller.appspotmail.com
+Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+Link: https://lore.kernel.org/r/20220331200515.153214-1-tadeusz.struk@linaro.org
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Cc: stable@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/super.c |   15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ fs/ext4/inode.c |   11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
---- a/fs/ext4/super.c
-+++ b/fs/ext4/super.c
-@@ -4514,9 +4514,18 @@ no_journal:
- 	 * Get the # of file system overhead blocks from the
- 	 * superblock if present.
- 	 */
--	if (es->s_overhead_clusters)
--		sbi->s_overhead = le32_to_cpu(es->s_overhead_clusters);
--	else {
-+	sbi->s_overhead = le32_to_cpu(es->s_overhead_clusters);
-+	/* ignore the precalculated value if it is ridiculous */
-+	if (sbi->s_overhead > ext4_blocks_count(es))
-+		sbi->s_overhead = 0;
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -4311,7 +4311,8 @@ int ext4_punch_hole(struct inode *inode,
+ 	struct super_block *sb = inode->i_sb;
+ 	ext4_lblk_t first_block, stop_block;
+ 	struct address_space *mapping = inode->i_mapping;
+-	loff_t first_block_offset, last_block_offset;
++	loff_t first_block_offset, last_block_offset, max_length;
++	struct ext4_sb_info *sbi = EXT4_SB(inode->i_sb);
+ 	handle_t *handle;
+ 	unsigned int credits;
+ 	int ret = 0;
+@@ -4357,6 +4358,14 @@ int ext4_punch_hole(struct inode *inode,
+ 		   offset;
+ 	}
+ 
 +	/*
-+	 * If the bigalloc feature is not enabled recalculating the
-+	 * overhead doesn't take long, so we might as well just redo
-+	 * it to make sure we are using the correct value.
++	 * For punch hole the length + offset needs to be within one block
++	 * before last range. Adjust the length if it goes beyond that limit.
 +	 */
-+	if (!ext4_has_feature_bigalloc(sb))
-+		sbi->s_overhead = 0;
-+	if (sbi->s_overhead == 0) {
- 		err = ext4_calculate_overhead(sb);
- 		if (err)
- 			goto failed_mount_wq;
++	max_length = sbi->s_bitmap_maxbytes - inode->i_sb->s_blocksize;
++	if (offset + length > max_length)
++		length = max_length - offset;
++
+ 	if (offset & (sb->s_blocksize - 1) ||
+ 	    (offset + length) & (sb->s_blocksize - 1)) {
+ 		/*
 
 
