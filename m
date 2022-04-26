@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82C79C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE65AC43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:48:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346655AbiDZIuO (ORCPT
+        id S1346819AbiDZIuf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:50:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59366 "EHLO
+        Tue, 26 Apr 2022 04:50:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345874AbiDZIjk (ORCPT
+        with ESMTP id S1345813AbiDZIje (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:39:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9450793A9;
-        Tue, 26 Apr 2022 01:32:13 -0700 (PDT)
+        Tue, 26 Apr 2022 04:39:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67A82762B9;
+        Tue, 26 Apr 2022 01:31:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B6356186E;
-        Tue, 26 Apr 2022 08:32:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A881C385A0;
-        Tue, 26 Apr 2022 08:32:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 02BC5618A0;
+        Tue, 26 Apr 2022 08:31:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C67CCC385A0;
+        Tue, 26 Apr 2022 08:31:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961932;
-        bh=avBp042OE31BMRDyzTLJ+AKx4VLhedoWFD+owDAlhws=;
+        s=korg; t=1650961897;
+        bh=PIbE8wYRzCn0BTyvB9PVYzMMEEQC1HTzIblaKs78ulA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UG0C0NrntO5mQyEsIh7nUGPs7OaqZ336c4Jr3sJiOWQVbE3n8OrizUxFkQZIwCoFn
-         I54mR/yXaruuK6DjtutzWmS5Zq1PLxWGqQyds7PSnTW7JrlKTP7pvLXH8PPTNG9l1g
-         ie6usWZPTXYcKEjRMJWsMsdIYiSyUmwNA0J0eJrQ=
+        b=qW6MB7so/s23bCtHVjetOtLRiRkKW8lnRXGijYY2oQfyTuEJCTLn8SORVoyFCOudj
+         /l1y0k4vpU1eVDrOZ1fRd9cVaS9bHgcn27otPDmLsudhLQgBK2xC7PabQ2Wxw7xfuH
+         5kRlVt9tkMR9LbXVk61u+j76Y6gxG1puvzDPw1XA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dima Ruinskiy <dima.ruinskiy@intel.com>,
-        Sasha Neftin <sasha.neftin@intel.com>,
-        Naama Meir <naamax.meir@linux.intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 17/86] igc: Fix infinite loop in release_swfw_sync
-Date:   Tue, 26 Apr 2022 10:20:45 +0200
-Message-Id: <20220426081741.703088248@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sergey Matyukevich <sergey.matyukevich@synopsys.com>,
+        Vineet Gupta <vgupta@kernel.org>
+Subject: [PATCH 5.4 50/62] ARC: entry: fix syscall_trace_exit argument
+Date:   Tue, 26 Apr 2022 10:21:30 +0200
+Message-Id: <20220426081738.656673831@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
-References: <20220426081741.202366502@linuxfoundation.org>
+In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
+References: <20220426081737.209637816@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,49 +50,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+From: Sergey Matyukevich <sergey.matyukevich@synopsys.com>
 
-[ Upstream commit 907862e9aef75bf89e2b265efcc58870be06081e ]
+commit b1c6ecfdd06907554518ec384ce8e99889d15193 upstream.
 
-An infinite loop may occur if we fail to acquire the HW semaphore,
-which is needed for resource release.
-This will typically happen if the hardware is surprise-removed.
-At this stage there is nothing to do, except log an error and quit.
+Function syscall_trace_exit expects pointer to pt_regs. However
+r0 is also used to keep syscall return value. Restore pointer
+to pt_regs before calling syscall_trace_exit.
 
-Fixes: c0071c7aa5fe ("igc: Add HW initialization code")
-Suggested-by: Dima Ruinskiy <dima.ruinskiy@intel.com>
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Naama Meir <naamax.meir@linux.intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Sergey Matyukevich <sergey.matyukevich@synopsys.com>
+Signed-off-by: Vineet Gupta <vgupta@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/igc/igc_i225.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ arch/arc/kernel/entry.S |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_i225.c b/drivers/net/ethernet/intel/igc/igc_i225.c
-index 553d6bc78e6b..624236a4202e 100644
---- a/drivers/net/ethernet/intel/igc/igc_i225.c
-+++ b/drivers/net/ethernet/intel/igc/igc_i225.c
-@@ -156,8 +156,15 @@ void igc_release_swfw_sync_i225(struct igc_hw *hw, u16 mask)
- {
- 	u32 swfw_sync;
+--- a/arch/arc/kernel/entry.S
++++ b/arch/arc/kernel/entry.S
+@@ -199,6 +199,7 @@ tracesys_exit:
+ 	st  r0, [sp, PT_r0]     ; sys call return value in pt_regs
  
--	while (igc_get_hw_semaphore_i225(hw))
--		; /* Empty */
-+	/* Releasing the resource requires first getting the HW semaphore.
-+	 * If we fail to get the semaphore, there is nothing we can do,
-+	 * except log an error and quit. We are not allowed to hang here
-+	 * indefinitely, as it may cause denial of service or system crash.
-+	 */
-+	if (igc_get_hw_semaphore_i225(hw)) {
-+		hw_dbg("Failed to release SW_FW_SYNC.\n");
-+		return;
-+	}
- 
- 	swfw_sync = rd32(IGC_SW_FW_SYNC);
- 	swfw_sync &= ~mask;
--- 
-2.35.1
-
+ 	;POST Sys Call Ptrace Hook
++	mov r0, sp		; pt_regs needed
+ 	bl  @syscall_trace_exit
+ 	b   ret_from_exception ; NOT ret_from_system_call at is saves r0 which
+ 	; we'd done before calling post hook above
 
 
