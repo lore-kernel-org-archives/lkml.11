@@ -2,52 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DB0EC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCC67C4707E
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:12:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347160AbiDZJOB (ORCPT
+        id S1347486AbiDZJOU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:14:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55746 "EHLO
+        Tue, 26 Apr 2022 05:14:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347667AbiDZIvu (ORCPT
+        with ESMTP id S245512AbiDZIwS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:51:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 452CC13FB8;
-        Tue, 26 Apr 2022 01:40:45 -0700 (PDT)
+        Tue, 26 Apr 2022 04:52:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 673A5D5557;
+        Tue, 26 Apr 2022 01:40:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D5362B81D1B;
-        Tue, 26 Apr 2022 08:40:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FB03C385B0;
-        Tue, 26 Apr 2022 08:40:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0561F604F5;
+        Tue, 26 Apr 2022 08:40:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 169C9C385A0;
+        Tue, 26 Apr 2022 08:40:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962436;
-        bh=ZECTkgl81n78hZ7uxN4JX8xL/27fYo6cIxZg+Du304Y=;
+        s=korg; t=1650962448;
+        bh=I7E4f3rFKZQ0HQraiuVyxk/qYySAiRYvtrWeIKvVc1c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ayPLPbVF0pCMlmpa666CXXaqybDsg3DX6C+uwjLUO1E/HT4VtAYA8tf6AS42gWt74
-         nrhum6OAeOI1nY1vnYUHDTchDEKfdZxtKWhsO6r1fFGNS8OEl1RIqFKsGTttJLQ0Lk
-         c+2q1qh8GZEpypv+KL5jXsSZgqvU1/GuVep1QLws=
+        b=XFZJBce1zmlyWPWF59zjCtk0uR3wh5CZlFLQyIG2XIhvLNoTEwZ5LRu/HGjMKTQe3
+         ISZNHkuGIEg5rzrafX7VfJOk/LhxLACiW6yXCkJZ/pSAytVO5hAaw+Gbh5Oi87s09v
+         qPdXoS2qURq6igt85JzsIDFi5rYpAsAnBqfdRS9g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Leo Yan <leo.yan@linaro.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        German Gomez <german.gomez@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        James Clark <james.clark@arm.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 097/124] perf script: Always allow field data_src for auxtrace
-Date:   Tue, 26 Apr 2022 10:21:38 +0200
-Message-Id: <20220426081750.057351677@linuxfoundation.org>
+        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>
+Subject: [PATCH 5.15 100/124] xtensa: fix a7 clobbering in coprocessor context load/store
+Date:   Tue, 26 Apr 2022 10:21:41 +0200
+Message-Id: <20220426081750.141678316@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -59,54 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leo Yan <leo.yan@linaro.org>
+From: Max Filippov <jcmvbkbc@gmail.com>
 
-[ Upstream commit c6d8df01064333dcf140eda996abdb60a60e24b3 ]
+commit 839769c35477d4acc2369e45000ca7b0b6af39a7 upstream.
 
-If use command 'perf script -F,+data_src' to dump memory samples with
-Arm SPE trace data, it reports error:
+Fast coprocessor exception handler saves a3..a6, but coprocessor context
+load/store code uses a4..a7 as temporaries, potentially clobbering a7.
+'Potentially' because coprocessor state load/store macros may not use
+all four temporary registers (and neither FPU nor HiFi macros do).
+Use a3..a6 as intended.
 
-  # perf script -F,+data_src
-  Samples for 'dummy:u' event do not have DATA_SRC attribute set. Cannot print 'data_src' field.
-
-This is because the 'dummy:u' event is absent DATA_SRC bit in its sample
-type, so if a file contains AUX area tracing data then always allow
-field 'data_src' to be selected as an option for perf script.
-
-Fixes: e55ed3423c1bb29f ("perf arm-spe: Synthesize memory event")
-Signed-off-by: Leo Yan <leo.yan@linaro.org>
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: German Gomez <german.gomez@arm.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: James Clark <james.clark@arm.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Leo Yan <leo.yan@linaro.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220417114837.839896-1-leo.yan@linaro.org
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Fixes: c658eac628aa ("[XTENSA] Add support for configurable registers and coprocessors")
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/perf/builtin-script.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/xtensa/kernel/coprocessor.S |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/perf/builtin-script.c b/tools/perf/builtin-script.c
-index 18b56256bb6f..cb3d81adf5ca 100644
---- a/tools/perf/builtin-script.c
-+++ b/tools/perf/builtin-script.c
-@@ -455,7 +455,7 @@ static int evsel__check_attr(struct evsel *evsel, struct perf_session *session)
- 		return -EINVAL;
+--- a/arch/xtensa/kernel/coprocessor.S
++++ b/arch/xtensa/kernel/coprocessor.S
+@@ -29,7 +29,7 @@
+ 	.if XTENSA_HAVE_COPROCESSOR(x);					\
+ 		.align 4;						\
+ 	.Lsave_cp_regs_cp##x:						\
+-		xchal_cp##x##_store a2 a4 a5 a6 a7;			\
++		xchal_cp##x##_store a2 a3 a4 a5 a6;			\
+ 		jx	a0;						\
+ 	.endif
  
- 	if (PRINT_FIELD(DATA_SRC) &&
--	    evsel__check_stype(evsel, PERF_SAMPLE_DATA_SRC, "DATA_SRC", PERF_OUTPUT_DATA_SRC))
-+	    evsel__do_check_stype(evsel, PERF_SAMPLE_DATA_SRC, "DATA_SRC", PERF_OUTPUT_DATA_SRC, allow_user_set))
- 		return -EINVAL;
+@@ -46,7 +46,7 @@
+ 	.if XTENSA_HAVE_COPROCESSOR(x);					\
+ 		.align 4;						\
+ 	.Lload_cp_regs_cp##x:						\
+-		xchal_cp##x##_load a2 a4 a5 a6 a7;			\
++		xchal_cp##x##_load a2 a3 a4 a5 a6;			\
+ 		jx	a0;						\
+ 	.endif
  
- 	if (PRINT_FIELD(WEIGHT) &&
--- 
-2.35.1
-
 
 
