@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07AB6C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:32:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EABDDC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:32:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347823AbiDZJeS (ORCPT
+        id S1347788AbiDZJeN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:34:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54272 "EHLO
+        Tue, 26 Apr 2022 05:34:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347870AbiDZJGT (ORCPT
+        with ESMTP id S1347869AbiDZJGT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 05:06:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08A39A76CF;
-        Tue, 26 Apr 2022 01:46:31 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9948A169409;
+        Tue, 26 Apr 2022 01:46:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 97740604F5;
-        Tue, 26 Apr 2022 08:46:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DEB7C385A4;
-        Tue, 26 Apr 2022 08:46:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4CD5EB81CF2;
+        Tue, 26 Apr 2022 08:46:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 838F1C385A0;
+        Tue, 26 Apr 2022 08:46:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962790;
-        bh=V926YmHTdA7rACZ2zyMbnrRNHwioqQYNO8bk8iUKYCI=;
+        s=korg; t=1650962784;
+        bh=9Vd9VfQI/r2lx1eeK2qA6QkTXF4Wdp/LKCeS7dSW+2M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p/p+qPnyY7TxAi/znFiU4BhYWsi8z5T9EdbxVTNOSRLmwh/mqf0Tr6aIVBX3C1agN
-         dYRVUmhy/hV14B9pFOHhzpq58jktW5RQXp/puJcuWPLwrVbq+X8XkKwNdePi9q+mpw
-         8/DgO7PYZuDbP9mMEWk98CcnFgyzHKrDTT2JMUpU=
+        b=qHqQzBREIBaGwMusw5cJeYXQTpe1Ky8ONLslSpDDJiF1R23FcBLZTkG4MSSGA+UkQ
+         UWgb+CXgqxpjxfn+zA+DjDwGkHJ3YjTaKvcswYSXcNA5amukOGfGnLR1s9v2sHQZG/
+         subdC/5m0MqWB8NUzEuLVBGq6863gtlmzGx/iy4c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xu Yu <xuyu@linux.alibaba.com>,
-        Abaci <abaci@linux.alibaba.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Oscar Salvador <osalvador@suse.de>,
+        stable@vger.kernel.org, Zqiang <qiang1.zhang@intel.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.17 089/146] mm/memory-failure.c: skip huge_zero_page in memory_failure()
-Date:   Tue, 26 Apr 2022 10:21:24 +0200
-Message-Id: <20220426081752.561084976@linuxfoundation.org>
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 087/146] irq_work: use kasan_record_aux_stack_noalloc() record callstack
+Date:   Tue, 26 Apr 2022 10:21:22 +0200
+Message-Id: <20220426081752.504829626@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -55,95 +55,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xu Yu <xuyu@linux.alibaba.com>
+From: Zqiang <qiang1.zhang@intel.com>
 
-commit d173d5417fb67411e623d394aab986d847e47dad upstream.
+[ Upstream commit 25934fcfb93c4687ad32fd3d062bcf03457129d4 ]
 
-Kernel panic when injecting memory_failure for the global
-huge_zero_page, when CONFIG_DEBUG_VM is enabled, as follows.
+On PREEMPT_RT kernel and KASAN is enabled.  the kasan_record_aux_stack()
+may call alloc_pages(), and the rt-spinlock will be acquired, if currently
+in atomic context, will trigger warning:
 
-  Injecting memory failure for pfn 0x109ff9 at process virtual address 0x20ff9000
-  page:00000000fb053fc3 refcount:2 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x109e00
-  head:00000000fb053fc3 order:9 compound_mapcount:0 compound_pincount:0
-  flags: 0x17fffc000010001(locked|head|node=0|zone=2|lastcpupid=0x1ffff)
-  raw: 017fffc000010001 0000000000000000 dead000000000122 0000000000000000
-  raw: 0000000000000000 0000000000000000 00000002ffffffff 0000000000000000
-  page dumped because: VM_BUG_ON_PAGE(is_huge_zero_page(head))
-  ------------[ cut here ]------------
-  kernel BUG at mm/huge_memory.c:2499!
-  invalid opcode: 0000 [#1] PREEMPT SMP PTI
-  CPU: 6 PID: 553 Comm: split_bug Not tainted 5.18.0-rc1+ #11
-  Hardware name: Alibaba Cloud Alibaba Cloud ECS, BIOS 3288b3c 04/01/2014
-  RIP: 0010:split_huge_page_to_list+0x66a/0x880
-  Code: 84 9b fb ff ff 48 8b 7c 24 08 31 f6 e8 9f 5d 2a 00 b8 b8 02 00 00 e9 e8 fb ff ff 48 c7 c6 e8 47 3c 82 4c b
-  RSP: 0018:ffffc90000dcbdf8 EFLAGS: 00010246
-  RAX: 000000000000003c RBX: 0000000000000001 RCX: 0000000000000000
-  RDX: 0000000000000000 RSI: ffffffff823e4c4f RDI: 00000000ffffffff
-  RBP: ffff88843fffdb40 R08: 0000000000000000 R09: 00000000fffeffff
-  R10: ffffc90000dcbc48 R11: ffffffff82d68448 R12: ffffea0004278000
-  R13: ffffffff823c6203 R14: 0000000000109ff9 R15: ffffea000427fe40
-  FS:  00007fc375a26740(0000) GS:ffff88842fd80000(0000) knlGS:0000000000000000
-  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-  CR2: 00007fc3757c9290 CR3: 0000000102174006 CR4: 00000000003706e0
-  DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-  DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+  BUG: sleeping function called from invalid context at kernel/locking/spinlock_rt.c:46
+  in_atomic(): 1, irqs_disabled(): 1, non_block: 0, pid: 239, name: bootlogd
+  Preemption disabled at:
+  [<ffffffffbab1a531>] rt_mutex_slowunlock+0xa1/0x4e0
+  CPU: 3 PID: 239 Comm: bootlogd Tainted: G        W 5.17.1-rt17-yocto-preempt-rt+ #105
+  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.15.0-0-g2dd4b9b3f840-prebuilt.qemu.org 04/01/2014
   Call Trace:
-   try_to_split_thp_page+0x3a/0x130
-   memory_failure+0x128/0x800
-   madvise_inject_error.cold+0x8b/0xa1
-   __x64_sys_madvise+0x54/0x60
-   do_syscall_64+0x35/0x80
-   entry_SYSCALL_64_after_hwframe+0x44/0xae
-  RIP: 0033:0x7fc3754f8bf9
-  Code: 01 00 48 81 c4 80 00 00 00 e9 f1 fe ff ff 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 8
-  RSP: 002b:00007ffeda93a1d8 EFLAGS: 00000217 ORIG_RAX: 000000000000001c
-  RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fc3754f8bf9
-  RDX: 0000000000000064 RSI: 0000000000003000 RDI: 0000000020ff9000
-  RBP: 00007ffeda93a200 R08: 0000000000000000 R09: 0000000000000000
-  R10: 00000000ffffffff R11: 0000000000000217 R12: 0000000000400490
-  R13: 00007ffeda93a2e0 R14: 0000000000000000 R15: 0000000000000000
+     __might_resched.cold+0x13b/0x173
+     rt_spin_lock+0x5b/0xf0
+     get_page_from_freelist+0x20c/0x1610
+     __alloc_pages+0x25e/0x5e0
+     __stack_depot_save+0x3c0/0x4a0
+     kasan_save_stack+0x3a/0x50
+     __kasan_record_aux_stack+0xb6/0xc0
+     kasan_record_aux_stack+0xe/0x10
+     irq_work_queue_on+0x6a/0x1c0
+     pull_rt_task+0x631/0x6b0
+     do_balance_callbacks+0x56/0x80
+     __balance_callbacks+0x63/0x90
+     rt_mutex_setprio+0x349/0x880
+     rt_mutex_slowunlock+0x22a/0x4e0
+     rt_spin_unlock+0x49/0x80
+     uart_write+0x186/0x2b0
+     do_output_char+0x2e9/0x3a0
+     n_tty_write+0x306/0x800
+     file_tty_write.isra.0+0x2af/0x450
+     tty_write+0x22/0x30
+     new_sync_write+0x27c/0x3a0
+     vfs_write+0x3f7/0x5d0
+     ksys_write+0xd9/0x180
+     __x64_sys_write+0x43/0x50
+     do_syscall_64+0x44/0x90
+     entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-This makes huge_zero_page bail out explicitly before split in
-memory_failure(), thus the panic above won't happen again.
+Fix it by using kasan_record_aux_stack_noalloc() to avoid the call to
+alloc_pages().
 
-Link: https://lkml.kernel.org/r/497d3835612610e370c74e697ea3c721d1d55b9c.1649775850.git.xuyu@linux.alibaba.com
-Fixes: 6a46079cf57a ("HWPOISON: The high level memory error handler in the VM v7")
-Signed-off-by: Xu Yu <xuyu@linux.alibaba.com>
-Reported-by: Abaci <abaci@linux.alibaba.com>
-Suggested-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
-Acked-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
-Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
-Cc: Anshuman Khandual <anshuman.khandual@arm.com>
-Cc: Oscar Salvador <osalvador@suse.de>
-Cc: <stable@vger.kernel.org>
+Link: https://lkml.kernel.org/r/20220402142555.2699582-1-qiang1.zhang@intel.com
+Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>
+Cc: Alexander Potapenko <glider@google.com>
+Cc: Andrey Konovalov <andreyknvl@gmail.com>
+Cc: Dmitry Vyukov <dvyukov@google.com>
 Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/memory-failure.c |   13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ kernel/irq_work.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/mm/memory-failure.c
-+++ b/mm/memory-failure.c
-@@ -1780,6 +1780,19 @@ try_again:
+diff --git a/kernel/irq_work.c b/kernel/irq_work.c
+index f7df715ec28e..7afa40fe5cc4 100644
+--- a/kernel/irq_work.c
++++ b/kernel/irq_work.c
+@@ -137,7 +137,7 @@ bool irq_work_queue_on(struct irq_work *work, int cpu)
+ 	if (!irq_work_claim(work))
+ 		return false;
  
- 	if (PageTransHuge(hpage)) {
- 		/*
-+		 * Bail out before SetPageHasHWPoisoned() if hpage is
-+		 * huge_zero_page, although PG_has_hwpoisoned is not
-+		 * checked in set_huge_zero_page().
-+		 *
-+		 * TODO: Handle memory failure of huge_zero_page thoroughly.
-+		 */
-+		if (is_huge_zero_page(hpage)) {
-+			action_result(pfn, MF_MSG_UNSPLIT_THP, MF_IGNORED);
-+			res = -EBUSY;
-+			goto unlock_mutex;
-+		}
-+
-+		/*
- 		 * The flag must be set after the refcount is bumped
- 		 * otherwise it may race with THP split.
- 		 * And the flag can't be set in get_hwpoison_page() since
+-	kasan_record_aux_stack(work);
++	kasan_record_aux_stack_noalloc(work);
+ 
+ 	preempt_disable();
+ 	if (cpu != smp_processor_id()) {
+-- 
+2.35.1
+
 
 
