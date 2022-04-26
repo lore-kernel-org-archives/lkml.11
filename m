@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B161EC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:59:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14E34C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:00:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239227AbiDZJDA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:03:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55176 "EHLO
+        id S1346128AbiDZJDJ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:03:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346933AbiDZIpb (ORCPT
+        with ESMTP id S1346917AbiDZIpa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:45:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 651603BBFD;
-        Tue, 26 Apr 2022 01:36:52 -0700 (PDT)
+        Tue, 26 Apr 2022 04:45:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A70933E14;
+        Tue, 26 Apr 2022 01:36:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C4624618E8;
-        Tue, 26 Apr 2022 08:36:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3F4CC385A0;
-        Tue, 26 Apr 2022 08:36:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9FA66B81CED;
+        Tue, 26 Apr 2022 08:36:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCF8EC385AC;
+        Tue, 26 Apr 2022 08:36:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962211;
-        bh=O5cWtjT6oZ9kHdt3jLx0dw74Nywf3PaeWXGX73eSrJs=;
+        s=korg; t=1650962205;
+        bh=bcOTZJMicACjWXiZfXi+DQEm7lArO/AWDfEHBhtc7QE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h8U5zN+LbLDcyYSiJ0UlwAT9RnmpiKXLmwGc3fFcoK4tDuKbsIQR3hBgS91Hh5huG
-         RNLRc3tqINJqQ/ELBEmkIgEYra/2wibdzMHxsZIEtDPc+X2A8uzoydL+ssEaLvlEnQ
-         wMyFUjyxU5Jv5w/4SLdm68GuwWtxPHU8f0gxgxT8=
+        b=tJF6SgeW06cXl1GPFvaAWvJh69p8E4qDTTK9WOJZGKdhP8NH+p/JCaPcx+gDOViYx
+         8aAHGwpAiwWFuUwOdgsDxj0cGoduwFWMKkc3RMf2MTqhb0cSFtZGK9UGDbcG2RTyqv
+         1/DhZoTPNTEf7692o82sIqhEDOfo+Lp3ikb7u6NI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tony Zhu <tony.zhu@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 022/124] dmaengine: idxd: fix device cleanup on disable
-Date:   Tue, 26 Apr 2022 10:20:23 +0200
-Message-Id: <20220426081747.936081453@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 020/124] ASoC: msm8916-wcd-digital: Check failure for devm_snd_soc_register_component
+Date:   Tue, 26 Apr 2022 10:20:21 +0200
+Message-Id: <20220426081747.879941932@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -49,50 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Jiang <dave.jiang@intel.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 12e45e89556d7a532120f976081e9e7582addd2b ]
+[ Upstream commit e927b05f3cc20de87f6b7d912a5bbe556931caca ]
 
-There are certain parts of WQ that needs to be cleaned up even after WQ is
-disabled during the device disable. Those are the unchangeable parts for a
-WQ when the device is still enabled. Move the cleanup outside of WQ state
-check. Remove idxd_wq_disable_cleanup() inside idxd_wq_device_reset_cleanup()
-since only the unchangeable parts need to be cleared.
+devm_snd_soc_register_component() may fails, we should check the error
+and do the corresponding error handling.
 
-Fixes: 0f225705cf65 ("dmaengine: idxd: fix wq settings post wq disable")
-Reported-by: Tony Zhu <tony.zhu@intel.com>
-Tested-by: Tony Zhu <tony.zhu@intel.com>
-Signed-off-by: Dave Jiang <dave.jiang@intel.com>
-Link: https://lore.kernel.org/r/164919561905.1455025.13542366389944678346.stgit@djiang5-desk3.ch.intel.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: 150db8c5afa1 ("ASoC: codecs: Add msm8916-wcd digital codec")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220403115239.30140-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/idxd/device.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ sound/soc/codecs/msm8916-wcd-digital.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/dma/idxd/device.c b/drivers/dma/idxd/device.c
-index 7bd9ac1e93b2..a67bafc596b7 100644
---- a/drivers/dma/idxd/device.c
-+++ b/drivers/dma/idxd/device.c
-@@ -406,7 +406,6 @@ static void idxd_wq_device_reset_cleanup(struct idxd_wq *wq)
- {
- 	lockdep_assert_held(&wq->wq_lock);
+diff --git a/sound/soc/codecs/msm8916-wcd-digital.c b/sound/soc/codecs/msm8916-wcd-digital.c
+index 9ad7fc0baf07..20a07c92b2fc 100644
+--- a/sound/soc/codecs/msm8916-wcd-digital.c
++++ b/sound/soc/codecs/msm8916-wcd-digital.c
+@@ -1206,9 +1206,16 @@ static int msm8916_wcd_digital_probe(struct platform_device *pdev)
  
--	idxd_wq_disable_cleanup(wq);
- 	wq->size = 0;
- 	wq->group = NULL;
- }
-@@ -723,9 +722,9 @@ static void idxd_device_wqs_clear_state(struct idxd_device *idxd)
+ 	dev_set_drvdata(dev, priv);
  
- 		if (wq->state == IDXD_WQ_ENABLED) {
- 			idxd_wq_disable_cleanup(wq);
--			idxd_wq_device_reset_cleanup(wq);
- 			wq->state = IDXD_WQ_DISABLED;
- 		}
-+		idxd_wq_device_reset_cleanup(wq);
- 	}
- }
- 
+-	return devm_snd_soc_register_component(dev, &msm8916_wcd_digital,
++	ret = devm_snd_soc_register_component(dev, &msm8916_wcd_digital,
+ 				      msm8916_wcd_digital_dai,
+ 				      ARRAY_SIZE(msm8916_wcd_digital_dai));
++	if (ret)
++		goto err_mclk;
++
++	return 0;
++
++err_mclk:
++	clk_disable_unprepare(priv->mclk);
+ err_clk:
+ 	clk_disable_unprepare(priv->ahbclk);
+ 	return ret;
 -- 
 2.35.1
 
