@@ -2,58 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA643C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:45:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 025FDC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:45:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353167AbiDZQsM (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 12:48:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40454 "EHLO
+        id S232215AbiDZQsQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 12:48:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353096AbiDZQru (ORCPT
+        with ESMTP id S1353120AbiDZQrs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 12:47:50 -0400
-Received: from mail-ej1-x649.google.com (mail-ej1-x649.google.com [IPv6:2a00:1450:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 413421906BA
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:44:42 -0700 (PDT)
-Received: by mail-ej1-x649.google.com with SMTP id sa27-20020a1709076d1b00b006e8b357a2e7so9325546ejc.14
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:44:42 -0700 (PDT)
+        Tue, 26 Apr 2022 12:47:48 -0400
+Received: from mail-ej1-x64a.google.com (mail-ej1-x64a.google.com [IPv6:2a00:1450:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5481C191C67
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:44:32 -0700 (PDT)
+Received: by mail-ej1-x64a.google.com with SMTP id go12-20020a1709070d8c00b006f009400732so9165153ejc.1
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:44:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=/0H5A8X92xIp0p19j3P2M66qBbmfiGtveehlyZCJw24=;
-        b=FvkMkIGRscjUzYZMvLVFQr9H/QRVOHYZw4hHknosvP6NOZtQxpNsZd0RtzhJXelcRc
-         z988hAfskDDmoJnPIiI0jXNGvUulB8rFxBfA8ab5Sms91LUTaW4M13z8UFY9KvIBTi0U
-         mydviyOj8aDprvPJfYeUMhjCpbeC8rH4hZxCn8OWbU3YolhExGVHn2JyusklOjF/6sO4
-         vYyxMokIMpAW+3L8FTBFk9+HgjrICCnt0AsWcRVYbtUA2ELiqXnXSxBNwEJZcwS3tI4o
-         91Z59BTGhx3wH4FUgP2JaAvwZ5iQeqRkzHHrNtLbtKEtxaZ4rzTmakhpwXtIFjy1dzme
-         JxoA==
+        bh=jT7N8sHbqw5Bt63XokggrytDJOztxBUcMGiWNZUZnNs=;
+        b=socyW/SWH6WVUElWDQ9so0Jec6CqBHZso2QGVjaGlPPUu+vTsdFC6iZP42U1gWVUW8
+         lw5Omaj6xQ6NIAx4hEPTVPQZVPhUnOOdq2KiTARpdZyQ3LitifZ9pKoTzPHYkhsda4Rc
+         I3/96cm8sYfgVBN9+zu56yewNbGMMZugG3lvIt1FRn+zBDIMu2owM5cLnh00hlx9RTgJ
+         2Z6YBAV3FKrKFXGf4sOcstHFSQon+8TmbuzAsNLmJ8iTodBN45fyl/KZmz89vwrBf1cr
+         dJFUsGH8Xd4MrMUpg558yBB4sq9J25PoMnfrF15rZOAHy5XHDqKNCFXnOKuvMldOAx0v
+         Xc1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=/0H5A8X92xIp0p19j3P2M66qBbmfiGtveehlyZCJw24=;
-        b=7O25rQT98YP6Rxfu6TYJ6A1FB8UfRV7Oyid2sXuGOD6Wotfeixo4ApuDuuXgj68RmA
-         8yGQpWWwbZ7C1APPKbAwjKcSAdbKI5HeOaUZUCow+Ey3jiy2A9EpikrMxeoO76NXaTQv
-         38ICYtPlz5EGIrqwId1wkecn24sByGGJcPksuLAT5z7VtF29KHdFPo0ARaOLNcDMGSvQ
-         5XUMy8V3JTkmXXXkE+tcVVxRkXBZTgVM4E9EhWFVB5oA9YXYj1x/9j7h/YgobpcJotwU
-         t1gD5VIBJxMmVSqwtqGVoncRP3vl+LdIws2H/5XWu+aCJ7V7tcJUzxdqBzqaenFIqLaM
-         LLow==
-X-Gm-Message-State: AOAM533jfSUs8XgY7MlSR4sH+JRKLSoo3RmP4PpQEvtdG3F/yaUdxTLU
-        DGicIRsF2feT7k09NrSQUkwccV84V3s=
-X-Google-Smtp-Source: ABdhPJyznSX2i8WSeLQTTkki2cbZTho3ac9KkIH//+BcoF3wC20oGterW7mlNzbNsl8P2+ms/2tHQUoo1l8=
+        bh=jT7N8sHbqw5Bt63XokggrytDJOztxBUcMGiWNZUZnNs=;
+        b=sQvd/EVuiBtniFrrGoAQ7Pn0sY/JVGPUvkj2tggVDAQ56IiPHCFQMyTLY32K3HkNzY
+         qu+/QcsZxwXqhGkS5/kL+AG+dckk6GsBJaKXTQDrBRCkSXiAzrObAMWZ2QEsas3OCgKq
+         SADYEC2JmnYNYh1XKGNMfTQ+ejESHJdLzlAP6cXaC69UzUbT4MffImyrQJxI8ST7kQhS
+         ruqOMFM9nUCUx/H5k0pULDP7FAWOxrdfJoHtHWqJqrlsw7T/cTjWKeiCX8hAu+xbIZOQ
+         5qzy03y7CK3itjAM3qvpaoV0/7l3Mc/ffXbr9tuiTCFM2e8cvIgJCpHGHLwPS9Wbf4oL
+         jy/g==
+X-Gm-Message-State: AOAM530f8VLwlEDef1RYE5+SMfDxKEDJI6PKeTPp1k8DZxnlhBzCY5qf
+        VM5vmaVs/Ks3oOCwPxYWbj4WcGJdolY=
+X-Google-Smtp-Source: ABdhPJzVoY4VqalpQr3d8BPXtD+NaAh71WbLc1nD76HvvUm8mcb7U8Xkr1TFGyyyj1Et3ec1q26DZC4DL3U=
 X-Received: from glider.muc.corp.google.com ([2a00:79e0:15:13:d580:abeb:bf6d:5726])
- (user=glider job=sendgmr) by 2002:aa7:d310:0:b0:425:f22f:763f with SMTP id
- p16-20020aa7d310000000b00425f22f763fmr9236955edq.163.1650991480781; Tue, 26
- Apr 2022 09:44:40 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 18:42:37 +0200
+ (user=glider job=sendgmr) by 2002:a05:6402:3593:b0:425:dfd4:2947 with SMTP id
+ y19-20020a056402359300b00425dfd42947mr14309082edc.137.1650991470646; Tue, 26
+ Apr 2022 09:44:30 -0700 (PDT)
+Date:   Tue, 26 Apr 2022 18:42:33 +0200
 In-Reply-To: <20220426164315.625149-1-glider@google.com>
-Message-Id: <20220426164315.625149-9-glider@google.com>
+Message-Id: <20220426164315.625149-5-glider@google.com>
 Mime-Version: 1.0
 References: <20220426164315.625149-1-glider@google.com>
 X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
-Subject: [PATCH v3 08/46] kmsan: introduce __no_sanitize_memory and __no_kmsan_checks
+Subject: [PATCH v3 04/46] instrumented.h: allow instrumenting both sides of copy_from_user()
 From:   Alexander Potapenko <glider@google.com>
 To:     glider@google.com
 Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
@@ -91,81 +90,152 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-__no_sanitize_memory is a function attribute that instructs KMSAN to
-skip a function during instrumentation. This is needed to e.g. implement
-the noinstr functions.
+Introduce instrument_copy_from_user_before() and
+instrument_copy_from_user_after() hooks to be invoked before and after
+the call to copy_from_user().
 
-__no_kmsan_checks is a function attribute that makes KMSAN
-ignore the uninitialized values coming from the function's
-inputs, and initialize the function's outputs.
-
-Functions marked with this attribute can't be inlined into functions
-not marked with it, and vice versa. This behavior is overridden by
-__always_inline.
-
-__SANITIZE_MEMORY__ is a macro that's defined iff the file is
-instrumented with KMSAN. This is not the same as CONFIG_KMSAN, which is
-defined for every file.
+KASAN and KCSAN will be only using instrument_copy_from_user_before(),
+but for KMSAN we'll need to insert code after copy_from_user().
 
 Signed-off-by: Alexander Potapenko <glider@google.com>
 ---
-Link: https://linux-review.googlesource.com/id/I004ff0360c918d3cd8b18767ddd1381c6d3281be
+Link: https://linux-review.googlesource.com/id/I855034578f0b0f126734cbd734fb4ae1d3a6af99
 ---
- include/linux/compiler-clang.h | 23 +++++++++++++++++++++++
- include/linux/compiler-gcc.h   |  6 ++++++
- 2 files changed, 29 insertions(+)
+ include/linux/instrumented.h | 21 +++++++++++++++++++--
+ include/linux/uaccess.h      | 19 ++++++++++++++-----
+ lib/iov_iter.c               |  9 ++++++---
+ lib/usercopy.c               |  3 ++-
+ 4 files changed, 41 insertions(+), 11 deletions(-)
 
-diff --git a/include/linux/compiler-clang.h b/include/linux/compiler-clang.h
-index babb1347148c5..c561064921449 100644
---- a/include/linux/compiler-clang.h
-+++ b/include/linux/compiler-clang.h
-@@ -51,6 +51,29 @@
- #define __no_sanitize_undefined
- #endif
+diff --git a/include/linux/instrumented.h b/include/linux/instrumented.h
+index 42faebbaa202a..ee8f7d17d34f5 100644
+--- a/include/linux/instrumented.h
++++ b/include/linux/instrumented.h
+@@ -120,7 +120,7 @@ instrument_copy_to_user(void __user *to, const void *from, unsigned long n)
+ }
  
-+#if __has_feature(memory_sanitizer)
-+#define __SANITIZE_MEMORY__
-+/*
-+ * Unlike other sanitizers, KMSAN still inserts code into functions marked with
-+ * no_sanitize("kernel-memory"). Using disable_sanitizer_instrumentation
-+ * provides the behavior consistent with other __no_sanitize_ attributes,
-+ * guaranteeing that __no_sanitize_memory functions remain uninstrumented.
-+ */
-+#define __no_sanitize_memory __disable_sanitizer_instrumentation
-+
-+/*
-+ * The __no_kmsan_checks attribute ensures that a function does not produce
-+ * false positive reports by:
-+ *  - initializing all local variables and memory stores in this function;
-+ *  - skipping all shadow checks;
-+ *  - passing initialized arguments to this function's callees.
-+ */
-+#define __no_kmsan_checks __attribute__((no_sanitize("kernel-memory")))
-+#else
-+#define __no_sanitize_memory
-+#define __no_kmsan_checks
-+#endif
-+
- /*
-  * Support for __has_feature(coverage_sanitizer) was added in Clang 13 together
-  * with no_sanitize("coverage"). Prior versions of Clang support coverage
-diff --git a/include/linux/compiler-gcc.h b/include/linux/compiler-gcc.h
-index 52299c957c98e..f1a7ce3f6e6fd 100644
---- a/include/linux/compiler-gcc.h
-+++ b/include/linux/compiler-gcc.h
-@@ -133,6 +133,12 @@
- #define __SANITIZE_ADDRESS__
- #endif
+ /**
+- * instrument_copy_from_user - instrument writes of copy_from_user
++ * instrument_copy_from_user_before - add instrumentation before copy_from_user
+  *
+  * Instrument writes to kernel memory, that are due to copy_from_user (and
+  * variants). The instrumentation should be inserted before the accesses.
+@@ -130,10 +130,27 @@ instrument_copy_to_user(void __user *to, const void *from, unsigned long n)
+  * @n number of bytes to copy
+  */
+ static __always_inline void
+-instrument_copy_from_user(const void *to, const void __user *from, unsigned long n)
++instrument_copy_from_user_before(const void *to, const void __user *from, unsigned long n)
+ {
+ 	kasan_check_write(to, n);
+ 	kcsan_check_write(to, n);
+ }
  
-+/*
-+ * GCC does not support KMSAN.
++/**
++ * instrument_copy_from_user_after - add instrumentation after copy_from_user
++ *
++ * Instrument writes to kernel memory, that are due to copy_from_user (and
++ * variants). The instrumentation should be inserted after the accesses.
++ *
++ * @to destination address
++ * @from source address
++ * @n number of bytes to copy
++ * @left number of bytes not copied (as returned by copy_from_user)
 + */
-+#define __no_sanitize_memory
-+#define __no_kmsan_checks
++static __always_inline void
++instrument_copy_from_user_after(const void *to, const void __user *from,
++				unsigned long n, unsigned long left)
++{
++}
 +
- /*
-  * Turn individual warnings and errors on and off locally, depending
-  * on version.
+ #endif /* _LINUX_INSTRUMENTED_H */
+diff --git a/include/linux/uaccess.h b/include/linux/uaccess.h
+index 546179418ffa2..079bdea3b9dcd 100644
+--- a/include/linux/uaccess.h
++++ b/include/linux/uaccess.h
+@@ -58,20 +58,28 @@
+ static __always_inline __must_check unsigned long
+ __copy_from_user_inatomic(void *to, const void __user *from, unsigned long n)
+ {
+-	instrument_copy_from_user(to, from, n);
++	unsigned long res;
++
++	instrument_copy_from_user_before(to, from, n);
+ 	check_object_size(to, n, false);
+-	return raw_copy_from_user(to, from, n);
++	res = raw_copy_from_user(to, from, n);
++	instrument_copy_from_user_after(to, from, n, res);
++	return res;
+ }
+ 
+ static __always_inline __must_check unsigned long
+ __copy_from_user(void *to, const void __user *from, unsigned long n)
+ {
++	unsigned long res;
++
+ 	might_fault();
++	instrument_copy_from_user_before(to, from, n);
+ 	if (should_fail_usercopy())
+ 		return n;
+-	instrument_copy_from_user(to, from, n);
+ 	check_object_size(to, n, false);
+-	return raw_copy_from_user(to, from, n);
++	res = raw_copy_from_user(to, from, n);
++	instrument_copy_from_user_after(to, from, n, res);
++	return res;
+ }
+ 
+ /**
+@@ -115,8 +123,9 @@ _copy_from_user(void *to, const void __user *from, unsigned long n)
+ 	unsigned long res = n;
+ 	might_fault();
+ 	if (!should_fail_usercopy() && likely(access_ok(from, n))) {
+-		instrument_copy_from_user(to, from, n);
++		instrument_copy_from_user_before(to, from, n);
+ 		res = raw_copy_from_user(to, from, n);
++		instrument_copy_from_user_after(to, from, n, res);
+ 	}
+ 	if (unlikely(res))
+ 		memset(to + (n - res), 0, res);
+diff --git a/lib/iov_iter.c b/lib/iov_iter.c
+index 6dd5330f7a995..fb19401c29c4f 100644
+--- a/lib/iov_iter.c
++++ b/lib/iov_iter.c
+@@ -159,13 +159,16 @@ static int copyout(void __user *to, const void *from, size_t n)
+ 
+ static int copyin(void *to, const void __user *from, size_t n)
+ {
++	size_t res = n;
++
+ 	if (should_fail_usercopy())
+ 		return n;
+ 	if (access_ok(from, n)) {
+-		instrument_copy_from_user(to, from, n);
+-		n = raw_copy_from_user(to, from, n);
++		instrument_copy_from_user_before(to, from, n);
++		res = raw_copy_from_user(to, from, n);
++		instrument_copy_from_user_after(to, from, n, res);
+ 	}
+-	return n;
++	return res;
+ }
+ 
+ static size_t copy_page_to_iter_iovec(struct page *page, size_t offset, size_t bytes,
+diff --git a/lib/usercopy.c b/lib/usercopy.c
+index 7413dd300516e..1505a52f23a01 100644
+--- a/lib/usercopy.c
++++ b/lib/usercopy.c
+@@ -12,8 +12,9 @@ unsigned long _copy_from_user(void *to, const void __user *from, unsigned long n
+ 	unsigned long res = n;
+ 	might_fault();
+ 	if (!should_fail_usercopy() && likely(access_ok(from, n))) {
+-		instrument_copy_from_user(to, from, n);
++		instrument_copy_from_user_before(to, from, n);
+ 		res = raw_copy_from_user(to, from, n);
++		instrument_copy_from_user_after(to, from, n, res);
+ 	}
+ 	if (unlikely(res))
+ 		memset(to + (n - res), 0, res);
 -- 
 2.36.0.rc2.479.g8af0fa9b8e-goog
 
