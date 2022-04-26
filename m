@@ -2,131 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB6C8C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 22:16:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13016C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 22:20:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355762AbiDZWUC (ORCPT
+        id S1344401AbiDZWXi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 18:20:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37424 "EHLO
+        Tue, 26 Apr 2022 18:23:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355708AbiDZWSy (ORCPT
+        with ESMTP id S230496AbiDZWXe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 18:18:54 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D7D643EDA
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 15:15:43 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id a14-20020a7bc1ce000000b00393fb52a386so1733492wmj.1
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 15:15:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linexp-org.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ZLbpL2O4THqkOA2T7fA77zNe+VikV0QIHwrfCO5ZH9g=;
-        b=UvgDzFtdTJF5q0RKUzObK80v8Xw9nrNu0dt5i4EiXvIGlydd80EvbGmS+8wnoi7SJY
-         ERqWS1iJk6vEWurRXTTv8oIzuCpedLmi4+7j3U3fBv0BJDijYEZZLTeBi3g0sHaMOSg4
-         AW36EupfAAadusdJRtOBCN4WyNEOj845Ds1iT6oTmpRdppNtS+GkFAhKZfO9Ajm1sRfg
-         g0yzZ/EqEFLieQ2FRHNHV/ndaSwLjM0m1izvqbSiuiC9E6zPDVgsWG93rahorVwuBEnU
-         MUHtd1xmBrBCuq2lYo7ce8pbGV+4MzGG8RPETujs/IrXineLEPySOCKjSg1X7A4MGSHG
-         jIJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ZLbpL2O4THqkOA2T7fA77zNe+VikV0QIHwrfCO5ZH9g=;
-        b=y+Z3m3nYGtwOMYT0my3J9xWLvsgwNuOLjPhIpFBeOfYlTKCsnI5x9aVy086Co0MeJk
-         9zy0NkRk5Qv33jIoNIquuCNqc8prpgT1L7f0ubIsLLTVvbS4Tox8qoxPBk6Y1B2sOI95
-         nXdvV6sdtdCY2Y4tja3nDptYGguLEYKqDHbVY3IIX70qaoRcmNWTNSfpKsiG/v3TIEnR
-         BFO1CUSX1wzEUuO0pJxk4sYMEpwLD8yjujeyrjFxCt+bUF3wrZOE3+0037zO6oRU/8a0
-         /r93rxfdXvwuLdJxfv9xUDYZRoUyDQ05C+FL41qVaQuu/eZrpt5fZDx3z4EKVSenLBfi
-         3Icw==
-X-Gm-Message-State: AOAM531AuylY6Lc6aQmEJHu+IZFyt8U8yUA8rEwZW463/ogFpvLIeLhb
-        X2ZFbGh+X2hTkSjfWBZSm/QCpA==
-X-Google-Smtp-Source: ABdhPJwe4w6Sy0t5oaUh/SdM7Ot753PzTjsTfs+amEp/ItQYZeZtuW1ERBNh0tVAlFfShbpOlDtNJw==
-X-Received: by 2002:a7b:cc17:0:b0:38d:af7:3848 with SMTP id f23-20020a7bcc17000000b0038d0af73848mr23481127wmh.41.1651011342026;
-        Tue, 26 Apr 2022 15:15:42 -0700 (PDT)
-Received: from localhost.localdomain (static-176-182-171-101.ncc.abo.bbox.fr. [176.182.171.101])
-        by smtp.gmail.com with ESMTPSA id j19-20020adfb313000000b0020aed8ece65sm393314wrd.32.2022.04.26.15.15.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 15:15:41 -0700 (PDT)
-From:   Daniel Lezcano <daniel.lezcano@linexp.org>
-To:     rafael@kernel.org, daniel.lezcano@linaro.org
-Cc:     khilman@baylibre.com, abailon@baylibre.com,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 09/15] thermal/core: Move thermal_set_delay_jiffies to static
-Date:   Wed, 27 Apr 2022 00:15:17 +0200
-Message-Id: <20220426221523.3056696-10-daniel.lezcano@linexp.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220426221523.3056696-1-daniel.lezcano@linexp.org>
-References: <20220426221523.3056696-1-daniel.lezcano@linexp.org>
+        Tue, 26 Apr 2022 18:23:34 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3B681DA78;
+        Tue, 26 Apr 2022 15:20:23 -0700 (PDT)
+Received: from mail-yb1-f180.google.com ([209.85.219.180]) by
+ mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MIKs0-1ng81J3aBI-00EPJk; Wed, 27 Apr 2022 00:20:22 +0200
+Received: by mail-yb1-f180.google.com with SMTP id y2so199659ybi.7;
+        Tue, 26 Apr 2022 15:20:21 -0700 (PDT)
+X-Gm-Message-State: AOAM530dksNh2Wr7t3Qi2voZaXX87UE2D6ey4u8pwQGyAikY8TJPvJPO
+        XNn3rbx3kkmtA4RsP8jQkuJozSBaT/CpLXrfj18=
+X-Google-Smtp-Source: ABdhPJzbAvI1S2GyRLREWapjSXfR+JqwT+LmqG09UCM4q8/CHei88Q5j9UOL+o3W1tRf1uMqf75Cr4X40ZB+iuMcOqE=
+X-Received: by 2002:a81:1dd1:0:b0:2ea:c38b:65a8 with SMTP id
+ d200-20020a811dd1000000b002eac38b65a8mr23947273ywd.135.1651007764178; Tue, 26
+ Apr 2022 14:16:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220426201539.12829-1-sven@svenpeter.dev>
+In-Reply-To: <20220426201539.12829-1-sven@svenpeter.dev>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Tue, 26 Apr 2022 23:15:48 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1yJkegvgvzHemBd_dowvpyDmxtUnrpiHob8+hiNeO4sw@mail.gmail.com>
+Message-ID: <CAK8P3a1yJkegvgvzHemBd_dowvpyDmxtUnrpiHob8+hiNeO4sw@mail.gmail.com>
+Subject: Re: [PATCH v3 0/6] Apple M1 (Pro/Max) NVMe driver
+To:     Sven Peter <sven@svenpeter.dev>
+Cc:     Hector Martin <marcan@marcan.st>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Keith Busch <kbusch@kernel.org>,
+        Jens Axboe <axboe@fb.com>, Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Marc Zyngier <maz@kernel.org>, Janne Grunau <j@jannau.net>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-nvme@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:CixkS2E+mlKw5pzPwhyDCC/8HxFvnr3fmZhK4GHAcYfDZLts8XD
+ iRk6lX964SAVPkFxrZ/mvnfFOZqTYsJwrrxsz68R7hh8hD3EgkHIAXjDnn1U5jXuBZzFe1n
+ 6dK/Yg2qoYt6uy7WOgeTbIVUWY5F256u/Bbw7jmgkf17u9vvr8YzZw8Ra89GQrhgiZYfGZX
+ 5z7fbK4CeEyXTNuv0Eufw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:SbbhEI0rkWg=:eUZEiUHFZiKJDS2DW1SQee
+ Af1x9PLsKdCkbbKeD8NVLB7QpGG5RG/133tp4hDAyQynhS0kKk98FMyhTRxYOsqQDS37bwCd1
+ wt+cJNB94WAdhWbE+mMkJAqDFYOVzdk6R+9ZP8jVQPMmCrcrk2TJ+Hw8e4wliHsy9CpP9l/8O
+ PQG6wHCWSUlVj67hpUt88pzfch3N1ntrRw7KgFMf5xMdLgAoYHaE8Cbta2oNNuBSCrc5HXUeZ
+ gCL0Ml0HAoUT+w8xIqyBSXqVPbo07nxmXTriWu/7ekYKS9M5cDk26fQUK2tXKy3GG1cgFG6ZD
+ SHo95Gu6sJE2e0c82cnYlZg/VV6reXmOVNY88HgLH4hxtBCmbLRUTxuvnIv9rvVuxPvum4XnZ
+ puQp+e+pMb6hQ1F/zBcQQgcfLEcpHeG2xpS1jCcJ99dbPeYEB6oJcr4Gv4MtMfK2RlslMYU2+
+ fPJyQ4als5hYkfKBryHMSPB8wEia19dqs5Aebx3hIED9mH2nUR89/hS2JsYS3Ezf1CbNOW1tT
+ dDnsB6P95KGpAr06AMk1yZrGYbPbY8yfMq1rTXQvD79ZjcNi4SSNDKtVDAVLy0+R50sd1JFhb
+ sQ+Y7gx68+soP32QPvvOTbrk+MqzpHBjJIFW2lI5/f8PtYNgeF9IcJT7xOXqZ8v5/wwD6dd24
+ /B1njLN+7qFQ6tyWEJ0BEt+yrHnh1pXcecmRORlXktMG74OKmsZqP89e6a31T8nzBckOx2iEx
+ quSjsSrO85b1J6MwAhudajmp5FQEr0auEeJK4VehP44ViQClo7PCoiZdaDxvrDMemURC6TOds
+ 5uCmLIA27bF2UM/rTyoYphqapqcR/PnwsnzU3oAV207r/TQblk=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The function 'thermal_set_delay_jiffies' is only used in
-thermal_core.c but it is defined and implemented in a separate
-file. Move the function to thermal_core.c and make it static.
+On Tue, Apr 26, 2022 at 10:15 PM Sven Peter <sven@svenpeter.dev> wrote:
+>
+> Hi,
+>
+> This series includes everything[*] required to get NVMe up and running on
+> Apple's M1, M1 Pro and M1 Max SoCs.
+>
+> v1: https://lore.kernel.org/linux-nvme/20220321165049.35985-1-sven@svenpeter.dev/T/
+> v2: https://lore.kernel.org/linux-nvme/20220415142055.30873-1-sven@svenpeter.dev/T/
+>
+> Thanks everyone for the reviews of v2 again! There are just some minor
+> changes since v2 listed in the individual commits again.
 
-Cc: Alexandre Bailon <abailon@baylibre.com>
-Cc: Kevin Hilman <khilman@baylibre.com>
-Cc; Eduardo Valentin <eduval@amazon.com>
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linexp.org>
----
- drivers/thermal/thermal_core.c    | 7 +++++++
- drivers/thermal/thermal_core.h    | 1 -
- drivers/thermal/thermal_helpers.c | 7 -------
- 3 files changed, 7 insertions(+), 8 deletions(-)
+Nice! I had not looked at v2 in much detail, but I'm perfectly happy
+with this version,
 
-diff --git a/drivers/thermal/thermal_core.c b/drivers/thermal/thermal_core.c
-index a34c8cb31e91..e741c932236e 100644
---- a/drivers/thermal/thermal_core.c
-+++ b/drivers/thermal/thermal_core.c
-@@ -1158,6 +1158,13 @@ static void bind_tz(struct thermal_zone *tz)
- 	mutex_unlock(&thermal_list_lock);
- }
- 
-+static void thermal_set_delay_jiffies(unsigned long *delay_jiffies, int delay_ms)
-+{
-+	*delay_jiffies = msecs_to_jiffies(delay_ms);
-+	if (delay_ms > 1000)
-+		*delay_jiffies = round_jiffies(*delay_jiffies);
-+}
-+
- /**
-  * thermal_zone_register() - register a new thermal zone device
-  * @type:	the thermal zone device type
-diff --git a/drivers/thermal/thermal_core.h b/drivers/thermal/thermal_core.h
-index 9ecd12e8ef9b..ea92a959ad59 100644
---- a/drivers/thermal/thermal_core.h
-+++ b/drivers/thermal/thermal_core.h
-@@ -112,7 +112,6 @@ int thermal_build_list_of_policies(char *buf);
- 
- /* Helpers */
- void thermal_zone_set_trips(struct thermal_zone *tz);
--void thermal_set_delay_jiffies(unsigned long *delay_jiffies, int delay_ms);
- 
- /* sysfs I/F */
- int thermal_zone_create_device_groups(struct thermal_zone *, int);
-diff --git a/drivers/thermal/thermal_helpers.c b/drivers/thermal/thermal_helpers.c
-index 76b831d9e0e9..aa687dee4d64 100644
---- a/drivers/thermal/thermal_helpers.c
-+++ b/drivers/thermal/thermal_helpers.c
-@@ -174,13 +174,6 @@ void thermal_zone_set_trips(struct thermal_zone *tz)
- 	mutex_unlock(&tz->lock);
- }
- 
--void thermal_set_delay_jiffies(unsigned long *delay_jiffies, int delay_ms)
--{
--	*delay_jiffies = msecs_to_jiffies(delay_ms);
--	if (delay_ms > 1000)
--		*delay_jiffies = round_jiffies(*delay_jiffies);
--}
--
- static void thermal_cdev_set_cur_state(struct thermal_cooling_device *cdev,
- 				       int target)
- {
--- 
-2.25.1
+I found a few things that could be improved if you do a respin, but
+nothing important.
 
+> [*] The only missing part in this series are the device tree updates
+>     but since these will go through arm-soc anyway I haven't included
+>     them here but will instead submit them once this series is in a shape
+>     where it can be merged.
+
+Just as a clarification: the drivers/soc/ portion should normally go through the
+soc tree as well, but I'm happy for those to get merged along with the
+nvme driver
+if that helps get it all mainlined more quickly.
+
+       Arnd
