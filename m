@@ -2,88 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A84FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:03:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83BBCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:05:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343640AbiDZHG4 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 03:06:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50504 "EHLO
+        id S234634AbiDZHIO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 03:08:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343625AbiDZHGm (ORCPT
+        with ESMTP id S229659AbiDZHIL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 03:06:42 -0400
-Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 88A9C6D4C2;
-        Tue, 26 Apr 2022 00:03:35 -0700 (PDT)
-HMM_SOURCE_IP: 172.18.0.48:51254.2065698957
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-202.80.192.38 (unknown [172.18.0.48])
-        by chinatelecom.cn (HERMES) with SMTP id B42EE2800BC;
-        Tue, 26 Apr 2022 15:03:32 +0800 (CST)
-X-189-SAVE-TO-SEND: +liuxp11@chinatelecom.cn
-Received: from  ([172.18.0.48])
-        by app0024 with ESMTP id 08721fdb41b643019545bdfc34306865 for wim@linux-watchdog.org;
-        Tue, 26 Apr 2022 15:03:34 CST
-X-Transaction-ID: 08721fdb41b643019545bdfc34306865
-X-Real-From: liuxp11@chinatelecom.cn
-X-Receive-IP: 172.18.0.48
-X-MEDUSA-Status: 0
-Sender: liuxp11@chinatelecom.cn
-From:   Liu Xinpeng <liuxp11@chinatelecom.cn>
-To:     wim@linux-watchdog.org, linux@roeck-us.net, tzungbi@kernel.org
-Cc:     linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Liu Xinpeng <liuxp11@chinatelecom.cn>
-Subject: [PATCH v4 4/4] watchdog: iTCO_wdg: Make code more clearly with macro definition
-Date:   Tue, 26 Apr 2022 15:03:08 +0800
-Message-Id: <1650956588-795-5-git-send-email-liuxp11@chinatelecom.cn>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1650956588-795-1-git-send-email-liuxp11@chinatelecom.cn>
-References: <1650956588-795-1-git-send-email-liuxp11@chinatelecom.cn>
+        Tue, 26 Apr 2022 03:08:11 -0400
+Received: from mail.meizu.com (edge07.meizu.com [112.91.151.210])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 987376424;
+        Tue, 26 Apr 2022 00:05:02 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail11.meizu.com
+ (172.16.1.15) with Microsoft SMTP Server (TLS) id 14.3.487.0; Tue, 26 Apr
+ 2022 15:05:03 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Tue, 26 Apr
+ 2022 15:05:00 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     Alex Shi <alexs@kernel.org>, Jonathan Corbet <corbet@lwn.net>
+CC:     Haowen Bai <baihaowen@meizu.com>, <linux-doc@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH 1/2] docs/zh_CN: sync with original text Documentation/vm/page_owner.rst
+Date:   Tue, 26 Apr 2022 15:04:53 +0800
+Message-ID: <1650956694-30699-2-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1650956694-30699-1-git-send-email-baihaowen@meizu.com>
+References: <1650956694-30699-1-git-send-email-baihaowen@meizu.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Using SET_NOIRQ_SYSTEM_SLEEP_PM_OPS reduces redundant code.
+As the tools/vm/page_owner_sort added some feature and original text
+updated, sync the translation of zh_CN as below.
 
-Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
-Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
+Commit 8bd16bc0a081 ("tools/vm/page_owner_sort.c: support sorting blocks
+by multiple keys") add sorting blocks by multiple keys usage
+description.
+
+Commit 78a0b94f3829 ("tools/vm/page_owner_sort.c: support for multi-value
+selection in single argument") add multi-value selection in single
+argument usage description.
+
+Commit c89b3ad2dea2 ("doc/vm/page_owner.rst: remove content related to -c
+option") remove  -c option usage description.
+
+Commit 9c8a0a8e599f ("tools/vm/page_owner_sort.c: support for user-defined
+culling rules") add user-defined culling rules usage description.
+
+Commit 8ea8613a616a ("tools/vm/page_owner_sort.c: support for selecting by
+PID, TGID or task command name") add selecting by PID, TGID or task
+command name usage description.
+
+Commit 194d52d771b8 ("tools/vm/page_owner_sort: support for sorting by
+task command name") add sorting by task command name usage description.
+
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
 ---
- drivers/watchdog/iTCO_wdt.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+ Documentation/translations/zh_CN/vm/page_owner.rst | 61 +++++++++++++++++++++-
+ 1 file changed, 60 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/watchdog/iTCO_wdt.c b/drivers/watchdog/iTCO_wdt.c
-index 3f2f4343644f..8d24cf4f4ca3 100644
---- a/drivers/watchdog/iTCO_wdt.c
-+++ b/drivers/watchdog/iTCO_wdt.c
-@@ -635,22 +635,18 @@ static int iTCO_wdt_resume_noirq(struct device *dev)
+diff --git a/Documentation/translations/zh_CN/vm/page_owner.rst b/Documentation/translations/zh_CN/vm/page_owner.rst
+index 9e951fabba9d..c692e81c724e 100644
+--- a/Documentation/translations/zh_CN/vm/page_owner.rst
++++ b/Documentation/translations/zh_CN/vm/page_owner.rst
+@@ -103,14 +103,73 @@ page owner在默认情况下是禁用的。所以，如果你想使用它，你
+ 		-m		按总内存排序
+ 		-p		按pid排序。
+ 		-P		按tgid排序。
++		-n		按任务名称排序。
+ 		-r		按内存释放时间排序。
+ 		-s		按堆栈跟踪排序。
+ 		-t		按时间排序（默认）。
++		--sort <order>	指定排序顺序。排序语法是 [+|-]key[,[+|-]key[,...]]. 从
++						**标准格式说明符** 部分选择一个键。"+" 是可选的，因为默认方向是增加数字或字典顺序。
++						允许混合使用缩写键和全称键。
++
++		Examples:
++				./page_owner_sort <input> <output> --sort=n,+pid,-tgid
++				./page_owner_sort <input> <output> --sort=at
  
- 	return 0;
- }
-+#endif /* CONFIG_PM_SLEEP */
+    其它函数:
  
- static const struct dev_pm_ops iTCO_wdt_pm = {
--	.suspend_noirq = iTCO_wdt_suspend_noirq,
--	.resume_noirq = iTCO_wdt_resume_noirq,
-+	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(iTCO_wdt_suspend_noirq,
-+				      iTCO_wdt_resume_noirq)
- };
+ 	Cull:
+-		-c		通过比较堆栈跟踪而不是总块来进行剔除。
++		--cull <rules>
++				指定筛选规则。筛选语法是 key[,key[,...]]。在**标准格式说明符**部分选择一个多字母键
++
++		<rules> 是逗号分隔列表形式的单个参数，它提供了一种指定单个筛选规则的方法。下面的**标准格式说明
++				符**部分描述了可识别的关键字。<rules> 可以由键 k1,k2, ... 顺序指定，如下面的
++				STANDARD SORT KEYS 部分所述。允许混合使用缩写形式和完整形式的键。
  
--#define ITCO_WDT_PM_OPS	(&iTCO_wdt_pm)
--#else
--#define ITCO_WDT_PM_OPS	NULL
--#endif /* CONFIG_PM_SLEEP */
--
- static struct platform_driver iTCO_wdt_driver = {
- 	.probe          = iTCO_wdt_probe,
- 	.driver         = {
- 		.name   = DRV_NAME,
--		.pm     = ITCO_WDT_PM_OPS,
-+		.pm     = &iTCO_wdt_pm,
- 	},
- };
- 
++		Examples:
++				./page_owner_sort <input> <output> --cull=stacktrace
++				./page_owner_sort <input> <output> --cull=st,pid,name
++				./page_owner_sort <input> <output> --cull=n,f
+ 	Filter:
+ 		-f		过滤掉内存已被释放的块的信息。
++
++	Select:
++		--pid <pidlist>		通过 pid 进行选择。这将选择进程 ID 号出现在 <pidlist> 中的块。
++		--tgid <tgidlist>	通过 tgid 进行选择。这将选择线程组 ID 号出现在 <tgidlist> 中的块。
++		--name <cmdlist>	按任务名称选择。这将选择任务名称出现在 <cmdlist> 中的块。
++
++		<pidlist>、<tgidlist>、<cmdlist>是逗号分隔列表形式的单参数，它提供了一种指定单个选择规则的方法。
++
++
++		Examples:
++				./page_owner_sort <input> <output> --pid=1
++				./page_owner_sort <input> <output> --tgid=1,2,3
++				./page_owner_sort <input> <output> --name name1,name2
++
++标准格式说明符
++==============
++
++--sort 选项:
++
++        ======          ==========      ===================
++        缩写键          全称键          描述
++        ======          ==========      ===================
++        p               pid             进程 ID
++        tg              tgid            线程组 ID
++        n               name            任务名称
++        st              stacktrace      页面分配的调用栈
++        T               txt             块的全文
++        ft              free_ts         页面被释放的时间戳
++        at              alloc_ts        页面分配的时间戳
++        ======          ==========      ===================
++
++--curl 选项:
++
++        ======          ==========      ==================
++        缩写键          全称键          描述
++        ======          ==========      ==================
++        p               pid             进程 ID
++        tg              tgid            线程组 ID
++        n               name            任务名称
++        f               free            该页面是否已被释放
++        st              stacktrace      页面分配的调用栈
++        ======          ==========      ==================
 -- 
-2.23.0
+2.7.4
 
