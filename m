@@ -2,95 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82C23C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:12:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B5F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:12:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347806AbiDZJO5 (ORCPT
+        id S1347585AbiDZJOl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:14:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53426 "EHLO
+        Tue, 26 Apr 2022 05:14:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347171AbiDZIvL (ORCPT
+        with ESMTP id S1347252AbiDZIvP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:51:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E1D95174F57
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 01:39:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650962375;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=jw4mRm1FwTyP9UJn0J2QYoEfx6c/KUy1MZndEek5Xy4=;
-        b=GBWgqXkht6sDNof5EbVCHTfClfAyTFqyszgabT7CrLi7fIg9WYUlx7pGu/75GvO6WhQzhv
-        Px8KUa/M04NS+2ORW6TYRBZx9688+4K0qnYlHy3BU1f63xcV/bonaxOjMhvrinO88dqsb5
-        EzQO+g1vDa//7XExLw3RILK9/5sa/ew=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-528-CYwSJY6VMdCvHuicgWTNAg-1; Tue, 26 Apr 2022 04:39:33 -0400
-X-MC-Unique: CYwSJY6VMdCvHuicgWTNAg-1
-Received: by mail-wm1-f71.google.com with SMTP id d13-20020a05600c3acd00b0038ff865c043so912671wms.3
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 01:39:33 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jw4mRm1FwTyP9UJn0J2QYoEfx6c/KUy1MZndEek5Xy4=;
-        b=ruEl+motXCp04DRHUC90IQSvtTRFBprflJc6XkehMfMHBy+yh8umNf9bLrHtQlyp+Z
-         uoeyHKeIROFZ9TI3xDeKBODLakhVuVcGf6svQvTLdvkma22ipn3X+DDgeytMA7C1CO29
-         dbBqbHB1P4deQI0U9E4NYz5nPbgjKcFn966ZAj0b/cCzprmj1kK696rHH7Nyiog7Z5kA
-         2PrjMA/YGqQJ5GYsxYukfQSEq9zZo32l53vR+H0u/IwNKcQ3yJPHpGLauhjQG1wjMFs6
-         4YJ6PvU8sFhY98YTYz/08qfsqD4YyhHHu7wkITKOJv7Tl1IKWo4xIkzHGmi1ofP5d+RO
-         GI7g==
-X-Gm-Message-State: AOAM532nyBdpNW4br0XaBdxhTrFce/oRklLdWUm/8KxRlCBYxG0A+bUo
-        pmkZePvE+K0yvYuSaTkswJIS9/jYpgTy82M0fkC4Lg2BQLOahQDkiOJ1bQR95579CbkU9hfLi2g
-        FLHK0ONNCL78tAxI6GW0DhJA=
-X-Received: by 2002:adf:f2cc:0:b0:20a:cfbb:ac29 with SMTP id d12-20020adff2cc000000b0020acfbbac29mr13112678wrp.263.1650962372645;
-        Tue, 26 Apr 2022 01:39:32 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzg+iA38qQD6BfGY7gT19eBuYvIEUVtaGrwCfg2tNslK+9+RXqcvF8J8rAbLA8+jmpLyYCg8A==
-X-Received: by 2002:adf:f2cc:0:b0:20a:cfbb:ac29 with SMTP id d12-20020adff2cc000000b0020acfbbac29mr13112659wrp.263.1650962372470;
-        Tue, 26 Apr 2022 01:39:32 -0700 (PDT)
-Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
-        by smtp.gmail.com with ESMTPSA id 204-20020a1c02d5000000b003928c42d02asm12839575wmc.23.2022.04.26.01.39.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 01:39:31 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 09:39:30 +0100
-From:   Aaron Tomlin <atomlin@redhat.com>
-To:     Luis Chamberlain <mcgrof@kernel.org>, k@ava.usersys.com
-Cc:     cl@linux.com, pmladek@suse.com, mbenes@suse.cz,
-        christophe.leroy@csgroup.eu, akpm@linux-foundation.org,
-        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
-        atomlin@atomlin.com, ghalat@redhat.com, oleksandr@natalenko.name,
-        neelx@redhat.com
-Subject: Re: [PATCH v4 0/2] module: Introduce module unload taint tracking
-Message-ID: <20220426083930.hltsfxoe6ax6dspj@ava.usersys.com>
-X-PGP-Key: http://pgp.mit.edu/pks/lookup?search=atomlin%40redhat.com
-X-PGP-Fingerprint: 7906 84EB FA8A 9638 8D1E  6E9B E2DE 9658 19CC 77D6
-References: <20220425090841.3958494-1-atomlin@redhat.com>
- <YmcvZQSiu95MUvxI@bombadil.infradead.org>
+        Tue, 26 Apr 2022 04:51:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E8DC29C;
+        Tue, 26 Apr 2022 01:40:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B62BCB81CF0;
+        Tue, 26 Apr 2022 08:40:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07FE9C385A4;
+        Tue, 26 Apr 2022 08:39:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650962399;
+        bh=c4tV8qVMiEPhY0Aru+SR6B5J65uqhDU1LrLy5WMOB+A=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=unAd7+PUnXCNRyJHnoJ43UxmaFQvXPXCD3Ff3TE+fGRp66ruMKWJf/D7S80TwlzZ5
+         S9CHkY2h3GtrilQvBBPEjw35B6JLpIEAHsHnLvNrvDOoWqhBcJ4D/rWFSkMChM6KO2
+         HQP8WuicPCt9ca0M0ahelca8sJ2qDHS0TUaGvY8o=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Kurt Kanzenbach <kurt@linutronix.de>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 043/124] net: dsa: hellcreek: Calculate checksums in tagger
+Date:   Tue, 26 Apr 2022 10:20:44 +0200
+Message-Id: <20220426081748.526546166@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
+References: <20220426081747.286685339@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YmcvZQSiu95MUvxI@bombadil.infradead.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 2022-04-25 16:31 -0700, Luis Chamberlain wrote:
-> This all looks good except with all the work you did to remove
-> #ifdef hell, it gets me wondering why not just use a new file for this?
-> 
-> What does that look like?
+From: Kurt Kanzenbach <kurt@linutronix.de>
 
-Hi Luis,
+[ Upstream commit 0763120b090418a5257402754e22a34227ae5f12 ]
 
-I thought about it. It is indeed possible. Yet, I do not think it is worth
-it, for such a small change; albeit, what do you prefer?
+In case the checksum calculation is offloaded to the DSA master network
+interface, it will include the switch trailing tag. As soon as the switch strips
+that tag on egress, the calculated checksum is wrong.
 
+Therefore, add the checksum calculation to the tagger (if required) before
+adding the switch tag. This way, the hellcreek code works with all DSA master
+interfaces regardless of their declared feature set.
 
-Kind regards,
+Fixes: 01ef09caad66 ("net: dsa: Add tag handling for Hirschmann Hellcreek switches")
+Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220415103320.90657-1-kurt@linutronix.de
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/dsa/tag_hellcreek.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
+diff --git a/net/dsa/tag_hellcreek.c b/net/dsa/tag_hellcreek.c
+index f64b805303cd..eb204ad36eee 100644
+--- a/net/dsa/tag_hellcreek.c
++++ b/net/dsa/tag_hellcreek.c
+@@ -21,6 +21,14 @@ static struct sk_buff *hellcreek_xmit(struct sk_buff *skb,
+ 	struct dsa_port *dp = dsa_slave_to_port(dev);
+ 	u8 *tag;
+ 
++	/* Calculate checksums (if required) before adding the trailer tag to
++	 * avoid including it in calculations. That would lead to wrong
++	 * checksums after the switch strips the tag.
++	 */
++	if (skb->ip_summed == CHECKSUM_PARTIAL &&
++	    skb_checksum_help(skb))
++		return NULL;
++
+ 	/* Tag encoding */
+ 	tag  = skb_put(skb, HELLCREEK_TAG_LEN);
+ 	*tag = BIT(dp->index);
 -- 
-Aaron Tomlin
+2.35.1
+
+
 
