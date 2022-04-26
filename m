@@ -2,166 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB060C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 11:57:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33CBDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 11:59:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349731AbiDZMAa (ORCPT
+        id S1346902AbiDZMDC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 08:00:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51890 "EHLO
+        Tue, 26 Apr 2022 08:03:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239509AbiDZMAZ (ORCPT
+        with ESMTP id S239509AbiDZMDA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 08:00:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33C0256425;
-        Tue, 26 Apr 2022 04:57:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C360061450;
-        Tue, 26 Apr 2022 11:57:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18D19C385AD;
-        Tue, 26 Apr 2022 11:57:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650974237;
-        bh=twfTbbwUvKw/8ZG6RW1rx/zAXpWAE+uv7bndMdyjTh4=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=ovmbWjM4yMUna6oFKMWFskjFHX7UssxUvkdzmOFocV6oOR932Hrv61+uG+kWdyWqX
-         RSvufD0OlEd1PHn7iRYbD6zs/e5IOLv432NI+fgyWvPB285wBoS09Y9kJFOKIL/Zvz
-         lyvXZQM9mTrQzD2qv5O9JGJm9gEoCzXcAzRmOyQMMS/iWW650OwOsFiMcYcczJD9c+
-         PWMumhLZ4XD+cMH7aLRlidJNsP8vEZ7FddLHHkLlrxin16WXiQ6VIlO8frKJb4qL37
-         d3eZuWR3CM6A49SDlQpdNjTGxsY1vHjL8l53K/oMae9WW7imJCCGiN8lwp32ViUPvv
-         zXjo7j4nOTjZw==
-Message-ID: <1535620a-5a41-1ec4-3963-c9bc3b8e117f@kernel.org>
-Date:   Tue, 26 Apr 2022 13:57:13 +0200
+        Tue, 26 Apr 2022 08:03:00 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49B566339E;
+        Tue, 26 Apr 2022 04:59:52 -0700 (PDT)
+Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KngNV48MVzGpRr;
+        Tue, 26 Apr 2022 19:57:14 +0800 (CST)
+Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
+ dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 26 Apr 2022 19:59:50 +0800
+Received: from huawei.com (10.67.165.24) by dggpeml100012.china.huawei.com
+ (7.185.36.121) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 26 Apr
+ 2022 19:59:50 +0800
+From:   Kai Ye <yekai13@huawei.com>
+To:     <herbert@gondor.apana.org.au>
+CC:     <linux-crypto@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <wangzhou1@hisilicon.com>, <yekai13@huawei.com>,
+        <liulongfang@huawei.com>
+Subject: [PATCH] crypto: hisilicon/sec - add sm4 generic selection
+Date:   Tue, 26 Apr 2022 19:53:58 +0800
+Message-ID: <20220426115358.52392-1-yekai13@huawei.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 1/2] rtla: Remove procps-ng dependency
-Content-Language: en-US
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     linux-trace-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        John Kacur <jkacur@redhat.com>, Daniel Wagner <dwagner@suse.de>
-References: <52161d343abeda6d039d2f0734904a1383a4c62e.1650617571.git.bristot@kernel.org>
- <20220425214559.55988956@gandalf.local.home>
-From:   Daniel Bristot de Oliveira <bristot@kernel.org>
-In-Reply-To: <20220425214559.55988956@gandalf.local.home>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpeml100012.china.huawei.com (7.185.36.121)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/26/22 03:45, Steven Rostedt wrote:
-> On Fri, 22 Apr 2022 12:01:31 +0200
-> Daniel Bristot de Oliveira <bristot@kernel.org> wrote:
-> 
-> 
->> +
->> +/*
->> + * procfs_is_workload_pid - check if a procfs entry contains a workload_prefix* comm
->> + *
->> + * Check if the procfs entry is a directory of a process, and then check if the
->> + * process has a comm with the prefix set in char *workload_prefix. As the
->> + * current users of this function only check for kernel threads, there is no
->> + * need to check for the threads for the process.
->> + *
->> + * Return: True if the proc_entry contains a comm file with workload_prefix*.
->> + * Otherwise returns false.
->> + */
->> +static int procfs_is_workload_pid(const char *workload_prefix, struct dirent *proc_entry)
->> +{
->> +	char comm_path[MAX_PATH], comm[MAX_PATH];
-> 
-> This is probably fine (but there is one issue), but I would have done this
-> a little different.
-> 
-> 	int len = strlen(workload_prefix);
-> 	char comm[len + 1];
-> 
->> +	int comm_fd, retval;
->> +	char *t_name;
->> +
->> +	if (proc_entry->d_type != DT_DIR)
->> +		return 0;
->> +
->> +	if (*proc_entry->d_name == '.')
->> +		return 0;
->> +
->> +	/* check if the string is a pid */
->> +	for (t_name = proc_entry->d_name; t_name; t_name++) {
->> +		if (!isdigit(*t_name))
->> +			break;
->> +	}
->> +
->> +	if (*t_name != '\0')
->> +		return 0;
->> +
->> +	snprintf(comm_path, MAX_PATH, "/proc/%s/comm", proc_entry->d_name);
->> +	comm_fd = open(comm_path, O_RDONLY);
->> +	if (comm_fd < 0)
->> +		return 0;
->> +
->> +	memset(comm, 0, MAX_PATH);
-> 
-> No need for the memset.
-> 
->> +	retval = read(comm_fd, comm, MAX_PATH);
-> 
-> 	retval = read(comm_fd, comm, len + 1);
-> 
->> +
->> +	close(comm_fd);
->> +
->> +	if (retval <= 0)
->> +		return 0;
-> 
-> 	if (comm[len] != '\n')
-> 		return 0;
-> 
->> +
->> +	retval = !strncmp(workload_prefix, comm, strlen(workload_prefix));
-> 
-> What happens if strlen(workload_prefix) is greater than MAX_PATH? ;-)
+Add sm4 generic selection for fallback tfm in the Kconfig.
 
-That is a concern I had, but we have only two use cases on rtla so far, and they
-are both bounded: 'timerlat/' 'osnoise/'...
+Signed-off-by: Kai Ye <yekai13@huawei.com>
+---
+ drivers/crypto/hisilicon/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-I will add a check though.
-
-> 
-> 	retval = !strncmp(workload_prefix, comm, len);
-> 
-> But that's me. If you want to keep this as is, let me know.
-
-I made these changes... but I am loosing the debug_msg() with the comm/pid that
-matched. I am adding these messages (and I plan to add more) so I can use on
-testing scripts...
-
-At the same time, I can share a char buffer[MAX_PATH] for both the comm and
-comm_path...
-
-I think I will go this way (using a single buffer), adding a warning... and...
-
-> -- Steve
-> 
-> 
-> 
->> +	if (!retval)
->> +		return 0;
-
-also removing ! in the the revtal = !strcmp(...); if (!retval).
-
-Thoughts?
-
--- Daniel
-
->> +
->> +	/* comm already have \n */
->> +	debug_msg("Found workload pid:%s comm:%s", proc_entry->d_name, comm);
->> +
->> +	return 1;
->> +}
->> +
+diff --git a/drivers/crypto/hisilicon/Kconfig b/drivers/crypto/hisilicon/Kconfig
+index e572f9982d4e..27e1fa912063 100644
+--- a/drivers/crypto/hisilicon/Kconfig
++++ b/drivers/crypto/hisilicon/Kconfig
+@@ -26,6 +26,7 @@ config CRYPTO_DEV_HISI_SEC2
+ 	select CRYPTO_SHA1
+ 	select CRYPTO_SHA256
+ 	select CRYPTO_SHA512
++	select CRYPTO_SM4
+ 	depends on PCI && PCI_MSI
+ 	depends on UACCE || UACCE=n
+ 	depends on ARM64 || (COMPILE_TEST && 64BIT)
+-- 
+2.33.0
 
