@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50677C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:04:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62E48C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:05:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237064AbiDZJHz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:07:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56256 "EHLO
+        id S1345642AbiDZJIF (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:08:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346402AbiDZIpA (ORCPT
+        with ESMTP id S1346335AbiDZIov (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:45:00 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5008789329;
-        Tue, 26 Apr 2022 01:34:43 -0700 (PDT)
+        Tue, 26 Apr 2022 04:44:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B752887B0;
+        Tue, 26 Apr 2022 01:34:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E1D21CE1BC3;
-        Tue, 26 Apr 2022 08:34:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3CA1C385A0;
-        Tue, 26 Apr 2022 08:34:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 06190617E7;
+        Tue, 26 Apr 2022 08:34:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 127A6C385A0;
+        Tue, 26 Apr 2022 08:34:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962080;
-        bh=cO5fCD0ZzNkZaR/zh4/84j4XIbL0lFAwsD0hABYmrS8=;
+        s=korg; t=1650962077;
+        bh=PIbE8wYRzCn0BTyvB9PVYzMMEEQC1HTzIblaKs78ulA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZPDlixFUwmRQiXC0c/CBzObZEcVbCpMcaR/8xhRm46vk2Sv32xEI1PWFS1l/xFUyS
-         in1F0+HHe1QpPFDVkkv6Ezzo3Nm7fw3yEyr3V72Q+ksRQMQXtqStxi2MceDCQwACQG
-         DNq4XuJ4Mgv2IOo8EdMr+e8+T6lnIctm0E0A36P4=
+        b=u+5d0n16mUhznDxUx0Tvq0ySfm8iTGsyQv3Y+RLM0sBWyTDj3l2h7fOWTJSw4FJbQ
+         cW0VWQuK6D1WAYBC1Q8oaI0dzYYzCMmckOG23PqEzkjp3lH3mtujoci5FfYj+Wg3v2
+         O8dgl2YX4GSSmm0r4Um8/qHsp3qcPCNLYCgo3kWk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Al Grant <al.grant@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH 5.10 65/86] arm_pmu: Validate single/group leader events
-Date:   Tue, 26 Apr 2022 10:21:33 +0200
-Message-Id: <20220426081743.084793776@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sergey Matyukevich <sergey.matyukevich@synopsys.com>,
+        Vineet Gupta <vgupta@kernel.org>
+Subject: [PATCH 5.10 64/86] ARC: entry: fix syscall_trace_exit argument
+Date:   Tue, 26 Apr 2022 10:21:32 +0200
+Message-Id: <20220426081743.054171142@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
 References: <20220426081741.202366502@linuxfoundation.org>
@@ -50,54 +50,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Herring <robh@kernel.org>
+From: Sergey Matyukevich <sergey.matyukevich@synopsys.com>
 
-commit e5c23779f93d45e39a52758ca593bd7e62e9b4be upstream.
+commit b1c6ecfdd06907554518ec384ce8e99889d15193 upstream.
 
-In the case where there is only a cycle counter available (i.e.
-PMCR_EL0.N is 0) and an event other than CPU cycles is opened, the open
-should fail as the event can never possibly be scheduled. However, the
-event validation when an event is opened is skipped when the group
-leader is opened. Fix this by always validating the group leader events.
+Function syscall_trace_exit expects pointer to pt_regs. However
+r0 is also used to keep syscall return value. Restore pointer
+to pt_regs before calling syscall_trace_exit.
 
-Reported-by: Al Grant <al.grant@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Acked-by: Mark Rutland <mark.rutland@arm.com>
-Link: https://lore.kernel.org/r/20220408203330.4014015-1-robh@kernel.org
 Cc: <stable@vger.kernel.org>
-Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Sergey Matyukevich <sergey.matyukevich@synopsys.com>
+Signed-off-by: Vineet Gupta <vgupta@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/perf/arm_pmu.c |   10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ arch/arc/kernel/entry.S |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/perf/arm_pmu.c
-+++ b/drivers/perf/arm_pmu.c
-@@ -398,6 +398,9 @@ validate_group(struct perf_event *event)
- 	if (!validate_event(event->pmu, &fake_pmu, leader))
- 		return -EINVAL;
+--- a/arch/arc/kernel/entry.S
++++ b/arch/arc/kernel/entry.S
+@@ -199,6 +199,7 @@ tracesys_exit:
+ 	st  r0, [sp, PT_r0]     ; sys call return value in pt_regs
  
-+	if (event == leader)
-+		return 0;
-+
- 	for_each_sibling_event(sibling, leader) {
- 		if (!validate_event(event->pmu, &fake_pmu, sibling))
- 			return -EINVAL;
-@@ -487,12 +490,7 @@ __hw_perf_event_init(struct perf_event *
- 		local64_set(&hwc->period_left, hwc->sample_period);
- 	}
- 
--	if (event->group_leader != event) {
--		if (validate_group(event) != 0)
--			return -EINVAL;
--	}
--
--	return 0;
-+	return validate_group(event);
- }
- 
- static int armpmu_event_init(struct perf_event *event)
+ 	;POST Sys Call Ptrace Hook
++	mov r0, sp		; pt_regs needed
+ 	bl  @syscall_trace_exit
+ 	b   ret_from_exception ; NOT ret_from_system_call at is saves r0 which
+ 	; we'd done before calling post hook above
 
 
