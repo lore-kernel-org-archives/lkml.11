@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFF72C35294
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:37:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85C4AC352A7
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:37:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348559AbiDZJkP (ORCPT
+        id S1348737AbiDZJkf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:40:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55002 "EHLO
+        Tue, 26 Apr 2022 05:40:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345987AbiDZJHC (ORCPT
+        with ESMTP id S1346695AbiDZJMt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:07:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6A543AA4C;
-        Tue, 26 Apr 2022 01:48:16 -0700 (PDT)
+        Tue, 26 Apr 2022 05:12:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 060EA1815FF;
+        Tue, 26 Apr 2022 01:49:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 70F69B81CF2;
-        Tue, 26 Apr 2022 08:48:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B68A1C385A4;
-        Tue, 26 Apr 2022 08:48:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9941AB81D09;
+        Tue, 26 Apr 2022 08:49:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E36CDC385A4;
+        Tue, 26 Apr 2022 08:49:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962894;
-        bh=4AXazc0jgDq/CltRhbfOjP6IiwafM5rb0c14XsM8sU8=;
+        s=korg; t=1650962983;
+        bh=nklLb4gbCMQEaN+WxPmRslhp6NdUltk2940n2uXGnuk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ij+CAe8pojujSsAQDQNGEHSlZGrzVOCO81tKQ/YnjzlKslumDTs5t8AuxjMrV059o
-         ZUL1UlGC8lX5Fx0JyWwA09/JxEGNon4iUyy/UVb2mzlmSxrLbNQvaiDfV0huhDXtcw
-         FLQRYARlQrFjXXf5rgddAd0kB0BMg53eNlHyFB48=
+        b=LvD8Lcr6UaUgBr4LAt+qv6jdYxpg7OLc7TAtO4IF00YApo77gnk+fheeB/fsd3SM0
+         ZZw/ZI9S+Xb4y3WLY+2vASAUfQcVuZ7Ba5jT+ItvtLti+NdCoXATMDDO+b1Yfj88YA
+         dT5BcznNbm5UpFtYCu7i34UWR8ZdERZoIzBF6kH8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.17 124/146] codecs: rt5682s: fix an incorrect NULL check on list iterator
-Date:   Tue, 26 Apr 2022 10:21:59 +0200
-Message-Id: <20220426081753.548650313@linuxfoundation.org>
+        stable@vger.kernel.org, Alex Elder <elder@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: [PATCH 5.17 146/146] arm64: dts: qcom: add IPA qcom,qmp property
+Date:   Tue, 26 Apr 2022 10:22:21 +0200
+Message-Id: <20220426081754.163324695@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -49,55 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Alex Elder <elder@linaro.org>
 
-commit acc72863e0f11cd0bedc888b663700229f9ba5ff upstream.
+commit 73419e4d2fd1b838fcb1df6a978d67b3ae1c5c01 upstream.
 
-The bug is here:
-            if (!dai) {
+At least three platforms require the "qcom,qmp" property to be
+specified, so the IPA driver can request register retention across
+power collapse.  Update DTS files accordingly.
 
-The list iterator value 'dai' will *always* be set and non-NULL
-by for_each_component_dais(), so it is incorrect to assume that
-the iterator value will be NULL if the list is empty or no element
-is found (In fact, it will be a bogus pointer to an invalid struct
-object containing the HEAD). Otherwise it will bypass the check
-'if (!dai) {' (never call dev_err() and never return -ENODEV;)
-and lead to invalid memory access lately when calling
-'rt5682s_set_bclk1_ratio(dai, factor);'.
-
-To fix the bug, just return rt5682s_set_bclk1_ratio(dai, factor);
-when found the 'dai', otherwise dev_err() and return -ENODEV;
-
-Cc: stable@vger.kernel.org
-Fixes: bdd229ab26be9 ("ASoC: rt5682s: Add driver for ALC5682I-VS codec")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Link: https://lore.kernel.org/r/20220327081300.12962-1-xiam0nd.tong@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Alex Elder <elder@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220201140723.467431-1-elder@linaro.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/rt5682s.c |   11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+ arch/arm64/boot/dts/qcom/sc7180.dtsi |    2 ++
+ arch/arm64/boot/dts/qcom/sc7280.dtsi |    2 ++
+ arch/arm64/boot/dts/qcom/sm8350.dtsi |    2 ++
+ 3 files changed, 6 insertions(+)
 
---- a/sound/soc/codecs/rt5682s.c
-+++ b/sound/soc/codecs/rt5682s.c
-@@ -2679,14 +2679,11 @@ static int rt5682s_bclk_set_rate(struct
+--- a/arch/arm64/boot/dts/qcom/sc7180.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7180.dtsi
+@@ -1459,6 +1459,8 @@
+ 					     "imem",
+ 					     "config";
  
- 	for_each_component_dais(component, dai)
- 		if (dai->id == RT5682S_AIF1)
--			break;
--	if (!dai) {
--		dev_err(component->dev, "dai %d not found in component\n",
--			RT5682S_AIF1);
--		return -ENODEV;
--	}
-+			return rt5682s_set_bclk1_ratio(dai, factor);
++			qcom,qmp = <&aoss_qmp>;
++
+ 			qcom,smem-states = <&ipa_smp2p_out 0>,
+ 					   <&ipa_smp2p_out 1>;
+ 			qcom,smem-state-names = "ipa-clock-enabled-valid",
+--- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+@@ -1714,6 +1714,8 @@
+ 			interconnect-names = "memory",
+ 					     "config";
  
--	return rt5682s_set_bclk1_ratio(dai, factor);
-+	dev_err(component->dev, "dai %d not found in component\n",
-+		RT5682S_AIF1);
-+	return -ENODEV;
- }
++			qcom,qmp = <&aoss_qmp>;
++
+ 			qcom,smem-states = <&ipa_smp2p_out 0>,
+ 					   <&ipa_smp2p_out 1>;
+ 			qcom,smem-state-names = "ipa-clock-enabled-valid",
+--- a/arch/arm64/boot/dts/qcom/sm8350.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8350.dtsi
+@@ -1443,6 +1443,8 @@
+ 			interconnect-names = "memory",
+ 					     "config";
  
- static const struct clk_ops rt5682s_dai_clk_ops[RT5682S_DAI_NUM_CLKS] = {
++			qcom,qmp = <&aoss_qmp>;
++
+ 			qcom,smem-states = <&ipa_smp2p_out 0>,
+ 					   <&ipa_smp2p_out 1>;
+ 			qcom,smem-state-names = "ipa-clock-enabled-valid",
 
 
