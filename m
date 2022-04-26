@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8ECAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:14:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3AD8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:14:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245077AbiDZJQL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:16:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55746 "EHLO
+        id S244513AbiDZJRk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:17:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346694AbiDZIuQ (ORCPT
+        with ESMTP id S1346347AbiDZIuB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:50:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 438C416D991;
-        Tue, 26 Apr 2022 01:38:41 -0700 (PDT)
+        Tue, 26 Apr 2022 04:50:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B49CC90C3;
+        Tue, 26 Apr 2022 01:38:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B5E85B81D09;
-        Tue, 26 Apr 2022 08:38:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11FD4C385A0;
-        Tue, 26 Apr 2022 08:38:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 718036090C;
+        Tue, 26 Apr 2022 08:38:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77142C385A0;
+        Tue, 26 Apr 2022 08:38:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962318;
-        bh=5OERo2r+XXRBZapPjMBAUbdhmImkWNTw4gJreqwgq2c=;
+        s=korg; t=1650962287;
+        bh=1OWTHQQH1jcO8sBBchXhD6ZyJQdD/B6PmUizs65gAqU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b7UlclMUYWrYSFr6bo/Y2OPm9Czj9vu6+XJWQMiw4zOinADPpbphqxz1bmTqkpWQJ
-         syKyJgtmL1S3xQb31RsFYqeLPgdyoinInJNQP1Po+IgtGOB/jxKq/0Bl0VHvm+HE4m
-         GXavcG5J3K4rlhYUt+wrBhnloAq6jgc/T5cQs2yI=
+        b=1S55xpgUGNP+j5OvUz2ON9E5LZZsm09oJH9uUZ0ITM/7N9PM8NRrq737iceWeQwSp
+         +tjBIH0J9xou8UpbaQ/KpaYWzebMypI5klYNtzXnTKS4yLF3YgVlqoWytn/orUnqLa
+         /r2GVNroBiwAD7+KNR4wtTgO9GpO661FBYJJSkV0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Hans de Goede <hdegoede@redhat.com>,
+        stable@vger.kernel.org, Kevin Hao <haokexin@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 056/124] platform/x86: samsung-laptop: Fix an unsigned comparison which can never be negative
-Date:   Tue, 26 Apr 2022 10:20:57 +0200
-Message-Id: <20220426081748.894268339@linuxfoundation.org>
+Subject: [PATCH 5.15 047/124] net: stmmac: Use readl_poll_timeout_atomic() in atomic state
+Date:   Tue, 26 Apr 2022 10:20:48 +0200
+Message-Id: <20220426081748.638899495@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -50,38 +49,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+From: Kevin Hao <haokexin@gmail.com>
 
-[ Upstream commit 0284d4d1be753f648f28b77bdfbe6a959212af5c ]
+[ Upstream commit 234901de2bc6847eaa0aeb4aba62c31ffb8d3ad6 ]
 
-Eliminate the follow smatch warnings:
+The init_systime() may be invoked in atomic state. We have observed the
+following call trace when running "phc_ctl /dev/ptp0 set" on a Intel
+Agilex board.
+  BUG: sleeping function called from invalid context at drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c:74
+  in_atomic(): 1, irqs_disabled(): 128, non_block: 0, pid: 381, name: phc_ctl
+  preempt_count: 1, expected: 0
+  RCU nest depth: 0, expected: 0
+  Preemption disabled at:
+  [<ffff80000892ef78>] stmmac_set_time+0x34/0x8c
+  CPU: 2 PID: 381 Comm: phc_ctl Not tainted 5.18.0-rc2-next-20220414-yocto-standard+ #567
+  Hardware name: SoCFPGA Agilex SoCDK (DT)
+  Call trace:
+   dump_backtrace.part.0+0xc4/0xd0
+   show_stack+0x24/0x40
+   dump_stack_lvl+0x7c/0xa0
+   dump_stack+0x18/0x34
+   __might_resched+0x154/0x1c0
+   __might_sleep+0x58/0x90
+   init_systime+0x78/0x120
+   stmmac_set_time+0x64/0x8c
+   ptp_clock_settime+0x60/0x9c
+   pc_clock_settime+0x6c/0xc0
+   __arm64_sys_clock_settime+0x88/0xf0
+   invoke_syscall+0x5c/0x130
+   el0_svc_common.constprop.0+0x4c/0x100
+   do_el0_svc+0x7c/0xa0
+   el0_svc+0x58/0xcc
+   el0t_64_sync_handler+0xa4/0x130
+   el0t_64_sync+0x18c/0x190
 
-drivers/platform/x86/samsung-laptop.c:1124 kbd_led_set() warn: unsigned
-'value' is never less than zero.
+So we should use readl_poll_timeout_atomic() here instead of
+readl_poll_timeout().
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Link: https://lore.kernel.org/r/20220322061830.105579-1-jiapeng.chong@linux.alibaba.com
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Also adjust the delay time to 10us to fix a "__bad_udelay" build error
+reported by "kernel test robot <lkp@intel.com>". I have tested this on
+Intel Agilex and NXP S32G boards, there is no delay needed at all.
+So the 10us delay should be long enough for most cases.
+
+Fixes: ff8ed737860e ("net: stmmac: use readl_poll_timeout() function in init_systime()")
+Signed-off-by: Kevin Hao <haokexin@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/x86/samsung-laptop.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/platform/x86/samsung-laptop.c b/drivers/platform/x86/samsung-laptop.c
-index 7ee010aa740a..404bdb4cbfae 100644
---- a/drivers/platform/x86/samsung-laptop.c
-+++ b/drivers/platform/x86/samsung-laptop.c
-@@ -1121,8 +1121,6 @@ static void kbd_led_set(struct led_classdev *led_cdev,
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
+index a7ec9f4d46ce..d68ef72dcdde 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
+@@ -71,9 +71,9 @@ static int init_systime(void __iomem *ioaddr, u32 sec, u32 nsec)
+ 	writel(value, ioaddr + PTP_TCR);
  
- 	if (value > samsung->kbd_led.max_brightness)
- 		value = samsung->kbd_led.max_brightness;
--	else if (value < 0)
--		value = 0;
+ 	/* wait for present system time initialize to complete */
+-	return readl_poll_timeout(ioaddr + PTP_TCR, value,
++	return readl_poll_timeout_atomic(ioaddr + PTP_TCR, value,
+ 				 !(value & PTP_TCR_TSINIT),
+-				 10000, 100000);
++				 10, 100000);
+ }
  
- 	samsung->kbd_led_wk = value;
- 	queue_work(samsung->led_workqueue, &samsung->kbd_led_work);
+ static int config_addend(void __iomem *ioaddr, u32 addend)
 -- 
 2.35.1
 
