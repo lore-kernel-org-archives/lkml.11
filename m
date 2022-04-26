@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC483C3527E
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:27:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1BFFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:27:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347534AbiDZJ2F (ORCPT
+        id S1343796AbiDZJag (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:28:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38488 "EHLO
+        Tue, 26 Apr 2022 05:30:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347321AbiDZJF1 (ORCPT
+        with ESMTP id S1347706AbiDZJGD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:05:27 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86A5410FF35;
-        Tue, 26 Apr 2022 01:44:26 -0700 (PDT)
+        Tue, 26 Apr 2022 05:06:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9B9691575;
+        Tue, 26 Apr 2022 01:45:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 90520CE1BC9;
-        Tue, 26 Apr 2022 08:44:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B240C385A4;
-        Tue, 26 Apr 2022 08:44:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8C23AB81CF2;
+        Tue, 26 Apr 2022 08:45:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E539AC385A4;
+        Tue, 26 Apr 2022 08:45:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962662;
-        bh=DmMGXqK7DS2Xf58XdTr8GbA0QdOIbiW13DwxnpGq0S8=;
+        s=korg; t=1650962727;
+        bh=b4p1qyedlBDAstvbmnUg5BCNYOdyAfUcvjgPiWS3/Fg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fp440xzHA8bW9i4PISZ6DpncbW2z0sUhjMPWYisnRIoh3mhTL1pg6J6a8swrkWV5q
-         3ZOHfbw7kn5R+BoRny3dsRR9sHewN9z95mkY4CFurg4oEYHN4c4ihwg3yU7DWXtOvo
-         zYOw+V+j0mpx4rsnq8lMwX7GP0TGo8mGk3LRZkSw=
+        b=LiSklW4O2gQP2oblljUSKtSCy9NzvOUPG3G75pw0wJFtKdqXznneMUoBKOVpvHuql
+         TO90EsmEwQySX+XV7Y4NVJO/DcCcx2hJ8IKn6M5pRvnyvMH2yrayQFxiYyo8+T2qhQ
+         ZJys545hq2xUpg6x62uXtaMw30Iibfdb+op8D0q0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Atish Patra <atishp@rivosinc.com>,
-        Anup Patel <anup@brainfault.org>,
+        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        Steve French <sfrench@samba.org>,
+        Shyam Prasad N <nspmangalore@gmail.com>,
+        Rohith Surabattula <rohiths.msft@gmail.com>,
+        linux-cifs@vger.kernel.org, Steve French <stfrench@microsoft.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 046/146] RISC-V: KVM: Restrict the extensions that can be disabled
-Date:   Tue, 26 Apr 2022 10:20:41 +0200
-Message-Id: <20220426081751.364424754@linuxfoundation.org>
+Subject: [PATCH 5.17 070/146] cifs: Check the IOCB_DIRECT flag, not O_DIRECT
+Date:   Tue, 26 Apr 2022 10:21:05 +0200
+Message-Id: <20220426081752.031360651@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -50,63 +53,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Atish Patra <atishp@rivosinc.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit 38d9a4ac65f204f264b33b966f0af4366f5518a8 ]
+[ Upstream commit 994fd530a512597ffcd713b0f6d5bc916c5698f0 ]
 
-Currently, the config isa register allows us to disable all allowed
-single letter ISA extensions. It shouldn't be the case as vmm shouldn't
-be able to disable base extensions (imac).
+Use the IOCB_DIRECT indicator flag on the I/O context rather than checking to
+see if the file was opened O_DIRECT.
 
-These extensions should always be enabled as long as they are enabled
-in the host ISA.
-
-Signed-off-by: Atish Patra <atishp@rivosinc.com>
-Signed-off-by: Anup Patel <anup@brainfault.org>
-Fixes: 92ad82002c39 ("RISC-V: KVM: Implement
-KVM_GET_ONE_REG/KVM_SET_ONE_REG ioctls")
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Steve French <sfrench@samba.org>
+cc: Shyam Prasad N <nspmangalore@gmail.com>
+cc: Rohith Surabattula <rohiths.msft@gmail.com>
+cc: linux-cifs@vger.kernel.org
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/riscv/kvm/vcpu.c | 19 ++++++++++++-------
- 1 file changed, 12 insertions(+), 7 deletions(-)
+ fs/cifs/cifsfs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/riscv/kvm/vcpu.c b/arch/riscv/kvm/vcpu.c
-index 2e25a7b83a1b..aad430668bb4 100644
---- a/arch/riscv/kvm/vcpu.c
-+++ b/arch/riscv/kvm/vcpu.c
-@@ -38,12 +38,16 @@ const struct kvm_stats_header kvm_vcpu_stats_header = {
- 		       sizeof(kvm_vcpu_stats_desc),
- };
+diff --git a/fs/cifs/cifsfs.c b/fs/cifs/cifsfs.c
+index 792fdcfdc6ad..10aa0fb94613 100644
+--- a/fs/cifs/cifsfs.c
++++ b/fs/cifs/cifsfs.c
+@@ -946,7 +946,7 @@ cifs_loose_read_iter(struct kiocb *iocb, struct iov_iter *iter)
+ 	ssize_t rc;
+ 	struct inode *inode = file_inode(iocb->ki_filp);
  
--#define KVM_RISCV_ISA_ALLOWED	(riscv_isa_extension_mask(a) | \
--				 riscv_isa_extension_mask(c) | \
--				 riscv_isa_extension_mask(d) | \
--				 riscv_isa_extension_mask(f) | \
--				 riscv_isa_extension_mask(i) | \
--				 riscv_isa_extension_mask(m))
-+#define KVM_RISCV_ISA_DISABLE_ALLOWED	(riscv_isa_extension_mask(d) | \
-+					riscv_isa_extension_mask(f))
-+
-+#define KVM_RISCV_ISA_DISABLE_NOT_ALLOWED	(riscv_isa_extension_mask(a) | \
-+						riscv_isa_extension_mask(c) | \
-+						riscv_isa_extension_mask(i) | \
-+						riscv_isa_extension_mask(m))
-+
-+#define KVM_RISCV_ISA_ALLOWED (KVM_RISCV_ISA_DISABLE_ALLOWED | \
-+			       KVM_RISCV_ISA_DISABLE_NOT_ALLOWED)
+-	if (iocb->ki_filp->f_flags & O_DIRECT)
++	if (iocb->ki_flags & IOCB_DIRECT)
+ 		return cifs_user_readv(iocb, iter);
  
- static void kvm_riscv_reset_vcpu(struct kvm_vcpu *vcpu)
- {
-@@ -217,7 +221,8 @@ static int kvm_riscv_vcpu_set_reg_config(struct kvm_vcpu *vcpu,
- 	switch (reg_num) {
- 	case KVM_REG_RISCV_CONFIG_REG(isa):
- 		if (!vcpu->arch.ran_atleast_once) {
--			vcpu->arch.isa = reg_val;
-+			/* Ignore the disable request for these extensions */
-+			vcpu->arch.isa = reg_val | KVM_RISCV_ISA_DISABLE_NOT_ALLOWED;
- 			vcpu->arch.isa &= riscv_isa_extension_base(NULL);
- 			vcpu->arch.isa &= KVM_RISCV_ISA_ALLOWED;
- 			kvm_riscv_vcpu_fp_reset(vcpu);
+ 	rc = cifs_revalidate_mapping(inode);
 -- 
 2.35.1
 
