@@ -2,128 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C002EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 13:01:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A985EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 13:01:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350627AbiDZND5 (ORCPT
+        id S1348378AbiDZNEh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 09:03:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50778 "EHLO
+        Tue, 26 Apr 2022 09:04:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350641AbiDZNDo (ORCPT
+        with ESMTP id S1345226AbiDZNEf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 09:03:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85E26178F6B;
-        Tue, 26 Apr 2022 06:00:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ED309B81F49;
-        Tue, 26 Apr 2022 13:00:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 611DCC385AA;
-        Tue, 26 Apr 2022 12:59:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650978002;
-        bh=STeOVJbFv0JAM+ZjVWQ3iAdUGzHt/rmNObKdTePC+ME=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=dAXHGNPCaUc4r5pI9MdXUehO2ZvpZkI6GhGX5vezp8eGr2UoCEc0bCH+9AXCGqWbb
-         neaOpOXtSg3rUTweJ7q/HMedbwbwBUQj4XNMVwak2CZLXXspxNlxH8jczgKSuAkUmm
-         9SZaARj7Fx2kNLuI71CO4AckeK/s39uwJCEhNPV1DzM82JTTDDvHehXrZGKoFtFJNK
-         UUSQIfteZfmRiiI2tkAlMd91iyL+UMviQAyG2sHqH7QjyEERD1gtIXsMVUtBEdAAZ/
-         bo/3q640ojKAipfL/DtbRwNaqvXVakHJaZZd0/qu8ESpqewv63X9ZAmZ/iWbgs8Yvn
-         7lh9IFW2RJBxQ==
-Message-ID: <a9438aef-78a3-e8ab-2b78-cc872447df08@kernel.org>
-Date:   Tue, 26 Apr 2022 14:59:57 +0200
+        Tue, 26 Apr 2022 09:04:35 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 104D11DA7D;
+        Tue, 26 Apr 2022 06:01:25 -0700 (PDT)
+Received: from kwepemi500007.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KnhlW5VlwzGp36;
+        Tue, 26 Apr 2022 20:58:47 +0800 (CST)
+Received: from kwepemm600001.china.huawei.com (7.193.23.3) by
+ kwepemi500007.china.huawei.com (7.221.188.207) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 26 Apr 2022 21:01:23 +0800
+Received: from huawei.com (10.175.113.133) by kwepemm600001.china.huawei.com
+ (7.193.23.3) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 26 Apr
+ 2022 21:01:22 +0800
+From:   Wang Hai <wanghai38@huawei.com>
+To:     <trond.myklebust@hammerspace.com>, <anna@kernel.org>,
+        <chuck.lever@oracle.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <pabeni@redhat.com>
+CC:     <linux-nfs@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <wanghai38@huawei.com>
+Subject: [PATCH net] SUNRPC: Fix local socket leak in xs_local_setup_socket()
+Date:   Tue, 26 Apr 2022 21:20:11 +0800
+Message-ID: <20220426132011.25418-1-wanghai38@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v4 5/5] usb: host: add xhci-exynos driver
-Content-Language: en-US
-To:     Daehwan Jung <dh10.jung@samsung.com>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     "open list:USB XHCI DRIVER" <linux-usb@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Howard Yen <howardyen@google.com>,
-        Jack Pham <jackp@codeaurora.org>,
-        Puma Hsu <pumahsu@google.com>,
-        "J . Avila" <elavila@google.com>, sc.suh@samsung.com,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-References: <1650964728-175347-1-git-send-email-dh10.jung@samsung.com>
- <CGME20220426092023epcas2p32946c087135ca4b7e63b03915060c55d@epcas2p3.samsung.com>
- <1650964728-175347-6-git-send-email-dh10.jung@samsung.com>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <1650964728-175347-6-git-send-email-dh10.jung@samsung.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.113.133]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600001.china.huawei.com (7.193.23.3)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 26/04/2022 11:18, Daehwan Jung wrote:
-> This driver is for Samsung Exynos xhci host conroller. It uses xhci-plat
-> driver mainly and extends some functions by xhci hooks and overrides.
-> 
-> It supports USB Audio offload with Co-processor. It only cares DCBAA,
-> Device Context, Transfer Ring, Event Ring, and ERST. They are allocated
-> on specific address with xhci hooks. Co-processor could use them directly
-> without xhci driver after then.
+If the connection to a local endpoint in xs_local_setup_socket() fails,
+fput() is missing in the error path, which will result in a socket leak.
+It can be reproduced in simple script below.
 
-This does not look like developed in current Linux kernel, but something
-out-of-tree, with some other unknown modifications. This is not how the
-code should be developed. Please rebase on linux-next and drop any
-unrelated modifications (these which are not sent with this patchset).
+while true
+do
+        systemctl stop rpcbind.service
+        systemctl stop rpc-statd.service
+        systemctl stop nfs-server.service
 
-(...)
+        systemctl restart rpcbind.service
+        systemctl restart rpc-statd.service
+        systemctl restart nfs-server.service
+done
 
-> +
-> +static int xhci_exynos_suspend(struct device *dev)
-> +{
-> +	struct usb_hcd	*hcd = dev_get_drvdata(dev);
-> +	struct xhci_hcd	*xhci = hcd_to_xhci(hcd);
-> +
-> +	/* TODO: AP sleep scenario*/
+When executing the script, you can observe that the
+"cat /proc/net/unix | wc -l" count keeps growing.
 
-Shall the patchset be called RFC?
+Add the missing fput(), and restore transport to old socket.
 
-> +
-> +	return xhci_suspend(xhci, device_may_wakeup(dev));
-> +}
-> +
-> +static int xhci_exynos_resume(struct device *dev)
-> +{
-> +	struct usb_hcd	*hcd = dev_get_drvdata(dev);
-> +	struct xhci_hcd	*xhci = hcd_to_xhci(hcd);
-> +	int ret;
-> +
-> +	/* TODO: AP resume scenario*/
-> +
-> +	ret = xhci_resume(xhci, 0);
-> +	if (ret)
-> +		return ret;
-> +
-> +	pm_runtime_disable(dev);
-> +	pm_runtime_set_active(dev);
-> +	pm_runtime_enable(dev);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct dev_pm_ops xhci_exynos_pm_ops = {
-> +	SET_SYSTEM_SLEEP_PM_OPS(xhci_exynos_suspend, xhci_exynos_resume)
-> +};
-> +
-> +MODULE_DESCRIPTION("xHCI Exynos Host Controller Driver");
-> +MODULE_LICENSE("GPL");
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+---
+ net/sunrpc/xprtsock.c | 20 ++++++++++++++++++--
+ 1 file changed, 18 insertions(+), 2 deletions(-)
 
-You don't have list of compatibles (and missing bindings), driver
-definition, driver registration. Entire solution is not used - nothing
-calls xhci_exynos_vendor_init(), because nothign uses "ops".
+diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
+index 0f39e08ee580..7219c545385e 100644
+--- a/net/sunrpc/xprtsock.c
++++ b/net/sunrpc/xprtsock.c
+@@ -1819,6 +1819,9 @@ static int xs_local_finish_connecting(struct rpc_xprt *xprt,
+ {
+ 	struct sock_xprt *transport = container_of(xprt, struct sock_xprt,
+ 									xprt);
++	struct socket *trans_sock = NULL;
++	struct sock *trans_inet = NULL;
++	int ret;
+ 
+ 	if (!transport->inet) {
+ 		struct sock *sk = sock->sk;
+@@ -1835,6 +1838,9 @@ static int xs_local_finish_connecting(struct rpc_xprt *xprt,
+ 
+ 		xprt_clear_connected(xprt);
+ 
++		trans_sock = transport->sock;
++		trans_inet = transport->inet;
++
+ 		/* Reset to new socket */
+ 		transport->sock = sock;
+ 		transport->inet = sk;
+@@ -1844,7 +1850,14 @@ static int xs_local_finish_connecting(struct rpc_xprt *xprt,
+ 
+ 	xs_stream_start_connect(transport);
+ 
+-	return kernel_connect(sock, xs_addr(xprt), xprt->addrlen, 0);
++	ret = kernel_connect(sock, xs_addr(xprt), xprt->addrlen, 0);
++	/* Restore to old socket */
++	if (ret && trans_inet) {
++		transport->sock = trans_sock;
++		transport->inet = trans_inet;
++	}
++
++	return ret;
+ }
+ 
+ /**
+@@ -1887,7 +1900,7 @@ static int xs_local_setup_socket(struct sock_xprt *transport)
+ 		xprt->stat.connect_time += (long)jiffies -
+ 					   xprt->stat.connect_start;
+ 		xprt_set_connected(xprt);
+-		break;
++		goto out;
+ 	case -ENOBUFS:
+ 		break;
+ 	case -ENOENT:
+@@ -1904,6 +1917,9 @@ static int xs_local_setup_socket(struct sock_xprt *transport)
+ 				xprt->address_strings[RPC_DISPLAY_ADDR]);
+ 	}
+ 
++	transport->file = NULL;
++	fput(filp);
++
+ out:
+ 	xprt_clear_connecting(xprt);
+ 	xprt_wake_pending_tasks(xprt, status);
+-- 
+2.17.1
 
-This does not work and it makes it impossible to test it. Please provide
-proper XHCI Exynos driver, assuming you need it and it is not part of
-regular Exynos XHCI drivers (DWC3 and so on).
-
-Best regards,
-Krzysztof
