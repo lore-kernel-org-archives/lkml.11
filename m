@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99680C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC483C3527E
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:27:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347401AbiDZJ1k (ORCPT
+        id S1347534AbiDZJ2F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:27:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57326 "EHLO
+        Tue, 26 Apr 2022 05:28:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347115AbiDZJFP (ORCPT
+        with ESMTP id S1347321AbiDZJF1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:05:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82AB0FAD9D;
-        Tue, 26 Apr 2022 01:44:08 -0700 (PDT)
+        Tue, 26 Apr 2022 05:05:27 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86A5410FF35;
+        Tue, 26 Apr 2022 01:44:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B87BFB81D1C;
-        Tue, 26 Apr 2022 08:44:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28FAFC385A0;
-        Tue, 26 Apr 2022 08:44:04 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 90520CE1BC9;
+        Tue, 26 Apr 2022 08:44:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B240C385A4;
+        Tue, 26 Apr 2022 08:44:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962645;
-        bh=c4tV8qVMiEPhY0Aru+SR6B5J65uqhDU1LrLy5WMOB+A=;
+        s=korg; t=1650962662;
+        bh=DmMGXqK7DS2Xf58XdTr8GbA0QdOIbiW13DwxnpGq0S8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qK/Xf17KdKuqOibmMix55OlrU7MDrDHr1Uo5xwX5i51xYgWwDnKP36ct/8J8/KZY6
-         eJufuM6Hv/uVnQYzNHEoHsPC0YiN5nQ2WBNkV0PS/iQK29/JgGW5SfItvX3UlQaIXE
-         GNomokC63/sV/hszCAD6ElHjUDsTvUm/3Hz8lZzI=
+        b=fp440xzHA8bW9i4PISZ6DpncbW2z0sUhjMPWYisnRIoh3mhTL1pg6J6a8swrkWV5q
+         3ZOHfbw7kn5R+BoRny3dsRR9sHewN9z95mkY4CFurg4oEYHN4c4ihwg3yU7DWXtOvo
+         zYOw+V+j0mpx4rsnq8lMwX7GP0TGo8mGk3LRZkSw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kurt Kanzenbach <kurt@linutronix.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Atish Patra <atishp@rivosinc.com>,
+        Anup Patel <anup@brainfault.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 041/146] net: dsa: hellcreek: Calculate checksums in tagger
-Date:   Tue, 26 Apr 2022 10:20:36 +0200
-Message-Id: <20220426081751.223955523@linuxfoundation.org>
+Subject: [PATCH 5.17 046/146] RISC-V: KVM: Restrict the extensions that can be disabled
+Date:   Tue, 26 Apr 2022 10:20:41 +0200
+Message-Id: <20220426081751.364424754@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -51,47 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kurt Kanzenbach <kurt@linutronix.de>
+From: Atish Patra <atishp@rivosinc.com>
 
-[ Upstream commit 0763120b090418a5257402754e22a34227ae5f12 ]
+[ Upstream commit 38d9a4ac65f204f264b33b966f0af4366f5518a8 ]
 
-In case the checksum calculation is offloaded to the DSA master network
-interface, it will include the switch trailing tag. As soon as the switch strips
-that tag on egress, the calculated checksum is wrong.
+Currently, the config isa register allows us to disable all allowed
+single letter ISA extensions. It shouldn't be the case as vmm shouldn't
+be able to disable base extensions (imac).
 
-Therefore, add the checksum calculation to the tagger (if required) before
-adding the switch tag. This way, the hellcreek code works with all DSA master
-interfaces regardless of their declared feature set.
+These extensions should always be enabled as long as they are enabled
+in the host ISA.
 
-Fixes: 01ef09caad66 ("net: dsa: Add tag handling for Hirschmann Hellcreek switches")
-Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220415103320.90657-1-kurt@linutronix.de
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Atish Patra <atishp@rivosinc.com>
+Signed-off-by: Anup Patel <anup@brainfault.org>
+Fixes: 92ad82002c39 ("RISC-V: KVM: Implement
+KVM_GET_ONE_REG/KVM_SET_ONE_REG ioctls")
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/dsa/tag_hellcreek.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/riscv/kvm/vcpu.c | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
 
-diff --git a/net/dsa/tag_hellcreek.c b/net/dsa/tag_hellcreek.c
-index f64b805303cd..eb204ad36eee 100644
---- a/net/dsa/tag_hellcreek.c
-+++ b/net/dsa/tag_hellcreek.c
-@@ -21,6 +21,14 @@ static struct sk_buff *hellcreek_xmit(struct sk_buff *skb,
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
- 	u8 *tag;
+diff --git a/arch/riscv/kvm/vcpu.c b/arch/riscv/kvm/vcpu.c
+index 2e25a7b83a1b..aad430668bb4 100644
+--- a/arch/riscv/kvm/vcpu.c
++++ b/arch/riscv/kvm/vcpu.c
+@@ -38,12 +38,16 @@ const struct kvm_stats_header kvm_vcpu_stats_header = {
+ 		       sizeof(kvm_vcpu_stats_desc),
+ };
  
-+	/* Calculate checksums (if required) before adding the trailer tag to
-+	 * avoid including it in calculations. That would lead to wrong
-+	 * checksums after the switch strips the tag.
-+	 */
-+	if (skb->ip_summed == CHECKSUM_PARTIAL &&
-+	    skb_checksum_help(skb))
-+		return NULL;
+-#define KVM_RISCV_ISA_ALLOWED	(riscv_isa_extension_mask(a) | \
+-				 riscv_isa_extension_mask(c) | \
+-				 riscv_isa_extension_mask(d) | \
+-				 riscv_isa_extension_mask(f) | \
+-				 riscv_isa_extension_mask(i) | \
+-				 riscv_isa_extension_mask(m))
++#define KVM_RISCV_ISA_DISABLE_ALLOWED	(riscv_isa_extension_mask(d) | \
++					riscv_isa_extension_mask(f))
 +
- 	/* Tag encoding */
- 	tag  = skb_put(skb, HELLCREEK_TAG_LEN);
- 	*tag = BIT(dp->index);
++#define KVM_RISCV_ISA_DISABLE_NOT_ALLOWED	(riscv_isa_extension_mask(a) | \
++						riscv_isa_extension_mask(c) | \
++						riscv_isa_extension_mask(i) | \
++						riscv_isa_extension_mask(m))
++
++#define KVM_RISCV_ISA_ALLOWED (KVM_RISCV_ISA_DISABLE_ALLOWED | \
++			       KVM_RISCV_ISA_DISABLE_NOT_ALLOWED)
+ 
+ static void kvm_riscv_reset_vcpu(struct kvm_vcpu *vcpu)
+ {
+@@ -217,7 +221,8 @@ static int kvm_riscv_vcpu_set_reg_config(struct kvm_vcpu *vcpu,
+ 	switch (reg_num) {
+ 	case KVM_REG_RISCV_CONFIG_REG(isa):
+ 		if (!vcpu->arch.ran_atleast_once) {
+-			vcpu->arch.isa = reg_val;
++			/* Ignore the disable request for these extensions */
++			vcpu->arch.isa = reg_val | KVM_RISCV_ISA_DISABLE_NOT_ALLOWED;
+ 			vcpu->arch.isa &= riscv_isa_extension_base(NULL);
+ 			vcpu->arch.isa &= KVM_RISCV_ISA_ALLOWED;
+ 			kvm_riscv_vcpu_fp_reset(vcpu);
 -- 
 2.35.1
 
