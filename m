@@ -2,136 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7E7FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 14:56:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FF5CC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 14:58:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351835AbiDZO7n (ORCPT
+        id S1347794AbiDZPBf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 10:59:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33100 "EHLO
+        Tue, 26 Apr 2022 11:01:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345047AbiDZO7l (ORCPT
+        with ESMTP id S242873AbiDZPBe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 10:59:41 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A12A3692BF;
-        Tue, 26 Apr 2022 07:56:33 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23QEuLXW054245;
-        Tue, 26 Apr 2022 09:56:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1650984981;
-        bh=OnduF3LsOWR2zr4akgCgTA3k4E/PAj89iQ6krG9cm48=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=HMtXvTAyrOXI4tLDhh/96Zojc2y+4rmxa2FPq/cwnqamOE+1RX9WZ5J3d/dAAQThp
-         kVivtr7jU6XbM+y93Q9Lh+IXK0G9iDN+FI8UZXDjHCXRw5L4ueEBP/03iVmnPykcjy
-         pkz66idina4Zck2i+HsoRSmkfyN78Sm0fRIw4WSU=
-Received: from DFLE111.ent.ti.com (dfle111.ent.ti.com [10.64.6.32])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23QEuLHh055593
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 26 Apr 2022 09:56:21 -0500
-Received: from DFLE114.ent.ti.com (10.64.6.35) by DFLE111.ent.ti.com
- (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 26
- Apr 2022 09:56:21 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 26 Apr 2022 09:56:21 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23QEuJIp008253;
-        Tue, 26 Apr 2022 09:56:20 -0500
-Date:   Tue, 26 Apr 2022 20:26:19 +0530
-From:   Rahul T R <r-ravikumar@ti.com>
-To:     Nishanth Menon <nm@ti.com>
-CC:     Vignesh Raghavendra <vigneshr@ti.com>, <kristo@kernel.org>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski@canonical.com>,
+        Tue, 26 Apr 2022 11:01:34 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB3D3B1A85;
+        Tue, 26 Apr 2022 07:58:24 -0700 (PDT)
+Received: from zn.tnic (p5de8eeb4.dip0.t-ipconnect.de [93.232.238.180])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id CCDC91EC04A6;
+        Tue, 26 Apr 2022 16:58:18 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1650985098;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=huE9l2xeCAZTTmW3YvsVXEyz0aYX0tkv096G9fcKNMs=;
+        b=kZ9cgchnykOJBP/Zraue/GbX4prLLK6JNadhlLnybF3BCGEnF1Lyv139yO2WqIULBsUVBu
+        nE9boKRV3r1d8b52vIqgI43dG/xJ9DU9KmGt2hXxLH7sgnMbvULzkhP47l4+0/yFRY3QBw
+        usaHAgyb9fNDhU43KDmJaoV8b10Ia9I=
+Date:   Tue, 26 Apr 2022 16:58:16 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Sherry Sun <sherry.sun@nxp.com>
+Cc:     "michal.simek@xilinx.com" <michal.simek@xilinx.com>,
+        "Shubhrajyoti.datta@xilinx.com" <Shubhrajyoti.datta@xilinx.com>,
+        "mchehab@kernel.org" <mchehab@kernel.org>,
+        "tony.luck@intel.com" <tony.luck@intel.com>,
+        "james.morse@arm.com" <james.morse@arm.com>,
+        "rric@kernel.org" <rric@kernel.org>,
+        "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
         <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <tomi.valkeinen@ideasonboard.com>,
-        <laurent.pinchart@ideasonboard.com>, <kishon@ti.com>
-Subject: Re: [PATCH v3 0/2] DSS: Add support for DisplayPort
-Message-ID: <20220426145618.wcrggf3qmkldihv3@uda0490373>
-References: <20220406165852.13026-1-r-ravikumar@ti.com>
- <ed64bf63-95c6-94ae-4c4f-a206250f44a9@ti.com>
- <20220422141637.4hz5nrlpjapmqezw@uda0490373>
- <20220422161711.jkderbw5r4wxwgjf@crudeness>
+        dl-linux-imx <linux-imx@nxp.com>
+Subject: Re: [PATCH V2 2/2] EDAC: synopsys: re-enable the interrupts in
+ intr_handler for V3.X Synopsys EDAC DDR
+Message-ID: <YmgIiPzvgO3CdlqF@zn.tnic>
+References: <20220421015313.5747-1-sherry.sun@nxp.com>
+ <20220421015313.5747-3-sherry.sun@nxp.com>
+ <YmEerhSXM0L8cUuj@zn.tnic>
+ <AS8PR04MB8404243437B78FA6B1E46F3092F69@AS8PR04MB8404.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220422161711.jkderbw5r4wxwgjf@crudeness>
-User-Agent: NeoMutt/20171215
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+In-Reply-To: <AS8PR04MB8404243437B78FA6B1E46F3092F69@AS8PR04MB8404.eurprd04.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11:17-20220422, Nishanth Menon wrote:
-> On 19:46-20220422, Rahul T R wrote:
-> > On 12:51-20220415, Vignesh Raghavendra wrote:
-> > > 
-> > > 
-> > > On 06/04/22 10:28 pm, Rahul T R wrote:
-> > > > The following series of patches enables DisplayPort on
-> > > > j721e-evm
-> > > > 
-> > > > Tomi Valkeinen (2):
-> > > >   arm64: dts: ti: k3-j721e-main: add DP & DP PHY
-> > > >   arm64: dts: ti: k3-j721e-common-proc-board: add DP to j7 evm
-> > > > 
-> > > > v2:
-> > > >    - use phandle with a parameter to refer clocks insted of
-> > > >      sub nodes in serdes_wiz node
-> > > >    - move phy link node to board DTS file
-> > > > 
-> > > > v3:
-> > > >    - Fix the regulator node name as per the DT spec
-> > > >    - Use Macro for GPIO type
-> > > > 
-> > > > boot logs:
-> > > >    https://gist.githubusercontent.com/ravi-rahul/1bdbc3f77ab381e486c8394650c2e85d/raw/f04584c30181821c4ee83aee7781a9ba143cd3f3/j7_DP_upstream.log
-> > > > 
-> > > > kernel patch verify report:
-> > > >    https://gist.githubusercontent.com/ravi-rahul/a982fef3fae03ec0dbdd5cb475a4cb25/raw/c8230370746e9878daf9527c3aa9d82eed7aa33c/report-kernel-patch-verify.txt
-> > > 
-> > > Hmm, With dtbs_check I see (on v5.18-rc1 tag)
-> > > 
-> > > +/workdir/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dtb: dp-bridge@a000000: ports: 'port@0' is a required property
-> > > +/workdir/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dtb: dp-bridge@a000000: ports: 'port@4' is a required property
-> > > +/workdir/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dtb: dp-bridge@a000000: 'phys' is a required property
-> > > +/workdir/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dtb: dp-bridge@a000000: 'phy-names' is a required property
-> > > 
-> > > This goes away with 2/2 although adds:
-> > > +<stdout>: Warning (graph_child_address): /bus@100000/dss@4a00000/ports: graph node has single child node 'port@0', #address-cells/#size-cells are not necessary
-> > > 
-> > > 
-> > > Do we need to have empty ports node in j721e-main.dtsi for dp-bridge?   And something similar wrt phys as well?
-> > > 
-> > > Regards
-> > > Vignesh
-> > 
-> > Hi Vignesh,
-> > 
-> > Thanks for the review!
-> > Not sure why kernel patch verify did not catch this
-> 
-> if you are'nt able to install all the required packages and version of
-> packages, then use the kpv wrapper script for docker container that
-> already packages things.
+On Sat, Apr 23, 2022 at 07:03:45AM +0000, Sherry Sun wrote:
+> My fix patches are based on Dinh's patch: f7824ded4149
+> ("EDAC/synopsys: Add support for version 3 of the Synopsys EDAC DDR"),
+> as this patch was introduced since L5.17, it's quite new, so I think
+> we don't need to backport them to the stable kernels.
 
-Hi Nishanth,
+What do you mean, quite new?
 
-kpv is expecting cross compile toolchain
-to be present in /opt of host. Once I copied
-the toolchain to /opt tests are running fine
+There are 5.17.x stable releases so they will need those fixes too.
 
-I have fixed the dtbs_checks warnings, will
-send v4 with the fixes
+-- 
+Regards/Gruss,
+    Boris.
 
-Thanks
-Rahul T R
-
-> -- 
-> Regards,
-> Nishanth Menon
-> K ey (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
+https://people.kernel.org/tglx/notes-about-netiquette
