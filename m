@@ -2,121 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7296FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 18:34:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C684C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 18:34:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351905AbiDZSh2 (ORCPT
+        id S1351930AbiDZSiC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 14:37:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43022 "EHLO
+        Tue, 26 Apr 2022 14:38:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351841AbiDZSh1 (ORCPT
+        with ESMTP id S1348811AbiDZSh7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 14:37:27 -0400
-Received: from conssluserg-03.nifty.com (conssluserg-03.nifty.com [210.131.2.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ADBF483AA;
-        Tue, 26 Apr 2022 11:34:18 -0700 (PDT)
-Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182]) (authenticated)
-        by conssluserg-03.nifty.com with ESMTP id 23QIXmP9029461;
-        Wed, 27 Apr 2022 03:33:48 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 23QIXmP9029461
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1650998028;
-        bh=MU07d+AY262zmGtq+SAVA7lALUspXSeSWe02H3uj1Xs=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=lguVaRuEX3+hSS8983Stao2YuzU83B4mWLci+q6evrHIVLDEnaspCIFhTFyjlNBt4
-         ogjs1QjTWN2sJx57hXaCQZcKe2Qtg07GE4kCNg5wm2cPzDQrQY2RZ/ZffKpKhpRYG/
-         BE7O9Sva9p7379jrfRbt3rYHsCOXBmNq/jTxkrrvtHUKyj1e3x/AX2AHkwUdoakg5t
-         8wbCp7wNM53R3yaIVEQ0SsQHrewmCuyMsDefoxsPihScj9tvQ3y6iAqnNuES1+1hI5
-         2XBMezd4GbfkTfcstdT7KamsdbOegqk8RWDCodwGF59bDGWgO6dQterjWMvBDVAgGD
-         bJul1FngcXvoA==
-X-Nifty-SrcIP: [209.85.214.182]
-Received: by mail-pl1-f182.google.com with SMTP id u7so15679921plg.13;
-        Tue, 26 Apr 2022 11:33:48 -0700 (PDT)
-X-Gm-Message-State: AOAM533T5AKJlZAapqzcV2M+we6IFFYG65pgjH6gDqtEuXzCrcE43jTr
-        po/f+a/PaKmW8K18bJKNT0IlM8gdDeBOMXqvT50=
-X-Google-Smtp-Source: ABdhPJyZ9MX01nIu6mjkQna2NHamZuUGcHbEm8Gxa5aJQzqyZeFUAtdhz+cCf+uq33d0JOiUSGbOfW2CVOxOByuqjV4=
-X-Received: by 2002:a17:90a:e7d2:b0:1d7:4f8d:3ca6 with SMTP id
- kb18-20020a17090ae7d200b001d74f8d3ca6mr28395475pjb.144.1650998027682; Tue, 26
- Apr 2022 11:33:47 -0700 (PDT)
+        Tue, 26 Apr 2022 14:37:59 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31A2760065
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 11:34:50 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id i27so37811816ejd.9
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 11:34:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=I36VwtUeuAmuD4bFbNMu6bpDdj7jTQxYDk6uobWAz4I=;
+        b=CSDcGpGYwWyi+nQU+QfG4w4xt2JugtgrTpyEtNtutBA+oc3F4R7DvwwsgFe53SR/G7
+         DLVv0C0TK6QT41ZWb+XnlfrZ1TGqOyVkbyu6yrZsB+zQYy45spAMBqiBuOubQ9BSXJCu
+         LqCOgzzvLvmkdUuyr5nsztZ4LADuWO4RhV18QXGMAH45tlJa5A0kpNl1Q3Z6Qxc4nwZX
+         rNO/0HmEoVuUkzBIrzR17BPuAx55VoevddCiX3aW9ftyZwtFIFkrugvakhlWRwpVrpaz
+         pBpxTqNbrrlavAVZWw6pICQbfulgC75uUZKZiLq9K7CExLa6qfv3mSIaWdpmZ0w7pQae
+         rm7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=I36VwtUeuAmuD4bFbNMu6bpDdj7jTQxYDk6uobWAz4I=;
+        b=qg7tHGie8elbiz0PHpKwnpcoRD02PKGW337n3+UQPdbGnZ9uCjXm8NtNNWRijq1r6C
+         tslpIACNBD1wJpcfdyXKZGoWNuVQluQxKsw6tNj6UG/QQNbp3ow/lvE7B1/xAaXZXYUb
+         mXFEgeQFl8L1ZXkCxfko6JTDWJsxvCSCII12exqE2gBtbjO8DL5G3Zd3ebXNng9p02gn
+         uWFCqNxgCqFwlOa9jE5OkfIup3Nuoc3KmjFDxJM+b7seA18HzkMSkXoibBYy7HRy1Zzq
+         AOecVuRMxqZCodKy8n9krqGAs37iJYhO4kFdVPP8p8AotrHqgCPSVv09NmOQxAIsoTUX
+         g5hQ==
+X-Gm-Message-State: AOAM530aqODRUWrcVN5chhZr2q6ITtQqp867Uq5FQkVWMZgOIrs0ME7a
+        h+d6lrGTwywh+yN5QOb+rjxXlw==
+X-Google-Smtp-Source: ABdhPJzv66jM6MIqRtt7g5BYGXZjhviSioV3C+dNgc0TitekVscN7XXrq3vvtBMi+cECjIvjLanl0A==
+X-Received: by 2002:a17:906:7c93:b0:6cd:341a:a1d5 with SMTP id w19-20020a1709067c9300b006cd341aa1d5mr22084235ejo.698.1650998088759;
+        Tue, 26 Apr 2022 11:34:48 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id x1-20020a1709060ee100b006e8a49f215dsm5292323eji.73.2022.04.26.11.34.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 11:34:48 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH] ARM: dts: exynos: add atmel,24c128 fallback to Samsung EEPROM
+Date:   Tue, 26 Apr 2022 20:34:43 +0200
+Message-Id: <20220426183443.243113-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <20220424190811.1678416-1-masahiroy@kernel.org>
- <20220424190811.1678416-17-masahiroy@kernel.org> <CAKwvOdk1nt4b9am=_BP=U3igkSRBN14nx+5oS8iaaw9zhbH5JA@mail.gmail.com>
- <CAK7LNAR-u=EVzPL+iJHoBW62AK2ViD3nVnL79EdxNS03UxmkBA@mail.gmail.com> <CAKwvOd=9ffHMynzCPXPAAdz90BcW0JhihjqnRNneFqMq3u+59Q@mail.gmail.com>
-In-Reply-To: <CAKwvOd=9ffHMynzCPXPAAdz90BcW0JhihjqnRNneFqMq3u+59Q@mail.gmail.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Wed, 27 Apr 2022 03:33:10 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASnQ2QXV9=CyTLq+3rzJ-n8hEhgtuRmj8hBHmX8-8n_cg@mail.gmail.com>
-Message-ID: <CAK7LNASnQ2QXV9=CyTLq+3rzJ-n8hEhgtuRmj8hBHmX8-8n_cg@mail.gmail.com>
-Subject: Re: [PATCH 16/27] modpost: make multiple export error
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 1:40 AM Nick Desaulniers
-<ndesaulniers@google.com> wrote:
->
-> On Mon, Apr 25, 2022 at 9:10 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
-> >
-> > On Tue, Apr 26, 2022 at 3:48 AM Nick Desaulniers
-> > <ndesaulniers@google.com> wrote:
-> > >
-> > > On Sun, Apr 24, 2022 at 12:09 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
-> > > >
-> > > > This is currently a warning, but I think modpost should stop building
-> > > > in this case.
-> > > >
-> > > > If the same symbol is exported multiple times and we let it keep going,
-> > > > the sanity check becomes difficult.
-> > > >
-> > > > Only the legitimate case is that an external module overrides the
-> > > > corresponding in-tree module to provide a different implementation
-> > > > with the same interface.
-> > >
-> > > Could the same module export a weak version of a symbol, and a strong one?
-> >
-> > No.  There is no concept like   EXPORT_SYMBOL_WEAK.
-> >
-> > I am talking about kmod things.
-> > You can modprobe an external module instead of the in-kernel one.
->
-> Ok, this patch seems fine to me.
-> Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-> --
-> Thanks,
-> ~Nick Desaulniers
+The Samsung s524ad0xd1 EEPROM should use atmel,24c128 fallback,
+according to the AT24 EEPROM bindings.
 
+Reported-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ arch/arm/boot/dts/exynos5250-smdk5250.dts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Nick,
-
-
-If useful, I can add more commits to the commit description.
-
-
-I know one example in the tree that exploits this feature.
-
-$ make allmodconfig all
-   You will get drivers/nvdimm/libnvdimm.ko, then
-
-$ make M=tools/testing/nvdimm
-   You will get tools/testing/nvdimm/libnvdimm.ko
-
-The latter is a mocked one that exported the same symbols
-as drivers/nvdimm/libnvdimm.ko
-
-
-
-
-
-
-
-
-
+diff --git a/arch/arm/boot/dts/exynos5250-smdk5250.dts b/arch/arm/boot/dts/exynos5250-smdk5250.dts
+index 21fbbf3d8684..71293749ac48 100644
+--- a/arch/arm/boot/dts/exynos5250-smdk5250.dts
++++ b/arch/arm/boot/dts/exynos5250-smdk5250.dts
+@@ -129,7 +129,7 @@ &i2c_0 {
+ 	samsung,i2c-max-bus-freq = <20000>;
+ 
+ 	eeprom@50 {
+-		compatible = "samsung,s524ad0xd1";
++		compatible = "samsung,s524ad0xd1", "atmel,24c128";
+ 		reg = <0x50>;
+ 	};
+ 
+@@ -289,7 +289,7 @@ &i2c_1 {
+ 	samsung,i2c-max-bus-freq = <20000>;
+ 
+ 	eeprom@51 {
+-		compatible = "samsung,s524ad0xd1";
++		compatible = "samsung,s524ad0xd1", "atmel,24c128";
+ 		reg = <0x51>;
+ 	};
+ 
 -- 
-Best Regards
-Masahiro Yamada
+2.32.0
+
