@@ -2,110 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 835DBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:21:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B48F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:22:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344634AbiDZIXx (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:23:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51170 "EHLO
+        id S241985AbiDZIZP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:25:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344584AbiDZIXd (ORCPT
+        with ESMTP id S233617AbiDZIZL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:23:33 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F5D39BA6;
-        Tue, 26 Apr 2022 01:20:24 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id iq2-20020a17090afb4200b001d93cf33ae9so1581044pjb.5;
-        Tue, 26 Apr 2022 01:20:24 -0700 (PDT)
+        Tue, 26 Apr 2022 04:25:11 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52D5C3A183
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 01:22:04 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id t13so15478355pgn.8
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 01:22:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=HTkhVCwB81oItW36nLwVzqqoPPJpYzHgpYIkMsBEsWk=;
-        b=qde4ACVjiYLawr37T6PT5dksdblUsoa1GgAxmw56O26epijv0fY5S/aos5REMDWYCG
-         JfIuyZni5momoXAwCnCqNE+ZEUOtQaLV19GuctsTU4aLJGXnT/qF3KC6QbqbvAKrPHJe
-         XMXKNSxyAd8FVND+DY1oRO3ry5GQH9u5BJSCMrmatwAusRSHP1C0raAXQS+DFn6Yrs38
-         3KrwPVzaaNMQhUgyC9dmAOVYb9nTfvd8zFFHDNuWfkjdt7/PpwasisaDSz/1t9OeczwD
-         1MyxnHDs6zYoDccHszD7bPBNvEFOkwPT13kdjB6QdIFe61KwUWd5WPYP9h8vt8FzIu9N
-         tAJA==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vYVekr4YvbLsHucHgm8G116TEThN3UMClXJfeXv+hU4=;
+        b=Nb0f085ZebEJPCinOt6pZuFn0qnmDisNJu5Rk80wCa2s+nzszKjhhN4UYYPkQf6Acl
+         4MNxkF4dJar7sBIPLss1tBOwkJIQPxjxDiJhtK+qBWVV3FueQ7Y3/3FNXr4iEj6LLWQ0
+         XtKDYU3kDmdNcLu0lZTv3l1D1v8FEexelBTge/3sgZ1G2+x/gnzegDDxD7OWEEqauFPo
+         Dyh4tqvAiTtlFtRibQNGYrzkR+45N/GSrL65LCMM6ZIYcS2gUX/5TrsQf/m7AWZIsDlz
+         HCl0y0xFw62Tkv9V9sIeieoOmG678iXvg1SIo/di5OfVnOIVtnLujz92GTkOopXwSOqg
+         Pa/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=HTkhVCwB81oItW36nLwVzqqoPPJpYzHgpYIkMsBEsWk=;
-        b=hCysq6tAqzlEGxUpOsCvso2DS+MUTBkxVy9xJZFmMqDdbY74uK7sogsa5+OBXl4kRs
-         qHlvNV9MBQ+4n1cSHeoZ7/AEyfQpBWuco0HZsXehC8fk7lrOXy5JzocQeNxqPX5nFWH1
-         /Xo5WYKxn9t8fDdMcTwqf98LKRviYF0IWXLSSLqBcX5zp9Ht4nvbxwMxwJVyasK1uVT6
-         tewF2tJqYTGfhbbvSpVX9MNa7HuRHQobZybKfioChPfAzN4fXYslKsYNWeiaSqtgrlt/
-         KQKJ0wEtPFgV6wwoCX959T/QQcLayU5MHNYzf6xVk2AjTSV+aeJInhI26u/q5OizY92T
-         YAUA==
-X-Gm-Message-State: AOAM533U+F8WWSG2tPHc1BiOw0VCJikibwyAEM/H2g0S3vmXQkv4dT31
-        iLdXhRnwPl2054yDr6crhlI=
-X-Google-Smtp-Source: ABdhPJwXqDMtVIFw0QkmLuBxcx6aLiJkCFN1IFwubZCd4py0WHhuQkHE3qlR2hKfthPTTcPsxfFYHw==
-X-Received: by 2002:a17:90b:4c47:b0:1d9:88b2:1995 with SMTP id np7-20020a17090b4c4700b001d988b21995mr7575724pjb.80.1650961224288;
-        Tue, 26 Apr 2022 01:20:24 -0700 (PDT)
-Received: from [192.168.2.225] (93.179.119.173.16clouds.com. [93.179.119.173])
-        by smtp.gmail.com with ESMTPSA id 132-20020a62168a000000b004f40e8b3133sm14947128pfw.188.2022.04.26.01.20.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Apr 2022 01:20:23 -0700 (PDT)
-Message-ID: <73d2f4cb-9f38-ac33-b4c0-c4d3b465bf8b@gmail.com>
-Date:   Tue, 26 Apr 2022 16:20:17 +0800
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vYVekr4YvbLsHucHgm8G116TEThN3UMClXJfeXv+hU4=;
+        b=eb8au87+HbSnDhVZH4eifnAbAeUKTYI5nsAIBnwK/gDmZOFmrbVE/obqlwBqn901xb
+         6H9HC0K9DHtIt8ixGoHsQo1Thj69WNmOzYBdpX0R2peXloHvzY6jgOd18BRjgX0fE/24
+         Y/TJAjwR+mFm26YOdt/wd/KWWB5bWawULhQBfyB8CTyO8OvglA3/B24Q0P7SjT2+uTHk
+         ej4sLUBsuWcCwvexETnSP9ZdgOp3Y5EpoWYlEN/pbpb2jdvAugx6GH/gVABeUZImTPYu
+         tR3JlLBg+yX9RZIHbJ2spbeYiIb7+XkpNJ/RzWV2oSpm8nqJXkq4Vg/VoaIMdxE4ntmi
+         x+LQ==
+X-Gm-Message-State: AOAM5338Zas5qD3Jq2uoJ8VmQEnloKl3B8ALz2MrITuF73FmS833pBE1
+        vzelZW8hWT+c4tYNXCx98uM7hDOqOAvAKC3ambR2Hw==
+X-Google-Smtp-Source: ABdhPJybbRW7pdqOBNu6OOPzoqNan/UX/T0v/4RUTxOJQn1Z3o8uYdUQoDVJmhHDZY+9YjyLjHQlZWEfPkhhw0B3A+Y=
+X-Received: by 2002:a05:6a00:2310:b0:4fa:7eb1:e855 with SMTP id
+ h16-20020a056a00231000b004fa7eb1e855mr23543830pfh.14.1650961323839; Tue, 26
+ Apr 2022 01:22:03 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 1/2] docs/zh_CN: sync with original text
- Documentation/vm/page_owner.rst
-Content-Language: en-US
-To:     baihaowen <baihaowen@meizu.com>, siyanteng01@gmail.com
-Cc:     alexs@kernel.org, corbet@lwn.net, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, siyanteng@loongson.cn
-References: <CAEensMzuQ0uAw8_5Xb7u1n685au=DpaJyPevGCT8GCG7xS42ow@mail.gmail.com>
- <1650424016-7225-1-git-send-email-baihaowen@meizu.com>
- <1650424016-7225-2-git-send-email-baihaowen@meizu.com>
- <30d2f96e-99e1-2976-a294-8e112166afff@gmail.com>
- <049ccac8-c394-0cdc-c2ed-4ea91cab6439@meizu.com>
- <c498b2a7-8f0e-4f6d-10ba-49c4c7794ff9@gmail.com>
- <0be9fe6a-b01e-b355-9283-6ad8372932d6@meizu.com>
-From:   Alex Shi <seakeel@gmail.com>
-In-Reply-To: <0be9fe6a-b01e-b355-9283-6ad8372932d6@meizu.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220425141617.23925-1-afd@ti.com> <20220425141617.23925-2-afd@ti.com>
+ <CAFA6WYN7GG6ZgxQ=AMinZ91f7QDh+aEPhL-Obx1s=zqReViAew@mail.gmail.com>
+In-Reply-To: <CAFA6WYN7GG6ZgxQ=AMinZ91f7QDh+aEPhL-Obx1s=zqReViAew@mail.gmail.com>
+From:   Jens Wiklander <jens.wiklander@linaro.org>
+Date:   Tue, 26 Apr 2022 10:21:53 +0200
+Message-ID: <CAHUa44H34Wh-Hpw9LzSS3KsKYethLMo_ih+9BafWCvW_TDU=3Q@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] tee: remove flags TEE_IOCTL_SHM_MAPPED and TEE_IOCTL_SHM_DMA_BUF
+To:     Sumit Garg <sumit.garg@linaro.org>
+Cc:     Andrew Davis <afd@ti.com>, op-tee@lists.trustedfirmware.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Apr 25, 2022 at 4:18 PM Sumit Garg <sumit.garg@linaro.org> wrote:
+>
+> On Mon, 25 Apr 2022 at 19:46, Andrew Davis <afd@ti.com> wrote:
+> >
+> > These look to be leftover from an early edition of this driver. Userspace
+> > does not need this information. Checking all users of this that I have
+> > access to I have verified no one is using them.
+> >
+> > They leak internal use flags out to userspace. Even more they are not
+> > correct anymore after a45ea4efa358. Lets drop these flags before
+> > someone does try to use them for something and they become ABI.
+> >
+> > Signed-off-by: Andrew Davis <afd@ti.com>
+> > ---
+> >
+> > Changes from v1:
+> >  - Removed flags return from tee_ioctl_shm_alloc()
+> >
+>
+> Acked-by: Sumit Garg <sumit.garg@linaro.org>
+>
+> -Sumit
+>
+> >  drivers/tee/tee_core.c   | 2 --
+> >  include/uapi/linux/tee.h | 4 ----
+> >  2 files changed, 6 deletions(-)
 
 
-On 4/25/22 09:17, baihaowen wrote:
-> 在 4/24/22 11:16 AM, Alex Shi 写道:
->>
->> On 4/24/22 10:56, baihaowen wrote:
->>>>> +        ======          ==========      ==================
->>> hi, Alex
->>> I can apply local.
->>> ➜  linux-next git:(heads/next-20220421) ✗ git am doc_pageonwer_patches/0001-docs-zh_CN-sync-with-original-text-Documentation-vm-.patch
->>> 应用：docs/zh_CN: sync with original text Documentation/vm/page_owner.rst
->>> ➜  linux-next git:(heads/next-20220421) ✗ git am doc_pageonwer_patches/0002-doc-vm-page_owner.rst-Fix-table-display-confusion.patch   
->>> 应用：doc/vm/page_owner.rst: Fix table display confusion
->>>
->>> I think git send-email will change format by my select. I'll try to resend.
->> Send to yourself only then get it from your email client and try applying. 
->>
->> Thanks
->> Alex
-> Hi Alex
-> 
-> Could you tell me how do you do when you get a patch from email ?
-> 
-> I get my patch from email and then copy-patse to a new file, then git am xx.patch.
+Looks good to me, I'm picking up this.
 
-Don't do it. copy usually mess the format of patch.
+Thanks,
+Jens
 
-Saving the patch email from many kind of email-clients as raw file, like thunderbird etc.
-Then using 'git am xxx.patch'. It will work. In fact, git can handle the plain email patch well.
-
-
-> It will notice 补丁格式检测失败。
-> 
+> >
+> > diff --git a/drivers/tee/tee_core.c b/drivers/tee/tee_core.c
+> > index 8aa1a4836b92f..af0f7c603fa46 100644
+> > --- a/drivers/tee/tee_core.c
+> > +++ b/drivers/tee/tee_core.c
+> > @@ -302,7 +302,6 @@ static int tee_ioctl_shm_alloc(struct tee_context *ctx,
+> >                 return PTR_ERR(shm);
+> >
+> >         data.id = shm->id;
+> > -       data.flags = shm->flags;
+> >         data.size = shm->size;
+> >
+> >         if (copy_to_user(udata, &data, sizeof(data)))
+> > @@ -339,7 +338,6 @@ tee_ioctl_shm_register(struct tee_context *ctx,
+> >                 return PTR_ERR(shm);
+> >
+> >         data.id = shm->id;
+> > -       data.flags = shm->flags;
+> >         data.length = shm->size;
+> >
+> >         if (copy_to_user(udata, &data, sizeof(data)))
+> > diff --git a/include/uapi/linux/tee.h b/include/uapi/linux/tee.h
+> > index 25a6c534beb1b..23e57164693c4 100644
+> > --- a/include/uapi/linux/tee.h
+> > +++ b/include/uapi/linux/tee.h
+> > @@ -42,10 +42,6 @@
+> >  #define TEE_IOC_MAGIC  0xa4
+> >  #define TEE_IOC_BASE   0
+> >
+> > -/* Flags relating to shared memory */
+> > -#define TEE_IOCTL_SHM_MAPPED   0x1     /* memory mapped in normal world */
+> > -#define TEE_IOCTL_SHM_DMA_BUF  0x2     /* dma-buf handle on shared memory */
+> > -
+> >  #define TEE_MAX_ARG_SIZE       1024
+> >
+> >  #define TEE_GEN_CAP_GP         (1 << 0)/* GlobalPlatform compliant TEE */
+> > --
+> > 2.17.1
+> >
