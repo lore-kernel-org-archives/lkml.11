@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8567EC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7591BC4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:51:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346195AbiDZIyX (ORCPT
+        id S1346148AbiDZIyP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:54:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58760 "EHLO
+        Tue, 26 Apr 2022 04:54:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345816AbiDZIje (ORCPT
+        with ESMTP id S1345822AbiDZIje (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:39:34 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC99E78FF7;
-        Tue, 26 Apr 2022 01:31:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4357F78FE6;
+        Tue, 26 Apr 2022 01:31:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A4E58B81CF3;
-        Tue, 26 Apr 2022 08:31:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAE36C385A0;
-        Tue, 26 Apr 2022 08:31:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F133FB81CFE;
+        Tue, 26 Apr 2022 08:31:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64333C385A4;
+        Tue, 26 Apr 2022 08:31:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961903;
-        bh=+7W/z/NXq+al8Bfg6I1o93fhJ8rD0L8br9mElJvBpog=;
+        s=korg; t=1650961911;
+        bh=Zg0RKzNVnX/cBhF2uFK+M+gvp7hkVVGk/9ryYNxE078=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xo+38FwCX+Jz9v8TL8/R/qMLZqBVkyAFhrklOMx1hnRpYS2N5d0zmoo7KksnEs8Qk
-         ayzFeO1hPLrS48da+UFP9kLVSO/ItpYE82EKQqQQGSoN6VMr9ZrTpX63wFXA+vu7wc
-         h3cvUkQ+48NXwDL8x1QEwo6Lv3Dcrf16vfW3Ku3k=
+        b=0nPHg1DATzcAJRICAIyoT8QbLhqg/KXik897QA4x20kN+D1XATw01DRQDH4/hfyRu
+         9DSgJjdoE2YotV73Le/anMUnvgs68whnlCp/uGVmZv6fLPLLHvPug9EwgUhz/7VnQi
+         Q1m2vWAoX7MceBxLaGx8Ye3hlbNWRvDjldIf9t2w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Ye Bin <yebin10@huawei.com>, Jan Kara <jack@suse.cz>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 5.4 52/62] ext4: fix symlink file size not match to file content
-Date:   Tue, 26 Apr 2022 10:21:32 +0200
-Message-Id: <20220426081738.713722480@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 10/86] ASoC: atmel: Remove system clock tree configuration for at91sam9g20ek
+Date:   Tue, 26 Apr 2022 10:20:38 +0200
+Message-Id: <20220426081741.505015298@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
-References: <20220426081737.209637816@linuxfoundation.org>
+In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
+References: <20220426081741.202366502@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,51 +50,142 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Bin <yebin10@huawei.com>
+From: Mark Brown <broonie@kernel.org>
 
-commit a2b0b205d125f27cddfb4f7280e39affdaf46686 upstream.
+[ Upstream commit c775cbf62ed4911e4f0f23880f01815753123690 ]
 
-We got issue as follows:
-[home]# fsck.ext4  -fn  ram0yb
-e2fsck 1.45.6 (20-Mar-2020)
-Pass 1: Checking inodes, blocks, and sizes
-Pass 2: Checking directory structure
-Symlink /p3/d14/d1a/l3d (inode #3494) is invalid.
-Clear? no
-Entry 'l3d' in /p3/d14/d1a (3383) has an incorrect filetype (was 7, should be 0).
-Fix? no
+The MCLK of the WM8731 on the AT91SAM9G20-EK board is connected to the
+PCK0 output of the SoC, intended in the reference software to be supplied
+using PLLB and programmed to 12MHz. As originally written for use with a
+board file the audio driver was responsible for configuring the entire tree
+but in the conversion to the common clock framework the registration of
+the named pck0 and pllb clocks was removed so the driver has failed to
+instantiate ever since.
 
-As the symlink file size does not match the file content. If the writeback
-of the symlink data block failed, ext4_finish_bio() handles the end of IO.
-However this function fails to mark the buffer with BH_write_io_error and
-so when unmount does journal checkpoint it cannot detect the writeback
-error and will cleanup the journal. Thus we've lost the correct data in the
-journal area. To solve this issue, mark the buffer as BH_write_io_error in
-ext4_finish_bio().
+Since the WM8731 driver has had support for managing a MCLK provided via
+the common clock framework for some time we can simply drop all the clock
+management code from the machine driver other than configuration of the
+sysclk rate, the CODEC driver still respects that configuration from the
+machine driver.
 
-Cc: stable@kernel.org
-Signed-off-by: Ye Bin <yebin10@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220321144438.201685-1-yebin10@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: ff78a189b0ae55f ("ARM: at91: remove old at91-specific clock driver")
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Reviewed-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Link: https://lore.kernel.org/r/20220325154241.1600757-2-broonie@kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/page-io.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ sound/soc/atmel/sam9g20_wm8731.c | 61 --------------------------------
+ 1 file changed, 61 deletions(-)
 
---- a/fs/ext4/page-io.c
-+++ b/fs/ext4/page-io.c
-@@ -100,8 +100,10 @@ static void ext4_finish_bio(struct bio *
- 				continue;
- 			}
- 			clear_buffer_async_write(bh);
--			if (bio->bi_status)
-+			if (bio->bi_status) {
-+				set_buffer_write_io_error(bh);
- 				buffer_io_error(bh);
-+			}
- 		} while ((bh = bh->b_this_page) != head);
- 		bit_spin_unlock(BH_Uptodate_Lock, &head->b_state);
- 		local_irq_restore(flags);
+diff --git a/sound/soc/atmel/sam9g20_wm8731.c b/sound/soc/atmel/sam9g20_wm8731.c
+index 8a55d59a6c2a..d243de5f23dc 100644
+--- a/sound/soc/atmel/sam9g20_wm8731.c
++++ b/sound/soc/atmel/sam9g20_wm8731.c
+@@ -46,35 +46,6 @@
+  */
+ #undef ENABLE_MIC_INPUT
+ 
+-static struct clk *mclk;
+-
+-static int at91sam9g20ek_set_bias_level(struct snd_soc_card *card,
+-					struct snd_soc_dapm_context *dapm,
+-					enum snd_soc_bias_level level)
+-{
+-	static int mclk_on;
+-	int ret = 0;
+-
+-	switch (level) {
+-	case SND_SOC_BIAS_ON:
+-	case SND_SOC_BIAS_PREPARE:
+-		if (!mclk_on)
+-			ret = clk_enable(mclk);
+-		if (ret == 0)
+-			mclk_on = 1;
+-		break;
+-
+-	case SND_SOC_BIAS_OFF:
+-	case SND_SOC_BIAS_STANDBY:
+-		if (mclk_on)
+-			clk_disable(mclk);
+-		mclk_on = 0;
+-		break;
+-	}
+-
+-	return ret;
+-}
+-
+ static const struct snd_soc_dapm_widget at91sam9g20ek_dapm_widgets[] = {
+ 	SND_SOC_DAPM_MIC("Int Mic", NULL),
+ 	SND_SOC_DAPM_SPK("Ext Spk", NULL),
+@@ -135,7 +106,6 @@ static struct snd_soc_card snd_soc_at91sam9g20ek = {
+ 	.owner = THIS_MODULE,
+ 	.dai_link = &at91sam9g20ek_dai,
+ 	.num_links = 1,
+-	.set_bias_level = at91sam9g20ek_set_bias_level,
+ 
+ 	.dapm_widgets = at91sam9g20ek_dapm_widgets,
+ 	.num_dapm_widgets = ARRAY_SIZE(at91sam9g20ek_dapm_widgets),
+@@ -148,7 +118,6 @@ static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
+ {
+ 	struct device_node *np = pdev->dev.of_node;
+ 	struct device_node *codec_np, *cpu_np;
+-	struct clk *pllb;
+ 	struct snd_soc_card *card = &snd_soc_at91sam9g20ek;
+ 	int ret;
+ 
+@@ -162,31 +131,6 @@ static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
+ 		return -EINVAL;
+ 	}
+ 
+-	/*
+-	 * Codec MCLK is supplied by PCK0 - set it up.
+-	 */
+-	mclk = clk_get(NULL, "pck0");
+-	if (IS_ERR(mclk)) {
+-		dev_err(&pdev->dev, "Failed to get MCLK\n");
+-		ret = PTR_ERR(mclk);
+-		goto err;
+-	}
+-
+-	pllb = clk_get(NULL, "pllb");
+-	if (IS_ERR(pllb)) {
+-		dev_err(&pdev->dev, "Failed to get PLLB\n");
+-		ret = PTR_ERR(pllb);
+-		goto err_mclk;
+-	}
+-	ret = clk_set_parent(mclk, pllb);
+-	clk_put(pllb);
+-	if (ret != 0) {
+-		dev_err(&pdev->dev, "Failed to set MCLK parent\n");
+-		goto err_mclk;
+-	}
+-
+-	clk_set_rate(mclk, MCLK_RATE);
+-
+ 	card->dev = &pdev->dev;
+ 
+ 	/* Parse device node info */
+@@ -230,9 +174,6 @@ static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
+ 
+ 	return ret;
+ 
+-err_mclk:
+-	clk_put(mclk);
+-	mclk = NULL;
+ err:
+ 	atmel_ssc_put_audio(0);
+ 	return ret;
+@@ -242,8 +183,6 @@ static int at91sam9g20ek_audio_remove(struct platform_device *pdev)
+ {
+ 	struct snd_soc_card *card = platform_get_drvdata(pdev);
+ 
+-	clk_disable(mclk);
+-	mclk = NULL;
+ 	snd_soc_unregister_card(card);
+ 	atmel_ssc_put_audio(0);
+ 
+-- 
+2.35.1
+
 
 
