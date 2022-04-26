@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD494C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:28:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C769C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:28:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344912AbiDZIba (ORCPT
+        id S1344919AbiDZIbh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:31:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36178 "EHLO
+        Tue, 26 Apr 2022 04:31:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344804AbiDZI2b (ORCPT
+        with ESMTP id S1344692AbiDZI2k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:28:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4092A135B06;
-        Tue, 26 Apr 2022 01:24:14 -0700 (PDT)
+        Tue, 26 Apr 2022 04:28:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A123135B19;
+        Tue, 26 Apr 2022 01:24:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CA7F1617F1;
-        Tue, 26 Apr 2022 08:24:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6040C385AE;
-        Tue, 26 Apr 2022 08:24:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AA1F8617F1;
+        Tue, 26 Apr 2022 08:24:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7CD2C385A0;
+        Tue, 26 Apr 2022 08:24:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961453;
-        bh=e58p+eX3tzKZICjXxJ3Z7whh5AvYJrfSGi0Pe0PQWXM=;
+        s=korg; t=1650961456;
+        bh=IZI1pv8Ex4cfr00pOxZe1myvfnxTKl2H2WTiS4ekVeI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eQCmV5A7giQjDgx3yb3ZxkFoP900SXOWj30OqrHNuyifrM7QwWDckVUl7UJQnMmmR
-         OnXBcWro98NC61XOLWW41Yad2Bemf/PbBd35xX2FdEpJObdrYIKmXJWqMv4aL0G7lV
-         g9/+N6cUE5uKgOcg3H9VPTnplebrZX2I+65Le+CM=
+        b=bL3ij8jUPa3PMEix5AcEq6F4kCBfwV9mI5DfBVcLhXR99Oq64qLwnutlKkLX16pxF
+         fn7OcWafOdNzEGBBQz6OpzySWe3lgxPSftG5OBE1b+XUVYQbdaNpprGK3RC0vq1CoJ
+         QYOms8PdH+z/UQULbiVwsJ241vq5LnCEnmEgBwa0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hongbin Wang <wh_bin@126.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        Steve French <sfrench@samba.org>,
+        Shyam Prasad N <nspmangalore@gmail.com>,
+        Rohith Surabattula <rohiths.msft@gmail.com>,
+        linux-cifs@vger.kernel.org, Steve French <stfrench@microsoft.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 16/43] vxlan: fix error return code in vxlan_fdb_append
-Date:   Tue, 26 Apr 2022 10:20:58 +0200
-Message-Id: <20220426081734.996931103@linuxfoundation.org>
+Subject: [PATCH 4.14 17/43] cifs: Check the IOCB_DIRECT flag, not O_DIRECT
+Date:   Tue, 26 Apr 2022 10:20:59 +0200
+Message-Id: <20220426081735.026599886@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081734.509314186@linuxfoundation.org>
 References: <20220426081734.509314186@linuxfoundation.org>
@@ -50,38 +53,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hongbin Wang <wh_bin@126.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit 7cea5560bf656b84f9ed01c0cc829d4eecd0640b ]
+[ Upstream commit 994fd530a512597ffcd713b0f6d5bc916c5698f0 ]
 
-When kmalloc and dst_cache_init failed,
-should return ENOMEM rather than ENOBUFS.
+Use the IOCB_DIRECT indicator flag on the I/O context rather than checking to
+see if the file was opened O_DIRECT.
 
-Signed-off-by: Hongbin Wang <wh_bin@126.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Steve French <sfrench@samba.org>
+cc: Shyam Prasad N <nspmangalore@gmail.com>
+cc: Rohith Surabattula <rohiths.msft@gmail.com>
+cc: linux-cifs@vger.kernel.org
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/vxlan.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/cifs/cifsfs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index 066a4654e838..31657f15eb07 100644
---- a/drivers/net/vxlan.c
-+++ b/drivers/net/vxlan.c
-@@ -524,11 +524,11 @@ static int vxlan_fdb_append(struct vxlan_fdb *f,
+diff --git a/fs/cifs/cifsfs.c b/fs/cifs/cifsfs.c
+index dba0d12c3db1..1d3f98572068 100644
+--- a/fs/cifs/cifsfs.c
++++ b/fs/cifs/cifsfs.c
+@@ -773,7 +773,7 @@ cifs_loose_read_iter(struct kiocb *iocb, struct iov_iter *iter)
+ 	ssize_t rc;
+ 	struct inode *inode = file_inode(iocb->ki_filp);
  
- 	rd = kmalloc(sizeof(*rd), GFP_ATOMIC);
- 	if (rd == NULL)
--		return -ENOBUFS;
-+		return -ENOMEM;
+-	if (iocb->ki_filp->f_flags & O_DIRECT)
++	if (iocb->ki_flags & IOCB_DIRECT)
+ 		return cifs_user_readv(iocb, iter);
  
- 	if (dst_cache_init(&rd->dst_cache, GFP_ATOMIC)) {
- 		kfree(rd);
--		return -ENOBUFS;
-+		return -ENOMEM;
- 	}
- 
- 	rd->remote_ip = *ip;
+ 	rc = cifs_revalidate_mapping(inode);
 -- 
 2.35.1
 
