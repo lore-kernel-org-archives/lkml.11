@@ -2,82 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43CC1C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:20:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BFC8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:20:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344576AbiDZIXW (ORCPT
+        id S1344583AbiDZIXY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:23:22 -0400
+        Tue, 26 Apr 2022 04:23:24 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236599AbiDZIXT (ORCPT
+        with ESMTP id S1344572AbiDZIXV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:23:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92B6237BDC;
-        Tue, 26 Apr 2022 01:20:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 26 Apr 2022 04:23:21 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4ACE638193
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 01:20:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650961213;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=aNhaa4dZuwIsZ3bau/gdwYP34lare5fShqR6oe9C3Es=;
+        b=DGvdOV8vBaOlcjy7sIvGds6ivaELNJGoK5J3jooTQItrSkjokA56Njbf8AwtM45RzplvzH
+        ggcy7cchWL864/ZPYInvSMBHWxQvWenJPebMcyX2F3Tw095YBIfP4nLqstTOSJ8/F8jcaX
+        H/9rXKbj8hQJJ0LE80j5fgHTtfQziDg=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-466-TFfwwowKMQGeuFJuuGYKyw-1; Tue, 26 Apr 2022 04:20:11 -0400
+X-MC-Unique: TFfwwowKMQGeuFJuuGYKyw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 09ADF617E4;
-        Tue, 26 Apr 2022 08:20:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5019CC385AE;
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1DAB029ABA02;
         Tue, 26 Apr 2022 08:20:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650961211;
-        bh=ugo6y6jiYnqSUXmZRfk+DmmPi2q5AZ1H/WOY8Ca7Lwc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Qywktqcx1E46JxwpO18a/reuO2eDEsGHII+Cj5Z+oKNAgysipOJX/3gl5FnBWdp7B
-         G3+Op1x/Gue0BkzAqnEXv13/A22HsVwj/HUESnzZ3qw3P9a8LVgNv5j3L13iLTrYUK
-         qsyobfDACvojg7BGOoHmFFSpOxHCFo+ZtdpY9yRjPGaDV5WgjW2bxhR5U7e69xKr00
-         UEhB+A+pMf3YhW2s3ffoJTXazfCLpnCJhKBa/NrC2VEOVej71Jdg2H4aXIM+BAuyct
-         FQNbq/T2UFTFU29GLfNodsju0oS9VgmwfYhPTu9wnsKDofQmy9eRNbhlMVSiadUu6d
-         2+IZVbOg5iP1w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 39DAAE8DD85;
-        Tue, 26 Apr 2022 08:20:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+Received: from rotkaeppchen (unknown [10.39.193.220])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0A5B840D0160;
+        Tue, 26 Apr 2022 08:20:09 +0000 (UTC)
+Date:   Tue, 26 Apr 2022 10:20:08 +0200
+From:   Philipp Rudo <prudo@redhat.com>
+To:     lizhe <sensor1010@163.com>
+Cc:     "Baoquan He" <bhe@redhat.com>, dyoung@redhat.com,
+        vgoyal@redhat.com, kexec@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] kernel/crash_core.c: No judgment required
+Message-ID: <20220426102008.39718e00@rotkaeppchen>
+In-Reply-To: <20220426101718.765686a9@rotkaeppchen>
+References: <20211210032003.16278-1-sensor1010@163.com>
+        <20211214173242.192f47e8@rhtmp>
+        <YmX7EW4Gs+c1ZueQ@MiWiFi-R3L-srv>
+        <62058381.3b6e.1805f62c8f4.Coremail.sensor1010@163.com>
+        <20220426101718.765686a9@rotkaeppchen>
+Organization: Red Hat inc.
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Patch net-next] net: phy: LAN937x: add interrupt support for link
- detection
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165096121123.19252.3865282895465550073.git-patchwork-notify@kernel.org>
-Date:   Tue, 26 Apr 2022 08:20:11 +0000
-References: <20220423154727.29052-1-arun.ramadoss@microchip.com>
-In-Reply-To: <20220423154727.29052-1-arun.ramadoss@microchip.com>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, kuba@kernel.org, davem@davemloft.net,
-        linux@armlinux.org.uk, hkallweit1@gmail.com, andrew@lunn.ch,
-        UNGLinuxDriver@microchip.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Hi,
 
-This patch was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+On Tue, 26 Apr 2022 10:17:18 +0200
+Philipp Rudo <prudo@redhat.com> wrote:
 
-On Sat, 23 Apr 2022 21:17:27 +0530 you wrote:
-> Added the config_intr and handle_interrupt for the LAN937x phy which is
-> same as the LAN87xx phy.
+> Hi lizhe,
 > 
-> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-> ---
->  drivers/net/phy/microchip_t1.c | 2 ++
->  1 file changed, 2 insertions(+)
+> On Mon, 25 Apr 2022 14:22:31 +0800 (CST)
+> lizhe  <sensor1010@163.com> wrote:
 > 
-> [...]
+> > HI :
+> > 
+> > 
+> > I found the problem at the first time and gave the solution,
+> > 
+> > 
+> > 
+> > 
+> > Pphilipp Rudo just saw the solution to the problem and gave an explanation.
+> > the author of this patch should only be me  
+> 
+> right, I only commented on the patch you sent.
+> 
+> Could you please update the commit message and send a v2.
 
-Here is the summary with links:
-  - [net-next] net: phy: LAN937x: add interrupt support for link detection
-    https://git.kernel.org/netdev/net-next/c/fb0a43f5bd45
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+should have checked the rest of my mails first...
 
