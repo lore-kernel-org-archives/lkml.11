@@ -2,90 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70196C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 13:20:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B424C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 13:20:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350836AbiDZNXL (ORCPT
+        id S1349969AbiDZNXS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 09:23:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49338 "EHLO
+        Tue, 26 Apr 2022 09:23:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350834AbiDZNXC (ORCPT
+        with ESMTP id S1350842AbiDZNXL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 09:23:02 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F3441472CE
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 06:19:55 -0700 (PDT)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23QAWpT4025876;
-        Tue, 26 Apr 2022 15:19:43 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=selector1;
- bh=6vDfFWt5DqxBN+l8Zc4TuK5apUkvbBDEvZBSbTNYP4k=;
- b=AIDJ7gPwxst+Seoxpcd7bsziDxkHxoj7xIQqsfHCvbY6fZ41wJXRpILmGqV4yZcc0Z42
- yyZ9wpdwUJ0lqO/G9PEtiae9GDHo81rKSd+L96wU3tX4z7egeRTaxAi5iI2rr/GsRMeA
- hURrhTW2GNuOZMvw1MUWNOHdljPGtuOre8L+smcNHuv1ygN0oOxzLBaoJRlmUR/rqpfp
- PxlLnrdd91Uc8qXFZf2SXK5OqVT3tHU7SMTUmP9IBrY+tjegYPGiRnv1Gal4Dm+uoEjJ
- IxkQKZyqFddsqxvpejqu+C1odVS7W8Dej6uLizeKeX/XbUwVHQJNmuXxEJpOyqFZOMCO 8g== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3fm8t1q5vv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 26 Apr 2022 15:19:43 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 7874A10002A;
-        Tue, 26 Apr 2022 15:19:42 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 64F4E2278AD;
-        Tue, 26 Apr 2022 15:19:42 +0200 (CEST)
-Received: from localhost (10.75.127.50) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Tue, 26 Apr 2022 15:19:41
- +0200
-From:   Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>
-To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-CC:     <dri-devel@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
-        Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>
-Subject: [PATCH] drm: fix typo in comment
-Date:   Tue, 26 Apr 2022 15:19:12 +0200
-Message-ID: <20220426131912.3850354-1-raphael.gallais-pou@foss.st.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 26 Apr 2022 09:23:11 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E73D9DF92
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 06:20:00 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id y38so2206999pfa.6
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 06:20:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=HLmgdCeRQnlZPI0jqFO8y9T2xXc5m6qGLiOpaSM2FSM=;
+        b=jPCQfFTpQpV7n7pB7rQDJt9sEnkgB4WREXGbL8Dv7b1F2XbxwlGG9CjunEgd52tZNh
+         f7b7jRWcHwxnBXWkjhTIo5RsaLGht6e7tCbque3ut0TGd+K/JWFdBL3RoZ66gTg6AWOr
+         tt/4wyon5tX9Fj2AvW12rYJSMG5VjtoOlW++QPT8nwJk7gFXCOX3SrHat2epwpEjI8ww
+         AFCQ8Rn77o0zNND5MQZv31aCz2DUeV3FK9hPagKRgqmRKXpwU/XnLSgFUbHZhkfSHEkJ
+         o1Ok5lmOEVM5/v+cSqBQdoCuC+HiqBJ64GblVLjeciEYYmiEZfTWUZcMQfwIiTVE6i/p
+         J72w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=HLmgdCeRQnlZPI0jqFO8y9T2xXc5m6qGLiOpaSM2FSM=;
+        b=vN8ISC++1nm95IB5OYjcGnry9O/j9oKYt1+yHqbTtROE+4I45EEuXs1247kgmIMhjg
+         pBGvS2UhLzCd85FJ27YFxfYrvoaS/F0NYvy+7Sp5+YDDOSaDY9jmwusEA9HXfVQEEgpO
+         kC0SN0wh5iXZbdYrzGdH2q+mojzA+RCaLWucTzxmO9fqXaY5oIpM5zOCf9gHh0hrr+CD
+         DhVBLETdUPkiqdIA5TjFf3z0FmaEuiYZv5UN1lyQxSXn1URXIGfU70JNA8mzSrNbTW8S
+         s8bVQ9pXMn9Sf+zwL+jK5Wpm0Lav3M60KTOMuu10S6PFLF1Gs6Mp/HF/u3rOULIf790o
+         cDPQ==
+X-Gm-Message-State: AOAM5317UyRRXOEVPT0C9hGhMvywhpnEFKjeh3RMvVY+WNli3qF3JIs+
+        PmuL0A0ANjPdfrVrZEhSHnIFVw==
+X-Google-Smtp-Source: ABdhPJywU6zSNw8eC6iZB0lW4cMNYVRUgoT39LY8hW7zbfiZnYq6dVsSlFGb05d66NZD5nCNmqfhWQ==
+X-Received: by 2002:a63:86c8:0:b0:3aa:fa50:b002 with SMTP id x191-20020a6386c8000000b003aafa50b002mr13427236pgd.570.1650979199932;
+        Tue, 26 Apr 2022 06:19:59 -0700 (PDT)
+Received: from leoy-ThinkPad-X240s (216.24.179.102.16clouds.com. [216.24.179.102])
+        by smtp.gmail.com with ESMTPSA id x22-20020a17090aa39600b001d95c09f877sm3120923pjp.35.2022.04.26.06.19.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 06:19:59 -0700 (PDT)
+Date:   Tue, 26 Apr 2022 21:19:52 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     James Clark <james.clark@arm.com>
+Cc:     Timothy Hayes <timothy.hayes@arm.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        acme@kernel.org, John Garry <john.garry@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH 2/3] perf: arm-spe: Fix SPE events with phys addresses
+Message-ID: <20220426131952.GA1923836@leoy-ThinkPad-X240s>
+References: <20220421165205.117662-1-timothy.hayes@arm.com>
+ <20220421165205.117662-3-timothy.hayes@arm.com>
+ <20220424125951.GD978927@leoy-ThinkPad-X240s>
+ <322009d2-330c-22d4-4075-eca2042f64e1@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.50]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-26_02,2022-04-26_02,2022-02-23_01
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <322009d2-330c-22d4-4075-eca2042f64e1@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix typo in a doxygen comment (replaced green by blue) in drm_color_mgmt.c
+On Mon, Apr 25, 2022 at 10:12:36AM +0100, James Clark wrote:
 
-Signed-off-by: Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>
----
- drivers/gpu/drm/drm_color_mgmt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+[...]
 
-diff --git a/drivers/gpu/drm/drm_color_mgmt.c b/drivers/gpu/drm/drm_color_mgmt.c
-index 9079fbe21d2f..17c6c3eefcd6 100644
---- a/drivers/gpu/drm/drm_color_mgmt.c
-+++ b/drivers/gpu/drm/drm_color_mgmt.c
-@@ -259,7 +259,7 @@ static bool drm_crtc_supports_legacy_gamma(struct drm_crtc *crtc)
-  * @crtc: CRTC object
-  * @red: red correction table
-  * @green: green correction table
-- * @blue: green correction table
-+ * @blue: blue correction table
-  * @size: size of the tables
-  * @ctx: lock acquire context
-  *
--- 
-2.25.1
+> >> diff --git a/tools/perf/util/arm-spe.c b/tools/perf/util/arm-spe.c
+> >> index 151cc38a171c..1a80151baed9 100644
+> >> --- a/tools/perf/util/arm-spe.c
+> >> +++ b/tools/perf/util/arm-spe.c
+> >> @@ -1033,7 +1033,8 @@ arm_spe_synth_events(struct arm_spe *spe, struct perf_session *session)
+> >>  	memset(&attr, 0, sizeof(struct perf_event_attr));
+> >>  	attr.size = sizeof(struct perf_event_attr);
+> >>  	attr.type = PERF_TYPE_HARDWARE;
+> >> -	attr.sample_type = evsel->core.attr.sample_type & PERF_SAMPLE_MASK;
+> >> +	attr.sample_type = evsel->core.attr.sample_type &
+> >> +				(PERF_SAMPLE_MASK | PERF_SAMPLE_PHYS_ADDR);
+> > 
+> > I verified this patch and I can confirm the physical address can be
+> > dumped successfully.
+> > 
+> > I have a more general question, seems to me, we need to change the
+> > macro PERF_SAMPLE_MASK in the file util/event.h as below, so
+> > here doesn't need to 'or' the flag PERF_SAMPLE_PHYS_ADDR anymore.
+> > 
+> > @Arnaldo, @Jiri, could you confirm if this is the right way to move
+> > forward?  I am not sure why PERF_SAMPLE_MASK doesn't contain the bit
+> > PERF_SAMPLE_PHYS_ADDR in current code.
+> 
+> I think there is a reason that PERF_SAMPLE_MASK is a subset of all the
+> bits. This comment below suggests it. Is it so the mask only includes fields
+> that are 64bits? That makes the __evsel__sample_size() function a simple
+> multiplication of a count of all the fields that are 64bits.
 
+After reading code, seems the conclusion "a count of all the fields
+that are 64bits" is not valid.  PERF_SAMPLE_MASK contains bits
+PERF_SAMPLE_IP and PERF_SAMPLE_TID, the corresponding fields 'pid'
+and 'tid' in the structure perf_sample are u32 type.
+
+>   static int
+>   perf_event__check_size(union perf_event *event, unsigned int sample_size)
+>   {
+> 	/*
+> 	 * The evsel's sample_size is based on PERF_SAMPLE_MASK which includes
+> 	 * up to PERF_SAMPLE_PERIOD.  After that overflow() must be used to
+> 	 * check the format does not go past the end of the event.
+> 	 */
+> 	if (sample_size + sizeof(event->header) > event->header.size)
+> 		return -EFAULT;
+
+Okay, thanks for sharing the info, it does show that it's deliberately to
+not contain all fields in PERF_SAMPLE_MASK.  If so, this patch is fine
+for me:
+
+Reviewed-by: Leo Yan <leo.yan@linaro.org>
+
+
+> 	return 0;
+>   }
+> 
+> Having said that, the mask was updated once to add PERF_SAMPLE_IDENTIFIER to
+> it, so that comment is slightly out of date now.
+> 
+> 
+> > 
+> > diff --git a/tools/perf/util/event.h b/tools/perf/util/event.h
+> > index cdd72e05fd28..c905ac32ebad 100644
+> > --- a/tools/perf/util/event.h
+> > +++ b/tools/perf/util/event.h
+> > @@ -39,7 +39,7 @@ struct perf_event_attr;
+> >          PERF_SAMPLE_TIME | PERF_SAMPLE_ADDR |          \
+> >         PERF_SAMPLE_ID | PERF_SAMPLE_STREAM_ID |        \
+> >          PERF_SAMPLE_CPU | PERF_SAMPLE_PERIOD |         \
+> > -        PERF_SAMPLE_IDENTIFIER)
+> > +        PERF_SAMPLE_IDENTIFIER | PERF_SAMPLE_PHYS_ADDR)
+> > 
+> > Thanks,
+> > Leo
+> > 
+> >>  	attr.sample_type |= PERF_SAMPLE_IP | PERF_SAMPLE_TID |
+> >>  			    PERF_SAMPLE_PERIOD | PERF_SAMPLE_DATA_SRC |
+> >>  			    PERF_SAMPLE_WEIGHT | PERF_SAMPLE_ADDR;
+> >> -- 
+> >> 2.25.1
+> >>
