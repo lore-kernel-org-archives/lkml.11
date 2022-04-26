@@ -2,159 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E812C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 12:25:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD36DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 12:25:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244394AbiDZM2J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 08:28:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52260 "EHLO
+        id S1346010AbiDZM2a (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 08:28:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242525AbiDZM2G (ORCPT
+        with ESMTP id S1346809AbiDZM2Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 08:28:06 -0400
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E453C15C396;
-        Tue, 26 Apr 2022 05:24:57 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 20:24:04 +0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1650975895;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8ihWfybmQBLwWs2JDnc+H/HKvcZbSpd7+Ep5O3IrtFw=;
-        b=RxPE+S/KZdvXUPCvXIpza6SglxVNoMOI1kqQVJy2QL5+sq14mkJDaDXHCg/nbpzOaVBdPo
-        cdLL7xkr5NfPMQor8TaWV2iOB6XUiyoU2pPVh4qcxYVHHhhyP/Urq0MTP8JFi2VCXp7AFp
-        yyhYC5ykSb/j7hdEe6UsQcwRNo+WeYg=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Cai Huoqing <cai.huoqing@linux.dev>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        linaro-mm-sig@lists.linaro.org
-Subject: Re: [Linaro-mm-sig] Re: [PATCH v2 4/4] drm/nvdla/uapi: Add UAPI of
- NVDLA driver
-Message-ID: <20220426122404.GA6788@chq-T47>
-References: <20220426060808.78225-1-cai.huoqing@linux.dev>
- <20220426060808.78225-5-cai.huoqing@linux.dev>
- <618a4f53-0998-1e6b-e32b-8bf2d3057cec@amd.com>
- <CAK8P3a2w1t7Sk897u0ndD66Lwp5a4DuOqqQLN4yHSg=JmrpOHQ@mail.gmail.com>
+        Tue, 26 Apr 2022 08:28:25 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D14F617AA0
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 05:25:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650975917; x=1682511917;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=tGwiiAq/AyILdUgXsGoOt0BVavq4XkHHO7RIMveHi4E=;
+  b=FV30eo43fKkE/9eIrOfFz4wHfg1AYuHUJzItLiBnQ2F+O5XuQ6ouQrX2
+   AbZgO1ZaDleorFzftMeVVaoIperrWRsqCOhsPOg9OMY19m/eTy8WrG5ii
+   crPk18Va2b9nxDMaOKUUuf/5ai6M/FP3X6k2IlNLc5gWds6/83770ns8w
+   U8zIuaare02a8xpYawPZ+sdvWL6a1aIhsII6tqUZ6+6sT9lpciRrgc67l
+   nKDUKSdAW0biAJ2mssX0FBINZF5LZsug7RlecpWoygfeZ2AWxu+nkeXyX
+   bFoF/2Cz6qIUaALXWU6bhRvDfj0RFhk2dGM28djS1R6n9m+UdkkAYDX20
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="326047767"
+X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
+   d="scan'208";a="326047767"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 05:25:17 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
+   d="scan'208";a="705025307"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 26 Apr 2022 05:25:16 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1njKFo-0003Xq-2U;
+        Tue, 26 Apr 2022 12:25:16 +0000
+Date:   Tue, 26 Apr 2022 20:25:05 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [rostedt-trace:ftrace/core 5/27] ERROR: modpost: "del_timer_free"
+ [drivers/bluetooth/hci_uart.ko] undefined!
+Message-ID: <202204262014.jLVxAaWT-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAK8P3a2w1t7Sk897u0ndD66Lwp5a4DuOqqQLN4yHSg=JmrpOHQ@mail.gmail.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 26 4月 22 12:50:50, Arnd Bergmann wrote:
-> On Tue, Apr 26, 2022 at 8:31 AM Christian König
-> <christian.koenig@amd.com> wrote:
-> > Am 26.04.22 um 08:08 schrieb Cai Huoqing:
-> > > The NVIDIA Deep Learning Accelerator (NVDLA) is an open source IP
-> > > which is integrated into NVIDIA Jetson AGX Xavier,
-> > > so add UAPI of this driver.
-> > >
-> > > Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
-> 
-> I saw the reply but no the original mail, so I'll comment here
-Hi, thanks for your reply
-The patches here:
-https://lore.kernel.org/lkml/20220426060808.78225-3-cai.huoqing@linux.dev/
-> 
-> > > +
-> > > +#if !defined(__KERNEL__)
-> > > +#define __user
-> > > +#endif
-> 
-> This is done in the 'make headers_install' step, no need to define it
-> separately.
-> 
-> > > +#define NVDLA_NO_TIMEOUT    (0xffffffff)
-> > > +     __u32 timeout;
-> >
-> > What format does that timeout value have?
-> >
-> > In general it is best practice to have absolute 64bit nanosecond
-> > timeouts (to be used with ktime inside the kernel) so that restarting
-> > interrupted IOCTLs works smooth.
-> 
-> When using absolute values, one also needs to decide whether this should be
-> realtime, monotonic or boottime and document the decision.
-> 
-> 
-> > > + * struct nvdla_submit_args structure for task submit
-> > > + *
-> > > + * @tasks            pointer to array of struct nvdla_ioctl_submit_task
-> > > + * @num_tasks                number of entries in tasks
-> > > + * @flags            flags for task submit, no flags defined yet
-> > > + * @version          version of task structure
-> > > + *
-> > > + */
-> > > +struct nvdla_submit_args {
-> > > +     __u64 tasks;
-> > > +     __u16 num_tasks;
-> > > +#define NVDLA_MAX_TASKS_PER_SUBMIT   24
-> > > +#define NVDLA_SUBMIT_FLAGS_ATOMIC    (1 << 0)
-> >
-> > Well that "no flags defined yet" from the comment above is probably
-> > outdated :)
-> 
-> > > +     __u16 flags;
-> > > +     __u32 version;
-> > > +};
-> 
-> Versioned interfaces are usually a bad idea. If you introduce an ioctl command,
-> it should generally keep working. If you ever need to change the interface, just
-> use a new command number for the new version.
-> 
-> > > +/**
-> > > + * struct nvdla_gem_create_args for allocating DMA buffer through GEM
-> > > + *
-> > > + * @handle           handle updated by kernel after allocation
-> > > + * @flags            implementation specific flags
-> > > + * @size             size of buffer to allocate
-> > > + */
-> > > +struct nvdla_gem_create_args {
-> > > +     __u32 handle;
-> > > +     __u32 flags;
-> > > +     __u64 size;
-> > > +};
-> > > +
-> > > +/**
-> > > + * struct nvdla_gem_map_offset_args for mapping DMA buffer
-> > > + *
-> > > + * @handle           handle of the buffer
-> > > + * @reserved         reserved for padding
-> > > + * @offset           offset updated by kernel after mapping
-> > > + */
-> > > +struct nvdla_gem_map_offset_args {
-> > > +     __u32 handle;
-> > > +     __u32 reserved;
-> > > +     __u64 offset;
-> > > +};
-> > > +
-> > > +#define DRM_NVDLA_SUBMIT             0x00
-> > > +#define DRM_NVDLA_GEM_CREATE 0x01
-> > > +#define DRM_NVDLA_GEM_MMAP           0x02
-> 
-> Is this an actual mmap() call, or something that needs to be done before the
-> mmap()? Is the 'handle' a file descriptor or some internal number?
-It's an gem object mmap which calls drm_gem_dumb_map_offset() inside and
-the handle is gem object handle.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git ftrace/core
+head:   34013efca7a53dc163483fae58c114bd8b2c47f4
+commit: c0c1fa7de9ef7b30b95044910ce8b115e24dbb20 [5/27] timers: Add del_time_free() to be called before freeing timer
+config: powerpc-allmodconfig (https://download.01.org/0day-ci/archive/20220426/202204262014.jLVxAaWT-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git/commit/?id=c0c1fa7de9ef7b30b95044910ce8b115e24dbb20
+        git remote add rostedt-trace https://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git
+        git fetch --no-tags rostedt-trace ftrace/core
+        git checkout c0c1fa7de9ef7b30b95044910ce8b115e24dbb20
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash
 
-Thanks,
-Cai
-> 
->       Arnd
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>, old ones prefixed by <<):
+
+>> ERROR: modpost: "del_timer_free" [drivers/bluetooth/hci_uart.ko] undefined!
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
