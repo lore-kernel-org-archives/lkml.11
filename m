@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA0CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:03:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23D89C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:03:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351716AbiDZTGz (ORCPT
+        id S1346713AbiDZTG7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 15:06:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42436 "EHLO
+        Tue, 26 Apr 2022 15:06:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353764AbiDZTFj (ORCPT
+        with ESMTP id S1353754AbiDZTFc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 15:05:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94BB419982F;
-        Tue, 26 Apr 2022 12:02:24 -0700 (PDT)
+        Tue, 26 Apr 2022 15:05:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58A101999D5;
+        Tue, 26 Apr 2022 12:02:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 341B5619C5;
-        Tue, 26 Apr 2022 19:02:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7995CC385A4;
-        Tue, 26 Apr 2022 19:02:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E2D99619C4;
+        Tue, 26 Apr 2022 19:02:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E848C385AD;
+        Tue, 26 Apr 2022 19:02:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650999743;
-        bh=J9fKvkWLHDd+6qz2ZBFVcWFT9ooivv7xE+aNdi+7aEU=;
+        s=k20201202; t=1650999742;
+        bh=pH8kHLg29q84DA3lAKF1knzAlPKUewGQtsmALlQhDkw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fVftWVBv1iea8k/Y/8zcaFhY7s821InzRGZaGv22HE9Kf6YnzbNvW+p978tOh8Qk+
-         NZzXoSYc29vsdBoX6b/Aao2n5MtERj6FECIpVGz/d21NxLnxIcSpwHW9wWQyriIMQ+
-         r+LWRgg16N6bIjhA/WdiRF3w0SFRefOP8L7ngc3ieBji3W1XKGSglhcCDCT2P9DV0D
-         xpgaICLOC+a4u1tvN4o7jCgvrlCcr8Jqr8WIVHxlO/m6OcIqbVUcF9LIho9yhnHu7X
-         Vt1/fmNSMJjX/MUkqTPs5S/9/7Exvy66/AqBFY2r9Z/NMh/ESK6hTqmqt/LseImdQA
-         JPamWXecQ8etw==
+        b=sUv44KYMyRgUcmKqs/27GHZ/Y71e5ZCVC0uIqBeuSRj5yiVapBrKYFQC5UhGzBuQZ
+         wZhD/aovSLGSI3C7awdN+oSxT/82X3XMgC2icnNsRPjICN2vU/uHYA2U2aSaCrt2J1
+         Ebrk4YfaeVho8QM14xJZE8Y5ptU4tQX0U5PZXM92XbPIDxsmIYyu/OZQxnSx6GgtO4
+         7VIvV1QgLWQKtwGICLStKG3WLJvXUG1twJA7M1teO/NpiKE6ih+bqTkG/rtSpM9DKr
+         g0utMUEQE3Ce+OnN+qexbY2aftP7Q1JPJKCEhGsnpjM5Jb7eRirplsiUA2b6fOk3c/
+         HoW6nwRe5+ilA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     suresh kumar <suresh2514@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, j.vosburgh@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 08/15] bonding: do not discard lowest hash bit for non layer3+4 hashing
-Date:   Tue, 26 Apr 2022 15:02:07 -0400
-Message-Id: <20220426190216.2351413-8-sashal@kernel.org>
+Cc:     Namjae Jeon <linkinjeon@kernel.org>,
+        Hyunchul Lee <hyc.lee@gmail.com>,
+        Steve French <stfrench@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>, sfrench@samba.org,
+        linux-cifs@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 05/15] ksmbd: increment reference count of parent fp
+Date:   Tue, 26 Apr 2022 15:02:04 -0400
+Message-Id: <20220426190216.2351413-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220426190216.2351413-1-sashal@kernel.org>
 References: <20220426190216.2351413-1-sashal@kernel.org>
@@ -54,97 +54,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: suresh kumar <suresh2514@gmail.com>
+From: Namjae Jeon <linkinjeon@kernel.org>
 
-[ Upstream commit 49aefd131739df552f83c566d0665744c30b1d70 ]
+[ Upstream commit 8510a043d334ecdf83d4604782f288db6bf21d60 ]
 
-Commit b5f862180d70 was introduced to discard lowest hash bit for layer3+4 hashing
-but it also removes last bit from non layer3+4 hashing
+Add missing increment reference count of parent fp in
+ksmbd_lookup_fd_inode().
 
-Below script shows layer2+3 hashing will result in same slave to be used with above commit.
-$ cat hash.py
-#/usr/bin/python3.6
-
-h_dests=[0xa0, 0xa1]
-h_source=0xe3
-hproto=0x8
-saddr=0x1e7aa8c0
-daddr=0x17aa8c0
-
-for h_dest in h_dests:
-    hash = (h_dest ^ h_source ^ hproto ^ saddr ^ daddr)
-    hash ^= hash >> 16
-    hash ^= hash >> 8
-    print(hash)
-
-print("with last bit removed")
-for h_dest in h_dests:
-    hash = (h_dest ^ h_source ^ hproto ^ saddr ^ daddr)
-    hash ^= hash >> 16
-    hash ^= hash >> 8
-    hash = hash >> 1
-    print(hash)
-
-Output:
-$ python3.6 hash.py
-522133332
-522133333   <-------------- will result in both slaves being used
-
-with last bit removed
-261066666
-261066666   <-------------- only single slave used
-
-Signed-off-by: suresh kumar <suresh2514@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+Reviewed-by: Hyunchul Lee <hyc.lee@gmail.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/bonding/bond_main.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ fs/ksmbd/smb2pdu.c   | 2 ++
+ fs/ksmbd/vfs_cache.c | 1 +
+ 2 files changed, 3 insertions(+)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 46c3301a5e07..2e75b7e8f70b 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -3817,14 +3817,19 @@ static bool bond_flow_dissect(struct bonding *bond, struct sk_buff *skb, const v
- 	return true;
- }
- 
--static u32 bond_ip_hash(u32 hash, struct flow_keys *flow)
-+static u32 bond_ip_hash(u32 hash, struct flow_keys *flow, int xmit_policy)
- {
- 	hash ^= (__force u32)flow_get_u32_dst(flow) ^
- 		(__force u32)flow_get_u32_src(flow);
- 	hash ^= (hash >> 16);
- 	hash ^= (hash >> 8);
-+
- 	/* discard lowest hash bit to deal with the common even ports pattern */
--	return hash >> 1;
-+	if (xmit_policy == BOND_XMIT_POLICY_LAYER34 ||
-+		xmit_policy == BOND_XMIT_POLICY_ENCAP34)
-+		return hash >> 1;
-+
-+	return hash;
- }
- 
- /* Generate hash based on xmit policy. If @skb is given it is used to linearize
-@@ -3854,7 +3859,7 @@ static u32 __bond_xmit_hash(struct bonding *bond, struct sk_buff *skb, const voi
- 			memcpy(&hash, &flow.ports.ports, sizeof(hash));
+diff --git a/fs/ksmbd/smb2pdu.c b/fs/ksmbd/smb2pdu.c
+index 192d8308afc2..a9fdb47c2791 100644
+--- a/fs/ksmbd/smb2pdu.c
++++ b/fs/ksmbd/smb2pdu.c
+@@ -5768,8 +5768,10 @@ static int set_rename_info(struct ksmbd_work *work, struct ksmbd_file *fp,
+ 	if (parent_fp) {
+ 		if (parent_fp->daccess & FILE_DELETE_LE) {
+ 			pr_err("parent dir is opened with delete access\n");
++			ksmbd_fd_put(work, parent_fp);
+ 			return -ESHARE;
+ 		}
++		ksmbd_fd_put(work, parent_fp);
  	}
- 
--	return bond_ip_hash(hash, &flow);
-+	return bond_ip_hash(hash, &flow, bond->params.xmit_policy);
- }
- 
- /**
-@@ -5012,7 +5017,7 @@ static u32 bond_sk_hash_l34(struct sock *sk)
- 	/* L4 */
- 	memcpy(&hash, &flow.ports.ports, sizeof(hash));
- 	/* L3 */
--	return bond_ip_hash(hash, &flow);
-+	return bond_ip_hash(hash, &flow, BOND_XMIT_POLICY_LAYER34);
- }
- 
- static struct net_device *__bond_sk_get_lower_dev(struct bonding *bond,
+ next:
+ 	return smb2_rename(work, fp, user_ns, rename_info,
+diff --git a/fs/ksmbd/vfs_cache.c b/fs/ksmbd/vfs_cache.c
+index 29c1db66bd0f..8b873d92d785 100644
+--- a/fs/ksmbd/vfs_cache.c
++++ b/fs/ksmbd/vfs_cache.c
+@@ -497,6 +497,7 @@ struct ksmbd_file *ksmbd_lookup_fd_inode(struct inode *inode)
+ 	list_for_each_entry(lfp, &ci->m_fp_list, node) {
+ 		if (inode == file_inode(lfp->filp)) {
+ 			atomic_dec(&ci->m_count);
++			lfp = ksmbd_fp_get(lfp);
+ 			read_unlock(&ci->m_lock);
+ 			return lfp;
+ 		}
 -- 
 2.35.1
 
