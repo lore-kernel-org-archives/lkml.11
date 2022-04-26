@@ -2,76 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97DC0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 17:59:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACBD2C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 18:00:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349728AbiDZSC5 (ORCPT
+        id S1349755AbiDZSD3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 14:02:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46178 "EHLO
+        Tue, 26 Apr 2022 14:03:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239509AbiDZSCv (ORCPT
+        with ESMTP id S1350596AbiDZSDZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 14:02:51 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6F2F53E1D;
-        Tue, 26 Apr 2022 10:59:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650995984; x=1682531984;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=9knLlEjOpl6r0INJCbRruNvLlalTOrFPYblaIwOz2os=;
-  b=IgAyqsS8EXFTFhFyVAmRJrRkDKs0B0yxA6r2Bdse6lur+mVxk0tQt+o0
-   661Ts+tHneG++7HTQJ0RT5c5mqPOlu+/EWP2tAGTcujYZO6dyd5rWXnd1
-   uPAieWxm3d6fXUPXCTsn+3dn0G9TsTFE5mCoZU5HjC+RdwNhIuKcKClg4
-   Q=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 26 Apr 2022 10:59:44 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 10:59:12 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 26 Apr 2022 10:59:12 -0700
-Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 26 Apr 2022 10:59:11 -0700
-From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
-To:     <dri-devel@lists.freedesktop.org>, <robdclark@gmail.com>,
-        <sean@poorly.run>, <swboyd@chromium.org>, <vkoul@kernel.org>,
-        <daniel@ffwll.ch>, <airlied@linux.ie>, <agross@kernel.org>,
-        <dmitry.baryshkov@linaro.org>, <bjorn.andersson@linaro.org>
-CC:     Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
-        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 0/2]  fix DP phy compliance test
-Date:   Tue, 26 Apr 2022 10:58:57 -0700
-Message-ID: <1650995939-28467-1-git-send-email-quic_khsieh@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Tue, 26 Apr 2022 14:03:25 -0400
+Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C59EE13F6F;
+        Tue, 26 Apr 2022 11:00:16 -0700 (PDT)
+Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-e9027efe6aso12882450fac.10;
+        Tue, 26 Apr 2022 11:00:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SkneqWq9FDny4rMtUcZ44P/OejiG2SCIexlA/0LO6kM=;
+        b=ZYhVtHQVq5lkLxxAp29Das27NkddJ9VXolcmurcMsHPr9eEtLpcq/CDUe0pyChBlbK
+         5FfpGYJ1Rmy4NGOlBmHR5VURqn4VJrYdEX+4tLWEFjA2N6sA8JIG21D0LLRX+iWu0Zek
+         T8TLi0UuCAABjR7VWC6fNKNjPIt0/aAFP4f976+ispmEJo073HfTO7ke33QnxEr01xbq
+         zAIfToYRoC26QV7XMU7/IgHJlCqgFc6PLqWInB3bw6fuWUUa5sM5TFaCF5GJAN09xA2T
+         Pceyncgf+RBZWQ0lIVX8PXDRZdLUReT0gnP1GnjSxLR9TWFg50xsfZQslTfZJhtJCdFl
+         mNIA==
+X-Gm-Message-State: AOAM531kiLg7nBv8cVHra31ebbRDOby5stWyOD8nXkOPKRA4slnP5YNI
+        JjkJmS/Hyj4qiF9NP1O9ig==
+X-Google-Smtp-Source: ABdhPJzlFNfKsmBnTcOItHrKkQhyv1JiJiGqQa16jK+6PcJrp7RHk9StcPftCzLIwKnUKvS04f7WaA==
+X-Received: by 2002:a05:6870:b39c:b0:d1:4a9f:35f9 with SMTP id w28-20020a056870b39c00b000d14a9f35f9mr9164098oap.119.1650996016098;
+        Tue, 26 Apr 2022 11:00:16 -0700 (PDT)
+Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.googlemail.com with ESMTPSA id y23-20020a056808061700b00322e73cd18bsm5028505oih.16.2022.04.26.11.00.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 11:00:15 -0700 (PDT)
+From:   Rob Herring <robh@kernel.org>
+To:     Bartosz Golaszewski <brgl@bgdev.pl>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>
+Cc:     Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org
+Subject: [PATCH v2] dt-bindings: eeprom/at24: Add samsung,s524ad0xd1 compatible
+Date:   Tue, 26 Apr 2022 12:59:39 -0500
+Message-Id: <20220426175938.2262966-1-robh@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Current DP phy compliance test failed due to test pattern generation was
-terminated premature.
+The samsung,s524ad0xd1 compatible is in use, but not documented. According
+to arch/arm/mach-s3c/mach-smdk6410.c, the samsung,s524ad0xd1 is compatible
+with the 24c128. As the schema requires a fallback compatible to the
+corresponding Atmel compatible, 'atmel,24c128' is added as a fallback.
 
-Kuogee Hsieh (2):
-  drm/msm/dp: reset DP controller before transmit phy test pattern
-  drm/msm/dp: do not stop transmitting phy test pattern during DP phy
-    compliance test
+Signed-off-by: Rob Herring <robh@kernel.org>
+---
+v2:
+ - Fix the example in samsung,s3c2410-i2c.yaml
 
- drivers/gpu/drm/msm/dp/dp_ctrl.c | 16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
+ Documentation/devicetree/bindings/eeprom/at24.yaml            | 4 +++-
+ .../devicetree/bindings/i2c/samsung,s3c2410-i2c.yaml          | 2 +-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
+diff --git a/Documentation/devicetree/bindings/eeprom/at24.yaml b/Documentation/devicetree/bindings/eeprom/at24.yaml
+index 6b61a8cf6137..d14e0accbda8 100644
+--- a/Documentation/devicetree/bindings/eeprom/at24.yaml
++++ b/Documentation/devicetree/bindings/eeprom/at24.yaml
+@@ -120,7 +120,9 @@ properties:
+           - const: giantec,gt24c32a
+           - const: atmel,24c32
+       - items:
+-          - const: renesas,r1ex24128
++          - enum:
++              - renesas,r1ex24128
++              - samsung,s524ad0xd1
+           - const: atmel,24c128
+ 
+   label:
+diff --git a/Documentation/devicetree/bindings/i2c/samsung,s3c2410-i2c.yaml b/Documentation/devicetree/bindings/i2c/samsung,s3c2410-i2c.yaml
+index c26230518957..3d5782deb97d 100644
+--- a/Documentation/devicetree/bindings/i2c/samsung,s3c2410-i2c.yaml
++++ b/Documentation/devicetree/bindings/i2c/samsung,s3c2410-i2c.yaml
+@@ -123,7 +123,7 @@ examples:
+         samsung,i2c-slave-addr = <0x66>;
+ 
+         eeprom@50 {
+-            compatible = "samsung,s524ad0xd1";
++            compatible = "samsung,s524ad0xd1", "atmel,24c128";
+             reg = <0x50>;
+         };
+     };
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+2.34.1
 
