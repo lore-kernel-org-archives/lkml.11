@@ -2,66 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4043CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 17:53:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25814C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 17:53:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241947AbiDZR4L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 13:56:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48800 "EHLO
+        id S244262AbiDZR4Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 13:56:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231888AbiDZR4J (ORCPT
+        with ESMTP id S242353AbiDZR4L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 13:56:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA44B11A14;
-        Tue, 26 Apr 2022 10:53:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 54108B80ECC;
-        Tue, 26 Apr 2022 17:53:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 562F3C385A0;
-        Tue, 26 Apr 2022 17:52:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650995579;
-        bh=kmZi1cLdIYN2KtLsTq/cOvLBMOfPugUMZg11JTEai0s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nTJJwqyiXBBu92cmm6xgE/OzGo2kOeuCuvVZXInraWOow5/RkaJRIqwWrP1hXNlxG
-         p79YnJjhgHvL8+glfhuBPrrMwNJFQqfqoJpZdZDEhKqqU6cFgPNcedTC5F3G+0HsdZ
-         mskrGLL7g4SttiYU2iIvRAZ9RbUbNCGoDcSSb53U=
-Date:   Tue, 26 Apr 2022 19:52:55 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     john.p.donnelly@oracle.com
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com, Waiman Long <longman@redhat.com>
-Subject: Re: [PATCH 5.15 000/124] 5.15.36-rc1 review
-Message-ID: <Ymgxd6WGhUBuntkS@kroah.com>
-References: <20220426081747.286685339@linuxfoundation.org>
- <09eb98b8-6200-20c2-faa2-ced7f0e4fc95@oracle.com>
+        Tue, 26 Apr 2022 13:56:11 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C10D1208E;
+        Tue, 26 Apr 2022 10:53:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650995583; x=1682531583;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=XqUIzyKlR1H4AWn7rRefqRtq3YT/aLsnxjGSzWgozcU=;
+  b=bfhDEV8F5VghxEWFPhZOIWEfEtSXKE2Jkh1YVPEg0FWam01bhknSytoy
+   IcwJ8z5cXX95dl82x0ufhyDP5dbnxFtHhBZdxquEgcWg9ZwFJ7MY+Rc/o
+   aLIBQrqIe/qj61PRUzLq0pfbL9M+52m/moYCIvZMBGNNlV4mvc/uOvGx3
+   Ouk6YNBB7z/NV8ll7Wed8d+w/APACgwoTZybDQWQ1VxlMZosrVngIiEHB
+   +7QDlyaCVbH27ezLpdcl76k6oOWRBCmw07yj1SlYSd6xjSiOzb5hBO1jo
+   IJo6MhNobHBKPXekXKjxTdCFHhgb0/2pIrMkts2JXQWyOG9IOwjlmhFkv
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="245595597"
+X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
+   d="scan'208";a="245595597"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 10:53:03 -0700
+X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
+   d="scan'208";a="580064081"
+Received: from dsocek-mobl2.amr.corp.intel.com (HELO [10.212.69.119]) ([10.212.69.119])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 10:53:00 -0700
+Message-ID: <90b448ba-2d5c-b0a2-4716-a8470fe09af0@intel.com>
+Date:   Tue, 26 Apr 2022 10:55:43 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <09eb98b8-6200-20c2-faa2-ced7f0e4fc95@oracle.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v7 5/8] x86/e820: Refactor e820__range_remove
+Content-Language: en-US
+To:     Martin Fernandez <martin.fernandez@eclypsium.com>
+Cc:     linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, linux-mm@kvack.org,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        ardb@kernel.org, dvhart@infradead.org, andy@infradead.org,
+        gregkh@linuxfoundation.org, rafael@kernel.org, rppt@kernel.org,
+        akpm@linux-foundation.org, daniel.gutson@eclypsium.com,
+        hughsient@gmail.com, alex.bazhaniuk@eclypsium.com,
+        alison.schofield@intel.com, keescook@chromium.org
+References: <20220425171526.44925-1-martin.fernandez@eclypsium.com>
+ <20220425171526.44925-6-martin.fernandez@eclypsium.com>
+ <a02186b9-b72c-1484-2973-c59272ae0a7e@intel.com>
+ <CAKgze5Y1bKUAqPHEY71y_puTmuV2K02qjt0qzwO-KA3SYio0Tw@mail.gmail.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <CAKgze5Y1bKUAqPHEY71y_puTmuV2K02qjt0qzwO-KA3SYio0Tw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 12:37:21PM -0500, john.p.donnelly@oracle.com wrote:
-> 76723ed1fb89 2021-12-01 | locking/rwsem: Make handoff bit handling more
-> consistent
+On 4/26/22 10:37, Martin Fernandez wrote:
+>> Also, in general, the naming is a bit verbose.  You might want to trim
+>> some of those names down, like:
+>>
+>>> +static bool __init crypto_updater__should_update(const struct e820_entry
+>>> *entry,
+>>> +						 const void *data)
+>>> +{
+>>> +	const struct e820_crypto_updater_data *crypto_updater_data =
+>>> +		(const struct e820_crypto_updater_data *)data;
+> Yes I agree on this. Do you have any suggestions for these kind of
+> functions? I want to explicitly state that these functions are in some of
+> namespace and are different of the other ones.
 > 
-> In Linux 5.15.y.
+> In the end I don't think this is very harmful since these functions are one-time
+> used (in a single place), is not the case that you have to use them everywhere..
 
-That commit is in 5.15.6, released December 1, 2021.  And this just now
-shows up?  How is this related to 5.15.36-rc1?
+Let's just start with the fact that this is a pointer to a structure
+containing an enum that represents a single bit.  You could just pass
+around an address to a bool:
 
-Please start a new thread with the authors/reviewers of that commit and
-we will be glad to discuss it.
+	bool crypto_capable = *(bool *)data;
 
-thanks,
+or even just pass and use the 'void *data' pointer as a value directly:
 
-greg k-h
+	bool crypto_capable = (bool)data;
+
+That, for one, would get rid of some of the naming craziness.
+
+If it were me, and I *really* wanted to keep the full types, I would
+have just condensed that line down to:
+
+	struct e820_crypto_updater_data *crypto_data = data;
+
+Yeah, it _can_ be const, but it buys you practically nothing in this
+case and only hurts readability.
