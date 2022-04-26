@@ -2,145 +2,368 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5710EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 13:08:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43E64C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 13:09:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350639AbiDZNL0 (ORCPT
+        id S1350642AbiDZNMZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 09:11:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59226 "EHLO
+        Tue, 26 Apr 2022 09:12:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241162AbiDZNLY (ORCPT
+        with ESMTP id S1349073AbiDZNMV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 09:11:24 -0400
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam07on2068.outbound.protection.outlook.com [40.107.95.68])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E5CE45AFF;
-        Tue, 26 Apr 2022 06:08:17 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Pvq/3eJYDfs44wyJvTJFUyqjWnF/t5Qe22HFW6l/sC5xiGT09g/sTbbxbzuHt9saU4qMWm5TXEC9tX8uvRjEhNJvvpzB4RYj7OynBmQ/035nCjD4GjDoxvY6H42zu9jVB0d2Q+H2c4Oc7neTKCDxbuNxichHgMH5OupHOJp67o8hrNrjBwfSauRgXnisGaLm+3sKWT7Pswj9sTctYzxnuJjhNiR9RlQGV5/3o9hIqvAnn+HNVjaZeA2kxeB9UrBFepdgCu/587x6OfyCvh23qTcozjqHNZN48BTWEVVsQGlRzx71W8VqOIN9RwC6C7d6n35+MvAPxeiBgFj69Z6eSg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nRE9rJl1IDZBkXPsETmZhYc6pmFlZEIetglvHDbIy8M=;
- b=lNuSJ6C2aOo9Lqx0y1b//3t1nfd5tWJ4gQ9+A5GAsbmML/vcdL9P65xiJIYDB2ImJTDXTVGhSNZPM8+qwrv2ZyzsS6f8UXyoBNr829dZQHmp8d9BLvuSzXb4CpSSgdo0zP8Hg944ckhNRPM13pz2uXV+zPqFhBUduSHBm5LFmwTGyWwiyV3LUEZYLmX876Uj44b5sfJQGh+6s0Yc2j9tRzANSbTanChZgSJAfir3j1bpnrSlhnNnWlzLfDdn7A2vBMdYBPk2pXV+MiGQH0ElLKtk4ynTyWzK6k1S7hfchhsedemjMZKejrnqap14AzYk/rzvQyShSjbeRhahbHX8/w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nRE9rJl1IDZBkXPsETmZhYc6pmFlZEIetglvHDbIy8M=;
- b=c92v1yNJm0vPD0ABtzabnI69ia97EAzhRn4DxE3dTgJt6pgxNdbTLRVpoqgaWM901wqqcwYV9JHQGfWSY+quNmAwU57Xd4agFH/6Kd38DQZ4uiq+MlPegdY84XRjbq2KEZNM4T3NVgXAWmGWJsRB3V1QIUrtQ12oGF1RBOwZetc=
-Received: from MW4PR03CA0180.namprd03.prod.outlook.com (2603:10b6:303:8d::35)
- by BYAPR12MB3575.namprd12.prod.outlook.com (2603:10b6:a03:ab::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.15; Tue, 26 Apr
- 2022 13:08:10 +0000
-Received: from CO1NAM11FT047.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:8d:cafe::6b) by MW4PR03CA0180.outlook.office365.com
- (2603:10b6:303:8d::35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.13 via Frontend
- Transport; Tue, 26 Apr 2022 13:08:10 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT047.mail.protection.outlook.com (10.13.174.132) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5186.14 via Frontend Transport; Tue, 26 Apr 2022 13:08:10 +0000
-Received: from sindhu.amdval.net (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 26 Apr
- 2022 08:08:03 -0500
-From:   Sandipan Das <sandipan.das@amd.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
-        <x86@kernel.org>
-CC:     <peterz@infradead.org>, <bp@alien8.de>,
-        <dave.hansen@linux.intel.com>, <acme@kernel.org>,
-        <mark.rutland@arm.com>, <alexander.shishkin@linux.intel.com>,
-        <namhyung@kernel.org>, <jolsa@kernel.org>, <tglx@linutronix.de>,
-        <mingo@redhat.com>, <pbonzini@redhat.com>, <jmattson@google.com>,
-        <like.xu.linux@gmail.com>, <eranian@google.com>, <puwen@hygon.cn>,
-        <ananth.narayan@amd.com>, <ravi.bangoria@amd.com>,
-        <santosh.shukla@amd.com>, <sandipan.das@amd.com>
-Subject: [PATCH v3 7/7] kvm: x86/cpuid: Fix CPUID leaf 0xA
-Date:   Tue, 26 Apr 2022 18:35:38 +0530
-Message-ID: <476a0d6feef8016ed19e4911ac25abdd20aabeb3.1650977962.git.sandipan.das@amd.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1650977962.git.sandipan.das@amd.com>
-References: <cover.1650977962.git.sandipan.das@amd.com>
+        Tue, 26 Apr 2022 09:12:21 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7F98527E6
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 06:09:13 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id k27so7088730edk.4
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 06:09:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=szeredi.hu; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=VdN4pWw1gFHOQoY+oG3aMlLwfFdnNeJvy8yld8aLNZY=;
+        b=h9eIxIlj8VlMyJtF8rAipZvas4ylrtXbM0hqwo7YY5TNioud6/RuQ78vi1FtKhPMwx
+         aQU0m4bB8FiWzJb6aNIT7OfCpOhL4d2qn0kmOnQYYUSDlBC7J99crI4KwUXybbZJnWnV
+         oEO84zPRqvWKMYf46FTtaIYUvYznA/dEsYHEk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=VdN4pWw1gFHOQoY+oG3aMlLwfFdnNeJvy8yld8aLNZY=;
+        b=EAbgkyk1a5QdntK08pSobYbNucnesBXMy7j/hkopT8r+CQ54n3DlcwpQCuLtwBkoP7
+         i4Slqi0b/fZQ/Qxl2oVJIhbCV00h0kLxKsAz23kXkEsj8vOtDKLPwC4dJO/uazbLB0/2
+         c77nhKRQyL2m7MLJGK/mWekkRVaepieGjjXB7RnNPMDzOpnen4zz2Bn6xFxklyfKlOk4
+         Gkc7Hz64J0V+QR05v/BXgAF4oRxjkFTF3kXc0tyzLuAY4fmw7U5huv46YdTZYbtp2e5h
+         qoObW+FoRLO2hFBJ6lr8F9tuKQzBc6x91OmamTLJ7UQMK0pfP9tVKvLL1Rc5fUtobx3M
+         cbJQ==
+X-Gm-Message-State: AOAM530fOli7HXIYpIFuBs/xfRXRXFuuJb5O0dfXHhc+BSKGKQAfV0Ip
+        OSmwmCn+pUsIoAoxaupzDmZWug==
+X-Google-Smtp-Source: ABdhPJwoEgGyFlADhZL2+OS+zU1EASVg1k8ks63rb41Idnhg6YfoUENziFMMN4nFvKLmsbj4O1A3xw==
+X-Received: by 2002:a50:9f06:0:b0:425:c1ba:5037 with SMTP id b6-20020a509f06000000b00425c1ba5037mr21686551edf.285.1650978552055;
+        Tue, 26 Apr 2022 06:09:12 -0700 (PDT)
+Received: from miu.piliscsaba.redhat.com (catv-178-48-189-3.catv.fixed.vodafone.hu. [178.48.189.3])
+        by smtp.gmail.com with ESMTPSA id lb4-20020a170907784400b006e0d13f65e5sm4857331ejc.167.2022.04.26.06.09.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 06:09:11 -0700 (PDT)
+Date:   Tue, 26 Apr 2022 15:09:05 +0200
+From:   Miklos Szeredi <miklos@szeredi.hu>
+To:     Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xie Yongji <xieyongji@bytedance.com>
+Subject: Re: Re: Re: [RFC PATCH] fuse: support cache revalidation in
+ writeback_cache mode
+Message-ID: <Ymfu8fGbfYi4FxQ4@miu.piliscsaba.redhat.com>
+References: <20220325132126.61949-1-zhangjiachen.jaycee@bytedance.com>
+ <CAJfpeguESQm1KsQLyoMRTevLttV8N8NTGsb2tRbNS1AQ_pNAww@mail.gmail.com>
+ <CAFQAk7ibzCn8OD84-nfg6_AePsKFTu9m7pXuQwcQP5OBp7ZCag@mail.gmail.com>
+ <CAJfpegsbaz+RRcukJEOw+H=G3ft43vjDMnJ8A24JiuZFQ24eHA@mail.gmail.com>
+ <CAFQAk7hakYNfBaOeMKRmMPTyxFb2xcyUTdugQG1D6uZB_U1zBg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5d17b94c-1969-4fbd-9ba1-08da2785d03d
-X-MS-TrafficTypeDiagnostic: BYAPR12MB3575:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR12MB35755E64566E6F67AF1D53748BFB9@BYAPR12MB3575.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: LxB0K1rg0yw8BnMdkrcUeSq8pH9ov9PYS5kFnDeFx7Wmn6BYQH8rd7PYcFZX6eFPpI8pUCh3hS2JEvUTV/Ma3ncTU+LAhFu1e3lK761NVAIxlAcFKLsD4w34vWKMB/OlqRENZYwrbyYaqzA9bISQmSmZ4DNQ8dMKKu5CkfLF89/yPcPAql/hoy2WhZTMTpl61RadNxsGCSEht8csPvxE10Uy9UsEeLsw9mYCrpJaHZBIDid4G37qZwiy/UNFKaqKnoxIi71ZgsBIDX81GKHvmg4SEG8gasYiSfvd4EGKvLErveOChES5XGyXdQ7WLmZBucxhmOahpFvRLqawCb+JYo6CkoPF6zZKx/9xJ2Gs6JBgvj6w51M32ZlTOCYSz/yqsSMWWsFCV8TcQ1Vjs2Ou7mO300r8XpeRIkM+KIFafDQQIn0jag0/tfHj31xiypnwHXwkIlplC1IdtnWnsf35e+d0ajNn/OCnxrXWdqMk2uhjqUVr1Em55tWPPv1yKrNagwQYYwel4nGylFHTjp7JdkcATb72oc5iaYKkPZ+lX+pycV6Nq5m0Yx4WmiHEc4hwMJNwl+GQO/eJCvAHxw7bmf08ufnGEy0ZgUh2aeBemwSivV8oN+sFxiVtnLHIM7Kw4kWVZfvesSMEljj66yOKytmAgZgJjJwqjEmnSqO12xxSrci/GZnmLqRU7VAERCEN3ls2wjHyPAdMaTjOwloJDw==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(6666004)(336012)(16526019)(47076005)(186003)(83380400001)(2616005)(36860700001)(82310400005)(426003)(2906002)(316002)(86362001)(54906003)(36756003)(110136005)(40460700003)(508600001)(81166007)(5660300002)(44832011)(356005)(4326008)(26005)(70586007)(8936002)(70206006)(8676002)(7416002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Apr 2022 13:08:10.2303
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5d17b94c-1969-4fbd-9ba1-08da2785d03d
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT047.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3575
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFQAk7hakYNfBaOeMKRmMPTyxFb2xcyUTdugQG1D6uZB_U1zBg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On some x86 processors, CPUID leaf 0xA provides information
-on Architectural Performance Monitoring features. It
-advertises a PMU version which Qemu uses to determine the
-availability of additional MSRs to manage the PMCs.
+On Mon, Apr 25, 2022 at 09:52:44PM +0800, Jiachen Zhang wrote:
 
-Upon receiving a KVM_GET_SUPPORTED_CPUID ioctl request for
-the same, the kernel constructs return values based on the
-x86_pmu_capability irrespective of the vendor.
+> Some users may want both the high performance of writeback mode and a
+> little bit more consistency among FUSE mounts. In the current
+> writeback mode implementation, users of one FUSE mount can never see
+> the file expansion done by other FUSE mounts.
 
-This leaf and the additional MSRs are not supported on AMD
-and Hygon processors. If AMD PerfMonV2 is detected, the PMU
-version is set to 2 and guest startup breaks because of an
-attempt to access a non-existent MSR. Return zeros to avoid
-this.
+Okay.
 
-Fixes: a6c06ed1a60a ("KVM: Expose the architectural performance monitoring CPUID leaf")
-Reported-by: Vasant Hegde <vasant.hegde@amd.com>
-Signed-off-by: Sandipan Das <sandipan.das@amd.com>
+Here's a preliminary patch that you could try.
+
+Thanks,
+Miklos
+
 ---
- arch/x86/kvm/cpuid.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ fs/fuse/dir.c             |   35 ++++++++++++++++++++++-------------
+ fs/fuse/file.c            |   17 +++++++++++++++--
+ fs/fuse/fuse_i.h          |   14 +++++++++++++-
+ fs/fuse/inode.c           |   32 +++++++++++++++++++++++++++-----
+ include/uapi/linux/fuse.h |    5 +++++
+ 5 files changed, 82 insertions(+), 21 deletions(-)
 
-diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-index 4b62d80bb22f..d27d6a8f601a 100644
---- a/arch/x86/kvm/cpuid.c
-+++ b/arch/x86/kvm/cpuid.c
-@@ -872,6 +872,12 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array *array, u32 function)
- 		union cpuid10_eax eax;
- 		union cpuid10_edx edx;
+--- a/include/uapi/linux/fuse.h
++++ b/include/uapi/linux/fuse.h
+@@ -194,6 +194,7 @@
+  *  - add FUSE_SECURITY_CTX init flag
+  *  - add security context to create, mkdir, symlink, and mknod requests
+  *  - add FUSE_HAS_INODE_DAX, FUSE_ATTR_DAX
++ *  - add FUSE_WRITEBACK_CACHE_V2 init flag
+  */
  
-+		if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
-+		    boot_cpu_data.x86_vendor == X86_VENDOR_HYGON) {
-+			entry->eax = entry->ebx = entry->ecx = entry->edx = 0;
-+			break;
-+		}
+ #ifndef _LINUX_FUSE_H
+@@ -353,6 +354,9 @@ struct fuse_file_lock {
+  * FUSE_SECURITY_CTX:	add security context to create, mkdir, symlink, and
+  *			mknod
+  * FUSE_HAS_INODE_DAX:  use per inode DAX
++ * FUSE_WRITEBACK_CACHE_V2:
++ *			- allow time/size to be refreshed if no pending write
++ * 			- time/size not cached for falocate/copy_file_range
+  */
+ #define FUSE_ASYNC_READ		(1 << 0)
+ #define FUSE_POSIX_LOCKS	(1 << 1)
+@@ -389,6 +393,7 @@ struct fuse_file_lock {
+ /* bits 32..63 get shifted down 32 bits into the flags2 field */
+ #define FUSE_SECURITY_CTX	(1ULL << 32)
+ #define FUSE_HAS_INODE_DAX	(1ULL << 33)
++#define FUSE_WRITEBACK_CACHE_V2	(1ULL << 34)
+ 
+ /**
+  * CUSE INIT request/reply flags
+--- a/fs/fuse/inode.c
++++ b/fs/fuse/inode.c
+@@ -222,19 +222,37 @@ void fuse_change_attributes_common(struc
+ u32 fuse_get_cache_mask(struct inode *inode)
+ {
+ 	struct fuse_conn *fc = get_fuse_conn(inode);
++	struct fuse_inode *fi = get_fuse_inode(inode);
+ 
+ 	if (!fc->writeback_cache || !S_ISREG(inode->i_mode))
+ 		return 0;
+ 
++	/*
++	 * In writeback_cache_v2 mode if all the following conditions are met,
++	 * then allow the attributes to be refreshed:
++	 *
++	 * - inode is not dirty (I_DIRTY_INODE)
++	 * - inode is not in the process of being written (I_SYNC)
++	 * - inode has no dirty pages (I_DIRTY_PAGES)
++	 * - inode does not have any page writeback in progress
++	 *
++	 * Note: checking PAGECACHE_TAG_WRITEBACK is not sufficient in fuse,
++	 * since inode can appear to have no PageWriteback pages, yet still have
++	 * outstanding write request.
++	 */
++	if (fc->writeback_cache_v2 && !(inode->i_state & (I_DIRTY | I_SYNC)) &&
++	    RB_EMPTY_ROOT(&fi->writepages))
++		return 0;
 +
- 		perf_get_x86_pmu_capability(&cap);
+ 	return STATX_MTIME | STATX_CTIME | STATX_SIZE;
+ }
  
- 		/*
--- 
-2.34.1
-
+-void fuse_change_attributes(struct inode *inode, struct fuse_attr *attr,
+-			    u64 attr_valid, u64 attr_version)
++void fuse_change_attributes_mask(struct inode *inode, struct fuse_attr *attr,
++				 u64 attr_valid, u64 attr_version,
++				 u32 cache_mask)
+ {
+ 	struct fuse_conn *fc = get_fuse_conn(inode);
+ 	struct fuse_inode *fi = get_fuse_inode(inode);
+-	u32 cache_mask;
+ 	loff_t oldsize;
+ 	struct timespec64 old_mtime;
+ 
+@@ -244,7 +262,7 @@ void fuse_change_attributes(struct inode
+ 	 * may update i_size.  In these cases trust the cached value in the
+ 	 * inode.
+ 	 */
+-	cache_mask = fuse_get_cache_mask(inode);
++	cache_mask |= fuse_get_cache_mask(inode);
+ 	if (cache_mask & STATX_SIZE)
+ 		attr->size = i_size_read(inode);
+ 
+@@ -1153,6 +1171,10 @@ static void process_init_reply(struct fu
+ 				fc->async_dio = 1;
+ 			if (flags & FUSE_WRITEBACK_CACHE)
+ 				fc->writeback_cache = 1;
++			if (flags & FUSE_WRITEBACK_CACHE_V2) {
++				fc->writeback_cache = 1;
++				fc->writeback_cache_v2 = 1;
++			}
+ 			if (flags & FUSE_PARALLEL_DIROPS)
+ 				fc->parallel_dirops = 1;
+ 			if (flags & FUSE_HANDLE_KILLPRIV)
+@@ -1234,7 +1256,7 @@ void fuse_send_init(struct fuse_mount *f
+ 		FUSE_ABORT_ERROR | FUSE_MAX_PAGES | FUSE_CACHE_SYMLINKS |
+ 		FUSE_NO_OPENDIR_SUPPORT | FUSE_EXPLICIT_INVAL_DATA |
+ 		FUSE_HANDLE_KILLPRIV_V2 | FUSE_SETXATTR_EXT | FUSE_INIT_EXT |
+-		FUSE_SECURITY_CTX;
++		FUSE_SECURITY_CTX | FUSE_WRITEBACK_CACHE_V2;
+ #ifdef CONFIG_FUSE_DAX
+ 	if (fm->fc->dax)
+ 		flags |= FUSE_MAP_ALIGNMENT;
+--- a/fs/fuse/dir.c
++++ b/fs/fuse/dir.c
+@@ -213,6 +213,7 @@ static int fuse_dentry_revalidate(struct
+ 		FUSE_ARGS(args);
+ 		struct fuse_forget_link *forget;
+ 		u64 attr_version;
++		u32 cache_mask;
+ 
+ 		/* For negative dentries, always do a fresh lookup */
+ 		if (!inode)
+@@ -230,6 +231,7 @@ static int fuse_dentry_revalidate(struct
+ 			goto out;
+ 
+ 		attr_version = fuse_get_attr_version(fm->fc);
++		cache_mask = fuse_get_cache_mask(inode);
+ 
+ 		parent = dget_parent(entry);
+ 		fuse_lookup_init(fm->fc, &args, get_node_id(d_inode(parent)),
+@@ -259,9 +261,9 @@ static int fuse_dentry_revalidate(struct
+ 			goto invalid;
+ 
+ 		forget_all_cached_acls(inode);
+-		fuse_change_attributes(inode, &outarg.attr,
+-				       entry_attr_timeout(&outarg),
+-				       attr_version);
++		fuse_change_attributes_mask(inode, &outarg.attr,
++					    entry_attr_timeout(&outarg),
++					    attr_version, cache_mask);
+ 		fuse_change_entry_timeout(entry, &outarg);
+ 	} else if (inode) {
+ 		fi = get_fuse_inode(inode);
+@@ -836,16 +838,23 @@ static int fuse_symlink(struct user_name
+ 
+ void fuse_flush_time_update(struct inode *inode)
+ {
+-	int err = sync_inode_metadata(inode, 1);
++	struct fuse_conn *fc = get_fuse_conn(inode);
++	int err;
+ 
+-	mapping_set_error(inode->i_mapping, err);
++	if (!fc->writeback_cache_v2) {
++		err = sync_inode_metadata(inode, 1);
++		mapping_set_error(inode->i_mapping, err);
++	}
+ }
+ 
+ static void fuse_update_ctime_in_cache(struct inode *inode)
+ {
+ 	if (!IS_NOCMTIME(inode)) {
++		struct fuse_conn *fc = get_fuse_conn(inode);
++
+ 		inode->i_ctime = current_time(inode);
+-		mark_inode_dirty_sync(inode);
++		if (!fc->writeback_cache_v2)
++			mark_inode_dirty_sync(inode);
+ 		fuse_flush_time_update(inode);
+ 	}
+ }
+@@ -1065,7 +1074,7 @@ static void fuse_fillattr(struct inode *
+ }
+ 
+ static int fuse_do_getattr(struct inode *inode, struct kstat *stat,
+-			   struct file *file)
++			   struct file *file, u32 cache_mask)
+ {
+ 	int err;
+ 	struct fuse_getattr_in inarg;
+@@ -1100,9 +1109,9 @@ static int fuse_do_getattr(struct inode
+ 			fuse_make_bad(inode);
+ 			err = -EIO;
+ 		} else {
+-			fuse_change_attributes(inode, &outarg.attr,
+-					       attr_timeout(&outarg),
+-					       attr_version);
++			fuse_change_attributes_mask(inode, &outarg.attr,
++						    attr_timeout(&outarg),
++						    attr_version, cache_mask);
+ 			if (stat)
+ 				fuse_fillattr(inode, &outarg.attr, stat);
+ 		}
+@@ -1131,7 +1140,7 @@ static int fuse_update_get_attr(struct i
+ 
+ 	if (sync) {
+ 		forget_all_cached_acls(inode);
+-		err = fuse_do_getattr(inode, stat, file);
++		err = fuse_do_getattr(inode, stat, file, cache_mask);
+ 	} else if (stat) {
+ 		generic_fillattr(&init_user_ns, inode, stat);
+ 		stat->mode = fi->orig_i_mode;
+@@ -1277,7 +1286,7 @@ static int fuse_perm_getattr(struct inod
+ 		return -ECHILD;
+ 
+ 	forget_all_cached_acls(inode);
+-	return fuse_do_getattr(inode, NULL, NULL);
++	return fuse_do_getattr(inode, NULL, NULL, 0);
+ }
+ 
+ /*
+@@ -1833,7 +1842,7 @@ static int fuse_setattr(struct user_name
+ 			 * ia_mode calculation may have used stale i_mode.
+ 			 * Refresh and recalculate.
+ 			 */
+-			ret = fuse_do_getattr(inode, NULL, file);
++			ret = fuse_do_getattr(inode, NULL, file, 0);
+ 			if (ret)
+ 				return ret;
+ 
+--- a/fs/fuse/file.c
++++ b/fs/fuse/file.c
+@@ -2949,6 +2949,19 @@ static int fuse_writeback_range(struct i
+ 	return err;
+ }
+ 
++static void fuse_update_time(struct file *file)
++{
++	struct inode *inode = file_inode(file);
++	struct fuse_conn *fc = get_fuse_conn(inode);
++
++	if (!IS_NOCMTIME(inode)) {
++		if (fc->writeback_cache_v2)
++			inode->i_mtime = inode->i_ctime = current_time(inode);
++		else
++			file_update_time(file);
++	}
++}
++
+ static long fuse_file_fallocate(struct file *file, int mode, loff_t offset,
+ 				loff_t length)
+ {
+@@ -3021,7 +3034,7 @@ static long fuse_file_fallocate(struct f
+ 	/* we could have extended the file */
+ 	if (!(mode & FALLOC_FL_KEEP_SIZE)) {
+ 		if (fuse_write_update_attr(inode, offset + length, length))
+-			file_update_time(file);
++			fuse_update_time(file);
+ 	}
+ 
+ 	if (mode & (FALLOC_FL_PUNCH_HOLE | FALLOC_FL_ZERO_RANGE))
+@@ -3135,7 +3148,7 @@ static ssize_t __fuse_copy_file_range(st
+ 				   ALIGN_DOWN(pos_out, PAGE_SIZE),
+ 				   ALIGN(pos_out + outarg.size, PAGE_SIZE) - 1);
+ 
+-	file_update_time(file_out);
++	fuse_update_time(file_out);
+ 	fuse_write_update_attr(inode_out, pos_out + outarg.size, outarg.size);
+ 
+ 	err = outarg.size;
+--- a/fs/fuse/fuse_i.h
++++ b/fs/fuse/fuse_i.h
+@@ -654,6 +654,9 @@ struct fuse_conn {
+ 	/* show legacy mount options */
+ 	unsigned int legacy_opts_show:1;
+ 
++	/* Improved writeback cache policy */
++	unsigned writeback_cache_v2:1;
++
+ 	/*
+ 	 * fs kills suid/sgid/cap on write/chown/trunc. suid is killed on
+ 	 * write/trunc only if caller did not have CAP_FSETID.  sgid is killed
+@@ -1049,8 +1052,17 @@ void fuse_init_symlink(struct inode *ino
+ /**
+  * Change attributes of an inode
+  */
++void fuse_change_attributes_mask(struct inode *inode, struct fuse_attr *attr,
++				 u64 attr_valid, u64 attr_version,
++				 u32 cache_mask);
++
++static inline
+ void fuse_change_attributes(struct inode *inode, struct fuse_attr *attr,
+-			    u64 attr_valid, u64 attr_version);
++			    u64 attr_valid, u64 attr_version)
++{
++	return fuse_change_attributes_mask(inode, attr,
++					   attr_valid, attr_version, 0);
++}
+ 
+ void fuse_change_attributes_common(struct inode *inode, struct fuse_attr *attr,
+ 				   u64 attr_valid, u32 cache_mask);
