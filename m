@@ -2,124 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1A35C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 04:09:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 479BAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 04:10:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243937AbiDZEM7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 00:12:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34778 "EHLO
+        id S241515AbiDZEN0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 00:13:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234748AbiDZEMy (ORCPT
+        with ESMTP id S243948AbiDZENW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 00:12:54 -0400
-Received: from conssluserg-03.nifty.com (conssluserg-03.nifty.com [210.131.2.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3464E17E3E;
-        Mon, 25 Apr 2022 21:09:47 -0700 (PDT)
-Received: from mail-pj1-f46.google.com (mail-pj1-f46.google.com [209.85.216.46]) (authenticated)
-        by conssluserg-03.nifty.com with ESMTP id 23Q49Mom019014;
-        Tue, 26 Apr 2022 13:09:22 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 23Q49Mom019014
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1650946162;
-        bh=vlQmv5riRzngKOKBqAqSk4kL8xP/v527bj+1qTzl/Rs=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=kDRO6n4gcrugtInPeEtD2mbsqkzimAnrWpgjATsadHhZu2Mi3sukqotidRdr0/5Oy
-         VPhYHBPYXCEJpLzSb+5rq+K3nqW2cE42H6K8ONhywaLUGgve5ql7hcbrYM2WK1G9NA
-         /OqC30MXIOxKCzvK/qT1sUWsmyNEt+Bhink6eUw41ePn92d7GYFHmuAmcilP6Itpw1
-         YEnCme4mVk4EjUOscfA/yCqfleX9hHW7df0Ae/+g4qzBwDRX4t580HHYqZU/2aKVeA
-         CUXWwbUFqAnFvk38Wmzmx1sPBjK2o9T4azPl59o/vr/+9LlI1vTX3aT0OyRykhnE2O
-         pGNktduCLdJeA==
-X-Nifty-SrcIP: [209.85.216.46]
-Received: by mail-pj1-f46.google.com with SMTP id u6-20020a17090a1f0600b001d86bd69427so1355364pja.5;
-        Mon, 25 Apr 2022 21:09:22 -0700 (PDT)
-X-Gm-Message-State: AOAM532dIkyNtxjdZDkVwfmGKsGTXoUHtDDGK/c41iUE7axQxNKv6AKg
-        5lekvUnG9t65YM542UHSWPaLjQ73mIZx/pMAbxo=
-X-Google-Smtp-Source: ABdhPJyeTNXk3eEgUbbGnI1xpxigeGRimHhJalVAMLzx3oMGsvYQPLReffx9PB/krO9KrZOWN3kQB06Mm5If++lLOVw=
-X-Received: by 2002:a17:90a:e517:b0:1d7:5bbd:f9f0 with SMTP id
- t23-20020a17090ae51700b001d75bbdf9f0mr24345046pjy.77.1650946161687; Mon, 25
- Apr 2022 21:09:21 -0700 (PDT)
+        Tue, 26 Apr 2022 00:13:22 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F18761080;
+        Mon, 25 Apr 2022 21:10:15 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KnT1P2SRFzhYqg;
+        Tue, 26 Apr 2022 12:10:01 +0800 (CST)
+Received: from [10.67.110.173] (10.67.110.173) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 26 Apr 2022 12:10:13 +0800
+Message-ID: <853635d6-9e74-c3dc-f6dc-d4166616c8e5@huawei.com>
+Date:   Tue, 26 Apr 2022 12:10:13 +0800
 MIME-Version: 1.0
-References: <20220424190811.1678416-1-masahiroy@kernel.org>
- <20220424190811.1678416-17-masahiroy@kernel.org> <CAKwvOdk1nt4b9am=_BP=U3igkSRBN14nx+5oS8iaaw9zhbH5JA@mail.gmail.com>
-In-Reply-To: <CAKwvOdk1nt4b9am=_BP=U3igkSRBN14nx+5oS8iaaw9zhbH5JA@mail.gmail.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Tue, 26 Apr 2022 13:08:45 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAR-u=EVzPL+iJHoBW62AK2ViD3nVnL79EdxNS03UxmkBA@mail.gmail.com>
-Message-ID: <CAK7LNAR-u=EVzPL+iJHoBW62AK2ViD3nVnL79EdxNS03UxmkBA@mail.gmail.com>
-Subject: Re: [PATCH 16/27] modpost: make multiple export error
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: How to list keys used for kexec
+Content-Language: en-US
+To:     =?UTF-8?Q?Michal_Such=c3=a1nek?= <msuchanek@suse.de>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>
+References: <20220414175930.GM163591@kunlun.suse.cz>
+From:   "Guozihua (Scott)" <guozihua@huawei.com>
+In-Reply-To: <20220414175930.GM163591@kunlun.suse.cz>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.110.173]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500024.china.huawei.com (7.185.36.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 3:48 AM Nick Desaulniers
-<ndesaulniers@google.com> wrote:
->
-> On Sun, Apr 24, 2022 at 12:09 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
-> >
-> > This is currently a warning, but I think modpost should stop building
-> > in this case.
-> >
-> > If the same symbol is exported multiple times and we let it keep going,
-> > the sanity check becomes difficult.
-> >
-> > Only the legitimate case is that an external module overrides the
-> > corresponding in-tree module to provide a different implementation
-> > with the same interface.
->
-> Could the same module export a weak version of a symbol, and a strong one?
+On 2022/4/15 1:59, Michal Suchánek wrote:
+> Hello,
+> 
+> apparently modules are verified by keys from 'secondary' keyring on all
+> platforms.
+> 
+> If you happen to know that it's this particular keyring, and know how
+> to list keyrings recursively you can find the keys that are used for
+> verifying modules.
+> 
+> However, for kexec we have
+> 
+>   - primary keyring on aarch64
+>   - platform keyring on s390
+>   - secondary AND platform keyring on x86
+> 
+> How is a user supposed to know which keys are used for kexec image
+> verification?
+> 
+> There is an implicit keyring that is ad-hoc constructed by the code that
+> does the kexec verification but there is no key list observable from
+> userspace that corresponds to this ad-hoc keyring only known to the kexec
+> code.
+> 
+> Can the kernel make the information which keys are used for what purpose
+> available to the user?
+> 
+> Thanks
+> 
+> Michal
+> 
+> .
 
-No.  There is no concept like   EXPORT_SYMBOL_WEAK.
+Hi Michal
 
-I am talking about kmod things.
-You can modprobe an external module instead of the in-kernel one.
+I'll try my best to understand and answer your question.
 
->
-> Can kernel modules override in-kernel strong symbols?
+First of all, the "key" you mentioned here is actually certificate. And 
+there are no way for the kernel to know "which certificate is used for 
+what purpose" but to get a hint from the certificate's extension, if 
+they exist. However, the extension only points out what this certificate 
+should be used for, but not exactly what it is actually used for.
 
-Yes, I think so.
+Secondly, the verification process requires the module (kernel image in 
+this question) to contain information on which certificate should be 
+used to verify itself. The signature provided by the module is in PKCS#7 
+format which contains a list of certificates for the verifier to 
+construct a "chain of trust". Each certificates contains information 
+pointing to the certificate of it's issuer, and eventually to one of the 
+certificate stored in one of the keyrings you mentioned.
 
-
->
-> >
-> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> > ---
-> >
-> >  scripts/mod/modpost.c | 6 +++---
-> >  1 file changed, 3 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-> > index 14044cd94aaa..73f0b98e3b5a 100644
-> > --- a/scripts/mod/modpost.c
-> > +++ b/scripts/mod/modpost.c
-> > @@ -411,9 +411,9 @@ static struct symbol *sym_add_exported(const char *name, struct module *mod,
-> >                 list_add_tail(&s->list, &mod->exported_symbols);
-> >         } else if (!external_module || s->module->is_vmlinux ||
-> >                    s->module == mod) {
-> > -               warn("%s: '%s' exported twice. Previous export was in %s%s\n",
-> > -                    mod->name, name, s->module->name,
-> > -                    s->module->is_vmlinux ? "" : ".ko");
-> > +               error("%s: '%s' exported twice. Previous export was in %s%s\n",
-> > +                     mod->name, name, s->module->name,
-> > +                     s->module->is_vmlinux ? "" : ".ko");
-> >                 return s;
-> >         }
-> >
-> > --
-> > 2.32.0
-> >
->
->
-> --
-> Thanks,
-> ~Nick Desaulniers
-
-
+All in all, certificates in these keyrings you mentioned can be used for 
+various purpose, and it's the responsibility for the modules being 
+verified to provide information stating which certificate should be used 
+for verification. Thus, the best way to find out which key is used for 
+kexec is to look at key used to sign the kernel image.
 
 -- 
-Best Regards
-Masahiro Yamada
+Best
+GUO Zihua
