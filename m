@@ -2,99 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA90FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:10:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E541C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:11:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343679AbiDZHNu (ORCPT
+        id S1343703AbiDZHO0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 03:13:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51022 "EHLO
+        Tue, 26 Apr 2022 03:14:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236684AbiDZHNn (ORCPT
+        with ESMTP id S1343701AbiDZHN5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 03:13:43 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 458151403F;
-        Tue, 26 Apr 2022 00:10:37 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D5E3723A;
-        Tue, 26 Apr 2022 00:10:36 -0700 (PDT)
-Received: from [192.168.1.11] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9F3BF3F73B;
-        Tue, 26 Apr 2022 00:10:32 -0700 (PDT)
-Message-ID: <6765104a-761c-4586-502c-2b98ee6016a1@arm.com>
-Date:   Tue, 26 Apr 2022 09:10:56 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 0/2] Enable EAS for CPPC/ACPI based systems
-Content-Language: en-US
-To:     Viresh Kumar <viresh.kumar@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, Ionela.Voinescu@arm.com,
-        Lukasz.Luba@arm.com, Morten.Rasmussen@arm.com,
-        Dietmar.Eggemann@arm.com, maz@kernel.org,
-        daniel.lezcano@linaro.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Fuad Tabba <tabba@google.com>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org
-References: <20220425123819.137735-1-pierre.gondois@arm.com>
- <20220426030810.wj7mdhjhzs2s6y7h@vireshk-i7>
- <20220426063739.6ljxtr6hpz7tber5@vireshk-i7>
-From:   Pierre Gondois <pierre.gondois@arm.com>
-In-Reply-To: <20220426063739.6ljxtr6hpz7tber5@vireshk-i7>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Tue, 26 Apr 2022 03:13:57 -0400
+Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 771B01403F;
+        Tue, 26 Apr 2022 00:10:50 -0700 (PDT)
+HMM_SOURCE_IP: 172.18.0.188:50678.1670155976
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-202.80.192.39 (unknown [172.18.0.188])
+        by chinatelecom.cn (HERMES) with SMTP id 466162800A9;
+        Tue, 26 Apr 2022 15:10:44 +0800 (CST)
+X-189-SAVE-TO-SEND: +liuxp11@chinatelecom.cn
+Received: from  ([172.18.0.188])
+        by app0023 with ESMTP id cad0a28d3faa422aabfbb6caf3f45541 for wim@linux-watchdog.org;
+        Tue, 26 Apr 2022 15:10:49 CST
+X-Transaction-ID: cad0a28d3faa422aabfbb6caf3f45541
+X-Real-From: liuxp11@chinatelecom.cn
+X-Receive-IP: 172.18.0.188
+X-MEDUSA-Status: 0
+Sender: liuxp11@chinatelecom.cn
+From:   Liu Xinpeng <liuxp11@chinatelecom.cn>
+To:     wim@linux-watchdog.org, linux@roeck-us.net, tzungbi@kernel.org
+Cc:     linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Liu Xinpeng <liuxp11@chinatelecom.cn>
+Subject: [PATCH v4 0/4] Some impovements about watchdog
+Date:   Tue, 26 Apr 2022 15:10:25 +0800
+Message-Id: <1650957029-910-1-git-send-email-liuxp11@chinatelecom.cn>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Viresh,
-The 2 patches are relying on Lukasz' patch-set at:
-https://lkml.org/lkml/2022/3/21/282
-The serie was accepted by Rafael (cf. https://lkml.org/lkml/2022/4/13/701) and
-is currently in linux-next. More specifically, the missing patch causing the
-build failure is: 'PM: EM: Add .get_cost() callback'
+Changelog:
+v1->v2 Update the commit messages
+v2->v3 - Add the context about why using watchdog_timeout_invalid.
+       - Using SET_NOIRQ_SYSTEM_SLEEP_PM_OPS reduces redundant code for
+       iTCO watchdog.
+v3->v4 - For patch 1, update commit message, rename WDAT_TIMEOUT_MIN 
+       to WDAT_MIN_TIMEOUT, keeps consistent with WDAT_DEFAULT_TIMEOUT.
+       - For patch 4, iTCO_wdt_suspend_noirq and iTCO_wdt_resume_noirq
+       are possible unused, so keep "ifdef CONFIG_PM_SLEEP ... #endif".
 
- From what I see, the branch cpufreq/arm/linux-next (from your repo) that was
-used in the CI is based on v5.18-rc1 and doesn't have Lukasz' patches. Should
-we wait for the patches to be in a rc version, or is there a process for this
-kind of case ?
+       Thanks Guenter Roeck and Tzung-Bi Shih's suggestions.
 
-Regards,
-Pierre
+Liu Xinpeng (4):
+  watchdog: wdat_wdg: Using the existed function to check parameter
+    timeout
+  watchdog: wdat_wdg: Stop watchdog when rebooting the system
+  watchdog: wdat_wdg: Stop watchdog when uninstalling module
+  watchdog: iTCO_wdg: Make code more clearly with macro definition
 
+ drivers/watchdog/iTCO_wdt.c | 12 +++---------
+ drivers/watchdog/wdat_wdt.c |  7 +++++--
+ 2 files changed, 8 insertions(+), 11 deletions(-)
 
+-- 
+2.23.0
 
-On 4/26/22 08:37, Viresh Kumar wrote:
-> On 26-04-22, 08:38, Viresh Kumar wrote:
->> On 25-04-22, 14:38, Pierre Gondois wrote:
->>> v3:
->>> - Remove efficiency_class_populated variable. [Viresh]
->>> - Remove patch "cpufreq: CPPC: Add cppc_cpufreq_search_cpu_data"
->>>    and access cpu_data through policy->driver_data. [Viresh]
->>> - arm64 code only acked by Catalin [Catalin]
->>
->> Applied. Thanks.
-> 
-> Removed, build failures:
-> 
-> https://gitlab.com/vireshk/pmko/-/jobs/2375905218
-> 
-> Log: https://builds.tuxbuild.com/28Jos1GBXfT5Cl3HoBKKwmM8Ddk/build.log
-> 
-> /builds/linux/drivers/cpufreq/cppc_cpufreq.c: In function 'cppc_cpufreq_register_em':
-> 368/builds/linux/drivers/cpufreq/cppc_cpufreq.c:593:3: error: implicit declaration of function 'EM_ADV_DATA_CB'; did you mean 'EM_DATA_CB'? [-Werror=implicit-function-declaration]
-> 369  593 |   EM_ADV_DATA_CB(cppc_get_cpu_power, cppc_get_cpu_cost);
-> 370      |   ^~~~~~~~~~~~~~
-> 371      |   EM_DATA_CB
-> 372/builds/linux/drivers/cpufreq/cppc_cpufreq.c:593:3: error: invalid initializer
-> 373cc1: some warnings being treated as errors
-> 374
-> 
