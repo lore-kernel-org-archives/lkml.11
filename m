@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05555C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 15:36:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EC83C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 15:36:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352421AbiDZPj1 (ORCPT
+        id S1352429AbiDZPja (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 11:39:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51758 "EHLO
+        Tue, 26 Apr 2022 11:39:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352403AbiDZPjX (ORCPT
+        with ESMTP id S1352407AbiDZPjX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 11:39:23 -0400
 Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63EECFD25;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64A4115703;
         Tue, 26 Apr 2022 08:36:15 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23QFa2fQ095166;
-        Tue, 26 Apr 2022 10:36:02 -0500
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23QFZwC4095154;
+        Tue, 26 Apr 2022 10:35:58 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1650987362;
-        bh=pE01LlepLn5P9pAdXaezuYxpflC2yPhfl2ruFXlenkk=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=Ay/7sTLlOBJXMWgPOrL+QhhBFsYo5zenazlhExMA2PYV+SqgfzvwPvtukAz4A8+Z7
-         Yi8CtKWpTSxCwNIm5YH059uzjP+Vy+677ulV7rsjGEvWRQ6GeWvzuy7xnTDx5yeowS
-         sneZSbO9JN8Bf/0Xf5ItqcKOhzAIIi3vXCNKp2D8=
-Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23QFa229130816
+        s=ti-com-17Q1; t=1650987358;
+        bh=+wXVEK8JCV6awv2uh9nVMeADNZSkgBnA4Ju6ueZN+HA=;
+        h=From:To:CC:Subject:Date;
+        b=trVDvRK66edZUKXwpvoR7RfDwCgujhNAMjpxnr74PO0ZkqMmhAcXDjDT5O5N9H7kr
+         myuhDVQi52eRARJKHVJJF2ucWTI/1BJY5kKgCIiGv78jcmkCKcmNJtrz/pxuY1vbum
+         HQ4kFZ6WMIVqQ5jhJYAcG1dr31PLrzk2df4gUrdk=
+Received: from DFLE108.ent.ti.com (dfle108.ent.ti.com [10.64.6.29])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23QFZvux090012
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 26 Apr 2022 10:36:02 -0500
-Received: from DFLE101.ent.ti.com (10.64.6.22) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
+        Tue, 26 Apr 2022 10:35:58 -0500
+Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE108.ent.ti.com
+ (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 26
- Apr 2022 10:36:01 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE101.ent.ti.com
- (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
+ Apr 2022 10:35:57 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE110.ent.ti.com
+ (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 26 Apr 2022 10:36:01 -0500
+ Frontend Transport; Tue, 26 Apr 2022 10:35:57 -0500
 Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23QFa0qR016838;
-        Tue, 26 Apr 2022 10:36:01 -0500
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23QFZu57016778;
+        Tue, 26 Apr 2022 10:35:57 -0500
 From:   Rahul T R <r-ravikumar@ti.com>
 To:     <nm@ti.com>
 CC:     <vigneshr@ti.com>, <kristo@kernel.org>, <robh+dt@kernel.org>,
@@ -50,12 +50,10 @@ CC:     <vigneshr@ti.com>, <kristo@kernel.org>, <robh+dt@kernel.org>,
         <tomi.valkeinen@ideasonboard.com>,
         <laurent.pinchart@ideasonboard.com>, <kishon@ti.com>,
         <r-ravikumar@ti.com>
-Subject: [PATCH v4 2/2] arm64: dts: ti: k3-j721e-common-proc-board: add DP to j7 evm
-Date:   Tue, 26 Apr 2022 21:05:53 +0530
-Message-ID: <20220426153553.18474-3-r-ravikumar@ti.com>
+Subject: [PATCH v4 0/2] DSS: Add support for DisplayPort
+Date:   Tue, 26 Apr 2022 21:05:51 +0530
+Message-ID: <20220426153553.18474-1-r-ravikumar@ti.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220426153553.18474-1-r-ravikumar@ti.com>
-References: <20220426153553.18474-1-r-ravikumar@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
@@ -63,118 +61,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tomi Valkeinen <tomi.valkeinen@ti.com>
+The following series of patches enables DisplayPort on
+j721e-evm
 
-Add the endpoint nodes to describe connection from
-DSS => MHDP => DisplayPort connector.
-Also add the required pinmux nodes for hotplug.
+v2:
+   - use phandle with a parameter to refer clocks insted of
+     sub nodes in serdes_wiz node
+   - move phy link node to board DTS file
 
-Signed-off-by: Tomi Valkeinen <tomi.valkeinen@ti.com>
-Signed-off-by: Rahul T R <r-ravikumar@ti.com>
----
- .../dts/ti/k3-j721e-common-proc-board.dts     | 61 +++++++++++++++++--
- 1 file changed, 57 insertions(+), 4 deletions(-)
+v3:
+   - Fix the regulator node name as per the DT spec
+   - Use Macro for GPIO type
 
-diff --git a/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts b/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-index 2f119e94e783..4b9e3f671781 100644
---- a/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-+++ b/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-@@ -148,6 +148,28 @@
- 		pinctrl-0 = <&main_mcan2_gpio_pins_default>;
- 		standby-gpios = <&main_gpio0 127 GPIO_ACTIVE_HIGH>;
- 	};
-+
-+	dp_pwr_3v3: regulator-dp-prw {
-+		compatible = "regulator-fixed";
-+		regulator-name = "dp-pwr";
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+		gpio = <&exp4 0 GPIO_ACTIVE_HIGH>; /* P0 - DP0_PWR_SW_EN */
-+		enable-active-high;
-+	};
-+
-+	dp0: connector {
-+		compatible = "dp-connector";
-+		label = "DP0";
-+		type = "full-size";
-+		dp-pwr-supply = <&dp_pwr_3v3>;
-+
-+		port {
-+			dp_connector_in: endpoint {
-+				remote-endpoint = <&dp0_out>;
-+			};
-+		};
-+	};
- };
- 
- &main_pmx0 {
-@@ -190,6 +212,12 @@
- 		>;
- 	};
- 
-+	dp0_pins_default: dp0-pins-default {
-+		pinctrl-single,pins = <
-+			J721E_IOPAD(0x1c4, PIN_INPUT, 5) /* SPI0_CS1.DP0_HPD */
-+		>;
-+	};
-+
- 	main_i2c1_exp4_pins_default: main-i2c1-exp4-pins-default {
- 		pinctrl-single,pins = <
- 			J721E_IOPAD(0x230, PIN_INPUT, 7) /* (U2) ECAP0_IN_APWM_OUT.GPIO1_11 */
-@@ -658,6 +686,33 @@
- 				 <&k3_clks 152 18>;	/* PLL23_HSDIV0 */
- };
- 
-+&dss_ports {
-+	port {
-+		dpi0_out: endpoint {
-+			remote-endpoint = <&dp0_in>;
-+		};
-+	};
-+};
-+
-+&dp0_ports {
-+	#address-cells = <1>;
-+	#size-cells = <0>;
-+
-+	port@0 {
-+		reg = <0>;
-+		dp0_in: endpoint {
-+			remote-endpoint = <&dpi0_out>;
-+		};
-+	};
-+
-+	port@4 {
-+		reg = <4>;
-+		dp0_out: endpoint {
-+			remote-endpoint = <&dp_connector_in>;
-+		};
-+	};
-+};
-+
- &mcasp0 {
- 	status = "disabled";
- };
-@@ -807,6 +862,8 @@
- &mhdp {
- 	phys = <&torrent_phy_dp>;
- 	phy-names = "dpphy";
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&dp0_pins_default>;
- };
- 
- &pcie0_rc {
-@@ -859,10 +916,6 @@
- 	status = "disabled";
- };
- 
--&dss {
--	status = "disabled";
--};
--
- &icssg0_mdio {
- 	status = "disabled";
- };
+v4:
+   - Move adding of phy link nodes from 2/2 to 1/2, to fix dtbs checks warnings
+   - Add leading zeros to align reg property addresses and sizes
+   - Add empty ports for mhdp node in dtsi file to fix dtbs checks warnings
+
+boot logs:
+   https://gist.githubusercontent.com/ravi-rahul/1bdbc3f77ab381e486c8394650c2e85d/raw/2327c9894c3236950a00f4511ae668ac4399b71e/j7_DP_upstream.log
+
+kernel patch verify report:
+   https://gist.githubusercontent.com/ravi-rahul/a982fef3fae03ec0dbdd5cb475a4cb25/raw/9ef482f96fa351cff7980e4340e9bcb8471ec3ab/report-kernel-patch-verify.txt
+
+Tomi Valkeinen (2):
+  arm64: dts: ti: k3-j721e-*: add DP & DP PHY
+  arm64: dts: ti: k3-j721e-common-proc-board: add DP to j7 evm
+
+ .../dts/ti/k3-j721e-common-proc-board.dts     | 77 ++++++++++++++++++-
+ arch/arm64/boot/dts/ti/k3-j721e-main.dtsi     | 75 +++++++++++++++++-
+ arch/arm64/boot/dts/ti/k3-j721e-sk.dts        | 16 ++++
+ 3 files changed, 162 insertions(+), 6 deletions(-)
+
 -- 
 2.17.1
 
