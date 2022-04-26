@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7591BC4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:51:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3C21C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:51:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346148AbiDZIyP (ORCPT
+        id S1346232AbiDZIy2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:54:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59624 "EHLO
+        Tue, 26 Apr 2022 04:54:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345822AbiDZIje (ORCPT
+        with ESMTP id S1345325AbiDZIim (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:39:34 -0400
+        Tue, 26 Apr 2022 04:38:42 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4357F78FE6;
-        Tue, 26 Apr 2022 01:31:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 220E492D3A;
+        Tue, 26 Apr 2022 01:29:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F133FB81CFE;
-        Tue, 26 Apr 2022 08:31:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64333C385A4;
-        Tue, 26 Apr 2022 08:31:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 30BD3B81CF9;
+        Tue, 26 Apr 2022 08:29:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F320C385A4;
+        Tue, 26 Apr 2022 08:29:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961911;
-        bh=Zg0RKzNVnX/cBhF2uFK+M+gvp7hkVVGk/9ryYNxE078=;
+        s=korg; t=1650961771;
+        bh=PppC3vam2C5Yu3j4i8ueQKhK2ayOhbdqrydENy51b+I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0nPHg1DATzcAJRICAIyoT8QbLhqg/KXik897QA4x20kN+D1XATw01DRQDH4/hfyRu
-         9DSgJjdoE2YotV73Le/anMUnvgs68whnlCp/uGVmZv6fLPLLHvPug9EwgUhz/7VnQi
-         Q1m2vWAoX7MceBxLaGx8Ye3hlbNWRvDjldIf9t2w=
+        b=XoZWaE1EHxB9z8GLhnbJsiL5/ePcLv+zpWohFV6UyedLhoFu22EhAU06zIvaHhnQk
+         FlS4KvuwAEej+HTcjBtaEOh9Hk69oZYS26knlDcGruvaS9BimAM33RwlT9m6pvSKQB
+         DasUg77rck1bvYUoyXWsBlaVMw9G8ulqBXLRXXds=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        stable@vger.kernel.org, Sameer Pujar <spujar@nvidia.com>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Thierry Reding <treding@nvidia.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 10/86] ASoC: atmel: Remove system clock tree configuration for at91sam9g20ek
-Date:   Tue, 26 Apr 2022 10:20:38 +0200
-Message-Id: <20220426081741.505015298@linuxfoundation.org>
+Subject: [PATCH 5.4 24/62] reset: tegra-bpmp: Restore Handle errors in BPMP response
+Date:   Tue, 26 Apr 2022 10:21:04 +0200
+Message-Id: <20220426081737.921143888@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
-References: <20220426081741.202366502@linuxfoundation.org>
+In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
+References: <20220426081737.209637816@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,140 +52,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Sameer Pujar <spujar@nvidia.com>
 
-[ Upstream commit c775cbf62ed4911e4f0f23880f01815753123690 ]
+[ Upstream commit d1da1052ffad63aa5181b69f20a6952e31f339c2 ]
 
-The MCLK of the WM8731 on the AT91SAM9G20-EK board is connected to the
-PCK0 output of the SoC, intended in the reference software to be supplied
-using PLLB and programmed to 12MHz. As originally written for use with a
-board file the audio driver was responsible for configuring the entire tree
-but in the conversion to the common clock framework the registration of
-the named pck0 and pllb clocks was removed so the driver has failed to
-instantiate ever since.
+This reverts following commit 69125b4b9440 ("reset: tegra-bpmp: Revert
+Handle errors in BPMP response").
 
-Since the WM8731 driver has had support for managing a MCLK provided via
-the common clock framework for some time we can simply drop all the clock
-management code from the machine driver other than configuration of the
-sysclk rate, the CODEC driver still respects that configuration from the
-machine driver.
+The Tegra194 HDA reset failure is fixed by commit d278dc9151a0 ("ALSA:
+hda/tegra: Fix Tegra194 HDA reset failure"). The temporary revert of
+original commit c045ceb5a145 ("reset: tegra-bpmp: Handle errors in BPMP
+response") can be removed now.
 
-Fixes: ff78a189b0ae55f ("ARM: at91: remove old at91-specific clock driver")
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Reviewed-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-Link: https://lore.kernel.org/r/20220325154241.1600757-2-broonie@kernel.org
+Signed-off-by: Sameer Pujar <spujar@nvidia.com>
+Tested-by: Jon Hunter <jonathanh@nvidia.com>
+Reviewed-by: Jon Hunter <jonathanh@nvidia.com>
+Acked-by: Thierry Reding <treding@nvidia.com>
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+Link: https://lore.kernel.org/r/1641995806-15245-1-git-send-email-spujar@nvidia.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/atmel/sam9g20_wm8731.c | 61 --------------------------------
- 1 file changed, 61 deletions(-)
+ drivers/reset/tegra/reset-bpmp.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/atmel/sam9g20_wm8731.c b/sound/soc/atmel/sam9g20_wm8731.c
-index 8a55d59a6c2a..d243de5f23dc 100644
---- a/sound/soc/atmel/sam9g20_wm8731.c
-+++ b/sound/soc/atmel/sam9g20_wm8731.c
-@@ -46,35 +46,6 @@
-  */
- #undef ENABLE_MIC_INPUT
+diff --git a/drivers/reset/tegra/reset-bpmp.c b/drivers/reset/tegra/reset-bpmp.c
+index 24d3395964cc..4c5bba52b105 100644
+--- a/drivers/reset/tegra/reset-bpmp.c
++++ b/drivers/reset/tegra/reset-bpmp.c
+@@ -20,6 +20,7 @@ static int tegra_bpmp_reset_common(struct reset_controller_dev *rstc,
+ 	struct tegra_bpmp *bpmp = to_tegra_bpmp(rstc);
+ 	struct mrq_reset_request request;
+ 	struct tegra_bpmp_message msg;
++	int err;
  
--static struct clk *mclk;
--
--static int at91sam9g20ek_set_bias_level(struct snd_soc_card *card,
--					struct snd_soc_dapm_context *dapm,
--					enum snd_soc_bias_level level)
--{
--	static int mclk_on;
--	int ret = 0;
--
--	switch (level) {
--	case SND_SOC_BIAS_ON:
--	case SND_SOC_BIAS_PREPARE:
--		if (!mclk_on)
--			ret = clk_enable(mclk);
--		if (ret == 0)
--			mclk_on = 1;
--		break;
--
--	case SND_SOC_BIAS_OFF:
--	case SND_SOC_BIAS_STANDBY:
--		if (mclk_on)
--			clk_disable(mclk);
--		mclk_on = 0;
--		break;
--	}
--
--	return ret;
--}
--
- static const struct snd_soc_dapm_widget at91sam9g20ek_dapm_widgets[] = {
- 	SND_SOC_DAPM_MIC("Int Mic", NULL),
- 	SND_SOC_DAPM_SPK("Ext Spk", NULL),
-@@ -135,7 +106,6 @@ static struct snd_soc_card snd_soc_at91sam9g20ek = {
- 	.owner = THIS_MODULE,
- 	.dai_link = &at91sam9g20ek_dai,
- 	.num_links = 1,
--	.set_bias_level = at91sam9g20ek_set_bias_level,
+ 	memset(&request, 0, sizeof(request));
+ 	request.cmd = command;
+@@ -30,7 +31,13 @@ static int tegra_bpmp_reset_common(struct reset_controller_dev *rstc,
+ 	msg.tx.data = &request;
+ 	msg.tx.size = sizeof(request);
  
- 	.dapm_widgets = at91sam9g20ek_dapm_widgets,
- 	.num_dapm_widgets = ARRAY_SIZE(at91sam9g20ek_dapm_widgets),
-@@ -148,7 +118,6 @@ static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
- {
- 	struct device_node *np = pdev->dev.of_node;
- 	struct device_node *codec_np, *cpu_np;
--	struct clk *pllb;
- 	struct snd_soc_card *card = &snd_soc_at91sam9g20ek;
- 	int ret;
+-	return tegra_bpmp_transfer(bpmp, &msg);
++	err = tegra_bpmp_transfer(bpmp, &msg);
++	if (err)
++		return err;
++	if (msg.rx.ret)
++		return -EINVAL;
++
++	return 0;
+ }
  
-@@ -162,31 +131,6 @@ static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
- 		return -EINVAL;
- 	}
- 
--	/*
--	 * Codec MCLK is supplied by PCK0 - set it up.
--	 */
--	mclk = clk_get(NULL, "pck0");
--	if (IS_ERR(mclk)) {
--		dev_err(&pdev->dev, "Failed to get MCLK\n");
--		ret = PTR_ERR(mclk);
--		goto err;
--	}
--
--	pllb = clk_get(NULL, "pllb");
--	if (IS_ERR(pllb)) {
--		dev_err(&pdev->dev, "Failed to get PLLB\n");
--		ret = PTR_ERR(pllb);
--		goto err_mclk;
--	}
--	ret = clk_set_parent(mclk, pllb);
--	clk_put(pllb);
--	if (ret != 0) {
--		dev_err(&pdev->dev, "Failed to set MCLK parent\n");
--		goto err_mclk;
--	}
--
--	clk_set_rate(mclk, MCLK_RATE);
--
- 	card->dev = &pdev->dev;
- 
- 	/* Parse device node info */
-@@ -230,9 +174,6 @@ static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
- 
- 	return ret;
- 
--err_mclk:
--	clk_put(mclk);
--	mclk = NULL;
- err:
- 	atmel_ssc_put_audio(0);
- 	return ret;
-@@ -242,8 +183,6 @@ static int at91sam9g20ek_audio_remove(struct platform_device *pdev)
- {
- 	struct snd_soc_card *card = platform_get_drvdata(pdev);
- 
--	clk_disable(mclk);
--	mclk = NULL;
- 	snd_soc_unregister_card(card);
- 	atmel_ssc_put_audio(0);
- 
+ static int tegra_bpmp_reset_module(struct reset_controller_dev *rstc,
 -- 
 2.35.1
 
