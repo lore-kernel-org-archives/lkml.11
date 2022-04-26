@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1547C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:15:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50568C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:15:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241167AbiDZJSe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:18:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60372 "EHLO
+        id S1346828AbiDZJSn (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:18:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345905AbiDZIoR (ORCPT
+        with ESMTP id S1346358AbiDZIyo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:44:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5357815CF5E;
-        Tue, 26 Apr 2022 01:33:50 -0700 (PDT)
+        Tue, 26 Apr 2022 04:54:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47178DAFCA;
+        Tue, 26 Apr 2022 01:41:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 28A5161899;
-        Tue, 26 Apr 2022 08:33:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3726AC385AC;
-        Tue, 26 Apr 2022 08:33:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D11F5B81CED;
+        Tue, 26 Apr 2022 08:41:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4114EC385AC;
+        Tue, 26 Apr 2022 08:41:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962029;
-        bh=BKmbcASJHd6f1rIBhJ/lD0NYZIRNWXppaDUSuvpXYF0=;
+        s=korg; t=1650962468;
+        bh=ZxgTw4UzvfWbr0evmQdbxSaSvx3FVMuFHEdvOCmww5A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eMfAGrIZpK7Rk2iQ4UENUWj92y3FKV3jt/59bYJgZt2enLv1cSSoljPeedD44Uhry
-         ztie5ppoKz5P23YdX21lETapOB497qiR51oKt1DKLbdfkAh58x+o8A0+pHJq2PbhMP
-         gDpjwgxRpdtMM2GOmmxNjq+TSahzBke4fxeE1zbQ=
+        b=cmIlqoCw8pOdIN/uFdLTjF/fRtPK8h/jviOq8ITy4p7Kjkg5rBlrg7TvVtppQHpKo
+         JMD77Vnzgt/nr/4kOoBbdwDuTjA+K+0THbHok7eEpc2dCVDnUBVTzAZAcCLYN+28E0
+         ttuhCCc4fRJzbrGH8BrlVPUG98Dm3pJGz0mY6DsI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Keith Busch <kbusch@kernel.org>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 49/86] nvme: add a quirk to disable namespace identifiers
-Date:   Tue, 26 Apr 2022 10:21:17 +0200
-Message-Id: <20220426081742.619192756@linuxfoundation.org>
+        stable@vger.kernel.org, Dongli Cao <caodongli@kingsoft.com>,
+        Like Xu <likexu@tencent.com>,
+        Yanan Wang <wangyanan55@huawei.com>,
+        Jim Mattson <jmattson@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.15 107/124] KVM: x86/pmu: Update AMD PMC sample period to fix guest NMI-watchdog
+Date:   Tue, 26 Apr 2022 10:21:48 +0200
+Message-Id: <20220426081750.337095129@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
-References: <20220426081741.202366502@linuxfoundation.org>
+In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
+References: <20220426081747.286685339@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,103 +52,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Like Xu <likexu@tencent.com>
 
-[ Upstream commit 00ff400e6deee00f7b15e200205b2708b63b8cf6 ]
+commit 75189d1de1b377e580ebd2d2c55914631eac9c64 upstream.
 
-Add a quirk to disable using and exporting namespace identifiers for
-controllers where they are broken beyond repair.
+NMI-watchdog is one of the favorite features of kernel developers,
+but it does not work in AMD guest even with vPMU enabled and worse,
+the system misrepresents this capability via /proc.
 
-The most directly visible problem with non-unique namespace identifiers
-is that they break the /dev/disk/by-id/ links, with the link for a
-supposedly unique identifier now pointing to one of multiple possible
-namespaces that share the same ID, and a somewhat random selection of
-which one actually shows up.
+This is a PMC emulation error. KVM does not pass the latest valid
+value to perf_event in time when guest NMI-watchdog is running, thus
+the perf_event corresponding to the watchdog counter will enter the
+old state at some point after the first guest NMI injection, forcing
+the hardware register PMC0 to be constantly written to 0x800000000001.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Keith Busch <kbusch@kernel.org>
-Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
-Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Meanwhile, the running counter should accurately reflect its new value
+based on the latest coordinated pmc->counter (from vPMC's point of view)
+rather than the value written directly by the guest.
+
+Fixes: 168d918f2643 ("KVM: x86: Adjust counter sample period after a wrmsr")
+Reported-by: Dongli Cao <caodongli@kingsoft.com>
+Signed-off-by: Like Xu <likexu@tencent.com>
+Reviewed-by: Yanan Wang <wangyanan55@huawei.com>
+Tested-by: Yanan Wang <wangyanan55@huawei.com>
+Reviewed-by: Jim Mattson <jmattson@google.com>
+Message-Id: <20220409015226.38619-1-likexu@tencent.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nvme/host/core.c | 24 ++++++++++++++++++------
- drivers/nvme/host/nvme.h |  5 +++++
- 2 files changed, 23 insertions(+), 6 deletions(-)
+ arch/x86/kvm/pmu.h           |    9 +++++++++
+ arch/x86/kvm/svm/pmu.c       |    1 +
+ arch/x86/kvm/vmx/pmu_intel.c |    8 ++------
+ 3 files changed, 12 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 853b9a24f744..ad4f1cfbad2e 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -1270,6 +1270,8 @@ static int nvme_process_ns_desc(struct nvme_ctrl *ctrl, struct nvme_ns_ids *ids,
- 				 warn_str, cur->nidl);
- 			return -1;
- 		}
-+		if (ctrl->quirks & NVME_QUIRK_BOGUS_NID)
-+			return NVME_NIDT_EUI64_LEN;
- 		memcpy(ids->eui64, data + sizeof(*cur), NVME_NIDT_EUI64_LEN);
- 		return NVME_NIDT_EUI64_LEN;
- 	case NVME_NIDT_NGUID:
-@@ -1278,6 +1280,8 @@ static int nvme_process_ns_desc(struct nvme_ctrl *ctrl, struct nvme_ns_ids *ids,
- 				 warn_str, cur->nidl);
- 			return -1;
- 		}
-+		if (ctrl->quirks & NVME_QUIRK_BOGUS_NID)
-+			return NVME_NIDT_NGUID_LEN;
- 		memcpy(ids->nguid, data + sizeof(*cur), NVME_NIDT_NGUID_LEN);
- 		return NVME_NIDT_NGUID_LEN;
- 	case NVME_NIDT_UUID:
-@@ -1286,6 +1290,8 @@ static int nvme_process_ns_desc(struct nvme_ctrl *ctrl, struct nvme_ns_ids *ids,
- 				 warn_str, cur->nidl);
- 			return -1;
- 		}
-+		if (ctrl->quirks & NVME_QUIRK_BOGUS_NID)
-+			return NVME_NIDT_UUID_LEN;
- 		uuid_copy(&ids->uuid, data + sizeof(*cur));
- 		return NVME_NIDT_UUID_LEN;
- 	case NVME_NIDT_CSI:
-@@ -1381,12 +1387,18 @@ static int nvme_identify_ns(struct nvme_ctrl *ctrl, unsigned nsid,
- 	if ((*id)->ncap == 0) /* namespace not allocated or attached */
- 		goto out_free_id;
+--- a/arch/x86/kvm/pmu.h
++++ b/arch/x86/kvm/pmu.h
+@@ -141,6 +141,15 @@ static inline u64 get_sample_period(stru
+ 	return sample_period;
+ }
  
--	if (ctrl->vs >= NVME_VS(1, 1, 0) &&
--	    !memchr_inv(ids->eui64, 0, sizeof(ids->eui64)))
--		memcpy(ids->eui64, (*id)->eui64, sizeof(ids->eui64));
--	if (ctrl->vs >= NVME_VS(1, 2, 0) &&
--	    !memchr_inv(ids->nguid, 0, sizeof(ids->nguid)))
--		memcpy(ids->nguid, (*id)->nguid, sizeof(ids->nguid));
++static inline void pmc_update_sample_period(struct kvm_pmc *pmc)
++{
++	if (!pmc->perf_event || pmc->is_paused)
++		return;
 +
-+	if (ctrl->quirks & NVME_QUIRK_BOGUS_NID) {
-+		dev_info(ctrl->device,
-+			 "Ignoring bogus Namespace Identifiers\n");
-+	} else {
-+		if (ctrl->vs >= NVME_VS(1, 1, 0) &&
-+		    !memchr_inv(ids->eui64, 0, sizeof(ids->eui64)))
-+			memcpy(ids->eui64, (*id)->eui64, sizeof(ids->eui64));
-+		if (ctrl->vs >= NVME_VS(1, 2, 0) &&
-+		    !memchr_inv(ids->nguid, 0, sizeof(ids->nguid)))
-+			memcpy(ids->nguid, (*id)->nguid, sizeof(ids->nguid));
-+	}
- 
- 	return 0;
- 
-diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 5dd1dd8021ba..10e5ae3a8c0d 100644
---- a/drivers/nvme/host/nvme.h
-+++ b/drivers/nvme/host/nvme.h
-@@ -150,6 +150,11 @@ enum nvme_quirks {
- 	 * encoding the generation sequence number.
- 	 */
- 	NVME_QUIRK_SKIP_CID_GEN			= (1 << 17),
++	perf_event_period(pmc->perf_event,
++			  get_sample_period(pmc, pmc->counter));
++}
 +
-+	/*
-+	 * Reports garbage in the namespace identifiers (eui64, nguid, uuid).
-+	 */
-+	NVME_QUIRK_BOGUS_NID			= (1 << 18),
- };
- 
- /*
--- 
-2.35.1
-
+ void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel);
+ void reprogram_fixed_counter(struct kvm_pmc *pmc, u8 ctrl, int fixed_idx);
+ void reprogram_counter(struct kvm_pmu *pmu, int pmc_idx);
+--- a/arch/x86/kvm/svm/pmu.c
++++ b/arch/x86/kvm/svm/pmu.c
+@@ -256,6 +256,7 @@ static int amd_pmu_set_msr(struct kvm_vc
+ 	pmc = get_gp_pmc_amd(pmu, msr, PMU_TYPE_COUNTER);
+ 	if (pmc) {
+ 		pmc->counter += data - pmc_read_counter(pmc);
++		pmc_update_sample_period(pmc);
+ 		return 0;
+ 	}
+ 	/* MSR_EVNTSELn */
+--- a/arch/x86/kvm/vmx/pmu_intel.c
++++ b/arch/x86/kvm/vmx/pmu_intel.c
+@@ -439,15 +439,11 @@ static int intel_pmu_set_msr(struct kvm_
+ 			    !(msr & MSR_PMC_FULL_WIDTH_BIT))
+ 				data = (s64)(s32)data;
+ 			pmc->counter += data - pmc_read_counter(pmc);
+-			if (pmc->perf_event && !pmc->is_paused)
+-				perf_event_period(pmc->perf_event,
+-						  get_sample_period(pmc, data));
++			pmc_update_sample_period(pmc);
+ 			return 0;
+ 		} else if ((pmc = get_fixed_pmc(pmu, msr))) {
+ 			pmc->counter += data - pmc_read_counter(pmc);
+-			if (pmc->perf_event && !pmc->is_paused)
+-				perf_event_period(pmc->perf_event,
+-						  get_sample_period(pmc, data));
++			pmc_update_sample_period(pmc);
+ 			return 0;
+ 		} else if ((pmc = get_gp_pmc(pmu, msr, MSR_P6_EVNTSEL0))) {
+ 			if (data == pmc->eventsel)
 
 
