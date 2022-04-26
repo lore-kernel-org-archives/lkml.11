@@ -2,98 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08073C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 20:16:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A920C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 20:16:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354792AbiDZUTr (ORCPT
+        id S1354820AbiDZUTu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 16:19:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53934 "EHLO
+        Tue, 26 Apr 2022 16:19:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354861AbiDZUS4 (ORCPT
+        with ESMTP id S1354895AbiDZUTB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 16:18:56 -0400
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B99A1D323
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 13:15:45 -0700 (PDT)
-Received: by mail-io1-xd2c.google.com with SMTP id e15so3765922iob.3
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 13:15:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=HLfBsULnxIHtTg2vaikfG3QQHyujaLrfdQn3O+y4ETI=;
-        b=K+QcZXo4BDYUlsPbgXhdk3qDu7qLz/0pZHUt2IEnBCVZKIycAZA/bn5Kc0czFEulAS
-         oGPBa00f1zJkrVHe++8dSEIPcfxhlnkwAeZF+baX+zb5MS+5yoVWBWW6G9hqGGEydkwm
-         G9SosRBRI55oHTWo/M36KYsCcBD9eotVtNWPM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=HLfBsULnxIHtTg2vaikfG3QQHyujaLrfdQn3O+y4ETI=;
-        b=XhiohiMjmaR1F0gNG9YkijQJQLTjLyzmmEbb3wCxnVoWy4rASzNhKJTy/fCZCU8bMO
-         HAP5s9G6evViVtBcIxgIjQ7A+TMi8fpD/Gkan9kNrIJ5xVyqRw9yy0yFlRRd3Feg2Ihq
-         9cE0M4tHWz4bHvReQM07hk9kJLg+YF1Aq8uUBi+Z2QEt4O0rwXUskQd5tdEqu/SUutHv
-         Gr5yW4o/i22xE8XIfad6Ipl4a7MkAT1CckHXcpJDk3qiYwAB5HyxhpKdiGKJlsEXr2SC
-         n6qwzc10X9H4T1c71OcsPtX0w2Kc4mQergm3u742XO7bLIUSNRAfcdIr34fvA2jh6JUM
-         7gtA==
-X-Gm-Message-State: AOAM530TMB29cEWRmF9jzDh6CFSLUvhtGb195u5ewXYueC0vaJH7JtPh
-        Yo3OTJeomwkehdrNgoLgR4FFwg==
-X-Google-Smtp-Source: ABdhPJwPzMOmHWAfV+Bu4oMaLQ30snKfKqCT/WHhMeSJMw1dHMtTe7qM6LLhSrQA61YA33tSsEU15A==
-X-Received: by 2002:a5d:860d:0:b0:649:be05:7b0b with SMTP id f13-20020a5d860d000000b00649be057b0bmr10349378iol.22.1651004145105;
-        Tue, 26 Apr 2022 13:15:45 -0700 (PDT)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id y126-20020a6bc884000000b00657ae00d56bsm1153279iof.48.2022.04.26.13.15.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Apr 2022 13:15:44 -0700 (PDT)
-Subject: Re: [PATCH 4.19 00/53] 4.19.240-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220426081735.651926456@linuxfoundation.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <5337eb4a-73d3-881e-83a6-69919e812f34@linuxfoundation.org>
-Date:   Tue, 26 Apr 2022 14:15:42 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Tue, 26 Apr 2022 16:19:01 -0400
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C865F2637;
+        Tue, 26 Apr 2022 13:15:52 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 310595C0043;
+        Tue, 26 Apr 2022 16:15:50 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Tue, 26 Apr 2022 16:15:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
+         h=cc:cc:content-transfer-encoding:date:date:from:from
+        :in-reply-to:message-id:mime-version:reply-to:sender:subject
+        :subject:to:to; s=fm1; t=1651004150; x=1651090550; bh=UvoCEZV2iN
+        YmrEf0Gl3v1FkuJK/y6NUl/vMG5P+QSfE=; b=ET0RQP18f8/Tic5fZOJ13JJKpg
+        1Cyoa9sdGbqgBmEA373pkCuMcwasDMwa9k1V5b042Sy5XtJND9bIMr/7ZmUWfZUy
+        s4mtzxDGf7ar7SYpOcs0e8tyBL9WTw04dYzi8ocIFd6nTFxAUBh1u2DzZ26MLU5T
+        v6gpyru/w/rlBrGC9fAbFhkTWsDyRKWaTWDJy2CZy7QfnsfvtEINf/OEDOaGkAmF
+        5ktOcUMOW+kzDC6YKQOOar5seiShNk+qHdjgUTpwSAI9qCcJII1yjlHDWiQebPys
+        V1L1bMY2a7T04Gsr7pauKZRYJiq7ysQjGzq/U5skqV3DTtaFtWxIvyyVdOlA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :from:from:in-reply-to:message-id:mime-version:reply-to:sender
+        :subject:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender
+        :x-me-sender:x-sasl-enc; s=fm1; t=1651004150; x=1651090550; bh=U
+        voCEZV2iNYmrEf0Gl3v1FkuJK/y6NUl/vMG5P+QSfE=; b=Gcfcf0Bbr7NmvtmK7
+        k8+TH0maJKfpxxqb3VJRkByIrcgMwhmdXnhMrtcnCmHflaiI9x7+sVahvUldWBoa
+        V98UoNXgqa5Cq2oVAwWEtOtJBOV5/o8LQGCGH1vPwuRGAxRotUqz3wzQfE/O87eB
+        vZ3akF3AmI7Pro3GqfH3VmHjogDedB7VAQXb+306lo4m3x4RXtgstPt1OfdmfdmR
+        wjTHeyB3Mr18IUB99BhHYcC09S1TWmiYRjAUxHc+diCcYyAA12TYIAWIP38VJ/1h
+        qXKksR2P4vMtFNFoc/7wnu3xANo196KCaA0eBDBt7BLRgPH+R2e6+hoHRJYigeJ+
+        BPEyQ==
+X-ME-Sender: <xms:9VJoYtrRpW4lYNgU6LzBAmvN79qHNsns6vXMhla5hOesXhF9YZOGXQ>
+    <xme:9VJoYvpREuD_WsTg0VyQsdFTWPnSgK9w1r-x1trEo1wNGE6stiYFG0Ot3KaGrC9Sc
+    bz-1iXj99aLrybLlI0>
+X-ME-Received: <xmr:9VJoYqPbSzP2D2JRPEVP4IRwzS3us41auUhWQPLJj4xF9Rhyz8sF69APGXQlMxvbeOvCmcoL8ScX46FFuOCxeekeX3VaeTB8RFC8ChYvA4lqJBN_cC51ZQ1k>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudefgddugeefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    hmihhsshhinhhgucfvqfcufhhivghlugculdeftddmnegoteeftdduqddtudculdduhedm
+    necujfgurhephffvvefufffkofgggfestdekredtredttdenucfhrhhomhepufhvvghnuc
+    frvghtvghruceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtffrrghtthgv
+    rhhnpefggeduffduleefueegtdejueegheeuffduveevgeevkedthfeuheeuueefleehve
+    enucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptden
+    ucfrrghrrghmpehmrghilhhfrhhomhepshhvvghnsehsvhgvnhhpvghtvghrrdguvghv
+X-ME-Proxy: <xmx:9VJoYo5iyBfFydfXf-oO8QrlGYl5XR__7CLLpCF6pJPiO5Fdy2cdHw>
+    <xmx:9VJoYs5OCWRZ8-yDD8-Dj5u0r8ODQang3_DkLrF0MfmAbaJaYOWyDg>
+    <xmx:9VJoYgg-kr9bFl2wFinFz-7-SJcvjzpi2-YexdWB0w6Fr0BKofXAkA>
+    <xmx:9lJoYrTBWFznWQFHILKcD2RA-Uin9bPbXxXq_PDvDAXnL1PIdpALRg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 26 Apr 2022 16:15:47 -0400 (EDT)
+From:   Sven Peter <sven@svenpeter.dev>
+Cc:     Sven Peter <sven@svenpeter.dev>, Hector Martin <marcan@marcan.st>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Keith Busch <kbusch@kernel.org>,
+        Jens Axboe <axboe@fb.com>, Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Marc Zyngier <maz@kernel.org>, Janne Grunau <j@jannau.net>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org
+Subject: [PATCH v3 0/6] Apple M1 (Pro/Max) NVMe driver
+Date:   Tue, 26 Apr 2022 22:15:33 +0200
+Message-Id: <20220426201539.12829-1-sven@svenpeter.dev>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 MIME-Version: 1.0
-In-Reply-To: <20220426081735.651926456@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/26/22 2:20 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 4.19.240 release.
-> There are 53 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Thu, 28 Apr 2022 08:17:22 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.240-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+Hi,
 
-Compiled and booted on my test system. No dmesg regressions.
+This series includes everything[*] required to get NVMe up and running on
+Apple's M1, M1 Pro and M1 Max SoCs.
 
-Tested-by: Shuah Khan <skhan@linuxfoundation.org>
+v1: https://lore.kernel.org/linux-nvme/20220321165049.35985-1-sven@svenpeter.dev/T/
+v2: https://lore.kernel.org/linux-nvme/20220415142055.30873-1-sven@svenpeter.dev/T/
 
-thanks,
--- Shuah
+Thanks everyone for the reviews of v2 again! There are just some minor
+changes since v2 listed in the individual commits again.
+
+Thanks,
+
+Sven
+
+[*] The only missing part in this series are the device tree updates
+    but since these will go through arm-soc anyway I haven't included
+    them here but will instead submit them once this series is in a shape
+    where it can be merged.
+
+Sven Peter (6):
+  dt-bindings: iommu: Add Apple SART DMA address filter
+  dt-bindings: nvme: Add Apple ANS NVMe
+  soc: apple: Always include Makefile
+  soc: apple: Add SART driver
+  soc: apple: Add RTKit IPC library
+  nvme-apple: Add initial Apple SoC NVMe driver
+
+ .../devicetree/bindings/iommu/apple,sart.yaml |   52 +
+ .../bindings/nvme/apple,nvme-ans.yaml         |  111 ++
+ MAINTAINERS                                   |    4 +
+ drivers/nvme/host/Kconfig                     |   13 +
+ drivers/nvme/host/Makefile                    |    3 +
+ drivers/nvme/host/apple.c                     | 1598 +++++++++++++++++
+ drivers/soc/Makefile                          |    2 +-
+ drivers/soc/apple/Kconfig                     |   24 +
+ drivers/soc/apple/Makefile                    |    6 +
+ drivers/soc/apple/rtkit-crashlog.c            |  154 ++
+ drivers/soc/apple/rtkit-internal.h            |   62 +
+ drivers/soc/apple/rtkit.c                     |  958 ++++++++++
+ drivers/soc/apple/sart.c                      |  328 ++++
+ include/linux/soc/apple/rtkit.h               |  159 ++
+ include/linux/soc/apple/sart.h                |   57 +
+ 15 files changed, 3530 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/iommu/apple,sart.yaml
+ create mode 100644 Documentation/devicetree/bindings/nvme/apple,nvme-ans.yaml
+ create mode 100644 drivers/nvme/host/apple.c
+ create mode 100644 drivers/soc/apple/rtkit-crashlog.c
+ create mode 100644 drivers/soc/apple/rtkit-internal.h
+ create mode 100644 drivers/soc/apple/rtkit.c
+ create mode 100644 drivers/soc/apple/sart.c
+ create mode 100644 include/linux/soc/apple/rtkit.h
+ create mode 100644 include/linux/soc/apple/sart.h
+
+-- 
+2.25.1
+
