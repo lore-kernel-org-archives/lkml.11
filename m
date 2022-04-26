@@ -2,121 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B942CC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:43:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1A49C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:44:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241369AbiDZJqK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:46:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58462 "EHLO
+        id S1345003AbiDZJrn (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:47:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348226AbiDZJoZ (ORCPT
+        with ESMTP id S1344545AbiDZJqO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:44:25 -0400
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59B0B1E030D;
-        Tue, 26 Apr 2022 02:00:59 -0700 (PDT)
-Received: by mail-oi1-x231.google.com with SMTP id v65so15242108oig.10;
-        Tue, 26 Apr 2022 02:00:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Nwb8/mmKZO6P2XfY+52W/cShYVLjOcMT6tDHNN8mOew=;
-        b=HCXSqQvdAuaIFTCy251ccV6oh0hasfXDX64YFOgQJLaxeXoOUyhm8W1g7IUsXtWN/p
-         1UsVYx5fub55CfJPvEdF8A10srT9i+AlW5L21I5QLvTc5JTJj4mZKslJIKwXl6EsACNY
-         JwNRTFdGZbf/wI/FcRNS2knVV+2UQHKYjfmms2joZ/Excnab5Ouly0ys3DDra6fkmPsv
-         nGZDGwlmfo8VqCuLwlLf66LDMZBjzd7KU2nT9KU1/cSi+Rnkl1d4gPNsQJPqW4QKfsCt
-         k508Jcg/8ZeyslKYcSZaKXGmAcChWmwcVGvVC7UUtdoq31/wk32NyA9WIINLOukCk2HN
-         WZNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Nwb8/mmKZO6P2XfY+52W/cShYVLjOcMT6tDHNN8mOew=;
-        b=P2aPJ9zI53waj3GjHAPGV0uXMpw0kePXU1zUgpPPiuW+DwuiMF7gUx0kzliZLtKjXy
-         6HNqPHK6y2BeW8bRCMC06KOQuH5PWYlJypCTzISScJsYpF1L3lPSBD5dImAcN/qi0SIx
-         RTeENC/j1ns/8f5a9iQSVruWn/3QzwQXeyd5bYY1Q0FU5k6yEGD1lUkHbjJeXJgJUYPW
-         TwKH+9fVuKIcl+PmOBsBWp/AX/ytdkTXNX9taxXm/wr5YnpC9eKYCES0c9j9cu3T3iDB
-         fY31LQlVtCtzN1Ub1oUH4j7+gXHKvWLqweQPkb0w33O1ES2Ytt+k2pIztXubi/Lhgb+K
-         a0Bw==
-X-Gm-Message-State: AOAM531neZfoq+ee6tlR3Lmyge6Z7xShRi0zHGghivtoc7OjenxG8BXr
-        0PC9UBzxuZDZO2JYzSOs7ysuK4x/eLM=
-X-Google-Smtp-Source: ABdhPJwUaViFkskduZFOqEI2ZLyl0iibEjD7lEBlQbzcpENqkhFic3BipIG+zKYZGGVjXTKPXso+rQ==
-X-Received: by 2002:a05:6808:2189:b0:322:e874:e8f2 with SMTP id be9-20020a056808218900b00322e874e8f2mr10197307oib.289.1650963655383;
-        Tue, 26 Apr 2022 02:00:55 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id bp17-20020a056808239100b00322c34c4afbsm4812214oib.25.2022.04.26.02.00.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Apr 2022 02:00:53 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <f07ef9bd-2a1d-6aec-a490-4c419ca0daab@roeck-us.net>
-Date:   Tue, 26 Apr 2022 02:00:51 -0700
+        Tue, 26 Apr 2022 05:46:14 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 686931E273D;
+        Tue, 26 Apr 2022 02:01:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650963691; x=1682499691;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Q0wsFRNig3tKzog0D3raZMVGJ+/3YHHpj8P4YRAyqKQ=;
+  b=hcfALOi1OxbEqdtodSz4m5R9e6waEV0VLZMmjdvPsvxf7zcHSVcHvyhy
+   iAdnYI2Q8PKYJIVdMpNylWPai6sF6AwhFwaf6bS/RyeHjpijyHpgC/h4G
+   vUe4aDfvliLmjSeNV41Ta2kOfoxKfttFxJNs0BvhixkcHm86jAsnocbBv
+   oTkYu20JAQ2fmPhD6BmXnSUKOvul0RZ4x5cLCRcPklEQHM8EulI3yuX9z
+   kyCIT5rXp//CaHst3zub7mqe3HCTEvrMYon69BH3y5a0lVnWUtPbidEGu
+   WNxacuFqLlPcgHdBqswzznKBoM/yZRFB3a7DWtiXfZv6eA+LHfTZ8dNgk
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="325995819"
+X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
+   d="scan'208";a="325995819"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 02:01:21 -0700
+X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
+   d="scan'208";a="579780688"
+Received: from aslawinx-mobl.ger.corp.intel.com (HELO [10.99.241.209]) ([10.99.241.209])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 02:01:20 -0700
+Message-ID: <9a1299a4-873c-b3f8-c7c7-6f3fcfee0d5f@linux.intel.com>
+Date:   Tue, 26 Apr 2022 11:01:18 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH v5] watchdog: wdat_wdg: Using the existed function to
- check parameter timeout
+Subject: Re: linux-next: build failure after merge of the sound-asoc tree
 Content-Language: en-US
-To:     Liu Xinpeng <liuxp11@chinatelecom.cn>, wim@linux-watchdog.org,
-        tzungbi@kernel.org
-Cc:     linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1650962589-1992-1-git-send-email-liuxp11@chinatelecom.cn>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <1650962589-1992-1-git-send-email-liuxp11@chinatelecom.cn>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Mark Brown <broonie@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>
+Cc:     Cezary Rojewski <cezary.rojewski@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20220426183048.5f1cb899@canb.auug.org.au>
+From:   =?UTF-8?Q?Amadeusz_S=c5=82awi=c5=84ski?= 
+        <amadeuszx.slawinski@linux.intel.com>
+In-Reply-To: <20220426183048.5f1cb899@canb.auug.org.au>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/26/22 01:43, Liu Xinpeng wrote:
-> Context: If max_hw_heartbeat_ms is provided, the configured maximum timeout
-
-I am quite sure I asked you to drop "Context: " and to change "existed" in
-the subject to "existing".
-
-Guenter
-
-> is not limited by it. The limit check in this driver therefore doesn't make
-> much sense. Similar, the watchdog core ensures that minimum timeout limits
-> are met if min_hw_heartbeat_ms is set. Using watchdog_timeout_invalid()
-> makes more sense because it takes this into account.
+On 4/26/2022 10:30 AM, Stephen Rothwell wrote:
+> Hi all,
 > 
-> Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
+> After merging the sound-asoc tree, today's linux-next build (powerpc
+> allyesconfig) failed like this:
+> 
+> sound/soc/intel/avs/path.c: In function 'avs_copier_create':
+> sound/soc/intel/avs/path.c:186:31: error: invalid use of undefined type 'struct nhlt_specific_cfg'
+>    186 |                 data = ep_blob->caps;
+>        |                               ^~
+> sound/soc/intel/avs/path.c:187:36: error: invalid use of undefined type 'struct nhlt_specific_cfg'
+>    187 |                 data_size = ep_blob->size;
+>        |                                    ^~
+> sound/soc/intel/avs/path.c:210:31: error: invalid use of undefined type 'struct nhlt_specific_cfg'
+>    210 |                 data = ep_blob->caps;
+>        |                               ^~
+> sound/soc/intel/avs/path.c:211:36: error: invalid use of undefined type 'struct nhlt_specific_cfg'
+>    211 |                 data_size = ep_blob->size;
+>        |                                    ^~
+> 
+> Caused by commit
+> 
+>    274d79e51875 ("ASoC: Intel: avs: Configure modules according to their type")
+> 
+> I have applied the following patch for today:
+> 
+> From: Stephen Rothwell <sfr@canb.auug.org.au>
+> Date: Tue, 26 Apr 2022 17:49:37 +1000
+> Subject: [PATCH] fixup for "ASoC: Intel: avs: Configure modules according to their type"
+> 
+> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
 > ---
->   drivers/watchdog/wdat_wdt.c | 5 +++--
->   1 file changed, 3 insertions(+), 2 deletions(-)
+>   sound/soc/intel/avs/path.c | 1 +
+>   1 file changed, 1 insertion(+)
 > 
-> diff --git a/drivers/watchdog/wdat_wdt.c b/drivers/watchdog/wdat_wdt.c
-> index 195c8c004b69..9db01d165310 100644
-> --- a/drivers/watchdog/wdat_wdt.c
-> +++ b/drivers/watchdog/wdat_wdt.c
-> @@ -55,6 +55,7 @@ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
->   		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
->   
->   #define WDAT_DEFAULT_TIMEOUT	30
-> +#define WDAT_MIN_TIMEOUT     1
->   
->   static int timeout = WDAT_DEFAULT_TIMEOUT;
->   module_param(timeout, int, 0);
-> @@ -344,6 +345,7 @@ static int wdat_wdt_probe(struct platform_device *pdev)
->   	wdat->period = tbl->timer_period;
->   	wdat->wdd.min_hw_heartbeat_ms = wdat->period * tbl->min_count;
->   	wdat->wdd.max_hw_heartbeat_ms = wdat->period * tbl->max_count;
-> +	wdat->wdd.min_timeout = WDAT_MIN_TIMEOUT;
->   	wdat->stopped_in_sleep = tbl->flags & ACPI_WDAT_STOPPED;
->   	wdat->wdd.info = &wdat_wdt_info;
->   	wdat->wdd.ops = &wdat_wdt_ops;
-> @@ -450,8 +452,7 @@ static int wdat_wdt_probe(struct platform_device *pdev)
->   	 * watchdog properly after it has opened the device. In some cases
->   	 * the BIOS default is too short and causes immediate reboot.
->   	 */
-> -	if (timeout * 1000 < wdat->wdd.min_hw_heartbeat_ms ||
-> -	    timeout * 1000 > wdat->wdd.max_hw_heartbeat_ms) {
-> +	if (watchdog_timeout_invalid(&wdat->wdd, timeout)) {
->   		dev_warn(dev, "Invalid timeout %d given, using %d\n",
->   			 timeout, WDAT_DEFAULT_TIMEOUT);
->   		timeout = WDAT_DEFAULT_TIMEOUT;
+> diff --git a/sound/soc/intel/avs/path.c b/sound/soc/intel/avs/path.c
+> index 3d46dd5e5bc4..6f47ac44de87 100644
+> --- a/sound/soc/intel/avs/path.c
+> +++ b/sound/soc/intel/avs/path.c
+> @@ -9,6 +9,7 @@
+>   #include <sound/intel-nhlt.h>
+>   #include <sound/pcm_params.h>
+>   #include <sound/soc.h>
+> +#include <sound/intel-nhlt.h>
+
+This fix seems weird, as same include is 3 lines earlier?
+
+>   #include "avs.h"
+>   #include "path.h"
+>   #include "topology.h"
 
