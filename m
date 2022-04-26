@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44825C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:29:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9419CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:29:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344933AbiDZIc4 (ORCPT
+        id S1344952AbiDZIdA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:32:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38290 "EHLO
+        Tue, 26 Apr 2022 04:33:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344943AbiDZIbu (ORCPT
+        with ESMTP id S1344880AbiDZIbo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:31:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19B5B192B4;
-        Tue, 26 Apr 2022 01:25:04 -0700 (PDT)
+        Tue, 26 Apr 2022 04:31:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5F777E597;
+        Tue, 26 Apr 2022 01:24:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 85EC961778;
-        Tue, 26 Apr 2022 08:25:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91F53C385A4;
-        Tue, 26 Apr 2022 08:25:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 04EBB617A4;
+        Tue, 26 Apr 2022 08:24:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1203FC385A4;
+        Tue, 26 Apr 2022 08:24:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961504;
-        bh=UiupeQkFTQvqJQSThXyiRApkOfAntuxNJuCUQopE/c8=;
+        s=korg; t=1650961498;
+        bh=rv/GX7icARfrLpZuyE33Cr4F/qHjUe73i7Nfj25q3AY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i8qC1Uk2wk0pomaDUiORjfYXRHTL4iC0uV1ekfy1H6xnCzW9gu41tRwLITm3t84zr
-         //ATdA65x/t+LKvfTOPsHFyWg2h+BroNrJD1ilLn8i7mR4YQLMH9Xs1XJb7IsrDBdI
-         qAmnWBD2ATiPBScYuFlagbu/w5Yo9al3detQ96YA=
+        b=Ysa7Bi14jK+nAmCl9VKwTbvVA26yL7K5vABilwb7lXmZqlgUbrhGHBtBHcyKLwKEe
+         G18AXilCvIgAIepGZHbeYUiAn/Z8LeV4IVEVGIkQkgxkjV39sPvE7xYZF6Rwppm/ib
+         I6N7Q2s/WLyZDa/f1+0Ro+Rs3l9U/7oXfKuQA4Qw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ricardo Dias <rdias@singlestore.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Benjamin Herrenschmidt <benh@amazon.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.14 09/43] tcp: Fix potential use-after-free due to double kfree()
-Date:   Tue, 26 Apr 2022 10:20:51 +0200
-Message-Id: <20220426081734.791889606@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+70e777a39907d6d5fd0a@syzkaller.appspotmail.com,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 4.14 07/43] ALSA: usb-audio: Clear MIDI port active flag after draining
+Date:   Tue, 26 Apr 2022 10:20:49 +0200
+Message-Id: <20220426081734.732504490@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081734.509314186@linuxfoundation.org>
 References: <20220426081734.509314186@linuxfoundation.org>
@@ -52,76 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit c89dffc70b340780e5b933832d8c3e045ef3791e upstream.
+commit 0665886ad1392e6b5bae85d7a6ccbed48dca1522 upstream.
 
-Receiving ACK with a valid SYN cookie, cookie_v4_check() allocates struct
-request_sock and then can allocate inet_rsk(req)->ireq_opt. After that,
-tcp_v4_syn_recv_sock() allocates struct sock and copies ireq_opt to
-inet_sk(sk)->inet_opt. Normally, tcp_v4_syn_recv_sock() inserts the full
-socket into ehash and sets NULL to ireq_opt. Otherwise,
-tcp_v4_syn_recv_sock() has to reset inet_opt by NULL and free the full
-socket.
+When a rawmidi output stream is closed, it calls the drain at first,
+then does trigger-off only when the drain returns -ERESTARTSYS as a
+fallback.  It implies that each driver should turn off the stream
+properly after the drain.  Meanwhile, USB-audio MIDI interface didn't
+change the port->active flag after the drain.  This may leave the
+output work picking up the port that is closed right now, which
+eventually leads to a use-after-free for the already released rawmidi
+object.
 
-The commit 01770a1661657 ("tcp: fix race condition when creating child
-sockets from syncookies") added a new path, in which more than one cores
-create full sockets for the same SYN cookie. Currently, the core which
-loses the race frees the full socket without resetting inet_opt, resulting
-in that both sock_put() and reqsk_put() call kfree() for the same memory:
+This patch fixes the bug by properly clearing the port->active flag
+after the output drain.
 
-  sock_put
-    sk_free
-      __sk_free
-        sk_destruct
-          __sk_destruct
-            sk->sk_destruct/inet_sock_destruct
-              kfree(rcu_dereference_protected(inet->inet_opt, 1));
-
-  reqsk_put
-    reqsk_free
-      __reqsk_free
-        req->rsk_ops->destructor/tcp_v4_reqsk_destructor
-          kfree(rcu_dereference_protected(inet_rsk(req)->ireq_opt, 1));
-
-Calling kmalloc() between the double kfree() can lead to use-after-free, so
-this patch fixes it by setting NULL to inet_opt before sock_put().
-
-As a side note, this kind of issue does not happen for IPv6. This is
-because tcp_v6_syn_recv_sock() clones both ipv6_opt and pktopts which
-correspond to ireq_opt in IPv4.
-
-Fixes: 01770a166165 ("tcp: fix race condition when creating child sockets from syncookies")
-CC: Ricardo Dias <rdias@singlestore.com>
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Reviewed-by: Benjamin Herrenschmidt <benh@amazon.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/r/20210118055920.82516-1-kuniyu@amazon.co.jp
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported-by: syzbot+70e777a39907d6d5fd0a@syzkaller.appspotmail.com
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/00000000000011555605dceaff03@google.com
+Link: https://lore.kernel.org/r/20220420130247.22062-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/tcp_ipv4.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/usb/midi.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -1421,6 +1421,8 @@ struct sock *tcp_v4_syn_recv_sock(const
- 		tcp_move_syn(newtp, req);
- 		ireq->ireq_opt = NULL;
- 	} else {
-+		newinet->inet_opt = NULL;
-+
- 		if (!req_unhash && found_dup_sk) {
- 			/* This code path should only be executed in the
- 			 * syncookie case only
-@@ -1428,8 +1430,6 @@ struct sock *tcp_v4_syn_recv_sock(const
- 			bh_unlock_sock(newsk);
- 			sock_put(newsk);
- 			newsk = NULL;
--		} else {
--			newinet->inet_opt = NULL;
- 		}
+--- a/sound/usb/midi.c
++++ b/sound/usb/midi.c
+@@ -1210,6 +1210,7 @@ static void snd_usbmidi_output_drain(str
+ 		} while (drain_urbs && timeout);
+ 		finish_wait(&ep->drain_wait, &wait);
  	}
- 	return newsk;
++	port->active = 0;
+ 	spin_unlock_irq(&ep->buffer_lock);
+ }
+ 
 
 
