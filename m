@@ -2,291 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52963C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 20:09:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41B1CC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 20:09:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354480AbiDZUMN (ORCPT
+        id S1354491AbiDZUMR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 16:12:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52902 "EHLO
+        Tue, 26 Apr 2022 16:12:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241532AbiDZUMF (ORCPT
+        with ESMTP id S242266AbiDZUMG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 16:12:05 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2705C16096A
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 13:08:57 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id iq2-20020a17090afb4200b001d93cf33ae9so3111517pjb.5
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 13:08:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=t6QIcs+xFWuzyKmT6GkfiHptzHoBTbTRx8qrcCtwFnc=;
-        b=DZtwSDR59d9/nLK1HZwTBNQzX9gSTqZg2xBQrCVREkKHrmPP4sBEZ8HolRQxXAYmFP
-         UeAjsisGKJCkOmuVMSD/G+XjDMqkPk3cLw5Gnn3sNIszlqKTpLb9vzuh62xfCQrRKyAL
-         7iRqGq3IZY8ZyMH3UyRIdHRAPRcZHYkQtVksDDWqa/+x4G60z0xJb8X1SeXsgBjFiM2X
-         Y/BMeF6YfdnAkrgSfMa5RD/DUuAnFuZl8w+a4jxnv9H+mtgiL1w804Y8T3728sPC9I3v
-         gPJB8sSEr6HGG6raBwM2IdQ1yEJPl9QATWKPC/1uPA9afIpOfXsdzQ7HIlhSV4VfGq6V
-         VZEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=t6QIcs+xFWuzyKmT6GkfiHptzHoBTbTRx8qrcCtwFnc=;
-        b=Wk6Tk9P/udFv5Vg6JG/5BNZyGK4QezN+IIJg5huuEz1fmeiqCLlBobD5tFJVdFyqG8
-         xQC1u+D4PRKVpwYsfxmr13k384I/GKNKBnnnmnGpuWyu+NHmKbAiIpYXRoxDU4sXGCcZ
-         l3vQ1l+Z/6WwH83OxhUZJ9gg9oZxb8ZGrGyGWc4xMvGXmC+cf0vMzgDFsc35gZ33gTSV
-         V5If6kfIWCHD2mNioRybMG4aIVeUzYqwan17wl3J0j+24BT+yUb0abUlUq+xtcmhKzR/
-         tJ4jkAj+54pYk+0Bd54w8ArYcq/GlDorW6V7qITdKkrYBJIOMlPPcSfSxA4/jojnS3hH
-         HZvA==
-X-Gm-Message-State: AOAM531Z7/uuwnxrv8O7rMVYtjDeiSzBIYVjI+qB25vJKWbQVLje6IuX
-        brapmUx/JOvjgacbDb9VosD9kw==
-X-Google-Smtp-Source: ABdhPJwHI8FI0L27+NnbqfEx0gDcABPcjvCE8f8g/FApGB/+/BmsZI5dOFL2TRsiqQXkGghV5QpSxA==
-X-Received: by 2002:a17:90b:38cb:b0:1d2:6c52:5be0 with SMTP id nn11-20020a17090b38cb00b001d26c525be0mr28861358pjb.32.1651003736611;
+        Tue, 26 Apr 2022 16:12:06 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C10AE160943;
         Tue, 26 Apr 2022 13:08:56 -0700 (PDT)
-Received: from x1.hsd1.or.comcast.net ([2601:1c2:1001:7090:9bcd:e060:b370:70d8])
-        by smtp.gmail.com with ESMTPSA id o5-20020a62f905000000b0050b5b5efa47sm16203839pfh.191.2022.04.26.13.08.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 13:08:56 -0700 (PDT)
-From:   Drew Fustini <dfustini@baylibre.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Nishanth Menon <nm@ti.com>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Dave Gerlach <d-gerlach@ti.com>,
-        Tony Lindgren <tony@atomide.com>
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Drew Fustini <dfustini@baylibre.com>,
-        Keerthy <j-keerthy@ti.com>
-Subject: [PATCH v3 2/2] soc: ti: wkup_m3_ipc: Add support for i2c voltage scaling
-Date:   Tue, 26 Apr 2022 13:07:44 -0700
-Message-Id: <20220426200741.712842-3-dfustini@baylibre.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220426200741.712842-1-dfustini@baylibre.com>
-References: <20220426200741.712842-1-dfustini@baylibre.com>
-MIME-Version: 1.0
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23QK4D2G029497;
+        Tue, 26 Apr 2022 20:08:53 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : content-transfer-encoding : mime-version; s=pp1;
+ bh=r/oHDfb3wqttXyg8WD8ijMXIoEJZISLmGztuIXE0le0=;
+ b=fP7z4UlWNIHnAJ9icdi6zqdtj/VckLThw2IFRBEdNkxi8Fi9Iv1Pf/1u52c3VeNpDlxg
+ cZpiw6G/GOwQL16NHiqtbt/bPKsxpkLd3F2mqEHGtzTT0BdOJbfhZBMvpRc+z+I8Zeb3
+ yn8c65Au2ZX8+DOMxbG3ClJMFjvB6Kzd+Myo2gTVZnWv1Rx9kR2yPXDYK6NtHphAiHLH
+ ZYUKCXyrr6XnhzlBzaitEq1wutZSEWAlwqrwvxI4UPF86QiYwy1bDjqGAUVQk71eUdvb
+ 1PdzAN2Sha8ac2qozYklu3XWwBafWILV/2s3q6pgxw2lbgFSc66sYI9NNlyXmbQF1s9w Jw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fpnhujcmj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 26 Apr 2022 20:08:53 +0000
+Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23QK8rLT016112;
+        Tue, 26 Apr 2022 20:08:53 GMT
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fpnhujcks-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 26 Apr 2022 20:08:53 +0000
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+        by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23QK8S4W031147;
+        Tue, 26 Apr 2022 20:08:51 GMT
+Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
+        by ppma03wdc.us.ibm.com with ESMTP id 3fm939ffwk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 26 Apr 2022 20:08:51 +0000
+Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
+        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23QK8oYF4391870
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 26 Apr 2022 20:08:50 GMT
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A79ABB205F;
+        Tue, 26 Apr 2022 20:08:50 +0000 (GMT)
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2EF24B2065;
+        Tue, 26 Apr 2022 20:08:46 +0000 (GMT)
+Received: from li-c92d2ccc-254b-11b2-a85c-a700b5bfb098.ibm.com.com (unknown [9.211.73.42])
+        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
+        Tue, 26 Apr 2022 20:08:46 +0000 (GMT)
+From:   Matthew Rosato <mjrosato@linux.ibm.com>
+To:     linux-s390@vger.kernel.org
+Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
+        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
+        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
+        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
+        jgg@nvidia.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+Subject: [PATCH v6 00/21] KVM: s390: enable zPCI for interpretive execution
+Date:   Tue, 26 Apr 2022 16:08:21 -0400
+Message-Id: <20220426200842.98655-1-mjrosato@linux.ibm.com>
+X-Mailer: git-send-email 2.27.0
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: HnmVcpyemUPJRHFYY5PwyNGyjz7i7l2o
+X-Proofpoint-ORIG-GUID: lgOIAYejhg4PYviO-ZqHaWpamvi2iK6B
 Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-26_06,2022-04-26_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 phishscore=0
+ lowpriorityscore=0 spamscore=0 bulkscore=0 impostorscore=0 suspectscore=0
+ priorityscore=1501 mlxlogscore=672 adultscore=0 malwarescore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204260127
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Gerlach <d-gerlach@ti.com>
+Enable interpretive execution of zPCI instructions + adapter interruption
+forwarding for s390x KVM vfio-pci.  This is done by triggering a routine
+when the VFIO group is associated with the KVM guest, transmitting to
+firmware a special token (GISA designation) to enable that specific guest
+for interpretive execution on that zPCI device.  Load/store interpreation
+enablement is then controlled by userspace (based upon whether or not a
+SHM bit is placed in the virtual function handle).  Adapter Event
+Notification interpretation is controlled from userspace via a new KVM
+ioctl.
 
-Allow loading of a binary containing i2c scaling sequences to be
-provided to the wkup_m3 firmware in order to properly scale voltage
-rails on the PMIC during low power modes like DeepSleep0. Proper binary
-format is determined by the FW in use.
+By allowing intepretation of zPCI instructions and firmware delivery of
+interrupts to guests, we can reduce the frequency of guest SIE exits for
+zPCI.  
 
-Code expects firmware to have 0x0C57 present as the first two bytes
-followed by one byte defining offset to sleep sequence followed by one
-byte defining offset to wake sequence and then lastly both sequences.
-Each sequence is a series of I2C transfers in the form:
+From the perspective of guest configuration, you passthrough zPCI devices
+in the same manner as before, with intepretation support being used by
+default if available in kernel+qemu.
 
-u8 length | u8 chip address | u8 byte0/reg address | u8 byte1 | u8 byteN
-..
+Some minor changes are already suggested for the QEMU series, but for
+now the v5 one is still compatible:
 
-The length indicates the number of bytes to transfer, including the
-register address. The length of each transfer is limited by the I2C
-buffer size of 32 bytes.
+https://lore.kernel.org/kvm/20220404181726.60291-1-mjrosato@linux.ibm.com/
 
-Based on previous work by Russ Dill.
+Changelog v5->v6:                                                               
+- Add more R-b tags                                                             
+- Address a leak of aift during rmmod kvm (Christian) also destroy the          
+  associated mutex at this time                                                 
+- only need to check nisc match during 2nd insmod of kvm (Pierre)               
+- Register for kvm notifier in vfio_pci_zdev open_device, use this to           
+  trigger GISA (un)registration instead of via iommu_group_for_each_dev         
+  from virt/kvm/vfio.c (Jason)                                                  
+- Since we now always enable the interpretation facilities once a               
+  passthrough PCI device is detected, let's just set the ECB during             
+  init vm -- SHM bits will always be used to override load/store                
+  interpretation                                                                
+- Still using KVM_S390_ZPCI_OP for AEN setup/teardown; we can continue          
+  to discuss alternatives if it makes sense, but wanted to update the           
+  rest of the series so review can continue.   
 
-Signed-off-by: Dave Gerlach <d-gerlach@ti.com>
-Signed-off-by: Keerthy <j-keerthy@ti.com>
-[dfustini: add NULL argument to rproc_da_to_va() call]
-[dfustini: replace FW_ACTION_HOTPLUG with FW_ACTION_UEVENT]
-Signed-off-by: Drew Fustini <dfustini@baylibre.com>
----
-Changes from v2:
-- None
+Matthew Rosato (21):
+  s390/sclp: detect the zPCI load/store interpretation facility
+  s390/sclp: detect the AISII facility
+  s390/sclp: detect the AENI facility
+  s390/sclp: detect the AISI facility
+  s390/airq: pass more TPI info to airq handlers
+  s390/airq: allow for airq structure that uses an input vector
+  s390/pci: externalize the SIC operation controls and routine
+  s390/pci: stash associated GISA designation
+  s390/pci: stash dtsm and maxstbl
+  KVM: s390: pci: add basic kvm_zdev structure
+  KVM: s390: pci: do initial setup for AEN interpretation
+  KVM: s390: pci: enable host forwarding of Adapter Event Notifications
+  KVM: s390: mechanism to enable guest zPCI Interpretation
+  KVM: s390: pci: provide routines for enabling/disabling interrupt
+    forwarding
+  KVM: s390: pci: add routines to start/stop interpretive execution
+  vfio-pci/zdev: add open/close device hooks
+  vfio-pci/zdev: add function handle to clp base capability
+  vfio-pci/zdev: different maxstbl for interpreted devices
+  KVM: s390: add KVM_S390_ZPCI_OP to manage guest zPCI devices
+  KVM: s390: introduce CPU feature for zPCI Interpretation
+  MAINTAINERS: additional files related kvm s390 pci passthrough
 
-Changes from v1:
-- change 'ti,scale-data-fw' to 'firmware-name'
+ Documentation/virt/kvm/api.rst   |  45 +++
+ MAINTAINERS                      |   1 +
+ arch/s390/include/asm/airq.h     |   7 +-
+ arch/s390/include/asm/kvm_host.h |  18 +
+ arch/s390/include/asm/pci.h      |  12 +
+ arch/s390/include/asm/pci_clp.h  |   9 +-
+ arch/s390/include/asm/pci_insn.h |  29 +-
+ arch/s390/include/asm/sclp.h     |   4 +
+ arch/s390/include/asm/tpi.h      |  13 +
+ arch/s390/include/uapi/asm/kvm.h |   1 +
+ arch/s390/kvm/Makefile           |   1 +
+ arch/s390/kvm/interrupt.c        |  95 ++++-
+ arch/s390/kvm/kvm-s390.c         |  87 +++-
+ arch/s390/kvm/kvm-s390.h         |  10 +
+ arch/s390/kvm/pci.c              | 667 +++++++++++++++++++++++++++++++
+ arch/s390/kvm/pci.h              |  87 ++++
+ arch/s390/pci/pci.c              |  15 +
+ arch/s390/pci/pci_clp.c          |   7 +
+ arch/s390/pci/pci_insn.c         |   4 +-
+ arch/s390/pci/pci_irq.c          |  48 ++-
+ drivers/s390/char/sclp_early.c   |   4 +
+ drivers/s390/cio/airq.c          |  12 +-
+ drivers/s390/cio/qdio_thinint.c  |   6 +-
+ drivers/s390/crypto/ap_bus.c     |   9 +-
+ drivers/s390/virtio/virtio_ccw.c |   6 +-
+ drivers/vfio/pci/vfio_pci_core.c |   2 +
+ drivers/vfio/pci/vfio_pci_zdev.c |  61 ++-
+ include/linux/vfio_pci_core.h    |  10 +
+ include/uapi/linux/kvm.h         |  31 ++
+ include/uapi/linux/vfio_zdev.h   |   7 +
+ 30 files changed, 1256 insertions(+), 52 deletions(-)
+ create mode 100644 arch/s390/kvm/pci.c
+ create mode 100644 arch/s390/kvm/pci.h
 
-drivers/soc/ti/wkup_m3_ipc.c | 93 +++++++++++++++++++++++++++++++++++-
- include/linux/wkup_m3_ipc.h  |  9 ++++
- 2 files changed, 101 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/soc/ti/wkup_m3_ipc.c b/drivers/soc/ti/wkup_m3_ipc.c
-index 988162dd153a..c35eaecf4ab4 100644
---- a/drivers/soc/ti/wkup_m3_ipc.c
-+++ b/drivers/soc/ti/wkup_m3_ipc.c
-@@ -8,6 +8,7 @@
-  */
- 
- #include <linux/err.h>
-+#include <linux/firmware.h>
- #include <linux/kernel.h>
- #include <linux/kthread.h>
- #include <linux/interrupt.h>
-@@ -55,6 +56,12 @@
- #define M3_STATE_MSG_FOR_LP		3
- #define M3_STATE_MSG_FOR_RESET		4
- 
-+#define WKUP_M3_SD_FW_MAGIC		0x570C
-+
-+#define WKUP_M3_DMEM_START		0x80000
-+#define WKUP_M3_AUXDATA_OFFSET		0x1000
-+#define WKUP_M3_AUXDATA_SIZE		0xFF
-+
- static struct wkup_m3_ipc *m3_ipc_state;
- 
- static const struct wkup_m3_wakeup_src wakeups[] = {
-@@ -75,6 +82,81 @@ static const struct wkup_m3_wakeup_src wakeups[] = {
- 	{.irq_nr = 0,	.src = "Unknown"},
- };
- 
-+/**
-+ * wkup_m3_copy_aux_data - Copy auxiliary data to special region of m3 dmem
-+ * @data - pointer to data
-+ * @sz - size of data to copy (limit 256 bytes)
-+ *
-+ * Copies any additional blob of data to the wkup_m3 dmem to be used by the
-+ * firmware
-+ */
-+static unsigned long wkup_m3_copy_aux_data(struct wkup_m3_ipc *m3_ipc,
-+					   const void *data, int sz)
-+{
-+	unsigned long aux_data_dev_addr;
-+	void *aux_data_addr;
-+
-+	aux_data_dev_addr = WKUP_M3_DMEM_START + WKUP_M3_AUXDATA_OFFSET;
-+	aux_data_addr = rproc_da_to_va(m3_ipc->rproc,
-+				       aux_data_dev_addr,
-+				       WKUP_M3_AUXDATA_SIZE,
-+				       NULL);
-+	memcpy(aux_data_addr, data, sz);
-+
-+	return WKUP_M3_AUXDATA_OFFSET;
-+}
-+
-+static void wkup_m3_scale_data_fw_cb(const struct firmware *fw, void *context)
-+{
-+	unsigned long val, aux_base;
-+	struct wkup_m3_scale_data_header hdr;
-+	struct wkup_m3_ipc *m3_ipc = context;
-+	struct device *dev = m3_ipc->dev;
-+
-+	if (!fw) {
-+		dev_err(dev, "Voltage scale fw name given but file missing.\n");
-+		return;
-+	}
-+
-+	memcpy(&hdr, fw->data, sizeof(hdr));
-+
-+	if (hdr.magic != WKUP_M3_SD_FW_MAGIC) {
-+		dev_err(dev, "PM: Voltage Scale Data binary does not appear valid.\n");
-+		goto release_sd_fw;
-+	}
-+
-+	aux_base = wkup_m3_copy_aux_data(m3_ipc, fw->data + sizeof(hdr),
-+					 fw->size - sizeof(hdr));
-+
-+	val = (aux_base + hdr.sleep_offset);
-+	val |= ((aux_base + hdr.wake_offset) << 16);
-+
-+	m3_ipc->volt_scale_offsets = val;
-+
-+release_sd_fw:
-+	release_firmware(fw);
-+};
-+
-+static int wkup_m3_init_scale_data(struct wkup_m3_ipc *m3_ipc,
-+				   struct device *dev)
-+{
-+	int ret = 0;
-+
-+	/*
-+	 * If no name is provided, user has already been warned, pm will
-+	 * still work so return 0
-+	 */
-+
-+	if (!m3_ipc->sd_fw_name)
-+		return ret;
-+
-+	ret = request_firmware_nowait(THIS_MODULE, FW_ACTION_UEVENT,
-+				      m3_ipc->sd_fw_name, dev, GFP_ATOMIC,
-+				      m3_ipc, wkup_m3_scale_data_fw_cb);
-+
-+	return ret;
-+}
-+
- static void am33xx_txev_eoi(struct wkup_m3_ipc *m3_ipc)
- {
- 	writel(AM33XX_M3_TXEV_ACK,
-@@ -139,6 +221,7 @@ static irqreturn_t wkup_m3_txev_handler(int irq, void *ipc_data)
- 		}
- 
- 		m3_ipc->state = M3_STATE_INITED;
-+		wkup_m3_init_scale_data(m3_ipc, dev);
- 		complete(&m3_ipc->sync_complete);
- 		break;
- 	case M3_STATE_MSG_FOR_RESET:
-@@ -300,12 +383,15 @@ static int wkup_m3_prepare_low_power(struct wkup_m3_ipc *m3_ipc, int state)
- 	switch (state) {
- 	case WKUP_M3_DEEPSLEEP:
- 		m3_power_state = IPC_CMD_DS0;
-+		wkup_m3_ctrl_ipc_write(m3_ipc, m3_ipc->volt_scale_offsets, 5);
- 		break;
- 	case WKUP_M3_STANDBY:
- 		m3_power_state = IPC_CMD_STANDBY;
-+		wkup_m3_ctrl_ipc_write(m3_ipc, DS_IPC_DEFAULT, 5);
- 		break;
- 	case WKUP_M3_IDLE:
- 		m3_power_state = IPC_CMD_IDLE;
-+		wkup_m3_ctrl_ipc_write(m3_ipc, DS_IPC_DEFAULT, 5);
- 		break;
- 	default:
- 		return 1;
-@@ -319,7 +405,6 @@ static int wkup_m3_prepare_low_power(struct wkup_m3_ipc *m3_ipc, int state)
- 			       m3_ipc->isolation_conf, 4);
- 	wkup_m3_ctrl_ipc_write(m3_ipc, DS_IPC_DEFAULT, 2);
- 	wkup_m3_ctrl_ipc_write(m3_ipc, DS_IPC_DEFAULT, 3);
--	wkup_m3_ctrl_ipc_write(m3_ipc, DS_IPC_DEFAULT, 5);
- 	wkup_m3_ctrl_ipc_write(m3_ipc, DS_IPC_DEFAULT, 6);
- 	wkup_m3_ctrl_ipc_write(m3_ipc, DS_IPC_DEFAULT, 7);
- 
-@@ -528,6 +613,12 @@ static int wkup_m3_ipc_probe(struct platform_device *pdev)
- 	if (of_find_property(np, "ti,set-io-isolation", NULL))
- 		wkup_m3_set_io_isolation(m3_ipc);
- 
-+	ret = of_property_read_string(np, "firmware-name",
-+				      &m3_ipc->sd_fw_name);
-+	if (ret) {
-+		dev_dbg(dev, "Voltage scaling data blob not provided from DT.\n");
-+	};
-+
- 	/*
- 	 * Wait for firmware loading completion in a thread so we
- 	 * can boot the wkup_m3 as soon as it's ready without holding
-diff --git a/include/linux/wkup_m3_ipc.h b/include/linux/wkup_m3_ipc.h
-index b706eac58f92..fef0fac60f8c 100644
---- a/include/linux/wkup_m3_ipc.h
-+++ b/include/linux/wkup_m3_ipc.h
-@@ -37,6 +37,9 @@ struct wkup_m3_ipc {
- 	int isolation_conf;
- 	int state;
- 
-+	unsigned long volt_scale_offsets;
-+	const char *sd_fw_name;
-+
- 	struct completion sync_complete;
- 	struct mbox_client mbox_client;
- 	struct mbox_chan *mbox;
-@@ -50,6 +53,12 @@ struct wkup_m3_wakeup_src {
- 	char src[10];
- };
- 
-+struct wkup_m3_scale_data_header {
-+	u16 magic;
-+	u8 sleep_offset;
-+	u8 wake_offset;
-+} __packed;
-+
- struct wkup_m3_ipc_ops {
- 	void (*set_mem_type)(struct wkup_m3_ipc *m3_ipc, int mem_type);
- 	void (*set_resume_address)(struct wkup_m3_ipc *m3_ipc, void *addr);
 -- 
-2.32.0
+2.27.0
 
