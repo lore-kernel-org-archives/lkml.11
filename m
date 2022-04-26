@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D155C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:23:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98A58C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347643AbiDZJYW (ORCPT
+        id S1347708AbiDZJYi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:24:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60910 "EHLO
+        Tue, 26 Apr 2022 05:24:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346461AbiDZJAh (ORCPT
+        with ESMTP id S1345700AbiDZI5o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:00:37 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8BAB3F326;
-        Tue, 26 Apr 2022 01:43:11 -0700 (PDT)
+        Tue, 26 Apr 2022 04:57:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2762564C4;
+        Tue, 26 Apr 2022 01:42:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 1B3C9CE1BC9;
-        Tue, 26 Apr 2022 08:43:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07900C385A0;
-        Tue, 26 Apr 2022 08:43:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D1A12B81CED;
+        Tue, 26 Apr 2022 08:42:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3511CC385A0;
+        Tue, 26 Apr 2022 08:42:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962588;
-        bh=TtTnQKhdU8HQ67xMPTU0sa9FR8Yxr1MJiU8Vwdxpc0E=;
+        s=korg; t=1650962564;
+        bh=J+4i1vcd5/XjbgPWY6oEshrMLJ1WCfrhyL0vvFwQMNU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PKh/+6awDvBGd9sJELZYk8ETLjYhN+RC5LtEehA3Gswowqr4I6IFidVUvY4D0KEVO
-         hyhZWsmU24mzp61yEEGNhfuvsIIK7Q6lATPr103BwWUa1EVnE8ZiPhJ6hnXr/f9Zl8
-         iSdwIrl25WOHaZbGGDcHSVrZPOAxy7AcaPThGcdg=
+        b=Da4WgEYiKXmnPFimqfHP0eQYS+QLQ3jfYEgt7pPOBicZBL1tIXBo4yZyvE0oDx6ii
+         Cck24CtF1hVAJdRwshG+zW4RGh7h0eWfopREq2APsZrYbhFc4/DEKtahumjXhbJcSN
+         eTVkG604nLAQsFJfjhe4OWNgR0mLsvgX4q2vUWN8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 023/146] spi: cadence-quadspi: fix incorrect supports_op() return value
-Date:   Tue, 26 Apr 2022 10:20:18 +0200
-Message-Id: <20220426081750.717969684@linuxfoundation.org>
+        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
+        Khazhismel Kumykov <khazhy@google.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.17 004/146] block/compat_ioctl: fix range check in BLKGETSIZE
+Date:   Tue, 26 Apr 2022 10:19:59 +0200
+Message-Id: <20220426081750.184589989@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -51,63 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+From: Khazhismel Kumykov <khazhy@google.com>
 
-[ Upstream commit f1d388f216aeb41a5df518815ae559d14a6d438e ]
+commit ccf16413e520164eb718cf8b22a30438da80ff23 upstream.
 
-Since the conversion to spi-mem, the driver advertised support for
-various operations that cqspi_set_protocol() was never expected to handle
-correctly - in particuar all non-DTR operations with command or address
-buswidth > 1. For DTR, all operations except for 8-8-8 would fail, as
-cqspi_set_protocol() returns -EINVAL.
+kernel ulong and compat_ulong_t may not be same width. Use type directly
+to eliminate mismatches.
 
-In non-DTR mode, this resulted in data corruption for SPI-NOR flashes that
-support such operations. As a minimal fix that can be backported to stable
-kernels, simply disallow the unsupported operations again to avoid this
-issue.
+This would result in truncation rather than EFBIG for 32bit mode for
+large disks.
 
-Fixes: a314f6367787 ("mtd: spi-nor: Convert cadence-quadspi to use spi-mem framework")
-Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Link: https://lore.kernel.org/r/20220406132832.199777-1-matthias.schiffer@ew.tq-group.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+Signed-off-by: Khazhismel Kumykov <khazhy@google.com>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Link: https://lore.kernel.org/r/20220414224056.2875681-1-khazhy@google.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/spi/spi-cadence-quadspi.c | 19 +++++++++++++++++--
- 1 file changed, 17 insertions(+), 2 deletions(-)
+ block/ioctl.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/spi/spi-cadence-quadspi.c b/drivers/spi/spi-cadence-quadspi.c
-index 75f356041138..b8ac24318cb3 100644
---- a/drivers/spi/spi-cadence-quadspi.c
-+++ b/drivers/spi/spi-cadence-quadspi.c
-@@ -1415,9 +1415,24 @@ static bool cqspi_supports_mem_op(struct spi_mem *mem,
- 	all_false = !op->cmd.dtr && !op->addr.dtr && !op->dummy.dtr &&
- 		    !op->data.dtr;
+--- a/block/ioctl.c
++++ b/block/ioctl.c
+@@ -629,7 +629,7 @@ long compat_blkdev_ioctl(struct file *fi
+ 		return compat_put_long(argp,
+ 			(bdev->bd_disk->bdi->ra_pages * PAGE_SIZE) / 512);
+ 	case BLKGETSIZE:
+-		if (bdev_nr_sectors(bdev) > ~0UL)
++		if (bdev_nr_sectors(bdev) > ~(compat_ulong_t)0)
+ 			return -EFBIG;
+ 		return compat_put_ulong(argp, bdev_nr_sectors(bdev));
  
--	/* Mixed DTR modes not supported. */
--	if (!(all_true || all_false))
-+	if (all_true) {
-+		/* Right now we only support 8-8-8 DTR mode. */
-+		if (op->cmd.nbytes && op->cmd.buswidth != 8)
-+			return false;
-+		if (op->addr.nbytes && op->addr.buswidth != 8)
-+			return false;
-+		if (op->data.nbytes && op->data.buswidth != 8)
-+			return false;
-+	} else if (all_false) {
-+		/* Only 1-1-X ops are supported without DTR */
-+		if (op->cmd.nbytes && op->cmd.buswidth > 1)
-+			return false;
-+		if (op->addr.nbytes && op->addr.buswidth > 1)
-+			return false;
-+	} else {
-+		/* Mixed DTR modes are not supported. */
- 		return false;
-+	}
- 
- 	if (all_true)
- 		return spi_mem_dtr_supports_op(mem, op);
--- 
-2.35.1
-
 
 
