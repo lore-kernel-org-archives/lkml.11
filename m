@@ -2,98 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFDF1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 18:13:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D28A2C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 18:13:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350485AbiDZSQ1 (ORCPT
+        id S1350531AbiDZSQe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 14:16:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41870 "EHLO
+        Tue, 26 Apr 2022 14:16:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345199AbiDZSQX (ORCPT
+        with ESMTP id S1350452AbiDZSQ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 14:16:23 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0F866C94F;
-        Tue, 26 Apr 2022 11:13:14 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23QID1M8071353;
-        Tue, 26 Apr 2022 13:13:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1650996781;
-        bh=gYdo4+FlQ6jEDi/fm6d9b5+tZchGG9chl4+25nGIlwE=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=x3FNEpFnQWwpf445wCh6hZYq4xHcAwSRb/WuxZejYGeqomq2uy8oHxKCErPWUT9Lo
-         X9hnI/3QXltKe9Vl7NBIwlRPOAqisD9ninsDCzIIuruY3pys+EJQSlz4BunKvdCR+D
-         BTwKzUFDfrUt2vHn4Mhe3ou+x8RiA3mtJylZcUD8=
-Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23QID19J037357
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 26 Apr 2022 13:13:01 -0500
-Received: from DFLE108.ent.ti.com (10.64.6.29) by DFLE113.ent.ti.com
- (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 26
- Apr 2022 13:13:01 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE108.ent.ti.com
- (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 26 Apr 2022 13:13:01 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23QID1fK128429;
-        Tue, 26 Apr 2022 13:13:01 -0500
-Date:   Tue, 26 Apr 2022 13:13:01 -0500
-From:   Nishanth Menon <nm@ti.com>
-To:     Rahul T R <r-ravikumar@ti.com>
-CC:     <vigneshr@ti.com>, <kristo@kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski@canonical.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <tomi.valkeinen@ideasonboard.com>,
-        <laurent.pinchart@ideasonboard.com>, <kishon@ti.com>
-Subject: Re: [PATCH v4 2/2] arm64: dts: ti: k3-j721e-common-proc-board: add
- DP to j7 evm
-Message-ID: <20220426181301.z7jojik7zh7flh3h@gummy>
-References: <20220426153553.18474-1-r-ravikumar@ti.com>
- <20220426153553.18474-3-r-ravikumar@ti.com>
+        Tue, 26 Apr 2022 14:16:26 -0400
+Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40A026C951;
+        Tue, 26 Apr 2022 11:13:16 -0700 (PDT)
+Received: by mail-oi1-f173.google.com with SMTP id e4so21610642oif.2;
+        Tue, 26 Apr 2022 11:13:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=eAx2PLqzD0frmD0Kzzi8iEUnvgkRX+N1plVsUdZCM1c=;
+        b=VyyGSjTq8bzuFOFt71RMLq3dSox+OUoCgn0DNVohuQntoF3mRH/+Ok8TBTQB86I1E8
+         odv3fWz1m2IBH2Umo57GDAGiUDOvIAu74jkVYgkaI4vF4UO2NFMXnmIMDLC0X4LQ1B28
+         393v32WBkYKaQa8a7NGGNzrVjzWrU/TWzxwHRa9+CEDjRMk2fcVr+IJr6beZZ/wDqU4Y
+         +4XL7XXK7vp9TZZFh7OpPeIwXYkFHLfQVJsbinFuNYv3n+/KoKgOCiBgQiWrITlSEye3
+         h46oIMTJztgqeO4TdT4bA1Kxf/bMD8lPtsOFODHpFMLZb7yxD2eWlX2+9Qv51Vj3EbtF
+         hP0A==
+X-Gm-Message-State: AOAM533MIwhNiisJWM+21eT76nuyccZuxaV70gSdPawM+1BhPe2cpy0x
+        W7abwS7n2nLNJLS7iCC7gduTB+zlbg==
+X-Google-Smtp-Source: ABdhPJy78nTT6+KFIUyZupPqSsmVbmUD0yluTyO1eKHY22JblRzuRltLEpnF8aDvcNyM3QqbfxzSdA==
+X-Received: by 2002:a05:6808:1206:b0:2d7:65a8:65e with SMTP id a6-20020a056808120600b002d765a8065emr11200486oil.107.1650996795534;
+        Tue, 26 Apr 2022 11:13:15 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id o19-20020a4a9593000000b0032176119e65sm5930676ooi.34.2022.04.26.11.13.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 11:13:15 -0700 (PDT)
+Received: (nullmailer pid 2285557 invoked by uid 1000);
+        Tue, 26 Apr 2022 18:13:14 -0000
+Date:   Tue, 26 Apr 2022 13:13:14 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-arm-msm@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>, linux-kernel@vger.kernel.org,
+        Liam Girdwood <lgirdwood@gmail.com>, devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 2/3] regulator: dt-bindings: qcom,rpmh: document
+ supplies per variant
+Message-ID: <Ymg2Os22eG4gwdbG@robh.at.kernel.org>
+References: <20220426105501.73200-1-krzysztof.kozlowski@linaro.org>
+ <20220426105501.73200-3-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220426153553.18474-3-r-ravikumar@ti.com>
-User-Agent: NeoMutt/20171215
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+In-Reply-To: <20220426105501.73200-3-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21:05-20220426, Rahul T R wrote:
-> From: Tomi Valkeinen <tomi.valkeinen@ti.com>
+On Tue, 26 Apr 2022 12:55:00 +0200, Krzysztof Kozlowski wrote:
+> The RPMH regulator binding covers several devices with different
+> regulator supplies, so it uses patterns matching broad range of these
+> supplies.  This works fine but is not specific and might miss actual
+> mistakes when a wrong supply property is used for given variant.
+> 
+> Describe the supplies depending on the compatible, using a defs-allOf
+> method.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  .../regulator/qcom,rpmh-regulator.yaml        | 256 +++++++++++++++++-
+>  1 file changed, 242 insertions(+), 14 deletions(-)
 > 
 
-[...]
-
-> 
-> diff --git a/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts b/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-> index 2f119e94e783..4b9e3f671781 100644
-> --- a/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-> +++ b/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-> @@ -148,6 +148,28 @@
->  		pinctrl-0 = <&main_mcan2_gpio_pins_default>;
->  		standby-gpios = <&main_gpio0 127 GPIO_ACTIVE_HIGH>;
->  	};
-> +
-> +	dp_pwr_3v3: regulator-dp-prw {
-
-See feedback in https://lore.kernel.org/all/c50819cb-8234-670f-c7c0-0507af2f96df@linaro.org/
-
-> +		compatible = "regulator-fixed";
-> +		regulator-name = "dp-pwr";
-> +		regulator-min-microvolt = <3300000>;
-> +		regulator-max-microvolt = <3300000>;
-> +		gpio = <&exp4 0 GPIO_ACTIVE_HIGH>; /* P0 - DP0_PWR_SW_EN */
-> +		enable-active-high;
-> +	};
-> +
--- 
-Regards,
-Nishanth Menon
-Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
+Reviewed-by: Rob Herring <robh@kernel.org>
