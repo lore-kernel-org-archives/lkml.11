@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A364C3527A
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:58:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F04E3C3527C
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:58:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346371AbiDZJAZ (ORCPT
+        id S1346318AbiDZJAP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:00:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57798 "EHLO
+        Tue, 26 Apr 2022 05:00:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346883AbiDZIp2 (ORCPT
+        with ESMTP id S1346870AbiDZIp1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:45:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78FD81FA5B;
-        Tue, 26 Apr 2022 01:36:08 -0700 (PDT)
+        Tue, 26 Apr 2022 04:45:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 818967DAA4;
+        Tue, 26 Apr 2022 01:36:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3635B81CED;
-        Tue, 26 Apr 2022 08:36:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56FA1C385A4;
-        Tue, 26 Apr 2022 08:36:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3EC3DB81D09;
+        Tue, 26 Apr 2022 08:36:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 758C1C385A0;
+        Tue, 26 Apr 2022 08:36:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962165;
-        bh=UHRPuTmqGxLHdHpx4pWSZlvt+YX/rS3XZemVEwKUkWo=;
+        s=korg; t=1650962162;
+        bh=70qI1yjsoDgEU4yMqhafU1+UfBm/Xmzov+B9musjrjM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Un0A8cf29pzC7mFHeXLVMOTqQa+SWAhXlaY4Cb5QKne2WzSWWVRf/d2qmk/SqRoVZ
-         5Z6pewUo+wquA2MOFPuBoQTDpJn0IiehRQ2ZGemrjx5KW9dgj/saQT/VcR+tLX5boW
-         IzuFEne25+ckeR5XSYlxlITjdS/JODzNm7fFZp8w=
+        b=QrsMleYuf64SZnN9G9ghYNShZh2RqCDNt+C23bse3D8rSWLzQDg8PE3zLXD09/F/y
+         XNdQgql5tvyBci7I43Sf74v9etcsxFDHsOCWe9g8ObYbJ/e03UH9cgNt0r5p7xZrtC
+         uvZIiuSw8gjNQmlVNm8TMqwuG6EYQyeeNnTR1rv4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        stable@kernel.org
-Subject: [PATCH 5.10 79/86] ext4: fix overhead calculation to account for the reserved gdt blocks
-Date:   Tue, 26 Apr 2022 10:21:47 +0200
-Message-Id: <20220426081743.496343497@linuxfoundation.org>
+        Marek Vasut <marex@denx.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 86/86] Revert "net: micrel: fix KS8851_MLL Kconfig"
+Date:   Tue, 26 Apr 2022 10:21:54 +0200
+Message-Id: <20220426081743.697134831@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
 References: <20220426081741.202366502@linuxfoundation.org>
@@ -49,35 +53,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Theodore Ts'o <tytso@mit.edu>
+From: Marek Vasut <marex@denx.de>
 
-commit 10b01ee92df52c8d7200afead4d5e5f55a5c58b1 upstream.
+This reverts commit 1ff5359afa5ec0dd09fe76183dc4fa24b50e4125 which is
+commit c3efcedd272aa6dd5929e20cf902a52ddaa1197a upstream.
 
-The kernel calculation was underestimating the overhead by not taking
-into account the reserved gdt blocks.  With this change, the overhead
-calculated by the kernel matches the overhead calculation in mke2fs.
+The upstream commit c3efcedd272a ("net: micrel: fix KS8851_MLL Kconfig")
+depends on e5f31552674e ("ethernet: fix PTP_1588_CLOCK dependencies")
+which is not part of Linux 5.10.y . Revert the aforementioned commit to
+prevent breakage in 5.10.y .
 
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Cc: stable@kernel.org
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Randy Dunlap <rdunlap@infradead.org>
+Cc: Sasha Levin <sashal@kernel.org>
+Cc: <stable@vger.kernel.org> # 5.10.x
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/super.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/micrel/Kconfig |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/fs/ext4/super.c
-+++ b/fs/ext4/super.c
-@@ -3870,9 +3870,11 @@ static int count_overhead(struct super_b
- 	ext4_fsblk_t		first_block, last_block, b;
- 	ext4_group_t		i, ngroups = ext4_get_groups_count(sb);
- 	int			s, j, count = 0;
-+	int			has_super = ext4_bg_has_super(sb, grp);
- 
- 	if (!ext4_has_feature_bigalloc(sb))
--		return (ext4_bg_has_super(sb, grp) + ext4_bg_num_gdb(sb, grp) +
-+		return (has_super + ext4_bg_num_gdb(sb, grp) +
-+			(has_super ? le16_to_cpu(sbi->s_es->s_reserved_gdt_blocks) : 0) +
- 			sbi->s_itb_per_group + 2);
- 
- 	first_block = le32_to_cpu(sbi->s_es->s_first_data_block) +
+--- a/drivers/net/ethernet/micrel/Kconfig
++++ b/drivers/net/ethernet/micrel/Kconfig
+@@ -37,7 +37,6 @@ config KS8851
+ config KS8851_MLL
+ 	tristate "Micrel KS8851 MLL"
+ 	depends on HAS_IOMEM
+-	depends on PTP_1588_CLOCK_OPTIONAL
+ 	select MII
+ 	select CRC32
+ 	select EEPROM_93CX6
 
 
