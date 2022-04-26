@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66D30C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D04C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:48:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346261AbiDZIt7 (ORCPT
+        id S1346720AbiDZIuR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:49:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36638 "EHLO
+        Tue, 26 Apr 2022 04:50:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345660AbiDZIjU (ORCPT
+        with ESMTP id S1345855AbiDZIjj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:39:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89B153DA6F;
-        Tue, 26 Apr 2022 01:30:39 -0700 (PDT)
+        Tue, 26 Apr 2022 04:39:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A625A793B5;
+        Tue, 26 Apr 2022 01:32:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3936A617A4;
-        Tue, 26 Apr 2022 08:30:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A42FC385A0;
-        Tue, 26 Apr 2022 08:30:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DD0361864;
+        Tue, 26 Apr 2022 08:32:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EC76C385A0;
+        Tue, 26 Apr 2022 08:32:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961838;
-        bh=XGSb/BaOFZrY1oZd6WGEMKQ89ZzLJwd0bo7KPM/hLO0=;
+        s=korg; t=1650961929;
+        bh=4LPqaj5Lo0OfNPU9gxZMt0k8k/l1yn/DuS3f4pPqxeo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LwFGwYEsJxxYLBIpU6hnO3Vi8ye50WX+rKTytyvXTHarMZo/qWBPZQx8QTSmjwErh
-         T9Bu5spuoWvxnceEQO722F2+FyWKAj51zG2fhLtTPsVMAwk4ZafryEzwLQGvCO5Dke
-         r8SzrOY53O6baMsLKEUUdu2RVMxn4UH5EF2Gz6Cs=
+        b=BtOTkTUG3vDQslzaFXOqbbMM/TqC/Z0aACS4ihLb0Gja2ilSmHe3WPPK4xvle2SxX
+         is0WaM9ZoMqLN1qvFwsSmMIOsPYak36IGaFzOnj6MMkkEivqbNXwfqwZ5y/QZtmRpF
+         HfXCLnBg1n/ju/i0ObK8yhof1EGScQkCeXwedRg4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ricardo Dias <rdias@singlestore.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Benjamin Herrenschmidt <benh@amazon.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 08/62] tcp: Fix potential use-after-free due to double kfree()
-Date:   Tue, 26 Apr 2022 10:20:48 +0200
-Message-Id: <20220426081737.460429927@linuxfoundation.org>
+        stable@vger.kernel.org, Sabrina Dubroca <sd@queasysnail.net>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 16/86] esp: limit skb_page_frag_refill use to a single page
+Date:   Tue, 26 Apr 2022 10:20:44 +0200
+Message-Id: <20220426081741.674635373@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
-References: <20220426081737.209637816@linuxfoundation.org>
+In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
+References: <20220426081741.202366502@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,76 +50,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+From: Sabrina Dubroca <sd@queasysnail.net>
 
-commit c89dffc70b340780e5b933832d8c3e045ef3791e upstream.
+[ Upstream commit 5bd8baab087dff657e05387aee802e70304cc813 ]
 
-Receiving ACK with a valid SYN cookie, cookie_v4_check() allocates struct
-request_sock and then can allocate inet_rsk(req)->ireq_opt. After that,
-tcp_v4_syn_recv_sock() allocates struct sock and copies ireq_opt to
-inet_sk(sk)->inet_opt. Normally, tcp_v4_syn_recv_sock() inserts the full
-socket into ehash and sets NULL to ireq_opt. Otherwise,
-tcp_v4_syn_recv_sock() has to reset inet_opt by NULL and free the full
-socket.
+Commit ebe48d368e97 ("esp: Fix possible buffer overflow in ESP
+transformation") tried to fix skb_page_frag_refill usage in ESP by
+capping allocsize to 32k, but that doesn't completely solve the issue,
+as skb_page_frag_refill may return a single page. If that happens, we
+will write out of bounds, despite the check introduced in the previous
+patch.
 
-The commit 01770a1661657 ("tcp: fix race condition when creating child
-sockets from syncookies") added a new path, in which more than one cores
-create full sockets for the same SYN cookie. Currently, the core which
-loses the race frees the full socket without resetting inet_opt, resulting
-in that both sock_put() and reqsk_put() call kfree() for the same memory:
+This patch forces COW in cases where we would end up calling
+skb_page_frag_refill with a size larger than a page (first in
+esp_output_head with tailen, then in esp_output_tail with
+skb->data_len).
 
-  sock_put
-    sk_free
-      __sk_free
-        sk_destruct
-          __sk_destruct
-            sk->sk_destruct/inet_sock_destruct
-              kfree(rcu_dereference_protected(inet->inet_opt, 1));
-
-  reqsk_put
-    reqsk_free
-      __reqsk_free
-        req->rsk_ops->destructor/tcp_v4_reqsk_destructor
-          kfree(rcu_dereference_protected(inet_rsk(req)->ireq_opt, 1));
-
-Calling kmalloc() between the double kfree() can lead to use-after-free, so
-this patch fixes it by setting NULL to inet_opt before sock_put().
-
-As a side note, this kind of issue does not happen for IPv6. This is
-because tcp_v6_syn_recv_sock() clones both ipv6_opt and pktopts which
-correspond to ireq_opt in IPv4.
-
-Fixes: 01770a166165 ("tcp: fix race condition when creating child sockets from syncookies")
-CC: Ricardo Dias <rdias@singlestore.com>
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Reviewed-by: Benjamin Herrenschmidt <benh@amazon.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/r/20210118055920.82516-1-kuniyu@amazon.co.jp
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: cac2661c53f3 ("esp4: Avoid skb_cow_data whenever possible")
+Fixes: 03e2a30f6a27 ("esp6: Avoid skb_cow_data whenever possible")
+Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_ipv4.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/net/esp.h | 2 --
+ net/ipv4/esp4.c   | 5 ++---
+ net/ipv6/esp6.c   | 5 ++---
+ 3 files changed, 4 insertions(+), 8 deletions(-)
 
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -1503,6 +1503,8 @@ struct sock *tcp_v4_syn_recv_sock(const
- 		tcp_move_syn(newtp, req);
- 		ireq->ireq_opt = NULL;
- 	} else {
-+		newinet->inet_opt = NULL;
-+
- 		if (!req_unhash && found_dup_sk) {
- 			/* This code path should only be executed in the
- 			 * syncookie case only
-@@ -1510,8 +1512,6 @@ struct sock *tcp_v4_syn_recv_sock(const
- 			bh_unlock_sock(newsk);
- 			sock_put(newsk);
- 			newsk = NULL;
--		} else {
--			newinet->inet_opt = NULL;
- 		}
+diff --git a/include/net/esp.h b/include/net/esp.h
+index 90cd02ff77ef..9c5637d41d95 100644
+--- a/include/net/esp.h
++++ b/include/net/esp.h
+@@ -4,8 +4,6 @@
+ 
+ #include <linux/skbuff.h>
+ 
+-#define ESP_SKB_FRAG_MAXSIZE (PAGE_SIZE << SKB_FRAG_PAGE_ORDER)
+-
+ struct ip_esp_hdr;
+ 
+ static inline struct ip_esp_hdr *ip_esp_hdr(const struct sk_buff *skb)
+diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
+index 9aae82145bc1..20d738137841 100644
+--- a/net/ipv4/esp4.c
++++ b/net/ipv4/esp4.c
+@@ -448,7 +448,6 @@ int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
+ 	struct page *page;
+ 	struct sk_buff *trailer;
+ 	int tailen = esp->tailen;
+-	unsigned int allocsz;
+ 
+ 	/* this is non-NULL only with TCP/UDP Encapsulation */
+ 	if (x->encap) {
+@@ -458,8 +457,8 @@ int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
+ 			return err;
  	}
- 	return newsk;
+ 
+-	allocsz = ALIGN(skb->data_len + tailen, L1_CACHE_BYTES);
+-	if (allocsz > ESP_SKB_FRAG_MAXSIZE)
++	if (ALIGN(tailen, L1_CACHE_BYTES) > PAGE_SIZE ||
++	    ALIGN(skb->data_len, L1_CACHE_BYTES) > PAGE_SIZE)
+ 		goto cow;
+ 
+ 	if (!skb_cloned(skb)) {
+diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
+index 20c7bef6829e..cb28f8928f9e 100644
+--- a/net/ipv6/esp6.c
++++ b/net/ipv6/esp6.c
+@@ -483,7 +483,6 @@ int esp6_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info
+ 	struct page *page;
+ 	struct sk_buff *trailer;
+ 	int tailen = esp->tailen;
+-	unsigned int allocsz;
+ 
+ 	if (x->encap) {
+ 		int err = esp6_output_encap(x, skb, esp);
+@@ -492,8 +491,8 @@ int esp6_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info
+ 			return err;
+ 	}
+ 
+-	allocsz = ALIGN(skb->data_len + tailen, L1_CACHE_BYTES);
+-	if (allocsz > ESP_SKB_FRAG_MAXSIZE)
++	if (ALIGN(tailen, L1_CACHE_BYTES) > PAGE_SIZE ||
++	    ALIGN(skb->data_len, L1_CACHE_BYTES) > PAGE_SIZE)
+ 		goto cow;
+ 
+ 	if (!skb_cloned(skb)) {
+-- 
+2.35.1
+
 
 
