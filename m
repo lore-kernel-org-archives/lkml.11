@@ -2,209 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF369C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:14:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0F49C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:14:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244682AbiDZJRR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:17:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52184 "EHLO
+        id S234285AbiDZJRb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:17:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346435AbiDZIuF (ORCPT
+        with ESMTP id S1346675AbiDZIuP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:50:05 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65B7B138460
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 01:38:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650962298; x=1682498298;
-  h=from:to:cc:subject:date:message-id:content-id:
-   content-transfer-encoding:mime-version;
-  bh=7MPbh3R207hOTAtgxS4en4sL8d7hFLPj84StDsAjo2c=;
-  b=TDUQwFUO3D9TW7djLYLFNGUg71aT8J09au/uYZom59l8eSByQzLNp4Bj
-   g1xEuFqQ7fkzI5PKHO0KeizTHIG0m+iTYarNzRV3bOTJuPnfb0Sqh03YJ
-   LfAMpiML5Ln+luBHarWkbCkZCU4Y+paJmbWeW+sd6njgBZ4v1l9mD/lOi
-   MBfl+heGxePiReRbELC3Z9nSVyIMzp33J4SeP6AAKfxHcKs6O/5jaMUPz
-   M+IK9Qjtb+bELTxHQln6MXAaWUpBkhcFNpkBgHvk+RvWkrrHcIh8/qikr
-   8qz51DMJQygiMQjNarldP4KhYyorPcNkqg2P5cx1ui4V/mNMPqW+Ym9hZ
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="325988536"
-X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
-   d="scan'208";a="325988536"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 01:37:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
-   d="scan'208";a="538426928"
-Received: from orsmsx605.amr.corp.intel.com ([10.22.229.18])
-  by orsmga002.jf.intel.com with ESMTP; 26 Apr 2022 01:37:58 -0700
-Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
- ORSMSX605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Tue, 26 Apr 2022 01:37:58 -0700
-Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
- ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Tue, 26 Apr 2022 01:37:58 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Tue, 26 Apr 2022 01:37:58 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.169)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Tue, 26 Apr 2022 01:37:58 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ixTKwtXEu21aDshYYghlz3VdCQjxxgzRgeUOssheYmvhAwhEmveYzg9x7kPAw8CdpXNpzPP4r53qEaTPjNc55Rwvtx6DTMxnxyiB1JSN7W9ZaDYIGS5uik0aY0AFvbRVLZNn3/jxGP62z4Ka2LVSK2+21bwKX7qRlp8rqKUqU1ycxIembQJmnO0X5B6wh6ibUx1Ik8qRbNiASj2lCzqw6TKVcXSp/I3ZshgovHivhAN4dL9LBQq/zFbu903Z1HyWW5EMdYU+67puW5qPwbIXTVUk6ceLH/MWmYCZbXd+0TOIswWdElWGO7/9dH/u+BtaQbGvV0tbRZiccRcyct6G4Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=P7gQEhB6sYpNG+h8gRThZvoATjQofvYOMH1Jb5Ssxac=;
- b=lnhWSdg4B9f0t3K+ptYagDeMfu3hwpRt7nBAFz+GNh3WPXm4Oj9kCPfRlYCcp5JSFdMbyrYSwGYC0Ac0kvtzySVejxYT3dypNx++yMnOZqUcPlt+oNB/4k32LXJRKKSQs3ZH50nQAF7CAufXN1R4nyrGkTA2hJrt0X6N//WyRkVqeGxDgmAVRGKdGX2srPN29syMZcGUTNLgBbHPVd0nCPdwaXpM4EqpBH1eJVIllIYNkgBBBhFCmL2UnAG3vHBdz7HEtax3upx8QlDDVoSrrOaw3qhFsfwZvKVESXUnEyQ/lVgXQoZ8x5LLxYBCQPO03nqc7MwLF3Fa9OtSJSXOUA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from DM4PR11MB5549.namprd11.prod.outlook.com (2603:10b6:5:388::7) by
- BYAPR11MB3622.namprd11.prod.outlook.com (2603:10b6:a03:fe::30) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5186.15; Tue, 26 Apr 2022 08:37:56 +0000
-Received: from DM4PR11MB5549.namprd11.prod.outlook.com
- ([fe80::e5b8:93eb:e06b:f1ab]) by DM4PR11MB5549.namprd11.prod.outlook.com
- ([fe80::e5b8:93eb:e06b:f1ab%7]) with mapi id 15.20.5186.021; Tue, 26 Apr 2022
- 08:37:56 +0000
-From:   "Wang, Zhi A" <zhi.a.wang@intel.com>
-To:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-CC:     "intel-gvt-dev@lists.freedesktop.org" 
-        <intel-gvt-dev@lists.freedesktop.org>,
-        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>
-Subject: [PULL v2] gvt-next
-Thread-Topic: [PULL v2] gvt-next
-Thread-Index: AQHYWUjt+5kTXeJSAUe3EdP3wW4wYQ==
-Date:   Tue, 26 Apr 2022 08:37:56 +0000
-Message-ID: <c2ce1554-a025-7a9f-6337-6e6f847fecb6@intel.com>
-Accept-Language: en-FI, en-US
-Content-Language: aa
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5565b3ee-88d2-434b-d7bf-08da27600fe6
-x-ms-traffictypediagnostic: BYAPR11MB3622:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-microsoft-antispam-prvs: <BYAPR11MB3622F380E27BC8D35AE8F145CAFB9@BYAPR11MB3622.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: KF+MmTP0Itz1tDW1TfKXM/NIlzKd619NCBUceXtbsv4g7o0I9vufwsu7hksvvWexJ2QH7APa+c6aCsNhfctJePjGfZ1DSmUc2HkGvmcgNqY1/L0GqIucbByHn1Qw6+nEVy2B7mWmY1KHpDE48F8bCRPR+ZvylOtP+TFBXsgFoJS23waOqaN0xniArt++5disNGhelVOQSslgtUinIzhI52e/A1MUvD3iBgof7yuuXxN4FodPuousnluqx+orDfRqG6av/KmnvvTm4hNOjFW6oYIXAb2LfwDTRIXI+ITSJ78q7NBJ08Ii5dqUyJKS/N8nGIUxm23O7xPYzPwmPAWKWbPwVYfmAxg2z9ZgMN1uYkRF4EbLHcXdAmqfK3geRloNpTTzzrkw9PDOicBZt6Y1zb4ENfxj6+Mfmf9TFUdn03lgW3cu1TTnx6Gy4nNrVstSHO3b5te0ZlYLR5gCPJykSpfeajbCuhEDii5iOHOKNYDoVxBvnuMyq53ciZgRLdkPSsVG5SP6fbLRskQWQ5C0lnnA7Zll0c3BWojJIS3WAoiVyPsKa8Rr1DRBimGmq2+ZdUWJOc2NrWZhNT7RUrq2N88s6VkN+uGIhsowIQbDNqOD53f+v+3IFCMK/eGk89LV0v9CXNhwRMMEGsPlnxnnDcWzCrqTe9LEo9lAOLI5FIZhlgC6npqZEqSMOXZIjHDjJnjBij/g/6ETu0qeSL1+WELJtO2/b9oEf1Sdvwc5js7E6+yflNKAzCjUDJqhHDo5I1QfQt+OPUToJel+wW3aDNCaR5O8DeekFLxXOrANqcrpPIrY2T1fWqNRipXLxrSufjRR5s1j8/v7ZDTCN1gqcQU55G/AjPNQTqrDAGUr0es=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB5549.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(8936002)(8676002)(4326008)(186003)(316002)(7416002)(82960400001)(966005)(31696002)(86362001)(6486002)(2906002)(122000001)(508600001)(38100700002)(110136005)(38070700005)(5660300002)(76116006)(54906003)(66476007)(66446008)(64756008)(83380400001)(66556008)(2616005)(71200400001)(66946007)(91956017)(6506007)(6512007)(31686004)(26005)(36756003)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?Windows-1252?Q?oA6jPmEz7iXkuQUoCt+BngnvApeDBdYAQXlOJRf9Pcekg5yMAHalBzsR?=
- =?Windows-1252?Q?w0ctit+DDi0KtR5gmypLucSDfYYTBGZjVQ8c+KOkf0LktO/QcTH/ebyA?=
- =?Windows-1252?Q?cLp8iUKymSNp/EG0aw8V3cndOBNtabdAIwvtvTzAwbDFMzwpXkd11z1j?=
- =?Windows-1252?Q?1GOdYtDij/otCHYQ8acGk2WiZMppnotN3ODMtGTMjdiBEr4usCuB7YG1?=
- =?Windows-1252?Q?eONOW7V8H0nocTChraboytCs72znENPjUrNYq4XLIL2D0NSqqohiD/1e?=
- =?Windows-1252?Q?ISz6zlkS6b73aSm38pFkFqxPvz1/uTfscyzBa1E27NRpwC+RAonbZ6o9?=
- =?Windows-1252?Q?6T2Abs23XhJS1lQsN1my0mV/dEQo758yMrw6LRxlXUzqFi3ygEgOPUtl?=
- =?Windows-1252?Q?tEJU5r/J3rcKDP4BLtRXCkzwpVdiFfkJsYUlcyAXr+WaqBGUWe/h+3JK?=
- =?Windows-1252?Q?5w7jhJChF2+LUzcMM3Xiwkfv6ncjoJptN84c938h5bdvw8Olw0P4+xTy?=
- =?Windows-1252?Q?hBp8ztqIddHzv1OvVJ6DSlyLHWH0L22TXvlP0HEWB0R93rzchhN7rVpT?=
- =?Windows-1252?Q?KPvrg/UQnZnJl6tcu4bfcrZFTjO0jjGP0bITce318MKzxwUHy3YVwsvX?=
- =?Windows-1252?Q?Fea9TAm2uWu9m2AA1Dw69PBWbbXBwmQjYScxYxto0TwpEqAi0HWq0v0k?=
- =?Windows-1252?Q?yaIDO4Mhe1/t73oPawE/ptBiQUz/ZfNajdAnL+lTXueMCw6J3PE/LjOB?=
- =?Windows-1252?Q?fxcd7S6weNT+Ub9pCE33GDSJouMFJyerk5vrehhemO6gl+mts7GUjExK?=
- =?Windows-1252?Q?ktXRVZaKur9jexKMykj2/mJvB2T4rxiRhWNGlg6LcKBLQknprXUcOOaS?=
- =?Windows-1252?Q?shrnGRL4CaO5d7DbB5dK6W91atp+YmLDBu+EQRScfRatQ7jMqJ1g57S3?=
- =?Windows-1252?Q?D5AZvI1gl3wPwCbS2lakJk0c6vAPh4+ktHIPX7U0HvjttTdLWMEU22eZ?=
- =?Windows-1252?Q?UGYiBbhfRKU81IPIMvB0kuwBHL/Vr+lGD1Nvxm+ZNF219bt2xKfUZwva?=
- =?Windows-1252?Q?EKkm5LFmSGj1YUW0D4frEVio9629KpxlOtH/vuSJe0RNHpDQ9R7Zr2Eu?=
- =?Windows-1252?Q?dZlo8HIhMJVqI1Aq+MMl3Vbdk/gFb0Bw0gQX6MIne6Zz3jiaYLdQYqeZ?=
- =?Windows-1252?Q?QhWTDDvWlxQmg9NtBDFyL3pxu3jCp/5c8CFAy/uJWUBF0ffP7j0DALVU?=
- =?Windows-1252?Q?nw4wcZflBBV/koI7ryDKvulKkgxXCgGkRuVkNfRoK+Dx4kRNgilvGLik?=
- =?Windows-1252?Q?g7EIqc9n6ax43NudgoGvxyPlWN5sfP5zpjsOFja+Wddi/kCFTgkRJdJJ?=
- =?Windows-1252?Q?Z0f+RE6uHnu2mfxJL0tXPIqyU+EfWzjl2wM5sHm7+YiFYhGU/uNfLD7n?=
- =?Windows-1252?Q?Lt6CWPr5DBqhXEzYazf5xZQ5zw7NCdtXeQHDDXsH5E2gBI4tIE1Ur1P5?=
- =?Windows-1252?Q?eTOJoNmp+Dt8ws53E/KCFB+KAYOizJpV2QeipDsbf4TWbLq1JMlgmIyw?=
- =?Windows-1252?Q?kvE/yX+Vb4SntvZinvpolWtAAhRNMzH6wjmia/+fLo6yyqtohGWHx3l6?=
- =?Windows-1252?Q?RlOsYUJoR2CuALG9ZJcBzQZaMFGezKQJgzJVsAc5ONEJo6uGTdojn4f5?=
- =?Windows-1252?Q?hbNlbWBiWZWqALjMS6RamdSLBbqbAlnyt3BP6D3EQUJrcFZpGjfutDxc?=
- =?Windows-1252?Q?b0+K/no9+l7+oGYhjve1n5a0vW85klRE+NIxPaUvoPHuFOQdlzhyBhUM?=
- =?Windows-1252?Q?j70BJzKAUDqUFkZVJe5V4OH/G40tNzQkkKvSGHUA5kUKVTw+NN6Sk6QH?=
- =?Windows-1252?Q?Kwn8bnBKML0naQ=3D=3D?=
-Content-Type: text/plain; charset="Windows-1252"
-Content-ID: <0C4F8D5BE5BA1B4880629FE35D8F727D@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        Tue, 26 Apr 2022 04:50:15 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9E22153771;
+        Tue, 26 Apr 2022 01:38:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 54C9BCE1BC9;
+        Tue, 26 Apr 2022 08:38:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D207C385AC;
+        Tue, 26 Apr 2022 08:38:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650962312;
+        bh=pCP7/cH25+g3Q4YdnXB4uOJeko31Uwuq9MNMwOC3uoo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=diQ3KYmWuvdnJP2u5DQ49TV5xi6KJB5HgtGVXtIZjPwL/QPWt9EiQ0chzJsDcVfXR
+         G0mp++EaeSetGG1XSLUGXpbvt3ReCJcwqMbDVaiMOf8Aluhyu9EKsOPtyurvFVUCRr
+         2OihAvQNYxS0sngKRc9X15dE5XXMT5sS1XKNeafc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Feng Zhou <zhoufeng.zf@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Peilin Ye <peilin.ye@bytedance.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 037/124] ip6_gre: Fix skb_under_panic in __gre6_xmit()
+Date:   Tue, 26 Apr 2022 10:20:38 +0200
+Message-Id: <20220426081748.358077005@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
+References: <20220426081747.286685339@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB5549.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5565b3ee-88d2-434b-d7bf-08da27600fe6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Apr 2022 08:37:56.3320
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 60jvk7BuSpX0KCR1Ol1LbwEVf6csBnf06RDeitAR9IkewoYOm5Z8XZ2iImg06tNhp1j6u/HbPuzIeHFYUu62Cw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB3622
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi folks:
+From: Peilin Ye <peilin.ye@bytedance.com>
 
-I updated the branch again. Please use this pull. Here is the pull of
-gvt-next which fixes the compilation error when i915 debug is open after
-the GVT-g refactor patches.
+[ Upstream commit ab198e1d0dd8dc4bc7575fb50758e2cbd51e14e1 ]
 
-Thanks so much for the efforts.
+Feng reported an skb_under_panic BUG triggered by running
+test_ip6gretap() in tools/testing/selftests/bpf/test_tunnel.sh:
 
-Thanks,
-Zhi.
+[   82.492551] skbuff: skb_under_panic: text:ffffffffb268bb8e len:403 put:12 head:ffff9997c5480000 data:ffff9997c547fff8 tail:0x18b end:0x2c0 dev:ip6gretap11
+<...>
+[   82.607380] Call Trace:
+[   82.609389]  <TASK>
+[   82.611136]  skb_push.cold.109+0x10/0x10
+[   82.614289]  __gre6_xmit+0x41e/0x590
+[   82.617169]  ip6gre_tunnel_xmit+0x344/0x3f0
+[   82.620526]  dev_hard_start_xmit+0xf1/0x330
+[   82.623882]  sch_direct_xmit+0xe4/0x250
+[   82.626961]  __dev_queue_xmit+0x720/0xfe0
+<...>
+[   82.633431]  packet_sendmsg+0x96a/0x1cb0
+[   82.636568]  sock_sendmsg+0x30/0x40
+<...>
 
-The following changes since commit 2917f53113be3b7a0f374e02cebe6d6b749366b5=
-:
+The following sequence of events caused the BUG:
 
-  vfio/mdev: Remove mdev drvdata (2022-04-21 07:36:56 -0400)
+1. During ip6gretap device initialization, tunnel->tun_hlen (e.g. 4) is
+   calculated based on old flags (see ip6gre_calc_hlen());
+2. packet_snd() reserves header room for skb A, assuming
+   tunnel->tun_hlen is 4;
+3. Later (in clsact Qdisc), the eBPF program sets a new tunnel key for
+   skb A using bpf_skb_set_tunnel_key() (see _ip6gretap_set_tunnel());
+4. __gre6_xmit() detects the new tunnel key, and recalculates
+   "tun_hlen" (e.g. 12) based on new flags (e.g. TUNNEL_KEY and
+   TUNNEL_SEQ);
+5. gre_build_header() calls skb_push() with insufficient reserved header
+   room, triggering the BUG.
 
-are available in the Git repository at:
+As sugguested by Cong, fix it by moving the call to skb_cow_head() after
+the recalculation of tun_hlen.
 
-  https://github.com/intel/gvt-linux tags/gvt-next-2022-04-26
+Reproducer:
 
-for you to fetch changes up to 5e9ae5c47052e28a31fb4f55a6e735c28d4c3948:
+  OBJ=$LINUX/tools/testing/selftests/bpf/test_tunnel_kern.o
 
-  drm/i915/gvt: Add missing symbol export. (2022-04-26 04:18:43 -0400)
+  ip netns add at_ns0
+  ip link add veth0 type veth peer name veth1
+  ip link set veth0 netns at_ns0
+  ip netns exec at_ns0 ip addr add 172.16.1.100/24 dev veth0
+  ip netns exec at_ns0 ip link set dev veth0 up
+  ip link set dev veth1 up mtu 1500
+  ip addr add dev veth1 172.16.1.200/24
 
-----------------------------------------------------------------
-gvt-next-2022-04-26
+  ip netns exec at_ns0 ip addr add ::11/96 dev veth0
+  ip netns exec at_ns0 ip link set dev veth0 up
+  ip addr add dev veth1 ::22/96
+  ip link set dev veth1 up
 
-- Add two missing exports of symbols when i915 debug is enabled
+  ip netns exec at_ns0 \
+  	ip link add dev ip6gretap00 type ip6gretap seq flowlabel 0xbcdef key 2 \
+  	local ::11 remote ::22
 
-----------------------------------------------------------------
-Zhi Wang (1):
-      drm/i915/gvt: Add missing symbol export.
+  ip netns exec at_ns0 ip addr add dev ip6gretap00 10.1.1.100/24
+  ip netns exec at_ns0 ip addr add dev ip6gretap00 fc80::100/96
+  ip netns exec at_ns0 ip link set dev ip6gretap00 up
 
- drivers/gpu/drm/i915/intel_gvt.c | 2 ++
- 1 file changed, 2 insertions(+)
+  ip link add dev ip6gretap11 type ip6gretap external
+  ip addr add dev ip6gretap11 10.1.1.200/24
+  ip addr add dev ip6gretap11 fc80::200/24
+  ip link set dev ip6gretap11 up
 
-----------------------------------------------------------------
-gvt-next-2022-04-26
+  tc qdisc add dev ip6gretap11 clsact
+  tc filter add dev ip6gretap11 egress bpf da obj $OBJ sec ip6gretap_set_tunnel
+  tc filter add dev ip6gretap11 ingress bpf da obj $OBJ sec ip6gretap_get_tunnel
 
-- Add two missing exports of symbols when i915 debug is enabled.
+  ping6 -c 3 -w 10 -q ::11
 
-----------------------------------------------------------------
-Zhi Wang (1):
-      drm/i915/gvt: Add missing export of symbols.
+Fixes: 6712abc168eb ("ip6_gre: add ip6 gre and gretap collect_md mode")
+Reported-by: Feng Zhou <zhoufeng.zf@bytedance.com>
+Co-developed-by: Cong Wang <cong.wang@bytedance.com>
+Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/ipv6/ip6_gre.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
- drivers/gpu/drm/i915/intel_gvt.c | 2 ++
- 1 file changed, 2 insertions(+)
+diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
+index 288720838329..869c3337e319 100644
+--- a/net/ipv6/ip6_gre.c
++++ b/net/ipv6/ip6_gre.c
+@@ -733,9 +733,6 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
+ 	else
+ 		fl6->daddr = tunnel->parms.raddr;
+ 
+-	if (skb_cow_head(skb, dev->needed_headroom ?: tunnel->hlen))
+-		return -ENOMEM;
+-
+ 	/* Push GRE header. */
+ 	protocol = (dev->type == ARPHRD_ETHER) ? htons(ETH_P_TEB) : proto;
+ 
+@@ -763,6 +760,9 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
+ 			(TUNNEL_CSUM | TUNNEL_KEY | TUNNEL_SEQ);
+ 		tun_hlen = gre_calc_hlen(flags);
+ 
++		if (skb_cow_head(skb, dev->needed_headroom ?: tun_hlen + tunnel->encap_hlen))
++			return -ENOMEM;
++
+ 		gre_build_header(skb, tun_hlen,
+ 				 flags, protocol,
+ 				 tunnel_id_to_key32(tun_info->key.tun_id),
+@@ -773,6 +773,9 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
+ 		if (tunnel->parms.o_flags & TUNNEL_SEQ)
+ 			tunnel->o_seqno++;
+ 
++		if (skb_cow_head(skb, dev->needed_headroom ?: tunnel->hlen))
++			return -ENOMEM;
++
+ 		gre_build_header(skb, tunnel->tun_hlen, tunnel->parms.o_flags,
+ 				 protocol, tunnel->parms.o_key,
+ 				 htonl(tunnel->o_seqno));
+-- 
+2.35.1
+
+
+
