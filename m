@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91D85C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:37:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D381C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:37:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231788AbiDZIko (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:40:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34170 "EHLO
+        id S1345235AbiDZIkv (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:40:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344840AbiDZIdr (ORCPT
+        with ESMTP id S1345051AbiDZIeB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:33:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C319B45059;
-        Tue, 26 Apr 2022 01:25:42 -0700 (PDT)
+        Tue, 26 Apr 2022 04:34:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B74FE4926F;
+        Tue, 26 Apr 2022 01:25:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 84046B81A2F;
-        Tue, 26 Apr 2022 08:25:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFEECC385A0;
-        Tue, 26 Apr 2022 08:25:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4D837B81CED;
+        Tue, 26 Apr 2022 08:25:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADDEEC385A4;
+        Tue, 26 Apr 2022 08:25:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961539;
-        bh=Wgd36B5rjC5/ZHNoZuT+EVys1kOLNjl1nZr2tmHVyXc=;
+        s=korg; t=1650961551;
+        bh=oSuHjYnc4bLA0y6cCDQh0oUNf9sfa5dJvwoq7Lyr2UE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1kv/2SVkNVXt0w3O5O2T7l0un7b1vfone/2arnfm+zkp5Secojklv5gFveREy7ILu
-         XCrufsSGJIe0DlN3X393tCKAUj6iw4ZkszOsEBWpqOv00Whacjkz/QrZvqvtw7zv9W
-         Df7EO+yLR8WBPAxW6tLu4HUfgsVqlkJvaq2ddCto=
+        b=vwjAw6JDXZNe5uljzMhPsnNsv7lgDmyYI74YClPx44HsXHuC4EGNQPyLtcKiOArLl
+         RyxHAbpITkVjcxmpbUJ75ddhpZvE35Hk72GgYWw2ZfDteDyaKF9yCGt50vOlapEsBp
+         tR5FexyHA8av5q9e437xWRhXB2vT+uk3d4gAN0Mg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, lee.jones@linaro.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Ye Bin <yebin10@huawei.com>, Jan Kara <jack@suse.cz>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 4.14 29/43] ext4: fix symlink file size not match to file content
-Date:   Tue, 26 Apr 2022 10:21:11 +0200
-Message-Id: <20220426081735.376938779@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "stable@vger.kernel.org, Dan Carpenter" <dan.carpenter@oracle.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [PATCH 4.14 33/43] staging: ion: Prevent incorrect reference counting behavour
+Date:   Tue, 26 Apr 2022 10:21:15 +0200
+Message-Id: <20220426081735.492914608@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081734.509314186@linuxfoundation.org>
 References: <20220426081734.509314186@linuxfoundation.org>
@@ -49,51 +50,28 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Bin <yebin10@huawei.com>
 
-commit a2b0b205d125f27cddfb4f7280e39affdaf46686 upstream.
+Supply additional check in order to prevent unexpected results.
 
-We got issue as follows:
-[home]# fsck.ext4  -fn  ram0yb
-e2fsck 1.45.6 (20-Mar-2020)
-Pass 1: Checking inodes, blocks, and sizes
-Pass 2: Checking directory structure
-Symlink /p3/d14/d1a/l3d (inode #3494) is invalid.
-Clear? no
-Entry 'l3d' in /p3/d14/d1a (3383) has an incorrect filetype (was 7, should be 0).
-Fix? no
-
-As the symlink file size does not match the file content. If the writeback
-of the symlink data block failed, ext4_finish_bio() handles the end of IO.
-However this function fails to mark the buffer with BH_write_io_error and
-so when unmount does journal checkpoint it cannot detect the writeback
-error and will cleanup the journal. Thus we've lost the correct data in the
-journal area. To solve this issue, mark the buffer as BH_write_io_error in
-ext4_finish_bio().
-
-Cc: stable@kernel.org
-Signed-off-by: Ye Bin <yebin10@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220321144438.201685-1-yebin10@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Fixes: b892bf75b2034 ("ion: Switch ion to use dma-buf")
+Suggested-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/page-io.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/staging/android/ion/ion.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/fs/ext4/page-io.c
-+++ b/fs/ext4/page-io.c
-@@ -105,8 +105,10 @@ static void ext4_finish_bio(struct bio *
- 				continue;
- 			}
- 			clear_buffer_async_write(bh);
--			if (bio->bi_status)
-+			if (bio->bi_status) {
-+				set_buffer_write_io_error(bh);
- 				buffer_io_error(bh);
-+			}
- 		} while ((bh = bh->b_this_page) != head);
- 		bit_spin_unlock(BH_Uptodate_Lock, &head->b_state);
- 		local_irq_restore(flags);
+--- a/drivers/staging/android/ion/ion.c
++++ b/drivers/staging/android/ion/ion.c
+@@ -160,6 +160,9 @@ static void *ion_buffer_kmap_get(struct
+ 	void *vaddr;
+ 
+ 	if (buffer->kmap_cnt) {
++		if (buffer->kmap_cnt == INT_MAX)
++			return ERR_PTR(-EOVERFLOW);
++
+ 		buffer->kmap_cnt++;
+ 		return buffer->vaddr;
+ 	}
 
 
