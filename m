@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F569C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:39:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5B59C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:39:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345550AbiDZImj (ORCPT
+        id S1345074AbiDZImt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:42:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36976 "EHLO
+        Tue, 26 Apr 2022 04:42:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345568AbiDZIeo (ORCPT
+        with ESMTP id S1345639AbiDZIev (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:34:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C020793AD;
-        Tue, 26 Apr 2022 01:27:47 -0700 (PDT)
+        Tue, 26 Apr 2022 04:34:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30E7A7B111;
+        Tue, 26 Apr 2022 01:27:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC8DC6183D;
-        Tue, 26 Apr 2022 08:27:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D806CC385A0;
-        Tue, 26 Apr 2022 08:27:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C0BB86185C;
+        Tue, 26 Apr 2022 08:27:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF145C385A4;
+        Tue, 26 Apr 2022 08:27:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961666;
-        bh=JQ7Ve6zrX8vsQolzB2eHjcNa/3twcGFJn2Abmjf8RFI=;
+        s=korg; t=1650961678;
+        bh=GYRN8gEHNluHJetTN7qwHBSbp5xnHOcjNQsr6hRA2LE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cSWLxnN6tRzlGsFygqr6bY/gb/wvsIXMwb4mfv6hBN6h4tbEJRQacm8BqQFo0pzY6
-         xIaDnxqmzjOfCW88CuUWKfSnPe9HAuDaN6qyUjdWcfxJeGWVUbMDFSsFbZHnQYKLmj
-         nsWipIpwW06bqDDiAXMwDTtiun7oLVyCvK3PVD/k=
+        b=ui3knCezcZnfSYd8N96MA3f1A0ifNWB9dkucJ7yjp9TVGGMuVMygGIDASiHX9ULhR
+         x5QdhpZFHr5EWTUMEbtRjHEbLikzb2CUuEvp8s+2pWnDL7MkeWl7dSrjEUBkNIcZTA
+         14in1qdm4v3uJZGCT03BZOcZiV2KbQHnFkd85b88=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
-        Khazhismel Kumykov <khazhy@google.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 4.19 44/53] block/compat_ioctl: fix range check in BLKGETSIZE
-Date:   Tue, 26 Apr 2022 10:21:24 +0200
-Message-Id: <20220426081736.939004934@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 4.19 30/53] dma: at_xdmac: fix a missing check on list iterator
+Date:   Tue, 26 Apr 2022 10:21:10 +0200
+Message-Id: <20220426081736.533147335@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081735.651926456@linuxfoundation.org>
 References: <20220426081735.651926456@linuxfoundation.org>
@@ -51,36 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Khazhismel Kumykov <khazhy@google.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit ccf16413e520164eb718cf8b22a30438da80ff23 upstream.
+commit 206680c4e46b62fd8909385e0874a36952595b85 upstream.
 
-kernel ulong and compat_ulong_t may not be same width. Use type directly
-to eliminate mismatches.
+The bug is here:
+	__func__, desc, &desc->tx_dma_desc.phys, ret, cookie, residue);
 
-This would result in truncation rather than EFBIG for 32bit mode for
-large disks.
+The list iterator 'desc' will point to a bogus position containing
+HEAD if the list is empty or no element is found. To avoid dev_dbg()
+prints a invalid address, use a new variable 'iter' as the list
+iterator, while use the origin variable 'desc' as a dedicated
+pointer to point to the found element.
 
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Khazhismel Kumykov <khazhy@google.com>
-Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
-Link: https://lore.kernel.org/r/20220414224056.2875681-1-khazhy@google.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Cc: stable@vger.kernel.org
+Fixes: 82e2424635f4c ("dmaengine: xdmac: fix print warning on dma_addr_t variable")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Link: https://lore.kernel.org/r/20220327061154.4867-1-xiam0nd.tong@gmail.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- block/compat_ioctl.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/dma/at_xdmac.c |   12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
---- a/block/compat_ioctl.c
-+++ b/block/compat_ioctl.c
-@@ -391,7 +391,7 @@ long compat_blkdev_ioctl(struct file *fi
- 		return 0;
- 	case BLKGETSIZE:
- 		size = i_size_read(bdev->bd_inode);
--		if ((size >> 9) > ~0UL)
-+		if ((size >> 9) > ~(compat_ulong_t)0)
- 			return -EFBIG;
- 		return compat_put_ulong(arg, size >> 9);
+--- a/drivers/dma/at_xdmac.c
++++ b/drivers/dma/at_xdmac.c
+@@ -1390,7 +1390,7 @@ at_xdmac_tx_status(struct dma_chan *chan
+ {
+ 	struct at_xdmac_chan	*atchan = to_at_xdmac_chan(chan);
+ 	struct at_xdmac		*atxdmac = to_at_xdmac(atchan->chan.device);
+-	struct at_xdmac_desc	*desc, *_desc;
++	struct at_xdmac_desc	*desc, *_desc, *iter;
+ 	struct list_head	*descs_list;
+ 	enum dma_status		ret;
+ 	int			residue, retry;
+@@ -1505,11 +1505,13 @@ at_xdmac_tx_status(struct dma_chan *chan
+ 	 * microblock.
+ 	 */
+ 	descs_list = &desc->descs_list;
+-	list_for_each_entry_safe(desc, _desc, descs_list, desc_node) {
+-		dwidth = at_xdmac_get_dwidth(desc->lld.mbr_cfg);
+-		residue -= (desc->lld.mbr_ubc & 0xffffff) << dwidth;
+-		if ((desc->lld.mbr_nda & 0xfffffffc) == cur_nda)
++	list_for_each_entry_safe(iter, _desc, descs_list, desc_node) {
++		dwidth = at_xdmac_get_dwidth(iter->lld.mbr_cfg);
++		residue -= (iter->lld.mbr_ubc & 0xffffff) << dwidth;
++		if ((iter->lld.mbr_nda & 0xfffffffc) == cur_nda) {
++			desc = iter;
+ 			break;
++		}
+ 	}
+ 	residue += cur_ubc << dwidth;
  
 
 
