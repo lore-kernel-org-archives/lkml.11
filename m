@@ -2,46 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3D75C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:10:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A76D8C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:12:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346538AbiDZJN3 (ORCPT
+        id S1346834AbiDZJMF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:13:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55528 "EHLO
+        Tue, 26 Apr 2022 05:12:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347107AbiDZIvH (ORCPT
+        with ESMTP id S1347311AbiDZIvS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:51:07 -0400
+        Tue, 26 Apr 2022 04:51:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91D7C174A00;
-        Tue, 26 Apr 2022 01:39:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5413263DA;
+        Tue, 26 Apr 2022 01:40:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B5AE6090C;
-        Tue, 26 Apr 2022 08:39:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E55D7C385A0;
-        Tue, 26 Apr 2022 08:39:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C689260EC3;
+        Tue, 26 Apr 2022 08:40:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4D9EC385A0;
+        Tue, 26 Apr 2022 08:40:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962370;
-        bh=91IJCXFXrRhxZ3eZykcnYSPjUcHxOjTmk7YsarhCXlc=;
+        s=korg; t=1650962408;
+        bh=C+Emsd2dvUZs4sS+uJikxoTnvtK6V3iRkCJ7myLYyI4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jcl79l8X9vqlEt4w5KYGjlQxg353RuXMYeZSm0nCLq4sawsIwfml6NG4CXIvTF/p0
-         NM+6Le4I1Q0940JRIjzGDjsqDQ637rT+iOIuEkG3W5BTCf2uSUIhq26ib5h03idMge
-         HHdFsxz2SmiUH3HsbRuZq1ZsgoZU+GBuTKgs/yR0=
+        b=RDUttGCxQCtc2DUIfYhTDL4YlzQ7U7PaT8piZ5prXDb+VVkqZgzvlxDbEKZXNFwyZ
+         xFW/PQYvGxoGuF70RZu2c/TAxUWTaqFHtBRG4p6uHgaGhCFa44O/dCUDj+SXIzVRes
+         fb/SfJHvfFY2Izz4nvHeqsRdG16AHvMbjyYNs9Og=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Andreas Schwab <schwab@linux-m68k.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 072/124] stat: fix inconsistency between struct stat and struct compat_stat
-Date:   Tue, 26 Apr 2022 10:21:13 +0200
-Message-Id: <20220426081749.348732389@linuxfoundation.org>
+        stable@vger.kernel.org, Shakeel Butt <shakeelb@google.com>,
+        Daniel Dao <dqminh@cloudflare.com>,
+        Ivan Babrou <ivan@cloudflare.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
+        Frank Hofmann <fhofmann@cloudflare.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.15 079/124] memcg: sync flush only if periodic flush is delayed
+Date:   Tue, 26 Apr 2022 10:21:20 +0200
+Message-Id: <20220426081749.546421968@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -53,138 +57,127 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Shakeel Butt <shakeelb@google.com>
 
-[ Upstream commit 932aba1e169090357a77af18850a10c256b50819 ]
+commit 9b3016154c913b2e7ec5ae5c9a42eb9e732d86aa upstream.
 
-struct stat (defined in arch/x86/include/uapi/asm/stat.h) has 32-bit
-st_dev and st_rdev; struct compat_stat (defined in
-arch/x86/include/asm/compat.h) has 16-bit st_dev and st_rdev followed by
-a 16-bit padding.
+Daniel Dao has reported [1] a regression on workloads that may trigger a
+lot of refaults (anon and file).  The underlying issue is that flushing
+rstat is expensive.  Although rstat flush are batched with (nr_cpus *
+MEMCG_BATCH) stat updates, it seems like there are workloads which
+genuinely do stat updates larger than batch value within short amount of
+time.  Since the rstat flush can happen in the performance critical
+codepaths like page faults, such workload can suffer greatly.
 
-This patch fixes struct compat_stat to match struct stat.
+This patch fixes this regression by making the rstat flushing
+conditional in the performance critical codepaths.  More specifically,
+the kernel relies on the async periodic rstat flusher to flush the stats
+and only if the periodic flusher is delayed by more than twice the
+amount of its normal time window then the kernel allows rstat flushing
+from the performance critical codepaths.
 
-[ Historical note: the old x86 'struct stat' did have that 16-bit field
-  that the compat layer had kept around, but it was changes back in 2003
-  by "struct stat - support larger dev_t":
+Now the question: what are the side-effects of this change? The worst
+that can happen is the refault codepath will see 4sec old lruvec stats
+and may cause false (or missed) activations of the refaulted page which
+may under-or-overestimate the workingset size.  Though that is not very
+concerning as the kernel can already miss or do false activations.
 
-    https://git.kernel.org/pub/scm/linux/kernel/git/tglx/history.git/commit/?id=e95b2065677fe32512a597a79db94b77b90c968d
+There are two more codepaths whose flushing behavior is not changed by
+this patch and we may need to come to them in future.  One is the
+writeback stats used by dirty throttling and second is the deactivation
+heuristic in the reclaim.  For now keeping an eye on them and if there
+is report of regression due to these codepaths, we will reevaluate then.
 
-  and back in those days, the x86_64 port was still new, and separate
-  from the i386 code, and had already picked up the old version with a
-  16-bit st_dev field ]
-
-Note that we can't change compat_dev_t because it is used by
-compat_loop_info.
-
-Also, if the st_dev and st_rdev values are 32-bit, we don't have to use
-old_valid_dev to test if the value fits into them.  This fixes
--EOVERFLOW on filesystems that are on NVMe because NVMe uses the major
-number 259.
-
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Cc: Andreas Schwab <schwab@linux-m68k.org>
-Cc: Matthew Wilcox <willy@infradead.org>
-Cc: Christoph Hellwig <hch@infradead.org>
+Link: https://lore.kernel.org/all/CA+wXwBSyO87ZX5PVwdHm-=dBjZYECGmfnydUicUyrQqndgX2MQ@mail.gmail.com [1]
+Link: https://lkml.kernel.org/r/20220304184040.1304781-1-shakeelb@google.com
+Fixes: 1f828223b799 ("memcg: flush lruvec stats in the refault")
+Signed-off-by: Shakeel Butt <shakeelb@google.com>
+Reported-by: Daniel Dao <dqminh@cloudflare.com>
+Tested-by: Ivan Babrou <ivan@cloudflare.com>
+Cc: Michal Hocko <mhocko@suse.com>
+Cc: Roman Gushchin <roman.gushchin@linux.dev>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: Michal Koutný <mkoutny@suse.com>
+Cc: Frank Hofmann <fhofmann@cloudflare.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/compat.h |  6 ++----
- fs/stat.c                     | 19 ++++++++++---------
- 2 files changed, 12 insertions(+), 13 deletions(-)
+ include/linux/memcontrol.h |    5 +++++
+ mm/memcontrol.c            |   12 +++++++++++-
+ mm/workingset.c            |    2 +-
+ 3 files changed, 17 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/include/asm/compat.h b/arch/x86/include/asm/compat.h
-index 7516e4199b3c..20fd0acd7d80 100644
---- a/arch/x86/include/asm/compat.h
-+++ b/arch/x86/include/asm/compat.h
-@@ -28,15 +28,13 @@ typedef u16		compat_ipc_pid_t;
- typedef __kernel_fsid_t	compat_fsid_t;
+--- a/include/linux/memcontrol.h
++++ b/include/linux/memcontrol.h
+@@ -1002,6 +1002,7 @@ static inline unsigned long lruvec_page_
+ }
  
- struct compat_stat {
--	compat_dev_t	st_dev;
--	u16		__pad1;
-+	u32		st_dev;
- 	compat_ino_t	st_ino;
- 	compat_mode_t	st_mode;
- 	compat_nlink_t	st_nlink;
- 	__compat_uid_t	st_uid;
- 	__compat_gid_t	st_gid;
--	compat_dev_t	st_rdev;
--	u16		__pad2;
-+	u32		st_rdev;
- 	u32		st_size;
- 	u32		st_blksize;
- 	u32		st_blocks;
-diff --git a/fs/stat.c b/fs/stat.c
-index 28d2020ba1f4..246d138ec066 100644
---- a/fs/stat.c
-+++ b/fs/stat.c
-@@ -334,9 +334,6 @@ SYSCALL_DEFINE2(fstat, unsigned int, fd, struct __old_kernel_stat __user *, stat
- #  define choose_32_64(a,b) b
- #endif
+ void mem_cgroup_flush_stats(void);
++void mem_cgroup_flush_stats_delayed(void);
  
--#define valid_dev(x)  choose_32_64(old_valid_dev(x),true)
--#define encode_dev(x) choose_32_64(old_encode_dev,new_encode_dev)(x)
--
- #ifndef INIT_STRUCT_STAT_PADDING
- #  define INIT_STRUCT_STAT_PADDING(st) memset(&st, 0, sizeof(st))
- #endif
-@@ -345,7 +342,9 @@ static int cp_new_stat(struct kstat *stat, struct stat __user *statbuf)
+ void __mod_memcg_lruvec_state(struct lruvec *lruvec, enum node_stat_item idx,
+ 			      int val);
+@@ -1422,6 +1423,10 @@ static inline void mem_cgroup_flush_stat
  {
- 	struct stat tmp;
+ }
  
--	if (!valid_dev(stat->dev) || !valid_dev(stat->rdev))
-+	if (sizeof(tmp.st_dev) < 4 && !old_valid_dev(stat->dev))
-+		return -EOVERFLOW;
-+	if (sizeof(tmp.st_rdev) < 4 && !old_valid_dev(stat->rdev))
- 		return -EOVERFLOW;
- #if BITS_PER_LONG == 32
- 	if (stat->size > MAX_NON_LFS)
-@@ -353,7 +352,7 @@ static int cp_new_stat(struct kstat *stat, struct stat __user *statbuf)
- #endif
- 
- 	INIT_STRUCT_STAT_PADDING(tmp);
--	tmp.st_dev = encode_dev(stat->dev);
-+	tmp.st_dev = new_encode_dev(stat->dev);
- 	tmp.st_ino = stat->ino;
- 	if (sizeof(tmp.st_ino) < sizeof(stat->ino) && tmp.st_ino != stat->ino)
- 		return -EOVERFLOW;
-@@ -363,7 +362,7 @@ static int cp_new_stat(struct kstat *stat, struct stat __user *statbuf)
- 		return -EOVERFLOW;
- 	SET_UID(tmp.st_uid, from_kuid_munged(current_user_ns(), stat->uid));
- 	SET_GID(tmp.st_gid, from_kgid_munged(current_user_ns(), stat->gid));
--	tmp.st_rdev = encode_dev(stat->rdev);
-+	tmp.st_rdev = new_encode_dev(stat->rdev);
- 	tmp.st_size = stat->size;
- 	tmp.st_atime = stat->atime.tv_sec;
- 	tmp.st_mtime = stat->mtime.tv_sec;
-@@ -644,11 +643,13 @@ static int cp_compat_stat(struct kstat *stat, struct compat_stat __user *ubuf)
++static inline void mem_cgroup_flush_stats_delayed(void)
++{
++}
++
+ static inline void __mod_memcg_lruvec_state(struct lruvec *lruvec,
+ 					    enum node_stat_item idx, int val)
  {
- 	struct compat_stat tmp;
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -650,6 +650,9 @@ static DECLARE_DEFERRABLE_WORK(stats_flu
+ static DEFINE_SPINLOCK(stats_flush_lock);
+ static DEFINE_PER_CPU(unsigned int, stats_updates);
+ static atomic_t stats_flush_threshold = ATOMIC_INIT(0);
++static u64 flush_next_time;
++
++#define FLUSH_TIME (2UL*HZ)
  
--	if (!old_valid_dev(stat->dev) || !old_valid_dev(stat->rdev))
-+	if (sizeof(tmp.st_dev) < 4 && !old_valid_dev(stat->dev))
-+		return -EOVERFLOW;
-+	if (sizeof(tmp.st_rdev) < 4 && !old_valid_dev(stat->rdev))
- 		return -EOVERFLOW;
+ static inline void memcg_rstat_updated(struct mem_cgroup *memcg, int val)
+ {
+@@ -671,6 +674,7 @@ static void __mem_cgroup_flush_stats(voi
+ 	if (!spin_trylock_irqsave(&stats_flush_lock, flag))
+ 		return;
  
- 	memset(&tmp, 0, sizeof(tmp));
--	tmp.st_dev = old_encode_dev(stat->dev);
-+	tmp.st_dev = new_encode_dev(stat->dev);
- 	tmp.st_ino = stat->ino;
- 	if (sizeof(tmp.st_ino) < sizeof(stat->ino) && tmp.st_ino != stat->ino)
- 		return -EOVERFLOW;
-@@ -658,7 +659,7 @@ static int cp_compat_stat(struct kstat *stat, struct compat_stat __user *ubuf)
- 		return -EOVERFLOW;
- 	SET_UID(tmp.st_uid, from_kuid_munged(current_user_ns(), stat->uid));
- 	SET_GID(tmp.st_gid, from_kgid_munged(current_user_ns(), stat->gid));
--	tmp.st_rdev = old_encode_dev(stat->rdev);
-+	tmp.st_rdev = new_encode_dev(stat->rdev);
- 	if ((u64) stat->size > MAX_NON_LFS)
- 		return -EOVERFLOW;
- 	tmp.st_size = stat->size;
--- 
-2.35.1
-
++	flush_next_time = jiffies_64 + 2*FLUSH_TIME;
+ 	cgroup_rstat_flush_irqsafe(root_mem_cgroup->css.cgroup);
+ 	atomic_set(&stats_flush_threshold, 0);
+ 	spin_unlock_irqrestore(&stats_flush_lock, flag);
+@@ -682,10 +686,16 @@ void mem_cgroup_flush_stats(void)
+ 		__mem_cgroup_flush_stats();
+ }
+ 
++void mem_cgroup_flush_stats_delayed(void)
++{
++	if (time_after64(jiffies_64, flush_next_time))
++		mem_cgroup_flush_stats();
++}
++
+ static void flush_memcg_stats_dwork(struct work_struct *w)
+ {
+ 	__mem_cgroup_flush_stats();
+-	queue_delayed_work(system_unbound_wq, &stats_flush_dwork, 2UL*HZ);
++	queue_delayed_work(system_unbound_wq, &stats_flush_dwork, FLUSH_TIME);
+ }
+ 
+ /**
+--- a/mm/workingset.c
++++ b/mm/workingset.c
+@@ -352,7 +352,7 @@ void workingset_refault(struct page *pag
+ 
+ 	inc_lruvec_state(lruvec, WORKINGSET_REFAULT_BASE + file);
+ 
+-	mem_cgroup_flush_stats();
++	mem_cgroup_flush_stats_delayed();
+ 	/*
+ 	 * Compare the distance to the existing workingset size. We
+ 	 * don't activate pages that couldn't stay resident even if
 
 
