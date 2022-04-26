@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77289C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:23:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B83B6C4167D
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347965AbiDZJZA (ORCPT
+        id S1347737AbiDZJYr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:25:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56276 "EHLO
+        Tue, 26 Apr 2022 05:24:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346741AbiDZJBL (ORCPT
+        with ESMTP id S1345668AbiDZI5p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:01:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6CA1793B2;
-        Tue, 26 Apr 2022 01:43:29 -0700 (PDT)
+        Tue, 26 Apr 2022 04:57:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F6195F60;
+        Tue, 26 Apr 2022 01:42:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A7B9611A3;
-        Tue, 26 Apr 2022 08:43:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80783C385A4;
-        Tue, 26 Apr 2022 08:43:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5B80CB81CFA;
+        Tue, 26 Apr 2022 08:42:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C27E1C385A4;
+        Tue, 26 Apr 2022 08:42:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962608;
-        bh=1kzBCrS/4dNEaFZo2xGXwRPSegciKCrtTqSWBwzICZM=;
+        s=korg; t=1650962553;
+        bh=NVOb1+z+z+tkeyXb0Ow7XL3idaCx8Ke0kAe6jaD9rbM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y+t67OceqFieOhbyOhJqpoUY9KJDOBG1ktfoMk7owRCdC2eU7fJZguMTkPaag+BUn
-         I9nOJkgjub436IwdJwF7GifF6/KyOQRJUKcuK3zz884Pu4/dH+eb7c8OjsDydeb8+M
-         vTuleF2BAV4ocN73GhCRTgLfoQ5Pme4bsFjVndBE=
+        b=DmJrsZPI5PR/heGWUHwA7+fACsAjHANZ98rvabIge85SLrVOE+n0BI2dWPMpK/kFB
+         P8vz8EqCisoViOwuLpvWYW8yNwBK8Heaq9YUBcbC7SGbIQGsCVIET82ZUpHyQpAwAy
+         oUAi0NMyvTnGAOGflmOB2xB6GRTxIYXwkAGrt69Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 030/146] ALSA: hda/hdmi: fix warning about PCM count when used with SOF
-Date:   Tue, 26 Apr 2022 10:20:25 +0200
-Message-Id: <20220426081750.914813903@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 011/146] ASoC: atmel: Remove system clock tree configuration for at91sam9g20ek
+Date:   Tue, 26 Apr 2022 10:20:06 +0200
+Message-Id: <20220426081750.381331669@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -50,66 +50,140 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit c74193787b2f683751a67603fb5f15c7584f355f ]
+[ Upstream commit c775cbf62ed4911e4f0f23880f01815753123690 ]
 
-With commit 13046370c4d1 ("ALSA: hda/hdmi: let new platforms assign the
-pcm slot dynamically"), old behaviour to consider the HDA pin number,
-when choosing PCM to assign, was dropped.
+The MCLK of the WM8731 on the AT91SAM9G20-EK board is connected to the
+PCK0 output of the SoC, intended in the reference software to be supplied
+using PLLB and programmed to 12MHz. As originally written for use with a
+board file the audio driver was responsible for configuring the entire tree
+but in the conversion to the common clock framework the registration of
+the named pck0 and pllb clocks was removed so the driver has failed to
+instantiate ever since.
 
-Build on this change and limit the number of PCMs created to number of
-converters (= maximum number of concurrent display/receivers) when
-"mst_no_extra_pcms" and "dyn_pcm_no_legacy" quirks are both set.
+Since the WM8731 driver has had support for managing a MCLK provided via
+the common clock framework for some time we can simply drop all the clock
+management code from the machine driver other than configuration of the
+sysclk rate, the CODEC driver still respects that configuration from the
+machine driver.
 
-Fix the check in hdmi_find_pcm_slot() to ensure only spec->pcm_used
-entries are considered in the search. Elsewhere in the driver
-spec->pcm_used is already checked properly.
-
-Doing this avoids following warning at SOF driver probe for multiple
-machine drivers:
-
-[  112.425297] sof_sdw sof_sdw: hda_dsp_hdmi_build_controls: no
-PCM in topology for HDMI converter 4
-[  112.425298] sof_sdw sof_sdw: hda_dsp_hdmi_build_controls: no
-PCM in topology for HDMI converter 5
-[  112.425299] sof_sdw sof_sdw: hda_dsp_hdmi_build_controls: no
-PCM in topology for HDMI converter 6
-
-Fixes: 13046370c4d1 ("ALSA: hda/hdmi: let new platforms assign the pcm slot dynamically")
-BugLink: https://github.com/thesofproject/linux/issues/2573
-Signed-off-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-Link: https://lore.kernel.org/r/20220414150516.3638283-1-kai.vehmanen@linux.intel.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fixes: ff78a189b0ae55f ("ARM: at91: remove old at91-specific clock driver")
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Reviewed-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Link: https://lore.kernel.org/r/20220325154241.1600757-2-broonie@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/hda/patch_hdmi.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ sound/soc/atmel/sam9g20_wm8731.c | 61 --------------------------------
+ 1 file changed, 61 deletions(-)
 
-diff --git a/sound/pci/hda/patch_hdmi.c b/sound/pci/hda/patch_hdmi.c
-index cf4f277dccdd..26637a695979 100644
---- a/sound/pci/hda/patch_hdmi.c
-+++ b/sound/pci/hda/patch_hdmi.c
-@@ -1387,7 +1387,7 @@ static int hdmi_find_pcm_slot(struct hdmi_spec *spec,
+diff --git a/sound/soc/atmel/sam9g20_wm8731.c b/sound/soc/atmel/sam9g20_wm8731.c
+index 33e43013ff77..0d639a33ad96 100644
+--- a/sound/soc/atmel/sam9g20_wm8731.c
++++ b/sound/soc/atmel/sam9g20_wm8731.c
+@@ -46,35 +46,6 @@
+  */
+ #undef ENABLE_MIC_INPUT
  
-  last_try:
- 	/* the last try; check the empty slots in pins */
--	for (i = 0; i < spec->num_nids; i++) {
-+	for (i = 0; i < spec->pcm_used; i++) {
- 		if (!test_bit(i, &spec->pcm_bitmap))
- 			return i;
+-static struct clk *mclk;
+-
+-static int at91sam9g20ek_set_bias_level(struct snd_soc_card *card,
+-					struct snd_soc_dapm_context *dapm,
+-					enum snd_soc_bias_level level)
+-{
+-	static int mclk_on;
+-	int ret = 0;
+-
+-	switch (level) {
+-	case SND_SOC_BIAS_ON:
+-	case SND_SOC_BIAS_PREPARE:
+-		if (!mclk_on)
+-			ret = clk_enable(mclk);
+-		if (ret == 0)
+-			mclk_on = 1;
+-		break;
+-
+-	case SND_SOC_BIAS_OFF:
+-	case SND_SOC_BIAS_STANDBY:
+-		if (mclk_on)
+-			clk_disable(mclk);
+-		mclk_on = 0;
+-		break;
+-	}
+-
+-	return ret;
+-}
+-
+ static const struct snd_soc_dapm_widget at91sam9g20ek_dapm_widgets[] = {
+ 	SND_SOC_DAPM_MIC("Int Mic", NULL),
+ 	SND_SOC_DAPM_SPK("Ext Spk", NULL),
+@@ -135,7 +106,6 @@ static struct snd_soc_card snd_soc_at91sam9g20ek = {
+ 	.owner = THIS_MODULE,
+ 	.dai_link = &at91sam9g20ek_dai,
+ 	.num_links = 1,
+-	.set_bias_level = at91sam9g20ek_set_bias_level,
+ 
+ 	.dapm_widgets = at91sam9g20ek_dapm_widgets,
+ 	.num_dapm_widgets = ARRAY_SIZE(at91sam9g20ek_dapm_widgets),
+@@ -148,7 +118,6 @@ static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
+ {
+ 	struct device_node *np = pdev->dev.of_node;
+ 	struct device_node *codec_np, *cpu_np;
+-	struct clk *pllb;
+ 	struct snd_soc_card *card = &snd_soc_at91sam9g20ek;
+ 	int ret;
+ 
+@@ -162,31 +131,6 @@ static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
+ 		return -EINVAL;
  	}
-@@ -2263,7 +2263,9 @@ static int generic_hdmi_build_pcms(struct hda_codec *codec)
- 	 * dev_num is the device entry number in a pin
- 	 */
  
--	if (codec->mst_no_extra_pcms)
-+	if (spec->dyn_pcm_no_legacy && codec->mst_no_extra_pcms)
-+		pcm_num = spec->num_cvts;
-+	else if (codec->mst_no_extra_pcms)
- 		pcm_num = spec->num_nids;
- 	else
- 		pcm_num = spec->num_nids + spec->dev_num - 1;
+-	/*
+-	 * Codec MCLK is supplied by PCK0 - set it up.
+-	 */
+-	mclk = clk_get(NULL, "pck0");
+-	if (IS_ERR(mclk)) {
+-		dev_err(&pdev->dev, "Failed to get MCLK\n");
+-		ret = PTR_ERR(mclk);
+-		goto err;
+-	}
+-
+-	pllb = clk_get(NULL, "pllb");
+-	if (IS_ERR(pllb)) {
+-		dev_err(&pdev->dev, "Failed to get PLLB\n");
+-		ret = PTR_ERR(pllb);
+-		goto err_mclk;
+-	}
+-	ret = clk_set_parent(mclk, pllb);
+-	clk_put(pllb);
+-	if (ret != 0) {
+-		dev_err(&pdev->dev, "Failed to set MCLK parent\n");
+-		goto err_mclk;
+-	}
+-
+-	clk_set_rate(mclk, MCLK_RATE);
+-
+ 	card->dev = &pdev->dev;
+ 
+ 	/* Parse device node info */
+@@ -230,9 +174,6 @@ static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
+ 
+ 	return ret;
+ 
+-err_mclk:
+-	clk_put(mclk);
+-	mclk = NULL;
+ err:
+ 	atmel_ssc_put_audio(0);
+ 	return ret;
+@@ -242,8 +183,6 @@ static int at91sam9g20ek_audio_remove(struct platform_device *pdev)
+ {
+ 	struct snd_soc_card *card = platform_get_drvdata(pdev);
+ 
+-	clk_disable(mclk);
+-	mclk = NULL;
+ 	snd_soc_unregister_card(card);
+ 	atmel_ssc_put_audio(0);
+ 
 -- 
 2.35.1
 
