@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D1C7C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:43:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4B07C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:43:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345552AbiDZIqX (ORCPT
+        id S1344175AbiDZIql (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:46:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57548 "EHLO
+        Tue, 26 Apr 2022 04:46:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345795AbiDZIjb (ORCPT
+        with ESMTP id S1345787AbiDZIjb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:39:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B905985AB;
-        Tue, 26 Apr 2022 01:31:17 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45DF34505A;
+        Tue, 26 Apr 2022 01:31:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 07FBB6186E;
-        Tue, 26 Apr 2022 08:31:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15393C385A4;
-        Tue, 26 Apr 2022 08:31:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC41061896;
+        Tue, 26 Apr 2022 08:31:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA0DFC385A4;
+        Tue, 26 Apr 2022 08:31:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961876;
-        bh=sx9Nf9/mhn8X59xFujWYUdyZG3f9x6QeplJYXWtuHYY=;
+        s=korg; t=1650961861;
+        bh=zlFNlgiWN8d/TLCRFsjLrNWeu1z43hW4bs5yotmPwKM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P42HWGpGVsDwa/xwcfLbIFhubhMhTA/zkMmDb5BF2FyP4sL0J7X1dpTS07kfiTDTS
-         blYM5UC/IcaroAeh78cc9zAUYxxcqUVl64Xo4lKTjtxW5LjDY6yL62H+TlhOfX9dku
-         34DP/3znj2FnnN4XR+GuW0q4jfa98RBONph10gdI=
+        b=wYqYy5gJgdnLazyEUxQeSXMHcM4ZusDBzDw3ZeK1al7MVZsjybpv6HTdmqfYRhovN
+         x5q6CudHGNcbUZzRX1Op5INFC0auwSqyJeh2yN5zTkDiMOiZS4X2k8IGckMLeDYSHt
+         RR0hI+8g130pS3mBg42rPakUPfw3kN5ZdJhXizoQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
-        Khazhismel Kumykov <khazhy@google.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.4 61/62] block/compat_ioctl: fix range check in BLKGETSIZE
-Date:   Tue, 26 Apr 2022 10:21:41 +0200
-Message-Id: <20220426081738.970976617@linuxfoundation.org>
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        stable@kernel.org
+Subject: [PATCH 5.4 56/62] ext4: fix overhead calculation to account for the reserved gdt blocks
+Date:   Tue, 26 Apr 2022 10:21:36 +0200
+Message-Id: <20220426081738.828053637@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
 References: <20220426081737.209637816@linuxfoundation.org>
@@ -51,36 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Khazhismel Kumykov <khazhy@google.com>
+From: Theodore Ts'o <tytso@mit.edu>
 
-commit ccf16413e520164eb718cf8b22a30438da80ff23 upstream.
+commit 10b01ee92df52c8d7200afead4d5e5f55a5c58b1 upstream.
 
-kernel ulong and compat_ulong_t may not be same width. Use type directly
-to eliminate mismatches.
+The kernel calculation was underestimating the overhead by not taking
+into account the reserved gdt blocks.  With this change, the overhead
+calculated by the kernel matches the overhead calculation in mke2fs.
 
-This would result in truncation rather than EFBIG for 32bit mode for
-large disks.
-
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Khazhismel Kumykov <khazhy@google.com>
-Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
-Link: https://lore.kernel.org/r/20220414224056.2875681-1-khazhy@google.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- block/compat_ioctl.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ext4/super.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/block/compat_ioctl.c
-+++ b/block/compat_ioctl.c
-@@ -393,7 +393,7 @@ long compat_blkdev_ioctl(struct file *fi
- 		return 0;
- 	case BLKGETSIZE:
- 		size = i_size_read(bdev->bd_inode);
--		if ((size >> 9) > ~0UL)
-+		if ((size >> 9) > ~(compat_ulong_t)0)
- 			return -EFBIG;
- 		return compat_put_ulong(arg, size >> 9);
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -3485,9 +3485,11 @@ static int count_overhead(struct super_b
+ 	ext4_fsblk_t		first_block, last_block, b;
+ 	ext4_group_t		i, ngroups = ext4_get_groups_count(sb);
+ 	int			s, j, count = 0;
++	int			has_super = ext4_bg_has_super(sb, grp);
  
+ 	if (!ext4_has_feature_bigalloc(sb))
+-		return (ext4_bg_has_super(sb, grp) + ext4_bg_num_gdb(sb, grp) +
++		return (has_super + ext4_bg_num_gdb(sb, grp) +
++			(has_super ? le16_to_cpu(sbi->s_es->s_reserved_gdt_blocks) : 0) +
+ 			sbi->s_itb_per_group + 2);
+ 
+ 	first_block = le32_to_cpu(sbi->s_es->s_first_data_block) +
 
 
