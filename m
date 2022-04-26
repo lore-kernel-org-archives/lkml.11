@@ -2,214 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14504C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 13:25:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C223C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 13:26:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350939AbiDZN2f (ORCPT
+        id S1350983AbiDZN3H (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 09:28:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42724 "EHLO
+        Tue, 26 Apr 2022 09:29:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347820AbiDZN23 (ORCPT
+        with ESMTP id S1351046AbiDZN3E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 09:28:29 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 691AE1EAFF;
-        Tue, 26 Apr 2022 06:25:21 -0700 (PDT)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23QCMnQD007300;
-        Tue, 26 Apr 2022 13:25:18 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=y/FQiD/GcebPEX7SS1oTYUVL3rQ7Svp69NhiEeikjyw=;
- b=rctrgqZRg/GEN0Hit/eRFScwpAHLllDRKljL/mBrCFyfj+Qr5SZFW7G+nLcOI7q9MxmG
- z3i3HqyiGjd52bg5FExtX1XgpOoC+qOlHhLjebdFYHNdrWIaiaKn2lrIXMQ+k6VZrMkp
- mV5VLigou5B/HGisEZQgdbY41A5Iim6mbhzFsa6iKpij6yJWz/awbMw65zKyRao88GZu
- o1CRk+FP+ZWw+we01MDd2gEqAPCtvw5u35nup30+n9nbOa+6HbH8EEh1bKpxSSntbZIq
- g4MOqZ8fjoGLVJirPla2WrkR1eznSfmq6ZytbWD3cYEI22h3P/YVV448/qntXQjTE48f 4w== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fpbyh7jh7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 26 Apr 2022 13:25:18 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23QDPHuc013555;
-        Tue, 26 Apr 2022 13:25:17 GMT
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fpbyh7jgf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 26 Apr 2022 13:25:17 +0000
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23QDD6kS026252;
-        Tue, 26 Apr 2022 13:25:15 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma06fra.de.ibm.com with ESMTP id 3fm8qhkfw3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 26 Apr 2022 13:25:15 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23QDPC7n54067668
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 26 Apr 2022 13:25:12 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 36F89A405F;
-        Tue, 26 Apr 2022 13:25:12 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 876F7A405C;
-        Tue, 26 Apr 2022 13:25:11 +0000 (GMT)
-Received: from [9.171.92.107] (unknown [9.171.92.107])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 26 Apr 2022 13:25:11 +0000 (GMT)
-Message-ID: <1c2caf30-da84-b4ce-d2ac-4edb5ef60a79@linux.ibm.com>
-Date:   Tue, 26 Apr 2022 15:25:11 +0200
+        Tue, 26 Apr 2022 09:29:04 -0400
+Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C27A522524
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 06:25:56 -0700 (PDT)
+Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-2f7d621d1caso70514467b3.11
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 06:25:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=eclypsium.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hXo185h+kObSXkmQZMr8a8mrf64dnncRTNIlAM3h4k0=;
+        b=XhtPv0riXJD4oHpkFiEGvmxAh+OpkTuZqJNaNstrZ+03xWz4+eDhyxgf4+khWCQbOR
+         Q2FF4wcYRcJCHhrpWxTZmaVNfpXgVtNo+IPasqov4enVnqa7Yyul0b+fWNDyrUOCCQNE
+         DI+kns+Cp/Gut1CGsEAnh+HysYx0PipRwICaAIjbUW9alp60ozvNXxTOU50PgJI4pvuG
+         HwWNpwWhqgpFS8X40+4VFVPQLwJDJR3cAWTLzGtACGPi2Ur6Ui1yH1N4nEPk38pF+ZeH
+         DrZA/75cxP0cqsZpfjn/mfb6QxGqr+xYAFUlKLlearwimmc4MJv4zbwK5DkiNDeFYSRp
+         xKcg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hXo185h+kObSXkmQZMr8a8mrf64dnncRTNIlAM3h4k0=;
+        b=dFGQaZIZ+bbWTJU7h+cBmMJngNju9vO3+9JDbsPSwAtR6wwgclqxtGndPvGrnts7h3
+         dRW1KfWew3CbR4bmF6IXxkCHZzjJViqqlJKuZ2EcGAqwBiN7ZPzaZCo0fgQreN7j8ry3
+         t4SIfpf0KNEdQ3XFJU4F++2bclLPLlk+VzpE5wUSePtmmcRQT0fZan3iKGHAcNOZEk4G
+         Z2THrGvYRjjT2eWhklozluqYqRD9BBntgbQ7yh3AJbgDtTWKOSoJT+skQgfY3JdxBsPJ
+         1ajy/Xz9oXqu5A7+vY0AgO2CA+GfoexUeKGXzB+2HSLJpETgeqcyB7cGV3iYt+buuQHD
+         iQ3g==
+X-Gm-Message-State: AOAM530FLYnWioPDQmqpKUdYzr3cu4IfoKHEG4QTbS68bJJwMRpZKXtn
+        l6pcSFl4igtKpWo08rlcJOOf5ghTRXsv9jiyd76/0DeotIsxOg==
+X-Google-Smtp-Source: ABdhPJyeUmVpGb8SXBarAcmmHFvinXgebrIrvNFeIufykRJ4H//aeaz5HNCbHAftyJ7CTjQF/0WXHFIa0gYB6LJ9lms=
+X-Received: by 2002:a81:7895:0:b0:2f1:6933:3b66 with SMTP id
+ t143-20020a817895000000b002f169333b66mr21694519ywc.239.1650979555989; Tue, 26
+ Apr 2022 06:25:55 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 1/2] KVM: s390: Don't indicate suppression on dirtying,
- failing memop
-Content-Language: en-US
-To:     Janosch Frank <frankja@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>
-Cc:     David Hildenbrand <david@redhat.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
-        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
-References: <20220425100147.1755340-1-scgl@linux.ibm.com>
- <20220425100147.1755340-2-scgl@linux.ibm.com>
- <2be2e47d-c1f5-18ac-264d-a1bde3b03c24@linux.ibm.com>
-From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-In-Reply-To: <2be2e47d-c1f5-18ac-264d-a1bde3b03c24@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: YLjkWhMDasuEcPrrkpUrpC3yWRQPeUfi
-X-Proofpoint-GUID: HNOOXhk0qSQludk9sB3t2M4z0SqA8SZJ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-26_02,2022-04-26_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 spamscore=0
- bulkscore=0 adultscore=0 mlxlogscore=999 lowpriorityscore=0 suspectscore=0
- priorityscore=1501 phishscore=0 mlxscore=0 malwarescore=0 impostorscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2204260083
+References: <20220425171526.44925-1-martin.fernandez@eclypsium.com>
+ <20220425171526.44925-2-martin.fernandez@eclypsium.com> <YmeM5fklUssR/74e@kernel.org>
+ <CAKgze5YwTD3neYjKNZzLz6DLWxpGPohGCDGT6oJn-KUdAxyCfg@mail.gmail.com> <Ymfxt/ccab3DQENo@kernel.org>
+In-Reply-To: <Ymfxt/ccab3DQENo@kernel.org>
+From:   Daniel Gutson <daniel.gutson@eclypsium.com>
+Date:   Tue, 26 Apr 2022 10:25:45 -0300
+Message-ID: <CAFmMkTHQ75nJi+Zwi6AEy095qUAhDjdbBqSpvvxq8-B2gD4j-g@mail.gmail.com>
+Subject: Re: [PATCH v7 1/8] mm/memblock: Tag memblocks with crypto capabilities
+To:     Mike Rapoport <rppt@kernel.org>
+Cc:     Martin Fernandez <martin.fernandez@eclypsium.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-mm@kvack.org, Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, ardb@kernel.org,
+        dvhart@infradead.org, andy@infradead.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        rafael@kernel.org, akpm@linux-foundation.org,
+        Richard Hughes <hughsient@gmail.com>,
+        Alex Bazhaniuk <alex.bazhaniuk@eclypsium.com>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Kees Cook <keescook@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/26/22 09:18, Janosch Frank wrote:
-> On 4/25/22 12:01, Janis Schoetterl-Glausch wrote:
->> If user space uses a memop to emulate an instruction and that
->> memop fails, the execution of the instruction ends.
->> Instruction execution can end in different ways, one of which is
->> suppression, which requires that the instruction execute like a no-op.
-> 
-> 
-> 
->> A writing memop that spans multiple pages and fails due to key
->> protection can modified guest memory, as a result, the likely
->> correct ending is termination. Therefore do not indicate a
->> suppressing instruction ending in this case.
-> 
-> Check grammar.
-> 
->>
->> Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
->> ---
->>   arch/s390/kvm/gaccess.c | 47 ++++++++++++++++++++++++-----------------
->>   1 file changed, 28 insertions(+), 19 deletions(-)
->>
->> diff --git a/arch/s390/kvm/gaccess.c b/arch/s390/kvm/gaccess.c
->> index d53a183c2005..3b1fbef82288 100644
->> --- a/arch/s390/kvm/gaccess.c
->> +++ b/arch/s390/kvm/gaccess.c
->> @@ -491,8 +491,8 @@ enum prot_type {
->>       PROT_TYPE_IEP  = 4,
->>   };
->>   -static int trans_exc(struct kvm_vcpu *vcpu, int code, unsigned long gva,
->> -             u8 ar, enum gacc_mode mode, enum prot_type prot)
->> +static int trans_exc_ending(struct kvm_vcpu *vcpu, int code, unsigned long gva, u8 ar,
->> +                enum gacc_mode mode, enum prot_type prot, bool suppress)
->>   {
->>       struct kvm_s390_pgm_info *pgm = &vcpu->arch.pgm;
->>       struct trans_exc_code_bits *tec;
->> @@ -503,22 +503,24 @@ static int trans_exc(struct kvm_vcpu *vcpu, int code, unsigned long gva,
->>         switch (code) {
->>       case PGM_PROTECTION:
->> -        switch (prot) {
->> -        case PROT_TYPE_IEP:
->> -            tec->b61 = 1;
->> -            fallthrough;
->> -        case PROT_TYPE_LA:
->> -            tec->b56 = 1;
->> -            break;
->> -        case PROT_TYPE_KEYC:
->> -            tec->b60 = 1;
->> -            break;
->> -        case PROT_TYPE_ALC:
->> -            tec->b60 = 1;
->> -            fallthrough;
->> -        case PROT_TYPE_DAT:
->> -            tec->b61 = 1;
->> -            break;
->> +        if (suppress) {
->> +            switch (prot) {
->> +            case PROT_TYPE_IEP:
->> +                tec->b61 = 1;
->> +                fallthrough;
->> +            case PROT_TYPE_LA:
->> +                tec->b56 = 1;
->> +                break;
->> +            case PROT_TYPE_KEYC:
->> +                tec->b60 = 1;
->> +                break;
->> +            case PROT_TYPE_ALC:
->> +                tec->b60 = 1;
->> +                fallthrough;
->> +            case PROT_TYPE_DAT:
->> +                tec->b61 = 1;
->> +                break;
->> +            }
->>           }
-> 
-> How about switching this around and masking those bits on termination.
+On Tue, Apr 26, 2022 at 10:21 AM Mike Rapoport <rppt@kernel.org> wrote:
+>
+> On Tue, Apr 26, 2022 at 09:59:04AM -0300, Martin Fernandez wrote:
+> > On 4/26/22, Mike Rapoport <rppt@kernel.org> wrote:
+> > > On Mon, Apr 25, 2022 at 02:15:19PM -0300, Martin Fernandez wrote:
+> > >> Add the capability to mark regions of the memory memory_type able of
+> > >> hardware memory encryption.
+> > >>
+> > >> Also add the capability to query if all regions of a memory node are
+> > >> able to do hardware memory encryption to call it when initializing the
+> > >> nodes. Warn the user if a node has both encryptable and
+> > >> non-encryptable regions.
+> > >>
+> > >> Signed-off-by: Martin Fernandez <martin.fernandez@eclypsium.com>
+> > >> ---
+> > >>  include/linux/memblock.h |  5 ++++
+> > >>  mm/memblock.c            | 62 ++++++++++++++++++++++++++++++++++++++++
+> > >>  2 files changed, 67 insertions(+)
+> > >>
+> > >> diff --git a/include/linux/memblock.h b/include/linux/memblock.h
+> > >> index 50ad19662a32..00c4f1a20335 100644
+> > >> --- a/include/linux/memblock.h
+> > >> +++ b/include/linux/memblock.h
+> > >> @@ -40,6 +40,7 @@ extern unsigned long long max_possible_pfn;
+> > >>   * via a driver, and never indicated in the firmware-provided memory map
+> > >> as
+> > >>   * system RAM. This corresponds to IORESOURCE_SYSRAM_DRIVER_MANAGED in
+> > >> the
+> > >>   * kernel resource tree.
+> > >> + * @MEMBLOCK_CRYPTO_CAPABLE: capable of hardware encryption
+> > >>   */
+> > >>  enum memblock_flags {
+> > >>    MEMBLOCK_NONE           = 0x0,  /* No special request */
+> > >> @@ -47,6 +48,7 @@ enum memblock_flags {
+> > >>    MEMBLOCK_MIRROR         = 0x2,  /* mirrored region */
+> > >>    MEMBLOCK_NOMAP          = 0x4,  /* don't add to kernel direct mapping */
+> > >>    MEMBLOCK_DRIVER_MANAGED = 0x8,  /* always detected via a driver */
+> > >> +  MEMBLOCK_CRYPTO_CAPABLE = 0x10, /* capable of hardware encryption */
+> > >>  };
+> > >>
+> > >>  /**
+> > >> @@ -120,6 +122,9 @@ int memblock_physmem_add(phys_addr_t base, phys_addr_t
+> > >> size);
+> > >>  void memblock_trim_memory(phys_addr_t align);
+> > >>  bool memblock_overlaps_region(struct memblock_type *type,
+> > >>                          phys_addr_t base, phys_addr_t size);
+> > >> +bool memblock_node_is_crypto_capable(int nid);
+> > >> +int memblock_mark_crypto_capable(phys_addr_t base, phys_addr_t size);
+> > >> +int memblock_clear_crypto_capable(phys_addr_t base, phys_addr_t size);
+> > >>  int memblock_mark_hotplug(phys_addr_t base, phys_addr_t size);
+> > >>  int memblock_clear_hotplug(phys_addr_t base, phys_addr_t size);
+> > >>  int memblock_mark_mirror(phys_addr_t base, phys_addr_t size);
+> > >> diff --git a/mm/memblock.c b/mm/memblock.c
+> > >> index e4f03a6e8e56..fe62f81572e6 100644
+> > >> --- a/mm/memblock.c
+> > >> +++ b/mm/memblock.c
+> > >> @@ -191,6 +191,40 @@ bool __init_memblock memblock_overlaps_region(struct
+> > >> memblock_type *type,
+> > >>    return i < type->cnt;
+> > >>  }
+> > >>
+> > >> +/**
+> > >> + * memblock_node_is_crypto_capable - get if whole node is capable
+> > >> + * of encryption
+> > >> + * @nid: number of node
+> > >> + *
+> > >> + * Iterate over all memory memblock_type and find if all regions under
+> > >> + * node @nid are capable of hardware encryption.
+> > >> + *
+> > >> + * Return:
+> > >> + * true if every region in memory memblock_type is capable of
+> > >
+> > > I'd s/in memory memblock_type/in @nid
+> > >
+> >
+> > Good, thanks.
+> >
+> > >> + * encryption, false otherwise.
+> > >> + */
+> > >> +bool __init_memblock memblock_node_is_crypto_capable(int nid)
+> > >> +{
+> > >> +  struct memblock_region *region;
+> > >> +  int crypto_capables = 0;
+> > >> +  int not_crypto_capables = 0;
+> > >> +
+> > >> +  for_each_mem_region(region) {
+> > >> +          if (memblock_get_region_node(region) == nid) {
+> > >> +                  if (region->flags & MEMBLOCK_CRYPTO_CAPABLE)
+> > >> +                          crypto_capables++;
+> > >> +                  else
+> > >> +                          not_crypto_capables++;
+> > >> +          }
+> > >> +  }
+> > >> +
+> > >> +  if (crypto_capables > 0 && not_crypto_capables > 0)
+> > >> +          pr_warn("Node %d has %d regions that are encryptable and %d regions
+> > >> that aren't",
+> > >> +                  nid, not_crypto_capables, crypto_capables);
+> > >> +
+> > >> +  return not_crypto_capables == 0;
+> > >
+> > > This will return true for memoryless nodes as well. Do you mean to consider
+> > > them as capable of encryption?
+> > >
+> >
+> > Not really, I didn't think about that to be honest. I don't think it's
+> > a good idea to consider them as capable, right?
+>
+> I think capable of encryption would mean
+>
+>         crypto_capables && !not_crypto_capables
 
-I did initially have if (!terminate) { ... }, but it seemed more straight forward
-to me without the negation. Or are you suggesting explicitly resetting the
-bits to zero when terminating?
-> 
->>           fallthrough;
->>       case PGM_ASCE_TYPE:
->> @@ -552,6 +554,12 @@ static int trans_exc(struct kvm_vcpu *vcpu, int code, unsigned long gva,
->>       return code;
->>   }
->>   +static int trans_exc(struct kvm_vcpu *vcpu, int code, unsigned long gva, u8 ar,
->> +             enum gacc_mode mode, enum prot_type prot)
->> +{
->> +    return trans_exc_ending(vcpu, code, gva, ar, mode, prot, true);
->> +}
->> +
->>   static int get_vcpu_asce(struct kvm_vcpu *vcpu, union asce *asce,
->>                unsigned long ga, u8 ar, enum gacc_mode mode)
->>   {
->> @@ -1110,7 +1118,8 @@ int access_guest_with_key(struct kvm_vcpu *vcpu, unsigned long ga, u8 ar,
->>           ga = kvm_s390_logical_to_effective(vcpu, ga + fragment_len);
->>       }
->>       if (rc > 0)
->> -        rc = trans_exc(vcpu, rc, ga, ar, mode, prot);
->> +        rc = trans_exc_ending(vcpu, rc, ga, ar, mode, prot,
->> +                      (mode != GACC_STORE) || (idx == 0));
-> 
-> Add a boolean variable named terminating, calculate the value before passing the boolean on.
+Since these operands were evaluated above with comparison ops, I would say
+    crypto_capables > 0 && not_crypto_capables == 0
+to improve readability and be explicit that they are numbers rather
+than booleans.
 
-Ok. I'll scope it to the body of the if.
-> 
->>   out_unlock:
->>       if (need_ipte_lock)
->>           ipte_unlock(vcpu);
-> 
-> 
 
+>
+> --
+> Sincerely yours,
+> Mike.
