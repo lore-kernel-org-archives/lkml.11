@@ -2,51 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B8D3C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33B3CC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:07:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353832AbiDZTKA (ORCPT
+        id S1354127AbiDZTIt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 15:10:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41848 "EHLO
+        Tue, 26 Apr 2022 15:08:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353862AbiDZTGL (ORCPT
+        with ESMTP id S1353821AbiDZTFy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 15:06:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DB6919AD9B;
-        Tue, 26 Apr 2022 12:02:55 -0700 (PDT)
+        Tue, 26 Apr 2022 15:05:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37C0C19AD8F;
+        Tue, 26 Apr 2022 12:02:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F3E9CB8224F;
-        Tue, 26 Apr 2022 19:02:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94812C385AF;
-        Tue, 26 Apr 2022 19:02:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D823619C4;
+        Tue, 26 Apr 2022 19:02:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6F66C385A4;
+        Tue, 26 Apr 2022 19:02:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650999772;
-        bh=jxEYhLXnDhoasLkMPJ3FCn7DdkdeY51RCTlf2BMdVK8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vAPW0gWisLTfRwFazXhZo9BdJ5sk+de29UX+g8dmg6pX5FvU6VYfEVPCL64bAqu39
-         OGR8AQn4gNqjGVWnt20Mtm4jpKiF5ctCoYgSBTNaL6FejO4gbRL0r2tJqdOPlO1ssR
-         ZqjwGALSk2ET/0ghqyJK0eJiHdWr5qlRq08ykpfqu5EVxeMLlSIL4KZI5Egxfucc/s
-         8SVyKfZZIYEwEYin0cQS/58Dc1W1dpYw4bQogReKVn+GWqRrKy2EKFqunw/IO3mhQy
-         YQRyx5i0JQcgKZywYovDJhoJZe1rCjp6xR7W62mWLYGo8oCKG0t2mtl0woSF/blZIe
-         sbdd1xs+wlgxw==
+        s=k20201202; t=1650999765;
+        bh=Yi/VZKwBWFltSoUl2IA96DoXBsbE40ytjiMP4EHVQC8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=rn4k2rOTfz0/roH7CmN+b5VvBIURxqAtl/tgMmuQpprSu3X/N51GS4vJrdq4Gdlds
+         7wjWwbNISLkhZXgBiJp85p6BQBPKyAzmyu5cUY8t6ueKTRLa/j9WCndHRiL7sLCb1h
+         v0BvhuyhxG0wKjvXYadqXVOZ40+hsUgm3nt8iNQAX9zQDfRw7XucjLI5ze8MdQ58dR
+         1xekYEcBS6D6p8pEUIU9wOgqaUPQQ3nehvHS56J7RQ+qOGMjbG4HRZKVeZyIsIPZrS
+         p/0/C76OyczFLfV2X2ABFJKrew/8b3CWQE5bARiB4Ly4mp5+LDdxqX9mhxXi340r0u
+         VQqc2fo2kCspg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peilin Ye <peilin.ye@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 2/6] ip6_gre: Avoid updating tunnel->tun_hlen in __gre6_xmit()
-Date:   Tue, 26 Apr 2022 15:02:45 -0400
-Message-Id: <20220426190251.2351817-2-sashal@kernel.org>
+Cc:     Zheyu Ma <zheyuma97@gmail.com>, Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, ckeepax@opensource.cirrus.com,
+        u.kleine-koenig@pengutronix.de, patches@opensource.cirrus.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.4 1/6] ASoC: wm8731: Disable the regulator when probing fails
+Date:   Tue, 26 Apr 2022 15:02:37 -0400
+Message-Id: <20220426190243.2351733-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220426190251.2351817-1-sashal@kernel.org>
-References: <20220426190251.2351817-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,46 +52,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit f40c064e933d7787ca7411b699504d7a2664c1f5 ]
+[ Upstream commit 92ccbf17eeacf510cf1eed9c252d9332ca24f02d ]
 
-Do not update tunnel->tun_hlen in data plane code.  Use a local variable
-instead, just like "tunnel_hlen" in net/ipv4/ip_gre.c:gre_fb_xmit().
+When the driver fails during probing, the driver should disable the
+regulator, not just handle it in wm8731_hw_init().
 
-Co-developed-by: Cong Wang <cong.wang@bytedance.com>
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+The following log reveals it:
+
+[   17.812483] WARNING: CPU: 1 PID: 364 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
+[   17.815958] RIP: 0010:_regulator_put+0x3ec/0x4e0
+[   17.824467] Call Trace:
+[   17.824774]  <TASK>
+[   17.825040]  regulator_bulk_free+0x82/0xe0
+[   17.825514]  devres_release_group+0x319/0x3d0
+[   17.825882]  i2c_device_probe+0x766/0x940
+[   17.829198]  i2c_register_driver+0xb5/0x130
+
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Link: https://lore.kernel.org/r/20220405121038.4094051-1-zheyuma97@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/ip6_gre.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ sound/soc/codecs/wm8731.c | 19 +++++++++++--------
+ 1 file changed, 11 insertions(+), 8 deletions(-)
 
-diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
-index 043e57d08a3e..4fd6c0929b14 100644
---- a/net/ipv6/ip6_gre.c
-+++ b/net/ipv6/ip6_gre.c
-@@ -750,6 +750,7 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
- 		struct ip_tunnel_info *tun_info;
- 		const struct ip_tunnel_key *key;
- 		__be16 flags;
-+		int tun_hlen;
+diff --git a/sound/soc/codecs/wm8731.c b/sound/soc/codecs/wm8731.c
+index 6fd1bef848ed..fa55d79b39b6 100644
+--- a/sound/soc/codecs/wm8731.c
++++ b/sound/soc/codecs/wm8731.c
+@@ -601,7 +601,7 @@ static int wm8731_hw_init(struct device *dev, struct wm8731_priv *wm8731)
+ 	ret = wm8731_reset(wm8731->regmap);
+ 	if (ret < 0) {
+ 		dev_err(dev, "Failed to issue reset: %d\n", ret);
+-		goto err_regulator_enable;
++		goto err;
+ 	}
  
- 		tun_info = skb_tunnel_info(skb);
- 		if (unlikely(!tun_info ||
-@@ -767,9 +768,9 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
- 		dsfield = key->tos;
- 		flags = key->tun_flags &
- 			(TUNNEL_CSUM | TUNNEL_KEY | TUNNEL_SEQ);
--		tunnel->tun_hlen = gre_calc_hlen(flags);
-+		tun_hlen = gre_calc_hlen(flags);
+ 	/* Clear POWEROFF, keep everything else disabled */
+@@ -618,10 +618,7 @@ static int wm8731_hw_init(struct device *dev, struct wm8731_priv *wm8731)
  
--		gre_build_header(skb, tunnel->tun_hlen,
-+		gre_build_header(skb, tun_hlen,
- 				 flags, protocol,
- 				 tunnel_id_to_key32(tun_info->key.tun_id),
- 				 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++)
+ 	regcache_mark_dirty(wm8731->regmap);
+ 
+-err_regulator_enable:
+-	/* Regulators will be enabled by bias management */
+-	regulator_bulk_disable(ARRAY_SIZE(wm8731->supplies), wm8731->supplies);
+-
++err:
+ 	return ret;
+ }
+ 
+@@ -765,21 +762,27 @@ static int wm8731_i2c_probe(struct i2c_client *i2c,
+ 		ret = PTR_ERR(wm8731->regmap);
+ 		dev_err(&i2c->dev, "Failed to allocate register map: %d\n",
+ 			ret);
+-		return ret;
++		goto err_regulator_enable;
+ 	}
+ 
+ 	ret = wm8731_hw_init(&i2c->dev, wm8731);
+ 	if (ret != 0)
+-		return ret;
++		goto err_regulator_enable;
+ 
+ 	ret = devm_snd_soc_register_component(&i2c->dev,
+ 			&soc_component_dev_wm8731, &wm8731_dai, 1);
+ 	if (ret != 0) {
+ 		dev_err(&i2c->dev, "Failed to register CODEC: %d\n", ret);
+-		return ret;
++		goto err_regulator_enable;
+ 	}
+ 
+ 	return 0;
++
++err_regulator_enable:
++	/* Regulators will be enabled by bias management */
++	regulator_bulk_disable(ARRAY_SIZE(wm8731->supplies), wm8731->supplies);
++
++	return ret;
+ }
+ 
+ static int wm8731_i2c_remove(struct i2c_client *client)
 -- 
 2.35.1
 
