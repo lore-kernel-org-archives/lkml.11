@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B425C35296
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:12:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C61D9C3527E
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:12:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347877AbiDZJO7 (ORCPT
+        id S1347386AbiDZJOJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:14:59 -0400
+        Tue, 26 Apr 2022 05:14:09 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347167AbiDZIvL (ORCPT
+        with ESMTP id S1347475AbiDZIvi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:51:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1B89174F56;
-        Tue, 26 Apr 2022 01:39:36 -0700 (PDT)
+        Tue, 26 Apr 2022 04:51:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 224DDCD675;
+        Tue, 26 Apr 2022 01:40:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 00B83B81D18;
-        Tue, 26 Apr 2022 08:39:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E9CEC385A0;
-        Tue, 26 Apr 2022 08:39:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C95E3B81D0B;
+        Tue, 26 Apr 2022 08:40:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32D75C385A0;
+        Tue, 26 Apr 2022 08:40:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962373;
-        bh=NTFmc6yUB3G/+inTJha6H7dnjf/aU7LUIJdiD7wZZfk=;
+        s=korg; t=1650962416;
+        bh=ANemBF0bfxRf6RmGxUxmDlZxuSUU9ownLlWMAlAyxEM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1Wha1JePcisWwDcSf3RWyFjQOfr3IxvjuF5nD5wK/ysW3ma2Ve3nGseoY51TVDgX6
-         C+aNzXMj334g0SwEQSbFip5tYgcYhkOHqPhR05569Kfha62uqoeZj91NMKoCAh8au9
-         HB1/2irR3v9ZmiRq1CWthZIORInWPBEF9dW/5QEI=
+        b=yjN08sDuwdOeq9SMr42V4tEMiHXL5LPTltMUlubaj+Gf8/ahPzFwlPZEpCuG6cpRT
+         KIzmLZfDBgDpYAhnUEs8ckgnSvVWz3nnaKEf7zUuL/zMVkugwQ4x208GEEaRYREcFJ
+         sVyD4vO5Z1rJvMFOAmsYR4IvNYPYCE9HclLjOVUg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Disseldorp <ddiss@suse.de>,
-        Jeff Layton <jlayton@kernel.org>, NeilBrown <neilb@suse.de>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        stable@vger.kernel.org, Zhipeng Xie <xiezhipeng1@huawei.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 073/124] VFS: filename_create(): fix incorrect intent.
-Date:   Tue, 26 Apr 2022 10:21:14 +0200
-Message-Id: <20220426081749.377215935@linuxfoundation.org>
+Subject: [PATCH 5.15 090/124] perf/core: Fix perf_mmap fail when CONFIG_PERF_USE_VMALLOC enabled
+Date:   Tue, 26 Apr 2022 10:21:31 +0200
+Message-Id: <20220426081749.857987874@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -52,106 +50,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: NeilBrown <neilb@suse.de>
+From: Zhipeng Xie <xiezhipeng1@huawei.com>
 
-[ Upstream commit b3d4650d82c71b9c9a8184de9e8bb656012b289e ]
+[ Upstream commit 60490e7966659b26d74bf1fa4aa8693d9a94ca88 ]
 
-When asked to create a path ending '/', but which is not to be a
-directory (LOOKUP_DIRECTORY not set), filename_create() will never try
-to create the file.  If it doesn't exist, -ENOENT is reported.
+This problem can be reproduced with CONFIG_PERF_USE_VMALLOC enabled on
+both x86_64 and aarch64 arch when using sysdig -B(using ebpf)[1].
+sysdig -B works fine after rebuilding the kernel with
+CONFIG_PERF_USE_VMALLOC disabled.
 
-However, it still passes LOOKUP_CREATE|LOOKUP_EXCL to the filesystems
-->lookup() function, even though there is no intent to create.  This is
-misleading and can cause incorrect behaviour.
+I tracked it down to the if condition event->rb->nr_pages != nr_pages
+in perf_mmap is true when CONFIG_PERF_USE_VMALLOC is enabled where
+event->rb->nr_pages = 1 and nr_pages = 2048 resulting perf_mmap to
+return -EINVAL. This is because when CONFIG_PERF_USE_VMALLOC is
+enabled, rb->nr_pages is always equal to 1.
 
-If you try
+Arch with CONFIG_PERF_USE_VMALLOC enabled by default:
+	arc/arm/csky/mips/sh/sparc/xtensa
 
-   ln -s foo /path/dir/
+Arch with CONFIG_PERF_USE_VMALLOC disabled by default:
+	x86_64/aarch64/...
 
-where 'dir' is a directory on an NFS filesystem which is not currently
-known in the dcache, this will fail with ENOENT.
+Fix this problem by using data_page_nr()
 
-But as the name is not in the dcache, nfs_lookup gets called with
-LOOKUP_CREATE|LOOKUP_EXCL and so it returns NULL without performing any
-lookup, with the expectation that a subsequent call to create the target
-will be made, and the lookup can be combined with the creation.  In the
-case with a trailing '/' and no LOOKUP_DIRECTORY, that call is never
-made.  Instead filename_create() sees that the dentry is not (yet)
-positive and returns -ENOENT - even though the directory actually
-exists.
+[1] https://github.com/draios/sysdig
 
-So only set LOOKUP_CREATE|LOOKUP_EXCL if there really is an intent to
-create, and use the absence of these flags to decide if -ENOENT should
-be returned.
-
-Note that filename_parentat() is only interested in LOOKUP_REVAL, so we
-split that out and store it in 'reval_flag'.  __lookup_hash() then gets
-reval_flag combined with whatever create flags were determined to be
-needed.
-
-Reviewed-by: David Disseldorp <ddiss@suse.de>
-Reviewed-by: Jeff Layton <jlayton@kernel.org>
-Signed-off-by: NeilBrown <neilb@suse.de>
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 906010b2134e ("perf_event: Provide vmalloc() based mmap() backing")
+Signed-off-by: Zhipeng Xie <xiezhipeng1@huawei.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20220209145417.6495-1-xiezhipeng1@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/namei.c | 22 ++++++++++------------
- 1 file changed, 10 insertions(+), 12 deletions(-)
+ kernel/events/core.c        | 2 +-
+ kernel/events/internal.h    | 5 +++++
+ kernel/events/ring_buffer.c | 5 -----
+ 3 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/fs/namei.c b/fs/namei.c
-index 3bb65f48fe1d..8882a70dc119 100644
---- a/fs/namei.c
-+++ b/fs/namei.c
-@@ -3625,18 +3625,14 @@ static struct dentry *filename_create(int dfd, struct filename *name,
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index 699446d60b6b..7c891a8eb323 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -6348,7 +6348,7 @@ static int perf_mmap(struct file *file, struct vm_area_struct *vma)
+ again:
+ 	mutex_lock(&event->mmap_mutex);
+ 	if (event->rb) {
+-		if (event->rb->nr_pages != nr_pages) {
++		if (data_page_nr(event->rb) != nr_pages) {
+ 			ret = -EINVAL;
+ 			goto unlock;
+ 		}
+diff --git a/kernel/events/internal.h b/kernel/events/internal.h
+index 228801e20788..aa23ffdaf819 100644
+--- a/kernel/events/internal.h
++++ b/kernel/events/internal.h
+@@ -116,6 +116,11 @@ static inline int page_order(struct perf_buffer *rb)
+ }
+ #endif
+ 
++static inline int data_page_nr(struct perf_buffer *rb)
++{
++	return rb->nr_pages << page_order(rb);
++}
++
+ static inline unsigned long perf_data_size(struct perf_buffer *rb)
  {
- 	struct dentry *dentry = ERR_PTR(-EEXIST);
- 	struct qstr last;
-+	bool want_dir = lookup_flags & LOOKUP_DIRECTORY;
-+	unsigned int reval_flag = lookup_flags & LOOKUP_REVAL;
-+	unsigned int create_flags = LOOKUP_CREATE | LOOKUP_EXCL;
- 	int type;
- 	int err2;
- 	int error;
--	bool is_dir = (lookup_flags & LOOKUP_DIRECTORY);
+ 	return rb->nr_pages << (PAGE_SHIFT + page_order(rb));
+diff --git a/kernel/events/ring_buffer.c b/kernel/events/ring_buffer.c
+index 52868716ec35..fb35b926024c 100644
+--- a/kernel/events/ring_buffer.c
++++ b/kernel/events/ring_buffer.c
+@@ -859,11 +859,6 @@ void rb_free(struct perf_buffer *rb)
+ }
  
--	/*
--	 * Note that only LOOKUP_REVAL and LOOKUP_DIRECTORY matter here. Any
--	 * other flags passed in are ignored!
--	 */
--	lookup_flags &= LOOKUP_REVAL;
+ #else
+-static int data_page_nr(struct perf_buffer *rb)
+-{
+-	return rb->nr_pages << page_order(rb);
+-}
 -
--	error = filename_parentat(dfd, name, lookup_flags, path, &last, &type);
-+	error = filename_parentat(dfd, name, reval_flag, path, &last, &type);
- 	if (error)
- 		return ERR_PTR(error);
- 
-@@ -3650,11 +3646,13 @@ static struct dentry *filename_create(int dfd, struct filename *name,
- 	/* don't fail immediately if it's r/o, at least try to report other errors */
- 	err2 = mnt_want_write(path->mnt);
- 	/*
--	 * Do the final lookup.
-+	 * Do the final lookup.  Suppress 'create' if there is a trailing
-+	 * '/', and a directory wasn't requested.
- 	 */
--	lookup_flags |= LOOKUP_CREATE | LOOKUP_EXCL;
-+	if (last.name[last.len] && !want_dir)
-+		create_flags = 0;
- 	inode_lock_nested(path->dentry->d_inode, I_MUTEX_PARENT);
--	dentry = __lookup_hash(&last, path->dentry, lookup_flags);
-+	dentry = __lookup_hash(&last, path->dentry, reval_flag | create_flags);
- 	if (IS_ERR(dentry))
- 		goto unlock;
- 
-@@ -3668,7 +3666,7 @@ static struct dentry *filename_create(int dfd, struct filename *name,
- 	 * all is fine. Let's be bastards - you had / on the end, you've
- 	 * been asking for (non-existent) directory. -ENOENT for you.
- 	 */
--	if (unlikely(!is_dir && last.name[last.len])) {
-+	if (unlikely(!create_flags)) {
- 		error = -ENOENT;
- 		goto fail;
- 	}
+ static struct page *
+ __perf_mmap_to_page(struct perf_buffer *rb, unsigned long pgoff)
+ {
 -- 
 2.35.1
 
