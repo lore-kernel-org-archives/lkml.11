@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DC22C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6430AC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:27:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347720AbiDZJ3T (ORCPT
+        id S1347758AbiDZJ3Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:29:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47418 "EHLO
+        Tue, 26 Apr 2022 05:29:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347518AbiDZJFy (ORCPT
+        with ESMTP id S1347499AbiDZJFx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:05:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37ED6132A5A;
-        Tue, 26 Apr 2022 01:44:52 -0700 (PDT)
+        Tue, 26 Apr 2022 05:05:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9155891570;
+        Tue, 26 Apr 2022 01:44:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B5644B81C76;
-        Tue, 26 Apr 2022 08:44:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17D73C385A4;
-        Tue, 26 Apr 2022 08:44:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F14061356;
+        Tue, 26 Apr 2022 08:44:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21510C385A4;
+        Tue, 26 Apr 2022 08:44:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962689;
-        bh=F8JClQJMR4Kpr/SMZZA1Y//cfKqVMJ4DzrwDdCothXE=;
+        s=korg; t=1650962686;
+        bh=GwuxwJSY6TmdTZNREcQNOtDHNwXMuLUyUK+8yLIXuPA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1VLC0zADUzYRVnChUCygKAALxnpLyTp7FrCWISNewCdvEypFK55NXVfLRQ20oQzkD
-         AMfn6960WBF/oiXNQcvWHsy9nU6Q1S1WoZJOpjBH4srXd5+RuS+fl+cQjPgqgpnT05
-         HLnwddjWTyczjwdo2D/eLMk68lEME1/17vywyIKg=
+        b=LmiU+0G+JwgimJF8qwetkN3oNOVemaopP4Sy7IhryGzm994FphBbQvec3eRog2XRI
+         mpJQv4lVq90eK6dVbb6FmiCgrr9LFQgqNesMZLU2NTM5Y7aU7THLA9QfffJ7D59uIe
+         iTIhftl0GdrauaY546J4mOhIKV9pl/C0jWhHUWa0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Amit Cohen <amcohen@nvidia.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 054/146] selftests: mlxsw: vxlan_flooding_ipv6: Prevent flooding of unwanted packets
-Date:   Tue, 26 Apr 2022 10:20:49 +0200
-Message-Id: <20220426081751.587847689@linuxfoundation.org>
+Subject: [PATCH 5.17 053/146] selftests: mlxsw: vxlan_flooding: Prevent flooding of unwanted packets
+Date:   Tue, 26 Apr 2022 10:20:48 +0200
+Message-Id: <20220426081751.560067185@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -53,7 +53,7 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-[ Upstream commit 5e6242151d7f17b056a82ca7b860c4ec8eaa7589 ]
+[ Upstream commit 044011fdf162c5dd61c02841930c8f438a9adadb ]
 
 The test verifies that packets are correctly flooded by the bridge and
 the VXLAN device by matching on the encapsulated packets at the other
@@ -69,20 +69,20 @@ In the software data path, the problem can be solved by matching on the
 inner destination MAC or dropping unwanted packets at the egress of the
 VXLAN device, but this is not currently supported by mlxsw.
 
-Fixes: d01724dd2a66 ("selftests: mlxsw: spectrum-2: Add a test for VxLAN flooding with IPv6")
+Fixes: 94d302deae25 ("selftests: mlxsw: Add a test for VxLAN flooding")
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 Reviewed-by: Amit Cohen <amcohen@nvidia.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/mlxsw/spectrum-2/vxlan_flooding_ipv6.sh | 17 +++++++++++++++++
+ .../drivers/net/mlxsw/vxlan_flooding.sh         | 17 +++++++++++++++++
  1 file changed, 17 insertions(+)
 
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/vxlan_flooding_ipv6.sh b/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/vxlan_flooding_ipv6.sh
-index 429f7ee735cf..fd23c80eba31 100755
---- a/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/vxlan_flooding_ipv6.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/vxlan_flooding_ipv6.sh
-@@ -159,6 +159,17 @@ flooding_remotes_add()
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/vxlan_flooding.sh b/tools/testing/selftests/drivers/net/mlxsw/vxlan_flooding.sh
+index fedcb7b35af9..af5ea50ed5c0 100755
+--- a/tools/testing/selftests/drivers/net/mlxsw/vxlan_flooding.sh
++++ b/tools/testing/selftests/drivers/net/mlxsw/vxlan_flooding.sh
+@@ -172,6 +172,17 @@ flooding_filters_add()
  	local lsb
  	local i
  
@@ -97,10 +97,10 @@ index 429f7ee735cf..fd23c80eba31 100755
 +	tc filter add dev $h1 egress protocol all pref 2 handle 2 \
 +		matchall skip_hw action drop
 +
- 	for i in $(eval echo {1..$num_remotes}); do
- 		lsb=$((i + 1))
+ 	tc qdisc add dev $rp2 clsact
  
-@@ -195,6 +206,12 @@ flooding_filters_del()
+ 	for i in $(eval echo {1..$num_remotes}); do
+@@ -194,6 +205,12 @@ flooding_filters_del()
  	done
  
  	tc qdisc del dev $rp2 clsact
