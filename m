@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4560CC35295
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4EA2C352A1
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:48:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345969AbiDZItW (ORCPT
+        id S1347697AbiDZIvx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:49:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60244 "EHLO
+        Tue, 26 Apr 2022 04:51:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345546AbiDZIjN (ORCPT
+        with ESMTP id S1345351AbiDZIkR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:39:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 383D63FBF3;
-        Tue, 26 Apr 2022 01:30:12 -0700 (PDT)
+        Tue, 26 Apr 2022 04:40:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6803F151F32;
+        Tue, 26 Apr 2022 01:32:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E63BFB81CAF;
-        Tue, 26 Apr 2022 08:30:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CAD2C385A0;
-        Tue, 26 Apr 2022 08:30:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E2300618A0;
+        Tue, 26 Apr 2022 08:32:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B05DCC385A0;
+        Tue, 26 Apr 2022 08:32:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961809;
-        bh=/BAm5NTJdX2tMlaApiM7QAkYP88sHZe13rGjL+RUOcg=;
+        s=korg; t=1650961960;
+        bh=Iy8GuK4pdJNvWwEuvGN26r2gVYg22rACavhfjC3rnwo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CyU2mwLK3PQIVN8Cj9UsbVQF26HOxaK5nAa5Q6kwIpjoTSKv4bWZtuoGZBPPf1/7G
-         i5ae9hXVmg89R+i4ryFo+7AWJMGW6nd16vzyFIE6ao5AlT+nd+TzflVPQgw1Qxnc0c
-         kg6/cnsfIK3BaSaoAl2OSnk2CzFrwJygTGOIFZH0=
+        b=P7UgwYZh7IJmAhr3JfBjKxt4hsmm067xUZ66WnAuOtOSMPLSmjZh2G/Ysxh6XoEtn
+         76S/wzEIpv4rr10rc0a44CaBRu2aDVbHwTQ68+3h0X5Cwl1MGU1bZAfKlFyPubaNpA
+         Jo3A1vPp4tleVNUd9oTJ140stsWp6fq9FRigdWFQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
-        Borislav Petkov <bp@suse.de>,
-        Michal Simek <michal.simek@xilinx.com>
-Subject: [PATCH 5.4 36/62] EDAC/synopsys: Read the error count from the correct register
-Date:   Tue, 26 Apr 2022 10:21:16 +0200
-Message-Id: <20220426081738.258085768@linuxfoundation.org>
+        stable@vger.kernel.org, Ido Schimmel <idosch@idosch.org>,
+        David Ahern <dsahern@kernel.org>,
+        Alexis Bauvin <abauvin@scaleway.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 25/86] l3mdev: l3mdev_master_upper_ifindex_by_index_rcu should be using netdev_master_upper_dev_get_rcu
+Date:   Tue, 26 Apr 2022 10:20:53 +0200
+Message-Id: <20220426081741.936430207@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
-References: <20220426081737.209637816@linuxfoundation.org>
+In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
+References: <20220426081741.202366502@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,61 +52,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+From: David Ahern <dsahern@kernel.org>
 
-commit e2932d1f6f055b2af2114c7e64a26dc1b5593d0c upstream.
+[ Upstream commit 83daab06252ee5d0e1f4373ff28b79304945fc19 ]
 
-Currently, the error count is read wrongly from the status register. Read
-the count from the proper error count register (ERRCNT).
+Next patch uses l3mdev_master_upper_ifindex_by_index_rcu which throws
+a splat with debug kernels:
 
-  [ bp: Massage. ]
+[13783.087570] ------------[ cut here ]------------
+[13783.093974] RTNL: assertion failed at net/core/dev.c (6702)
+[13783.100761] WARNING: CPU: 3 PID: 51132 at net/core/dev.c:6702 netdev_master_upper_dev_get+0x16a/0x1a0
 
-Fixes: b500b4a029d5 ("EDAC, synopsys: Add ECC support for ZynqMP DDR controller")
-Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Acked-by: Michal Simek <michal.simek@xilinx.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220414102813.4468-1-shubhrajyoti.datta@xilinx.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[13783.184226] CPU: 3 PID: 51132 Comm: kworker/3:3 Not tainted 5.17.0-custom-100090-g6f963aafb1cc #682
+[13783.194788] Hardware name: Mellanox Technologies Ltd. MSN2010/SA002610, BIOS 5.6.5 08/24/2017
+[13783.204755] Workqueue: mld mld_ifc_work [ipv6]
+[13783.210338] RIP: 0010:netdev_master_upper_dev_get+0x16a/0x1a0
+[13783.217209] Code: 0f 85 e3 fe ff ff e8 65 ac ec fe ba 2e 1a 00 00 48 c7 c6 60 6f 38 83 48 c7 c7 c0 70 38 83 c6 05 5e b5 d7 01 01 e8 c6 29 52 00 <0f> 0b e9 b8 fe ff ff e8 5a 6c 35 ff e9 1c ff ff ff 48 89 ef e8 7d
+[13783.238659] RSP: 0018:ffffc9000b37f5a8 EFLAGS: 00010286
+[13783.244995] RAX: 0000000000000000 RBX: ffff88812ee5c000 RCX: 0000000000000000
+[13783.253379] RDX: ffff88811ce09d40 RSI: ffffffff812d0fcd RDI: fffff5200166fea7
+[13783.261769] RBP: 0000000000000000 R08: 0000000000000001 R09: ffff8882375f4287
+[13783.270138] R10: ffffed1046ebe850 R11: 0000000000000001 R12: dffffc0000000000
+[13783.278510] R13: 0000000000000275 R14: ffffc9000b37f688 R15: ffff8881273b4af8
+[13783.286870] FS:  0000000000000000(0000) GS:ffff888237400000(0000) knlGS:0000000000000000
+[13783.296352] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[13783.303177] CR2: 00007ff25fc9b2e8 CR3: 0000000174d23000 CR4: 00000000001006e0
+[13783.311546] Call Trace:
+[13783.314660]  <TASK>
+[13783.317553]  l3mdev_master_upper_ifindex_by_index_rcu+0x43/0xe0
+...
+
+Change l3mdev_master_upper_ifindex_by_index_rcu to use
+netdev_master_upper_dev_get_rcu.
+
+Fixes: 6a6d6681ac1a ("l3mdev: add function to retreive upper master")
+Signed-off-by: Ido Schimmel <idosch@idosch.org>
+Signed-off-by: David Ahern <dsahern@kernel.org>
+Cc: Alexis Bauvin <abauvin@scaleway.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/edac/synopsys_edac.c |   16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
+ net/l3mdev/l3mdev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/edac/synopsys_edac.c
-+++ b/drivers/edac/synopsys_edac.c
-@@ -163,6 +163,11 @@
- #define ECC_STAT_CECNT_SHIFT		8
- #define ECC_STAT_BITNUM_MASK		0x7F
+diff --git a/net/l3mdev/l3mdev.c b/net/l3mdev/l3mdev.c
+index 864326f150e2..f2c3a61ad134 100644
+--- a/net/l3mdev/l3mdev.c
++++ b/net/l3mdev/l3mdev.c
+@@ -147,7 +147,7 @@ int l3mdev_master_upper_ifindex_by_index_rcu(struct net *net, int ifindex)
  
-+/* ECC error count register definitions */
-+#define ECC_ERRCNT_UECNT_MASK		0xFFFF0000
-+#define ECC_ERRCNT_UECNT_SHIFT		16
-+#define ECC_ERRCNT_CECNT_MASK		0xFFFF
-+
- /* DDR QOS Interrupt register definitions */
- #define DDR_QOS_IRQ_STAT_OFST		0x20200
- #define DDR_QOSUE_MASK			0x4
-@@ -418,15 +423,16 @@ static int zynqmp_get_error_info(struct
- 	base = priv->baseaddr;
- 	p = &priv->stat;
+ 	dev = dev_get_by_index_rcu(net, ifindex);
+ 	while (dev && !netif_is_l3_master(dev))
+-		dev = netdev_master_upper_dev_get(dev);
++		dev = netdev_master_upper_dev_get_rcu(dev);
  
-+	regval = readl(base + ECC_ERRCNT_OFST);
-+	p->ce_cnt = regval & ECC_ERRCNT_CECNT_MASK;
-+	p->ue_cnt = (regval & ECC_ERRCNT_UECNT_MASK) >> ECC_ERRCNT_UECNT_SHIFT;
-+	if (!p->ce_cnt)
-+		goto ue_err;
-+
- 	regval = readl(base + ECC_STAT_OFST);
- 	if (!regval)
- 		return 1;
- 
--	p->ce_cnt = (regval & ECC_STAT_CECNT_MASK) >> ECC_STAT_CECNT_SHIFT;
--	p->ue_cnt = (regval & ECC_STAT_UECNT_MASK) >> ECC_STAT_UECNT_SHIFT;
--	if (!p->ce_cnt)
--		goto ue_err;
--
- 	p->ceinfo.bitpos = (regval & ECC_STAT_BITNUM_MASK);
- 
- 	regval = readl(base + ECC_CEADDR0_OFST);
+ 	return dev ? dev->ifindex : 0;
+ }
+-- 
+2.35.1
+
 
 
