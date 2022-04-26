@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D9AEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:09:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1910C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:09:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242092AbiDZJMi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:12:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55788 "EHLO
+        id S239666AbiDZJMq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:12:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347505AbiDZIvl (ORCPT
+        with ESMTP id S1347526AbiDZIvm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:51:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D130626F;
-        Tue, 26 Apr 2022 01:40:21 -0700 (PDT)
+        Tue, 26 Apr 2022 04:51:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DC23CE646;
+        Tue, 26 Apr 2022 01:40:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A0091B81CF2;
-        Tue, 26 Apr 2022 08:40:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1306EC385A0;
-        Tue, 26 Apr 2022 08:40:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D3F04B81D0A;
+        Tue, 26 Apr 2022 08:40:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FAC7C385A0;
+        Tue, 26 Apr 2022 08:40:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962419;
-        bh=1VoSaBJwo6TdKIU4fRmW1G6i+TLa8PraiX9ok07uIxI=;
+        s=korg; t=1650962422;
+        bh=sr+Nk5FxcDLzx6uPd1VgAtnE1P3v/6qsQnnjLwf2oUA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bsze/IAGz/76XiXp8N7GIV2CAZ9NnxtX9j7387wT6lCgO/y3yqliExzxGBY2he6wz
-         vsYxoNhttCQlduU440RQjlK5jMsEgAKw3sKoWBy7R7tWF8s4mDEmHoQVpna79+taot
-         EYJbYzmsIMhMS62ad4RN+NjB3OEUkYiUhCxQ95Ro=
+        b=X2fqpmhtld7mBvArSWCvBjiuajzNxqmrHY6gojhQHnfBrgH+XeWG5fXAXWzHDEmPN
+         dLtQs20fqzYL1jjqcemHhpJouSp+cbUVBtVqXin4qMvadpYCPKqn4OeyPYeB6qqgnf
+         Y7mnaGdeb33cqnGG5mnLjYDQjwYWawbjMrDPh7+Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Stefan Wahren <stefan.wahren@i2se.com>,
         Maxime Ripard <maxime@cerno.tech>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 091/124] drm/panel/raspberrypi-touchscreen: Avoid NULL deref if not initialised
-Date:   Tue, 26 Apr 2022 10:21:32 +0200
-Message-Id: <20220426081749.886588218@linuxfoundation.org>
+Subject: [PATCH 5.15 092/124] drm/panel/raspberrypi-touchscreen: Initialise the bridge in prepare
+Date:   Tue, 26 Apr 2022 10:21:33 +0200
+Message-Id: <20220426081749.914852716@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -53,38 +53,59 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Dave Stevenson <dave.stevenson@raspberrypi.com>
 
-[ Upstream commit f92055ae0acb035891e988ce345d6b81a0316423 ]
+[ Upstream commit 5f18c0782b99e26121efa93d20b76c19e17aa1dd ]
 
-If a call to rpi_touchscreen_i2c_write from rpi_touchscreen_probe
-fails before mipi_dsi_device_register_full is called, then
-in trying to log the error message if uses ts->dsi->dev when
-it is still NULL.
-
-Use ts->i2c->dev instead, which is initialised earlier in probe.
+The panel has a prepare call which is before video starts, and an
+enable call which is after.
+The Toshiba bridge should be configured before video, so move
+the relevant power and initialisation calls to prepare.
 
 Fixes: 2f733d6194bd ("drm/panel: Add support for the Raspberry Pi 7" Touchscreen.")
 Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
 Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
 Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220415162513.42190-2-stefan.wahren@i2se.com
+Link: https://patchwork.freedesktop.org/patch/msgid/20220415162513.42190-3-stefan.wahren@i2se.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c b/drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c
-index 46029c5610c8..1f805eb8fdb5 100644
+index 1f805eb8fdb5..145047e19394 100644
 --- a/drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c
 +++ b/drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c
-@@ -229,7 +229,7 @@ static void rpi_touchscreen_i2c_write(struct rpi_touchscreen *ts,
- 
- 	ret = i2c_smbus_write_byte_data(ts->i2c, reg, val);
- 	if (ret)
--		dev_err(&ts->dsi->dev, "I2C write failed: %d\n", ret);
-+		dev_err(&ts->i2c->dev, "I2C write failed: %d\n", ret);
+@@ -265,7 +265,7 @@ static int rpi_touchscreen_noop(struct drm_panel *panel)
+ 	return 0;
  }
  
- static int rpi_touchscreen_write(struct rpi_touchscreen *ts, u16 reg, u32 val)
+-static int rpi_touchscreen_enable(struct drm_panel *panel)
++static int rpi_touchscreen_prepare(struct drm_panel *panel)
+ {
+ 	struct rpi_touchscreen *ts = panel_to_ts(panel);
+ 	int i;
+@@ -295,6 +295,13 @@ static int rpi_touchscreen_enable(struct drm_panel *panel)
+ 	rpi_touchscreen_write(ts, DSI_STARTDSI, 0x01);
+ 	msleep(100);
+ 
++	return 0;
++}
++
++static int rpi_touchscreen_enable(struct drm_panel *panel)
++{
++	struct rpi_touchscreen *ts = panel_to_ts(panel);
++
+ 	/* Turn on the backlight. */
+ 	rpi_touchscreen_i2c_write(ts, REG_PWM, 255);
+ 
+@@ -349,7 +356,7 @@ static int rpi_touchscreen_get_modes(struct drm_panel *panel,
+ static const struct drm_panel_funcs rpi_touchscreen_funcs = {
+ 	.disable = rpi_touchscreen_disable,
+ 	.unprepare = rpi_touchscreen_noop,
+-	.prepare = rpi_touchscreen_noop,
++	.prepare = rpi_touchscreen_prepare,
+ 	.enable = rpi_touchscreen_enable,
+ 	.get_modes = rpi_touchscreen_get_modes,
+ };
 -- 
 2.35.1
 
