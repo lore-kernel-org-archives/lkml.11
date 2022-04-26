@@ -2,170 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1169C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 02:19:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A2A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 02:22:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241738AbiDZCWG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 22:22:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33762 "EHLO
+        id S241914AbiDZCZM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 22:25:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229508AbiDZCWE (ORCPT
+        with ESMTP id S229701AbiDZCZK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 22:22:04 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 596AE113C88
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 19:18:58 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id z99so20598520ede.5
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 19:18:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=c4m32+fTXzvjrK8N2PTs9HFTY5JW2xcDekaDXCQn2Jo=;
-        b=UJ31W5ZGcTMdSrRnKjrJV8Q7vQiCR0y48RG002zAPW0z545pWer/A2fTaArW9Is7Jy
-         epp1b/Me9p6puYs3/q2r3o9R9bp2QEb09OKfTf/KJdjzwPFEPZZskrURVnLpaJZb54PZ
-         foOuSGS/UEjxyzsKHE/tENb1LS77Wnf7POSVo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=c4m32+fTXzvjrK8N2PTs9HFTY5JW2xcDekaDXCQn2Jo=;
-        b=XGtBmwkeaGbc9DwODCWIrYPWXmpKHTsR+SbwwL9uAEcqsH1Zb0XfPuqEOedSURZLsG
-         Z57wuQkcpH1fj601vekcxm/l4EADWQ9LTKi+/IRTtSax8+UA+VolHk8JO9crIlKL4UJx
-         w7aluFmcOOb01QvF8EbDrtfDCJwM6kNxyLoKOl2rl6/Ok5fbU87bm6IocoC+BW7TgvBO
-         obwt5CwxKB1DJE0drSPkYCvkzl8qAIpyeA8DL5ygvenVnkQuE8SUzKqx4wL7HtCLZ+R4
-         EbfUL/0hydcVUowVXWbYD6ghzDAnGio+ogDQUUfuF6yXFYXEvvhnMpmQmOSXogR1lFAk
-         iGTA==
-X-Gm-Message-State: AOAM530tvP9wnJ68q8d3w5bVjYwkY7XA1PlP4Gd/aK5znOYQPFgjwsEB
-        MU+A5bfQZZZeatBXwEyvg3XpYFACsxu4qDSf
-X-Google-Smtp-Source: ABdhPJy6bP6SUs2G9SfwP9puvAiwsjWQUW+S6gRjW4N2RUSoVru2l/BT8tzW/l9vlwhxrkoH8eBkow==
-X-Received: by 2002:a05:6402:1cc1:b0:413:2cfb:b6ca with SMTP id ds1-20020a0564021cc100b004132cfbb6camr21608471edb.265.1650939537003;
-        Mon, 25 Apr 2022 19:18:57 -0700 (PDT)
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com. [209.85.221.46])
-        by smtp.gmail.com with ESMTPSA id q17-20020a1709064cd100b006e78206fe2bsm4194406ejt.111.2022.04.25.19.18.55
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Apr 2022 19:18:56 -0700 (PDT)
-Received: by mail-wr1-f46.google.com with SMTP id d5so8170374wrb.6
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 19:18:55 -0700 (PDT)
-X-Received: by 2002:a05:6000:c7:b0:20a:d8c1:d044 with SMTP id
- q7-20020a05600000c700b0020ad8c1d044mr7719873wrx.422.1650939535168; Mon, 25
- Apr 2022 19:18:55 -0700 (PDT)
-MIME-Version: 1.0
-References: <1650671124-14030-1-git-send-email-quic_khsieh@quicinc.com>
- <3b9588d2-d9f6-c96f-b316-953b56b59bfe@linaro.org> <73e2a37e-23db-d614-5f5c-8120f1869158@quicinc.com>
- <CAA8EJprjuzUrfwXodgKmbWxgK6t+bY601E_nS7CHNH_+4Tfn5Q@mail.gmail.com>
- <9b331b16-8d1b-4e74-8fee-d74c4041f8d7@quicinc.com> <CAD=FV=VxEnbBypNYSq=iTUTwZUs_v620juSA6gsMW4h2_3HyBQ@mail.gmail.com>
- <9b4ccdef-c98a-b907-c7ee-a92456dc5bba@quicinc.com>
-In-Reply-To: <9b4ccdef-c98a-b907-c7ee-a92456dc5bba@quicinc.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Mon, 25 Apr 2022 19:18:43 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=U3MJ1W6CCVW0+Si8ZyAD+_ZBYsL1cT6Y8yhcTvWsCLUQ@mail.gmail.com>
-Message-ID: <CAD=FV=U3MJ1W6CCVW0+Si8ZyAD+_ZBYsL1cT6Y8yhcTvWsCLUQ@mail.gmail.com>
-Subject: Re: [Freedreno] [PATCH] drm/msm/dp: move add fail safe mode to dp_connector_get_mode()
-To:     Abhinav Kumar <quic_abhinavk@quicinc.com>
-Cc:     Sean Paul <sean@poorly.run>,
-        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Vinod Koul <vkoul@kernel.org>, Andy Gross <agross@kernel.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        freedreno <freedreno@lists.freedesktop.org>
+        Mon, 25 Apr 2022 22:25:10 -0400
+Received: from bedivere.hansenpartnership.com (bedivere.hansenpartnership.com [IPv6:2607:fcd0:100:8a00::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB66E86E09;
+        Mon, 25 Apr 2022 19:22:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+        d=hansenpartnership.com; s=20151216; t=1650939723;
+        bh=rOas/IZ4nk8ZseOMrCeHITIudB+xnsliDrTtFFh9E84=;
+        h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
+        b=xSi6gI23nT8tAQZ85B39xUrcB0nxfG6MDm7hyHB6N8b7bEIKgTD/ulrhLKuAmmkjP
+         3QYRR1p3MWsUj+9dnJsohNg7NXJMhOtZ6ErqRE3qX+Or1Lx2WRFRnuFAdD9CKgc1EQ
+         wVv25XAYGq/ciqUvVDMJ101Q5shuPYsv/yHaWhS4=
+Received: from localhost (localhost [127.0.0.1])
+        by bedivere.hansenpartnership.com (Postfix) with ESMTP id 4ED901287A1F;
+        Mon, 25 Apr 2022 22:22:03 -0400 (EDT)
+Received: from bedivere.hansenpartnership.com ([127.0.0.1])
+        by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id gZEvPG-9iFTr; Mon, 25 Apr 2022 22:22:03 -0400 (EDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+        d=hansenpartnership.com; s=20151216; t=1650939723;
+        bh=rOas/IZ4nk8ZseOMrCeHITIudB+xnsliDrTtFFh9E84=;
+        h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
+        b=xSi6gI23nT8tAQZ85B39xUrcB0nxfG6MDm7hyHB6N8b7bEIKgTD/ulrhLKuAmmkjP
+         3QYRR1p3MWsUj+9dnJsohNg7NXJMhOtZ6ErqRE3qX+Or1Lx2WRFRnuFAdD9CKgc1EQ
+         wVv25XAYGq/ciqUvVDMJ101Q5shuPYsv/yHaWhS4=
+Received: from lingrow.int.hansenpartnership.com (unknown [IPv6:2601:5c4:4300:c551::c14])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id 2741512810AB;
+        Mon, 25 Apr 2022 22:22:02 -0400 (EDT)
+Message-ID: <4b7a9126e3988f0f08245df398ffe1e0ec0b9558.camel@HansenPartnership.com>
+Subject: Re: Rust and Kernel Vendoring [Was Re: [PATCH v2 1/8] lib/printbuf:
+ New data structure for heap-allocated strings]
+From:   James Bottomley <James.Bottomley@HansenPartnership.com>
+To:     Kent Overstreet <kent.overstreet@gmail.com>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Christoph Hellwig <hch@lst.de>, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        hannes@cmpxchg.org, akpm@linux-foundation.org,
+        linux-clk@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-input@vger.kernel.org, roman.gushchin@linux.dev
+Date:   Mon, 25 Apr 2022 22:22:00 -0400
+In-Reply-To: <20220424203626.sdppoyvyrn4yeglp@moria.home.lan>
+References: <20220421234837.3629927-7-kent.overstreet@gmail.com>
+         <20220422042017.GA9946@lst.de> <YmI5yA1LrYrTg8pB@moria.home.lan>
+         <20220422052208.GA10745@lst.de> <YmI/v35IvxhOZpXJ@moria.home.lan>
+         <20220422113736.460058cc@gandalf.local.home>
+         <20220422193015.2rs2wvqwdlczreh3@moria.home.lan>
+         <1f3ce897240bf0f125ca3e5f6ded7c290118a8dc.camel@HansenPartnership.com>
+         <20220422211350.qn2brzkfwsulwbiq@moria.home.lan>
+         <afdda017cbd0dc0f41d673fe53d2a9c48fba9a6c.camel@HansenPartnership.com>
+         <20220424203626.sdppoyvyrn4yeglp@moria.home.lan>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.4 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Sun, 2022-04-24 at 16:36 -0400, Kent Overstreet wrote:
+> On Sat, Apr 23, 2022 at 10:16:37AM -0400, James Bottomley wrote:
+> > You stripped the nuance of that.  I said many no_std crates could
+> > be used in the kernel.  I also said that the async crate couldn't
+> > because the rust compiler itself would have to support the kernel
+> > threading model.
+> 
+> I just scanned through that thread and that's not what you said. What
+> you said was:
+> 
+> > The above is also the rust crate problem in miniature: the crates
+> > grow API features the kernel will never care about and importing
+> > them wholesale is going to take forever because of the internal
+> > kernel support issue.  In the end, to take rust async as an
+> > example, it will be much better to do for rust what we've done for
+> > zlib: take the core that can support the kernel threading model and
+> > reimplement that in the kernel crate.  The act of doing that will
+> > a) prove people care enough about the functionality and b) allow us
+> > to refine it nicely.
+> > 
+> > I also don't think rust would really want to import crates
+> > wholesale.  The reason for no_std is that rust is trying to adapt
+> > to embedded environments, which the somewhat harsh constraints of
+> > the kernel is very similar to.
+> 
+> But maybe your position has changed somewhat?
 
-On Mon, Apr 25, 2022 at 6:42 PM Abhinav Kumar <quic_abhinavk@quicinc.com> wrote:
->
-> >> 2) When there was a valid EDID but no 640x480 mode
-> >>
-> >> This is the equipment specific case and the one even I was a bit
-> >> surprised. There is a DP compliance equipment we have in-house and while
-> >> validation, it was found that in its list of modes , it did not have any
-> >> modes which chromebook supported ( due to 2 lanes ). But my
-> >> understanding was that, all sinks should have atleast 640x480 but
-> >> apparently this one did not have that. So to handle this DP compliance
-> >> equipment behavior, we had to do this.
-> >
-> > That doesn't seem right. If there's a valid EDID and the valid EDID
-> > doesn't contain 640x480, are you _sure_ you're supposed to be adding
-> > 640x480? That doesn't sound right to me. I've got a tiny display in
-> > front of me for testing that only has one mode:
-> >
-> >    #0 800x480 65.68 800 840 888 928 480 493 496 525 32000
-> >
->
-> As I had wrote, DRM core kicks in only when the count of modes is 0.
-> Here what is happening is the count was not 0 but 640x480 was not
-> present in the EDID. So we had to add it explicitly.
->
-> Your tiny display is a display port display?
->
-> I am referring to only display port monitors. If your tiny display is
-> DP, it should have had 640x480 in its list of modes.
+I read those two as saying the same thing just with differing levels of
+detail.
 
-My tiny display is actually a HDMI display hooked up to a HDMI to DP
-(active) adapter.
+>  It sounds like you've been arguing against just directly depending
+> on foreign reposotories and for the staus quo of just ad-hoc copying
+> of code.
 
-...but this is a legal and common thing to have. I suppose possibly my
-HDMI display is "illegal"?
+I don't think I've said anything generalised about that either way. 
+However, I have noted that most of the external repositories I've
+looked at can't (or shouldn't) be imported directly.  Perhaps if we
+could find one that could be pulled in directly, we could use that to
+drive a discussion of how.
 
-OK, so reading through the spec more carefully, I do see that the DP
-spec makes numerous mentions of the fact that DP sinks _must_ support
-640x480. Even going back to DP 1.4, I see section "5.2.1.2 Video
-Timing Format" says that we must support 640x480. It seems like that's
-_intended_ to be used only if the EDID read fails, though or if we
-somehow have to output video without knowledge of the EDID. It seems
-hard to believe that there's a great reason to assume a display will
-support 640x480 if we have more accurate knowledge.
+> I'll help by stating my own position: I think we should be coming up
+> with a process for how dependencies on other git repositories are
+> going to work, something better than just cut and paste. Whether or
+> not we vendorize code isn't really that important, but I'd say that
+> if we are vendorizing code and we're notincluding entire sub-
+> repositories (like cargo vendor does) we ought to still make this a
+> scripted process that takes as an input a list of files we're
+> pulling and a remote repository we're pulling from, and the file list
+> and the remote repo (and commit ID we're pulling from) should all be
+> checked in.
 
-In any case, I guess I would still say that adding this mode belongs
-in the DRM core. The core should notice that it's a DP connection
-(bridge->type == DRM_MODE_CONNECTOR_DisplayPort) and that 640x480 was
-left out and it should add it. We should also make sure it's not
-"preferred" and is last in the list so we never accidentally pick it.
-If DP truly says that we should always give the user 640x480 then
-that's true for everyone, not just Qualcomm. We should add it in the
-core. If, later, someone wants to hide this from the UI it would be
-much easier if they only needed to modify one place.
+Do we have an example of an external piece of code we could do this to?
+
+[...]
+> > > The kernel community has a lot of that going on here. Again,
+> > > sorry to pick on you James, but I wanted to make the argument
+> > > that - maybe the kernel _should_ be adopting a more structured
+> > > way of using code from outside repositories, like cargo, or git
+> > > submodules (except I've never had a positive experience with git
+> > > submodules, so ignore that suggestion, unless I've just been
+> > > using them wrong, in which case someone please teach me). To read
+> > > you and Greg saying "nah, just copy code from other repos, it's
+> > > fine" - it felt like being back in the old days when we were
+> > > still trying to get people to use source control, and having that
+> > > one older colleague who _insisted_ on not using source control of
+> > > any kind, and that's a bit disheartening.
+> > 
+> > Even in C terms, the kernel is a nostdlib environment.  If a C
+> > project has too much libc dependency it's not going to work
+> > directly in the kernel, nor should it.  Let's look at zstd (which
+> > is pretty much a nostdlib project) as a great example: the facebook
+> > people didn't actually port the top of their tree (1.5) to the
+> > kernel, they backported bug fixes to the 1.4 branch and made a
+> > special release (1.4.10) just for us.  Why did they do this?  It
+> > was because the 1.5 version vastly increased stack use to the
+> > extent it would run off the end of the limited kernel stack so
+> > couldn't be ported directly into the kernel.  A lot of C libraries
+> > that are nostdlib have problems like this as well (you can use
+> > recursion, but not in the kernel).  There's no easy way of shimming
+> > environmental constraints like this.
+> 
+> I wonder if we might have come up with a better solution if there'd
+> been more cross-project communication and less siloing. Small stacks
+> aren't particular to the kernel - it's definitely not unheard of to
+> write userspace code where you want to have a lot of small stacks
+> (especially if you're doing some kind of coroutine style threading;
+> I've done stuff like this in the past)
+
+But would you say that every piece of userspace code should reject
+recursion and write for small stacks just in case it needs to be reused
+in a more extreme environment?
+
+I don't; I think it's fine there are loads of implementations that
+would never work in our environment, because mostly there's no reason
+to use them in the kernel (or another embedded environment).  I also
+understand why people build for the standard userspace environment
+first ... it reduces complexity and makes the construction way easier. 
+
+>  - and to me, as someone who's been incrementing on and maintaining a
+> codebase in active use for 10 years, having multiple older versions
+> in active use that need bugfixes gives me cold shivers.
+> 
+> I wouldn't be surprised if at some point the zstd people walk back
+> some of their changes or make it configurable at some point :)
+
+Many things can happen in the future, but right at the moment I still
+think zstd is working fine for both parties.
+
+James
 
 
-> > So IMO we _shouldn't_ land ${SUBJECT} patch.
-> >
-> > Just for testing, I also tried a hack to make EDID reading fail
-> > (return -EIO in the MSM dp_aux_transfer() function if msg->request <
-> > 8). Before ${SUBJECT} patch I'd see these modes:
-> >
-> >    #0 1024x768 60.00 1024 1048 1184 1344 768 771 777 806 65000
-> >    #1 800x600 60.32 800 840 968 1056 600 601 605 628 40000
-> >    #2 800x600 56.25 800 824 896 1024 600 601 603 625 36000
-> >    #3 848x480 60.00 848 864 976 1088 480 486 494 517 33750
-> >    #4 640x480 59.94 640 656 752 800 480 490 492 525 25175
-> >
-> > ...and after ${SUBJECT} patch I'd see:
-> >
-> >    #0 640x480 59.94 640 656 752 800 480 490 492 525 25175
-> >    #1 1024x768 60.00 1024 1048 1184 1344 768 771 777 806 65000
-> >    #2 800x600 60.32 800 840 968 1056 600 601 605 628 40000
-> >    #3 800x600 56.25 800 824 896 1024 600 601 603 625 36000
-> >    #4 848x480 60.00 848 864 976 1088 480 486 494 517 33750
-> >
-> > ...so your patch causes 640x480 to be prioritized. That also doesn't
-> > seem ideal. If it was ideal, the DRM core should have listed 640x480
-> > first.
->
-> So this is a different display or these modes are coming due to the
-> drm_add_modes_noedid() call because of the EDID read fail right?
-
-Right, it's from the !edid case.
-
--Doug
