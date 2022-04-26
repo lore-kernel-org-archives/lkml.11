@@ -2,106 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 913CFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 22:05:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 433C4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 22:07:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355636AbiDZWIS (ORCPT
+        id S1355646AbiDZWKo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 18:08:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55670 "EHLO
+        Tue, 26 Apr 2022 18:10:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346480AbiDZWIO (ORCPT
+        with ESMTP id S229833AbiDZWKi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 18:08:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A39E639D
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 15:05:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1504BB82377
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 22:05:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADD6EC385AF
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 22:05:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651010702;
-        bh=f3y+x+jIoq4DGRlS1US0ASYjqXchO+3gcLp/ZetbNsg=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Eoy/L9P/NCGYqnIObNJpoaufykwjGFVGt0pIEzsGKqHwg0McwrnGwdJA2CuNXfb9O
-         64FnIgu20MVLggTs66O1QBN5aOh7A5jVcwc5zKwHNaIftS5r1y86BxdIFtBAlNP4mA
-         inI6sw4//9kpwnSBKSrt5JLiBp7hOaff4czV7CCE5ojzHp1TPizKnoflwPp+zN+JZv
-         /eS4sMJzNBynnIcCc+JBVtG85hboR5eLRxPD75ifbZ9R4aK8gAOO56yvrHsXEZLiNp
-         1Aw+hKNhjHW6K66xO4EtgsYBKf6R2sDr2MtFEEOKloop9ta7zqxnCAyYXJRYjEMRe/
-         X2i9mxxew5DqA==
-Received: by mail-pg1-f174.google.com with SMTP id v10so6057495pgl.11
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 15:05:02 -0700 (PDT)
-X-Gm-Message-State: AOAM5300UgKJn/PSvl2sFlU5qjCCedCTjl8BZwRp1B28E+nQf8G5+XlZ
-        fTG1KLRfghnkqiAo3WIxhzkgSVgKUZgQf2DCuQ==
-X-Google-Smtp-Source: ABdhPJyPBtUnTXxk3RT6NLfJXkbbUZFJ459uNsUTNbpTM+9Vq9y+dsVPfv2Yzl1mh6rc7Wui2OvyP81FE6GOokMTqnA=
-X-Received: by 2002:a05:6a00:10d0:b0:4f7:5af4:47b6 with SMTP id
- d16-20020a056a0010d000b004f75af447b6mr26353448pfu.6.1651010702163; Tue, 26
- Apr 2022 15:05:02 -0700 (PDT)
+        Tue, 26 Apr 2022 18:10:38 -0400
+Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A878B1ED;
+        Tue, 26 Apr 2022 15:07:30 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.west.internal (Postfix) with ESMTP id 4527C3200915;
+        Tue, 26 Apr 2022 18:07:29 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Tue, 26 Apr 2022 18:07:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1651010848; x=
+        1651097248; bh=h/r6mqxxO8CGeQeYBV/T4XnCBd2vSsImhikCpYpQ254=; b=c
+        YypQLUUfXsYTcz6o9Udfvm/qe4Nn05wll+0A9csMAwVxo5xt5QqjdB2b/Yyk2Fk+
+        Mc7ucKXKs6E5zgYWzoB8a1nmh+gaxiKEY/Klg16WJhYhywT21yqVPlGHsjbGELRG
+        JjiW8Fi1k0j4a2ZzqoqJV8woNGBN5zsNRIT6dxYL2vWa2qexUKgFVALrjX19ZmSu
+        t7uAmMNjd/bCaj2Ud0qwNTFQ858HYN1B6Cd0EbLwVCJZ5eAbvYuTzy8U/cPx4hjq
+        PilLVmkX159bl+ymxiiaX4Hs568cx4ien2ChSqisNJKE2wTX8RNydahQYNq+ioan
+        Whi8WLkHjfL0Eva1wThKw==
+X-ME-Sender: <xms:IG1oYr7tB8X8VHhQuCPIXTSQrW4HoVCxRaEvWBSeTbkxzki_r7MWaQ>
+    <xme:IG1oYg4KFzuLj8oX-3JY1Jr2l0_mrmlM9OZMjhOMcpe57a8cqZwkopdVwfwpej-Kp
+    gEEr-e4So-C1Ls>
+X-ME-Received: <xmr:IG1oYic0IDxNLyD9uJInZA3hErzMmV6HarUcakAZN3M698HufI0X8UeN394g>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudeggddtiecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvvefukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeffvghmihcu
+    ofgrrhhivgcuqfgsvghnohhurhcuoeguvghmihesihhnvhhishhisghlvghthhhinhhgsh
+    hlrggsrdgtohhmqeenucggtffrrghtthgvrhhnpeduieelfeeutedvleehueetffejgeej
+    geffkeelveeuleeukeejjeduffetjeekteenucevlhhushhtvghrufhiiigvpedtnecurf
+    grrhgrmhepmhgrihhlfhhrohhmpeguvghmihesihhnvhhishhisghlvghthhhinhhgshhl
+    rggsrdgtohhm
+X-ME-Proxy: <xmx:IG1oYsKqaLNox9Y-AHjoTTSkZukzU6K7fXD056oTXSeUTBzqdvEtkg>
+    <xmx:IG1oYvLEFlCZNOmbEZ8HsGppfUPV-cla42PV7--2CKVRyuFM2mCHLw>
+    <xmx:IG1oYlzjoXoZ88OXBvqk8D8U5I0MP9RVRY_x-RF-SC8y3FKGnvcyqg>
+    <xmx:IG1oYmW-BvkYDvyZ2GpVU072mNFcO1fFD0LZ9FUIw7rdUflJ4xn81w>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 26 Apr 2022 18:07:28 -0400 (EDT)
+Date:   Tue, 26 Apr 2022 18:07:26 -0400
+From:   Demi Marie Obenour <demi@invisiblethingslab.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Lennart Poettering <lennart@poettering.net>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Block Mailing List <linux-block@vger.kernel.org>,
+        Linux Filesystem Mailing List <linux-fsdevel@vger.kernel.org>
+Subject: Re: Race-free block device opening
+Message-ID: <YmhtHgaJaw0wfzY6@itl-email>
+References: <Ymg2HIc8NGraPNbM@itl-email>
+ <Ymg7dihxLG923vs3@kroah.com>
+ <YmhktF/9DyEQpatZ@itl-email>
 MIME-Version: 1.0
-References: <20220421192132.109954-1-nick.hawkins@hpe.com> <20220421192132.109954-5-nick.hawkins@hpe.com>
- <CAK8P3a0nQ1BrtfBJ7sUSaLkA=pbVwx83bEUpZczvLOSOHDR=dw@mail.gmail.com>
- <CACRpkdbJ1N7VOgoBzGS+cOaErFcYiOVDeWRmhPyHA7=9W0CGhA@mail.gmail.com>
- <CAK8P3a2ie8kFYstCYr6FO6+yFw7VxyJjWYyy9b+rUHu_u0YXPg@mail.gmail.com>
- <YmhmXl5IWHmKzAyG@robh.at.kernel.org> <CAK8P3a3+TGSJgJ2-mgj+NjT3k8uuUpesLErwqZ2M_dkNqbMXXQ@mail.gmail.com>
-In-Reply-To: <CAK8P3a3+TGSJgJ2-mgj+NjT3k8uuUpesLErwqZ2M_dkNqbMXXQ@mail.gmail.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Tue, 26 Apr 2022 17:04:50 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqKqB+Fas1NOmAq+ocG8KY6ugOiZ_o6e9=5unzf5-ku5Ag@mail.gmail.com>
-Message-ID: <CAL_JsqKqB+Fas1NOmAq+ocG8KY6ugOiZ_o6e9=5unzf5-ku5Ag@mail.gmail.com>
-Subject: Re: [PATCH v5 04/11] clocksource/drivers: Add HPE GXP timer
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        "Hawkins, Nick" <nick.hawkins@hpe.com>,
-        "Verdun, Jean-Marie" <verdun@hpe.com>,
-        Joel Stanley <joel@jms.id.au>,
-        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="gTBYkXogsP2+mBjf"
+Content-Disposition: inline
+In-Reply-To: <YmhktF/9DyEQpatZ@itl-email>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 4:55 PM Arnd Bergmann <arnd@arndb.de> wrote:
->
-> On Tue, Apr 26, 2022 at 11:38 PM Rob Herring <robh@kernel.org> wrote:
-> > On Tue, Apr 26, 2022 at 08:00:20AM +0200, Arnd Bergmann wrote:
-> > > On Mon, Apr 25, 2022 at 10:38 PM Linus Walleij <linus.walleij@linaro.org> wrote:
->
-> > > There are multiple ways of doing this that we already discussed
-> > > in the thread. The easiest is probably to have a child node without
-> > > custom registers in the DT and then use the DT helpers to
-> > > populate the linux devices with the correct data.
-> >
-> > I think that's what the wdt binding is doing, but I don't like that.
-> > Maybe it's not a child node, I can't tell.
-> >
-> > Bindings should not be decided on the *current* driver split on one
-> > particular OS. This looks like 1 block, so 1 node.
->
-> Fair enough.
->
-> > If that doesn't work well or easy for Linux, then we should fix Linux.
->
-> Doing a simple platform_device_create_pdata() should work fine here,
-> the only problem that might exist is if the wdt driver needs access to
-> DT properties, as we can't have both devices refer to the same of_node
-> pointer,
 
-Why not? There's even a struct device flag for that.
+--gTBYkXogsP2+mBjf
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Date: Tue, 26 Apr 2022 18:07:26 -0400
+From: Demi Marie Obenour <demi@invisiblethingslab.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Lennart Poettering <lennart@poettering.net>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	Linux Block Mailing List <linux-block@vger.kernel.org>,
+	Linux Filesystem Mailing List <linux-fsdevel@vger.kernel.org>
+Subject: Re: Race-free block device opening
 
-> which would cause them to be picked up by the timer driver
-> again.
+Also bringing in Lennart Poettering.
+--=20
+Sincerely,
+Demi Marie Obenour (she/her/hers)
+Invisible Things Lab
 
-Huh?
+--gTBYkXogsP2+mBjf
+Content-Type: application/pgp-signature; name="signature.asc"
 
-That's not to say there might be some gotchas. The musb driver didn't
-like sharing. But those are issues we should fix rather than
-work-around in the binding.
+-----BEGIN PGP SIGNATURE-----
 
-Rob
+iQIzBAEBCAAdFiEEdodNnxM2uiJZBxxxsoi1X/+cIsEFAmJobR4ACgkQsoi1X/+c
+IsE22g//eP5BToabrRG6R01WwqEnt6LQZHk9en1xjSGr6X5hiKJ1Sc+/r3bbF3VN
+WElHab/etgpidX48krogtoNasrk3ck/SKFes/GIQTnLcWdBJ6Syhnb94jMOgNbFk
+qkVyrKNvKX9XtNhgq5PolVXV+VUuT6PEz0LmPvZKdEKwpjS0kEL+jIDUxdYRMRdm
+icbIbHx769PQiOyEyOYuq8ZxGRsN0TVuUJtNwlBxD6dlYGSAkA4KIujfe5ntN5gA
+DOgXJqd9cwyEpi7hTWvyZcQmeJnMwZWbuFuYnwSIlvLuLTPvlEdr3K37SoziBlky
++3l71tzU3EJwQfMsfBBgPqj60cAEv8WZWubTyG7gjx+xZa+aJvcrY4+3tyH1Yapk
+5dVBcY53DYM1Lo7tOySfUUTuq7byfo0Bx9ZwyksWptcSg/v9C4NqIFJcSzdOixPA
+HXcnnyQ+zK4ikGRvFC9t89sbXpK5j7koC7PAQ844bdkRMKkodOk0EyMCfPOVrBz9
+1Yxy8yqrLa6SaDf0M5oY3W3Aghzmw2cGDqXCtIB317ewBOKuuCbf5z/dUyKP62Bt
+7SrZTRy97ZBAfMrTLPHrEyDe+SzG1Yg3hf/pAo9A1ZAw91I1WMB0yDo/Zi96omRH
+MHhZ+bgTu8oNVxOVFLmYsOW11MIsTcxQnPmbljm3Sg6YOd1mvgE=
+=8Wnx
+-----END PGP SIGNATURE-----
+
+--gTBYkXogsP2+mBjf--
