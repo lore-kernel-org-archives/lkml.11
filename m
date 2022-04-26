@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73FF1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:24:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8097AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:24:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344736AbiDZI1X (ORCPT
+        id S1344800AbiDZI1c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:27:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36180 "EHLO
+        Tue, 26 Apr 2022 04:27:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344673AbiDZI0n (ORCPT
+        with ESMTP id S239221AbiDZI0n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:26:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 559333E5FA;
-        Tue, 26 Apr 2022 01:23:14 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C8A13CFEF;
+        Tue, 26 Apr 2022 01:23:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 378C86179E;
-        Tue, 26 Apr 2022 08:23:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15FD1C385B8;
-        Tue, 26 Apr 2022 08:23:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C1152B81CF7;
+        Tue, 26 Apr 2022 08:23:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CB5EC385A0;
+        Tue, 26 Apr 2022 08:23:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961393;
-        bh=06XDKZ6eGspf8eNJ01Fmut9oFMZHv1vvkWCZjqwZm/w=;
+        s=korg; t=1650961390;
+        bh=egwIRRSMu30r1F9VMK/dU1QtErCVb4A+qEWO9CxAxOg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MOPJVGcvF4RTtXsBmng1LiefEiiEiEwlmyw5fF6yip+ZS9KtJxJtl1p+aC7MT1HJv
-         T7IEkmRrP6amvgbdyAsM1j8XC8WoBwtWB3pHta9bk2mlxoTM7Xt535GeDpysOdjOv9
-         9bvt7W3sYdBbKUvxYnLrrp96KsWAahsg3+C6MNYU=
+        b=hQ/rRthtzBNv5twHv4GAN/IkHNQV94PL+CxhsjbRkfqiKmNd6luhRtuuWsJougfoR
+         qA38CCwQAHGtw86NSg1tI6rc75BBZgPqEPoxO2/oI36yeIn3kHo59uSe+C+PkxXXut
+         9dOKWrL0gn+8Q4ZRIQa1FSrmu+aSqy2LbdRKEOEo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sergey Matyukevich <sergey.matyukevich@synopsys.com>,
-        Vineet Gupta <vgupta@kernel.org>
-Subject: [PATCH 4.9 20/24] ARC: entry: fix syscall_trace_exit argument
-Date:   Tue, 26 Apr 2022 10:21:14 +0200
-Message-Id: <20220426081731.969641568@linuxfoundation.org>
+        stable@vger.kernel.org, Xiongwei Song <sxwjean@gmail.com>,
+        Arthur Marsh <arthur.marsh@internode.on.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Khem Raj <raj.khem@gmail.com>
+Subject: [PATCH 4.9 02/24] mm: page_alloc: fix building error on -Werror=array-compare
+Date:   Tue, 26 Apr 2022 10:20:56 +0200
+Message-Id: <20220426081731.445639121@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081731.370823950@linuxfoundation.org>
 References: <20220426081731.370823950@linuxfoundation.org>
@@ -50,31 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Matyukevich <sergey.matyukevich@synopsys.com>
+From: Xiongwei Song <sxwjean@gmail.com>
 
-commit b1c6ecfdd06907554518ec384ce8e99889d15193 upstream.
+commit ca831f29f8f25c97182e726429b38c0802200c8f upstream.
 
-Function syscall_trace_exit expects pointer to pt_regs. However
-r0 is also used to keep syscall return value. Restore pointer
-to pt_regs before calling syscall_trace_exit.
+Arthur Marsh reported we would hit the error below when building kernel
+with gcc-12:
 
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Sergey Matyukevich <sergey.matyukevich@synopsys.com>
-Signed-off-by: Vineet Gupta <vgupta@kernel.org>
+  CC      mm/page_alloc.o
+  mm/page_alloc.c: In function `mem_init_print_info':
+  mm/page_alloc.c:8173:27: error: comparison between two arrays [-Werror=array-compare]
+   8173 |                 if (start <= pos && pos < end && size > adj) \
+        |
+
+In C++20, the comparision between arrays should be warned.
+
+Link: https://lkml.kernel.org/r/20211125130928.32465-1-sxwjean@me.com
+Signed-off-by: Xiongwei Song <sxwjean@gmail.com>
+Reported-by: Arthur Marsh <arthur.marsh@internode.on.net>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Khem Raj <raj.khem@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arc/kernel/entry.S |    1 +
- 1 file changed, 1 insertion(+)
+ mm/page_alloc.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/arc/kernel/entry.S
-+++ b/arch/arc/kernel/entry.S
-@@ -191,6 +191,7 @@ tracesys_exit:
- 	st  r0, [sp, PT_r0]     ; sys call return value in pt_regs
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -6504,7 +6504,7 @@ void __init mem_init_print_info(const ch
+ 	 */
+ #define adj_init_size(start, end, size, pos, adj) \
+ 	do { \
+-		if (start <= pos && pos < end && size > adj) \
++		if (&start[0] <= &pos[0] && &pos[0] < &end[0] && size > adj) \
+ 			size -= adj; \
+ 	} while (0)
  
- 	;POST Sys Call Ptrace Hook
-+	mov r0, sp		; pt_regs needed
- 	bl  @syscall_trace_exit
- 	b   ret_from_exception ; NOT ret_from_system_call at is saves r0 which
- 	; we'd done before calling post hook above
 
 
