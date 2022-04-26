@@ -2,151 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E07CCC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4BC5C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 17:11:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231144AbiDZRMR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 13:12:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44518 "EHLO
+        id S1354050AbiDZRMK (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 13:12:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354037AbiDZRMD (ORCPT
+        with ESMTP id S1353916AbiDZRLk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 13:12:03 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1096338BF
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 10:08:39 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id w1so33061355lfa.4
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 10:08:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mj5YNIpqKili4njrI75f0/IFkDmlnuz7/vAcRFXF5qo=;
-        b=io1nLFMc9+ErVeKm4EDDchVdVYXWmUQ8SmiWSUDjaMpSsm6oWXpCfZj4wr5zNa+Qqv
-         OMlIIEMk6xiz9WnGxyRzQRmb0+VqnuRlAVBJnP+j1MDdagAmzm6iDrPvMufpbyIFcoxk
-         v7x09EqIb7DCKz+eQmrKau4OihA3TSQGvVoZM794wf+uvE75uZVZQ9S9+h5Ax3gsvDqp
-         TfR+sM4zKjIsIQazg+gsigCLkHC8E9Y3PG54FqBIFQBfEXzNkwtLYlGIkUEIRPOKz30e
-         6IfpDWoXlE1BAgwdlCLu1nA1P/tJh27jDlXuB04EGVzlsNYIIaQBZ3HVG6+j+XeKXIj0
-         qnTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mj5YNIpqKili4njrI75f0/IFkDmlnuz7/vAcRFXF5qo=;
-        b=mV684w1K3X5perfx2K08c7rfmqRF4g4hHxI7yUidDXz9rsrtO8tCR1JudWbzVlDeaa
-         BCdsBCsO7NIykMDZYE9WEOWJasJOnByngyheKWJiWy5CTc/cm5z0Pb5Ww/UfhmIiU6E9
-         adcofoqeBxOswK3sGiTFeLEAgkVOMYfp0EAuqdGezMVdGxmbSSdnUgWcCJgfdy6NqZ4V
-         ZJ0t5LiFN31IHP6Fh5yy1NdJrHphPe4INsYP9Qe26BOsDGuSffEole72qCRwZWq10tpE
-         Eqc27rTyfoGg3e0vct0K5PBaqrRe1lyITv5QTFoYcrBPJtGzvWpEQLEhM854PtpQApjn
-         ICLw==
-X-Gm-Message-State: AOAM5332r8JoR0BUnj6rdN1/QyQAbMsNO+vRXd1lqjwP2iX3V3cOgVWb
-        EsorpE95kZUIu5AVAiAG7Ko1VTtDeL8ib0fXME77o6MHjIE=
-X-Google-Smtp-Source: ABdhPJya8Phm79PF7Y31/YZmxkplUDt9LDWp86dvQxAFGd8ZFGIj4Jv0kqJTc68ZS1a4NQqtlQM/NuM719rjq4AgJVo=
-X-Received: by 2002:a05:6512:1d1:b0:471:f63a:b182 with SMTP id
- f17-20020a05651201d100b00471f63ab182mr13215378lfp.392.1650992917897; Tue, 26
- Apr 2022 10:08:37 -0700 (PDT)
+        Tue, 26 Apr 2022 13:11:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B14F340EE;
+        Tue, 26 Apr 2022 10:08:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4584D6159F;
+        Tue, 26 Apr 2022 17:07:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EE08C385A0;
+        Tue, 26 Apr 2022 17:07:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650992869;
+        bh=dgLR3TJhT/EC15yAj4pcZSpH0ev/CMEBayE7jUH2n2k=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=R6yCjZh9Pd5a1cJfpZbK4GvKX+nR4A/muitN3gB2kT+ln6pKlwWs4cb+jM4qax83X
+         ItwRgJI57HCHD5rhEVHZymhSUa6z36Q5RVNNAoBDb5nAZo9aWwz8xm4fM2ftT/HkWu
+         yxhMqsrvwFA/G6VqWKp6MPs8k+9n70C3ANdRJrJT6PAkUbAQmYKDcHzBjLdK5JTjfV
+         xllp1hAQvdKGXQGAjJljA+UylV3BxUHY+rQiZOmFfZ5izY2QQQu7kCRmgYLA4doyRh
+         j0/1zc7QdVTdTPeB8gh1qmoOh2wqX0emkCbWyzbc0qnK3+yrTi4ZzgT5AH5JNnNtjs
+         tCO95OsDKH+rw==
+From:   Mark Brown <broonie@kernel.org>
+To:     linux-arm-msm@vger.kernel.org, srinivas.kandagatla@linaro.org,
+        quic_rohkumar@quicinc.com, robh+dt@kernel.org,
+        judyhsiao@chromium.org, agross@kernel.org,
+        quic_srivasam@quicinc.com, bjorn.andersson@linaro.org,
+        bgoswami@quicinc.com, alsa-devel@alsa-project.org, tiwai@suse.com,
+        perex@perex.cz, linux-kernel@vger.kernel.org,
+        quic_plai@quicinc.com, swboyd@chromium.org, lgirdwood@gmail.com
+Cc:     quic_potturu@quicinc.com
+In-Reply-To: <1650374329-7279-1-git-send-email-quic_srivasam@quicinc.com>
+References: <1650374329-7279-1-git-send-email-quic_srivasam@quicinc.com>
+Subject: Re: [PATCH v2] ASoC: qcom: SC7280: Update machine driver startup, shutdown callbacks
+Message-Id: <165099286607.2323572.4725275320203551447.b4-ty@kernel.org>
+Date:   Tue, 26 Apr 2022 18:07:46 +0100
 MIME-Version: 1.0
-References: <20220424190811.1678416-1-masahiroy@kernel.org> <20220424190811.1678416-11-masahiroy@kernel.org>
-In-Reply-To: <20220424190811.1678416-11-masahiroy@kernel.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 26 Apr 2022 10:08:25 -0700
-Message-ID: <CAKwvOdnysRX_qp1KYSd331G7K863iH-Xiw3UOwKRSQm65u9i-Q@mail.gmail.com>
-Subject: Re: [PATCH 10/27] modpost: traverse unresolved symbols in order
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michal Marek <michal.lkml@markovi.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 24, 2022 at 12:09 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> Currently, modpost manages unresolved in a singly liked list; it adds
+On Tue, 19 Apr 2022 18:48:49 +0530, Srinivasa Rao Mandadapu wrote:
+> Update machine driver startup, shutdown callback functions to avoid
+> sound card registration failure on other platforms.
+> Without this change, platforms with WCD codec is failing to register
+> sound card.
+> 
+> Fixes: c5198db82d4c ("ASoC: qcom: Add driver support for ALC5682I-VS")
+> 
+> [...]
 
-s/liked/linked/
+Applied to
 
-> a new node to the head, and traverses the list from new to old.
->
-> Use a doubly linked list to keep the order in the symbol table in the
-> ELF file.
->
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> ---
->
->  scripts/mod/modpost.c | 20 ++++++++++++++------
->  scripts/mod/modpost.h |  2 +-
->  2 files changed, 15 insertions(+), 7 deletions(-)
->
-> diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-> index 1c7d2831e89d..e1eb188d6282 100644
-> --- a/scripts/mod/modpost.c
-> +++ b/scripts/mod/modpost.c
-> @@ -185,6 +185,8 @@ static struct module *new_module(const char *modname)
->         mod = NOFAIL(malloc(sizeof(*mod) + strlen(modname) + 1));
->         memset(mod, 0, sizeof(*mod));
->
-> +       INIT_LIST_HEAD(&mod->unresolved_symbols);
-> +
->         strcpy(mod->name, modname);
->         mod->is_vmlinux = (strcmp(modname, "vmlinux") == 0);
->         mod->gpl_compatible = true;
-> @@ -201,6 +203,7 @@ static struct module *new_module(const char *modname)
->
->  struct symbol {
->         struct symbol *next;
-> +       struct list_head list;
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
 
-Isn't `list` meant to replace `next`?
+Thanks!
 
->         struct module *module;
->         unsigned int crc;
->         bool crc_valid;
-> @@ -255,8 +258,12 @@ static struct symbol *new_symbol(const char *name, struct module *module,
->
->  static void sym_add_unresolved(const char *name, struct module *mod, bool weak)
->  {
-> -       mod->unres = alloc_symbol(name, mod->unres);
-> -       mod->unres->weak = weak;
-> +       struct symbol *sym;
-> +
-> +       sym = alloc_symbol(name, NULL);
-> +       sym->weak = weak;
-> +
-> +       list_add_tail(&sym->list, &mod->unresolved_symbols);
+[1/1] ASoC: qcom: SC7280: Update machine driver startup, shutdown callbacks
+      commit: c85f533d51ca42a461a61303322b0cf74fb75a6b
 
-Because I was curious here why NULL was passed, rather than remove the
-assignment to struct symbol's next member in alloc_symbol.
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
-I get why you replace the `unres` member of struct module. I guess I'm
-curious then why yet another list is added to struct symbol, rather
-than replace the next member.
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
-Also, does adding a struct list_head member really not specify the
-_type_ of the next element?  I guess when I look at the definition of
-struct module, at the member unresolved symbols, I don't know whether
-it's a list of struct module* or a list of struct symbol*.
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
 
-<snip>
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
 
-> diff --git a/scripts/mod/modpost.h b/scripts/mod/modpost.h
-> index c3b5d2f0e2bb..6a90bfc08458 100644
-> --- a/scripts/mod/modpost.h
-> +++ b/scripts/mod/modpost.h
-> @@ -117,7 +117,7 @@ struct namespace_list {
->  struct module {
->         struct list_head list;
->         int gpl_compatible;
-> -       struct symbol *unres;
-> +       struct list_head unresolved_symbols;
->         bool from_dump;         /* true if module was loaded from *.symvers */
->         bool is_vmlinux;
->         bool seen;
-> --
-> 2.32.0
->
-
-
--- 
 Thanks,
-~Nick Desaulniers
+Mark
