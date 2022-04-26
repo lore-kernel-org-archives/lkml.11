@@ -2,113 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ED76C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:38:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 488FAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:38:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349503AbiDZKlT (ORCPT
+        id S1349335AbiDZKlb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 06:41:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49894 "EHLO
+        Tue, 26 Apr 2022 06:41:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350157AbiDZKkM (ORCPT
+        with ESMTP id S1350270AbiDZKkU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 06:40:12 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B9D91EACA;
-        Tue, 26 Apr 2022 03:30:00 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id d6so16661700ede.8;
-        Tue, 26 Apr 2022 03:30:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LTZivMFTyarowtjvZsLmSz53sJ8fua2clE9JO0AViWw=;
-        b=lIWdCje29PhrXiG84AYK/fAkTPVO9Xz9g253ZCUUK+Hp/vIVJWHpPBpQpxQjt53gHx
-         iN+KMl6ALYRKvPaDySuc4UsI6ga0mWS7yUdyy3ioev1B1rCpklQalOH4hpN+xw235Odq
-         qzwYQ7nm2RsS9J7KXnbza27TlkAtGModTyAulsIPkqvbYSkvBb3fbZQZ3fnhx9Qkmy8S
-         F81bBmzpgV9G7Lwiy9JYs+Y8XG0guJEYp+64sAyPjuXHfXh2wTY7MBybgQ0OywzWM/tv
-         e5UWhtV2yShw2LYoY5EqceFDrdtWuU99L2ButNyqfdos3WS80fS9s6oh7C8WYyf1TfOx
-         h3hg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LTZivMFTyarowtjvZsLmSz53sJ8fua2clE9JO0AViWw=;
-        b=Y4rUzz6Qm+PXSMGPPNW/EbHu9RjKxoxQZZI0N0zcrRq65LyeM8QMCO2ehxg8E0abSO
-         LQ/cXxFYJZTQnJq4lB/yJurcLiA4FwtDgHAlmtFTnwJ3dry2LxOITCFqCijR2RPJz1lW
-         c1n/1ct2UwJsOMvbpry3hs0DFGZkZLv21qzfa9FXXvo22hLp/HakVibmuTbLwJ1mwzFu
-         B7wuezyhaF1h7aoAUcglvt55sM5rRxQHjhPbByxe2YP5NnhVE+YzoZ7BhQfF+k11DdBK
-         vaKuojAdTrSDH/pfiYJHKcER+nnz3hRNvgqmJmDFLJOjg2nUhMQlESOyYwD8wdj0ECh8
-         RfNQ==
-X-Gm-Message-State: AOAM530tAW/tFVu3xn+XNRjfsvDq4+1Xz/l8WU32iKTlnHAeRW7pNqhs
-        TCY2fd/tLnwbgTUmf5p3UGumOMGRgXYs411McDw=
-X-Google-Smtp-Source: ABdhPJyDzGgT65bNt9vthGlanF7wSx2um9g1nmHGK2QB5fZUPfxvE2f7p5FkhAVNQhWvys1clS4g3RswY5rO293PZcM=
-X-Received: by 2002:aa7:d350:0:b0:425:e029:da56 with SMTP id
- m16-20020aa7d350000000b00425e029da56mr12360614edr.296.1650968999090; Tue, 26
- Apr 2022 03:29:59 -0700 (PDT)
+        Tue, 26 Apr 2022 06:40:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96EA926DC;
+        Tue, 26 Apr 2022 03:30:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 354D0B81D53;
+        Tue, 26 Apr 2022 10:30:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EE7D1C385BD;
+        Tue, 26 Apr 2022 10:30:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650969012;
+        bh=l6n5SuqN/qPa31I2vHmvChTwK5PnnNOmZRtqZAhfKD0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=hI1YVZprZsEvzU3QtVMbeMXpy81SrjwvfFgT8EgaGocogSJNqziOFnjAbYTa+FkR2
+         E5lGm1zuN5+e8VsGYAKWVINVwre8YkB5XMIqqPLJECPZuXSjKTQ9gwAVope5gthEGU
+         I2UcdomeHTVvLq1t2bvCk88qA47fBsMGSNq4Ke2JxJDYnp2W5PLcf0v1rteOLALWIK
+         9TgsX4OFZs5gFIVWQxAmGLoDnKeez0WUWzBc/4WdoDYRxOzxaHNbUbenOb9veJ3SgM
+         TWDHmaHux2/wCWY7Zz5mLPNfI+1hS3/zleMAafDqFi5In66bVpHkmXoxyPM+DLYzh2
+         lsGGcVr/1tGZg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CCCB2E6D402;
+        Tue, 26 Apr 2022 10:30:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220414190242.22178-1-andriy.shevchenko@linux.intel.com>
- <20220414190242.22178-2-andriy.shevchenko@linux.intel.com> <CAMRc=MfE0othcfwETf13_K3sOLKmUGwCnjapzVjLMk1cD+ihVQ@mail.gmail.com>
-In-Reply-To: <CAMRc=MfE0othcfwETf13_K3sOLKmUGwCnjapzVjLMk1cD+ihVQ@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 26 Apr 2022 12:29:20 +0200
-Message-ID: <CAHp75VcpZPB12Y4FVN4h9RdkvYQfELtbRnd08FfPpG1cJG-99g@mail.gmail.com>
-Subject: Re: [PATCH v5 1/6] gpiolib: Introduce a helper to get first GPIO
- controller node
-To:     Bartosz Golaszewski <brgl@bgdev.pl>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-amlogic <linux-amlogic@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v3] net: dsa: mv88e6xxx: Fix port_hidden_wait to account for
+ port_base_addr
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165096901183.6856.17060900849638968052.git-patchwork-notify@kernel.org>
+Date:   Tue, 26 Apr 2022 10:30:11 +0000
+References: <20220425070454.348584-1-nathan@nathanrossi.com>
+In-Reply-To: <20220425070454.348584-1-nathan@nathanrossi.com>
+To:     Nathan Rossi <nathan@nathanrossi.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, kabel@kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 12:27 AM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
->
-> On Thu, Apr 14, 2022 at 9:02 PM Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> wrote:
-> >
-> > Introduce a helper to get first GPIO controller node which drivers
-> > may want to use.
+Hello:
 
-> > +static inline struct fwnode_handle *gpiochip_node_get_first(struct device *dev)
-> > +{
-> > +       struct fwnode_handle *fwnode;
-> > +
-> > +       for_each_gpiochip_node(dev, fwnode)
-> > +               return fwnode;
-> > +
-> > +       return NULL;
-> > +}
-> > +
-> >  #endif /* __LINUX_GPIO_DRIVER_H */
-> > --
-> > 2.35.1
-> >
->
-> Any chance you could name it get_first_gpiochip_node()? It's static so
-> we don't have to worry about the prefix and it would make the purpose
-> more clear.
+This patch was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-There are two things why I prefer it as is:
-1) it's static inline, so it's part of (internal) but still exported API;
-2) it's already in my for-next branch which I would like not to
-rebase, until it's a really serious issue.
+On Mon, 25 Apr 2022 07:04:54 +0000 you wrote:
+> The other port_hidden functions rely on the port_read/port_write
+> functions to access the hidden control port. These functions apply the
+> offset for port_base_addr where applicable. Update port_hidden_wait to
+> use the port_wait_bit so that port_base_addr offsets are accounted for
+> when waiting for the busy bit to change.
+> 
+> Without the offset the port_hidden_wait function would timeout on
+> devices that have a non-zero port_base_addr (e.g. MV88E6141), however
+> devices that have a zero port_base_addr would operate correctly (e.g.
+> MV88E6390).
+> 
+> [...]
 
-That said, if you still insist I can rename it.
+Here is the summary with links:
+  - [v3] net: dsa: mv88e6xxx: Fix port_hidden_wait to account for port_base_addr
+    https://git.kernel.org/netdev/net/c/24cbdb910bb6
 
+You are awesome, thank you!
 -- 
-With Best Regards,
-Andy Shevchenko
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
