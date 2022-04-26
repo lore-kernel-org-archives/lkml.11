@@ -2,94 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98925C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 23:57:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3726FC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 23:57:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356285AbiD0AAN (ORCPT
+        id S1356271AbiD0AAb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 20:00:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45976 "EHLO
+        Tue, 26 Apr 2022 20:00:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356253AbiDZX7r (ORCPT
+        with ESMTP id S1356288AbiD0AAU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 19:59:47 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 282D0488A9
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 16:56:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651017398; x=1682553398;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=tA/0dx3kOuM/bOmv9rB+8wuyPRn5khLhY2aFJCWhgdE=;
-  b=E2zxf8Mm/87/BTPpgZ1Z2iAhIno3PIqS8lta4ejBUoo5sTxUf42A7myT
-   k7oS8/e8RrMzSUraAPN61abbehxb4u5vtuK/wh+MwFS7yFXzO/SM+Fkbh
-   1Az1LELSNLOTl0t0QH5shYWh9HxBipjG7AR7K7Gpex9Mc3sq5gCtJgP2u
-   xGiXAq+C3CJjlFTGj12gtrKAcY7WZX0yXqOuUp/MtoSLZvY8t84EkEXP8
-   6t5G/Mvk1aCg+1zAs2OWHEMgjZ5sQzKNCGZyyBvowKmRMDTPyiOQ3mCGk
-   ORpOPuZsfPWGsg9MpBr7+82XcsGpeYc0xMF7qcdRQvlZHVKJYQHpPqX7i
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="245682880"
-X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
-   d="scan'208";a="245682880"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 16:56:37 -0700
-X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
-   d="scan'208";a="730515038"
-Received: from htamura-mobl2.gar.corp.intel.com (HELO bard-pc.domain.name) ([10.252.185.30])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 16:56:36 -0700
-From:   Bard Liao <yung-chuan.liao@linux.intel.com>
-To:     alsa-devel@alsa-project.org, vkoul@kernel.org
-Cc:     vinod.koul@linaro.org, linux-kernel@vger.kernel.org,
-        gregkh@linuxfoundation.org, srinivas.kandagatla@linaro.org,
-        pierre-louis.bossart@linux.intel.com, sanyog.r.kale@intel.com,
-        bard.liao@intel.com
-Subject: [PATCH 3/5] soundwire: cadence: use pm_runtime_resume_and_get()
-Date:   Wed, 27 Apr 2022 07:56:21 +0800
-Message-Id: <20220426235623.4253-4-yung-chuan.liao@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220426235623.4253-1-yung-chuan.liao@linux.intel.com>
-References: <20220426235623.4253-1-yung-chuan.liao@linux.intel.com>
+        Tue, 26 Apr 2022 20:00:20 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68A0F4EA1E
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 16:56:54 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id y14so171508pfe.10
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 16:56:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=7Vd79Y282uj8GnLQRXQvOoxbMKGwuxqHo8kRf4cU958=;
+        b=iQWMWN8mblU7AZgtWY+rZW8Z55g8FPr1ZFwzxsYu7RXa3DhTX2weqxgZjDVPTSDBSq
+         hh7q8PIFIzX0UVjbAXwOTyOlQser4taBBwZ6NHC4L85PMu0aMFQbRvWJ2WNnKOwt0CcF
+         ZaefjLWhDq6zS5jp3Ez2IPRw9RevbpBJSVE20=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=7Vd79Y282uj8GnLQRXQvOoxbMKGwuxqHo8kRf4cU958=;
+        b=TQNOn0y+aB+9WXRMesxjp2iUztFhJzDVHbCHuDl6mTMjn+OiYRQJLc5ANAc42z+hPU
+         um59zEhG88YyV0aQzRG0qt443Z0bYOqUsWdBi3lizTVsGlBsfoFALgDUv9jyRPa53+xd
+         j5YS3ZOM/sUFpLypflLl+CNw2moP56ttK3Okha1Dvkl40rVK/OjUF8WPhouWYiNoXfRf
+         NnM8WPRMyM2UrE/lJevjmeYgw8Lz/he59rXfSegjM6gX2iwPAADvDbqaQQ9XGccX9l3k
+         5YHhQsgqhUpnh914NT22gBK3u4L4JjezG3q4PReK8AZXO9YrhOJGrueNmg+3ACDm3a+g
+         2Kkg==
+X-Gm-Message-State: AOAM530ZlScn9jL/ggx6dnMNZz5XAyLrPv1C3vjF1Ez5cqpZMvar+Q5n
+        r5wpylUt/BJy5lT0v84Xf81VsA==
+X-Google-Smtp-Source: ABdhPJxjhL0jTEJii7KascE+L/yC5HoIjePRCqXQx4fkDulOzR2MYVclb7Jj+KHTS3rMjfqrOiox1Q==
+X-Received: by 2002:a05:6a00:1152:b0:4be:ab79:fcfa with SMTP id b18-20020a056a00115200b004beab79fcfamr26844218pfm.3.1651017414417;
+        Tue, 26 Apr 2022 16:56:54 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id n1-20020a17090a670100b001d96bc27a57sm73410pjj.54.2022.04.26.16.56.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 16:56:53 -0700 (PDT)
+Date:   Tue, 26 Apr 2022 16:56:53 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Dan Li <ashimida@linux.alibaba.com>, kbuild-all@lists.01.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [kees:for-next/lkdtm 6/6] drivers/misc/lkdtm/cfi.c:62:37:
+ warning: cast from pointer to integer of different size
+Message-ID: <202204261653.91255EEE0@keescook>
+References: <202204170710.LwCV5Ec0-lkp@intel.com>
+ <202204181515.FC6649DC81@keescook>
+ <CAMuHMdVz-J-1ZQ08u0bsQihDkcRmEPrtX5B_oRJ+Ns5jrasnUw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdVz-J-1ZQ08u0bsQihDkcRmEPrtX5B_oRJ+Ns5jrasnUw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+On Tue, Apr 26, 2022 at 03:03:33PM +0200, Geert Uytterhoeven wrote:
+> On Tue, Apr 19, 2022 at 9:20 PM Kees Cook <keescook@chromium.org> wrote:
+> > On Sun, Apr 17, 2022 at 07:26:33AM +0800, kernel test robot wrote:
+> > > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git for-next/lkdtm
+> > > head:   2e53b877dc1258d4ac3de98f496bb88ec3bf5e25
+> > > commit: 2e53b877dc1258d4ac3de98f496bb88ec3bf5e25 [6/6] lkdtm: Add CFI_BACKWARD to test ROP mitigations
+> > > config: sparc-randconfig-r026-20220417 (https://download.01.org/0day-ci/archive/20220417/202204170710.LwCV5Ec0-lkp@intel.com/config)
+> 
+> Just received a failure for m68k-allmodconfig on next-20220426:
+> 
+> drivers/misc/lkdtm/cfi.c:62:37: error: cast from pointer to integer of
+> different size [-Werror=pointer-to-int-cast]
+> drivers/misc/lkdtm/cfi.c:62:10: error: cast to pointer from integer of
+> different size [-Werror=int-to-pointer-cast]
+> drivers/misc/lkdtm/cfi.c:62:37: error: cast from pointer to integer of
+> different size [-Werror=pointer-to-int-cast]
+> drivers/misc/lkdtm/cfi.c:62:10: error: cast to pointer from integer of
+> different size [-Werror=int-to-pointer-cast]
+> 
+> > > compiler: sparc-linux-gcc (GCC) 11.2.0
+> > > reproduce (this is a W=1 build):
+> > >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+> > >         chmod +x ~/bin/make.cross
+> > >         # https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git/commit/?id=2e53b877dc1258d4ac3de98f496bb88ec3bf5e25
+> > >         git remote add kees https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git
+> > >         git fetch --no-tags kees for-next/lkdtm
+> > >         git checkout 2e53b877dc1258d4ac3de98f496bb88ec3bf5e25
+> > >         # save the config file to linux build tree
+> > >         mkdir build_dir
+> > >         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=sparc SHELL=/bin/bash drivers/misc/lkdtm/
+> > >
+> > > If you fix the issue, kindly add following tag as appropriate
+> > > Reported-by: kernel test robot <lkp@intel.com>
+> > >
+> > > All warnings (new ones prefixed by >>):
+> > >
+> > >    drivers/misc/lkdtm/cfi.c: In function 'set_return_addr_unchecked':
+> > > >> drivers/misc/lkdtm/cfi.c:62:37: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+> > >       62 |         ((__force __typeof__(addr))((__force u64)(addr) | PAGE_OFFSET))
+> > >          |                                     ^
+> > >    drivers/misc/lkdtm/cfi.c:72:13: note: in expansion of macro 'no_pac_addr'
+> > >       72 |         if (no_pac_addr(*ret_addr) == expected)
+> > >          |             ^~~~~~~~~~~
+> >
+> > Hmm. I don't see why this is warning. The macro looks like untagged_addr():
+> >
+> > #define untagged_addr(addr)     ({ \
+> >         u64 __addr = (__force u64)(addr); \
+> >         __addr &= __untagged_addr(__addr); \
+> >         (__force __typeof__(addr))__addr; \
+> > })
+> 
+> The offending macro is:
+> 
+> #define no_pac_addr(addr)      \
+>           ((__force __typeof__(addr))((__force u64)(addr) | PAGE_OFFSET))
+> 
+> On 32-bit, addr is a 32-bit pointer, which is cast to a 64-bit integer first,
+> then to a 32-bit pointer again.
+> All of these need intermediate casts to uintptr_t.
 
-Use pm_runtime_resume_and_get() to replace the pm_runtime_get_sync() and
-pm_runtime_put_noidle() pattern.
+As in this?
 
-No functional changes.
+#define no_pac_addr(addr)      \
+	((__force __typeof__(addr))((uintptr_t)(addr) | PAGE_OFFSET))
 
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
----
- drivers/soundwire/cadence_master.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/soundwire/cadence_master.c b/drivers/soundwire/cadence_master.c
-index 558390af44b6..a53a777f2241 100644
---- a/drivers/soundwire/cadence_master.c
-+++ b/drivers/soundwire/cadence_master.c
-@@ -386,12 +386,11 @@ static int cdns_parity_error_injection(void *data, u64 value)
- 	 * Resume Master device. If this results in a bus reset, the
- 	 * Slave devices will re-attach and be re-enumerated.
- 	 */
--	ret = pm_runtime_get_sync(bus->dev);
-+	ret = pm_runtime_resume_and_get(bus->dev);
- 	if (ret < 0 && ret != -EACCES) {
- 		dev_err_ratelimited(cdns->dev,
--				    "pm_runtime_get_sync failed in %s, ret %d\n",
-+				    "pm_runtime_resume_and_get failed in %s, ret %d\n",
- 				    __func__, ret);
--		pm_runtime_put_noidle(bus->dev);
- 		return ret;
- 	}
- 
+
 -- 
-2.25.1
-
+Kees Cook
