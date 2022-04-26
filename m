@@ -2,122 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BCDBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:02:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DDDDC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:04:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352789AbiDZQFb (ORCPT
+        id S1352783AbiDZQHV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 12:05:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45102 "EHLO
+        Tue, 26 Apr 2022 12:07:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237871AbiDZQF1 (ORCPT
+        with ESMTP id S237871AbiDZQHO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 12:05:27 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB2EF42EE7
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:02:19 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Tue, 26 Apr 2022 12:07:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DA91434AA;
+        Tue, 26 Apr 2022 09:04:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 8897A1F388;
-        Tue, 26 Apr 2022 16:02:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1650988938; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rhUCnfLaLVR3gKOvJDs3VsH1Owqoy0EyHHUnNelrzz8=;
-        b=FUeN2KN3Y4LRX09Snuy+dqHQLQ7yIRxsLMnO5Xbopwj20SsLx+EyN00Oq6CsX/hOrTPlWQ
-        RKhhw5M4zO/Y2IqILzvDiqRTeuCQ0jj154pY4kuSNmzXXzWrk5Tej1UZlDMCECF/Bo48kI
-        D9Bz39BV7K3LNRhIEpkcrNg1rOGUWRc=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1650988938;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rhUCnfLaLVR3gKOvJDs3VsH1Owqoy0EyHHUnNelrzz8=;
-        b=Ztj4sEhh40VCp+3uJZbgUl8r3xxZ1oZvtgm3dkbgOWZ2UL5dSgmcWVHtmMEp7dCcxaOspJ
-        o3HFSBNnOVPlYfBw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5E57013223;
-        Tue, 26 Apr 2022 16:02:18 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id X2dWFooXaGIBdgAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Tue, 26 Apr 2022 16:02:18 +0000
-Message-ID: <768d4216-232e-6c67-b395-83c2f34c7970@suse.cz>
-Date:   Tue, 26 Apr 2022 18:02:18 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 05/23] mm/slab_common: cleanup __kmalloc()
-Content-Language: en-US
-To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Cc:     Marco Elver <elver@google.com>,
-        Matthew WilCox <willy@infradead.org>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-References: <20220414085727.643099-1-42.hyeyoo@gmail.com>
- <20220414085727.643099-6-42.hyeyoo@gmail.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220414085727.643099-6-42.hyeyoo@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F3EFA61A59;
+        Tue, 26 Apr 2022 16:04:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94823C385AA;
+        Tue, 26 Apr 2022 16:04:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650989045;
+        bh=69jqnS80ls4U/ADxnP7PEc7prC9IyzE3eMxJZnp7tAU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=OF7ff69aH9WhWwYQqzv8Ol92hHSgQ1EBu3+vmSaVHUEhT5CXy6BJoKpnIuYAhOrt8
+         W1+kix+7UbGMbEfZgWHap4qIKIRg2Ye6XkwFsUB7ytq8MkxS6U4QjlimKB3EUaL4Tl
+         lG+o75zjCy5+kHsfpGM/hBJukTZGFs1jaomfDgYBY1Kv33I3gF4Y/h2hmu16YG4tOI
+         kHd3BWsSDlq/XDUcjLKqULgQd/YhY8S2ZqFQGnW6NepUoyoYTx17eDXhJL7t6mPl//
+         V69PmgBM9PsxdttsmpNYPouZkSizbbwh7Uo5h5cBqpGePVXkk9IKXAYus5nAM8w29n
+         A7gpRf/DVOB8Q==
+Date:   Wed, 27 Apr 2022 01:03:59 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Jiri Olsa <olsajiri@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: Re: [PATCHv2 bpf-next 1/4] kallsyms: Add kallsyms_lookup_names
+ function
+Message-Id: <20220427010359.8400f28813c1ffc62af2ae2b@kernel.org>
+In-Reply-To: <YmflGEbjkp8mynxK@krava>
+References: <20220418124834.829064-1-jolsa@kernel.org>
+        <20220418124834.829064-2-jolsa@kernel.org>
+        <20220418233546.dfe0a1be12193c26b05cdd93@kernel.org>
+        <Yl5yHVOJpCYr+T3r@krava>
+        <YmJPcU9dahEatb0f@krava>
+        <20220426190108.d9c76f5ccff52e27dbef21af@kernel.org>
+        <YmflGEbjkp8mynxK@krava>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/14/22 10:57, Hyeonggon Yoo wrote:
-> Make __kmalloc() wrapper of __kmalloc_node().
+On Tue, 26 Apr 2022 14:27:04 +0200
+Jiri Olsa <olsajiri@gmail.com> wrote:
 
-Again/similarly, looks like this will make SLUB not miss trace for
-kmalloc_large() anymore.
+> On Tue, Apr 26, 2022 at 07:01:08PM +0900, Masami Hiramatsu wrote:
+> > Hi Jiri,
+> > 
+> > Sorry for replying late.
+> > 
+> > On Fri, 22 Apr 2022 08:47:13 +0200
+> > Jiri Olsa <olsajiri@gmail.com> wrote:
+> > 
+> > > On Tue, Apr 19, 2022 at 10:26:05AM +0200, Jiri Olsa wrote:
+> > > 
+> > > SNIP
+> > > 
+> > > > > > +static int kallsyms_callback(void *data, const char *name,
+> > > > > > +			     struct module *mod, unsigned long addr)
+> > > > > > +{
+> > > > > > +	struct kallsyms_data *args = data;
+> > > > > > +
+> > > > > > +	if (!bsearch(&name, args->syms, args->cnt, sizeof(*args->syms), symbols_cmp))
+> > > > > > +		return 0;
+> > > > > > +
+> > > > > > +	addr = ftrace_location(addr);
+> > > > > > +	if (!addr)
+> > > > > > +		return 0;
+> > > > > 
+> > > > > Ooops, wait. Did you do this last version? I missed this point.
+> > > > > This changes the meanings of the kernel function.
+> > > > 
+> > > > yes, it was there before ;-) and you're right.. so some archs can
+> > > > return different address, I did not realize that
+> > > > 
+> > > > > 
+> > > > > > +
+> > > > > > +	args->addrs[args->found++] = addr;
+> > > > > > +	return args->found == args->cnt ? 1 : 0;
+> > > > > > +}
+> > > > > > +
+> > > > > > +/**
+> > > > > > + * kallsyms_lookup_names - Lookup addresses for array of symbols
+> > > > > 
+> > > > > More correctly "Lookup 'ftraced' addresses for array of sorted symbols", right?
+> > > > > 
+> > > > > I'm not sure, we can call it as a 'kallsyms' API, since this is using
+> > > > > kallsyms but doesn't return symbol address, but ftrace address.
+> > > > > I think this name misleads user to expect returning symbol address.
+> > > > > 
+> > > > > > + *
+> > > > > > + * @syms: array of symbols pointers symbols to resolve, must be
+> > > > > > + * alphabetically sorted
+> > > > > > + * @cnt: number of symbols/addresses in @syms/@addrs arrays
+> > > > > > + * @addrs: array for storing resulting addresses
+> > > > > > + *
+> > > > > > + * This function looks up addresses for array of symbols provided in
+> > > > > > + * @syms array (must be alphabetically sorted) and stores them in
+> > > > > > + * @addrs array, which needs to be big enough to store at least @cnt
+> > > > > > + * addresses.
+> > > > > 
+> > > > > Hmm, sorry I changed my mind. I rather like to expose kallsyms_on_each_symbol()
+> > > > > and provide this API from fprobe or ftrace, because this returns ftrace address
+> > > > > and thus this is only used from fprobe.
+> > > > 
+> > > > ok, so how about:
+> > > > 
+> > > >   int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt, unsigned long *addrs);
+> > > 
+> > > quick question.. is it ok if it stays in kalsyms.c object?
+> > 
+> > I think if this is for the ftrace API, I think it should be in the ftrace.c, and
+> > it can remove unneeded #ifdefs in C code.
+> > 
+> > > 
+> > > so we don't need to expose kallsyms_on_each_symbol,
+> > > and it stays in 'kalsyms' place
+> > 
+> > We don't need to expose it to modules, but just make it into a global scope.
+> > I don't think that doesn't cause a problem.
 
-> Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Oops, I meant "I don't think that cause any problem."
 
-Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
-
-Nit below:
-
-> ---
->  include/linux/slab.h | 13 ++++++++++---
->  mm/slab.c            | 34 ----------------------------------
->  mm/slob.c            |  6 ------
->  mm/slub.c            | 23 -----------------------
->  4 files changed, 10 insertions(+), 66 deletions(-)
 > 
-> diff --git a/include/linux/slab.h b/include/linux/slab.h
-> index acdb4b7428f9..4c06d15f731c 100644
-> --- a/include/linux/slab.h
-> +++ b/include/linux/slab.h
-> @@ -419,7 +419,16 @@ static __always_inline unsigned int __kmalloc_index(size_t size,
->  #define kmalloc_index(s) __kmalloc_index(s, true)
->  #endif /* !CONFIG_SLOB */
->  
-> -void *__kmalloc(size_t size, gfp_t flags) __assume_kmalloc_alignment __alloc_size(1);
-> +extern void *__kmalloc_node(size_t size, gfp_t flags, int node)
-> +			    __assume_kmalloc_alignment
-> +			    __alloc_size(1);
-> +
+> np, will move it to ftrace
 
-Again, no 'extern' please.
+Thank you!
 
-> +static __always_inline __alloc_size(1) __assume_kmalloc_alignment
-> +void *__kmalloc(size_t size, gfp_t flags)
-> +{
-> +	return __kmalloc_node(size, flags, NUMA_NO_NODE);
-> +}
-> +
->  void *kmem_cache_alloc(struct kmem_cache *s, gfp_t flags) __assume_slab_alignment __malloc;
->  void *kmem_cache_alloc_lru(struct kmem_cache *s, struct list_lru *lru,
->  			   gfp_t gfpflags) __assume_slab_alignment __malloc;
+> 
+> thanks,
+> jirka
+
+
+-- 
+Masami Hiramatsu <mhiramat@kernel.org>
