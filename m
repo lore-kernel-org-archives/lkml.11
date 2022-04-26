@@ -2,103 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB142C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 21:08:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61321C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 21:08:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355254AbiDZVLU (ORCPT
+        id S1355271AbiDZVLZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 17:11:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35082 "EHLO
+        Tue, 26 Apr 2022 17:11:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243506AbiDZVLO (ORCPT
+        with ESMTP id S243506AbiDZVLW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 17:11:14 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAE4A6D4F5
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 14:08:05 -0700 (PDT)
+        Tue, 26 Apr 2022 17:11:22 -0400
+Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 719306D4D9
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 14:08:13 -0700 (PDT)
+Received: by mail-ot1-x332.google.com with SMTP id 88-20020a9d0ee1000000b005d0ae4e126fso13919918otj.5
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 14:08:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1651007285; x=1682543285;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=L2aiClk+1ighNnSdgTpBPizL0Y+boQZg3WeLjQ9uEkk=;
-  b=oiAiXptJfcklIKNWjdxKeSttUNybZSHHpTfs87Q61/zIYIQo90lj/GFX
-   DNex1lzSVp9zDsXUNOKFgaEgFJq+Xv+ghI/bZ5JZXiRFhilUUWMSrdNGy
-   Ybvhyb8udWKeoXwqIt0WN1wM6VFw/qpTKjlW7OD54gsMHAumdxIHdyqpE
-   0=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 26 Apr 2022 14:08:05 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 14:08:05 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 26 Apr 2022 14:08:04 -0700
-Received: from qian (10.80.80.8) by nalasex01a.na.qualcomm.com (10.47.209.196)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 26 Apr
- 2022 14:08:03 -0700
-Date:   Tue, 26 Apr 2022 17:08:01 -0400
-From:   Qian Cai <quic_qiancai@quicinc.com>
-To:     Zi Yan <ziy@nvidia.com>
-CC:     David Hildenbrand <david@redhat.com>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>,
-        <virtualization@lists.linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Eric Ren <renzhengeek@gmail.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        "Oscar Salvador" <osalvador@suse.de>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH v11 0/6] Use pageblock_order for cma and
- alloc_contig_range alignment.
-Message-ID: <20220426210801.GA1038@qian>
-References: <20220425143118.2850746-1-zi.yan@sent.com>
- <20220426201855.GA1014@qian>
- <B621B4DD-5D11-4F0E-AFF5-F8684AE37E57@nvidia.com>
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=oOiTDP3iRudLqeNHeG0SSRW6WmEyHCfQv2s8km2VlTE=;
+        b=WDTZ94gF93fjDziFhbGcTO4t4Fb/nL5VtVyHG6Ts5gCsTQhihFrg7+V1o9Sd/Jb6uj
+         0K926cPr51FkS2ZmVZI7JldZ7tV7kZleje8iOFZXRVrZ5zDen7sPH25Y+LMpVj938v7k
+         LXWv3boI1jWsY3svbz09SJIiMfLXj1P/AYtuY+xeklmkK3LNKsO3ipZqISKdJ9fyqa79
+         2jIkctsiXnV2lnRwAP70rBzUqJFmQIqodJIW8E5iHPaHuVGy0yUnv83pAsawmbDM421r
+         oHgVUK+7PsbamxlEVxbKVnCIjw0toSxdoxU/M4EjaiQzsba73CcdDD1vak0O1JTzCfHL
+         Jdfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=oOiTDP3iRudLqeNHeG0SSRW6WmEyHCfQv2s8km2VlTE=;
+        b=ERYigmHlbx9rZsucKfgpVQxc4g1QkNtx2Q6nm0Wv8AIQn9wHBGJQMgglMQHHJSwkBB
+         YbgifIRXCSO3dFrk5iiJ3PswAyj74HKCnYywp2zBZQPpoZ/36g3uMBBempcAabY3pVaC
+         8DLYoIE+0t0/NIRgH9OOo2c4NkYVe1rvMl4NVCAXTbjmLR8JC3foJA8lTHjPZyylteeF
+         LRtY3+aUBmyFcXMrAUoWj13L3RIt+XON0Iwc5Hnt8TwDa05d4JwX0BC2y3v3aofq9umS
+         H2m9W5iuYLJOxHaTSIND+6qpnmawPKpKXAp7j+92SbHeF17PqKHaWBbYlchxcsSZxNcp
+         1nUQ==
+X-Gm-Message-State: AOAM532vaEgrXmF2p17tGtYArXObeCfWUgdl1q+HHiBrBF494rqpSlOt
+        bzg/rvlpy0RYnKZIyqQU2JI5Zg==
+X-Google-Smtp-Source: ABdhPJxuUikNONG8mH33MVObRzni7bUGk5YoSD2Bver9T2lndjY1DS4aTsdLXeTx1lspBkANXd5yRw==
+X-Received: by 2002:a9d:6e83:0:b0:605:4a01:1d8c with SMTP id a3-20020a9d6e83000000b006054a011d8cmr8928613otr.174.1651007292783;
+        Tue, 26 Apr 2022 14:08:12 -0700 (PDT)
+Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id t28-20020a056808159c00b00325361c4fbesm2553898oiw.5.2022.04.26.14.08.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 14:08:11 -0700 (PDT)
+Date:   Tue, 26 Apr 2022 14:10:08 -0700
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Cc:     Maxime Ripard <maxime@cerno.tech>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Rob Clark <robdclark@gmail.com>, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robert Foss <robert.foss@linaro.org>
+Subject: Re: [PATCH 2/2] Revert "drm: of: Lookup if child node has panel or
+ bridge"
+Message-ID: <YmhfsGAJjSmSPs/l@ripper>
+References: <20220421082358.ivpmtak3ednvddrc@houat>
+ <YmEdAVwZuA7Wo1Ch@aptenodytes>
+ <YmelPCcWCCjALtRU@aptenodytes>
+ <YmfYi5G7hMKLAH3T@pendragon.ideasonboard.com>
+ <YmfoiD0r8MD/kr1N@aptenodytes>
+ <20220426125401.yyrhg6aeafdjw4ad@houat>
+ <20220426125544.mroteu3hvyvlyb6g@houat>
+ <Ymft0SM5GNHXjkVb@aptenodytes>
+ <20220426131944.b26rqqmk7gpcplbg@houat>
+ <Ymf4nmQAkEciwyt/@aptenodytes>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <B621B4DD-5D11-4F0E-AFF5-F8684AE37E57@nvidia.com>
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+In-Reply-To: <Ymf4nmQAkEciwyt/@aptenodytes>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 04:26:08PM -0400, Zi Yan wrote:
-> Thanks for reporting the issue. Do you have a reproducer I can use to debug the code?
+On Tue 26 Apr 06:50 PDT 2022, Paul Kocialkowski wrote:
 
-Nothing fancy. It just try to remove and add back each memory section.
+> On Tue 26 Apr 22, 15:19, Maxime Ripard wrote:
+> > On Tue, Apr 26, 2022 at 03:04:17PM +0200, Paul Kocialkowski wrote:
+> > > On Tue 26 Apr 22, 14:55, Maxime Ripard wrote:
+> > > > On Tue, Apr 26, 2022 at 02:54:01PM +0200, Maxime Ripard wrote:
+> > > > > On Tue, Apr 26, 2022 at 02:41:44PM +0200, Paul Kocialkowski wrote:
+> > > > > > On Tue 26 Apr 22, 14:33, Laurent Pinchart wrote:
+> > > > > > > On Tue, Apr 26, 2022 at 09:54:36AM +0200, Paul Kocialkowski wrote:
+> > > > > > > > On Thu 21 Apr 22, 10:59, Paul Kocialkowski wrote:
+> > > > > > > > > On Thu 21 Apr 22, 10:23, Maxime Ripard wrote:
+> > > > > > > > > > On Thu, Apr 21, 2022 at 01:15:54PM +0530, Jagan Teki wrote:
+> > > > > > > > > > > + Linus
+> > > > > > > > > > > + Marek
+> > > > > > > > > > > + Laurent
+> > > > > > > > > > > + Robert
+> > > > > > > > > > > 
+> > > > > > > > > > > On Thu, Apr 21, 2022 at 4:40 AM Bjorn Andersson wrote:
+> > > > > > > > > > > >
+> > > > > > > > > > > > Commit '80253168dbfd ("drm: of: Lookup if child node has panel or
+> > > > > > > > > > > > bridge")' attempted to simplify the case of expressing a simple panel
+> > > > > > > > > > > > under a DSI controller, by assuming that the first non-graph child node
+> > > > > > > > > > > > was a panel or bridge.
+> > > > > > > > > > > >
+> > > > > > > > > > > > Unfortunately for non-trivial cases the first child node might not be a
+> > > > > > > > > > > > panel or bridge.  Examples of this can be a aux-bus in the case of
+> > > > > > > > > > > > DisplayPort, or an opp-table represented before the panel node.
+> > > > > > > > > > > >
+> > > > > > > > > > > > In these cases the reverted commit prevents the caller from ever finding
+> > > > > > > > > > > > a reference to the panel.
+> > > > > > > > > > > >
+> > > > > > > > > > > > This reverts commit '80253168dbfd ("drm: of: Lookup if child node has
+> > > > > > > > > > > > panel or bridge")', in favor of using an explicit graph reference to the
+> > > > > > > > > > > > panel in the trivial case as well.
+> > > > > > > > > > > 
+> > > > > > > > > > > This eventually breaks many child-based devm_drm_of_get_bridge
+> > > > > > > > > > > switched drivers.  Do you have any suggestions on how to proceed to
+> > > > > > > > > > > succeed in those use cases as well?
+> > > > > > > > > > 
+> > > > > > > > > > I guess we could create a new helper for those, like
+> > > > > > > > > > devm_drm_of_get_bridge_with_panel, or something.
+> > > > > > > > > 
+> > > > > > > > > Oh wow I feel stupid for not thinking about that.
+> > > > > > > > > 
+> > > > > > > > > Yeah I agree that it seems like the best option.
+> > > > > > > > 
+> > > > > > > > Should I prepare a patch with such a new helper?
+> > > > > > > > 
+> > > > > > > > The idea would be to keep drm_of_find_panel_or_bridge only for the of graph
+> > > > > > > > case and add one for the child node case, maybe:
+> > > > > > > > drm_of_find_child_panel_or_bridge.
+> > > > > > > > 
+> > > > > > > > I really don't have a clear idea of which driver would need to be switched
+> > > > > > > > over though. Could someone (Jagan?) let me know where it would be needed?
+> > > > > > > > 
+> > > > > > > > Are there cases where we could both expect of graph and child node?
+> > > > > > > > (i.e. does the new helper also need to try via of graph?)
+> > > > > > > 
+> > > > > > > I still think we should use OF graph uncondtionally, even in the DSI
+> > > > > > > case. We need to ensure backward-compatibility, but I'd like new
+> > > > > > > bindings (and thus new drivers) to always use OF graph.
+> > > > > > 
+> > > > > > I just went over the thread on "drm: of: Improve error handling in bridge/panel
+> > > > > > detection" again and I'm no longer sure there's actually still an issue that
+> > > > > > stands, with the fix that allows returning -ENODEV when possible.
+> > > > > > 
+> > > > > > The remaining issue that was brought up was with a connector node, but it should
+> > > > > > be up to the driver to detect that and avoid calling drm_of_find_panel_or_bridge
+> > > > > > in such situations.
+> > > > > > 
+> > > > > > So with that in mind it feels like the child node approach can be viable
+> > > > > > (and integrated in the same helper).
+> > > > > > 
+> > > > > > We might still want to favor an explicit OF graph approach, but note that
+> > > > > > dsi-controller.yaml also specifies extra properties that are specific to
+> > > > > > MIPI DSI and I'm not sure there are equivalent definitions for the OF graph
+> > > > > > approach.
+> > > > > > 
+> > > > > > What do you think?
+> > > > > 
+> > > > > I don't think Laurent's point was to move the child node away from its
+> > > > > DSI controller, that part doesn't make much sense. The panel or bridge
+> > > > > is still accessed through the DSI bus, so it very much belongs there.
+> > > > > 
+> > > > > What he meant I think was that we mandate the OF graph for all panels,
+> > > > > so for panels/bridges controlled through DCS, you would still list the
+> > > > > output through the graph.
+> > > > 
+> > > > Also, we're already in a bit of a mess right now. I don't think rushing
+> > > > that kind of patches in a (late) rc is making much sense, but as I said,
+> > > > if you want to start working on this, then I'll take a revert for the
+> > > > next rc, and then we can work calmly on this.
+> > > 
+> > > As I understand it we either have some broken stuff because of the revert of:
+> > > - drm: of: Lookup if child node has panel or bridge
+> > > - drm: of: Properly try all possible cases for bridge/panel detection
+> > > 
+> > > because the child node is already used in places, or we can have broken stuff
+> > > because with the patches because with these two patches -ENODEV is no longer
+> > > returned.
+> > > 
+> > > Now with the extra patch that I sent:
+> > > - drm: of: Improve error handling in bridge/panel detection
+> > > 
+> > > we get -ENODEV back, except for the connector case but this one should be
+> > > handled in drivers directly and drm_of_find_panel_or_bridge should not be
+> > > called in that situation.
+> > > 
+> > > So all in all it seems that all the pieces are there, unless I'm missing
+> > > something.
+> > > 
+> > > What do you think?
+> > 
+> > If Bjorn and Thierry can confirm that it indeeds work in their case,
+> > I'll be happy to apply those patches as well.
+> 
+> I still think we'd need a fix for Bjorn's connector case though.
+> Not sure I would be confident providing that one without the hardware
+> to test with.
+> 
+> Bjorn, what do you think?
+> 
 
-#!/usr/bin/env python3
-# SPDX-License-Identifier: GPL-2.0
+I'm okay with the idea that it's up the driver to check that the output
+port references an usb-c-connector - either before the call or upon
+drm_of_find_panel_or_bridge() returning an error.
 
-import os
-import re
-import subprocess
-
-
-def mem_iter():
-    base_dir = '/sys/devices/system/memory/'
-    for curr_dir in os.listdir(base_dir):
-        if re.match(r'memory\d+', curr_dir):
-            yield base_dir + curr_dir
-
-
-if __name__ == '__main__':
-    print('- Try to remove each memory section and then add it back.')
-    for mem_dir in mem_iter():
-        status = f'{mem_dir}/online'
-        if open(status).read().rstrip() == '1':
-            # This could expectedly fail due to many reasons.
-            section = os.path.basename(mem_dir)
-            print(f'- Try to remove {section}.')
-            proc = subprocess.run([f'echo 0 | sudo tee {status}'], shell=True)
-            if proc.returncode == 0:
-                print(f'- Try to add {section}.')
-                subprocess.check_call([f'echo 1 | sudo tee {status}'], shell=True)
-
+Regards,
+Bjorn
