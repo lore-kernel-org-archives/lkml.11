@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FC93C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:27:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D9D4C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:27:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344711AbiDZJ2z (ORCPT
+        id S1347652AbiDZJ3N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:28:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47456 "EHLO
+        Tue, 26 Apr 2022 05:29:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347399AbiDZJFe (ORCPT
+        with ESMTP id S1347431AbiDZJFh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:05:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 411961186CB;
-        Tue, 26 Apr 2022 01:44:37 -0700 (PDT)
+        Tue, 26 Apr 2022 05:05:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C54AA12010E;
+        Tue, 26 Apr 2022 01:44:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D0EE4B81CFE;
-        Tue, 26 Apr 2022 08:44:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41567C385A0;
-        Tue, 26 Apr 2022 08:44:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FEB16133B;
+        Tue, 26 Apr 2022 08:44:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 533DEC385AE;
+        Tue, 26 Apr 2022 08:44:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962674;
-        bh=Th76JKZ9CsbzO2LRXhEGwGKGzEEhBTm8VcaD4c9LbaA=;
+        s=korg; t=1650962680;
+        bh=bOp/BP4lyuCh0nGRQPZAmPuB9T8MC+2Xng4CvR1ltGc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2Begww2HVPuBUi2UaeYTPCPmeh5Q+Hps4Pw61UnBv0yji2fKLWRUH7lke4sj+iJ0I
-         bWICtkkIyRHpFsOtkbNejGt38aUMYWejUkWylW8hK065RHY+ySd5ujwa3PIS7dMWQB
-         HqL40XkpKhmLbktL4q4X6Vd0F91P90s2rH3aiAeE=
+        b=RvpJ2uZcxDfNjBWXlg0rNrPVOOAdV/uPEE8lXYLAw5OF2s0n3NxrdngjSvfbL5iB+
+         /l3cIVGDPmAEtPiP8t5JKpPs/LBLTzxy3okArkj/jBrN3f9yOibkgPW/xyy6tA5qGu
+         obxb/lrobmNeWWTz2Ss79aeIrUEe1sgnOlVUkXco=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bernice Zhang <bernice.zhang@intel.com>,
+        stable@vger.kernel.org, Tony Zhu <tony.zhu@intel.com>,
         Dave Jiang <dave.jiang@intel.com>,
         Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 050/146] dmaengine: idxd: add RO check for wq max_batch_size write
-Date:   Tue, 26 Apr 2022 10:20:45 +0200
-Message-Id: <20220426081751.477473628@linuxfoundation.org>
+Subject: [PATCH 5.17 052/146] dmaengine: idxd: skip clearing device context when device is read-only
+Date:   Tue, 26 Apr 2022 10:20:47 +0200
+Message-Id: <20220426081751.532726298@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -52,36 +52,37 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Dave Jiang <dave.jiang@intel.com>
 
-[ Upstream commit 66903461ffed0b66fc3e0200082d4e09365aacdc ]
+[ Upstream commit 1cd8e751d96c43ece3f6842ac2244a37d9332c3a ]
 
-Block wq_max_batch_size_store() when the device is configured as read-only
-and not configurable.
+If the device shows up as read-only configuration, skip the clearing of the
+state as the context must be preserved for device re-enable after being
+disabled.
 
-Fixes: e7184b159dd3 ("dmaengine: idxd: add support for configurable max wq batch size")
-Reported-by: Bernice Zhang <bernice.zhang@intel.com>
-Tested-by: Bernice Zhang <bernice.zhang@intel.com>
+Fixes: 0dcfe41e9a4c ("dmanegine: idxd: cleanup all device related bits after disabling device")
+Reported-by: Tony Zhu <tony.zhu@intel.com>
+Tested-by: Tony Zhu <tony.zhu@intel.com>
 Signed-off-by: Dave Jiang <dave.jiang@intel.com>
-Link: https://lore.kernel.org/r/164971493551.2201159.1942042593642155209.stgit@djiang5-desk3.ch.intel.com
+Link: https://lore.kernel.org/r/164971479479.2200566.13980022473526292759.stgit@djiang5-desk3.ch.intel.com
 Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/idxd/sysfs.c | 3 +++
+ drivers/dma/idxd/device.c | 3 +++
  1 file changed, 3 insertions(+)
 
-diff --git a/drivers/dma/idxd/sysfs.c b/drivers/dma/idxd/sysfs.c
-index 7e19ab92b61a..6c41d429bd89 100644
---- a/drivers/dma/idxd/sysfs.c
-+++ b/drivers/dma/idxd/sysfs.c
-@@ -939,6 +939,9 @@ static ssize_t wq_max_batch_size_store(struct device *dev, struct device_attribu
- 	u64 batch_size;
- 	int rc;
+diff --git a/drivers/dma/idxd/device.c b/drivers/dma/idxd/device.c
+index 5a0535a0f850..f652da6ab47d 100644
+--- a/drivers/dma/idxd/device.c
++++ b/drivers/dma/idxd/device.c
+@@ -708,6 +708,9 @@ static void idxd_device_wqs_clear_state(struct idxd_device *idxd)
  
+ void idxd_device_clear_state(struct idxd_device *idxd)
+ {
 +	if (!test_bit(IDXD_FLAG_CONFIGURABLE, &idxd->flags))
-+		return -EPERM;
++		return;
 +
- 	if (wq->state != IDXD_WQ_DISABLED)
- 		return -EPERM;
- 
+ 	idxd_groups_clear_state(idxd);
+ 	idxd_engines_clear_state(idxd);
+ 	idxd_device_wqs_clear_state(idxd);
 -- 
 2.35.1
 
