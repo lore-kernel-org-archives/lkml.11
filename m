@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93177C4707A
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:12:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7F8DC4167D
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:12:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347329AbiDZJOH (ORCPT
+        id S1347757AbiDZJOy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:14:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55622 "EHLO
+        Tue, 26 Apr 2022 05:14:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347644AbiDZIvt (ORCPT
+        with ESMTP id S1347190AbiDZIvM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:51:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8422DD1CFD;
-        Tue, 26 Apr 2022 01:40:43 -0700 (PDT)
+        Tue, 26 Apr 2022 04:51:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E45A175315;
+        Tue, 26 Apr 2022 01:39:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F52F6090C;
-        Tue, 26 Apr 2022 08:40:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2F94C385A4;
-        Tue, 26 Apr 2022 08:40:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AFD72B81D0A;
+        Tue, 26 Apr 2022 08:39:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0478FC385A4;
+        Tue, 26 Apr 2022 08:39:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962434;
-        bh=zSDmJ6fUt5MMEw2xJrfGFiI+Dx6P8QzmJvl3KZzetKk=;
+        s=korg; t=1650962376;
+        bh=pLJV1qtoBgUejyTtl1bi9Y8qfqHAmqzfVAIQozwD2d8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dF1ficWfjAtWfUaQbaA6+kyBPFUMgMEXhcB3FMHnuwRYYxrIQHa01zzKnJb69bgWq
-         0EjyYsdEpv02lnqpzSbtYc4IGZdgjk1CMYns4Z5sZE6Fa/fWkt5N4lfteDP+UO3o0n
-         hCAGhnviVsJKpEkL0XWkkmLSka/EV6J94FLwiTBM=
+        b=AOU+akwHJmKN2xFiv3FaMbO6A7ffQrqBDHOdhyoGkQIzz+GsTgAJv0qT9Sbz4p+Z9
+         +oI5rVamUzt2LyAo07K1BkQ6o0V+WeF9i9e+767o7eFY0swP5PFgp35GMAoO1zUzyW
+         g6SMO71CLWf0JCH2jisbOP0Yoo67Tu+XvUZe1NgM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
-        Madhavan Srinivasan <maddy@linux.vnet.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Keith Busch <kbusch@kernel.org>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 096/124] powerpc/perf: Fix power10 event alternatives
-Date:   Tue, 26 Apr 2022 10:21:37 +0200
-Message-Id: <20220426081750.029063718@linuxfoundation.org>
+Subject: [PATCH 5.15 074/124] nvme: add a quirk to disable namespace identifiers
+Date:   Tue, 26 Apr 2022 10:21:15 +0200
+Message-Id: <20220426081749.405439554@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -52,96 +52,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+From: Christoph Hellwig <hch@lst.de>
 
-[ Upstream commit c6cc9a852f123301d5271f1484df8e961b2b64f1 ]
+[ Upstream commit 00ff400e6deee00f7b15e200205b2708b63b8cf6 ]
 
-When scheduling a group of events, there are constraint checks done to
-make sure all events can go in a group. Example, one of the criteria is
-that events in a group cannot use the same PMC. But platform specific
-PMU supports alternative event for some of the event codes. During
-perf_event_open(), if any event group doesn't match constraint check
-criteria, further lookup is done to find alternative event.
+Add a quirk to disable using and exporting namespace identifiers for
+controllers where they are broken beyond repair.
 
-By current design, the array of alternatives events in PMU code is
-expected to be sorted by column 0. This is because in
-find_alternative() the return criteria is based on event code
-comparison. ie. "event < ev_alt[i][0])". This optimisation is there
-since find_alternative() can be called multiple times. In power10 PMU
-code, the alternative event array is not sorted properly and hence there
-is breakage in finding alternative event.
+The most directly visible problem with non-unique namespace identifiers
+is that they break the /dev/disk/by-id/ links, with the link for a
+supposedly unique identifier now pointing to one of multiple possible
+namespaces that share the same ID, and a somewhat random selection of
+which one actually shows up.
 
-To work with existing logic, fix the alternative event array to be
-sorted by column 0 for power10-pmu.c
-
-Results:
-
-In case where an alternative event is not chosen when we could, events
-will be multiplexed. ie, time sliced where it could actually run
-concurrently.
-
-Example, in power10 PM_INST_CMPL_ALT(0x00002) has alternative event,
-PM_INST_CMPL(0x500fa). Without the fix, if a group of events with PMC1
-to PMC4 is used along with PM_INST_CMPL_ALT, it will be time sliced
-since all programmable PMC's are consumed already. But with the fix,
-when it picks alternative event on PMC5, all events will run
-concurrently.
-
-Before:
-
- # perf stat -e r00002,r100fc,r200fa,r300fc,r400fc
-
- Performance counter stats for 'system wide':
-
-         328668935      r00002               (79.94%)
-          56501024      r100fc               (79.95%)
-          49564238      r200fa               (79.95%)
-               376      r300fc               (80.19%)
-               660      r400fc               (79.97%)
-
-       4.039150522 seconds time elapsed
-
-With the fix, since alternative event is chosen to run on PMC6, events
-will be run concurrently.
-
-After:
-
- # perf stat -e r00002,r100fc,r200fa,r300fc,r400fc
-
- Performance counter stats for 'system wide':
-
-          23596607      r00002
-           4907738      r100fc
-           2283608      r200fa
-               135      r300fc
-               248      r400fc
-
-       1.664671390 seconds time elapsed
-
-Fixes: a64e697cef23 ("powerpc/perf: power10 Performance Monitoring support")
-Signed-off-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
-Reviewed-by: Madhavan Srinivasan <maddy@linux.vnet.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220419114828.89843-2-atrajeev@linux.vnet.ibm.com
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Keith Busch <kbusch@kernel.org>
+Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/perf/power10-pmu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/nvme/host/core.c | 24 ++++++++++++++++++------
+ drivers/nvme/host/nvme.h |  5 +++++
+ 2 files changed, 23 insertions(+), 6 deletions(-)
 
-diff --git a/arch/powerpc/perf/power10-pmu.c b/arch/powerpc/perf/power10-pmu.c
-index 9dd75f385837..07ca62d084d9 100644
---- a/arch/powerpc/perf/power10-pmu.c
-+++ b/arch/powerpc/perf/power10-pmu.c
-@@ -91,8 +91,8 @@ extern u64 PERF_REG_EXTENDED_MASK;
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index 4c35e9acf8ee..f2bb57615762 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -1354,6 +1354,8 @@ static int nvme_process_ns_desc(struct nvme_ctrl *ctrl, struct nvme_ns_ids *ids,
+ 				 warn_str, cur->nidl);
+ 			return -1;
+ 		}
++		if (ctrl->quirks & NVME_QUIRK_BOGUS_NID)
++			return NVME_NIDT_EUI64_LEN;
+ 		memcpy(ids->eui64, data + sizeof(*cur), NVME_NIDT_EUI64_LEN);
+ 		return NVME_NIDT_EUI64_LEN;
+ 	case NVME_NIDT_NGUID:
+@@ -1362,6 +1364,8 @@ static int nvme_process_ns_desc(struct nvme_ctrl *ctrl, struct nvme_ns_ids *ids,
+ 				 warn_str, cur->nidl);
+ 			return -1;
+ 		}
++		if (ctrl->quirks & NVME_QUIRK_BOGUS_NID)
++			return NVME_NIDT_NGUID_LEN;
+ 		memcpy(ids->nguid, data + sizeof(*cur), NVME_NIDT_NGUID_LEN);
+ 		return NVME_NIDT_NGUID_LEN;
+ 	case NVME_NIDT_UUID:
+@@ -1370,6 +1374,8 @@ static int nvme_process_ns_desc(struct nvme_ctrl *ctrl, struct nvme_ns_ids *ids,
+ 				 warn_str, cur->nidl);
+ 			return -1;
+ 		}
++		if (ctrl->quirks & NVME_QUIRK_BOGUS_NID)
++			return NVME_NIDT_UUID_LEN;
+ 		uuid_copy(&ids->uuid, data + sizeof(*cur));
+ 		return NVME_NIDT_UUID_LEN;
+ 	case NVME_NIDT_CSI:
+@@ -1466,12 +1472,18 @@ static int nvme_identify_ns(struct nvme_ctrl *ctrl, unsigned nsid,
+ 	if ((*id)->ncap == 0) /* namespace not allocated or attached */
+ 		goto out_free_id;
  
- /* Table of alternatives, sorted by column 0 */
- static const unsigned int power10_event_alternatives[][MAX_ALT] = {
--	{ PM_CYC_ALT,			PM_CYC },
- 	{ PM_INST_CMPL_ALT,		PM_INST_CMPL },
-+	{ PM_CYC_ALT,			PM_CYC },
+-	if (ctrl->vs >= NVME_VS(1, 1, 0) &&
+-	    !memchr_inv(ids->eui64, 0, sizeof(ids->eui64)))
+-		memcpy(ids->eui64, (*id)->eui64, sizeof(ids->eui64));
+-	if (ctrl->vs >= NVME_VS(1, 2, 0) &&
+-	    !memchr_inv(ids->nguid, 0, sizeof(ids->nguid)))
+-		memcpy(ids->nguid, (*id)->nguid, sizeof(ids->nguid));
++
++	if (ctrl->quirks & NVME_QUIRK_BOGUS_NID) {
++		dev_info(ctrl->device,
++			 "Ignoring bogus Namespace Identifiers\n");
++	} else {
++		if (ctrl->vs >= NVME_VS(1, 1, 0) &&
++		    !memchr_inv(ids->eui64, 0, sizeof(ids->eui64)))
++			memcpy(ids->eui64, (*id)->eui64, sizeof(ids->eui64));
++		if (ctrl->vs >= NVME_VS(1, 2, 0) &&
++		    !memchr_inv(ids->nguid, 0, sizeof(ids->nguid)))
++			memcpy(ids->nguid, (*id)->nguid, sizeof(ids->nguid));
++	}
+ 
+ 	return 0;
+ 
+diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
+index 0628e2d802e7..f1e5c7564cae 100644
+--- a/drivers/nvme/host/nvme.h
++++ b/drivers/nvme/host/nvme.h
+@@ -144,6 +144,11 @@ enum nvme_quirks {
+ 	 * encoding the generation sequence number.
+ 	 */
+ 	NVME_QUIRK_SKIP_CID_GEN			= (1 << 17),
++
++	/*
++	 * Reports garbage in the namespace identifiers (eui64, nguid, uuid).
++	 */
++	NVME_QUIRK_BOGUS_NID			= (1 << 18),
  };
  
- static int power10_get_alternatives(u64 event, unsigned int flags, u64 alt[])
+ /*
 -- 
 2.35.1
 
