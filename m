@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23BFFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:34:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BF22C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:34:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344063AbiDZHhi (ORCPT
+        id S1344057AbiDZHhp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 03:37:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41462 "EHLO
+        Tue, 26 Apr 2022 03:37:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344061AbiDZHha (ORCPT
+        with ESMTP id S245231AbiDZHhd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 03:37:30 -0400
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F1751331BB
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 00:34:24 -0700 (PDT)
+        Tue, 26 Apr 2022 03:37:33 -0400
+Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [IPv6:2001:4b98:dc4:8::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ABA01331AF
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 00:34:27 -0700 (PDT)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id F31C340004;
-        Tue, 26 Apr 2022 07:34:20 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 782F5240003;
+        Tue, 26 Apr 2022 07:34:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1650958462;
+        t=1650958466;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=P5bJaWA94MbeEcumkuk0ZButgw7OJvfuu3YZ1ypnOaY=;
-        b=DKn2uSinHob9BtRTzHJGM+QzhKBlbJD2jEsOnPODIccuNrnwgPsZH6lJBrJcOnzgiIA1Uo
-        nKKa2HU27uWChoaV4Zo236TMxDYI9h0ZVFVPkJI9QHw1wkzlU794vDsnQSDfRrSeu+sUFx
-        5JQZfOLab7utin9mS+txApqj124u6vw5sNS5LC11/qPFkuKK2UXOcUATjVbwqm9Y8Hp012
-        CeNQjiYQgX7lQpyUFusrzaHFTsHW2nQk/UjZ3AFfmo6gSBUjLUSVGQY9xV6k8Qz11cbZWa
-        jfMWHHh/NrDtgMTS9/1dltGxCcTIcEOQd6Bz0St7FYqPX5bPC/fA53OAHpAntA==
+        bh=J7YqhSKrC6vTx6OTh1GjxytRJNzGy9mqDr77XFHjCPs=;
+        b=mTJhjFFaz1YVlT4I4REZKOw6I09IhEYF/GucMkR+GC+Pq8BS5ApXyW+cqlY+TbiAyZ8BnV
+        Mw80yYVcleIrHonCtHFZHwGojAt6mhnERa+57ZLi7kSTduitPEV8qWAvq0v/1SPsFgb+Va
+        9mgQrUBNUs8XTdIsgGKwMtj31vHvGy8Lc2ZI2szNmG2TSQHEtAadO82CSPXIqsjskDhC3m
+        DFr5GXb0EiEJ0gsToP0qae+3AVINE3UFLw4B7v2XfXDJ2Bzx/W19P492bpFF7+yr3pprll
+        cRQMM7vU81dYe/vL0yhcs/erx4ZkIZ/lbzgaOZzdhwFRf74d0EV2t80lg5SQZA==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Jean-Marc Eurin <jmeurin@google.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>,
         Richard Weinberger <richard@nod.at>,
         Vignesh Raghavendra <vigneshr@ti.com>
-Cc:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH v4 2/3] mtd: mtdoops: Create a header structure for the saved mtdoops.
-Date:   Tue, 26 Apr 2022 09:34:20 +0200
-Message-Id: <20220426073420.36975-1-miquel.raynal@bootlin.com>
+Cc:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 1/3] mtd: mtdoops: Fix the size of the header read buffer.
+Date:   Tue, 26 Apr 2022 09:34:25 +0200
+Message-Id: <20220426073425.37044-1-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220421234244.2172003-3-jmeurin@google.com>
+In-Reply-To: <20220421234244.2172003-2-jmeurin@google.com>
 References: 
 MIME-Version: 1.0
 X-linux-mtd-patch-notification: thanks
-X-linux-mtd-patch-commit: b'0bd359ee712d9d3e757971ded4094c8ba006acd4'
+X-linux-mtd-patch-commit: b'fbb83e546ea4543ab0c59dcbfc5a5a1471ea1806'
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-04-21 at 23:42:43 UTC, Jean-Marc Eurin wrote:
-> Create a dump header to enable the addition of fields without having
-> to modify the rest of the code.
+On Thu, 2022-04-21 at 23:42:42 UTC, Jean-Marc Eurin wrote:
+> The read buffer size depends on the MTDOOPS_HEADER_SIZE.
 > 
-> Reported-by: kernel test robot <lkp@intel.com>
+> Tested: Changed the header size, it doesn't panic, header is still
+> read/written correctly.
+> 
 > Signed-off-by: Jean-Marc Eurin <jmeurin@google.com>
 
 Applied to https://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git mtd/next, thanks.
