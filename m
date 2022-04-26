@@ -2,68 +2,280 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8292EC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 01:56:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98B07C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 01:58:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241602AbiDZB7Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 21:59:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37818 "EHLO
+        id S241633AbiDZCBo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 22:01:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229834AbiDZB7X (ORCPT
+        with ESMTP id S229834AbiDZCBn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 21:59:23 -0400
-Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB9C46FA0B;
-        Mon, 25 Apr 2022 18:56:17 -0700 (PDT)
-Date:   Mon, 25 Apr 2022 18:56:08 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1650938176;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=eknS5mZjx4pi0PW50DuACc81xMEJlhElzkFotI9xECI=;
-        b=Zy5KwFrskWKcY3bLKvYR+K/romXFvT8ubAkmxpL922s/9KYhDYlCYyxcYgBNWmO6yRbAyC
-        IFVV3DYFHNBmr/F90mhh7Pla2zpFxQqPYO7rgaZdV6JsTx9RICKkLRnpAIprEhvq78S2W5
-        GPndu/sXoZVZyLWfyONdz6s6ipZHESo=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     David Vernet <void@manifault.com>
-Cc:     akpm@linux-foundation.org, tj@kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        cgroups@vger.kernel.org, hannes@cmpxchg.org, mhocko@kernel.org,
-        shakeelb@google.com, kernel-team@fb.com
-Subject: Re: [PATCH v2 1/5] cgroups: Refactor children cgroups in memcg tests
-Message-ID: <YmdROKOEfiP1rk8q@carbon>
-References: <20220423155619.3669555-1-void@manifault.com>
- <20220423155619.3669555-2-void@manifault.com>
+        Mon, 25 Apr 2022 22:01:43 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 635247F213;
+        Mon, 25 Apr 2022 18:58:32 -0700 (PDT)
+X-UUID: 9195ffa0bb584458bdb89e262764789c-20220426
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:65318cd4-b088-48af-9168-170ab149b110,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:faefae9,CLOUDID:7be916f0-06b0-4305-bfbf-554bfc9d151a,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: 9195ffa0bb584458bdb89e262764789c-20220426
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <ck.hu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1969511146; Tue, 26 Apr 2022 09:58:27 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Tue, 26 Apr 2022 09:58:26 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 26 Apr
+ 2022 09:58:25 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 26 Apr 2022 09:58:24 +0800
+Message-ID: <a9e026c2018668057b8482c27eeae991667c46d3.camel@mediatek.com>
+Subject: Re: [PATCH v1, 1/1] drm/mediatek: add lut diff flag for new gamma
+ hardware support
+From:   CK Hu <ck.hu@mediatek.com>
+To:     Yongqiang Niu <yongqiang.niu@mediatek.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>
+CC:     Yongqiang Niu <yongqiang.niu@mediatek.corp-partner.google.com>,
+        <devicetree@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        David Airlie <airlied@linux.ie>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        "Dennis YC Hsieh" <dennis-yc.hsieh@mediatek.com>,
+        Fabien Parent <fparent@baylibre.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <linux-arm-kernel@lists.infradead.org>
+Date:   Tue, 26 Apr 2022 09:58:24 +0800
+In-Reply-To: <20220420130617.814-2-yongqiang.niu@mediatek.com>
+References: <20220420130617.814-1-yongqiang.niu@mediatek.com>
+         <20220420130617.814-2-yongqiang.niu@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220423155619.3669555-2-void@manifault.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 23, 2022 at 08:56:17AM -0700, David Vernet wrote:
-> In test_memcg_min() and test_memcg_low(), there is an array of four sibling
-> cgroups. All but one of these sibling groups does a 50MB allocation, and
-> the group that does no allocation is the third of four in the array.  This
-> is not a problem per se, but makes it a bit tricky to do some assertions in
-> test_memcg_low(), as we want to make assertions on the siblings based on
-> whether or not they performed allocations. Having a static index before
-> which all groups have performed an allocation makes this cleaner.
-> 
-> This patch therefore reorders the sibling groups so that the group that
-> performs no allocations is the last in the array. A follow-on patch will
-> leverage this to fix a bug in the test that incorrectly asserts that a
-> sibling group that had performed an allocation, but only had protection
-> from its parent, will not observe any memory.events.low events during
-> reclaim.
-> 
-> Signed-off-by: David Vernet <void@manifault.com>
+Hi, Yongqiang:
 
-Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
+On Wed, 2022-04-20 at 21:06 +0800, Yongqiang Niu wrote:
+> From: Yongqiang Niu <yongqiang.niu@mediatek.corp-partner.google.com>
+> 
+> mt8183 gamma module usage is different with before soc,
+> gamma odd(index start from 0) lut value set to hardware
+> register should be
+> the difference of current lut value with last lut value.
+> 
+> gamma function support both increase and decrease lut.
 
-Thanks!
+How to set decrease lut?
+
+Original lut:
+12 10 8 6 4 2
+
+Does diff lut look like this?
+12 [2] 8 [2] 4 [2]
+
+How does hardware know that this is increase lut or decrease lut?
+
+> chrome os app set increase lut normally.
+> 
+> for increase lut example, chrome os user space set lut
+> like this(only r chanel for example):
+> 2 4 6 8 10 12.
+> 1) mt8183 gamma driver should set the gamma lut to hardware
+> register like this:
+> 2 [2] 6 [8] 10 [2]
+
+2 [2] 6 [2] 10 [2]
+
+> the value with [] is the difference value
+> 2) gamma hardware will restore the lut when apply gamma
+> function to display
+
+I don't know why do you mention the 'restore', any modification is
+related to this?
+
+> 
+> Signed-off-by: Yongqiang Niu <
+> yongqiang.niu@mediatek.corp-partner.google.com>
+> ---
+>  drivers/gpu/drm/mediatek/mtk_disp_aal.c   |  4 ++-
+>  drivers/gpu/drm/mediatek/mtk_disp_drv.h   |  2 +-
+>  drivers/gpu/drm/mediatek/mtk_disp_gamma.c | 34 +++++++++++++++++++
+> ----
+>  3 files changed, 32 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/mediatek/mtk_disp_aal.c
+> b/drivers/gpu/drm/mediatek/mtk_disp_aal.c
+> index f46d4ab73d6a..e6378b074a17 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_disp_aal.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_disp_aal.c
+> @@ -23,6 +23,7 @@
+>  
+>  struct mtk_disp_aal_data {
+>  	bool has_gamma;
+> +	bool lut_diff;
+>  };
+>  
+>  /**
+> @@ -66,7 +67,7 @@ void mtk_aal_gamma_set(struct device *dev, struct
+> drm_crtc_state *state)
+>  	struct mtk_disp_aal *aal = dev_get_drvdata(dev);
+>  
+>  	if (aal->data && aal->data->has_gamma)
+> -		mtk_gamma_set_common(aal->regs, state);
+> +		mtk_gamma_set_common(aal->regs, state, aal->data-
+> >lut_diff);
+
+gamma in aal does not support diff lut, so this would make things
+simple.
+
+mtk_gamma_set_common(aal->regs, state, false);
+
+Regards,
+CK
+
+>  }
+>  
+>  void mtk_aal_start(struct device *dev)
+> @@ -148,6 +149,7 @@ static int mtk_disp_aal_remove(struct
+> platform_device *pdev)
+>  
+>  static const struct mtk_disp_aal_data mt8173_aal_driver_data = {
+>  	.has_gamma = true,
+> +	.lut_diff = false,
+>  };
+>  
+>  static const struct of_device_id mtk_disp_aal_driver_dt_match[] = {
+> diff --git a/drivers/gpu/drm/mediatek/mtk_disp_drv.h
+> b/drivers/gpu/drm/mediatek/mtk_disp_drv.h
+> index 86c3068894b1..3380651c6707 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_disp_drv.h
+> +++ b/drivers/gpu/drm/mediatek/mtk_disp_drv.h
+> @@ -51,7 +51,7 @@ void mtk_gamma_config(struct device *dev, unsigned
+> int w,
+>  		      unsigned int h, unsigned int vrefresh,
+>  		      unsigned int bpc, struct cmdq_pkt *cmdq_pkt);
+>  void mtk_gamma_set(struct device *dev, struct drm_crtc_state
+> *state);
+> -void mtk_gamma_set_common(void __iomem *regs, struct drm_crtc_state
+> *state);
+> +void mtk_gamma_set_common(void __iomem *regs, struct drm_crtc_state
+> *state, bool lut_diff);
+>  void mtk_gamma_start(struct device *dev);
+>  void mtk_gamma_stop(struct device *dev);
+>  
+> diff --git a/drivers/gpu/drm/mediatek/mtk_disp_gamma.c
+> b/drivers/gpu/drm/mediatek/mtk_disp_gamma.c
+> index 3a5815ab4079..fec2e9a5b60d 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_disp_gamma.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_disp_gamma.c
+> @@ -27,6 +27,7 @@
+>  
+>  struct mtk_disp_gamma_data {
+>  	bool has_dither;
+> +	bool lut_diff;
+>  };
+>  
+>  /*
+> @@ -53,12 +54,13 @@ void mtk_gamma_clk_disable(struct device *dev)
+>  	clk_disable_unprepare(gamma->clk);
+>  }
+>  
+> -void mtk_gamma_set_common(void __iomem *regs, struct drm_crtc_state
+> *state)
+> +void mtk_gamma_set_common(void __iomem *regs, struct drm_crtc_state
+> *state, bool lut_diff)
+>  {
+>  	unsigned int i, reg;
+>  	struct drm_color_lut *lut;
+>  	void __iomem *lut_base;
+>  	u32 word;
+> +	u32 diff[3] = {0};
+>  
+>  	if (state->gamma_lut) {
+>  		reg = readl(regs + DISP_GAMMA_CFG);
+> @@ -67,9 +69,20 @@ void mtk_gamma_set_common(void __iomem *regs,
+> struct drm_crtc_state *state)
+>  		lut_base = regs + DISP_GAMMA_LUT;
+>  		lut = (struct drm_color_lut *)state->gamma_lut->data;
+>  		for (i = 0; i < MTK_LUT_SIZE; i++) {
+> -			word = (((lut[i].red >> 6) & LUT_10BIT_MASK) <<
+> 20) +
+> -				(((lut[i].green >> 6) & LUT_10BIT_MASK)
+> << 10) +
+> -				((lut[i].blue >> 6) & LUT_10BIT_MASK);
+> +
+> +			if (!lut_diff || (i % 2 == 0)) {
+> +				word = (((lut[i].red >> 6) &
+> LUT_10BIT_MASK) << 20) +
+> +					(((lut[i].green >> 6) &
+> LUT_10BIT_MASK) << 10) +
+> +					((lut[i].blue >> 6) &
+> LUT_10BIT_MASK);
+> +			} else {
+> +				diff[0] = abs((lut[i].red >> 6) -
+> (lut[i - 1].red >> 6));
+> +				diff[1] = abs((lut[i].green >> 6) -
+> (lut[i - 1].green >> 6));
+> +				diff[2] = abs((lut[i].blue >> 6) -
+> (lut[i - 1].blue >> 6));
+> +
+> +				word = ((diff[0] & LUT_10BIT_MASK) <<
+> 20) +
+> +					((diff[1] & LUT_10BIT_MASK) <<
+> 10) +
+> +					(diff[2] & LUT_10BIT_MASK);
+> +			}
+>  			writel(word, (lut_base + i * 4));
+>  		}
+>  	}
+> @@ -78,8 +91,12 @@ void mtk_gamma_set_common(void __iomem *regs,
+> struct drm_crtc_state *state)
+>  void mtk_gamma_set(struct device *dev, struct drm_crtc_state *state)
+>  {
+>  	struct mtk_disp_gamma *gamma = dev_get_drvdata(dev);
+> +	bool lut_diff = false;
+> +
+> +	if (gamma->data)
+> +		lut_diff = gamma->data->lut_diff;
+>  
+> -	mtk_gamma_set_common(gamma->regs, state);
+> +	mtk_gamma_set_common(gamma->regs, state, lut_diff);
+>  }
+>  
+>  void mtk_gamma_config(struct device *dev, unsigned int w,
+> @@ -176,10 +193,15 @@ static const struct mtk_disp_gamma_data
+> mt8173_gamma_driver_data = {
+>  	.has_dither = true,
+>  };
+>  
+> +static const struct mtk_disp_gamma_data mt8183_gamma_driver_data = {
+> +	.lut_diff = true,
+> +};
+> +
+>  static const struct of_device_id mtk_disp_gamma_driver_dt_match[] =
+> {
+>  	{ .compatible = "mediatek,mt8173-disp-gamma",
+>  	  .data = &mt8173_gamma_driver_data},
+> -	{ .compatible = "mediatek,mt8183-disp-gamma"},
+> +	{ .compatible = "mediatek,mt8183-disp-gamma",
+> +	  .data = &mt8183_gamma_driver_data},
+>  	{},
+>  };
+>  MODULE_DEVICE_TABLE(of, mtk_disp_gamma_driver_dt_match);
+
