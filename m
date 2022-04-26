@@ -2,98 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58F50C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 14:02:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0AF0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 14:02:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351389AbiDZOF3 (ORCPT
+        id S1351396AbiDZOFq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 10:05:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51096 "EHLO
+        Tue, 26 Apr 2022 10:05:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237262AbiDZOF1 (ORCPT
+        with ESMTP id S1351375AbiDZODx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 10:05:27 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 247F519689D
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 07:02:19 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id k2so5191299wrd.5
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 07:02:19 -0700 (PDT)
+        Tue, 26 Apr 2022 10:03:53 -0400
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42C2E1A82C;
+        Tue, 26 Apr 2022 07:00:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Q2GTfUc7VLX7J3kb7UZo3L6hgl7G3SCi+Soy09ZT8/Q=;
-        b=V16PSVQfUB/Or3B+sTPWN0OESvTLnOXJvVItFoiiWr+i+XWczhhBYVqK0CQKrBFUPV
-         2nQrPeuHneJbpozsMrqjc0knwusbWrNPFgRqv28DbmGNIILbFLlzBHm98vIKW6Pp1XT1
-         S//6Kt+IKv+px8Q76JYBkx1Hxff3JHR3cKMP0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Q2GTfUc7VLX7J3kb7UZo3L6hgl7G3SCi+Soy09ZT8/Q=;
-        b=ryWOh4UDkxCWdBgf5HG3ftfqgYTsJyW3yE3fgF2q7mC0Dh38sNkmXIVLTedhllcWz6
-         J06mXdy2bgDbQtZLJu022ufFp1tkfThsur0nL+5xrYKa940TubWacyBPo5FGYhAm0jd+
-         L8Z2kBmGyUWQBMhQx7DwOKzz3xN8EkmGWE54WwAtoF2IW0p1b6JxKg3xDAUrB0v6JxwY
-         EA8b0qd5ipK+JtLmqHgLYu9enm8FHggzNNGsTqHmUiwif7+yp2XFwOxpHypvVeH4aFve
-         lE9APDUNo3qeN0RMlZqjDH3pFQOLbEyZCQpb38IFYDnJmqAT6bjmLoX6YSe/cO1ejliO
-         64Hw==
-X-Gm-Message-State: AOAM531pldsLVW5tOyudlYcyFWVl9RHHHskm+yNC4tQW/DEH7hYIWzbT
-        qfOk2+reQsfkQgXxPpRI1btz/Q==
-X-Google-Smtp-Source: ABdhPJxic/QZR2BhX6akoIU8RQ/B3yNQzrr038cwGWxQtu13ObaIie5wUl501AIceUw/M1p5EPN2Vg==
-X-Received: by 2002:adf:e346:0:b0:205:97d0:50db with SMTP id n6-20020adfe346000000b0020597d050dbmr18586212wrj.257.1650981737632;
-        Tue, 26 Apr 2022 07:02:17 -0700 (PDT)
-Received: from google.com ([37.228.205.1])
-        by smtp.gmail.com with ESMTPSA id j13-20020a05600c190d00b00393ee555683sm5414256wmq.27.2022.04.26.07.02.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 07:02:17 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 14:02:15 +0000
-From:   Fabio Baltieri <fabiobaltieri@chromium.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        chrome-platform@lists.linux.dev, linux-pwm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 3/4] dt-bindings: update google,cros-ec-pwm
- documentation
-Message-ID: <Ymf7Z/BJQSWO6pjE@google.com>
-References: <20220420141556.681212-1-fabiobaltieri@chromium.org>
- <20220420141556.681212-4-fabiobaltieri@chromium.org>
- <YmcZn8mWQveT5HzT@robh.at.kernel.org>
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1650981647; x=1682517647;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=2kGoDhwDDU4SUv0yonPrLgPdKoDB23uSHWFWBT2qSyo=;
+  b=ZyvvWUzNOp8iKFNsAEIBTB2cipSq4YEOVRY/9f57a1+CXJV75tgoo00b
+   OKQpQexRYzEiFE1/1sTKFOks4IH/tQdhlaKTJIXgGolUDWb56P6zwFovm
+   bCRnKLAdESugIo+3xLQ9FCvl+GuoBzVzmv9YzY9QKwiDaDHcjph4oQb1I
+   Y=;
+X-IronPort-AV: E=Sophos;i="5.90,291,1643673600"; 
+   d="scan'208";a="83172134"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-4ba5c7da.us-east-1.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 26 Apr 2022 14:00:20 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-iad-1a-4ba5c7da.us-east-1.amazon.com (Postfix) with ESMTPS id 4F20630008C;
+        Tue, 26 Apr 2022 14:00:14 +0000 (UTC)
+Received: from EX13D02UWB001.ant.amazon.com (10.43.161.240) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.32; Tue, 26 Apr 2022 13:59:47 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (10.43.61.77) by
+ EX13D02UWB001.ant.amazon.com (10.43.161.240) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.32; Tue, 26 Apr 2022 13:59:47 +0000
+Received: from dev-dsk-alisaidi-1d-b9a0e636.us-east-1.amazon.com
+ (172.19.181.128) by mail-relay.amazon.com (10.43.61.169) with Microsoft SMTP
+ Server id 15.0.1497.32 via Frontend Transport; Tue, 26 Apr 2022 13:59:46
+ +0000
+Received: by dev-dsk-alisaidi-1d-b9a0e636.us-east-1.amazon.com (Postfix, from userid 5131138)
+        id 5192F20ED; Tue, 26 Apr 2022 13:59:45 +0000 (UTC)
+From:   Ali Saidi <alisaidi@amazon.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <german.gomez@arm.com>,
+        <leo.yan@linaro.org>, <acme@kernel.org>
+CC:     <alisaidi@amazon.com>, <benh@kernel.crashing.org>,
+        <Nick.Forrington@arm.com>, <alexander.shishkin@linux.intel.com>,
+        <andrew.kilroy@arm.com>, <james.clark@arm.com>,
+        <john.garry@huawei.com>, <jolsa@kernel.org>, <kjain@linux.ibm.com>,
+        <lihuafei1@huawei.com>, <mark.rutland@arm.com>,
+        <mathieu.poirier@linaro.org>, <mingo@redhat.com>,
+        <namhyung@kernel.org>, <peterz@infradead.org>, <will@kernel.org>
+Subject: [PATCH v7 1/5] perf: Add SNOOP_PEER flag to perf mem data struct
+Date:   Tue, 26 Apr 2022 13:59:33 +0000
+Message-ID: <20220426135937.18497-2-alisaidi@amazon.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220426135937.18497-1-alisaidi@amazon.com>
+References: <20220426135937.18497-1-alisaidi@amazon.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YmcZn8mWQveT5HzT@robh.at.kernel.org>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 04:58:55PM -0500, Rob Herring wrote:
-> On Wed, Apr 20, 2022 at 02:15:55PM +0000, Fabio Baltieri wrote:
-> > Update google,cros-ec-pwm node documentation to mention the
-> > google,cros-ec-pwm-type compatible.
-> 
-> It would be good if the subject provided some clue what the update is. 
-> Every change is an update. And all bindings are 'documentation' so 
-> that can be dropped.
+Add a flag to the perf mem data struct to signal that a request caused a
+cache-to-cache transfer of a line from a peer of the requestor and
+wasn't sourced from a lower cache level.  The line being moved from one
+peer cache to another has latency and performance implications. On Arm64
+Neoverse systems the data source can indicate a cache-to-cache transfer
+but not if the line is dirty or clean, so instead of overloading HITM
+define a new flag that indicates this type of transfer.
 
-Fair enough, I'll reword the subject and send a v6.
+Signed-off-by: Ali Saidi <alisaidi@amazon.com>
+Reviewed-by: Leo Yan <leo.yan@linaro.org>
+---
+ include/uapi/linux/perf_event.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> 
-> > 
-> > Signed-off-by: Fabio Baltieri <fabiobaltieri@chromium.org>
-> > ---
-> >  .../devicetree/bindings/pwm/google,cros-ec-pwm.yaml      | 9 ++++++++-
-> >  1 file changed, 8 insertions(+), 1 deletion(-)
-> 
-> In any case,
-> 
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> 
-
-Thanks!
-
+diff --git a/include/uapi/linux/perf_event.h b/include/uapi/linux/perf_event.h
+index d37629dbad72..7b88bfd097dc 100644
+--- a/include/uapi/linux/perf_event.h
++++ b/include/uapi/linux/perf_event.h
+@@ -1310,7 +1310,7 @@ union perf_mem_data_src {
+ #define PERF_MEM_SNOOP_SHIFT	19
+ 
+ #define PERF_MEM_SNOOPX_FWD	0x01 /* forward */
+-/* 1 free */
++#define PERF_MEM_SNOOPX_PEER	0x02 /* xfer from peer */
+ #define PERF_MEM_SNOOPX_SHIFT  38
+ 
+ /* locked instruction */
 -- 
-Fabio Baltieri
+2.32.0
+
