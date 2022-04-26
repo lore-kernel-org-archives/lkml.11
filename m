@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15951C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:23:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C86EAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:23:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237664AbiDZI0I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:26:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59394 "EHLO
+        id S1344631AbiDZI0K (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:26:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241726AbiDZIZu (ORCPT
+        with ESMTP id S1344589AbiDZIZu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:25:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 842A63A5C6;
-        Tue, 26 Apr 2022 01:22:43 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47F453A5E8;
+        Tue, 26 Apr 2022 01:22:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7C35B81CF6;
-        Tue, 26 Apr 2022 08:22:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 024CEC385BD;
-        Tue, 26 Apr 2022 08:22:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D3706617E7;
+        Tue, 26 Apr 2022 08:22:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4E7CC385A0;
+        Tue, 26 Apr 2022 08:22:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961360;
-        bh=j0gl3vwHeaKb2MMhrqnV3OYaEofGRoT5zWN/DeGK2dI=;
+        s=korg; t=1650961363;
+        bh=k/8eucsA20qaz2LGYTkOnoaj9M7PhP6Q6Ov+oEMP+zg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JWQIVHdUCvHkSQs4sxG4jMN4RgWwzTyEHoAWNImXlgxvSySVOFjMQhsR6lNONrhyC
-         YSEiuAi1GFQzBg3e+ZRw7MK8oQotFmn+EKpfSylY6uL1x2/xiByKONIy/x9KfnsSQC
-         2BXUQqcFGPBGBYbwCPunAW8FEXrkdqtUbGSWaZTI=
+        b=JSGafWDtHLotVHCeMsf5bo99HSM8QTOlMcV1OerIztHvAbTRYhNri1HdBeq/Ki2Qr
+         pRsbelRkL/E8mU7VjhKW4+vpebQZghPNzoGI6B8WeGVonfZjtfuRNJR8eU2U2OMWaR
+         r+7Grom7NdjV4DFI0Mu61tN5lc6y8N8WV0NKCpb8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 10/24] ALSA: usb-audio: Fix undefined behavior due to shift overflowing the constant
-Date:   Tue, 26 Apr 2022 10:21:04 +0200
-Message-Id: <20220426081731.676796934@linuxfoundation.org>
+        stable@vger.kernel.org, Hongbin Wang <wh_bin@126.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 11/24] vxlan: fix error return code in vxlan_fdb_append
+Date:   Tue, 26 Apr 2022 10:21:05 +0200
+Message-Id: <20220426081731.706159199@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081731.370823950@linuxfoundation.org>
 References: <20220426081731.370823950@linuxfoundation.org>
@@ -48,43 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Hongbin Wang <wh_bin@126.com>
 
-[ Upstream commit 1ef8715975de8bd481abbd0839ed4f49d9e5b0ff ]
+[ Upstream commit 7cea5560bf656b84f9ed01c0cc829d4eecd0640b ]
 
-Fix:
+When kmalloc and dst_cache_init failed,
+should return ENOMEM rather than ENOBUFS.
 
-  sound/usb/midi.c: In function ‘snd_usbmidi_out_endpoint_create’:
-  sound/usb/midi.c:1389:2: error: case label does not reduce to an integer constant
-    case USB_ID(0xfc08, 0x0101): /* Unknown vendor Cable */
-    ^~~~
-
-See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
-details as to why it triggers with older gccs only.
-
-[ A slight correction with parentheses around the argument by tiwai ]
-
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220405151517.29753-3-bp@alien8.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Hongbin Wang <wh_bin@126.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/usb/usbaudio.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/vxlan.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/usb/usbaudio.h b/sound/usb/usbaudio.h
-index 62456a806bb4..4b8f1c46420d 100644
---- a/sound/usb/usbaudio.h
-+++ b/sound/usb/usbaudio.h
-@@ -22,7 +22,7 @@
-  */
+diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
+index 0bfadec8b79c..d59cb381e80b 100644
+--- a/drivers/net/vxlan.c
++++ b/drivers/net/vxlan.c
+@@ -490,11 +490,11 @@ static int vxlan_fdb_append(struct vxlan_fdb *f,
  
- /* handling of USB vendor/product ID pairs as 32-bit numbers */
--#define USB_ID(vendor, product) (((vendor) << 16) | (product))
-+#define USB_ID(vendor, product) (((unsigned int)(vendor) << 16) | (product))
- #define USB_ID_VENDOR(id) ((id) >> 16)
- #define USB_ID_PRODUCT(id) ((u16)(id))
+ 	rd = kmalloc(sizeof(*rd), GFP_ATOMIC);
+ 	if (rd == NULL)
+-		return -ENOBUFS;
++		return -ENOMEM;
  
+ 	if (dst_cache_init(&rd->dst_cache, GFP_ATOMIC)) {
+ 		kfree(rd);
+-		return -ENOBUFS;
++		return -ENOMEM;
+ 	}
+ 
+ 	rd->remote_ip = *ip;
 -- 
 2.35.1
 
