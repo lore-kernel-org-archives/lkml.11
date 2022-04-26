@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E02A1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:49:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDF4DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:49:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353484AbiDZQw0 (ORCPT
+        id S1353182AbiDZQwa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 12:52:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44042 "EHLO
+        Tue, 26 Apr 2022 12:52:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353253AbiDZQvZ (ORCPT
+        with ESMTP id S1353256AbiDZQv0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 12:51:25 -0400
-Received: from mail-ej1-x64a.google.com (mail-ej1-x64a.google.com [IPv6:2a00:1450:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D9A5488AB
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:46:16 -0700 (PDT)
-Received: by mail-ej1-x64a.google.com with SMTP id hr35-20020a1709073fa300b006f3647cd980so5655265ejc.5
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:46:16 -0700 (PDT)
+        Tue, 26 Apr 2022 12:51:26 -0400
+Received: from mail-ed1-x54a.google.com (mail-ed1-x54a.google.com [IPv6:2a00:1450:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EE0C48E6A
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:46:21 -0700 (PDT)
+Received: by mail-ed1-x54a.google.com with SMTP id b24-20020a50e798000000b0041631767675so10630518edn.23
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:46:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=qZO+Ar5AUQjZ17sp8HnLfJ3bnZDmnQ4HtehVjR2RSag=;
-        b=Pt5+odsaPLVLA+BIkFaOGZ5z3uWJenSne3f73BJt4PbanWkfmtsct7CN0wAO2xN5gU
-         Yhaxk8FOCzZhswyeeTNVL8OMhm9c/T3iPCztTqmlZxSpLpgMOs6YXH5MZ/fx+97iCGvz
-         zddbne3cp5tk6W6voA6FNsecjeKs0yW1DQ4Tz30W1QM+yA9fVauckWd7D4HpMMiv8n/u
-         VNAOuyzoM5s6YO+8DH4/mHKvxm5uilD1LTm5hSJS1BnACQmJdUQmedoVo1JHnrQYqad/
-         JlxuIlepoOSV3NlP0UfaMmhcA4Fr+PZ2URCMg+I0v/ZRX2C/u5IO3EAmXGa2X6k+fRQb
-         I4UQ==
+        bh=XPVyte1DHdZzGVqIYLZisC9WWn/NV5PTOOmKGsNYVqI=;
+        b=tfexPWSj1PSjUb4y32u6HDb/QnE+2ju4Q3VQ+kF29tn7ADhoO3fHaJy9KBX3jTsEd8
+         BhBWx/VeORcURqli+p+9+1QH8obAqShcA6ErLkkeVUmnfCO3qJEDT5UirMbYVSK2rKI7
+         EHcv+GYbS6ck2ZGcmgknDsZroKT9WTKBy/bFVemoqQAXMDxG6HC+soFmb8T4ca/gXcrO
+         ftqfgIZ/fqbniMJnPu4e11czzALuk3B6wUJb7Az/LpjxMDJcInKVf5CafrOSxVa2JPzU
+         ++NO1MFfBz4ggnwPlPZhMJNmDFkkEcXO47/KdD9d+fQq4LH0V9JjN+pdxl1pwz5u4gCv
+         AAQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=qZO+Ar5AUQjZ17sp8HnLfJ3bnZDmnQ4HtehVjR2RSag=;
-        b=PvvQOkeWxb6tin1r/OdBpIQ8hVIbIwFgBKLY/n662Oo1Yc2gzkT3RFavBCrcUDflLs
-         To1X4x/SsydH6Gjq4FDxgOoM7VqwnFsKE92qeV1cla2+rLg0szhkMHP461cEk36yD6ck
-         TFM8yhVnJC1HPGjZePU2ds4uXwzpo5psB26UvrvZmakkP7hLnlkT/0uBFeQ3c3deJrFi
-         E2LDgaPSxmWx4JfBwiy8atnQY9a6ykOa4FT6CRl3yZ1uo6IwzOvjtkmzv+Rwq9TvxZPC
-         3YZhoFaRJADOVgggx8HQ+eTvA64+eAD/kYhejvkot2bEKIdmS94vZAYYzE9trd0JGX2p
-         3ynA==
-X-Gm-Message-State: AOAM533z3HeKgR6SbeNYFBG0MBPxRSsc9rRYE5TAiZBaOqNqPc/iHBBY
-        KGTB7bXjAeFsaSx1+M5g0tTlTV2vNes=
-X-Google-Smtp-Source: ABdhPJwC/1Ho3LFpscyKKysPm+tD7uHD3uvu1NdPCEt5vju65j1NkGkMRTYyimkaio71xSi48PC422JlIc4=
+        bh=XPVyte1DHdZzGVqIYLZisC9WWn/NV5PTOOmKGsNYVqI=;
+        b=YCMVk/4xsxqLcekq4UbfM/rjt7ecaFplueal5/IZMHKWCzgzu+31vPXeqdIXTMe8+j
+         qITpp1+KiFRxTOO5NvtOIfpqL58WcxwQxNso3t+zLK9oI2QZRETxFonHg6imifk98wxE
+         i+z0vTGLI7OIaADjI1QxaxgSYFzfp1gOCJIDRcLjNLSpAg5CVCse8j654xLoeBJRSKj5
+         zGhG9z2rn827Q9yJsln1V8gdrptnAeoUSjBdN7Qn40P1usbZGtloA30aUEaEIvs57Win
+         5TnRNkPowqWa+0Q6mhceEv+kWGxhJNSt0PG6cuaoZfY1feoO3ZHjjHZBlmIqJxsKezqW
+         tMAw==
+X-Gm-Message-State: AOAM530VDlqXHT1O8zLSv06F791pqP3P1TRI9FXEaCBIAi+H2UhqQfsN
+        kqDsjbu8S0mpkLzk5R12KG2IJ/i4mAg=
+X-Google-Smtp-Source: ABdhPJxd69pRVvXv3tLXpgiAhti/608pH1mq1OSHk1HEp8P9KBrw2Up9R6Lp+Ti78ee6VL9a6lRzmQRfcX0=
 X-Received: from glider.muc.corp.google.com ([2a00:79e0:15:13:d580:abeb:bf6d:5726])
- (user=glider job=sendgmr) by 2002:a05:6402:2689:b0:422:15c4:e17e with SMTP id
- w9-20020a056402268900b0042215c4e17emr26075746edd.33.1650991574553; Tue, 26
- Apr 2022 09:46:14 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 18:43:13 +0200
+ (user=glider job=sendgmr) by 2002:a17:906:478b:b0:6db:8b6e:d5de with SMTP id
+ cw11-20020a170906478b00b006db8b6ed5demr22938586ejc.161.1650991579678; Tue, 26
+ Apr 2022 09:46:19 -0700 (PDT)
+Date:   Tue, 26 Apr 2022 18:43:15 +0200
 In-Reply-To: <20220426164315.625149-1-glider@google.com>
-Message-Id: <20220426164315.625149-45-glider@google.com>
+Message-Id: <20220426164315.625149-47-glider@google.com>
 Mime-Version: 1.0
 References: <20220426164315.625149-1-glider@google.com>
 X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
-Subject: [PATCH v3 44/46] x86: fs: kmsan: disable CONFIG_DCACHE_WORD_ACCESS
+Subject: [PATCH v3 46/46] x86: kmsan: enable KMSAN builds for x86
 From:   Alexander Potapenko <glider@google.com>
 To:     glider@google.com
 Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
@@ -85,41 +85,33 @@ Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
         Vegard Nossum <vegard.nossum@oracle.com>,
         Vlastimil Babka <vbabka@suse.cz>, kasan-dev@googlegroups.com,
         linux-mm@kvack.org, linux-arch@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Andrey Konovalov <andreyknvl@gmail.com>
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-dentry_string_cmp() calls read_word_at_a_time(), which might read
-uninitialized bytes to optimize string comparisons.
-Disabling CONFIG_DCACHE_WORD_ACCESS should prohibit this optimization,
-as well as (probably) similar ones.
+Make KMSAN usable by adding the necessary Kconfig bits.
 
-Suggested-by: Andrey Konovalov <andreyknvl@gmail.com>
 Signed-off-by: Alexander Potapenko <glider@google.com>
 ---
-Link: https://linux-review.googlesource.com/id/I4c0073224ac2897cafb8c037362c49dda9cfa133
+Link: https://linux-review.googlesource.com/id/I1d295ce8159ce15faa496d20089d953a919c125e
 ---
- arch/x86/Kconfig | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/x86/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index ee5e6fd65bf1d..3209073f96415 100644
+index 3209073f96415..592f5ca2017c2 100644
 --- a/arch/x86/Kconfig
 +++ b/arch/x86/Kconfig
-@@ -128,7 +128,9 @@ config X86
- 	select CLKEVT_I8253
- 	select CLOCKSOURCE_VALIDATE_LAST_CYCLE
- 	select CLOCKSOURCE_WATCHDOG
--	select DCACHE_WORD_ACCESS
-+	# Word-size accesses may read uninitialized data past the trailing \0
-+	# in strings and cause false KMSAN reports.
-+	select DCACHE_WORD_ACCESS		if !KMSAN
- 	select DYNAMIC_SIGFRAME
- 	select EDAC_ATOMIC_SCRUB
- 	select EDAC_SUPPORT
+@@ -168,6 +168,7 @@ config X86
+ 	select HAVE_ARCH_KASAN			if X86_64
+ 	select HAVE_ARCH_KASAN_VMALLOC		if X86_64
+ 	select HAVE_ARCH_KFENCE
++	select HAVE_ARCH_KMSAN			if X86_64
+ 	select HAVE_ARCH_KGDB
+ 	select HAVE_ARCH_MMAP_RND_BITS		if MMU
+ 	select HAVE_ARCH_MMAP_RND_COMPAT_BITS	if MMU && COMPAT
 -- 
 2.36.0.rc2.479.g8af0fa9b8e-goog
 
