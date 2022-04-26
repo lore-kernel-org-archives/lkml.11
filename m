@@ -2,142 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A920C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 20:16:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D24D0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 20:16:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354820AbiDZUTu (ORCPT
+        id S1354837AbiDZUTz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 16:19:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55282 "EHLO
+        Tue, 26 Apr 2022 16:19:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354895AbiDZUTB (ORCPT
+        with ESMTP id S1354850AbiDZUSz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 16:19:01 -0400
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C865F2637;
-        Tue, 26 Apr 2022 13:15:52 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 310595C0043;
-        Tue, 26 Apr 2022 16:15:50 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Tue, 26 Apr 2022 16:15:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
-         h=cc:cc:content-transfer-encoding:date:date:from:from
-        :in-reply-to:message-id:mime-version:reply-to:sender:subject
-        :subject:to:to; s=fm1; t=1651004150; x=1651090550; bh=UvoCEZV2iN
-        YmrEf0Gl3v1FkuJK/y6NUl/vMG5P+QSfE=; b=ET0RQP18f8/Tic5fZOJ13JJKpg
-        1Cyoa9sdGbqgBmEA373pkCuMcwasDMwa9k1V5b042Sy5XtJND9bIMr/7ZmUWfZUy
-        s4mtzxDGf7ar7SYpOcs0e8tyBL9WTw04dYzi8ocIFd6nTFxAUBh1u2DzZ26MLU5T
-        v6gpyru/w/rlBrGC9fAbFhkTWsDyRKWaTWDJy2CZy7QfnsfvtEINf/OEDOaGkAmF
-        5ktOcUMOW+kzDC6YKQOOar5seiShNk+qHdjgUTpwSAI9qCcJII1yjlHDWiQebPys
-        V1L1bMY2a7T04Gsr7pauKZRYJiq7ysQjGzq/U5skqV3DTtaFtWxIvyyVdOlA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :from:from:in-reply-to:message-id:mime-version:reply-to:sender
-        :subject:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender
-        :x-me-sender:x-sasl-enc; s=fm1; t=1651004150; x=1651090550; bh=U
-        voCEZV2iNYmrEf0Gl3v1FkuJK/y6NUl/vMG5P+QSfE=; b=Gcfcf0Bbr7NmvtmK7
-        k8+TH0maJKfpxxqb3VJRkByIrcgMwhmdXnhMrtcnCmHflaiI9x7+sVahvUldWBoa
-        V98UoNXgqa5Cq2oVAwWEtOtJBOV5/o8LQGCGH1vPwuRGAxRotUqz3wzQfE/O87eB
-        vZ3akF3AmI7Pro3GqfH3VmHjogDedB7VAQXb+306lo4m3x4RXtgstPt1OfdmfdmR
-        wjTHeyB3Mr18IUB99BhHYcC09S1TWmiYRjAUxHc+diCcYyAA12TYIAWIP38VJ/1h
-        qXKksR2P4vMtFNFoc/7wnu3xANo196KCaA0eBDBt7BLRgPH+R2e6+hoHRJYigeJ+
-        BPEyQ==
-X-ME-Sender: <xms:9VJoYtrRpW4lYNgU6LzBAmvN79qHNsns6vXMhla5hOesXhF9YZOGXQ>
-    <xme:9VJoYvpREuD_WsTg0VyQsdFTWPnSgK9w1r-x1trEo1wNGE6stiYFG0Ot3KaGrC9Sc
-    bz-1iXj99aLrybLlI0>
-X-ME-Received: <xmr:9VJoYqPbSzP2D2JRPEVP4IRwzS3us41auUhWQPLJj4xF9Rhyz8sF69APGXQlMxvbeOvCmcoL8ScX46FFuOCxeekeX3VaeTB8RFC8ChYvA4lqJBN_cC51ZQ1k>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudefgddugeefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    hmihhsshhinhhgucfvqfcufhhivghlugculdeftddmnegoteeftdduqddtudculdduhedm
-    necujfgurhephffvvefufffkofgggfestdekredtredttdenucfhrhhomhepufhvvghnuc
-    frvghtvghruceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtffrrghtthgv
-    rhhnpefggeduffduleefueegtdejueegheeuffduveevgeevkedthfeuheeuueefleehve
-    enucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptden
-    ucfrrghrrghmpehmrghilhhfrhhomhepshhvvghnsehsvhgvnhhpvghtvghrrdguvghv
-X-ME-Proxy: <xmx:9VJoYo5iyBfFydfXf-oO8QrlGYl5XR__7CLLpCF6pJPiO5Fdy2cdHw>
-    <xmx:9VJoYs5OCWRZ8-yDD8-Dj5u0r8ODQang3_DkLrF0MfmAbaJaYOWyDg>
-    <xmx:9VJoYgg-kr9bFl2wFinFz-7-SJcvjzpi2-YexdWB0w6Fr0BKofXAkA>
-    <xmx:9lJoYrTBWFznWQFHILKcD2RA-Uin9bPbXxXq_PDvDAXnL1PIdpALRg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 26 Apr 2022 16:15:47 -0400 (EDT)
-From:   Sven Peter <sven@svenpeter.dev>
-Cc:     Sven Peter <sven@svenpeter.dev>, Hector Martin <marcan@marcan.st>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Keith Busch <kbusch@kernel.org>,
-        Jens Axboe <axboe@fb.com>, Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Marc Zyngier <maz@kernel.org>, Janne Grunau <j@jannau.net>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org
-Subject: [PATCH v3 0/6] Apple M1 (Pro/Max) NVMe driver
-Date:   Tue, 26 Apr 2022 22:15:33 +0200
-Message-Id: <20220426201539.12829-1-sven@svenpeter.dev>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+        Tue, 26 Apr 2022 16:18:55 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57A56EA
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 13:15:42 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id bn33so23437321ljb.6
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 13:15:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=NoH+Q2JRO6SKcFvlMJuCO580Qoh6JOOoycqYQgBg9Ro=;
+        b=cWB0TVSq8VKcPdtkF3M26lXQbeIW1kHtVsp0FDBMnEKF3reK6Q2MuOAyXLaMgZrW7n
+         ijHrNuaCDG/pz5dROHnVVq3xj6N16Rm7onIyGZT6bacYY68GG7+vpd+wHnnabQnAXyB3
+         rWjH3iOHckvnlEFaIw0/go6q29XOrF7nDGopwT98p39Tk88l58PNKSdiAJHdID6G127l
+         FDeGRlU2CeFXqKI8IB48fCse5Jj7jknXvWDO2D++PLSp+Lw1JpILw2JhwMpPB32HV/5V
+         Pp4n5TwBSyrUf3jONeM+VMZxd+H+e5qRkv65DR5S68TotRVguKv3Cq568cYm6GIiDjr9
+         f/eA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=NoH+Q2JRO6SKcFvlMJuCO580Qoh6JOOoycqYQgBg9Ro=;
+        b=joUlVHgfxGmThFwe1Zv+8gM556iaZC9zvoiRK7+NXu3D/sLCggtKDCTRVK8VSHSU11
+         VYlMAPPbX36uOc54JwlHrDAzLUGooUPxENet9rwfAmnWA3AheRDT08UxgEzFOuX6NeHf
+         bLbqzOiPeoSzD9nYUg4JM2GISdpOiqQDFVt0xzMb3Q3KAG7SGVctnOCqaEeU0eyfL2vJ
+         YHXoh/t1bPm4da9kgYTCw25uPHcyyyZiSuN50jLJA+1/pq4prbFt0Jbod+HZcrnwrKSg
+         SJhXpZQcCcyAbTxsuTGNesG0XCkAjqc+mm4FKUGk6wfGYx6Gzqc7MdpuN92mj9SVlqi2
+         NwfQ==
+X-Gm-Message-State: AOAM533PUNBP34BXVMSO4IOemtL4U/TBo/qk1C5VgjRNKRBdxd4DTdva
+        9I4vMwwBxughUln7ulc0MbkPjQ==
+X-Google-Smtp-Source: ABdhPJz2e3A8i09zQrnVOpL83T9ubklwt+3pWXhS5CcK/Muf+ApEy2u+oQF0FV2zPUXzGlOs+SgVww==
+X-Received: by 2002:a2e:3e15:0:b0:247:d94b:c004 with SMTP id l21-20020a2e3e15000000b00247d94bc004mr15684754lja.428.1651004140400;
+        Tue, 26 Apr 2022 13:15:40 -0700 (PDT)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id d29-20020a19385d000000b004720e1cc3fasm606630lfj.70.2022.04.26.13.15.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Apr 2022 13:15:40 -0700 (PDT)
+Message-ID: <5915a71f-50fa-8783-f186-7bbf9a5409c8@linaro.org>
+Date:   Tue, 26 Apr 2022 23:15:39 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v4] drm/msm/dp: remove fail safe mode related code
+Content-Language: en-GB
+To:     Kuogee Hsieh <quic_khsieh@quicinc.com>, robdclark@gmail.com,
+        sean@poorly.run, swboyd@chromium.org, dianders@chromium.org,
+        vkoul@kernel.org, daniel@ffwll.ch, airlied@linux.ie,
+        agross@kernel.org, bjorn.andersson@linaro.org
+Cc:     quic_abhinavk@quicinc.com, quic_aravindh@quicinc.com,
+        quic_sbillaka@quicinc.com, freedreno@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1651003453-12282-1-git-send-email-quic_khsieh@quicinc.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <1651003453-12282-1-git-send-email-quic_khsieh@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On 26/04/2022 23:04, Kuogee Hsieh wrote:
+> Current DP driver implementation has adding safe mode done at
+> dp_hpd_plug_handle() which is expected to be executed under event
+> thread context.
+> 
+> However there is possible circular locking happen (see blow stack trace)
+> after edp driver call dp_hpd_plug_handle() from dp_bridge_enable() which
+> is executed under drm_thread context.
+> 
+> After review all possibilities methods and as discussed on
+> https://patchwork.freedesktop.org/patch/483155/, supporting EDID
+> compliance tests in the driver is quite hacky. As seen with other
+> vendor drivers, supporting these will be much easier with IGT. Hence
+> removing all the related fail safe code for it so that no possibility
+> of circular lock will happen.
+> 
+> ======================================================
+>   WARNING: possible circular locking dependency detected
+>   5.15.35-lockdep #6 Tainted: G        W
+>   ------------------------------------------------------
+>   frecon/429 is trying to acquire lock:
+>   ffffff808dc3c4e8 (&dev->mode_config.mutex){+.+.}-{3:3}, at:
+> dp_panel_add_fail_safe_mode+0x4c/0xa0
+> 
+>   but task is already holding lock:
+>   ffffff808dc441e0 (&kms->commit_lock[i]){+.+.}-{3:3}, at: lock_crtcs+0xb4/0x124
+> 
+>   which lock already depends on the new lock.
+> 
+>   the existing dependency chain (in reverse order) is:
+> 
+>   -> #3 (&kms->commit_lock[i]){+.+.}-{3:3}:
+>          __mutex_lock_common+0x174/0x1a64
+>          mutex_lock_nested+0x98/0xac
+>          lock_crtcs+0xb4/0x124
+>          msm_atomic_commit_tail+0x330/0x748
+>          commit_tail+0x19c/0x278
+>          drm_atomic_helper_commit+0x1dc/0x1f0
+>          drm_atomic_commit+0xc0/0xd8
+>          drm_atomic_helper_set_config+0xb4/0x134
+>          drm_mode_setcrtc+0x688/0x1248
+>          drm_ioctl_kernel+0x1e4/0x338
+>          drm_ioctl+0x3a4/0x684
+>          __arm64_sys_ioctl+0x118/0x154
+>          invoke_syscall+0x78/0x224
+>          el0_svc_common+0x178/0x200
+>          do_el0_svc+0x94/0x13c
+>          el0_svc+0x5c/0xec
+>          el0t_64_sync_handler+0x78/0x108
+>          el0t_64_sync+0x1a4/0x1a8
+> 
+>   -> #2 (crtc_ww_class_mutex){+.+.}-{3:3}:
+>          __mutex_lock_common+0x174/0x1a64
+>          ww_mutex_lock+0xb8/0x278
+>          modeset_lock+0x304/0x4ac
+>          drm_modeset_lock+0x4c/0x7c
+>          drmm_mode_config_init+0x4a8/0xc50
+>          msm_drm_init+0x274/0xac0
+>          msm_drm_bind+0x20/0x2c
+>          try_to_bring_up_master+0x3dc/0x470
+>          __component_add+0x18c/0x3c0
+>          component_add+0x1c/0x28
+>          dp_display_probe+0x954/0xa98
+>          platform_probe+0x124/0x15c
+>          really_probe+0x1b0/0x5f8
+>          __driver_probe_device+0x174/0x20c
+>          driver_probe_device+0x70/0x134
+>          __device_attach_driver+0x130/0x1d0
+>          bus_for_each_drv+0xfc/0x14c
+>          __device_attach+0x1bc/0x2bc
+>          device_initial_probe+0x1c/0x28
+>          bus_probe_device+0x94/0x178
+>          deferred_probe_work_func+0x1a4/0x1f0
+>          process_one_work+0x5d4/0x9dc
+>          worker_thread+0x898/0xccc
+>          kthread+0x2d4/0x3d4
+>          ret_from_fork+0x10/0x20
+> 
+>   -> #1 (crtc_ww_class_acquire){+.+.}-{0:0}:
+>          ww_acquire_init+0x1c4/0x2c8
+>          drm_modeset_acquire_init+0x44/0xc8
+>          drm_helper_probe_single_connector_modes+0xb0/0x12dc
+>          drm_mode_getconnector+0x5dc/0xfe8
+>          drm_ioctl_kernel+0x1e4/0x338
+>          drm_ioctl+0x3a4/0x684
+>          __arm64_sys_ioctl+0x118/0x154
+>          invoke_syscall+0x78/0x224
+>          el0_svc_common+0x178/0x200
+>          do_el0_svc+0x94/0x13c
+>          el0_svc+0x5c/0xec
+>          el0t_64_sync_handler+0x78/0x108
+>          el0t_64_sync+0x1a4/0x1a8
+> 
+>   -> #0 (&dev->mode_config.mutex){+.+.}-{3:3}:
+>          __lock_acquire+0x2650/0x672c
+>          lock_acquire+0x1b4/0x4ac
+>          __mutex_lock_common+0x174/0x1a64
+>          mutex_lock_nested+0x98/0xac
+>          dp_panel_add_fail_safe_mode+0x4c/0xa0
+>          dp_hpd_plug_handle+0x1f0/0x280
+>          dp_bridge_enable+0x94/0x2b8
+>          drm_atomic_bridge_chain_enable+0x11c/0x168
+>          drm_atomic_helper_commit_modeset_enables+0x500/0x740
+>          msm_atomic_commit_tail+0x3e4/0x748
+>          commit_tail+0x19c/0x278
+>          drm_atomic_helper_commit+0x1dc/0x1f0
+>          drm_atomic_commit+0xc0/0xd8
+>          drm_atomic_helper_set_config+0xb4/0x134
+>          drm_mode_setcrtc+0x688/0x1248
+>          drm_ioctl_kernel+0x1e4/0x338
+>          drm_ioctl+0x3a4/0x684
+>          __arm64_sys_ioctl+0x118/0x154
+>          invoke_syscall+0x78/0x224
+>          el0_svc_common+0x178/0x200
+>          do_el0_svc+0x94/0x13c
+>          el0_svc+0x5c/0xec
+>          el0t_64_sync_handler+0x78/0x108
+>          el0t_64_sync+0x1a4/0x1a8
+> 
+> Changes in v2:
+> -- re text commit title
+> -- remove all fail safe mode
+> 
+> Changes in v3:
+> -- remove dp_panel_add_fail_safe_mode() from dp_panel.h
+> -- add Fixes
+> 
+> Changes in v4:
+> --  to=dianders@chromium.org
+> 
+> Fixes: 8b2c181 ("drm/msm/dp: add fail safe mode outside of event_mutex context")
+> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+> 
+> Fixes: f1b47e6a8df8 ("drm/msm/dp: remove fail safe mode related code")
+> Reported-by: Douglas Anderson <dianders@chromium.org>
 
-This series includes everything[*] required to get NVMe up and running on
-Apple's M1, M1 Pro and M1 Max SoCs.
+This does not look correct. Your sign-off should be the latest one. Also 
+please recheck the Fixes tags.
 
-v1: https://lore.kernel.org/linux-nvme/20220321165049.35985-1-sven@svenpeter.dev/T/
-v2: https://lore.kernel.org/linux-nvme/20220415142055.30873-1-sven@svenpeter.dev/T/
+> ---
+>   drivers/gpu/drm/msm/dp/dp_panel.c | 11 -----------
+>   1 file changed, 11 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/msm/dp/dp_panel.c b/drivers/gpu/drm/msm/dp/dp_panel.c
+> index f141872..26f4b695 100644
+> --- a/drivers/gpu/drm/msm/dp/dp_panel.c
+> +++ b/drivers/gpu/drm/msm/dp/dp_panel.c
+> @@ -206,17 +206,6 @@ int dp_panel_read_sink_caps(struct dp_panel *dp_panel,
+>   			rc = -ETIMEDOUT;
+>   			goto end;
+>   		}
+> -
+> -		/* fail safe edid */
+> -		mutex_lock(&connector->dev->mode_config.mutex);
+> -		if (drm_add_modes_noedid(connector, 640, 480))
+> -			drm_set_preferred_mode(connector, 640, 480);
+> -		mutex_unlock(&connector->dev->mode_config.mutex);
+> -	} else {
+> -		/* always add fail-safe mode as backup mode */
+> -		mutex_lock(&connector->dev->mode_config.mutex);
+> -		drm_add_modes_noedid(connector, 640, 480);
+> -		mutex_unlock(&connector->dev->mode_config.mutex);
+>   	}
+>   
+>   	if (panel->aux_cfg_update_done) {
 
-Thanks everyone for the reviews of v2 again! There are just some minor
-changes since v2 listed in the individual commits again.
-
-Thanks,
-
-Sven
-
-[*] The only missing part in this series are the device tree updates
-    but since these will go through arm-soc anyway I haven't included
-    them here but will instead submit them once this series is in a shape
-    where it can be merged.
-
-Sven Peter (6):
-  dt-bindings: iommu: Add Apple SART DMA address filter
-  dt-bindings: nvme: Add Apple ANS NVMe
-  soc: apple: Always include Makefile
-  soc: apple: Add SART driver
-  soc: apple: Add RTKit IPC library
-  nvme-apple: Add initial Apple SoC NVMe driver
-
- .../devicetree/bindings/iommu/apple,sart.yaml |   52 +
- .../bindings/nvme/apple,nvme-ans.yaml         |  111 ++
- MAINTAINERS                                   |    4 +
- drivers/nvme/host/Kconfig                     |   13 +
- drivers/nvme/host/Makefile                    |    3 +
- drivers/nvme/host/apple.c                     | 1598 +++++++++++++++++
- drivers/soc/Makefile                          |    2 +-
- drivers/soc/apple/Kconfig                     |   24 +
- drivers/soc/apple/Makefile                    |    6 +
- drivers/soc/apple/rtkit-crashlog.c            |  154 ++
- drivers/soc/apple/rtkit-internal.h            |   62 +
- drivers/soc/apple/rtkit.c                     |  958 ++++++++++
- drivers/soc/apple/sart.c                      |  328 ++++
- include/linux/soc/apple/rtkit.h               |  159 ++
- include/linux/soc/apple/sart.h                |   57 +
- 15 files changed, 3530 insertions(+), 1 deletion(-)
- create mode 100644 Documentation/devicetree/bindings/iommu/apple,sart.yaml
- create mode 100644 Documentation/devicetree/bindings/nvme/apple,nvme-ans.yaml
- create mode 100644 drivers/nvme/host/apple.c
- create mode 100644 drivers/soc/apple/rtkit-crashlog.c
- create mode 100644 drivers/soc/apple/rtkit-internal.h
- create mode 100644 drivers/soc/apple/rtkit.c
- create mode 100644 drivers/soc/apple/sart.c
- create mode 100644 include/linux/soc/apple/rtkit.h
- create mode 100644 include/linux/soc/apple/sart.h
 
 -- 
-2.25.1
-
+With best wishes
+Dmitry
