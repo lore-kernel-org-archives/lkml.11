@@ -2,88 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28E9CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 11:48:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03A6FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 11:49:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349657AbiDZLvh (ORCPT
+        id S1349664AbiDZLw3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 07:51:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49520 "EHLO
+        Tue, 26 Apr 2022 07:52:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346506AbiDZLvd (ORCPT
+        with ESMTP id S244202AbiDZLw0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 07:51:33 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 131A538DB8
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 04:48:20 -0700 (PDT)
-Received: from [192.168.1.107] ([37.4.249.94]) by mrelayeu.kundenserver.de
- (mreue109 [212.227.15.183]) with ESMTPSA (Nemesis) id
- 1MuluP-1nzscW3cgN-00rptO; Tue, 26 Apr 2022 13:48:07 +0200
-Message-ID: <4719fce9-4235-f1d7-f95e-67e5a47a0968@i2se.com>
-Date:   Tue, 26 Apr 2022 13:48:06 +0200
+        Tue, 26 Apr 2022 07:52:26 -0400
+Received: from spam2.hygon.cn (unknown [110.188.70.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81CFA38DB8
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 04:49:17 -0700 (PDT)
+Received: from MK-DB.hygon.cn ([172.23.18.60])
+        by spam2.hygon.cn with ESMTP id 23QBjhUM002405;
+        Tue, 26 Apr 2022 19:45:43 +0800 (GMT-8)
+        (envelope-from puwen@hygon.cn)
+Received: from cncheex01.Hygon.cn ([172.23.18.10])
+        by MK-DB.hygon.cn with ESMTP id 23QBjavX089615;
+        Tue, 26 Apr 2022 19:45:36 +0800 (GMT-8)
+        (envelope-from puwen@hygon.cn)
+Received: from cncheex01.Hygon.cn (172.23.18.10) by cncheex01.Hygon.cn
+ (172.23.18.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 26 Apr
+ 2022 19:45:32 +0800
+Received: from cncheex01.Hygon.cn ([172.23.18.10]) by cncheex01.Hygon.cn
+ ([172.23.18.10]) with mapi id 15.01.2375.024; Tue, 26 Apr 2022 19:45:32 +0800
+From:   Wen Pu <puwen@hygon.cn>
+To:     Sandipan Das <sandipan.das@amd.com>,
+        Peter Zijlstra <peterz@infradead.org>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-perf-users@vger.kernel.org" <linux-perf-users@vger.kernel.org>,
+        "x86@kernel.org" <x86@kernel.org>, "bp@alien8.de" <bp@alien8.de>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "acme@kernel.org" <acme@kernel.org>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "alexander.shishkin@linux.intel.com" 
+        <alexander.shishkin@linux.intel.com>,
+        "namhyung@kernel.org" <namhyung@kernel.org>,
+        "jolsa@kernel.org" <jolsa@kernel.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "pbonzini@redhat.com" <pbonzini@redhat.com>,
+        "jmattson@google.com" <jmattson@google.com>,
+        "like.xu.linux@gmail.com" <like.xu.linux@gmail.com>,
+        "eranian@google.com" <eranian@google.com>,
+        "ananth.narayan@amd.com" <ananth.narayan@amd.com>,
+        "ravi.bangoria@amd.com" <ravi.bangoria@amd.com>,
+        "santosh.shukla@amd.com" <santosh.shukla@amd.com>
+Subject: Re: [PATCH v2 7/7] kvm: x86/cpuid: Fix CPUID leaf 0xA
+Thread-Topic: [PATCH v2 7/7] kvm: x86/cpuid: Fix CPUID leaf 0xA
+Thread-Index: AQHYWHxbGifZsj53i0W4Cl6nd1FFc60BVJgAgAAG9ICAADOjAA==
+Date:   Tue, 26 Apr 2022 11:45:32 +0000
+Message-ID: <25e89d27-d7da-2dea-dd20-0a9d8dcdee83@hygon.cn>
+References: <cover.1650515382.git.sandipan.das@amd.com>
+ <54bc7fe4cadf6bdef823bab1fba43d4891d2e1a9.1650515382.git.sandipan.das@amd.com>
+ <20220426081550.GO2731@worktop.programming.kicks-ass.net>
+ <9e6d14a0-a658-195c-c7a3-7d2687a61544@amd.com>
+In-Reply-To: <9e6d14a0-a658-195c-c7a3-7d2687a61544@amd.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.23.18.44]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <E3FFCC354D999045906CD0C0BD9713BF@Hygon.cn>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v9 0/6] Raspberry Pi Sense HAT driver
-Content-Language: en-US
-To:     Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Charles Mirabile <cmirabil@redhat.com>,
-        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        Serge Schneider <serge@raspberrypi.org>,
-        Mattias Brugger <mbrugger@suse.com>,
-        linux-rpi-kernel@lists.infradead.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        fedora-rpi@googlegroups.com, Daniel Bauman <dbauman@redhat.com>,
-        Mwesigwa Guma <mguma@redhat.com>,
-        Joel Savitz <jsavitz@redhat.com>
-References: <20220419205158.28088-1-cmirabil@redhat.com>
- <CANiq72n1gBE+tv3oAF4wjdK2jEJJmU4V=Y1CTZ1PpCEeqLbo9g@mail.gmail.com>
- <CABe3_aE-nQzZazLfxk1OnCNRF0sDqcWi6gieYSf4O4aYS_Ahog@mail.gmail.com>
- <06e0138a526f1fd9fe5b18184163c1ff98f0103b.camel@redhat.com>
-From:   Stefan Wahren <stefan.wahren@i2se.com>
-In-Reply-To: <06e0138a526f1fd9fe5b18184163c1ff98f0103b.camel@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:j757HjkwEM2RAj4rRTaWKm/gO6O5Oa6SilqOmn2fBevQYeQqjAE
- 1uzxPs3Ps2MzPghvwU6bWqVQOGk6jjAl3iItIiXnHIorak7h9zQ71pF5hmy5BFmuvqwC1B7
- chl2Z0TwQ9ao7Fngr/SgTuYun41y1w5WH5Kqa15LyO2tiFtEpfhZni9J+8aDWThYRDYvmHI
- bENi28gwFa26BAdE2Th+g==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:ONPCkDqewB8=:xGUiE0EPGmj80rc04tRVaj
- 7MxZckTL9Te9JI5u1dCzSQh41owacI2G3dSxL3tiI8gBBwKk6ZQ1Ve11gZ0G7L3R1mVNbG+g2
- q8oaEKKOT8KMfEZFGtuugH3EoA7qSwmxNGWBO8BhAyn+cz2rqTSL7nGYPJd5Fi+Kcan75Ty+o
- 8FqMlYZ/wsnOfdQIZCj6k5YW6IY9IR+AuHxkn3Z4mYZgnyG0xY/lDMR6itneivUT2LrKKdgRn
- OcDZTwGcdp4OK/k+TOAQmdJhX9E2N10FSaPCx6utNXWXP+6ekizlfTB/Qdg9HRCJOmgLuVmev
- rm8EROuVF3dBMk7ao247+pgxY+48ZqRfekgAgofcdOlLGfPpGVEZiqWCbNHdqMdojPAcXIJ6c
- hlsFYx+Lk0D700zdGB9ilUNOW2BzDaBJmVYNbo+z40fY55rU5PgyiLI8mPkpxJLass8fMF9DO
- yRNrN2DAaXpc0uW8uP0p9eHXqy6l/DKfHg1Y+Hx4gKQR3Ak2ORNsy8RkHZIBJ6PhuVq06H0Kh
- SWKFNtCICLiLNpTCHNqOv/8W8ZhHNRCgUrAol0h/FPJxLWqnWrxrNLuVc7XvemTHFldgsamnC
- y5D4iXzFB4kz9Hk5EzvpMKVSsRkE1RuCt0RonOv/MaxV+qw5KchNcdpXKYR0ExIu0YACwMq6d
- DWIN/L//xz8A8S6624g0wVrS7oBcwXnuoI0Gw2rRkrRh4YMD//6og4XtqPNvmVqSGmelmiTks
- CI7tJQ/Xy4k8GxNZ
+X-MAIL: spam2.hygon.cn 23QBjhUM002405
+X-DNSRBL: 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 26.04.22 um 12:18 schrieb Nicolas Saenz Julienne:
-> Hi Charles, Miguel,
->
-> On Mon, 2022-04-25 at 19:34 -0400, Charles Mirabile wrote:
->> Hi Miguel—
->>
->> Thanks for your help in reviewing this patch. I think all of the feedback is cleared up.
->>
->> I am not sure which tree this should go into, but maybe the Raspberry Pi tree maintained
->> by Nicolas Saenz Julienne (git://git.kernel.org/pub/scm/linux/kernel/git/nsaenz/linux-
->> rpi.git)? What do you think? Thanks!
-> Since there is no code dependency between the different drivers/patches I
-> suggest for each patch to go through its respective maintainer tree. Also, if
-> we were to move the whole series through as single tree, it's important to have
-> ACKs from all the subsystem maintainers.
-Yes, we still need a Ack of Rob for the device tree bindings. Please 
-give him the common 2 weeks for a review.
->
-> I'll do a last review during the week.
->
-> Regards,
->
+T24gMjAyMi80LzI2IDE2OjQwLCBTYW5kaXBhbiBEYXMgd3JvdGU6DQo+IEhpIFBldGVyLA0KPiAN
+Cj4gT24gNC8yNi8yMDIyIDE6NDUgUE0sIFBldGVyIFppamxzdHJhIHdyb3RlOg0KPj4gT24gVGh1
+LCBBcHIgMjEsIDIwMjIgYXQgMTE6MTY6NTlBTSArMDUzMCwgU2FuZGlwYW4gRGFzIHdyb3RlOg0K
+Pj4+IE9uIHNvbWUgeDg2IHByb2Nlc3NvcnMsIENQVUlEIGxlYWYgMHhBIHByb3ZpZGVzIGluZm9y
+bWF0aW9uDQo+Pj4gb24gQXJjaGl0ZWN0dXJhbCBQZXJmb3JtYW5jZSBNb25pdG9yaW5nIGZlYXR1
+cmVzLiBJdA0KPj4+IGFkdmVydGlzZXMgYSBQTVUgdmVyc2lvbiB3aGljaCBRZW11IHVzZXMgdG8g
+ZGV0ZXJtaW5lIHRoZQ0KPj4+IGF2YWlsYWJpbGl0eSBvZiBhZGRpdGlvbmFsIE1TUnMgdG8gbWFu
+YWdlIHRoZSBQTUNzLg0KPj4+DQo+Pj4gVXBvbiByZWNlaXZpbmcgYSBLVk1fR0VUX1NVUFBPUlRF
+RF9DUFVJRCBpb2N0bCByZXF1ZXN0IGZvcg0KPj4+IHRoZSBzYW1lLCB0aGUga2VybmVsIGNvbnN0
+cnVjdHMgcmV0dXJuIHZhbHVlcyBiYXNlZCBvbiB0aGUNCj4+PiB4ODZfcG11X2NhcGFiaWxpdHkg
+aXJyZXNwZWN0aXZlIG9mIHRoZSB2ZW5kb3IuDQo+Pj4NCj4+PiBUaGlzIGxlYWYgYW5kIHRoZSBh
+ZGRpdGlvbmFsIE1TUnMgYXJlIG5vdCBzdXBwb3J0ZWQgb24gQU1EDQo+Pj4gcHJvY2Vzc29ycy4g
+SWYgUGVyZk1vblYyIGlzIGRldGVjdGVkLCB0aGUgUE1VIHZlcnNpb24gaXMNCj4+PiBzZXQgdG8g
+MiBhbmQgZ3Vlc3Qgc3RhcnR1cCBicmVha3MgYmVjYXVzZSBvZiBhbiBhdHRlbXB0IHRvDQo+Pj4g
+YWNjZXNzIGEgbm9uLWV4aXN0ZW50IE1TUi4gUmV0dXJuIHplcm9zIHRvIGF2b2lkIHRoaXMuDQo+
+Pj4NCj4+PiBGaXhlczogYTZjMDZlZDFhNjBhICgiS1ZNOiBFeHBvc2UgdGhlIGFyY2hpdGVjdHVy
+YWwgcGVyZm9ybWFuY2UgbW9uaXRvcmluZyBDUFVJRCBsZWFmIikNCj4+PiBSZXBvcnRlZC1ieTog
+VmFzYW50IEhlZ2RlIDx2YXNhbnQuaGVnZGVAYW1kLmNvbT4NCj4+PiBTaWduZWQtb2ZmLWJ5OiBT
+YW5kaXBhbiBEYXMgPHNhbmRpcGFuLmRhc0BhbWQuY29tPg0KPj4+IC0tLQ0KPj4+ICAgYXJjaC94
+ODYva3ZtL2NwdWlkLmMgfCA1ICsrKysrDQo+Pj4gICAxIGZpbGUgY2hhbmdlZCwgNSBpbnNlcnRp
+b25zKCspDQo+Pj4NCj4+PiBkaWZmIC0tZ2l0IGEvYXJjaC94ODYva3ZtL2NwdWlkLmMgYi9hcmNo
+L3g4Ni9rdm0vY3B1aWQuYw0KPj4+IGluZGV4IDRiNjJkODBiYjIyZi4uNmJkNjVjYWQ3NWVmIDEw
+MDY0NA0KPj4+IC0tLSBhL2FyY2gveDg2L2t2bS9jcHVpZC5jDQo+Pj4gKysrIGIvYXJjaC94ODYv
+a3ZtL2NwdWlkLmMNCj4+PiBAQCAtODcyLDYgKzg3MiwxMSBAQCBzdGF0aWMgaW5saW5lIGludCBf
+X2RvX2NwdWlkX2Z1bmMoc3RydWN0IGt2bV9jcHVpZF9hcnJheSAqYXJyYXksIHUzMiBmdW5jdGlv
+bikNCj4+PiAgIAkJdW5pb24gY3B1aWQxMF9lYXggZWF4Ow0KPj4+ICAgCQl1bmlvbiBjcHVpZDEw
+X2VkeCBlZHg7DQo+Pj4gICANCj4+PiArCQlpZiAoYm9vdF9jcHVfZGF0YS54ODZfdmVuZG9yID09
+IFg4Nl9WRU5ET1JfQU1EKSB7DQo+Pg0KPj4gVGhpcyBpcyB0aGUgb2JsaWdhdG9yeSBxdWVzdGlv
+biBhYm91dCBIWUdPTjsgc2hvdWxkIHRoZXkgYmUgaW5jbHVkZWQNCj4+IGhlcmU/DQo+Pg0KPj4g
+eDg2IGlzIGdldHRpbmcgYSBudW1iZXIgb2YgbWUtdG9vIHBhdGNoZXMgZnJvbSBib3RoIHNpZGVz
+LCB3aGVyZQ0KPj4gYmVoYXZpb3VyIGhhcyBkaXZlcmdlZCBmb3Igbm8gcmFpc2luIGFuZCB0aGVu
+IG5lZWRzIHRvIGJlIGZpeGVkIHVwDQo+PiBhZ2Fpbi4NCj4+DQo+IA0KPiAgRnJvbSB3aGF0IEkg
+dW5kZXJzdGFuZCwgSHlnb24gcHJvY2Vzc29ycyBhbHNvIGRvIG5vdCBzdXBwb3J0IHRoaXMgbGVh
+Zi4NCj4gQ29weWluZyBQdSBXZW4gZm9yIGNvbmZpcm1hdGlvbi4NCg0KSGkgUGV0ZXIsIFNhbmRp
+cGFu77yaDQoNCkkgaGF2ZSBjb25maXJtZWQgdGhhdCBIeWdvbiBwcm9jZXNzb3JzIGRvIG5vdCBz
+dXBwb3J0IENQVUlEIGxlYWYgMHhBLg0KU2FuZGlwYW4sIGNvdWxkIHlvdSBwbGVhc2UgYWxzbyBh
+ZGQgWDg2X1ZFTkRPUl9IWUdPTiBpbiB0aGUgaWYNCmNvbmRpdGlvbmFsPw0KDQotLSANClJlZ2Fy
+ZHMsDQpQdSBXZW4NCg0KPiAtIFNhbmRpcGFuDQo+IA0KPj4+ICsJCQllbnRyeS0+ZWF4ID0gZW50
+cnktPmVieCA9IGVudHJ5LT5lY3ggPSBlbnRyeS0+ZWR4ID0gMDsNCj4+PiArCQkJYnJlYWs7DQo+
+Pj4gKwkJfQ0KPj4+ICsNCj4+PiAgIAkJcGVyZl9nZXRfeDg2X3BtdV9jYXBhYmlsaXR5KCZjYXAp
+Ow0KPj4+ICAgDQo+Pj4gICAJCS8qDQo+Pj4gLS0gDQo+Pj4gMi4zMi4wDQo+Pj4=
