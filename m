@@ -2,95 +2,238 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99F59C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:35:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47872C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:35:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347886AbiDZJiW (ORCPT
+        id S1347889AbiDZJih (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:38:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39642 "EHLO
+        Tue, 26 Apr 2022 05:38:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346254AbiDZJH3 (ORCPT
+        with ESMTP id S1346201AbiDZJHS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:07:29 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 962161759D4;
-        Tue, 26 Apr 2022 01:48:28 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id e2so18129214wrh.7;
-        Tue, 26 Apr 2022 01:48:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=iHo8yEw9vi6ApvW9lREs3BsO/SztyDLEl+71H8g0jpU=;
-        b=VN1eJoSUpgw+fEiVLbAQqhxhv2kBlRYd8XppnJMJZihec2fPd9TDx1BawH28JfstJ4
-         MZGiQzfZyiade6E40jIsx2nB2EHHy4ghLMSIVu3f/1AEIK1j8MmMOT0EdcQR0Fa/KYu/
-         YenaRIDsLY0GZOFU7xhlRt915PShWqXv8pk8AJa3mNJD8h48/MVhKEUKjq87k9d+Q9dF
-         67G8ODzTX8xqtN4Thyv+u2ISk4AcFdK63c2xoYkumqzsp01RXkqZE7MBmZxhV/DF4WI+
-         4sZzFl59rGb59ctGzr33iTIilpZGoNcDyMxaaeq9el0k6lbQgPaRcayoqUPC1c0SmY7Z
-         Wzqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=iHo8yEw9vi6ApvW9lREs3BsO/SztyDLEl+71H8g0jpU=;
-        b=DZvc71mDU9/OnEdtDObdTwXfg4Vf73JVskdHAi/QSgPRpif+EgzFqRbirbnuFOlb3x
-         pz3L5iiatMEJ6yT8NeimzsQ7J2LYTpt5lp9l+mxEy2E1fIX9vzG1ZgDptuOYzgCPQFe2
-         EYcQO5bS5gxOD+tuz5qoYiFE/SuwnGxfDCuKTR2iGxTEVNbzs3XZZeXoSMeYtwrAcHkU
-         Fg5v0GEm8SaQuuG1SfuEICRpHnX6R4KzU4LROTQDupY+rhBLN2lZTgAgZZgXHqaHTbNn
-         C/gIe4AykST+T9ZX1vJgORGGDTn0oxmg1NtcFUfhs4qOaAWZyFS64rC4pU0N580drvfl
-         Kztw==
-X-Gm-Message-State: AOAM530NaWRQENU8A+4kZurSt+xBBQGllmHLc61aHBsMrj1QNRFkx6ne
-        9J7FvrWHBLfj1dK9tDy/KQ3uaR+X+dL+Hw==
-X-Google-Smtp-Source: ABdhPJwK/gdxNbR5wcwzCjZbJ0uPzi5O3qeN6FpU1jS1wRJBjccxbWHo8LB3JeEZkNOTKlhLjf7S3g==
-X-Received: by 2002:a05:6000:18a8:b0:20a:8a52:5c7e with SMTP id b8-20020a05600018a800b0020a8a525c7emr17783246wri.355.1650962907085;
-        Tue, 26 Apr 2022 01:48:27 -0700 (PDT)
-Received: from [192.168.0.43] (static-35-180-85-188.ipcom.comunitel.net. [188.85.180.35])
-        by smtp.gmail.com with ESMTPSA id g13-20020a5d64ed000000b0020a9e488976sm11890834wri.25.2022.04.26.01.48.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Apr 2022 01:48:26 -0700 (PDT)
-Message-ID: <60b73431-ea41-bcca-8374-1836488b399c@gmail.com>
-Date:   Tue, 26 Apr 2022 10:48:25 +0200
+        Tue, 26 Apr 2022 05:07:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C978D082E;
+        Tue, 26 Apr 2022 01:48:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AD2FD60C42;
+        Tue, 26 Apr 2022 08:48:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B41B8C385A0;
+        Tue, 26 Apr 2022 08:48:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650962900;
+        bh=HId+6tXTg5x1+3jpLMDLJZA0gM91e9w+FYLycdrtnXA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=2Nl0Bi5IhxqcMG+SPAVh+Df0yXiZ/1Dfo5r8NFHTc/2aQEBD/TIWTQ5w9jlG+S4PH
+         taFPcI7Ssg4UXRHKt2oSQRq27Lu5j1vaSoiltlJjS1nqqdlTBqD7GThXmBm3m1/G2J
+         VDPqM9ZqF8VhortzKhPYlYk0ppiFVqpgElHvTrvY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zack Rusin <zackr@vmware.com>,
+        Philipp Sieweck <psi@informatik.uni-kiel.de>,
+        Maaz Mombasawala <mombasawalam@vmware.com>,
+        Martin Krastev <krastevm@vmware.com>
+Subject: [PATCH 5.17 126/146] drm/vmwgfx: Fix gem refcounting and memory evictions
+Date:   Tue, 26 Apr 2022 10:22:01 +0200
+Message-Id: <20220426081753.603340299@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
+References: <20220426081750.051179617@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: linux-next: Signed-off-by missing for commit in the mediatek tree
-Content-Language: en-US
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-References: <20220426080706.26c6816b@canb.auug.org.au>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20220426080706.26c6816b@canb.auug.org.au>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Stephen,
+From: Zack Rusin <zackr@vmware.com>
 
-On 26/04/2022 00:07, Stephen Rothwell wrote:
-> Hi all,
-> 
-> Commits
-> 
->    775ef8aaa66e ("arm64: dts: mediatek: align thermal zone node names with dtschema")
->    c8b8db1a173d ("arm64: dts: mediatek: align operating-points table name with dtschema")
->    c01d9aa630b8 ("arm64: dts: mediatek: mt8183: align Google CROS EC PWM node name with dtschema")
->    75a3c81bc634 ("arm64: dts: hisilicon: align 'freq-table-hz' with dtschema in UFS")
-> 
-> are missing a Signed-off-by from their committer.
-> 
+commit 298799a28264ce400d9ff95c51b7adcb123d866e upstream.
 
-These patches are taken by Krysztof and merge into my tree via a tag [1] to 
-avoid any conflicts. Please let me know if there is anything I need to do to fix 
-this problem.
+v2: Add the last part of the ref count fix which was spotted by
+Philipp Sieweck where the ref count of cpu writers is off due to
+ERESTARTSYS or EBUSY during bo waits.
 
-Regards,
-Matthias
+The initial GEM port broke refcounting on shareable (prime) surfaces and
+memory evictions. The prime surfaces broke because the parent surfaces
+weren't increasing the ref count on GEM surfaces, which meant that
+the memory backing textures could have been deleted while the texture
+was still accessible. The evictions broke due to a typo, the code was
+supposed to exit if the passed buffers were not vmw_buffer_object
+not if they were. They're tied because the evictions depend on having
+memory to actually evict.
 
-[1] 
-https://git.kernel.org/pub/scm/linux/kernel/git/krzk/linux.git/log/?h=for-v5.19/arm-dts64-cleanups
+This fixes crashes with XA state tracker which is used for xrender
+acceleration on xf86-video-vmware, apps/tests which use a lot of
+memory (a good test being the piglit's streaming-texture-leak) and
+desktops.
+
+Signed-off-by: Zack Rusin <zackr@vmware.com>
+Fixes: 8afa13a0583f ("drm/vmwgfx: Implement DRIVER_GEM")
+Reported-by: Philipp Sieweck <psi@informatik.uni-kiel.de>
+Cc: <stable@vger.kernel.org> # v5.17+
+Reviewed-by: Maaz Mombasawala <mombasawalam@vmware.com>
+Reviewed-by: Martin Krastev <krastevm@vmware.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220420040328.1007409-1-zack@kde.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/gpu/drm/vmwgfx/vmwgfx_bo.c      |   43 ++++++++++++++------------------
+ drivers/gpu/drm/vmwgfx/vmwgfx_drv.c     |    8 +----
+ drivers/gpu/drm/vmwgfx/vmwgfx_surface.c |    7 ++++-
+ 3 files changed, 28 insertions(+), 30 deletions(-)
+
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_bo.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_bo.c
+@@ -46,6 +46,21 @@ vmw_buffer_object(struct ttm_buffer_obje
+ 	return container_of(bo, struct vmw_buffer_object, base);
+ }
+ 
++/**
++ * bo_is_vmw - check if the buffer object is a &vmw_buffer_object
++ * @bo: ttm buffer object to be checked
++ *
++ * Uses destroy function associated with the object to determine if this is
++ * a &vmw_buffer_object.
++ *
++ * Returns:
++ * true if the object is of &vmw_buffer_object type, false if not.
++ */
++static bool bo_is_vmw(struct ttm_buffer_object *bo)
++{
++	return bo->destroy == &vmw_bo_bo_free ||
++	       bo->destroy == &vmw_gem_destroy;
++}
+ 
+ /**
+  * vmw_bo_pin_in_placement - Validate a buffer to placement.
+@@ -615,8 +630,9 @@ int vmw_user_bo_synccpu_ioctl(struct drm
+ 
+ 		ret = vmw_user_bo_synccpu_grab(vbo, arg->flags);
+ 		vmw_bo_unreference(&vbo);
+-		if (unlikely(ret != 0 && ret != -ERESTARTSYS &&
+-			     ret != -EBUSY)) {
++		if (unlikely(ret != 0)) {
++			if (ret == -ERESTARTSYS || ret == -EBUSY)
++				return -EBUSY;
+ 			DRM_ERROR("Failed synccpu grab on handle 0x%08x.\n",
+ 				  (unsigned int) arg->handle);
+ 			return ret;
+@@ -798,7 +814,7 @@ int vmw_dumb_create(struct drm_file *fil
+ void vmw_bo_swap_notify(struct ttm_buffer_object *bo)
+ {
+ 	/* Is @bo embedded in a struct vmw_buffer_object? */
+-	if (vmw_bo_is_vmw_bo(bo))
++	if (!bo_is_vmw(bo))
+ 		return;
+ 
+ 	/* Kill any cached kernel maps before swapout */
+@@ -822,7 +838,7 @@ void vmw_bo_move_notify(struct ttm_buffe
+ 	struct vmw_buffer_object *vbo;
+ 
+ 	/* Make sure @bo is embedded in a struct vmw_buffer_object? */
+-	if (vmw_bo_is_vmw_bo(bo))
++	if (!bo_is_vmw(bo))
+ 		return;
+ 
+ 	vbo = container_of(bo, struct vmw_buffer_object, base);
+@@ -843,22 +859,3 @@ void vmw_bo_move_notify(struct ttm_buffe
+ 	if (mem->mem_type != VMW_PL_MOB && bo->resource->mem_type == VMW_PL_MOB)
+ 		vmw_resource_unbind_list(vbo);
+ }
+-
+-/**
+- * vmw_bo_is_vmw_bo - check if the buffer object is a &vmw_buffer_object
+- * @bo: buffer object to be checked
+- *
+- * Uses destroy function associated with the object to determine if this is
+- * a &vmw_buffer_object.
+- *
+- * Returns:
+- * true if the object is of &vmw_buffer_object type, false if not.
+- */
+-bool vmw_bo_is_vmw_bo(struct ttm_buffer_object *bo)
+-{
+-	if (bo->destroy == &vmw_bo_bo_free ||
+-	    bo->destroy == &vmw_gem_destroy)
+-		return true;
+-
+-	return false;
+-}
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c
+@@ -997,13 +997,10 @@ static int vmw_driver_load(struct vmw_pr
+ 		goto out_no_fman;
+ 	}
+ 
+-	drm_vma_offset_manager_init(&dev_priv->vma_manager,
+-				    DRM_FILE_PAGE_OFFSET_START,
+-				    DRM_FILE_PAGE_OFFSET_SIZE);
+ 	ret = ttm_device_init(&dev_priv->bdev, &vmw_bo_driver,
+ 			      dev_priv->drm.dev,
+ 			      dev_priv->drm.anon_inode->i_mapping,
+-			      &dev_priv->vma_manager,
++			      dev_priv->drm.vma_offset_manager,
+ 			      dev_priv->map_mode == vmw_dma_alloc_coherent,
+ 			      false);
+ 	if (unlikely(ret != 0)) {
+@@ -1173,7 +1170,6 @@ static void vmw_driver_unload(struct drm
+ 	vmw_devcaps_destroy(dev_priv);
+ 	vmw_vram_manager_fini(dev_priv);
+ 	ttm_device_fini(&dev_priv->bdev);
+-	drm_vma_offset_manager_destroy(&dev_priv->vma_manager);
+ 	vmw_release_device_late(dev_priv);
+ 	vmw_fence_manager_takedown(dev_priv->fman);
+ 	if (dev_priv->capabilities & SVGA_CAP_IRQMASK)
+@@ -1397,7 +1393,7 @@ vmw_get_unmapped_area(struct file *file,
+ 	struct vmw_private *dev_priv = vmw_priv(file_priv->minor->dev);
+ 
+ 	return drm_get_unmapped_area(file, uaddr, len, pgoff, flags,
+-				     &dev_priv->vma_manager);
++				     dev_priv->drm.vma_offset_manager);
+ }
+ 
+ static int vmwgfx_pm_notifier(struct notifier_block *nb, unsigned long val,
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_surface.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_surface.c
+@@ -683,6 +683,9 @@ static void vmw_user_surface_base_releas
+ 	    container_of(base, struct vmw_user_surface, prime.base);
+ 	struct vmw_resource *res = &user_srf->srf.res;
+ 
++	if (base->shareable && res && res->backup)
++		drm_gem_object_put(&res->backup->base.base);
++
+ 	*p_base = NULL;
+ 	vmw_resource_unreference(&res);
+ }
+@@ -857,6 +860,7 @@ int vmw_surface_define_ioctl(struct drm_
+ 			goto out_unlock;
+ 		}
+ 		vmw_bo_reference(res->backup);
++		drm_gem_object_get(&res->backup->base.base);
+ 	}
+ 
+ 	tmp = vmw_resource_reference(&srf->res);
+@@ -1513,7 +1517,6 @@ vmw_gb_surface_define_internal(struct dr
+ 							&res->backup);
+ 		if (ret == 0)
+ 			vmw_bo_reference(res->backup);
+-
+ 	}
+ 
+ 	if (unlikely(ret != 0)) {
+@@ -1561,6 +1564,8 @@ vmw_gb_surface_define_internal(struct dr
+ 			drm_vma_node_offset_addr(&res->backup->base.base.vma_node);
+ 		rep->buffer_size = res->backup->base.base.size;
+ 		rep->buffer_handle = backup_handle;
++		if (user_srf->prime.base.shareable)
++			drm_gem_object_get(&res->backup->base.base);
+ 	} else {
+ 		rep->buffer_map_handle = 0;
+ 		rep->buffer_size = 0;
+
+
