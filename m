@@ -2,88 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E29FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 18:01:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27F49C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 18:01:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349800AbiDZSEZ (ORCPT
+        id S1349792AbiDZSEi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 14:04:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51372 "EHLO
+        Tue, 26 Apr 2022 14:04:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349647AbiDZSEX (ORCPT
+        with ESMTP id S1351468AbiDZSEf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 14:04:23 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F41E26552;
-        Tue, 26 Apr 2022 11:01:15 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id n18so30983319plg.5;
-        Tue, 26 Apr 2022 11:01:15 -0700 (PDT)
+        Tue, 26 Apr 2022 14:04:35 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D326927B18
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 11:01:26 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id y38so2920023pfa.6
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 11:01:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=zUoXhYlEPUwygJjdo5BRN5pmDVa+7E+PlxHMCgZpZ0w=;
-        b=hcYsRmt4lBqSWMgHEvkZnwOyFsjQ7evTB7ufr2P4rNl4239Uy5JZ/QRzy2x/OPD0ba
-         2edErYgTbvDSx42epM+9ejtS89q4fYe7wwwmvdAjUpu8DnLmsF29efzUUR620aeZNz0V
-         1f99LFrC27/RseSqbFbg8tS28LMaM8KDeh2BvnZyaPSECvk2NUE+XjAQY86bCzS5RuMZ
-         +Keyys9FVNQuq4uUU4dImF51sFYbji97PHZN12fn4EmyrjLQiQiYdk2vgZ4QELCqP2fn
-         WTivWVlcUbwuZApEK/AMzP+jRKxtdfOSehhA8unbAvcjaxFmEgJe7LVmH4gt2qf9mT6C
-         7BPA==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=XRsu/ussswt/LIrflZJyacP4e2z+gM39yV+1fzyWCuw=;
+        b=XLPvEl+krom+vUGXLLaM9U5FMvMXJDtCpmsgMIMmsaMdInWzeTqMzVZIuAysv57Ob+
+         4X5WXx9T58lNI5xuusGfrtE38Ta1uE2xmgiTdklo/jLzQ8BLnvsyWxZ3lcudjHrGsSIC
+         937A84Dat2VCWHdClpkuzhwjGY51zChKfOIig=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=zUoXhYlEPUwygJjdo5BRN5pmDVa+7E+PlxHMCgZpZ0w=;
-        b=XgCo9hZz+iQB+5yKoUWjn3MQnRNUF+/D2b2Ecv14/BIkkBVEzGMspqvCwjn28tOvFy
-         rjZrvDu2udupE3Xbh2FfMVw2nT/dKIrH58212yR+2MuS4tr7anLr5boI/6j4Me6rCNHU
-         pW1Lq2u+0tV9x76cAl3lJPMMLyKoZKXZWOydOPgnjRVU6s4BlFky6kTlyuunVtBjxvrd
-         xFLhH4EhnpHDlwpD1MokhN6xlOHqdgRCacrA69MO/rlRPOW8ICVpXrHmpyzGOumYhYUY
-         UjAxwRLypO2foZPWFxtxPiA+gaAkuuzw0006OQVXwkEHyoHKFHLkRkbMQRasry7vBm7x
-         WsBw==
-X-Gm-Message-State: AOAM533f59KvXymAhcRh30QSY9wzY8oJQaQC1xEYn9cVfCRcOfR4xGUT
-        w3Bz2aM6Ed5kYxPEzi/+1zY=
-X-Google-Smtp-Source: ABdhPJxB35ksz2ue4CmyT2YMIpGvVDGSIP6OdyoL8XDkntYdMY3GPTUXqstvmhpGyQiDDfr7aRw+3Q==
-X-Received: by 2002:a17:902:ab5c:b0:15c:ea3a:9437 with SMTP id ij28-20020a170902ab5c00b0015cea3a9437mr17694095plb.9.1650996074686;
-        Tue, 26 Apr 2022 11:01:14 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id z6-20020a056a00240600b004e17ab23340sm17522657pfh.177.2022.04.26.11.01.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Apr 2022 11:01:14 -0700 (PDT)
-Message-ID: <bf92c94b-3559-d56a-9264-557ebf3845dd@gmail.com>
-Date:   Tue, 26 Apr 2022 11:01:12 -0700
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=XRsu/ussswt/LIrflZJyacP4e2z+gM39yV+1fzyWCuw=;
+        b=Re+LC8nQsebzgmSZA70u5aeZr0SrRNdlMYj1LLgs+egSNWME88owEHQdWKwKNEWQ71
+         FeF4EcRLw7WGd0GAZnQXBYALJuMoCwiNC1oJ9vVeern862s2B7o/numlRzu/EW3j+/fZ
+         F1Hq4eYTULklOLWZ+XztYDdyLZsMhmVvd+ulgolJGcTu7aSvOIgbwcx3nA3YaB+wtn1/
+         TNry60jp59gRjPRFteqQDHNRhn/TGWwsgiSwo1WhXzFxjGezHDp6fgnuaEhiHL1Xmf6I
+         u6r21NzHypZD3qYDHFvwyycqFiCWg7USFMx6fmb2uxxXnJtmzx7Sxlk97EiJ6/CLRHhw
+         5c2g==
+X-Gm-Message-State: AOAM533RzWMsZZgJPtXLK6yikQmyO01YCUBrM+NvAHJpXdrqtwQns36L
+        XlmNXa0Ozcn/f5xkwOjO4IzXVg==
+X-Google-Smtp-Source: ABdhPJx+8k6RshbL4Qs3shYsjvDuW5rotWD+JQBa6tZTy5QcrmBBIBGpOAXKkMDhNkmcjxy8bxm28w==
+X-Received: by 2002:a05:6a02:10d:b0:381:f4c8:ad26 with SMTP id bg13-20020a056a02010d00b00381f4c8ad26mr20497541pgb.135.1650996085751;
+        Tue, 26 Apr 2022 11:01:25 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id y2-20020a17090a784200b001cd4989ff42sm3408312pjl.9.2022.04.26.11.01.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 11:01:25 -0700 (PDT)
+Date:   Tue, 26 Apr 2022 11:01:24 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        akpm@linux-foundation.org, alex.popov@linux.com,
+        catalin.marinas@arm.com, luto@kernel.org, will@kernel.org
+Subject: Re: [PATCH 0/8] stackleak: fixes and rework
+Message-ID: <202204261101.D3DC3333@keescook>
+References: <20220425115603.781311-1-mark.rutland@arm.com>
+ <202204251551.0CFE01DF4@keescook>
+ <YmgXVwaYQ1Kn5+b0@lakrids>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [Patch net-next] net: dsa: ksz9477: move get_stats64 to
- ksz_common.c
-Content-Language: en-US
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>
-References: <20220426091048.9311-1-arun.ramadoss@microchip.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220426091048.9311-1-arun.ramadoss@microchip.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YmgXVwaYQ1Kn5+b0@lakrids>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/26/22 02:10, Arun Ramadoss wrote:
-> The mib counters for the ksz9477 is same for the ksz9477 switch and
-> LAN937x switch. Hence moving it to ksz_common.c file in order to have it
-> generic function. The DSA hook get_stats64 now can call ksz_get_stats64.
+On Tue, Apr 26, 2022 at 05:01:27PM +0100, Mark Rutland wrote:
+> On Mon, Apr 25, 2022 at 03:54:00PM -0700, Kees Cook wrote:
+> > On Mon, Apr 25, 2022 at 12:55:55PM +0100, Mark Rutland wrote:
+> > > This series reworks the stackleak code. The first patch fixes some
+> > > latent issues on arm64, and the subsequent patches improve the code to
+> > > improve clarity and permit better code generation.
+> > 
+> > This looks nice; thanks! I'll put this through build testing and get it
+> > applied shortly...
 > 
-> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-> Reviewed-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> FWIW, looking at testing I've spotted a fencepost error, so I'll spin a
+> v2 with that fixed (and with updates to the LKDTM test).
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Ah! Oops, ok, I'll unpush the series, I missed this. :)
+
 -- 
-Florian
+Kees Cook
