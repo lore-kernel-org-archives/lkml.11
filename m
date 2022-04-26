@@ -2,237 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2AF3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 13:49:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B62CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 13:49:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350155AbiDZNwJ (ORCPT
+        id S1350413AbiDZNwc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 09:52:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53032 "EHLO
+        Tue, 26 Apr 2022 09:52:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234454AbiDZNv4 (ORCPT
+        with ESMTP id S234454AbiDZNwa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 09:51:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D0746E541;
-        Tue, 26 Apr 2022 06:48:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DB51615EB;
-        Tue, 26 Apr 2022 13:48:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F54BC385AA;
-        Tue, 26 Apr 2022 13:48:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650980924;
-        bh=QJut5zbZIu0zU0qLAgUT2dCQ8IrsxOQVQKtHFpXQ6Vs=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=b1SlcU3TjJHndH5eCIEaKPAhTYS6StEowS7FMkF7ZY60tIoqFMeTscRXVmyGTncWx
-         FQbh175kFVoS9DHQTiKJW8XJ5K9FqHUbi0221/1Pmmzw/PwB+YJ1fIPJboWTsODIAr
-         0ZVL51kmjRDQLEvdlN0oImMbO+wPxat5Ew53sJr8OdDh5qFv+obrfxLswm+IHBt7MT
-         H09zmXvBspTnjjFrPRwPuYMTVN0ff4k7AVOob5+fq4N6sDdsdDfHNGTvGgXeN8Zfoj
-         XyTUeA7m5ZCFrZq9l7ZOF4Cs4cM95aPJhu3NIS+y5BRvVFc/nFC0A8PfGa3DXnjJ1a
-         8Gkvd9PCe/sYw==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 12FC55C0460; Tue, 26 Apr 2022 06:48:44 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 06:48:44 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     "Zhang, Qiang1" <qiang1.zhang@intel.com>
-Cc:     "frederic@kernel.org" <frederic@kernel.org>,
-        "rcu@vger.kernel.org" <rcu@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4] rcu: Dump all rcuc kthreads status for CPUs that not
- report quiescent state
-Message-ID: <20220426134844.GC4285@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220425010404.3249118-1-qiang1.zhang@intel.com>
- <20220425154533.GT4285@paulmck-ThinkPad-P17-Gen-1>
- <PH0PR11MB5880A72D33DCB9CDC22DED19DAFB9@PH0PR11MB5880.namprd11.prod.outlook.com>
+        Tue, 26 Apr 2022 09:52:30 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B63D6D84D
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 06:49:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650980963; x=1682516963;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=+1AaMUKz7U1/QUWjG1naPByn71Ih8gIWJmcdLnyBoi8=;
+  b=bxM+KnRK+gZN8w5ZFYMF1QBiS+7Aef+w0bI7sTgu4sm6JPnZadkUjoPh
+   49vfc2tULpZu3aHmfjHZCDDP6FLdfxNkXbWQY/My3huxvJhQDW+wsml0j
+   xoRaBEqNXrAG/24qaV+y9ascwxSANcem1/7J76fo5MKHjpe5gp9eIzoF2
+   0PWqCFswxRun4xlvO+XAd4HFmaDLLtcypqhJFFuaJMtqVT73vEomPpPmN
+   hT5+bO/hemj25R4Xlr4L6+Mhu2oNv8ddDOigfINtUP6NB4DVRR+ksXNxu
+   Wssyjw92nipLT7QTdi2OB4TA6Rx9CyT2HejJDLe0rAY3asf1RDBi9VsxE
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="265105770"
+X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
+   d="scan'208";a="265105770"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 06:49:21 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
+   d="scan'208";a="579902914"
+Received: from ubuntu.bj.intel.com ([10.238.155.108])
+  by orsmga008.jf.intel.com with ESMTP; 26 Apr 2022 06:49:19 -0700
+From:   Jun Miao <jun.miao@intel.com>
+To:     peterz@infradead.org
+Cc:     bigeasy@linutronix.de, qiang1.zhang@intel.com,
+        linux-kernel@vger.kernel.org, jun.miao@intel.com
+Subject: [PATCH] irq_work: Make irq_work_queue_on() NMI-safe again
+Date:   Tue, 26 Apr 2022 21:49:24 +0800
+Message-Id: <20220426134924.736104-1-jun.miao@intel.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <PH0PR11MB5880A72D33DCB9CDC22DED19DAFB9@PH0PR11MB5880.namprd11.prod.outlook.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 06:44:46AM +0000, Zhang, Qiang1 wrote:
-> 
-> On Mon, Apr 25, 2022 at 09:04:04AM +0800, Zqiang wrote:
-> > If the rcutree.use_softirq is configured, when RCU Stall event 
-> > happened, dump status of all rcuc kthreads who due to starvation 
-> > prevented grace period ends on CPUs that not report quiescent state.
-> > 
-> > Signed-off-by: Zqiang <qiang1.zhang@intel.com>
-> > ---
-> >  v1->v2:
-> >  rework rcuc_kthread_dump function
-> >  v2->v3:
-> >  merge this rcuc-stalled information into print_cpu_stall_info()
-> >  v3->v4:
-> >  print rcuc info only when rcuc kthread is starved
-> > 
-> >  kernel/rcu/tree_stall.h | 49 
-> > ++++++++++++++++++-----------------------
-> >  1 file changed, 21 insertions(+), 28 deletions(-)
-> 
-> >I have queued this for testing and further review, thank you!
-> >
-> >I did the usual wordsmithing, plus I got rid of a couple of space characters that are extraneous in the common case (one of yours and one pre-existing instance).
-> >
-> >Could you please generate an actual stall of this type?  You might need to add a delay to the rcuc code, but other than that, please see the rcutorture blog series [1] and in particular the post on forcing stall warnings [2].
-> >
-> >							Thanx, Paul
-> >
-> >[1] https://paulmck.livejournal.com/61432.html
-> >[2] https://paulmck.livejournal.com/58077.html
-> 
-> I followed the instructions, add " rcutorture.stall_cpu=22 rcutorture.fwd_progress=0"  and
-> " rcutree.use_softirq=0"to bootargs, can trigger  RCU CPU stall warning:
-> 
-> root@qemux86-64:/# dmesg
-> [   37.556435] rcu: INFO: rcu_preempt self-detected stall on CPU
-> [   37.556437] rcu:     3-....: (1 GPs behind) idle=269/1/0x4000000000000000 softirq=0/0 fqs=5631 rcuc=26004 jiffies(starved)
-> [   37.556440]  (t=26000 jiffies g=3589 q=35403)
-> [   37.556441] NMI backtrace for cpu 3
-> [   37.556442] CPU: 3 PID: 117 Comm: rcu_torture_sta Tainted: G             L    5.17.0-yoctodev-standard #16 7fe7533e7466875b0801ac148f921afcf57d38bc
-> [   37.556443] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.15.0-0-g2dd4b9b3f840-prebuilt.qemu.org 04/01/2014
-> [   37.556444] Call Trace:
-> [   37.556445]  <IRQ>
-> [   37.556446]  dump_stack_lvl+0x5b/0x82
-> [   37.556449]  dump_stack+0x10/0x12
-> [   37.556451]  nmi_cpu_backtrace.cold+0x32/0x8a
-> [   37.556452]  ? lapic_can_unplug_cpu+0x80/0x80
-> [   37.556454]  nmi_trigger_cpumask_backtrace+0xce/0xe0
-> [   37.556456]  arch_trigger_cpumask_backtrace+0x19/0x20
-> [   37.556458]  rcu_dump_cpu_stacks+0xcd/0x140
-> [   37.556460]  rcu_sched_clock_irq.cold+0x7a/0x3ba
-> [   37.556463]  ? debug_smp_processor_id+0x17/0x20
-> [   37.556466]  update_process_times+0x9b/0xd0
-> [   37.556467]  tick_sched_handle.isra.0+0x25/0x50
-> [   37.556469]  tick_sched_timer+0x79/0x90
-> [   37.556470]  ? tick_sched_do_timer+0x60/0x60
-> [   37.556471]  __hrtimer_run_queues+0x1d1/0x4c0
-> [   37.556473]  hrtimer_interrupt+0x114/0x230
-> [   37.556475]  ? rcu_read_lock_held_common+0x12/0x50
-> [   37.556489]  __sysvec_apic_timer_interrupt+0xa4/0x280
-> [   37.556491]  sysvec_apic_timer_interrupt+0x95/0xc0
-> [   37.556492]  </IRQ>
+We should not put NMI unsafe code in irq_work_queue_on().
 
-Excellent, thank you!!!
+The KASAN of kasan_record_aux_stack_noalloc() is not NMI safe. Because which
+will call the spinlock. While the irq_work_queue_on() is also very carefully
+carafted to be exactly that.
+When unable CONFIG_SM or local CPU, the irq_work_queue_on() is even same to
+irq_work_queue(). So delete KASAN instantly.
 
-Now could you please do the same thing for a use_softirq kernel to
-verify that it prints correctly when that message is not supposed
-to be shown?
+Fixes: e2b5bcf9f5ba ("irq_work: record irq_work_queue() call stack")
+Suggested by: "Huang, Ying" <ying.huang@intel.com>
+Signed-off-by: Jun Miao <jun.miao@intel.com>
+---
+ kernel/irq_work.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-							Thanx, Paul
+diff --git a/kernel/irq_work.c b/kernel/irq_work.c
+index 7afa40fe5cc4..e7f48aa8d8af 100644
+--- a/kernel/irq_work.c
++++ b/kernel/irq_work.c
+@@ -20,7 +20,6 @@
+ #include <linux/smp.h>
+ #include <linux/smpboot.h>
+ #include <asm/processor.h>
+-#include <linux/kasan.h>
+ 
+ static DEFINE_PER_CPU(struct llist_head, raised_list);
+ static DEFINE_PER_CPU(struct llist_head, lazy_list);
+@@ -137,8 +136,6 @@ bool irq_work_queue_on(struct irq_work *work, int cpu)
+ 	if (!irq_work_claim(work))
+ 		return false;
+ 
+-	kasan_record_aux_stack_noalloc(work);
+-
+ 	preempt_disable();
+ 	if (cpu != smp_processor_id()) {
+ 		/* Arch remote IPI send/receive backend aren't NMI safe */
+-- 
+2.32.0
 
-> Thanks
-> Zqiang
-> 
-> >
-> ------------------------------------------------------------------------
-> 
-> commit 66226e2acda8b31b60137b1ae71244df68541a01
-> Author: Zqiang <qiang1.zhang@intel.com>
-> Date:   Mon Apr 25 09:04:04 2022 +0800
-> 
->     rcu: Dump all rcuc kthreads status for CPUs that not report quiescent state
->     
->     If the rcutree.use_softirq kernel boot parameter is disabled, then it is
->     possible that a RCU CPU stall is due to the rcuc kthreads being starved of
->     CPU time.  There is currently no easy way to infer this from the RCU CPU
->     stall warning output.  This commit therefore adds a string of the form "
->     rcuc=%ld jiffies(starved)" to a given CPU's output if the corresponding
->     rcuc kthread has been starved for more than two seconds.
->     
->     [ paulmck: Eliminate extraneous space characters. ]
->     
->     Signed-off-by: Zqiang <qiang1.zhang@intel.com>
->     Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-> 
-> diff --git a/kernel/rcu/tree_stall.h b/kernel/rcu/tree_stall.h index d7956c03edbd4..0a25a4ea6eef8 100644
-> --- a/kernel/rcu/tree_stall.h
-> +++ b/kernel/rcu/tree_stall.h
-> @@ -407,7 +407,19 @@ static bool rcu_is_gp_kthread_starving(unsigned long *jp)
->  
->  static bool rcu_is_rcuc_kthread_starving(struct rcu_data *rdp, unsigned long *jp)  {
-> -	unsigned long j = jiffies - READ_ONCE(rdp->rcuc_activity);
-> +	int cpu;
-> +	struct task_struct *rcuc;
-> +	unsigned long j;
-> +
-> +	rcuc = rdp->rcu_cpu_kthread_task;
-> +	if (!rcuc)
-> +		return false;
-> +
-> +	cpu = task_cpu(rcuc);
-> +	if (cpu_is_offline(cpu) || idle_cpu(cpu))
-> +		return false;
-> +
-> +	j = jiffies - READ_ONCE(rdp->rcuc_activity);
->  
->  	if (jp)
->  		*jp = j;
-> @@ -432,6 +444,9 @@ static void print_cpu_stall_info(int cpu)
->  	struct rcu_data *rdp = per_cpu_ptr(&rcu_data, cpu);
->  	char *ticks_title;
->  	unsigned long ticks_value;
-> +	bool rcuc_starved;
-> +	unsigned long j;
-> +	char buf[32];
->  
->  	/*
->  	 * We could be printing a lot while holding a spinlock.  Avoid @@ -449,7 +464,10 @@ static void print_cpu_stall_info(int cpu)
->  	delta = rcu_seq_ctr(rdp->mynode->gp_seq - rdp->rcu_iw_gp_seq);
->  	falsepositive = rcu_is_gp_kthread_starving(NULL) &&
->  			rcu_dynticks_in_eqs(rcu_dynticks_snap(rdp));
-> -	pr_err("\t%d-%c%c%c%c: (%lu %s) idle=%03x/%ld/%#lx softirq=%u/%u fqs=%ld %s\n",
-> +	rcuc_starved = rcu_is_rcuc_kthread_starving(rdp, &j);
-> +	if (rcuc_starved)
-> +		sprintf(buf, " rcuc=%ld jiffies(starved)", j);
-> +	pr_err("\t%d-%c%c%c%c: (%lu %s) idle=%03x/%ld/%#lx softirq=%u/%u 
-> +fqs=%ld%s%s\n",
->  	       cpu,
->  	       "O."[!!cpu_online(cpu)],
->  	       "o."[!!(rdp->grpmask & rdp->mynode->qsmaskinit)], @@ -462,32 +480,10 @@ static void print_cpu_stall_info(int cpu)
->  	       rdp->dynticks_nesting, rdp->dynticks_nmi_nesting,
->  	       rdp->softirq_snap, kstat_softirqs_cpu(RCU_SOFTIRQ, cpu),
->  	       data_race(rcu_state.n_force_qs) - rcu_state.n_force_qs_gpstart,
-> +	       rcuc_starved ? buf : "",
->  	       falsepositive ? " (false positive?)" : "");  }
->  
-> -static void rcuc_kthread_dump(struct rcu_data *rdp) -{
-> -	int cpu;
-> -	unsigned long j;
-> -	struct task_struct *rcuc;
-> -
-> -	rcuc = rdp->rcu_cpu_kthread_task;
-> -	if (!rcuc)
-> -		return;
-> -
-> -	cpu = task_cpu(rcuc);
-> -	if (cpu_is_offline(cpu) || idle_cpu(cpu))
-> -		return;
-> -
-> -	if (!rcu_is_rcuc_kthread_starving(rdp, &j))
-> -		return;
-> -
-> -	pr_err("%s kthread starved for %ld jiffies\n", rcuc->comm, j);
-> -	sched_show_task(rcuc);
-> -	if (!trigger_single_cpu_backtrace(cpu))
-> -		dump_cpu_task(cpu);
-> -}
-> -
->  /* Complain about starvation of grace-period kthread.  */  static void rcu_check_gp_kthread_starvation(void)
->  {
-> @@ -659,9 +655,6 @@ static void print_cpu_stall(unsigned long gps)
->  	rcu_check_gp_kthread_expired_fqs_timer();
->  	rcu_check_gp_kthread_starvation();
->  
-> -	if (!use_softirq)
-> -		rcuc_kthread_dump(rdp);
-> -
->  	rcu_dump_cpu_stacks();
->  
->  	raw_spin_lock_irqsave_rcu_node(rnp, flags);
