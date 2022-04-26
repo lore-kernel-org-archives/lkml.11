@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A427C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:48:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 288E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:48:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353390AbiDZQvz (ORCPT
+        id S1353395AbiDZQv6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 12:51:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43222 "EHLO
+        Tue, 26 Apr 2022 12:51:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353252AbiDZQvA (ORCPT
+        with ESMTP id S1353360AbiDZQvA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 12:51:00 -0400
-Received: from mail-ed1-x54a.google.com (mail-ed1-x54a.google.com [IPv6:2a00:1450:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E85D0289A7
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:46:05 -0700 (PDT)
-Received: by mail-ed1-x54a.google.com with SMTP id t25-20020a508d59000000b00425d86c2987so4109343edt.21
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:46:05 -0700 (PDT)
+Received: from mail-ed1-x549.google.com (mail-ed1-x549.google.com [IPv6:2a00:1450:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A0B24833A
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:46:03 -0700 (PDT)
+Received: by mail-ed1-x549.google.com with SMTP id b24-20020a50e798000000b0041631767675so10630033edn.23
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:46:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=xs3mnLw1SF/DZ/Tq7NTZzrdEtEEoGjj1tkhOxGSNVPQ=;
-        b=Dp8fDgewCtm7EfJ+NxSWPaqf4fjHXCb5jsKUHsqjOQlRwQkgkKZ/UWCSiVVrRs/uZW
-         OQRNetbiqEwnG85Z0p1Sf25DydKgfbA8aQ0Bsb8u1giNx3oJsml+h06KXd12ZFl+7zlh
-         88EaOBCQpujgyWZhEQULbY92x5FazQAo2pGdWFAwltYHX4X7vprtu3R+YlyuxLW4bV7A
-         kz4jOXTPx7d0TC785iMRbaV+fkvSej+QsvFkw8jbYuayp+vHkk5UYhSq7fmBnGbZjeRh
-         ej2EyGUQvI2W9wRBjeiQzBogyryUJQVM1Tt85ycKl00a26JFtroHDFnq/8e7RZbUcfE0
-         4QnQ==
+        bh=XLE4dDKZQivTtEUon/Tj4SL+cxx+nqfawlbFCYGovJc=;
+        b=JMsNnrgA3RJaeGbSFsIbMJk1WKHAyC9mHh9w+Ezp2I0AryPzMo0hvP3hFHcM3Fes/j
+         0Od6aTn5hLCVFSLoC+QEN/Y51yJ/k3To1PPqp71oGx9SidpVIg7W/FFigKzrWKt5pZNf
+         ObR3IfkU591CrM0QCB8Yyv69AzGBOduai/CQ5ZELgXkxhQBpzhytZFiVH0+MwZEQnsa3
+         V3yvl4lBVXMYXdY61XOr/QmKRJgkZHWIaUhgcwCtzjh2gZfAxHgEOuB8kzeynle/cRhb
+         dXMQ2W1fkb0VB8Nx+GeffYe9rusz/mxzvp3Q0HOhGVl2s14bRkzEjCgm6Hi/UlxZ9QPZ
+         fd4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=xs3mnLw1SF/DZ/Tq7NTZzrdEtEEoGjj1tkhOxGSNVPQ=;
-        b=Mt3yn8Ct68Yw+ddK6FI3m6vUK0dUU1YdxsUTByt35K4XtQxeXCWd96MBC1oNA/xL+E
-         JRJxkWADsQaB6PEvHILa4+6qD+DL7ZdTkAz5keOpMIxa2oXa+7bl9wxLmDw8TDIvFME6
-         i6qvaYgc+X2Jj6o9kclQ8plvVTog7uy8T+TEVRF+IvZbB7bkPcGE28VuOsIEQXOh4y6j
-         etbMhMNHUmZaU3ZwPEh0u2xqgE/Rx+f/H0CMxMnSVcaflYcu/UlBCcbq0aHEkjQtuVAZ
-         tBeWktuEXrGylY7t6xeXOlXCDAzoJ+mxlxB/POy+Dr1yXgeUcAPIACdxcsFPHmMW493w
-         sYOQ==
-X-Gm-Message-State: AOAM533skDPiK/4SOVnfu44P1S9/Pl4j6rddhQKnLKTFwE12Bk+fJnUa
-        wI+RZjPWF2BX9LPqHBksaaQw8Qrz+BQ=
-X-Google-Smtp-Source: ABdhPJyVycewaYAOLWq91OXZaqwuaaJYgCPy/6P6fQ6DCJX8eHTBHY2JtlW8ZAI35LArwnFF6hd2OCloeNo=
+        bh=XLE4dDKZQivTtEUon/Tj4SL+cxx+nqfawlbFCYGovJc=;
+        b=5Ra/e4QlsN++eNV7i8TFW51YOuE0yFvEPt17f7v2T3wDVKSPznn0hsiDb/6arspLa8
+         7Z2sF4S6MX0zs9c6KgAC4tudtqSCVwP4RZnFFbm+Gnvko3r8mIekfdeuhHaPob+rIEBy
+         uvYcyyqd9DKgKulopVs8NBvwxxsHikmHs4lIygx49qKTux+fhA7HESfSVXddJuIGuUx1
+         jP6uFtsvlQKFnqp9vE+CEYn43TN3Cz6D8VTqKtVjn4l1biHbOwWdrGyFK8F29ETvGq0s
+         cFVxGRrgIkaQL8Ey0ifqd7hSJfeD6Kc7xoxH7NHx6EeVU9HHtmF35XaDJI7sPA5U682U
+         Dapw==
+X-Gm-Message-State: AOAM532u3/MuPqCHtXDbC/0Wwe5nmOofD5vHhP0V7VVo2eRRC3YsqY58
+        ko5kD4KQV90LT2SffHF+sKv+uvEEhAE=
+X-Google-Smtp-Source: ABdhPJw2dp1WxDXIXbxKtYrp2TPHwfmzrgTwJgDoJzBSZTqGhvOW8ABWyU8M8nHDx8YckvsgOVfYsGY3TJA=
 X-Received: from glider.muc.corp.google.com ([2a00:79e0:15:13:d580:abeb:bf6d:5726])
- (user=glider job=sendgmr) by 2002:aa7:c70f:0:b0:425:f70d:b34 with SMTP id
- i15-20020aa7c70f000000b00425f70d0b34mr7131646edq.306.1650991564200; Tue, 26
- Apr 2022 09:46:04 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 18:43:09 +0200
+ (user=glider job=sendgmr) by 2002:a17:907:3e21:b0:6f3:bd59:1aa0 with SMTP id
+ hp33-20020a1709073e2100b006f3bd591aa0mr1461947ejc.682.1650991561485; Tue, 26
+ Apr 2022 09:46:01 -0700 (PDT)
+Date:   Tue, 26 Apr 2022 18:43:08 +0200
 In-Reply-To: <20220426164315.625149-1-glider@google.com>
-Message-Id: <20220426164315.625149-41-glider@google.com>
+Message-Id: <20220426164315.625149-40-glider@google.com>
 Mime-Version: 1.0
 References: <20220426164315.625149-1-glider@google.com>
 X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
-Subject: [PATCH v3 40/46] x86: kmsan: handle open-coded assembly in lib/iomem.c
+Subject: [PATCH v3 39/46] x86: kmsan: skip shadow checks in __switch_to()
 From:   Alexander Potapenko <glider@google.com>
 To:     glider@google.com
 Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
@@ -91,47 +91,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-KMSAN cannot intercept memory accesses within asm() statements.
-That's why we add kmsan_unpoison_memory() and kmsan_check_memory() to
-hint it how to handle memory copied from/to I/O memory.
+When instrumenting functions, KMSAN obtains the per-task state (mostly
+pointers to metadata for function arguments and return values) once per
+function at its beginning, using the `current` pointer.
 
+Every time the instrumented function calls another function, this state
+(`struct kmsan_context_state`) is updated with shadow/origin data of the
+passed and returned values.
+
+When `current` changes in the low-level arch code, instrumented code can
+not notice that, and will still refer to the old state, possibly corrupting
+it or using stale data. This may result in false positive reports.
+
+To deal with that, we need to apply __no_kmsan_checks to the functions
+performing context switching - this will result in skipping all KMSAN
+shadow checks and marking newly created values as initialized,
+preventing all false positive reports in those functions. False negatives
+are still possible, but we expect them to be rare and impersistent.
+
+Suggested-by: Marco Elver <elver@google.com>
 Signed-off-by: Alexander Potapenko <glider@google.com>
----
-Link: https://linux-review.googlesource.com/id/Icb16bf17269087e475debf07a7fe7d4bebc3df23
----
- arch/x86/lib/iomem.c | 5 +++++
- 1 file changed, 5 insertions(+)
 
-diff --git a/arch/x86/lib/iomem.c b/arch/x86/lib/iomem.c
-index 3e2f33fc33de2..e0411a3774d49 100644
---- a/arch/x86/lib/iomem.c
-+++ b/arch/x86/lib/iomem.c
-@@ -1,6 +1,7 @@
- #include <linux/string.h>
- #include <linux/module.h>
- #include <linux/io.h>
-+#include <linux/kmsan-checks.h>
- 
- #define movs(type,to,from) \
- 	asm volatile("movs" type:"=&D" (to), "=&S" (from):"0" (to), "1" (from):"memory")
-@@ -37,6 +38,8 @@ static void string_memcpy_fromio(void *to, const volatile void __iomem *from, si
- 		n-=2;
- 	}
- 	rep_movs(to, (const void *)from, n);
-+	/* KMSAN must treat values read from devices as initialized. */
-+	kmsan_unpoison_memory(to, n);
- }
- 
- static void string_memcpy_toio(volatile void __iomem *to, const void *from, size_t n)
-@@ -44,6 +47,8 @@ static void string_memcpy_toio(volatile void __iomem *to, const void *from, size
- 	if (unlikely(!n))
- 		return;
- 
-+	/* Make sure uninitialized memory isn't copied to devices. */
-+	kmsan_check_memory(from, n);
- 	/* Align any unaligned destination IO */
- 	if (unlikely(1 & (unsigned long)to)) {
- 		movs("b", to, from);
+---
+v2:
+ -- This patch was previously called "kmsan: skip shadow checks in files
+    doing context switches". Per Mark Rutland's suggestion, we now only
+    skip checks in low-level arch-specific code, as context switches in
+    common code should be invisible to KMSAN. We also apply the checks
+    to precisely the functions performing the context switch instead of
+    the whole file.
+
+Link: https://linux-review.googlesource.com/id/I45e3ed9c5f66ee79b0409d1673d66ae419029bcb
+
+Replace KMSAN_ENABLE_CHECKS_process_64.o with __no_kmsan_checks
+---
+ arch/x86/kernel/process_64.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.c
+index e459253649be2..9952a4c7e1d20 100644
+--- a/arch/x86/kernel/process_64.c
++++ b/arch/x86/kernel/process_64.c
+@@ -553,6 +553,7 @@ void compat_start_thread(struct pt_regs *regs, u32 new_ip, u32 new_sp, bool x32)
+  * Kprobes not supported here. Set the probe on schedule instead.
+  * Function graph tracer not supported too.
+  */
++__no_kmsan_checks
+ __visible __notrace_funcgraph struct task_struct *
+ __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
+ {
 -- 
 2.36.0.rc2.479.g8af0fa9b8e-goog
 
