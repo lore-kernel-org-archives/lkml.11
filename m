@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8B9EC4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 814DDC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:17:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347446AbiDZJUJ (ORCPT
+        id S1347371AbiDZJT6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:20:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56196 "EHLO
+        Tue, 26 Apr 2022 05:19:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345546AbiDZI4h (ORCPT
+        with ESMTP id S1345876AbiDZI4r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:56:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A933DC5BE;
-        Tue, 26 Apr 2022 01:41:19 -0700 (PDT)
+        Tue, 26 Apr 2022 04:56:47 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80FEA8165C;
+        Tue, 26 Apr 2022 01:41:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 233D6604F5;
-        Tue, 26 Apr 2022 08:41:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 342F3C385A4;
-        Tue, 26 Apr 2022 08:41:18 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A1268CE1BD5;
+        Tue, 26 Apr 2022 08:41:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 814F8C385A4;
+        Tue, 26 Apr 2022 08:41:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962478;
-        bh=YqHERyHUxwYJs79q5FsoWblJusq3+OePBnS0nEGGnn8=;
+        s=korg; t=1650962486;
+        bh=DYSNSp8iRym2lE5Nit1dl1dGlcB1989Le7U+aRqnevo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KuLWnI/5V1u7RqUfKysiocBEn6GP4rTbcyyEtOqJeogjupl9bezgPMkUWbC3zR9n1
-         omxhhONQftOi4osRhXb2ZGW4egplsPCYdiYTHttP4qfsk0jzhQCj4Hdi3L1uPtwuBA
-         Oi6gJMcwM4veg5UFjQ4Hcrrt5n+UGjkOLbc9rmC8=
+        b=BT9D6odXqQ5GVAEjr4LsFXSGYYIsPy8COehUGh8JN45JCIksRCdMaK9He63U9L0xv
+         GhbC6vgtLu19Uacqnwm2q20FatqaCN3cBs/PH+6mbmDUz9cQNeHmSn5Jhm8/kbl2sl
+         H5rNsmqDGNiRiJR0zmC4FTHPiFu9xJkmtSQf0jtA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.15 109/124] KVM: nVMX: Defer APICv updates while L2 is active until L1 is active
-Date:   Tue, 26 Apr 2022 10:21:50 +0200
-Message-Id: <20220426081750.393843374@linuxfoundation.org>
+        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.15 112/124] netfilter: conntrack: avoid useless indirection during conntrack destruction
+Date:   Tue, 26 Apr 2022 10:21:53 +0200
+Message-Id: <20220426081750.477069275@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -49,93 +49,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Florian Westphal <fw@strlen.de>
 
-commit 7c69661e225cc484fbf44a0b99b56714a5241ae3 upstream.
+commit 6ae7989c9af0d98ab64196f4f4c6f6499454bd23 upstream.
 
-Defer APICv updates that occur while L2 is active until nested VM-Exit,
-i.e. until L1 regains control.  vmx_refresh_apicv_exec_ctrl() assumes L1
-is active and (a) stomps all over vmcs02 and (b) neglects to ever updated
-vmcs01.  E.g. if vmcs12 doesn't enable the TPR shadow for L2 (and thus no
-APICv controls), L1 performs nested VM-Enter APICv inhibited, and APICv
-becomes unhibited while L2 is active, KVM will set various APICv controls
-in vmcs02 and trigger a failed VM-Entry.  The kicker is that, unless
-running with nested_early_check=1, KVM blames L1 and chaos ensues.
+nf_ct_put() results in a usesless indirection:
 
-In all cases, ignoring vmcs02 and always deferring the inhibition change
-to vmcs01 is correct (or at least acceptable).  The ABSENT and DISABLE
-inhibitions cannot truly change while L2 is active (see below).
+nf_ct_put -> nf_conntrack_put -> nf_conntrack_destroy -> rcu readlock +
+indirect call of ct_hooks->destroy().
 
-IRQ_BLOCKING can change, but it is firmly a best effort debug feature.
-Furthermore, only L2's APIC is accelerated/virtualized to the full extent
-possible, e.g. even if L1 passes through its APIC to L2, normal MMIO/MSR
-interception will apply to the virtual APIC managed by KVM.
-The exception is the SELF_IPI register when x2APIC is enabled, but that's
-an acceptable hole.
+There are two _put helpers:
+nf_ct_put and nf_conntrack_put.  The latter is what should be used in
+code that MUST NOT cause a linker dependency on the conntrack module
+(e.g. calls from core network stack).
 
-Lastly, Hyper-V's Auto EOI can technically be toggled if L1 exposes the
-MSRs to L2, but for that to work in any sane capacity, L1 would need to
-pass through IRQs to L2 as well, and IRQs must be intercepted to enable
-virtual interrupt delivery.  I.e. exposing Auto EOI to L2 and enabling
-VID for L2 are, for all intents and purposes, mutually exclusive.
+Everyone else should call nf_ct_put() instead.
 
-Lack of dynamic toggling is also why this scenario is all but impossible
-to encounter in KVM's current form.  But a future patch will pend an
-APICv update request _during_ vCPU creation to plug a race where a vCPU
-that's being created doesn't get included in the "all vCPUs request"
-because it's not yet visible to other vCPUs.  If userspaces restores L2
-after VM creation (hello, KVM selftests), the first KVM_RUN will occur
-while L2 is active and thus service the APICv update request made during
-VM creation.
+A followup patch will convert a few nf_conntrack_put() calls to
+nf_ct_put(), in particular from modules that already have a conntrack
+dependency such as act_ct or even nf_conntrack itself.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220420013732.3308816-3-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/vmx/nested.c |    5 +++++
- arch/x86/kvm/vmx/vmx.c    |    5 +++++
- arch/x86/kvm/vmx/vmx.h    |    1 +
- 3 files changed, 11 insertions(+)
+ include/linux/netfilter/nf_conntrack_common.h |    2 ++
+ include/net/netfilter/nf_conntrack.h          |    8 ++++++--
+ net/netfilter/nf_conntrack_core.c             |   12 ++++++------
+ 3 files changed, 14 insertions(+), 8 deletions(-)
 
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -4601,6 +4601,11 @@ void nested_vmx_vmexit(struct kvm_vcpu *
- 		kvm_make_request(KVM_REQ_APIC_PAGE_RELOAD, vcpu);
- 	}
+--- a/include/linux/netfilter/nf_conntrack_common.h
++++ b/include/linux/netfilter/nf_conntrack_common.h
+@@ -29,6 +29,8 @@ struct nf_conntrack {
+ };
  
-+	if (vmx->nested.update_vmcs01_apicv_status) {
-+		vmx->nested.update_vmcs01_apicv_status = false;
-+		kvm_make_request(KVM_REQ_APICV_UPDATE, vcpu);
-+	}
+ void nf_conntrack_destroy(struct nf_conntrack *nfct);
 +
- 	if ((vm_exit_reason != -1) &&
- 	    (enable_shadow_vmcs || evmptr_is_valid(vmx->nested.hv_evmcs_vmptr)))
- 		vmx->nested.need_vmcs12_to_shadow_sync = true;
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -4098,6 +4098,11 @@ static void vmx_refresh_apicv_exec_ctrl(
++/* like nf_ct_put, but without module dependency on nf_conntrack */
+ static inline void nf_conntrack_put(struct nf_conntrack *nfct)
  {
- 	struct vcpu_vmx *vmx = to_vmx(vcpu);
+ 	if (nfct && refcount_dec_and_test(&nfct->use))
+--- a/include/net/netfilter/nf_conntrack.h
++++ b/include/net/netfilter/nf_conntrack.h
+@@ -76,6 +76,8 @@ struct nf_conn {
+ 	 * Hint, SKB address this struct and refcnt via skb->_nfct and
+ 	 * helpers nf_conntrack_get() and nf_conntrack_put().
+ 	 * Helper nf_ct_put() equals nf_conntrack_put() by dec refcnt,
++	 * except that the latter uses internal indirection and does not
++	 * result in a conntrack module dependency.
+ 	 * beware nf_ct_get() is different and don't inc refcnt.
+ 	 */
+ 	struct nf_conntrack ct_general;
+@@ -169,11 +171,13 @@ nf_ct_get(const struct sk_buff *skb, enu
+ 	return (struct nf_conn *)(nfct & NFCT_PTRMASK);
+ }
  
-+	if (is_guest_mode(vcpu)) {
-+		vmx->nested.update_vmcs01_apicv_status = true;
-+		return;
-+	}
++void nf_ct_destroy(struct nf_conntrack *nfct);
 +
- 	pin_controls_set(vmx, vmx_pin_based_exec_ctrl(vmx));
- 	if (cpu_has_secondary_exec_ctrls()) {
- 		if (kvm_vcpu_apicv_active(vcpu))
---- a/arch/x86/kvm/vmx/vmx.h
-+++ b/arch/x86/kvm/vmx/vmx.h
-@@ -164,6 +164,7 @@ struct nested_vmx {
- 	bool change_vmcs01_virtual_apic_mode;
- 	bool reload_vmcs01_apic_access_page;
- 	bool update_vmcs01_cpu_dirty_logging;
-+	bool update_vmcs01_apicv_status;
+ /* decrement reference count on a conntrack */
+ static inline void nf_ct_put(struct nf_conn *ct)
+ {
+-	WARN_ON(!ct);
+-	nf_conntrack_put(&ct->ct_general);
++	if (ct && refcount_dec_and_test(&ct->ct_general.use))
++		nf_ct_destroy(&ct->ct_general);
+ }
  
- 	/*
- 	 * Enlightened VMCS has been enabled. It does not mean that L1 has to
+ /* Protocol module loading */
+--- a/net/netfilter/nf_conntrack_core.c
++++ b/net/netfilter/nf_conntrack_core.c
+@@ -571,7 +571,7 @@ static void nf_ct_del_from_dying_or_unco
+ 
+ #define NFCT_ALIGN(len)	(((len) + NFCT_INFOMASK) & ~NFCT_INFOMASK)
+ 
+-/* Released via destroy_conntrack() */
++/* Released via nf_ct_destroy() */
+ struct nf_conn *nf_ct_tmpl_alloc(struct net *net,
+ 				 const struct nf_conntrack_zone *zone,
+ 				 gfp_t flags)
+@@ -625,12 +625,11 @@ static void destroy_gre_conntrack(struct
+ #endif
+ }
+ 
+-static void
+-destroy_conntrack(struct nf_conntrack *nfct)
++void nf_ct_destroy(struct nf_conntrack *nfct)
+ {
+ 	struct nf_conn *ct = (struct nf_conn *)nfct;
+ 
+-	pr_debug("destroy_conntrack(%p)\n", ct);
++	pr_debug("%s(%p)\n", __func__, ct);
+ 	WARN_ON(refcount_read(&nfct->use) != 0);
+ 
+ 	if (unlikely(nf_ct_is_template(ct))) {
+@@ -656,9 +655,10 @@ destroy_conntrack(struct nf_conntrack *n
+ 	if (ct->master)
+ 		nf_ct_put(ct->master);
+ 
+-	pr_debug("destroy_conntrack: returning ct=%p to slab\n", ct);
++	pr_debug("%s: returning ct=%p to slab\n", __func__, ct);
+ 	nf_conntrack_free(ct);
+ }
++EXPORT_SYMBOL(nf_ct_destroy);
+ 
+ static void nf_ct_delete_from_lists(struct nf_conn *ct)
+ {
+@@ -2825,7 +2825,7 @@ err_cachep:
+ 
+ static struct nf_ct_hook nf_conntrack_hook = {
+ 	.update		= nf_conntrack_update,
+-	.destroy	= destroy_conntrack,
++	.destroy	= nf_ct_destroy,
+ 	.get_tuple_skb  = nf_conntrack_get_tuple_skb,
+ };
+ 
 
 
