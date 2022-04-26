@@ -2,111 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF16CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 20:18:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA609C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 20:18:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354725AbiDZUVo (ORCPT
+        id S1354915AbiDZUVz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 16:21:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38312 "EHLO
+        Tue, 26 Apr 2022 16:21:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354904AbiDZUVm (ORCPT
+        with ESMTP id S1354904AbiDZUVx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 16:21:42 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF9F40909
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 13:18:30 -0700 (PDT)
+        Tue, 26 Apr 2022 16:21:53 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 116521A4315;
+        Tue, 26 Apr 2022 13:18:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651004310; x=1682540310;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=lP3baKG5jw9ATZeLqsBWuVAZhUls7h1IdUOOl3BREwA=;
-  b=Grme+QLUa3qvLL5YqLPEorTCedWRIANpYU2+E5DSpuBJ4YhR34/YcAIk
-   UshsOodOqN4AwFN0dzuNdFvKFJb3Rw8TFeMV5mO3Clz9UWYxuajdmQKCz
-   AUn5bz8msiEdtHZQSLe516gaxYBcpNNSTWgy/QyKThpwvvNcnwQPgEXMN
-   wjZOXRaQifLWWxiYxng+j3MKSJykq0rooAtqjhGQp1Dl1kN0xpjq7gVOy
-   lTdLMuROrN9eDszE5/sFq3Xap3+KDsWju51mGA85g0XFHduRxr6EnWGtj
-   FCmjk6hookQIXkqqTJsDsiMB1zQJnD94FKpV2kytUhENUA2jiTGdouHHO
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="326199820"
+  t=1651004325; x=1682540325;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ZDF3hFy0BWL791La2UQ13qzXZCvp2fj56KNm9NYlwqg=;
+  b=ZAGzK+dQAROhcgCc0Bgq51/+3UIs93n0dv9hH0zBrgC4yI9BlFNSWdNh
+   SOwToozEC8wTMy+ZSKuzON9p5k0xHp0BIBOsfv9k1RWbnXWTNvLKVQy5j
+   G7uoPHpNj1gtrXuqq3c7jwuBEkop+sw+XjplkiEt2jnNgikDqWKJl8tgB
+   g/aYyTlXwstCtDbCDSil2LVx/OZar7V5/3FDgIAmP5AopZZjAHJvLYUUf
+   klZA3/ptOxNhANNnC+A63v+pjy1/nHY9i1Eyb5p9vrfC8IHz1TrX4U0lP
+   MibiV+RteojZ/aRlXh5IU69I+29jsItNl6Twq2PdPGElhb/sEilp1ofCx
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="245633473"
 X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
-   d="scan'208";a="326199820"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 13:18:29 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="245633473"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 13:18:44 -0700
 X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
-   d="scan'208";a="595939325"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 26 Apr 2022 13:18:27 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1njRdj-0003wQ-8B;
-        Tue, 26 Apr 2022 20:18:27 +0000
-Date:   Wed, 27 Apr 2022 04:17:29 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Imran Khan <imran.f.khan@oracle.com>
-Cc:     kbuild-all@lists.01.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [driver-core:driver-core-testing 30/34] fs/kernfs/file.c:160:46:
- sparse: sparse: incorrect type in argument 1 (different address spaces)
-Message-ID: <202204270438.Uex7Kt3b-lkp@intel.com>
+   d="scan'208";a="580136420"
+Received: from dsocek-mobl2.amr.corp.intel.com (HELO [10.212.69.119]) ([10.212.69.119])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 13:18:43 -0700
+Message-ID: <334c4b90-52c4-cffc-f3e2-4bd6a987eb69@intel.com>
+Date:   Tue, 26 Apr 2022 13:21:30 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 01/21] x86/virt/tdx: Detect SEAM
+Content-Language: en-US
+To:     Kai Huang <kai.huang@intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Cc:     seanjc@google.com, pbonzini@redhat.com, len.brown@intel.com,
+        tony.luck@intel.com, rafael.j.wysocki@intel.com,
+        reinette.chatre@intel.com, dan.j.williams@intel.com,
+        peterz@infradead.org, ak@linux.intel.com,
+        kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        isaku.yamahata@intel.com
+References: <cover.1649219184.git.kai.huang@intel.com>
+ <ab118fb9bd39b200feb843660a9b10421943aa70.1649219184.git.kai.huang@intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <ab118fb9bd39b200feb843660a9b10421943aa70.1649219184.git.kai.huang@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git driver-core-testing
-head:   26360a8c9732cff2ee5bc2f180e9716b63e9f650
-commit: 07b42a72474e4ab59d6acb451f7816664095d7c0 [30/34] kernfs: make ->attr.open RCU protected.
-config: alpha-randconfig-s032-20220425 (https://download.01.org/0day-ci/archive/20220427/202204270438.Uex7Kt3b-lkp@intel.com/config)
-compiler: alpha-linux-gcc (GCC) 11.3.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git/commit/?id=07b42a72474e4ab59d6acb451f7816664095d7c0
-        git remote add driver-core https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git
-        git fetch --no-tags driver-core driver-core-testing
-        git checkout 07b42a72474e4ab59d6acb451f7816664095d7c0
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=alpha SHELL=/bin/bash fs/kernfs/
+> +config INTEL_TDX_HOST
+> +	bool "Intel Trust Domain Extensions (TDX) host support"
+> +	default n
+> +	depends on CPU_SUP_INTEL
+> +	depends on X86_64
+> +	help
+> +	  Intel Trust Domain Extensions (TDX) protects guest VMs from malicious
+> +	  host and certain physical attacks.  This option enables necessary TDX
+> +	  support in host kernel to run protected VMs.
+> +
+> +	  If unsure, say N.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Nothing about KVM?
+
+...
+> diff --git a/arch/x86/virt/vmx/tdx/tdx.c b/arch/x86/virt/vmx/tdx/tdx.c
+> new file mode 100644
+> index 000000000000..03f35c75f439
+> --- /dev/null
+> +++ b/arch/x86/virt/vmx/tdx/tdx.c
+> @@ -0,0 +1,102 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright(c) 2022 Intel Corporation.
+> + *
+> + * Intel Trusted Domain Extensions (TDX) support
+> + */
+> +
+> +#define pr_fmt(fmt)	"tdx: " fmt
+> +
+> +#include <linux/types.h>
+> +#include <linux/cpumask.h>
+> +#include <asm/msr-index.h>
+> +#include <asm/msr.h>
+> +#include <asm/cpufeature.h>
+> +#include <asm/cpufeatures.h>
+> +#include <asm/tdx.h>
+> +
+> +/* Support Intel Secure Arbitration Mode Range Registers (SEAMRR) */
+> +#define MTRR_CAP_SEAMRR			BIT(15)
+> +
+> +/* Core-scope Intel SEAMRR base and mask registers. */
+> +#define MSR_IA32_SEAMRR_PHYS_BASE	0x00001400
+> +#define MSR_IA32_SEAMRR_PHYS_MASK	0x00001401
+> +
+> +#define SEAMRR_PHYS_BASE_CONFIGURED	BIT_ULL(3)
+> +#define SEAMRR_PHYS_MASK_ENABLED	BIT_ULL(11)
+> +#define SEAMRR_PHYS_MASK_LOCKED		BIT_ULL(10)
+> +
+> +#define SEAMRR_ENABLED_BITS	\
+> +	(SEAMRR_PHYS_MASK_ENABLED | SEAMRR_PHYS_MASK_LOCKED)
+> +
+> +/* BIOS must configure SEAMRR registers for all cores consistently */
+> +static u64 seamrr_base, seamrr_mask;
+> +
+> +static bool __seamrr_enabled(void)
+> +{
+> +	return (seamrr_mask & SEAMRR_ENABLED_BITS) == SEAMRR_ENABLED_BITS;
+> +}
+
+But there's no case where seamrr_mask is non-zero and where
+_seamrr_enabled().  Why bother checking the SEAMRR_ENABLED_BITS?
+
+> +static void detect_seam_bsp(struct cpuinfo_x86 *c)
+> +{
+> +	u64 mtrrcap, base, mask;
+> +
+> +	/* SEAMRR is reported via MTRRcap */
+> +	if (!boot_cpu_has(X86_FEATURE_MTRR))
+> +		return;
+> +
+> +	rdmsrl(MSR_MTRRcap, mtrrcap);
+> +	if (!(mtrrcap & MTRR_CAP_SEAMRR))
+> +		return;
+> +
+> +	rdmsrl(MSR_IA32_SEAMRR_PHYS_BASE, base);
+> +	if (!(base & SEAMRR_PHYS_BASE_CONFIGURED)) {
+> +		pr_info("SEAMRR base is not configured by BIOS\n");
+> +		return;
+> +	}
+> +
+> +	rdmsrl(MSR_IA32_SEAMRR_PHYS_MASK, mask);
+> +	if ((mask & SEAMRR_ENABLED_BITS) != SEAMRR_ENABLED_BITS) {
+> +		pr_info("SEAMRR is not enabled by BIOS\n");
+> +		return;
+> +	}
+> +
+> +	seamrr_base = base;
+> +	seamrr_mask = mask;
+> +}
+
+Comment, please.
+
+	/*
+	 * Stash the boot CPU's MSR values so that AP values
+	 * can can be checked for consistency.
+	 */
 
 
-sparse warnings: (new ones prefixed by >>)
->> fs/kernfs/file.c:160:46: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct atomic_t const [usertype] *v @@     got struct atomic_t [noderef] __rcu * @@
-   fs/kernfs/file.c:160:46: sparse:     expected struct atomic_t const [usertype] *v
-   fs/kernfs/file.c:160:46: sparse:     got struct atomic_t [noderef] __rcu *
-   fs/kernfs/file.c:204:46: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct atomic_t const [usertype] *v @@     got struct atomic_t [noderef] __rcu * @@
-   fs/kernfs/file.c:204:46: sparse:     expected struct atomic_t const [usertype] *v
-   fs/kernfs/file.c:204:46: sparse:     got struct atomic_t [noderef] __rcu *
+> +static void detect_seam_ap(struct cpuinfo_x86 *c)
+> +{
+> +	u64 base, mask;
+> +
+> +	/*
+> +	 * Don't bother to detect this AP if SEAMRR is not
+> +	 * enabled after earlier detections.
+> +	 */
+> +	if (!__seamrr_enabled())
+> +		return;
+> +
+> +	rdmsrl(MSR_IA32_SEAMRR_PHYS_BASE, base);
+> +	rdmsrl(MSR_IA32_SEAMRR_PHYS_MASK, mask);
+> +
 
-vim +160 fs/kernfs/file.c
+This is the place for a comment about why the values have to be equal.
 
-414985ae23c031e Tejun Heo 2013-11-28  155  
-414985ae23c031e Tejun Heo 2013-11-28  156  static int kernfs_seq_show(struct seq_file *sf, void *v)
-414985ae23c031e Tejun Heo 2013-11-28  157  {
-c525aaddc366df2 Tejun Heo 2013-12-11  158  	struct kernfs_open_file *of = sf->private;
-414985ae23c031e Tejun Heo 2013-11-28  159  
-adc5e8b58f4886d Tejun Heo 2013-12-11 @160  	of->event = atomic_read(&of->kn->attr.open->event);
-414985ae23c031e Tejun Heo 2013-11-28  161  
-adc5e8b58f4886d Tejun Heo 2013-12-11  162  	return of->kn->attr.ops->seq_show(sf, v);
-414985ae23c031e Tejun Heo 2013-11-28  163  }
-414985ae23c031e Tejun Heo 2013-11-28  164  
+> +	if (base == seamrr_base && mask == seamrr_mask)
+> +		return;
+> +
+> +	pr_err("Inconsistent SEAMRR configuration by BIOS\n");
+> +	/* Mark SEAMRR as disabled. */
+> +	seamrr_base = 0;
+> +	seamrr_mask = 0;
+> +}
+> +
+> +static void detect_seam(struct cpuinfo_x86 *c)
+> +{
+> +	if (c == &boot_cpu_data)
+> +		detect_seam_bsp(c);
+> +	else
+> +		detect_seam_ap(c);
+> +}
+> +
+> +void tdx_detect_cpu(struct cpuinfo_x86 *c)
+> +{
+> +	detect_seam(c);
+> +}
 
-:::::: The code at line 160 was first introduced by commit
-:::::: adc5e8b58f4886d45f79f4ff41a09001a76a6b12 kernfs: drop s_ prefix from kernfs_node members
-
-:::::: TO: Tejun Heo <tj@kernel.org>
-:::::: CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+The extra function looks a bit silly here now.  Maybe this gets filled
+out later, but it's goofy-looking here.
