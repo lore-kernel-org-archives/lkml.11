@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7262DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:29:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 579F2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:30:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347539AbiDZJc4 (ORCPT
+        id S1347553AbiDZJdD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:32:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38556 "EHLO
+        Tue, 26 Apr 2022 05:33:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347670AbiDZJGB (ORCPT
+        with ESMTP id S1347656AbiDZJGA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:06:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BDDA15C3A7;
-        Tue, 26 Apr 2022 01:45:18 -0700 (PDT)
+        Tue, 26 Apr 2022 05:06:00 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A996515B46E;
+        Tue, 26 Apr 2022 01:45:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E214AB81CF0;
-        Tue, 26 Apr 2022 08:45:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50856C385AC;
-        Tue, 26 Apr 2022 08:45:15 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 467C7CE1BC9;
+        Tue, 26 Apr 2022 08:45:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23232C385A4;
+        Tue, 26 Apr 2022 08:45:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962715;
-        bh=zqYE2dBiFpRl4OeuEjvjF+2WlsvVq3M+PLNfL0rUOW0=;
+        s=korg; t=1650962709;
+        bh=LNen/Hol42nJKmCO91F1P60/W/lNiA3tn9i6VwXxB0o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0Qcw77QJ89XaQBUmHN54RgYBTS/UnhnkJSj77M3TMO5i8hDqS/BvmyNN6dfp7PXjq
-         tg0B+75xxnGxHT8jxOgibCHVt63lYoIQ6TYUYTNz+ZCqPXpth+6kSCKLqioPMhGaw6
-         hJsLUxlUfdlOF2CKXFH1loyUESyaLKouYBYV++VI=
+        b=g0iOJI1YZbXGxmb3kPo2efPruK1LVXzR2SI+a4pm0zFpQqEC5iyaaWhnEWtNdVuNk
+         X2a3zYF8bhQlna7z3a2VbKbqLOZt/VaqKqBIBd1vFwFffrdTsIgTxkvqfrgckWc/OR
+         SRzHrIhyQHrljYJ90BAyO0olY5hfqxHmqGxUrWO4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oliver Upton <oupton@google.com>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 066/146] selftests: KVM: Free the GIC FD when cleaning up in arch_timer
-Date:   Tue, 26 Apr 2022 10:21:01 +0200
-Message-Id: <20220426081751.920361986@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 013/146] ASoC: rk817: Use devm_clk_get() in rk817_platform_probe
+Date:   Tue, 26 Apr 2022 10:20:08 +0200
+Message-Id: <20220426081750.437199412@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -49,75 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Upton <oupton@google.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 21db83846683d3987666505a3ec38f367708199a ]
+[ Upstream commit 8ba08d3a367a70f707b7c5d53ad92b98b960ee88 ]
 
-In order to correctly destroy a VM, all references to the VM must be
-freed. The arch_timer selftest creates a VGIC for the guest, which
-itself holds a reference to the VM.
+We need to call clk_put() to undo clk_get() in the error path.
+Use devm_clk_get() to obtain a reference to the clock, It has
+the benefit that clk_put() is no longer required.
 
-Close the GIC FD when cleaning up a VM.
-
-Signed-off-by: Oliver Upton <oupton@google.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220406235615.1447180-4-oupton@google.com
+Fixes: 0d6a04da9b25 ("ASoC: Add Rockchip rk817 audio CODEC support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220404090753.17940-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/kvm/aarch64/arch_timer.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+ sound/soc/codecs/rk817_codec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/kvm/aarch64/arch_timer.c b/tools/testing/selftests/kvm/aarch64/arch_timer.c
-index b08d30bf71c5..3b940a101bc0 100644
---- a/tools/testing/selftests/kvm/aarch64/arch_timer.c
-+++ b/tools/testing/selftests/kvm/aarch64/arch_timer.c
-@@ -362,11 +362,12 @@ static void test_init_timer_irq(struct kvm_vm *vm)
- 	pr_debug("ptimer_irq: %d; vtimer_irq: %d\n", ptimer_irq, vtimer_irq);
- }
+diff --git a/sound/soc/codecs/rk817_codec.c b/sound/soc/codecs/rk817_codec.c
+index 8fffe378618d..cce6f4e7992f 100644
+--- a/sound/soc/codecs/rk817_codec.c
++++ b/sound/soc/codecs/rk817_codec.c
+@@ -489,7 +489,7 @@ static int rk817_platform_probe(struct platform_device *pdev)
  
-+static int gic_fd;
-+
- static struct kvm_vm *test_vm_create(void)
- {
- 	struct kvm_vm *vm;
- 	unsigned int i;
--	int ret;
- 	int nr_vcpus = test_args.nr_vcpus;
+ 	rk817_codec_parse_dt_property(&pdev->dev, rk817_codec_data);
  
- 	vm = vm_create_default_with_vcpus(nr_vcpus, 0, 0, guest_code, NULL);
-@@ -383,8 +384,8 @@ static struct kvm_vm *test_vm_create(void)
- 
- 	ucall_init(vm, NULL);
- 	test_init_timer_irq(vm);
--	ret = vgic_v3_setup(vm, nr_vcpus, 64, GICD_BASE_GPA, GICR_BASE_GPA);
--	if (ret < 0) {
-+	gic_fd = vgic_v3_setup(vm, nr_vcpus, 64, GICD_BASE_GPA, GICR_BASE_GPA);
-+	if (gic_fd < 0) {
- 		print_skip("Failed to create vgic-v3");
- 		exit(KSFT_SKIP);
- 	}
-@@ -395,6 +396,12 @@ static struct kvm_vm *test_vm_create(void)
- 	return vm;
- }
- 
-+static void test_vm_cleanup(struct kvm_vm *vm)
-+{
-+	close(gic_fd);
-+	kvm_vm_free(vm);
-+}
-+
- static void test_print_help(char *name)
- {
- 	pr_info("Usage: %s [-h] [-n nr_vcpus] [-i iterations] [-p timer_period_ms]\n",
-@@ -478,7 +485,7 @@ int main(int argc, char *argv[])
- 
- 	vm = test_vm_create();
- 	test_run(vm);
--	kvm_vm_free(vm);
-+	test_vm_cleanup(vm);
- 
- 	return 0;
- }
+-	rk817_codec_data->mclk = clk_get(pdev->dev.parent, "mclk");
++	rk817_codec_data->mclk = devm_clk_get(pdev->dev.parent, "mclk");
+ 	if (IS_ERR(rk817_codec_data->mclk)) {
+ 		dev_dbg(&pdev->dev, "Unable to get mclk\n");
+ 		ret = -ENXIO;
 -- 
 2.35.1
 
