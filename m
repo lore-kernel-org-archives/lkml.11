@@ -2,129 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A66A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 18:15:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C654BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 18:16:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353663AbiDZSSr (ORCPT
+        id S1353683AbiDZSTI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 14:18:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51206 "EHLO
+        Tue, 26 Apr 2022 14:19:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237097AbiDZSSn (ORCPT
+        with ESMTP id S1353670AbiDZSSx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 14:18:43 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E7C21E1F
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 11:15:35 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id v64-20020a1cac43000000b0038cfd1b3a6dso2020775wme.5
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 11:15:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hbRg3+D0qvDncNTkVqOcbyfIAlM3Zlr4GMjtiFZIfZM=;
-        b=01gTfT0gcVgLiKXhgLBlbwibmeAHTTbph2mbBpIfbM+VBaogBEcxO1BC68Vv4+P7gd
-         EtZ3XYD33SqbEAJxKGaqxTt3ZELkStaKc/inWJ/oOdUUxuldxDnT4OXLoV+ntuwvX9q2
-         VaUqJHTpva6CnlBikyb4eyUSqCpx2X2VVr2pUuv73s9fNFp6/HW5CRuY2Rr65j5QT7mT
-         aKaPjB0CajSuCxj08E7oDIEwAr3UggP2TUFSu7R0mIqwhATIPA6lAerJeXmfqAjsvFR6
-         KQK/sXmjJEoVHl0qmx5lF482kkrJXG/3eUh1EBlRVAV9teY2m1DPOQwtWva2KaHGasDb
-         HpQQ==
+        Tue, 26 Apr 2022 14:18:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 97EA231377
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 11:15:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650996944;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5eKECW1gDIo2Gn5I+8eJ141sOgh784fCDwHXtewOPik=;
+        b=WnYJPFovWzmX5IT3WNoM03+055IDD65N38FxObcXVB/PV+eGcGosnA4+rYqH3ikVrChp2I
+        oNfG8Gc4KRtl9S3Tw0HboO9Rs8G1PiGRbUkHyilES0kz+ucCh2NRcf/PBmD9X47fXKvVCY
+        4GqZ+ejRzDiUy2Bn5X9yJY5i7AcksBM=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-170-Qn9jT4RmN9aKjMuKdivEmw-1; Tue, 26 Apr 2022 14:15:43 -0400
+X-MC-Unique: Qn9jT4RmN9aKjMuKdivEmw-1
+Received: by mail-qv1-f70.google.com with SMTP id u19-20020ad449b3000000b004523cc11b95so10253115qvx.7
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 11:15:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hbRg3+D0qvDncNTkVqOcbyfIAlM3Zlr4GMjtiFZIfZM=;
-        b=XUTtQB/2a+h9W2kbHpOWx1m1js0gizGIuANNMwMqub2pn+YHRFKlk2bLKgnN0C1776
-         se6+O7WiXGBXUc6CqpYd/E/HiihR6CZavR4XJToJV9mJBPz9Crp6I1AULZYsUNjElFGk
-         ecPCK8/U6LJckX6QesMhDsgRVwwTvDtwgS8byIexkXFnOFWuU3656g1w4xUboQg8VLP7
-         ab2Fl1rslPymST48z8+eE9YXm/KxIPRkhygRMqC7prmwT8C6r/4q8B3aBjucuDsdwB/p
-         5AcJWvTRpLitY6Y1V3hckiyIh2pfyS0cAYe8YnX0MUeAYzmy7mbz7iaKsTpPpF11sJ3t
-         dUqA==
-X-Gm-Message-State: AOAM5312VYXMmr9vly5fKnPXPhuzQ3HSk2kKE4wMPDsu2heqbVrpPiKf
-        hiwbiBJmmjFaWEE2H5ChH3oNlj89kcbhr2q8cAQ3
-X-Google-Smtp-Source: ABdhPJzsQMvzjT3zCpAssxoYUdMMx+uX/m7hjgtVQrQQXoBmGGpReRk+J6g64zUtXpR0bHk3ZTZXK0lO+sdMqdmQ/zI=
-X-Received: by 2002:a1c:f009:0:b0:387:6fea:8ebc with SMTP id
- a9-20020a1cf009000000b003876fea8ebcmr32002327wmb.84.1650996933878; Tue, 26
- Apr 2022 11:15:33 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220418145945.38797-1-casey@schaufler-ca.com>
- <20220418145945.38797-27-casey@schaufler-ca.com> <ad1e85e1-8706-7b93-59cd-99ccef273be4@canonical.com>
-In-Reply-To: <ad1e85e1-8706-7b93-59cd-99ccef273be4@canonical.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Tue, 26 Apr 2022 14:15:23 -0400
-Message-ID: <CAHC9VhS0ht0wWtruDjVvOsy_1LOCswF0kjmd9u8XZXm00jHvOw@mail.gmail.com>
-Subject: Re: [PATCH v35 26/29] Audit: Add record for multiple task security contexts
-To:     John Johansen <john.johansen@canonical.com>
-Cc:     Casey Schaufler <casey@schaufler-ca.com>,
-        casey.schaufler@intel.com, jmorris@namei.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
-        linux-audit@redhat.com, keescook@chromium.org,
-        penguin-kernel@i-love.sakura.ne.jp, stephen.smalley.work@gmail.com,
-        linux-kernel@vger.kernel.org
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:organization:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=5eKECW1gDIo2Gn5I+8eJ141sOgh784fCDwHXtewOPik=;
+        b=fTTH1+kIEYhb6gzZ4zWlS2nWiLhGcx/ogUYqlNG0/DtnJ5OE3e9yyrcEZtHaB6K/2d
+         KZHAFWSPDCoVmgHZRSqqv4qejdIYoJsAu8Vh5CPr+xlUuWJBq4IVmmYTuHMGAX0gUth/
+         jop30XmPo5LplIco5EFNIfIlHDLHKK2of27Odrz/RruvM8LnxxpjOX8Hw9oW2g3jtukl
+         2At0BKedSY0Wd5sPb7ULA+9fKjDjxau7izNVmIES10fhohG26MRhwKISEGlWPS7Lhg/7
+         QpUcZCAFJrJuCuce4/gPprEI7cG3JSYrg2sgYjES5g7tfTUm4ZPkXrLLYIZsv3sZ/lVD
+         SLVQ==
+X-Gm-Message-State: AOAM533o9bUlC/FUBmNctUPlFlV/OgVuTfZ2ceyxsEjvYTrtA2u6fS5m
+        ZD79ojG8KqickqTJtyj8GDHm9GM+0BsQUEaYknWrFElQ01jGww2FMx4zEu1kIG08TIexXe535Et
+        WDzrDV9FI1mcJc1znL5Fpko3H
+X-Received: by 2002:a05:622a:13:b0:2f3:64ce:c72a with SMTP id x19-20020a05622a001300b002f364cec72amr8826935qtw.620.1650996942657;
+        Tue, 26 Apr 2022 11:15:42 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw1e4/M/au78sjUpZYL6OJmbQ+wWx6rD4GopCcbIHg0y7+HfqjhyaKxpYxh4L66r+tD+2xJhA==
+X-Received: by 2002:a05:622a:13:b0:2f3:64ce:c72a with SMTP id x19-20020a05622a001300b002f364cec72amr8826912qtw.620.1650996942425;
+        Tue, 26 Apr 2022 11:15:42 -0700 (PDT)
+Received: from [192.168.8.138] (static-71-184-137-158.bstnma.ftas.verizon.net. [71.184.137.158])
+        by smtp.gmail.com with ESMTPSA id a1-20020a05622a02c100b002f342ccc1c5sm8103969qtx.72.2022.04.26.11.15.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 11:15:41 -0700 (PDT)
+Message-ID: <6fb203ca8182c50156fdc7655146c803a3f22b05.camel@redhat.com>
+Subject: Re: [PATCH] drm/nouveau: fix returnvar.cocci warning
+From:   Lyude Paul <lyude@redhat.com>
+To:     Guo Zhengkui <guozhengkui@vivo.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Karol Herbst <kherbst@redhat.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        "open list:DRM DRIVER FOR NVIDIA GEFORCE/QUADRO GPUS" 
+        <dri-devel@lists.freedesktop.org>,
+        "open list:DRM DRIVER FOR NVIDIA GEFORCE/QUADRO GPUS" 
+        <nouveau@lists.freedesktop.org>,
+        open list <linux-kernel@vger.kernel.org>
+Cc:     zhengkui_guo@outlook.com
+Date:   Tue, 26 Apr 2022 14:15:40 -0400
+In-Reply-To: <20220425114701.7182-1-guozhengkui@vivo.com>
+References: <20220425114701.7182-1-guozhengkui@vivo.com>
+Organization: Red Hat Inc.
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 9:08 PM John Johansen
-<john.johansen@canonical.com> wrote:
-> On 4/18/22 07:59, Casey Schaufler wrote:
-> > Create a new audit record AUDIT_MAC_TASK_CONTEXTS.
-> > An example of the MAC_TASK_CONTEXTS (1420) record is:
-> >
-> >     type=MAC_TASK_CONTEXTS[1420]
-> >     msg=audit(1600880931.832:113)
-> >     subj_apparmor=unconfined
-> >     subj_smack=_
-> >
-> > When an audit event includes a AUDIT_MAC_TASK_CONTEXTS record
-> > the "subj=" field in other records in the event will be "subj=?".
-> > An AUDIT_MAC_TASK_CONTEXTS record is supplied when the system has
-> > multiple security modules that may make access decisions based
-> > on a subject security context.
-> >
-> > Functions are created to manage the skb list in the audit_buffer.
-> >
-> > Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
->
-> Besides moving the aux fns, and the whining below
-> Reviewed-by: John Johansen <john.johansen@canonical.com>
+Reviewed-by: Lyude Paul <lyude@redhat.com>
 
-...
+Will push upstream in a moment
 
-> > diff --git a/kernel/audit.c b/kernel/audit.c
-> > index 4d44c05053b0..8ed2d717c217 100644
-> > --- a/kernel/audit.c
-> > +++ b/kernel/audit.c
-> > @@ -2185,16 +2238,44 @@ int audit_log_task_context(struct audit_buffer *ab)
-> >       if (!lsmblob_is_set(&blob))
-> >               return 0;
-> >
-> > -     error = security_secid_to_secctx(&blob, &context, LSMBLOB_FIRST);
-> > +     if (!lsm_multiple_contexts()) {
-> > +             error = security_secid_to_secctx(&blob, &context,
-> > +                                              LSMBLOB_FIRST);
-> > +             if (error) {
-> > +                     if (error != -EINVAL)
-> > +                             goto error_path;
-> > +                     return 0;
-> > +             }
-> >
-> > -     if (error) {
-> > -             if (error != -EINVAL)
-> > +             audit_log_format(ab, " subj=%s", context.context);
-> > +             security_release_secctx(&context);
-> > +     } else {
-> > +             /* Multiple LSMs provide contexts. Include an aux record. */
-> > +             audit_log_format(ab, " subj=?");
->
-> just me whining, you sure we can't just drop subj= here
-
-Have I recently given you my "the audit code is crap" speech? ;)
-
-I more or less answered this with my comments on the earlier patch,
-but we need to keep this around for compatibility.  It will get better
-in the future.
+On Mon, 2022-04-25 at 19:47 +0800, Guo Zhengkui wrote:
+> Fix the following coccicheck warning:
+> drivers/gpu/drm/nouveau/nvkm/subdev/devinit/gt215.c:71:5-12:
+> Unneeded variable: "disable". Return "0ULL" on line 85.
+> 
+> Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
+> ---
+>  drivers/gpu/drm/nouveau/nvkm/subdev/devinit/gt215.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/devinit/gt215.c
+> b/drivers/gpu/drm/nouveau/nvkm/subdev/devinit/gt215.c
+> index dc026ac1b595..3d0ab86c3115 100644
+> --- a/drivers/gpu/drm/nouveau/nvkm/subdev/devinit/gt215.c
+> +++ b/drivers/gpu/drm/nouveau/nvkm/subdev/devinit/gt215.c
+> @@ -68,7 +68,6 @@ gt215_devinit_disable(struct nvkm_devinit *init)
+>         struct nvkm_device *device = init->subdev.device;
+>         u32 r001540 = nvkm_rd32(device, 0x001540);
+>         u32 r00154c = nvkm_rd32(device, 0x00154c);
+> -       u64 disable = 0ULL;
+>  
+>         if (!(r001540 & 0x40000000)) {
+>                 nvkm_subdev_disable(device, NVKM_ENGINE_MSPDEC, 0);
+> @@ -82,7 +81,7 @@ gt215_devinit_disable(struct nvkm_devinit *init)
+>         if (!(r00154c & 0x00000200))
+>                 nvkm_subdev_disable(device, NVKM_ENGINE_CE, 0);
+>  
+> -       return disable;
+> +       return 0ULL;
+>  }
+>  
+>  static u32
 
 -- 
-paul-moore.com
+Cheers,
+ Lyude Paul (she/her)
+ Software Engineer at Red Hat
+
