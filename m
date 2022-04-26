@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19B39C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43342C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:26:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238062AbiDZI2v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:28:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36312 "EHLO
+        id S1344843AbiDZI3A (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:29:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344768AbiDZI1n (ORCPT
+        with ESMTP id S1344735AbiDZI1E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:27:43 -0400
+        Tue, 26 Apr 2022 04:27:04 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4663612C8C8;
-        Tue, 26 Apr 2022 01:23:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C90943394;
+        Tue, 26 Apr 2022 01:23:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A9CE961806;
-        Tue, 26 Apr 2022 08:23:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB678C385A0;
-        Tue, 26 Apr 2022 08:23:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 969686179E;
+        Tue, 26 Apr 2022 08:23:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5259C385A0;
+        Tue, 26 Apr 2022 08:23:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961426;
-        bh=XO+htxcasVjIz8LtHd+6NBfz45Ayc74nohNSB2FcCHY=;
+        s=korg; t=1650961408;
+        bh=g77+6m7gXsy6z6hMtIuJX/2wFFibPS8xVrVqqxMjjgU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pod5LRnMUePi1qEHRA14UCWdd2GVEuHsTyuNFt1ojhaHirdFHQOs4PhBwwaXWf+jW
-         M+BdlIGS+NTTA4WNMuOry52FosAH/lj7UdV5Z+22CovCao/kC7KTxYZ9mFiENBk1xo
-         JhELfZWKaqyiOWcA1PiWOC9i7mDf0LrYTLcr0Taw=
+        b=mfBUFIzoY9xgCCT0M5BTZ2pBri4UmaUTX2jF0ZEDEGnNneZqRumW0u86xpKR8wWvm
+         YBYvKDUbPMOMUqfs82i5MSR84pbc2WMPhjV7eIEZZPxwqNwm6yiVErVOXBO5DT5fGc
+         UA8EKaW92V8C/qpl2WIOxeegvSljaZ9285xrQSHA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 09/24] platform/x86: samsung-laptop: Fix an unsigned comparison which can never be negative
-Date:   Tue, 26 Apr 2022 10:21:03 +0200
-Message-Id: <20220426081731.647075021@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+c6fd14145e2f62ca0784@syzkaller.appspotmail.com,
+        Bob Peterson <rpeterso@redhat.com>,
+        Andreas Gruenbacher <agruenba@redhat.com>
+Subject: [PATCH 4.9 03/24] gfs2: assign rgrp glock before compute_bitstructs
+Date:   Tue, 26 Apr 2022 10:20:57 +0200
+Message-Id: <20220426081731.475169845@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081731.370823950@linuxfoundation.org>
 References: <20220426081731.370823950@linuxfoundation.org>
@@ -50,40 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+From: Bob Peterson <rpeterso@redhat.com>
 
-[ Upstream commit 0284d4d1be753f648f28b77bdfbe6a959212af5c ]
+commit 428f651cb80b227af47fc302e4931791f2fb4741 upstream.
 
-Eliminate the follow smatch warnings:
+Before this patch, function read_rindex_entry called compute_bitstructs
+before it allocated a glock for the rgrp. But if compute_bitstructs found
+a problem with the rgrp, it called gfs2_consist_rgrpd, and that called
+gfs2_dump_glock for rgd->rd_gl which had not yet been assigned.
 
-drivers/platform/x86/samsung-laptop.c:1124 kbd_led_set() warn: unsigned
-'value' is never less than zero.
+read_rindex_entry
+   compute_bitstructs
+      gfs2_consist_rgrpd
+         gfs2_dump_glock <---------rgd->rd_gl was not set.
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Link: https://lore.kernel.org/r/20220322061830.105579-1-jiapeng.chong@linux.alibaba.com
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This patch changes read_rindex_entry so it assigns an rgrp glock before
+calling compute_bitstructs so gfs2_dump_glock does not reference an
+unassigned pointer. If an error is discovered, the glock must also be
+put, so a new goto and label were added.
+
+Reported-by: syzbot+c6fd14145e2f62ca0784@syzkaller.appspotmail.com
+Signed-off-by: Bob Peterson <rpeterso@redhat.com>
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/platform/x86/samsung-laptop.c | 2 --
- 1 file changed, 2 deletions(-)
+ fs/gfs2/rgrp.c |    9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/platform/x86/samsung-laptop.c b/drivers/platform/x86/samsung-laptop.c
-index 8c146e2b6727..4664d3e191c8 100644
---- a/drivers/platform/x86/samsung-laptop.c
-+++ b/drivers/platform/x86/samsung-laptop.c
-@@ -1125,8 +1125,6 @@ static void kbd_led_set(struct led_classdev *led_cdev,
+--- a/fs/gfs2/rgrp.c
++++ b/fs/gfs2/rgrp.c
+@@ -917,15 +917,15 @@ static int read_rindex_entry(struct gfs2
+ 	rgd->rd_bitbytes = be32_to_cpu(buf.ri_bitbytes);
+ 	spin_lock_init(&rgd->rd_rsspin);
  
- 	if (value > samsung->kbd_led.max_brightness)
- 		value = samsung->kbd_led.max_brightness;
--	else if (value < 0)
--		value = 0;
+-	error = compute_bitstructs(rgd);
+-	if (error)
+-		goto fail;
+-
+ 	error = gfs2_glock_get(sdp, rgd->rd_addr,
+ 			       &gfs2_rgrp_glops, CREATE, &rgd->rd_gl);
+ 	if (error)
+ 		goto fail;
  
- 	samsung->kbd_led_wk = value;
- 	queue_work(samsung->led_workqueue, &samsung->kbd_led_work);
--- 
-2.35.1
-
++	error = compute_bitstructs(rgd);
++	if (error)
++		goto fail_glock;
++
+ 	rgd->rd_rgl = (struct gfs2_rgrp_lvb *)rgd->rd_gl->gl_lksb.sb_lvbptr;
+ 	rgd->rd_flags &= ~(GFS2_RDF_UPTODATE | GFS2_RDF_PREFERRED);
+ 	if (rgd->rd_data > sdp->sd_max_rg_data)
+@@ -942,6 +942,7 @@ static int read_rindex_entry(struct gfs2
+ 	}
+ 
+ 	error = 0; /* someone else read in the rgrp; free it and ignore it */
++fail_glock:
+ 	gfs2_glock_put(rgd->rd_gl);
+ 
+ fail:
 
 
