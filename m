@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E62AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:17:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD76CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:17:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238805AbiDZJUt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:20:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52848 "EHLO
+        id S242943AbiDZJUx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:20:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345602AbiDZI51 (ORCPT
+        with ESMTP id S245020AbiDZI5Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:57:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B84384EC6;
-        Tue, 26 Apr 2022 01:42:02 -0700 (PDT)
+        Tue, 26 Apr 2022 04:57:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB1EA81677;
+        Tue, 26 Apr 2022 01:41:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BBCF660A67;
-        Tue, 26 Apr 2022 08:42:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C29CFC385A0;
-        Tue, 26 Apr 2022 08:42:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A77ABB81CED;
+        Tue, 26 Apr 2022 08:41:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C329C385A4;
+        Tue, 26 Apr 2022 08:41:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962521;
-        bh=+kalJFicQos3OPzHJvD22NxkzItAti/SDX2f8dJuBmw=;
+        s=korg; t=1650962515;
+        bh=Oaa1kYDZlmNoZlnAkZ1ogI20WNPdZk//Lu5Kqqcgd04=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WNzq6ozR+EZtz59Dbtwqf493lVRfwg8lXRA0UWyTcrLeF9fzumMWiKsR6veGz1/R+
-         uXhY+ea1SqHZyaS4jAb6xpW72l4tS5xaVVSUmhDD6edjMerDv3XzzmEXtqXaz5F83t
-         TWVwCODU8K2MdpZF8ZHraM7IUI4u4f29/9tI79m0=
+        b=qDSjBdQiiozyNJclvsVg7ae8mw4mTWIjCwKHUWIK+FnlcRv6W9EQDNA05Wb7Hb8k5
+         lLUdBMW1v/B9SQLZz7todEgZtBt8ScWWod1BebfZhAMBM+3QLMm+HbhT+Y8f+DctDk
+         HQ1Yd9C/iQ5HMI8nU6eNzNMgmcMxbCuezPCc1kQ8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 5.15 084/124] dma: at_xdmac: fix a missing check on list iterator
-Date:   Tue, 26 Apr 2022 10:21:25 +0200
-Message-Id: <20220426081749.689618472@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
+        Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.15 120/124] netfilter: nft_ct: fix use after free when attaching zone template
+Date:   Tue, 26 Apr 2022 10:22:01 +0200
+Message-Id: <20220426081750.701058603@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -48,57 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Florian Westphal <fw@strlen.de>
 
-commit 206680c4e46b62fd8909385e0874a36952595b85 upstream.
+commit 34243b9ec856309339172b1507379074156947e8 upstream.
 
-The bug is here:
-	__func__, desc, &desc->tx_dma_desc.phys, ret, cookie, residue);
+The conversion erroneously removed the refcount increment.
+In case we can use the percpu template, we need to increment
+the refcount, else it will be released when the skb gets freed.
 
-The list iterator 'desc' will point to a bogus position containing
-HEAD if the list is empty or no element is found. To avoid dev_dbg()
-prints a invalid address, use a new variable 'iter' as the list
-iterator, while use the origin variable 'desc' as a dedicated
-pointer to point to the found element.
+In case the slowpath is taken, the new template already has a
+refcount of 1.
 
-Cc: stable@vger.kernel.org
-Fixes: 82e2424635f4c ("dmaengine: xdmac: fix print warning on dma_addr_t variable")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Link: https://lore.kernel.org/r/20220327061154.4867-1-xiam0nd.tong@gmail.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: 719774377622 ("netfilter: conntrack: convert to refcount_t api")
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/dma/at_xdmac.c |   12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ net/netfilter/nft_ct.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/drivers/dma/at_xdmac.c
-+++ b/drivers/dma/at_xdmac.c
-@@ -1450,7 +1450,7 @@ at_xdmac_tx_status(struct dma_chan *chan
- {
- 	struct at_xdmac_chan	*atchan = to_at_xdmac_chan(chan);
- 	struct at_xdmac		*atxdmac = to_at_xdmac(atchan->chan.device);
--	struct at_xdmac_desc	*desc, *_desc;
-+	struct at_xdmac_desc	*desc, *_desc, *iter;
- 	struct list_head	*descs_list;
- 	enum dma_status		ret;
- 	int			residue, retry;
-@@ -1565,11 +1565,13 @@ at_xdmac_tx_status(struct dma_chan *chan
- 	 * microblock.
- 	 */
- 	descs_list = &desc->descs_list;
--	list_for_each_entry_safe(desc, _desc, descs_list, desc_node) {
--		dwidth = at_xdmac_get_dwidth(desc->lld.mbr_cfg);
--		residue -= (desc->lld.mbr_ubc & 0xffffff) << dwidth;
--		if ((desc->lld.mbr_nda & 0xfffffffc) == cur_nda)
-+	list_for_each_entry_safe(iter, _desc, descs_list, desc_node) {
-+		dwidth = at_xdmac_get_dwidth(iter->lld.mbr_cfg);
-+		residue -= (iter->lld.mbr_ubc & 0xffffff) << dwidth;
-+		if ((iter->lld.mbr_nda & 0xfffffffc) == cur_nda) {
-+			desc = iter;
- 			break;
-+		}
- 	}
- 	residue += cur_ubc << dwidth;
+--- a/net/netfilter/nft_ct.c
++++ b/net/netfilter/nft_ct.c
+@@ -260,9 +260,12 @@ static void nft_ct_set_zone_eval(const s
+ 	ct = this_cpu_read(nft_ct_pcpu_template);
  
+ 	if (likely(refcount_read(&ct->ct_general.use) == 1)) {
++		refcount_inc(&ct->ct_general.use);
+ 		nf_ct_zone_add(ct, &zone);
+ 	} else {
+-		/* previous skb got queued to userspace */
++		/* previous skb got queued to userspace, allocate temporary
++		 * one until percpu template can be reused.
++		 */
+ 		ct = nf_ct_tmpl_alloc(nft_net(pkt), &zone, GFP_ATOMIC);
+ 		if (!ct) {
+ 			regs->verdict.code = NF_DROP;
 
 
