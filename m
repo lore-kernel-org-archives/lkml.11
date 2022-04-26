@@ -2,91 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B82EBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 03:36:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B71FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 03:38:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235593AbiDZDj2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 23:39:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39388 "EHLO
+        id S237818AbiDZDlU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 23:41:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243201AbiDZDi4 (ORCPT
+        with ESMTP id S229642AbiDZDlR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 23:38:56 -0400
-Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.228])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C11353A1AA;
-        Mon, 25 Apr 2022 20:35:49 -0700 (PDT)
-HMM_SOURCE_IP: 172.18.0.188:49938.983364622
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-202.80.192.39 (unknown [172.18.0.188])
-        by chinatelecom.cn (HERMES) with SMTP id E5F7A280029;
-        Tue, 26 Apr 2022 11:35:47 +0800 (CST)
-X-189-SAVE-TO-SEND: +liuxp11@chinatelecom.cn
-Received: from  ([172.18.0.188])
-        by app0023 with ESMTP id 10d57f2abc2e4ef58faa5f71ac2aa20b for wim@linux-watchdog.org;
-        Tue, 26 Apr 2022 11:35:48 CST
-X-Transaction-ID: 10d57f2abc2e4ef58faa5f71ac2aa20b
-X-Real-From: liuxp11@chinatelecom.cn
-X-Receive-IP: 172.18.0.188
-X-MEDUSA-Status: 0
-Sender: liuxp11@chinatelecom.cn
-From:   Liu Xinpeng <liuxp11@chinatelecom.cn>
-To:     wim@linux-watchdog.org, linux@roeck-us.net
-Cc:     linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Liu Xinpeng <liuxp11@chinatelecom.cn>
-Subject: [PATCH v3 4/4] watchdog: iTCO_wdg: Make code more clearly with macro definition
-Date:   Tue, 26 Apr 2022 11:35:20 +0800
-Message-Id: <1650944120-30954-5-git-send-email-liuxp11@chinatelecom.cn>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1650944120-30954-1-git-send-email-liuxp11@chinatelecom.cn>
-References: <1650944120-30954-1-git-send-email-liuxp11@chinatelecom.cn>
+        Mon, 25 Apr 2022 23:41:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1415BECCC3
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 20:38:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650944288;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=WIQnceDnTPqWEyvR+jRAACxbLqJerOV/+jqpfvLm6RA=;
+        b=MLWYRgiSfQia2PCtCy8qMwi/YcSDMGYoHSKy5rxuTbAVYFLxeVYPBfX6VJfmK2oSYyBOJ4
+        9+0LynSTzVyqgr37Pur4GOLWd0GZmX29YNHvQJcTp7lJiW9HD4ZFUHNZgLkLwST+ReC3QP
+        P0ncMw/LXcY2ESMnFLsZjyquLd5QmYo=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-360-Y3eliJzMN_-VxwB05UYHxw-1; Mon, 25 Apr 2022 23:38:06 -0400
+X-MC-Unique: Y3eliJzMN_-VxwB05UYHxw-1
+Received: by mail-wm1-f71.google.com with SMTP id i131-20020a1c3b89000000b00392b57fbdaaso617943wma.0
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 20:38:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WIQnceDnTPqWEyvR+jRAACxbLqJerOV/+jqpfvLm6RA=;
+        b=gaB5cjEvyDq3cqgRqRnsY2SEctd9zFyix6ujdpoIj1ay1wfGwbP8ty7Y7rOeHMizif
+         qTRQ8AdACWln2mqHnlqw64NxCcEff/8Ktv7eLZmHn6gUQUwLsZER2xYfs2ua1rHIrtSf
+         YPcM+bXMYGaEvdHe/pwwHJZqfpyZGTmV3tlyTxRpvGkBsyv0x/N9aJl/99g2CJOQTtVI
+         W/srxK4xkkBpYxpJ+NhAAaS+KykQtJJe9syfkY18yi1b8TbRPAcuby6EDbUwsjt/KcRF
+         VbdLrtJHZ2sxsplKVoXdn/FiuHLNN5/UIlf5SSBsmMkSJTal4FnKpvQBdtzLiVUWjTzr
+         4dnQ==
+X-Gm-Message-State: AOAM531vAN9Xtt3kC7mY4lRnRG3/9x4rELPd1vgT23Ww6Pt+eOmFrYKa
+        SbEFUUWPc0P2iAxUN2TnnHH+LHYxqWNmQA4z3ZMwzD3odGr+TLhEpkILib0B9XXLTtb0PPtKObe
+        o2pZ7WtJhm96P9C0av8H9VLtn
+X-Received: by 2002:a5d:6102:0:b0:20a:db89:724f with SMTP id v2-20020a5d6102000000b0020adb89724fmr6294043wrt.59.1650944285456;
+        Mon, 25 Apr 2022 20:38:05 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyDl85Otu4KZcKjc/hiNLN0xYTp11xKMZiuuo8GOT13qx2bgBE3K0mDwMLh4XIvvLqvOuFVPA==
+X-Received: by 2002:a5d:6102:0:b0:20a:db89:724f with SMTP id v2-20020a5d6102000000b0020adb89724fmr6294031wrt.59.1650944285222;
+        Mon, 25 Apr 2022 20:38:05 -0700 (PDT)
+Received: from redhat.com ([2.53.22.137])
+        by smtp.gmail.com with ESMTPSA id p3-20020a5d59a3000000b0020a83f00487sm14093629wrr.9.2022.04.25.20.38.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Apr 2022 20:38:04 -0700 (PDT)
+Date:   Mon, 25 Apr 2022 23:38:00 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Halil Pasic <pasic@linux.ibm.com>
+Cc:     Cornelia Huck <cohuck@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, sgarzare@redhat.com,
+        eperezma@redhat.com, lulu@redhat.com, tglx@linutronix.de,
+        peterz@infradead.org, paulmck@kernel.org, maz@kernel.org
+Subject: Re: [PATCH V3 6/9] virtio-ccw: implement synchronize_cbs()
+Message-ID: <20220425233604-mutt-send-email-mst@kernel.org>
+References: <20220425024418.8415-1-jasowang@redhat.com>
+ <20220425024418.8415-7-jasowang@redhat.com>
+ <20220425040512-mutt-send-email-mst@kernel.org>
+ <87a6c98rwf.fsf@redhat.com>
+ <20220425095742-mutt-send-email-mst@kernel.org>
+ <20220426042911.544477f9.pasic@linux.ibm.com>
+ <20220425233434-mutt-send-email-mst@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220425233434-mutt-send-email-mst@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Using SET_NOIRQ_SYSTEM_SLEEP_PM_OPS reduces redundant code.
+On Mon, Apr 25, 2022 at 11:35:41PM -0400, Michael S. Tsirkin wrote:
+> On Tue, Apr 26, 2022 at 04:29:11AM +0200, Halil Pasic wrote:
+> > On Mon, 25 Apr 2022 09:59:55 -0400
+> > "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> > 
+> > > On Mon, Apr 25, 2022 at 10:54:24AM +0200, Cornelia Huck wrote:
+> > > > On Mon, Apr 25 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> > > >   
+> > > > > On Mon, Apr 25, 2022 at 10:44:15AM +0800, Jason Wang wrote:  
+> > > > >> This patch tries to implement the synchronize_cbs() for ccw. For the
+> > > > >> vring_interrupt() that is called via virtio_airq_handler(), the
+> > > > >> synchronization is simply done via the airq_info's lock. For the
+> > > > >> vring_interrupt() that is called via virtio_ccw_int_handler(), a per
+> > > > >> device spinlock for irq is introduced ans used in the synchronization
+> > > > >> method.
+> > > > >> 
+> > > > >> Cc: Thomas Gleixner <tglx@linutronix.de>
+> > > > >> Cc: Peter Zijlstra <peterz@infradead.org>
+> > > > >> Cc: "Paul E. McKenney" <paulmck@kernel.org>
+> > > > >> Cc: Marc Zyngier <maz@kernel.org>
+> > > > >> Cc: Halil Pasic <pasic@linux.ibm.com>
+> > > > >> Cc: Cornelia Huck <cohuck@redhat.com>
+> > > > >> Signed-off-by: Jason Wang <jasowang@redhat.com>  
+> > > > >
+> > > > >
+> > > > > This is the only one that is giving me pause. Halil, Cornelia,
+> > > > > should we be concerned about the performance impact here?
+> > > > > Any chance it can be tested?  
+> > > > 
+> > > > We can have a bunch of devices using the same airq structure, and the
+> > > > sync cb creates a choke point, same as registering/unregistering.  
+> > > 
+> > > BTW can callbacks for multiple VQs run on multiple CPUs at the moment?
+> > 
+> > I'm not sure I understand the question.
+> > 
+> > I do think we can have multiple CPUs that are executing some portion of
+> > virtio_ccw_int_handler(). So I guess the answer is yes. Connie what do you think?
+> > 
+> > On the other hand we could also end up serializing synchronize_cbs()
+> > calls for different devices if they happen to use the same airq_info. But
+> > this probably was not your question
+> 
+> 
+> I am less concerned about  synchronize_cbs being slow and more about
+> the slowdown in interrupt processing itself.
+> 
+> > > this patch serializes them on a spinlock.
+> > >
+> > 
+> > Those could then pile up on the newly introduced spinlock.
+> > 
+> > Regards,
+> > Halil
+> 
+> Hmm yea ... not good.
 
-Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
----
- drivers/watchdog/iTCO_wdt.c | 12 +++---------
- 1 file changed, 3 insertions(+), 9 deletions(-)
+Is there any other way to synchronize with all callbacks?
 
-diff --git a/drivers/watchdog/iTCO_wdt.c b/drivers/watchdog/iTCO_wdt.c
-index 3f2f4343644f..f870cf08f143 100644
---- a/drivers/watchdog/iTCO_wdt.c
-+++ b/drivers/watchdog/iTCO_wdt.c
-@@ -596,7 +596,6 @@ static int iTCO_wdt_probe(struct platform_device *pdev)
- 	return 0;
- }
- 
--#ifdef CONFIG_PM_SLEEP
- /*
-  * Suspend-to-idle requires this, because it stops the ticks and timekeeping, so
-  * the watchdog cannot be pinged while in that state.  In ACPI sleep states the
-@@ -637,20 +636,15 @@ static int iTCO_wdt_resume_noirq(struct device *dev)
- }
- 
- static const struct dev_pm_ops iTCO_wdt_pm = {
--	.suspend_noirq = iTCO_wdt_suspend_noirq,
--	.resume_noirq = iTCO_wdt_resume_noirq,
-+	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(iTCO_wdt_suspend_noirq,
-+				      iTCO_wdt_resume_noirq)
- };
- 
--#define ITCO_WDT_PM_OPS	(&iTCO_wdt_pm)
--#else
--#define ITCO_WDT_PM_OPS	NULL
--#endif /* CONFIG_PM_SLEEP */
--
- static struct platform_driver iTCO_wdt_driver = {
- 	.probe          = iTCO_wdt_probe,
- 	.driver         = {
- 		.name   = DRV_NAME,
--		.pm     = ITCO_WDT_PM_OPS,
-+		.pm     = &iTCO_wdt_pm,
- 	},
- };
- 
--- 
-2.23.0
+> -- 
+> MST
 
