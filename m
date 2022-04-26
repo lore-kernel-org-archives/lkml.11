@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A04D1C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:51:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04E24C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:51:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345941AbiDZIxe (ORCPT
+        id S1345979AbiDZIxo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:53:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58780 "EHLO
+        Tue, 26 Apr 2022 04:53:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345914AbiDZIjn (ORCPT
+        with ESMTP id S1345843AbiDZIji (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:39:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C45A07F21B;
-        Tue, 26 Apr 2022 01:32:21 -0700 (PDT)
+        Tue, 26 Apr 2022 04:39:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C792E793B8;
+        Tue, 26 Apr 2022 01:32:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47C46B81CFE;
-        Tue, 26 Apr 2022 08:32:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D363C385A4;
-        Tue, 26 Apr 2022 08:32:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 08485617D2;
+        Tue, 26 Apr 2022 08:32:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18C87C385AC;
+        Tue, 26 Apr 2022 08:32:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961938;
-        bh=nDv3ZUX4ndQ8MpYE3JNAFqkJacWDpguWL47ft7pczH0=;
+        s=korg; t=1650961926;
+        bh=aN26knkQ3uIvvm0WQL2I229Lj/DG+/cm/IpczxzF+LU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w1G5o8NQN7XrHzTyguQ3tTQ3vNhxjM/BvyuaOP0n166fhYFQ/ymLyX/q+jXLPGUgQ
-         iZLFPgk+OZSOxk2ccGQWSlzE2dOMyP9Eo+keMyAiY1qns0l03pcUWmIr22o1f5T48l
-         CxiXmsGWA9DcP//1TSf407eN09iVmAJ2xzwp1s64=
+        b=V6/rD1ZgKo2ggXD0UIOJzU5bwnuZ3cLpgzFhh6WBH1k1qAXfT27CrH8jZmcM5+C3C
+         oSacURcDxTOO7bAwpxK7qPqRzoAk8O7kH/EVyc4kBeZl6IjK8FLeynw2Oj7OE0BPfP
+         ltaFANwArIn3wRHjIhxqzQDvCHzPWSazu1puo1R0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 19/86] rxrpc: Restore removed timer deletion
-Date:   Tue, 26 Apr 2022 10:20:47 +0200
-Message-Id: <20220426081741.760370156@linuxfoundation.org>
+Subject: [PATCH 5.10 15/86] spi: spi-mtk-nor: initialize spi controller after resume
+Date:   Tue, 26 Apr 2022 10:20:43 +0200
+Message-Id: <20220426081741.645860860@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
 References: <20220426081741.202366502@linuxfoundation.org>
@@ -53,57 +52,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
 
-[ Upstream commit ee3b0826b4764f6c13ad6db67495c5a1c38e9025 ]
+[ Upstream commit 317c2045618cc1f8d38beb8c93a7bdb6ad8638c6 ]
 
-A recent patch[1] from Eric Dumazet flipped the order in which the
-keepalive timer and the keepalive worker were cancelled in order to fix a
-syzbot reported issue[2].  Unfortunately, this enables the mirror image bug
-whereby the timer races with rxrpc_exit_net(), restarting the worker after
-it has been cancelled:
+After system resumes, the registers of nor controller are
+initialized with default values. The nor controller will
+not function properly.
 
-	CPU 1		CPU 2
-	===============	=====================
-			if (rxnet->live)
-			<INTERRUPT>
-	rxnet->live = false;
- 	cancel_work_sync(&rxnet->peer_keepalive_work);
-			rxrpc_queue_work(&rxnet->peer_keepalive_work);
-	del_timer_sync(&rxnet->peer_keepalive_timer);
+To handle both issues above, we add mtk_nor_init() in
+mtk_nor_resume after pm_runtime_force_resume().
 
-Fix this by restoring the removed del_timer_sync() so that we try to remove
-the timer twice.  If the timer runs again, it should see ->live == false
-and not restart the worker.
+Fixes: 3bfd9103c7af ("spi: spi-mtk-nor: Add power management support")
 
-Fixes: 1946014ca3b1 ("rxrpc: fix a race in rxrpc_exit_net()")
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Eric Dumazet <edumazet@google.com>
-cc: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
-Link: https://lore.kernel.org/r/20220404183439.3537837-1-eric.dumazet@gmail.com/ [1]
-Link: https://syzkaller.appspot.com/bug?extid=724378c4bb58f703b09a [2]
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Link: https://lore.kernel.org/r/20220412115743.22641-1-allen-kh.cheng@mediatek.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rxrpc/net_ns.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/spi/spi-mtk-nor.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/net/rxrpc/net_ns.c b/net/rxrpc/net_ns.c
-index f15d6942da45..cc7e30733feb 100644
---- a/net/rxrpc/net_ns.c
-+++ b/net/rxrpc/net_ns.c
-@@ -113,7 +113,9 @@ static __net_exit void rxrpc_exit_net(struct net *net)
- 	struct rxrpc_net *rxnet = rxrpc_net(net);
+diff --git a/drivers/spi/spi-mtk-nor.c b/drivers/spi/spi-mtk-nor.c
+index 288f6c2bbd57..106e3cacba4c 100644
+--- a/drivers/spi/spi-mtk-nor.c
++++ b/drivers/spi/spi-mtk-nor.c
+@@ -895,7 +895,17 @@ static int __maybe_unused mtk_nor_suspend(struct device *dev)
  
- 	rxnet->live = false;
-+	del_timer_sync(&rxnet->peer_keepalive_timer);
- 	cancel_work_sync(&rxnet->peer_keepalive_work);
-+	/* Remove the timer again as the worker may have restarted it. */
- 	del_timer_sync(&rxnet->peer_keepalive_timer);
- 	rxrpc_destroy_all_calls(rxnet);
- 	rxrpc_destroy_all_connections(rxnet);
+ static int __maybe_unused mtk_nor_resume(struct device *dev)
+ {
+-	return pm_runtime_force_resume(dev);
++	struct spi_controller *ctlr = dev_get_drvdata(dev);
++	struct mtk_nor *sp = spi_controller_get_devdata(ctlr);
++	int ret;
++
++	ret = pm_runtime_force_resume(dev);
++	if (ret)
++		return ret;
++
++	mtk_nor_init(sp);
++
++	return 0;
+ }
+ 
+ static const struct dev_pm_ops mtk_nor_pm_ops = {
 -- 
 2.35.1
 
