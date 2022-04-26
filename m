@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0378CC3527A
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:32:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1159C41535
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:32:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348227AbiDZJe6 (ORCPT
+        id S1348203AbiDZJex (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:34:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39816 "EHLO
+        Tue, 26 Apr 2022 05:34:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347894AbiDZJGV (ORCPT
+        with ESMTP id S1346763AbiDZJE4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:06:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02617954BE;
-        Tue, 26 Apr 2022 01:46:50 -0700 (PDT)
+        Tue, 26 Apr 2022 05:04:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D712E6C59;
+        Tue, 26 Apr 2022 01:43:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9828260C42;
-        Tue, 26 Apr 2022 08:46:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0ED1C385A0;
-        Tue, 26 Apr 2022 08:46:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E38EBB81CFE;
+        Tue, 26 Apr 2022 08:43:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46264C385AC;
+        Tue, 26 Apr 2022 08:43:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962809;
-        bh=j1Tg1nLCK4PayqRk4fovyoejWs7owY0pBIUS6PJwmyI=;
+        s=korg; t=1650962626;
+        bh=tHBwQJ6rRcMp2aSFYxudKL5By5NcYvKgPRim1s1nXGE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lvb+iwY7QIacNQuZEB2ixr2LQaE3vwGYj/8m1c4dPdI5r33KZrbg7Q8LhygjwyJ0j
-         9p3GCUkmuABMQeu+5z/ST2icQ11EONrheqgNxdOmYtWjSP7NWmo8iGIYaIzPQz0UC/
-         O6lhZjWlDEzEsT+Y/1kRXNhQ5J3aL1oG+IPk/kfs=
+        b=ltmcHLHV/PLRDbL1yYbzsL5T9YAlzuuwC65Uc7bQA+UoAqqZ1gne0i99655ShJrYr
+         ylvCW9jjzNx9bnRNQpEZRHWLhtx3ul5nGGC9jEAa+NxJp1E/iLHZxEa6EnSNg0i0VR
+         FvTNpUMPnlDA/mP2USlKZu5wVEGu1ka08bF2L03E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 5.17 095/146] dma: at_xdmac: fix a missing check on list iterator
-Date:   Tue, 26 Apr 2022 10:21:30 +0200
-Message-Id: <20220426081752.728998984@linuxfoundation.org>
+        stable@vger.kernel.org, Feng Zhou <zhoufeng.zf@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Peilin Ye <peilin.ye@bytedance.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 035/146] ip6_gre: Fix skb_under_panic in __gre6_xmit()
+Date:   Tue, 26 Apr 2022 10:20:30 +0200
+Message-Id: <20220426081751.054765959@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -49,57 +52,128 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Peilin Ye <peilin.ye@bytedance.com>
 
-commit 206680c4e46b62fd8909385e0874a36952595b85 upstream.
+[ Upstream commit ab198e1d0dd8dc4bc7575fb50758e2cbd51e14e1 ]
 
-The bug is here:
-	__func__, desc, &desc->tx_dma_desc.phys, ret, cookie, residue);
+Feng reported an skb_under_panic BUG triggered by running
+test_ip6gretap() in tools/testing/selftests/bpf/test_tunnel.sh:
 
-The list iterator 'desc' will point to a bogus position containing
-HEAD if the list is empty or no element is found. To avoid dev_dbg()
-prints a invalid address, use a new variable 'iter' as the list
-iterator, while use the origin variable 'desc' as a dedicated
-pointer to point to the found element.
+[   82.492551] skbuff: skb_under_panic: text:ffffffffb268bb8e len:403 put:12 head:ffff9997c5480000 data:ffff9997c547fff8 tail:0x18b end:0x2c0 dev:ip6gretap11
+<...>
+[   82.607380] Call Trace:
+[   82.609389]  <TASK>
+[   82.611136]  skb_push.cold.109+0x10/0x10
+[   82.614289]  __gre6_xmit+0x41e/0x590
+[   82.617169]  ip6gre_tunnel_xmit+0x344/0x3f0
+[   82.620526]  dev_hard_start_xmit+0xf1/0x330
+[   82.623882]  sch_direct_xmit+0xe4/0x250
+[   82.626961]  __dev_queue_xmit+0x720/0xfe0
+<...>
+[   82.633431]  packet_sendmsg+0x96a/0x1cb0
+[   82.636568]  sock_sendmsg+0x30/0x40
+<...>
 
-Cc: stable@vger.kernel.org
-Fixes: 82e2424635f4c ("dmaengine: xdmac: fix print warning on dma_addr_t variable")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Link: https://lore.kernel.org/r/20220327061154.4867-1-xiam0nd.tong@gmail.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The following sequence of events caused the BUG:
+
+1. During ip6gretap device initialization, tunnel->tun_hlen (e.g. 4) is
+   calculated based on old flags (see ip6gre_calc_hlen());
+2. packet_snd() reserves header room for skb A, assuming
+   tunnel->tun_hlen is 4;
+3. Later (in clsact Qdisc), the eBPF program sets a new tunnel key for
+   skb A using bpf_skb_set_tunnel_key() (see _ip6gretap_set_tunnel());
+4. __gre6_xmit() detects the new tunnel key, and recalculates
+   "tun_hlen" (e.g. 12) based on new flags (e.g. TUNNEL_KEY and
+   TUNNEL_SEQ);
+5. gre_build_header() calls skb_push() with insufficient reserved header
+   room, triggering the BUG.
+
+As sugguested by Cong, fix it by moving the call to skb_cow_head() after
+the recalculation of tun_hlen.
+
+Reproducer:
+
+  OBJ=$LINUX/tools/testing/selftests/bpf/test_tunnel_kern.o
+
+  ip netns add at_ns0
+  ip link add veth0 type veth peer name veth1
+  ip link set veth0 netns at_ns0
+  ip netns exec at_ns0 ip addr add 172.16.1.100/24 dev veth0
+  ip netns exec at_ns0 ip link set dev veth0 up
+  ip link set dev veth1 up mtu 1500
+  ip addr add dev veth1 172.16.1.200/24
+
+  ip netns exec at_ns0 ip addr add ::11/96 dev veth0
+  ip netns exec at_ns0 ip link set dev veth0 up
+  ip addr add dev veth1 ::22/96
+  ip link set dev veth1 up
+
+  ip netns exec at_ns0 \
+  	ip link add dev ip6gretap00 type ip6gretap seq flowlabel 0xbcdef key 2 \
+  	local ::11 remote ::22
+
+  ip netns exec at_ns0 ip addr add dev ip6gretap00 10.1.1.100/24
+  ip netns exec at_ns0 ip addr add dev ip6gretap00 fc80::100/96
+  ip netns exec at_ns0 ip link set dev ip6gretap00 up
+
+  ip link add dev ip6gretap11 type ip6gretap external
+  ip addr add dev ip6gretap11 10.1.1.200/24
+  ip addr add dev ip6gretap11 fc80::200/24
+  ip link set dev ip6gretap11 up
+
+  tc qdisc add dev ip6gretap11 clsact
+  tc filter add dev ip6gretap11 egress bpf da obj $OBJ sec ip6gretap_set_tunnel
+  tc filter add dev ip6gretap11 ingress bpf da obj $OBJ sec ip6gretap_get_tunnel
+
+  ping6 -c 3 -w 10 -q ::11
+
+Fixes: 6712abc168eb ("ip6_gre: add ip6 gre and gretap collect_md mode")
+Reported-by: Feng Zhou <zhoufeng.zf@bytedance.com>
+Co-developed-by: Cong Wang <cong.wang@bytedance.com>
+Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/at_xdmac.c |   12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ net/ipv6/ip6_gre.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---- a/drivers/dma/at_xdmac.c
-+++ b/drivers/dma/at_xdmac.c
-@@ -1453,7 +1453,7 @@ at_xdmac_tx_status(struct dma_chan *chan
- {
- 	struct at_xdmac_chan	*atchan = to_at_xdmac_chan(chan);
- 	struct at_xdmac		*atxdmac = to_at_xdmac(atchan->chan.device);
--	struct at_xdmac_desc	*desc, *_desc;
-+	struct at_xdmac_desc	*desc, *_desc, *iter;
- 	struct list_head	*descs_list;
- 	enum dma_status		ret;
- 	int			residue, retry;
-@@ -1568,11 +1568,13 @@ at_xdmac_tx_status(struct dma_chan *chan
- 	 * microblock.
- 	 */
- 	descs_list = &desc->descs_list;
--	list_for_each_entry_safe(desc, _desc, descs_list, desc_node) {
--		dwidth = at_xdmac_get_dwidth(desc->lld.mbr_cfg);
--		residue -= (desc->lld.mbr_ubc & 0xffffff) << dwidth;
--		if ((desc->lld.mbr_nda & 0xfffffffc) == cur_nda)
-+	list_for_each_entry_safe(iter, _desc, descs_list, desc_node) {
-+		dwidth = at_xdmac_get_dwidth(iter->lld.mbr_cfg);
-+		residue -= (iter->lld.mbr_ubc & 0xffffff) << dwidth;
-+		if ((iter->lld.mbr_nda & 0xfffffffc) == cur_nda) {
-+			desc = iter;
- 			break;
-+		}
- 	}
- 	residue += cur_ubc << dwidth;
+diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
+index b43a46449130..976236736146 100644
+--- a/net/ipv6/ip6_gre.c
++++ b/net/ipv6/ip6_gre.c
+@@ -733,9 +733,6 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
+ 	else
+ 		fl6->daddr = tunnel->parms.raddr;
  
+-	if (skb_cow_head(skb, dev->needed_headroom ?: tunnel->hlen))
+-		return -ENOMEM;
+-
+ 	/* Push GRE header. */
+ 	protocol = (dev->type == ARPHRD_ETHER) ? htons(ETH_P_TEB) : proto;
+ 
+@@ -763,6 +760,9 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
+ 			(TUNNEL_CSUM | TUNNEL_KEY | TUNNEL_SEQ);
+ 		tun_hlen = gre_calc_hlen(flags);
+ 
++		if (skb_cow_head(skb, dev->needed_headroom ?: tun_hlen + tunnel->encap_hlen))
++			return -ENOMEM;
++
+ 		gre_build_header(skb, tun_hlen,
+ 				 flags, protocol,
+ 				 tunnel_id_to_key32(tun_info->key.tun_id),
+@@ -773,6 +773,9 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
+ 		if (tunnel->parms.o_flags & TUNNEL_SEQ)
+ 			tunnel->o_seqno++;
+ 
++		if (skb_cow_head(skb, dev->needed_headroom ?: tunnel->hlen))
++			return -ENOMEM;
++
+ 		gre_build_header(skb, tunnel->tun_hlen, tunnel->parms.o_flags,
+ 				 protocol, tunnel->parms.o_key,
+ 				 htonl(tunnel->o_seqno));
+-- 
+2.35.1
+
 
 
