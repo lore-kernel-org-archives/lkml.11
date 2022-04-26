@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69D91C43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:03:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA0CDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:03:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354019AbiDZTGu (ORCPT
+        id S1351716AbiDZTGz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 15:06:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41860 "EHLO
+        Tue, 26 Apr 2022 15:06:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353753AbiDZTFc (ORCPT
+        with ESMTP id S1353764AbiDZTFj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 15:05:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EF12199817;
-        Tue, 26 Apr 2022 12:02:22 -0700 (PDT)
+        Tue, 26 Apr 2022 15:05:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94BB419982F;
+        Tue, 26 Apr 2022 12:02:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2A9B7B82249;
-        Tue, 26 Apr 2022 19:02:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5393C385AA;
-        Tue, 26 Apr 2022 19:02:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 341B5619C5;
+        Tue, 26 Apr 2022 19:02:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7995CC385A4;
+        Tue, 26 Apr 2022 19:02:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650999739;
-        bh=iw5SCpFro/JP7l3X7EgKZ6Yqw1DXUGHdxpZWO5Mv9SY=;
+        s=k20201202; t=1650999743;
+        bh=J9fKvkWLHDd+6qz2ZBFVcWFT9ooivv7xE+aNdi+7aEU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NrWjcW28WjqmZVgK9fEl0G9PdXTMq7DrCqK16tUPNhIvSN6tU1pRS/nzT+8a+aa2h
-         TaJoBMjD8EGh8h/hBHq+9X2p0+IbhSzJyBuUdK0+SdrWJLr15THuPaj9lJlh1a0AkQ
-         QpSXSI4qn93pdkFifGszSJ2J0S6QFNlCAFwttZcGDgd+0fBz2+1Q1chhVXI0ThXkjW
-         OGo3M6djmLvhNvePTKd5r2VI9QcE/h2oHXIEOlfu4tl17ZDTneBuyh1FjsLXau+a4j
-         j9yHC6zmyn01rZXTM3p/gnbK3L2IFDQZUZG0v3sUX7TGhZ+npnYULK5vYBfh+xiCoO
-         SvdFODXTJilZQ==
+        b=fVftWVBv1iea8k/Y/8zcaFhY7s821InzRGZaGv22HE9Kf6YnzbNvW+p978tOh8Qk+
+         NZzXoSYc29vsdBoX6b/Aao2n5MtERj6FECIpVGz/d21NxLnxIcSpwHW9wWQyriIMQ+
+         r+LWRgg16N6bIjhA/WdiRF3w0SFRefOP8L7ngc3ieBji3W1XKGSglhcCDCT2P9DV0D
+         xpgaICLOC+a4u1tvN4o7jCgvrlCcr8Jqr8WIVHxlO/m6OcIqbVUcF9LIho9yhnHu7X
+         Vt1/fmNSMJjX/MUkqTPs5S/9/7Exvy66/AqBFY2r9Z/NMh/ESK6hTqmqt/LseImdQA
+         JPamWXecQ8etw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ye Bin <yebin10@huawei.com>, Jan Kara <jack@suse.cz>,
-        Ritesh Harjani <riteshh@linux.ibm.com>,
-        Theodore Ts'o <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>,
-        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 03/15] ext4: fix bug_on in start_this_handle during umount filesystem
-Date:   Tue, 26 Apr 2022 15:02:02 -0400
-Message-Id: <20220426190216.2351413-3-sashal@kernel.org>
+Cc:     suresh kumar <suresh2514@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 08/15] bonding: do not discard lowest hash bit for non layer3+4 hashing
+Date:   Tue, 26 Apr 2022 15:02:07 -0400
+Message-Id: <20220426190216.2351413-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220426190216.2351413-1-sashal@kernel.org>
 References: <20220426190216.2351413-1-sashal@kernel.org>
@@ -53,116 +54,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Bin <yebin10@huawei.com>
+From: suresh kumar <suresh2514@gmail.com>
 
-[ Upstream commit b98535d091795a79336f520b0708457aacf55c67 ]
+[ Upstream commit 49aefd131739df552f83c566d0665744c30b1d70 ]
 
-We got issue as follows:
-------------[ cut here ]------------
-kernel BUG at fs/jbd2/transaction.c:389!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
-CPU: 9 PID: 131 Comm: kworker/9:1 Not tainted 5.17.0-862.14.0.6.x86_64-00001-g23f87daf7d74-dirty #197
-Workqueue: events flush_stashed_error_work
-RIP: 0010:start_this_handle+0x41c/0x1160
-RSP: 0018:ffff888106b47c20 EFLAGS: 00010202
-RAX: ffffed10251b8400 RBX: ffff888128dc204c RCX: ffffffffb52972ac
-RDX: 0000000000000200 RSI: 0000000000000004 RDI: ffff888128dc2050
-RBP: 0000000000000039 R08: 0000000000000001 R09: ffffed10251b840a
-R10: ffff888128dc204f R11: ffffed10251b8409 R12: ffff888116d78000
-R13: 0000000000000000 R14: dffffc0000000000 R15: ffff888128dc2000
-FS:  0000000000000000(0000) GS:ffff88839d680000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000001620068 CR3: 0000000376c0e000 CR4: 00000000000006e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- jbd2__journal_start+0x38a/0x790
- jbd2_journal_start+0x19/0x20
- flush_stashed_error_work+0x110/0x2b3
- process_one_work+0x688/0x1080
- worker_thread+0x8b/0xc50
- kthread+0x26f/0x310
- ret_from_fork+0x22/0x30
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
+Commit b5f862180d70 was introduced to discard lowest hash bit for layer3+4 hashing
+but it also removes last bit from non layer3+4 hashing
 
-Above issue may happen as follows:
-      umount            read procfs            error_work
-ext4_put_super
-  flush_work(&sbi->s_error_work);
+Below script shows layer2+3 hashing will result in same slave to be used with above commit.
+$ cat hash.py
+#/usr/bin/python3.6
 
-                      ext4_mb_seq_groups_show
-	                ext4_mb_load_buddy_gfp
-			  ext4_mb_init_group
-			    ext4_mb_init_cache
-	                      ext4_read_block_bitmap_nowait
-			        ext4_validate_block_bitmap
-				  ext4_error
-			            ext4_handle_error
-			              schedule_work(&EXT4_SB(sb)->s_error_work);
+h_dests=[0xa0, 0xa1]
+h_source=0xe3
+hproto=0x8
+saddr=0x1e7aa8c0
+daddr=0x17aa8c0
 
-  ext4_unregister_sysfs(sb);
-  jbd2_journal_destroy(sbi->s_journal);
-    journal_kill_thread
-      journal->j_flags |= JBD2_UNMOUNT;
+for h_dest in h_dests:
+    hash = (h_dest ^ h_source ^ hproto ^ saddr ^ daddr)
+    hash ^= hash >> 16
+    hash ^= hash >> 8
+    print(hash)
 
-                                          flush_stashed_error_work
-				            jbd2_journal_start
-					      start_this_handle
-					        BUG_ON(journal->j_flags & JBD2_UNMOUNT);
+print("with last bit removed")
+for h_dest in h_dests:
+    hash = (h_dest ^ h_source ^ hproto ^ saddr ^ daddr)
+    hash ^= hash >> 16
+    hash ^= hash >> 8
+    hash = hash >> 1
+    print(hash)
 
-To solve this issue, we call 'ext4_unregister_sysfs() before flushing
-s_error_work in ext4_put_super().
+Output:
+$ python3.6 hash.py
+522133332
+522133333   <-------------- will result in both slaves being used
 
-Signed-off-by: Ye Bin <yebin10@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Ritesh Harjani <riteshh@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220322012419.725457-1-yebin10@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+with last bit removed
+261066666
+261066666   <-------------- only single slave used
+
+Signed-off-by: suresh kumar <suresh2514@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/super.c | 19 ++++++++++++-------
- 1 file changed, 12 insertions(+), 7 deletions(-)
+ drivers/net/bonding/bond_main.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index fd4d34deb9fc..d72adbc7e836 100644
---- a/fs/ext4/super.c
-+++ b/fs/ext4/super.c
-@@ -1167,20 +1167,25 @@ static void ext4_put_super(struct super_block *sb)
- 	int aborted = 0;
- 	int i, err;
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 46c3301a5e07..2e75b7e8f70b 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -3817,14 +3817,19 @@ static bool bond_flow_dissect(struct bonding *bond, struct sk_buff *skb, const v
+ 	return true;
+ }
  
--	ext4_unregister_li_request(sb);
--	ext4_quota_off_umount(sb);
--
--	flush_work(&sbi->s_error_work);
--	destroy_workqueue(sbi->rsv_conversion_wq);
--	ext4_release_orphan_info(sb);
--
- 	/*
- 	 * Unregister sysfs before destroying jbd2 journal.
- 	 * Since we could still access attr_journal_task attribute via sysfs
- 	 * path which could have sbi->s_journal->j_task as NULL
-+	 * Unregister sysfs before flush sbi->s_error_work.
-+	 * Since user may read /proc/fs/ext4/xx/mb_groups during umount, If
-+	 * read metadata verify failed then will queue error work.
-+	 * flush_stashed_error_work will call start_this_handle may trigger
-+	 * BUG_ON.
- 	 */
- 	ext4_unregister_sysfs(sb);
+-static u32 bond_ip_hash(u32 hash, struct flow_keys *flow)
++static u32 bond_ip_hash(u32 hash, struct flow_keys *flow, int xmit_policy)
+ {
+ 	hash ^= (__force u32)flow_get_u32_dst(flow) ^
+ 		(__force u32)flow_get_u32_src(flow);
+ 	hash ^= (hash >> 16);
+ 	hash ^= (hash >> 8);
++
+ 	/* discard lowest hash bit to deal with the common even ports pattern */
+-	return hash >> 1;
++	if (xmit_policy == BOND_XMIT_POLICY_LAYER34 ||
++		xmit_policy == BOND_XMIT_POLICY_ENCAP34)
++		return hash >> 1;
++
++	return hash;
+ }
  
-+	ext4_unregister_li_request(sb);
-+	ext4_quota_off_umount(sb);
-+
-+	flush_work(&sbi->s_error_work);
-+	destroy_workqueue(sbi->rsv_conversion_wq);
-+	ext4_release_orphan_info(sb);
-+
- 	if (sbi->s_journal) {
- 		aborted = is_journal_aborted(sbi->s_journal);
- 		err = jbd2_journal_destroy(sbi->s_journal);
+ /* Generate hash based on xmit policy. If @skb is given it is used to linearize
+@@ -3854,7 +3859,7 @@ static u32 __bond_xmit_hash(struct bonding *bond, struct sk_buff *skb, const voi
+ 			memcpy(&hash, &flow.ports.ports, sizeof(hash));
+ 	}
+ 
+-	return bond_ip_hash(hash, &flow);
++	return bond_ip_hash(hash, &flow, bond->params.xmit_policy);
+ }
+ 
+ /**
+@@ -5012,7 +5017,7 @@ static u32 bond_sk_hash_l34(struct sock *sk)
+ 	/* L4 */
+ 	memcpy(&hash, &flow.ports.ports, sizeof(hash));
+ 	/* L3 */
+-	return bond_ip_hash(hash, &flow);
++	return bond_ip_hash(hash, &flow, BOND_XMIT_POLICY_LAYER34);
+ }
+ 
+ static struct net_device *__bond_sk_get_lower_dev(struct bonding *bond,
 -- 
 2.35.1
 
