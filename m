@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1ECEC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:48:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34F74C4707A
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:48:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347435AbiDZIv3 (ORCPT
+        id S1347668AbiDZIvu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:51:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59544 "EHLO
+        Tue, 26 Apr 2022 04:51:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345789AbiDZIjb (ORCPT
+        with ESMTP id S241862AbiDZIjv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:39:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F6A66D864;
-        Tue, 26 Apr 2022 01:31:08 -0700 (PDT)
+        Tue, 26 Apr 2022 04:39:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E235D14D28C;
+        Tue, 26 Apr 2022 01:32:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AF66B6189A;
-        Tue, 26 Apr 2022 08:31:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B13DCC385A4;
-        Tue, 26 Apr 2022 08:31:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5DE8AB81D06;
+        Tue, 26 Apr 2022 08:32:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E31EC385AC;
+        Tue, 26 Apr 2022 08:32:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961867;
-        bh=cAHJHvv5OO7Wdml7C5cnVYBlU08Dp1ge/HrmNel2wYg=;
+        s=korg; t=1650961954;
+        bh=BU1pOQ1nK3rdoZZKFHeBNw6ys46RrHzncOALM+liBxA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XxgTQ157zKyXhXp75zzpFTek9Ude9VQzqxPFAOKm8ua55yu+XwbhdZpUubRoL4opt
-         HSCBm81QnS3+iDLRL/PUdhlfNIxCi4ysQR7x7KFKwxKoZLDEHPgKwqLBmQrDxHxVgh
-         yklgu9KxC1ODd2yxaeobxE5r1MJDHayields5nVM=
+        b=ELsOuhUixEDeUmg8RAZOmcjXaNyC74bEHLP11NqQ34k81iXH5S/ZJl9+C7NnDaK/O
+         vhhVSryN26o9KKOMJpywJJ47mnN3Cj09vseI8RVnkDjiG9OHlH+KEICF6qyqoC08Tb
+         mBreS6VxCGAncLlD8N9yYjBGTimj62W4pp09uJ1U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
-        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 5.4 58/62] jbd2: fix a potential race while discarding reserved buffers after an abort
-Date:   Tue, 26 Apr 2022 10:21:38 +0200
-Message-Id: <20220426081738.884850289@linuxfoundation.org>
+        stable@vger.kernel.org, Feng Zhou <zhoufeng.zf@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Peilin Ye <peilin.ye@bytedance.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 23/86] ip6_gre: Fix skb_under_panic in __gre6_xmit()
+Date:   Tue, 26 Apr 2022 10:20:51 +0200
+Message-Id: <20220426081741.880255898@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
-References: <20220426081737.209637816@linuxfoundation.org>
+In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
+References: <20220426081741.202366502@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,116 +52,128 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Bin <yebin10@huawei.com>
+From: Peilin Ye <peilin.ye@bytedance.com>
 
-commit 23e3d7f7061f8682c751c46512718f47580ad8f0 upstream.
+[ Upstream commit ab198e1d0dd8dc4bc7575fb50758e2cbd51e14e1 ]
 
-we got issue as follows:
-[   72.796117] EXT4-fs error (device sda): ext4_journal_check_start:83: comm fallocate: Detected aborted journal
-[   72.826847] EXT4-fs (sda): Remounting filesystem read-only
-fallocate: fallocate failed: Read-only file system
-[   74.791830] jbd2_journal_commit_transaction: jh=0xffff9cfefe725d90 bh=0x0000000000000000 end delay
-[   74.793597] ------------[ cut here ]------------
-[   74.794203] kernel BUG at fs/jbd2/transaction.c:2063!
-[   74.794886] invalid opcode: 0000 [#1] PREEMPT SMP PTI
-[   74.795533] CPU: 4 PID: 2260 Comm: jbd2/sda-8 Not tainted 5.17.0-rc8-next-20220315-dirty #150
-[   74.798327] RIP: 0010:__jbd2_journal_unfile_buffer+0x3e/0x60
-[   74.801971] RSP: 0018:ffffa828c24a3cb8 EFLAGS: 00010202
-[   74.802694] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-[   74.803601] RDX: 0000000000000001 RSI: ffff9cfefe725d90 RDI: ffff9cfefe725d90
-[   74.804554] RBP: ffff9cfefe725d90 R08: 0000000000000000 R09: ffffa828c24a3b20
-[   74.805471] R10: 0000000000000001 R11: 0000000000000001 R12: ffff9cfefe725d90
-[   74.806385] R13: ffff9cfefe725d98 R14: 0000000000000000 R15: ffff9cfe833a4d00
-[   74.807301] FS:  0000000000000000(0000) GS:ffff9d01afb00000(0000) knlGS:0000000000000000
-[   74.808338] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   74.809084] CR2: 00007f2b81bf4000 CR3: 0000000100056000 CR4: 00000000000006e0
-[   74.810047] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[   74.810981] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[   74.811897] Call Trace:
-[   74.812241]  <TASK>
-[   74.812566]  __jbd2_journal_refile_buffer+0x12f/0x180
-[   74.813246]  jbd2_journal_refile_buffer+0x4c/0xa0
-[   74.813869]  jbd2_journal_commit_transaction.cold+0xa1/0x148
-[   74.817550]  kjournald2+0xf8/0x3e0
-[   74.819056]  kthread+0x153/0x1c0
-[   74.819963]  ret_from_fork+0x22/0x30
+Feng reported an skb_under_panic BUG triggered by running
+test_ip6gretap() in tools/testing/selftests/bpf/test_tunnel.sh:
 
-Above issue may happen as follows:
-        write                   truncate                   kjournald2
-generic_perform_write
- ext4_write_begin
-  ext4_walk_page_buffers
-   do_journal_get_write_access ->add BJ_Reserved list
- ext4_journalled_write_end
-  ext4_walk_page_buffers
-   write_end_fn
-    ext4_handle_dirty_metadata
-                ***************JBD2 ABORT**************
-     jbd2_journal_dirty_metadata
- -> return -EROFS, jh in reserved_list
-                                                   jbd2_journal_commit_transaction
-                                                    while (commit_transaction->t_reserved_list)
-                                                      jh = commit_transaction->t_reserved_list;
-                        truncate_pagecache_range
-                         do_invalidatepage
-			  ext4_journalled_invalidatepage
-			   jbd2_journal_invalidatepage
-			    journal_unmap_buffer
-			     __dispose_buffer
-			      __jbd2_journal_unfile_buffer
-			       jbd2_journal_put_journal_head ->put last ref_count
-			        __journal_remove_journal_head
-				 bh->b_private = NULL;
-				 jh->b_bh = NULL;
-				                      jbd2_journal_refile_buffer(journal, jh);
-							bh = jh2bh(jh);
-							->bh is NULL, later will trigger null-ptr-deref
-				 journal_free_journal_head(jh);
+[   82.492551] skbuff: skb_under_panic: text:ffffffffb268bb8e len:403 put:12 head:ffff9997c5480000 data:ffff9997c547fff8 tail:0x18b end:0x2c0 dev:ip6gretap11
+<...>
+[   82.607380] Call Trace:
+[   82.609389]  <TASK>
+[   82.611136]  skb_push.cold.109+0x10/0x10
+[   82.614289]  __gre6_xmit+0x41e/0x590
+[   82.617169]  ip6gre_tunnel_xmit+0x344/0x3f0
+[   82.620526]  dev_hard_start_xmit+0xf1/0x330
+[   82.623882]  sch_direct_xmit+0xe4/0x250
+[   82.626961]  __dev_queue_xmit+0x720/0xfe0
+<...>
+[   82.633431]  packet_sendmsg+0x96a/0x1cb0
+[   82.636568]  sock_sendmsg+0x30/0x40
+<...>
 
-After commit 96f1e0974575, we no longer hold the j_state_lock while
-iterating over the list of reserved handles in
-jbd2_journal_commit_transaction().  This potentially allows the
-journal_head to be freed by journal_unmap_buffer while the commit
-codepath is also trying to free the BJ_Reserved buffers.  Keeping
-j_state_lock held while trying extends hold time of the lock
-minimally, and solves this issue.
+The following sequence of events caused the BUG:
 
-Fixes: 96f1e0974575("jbd2: avoid long hold times of j_state_lock while committing a transaction")
-Signed-off-by: Ye Bin <yebin10@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220317142137.1821590-1-yebin10@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+1. During ip6gretap device initialization, tunnel->tun_hlen (e.g. 4) is
+   calculated based on old flags (see ip6gre_calc_hlen());
+2. packet_snd() reserves header room for skb A, assuming
+   tunnel->tun_hlen is 4;
+3. Later (in clsact Qdisc), the eBPF program sets a new tunnel key for
+   skb A using bpf_skb_set_tunnel_key() (see _ip6gretap_set_tunnel());
+4. __gre6_xmit() detects the new tunnel key, and recalculates
+   "tun_hlen" (e.g. 12) based on new flags (e.g. TUNNEL_KEY and
+   TUNNEL_SEQ);
+5. gre_build_header() calls skb_push() with insufficient reserved header
+   room, triggering the BUG.
+
+As sugguested by Cong, fix it by moving the call to skb_cow_head() after
+the recalculation of tun_hlen.
+
+Reproducer:
+
+  OBJ=$LINUX/tools/testing/selftests/bpf/test_tunnel_kern.o
+
+  ip netns add at_ns0
+  ip link add veth0 type veth peer name veth1
+  ip link set veth0 netns at_ns0
+  ip netns exec at_ns0 ip addr add 172.16.1.100/24 dev veth0
+  ip netns exec at_ns0 ip link set dev veth0 up
+  ip link set dev veth1 up mtu 1500
+  ip addr add dev veth1 172.16.1.200/24
+
+  ip netns exec at_ns0 ip addr add ::11/96 dev veth0
+  ip netns exec at_ns0 ip link set dev veth0 up
+  ip addr add dev veth1 ::22/96
+  ip link set dev veth1 up
+
+  ip netns exec at_ns0 \
+  	ip link add dev ip6gretap00 type ip6gretap seq flowlabel 0xbcdef key 2 \
+  	local ::11 remote ::22
+
+  ip netns exec at_ns0 ip addr add dev ip6gretap00 10.1.1.100/24
+  ip netns exec at_ns0 ip addr add dev ip6gretap00 fc80::100/96
+  ip netns exec at_ns0 ip link set dev ip6gretap00 up
+
+  ip link add dev ip6gretap11 type ip6gretap external
+  ip addr add dev ip6gretap11 10.1.1.200/24
+  ip addr add dev ip6gretap11 fc80::200/24
+  ip link set dev ip6gretap11 up
+
+  tc qdisc add dev ip6gretap11 clsact
+  tc filter add dev ip6gretap11 egress bpf da obj $OBJ sec ip6gretap_set_tunnel
+  tc filter add dev ip6gretap11 ingress bpf da obj $OBJ sec ip6gretap_get_tunnel
+
+  ping6 -c 3 -w 10 -q ::11
+
+Fixes: 6712abc168eb ("ip6_gre: add ip6 gre and gretap collect_md mode")
+Reported-by: Feng Zhou <zhoufeng.zf@bytedance.com>
+Co-developed-by: Cong Wang <cong.wang@bytedance.com>
+Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/jbd2/commit.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/ipv6/ip6_gre.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---- a/fs/jbd2/commit.c
-+++ b/fs/jbd2/commit.c
-@@ -451,7 +451,6 @@ void jbd2_journal_commit_transaction(jou
- 	}
- 	spin_unlock(&commit_transaction->t_handle_lock);
- 	commit_transaction->t_state = T_SWITCH;
--	write_unlock(&journal->j_state_lock);
+diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
+index 949d6fbc1ca0..1f6c752f13b4 100644
+--- a/net/ipv6/ip6_gre.c
++++ b/net/ipv6/ip6_gre.c
+@@ -733,9 +733,6 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
+ 	else
+ 		fl6->daddr = tunnel->parms.raddr;
  
- 	J_ASSERT (atomic_read(&commit_transaction->t_outstanding_credits) <=
- 			journal->j_max_transaction_buffers);
-@@ -471,6 +470,8 @@ void jbd2_journal_commit_transaction(jou
- 	 * has reserved.  This is consistent with the existing behaviour
- 	 * that multiple jbd2_journal_get_write_access() calls to the same
- 	 * buffer are perfectly permissible.
-+	 * We use journal->j_state_lock here to serialize processing of
-+	 * t_reserved_list with eviction of buffers from journal_unmap_buffer().
- 	 */
- 	while (commit_transaction->t_reserved_list) {
- 		jh = commit_transaction->t_reserved_list;
-@@ -490,6 +491,7 @@ void jbd2_journal_commit_transaction(jou
- 		jbd2_journal_refile_buffer(journal, jh);
- 	}
+-	if (skb_cow_head(skb, dev->needed_headroom ?: tunnel->hlen))
+-		return -ENOMEM;
+-
+ 	/* Push GRE header. */
+ 	protocol = (dev->type == ARPHRD_ETHER) ? htons(ETH_P_TEB) : proto;
  
-+	write_unlock(&journal->j_state_lock);
- 	/*
- 	 * Now try to drop any written-back buffers from the journal's
- 	 * checkpoint lists.  We do this *before* commit because it potentially
+@@ -763,6 +760,9 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
+ 			(TUNNEL_CSUM | TUNNEL_KEY | TUNNEL_SEQ);
+ 		tun_hlen = gre_calc_hlen(flags);
+ 
++		if (skb_cow_head(skb, dev->needed_headroom ?: tun_hlen + tunnel->encap_hlen))
++			return -ENOMEM;
++
+ 		gre_build_header(skb, tun_hlen,
+ 				 flags, protocol,
+ 				 tunnel_id_to_key32(tun_info->key.tun_id),
+@@ -773,6 +773,9 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
+ 		if (tunnel->parms.o_flags & TUNNEL_SEQ)
+ 			tunnel->o_seqno++;
+ 
++		if (skb_cow_head(skb, dev->needed_headroom ?: tunnel->hlen))
++			return -ENOMEM;
++
+ 		gre_build_header(skb, tunnel->tun_hlen, tunnel->parms.o_flags,
+ 				 protocol, tunnel->parms.o_key,
+ 				 htonl(tunnel->o_seqno));
+-- 
+2.35.1
+
 
 
