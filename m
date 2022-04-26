@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 712FAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:00:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ADC6C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:00:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345902AbiDZJCp (ORCPT
+        id S1346032AbiDZJCx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:02:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60058 "EHLO
+        Tue, 26 Apr 2022 05:02:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346978AbiDZIpl (ORCPT
+        with ESMTP id S1346925AbiDZIpa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:45:41 -0400
+        Tue, 26 Apr 2022 04:45:30 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DD663EAA4;
-        Tue, 26 Apr 2022 01:37:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78DE41AD92;
+        Tue, 26 Apr 2022 01:36:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 15014618E8;
-        Tue, 26 Apr 2022 08:37:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C952C385A0;
-        Tue, 26 Apr 2022 08:37:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C8F3B6185A;
+        Tue, 26 Apr 2022 08:36:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D33D3C385A0;
+        Tue, 26 Apr 2022 08:36:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962224;
-        bh=trXIu8XHmAnC0fElf80oY0FbsOH2cP1tf1pUgA0Dk4Q=;
+        s=korg; t=1650962208;
+        bh=gqlxaGYfWqqG9E/fFDrrA2GT9DYQMvRsO6xKQ/GoAes=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ak+5OhYLG0tKpZduetAkXNGPyoyno32XENkH89pt/YYy0cglCFtTObQkgCq1XouKN
-         UdoJ9z3sJzhW8MHSGwpyBUbzs3xYP86krv6f/8RvHKoB+2Vdgulu9Q72Pvti+GlkQn
-         D/iKl1O1tFqSvS2kTIwzAcfG9OLUZdMKLtEm30Sw=
+        b=AZtSf49nYyIXVKO0CFEnY4urOT4/BbDxKAJk4cM3AgK+FkK2Mz5rdPY7QnaZjVJ4m
+         j3nycRuNEJqIUDxKoRXBemgYa6f9FXFJIk5oKjYicqJ6rqu8u3clrbFZvNmUxnuUjV
+         V7vg1CLS5Uf27N3qemBWFgvWlw00v7i5U+VHz3YA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        stable@vger.kernel.org, Amit Pundir <amit.pundir@linaro.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 026/124] spi: spi-mtk-nor: initialize spi controller after resume
-Date:   Tue, 26 Apr 2022 10:20:27 +0200
-Message-Id: <20220426081748.049178955@linuxfoundation.org>
+Subject: [PATCH 5.15 021/124] ASoC: codecs: wcd934x: do not switch off SIDO Buck when codec is in use
+Date:   Tue, 26 Apr 2022 10:20:22 +0200
+Message-Id: <20220426081747.907677356@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -52,51 +51,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 
-[ Upstream commit 317c2045618cc1f8d38beb8c93a7bdb6ad8638c6 ]
+[ Upstream commit db6dd1bee63d1d88fbddfe07af800af5948ac28e ]
 
-After system resumes, the registers of nor controller are
-initialized with default values. The nor controller will
-not function properly.
+SIDO(Single-Inductor Dual-Ouput) Buck powers up both analog and digital
+circuits along with internal memory, powering off this is the last thing
+that codec should do when going to very low power.
 
-To handle both issues above, we add mtk_nor_init() in
-mtk_nor_resume after pm_runtime_force_resume().
+Current code was powering off this Buck if there are no users of sysclk,
+which is not correct. Powering off this buck will result in no register access.
+This code path was never tested until recently after adding pm support
+in SoundWire controller. Fix this by removing the buck poweroff when the
+codec is active and also the code that is not used.
 
-Fixes: 3bfd9103c7af ("spi: spi-mtk-nor: Add power management support")
+Without this patch all the read/write transactions will never complete and
+results in SLIMBus Errors like:
 
-Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Link: https://lore.kernel.org/r/20220412115743.22641-1-allen-kh.cheng@mediatek.com
+qcom,slim-ngd qcom,slim-ngd.1: Tx:MT:0x0, MC:0x60, LA:0xcf failed:-110
+wcd934x-codec wcd934x-codec.1.auto: ASoC: error at soc_component_read_no_lock
+	on wcd934x-codec.1.auto for register: [0x00000d05] -110
+qcom,slim-ngd-ctrl 171c0000.slim: Error Interrupt received 0x82000000
+
+Reported-by: Amit Pundir <amit.pundir@linaro.org>
+Fixes: a61f3b4f476e ("ASoC: wcd934x: add support to wcd9340/wcd9341 codec")
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Tested-by: Amit Pundir <amit.pundir@linaro.org>
+Link: https://lore.kernel.org/r/20220407094313.2880-1-srinivas.kandagatla@linaro.org
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-mtk-nor.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ sound/soc/codecs/wcd934x.c | 26 +-------------------------
+ 1 file changed, 1 insertion(+), 25 deletions(-)
 
-diff --git a/drivers/spi/spi-mtk-nor.c b/drivers/spi/spi-mtk-nor.c
-index 5c93730615f8..6d203477c04b 100644
---- a/drivers/spi/spi-mtk-nor.c
-+++ b/drivers/spi/spi-mtk-nor.c
-@@ -909,7 +909,17 @@ static int __maybe_unused mtk_nor_suspend(struct device *dev)
+diff --git a/sound/soc/codecs/wcd934x.c b/sound/soc/codecs/wcd934x.c
+index 7b99318070cf..144046864d15 100644
+--- a/sound/soc/codecs/wcd934x.c
++++ b/sound/soc/codecs/wcd934x.c
+@@ -1274,29 +1274,7 @@ static int wcd934x_set_sido_input_src(struct wcd934x_codec *wcd, int sido_src)
+ 	if (sido_src == wcd->sido_input_src)
+ 		return 0;
  
- static int __maybe_unused mtk_nor_resume(struct device *dev)
- {
--	return pm_runtime_force_resume(dev);
-+	struct spi_controller *ctlr = dev_get_drvdata(dev);
-+	struct mtk_nor *sp = spi_controller_get_devdata(ctlr);
-+	int ret;
-+
-+	ret = pm_runtime_force_resume(dev);
-+	if (ret)
-+		return ret;
-+
-+	mtk_nor_init(sp);
-+
-+	return 0;
- }
- 
- static const struct dev_pm_ops mtk_nor_pm_ops = {
+-	if (sido_src == SIDO_SOURCE_INTERNAL) {
+-		regmap_update_bits(wcd->regmap, WCD934X_ANA_BUCK_CTL,
+-				   WCD934X_ANA_BUCK_HI_ACCU_EN_MASK, 0);
+-		usleep_range(100, 110);
+-		regmap_update_bits(wcd->regmap, WCD934X_ANA_BUCK_CTL,
+-				   WCD934X_ANA_BUCK_HI_ACCU_PRE_ENX_MASK, 0x0);
+-		usleep_range(100, 110);
+-		regmap_update_bits(wcd->regmap, WCD934X_ANA_RCO,
+-				   WCD934X_ANA_RCO_BG_EN_MASK, 0);
+-		usleep_range(100, 110);
+-		regmap_update_bits(wcd->regmap, WCD934X_ANA_BUCK_CTL,
+-				   WCD934X_ANA_BUCK_PRE_EN1_MASK,
+-				   WCD934X_ANA_BUCK_PRE_EN1_ENABLE);
+-		usleep_range(100, 110);
+-		regmap_update_bits(wcd->regmap, WCD934X_ANA_BUCK_CTL,
+-				   WCD934X_ANA_BUCK_PRE_EN2_MASK,
+-				   WCD934X_ANA_BUCK_PRE_EN2_ENABLE);
+-		usleep_range(100, 110);
+-		regmap_update_bits(wcd->regmap, WCD934X_ANA_BUCK_CTL,
+-				   WCD934X_ANA_BUCK_HI_ACCU_EN_MASK,
+-				   WCD934X_ANA_BUCK_HI_ACCU_ENABLE);
+-		usleep_range(100, 110);
+-	} else if (sido_src == SIDO_SOURCE_RCO_BG) {
++	if (sido_src == SIDO_SOURCE_RCO_BG) {
+ 		regmap_update_bits(wcd->regmap, WCD934X_ANA_RCO,
+ 				   WCD934X_ANA_RCO_BG_EN_MASK,
+ 				   WCD934X_ANA_RCO_BG_ENABLE);
+@@ -1382,8 +1360,6 @@ static int wcd934x_disable_ana_bias_and_syclk(struct wcd934x_codec *wcd)
+ 	regmap_update_bits(wcd->regmap, WCD934X_CLK_SYS_MCLK_PRG,
+ 			   WCD934X_EXT_CLK_BUF_EN_MASK |
+ 			   WCD934X_MCLK_EN_MASK, 0x0);
+-	wcd934x_set_sido_input_src(wcd, SIDO_SOURCE_INTERNAL);
+-
+ 	regmap_update_bits(wcd->regmap, WCD934X_ANA_BIAS,
+ 			   WCD934X_ANA_BIAS_EN_MASK, 0);
+ 	regmap_update_bits(wcd->regmap, WCD934X_ANA_BIAS,
 -- 
 2.35.1
 
