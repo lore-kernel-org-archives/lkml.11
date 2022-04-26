@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE9DAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:27:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77C23C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:27:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236473AbiDZJam (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:30:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38470 "EHLO
+        id S240797AbiDZJaq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:30:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347745AbiDZJGH (ORCPT
+        with ESMTP id S1347794AbiDZJGN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:06:07 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2B63218B;
-        Tue, 26 Apr 2022 01:45:33 -0700 (PDT)
+        Tue, 26 Apr 2022 05:06:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E23A3D4AE;
+        Tue, 26 Apr 2022 01:45:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 45963CE1BAF;
-        Tue, 26 Apr 2022 08:45:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04614C385AE;
-        Tue, 26 Apr 2022 08:45:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC984603E0;
+        Tue, 26 Apr 2022 08:45:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0B35C385A0;
+        Tue, 26 Apr 2022 08:45:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962730;
-        bh=td2dPsECXqyRY/ABkxSK/V+113r84hWAnEKvyOEtiLI=;
+        s=korg; t=1650962748;
+        bh=9WAmhY5f6qFi8xrAoZFuaVIdy4mSbc5qCQoCZ9V5We8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=njulX8p5PokXdxy3+bXIuItF9EtnDLgZmiqpaJ6zvXe6pNnjLG17bK9ux5Oi60XSL
-         veqBsLqO+rEkjj9d9mWfgEVd1hepuCpI2ih15RjgZKuTNAxpmx346lzwVKhNZaHCHz
-         DxTrjfPN45ZRvxYvN8+5iB/H8HI46U9ik3NhsnQY=
+        b=txdlvN9wH8HAOt445NpTv0aEb16dc+Vu+CysJsXUeO1evN+KHFWfW3UaXLY0b79H6
+         Bq8svrKrLb1/X8ZJHOwBtLWSU7YQnsxLAxgzaCpI7/N3/pA5C2Nuav9WYURVBsfotY
+         C4hNXLZEE38beWLYYcwfY5CtK54w9GJit5TdCWqc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Igor Russkikh <irusskikh@marvell.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 071/146] net: atlantic: Avoid out-of-bounds indexing
-Date:   Tue, 26 Apr 2022 10:21:06 +0200
-Message-Id: <20220426081752.058153194@linuxfoundation.org>
+Subject: [PATCH 5.17 076/146] KVM: x86: hyper-v: Avoid writing to TSC page without an active vCPU
+Date:   Tue, 26 Apr 2022 10:21:11 +0200
+Message-Id: <20220426081752.202393117@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -52,125 +51,181 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
 
-[ Upstream commit 8d3a6c37d50d5a0504c126c932cc749e6dd9c78f ]
+[ Upstream commit 42dcbe7d8bac997eef4c379e61d9121a15ed4e36 ]
 
-UBSAN warnings are observed on atlantic driver:
-[ 294.432996] UBSAN: array-index-out-of-bounds in /build/linux-Qow4fL/linux-5.15.0/drivers/net/ethernet/aquantia/atlantic/aq_nic.c:484:48
-[ 294.433695] index 8 is out of range for type 'aq_vec_s *[8]'
+The following WARN is triggered from kvm_vm_ioctl_set_clock():
+ WARNING: CPU: 10 PID: 579353 at arch/x86/kvm/../../../virt/kvm/kvm_main.c:3161 mark_page_dirty_in_slot+0x6c/0x80 [kvm]
+ ...
+ CPU: 10 PID: 579353 Comm: qemu-system-x86 Tainted: G        W  O      5.16.0.stable #20
+ Hardware name: LENOVO 20UF001CUS/20UF001CUS, BIOS R1CET65W(1.34 ) 06/17/2021
+ RIP: 0010:mark_page_dirty_in_slot+0x6c/0x80 [kvm]
+ ...
+ Call Trace:
+  <TASK>
+  ? kvm_write_guest+0x114/0x120 [kvm]
+  kvm_hv_invalidate_tsc_page+0x9e/0xf0 [kvm]
+  kvm_arch_vm_ioctl+0xa26/0xc50 [kvm]
+  ? schedule+0x4e/0xc0
+  ? __cond_resched+0x1a/0x50
+  ? futex_wait+0x166/0x250
+  ? __send_signal+0x1f1/0x3d0
+  kvm_vm_ioctl+0x747/0xda0 [kvm]
+  ...
 
-The ring is dereferenced right before breaking out the loop, to prevent
-that from happening, only use the index in the loop to fix the issue.
+The WARN was introduced by commit 03c0304a86bc ("KVM: Warn if
+mark_page_dirty() is called without an active vCPU") but the change seems
+to be correct (unlike Hyper-V TSC page update mechanism). In fact, there's
+no real need to actually write to guest memory to invalidate TSC page, this
+can be done by the first vCPU which goes through kvm_guest_time_update().
 
-BugLink: https://bugs.launchpad.net/bugs/1958770
-Tested-by: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Reviewed-by: Igor Russkikh <irusskikh@marvell.com>
-Link: https://lore.kernel.org/r/20220408022204.16815-1-kai.heng.feng@canonical.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported-by: Maxim Levitsky <mlevitsk@redhat.com>
+Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
+Suggested-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Message-Id: <20220407201013.963226-1-vkuznets@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/aquantia/atlantic/aq_nic.c   |  8 +++----
- .../net/ethernet/aquantia/atlantic/aq_vec.c   | 24 +++++++++----------
- 2 files changed, 16 insertions(+), 16 deletions(-)
+ arch/x86/include/asm/kvm_host.h |  4 +---
+ arch/x86/kvm/hyperv.c           | 40 +++++++--------------------------
+ arch/x86/kvm/hyperv.h           |  2 +-
+ arch/x86/kvm/x86.c              |  7 +++---
+ 4 files changed, 13 insertions(+), 40 deletions(-)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-index 33f1a1377588..24d715c28a35 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-@@ -486,8 +486,8 @@ int aq_nic_start(struct aq_nic_s *self)
- 	if (err < 0)
- 		goto err_exit;
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 85ee96abba80..c4b4c0839dbd 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -969,12 +969,10 @@ enum hv_tsc_page_status {
+ 	HV_TSC_PAGE_UNSET = 0,
+ 	/* TSC page MSR was written by the guest, update pending */
+ 	HV_TSC_PAGE_GUEST_CHANGED,
+-	/* TSC page MSR was written by KVM userspace, update pending */
++	/* TSC page update was triggered from the host side */
+ 	HV_TSC_PAGE_HOST_CHANGED,
+ 	/* TSC page was properly set up and is currently active  */
+ 	HV_TSC_PAGE_SET,
+-	/* TSC page is currently being updated and therefore is inactive */
+-	HV_TSC_PAGE_UPDATING,
+ 	/* TSC page was set up with an inaccessible GPA */
+ 	HV_TSC_PAGE_BROKEN,
+ };
+diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
+index 10bc257d3803..247ac71b7a10 100644
+--- a/arch/x86/kvm/hyperv.c
++++ b/arch/x86/kvm/hyperv.c
+@@ -1128,11 +1128,13 @@ void kvm_hv_setup_tsc_page(struct kvm *kvm,
+ 	BUILD_BUG_ON(sizeof(tsc_seq) != sizeof(hv->tsc_ref.tsc_sequence));
+ 	BUILD_BUG_ON(offsetof(struct ms_hyperv_tsc_page, tsc_sequence) != 0);
  
--	for (i = 0U, aq_vec = self->aq_vec[0];
--		self->aq_vecs > i; ++i, aq_vec = self->aq_vec[i]) {
-+	for (i = 0U; self->aq_vecs > i; ++i) {
-+		aq_vec = self->aq_vec[i];
- 		err = aq_vec_start(aq_vec);
- 		if (err < 0)
- 			goto err_exit;
-@@ -517,8 +517,8 @@ int aq_nic_start(struct aq_nic_s *self)
- 		mod_timer(&self->polling_timer, jiffies +
- 			  AQ_CFG_POLLING_TIMER_INTERVAL);
- 	} else {
--		for (i = 0U, aq_vec = self->aq_vec[0];
--			self->aq_vecs > i; ++i, aq_vec = self->aq_vec[i]) {
-+		for (i = 0U; self->aq_vecs > i; ++i) {
-+			aq_vec = self->aq_vec[i];
- 			err = aq_pci_func_alloc_irq(self, i, self->ndev->name,
- 						    aq_vec_isr, aq_vec,
- 						    aq_vec_get_affinity_mask(aq_vec));
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_vec.c b/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
-index f4774cf051c9..6ab1f3212d24 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
-@@ -43,8 +43,8 @@ static int aq_vec_poll(struct napi_struct *napi, int budget)
- 	if (!self) {
- 		err = -EINVAL;
- 	} else {
--		for (i = 0U, ring = self->ring[0];
--			self->tx_rings > i; ++i, ring = self->ring[i]) {
-+		for (i = 0U; self->tx_rings > i; ++i) {
-+			ring = self->ring[i];
- 			u64_stats_update_begin(&ring[AQ_VEC_RX_ID].stats.rx.syncp);
- 			ring[AQ_VEC_RX_ID].stats.rx.polls++;
- 			u64_stats_update_end(&ring[AQ_VEC_RX_ID].stats.rx.syncp);
-@@ -182,8 +182,8 @@ int aq_vec_init(struct aq_vec_s *self, const struct aq_hw_ops *aq_hw_ops,
- 	self->aq_hw_ops = aq_hw_ops;
- 	self->aq_hw = aq_hw;
++	mutex_lock(&hv->hv_lock);
++
+ 	if (hv->hv_tsc_page_status == HV_TSC_PAGE_BROKEN ||
++	    hv->hv_tsc_page_status == HV_TSC_PAGE_SET ||
+ 	    hv->hv_tsc_page_status == HV_TSC_PAGE_UNSET)
+-		return;
++		goto out_unlock;
  
--	for (i = 0U, ring = self->ring[0];
--		self->tx_rings > i; ++i, ring = self->ring[i]) {
-+	for (i = 0U; self->tx_rings > i; ++i) {
-+		ring = self->ring[i];
- 		err = aq_ring_init(&ring[AQ_VEC_TX_ID], ATL_RING_TX);
- 		if (err < 0)
- 			goto err_exit;
-@@ -224,8 +224,8 @@ int aq_vec_start(struct aq_vec_s *self)
- 	unsigned int i = 0U;
- 	int err = 0;
+-	mutex_lock(&hv->hv_lock);
+ 	if (!(hv->hv_tsc_page & HV_X64_MSR_TSC_REFERENCE_ENABLE))
+ 		goto out_unlock;
  
--	for (i = 0U, ring = self->ring[0];
--		self->tx_rings > i; ++i, ring = self->ring[i]) {
-+	for (i = 0U; self->tx_rings > i; ++i) {
-+		ring = self->ring[i];
- 		err = self->aq_hw_ops->hw_ring_tx_start(self->aq_hw,
- 							&ring[AQ_VEC_TX_ID]);
- 		if (err < 0)
-@@ -248,8 +248,8 @@ void aq_vec_stop(struct aq_vec_s *self)
- 	struct aq_ring_s *ring = NULL;
- 	unsigned int i = 0U;
+@@ -1194,45 +1196,19 @@ void kvm_hv_setup_tsc_page(struct kvm *kvm,
+ 	mutex_unlock(&hv->hv_lock);
+ }
  
--	for (i = 0U, ring = self->ring[0];
--		self->tx_rings > i; ++i, ring = self->ring[i]) {
-+	for (i = 0U; self->tx_rings > i; ++i) {
-+		ring = self->ring[i];
- 		self->aq_hw_ops->hw_ring_tx_stop(self->aq_hw,
- 						 &ring[AQ_VEC_TX_ID]);
+-void kvm_hv_invalidate_tsc_page(struct kvm *kvm)
++void kvm_hv_request_tsc_page_update(struct kvm *kvm)
+ {
+ 	struct kvm_hv *hv = to_kvm_hv(kvm);
+-	u64 gfn;
+-	int idx;
+-
+-	if (hv->hv_tsc_page_status == HV_TSC_PAGE_BROKEN ||
+-	    hv->hv_tsc_page_status == HV_TSC_PAGE_UNSET ||
+-	    tsc_page_update_unsafe(hv))
+-		return;
  
-@@ -268,8 +268,8 @@ void aq_vec_deinit(struct aq_vec_s *self)
- 	if (!self)
- 		goto err_exit;
+ 	mutex_lock(&hv->hv_lock);
  
--	for (i = 0U, ring = self->ring[0];
--		self->tx_rings > i; ++i, ring = self->ring[i]) {
-+	for (i = 0U; self->tx_rings > i; ++i) {
-+		ring = self->ring[i];
- 		aq_ring_tx_clean(&ring[AQ_VEC_TX_ID]);
- 		aq_ring_rx_deinit(&ring[AQ_VEC_RX_ID]);
- 	}
-@@ -297,8 +297,8 @@ void aq_vec_ring_free(struct aq_vec_s *self)
- 	if (!self)
- 		goto err_exit;
+-	if (!(hv->hv_tsc_page & HV_X64_MSR_TSC_REFERENCE_ENABLE))
+-		goto out_unlock;
+-
+-	/* Preserve HV_TSC_PAGE_GUEST_CHANGED/HV_TSC_PAGE_HOST_CHANGED states */
+-	if (hv->hv_tsc_page_status == HV_TSC_PAGE_SET)
+-		hv->hv_tsc_page_status = HV_TSC_PAGE_UPDATING;
++	if (hv->hv_tsc_page_status == HV_TSC_PAGE_SET &&
++	    !tsc_page_update_unsafe(hv))
++		hv->hv_tsc_page_status = HV_TSC_PAGE_HOST_CHANGED;
  
--	for (i = 0U, ring = self->ring[0];
--		self->tx_rings > i; ++i, ring = self->ring[i]) {
-+	for (i = 0U; self->tx_rings > i; ++i) {
-+		ring = self->ring[i];
- 		aq_ring_free(&ring[AQ_VEC_TX_ID]);
- 		if (i < self->rx_rings)
- 			aq_ring_free(&ring[AQ_VEC_RX_ID]);
+-	gfn = hv->hv_tsc_page >> HV_X64_MSR_TSC_REFERENCE_ADDRESS_SHIFT;
+-
+-	hv->tsc_ref.tsc_sequence = 0;
+-
+-	/*
+-	 * Take the srcu lock as memslots will be accessed to check the gfn
+-	 * cache generation against the memslots generation.
+-	 */
+-	idx = srcu_read_lock(&kvm->srcu);
+-	if (kvm_write_guest(kvm, gfn_to_gpa(gfn),
+-			    &hv->tsc_ref, sizeof(hv->tsc_ref.tsc_sequence)))
+-		hv->hv_tsc_page_status = HV_TSC_PAGE_BROKEN;
+-	srcu_read_unlock(&kvm->srcu, idx);
+-
+-out_unlock:
+ 	mutex_unlock(&hv->hv_lock);
+ }
+ 
+-
+ static bool hv_check_msr_access(struct kvm_vcpu_hv *hv_vcpu, u32 msr)
+ {
+ 	if (!hv_vcpu->enforce_cpuid)
+diff --git a/arch/x86/kvm/hyperv.h b/arch/x86/kvm/hyperv.h
+index ed1c4e546d04..3e79b4a9ed4e 100644
+--- a/arch/x86/kvm/hyperv.h
++++ b/arch/x86/kvm/hyperv.h
+@@ -133,7 +133,7 @@ void kvm_hv_process_stimers(struct kvm_vcpu *vcpu);
+ 
+ void kvm_hv_setup_tsc_page(struct kvm *kvm,
+ 			   struct pvclock_vcpu_time_info *hv_clock);
+-void kvm_hv_invalidate_tsc_page(struct kvm *kvm);
++void kvm_hv_request_tsc_page_update(struct kvm *kvm);
+ 
+ void kvm_hv_init_vm(struct kvm *kvm);
+ void kvm_hv_destroy_vm(struct kvm *kvm);
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 05128162ebd5..7a98dea498ed 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -2874,7 +2874,7 @@ static void kvm_end_pvclock_update(struct kvm *kvm)
+ 
+ static void kvm_update_masterclock(struct kvm *kvm)
+ {
+-	kvm_hv_invalidate_tsc_page(kvm);
++	kvm_hv_request_tsc_page_update(kvm);
+ 	kvm_start_pvclock_update(kvm);
+ 	pvclock_update_vm_gtod_copy(kvm);
+ 	kvm_end_pvclock_update(kvm);
+@@ -3086,8 +3086,7 @@ static int kvm_guest_time_update(struct kvm_vcpu *v)
+ 				       offsetof(struct compat_vcpu_info, time));
+ 	if (vcpu->xen.vcpu_time_info_set)
+ 		kvm_setup_pvclock_page(v, &vcpu->xen.vcpu_time_info_cache, 0);
+-	if (!v->vcpu_idx)
+-		kvm_hv_setup_tsc_page(v->kvm, &vcpu->hv_clock);
++	kvm_hv_setup_tsc_page(v->kvm, &vcpu->hv_clock);
+ 	return 0;
+ }
+ 
+@@ -6190,7 +6189,7 @@ static int kvm_vm_ioctl_set_clock(struct kvm *kvm, void __user *argp)
+ 	if (data.flags & ~KVM_CLOCK_VALID_FLAGS)
+ 		return -EINVAL;
+ 
+-	kvm_hv_invalidate_tsc_page(kvm);
++	kvm_hv_request_tsc_page_update(kvm);
+ 	kvm_start_pvclock_update(kvm);
+ 	pvclock_update_vm_gtod_copy(kvm);
+ 
 -- 
 2.35.1
 
