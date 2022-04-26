@@ -2,173 +2,262 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0428C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:37:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B141FC352A8
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:37:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348068AbiDZJis (ORCPT
+        id S1348860AbiDZJkq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:38:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57326 "EHLO
+        Tue, 26 Apr 2022 05:40:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346322AbiDZJHa (ORCPT
+        with ESMTP id S1347372AbiDZJOJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:07:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17623177D62;
-        Tue, 26 Apr 2022 01:48:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 26 Apr 2022 05:14:09 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2653184F89;
+        Tue, 26 Apr 2022 01:50:32 -0700 (PDT)
+Received: from [IPV6:2a01:e0a:120:3210:8ccc:428d:6d90:c434] (unknown [IPv6:2a01:e0a:120:3210:8ccc:428d:6d90:c434])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BC3C5B81D1D;
-        Tue, 26 Apr 2022 08:48:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC144C36B02;
-        Tue, 26 Apr 2022 08:48:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962933;
-        bh=6pXOWmTgn4O0DV0NlSyzr0Epima/4X0Ygqq5vWLQrpE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QO19NtlT100wm/X6owx6GpGMfm4GuluAALRSDFxBOXc/pkVW4DglbMRxyZqS6eYup
-         IloAuNXb5CdcxouWqyqJTZ0FjR+2Tu5o0pwhvszIIotXBKge53jxJjDd6JbNU5JEmE
-         itzyeScinwbSzns3vG3gdKtMuPqCjK2x9pEJbsHo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
-        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
-        stable@kernel.org
-Subject: [PATCH 5.17 136/146] ext4: fix use-after-free in ext4_search_dir
-Date:   Tue, 26 Apr 2022 10:22:11 +0200
-Message-Id: <20220426081753.881689748@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
-References: <20220426081750.051179617@linuxfoundation.org>
-User-Agent: quilt/0.66
+        (Authenticated sender: benjamin.gaignard)
+        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 5B6521F432A5;
+        Tue, 26 Apr 2022 09:50:28 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1650963028;
+        bh=18a60e/DwgY4enKZwDEyBFnNVeOwXwEzJ1HC9CbWJlk=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=joBJi5gC5PsBMnd80pUct5A2XyeH/CkWCHoEGTT3Zeiqgg0/4MstrlrVikCErKRd8
+         y1YQ6dlgFGmK7aJb9m+gBuJziQ37mSx4w9V/CdzPc/ZXQ3I2qXIIlAm7eg/9ZnQ8qK
+         2AO8QE3mPeRL7Fi6wspO4JAVR9hvr7jHxjUlxJelSRcMnAnx/hyL874Em0W5/4y+3/
+         M5aw0+jxmPJ34K6Z+nDV7nL6h87aJyeS+kWZxCx1GH7E986ZdZRab5ICZ++avl0Xnp
+         RSU9G4bRYqUkc64DuhdW2Zk0woeWKGOOWpcYQyO7ZydLQw2ex1m05zTFtqFirAedB4
+         Z+JQA7TRFg0WA==
+Message-ID: <8e6977ac-53bb-53f0-3fdc-75aa2643cb77@collabora.com>
+Date:   Tue, 26 Apr 2022 10:50:25 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v5 04/17] media: uapi: HEVC: Add missing fields in HEVC
+ controls
+Content-Language: en-US
+To:     Sebastian Fricke <sebastian.fricke@collabora.com>
+Cc:     mchehab@kernel.org, hverkuil@xs4all.nl,
+        ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de,
+        gregkh@linuxfoundation.org, mripard@kernel.org,
+        paul.kocialkowski@bootlin.com, wens@csie.org,
+        jernej.skrabec@gmail.com, samuel@sholland.org,
+        nicolas.dufresne@collabora.com, linux-media@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        linux-staging@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
+References: <20220407152940.738159-1-benjamin.gaignard@collabora.com>
+ <20220407152940.738159-5-benjamin.gaignard@collabora.com>
+ <20220425135449.oapsrqqyq34s2ii3@basti-XPS-13-9310>
+ <d1ba4e57-2f13-ab3b-f79a-dc812cd4c2bf@collabora.com>
+ <20220426075234.6gk72hzf2bgaxwqw@basti-XPS-13-9310>
+From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
+In-Reply-To: <20220426075234.6gk72hzf2bgaxwqw@basti-XPS-13-9310>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Bin <yebin10@huawei.com>
 
-commit c186f0887fe7061a35cebef024550ec33ef8fbd8 upstream.
+Le 26/04/2022 à 09:52, Sebastian Fricke a écrit :
+> Hey Benjamin,
+>
+> On 25.04.2022 18:16, Benjamin Gaignard wrote:
+>>
+>> Le 25/04/2022 à 15:54, Sebastian Fricke a écrit :
+>>> On 07.04.2022 17:29, Benjamin Gaignard wrote:
+>>>> Complete the HEVC controls with missing fields from H.265 
+>>>> specifications.
+>>>> Even if these fields aren't used by the current mainlined drivers
+>>>> they will be need for (at least) rkvdec driver.
+>>>
+>>> s/be need/be required/
+>>> or
+>>> s/be need/be needed/
+>>>
+>>> s/rkvdec/the rkvdec/
+>>>
+>>>>
+>>>> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+>>>> ---
+>>>> .../media/v4l/ext-ctrls-codec.rst             | 19 +++++++++++++++++++
+>>>> include/media/hevc-ctrls.h                    |  6 +++++-
+>>>> 2 files changed, 24 insertions(+), 1 deletion(-)
+>>>>
+>>>> diff --git 
+>>>> a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst 
+>>>> b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+>>>> index 4cd7c541fc30..dbb08603217b 100644
+>>>> --- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+>>>> +++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+>>>> @@ -2661,6 +2661,16 @@ enum 
+>>>> v4l2_mpeg_video_hevc_size_of_length_field -
+>>>>     :stub-columns: 0
+>>>>     :widths:       1 1 2
+>>>>
+>>>> +    * - __u8
+>>>> +      - ``video_parameter_set_id``
+>>>> +      - Specifies the value of the vps_video_parameter_set_id of 
+>>>> the active VPS
+>>>> +        as descibed in section "7.4.3.2.1 General sequence 
+>>>> parameter set RBSP semantics"
+>>>> +        of H.265 specifications.
+>>>> +    * - __u8
+>>>> +      - ``seq_parameter_set_id``
+>>>> +      - Provides an identifier for the SPS for reference by other 
+>>>> syntax elements
+>>>> +        as descibed in section "7.4.3.2.1 General sequence 
+>>>> parameter set RBSP semantics"
+>>>> +        of H.265 specifications.
+>>>>     * - __u16
+>>>>       - ``pic_width_in_luma_samples``
+>>>>       -
+>>>> @@ -2800,6 +2810,9 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
+>>>>     :stub-columns: 0
+>>>>     :widths:       1 1 2
+>>>>
+>>>> +    * - __u8
+>>>> +      - ``pic_parameter_set_id``
+>>>> +      - Identifies the PPS for reference by other syntax elements.
+>>>>     * - __u8
+>>>>       - ``num_extra_slice_header_bits``
+>>>>       -
+>>>> @@ -3026,6 +3039,12 @@ enum 
+>>>> v4l2_mpeg_video_hevc_size_of_length_field -
+>>>>     * - __u8
+>>>>       - ``ref_idx_l1[V4L2_HEVC_DPB_ENTRIES_NUM_MAX]``
+>>>>       - The list of L1 reference elements as indices in the DPB.
+>>>> +    * - __u16
+>>>> +      - ``short_term_ref_pic_set_size``
+>>>> +      - Specifies the size of short-term reference pictures set 
+>>>> included in the SPS.
+>>>
+>>> s/size of/size of the/
+>>>
+>>> Section 7.4.8 depicts that the st_ref_pic_set syntax
+>>> structure can be part of the SPS or the slice header.
+>>>
+>>> I think we should mention that we talk about the size of the 
+>>> st_ref_pic_set
+>>> syntax structure from section 7.4.8 of the specification.
+>>>> +    * - __u16
+>>>> +      - ``long_term_ref_pic_set_size``
+>>>> +      - Specifies the size of long-term reference pictures set 
+>>>> include in the SPS.
+>>>
+>>> s/size of/size of the/
+>>>
+>>> Can we make this a bit more helpful? The specification doesn't contain
+>>> a similar structure to `st_ref_pic_set` for long term pictures. So, 
+>>> as a
+>>> programmer this leaves me guessing:
+>>> - Which syntax structure's size are we talking about?
+>>> - Does this correlate to any of the existing sections of the
+>>> specification?
+>>> Because in the end, I feel like this documentation should be able to
+>>> help a programmer to provide the correct data for the uABI.
+>>
+>> I will reword it like that:
+>>
+>>   * - __u16
+>>     - ``short_term_ref_pic_set_size``
+>>     - Specifies the size, in bits, of the short-term reference 
+>> pictures set, described as st_ref_pic_set()
+>
+> Just ...
+>
+> s/reference pictures set/reference picture set/
+>
+>>      in the specification, included in the slice header (section 
+>> 7.3.6.1).
+>
+> s/slice header/slice header or SPS/
+>
+>
+>>
+>> * - __u16
+>>    - ``long_term_ref_pic_set_size``
+>>    - Specifies the size, in bits, of the long-term reference pictures 
+>> set include in the slice header.
+>
+> s/reference pictures set/reference picture set/
+>
+> Looking at the documentation it looks like: s/slice header/slice 
+> header or SPS/
+> (For example in section 7.3.6.1:
+> ```
+> if( long_term_ref_pics_present_flag ) {
+>   if( num_long_term_ref_pics_sps > 0 )
+>     num_long_term_sps
+>   num_long_term_pics
+>   for( i = 0; i < num_long_term_sps + num_long_term_pics; i++ ) {
+>     ...
+> ```
+> )
+>
+> ... and then it looks very good!
 
-We got issue as follows:
-EXT4-fs (loop0): mounted filesystem without journal. Opts: ,errors=continue
-==================================================================
-BUG: KASAN: use-after-free in ext4_search_dir fs/ext4/namei.c:1394 [inline]
-BUG: KASAN: use-after-free in search_dirblock fs/ext4/namei.c:1199 [inline]
-BUG: KASAN: use-after-free in __ext4_find_entry+0xdca/0x1210 fs/ext4/namei.c:1553
-Read of size 1 at addr ffff8881317c3005 by task syz-executor117/2331
+I don't know the syntax to insert this kind of comment inside an array in the documentation
+so it will remain as before :-)
 
-CPU: 1 PID: 2331 Comm: syz-executor117 Not tainted 5.10.0+ #1
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
-Call Trace:
- __dump_stack lib/dump_stack.c:83 [inline]
- dump_stack+0x144/0x187 lib/dump_stack.c:124
- print_address_description+0x7d/0x630 mm/kasan/report.c:387
- __kasan_report+0x132/0x190 mm/kasan/report.c:547
- kasan_report+0x47/0x60 mm/kasan/report.c:564
- ext4_search_dir fs/ext4/namei.c:1394 [inline]
- search_dirblock fs/ext4/namei.c:1199 [inline]
- __ext4_find_entry+0xdca/0x1210 fs/ext4/namei.c:1553
- ext4_lookup_entry fs/ext4/namei.c:1622 [inline]
- ext4_lookup+0xb8/0x3a0 fs/ext4/namei.c:1690
- __lookup_hash+0xc5/0x190 fs/namei.c:1451
- do_rmdir+0x19e/0x310 fs/namei.c:3760
- do_syscall_64+0x33/0x40 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x445e59
-Code: 4d c7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 1b c7 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fff2277fac8 EFLAGS: 00000246 ORIG_RAX: 0000000000000054
-RAX: ffffffffffffffda RBX: 0000000000400280 RCX: 0000000000445e59
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 00000000200000c0
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000002
-R10: 00007fff2277f990 R11: 0000000000000246 R12: 0000000000000000
-R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
+Benjamin
 
-The buggy address belongs to the page:
-page:0000000048cd3304 refcount:0 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x1317c3
-flags: 0x200000000000000()
-raw: 0200000000000000 ffffea0004526588 ffffea0004528088 0000000000000000
-raw: 0000000000000001 0000000000000000 00000000ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff8881317c2f00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff8881317c2f80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->ffff8881317c3000: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-                   ^
- ffff8881317c3080: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
- ffff8881317c3100: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-==================================================================
-
-ext4_search_dir:
-  ...
-  de = (struct ext4_dir_entry_2 *)search_buf;
-  dlimit = search_buf + buf_size;
-  while ((char *) de < dlimit) {
-  ...
-    if ((char *) de + de->name_len <= dlimit &&
-	 ext4_match(dir, fname, de)) {
-	    ...
-    }
-  ...
-    de_len = ext4_rec_len_from_disk(de->rec_len, dir->i_sb->s_blocksize);
-    if (de_len <= 0)
-      return -1;
-    offset += de_len;
-    de = (struct ext4_dir_entry_2 *) ((char *) de + de_len);
-  }
-
-Assume:
-de=0xffff8881317c2fff
-dlimit=0x0xffff8881317c3000
-
-If read 'de->name_len' which address is 0xffff8881317c3005, obviously is
-out of range, then will trigger use-after-free.
-To solve this issue, 'dlimit' must reserve 8 bytes, as we will read
-'de->name_len' to judge if '(char *) de + de->name_len' out of range.
-
-Signed-off-by: Ye Bin <yebin10@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220324064816.1209985-1-yebin10@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Cc: stable@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- fs/ext4/ext4.h  |    4 ++++
- fs/ext4/namei.c |    4 ++--
- 2 files changed, 6 insertions(+), 2 deletions(-)
-
---- a/fs/ext4/ext4.h
-+++ b/fs/ext4/ext4.h
-@@ -2271,6 +2271,10 @@ static inline int ext4_forced_shutdown(s
-  * Structure of a directory entry
-  */
- #define EXT4_NAME_LEN 255
-+/*
-+ * Base length of the ext4 directory entry excluding the name length
-+ */
-+#define EXT4_BASE_DIR_LEN (sizeof(struct ext4_dir_entry_2) - EXT4_NAME_LEN)
- 
- struct ext4_dir_entry {
- 	__le32	inode;			/* Inode number */
---- a/fs/ext4/namei.c
-+++ b/fs/ext4/namei.c
-@@ -1466,10 +1466,10 @@ int ext4_search_dir(struct buffer_head *
- 
- 	de = (struct ext4_dir_entry_2 *)search_buf;
- 	dlimit = search_buf + buf_size;
--	while ((char *) de < dlimit) {
-+	while ((char *) de < dlimit - EXT4_BASE_DIR_LEN) {
- 		/* this code is executed quadratically often */
- 		/* do minimal checking `by hand' */
--		if ((char *) de + de->name_len <= dlimit &&
-+		if (de->name + de->name_len <= dlimit &&
- 		    ext4_match(dir, fname, de)) {
- 			/* found a match - just to be sure, do
- 			 * a full check */
-
-
+>
+> Greetings,
+> Sebastian
+>
+>>      It is the number of bits in the conditional block if( 
+>> long_term_ref_pics_present_flag ) {...}
+>>      in section 7.3.6.1 of the specification.
+>>
+>> Benjamin
+>>
+>>
+>>>
+>>> Greetings,
+>>> Sebastian
+>>>
+>>>>     * - __u8
+>>>>       - ``padding``
+>>>>       - Applications and drivers must set this to zero.
+>>>> diff --git a/include/media/hevc-ctrls.h b/include/media/hevc-ctrls.h
+>>>> index 01ccda48d8c5..a329e086a89a 100644
+>>>> --- a/include/media/hevc-ctrls.h
+>>>> +++ b/include/media/hevc-ctrls.h
+>>>> @@ -58,6 +58,8 @@ enum v4l2_mpeg_video_hevc_start_code {
+>>>> /* The controls are not stable at the moment and will likely be 
+>>>> reworked. */
+>>>> struct v4l2_ctrl_hevc_sps {
+>>>>     /* ISO/IEC 23008-2, ITU-T Rec. H.265: Sequence parameter set */
+>>>> +    __u8    video_parameter_set_id;
+>>>> +    __u8    seq_parameter_set_id;
+>>>>     __u16    pic_width_in_luma_samples;
+>>>>     __u16    pic_height_in_luma_samples;
+>>>>     __u8    bit_depth_luma_minus8;
+>>>> @@ -108,6 +110,7 @@ struct v4l2_ctrl_hevc_sps {
+>>>>
+>>>> struct v4l2_ctrl_hevc_pps {
+>>>>     /* ISO/IEC 23008-2, ITU-T Rec. H.265: Picture parameter set */
+>>>> +    __u8    pic_parameter_set_id;
+>>>>     __u8    num_extra_slice_header_bits;
+>>>>     __u8    num_ref_idx_l0_default_active_minus1;
+>>>>     __u8    num_ref_idx_l1_default_active_minus1;
+>>>> @@ -199,7 +202,8 @@ struct v4l2_ctrl_hevc_slice_params {
+>>>>     __u32    slice_segment_addr;
+>>>>     __u8    ref_idx_l0[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
+>>>>     __u8    ref_idx_l1[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
+>>>> -
+>>>> +    __u16    short_term_ref_pic_set_size;
+>>>> +    __u16    long_term_ref_pic_set_size;
+>>>>     __u8    padding;
+>>>>
+>>>>     /* ISO/IEC 23008-2, ITU-T Rec. H.265: Weighted prediction 
+>>>> parameter */
+>>>> -- 
+>>>> 2.32.0
+>>>>
