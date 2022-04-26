@@ -2,222 +2,385 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68ED2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 13:53:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4953CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 13:53:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351190AbiDZN4Q (ORCPT
+        id S1351197AbiDZN4f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 09:56:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41416 "EHLO
+        Tue, 26 Apr 2022 09:56:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351184AbiDZN4N (ORCPT
+        with ESMTP id S1351192AbiDZN4c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 09:56:13 -0400
-Received: from mx0b-002e3701.pphosted.com (mx0b-002e3701.pphosted.com [148.163.143.35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ABDE1541F3;
-        Tue, 26 Apr 2022 06:53:05 -0700 (PDT)
-Received: from pps.filterd (m0150245.ppops.net [127.0.0.1])
-        by mx0b-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23QDQbFs002755;
-        Tue, 26 Apr 2022 13:52:27 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pps0720;
- bh=vv2zxzg9or9pM0cT0Nn/4xyr5w+j/pCq/qCMmGuuKxw=;
- b=hhS9wquT8yppZW4wwbBnVWIlAfsQi5Bm580YBRm+uaarM0GTp9toY9KfRFm/tsH9SUZm
- erQnlf5CcFSVfdJ6xmgVf2Gh6fWL2/wup4o0b9qNe6US9BO4WCm4OxOMg/FXz0yVQFks
- zxfdQ9180sofw5q5efeHWIikHjOrgiortsrKbV9jK+eCF0c1VIHqeC3lFK+gJJJcDLX/
- tr3RVHNikEX5DpUFnerLqVtMUx4SqMz9ZSKkILIwQ6JmnoXF6r8PYRwnTqTEaDYSbeWB
- e1JhU0qz1w9amgu4GSYAK4foWelABGbXc9gF1dLUEsHO2dIi4m9jmY9KgEPRqIUW8aZg CQ== 
-Received: from p1lg14880.it.hpe.com (p1lg14880.it.hpe.com [16.230.97.201])
-        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3fphmjr802-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 26 Apr 2022 13:52:27 +0000
-Received: from p1wg14924.americas.hpqcorp.net (unknown [10.119.18.113])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by p1lg14880.it.hpe.com (Postfix) with ESMTPS id 8A5F5800359;
-        Tue, 26 Apr 2022 13:52:25 +0000 (UTC)
-Received: from p1wg14928.americas.hpqcorp.net (10.119.18.116) by
- p1wg14924.americas.hpqcorp.net (10.119.18.113) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Tue, 26 Apr 2022 01:52:19 -1200
-Received: from p1wg14925.americas.hpqcorp.net (10.119.18.114) by
- p1wg14928.americas.hpqcorp.net (10.119.18.116) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Tue, 26 Apr 2022 01:52:18 -1200
-Received: from P1WG14918.americas.hpqcorp.net (16.230.19.121) by
- p1wg14925.americas.hpqcorp.net (10.119.18.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15
- via Frontend Transport; Tue, 26 Apr 2022 01:52:18 -1200
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (192.58.206.38)
- by edge.it.hpe.com (16.230.19.121) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Tue, 26 Apr 2022 13:52:18 +0000
+        Tue, 26 Apr 2022 09:56:32 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2050.outbound.protection.outlook.com [40.107.94.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AF6E15C299
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 06:53:22 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=G1r4IXdfk2AUfWQdKpF8XWvPl+C7qtvITd1LO4cKu8AferCYnA/P+V9sHztAxL6gsmAegoL+gbNMEpgTwsbZV6zbaa9hwcVaxC1hSsCApnXnWHsF5FbF9Xj3OYrOlD4IFHPsfBpw5u0KgvK8GunC3a/SQ0m8hoMc4nQVrVXqZHE12l4h4jBU3FHYFZyKux8dSYYAYNH0Zc63iCn7bkO+YGf5YEXphJ/zEQzfkrRmbIEl99/MFiCcAyxcRDt253ppDpv4R4cMjA96TktvII5UX9RearNUiwcrsbM7QExP+AimxrSvYXpGAvzvV+Uox3heNisFQ3uTNJ6i9gnnxbZMFA==
+ b=REXcdnB9TyyloKR4E3Xd9rjoUvKLaYtzc/QQIHwEKdyT7EObGZYpyPP+LCVyhyV2MPUncjoUtOKvRJdWAKUyLneL4dMBIYpvky1DFvAYzrOLp9zfEooKz3Wfp+Vuj5CnBCf9Y24/5lGCJjdrHzRbzv5NZHChMwZMDRKidIX3mlANw9a+fOGBhjPX0PW1c8+99vCINfr9Ea6OPf8TQtM4NfFtC9Pet3Vph0EhcsLvnPtIT6YRW6p502tbbgXG/KajQyJCo+CpAdH7SeDzPtZxhVBAC9mKBMyK+Xd5iIvC3y/BHlByAKaV5SEBg3M3gUN/DSdW0G0Xi6gBfIWwA8vfhg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vv2zxzg9or9pM0cT0Nn/4xyr5w+j/pCq/qCMmGuuKxw=;
- b=FiYPQIgc8+mDiWRVG4cTh+MH4qAqt4fVZtbqDzcnK9ouv4AHzaTa7+RUtyvBXN0tjP2xpZ6Az9AwhvUysMSdKCBIz0BOshu0jFSDFyidMqavInLtES8FZyGIsJyIBLnRD7dJ+753ulFRMiQuHcEcKL5qollIrnykZCKB8TpIiZaDB5lWU9RXu0miWFQd3OPGzHriYw2eUC7etTiWS+2kiJj9b9sBU+eQX/8cOPY4mHzYG0mOgcQXVPSHUOhGtr5nKeveaNQ7+2w0exEZdWtofucANsGS6/YNCMWrpioNm5uTffQjTyFlvUza+Iz6iIkNeCVxUdJzFTSjWt2r/DSSZA==
+ bh=BF2KzYgCablwP47d4neBSayo/Rm5+cKCPZnrmtajTOM=;
+ b=i2CYgzAqWFKbWTnui0xiXBq52ggsPw8FIjC/cxeFt8gnN6N3cTpdL0hePQizzVf711k02P0oval8R6kAvfL71ZS3cnL6psZDetFz3v7YHb9wP6zfTgqLKtpxT+1q+n5xEcRD4doZh7GlQ6f0h3ZCn2Y4Jh9PMUmHIue3hFjxYp8NImcW64ofvlmsTSib4g8TjAe22YZltMaHooDAvzsFEESRkYBfC3fqKpioKRuC77jX7DJTpsx2btPvRvd0O5tUZ1ctdxLLGYrpGBWquDBlvhu+enwdOB1i+OC5SlP+Vp0UvtEtm31Qw3jI1Uzdwr2BsRnzgswPgNX1YPiotcetrQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=hpe.com; dmarc=pass action=none header.from=hpe.com; dkim=pass
- header.d=hpe.com; arc=none
-Received: from PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM (2603:10b6:510:172::21)
- by PH0PR84MB1360.NAMPRD84.PROD.OUTLOOK.COM (2603:10b6:510:172::9) with
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BF2KzYgCablwP47d4neBSayo/Rm5+cKCPZnrmtajTOM=;
+ b=WQra2n6fxBZ4crUsN5QK/HX1IxYYUbSdaCdF6zHZgk+NnE/z1pJZoXAKDCBzk9EWLSr8Fi3IhHdc+Ju1Yv9Lxbnc5hPA3PO1f449hia81pub1dgfOBIezPh0wPVqIQxmVkZtxZJXlnvecAeIAWrnBU94izrehFI72heh6rHKOsw=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from SA0PR12MB4526.namprd12.prod.outlook.com (2603:10b6:806:98::23)
+ by BN6PR1201MB0097.namprd12.prod.outlook.com (2603:10b6:405:54::23) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.21; Tue, 26 Apr
- 2022 13:52:17 +0000
-Received: from PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM
- ([fe80::6055:1602:5a0a:1562]) by PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM
- ([fe80::6055:1602:5a0a:1562%7]) with mapi id 15.20.5186.021; Tue, 26 Apr 2022
- 13:52:17 +0000
-From:   "Hawkins, Nick" <nick.hawkins@hpe.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh@kernel.org>
-CC:     "Verdun, Jean-Marie" <verdun@hpe.com>,
-        "joel@jms.id.au" <joel@jms.id.au>, "arnd@arndb.de" <arnd@arndb.de>,
-        "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v5 06/11] dt-bindings: watchdog: Add HPE GXP Watchdog
- timer binding
-Thread-Topic: [PATCH v5 06/11] dt-bindings: watchdog: Add HPE GXP Watchdog
- timer binding
-Thread-Index: AQHYVbTOsVjE6kZL10OpjL+eSsDcLa0BNZcAgAD++BCAAATIgIAAAJqA
-Date:   Tue, 26 Apr 2022 13:52:17 +0000
-Message-ID: <PH0PR84MB1718D9B549FB0CC6FDDAA19788FB9@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
-References: <20220421192132.109954-1-nick.hawkins@hpe.com>
- <20220421192132.109954-7-nick.hawkins@hpe.com>
- <YmcbCgjD85lIRMSf@robh.at.kernel.org>
- <PH0PR84MB171845F606BC40AD653BEC8888FB9@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
- <b9d68100-c6f3-4f58-fe42-63f4cdf1dc50@linaro.org>
-In-Reply-To: <b9d68100-c6f3-4f58-fe42-63f4cdf1dc50@linaro.org>
-Accept-Language: en-US
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.15; Tue, 26 Apr
+ 2022 13:53:20 +0000
+Received: from SA0PR12MB4526.namprd12.prod.outlook.com
+ ([fe80::8515:3855:bed9:3f05]) by SA0PR12MB4526.namprd12.prod.outlook.com
+ ([fe80::8515:3855:bed9:3f05%9]) with mapi id 15.20.5186.021; Tue, 26 Apr 2022
+ 13:53:20 +0000
+Message-ID: <5adfe067-dc00-6567-e218-c5c68670cf5b@amd.com>
+Date:   Tue, 26 Apr 2022 08:53:15 -0500
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.0
+Subject: Re: [PATCHv4] drm/amdgpu: disable ASPM on Intel Alder Lake based
+ systems
 Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d728312e-82a8-4803-7214-08da278bf9e9
-x-ms-traffictypediagnostic: PH0PR84MB1360:EE_
-x-microsoft-antispam-prvs: <PH0PR84MB1360BB550BE742EB29F7387088FB9@PH0PR84MB1360.NAMPRD84.PROD.OUTLOOK.COM>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: gvQn/KMN4RNRi5IDoYm895a36auRwPMEVIjbkcUDElqkNCO/AfjVxYEJSNCXBw/5gXPFiI1l8L0VhyMtDxA+aQoaXHc5W6RWax6NniXloMO2syAHrGBWwfB7wY09M47SVyBb4YAr8zGIFInDATRW8LrWLmJ2KlyXlXGpH40+9zs1hT60Da54LgYB3kQtpuAjH3YmkG46IBGRYdW+0zgXm9Af4NOm+oPfBxoyZdGamydsOKppV1d9JxkM9M8e/o6cGLjzGGC0AfEkgsKC9hOH3bXgnEgDeIDl9G+MU5Lwq6pUkaPkBHWx1RRnNWHgz6qkCmHpLJ0szfyMXAtGfhPkkeL4ZLo0GFMzOxtew9FD9HYPS4xaaxonVDU2U2dS/KQrhq4f+tP1aWYGWHU3FLBuP6HLsrgYN/IVPmV95wwYMXhH2fomMzfhNoAPcWpBMwZJ5dZoUjBdSgPkgT17Q9elFp9gaF6dL8N/f8MlJlNpoPQXPVxcFDcH1sIZcXa2zapzzB3zixlVn9MlSCGGDWgLAwIEBtjZW35uXwmZmPl8sBkV1Q/DRXKqVx4z76BP0I8hXB3NGWYiUvJL/nSGuzlVS5MIs5aceR8wHziyAKz/tZ26fqLqnVEK7SvdTHJ4cz5lZhardqEpMv269xCPs7eVqbxAFm7a6OdYGZXbeJmJ4w9vQd/71VSkkJC3OgXm6n1IJeOqUo/KG7NDQXJCTAs3Qd7ODTgyYUCBlW0pRCMOlqk/O1OArid58lHzX+T8SxdO537XuHs6JEBWzQA2Y6JQHrsv213JhfyNXIjesL+Y8P/ZPYR57P2BtCj1c209X3dxCLUleIk5PWvwjqIvPhewQw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(366004)(71200400001)(122000001)(7416002)(316002)(52536014)(7696005)(83380400001)(508600001)(9686003)(38100700002)(38070700005)(26005)(966005)(55236004)(5660300002)(86362001)(8936002)(53546011)(2906002)(55016003)(66446008)(66476007)(66556008)(64756008)(4326008)(8676002)(54906003)(186003)(6506007)(76116006)(33656002)(110136005)(82960400001)(66946007);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?aFZvTEhFdHQ1YnpyaTJKbU1pSHVrQVZGY2J6aVNpdGpPYjkyYnVoTUhBWkIv?=
- =?utf-8?B?NU16TklIVzhnYVhCVHpCNUdxcTQxZmwyUGlnRFl2Qms3dG5Qa29NbnJBTWpU?=
- =?utf-8?B?MUdhK2llWHBTVlFUU2I5SmVHamxaVmxVRHk0MUw1SVBrS2JnVFNHejJxQlRB?=
- =?utf-8?B?M0dab2trMkl0MktiQXdsUGZ6UVZzWEg4LzIySGF1MWlHalZWWUtHUVlWVFlO?=
- =?utf-8?B?cmdDY3NUcnVqcWEvSjRtMkdFQzVLbW42TGp4SzdIUFBycU01WEY3K29wbUkw?=
- =?utf-8?B?a29oS201cGNUU3RPSWVST2JDZHZFczdITmhwMnpWQjlkZ2JqTGJ0V0dDS3JF?=
- =?utf-8?B?V3dtL1dhMU9nQ3BFZ2dWejEzeUR6dy9ON3poOFVoV1luTC9QT1VDWjdlMTh2?=
- =?utf-8?B?T2ZYbCtZcThZbmJwT3g2TGtUNFc4dTdkc1I2N0hRaHVOMFcyR2h2TWJIREpa?=
- =?utf-8?B?a2xKVTZPTTR1eEdjTUZxbmpjUm5iRW9IWGJPRmEvYzN3NDJvTHVpdS9JQml2?=
- =?utf-8?B?Sjl2anloT3dTY0VwRXNGVGEzKzZhNmVCSkFYeHVkbTB0V0ZOMjdjaWRlZzY5?=
- =?utf-8?B?MUwyV1ZIc2pTTEFTTnNNUzREaHhlclBhZThxWDQvZWZLbVJZTVpvOExaSW5S?=
- =?utf-8?B?T2E0OW43RjFVYUtZa1daT2FxdnFaN2RDRUJEdThFVUVER2twOWNjWXNaejRC?=
- =?utf-8?B?Ny9JTCtxQzRNT1pDWDVSMFZzVmtlVE02a21WM0FjV1FEWDNMaGJMY3ZkKzZD?=
- =?utf-8?B?S3lIS2RmSzl0aFJzWlVRS0wyVWtKQk80MjNzOExTcGhXLzRIc1I0MVZVZGVQ?=
- =?utf-8?B?QzgxUmJPM1k1WEFzMGI1OUphb1pUVkRIN01qcUd2Zlpja0Y0V2tYdDMwd1BK?=
- =?utf-8?B?UEEzYnV1ZS9KaC9BQXVkVGpodkVqdytuMGM1ekcvYXgvWkxXbzZFWDhyNS9i?=
- =?utf-8?B?NnE0ZGhyK1YzaUtIOGZKaXpnY0U5MmhIMGwvajhwNlFuUTVESXRwZ1VVZzh0?=
- =?utf-8?B?cWs1S0EybldDOVZxSVJWNnVudmZLa0VuS0VzaC9DbC8xTk1iK1JYNUowb1Y1?=
- =?utf-8?B?NWthdTRUSFFoWFBqa2xRTVJHZkRacjNONEhCeXlzMFd4Tkp3M09NMW1EKzdP?=
- =?utf-8?B?M2dPU0JzeitKR1hheHo5TkYxUkhtWXVrR1BGMWJKd2x3dVdaOXRLUm12cGhS?=
- =?utf-8?B?UTdKdkFsSTlxbjg5QVNSbUE5VHU3aXZvWDh5QTRxeUtYS2pyQVh2T3lLL1NI?=
- =?utf-8?B?aVY3bUFGNU15UjZ6OGZoK0piQzN3QzladEtkeDhPaDhaTWYrZVprMU5DQmVs?=
- =?utf-8?B?TXlUU3FZb2w4UitYVk1xaU5OYmV4NFpJSnJEM0tZZDhQTU9KTnBJTWs2cGQw?=
- =?utf-8?B?S0V5K1JjNmdFcnYvT2JYS3U2UnE2czdlR0VJOFFVK1B4WXRzS2N5Ullxcjdn?=
- =?utf-8?B?Z2d5NWEyZlgrWkE1VzhrUlI5ZzRrQWhGMEdlQ2o2NWVuTVpiNklkMGdhY3R1?=
- =?utf-8?B?Tnk4UWt6RGxubEZVaGNYc3NCUGRSenU3TDd5TjNrWE1IR1lFMjZTWmNFUHZP?=
- =?utf-8?B?MDRYSE0zKzBaUElUWm5IRWs5bDdQd1kzeWE1VlY4TFFJaUQxWTh5bTYza0pT?=
- =?utf-8?B?d2JaSHA2NEk2MmVsSG1UQ3ltWllaeEFUYncxNTBtUVJ0WlNGbEI3aHlxT3dr?=
- =?utf-8?B?YWVkbDYzMkgvYnZ1QzNBMlV6MkdsSjFoNkJJbU95QmtTMHZqVGQ3OU5jTDZS?=
- =?utf-8?B?ZldXRkxOT2F2WlJBNnErTnI1elpHT0s0K3cxZVdwQjNIRGNyekNsUmlKdjVG?=
- =?utf-8?B?TXduQVl1a2NqRW5qd3V1eHlrYmpmYXExV0N2cEVISWxhVE0zVGZCZEV1ZXNj?=
- =?utf-8?B?YjdxSTdPQ2NObjFFRk5mZWpFemhjZ0hKb2VaSWhCdUJLUTdjKzVSYnRaQXBa?=
- =?utf-8?B?WGpwWVZYWUZGalc5TWtVcGtWQkcxQmNRdk56a0ZSamtOb0t2UXdXdmoxWW1k?=
- =?utf-8?B?MDFYS1VDNUFib0ZuaStGTG52T1hmVzRDTlNYdzQ2K2swbVJQc01QSVNDckhz?=
- =?utf-8?B?SUMyZ2Zod1E3eFNRalRvK2tJSG84Y3Q2eWZKRGdqZjNxNWF0WnRJTWFockdi?=
- =?utf-8?B?Mkd0alVkNnpPSDIyVWtwaGtxdWFnb0Q0Yy85Wkd2bHRWcXR3Ym5EUE9lekZH?=
- =?utf-8?B?eThGNVNjWlBBNDAxWXlrT3F4RHR1bUxvUU8zZHJSaGsxc1R4QVNWZFNtUldi?=
- =?utf-8?B?NlpaMlJ0cDZLVUx3bkJ3Vmdoa3FpTVc0UHlweUNhWnl1dUFHSHdxOTRIZDJw?=
- =?utf-8?B?aVdnakpCcmJQL2ZGUVlRSlZPNlNyWmlqL3orU3U2dWlYS1RDVmtWdz09?=
-Content-Type: text/plain; charset="utf-8"
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: d728312e-82a8-4803-7214-08da278bf9e9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Apr 2022 13:52:17.2484
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 105b2061-b669-4b31-92ac-24d304d195dc
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: KvFMKYwdGBoQktAjK2hX35SdZEzOCzdNjLwgnMCSp3qg3XGeOeqBT85bKVA9ua+jkaHEOzmaHdS5NTU6lBkxDw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR84MB1360
-X-OriginatorOrg: hpe.com
-X-Proofpoint-ORIG-GUID: EdAiDaP_5RstoAaA8aDyU1vJmuD0yXTM
-X-Proofpoint-GUID: EdAiDaP_5RstoAaA8aDyU1vJmuD0yXTM
-Content-Transfer-Encoding: base64
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     Dave Airlie <airlied@linux.ie>, Xinhui Pan <xinhui.pan@amd.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        amd-gfx@lists.freedesktop.org,
+        Alexander Deucher <alexander.deucher@amd.com>,
+        dri-devel@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
+        Alex Deucher <alexdeucher@gmail.com>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        Mario Limonciello <mario.limonciello@amd.com>
+References: <20220412215000.897344-1-richard.gong@amd.com>
+ <d4ba3998-34aa-86d2-bde9-bc6ae9d8d08d@molgen.mpg.de>
+ <CADnq5_MgvcGPWf2gYn_3qCr+Gq1P39tvv-W-o8NhivvMpMwUBA@mail.gmail.com>
+ <91e916e3-d793-b814-6cbf-abee0667f5f8@molgen.mpg.de>
+ <94fd858d-1792-9c05-b5c6-1b028427687d@amd.com>
+ <efc1dfd1-2b54-aee5-1497-4b800a468141@molgen.mpg.de>
+ <237da02b-0ed8-6b1c-3eaf-5574aab4f13f@amd.com>
+ <294555b4-2d1b-270f-6682-3a17e9df133c@molgen.mpg.de>
+From:   "Gong, Richard" <richard.gong@amd.com>
+In-Reply-To: <294555b4-2d1b-270f-6682-3a17e9df133c@molgen.mpg.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: CH0PR03CA0036.namprd03.prod.outlook.com
+ (2603:10b6:610:b3::11) To SA0PR12MB4526.namprd12.prod.outlook.com
+ (2603:10b6:806:98::23)
 MIME-Version: 1.0
-X-HPE-SCL: -1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-26_04,2022-04-26_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- lowpriorityscore=0 suspectscore=0 clxscore=1015 mlxscore=0 spamscore=0
- adultscore=0 impostorscore=0 priorityscore=1501 phishscore=0 bulkscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204260088
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0218428e-f7d4-4729-bd8f-08da278c1f7e
+X-MS-TrafficTypeDiagnostic: BN6PR1201MB0097:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR1201MB009726DD2792E534F3BE9DE395FB9@BN6PR1201MB0097.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: cT8DbLaatH8nnQOv/aZJYWeogeFdBB6hWAwE9FKPiUaSfCUlfNa5XVy+AwuJIMbNCNuhU+Tlk1WTqPBJr5QsDWdoi1zK2+CmJPDvLtHWY2VdHwWE9HX2Bo/xPwRQjekQZEsiEy5Q2nKFxMqdC3UzZXHkyUCmOF01XULukYfQL4uD36hssXjlQBfLLW7zlnnlxur2Nlq6wJgFFWHNgMMH7UE7wz0wS2lDYZ4qGI8PrMPTSvA0DeC8heQBqsg74a2ZCwh2O4ZD/xwZp36tcEGWXL/kM1Jx7G6jGBZxwvSkutdQc5i/T07mWFSI7P87scxiJprcduSdFWNcbJz70ZITg/4Pxi1v5lgodQ1LLHfii2jn5MXbnUrfHkO+mvMtaBSHLySLNeSr0fnPa0+WFwnw83j/lLp5sQwgkf4+j3W3vy/dcxKVG70iFk6FBJohGjxOthtUvDVNLqlS7DVLZw2gL3N/m0b9IUgYiIXJal+8VoX9bzXeFvXH9QJaOBHSE9rfcr4k8i1fqsRbLzUl9Uqh8dnc4dxYuf/2ftD+YvM9cRHzc/IxuuN6j1afTaeEdfMVTKW8/T5g29Sheqf5IIB9XaZIP73FbJOiLGvUg9lwelVwVlfPqRfaDFxZPymsiRCbC/JS4yJaICyLsW77V8Ic0KgsAb8VoOdzN4lspPc7EdXheQfO1u6cPe28LX6wlUHB/6XrRf1oTj1XkNlc65guyX5lWQUkECb1RQllT3Qj2HCIFicpdU6GfA/Wg5yofbwvjPFWFmR2NpnAlBb4MkWpLMtDeH1H1BjA9iOcBUl+WhehA840wC6ddbI26g9qpDVl
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA0PR12MB4526.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(36756003)(6486002)(2616005)(5660300002)(6506007)(53546011)(8936002)(31686004)(83380400001)(186003)(45080400002)(966005)(31696002)(26005)(86362001)(38100700002)(6512007)(6666004)(8676002)(66556008)(4326008)(2906002)(508600001)(66946007)(66476007)(6916009)(316002)(54906003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bDV2UUdsSmdPdmkzdmphR1pETnZrMkFDQzN3bnc3VTRQcEJVUG9iRnVuS2Y1?=
+ =?utf-8?B?TXJUVkpSS09pQ015enZzalpPNllpZy93SnNTcjhQN2pDZUJWOE0rSHhxYmVn?=
+ =?utf-8?B?UGVrODlqbmJhMTR4cTJ5RXdMejlUdlMza2VkOVp1UmpHMGRnbmd5V1FhSlJI?=
+ =?utf-8?B?d0x0SjVOSHZiaVRwbmdoTkFheVZGUFFMeEplazhwd3hsRWZCR3VhQldqbksv?=
+ =?utf-8?B?bFpmM1h2Slg3VWVNY3Vjd1FxZmJnc01KNittQ2M1SGNzOGx1NFZTZ3ZnMzVM?=
+ =?utf-8?B?dThtUUNLMTlyNWg4Mm9SNzdybnVUYngvRTlYSzZad1BiS2ZEL1JGMVRSWlBI?=
+ =?utf-8?B?S3psZ0hVbjRKWW9ndml1eGRRVWtkZHVnK2oxUDZvSC9iQXZQOEUwcWxCOEhr?=
+ =?utf-8?B?OVA2UDVTK2xBejhNRDUwcUVFaEswLzZYV1RmcXArc1pOWm4yL2U0RTBSRzRh?=
+ =?utf-8?B?ZDZUVEowdkNudTMzdjROM1l0RU5sSWpFQ2xjTXJHZlM5TDlBQndJZWlhdGpV?=
+ =?utf-8?B?UysveW94WmRKb0hVNGl0NmVyVEh6MnNGTDUzYWJxcXFRL00ya3RJNDl4Z2lo?=
+ =?utf-8?B?S05Mc0NiVkhFdkk2OUEvUWJObGdCdm81REhBakFhRGVoaDR3Y2VPdGNEYUJX?=
+ =?utf-8?B?S1E5ckhHL2VlQnA1MkQvSHkzMDFmYWpwN1d6cE9qZHhRbzQrNVRPWWtoT0VQ?=
+ =?utf-8?B?SFBJaUowbjVkNkl1UytmTWoxVW5MakFZbUc1TXZ3dUVya2R1dmtKMzI5SnZH?=
+ =?utf-8?B?eFlvclhNaklTb0dZOHEzb2czVUJORloxdG5YQjZqOG5nS04xc2l3UTZoVU9y?=
+ =?utf-8?B?S3hSQ0k0MmhrUUN6ZjdJNWJiS0xQekkyZzgwUDNKejA5OWdaQXFiOVVMWEJ3?=
+ =?utf-8?B?N1BaSW9ySWd5RlRsVFhVUHo2Yng2K2lvRGFickpvWFpLb25CRTVjaWNmN1hW?=
+ =?utf-8?B?NEl5ZGZNMldRNk1ZcXlyR3dlMUFuZGF1QUVjUlRlUkJvSmR1dkhNdmNDWk1X?=
+ =?utf-8?B?QS9GYkxvbXpUMm5yQ2xDcXVGYy92WFhSUm91QktwUjdkVVlXRkhVT3BtNzBa?=
+ =?utf-8?B?bTArZmdWZytzcnJmcGNFZ1pCYXFENEN1QU81STRtUVNBMXVDYloySW1USTdP?=
+ =?utf-8?B?Mm45WFVabmdWV3U3Vm1JSjhPQVJBUWJaWC9CUUR0VmhnamNmeDkwY0pBc0NJ?=
+ =?utf-8?B?VlRSN0o3RUpXek5zL053Z1NSMEpORlZDWThKMnNJS09wRG4weWllVmNtaVIw?=
+ =?utf-8?B?UmVrQ2JQaFA3WWpFOW9EcVFmVXNCRVZBVERWVWU5cDR6M01hRzhPRGJMR3Ey?=
+ =?utf-8?B?QjhlZXkycFhYTUFadXZuUlJPZ1E1QVVTUWdMRjR0YUhCUFpkelJ5M0ZQTVBG?=
+ =?utf-8?B?WDAvTjlaamVUTno0Y3p2b0djTmNNekZMblBxQkNjbnkxRUZUKzgwQkVjdWF3?=
+ =?utf-8?B?MUkwcDRFOXZkdTNwWmRIRkpyemlmaDM3UlZVR0syaTlFclpiOE1tZThUR3Vx?=
+ =?utf-8?B?d1ptWjlzaXB6aUtjQzNhNXBqcC80V3JsSFZlTWV1WGRTZ2J4ZjJ6S0RxYUMw?=
+ =?utf-8?B?RHp3ZzIzMWNsSFFtQU8yWXZhVHNzcG9oUWVKMkZVNU9yVWd0eDFJYjh4UkNm?=
+ =?utf-8?B?SVNBS0NKN2ZKaVczM21DSGVudFVTb2NCUjVTSnRnc0hRUlFsK1RWcmJSTkxq?=
+ =?utf-8?B?OGJRMkVsM1ZrTEVtRld1Zm9LSFFoV256SEN2VERaN2ljeVcwL2pZeWE5YmVu?=
+ =?utf-8?B?dWNmajZpdGUyaUdyaUgyZ1RlTUI1WUN4SkRDcmtwaU5qQ3podisvZWRuMXlT?=
+ =?utf-8?B?elVSY1R6N2VGRTdkTHpaVVI2ZjBqeTZtcEF1QnJjUHF1K1VzUGJUWk54UlJF?=
+ =?utf-8?B?QnUxVE9Hcm12YUdjRkhJZmhmU2ZYRElVRWh1a2JVbVI5dWoxS1dRUmNXKzB5?=
+ =?utf-8?B?dUc3dnlxZFJ2amUxTHRtZWdrZUVNNXA0L1JvN21pMHpJenFkdTJ2U3lZMmcr?=
+ =?utf-8?B?YzVFVFNtVmNFckhkSDJsTmtxSkcyMGRVd0dEd3hjKy9TRWdXMnMvZFRJMGY1?=
+ =?utf-8?B?c2FLYW45R210eERrdFJRM0ozTlgrUVA1QXk0bmhPNW5VZk5hRUtFNERWL0c2?=
+ =?utf-8?B?WFJla0x0MWRORGRuMFpwcHduc0cxSDFVTHlnS0hFaStHYzVaUldBazFmUTh5?=
+ =?utf-8?B?SVBoa3lxL1c4L2szODAwbHR1UnowUmt0NGhNbmVERmVNdmd4d3hmV014c2ZP?=
+ =?utf-8?B?YmZpOE9jZGZDOWM5ZDM5UU96ZHA3RjhzRkI4US80VGx2NGx6Tmp1emRYZEVX?=
+ =?utf-8?B?Ykk2OEpWOTFXNXd5OWlWNnRDUURCa3dCdDlzQjFTbUdZMXJyK1NIUT09?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0218428e-f7d4-4729-bd8f-08da278c1f7e
+X-MS-Exchange-CrossTenant-AuthSource: SA0PR12MB4526.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Apr 2022 13:53:20.4588
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0MRoHT7Z3PJb2BzFFeq5HBRz2WlgMpiNh9A4oTkRBlKTOBSE04fpwX5342h91Xli5+GUb0wBtxmg8eKSxwY8/w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1201MB0097
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBLcnp5c3p0b2YgS296bG93c2tp
-IFttYWlsdG86a3J6eXN6dG9mLmtvemxvd3NraUBsaW5hcm8ub3JnXSANClNlbnQ6IFR1ZXNkYXks
-IEFwcmlsIDI2LCAyMDIyIDg6MzUgQU0NClRvOiBIYXdraW5zLCBOaWNrIDxuaWNrLmhhd2tpbnNA
-aHBlLmNvbT47IFJvYiBIZXJyaW5nIDxyb2JoQGtlcm5lbC5vcmc+DQpDYzogVmVyZHVuLCBKZWFu
-LU1hcmllIDx2ZXJkdW5AaHBlLmNvbT47IGpvZWxAam1zLmlkLmF1OyBhcm5kQGFybmRiLmRlOyBv
-cGVuYm1jQGxpc3RzLm96bGFicy5vcmc7IFdpbSBWYW4gU2Vicm9lY2sgPHdpbUBsaW51eC13YXRj
-aGRvZy5vcmc+OyBHdWVudGVyIFJvZWNrIDxsaW51eEByb2Vjay11cy5uZXQ+OyBLcnp5c3p0b2Yg
-S296bG93c2tpIDxrcnp5c3p0b2Yua296bG93c2tpK2R0QGxpbmFyby5vcmc+OyBsaW51eC13YXRj
-aGRvZ0B2Z2VyLmtlcm5lbC5vcmc7IGRldmljZXRyZWVAdmdlci5rZXJuZWwub3JnOyBsaW51eC1r
-ZXJuZWxAdmdlci5rZXJuZWwub3JnDQpTdWJqZWN0OiBSZTogW1BBVENIIHY1IDA2LzExXSBkdC1i
-aW5kaW5nczogd2F0Y2hkb2c6IEFkZCBIUEUgR1hQIFdhdGNoZG9nIHRpbWVyIGJpbmRpbmcNCg0K
-T24gMjYvMDQvMjAyMiAxNToyMSwgSGF3a2lucywgTmljayB3cm90ZToNCj4+PiBIb3cgaXMgdGhp
-cyBoL3cgY29udHJvbGxlZD8gSSdtIGd1ZXNzaW5nIGl0J3MgcGFydCBvZiB0aGUgdGltZXI/IElm
-IHNvLCB5b3UgZG9uJ3QgbmVlZCB0aGlzIG5vZGUuIEEgc2luZ2xlIG5vZGUgY2FuIGltcGxlbWVu
-dCBtdWx0aXBsZSBmdW5jdGlvbnMuDQo+PiANCj4+IEl0IGlzIGFzc29jaWF0ZWQgd2l0aCB0aGUg
-dGltZXIgYmVjYXVzZSBvZiB0aGUgc2hhcmVkIHJlZ2lzdGVyIHNldC4gQmFzZWQgb24gZmVlZGJh
-Y2sgZnJvbSBLcnp5c3p0b2YgSSBuZWVkIHRvIGNyZWF0ZSBhIGNoaWxkIG5vZGUgZm9yIGd4cC10
-aW1lci4gSSB0aGVyZWZvcmUgd2lsbCByZW1vdmUgdGhpcyBmaWxlIGFuZCBtb3ZlIGd4cC13ZHQg
-dG8gdGhlIGhwZSxneHAtdGltZXIueWFtbCBhcyBhIGNoaWxkIG5vZGUuDQoNCj5JIGhhdmUgaW1w
-cmVzc2lvbiBteSBmZWVkYmFjayB3YXMgYWJvdXQgbWFwcGluZyBlbnRpcmUgYWRkcmVzcyBzcGFj
-ZSwgbm90IGZldyByZWdpc3RlcnMgb2Ygd2F0Y2hkb2c6DQo+aHR0cHM6Ly9sb3JlLmtlcm5lbC5v
-cmcvYWxsL2M2MzA5ZWQ4LTZlNzQtNjdkMy0zMDRhLWY1Mzk5ZDE2Y2MzN0BjYW5vbmljYWwuY29t
-Lw0KDQo+SG93ZXZlciBsYXRlciBkdXJpbmcgdGFsa3MgaXQgdHVybmVkIG91dCB0aGF0IHRoZSBh
-ZGRyZXNzIHNwYWNlIGlzIGhlYXZpbHkgc2hhcmVkLg0KDQo+TmljaywNCj5CVFcsIGRvIHlvdSBz
-ZWUgbXkgY29tbWVudHMgaW4gdGhlIGVtYWlsIEkgbGlua2VkIGFib3ZlPyBUaGlzIHY1IG1ha2Vz
-IHRoZSBzYW1lIG1pc3Rha2UuIFdlIHRhbGtlZCBhYm91dCB0aGlzIGFscmVhZHksIHNvIHBsZWFz
-ZSBtYWtlIG5vdGUgb2YgY29tbWVudHMgeW91IHJlY2VpdmUgYW5kIGltcGxlbWVudCB0aGVtLg0K
-DQpLcnp5c3p0b2YsDQoNCkFwb2xvZ2llcywgSSBkaWQgbWlzcyB0aGUgY29tbWVudCBhYm91dCB0
-aGUgZG91YmxlIHNwYWNpbmcgYXJvdW5kIHRoZSBsYWJlbCBhbmQgdGhlIGxhYmVsIG5vdCBiZWlu
-ZyBuZWNlc3NhcnkuIEkgd2lsbCBub3QgbWFrZSB0aGlzIG1pc3Rha2UgYWdhaW4uIEkgYmVjYW1l
-IGZvY3VzZWQgYWJvdXQgdGhlIGNvbW1lbnQgb2YgbWFwcGluZyBhbiBlbnRpcmUgcmVnaXN0ZXIg
-c3BhY2Ugd2hpY2ggaW5kaXJlY3RseSBsZWFkIG1lIG9uIHRvIHRoZSBwYXRoIHdoaWNoIEkgYW0g
-bm93IGhhdmluZyB0aGUgZ3hwLXRpbWVyIGhhdmUgdGhlIGd4cC13ZHQgYXMgYSBjaGlsZC4gVG8g
-YmUgc3BlY2lmaWMgdGhlIGZlZWRiYWNrIEkgd2FzIHNwZWFraW5nIG9mIGFib3ZlIHdhcyBhYm91
-dCB0aGUgZ3hwLXRpbWVyIHdoaWNoIGlzIGhlcmU6IGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2Fs
-bC83MDRmZmE1Ni00YmFlLWZjMzMtZmRkZi0zZTNkZDhiZTBkYjlAbGluYXJvLm9yZy8gVGhhdCBp
-cyB0aGUgY2hpbGRyZW4gbXVzdCBiZSBkZWZpbmVkIGZvciBhIHNpbXBsZS1tZmQgZGV2aWNlLiBI
-ZW5jZSB0aGUgcGxhbiBJIGhhdmUgbm93IGlzIHRvIHJlbW92ZSB0aGUgaHBlLGd4cC13ZHQueWFt
-bCBlbnRpcmVseSBhbmQgaW5jbHVkZSBpdCBpbiB0aGUgaHBlLGd4cC10aW1lci55YW1sLiBJIGFz
-c3VtZSB0aGF0IGlzIHRoZSBjb3JyZWN0IHRoaW5nIHRvIGRvPw0KDQpUaGFuayB5b3UgZm9yIHlv
-dXIgdGltZSBhbmQgZmVlZGJhY2ssDQoNCi1OaWNrDQo=
+Hi Paul,
+
+On 4/21/2022 12:35 AM, Paul Menzel wrote:
+> Dear Richard,
+>
+>
+> Am 21.04.22 um 03:12 schrieb Gong, Richard:
+>
+>> On 4/20/2022 3:29 PM, Paul Menzel wrote:
+>
+>>> Am 19.04.22 um 23:46 schrieb Gong, Richard:
+>>>
+>>>> On 4/14/2022 2:52 AM, Paul Menzel wrote:
+>>>>> [Cc: -kernel test robot <lkp@intel.com>]
+>>>
+>>> […]
+>>>
+>>>>> Am 13.04.22 um 15:00 schrieb Alex Deucher:
+>>>>>> On Wed, Apr 13, 2022 at 3:43 AM Paul Menzel wrote:
+>>>>>
+>>>>>>> Thank you for sending out v4.
+>>>>>>>
+>>>>>>> Am 12.04.22 um 23:50 schrieb Richard Gong:
+>>>>>>>> Active State Power Management (ASPM) feature is enabled since 
+>>>>>>>> kernel 5.14.
+>>>>>>>> There are some AMD GFX cards (such as WX3200 and RX640) that 
+>>>>>>>> won't work
+>>>>>>>> with ASPM-enabled Intel Alder Lake based systems. Using these 
+>>>>>>>> GFX cards as
+>>>>>>>> video/display output, Intel Alder Lake based systems will hang 
+>>>>>>>> during
+>>>>>>>> suspend/resume.
+>>>
+>>> [Your email program wraps lines in cited text for some reason, 
+>>> making the citation harder to read.]
+>>>
+>> Not sure why, I am using Mozila Thunderbird for email. I am not using 
+>> MS Outlook for upstream email.
+>
+> Strange. No idea if there were bugs in Mozilla Thunderbird 91.2.0, 
+> released over half year ago. The current version is 91.8.1. [1]
+>
+>>>>>>> I am still not clear, what “hang during suspend/resume” means. I 
+>>>>>>> guess
+>>>>>>> suspending works fine? During resume (S3 or S0ix?), where does 
+>>>>>>> it hang?
+>>>>>>> The system is functional, but there are only display problems?
+>>>> System freeze after suspend/resume.
+>>>
+>>> But you see certain messages still? At what point does it freeze 
+>>> exactly? In the bug report you posted Linux messages.
+>>
+>> No, the system freeze then users have to recycle power to recover.
+>
+> Then I misread the issue? Did you capture the messages over serial log 
+> then?
+
+I think so. We captured dmesg log.
+
+As mentioned early we need support from Intel on how to get ASPM working 
+for VI generation on Intel Alder Lake, but we don't know where things 
+currently stand.
+
+>
+>>>>>>>> The issue was initially reported on one system (Dell Precision 
+>>>>>>>> 3660 with
+>>>>>>>> BIOS version 0.14.81), but was later confirmed to affect at 
+>>>>>>>> least 4 Alder
+>>>>>>>> Lake based systems.
+>>>>>>>>
+>>>>>>>> Add extra check to disable ASPM on Intel Alder Lake based systems.
+>>>>>>>>
+>>>>>>>> Fixes: 0064b0ce85bb ("drm/amd/pm: enable ASPM by default")
+>>>>>>>> Link: 
+>>>>>>>> https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fgitlab.freedesktop.org%2Fdrm%2Famd%2F-%2Fissues%2F1885&amp;data=05%7C01%7Crichard.gong%40amd.com%7C5990a9e58af0438b80c308da2358d216%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637861161666341691%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=Ka3NSmXuyji%2F%2FRdH319aFk9ya5UytU8lq3FhiuMd%2FcU%3D&amp;reserved=0 
+>>>>>>>>
+>>>
+>>> Thank you Microsoft Outlook for keeping us safe. :(
+>> I am not using MS Outlook for the email exchanges.
+>
+> I guess, it’s not the client but the Microsoft email service 
+> (Exchange?) no idea adding these protection links. (Making it even 
+> harder for users to actually verify domain. No idea who comes up with 
+> these ideas, and customers actually accepting those.)
+>
+>>>>>>>>
+>>>>>>>> Reported-by: kernel test robot <lkp@intel.com>
+>>>>>>>
+>>>>>>> This tag is a little confusing. Maybe clarify that it was for an 
+>>>>>>> issue
+>>>>>>> in a previous patch iteration?
+>>>>
+>>>> I did describe in change-list version 3 below, which corrected the 
+>>>> build error with W=1 option.
+>>>>
+>>>> It is not good idea to add the description for that to the commit 
+>>>> message, this is why I add descriptions on change-list version 3.
+>>>
+>>> Do as you wish, but the current style is confusing, and readers of 
+>>> the commit are going to think, the kernel test robot reported the 
+>>> problem with AMD VI ASICs and Intel Alder Lake systems.
+>>>
+>>>>>>>
+>>>>>>>> Signed-off-by: Richard Gong <richard.gong@amd.com>
+>>>>>>>> ---
+>>>>>>>> v4: s/CONFIG_X86_64/CONFIG_X86
+>>>>>>>>       enhanced check logic
+>>>>>>>> v3: s/intel_core_asom_chk/aspm_support_quirk_check
+>>>>>>>>       correct build error with W=1 option
+>>>>>>>> v2: correct commit description
+>>>>>>>>       move the check from chip family to problematic platform
+>>>>>>>> ---
+>>>>>>>>    drivers/gpu/drm/amd/amdgpu/vi.c | 17 ++++++++++++++++-
+>>>>>>>>    1 file changed, 16 insertions(+), 1 deletion(-)
+>>>>>>>>
+>>>>>>>> diff --git a/drivers/gpu/drm/amd/amdgpu/vi.c 
+>>>>>>>> b/drivers/gpu/drm/amd/amdgpu/vi.c
+>>>>>>>> index 039b90cdc3bc..b33e0a9bee65 100644
+>>>>>>>> --- a/drivers/gpu/drm/amd/amdgpu/vi.c
+>>>>>>>> +++ b/drivers/gpu/drm/amd/amdgpu/vi.c
+>>>>>>>> @@ -81,6 +81,10 @@
+>>>>>>>>    #include "mxgpu_vi.h"
+>>>>>>>>    #include "amdgpu_dm.h"
+>>>>>>>>
+>>>>>>>> +#if IS_ENABLED(CONFIG_X86)
+>>>>>>>> +#include <asm/intel-family.h>
+>>>>>>>> +#endif
+>>>>>>>> +
+>>>>>>>>    #define ixPCIE_LC_L1_PM_SUBSTATE    0x100100C6
+>>>>>>>>    #define 
+>>>>>>>> PCIE_LC_L1_PM_SUBSTATE__LC_L1_SUBSTATES_OVERRIDE_EN_MASK 
+>>>>>>>> 0x00000001L
+>>>>>>>>    #define PCIE_LC_L1_PM_SUBSTATE__LC_PCI_PM_L1_2_OVERRIDE_MASK 
+>>>>>>>> 0x00000002L
+>>>>>>>> @@ -1134,13 +1138,24 @@ static void vi_enable_aspm(struct 
+>>>>>>>> amdgpu_device *adev)
+>>>>>>>>                WREG32_PCIE(ixPCIE_LC_CNTL, data);
+>>>>>>>>    }
+>>>>>>>>
+>>>>>>>> +static bool aspm_support_quirk_check(void)
+>>>>>>>> +{
+>>>>>>>> +     if (IS_ENABLED(CONFIG_X86)) {
+>>>>>>>> +             struct cpuinfo_x86 *c = &cpu_data(0);
+>>>>>>>> +
+>>>>>>>> +             return !(c->x86 == 6 && c->x86_model == 
+>>>>>>>> INTEL_FAM6_ALDERLAKE);
+>>>>>>>> +     }
+>>>>>>>> +
+>>>>>>>> +     return true;
+>>>>>>>> +}
+>>>>>>>> +
+>>>>>>>>    static void vi_program_aspm(struct amdgpu_device *adev)
+>>>>>>>>    {
+>>>>>>>>        u32 data, data1, orig;
+>>>>>>>>        bool bL1SS = false;
+>>>>>>>>        bool bClkReqSupport = true;
+>>>>>>>>
+>>>>>>>> -     if (!amdgpu_device_should_use_aspm(adev))
+>>>>>>>> +     if (!amdgpu_device_should_use_aspm(adev) || 
+>>>>>>>> !aspm_support_quirk_check())
+>>>>>>>>                return;
+>>>>>>>
+>>>>>>> Can users still forcefully enable ASPM with the parameter 
+>>>>>>> `amdgpu.aspm`?
+>>>>>>>
+>>>> As Mario mentioned in a separate reply, we can't forcefully enable 
+>>>> ASPM with the parameter 'amdgpu.aspm'.
+>>>
+>>> That would be a regression on systems where ASPM used to work. Hmm. 
+>>> I guess, you could say, there are no such systems.
+>>>
+>>>>>>>>
+>>>>>>>>        if (adev->flags & AMD_IS_APU ||
+>>>>>>>
+>>>>>>> If I remember correctly, there were also newer cards, where ASPM 
+>>>>>>> worked
+>>>>>>> with Intel Alder Lake, right? Can only the problematic 
+>>>>>>> generations for
+>>>>>>> WX3200 and RX640 be excluded from ASPM?
+>>>>>>
+>>>>>> This patch only disables it for the generatioaon that was 
+>>>>>> problematic.
+>>>>>
+>>>>> Could that please be made clear in the commit message summary, and 
+>>>>> message?
+>>>>
+>>>> Are you ok with the commit messages below?
+>>>
+>>> Please change the commit message summary. Maybe:
+>>>
+>>> drm/amdgpu: VI: Disable ASPM on Intel Alder Lake based systems
+>>>
+>>>> Active State Power Management (ASPM) feature is enabled since 
+>>>> kernel 5.14.
+>>>>
+>>>> There are some AMD GFX cards (such as WX3200 and RX640) that won't 
+>>>> work
+>>>> with ASPM-enabled Intel Alder Lake based systems. Using these GFX 
+>>>> cards as
+>>>> video/display output, Intel Alder Lake based systems will freeze after
+>>>> suspend/resume.
+>>>
+>>> Something like:
+>>>
+>>> On Intel Alder Lake based systems using ASPM with AMD GFX Volcanic 
+>>> Islands (VI) cards, like WX3200 and RX640, graphics don’t initialize 
+>>> when resuming from S0ix(?).
+>>>
+>>>
+>>>> The issue was initially reported on one system (Dell Precision 3660 
+>>>> with
+>>>> BIOS version 0.14.81), but was later confirmed to affect at least 4 
+>>>> Alder
+>>>> Lake based systems.
+>>>
+>>> Which ones?
+>> those are pre-production Alder Lake based OEM systems
+>
+> Just write that then: at least four pre-production Alder Lake based 
+> systems.
+>
+>>>> Add extra check to disable ASPM on Intel Alder Lake based systems with
+>>>> problematic generation GFX cards.
+>>>
+>>> … with the problematic Volcanic Islands GFX cards.
+>>>
+>>>>>
+>>>>> Loosely related, is there a public (or internal issue) to analyze 
+>>>>> how to get ASPM working for VI generation devices with Intel Alder 
+>>>>> Lake?
+>>>>
+>>>> As Alex mentioned, we need support from Intel. We don't have any 
+>>>> update on that.
+>>>
+>>> It’d be great to get that fixed properly.
+>>>
+>>> Last thing, please don’t hate me, does Linux log, that ASPM is 
+>>> disabled?
+>
+>
+> Kind regards,
+>
+> Paul
+>
+>
+> [1]: 
+> https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.thunderbird.net%2Fen-US%2Fthunderbird%2Freleases%2F&amp;data=05%7C01%7Crichard.gong%40amd.com%7C5990a9e58af0438b80c308da2358d216%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637861161666341691%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=HYlNdeVKxSWQto%2BWGAoUc5etFwhdlyTUoox71SQjCtY%3D&amp;reserved=0
