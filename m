@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE388C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:58:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4758FC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:58:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243445AbiDZJBr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:01:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57820 "EHLO
+        id S1343682AbiDZJBw (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:01:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346897AbiDZIp3 (ORCPT
+        with ESMTP id S1346955AbiDZIpk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:45:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36FAEB1E6;
-        Tue, 26 Apr 2022 01:36:23 -0700 (PDT)
+        Tue, 26 Apr 2022 04:45:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 445BF3DDD8;
+        Tue, 26 Apr 2022 01:36:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EA9C8B81CFE;
-        Tue, 26 Apr 2022 08:36:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 470AFC385AC;
-        Tue, 26 Apr 2022 08:36:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 21818618E8;
+        Tue, 26 Apr 2022 08:36:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBBB0C385A4;
+        Tue, 26 Apr 2022 08:36:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962180;
-        bh=Kb0biBkFZABp5DjxR6pFH9eVYKEyISk7HCQ3zv4bjvw=;
+        s=korg; t=1650962217;
+        bh=+2Fi1ILVgr/TXV+c7AXwJyqn3eo8rkvAxRa7kZL1PaY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BhNjI/xbF8vRomstX0HlAs8L2BHtp4bgC/JE7+O79SFzIqRLnKWtLuY1j7418UUOs
-         0gYgK41Z+CgLSoqG0EQuolY9cog1GucOcPvQ1WRPC/NZcZ0vDempR7Jpm/HymPXAC8
-         oOdvhOfD/BhBRblnkSHbS4erCL7GHEzcR92wSaWg=
+        b=SGvrIUIgPCHbe/uA5RP1C47y6okoqHtb5PfTNM1dsiYON6KYELtx2o8JhnVIJS/dg
+         5u4DJ2H8vwyH2h+2WFXp3v4xFAYl1NB+wlgEYq1y4Oii8EfPJynxl5rovOQ5gFm2Yv
+         2k6srU7HE5811mWU5o3rTKW7t8OakllT4fd3QXE0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
-        Peter Wang <peter.wang@mediatek.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.15 013/124] scsi: ufs: core: scsi_get_lba() error fix
-Date:   Tue, 26 Apr 2022 10:20:14 +0200
-Message-Id: <20220426081747.676581071@linuxfoundation.org>
+        stable@vger.kernel.org, Zhang Qilong <zhangqilong3@huawei.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 024/124] dmaengine: mediatek:Fix PM usage reference leak of mtk_uart_apdma_alloc_chan_resources
+Date:   Tue, 26 Apr 2022 10:20:25 +0200
+Message-Id: <20220426081747.992031554@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -49,60 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Wang <peter.wang@mediatek.com>
+From: zhangqilong <zhangqilong3@huawei.com>
 
-commit 2bd3b6b75946db2ace06e145d53988e10ed7e99a upstream.
+[ Upstream commit 545b2baac89b859180e51215468c05d85ea8465a ]
 
-When ufs initializes without scmd->device->sector_size set, scsi_get_lba()
-will get a wrong shift number and trigger an ubsan error.  The shift
-exponent 4294967286 is too large for the 64-bit type 'sector_t' (aka
-'unsigned long long').
+pm_runtime_get_sync will increment pm usage counter even it failed.
+Forgetting to putting operation will result in reference leak here.
+We fix it:
+1) Replacing it with pm_runtime_resume_and_get to keep usage counter
+   balanced.
+2) Add putting operation before returning error.
 
-Call scsi_get_lba() only when opcode is READ_10/WRITE_10/UNMAP.
-
-Link: https://lore.kernel.org/r/20220307111752.10465-1-peter.wang@mediatek.com
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Peter Wang <peter.wang@mediatek.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes:9135408c3ace4 ("dmaengine: mediatek: Add MediaTek UART APDMA support")
+Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
+Link: https://lore.kernel.org/r/20220319022142.142709-1-zhangqilong3@huawei.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ufs/ufshcd.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/dma/mediatek/mtk-uart-apdma.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---- a/drivers/scsi/ufs/ufshcd.c
-+++ b/drivers/scsi/ufs/ufshcd.c
-@@ -358,7 +358,7 @@ static void ufshcd_add_uic_command_trace
- static void ufshcd_add_command_trace(struct ufs_hba *hba, unsigned int tag,
- 				     enum ufs_trace_str_t str_t)
- {
--	u64 lba;
-+	u64 lba = 0;
- 	u8 opcode = 0, group_id = 0;
- 	u32 intr, doorbell;
- 	struct ufshcd_lrb *lrbp = &hba->lrb[tag];
-@@ -375,7 +375,6 @@ static void ufshcd_add_command_trace(str
- 		return;
+diff --git a/drivers/dma/mediatek/mtk-uart-apdma.c b/drivers/dma/mediatek/mtk-uart-apdma.c
+index 375e7e647df6..a1517ef1f4a0 100644
+--- a/drivers/dma/mediatek/mtk-uart-apdma.c
++++ b/drivers/dma/mediatek/mtk-uart-apdma.c
+@@ -274,7 +274,7 @@ static int mtk_uart_apdma_alloc_chan_resources(struct dma_chan *chan)
+ 	unsigned int status;
+ 	int ret;
  
- 	opcode = cmd->cmnd[0];
--	lba = scsi_get_lba(cmd);
+-	ret = pm_runtime_get_sync(mtkd->ddev.dev);
++	ret = pm_runtime_resume_and_get(mtkd->ddev.dev);
+ 	if (ret < 0) {
+ 		pm_runtime_put_noidle(chan->device->dev);
+ 		return ret;
+@@ -288,18 +288,21 @@ static int mtk_uart_apdma_alloc_chan_resources(struct dma_chan *chan)
+ 	ret = readx_poll_timeout(readl, c->base + VFF_EN,
+ 			  status, !status, 10, 100);
+ 	if (ret)
+-		return ret;
++		goto err_pm;
  
- 	if (opcode == READ_10 || opcode == WRITE_10) {
- 		/*
-@@ -383,6 +382,7 @@ static void ufshcd_add_command_trace(str
- 		 */
- 		transfer_len =
- 		       be32_to_cpu(lrbp->ucd_req_ptr->sc.exp_data_transfer_len);
-+		lba = scsi_get_lba(cmd);
- 		if (opcode == WRITE_10)
- 			group_id = lrbp->cmd->cmnd[6];
- 	} else if (opcode == UNMAP) {
-@@ -390,6 +390,7 @@ static void ufshcd_add_command_trace(str
- 		 * The number of Bytes to be unmapped beginning with the lba.
- 		 */
- 		transfer_len = blk_rq_bytes(rq);
-+		lba = scsi_get_lba(cmd);
+ 	ret = request_irq(c->irq, mtk_uart_apdma_irq_handler,
+ 			  IRQF_TRIGGER_NONE, KBUILD_MODNAME, chan);
+ 	if (ret < 0) {
+ 		dev_err(chan->device->dev, "Can't request dma IRQ\n");
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto err_pm;
  	}
  
- 	intr = ufshcd_readl(hba, REG_INTERRUPT_STATUS);
+ 	if (mtkd->support_33bits)
+ 		mtk_uart_apdma_write(c, VFF_4G_SUPPORT, VFF_4G_SUPPORT_CLR_B);
+ 
++err_pm:
++	pm_runtime_put_noidle(mtkd->ddev.dev);
+ 	return ret;
+ }
+ 
+-- 
+2.35.1
+
 
 
