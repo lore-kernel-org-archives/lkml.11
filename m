@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A2D8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:03:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABC73C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:03:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346475AbiDZJE1 (ORCPT
+        id S1346505AbiDZJEc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:04:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56568 "EHLO
+        Tue, 26 Apr 2022 05:04:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346792AbiDZIpW (ORCPT
+        with ESMTP id S1346793AbiDZIpW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:45:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 244223AA5D;
-        Tue, 26 Apr 2022 01:35:39 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B0013B3E8;
+        Tue, 26 Apr 2022 01:35:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B3BB7B81D1C;
-        Tue, 26 Apr 2022 08:35:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2379AC385A4;
-        Tue, 26 Apr 2022 08:35:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1882F61899;
+        Tue, 26 Apr 2022 08:35:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 094F6C385A4;
+        Tue, 26 Apr 2022 08:35:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962136;
-        bh=l9uC7Jd/JtduUprt9DTiagtw6UvvCPakC11dX7OhYYk=;
+        s=korg; t=1650962139;
+        bh=904Yeuvzqm23g7s+sAX4Ms24/YBBVjFmcCiyB/hFFGA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=owHLbfJC3++i22I0pKxzjPbNHh0Jrde6hIMovt9pmKpPAvqLiTKDVKxa+jUsIRO6m
-         V2dMbXEmN8SBx7ubjfg6eCtMapEZT3UEASbKpvQyJt/MhRV9oqRtMGDe9gR0H3bro2
-         Ks45rt+fYwbZahgq/wcEruUOaJmsFs46ge5qYI3g=
+        b=RvzUGZVsoN8NML6JTYW5UEoe9K4wHXWNhvo+Z8TSc4/PdkeXzA4F5cP7AjYWPxPHA
+         /IjNy4cujGZbjU2N4rgGF7+Pnvc6sHbpOqm1Ioyc5uUBKW1v09q0m/nH68w8/5AmNZ
+         I+QzxucziwzwcLswqWrW2zAxuCEvjNmmq52uMpEk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Lv Ruyi <lv.ruyi@zte.com.cn>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Xiaoke Wang <xkernel.wang@foxmail.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Rob Clark <robdclark@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 44/86] dpaa_eth: Fix missing of_node_put in dpaa_get_ts_info()
-Date:   Tue, 26 Apr 2022 10:21:12 +0200
-Message-Id: <20220426081742.478241645@linuxfoundation.org>
+Subject: [PATCH 5.10 45/86] drm/msm/mdp5: check the return of kzalloc()
+Date:   Tue, 26 Apr 2022 10:21:13 +0200
+Message-Id: <20220426081742.505980767@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
 References: <20220426081741.202366502@linuxfoundation.org>
@@ -51,44 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-[ Upstream commit 1a7eb80d170c28be2928433702256fe2a0bd1e0f ]
+[ Upstream commit 047ae665577776b7feb11bd4f81f46627cff95e7 ]
 
-Both of of_get_parent() and of_parse_phandle() return node pointer with
-refcount incremented, use of_node_put() on it to decrease refcount
-when done.
+kzalloc() is a memory allocation function which can return NULL when
+some internal memory errors happen. So it is better to check it to
+prevent potential wrong memory access.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Besides, since mdp5_plane_reset() is void type, so we should better
+set `plane-state` to NULL after releasing it.
+
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/481055/
+Link: https://lore.kernel.org/r/tencent_8E2A1C78140EE1784AB2FF4B2088CC0AB908@qq.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Rob Clark <robdclark@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
-index 1268996b7030..2f9075429c43 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
-@@ -489,11 +489,15 @@ static int dpaa_get_ts_info(struct net_device *net_dev,
- 	info->phc_index = -1;
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
+index 83423092de2f..da0799333970 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
+@@ -179,7 +179,10 @@ static void mdp5_plane_reset(struct drm_plane *plane)
+ 		drm_framebuffer_put(plane->state->fb);
  
- 	fman_node = of_get_parent(mac_node);
--	if (fman_node)
-+	if (fman_node) {
- 		ptp_node = of_parse_phandle(fman_node, "ptimer-handle", 0);
-+		of_node_put(fman_node);
-+	}
+ 	kfree(to_mdp5_plane_state(plane->state));
++	plane->state = NULL;
+ 	mdp5_state = kzalloc(sizeof(*mdp5_state), GFP_KERNEL);
++	if (!mdp5_state)
++		return;
  
--	if (ptp_node)
-+	if (ptp_node) {
- 		ptp_dev = of_find_device_by_node(ptp_node);
-+		of_node_put(ptp_node);
-+	}
- 
- 	if (ptp_dev)
- 		ptp = platform_get_drvdata(ptp_dev);
+ 	/* assign default blend parameters */
+ 	mdp5_state->alpha = 255;
 -- 
 2.35.1
 
