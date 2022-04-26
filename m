@@ -2,106 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 095CCC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:52:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50E89C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:53:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344340AbiDZH4C (ORCPT
+        id S1344386AbiDZH4G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 03:56:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50182 "EHLO
+        Tue, 26 Apr 2022 03:56:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344369AbiDZHx2 (ORCPT
+        with ESMTP id S1344368AbiDZHzO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 03:53:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9364ABBE
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 00:50:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650959419;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cgkVeFtk7kmhzt6NM7uvR8g8Xij0kTOqB1NgwHZ6ZsY=;
-        b=a59q494ptKU78H9wmlev01aL+1O07FEawGMwH+AcNno+vcdP60afKnBN70DQVTupPmPWin
-        jCeddQTo1ptMYgUwTpa+5REUAMusTduh7WV/qzasrj9rdEUHPq2E3i70YUhu5oE9vpMzwl
-        xWa9Cxc6B22gdHc6w327Nh/IvI/C+2g=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-630-QLIHlhc5MOyuKUKEui5Mtw-1; Tue, 26 Apr 2022 03:50:18 -0400
-X-MC-Unique: QLIHlhc5MOyuKUKEui5Mtw-1
-Received: by mail-wm1-f69.google.com with SMTP id az19-20020a05600c601300b003914ac8efb8so513101wmb.2
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 00:50:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=cgkVeFtk7kmhzt6NM7uvR8g8Xij0kTOqB1NgwHZ6ZsY=;
-        b=TvnSHhIt/uaoQBCVh6WIUWZtmUtYt22DIq5VC67ftatkf8F52hZ0jLMGJzdy9DAYDZ
-         l+cy6komuntKKJqzBUNaL6opxtAHghLO3VR/0A1SbwvYG0YomjjKDCSGD3CWPDs8n3Vq
-         F7M8N9enSDcxrtjWBt60U2oE9twuch2Ma+cbO/BIYs4FFWV7zhNQxmIEy3SUN9qmxaBt
-         vW5IvFnsLdxO2U643WBhWbJHfPcXvU9FkjnjLuoAnFLk/5hDdfbaEadECG++h9RZAPsx
-         +kKMl9ukKdlfYpziwk15EtBw/fffoWfMr2Rb+cz30YhsXcEaZnm325zmwLrDjGL3WO5r
-         Gr/Q==
-X-Gm-Message-State: AOAM531AXpZb7K982xEiZj7CwrjvBkQsV67EnF1dQZIdZJUfl6UfBHy5
-        Erp5IlQ46Vannj0FLs3uR/YQMDGN8U/JTggc1nsKqgxywwxjm8+O48ODdh/ciBh2ncRDg8ysRLq
-        Ih6jlRG60o4vwLa7icc1j6+Uu
-X-Received: by 2002:a05:600c:5c9:b0:38e:d44a:4cc1 with SMTP id p9-20020a05600c05c900b0038ed44a4cc1mr28698027wmd.124.1650959417063;
-        Tue, 26 Apr 2022 00:50:17 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxBXOpJmGEWozLGFN1CjEnuirBJfeA0Kz7+BA4MlA0zlr6UKrJpJpE31VOFYGB8/dXFdjuRBg==
-X-Received: by 2002:a05:600c:5c9:b0:38e:d44a:4cc1 with SMTP id p9-20020a05600c05c900b0038ed44a4cc1mr28698015wmd.124.1650959416879;
-        Tue, 26 Apr 2022 00:50:16 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-117-160.dyn.eolo.it. [146.241.117.160])
-        by smtp.gmail.com with ESMTPSA id b14-20020a7bc24e000000b003899c8053e1sm11841188wmj.41.2022.04.26.00.50.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 00:50:16 -0700 (PDT)
-Message-ID: <43773a65a27cb714e3319b06b0215fcb0471aae6.camel@redhat.com>
-Subject: Re: [PATCH] net: dsa: mv88e6xxx: Skip cmode writable for mv88e6*41
- if unchanged
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Marek =?ISO-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        Nathan Rossi <nathan@nathanrossi.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Date:   Tue, 26 Apr 2022 09:50:15 +0200
-In-Reply-To: <20220423152523.1f38e2d8@thinkpad>
-References: <20220423132035.238704-1-nathan@nathanrossi.com>
-         <20220423152523.1f38e2d8@thinkpad>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Tue, 26 Apr 2022 03:55:14 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA78E6479
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 00:52:07 -0700 (PDT)
+Received: from kwepemi500014.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KnYrQ2C6pzCsL1;
+        Tue, 26 Apr 2022 15:47:34 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi500014.china.huawei.com (7.221.188.232) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 26 Apr 2022 15:52:05 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 26 Apr 2022 15:52:04 +0800
+From:   Tong Tiangen <tongtiangen@huawei.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+CC:     <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-riscv@lists.infradead.org>,
+        Tong Tiangen <tongtiangen@huawei.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Guohanjun <guohanjun@huawei.com>
+Subject: [PATCH -next v6 5/6] arm64/mm: Enable ARCH_SUPPORTS_PAGE_TABLE_CHECK
+Date:   Tue, 26 Apr 2022 08:10:35 +0000
+Message-ID: <20220426081036.1374452-6-tongtiangen@huawei.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220426081036.1374452-1-tongtiangen@huawei.com>
+References: <20220426081036.1374452-1-tongtiangen@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+From: Kefeng Wang <wangkefeng.wang@huawei.com>
 
-On Sat, 2022-04-23 at 15:25 +0200, Marek Behún wrote:
-> On Sat, 23 Apr 2022 13:20:35 +0000
-> Nathan Rossi <nathan@nathanrossi.com> wrote:
-> 
-> > The mv88e6341_port_set_cmode function always calls the set writable
-> > regardless of whether the current cmode is different from the desired
-> > cmode. This is problematic for specific configurations of the mv88e6341
-> > and mv88e6141 (in single chip adddressing mode?) where the hidden
-> > registers are not accessible.
-> 
-> I don't have a problem with skipping setting cmode writable if cmode is
-> not being changed. But hidden registers should be accessible regardless
-> of whether you are using single chip addressing mode or not. You need
-> to find why it isn't working for you, this is a bug.
+As commit d283d422c6c4 ("x86: mm: add x86_64 support for page table check")
+, enable ARCH_SUPPORTS_PAGE_TABLE_CHECK on arm64.
 
-For the records, I read the above as requiring a fix the root cause, so
-I'm not applying this patch. Please correct me if I'm wrong.
+Add additional page table check stubs for page table helpers, these stubs
+can be used to check the existing page table entries.
 
-Thanks,
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
+Reviewed-by: Pasha Tatashin <pasha.tatashin@soleen.com>
+---
+ arch/arm64/Kconfig               |  1 +
+ arch/arm64/include/asm/pgtable.h | 59 +++++++++++++++++++++++++++++---
+ 2 files changed, 55 insertions(+), 5 deletions(-)
 
-Paolo
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index 18a18a0e855d..c1509525ab8e 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -92,6 +92,7 @@ config ARM64
+ 	select ARCH_SUPPORTS_ATOMIC_RMW
+ 	select ARCH_SUPPORTS_INT128 if CC_HAS_INT128
+ 	select ARCH_SUPPORTS_NUMA_BALANCING
++	select ARCH_SUPPORTS_PAGE_TABLE_CHECK
+ 	select ARCH_WANT_COMPAT_IPC_PARSE_VERSION if COMPAT
+ 	select ARCH_WANT_DEFAULT_BPF_JIT
+ 	select ARCH_WANT_DEFAULT_TOPDOWN_MMAP_LAYOUT
+diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pgtable.h
+index ad9b221963d4..fe17788a6885 100644
+--- a/arch/arm64/include/asm/pgtable.h
++++ b/arch/arm64/include/asm/pgtable.h
+@@ -33,6 +33,7 @@
+ #include <linux/mmdebug.h>
+ #include <linux/mm_types.h>
+ #include <linux/sched.h>
++#include <linux/page_table_check.h>
+ 
+ #ifdef CONFIG_TRANSPARENT_HUGEPAGE
+ #define __HAVE_ARCH_FLUSH_PMD_TLB_RANGE
+@@ -96,6 +97,7 @@ static inline pteval_t __phys_to_pte_val(phys_addr_t phys)
+ #define pte_young(pte)		(!!(pte_val(pte) & PTE_AF))
+ #define pte_special(pte)	(!!(pte_val(pte) & PTE_SPECIAL))
+ #define pte_write(pte)		(!!(pte_val(pte) & PTE_WRITE))
++#define pte_user(pte)		(!!(pte_val(pte) & PTE_USER))
+ #define pte_user_exec(pte)	(!(pte_val(pte) & PTE_UXN))
+ #define pte_cont(pte)		(!!(pte_val(pte) & PTE_CONT))
+ #define pte_devmap(pte)		(!!(pte_val(pte) & PTE_DEVMAP))
+@@ -312,7 +314,7 @@ static inline void __check_racy_pte_update(struct mm_struct *mm, pte_t *ptep,
+ 		     __func__, pte_val(old_pte), pte_val(pte));
+ }
+ 
+-static inline void set_pte_at(struct mm_struct *mm, unsigned long addr,
++static inline void __set_pte_at(struct mm_struct *mm, unsigned long addr,
+ 			      pte_t *ptep, pte_t pte)
+ {
+ 	if (pte_present(pte) && pte_user_exec(pte) && !pte_special(pte))
+@@ -343,6 +345,13 @@ static inline void set_pte_at(struct mm_struct *mm, unsigned long addr,
+ 	set_pte(ptep, pte);
+ }
+ 
++static inline void set_pte_at(struct mm_struct *mm, unsigned long addr,
++			      pte_t *ptep, pte_t pte)
++{
++	page_table_check_pte_set(mm, addr, ptep, pte);
++	return __set_pte_at(mm, addr, ptep, pte);
++}
++
+ /*
+  * Huge pte definitions.
+  */
+@@ -454,6 +463,8 @@ static inline int pmd_trans_huge(pmd_t pmd)
+ #define pmd_dirty(pmd)		pte_dirty(pmd_pte(pmd))
+ #define pmd_young(pmd)		pte_young(pmd_pte(pmd))
+ #define pmd_valid(pmd)		pte_valid(pmd_pte(pmd))
++#define pmd_user(pmd)		pte_user(pmd_pte(pmd))
++#define pmd_user_exec(pmd)	pte_user_exec(pmd_pte(pmd))
+ #define pmd_cont(pmd)		pte_cont(pmd_pte(pmd))
+ #define pmd_wrprotect(pmd)	pte_pmd(pte_wrprotect(pmd_pte(pmd)))
+ #define pmd_mkold(pmd)		pte_pmd(pte_mkold(pmd_pte(pmd)))
+@@ -501,8 +512,19 @@ static inline pmd_t pmd_mkdevmap(pmd_t pmd)
+ #define pud_pfn(pud)		((__pud_to_phys(pud) & PUD_MASK) >> PAGE_SHIFT)
+ #define pfn_pud(pfn,prot)	__pud(__phys_to_pud_val((phys_addr_t)(pfn) << PAGE_SHIFT) | pgprot_val(prot))
+ 
+-#define set_pmd_at(mm, addr, pmdp, pmd)	set_pte_at(mm, addr, (pte_t *)pmdp, pmd_pte(pmd))
+-#define set_pud_at(mm, addr, pudp, pud)	set_pte_at(mm, addr, (pte_t *)pudp, pud_pte(pud))
++static inline void set_pmd_at(struct mm_struct *mm, unsigned long addr,
++			      pmd_t *pmdp, pmd_t pmd)
++{
++	page_table_check_pmd_set(mm, addr, pmdp, pmd);
++	return __set_pte_at(mm, addr, (pte_t *)pmdp, pmd_pte(pmd));
++}
++
++static inline void set_pud_at(struct mm_struct *mm, unsigned long addr,
++			      pud_t *pudp, pud_t pud)
++{
++	page_table_check_pud_set(mm, addr, pudp, pud);
++	return __set_pte_at(mm, addr, (pte_t *)pudp, pud_pte(pud));
++}
+ 
+ #define __p4d_to_phys(p4d)	__pte_to_phys(p4d_pte(p4d))
+ #define __phys_to_p4d_val(phys)	__phys_to_pte_val(phys)
+@@ -643,6 +665,24 @@ static inline unsigned long pmd_page_vaddr(pmd_t pmd)
+ #define pud_present(pud)	pte_present(pud_pte(pud))
+ #define pud_leaf(pud)		pud_sect(pud)
+ #define pud_valid(pud)		pte_valid(pud_pte(pud))
++#define pud_user(pud)		pte_user(pud_pte(pud))
++
++#ifdef CONFIG_PAGE_TABLE_CHECK
++static inline bool pte_user_accessible_page(pte_t pte)
++{
++	return pte_present(pte) && (pte_user(pte) || pte_user_exec(pte));
++}
++
++static inline bool pmd_user_accessible_page(pmd_t pmd)
++{
++	return pmd_present(pmd) && (pmd_user(pmd) || pmd_user_exec(pmd));
++}
++
++static inline bool pud_user_accessible_page(pud_t pud)
++{
++	return pud_present(pud) && pud_user(pud);
++}
++#endif
+ 
+ static inline void set_pud(pud_t *pudp, pud_t pud)
+ {
+@@ -876,7 +916,11 @@ static inline int pmdp_test_and_clear_young(struct vm_area_struct *vma,
+ static inline pte_t ptep_get_and_clear(struct mm_struct *mm,
+ 				       unsigned long address, pte_t *ptep)
+ {
+-	return __pte(xchg_relaxed(&pte_val(*ptep), 0));
++	pte_t pte = __pte(xchg_relaxed(&pte_val(*ptep), 0));
++
++	page_table_check_pte_clear(mm, address, pte);
++
++	return pte;
+ }
+ 
+ #ifdef CONFIG_TRANSPARENT_HUGEPAGE
+@@ -884,7 +928,11 @@ static inline pte_t ptep_get_and_clear(struct mm_struct *mm,
+ static inline pmd_t pmdp_huge_get_and_clear(struct mm_struct *mm,
+ 					    unsigned long address, pmd_t *pmdp)
+ {
+-	return pte_pmd(ptep_get_and_clear(mm, address, (pte_t *)pmdp));
++	pmd_t pmd = pte_pmd(__pte(xchg_relaxed(&pte_val(*(pte_t *)pmdp), 0)));
++
++	page_table_check_pmd_clear(mm, address, pmd);
++
++	return pmd;
+ }
+ #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
+ 
+@@ -918,6 +966,7 @@ static inline void pmdp_set_wrprotect(struct mm_struct *mm,
+ static inline pmd_t pmdp_establish(struct vm_area_struct *vma,
+ 		unsigned long address, pmd_t *pmdp, pmd_t pmd)
+ {
++	page_table_check_pmd_set(vma->vm_mm, address, pmdp, pmd);
+ 	return __pmd(xchg_relaxed(&pmd_val(*pmdp), pmd_val(pmd)));
+ }
+ #endif
+-- 
+2.25.1
 
