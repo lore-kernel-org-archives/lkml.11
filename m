@@ -2,690 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A18B1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:50:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FA9AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:50:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353535AbiDZQxG (ORCPT
+        id S1353418AbiDZQxJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 12:53:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44044 "EHLO
+        Tue, 26 Apr 2022 12:53:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353325AbiDZQuR (ORCPT
+        with ESMTP id S1353251AbiDZQv3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 12:50:17 -0400
-Received: from mail-ed1-x54a.google.com (mail-ed1-x54a.google.com [IPv6:2a00:1450:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CDEC4199C
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:45:37 -0700 (PDT)
-Received: by mail-ed1-x54a.google.com with SMTP id h7-20020a056402094700b00425a52983dfso8256051edz.8
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:45:37 -0700 (PDT)
+        Tue, 26 Apr 2022 12:51:29 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54FFB4ECE6
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:46:55 -0700 (PDT)
+Received: by mail-io1-xd2b.google.com with SMTP id m13so7225366iob.4
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:46:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=16ohZwKZ9t3WAbi0BPPBDE5qeMRuLRROgr0ny4RlYME=;
-        b=hd5fKa3yl1cD60GLBnVYHLFqj30FOh54rE2Oq7JHoLD+E1R0r+8ebWBFi4Ec6/yN6I
-         2VHfaD9u+6R+5pPvZC2vcp3AmeAUtR5OUzLIsbP+sGZGJheeX+7A9SWP7pQngMMz3qjL
-         QTripPctFa88nzwXMYJ8UC69nodJsg64C33KTS2WMClfT1hp1HxZzTUL/pU2gMmMNlXH
-         xX20l1qJhPIRfQXmmOUzJ/S7aHCFrZqOcjs3VcKTw2C+wh835SRNI9el2psQYkn3f7/G
-         tK6Hzl1skO9u7qLGDR3Qbdn2jaaLVwP2o6+HcdbDhyAw87g3MyScAg+EKj1eX/Ob/MJy
-         aLHg==
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=nGoQA4PseSMoDB9HLCqlZ/CtlZ9MNnC5N8+D59h5w8o=;
+        b=QnD/GAUE7CCosj6Br3twZxRnNYr08rmMRUz4OvX6q9jQkOBisUBMikIxBXEke6gIxl
+         HDdrX0BRG0q0xgvMNTMpX+sEHvqA54rAFblk/g6oJw6KfoQVAtYNWdoWWuoAgU2e8wvP
+         b1JNpyVhx3OhWzMDxCKoDnl7Ib0SKcaHb2rf8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=16ohZwKZ9t3WAbi0BPPBDE5qeMRuLRROgr0ny4RlYME=;
-        b=IGNYWfZFZZ8/i7PiYwwRKuNkm1pQMa5MFZ+nT6sOY7HwlqfsddJOaZV6Uwuc8yArRg
-         IoT4wile8MQ0mhjoXpRcz4+9rM2C4MOiU6AACNCC+JD8DbV6xJmH9+jJCrQUll09e7bS
-         PQcPBeEQegDg35I0dqe3lvDSMoInvSvNzKKs553XW750eDBD+c9kV+uGF3J4CSEtoDR2
-         kuNmfpAT3GWM5GaQYWPz9QGDuJwQ0txblXjZhWeUgqs/5R0fM4WIp0ddp2rf+kPFhSEK
-         LuhbmfVPo1aAYdp6q5tZ/kC8HNNjrs2W181U2LJZO2oVSMY1mBP/Ii5h5oU0+shJaJeS
-         /jSw==
-X-Gm-Message-State: AOAM531kX/QYzBF3L0eGp5Q7RIsClzXMzmvYHl9/oRPLTWmKd+1saTp9
-        LxEWmjh9mAhjVOwed5OCBpJnkKWAeyw=
-X-Google-Smtp-Source: ABdhPJwgIvBqqtb4+UwfAnrYuzq842nCIM4NCU7gD9HqbyhroCBAje/ekLduvR5oCdli1Ru0qSmFr0Qjhq0=
-X-Received: from glider.muc.corp.google.com ([2a00:79e0:15:13:d580:abeb:bf6d:5726])
- (user=glider job=sendgmr) by 2002:a05:6402:5255:b0:425:e40a:c927 with SMTP id
- t21-20020a056402525500b00425e40ac927mr12754417edd.308.1650991535747; Tue, 26
- Apr 2022 09:45:35 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 18:42:58 +0200
-In-Reply-To: <20220426164315.625149-1-glider@google.com>
-Message-Id: <20220426164315.625149-30-glider@google.com>
-Mime-Version: 1.0
-References: <20220426164315.625149-1-glider@google.com>
-X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
-Subject: [PATCH v3 29/46] kmsan: add tests for KMSAN
-From:   Alexander Potapenko <glider@google.com>
-To:     glider@google.com
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=nGoQA4PseSMoDB9HLCqlZ/CtlZ9MNnC5N8+D59h5w8o=;
+        b=yMll3VJqLxGfqIm1d9lanOaug/1I+m1NECVvgifAfkoJQm1b4RkiGz2R4+PT/EbbyQ
+         HrD34gRwNZRVJVRnn0Hon8E/FFCwLZMAnB9Qdf7PGcHekCxsS2zg0lcmkZC37GBo48lL
+         HGXcHCsDXbE/LPYeOCC4jD739xmbRgP/90qVd+BDbcRMoG1a9Jx6wz3Bu7aA2CGy45P2
+         OaMSZ/wf7jZuTVA6XIYrAG2bVfniAcru5mQfM2YfYM/WOrIBRgJefSvCl+IJsFKbU+Da
+         z+x2qH2oyDgxoBTEAfdGZMmtTEhlIdS676RPzr999WgoTXGq+8d9vDgWF+qV92ltcDDN
+         VOfg==
+X-Gm-Message-State: AOAM530vZiAn6TWvQE6tUNiu9AwMU1+65CVuKrobMQTv3PBwqhE5qYRN
+        MFKQAu6JVzyTz2zWXQoRr6znPw==
+X-Google-Smtp-Source: ABdhPJwPUPDVAA6bhrjdmMl4qGGItt/zCCVnRl2EYeNJyvy+lZ5cwh07B5Ma0VIQ8LppwKw6p06/RQ==
+X-Received: by 2002:a05:6638:2182:b0:323:a610:3eaf with SMTP id s2-20020a056638218200b00323a6103eafmr10541408jaj.204.1650991614619;
+        Tue, 26 Apr 2022 09:46:54 -0700 (PDT)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id u12-20020a056e02170c00b002cc27d7fe26sm8832029ill.22.2022.04.26.09.46.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Apr 2022 09:46:54 -0700 (PDT)
+Subject: Re: [PATCH v2 4/6] userfaultfd: update documentation to describe
+ /dev/userfaultfd
+To:     Axel Rasmussen <axelrasmussen@google.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>, kasan-dev@googlegroups.com,
-        linux-mm@kvack.org, linux-arch@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Charan Teja Reddy <charante@codeaurora.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Dmitry V . Levin" <ldv@altlinux.org>,
+        Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>,
+        Hugh Dickins <hughd@google.com>, Jan Kara <jack@suse.cz>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@kernel.org>, Nadav Amit <namit@vmware.com>,
+        Peter Xu <peterx@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>, zhangyi <yi.zhang@huawei.com>
+Cc:     linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-kselftest@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220422212945.2227722-1-axelrasmussen@google.com>
+ <20220422212945.2227722-5-axelrasmussen@google.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <fc320218-bef1-c373-e6a6-afa2f6c4b56c@linuxfoundation.org>
+Date:   Tue, 26 Apr 2022 10:46:52 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
+MIME-Version: 1.0
+In-Reply-To: <20220422212945.2227722-5-axelrasmussen@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The testing module triggers KMSAN warnings in different cases and checks
-that the errors are properly reported, using console probes to capture
-the tool's output.
+On 4/22/22 3:29 PM, Axel Rasmussen wrote:
+> Explain the different ways to create a new userfaultfd, and how access
+> control works for each way.
+> 
+> Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
+> ---
+>   Documentation/admin-guide/mm/userfaultfd.rst | 38 ++++++++++++++++++--
+>   Documentation/admin-guide/sysctl/vm.rst      |  3 ++
+>   2 files changed, 39 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/admin-guide/mm/userfaultfd.rst b/Documentation/admin-guide/mm/userfaultfd.rst
+> index 6528036093e1..4c079b5377d4 100644
+> --- a/Documentation/admin-guide/mm/userfaultfd.rst
+> +++ b/Documentation/admin-guide/mm/userfaultfd.rst
+> @@ -17,7 +17,10 @@ of the ``PROT_NONE+SIGSEGV`` trick.
+>   Design
+>   ======
+>   
+> -Userfaults are delivered and resolved through the ``userfaultfd`` syscall.
 
-Signed-off-by: Alexander Potapenko <glider@google.com>
----
-v2:
- -- add memcpy tests
+Please keep this sentence in there and rephrase it to indicate how it was
+done in the past.
 
-Link: https://linux-review.googlesource.com/id/I49c3f59014cc37fd13541c80beb0b75a75244650
----
- lib/Kconfig.kmsan     |  16 ++
- mm/kmsan/Makefile     |   4 +
- mm/kmsan/kmsan_test.c | 536 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 556 insertions(+)
- create mode 100644 mm/kmsan/kmsan_test.c
+Also explain here why this new approach is better than the syscall approach
+before getting into the below details.
 
-diff --git a/lib/Kconfig.kmsan b/lib/Kconfig.kmsan
-index 199f79d031f94..a68fdb5ed5d92 100644
---- a/lib/Kconfig.kmsan
-+++ b/lib/Kconfig.kmsan
-@@ -21,3 +21,19 @@ config KMSAN
- 	  the whole system down.
- 
- 	  See <file:Documentation/dev-tools/kmsan.rst> for more details.
-+
-+if KMSAN
-+
-+config KMSAN_KUNIT_TEST
-+	tristate "KMSAN integration test suite" if !KUNIT_ALL_TESTS
-+	default KUNIT_ALL_TESTS
-+	depends on TRACEPOINTS && KUNIT
-+	help
-+	  Test suite for KMSAN, testing various error detection scenarios,
-+	  and checking that reports are correctly output to console.
-+
-+	  Say Y here if you want the test to be built into the kernel and run
-+	  during boot; say M if you want the test to build as a module; say N
-+	  if you are unsure.
-+
-+endif
-diff --git a/mm/kmsan/Makefile b/mm/kmsan/Makefile
-index f57a956cb1c8b..7be6a7e92394f 100644
---- a/mm/kmsan/Makefile
-+++ b/mm/kmsan/Makefile
-@@ -20,3 +20,7 @@ CFLAGS_init.o := $(CC_FLAGS_KMSAN_RUNTIME)
- CFLAGS_instrumentation.o := $(CC_FLAGS_KMSAN_RUNTIME)
- CFLAGS_report.o := $(CC_FLAGS_KMSAN_RUNTIME)
- CFLAGS_shadow.o := $(CC_FLAGS_KMSAN_RUNTIME)
-+
-+obj-$(CONFIG_KMSAN_KUNIT_TEST) += kmsan_test.o
-+KMSAN_SANITIZE_kmsan_test.o := y
-+CFLAGS_kmsan_test.o += $(call cc-disable-warning, uninitialized)
-diff --git a/mm/kmsan/kmsan_test.c b/mm/kmsan/kmsan_test.c
-new file mode 100644
-index 0000000000000..44bb2e0f87d81
---- /dev/null
-+++ b/mm/kmsan/kmsan_test.c
-@@ -0,0 +1,536 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Test cases for KMSAN.
-+ * For each test case checks the presence (or absence) of generated reports.
-+ * Relies on 'console' tracepoint to capture reports as they appear in the
-+ * kernel log.
-+ *
-+ * Copyright (C) 2021-2022, Google LLC.
-+ * Author: Alexander Potapenko <glider@google.com>
-+ *
-+ */
-+
-+#include <kunit/test.h>
-+#include "kmsan.h"
-+
-+#include <linux/jiffies.h>
-+#include <linux/kernel.h>
-+#include <linux/kmsan.h>
-+#include <linux/mm.h>
-+#include <linux/random.h>
-+#include <linux/slab.h>
-+#include <linux/spinlock.h>
-+#include <linux/string.h>
-+#include <linux/tracepoint.h>
-+#include <trace/events/printk.h>
-+
-+static DEFINE_PER_CPU(int, per_cpu_var);
-+
-+/* Report as observed from console. */
-+static struct {
-+	spinlock_t lock;
-+	bool available;
-+	bool ignore; /* Stop console output collection. */
-+	char header[256];
-+} observed = {
-+	.lock = __SPIN_LOCK_UNLOCKED(observed.lock),
-+};
-+
-+/* Probe for console output: obtains observed lines of interest. */
-+static void probe_console(void *ignore, const char *buf, size_t len)
-+{
-+	unsigned long flags;
-+
-+	if (observed.ignore)
-+		return;
-+	spin_lock_irqsave(&observed.lock, flags);
-+
-+	if (strnstr(buf, "BUG: KMSAN: ", len)) {
-+		/*
-+		 * KMSAN report and related to the test.
-+		 *
-+		 * The provided @buf is not NUL-terminated; copy no more than
-+		 * @len bytes and let strscpy() add the missing NUL-terminator.
-+		 */
-+		strscpy(observed.header, buf,
-+			min(len + 1, sizeof(observed.header)));
-+		WRITE_ONCE(observed.available, true);
-+		observed.ignore = true;
-+	}
-+	spin_unlock_irqrestore(&observed.lock, flags);
-+}
-+
-+/* Check if a report related to the test exists. */
-+static bool report_available(void)
-+{
-+	return READ_ONCE(observed.available);
-+}
-+
-+/* Information we expect in a report. */
-+struct expect_report {
-+	const char *error_type; /* Error type. */
-+	/*
-+	 * Kernel symbol from the error header, or NULL if no report is
-+	 * expected.
-+	 */
-+	const char *symbol;
-+};
-+
-+/* Check observed report matches information in @r. */
-+static bool report_matches(const struct expect_report *r)
-+{
-+	typeof(observed.header) expected_header;
-+	unsigned long flags;
-+	bool ret = false;
-+	const char *end;
-+	char *cur;
-+
-+	/* Doubled-checked locking. */
-+	if (!report_available() || !r->symbol)
-+		return (!report_available() && !r->symbol);
-+
-+	/* Generate expected report contents. */
-+
-+	/* Title */
-+	cur = expected_header;
-+	end = &expected_header[sizeof(expected_header) - 1];
-+
-+	cur += scnprintf(cur, end - cur, "BUG: KMSAN: %s", r->error_type);
-+
-+	scnprintf(cur, end - cur, " in %s", r->symbol);
-+	/* The exact offset won't match, remove it; also strip module name. */
-+	cur = strchr(expected_header, '+');
-+	if (cur)
-+		*cur = '\0';
-+
-+	spin_lock_irqsave(&observed.lock, flags);
-+	if (!report_available())
-+		goto out; /* A new report is being captured. */
-+
-+	/* Finally match expected output to what we actually observed. */
-+	ret = strstr(observed.header, expected_header);
-+out:
-+	spin_unlock_irqrestore(&observed.lock, flags);
-+
-+	return ret;
-+}
-+
-+/* ===== Test cases ===== */
-+
-+/* Prevent replacing branch with select in LLVM. */
-+static noinline void check_true(char *arg)
-+{
-+	pr_info("%s is true\n", arg);
-+}
-+
-+static noinline void check_false(char *arg)
-+{
-+	pr_info("%s is false\n", arg);
-+}
-+
-+#define USE(x)                                                                 \
-+	do {                                                                   \
-+		if (x)                                                         \
-+			check_true(#x);                                        \
-+		else                                                           \
-+			check_false(#x);                                       \
-+	} while (0)
-+
-+#define EXPECTATION_ETYPE_FN(e, reason, fn)                                    \
-+	struct expect_report e = {                                             \
-+		.error_type = reason,                                          \
-+		.symbol = fn,                                                  \
-+	}
-+
-+#define EXPECTATION_NO_REPORT(e) EXPECTATION_ETYPE_FN(e, NULL, NULL)
-+#define EXPECTATION_UNINIT_VALUE_FN(e, fn)                                     \
-+	EXPECTATION_ETYPE_FN(e, "uninit-value", fn)
-+#define EXPECTATION_UNINIT_VALUE(e) EXPECTATION_UNINIT_VALUE_FN(e, __func__)
-+#define EXPECTATION_USE_AFTER_FREE(e)                                          \
-+	EXPECTATION_ETYPE_FN(e, "use-after-free", __func__)
-+
-+/* Test case: ensure that kmalloc() returns uninitialized memory. */
-+static void test_uninit_kmalloc(struct kunit *test)
-+{
-+	EXPECTATION_UNINIT_VALUE(expect);
-+	int *ptr;
-+
-+	kunit_info(test, "uninitialized kmalloc test (UMR report)\n");
-+	ptr = kmalloc(sizeof(int), GFP_KERNEL);
-+	USE(*ptr);
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+/*
-+ * Test case: ensure that kmalloc'ed memory becomes initialized after memset().
-+ */
-+static void test_init_kmalloc(struct kunit *test)
-+{
-+	EXPECTATION_NO_REPORT(expect);
-+	int *ptr;
-+
-+	kunit_info(test, "initialized kmalloc test (no reports)\n");
-+	ptr = kmalloc(sizeof(int), GFP_KERNEL);
-+	memset(ptr, 0, sizeof(int));
-+	USE(*ptr);
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+/* Test case: ensure that kzalloc() returns initialized memory. */
-+static void test_init_kzalloc(struct kunit *test)
-+{
-+	EXPECTATION_NO_REPORT(expect);
-+	int *ptr;
-+
-+	kunit_info(test, "initialized kzalloc test (no reports)\n");
-+	ptr = kzalloc(sizeof(int), GFP_KERNEL);
-+	USE(*ptr);
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+/* Test case: ensure that local variables are uninitialized by default. */
-+static void test_uninit_stack_var(struct kunit *test)
-+{
-+	EXPECTATION_UNINIT_VALUE(expect);
-+	volatile int cond;
-+
-+	kunit_info(test, "uninitialized stack variable (UMR report)\n");
-+	USE(cond);
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+/* Test case: ensure that local variables with initializers are initialized. */
-+static void test_init_stack_var(struct kunit *test)
-+{
-+	EXPECTATION_NO_REPORT(expect);
-+	volatile int cond = 1;
-+
-+	kunit_info(test, "initialized stack variable (no reports)\n");
-+	USE(cond);
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+static noinline void two_param_fn_2(int arg1, int arg2)
-+{
-+	USE(arg1);
-+	USE(arg2);
-+}
-+
-+static noinline void one_param_fn(int arg)
-+{
-+	two_param_fn_2(arg, arg);
-+	USE(arg);
-+}
-+
-+static noinline void two_param_fn(int arg1, int arg2)
-+{
-+	int init = 0;
-+
-+	one_param_fn(init);
-+	USE(arg1);
-+	USE(arg2);
-+}
-+
-+static void test_params(struct kunit *test)
-+{
-+	EXPECTATION_UNINIT_VALUE_FN(expect, "two_param_fn");
-+	volatile int uninit, init = 1;
-+
-+	kunit_info(test,
-+		   "uninit passed through a function parameter (UMR report)\n");
-+	two_param_fn(uninit, init);
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+static int signed_sum3(int a, int b, int c)
-+{
-+	return a + b + c;
-+}
-+
-+/*
-+ * Test case: ensure that uninitialized values are tracked through function
-+ * arguments.
-+ */
-+static void test_uninit_multiple_params(struct kunit *test)
-+{
-+	EXPECTATION_UNINIT_VALUE(expect);
-+	volatile char b = 3, c;
-+	volatile int a;
-+
-+	kunit_info(test, "uninitialized local passed to fn (UMR report)\n");
-+	USE(signed_sum3(a, b, c));
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+/* Helper function to make an array uninitialized. */
-+static noinline void do_uninit_local_array(char *array, int start, int stop)
-+{
-+	volatile char uninit;
-+	int i;
-+
-+	for (i = start; i < stop; i++)
-+		array[i] = uninit;
-+}
-+
-+/*
-+ * Test case: ensure kmsan_check_memory() reports an error when checking
-+ * uninitialized memory.
-+ */
-+static void test_uninit_kmsan_check_memory(struct kunit *test)
-+{
-+	EXPECTATION_UNINIT_VALUE_FN(expect, "test_uninit_kmsan_check_memory");
-+	volatile char local_array[8];
-+
-+	kunit_info(
-+		test,
-+		"kmsan_check_memory() called on uninit local (UMR report)\n");
-+	do_uninit_local_array((char *)local_array, 5, 7);
-+
-+	kmsan_check_memory((char *)local_array, 8);
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+/*
-+ * Test case: check that a virtual memory range created with vmap() from
-+ * initialized pages is still considered as initialized.
-+ */
-+static void test_init_kmsan_vmap_vunmap(struct kunit *test)
-+{
-+	EXPECTATION_NO_REPORT(expect);
-+	const int npages = 2;
-+	struct page **pages;
-+	void *vbuf;
-+	int i;
-+
-+	kunit_info(test, "pages initialized via vmap (no reports)\n");
-+
-+	pages = kmalloc_array(npages, sizeof(struct page), GFP_KERNEL);
-+	for (i = 0; i < npages; i++)
-+		pages[i] = alloc_page(GFP_KERNEL);
-+	vbuf = vmap(pages, npages, VM_MAP, PAGE_KERNEL);
-+	memset(vbuf, 0xfe, npages * PAGE_SIZE);
-+	for (i = 0; i < npages; i++)
-+		kmsan_check_memory(page_address(pages[i]), PAGE_SIZE);
-+
-+	if (vbuf)
-+		vunmap(vbuf);
-+	for (i = 0; i < npages; i++)
-+		if (pages[i])
-+			__free_page(pages[i]);
-+	kfree(pages);
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+/*
-+ * Test case: ensure that memset() can initialize a buffer allocated via
-+ * vmalloc().
-+ */
-+static void test_init_vmalloc(struct kunit *test)
-+{
-+	EXPECTATION_NO_REPORT(expect);
-+	int npages = 8, i;
-+	char *buf;
-+
-+	kunit_info(test, "vmalloc buffer can be initialized (no reports)\n");
-+	buf = vmalloc(PAGE_SIZE * npages);
-+	buf[0] = 1;
-+	memset(buf, 0xfe, PAGE_SIZE * npages);
-+	USE(buf[0]);
-+	for (i = 0; i < npages; i++)
-+		kmsan_check_memory(&buf[PAGE_SIZE * i], PAGE_SIZE);
-+	vfree(buf);
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+/* Test case: ensure that use-after-free reporting works. */
-+static void test_uaf(struct kunit *test)
-+{
-+	EXPECTATION_USE_AFTER_FREE(expect);
-+	volatile int value;
-+	volatile int *var;
-+
-+	kunit_info(test, "use-after-free in kmalloc-ed buffer (UMR report)\n");
-+	var = kmalloc(80, GFP_KERNEL);
-+	var[3] = 0xfeedface;
-+	kfree((int *)var);
-+	/* Copy the invalid value before checking it. */
-+	value = var[3];
-+	USE(value);
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+/*
-+ * Test case: ensure that uninitialized values are propagated through per-CPU
-+ * memory.
-+ */
-+static void test_percpu_propagate(struct kunit *test)
-+{
-+	EXPECTATION_UNINIT_VALUE(expect);
-+	volatile int uninit, check;
-+
-+	kunit_info(test,
-+		   "uninit local stored to per_cpu memory (UMR report)\n");
-+
-+	this_cpu_write(per_cpu_var, uninit);
-+	check = this_cpu_read(per_cpu_var);
-+	USE(check);
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+/*
-+ * Test case: ensure that passing uninitialized values to printk() leads to an
-+ * error report.
-+ */
-+static void test_printk(struct kunit *test)
-+{
-+	EXPECTATION_UNINIT_VALUE_FN(expect, "number");
-+	volatile int uninit;
-+
-+	kunit_info(test, "uninit local passed to pr_info() (UMR report)\n");
-+	pr_info("%px contains %d\n", &uninit, uninit);
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+/*
-+ * Test case: ensure that memcpy() correctly copies uninitialized values between
-+ * aligned `src` and `dst`.
-+ */
-+static void test_memcpy_aligned_to_aligned(struct kunit *test)
-+{
-+	EXPECTATION_UNINIT_VALUE_FN(expect, "test_memcpy_aligned_to_aligned");
-+	volatile int uninit_src;
-+	volatile int dst = 0;
-+
-+	kunit_info(test, "memcpy()ing aligned uninit src to aligned dst (UMR report)\n");
-+	memcpy((void *)&dst, (void *)&uninit_src, sizeof(uninit_src));
-+	kmsan_check_memory((void *)&dst, sizeof(dst));
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+/*
-+ * Test case: ensure that memcpy() correctly copies uninitialized values between
-+ * aligned `src` and unaligned `dst`.
-+ *
-+ * Copying aligned 4-byte value to an unaligned one leads to touching two
-+ * aligned 4-byte values. This test case checks that KMSAN correctly reports an
-+ * error on the first of the two values.
-+ */
-+static void test_memcpy_aligned_to_unaligned(struct kunit *test)
-+{
-+	EXPECTATION_UNINIT_VALUE_FN(expect, "test_memcpy_aligned_to_unaligned");
-+	volatile int uninit_src;
-+	volatile char dst[8] = {0};
-+
-+	kunit_info(test, "memcpy()ing aligned uninit src to unaligned dst (UMR report)\n");
-+	memcpy((void *)&dst[1], (void *)&uninit_src, sizeof(uninit_src));
-+	kmsan_check_memory((void *)dst, 4);
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+/*
-+ * Test case: ensure that memcpy() correctly copies uninitialized values between
-+ * aligned `src` and unaligned `dst`.
-+ *
-+ * Copying aligned 4-byte value to an unaligned one leads to touching two
-+ * aligned 4-byte values. This test case checks that KMSAN correctly reports an
-+ * error on the second of the two values.
-+ */
-+static void test_memcpy_aligned_to_unaligned2(struct kunit *test)
-+{
-+	EXPECTATION_UNINIT_VALUE_FN(expect, "test_memcpy_aligned_to_unaligned2");
-+	volatile int uninit_src;
-+	volatile char dst[8] = {0};
-+
-+	kunit_info(test, "memcpy()ing aligned uninit src to unaligned dst - part 2 (UMR report)\n");
-+	memcpy((void *)&dst[1], (void *)&uninit_src, sizeof(uninit_src));
-+	kmsan_check_memory((void *)&dst[4], sizeof(uninit_src));
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+static struct kunit_case kmsan_test_cases[] = {
-+	KUNIT_CASE(test_uninit_kmalloc),
-+	KUNIT_CASE(test_init_kmalloc),
-+	KUNIT_CASE(test_init_kzalloc),
-+	KUNIT_CASE(test_uninit_stack_var),
-+	KUNIT_CASE(test_init_stack_var),
-+	KUNIT_CASE(test_params),
-+	KUNIT_CASE(test_uninit_multiple_params),
-+	KUNIT_CASE(test_uninit_kmsan_check_memory),
-+	KUNIT_CASE(test_init_kmsan_vmap_vunmap),
-+	KUNIT_CASE(test_init_vmalloc),
-+	KUNIT_CASE(test_uaf),
-+	KUNIT_CASE(test_percpu_propagate),
-+	KUNIT_CASE(test_printk),
-+	KUNIT_CASE(test_memcpy_aligned_to_aligned),
-+	KUNIT_CASE(test_memcpy_aligned_to_unaligned),
-+	KUNIT_CASE(test_memcpy_aligned_to_unaligned2),
-+	{},
-+};
-+
-+/* ===== End test cases ===== */
-+
-+static int test_init(struct kunit *test)
-+{
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&observed.lock, flags);
-+	observed.header[0] = '\0';
-+	observed.ignore = false;
-+	observed.available = false;
-+	spin_unlock_irqrestore(&observed.lock, flags);
-+
-+	return 0;
-+}
-+
-+static void test_exit(struct kunit *test)
-+{
-+}
-+
-+static struct kunit_suite kmsan_test_suite = {
-+	.name = "kmsan",
-+	.test_cases = kmsan_test_cases,
-+	.init = test_init,
-+	.exit = test_exit,
-+};
-+static struct kunit_suite *kmsan_test_suites[] = { &kmsan_test_suite, NULL };
-+
-+static void register_tracepoints(struct tracepoint *tp, void *ignore)
-+{
-+	check_trace_callback_type_console(probe_console);
-+	if (!strcmp(tp->name, "console"))
-+		WARN_ON(tracepoint_probe_register(tp, probe_console, NULL));
-+}
-+
-+static void unregister_tracepoints(struct tracepoint *tp, void *ignore)
-+{
-+	if (!strcmp(tp->name, "console"))
-+		tracepoint_probe_unregister(tp, probe_console, NULL);
-+}
-+
-+/*
-+ * We only want to do tracepoints setup and teardown once, therefore we have to
-+ * customize the init and exit functions and cannot rely on kunit_test_suite().
-+ */
-+static int __init kmsan_test_init(void)
-+{
-+	/*
-+	 * Because we want to be able to build the test as a module, we need to
-+	 * iterate through all known tracepoints, since the static registration
-+	 * won't work here.
-+	 */
-+	for_each_kernel_tracepoint(register_tracepoints, NULL);
-+	return __kunit_test_suites_init(kmsan_test_suites);
-+}
-+
-+static void kmsan_test_exit(void)
-+{
-+	__kunit_test_suites_exit(kmsan_test_suites);
-+	for_each_kernel_tracepoint(unregister_tracepoints, NULL);
-+	tracepoint_synchronize_unregister();
-+}
-+
-+late_initcall_sync(kmsan_test_init);
-+module_exit(kmsan_test_exit);
-+
-+MODULE_LICENSE("GPL v2");
-+MODULE_AUTHOR("Alexander Potapenko <glider@google.com>");
--- 
-2.36.0.rc2.479.g8af0fa9b8e-goog
+> +Userspace creates a new userfaultfd, initializes it, and registers one or more
+> +regions of virtual memory with it. Then, any page faults which occur within the
+> +region(s) result in a message being delivered to the userfaultfd, notifying
+> +userspace of the fault.
+>   
+>   The ``userfaultfd`` (aside from registering and unregistering virtual
+>   memory ranges) provides two primary functionalities:
+> @@ -39,7 +42,7 @@ Vmas are not suitable for page- (or hugepage) granular fault tracking
+>   when dealing with virtual address spaces that could span
+>   Terabytes. Too many vmas would be needed for that.>   
+> -The ``userfaultfd`` once opened by invoking the syscall, can also be
+> +The ``userfaultfd``, once created, can also be
 
+This is sentence is too short and would look odd. Combine the sentences
+so it renders well in the generated doc.
+
+>   passed using unix domain sockets to a manager process, so the same
+>   manager process could handle the userfaults of a multitude of
+>   different processes without them being aware about what is going on
+> @@ -50,6 +53,37 @@ is a corner case that would currently return ``-EBUSY``).
+>   API
+>   ===
+>   
+> +Creating a userfaultfd
+> +----------------------
+> +
+> +There are two mechanisms to create a userfaultfd. There are various ways to
+> +restrict this too, since userfaultfds which handle kernel page faults have
+> +historically been a useful tool for exploiting the kernel.
+> +
+> +The first is the userfaultfd(2) syscall. Access to this is controlled in several
+> +ways:
+> +
+> +- By default, the userfaultfd will be able to handle kernel page faults. This
+> +  can be disabled by passing in UFFD_USER_MODE_ONLY.
+> +
+> +- If vm.unprivileged_userfaultfd is 0, then the caller must *either* have
+> +  CAP_SYS_PTRACE, or pass in UFFD_USER_MODE_ONLY.
+> +
+> +- If vm.unprivileged_userfaultfd is 1, then no particular privilege is needed to
+> +  use this syscall, even if UFFD_USER_MODE_ONLY is *not* set.
+> +
+> +Alternatively, userfaultfds can be created by opening /dev/userfaultfd, and
+> +issuing a USERFAULTFD_IOC_NEW ioctl to this device. Access to this device is
+
+New ioctl? I thought we are moving away from using ioctls?
+
+> +controlled via normal filesystem permissions (user/group/mode for example) - no
+> +additional permission (capability/sysctl) is needed to be able to handle kernel
+> +faults this way. This is useful because it allows e.g. a specific user or group
+> +to be able to create kernel-fault-handling userfaultfds, without allowing it
+> +more broadly, or granting more privileges in addition to that particular ability
+> +(CAP_SYS_PTRACE). In other words, it allows permissions to be minimized.
+> +
+> +Initializing up a userfaultfd
+> +------------------------
+> +
+
+This will generate doc warn very likley - extend the dashes to the
+entire length of the subtitle.
+
+>   When first opened the ``userfaultfd`` must be enabled invoking the
+>   ``UFFDIO_API`` ioctl specifying a ``uffdio_api.api`` value set to ``UFFD_API`` (or
+>   a later API version) which will specify the ``read/POLLIN`` protocol
+> diff --git a/Documentation/admin-guide/sysctl/vm.rst b/Documentation/admin-guide/sysctl/vm.rst
+> index f4804ce37c58..8682d5fbc8ea 100644
+> --- a/Documentation/admin-guide/sysctl/vm.rst
+> +++ b/Documentation/admin-guide/sysctl/vm.rst
+> @@ -880,6 +880,9 @@ calls without any restrictions.
+>   
+>   The default value is 0.
+>   
+> +An alternative to this sysctl / the userfaultfd(2) syscall is to create
+> +userfaultfds via /dev/userfaultfd. See
+> +Documentation/admin-guide/mm/userfaultfd.rst.
+>   
+>   user_reserve_kbytes
+>   ===================
+> 
+
+thanks,
+-- Shuah
