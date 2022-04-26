@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34F74C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 258F5C35280
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:48:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347668AbiDZIvu (ORCPT
+        id S1347615AbiDZIvr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:51:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59330 "EHLO
+        Tue, 26 Apr 2022 04:51:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241862AbiDZIjv (ORCPT
+        with ESMTP id S1345759AbiDZIj2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:39:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E235D14D28C;
-        Tue, 26 Apr 2022 01:32:36 -0700 (PDT)
+        Tue, 26 Apr 2022 04:39:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE9451DA7D;
+        Tue, 26 Apr 2022 01:30:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5DE8AB81D06;
-        Tue, 26 Apr 2022 08:32:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E31EC385AC;
-        Tue, 26 Apr 2022 08:32:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 123EBB81CFA;
+        Tue, 26 Apr 2022 08:30:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 643A3C385AE;
+        Tue, 26 Apr 2022 08:30:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961954;
-        bh=BU1pOQ1nK3rdoZZKFHeBNw6ys46RrHzncOALM+liBxA=;
+        s=korg; t=1650961849;
+        bh=Eo6mTp73waa3f5yP2nmLHCgRXXu0Ial0krgj6rRKqJ0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ELsOuhUixEDeUmg8RAZOmcjXaNyC74bEHLP11NqQ34k81iXH5S/ZJl9+C7NnDaK/O
-         vhhVSryN26o9KKOMJpywJJ47mnN3Cj09vseI8RVnkDjiG9OHlH+KEICF6qyqoC08Tb
-         mBreS6VxCGAncLlD8N9yYjBGTimj62W4pp09uJ1U=
+        b=r3HA4AQAxKUZrZ0E0hOrhZg4FSFWLmSxDrO6iTpZcTHuALl3RzhJrY7GvO1c1q5Lc
+         dK/PSeNakVvYKCVrMZg3/LlXLyxvaoKhKqRE5M7hcIvPlZaTUt20i7Vnm/d5mg4Si6
+         W0SK1ZOXb3r/GRe08YMLrwcvuCYHpes2YMV5xTfo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Feng Zhou <zhoufeng.zf@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Peilin Ye <peilin.ye@bytedance.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        Madhavan Srinivasan <maddy@linux.vnet.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 23/86] ip6_gre: Fix skb_under_panic in __gre6_xmit()
-Date:   Tue, 26 Apr 2022 10:20:51 +0200
-Message-Id: <20220426081741.880255898@linuxfoundation.org>
+Subject: [PATCH 5.4 44/62] powerpc/perf: Fix power9 event alternatives
+Date:   Tue, 26 Apr 2022 10:21:24 +0200
+Message-Id: <20220426081738.485907049@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
-References: <20220426081741.202366502@linuxfoundation.org>
+In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
+References: <20220426081737.209637816@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,126 +52,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+From: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
 
-[ Upstream commit ab198e1d0dd8dc4bc7575fb50758e2cbd51e14e1 ]
+[ Upstream commit 0dcad700bb2776e3886fe0a645a4bf13b1e747cd ]
 
-Feng reported an skb_under_panic BUG triggered by running
-test_ip6gretap() in tools/testing/selftests/bpf/test_tunnel.sh:
+When scheduling a group of events, there are constraint checks done to
+make sure all events can go in a group. Example, one of the criteria is
+that events in a group cannot use the same PMC. But platform specific
+PMU supports alternative event for some of the event codes. During
+perf_event_open(), if any event group doesn't match constraint check
+criteria, further lookup is done to find alternative event.
 
-[   82.492551] skbuff: skb_under_panic: text:ffffffffb268bb8e len:403 put:12 head:ffff9997c5480000 data:ffff9997c547fff8 tail:0x18b end:0x2c0 dev:ip6gretap11
-<...>
-[   82.607380] Call Trace:
-[   82.609389]  <TASK>
-[   82.611136]  skb_push.cold.109+0x10/0x10
-[   82.614289]  __gre6_xmit+0x41e/0x590
-[   82.617169]  ip6gre_tunnel_xmit+0x344/0x3f0
-[   82.620526]  dev_hard_start_xmit+0xf1/0x330
-[   82.623882]  sch_direct_xmit+0xe4/0x250
-[   82.626961]  __dev_queue_xmit+0x720/0xfe0
-<...>
-[   82.633431]  packet_sendmsg+0x96a/0x1cb0
-[   82.636568]  sock_sendmsg+0x30/0x40
-<...>
+By current design, the array of alternatives events in PMU code is
+expected to be sorted by column 0. This is because in
+find_alternative() the return criteria is based on event code
+comparison. ie. "event < ev_alt[i][0])". This optimisation is there
+since find_alternative() can be called multiple times. In power9 PMU
+code, the alternative event array is not sorted properly and hence there
+is breakage in finding alternative events.
 
-The following sequence of events caused the BUG:
+To work with existing logic, fix the alternative event array to be
+sorted by column 0 for power9-pmu.c
 
-1. During ip6gretap device initialization, tunnel->tun_hlen (e.g. 4) is
-   calculated based on old flags (see ip6gre_calc_hlen());
-2. packet_snd() reserves header room for skb A, assuming
-   tunnel->tun_hlen is 4;
-3. Later (in clsact Qdisc), the eBPF program sets a new tunnel key for
-   skb A using bpf_skb_set_tunnel_key() (see _ip6gretap_set_tunnel());
-4. __gre6_xmit() detects the new tunnel key, and recalculates
-   "tun_hlen" (e.g. 12) based on new flags (e.g. TUNNEL_KEY and
-   TUNNEL_SEQ);
-5. gre_build_header() calls skb_push() with insufficient reserved header
-   room, triggering the BUG.
+Results:
 
-As sugguested by Cong, fix it by moving the call to skb_cow_head() after
-the recalculation of tun_hlen.
+With alternative events, multiplexing can be avoided. That is, for
+example, in power9 PM_LD_MISS_L1 (0x3e054) has alternative event,
+PM_LD_MISS_L1_ALT (0x400f0). This is an identical event which can be
+programmed in a different PMC.
 
-Reproducer:
+Before:
 
-  OBJ=$LINUX/tools/testing/selftests/bpf/test_tunnel_kern.o
+ # perf stat -e r3e054,r300fc
 
-  ip netns add at_ns0
-  ip link add veth0 type veth peer name veth1
-  ip link set veth0 netns at_ns0
-  ip netns exec at_ns0 ip addr add 172.16.1.100/24 dev veth0
-  ip netns exec at_ns0 ip link set dev veth0 up
-  ip link set dev veth1 up mtu 1500
-  ip addr add dev veth1 172.16.1.200/24
+ Performance counter stats for 'system wide':
 
-  ip netns exec at_ns0 ip addr add ::11/96 dev veth0
-  ip netns exec at_ns0 ip link set dev veth0 up
-  ip addr add dev veth1 ::22/96
-  ip link set dev veth1 up
+           1057860      r3e054              (50.21%)
+               379      r300fc              (49.79%)
 
-  ip netns exec at_ns0 \
-  	ip link add dev ip6gretap00 type ip6gretap seq flowlabel 0xbcdef key 2 \
-  	local ::11 remote ::22
+       0.944329741 seconds time elapsed
 
-  ip netns exec at_ns0 ip addr add dev ip6gretap00 10.1.1.100/24
-  ip netns exec at_ns0 ip addr add dev ip6gretap00 fc80::100/96
-  ip netns exec at_ns0 ip link set dev ip6gretap00 up
+Since both the events are using PMC3 in this case, they are
+multiplexed here.
 
-  ip link add dev ip6gretap11 type ip6gretap external
-  ip addr add dev ip6gretap11 10.1.1.200/24
-  ip addr add dev ip6gretap11 fc80::200/24
-  ip link set dev ip6gretap11 up
+After:
 
-  tc qdisc add dev ip6gretap11 clsact
-  tc filter add dev ip6gretap11 egress bpf da obj $OBJ sec ip6gretap_set_tunnel
-  tc filter add dev ip6gretap11 ingress bpf da obj $OBJ sec ip6gretap_get_tunnel
+ # perf stat -e r3e054,r300fc
 
-  ping6 -c 3 -w 10 -q ::11
+ Performance counter stats for 'system wide':
 
-Fixes: 6712abc168eb ("ip6_gre: add ip6 gre and gretap collect_md mode")
-Reported-by: Feng Zhou <zhoufeng.zf@bytedance.com>
-Co-developed-by: Cong Wang <cong.wang@bytedance.com>
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+           1006948      r3e054
+               182      r300fc
+
+Fixes: 91e0bd1e6251 ("powerpc/perf: Add PM_LD_MISS_L1 and PM_BR_2PATH to power9 event list")
+Signed-off-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+Reviewed-by: Madhavan Srinivasan <maddy@linux.vnet.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220419114828.89843-1-atrajeev@linux.vnet.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/ip6_gre.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ arch/powerpc/perf/power9-pmu.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
-index 949d6fbc1ca0..1f6c752f13b4 100644
---- a/net/ipv6/ip6_gre.c
-+++ b/net/ipv6/ip6_gre.c
-@@ -733,9 +733,6 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
- 	else
- 		fl6->daddr = tunnel->parms.raddr;
+diff --git a/arch/powerpc/perf/power9-pmu.c b/arch/powerpc/perf/power9-pmu.c
+index 08c3ef796198..1225f53609a4 100644
+--- a/arch/powerpc/perf/power9-pmu.c
++++ b/arch/powerpc/perf/power9-pmu.c
+@@ -131,11 +131,11 @@ int p9_dd22_bl_ev[] = {
  
--	if (skb_cow_head(skb, dev->needed_headroom ?: tunnel->hlen))
--		return -ENOMEM;
--
- 	/* Push GRE header. */
- 	protocol = (dev->type == ARPHRD_ETHER) ? htons(ETH_P_TEB) : proto;
+ /* Table of alternatives, sorted by column 0 */
+ static const unsigned int power9_event_alternatives[][MAX_ALT] = {
+-	{ PM_INST_DISP,			PM_INST_DISP_ALT },
+-	{ PM_RUN_CYC_ALT,		PM_RUN_CYC },
+-	{ PM_RUN_INST_CMPL_ALT,		PM_RUN_INST_CMPL },
+-	{ PM_LD_MISS_L1,		PM_LD_MISS_L1_ALT },
+ 	{ PM_BR_2PATH,			PM_BR_2PATH_ALT },
++	{ PM_INST_DISP,			PM_INST_DISP_ALT },
++	{ PM_RUN_CYC_ALT,               PM_RUN_CYC },
++	{ PM_LD_MISS_L1,                PM_LD_MISS_L1_ALT },
++	{ PM_RUN_INST_CMPL_ALT,         PM_RUN_INST_CMPL },
+ };
  
-@@ -763,6 +760,9 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
- 			(TUNNEL_CSUM | TUNNEL_KEY | TUNNEL_SEQ);
- 		tun_hlen = gre_calc_hlen(flags);
- 
-+		if (skb_cow_head(skb, dev->needed_headroom ?: tun_hlen + tunnel->encap_hlen))
-+			return -ENOMEM;
-+
- 		gre_build_header(skb, tun_hlen,
- 				 flags, protocol,
- 				 tunnel_id_to_key32(tun_info->key.tun_id),
-@@ -773,6 +773,9 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
- 		if (tunnel->parms.o_flags & TUNNEL_SEQ)
- 			tunnel->o_seqno++;
- 
-+		if (skb_cow_head(skb, dev->needed_headroom ?: tunnel->hlen))
-+			return -ENOMEM;
-+
- 		gre_build_header(skb, tunnel->tun_hlen, tunnel->parms.o_flags,
- 				 protocol, tunnel->parms.o_key,
- 				 htonl(tunnel->o_seqno));
+ static int power9_get_alternatives(u64 event, unsigned int flags, u64 alt[])
 -- 
 2.35.1
 
