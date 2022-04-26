@@ -2,195 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B1D5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:24:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D16FCC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:24:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344677AbiDZI15 (ORCPT
+        id S1344739AbiDZI2E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:27:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36038 "EHLO
+        Tue, 26 Apr 2022 04:28:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344758AbiDZI0o (ORCPT
+        with ESMTP id S1344730AbiDZI1D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:26:44 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13B9F3DDF9;
-        Tue, 26 Apr 2022 01:23:18 -0700 (PDT)
-X-UUID: ca5bc5c1788243d9bdf00873341344a6-20220426
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:deaf5418-98ed-4509-9059-884e43cd696f,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:faefae9,CLOUDID:c5bdbb2e-6199-437e-8ab4-9920b4bc5b76,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: ca5bc5c1788243d9bdf00873341344a6-20220426
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1906228943; Tue, 26 Apr 2022 16:23:11 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Tue, 26 Apr 2022 16:23:10 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 26 Apr 2022 16:23:10 +0800
-Message-ID: <9547368870f6a8d5c5e6bd5dd497ddbe04c51b93.camel@mediatek.com>
-Subject: Re: [PATCH V3 12/17] dt-binding: mt8192: Add infra_ao reset bit
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "mturquette@baylibre.com" <mturquette@baylibre.com>,
-        "sboyd@kernel.org" <sboyd@kernel.org>,
-        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>
-CC:     "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        "angelogioacchino.delregno@collabora.com" 
-        <angelogioacchino.delregno@collabora.com>,
-        Chun-Jie Chen =?UTF-8?Q?=28=E9=99=B3=E6=B5=9A=E6=A1=80=29?= 
-        <Chun-Jie.Chen@mediatek.com>,
-        "wenst@chromium.org" <wenst@chromium.org>,
-        Runyang Chen =?UTF-8?Q?=28=E9=99=88=E6=B6=A6=E6=B4=8B=29?= 
-        <Runyang.Chen@mediatek.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        Project_Global_Chrome_Upstream_Group 
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Tue, 26 Apr 2022 16:23:10 +0800
-In-Reply-To: <418c5f0c-5279-41f5-3705-345ec9a97ea2@linaro.org>
-References: <20220422060152.13534-1-rex-bc.chen@mediatek.com>
-         <20220422060152.13534-13-rex-bc.chen@mediatek.com>
-         <e5b18654-ce83-44ee-e4c8-4cdfc4ceaa1d@linaro.org>
-         <5ec37a01b0b84140a7d171b9a5cff7ad8f9fbe87.camel@mediatek.com>
-         <418c5f0c-5279-41f5-3705-345ec9a97ea2@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Tue, 26 Apr 2022 04:27:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F4F442EF3;
+        Tue, 26 Apr 2022 01:23:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 485B9B81CF3;
+        Tue, 26 Apr 2022 08:23:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B34CBC385A0;
+        Tue, 26 Apr 2022 08:23:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650961405;
+        bh=s3TZoSOvbMjpJ9+4y6K6ChvHNGTS8DnMQhNCoxABoF0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=QIjjcRCKnnZOgB3r7L7bjOMt3JMRllaSajTJ+ZTM/LUOhTMKr0EcxS28j1pi086YC
+         FjZwjF7hnxKozSUFc1y7rGAo+zQLQj6u5C6ivM1lidWzW3IYAoo7gyfR59oXZOYWeL
+         ngjufmJkeeNJY7wAk0rPX14cgO6iXt+iY7iDZ/ME=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
+        Khazhismel Kumykov <khazhy@google.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 4.9 24/24] block/compat_ioctl: fix range check in BLKGETSIZE
+Date:   Tue, 26 Apr 2022 10:21:18 +0200
+Message-Id: <20220426081732.085252639@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220426081731.370823950@linuxfoundation.org>
+References: <20220426081731.370823950@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-04-25 at 15:52 +0800, Krzysztof Kozlowski wrote:
-> On 25/04/2022 07:01, Rex-BC Chen wrote:
-> > On Sat, 2022-04-23 at 18:28 +0800, Krzysztof Kozlowski wrote:
-> > > On 22/04/2022 08:01, Rex-BC Chen wrote:
-> > > > To support reset of infra_ao, add the bit definition for
-> > > > thermal/PCIe/SVS.
-> > > > 
-> > > > Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-> > > > ---
-> > > >  include/dt-bindings/reset/mt8192-resets.h | 10 ++++++++++
-> > > >  1 file changed, 10 insertions(+)
-> > > > 
-> > > > diff --git a/include/dt-bindings/reset/mt8192-resets.h
-> > > > b/include/dt-bindings/reset/mt8192-resets.h
-> > > > index be9a7ca245b9..d5f3433175c1 100644
-> > > > --- a/include/dt-bindings/reset/mt8192-resets.h
-> > > > +++ b/include/dt-bindings/reset/mt8192-resets.h
-> > > > @@ -27,4 +27,14 @@
-> > > >  
-> > > >  #define MT8192_TOPRGU_SW_RST_NUM				
-> > > > 23
-> > > >  
-> > > > +/* INFRA RST0 */
-> > > > +#define MT8192_INFRA_RST0_LVTS_AP_RST				
-> > > > 0
-> > > > +/* INFRA RST2 */
-> > > > +#define MT8192_INFRA_RST2_PCIE_PHY_RST				
-> > > > 15
-> > > > +/* INFRA RST3 */
-> > > > +#define MT8192_INFRA_RST3_PTP_RST				
-> > > > 5
-> > > > +/* INFRA RST4 */
-> > > > +#define MT8192_INFRA_RST4_LVTS_MCU				
-> > > > 12
-> > > > +#define MT8192_INFRA_RST4_PCIE_TOP				
-> > > > 1
-> > > 
-> > > These should be the IDs of reset, not some register
-> > > values/offsets.
-> > > Therefore it is expected to have them incremented by 1.
-> > > 
-> > > 
-> > 
-> > Hello Krzysztof,
-> > 
-> > This is define bit.
-> > 
-> > There is serveral reset set for infra_ao while it's not serial.
-> > For MT8192, it's 0x120/0x130/0x140/0x150/0x730.
-> > We are implement #reset-cells = <2>, and we can use this reset
-> > drive
-> > more easier.
-> > 
-> > For example, in dts, we can define
-> > infra_ao: syscon {
-> > 	compatible = "mediatek,mt8192-infracfg", "syscon";
-> >  	reg = <0 0x10001000 0 0x1000>;
-> >  	#clock-cells = <1>;
-> > 	#reset-cells = <2>;
-> > };
-> > 
-> > thermal {
-> > 	...
-> > 	resets = <&infra_ao 0x730 MT8192_INFRA_RST4_LVTS_MCU>;
-> > 	...
-> > };
-> > 
-> > If it's acceptabel, I can update all bit difinition from 0 to 15
-> > for
-> > all reset set.
-> 
-> Bits are not acceptable, because you embed specific device
-> programming
-> model (register bits) into the binding.
-> 
-> These should be IDs, so decimal numbers incremented from 0, so:
-> #define MT8192_INFRA_RST0_LVTS_AP_RST				0
-> #define MT8192_INFRA_RST4_LVTS_MCU				1
-> #define MT8192_INFRA_RST4_PCIE_TOP				2
-> 
-> And what is 0x730 in your example? It does not look like ID of a
-> reset...
-> 
-> Entire changeset look wrong from DT point of view.
-> 
-> Best regards,
-> Krzysztof
+From: Khazhismel Kumykov <khazhy@google.com>
 
-Hello Krzysztof,
+commit ccf16413e520164eb718cf8b22a30438da80ff23 upstream.
 
-Got it. I will modify them to reset index.
-And the dts in my next version would somthing like this:
+kernel ulong and compat_ulong_t may not be same width. Use type directly
+to eliminate mismatches.
 
-----
-#define MT8192_INFRA_THERMAL_CTRL_RST			0
-#define MT8192_INFRA_PEXTP_PHY_RST			79
-#define MT8192_INFRA_PTP_RST				101
-#define MT8192_INFRA_RST4_PCIE_TOP			129
-#define MT8192_INFRA_THERMAL_CTRL_MCU_RST		140
-----
+This would result in truncation rather than EFBIG for 32bit mode for
+large disks.
 
-infra_ao: syscon {
-	compatible = "mediatek,mt8192-infracfg", "syscon";
-	reg = <0 0x10001000 0 0x1000>;
-	#clock-cells = <1>;
-	#reset-cells = <1>;
-};
+Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+Signed-off-by: Khazhismel Kumykov <khazhy@google.com>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Link: https://lore.kernel.org/r/20220414224056.2875681-1-khazhy@google.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ block/compat_ioctl.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-thermal {
-	...
-	resets = <&infra_ao MT8192_INFRA_THERMAL_CTRL_MCU_RST>;
-	...
-};
+--- a/block/compat_ioctl.c
++++ b/block/compat_ioctl.c
+@@ -394,7 +394,7 @@ long compat_blkdev_ioctl(struct file *fi
+ 		return 0;
+ 	case BLKGETSIZE:
+ 		size = i_size_read(bdev->bd_inode);
+-		if ((size >> 9) > ~0UL)
++		if ((size >> 9) > ~(compat_ulong_t)0)
+ 			return -EFBIG;
+ 		return compat_put_ulong(arg, size >> 9);
+ 
 
-BRs,
-Rex
 
