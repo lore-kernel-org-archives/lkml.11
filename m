@@ -2,126 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76FBBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:17:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1C12C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:17:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346558AbiDZJSx (ORCPT
+        id S1346885AbiDZJTC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:18:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56496 "EHLO
+        Tue, 26 Apr 2022 05:19:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345867AbiDZIoP (ORCPT
+        with ESMTP id S1345799AbiDZIoN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:44:15 -0400
+        Tue, 26 Apr 2022 04:44:13 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0D5515CED7;
-        Tue, 26 Apr 2022 01:33:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D9D15CE97;
+        Tue, 26 Apr 2022 01:33:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3DBE8B81A2F;
-        Tue, 26 Apr 2022 08:33:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27968C385AF;
-        Tue, 26 Apr 2022 08:33:44 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="SQ4KGuFb"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1650962021;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=x0ZaEAIZRfY3TXnaiCeg2Im/5REFBepeu9hIAwpHFEg=;
-        b=SQ4KGuFbwAXPLahgY7AhuqoWeqFloOr+hAIIPGiVl/7Ha8CRUcIy9PK+LUlx1JkJKU5Scg
-        yNlAZSNm+bmpas2sdxXJdZOvHJ2Q4LFMy+jAoS/PGdURyR0DHb5rONd6poB8+S0rnUuLwE
-        /i2Y2OWkI9Jy/YZc/LejjzK5jCMUIy8=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id e397a466 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        by ams.source.kernel.org (Postfix) with ESMTPS id B1F17B81D09;
         Tue, 26 Apr 2022 08:33:41 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        tglx@linutronix.de, bp@alien8.de
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Arnd Bergmann <arnd@arndb.de>, x86@kernel.org
-Subject: [PATCH v7 13/17] x86/asm: use fallback for random_get_entropy() instead of zero
-Date:   Tue, 26 Apr 2022 10:33:01 +0200
-Message-Id: <20220426083301.816458-1-Jason@zx2c4.com>
-In-Reply-To: <YmbZZwXxaC+S863+@zx2c4.com>
-References: <YmbZZwXxaC+S863+@zx2c4.com>
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25D16C385A0;
+        Tue, 26 Apr 2022 08:33:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650962020;
+        bh=gC60lZdSi3oRwqMdY9pNtyU8x1SgILIAISVp1gviYWw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=xyg8gvn9Vuxu4hRWXcnNiNmrULledpzeEKbt7ELmZVRtheptvrHSYYAOLkU6L7UG3
+         LVrec0OeAqaxFkqY2IAoYOnKL+6FcVYJmxEV4qkk+EPWIHN+2EjMhgfwa15zDb0qQ0
+         ESjzRJpZiSet3xrUMSOHNRd1PZDNUHeuGpoFeLdU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Tomas Melin <tomas.melin@vaisala.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 46/86] net: macb: Restart tx only if queue pointer is lagging
+Date:   Tue, 26 Apr 2022 10:21:14 +0200
+Message-Id: <20220426081742.534342914@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
+References: <20220426081741.202366502@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the event that random_get_entropy() can't access a cycle counter or
-similar, falling back to returning 0 is suboptimal. Instead, fallback
-to calling random_get_entropy_fallback(), which isn't extremely high
-precision or guaranteed to be entropic, but is certainly better than
-returning zero all the time.
+From: Tomas Melin <tomas.melin@vaisala.com>
 
-If CONFIG_X86_TSC=n, then it's possible for the kernel to run on systems
-without RDTSC, such as 486 and certain 586, so the fallback code is only
-required for that case.
+[ Upstream commit 5ad7f18cd82cee8e773d40cc7a1465a526f2615c ]
 
-As well, fix up both the new function and the get_cycles() function from
-which it was derived to use cpu_feature_enabled() rather than
-boot_cpu_has(), and use !IS_ENABLED() instead of #ifndef.
+commit 4298388574da ("net: macb: restart tx after tx used bit read")
+added support for restarting transmission. Restarting tx does not work
+in case controller asserts TXUBR interrupt and TQBP is already at the end
+of the tx queue. In that situation, restarting tx will immediately cause
+assertion of another TXUBR interrupt. The driver will end up in an infinite
+interrupt loop which it cannot break out of.
 
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: x86@kernel.org
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+For cases where TQBP is at the end of the tx queue, instead
+only clear TX_USED interrupt. As more data gets pushed to the queue,
+transmission will resume.
+
+This issue was observed on a Xilinx Zynq-7000 based board.
+During stress test of the network interface,
+driver would get stuck on interrupt loop within seconds or minutes
+causing CPU to stall.
+
+Signed-off-by: Tomas Melin <tomas.melin@vaisala.com>
+Tested-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Link: https://lore.kernel.org/r/20220407161659.14532-1-tomas.melin@vaisala.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-Changes v6->v7:
-- Adjust commit subject and body to match tip commit style.
-- Use !IS_ENABLED() instead of #ifndef.
+ drivers/net/ethernet/cadence/macb_main.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
- arch/x86/include/asm/timex.h | 9 +++++++++
- arch/x86/include/asm/tsc.h   | 7 +++----
- 2 files changed, 12 insertions(+), 4 deletions(-)
-
-diff --git a/arch/x86/include/asm/timex.h b/arch/x86/include/asm/timex.h
-index a4a8b1b16c0c..956e4145311b 100644
---- a/arch/x86/include/asm/timex.h
-+++ b/arch/x86/include/asm/timex.h
-@@ -5,6 +5,15 @@
- #include <asm/processor.h>
- #include <asm/tsc.h>
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index f29ec765d684..bd13f91efe7c 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -1531,6 +1531,7 @@ static void macb_tx_restart(struct macb_queue *queue)
+ 	unsigned int head = queue->tx_head;
+ 	unsigned int tail = queue->tx_tail;
+ 	struct macb *bp = queue->bp;
++	unsigned int head_idx, tbqp;
  
-+static inline unsigned long random_get_entropy(void)
-+{
-+	if (!IS_ENABLED(CONFIG_X86_TSC) &&
-+	    !cpu_feature_enabled(X86_FEATURE_TSC))
-+		return random_get_entropy_fallback();
-+	return rdtsc();
-+}
-+#define random_get_entropy random_get_entropy
+ 	if (bp->caps & MACB_CAPS_ISR_CLEAR_ON_WRITE)
+ 		queue_writel(queue, ISR, MACB_BIT(TXUBR));
+@@ -1538,6 +1539,13 @@ static void macb_tx_restart(struct macb_queue *queue)
+ 	if (head == tail)
+ 		return;
+ 
++	tbqp = queue_readl(queue, TBQP) / macb_dma_desc_get_size(bp);
++	tbqp = macb_adj_dma_desc_idx(bp, macb_tx_ring_wrap(bp, tbqp));
++	head_idx = macb_adj_dma_desc_idx(bp, macb_tx_ring_wrap(bp, head));
 +
- /* Assume we use the PIT time source for the clock tick */
- #define CLOCK_TICK_RATE		PIT_TICK_RATE
- 
-diff --git a/arch/x86/include/asm/tsc.h b/arch/x86/include/asm/tsc.h
-index 01a300a9700b..fbdc3d951494 100644
---- a/arch/x86/include/asm/tsc.h
-+++ b/arch/x86/include/asm/tsc.h
-@@ -20,13 +20,12 @@ extern void disable_TSC(void);
- 
- static inline cycles_t get_cycles(void)
- {
--#ifndef CONFIG_X86_TSC
--	if (!boot_cpu_has(X86_FEATURE_TSC))
-+	if (!IS_ENABLED(CONFIG_X86_TSC) &&
-+	    !cpu_feature_enabled(X86_FEATURE_TSC))
- 		return 0;
--#endif
--
- 	return rdtsc();
++	if (tbqp == head_idx)
++		return;
++
+ 	macb_writel(bp, NCR, macb_readl(bp, NCR) | MACB_BIT(TSTART));
  }
-+#define get_cycles get_cycles
  
- extern struct system_counterval_t convert_art_to_tsc(u64 art);
- extern struct system_counterval_t convert_art_ns_to_tsc(u64 art_ns);
 -- 
 2.35.1
+
+
 
