@@ -2,128 +2,274 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C36ACC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:44:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F052C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:46:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349059AbiDZKrk (ORCPT
+        id S1349465AbiDZKsw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 06:47:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47522 "EHLO
+        Tue, 26 Apr 2022 06:48:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349285AbiDZKpT (ORCPT
+        with ESMTP id S235210AbiDZKsc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 06:45:19 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C123201A3;
-        Tue, 26 Apr 2022 03:35:42 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 10:35:38 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650969340;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=BnEoxcZPIV50wEqSslZb+Yzb5QH9TDtGA2PniSIhmC0=;
-        b=qj/GTbIM6pbxbMlgvvJzAczc/iCVR6V4n3/ExGLghXx9gQOXnW44XtzAc9kSjlU6n0mSws
-        9WImxviXTHdXzAoCCpK3rYAA/O7J8+CZ8rPhnQXJg+UDhUL/ZHcXjnxo0VZA9nenh9vsXQ
-        yFfz/JZPrFaKS7p5bv3xvjMV3l4stF5eXbQbulgNHvJzJ4NB3ZviHaQ2RsBNsqKZOkEa4r
-        0CGz9mBA0seU97WDgFMTSDiXefu8S2vlHx81jGY2P4RHapDOUw7sodyU4s+iUdsy9uoH5J
-        GTZ4nGJ+qKv+j97V52K7GRsXLWU/k9oJXe+YRIndGrfDjusXJt6pTyme9oTNLg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650969340;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=BnEoxcZPIV50wEqSslZb+Yzb5QH9TDtGA2PniSIhmC0=;
-        b=YDy8mOXxkRf3jAakcO7jsd3rgJqhLpee95HjjhVqUXfaaD08Vzxl7gr8NMIBFrcFYbS75F
-        DJLK0RHJIXhC8YBg==
-From:   "tip-bot2 for Shida Zhang" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/urgent] bug: Have __warn() prototype defined unconditionally
-Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Shida Zhang <zhangshida@kylinos.cn>,
-        Borislav Petkov <bp@suse.de>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220426032007.510245-1-starzhangzsd@gmail.com>
-References: <20220426032007.510245-1-starzhangzsd@gmail.com>
+        Tue, 26 Apr 2022 06:48:32 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D20F1658A
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 03:41:12 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <l.stach@pengutronix.de>)
+        id 1njIce-0008BD-AL; Tue, 26 Apr 2022 12:40:44 +0200
+Message-ID: <3d183d0808f2450389fc7895bee7cd5d555b400e.camel@pengutronix.de>
+Subject: Re: [PATCH V4 07/11] arm64: dts: imx8mq: Enable both G1 and G2
+ VPU's with vpu-blk-ctrl
+From:   Lucas Stach <l.stach@pengutronix.de>
+To:     Martin Kepplinger <martin.kepplinger@puri.sm>,
+        Adam Ford <aford173@gmail.com>
+Cc:     linux-media <linux-media@vger.kernel.org>,
+        Adam Ford-BE <aford@beaconembedded.com>,
+        Chris Healy <cphealy@gmail.com>,
+        kernel test robot <lkp@intel.com>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "open list:HANTRO VPU CODEC DRIVER" 
+        <linux-rockchip@lists.infradead.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        arm-soc <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:STAGING SUBSYSTEM" <linux-staging@lists.linux.dev>
+Date:   Tue, 26 Apr 2022 12:40:42 +0200
+In-Reply-To: <e1db707dc71efc4bb8921a10f58c808d0b8fef5c.camel@puri.sm>
+References: <20220125171129.472775-1-aford173@gmail.com>
+         <20220125171129.472775-8-aford173@gmail.com>
+         <d6c5c5663f8ae904d409240063295cf516e17dd1.camel@puri.sm>
+         <4b958892ba788a0e9e73a9135c305aacbe33294d.camel@pengutronix.de>
+         <CAHCN7xKEWT=-ujUD0KC9O=VUyCDSGzwbB1_dC51_k=Hx3i6+bg@mail.gmail.com>
+         <e1db707dc71efc4bb8921a10f58c808d0b8fef5c.camel@puri.sm>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
 MIME-Version: 1.0
-Message-ID: <165096933899.4207.3847577381859492159.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: l.stach@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/urgent branch of tip:
+Am Dienstag, dem 26.04.2022 um 12:28 +0200 schrieb Martin Kepplinger:
+> Am Montag, dem 25.04.2022 um 10:47 -0500 schrieb Adam Ford:
+> > On Mon, Apr 25, 2022 at 10:34 AM Lucas Stach <l.stach@pengutronix.de>
+> > wrote:
+> > > 
+> > > Hi Martin,
+> > > 
+> > > Am Montag, dem 25.04.2022 um 17:22 +0200 schrieb Martin Kepplinger:
+> > > > Am Dienstag, dem 25.01.2022 um 11:11 -0600 schrieb Adam Ford:
+> > > > > With the Hantro G1 and G2 now setup to run independently,
+> > > > > update
+> > > > > the device tree to allow both to operate.  This requires the
+> > > > > vpu-blk-ctrl node to be configured.  Since vpu-blk-ctrl needs
+> > > > > certain clock enabled to handle the gating of the G1 and G2
+> > > > > fuses, the clock-parents and clock-rates for the various VPU's
+> > > > > to be moved into the pgc_vpu because they cannot get re-
+> > > > > parented
+> > > > > once enabled, and the pgc_vpu is the highest in the chain.
+> > > > > 
+> > > > > Signed-off-by: Adam Ford <aford173@gmail.com>
+> > > > > Reported-by: kernel test robot <lkp@intel.com>
+> > > > > Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+> > > > > 
+> > > > > diff --git a/arch/arm64/boot/dts/freescale/imx8mq.dtsi
+> > > > > b/arch/arm64/boot/dts/freescale/imx8mq.dtsi
+> > > > > index 2df2510d0118..549b2440f55d 100644
+> > > > > --- a/arch/arm64/boot/dts/freescale/imx8mq.dtsi
+> > > > > +++ b/arch/arm64/boot/dts/freescale/imx8mq.dtsi
+> > > > > @@ -737,7 +737,21 @@ pgc_gpu: power-domain@5 {
+> > > > >                                         pgc_vpu: power-domain@6
+> > > > > {
+> > > > >                                                 #power-domain-
+> > > > > cells =
+> > > > > <0>;
+> > > > >                                                 reg =
+> > > > > <IMX8M_POWER_DOMAIN_VPU>;
+> > > > > -                                               clocks = <&clk
+> > > > > IMX8MQ_CLK_VPU_DEC_ROOT>;
+> > > > > +                                               clocks = <&clk
+> > > > > IMX8MQ_CLK_VPU_DEC_ROOT>,
+> > > > > +                                                        <&clk
+> > > > > IMX8MQ_CLK_VPU_G1_ROOT>,
+> > > > > +                                                        <&clk
+> > > > > IMX8MQ_CLK_VPU_G2_ROOT>;
+> > > > > +                                               assigned-clocks
+> > > > > =
+> > > > > <&clk IMX8MQ_CLK_VPU_G1>,
+> > > > > +
+> > > > > <&clk IMX8MQ_CLK_VPU_G2>,
+> > > > > +
+> > > > > <&clk IMX8MQ_CLK_VPU_BUS>,
+> > > > > +
+> > > > > <&clk IMX8MQ_VPU_PLL_BYPASS>;
+> > > > > +                                               assigned-clock-
+> > > > > parents = <&clk IMX8MQ_VPU_PLL_OUT>,
+> > > > > +
+> > > > >     <&clk IMX8MQ_VPU_PLL_OUT>,
+> > > > > +
+> > > > >     <&clk IMX8MQ_SYS1_PLL_800M>,
+> > > > > +
+> > > > >     <&clk IMX8MQ_VPU_PLL>;
+> > > > > +                                               assigned-clock-
+> > > > > rates
+> > > > > = <600000000>,
+> > > > > +
+> > > > >   <600000000>,
+> > > > > +
+> > > > >   <800000000>,
+> > > > > +
+> > > > >   <0>;
+> > > > >                                         };
+> > > > > 
+> > > > >                                         pgc_disp: power-
+> > > > > domain@7 {
+> > > > > @@ -1457,30 +1471,31 @@ usb3_phy1: usb-phy@382f0040 {
+> > > > >                         status = "disabled";
+> > > > >                 };
+> > > > > 
+> > > > > -               vpu: video-codec@38300000 {
+> > > > > -                       compatible = "nxp,imx8mq-vpu";
+> > > > > -                       reg = <0x38300000 0x10000>,
+> > > > > -                             <0x38310000 0x10000>,
+> > > > > -                             <0x38320000 0x10000>;
+> > > > > -                       reg-names = "g1", "g2", "ctrl";
+> > > > > -                       interrupts = <GIC_SPI 7
+> > > > > IRQ_TYPE_LEVEL_HIGH>,
+> > > > > -                                    <GIC_SPI 8
+> > > > > IRQ_TYPE_LEVEL_HIGH>;
+> > > > > -                       interrupt-names = "g1", "g2";
+> > > > > +               vpu_g1: video-codec@38300000 {
+> > > > > +                       compatible = "nxp,imx8mq-vpu-g1";
+> > > > > +                       reg = <0x38300000 0x10000>;
+> > > > > +                       interrupts = <GIC_SPI 7
+> > > > > IRQ_TYPE_LEVEL_HIGH>;
+> > > > > +                       clocks = <&clk IMX8MQ_CLK_VPU_G1_ROOT>;
+> > > > > +                       power-domains = <&vpu_blk_ctrl
+> > > > > IMX8MQ_VPUBLK_PD_G1>;
+> > > > > +               };
+> > > > > +
+> > > > > +               vpu_g2: video-codec@38310000 {
+> > > > > +                       compatible = "nxp,imx8mq-vpu-g2";
+> > > > > +                       reg = <0x38310000 0x10000>;
+> > > > > +                       interrupts = <GIC_SPI 8
+> > > > > IRQ_TYPE_LEVEL_HIGH>;
+> > > > > +                       clocks = <&clk IMX8MQ_CLK_VPU_G2_ROOT>;
+> > > > > +                       power-domains = <&vpu_blk_ctrl
+> > > > > IMX8MQ_VPUBLK_PD_G2>;
+> > > > > +               };
+> > > > > +
+> > > > > +               vpu_blk_ctrl: blk-ctrl@38320000 {
+> > > > > +                       compatible = "fsl,imx8mq-vpu-blk-ctrl";
+> > > > > +                       reg = <0x38320000 0x100>;
+> > > > > +                       power-domains = <&pgc_vpu>, <&pgc_vpu>,
+> > > > > <&pgc_vpu>;
+> > > > > +                       power-domain-names = "bus", "g1", "g2";
+> > > > >                         clocks = <&clk IMX8MQ_CLK_VPU_G1_ROOT>,
+> > > > > -                                <&clk IMX8MQ_CLK_VPU_G2_ROOT>,
+> > > > > -                                <&clk
+> > > > > IMX8MQ_CLK_VPU_DEC_ROOT>;
+> > > > > -                       clock-names = "g1", "g2", "bus";
+> > > > > -                       assigned-clocks = <&clk
+> > > > > IMX8MQ_CLK_VPU_G1>,
+> > > > > -                                         <&clk
+> > > > > IMX8MQ_CLK_VPU_G2>,
+> > > > > -                                         <&clk
+> > > > > IMX8MQ_CLK_VPU_BUS>,
+> > > > > -                                         <&clk
+> > > > > IMX8MQ_VPU_PLL_BYPASS>;
+> > > > > -                       assigned-clock-parents = <&clk
+> > > > > IMX8MQ_VPU_PLL_OUT>,
+> > > > > -                                                <&clk
+> > > > > IMX8MQ_VPU_PLL_OUT>,
+> > > > > -                                                <&clk
+> > > > > IMX8MQ_SYS1_PLL_800M>,
+> > > > > -                                                <&clk
+> > > > > IMX8MQ_VPU_PLL>;
+> > > > > -                       assigned-clock-rates = <600000000>,
+> > > > > <600000000>,
+> > > > > -                                              <800000000>,
+> > > > > <0>;
+> > > > > -                       power-domains = <&pgc_vpu>;
+> > > > > +                                <&clk IMX8MQ_CLK_VPU_G2_ROOT>;
+> > > > > +                       clock-names = "g1", "g2";
+> > > > > +                       #power-domain-cells = <1>;
+> > > > >                 };
+> > > > > 
+> > > > >                 pcie0: pcie@33800000 {
+> > > > 
+> > > > With this update, when testing suspend to ram on imx8mq, I get:
+> > > > 
+> > > > buck4: failed to disable: -ETIMEDOUT
+> > > > 
+> > > > where buck4 is power-supply of pgc_vpu. And thus the transition
+> > > > to
+> > > > suspend (and resuming) fails.
+> > > > 
+> > > > Have you tested system suspend after the imx8m-blk-ctrl update on
+> > > > imx8mq?
+> > > 
+> > > I haven't tested system suspend, don't know if anyone else did.
+> > > However
+> > > I guess that this is just uncovering a preexisting issue in the
+> > > system
+> > > suspend sequencing, which you would also hit if the video decoders
+> > > were
+> > > active at system suspend time.
+> > 
+> > I have not tested it either.
+> > 
+> > > 
+> > > My guess is that the regulator disable fails, due to the power
+> > > domains
+> > > being disabled quite late in the suspend sequence, where i2c
+> > > communication with the PMIC is no longer possible due to i2c being
+> > > suspended already or something like that. Maybe you can dig in a
+> > > bit on
+> > > the actual sequence on your system and we can see how we can rework
+> > > things to suspend the power domains at a time where communication
+> > > with
+> > > the PMIC is still possible?
+> > 
+> > In the meantime, should we mark the regulator with regulator-always-
+> > on
+> > so it doesn't attempt to power it down?  It might not be ideal,but it
+> > might be enough to let it suspend.
+> > 
+> 
+> it would be a temporary workaround, but I want to remind you that it
+> wouldn't help much: even if suspending "works" again, system resume is
+> broken on imx8mq since
+> https://lore.kernel.org/all/a20ecd639f8e8b7fa4a9bed7a8e9590225262784.camel@puri.sm/
+> 
+> Of course I did the current tests on v5.18-rc4 without any gpcv2
+> changes to mainline. But for resume to work I need the one revert from
+> the above link (plus a minor additional hack) already.
+> 
+> If we'd have that working in mainline I could make sure it stays that
+> way :)
+> 
+This looks like the same underlying issue to me. We need to suspend the
+power domains before i2c (or whatever is causing the regulator disable
+fail) and only resume them after this subsystem is resumed.
 
-Commit-ID:     1fa568e26f001e951b634d62ef3accdc80a87c7b
-Gitweb:        https://git.kernel.org/tip/1fa568e26f001e951b634d62ef3accdc80a=
-87c7b
-Author:        Shida Zhang <zhangshida@kylinos.cn>
-AuthorDate:    Tue, 26 Apr 2022 11:20:07 +08:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Tue, 26 Apr 2022 10:59:57 +02:00
+Regards,
+Lucas
 
-bug: Have __warn() prototype defined unconditionally
 
-The __warn() prototype is declared in CONFIG_BUG scope but the function
-definition in panic.c is unconditional. The IBT enablement started using
-it unconditionally but a CONFIG_X86_KERNEL_IBT=3Dy, CONFIG_BUG=3Dn .config
-will trigger a
-
-  arch/x86/kernel/traps.c: In function =E2=80=98__exc_control_protection=E2=
-=80=99:
-  arch/x86/kernel/traps.c:249:17: error: implicit declaration of function \
-  	  =E2=80=98__warn=E2=80=99; did you mean =E2=80=98pr_warn=E2=80=99? [-Werr=
-or=3Dimplicit-function-declaration]
-
-Pull up the declarations so that they're unconditionally visible too.
-
-  [ bp: Rewrite commit message. ]
-
-Fixes: 991625f3dd2c ("x86/ibt: Add IBT feature, MSR and #CP handling")
-Suggested-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Shida Zhang <zhangshida@kylinos.cn>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220426032007.510245-1-starzhangzsd@gmail.com
----
- include/asm-generic/bug.h | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
-
-diff --git a/include/asm-generic/bug.h b/include/asm-generic/bug.h
-index edb0e2a..ba1f860 100644
---- a/include/asm-generic/bug.h
-+++ b/include/asm-generic/bug.h
-@@ -21,6 +21,12 @@
- #include <linux/panic.h>
- #include <linux/printk.h>
-=20
-+struct warn_args;
-+struct pt_regs;
-+
-+void __warn(const char *file, int line, void *caller, unsigned taint,
-+	    struct pt_regs *regs, struct warn_args *args);
-+
- #ifdef CONFIG_BUG
-=20
- #ifdef CONFIG_GENERIC_BUG
-@@ -110,11 +116,6 @@ extern __printf(1, 2) void __warn_printk(const char *fmt=
-, ...);
- #endif
-=20
- /* used internally by panic.c */
--struct warn_args;
--struct pt_regs;
--
--void __warn(const char *file, int line, void *caller, unsigned taint,
--	    struct pt_regs *regs, struct warn_args *args);
-=20
- #ifndef WARN_ON
- #define WARN_ON(condition) ({						\
