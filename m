@@ -2,222 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96B41C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 12:02:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFEC6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 12:03:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349733AbiDZMFK (ORCPT
+        id S1349753AbiDZMGy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 08:05:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39654 "EHLO
+        Tue, 26 Apr 2022 08:06:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235227AbiDZMFJ (ORCPT
+        with ESMTP id S235227AbiDZMGu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 08:05:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1451C69731;
-        Tue, 26 Apr 2022 05:02:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A23C061450;
-        Tue, 26 Apr 2022 12:01:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A4ADC385AA;
-        Tue, 26 Apr 2022 12:01:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650974519;
-        bh=crdW+PWFPIlqWU/xkDEBzMFGR+JLIJwz1ThC+HJuNoc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=i+GY25+XpjbYrqmKNq9MpW35s8r/kxUYOO7uGlRxbqNc40GW+JUIDwL5loAluxZdg
-         GurEXtHEtXzcfdMg0fj36gcwDHBu3ji8H6AoaKL/zumzIyxLraYCxRmgt0pgmXXj4V
-         lWwyb3wxo80+mbSZscDAXO3kQO+GfUd7vQ6RKK94=
-Date:   Tue, 26 Apr 2022 14:01:55 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Matthias Kaehlcke <mka@chromium.org>
-Cc:     Doug Anderson <dianders@chromium.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Felipe Balbi <balbi@kernel.org>,
-        Linux USB List <linux-usb@vger.kernel.org>,
-        Ravi Chandra Sadineni <ravisadineni@chromium.org>,
-        Roger Quadros <rogerq@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Bastien Nocera <hadess@hadess.net>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Peter Chen <peter.chen@kernel.org>,
-        Guo Zhengkui <guozhengkui@vivo.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Li Jun <jun.li@nxp.com>, Peter Chen <peter.chen@nxp.com>,
-        Thinh Nguyen <Thinh.Nguyen@synopsys.com>
-Subject: Re: [PATCH v21 0/3] usb: misc: Add onboard_usb_hub driver
-Message-ID: <YmffM2XuCiOghOLU@kroah.com>
-References: <20220217184254.4141705-1-mka@chromium.org>
- <CAD=FV=XswQj+L6rRuWH-PdoGp9vVsWKTwz1bFM_fagy55tKqEg@mail.gmail.com>
- <YmGetA6Huz4Sj/RL@google.com>
+        Tue, 26 Apr 2022 08:06:50 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17713A776F
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 05:03:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1650974611; x=1682510611;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=uz3cwQUhXnm76J2rfeQLE9M3SjOdhxdDoWlbU8/jmNI=;
+  b=kVKVxBuZIBzobt8ZzFQ4rbb/xBSx4wLF606UtZvAeE/qOZZlVrmjjHzP
+   DFz4IGVJ0QY+cgsITtpYwIvqKq/t+kgV5Nk9deuQR9D4mVK3uvcxoruKL
+   83FZGgwyT1czruob7PyQSW4iKw0a7BdL9WXtPJbq3BOlZ7TJvq/HBZAbw
+   yJzdQqsHA8hBiGSlWmwILZ0+N90eezE1V5Sxl1U1lGMYJASNKk0ifFuY5
+   sEZ+7eGEQPRUUs2f2vfQE6Xg8e3AWfUl0BLGd+YJWJbaNOy2+VhwGHBVH
+   4JxcibjX2Q65TneS44rPfztThCz7wqt1wxLkxgyn5+37KIfbAUU3NMl5H
+   A==;
+X-IronPort-AV: E=Sophos;i="5.90,290,1643698800"; 
+   d="scan'208";a="161341543"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Apr 2022 05:03:29 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 26 Apr 2022 05:03:28 -0700
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.72) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17 via Frontend
+ Transport; Tue, 26 Apr 2022 05:03:28 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JKfi70kgJoEusRfFqVFTZJXswJGsb/3ErP08mDhANYCgRqrIQUFcfjQsYvDJpeNzMZkCDNsTj9kZzTWM9CopJT/Ai7UpPlqdcZ4RXvZPvJt0mkJoJTnc2Je9AgcCOgE3KCuUL0ddh7CnmHj/5zoMQbhUEaH4olrqvQsDb1F1gEb+0IvBr/HxlE4C1vC3DhEsw8q7mXDoLAVcsDSF5hztbADXFq1r39OP74qpD9NrIGendKx0BBvXXPkC019q+5LwtpDSB3cwepsUeS9daQlcFuGPODTu3tyLM/mWJ00q+QLETz150NVtOLIrkn+rCA1TH4rdPW1zDbO3+lH/F+9mNg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=uz3cwQUhXnm76J2rfeQLE9M3SjOdhxdDoWlbU8/jmNI=;
+ b=YKE80wgbkzB8He+73fPaA3yr2FCXyNnq7g3/gn1Ao3wD8mh69hdJEjZMjnIrHTuZElYAV2miwZX4ekJaZ9lfxKKQva1ubmHuw2kRUSO9gJvxPfzn1iVC3cq8ldBxL8EdG/KfqH8J/e0nIaKsg45Y7TWSz1cbIxjfddsBxrG7cTCYgE0i6f71GDuPx3tATXoj+tRo3l4CBWl4naawbgQ9SY5/L+Ob4qvgZdFWdVcqZyqhmPjFukbs+iA0QEYMAt725HcBsgrGgo4sHi1TbV2wo1sZW1sKUZxITkEs1c/dq8E7OMh7v88Cp8PPMaL4wv7DIuCQxgfhgnp/7oF7Cr2hJA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uz3cwQUhXnm76J2rfeQLE9M3SjOdhxdDoWlbU8/jmNI=;
+ b=TkkJkBUOZccZEJ1GNglFaWputeW0S5QzrLvr7eAazkvZoAD0j/lFWT3+3oB6Oi1ZP2M1DQuNMftrkXfLZo90iNc37fcDziaXzor9gYHw0Tbu1/4FnbR1qXYNaOVdiIxILFdGHbUbk8uDRxnNF4UDN4db6saqEv8FeMYtIah+h+0=
+Received: from CO1PR11MB5154.namprd11.prod.outlook.com (2603:10b6:303:95::7)
+ by MN2PR11MB4647.namprd11.prod.outlook.com (2603:10b6:208:262::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Tue, 26 Apr
+ 2022 12:03:26 +0000
+Received: from CO1PR11MB5154.namprd11.prod.outlook.com
+ ([fe80::fcd4:8f8a:f0e9:8b18]) by CO1PR11MB5154.namprd11.prod.outlook.com
+ ([fe80::fcd4:8f8a:f0e9:8b18%7]) with mapi id 15.20.5186.021; Tue, 26 Apr 2022
+ 12:03:26 +0000
+From:   <Conor.Dooley@microchip.com>
+To:     <stefan.wahren@i2se.com>, <nsaenzju@redhat.com>,
+        <cmirabil@redhat.com>, <miguel.ojeda.sandonis@gmail.com>
+CC:     <linux-kernel@vger.kernel.org>, <serge@raspberrypi.org>,
+        <mbrugger@suse.com>, <linux-rpi-kernel@lists.infradead.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <fedora-rpi@googlegroups.com>, <dbauman@redhat.com>,
+        <mguma@redhat.com>, <jsavitz@redhat.com>
+Subject: Re: [PATCH v9 0/6] Raspberry Pi Sense HAT driver
+Thread-Topic: [PATCH v9 0/6] Raspberry Pi Sense HAT driver
+Thread-Index: AQHYWWWiIpBjc8I/WkmHxK3QsHObmQ==
+Date:   Tue, 26 Apr 2022 12:03:26 +0000
+Message-ID: <60c3e7e4-6406-ecaa-e89b-fc2d359d8d31@microchip.com>
+References: <20220419205158.28088-1-cmirabil@redhat.com>
+ <CANiq72n1gBE+tv3oAF4wjdK2jEJJmU4V=Y1CTZ1PpCEeqLbo9g@mail.gmail.com>
+ <CABe3_aE-nQzZazLfxk1OnCNRF0sDqcWi6gieYSf4O4aYS_Ahog@mail.gmail.com>
+ <06e0138a526f1fd9fe5b18184163c1ff98f0103b.camel@redhat.com>
+ <4719fce9-4235-f1d7-f95e-67e5a47a0968@i2se.com>
+In-Reply-To: <4719fce9-4235-f1d7-f95e-67e5a47a0968@i2se.com>
+Accept-Language: en-IE, en-US
+Content-Language: en-IE
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a729f82f-8123-449d-e5a2-08da277cc520
+x-ms-traffictypediagnostic: MN2PR11MB4647:EE_
+x-microsoft-antispam-prvs: <MN2PR11MB4647B66EA85DC014E64E6D6698FB9@MN2PR11MB4647.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: PI6P96D11k8NtqzYjxcjtGHki4Xim7UTWG+NqBprZUbdGG2i2Hlw0b413atzho9QTTfDbkpeGHfFBbQJAFNMHsmGIuL2C+XL2G1MssydX9DG0bBzE4Xri0/iVVb7XQcr3WzDH72wBrIqhMPHS2xYDZZ689iotSf/NRrUeEv35DOmzRq6uwZuJMwS+fKdsqEENKD+q0UC9LDdZZ/NLwN14RRkz3HVuNSfsm2zEq9YFM8PU6RjEbHMGz+FPWITB1Ra8rC7UNAatb0tTO+9XXiHE3muEtcfIi0uSZLdJRisPEnkPhRRSxJMZbG+sPgnfLtb9rdPSqmlERZO2760BdX9HEObYOwN18usmEZcW6cqYLEUQdwWyFfy5KQ+heyckF8Z9rrd6xZSXjV/EataxvWOABCwuRfHymmtVI7rsKeX+CyBj7Clf+6/LFJinI3J+/9sQWgFuAyOW1pAl9gDZUozv40YBO/MyPl44txCpuglTWnKxnVsTSb0BaZzYME3hnueinYSHrjnWx4mX3Ev26Xwff0Jf51FPH9kE9pXjRRy8FwEw4ybmODKobO836LdsFRP59uCx0pxBnT8eThQDzld0yN6Yy1ZJ+SdomKROt2ceWfrQExcQW0OSH8fBAq2y6bIjTEQdLEeS5LRAjiieoSlv/q0pflEhljWDFNpUfLl3ZATfayJtOiF8rn142iAtflq1JCS6AhTgfA7cShILDDl8kfPBqySO5GYQneaK9MR8C17pskieTOEcdmR83PgZvmDziuTO17Je2N+FXwuL6Ud8CsfSxF0LHlm0PjJY5fpqZQJNBduFsJpdPFhOJVPFoGwCNrfbeMJ9mGO2LAEIKuZfa9myRn9n3VloE9FFP/RGQ0=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5154.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(6506007)(5660300002)(8936002)(7416002)(36756003)(83380400001)(26005)(8676002)(4326008)(66476007)(64756008)(31696002)(66446008)(53546011)(2906002)(186003)(31686004)(86362001)(508600001)(2616005)(38070700005)(38100700002)(966005)(6486002)(316002)(66556008)(76116006)(91956017)(66946007)(122000001)(6512007)(110136005)(71200400001)(54906003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?RkRrMTQ4U0pvK0UwYlFqdkk0MjJMYlF6TUVzNUJwQXJQeEtuRlowZ0owR3dC?=
+ =?utf-8?B?U2dYdG12Sy9mdjJFOCtzSUxPTVJBeWdSdklOV1dScU43ZDhLZTlGb3JoOVhr?=
+ =?utf-8?B?TTBIdS9YalZsMnhyVzF4c2Z6NWRtMFplc1JkK3dTa0lnMXBuT0xabXAxN2xR?=
+ =?utf-8?B?M0ZvaGh5bGs5ZWU0R3NIM1I5SW9URS9VLzV4ZVRaVUFDZGtReHRIMnJoVzZU?=
+ =?utf-8?B?WWEwVmtDMG5rc25SQk1UTklDeTE3STBnK2kwMktmM1gva1VNSWRDMHZTNHdP?=
+ =?utf-8?B?MHM0TGxWRjY0dFVYMU56KzR6c21hTk9LSkVlOUh1U0QyZTdIRS9FNGphdXdo?=
+ =?utf-8?B?V3dLNk9QUlg5dVdscC9tWWJ6MkJsaWVIcjM4VmxRcmNEdEhMc2V5VzM5dUV5?=
+ =?utf-8?B?TUd4dHBqZEpHVE9paDVhc3BmTTZkaGdETkVYUnI5MmtZME1QNjV2eDFvVk9i?=
+ =?utf-8?B?R1JENVpEVzUzU0NMK2x2dGMxdEl3ZzZyNThKRzZXTlNiS0VVSEN4U3NIWFZk?=
+ =?utf-8?B?dldBT0VIZU5panBXNjFuRHNBV2ZKazgzeXBHQU43RHdCUHBiblVGT0h2UWdv?=
+ =?utf-8?B?bWlmb0xIdTZVTkg1WG5wOVN2S0R5OHpkVWg4WTl1ZzkzWXUxU040Q0drU2Fn?=
+ =?utf-8?B?TlVZb1B6NzNsOU5zZXpGSlBYUDhadXpabmM3d053SFJCVy9TNVpoelFVWk1D?=
+ =?utf-8?B?M2lVb0JQa0wxVHBpcU1MRE16dy9qRjhnNzlkNVBIWWZ2Y2hXUnB4K2crRlR0?=
+ =?utf-8?B?VlNSUGUySVh2RGFoNXJWdXllOGxRYnBFbE9yUzd4TlljRFpVUnFJcTB6NEtl?=
+ =?utf-8?B?U004dE9NdS9haDB0QlhZZXNiei9JUE1DOTFHZldZUFFXcjB2RjVxdDhaMExv?=
+ =?utf-8?B?SnlBa2tXQW5KZ2VpUlR6dDFiSUlrT1JkUkdrN1RTc2gxa1E4aE8yVHQwOHBJ?=
+ =?utf-8?B?K25Dbm94dkRyMnFIK3cyVGFSM2tnbkJVak9RaTRHVk1FVHRBMFZMMndBalU3?=
+ =?utf-8?B?cUI3TUdaZDMvZ1k3T29wRThJdzBSbFROcDZQQllQVlA4OG8rZ0RXUEFiMW1v?=
+ =?utf-8?B?V1hjNEkwOVIrN1J2WkhaMldmWnA3NmMyaWdSRCtqUnBiSDFlZjJabWJ4V3VP?=
+ =?utf-8?B?WXorN1hnYldRVjQ1ejFmLzdIRFJDSE94L09Fa2tsMDE2Qk01QmJPWU9rYTQ1?=
+ =?utf-8?B?SHFYbDRLazJpVDQ4UW5PaUdPRERYOFlrandXQXpLYUZlVHJzcEEwNXdGdUpI?=
+ =?utf-8?B?eEVBdXNrejBNd0RUcUx2SS9tRCt0NFUvMnlKTmpLZnUzV2w3K1U4OCtSVmVa?=
+ =?utf-8?B?UzVrSjU0V1AzdDNJaWlmaHlzZkZlUW5YY1lCV1dlbm92eHdvREFXalRNTkNJ?=
+ =?utf-8?B?OHJiY2lrK3c2YVNlNnVQaGFyQ3lla0lnZmI5R3M3RllaZWcvWWZabEdPekQv?=
+ =?utf-8?B?QURqbkVjQkRKam9yK1RMTndVWWhZbFAvalFJZDdpajVWRkJWT2ZxRzRsRUkw?=
+ =?utf-8?B?UkVqQXZyT3VsTFA1ZXNJQktFZzR0SkdFcldoSEk2THNjWEtuc2s0aDJaTjJn?=
+ =?utf-8?B?VndYWVlzUWM2QzRQQkFSZmFvaEUwVnUydjYrTlRWaUJlLzZ6UTY4czVkRDU2?=
+ =?utf-8?B?eTYwVHEwaHpWMEFsTlhKUVlWMDVNWVBmbnpTT1lpNHNKR3FHeUFQRFBRY09J?=
+ =?utf-8?B?amtHaTZzRlUyTHlpQXdEamZxQnNrUzZBZ2xqdlZqQ0xGTVNyUy9lcUEyRjB3?=
+ =?utf-8?B?ZTdqRGFhVGg3dms2S25tWmNCWXd3ZFIrK2xlaXlaWTk1cjUwanVOSWZrZURo?=
+ =?utf-8?B?cVhkMEdSS3lkUjBjYldjajhzVzY2TVlqd1J4UHArR0RBVW5Nay9pQnJ0dmV3?=
+ =?utf-8?B?aXRsVUc1UDdKQlZGa09zK3hRTStJdDFxcStsTEd6dy9QUDJsWVhaMGxHb210?=
+ =?utf-8?B?Sk1pejlPSk9XdXNnWlNWa2tlTjRUQ1QzRWJsemVXSDNMYlUrOTJtNTNZUUxk?=
+ =?utf-8?B?dzVOM0xicXdJbGUxaU0wRkJjSEw4YnprWTllREJHRnErN3U4S2ExZFo2TDhv?=
+ =?utf-8?B?U2hmejlpN2tDaE9OWlYyYkF2UkN1b28rVm5oZzlVY3J1TFZaeHgvZ2RoS3BF?=
+ =?utf-8?B?UlM4NWFHK3pwNlJBNWQzdEZ4ZllhcGFhNWpsamlQcGRrQnhEZk1vMlRqWENn?=
+ =?utf-8?B?bGZYSy9IZlRhNnhELzh1cHo1MHRuMC9mckk5cGZqVmo2NHpkb1U2NDYrV2Rv?=
+ =?utf-8?B?dzJBQzhyNm5yT1NBQmxmU1FFRWR0clJLcmFiWFVxbFpDWFU1dFFZQkFCTXU5?=
+ =?utf-8?B?ZkxhbXgzT3ZZcFdpM005cFVleVE1UkhtWml2eVg4UnowQXk1WHZ5QT09?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <0778AE6564A033439BB8375CC49CCB8C@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YmGetA6Huz4Sj/RL@google.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5154.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a729f82f-8123-449d-e5a2-08da277cc520
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Apr 2022 12:03:26.2417
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 0NEELSlhWpL7wjol5pjcYX/c7DETg3VUV/kJMg/g1dNo6Rh14Qn+A5RnMTZ2cwiH/El/hLOtlHuBrUFrEjENYdqj+Mfdhu4viVePj5ErRLc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4647
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 11:13:08AM -0700, Matthias Kaehlcke wrote:
-> Hi,
-> 
-> On Thu, Apr 07, 2022 at 12:41:22PM -0700, Doug Anderson wrote:
-> > Hi,
-> > 
-> > On Thu, Feb 17, 2022 at 10:43 AM Matthias Kaehlcke <mka@chromium.org> wrote:
-> > >
-> > > This series adds:
-> > > - the onboard_usb_hub_driver
-> > > - glue in the generic HCD code to create and destroy the
-> > >   onboard_usb_hub platform devices if needed
-> > > - device tree changes that add RTS5411 entries for the QCA SC7180
-> > >   based boards trogdor and lazor
-> > > - a couple of stubs for platform device functions to avoid
-> > >   unresolved symbols with certain kernel configs
-> > >
-> > > The main issue the driver addresses is that a USB hub needs to be
-> > > powered before it can be discovered. For discrete onboard hubs (an
-> > > example for such a hub is the Realtek RTS5411) this is often solved
-> > > by supplying the hub with an 'always-on' regulator, which is kind
-> > > of a hack. Some onboard hubs may require further initialization
-> > > steps, like changing the state of a GPIO or enabling a clock, which
-> > > requires even more hacks. This driver creates a platform device
-> > > representing the hub which performs the necessary initialization.
-> > > Currently it only supports switching on a single regulator, support
-> > > for multiple regulators or other actions can be added as needed.
-> > > Different initialization sequences can be supported based on the
-> > > compatible string.
-> > >
-> > > Besides performing the initialization the driver can be configured
-> > > to power the hub off during system suspend. This can help to extend
-> > > battery life on battery powered devices which have no requirements
-> > > to keep the hub powered during suspend. The driver can also be
-> > > configured to leave the hub powered when a wakeup capable USB device
-> > > is connected when suspending, and power it off otherwise.
-> > >
-> > > Changes in v21:
-> > > - dropped patch 'driver core: Export device_is_bound()'
-> > > - refactored _find_onboard_hub()
-> > > - removed 'onboard_hub_dev' symlinks from USB devices
-> > > - dropped patch 'arm64: dts: qcom: sc7180-trogdor: Add nodes for onboard USB hub'
-> > >   (will be sent separately)
-> > > - rebased series on v5.17-rc4
-> > >
-> > > Changes in v20:
-> > > - addressed review comments from Stephen
-> > > - changed DT node names for hubs
-> > >
-> > > Changes in v19:
-> > > - added VID:PID pairs and compatible strings for RTS5414 hub
-> > > - updated comments with RTS5411 USB versions to reflect those
-> > >   reported/supported by the hub
-> > > - rebased series on v5.16
-> > >
-> > > Changes in v18:
-> > > - introduced hidden Kconfig option to align module vs. builtin
-> > >   choice with CONFIG_USB (thanks Doug!)
-> > > - added patch 'driver core: Export device_is_bound()'
-> > > - also adjust device tree of pompom rev1
-> > > - dropped the following patches, which aren't needed anymore by this
-> > >   series (though they might still be useful on their own):
-> > >   - usb: Specify dependencies on USB_XHCI_PLATFORM with 'depends on'
-> > >   - arm64: defconfig: Explicitly enable USB_XHCI_PLATFORM
-> > >   - ARM: configs: Explicitly enable USB_XHCI_PLATFORM where needed
-> > >
-> > > Changes in v17:
-> > > - rebased on top of v5.16-rc1
-> > > - moved creation of onboard_hub platform devices from xhci_platform
-> > >   to the generic HCD code
-> > > - addressed review comments for the onboard_hub driver
-> > > - moved Kconfig/defconfig changes to the end of the series. The
-> > >   onboard_hub driver doesn't depend on XHCI_PLATFORM anymore,
-> > >   hence these changes aren't really required for the driver, but
-> > >   they still seem to be a worthwhile improvement
-> > >
-> > > Changes in v16:
-> > > - added patch 'ARM: configs: Explicitly enable USB_XHCI_PLATFORM
-> > >   where needed' to keep arm32 defconfigs effectively unchanged
-> > >
-> > > Changes in v15:
-> > > - adjusted dependencies of USB_DWC3_CORE to make sure it can only
-> > >   be enabled when at least one of USB_DWC3_HOST, USB_DWC3_GADGET
-> > >   or USB_DWC3_DUAL_ROLE is selectable
-> > >
-> > > Changes in v14:
-> > > - rebased on top of v5.14-rc1
-> > > - dropped DT binding patch which landed in v5.13
-> > >
-> > > Changes in v13:
-> > > - added patch "usb: Specify dependency on USB_XHCI_PLATFORM with
-> > >   'depends on'" to the series to avoid Kconfig conflicts
-> > > - added patch "arm64: defconfig: Explicitly enable USB_XHCI_PLATFORM"
-> > >   to the series to keep effective defconfig unchanged
-> > >
-> > > Changes in v12:
-> > > - onboard_hub driver: use IS_ENABLED(CONFIG_USB_ONBOARD_HUB_MODULE)
-> > >   in onboard_hub.h to also check for the driver built as module
-> > > - onboard_hub_driver: include onboard_hub.h again to make sure there
-> > >   are prototype declarations for the public functions
-> > >
-> > > Changes in v11:
-> > > - support multiple onboard hubs connected to the same parent
-> > > - don't include ‘onboard_hub.h’ from the onboard hub driver
-> > >
-> > > Changes in v10:
-> > > - always use of_is_onboard_usb_hub() stub unless ONBOARD_USB_HUB=y/m
-> > > - keep 'regulator-boot-on' property for pp3300_hub
-> > >
-> > > Changes in v9:
-> > > - added dependency on ONBOARD_USB_HUB (or !ONBOARD_USB_HUB) to
-> > >   USB_PLATFORM_XHCI
-> > >
-> > > Changes in v7:
-> > > - updated DT binding
-> > > - series rebased on qcom/arm64-for-5.13
-> > >
-> > > Changes in v6:
-> > > - updated summary
-> > >
-> > > Changes in v5:
-> > > - cover letter added
-> > >
-> > > Matthias Kaehlcke (3):
-> > >   of/platform: Add stubs for of_platform_device_create/destroy()
-> > >   usb: misc: Add onboard_usb_hub driver
-> > >   usb: core: hcd: Create platform devices for onboard hubs in probe()
-> > >
-> > >  .../sysfs-bus-platform-onboard-usb-hub        |   8 +
-> > >  MAINTAINERS                                   |   7 +
-> > >  drivers/usb/core/hcd.c                        |   6 +
-> > >  drivers/usb/misc/Kconfig                      |  23 +
-> > >  drivers/usb/misc/Makefile                     |   1 +
-> > >  drivers/usb/misc/onboard_usb_hub.c            | 510 ++++++++++++++++++
-> > >  include/linux/of_platform.h                   |  22 +-
-> > >  include/linux/usb/hcd.h                       |   1 +
-> > >  include/linux/usb/onboard_hub.h               |  18 +
-> > >  9 files changed, 592 insertions(+), 4 deletions(-)
-> > >  create mode 100644 Documentation/ABI/testing/sysfs-bus-platform-onboard-usb-hub
-> > >  create mode 100644 drivers/usb/misc/onboard_usb_hub.c
-> > >  create mode 100644 include/linux/usb/onboard_hub.h
-> > 
-> > With v5.18-rc1 out the door, I wonder if it's a good time to look at
-> > this series again. Are there any hidden blockers that it's waiting
-> > for?
-> 
-> Greg, please let me know if any further changes are needed or if this
-> series can be landed.
-
-After 21 different versions, there's nothing left for me to object to,
-so I'll go queue it up.  Thanks for sticking with it.
-
-greg k-h
+T24gMjYvMDQvMjAyMiAxMjo0OCwgU3RlZmFuIFdhaHJlbiB3cm90ZToNCj4gQW0gMjYuMDQuMjIg
+dW0gMTI6MTggc2NocmllYiBOaWNvbGFzIFNhZW56IEp1bGllbm5lOg0KPj4gSGkgQ2hhcmxlcywg
+TWlndWVsLA0KPj4NCj4+IE9uIE1vbiwgMjAyMi0wNC0yNSBhdCAxOTozNCAtMDQwMCwgQ2hhcmxl
+cyBNaXJhYmlsZSB3cm90ZToNCj4+PiBIaSBNaWd1ZWzigJQNCj4+Pg0KPj4+IFRoYW5rcyBmb3Ig
+eW91ciBoZWxwIGluIHJldmlld2luZyB0aGlzIHBhdGNoLiBJIHRoaW5rIGFsbCBvZiB0aGUgZmVl
+ZGJhY2sgaXMgY2xlYXJlZCB1cC4NCj4+Pg0KPj4+IEkgYW0gbm90IHN1cmUgd2hpY2ggdHJlZSB0
+aGlzIHNob3VsZCBnbyBpbnRvLCBidXQgbWF5YmUgdGhlIFJhc3BiZXJyeSBQaSB0cmVlIG1haW50
+YWluZWQNCj4+PiBieSBOaWNvbGFzIFNhZW56IEp1bGllbm5lIChnaXQ6Ly9naXQua2VybmVsLm9y
+Zy9wdWIvc2NtL2xpbnV4L2tlcm5lbC9naXQvbnNhZW56L2xpbnV4LQ0KPj4+IHJwaS5naXQpPyBX
+aGF0IGRvIHlvdSB0aGluaz8gVGhhbmtzIQ0KPj4gU2luY2UgdGhlcmUgaXMgbm8gY29kZSBkZXBl
+bmRlbmN5IGJldHdlZW4gdGhlIGRpZmZlcmVudCBkcml2ZXJzL3BhdGNoZXMgSQ0KPj4gc3VnZ2Vz
+dCBmb3IgZWFjaCBwYXRjaCB0byBnbyB0aHJvdWdoIGl0cyByZXNwZWN0aXZlIG1haW50YWluZXIg
+dHJlZS4gQWxzbywgaWYNCj4+IHdlIHdlcmUgdG8gbW92ZSB0aGUgd2hvbGUgc2VyaWVzIHRocm91
+Z2ggYXMgc2luZ2xlIHRyZWUsIGl0J3MgaW1wb3J0YW50IHRvIGhhdmUNCj4+IEFDS3MgZnJvbSBh
+bGwgdGhlIHN1YnN5c3RlbSBtYWludGFpbmVycy4NCj4gWWVzLCB3ZSBzdGlsbCBuZWVkIGEgQWNr
+IG9mIFJvYiBmb3IgdGhlIGRldmljZSB0cmVlIGJpbmRpbmdzLiBQbGVhc2UgZ2l2ZSBoaW0gdGhl
+IGNvbW1vbiAyIHdlZWtzIGZvciBhIHJldmlldy4NCg0KWW91IGhhdmUgb25lIGZyb20gS3J6eXN6
+dG9mIG9uIHRoZSBiaW5kaW5ncywgdGhhdCBzaG91bGQgYmUgc3VmZmljaWVudD8NCg0KaHR0cHM6
+Ly9kb2NzLmtlcm5lbC5vcmcvcHJvY2Vzcy9tYWludGFpbmVycy5odG1sI29wZW4tZmlybXdhcmUt
+YW5kLWZsYXR0ZW5lZC1kZXZpY2UtdHJlZS1iaW5kaW5ncw0KDQo+Pg0KPj4gSSdsbCBkbyBhIGxh
+c3QgcmV2aWV3IGR1cmluZyB0aGUgd2Vlay4NCj4+DQo+PiBSZWdhcmRzLA0KPj4NCg==
