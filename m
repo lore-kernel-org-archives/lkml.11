@@ -2,244 +2,241 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19E64C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:41:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61710C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353075AbiDZQoz (ORCPT
+        id S1353086AbiDZQqC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 12:44:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56334 "EHLO
+        Tue, 26 Apr 2022 12:46:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234846AbiDZQov (ORCPT
+        with ESMTP id S234846AbiDZQqA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 12:44:51 -0400
-Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E85835250
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:41:42 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 09:41:34 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1650991300;
+        Tue, 26 Apr 2022 12:46:00 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 189CB45ACD
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:42:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650991370;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=E/MIIOfJhqtHLMJjO2xxhPcOfdjq8JjVLKtUpyg3qj4=;
-        b=JHrIJCj/lia8vmPS4iWtsIgwt+kEs//Fa+z+pFzR37tZB17WAhjtTxmn+St05ErurnN2Zc
-        62aPqEtsfQ9Cws4mOfRAUKIK3eJRwqVcPHZPuV/ZFBRbiL0bbwAE518uIMk6QVR77K7Bc8
-        fes84gGppN6N8yvsCkqkUJXVZjH2SHQ=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     Dave Chinner <dchinner@redhat.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, Yang Shi <shy828301@gmail.com>,
-        Kent Overstreet <kent.overstreet@gmail.com>,
-        Hillf Danton <hdanton@sina.com>
-Subject: Re: [PATCH v2 0/7] mm: introduce shrinker debugfs interface
-Message-ID: <Ymggvr4Boc5JIf9j@carbon>
-References: <20220422202644.799732-1-roman.gushchin@linux.dev>
- <YmeK6/eZYaMo2Ltm@rh>
+        bh=D4Wo1BOUbiwCKjHDQuE2fXDkFkLp6gsv3e+wn4BHxY4=;
+        b=BfJotS1C+NcS9uPR6EGxN4cVHu9rzw/9BKjy2ClBe4y/ypURl//3qF1Z9c/hqxpVpwg4BC
+        IwK/LTYrrDHcreSIW5xVzxogl+jrcvDpXwmdubQsFszDNIIed/IOwBI3qVJDgx0pQmTC7g
+        tYi8RqvaXRMzsetW52lvrsQDBr6mV/o=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-237-cqXGR2ixPsis1NyJH0u7KQ-1; Tue, 26 Apr 2022 12:42:48 -0400
+X-MC-Unique: cqXGR2ixPsis1NyJH0u7KQ-1
+Received: by mail-wm1-f69.google.com with SMTP id v191-20020a1cacc8000000b0038ce818d2efso8291677wme.1
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:42:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=D4Wo1BOUbiwCKjHDQuE2fXDkFkLp6gsv3e+wn4BHxY4=;
+        b=tDVzNtPQZxPiVHELd7ztXP774XYfZkGQpOMkRqfFn0ZSMSaX7bLF5Z+AgDdUvKVffP
+         Y4gKUzE+yp2cfz9L79gbAft5tmnfj1IfkRUdriJeEAB+Jk3YjeXDAjapi2zyN8PjkIPr
+         eCJ4BlwJKIXgtNYhnDMQFR+vm340Kp4VV9KXCbxmFDp4u5FAgbMnNbC4djx2XvaOqC9Y
+         j1n1odx60qgbppSnUx6AHx0pkPs7+7eAp/Uk/y7T9O49ra33025wxkRr5X/EXMlmg4jG
+         swxL1WpVbzKiA14to2VtFBr7BdS9RhsWvYHJLKdpyuPaB1T6O9/dAOrf9PFl2d3iCZ2O
+         Q4Lw==
+X-Gm-Message-State: AOAM531UAeuc9FSER5c2feky/v5JwiZxJyHgoC6KoO+/tWAZlMw9AkJG
+        KPrtYHx9cGwUT6pNUl2NK2xQ+21NDIklhgVItZwjkKrYPccLc4qq9G+EJuQktxAa+ldhe5p8vi5
+        x6xCt9QlO+/G7hefChmM8hMU7
+X-Received: by 2002:a05:600c:348f:b0:393:dcff:f95b with SMTP id a15-20020a05600c348f00b00393dcfff95bmr19418053wmq.76.1650991366012;
+        Tue, 26 Apr 2022 09:42:46 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzw8SSeU6/it9DsVKT+zwFdAr+l3N0XPyXxX5+e0HOP9IQFGUbD8XN9KzX3ugSn+4PrPHPk3Q==
+X-Received: by 2002:a05:600c:348f:b0:393:dcff:f95b with SMTP id a15-20020a05600c348f00b00393dcfff95bmr19418039wmq.76.1650991365758;
+        Tue, 26 Apr 2022 09:42:45 -0700 (PDT)
+Received: from ?IPv6:2a0c:5a80:1306:2f00:cfcf:62cf:6f38:dd92? ([2a0c:5a80:1306:2f00:cfcf:62cf:6f38:dd92])
+        by smtp.gmail.com with ESMTPSA id r20-20020adfb1d4000000b0020adba3a4d6sm5555643wra.77.2022.04.26.09.42.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 09:42:45 -0700 (PDT)
+Message-ID: <0d6bf5a97777bec1e0b425f2fb33dbb80d848621.camel@redhat.com>
+Subject: Re: [PATCH 5/6] mm/page_alloc: Protect PCP lists with a spinlock
+From:   Nicolas Saenz Julienne <nsaenzju@redhat.com>
+To:     Mel Gorman <mgorman@techsingularity.net>
+Cc:     Marcelo Tosatti <mtosatti@redhat.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Michal Hocko <mhocko@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>
+Date:   Tue, 26 Apr 2022 18:42:43 +0200
+In-Reply-To: <20220420095906.27349-6-mgorman@techsingularity.net>
+References: <20220420095906.27349-1-mgorman@techsingularity.net>
+         <20220420095906.27349-6-mgorman@techsingularity.net>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YmeK6/eZYaMo2Ltm@rh>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 04:02:19PM +1000, Dave Chinner wrote:
-> On Fri, Apr 22, 2022 at 01:26:37PM -0700, Roman Gushchin wrote:
-> > There are 50+ different shrinkers in the kernel, many with their own bells and
-> > whistles. Under the memory pressure the kernel applies some pressure on each of
-> > them in the order of which they were created/registered in the system. Some
-> > of them can contain only few objects, some can be quite large. Some can be
-> > effective at reclaiming memory, some not.
-> > 
-> > The only existing debugging mechanism is a couple of tracepoints in
-> > do_shrink_slab(): mm_shrink_slab_start and mm_shrink_slab_end. They aren't
-> > covering everything though: shrinkers which report 0 objects will never show up,
-> > there is no support for memcg-aware shrinkers. Shrinkers are identified by their
-> > scan function, which is not always enough (e.g. hard to guess which super
-> > block's shrinker it is having only "super_cache_scan").
+On Wed, 2022-04-20 at 10:59 +0100, Mel Gorman wrote:
+> Currently the PCP lists are protected by using local_lock_irqsave to
+> prevent migration and IRQ reentrancy but this is inconvenient. Remote
+> draining of the lists is impossible and a workqueue is required and
+> every task allocation/free must disable then enable interrupts which is
+> expensive.
 > 
-> In general, I've had no trouble identifying individual shrinker
-> instances because I'm always looking at individual subsystem
-> shrinker tracepoints, too.  Hence I've almost always got the
-> identification information in the traces I need to trace just the
-> individual shrinker tracepoints and a bit of sed/grep/awk and I've
-> got something I can feed to gnuplot or a python script to graph...
+> As preparation for dealing with both of those problems, protect the
+> lists with a spinlock. The IRQ-unsafe version of the lock is used
+> because IRQs are already disabled by local_lock_irqsave. spin_trylock
+> is used in preparation for a time when local_lock could be used instead
+> of lock_lock_irqsave.
 > 
-> > They are a passive
-> > mechanism: there is no way to call into counting and scanning of an individual
-> > shrinker and profile it.
+> The per_cpu_pages still fits within the same number of cache lines after
+> this patch relative to before the series.
 > 
-> IDGI. profiling shrinkers iunder ideal conditions when there isn't
-> memory pressure is largely a useless exercise because execution
-> patterns under memory pressure are vastly different.
+> struct per_cpu_pages {
+>         spinlock_t                 lock;                 /*     0     4 */
+>         int                        count;                /*     4     4 */
+>         int                        high;                 /*     8     4 */
+>         int                        batch;                /*    12     4 */
+>         short int                  free_factor;          /*    16     2 */
+>         short int                  expire;               /*    18     2 */
 > 
-> All the problems with shrinkers show up when progress cannot be made
-> as fast as memory reclaim wants memory to be reclaimed. How do you
-> trigger priority windup causing large amounts of deferred processing
-> because shrinkers are running in GFP_NOFS/GFP_NOIO context? How do
-> you simulate objects getting dirtied in memory so they can't be
-> immediately reclaimed so the shrinker can't make any progress at all
-> until IO completes? How do you simulate the unbound concurrency that
-> direct reclaim can drive into the shrinkers that causes massive lock
-> contention on shared structures and locks that need to be accessed
-> to free objects?
+>         /* XXX 4 bytes hole, try to pack */
 > 
-> IOWs, if all you want to do is profile shrinkers running in the
-> absence of memory pressure, then you can do that perfectly well with
-> the existing 'echo 2 > /proc/sys/vm/drop_caches' mechanism. We don't
-> need some complex debugfs API just to profile the shrinker
-> behaviour.
+>         struct list_head           lists[13];            /*    24   208 */
 > 
-> So why do we need any of the complexity and potential for abuse that
-> comes from exposing control of shrinkers directly to userspace like
-> these patches do?
+>         /* size: 256, cachelines: 4, members: 7 */
+>         /* sum members: 228, holes: 1, sum holes: 4 */
+>         /* padding: 24 */
+> } __attribute__((__aligned__(64)));
 > 
-> > To provide a better visibility and debug options for memory shrinkers
-> > this patchset introduces a /sys/kernel/debug/shrinker interface, to some extent
-> > similar to /sys/kernel/slab.
+> Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
+> ---
+>  include/linux/mmzone.h |   1 +
+>  mm/page_alloc.c        | 155 +++++++++++++++++++++++++++++++++++------
+>  2 files changed, 136 insertions(+), 20 deletions(-)
 > 
-> /sys/kernel/slab contains read-only usage information - it is
-> analagous for visibility arguments, but it is not equivalent for
-> the rest of the "active" functionality you want to add here....
-> 
-> > For each shrinker registered in the system a directory is created. The directory
-> > contains "count" and "scan" files, which allow to trigger count_objects()
-> > and scan_objects() callbacks. For memcg-aware and numa-aware shrinkers
-> > count_memcg, scan_memcg, count_node, scan_node, count_memcg_node
-> > and scan_memcg_node are additionally provided. They allow to get per-memcg
-> > and/or per-node object count and shrink only a specific memcg/node.
-> 
-> Great, but why does the shrinker introspection interface need active
-> scan control functions like these?
-> 
-> > To make debugging more pleasant, the patchset also names all shrinkers,
-> > so that debugfs entries can have more meaningful names.
-> > 
-> > Usage examples:
-> > 
-> > 1) List registered shrinkers:
-> >   $ cd /sys/kernel/debug/shrinker/
-> >   $ ls
-> >     dqcache-16          sb-cgroup2-30    sb-hugetlbfs-33  sb-proc-41       sb-selinuxfs-22  sb-tmpfs-40    sb-zsmalloc-19
-> >     kfree_rcu-0         sb-configfs-23   sb-iomem-12      sb-proc-44       sb-sockfs-8      sb-tmpfs-42    shadow-18
-> >     sb-aio-20           sb-dax-11        sb-mqueue-21     sb-proc-45       sb-sysfs-26      sb-tmpfs-43    thp_deferred_split-10
-> >     sb-anon_inodefs-15  sb-debugfs-7     sb-nsfs-4        sb-proc-47       sb-tmpfs-1       sb-tmpfs-46    thp_zero-9
-> >     sb-bdev-3           sb-devpts-28     sb-pipefs-14     sb-pstore-31     sb-tmpfs-27      sb-tmpfs-49    xfs_buf-37
-> >     sb-bpf-32           sb-devtmpfs-5    sb-proc-25       sb-rootfs-2      sb-tmpfs-29      sb-tracefs-13  xfs_inodegc-38
-> >     sb-btrfs-24         sb-hugetlbfs-17  sb-proc-39       sb-securityfs-6  sb-tmpfs-35      sb-xfs-36      zspool-34
-> 
-> Ouch. That's not going to be useful for humans debugging a system as
-> there's no way to cross reference a "superblock" with an actual
-> filesystem mount point. Nor is there any way to reallly know that
-> all the shrinkers in one filesystem are related.
-> 
-> We normally solve this by ensuring that the fs related object has
-> the short bdev name appended to them. e.g:
-> 
-> $ pgrep xfs
-> 1 I root          36       2  0  60 -20 -     0 -      Apr19 ?        00:00:10 [kworker/0:1H-xfs-log/dm-3]
-> 1 I root         679       2  0  60 -20 -     0 -      Apr19 ?        00:00:00 [xfsalloc]
-> 1 I root         680       2  0  60 -20 -     0 -      Apr19 ?        00:00:00 [xfs_mru_cache]
-> 1 I root         681       2  0  60 -20 -     0 -      Apr19 ?        00:00:00 [xfs-buf/dm-1]
-> .....
-> 
-> Here we have a kworker process running log IO completion work on
-> dm-3, two global workqueue rescuer tasks (alloc, mru) and a rescuer
-> task for xfs-buf workqueue on dm-1.
-> 
-> We need the same name discrimination for shrinker information here,
-> too - just saying "this is an XFS superblock shrinker" is just not
-> sufficient when there are hundreds of XFS mount points with a
-> handful of shrinkers each.
-> 
-> > 2) Get information about a specific shrinker:
-> >   $ cd sb-btrfs-24/
-> >   $ ls
-> >     count  count_memcg  count_memcg_node  count_node  scan  scan_memcg  scan_memcg_node  scan_node
-> > 
-> > 3) Count objects on the system/root cgroup level
-> >   $ cat count
-> >     212
-> > 
-> > 4) Count objects on the system/root cgroup level per numa node (on a 2-node machine)
-> >   $ cat count_node
-> >     209 3
-> 
-> So a single space separated line with a number per node?
-> 
-> When you have a few hundred nodes and hundreds of thousands of objects per
-> node, we overrun the 4kB page size with a single line. What then?
-> 
-> > 5) Count objects for each memcg (output format: cgroup inode, count)
-> >   $ cat count_memcg
-> >     1 212
-> >     20 96
-> >     53 817
-> >     2297 2
-> >     218 13
-> >     581 30
-> >     911 124
-> >     <CUT>
-> 
-> What does "<CUT>" mean?
-> 
-> Also, this now iterates separate memcg per line. A parser now needs
-> to know the difference between count/count_node and
-> count_memcg/count_memcg_node because they are subtly different file
-> formats.  These files should have the same format, otherwise it just
-> creates needless complexity.
-> 
-> Indeed, why do we even need count/count_node? They are just the
-> "index 1" memcg output, so are totally redundant.
-> 
-> > 6) Same but with a per-node output
-> >   $ cat count_memcg_node
-> >     1 209 3
-> >     20 96 0
-> >     53 810 7
-> >     2297 2 0
-> >     218 13 0
-> >     581 30 0
-> >     911 124 0
-> >     <CUT>
-> 
-> So now we have a hundred nodes in the machine and thousands of
-> memcgs. And the information we want is in the numerically largest
-> memcg that is last in the list. ANd we want to graph it's behaviour
-> over time at high resolution (say 1Hz). Now we burn huge amounts
-> of CPU counting memcgs that we don't care about and then throwing
-> away most of the information. That's highly in-efficient and really
-> doesn't scale.
-> 
-> [snap active scan interface]
-> 
-> This just seems like a solution looking for a problem to solve.
-> Can you please describe the problem this infrastructure is going
-> to solve?
+> diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
+> index abe530748de6..8b5757735428 100644
+> --- a/include/linux/mmzone.h
+> +++ b/include/linux/mmzone.h
+> @@ -385,6 +385,7 @@ enum zone_watermarks {
+>  
+>  /* Fields and list protected by pagesets local_lock in page_alloc.c */
+>  struct per_cpu_pages {
+> +	spinlock_t lock;	/* Protects lists field */
+>  	int count;		/* number of pages in the list */
+>  	int high;		/* high watermark, emptying needed */
+>  	int batch;		/* chunk size for buddy add/remove */
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index dc0fdeb3795c..813c84b67c65 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -132,6 +132,17 @@ static DEFINE_PER_CPU(struct pagesets, pagesets) __maybe_unused = {
+>  	.lock = INIT_LOCAL_LOCK(lock),
+>  };
+>  
+> +#ifdef CONFIG_SMP
+> +/* On SMP, spin_trylock is sufficient protection */
+> +#define pcp_trylock_prepare(flags)	do { } while (0)
+> +#define pcp_trylock_finish(flag)	do { } while (0)
+> +#else
+> +
+> +/* UP spin_trylock always succeeds so disable IRQs to prevent re-entrancy. */
 
-Hi Dave!
+This is only needed on non-RT kernels. RT UP builds go through
+rt_spin_trylock(), which behaves like its SMP counterpart.
 
-Thank you for taking a look.
+> +#define pcp_trylock_prepare(flags)	local_irq_save(flags)
+> +#define pcp_trylock_finish(flags)	local_irq_restore(flags)
+> +#endif
+> +
+>  #ifdef CONFIG_USE_PERCPU_NUMA_NODE_ID
+>  DEFINE_PER_CPU(int, numa_node);
+>  EXPORT_PER_CPU_SYMBOL(numa_node);
+> @@ -3082,15 +3093,22 @@ static int rmqueue_bulk(struct zone *zone, unsigned int order,
+>   */
+>  void drain_zone_pages(struct zone *zone, struct per_cpu_pages *pcp)
+>  {
+> -	unsigned long flags;
+>  	int to_drain, batch;
+>  
+> -	local_lock_irqsave(&pagesets.lock, flags);
+>  	batch = READ_ONCE(pcp->batch);
+>  	to_drain = min(pcp->count, batch);
+> -	if (to_drain > 0)
+> +	if (to_drain > 0) {
+> +		unsigned long flags;
+> +
+> +		/* free_pcppages_bulk expects IRQs disabled for zone->lock */
+> +		local_irq_save(flags);
 
-Can you, please, summarize your position, because it's a bit unclear.
-You made a lot of good points about some details (e.g. shrinkers naming,
-and I totally agree there; machines with hundreds of nodes etc), then
-you said the active scanning is useless and then said the whole thing
-is useless and we're fine with what we have regarding shrinkers debugging.
+Why dropping the local_lock? That approach is nicer to RT builds, and I don't
+think it makes a difference from a non-RT perspective.
 
-My plan is to work on convert shrinkers API to bytes and experiment
-with different LRU implementations. I find an ability to easily export
-statistics and other data (which doesn't exist now) via debugfs useful
-(and way more convenient than changing existing tracepoints), as well as
-an ability to trigger scanning of individual shrinkers. If nobody else
-seeing any value here, I'm fine to keep these patches private, no reason
-to argue about the output format then.
+That said, IIUC, this will eventually disappear with subsequent patches, right?
 
-If you (or somebody else) see some value in at least "count" part, I'm happy
-to answer all questions and incorporate the feedback in the next version.
+> +
+> +		spin_lock(&pcp->lock);
+>  		free_pcppages_bulk(zone, to_drain, pcp, 0);
+> -	local_unlock_irqrestore(&pagesets.lock, flags);
+> +		spin_unlock(&pcp->lock);
+> +
+> +		local_irq_restore(flags);
+> +	}
+>  }
+>  #endif
+>  
 
-Thank you!
+[...]
+
+> @@ -3668,9 +3748,30 @@ struct page *__rmqueue_pcplist(struct zone *zone, unsigned int order,
+>  			int migratetype,
+>  			unsigned int alloc_flags,
+>  			struct per_cpu_pages *pcp,
+> -			struct list_head *list)
+> +			struct list_head *list,
+> +			bool locked)
+>  {
+>  	struct page *page;
+> +	unsigned long __maybe_unused UP_flags;
+> +
+> +	/*
+> +	 * spin_trylock is not necessary right now due to due to
+> +	 * local_lock_irqsave and is a preparation step for
+> +	 * a conversion to local_lock using the trylock to prevent
+> +	 * IRQ re-entrancy. If pcp->lock cannot be acquired, the caller
+> +	 * uses rmqueue_buddy.
+> +	 *
+> +	 * TODO: Convert local_lock_irqsave to local_lock. Care
+> +	 * 	 is needed as the type of local_lock would need a
+> +	 * 	 PREEMPT_RT version due to threaded IRQs.
+> +	 */
+
+I missed this in our previous conversation, but as far as RT is concerned
+local_lock_irqsave() is the same as local_lock(), see in local_lock_internal.h:
+
+#define __local_lock_irqsave(lock, flags)			\
+	do {							\
+		typecheck(unsigned long, flags);		\
+		flags = 0;					\
+		__local_lock(lock);				\
+	} while (0)
+
+Something similar happens with spin_lock_irqsave(), see in spinlock_rt.h:
+
+#define spin_lock_irqsave(lock, flags)			 \
+	do {						 \
+		typecheck(unsigned long, flags);	 \
+		flags = 0;				 \
+		spin_lock(lock);			 \
+	} while (0)
+
+IIUC, RT will run this code paths in threaded IRQ context, where we can think
+of RT spinlocks as mutexes (plus some extra priority inheritance magic).
+
+Regards,
+
+-- 
+Nicolás Sáenz
+
