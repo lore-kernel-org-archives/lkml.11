@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C7D3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 23:56:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14D09C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 23:56:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356262AbiDZX7v (ORCPT
+        id S1356269AbiDZX7y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 19:59:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45794 "EHLO
+        Tue, 26 Apr 2022 19:59:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356234AbiDZX7p (ORCPT
+        with ESMTP id S1356258AbiDZX7t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 19:59:45 -0400
+        Tue, 26 Apr 2022 19:59:49 -0400
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32F8148307
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 16:56:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CD134924D
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 16:56:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651017396; x=1682553396;
+  t=1651017400; x=1682553400;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=7EUtCKwJmlibbavHY3Ddf0LnLTbd6D1YbMdZzySp9tA=;
-  b=BCk2EY4eoAXsm5g3E/+QrYJzYkcX468S15wH6vO5sWVxhtB+BCgBfG4e
-   pV5IkzZ8KzFTcNs9lvmrBHLtmskp8irb5FgonChFP1Nxktc0WT2KIxwCK
-   KyF2+GfVb9+zfEDn6ALrvLGbMUrZ3SpvI5lkEJlhU1blBTyEd75wMRUHh
-   E2HJPlcEDEY8nZIxAbQSkMdadHVFm35cOcmAFoqgJCykel4xsv1mbnqq0
-   EoZ6TqleUXuPiDk8KBfyaG1DpeNIAjBMLCjFNf+pUVNDkKdM/61THqG1b
-   rb4z5fzx7aKMyO/GeVBUrYk3BTaBuKBLd7V1k548qz4ooM6ODiW+mdMI1
+  bh=V6orb7xMJrGLhUt7lGhLbHJI6NNpt/GIKG7ukF/7V64=;
+  b=dzbBfBPvl73DJ17Wb+QITy5Mc35KL2GGdSvR7hGz/aNi0QExNwPRXeXo
+   4IIxdsOpJrJzkG8n9urtNjWcTky+jggtEGR1qW0DHsxrLV4aowKMBkQt/
+   uijbBwyGq+uGWBpF4uXkEp7JveqYYvIY8T7Q5/eUmk9VW22T9bkvoR5+5
+   LDPnIdYTUUFwT2ro9moox8qpB6zbaeYp6IVSkqILyPbK02c+kG+r9Syxs
+   AJNe+shWxTJlB5ERCGAHTbI6nIsYGSufoW5K3QQknF0HAz5deh/OjpL3+
+   8Li3WRSuMi+UYExuJk5LJIhl/YXk6zpP8OWcpqiU5REu1eY2ja4pJU+6/
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="245682875"
+X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="245682884"
 X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
-   d="scan'208";a="245682875"
+   d="scan'208";a="245682884"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 16:56:35 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 16:56:39 -0700
 X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
-   d="scan'208";a="730515030"
+   d="scan'208";a="730515044"
 Received: from htamura-mobl2.gar.corp.intel.com (HELO bard-pc.domain.name) ([10.252.185.30])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 16:56:34 -0700
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 16:56:38 -0700
 From:   Bard Liao <yung-chuan.liao@linux.intel.com>
 To:     alsa-devel@alsa-project.org, vkoul@kernel.org
 Cc:     vinod.koul@linaro.org, linux-kernel@vger.kernel.org,
         gregkh@linuxfoundation.org, srinivas.kandagatla@linaro.org,
         pierre-louis.bossart@linux.intel.com, sanyog.r.kale@intel.com,
         bard.liao@intel.com
-Subject: [PATCH 2/5] soundwire: bus: use pm_runtime_resume_and_get()
-Date:   Wed, 27 Apr 2022 07:56:20 +0800
-Message-Id: <20220426235623.4253-3-yung-chuan.liao@linux.intel.com>
+Subject: [PATCH 4/5] soundwire: intel: use pm_runtime_resume_and_get()
+Date:   Wed, 27 Apr 2022 07:56:22 +0800
+Message-Id: <20220426235623.4253-5-yung-chuan.liao@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220426235623.4253-1-yung-chuan.liao@linux.intel.com>
 References: <20220426235623.4253-1-yung-chuan.liao@linux.intel.com>
@@ -68,53 +68,28 @@ Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
 Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
 ---
- drivers/soundwire/bus.c | 15 +++++----------
- 1 file changed, 5 insertions(+), 10 deletions(-)
+ drivers/soundwire/intel.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/soundwire/bus.c b/drivers/soundwire/bus.c
-index 354d3f89366f..193bf87866f6 100644
---- a/drivers/soundwire/bus.c
-+++ b/drivers/soundwire/bus.c
-@@ -536,11 +536,9 @@ int sdw_nread(struct sdw_slave *slave, u32 addr, size_t count, u8 *val)
- {
+diff --git a/drivers/soundwire/intel.c b/drivers/soundwire/intel.c
+index 63101f1ba271..ad41b50f2ef1 100644
+--- a/drivers/soundwire/intel.c
++++ b/drivers/soundwire/intel.c
+@@ -799,12 +799,11 @@ static int intel_startup(struct snd_pcm_substream *substream,
+ 	struct sdw_cdns *cdns = snd_soc_dai_get_drvdata(dai);
  	int ret;
  
--	ret = pm_runtime_get_sync(&slave->dev);
--	if (ret < 0 && ret != -EACCES) {
--		pm_runtime_put_noidle(&slave->dev);
-+	ret = pm_runtime_resume_and_get(&slave->dev);
-+	if (ret < 0 && ret != -EACCES)
- 		return ret;
--	}
- 
- 	ret = sdw_nread_no_pm(slave, addr, count, val);
- 
-@@ -562,11 +560,9 @@ int sdw_nwrite(struct sdw_slave *slave, u32 addr, size_t count, const u8 *val)
- {
- 	int ret;
- 
--	ret = pm_runtime_get_sync(&slave->dev);
--	if (ret < 0 && ret != -EACCES) {
--		pm_runtime_put_noidle(&slave->dev);
-+	ret = pm_runtime_resume_and_get(&slave->dev);
-+	if (ret < 0 && ret != -EACCES)
- 		return ret;
--	}
- 
- 	ret = sdw_nwrite_no_pm(slave, addr, count, val);
- 
-@@ -1506,10 +1502,9 @@ static int sdw_handle_slave_alerts(struct sdw_slave *slave)
- 
- 	sdw_modify_slave_status(slave, SDW_SLAVE_ALERT);
- 
--	ret = pm_runtime_get_sync(&slave->dev);
-+	ret = pm_runtime_resume_and_get(&slave->dev);
+-	ret = pm_runtime_get_sync(cdns->dev);
++	ret = pm_runtime_resume_and_get(cdns->dev);
  	if (ret < 0 && ret != -EACCES) {
- 		dev_err(&slave->dev, "Failed to resume device: %d\n", ret);
--		pm_runtime_put_noidle(&slave->dev);
+ 		dev_err_ratelimited(cdns->dev,
+-				    "pm_runtime_get_sync failed in %s, ret %d\n",
++				    "pm_runtime_resume_and_get failed in %s, ret %d\n",
+ 				    __func__, ret);
+-		pm_runtime_put_noidle(cdns->dev);
  		return ret;
  	}
- 
+ 	return 0;
 -- 
 2.25.1
 
