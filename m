@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75210C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE45BC4167B
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:48:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346018AbiDZItc (ORCPT
+        id S1346377AbiDZIuE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:49:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36684 "EHLO
+        Tue, 26 Apr 2022 04:50:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345580AbiDZIjO (ORCPT
+        with ESMTP id S1345730AbiDZIj1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:39:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1D9F19C34;
-        Tue, 26 Apr 2022 01:30:24 -0700 (PDT)
+        Tue, 26 Apr 2022 04:39:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DF0C3CA59;
+        Tue, 26 Apr 2022 01:30:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EAF11B81CF9;
-        Tue, 26 Apr 2022 08:30:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 344FDC385A0;
-        Tue, 26 Apr 2022 08:30:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E5A3B617D2;
+        Tue, 26 Apr 2022 08:30:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF06DC385A4;
+        Tue, 26 Apr 2022 08:30:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961821;
-        bh=MyWmK+PsAZoXKuUVRcLqfbxwM+xdMH/P2sk7Eu3KX8w=;
+        s=korg; t=1650961844;
+        bh=E6X3ptirYwat2tUUxAHSXLZPRaN7WMBiq59cx1MfAMI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Rwy2DfoP7aEsev8zoWfodw1eWJSAI8MIMiuqc/1CD9BtJe1RDyQ/3elvUITcon44H
-         Le+wv7COtXtb2wGuPtN+kZUO2cyN5kKchjUONSZfAjZF4PfJ0N7++MuaJOtiOEdnYx
-         /PHHV98k9X5GvZ8XjlwyBPxJMD6w7P1DJ+h4yQkQ=
+        b=x/VNc29ibksIY/xSC+fu5Iu+kVWSae3k8Wv7+ffRy5eRJDnBtphUZ8jZ+FmbmCrRV
+         xULkXEjJw/3TyI591Fd8seKKfwlZNxwYZj5fTUOInKIMtG/CXVZswQ0VvvpWKmJYdK
+         P4r/QMprk58Vbcj0DBoDYCH4CgzGW+gfRNSP/8+k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Maxime Ripard <maxime@cerno.tech>,
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 40/62] drm/panel/raspberrypi-touchscreen: Avoid NULL deref if not initialised
-Date:   Tue, 26 Apr 2022 10:21:20 +0200
-Message-Id: <20220426081738.370466024@linuxfoundation.org>
+Subject: [PATCH 5.4 10/62] ASoC: atmel: Remove system clock tree configuration for at91sam9g20ek
+Date:   Tue, 26 Apr 2022 10:20:50 +0200
+Message-Id: <20220426081737.521931311@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
 References: <20220426081737.209637816@linuxfoundation.org>
@@ -52,40 +50,140 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit f92055ae0acb035891e988ce345d6b81a0316423 ]
+[ Upstream commit c775cbf62ed4911e4f0f23880f01815753123690 ]
 
-If a call to rpi_touchscreen_i2c_write from rpi_touchscreen_probe
-fails before mipi_dsi_device_register_full is called, then
-in trying to log the error message if uses ts->dsi->dev when
-it is still NULL.
+The MCLK of the WM8731 on the AT91SAM9G20-EK board is connected to the
+PCK0 output of the SoC, intended in the reference software to be supplied
+using PLLB and programmed to 12MHz. As originally written for use with a
+board file the audio driver was responsible for configuring the entire tree
+but in the conversion to the common clock framework the registration of
+the named pck0 and pllb clocks was removed so the driver has failed to
+instantiate ever since.
 
-Use ts->i2c->dev instead, which is initialised earlier in probe.
+Since the WM8731 driver has had support for managing a MCLK provided via
+the common clock framework for some time we can simply drop all the clock
+management code from the machine driver other than configuration of the
+sysclk rate, the CODEC driver still respects that configuration from the
+machine driver.
 
-Fixes: 2f733d6194bd ("drm/panel: Add support for the Raspberry Pi 7" Touchscreen.")
-Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220415162513.42190-2-stefan.wahren@i2se.com
+Fixes: ff78a189b0ae55f ("ARM: at91: remove old at91-specific clock driver")
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Reviewed-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Link: https://lore.kernel.org/r/20220325154241.1600757-2-broonie@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/atmel/sam9g20_wm8731.c | 61 --------------------------------
+ 1 file changed, 61 deletions(-)
 
-diff --git a/drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c b/drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c
-index bdb4d59c8127..6906f522521d 100644
---- a/drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c
-+++ b/drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c
-@@ -232,7 +232,7 @@ static void rpi_touchscreen_i2c_write(struct rpi_touchscreen *ts,
+diff --git a/sound/soc/atmel/sam9g20_wm8731.c b/sound/soc/atmel/sam9g20_wm8731.c
+index 05277a88e20d..d1579896f3a1 100644
+--- a/sound/soc/atmel/sam9g20_wm8731.c
++++ b/sound/soc/atmel/sam9g20_wm8731.c
+@@ -46,35 +46,6 @@
+  */
+ #undef ENABLE_MIC_INPUT
  
- 	ret = i2c_smbus_write_byte_data(ts->i2c, reg, val);
- 	if (ret)
--		dev_err(&ts->dsi->dev, "I2C write failed: %d\n", ret);
-+		dev_err(&ts->i2c->dev, "I2C write failed: %d\n", ret);
- }
+-static struct clk *mclk;
+-
+-static int at91sam9g20ek_set_bias_level(struct snd_soc_card *card,
+-					struct snd_soc_dapm_context *dapm,
+-					enum snd_soc_bias_level level)
+-{
+-	static int mclk_on;
+-	int ret = 0;
+-
+-	switch (level) {
+-	case SND_SOC_BIAS_ON:
+-	case SND_SOC_BIAS_PREPARE:
+-		if (!mclk_on)
+-			ret = clk_enable(mclk);
+-		if (ret == 0)
+-			mclk_on = 1;
+-		break;
+-
+-	case SND_SOC_BIAS_OFF:
+-	case SND_SOC_BIAS_STANDBY:
+-		if (mclk_on)
+-			clk_disable(mclk);
+-		mclk_on = 0;
+-		break;
+-	}
+-
+-	return ret;
+-}
+-
+ static const struct snd_soc_dapm_widget at91sam9g20ek_dapm_widgets[] = {
+ 	SND_SOC_DAPM_MIC("Int Mic", NULL),
+ 	SND_SOC_DAPM_SPK("Ext Spk", NULL),
+@@ -135,7 +106,6 @@ static struct snd_soc_card snd_soc_at91sam9g20ek = {
+ 	.owner = THIS_MODULE,
+ 	.dai_link = &at91sam9g20ek_dai,
+ 	.num_links = 1,
+-	.set_bias_level = at91sam9g20ek_set_bias_level,
  
- static int rpi_touchscreen_write(struct rpi_touchscreen *ts, u16 reg, u32 val)
+ 	.dapm_widgets = at91sam9g20ek_dapm_widgets,
+ 	.num_dapm_widgets = ARRAY_SIZE(at91sam9g20ek_dapm_widgets),
+@@ -148,7 +118,6 @@ static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
+ {
+ 	struct device_node *np = pdev->dev.of_node;
+ 	struct device_node *codec_np, *cpu_np;
+-	struct clk *pllb;
+ 	struct snd_soc_card *card = &snd_soc_at91sam9g20ek;
+ 	int ret;
+ 
+@@ -162,31 +131,6 @@ static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
+ 		return -EINVAL;
+ 	}
+ 
+-	/*
+-	 * Codec MCLK is supplied by PCK0 - set it up.
+-	 */
+-	mclk = clk_get(NULL, "pck0");
+-	if (IS_ERR(mclk)) {
+-		dev_err(&pdev->dev, "Failed to get MCLK\n");
+-		ret = PTR_ERR(mclk);
+-		goto err;
+-	}
+-
+-	pllb = clk_get(NULL, "pllb");
+-	if (IS_ERR(pllb)) {
+-		dev_err(&pdev->dev, "Failed to get PLLB\n");
+-		ret = PTR_ERR(pllb);
+-		goto err_mclk;
+-	}
+-	ret = clk_set_parent(mclk, pllb);
+-	clk_put(pllb);
+-	if (ret != 0) {
+-		dev_err(&pdev->dev, "Failed to set MCLK parent\n");
+-		goto err_mclk;
+-	}
+-
+-	clk_set_rate(mclk, MCLK_RATE);
+-
+ 	card->dev = &pdev->dev;
+ 
+ 	/* Parse device node info */
+@@ -230,9 +174,6 @@ static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
+ 
+ 	return ret;
+ 
+-err_mclk:
+-	clk_put(mclk);
+-	mclk = NULL;
+ err:
+ 	atmel_ssc_put_audio(0);
+ 	return ret;
+@@ -242,8 +183,6 @@ static int at91sam9g20ek_audio_remove(struct platform_device *pdev)
+ {
+ 	struct snd_soc_card *card = platform_get_drvdata(pdev);
+ 
+-	clk_disable(mclk);
+-	mclk = NULL;
+ 	snd_soc_unregister_card(card);
+ 	atmel_ssc_put_audio(0);
+ 
 -- 
 2.35.1
 
