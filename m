@@ -2,88 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C912C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34339C43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:48:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347174AbiDZIvM (ORCPT
+        id S1347091AbiDZIvG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:51:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59484 "EHLO
+        Tue, 26 Apr 2022 04:51:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345800AbiDZIjc (ORCPT
+        with ESMTP id S1345801AbiDZIjc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:39:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2625B6EB3D;
-        Tue, 26 Apr 2022 01:31:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D2E5DB81CFA;
-        Tue, 26 Apr 2022 08:31:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26EC5C385A4;
-        Tue, 26 Apr 2022 08:31:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961879;
-        bh=F9+AFS+fc5u80EjXvsqSbNKTh1aIir5NKu5pZN3N3kU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Smu/kl9hME6I97rq3Ebv4imiptg0mv0jAS2hGaFDIx1GF4X5bTgR+LKp9ZcigPDzq
-         CooqsffAsG036B7OPv2SUsnMY6bvrwpIuumeGGpyP9Ray01d0JTkLaD1PVEC1X5qYi
-         DMaijF21aLiv8vIJ/GD5Z6IZzyY25da0vPm4srkE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Marek Vasut <marex@denx.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 62/62] Revert "net: micrel: fix KS8851_MLL Kconfig"
-Date:   Tue, 26 Apr 2022 10:21:42 +0200
-Message-Id: <20220426081738.999369794@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
-References: <20220426081737.209637816@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72AF8996A1;
+        Tue, 26 Apr 2022 01:31:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1650961881; x=1682497881;
+  h=from:to:cc:subject:date:message-id;
+  bh=ey2DEjx+AwyO6kemYE9A9R1iln2K570othjBxqTPYqY=;
+  b=YMmPAOq6g3ITUqKsSgvvDdhuQfYVjeyHV9yzYYsnrQjMX2MbZaOZmsCV
+   7fVJhUr+CK4cR0fppYGMSyQS4vks+438FIodfukQxCbE1wtoW8CHXS+P8
+   U6GZUFgDnchYP7ERpEpG0rGwhpe5O69FBkhQW6KqDei6tk6LguPYSDYIj
+   g=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 26 Apr 2022 01:31:20 -0700
+X-QCInternal: smtphost
+Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 26 Apr 2022 01:31:18 -0700
+X-QCInternal: smtphost
+Received: from hu-c-spathi-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.108.59])
+  by ironmsg01-blr.qualcomm.com with ESMTP; 26 Apr 2022 14:00:59 +0530
+Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 212714)
+        id 3A599DD9; Tue, 26 Apr 2022 14:00:58 +0530 (+0530)
+From:   Srinivasarao Pathipati <quic_spathi@quicinc.com>
+To:     ulf.hansson@linaro.org, adrian.hunter@intel.com,
+        riteshh@codeaurora.org, asutoshd@codeaurora.org, axboe@kernel.dk,
+        avri.altman@wdc.com, kch@nvidia.com, CLoehle@hyperstone.com,
+        swboyd@chromium.org, digetx@gmail.com, bigeasy@linutronix.de,
+        linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Shaik Sajida Bhanu <sbhanu@codeaurora.org>,
+        kamasali <quic_kamasali@quicinc.com>,
+        Srinivasarao Pathipati <quic_spathi@quicinc.com>
+Subject: [PATCH V1] mmc: core: Enable force hw reset
+Date:   Tue, 26 Apr 2022 14:00:18 +0530
+Message-Id: <1650961818-13452-1-git-send-email-quic_spathi@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+From: Shaik Sajida Bhanu <sbhanu@codeaurora.org>
 
-This reverts commit 4cd3c9e070d6a9a9dc76a5ffa79114953bf69087 which is
-commit c3efcedd272aa6dd5929e20cf902a52ddaa1197a upstream.
+During error recovery set need hw reset to handle
+ICE error where cqe reset is must.
 
-The upstream commit c3efcedd272a ("net: micrel: fix KS8851_MLL Kconfig")
-depends on e5f31552674e ("ethernet: fix PTP_1588_CLOCK dependencies")
-which is not part of Linux 5.4.y . Revert the aforementioned commit to
-prevent breakage in 5.4.y .
-
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Randy Dunlap <rdunlap@infradead.org>
-Cc: Sasha Levin <sashal@kernel.org>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Shaik Sajida Bhanu <sbhanu@codeaurora.org>
+Signed-off-by: kamasali <quic_kamasali@quicinc.com>
+Signed-off-by: Srinivasarao Pathipati <quic_spathi@quicinc.com>
 ---
- drivers/net/ethernet/micrel/Kconfig |    1 -
- 1 file changed, 1 deletion(-)
+ drivers/mmc/core/block.c      | 8 +++++---
+ drivers/mmc/host/cqhci-core.c | 7 +++++--
+ include/linux/mmc/host.h      | 1 +
+ 3 files changed, 11 insertions(+), 5 deletions(-)
 
---- a/drivers/net/ethernet/micrel/Kconfig
-+++ b/drivers/net/ethernet/micrel/Kconfig
-@@ -37,7 +37,6 @@ config KS8851
- config KS8851_MLL
- 	tristate "Micrel KS8851 MLL"
- 	depends on HAS_IOMEM
--	depends on PTP_1588_CLOCK_OPTIONAL
- 	select MII
- 	---help---
- 	  This platform driver is for Micrel KS8851 Address/data bus
-
+diff --git a/drivers/mmc/core/block.c b/drivers/mmc/core/block.c
+index b35e7a9..f63bf33 100644
+--- a/drivers/mmc/core/block.c
++++ b/drivers/mmc/core/block.c
+@@ -1482,10 +1482,12 @@ void mmc_blk_cqe_recovery(struct mmc_queue *mq)
+ 	pr_debug("%s: CQE recovery start\n", mmc_hostname(host));
+ 
+ 	err = mmc_cqe_recovery(host);
+-	if (err)
++	if (err || host->need_hw_reset) {
+ 		mmc_blk_reset(mq->blkdata, host, MMC_BLK_CQE_RECOVERY);
+-	else
+-		mmc_blk_reset_success(mq->blkdata, MMC_BLK_CQE_RECOVERY);
++		if (host->need_hw_reset)
++			host->need_hw_reset = false;
++	}
++	mmc_blk_reset_success(mq->blkdata, MMC_BLK_CQE_RECOVERY);
+ 
+ 	pr_debug("%s: CQE recovery done\n", mmc_hostname(host));
+ }
+diff --git a/drivers/mmc/host/cqhci-core.c b/drivers/mmc/host/cqhci-core.c
+index b0d30c3..311b510 100644
+--- a/drivers/mmc/host/cqhci-core.c
++++ b/drivers/mmc/host/cqhci-core.c
+@@ -812,18 +812,21 @@ static void cqhci_finish_mrq(struct mmc_host *mmc, unsigned int tag)
+ irqreturn_t cqhci_irq(struct mmc_host *mmc, u32 intmask, int cmd_error,
+ 		      int data_error)
+ {
+-	u32 status;
++	u32 status, ice_err;
+ 	unsigned long tag = 0, comp_status;
+ 	struct cqhci_host *cq_host = mmc->cqe_private;
+ 
+ 	status = cqhci_readl(cq_host, CQHCI_IS);
+ 	cqhci_writel(cq_host, status, CQHCI_IS);
++	ice_err = status & (CQHCI_IS_GCE | CQHCI_IS_ICCE);
+ 
+ 	pr_debug("%s: cqhci: IRQ status: 0x%08x\n", mmc_hostname(mmc), status);
+ 
+ 	if ((status & (CQHCI_IS_RED | CQHCI_IS_GCE | CQHCI_IS_ICCE)) ||
+-	    cmd_error || data_error)
++	    cmd_error || data_error || ice_err){
++		mmc->need_hw_reset = true;
+ 		cqhci_error_irq(mmc, status, cmd_error, data_error);
++	}
+ 
+ 	if (status & CQHCI_IS_TCC) {
+ 		/* read TCN and complete the request */
+diff --git a/include/linux/mmc/host.h b/include/linux/mmc/host.h
+index c193c50..3d00bcf 100644
+--- a/include/linux/mmc/host.h
++++ b/include/linux/mmc/host.h
+@@ -492,6 +492,7 @@ struct mmc_host {
+ 	int			cqe_qdepth;
+ 	bool			cqe_enabled;
+ 	bool			cqe_on;
++	bool                    need_hw_reset;
+ 
+ 	/* Inline encryption support */
+ #ifdef CONFIG_MMC_CRYPTO
+-- 
+2.7.4
 
