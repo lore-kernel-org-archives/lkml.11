@@ -2,97 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F5ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 12:41:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63850C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 12:42:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235158AbiDZMpE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 08:45:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37196 "EHLO
+        id S1350111AbiDZMpI (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 08:45:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350078AbiDZMo6 (ORCPT
+        with ESMTP id S1350089AbiDZMpA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 08:44:58 -0400
-Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D959177D57;
-        Tue, 26 Apr 2022 05:41:51 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id F3B995C0074;
-        Tue, 26 Apr 2022 08:41:50 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Tue, 26 Apr 2022 08:41:51 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm3; t=1650976910; x=
-        1651063310; bh=SgI0L/1WlWgshKXX27UtUUvssrv2YQvwIA+VNKXKllA=; b=w
-        cfv6dP/e+RxvqAtKVyrLaeVrUDKYdZuo3xtGvwK0d0fNQOGfoYNgfMjrKglV5WTy
-        /P5gGh2eUI8ReAk3jF+kROFdTVAHKnkH42pr4uyPHF1zBriOz5WwLvWcdJIt/ESY
-        8F5uUyC0YE9uwPJRzkbr4AojXLTocHBjrSbEB0SX2D/pB5wYPPtOeoWZwGsHLzDr
-        9wV5JSrD2Hh4QKl/3ZmG8+ckOAzwka0QDKZHulP40E7fYnRYh6IlgfIcI6rZt81q
-        tvZLKyoGCFimPskraYs7VsOMffZ8QCJmi8+ieLZd4xcqieQh+H0Kdomwr8YMJwhu
-        hDInhCm3EYvwPszccPsWw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; t=1650976910; x=1651063310; bh=SgI0L/1WlWgsh
-        KXX27UtUUvssrv2YQvwIA+VNKXKllA=; b=cx3HRloJBuB08s8rREExdCU6YfzvK
-        vvrpWPi+lZkdEYlYr0Lke42/1cF6nYvJ14wLr2Yo6UyQcmIJB7OD2uPwL3D+QneR
-        yz4N1RZRwdmpG9xXCfd85fdspOlXgvFyXQn/Qd9dYhI2PlmliUhIPAALi91+M2Cn
-        pMCMEs6/nCbJBti/I4VvJRhY+SCmGpAOmxkFUG0JSPSCNBNdQZ3Kv6E5/gJSaTpu
-        VHIUXfy80IqijTzBOarLeGjSP50CGiK6ISvDLH40/qqt3H0cj25wzjZIA8CEcZS5
-        ina1W/Evd2u6SddXbkyijQlKV9ad/MgH0NIPRxPIqt9ZIEA7Tes6byDnQ==
-X-ME-Sender: <xms:juhnYrum9ofuAVOWoI4dnecTSyJuYDi3cYkJrpBog2AOQwSgtg8i8w>
-    <xme:juhnYscbK6RkAXrZ6hgMM0Fih1KWl5WCTmPnRFLwEmC0-e0K3HHezGzIamL7xxfN5
-    Ea7SCqJLrbK8scxmZU>
-X-ME-Received: <xmr:juhnYuz1I8ZdNRgW8vAbaltv6tJarwgiVHi_jH4AlZlW8FfFttuBidNNiDPTjdMmSlCmF3PIWeAdMWcMw8pvpa-OhiKR9oheKIi8kWs>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudefgdehvdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefhvfevufffkffojghfgggtgfesthekredtredtjeenucfhrhhomhepofgrgihi
-    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
-    htthgvrhhnpeeuieeggffhffffieefheduieeuvdetgeeufeffvefgtedvffehheekffev
-    udefieenucevlhhushhtvghrufhiiigvpedunecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    hmrgigihhmvgestggvrhhnohdrthgvtghh
-X-ME-Proxy: <xmx:juhnYqMptU7adTxfUEVCcb20Hry4TkDJ2FdgDSwtsinNkEo6leWb3g>
-    <xmx:juhnYr_wEj8rONu7D0m5HnUUm-9--TvlY-GALkAv9mBynNbduBVYzg>
-    <xmx:juhnYqW3VvLOzBuJehU-NbyrwEthlifmePZmzIBuQXaTEVR-aJ9fBw>
-    <xmx:juhnYhdbVir_tQPX1k9Fa8K-lbvamQPkSLKpXGaNBnx5jLEeYRBbsw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 26 Apr 2022 08:41:50 -0400 (EDT)
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Chen-Yu Tsai <wens@csie.org>, Maxime Ripard <mripard@kernel.org>,
-        Samuel Holland <samuel@sholland.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>
-Cc:     Maxime Ripard <maxime@cerno.tech>, David Airlie <airlied@linux.ie>,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-sunxi@lists.linux.dev, dri-devel@lists.freedesktop.org,
+        Tue, 26 Apr 2022 08:45:00 -0400
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B80B9177D5B
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 05:41:51 -0700 (PDT)
+Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id EB464C000A;
+        Tue, 26 Apr 2022 12:41:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1650976909;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=pzdJ46PqwD6NvLn4OGquoCJPE0sWtsTMeA7LqT/UYHM=;
+        b=I7l2D0AQ5c8Pb7XRX4EWfk8Hv0ghS3I8GtmRjT3o7zcBkDgc2+yipAATSCEurgEprphx5e
+        IDPdQxaC8J0mOPhvHnLyX86wNF9r1M9VqlM8t8emXWzQ5ZG2F2uaBH1zgcKQpWXobSFqeI
+        wOyFcQ2VpJz78gbOprFVS+WXPo5fGBg3lgJFmuHvWZ9FNhLgtngBwsgZU8bwj6ktzkcVNl
+        cid7IlIsS2e46ii9r7ne3HTIEV+hi7Nd9fSDVyrDp9ztc5alBZmaNKIXOBmDBTgPEKH/Vo
+        MHM2jwHaITn0N5A+Y5mGnBEo5CydvrhXUpmA9VV8NRoJ3Vxgg1CHwa7ys2Zlcw==
+Date:   Tue, 26 Apr 2022 14:41:44 +0200
+From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc:     Maxime Ripard <maxime@cerno.tech>,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
         Daniel Vetter <daniel@ffwll.ch>,
-        kernel test robot <lkp@intel.com>
-Subject: Re: (subset) [PATCH v3 04/14] drm/sun4i: hdmi: Use more portable I/O helpers
-Date:   Tue, 26 Apr 2022 14:41:33 +0200
-Message-Id: <165097689885.514433.12561665113826982347.b4-ty@cerno.tech>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220424162633.12369-5-samuel@sholland.org>
-References: <20220424162633.12369-1-samuel@sholland.org> <20220424162633.12369-5-samuel@sholland.org>
+        Thierry Reding <thierry.reding@gmail.com>,
+        Rob Clark <robdclark@gmail.com>, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robert Foss <robert.foss@linaro.org>
+Subject: Re: [PATCH 2/2] Revert "drm: of: Lookup if child node has panel or
+ bridge"
+Message-ID: <YmfoiD0r8MD/kr1N@aptenodytes>
+References: <20220420231230.58499-1-bjorn.andersson@linaro.org>
+ <20220420231230.58499-2-bjorn.andersson@linaro.org>
+ <CAMty3ZAw7DUSnBePC05qC8Gn6ESKiu+FHw4a-HPPc05VX1hqhg@mail.gmail.com>
+ <20220421082358.ivpmtak3ednvddrc@houat>
+ <YmEdAVwZuA7Wo1Ch@aptenodytes>
+ <YmelPCcWCCjALtRU@aptenodytes>
+ <YmfYi5G7hMKLAH3T@pendragon.ideasonboard.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="F9z/MV/lH/oeMk3y"
+Content-Disposition: inline
+In-Reply-To: <YmfYi5G7hMKLAH3T@pendragon.ideasonboard.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 24 Apr 2022 11:26:22 -0500, Samuel Holland wrote:
-> readsb/writesb are unavailable on some architectures. In preparation for
-> removing the Kconfig architecture dependency, switch to the equivalent
-> but more portable ioread/write8_rep helpers.
-> 
-> 
 
-Applied to drm/drm-misc (drm-misc-next).
+--F9z/MV/lH/oeMk3y
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks!
-Maxime
+Hi,
+
+On Tue 26 Apr 22, 14:33, Laurent Pinchart wrote:
+> On Tue, Apr 26, 2022 at 09:54:36AM +0200, Paul Kocialkowski wrote:
+> > On Thu 21 Apr 22, 10:59, Paul Kocialkowski wrote:
+> > > On Thu 21 Apr 22, 10:23, Maxime Ripard wrote:
+> > > > On Thu, Apr 21, 2022 at 01:15:54PM +0530, Jagan Teki wrote:
+> > > > > + Linus
+> > > > > + Marek
+> > > > > + Laurent
+> > > > > + Robert
+> > > > >=20
+> > > > > On Thu, Apr 21, 2022 at 4:40 AM Bjorn Andersson wrote:
+> > > > > >
+> > > > > > Commit '80253168dbfd ("drm: of: Lookup if child node has panel =
+or
+> > > > > > bridge")' attempted to simplify the case of expressing a simple=
+ panel
+> > > > > > under a DSI controller, by assuming that the first non-graph ch=
+ild node
+> > > > > > was a panel or bridge.
+> > > > > >
+> > > > > > Unfortunately for non-trivial cases the first child node might =
+not be a
+> > > > > > panel or bridge.  Examples of this can be a aux-bus in the case=
+ of
+> > > > > > DisplayPort, or an opp-table represented before the panel node.
+> > > > > >
+> > > > > > In these cases the reverted commit prevents the caller from eve=
+r finding
+> > > > > > a reference to the panel.
+> > > > > >
+> > > > > > This reverts commit '80253168dbfd ("drm: of: Lookup if child no=
+de has
+> > > > > > panel or bridge")', in favor of using an explicit graph referen=
+ce to the
+> > > > > > panel in the trivial case as well.
+> > > > >=20
+> > > > > This eventually breaks many child-based devm_drm_of_get_bridge
+> > > > > switched drivers.  Do you have any suggestions on how to proceed =
+to
+> > > > > succeed in those use cases as well?
+> > > >=20
+> > > > I guess we could create a new helper for those, like
+> > > > devm_drm_of_get_bridge_with_panel, or something.
+> > >=20
+> > > Oh wow I feel stupid for not thinking about that.
+> > >=20
+> > > Yeah I agree that it seems like the best option.
+> >=20
+> > Should I prepare a patch with such a new helper?
+> >=20
+> > The idea would be to keep drm_of_find_panel_or_bridge only for the of g=
+raph
+> > case and add one for the child node case, maybe:
+> > drm_of_find_child_panel_or_bridge.
+> >=20
+> > I really don't have a clear idea of which driver would need to be switc=
+hed
+> > over though. Could someone (Jagan?) let me know where it would be neede=
+d?
+> >=20
+> > Are there cases where we could both expect of graph and child node?
+> > (i.e. does the new helper also need to try via of graph?)
+>=20
+> I still think we should use OF graph uncondtionally, even in the DSI
+> case. We need to ensure backward-compatibility, but I'd like new
+> bindings (and thus new drivers) to always use OF graph.
+
+I just went over the thread on "drm: of: Improve error handling in bridge/p=
+anel
+detection" again and I'm no longer sure there's actually still an issue that
+stands, with the fix that allows returning -ENODEV when possible.
+
+The remaining issue that was brought up was with a connector node, but it s=
+hould
+be up to the driver to detect that and avoid calling drm_of_find_panel_or_b=
+ridge
+in such situations.
+
+So with that in mind it feels like the child node approach can be viable
+(and integrated in the same helper).
+
+We might still want to favor an explicit OF graph approach, but note that
+dsi-controller.yaml also specifies extra properties that are specific to
+MIPI DSI and I'm not sure there are equivalent definitions for the OF graph
+approach.
+
+What do you think?
+
+Paul
+
+--=20
+Paul Kocialkowski, Bootlin
+Embedded Linux and kernel engineering
+https://bootlin.com
+
+--F9z/MV/lH/oeMk3y
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEJZpWjZeIetVBefti3cLmz3+fv9EFAmJn6IgACgkQ3cLmz3+f
+v9HfiAgAnddNYvh4bfTN9pfsyRPlJs7rKSuXMBHlH9jQ0Xa27352HuuJk/ScBKfo
+PbezLdXEQ0SDOr3FJDnNzyl/jLsa0yV/cZssvaHxyv6a3fFFYksLWXAXnsbNfnNL
+0AbIyEZT60n6F0j/fu9i76WgSbl+trzuuIcR5Ww+3n0RCmuhzX7nYVHVrlu7fqxh
+iwpxgw1rK5hrCpaRRQkdoV/rt5keYkMPcJeHSRzfz3RrvNwDOwCP8r4ct5GvlOPu
+/H/Pps5VDazKGxcAz5XU8WEAnKenXEnuwVKjcTlBGV1DWnmeZ5l5/Lj/HGhUzkR8
+rO3j2wR98TchcaUL18WFS2V2CW2SFw==
+=+4mx
+-----END PGP SIGNATURE-----
+
+--F9z/MV/lH/oeMk3y--
