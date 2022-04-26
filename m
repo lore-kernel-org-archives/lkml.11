@@ -2,139 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D94E5C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:27:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3213C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:27:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354117AbiDZTac (ORCPT
+        id S1354141AbiDZTae (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 15:30:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53998 "EHLO
+        Tue, 26 Apr 2022 15:30:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352273AbiDZTa3 (ORCPT
+        with ESMTP id S241779AbiDZTaa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 15:30:29 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CF676E4F7
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 12:27:19 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id a15so18849486pfv.11
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 12:27:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=YrNAxfDrxxD766OcfeCfCclqIZpQa0twyturIx4zcDA=;
-        b=lFpfuszm5sYEet8AFcmzLa4ajQqoQ28Y0ReAuZHGIDsHkytcZgVXGcB2HZzslryqop
-         KuAHYH0lOOzehRzsz/JNBPOdO0QuUNhTGm2JIAXfwTsO7RK1dG6NtZdU2wcGETwnHgT7
-         ERJZiZc94CGVpzdmoJXxJ6y/5gtpV9ksDeveb6drlh6e0+jqXTBo8hcp5Nw9TzKxleFI
-         LDHft1G55yQmOC7+qC0MNvo/CLNnvOeWQrUfQq6tkotBoY0TfSqWyXdMY+2OlEECxnse
-         vJ9KiPmxDEJDHRaqrzgw+O23TQleBL8JpBtCPJVrPaFM6wZ05Z6a2yKizbldHKlBgCmp
-         NcdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YrNAxfDrxxD766OcfeCfCclqIZpQa0twyturIx4zcDA=;
-        b=5F7Rr4NLt3qkjQKTdhO7PRPx2LcpdoY7Gp3hh64iffSFV1uzyVFJ//QDW4MF2DGEHN
-         dlytxSTXwcyFPaWy+o0VrXGJykEiQ9T0wDpNtXvpLJTatBSJASnfuHJq07l8sq5mnzJ3
-         A6hrRDosBStw1IMPGXQztqpEgK8xHMyXd0dB9M27hYWmnpgMl/ex3a9vLugZdPsoqLcn
-         hMjt7qLEu23OY+p9SeSEmtoKzLQDKoXvkxdradXCp6kK939WiQ80npiqiEhT/YqF2vJd
-         qiLRw+tskGRjoDIt7MiqjEEEAG/mgYa1EAorfaWqyLqnRSnMFVV8vHSaZ9YroR+lw7wj
-         wKmw==
-X-Gm-Message-State: AOAM533B1V84BMPvacqUUoQr5eLTvEAS6gGQZULO//WbRr1vEemojTKR
-        OqSvW+sDcNgmt3YVznAPoXr0/A==
-X-Google-Smtp-Source: ABdhPJwsYXdbHr7lCZriH0/82+iIj0K6xR6VWQSP6+pPkBdDyb7ogFEs1NlZGQpGAY7kGVDfBzcLyQ==
-X-Received: by 2002:a63:df0f:0:b0:3aa:436f:8784 with SMTP id u15-20020a63df0f000000b003aa436f8784mr20938313pgg.514.1651001239114;
-        Tue, 26 Apr 2022 12:27:19 -0700 (PDT)
-Received: from x1 ([2601:1c2:1001:7090:9bcd:e060:b370:70d8])
-        by smtp.gmail.com with ESMTPSA id o2-20020a62f902000000b0050cfb6994e2sm13327322pfh.130.2022.04.26.12.27.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 12:27:18 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 12:28:18 -0700
-From:   Drew Fustini <dfustini@baylibre.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Nishanth Menon <nm@ti.com>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Dave Gerlach <d-gerlach@ti.com>,
-        Tony Lindgren <tony@atomide.com>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Keerthy <j-keerthy@ti.com>
-Subject: Re: [PATCH 1/2] dt-bindings: wkup-m3-ipc: Add ti,scale-data-fw
- property
-Message-ID: <YmhH0gFFSfJmZkDX@x1>
-References: <20220425052806.484590-1-dfustini@baylibre.com>
- <20220425052806.484590-2-dfustini@baylibre.com>
- <YmbKvN00F6vGawpE@robh.at.kernel.org>
+        Tue, 26 Apr 2022 15:30:30 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 490396E8C9
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 12:27:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651001242; x=1682537242;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=zEcnyTYpfpi+xvrA/4iSPgFr1ehTLK7seCqFqpN4H1Q=;
+  b=jKVN5ZXcDP3dVRkELAkoBgNtWlPOXPsEgi4NF1RlFZ88p6IG/UDuOVxp
+   wj944vscV5N5b1kin6UOXezUZ3cd+lhsNgq6JgwfvNrMAjy3JHr+cOxa6
+   OLzN6Zb8PirdPkiNXDQpA9aapwchDjFv6cnoTCxqaC9gNAnhjEziQWvrs
+   coyo5PCzVwXRMdf75PChN7R12h573V92luDFk9SMlRfABieLI7Y7EzCKe
+   rfBJE5UeL2+KDjLghmc47FnM+98/DCVPoL9nEiINlAmsZ7giK62MdGlhr
+   cbC+AWV7UbIaBcSZ3DEZtPS9TXk6df7oBs2qk5ShcV/xLejX0WX7qjcn8
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="326187679"
+X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
+   d="scan'208";a="326187679"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 12:27:21 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
+   d="scan'208";a="532825890"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 26 Apr 2022 12:27:20 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1njQqF-0003v0-Rc;
+        Tue, 26 Apr 2022 19:27:19 +0000
+Date:   Wed, 27 Apr 2022 03:26:40 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Niklas Schnelle <schnelle@linux.ibm.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [niks:has_ioport 37/37] drivers/tty/serial/8250/8250_port.c:398:9:
+ error: implicit declaration of function 'outb'
+Message-ID: <202204270334.n8Pu6AGm-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YmbKvN00F6vGawpE@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 11:22:20AM -0500, Rob Herring wrote:
-> On Sun, Apr 24, 2022 at 10:28:05PM -0700, Drew Fustini wrote:
-> > From: Dave Gerlach <d-gerlach@ti.com>
-> > 
-> > Add documentation for ti,scale-data-fw property to enable I2C PMIC
-> > voltage scaling during deep sleep. The property contains the name of a
-> > binary file for the CM3 firmware to load.
-> > 
-> > Based on previous work by Russ Dill.
-> > 
-> > Signed-off-by: Dave Gerlach <d-gerlach@ti.com>
-> > Signed-off-by: Keerthy <j-keerthy@ti.com>
-> > [dfustini: split from driver patch and convert to json-schema]
-> > Signed-off-by: Drew Fustini <dfustini@baylibre.com>
-> > ---
-> >  .../devicetree/bindings/soc/ti/wkup-m3-ipc.yaml       | 11 +++++++++++
-> >  1 file changed, 11 insertions(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/soc/ti/wkup-m3-ipc.yaml b/Documentation/devicetree/bindings/soc/ti/wkup-m3-ipc.yaml
-> > index 88d690de050c..d2c248d82384 100644
-> > --- a/Documentation/devicetree/bindings/soc/ti/wkup-m3-ipc.yaml
-> > +++ b/Documentation/devicetree/bindings/soc/ti/wkup-m3-ipc.yaml
-> > @@ -40,6 +40,12 @@ description: |+
-> >    override the pin's existing bias (pull-up/pull-down) and value (high/low) when
-> >    IO isolation is active.
-> >  
-> > +  Support for I2C PMIC Voltage Scaling
-> > +  ====================================
-> > +  It is possible to pass the name of a binary file to load into the CM3 memory.
-> > +  The binary data is the I2C sequences for the CM3 to send out to the PMIC
-> > +  during low power mode entry.
-> > +
-> >  properties:
-> >    compatible:
-> >      enum:
-> > @@ -67,6 +73,11 @@ properties:
-> >        mbox_wkupm3 child node.
-> >      maxItems: 1
-> >  
-> > +  ti,scale-data-fw:
-> > +    $ref: /schemas/types.yaml#/definitions/string
-> > +    description:
-> > +      Name of the firmware binary in /lib/firmware to copy to CM3 aux data
-> 
-> The location of firmware files is up to the OS.
-> 
-> Is there other firmware? If not, 'firmware-name' is the somewhat 
-> standard property for this.
-> 
-> What's the default name?
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/niks/linux.git has_ioport
+head:   497d83d316c82255fcfbbefd3be766eeb46926d7
+commit: 497d83d316c82255fcfbbefd3be766eeb46926d7 [37/37] asm-generic/io.h: drop inb() etc for HAS_IOPORT=n
+config: m68k-randconfig-r023-20220425 (https://download.01.org/0day-ci/archive/20220427/202204270334.n8Pu6AGm-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/niks/linux.git/commit/?id=497d83d316c82255fcfbbefd3be766eeb46926d7
+        git remote add niks https://git.kernel.org/pub/scm/linux/kernel/git/niks/linux.git
+        git fetch --no-tags niks has_ioport
+        git checkout 497d83d316c82255fcfbbefd3be766eeb46926d7
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash drivers/tty/serial/8250/ lib/
 
-Thank you for the suggestion.  I will change it to firmware-name as
-this is the only type of firmware that this driver will need to load.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-There is no default name for the firmware. The name depends on the board
-being used. The current [1] possibilites are:
+All errors (new ones prefixed by >>):
 
-am43x-evm-scale-data.bin
-am335x-bone-scale-data.bin
-am335x-evm-scale-data.bin
+   drivers/tty/serial/8250/8250_port.c: In function 'hub6_serial_in':
+>> drivers/tty/serial/8250/8250_port.c:398:9: error: implicit declaration of function 'outb' [-Werror=implicit-function-declaration]
+     398 |         outb(p->hub6 - 1 + offset, p->iobase);
+         |         ^~~~
+>> drivers/tty/serial/8250/8250_port.c:399:16: error: implicit declaration of function 'inb' [-Werror=implicit-function-declaration]
+     399 |         return inb(p->iobase + 1);
+         |                ^~~
+   drivers/tty/serial/8250/8250_port.c: In function 'autoconfig_irq':
+>> drivers/tty/serial/8250/8250_port.c:1395:28: error: implicit declaration of function 'inb_p'; did you mean 'int_pow'? [-Werror=implicit-function-declaration]
+    1395 |                 save_ICP = inb_p(ICP);
+         |                            ^~~~~
+         |                            int_pow
+>> drivers/tty/serial/8250/8250_port.c:1396:17: error: implicit declaration of function 'outb_p' [-Werror=implicit-function-declaration]
+    1396 |                 outb_p(0x80, ICP);
+         |                 ^~~~~~
+   cc1: some warnings being treated as errors
+--
+   lib/iomap.c: In function 'ioread8':
+>> lib/iomap.c:75:30: error: implicit declaration of function 'inb' [-Werror=implicit-function-declaration]
+      75 |         IO_COND(addr, return inb(port), return readb(addr));
+         |                              ^~~
+   lib/iomap.c:57:17: note: in definition of macro 'IO_COND'
+      57 |                 is_pio;                                         \
+         |                 ^~~~~~
+   lib/iomap.c: In function 'ioread16':
+>> lib/iomap.c:80:30: error: implicit declaration of function 'inw' [-Werror=implicit-function-declaration]
+      80 |         IO_COND(addr, return inw(port), return readw(addr));
+         |                              ^~~
+   lib/iomap.c:57:17: note: in definition of macro 'IO_COND'
+      57 |                 is_pio;                                         \
+         |                 ^~~~~~
+   lib/iomap.c: In function 'ioread32':
+>> lib/iomap.c:90:30: error: implicit declaration of function 'inl' [-Werror=implicit-function-declaration]
+      90 |         IO_COND(addr, return inl(port), return readl(addr));
+         |                              ^~~
+   lib/iomap.c:57:17: note: in definition of macro 'IO_COND'
+      57 |                 is_pio;                                         \
+         |                 ^~~~~~
+   lib/iomap.c: In function 'iowrite8':
+>> lib/iomap.c:191:23: error: implicit declaration of function 'outb' [-Werror=implicit-function-declaration]
+     191 |         IO_COND(addr, outb(val,port), writeb(val, addr));
+         |                       ^~~~
+   lib/iomap.c:57:17: note: in definition of macro 'IO_COND'
+      57 |                 is_pio;                                         \
+         |                 ^~~~~~
+   lib/iomap.c: In function 'iowrite16':
+>> lib/iomap.c:195:23: error: implicit declaration of function 'outw' [-Werror=implicit-function-declaration]
+     195 |         IO_COND(addr, outw(val,port), writew(val, addr));
+         |                       ^~~~
+   lib/iomap.c:57:17: note: in definition of macro 'IO_COND'
+      57 |                 is_pio;                                         \
+         |                 ^~~~~~
+   lib/iomap.c: In function 'iowrite32':
+>> lib/iomap.c:203:23: error: implicit declaration of function 'outl' [-Werror=implicit-function-declaration]
+     203 |         IO_COND(addr, outl(val,port), writel(val, addr));
+         |                       ^~~~
+   lib/iomap.c:57:17: note: in definition of macro 'IO_COND'
+      57 |                 is_pio;                                         \
+         |                 ^~~~~~
+   lib/iomap.c: In function 'ioread8_rep':
+>> lib/iomap.c:330:23: error: implicit declaration of function 'insb' [-Werror=implicit-function-declaration]
+     330 |         IO_COND(addr, insb(port,dst,count), mmio_insb(addr, dst, count));
+         |                       ^~~~
+   lib/iomap.c:57:17: note: in definition of macro 'IO_COND'
+      57 |                 is_pio;                                         \
+         |                 ^~~~~~
+   lib/iomap.c: In function 'ioread16_rep':
+>> lib/iomap.c:334:23: error: implicit declaration of function 'insw' [-Werror=implicit-function-declaration]
+     334 |         IO_COND(addr, insw(port,dst,count), mmio_insw(addr, dst, count));
+         |                       ^~~~
+   lib/iomap.c:57:17: note: in definition of macro 'IO_COND'
+      57 |                 is_pio;                                         \
+         |                 ^~~~~~
+   lib/iomap.c: In function 'ioread32_rep':
+>> lib/iomap.c:338:23: error: implicit declaration of function 'insl' [-Werror=implicit-function-declaration]
+     338 |         IO_COND(addr, insl(port,dst,count), mmio_insl(addr, dst, count));
+         |                       ^~~~
+   lib/iomap.c:57:17: note: in definition of macro 'IO_COND'
+      57 |                 is_pio;                                         \
+         |                 ^~~~~~
+   lib/iomap.c: In function 'iowrite8_rep':
+>> lib/iomap.c:346:23: error: implicit declaration of function 'outsb' [-Werror=implicit-function-declaration]
+     346 |         IO_COND(addr, outsb(port, src, count), mmio_outsb(addr, src, count));
+         |                       ^~~~~
+   lib/iomap.c:57:17: note: in definition of macro 'IO_COND'
+      57 |                 is_pio;                                         \
+         |                 ^~~~~~
+   lib/iomap.c: In function 'iowrite16_rep':
+>> lib/iomap.c:350:23: error: implicit declaration of function 'outsw' [-Werror=implicit-function-declaration]
+     350 |         IO_COND(addr, outsw(port, src, count), mmio_outsw(addr, src, count));
+         |                       ^~~~~
+   lib/iomap.c:57:17: note: in definition of macro 'IO_COND'
+      57 |                 is_pio;                                         \
+         |                 ^~~~~~
+   lib/iomap.c: In function 'iowrite32_rep':
+>> lib/iomap.c:354:23: error: implicit declaration of function 'outsl' [-Werror=implicit-function-declaration]
+     354 |         IO_COND(addr, outsl(port, src,count), mmio_outsl(addr, src, count));
+         |                       ^~~~~
+   lib/iomap.c:57:17: note: in definition of macro 'IO_COND'
+      57 |                 is_pio;                                         \
+         |                 ^~~~~~
+   cc1: some warnings being treated as errors
 
-Thank you,
-Drew
 
-[1] https://git.ti.com/cgit/processor-firmware/ti-amx3-cm3-pm-firmware/tree/bin?h=08.02.00.006
+vim +/outb +398 drivers/tty/serial/8250/8250_port.c
+
+b6830f6df8914fa Peter Hurley 2015-06-27  394  
+b6830f6df8914fa Peter Hurley 2015-06-27  395  static unsigned int hub6_serial_in(struct uart_port *p, int offset)
+b6830f6df8914fa Peter Hurley 2015-06-27  396  {
+b6830f6df8914fa Peter Hurley 2015-06-27  397  	offset = offset << p->regshift;
+b6830f6df8914fa Peter Hurley 2015-06-27 @398  	outb(p->hub6 - 1 + offset, p->iobase);
+b6830f6df8914fa Peter Hurley 2015-06-27 @399  	return inb(p->iobase + 1);
+b6830f6df8914fa Peter Hurley 2015-06-27  400  }
+b6830f6df8914fa Peter Hurley 2015-06-27  401  
+
+:::::: The code at line 398 was first introduced by commit
+:::::: b6830f6df8914faae9561bb245860c21af9b9e9b serial: 8250: Split base port operations from universal driver
+
+:::::: TO: Peter Hurley <peter@hurleysoftware.com>
+:::::: CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
