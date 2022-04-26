@@ -2,127 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BC60C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 20:37:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67473C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 20:38:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355035AbiDZUkU (ORCPT
+        id S1355043AbiDZUlm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 16:40:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59988 "EHLO
+        Tue, 26 Apr 2022 16:41:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350728AbiDZUkR (ORCPT
+        with ESMTP id S229782AbiDZUll (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 16:40:17 -0400
-Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 932CE31208;
-        Tue, 26 Apr 2022 13:37:09 -0700 (PDT)
-Received: by mail-ot1-f51.google.com with SMTP id w27-20020a056830061b00b00604cde931a0so13879181oti.2;
-        Tue, 26 Apr 2022 13:37:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8Ua/QldL7pC5LZXWxffOFe8RnQhvpw8c3zNSB5ycwY8=;
-        b=laD/A1Y9qM3A0QFtpeYgmWXfcJPEnX/53nM4pGL/+soqTQvjubrjkK3cs/Y8ZcrCx5
-         O6iWzLWcLdynMR0qPHnlvPGEXRuFMSBsZFhG/OJ6pO4L1iAR341bR+2dwzZJkZqPRWWF
-         eggx+Q5XsbXgcroz7t6civ9aG+sWYIRVd72lPalhYuOCK/GowhpdUQ9/ug0qwXSVx5js
-         f+5/jdeZzQhJhmYDaBPtQFV8iYus8m4YcPW6Vz2vYlnQOXVtZ2FsBd5qbAJSMyN0vEug
-         pqvKb2eEtY54DtFFCurGd8TRBKE+etRsI4uKfBjWtcsf37qPL0H7SHPrMYXrYTSo9nye
-         FyBw==
-X-Gm-Message-State: AOAM5317+w6BNNfzQp3uKRrlHig12xfMtyh47HVqGFp5/4tBnmlfSSDF
-        Q5MrrHmz1MeRz+yBrGa//w==
-X-Google-Smtp-Source: ABdhPJzV94dg7hlsrdCIRh48Q/JHhKt1BGntT/HsErX1a5fw7wvJMn0OMxu04NvUD/iPdux9O8sz9w==
-X-Received: by 2002:a9d:4e8d:0:b0:605:4f04:4863 with SMTP id v13-20020a9d4e8d000000b006054f044863mr9009729otk.204.1651005428916;
-        Tue, 26 Apr 2022 13:37:08 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id q4-20020a4a3004000000b0035e974ec923sm282663oof.2.2022.04.26.13.37.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 13:37:08 -0700 (PDT)
-Received: (nullmailer pid 2493275 invoked by uid 1000);
-        Tue, 26 Apr 2022 20:37:07 -0000
-Date:   Tue, 26 Apr 2022 15:37:07 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Irui Wang <irui.wang@mediatek.com>
-Cc:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Yunfei Dong <yunfei.dong@mediatek.com>,
-        Maoguang Meng <maoguang.meng@mediatek.com>,
-        Longfei Wang <longfei.wang@mediatek.com>,
-        allen-kh.cheng@mediatek.com, linux-media@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, srv_heupstream@mediatek.com,
-        linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-Subject: Re: [PATCH] dt-bindings: media: mtk-vcodec: Adds encoder power
- domain property
-Message-ID: <YmhX89nQjkwt5qb3@robh.at.kernel.org>
-References: <20220420073440.31649-1-irui.wang@mediatek.com>
+        Tue, 26 Apr 2022 16:41:41 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 706E76E4CF
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 13:38:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651005512; x=1682541512;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=qh+uGKxXeeI6qvvTw6mz04btbKD2n7pIfIveGNz4wqo=;
+  b=KJz65jfmSl1SdQIIzeZbM3qsAwlcVbz4MRtjNgb23UmhANkbOjgw6VgO
+   N3RwlbddQ2AFJyfeht0yBpiWAQhHthXo+5OqRoXwOLW2kc+MlhZ4X0flB
+   JjKNmBXPkkxHWqsXUvf+eEX18OEWRQxIsKqzCaFPotjXi+xwxwhHb2KxA
+   TKb5EynxWLTmt8XqzMVW6uTZDRw8ryWjITBC9w+ty/dIwRjmR9TTecP0o
+   Zv4zQUwYKt11QkfjCqjtuO0MzDPeXC0qK7BJP/4sTZ4qJZxEgiTxMnxhy
+   r2wuMo7TabPgvFptoiO/B8GvsqNhyvTjeRZeMWwR6S64otuzvXkKD14Ct
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="263307504"
+X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
+   d="scan'208";a="263307504"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 13:38:32 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
+   d="scan'208";a="679187536"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 26 Apr 2022 13:38:30 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1njRx7-0003xw-8f;
+        Tue, 26 Apr 2022 20:38:29 +0000
+Date:   Wed, 27 Apr 2022 04:37:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Watson Chow <watson.chow@avnet.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: drivers/regulator/max20086-regulator.c:288:34: warning: unused
+ variable 'max20086_dt_ids'
+Message-ID: <202204270439.GkdfXdmL-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220420073440.31649-1-irui.wang@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 03:34:39PM +0800, Irui Wang wrote:
-> Adds encoder power domain property
+Hi Watson,
 
-Why? You can't add new, required properties as that breaks compatibility 
-with existing DTs.
+FYI, the error/warning still remains.
 
-> 
-> Signed-off-by: Irui Wang <irui.wang@mediatek.com>
-> ---
->  .../devicetree/bindings/media/mediatek,vcodec-encoder.yaml | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml b/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml
-> index deb5b657a2d5..3c069c965992 100644
-> --- a/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml
-> +++ b/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml
-> @@ -41,6 +41,9 @@ properties:
->  
->    assigned-clock-parents: true
->  
-> +  power-domains:
-> +    maxItems: 1
-> +
->    iommus:
->      minItems: 1
->      maxItems: 32
-> @@ -72,6 +75,7 @@ required:
->    - iommus
->    - assigned-clocks
->    - assigned-clock-parents
-> +  - power-domains
->  
->  allOf:
->    - if:
-> @@ -132,6 +136,7 @@ examples:
->      #include <dt-bindings/clock/mt8173-clk.h>
->      #include <dt-bindings/memory/mt8173-larb-port.h>
->      #include <dt-bindings/interrupt-controller/irq.h>
-> +    #include <dt-bindings/power/mt8173-power.h>
->  
->      vcodec_enc_avc: vcodec@18002000 {
->        compatible = "mediatek,mt8173-vcodec-enc";
-> @@ -153,6 +158,7 @@ examples:
->        clock-names = "venc_sel";
->        assigned-clocks = <&topckgen CLK_TOP_VENC_SEL>;
->        assigned-clock-parents = <&topckgen CLK_TOP_VCODECPLL>;
-> +      power-domains = <&scpsys MT8173_POWER_DOMAIN_VENC>;
->      };
->  
->      vcodec_enc_vp8: vcodec@19002000 {
-> @@ -173,4 +179,5 @@ examples:
->        clock-names = "venc_lt_sel";
->        assigned-clocks = <&topckgen CLK_TOP_VENC_LT_SEL>;
->        assigned-clock-parents = <&topckgen CLK_TOP_VCODECPLL_370P5>;
-> +      power-domains = <&scpsys MT8173_POWER_DOMAIN_VENC_LT>;
->      };
-> -- 
-> 2.18.0
-> 
-> 
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   d615b5416f8a1afeb82d13b238f8152c572d59c0
+commit: bfff546aae50ae68ed395bf0e0848188d27b0ba3 regulator: Add MAX20086-MAX20089 driver
+date:   4 months ago
+config: arm-randconfig-c002-20220425 (https://download.01.org/0day-ci/archive/20220427/202204270439.GkdfXdmL-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 1cddcfdc3c683b393df1a5c9063252eb60e52818)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=bfff546aae50ae68ed395bf0e0848188d27b0ba3
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout bfff546aae50ae68ed395bf0e0848188d27b0ba3
+        # save the config file
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross 
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/regulator/max20086-regulator.c:288:34: warning: unused variable 'max20086_dt_ids' [-Wunused-const-variable]
+   static const struct of_device_id max20086_dt_ids[] = {
+                                    ^
+   1 warning generated.
+
+
+vim +/max20086_dt_ids +288 drivers/regulator/max20086-regulator.c
+
+   287	
+ > 288	static const struct of_device_id max20086_dt_ids[] = {
+   289		{
+   290			.compatible = "maxim,max20086",
+   291			.data = &(const struct max20086_chip_info) {
+   292				.id = MAX20086_DEVICE_ID_MAX20086,
+   293				.num_outputs = 4,
+   294			}
+   295		}, {
+   296			.compatible = "maxim,max20087",
+   297			.data = &(const struct max20086_chip_info) {
+   298				.id = MAX20086_DEVICE_ID_MAX20087,
+   299				.num_outputs = 4,
+   300			}
+   301		}, {
+   302			.compatible = "maxim,max20088",
+   303			.data = &(const struct max20086_chip_info) {
+   304				.id = MAX20086_DEVICE_ID_MAX20088,
+   305				.num_outputs = 2,
+   306			}
+   307		}, {
+   308			.compatible = "maxim,max20089",
+   309			.data = &(const struct max20086_chip_info) {
+   310				.id = MAX20086_DEVICE_ID_MAX20089,
+   311				.num_outputs = 2,
+   312			}
+   313		},
+   314		{ /* Sentinel */ },
+   315	};
+   316	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
