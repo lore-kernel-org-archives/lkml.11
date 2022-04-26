@@ -2,49 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6EC4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:06:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32CADC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:06:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243750AbiDZTIl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 15:08:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43144 "EHLO
+        id S1354138AbiDZTIw (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 15:08:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353802AbiDZTFs (ORCPT
+        with ESMTP id S1353820AbiDZTFy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 15:05:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF532199835;
-        Tue, 26 Apr 2022 12:02:40 -0700 (PDT)
+        Tue, 26 Apr 2022 15:05:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86E4A19916B;
+        Tue, 26 Apr 2022 12:02:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 94D94B81DC2;
-        Tue, 26 Apr 2022 19:02:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F7E8C385A0;
-        Tue, 26 Apr 2022 19:02:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 21397619E9;
+        Tue, 26 Apr 2022 19:02:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F912C385A0;
+        Tue, 26 Apr 2022 19:02:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650999758;
-        bh=aEDMA/3oe/qWVXNiG9wL+UoIZG5uPLMm54IzJ4kwM5c=;
+        s=k20201202; t=1650999765;
+        bh=MHT2SeQdtx3XYjhw3wAw0mbMJj9Ahj3yxOPq+fIpods=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pG35yLUEp8QAz5J4G07P6E6ZsKIjwRyjav3VNlRW/HLf1bjcUok7I8ZoLPOED47I0
-         vC35IIwDceEtCRP1pLQS0PFhSg9uYsY1aWTiif/CSqFLGQc5jTL/wk5hfw7M5Yba+M
-         pJxG5e5aaG0wmH3fKJU4d4Rq1tBJ4DyRh06HhuCnEJaoilClKz7pgOLPrELQM06M80
-         OAnyrmiuo+Mj7jeiI+FRZzv75GHOq61hglUKcS4t4PpFfTI8JkOeqV8+WLiiTk4XCH
-         507Un/J9Wqyzicjr9DiaRZ+gSLV00nb8cry/0OVpxFwzCGFO4wQ58JQIkyOE3ZccbT
-         mrneN3wKsP/lQ==
+        b=rw9r6My2tKyeb5kDFZ2bl7n6Qq0ZU+S0ljaJhc5gzYpmAFYDUb/EDglTbVGh7bGOr
+         fr2j+tCNI9VmwYbyp2wDUJ4c/xGmswF/4lqvqr43afYm7tsZdf2NcDdq2+mzVXQjrl
+         8uRPvn+Ii+4EHFv30bSIrnly+VDyzsEMYv7Jr8Z9iuPHo1SlkVeCEMYPqEFKBxipPB
+         ysHajIowKmEHXqf/yR8Hy1SQLJtuHXzdqH0w1TC8QZOh1QGaEsLZDe9rR7JuZFq3x7
+         5pqiQZFo4yP6cb38PnrvNBpkWy2Lcy3THgkryin7Imn9cQBCr6/DWbytJK4zTlDiwK
+         9Co4MZmTuxMaQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mikulas Patocka <mpatocka@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, peterz@infradead.org, jpoimboe@redhat.com
-Subject: [PATCH AUTOSEL 5.10 5/9] x86: __memcpy_flushcache: fix wrong alignment if size > 2^32
-Date:   Tue, 26 Apr 2022 15:02:26 -0400
-Message-Id: <20220426190232.2351606-5-sashal@kernel.org>
+Cc:     Peilin Ye <peilin.ye@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 2/6] ip6_gre: Avoid updating tunnel->tun_hlen in __gre6_xmit()
+Date:   Tue, 26 Apr 2022 15:02:38 -0400
+Message-Id: <20220426190243.2351733-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220426190232.2351606-1-sashal@kernel.org>
-References: <20220426190232.2351606-1-sashal@kernel.org>
+In-Reply-To: <20220426190243.2351733-1-sashal@kernel.org>
+References: <20220426190243.2351733-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,49 +55,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Peilin Ye <peilin.ye@bytedance.com>
 
-[ Upstream commit a6823e4e360fe975bd3da4ab156df7c74c8b07f3 ]
+[ Upstream commit f40c064e933d7787ca7411b699504d7a2664c1f5 ]
 
-The first "if" condition in __memcpy_flushcache is supposed to align the
-"dest" variable to 8 bytes and copy data up to this alignment.  However,
-this condition may misbehave if "size" is greater than 4GiB.
+Do not update tunnel->tun_hlen in data plane code.  Use a local variable
+instead, just like "tunnel_hlen" in net/ipv4/ip_gre.c:gre_fb_xmit().
 
-The statement min_t(unsigned, size, ALIGN(dest, 8) - dest); casts both
-arguments to unsigned int and selects the smaller one.  However, the
-cast truncates high bits in "size" and it results in misbehavior.
-
-For example:
-
-	suppose that size == 0x100000001, dest == 0x200000002
-	min_t(unsigned, size, ALIGN(dest, 8) - dest) == min_t(0x1, 0xe) == 0x1;
-	...
-	dest += 0x1;
-
-so we copy just one byte "and" dest remains unaligned.
-
-This patch fixes the bug by replacing unsigned with size_t.
-
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Co-developed-by: Cong Wang <cong.wang@bytedance.com>
+Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/lib/usercopy_64.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv6/ip6_gre.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/lib/usercopy_64.c b/arch/x86/lib/usercopy_64.c
-index 508c81e97ab1..f1c0befb62df 100644
---- a/arch/x86/lib/usercopy_64.c
-+++ b/arch/x86/lib/usercopy_64.c
-@@ -121,7 +121,7 @@ void __memcpy_flushcache(void *_dst, const void *_src, size_t size)
+diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
+index 5dbc280d4385..e550db28aabb 100644
+--- a/net/ipv6/ip6_gre.c
++++ b/net/ipv6/ip6_gre.c
+@@ -730,6 +730,7 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
+ 		struct ip_tunnel_info *tun_info;
+ 		const struct ip_tunnel_key *key;
+ 		__be16 flags;
++		int tun_hlen;
  
- 	/* cache copy and flush to align dest */
- 	if (!IS_ALIGNED(dest, 8)) {
--		unsigned len = min_t(unsigned, size, ALIGN(dest, 8) - dest);
-+		size_t len = min_t(size_t, size, ALIGN(dest, 8) - dest);
+ 		tun_info = skb_tunnel_info(skb);
+ 		if (unlikely(!tun_info ||
+@@ -748,9 +749,9 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
+ 		dsfield = key->tos;
+ 		flags = key->tun_flags &
+ 			(TUNNEL_CSUM | TUNNEL_KEY | TUNNEL_SEQ);
+-		tunnel->tun_hlen = gre_calc_hlen(flags);
++		tun_hlen = gre_calc_hlen(flags);
  
- 		memcpy((void *) dest, (void *) source, len);
- 		clean_cache_range((void *) dest, len);
+-		gre_build_header(skb, tunnel->tun_hlen,
++		gre_build_header(skb, tun_hlen,
+ 				 flags, protocol,
+ 				 tunnel_id_to_key32(tun_info->key.tun_id),
+ 				 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++)
 -- 
 2.35.1
 
