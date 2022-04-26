@@ -2,121 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39A08C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 15:22:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE537C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 15:22:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351938AbiDZPZd (ORCPT
+        id S1344702AbiDZPZ7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 11:25:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53078 "EHLO
+        Tue, 26 Apr 2022 11:25:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347899AbiDZPZ3 (ORCPT
+        with ESMTP id S1347763AbiDZPZ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 11:25:29 -0400
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA10E9FE6
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 08:22:21 -0700 (PDT)
-Received: by mail-io1-xd32.google.com with SMTP id r28so1633016iot.1
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 08:22:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=cuUc2xoUdcusYuxjPdEemxe0UNLqKWIyVIlb0000qns=;
-        b=QGqDycSpps1eWGDw6i+/PLvWV/1ssbWDef/meMng+TM1+EOjoXaBjNS1UhqPSVghFJ
-         CLQ3GitILHh8j/g+1ZW9jFPosj4H0B2uxSxNBBjZlrPSGvcejiCi+IVzMINRgjErRQ3A
-         vzaux1hFD+39PDEb336qsqQzmhLlxQfFeL7nU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=cuUc2xoUdcusYuxjPdEemxe0UNLqKWIyVIlb0000qns=;
-        b=k0xUjO9a9kXwjglXiZg/S2EbwWzXcIZRUcAW5JLoBjqY+lOYLz2mF2td1Us46+7sNc
-         96zGtLMfe+Shg422hQcCTET/ly4a3eJ5BgIBEtGCGBnhX7RXvdOyTL3qxljZFRbAZgjc
-         Obz7HTLgoUc0eSrRQ0NBNmehqj11vY+LFjHm82EqvJqejh5NwfzEfdM3IzFBBmYL/Gj6
-         /INdOXK3Jb+UnWMzotGFF04RtzNespa0GUFFA6kBWJZYk4OfMsKSSSAHDDCasDy5USIl
-         4NjwhjDzWcNYxEpQO8QbU6FY2Ylo6O/2TZ3ng2b753Y6AHHSboq2gLKcBcp8K1WlhZFa
-         37kA==
-X-Gm-Message-State: AOAM530BXyuAD/ZvIPQ9wMYAQOUuM5aPT/G6ODBea4oB7XjY4i4qGEk0
-        CrU7QNe0mdej68fohVBMeTjxew==
-X-Google-Smtp-Source: ABdhPJw6/39kt+AkHmRqI0UfjPCWfFn4VCLbOGq0QHMTSobHN6hPb0rHONYxdmyZLKkU6FSTEZWcBw==
-X-Received: by 2002:a05:6638:25c3:b0:323:9914:c34f with SMTP id u3-20020a05663825c300b003239914c34fmr10887023jat.130.1650986541169;
-        Tue, 26 Apr 2022 08:22:21 -0700 (PDT)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id s10-20020a92d90a000000b002cd7294db60sm8247970iln.20.2022.04.26.08.22.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Apr 2022 08:22:20 -0700 (PDT)
-Subject: Re: [PATCH][V2] selftests/resctrl: Fix null pointer dereference on
- open failed
-To:     Colin Ian King <colin.i.king@gmail.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>,
-        Babu Moger <babu.moger@amd.com>,
-        linux-kselftest@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220426122531.1506634-1-colin.i.king@gmail.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <1d0b168a-8fe3-0b44-5e72-77e90d1f9ebb@linuxfoundation.org>
-Date:   Tue, 26 Apr 2022 09:21:55 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Tue, 26 Apr 2022 11:25:56 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 470FE140B4;
+        Tue, 26 Apr 2022 08:22:48 -0700 (PDT)
+Received: from zn.tnic (p5de8eeb4.dip0.t-ipconnect.de [93.232.238.180])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 991441EC050D;
+        Tue, 26 Apr 2022 17:22:42 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1650986562;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=MiyVowPK2hZlIKasSYAvE3SnRxXRBC3uvjngpKcSNns=;
+        b=PMojOBU+k5aEJqxWh5hhGrd66DheMBQyYIe5EzbwXn0aux6LMi2JD/r0SB3la5wWJY23tR
+        BtJR7dkdu94HUM0Iitc9EUzx96lXlqZsYbBt5hgdq325zYkkV+c+0caUm08/KbtNuqEHzh
+        20ZBQDXPy90GfpaRhP7ol+LiNQBtkIQ=
+Date:   Tue, 26 Apr 2022 17:22:39 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Matthieu Baerts <matthieu.baerts@tessares.net>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Pavel Machek <pavel@ucw.cz>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, Chen Yu <yu.c.chen@intel.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Catalin Marinas <catalin.marinas@arm.com>, linux-mm@kvack.org,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] x86/pm: fix false positive kmemleak report in
+ msr_build_context()
+Message-ID: <YmgOP1FFmidS9ecJ@zn.tnic>
+References: <20220423182410.1841114-1-matthieu.baerts@tessares.net>
 MIME-Version: 1.0
-In-Reply-To: <20220426122531.1506634-1-colin.i.king@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220423182410.1841114-1-matthieu.baerts@tessares.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/26/22 6:25 AM, Colin Ian King wrote:
-> Currently if opening /dev/null fails to open then file pointer fp
-> is null and further access to fp via fprintf will cause a null
-> pointer dereference. Fix this by returning a negative error value
-> when a null fp is detected.
-> 
-> Detected using cppcheck static analysis:
-> tools/testing/selftests/resctrl/fill_buf.c:124:6: note: Assuming
-> that condition '!fp' is not redundant
->   if (!fp)
->       ^
-> tools/testing/selftests/resctrl/fill_buf.c:126:10: note: Null
-> pointer dereference
->   fprintf(fp, "Sum: %d ", ret);
-> 
-> Fixes: a2561b12fe39 ("selftests/resctrl: Add built in benchmark")
-> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-> ---
-> 
-> V2: Add cppcheck analysis information
-> 
-> ---
->   tools/testing/selftests/resctrl/fill_buf.c | 4 +++-
->   1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/tools/testing/selftests/resctrl/fill_buf.c b/tools/testing/selftests/resctrl/fill_buf.c
-> index 51e5cf22632f..56ccbeae0638 100644
-> --- a/tools/testing/selftests/resctrl/fill_buf.c
-> +++ b/tools/testing/selftests/resctrl/fill_buf.c
-> @@ -121,8 +121,10 @@ static int fill_cache_read(unsigned char *start_ptr, unsigned char *end_ptr,
->   
->   	/* Consume read result so that reading memory is not optimized out. */
->   	fp = fopen("/dev/null", "w");
-> -	if (!fp)
-> +	if (!fp) {
->   		perror("Unable to write to /dev/null");
-> +		return -1;
-> +	}
->   	fprintf(fp, "Sum: %d ", ret);
->   	fclose(fp);
->   
-> 
+On Sat, Apr 23, 2022 at 08:24:10PM +0200, Matthieu Baerts wrote:
+> diff --git a/arch/x86/include/asm/suspend_64.h b/arch/x86/include/asm/suspend_64.h
+> index 35bb35d28733..bb7023dbf524 100644
+> --- a/arch/x86/include/asm/suspend_64.h
+> +++ b/arch/x86/include/asm/suspend_64.h
+> @@ -14,9 +14,13 @@
+>   * Image of the saved processor state, used by the low level ACPI suspend to
+>   * RAM code and by the low level hibernation code.
+>   *
+> - * If you modify it, fix arch/x86/kernel/acpi/wakeup_64.S and make sure that
+> - * __save/__restore_processor_state(), defined in arch/x86/kernel/suspend_64.c,
+> - * still work as required.
+> + * If you modify it before 'misc_enable', fix arch/x86/kernel/acpi/wakeup_64.S
 
-Thank you. Applied to linux-kselftest next for Linux 5.19-rc1
+Why does before misc_enable matter?
 
-thanks,
--- Shuah
+arch/x86/kernel/asm-offsets_64.c computes the offsets and there is a
+member like saved_context_gdt_desc which will get moved after your
+change but that's not a problem because the offset will get recomputed
+at build time.
+
+Hm?
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
