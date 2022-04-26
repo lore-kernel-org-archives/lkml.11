@@ -2,134 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B48F4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:22:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D446C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:22:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241985AbiDZIZP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:25:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57688 "EHLO
+        id S1344592AbiDZIZa (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:25:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233617AbiDZIZL (ORCPT
+        with ESMTP id S1344591AbiDZIZX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:25:11 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52D5C3A183
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 01:22:04 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id t13so15478355pgn.8
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 01:22:04 -0700 (PDT)
+        Tue, 26 Apr 2022 04:25:23 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCF903A5C3;
+        Tue, 26 Apr 2022 01:22:16 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id bx5so8040613pjb.3;
+        Tue, 26 Apr 2022 01:22:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vYVekr4YvbLsHucHgm8G116TEThN3UMClXJfeXv+hU4=;
-        b=Nb0f085ZebEJPCinOt6pZuFn0qnmDisNJu5Rk80wCa2s+nzszKjhhN4UYYPkQf6Acl
-         4MNxkF4dJar7sBIPLss1tBOwkJIQPxjxDiJhtK+qBWVV3FueQ7Y3/3FNXr4iEj6LLWQ0
-         XtKDYU3kDmdNcLu0lZTv3l1D1v8FEexelBTge/3sgZ1G2+x/gnzegDDxD7OWEEqauFPo
-         Dyh4tqvAiTtlFtRibQNGYrzkR+45N/GSrL65LCMM6ZIYcS2gUX/5TrsQf/m7AWZIsDlz
-         HCl0y0xFw62Tkv9V9sIeieoOmG678iXvg1SIo/di5OfVnOIVtnLujz92GTkOopXwSOqg
-         Pa/Q==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ry61oQOw1TxefJWFjV86DTJxbbTM3u3aRIyja+cc07w=;
+        b=hYJberNWpJnZgnTf9pcAYGQU8G2uGwQ2H/D/mBrao6r6L3a1I5qEFJkqTZs4lJea0q
+         ctvAk6eqcD2ijFAs7BGRcE0NXBVDrJsP5Ff2/ZUetBi7VGCIMp/dr+E++nYuYJQ6Jlh9
+         gp5hFY/7219vQgRGSf5PglWn/eBG4mcEu+hNp/JWpOviLN4sPKKOVq8/SzswSPVvMLHM
+         APUJGGc246PwSz7zG0VxqC2cETjCATQuy/z3U5uJn7sCQlBNhhMzS2IkHTH6euQ6H/Kw
+         Hj0x+4nk/QT4/kzlUQAuwXJjB3vjImdFqxox0NBReIszeeZNyysFeZKCwUO/DOlKYyEx
+         s5pA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vYVekr4YvbLsHucHgm8G116TEThN3UMClXJfeXv+hU4=;
-        b=eb8au87+HbSnDhVZH4eifnAbAeUKTYI5nsAIBnwK/gDmZOFmrbVE/obqlwBqn901xb
-         6H9HC0K9DHtIt8ixGoHsQo1Thj69WNmOzYBdpX0R2peXloHvzY6jgOd18BRjgX0fE/24
-         Y/TJAjwR+mFm26YOdt/wd/KWWB5bWawULhQBfyB8CTyO8OvglA3/B24Q0P7SjT2+uTHk
-         ej4sLUBsuWcCwvexETnSP9ZdgOp3Y5EpoWYlEN/pbpb2jdvAugx6GH/gVABeUZImTPYu
-         tR3JlLBg+yX9RZIHbJ2spbeYiIb7+XkpNJ/RzWV2oSpm8nqJXkq4Vg/VoaIMdxE4ntmi
-         x+LQ==
-X-Gm-Message-State: AOAM5338Zas5qD3Jq2uoJ8VmQEnloKl3B8ALz2MrITuF73FmS833pBE1
-        vzelZW8hWT+c4tYNXCx98uM7hDOqOAvAKC3ambR2Hw==
-X-Google-Smtp-Source: ABdhPJybbRW7pdqOBNu6OOPzoqNan/UX/T0v/4RUTxOJQn1Z3o8uYdUQoDVJmhHDZY+9YjyLjHQlZWEfPkhhw0B3A+Y=
-X-Received: by 2002:a05:6a00:2310:b0:4fa:7eb1:e855 with SMTP id
- h16-20020a056a00231000b004fa7eb1e855mr23543830pfh.14.1650961323839; Tue, 26
- Apr 2022 01:22:03 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ry61oQOw1TxefJWFjV86DTJxbbTM3u3aRIyja+cc07w=;
+        b=miiCMD2tsr/YmB+jQkQXDk2/oR5y0tKJihe8whwCnVkKY060X7mvbBU0cQ2I/vkIX0
+         bOhxeulxbKhuJfCg2xTfrzk7UaWLijm4pVVfacHcq+c/yILJ3gO2Xlun8NKS5zRcgbqG
+         55CQtzIpms4FzQybpm7aH25nEC7RogOY+OQ1M40ohX5cwC8/YzWJ8VJY6QqxkKXJPspP
+         Z+Vt+w6HbmH6jV8ZlLXvBpN0gjc+d9wL8IRmfmamYln6copYez+WPEGmmwpyvIfYZEhH
+         /TmCBgFYzmucrzOpCekJhr70h+OtVlnaakJworPWRM58uHsZ+1P1GHs44wrdsmq7ANsS
+         cq+g==
+X-Gm-Message-State: AOAM531nd6bN63Ktv12vyWZp9ue0gBr/a7KcH7dFhQ6PUphyiUo3f7i+
+        xw+d+nVsdHNgiGwwQly4HlA=
+X-Google-Smtp-Source: ABdhPJxNiF8zanUQKYJ607EC0HUpOomtgJ/TOStVYGUmh9XKjhgzkTyZdlRXyDGwNaSRPD1rBszaCA==
+X-Received: by 2002:a17:90b:304:b0:1d9:752b:437f with SMTP id ay4-20020a17090b030400b001d9752b437fmr10486148pjb.242.1650961336347;
+        Tue, 26 Apr 2022 01:22:16 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.111])
+        by smtp.gmail.com with ESMTPSA id s61-20020a17090a69c300b001cd4c118b07sm1879143pjj.16.2022.04.26.01.22.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 01:22:15 -0700 (PDT)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     arnd@arndb.de
+Cc:     linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Menglong Dong <imagedong@tencent.com>,
+        Mengen Sun <mengensun@tencent.com>
+Subject: [PATCH] bitops: remove unnecessary assignment in fls()
+Date:   Tue, 26 Apr 2022 16:21:55 +0800
+Message-Id: <20220426082155.10571-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-References: <20220425141617.23925-1-afd@ti.com> <20220425141617.23925-2-afd@ti.com>
- <CAFA6WYN7GG6ZgxQ=AMinZ91f7QDh+aEPhL-Obx1s=zqReViAew@mail.gmail.com>
-In-Reply-To: <CAFA6WYN7GG6ZgxQ=AMinZ91f7QDh+aEPhL-Obx1s=zqReViAew@mail.gmail.com>
-From:   Jens Wiklander <jens.wiklander@linaro.org>
-Date:   Tue, 26 Apr 2022 10:21:53 +0200
-Message-ID: <CAHUa44H34Wh-Hpw9LzSS3KsKYethLMo_ih+9BafWCvW_TDU=3Q@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] tee: remove flags TEE_IOCTL_SHM_MAPPED and TEE_IOCTL_SHM_DMA_BUF
-To:     Sumit Garg <sumit.garg@linaro.org>
-Cc:     Andrew Davis <afd@ti.com>, op-tee@lists.trustedfirmware.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 4:18 PM Sumit Garg <sumit.garg@linaro.org> wrote:
->
-> On Mon, 25 Apr 2022 at 19:46, Andrew Davis <afd@ti.com> wrote:
-> >
-> > These look to be leftover from an early edition of this driver. Userspace
-> > does not need this information. Checking all users of this that I have
-> > access to I have verified no one is using them.
-> >
-> > They leak internal use flags out to userspace. Even more they are not
-> > correct anymore after a45ea4efa358. Lets drop these flags before
-> > someone does try to use them for something and they become ABI.
-> >
-> > Signed-off-by: Andrew Davis <afd@ti.com>
-> > ---
-> >
-> > Changes from v1:
-> >  - Removed flags return from tee_ioctl_shm_alloc()
-> >
->
-> Acked-by: Sumit Garg <sumit.garg@linaro.org>
->
-> -Sumit
->
-> >  drivers/tee/tee_core.c   | 2 --
-> >  include/uapi/linux/tee.h | 4 ----
-> >  2 files changed, 6 deletions(-)
+From: Menglong Dong <imagedong@tencent.com>
 
+The last bits left move for the various 'x' in fls() is unnecessary,
+and remove it.
 
-Looks good to me, I'm picking up this.
+Signed-off-by: Mengen Sun <mengensun@tencent.com>
+Signed-off-by: Menglong Dong <imagedong@tencent.com>
+---
+ include/asm-generic/bitops/fls.h       | 4 +---
+ tools/include/asm-generic/bitops/fls.h | 4 +---
+ 2 files changed, 2 insertions(+), 6 deletions(-)
 
-Thanks,
-Jens
+diff --git a/include/asm-generic/bitops/fls.h b/include/asm-generic/bitops/fls.h
+index b168bb10e1be..07e5cdfc3b98 100644
+--- a/include/asm-generic/bitops/fls.h
++++ b/include/asm-generic/bitops/fls.h
+@@ -32,10 +32,8 @@ static __always_inline int fls(unsigned int x)
+ 		x <<= 2;
+ 		r -= 2;
+ 	}
+-	if (!(x & 0x80000000u)) {
+-		x <<= 1;
++	if (!(x & 0x80000000u))
+ 		r -= 1;
+-	}
+ 	return r;
+ }
+ 
+diff --git a/tools/include/asm-generic/bitops/fls.h b/tools/include/asm-generic/bitops/fls.h
+index b168bb10e1be..07e5cdfc3b98 100644
+--- a/tools/include/asm-generic/bitops/fls.h
++++ b/tools/include/asm-generic/bitops/fls.h
+@@ -32,10 +32,8 @@ static __always_inline int fls(unsigned int x)
+ 		x <<= 2;
+ 		r -= 2;
+ 	}
+-	if (!(x & 0x80000000u)) {
+-		x <<= 1;
++	if (!(x & 0x80000000u))
+ 		r -= 1;
+-	}
+ 	return r;
+ }
+ 
+-- 
+2.36.0
 
-> >
-> > diff --git a/drivers/tee/tee_core.c b/drivers/tee/tee_core.c
-> > index 8aa1a4836b92f..af0f7c603fa46 100644
-> > --- a/drivers/tee/tee_core.c
-> > +++ b/drivers/tee/tee_core.c
-> > @@ -302,7 +302,6 @@ static int tee_ioctl_shm_alloc(struct tee_context *ctx,
-> >                 return PTR_ERR(shm);
-> >
-> >         data.id = shm->id;
-> > -       data.flags = shm->flags;
-> >         data.size = shm->size;
-> >
-> >         if (copy_to_user(udata, &data, sizeof(data)))
-> > @@ -339,7 +338,6 @@ tee_ioctl_shm_register(struct tee_context *ctx,
-> >                 return PTR_ERR(shm);
-> >
-> >         data.id = shm->id;
-> > -       data.flags = shm->flags;
-> >         data.length = shm->size;
-> >
-> >         if (copy_to_user(udata, &data, sizeof(data)))
-> > diff --git a/include/uapi/linux/tee.h b/include/uapi/linux/tee.h
-> > index 25a6c534beb1b..23e57164693c4 100644
-> > --- a/include/uapi/linux/tee.h
-> > +++ b/include/uapi/linux/tee.h
-> > @@ -42,10 +42,6 @@
-> >  #define TEE_IOC_MAGIC  0xa4
-> >  #define TEE_IOC_BASE   0
-> >
-> > -/* Flags relating to shared memory */
-> > -#define TEE_IOCTL_SHM_MAPPED   0x1     /* memory mapped in normal world */
-> > -#define TEE_IOCTL_SHM_DMA_BUF  0x2     /* dma-buf handle on shared memory */
-> > -
-> >  #define TEE_MAX_ARG_SIZE       1024
-> >
-> >  #define TEE_GEN_CAP_GP         (1 << 0)/* GlobalPlatform compliant TEE */
-> > --
-> > 2.17.1
-> >
