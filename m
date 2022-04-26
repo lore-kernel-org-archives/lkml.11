@@ -2,90 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1790EC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:36:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 150C9C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:36:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353016AbiDZQjy (ORCPT
+        id S1353025AbiDZQj7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 12:39:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37122 "EHLO
+        Tue, 26 Apr 2022 12:39:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229684AbiDZQjx (ORCPT
+        with ESMTP id S229684AbiDZQj6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 12:39:53 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB18BBC9B;
-        Tue, 26 Apr 2022 09:36:45 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="253019521"
-X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
-   d="scan'208";a="253019521"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 09:30:01 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
-   d="scan'208";a="595840747"
-Received: from linux.intel.com ([10.54.29.200])
-  by orsmga001.jf.intel.com with ESMTP; 26 Apr 2022 09:30:00 -0700
-Received: from abityuts-desk1.fi.intel.com (abityuts-desk1.fi.intel.com [10.237.72.79])
-        by linux.intel.com (Postfix) with ESMTP id 56DA7580689;
-        Tue, 26 Apr 2022 09:29:58 -0700 (PDT)
-Message-ID: <47cbbe94b061d8d7b7c222a42fa80b7b4cd4b7e5.camel@gmail.com>
-Subject: Re: [RFC PATCH v3 2/5] cpuidle: Add Cpufreq Active Stats calls
- tracking idle entry/exit
-From:   Artem Bityutskiy <dedekind1@gmail.com>
-To:     Lukasz Luba <lukasz.luba@arm.com>
-Cc:     dietmar.eggemann@arm.com, viresh.kumar@linaro.org,
-        rafael@kernel.org, daniel.lezcano@linaro.org, amitk@kernel.org,
-        rui.zhang@intel.com, amit.kachhap@gmail.com,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Tue, 26 Apr 2022 19:29:57 +0300
-In-Reply-To: <36852629-f803-5ac9-bef5-bcfae3ed947d@arm.com>
-References: <20220406220809.22555-1-lukasz.luba@arm.com>
-         <20220406220809.22555-3-lukasz.luba@arm.com>
-         <97e7e3f5110702fab727b4df7d53511aef5c60b1.camel@gmail.com>
-         <36852629-f803-5ac9-bef5-bcfae3ed947d@arm.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+        Tue, 26 Apr 2022 12:39:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C10A2BE2C;
+        Tue, 26 Apr 2022 09:36:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5AA6C60ADA;
+        Tue, 26 Apr 2022 16:36:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DA9FC385AA;
+        Tue, 26 Apr 2022 16:36:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650991009;
+        bh=9UBlXEL+5EXdMywZqCfNDnB8y2GkRUxHNwf+32JANRQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=EDsksfjnlTd1PwBoyZCNHLOrR5M2shxvAywQ6MsmCSbgi/4tuCzy4/PY6ZUgpGL6s
+         WV8b21lEWkARxPfmRX9nTZ6zZyKvmE0ZGxj40sche74Hw8EXNZXKw2ayKfrmEVZUbo
+         LpQdEHw9m/KJ3l4WVmHd/Hov+YrJKU/cIveZlPLE=
+Date:   Tue, 26 Apr 2022 18:36:46 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "Luck, Tony" <tony.luck@intel.com>
+Cc:     hdegoede@redhat.com, markgross@kernel.org, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, hpa@zytor.com, corbet@lwn.net,
+        andriy.shevchenko@linux.intel.com, jithu.joseph@intel.com,
+        ashok.raj@intel.com, rostedt@goodmis.org, dan.j.williams@intel.com,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, patches@lists.linux.dev,
+        ravi.v.shankar@intel.com
+Subject: Re: [PATCH v4 04/10] platform/x86/intel/ifs: Read IFS firmware image
+Message-ID: <YmgfnhhCQHWPHxAw@kroah.com>
+References: <20220419163859.2228874-1-tony.luck@intel.com>
+ <20220422200219.2843823-1-tony.luck@intel.com>
+ <20220422200219.2843823-5-tony.luck@intel.com>
+ <YmfNVG0qLahv7TzL@kroah.com>
+ <YmgZ9d54sjKllh6U@agluck-desk3.sc.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YmgZ9d54sjKllh6U@agluck-desk3.sc.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-04-26 at 16:01 +0100, Lukasz Luba wrote:
-> > I am worried about adding more stuff here.
+On Tue, Apr 26, 2022 at 09:12:37AM -0700, Luck, Tony wrote:
+> On Tue, Apr 26, 2022 at 12:45:40PM +0200, Greg KH wrote:
+> > On Fri, Apr 22, 2022 at 01:02:13PM -0700, Tony Luck wrote:
+> > >  drivers/platform/x86/intel/ifs/Makefile |  2 +-
+> > >  drivers/platform/x86/intel/ifs/core.c   | 36 ++++++++++++++++++++++++-
+> > >  drivers/platform/x86/intel/ifs/ifs.h    | 25 +++++++++++++++++
+> > >  drivers/platform/x86/intel/ifs/load.c   | 28 +++++++++++++++++++
+> 
+> You haven't commented on the source tree location. With the change
+> to use misc_register() this isn't a "platform" device anymore.
+> 
+> Should I move to "drivers/misc/"? Or is there some better spot that
+> preseves the detail that this is an x86/intel driver in the path?
+
+There's misc_register() users all over the tree, no need for it to be in
+drivers/misc/ at all, especially if this really is a platform device as
+this one is.  It's fine here.
+
+> > > +static struct ifs_device ifs_devices[] = {
+> > > +	[IFS_SAF] = {
+> > > +		.data = {
+> > > +			.integrity_cap_bit = MSR_INTEGRITY_CAPS_PERIODIC_BIST_BIT,
+> > > +		},
+> > > +		.misc = {
+> > > +			.name = "intel_ifs_0",
+> > > +			.nodename = "intel_ifs/0",
+> > > +			.minor = MISC_DYNAMIC_MINOR,
+> > > +		},
+> > > +	},
+> > > +};
+> > > +
+> > > +#define IFS_NUMTESTS ARRAY_SIZE(ifs_devices)
 > > 
-> > Please, consider getting the stats after interrupts are re-enabled. You may
-> > lose
-> > some "precision" because of that, but it is probably overall better that
-> > adding
-> > to idle interrupt latency.
+> > Cute way to do this, but I don't see you ever have any more devices
+> > added to this list in this series.  Did I miss them?
 > 
-> Definitely. I don't need such precision, so later when interrupts are
-> re-enabled is OK for me.
+> That's in part 11/10 ... I have hardware, so I'm pretty sure that this
+> is a real thing. Just not ready to post until Intel announces the
+> details of the new test type.
 
-Thanks. That is preferable in general: we do not do things with interrupts
-disabled unless there is a very good reason to.
+Let's not over-engineer for anything we can not review today please.
 
+> > If not, why all the overhead and complexity involved here for just a
+> > single misc device?
 > 
-> This new call might be empty for your x86 kernels, since probably
-> you set the CONFIG_CPU_FREQ_STAT.I can add additional config
-> so platforms might still have CONFIG_CPU_FREQ_STAT but avoid this
-> new feature and additional overhead in idle exit when e.g.
-> CONFIG_CPU_FREQ_ACTIVE_STAT is not set.
+> It didn't seem like a lot of complexity here. It makes the changes to
+> this file to add an extra test trivial (just a new name in the "enum"
+> and a new initializer in ifs_devices[]).
 > 
-> The x86 platforms won't use IPA governor, so it's reasonable to
-> do this way.
+> Obviously some more code in load.c and runtest.c to handle the new
+> test type.
 > 
-> Does this sounds good?
+> If it really is too much now, I can rip it out from this submission
+> and add it back when the second test is ready for public view.
 
-I did not thoroughly read your patches so can't comment on the details.
+Please do, thanks.
 
-Just pointing that in general idle path is to be considered the critical path,
-especially the part before interrupts are re-enabled. Not only on x86,
-but on all platforms using cpuidle. This does not mean we can't read more
-statistics there, but it does mean that we should be very careful about added
-overhead, keep it under control, etc.
-
-Thank you!
-
+greg k-h
