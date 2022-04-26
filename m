@@ -2,101 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6758BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 17:53:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AB2BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 17:53:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343766AbiDZR4S (ORCPT
+        id S1345775AbiDZR4g (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 13:56:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49314 "EHLO
+        Tue, 26 Apr 2022 13:56:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244713AbiDZR4Q (ORCPT
+        with ESMTP id S244145AbiDZR4d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 13:56:16 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1806113E8A
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 10:53:08 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id fv2so3778650pjb.4
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 10:53:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=PNBpegmlEb8lPElw5+RDYmYOOWqbIDI2DwiLAWeIw7U=;
-        b=OeOXi3uSULB9EIP3d8f5Ia0fNoK6bP4qdUq2yHmlvn5M/fiNqn9SlyndfbcYjNh2pS
-         uxwuyYo4wCtJKikiMN3o7fkSfN10D0wS8yxUaVRe3By02qt7ClwdhLWNa8P4+h6LMQ8R
-         cenPKLXDlCvwyt09dLZ7JjQHmo5AcOSO1SoAM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=PNBpegmlEb8lPElw5+RDYmYOOWqbIDI2DwiLAWeIw7U=;
-        b=Xb/nR3UFN4MyYhx3bOnuVycIQ6DQ94CjQ65KQpZuc0abheDm3Fqfjtl2kz3npgtPjc
-         /sh9j7mIeczBZQ/6eY0TJCZX0mMpd7MMDQ7u8ANSXQghW13F20Q/KS2MzyCnOau4lEQR
-         gHR0vJACEUjlo9UllCa+bSEYqMp7V6qb8C4A1kGq8YT3Io+3LtPHOXfdhKgkJwNSKaw4
-         bhk2nzy/Tp1n/dIJRU7+f/FPbQ9mGgaJe/WgGkWscBujymzX/vbTiyiH1IW9NWQ3CeMr
-         cd3Wh27Y+d3JedcoIIzV5iPV+CjC4hGuSW7wwi/kz+ffP8HgoTB/4YoQPmiigaioL7IR
-         UjpQ==
-X-Gm-Message-State: AOAM532uhty+2n+Gmm5XlO16vNwnWQ6I/s/fhyvPL7OoBTiXf1oVtbFq
-        2Dee7EA6mplOEKb0+wVFyFA1gQ==
-X-Google-Smtp-Source: ABdhPJwhYYoupIid129Fuln8m6ZL7hFV/cbFMriZO1n71iloLpLHkBUTZunjtuVzrz4OMcipUYIVsA==
-X-Received: by 2002:a17:902:d70a:b0:158:7f07:e7c9 with SMTP id w10-20020a170902d70a00b001587f07e7c9mr24469482ply.109.1650995587582;
-        Tue, 26 Apr 2022 10:53:07 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id b2-20020a056a000a8200b004f1111c66afsm17727854pfl.148.2022.04.26.10.53.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 10:53:07 -0700 (PDT)
-From:   Kees Cook <keescook@chromium.org>
-To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        mark.rutland@arm.com
-Cc:     Kees Cook <keescook@chromium.org>, catalin.marinas@arm.com,
-        luto@kernel.org, Andrew Morton <akpm@linux-foundation.org>,
-        will@kernel.org, alex.popov@linux.com
-Subject: Re: [PATCH 0/8] stackleak: fixes and rework
-Date:   Tue, 26 Apr 2022 10:51:00 -0700
-Message-Id: <165099545363.893398.5975919098164892758.b4-ty@chromium.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220425115603.781311-1-mark.rutland@arm.com>
-References: <20220425115603.781311-1-mark.rutland@arm.com>
+        Tue, 26 Apr 2022 13:56:33 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA9811E3E9;
+        Tue, 26 Apr 2022 10:53:23 -0700 (PDT)
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23QGwKW7003829;
+        Tue, 26 Apr 2022 17:53:19 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=juCtkSXEZw5LHfimJHenTdoo3thJ7Vmt5MpxR+KgBH4=;
+ b=dYwHVvWqFdFbUz4jyXAMcRj5iHOmYQLecwG5cDDEoCDrlezAN60xCsFWwZ1erdQVbrx5
+ nmPLwcaJqZuYlI5eKdr6PfjygKapkDk5ExjLvRiLZCRJv1Y7y2ZMfCXBTq35y7x57hSZ
+ pD41sFyhU7SrmDVSDcvUts7KwySwbFCyrHznEPM5ZacYBJeaa57Sb7qyjlfBrKMHtRV/
+ KfMU/CWlYZjX0M+miDr19l3ir8iykivYwEsnjlBLCsqJP2ZqLkJaFKd8R1N0HF9CapeV
+ U5Ib70ctNpdQXMEeMXluNHdzqml2VWBGxM2xT8cMTTo4yNavc/8jnJTW9K3u6yKMNc42 Cw== 
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fpmqqh1v8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 26 Apr 2022 17:53:18 +0000
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23QHmLfF010162;
+        Tue, 26 Apr 2022 17:53:18 GMT
+Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
+        by ppma04dal.us.ibm.com with ESMTP id 3fm93a4c61-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 26 Apr 2022 17:53:18 +0000
+Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
+        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23QHrH5m13631800
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 26 Apr 2022 17:53:17 GMT
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 60A91B2066;
+        Tue, 26 Apr 2022 17:53:17 +0000 (GMT)
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 31823B2065;
+        Tue, 26 Apr 2022 17:53:17 +0000 (GMT)
+Received: from [9.47.158.152] (unknown [9.47.158.152])
+        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
+        Tue, 26 Apr 2022 17:53:17 +0000 (GMT)
+Message-ID: <a22345e8-92a5-687e-4940-ac7b9dcc7c2f@linux.ibm.com>
+Date:   Tue, 26 Apr 2022 13:53:16 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] ecdsa: Fix incorrect usage of vli_cmp
+Content-Language: en-US
+To:     herbert@gondor.apana.org.au, davem@davemloft.net,
+        linux-crypto@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+References: <20220421185740.799271-1-stefanb@linux.ibm.com>
+From:   Stefan Berger <stefanb@linux.ibm.com>
+In-Reply-To: <20220421185740.799271-1-stefanb@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: usan4VokGuCJejTsu4ey3K-uVBkqhiaN
+X-Proofpoint-ORIG-GUID: usan4VokGuCJejTsu4ey3K-uVBkqhiaN
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-26_05,2022-04-26_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 malwarescore=0
+ adultscore=0 impostorscore=0 phishscore=0 lowpriorityscore=0
+ suspectscore=0 mlxlogscore=999 priorityscore=1501 spamscore=0 mlxscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204260111
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 25 Apr 2022 12:55:55 +0100, Mark Rutland wrote:
-> This series reworks the stackleak code. The first patch fixes some
-> latent issues on arm64, and the subsequent patches improve the code to
-> improve clarity and permit better code generation.
+
+
+On 4/21/22 14:57, Stefan Berger wrote:
+> Fix incorrect usage of vli_cmp when calculating the value of res.x. For
+> signature verification to succeed, res.x must be the same as the r
+> component of the signature which is in the range of [1..n-1] with 'n'
+> being the order of the curve. Therefore, when res.x equals n calculate
+> res.x = res.x - n as well. Signature verification could have previously
+> unnecessarily failed in extremely rare cases.
+
+Actually, I am withdrawing this patch. Before this patch res.x could 
+equal 'n' and then wouldn't match r due to the range of r being 
+[1..n-1]. Now if res.x equals 'n' then res.x - n will be 0 and again 
+will not match 'r' due to the range of r being [1..n-1]. So it makes no 
+difference whether vli_cmp() == 1 or vli_cmp() >= 1 and the concern 
+above about rare cases not verifying the signature is wrong.
+
+    Stefan
+
 > 
-> I started working on this as a tangent from rework to arm64's stacktrace
-> code. Looking at users of the `on_*_stack()` helpers I noticed that the
-> assembly generated for stackleak was particularly awful as it performed
-> a lot of redundant work and also called instrumentable code, which isn't
-> sound.
+> Fixes: 4e6602916bc6 ("crypto: ecdsa - Add support for ECDSA signature verification")
+> Cc: <stable@vger.kernel.org>
+> Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+> ---
+>   crypto/ecdsa.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> [...]
-
-Applied to for-next/hardening, thanks!
-
-[1/8] arm64: stackleak: fix current_top_of_stack()
-      https://git.kernel.org/kees/c/b9f8167d08e9
-[2/8] stackleak: move skip_erasing() check earlier
-      https://git.kernel.org/kees/c/b7d6315d1d7c
-[3/8] stackleak: rework stack low bound handling
-      https://git.kernel.org/kees/c/1f4f72d1d99e
-[4/8] stackleak: clarify variable names
-      https://git.kernel.org/kees/c/52a2aa794e0a
-[5/8] stackleak: rework stack high bound handling
-      https://git.kernel.org/kees/c/83301ac044c9
-[6/8] stackleak: remove redundant check
-      https://git.kernel.org/kees/c/0cd7ee6880c7
-[7/8] stackleak: add on/off stack variants
-      https://git.kernel.org/kees/c/9bb0b174fd2b
-[8/8] arm64: entry: use stackleak_erase_on_task_stack()
-      https://git.kernel.org/kees/c/6a5927e73497
-
--- 
-Kees Cook
-
+> diff --git a/crypto/ecdsa.c b/crypto/ecdsa.c
+> index b3a8a6b572ba..674ab9275366 100644
+> --- a/crypto/ecdsa.c
+> +++ b/crypto/ecdsa.c
+> @@ -120,8 +120,8 @@ static int _ecdsa_verify(struct ecc_ctx *ctx, const u64 *hash, const u64 *r, con
+>   	/* res = u1*G + u2 * pub_key */
+>   	ecc_point_mult_shamir(&res, u1, &curve->g, u2, &ctx->pub_key, curve);
+>   
+> -	/* res.x = res.x mod n (if res.x > order) */
+> -	if (unlikely(vli_cmp(res.x, curve->n, ndigits) == 1))
+> +	/* res.x = res.x mod n (if res.x >= order) */
+> +	if (unlikely(vli_cmp(res.x, curve->n, ndigits) >= 0))
+>   		/* faster alternative for NIST p384, p256 & p192 */
+>   		vli_sub(res.x, res.x, curve->n, ndigits);
+>   
