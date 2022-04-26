@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87C7CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:02:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D16D7C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:02:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353666AbiDZTFT (ORCPT
+        id S1353616AbiDZTFX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 15:05:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39972 "EHLO
+        Tue, 26 Apr 2022 15:05:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350783AbiDZTFJ (ORCPT
+        with ESMTP id S1351034AbiDZTFK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 15:05:09 -0400
+        Tue, 26 Apr 2022 15:05:10 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9034F19916B;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4833199168;
         Tue, 26 Apr 2022 12:02:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B06D9619B9;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 76EA7619C8;
+        Tue, 26 Apr 2022 19:02:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7A98C385A4;
         Tue, 26 Apr 2022 19:02:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDE86C385AA;
-        Tue, 26 Apr 2022 19:01:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1650999720;
-        bh=0wa8R2ae7L5HvBja6cgYpwoZNRFRA5di92a2dlL7/Zo=;
+        bh=KjRdUnwoZ+7ZoJC1ywPnZHjuqyL95XZTVpmXHAYdaRw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GQrhIvv5cSV+xbheXI4gmS7HafKBEpY1H585Z8pXQuQalOW6Ci+TPUC8MCMJGKqK8
-         s3a2kUS913wA3A05MTT1gSjmtsMwhEkjg7uTKcFv+fkc0/hzJqL5mjhFzI1z8zsGA2
-         zUb3kVUpIyrMkUOR+wNxz5w/B+Fo/ImG6YSI5Iw7UyU5euGVnTuRjf+qN1fdUuwZQy
-         KjaK4QRILGM5e3Mh/BYC2+vzR9wEm2FVHAlXKgVg49r0T718iLQeKgicddpFwzKsCU
-         uh/arpViRmHc0wosCVr0SmVV2fzS2ZFmLdnfYzI4uOEjTNk8DOyE9iynxppNJDbnGA
-         2A2MqiQikPCGw==
+        b=PQsbFO5oCQT967Ipf0MCKaM3lN2yZvhXpwBR3YPwVyGZ3Zo3rMPb2BRNtyE0AThav
+         VFIl4+7DOTxZHk+kkHjHznIei9+F1dxWsKmOLycJNLi6F6sXsNSEOytOEyjOdfvy25
+         MxfiUSIbkVdYVEW1jekf7O4vKxU7vWYw6cqfBcOGuHb4ZxT83OqgIA0r3k3BaOUvZd
+         3kXWt+PwXv+xzhFoYUDzyCoNBOuQ+EdeK7CfsPukMKCwAKNbxQQmzaXJnDhjKRm6Nt
+         Z71eVzvB5KfiyGaabemvTSPTRfm+s2Gb8NQKf2NHdp/Tb9iEk5FRk39WI9n62NQqmI
+         pyzEvJUt0QXUw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, cezary.rojewski@intel.com,
-        liam.r.girdwood@linux.intel.com, yang.jie@linux.intel.com,
-        perex@perex.cz, tiwai@suse.com, peter.ujfalusi@linux.intel.com,
-        yung-chuan.liao@linux.intel.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.17 06/22] ASoC: Intel: sof_es8336: Add a quirk for Huawei Matebook D15
-Date:   Tue, 26 Apr 2022 15:01:29 -0400
-Message-Id: <20220426190145.2351135-6-sashal@kernel.org>
+Cc:     Ye Bin <yebin10@huawei.com>, Jan Kara <jack@suse.cz>,
+        Ritesh Harjani <riteshh@linux.ibm.com>,
+        Theodore Ts'o <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>,
+        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 08/22] ext4: fix bug_on in start_this_handle during umount filesystem
+Date:   Tue, 26 Apr 2022 15:01:31 -0400
+Message-Id: <20220426190145.2351135-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220426190145.2351135-1-sashal@kernel.org>
 References: <20220426190145.2351135-1-sashal@kernel.org>
@@ -56,47 +53,116 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mauro Carvalho Chehab <mchehab@kernel.org>
+From: Ye Bin <yebin10@huawei.com>
 
-[ Upstream commit c7cb4717f641db68e8117635bfcf62a9c27dc8d3 ]
+[ Upstream commit b98535d091795a79336f520b0708457aacf55c67 ]
 
-Based on experimental tests, Huawei Matebook D15 actually uses
-both gpio0 and gpio1: the first one controls the speaker, while
-the other one controls the headphone.
+We got issue as follows:
+------------[ cut here ]------------
+kernel BUG at fs/jbd2/transaction.c:389!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
+CPU: 9 PID: 131 Comm: kworker/9:1 Not tainted 5.17.0-862.14.0.6.x86_64-00001-g23f87daf7d74-dirty #197
+Workqueue: events flush_stashed_error_work
+RIP: 0010:start_this_handle+0x41c/0x1160
+RSP: 0018:ffff888106b47c20 EFLAGS: 00010202
+RAX: ffffed10251b8400 RBX: ffff888128dc204c RCX: ffffffffb52972ac
+RDX: 0000000000000200 RSI: 0000000000000004 RDI: ffff888128dc2050
+RBP: 0000000000000039 R08: 0000000000000001 R09: ffffed10251b840a
+R10: ffff888128dc204f R11: ffffed10251b8409 R12: ffff888116d78000
+R13: 0000000000000000 R14: dffffc0000000000 R15: ffff888128dc2000
+FS:  0000000000000000(0000) GS:ffff88839d680000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000001620068 CR3: 0000000376c0e000 CR4: 00000000000006e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ jbd2__journal_start+0x38a/0x790
+ jbd2_journal_start+0x19/0x20
+ flush_stashed_error_work+0x110/0x2b3
+ process_one_work+0x688/0x1080
+ worker_thread+0x8b/0xc50
+ kthread+0x26f/0x310
+ ret_from_fork+0x22/0x30
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
 
-Also, the headset is mapped as MIC1, instead of MIC2.
+Above issue may happen as follows:
+      umount            read procfs            error_work
+ext4_put_super
+  flush_work(&sbi->s_error_work);
 
-So, add a quirk for it.
+                      ext4_mb_seq_groups_show
+	                ext4_mb_load_buddy_gfp
+			  ext4_mb_init_group
+			    ext4_mb_init_cache
+	                      ext4_read_block_bitmap_nowait
+			        ext4_validate_block_bitmap
+				  ext4_error
+			            ext4_handle_error
+			              schedule_work(&EXT4_SB(sb)->s_error_work);
 
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Acked-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/d678aef9fc9a07aced611aa7cb8c9b800c649e5a.1649357263.git.mchehab@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+  ext4_unregister_sysfs(sb);
+  jbd2_journal_destroy(sbi->s_journal);
+    journal_kill_thread
+      journal->j_flags |= JBD2_UNMOUNT;
+
+                                          flush_stashed_error_work
+				            jbd2_journal_start
+					      start_this_handle
+					        BUG_ON(journal->j_flags & JBD2_UNMOUNT);
+
+To solve this issue, we call 'ext4_unregister_sysfs() before flushing
+s_error_work in ext4_put_super().
+
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Ritesh Harjani <riteshh@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220322012419.725457-1-yebin10@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/intel/boards/sof_es8336.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ fs/ext4/super.c | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
 
-diff --git a/sound/soc/intel/boards/sof_es8336.c b/sound/soc/intel/boards/sof_es8336.c
-index 28d7670b8f8f..b18951a8f309 100644
---- a/sound/soc/intel/boards/sof_es8336.c
-+++ b/sound/soc/intel/boards/sof_es8336.c
-@@ -252,6 +252,15 @@ static const struct dmi_system_id sof_es8336_quirk_table[] = {
- 					SOF_ES8336_TGL_GPIO_QUIRK |
- 					SOF_ES8336_ENABLE_DMIC)
- 	},
-+	{
-+		.callback = sof_es8336_quirk_cb,
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "HUAWEI"),
-+			DMI_MATCH(DMI_BOARD_NAME, "BOHB-WAX9-PCB-B2"),
-+		},
-+		.driver_data = (void *)(SOF_ES8336_HEADPHONE_GPIO |
-+					SOC_ES8336_HEADSET_MIC1)
-+	},
- 	{}
- };
+diff --git a/fs/ext4/super.c b/fs/ext4/super.c
+index bed29f96ccc7..67c7c6f1bc8e 100644
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -1199,20 +1199,25 @@ static void ext4_put_super(struct super_block *sb)
+ 	int aborted = 0;
+ 	int i, err;
  
+-	ext4_unregister_li_request(sb);
+-	ext4_quota_off_umount(sb);
+-
+-	flush_work(&sbi->s_error_work);
+-	destroy_workqueue(sbi->rsv_conversion_wq);
+-	ext4_release_orphan_info(sb);
+-
+ 	/*
+ 	 * Unregister sysfs before destroying jbd2 journal.
+ 	 * Since we could still access attr_journal_task attribute via sysfs
+ 	 * path which could have sbi->s_journal->j_task as NULL
++	 * Unregister sysfs before flush sbi->s_error_work.
++	 * Since user may read /proc/fs/ext4/xx/mb_groups during umount, If
++	 * read metadata verify failed then will queue error work.
++	 * flush_stashed_error_work will call start_this_handle may trigger
++	 * BUG_ON.
+ 	 */
+ 	ext4_unregister_sysfs(sb);
+ 
++	ext4_unregister_li_request(sb);
++	ext4_quota_off_umount(sb);
++
++	flush_work(&sbi->s_error_work);
++	destroy_workqueue(sbi->rsv_conversion_wq);
++	ext4_release_orphan_info(sb);
++
+ 	if (sbi->s_journal) {
+ 		aborted = is_journal_aborted(sbi->s_journal);
+ 		err = jbd2_journal_destroy(sbi->s_journal);
 -- 
 2.35.1
 
