@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3BA9C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:07:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D40DC46467
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:07:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346717AbiDZJI5 (ORCPT
+        id S1346913AbiDZJJ0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:08:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55176 "EHLO
+        Tue, 26 Apr 2022 05:09:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346060AbiDZIof (ORCPT
+        with ESMTP id S1346465AbiDZIuF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:44:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DD16160972;
-        Tue, 26 Apr 2022 01:34:08 -0700 (PDT)
+        Tue, 26 Apr 2022 04:50:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59EA21399B9;
+        Tue, 26 Apr 2022 01:38:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 38F37618BF;
-        Tue, 26 Apr 2022 08:34:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36E06C385A4;
-        Tue, 26 Apr 2022 08:34:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 53B1CB81CF2;
+        Tue, 26 Apr 2022 08:38:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B7EFC385A0;
+        Tue, 26 Apr 2022 08:38:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962047;
-        bh=H2GVOsN4Wlnmq7iS7cjQO3AXAVt7hMVJpGRKNMcx78Y=;
+        s=korg; t=1650962294;
+        bh=0AMYWBbfpUL//+F2tIsTAni2SaYlp5EIBR+OQERkZTc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oC9My93RObaDp8OXP2VpMvgrliqw0lDOyx/VR3HAVtXDyX9+pQisP6mb9YrSUXsc/
-         cD6qLLnLzGe83VInIF4+EJntPjZCFl145ZoaF/c0t+smeupOU6NGOn4/yHCTSVE1rr
-         d73iNTppz6e329zM4t6z2Ji4+e57FeO0lNoFpE08=
+        b=m0Al9Dmb1JcxCykmVLVsXCNYi7uCNKeUObwyMSjH9ujvdsif5qDuXwGJtq55HaS39
+         o/lScZUQkamczqXCEnNYip1FS4Ram/YCRxMUentrLNzdJv2W5hxnzoUsC98XQox79D
+         YXzfO2NhvuqsK+E4cbr0G5aXeZ0ZF4EhWJEX1DWY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Subject: [PATCH 5.10 55/86] ata: pata_marvell: Check the bmdma_addr beforing reading
-Date:   Tue, 26 Apr 2022 10:21:23 +0200
-Message-Id: <20220426081742.794341917@linuxfoundation.org>
+        stable@vger.kernel.org, Bernice Zhang <bernice.zhang@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 049/124] dmaengine: idxd: add RO check for wq max_transfer_size write
+Date:   Tue, 26 Apr 2022 10:20:50 +0200
+Message-Id: <20220426081748.695278023@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
-References: <20220426081741.202366502@linuxfoundation.org>
+In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
+References: <20220426081747.286685339@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,40 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Dave Jiang <dave.jiang@intel.com>
 
-commit aafa9f958342db36c17ac2a7f1b841032c96feb4 upstream.
+[ Upstream commit 505a2d1032ae656b0a8c736be110255503941cde ]
 
-Before detecting the cable type on the dma bar, the driver should check
-whether the 'bmdma_addr' is zero, which means the adapter does not
-support DMA, otherwise we will get the following error:
+Block wq_max_transfer_size_store() when the device is configured as
+read-only and not configurable.
 
-[    5.146634] Bad IO access at port 0x1 (return inb(port))
-[    5.147206] WARNING: CPU: 2 PID: 303 at lib/iomap.c:44 ioread8+0x4a/0x60
-[    5.150856] RIP: 0010:ioread8+0x4a/0x60
-[    5.160238] Call Trace:
-[    5.160470]  <TASK>
-[    5.160674]  marvell_cable_detect+0x6e/0xc0 [pata_marvell]
-[    5.161728]  ata_eh_recover+0x3520/0x6cc0
-[    5.168075]  ata_do_eh+0x49/0x3c0
-
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: d7aad5550eca ("dmaengine: idxd: add support for configurable max wq xfer size")
+Reported-by: Bernice Zhang <bernice.zhang@intel.com>
+Tested-by: Bernice Zhang <bernice.zhang@intel.com>
+Signed-off-by: Dave Jiang <dave.jiang@intel.com>
+Link: https://lore.kernel.org/r/164971488154.2200913.10706665404118545941.stgit@djiang5-desk3.ch.intel.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/ata/pata_marvell.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/dma/idxd/sysfs.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/ata/pata_marvell.c
-+++ b/drivers/ata/pata_marvell.c
-@@ -83,6 +83,8 @@ static int marvell_cable_detect(struct a
- 	switch(ap->port_no)
- 	{
- 	case 0:
-+		if (!ap->ioaddr.bmdma_addr)
-+			return ATA_CBL_PATA_UNK;
- 		if (ioread8(ap->ioaddr.bmdma_addr + 1) & 1)
- 			return ATA_CBL_PATA40;
- 		return ATA_CBL_PATA80;
+diff --git a/drivers/dma/idxd/sysfs.c b/drivers/dma/idxd/sysfs.c
+index f7ab5c077a2b..33d94c67fedb 100644
+--- a/drivers/dma/idxd/sysfs.c
++++ b/drivers/dma/idxd/sysfs.c
+@@ -842,6 +842,9 @@ static ssize_t wq_max_transfer_size_store(struct device *dev, struct device_attr
+ 	u64 xfer_size;
+ 	int rc;
+ 
++	if (!test_bit(IDXD_FLAG_CONFIGURABLE, &idxd->flags))
++		return -EPERM;
++
+ 	if (wq->state != IDXD_WQ_DISABLED)
+ 		return -EPERM;
+ 
+-- 
+2.35.1
+
 
 
