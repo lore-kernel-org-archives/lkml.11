@@ -2,99 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 498B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 14:51:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD3F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 14:51:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351743AbiDZOyL (ORCPT
+        id S1351769AbiDZOyS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 10:54:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40556 "EHLO
+        Tue, 26 Apr 2022 10:54:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243885AbiDZOyK (ORCPT
+        with ESMTP id S243885AbiDZOyR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 10:54:10 -0400
-Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FA2B3C4AB
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 07:51:02 -0700 (PDT)
-Received: by mail-ot1-x331.google.com with SMTP id 88-20020a9d0ee1000000b005d0ae4e126fso13205165otj.5
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 07:51:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mjUtCSyBnFk8A3kTILIrriQceuNIreHcu/IG7ob7Yjw=;
-        b=eEihIfAYOPixN4pXa9pV6rApPJ/mm+Ff36ssgjFVVtp6lXlr8xUkUFSXFY2R5btYUh
-         e0bPxX4RJNBOBvjBM5mH0kDJOuNImtnNAUiqKNLl1ts5txepBbOJS0W+CxxJ7IqBj5VY
-         mWVQN8+pTokpaJ8lG7CWp+dPeEyOulLirq4omYYkDQxB24tGSJmjVU40upQrW4VZcu2s
-         ij4AqBttsogwiH4XU2M2l9Dw6xVQLoAc4G5knFHo3/TNUKhJTJgABL5kngE/mPK9Nnw9
-         TlL2svtdIEJAh7kW/Xseb/5gzLETsWfkAL0LcBCzi8v1JEEc8rtYynsAuItgiOfC+3gl
-         7vYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mjUtCSyBnFk8A3kTILIrriQceuNIreHcu/IG7ob7Yjw=;
-        b=giCdh29eur5zp3bi68KIkFb2i3p2rP1zG8Co7gwT2pT1JRFGiwvxq4yi+xO4V0jLvl
-         xXpVk3YUV1Zdy4fsUIb5JEUATA5D8LMoDXVn4jFBG4/hfNk+0fpUvKLv2BKZ5TP42r1W
-         MwtBcumRA947Gd/6QPBXSaAOt29idjUeg6ZQTG1nm1hy6xkCARcDBcY29+kilaX8IhuN
-         KRZ2Hd5hh4/jAwFMyDA43Rt4XgQCs8RZc4hOQKnH35LXJvwqFQRswEUEQcN1BIhd60bz
-         9d3x97L/nngDOV6DOQp380WkTnmgmpBpQDK3qkF9REiYGKCcYaDupMkJQHHVx1Rh5Vl5
-         cdJg==
-X-Gm-Message-State: AOAM5301VYMm4ZmaaiYd0pYLzHNi6s5FN2ZClWc2k32A5I0Kmo8s3RE4
-        vpmqPGTsGiYYQdTCDOR3XrkrA2R1AEkcoz916DvW2fsy
-X-Google-Smtp-Source: ABdhPJwQWZyiDHzcPHPthMVbpOd+wMn9jPepqdWib/QYV5CmxlYnXLUwO6hhH6jHp7CQeRHWTBjQ9784pbyYkooY4Hg=
-X-Received: by 2002:a9d:110:0:b0:605:a618:4a68 with SMTP id
- 16-20020a9d0110000000b00605a6184a68mr4761422otu.357.1650984661559; Tue, 26
- Apr 2022 07:51:01 -0700 (PDT)
+        Tue, 26 Apr 2022 10:54:17 -0400
+Received: from abedmanico.biharhotel.com (abedmanico.biharhotel.com [194.31.98.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C74C33FBF5
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 07:51:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; s=dkim; d=biharhotel.com;
+ h=Reply-To:From:To:Subject:Date:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding; i=mar.veg@biharhotel.com;
+ bh=1dWi+UzZAOpqN+E1Lcs0ZpdTUIU=;
+ b=fJGj3cO/rFAXwXDl9kkSXbdRBJvmrb6yKt8wdlaHD24Z1Z2UTVo12AKjKtFh+oFxGRM9nu2g1H2t
+   JhgAnNp4A4FDAmsJLmmEgh673keelkuCv/utQPAO8TmgVGfc8qa8H4veEmC5nq1jsQWWBkgQWuvx
+   clMrSvCI+lgKnNz6Sp7DUP8j/wNLjfmsPNoK+qxivQzQ/B/z8GHBxQ2gVbss5HwTplO00huRZHNY
+   URXlf8xkM5s8XQKXpo7H5NulWoil8O9VvxqSa031FCgtnQPBznZEEDGI3kTVit/HmZuoFQKIVbvb
+   N2YPDm0QxqMmli21zVk89iA9LnY9QO/q/bzFIQ==
+DomainKey-Signature: a=rsa-sha1; c=nofws; q=dns; s=dkim; d=biharhotel.com;
+ b=TlRgitjoVez1PxfEMEOWEoSt4nE7oQVDeW1lV5gbWpyInl09qkFyuCnUBX6cNB0wJR/9ymCEFlrZ
+   mp74YCC1V3hLhslzeg/SIT7wbNAmryA6O2WnNFZ+SA7GaEKSu3Dg5cm7tSeNjAmYN8IYfh9ihmhz
+   +YxwEmYGfwGSrdN0zV4tQu7ORj0S+lpOr6GX3MrRRgML5FG+8uNk34nTrQtmMa4RABUWCXMQ6UBy
+   PDaM+m0tE/EzMVcB6zaO7mHG4XOKy9SI9QAdnAWbeB7hfGufgg/hNjT+a5JZ4MkRyHQ8LB03XwsN
+   1dvnfkqnb0EfOu/yetfCVDetw8U8zyOlxhkfyA==;
+Reply-To: bradleywrubel@scotts-foundation.org
+From:   "MACKENZIE SCOTT (Scott Foundation)" <mar.veg@biharhotel.com>
+To:     linux-kernel@vger.kernel.org
+Subject: CONGRATULATIONS...
+Date:   26 Apr 2022 16:21:52 +0200
+Message-ID: <20220426162152.ED22B8116CD02A22@biharhotel.com>
 MIME-Version: 1.0
-References: <20220426100616.1411209-1-oushixiong@kylinos.cn>
-In-Reply-To: <20220426100616.1411209-1-oushixiong@kylinos.cn>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Tue, 26 Apr 2022 10:50:50 -0400
-Message-ID: <CADnq5_NC+LckMSBYXHGDohyTB6PbELwtYqAknBgRvR3q7N_LYw@mail.gmail.com>
-Subject: Re: [PATCH] drm/amd: Fix spelling typo in comment
-To:     oushixiong <oushixiong@kylinos.cn>
-Cc:     Alex Deucher <alexander.deucher@amd.com>,
-        Jiawei Gu <Jiawei.Gu@amd.com>, David Airlie <airlied@linux.ie>,
-        xinhui pan <Xinhui.Pan@amd.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
-        Fangzhi Zuo <Jerry.Zuo@amd.com>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>, Daniel Vetter <daniel@ffwll.ch>,
-        John Clements <john.clements@amd.com>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Hawking Zhang <Hawking.Zhang@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Applied.  Thanks.
+Hello,
 
-Alex
+I'm Mackenzie Scott, Ex-wife to Jeff Bezos (Amazon Founder and=20
+CEO). I'm donating $4 billion to charities, churches, individuals,=20
+colleges and businesses across the Globe from Scott's Foundation to=20
+provide immediate support to people and businesses suffering=20
+economically from the impact of COVID-19 pandemic and the ongoing=20
+war in Ukraine. Your email emerged as one of the lucky winners=20
+after an electronically conducted ballot process.
 
-On Tue, Apr 26, 2022 at 8:56 AM oushixiong <oushixiong@kylinos.cn> wrote:
->
-> Signed-off-by: oushixiong <oushixiong@kylinos.cn>
-> ---
->  drivers/gpu/drm/amd/include/atomfirmware.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/gpu/drm/amd/include/atomfirmware.h b/drivers/gpu/drm/amd/include/atomfirmware.h
-> index 7bd763361d6e..b7a1e2116e7e 100644
-> --- a/drivers/gpu/drm/amd/include/atomfirmware.h
-> +++ b/drivers/gpu/drm/amd/include/atomfirmware.h
-> @@ -3,7 +3,7 @@
->  *  File Name      atomfirmware.h
->  *  Project        This is an interface header file between atombios and OS GPU drivers for SoC15 products
->  *
-> -*  Description    header file of general definitions for OS nd pre-OS video drivers
-> +*  Description    header file of general definitions for OS and pre-OS video drivers
->  *
->  *  Copyright 2014 Advanced Micro Devices, Inc.
->  *
-> --
-> 2.25.1
->
+I have a donation grant worth $8,500,000.00 Dollars for you. You=20
+are to contact Mr. BRADLEY WRUBEL for more information if you're=20
+interested.
+
+MR. BRADLEY WRUBEL
+bradleywrubel@scotts-foundation.org
+
+Congratulations.
+
+Yours Sincerely
+Mackenzie Scott
+The Scott Foundation
+P.O. Box 1513
+Los Gatos, CA 95031-1513
+USA.
