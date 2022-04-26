@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4329CC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:45:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 791D6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:45:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234934AbiDZIsM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:48:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39902 "EHLO
+        id S238633AbiDZIse (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:48:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345266AbiDZIhp (ORCPT
+        with ESMTP id S1345486AbiDZIjK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:37:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 655BE8CDAD;
-        Tue, 26 Apr 2022 01:29:24 -0700 (PDT)
+        Tue, 26 Apr 2022 04:39:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56C5B255;
+        Tue, 26 Apr 2022 01:29:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1D6B6B81CF9;
-        Tue, 26 Apr 2022 08:29:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CA39C385AE;
-        Tue, 26 Apr 2022 08:29:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E9FC761864;
+        Tue, 26 Apr 2022 08:29:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 036A7C385A4;
+        Tue, 26 Apr 2022 08:29:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961761;
-        bh=PfEQfKi3N0slKS7sruzQYrtgatSEteVIU2KP1w37ENY=;
+        s=korg; t=1650961797;
+        bh=904Yeuvzqm23g7s+sAX4Ms24/YBBVjFmcCiyB/hFFGA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kjUrmQg1+dYGJS72uc2fjPTwpBmL8E+2mA071mCwXVXOgEMiUj32R+McAU+huXWdk
-         z6tz2Hi/TaGxqyzayON0L8b/CtFVJ4goZdgTgFxUloQp5M5nxzTT17PsK2p/0XHwE+
-         9GLdSwqWd8pOFP/ArIVwr3eWcHOlEAINctwz6Qac=
+        b=DkLhMAjgFDkAA8aom/3DYSxi+Z8dMKurO/0tBabsFVSL4wA0nRmDbZDggw/2U0lAg
+         lrNbA3lExw4IfZHG6tRFnotFMBbdc2KRy0CuXUZWsZWlaKtNsPrOZlsnwUSDih2qjb
+         UnbtB2CTm9dtq4s+hLO9NJqcGp/m7HR32RYAh2a4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Xiaoke Wang <xkernel.wang@foxmail.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Rob Clark <robdclark@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 21/62] netlink: reset network and mac headers in netlink_dump()
-Date:   Tue, 26 Apr 2022 10:21:01 +0200
-Message-Id: <20220426081737.835695832@linuxfoundation.org>
+Subject: [PATCH 5.4 32/62] drm/msm/mdp5: check the return of kzalloc()
+Date:   Tue, 26 Apr 2022 10:21:12 +0200
+Message-Id: <20220426081738.146660402@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
 References: <20220426081737.209637816@linuxfoundation.org>
@@ -50,134 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-[ Upstream commit 99c07327ae11e24886d552dddbe4537bfca2765d ]
+[ Upstream commit 047ae665577776b7feb11bd4f81f46627cff95e7 ]
 
-netlink_dump() is allocating an skb, reserves space in it
-but forgets to reset network header.
+kzalloc() is a memory allocation function which can return NULL when
+some internal memory errors happen. So it is better to check it to
+prevent potential wrong memory access.
 
-This allows a BPF program, invoked later from sk_filter()
-to access uninitialized kernel memory from the reserved
-space.
+Besides, since mdp5_plane_reset() is void type, so we should better
+set `plane-state` to NULL after releasing it.
 
-Theorically mac header reset could be omitted, because
-it is set to a special initial value.
-bpf_internal_load_pointer_neg_helper calls skb_mac_header()
-without checking skb_mac_header_was_set().
-Relying on skb->len not being too big seems fragile.
-We also could add a sanity check in bpf_internal_load_pointer_neg_helper()
-to avoid surprises in the future.
-
-syzbot report was:
-
-BUG: KMSAN: uninit-value in ___bpf_prog_run+0xa22b/0xb420 kernel/bpf/core.c:1637
- ___bpf_prog_run+0xa22b/0xb420 kernel/bpf/core.c:1637
- __bpf_prog_run32+0x121/0x180 kernel/bpf/core.c:1796
- bpf_dispatcher_nop_func include/linux/bpf.h:784 [inline]
- __bpf_prog_run include/linux/filter.h:626 [inline]
- bpf_prog_run include/linux/filter.h:633 [inline]
- __bpf_prog_run_save_cb+0x168/0x580 include/linux/filter.h:756
- bpf_prog_run_save_cb include/linux/filter.h:770 [inline]
- sk_filter_trim_cap+0x3bc/0x8c0 net/core/filter.c:150
- sk_filter include/linux/filter.h:905 [inline]
- netlink_dump+0xe0c/0x16c0 net/netlink/af_netlink.c:2276
- netlink_recvmsg+0x1129/0x1c80 net/netlink/af_netlink.c:2002
- sock_recvmsg_nosec net/socket.c:948 [inline]
- sock_recvmsg net/socket.c:966 [inline]
- sock_read_iter+0x5a9/0x630 net/socket.c:1039
- do_iter_readv_writev+0xa7f/0xc70
- do_iter_read+0x52c/0x14c0 fs/read_write.c:786
- vfs_readv fs/read_write.c:906 [inline]
- do_readv+0x432/0x800 fs/read_write.c:943
- __do_sys_readv fs/read_write.c:1034 [inline]
- __se_sys_readv fs/read_write.c:1031 [inline]
- __x64_sys_readv+0xe5/0x120 fs/read_write.c:1031
- do_syscall_x64 arch/x86/entry/common.c:51 [inline]
- do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:81
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Uninit was stored to memory at:
- ___bpf_prog_run+0x96c/0xb420 kernel/bpf/core.c:1558
- __bpf_prog_run32+0x121/0x180 kernel/bpf/core.c:1796
- bpf_dispatcher_nop_func include/linux/bpf.h:784 [inline]
- __bpf_prog_run include/linux/filter.h:626 [inline]
- bpf_prog_run include/linux/filter.h:633 [inline]
- __bpf_prog_run_save_cb+0x168/0x580 include/linux/filter.h:756
- bpf_prog_run_save_cb include/linux/filter.h:770 [inline]
- sk_filter_trim_cap+0x3bc/0x8c0 net/core/filter.c:150
- sk_filter include/linux/filter.h:905 [inline]
- netlink_dump+0xe0c/0x16c0 net/netlink/af_netlink.c:2276
- netlink_recvmsg+0x1129/0x1c80 net/netlink/af_netlink.c:2002
- sock_recvmsg_nosec net/socket.c:948 [inline]
- sock_recvmsg net/socket.c:966 [inline]
- sock_read_iter+0x5a9/0x630 net/socket.c:1039
- do_iter_readv_writev+0xa7f/0xc70
- do_iter_read+0x52c/0x14c0 fs/read_write.c:786
- vfs_readv fs/read_write.c:906 [inline]
- do_readv+0x432/0x800 fs/read_write.c:943
- __do_sys_readv fs/read_write.c:1034 [inline]
- __se_sys_readv fs/read_write.c:1031 [inline]
- __x64_sys_readv+0xe5/0x120 fs/read_write.c:1031
- do_syscall_x64 arch/x86/entry/common.c:51 [inline]
- do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:81
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Uninit was created at:
- slab_post_alloc_hook mm/slab.h:737 [inline]
- slab_alloc_node mm/slub.c:3244 [inline]
- __kmalloc_node_track_caller+0xde3/0x14f0 mm/slub.c:4972
- kmalloc_reserve net/core/skbuff.c:354 [inline]
- __alloc_skb+0x545/0xf90 net/core/skbuff.c:426
- alloc_skb include/linux/skbuff.h:1158 [inline]
- netlink_dump+0x30f/0x16c0 net/netlink/af_netlink.c:2242
- netlink_recvmsg+0x1129/0x1c80 net/netlink/af_netlink.c:2002
- sock_recvmsg_nosec net/socket.c:948 [inline]
- sock_recvmsg net/socket.c:966 [inline]
- sock_read_iter+0x5a9/0x630 net/socket.c:1039
- do_iter_readv_writev+0xa7f/0xc70
- do_iter_read+0x52c/0x14c0 fs/read_write.c:786
- vfs_readv fs/read_write.c:906 [inline]
- do_readv+0x432/0x800 fs/read_write.c:943
- __do_sys_readv fs/read_write.c:1034 [inline]
- __se_sys_readv fs/read_write.c:1031 [inline]
- __x64_sys_readv+0xe5/0x120 fs/read_write.c:1031
- do_syscall_x64 arch/x86/entry/common.c:51 [inline]
- do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:81
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-CPU: 0 PID: 3470 Comm: syz-executor751 Not tainted 5.17.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Fixes: db65a3aaf29e ("netlink: Trim skb to alloc size to avoid MSG_TRUNC")
-Fixes: 9063e21fb026 ("netlink: autosize skb lengthes")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Link: https://lore.kernel.org/r/20220415181442.551228-1-eric.dumazet@gmail.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/481055/
+Link: https://lore.kernel.org/r/tencent_8E2A1C78140EE1784AB2FF4B2088CC0AB908@qq.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Rob Clark <robdclark@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netlink/af_netlink.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-index fb28969899af..8aefc52542a0 100644
---- a/net/netlink/af_netlink.c
-+++ b/net/netlink/af_netlink.c
-@@ -2253,6 +2253,13 @@ static int netlink_dump(struct sock *sk)
- 	 * single netdev. The outcome is MSG_TRUNC error.
- 	 */
- 	skb_reserve(skb, skb_tailroom(skb) - alloc_size);
-+
-+	/* Make sure malicious BPF programs can not read unitialized memory
-+	 * from skb->head -> skb->data
-+	 */
-+	skb_reset_network_header(skb);
-+	skb_reset_mac_header(skb);
-+
- 	netlink_skb_set_owner_r(skb, sk);
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
+index 83423092de2f..da0799333970 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
+@@ -179,7 +179,10 @@ static void mdp5_plane_reset(struct drm_plane *plane)
+ 		drm_framebuffer_put(plane->state->fb);
  
- 	if (nlk->dump_done_errno > 0) {
+ 	kfree(to_mdp5_plane_state(plane->state));
++	plane->state = NULL;
+ 	mdp5_state = kzalloc(sizeof(*mdp5_state), GFP_KERNEL);
++	if (!mdp5_state)
++		return;
+ 
+ 	/* assign default blend parameters */
+ 	mdp5_state->alpha = 255;
 -- 
 2.35.1
 
