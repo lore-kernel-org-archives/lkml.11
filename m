@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C2AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:05:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34449C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:07:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346474AbiDZJIW (ORCPT
+        id S1346583AbiDZJIi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:08:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59940 "EHLO
+        Tue, 26 Apr 2022 05:08:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346199AbiDZIom (ORCPT
+        with ESMTP id S1345764AbiDZIra (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:44:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF5B11632DF;
-        Tue, 26 Apr 2022 01:34:23 -0700 (PDT)
+        Tue, 26 Apr 2022 04:47:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 271E6A76FB;
+        Tue, 26 Apr 2022 01:37:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 481C7618C4;
-        Tue, 26 Apr 2022 08:34:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56DA7C385AC;
-        Tue, 26 Apr 2022 08:34:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AE3C3B81CFA;
+        Tue, 26 Apr 2022 08:37:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B769C385A0;
+        Tue, 26 Apr 2022 08:37:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962062;
-        bh=I7E4f3rFKZQ0HQraiuVyxk/qYySAiRYvtrWeIKvVc1c=;
+        s=korg; t=1650962261;
+        bh=jFm8Koe9x0fNpJvJozkZL3Fjf/sZ/Xq/QG5v5NdJk2U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CqvCfAtMzIlcvDEi5gN4VUR1uIRchXwHkMRK1eZT96y2m9S3LRxxYg3weLnfFkH/4
-         cKGJLqoBDxIWbSP7CxWQJ7D/jKi0pKMZXW1+r+xfsmuE6nKFV75p3DeT6DugFpHOnV
-         NtZ9RfPIk+jp97bNUlVuE/ksCOX8+P5ZGJpXXGxc=
+        b=NiVnhdl66aFSCoTogcV1sAhXCMyXdu8DQ7cU95KdE9zeJej5T9huth6otwgd4/jM5
+         6UfhGYps6FNIxSPfaGlzgWAoHfqpoRUN0jaImKmMB0nOIM2pmsBiSfY1cLAHs/RaU3
+         hM6hZWuIGt1TZIp1695JUKCxawPD58akJK2Tlp7U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PATCH 5.10 59/86] xtensa: fix a7 clobbering in coprocessor context load/store
-Date:   Tue, 26 Apr 2022 10:21:27 +0200
-Message-Id: <20220426081742.909050301@linuxfoundation.org>
+        stable@vger.kernel.org, Mike Rapoport <rppt@linux.ibm.com>,
+        Christoph Hellwig <hch@lst.de>,
+        David Hildenbrand <david@redhat.com>,
+        Will Deacon <will@kernel.org>,
+        Georgi Djakov <quic_c_gdjako@quicinc.com>
+Subject: [PATCH 5.15 006/124] dma-mapping: remove bogus test for pfn_valid from dma_map_resource
+Date:   Tue, 26 Apr 2022 10:20:07 +0200
+Message-Id: <20220426081747.474819433@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
-References: <20220426081741.202366502@linuxfoundation.org>
+In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
+References: <20220426081747.286685339@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,43 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Max Filippov <jcmvbkbc@gmail.com>
+From: Mike Rapoport <rppt@linux.ibm.com>
 
-commit 839769c35477d4acc2369e45000ca7b0b6af39a7 upstream.
+commit a9c38c5d267cb94871dfa2de5539c92025c855d7 upstream.
 
-Fast coprocessor exception handler saves a3..a6, but coprocessor context
-load/store code uses a4..a7 as temporaries, potentially clobbering a7.
-'Potentially' because coprocessor state load/store macros may not use
-all four temporary registers (and neither FPU nor HiFi macros do).
-Use a3..a6 as intended.
+dma_map_resource() uses pfn_valid() to ensure the range is not RAM.
+However, pfn_valid() only checks for availability of the memory map for a
+PFN but it does not ensure that the PFN is actually backed by RAM.
 
-Cc: stable@vger.kernel.org
-Fixes: c658eac628aa ("[XTENSA] Add support for configurable registers and coprocessors")
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+As dma_map_resource() is the only method in DMA mapping APIs that has this
+check, simply drop the pfn_valid() test from dma_map_resource().
+
+Link: https://lore.kernel.org/all/20210824173741.GC623@arm.com/
+Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Acked-by: David Hildenbrand <david@redhat.com>
+Link: https://lore.kernel.org/r/20210930013039.11260-2-rppt@kernel.org
+Signed-off-by: Will Deacon <will@kernel.org>
+Fixes: 859a85ddf90e ("mm: remove pfn_valid_within() and CONFIG_HOLES_IN_ZONE")
+Link: https://lore.kernel.org/r/Yl0IZWT2nsiYtqBT@linux.ibm.com
+Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/xtensa/kernel/coprocessor.S |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ kernel/dma/mapping.c |    4 ----
+ 1 file changed, 4 deletions(-)
 
---- a/arch/xtensa/kernel/coprocessor.S
-+++ b/arch/xtensa/kernel/coprocessor.S
-@@ -29,7 +29,7 @@
- 	.if XTENSA_HAVE_COPROCESSOR(x);					\
- 		.align 4;						\
- 	.Lsave_cp_regs_cp##x:						\
--		xchal_cp##x##_store a2 a4 a5 a6 a7;			\
-+		xchal_cp##x##_store a2 a3 a4 a5 a6;			\
- 		jx	a0;						\
- 	.endif
+--- a/kernel/dma/mapping.c
++++ b/kernel/dma/mapping.c
+@@ -296,10 +296,6 @@ dma_addr_t dma_map_resource(struct devic
+ 	if (WARN_ON_ONCE(!dev->dma_mask))
+ 		return DMA_MAPPING_ERROR;
  
-@@ -46,7 +46,7 @@
- 	.if XTENSA_HAVE_COPROCESSOR(x);					\
- 		.align 4;						\
- 	.Lload_cp_regs_cp##x:						\
--		xchal_cp##x##_load a2 a4 a5 a6 a7;			\
-+		xchal_cp##x##_load a2 a3 a4 a5 a6;			\
- 		jx	a0;						\
- 	.endif
- 
+-	/* Don't allow RAM to be mapped */
+-	if (WARN_ON_ONCE(pfn_valid(PHYS_PFN(phys_addr))))
+-		return DMA_MAPPING_ERROR;
+-
+ 	if (dma_map_direct(dev, ops))
+ 		addr = dma_direct_map_resource(dev, phys_addr, size, dir, attrs);
+ 	else if (ops->map_resource)
 
 
