@@ -2,103 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25814C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 17:53:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6758BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 17:53:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244262AbiDZR4Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 13:56:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48916 "EHLO
+        id S1343766AbiDZR4S (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 13:56:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242353AbiDZR4L (ORCPT
+        with ESMTP id S244713AbiDZR4Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 13:56:11 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C10D1208E;
-        Tue, 26 Apr 2022 10:53:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650995583; x=1682531583;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=XqUIzyKlR1H4AWn7rRefqRtq3YT/aLsnxjGSzWgozcU=;
-  b=bfhDEV8F5VghxEWFPhZOIWEfEtSXKE2Jkh1YVPEg0FWam01bhknSytoy
-   IcwJ8z5cXX95dl82x0ufhyDP5dbnxFtHhBZdxquEgcWg9ZwFJ7MY+Rc/o
-   aLIBQrqIe/qj61PRUzLq0pfbL9M+52m/moYCIvZMBGNNlV4mvc/uOvGx3
-   Ouk6YNBB7z/NV8ll7Wed8d+w/APACgwoTZybDQWQ1VxlMZosrVngIiEHB
-   +7QDlyaCVbH27ezLpdcl76k6oOWRBCmw07yj1SlYSd6xjSiOzb5hBO1jo
-   IJo6MhNobHBKPXekXKjxTdCFHhgb0/2pIrMkts2JXQWyOG9IOwjlmhFkv
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="245595597"
-X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
-   d="scan'208";a="245595597"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 10:53:03 -0700
-X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
-   d="scan'208";a="580064081"
-Received: from dsocek-mobl2.amr.corp.intel.com (HELO [10.212.69.119]) ([10.212.69.119])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 10:53:00 -0700
-Message-ID: <90b448ba-2d5c-b0a2-4716-a8470fe09af0@intel.com>
-Date:   Tue, 26 Apr 2022 10:55:43 -0700
+        Tue, 26 Apr 2022 13:56:16 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1806113E8A
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 10:53:08 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id fv2so3778650pjb.4
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 10:53:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=PNBpegmlEb8lPElw5+RDYmYOOWqbIDI2DwiLAWeIw7U=;
+        b=OeOXi3uSULB9EIP3d8f5Ia0fNoK6bP4qdUq2yHmlvn5M/fiNqn9SlyndfbcYjNh2pS
+         uxwuyYo4wCtJKikiMN3o7fkSfN10D0wS8yxUaVRe3By02qt7ClwdhLWNa8P4+h6LMQ8R
+         cenPKLXDlCvwyt09dLZ7JjQHmo5AcOSO1SoAM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=PNBpegmlEb8lPElw5+RDYmYOOWqbIDI2DwiLAWeIw7U=;
+        b=Xb/nR3UFN4MyYhx3bOnuVycIQ6DQ94CjQ65KQpZuc0abheDm3Fqfjtl2kz3npgtPjc
+         /sh9j7mIeczBZQ/6eY0TJCZX0mMpd7MMDQ7u8ANSXQghW13F20Q/KS2MzyCnOau4lEQR
+         gHR0vJACEUjlo9UllCa+bSEYqMp7V6qb8C4A1kGq8YT3Io+3LtPHOXfdhKgkJwNSKaw4
+         bhk2nzy/Tp1n/dIJRU7+f/FPbQ9mGgaJe/WgGkWscBujymzX/vbTiyiH1IW9NWQ3CeMr
+         cd3Wh27Y+d3JedcoIIzV5iPV+CjC4hGuSW7wwi/kz+ffP8HgoTB/4YoQPmiigaioL7IR
+         UjpQ==
+X-Gm-Message-State: AOAM532uhty+2n+Gmm5XlO16vNwnWQ6I/s/fhyvPL7OoBTiXf1oVtbFq
+        2Dee7EA6mplOEKb0+wVFyFA1gQ==
+X-Google-Smtp-Source: ABdhPJwhYYoupIid129Fuln8m6ZL7hFV/cbFMriZO1n71iloLpLHkBUTZunjtuVzrz4OMcipUYIVsA==
+X-Received: by 2002:a17:902:d70a:b0:158:7f07:e7c9 with SMTP id w10-20020a170902d70a00b001587f07e7c9mr24469482ply.109.1650995587582;
+        Tue, 26 Apr 2022 10:53:07 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id b2-20020a056a000a8200b004f1111c66afsm17727854pfl.148.2022.04.26.10.53.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 10:53:07 -0700 (PDT)
+From:   Kees Cook <keescook@chromium.org>
+To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        mark.rutland@arm.com
+Cc:     Kees Cook <keescook@chromium.org>, catalin.marinas@arm.com,
+        luto@kernel.org, Andrew Morton <akpm@linux-foundation.org>,
+        will@kernel.org, alex.popov@linux.com
+Subject: Re: [PATCH 0/8] stackleak: fixes and rework
+Date:   Tue, 26 Apr 2022 10:51:00 -0700
+Message-Id: <165099545363.893398.5975919098164892758.b4-ty@chromium.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220425115603.781311-1-mark.rutland@arm.com>
+References: <20220425115603.781311-1-mark.rutland@arm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v7 5/8] x86/e820: Refactor e820__range_remove
-Content-Language: en-US
-To:     Martin Fernandez <martin.fernandez@eclypsium.com>
-Cc:     linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, linux-mm@kvack.org,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        ardb@kernel.org, dvhart@infradead.org, andy@infradead.org,
-        gregkh@linuxfoundation.org, rafael@kernel.org, rppt@kernel.org,
-        akpm@linux-foundation.org, daniel.gutson@eclypsium.com,
-        hughsient@gmail.com, alex.bazhaniuk@eclypsium.com,
-        alison.schofield@intel.com, keescook@chromium.org
-References: <20220425171526.44925-1-martin.fernandez@eclypsium.com>
- <20220425171526.44925-6-martin.fernandez@eclypsium.com>
- <a02186b9-b72c-1484-2973-c59272ae0a7e@intel.com>
- <CAKgze5Y1bKUAqPHEY71y_puTmuV2K02qjt0qzwO-KA3SYio0Tw@mail.gmail.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <CAKgze5Y1bKUAqPHEY71y_puTmuV2K02qjt0qzwO-KA3SYio0Tw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/26/22 10:37, Martin Fernandez wrote:
->> Also, in general, the naming is a bit verbose.  You might want to trim
->> some of those names down, like:
->>
->>> +static bool __init crypto_updater__should_update(const struct e820_entry
->>> *entry,
->>> +						 const void *data)
->>> +{
->>> +	const struct e820_crypto_updater_data *crypto_updater_data =
->>> +		(const struct e820_crypto_updater_data *)data;
-> Yes I agree on this. Do you have any suggestions for these kind of
-> functions? I want to explicitly state that these functions are in some of
-> namespace and are different of the other ones.
+On Mon, 25 Apr 2022 12:55:55 +0100, Mark Rutland wrote:
+> This series reworks the stackleak code. The first patch fixes some
+> latent issues on arm64, and the subsequent patches improve the code to
+> improve clarity and permit better code generation.
 > 
-> In the end I don't think this is very harmful since these functions are one-time
-> used (in a single place), is not the case that you have to use them everywhere..
+> I started working on this as a tangent from rework to arm64's stacktrace
+> code. Looking at users of the `on_*_stack()` helpers I noticed that the
+> assembly generated for stackleak was particularly awful as it performed
+> a lot of redundant work and also called instrumentable code, which isn't
+> sound.
+> 
+> [...]
 
-Let's just start with the fact that this is a pointer to a structure
-containing an enum that represents a single bit.  You could just pass
-around an address to a bool:
+Applied to for-next/hardening, thanks!
 
-	bool crypto_capable = *(bool *)data;
+[1/8] arm64: stackleak: fix current_top_of_stack()
+      https://git.kernel.org/kees/c/b9f8167d08e9
+[2/8] stackleak: move skip_erasing() check earlier
+      https://git.kernel.org/kees/c/b7d6315d1d7c
+[3/8] stackleak: rework stack low bound handling
+      https://git.kernel.org/kees/c/1f4f72d1d99e
+[4/8] stackleak: clarify variable names
+      https://git.kernel.org/kees/c/52a2aa794e0a
+[5/8] stackleak: rework stack high bound handling
+      https://git.kernel.org/kees/c/83301ac044c9
+[6/8] stackleak: remove redundant check
+      https://git.kernel.org/kees/c/0cd7ee6880c7
+[7/8] stackleak: add on/off stack variants
+      https://git.kernel.org/kees/c/9bb0b174fd2b
+[8/8] arm64: entry: use stackleak_erase_on_task_stack()
+      https://git.kernel.org/kees/c/6a5927e73497
 
-or even just pass and use the 'void *data' pointer as a value directly:
+-- 
+Kees Cook
 
-	bool crypto_capable = (bool)data;
-
-That, for one, would get rid of some of the naming craziness.
-
-If it were me, and I *really* wanted to keep the full types, I would
-have just condensed that line down to:
-
-	struct e820_crypto_updater_data *crypto_data = data;
-
-Yeah, it _can_ be const, but it buys you practically nothing in this
-case and only hurts readability.
