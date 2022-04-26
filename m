@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57BF2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:32:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8303BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:32:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344831AbiDZIfl (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:35:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37018 "EHLO
+        id S245217AbiDZIf7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:35:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345001AbiDZIdx (ORCPT
+        with ESMTP id S1345094AbiDZIeF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:33:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A66746B08;
-        Tue, 26 Apr 2022 01:25:49 -0700 (PDT)
+        Tue, 26 Apr 2022 04:34:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 557286D4E0;
+        Tue, 26 Apr 2022 01:26:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 934A661722;
-        Tue, 26 Apr 2022 08:25:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A75C4C385A0;
-        Tue, 26 Apr 2022 08:25:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0E599B81CF5;
+        Tue, 26 Apr 2022 08:26:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54E1DC385A4;
+        Tue, 26 Apr 2022 08:25:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961548;
-        bh=UjFIeEsRkxBxNpxsJ7IbM0O0SWdTcEmSYu6onpJJ2XI=;
+        s=korg; t=1650961559;
+        bh=OZh4LPinysjplNiwT4eLfT6wOyCunHQ9OYvn5K7otxY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pd1kLKlaKzjx7LzXDp3jEFkrtcCDi5RvIvZieO/k1xs6xKeytG3r0GRn2BOQ1nxMm
-         RNGghZfBDFXBBmNR86q9QXT0k9fTz8WOOkGuhkwYEs24XDIbkrqEb88/ClI4OZ54Am
-         O3kjSUXMNcBKnvzRv2yJz53XpcWvM+H4h4gbrT+w=
+        b=FWTt+8fiJe7yNaIvAzBpg5q87Hg4LwrxKRT9UrsXV+7ZjSuxRKwfKD/3nOBMFfRuO
+         U0IH2RoXQUOQg7qvSN4tYS0kzSzQ6a2Tg4b8i8usy5hSUuGL69ep9ucyyTUJVVZlns
+         w/yqQhS7jxV0EwGRcl0x90dx8eZiqZimLeF5tHtM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        stable@kernel.org
-Subject: [PATCH 4.14 32/43] ext4: force overhead calculation if the s_overhead_cluster makes no sense
-Date:   Tue, 26 Apr 2022 10:21:14 +0200
-Message-Id: <20220426081735.463654791@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 4.14 26/43] ASoC: soc-dapm: fix two incorrect uses of list iterator
+Date:   Tue, 26 Apr 2022 10:21:08 +0200
+Message-Id: <20220426081735.290430235@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081734.509314186@linuxfoundation.org>
 References: <20220426081734.509314186@linuxfoundation.org>
@@ -49,44 +48,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Theodore Ts'o <tytso@mit.edu>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit 85d825dbf4899a69407338bae462a59aa9a37326 upstream.
+commit f730a46b931d894816af34a0ff8e4ad51565b39f upstream.
 
-If the file system does not use bigalloc, calculating the overhead is
-cheap, so force the recalculation of the overhead so we don't have to
-trust the precalculated overhead in the superblock.
+These two bug are here:
+	list_for_each_entry_safe_continue(w, n, list,
+					power_list);
+	list_for_each_entry_safe_continue(w, n, list,
+					power_list);
 
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Cc: stable@kernel.org
+After the list_for_each_entry_safe_continue() exits, the list iterator
+will always be a bogus pointer which point to an invalid struct objdect
+containing HEAD member. The funciton poniter 'w->event' will be a
+invalid value which can lead to a control-flow hijack if the 'w' can be
+controlled.
+
+The original intention was to continue the outer list_for_each_entry_safe()
+loop with the same entry if w->event is NULL, but misunderstanding the
+meaning of list_for_each_entry_safe_continue().
+
+So just add a 'continue;' to fix the bug.
+
+Cc: stable@vger.kernel.org
+Fixes: 163cac061c973 ("ASoC: Factor out DAPM sequence execution")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Link: https://lore.kernel.org/r/20220329012134.9375-1-xiam0nd.tong@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/super.c |   15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ sound/soc/soc-dapm.c |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
---- a/fs/ext4/super.c
-+++ b/fs/ext4/super.c
-@@ -4345,9 +4345,18 @@ no_journal:
- 	 * Get the # of file system overhead blocks from the
- 	 * superblock if present.
- 	 */
--	if (es->s_overhead_clusters)
--		sbi->s_overhead = le32_to_cpu(es->s_overhead_clusters);
--	else {
-+	sbi->s_overhead = le32_to_cpu(es->s_overhead_clusters);
-+	/* ignore the precalculated value if it is ridiculous */
-+	if (sbi->s_overhead > ext4_blocks_count(es))
-+		sbi->s_overhead = 0;
-+	/*
-+	 * If the bigalloc feature is not enabled recalculating the
-+	 * overhead doesn't take long, so we might as well just redo
-+	 * it to make sure we are using the correct value.
-+	 */
-+	if (!ext4_has_feature_bigalloc(sb))
-+		sbi->s_overhead = 0;
-+	if (sbi->s_overhead == 0) {
- 		err = ext4_calculate_overhead(sb);
- 		if (err)
- 			goto failed_mount_wq;
+--- a/sound/soc/soc-dapm.c
++++ b/sound/soc/soc-dapm.c
+@@ -1617,8 +1617,7 @@ static void dapm_seq_run(struct snd_soc_
+ 		switch (w->id) {
+ 		case snd_soc_dapm_pre:
+ 			if (!w->event)
+-				list_for_each_entry_safe_continue(w, n, list,
+-								  power_list);
++				continue;
+ 
+ 			if (event == SND_SOC_DAPM_STREAM_START)
+ 				ret = w->event(w,
+@@ -1630,8 +1629,7 @@ static void dapm_seq_run(struct snd_soc_
+ 
+ 		case snd_soc_dapm_post:
+ 			if (!w->event)
+-				list_for_each_entry_safe_continue(w, n, list,
+-								  power_list);
++				continue;
+ 
+ 			if (event == SND_SOC_DAPM_STREAM_START)
+ 				ret = w->event(w,
 
 
