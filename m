@@ -2,76 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 097E4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:35:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E579C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:37:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235270AbiDZKiL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 06:38:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57678 "EHLO
+        id S1349290AbiDZKky (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 06:40:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349175AbiDZKhY (ORCPT
+        with ESMTP id S1349365AbiDZKiv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 06:37:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F1F93B7;
-        Tue, 26 Apr 2022 03:21:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DEDEC615AB;
-        Tue, 26 Apr 2022 10:20:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D23B3C385A0;
-        Tue, 26 Apr 2022 10:20:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650968459;
-        bh=upRt5cWmk45sKqQhG085JLpi7qzRTD4ZA5fWWha7b9A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=2IvDGzM7d6NMwW8m92qobOdm0KxYklDlSURqj6xlGZ0Lip7LGAnU2Fpks5QkSrft4
-         sASZeINeZGJUxM4cpu/oZrFdKN0962p2fvAgOqkUzmgArFQNca0JSbPF7qTKRuQR6a
-         eKgsPIxgjxGnv46EGxVygB2m+AiB2KNXn5o0unmQ=
-Date:   Tue, 26 Apr 2022 12:20:56 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Daehwan Jung <dh10.jung@samsung.com>
-Cc:     Mathias Nyman <mathias.nyman@intel.com>,
-        "open list:USB XHCI DRIVER" <linux-usb@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Howard Yen <howardyen@google.com>,
-        Jack Pham <jackp@codeaurora.org>,
-        Puma Hsu <pumahsu@google.com>,
-        "J . Avila" <elavila@google.com>, sc.suh@samsung.com,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Subject: Re: [PATCH v4 5/5] usb: host: add xhci-exynos driver
-Message-ID: <YmfHiEneCRlnJA3e@kroah.com>
-References: <1650964728-175347-1-git-send-email-dh10.jung@samsung.com>
- <CGME20220426092023epcas2p32946c087135ca4b7e63b03915060c55d@epcas2p3.samsung.com>
- <1650964728-175347-6-git-send-email-dh10.jung@samsung.com>
+        Tue, 26 Apr 2022 06:38:51 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CC49E63;
+        Tue, 26 Apr 2022 03:25:12 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id dk23so11775161ejb.8;
+        Tue, 26 Apr 2022 03:25:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=E3GiU4VgA4X0FVG9Q0HUFWR78xcN+9K+AQZgrStd20Q=;
+        b=CqFomzrJcPjoOLCpk2zbMHsv8s4gpt3ktEOcbqKM6d/FBoOtD162g1SitcHKd5PByk
+         suRxgZLOxEcLtTnne2ZL5e33i5js7iU4Usk44bOXl9eMekMOjP4BBExt+1l94b+4ZW1x
+         3KbOzjNgjZHgZk9PIe8VNP4PcKpVxPsMiCv9L7rNy9JCscKBN7X7YgF3t4VDA4abwdTH
+         wJMBKu5z5Swresr5lB1ZQTWORt1kt5ewc+QqNpXpMnEuZ5OY2BWsL2UfeB9h/oHySeAe
+         9VM8P6oOc/aSpYDNuFbu5UHHt0oFmrU6l5Rpe+LsVYVIAgKMvTxlt9BzjZ4G2j66QbCA
+         8now==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=E3GiU4VgA4X0FVG9Q0HUFWR78xcN+9K+AQZgrStd20Q=;
+        b=HlIwJNlqNsjAOvbvQw9L/jYZIAiu8MGiN9cYvvHm8tgouiiLq9DPB/pyMLmBHNQtkJ
+         F2dvtrQ7aYypFxgv/aCJCyx2R46yhqoKG93wMY93gi2fovbvJEz4oGkpYMRFTTJU2BlW
+         mvNjD4H6BKh4JBoqAYGJOyTKXrLwvZL317mxKMFk5Qav1ggWeBWU8SX01dCRF/on6uBM
+         fdbP4LpzP3J1o4QJt9QBxNIApaEwgzsqH6na1RyjBE6MOikOkqzzpflfiZPYD1HfeOzh
+         zUbGiDc3pnD7h1aRr7kLWjt7WPwVrRQ5oPV3+6/9PEum7F8enNvCUU30GCWwwOJqcoND
+         HjYQ==
+X-Gm-Message-State: AOAM530ZhnhU28zeGXHYQDoi5N85MnWw6/3OxQE/ggf++og7yo84f5m6
+        jDMJb7C6vP0C1BeUQ16/z9CxRvEoWrFawtE9p2g=
+X-Google-Smtp-Source: ABdhPJz8BmGLAmH9fEGi0KuLOTUtQRadgcrFFvw87vyemx36ybgw9064Ch2gGNh59MOiJlvtRR/goPKKu8WsaV94ZpM=
+X-Received: by 2002:a17:907:7d8c:b0:6f2:476d:fde4 with SMTP id
+ oz12-20020a1709077d8c00b006f2476dfde4mr19555140ejc.497.1650968710844; Tue, 26
+ Apr 2022 03:25:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1650964728-175347-6-git-send-email-dh10.jung@samsung.com>
+References: <20220419141846.598305-1-maz@kernel.org> <CACRpkda3L_itpqcnPq6xDoJtNHt8NuvE1MZk1bCNR+u2KKUpBA@mail.gmail.com>
+ <874k2kccse.wl-maz@kernel.org>
+In-Reply-To: <874k2kccse.wl-maz@kernel.org>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 26 Apr 2022 12:24:31 +0200
+Message-ID: <CAHp75VcKNurETpNtrZM7SN2XEtLM6ZYFrS-gKr6r55Lc37gKQQ@mail.gmail.com>
+Subject: Re: [PATCH v3 00/10] gpiolib: Handle immutable irq_chip structures
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Joey Gouly <joey.gouly@arm.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
+        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        linux-arm-msm@vger.kernel.org,
+        Android Kernel Team <kernel-team@android.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 06:18:48PM +0900, Daehwan Jung wrote:
-> This driver is for Samsung Exynos xhci host conroller. It uses xhci-plat
-> driver mainly and extends some functions by xhci hooks and overrides.
-> 
-> It supports USB Audio offload with Co-processor. It only cares DCBAA,
-> Device Context, Transfer Ring, Event Ring, and ERST. They are allocated
-> on specific address with xhci hooks. Co-processor could use them directly
-> without xhci driver after then.
-> 
-> Signed-off-by: Daehwan Jung <dh10.jung@samsung.com>
-> ---
->  drivers/usb/host/Kconfig       |   8 +
->  drivers/usb/host/Makefile      |   1 +
->  drivers/usb/host/xhci-exynos.c | 567 +++++++++++++++++++++++++++++++++
->  drivers/usb/host/xhci-exynos.h |  50 +++
+On Sat, Apr 23, 2022 at 12:30 PM Marc Zyngier <maz@kernel.org> wrote:
+>
+> On Fri, 22 Apr 2022 22:24:22 +0100,
+> Linus Walleij <linus.walleij@linaro.org> wrote:
+> >
+> > On Tue, Apr 19, 2022 at 4:19 PM Marc Zyngier <maz@kernel.org> wrote:
+> >
+> > > This is a followup from [2].
+> > >
+> > > I recently realised that the gpiolib play ugly tricks on the
+> > > unsuspecting irq_chip structures by patching the callbacks.
+> > >
+> > > Not only this breaks when an irq_chip structure is made const (which
+> > > really should be the default case), but it also forces this structure
+> > > to be copied at nauseam for each instance of the GPIO block, which is
+> > > a waste of memory.
+> > >
+> > > My current approach is to add a new irq_chip flag (IRQCHIP_IMMUTABLE)
+> > > which does what it says on the tin: don't you dare writing to them.
+> > > Gpiolib is further updated not to install its own callbacks, and it
+> > > becomes the responsibility of the driver to call into the gpiolib when
+> > > required. This is similar to what we do for other subsystems such as
+> > > PCI-MSI.
+> > >
+> > > 5 drivers are updated to this new model: M1, QC, Tegra, pl061 and AMD
+> > > (as I actively use them) keeping a single irq_chip structure, marking
+> > > it const, and exposing the new flag.
+> > >
+> > > Nothing breaks, the volume of change is small, the memory usage goes
+> > > down and we have fewer callbacks that can be used as attack vectors.
+> > > What's not to love?
+> > >
+> > > Since there wasn't any objection in the previous round of review, I'm
+> > > going to take this series into -next to see if anything breaks at
+> > > scale.
+> >
+> > The series:
+> > Acked-by: Linus Walleij <linus.walleij@linaro.org>
+> >
+> > Bartosz: if you're happy with this can you apply it to an immutable branch
+> > from v5.18-rc1 and merge that into the GPIO for-next and then I can also
+> > pull that into pinctrl?
+>
+> For what it is worth, I've pushed this branch into irqchip-next.
+>
+> You can pick it up from:
+>
+> https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms.git/log/?h=irq/gpio-immutable
+>
+> but I can also drop it from the irqchip tree.
+>
+> Just let me know.
 
-Why do you need a .h file for a simple single driver like this?  Just
-put it all into the .c file please.
+I would prefer it if it goes as is now and every stakeholder can just
+pull it. As far as my drivers are concerned I also want to convert
+them sooner than later, meaning I want to pull this into my little
+tree as well. Bart, Linus, would it be also preferable for you?
 
-thanks,
 
-greg k-h
+-- 
+With Best Regards,
+Andy Shevchenko
