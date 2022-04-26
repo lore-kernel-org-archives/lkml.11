@@ -2,184 +2,266 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 224A8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 04:08:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBD00C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 04:09:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243920AbiDZELM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 00:11:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55954 "EHLO
+        id S243884AbiDZEMF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 00:12:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243880AbiDZELC (ORCPT
+        with ESMTP id S242812AbiDZEMC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 00:11:02 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 71D98167EB
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 21:07:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650946074;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=AuGMiVQ54UHeSvg8sdwlcgbUOg1bzj5/F3tz+KJ+Q24=;
-        b=E81ve1K6nSzXW0qyCp9KTTqaKVQl0gUrDeKWHWVc7nJebgr4G4ggRFtUM+P61cv7i7m19n
-        aqWYQ0qg0IIJ3jdrnWkBU2PpG6MuyFbzVkhIYJYInMqbbdiOQwkvFCwafQBfx9h88yVRn3
-        yZ37nUsNxlG2dqp001b+4QStDpfB2Tg=
-Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
- [209.85.208.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-509-83D199Z8P8e1XelT_xdyTw-1; Tue, 26 Apr 2022 00:07:53 -0400
-X-MC-Unique: 83D199Z8P8e1XelT_xdyTw-1
-Received: by mail-lj1-f197.google.com with SMTP id u19-20020a2e8553000000b0024f222a942aso42244ljj.8
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 21:07:52 -0700 (PDT)
+        Tue, 26 Apr 2022 00:12:02 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C05417AA6;
+        Mon, 25 Apr 2022 21:08:55 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id iq10so3763865pjb.0;
+        Mon, 25 Apr 2022 21:08:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=BmVF4EXcjcUNSi3DVcK9Nx6B3mnEaB3077X7MMFsCH0=;
+        b=eY/v11/AzoUnmAE005pzA2+P2TPM4js1nQPVJGszMkmoo4LNR9A2TammgELKTEZVT4
+         ALbCgTcTO1eTzNR0ztXNR85NtRWYDILNg0usTLT/o1PmmZdpURD8lYkebQJKQnb/0+W6
+         aCEVygfzejrLQGYbcao+E+yWffYpYfElzW3D2vJ8ve/rEmMKbOcxtH2AwWjTWjSXVBpu
+         SNDpIzKetnvROnk5Pq2WuGGXiajg5VuiRoMQH+CWtML90BZZJgmrAiJElbuP66KlxHVZ
+         j819XajsW1T5gJ2xMWJWfMTqZwpOmoIBSc4t2XVWn9qKM5LytfggJ82rNyKcXR7ZLGdq
+         /40g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=AuGMiVQ54UHeSvg8sdwlcgbUOg1bzj5/F3tz+KJ+Q24=;
-        b=ji8Jl4veWDt5LFau8VD9+Fur2KGzBD3OL1DpQN5IXd81ZW+4wu33y7Oh8WTEqJf6n4
-         WcLrNFH3rhK9VTnie1IeMPEVGXGlY6bleJFuasJHdEDEhiQ3yeLr5QfDpX6WB657HPAT
-         Hl1nQc//Slg/j3De5PYmNo7ktvqx42WY0C/UVEKHVC8W9sfXYGJdhDHFlC+Gi8EHelIz
-         QQwhDUWx5jU8jbA2DpGmkb4GoH9JPvrDFtPDiyA6Ox5QjlNkiuN/mMKVpoOHz2kHoX0f
-         fjbB7c2/UUJIK3kiUuQljgMeAEsW8SRJwvo+EWI7NMXHhMEY5UB/aSInu2i+16W1hyrM
-         9ruw==
-X-Gm-Message-State: AOAM531WlUZxqXZoB+k/6eapN7lDfQ7ND4ttcLdLS4IMsm8S2W/nqyH1
-        SQwjmuFk+Vh4RYo+ZbRKEuFdVUrfy4a9ithO3dc84vwT7W+vd4WCSJN6jo+remiwyTLcN48xOai
-        A+SrYZD3ppXBXd5hQnsYSntDOuh7FAcb6UVOOFECE
-X-Received: by 2002:a05:6512:b81:b0:448:b342:513c with SMTP id b1-20020a0565120b8100b00448b342513cmr15264136lfv.257.1650946071294;
-        Mon, 25 Apr 2022 21:07:51 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw8cMRgeJdLRR9nm75CnO2Nx0KqwdQSMGUUkDvsKw8o5celdKNAmeZb54EkxXEys10n8QzGyW2l09PAXlsiqFA=
-X-Received: by 2002:a05:6512:b81:b0:448:b342:513c with SMTP id
- b1-20020a0565120b8100b00448b342513cmr15264132lfv.257.1650946071111; Mon, 25
- Apr 2022 21:07:51 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=BmVF4EXcjcUNSi3DVcK9Nx6B3mnEaB3077X7MMFsCH0=;
+        b=fx3Pk5iK7ls/d/YVp+wIfr06D8BWqGP1feJbVgFK50QpUFKJPhKzJAv1Fy/5z0JWmY
+         Y5X9xqvCUsVzLcsj03W/5eOHCt4T8BbRDWHo7F21/hQniKyX6alZlAwBfv6QakoW3RVj
+         E8Lwfga3Q+/iKEfMplc5c90S78liQWa4wi7GSgjoXvBQeD1Dx+fMRxrTddN+q4OONber
+         nv4v8Oa1iMZwjKg75JEO30vfub92RPQOpgMRw2xFG1KEDiRO20RgEqNn76ZUbwskGVgx
+         SUh41crdYKLwEyvMtq7Dy9TY36AX+vH4A4uEkaUNwFCpA2nf5L+T5Yq3S83xpnwrVe/a
+         RZQw==
+X-Gm-Message-State: AOAM530/c2AfQOH7kKV85vCNk7Y0IhGhg6OPEl7EC2eW4koN4ksVms20
+        OWcsUykjdPpqwo/JFy2k1Qc=
+X-Google-Smtp-Source: ABdhPJziWPZHyo1se5MZFri6fbpoteACq47aWljWlxBdHHwNQ27+HiAWveJKeYQmtyXaSVSgY82L3g==
+X-Received: by 2002:a17:90a:aa8b:b0:1d9:868c:b4c5 with SMTP id l11-20020a17090aaa8b00b001d9868cb4c5mr6831705pjq.198.1650946134905;
+        Mon, 25 Apr 2022 21:08:54 -0700 (PDT)
+Received: from MBP-98dd607d3435.dhcp.thefacebook.com ([2620:10d:c090:400::5:438a])
+        by smtp.gmail.com with ESMTPSA id s4-20020a056a00194400b004fb358ffe84sm13128030pfk.104.2022.04.25.21.08.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Apr 2022 21:08:54 -0700 (PDT)
+Date:   Mon, 25 Apr 2022 21:08:51 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [RFC bpf-next v4 2/7] bpf/verifier: allow kfunc to return an
+ allocated mem
+Message-ID: <20220426040851.q3ovelrlcldvwhv5@MBP-98dd607d3435.dhcp.thefacebook.com>
+References: <20220421140740.459558-1-benjamin.tissoires@redhat.com>
+ <20220421140740.459558-3-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
-References: <20220425024418.8415-1-jasowang@redhat.com> <20220425024418.8415-7-jasowang@redhat.com>
- <20220425040512-mutt-send-email-mst@kernel.org> <87a6c98rwf.fsf@redhat.com>
- <20220425095742-mutt-send-email-mst@kernel.org> <20220426042911.544477f9.pasic@linux.ibm.com>
- <20220425233434-mutt-send-email-mst@kernel.org> <20220425233604-mutt-send-email-mst@kernel.org>
- <ba0c3977-c471-3275-2327-c5910cdd506a@redhat.com> <20220425235134-mutt-send-email-mst@kernel.org>
- <20220425235415-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20220425235415-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Tue, 26 Apr 2022 12:07:39 +0800
-Message-ID: <CACGkMEve+3ugK-Kgao3_2wbjb=fbF7AO2uEuArGjKgEAQcGdiQ@mail.gmail.com>
-Subject: Re: [PATCH V3 6/9] virtio-ccw: implement synchronize_cbs()
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Halil Pasic <pasic@linux.ibm.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        eperezma <eperezma@redhat.com>, Cindy Lu <lulu@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Marc Zyngier <maz@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220421140740.459558-3-benjamin.tissoires@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 11:55 AM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Mon, Apr 25, 2022 at 11:53:24PM -0400, Michael S. Tsirkin wrote:
-> > On Tue, Apr 26, 2022 at 11:42:45AM +0800, Jason Wang wrote:
-> > >
-> > > =E5=9C=A8 2022/4/26 11:38, Michael S. Tsirkin =E5=86=99=E9=81=93:
-> > > > On Mon, Apr 25, 2022 at 11:35:41PM -0400, Michael S. Tsirkin wrote:
-> > > > > On Tue, Apr 26, 2022 at 04:29:11AM +0200, Halil Pasic wrote:
-> > > > > > On Mon, 25 Apr 2022 09:59:55 -0400
-> > > > > > "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> > > > > >
-> > > > > > > On Mon, Apr 25, 2022 at 10:54:24AM +0200, Cornelia Huck wrote=
-:
-> > > > > > > > On Mon, Apr 25 2022, "Michael S. Tsirkin" <mst@redhat.com> =
-wrote:
-> > > > > > > > > On Mon, Apr 25, 2022 at 10:44:15AM +0800, Jason Wang wrot=
-e:
-> > > > > > > > > > This patch tries to implement the synchronize_cbs() for=
- ccw. For the
-> > > > > > > > > > vring_interrupt() that is called via virtio_airq_handle=
-r(), the
-> > > > > > > > > > synchronization is simply done via the airq_info's lock=
-. For the
-> > > > > > > > > > vring_interrupt() that is called via virtio_ccw_int_han=
-dler(), a per
-> > > > > > > > > > device spinlock for irq is introduced ans used in the s=
-ynchronization
-> > > > > > > > > > method.
-> > > > > > > > > >
-> > > > > > > > > > Cc: Thomas Gleixner <tglx@linutronix.de>
-> > > > > > > > > > Cc: Peter Zijlstra <peterz@infradead.org>
-> > > > > > > > > > Cc: "Paul E. McKenney" <paulmck@kernel.org>
-> > > > > > > > > > Cc: Marc Zyngier <maz@kernel.org>
-> > > > > > > > > > Cc: Halil Pasic <pasic@linux.ibm.com>
-> > > > > > > > > > Cc: Cornelia Huck <cohuck@redhat.com>
-> > > > > > > > > > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > > > > > > > >
-> > > > > > > > > This is the only one that is giving me pause. Halil, Corn=
-elia,
-> > > > > > > > > should we be concerned about the performance impact here?
-> > > > > > > > > Any chance it can be tested?
-> > > > > > > > We can have a bunch of devices using the same airq structur=
-e, and the
-> > > > > > > > sync cb creates a choke point, same as registering/unregist=
-ering.
-> > > > > > > BTW can callbacks for multiple VQs run on multiple CPUs at th=
-e moment?
-> > > > > > I'm not sure I understand the question.
-> > > > > >
-> > > > > > I do think we can have multiple CPUs that are executing some po=
-rtion of
-> > > > > > virtio_ccw_int_handler(). So I guess the answer is yes. Connie =
-what do you think?
-> > > > > >
-> > > > > > On the other hand we could also end up serializing synchronize_=
-cbs()
-> > > > > > calls for different devices if they happen to use the same airq=
-_info. But
-> > > > > > this probably was not your question
-> > > > >
-> > > > > I am less concerned about  synchronize_cbs being slow and more ab=
-out
-> > > > > the slowdown in interrupt processing itself.
-> > > > >
-> > > > > > > this patch serializes them on a spinlock.
-> > > > > > >
-> > > > > > Those could then pile up on the newly introduced spinlock.
-> > > > > >
-> > > > > > Regards,
-> > > > > > Halil
-> > > > > Hmm yea ... not good.
-> > > > Is there any other way to synchronize with all callbacks?
-> > >
-> > >
-> > > Maybe using rwlock as airq handler?
-> > >
-> > > Thanks
-> > >
-> >
-> > rwlock is still a shared cacheline bouncing between CPUs and
-> > a bunch of ordering instructions.
+On Thu, Apr 21, 2022 at 04:07:35PM +0200, Benjamin Tissoires wrote:
+> When a kfunc is not returning a pointer to a struct but to a plain type,
+> check if one of the arguments is called __sz and is a const from the
+> caller, and use this as the size of the allocated memory.
+> 
+> For tracing programs, we consider the provided memory to be read only
+> unless the program is BPF_MODIFY_RETURN.
+> 
+> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+> 
+> ---
+> 
+> new in v4
+> ---
+>  include/linux/btf.h   |  6 ++++
+>  kernel/bpf/btf.c      | 31 ++++++++++++++++----
+>  kernel/bpf/verifier.c | 66 +++++++++++++++++++++++++++++++++----------
+>  3 files changed, 83 insertions(+), 20 deletions(-)
+> 
+> diff --git a/include/linux/btf.h b/include/linux/btf.h
+> index 36bc09b8e890..76a3ff48ae2a 100644
+> --- a/include/linux/btf.h
+> +++ b/include/linux/btf.h
+> @@ -332,6 +332,12 @@ static inline struct btf_param *btf_params(const struct btf_type *t)
+>  	return (struct btf_param *)(t + 1);
+>  }
+>  
+> +struct bpf_reg_state;
+> +
+> +bool btf_is_kfunc_arg_mem_size(const struct btf *btf,
+> +			       const struct btf_param *arg,
+> +			       const struct bpf_reg_state *reg);
+> +
+>  #ifdef CONFIG_BPF_SYSCALL
+>  struct bpf_prog;
+>  
+> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+> index 76318a4c2d0e..22e6e3cdc7ee 100644
+> --- a/kernel/bpf/btf.c
+> +++ b/kernel/bpf/btf.c
+> @@ -5851,9 +5851,9 @@ static bool __btf_type_is_scalar_struct(struct bpf_verifier_log *log,
+>  	return true;
+>  }
+>  
+> -static bool is_kfunc_arg_mem_size(const struct btf *btf,
+> -				  const struct btf_param *arg,
+> -				  const struct bpf_reg_state *reg)
+> +bool btf_is_kfunc_arg_mem_size(const struct btf *btf,
+> +			       const struct btf_param *arg,
+> +			       const struct bpf_reg_state *reg)
+>  {
+>  	int len, sfx_len = sizeof("__sz") - 1;
+>  	const struct btf_type *t;
+> @@ -5976,7 +5976,7 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
+>  				reg_btf = reg->btf;
+>  				reg_ref_id = reg->btf_id;
+>  				/* Ensure only one argument is referenced
+> -				 * PTR_TO_BTF_ID, check_func_arg_reg_off relies
+> +				 * PTR_TO_BTF_ID or PTR_TO_MEM, check_func_arg_reg_off relies
+>  				 * on only one referenced register being allowed
+>  				 * for kfuncs.
+>  				 */
+> @@ -6012,7 +6012,10 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
+>  			u32 type_size;
+>  
+>  			if (is_kfunc) {
+> -				bool arg_mem_size = i + 1 < nargs && is_kfunc_arg_mem_size(btf, &args[i + 1], &regs[regno + 1]);
+> +				bool arg_mem_size = i + 1 < nargs &&
+> +						    btf_is_kfunc_arg_mem_size(btf,
+> +									      &args[i + 1],
+> +									      &regs[regno + 1]);
 
-Yes, but it should be faster than spinlocks anyhow.
+bpf allows ~100 chars. No need to break the line so much.
 
-> > Maybe something per-cpu + some IPIs to run things on all CPUs instead?
+>  
+>  				/* Permit pointer to mem, but only when argument
+>  				 * type is pointer to scalar, or struct composed
+> @@ -6039,6 +6042,24 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
+>  					i++;
+>  					continue;
+>  				}
+> +
+> +				if (rel && reg->ref_obj_id) {
+> +					/* Ensure only one argument is referenced
+> +					 * PTR_TO_BTF_ID or PTR_TO_MEM, check_func_arg_reg_off
+> +					 * relies on only one referenced register being allowed
+> +					 * for kfuncs.
+> +					 */
+> +					if (ref_obj_id) {
+> +						bpf_log(log,
+> +							"verifier internal error: more than one arg with ref_obj_id R%d %u %u\n",
+> +							regno,
+> +							reg->ref_obj_id,
+> +							ref_obj_id);
+> +						return -EFAULT;
+> +					}
+> +					ref_regno = regno;
+> +					ref_obj_id = reg->ref_obj_id;
+> +				}
+>  			}
+>  
+>  			resolve_ret = btf_resolve_size(btf, ref_t, &type_size);
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 71827d14724a..0f339f9058f3 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -6974,7 +6974,9 @@ static int check_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
+>  	int err, insn_idx = *insn_idx_p;
+>  	const struct btf_param *args;
+>  	struct btf *desc_btf;
+> +	enum bpf_prog_type prog_type = resolve_prog_type(env->prog);
+>  	bool acq;
+> +	size_t reg_size = 0;
+>  
+>  	/* skip for now, but return error when we find this in fixup_kfunc_call */
+>  	if (!insn->imm)
+> @@ -7015,8 +7017,8 @@ static int check_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
+>  		}
+>  	}
+>  
+> -	for (i = 0; i < CALLER_SAVED_REGS; i++)
+> -		mark_reg_not_init(env, regs, caller_saved[i]);
+> +	/* reset REG_0 */
+> +	mark_reg_not_init(env, regs, BPF_REG_0);
+>  
+>  	/* Check return type */
+>  	t = btf_type_skip_modifiers(desc_btf, func_proto->type, NULL);
+> @@ -7026,6 +7028,9 @@ static int check_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
+>  		return -EINVAL;
+>  	}
+>  
+> +	nargs = btf_type_vlen(func_proto);
+> +	args = btf_params(func_proto);
+> +
+>  	if (btf_type_is_scalar(t)) {
+>  		mark_reg_unknown(env, regs, BPF_REG_0);
+>  		mark_btf_func_reg_size(env, BPF_REG_0, t->size);
+> @@ -7033,24 +7038,54 @@ static int check_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
+>  		ptr_type = btf_type_skip_modifiers(desc_btf, t->type,
+>  						   &ptr_type_id);
+>  		if (!btf_type_is_struct(ptr_type)) {
+> -			ptr_type_name = btf_name_by_offset(desc_btf,
+> -							   ptr_type->name_off);
+> -			verbose(env, "kernel function %s returns pointer type %s %s is not supported\n",
+> -				func_name, btf_type_str(ptr_type),
+> -				ptr_type_name);
+> -			return -EINVAL;
+> +			/* if we have an array, we must have a const argument named "__sz" */
+> +			for (i = 0; i < nargs; i++) {
+> +				u32 regno = i + BPF_REG_1;
+> +				struct bpf_reg_state *reg = &regs[regno];
+> +
+> +				/* look for any const scalar parameter of name "__sz" */
+> +				if (!check_reg_arg(env, regno, SRC_OP) &&
+> +				    tnum_is_const(regs[regno].var_off) &&
+> +				    btf_is_kfunc_arg_mem_size(desc_btf, &args[i], reg))
+> +					reg_size = regs[regno].var_off.value;
+> +			}
+> +
+> +			if (!reg_size) {
+> +				ptr_type_name = btf_name_by_offset(desc_btf,
+> +								   ptr_type->name_off);
+> +				verbose(env,
+> +					"kernel function %s returns pointer type %s %s is not supported\n",
+> +					func_name,
+> +					btf_type_str(ptr_type),
+> +					ptr_type_name);
+> +				return -EINVAL;
+> +			}
+> +
+> +			mark_reg_known_zero(env, regs, BPF_REG_0);
+> +			regs[BPF_REG_0].type = PTR_TO_MEM;
+> +			regs[BPF_REG_0].mem_size = reg_size;
+> +
+> +			/* in case of tracing, only allow write access to
+> +			 * BPF_MODIFY_RETURN programs
+> +			 */
+> +			if (prog_type == BPF_PROG_TYPE_TRACING &&
+> +			    env->prog->expected_attach_type != BPF_MODIFY_RETURN)
+> +				regs[BPF_REG_0].type |= MEM_RDONLY;
 
-Is this something like a customized version of synchronzie_rcu_expedited()?
-
->
-> ... and I think classic and device interrupts are different enough
-> here ...
-
-Yes.
-
-Thanks
-
->
-> > > >
-> > > > > --
-> > > > > MST
->
-
+MOD_RET restriction looks artificial.
+We can distinguish readonly vs writeable PTR_TO_MEM based on
+another naming convention.
+Currently arg_name__sz applies to the previous argument.
+Matching suffix made sense there.
+Reusing the same suffix matching for a different purpose could be confusing.
+For this use case we may reserve a full argument name.
+Like "rdonly_buf_size" and "rdwr_buf_size" ?
