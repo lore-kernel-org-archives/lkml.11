@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E16BAC35280
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:27:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE9DAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:27:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347619AbiDZJ2M (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:28:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36992 "EHLO
+        id S236473AbiDZJam (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:30:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347281AbiDZJFY (ORCPT
+        with ESMTP id S1347745AbiDZJGH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:05:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EA7B10AE07;
-        Tue, 26 Apr 2022 01:44:19 -0700 (PDT)
+        Tue, 26 Apr 2022 05:06:07 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2B63218B;
+        Tue, 26 Apr 2022 01:45:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EE745B81CF2;
-        Tue, 26 Apr 2022 08:44:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5103AC385A0;
-        Tue, 26 Apr 2022 08:44:16 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 45963CE1BAF;
+        Tue, 26 Apr 2022 08:45:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04614C385AE;
+        Tue, 26 Apr 2022 08:45:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962656;
-        bh=tkS3gKgva/XIqZkE+JFNTwrjyxtyCeez1zb6zWntjpk=;
+        s=korg; t=1650962730;
+        bh=td2dPsECXqyRY/ABkxSK/V+113r84hWAnEKvyOEtiLI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pMDNDCpnCkQKwpSi0dh1OGxbx6IQ24/y1jH8ClKpcr/6V5c2w/KnHYPDT0tGJH+K3
-         vSd+oXxK+bWOnVvX7iC97YeA99jFMDtnhWurdscHxQwJ378JDIxJSDpMXOmQ9Bi31s
-         GMVoZ5oaxY8UvgLAz1mNR6LHcgsRzFzNrIdPjr0c=
+        b=njulX8p5PokXdxy3+bXIuItF9EtnDLgZmiqpaJ6zvXe6pNnjLG17bK9ux5Oi60XSL
+         veqBsLqO+rEkjj9d9mWfgEVd1hepuCpI2ih15RjgZKuTNAxpmx346lzwVKhNZaHCHz
+         DxTrjfPN45ZRvxYvN8+5iB/H8HI46U9ik3NhsnQY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Jouni=20H=C3=B6gander?= <jouni.hogander@intel.com>,
-        =?UTF-8?q?Jos=C3=A9=20Roberto=20de=20Souza?= <jose.souza@intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Igor Russkikh <irusskikh@marvell.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 044/146] drm/i915/display/psr: Unset enable_psr2_sel_fetch if other checks in intel_psr2_config_valid() fails
-Date:   Tue, 26 Apr 2022 10:20:39 +0200
-Message-Id: <20220426081751.309180604@linuxfoundation.org>
+Subject: [PATCH 5.17 071/146] net: atlantic: Avoid out-of-bounds indexing
+Date:   Tue, 26 Apr 2022 10:21:06 +0200
+Message-Id: <20220426081752.058153194@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -52,101 +52,125 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: José Roberto de Souza <jose.souza@intel.com>
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
-[ Upstream commit bb02330408a7bde33b5f46aa14fd5d7bfe6093b7 ]
+[ Upstream commit 8d3a6c37d50d5a0504c126c932cc749e6dd9c78f ]
 
-If any of the PSR2 checks after intel_psr2_sel_fetch_config_valid()
-fails, enable_psr2_sel_fetch will be kept enabled causing problems
-in the functions that only checks for it and not for has_psr2.
+UBSAN warnings are observed on atlantic driver:
+[ 294.432996] UBSAN: array-index-out-of-bounds in /build/linux-Qow4fL/linux-5.15.0/drivers/net/ethernet/aquantia/atlantic/aq_nic.c:484:48
+[ 294.433695] index 8 is out of range for type 'aq_vec_s *[8]'
 
-So here moving the check that do not depend on enable_psr2_sel_fetch
-and for the remaning ones jumping to a section that unset
-enable_psr2_sel_fetch in case of failure to support PSR2.
+The ring is dereferenced right before breaking out the loop, to prevent
+that from happening, only use the index in the loop to fix the issue.
 
-Fixes: 6e43e276b8c9 ("drm/i915: Initial implementation of PSR2 selective fetch")
-Cc: Jouni Högander <jouni.hogander@intel.com>
-Reviewed-by: Jouni Högander <jouni.hogander@intel.com>
-Signed-off-by: José Roberto de Souza <jose.souza@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220414151118.21980-1-jose.souza@intel.com
-(cherry picked from commit 554ae8dce1268789e72767a67f0635cb743b3cea)
-Signed-off-by: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+BugLink: https://bugs.launchpad.net/bugs/1958770
+Tested-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Reviewed-by: Igor Russkikh <irusskikh@marvell.com>
+Link: https://lore.kernel.org/r/20220408022204.16815-1-kai.heng.feng@canonical.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/i915/display/intel_psr.c | 38 +++++++++++++-----------
- 1 file changed, 21 insertions(+), 17 deletions(-)
+ .../net/ethernet/aquantia/atlantic/aq_nic.c   |  8 +++----
+ .../net/ethernet/aquantia/atlantic/aq_vec.c   | 24 +++++++++----------
+ 2 files changed, 16 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/display/intel_psr.c b/drivers/gpu/drm/i915/display/intel_psr.c
-index b00de57cc957..cd32e1470b3c 100644
---- a/drivers/gpu/drm/i915/display/intel_psr.c
-+++ b/drivers/gpu/drm/i915/display/intel_psr.c
-@@ -887,6 +887,20 @@ static bool intel_psr2_config_valid(struct intel_dp *intel_dp,
- 		return false;
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
+index 33f1a1377588..24d715c28a35 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
+@@ -486,8 +486,8 @@ int aq_nic_start(struct aq_nic_s *self)
+ 	if (err < 0)
+ 		goto err_exit;
+ 
+-	for (i = 0U, aq_vec = self->aq_vec[0];
+-		self->aq_vecs > i; ++i, aq_vec = self->aq_vec[i]) {
++	for (i = 0U; self->aq_vecs > i; ++i) {
++		aq_vec = self->aq_vec[i];
+ 		err = aq_vec_start(aq_vec);
+ 		if (err < 0)
+ 			goto err_exit;
+@@ -517,8 +517,8 @@ int aq_nic_start(struct aq_nic_s *self)
+ 		mod_timer(&self->polling_timer, jiffies +
+ 			  AQ_CFG_POLLING_TIMER_INTERVAL);
+ 	} else {
+-		for (i = 0U, aq_vec = self->aq_vec[0];
+-			self->aq_vecs > i; ++i, aq_vec = self->aq_vec[i]) {
++		for (i = 0U; self->aq_vecs > i; ++i) {
++			aq_vec = self->aq_vec[i];
+ 			err = aq_pci_func_alloc_irq(self, i, self->ndev->name,
+ 						    aq_vec_isr, aq_vec,
+ 						    aq_vec_get_affinity_mask(aq_vec));
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_vec.c b/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
+index f4774cf051c9..6ab1f3212d24 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
+@@ -43,8 +43,8 @@ static int aq_vec_poll(struct napi_struct *napi, int budget)
+ 	if (!self) {
+ 		err = -EINVAL;
+ 	} else {
+-		for (i = 0U, ring = self->ring[0];
+-			self->tx_rings > i; ++i, ring = self->ring[i]) {
++		for (i = 0U; self->tx_rings > i; ++i) {
++			ring = self->ring[i];
+ 			u64_stats_update_begin(&ring[AQ_VEC_RX_ID].stats.rx.syncp);
+ 			ring[AQ_VEC_RX_ID].stats.rx.polls++;
+ 			u64_stats_update_end(&ring[AQ_VEC_RX_ID].stats.rx.syncp);
+@@ -182,8 +182,8 @@ int aq_vec_init(struct aq_vec_s *self, const struct aq_hw_ops *aq_hw_ops,
+ 	self->aq_hw_ops = aq_hw_ops;
+ 	self->aq_hw = aq_hw;
+ 
+-	for (i = 0U, ring = self->ring[0];
+-		self->tx_rings > i; ++i, ring = self->ring[i]) {
++	for (i = 0U; self->tx_rings > i; ++i) {
++		ring = self->ring[i];
+ 		err = aq_ring_init(&ring[AQ_VEC_TX_ID], ATL_RING_TX);
+ 		if (err < 0)
+ 			goto err_exit;
+@@ -224,8 +224,8 @@ int aq_vec_start(struct aq_vec_s *self)
+ 	unsigned int i = 0U;
+ 	int err = 0;
+ 
+-	for (i = 0U, ring = self->ring[0];
+-		self->tx_rings > i; ++i, ring = self->ring[i]) {
++	for (i = 0U; self->tx_rings > i; ++i) {
++		ring = self->ring[i];
+ 		err = self->aq_hw_ops->hw_ring_tx_start(self->aq_hw,
+ 							&ring[AQ_VEC_TX_ID]);
+ 		if (err < 0)
+@@ -248,8 +248,8 @@ void aq_vec_stop(struct aq_vec_s *self)
+ 	struct aq_ring_s *ring = NULL;
+ 	unsigned int i = 0U;
+ 
+-	for (i = 0U, ring = self->ring[0];
+-		self->tx_rings > i; ++i, ring = self->ring[i]) {
++	for (i = 0U; self->tx_rings > i; ++i) {
++		ring = self->ring[i];
+ 		self->aq_hw_ops->hw_ring_tx_stop(self->aq_hw,
+ 						 &ring[AQ_VEC_TX_ID]);
+ 
+@@ -268,8 +268,8 @@ void aq_vec_deinit(struct aq_vec_s *self)
+ 	if (!self)
+ 		goto err_exit;
+ 
+-	for (i = 0U, ring = self->ring[0];
+-		self->tx_rings > i; ++i, ring = self->ring[i]) {
++	for (i = 0U; self->tx_rings > i; ++i) {
++		ring = self->ring[i];
+ 		aq_ring_tx_clean(&ring[AQ_VEC_TX_ID]);
+ 		aq_ring_rx_deinit(&ring[AQ_VEC_RX_ID]);
  	}
+@@ -297,8 +297,8 @@ void aq_vec_ring_free(struct aq_vec_s *self)
+ 	if (!self)
+ 		goto err_exit;
  
-+	/* Wa_16011303918:adl-p */
-+	if (crtc_state->vrr.enable &&
-+	    IS_ADLP_DISPLAY_STEP(dev_priv, STEP_A0, STEP_B0)) {
-+		drm_dbg_kms(&dev_priv->drm,
-+			    "PSR2 not enabled, not compatible with HW stepping + VRR\n");
-+		return false;
-+	}
-+
-+	if (!_compute_psr2_sdp_prior_scanline_indication(intel_dp, crtc_state)) {
-+		drm_dbg_kms(&dev_priv->drm,
-+			    "PSR2 not enabled, PSR2 SDP indication do not fit in hblank\n");
-+		return false;
-+	}
-+
- 	if (HAS_PSR2_SEL_FETCH(dev_priv)) {
- 		if (!intel_psr2_sel_fetch_config_valid(intel_dp, crtc_state) &&
- 		    !HAS_PSR_HW_TRACKING(dev_priv)) {
-@@ -900,12 +914,12 @@ static bool intel_psr2_config_valid(struct intel_dp *intel_dp,
- 	if (!crtc_state->enable_psr2_sel_fetch &&
- 	    IS_TGL_DISPLAY_STEP(dev_priv, STEP_A0, STEP_C0)) {
- 		drm_dbg_kms(&dev_priv->drm, "PSR2 HW tracking is not supported this Display stepping\n");
--		return false;
-+		goto unsupported;
- 	}
- 
- 	if (!psr2_granularity_check(intel_dp, crtc_state)) {
- 		drm_dbg_kms(&dev_priv->drm, "PSR2 not enabled, SU granularity not compatible\n");
--		return false;
-+		goto unsupported;
- 	}
- 
- 	if (!crtc_state->enable_psr2_sel_fetch &&
-@@ -914,25 +928,15 @@ static bool intel_psr2_config_valid(struct intel_dp *intel_dp,
- 			    "PSR2 not enabled, resolution %dx%d > max supported %dx%d\n",
- 			    crtc_hdisplay, crtc_vdisplay,
- 			    psr_max_h, psr_max_v);
--		return false;
--	}
--
--	if (!_compute_psr2_sdp_prior_scanline_indication(intel_dp, crtc_state)) {
--		drm_dbg_kms(&dev_priv->drm,
--			    "PSR2 not enabled, PSR2 SDP indication do not fit in hblank\n");
--		return false;
--	}
--
--	/* Wa_16011303918:adl-p */
--	if (crtc_state->vrr.enable &&
--	    IS_ADLP_DISPLAY_STEP(dev_priv, STEP_A0, STEP_B0)) {
--		drm_dbg_kms(&dev_priv->drm,
--			    "PSR2 not enabled, not compatible with HW stepping + VRR\n");
--		return false;
-+		goto unsupported;
- 	}
- 
- 	tgl_dc3co_exitline_compute_config(intel_dp, crtc_state);
- 	return true;
-+
-+unsupported:
-+	crtc_state->enable_psr2_sel_fetch = false;
-+	return false;
- }
- 
- void intel_psr_compute_config(struct intel_dp *intel_dp,
+-	for (i = 0U, ring = self->ring[0];
+-		self->tx_rings > i; ++i, ring = self->ring[i]) {
++	for (i = 0U; self->tx_rings > i; ++i) {
++		ring = self->ring[i];
+ 		aq_ring_free(&ring[AQ_VEC_TX_ID]);
+ 		if (i < self->rx_rings)
+ 			aq_ring_free(&ring[AQ_VEC_RX_ID]);
 -- 
 2.35.1
 
