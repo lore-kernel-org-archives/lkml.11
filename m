@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F37DC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 677BBC3527A
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:58:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346835AbiDZJBS (ORCPT
+        id S1346866AbiDZJBY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:01:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56526 "EHLO
+        Tue, 26 Apr 2022 05:01:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346885AbiDZIp2 (ORCPT
+        with ESMTP id S1346906AbiDZIp3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:45:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89FE864C4;
-        Tue, 26 Apr 2022 01:36:12 -0700 (PDT)
+        Tue, 26 Apr 2022 04:45:29 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16EDCE0F1;
+        Tue, 26 Apr 2022 01:36:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 268D36185C;
-        Tue, 26 Apr 2022 08:36:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31A29C385AC;
-        Tue, 26 Apr 2022 08:36:10 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 781CDCE1BB4;
+        Tue, 26 Apr 2022 08:36:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5029EC385A4;
+        Tue, 26 Apr 2022 08:36:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962171;
-        bh=v3d3wJ8d7he5GKQ/gI1Bji2FZeuuYgCu3YXM/O7M85o=;
+        s=korg; t=1650962189;
+        bh=e766lgzO81TnmAlucJg6mez/beyPjY8tXcsTVqwGVK4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iZpMRm+XASXQLK8kknecqQh5UBTZv9hmoacSUtjMoDJ5Uy7vuCY6c29Lflsq+Uq5+
-         ORO/XkoHGXODm93GQLtcuS7hIXUSFItd59X4yIOm2Ae2Us1ySIxNFkNJrON+OTXMhY
-         L6J3w/RixkjbOwl2pp4g5dqKw0//668cdF8S8Pgk=
+        b=WqpxVZqq+4ufpNlFMs5aFqz9j0Z2YvXm/3saL8VkkIJwktRY62D6VTjfQ+3nM1sI8
+         bDx4a4OVVWKwnbJxFO0nimRC+pUWTkBNM8nsTpwpOci0eS4NN0+UJ63y0BnYrctcUF
+         X8vO2g4FgOTHCpKZOQ4kn8uiQYBfsB1idsqPhERY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 5.15 010/124] perf tools: Fix segfault accessing sample_id xyarray
-Date:   Tue, 26 Apr 2022 10:20:11 +0200
-Message-Id: <20220426081747.590453260@linuxfoundation.org>
+        stable@vger.kernel.org, Tim Crawford <tcrawford@system76.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.15 016/124] ALSA: hda/realtek: Add quirk for Clevo NP70PNP
+Date:   Tue, 26 Apr 2022 10:20:17 +0200
+Message-Id: <20220426081747.763965949@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -50,64 +49,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adrian Hunter <adrian.hunter@intel.com>
+From: Tim Crawford <tcrawford@system76.com>
 
-commit a668cc07f990d2ed19424d5c1a529521a9d1cee1 upstream.
+commit 86222af07abf1f5f07a5873cc399c29ab8a9b8b8 upstream.
 
-perf_evsel::sample_id is an xyarray which can cause a segfault when
-accessed beyond its size. e.g.
+Fixes headset detection on Clevo NP70PNP.
 
-  # perf record -e intel_pt// -C 1 sleep 1
-  Segmentation fault (core dumped)
-  #
-
-That is happening because a dummy event is opened to capture text poke
-events accross all CPUs, however the mmap logic is allocating according
-to the number of user_requested_cpus.
-
-In general, perf sometimes uses the evsel cpus to open events, and
-sometimes the evlist user_requested_cpus. However, it is not necessary
-to determine which case is which because the opened event file
-descriptors are also in an xyarray, the size of whch can be used
-to correctly allocate the size of the sample_id xyarray, because there
-is one ID per file descriptor.
-
-Note, in the affected code path, perf_evsel fd array is subsequently
-used to get the file descriptor for the mmap, so it makes sense for the
-xyarrays to be the same size there.
-
-Fixes: d1a177595b3a824c ("libperf: Adopt perf_evlist__mmap()/munmap() from tools/perf")
-Fixes: 246eba8e9041c477 ("perf tools: Add support for PERF_RECORD_TEXT_POKE")
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-Acked-by: Ian Rogers <irogers@google.com>
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: stable@vger.kernel.org # 5.5+
-Link: https://lore.kernel.org/r/20220413114232.26914-1-adrian.hunter@intel.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Tim Crawford <tcrawford@system76.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220421170412.3697-1-tcrawford@system76.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/lib/perf/evlist.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/tools/lib/perf/evlist.c
-+++ b/tools/lib/perf/evlist.c
-@@ -577,7 +577,6 @@ int perf_evlist__mmap_ops(struct perf_ev
- {
- 	struct perf_evsel *evsel;
- 	const struct perf_cpu_map *cpus = evlist->cpus;
--	const struct perf_thread_map *threads = evlist->threads;
- 
- 	if (!ops || !ops->get || !ops->mmap)
- 		return -EINVAL;
-@@ -589,7 +588,7 @@ int perf_evlist__mmap_ops(struct perf_ev
- 	perf_evlist__for_each_entry(evlist, evsel) {
- 		if ((evsel->attr.read_format & PERF_FORMAT_ID) &&
- 		    evsel->sample_id == NULL &&
--		    perf_evsel__alloc_id(evsel, perf_cpu_map__nr(cpus), threads->nr) < 0)
-+		    perf_evsel__alloc_id(evsel, evsel->fd->max_x, evsel->fd->max_y) < 0)
- 			return -ENOMEM;
- 	}
- 
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -8962,6 +8962,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x1558, 0x8562, "Clevo NH[57][0-9]RZ[Q]", ALC269_FIXUP_DMIC),
+ 	SND_PCI_QUIRK(0x1558, 0x8668, "Clevo NP50B[BE]", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x866d, "Clevo NP5[05]PN[HJK]", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
++	SND_PCI_QUIRK(0x1558, 0x867c, "Clevo NP7[01]PNP", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x867d, "Clevo NP7[01]PN[HJK]", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x8680, "Clevo NJ50LU", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x8686, "Clevo NH50[CZ]U", ALC256_FIXUP_MIC_NO_PRESENCE_AND_RESUME),
 
 
