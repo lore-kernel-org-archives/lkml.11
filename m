@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B03B2C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2F82C41535
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:27:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347983AbiDZJaA (ORCPT
+        id S1348067AbiDZJa2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:30:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48190 "EHLO
+        Tue, 26 Apr 2022 05:30:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347612AbiDZJF7 (ORCPT
+        with ESMTP id S1347691AbiDZJGD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:05:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54BEC6249;
-        Tue, 26 Apr 2022 01:45:06 -0700 (PDT)
+        Tue, 26 Apr 2022 05:06:03 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A361015CEF0;
+        Tue, 26 Apr 2022 01:45:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0311BB81C76;
-        Tue, 26 Apr 2022 08:45:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AC83C385A4;
-        Tue, 26 Apr 2022 08:45:03 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 1FBE5CE1BDD;
+        Tue, 26 Apr 2022 08:45:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1355CC385AC;
+        Tue, 26 Apr 2022 08:45:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962703;
-        bh=im8fWudeT1VX4m99OVKg5QRNtoJ3f+uKLxsKH0N9C7k=;
+        s=korg; t=1650962721;
+        bh=f78a7N9udEO6WWX9YD5+pQYN4AKP3qbQWx0V0kl2zAQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cTIrFkF+oED7i97icZ3YEBWZi+9l2gpw9vNei5LSrfTJl81IVeb1nflGCgy5aU5k1
-         /JEYfqaA8hmiDAvpxPBtsnGh4wIi+TRPvrqmZeBe/y8u3EEmPzeb++78E4c03llHgd
-         AmVsFnBulr2v/T4bIZQ1EIfzZvB9JoAvxbdBHf4E=
+        b=Qy1m4J1HSHF/LlDtOwf2zkHenCBU5tcV0u0ow2UsozBV5DohWUCXFbT/PWL6iKV6Y
+         FNSahZNZ8hVNsn3yLi7HP00xdHS0YQfrPdUYFkfHrn+WIUaC5Dq4Aib4jTLHlNvePJ
+         oy7f0uYqbTe3zuP4VqfiV0GI6aheLDDS7PXj7avE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Richard Fitzgerald <rf@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 021/146] firmware: cs_dsp: Fix overrun of unterminated control name string
-Date:   Tue, 26 Apr 2022 10:20:16 +0200
-Message-Id: <20220426081750.660475827@linuxfoundation.org>
+        stable@vger.kernel.org, Rob Herring <robh@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 068/146] arm64: dts: imx: Fix imx8*-var-som touchscreen property sizes
+Date:   Tue, 26 Apr 2022 10:21:03 +0200
+Message-Id: <20220426081751.975523867@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -51,42 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Richard Fitzgerald <rf@opensource.cirrus.com>
+From: Rob Herring <robh@kernel.org>
 
-[ Upstream commit 5b933c7262c5b0ea11ea3c3b3ea81add04895954 ]
+[ Upstream commit 1bc12d301594eafde0a8529d28d459af81053b3a ]
 
-For wmfw format v2 and later the coefficient name strings have a length
-field and are NOT null-terminated. Use kasprintf() to convert the
-unterminated string into a null-terminated string in an allocated buffer.
+The common touchscreen properties are all 32-bit, not 16-bit. These
+properties must not be too important as they are all ignored in case of an
+error reading them.
 
-The previous code handled this duplication incorrectly using kmemdup()
-and getting the length from a strlen() of the (unterminated) source string.
-This resulted in creating a string that continued up to the next byte in
-the firmware file that just happened to be 0x00.
-
-Signed-off-by: Richard Fitzgerald <rf@opensource.cirrus.com>
-Fixes: f6bc909e7673 ("firmware: cs_dsp: add driver to support firmware loading on Cirrus Logic DSPs")
-Link: https://lore.kernel.org/r/20220412163927.1303470-1-rf@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/r/Yk3moe6Hz8ELM0iS@robh.at.kernel.org'
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/cirrus/cs_dsp.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ arch/arm64/boot/dts/freescale/imx8mm-var-som.dtsi | 8 ++++----
+ arch/arm64/boot/dts/freescale/imx8mn-var-som.dtsi | 8 ++++----
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/firmware/cirrus/cs_dsp.c b/drivers/firmware/cirrus/cs_dsp.c
-index e48108e694f8..7dad6f57d970 100644
---- a/drivers/firmware/cirrus/cs_dsp.c
-+++ b/drivers/firmware/cirrus/cs_dsp.c
-@@ -955,8 +955,7 @@ static int cs_dsp_create_control(struct cs_dsp *dsp,
- 	ctl->alg_region = *alg_region;
- 	if (subname && dsp->fw_ver >= 2) {
- 		ctl->subname_len = subname_len;
--		ctl->subname = kmemdup(subname,
--				       strlen(subname) + 1, GFP_KERNEL);
-+		ctl->subname = kasprintf(GFP_KERNEL, "%.*s", subname_len, subname);
- 		if (!ctl->subname) {
- 			ret = -ENOMEM;
- 			goto err_ctl;
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-var-som.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-var-som.dtsi
+index 1dc9d187601c..a0bd540f27d3 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-var-som.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mm-var-som.dtsi
+@@ -89,12 +89,12 @@
+ 		pendown-gpio = <&gpio1 3 GPIO_ACTIVE_LOW>;
+ 
+ 		ti,x-min = /bits/ 16 <125>;
+-		touchscreen-size-x = /bits/ 16 <4008>;
++		touchscreen-size-x = <4008>;
+ 		ti,y-min = /bits/ 16 <282>;
+-		touchscreen-size-y = /bits/ 16 <3864>;
++		touchscreen-size-y = <3864>;
+ 		ti,x-plate-ohms = /bits/ 16 <180>;
+-		touchscreen-max-pressure = /bits/ 16 <255>;
+-		touchscreen-average-samples = /bits/ 16 <10>;
++		touchscreen-max-pressure = <255>;
++		touchscreen-average-samples = <10>;
+ 		ti,debounce-tol = /bits/ 16 <3>;
+ 		ti,debounce-rep = /bits/ 16 <1>;
+ 		ti,settle-delay-usec = /bits/ 16 <150>;
+diff --git a/arch/arm64/boot/dts/freescale/imx8mn-var-som.dtsi b/arch/arm64/boot/dts/freescale/imx8mn-var-som.dtsi
+index b16c7caf34c1..87b5e23c766f 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mn-var-som.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mn-var-som.dtsi
+@@ -70,12 +70,12 @@
+ 		pendown-gpio = <&gpio1 3 GPIO_ACTIVE_LOW>;
+ 
+ 		ti,x-min = /bits/ 16 <125>;
+-		touchscreen-size-x = /bits/ 16 <4008>;
++		touchscreen-size-x = <4008>;
+ 		ti,y-min = /bits/ 16 <282>;
+-		touchscreen-size-y = /bits/ 16 <3864>;
++		touchscreen-size-y = <3864>;
+ 		ti,x-plate-ohms = /bits/ 16 <180>;
+-		touchscreen-max-pressure = /bits/ 16 <255>;
+-		touchscreen-average-samples = /bits/ 16 <10>;
++		touchscreen-max-pressure = <255>;
++		touchscreen-average-samples = <10>;
+ 		ti,debounce-tol = /bits/ 16 <3>;
+ 		ti,debounce-rep = /bits/ 16 <1>;
+ 		ti,settle-delay-usec = /bits/ 16 <150>;
 -- 
 2.35.1
 
