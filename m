@@ -2,134 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EC31C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:04:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8FDEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:06:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352804AbiDZQHn (ORCPT
+        id S1352805AbiDZQJ3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 12:07:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53582 "EHLO
+        Tue, 26 Apr 2022 12:09:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352785AbiDZQHh (ORCPT
+        with ESMTP id S236812AbiDZQJZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 12:07:37 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 628A943AEC;
-        Tue, 26 Apr 2022 09:04:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650989069; x=1682525069;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=mqAl6GT0VmvVsoiieDZ39Jw7aD8/OaezIaNnGD3XhX0=;
-  b=GMO1UOVeRGcWOBPOqi9WE+zgHoHJ00CpBAOhk9YQz6058jmtQFgSYMGZ
-   dmj1n46ybuG9MpzY8CjVdad1VCHzU25GIK1E33D3Iq9/AIpOMMTfMdTXd
-   vOzmqWaAoMnYBwc9cLkli97tTmUZFH/fGljD3CVvzzIX2nQtuy7iiF2Z7
-   O9WReeaP38e8j1UGMfcD7BTfqiqmfqMMnFdWp2qEDVdY37A/9adRTTX3s
-   ekVDNAl/0E/87t8JtxcXjJhgr0/eqvynJm9qW1hHIQC7qu8yx8dy6HAiI
-   fjUaHPGHxmH9DnKr3x2DrSbNLj1snwtSbTcHyZ+fSnPf2Lz30GyQELa95
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="328566878"
-X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
-   d="scan'208";a="328566878"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 09:03:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
-   d="scan'208";a="874822226"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 26 Apr 2022 09:03:42 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1njNfC-0003mk-5b;
-        Tue, 26 Apr 2022 16:03:42 +0000
-Date:   Wed, 27 Apr 2022 00:02:57 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Daehwan Jung <dh10.jung@samsung.com>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     kbuild-all@lists.01.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Howard Yen <howardyen@google.com>,
-        Jack Pham <jackp@codeaurora.org>,
-        Puma Hsu <pumahsu@google.com>,
-        "J . Avila" <elavila@google.com>,
-        Daehwan Jung <dh10.jung@samsung.com>, sc.suh@samsung.com,
-        Krzysztof Kozlowski <krzk@kernel.org>
-Subject: Re: [PATCH v4 1/5] usb: host: export symbols for xhci-exynos to use
- xhci hooks
-Message-ID: <202204262306.mzMIKFKO-lkp@intel.com>
-References: <1650964728-175347-2-git-send-email-dh10.jung@samsung.com>
+        Tue, 26 Apr 2022 12:09:25 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA2784579A;
+        Tue, 26 Apr 2022 09:06:16 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 5E74D1F42C72
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1650989172;
+        bh=1wvRqjVZjbReycK48tbxPvly7/Q6yNLcAhf9ITv2WX4=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=YJ+JNryBr+ROkJYtXFkF2H7ftrQmFIYl0D5Zd8CaOOtgTlc4zdhdCLz4PcLX35eWL
+         8LlIMGeCuzRmK5RG257HlotWDGpbNlMgzHXqy4Gw7oR2KBXSx4FjL0HZ3YIys1ZWgK
+         Q+dTEiHDJOhNl85mAePKB3wKTVETMQyV6AfLu9ho/YtTWReGmumRRSbAEB3mvyqvpo
+         uCoHd0koRXgJUNYWwi/WnkHuMMdL0T10+aMc+rxmrEKSI7Yv5UWDJKJ/q/hbVWWu8+
+         6JQq3FJ5jH3QJcgXGiuXkD3MPc1j6lLrdttCq3OL4Tm4RiAX7gUdH+N0e6RPnJfe34
+         BeSwA7WpwmCpg==
+Message-ID: <bad44be8-abc7-169f-bc7a-cef3692c9a71@collabora.com>
+Date:   Tue, 26 Apr 2022 18:06:08 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1650964728-175347-2-git-send-email-dh10.jung@samsung.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v7 2/2] phy: mediatek: Add PCIe PHY driver
+Content-Language: en-US
+To:     Jianjun Wang <jianjun.wang@mediatek.com>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     Wei-Shun Chang <weishunc@google.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rex-bc.chen@mediatek.com, randy.wu@mediatek.com,
+        jieyy.yang@mediatek.com, chuanjia.liu@mediatek.com,
+        qizhong.cheng@mediatek.com, jian.yang@mediatek.com
+References: <20220422142331.17173-1-jianjun.wang@mediatek.com>
+ <20220422142331.17173-3-jianjun.wang@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220422142331.17173-3-jianjun.wang@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daehwan,
+Il 22/04/22 16:23, Jianjun Wang ha scritto:
+> Add PCIe GEN3 PHY driver support on MediaTek chipsets.
+> 
+> Signed-off-by: Jianjun Wang <jianjun.wang@mediatek.com>
 
-Thank you for the patch! Perhaps something to improve:
+Hello Jianjun,
+there's only one last bit to fix, check below:
 
-[auto build test WARNING on usb/usb-testing]
-[also build test WARNING on krzk/for-next char-misc/char-misc-testing v5.18-rc4 next-20220426]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> ---
+>   drivers/phy/mediatek/Kconfig        |  11 ++
+>   drivers/phy/mediatek/Makefile       |   1 +
+>   drivers/phy/mediatek/phy-mtk-pcie.c | 267 ++++++++++++++++++++++++++++
+>   3 files changed, 279 insertions(+)
+>   create mode 100644 drivers/phy/mediatek/phy-mtk-pcie.c
+> 
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Daehwan-Jung/usb-host-export-symbols-for-xhci-exynos-to-use-xhci-hooks/20220426-181936
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git usb-testing
-config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20220426/202204262306.mzMIKFKO-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/05a4937860cedb97b77200b7312a6f009aca2fc6
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Daehwan-Jung/usb-host-export-symbols-for-xhci-exynos-to-use-xhci-hooks/20220426-181936
-        git checkout 05a4937860cedb97b77200b7312a6f009aca2fc6
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash drivers/usb/host/
+..snip..
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> +static int mtk_pcie_read_efuse(struct mtk_pcie_phy *pcie_phy)
+> +{
+> +	struct device *dev = pcie_phy->dev;
+> +	bool nvmem_enabled;
+> +	int ret, i;
+> +
+> +	/* nvmem data is optional */
+> +	nvmem_enabled = device_property_read_bool(dev, "nvmem-cells");
 
-All warnings (new ones prefixed by >>):
+device_property_read_bool() returns device_property_present().
 
-   drivers/usb/host/xhci-mem.c:68:6: warning: no previous prototype for 'xhci_segment_free' [-Wmissing-prototypes]
-      68 | void xhci_segment_free(struct xhci_hcd *xhci, struct xhci_segment *seg)
-         |      ^~~~~~~~~~~~~~~~~
-   drivers/usb/host/xhci-mem.c:100:6: warning: no previous prototype for 'xhci_link_segments' [-Wmissing-prototypes]
-     100 | void xhci_link_segments(struct xhci_segment *prev,
-         |      ^~~~~~~~~~~~~~~~~~
->> drivers/usb/host/xhci-mem.c:261:6: warning: no previous prototype for 'xhci_remove_stream_mapping' [-Wmissing-prototypes]
-     261 | void xhci_remove_stream_mapping(struct xhci_ring *ring)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/usb/host/xhci-mem.c:1974:5: warning: no previous prototype for 'xhci_check_trb_in_td_math' [-Wmissing-prototypes]
-    1974 | int xhci_check_trb_in_td_math(struct xhci_hcd *xhci)
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~~
+I would prefer that, instead, you call the latter:
 
+	nvmem_enabled = device_property_present(dev, "nvmem-cells");
 
-vim +/xhci_remove_stream_mapping +261 drivers/usb/host/xhci-mem.c
+It's the same, yes, but this will increase human readability, as the function
+name clearly states the intention here.
 
-   260	
- > 261	void xhci_remove_stream_mapping(struct xhci_ring *ring)
-   262	{
-   263		struct xhci_segment *seg;
-   264	
-   265		if (WARN_ON_ONCE(ring->trb_address_map == NULL))
-   266			return;
-   267	
-   268		seg = ring->first_seg;
-   269		do {
-   270			xhci_remove_segment_mapping(ring->trb_address_map, seg);
-   271			seg = seg->next;
-   272		} while (seg != ring->first_seg);
-   273	}
-   274	EXPORT_SYMBOL_GPL(xhci_remove_stream_mapping);
-   275	
+Thanks,
+Angelo
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
