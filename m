@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 046AFC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5362DC43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:37:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348135AbiDZJjF (ORCPT
+        id S1348224AbiDZJjR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:39:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38456 "EHLO
+        Tue, 26 Apr 2022 05:39:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346502AbiDZJIX (ORCPT
+        with ESMTP id S1346341AbiDZJIG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:08:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D2ED13FB8;
-        Tue, 26 Apr 2022 01:49:14 -0700 (PDT)
+        Tue, 26 Apr 2022 05:08:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CD84179E94;
+        Tue, 26 Apr 2022 01:49:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E1A65B81D09;
-        Tue, 26 Apr 2022 08:49:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42404C385BE;
-        Tue, 26 Apr 2022 08:49:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3838360C43;
+        Tue, 26 Apr 2022 08:49:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25A0EC385A4;
+        Tue, 26 Apr 2022 08:49:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962951;
-        bh=3cOjFrytvu+eMwtQ4tbOjqFmZep/na2RTLi1ivZ+4d4=;
+        s=korg; t=1650962942;
+        bh=uKEYDWt3OoW+HTLnKcurD0UcjrAlNyV6usIFyO9hi1U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o5TEQ/jU720560Mnex5Ld1dO38H7ynSa0WZijPU6b4tnGV1cfbBxpAR9spWMqHBHP
-         qSsklAV1mAcfRziBZ7tjO3LJqUrZrQQzNxjj+xZXds0/PVsWlU+BFl25CyfuZFlrcn
-         oEfJVVI64NNAWcmXC6XozZM/blEME0cPUKSfQNYU=
+        b=WasNxWZgZqdkkTDAbfUiRPLApHdqdwFVlKO3d+s43sRzp2Ita2X0FKd5PMtN+g6jX
+         SdTPmH2PePGlBAy+Q6XBCR94ye9og73Fg4nxJUZ7ZselTNHGk/3rWyLuYbIinq3X53
+         Dh6KahyMry7KulFxiV2NcO3X5BX1VMqj1VUot+no=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhipeng Xie <xiezhipeng1@huawei.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 103/146] perf/core: Fix perf_mmap fail when CONFIG_PERF_USE_VMALLOC enabled
-Date:   Tue, 26 Apr 2022 10:21:38 +0200
-Message-Id: <20220426081752.954011534@linuxfoundation.org>
+        stable@vger.kernel.org, Wang Jianjian <wangjianjian3@huawei.com>,
+        Theodore Tso <tytso@mit.edu>, stable@kernel.org
+Subject: [PATCH 5.17 138/146] ext4, doc: fix incorrect h_reserved size
+Date:   Tue, 26 Apr 2022 10:22:13 +0200
+Message-Id: <20220426081753.938064677@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -50,89 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhipeng Xie <xiezhipeng1@huawei.com>
+From: wangjianjian (C) <wangjianjian3@huawei.com>
 
-[ Upstream commit 60490e7966659b26d74bf1fa4aa8693d9a94ca88 ]
+commit 7102ffe4c166ca0f5e35137e9f9de83768c2d27d upstream.
 
-This problem can be reproduced with CONFIG_PERF_USE_VMALLOC enabled on
-both x86_64 and aarch64 arch when using sysdig -B(using ebpf)[1].
-sysdig -B works fine after rebuilding the kernel with
-CONFIG_PERF_USE_VMALLOC disabled.
+According to document and code, ext4_xattr_header's size is 32 bytes, so
+h_reserved size should be 3.
 
-I tracked it down to the if condition event->rb->nr_pages != nr_pages
-in perf_mmap is true when CONFIG_PERF_USE_VMALLOC is enabled where
-event->rb->nr_pages = 1 and nr_pages = 2048 resulting perf_mmap to
-return -EINVAL. This is because when CONFIG_PERF_USE_VMALLOC is
-enabled, rb->nr_pages is always equal to 1.
-
-Arch with CONFIG_PERF_USE_VMALLOC enabled by default:
-	arc/arm/csky/mips/sh/sparc/xtensa
-
-Arch with CONFIG_PERF_USE_VMALLOC disabled by default:
-	x86_64/aarch64/...
-
-Fix this problem by using data_page_nr()
-
-[1] https://github.com/draios/sysdig
-
-Fixes: 906010b2134e ("perf_event: Provide vmalloc() based mmap() backing")
-Signed-off-by: Zhipeng Xie <xiezhipeng1@huawei.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220209145417.6495-1-xiezhipeng1@huawei.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Wang Jianjian <wangjianjian3@huawei.com>
+Link: https://lore.kernel.org/r/92fcc3a6-7d77-8c09-4126-377fcb4c46a5@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/events/core.c        | 2 +-
- kernel/events/internal.h    | 5 +++++
- kernel/events/ring_buffer.c | 5 -----
- 3 files changed, 6 insertions(+), 6 deletions(-)
+ Documentation/filesystems/ext4/attributes.rst |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 0ee9ffceb976..baa0fe350246 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -6352,7 +6352,7 @@ static int perf_mmap(struct file *file, struct vm_area_struct *vma)
- again:
- 	mutex_lock(&event->mmap_mutex);
- 	if (event->rb) {
--		if (event->rb->nr_pages != nr_pages) {
-+		if (data_page_nr(event->rb) != nr_pages) {
- 			ret = -EINVAL;
- 			goto unlock;
- 		}
-diff --git a/kernel/events/internal.h b/kernel/events/internal.h
-index 082832738c8f..5150d5f84c03 100644
---- a/kernel/events/internal.h
-+++ b/kernel/events/internal.h
-@@ -116,6 +116,11 @@ static inline int page_order(struct perf_buffer *rb)
- }
- #endif
+--- a/Documentation/filesystems/ext4/attributes.rst
++++ b/Documentation/filesystems/ext4/attributes.rst
+@@ -76,7 +76,7 @@ The beginning of an extended attribute b
+      - Checksum of the extended attribute block.
+    * - 0x14
+      - \_\_u32
+-     - h\_reserved[2]
++     - h\_reserved[3]
+      - Zero.
  
-+static inline int data_page_nr(struct perf_buffer *rb)
-+{
-+	return rb->nr_pages << page_order(rb);
-+}
-+
- static inline unsigned long perf_data_size(struct perf_buffer *rb)
- {
- 	return rb->nr_pages << (PAGE_SHIFT + page_order(rb));
-diff --git a/kernel/events/ring_buffer.c b/kernel/events/ring_buffer.c
-index 52868716ec35..fb35b926024c 100644
---- a/kernel/events/ring_buffer.c
-+++ b/kernel/events/ring_buffer.c
-@@ -859,11 +859,6 @@ void rb_free(struct perf_buffer *rb)
- }
- 
- #else
--static int data_page_nr(struct perf_buffer *rb)
--{
--	return rb->nr_pages << page_order(rb);
--}
--
- static struct page *
- __perf_mmap_to_page(struct perf_buffer *rb, unsigned long pgoff)
- {
--- 
-2.35.1
-
+ The checksum is calculated against the FS UUID, the 64-bit block number
 
 
