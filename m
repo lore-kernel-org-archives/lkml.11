@@ -2,74 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61964C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 14:46:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29A35C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 14:47:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351700AbiDZOtG (ORCPT
+        id S1348093AbiDZOuM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 10:49:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48602 "EHLO
+        Tue, 26 Apr 2022 10:50:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351690AbiDZOtB (ORCPT
+        with ESMTP id S231352AbiDZOuK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 10:49:01 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E051913CE9;
-        Tue, 26 Apr 2022 07:45:53 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id ACEE223A;
-        Tue, 26 Apr 2022 07:45:53 -0700 (PDT)
-Received: from localhost.localdomain (pierre123.nice.arm.com [10.34.129.50])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id BD22D3F73B;
-        Tue, 26 Apr 2022 07:45:50 -0700 (PDT)
-From:   Pierre Gondois <pierre.gondois@arm.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     cristian.marussi@arm.com, Ionela.Voinescu@arm.com,
-        Dietmar.Eggemann@arm.com, Pierre Gondois <Pierre.Gondois@arm.com>,
-        Pierre Gondois <pierre.gondois@arm.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Pavel Machek <pavel@ucw.cz>, Len Brown <len.brown@intel.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Vincent Donnefort <vincent.donnefort@arm.com>,
-        linux-pm@vger.kernel.org
-Subject: [PATCH v1] PM: EM: Decrement policy counter
-Date:   Tue, 26 Apr 2022 16:44:48 +0200
-Message-Id: <20220426144448.43682-1-pierre.gondois@arm.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 26 Apr 2022 10:50:10 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DDCB289AD;
+        Tue, 26 Apr 2022 07:47:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8A63BCE1EC7;
+        Tue, 26 Apr 2022 14:46:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43544C385AA;
+        Tue, 26 Apr 2022 14:46:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650984417;
+        bh=/8WlzJeTBNWdeEvwIpkR3MrSpPzIdcQR58JBfllQbg0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=tyl4AjDWt4sAcE0/gUSdiGR9zz7nOQhSkgWk1ASyVK9yCRxCprkpHuqQe3Z4id9uI
+         FCODM7zTPKCMycIuYtkkm1jcXYto3ecXJ20nCwoAxsFez+VvteusBDERbXvzA/neCi
+         LGCys4wkcjT+nSFCFpgHaZsDUEaT2eM4cldtVaV97EaAfwo4RDEw1/Y0391jGsS1ox
+         9fvD0q2Wtc660LK7txzDJ/ULatEpwmnExFwruNPYPa3jRW/ddai33rMKvlBXF/bMvJ
+         qNprdx9WAXaGaHLKlZUJdu7osDtCR/hD8fZ9JejObeeCRyrV9IvjfdEJKM+klrzvI6
+         qWQ01xNl7d3Rw==
+Date:   Tue, 26 Apr 2022 09:55:54 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Andy Whitcroft <apw@canonical.com>, Joe Perches <joe@perches.com>,
+        Dwaipayan Ray <dwaipayanray1@gmail.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH][next] checkpatch: add new alloc functions to alloc with
+ multiplies check
+Message-ID: <20220426145554.GA7712@embeddedor>
+References: <20220426062043.GA19970@embeddedor>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220426062043.GA19970@embeddedor>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre Gondois <Pierre.Gondois@arm.com>
+On Tue, Apr 26, 2022 at 01:20:43AM -0500, Gustavo A. R. Silva wrote:
+> kvmalloc() and kvzalloc() functions have now 2-factor multiplication
+> argument forms kvmalloc_array() and kvcalloc(), correspondingly.
+> 
+> Add alloc-with-multiplies checks for these new functions.
+> 
+> Link: https://github.com/KSPP/linux/issues/187
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 
-Fixes: e458716a92b57 ("PM: EM: Mark inefficiencies in CPUFreq")
-In the above commit, cpufreq_cpu_get() is called without
-a cpufreq_cpu_put(), permanently increasing the reference counts
-of the policy struct.
-Decrement the reference count once the policy struct is not used
-anymore.
+I've taken this in my -next tree for 5.19:
 
-Tested-by: Cristian Marussi <cristian.marussi@arm.com>
-Signed-off-by: Pierre Gondois <pierre.gondois@arm.com>
----
- kernel/power/energy_model.c | 2 ++
- 1 file changed, 2 insertions(+)
+https://git.kernel.org/pub/scm/linux/kernel/git/gustavoars/linux.git/commit/?h=for-next/kspp-checkpatch
 
-diff --git a/kernel/power/energy_model.c b/kernel/power/energy_model.c
-index 0153b0ca7b23..6219aaa454b5 100644
---- a/kernel/power/energy_model.c
-+++ b/kernel/power/energy_model.c
-@@ -259,6 +259,8 @@ static void em_cpufreq_update_efficiencies(struct device *dev)
- 			found++;
- 	}
- 
-+	cpufreq_cpu_put(policy);
-+
- 	if (!found)
- 		return;
- 
--- 
-2.25.1
+Thanks
+--
+Gustavo
 
+> ---
+>  scripts/checkpatch.pl | 8 +++++---
+>  1 file changed, 5 insertions(+), 3 deletions(-)
+> 
+> diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
+> index 577e02998701..503e8abbb2c1 100755
+> --- a/scripts/checkpatch.pl
+> +++ b/scripts/checkpatch.pl
+> @@ -7033,14 +7033,16 @@ sub process {
+>  			    "Prefer $3(sizeof(*$1)...) over $3($4...)\n" . $herecurr);
+>  		}
+>  
+> -# check for k[mz]alloc with multiplies that could be kmalloc_array/kcalloc
+> +# check for (kv|k)[mz]alloc with multiplies that could be kmalloc_array/kvmalloc_array/kvcalloc/kcalloc
+>  		if ($perl_version_ok &&
+>  		    defined $stat &&
+> -		    $stat =~ /^\+\s*($Lval)\s*\=\s*(?:$balanced_parens)?\s*(k[mz]alloc)\s*\(\s*($FuncArg)\s*\*\s*($FuncArg)\s*,/) {
+> +		    $stat =~ /^\+\s*($Lval)\s*\=\s*(?:$balanced_parens)?\s*((?:kv|k)[mz]alloc)\s*\(\s*($FuncArg)\s*\*\s*($FuncArg)\s*,/) {
+>  			my $oldfunc = $3;
+>  			my $a1 = $4;
+>  			my $a2 = $10;
+>  			my $newfunc = "kmalloc_array";
+> +			$newfunc = "kvmalloc_array" if ($oldfunc eq "kvmalloc");
+> +			$newfunc = "kvcalloc" if ($oldfunc eq "kvzalloc");
+>  			$newfunc = "kcalloc" if ($oldfunc eq "kzalloc");
+>  			my $r1 = $a1;
+>  			my $r2 = $a2;
+> @@ -7057,7 +7059,7 @@ sub process {
+>  					 "Prefer $newfunc over $oldfunc with multiply\n" . $herectx) &&
+>  				    $cnt == 1 &&
+>  				    $fix) {
+> -					$fixed[$fixlinenr] =~ s/\b($Lval)\s*\=\s*(?:$balanced_parens)?\s*(k[mz]alloc)\s*\(\s*($FuncArg)\s*\*\s*($FuncArg)/$1 . ' = ' . "$newfunc(" . trim($r1) . ', ' . trim($r2)/e;
+> +					$fixed[$fixlinenr] =~ s/\b($Lval)\s*\=\s*(?:$balanced_parens)?\s*((?:kv|k)[mz]alloc)\s*\(\s*($FuncArg)\s*\*\s*($FuncArg)/$1 . ' = ' . "$newfunc(" . trim($r1) . ', ' . trim($r2)/e;
+>  				}
+>  			}
+>  		}
+> -- 
+> 2.27.0
+> 
