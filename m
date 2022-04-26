@@ -2,49 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A503DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:19:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96976C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:19:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234289AbiDZJWk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:22:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56194 "EHLO
+        id S1346793AbiDZJWu (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:22:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345815AbiDZI5o (ORCPT
+        with ESMTP id S1345732AbiDZI5o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:57:44 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13D7538BF;
-        Tue, 26 Apr 2022 01:42:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ECFA641F;
+        Tue, 26 Apr 2022 01:42:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CBD90B81CED;
-        Tue, 26 Apr 2022 08:42:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EF93C385A0;
-        Tue, 26 Apr 2022 08:42:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F002EB81CFA;
+        Tue, 26 Apr 2022 08:42:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3965BC385A0;
+        Tue, 26 Apr 2022 08:42:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962561;
-        bh=u4sbI5XwVnMsxy9SXjtwcoKdZpij0eoP3VcDQagwUCI=;
+        s=korg; t=1650962547;
+        bh=fzE8vYXo5wvI4ZjE9j51qmJP2/qFmdVxd/QX78EPfTA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZwZXenHQrKvWIhD4C/4kLCQMeDmsjSUGeAohHCmYNS8EOLXZ3mfqa7iffv62tQPzq
-         nNzVPvGxre/6ihKxQBEKSrwVJuw1Vjx8ZzrUxeyqRVzIsqrmQ+X/cfHsImVwE9r7tB
-         AtnlF8Oel9Qz5+IDVM62H+pb1lpzajeSH3HsQdKI=
+        b=QdUFGNA/Tfj8kPIckI5xK+/RlNxPGOPDwOGPNTcjh/BV4jboYUDFybQAkCBd8Hiko
+         IU7TKpOAzSKLPxZ5JBKHftMq7KBW+z9kN6f1LEd0kpW0wYeAG9pVHtlcx4pAkFProR
+         st/SFBuBvVN4liUvFApBlb1avNeOJby70GAwDR4w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Wheeler <daniel.wheeler@amd.com>,
-        Anthony Koo <Anthony.Koo@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        "Limonciello, Mario" <Mario.Limonciello@amd.com>
-Subject: [PATCH 5.17 003/146] drm/amd/display: Only set PSR version when valid
-Date:   Tue, 26 Apr 2022 10:19:58 +0200
-Message-Id: <20220426081750.156293191@linuxfoundation.org>
+        stable@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Kees Cook <keescook@chromium.org>,
+        Khem Raj <raj.khem@gmail.com>
+Subject: [PATCH 5.17 001/146] etherdevice: Adjust ether_addr* prototypes to silence -Wstringop-overead
+Date:   Tue, 26 Apr 2022 10:19:56 +0200
+Message-Id: <20220426081750.095040051@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -52,42 +54,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
+From: Kees Cook <keescook@chromium.org>
 
-commit 1210b17dd4ece454d68a9283f391e3b036aeb010 upstream.
+commit 2618a0dae09ef37728dab89ff60418cbe25ae6bd upstream.
 
-[Why]
-DMCUB will hang if we send a PSR unsupported set version command.
+With GCC 12, -Wstringop-overread was warning about an implicit cast from
+char[6] to char[8]. However, the extra 2 bytes are always thrown away,
+alignment doesn't matter, and the risk of hitting the edge of unallocated
+memory has been accepted, so this prototype can just be converted to a
+regular char *. Silences:
 
-This can occur if we fall-through into the default case in the switch
-statement for PSR version.
+net/core/dev.c: In function ‘bpf_prog_run_generic_xdp’: net/core/dev.c:4618:21: warning: ‘ether_addr_equal_64bits’ reading 8 bytes from a region of size 6 [-Wstringop-overread]
+ 4618 |         orig_host = ether_addr_equal_64bits(eth->h_dest, > skb->dev->dev_addr);
+      |                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+net/core/dev.c:4618:21: note: referencing argument 1 of type ‘const u8[8]’ {aka ‘const unsigned char[8]’}
+net/core/dev.c:4618:21: note: referencing argument 2 of type ‘const u8[8]’ {aka ‘const unsigned char[8]’}
+In file included from net/core/dev.c:91: include/linux/etherdevice.h:375:20: note: in a call to function ‘ether_addr_equal_64bits’
+  375 | static inline bool ether_addr_equal_64bits(const u8 addr1[6+2],
+      |                    ^~~~~~~~~~~~~~~~~~~~~~~
 
-[How]
-Add an unsupported check after the switch statement.
-
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Reviewed-by: Anthony Koo <Anthony.Koo@amd.com>
-Acked-by: Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
-Signed-off-by: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: "Limonciello, Mario" <Mario.Limonciello@amd.com>
+Reported-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Tested-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Link: https://lore.kernel.org/netdev/20220212090811.uuzk6d76agw2vv73@pengutronix.de
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: netdev@vger.kernel.org
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: Khem Raj <raj.khem@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/display/dc/dce/dmub_psr.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ include/linux/etherdevice.h |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
---- a/drivers/gpu/drm/amd/display/dc/dce/dmub_psr.c
-+++ b/drivers/gpu/drm/amd/display/dc/dce/dmub_psr.c
-@@ -138,6 +138,10 @@ static bool dmub_psr_set_version(struct
- 		cmd.psr_set_version.psr_set_version_data.version = PSR_VERSION_UNSUPPORTED;
- 		break;
- 	}
-+
-+	if (cmd.psr_set_version.psr_set_version_data.version == PSR_VERSION_UNSUPPORTED)
-+		return false;
-+
- 	cmd.psr_set_version.psr_set_version_data.cmd_version = DMUB_CMD_PSR_CONTROL_VERSION_1;
- 	cmd.psr_set_version.psr_set_version_data.panel_inst = panel_inst;
- 	cmd.psr_set_version.header.payload_bytes = sizeof(struct dmub_cmd_psr_set_version_data);
+--- a/include/linux/etherdevice.h
++++ b/include/linux/etherdevice.h
+@@ -134,7 +134,7 @@ static inline bool is_multicast_ether_ad
+ #endif
+ }
+ 
+-static inline bool is_multicast_ether_addr_64bits(const u8 addr[6+2])
++static inline bool is_multicast_ether_addr_64bits(const u8 *addr)
+ {
+ #if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
+ #ifdef __BIG_ENDIAN
+@@ -372,8 +372,7 @@ static inline bool ether_addr_equal(cons
+  * Please note that alignment of addr1 & addr2 are only guaranteed to be 16 bits.
+  */
+ 
+-static inline bool ether_addr_equal_64bits(const u8 addr1[6+2],
+-					   const u8 addr2[6+2])
++static inline bool ether_addr_equal_64bits(const u8 *addr1, const u8 *addr2)
+ {
+ #if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
+ 	u64 fold = (*(const u64 *)addr1) ^ (*(const u64 *)addr2);
 
 
