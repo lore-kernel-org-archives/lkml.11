@@ -2,42 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5167DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:54:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B145C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:54:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345912AbiDZI5p (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:57:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58454 "EHLO
+        id S237937AbiDZI5y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:57:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346290AbiDZIos (ORCPT
+        with ESMTP id S1346270AbiDZIor (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:44:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 226AA83B23;
-        Tue, 26 Apr 2022 01:34:34 -0700 (PDT)
+        Tue, 26 Apr 2022 04:44:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F01A083B28;
+        Tue, 26 Apr 2022 01:34:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C5832B81CF2;
-        Tue, 26 Apr 2022 08:34:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B33BC385A0;
-        Tue, 26 Apr 2022 08:34:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B1188B81CED;
+        Tue, 26 Apr 2022 08:34:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29545C385AC;
+        Tue, 26 Apr 2022 08:34:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962071;
-        bh=0o+/bcfWUb8QZLbrnONbvy8GeqdlyK3Z3oJkehZ0ZEw=;
+        s=korg; t=1650962068;
+        bh=NbsUClvZy0wolQZaaxQ4Sw5keVUOpjaf+AR7ay8B04w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HcmoZpAEANpvSqZYdF2Mg34lT1uNz7K27X/c1cYSHdiFpT1zzR+Y3cGKu5DjSaHKF
-         6NRgGPrMHRtcNVUfYLnJ1upuB/9JC/K+gEOr/fh8dAOKGKV5crRiRdDGIt/XbMZQT6
-         Yy8BDgpG7liTnTn5UB/lHGO3vKo5MM9ZNYZLG4ZU=
+        b=Abt+Wlqqtuw0SItjJDDt/E+JD69PrPYbfVP0aArsbHdClp40dfMfR88zPREqHSVnp
+         qt9z7WeggG+RiCdL8E8Qgs5/w5AAqZZ0PNjsON4+vBW6tEOUFjmvASh2RMNdZp3o1Q
+         UnqrrdFq0OAWzbpEqIb2NmgYo/wRl2s+QvvQAxUA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.10 62/86] ASoC: soc-dapm: fix two incorrect uses of list iterator
-Date:   Tue, 26 Apr 2022 10:21:30 +0200
-Message-Id: <20220426081742.997392899@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Shreeya Patel <shreeya.patel@collabora.com>,
+        =?UTF-8?q?Samuel=20=C4=8Cavoj?= <samuel@cavoj.net>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        lukeluk498@gmail.com, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.10 61/86] gpio: Request interrupts after IRQ is initialized
+Date:   Tue, 26 Apr 2022 10:21:29 +0200
+Message-Id: <20220426081742.967932943@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
 References: <20220426081741.202366502@linuxfoundation.org>
@@ -49,59 +54,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-commit f730a46b931d894816af34a0ff8e4ad51565b39f upstream.
+commit 06fb4ecfeac7e00d6704fa5ed19299f2fefb3cc9 upstream.
 
-These two bug are here:
-	list_for_each_entry_safe_continue(w, n, list,
-					power_list);
-	list_for_each_entry_safe_continue(w, n, list,
-					power_list);
+Commit 5467801f1fcb ("gpio: Restrict usage of GPIO chip irq members
+before initialization") attempted to fix a race condition that lead to a
+NULL pointer, but in the process caused a regression for _AEI/_EVT
+declared GPIOs.
 
-After the list_for_each_entry_safe_continue() exits, the list iterator
-will always be a bogus pointer which point to an invalid struct objdect
-containing HEAD member. The funciton poniter 'w->event' will be a
-invalid value which can lead to a control-flow hijack if the 'w' can be
-controlled.
+This manifests in messages showing deferred probing while trying to
+allocate IRQs like so:
 
-The original intention was to continue the outer list_for_each_entry_safe()
-loop with the same entry if w->event is NULL, but misunderstanding the
-meaning of list_for_each_entry_safe_continue().
+  amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x0000 to IRQ, err -517
+  amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x002C to IRQ, err -517
+  amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x003D to IRQ, err -517
+  [ .. more of the same .. ]
 
-So just add a 'continue;' to fix the bug.
+The code for walking _AEI doesn't handle deferred probing and so this
+leads to non-functional GPIO interrupts.
 
+Fix this issue by moving the call to `acpi_gpiochip_request_interrupts`
+to occur after gc->irc.initialized is set.
+
+Fixes: 5467801f1fcb ("gpio: Restrict usage of GPIO chip irq members before initialization")
+Link: https://lore.kernel.org/linux-gpio/BL1PR12MB51577A77F000A008AA694675E2EF9@BL1PR12MB5157.namprd12.prod.outlook.com/
+Link: https://bugzilla.suse.com/show_bug.cgi?id=1198697
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215850
+Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1979
+Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1976
+Reported-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Reviewed-by: Shreeya Patel <shreeya.patel@collabora.com>
+Tested-By: Samuel Čavoj <samuel@cavoj.net>
+Tested-By: lukeluk498@gmail.com Link:
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-and-tested-by: Takashi Iwai <tiwai@suse.de>
+Cc: Shreeya Patel <shreeya.patel@collabora.com>
 Cc: stable@vger.kernel.org
-Fixes: 163cac061c973 ("ASoC: Factor out DAPM sequence execution")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Link: https://lore.kernel.org/r/20220329012134.9375-1-xiam0nd.tong@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/soc-dapm.c |    6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/gpio/gpiolib.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/sound/soc/soc-dapm.c
-+++ b/sound/soc/soc-dapm.c
-@@ -1683,8 +1683,7 @@ static void dapm_seq_run(struct snd_soc_
- 		switch (w->id) {
- 		case snd_soc_dapm_pre:
- 			if (!w->event)
--				list_for_each_entry_safe_continue(w, n, list,
--								  power_list);
-+				continue;
+--- a/drivers/gpio/gpiolib.c
++++ b/drivers/gpio/gpiolib.c
+@@ -1612,8 +1612,6 @@ static int gpiochip_add_irqchip(struct g
  
- 			if (event == SND_SOC_DAPM_STREAM_START)
- 				ret = w->event(w,
-@@ -1696,8 +1695,7 @@ static void dapm_seq_run(struct snd_soc_
+ 	gpiochip_set_irq_hooks(gc);
  
- 		case snd_soc_dapm_post:
- 			if (!w->event)
--				list_for_each_entry_safe_continue(w, n, list,
--								  power_list);
-+				continue;
+-	acpi_gpiochip_request_interrupts(gc);
+-
+ 	/*
+ 	 * Using barrier() here to prevent compiler from reordering
+ 	 * gc->irq.initialized before initialization of above
+@@ -1623,6 +1621,8 @@ static int gpiochip_add_irqchip(struct g
  
- 			if (event == SND_SOC_DAPM_STREAM_START)
- 				ret = w->event(w,
+ 	gc->irq.initialized = true;
+ 
++	acpi_gpiochip_request_interrupts(gc);
++
+ 	return 0;
+ }
+ 
 
 
