@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FDE4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:13:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7D6EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:13:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243946AbiDZJQu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:16:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55676 "EHLO
+        id S244836AbiDZJQ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:16:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347236AbiDZIvO (ORCPT
+        with ESMTP id S1347217AbiDZIvO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:51:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FC13158F45;
-        Tue, 26 Apr 2022 01:39:57 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2B99158F49;
+        Tue, 26 Apr 2022 01:39:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C46E60C35;
-        Tue, 26 Apr 2022 08:39:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16355C385A0;
-        Tue, 26 Apr 2022 08:39:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 41C1760C4A;
+        Tue, 26 Apr 2022 08:39:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E06BC385A0;
+        Tue, 26 Apr 2022 08:39:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962396;
-        bh=EOw5hbKDTnYGfUcDibtjJA+xhAnCFPcdHRjqYVUw9Hc=;
+        s=korg; t=1650962387;
+        bh=/BAm5NTJdX2tMlaApiM7QAkYP88sHZe13rGjL+RUOcg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PDHReWnlzL5qY0lyPxdbsRYQFSqZBa/UMQ6ThLlssWlILesVO6I6ZuMqOkfsRSyJJ
-         5hZwAvekon9Le0CjUcFIbiHyxd59EYr0ijsMb33c2RLp1mlvfnNAZrWoZyIhK8DRMs
-         h6ymvxRifmVbx+kB0VS0A9i60S9usc7ILgIYgk38=
+        b=Kdy3rqM1aiICZ5CqrE4flk7BTsjD9Ff9g1K2xpnt5AzVo1vNSUP4XMIzvgAL4qQO0
+         /ihmDbFHCusFBk1bUl14FEoR9APuNcnJVyBcFtvN7KCoE98+9MuS/7wnD2GpocfA87
+         mO00UFUgZhCH9FZU0gAwRyF0AkUegRzwc8u8mLt4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        syzbot+2339c27f5c66c652843e@syzkaller.appspotmail.com,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 042/124] can: isotp: stop timeout monitoring when no first frame was sent
-Date:   Tue, 26 Apr 2022 10:20:43 +0200
-Message-Id: <20220426081748.498664094@linuxfoundation.org>
+        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
+        Borislav Petkov <bp@suse.de>,
+        Michal Simek <michal.simek@xilinx.com>
+Subject: [PATCH 5.15 077/124] EDAC/synopsys: Read the error count from the correct register
+Date:   Tue, 26 Apr 2022 10:21:18 +0200
+Message-Id: <20220426081749.489594896@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -51,69 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+From: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
 
-[ Upstream commit d73497081710c876c3c61444445512989e102152 ]
+commit e2932d1f6f055b2af2114c7e64a26dc1b5593d0c upstream.
 
-The first attempt to fix a the 'impossible' WARN_ON_ONCE(1) in
-isotp_tx_timer_handler() focussed on the identical CAN IDs created by
-the syzbot reproducer and lead to upstream fix/commit 3ea566422cbd
-("can: isotp: sanitize CAN ID checks in isotp_bind()"). But this did
-not catch the root cause of the wrong tx.state in the tx_timer handler.
+Currently, the error count is read wrongly from the status register. Read
+the count from the proper error count register (ERRCNT).
 
-In the isotp 'first frame' case a timeout monitoring needs to be started
-before the 'first frame' is send. But when this sending failed the timeout
-monitoring for this specific frame has to be disabled too.
+  [ bp: Massage. ]
 
-Otherwise the tx_timer is fired with the 'warn me' tx.state of ISOTP_IDLE.
-
-Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
-Link: https://lore.kernel.org/all/20220405175112.2682-1-socketcan@hartkopp.net
-Reported-by: syzbot+2339c27f5c66c652843e@syzkaller.appspotmail.com
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: b500b4a029d5 ("EDAC, synopsys: Add ECC support for ZynqMP DDR controller")
+Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Acked-by: Michal Simek <michal.simek@xilinx.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220414102813.4468-1-shubhrajyoti.datta@xilinx.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/can/isotp.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ drivers/edac/synopsys_edac.c |   16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
 
-diff --git a/net/can/isotp.c b/net/can/isotp.c
-index 5bce7c66c121..8c753dcefe7f 100644
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -866,6 +866,7 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
- 	struct canfd_frame *cf;
- 	int ae = (so->opt.flags & CAN_ISOTP_EXTEND_ADDR) ? 1 : 0;
- 	int wait_tx_done = (so->opt.flags & CAN_ISOTP_WAIT_TX_DONE) ? 1 : 0;
-+	s64 hrtimer_sec = 0;
- 	int off;
- 	int err;
+--- a/drivers/edac/synopsys_edac.c
++++ b/drivers/edac/synopsys_edac.c
+@@ -163,6 +163,11 @@
+ #define ECC_STAT_CECNT_SHIFT		8
+ #define ECC_STAT_BITNUM_MASK		0x7F
  
-@@ -964,7 +965,9 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
- 		isotp_create_fframe(cf, so, ae);
- 
- 		/* start timeout for FC */
--		hrtimer_start(&so->txtimer, ktime_set(1, 0), HRTIMER_MODE_REL_SOFT);
-+		hrtimer_sec = 1;
-+		hrtimer_start(&so->txtimer, ktime_set(hrtimer_sec, 0),
-+			      HRTIMER_MODE_REL_SOFT);
- 	}
- 
- 	/* send the first or only CAN frame */
-@@ -977,6 +980,11 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
- 	if (err) {
- 		pr_notice_once("can-isotp: %s: can_send_ret %pe\n",
- 			       __func__, ERR_PTR(err));
++/* ECC error count register definitions */
++#define ECC_ERRCNT_UECNT_MASK		0xFFFF0000
++#define ECC_ERRCNT_UECNT_SHIFT		16
++#define ECC_ERRCNT_CECNT_MASK		0xFFFF
 +
-+		/* no transmission -> no timeout monitoring */
-+		if (hrtimer_sec)
-+			hrtimer_cancel(&so->txtimer);
-+
- 		goto err_out_drop;
- 	}
+ /* DDR QOS Interrupt register definitions */
+ #define DDR_QOS_IRQ_STAT_OFST		0x20200
+ #define DDR_QOSUE_MASK			0x4
+@@ -418,15 +423,16 @@ static int zynqmp_get_error_info(struct
+ 	base = priv->baseaddr;
+ 	p = &priv->stat;
  
--- 
-2.35.1
-
++	regval = readl(base + ECC_ERRCNT_OFST);
++	p->ce_cnt = regval & ECC_ERRCNT_CECNT_MASK;
++	p->ue_cnt = (regval & ECC_ERRCNT_UECNT_MASK) >> ECC_ERRCNT_UECNT_SHIFT;
++	if (!p->ce_cnt)
++		goto ue_err;
++
+ 	regval = readl(base + ECC_STAT_OFST);
+ 	if (!regval)
+ 		return 1;
+ 
+-	p->ce_cnt = (regval & ECC_STAT_CECNT_MASK) >> ECC_STAT_CECNT_SHIFT;
+-	p->ue_cnt = (regval & ECC_STAT_UECNT_MASK) >> ECC_STAT_UECNT_SHIFT;
+-	if (!p->ce_cnt)
+-		goto ue_err;
+-
+ 	p->ceinfo.bitpos = (regval & ECC_STAT_BITNUM_MASK);
+ 
+ 	regval = readl(base + ECC_CEADDR0_OFST);
 
 
