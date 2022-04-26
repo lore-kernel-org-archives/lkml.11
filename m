@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45FD1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:40:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3045C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:42:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345666AbiDZInh (ORCPT
+        id S1345600AbiDZIns (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:43:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60530 "EHLO
+        Tue, 26 Apr 2022 04:43:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345228AbiDZIfW (ORCPT
+        with ESMTP id S1345231AbiDZIfW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:35:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41D78814BC;
-        Tue, 26 Apr 2022 01:28:48 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A76A782313;
+        Tue, 26 Apr 2022 01:28:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AA456B81CF7;
-        Tue, 26 Apr 2022 08:28:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EEC6C385A0;
-        Tue, 26 Apr 2022 08:28:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 43B42617EB;
+        Tue, 26 Apr 2022 08:28:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AD0AC385AC;
+        Tue, 26 Apr 2022 08:28:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961725;
-        bh=sLfaJ2yFtJbrru835t7MerWkZ2wruPNKYI5YQ6PVADE=;
+        s=korg; t=1650961729;
+        bh=sAv8qm0Z77pvWBsV0ej1topD7SZMzaglwU7qcAK61LY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l8o0gLe64wfd+HWoZmALs5lyxKqtBNrphtx8k+IlIXxZN95hP2SU2xBX4jbMToIxI
-         uN9luqae88TXPYJi/RvG977b27s7o7sKqgxe5fTpGvGccWaeUbgBiVHpjhQicCueua
-         PLRvldksiUizU+MrjmuSaAW7BQW0eXwt7q6fY6Wg=
+        b=r1jSVmjzV6B6EKuRfLeiaNv2RrNk55/v69txgIPSHFuw4kM72VdmqZn3EM9D2RvVr
+         ITf+aqwH2or/aAFQVP/p/jjW72StkvrijW1z8Lb3+lX2HUuWrprnbuuscR5R5Hp/mu
+         CJqVf+aZmC2i0g4UryMOEU8D2H7TWtH7M0bBJiIo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiongwei Song <sxwjean@gmail.com>,
-        Arthur Marsh <arthur.marsh@internode.on.net>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Khem Raj <raj.khem@gmail.com>
-Subject: [PATCH 5.4 02/62] mm: page_alloc: fix building error on -Werror=array-compare
-Date:   Tue, 26 Apr 2022 10:20:42 +0200
-Message-Id: <20220426081737.283239650@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 11/62] ASoC: msm8916-wcd-digital: Check failure for devm_snd_soc_register_component
+Date:   Tue, 26 Apr 2022 10:20:51 +0200
+Message-Id: <20220426081737.550569415@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
 References: <20220426081737.209637816@linuxfoundation.org>
@@ -52,42 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiongwei Song <sxwjean@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit ca831f29f8f25c97182e726429b38c0802200c8f upstream.
+[ Upstream commit e927b05f3cc20de87f6b7d912a5bbe556931caca ]
 
-Arthur Marsh reported we would hit the error below when building kernel
-with gcc-12:
+devm_snd_soc_register_component() may fails, we should check the error
+and do the corresponding error handling.
 
-  CC      mm/page_alloc.o
-  mm/page_alloc.c: In function `mem_init_print_info':
-  mm/page_alloc.c:8173:27: error: comparison between two arrays [-Werror=array-compare]
-   8173 |                 if (start <= pos && pos < end && size > adj) \
-        |
-
-In C++20, the comparision between arrays should be warned.
-
-Link: https://lkml.kernel.org/r/20211125130928.32465-1-sxwjean@me.com
-Signed-off-by: Xiongwei Song <sxwjean@gmail.com>
-Reported-by: Arthur Marsh <arthur.marsh@internode.on.net>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Khem Raj <raj.khem@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 150db8c5afa1 ("ASoC: codecs: Add msm8916-wcd digital codec")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220403115239.30140-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/page_alloc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/codecs/msm8916-wcd-digital.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -7588,7 +7588,7 @@ void __init mem_init_print_info(const ch
- 	 */
- #define adj_init_size(start, end, size, pos, adj) \
- 	do { \
--		if (start <= pos && pos < end && size > adj) \
-+		if (&start[0] <= &pos[0] && &pos[0] < &end[0] && size > adj) \
- 			size -= adj; \
- 	} while (0)
+diff --git a/sound/soc/codecs/msm8916-wcd-digital.c b/sound/soc/codecs/msm8916-wcd-digital.c
+index d5269ab5f91c..e4cde214b7b2 100644
+--- a/sound/soc/codecs/msm8916-wcd-digital.c
++++ b/sound/soc/codecs/msm8916-wcd-digital.c
+@@ -1206,9 +1206,16 @@ static int msm8916_wcd_digital_probe(struct platform_device *pdev)
  
+ 	dev_set_drvdata(dev, priv);
+ 
+-	return devm_snd_soc_register_component(dev, &msm8916_wcd_digital,
++	ret = devm_snd_soc_register_component(dev, &msm8916_wcd_digital,
+ 				      msm8916_wcd_digital_dai,
+ 				      ARRAY_SIZE(msm8916_wcd_digital_dai));
++	if (ret)
++		goto err_mclk;
++
++	return 0;
++
++err_mclk:
++	clk_disable_unprepare(priv->mclk);
+ err_clk:
+ 	clk_disable_unprepare(priv->ahbclk);
+ 	return ret;
+-- 
+2.35.1
+
 
 
