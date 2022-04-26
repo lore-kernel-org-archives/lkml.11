@@ -2,171 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63FA5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:34:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10016C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:34:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237714AbiDZIhK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:37:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36920 "EHLO
+        id S1345208AbiDZIhP (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:37:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345196AbiDZIeM (ORCPT
+        with ESMTP id S1345206AbiDZIeN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:34:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F6746F4A7;
-        Tue, 26 Apr 2022 01:26:26 -0700 (PDT)
+        Tue, 26 Apr 2022 04:34:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EFB96FA1F;
+        Tue, 26 Apr 2022 01:26:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AF4C2B81CF7;
-        Tue, 26 Apr 2022 08:26:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24655C385A4;
-        Tue, 26 Apr 2022 08:26:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650961583;
-        bh=Q27TqYlgk6lviYzg0sNURHKEbuAkNXjesHKLsg3DP9c=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BD12D61841;
+        Tue, 26 Apr 2022 08:26:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDA21C385BD;
+        Tue, 26 Apr 2022 08:26:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650961589;
+        bh=uezcfXl9P+IPn6+18yV+x/ymhvpLGiH3VEU2mLngXFA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fdQVY/Z4zicEVOUhpQVn6YGXfMzFgzXO/7J5vojBkcUzX30Naco6Yae0QXiGAKjOC
-         s6v1nXMdG7uy4UXc8kVHN0X0DPTS5zSKSDxSH9ESFA9/Skz4vIlyQ/D/dVu+cFtGql
-         L3t+bTZbAKzB/eWmGTenfWLRGOK1sKC6rdaTuJLIyT/ixkN7g91KK7lcWya4cF8V22
-         pgqN6zg74Rzv+PEXp/G+WrxXyCcggsgtkWH0hfhEqoEO7iva1i3KmvT+j/FCFuifLT
-         HbGwgV2gPgIjXeAcxV/W76JpIREXxYzGtgE+WvbOB4V2xrKv/tvBip481IlEQt+4BM
-         F53nM4Y8je81A==
-From:   Roger Quadros <rogerq@kernel.org>
-To:     krzk@kernel.org
-Cc:     miquel.raynal@bootlin.com, tony@atomide.com, vigneshr@ti.com,
-        kishon@ti.com, nm@ti.com, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Roger Quadros <rogerq@kernel.org>
-Subject: [PATCH v4 2/2] memory: omap-gpmc: Allow building as a module
-Date:   Tue, 26 Apr 2022 11:26:11 +0300
-Message-Id: <20220426082611.24427-3-rogerq@kernel.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220426082611.24427-1-rogerq@kernel.org>
-References: <20220426082611.24427-1-rogerq@kernel.org>
+        b=Xs5zBocbkLcmip0zQG/m0Edcxu+0D4A7or/bUo2xhLPmCgQ+3E8La7E1e2LZfJ+1V
+         0chEO/SzjpS4vYhqSHzcI6YzeRuPILUiIPcMHQiiiqkgsWt2iIpnkU7J6MZUvFsWmq
+         0NMZEZa/S9isplUobUYL4Tm39yiAVg2SpiVC9PXE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Sameer Pujar <spujar@nvidia.com>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Thierry Reding <treding@nvidia.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 18/53] reset: tegra-bpmp: Restore Handle errors in BPMP response
+Date:   Tue, 26 Apr 2022 10:20:58 +0200
+Message-Id: <20220426081736.185798092@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220426081735.651926456@linuxfoundation.org>
+References: <20220426081735.651926456@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allow OMAP_GPMC to be built as a module.
+From: Sameer Pujar <spujar@nvidia.com>
 
-When building this driver as a module, the symbol
-'of_default_bus_match_table' will not be found
-as it is not being exported.
+[ Upstream commit d1da1052ffad63aa5181b69f20a6952e31f339c2 ]
 
-The of_match_node() call is redundant anyways as
-of_platform_default_populate() already takes care of
-matching with 'of_default_bus_match_table'. So get
-rid of that call. This will also resolve the
-module build failure.
+This reverts following commit 69125b4b9440 ("reset: tegra-bpmp: Revert
+Handle errors in BPMP response").
 
-Move compatible match table to the end where it is
-usually expected.
+The Tegra194 HDA reset failure is fixed by commit d278dc9151a0 ("ALSA:
+hda/tegra: Fix Tegra194 HDA reset failure"). The temporary revert of
+original commit c045ceb5a145 ("reset: tegra-bpmp: Handle errors in BPMP
+response") can be removed now.
 
-Signed-off-by: Roger Quadros <rogerq@kernel.org>
+Signed-off-by: Sameer Pujar <spujar@nvidia.com>
+Tested-by: Jon Hunter <jonathanh@nvidia.com>
+Reviewed-by: Jon Hunter <jonathanh@nvidia.com>
+Acked-by: Thierry Reding <treding@nvidia.com>
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+Link: https://lore.kernel.org/r/1641995806-15245-1-git-send-email-spujar@nvidia.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/memory/Kconfig     |  2 +-
- drivers/memory/omap-gpmc.c | 43 ++++++++++++++++++++------------------
- 2 files changed, 24 insertions(+), 21 deletions(-)
+ drivers/reset/tegra/reset-bpmp.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/memory/Kconfig b/drivers/memory/Kconfig
-index da9634daad04..b7800b37af78 100644
---- a/drivers/memory/Kconfig
-+++ b/drivers/memory/Kconfig
-@@ -103,7 +103,7 @@ config TI_EMIF
- 	  temperature changes
+diff --git a/drivers/reset/tegra/reset-bpmp.c b/drivers/reset/tegra/reset-bpmp.c
+index 5daf2ee1a396..f9790b60f996 100644
+--- a/drivers/reset/tegra/reset-bpmp.c
++++ b/drivers/reset/tegra/reset-bpmp.c
+@@ -23,6 +23,7 @@ static int tegra_bpmp_reset_common(struct reset_controller_dev *rstc,
+ 	struct tegra_bpmp *bpmp = to_tegra_bpmp(rstc);
+ 	struct mrq_reset_request request;
+ 	struct tegra_bpmp_message msg;
++	int err;
  
- config OMAP_GPMC
--	bool "Texas Instruments OMAP SoC GPMC driver"
-+	tristate "Texas Instruments OMAP SoC GPMC driver"
- 	depends on OF_ADDRESS
- 	select GPIOLIB
- 	help
-diff --git a/drivers/memory/omap-gpmc.c b/drivers/memory/omap-gpmc.c
-index ed11887c1b7c..2351f2708da2 100644
---- a/drivers/memory/omap-gpmc.c
-+++ b/drivers/memory/omap-gpmc.c
-@@ -12,6 +12,7 @@
- #include <linux/cpu_pm.h>
- #include <linux/irq.h>
- #include <linux/kernel.h>
-+#include <linux/module.h>
- #include <linux/init.h>
- #include <linux/err.h>
- #include <linux/clk.h>
-@@ -1889,16 +1890,6 @@ int gpmc_cs_program_settings(int cs, struct gpmc_settings *p)
+ 	memset(&request, 0, sizeof(request));
+ 	request.cmd = command;
+@@ -33,7 +34,13 @@ static int tegra_bpmp_reset_common(struct reset_controller_dev *rstc,
+ 	msg.tx.data = &request;
+ 	msg.tx.size = sizeof(request);
+ 
+-	return tegra_bpmp_transfer(bpmp, &msg);
++	err = tegra_bpmp_transfer(bpmp, &msg);
++	if (err)
++		return err;
++	if (msg.rx.ret)
++		return -EINVAL;
++
++	return 0;
  }
  
- #ifdef CONFIG_OF
--static const struct of_device_id gpmc_dt_ids[] = {
--	{ .compatible = "ti,omap2420-gpmc" },
--	{ .compatible = "ti,omap2430-gpmc" },
--	{ .compatible = "ti,omap3430-gpmc" },	/* omap3430 & omap3630 */
--	{ .compatible = "ti,omap4430-gpmc" },	/* omap4430 & omap4460 & omap543x */
--	{ .compatible = "ti,am3352-gpmc" },	/* am335x devices */
--	{ .compatible = "ti,am64-gpmc" },
--	{ }
--};
--
- static void gpmc_cs_set_name(int cs, const char *name)
- {
- 	struct gpmc_cs_data *gpmc = &gpmc_cs[cs];
-@@ -2257,11 +2248,9 @@ static int gpmc_probe_generic_child(struct platform_device *pdev,
- 	if (!of_platform_device_create(child, NULL, &pdev->dev))
- 		goto err_child_fail;
- 
--	/* is child a common bus? */
--	if (of_match_node(of_default_bus_match_table, child))
--		/* create children and other common bus children */
--		if (of_platform_default_populate(child, NULL, &pdev->dev))
--			goto err_child_fail;
-+	/* create children and other common bus children */
-+	if (of_platform_default_populate(child, NULL, &pdev->dev))
-+		goto err_child_fail;
- 
- 	return 0;
- 
-@@ -2278,6 +2267,8 @@ static int gpmc_probe_generic_child(struct platform_device *pdev,
- 	return ret;
- }
- 
-+static const struct of_device_id gpmc_dt_ids[];
-+
- static int gpmc_probe_dt(struct platform_device *pdev)
- {
- 	int ret;
-@@ -2644,6 +2635,19 @@ static int gpmc_resume(struct device *dev)
- 
- static SIMPLE_DEV_PM_OPS(gpmc_pm_ops, gpmc_suspend, gpmc_resume);
- 
-+#ifdef CONFIG_OF
-+static const struct of_device_id gpmc_dt_ids[] = {
-+	{ .compatible = "ti,omap2420-gpmc" },
-+	{ .compatible = "ti,omap2430-gpmc" },
-+	{ .compatible = "ti,omap3430-gpmc" },	/* omap3430 & omap3630 */
-+	{ .compatible = "ti,omap4430-gpmc" },	/* omap4430 & omap4460 & omap543x */
-+	{ .compatible = "ti,am3352-gpmc" },	/* am335x devices */
-+	{ .compatible = "ti,am64-gpmc" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, gpmc_dt_ids);
-+#endif
-+
- static struct platform_driver gpmc_driver = {
- 	.probe		= gpmc_probe,
- 	.remove		= gpmc_remove,
-@@ -2654,8 +2658,7 @@ static struct platform_driver gpmc_driver = {
- 	},
- };
- 
--static __init int gpmc_init(void)
--{
--	return platform_driver_register(&gpmc_driver);
--}
--postcore_initcall(gpmc_init);
-+module_platform_driver(gpmc_driver);
-+
-+MODULE_DESCRIPTION("Texas Instruments GPMC driver");
-+MODULE_LICENSE("GPL");
+ static int tegra_bpmp_reset_module(struct reset_controller_dev *rstc,
 -- 
-2.17.1
+2.35.1
+
+
 
