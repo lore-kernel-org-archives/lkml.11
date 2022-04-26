@@ -2,249 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3DC8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:43:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 730D0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:43:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349383AbiDZKqe (ORCPT
+        id S1346414AbiDZKqk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 06:46:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44522 "EHLO
+        Tue, 26 Apr 2022 06:46:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345688AbiDZKpa (ORCPT
+        with ESMTP id S1348977AbiDZKpv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 06:45:30 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46AE3CB;
-        Tue, 26 Apr 2022 03:35:56 -0700 (PDT)
+        Tue, 26 Apr 2022 06:45:51 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 946B5CF;
+        Tue, 26 Apr 2022 03:36:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650969357; x=1682505357;
-  h=from:to:cc:subject:date:message-id;
-  bh=QfEX8tV1drJ4rEHqLXyrW2XLgcYgtO2Wd5PQkGlBvRw=;
-  b=iqy9t2LYLeM6ueGvEzJqSOGLeP+TUrbrll5G5geR4IOFsYc0K2pb3EQO
-   7k+IPF4OS/ehtqiOrmjNNSRloXkQH3RKfP9lzE4A/thYccroCaLXpaLCS
-   E0aL9G6eytQRr75JkgXOqGYjKyoKjGRLoHkcjUxfIaHIb3pNHBPCVe3Zp
-   0=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 26 Apr 2022 03:35:56 -0700
+  t=1650969392; x=1682505392;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=apd35d7BYOvqx7f5UyepnqlMxVdwfN37PS+LrGA7JK4=;
+  b=MWg4E3weB3gb2vDyazwvYxySMZueGT9ecz43/0NEeKZU7Yle1NvfBaYu
+   BBvNKQ+R7eGgXkPhGWvkikFuzUycJ096fzQn3d9+hPvvAaq/d0pVyUSZG
+   TmuIJEX9LByVdEaWwq27x1STmyhnUlfYW2Qu3eKKdiS1LrZVl6dPaZqz0
+   8=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 26 Apr 2022 03:36:32 -0700
 X-QCInternal: smtphost
-Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 26 Apr 2022 03:35:55 -0700
-X-QCInternal: smtphost
-Received: from hu-c-spathi-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.108.59])
-  by ironmsg01-blr.qualcomm.com with ESMTP; 26 Apr 2022 16:05:33 +0530
-Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 212714)
-        id ECA273085; Tue, 26 Apr 2022 16:05:32 +0530 (+0530)
-From:   Srinivasarao Pathipati <quic_spathi@quicinc.com>
-To:     digetx@gmail.com, axboe@kernel.dk, quic_kamasali@quicinc.com,
-        quic_nitirawa@quicinc.com, avri.altman@wdc.com,
-        quic_spathi@quicinc.com, quic_merez@quicinc.com, s.shtylyov@omp.ru,
-        quic_sayalil@quicinc.com, colyli@suse.de, cw9316.lee@samsung.com,
-        dsterba@suse.com, joel@jms.id.au, quic_sbhanu@quicinc.com,
-        linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Ram Prakash Gupta <rampraka@codeaurora.org>,
-        Nitin Rawat <nitirawa@codeaurora.org>
-Subject: [PATCH V1] FROMLIST: mmc: core: Export core functions required for clk scaling
-Date:   Tue, 26 Apr 2022 16:05:30 +0530
-Message-Id: <1650969330-9711-1-git-send-email-quic_spathi@quicinc.com>
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 03:36:32 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 26 Apr 2022 03:36:31 -0700
+Received: from hu-ylal-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 26 Apr 2022 03:36:29 -0700
+From:   Yogesh Lal <quic_ylal@quicinc.com>
+To:     <bjorn.andersson@linaro.org>, <quic_sibis@quicinc.com>
+CC:     <linux-arm-msm@vger.kernel.org>,
+        <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Yogesh Lal <quic_ylal@quicinc.com>
+Subject: [PATCH v2] remoteproc: qcom: Add fallback mechanism for full coredump collection
+Date:   Tue, 26 Apr 2022 16:06:14 +0530
+Message-ID: <1650969374-19245-1-git-send-email-quic_ylal@quicinc.com>
 X-Mailer: git-send-email 2.7.4
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ram Prakash Gupta <rampraka@codeaurora.org>
+In case remoteproc's firmware missing minidump support, during crash
+scenario coredump does not collected. This change adds a fallback
+mechanism for full coredump collection in the event of a crash.
 
-Export core function required for clk scaling post design change.
-This would help make clk scaling part of vendor module.
-
-Bug: 192337957
-Link: https://lore.kernel.org/lkml/1571668177-3766-2-git-send-email-
-rampraka@codeaurora.org/
-Signed-off-by: Nitin Rawat <nitirawa@codeaurora.org>
-Signed-off-by: Ram Prakash Gupta <rampraka@codeaurora.org>
-
-Signed-off-by: kamasali <quic_kamasali@quicinc.com>
-Signed-off-by: Srinivasarao Pathipati <quic_spathi@quicinc.com>
+Signed-off-by: Yogesh Lal <quic_ylal@quicinc.com>
 ---
- drivers/mmc/core/core.c  |  3 +++
- drivers/mmc/core/core.h  |  2 +-
- drivers/mmc/core/mmc.c   | 20 +++++++++++++-------
- drivers/mmc/core/queue.c |  1 +
- include/linux/mmc/mmc.h  |  9 +++++++++
- 5 files changed, 27 insertions(+), 8 deletions(-)
+ drivers/remoteproc/qcom_common.c   | 9 ++++++---
+ drivers/remoteproc/qcom_q6v5_pas.c | 1 +
+ 2 files changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/mmc/core/core.c b/drivers/mmc/core/core.c
-index 8cc2b74..7fc77d1 100644
---- a/drivers/mmc/core/core.c
-+++ b/drivers/mmc/core/core.c
-@@ -920,6 +920,7 @@ void mmc_set_clock(struct mmc_host *host, unsigned int hz)
- 	host->ios.clock = hz;
- 	mmc_set_ios(host);
- }
-+EXPORT_SYMBOL_GPL(mmc_set_clock);
- 
- int mmc_execute_tuning(struct mmc_card *card)
- {
-@@ -1003,6 +1004,7 @@ void mmc_set_initial_state(struct mmc_host *host)
- 
- 	mmc_crypto_set_initial_state(host);
- }
-+EXPORT_SYMBOL_GPL(mmc_set_initial_state);
- 
- /**
-  * mmc_vdd_to_ocrbitnum - Convert a voltage to the OCR bit number
-@@ -1266,6 +1268,7 @@ void mmc_set_timing(struct mmc_host *host, unsigned int timing)
- 	host->ios.timing = timing;
- 	mmc_set_ios(host);
- }
-+EXPORT_SYMBOL_GPL(mmc_set_timing);
- 
- /*
-  * Select appropriate driver type for host.
-diff --git a/drivers/mmc/core/core.h b/drivers/mmc/core/core.h
-index f5f3f62..a086152 100644
---- a/drivers/mmc/core/core.h
-+++ b/drivers/mmc/core/core.h
-@@ -42,7 +42,7 @@ struct device_node *mmc_of_find_child_device(struct mmc_host *host,
- void mmc_init_erase(struct mmc_card *card);
- 
- void mmc_set_chip_select(struct mmc_host *host, int mode);
--void mmc_set_clock(struct mmc_host *host, unsigned int hz);
-+extern void mmc_set_clock(struct mmc_host *host, unsigned int hz);
- void mmc_set_bus_mode(struct mmc_host *host, unsigned int mode);
- void mmc_set_bus_width(struct mmc_host *host, unsigned int width);
- u32 mmc_select_voltage(struct mmc_host *host, u32 ocr);
-diff --git a/drivers/mmc/core/mmc.c b/drivers/mmc/core/mmc.c
-index b4bcebc..2a642fc 100644
---- a/drivers/mmc/core/mmc.c
-+++ b/drivers/mmc/core/mmc.c
-@@ -975,7 +975,7 @@ static int mmc_select_powerclass(struct mmc_card *card)
- /*
-  * Set the bus speed for the selected speed mode.
-  */
--static void mmc_set_bus_speed(struct mmc_card *card)
-+void mmc_set_bus_speed(struct mmc_card *card)
- {
- 	unsigned int max_dtr = (unsigned int)-1;
- 
-@@ -995,7 +995,7 @@ static void mmc_set_bus_speed(struct mmc_card *card)
-  * If the bus width is changed successfully, return the selected width value.
-  * Zero is returned instead of error value if the wide width is not supported.
-  */
--static int mmc_select_bus_width(struct mmc_card *card)
-+int mmc_select_bus_width(struct mmc_card *card)
- {
- 	static unsigned ext_csd_bits[] = {
- 		EXT_CSD_BUS_WIDTH_8,
-@@ -1060,11 +1060,12 @@ static int mmc_select_bus_width(struct mmc_card *card)
- 
- 	return err;
- }
-+EXPORT_SYMBOL_GPL(mmc_select_bus_width);
- 
- /*
-  * Switch to the high-speed mode
-  */
--static int mmc_select_hs(struct mmc_card *card)
-+int mmc_select_hs(struct mmc_card *card)
- {
- 	int err;
- 
-@@ -1078,11 +1079,12 @@ static int mmc_select_hs(struct mmc_card *card)
- 
- 	return err;
- }
-+EXPORT_SYMBOL_GPL(mmc_select_hs);
- 
- /*
-  * Activate wide bus and DDR if supported.
-  */
--static int mmc_select_hs_ddr(struct mmc_card *card)
-+int mmc_select_hs_ddr(struct mmc_card *card)
- {
- 	struct mmc_host *host = card->host;
- 	u32 bus_width, ext_csd_bits;
-@@ -1151,8 +1153,9 @@ static int mmc_select_hs_ddr(struct mmc_card *card)
- 
- 	return err;
- }
-+EXPORT_SYMBOL_GPL(mmc_select_hs_ddr);
- 
--static int mmc_select_hs400(struct mmc_card *card)
-+int mmc_select_hs400(struct mmc_card *card)
- {
- 	struct mmc_host *host = card->host;
- 	unsigned int max_dtr;
-@@ -1246,6 +1249,7 @@ static int mmc_select_hs400(struct mmc_card *card)
- 	       __func__, err);
- 	return err;
- }
-+EXPORT_SYMBOL_GPL(mmc_select_hs400);
- 
- int mmc_hs200_to_hs400(struct mmc_card *card)
- {
-@@ -1524,7 +1528,7 @@ static int mmc_select_hs200(struct mmc_card *card)
- /*
-  * Activate High Speed, HS200 or HS400ES mode if supported.
-  */
--static int mmc_select_timing(struct mmc_card *card)
-+int mmc_select_timing(struct mmc_card *card)
- {
- 	int err = 0;
- 
-@@ -1559,12 +1563,13 @@ static int mmc_select_timing(struct mmc_card *card)
- 	mmc_set_bus_speed(card);
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(mmc_select_timing);
- 
- /*
-  * Execute tuning sequence to seek the proper bus operating
-  * conditions for HS200 and HS400, which sends CMD21 to the device.
-  */
--static int mmc_hs200_tuning(struct mmc_card *card)
-+int mmc_hs200_tuning(struct mmc_card *card)
- {
- 	struct mmc_host *host = card->host;
- 
-@@ -1579,6 +1584,7 @@ static int mmc_hs200_tuning(struct mmc_card *card)
- 
- 	return mmc_execute_tuning(card);
- }
-+EXPORT_SYMBOL_GPL(mmc_hs200_tuning);
- 
- /*
-  * Handle the detection and initialisation of a card.
-diff --git a/drivers/mmc/core/queue.c b/drivers/mmc/core/queue.c
-index 7b07520..cb679a7 100644
---- a/drivers/mmc/core/queue.c
-+++ b/drivers/mmc/core/queue.c
-@@ -68,6 +68,7 @@ enum mmc_issue_type mmc_issue_type(struct mmc_queue *mq, struct request *req)
- 
- 	return MMC_ISSUE_SYNC;
- }
-+EXPORT_SYMBOL_GPL(mmc_issue_type);
- 
- static void __mmc_cqe_recovery_notifier(struct mmc_queue *mq)
- {
-diff --git a/include/linux/mmc/mmc.h b/include/linux/mmc/mmc.h
-index d9a65c6..2884634 100644
---- a/include/linux/mmc/mmc.h
-+++ b/include/linux/mmc/mmc.h
-@@ -449,4 +449,13 @@ static inline bool mmc_ready_for_data(u32 status)
- 
- #define mmc_driver_type_mask(n)		(1 << (n))
- 
-+struct mmc_card;
+diff --git a/drivers/remoteproc/qcom_common.c b/drivers/remoteproc/qcom_common.c
+index 4b91e3c..12b4142 100644
+--- a/drivers/remoteproc/qcom_common.c
++++ b/drivers/remoteproc/qcom_common.c
+@@ -162,9 +162,12 @@ void qcom_minidump(struct rproc *rproc, unsigned int minidump_id)
+ 	 * is initialized in memory and encryption status is set.
+ 	 */
+ 	if (subsystem->regions_baseptr == 0 ||
+-	    le32_to_cpu(subsystem->status) != 1 ||
+-	    le32_to_cpu(subsystem->enabled) != MD_SS_ENABLED ||
+-	    le32_to_cpu(subsystem->encryption_status) != MD_SS_ENCR_DONE) {
++		le32_to_cpu(subsystem->status) != 1 ||
++		le32_to_cpu(subsystem->enabled) != MD_SS_ENABLED) {
++			return rproc_coredump(rproc);
++		}
 +
-+extern int mmc_select_bus_width(struct mmc_card *card);
-+extern int mmc_select_hs(struct mmc_card *card);
-+extern int mmc_select_hs_ddr(struct mmc_card *card);
-+extern int mmc_select_hs400(struct mmc_card *card);
-+extern int mmc_hs200_tuning(struct mmc_card *card);
-+extern int mmc_select_timing(struct mmc_card *card);
-+
- #endif /* LINUX_MMC_MMC_H */
++	if (le32_to_cpu(subsystem->encryption_status) != MD_SS_ENCR_DONE) {
+ 		dev_err(&rproc->dev, "Minidump not ready, skipping\n");
+ 		return;
+ 	}
+diff --git a/drivers/remoteproc/qcom_q6v5_pas.c b/drivers/remoteproc/qcom_q6v5_pas.c
+index 1ae47cc..40bf747 100644
+--- a/drivers/remoteproc/qcom_q6v5_pas.c
++++ b/drivers/remoteproc/qcom_q6v5_pas.c
+@@ -293,6 +293,7 @@ static const struct rproc_ops adsp_minidump_ops = {
+ 	.start = adsp_start,
+ 	.stop = adsp_stop,
+ 	.da_to_va = adsp_da_to_va,
++	.parse_fw = qcom_register_dump_segments,
+ 	.load = adsp_load,
+ 	.panic = adsp_panic,
+ 	.coredump = adsp_minidump,
 -- 
 2.7.4
 
