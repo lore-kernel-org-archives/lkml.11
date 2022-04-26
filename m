@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D40DC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D346C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:07:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346913AbiDZJJ0 (ORCPT
+        id S1346748AbiDZJJD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:09:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52762 "EHLO
+        Tue, 26 Apr 2022 05:09:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346465AbiDZIuF (ORCPT
+        with ESMTP id S1346221AbiDZIt6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:50:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59EA21399B9;
-        Tue, 26 Apr 2022 01:38:16 -0700 (PDT)
+        Tue, 26 Apr 2022 04:49:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05256C7EBF;
+        Tue, 26 Apr 2022 01:37:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 53B1CB81CF2;
-        Tue, 26 Apr 2022 08:38:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B7EFC385A0;
-        Tue, 26 Apr 2022 08:38:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A6AD60A67;
+        Tue, 26 Apr 2022 08:37:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65F01C385A0;
+        Tue, 26 Apr 2022 08:37:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962294;
-        bh=0AMYWBbfpUL//+F2tIsTAni2SaYlp5EIBR+OQERkZTc=;
+        s=korg; t=1650962278;
+        bh=CNOrExejcAtrT2uI/EvTsxM/o0aOOv5V/6eM/dQIZFk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m0Al9Dmb1JcxCykmVLVsXCNYi7uCNKeUObwyMSjH9ujvdsif5qDuXwGJtq55HaS39
-         o/lScZUQkamczqXCEnNYip1FS4Ram/YCRxMUentrLNzdJv2W5hxnzoUsC98XQox79D
-         YXzfO2NhvuqsK+E4cbr0G5aXeZ0ZF4EhWJEX1DWY=
+        b=esFXcL9XtfPp7Y9Gw2Ul/ptMgjdhsYjwcrR8d7doyFN5FiyESXda8s/vY0jT4TQ+e
+         pPAhitrpVppOOusSnt76PLfqVoBXUYML5rOgDVTWWtyEHaETTPF0ZHNQY8Xm4hRKcj
+         1YV+8SI7wb/N5fLthq5+5vE+7gCprplrPum41K+c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bernice Zhang <bernice.zhang@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 049/124] dmaengine: idxd: add RO check for wq max_transfer_size write
-Date:   Tue, 26 Apr 2022 10:20:50 +0200
-Message-Id: <20220426081748.695278023@linuxfoundation.org>
+        stable@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
+        Peilin Ye <peilin.ye@bytedance.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 036/124] ip6_gre: Avoid updating tunnel->tun_hlen in __gre6_xmit()
+Date:   Tue, 26 Apr 2022 10:20:37 +0200
+Message-Id: <20220426081748.330188844@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -50,38 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Jiang <dave.jiang@intel.com>
+From: Peilin Ye <peilin.ye@bytedance.com>
 
-[ Upstream commit 505a2d1032ae656b0a8c736be110255503941cde ]
+[ Upstream commit f40c064e933d7787ca7411b699504d7a2664c1f5 ]
 
-Block wq_max_transfer_size_store() when the device is configured as
-read-only and not configurable.
+Do not update tunnel->tun_hlen in data plane code.  Use a local variable
+instead, just like "tunnel_hlen" in net/ipv4/ip_gre.c:gre_fb_xmit().
 
-Fixes: d7aad5550eca ("dmaengine: idxd: add support for configurable max wq xfer size")
-Reported-by: Bernice Zhang <bernice.zhang@intel.com>
-Tested-by: Bernice Zhang <bernice.zhang@intel.com>
-Signed-off-by: Dave Jiang <dave.jiang@intel.com>
-Link: https://lore.kernel.org/r/164971488154.2200913.10706665404118545941.stgit@djiang5-desk3.ch.intel.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Co-developed-by: Cong Wang <cong.wang@bytedance.com>
+Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/idxd/sysfs.c | 3 +++
- 1 file changed, 3 insertions(+)
+ net/ipv6/ip6_gre.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/dma/idxd/sysfs.c b/drivers/dma/idxd/sysfs.c
-index f7ab5c077a2b..33d94c67fedb 100644
---- a/drivers/dma/idxd/sysfs.c
-+++ b/drivers/dma/idxd/sysfs.c
-@@ -842,6 +842,9 @@ static ssize_t wq_max_transfer_size_store(struct device *dev, struct device_attr
- 	u64 xfer_size;
- 	int rc;
+diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
+index 466a5610e3ca..288720838329 100644
+--- a/net/ipv6/ip6_gre.c
++++ b/net/ipv6/ip6_gre.c
+@@ -743,6 +743,7 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
+ 		struct ip_tunnel_info *tun_info;
+ 		const struct ip_tunnel_key *key;
+ 		__be16 flags;
++		int tun_hlen;
  
-+	if (!test_bit(IDXD_FLAG_CONFIGURABLE, &idxd->flags))
-+		return -EPERM;
-+
- 	if (wq->state != IDXD_WQ_DISABLED)
- 		return -EPERM;
+ 		tun_info = skb_tunnel_info_txcheck(skb);
+ 		if (IS_ERR(tun_info) ||
+@@ -760,9 +761,9 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
+ 		dsfield = key->tos;
+ 		flags = key->tun_flags &
+ 			(TUNNEL_CSUM | TUNNEL_KEY | TUNNEL_SEQ);
+-		tunnel->tun_hlen = gre_calc_hlen(flags);
++		tun_hlen = gre_calc_hlen(flags);
  
+-		gre_build_header(skb, tunnel->tun_hlen,
++		gre_build_header(skb, tun_hlen,
+ 				 flags, protocol,
+ 				 tunnel_id_to_key32(tun_info->key.tun_id),
+ 				 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++)
 -- 
 2.35.1
 
