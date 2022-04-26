@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A0C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:59:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B161EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:59:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245738AbiDZJCg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:02:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56044 "EHLO
+        id S239227AbiDZJDA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:03:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347127AbiDZIpv (ORCPT
+        with ESMTP id S1346933AbiDZIpb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:45:51 -0400
+        Tue, 26 Apr 2022 04:45:31 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA3C5793B5;
-        Tue, 26 Apr 2022 01:37:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 651603BBFD;
+        Tue, 26 Apr 2022 01:36:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BFC7603E0;
-        Tue, 26 Apr 2022 08:37:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31E9CC385A0;
-        Tue, 26 Apr 2022 08:37:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C4624618E8;
+        Tue, 26 Apr 2022 08:36:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3F4CC385A0;
+        Tue, 26 Apr 2022 08:36:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962243;
-        bh=WX/DtGNbHwolQ0XWCUvkRTjty4uMyDFVP57ojyvmgJ4=;
+        s=korg; t=1650962211;
+        bh=O5cWtjT6oZ9kHdt3jLx0dw74Nywf3PaeWXGX73eSrJs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O/m9gHQ4zbG/9VPNA0jnl+Dqe6FP6KeJCbkZg6yChFshWUv6/OxrPqQQlhCz9dw3H
-         xXFQYkvFFzLOiA86N3chniDtHq7BoU1UkYuEANS4OK42ngWtrsMwaFZVcRuM5MB5xQ
-         TxNovMJxEUSvwMaAL4Wsp9VY3TgNn8+j4OW/4dOc=
+        b=h8U5zN+LbLDcyYSiJ0UlwAT9RnmpiKXLmwGc3fFcoK4tDuKbsIQR3hBgS91Hh5huG
+         RNLRc3tqINJqQ/ELBEmkIgEYra/2wibdzMHxsZIEtDPc+X2A8uzoydL+ssEaLvlEnQ
+         wMyFUjyxU5Jv5w/4SLdm68GuwWtxPHU8f0gxgxT8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Naama Meir <naamax.meir@linux.intel.com>,
-        Paul Menzel <pmenzel@molgen.mpg.de>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 031/124] igc: Fix suspending when PTM is active
-Date:   Tue, 26 Apr 2022 10:20:32 +0200
-Message-Id: <20220426081748.188785492@linuxfoundation.org>
+        stable@vger.kernel.org, Tony Zhu <tony.zhu@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 022/124] dmaengine: idxd: fix device cleanup on disable
+Date:   Tue, 26 Apr 2022 10:20:23 +0200
+Message-Id: <20220426081747.936081453@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -52,63 +49,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+From: Dave Jiang <dave.jiang@intel.com>
 
-[ Upstream commit 822f52e7efdc88fccffb9fbf6250a4b7666a0b0f ]
+[ Upstream commit 12e45e89556d7a532120f976081e9e7582addd2b ]
 
-Some mainboard/CPU combinations, in particular, Alder Lake-S with a
-W680 mainboard, have shown problems (system hangs usually, no kernel
-logs) with suspend/resume when PCIe PTM is enabled and active. In some
-cases, it could be reproduced when removing the igc module.
+There are certain parts of WQ that needs to be cleaned up even after WQ is
+disabled during the device disable. Those are the unchangeable parts for a
+WQ when the device is still enabled. Move the cleanup outside of WQ state
+check. Remove idxd_wq_disable_cleanup() inside idxd_wq_device_reset_cleanup()
+since only the unchangeable parts need to be cleared.
 
-The best we can do is to stop PTM dialogs from the downstream/device
-side before the interface is brought down. PCIe PTM will be re-enabled
-when the interface is being brought up.
-
-Fixes: a90ec8483732 ("igc: Add support for PTP getcrosststamp()")
-Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Tested-by: Naama Meir <naamax.meir@linux.intel.com>
-Acked-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: 0f225705cf65 ("dmaengine: idxd: fix wq settings post wq disable")
+Reported-by: Tony Zhu <tony.zhu@intel.com>
+Tested-by: Tony Zhu <tony.zhu@intel.com>
+Signed-off-by: Dave Jiang <dave.jiang@intel.com>
+Link: https://lore.kernel.org/r/164919561905.1455025.13542366389944678346.stgit@djiang5-desk3.ch.intel.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/igc/igc_ptp.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+ drivers/dma/idxd/device.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_ptp.c b/drivers/net/ethernet/intel/igc/igc_ptp.c
-index 4f9245aa79a1..8e521f99b80a 100644
---- a/drivers/net/ethernet/intel/igc/igc_ptp.c
-+++ b/drivers/net/ethernet/intel/igc/igc_ptp.c
-@@ -996,6 +996,17 @@ static void igc_ptp_time_restore(struct igc_adapter *adapter)
- 	igc_ptp_write_i225(adapter, &ts);
+diff --git a/drivers/dma/idxd/device.c b/drivers/dma/idxd/device.c
+index 7bd9ac1e93b2..a67bafc596b7 100644
+--- a/drivers/dma/idxd/device.c
++++ b/drivers/dma/idxd/device.c
+@@ -406,7 +406,6 @@ static void idxd_wq_device_reset_cleanup(struct idxd_wq *wq)
+ {
+ 	lockdep_assert_held(&wq->wq_lock);
+ 
+-	idxd_wq_disable_cleanup(wq);
+ 	wq->size = 0;
+ 	wq->group = NULL;
+ }
+@@ -723,9 +722,9 @@ static void idxd_device_wqs_clear_state(struct idxd_device *idxd)
+ 
+ 		if (wq->state == IDXD_WQ_ENABLED) {
+ 			idxd_wq_disable_cleanup(wq);
+-			idxd_wq_device_reset_cleanup(wq);
+ 			wq->state = IDXD_WQ_DISABLED;
+ 		}
++		idxd_wq_device_reset_cleanup(wq);
+ 	}
  }
  
-+static void igc_ptm_stop(struct igc_adapter *adapter)
-+{
-+	struct igc_hw *hw = &adapter->hw;
-+	u32 ctrl;
-+
-+	ctrl = rd32(IGC_PTM_CTRL);
-+	ctrl &= ~IGC_PTM_CTRL_EN;
-+
-+	wr32(IGC_PTM_CTRL, ctrl);
-+}
-+
- /**
-  * igc_ptp_suspend - Disable PTP work items and prepare for suspend
-  * @adapter: Board private structure
-@@ -1013,8 +1024,10 @@ void igc_ptp_suspend(struct igc_adapter *adapter)
- 	adapter->ptp_tx_skb = NULL;
- 	clear_bit_unlock(__IGC_PTP_TX_IN_PROGRESS, &adapter->state);
- 
--	if (pci_device_is_present(adapter->pdev))
-+	if (pci_device_is_present(adapter->pdev)) {
- 		igc_ptp_time_save(adapter);
-+		igc_ptm_stop(adapter);
-+	}
- }
- 
- /**
 -- 
 2.35.1
 
