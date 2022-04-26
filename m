@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0B86C4167E
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:48:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FB8DC3527A
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:48:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346848AbiDZIuq (ORCPT
+        id S1346994AbiDZIu7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:50:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58492 "EHLO
+        Tue, 26 Apr 2022 04:50:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345814AbiDZIje (ORCPT
+        with ESMTP id S1345804AbiDZIjd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:39:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9D9A76293;
-        Tue, 26 Apr 2022 01:31:36 -0700 (PDT)
+        Tue, 26 Apr 2022 04:39:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23AD770911;
+        Tue, 26 Apr 2022 01:31:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 76BA4B81CF3;
-        Tue, 26 Apr 2022 08:31:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDAADC385A0;
-        Tue, 26 Apr 2022 08:31:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DA40DB81CF9;
+        Tue, 26 Apr 2022 08:31:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 342C0C385A0;
+        Tue, 26 Apr 2022 08:31:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961894;
-        bh=5T3eTfQO08G5FmqikWHLKnbCUxqKl/QAJjfaLnqdXfE=;
+        s=korg; t=1650961882;
+        bh=wa6DKY7ihCAiI4ORJ4Lemo2W/kJEgxqyoapglfQxiiI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lor8HovSYpCupsAKpoNvLwgEjct/lfADAIBhqEG18IinOIqKe4mmMY7wtxGeco/zH
-         JJ7Yw31t6dKPky4MAvSjBqwSDNEG6fQqnU1O45FZ5XZnOtCx+gZWuRRHlqPyCBospy
-         DQQAuXpK38xHgS/nfXVCRu+mKnAbUlDUmIxH32X0=
+        b=zTIhCndvvQ9lFjQdYDx/ZcDCTWzJZ93lSng+ASgD7p7SwgN/5Oh6e4Lqjsy+Mkhh9
+         lTHsT/Y5yjfo+mAp8uKljrTzjGiGK9DyYUxFKXc+kKU2FwK9FefzAvx4gjRIodGec6
+         bTogZk3jJD1BRAHOYZgPC8Ny7lld+LbMSauww53o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        James Hutchinson <jahutchinson99@googlemail.com>,
-        Dima Ruinskiy <dima.ruinskiy@intel.com>,
-        Sasha Neftin <sasha.neftin@intel.com>,
-        Naama Meir <naamax.meir@linux.intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.4 49/62] e1000e: Fix possible overflow in LTR decoding
-Date:   Tue, 26 Apr 2022 10:21:29 +0200
-Message-Id: <20220426081738.628092897@linuxfoundation.org>
+        stable@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
+        Guo Ren <guoren@kernel.org>, Max Filippov <jcmvbkbc@gmail.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Subject: [PATCH 5.4 45/62] xtensa: patch_text: Fixup last cpu should be master
+Date:   Tue, 26 Apr 2022 10:21:25 +0200
+Message-Id: <20220426081738.514474363@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
 References: <20220426081737.209637816@linuxfoundation.org>
@@ -53,52 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+From: Guo Ren <guoren@linux.alibaba.com>
 
-commit 04ebaa1cfddae5f240cc7404f009133bb0389a47 upstream.
+commit ee69d4be8fd064cd08270b4808d2dfece3614ee0 upstream.
 
-When we decode the latency and the max_latency, u16 value may not fit
-the required size and could lead to the wrong LTR representation.
+These patch_text implementations are using stop_machine_cpuslocked
+infrastructure with atomic cpu_count. The original idea: When the
+master CPU patch_text, the others should wait for it. But current
+implementation is using the first CPU as master, which couldn't
+guarantee the remaining CPUs are waiting. This patch changes the
+last CPU as the master to solve the potential risk.
 
-Scaling is represented as:
-scale 0 - 1         (2^(5*0)) = 2^0
-scale 1 - 32        (2^(5 *1))= 2^5
-scale 2 - 1024      (2^(5 *2)) =2^10
-scale 3 - 32768     (2^(5 *3)) =2^15
-scale 4 - 1048576   (2^(5 *4)) = 2^20
-scale 5 - 33554432  (2^(5 *4)) = 2^25
-scale 4 and scale 5 required 20 and 25 bits respectively.
-scale 6 reserved.
-
-Replace the u16 type with the u32 type and allow corrected LTR
-representation.
-
-Cc: stable@vger.kernel.org
-Fixes: 44a13a5d99c7 ("e1000e: Fix the max snoop/no-snoop latency for 10M")
-Reported-by: James Hutchinson <jahutchinson99@googlemail.com>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215689
-Suggested-by: Dima Ruinskiy <dima.ruinskiy@intel.com>
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Naama Meir <naamax.meir@linux.intel.com>
-Tested-by: James Hutchinson <jahutchinson99@googlemail.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: 64711f9a47d4 ("xtensa: implement jump_label support")
+Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+Signed-off-by: Guo Ren <guoren@kernel.org>
+Reviewed-by: Max Filippov <jcmvbkbc@gmail.com>
+Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: <stable@vger.kernel.org>
+Message-Id: <20220407073323.743224-4-guoren@kernel.org>
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/e1000e/ich8lan.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/xtensa/kernel/jump_label.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
-+++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-@@ -995,8 +995,8 @@ static s32 e1000_platform_pm_pch_lpt(str
+--- a/arch/xtensa/kernel/jump_label.c
++++ b/arch/xtensa/kernel/jump_label.c
+@@ -40,7 +40,7 @@ static int patch_text_stop_machine(void
  {
- 	u32 reg = link << (E1000_LTRV_REQ_SHIFT + E1000_LTRV_NOSNOOP_SHIFT) |
- 	    link << E1000_LTRV_REQ_SHIFT | E1000_LTRV_SEND;
--	u16 max_ltr_enc_d = 0;	/* maximum LTR decoded by platform */
--	u16 lat_enc_d = 0;	/* latency decoded */
-+	u32 max_ltr_enc_d = 0;	/* maximum LTR decoded by platform */
-+	u32 lat_enc_d = 0;	/* latency decoded */
- 	u16 lat_enc = 0;	/* latency encoded */
+ 	struct patch *patch = data;
  
- 	if (link) {
+-	if (atomic_inc_return(&patch->cpu_count) == 1) {
++	if (atomic_inc_return(&patch->cpu_count) == num_online_cpus()) {
+ 		local_patch_text(patch->addr, patch->data, patch->sz);
+ 		atomic_inc(&patch->cpu_count);
+ 	} else {
 
 
