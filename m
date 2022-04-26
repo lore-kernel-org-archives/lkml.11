@@ -2,89 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33658C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 04:09:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1A35C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 04:09:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243900AbiDZEMS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 00:12:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59796 "EHLO
+        id S243937AbiDZEM7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 00:12:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243903AbiDZEMH (ORCPT
+        with ESMTP id S234748AbiDZEMy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 00:12:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44B0F17E13;
-        Mon, 25 Apr 2022 21:09:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F020FB81C0E;
-        Tue, 26 Apr 2022 04:08:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 026BCC385A4;
-        Tue, 26 Apr 2022 04:08:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650946138;
-        bh=UF2W6wDrcxlNMtRIim34cJfK+miQaqNxs0sRQs93kdc=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=oZK/Bkylyrvwtb+97S1FgyI27WMH/0/jf1Ljzxr1W0Esd1vpY82/bUpt3K8vAW0IW
-         +nU/QMWo9MVCzGZZrv4D/s6okRjDpRl3yeNyeHonZKxKkrrDn00D9PgaWnC2KDk7mt
-         WgongvnOf6/tnitnawdiKFslUj8LG4+sg8fqrs5Rqn1/y6CAok5SbNaEniLUvzhrnl
-         RYyBuqdooZ4fb1v8QvlAhVQzTo00S54sGt4afhR3iUgwrpNjLKcTBqYNJrxMB9t77P
-         C0/iW8yA+HcI5CLutsdjR6tVJXqXu/GpmgmqIPuHIA8pmSaS9f/j7Vp02fxU36+84I
-         pcgxnlKSgaWfw==
-Message-ID: <16d4ad77b5f306e14c089d56c60b160d1d23be52.camel@kernel.org>
-Subject: Re: [PATCH V4 00/31] x86/sgx and selftests/sgx: Support SGX2
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Reinette Chatre <reinette.chatre@intel.com>,
-        "Dhanraj, Vijay" <vijay.dhanraj@intel.com>
-Cc:     "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "Lutomirski, Andy" <luto@kernel.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "Shanahan, Mark" <mark.shanahan@intel.com>,
-        "Christopherson,, Sean" <seanjc@google.com>,
-        "Huang, Kai" <kai.huang@intel.com>,
-        "Zhang, Cathy" <cathy.zhang@intel.com>,
-        "Xing, Cedric" <cedric.xing@intel.com>,
-        "Huang, Haitao" <haitao.huang@intel.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Date:   Tue, 26 Apr 2022 07:10:26 +0300
-In-Reply-To: <d8aceb1e-c6ef-1ca0-f11e-e7e83e634854@intel.com>
-References: <cover.1649878359.git.reinette.chatre@intel.com>
-         <2f4338f37943c2b067db16ae65c9af665d3b51d9.camel@kernel.org>
-         <9fbf26c8-5808-20c5-8653-d4f36bf398a4@intel.com>
-         <42a52a6018e8dadb4c3eebefaae4dab31c0d5721.camel@kernel.org>
-         <DM8PR11MB5591BBA189BC4EA5CFE2C7EAF6EF9@DM8PR11MB5591.namprd11.prod.outlook.com>
-         <54f053d8bb6b72725b2351fc2016d20b65cebbf1.camel@kernel.org>
-         <DM8PR11MB559180D1BA05B0E77D354467F6F49@DM8PR11MB5591.namprd11.prod.outlook.com>
-         <a94e4098-f5c1-f9ff-fab0-c2e5210cf188@intel.com>
-         <YmJyYwp9UHRLWaTw@kernel.org>
-         <DM8PR11MB5591CACC6757FE71B3E19FC3F6F89@DM8PR11MB5591.namprd11.prod.outlook.com>
-         <d8aceb1e-c6ef-1ca0-f11e-e7e83e634854@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.1 
+        Tue, 26 Apr 2022 00:12:54 -0400
+Received: from conssluserg-03.nifty.com (conssluserg-03.nifty.com [210.131.2.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3464E17E3E;
+        Mon, 25 Apr 2022 21:09:47 -0700 (PDT)
+Received: from mail-pj1-f46.google.com (mail-pj1-f46.google.com [209.85.216.46]) (authenticated)
+        by conssluserg-03.nifty.com with ESMTP id 23Q49Mom019014;
+        Tue, 26 Apr 2022 13:09:22 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 23Q49Mom019014
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1650946162;
+        bh=vlQmv5riRzngKOKBqAqSk4kL8xP/v527bj+1qTzl/Rs=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=kDRO6n4gcrugtInPeEtD2mbsqkzimAnrWpgjATsadHhZu2Mi3sukqotidRdr0/5Oy
+         VPhYHBPYXCEJpLzSb+5rq+K3nqW2cE42H6K8ONhywaLUGgve5ql7hcbrYM2WK1G9NA
+         /OqC30MXIOxKCzvK/qT1sUWsmyNEt+Bhink6eUw41ePn92d7GYFHmuAmcilP6Itpw1
+         YEnCme4mVk4EjUOscfA/yCqfleX9hHW7df0Ae/+g4qzBwDRX4t580HHYqZU/2aKVeA
+         CUXWwbUFqAnFvk38Wmzmx1sPBjK2o9T4azPl59o/vr/+9LlI1vTX3aT0OyRykhnE2O
+         pGNktduCLdJeA==
+X-Nifty-SrcIP: [209.85.216.46]
+Received: by mail-pj1-f46.google.com with SMTP id u6-20020a17090a1f0600b001d86bd69427so1355364pja.5;
+        Mon, 25 Apr 2022 21:09:22 -0700 (PDT)
+X-Gm-Message-State: AOAM532dIkyNtxjdZDkVwfmGKsGTXoUHtDDGK/c41iUE7axQxNKv6AKg
+        5lekvUnG9t65YM542UHSWPaLjQ73mIZx/pMAbxo=
+X-Google-Smtp-Source: ABdhPJyeTNXk3eEgUbbGnI1xpxigeGRimHhJalVAMLzx3oMGsvYQPLReffx9PB/krO9KrZOWN3kQB06Mm5If++lLOVw=
+X-Received: by 2002:a17:90a:e517:b0:1d7:5bbd:f9f0 with SMTP id
+ t23-20020a17090ae51700b001d75bbdf9f0mr24345046pjy.77.1650946161687; Mon, 25
+ Apr 2022 21:09:21 -0700 (PDT)
 MIME-Version: 1.0
+References: <20220424190811.1678416-1-masahiroy@kernel.org>
+ <20220424190811.1678416-17-masahiroy@kernel.org> <CAKwvOdk1nt4b9am=_BP=U3igkSRBN14nx+5oS8iaaw9zhbH5JA@mail.gmail.com>
+In-Reply-To: <CAKwvOdk1nt4b9am=_BP=U3igkSRBN14nx+5oS8iaaw9zhbH5JA@mail.gmail.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Tue, 26 Apr 2022 13:08:45 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAR-u=EVzPL+iJHoBW62AK2ViD3nVnL79EdxNS03UxmkBA@mail.gmail.com>
+Message-ID: <CAK7LNAR-u=EVzPL+iJHoBW62AK2ViD3nVnL79EdxNS03UxmkBA@mail.gmail.com>
+Subject: Re: [PATCH 16/27] modpost: make multiple export error
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-04-25 at 16:56 -0700, Reinette Chatre wrote:
-> > [PATCH V4 16/31] x86/sgx: Support adding of pages to an initialized enc=
-lave
-> > [PATCH V4 15/31] x86/sgx: Support restricting of enclave page permissio=
-ns
-> > [PATCH V4 18/31] x86/sgx: Support modifying SGX page type
-> > [PATCH V4 19/31] x86/sgx: Support complete page removal
+On Tue, Apr 26, 2022 at 3:48 AM Nick Desaulniers
+<ndesaulniers@google.com> wrote:
+>
+> On Sun, Apr 24, 2022 at 12:09 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
+> >
+> > This is currently a warning, but I think modpost should stop building
+> > in this case.
+> >
+> > If the same symbol is exported multiple times and we let it keep going,
+> > the sanity check becomes difficult.
+> >
+> > Only the legitimate case is that an external module overrides the
+> > corresponding in-tree module to provide a different implementation
+> > with the same interface.
+>
+> Could the same module export a weak version of a symbol, and a strong one?
 
-You can add my tested-by to all of the four now [*].
+No.  There is no concept like   EXPORT_SYMBOL_WEAK.
 
-[*] https://github.com/enarx/enarx/pull/1776
+I am talking about kmod things.
+You can modprobe an external module instead of the in-kernel one.
 
-BR, Jarkko
+>
+> Can kernel modules override in-kernel strong symbols?
+
+Yes, I think so.
+
+
+>
+> >
+> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> > ---
+> >
+> >  scripts/mod/modpost.c | 6 +++---
+> >  1 file changed, 3 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+> > index 14044cd94aaa..73f0b98e3b5a 100644
+> > --- a/scripts/mod/modpost.c
+> > +++ b/scripts/mod/modpost.c
+> > @@ -411,9 +411,9 @@ static struct symbol *sym_add_exported(const char *name, struct module *mod,
+> >                 list_add_tail(&s->list, &mod->exported_symbols);
+> >         } else if (!external_module || s->module->is_vmlinux ||
+> >                    s->module == mod) {
+> > -               warn("%s: '%s' exported twice. Previous export was in %s%s\n",
+> > -                    mod->name, name, s->module->name,
+> > -                    s->module->is_vmlinux ? "" : ".ko");
+> > +               error("%s: '%s' exported twice. Previous export was in %s%s\n",
+> > +                     mod->name, name, s->module->name,
+> > +                     s->module->is_vmlinux ? "" : ".ko");
+> >                 return s;
+> >         }
+> >
+> > --
+> > 2.32.0
+> >
+>
+>
+> --
+> Thanks,
+> ~Nick Desaulniers
+
+
+
+-- 
+Best Regards
+Masahiro Yamada
