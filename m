@@ -2,43 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D5D4C3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DB0EC46467
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:12:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347102AbiDZJNz (ORCPT
+        id S1347160AbiDZJOB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:13:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52764 "EHLO
+        Tue, 26 Apr 2022 05:14:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347684AbiDZIvv (ORCPT
+        with ESMTP id S1347667AbiDZIvu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:51:51 -0400
+        Tue, 26 Apr 2022 04:51:50 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 005FCD399F;
-        Tue, 26 Apr 2022 01:40:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 452CC13FB8;
+        Tue, 26 Apr 2022 01:40:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2617B81CFA;
-        Tue, 26 Apr 2022 08:40:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29CEBC385A0;
-        Tue, 26 Apr 2022 08:40:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D5362B81D1B;
+        Tue, 26 Apr 2022 08:40:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FB03C385B0;
+        Tue, 26 Apr 2022 08:40:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962445;
-        bh=wa6DKY7ihCAiI4ORJ4Lemo2W/kJEgxqyoapglfQxiiI=;
+        s=korg; t=1650962436;
+        bh=ZECTkgl81n78hZ7uxN4JX8xL/27fYo6cIxZg+Du304Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ajQpFr4QiCMxUyQLMdVrQtgkaYRX/UQZN2Oz2Yf2e/gC1rkxB4Vcmula6ZgGIponB
-         yLf0EI83n0KI2cR6gBE+Bv+hAM9CNztAbkx/5YtxaqFeEUMDwSMfTSXizlRSUDVqWX
-         lLKVVuf0JxE47VS+yF9WcNSz7PYrTsocxQUfv2Wk=
+        b=ayPLPbVF0pCMlmpa666CXXaqybDsg3DX6C+uwjLUO1E/HT4VtAYA8tf6AS42gWt74
+         nrhum6OAeOI1nY1vnYUHDTchDEKfdZxtKWhsO6r1fFGNS8OEl1RIqFKsGTttJLQ0Lk
+         c+2q1qh8GZEpypv+KL5jXsSZgqvU1/GuVep1QLws=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
-        Guo Ren <guoren@kernel.org>, Max Filippov <jcmvbkbc@gmail.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Subject: [PATCH 5.15 099/124] xtensa: patch_text: Fixup last cpu should be master
-Date:   Tue, 26 Apr 2022 10:21:40 +0200
-Message-Id: <20220426081750.114127201@linuxfoundation.org>
+        stable@vger.kernel.org, Leo Yan <leo.yan@linaro.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        German Gomez <german.gomez@arm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        James Clark <james.clark@arm.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 097/124] perf script: Always allow field data_src for auxtrace
+Date:   Tue, 26 Apr 2022 10:21:38 +0200
+Message-Id: <20220426081750.057351677@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -50,40 +59,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Ren <guoren@linux.alibaba.com>
+From: Leo Yan <leo.yan@linaro.org>
 
-commit ee69d4be8fd064cd08270b4808d2dfece3614ee0 upstream.
+[ Upstream commit c6d8df01064333dcf140eda996abdb60a60e24b3 ]
 
-These patch_text implementations are using stop_machine_cpuslocked
-infrastructure with atomic cpu_count. The original idea: When the
-master CPU patch_text, the others should wait for it. But current
-implementation is using the first CPU as master, which couldn't
-guarantee the remaining CPUs are waiting. This patch changes the
-last CPU as the master to solve the potential risk.
+If use command 'perf script -F,+data_src' to dump memory samples with
+Arm SPE trace data, it reports error:
 
-Fixes: 64711f9a47d4 ("xtensa: implement jump_label support")
-Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-Signed-off-by: Guo Ren <guoren@kernel.org>
-Reviewed-by: Max Filippov <jcmvbkbc@gmail.com>
-Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
-Cc: <stable@vger.kernel.org>
-Message-Id: <20220407073323.743224-4-guoren@kernel.org>
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  # perf script -F,+data_src
+  Samples for 'dummy:u' event do not have DATA_SRC attribute set. Cannot print 'data_src' field.
+
+This is because the 'dummy:u' event is absent DATA_SRC bit in its sample
+type, so if a file contains AUX area tracing data then always allow
+field 'data_src' to be selected as an option for perf script.
+
+Fixes: e55ed3423c1bb29f ("perf arm-spe: Synthesize memory event")
+Signed-off-by: Leo Yan <leo.yan@linaro.org>
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: German Gomez <german.gomez@arm.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: James Clark <james.clark@arm.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Leo Yan <leo.yan@linaro.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220417114837.839896-1-leo.yan@linaro.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/xtensa/kernel/jump_label.c |    2 +-
+ tools/perf/builtin-script.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/xtensa/kernel/jump_label.c
-+++ b/arch/xtensa/kernel/jump_label.c
-@@ -40,7 +40,7 @@ static int patch_text_stop_machine(void
- {
- 	struct patch *patch = data;
+diff --git a/tools/perf/builtin-script.c b/tools/perf/builtin-script.c
+index 18b56256bb6f..cb3d81adf5ca 100644
+--- a/tools/perf/builtin-script.c
++++ b/tools/perf/builtin-script.c
+@@ -455,7 +455,7 @@ static int evsel__check_attr(struct evsel *evsel, struct perf_session *session)
+ 		return -EINVAL;
  
--	if (atomic_inc_return(&patch->cpu_count) == 1) {
-+	if (atomic_inc_return(&patch->cpu_count) == num_online_cpus()) {
- 		local_patch_text(patch->addr, patch->data, patch->sz);
- 		atomic_inc(&patch->cpu_count);
- 	} else {
+ 	if (PRINT_FIELD(DATA_SRC) &&
+-	    evsel__check_stype(evsel, PERF_SAMPLE_DATA_SRC, "DATA_SRC", PERF_OUTPUT_DATA_SRC))
++	    evsel__do_check_stype(evsel, PERF_SAMPLE_DATA_SRC, "DATA_SRC", PERF_OUTPUT_DATA_SRC, allow_user_set))
+ 		return -EINVAL;
+ 
+ 	if (PRINT_FIELD(WEIGHT) &&
+-- 
+2.35.1
+
 
 
