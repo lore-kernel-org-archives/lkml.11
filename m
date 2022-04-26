@@ -2,135 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BBF1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 00:47:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F38C3C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 00:53:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240616AbiDZAub (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 20:50:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40824 "EHLO
+        id S234302AbiDZA5B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 20:57:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240562AbiDZAua (ORCPT
+        with ESMTP id S230268AbiDZA45 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 20:50:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E86A88233F;
-        Mon, 25 Apr 2022 17:47:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AB226B81BBD;
-        Tue, 26 Apr 2022 00:47:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C00CC385BC;
-        Tue, 26 Apr 2022 00:47:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650934041;
-        bh=kLamuQx/TZ/sNoIRw/5TAxBjveCbRpEZboY1GBz+FsU=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ff3YbpHMajkkkQd7iGBvfo0jDfSl0+Es3gn64y/jL/MpVBIfCrSI2ej1Bb1CX9Cyj
-         C/wyYFVOu8n8PmRIrl/23O/Sqdm3lKb5PugMl0sQYHUsO9rSI15ZUG7GJaonc3kfpw
-         0lfX/waaN/3oLyl59rSWdx1VNwSYmRTsKnXYLStxl/SwhQMSIl/f5LLu/JUk//sAhw
-         EL3RV3VwvrFpC85bQVAmoptp6PTvBCiNpoJvr+g7mEL9dVA6NyodDhPornLJEk2EYj
-         8AootvLdDgj55S7H5PnBAArXtXwPDGUN7F0Ll0htf4vBlMHmB4/m9n04J2DpOHwBX8
-         cYUyVp+VbqaRA==
-Received: by mail-pf1-f171.google.com with SMTP id y38so673365pfa.6;
-        Mon, 25 Apr 2022 17:47:21 -0700 (PDT)
-X-Gm-Message-State: AOAM531Vmxo9QAMLDi691J+p+9N/T/L4YS1zyFweoVCs8drCdPfx81F9
-        3U2g+HVvZC/+X+g9PabnuwqQl2oi5jIOv25m4Q==
-X-Google-Smtp-Source: ABdhPJycsc7NBLBhkO+uQw3aVqYzcavGPUv3sesqoIz5RMiNfznfUgjgBNTclu+0EbdqOtljNB8bkZ9ZkyhqfqI73qY=
-X-Received: by 2002:a05:6a00:10d0:b0:4f7:5af4:47b6 with SMTP id
- d16-20020a056a0010d000b004f75af447b6mr21383086pfu.6.1650934040893; Mon, 25
- Apr 2022 17:47:20 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220422120850.769480-1-herve.codina@bootlin.com>
- <20220422120850.769480-2-herve.codina@bootlin.com> <YmdAqGyl5pyjvwX+@robh.at.kernel.org>
-In-Reply-To: <YmdAqGyl5pyjvwX+@robh.at.kernel.org>
+        Mon, 25 Apr 2022 20:56:57 -0400
+Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A505111F616;
+        Mon, 25 Apr 2022 17:53:51 -0700 (PDT)
+Received: by mail-oi1-f173.google.com with SMTP id z2so19083816oic.6;
+        Mon, 25 Apr 2022 17:53:51 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=LiBb1G/G7jJu1o65ShfAjvqlVVoLC33DiAZWBcbJn+4=;
+        b=k/thr53Z6qcTZqQ5Q4ETWcPWOx3rDwkYFVQv3tn7jtwxpYNKY/hY33VMKA1gjm7Klu
+         kji4uwdiUHyaDjVjhpb+WbjnfLyNse7v9XQhJZNVAAZSwBI2wWh/Dx5+ZUJsZOip5d8v
+         JmSlL6DIXb4n7yUQSRak/0HkPv8uOiVcpWR6njLesM8h9Spic5++GVEv0qL6q5jIip56
+         +qAQaWt72iR+Xeq0iok7HrqdnssJnTrl+h2CZ4SMQAv6Vtt4+ZN63+DOx9Ft5ZIUCuLi
+         b9ERobUYg+fqDtblai5mMuEdAbBVAkPZqG6vq6DMbqLPOg+68Wp5jBPJFMkYA6dnQf2j
+         NM0Q==
+X-Gm-Message-State: AOAM530bLUo4heP4U0iLKHtykNps65r8mrT4ad80thdkt0wfcDacSyM/
+        iK0+PcX4AIMir799+p8ikA==
+X-Google-Smtp-Source: ABdhPJxRtbVDPzmmRpgRZB/ig6Pk79odkg8n0ekCj8+d9FU1Xibzq+67urtM1Z7f1l8HGFrnC+qJGw==
+X-Received: by 2002:a05:6808:28a:b0:325:5b2e:bfb2 with SMTP id z10-20020a056808028a00b003255b2ebfb2mr466762oic.206.1650934431026;
+        Mon, 25 Apr 2022 17:53:51 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id z5-20020a0568301da500b006054fd8c847sm4416348oti.11.2022.04.25.17.53.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Apr 2022 17:53:50 -0700 (PDT)
+Received: (nullmailer pid 655384 invoked by uid 1000);
+        Tue, 26 Apr 2022 00:53:49 -0000
+Date:   Mon, 25 Apr 2022 19:53:49 -0500
 From:   Rob Herring <robh@kernel.org>
-Date:   Mon, 25 Apr 2022 19:47:08 -0500
-X-Gmail-Original-Message-ID: <CAL_Jsq+CZs_0X5R19R86Vck3BeMKYqhNUeZnvZ_YSwuA8ZH3Eg@mail.gmail.com>
-Message-ID: <CAL_Jsq+CZs_0X5R19R86Vck3BeMKYqhNUeZnvZ_YSwuA8ZH3Eg@mail.gmail.com>
-Subject: Re: [PATCH v3 1/8] dt-bindings: PCI: pci-rcar-gen2: Convert bindings
- to json-schema
-To:     Herve Codina <herve.codina@bootlin.com>
-Cc:     Marek Vasut <marek.vasut+renesas@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
+To:     David Heidelberg <david@ixit.cz>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
-        PCI <linux-pci@vger.kernel.org>,
-        "open list:MEDIA DRIVERS FOR RENESAS - FCP" 
-        <linux-renesas-soc@vger.kernel.org>, devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Clement Leger <clement.leger@bootlin.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] dt-bindings: mailbox: qcom-ipcc: add missing
+ compatible for SM8450
+Message-ID: <YmdCnWRu6AgBlsEH@robh.at.kernel.org>
+References: <20220425134717.55418-1-david@ixit.cz>
+ <6f72be3c-c907-bc7a-6b64-6becfc76934e@linaro.org>
+ <33da014b-bfb0-a39f-aba7-f469fcb5cfbb@ixit.cz>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <33da014b-bfb0-a39f-aba7-f469fcb5cfbb@ixit.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 7:45 PM Rob Herring <robh@kernel.org> wrote:
->
-> On Fri, Apr 22, 2022 at 02:08:43PM +0200, Herve Codina wrote:
-> > Convert Renesas PCI bridge bindings documentation to json-schema.
-> >
-> > Signed-off-by: Herve Codina <herve.codina@bootlin.com>
-> > ---
-> >  .../devicetree/bindings/pci/pci-rcar-gen2.txt |  84 ----------
-> >  .../bindings/pci/renesas,pci-rcar-gen2.yaml   | 156 ++++++++++++++++++
-> >  2 files changed, 156 insertions(+), 84 deletions(-)
-> >  delete mode 100644 Documentation/devicetree/bindings/pci/pci-rcar-gen2.txt
-> >  create mode 100644 Documentation/devicetree/bindings/pci/renesas,pci-rcar-gen2.yaml
->
-> > diff --git a/Documentation/devicetree/bindings/pci/renesas,pci-rcar-gen2.yaml b/Documentation/devicetree/bindings/pci/renesas,pci-rcar-gen2.yaml
-> > new file mode 100644
-> > index 000000000000..494eb975c146
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/pci/renesas,pci-rcar-gen2.yaml
-> > @@ -0,0 +1,156 @@
-> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/pci/renesas,pci-rcar-gen2.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Renesas AHB to PCI bridge
-> > +
-> > +maintainers:
-> > +  - Marek Vasut <marek.vasut+renesas@gmail.com>
-> > +  - Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> > +
-> > +description: |
-> > +  This is the bridge used internally to connect the USB controllers to the
-> > +  AHB. There is one bridge instance per USB port connected to the internal
-> > +  OHCI and EHCI controllers.
-> > +
-> > +allOf:
-> > +  - $ref: /schemas/pci/pci-bus.yaml#
-> > +
-> > +properties:
-> > +  compatible:
-> > +    oneOf:
-> > +      - items:
->
-> Don't need oneOf with only 1 entry. Otherwise,
+On Mon, Apr 25, 2022 at 04:05:57PM +0200, David Heidelberg wrote:
+> On 25/04/2022 15:51, Krzysztof Kozlowski wrote:
+> > On 25/04/2022 15:47, David Heidelberg wrote:
+> > > Adds forgotten compatible and update SPDX header.
+> > You need to explain what is this "forgotten compatible". It's to vague.
+> Forgotten by someone who implemented it in driver. Hope that clarify it for
+> you and possibly other readers. Btw. qcom,*sm8450* compatibles are widely
+> used and fact that `make dtbs_check` noticed it missing here isn't
+> suprising..
+> > 
+> > The SPDX update lacks answer to "why". There is no reason to do it, so
+> > please explain why it is needed.
+> 
+> Please read https://spdx.org/licenses/GPL-2.0.html (red colored text).
+> 
+> I personally encountered situation, where usage GPL license without specific
+> `-only` or `-or-later` caused unnecessary confusion and uncertainty.
 
-Nevermind, I see you need it in the next patch.
+I don't mind changing these, but please do a tree wide change for all 
+bindings, not an 'while I'm here also change X' change.
 
->
-> Reviewed-by: Rob Herring <robh@kernel.org>
->
-> > +          - enum:
-> > +              - renesas,pci-r8a7742      # RZ/G1H
-> > +              - renesas,pci-r8a7743      # RZ/G1M
-> > +              - renesas,pci-r8a7744      # RZ/G1N
-> > +              - renesas,pci-r8a7745      # RZ/G1E
-> > +              - renesas,pci-r8a7790      # R-Car H2
-> > +              - renesas,pci-r8a7791      # R-Car M2-W
-> > +              - renesas,pci-r8a7793      # R-Car M2-N
-> > +              - renesas,pci-r8a7794      # R-Car E2
-> > +          - const: renesas,pci-rcar-gen2 # R-Car Gen2 and RZ/G1
-> > +
+Rob
