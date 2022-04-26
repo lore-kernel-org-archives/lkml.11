@@ -2,128 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 916DAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:48:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 910C0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:49:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344273AbiDZHvu (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 03:51:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45812 "EHLO
+        id S233747AbiDZHwG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 03:52:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242452AbiDZHvp (ORCPT
+        with ESMTP id S1344282AbiDZHvw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 03:51:45 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C00741A040;
-        Tue, 26 Apr 2022 00:48:37 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id h1so17219580pfv.12;
-        Tue, 26 Apr 2022 00:48:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=f3CunhxLC3mb3e6UNr+xNX95pgRojNIa+JUKiN4OUms=;
-        b=TljaTwoD8SLvOhWYTxOMKfYY4caoHsVCypcKaTpr1fj0K9eavwC4WSrr8G2XGElv8x
-         TV9kj4OpypB/7rTo+tSov6Fhh50nCp6quQer1GYUvmSyAxLUzyGDQwX6SW4ddDzFDIOx
-         6NB1aq9idon2IZZRJdp8SP825iqygYG2wCZap9YmIKbCh1GtDzbZSPKq6e1EU+rYfu3Q
-         DysNrV27KbaIKIkDTDBGraC+yTWaPMQGx3+ki4BKfk4HizU8csvTp0Ol0uCs3egEEEzh
-         S0HZdkVei0DhgK4TtYnkwmcRYoRjDjQH2Ho5T6mcxx2QupLuE1DZthyiYYsEEzAdy8aq
-         DKfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=f3CunhxLC3mb3e6UNr+xNX95pgRojNIa+JUKiN4OUms=;
-        b=4yZQCA26rgytSVQg66+gNMaq5dwTDEuljoYzkpJhW547TMDWlso3xheFlGFvgcgCKT
-         tAPSljbENDe/EmRdTOFciCO+VXPqcMtFvtYcYmnN27Fi9LVRs7C4hfyNWcE5ayKUf3Bc
-         5puG8JGgYoGzu+9k0OmzE5Im13xveuA5tuspsAUecUXtbpXY+gbCzytc6HoKah7T3Seu
-         xODILt1EgNYg7PwHXuN1IOrdcAsulECVMRlQYEDwalUIWXbyNh1qj5y/4is8DUtexsEJ
-         hpRCHEU06xEuYCGHUPyApcoQisHGCvJHleTFkEbgw8oIb+0FVSO+YsSb2p6t7+OM0Gb7
-         FuLQ==
-X-Gm-Message-State: AOAM531mF+vsF/RsoM9IwpmJmweqx2nDBsZ9pXVLANRVWlnVnR42/flT
-        A2aDZAeb5tQARb6DgxYGZPCD0hKsCaQ=
-X-Google-Smtp-Source: ABdhPJzbS6CSlbSiL3g2XpFHPHeAZCURvdyStjTGUIx8QfAcYIPh4pe5nzI/LP307yAagUaH8Nk2Bg==
-X-Received: by 2002:a63:3115:0:b0:3ab:2131:5f12 with SMTP id x21-20020a633115000000b003ab21315f12mr9658991pgx.0.1650959316856;
-        Tue, 26 Apr 2022 00:48:36 -0700 (PDT)
-Received: from debian.me (subs32-116-206-28-30.three.co.id. [116.206.28.30])
-        by smtp.gmail.com with ESMTPSA id n12-20020a17090ade8c00b001d25dfb9d39sm1845467pjv.14.2022.04.26.00.48.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 00:48:35 -0700 (PDT)
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     linux-doc@vger.kernel.org
-Cc:     Bagas Sanjaya <bagasdotme@gmail.com>,
-        kernel test robot <lkp@intel.com>,
-        Suresh Warrier <warrier@linux.vnet.ibm.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Segher Boessenkool <segher@kernel.crashing.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Fabiano Rosas <farosas@linux.ibm.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Alexey Kardashevskiy <aik@ozlabs.ru>,
-        linuxppc-dev@lists.ozlabs.org, kvm@vger.kernel.org,
-        stable@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] KVM: powerpc: remove extraneous asterisk from rm_host_ipi_action comment
-Date:   Tue, 26 Apr 2022 14:47:51 +0700
-Message-Id: <20220426074750.71251-1-bagasdotme@gmail.com>
-X-Mailer: git-send-email 2.36.0
+        Tue, 26 Apr 2022 03:51:52 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B3661A3A4;
+        Tue, 26 Apr 2022 00:48:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650959325; x=1682495325;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version:content-id;
+  bh=Y3MQhCXobnzYH8jvj04XHW91HYwyje2IP6fIr/XFnpQ=;
+  b=gFtCcTDkv5cy+UBKzg9fFu8cr55yq79acsUt7jviszRulIir3rNgg1HO
+   H9Yqq27eD0eolje3zcanFihCv0kdOappZyEV7vPFqjwQLYt81sUJ1u0WB
+   qwM8pPrYhdX75RmPPHEjVToC4QOsMudkVDSeX7tmCd8rf6a5eVtmIFkFN
+   PAr4wsktgX9aLzube7wSKBi16oTT5OLttsvm0iQJSVlZvxVjZch+MKaCO
+   4Po9erawKktOHeNIna/TEVhPVDxmypbnBkwJRdwWwuPcxjdpy8UQkT/02
+   yJni2qVisgjJI+cHqU865YXNYfwqDf7X8Ctcjn6UO/zTFGqByOppSM0MR
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="247420048"
+X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
+   d="scan'208";a="247420048"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 00:48:45 -0700
+X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
+   d="scan'208";a="579745009"
+Received: from mmilkovx-mobl.amr.corp.intel.com ([10.249.47.245])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 00:48:42 -0700
+Date:   Tue, 26 Apr 2022 10:48:40 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+cc:     linux-serial <linux-serial@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Gilles Buloz <gilles.buloz@kontron.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: Re: [PATCH v3 3/5] tty: Add lookahead param to receive_buf
+In-Reply-To: <d496d544-fe59-5fa7-5d21-ab6ad025fa75@linux.intel.com>
+Message-ID: <769b1be-87c3-e1c1-b1f9-d56a74ff549@linux.intel.com>
+References: <20220411094859.10894-1-ilpo.jarvinen@linux.intel.com> <20220411094859.10894-4-ilpo.jarvinen@linux.intel.com> <YmK83NfVqEvGg8DW@kroah.com> <d496d544-fe59-5fa7-5d21-ab6ad025fa75@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; BOUNDARY="8323329-1967645119-1650900405=:1634"
+Content-ID: <d1c0cb3a-7189-c235-6a83-e663903cadf@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kernel test robot reported kernel-doc warning for rm_host_ipi_action():
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-arch/powerpc/kvm/book3s_hv_rm_xics.c:887: warning: This comment
-starts with '/**', but isn't a kernel-doc comment. Refer
-Documentation/doc-guide/kernel-doc.rst
+--8323329-1967645119-1650900405=:1634
+Content-Type: text/plain; CHARSET=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
+Content-ID: <31544f8e-b7f-c1f-9613-4f7778a13b49@linux.intel.com>
 
-Since the function is static, remove the extraneous (second) asterisk at
-the head of function comment.
+On Fri, 22 Apr 2022, Ilpo Järvinen wrote:
 
-Link: https://lore.kernel.org/linux-doc/202204252334.Cd2IsiII-lkp@intel.com/
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: Suresh Warrier <warrier@linux.vnet.ibm.com>
-Cc: Paul Mackerras <paulus@samba.org>
-Cc: Anders Roxell <anders.roxell@linaro.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Segher Boessenkool <segher@kernel.crashing.org>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: Nicholas Piggin <npiggin@gmail.com>
-Cc: Fabiano Rosas <farosas@linux.ibm.com>
-Cc: Paolo Bonzini <pbonzini@redhat.com>
-Cc: Alexey Kardashevskiy <aik@ozlabs.ru>
-Cc: linuxppc-dev@lists.ozlabs.org
-Cc: kvm@vger.kernel.org
-Cc: stable@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
----
- arch/powerpc/kvm/book3s_hv_rm_xics.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> On Fri, 22 Apr 2022, Greg KH wrote:
+> 
+> > >  /* Returns true if c is consumed as flow-control character */
+> > > -static bool n_tty_receive_char_flow_ctrl(struct tty_struct *tty, unsigned char c)
+> > > +static bool n_tty_receive_char_flow_ctrl(struct tty_struct *tty, unsigned char c,
+> > > +					 bool lookahead_done)
+> > >  {
+> > >  	if (!n_tty_is_char_flow_ctrl(tty, c))
+> > >  		return false;
+> > >  
+> > > +	if (lookahead_done)
+> > > +		return true;
+> > 
+> > Why would this function be called if this option was true?
+> 
+> Agreed, it makes sense to move the check before call (and then I also 
+> don't need to reorganize this function anymore).
 
-diff --git a/arch/powerpc/kvm/book3s_hv_rm_xics.c b/arch/powerpc/kvm/book3s_hv_rm_xics.c
-index 587c33fc45640f..6e16bd751c8423 100644
---- a/arch/powerpc/kvm/book3s_hv_rm_xics.c
-+++ b/arch/powerpc/kvm/book3s_hv_rm_xics.c
-@@ -883,7 +883,7 @@ long kvmppc_deliver_irq_passthru(struct kvm_vcpu *vcpu,
- 
- /*  --- Non-real mode XICS-related built-in routines ---  */
- 
--/**
-+/*
-  * Host Operations poked by RM KVM
-  */
- static void rm_host_ipi_action(int action, void *data)
+I think I want to renege on this. The reason is that on flow control char, 
+two things must occur:
+  a) it must not be treated as normal char
+  b) if not yet processed, flow control actions need to be taken
 
-base-commit: d615b5416f8a1afeb82d13b238f8152c572d59c0
+When the check is inside, return value of n_tty_receive_char_flow_ctrl 
+decides a), and b) is kept internal to n_tty_receive_char_flow_ctrl().
+
+If I more that lookahead_done check into the caller domain, things get 
+IMHO a lot more messy. Effectively, I have three options for the calling 
+domain to chose from:
+
+	if (I_IXON(tty)) {
+		if (!lookahead_done) {
+			if (n_tty_receive_char_flow_ctrl(tty, c))
+				return;
+		} else if (n_tty_is_char_flow_ctrl(tty, c)) {
+			return;
+		}
+	}
+
+or
+
+	if (I_IXON(tty)) {
+		if ((!lookahead_done && n_tty_receive_char_flow_ctrl(tty, c)) ||
+		    (lookahead_done && n_tty_is_char_flow_ctrl(tty, c))) {
+			return;
+	}
+
+vs
+
+        if (I_IXON(tty) && n_tty_receive_char_flow_ctrl(tty, c, lookahead_done))
+                return;
+
+I heavily prefer that last option.
+
 -- 
-An old man doll... just what I always wanted! - Clara
-
+ i.
+--8323329-1967645119-1650900405=:1634--
