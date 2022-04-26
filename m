@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABC73C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:03:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11B37C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:03:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346505AbiDZJEc (ORCPT
+        id S1346525AbiDZJEg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:04:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56574 "EHLO
+        Tue, 26 Apr 2022 05:04:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346793AbiDZIpW (ORCPT
+        with ESMTP id S1347152AbiDZIpx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:45:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B0013B3E8;
-        Tue, 26 Apr 2022 01:35:40 -0700 (PDT)
+        Tue, 26 Apr 2022 04:45:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97A3B7B106;
+        Tue, 26 Apr 2022 01:37:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1882F61899;
-        Tue, 26 Apr 2022 08:35:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 094F6C385A4;
-        Tue, 26 Apr 2022 08:35:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3033860A67;
+        Tue, 26 Apr 2022 08:37:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39A5FC385A0;
+        Tue, 26 Apr 2022 08:37:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962139;
-        bh=904Yeuvzqm23g7s+sAX4Ms24/YBBVjFmcCiyB/hFFGA=;
+        s=korg; t=1650962249;
+        bh=nDv3ZUX4ndQ8MpYE3JNAFqkJacWDpguWL47ft7pczH0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RvzUGZVsoN8NML6JTYW5UEoe9K4wHXWNhvo+Z8TSc4/PdkeXzA4F5cP7AjYWPxPHA
-         /IjNy4cujGZbjU2N4rgGF7+Pnvc6sHbpOqm1Ioyc5uUBKW1v09q0m/nH68w8/5AmNZ
-         I+QzxucziwzwcLswqWrW2zAxuCEvjNmmq52uMpEk=
+        b=gT0hKcWFbrDfpQcocWi64NHK75xu1QrM2tHb8QaL0DLqsHl7pLtRjdYVkabrBGaxm
+         9bcN2MWx9Oc8v53fuNdPLlRU8z7aMoRhAE5Po0n0LnAQRRaEXv3Ob/cpR4SJIWfHI0
+         EKsqfJJKlYpx0RY470yuzLece42ENTKS50gp7HkU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaoke Wang <xkernel.wang@foxmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Rob Clark <robdclark@chromium.org>,
+        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 45/86] drm/msm/mdp5: check the return of kzalloc()
-Date:   Tue, 26 Apr 2022 10:21:13 +0200
-Message-Id: <20220426081742.505980767@linuxfoundation.org>
+Subject: [PATCH 5.15 033/124] rxrpc: Restore removed timer deletion
+Date:   Tue, 26 Apr 2022 10:20:34 +0200
+Message-Id: <20220426081748.245548607@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
-References: <20220426081741.202366502@linuxfoundation.org>
+In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
+References: <20220426081747.286685339@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,43 +53,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit 047ae665577776b7feb11bd4f81f46627cff95e7 ]
+[ Upstream commit ee3b0826b4764f6c13ad6db67495c5a1c38e9025 ]
 
-kzalloc() is a memory allocation function which can return NULL when
-some internal memory errors happen. So it is better to check it to
-prevent potential wrong memory access.
+A recent patch[1] from Eric Dumazet flipped the order in which the
+keepalive timer and the keepalive worker were cancelled in order to fix a
+syzbot reported issue[2].  Unfortunately, this enables the mirror image bug
+whereby the timer races with rxrpc_exit_net(), restarting the worker after
+it has been cancelled:
 
-Besides, since mdp5_plane_reset() is void type, so we should better
-set `plane-state` to NULL after releasing it.
+	CPU 1		CPU 2
+	===============	=====================
+			if (rxnet->live)
+			<INTERRUPT>
+	rxnet->live = false;
+ 	cancel_work_sync(&rxnet->peer_keepalive_work);
+			rxrpc_queue_work(&rxnet->peer_keepalive_work);
+	del_timer_sync(&rxnet->peer_keepalive_timer);
 
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/481055/
-Link: https://lore.kernel.org/r/tencent_8E2A1C78140EE1784AB2FF4B2088CC0AB908@qq.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Rob Clark <robdclark@chromium.org>
+Fix this by restoring the removed del_timer_sync() so that we try to remove
+the timer twice.  If the timer runs again, it should see ->live == false
+and not restart the worker.
+
+Fixes: 1946014ca3b1 ("rxrpc: fix a race in rxrpc_exit_net()")
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Eric Dumazet <edumazet@google.com>
+cc: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+Link: https://lore.kernel.org/r/20220404183439.3537837-1-eric.dumazet@gmail.com/ [1]
+Link: https://syzkaller.appspot.com/bug?extid=724378c4bb58f703b09a [2]
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c | 3 +++
- 1 file changed, 3 insertions(+)
+ net/rxrpc/net_ns.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
-index 83423092de2f..da0799333970 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
-@@ -179,7 +179,10 @@ static void mdp5_plane_reset(struct drm_plane *plane)
- 		drm_framebuffer_put(plane->state->fb);
+diff --git a/net/rxrpc/net_ns.c b/net/rxrpc/net_ns.c
+index f15d6942da45..cc7e30733feb 100644
+--- a/net/rxrpc/net_ns.c
++++ b/net/rxrpc/net_ns.c
+@@ -113,7 +113,9 @@ static __net_exit void rxrpc_exit_net(struct net *net)
+ 	struct rxrpc_net *rxnet = rxrpc_net(net);
  
- 	kfree(to_mdp5_plane_state(plane->state));
-+	plane->state = NULL;
- 	mdp5_state = kzalloc(sizeof(*mdp5_state), GFP_KERNEL);
-+	if (!mdp5_state)
-+		return;
- 
- 	/* assign default blend parameters */
- 	mdp5_state->alpha = 255;
+ 	rxnet->live = false;
++	del_timer_sync(&rxnet->peer_keepalive_timer);
+ 	cancel_work_sync(&rxnet->peer_keepalive_work);
++	/* Remove the timer again as the worker may have restarted it. */
+ 	del_timer_sync(&rxnet->peer_keepalive_timer);
+ 	rxrpc_destroy_all_calls(rxnet);
+ 	rxrpc_destroy_all_connections(rxnet);
 -- 
 2.35.1
 
