@@ -2,96 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8AFDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:23:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D2C3C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:23:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344643AbiDZI0T (ORCPT
+        id S1344648AbiDZI0c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:26:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59114 "EHLO
+        Tue, 26 Apr 2022 04:26:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234242AbiDZI0A (ORCPT
+        with ESMTP id S1344299AbiDZI0C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:26:00 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93BB33A5E9;
-        Tue, 26 Apr 2022 01:22:47 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 357091F380;
-        Tue, 26 Apr 2022 08:22:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1650961366; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=NKbpFjMDPqd7TQ514NLGknGrSkR1xvTuZ+twvGBw1Ds=;
-        b=Ku8RBnA0Rf9zQsz4S8BTrgHF20lahZ8buxMT5bsutog3s+qQEzlQpjXalln29/WK/9rWTe
-        y/9DNr88hxHzQwcPkYA9KVTaL8FZ7DTVb/ZbTuzWAufvvhtv6te6DXO8ZUj85HjsIehW/n
-        qbSDE3xjlsTQgKOtmALRZ+WjV1K1F3E=
-Received: from suse.cz (unknown [10.100.201.86])
+        Tue, 26 Apr 2022 04:26:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1770D39B8F;
+        Tue, 26 Apr 2022 01:22:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 2BB612C146;
-        Tue, 26 Apr 2022 08:22:45 +0000 (UTC)
-Date:   Tue, 26 Apr 2022 10:22:42 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Yosry Ahmed <yosryahmed@google.com>
-Cc:     David Rientjes <rientjes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Shuah Khan <shuah@kernel.org>, Yu Zhao <yuzhao@google.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
-        Chen Wandun <chenwandun@huawei.com>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>,
-        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
-        Tim Chen <tim.c.chen@linux.intel.com>, cgroups@vger.kernel.org,
-        linux-doc@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v5 1/4] memcg: introduce per-memcg reclaim interface
-Message-ID: <Ymer0qeaJlRY1Ju6@dhcp22.suse.cz>
-References: <20220425190040.2475377-1-yosryahmed@google.com>
- <20220425190040.2475377-2-yosryahmed@google.com>
- <a4c3d067-d08d-409d-e7b-b6e0b1d2dfda@google.com>
- <CAJD7tka_96du2UUx0xuseR62wu005-KPf7fSyDTAuXOWsgUQDg@mail.gmail.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A7EB26179E;
+        Tue, 26 Apr 2022 08:22:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2A0CC385A0;
+        Tue, 26 Apr 2022 08:22:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650961375;
+        bh=yx8av04Y5xxLJJnNv+WtjSdUDUvPluHDdTSScXGxX4s=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=eH01vc+/dD+5dznQIdPe/TJ4fF+Mu44+rhak/8KVRGl+bNDqLTxsxIEpw9jjU6W71
+         iiwXBCGL0WoXjHty6c1GROqwyFQIEKyLFh9MFpToLFvl7KoTbRntWWIZ2ksUqwKMdZ
+         edj/uUKf2zPXWQ9jcKiOB5lPeITdRusUdoX2rV1o=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Subject: [PATCH 4.9 15/24] ata: pata_marvell: Check the bmdma_addr beforing reading
+Date:   Tue, 26 Apr 2022 10:21:09 +0200
+Message-Id: <20220426081731.823926698@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220426081731.370823950@linuxfoundation.org>
+References: <20220426081731.370823950@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJD7tka_96du2UUx0xuseR62wu005-KPf7fSyDTAuXOWsgUQDg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 25-04-22 12:31:51, Yosry Ahmed wrote:
-> On Mon, Apr 25, 2022 at 12:15 PM David Rientjes <rientjes@google.com> wrote:
-[...]
-> > "can over or under reclaim from the target cgroup" begs the question of
-> > how much more memory the kernel can decide to reclaim :)  I think it's
-> > assumed that it's minimal and that matches the current implementation that
-> > rounds up to SWAP_CLUSTER_MAX, though, so looks good.
-> >
-> > Thanks Yosry!
-> 
-> I think it could be more complex than this. Some functions that get
-> called during reclaim only use the nr_to_reclaim parameter to check if
-> they need one more iteration, but not to limit the actual reclaimed
-> pages per say. For example, nr_to_reclaim is not even passed to
-> shrink_slab() or mem_cgroup_soft_limit_reclaim(), so they have no way
-> to know that they should stop if nr_to_reclaim was already satisfied.
-> I think the general assumption is that each of these calls normally
-> does not reclaim a huge number of pages, so like you said, the kernel
-> should not over-reclaim too much. However, I don't think there are
-> guarantees about this.
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-There are no guarantees indeed and it si definitely good to be explicit
-about that so that userspace tools expect that and consider that in
-the imeplementation. Sure we do not want to go overboard and huge excess
-should be considered a bug. I am not sure we do agree on the notion of
-"huge" so let's see.
--- 
-Michal Hocko
-SUSE Labs
+commit aafa9f958342db36c17ac2a7f1b841032c96feb4 upstream.
+
+Before detecting the cable type on the dma bar, the driver should check
+whether the 'bmdma_addr' is zero, which means the adapter does not
+support DMA, otherwise we will get the following error:
+
+[    5.146634] Bad IO access at port 0x1 (return inb(port))
+[    5.147206] WARNING: CPU: 2 PID: 303 at lib/iomap.c:44 ioread8+0x4a/0x60
+[    5.150856] RIP: 0010:ioread8+0x4a/0x60
+[    5.160238] Call Trace:
+[    5.160470]  <TASK>
+[    5.160674]  marvell_cable_detect+0x6e/0xc0 [pata_marvell]
+[    5.161728]  ata_eh_recover+0x3520/0x6cc0
+[    5.168075]  ata_do_eh+0x49/0x3c0
+
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/ata/pata_marvell.c |    2 ++
+ 1 file changed, 2 insertions(+)
+
+--- a/drivers/ata/pata_marvell.c
++++ b/drivers/ata/pata_marvell.c
+@@ -82,6 +82,8 @@ static int marvell_cable_detect(struct a
+ 	switch(ap->port_no)
+ 	{
+ 	case 0:
++		if (!ap->ioaddr.bmdma_addr)
++			return ATA_CBL_PATA_UNK;
+ 		if (ioread8(ap->ioaddr.bmdma_addr + 1) & 1)
+ 			return ATA_CBL_PATA40;
+ 		return ATA_CBL_PATA80;
+
+
