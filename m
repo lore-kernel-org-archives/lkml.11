@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EFACC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:52:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4991BC43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:52:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245701AbiDZIzR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:55:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58466 "EHLO
+        id S1345812AbiDZIz4 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:55:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345516AbiDZIl5 (ORCPT
+        with ESMTP id S1345331AbiDZInG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:41:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABB64158F84;
-        Tue, 26 Apr 2022 01:33:07 -0700 (PDT)
+        Tue, 26 Apr 2022 04:43:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FD6015AE05;
+        Tue, 26 Apr 2022 01:33:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D7766185D;
-        Tue, 26 Apr 2022 08:33:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E370C385A0;
-        Tue, 26 Apr 2022 08:33:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1FAEBB81A2F;
+        Tue, 26 Apr 2022 08:33:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D1EBC385AC;
+        Tue, 26 Apr 2022 08:33:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961986;
-        bh=EGbn0DdCYwtJ3+c4oJdDYP5vjRTc9aYEwtto72wo0VU=;
+        s=korg; t=1650961998;
+        bh=80qNFGPfY4+4wFA85e0lNV404e/wfBFWOpWxy8nryI4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Rzp1M/9YPMg/Jw3VrV530uL3STcRG6QwJ7PEe7H0lIVNNDcIwsQvJfYzmR3AUxjq9
-         qp/TZA2lNTN+iM9GD86qpSmybw6Ii4HvTZvGQg9kPaM4nUQpANrgQ7GJKUIg9d+Dg3
-         SKmeAci1fZyxPFuOMAsE9dgb/xJxbnhu+yFTx3nI=
+        b=1m8aAKwQcAooPbdQ1cUe1LukR7v0gTEeAcKnEtzV3oQN40K0eZJAV/csMnjUbSHv7
+         wYfPtruIySFaJTVns/D0xLw9i7D9rzxWd5tbtsWJxhZzaLCXJAwS+WjXwEcEojtIlS
+         9DZloEZPYGVlx6uTh1EVayVX9QDlARzf9UDhcPmc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qian Cai <quic_qiancai@quicinc.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 33/86] arm64: mm: fix p?d_leaf()
-Date:   Tue, 26 Apr 2022 10:21:01 +0200
-Message-Id: <20220426081742.162293381@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+c6fd14145e2f62ca0784@syzkaller.appspotmail.com,
+        Bob Peterson <rpeterso@redhat.com>,
+        Andreas Gruenbacher <agruenba@redhat.com>
+Subject: [PATCH 5.10 05/86] gfs2: assign rgrp glock before compute_bitstructs
+Date:   Tue, 26 Apr 2022 10:20:33 +0200
+Message-Id: <20220426081741.363587771@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
 References: <20220426081741.202366502@linuxfoundation.org>
@@ -49,49 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Muchun Song <songmuchun@bytedance.com>
+From: Bob Peterson <rpeterso@redhat.com>
 
-[ Upstream commit 23bc8f69f0eceecbb87c3801d2e48827d2dca92b ]
+commit 428f651cb80b227af47fc302e4931791f2fb4741 upstream.
 
-The pmd_leaf() is used to test a leaf mapped PMD, however, it misses
-the PROT_NONE mapped PMD on arm64.  Fix it.  A real world issue [1]
-caused by this was reported by Qian Cai. Also fix pud_leaf().
+Before this patch, function read_rindex_entry called compute_bitstructs
+before it allocated a glock for the rgrp. But if compute_bitstructs found
+a problem with the rgrp, it called gfs2_consist_rgrpd, and that called
+gfs2_dump_glock for rgd->rd_gl which had not yet been assigned.
 
-Link: https://patchwork.kernel.org/comment/24798260/ [1]
-Fixes: 8aa82df3c123 ("arm64: mm: add p?d_leaf() definitions")
-Reported-by: Qian Cai <quic_qiancai@quicinc.com>
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-Link: https://lore.kernel.org/r/20220422060033.48711-1-songmuchun@bytedance.com
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+read_rindex_entry
+   compute_bitstructs
+      gfs2_consist_rgrpd
+         gfs2_dump_glock <---------rgd->rd_gl was not set.
+
+This patch changes read_rindex_entry so it assigns an rgrp glock before
+calling compute_bitstructs so gfs2_dump_glock does not reference an
+unassigned pointer. If an error is discovered, the glock must also be
+put, so a new goto and label were added.
+
+Reported-by: syzbot+c6fd14145e2f62ca0784@syzkaller.appspotmail.com
+Signed-off-by: Bob Peterson <rpeterso@redhat.com>
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/include/asm/pgtable.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/gfs2/rgrp.c |    9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pgtable.h
-index 9cf8e304bb56..3f74db7b0a31 100644
---- a/arch/arm64/include/asm/pgtable.h
-+++ b/arch/arm64/include/asm/pgtable.h
-@@ -516,7 +516,7 @@ extern pgprot_t phys_mem_access_prot(struct file *file, unsigned long pfn,
- 				 PMD_TYPE_TABLE)
- #define pmd_sect(pmd)		((pmd_val(pmd) & PMD_TYPE_MASK) == \
- 				 PMD_TYPE_SECT)
--#define pmd_leaf(pmd)		pmd_sect(pmd)
-+#define pmd_leaf(pmd)		(pmd_present(pmd) && !pmd_table(pmd))
- #define pmd_bad(pmd)		(!pmd_table(pmd))
+--- a/fs/gfs2/rgrp.c
++++ b/fs/gfs2/rgrp.c
+@@ -906,15 +906,15 @@ static int read_rindex_entry(struct gfs2
+ 	rgd->rd_bitbytes = be32_to_cpu(buf.ri_bitbytes);
+ 	spin_lock_init(&rgd->rd_rsspin);
  
- #if defined(CONFIG_ARM64_64K_PAGES) || CONFIG_PGTABLE_LEVELS < 3
-@@ -603,7 +603,7 @@ static inline unsigned long pmd_page_vaddr(pmd_t pmd)
- #define pud_none(pud)		(!pud_val(pud))
- #define pud_bad(pud)		(!pud_table(pud))
- #define pud_present(pud)	pte_present(pud_pte(pud))
--#define pud_leaf(pud)		pud_sect(pud)
-+#define pud_leaf(pud)		(pud_present(pud) && !pud_table(pud))
- #define pud_valid(pud)		pte_valid(pud_pte(pud))
+-	error = compute_bitstructs(rgd);
+-	if (error)
+-		goto fail;
+-
+ 	error = gfs2_glock_get(sdp, rgd->rd_addr,
+ 			       &gfs2_rgrp_glops, CREATE, &rgd->rd_gl);
+ 	if (error)
+ 		goto fail;
  
- static inline void set_pud(pud_t *pudp, pud_t pud)
--- 
-2.35.1
-
++	error = compute_bitstructs(rgd);
++	if (error)
++		goto fail_glock;
++
+ 	rgd->rd_rgl = (struct gfs2_rgrp_lvb *)rgd->rd_gl->gl_lksb.sb_lvbptr;
+ 	rgd->rd_flags &= ~(GFS2_RDF_UPTODATE | GFS2_RDF_PREFERRED);
+ 	if (rgd->rd_data > sdp->sd_max_rg_data)
+@@ -928,6 +928,7 @@ static int read_rindex_entry(struct gfs2
+ 	}
+ 
+ 	error = 0; /* someone else read in the rgrp; free it and ignore it */
++fail_glock:
+ 	gfs2_glock_put(rgd->rd_gl);
+ 
+ fail:
 
 
