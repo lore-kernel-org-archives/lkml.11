@@ -2,58 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05251C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:14:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DF22C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:14:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345284AbiDZKRh (ORCPT
+        id S1348439AbiDZKSA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 06:17:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36316 "EHLO
+        Tue, 26 Apr 2022 06:18:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348680AbiDZKRE (ORCPT
+        with ESMTP id S1348659AbiDZKRV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 06:17:04 -0400
-Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C6A46D3BF;
-        Tue, 26 Apr 2022 02:40:37 -0700 (PDT)
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
-        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-        id 1njHg0-006xZ5-JA; Tue, 26 Apr 2022 19:40:10 +1000
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Tue, 26 Apr 2022 17:40:08 +0800
-Date:   Tue, 26 Apr 2022 17:40:08 +0800
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Conor.Dooley@microchip.com
-Cc:     rdunlap@infradead.org, sfr@canb.auug.org.au,
-        akpm@linux-foundation.org, mhocko@suse.cz,
-        linux-crypto@vger.kernel.org, broonie@kernel.org,
-        linux-fsdevel@vger.kernel.org, mm-commits@vger.kernel.org,
-        linux-next@vger.kernel.org, linux-mm@kvack.org,
+        Tue, 26 Apr 2022 06:17:21 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 206AE6D86B
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 02:40:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C04B1CE1BF7
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:40:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B48FC385AE;
+        Tue, 26 Apr 2022 09:40:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650966047;
+        bh=UN8z2B0f1uixgrTjJ4GuWq66nLJBNSlOCFUejl7xRG0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=vRyA9LmX87bAOFVLGVgpQdlLBmlF1yysxasr2dXDjlU1FuDA3gKIYpSzQhJyjc1jN
+         zAbpGKMxQfEazx0Ly+jhnTYqk0TYre0bCdoabvuodL0yFkWhS2+gPwLHgR5jwdmrx+
+         6eV+LPnM1HGKYF3O1uXOrLPnuKW0+eUKSyKbiaSw=
+Date:   Tue, 26 Apr 2022 11:40:44 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     xkernel.wang@foxmail.com
+Cc:     paskripkin@gmail.com, Larry.Finger@lwfinger.net,
+        phil@philpotter.co.uk, linux-staging@lists.linux.dev,
         linux-kernel@vger.kernel.org
-Subject: Re: mmotm 2022-04-25-17-59 uploaded
- (drivers/char/hw_random/mpfs-rng.c)
-Message-ID: <Yme9+HuB2N3KOMf+@gondor.apana.org.au>
-References: <20220426005932.848CBC385A4@smtp.kernel.org>
- <6ff380c5-4f2c-44ea-2541-b32733e45ac3@infradead.org>
- <191e32d7-efde-327e-b112-000d8f778996@microchip.com>
+Subject: Re: [PATCH v3 1/2] staging: r8188eu: fix potential memory leak in
+ _rtw_init_xmit_priv()
+Message-ID: <Yme+HFZ6u2gvMbfz@kroah.com>
+References: <tencent_06FCFF1B2086CCD7B9C51C7C1490E1D64A08@qq.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <191e32d7-efde-327e-b112-000d8f778996@microchip.com>
+In-Reply-To: <tencent_06FCFF1B2086CCD7B9C51C7C1490E1D64A08@qq.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 06:36:27AM +0000, Conor.Dooley@microchip.com wrote:
->
-> @Herbert, would you rather revert the part of 6a71277ce91e that enables
-> compile test or I can send a patch for the stubbed versions now that
-> there is a user for them? (My preference would be to keep COMPILE_TEST)
+On Fri, Apr 08, 2022 at 09:37:10AM +0800, xkernel.wang@foxmail.com wrote:
+> From: Xiaoke Wang <xkernel.wang@foxmail.com>
+> 
+> In _rtw_init_xmit_priv(), there are several error paths for allocation
+> failures just jump to the `exit` section. However, there is no action
+> will be performed, so the allocated resources are not properly released,
+> which leads to various memory leaks.
+> 
+> To properly release them, this patch unifies the error handling code and
+> several error handling paths are added.
+> According to the allocation sequence, if the validation fails, it will
+> jump to its corresponding error tag to release the resources.
+> 
+> Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+> ---
+> ChangeLog:
+> v1->v2 update the description and adjust the sequence of patches.
+> v2->v3 None to this patch, but some to another pathch in this series.
+>  drivers/staging/r8188eu/core/rtw_xmit.c | 32 ++++++++++++++++++-------
+>  1 file changed, 24 insertions(+), 8 deletions(-)
 
-I'll just revert that patch because it turns out the underlying
-option already supports COMPILE_TEST so this is redundant.
+I still have 12 patches in my queue from you, yet no idea which order
+they belong in at all, nor which is the latest versions :(
 
-Thanks,
--- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+Please rebase and resubmit them ALL as a single patch series so I can
+have a hint as to what to do here.
+
+thanks,
+
+greg k-h
