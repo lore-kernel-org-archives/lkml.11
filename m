@@ -2,510 +2,318 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFADAC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:59:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D81E8C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 17:01:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353582AbiDZRCe (ORCPT
+        id S1353627AbiDZRE1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 13:02:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36534 "EHLO
+        Tue, 26 Apr 2022 13:04:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244109AbiDZRCb (ORCPT
+        with ESMTP id S1353660AbiDZREO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 13:02:31 -0400
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 878C76EC56
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:59:20 -0700 (PDT)
-Received: by mail-yb1-xb34.google.com with SMTP id i38so15065787ybj.13
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:59:20 -0700 (PDT)
+        Tue, 26 Apr 2022 13:04:14 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A54E7B119
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 10:01:05 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id t25so33026492lfg.7
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 10:01:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GH43qdalFH201bywPnynKUZzlq3g2/HxF1LQk9DABhQ=;
-        b=Uzta1YZI7Jy2BsepTIAPH2iHY8+QVbAQm2WuRTvfQjdO+Zl0TRZ5s48KpmTMOljED8
-         dlp+glTdjoXZ7+WRnbWOM34zoxDTa5fTmwjYVFz/zrw/gq+TTnuEA68ZkGWgFx5k062m
-         d7NtID9A7CDm0FTV2cgPwBgxxuSD7QL05dGsXXxz21Djn9hWloPKV30mFUxO8MQndSPi
-         ZcxzBwBKKlk43RePiPZmgRKr55YK4Jpw3zrGexCE6fuDTrHQZL275xlKSdQqnp19MZtS
-         q9mjO9zgmXQbLR287q01cq28x/be2qK1DLQoklNucuYOBt5GJCrghmJRkrKZzb5HvEC0
-         oAZw==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=4+Qo68x5Zl8HOY6MDkqP6pZgBTBco8Ua12tRa2x5rKA=;
+        b=vyAWSPj1+4eCeue2yVns5n0/P44QU+/kI8LkJCIJXP+VbGrBTWo7b4wXcu6QE3Ut8A
+         QVCOAGcnWJ27G3y4AOPdj5wfzzAEIiA4abjqu8Rc56t6P7VecBx0ryIxEurADVpl9JfJ
+         ddevzSCm57K7ncWOtD9gHg1GJ1ExwUQJExyMuNdwsTGKkmENT+/bPs+2PLqLE4CzbxOF
+         mFbAIGzZaE6FFpoukrxKJ5zPusB86TCLegZNKUhPGjzC5AXVktLCN3bVeDvDV+A8O7rs
+         /xACJ7DYETnQi6HDuZRDYfEOOSKze0VsCcU5a41ysHc7UcMACuWAV+3B0gaREB2P1yrK
+         +d/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GH43qdalFH201bywPnynKUZzlq3g2/HxF1LQk9DABhQ=;
-        b=krVwecHLWUGg61Xzajb4dHJRxh3zIAkBvk4GarmwkYgwW4VZX3UZ3lKFYnILNeaSdi
-         4CH4rp4JvMruoBOryHGGRAnY3T3/iLcSa9eAZ4Cd0kr4Teql9WqjM0KAZBYhIVTz2KLM
-         ss9bGQ+YARPJrP6NfZBuC2ALsI0S71X6HgtE2NXE8nHUE9FnP9YBqQrDZ66l2WlqXdmp
-         /2Cp4E4cLP3Boq99m4wXbDvfoYIRfhhxsJ6rGWFSB6zluSIF+meCCx9NNHZ8wi415q8x
-         wcVcCA4xbv6b9EhxEFh6oBRh7CFc4XXYA4uTvB3eY5nqLyBy05EHBIUC6x1hWac7cTIF
-         tAAA==
-X-Gm-Message-State: AOAM530zyjiQdepBAMFAYi2rS1ar9oY1rfK5Kg+zzyW8D5p5F1CBXxOs
-        nNXOeNJQra4yRSL0hN6BQSjpDpml8OKmiBkmJ0wLQg==
-X-Google-Smtp-Source: ABdhPJyS816mANzNCVy6Xw+/t0TYvoxND0MQXvY0xO2rpGgXp0BPOB5YvkrnMrAaGay/ubrvl3TbG4MxQf+GkmNhPEc=
-X-Received: by 2002:a05:6902:1242:b0:644:c30c:cfcc with SMTP id
- t2-20020a056902124200b00644c30ccfccmr21290240ybu.509.1650992359476; Tue, 26
- Apr 2022 09:59:19 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=4+Qo68x5Zl8HOY6MDkqP6pZgBTBco8Ua12tRa2x5rKA=;
+        b=qSnv2rzU6LmUtz3orpe751+lynyr9WCGviN+XPD3yM0W9YN/lyPDu47i2ljli0dTzz
+         opjmtra3DsU+L0eTN+HB0mKuM3LBUpKe3g2P621vTSdP6zO4YO0qveqY3hRKy42CjdtM
+         19inSD6Q6vGYjAWVKLRun6qsx3/fKt0wV0ZZUs4W87Foa2vNiB4yyiNMPu8fuZBe6SS/
+         kFvi2/IWQF+3cshT66ZS41pXkbLd16752eos0A285XjzxhnqTCyO2Z4u5zYLNsoBJtAa
+         5p44l852cMRjP0d5MIOgH1NmsBPIo66++UJAtISvZ8TAbVkaoZQtvKf5UfdHlnjYgmNO
+         +CSw==
+X-Gm-Message-State: AOAM530w0GKAz1D62EVDDiVGVYkGWQAcjXBI8XM/QWktoafxNyQtijkk
+        ROyiB9cVEhCmFRB9XNNA5MQOlg==
+X-Google-Smtp-Source: ABdhPJyOkcAVGyLINFOnndGUkdkwynO0Z539Q14taEuqWC0ckeo9GmyPCROf+ugVkI4D2WEpEqvY/g==
+X-Received: by 2002:a05:6512:2a88:b0:46d:fa80:820a with SMTP id dt8-20020a0565122a8800b0046dfa80820amr16441168lfb.665.1650992463446;
+        Tue, 26 Apr 2022 10:01:03 -0700 (PDT)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id h26-20020a056512055a00b00471ffe4b270sm1085097lfl.168.2022.04.26.10.01.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Apr 2022 10:01:02 -0700 (PDT)
+Message-ID: <87a921db-c4bb-eb43-96c5-0bdb757c7df9@linaro.org>
+Date:   Tue, 26 Apr 2022 20:01:02 +0300
 MIME-Version: 1.0
-References: <20220423000328.2103733-1-rananta@google.com> <20220423000328.2103733-9-rananta@google.com>
- <896e95a1-6a3e-c524-4951-8fae9697b85e@redhat.com>
-In-Reply-To: <896e95a1-6a3e-c524-4951-8fae9697b85e@redhat.com>
-From:   Raghavendra Rao Ananta <rananta@google.com>
-Date:   Tue, 26 Apr 2022 09:59:08 -0700
-Message-ID: <CAJHc60z_+O09u0wB9=PnuEu3bZC0tQG93iWbjTP7-WvnN-FEnQ@mail.gmail.com>
-Subject: Re: [PATCH v6 8/9] selftests: KVM: aarch64: Introduce hypercall ABI test
-To:     Gavin Shan <gshan@redhat.com>
-Cc:     Marc Zyngier <maz@kernel.org>, Andrew Jones <drjones@redhat.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        kvm@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
-        Peter Shier <pshier@google.com>, linux-kernel@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Will Deacon <will@kernel.org>, kvmarm@lists.cs.columbia.edu,
-        linux-arm-kernel@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [Freedreno] [PATCH] drm/msm/dp: move add fail safe mode to
+ dp_connector_get_mode()
+Content-Language: en-GB
+To:     Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Doug Anderson <dianders@chromium.org>
+Cc:     freedreno <freedreno@lists.freedesktop.org>,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        David Airlie <airlied@linux.ie>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Vinod Koul <vkoul@kernel.org>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
+        Stephen Boyd <swboyd@chromium.org>, Sean Paul <sean@poorly.run>
+References: <1650671124-14030-1-git-send-email-quic_khsieh@quicinc.com>
+ <3b9588d2-d9f6-c96f-b316-953b56b59bfe@linaro.org>
+ <73e2a37e-23db-d614-5f5c-8120f1869158@quicinc.com>
+ <CAA8EJprjuzUrfwXodgKmbWxgK6t+bY601E_nS7CHNH_+4Tfn5Q@mail.gmail.com>
+ <9b331b16-8d1b-4e74-8fee-d74c4041f8d7@quicinc.com>
+ <CAD=FV=VxEnbBypNYSq=iTUTwZUs_v620juSA6gsMW4h2_3HyBQ@mail.gmail.com>
+ <9b4ccdef-c98a-b907-c7ee-a92456dc5bba@quicinc.com>
+ <CAD=FV=U3MJ1W6CCVW0+Si8ZyAD+_ZBYsL1cT6Y8yhcTvWsCLUQ@mail.gmail.com>
+ <d3d1d0d5-d3e0-0777-5b20-cdf24697742d@quicinc.com>
+ <CAD=FV=W2WPdiY2zq6JC_-10kOqzDuiUYQOdYbyRyw2k-fbXFXQ@mail.gmail.com>
+ <eaedbc40-f8cb-aaf8-f335-ef48e3cf82cc@quicinc.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <eaedbc40-f8cb-aaf8-f335-ef48e3cf82cc@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Gavin,
+On 26/04/2022 18:37, Abhinav Kumar wrote:
+> Hi Doug
+> 
+> On 4/26/2022 8:20 AM, Doug Anderson wrote:
+>> Hi,
+>>
+>> On Mon, Apr 25, 2022 at 8:35 PM Abhinav Kumar 
+>> <quic_abhinavk@quicinc.com> wrote:
+>>>
+>>> On 4/25/2022 7:18 PM, Doug Anderson wrote:
+>>>> Hi,
+>>>>
+>>>> On Mon, Apr 25, 2022 at 6:42 PM Abhinav Kumar 
+>>>> <quic_abhinavk@quicinc.com> wrote:
+>>>>>
+>>>>>>> 2) When there was a valid EDID but no 640x480 mode
+>>>>>>>
+>>>>>>> This is the equipment specific case and the one even I was a bit
+>>>>>>> surprised. There is a DP compliance equipment we have in-house 
+>>>>>>> and while
+>>>>>>> validation, it was found that in its list of modes , it did not 
+>>>>>>> have any
+>>>>>>> modes which chromebook supported ( due to 2 lanes ). But my
+>>>>>>> understanding was that, all sinks should have atleast 640x480 but
+>>>>>>> apparently this one did not have that. So to handle this DP 
+>>>>>>> compliance
+>>>>>>> equipment behavior, we had to do this.
+>>>>>>
+>>>>>> That doesn't seem right. If there's a valid EDID and the valid EDID
+>>>>>> doesn't contain 640x480, are you _sure_ you're supposed to be adding
+>>>>>> 640x480? That doesn't sound right to me. I've got a tiny display in
+>>>>>> front of me for testing that only has one mode:
+>>>>>>
+>>>>>>      #0 800x480 65.68 800 840 888 928 480 493 496 525 32000
+>>>>>>
+>>>>>
+>>>>> As I had wrote, DRM core kicks in only when the count of modes is 0.
+>>>>> Here what is happening is the count was not 0 but 640x480 was not
+>>>>> present in the EDID. So we had to add it explicitly.
+>>>>>
+>>>>> Your tiny display is a display port display?
+>>>>>
+>>>>> I am referring to only display port monitors. If your tiny display is
+>>>>> DP, it should have had 640x480 in its list of modes.
+>>>>
+>>>> My tiny display is actually a HDMI display hooked up to a HDMI to DP
+>>>> (active) adapter.
+>>>>
+>>>> ...but this is a legal and common thing to have. I suppose possibly my
+>>>> HDMI display is "illegal"?
+>>>>
+>>>> OK, so reading through the spec more carefully, I do see that the DP
+>>>> spec makes numerous mentions of the fact that DP sinks _must_ support
+>>>> 640x480. Even going back to DP 1.4, I see section "5.2.1.2 Video
+>>>> Timing Format" says that we must support 640x480. It seems like that's
+>>>> _intended_ to be used only if the EDID read fails, though or if we
+>>>> somehow have to output video without knowledge of the EDID. It seems
+>>>> hard to believe that there's a great reason to assume a display will
+>>>> support 640x480 if we have more accurate knowledge.
+>>>>
+>>>> In any case, I guess I would still say that adding this mode belongs
+>>>> in the DRM core. The core should notice that it's a DP connection
+>>>> (bridge->type == DRM_MODE_CONNECTOR_DisplayPort) and that 640x480 was
+>>>> left out and it should add it. We should also make sure it's not
+>>>> "preferred" and is last in the list so we never accidentally pick it.
+>>>> If DP truly says that we should always give the user 640x480 then
+>>>> that's true for everyone, not just Qualcomm. We should add it in the
+>>>> core. If, later, someone wants to hide this from the UI it would be
+>>>> much easier if they only needed to modify one place.
+>>>>
+>>>
+>>> So I debugged with kuogee just now using the DP compliance equipment.
+>>> It turns out, the issue is not that 640x480 mode is not present.
+>>>
+>>> The issue is that it is not marked as preferred.
+>>>
+>>> Hence we missed this part during debugging this equipment failure.
+>>>
+>>> We still have to figure out the best way to either mark 640x480 as
+>>> preferred or eliminate other modes during the test-case so that 640x480
+>>> is actually picked by usermode.
+>>>
+>>> Now that being said, the fix still doesn't belong in the framework. It
+>>> has to be in the msm/dp code.
+>>>
+>>> Different vendors handle this failure case differently looks like.
+>>>
+>>> Lets take below snippet from i915 as example.
+>>>
+>>> 3361    if (intel_connector->detect_edid == NULL ||
+>>> 3362        connector->edid_corrupt ||
+>>> 3363        intel_dp->aux.i2c_defer_count > 6) {
+>>> 3364            /* Check EDID read for NACKs, DEFERs and corruption
+>>> 3365             * (DP CTS 1.2 Core r1.1)
+>>> 3366             *    4.2.2.4 : Failed EDID read, I2C_NAK
+>>> 3367             *    4.2.2.5 : Failed EDID read, I2C_DEFER
+>>> 3368             *    4.2.2.6 : EDID corruption detected
+>>> 3369             * Use failsafe mode for all cases
+>>> 3370             */
+>>> 3371            if (intel_dp->aux.i2c_nack_count > 0 ||
+>>> 3372                    intel_dp->aux.i2c_defer_count > 0)
+>>> 3373                    drm_dbg_kms(&i915->drm,
+>>> 3374                                "EDID read had %d NACKs, %d 
+>>> DEFERs\n",
+>>> 3375                                intel_dp->aux.i2c_nack_count,
+>>> 3376                                intel_dp->aux.i2c_defer_count);
+>>> 3377            intel_dp->compliance.test_data.edid = 
+>>> INTEL_DP_RESOLUTION_FAILSAFE;
+>>
+> 
+> The reason I pointed to this code is to give an example of how other 
+> drivers handle this test-case.
+> 
+> We added this patch for 4.2.2.1 and 4.2.2.6 EDID test cases.
+> 
+> The challenge here as found out from our discussion here was to mark a 
+> particular mode as preferred so that the Chrome usermode can pick it.
+> 
+> Now whats happening with that there was always a possibility of two 
+> modes being marked as preferred due to this and so-on.
+> 
+> We had a pretty long discussion last night and thought of all possible 
+> solutions but all of them look like a hack to us in the driver because 
+> we end up breaking other things due to this.
+> 
+> So we decided that driver is not the place to handle this test case.
+> Since we do have IGT support for chromebooks, we will handle both these 
+> test cases there as other vendors do the same way and it works.
+> 
+> 
+>> Just because Intel DRM has its own solution for something doesn't mean
+>> everyone else should copy them and implement their own solution. Up
+>> until recently DP AUX backlights were baked into different DRM
+>> drivers. A recent effort was made to pull it out. I think the Intel
+>> DRM code was the "first one" to the party and it wasn't clear how
+>> things should be broken up to share with other drivers, so mostly it
+>> did everything itself, but that's not the long term answer.
+>>
+>> I'm not saying that we need to block your change on a full re-design
+>> or anything, but I'm just saying that:
+>>
+>> * You're trying to implement a generic DP rule, not something specific
+>> to Qualcomm hardware. That implies that, if possible, it shouldn't be
+>> in a Qualcomm driver.
+>>
+>> * It doesn't seem like it would be terrible to handle this in the core.
+>>
+>>
+>>> This marks the fail safe mode and IGT test case reads this to set this
+>>> mode and hence the test passes.
+>>>
+>>> We rely on the chromeOS usermode to output pixel data for this test-case
+>>> and not IGT. We use IGT only for video pattern CTS today but this is a
+>>> different test-case which is failing.
+>>>
+>>> ChromeOS usermode will not pick 640x480 unless we mark it as preferred
+>>> or other modes are eliminated.
+>>>
+>>> So we have to come up with the right way for the usermode to pick 
+>>> 640x480.
+>>>
+>>> We will discuss this a bit more and come up with a different change.
+>>
+>> Can you provide the exact EDID from the failing test case? Maybe that
+>> will help shed some light on what's going on. I looked at the original
+>> commit and it just referred to 4.2.2.1, which I assume is "EDID Read
+>> upon HPD Plug Event", but that doesn't give details that seem relevant
+>> to the discussion here.
+> 
+> Yes so it is 4.2.2.1 and 4.2.2.6.
+> 
+> That alone wont give the full picture.
+> 
+> So its a combination of things.
+> 
+> While running the test, the test equipment published only one mode.
+> But we could not support that mode because of 2 lanes.
+> Equipment did not add 640x480 to the list of modes.
+> DRM fwk will also not add it because count_modes is not 0 ( there was 
+> one mode ).
+> So we ended up making these changes.
 
-On Tue, Apr 26, 2022 at 12:50 AM Gavin Shan <gshan@redhat.com> wrote:
->
-> Hi Raghavendra,
->
-> On 4/23/22 8:03 AM, Raghavendra Rao Ananta wrote:
-> > Introduce a KVM selftest to check the hypercall interface
-> > for arm64 platforms. The test validates the user-space'
-> > [GET|SET]_ONE_REG interface to read/write the psuedo-firmware
-> > registers as well as its effects on the guest upon certain
-> > configurations.
-> >
-> > Signed-off-by: Raghavendra Rao Ananta <rananta@google.com>
-> > ---
-> >   tools/testing/selftests/kvm/.gitignore        |   1 +
-> >   tools/testing/selftests/kvm/Makefile          |   1 +
-> >   .../selftests/kvm/aarch64/hypercalls.c        | 335 ++++++++++++++++++
-> >   3 files changed, 337 insertions(+)
-> >   create mode 100644 tools/testing/selftests/kvm/aarch64/hypercalls.c
-> >
->
-> There are comments about @false_hvc_info[] and some nits, as below.
-> Please evaluate and improve if it makes sense to you. Otherwise, it
-> looks good to me:
->
-> Reviewed-by: Gavin Shan <gshan@redhat.com>
->
-> > diff --git a/tools/testing/selftests/kvm/.gitignore b/tools/testing/selftests/kvm/.gitignore
-> > index 1bb575dfc42e..b17e464ec661 100644
-> > --- a/tools/testing/selftests/kvm/.gitignore
-> > +++ b/tools/testing/selftests/kvm/.gitignore
-> > @@ -2,6 +2,7 @@
-> >   /aarch64/arch_timer
-> >   /aarch64/debug-exceptions
-> >   /aarch64/get-reg-list
-> > +/aarch64/hypercalls
-> >   /aarch64/psci_test
-> >   /aarch64/vcpu_width_config
-> >   /aarch64/vgic_init
-> > diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
-> > index c2cf4d318296..97eef0c03d3b 100644
-> > --- a/tools/testing/selftests/kvm/Makefile
-> > +++ b/tools/testing/selftests/kvm/Makefile
-> > @@ -105,6 +105,7 @@ TEST_GEN_PROGS_x86_64 += system_counter_offset_test
-> >   TEST_GEN_PROGS_aarch64 += aarch64/arch_timer
-> >   TEST_GEN_PROGS_aarch64 += aarch64/debug-exceptions
-> >   TEST_GEN_PROGS_aarch64 += aarch64/get-reg-list
-> > +TEST_GEN_PROGS_aarch64 += aarch64/hypercalls
-> >   TEST_GEN_PROGS_aarch64 += aarch64/psci_test
-> >   TEST_GEN_PROGS_aarch64 += aarch64/vcpu_width_config
-> >   TEST_GEN_PROGS_aarch64 += aarch64/vgic_init
-> > diff --git a/tools/testing/selftests/kvm/aarch64/hypercalls.c b/tools/testing/selftests/kvm/aarch64/hypercalls.c
-> > new file mode 100644
-> > index 000000000000..f404343a0ae3
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/kvm/aarch64/hypercalls.c
-> > @@ -0,0 +1,335 @@
-> > +// SPDX-License-Identifier: GPL-2.0-only
-> > +
-> > +/* hypercalls: Check the ARM64's psuedo-firmware bitmap register interface.
-> > + *
-> > + * The test validates the basic hypercall functionalities that are exposed
-> > + * via the psuedo-firmware bitmap register. This includes the registers'
-> > + * read/write behavior before and after the VM has started, and if the
-> > + * hypercalls are properly masked or unmasked to the guest when disabled or
-> > + * enabled from the KVM userspace, respectively.
-> > + */
-> > +
-> > +#include <errno.h>
-> > +#include <linux/arm-smccc.h>
-> > +#include <asm/kvm.h>
-> > +#include <kvm_util.h>
-> > +
-> > +#include "processor.h"
-> > +
-> > +#define FW_REG_ULIMIT_VAL(max_feat_bit) (GENMASK(max_feat_bit, 0))
-> > +
-> > +/* Last valid bits of the bitmapped firmware registers */
-> > +#define KVM_REG_ARM_STD_BMAP_BIT_MAX         0
-> > +#define KVM_REG_ARM_STD_HYP_BMAP_BIT_MAX     0
-> > +#define KVM_REG_ARM_VENDOR_HYP_BMAP_BIT_MAX  1
-> > +
-> > +struct kvm_fw_reg_info {
-> > +     uint64_t reg;           /* Register definition */
-> > +     uint64_t max_feat_bit;  /* Bit that represents the upper limit of the feature-map */
-> > +};
-> > +
-> > +#define FW_REG_INFO(r)                       \
-> > +     {                                       \
-> > +             .reg = r,                       \
-> > +             .max_feat_bit = r##_BIT_MAX,    \
-> > +     }
-> > +
-> > +static const struct kvm_fw_reg_info fw_reg_info[] = {
-> > +     FW_REG_INFO(KVM_REG_ARM_STD_BMAP),
-> > +     FW_REG_INFO(KVM_REG_ARM_STD_HYP_BMAP),
-> > +     FW_REG_INFO(KVM_REG_ARM_VENDOR_HYP_BMAP),
-> > +};
-> > +
-> > +enum test_stage {
-> > +     TEST_STAGE_REG_IFACE,
-> > +     TEST_STAGE_HVC_IFACE_FEAT_DISABLED,
-> > +     TEST_STAGE_HVC_IFACE_FEAT_ENABLED,
-> > +     TEST_STAGE_HVC_IFACE_FALSE_INFO,
-> > +     TEST_STAGE_END,
-> > +};
-> > +
-> > +static int stage = TEST_STAGE_REG_IFACE;
-> > +
-> > +struct test_hvc_info {
-> > +     uint32_t func_id;
-> > +     uint64_t arg1;
-> > +};
-> > +
-> > +#define TEST_HVC_INFO(f, a1) \
-> > +     {                       \
-> > +             .func_id = f,   \
-> > +             .arg1 = a1,     \
-> > +     }
-> > +
-> > +static const struct test_hvc_info hvc_info[] = {
-> > +     /* KVM_REG_ARM_STD_BMAP */
-> > +     TEST_HVC_INFO(ARM_SMCCC_TRNG_VERSION, 0),
-> > +     TEST_HVC_INFO(ARM_SMCCC_TRNG_FEATURES, ARM_SMCCC_TRNG_RND64),
-> > +     TEST_HVC_INFO(ARM_SMCCC_TRNG_GET_UUID, 0),
-> > +     TEST_HVC_INFO(ARM_SMCCC_TRNG_RND32, 0),
-> > +     TEST_HVC_INFO(ARM_SMCCC_TRNG_RND64, 0),
-> > +
-> > +     /* KVM_REG_ARM_STD_HYP_BMAP */
-> > +     TEST_HVC_INFO(ARM_SMCCC_ARCH_FEATURES_FUNC_ID, ARM_SMCCC_HV_PV_TIME_FEATURES),
-> > +     TEST_HVC_INFO(ARM_SMCCC_HV_PV_TIME_FEATURES, ARM_SMCCC_HV_PV_TIME_ST),
-> > +     TEST_HVC_INFO(ARM_SMCCC_HV_PV_TIME_ST, 0),
-> > +
-> > +     /* KVM_REG_ARM_VENDOR_HYP_BMAP */
-> > +     TEST_HVC_INFO(ARM_SMCCC_VENDOR_HYP_KVM_FEATURES_FUNC_ID,
-> > +                     ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID),
-> > +     TEST_HVC_INFO(ARM_SMCCC_VENDOR_HYP_CALL_UID_FUNC_ID, 0),
-> > +     TEST_HVC_INFO(ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID, KVM_PTP_VIRT_COUNTER),
-> > +};
-> > +
-> > +/* Feed false hypercall info to test the KVM behavior */
-> > +static const struct test_hvc_info false_hvc_info[] = {
-> > +     /* Feature support check against a different family of hypercalls */
-> > +     TEST_HVC_INFO(ARM_SMCCC_TRNG_FEATURES, ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID),
-> > +     TEST_HVC_INFO(ARM_SMCCC_ARCH_FEATURES_FUNC_ID, ARM_SMCCC_TRNG_RND64),
-> > +     TEST_HVC_INFO(ARM_SMCCC_HV_PV_TIME_FEATURES, ARM_SMCCC_TRNG_RND64),
-> > +};
-> > +
->
-> I don't see too much benefits of @false_hvc_info[] because
-> NOT_SUPPORTED is always returned from its test case. I think
-> it and its test case can be removed if you agree. I'm not
-> sure if it was suggested by somebody else.
->
-While this is not exactly testing the bitmap firmware registers, the
-idea behind introducing false_hvc_info[] was to introduce some
-negative tests and see if KVM handles it well. Especially with
-*_FEATURES func_ids, we can accidentally introduce functional bugs in
-KVM, and these would act as our safety net. I was planning to also
-test with some reserved hypercall numbers, just to test if the kernel
-doesn't panic for some reason.
+I think a proper solution might be to rewrite 
+drm_helper_probe_single_connector_modes() in the following way:
+- call get_modes()
+- validate the result
+- prune invalid
 
-> > +static void guest_test_hvc(const struct test_hvc_info *hc_info)
-> > +{
-> > +     unsigned int i;
-> > +     struct arm_smccc_res res;
-> > +     unsigned int hvc_info_arr_sz;
-> > +
-> > +     hvc_info_arr_sz =
-> > +     hc_info == hvc_info ? ARRAY_SIZE(hvc_info) : ARRAY_SIZE(false_hvc_info);
-> > +
-> > +     for (i = 0; i < hvc_info_arr_sz; i++, hc_info++) {
-> > +             memset(&res, 0, sizeof(res));
-> > +             smccc_hvc(hc_info->func_id, hc_info->arg1, 0, 0, 0, 0, 0, 0, &res);
-> > +
-> > +             switch (stage) {
-> > +             case TEST_STAGE_HVC_IFACE_FEAT_DISABLED:
-> > +             case TEST_STAGE_HVC_IFACE_FALSE_INFO:
-> > +                     GUEST_ASSERT_3(res.a0 == SMCCC_RET_NOT_SUPPORTED,
-> > +                                     res.a0, hc_info->func_id, hc_info->arg1);
-> > +                     break;
-> > +             case TEST_STAGE_HVC_IFACE_FEAT_ENABLED:
-> > +                     GUEST_ASSERT_3(res.a0 != SMCCC_RET_NOT_SUPPORTED,
-> > +                                     res.a0, hc_info->func_id, hc_info->arg1);
-> > +                     break;
-> > +             default:
-> > +                     GUEST_ASSERT_1(0, stage);
-> > +             }
-> > +     }
-> > +}
-> > +
-> > +static void guest_code(void)
-> > +{
-> > +     while (stage != TEST_STAGE_END) {
-> > +             switch (stage) {
-> > +             case TEST_STAGE_REG_IFACE:
-> > +                     break;
-> > +             case TEST_STAGE_HVC_IFACE_FEAT_DISABLED:
-> > +             case TEST_STAGE_HVC_IFACE_FEAT_ENABLED:
-> > +                     guest_test_hvc(hvc_info);
-> > +                     break;
-> > +             case TEST_STAGE_HVC_IFACE_FALSE_INFO:
-> > +                     guest_test_hvc(false_hvc_info);
-> > +                     break;
-> > +             default:
-> > +                     GUEST_ASSERT_1(0, stage);
-> > +             }
-> > +
-> > +             GUEST_SYNC(stage);
-> > +     }
-> > +
-> > +     GUEST_DONE();
-> > +}
-> > +
-> > +static int set_fw_reg(struct kvm_vm *vm, uint64_t id, uint64_t val)
-> > +{
-> > +     struct kvm_one_reg reg = {
-> > +             .id = id,
-> > +             .addr = (uint64_t)&val,
-> > +     };
-> > +
-> > +     return _vcpu_ioctl(vm, 0, KVM_SET_ONE_REG, &reg);
-> > +}
-> > +
-> > +static void get_fw_reg(struct kvm_vm *vm, uint64_t id, uint64_t *addr)
-> > +{
-> > +     struct kvm_one_reg reg = {
-> > +             .id = id,
-> > +             .addr = (uint64_t)addr,
-> > +     };
-> > +
-> > +     vcpu_ioctl(vm, 0, KVM_GET_ONE_REG, &reg);
-> > +}
-> > +
-> > +struct st_time {
-> > +     uint32_t rev;
-> > +     uint32_t attr;
-> > +     uint64_t st_time;
-> > +};
-> > +
-> > +#define STEAL_TIME_SIZE              ((sizeof(struct st_time) + 63) & ~63)
-> > +#define ST_GPA_BASE          (1 << 30)
-> > +
-> > +static void steal_time_init(struct kvm_vm *vm)
-> > +{
-> > +     uint64_t st_ipa = (ulong)ST_GPA_BASE;
-> > +     unsigned int gpages;
-> > +     struct kvm_device_attr dev = {
-> > +             .group = KVM_ARM_VCPU_PVTIME_CTRL,
-> > +             .attr = KVM_ARM_VCPU_PVTIME_IPA,
-> > +             .addr = (uint64_t)&st_ipa,
-> > +     };
-> > +
-> > +     gpages = vm_calc_num_guest_pages(VM_MODE_DEFAULT, STEAL_TIME_SIZE);
-> > +     vm_userspace_mem_region_add(vm, VM_MEM_SRC_ANONYMOUS, ST_GPA_BASE, 1, gpages, 0);
-> > +
-> > +     vcpu_ioctl(vm, 0, KVM_SET_DEVICE_ATTR, &dev);
-> > +}
-> > +
-> > +static void test_fw_regs_before_vm_start(struct kvm_vm *vm)
-> > +{
-> > +     uint64_t val;
-> > +     unsigned int i;
-> > +     int ret;
-> > +
-> > +     for (i = 0; i < ARRAY_SIZE(fw_reg_info); i++) {
-> > +             const struct kvm_fw_reg_info *reg_info = &fw_reg_info[i];
-> > +
-> > +             /* First 'read' should be an upper limit of the features supported */
-> > +             get_fw_reg(vm, reg_info->reg, &val);
-> > +             TEST_ASSERT(val == FW_REG_ULIMIT_VAL(reg_info->max_feat_bit),
-> > +                     "Expected all the features to be set for reg: 0x%lx; expected: 0x%lx; read: 0x%lx\n",
-> > +                     reg_info->reg, FW_REG_ULIMIT_VAL(reg_info->max_feat_bit), val);
-> > +
-> > +             /* Test a 'write' by disabling all the features of the register map */
-> > +             ret = set_fw_reg(vm, reg_info->reg, 0);
-> > +             TEST_ASSERT(ret == 0,
-> > +                     "Failed to clear all the features of reg: 0x%lx; ret: %d\n",
-> > +                     reg_info->reg, errno);
-> > +
-> > +             get_fw_reg(vm, reg_info->reg, &val);
-> > +             TEST_ASSERT(val == 0,
-> > +                     "Expected all the features to be cleared for reg: 0x%lx\n", reg_info->reg);
-> > +
-> > +             /*
-> > +              * Test enabling a feature that's not supported.
-> > +              * Avoid this check if all the bits are occupied.
-> > +              */
-> > +             if (reg_info->max_feat_bit < 63) {
-> > +                     ret = set_fw_reg(vm, reg_info->reg, BIT(reg_info->max_feat_bit + 1));
-> > +                     TEST_ASSERT(ret != 0 && errno == EINVAL,
-> > +                     "Unexpected behavior or return value (%d) while setting an unsupported feature for reg: 0x%lx\n",
-> > +                     errno, reg_info->reg);
-> > +             }
-> > +     }
-> > +}
->
-> Just in case :)
->
->       ret = set_fw_reg(vm, reg_info->reg, GENMASK(63, reg_info->max_feat_bit + 1));
->
-It may be better to cover the entire range, but to test only the
-(max_feat_bit + 1) gives us the advantage of checking if there's any
-discrepancy between the kernel and the test, now that *_BIT_MAX are
-not a part of UAPI headers.
+- if the number of modes is 0, call drm_add_override_edid_modes()
+- validate the result
+- prune invalid
 
-Probably also include your test along with the existing one?
->
-> > +
-> > +static void test_fw_regs_after_vm_start(struct kvm_vm *vm)
-> > +{
-> > +     uint64_t val;
-> > +     unsigned int i;
-> > +     int ret;
-> > +
-> > +     for (i = 0; i < ARRAY_SIZE(fw_reg_info); i++) {
-> > +             const struct kvm_fw_reg_info *reg_info = &fw_reg_info[i];
-> > +
-> > +             /*
-> > +              * Before starting the VM, the test clears all the bits.
-> > +              * Check if that's still the case.
-> > +              */
-> > +             get_fw_reg(vm, reg_info->reg, &val);
-> > +             TEST_ASSERT(val == 0,
-> > +                     "Expected all the features to be cleared for reg: 0x%lx\n",
-> > +                     reg_info->reg);
-> > +
-> > +             /*
-> > +              * Set all the features for this register again. KVM shouldn't
-> > +              * allow this as the VM is running.
-> > +              */
-> > +             ret = set_fw_reg(vm, reg_info->reg, FW_REG_ULIMIT_VAL(reg_info->max_feat_bit));
-> > +             TEST_ASSERT(ret != 0 && errno == EBUSY,
-> > +             "Unexpected behavior or return value (%d) while setting a feature while VM is running for reg: 0x%lx\n",
-> > +             errno, reg_info->reg);
-> > +     }
-> > +}
-> > +
->
-> I guess you want to check -EBUSY is returned. In that case,
-> the comments here could be clearer, something like below
-> to emphasize '-EBUSY'.
->
->          /*
->           * After VM runs for once, -EBUSY should be returned on attempt
->           * to set features. Check if the correct errno is returned.
->           */
->
-Sounds good.
+- if the number of modes is still 0, call drm_add_modes_noedid()
+- validate the result
+- prune invalid
 
-> > +static struct kvm_vm *test_vm_create(void)
-> > +{
-> > +     struct kvm_vm *vm;
-> > +
-> > +     vm = vm_create_default(0, 0, guest_code);
-> > +
-> > +     ucall_init(vm, NULL);
-> > +     steal_time_init(vm);
-> > +
-> > +     return vm;
-> > +}
-> > +
-> > +static struct kvm_vm *test_guest_stage(struct kvm_vm *vm)
-> > +{
-> > +     struct kvm_vm *ret_vm = vm;
-> > +
-> > +     pr_debug("Stage: %d\n", stage);
-> > +
-> > +     switch (stage) {
-> > +     case TEST_STAGE_REG_IFACE:
-> > +             test_fw_regs_after_vm_start(vm);
-> > +             break;
-> > +     case TEST_STAGE_HVC_IFACE_FEAT_DISABLED:
-> > +             /* Start a new VM so that all the features are now enabled by default */
-> > +             kvm_vm_free(vm);
-> > +             ret_vm = test_vm_create();
-> > +             break;
-> > +     case TEST_STAGE_HVC_IFACE_FEAT_ENABLED:
-> > +     case TEST_STAGE_HVC_IFACE_FALSE_INFO:
-> > +             break;
-> > +     default:
-> > +             TEST_FAIL("Unknown test stage: %d\n", stage);
-> > +     }
-> > +
-> > +     stage++;
-> > +     sync_global_to_guest(vm, stage);
-> > +
-> > +     return ret_vm;
-> > +}
-> > +
-> > +static void test_run(void)
-> > +{
-> > +     struct kvm_vm *vm;
-> > +     struct ucall uc;
-> > +     bool guest_done = false;
-> > +
-> > +     vm = test_vm_create();
-> > +
-> > +     test_fw_regs_before_vm_start(vm);
-> > +
-> > +     while (!guest_done) {
-> > +             vcpu_run(vm, 0);
-> > +
-> > +             switch (get_ucall(vm, 0, &uc)) {
-> > +             case UCALL_SYNC:
-> > +                     vm = test_guest_stage(vm);
-> > +                     break;
-> > +             case UCALL_DONE:
-> > +                     guest_done = true;
-> > +                     break;
-> > +             case UCALL_ABORT:
-> > +                     TEST_FAIL("%s at %s:%ld\n\tvalues: 0x%lx, 0x%lx; 0x%lx, stage: %u",
-> > +                     (const char *)uc.args[0], __FILE__, uc.args[1],
-> > +                     uc.args[2], uc.args[3], uc.args[4], stage);
-> > +                     break;
-> > +             default:
-> > +                     TEST_FAIL("Unexpected guest exit\n");
-> > +             }
-> > +     }
-> > +
-> > +     kvm_vm_free(vm);
-> > +}
-> > +
-> > +int main(void)
-> > +{
-> > +     setbuf(stdout, NULL);
-> > +
-> > +     test_run();
-> > +     return 0;
-> > +}
-> >
->
-> Thanks,
-> Gavin
->
-Thanks for the reviews on all the patches, Gavin.
+[A separate change might happen here after all the checks: if the number 
+of modes is still 0 and if it is a DP, enforce adding 640x480 even w/o 
+validation. But generally I feel that this shouldn't be necessary 
+because the previous step should have added it.]
 
-Regards,
-Raghavendra
+This way we can be sure that all modes are validated, but still to do 
+our best to add something supported to the list of modes.
+
+> 
+> 
+>>
+>> I guess maybe what's happening is that the test case is giving an EDID
+>> where all the modes are not supportable by the current clock rate /
+>> lanes? ...and then somehow we're not falling back to 640x480. It's
+>> always possible that this is a userspace problem.
+>>
+>> In any case, would you object to a revert of the patches in the short 
+>> term?
+> 
+> Not sure, if you saw this change kuogee posted last night.
+> https://patchwork.freedesktop.org/patch/483415/
+> We did decided to remove all the code related to these test cases and 
+> handle them in IGT.
+> 
+>>
+>> -Doug
+
+
+-- 
+With best wishes
+Dmitry
