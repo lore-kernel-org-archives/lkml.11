@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED88BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:00:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05C9FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:00:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346342AbiDZJDX (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:03:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57822 "EHLO
+        id S241368AbiDZJD3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:03:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346916AbiDZIpa (ORCPT
+        with ESMTP id S1346910AbiDZIp3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:45:30 -0400
+        Tue, 26 Apr 2022 04:45:29 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DFB913DD8;
-        Tue, 26 Apr 2022 01:36:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09DB313DCB;
+        Tue, 26 Apr 2022 01:36:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A0AA06185C;
-        Tue, 26 Apr 2022 08:36:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DADBC385A0;
-        Tue, 26 Apr 2022 08:36:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 99FD66185A;
+        Tue, 26 Apr 2022 08:36:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E8F6C385A4;
+        Tue, 26 Apr 2022 08:36:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962199;
-        bh=LNen/Hol42nJKmCO91F1P60/W/lNiA3tn9i6VwXxB0o=;
+        s=korg; t=1650962196;
+        bh=GF26Eid8I+SnitU7p4oy6f6kKqZJS6lzRoUxig15UmY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2UrutGPySF6NkR3ee6eZ8xZW0bvaLGv79ODSop2B4fuMSU+eiN6RqNj+dd5+lOkbj
-         A4TIx8erexbJMjzz3AKhdG2DEKfK/9in6qVzccckO6Shxdt+FaXopm17pmWeM1HYJo
-         BMx1h1B4ZEQLV+7DkxV8PB0HujF18giXEyzyv58M=
+        b=nieMy1TDqEuIsWK55tP+E+7xCdDyI26iJeFy3ZWE0EEThWBW9z9gEI0TZQQI/oBSg
+         ZqUkbS/RruXsxzrYko+GOiOmXi8S6D7Bb4lh2EznZj6Jl3XdbZybs3m5N8QexOEkjA
+         YpKZ9WgXwy1ny15Hzdq1IpfZRMUtACzWH5iB2Y7k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        stable@vger.kernel.org,
+        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 019/124] ASoC: rk817: Use devm_clk_get() in rk817_platform_probe
-Date:   Tue, 26 Apr 2022 10:20:20 +0200
-Message-Id: <20220426081747.851459886@linuxfoundation.org>
+Subject: [PATCH 5.15 018/124] ASoC: topology: Correct error handling in soc_tplg_dapm_widget_create()
+Date:   Tue, 26 Apr 2022 10:20:19 +0200
+Message-Id: <20220426081747.822568035@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -50,36 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
 
-[ Upstream commit 8ba08d3a367a70f707b7c5d53ad92b98b960ee88 ]
+[ Upstream commit 9c363532413cda3e2c6dfa10e5cca7cd221877a0 ]
 
-We need to call clk_put() to undo clk_get() in the error path.
-Use devm_clk_get() to obtain a reference to the clock, It has
-the benefit that clk_put() is no longer required.
+Academic correction of error handling:
+In case the allocation of kc or kcontrol_type fails the correct label to
+jump is hdr_err since the template.sname has been also allocated at this
+point.
 
-Fixes: 0d6a04da9b25 ("ASoC: Add Rockchip rk817 audio CODEC support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220404090753.17940-1-linmq006@gmail.com
+Fixes: d29d41e28eea6 ("ASoC: topology: Add support for multiple kcontrol types to a widget")
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220331114957.519-1-peter.ujfalusi@linux.intel.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/rk817_codec.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/soc-topology.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/codecs/rk817_codec.c b/sound/soc/codecs/rk817_codec.c
-index 8fffe378618d..cce6f4e7992f 100644
---- a/sound/soc/codecs/rk817_codec.c
-+++ b/sound/soc/codecs/rk817_codec.c
-@@ -489,7 +489,7 @@ static int rk817_platform_probe(struct platform_device *pdev)
+diff --git a/sound/soc/soc-topology.c b/sound/soc/soc-topology.c
+index 561eddfc8c22..eff8d4f71561 100644
+--- a/sound/soc/soc-topology.c
++++ b/sound/soc/soc-topology.c
+@@ -1481,12 +1481,12 @@ static int soc_tplg_dapm_widget_create(struct soc_tplg *tplg,
+ 	template.num_kcontrols = le32_to_cpu(w->num_kcontrols);
+ 	kc = devm_kcalloc(tplg->dev, le32_to_cpu(w->num_kcontrols), sizeof(*kc), GFP_KERNEL);
+ 	if (!kc)
+-		goto err;
++		goto hdr_err;
  
- 	rk817_codec_parse_dt_property(&pdev->dev, rk817_codec_data);
+ 	kcontrol_type = devm_kcalloc(tplg->dev, le32_to_cpu(w->num_kcontrols), sizeof(unsigned int),
+ 				     GFP_KERNEL);
+ 	if (!kcontrol_type)
+-		goto err;
++		goto hdr_err;
  
--	rk817_codec_data->mclk = clk_get(pdev->dev.parent, "mclk");
-+	rk817_codec_data->mclk = devm_clk_get(pdev->dev.parent, "mclk");
- 	if (IS_ERR(rk817_codec_data->mclk)) {
- 		dev_dbg(&pdev->dev, "Unable to get mclk\n");
- 		ret = -ENXIO;
+ 	for (i = 0; i < w->num_kcontrols; i++) {
+ 		control_hdr = (struct snd_soc_tplg_ctl_hdr *)tplg->pos;
 -- 
 2.35.1
 
