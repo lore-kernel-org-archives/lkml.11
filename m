@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E75DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:02:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D47B7C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:02:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350746AbiDZTFJ (ORCPT
+        id S1352744AbiDZTFM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 15:05:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39238 "EHLO
+        Tue, 26 Apr 2022 15:05:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349665AbiDZTE6 (ORCPT
+        with ESMTP id S1350538AbiDZTFF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 15:04:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 848BC1597AB;
-        Tue, 26 Apr 2022 12:01:50 -0700 (PDT)
+        Tue, 26 Apr 2022 15:05:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08DE319916C;
+        Tue, 26 Apr 2022 12:01:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 41166B8224F;
-        Tue, 26 Apr 2022 19:01:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE9CAC385AA;
-        Tue, 26 Apr 2022 19:01:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 950B3B8224E;
+        Tue, 26 Apr 2022 19:01:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CE8EC385A4;
+        Tue, 26 Apr 2022 19:01:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650999707;
-        bh=Lczrt4+YUqRZ1mToh23wQuAlFBbPmfoWphl6BE6TpG8=;
+        s=k20201202; t=1650999713;
+        bh=HzXEB+jiefZVdvXEiPjM7zJ7btDrrLOGhLbd7Aa/u8A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j1Y3W/cDiQF6/YxPYC0jGB8sliXqFZlhFUltYGhUWmPAKyAtrjcZ86UEj23CJDfWT
-         gQBw32n4QTJ91c3OX+FpVn7LfaMVezW7HbAEbJifEttVwJmLPwbF/1XTrawHziyKwK
-         yeuQaogYfVUOqcz4j/LYCGKI3GMgmQDmHYDgG5a0JZdyNhxqDtX5Rgc9lDDSnwbc2r
-         Tzkzx/cx4727XNHwJozoJr/CJt6X3XpNHvHKN+mnjhv7VuDBUtVFfStTYuS3rjrAke
-         3F0Qnnb/HCAIB9UxKvCLShTRLEvTgZSTs1Y9RhvuNJjcd1s3EwHtIQtg9lNUems1p1
-         JLlJafdNc0tMA==
+        b=m+XWC9p3rE/oWbJGRHMUV0tpjTCFLpUznTyk9OV/U3HTwaUSmmxckY68j15RqyMrC
+         U/UaEdZ6Oq6dafm2jOMAhF+VkaCUfnEJbOTBt0zTiZOMjUZUAaRiCQtmoccX3H1Lz0
+         kqGgIegzmGVRzai+e3MYIvV5Me8BIIEZJdenB4VN8IUfWUpxJ1PN8XXY1RGo5x1exV
+         tcbfqSEkHHjV+kr3EuMLJVCMZuQYckKttvzoM+vOZFxeSnAecouDbxjO+L62UwzMU8
+         RtUqLeOV+nMVZ9Un2guEUqjuQ927RbnVzwXn5bQ3N1/0jK0t2lBKj9hArfYzDq/CDs
+         Dv5Nr3i8CGdGw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Rander Wang <rander.wang@intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, oder_chiou@realtek.com,
-        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+Cc:     Zheyu Ma <zheyuma97@gmail.com>, Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, ckeepax@opensource.cirrus.com,
+        u.kleine-koenig@pengutronix.de, patches@opensource.cirrus.com,
         alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.17 03/22] ASoC: rt711/5682: check if bus is active before deferred jack detection
-Date:   Tue, 26 Apr 2022 15:01:26 -0400
-Message-Id: <20220426190145.2351135-3-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.17 05/22] ASoC: wm8731: Disable the regulator when probing fails
+Date:   Tue, 26 Apr 2022 15:01:28 -0400
+Message-Id: <20220426190145.2351135-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220426190145.2351135-1-sashal@kernel.org>
 References: <20220426190145.2351135-1-sashal@kernel.org>
@@ -56,72 +54,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 770f3d992a3f7330f801dfeee98429b2885c9fdb ]
+[ Upstream commit 92ccbf17eeacf510cf1eed9c252d9332ca24f02d ]
 
-This patch takes a defensive programming and paranoid approach in case
-the parent device (SoundWire) is pm_runtime resumed but the rt711
-device is not. In that case, during the attachment and initialization,
-a jack detection workqueue can be scheduled. Since the pm_runtime
-suspend routines will not be invoked, the sequence to cancel all
-deferred work is not executed, and the jack detection could happen
-after the bus stops operating, leading to a timeout.
+When the driver fails during probing, the driver should disable the
+regulator, not just handle it in wm8731_hw_init().
 
-This patch applies the same solution to rt5682, based on the
-similarities between codec drivers. The race condition with rt5682 was
-not detected experimentally though.
+The following log reveals it:
 
-BugLink: https://github.com/thesofproject/linux/issues/3459
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Rander Wang <rander.wang@intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Link: https://lore.kernel.org/r/20220406192005.262996-1-pierre-louis.bossart@linux.intel.com
+[   17.812483] WARNING: CPU: 1 PID: 364 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
+[   17.815958] RIP: 0010:_regulator_put+0x3ec/0x4e0
+[   17.824467] Call Trace:
+[   17.824774]  <TASK>
+[   17.825040]  regulator_bulk_free+0x82/0xe0
+[   17.825514]  devres_release_group+0x319/0x3d0
+[   17.825882]  i2c_device_probe+0x766/0x940
+[   17.829198]  i2c_register_driver+0xb5/0x130
+
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Link: https://lore.kernel.org/r/20220405121038.4094051-1-zheyuma97@gmail.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/rt5682.c | 9 +++++++++
- sound/soc/codecs/rt711.c  | 7 +++++++
- 2 files changed, 16 insertions(+)
+ sound/soc/codecs/wm8731.c | 19 +++++++++++--------
+ 1 file changed, 11 insertions(+), 8 deletions(-)
 
-diff --git a/sound/soc/codecs/rt5682.c b/sound/soc/codecs/rt5682.c
-index be68d573a490..e6f7e9f82511 100644
---- a/sound/soc/codecs/rt5682.c
-+++ b/sound/soc/codecs/rt5682.c
-@@ -1100,6 +1100,15 @@ void rt5682_jack_detect_handler(struct work_struct *work)
- 		return;
+diff --git a/sound/soc/codecs/wm8731.c b/sound/soc/codecs/wm8731.c
+index 86b1f6eaa599..518167d90b10 100644
+--- a/sound/soc/codecs/wm8731.c
++++ b/sound/soc/codecs/wm8731.c
+@@ -602,7 +602,7 @@ static int wm8731_hw_init(struct device *dev, struct wm8731_priv *wm8731)
+ 	ret = wm8731_reset(wm8731->regmap);
+ 	if (ret < 0) {
+ 		dev_err(dev, "Failed to issue reset: %d\n", ret);
+-		goto err_regulator_enable;
++		goto err;
  	}
  
-+	if (rt5682->is_sdw) {
-+		if (pm_runtime_status_suspended(rt5682->slave->dev.parent)) {
-+			dev_dbg(&rt5682->slave->dev,
-+				"%s: parent device is pm_runtime_status_suspended, skipping jack detection\n",
-+				__func__);
-+			return;
-+		}
-+	}
-+
- 	dapm = snd_soc_component_get_dapm(rt5682->component);
+ 	/* Clear POWEROFF, keep everything else disabled */
+@@ -619,10 +619,7 @@ static int wm8731_hw_init(struct device *dev, struct wm8731_priv *wm8731)
  
- 	snd_soc_dapm_mutex_lock(dapm);
-diff --git a/sound/soc/codecs/rt711.c b/sound/soc/codecs/rt711.c
-index 6770825d037a..ea25fd58d43a 100644
---- a/sound/soc/codecs/rt711.c
-+++ b/sound/soc/codecs/rt711.c
-@@ -245,6 +245,13 @@ static void rt711_jack_detect_handler(struct work_struct *work)
- 	if (!rt711->component->card->instantiated)
- 		return;
+ 	regcache_mark_dirty(wm8731->regmap);
  
-+	if (pm_runtime_status_suspended(rt711->slave->dev.parent)) {
-+		dev_dbg(&rt711->slave->dev,
-+			"%s: parent device is pm_runtime_status_suspended, skipping jack detection\n",
-+			__func__);
-+		return;
-+	}
+-err_regulator_enable:
+-	/* Regulators will be enabled by bias management */
+-	regulator_bulk_disable(ARRAY_SIZE(wm8731->supplies), wm8731->supplies);
+-
++err:
+ 	return ret;
+ }
+ 
+@@ -760,21 +757,27 @@ static int wm8731_i2c_probe(struct i2c_client *i2c,
+ 		ret = PTR_ERR(wm8731->regmap);
+ 		dev_err(&i2c->dev, "Failed to allocate register map: %d\n",
+ 			ret);
+-		return ret;
++		goto err_regulator_enable;
+ 	}
+ 
+ 	ret = wm8731_hw_init(&i2c->dev, wm8731);
+ 	if (ret != 0)
+-		return ret;
++		goto err_regulator_enable;
+ 
+ 	ret = devm_snd_soc_register_component(&i2c->dev,
+ 			&soc_component_dev_wm8731, &wm8731_dai, 1);
+ 	if (ret != 0) {
+ 		dev_err(&i2c->dev, "Failed to register CODEC: %d\n", ret);
+-		return ret;
++		goto err_regulator_enable;
+ 	}
+ 
+ 	return 0;
 +
- 	reg = RT711_VERB_GET_PIN_SENSE | RT711_HP_OUT;
- 	ret = regmap_read(rt711->regmap, reg, &jack_status);
- 	if (ret < 0)
++err_regulator_enable:
++	/* Regulators will be enabled by bias management */
++	regulator_bulk_disable(ARRAY_SIZE(wm8731->supplies), wm8731->supplies);
++
++	return ret;
+ }
+ 
+ static int wm8731_i2c_remove(struct i2c_client *client)
 -- 
 2.35.1
 
