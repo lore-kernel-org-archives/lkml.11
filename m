@@ -2,196 +2,304 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91946C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F76DC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 17:14:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231484AbiDZRRb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 13:17:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39320 "EHLO
+        id S1353827AbiDZRQP (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 13:16:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232441AbiDZRRC (ORCPT
+        with ESMTP id S232331AbiDZROw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 13:17:02 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 980571275D
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 10:13:54 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id h1so18525147pfv.12
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 10:13:54 -0700 (PDT)
+        Tue, 26 Apr 2022 13:14:52 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50A0538D9D
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 10:11:25 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id be20so14821973edb.12
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 10:11:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=COISYBtLemURzEtVRJTSOaoU1kvxhQruqFG2UXo9XUw=;
-        b=ICQKMM5VJ8dZCmZ5IDftKBD0tk2p/btzOGUR1kYXd/zFRS/EkvTLCpPCF1BWQ1lKzH
-         Bqh4vxvd9/HnKEhvMjZIYnNj2yFTyCqWnJW+u9sWIKXgfunEJOyiAGcoiGom0Fjw4+ka
-         PLtm7GIGMzzUN3ttrb56TQfPJKwV2PasGCyTFseghYcMYWl+0iS+YumxymWwxECcFY1g
-         JRdSZQT+i9TCp8T5DDInsYfDjIyKVFo702VauqiPnw8KYNWqo4U3LUZim+g67CUif1E7
-         I2M4VxY3Hs8iCvYzmtDEU4yfuI4Q/MIIivgirMZZUMt0ThznOwHSbGUBfWZwJDUpmo8/
-         B/oA==
+        bh=90WOln1uLYqSTbETT8f1iohTkA/2aH9Lj2jwOkUtno4=;
+        b=dNVlrh3iJXwdEerY3gFXeGNN1xr+XG6EYJEw4pTDhKyFBBVQ49XrVBdMhPgic7frMK
+         K9s2N3tI/I6qwBQaUzcJurOmJyIMZxdFyECfbwEo8s2p2oXD6sT1mEXF/CcR0p1ygdq7
+         5TyZaqvBNxHmoUZqzDt7Ei/lqYY/Nd9Aq5SCM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=COISYBtLemURzEtVRJTSOaoU1kvxhQruqFG2UXo9XUw=;
-        b=0sZYFerkSrdTUBMV/wea4vT1xUkPmXkmshNC6zkT2E0EZzYh0ypFdsXicM9kCWgrTt
-         WtGr9hN4Sa0j/18wWtj7BmjmltLFrkXr4TS4suytxzkx0no9NyxF/kWs27yK/Xe7gtCo
-         p3M/28qj8nd7yMvMafSk0q5AtHlbYwBa/1usxpBxchtcuNQB7YCE3kvKeFcn4ifjzGPK
-         8xyynEzNav27NnJnwGVFSHyEkPJUr1Y5uW5ZuMxlGC8FYCs4NUXezul8BUC8H04kxMJI
-         0VW0Hylay1l+s4MPtYl9gyUx2gQGGLIEgd750i+dg2BLPmjVIYXCR0Y1a3vwN039xFwl
-         Wrtw==
-X-Gm-Message-State: AOAM5315iEUjgG1/O6QF1x1WS4eSck7s3WeI6zjX5fOfS7KTg885ESh1
-        TwRo7hsAETa64a6t8T1a/ISRG/z0PYyTP+exX1N+5g==
-X-Google-Smtp-Source: ABdhPJw0Ra1dMBKYFZkjWanWW4cefxv2B97eXQvw3FrcmpDznbuhiQB1ig3w2zhaYU9CkF8BOrp7P30WHnRXgF9Udfk=
-X-Received: by 2002:a62:fb0e:0:b0:505:fd9e:9218 with SMTP id
- x14-20020a62fb0e000000b00505fd9e9218mr26023121pfm.78.1650993233860; Tue, 26
- Apr 2022 10:13:53 -0700 (PDT)
+        bh=90WOln1uLYqSTbETT8f1iohTkA/2aH9Lj2jwOkUtno4=;
+        b=ofHpSA9DiQcXdbfYR0h2lDTvNs38lcK8wGqbVQ8/wJ95CiuLlrvItfnEZ4wPpKLS4w
+         PCaDyoIjA447Q8lqp42+/gep9K9FJgFLhtJ6ZuJZTjlGTpW2XuSXsoQUfce/0xDQai+G
+         6yns0REX2InNgEDqGFWbyX4LTUHIoY+7sWQFia9LGitpXzh4Wp26s8laFtiNVSlq/pJ7
+         yvUaYsyyzxCsIvgJoobsLiXcr3jDbJnRtDx7d+BCaVj3imqMZnAFmhbBrDtzEvVRYrUe
+         Q/rYMgAl3yhSKlHlyrBegeUJqf2pQ/Yja861YHgLhBiwc0DuOCy3s7oJdlzZGKR/XSH5
+         tsYA==
+X-Gm-Message-State: AOAM5331Ap8o7VI3OQyioj+PLT8cVqrNIqscN5Mu59LhythTG70COQFJ
+        bJRtk61U53iImDRIIq7dBBAjScT1HfrVpTdE
+X-Google-Smtp-Source: ABdhPJyMOR7Wkx5gRaCbJ3NyPiP9foyy+rPl3EN9DfUQhmQiKoNxJqHe61dfEcp8OuSfT3BKWGTl5Q==
+X-Received: by 2002:a05:6402:3584:b0:423:e4d0:34f with SMTP id y4-20020a056402358400b00423e4d0034fmr25731945edc.72.1650993083424;
+        Tue, 26 Apr 2022 10:11:23 -0700 (PDT)
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com. [209.85.221.46])
+        by smtp.gmail.com with ESMTPSA id h15-20020a17090791cf00b006f3a88de2a8sm1581781ejz.224.2022.04.26.10.11.21
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Apr 2022 10:11:22 -0700 (PDT)
+Received: by mail-wr1-f46.google.com with SMTP id q23so13501557wra.1
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 10:11:21 -0700 (PDT)
+X-Received: by 2002:a5d:64eb:0:b0:20a:ecf8:ac9f with SMTP id
+ g11-20020a5d64eb000000b0020aecf8ac9fmr97138wri.342.1650993080769; Tue, 26 Apr
+ 2022 10:11:20 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220426000640.3581446-1-rajatja@google.com> <030f48f4-44d7-c04c-a194-5f4999873ebe@arm.com>
-In-Reply-To: <030f48f4-44d7-c04c-a194-5f4999873ebe@arm.com>
-From:   Rajat Jain <rajatja@google.com>
-Date:   Tue, 26 Apr 2022 10:13:17 -0700
-Message-ID: <CACK8Z6GEPTaQKbxeBqQuKbNmVkL1DoHDrKwDeosCeRXfHbD_=w@mail.gmail.com>
-Subject: Re: [PATCH v6 1/2] PCI/ACPI: Support Microsoft's "DmaProperty"
-To:     Robin Murphy <robin.murphy@arm.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, linux-pci@vger.kernel.org,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Rajat Jain <rajatxjain@gmail.com>,
-        Dmitry Torokhov <dtor@google.com>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Pavel Machek <pavel@denx.de>,
-        "Oliver O'Halloran" <oohall@gmail.com>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        iommu@lists.linux-foundation.org,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
+References: <1650671124-14030-1-git-send-email-quic_khsieh@quicinc.com>
+ <3b9588d2-d9f6-c96f-b316-953b56b59bfe@linaro.org> <73e2a37e-23db-d614-5f5c-8120f1869158@quicinc.com>
+ <CAA8EJprjuzUrfwXodgKmbWxgK6t+bY601E_nS7CHNH_+4Tfn5Q@mail.gmail.com>
+ <9b331b16-8d1b-4e74-8fee-d74c4041f8d7@quicinc.com> <CAD=FV=VxEnbBypNYSq=iTUTwZUs_v620juSA6gsMW4h2_3HyBQ@mail.gmail.com>
+ <9b4ccdef-c98a-b907-c7ee-a92456dc5bba@quicinc.com> <CAD=FV=U3MJ1W6CCVW0+Si8ZyAD+_ZBYsL1cT6Y8yhcTvWsCLUQ@mail.gmail.com>
+ <d3d1d0d5-d3e0-0777-5b20-cdf24697742d@quicinc.com> <CAD=FV=W2WPdiY2zq6JC_-10kOqzDuiUYQOdYbyRyw2k-fbXFXQ@mail.gmail.com>
+ <eaedbc40-f8cb-aaf8-f335-ef48e3cf82cc@quicinc.com> <87a921db-c4bb-eb43-96c5-0bdb757c7df9@linaro.org>
+In-Reply-To: <87a921db-c4bb-eb43-96c5-0bdb757c7df9@linaro.org>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Tue, 26 Apr 2022 10:11:08 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=XNWCLxEcGdDOarsY5j7wQDcPP__VsMhpe_G4N1kL-gHg@mail.gmail.com>
+Message-ID: <CAD=FV=XNWCLxEcGdDOarsY5j7wQDcPP__VsMhpe_G4N1kL-gHg@mail.gmail.com>
+Subject: Re: [Freedreno] [PATCH] drm/msm/dp: move add fail safe mode to dp_connector_get_mode()
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        David Airlie <airlied@linux.ie>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Vinod Koul <vkoul@kernel.org>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
+        Stephen Boyd <swboyd@chromium.org>, Sean Paul <sean@poorly.run>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 4:15 AM Robin Murphy <robin.murphy@arm.com> wrote:
->
-> On 2022-04-26 01:06, Rajat Jain via iommu wrote:
-> > The "DmaProperty" is supported and currently documented and used by
-> > Microsoft [link 1 below], to flag internal PCIe root ports that need
-> > DMA protection [link 2 below]. We have discussed with them and reached
-> > a common understanding that they shall change their MSDN documentation
-> > to say that the same property can be used to protect any PCI device,
-> > and not just internal PCIe root ports (since there is no point
-> > introducing yet another property for arbitrary PCI devices). This helps
-> > with security from internal devices that offer an attack surface for
-> > DMA attacks (e.g. internal network devices).
-> >
-> > Support DmaProperty to mark DMA from a PCI device as untrusted.
-> >
-> > Link: [1] https://docs.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports#identifying-internal-pcie-ports-accessible-to-users-and-requiring-dma-protection
-> > Link: [2] https://docs.microsoft.com/en-us/windows/security/information-protection/kernel-dma-protection-for-thunderbolt
-> > Signed-off-by: Rajat Jain <rajatja@google.com>
-> > Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-> > Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> > ---
-> > v6: * Take care of Bjorn's comments:
-> >         - Update the commit log
-> >         - Rename to pci_dev_has_dma_property()
-> >         - Use acpi_dev_get_property()
-> > v5: * Reorder the patches in the series
-> > v4: * Add the GUID.
-> >      * Update the comment and commitlog.
-> > v3: * Use Microsoft's documented property "DmaProperty"
-> >      * Resctrict to ACPI only
-> >
-> >   drivers/acpi/property.c |  3 +++
-> >   drivers/pci/pci-acpi.c  | 21 +++++++++++++++++++++
-> >   2 files changed, 24 insertions(+)
-> >
-> > diff --git a/drivers/acpi/property.c b/drivers/acpi/property.c
-> > index 12bbfe833609..bafe35c301ac 100644
-> > --- a/drivers/acpi/property.c
-> > +++ b/drivers/acpi/property.c
-> > @@ -48,6 +48,9 @@ static const guid_t prp_guids[] = {
-> >       /* Storage device needs D3 GUID: 5025030f-842f-4ab4-a561-99a5189762d0 */
-> >       GUID_INIT(0x5025030f, 0x842f, 0x4ab4,
-> >                 0xa5, 0x61, 0x99, 0xa5, 0x18, 0x97, 0x62, 0xd0),
-> > +     /* DmaProperty for PCI devices GUID: 70d24161-6dd5-4c9e-8070-705531292865 */
-> > +     GUID_INIT(0x70d24161, 0x6dd5, 0x4c9e,
-> > +               0x80, 0x70, 0x70, 0x55, 0x31, 0x29, 0x28, 0x65),
-> >   };
-> >
-> >   /* ACPI _DSD data subnodes GUID: dbb8e3e6-5886-4ba6-8795-1319f52a966b */
-> > diff --git a/drivers/pci/pci-acpi.c b/drivers/pci/pci-acpi.c
-> > index 3ae435beaf0a..d7c6ba48486f 100644
-> > --- a/drivers/pci/pci-acpi.c
-> > +++ b/drivers/pci/pci-acpi.c
-> > @@ -1369,12 +1369,33 @@ static void pci_acpi_set_external_facing(struct pci_dev *dev)
-> >               dev->external_facing = 1;
-> >   }
-> >
-> > +static int pci_dev_has_dma_property(struct pci_dev *dev)
-> > +{
-> > +     struct acpi_device *adev;
-> > +     const union acpi_object *obj;
-> > +
-> > +     adev = ACPI_COMPANION(&dev->dev);
-> > +     if (!adev)
-> > +             return 0;
-> > +
-> > +     /*
-> > +      * Property also used by Microsoft Windows for same purpose,
-> > +      * (to implement DMA protection from a device, using the IOMMU).
->
-> Nit: there is no context for "same purpose" here, so this comment is
-> more confusing than helpful. Might I suggest a rewording like:
->
->         /*
->          * Property used by Microsoft Windows to enforce IOMMU DMA
->          * protection for any device that the system might not fully
->          * trust; we'll honour it the same way.
->          */
->
-> ?
+Hi,
 
-Sure, will do.
-
+On Tue, Apr 26, 2022 at 10:01 AM Dmitry Baryshkov
+<dmitry.baryshkov@linaro.org> wrote:
 >
-> Personally I think it would have been more logical to handle this in
-> pci_set_dma_untrusted(), but I see some of those implementation aspects
-> have already been discussed, and Bjorn's preference definitely wins over
-> mine here :)
-
-Yes, this was discussed. The primary reason is that ACPI properties
-for PCI devices are not available at the time pci_set_untrusted_dma()
-is called.
-
-Thanks & Best Regards,
-
-Rajat
-
->
-> Thanks,
-> Robin.
->
-> > +      */
-> > +     if (!acpi_dev_get_property(adev, "DmaProperty", ACPI_TYPE_INTEGER,
-> > +                                &obj) && obj->integer.value == 1)
-> > +             return 1;
-> > +
-> > +     return 0;
-> > +}
-> > +
-> >   void pci_acpi_setup(struct device *dev, struct acpi_device *adev)
-> >   {
-> >       struct pci_dev *pci_dev = to_pci_dev(dev);
+> On 26/04/2022 18:37, Abhinav Kumar wrote:
+> > Hi Doug
 > >
-> >       pci_acpi_optimize_delay(pci_dev, adev->handle);
-> >       pci_acpi_set_external_facing(pci_dev);
-> > +     pci_dev->untrusted |= pci_dev_has_dma_property(pci_dev); >      pci_acpi_add_edr_notifier(pci_dev);
+> > On 4/26/2022 8:20 AM, Doug Anderson wrote:
+> >> Hi,
+> >>
+> >> On Mon, Apr 25, 2022 at 8:35 PM Abhinav Kumar
+> >> <quic_abhinavk@quicinc.com> wrote:
+> >>>
+> >>> On 4/25/2022 7:18 PM, Doug Anderson wrote:
+> >>>> Hi,
+> >>>>
+> >>>> On Mon, Apr 25, 2022 at 6:42 PM Abhinav Kumar
+> >>>> <quic_abhinavk@quicinc.com> wrote:
+> >>>>>
+> >>>>>>> 2) When there was a valid EDID but no 640x480 mode
+> >>>>>>>
+> >>>>>>> This is the equipment specific case and the one even I was a bit
+> >>>>>>> surprised. There is a DP compliance equipment we have in-house
+> >>>>>>> and while
+> >>>>>>> validation, it was found that in its list of modes , it did not
+> >>>>>>> have any
+> >>>>>>> modes which chromebook supported ( due to 2 lanes ). But my
+> >>>>>>> understanding was that, all sinks should have atleast 640x480 but
+> >>>>>>> apparently this one did not have that. So to handle this DP
+> >>>>>>> compliance
+> >>>>>>> equipment behavior, we had to do this.
+> >>>>>>
+> >>>>>> That doesn't seem right. If there's a valid EDID and the valid EDID
+> >>>>>> doesn't contain 640x480, are you _sure_ you're supposed to be adding
+> >>>>>> 640x480? That doesn't sound right to me. I've got a tiny display in
+> >>>>>> front of me for testing that only has one mode:
+> >>>>>>
+> >>>>>>      #0 800x480 65.68 800 840 888 928 480 493 496 525 32000
+> >>>>>>
+> >>>>>
+> >>>>> As I had wrote, DRM core kicks in only when the count of modes is 0.
+> >>>>> Here what is happening is the count was not 0 but 640x480 was not
+> >>>>> present in the EDID. So we had to add it explicitly.
+> >>>>>
+> >>>>> Your tiny display is a display port display?
+> >>>>>
+> >>>>> I am referring to only display port monitors. If your tiny display is
+> >>>>> DP, it should have had 640x480 in its list of modes.
+> >>>>
+> >>>> My tiny display is actually a HDMI display hooked up to a HDMI to DP
+> >>>> (active) adapter.
+> >>>>
+> >>>> ...but this is a legal and common thing to have. I suppose possibly my
+> >>>> HDMI display is "illegal"?
+> >>>>
+> >>>> OK, so reading through the spec more carefully, I do see that the DP
+> >>>> spec makes numerous mentions of the fact that DP sinks _must_ support
+> >>>> 640x480. Even going back to DP 1.4, I see section "5.2.1.2 Video
+> >>>> Timing Format" says that we must support 640x480. It seems like that's
+> >>>> _intended_ to be used only if the EDID read fails, though or if we
+> >>>> somehow have to output video without knowledge of the EDID. It seems
+> >>>> hard to believe that there's a great reason to assume a display will
+> >>>> support 640x480 if we have more accurate knowledge.
+> >>>>
+> >>>> In any case, I guess I would still say that adding this mode belongs
+> >>>> in the DRM core. The core should notice that it's a DP connection
+> >>>> (bridge->type == DRM_MODE_CONNECTOR_DisplayPort) and that 640x480 was
+> >>>> left out and it should add it. We should also make sure it's not
+> >>>> "preferred" and is last in the list so we never accidentally pick it.
+> >>>> If DP truly says that we should always give the user 640x480 then
+> >>>> that's true for everyone, not just Qualcomm. We should add it in the
+> >>>> core. If, later, someone wants to hide this from the UI it would be
+> >>>> much easier if they only needed to modify one place.
+> >>>>
+> >>>
+> >>> So I debugged with kuogee just now using the DP compliance equipment.
+> >>> It turns out, the issue is not that 640x480 mode is not present.
+> >>>
+> >>> The issue is that it is not marked as preferred.
+> >>>
+> >>> Hence we missed this part during debugging this equipment failure.
+> >>>
+> >>> We still have to figure out the best way to either mark 640x480 as
+> >>> preferred or eliminate other modes during the test-case so that 640x480
+> >>> is actually picked by usermode.
+> >>>
+> >>> Now that being said, the fix still doesn't belong in the framework. It
+> >>> has to be in the msm/dp code.
+> >>>
+> >>> Different vendors handle this failure case differently looks like.
+> >>>
+> >>> Lets take below snippet from i915 as example.
+> >>>
+> >>> 3361    if (intel_connector->detect_edid == NULL ||
+> >>> 3362        connector->edid_corrupt ||
+> >>> 3363        intel_dp->aux.i2c_defer_count > 6) {
+> >>> 3364            /* Check EDID read for NACKs, DEFERs and corruption
+> >>> 3365             * (DP CTS 1.2 Core r1.1)
+> >>> 3366             *    4.2.2.4 : Failed EDID read, I2C_NAK
+> >>> 3367             *    4.2.2.5 : Failed EDID read, I2C_DEFER
+> >>> 3368             *    4.2.2.6 : EDID corruption detected
+> >>> 3369             * Use failsafe mode for all cases
+> >>> 3370             */
+> >>> 3371            if (intel_dp->aux.i2c_nack_count > 0 ||
+> >>> 3372                    intel_dp->aux.i2c_defer_count > 0)
+> >>> 3373                    drm_dbg_kms(&i915->drm,
+> >>> 3374                                "EDID read had %d NACKs, %d
+> >>> DEFERs\n",
+> >>> 3375                                intel_dp->aux.i2c_nack_count,
+> >>> 3376                                intel_dp->aux.i2c_defer_count);
+> >>> 3377            intel_dp->compliance.test_data.edid =
+> >>> INTEL_DP_RESOLUTION_FAILSAFE;
+> >>
 > >
-> >       pci_acpi_add_pm_notifier(adev, pci_dev);
+> > The reason I pointed to this code is to give an example of how other
+> > drivers handle this test-case.
+> >
+> > We added this patch for 4.2.2.1 and 4.2.2.6 EDID test cases.
+> >
+> > The challenge here as found out from our discussion here was to mark a
+> > particular mode as preferred so that the Chrome usermode can pick it.
+> >
+> > Now whats happening with that there was always a possibility of two
+> > modes being marked as preferred due to this and so-on.
+> >
+> > We had a pretty long discussion last night and thought of all possible
+> > solutions but all of them look like a hack to us in the driver because
+> > we end up breaking other things due to this.
+> >
+> > So we decided that driver is not the place to handle this test case.
+> > Since we do have IGT support for chromebooks, we will handle both these
+> > test cases there as other vendors do the same way and it works.
+> >
+> >
+> >> Just because Intel DRM has its own solution for something doesn't mean
+> >> everyone else should copy them and implement their own solution. Up
+> >> until recently DP AUX backlights were baked into different DRM
+> >> drivers. A recent effort was made to pull it out. I think the Intel
+> >> DRM code was the "first one" to the party and it wasn't clear how
+> >> things should be broken up to share with other drivers, so mostly it
+> >> did everything itself, but that's not the long term answer.
+> >>
+> >> I'm not saying that we need to block your change on a full re-design
+> >> or anything, but I'm just saying that:
+> >>
+> >> * You're trying to implement a generic DP rule, not something specific
+> >> to Qualcomm hardware. That implies that, if possible, it shouldn't be
+> >> in a Qualcomm driver.
+> >>
+> >> * It doesn't seem like it would be terrible to handle this in the core.
+> >>
+> >>
+> >>> This marks the fail safe mode and IGT test case reads this to set this
+> >>> mode and hence the test passes.
+> >>>
+> >>> We rely on the chromeOS usermode to output pixel data for this test-case
+> >>> and not IGT. We use IGT only for video pattern CTS today but this is a
+> >>> different test-case which is failing.
+> >>>
+> >>> ChromeOS usermode will not pick 640x480 unless we mark it as preferred
+> >>> or other modes are eliminated.
+> >>>
+> >>> So we have to come up with the right way for the usermode to pick
+> >>> 640x480.
+> >>>
+> >>> We will discuss this a bit more and come up with a different change.
+> >>
+> >> Can you provide the exact EDID from the failing test case? Maybe that
+> >> will help shed some light on what's going on. I looked at the original
+> >> commit and it just referred to 4.2.2.1, which I assume is "EDID Read
+> >> upon HPD Plug Event", but that doesn't give details that seem relevant
+> >> to the discussion here.
+> >
+> > Yes so it is 4.2.2.1 and 4.2.2.6.
+> >
+> > That alone wont give the full picture.
+> >
+> > So its a combination of things.
+> >
+> > While running the test, the test equipment published only one mode.
+> > But we could not support that mode because of 2 lanes.
+> > Equipment did not add 640x480 to the list of modes.
+> > DRM fwk will also not add it because count_modes is not 0 ( there was
+> > one mode ).
+> > So we ended up making these changes.
+>
+> I think a proper solution might be to rewrite
+> drm_helper_probe_single_connector_modes() in the following way:
+> - call get_modes()
+> - validate the result
+> - prune invalid
+>
+> - if the number of modes is 0, call drm_add_override_edid_modes()
+> - validate the result
+> - prune invalid
+>
+> - if the number of modes is still 0, call drm_add_modes_noedid()
+> - validate the result
+> - prune invalid
+>
+> [A separate change might happen here after all the checks: if the number
+> of modes is still 0 and if it is a DP, enforce adding 640x480 even w/o
+> validation. But generally I feel that this shouldn't be necessary
+> because the previous step should have added it.]
+>
+> This way we can be sure that all modes are validated, but still to do
+> our best to add something supported to the list of modes.
+
+I'm partway through implementing / testing something similar to this.
+;-) My logic is slightly different than yours, though. In the very
+least I'm not convinced that we want to add the higher resolution
+modes (like 1024x768) if all the modes fail to validate. The DP spec
+only claims 640x480 is always supported. The higher resolution modes
+are for when the EDID fails to read I think. Similarly I'm not
+convinced that we should do pruning before deciding on
+drm_add_override_edid_modes().
+
+-Doug
