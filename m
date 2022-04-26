@@ -2,59 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81F05C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:48:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EBB0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:48:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353423AbiDZQvc (ORCPT
+        id S1353456AbiDZQvg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 12:51:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43226 "EHLO
+        Tue, 26 Apr 2022 12:51:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236211AbiDZQuQ (ORCPT
+        with ESMTP id S1346708AbiDZQuo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 12:50:16 -0400
+        Tue, 26 Apr 2022 12:50:44 -0400
 Received: from mail-ed1-x54a.google.com (mail-ed1-x54a.google.com [IPv6:2a00:1450:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0512E3F89A
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:45:34 -0700 (PDT)
-Received: by mail-ed1-x54a.google.com with SMTP id ee56-20020a056402293800b00425b0f5b9c6so7562195edb.9
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:45:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2615348302
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:45:45 -0700 (PDT)
+Received: by mail-ed1-x54a.google.com with SMTP id l24-20020a056402231800b00410f19a3103so10612285eda.5
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:45:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=7rWXomHmmGtw2qSW/Jql3Xky6Nc8Jl3o+xpl6HNe0X8=;
-        b=q5MasDLtRuk73svjnlxTla0qBFDkgnt0PsXrVkFMN41i4z8Uc7BjsHa4IZlwyI4mOh
-         PSjNtr6oT4aSfGpSW0YXGpJKMOZ3sk1QnOzt4PQcjsP2frb+KqFrSVrmWcDHhZkns/d/
-         pdEqJGCSd8xeQiS1/OQIYoiHjeol8c3Q+yW+/B+Knn6wOUS02dBp111b/1mBG/LNHKLX
-         o57oj7KW5sVZwCE68ycL0SdOrbqmApIoCkh8dUgH6H+ygVwXbl7Gp7mJ6YMwZNc44jBv
-         kf7eWkFxMSiWJtqo7427dYj43Sgw5gav9YAFNr+RIt6rHBJ0ZfsALEQce0T6+nWFX4OZ
-         E6gw==
+        bh=KgfdOYR2+eRzwy3N1nFbXjWhZjMyNN/8KPMy2HvUIiA=;
+        b=DiXJaiB8AJMG8+A1MDOZ3VuBShHUCaL1GlKQxcD6mV0R7Av/UajF571MXN7vKcH+xJ
+         B9d0v8KhVCzlQ+z94pkBBtVLTSnlc2yIkyIXP0B+bFCdaqtmHA9pe8/5NYuKcmD5Vy3L
+         fA34cdtJjSamNgh5dsmbUVd7b9zA7hnjKOjdt88/6jqxc/UG3ZHi4m5Nam5rWzqbzqPm
+         cd06DBJ3ACVxlq9XrgpCh+wVKQori1dj0NvbQ7HSZw0NjHsIf9jtgKdLkxo1euBXeZpk
+         ExnDMib7ea+byjuGF4JqXiPnkpgw3Zh2HRRI3cVSjxCjQ97crsBXKlz1IuJlZ96GONPP
+         Cgcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=7rWXomHmmGtw2qSW/Jql3Xky6Nc8Jl3o+xpl6HNe0X8=;
-        b=DjKyxpK5i7NS9QvVCozV4MRIw57kJbsvvfFo8G5qcMGOYqIzFdCkFZsekjj4gN02xx
-         tGDKECZo+09CrnXeil7l3MumegM6RVWnoLqQRlsNQFM20ymejZYyHTdfV1ZeX7qCcTGU
-         Up13H/Ih6WMqmA1gJ9FwPyjW3Ho4TZtvps5LkP8zjAeXfa5VG5XDFECpeumZLjJa9VHP
-         8fDCxOD3SRL3j4iVMtKBBpg9f0dR6C1jNWR6LOf9Yf3HTXjgawB9NeW42+4zIimBJTrL
-         17Xmzjb3A5JkUHq+UGrrtCVhYvvgpimCqKmucFNtQuOlPNXIpBDp25itInbRYJaOnkgz
-         +/3Q==
-X-Gm-Message-State: AOAM531SxfNRsKj8mfomflHVlJJNy+qiIr7SynnsFTqrVzhNx1Mi0Lfl
-        dkirvqvxvXl6e5bXJmolvyhVGYoSxS4=
-X-Google-Smtp-Source: ABdhPJyHNp1hORgE0TcahA4SesrvDuNa9ln2vyqb/yiKW2MgJrSo3ZS2uZRSG/oHoxHKcWZIpPWb90g9a0g=
+        bh=KgfdOYR2+eRzwy3N1nFbXjWhZjMyNN/8KPMy2HvUIiA=;
+        b=BGou/RkgZRvdZWK5APnCgjMVwxJrQ0C2f6hhmhd91xVzoXAxo6a4toYA3/5jgUrgK4
+         15VHCK2Y6Mq+gs/YgaDZPrVqvvXjzWya0ofAqS7GPAeD5uz3MiEOnjS+ACrUweyBvVG3
+         wRUvxNBAF3CZmKesjiw2z67FJ8tYV1lEKhCRSJv6xR9Zj9y/JVaM377xDko3kVV541Ny
+         2Khl/8V74AqtRgTQrKGPDw4cDL/cQFL4H/2HrAzq6HXJ99LokU3Jl/exQQgKu06UigJY
+         S61dACCbvfigUUNtJmWV2muhDjKD6F6vS3+7OA9bHTtoeyHaDoCq/N07SOfGhxv+LEnL
+         /w/g==
+X-Gm-Message-State: AOAM532msI6eWpTZ3R3O7wHB5sQVdWSwMGmzZuDTO5ZTxY0GJbrEYh06
+        woA4h2mn1JpOivt4AxvZhvWolMXH6EQ=
+X-Google-Smtp-Source: ABdhPJzCT8fH32RoUVNaiZCyh2VQrj6uF5kLZlCQX+kBGFsZsTKhLxpnKoIswBSqwHZF0t1dzIj5uX6h2dU=
 X-Received: from glider.muc.corp.google.com ([2a00:79e0:15:13:d580:abeb:bf6d:5726])
- (user=glider job=sendgmr) by 2002:a05:6402:27d1:b0:425:f92f:aac0 with SMTP id
- c17-20020a05640227d100b00425f92faac0mr5194069ede.409.1650991533278; Tue, 26
- Apr 2022 09:45:33 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 18:42:57 +0200
+ (user=glider job=sendgmr) by 2002:a05:6402:26c7:b0:423:e5d6:b6c6 with SMTP id
+ x7-20020a05640226c700b00423e5d6b6c6mr25480700edd.61.1650991543391; Tue, 26
+ Apr 2022 09:45:43 -0700 (PDT)
+Date:   Tue, 26 Apr 2022 18:43:01 +0200
 In-Reply-To: <20220426164315.625149-1-glider@google.com>
-Message-Id: <20220426164315.625149-29-glider@google.com>
+Message-Id: <20220426164315.625149-33-glider@google.com>
 Mime-Version: 1.0
 References: <20220426164315.625149-1-glider@google.com>
 X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
-Subject: [PATCH v3 28/46] kmsan: entry: handle register passing from
- uninstrumented code
+Subject: [PATCH v3 32/46] kmsan: disable physical page merging in biovec
 From:   Alexander Potapenko <glider@google.com>
 To:     glider@google.com
 Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
@@ -92,120 +91,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace instrumentation_begin()	with instrumentation_begin_with_regs()
-to let KMSAN handle the non-instrumented code and unpoison pt_regs
-passed from the instrumented part.
+KMSAN metadata for adjacent physical pages may not be adjacent,
+therefore accessing such pages together may lead to metadata
+corruption.
+We disable merging pages in biovec to prevent such corruptions.
 
 Signed-off-by: Alexander Potapenko <glider@google.com>
 ---
-Link: https://linux-review.googlesource.com/id/I7f0a9809b66bd85faae43142971d0095771b7a42
----
- kernel/entry/common.c | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/kernel/entry/common.c b/kernel/entry/common.c
-index 93c3b86e781c1..ce2324374882c 100644
---- a/kernel/entry/common.c
-+++ b/kernel/entry/common.c
-@@ -23,7 +23,7 @@ static __always_inline void __enter_from_user_mode(struct pt_regs *regs)
- 	CT_WARN_ON(ct_state() != CONTEXT_USER);
- 	user_exit_irqoff();
+Link: https://linux-review.googlesource.com/id/Iece16041be5ee47904fbc98121b105e5be5fea5c
+---
+ block/blk.h | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/block/blk.h b/block/blk.h
+index 8ccbc6e076369..95815ac559743 100644
+--- a/block/blk.h
++++ b/block/blk.h
+@@ -93,6 +93,13 @@ static inline bool biovec_phys_mergeable(struct request_queue *q,
+ 	phys_addr_t addr1 = page_to_phys(vec1->bv_page) + vec1->bv_offset;
+ 	phys_addr_t addr2 = page_to_phys(vec2->bv_page) + vec2->bv_offset;
  
--	instrumentation_begin();
-+	instrumentation_begin_with_regs(regs);
- 	trace_hardirqs_off_finish();
- 	instrumentation_end();
- }
-@@ -105,7 +105,7 @@ noinstr long syscall_enter_from_user_mode(struct pt_regs *regs, long syscall)
- 
- 	__enter_from_user_mode(regs);
- 
--	instrumentation_begin();
-+	instrumentation_begin_with_regs(regs);
- 	local_irq_enable();
- 	ret = __syscall_enter_from_user_work(regs, syscall);
- 	instrumentation_end();
-@@ -116,7 +116,7 @@ noinstr long syscall_enter_from_user_mode(struct pt_regs *regs, long syscall)
- noinstr void syscall_enter_from_user_mode_prepare(struct pt_regs *regs)
- {
- 	__enter_from_user_mode(regs);
--	instrumentation_begin();
-+	instrumentation_begin_with_regs(regs);
- 	local_irq_enable();
- 	instrumentation_end();
- }
-@@ -290,7 +290,7 @@ void syscall_exit_to_user_mode_work(struct pt_regs *regs)
- 
- __visible noinstr void syscall_exit_to_user_mode(struct pt_regs *regs)
- {
--	instrumentation_begin();
-+	instrumentation_begin_with_regs(regs);
- 	__syscall_exit_to_user_mode_work(regs);
- 	instrumentation_end();
- 	__exit_to_user_mode();
-@@ -303,7 +303,7 @@ noinstr void irqentry_enter_from_user_mode(struct pt_regs *regs)
- 
- noinstr void irqentry_exit_to_user_mode(struct pt_regs *regs)
- {
--	instrumentation_begin();
-+	instrumentation_begin_with_regs(regs);
- 	exit_to_user_mode_prepare(regs);
- 	instrumentation_end();
- 	__exit_to_user_mode();
-@@ -351,7 +351,7 @@ noinstr irqentry_state_t irqentry_enter(struct pt_regs *regs)
- 		 */
- 		lockdep_hardirqs_off(CALLER_ADDR0);
- 		rcu_irq_enter();
--		instrumentation_begin();
-+		instrumentation_begin_with_regs(regs);
- 		trace_hardirqs_off_finish();
- 		instrumentation_end();
- 
-@@ -366,7 +366,7 @@ noinstr irqentry_state_t irqentry_enter(struct pt_regs *regs)
- 	 * in having another one here.
- 	 */
- 	lockdep_hardirqs_off(CALLER_ADDR0);
--	instrumentation_begin();
-+	instrumentation_begin_with_regs(regs);
- 	rcu_irq_enter_check_tick();
- 	trace_hardirqs_off_finish();
- 	instrumentation_end();
-@@ -413,7 +413,7 @@ noinstr void irqentry_exit(struct pt_regs *regs, irqentry_state_t state)
- 		 * and RCU as the return to user mode path.
- 		 */
- 		if (state.exit_rcu) {
--			instrumentation_begin();
-+			instrumentation_begin_with_regs(regs);
- 			/* Tell the tracer that IRET will enable interrupts */
- 			trace_hardirqs_on_prepare();
- 			lockdep_hardirqs_on_prepare(CALLER_ADDR0);
-@@ -423,7 +423,7 @@ noinstr void irqentry_exit(struct pt_regs *regs, irqentry_state_t state)
- 			return;
- 		}
- 
--		instrumentation_begin();
-+		instrumentation_begin_with_regs(regs);
- 		if (IS_ENABLED(CONFIG_PREEMPTION))
- 			irqentry_exit_cond_resched();
- 
-@@ -451,7 +451,7 @@ irqentry_state_t noinstr irqentry_nmi_enter(struct pt_regs *regs)
- 	lockdep_hardirq_enter();
- 	rcu_nmi_enter();
- 
--	instrumentation_begin();
-+	instrumentation_begin_with_regs(regs);
- 	trace_hardirqs_off_finish();
- 	ftrace_nmi_enter();
- 	instrumentation_end();
-@@ -461,7 +461,7 @@ irqentry_state_t noinstr irqentry_nmi_enter(struct pt_regs *regs)
- 
- void noinstr irqentry_nmi_exit(struct pt_regs *regs, irqentry_state_t irq_state)
- {
--	instrumentation_begin();
-+	instrumentation_begin_with_regs(regs);
- 	ftrace_nmi_exit();
- 	if (irq_state.lockdep) {
- 		trace_hardirqs_on_prepare();
++	/*
++	 * Merging adjacent physical pages may not work correctly under KMSAN
++	 * if their metadata pages aren't adjacent. Just disable merging.
++	 */
++	if (IS_ENABLED(CONFIG_KMSAN))
++		return false;
++
+ 	if (addr1 + vec1->bv_len != addr2)
+ 		return false;
+ 	if (xen_domain() && !xen_biovec_phys_mergeable(vec1, vec2->bv_page))
 -- 
 2.36.0.rc2.479.g8af0fa9b8e-goog
 
