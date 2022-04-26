@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E3B8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:25:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E6E4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:25:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235133AbiDZJ2i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:28:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54916 "EHLO
+        id S1343519AbiDZJ2o (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:28:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347352AbiDZJFa (ORCPT
+        with ESMTP id S1347395AbiDZJFd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:05:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B9EC111CA6;
-        Tue, 26 Apr 2022 01:44:29 -0700 (PDT)
+        Tue, 26 Apr 2022 05:05:33 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F401114F9B;
+        Tue, 26 Apr 2022 01:44:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E0F26133B;
-        Tue, 26 Apr 2022 08:44:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A2DDC385A4;
-        Tue, 26 Apr 2022 08:44:28 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 68893CE1BC9;
+        Tue, 26 Apr 2022 08:44:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B25BC385B1;
+        Tue, 26 Apr 2022 08:44:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962668;
-        bh=boMH+JABDXmSGHJzf6Di9Kg3rMGRkIRz2H3gt25TXfs=;
+        s=korg; t=1650962671;
+        bh=1XJ1Sf60yZQU4IASk4WLywESxjLgzcT8qGbx2geJLIg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tbio1GR3nXc464jxJx0wzUzDeYP/te2h8yADQ4Y8RK3I+gdX2SxIBueLxRd/A6+KX
-         GXc85alZ3AN5n3bfb/yDnmLh8gR47lrqFFBIkbUphwHKYguT7ylzpFlG5RmlGULyVb
-         N9WS107cI7s5V1lb/vnQFIw9deovm0G0fP3RneD8=
+        b=uPT7lObJB2Dho6jYke9Eoj6X84bCWj3Uy5vT/fREBl4+f4FMIctXHjIKBh68tGIib
+         REFEWr7cfscVI2Svs/mYavZi+pnMVPeY1uucplIjRGdL0/RbMuupP5auvIditxHtNX
+         kcxxGAsoeT/CTa413VfOAhLAjWyryQIv7/Cbi9U0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Thiago Macieira <thiago.macieira@intel.com>,
+        stable@vger.kernel.org, Dave Hansen <dave.hansen@intel.com>,
         Dave Jiang <dave.jiang@intel.com>,
         Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 048/146] dmaengine: idxd: match type for retries var in idxd_enqcmds()
-Date:   Tue, 26 Apr 2022 10:20:43 +0200
-Message-Id: <20220426081751.422610194@linuxfoundation.org>
+Subject: [PATCH 5.17 049/146] dmaengine: idxd: fix retry value to be constant for duration of function call
+Date:   Tue, 26 Apr 2022 10:20:44 +0200
+Message-Id: <20220426081751.449551776@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -52,36 +52,45 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Dave Jiang <dave.jiang@intel.com>
 
-[ Upstream commit 5d9d16e5aa0cf023e600bf716239fd9caa2d4148 ]
+[ Upstream commit bc3452cdfc468a65965d0ac397c940acb787ea4d ]
 
-wq->enqcmds_retries is defined as unsigned int. However, retries on the
-stack is defined as int. Change retries to unsigned int to compare the same
-type.
+When retries is compared to wq->enqcmds_retries each loop of idxd_enqcmds(),
+wq->enqcmds_retries can potentially changed by user. Assign the value
+of retries to wq->enqcmds_retries during initialization so it is the
+original value set when entering the function.
 
 Fixes: 7930d8553575 ("dmaengine: idxd: add knob for enqcmds retries")
-Suggested-by: Thiago Macieira <thiago.macieira@intel.com>
+Suggested-by: Dave Hansen <dave.hansen@intel.com>
 Signed-off-by: Dave Jiang <dave.jiang@intel.com>
-Link: https://lore.kernel.org/r/165031747059.3658198.6035308204505664375.stgit@djiang5-desk3.ch.intel.com
+Link: https://lore.kernel.org/r/165031760154.3658664.1983547716619266558.stgit@djiang5-desk3.ch.intel.com
 Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/idxd/submit.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/dma/idxd/submit.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/dma/idxd/submit.c b/drivers/dma/idxd/submit.c
-index e289fd48711a..554b0602d2e9 100644
+index 554b0602d2e9..c01db23e3333 100644
 --- a/drivers/dma/idxd/submit.c
 +++ b/drivers/dma/idxd/submit.c
-@@ -150,7 +150,8 @@ static void llist_abort_desc(struct idxd_wq *wq, struct idxd_irq_entry *ie,
+@@ -150,7 +150,7 @@ static void llist_abort_desc(struct idxd_wq *wq, struct idxd_irq_entry *ie,
   */
  int idxd_enqcmds(struct idxd_wq *wq, void __iomem *portal, const void *desc)
  {
--	int rc, retries = 0;
-+	unsigned int retries = 0;
-+	int rc;
+-	unsigned int retries = 0;
++	unsigned int retries = wq->enqcmds_retries;
+ 	int rc;
  
  	do {
- 		rc = enqcmds(portal, desc);
+@@ -158,7 +158,7 @@ int idxd_enqcmds(struct idxd_wq *wq, void __iomem *portal, const void *desc)
+ 		if (rc == 0)
+ 			break;
+ 		cpu_relax();
+-	} while (retries++ < wq->enqcmds_retries);
++	} while (retries--);
+ 
+ 	return rc;
+ }
 -- 
 2.35.1
 
