@@ -2,145 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6B5BC47084
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:37:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0428C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:37:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348893AbiDZJks (ORCPT
+        id S1348068AbiDZJis (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:40:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45686 "EHLO
+        Tue, 26 Apr 2022 05:38:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347887AbiDZJO7 (ORCPT
+        with ESMTP id S1346322AbiDZJHa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:14:59 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DF0418C471;
-        Tue, 26 Apr 2022 01:52:23 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 9BC9D1F380;
-        Tue, 26 Apr 2022 08:52:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1650963141; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Q9x48+GCsfx8UTJooQHuN3co/8645ibddxEq5xzH/f0=;
-        b=yZAvKIvoIMj/C8AP23Sgip2C72RyAhmfCGURC5EmsDATIEEbmcTjCMr+5vNPDW7nXL4IDr
-        RZS5hN3NDlSmSC7KZmxgh0Q8+ebajiyLfcqCBuxyFAtAuk+JqnCyYkZqRqpDEjqNk2wQvb
-        SKB0lwW8mxkThtwtw7IHoN2ElKj716w=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1650963141;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Q9x48+GCsfx8UTJooQHuN3co/8645ibddxEq5xzH/f0=;
-        b=giElD4sntmpyBe4F+XJ7JwX+63DS/bvCsQrP7DFkNJT51AmyejoqK0FthrZ4dyZWLMA9OM
-        UJSMBqiHWoFOqaAQ==
-Received: from kunlun.suse.cz (unknown [10.100.128.76])
+        Tue, 26 Apr 2022 05:07:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17623177D62;
+        Tue, 26 Apr 2022 01:48:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 7FB0A2C17E;
-        Tue, 26 Apr 2022 08:52:21 +0000 (UTC)
-Date:   Tue, 26 Apr 2022 10:52:20 +0200
-From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
-To:     "Guozihua (Scott)" <guozihua@huawei.com>
-Cc:     "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>
-Subject: Re: How to list keys used for kexec
-Message-ID: <20220426085220.GE163591@kunlun.suse.cz>
-References: <20220414175930.GM163591@kunlun.suse.cz>
- <853635d6-9e74-c3dc-f6dc-d4166616c8e5@huawei.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id BC3C5B81D1D;
+        Tue, 26 Apr 2022 08:48:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC144C36B02;
+        Tue, 26 Apr 2022 08:48:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650962933;
+        bh=6pXOWmTgn4O0DV0NlSyzr0Epima/4X0Ygqq5vWLQrpE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=QO19NtlT100wm/X6owx6GpGMfm4GuluAALRSDFxBOXc/pkVW4DglbMRxyZqS6eYup
+         IloAuNXb5CdcxouWqyqJTZ0FjR+2Tu5o0pwhvszIIotXBKge53jxJjDd6JbNU5JEmE
+         itzyeScinwbSzns3vG3gdKtMuPqCjK2x9pEJbsHo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
+        stable@kernel.org
+Subject: [PATCH 5.17 136/146] ext4: fix use-after-free in ext4_search_dir
+Date:   Tue, 26 Apr 2022 10:22:11 +0200
+Message-Id: <20220426081753.881689748@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
+References: <20220426081750.051179617@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <853635d6-9e74-c3dc-f6dc-d4166616c8e5@huawei.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 12:10:13PM +0800, Guozihua (Scott) wrote:
-> On 2022/4/15 1:59, Michal Suchánek wrote:
-> > Hello,
-> > 
-> > apparently modules are verified by keys from 'secondary' keyring on all
-> > platforms.
-> > 
-> > If you happen to know that it's this particular keyring, and know how
-> > to list keyrings recursively you can find the keys that are used for
-> > verifying modules.
-> > 
-> > However, for kexec we have
-> > 
-> >   - primary keyring on aarch64
-> >   - platform keyring on s390
-> >   - secondary AND platform keyring on x86
-> > 
-> > How is a user supposed to know which keys are used for kexec image
-> > verification?
-> > 
-> > There is an implicit keyring that is ad-hoc constructed by the code that
-> > does the kexec verification but there is no key list observable from
-> > userspace that corresponds to this ad-hoc keyring only known to the kexec
-> > code.
-> > 
-> > Can the kernel make the information which keys are used for what purpose
-> > available to the user?
-> > 
-> > Thanks
-> > 
-> > Michal
-> > 
-> > .
-> 
-> Hi Michal
-> 
-> I'll try my best to understand and answer your question.
-> 
-> First of all, the "key" you mentioned here is actually certificate. And
-> there are no way for the kernel to know "which certificate is used for what
-> purpose" but to get a hint from the certificate's extension, if they exist.
-> However, the extension only points out what this certificate should be used
-> for, but not exactly what it is actually used for.
+From: Ye Bin <yebin10@huawei.com>
 
-> Secondly, the verification process requires the module (kernel image in this
-> question) to contain information on which certificate should be used to
-> verify itself. The signature provided by the module is in PKCS#7 format
-> which contains a list of certificates for the verifier to construct a "chain
-> of trust". Each certificates contains information pointing to the
-> certificate of it's issuer, and eventually to one of the certificate stored
-> in one of the keyrings you mentioned.
+commit c186f0887fe7061a35cebef024550ec33ef8fbd8 upstream.
 
-Indeed, that's not really relevant to this problem.
-Sure, if the certificates extension does exist and does not state that
-the certificate can be used for code signing then the signature should
-be rejected. The same if the signature is malformed and does not provide
-enough information to determine which key was used to create it.
+We got issue as follows:
+EXT4-fs (loop0): mounted filesystem without journal. Opts: ,errors=continue
+==================================================================
+BUG: KASAN: use-after-free in ext4_search_dir fs/ext4/namei.c:1394 [inline]
+BUG: KASAN: use-after-free in search_dirblock fs/ext4/namei.c:1199 [inline]
+BUG: KASAN: use-after-free in __ext4_find_entry+0xdca/0x1210 fs/ext4/namei.c:1553
+Read of size 1 at addr ffff8881317c3005 by task syz-executor117/2331
 
-The question which key will be checked, though.
-> 
-> All in all, certificates in these keyrings you mentioned can be used for
-> various purpose, and it's the responsibility for the modules being verified
-> to provide information stating which certificate should be used for
-> verification. Thus, the best way to find out which key is used for kexec is
-> to look at key used to sign the kernel image.
+CPU: 1 PID: 2331 Comm: syz-executor117 Not tainted 5.10.0+ #1
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+Call Trace:
+ __dump_stack lib/dump_stack.c:83 [inline]
+ dump_stack+0x144/0x187 lib/dump_stack.c:124
+ print_address_description+0x7d/0x630 mm/kasan/report.c:387
+ __kasan_report+0x132/0x190 mm/kasan/report.c:547
+ kasan_report+0x47/0x60 mm/kasan/report.c:564
+ ext4_search_dir fs/ext4/namei.c:1394 [inline]
+ search_dirblock fs/ext4/namei.c:1199 [inline]
+ __ext4_find_entry+0xdca/0x1210 fs/ext4/namei.c:1553
+ ext4_lookup_entry fs/ext4/namei.c:1622 [inline]
+ ext4_lookup+0xb8/0x3a0 fs/ext4/namei.c:1690
+ __lookup_hash+0xc5/0x190 fs/namei.c:1451
+ do_rmdir+0x19e/0x310 fs/namei.c:3760
+ do_syscall_64+0x33/0x40 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x445e59
+Code: 4d c7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 1b c7 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fff2277fac8 EFLAGS: 00000246 ORIG_RAX: 0000000000000054
+RAX: ffffffffffffffda RBX: 0000000000400280 RCX: 0000000000445e59
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 00000000200000c0
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000002
+R10: 00007fff2277f990 R11: 0000000000000246 R12: 0000000000000000
+R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
 
-There aren't really good tools for working with the kernel signatures
-but I can tell what certificate it was signed with jumping throught some
-hoops.
+The buggy address belongs to the page:
+page:0000000048cd3304 refcount:0 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x1317c3
+flags: 0x200000000000000()
+raw: 0200000000000000 ffffea0004526588 ffffea0004528088 0000000000000000
+raw: 0000000000000001 0000000000000000 00000000ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
 
-What I can't tell without reading the kernel code (different for each
-architecture) is what certificates the kernel considers valid for
-signing kernels. The kernel surely knows but does not tell.
+Memory state around the buggy address:
+ ffff8881317c2f00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff8881317c2f80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>ffff8881317c3000: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+                   ^
+ ffff8881317c3080: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff8881317c3100: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+==================================================================
 
-That is, for example, if I have a known bad kernel I want to be able to
-tell if it's loadable without actually loading it.
+ext4_search_dir:
+  ...
+  de = (struct ext4_dir_entry_2 *)search_buf;
+  dlimit = search_buf + buf_size;
+  while ((char *) de < dlimit) {
+  ...
+    if ((char *) de + de->name_len <= dlimit &&
+	 ext4_match(dir, fname, de)) {
+	    ...
+    }
+  ...
+    de_len = ext4_rec_len_from_disk(de->rec_len, dir->i_sb->s_blocksize);
+    if (de_len <= 0)
+      return -1;
+    offset += de_len;
+    de = (struct ext4_dir_entry_2 *) ((char *) de + de_len);
+  }
 
-Thanks
+Assume:
+de=0xffff8881317c2fff
+dlimit=0x0xffff8881317c3000
 
-Michal
+If read 'de->name_len' which address is 0xffff8881317c3005, obviously is
+out of range, then will trigger use-after-free.
+To solve this issue, 'dlimit' must reserve 8 bytes, as we will read
+'de->name_len' to judge if '(char *) de + de->name_len' out of range.
+
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220324064816.1209985-1-yebin10@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/ext4/ext4.h  |    4 ++++
+ fs/ext4/namei.c |    4 ++--
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+--- a/fs/ext4/ext4.h
++++ b/fs/ext4/ext4.h
+@@ -2271,6 +2271,10 @@ static inline int ext4_forced_shutdown(s
+  * Structure of a directory entry
+  */
+ #define EXT4_NAME_LEN 255
++/*
++ * Base length of the ext4 directory entry excluding the name length
++ */
++#define EXT4_BASE_DIR_LEN (sizeof(struct ext4_dir_entry_2) - EXT4_NAME_LEN)
+ 
+ struct ext4_dir_entry {
+ 	__le32	inode;			/* Inode number */
+--- a/fs/ext4/namei.c
++++ b/fs/ext4/namei.c
+@@ -1466,10 +1466,10 @@ int ext4_search_dir(struct buffer_head *
+ 
+ 	de = (struct ext4_dir_entry_2 *)search_buf;
+ 	dlimit = search_buf + buf_size;
+-	while ((char *) de < dlimit) {
++	while ((char *) de < dlimit - EXT4_BASE_DIR_LEN) {
+ 		/* this code is executed quadratically often */
+ 		/* do minimal checking `by hand' */
+-		if ((char *) de + de->name_len <= dlimit &&
++		if (de->name + de->name_len <= dlimit &&
+ 		    ext4_match(dir, fname, de)) {
+ 			/* found a match - just to be sure, do
+ 			 * a full check */
+
+
