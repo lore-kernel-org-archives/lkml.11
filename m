@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B682C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:33:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42DCCC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:33:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347444AbiDZJgF (ORCPT
+        id S1347558AbiDZJgK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:36:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41348 "EHLO
+        Tue, 26 Apr 2022 05:36:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347929AbiDZJGX (ORCPT
+        with ESMTP id S244323AbiDZJGY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:06:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3989AB8985;
-        Tue, 26 Apr 2022 01:47:28 -0700 (PDT)
+        Tue, 26 Apr 2022 05:06:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A540FC8488;
+        Tue, 26 Apr 2022 01:47:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F1CDCB81A2F;
-        Tue, 26 Apr 2022 08:47:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FD97C385A0;
-        Tue, 26 Apr 2022 08:47:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3ADE6B81CB3;
+        Tue, 26 Apr 2022 08:47:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9384C385A0;
+        Tue, 26 Apr 2022 08:47:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962845;
-        bh=euVy0+SWJLyLoXQycColti30EIyblijkVeISgJbnouw=;
+        s=korg; t=1650962861;
+        bh=yij2d1Ux7ctNvj7P7J9HDGOnvtH6jjc+nI7oka++9FQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x7w6TOSmBg+c4Rf+WNxsVmeoFLmHkZTBsckfamgxgJEPE9yL+DXZNi651wRt+j6js
-         1exWUUrdZTKhTEu/5YLVozu7077CgMGpunhxEqvJ78fbALmbvMYhij9XPpxQFNZrSo
-         EI5VFgVMfx6A1PikAmLJw3sgVXzZTuO1AM8sT7uE=
+        b=xsrD4euY7v+y4w5W0N3BR2eTFTPkp/G+emBM/GpECuDFv/wSKnK7nPFUxunMUN896
+         IgujwGhRiiB+6I2wtoyVaG97h/VfuY5gEouShsnoOn2OX97rKhaQd+OjFrc0S+ne4b
+         JnGzCwyqgYRgGB4eMiOr0SC/ouWR1wmYVoU7NLXg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
-        Madhavan Srinivasan <maddy@linux.vnet.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 109/146] powerpc/perf: Fix power9 event alternatives
-Date:   Tue, 26 Apr 2022 10:21:44 +0200
-Message-Id: <20220426081753.120091480@linuxfoundation.org>
+        stable@vger.kernel.org, Seth Forshee <sforshee@digitalocean.com>,
+        Christoph Hellwig <hch@lst.de>, regressions@lists.linux.dev,
+        "Christian Brauner (Microsoft)" <brauner@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.17 114/146] fs: fix acl translation
+Date:   Tue, 26 Apr 2022 10:21:49 +0200
+Message-Id: <20220426081753.258552761@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -52,90 +51,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+From: Christian Brauner <brauner@kernel.org>
 
-[ Upstream commit 0dcad700bb2776e3886fe0a645a4bf13b1e747cd ]
+commit 705191b03d507744c7e097f78d583621c14988ac upstream.
 
-When scheduling a group of events, there are constraint checks done to
-make sure all events can go in a group. Example, one of the criteria is
-that events in a group cannot use the same PMC. But platform specific
-PMU supports alternative event for some of the event codes. During
-perf_event_open(), if any event group doesn't match constraint check
-criteria, further lookup is done to find alternative event.
+Last cycle we extended the idmapped mounts infrastructure to support
+idmapped mounts of idmapped filesystems (No such filesystem yet exist.).
+Since then, the meaning of an idmapped mount is a mount whose idmapping
+is different from the filesystems idmapping.
 
-By current design, the array of alternatives events in PMU code is
-expected to be sorted by column 0. This is because in
-find_alternative() the return criteria is based on event code
-comparison. ie. "event < ev_alt[i][0])". This optimisation is there
-since find_alternative() can be called multiple times. In power9 PMU
-code, the alternative event array is not sorted properly and hence there
-is breakage in finding alternative events.
+While doing that work we missed to adapt the acl translation helpers.
+They still assume that checking for the identity mapping is enough.  But
+they need to use the no_idmapping() helper instead.
 
-To work with existing logic, fix the alternative event array to be
-sorted by column 0 for power9-pmu.c
+Note, POSIX ACLs are always translated right at the userspace-kernel
+boundary using the caller's current idmapping and the initial idmapping.
+The order depends on whether we're coming from or going to userspace.
+The filesystem's idmapping doesn't matter at the border.
 
-Results:
+Consequently, if a non-idmapped mount is passed we need to make sure to
+always pass the initial idmapping as the mount's idmapping and not the
+filesystem idmapping.  Since it's irrelevant here it would yield invalid
+ids and prevent setting acls for filesystems that are mountable in a
+userns and support posix acls (tmpfs and fuse).
 
-With alternative events, multiplexing can be avoided. That is, for
-example, in power9 PM_LD_MISS_L1 (0x3e054) has alternative event,
-PM_LD_MISS_L1_ALT (0x400f0). This is an identical event which can be
-programmed in a different PMC.
+I verified the regression reported in [1] and verified that this patch
+fixes it.  A regression test will be added to xfstests in parallel.
 
-Before:
-
- # perf stat -e r3e054,r300fc
-
- Performance counter stats for 'system wide':
-
-           1057860      r3e054              (50.21%)
-               379      r300fc              (49.79%)
-
-       0.944329741 seconds time elapsed
-
-Since both the events are using PMC3 in this case, they are
-multiplexed here.
-
-After:
-
- # perf stat -e r3e054,r300fc
-
- Performance counter stats for 'system wide':
-
-           1006948      r3e054
-               182      r300fc
-
-Fixes: 91e0bd1e6251 ("powerpc/perf: Add PM_LD_MISS_L1 and PM_BR_2PATH to power9 event list")
-Signed-off-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
-Reviewed-by: Madhavan Srinivasan <maddy@linux.vnet.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220419114828.89843-1-atrajeev@linux.vnet.ibm.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215849 [1]
+Fixes: bd303368b776 ("fs: support mapped mounts of mapped filesystems")
+Cc: Seth Forshee <sforshee@digitalocean.com>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: <stable@vger.kernel.org> # 5.17
+Cc: <regressions@lists.linux.dev>
+Signed-off-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/perf/power9-pmu.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ fs/posix_acl.c                  |   10 ++++++++++
+ fs/xattr.c                      |    6 ++++--
+ include/linux/posix_acl_xattr.h |    4 ++++
+ 3 files changed, 18 insertions(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/perf/power9-pmu.c b/arch/powerpc/perf/power9-pmu.c
-index 4b7c17e36100..37b2860db483 100644
---- a/arch/powerpc/perf/power9-pmu.c
-+++ b/arch/powerpc/perf/power9-pmu.c
-@@ -133,11 +133,11 @@ int p9_dd22_bl_ev[] = {
+--- a/fs/posix_acl.c
++++ b/fs/posix_acl.c
+@@ -759,9 +759,14 @@ static void posix_acl_fix_xattr_userns(
+ }
  
- /* Table of alternatives, sorted by column 0 */
- static const unsigned int power9_event_alternatives[][MAX_ALT] = {
--	{ PM_INST_DISP,			PM_INST_DISP_ALT },
--	{ PM_RUN_CYC_ALT,		PM_RUN_CYC },
--	{ PM_RUN_INST_CMPL_ALT,		PM_RUN_INST_CMPL },
--	{ PM_LD_MISS_L1,		PM_LD_MISS_L1_ALT },
- 	{ PM_BR_2PATH,			PM_BR_2PATH_ALT },
-+	{ PM_INST_DISP,			PM_INST_DISP_ALT },
-+	{ PM_RUN_CYC_ALT,               PM_RUN_CYC },
-+	{ PM_LD_MISS_L1,                PM_LD_MISS_L1_ALT },
-+	{ PM_RUN_INST_CMPL_ALT,         PM_RUN_INST_CMPL },
- };
+ void posix_acl_fix_xattr_from_user(struct user_namespace *mnt_userns,
++				   struct inode *inode,
+ 				   void *value, size_t size)
+ {
+ 	struct user_namespace *user_ns = current_user_ns();
++
++	/* Leave ids untouched on non-idmapped mounts. */
++	if (no_idmapping(mnt_userns, i_user_ns(inode)))
++		mnt_userns = &init_user_ns;
+ 	if ((user_ns == &init_user_ns) && (mnt_userns == &init_user_ns))
+ 		return;
+ 	posix_acl_fix_xattr_userns(&init_user_ns, user_ns, mnt_userns, value,
+@@ -769,9 +774,14 @@ void posix_acl_fix_xattr_from_user(struc
+ }
  
- static int power9_get_alternatives(u64 event, unsigned int flags, u64 alt[])
--- 
-2.35.1
-
+ void posix_acl_fix_xattr_to_user(struct user_namespace *mnt_userns,
++				 struct inode *inode,
+ 				 void *value, size_t size)
+ {
+ 	struct user_namespace *user_ns = current_user_ns();
++
++	/* Leave ids untouched on non-idmapped mounts. */
++	if (no_idmapping(mnt_userns, i_user_ns(inode)))
++		mnt_userns = &init_user_ns;
+ 	if ((user_ns == &init_user_ns) && (mnt_userns == &init_user_ns))
+ 		return;
+ 	posix_acl_fix_xattr_userns(user_ns, &init_user_ns, mnt_userns, value,
+--- a/fs/xattr.c
++++ b/fs/xattr.c
+@@ -569,7 +569,8 @@ setxattr(struct user_namespace *mnt_user
+ 		}
+ 		if ((strcmp(kname, XATTR_NAME_POSIX_ACL_ACCESS) == 0) ||
+ 		    (strcmp(kname, XATTR_NAME_POSIX_ACL_DEFAULT) == 0))
+-			posix_acl_fix_xattr_from_user(mnt_userns, kvalue, size);
++			posix_acl_fix_xattr_from_user(mnt_userns, d_inode(d),
++						      kvalue, size);
+ 	}
+ 
+ 	error = vfs_setxattr(mnt_userns, d, kname, kvalue, size, flags);
+@@ -667,7 +668,8 @@ getxattr(struct user_namespace *mnt_user
+ 	if (error > 0) {
+ 		if ((strcmp(kname, XATTR_NAME_POSIX_ACL_ACCESS) == 0) ||
+ 		    (strcmp(kname, XATTR_NAME_POSIX_ACL_DEFAULT) == 0))
+-			posix_acl_fix_xattr_to_user(mnt_userns, kvalue, error);
++			posix_acl_fix_xattr_to_user(mnt_userns, d_inode(d),
++						    kvalue, error);
+ 		if (size && copy_to_user(value, kvalue, error))
+ 			error = -EFAULT;
+ 	} else if (error == -ERANGE && size >= XATTR_SIZE_MAX) {
+--- a/include/linux/posix_acl_xattr.h
++++ b/include/linux/posix_acl_xattr.h
+@@ -34,15 +34,19 @@ posix_acl_xattr_count(size_t size)
+ 
+ #ifdef CONFIG_FS_POSIX_ACL
+ void posix_acl_fix_xattr_from_user(struct user_namespace *mnt_userns,
++				   struct inode *inode,
+ 				   void *value, size_t size);
+ void posix_acl_fix_xattr_to_user(struct user_namespace *mnt_userns,
++				   struct inode *inode,
+ 				 void *value, size_t size);
+ #else
+ static inline void posix_acl_fix_xattr_from_user(struct user_namespace *mnt_userns,
++						 struct inode *inode,
+ 						 void *value, size_t size)
+ {
+ }
+ static inline void posix_acl_fix_xattr_to_user(struct user_namespace *mnt_userns,
++					       struct inode *inode,
+ 					       void *value, size_t size)
+ {
+ }
 
 
