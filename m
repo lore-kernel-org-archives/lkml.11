@@ -2,169 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73E08C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:43:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D1C7C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:43:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345477AbiDZIqF (ORCPT
+        id S1345552AbiDZIqX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:46:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59194 "EHLO
+        Tue, 26 Apr 2022 04:46:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345757AbiDZIj2 (ORCPT
+        with ESMTP id S1345795AbiDZIjb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:39:28 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F8C0403D5;
-        Tue, 26 Apr 2022 01:30:50 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Tue, 26 Apr 2022 04:39:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B905985AB;
+        Tue, 26 Apr 2022 01:31:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KnZpF4Pyqz4ySX;
-        Tue, 26 Apr 2022 18:30:45 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1650961846;
-        bh=cBtamjcdMrl1lr8mEXPJ4M3wlinoEv8uv5M/sx0Fo7E=;
-        h=Date:From:To:Cc:Subject:From;
-        b=nZC6aHmP7oY6UJj+boFIbMOre3CB0dlZx9FxHkcpBEejany4y/wTJHmY+v4+o4sRp
-         fwR6h9M5ALvgv4LZDEvN3dXLBjlQ7Au0pjcN6LB0ii5vonvn3ejWpdB5lDLX19JBx2
-         aJVPv4oNYLw0hf8KYsle02XBtBVhnQ17yy+kM3YDEJTDSnEoKf8Sc6yyfUF+HyilLI
-         M1Iu7ixMl10/FrIux0bQqrRoeJMu/5FBO90UzEduvy0186oe7xjLqgueANcSuAIdTX
-         JEUSAqfYRCEv6pCDXeaS5FmmUgGjSAyKfyPGxrbQf0p3x9lJiPpkzKt+auZMDIcKaE
-         iLk1TlAz8SdRg==
-Date:   Tue, 26 Apr 2022 18:30:44 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>
-Cc:     Amadeusz =?UTF-8?B?U8WCYXdpxYRza2k=?= 
-        <amadeuszx.slawinski@linux.intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build failure after merge of the sound-asoc tree
-Message-ID: <20220426183044.4f72059b@canb.auug.org.au>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 07FBB6186E;
+        Tue, 26 Apr 2022 08:31:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15393C385A4;
+        Tue, 26 Apr 2022 08:31:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650961876;
+        bh=sx9Nf9/mhn8X59xFujWYUdyZG3f9x6QeplJYXWtuHYY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=P42HWGpGVsDwa/xwcfLbIFhubhMhTA/zkMmDb5BF2FyP4sL0J7X1dpTS07kfiTDTS
+         blYM5UC/IcaroAeh78cc9zAUYxxcqUVl64Xo4lKTjtxW5LjDY6yL62H+TlhOfX9dku
+         34DP/3znj2FnnN4XR+GuW0q4jfa98RBONph10gdI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
+        Khazhismel Kumykov <khazhy@google.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.4 61/62] block/compat_ioctl: fix range check in BLKGETSIZE
+Date:   Tue, 26 Apr 2022 10:21:41 +0200
+Message-Id: <20220426081738.970976617@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
+References: <20220426081737.209637816@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/5cYsxUw5ftwaVcHzMg.4l0k";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/5cYsxUw5ftwaVcHzMg.4l0k
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+From: Khazhismel Kumykov <khazhy@google.com>
 
-Hi all,
+commit ccf16413e520164eb718cf8b22a30438da80ff23 upstream.
 
-After merging the sound-asoc tree, today's linux-next build (powerpc
-allyesconfig) failed like this:
+kernel ulong and compat_ulong_t may not be same width. Use type directly
+to eliminate mismatches.
 
-sound/soc/soc-acpi.c:34:1: error: redefinition of 'snd_soc_acpi_find_machin=
-e'
-   34 | snd_soc_acpi_find_machine(struct snd_soc_acpi_mach *machines)
-      | ^~~~~~~~~~~~~~~~~~~~~~~~~
-In file included from sound/soc/soc-acpi.c:9:
-include/sound/soc-acpi.h:38:1: note: previous definition of 'snd_soc_acpi_f=
-ind_machine' with type 'struct snd_soc_acpi_mach *(struct snd_soc_acpi_mach=
- *)'
-   38 | snd_soc_acpi_find_machine(struct snd_soc_acpi_mach *machines)
-      | ^~~~~~~~~~~~~~~~~~~~~~~~~
-sound/soc/soc-acpi.c: In function 'snd_soc_acpi_find_package':
-sound/soc/soc-acpi.c:58:36: error: implicit declaration of function 'acpi_f=
-etch_acpi_dev'; did you mean 'device_match_acpi_dev'? [-Werror=3Dimplicit-f=
-unction-declaration]
-   58 |         struct acpi_device *adev =3D acpi_fetch_acpi_dev(handle);
-      |                                    ^~~~~~~~~~~~~~~~~~~
-      |                                    device_match_acpi_dev
-sound/soc/soc-acpi.c:58:36: error: initialization of 'struct acpi_device *'=
- from 'int' makes pointer from integer without a cast [-Werror=3Dint-conver=
-sion]
-sound/soc/soc-acpi.c:64:25: error: invalid use of undefined type 'struct ac=
-pi_device'
-   64 |         if (adev && adev->status.present && adev->status.functional=
-) {
-      |                         ^~
-sound/soc/soc-acpi.c:64:49: error: invalid use of undefined type 'struct ac=
-pi_device'
-   64 |         if (adev && adev->status.present && adev->status.functional=
-) {
-      |                                                 ^~
-sound/soc/soc-acpi.c:80:26: error: implicit declaration of function 'acpi_e=
-xtract_package' [-Werror=3Dimplicit-function-declaration]
-   80 |                 status =3D acpi_extract_package(myobj,
-      |                          ^~~~~~~~~~~~~~~~~~~~
-sound/soc/soc-acpi.c: At top level:
-sound/soc/soc-acpi.c:95:6: error: redefinition of 'snd_soc_acpi_find_packag=
-e_from_hid'
-   95 | bool snd_soc_acpi_find_package_from_hid(const u8 hid[ACPI_ID_LEN],
-      |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-In file included from sound/soc/soc-acpi.c:9:
-include/sound/soc-acpi.h:44:1: note: previous definition of 'snd_soc_acpi_f=
-ind_package_from_hid' with type 'bool(const u8 *, struct snd_soc_acpi_packa=
-ge_context *)' {aka '_Bool(const unsigned char *, struct snd_soc_acpi_packa=
-ge_context *)'}
-   44 | snd_soc_acpi_find_package_from_hid(const u8 hid[ACPI_ID_LEN],
-      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-sound/soc/soc-acpi.c:109:27: error: redefinition of 'snd_soc_acpi_codec_lis=
-t'
-  109 | struct snd_soc_acpi_mach *snd_soc_acpi_codec_list(void *arg)
-      |                           ^~~~~~~~~~~~~~~~~~~~~~~
-In file included from sound/soc/soc-acpi.c:9:
-include/sound/soc-acpi.h:51:41: note: previous definition of 'snd_soc_acpi_=
-codec_list' with type 'struct snd_soc_acpi_mach *(void *)'
-   51 | static inline struct snd_soc_acpi_mach *snd_soc_acpi_codec_list(voi=
-d *arg)
-      |                                         ^~~~~~~~~~~~~~~~~~~~~~~
+This would result in truncation rather than EFBIG for 32bit mode for
+large disks.
 
-Caused by commit
-
-  47a1886a610a ("ASoC: Intel: avs: Enable AVS driver only on x86 platforms")
-
-I have applied the following patch for today:
-
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Tue, 26 Apr 2022 18:01:06 +1000
-Subject: [PATCH] partial revert of "ASoC: Intel: avs: Enable AVS driver onl=
-y on x86 platforms"
-
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+Signed-off-by: Khazhismel Kumykov <khazhy@google.com>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Link: https://lore.kernel.org/r/20220414224056.2875681-1-khazhy@google.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/intel/Kconfig | 2 +-
+ block/compat_ioctl.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/intel/Kconfig b/sound/soc/intel/Kconfig
-index be42c4eff165..b0b46deb25c6 100644
---- a/sound/soc/intel/Kconfig
-+++ b/sound/soc/intel/Kconfig
-@@ -211,7 +211,7 @@ config SND_SOC_INTEL_KEEMBAY
-=20
- config SND_SOC_INTEL_AVS
- 	tristate "Intel AVS driver"
--	depends on (X86 && ACPI) || COMPILE_TEST
-+	depends on (X86 && ACPI)
- 	depends on PCI
- 	depends on COMMON_CLK
- 	select SND_SOC_ACPI
---=20
-2.35.1
+--- a/block/compat_ioctl.c
++++ b/block/compat_ioctl.c
+@@ -393,7 +393,7 @@ long compat_blkdev_ioctl(struct file *fi
+ 		return 0;
+ 	case BLKGETSIZE:
+ 		size = i_size_read(bdev->bd_inode);
+-		if ((size >> 9) > ~0UL)
++		if ((size >> 9) > ~(compat_ulong_t)0)
+ 			return -EFBIG;
+ 		return compat_put_ulong(arg, size >> 9);
+ 
 
---=20
-Cheers,
-Stephen Rothwell
 
---Sig_/5cYsxUw5ftwaVcHzMg.4l0k
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJnrbQACgkQAVBC80lX
-0Gwrzwf/Wnf6i6TNLDZh3eb5zrEBhx9ZFQiGZU7fuhViFCKeov9VlI7JS4a+xQPn
-6m2bE1cWVCasjvIKMil15ZLm8whmtRyvml1l0mQ1p/D8uOqziyDypxj7Wj/CQYaR
-RNf2Yg4YB3j3UsN2zoQGPNdb9cDeou5C/UwtgTBKbqrCg8mfXvNLcmMf1NI9sZI4
-yfawQXp6inMcTpisNz79LSuiWaqZOOVby42byjcymyl++LQon8aOwtI8aZ6uxEwW
-UkkxU9a5p6L/5lSa1GLPOkqED+gA1Q8FEipBBMlSsvS0wUys7jcwPIy5fhA73wlB
-cdFd4Bp86m9kUm9KvtK6S8ELXqIOXg==
-=V5EX
------END PGP SIGNATURE-----
-
---Sig_/5cYsxUw5ftwaVcHzMg.4l0k--
