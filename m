@@ -2,80 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10903C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 06:07:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 424B7C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 06:08:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244692AbiDZGK5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 02:10:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42138 "EHLO
+        id S244737AbiDZGLx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 02:11:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233131AbiDZGKz (ORCPT
+        with ESMTP id S233131AbiDZGLt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 02:10:55 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 173EF97BBD
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 23:07:49 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8A2C823A;
-        Mon, 25 Apr 2022 23:07:48 -0700 (PDT)
-Received: from [192.168.225.134] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 726A83F5A1;
-        Mon, 25 Apr 2022 23:07:46 -0700 (PDT)
-Message-ID: <63deb092-4002-d798-410e-1db2081f0ef8@arm.com>
-Date:   Tue, 26 Apr 2022 11:38:19 +0530
+        Tue, 26 Apr 2022 02:11:49 -0400
+Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70D8FB644C;
+        Mon, 25 Apr 2022 23:08:42 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1650953320;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ug9uQ7MO8p5lAMaOYLg82gdoR0QvVH+wRiaruaTU7/M=;
+        b=H0dx5u62TZdPskxIIVhdsChJfduatSw8eVPGqkb/o6/xCbHB6fmS99y1cn+Np4lvGH8eXC
+        h1wqWv/cVIwctMp8/GQI7KJTI4av9hLXnIdVhWaMVLPbGoQfrT2bq1Nt+gxYstLkt2OhpC
+        hHwKYlaC3fnbkznyLO6tBkT22Yd6nGM=
+From:   Cai Huoqing <cai.huoqing@linux.dev>
+To:     cai.huoqing@linux.dev
+Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org
+Subject: [PATCH v2 0/4] drm/nvdla: Add driver support for NVDLA
+Date:   Tue, 26 Apr 2022 14:07:57 +0800
+Message-Id: <20220426060808.78225-1-cai.huoqing@linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] xtensa: enable ARCH_HAS_DEBUG_VM_PGTABLE
-Content-Language: en-US
-To:     Max Filippov <jcmvbkbc@gmail.com>, linux-xtensa@linux-xtensa.org
-Cc:     Chris Zankel <chris@zankel.net>, linux-kernel@vger.kernel.org
-References: <20220425180540.880632-1-jcmvbkbc@gmail.com>
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-In-Reply-To: <20220425180540.880632-1-jcmvbkbc@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Max,
+The NVIDIA Deep Learning Accelerator (NVDLA) is an open source IP
+which is integrated into NVIDIA Jetson AGX Xavier,
+so add driver support for this accelerator."
 
-Thanks for the patch. Just wondering if you ran with different config
-options (which might impact test case selection) on/off during testing ?
+v1->v2:
+*Rename nvdla_drm.[ch] to nvdla_drv.[ch] and rename nvdla_ioctl.h to nvdla_drm.h,
+ move it to uapi.
+ comments link: https://lore.kernel.org/lkml/20bac605-97e6-e5cd-c4e4-83a8121645d8@amd.com/
+*Remove the  onexistent filename  in Makefile
+ comments link: https://lore.kernel.org/lkml/202204201512.pp20MXT5-lkp@intel.com/
+*Sort file names alphabetically in Makefile.
+*Rearrange the error messages, and use drm_err/_dbg() instead of pr_err/_dbg().
+*Replace  "dla_" prefix with "nvdla_"
+*Check the iosys_map by iosys_map_is_null(), and check "ret" directly.
+*Using iosys_map_memcpy_to/_from() for iosys_map instead of memcpy()
+*Fix parameter error "dma_buf_vunmap(buf, ptr)", use "&map" instead of "ptr"
+*Use iosys_map instead of kvaddr and use "iosys_map_set_vaddr()" to initialize iosys_map
+*Using "vma->vm_pgoff -= drm_vma_node_start(&obj->vma_node)" to update vm_pgoff is cleaner
+*Remove the unused nvdla_drm_gem_mmap, register drm_gem_mmap to file_operations directly.
+*Use DEFINE_DRM_GEM_FOPS() to define nvdla_drm_fops.
+*Remove the unused nvdla_drm_gem_mmap_buf, register drm_gem_prime_mmap to drm_driver directly.
+ comments link: https://lore.kernel.org/lkml/7fa19996-5830-af3d-ab24-08c76e1d5604@suse.de/
+*Fix typo and some code style
+*Remove unused function nvdla_get_time_us()
+ comments link: https://lore.kernel.org/lkml/0fa9ab41-c18e-a569-e6fe-a0e9d965905e@stargateuniverse.net/
 
-- Anshuman
+Cai Huoqing (4):
+  MAINTAINERS: Add the driver info of the NVDLA
+  drm/nvdla: Add driver support for NVDLA
+  drm/nvdla: Add register head file of NVDLA
+  drm/nvdla/uapi: Add UAPI of NVDLA driver
 
-On 4/25/22 23:35, Max Filippov wrote:
-> xtensa kernels successfully build and run with
-> CONFIG_DEBUG_VM_PGTABLE=y, enable arch support for it.
-> 
-> Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
-> ---
->  Documentation/features/debug/debug-vm-pgtable/arch-support.txt | 2 +-
->  arch/xtensa/Kconfig                                            | 1 +
->  2 files changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/features/debug/debug-vm-pgtable/arch-support.txt b/Documentation/features/debug/debug-vm-pgtable/arch-support.txt
-> index 83eafe1a7f68..ff21a83abe62 100644
-> --- a/Documentation/features/debug/debug-vm-pgtable/arch-support.txt
-> +++ b/Documentation/features/debug/debug-vm-pgtable/arch-support.txt
-> @@ -27,5 +27,5 @@
->      |       sparc: | TODO |
->      |          um: | TODO |
->      |         x86: |  ok  |
-> -    |      xtensa: | TODO |
-> +    |      xtensa: |  ok  |
->      -----------------------
-> diff --git a/arch/xtensa/Kconfig b/arch/xtensa/Kconfig
-> index 2ed897299f19..903b910ebc10 100644
-> --- a/arch/xtensa/Kconfig
-> +++ b/arch/xtensa/Kconfig
-> @@ -4,6 +4,7 @@ config XTENSA
->  	select ARCH_32BIT_OFF_T
->  	select ARCH_HAS_BINFMT_FLAT if !MMU
->  	select ARCH_HAS_CURRENT_STACK_POINTER
-> +	select ARCH_HAS_DEBUG_VM_PGTABLE
->  	select ARCH_HAS_DMA_PREP_COHERENT if MMU
->  	select ARCH_HAS_SYNC_DMA_FOR_CPU if MMU
->  	select ARCH_HAS_SYNC_DMA_FOR_DEVICE if MMU
+ MAINTAINERS                             |    7 +
+ drivers/gpu/drm/Kconfig                 |    2 +
+ drivers/gpu/drm/Makefile                |    1 +
+ drivers/gpu/drm/nvdla/Kconfig           |    8 +
+ drivers/gpu/drm/nvdla/Makefile          |   17 +
+ drivers/gpu/drm/nvdla/nvdla_bdma.c      |  198 +
+ drivers/gpu/drm/nvdla/nvdla_cache.c     |  202 +
+ drivers/gpu/drm/nvdla/nvdla_cdp.c       |  299 ++
+ drivers/gpu/drm/nvdla/nvdla_common.c    |  293 ++
+ drivers/gpu/drm/nvdla/nvdla_common.h    |  835 +++
+ drivers/gpu/drm/nvdla/nvdla_conv.c      |  684 +++
+ drivers/gpu/drm/nvdla/nvdla_drv.c       |  694 +++
+ drivers/gpu/drm/nvdla/nvdla_drv.h       |  129 +
+ drivers/gpu/drm/nvdla/nvdla_engine.c    |  233 +
+ drivers/gpu/drm/nvdla/nvdla_engine.h    |  272 +
+ drivers/gpu/drm/nvdla/nvdla_gem.c       |  358 ++
+ drivers/gpu/drm/nvdla/nvdla_pdp.c       |  448 ++
+ drivers/gpu/drm/nvdla/nvdla_reg.h       | 6411 +++++++++++++++++++++++
+ drivers/gpu/drm/nvdla/nvdla_rubik.c     |  214 +
+ drivers/gpu/drm/nvdla/nvdla_sched.h     |   37 +
+ drivers/gpu/drm/nvdla/nvdla_scheduler.c | 1012 ++++
+ drivers/gpu/drm/nvdla/nvdla_sdp.c       |  723 +++
+ include/uapi/drm/nvdla_drm.h            |   99 +
+ 23 files changed, 13176 insertions(+)
+ create mode 100644 drivers/gpu/drm/nvdla/Kconfig
+ create mode 100644 drivers/gpu/drm/nvdla/Makefile
+ create mode 100644 drivers/gpu/drm/nvdla/nvdla_bdma.c
+ create mode 100644 drivers/gpu/drm/nvdla/nvdla_cache.c
+ create mode 100644 drivers/gpu/drm/nvdla/nvdla_cdp.c
+ create mode 100644 drivers/gpu/drm/nvdla/nvdla_common.c
+ create mode 100644 drivers/gpu/drm/nvdla/nvdla_common.h
+ create mode 100644 drivers/gpu/drm/nvdla/nvdla_conv.c
+ create mode 100644 drivers/gpu/drm/nvdla/nvdla_drv.c
+ create mode 100644 drivers/gpu/drm/nvdla/nvdla_drv.h
+ create mode 100644 drivers/gpu/drm/nvdla/nvdla_engine.c
+ create mode 100644 drivers/gpu/drm/nvdla/nvdla_engine.h
+ create mode 100644 drivers/gpu/drm/nvdla/nvdla_gem.c
+ create mode 100644 drivers/gpu/drm/nvdla/nvdla_pdp.c
+ create mode 100644 drivers/gpu/drm/nvdla/nvdla_reg.h
+ create mode 100644 drivers/gpu/drm/nvdla/nvdla_rubik.c
+ create mode 100644 drivers/gpu/drm/nvdla/nvdla_sched.h
+ create mode 100644 drivers/gpu/drm/nvdla/nvdla_scheduler.c
+ create mode 100644 drivers/gpu/drm/nvdla/nvdla_sdp.c
+ create mode 100644 include/uapi/drm/nvdla_drm.h
+
+-- 
+2.25.1
+
