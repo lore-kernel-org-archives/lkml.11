@@ -2,97 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5974EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 17:14:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BA3AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 17:16:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231872AbiDZRRv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 13:17:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52274 "EHLO
+        id S1353599AbiDZRTU (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 13:19:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353659AbiDZRPy (ORCPT
+        with ESMTP id S1353458AbiDZRSQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 13:15:54 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06A953C710;
-        Tue, 26 Apr 2022 10:12:21 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id iq10so5622269pjb.0;
-        Tue, 26 Apr 2022 10:12:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Xex1L+qhJCY3xuEM8rnY77RhjLIAitywaBH8FnXN2NE=;
-        b=bxXsJwIQmg2ku7et4j8+xq9nMg00udwIkyvPh9/9E/YjIyflfTwylCbsEfjDeJT5M+
-         CwMfZEUY6uRG3oP8T7x8URYwmIyq9akC3TPlTUhzWkNN7GHYJ3vCRUrrpRb9ejan+nc7
-         rsH505UOI3MmkMuYRrvvdLfK4/1gbhOGFH2jPkSNyqzO/qMdGaet/DwzRAdkB2T9kVCk
-         kj1XvRZXdJwZug6iiQQcoHvWgFrcvOIAoX+QR+3K54Mj/suX5EkmG5WfvBmroRPBGQDy
-         48Y0ATvVxJrHZl6T5NAISRCpMmfQ1gS0LLIcJwr3CX0Pkfo2NlAARLHQppCw/KbZFX4M
-         60Ig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Xex1L+qhJCY3xuEM8rnY77RhjLIAitywaBH8FnXN2NE=;
-        b=c56nqED83kCRf4MBoKOj5MXTDjf65zzaKu/hH2XoD5cCB4Yq39AunLscnpg5n5zRu9
-         F61JKoH/uYuTsxckz//TY+DOaxnAXobH4Q0oH44dNuohshx2UioMHFeLRQkgqdGVtpww
-         PIXH/VHCnzqEkqLv7J4oyDFtX9zsiXkx0RZwTpAvDw35y1HjTDwZj5fJqFfQ/A45ykA9
-         QHSme+oCmCpFYyKeuoHqBsrZYDBAJdeoqf58aCHooX6utcKCk4J7lufJJPMqsldd/4gp
-         PEkLVpswbuPIvv+9f8VCJafrw/L07Hs5Fq5sg/DySbUOGKjAXNV4CVEagzi8VPJxia0m
-         BfqA==
-X-Gm-Message-State: AOAM530MzURGZGwkJfCzPYSTL/KmpgZQf+OYzML8423/Qyvjpd7As/hj
-        ncDu79VHi/tzQn+mpyXMqIU=
-X-Google-Smtp-Source: ABdhPJxu8MceZNAOZTO63BsuWJu133Vs0KS3r76F9XhsDtYfhid4pivBZxd0ZvAvKPlpmG9QgmN2Mw==
-X-Received: by 2002:a17:902:e8cf:b0:156:36e0:6bcb with SMTP id v15-20020a170902e8cf00b0015636e06bcbmr23470774plg.105.1650993140487;
-        Tue, 26 Apr 2022 10:12:20 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id i23-20020a056a00225700b0050d38d0f58dsm9035602pfu.213.2022.04.26.10.12.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Apr 2022 10:12:20 -0700 (PDT)
-Message-ID: <53ab8f7d-bf13-c285-b67c-d7e224b581a0@gmail.com>
-Date:   Tue, 26 Apr 2022 10:12:18 -0700
+        Tue, 26 Apr 2022 13:18:16 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D69526E8
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 10:15:08 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id BD090210EA;
+        Tue, 26 Apr 2022 17:15:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1650993306; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dvV2nJBzNibHRnWgDFAzy5khPlxaeLLn78Tf6Vn7WqQ=;
+        b=ssga9CwJbOWK1c4zQuqN7zMjsjrJvUiAf4lSZv8141vNqAz90Qjw7dA9+A2nDDREXMIRE9
+        AOT9tfFzRYlvmgiSHhZe6hzSBCvGTq2L6nZUi85XYXb/zko4VJWac1w2vRaEfvmB2UHYJi
+        X24l560Rqy63nd+qvycSDJdbMmLf5CI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1650993306;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dvV2nJBzNibHRnWgDFAzy5khPlxaeLLn78Tf6Vn7WqQ=;
+        b=qcui5A9TMEGwqvNzmE38B/X/KwhTA7UQOoUXO4fZsVpXyoZY+WzFaXBBJecilbkoitQMaA
+        7Oe+6lmuxppQXtAw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 8EBAD13AD5;
+        Tue, 26 Apr 2022 17:15:06 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id Vk26IZooaGIGFQAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Tue, 26 Apr 2022 17:15:06 +0000
+Message-ID: <37811df5-b0f5-355b-41cf-2e491fb3cd6c@suse.cz>
+Date:   Tue, 26 Apr 2022 19:15:06 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH 5.10 00/86] 5.10.113-rc1 review
 Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Cc:     Marco Elver <elver@google.com>,
+        Matthew WilCox <willy@infradead.org>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-References: <20220426081741.202366502@linuxfoundation.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <20220414085727.643099-1-42.hyeyoo@gmail.com>
+ <20220414085727.643099-9-42.hyeyoo@gmail.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+Subject: Re: [PATCH v2 08/23] mm/slab_common: make kmalloc_large_node()
+ consistent with kmalloc_large()
+In-Reply-To: <20220414085727.643099-9-42.hyeyoo@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/26/22 01:20, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.10.113 release.
-> There are 86 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On 4/14/22 10:57, Hyeonggon Yoo wrote:
+> Move tracepoints into kmalloc_large_node() and add missing flag fix code.
 > 
-> Responses should be made by Thu, 28 Apr 2022 08:17:22 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.113-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
+> Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
 
-On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
+Hm so there's a problem with the tracepoint's caller.
 
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+kmalloc_large() is only called from kmalloc() which is an inline  thus the
+callsite of kmalloc() calls directly kmalloc_large(). So when
+kmalloc_large() does "trace_kmalloc(_RET_IP_, ...)" the _RET_IP_ is the
+callsite of kmalloc(), which is what we want.
+
+But with kmalloc_large_node()...
+
+> ---
+>  mm/slab_common.c |  6 ++++++
+>  mm/slub.c        | 22 ++++------------------
+>  2 files changed, 10 insertions(+), 18 deletions(-)
+> 
+> diff --git a/mm/slab_common.c b/mm/slab_common.c
+> index e72089515030..cf17be8cd9ad 100644
+> --- a/mm/slab_common.c
+> +++ b/mm/slab_common.c
+> @@ -955,6 +955,9 @@ void *kmalloc_large_node(size_t size, gfp_t flags, int node)
+>  	void *ptr = NULL;
+>  	unsigned int order = get_order(size);
+>  
+> +	if (unlikely(flags & GFP_SLAB_BUG_MASK))
+> +		flags = kmalloc_fix_flags(flags);
+> +
+>  	flags |= __GFP_COMP;
+>  	page = alloc_pages_node(node, flags, order);
+>  	if (page) {
+> @@ -966,6 +969,9 @@ void *kmalloc_large_node(size_t size, gfp_t flags, int node)
+>  	ptr = kasan_kmalloc_large(ptr, size, flags);
+>  	/* As ptr might get tagged, call kmemleak hook after KASAN. */
+>  	kmemleak_alloc(ptr, size, 1, flags);
+> +	trace_kmalloc_node(_RET_IP_, ptr,
+> +			   size, PAGE_SIZE << order,
+> +			   flags, node);
+
+... the _RET_IP_ here would be __kmalloc_node() which is not useful.
+
+>  	return ptr;
+>  }
+> diff --git a/mm/slub.c b/mm/slub.c
+> index 640712706f2b..f10a892f1772 100644
+> --- a/mm/slub.c
+> +++ b/mm/slub.c
+> @@ -4396,15 +4396,8 @@ void *__kmalloc_node(size_t size, gfp_t flags, int node)
+>  	struct kmem_cache *s;
+>  	void *ret;
+>  
+> -	if (unlikely(size > KMALLOC_MAX_CACHE_SIZE)) {
+> -		ret = kmalloc_large_node(size, flags, node);
+> -
+> -		trace_kmalloc_node(_RET_IP_, ret,
+> -				   size, PAGE_SIZE << get_order(size),
+> -				   flags, node);
+
+Here it was OK because __kmalloc_node is expanded from something inline
+coming from slab.h.
+
+> -
+> -		return ret;
+> -	}
+> +	if (unlikely(size > KMALLOC_MAX_CACHE_SIZE))
+> +		return kmalloc_large_node(size, flags, node);
+>  
+>  	s = kmalloc_slab(size, flags);
+>  
+> @@ -4861,15 +4854,8 @@ void *__kmalloc_node_track_caller(size_t size, gfp_t gfpflags,
+>  	struct kmem_cache *s;
+>  	void *ret;
+>  
+> -	if (unlikely(size > KMALLOC_MAX_CACHE_SIZE)) {
+> -		ret = kmalloc_large_node(size, gfpflags, node);
+> -
+> -		trace_kmalloc_node(caller, ret,
+> -				   size, PAGE_SIZE << get_order(size),
+> -				   gfpflags, node);
+> -
+> -		return ret;
+> -	}
+> +	if (unlikely(size > KMALLOC_MAX_CACHE_SIZE))
+> +		return kmalloc_large_node(size, gfpflags, node);
+
+And here it even forgets the 'caller'.
+
+>  
+>  	s = kmalloc_slab(size, gfpflags);
+>  
+
