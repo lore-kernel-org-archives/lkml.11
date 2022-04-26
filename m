@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 533E3C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77289C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:23:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347861AbiDZJYz (ORCPT
+        id S1347965AbiDZJZA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:24:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43430 "EHLO
+        Tue, 26 Apr 2022 05:25:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346666AbiDZJBJ (ORCPT
+        with ESMTP id S1346741AbiDZJBL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:01:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1B2440901;
-        Tue, 26 Apr 2022 01:43:22 -0700 (PDT)
+        Tue, 26 Apr 2022 05:01:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6CA1793B2;
+        Tue, 26 Apr 2022 01:43:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4B413B81CED;
-        Tue, 26 Apr 2022 08:43:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0335C385A4;
-        Tue, 26 Apr 2022 08:43:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A7B9611A3;
+        Tue, 26 Apr 2022 08:43:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80783C385A4;
+        Tue, 26 Apr 2022 08:43:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962600;
-        bh=vODgJ8/N38n2QubethSt6gI2SLcVIqnaSD0Dgq0Gjfc=;
+        s=korg; t=1650962608;
+        bh=1kzBCrS/4dNEaFZo2xGXwRPSegciKCrtTqSWBwzICZM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L6vz74UXmwqhC1whxyDdyd+8PTlSm1wZw4weywrXzh/EixhCcgO1MvtYCu1KGQ4GY
-         fR9P1JCiOSQewtnj/8XL/bLZlwi3OA809dNYgGonfxLRFgAEUbr0YqGeKbcJ1c1bve
-         AzreD7b2SrvFzdETS2O2aJP+BR4bQDz3fMn18Guc=
+        b=y+t67OceqFieOhbyOhJqpoUY9KJDOBG1ktfoMk7owRCdC2eU7fJZguMTkPaag+BUn
+         I9nOJkgjub436IwdJwF7GifF6/KyOQRJUKcuK3zz884Pu4/dH+eb7c8OjsDydeb8+M
+         vTuleF2BAV4ocN73GhCRTgLfoQ5Pme4bsFjVndBE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Grzegorz Nitka <grzegorz.nitka@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 027/146] ice: allow creating VFs for !CONFIG_NET_SWITCHDEV
-Date:   Tue, 26 Apr 2022 10:20:22 +0200
-Message-Id: <20220426081750.831045448@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 030/146] ALSA: hda/hdmi: fix warning about PCM count when used with SOF
+Date:   Tue, 26 Apr 2022 10:20:25 +0200
+Message-Id: <20220426081750.914813903@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -53,43 +50,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+From: Kai Vehmanen <kai.vehmanen@linux.intel.com>
 
-[ Upstream commit aacca7a83b9753c562395ef328352dfd8c003c59 ]
+[ Upstream commit c74193787b2f683751a67603fb5f15c7584f355f ]
 
-Currently for !CONFIG_NET_SWITCHDEV kernel builds it is not possible to
-create VFs properly as call to ice_eswitch_configure() returns
--EOPNOTSUPP for us. This is because CONFIG_ICE_SWITCHDEV depends on
-CONFIG_NET_SWITCHDEV.
+With commit 13046370c4d1 ("ALSA: hda/hdmi: let new platforms assign the
+pcm slot dynamically"), old behaviour to consider the HDA pin number,
+when choosing PCM to assign, was dropped.
 
-Change the ice_eswitch_configure() implementation for
-!CONFIG_ICE_SWITCHDEV to return 0 instead -EOPNOTSUPP and let
-ice_ena_vfs() finish its work properly.
+Build on this change and limit the number of PCMs created to number of
+converters (= maximum number of concurrent display/receivers) when
+"mst_no_extra_pcms" and "dyn_pcm_no_legacy" quirks are both set.
 
-CC: Grzegorz Nitka <grzegorz.nitka@intel.com>
-Fixes: 1a1c40df2e80 ("ice: set and release switchdev environment")
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Signed-off-by: Michal Swiatkowski <michal.swiatkowski@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fix the check in hdmi_find_pcm_slot() to ensure only spec->pcm_used
+entries are considered in the search. Elsewhere in the driver
+spec->pcm_used is already checked properly.
+
+Doing this avoids following warning at SOF driver probe for multiple
+machine drivers:
+
+[  112.425297] sof_sdw sof_sdw: hda_dsp_hdmi_build_controls: no
+PCM in topology for HDMI converter 4
+[  112.425298] sof_sdw sof_sdw: hda_dsp_hdmi_build_controls: no
+PCM in topology for HDMI converter 5
+[  112.425299] sof_sdw sof_sdw: hda_dsp_hdmi_build_controls: no
+PCM in topology for HDMI converter 6
+
+Fixes: 13046370c4d1 ("ALSA: hda/hdmi: let new platforms assign the pcm slot dynamically")
+BugLink: https://github.com/thesofproject/linux/issues/2573
+Signed-off-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+Link: https://lore.kernel.org/r/20220414150516.3638283-1-kai.vehmanen@linux.intel.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_eswitch.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/pci/hda/patch_hdmi.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_eswitch.h b/drivers/net/ethernet/intel/ice/ice_eswitch.h
-index bd58d9d2e565..6a413331572b 100644
---- a/drivers/net/ethernet/intel/ice/ice_eswitch.h
-+++ b/drivers/net/ethernet/intel/ice/ice_eswitch.h
-@@ -52,7 +52,7 @@ static inline void ice_eswitch_update_repr(struct ice_vsi *vsi) { }
+diff --git a/sound/pci/hda/patch_hdmi.c b/sound/pci/hda/patch_hdmi.c
+index cf4f277dccdd..26637a695979 100644
+--- a/sound/pci/hda/patch_hdmi.c
++++ b/sound/pci/hda/patch_hdmi.c
+@@ -1387,7 +1387,7 @@ static int hdmi_find_pcm_slot(struct hdmi_spec *spec,
  
- static inline int ice_eswitch_configure(struct ice_pf *pf)
- {
--	return -EOPNOTSUPP;
-+	return 0;
- }
+  last_try:
+ 	/* the last try; check the empty slots in pins */
+-	for (i = 0; i < spec->num_nids; i++) {
++	for (i = 0; i < spec->pcm_used; i++) {
+ 		if (!test_bit(i, &spec->pcm_bitmap))
+ 			return i;
+ 	}
+@@ -2263,7 +2263,9 @@ static int generic_hdmi_build_pcms(struct hda_codec *codec)
+ 	 * dev_num is the device entry number in a pin
+ 	 */
  
- static inline int ice_eswitch_rebuild(struct ice_pf *pf)
+-	if (codec->mst_no_extra_pcms)
++	if (spec->dyn_pcm_no_legacy && codec->mst_no_extra_pcms)
++		pcm_num = spec->num_cvts;
++	else if (codec->mst_no_extra_pcms)
+ 		pcm_num = spec->num_nids;
+ 	else
+ 		pcm_num = spec->num_nids + spec->dev_num - 1;
 -- 
 2.35.1
 
