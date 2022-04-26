@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3850C43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:49:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBA0CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:49:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241474AbiDZIwq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:52:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36584 "EHLO
+        id S236092AbiDZIw4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:52:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345507AbiDZIkq (ORCPT
+        with ESMTP id S1345622AbiDZIjS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:40:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FAEB1541DF;
-        Tue, 26 Apr 2022 01:32:50 -0700 (PDT)
+        Tue, 26 Apr 2022 04:39:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0572F3EA95;
+        Tue, 26 Apr 2022 01:30:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 99761B81CF2;
-        Tue, 26 Apr 2022 08:32:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEC81C385A4;
-        Tue, 26 Apr 2022 08:32:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A71D4617E8;
+        Tue, 26 Apr 2022 08:30:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB169C385A4;
+        Tue, 26 Apr 2022 08:30:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961963;
-        bh=JCay/nRP8oigsNZ1tInS4nlrk6nHs+AHzd/aG7CWa3U=;
+        s=korg; t=1650961830;
+        bh=rb+YQb/RpxOJmP1gc+oK1KQiiyTaws1zPR+KDnqVBNQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pzTeBOV+SFnXQRJTT25VBlFDX0cc0vLk5Zkr2ov15ZEcHkyd+8TnH+SjFFuQDUokG
-         FRpO0w8dzW77dblxnHhsZW+mtXKnO9kEVbV588LtYBXJRsDmtoYrdX+tAGSK6YDA2T
-         W2L383bweIHRrS/ECtbbkymi0I8IjLi8AN4Twvyo=
+        b=QZV3Th1UFCnrNnn3Vj+CROLq8VivixLs26Ea4H+J7YccaxDJWWOyDqYwKJEG7+8E9
+         an1mwatNhKZzGC53qFlQOAUDeAf1FxEyDIi10+jZ4k2hH+goekhLl232cIMJzX78Xs
+         i+mkM8u6CCxLnN2qO1nvTJwnpS/Fythn5s2VhUBw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Alexey Kardashevskiy <aik@ozlabs.ru>,
+        David Gibson <david@gibson.dropbear.id.au>,
+        Frederic Barrat <fbarrat@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 26/86] ipv6: make ip6_rt_gc_expire an atomic_t
-Date:   Tue, 26 Apr 2022 10:20:54 +0200
-Message-Id: <20220426081741.964618835@linuxfoundation.org>
+Subject: [PATCH 5.4 42/62] KVM: PPC: Fix TCE handling for VFIO
+Date:   Tue, 26 Apr 2022 10:21:22 +0200
+Message-Id: <20220426081738.428966768@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
-References: <20220426081741.202366502@linuxfoundation.org>
+In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
+References: <20220426081737.209637816@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,122 +51,292 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Alexey Kardashevskiy <aik@ozlabs.ru>
 
-[ Upstream commit 9cb7c013420f98fa6fd12fc6a5dc055170c108db ]
+[ Upstream commit 26a62b750a4e6364b0393562f66759b1494c3a01 ]
 
-Reads and Writes to ip6_rt_gc_expire always have been racy,
-as syzbot reported lately [1]
+The LoPAPR spec defines a guest visible IOMMU with a variable page size.
+Currently QEMU advertises 4K, 64K, 2M, 16MB pages, a Linux VM picks
+the biggest (16MB). In the case of a passed though PCI device, there is
+a hardware IOMMU which does not support all pages sizes from the above -
+P8 cannot do 2MB and P9 cannot do 16MB. So for each emulated
+16M IOMMU page we may create several smaller mappings ("TCEs") in
+the hardware IOMMU.
 
-There is a possible risk of under-flow, leading
-to unexpected high value passed to fib6_run_gc(),
-although I have not observed this in the field.
+The code wrongly uses the emulated TCE index instead of hardware TCE
+index in error handling. The problem is easier to see on POWER8 with
+multi-level TCE tables (when only the first level is preallocated)
+as hash mode uses real mode TCE hypercalls handlers.
+The kernel starts using indirect tables when VMs get bigger than 128GB
+(depends on the max page order).
+The very first real mode hcall is going to fail with H_TOO_HARD as
+in the real mode we cannot allocate memory for TCEs (we can in the virtual
+mode) but on the way out the code attempts to clear hardware TCEs using
+emulated TCE indexes which corrupts random kernel memory because
+it_offset==1<<59 is subtracted from those indexes and the resulting index
+is out of the TCE table bounds.
 
-Hosts hitting ip6_dst_gc() very hard are under pretty bad
-state anyway.
+This fixes kvmppc_clear_tce() to use the correct TCE indexes.
 
-[1]
-BUG: KCSAN: data-race in ip6_dst_gc / ip6_dst_gc
+While at it, this fixes TCE cache invalidation which uses emulated TCE
+indexes instead of the hardware ones. This went unnoticed as 64bit DMA
+is used these days and VMs map all RAM in one go and only then do DMA
+and this is when the TCE cache gets populated.
 
-read-write to 0xffff888102110744 of 4 bytes by task 13165 on cpu 1:
- ip6_dst_gc+0x1f3/0x220 net/ipv6/route.c:3311
- dst_alloc+0x9b/0x160 net/core/dst.c:86
- ip6_dst_alloc net/ipv6/route.c:344 [inline]
- icmp6_dst_alloc+0xb2/0x360 net/ipv6/route.c:3261
- mld_sendpack+0x2b9/0x580 net/ipv6/mcast.c:1807
- mld_send_cr net/ipv6/mcast.c:2119 [inline]
- mld_ifc_work+0x576/0x800 net/ipv6/mcast.c:2651
- process_one_work+0x3d3/0x720 kernel/workqueue.c:2289
- worker_thread+0x618/0xa70 kernel/workqueue.c:2436
- kthread+0x1a9/0x1e0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30
+Potentially this could slow down mapping, however normally 16MB
+emulated pages are backed by 64K hardware pages so it is one write to
+the "TCE Kill" per 256 updates which is not that bad considering the size
+of the cache (1024 TCEs or so).
 
-read-write to 0xffff888102110744 of 4 bytes by task 11607 on cpu 0:
- ip6_dst_gc+0x1f3/0x220 net/ipv6/route.c:3311
- dst_alloc+0x9b/0x160 net/core/dst.c:86
- ip6_dst_alloc net/ipv6/route.c:344 [inline]
- icmp6_dst_alloc+0xb2/0x360 net/ipv6/route.c:3261
- mld_sendpack+0x2b9/0x580 net/ipv6/mcast.c:1807
- mld_send_cr net/ipv6/mcast.c:2119 [inline]
- mld_ifc_work+0x576/0x800 net/ipv6/mcast.c:2651
- process_one_work+0x3d3/0x720 kernel/workqueue.c:2289
- worker_thread+0x618/0xa70 kernel/workqueue.c:2436
- kthread+0x1a9/0x1e0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30
+Fixes: ca1fc489cfa0 ("KVM: PPC: Book3S: Allow backing bigger guest IOMMU pages with smaller physical pages")
 
-value changed: 0x00000bb3 -> 0x00000ba9
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 0 PID: 11607 Comm: kworker/0:21 Not tainted 5.18.0-rc1-syzkaller-00037-g42e7a03d3bad-dirty #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: mld mld_ifc_work
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Link: https://lore.kernel.org/r/20220413181333.649424-1-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
+Tested-by: David Gibson <david@gibson.dropbear.id.au>
+Reviewed-by: Frederic Barrat <fbarrat@linux.ibm.com>
+Reviewed-by: David Gibson <david@gibson.dropbear.id.au>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220420050840.328223-1-aik@ozlabs.ru
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/netns/ipv6.h |  4 ++--
- net/ipv6/route.c         | 11 ++++++-----
- 2 files changed, 8 insertions(+), 7 deletions(-)
+ arch/powerpc/kvm/book3s_64_vio.c    | 45 +++++++++++++++--------------
+ arch/powerpc/kvm/book3s_64_vio_hv.c | 44 ++++++++++++++--------------
+ 2 files changed, 45 insertions(+), 44 deletions(-)
 
-diff --git a/include/net/netns/ipv6.h b/include/net/netns/ipv6.h
-index 1c0fbe3abf24..f179996c6184 100644
---- a/include/net/netns/ipv6.h
-+++ b/include/net/netns/ipv6.h
-@@ -78,8 +78,8 @@ struct netns_ipv6 {
- 	struct dst_ops		ip6_dst_ops;
- 	rwlock_t		fib6_walker_lock;
- 	spinlock_t		fib6_gc_lock;
--	unsigned int		 ip6_rt_gc_expire;
--	unsigned long		 ip6_rt_last_gc;
-+	atomic_t		ip6_rt_gc_expire;
-+	unsigned long		ip6_rt_last_gc;
- 	unsigned char		flowlabel_has_excl;
- #ifdef CONFIG_IPV6_MULTIPLE_TABLES
- 	bool			fib6_has_custom_rules;
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 776b1b58c5dc..6ace9f0ac22f 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -3192,6 +3192,7 @@ static int ip6_dst_gc(struct dst_ops *ops)
- 	int rt_elasticity = net->ipv6.sysctl.ip6_rt_gc_elasticity;
- 	int rt_gc_timeout = net->ipv6.sysctl.ip6_rt_gc_timeout;
- 	unsigned long rt_last_gc = net->ipv6.ip6_rt_last_gc;
-+	unsigned int val;
- 	int entries;
- 
- 	entries = dst_entries_get_fast(ops);
-@@ -3202,13 +3203,13 @@ static int ip6_dst_gc(struct dst_ops *ops)
- 	    entries <= rt_max_size)
- 		goto out;
- 
--	net->ipv6.ip6_rt_gc_expire++;
--	fib6_run_gc(net->ipv6.ip6_rt_gc_expire, net, true);
-+	fib6_run_gc(atomic_inc_return(&net->ipv6.ip6_rt_gc_expire), net, true);
- 	entries = dst_entries_get_slow(ops);
- 	if (entries < ops->gc_thresh)
--		net->ipv6.ip6_rt_gc_expire = rt_gc_timeout>>1;
-+		atomic_set(&net->ipv6.ip6_rt_gc_expire, rt_gc_timeout >> 1);
- out:
--	net->ipv6.ip6_rt_gc_expire -= net->ipv6.ip6_rt_gc_expire>>rt_elasticity;
-+	val = atomic_read(&net->ipv6.ip6_rt_gc_expire);
-+	atomic_set(&net->ipv6.ip6_rt_gc_expire, val - (val >> rt_elasticity));
- 	return entries > rt_max_size;
+diff --git a/arch/powerpc/kvm/book3s_64_vio.c b/arch/powerpc/kvm/book3s_64_vio.c
+index 03b947429e4d..4518a0f2d6c6 100644
+--- a/arch/powerpc/kvm/book3s_64_vio.c
++++ b/arch/powerpc/kvm/book3s_64_vio.c
+@@ -420,13 +420,19 @@ static void kvmppc_tce_put(struct kvmppc_spapr_tce_table *stt,
+ 	tbl[idx % TCES_PER_PAGE] = tce;
  }
  
-@@ -6363,7 +6364,7 @@ static int __net_init ip6_route_net_init(struct net *net)
- 	net->ipv6.sysctl.ip6_rt_min_advmss = IPV6_MIN_MTU - 20 - 40;
- 	net->ipv6.sysctl.skip_notify_on_dev_down = 0;
+-static void kvmppc_clear_tce(struct mm_struct *mm, struct iommu_table *tbl,
+-		unsigned long entry)
++static void kvmppc_clear_tce(struct mm_struct *mm, struct kvmppc_spapr_tce_table *stt,
++		struct iommu_table *tbl, unsigned long entry)
+ {
+-	unsigned long hpa = 0;
+-	enum dma_data_direction dir = DMA_NONE;
++	unsigned long i;
++	unsigned long subpages = 1ULL << (stt->page_shift - tbl->it_page_shift);
++	unsigned long io_entry = entry << (stt->page_shift - tbl->it_page_shift);
++
++	for (i = 0; i < subpages; ++i) {
++		unsigned long hpa = 0;
++		enum dma_data_direction dir = DMA_NONE;
  
--	net->ipv6.ip6_rt_gc_expire = 30*HZ;
-+	atomic_set(&net->ipv6.ip6_rt_gc_expire, 30*HZ);
+-	iommu_tce_xchg_no_kill(mm, tbl, entry, &hpa, &dir);
++		iommu_tce_xchg_no_kill(mm, tbl, io_entry + i, &hpa, &dir);
++	}
+ }
  
- 	ret = 0;
- out:
+ static long kvmppc_tce_iommu_mapped_dec(struct kvm *kvm,
+@@ -485,6 +491,8 @@ static long kvmppc_tce_iommu_unmap(struct kvm *kvm,
+ 			break;
+ 	}
+ 
++	iommu_tce_kill(tbl, io_entry, subpages);
++
+ 	return ret;
+ }
+ 
+@@ -544,6 +552,8 @@ static long kvmppc_tce_iommu_map(struct kvm *kvm,
+ 			break;
+ 	}
+ 
++	iommu_tce_kill(tbl, io_entry, subpages);
++
+ 	return ret;
+ }
+ 
+@@ -590,10 +600,9 @@ long kvmppc_h_put_tce(struct kvm_vcpu *vcpu, unsigned long liobn,
+ 			ret = kvmppc_tce_iommu_map(vcpu->kvm, stt, stit->tbl,
+ 					entry, ua, dir);
+ 
+-		iommu_tce_kill(stit->tbl, entry, 1);
+ 
+ 		if (ret != H_SUCCESS) {
+-			kvmppc_clear_tce(vcpu->kvm->mm, stit->tbl, entry);
++			kvmppc_clear_tce(vcpu->kvm->mm, stt, stit->tbl, entry);
+ 			goto unlock_exit;
+ 		}
+ 	}
+@@ -669,13 +678,13 @@ long kvmppc_h_put_tce_indirect(struct kvm_vcpu *vcpu,
+ 		 */
+ 		if (get_user(tce, tces + i)) {
+ 			ret = H_TOO_HARD;
+-			goto invalidate_exit;
++			goto unlock_exit;
+ 		}
+ 		tce = be64_to_cpu(tce);
+ 
+ 		if (kvmppc_tce_to_ua(vcpu->kvm, tce, &ua)) {
+ 			ret = H_PARAMETER;
+-			goto invalidate_exit;
++			goto unlock_exit;
+ 		}
+ 
+ 		list_for_each_entry_lockless(stit, &stt->iommu_tables, next) {
+@@ -684,19 +693,15 @@ long kvmppc_h_put_tce_indirect(struct kvm_vcpu *vcpu,
+ 					iommu_tce_direction(tce));
+ 
+ 			if (ret != H_SUCCESS) {
+-				kvmppc_clear_tce(vcpu->kvm->mm, stit->tbl,
+-						entry);
+-				goto invalidate_exit;
++				kvmppc_clear_tce(vcpu->kvm->mm, stt, stit->tbl,
++						 entry + i);
++				goto unlock_exit;
+ 			}
+ 		}
+ 
+ 		kvmppc_tce_put(stt, entry + i, tce);
+ 	}
+ 
+-invalidate_exit:
+-	list_for_each_entry_lockless(stit, &stt->iommu_tables, next)
+-		iommu_tce_kill(stit->tbl, entry, npages);
+-
+ unlock_exit:
+ 	srcu_read_unlock(&vcpu->kvm->srcu, idx);
+ 
+@@ -735,20 +740,16 @@ long kvmppc_h_stuff_tce(struct kvm_vcpu *vcpu,
+ 				continue;
+ 
+ 			if (ret == H_TOO_HARD)
+-				goto invalidate_exit;
++				return ret;
+ 
+ 			WARN_ON_ONCE(1);
+-			kvmppc_clear_tce(vcpu->kvm->mm, stit->tbl, entry);
++			kvmppc_clear_tce(vcpu->kvm->mm, stt, stit->tbl, entry + i);
+ 		}
+ 	}
+ 
+ 	for (i = 0; i < npages; ++i, ioba += (1ULL << stt->page_shift))
+ 		kvmppc_tce_put(stt, ioba >> stt->page_shift, tce_value);
+ 
+-invalidate_exit:
+-	list_for_each_entry_lockless(stit, &stt->iommu_tables, next)
+-		iommu_tce_kill(stit->tbl, ioba >> stt->page_shift, npages);
+-
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(kvmppc_h_stuff_tce);
+diff --git a/arch/powerpc/kvm/book3s_64_vio_hv.c b/arch/powerpc/kvm/book3s_64_vio_hv.c
+index 35fd67b4ceb4..abb49d863329 100644
+--- a/arch/powerpc/kvm/book3s_64_vio_hv.c
++++ b/arch/powerpc/kvm/book3s_64_vio_hv.c
+@@ -251,13 +251,19 @@ extern void iommu_tce_kill_rm(struct iommu_table *tbl,
+ 		tbl->it_ops->tce_kill(tbl, entry, pages, true);
+ }
+ 
+-static void kvmppc_rm_clear_tce(struct kvm *kvm, struct iommu_table *tbl,
+-		unsigned long entry)
++static void kvmppc_rm_clear_tce(struct kvm *kvm, struct kvmppc_spapr_tce_table *stt,
++		struct iommu_table *tbl, unsigned long entry)
+ {
+-	unsigned long hpa = 0;
+-	enum dma_data_direction dir = DMA_NONE;
++	unsigned long i;
++	unsigned long subpages = 1ULL << (stt->page_shift - tbl->it_page_shift);
++	unsigned long io_entry = entry << (stt->page_shift - tbl->it_page_shift);
++
++	for (i = 0; i < subpages; ++i) {
++		unsigned long hpa = 0;
++		enum dma_data_direction dir = DMA_NONE;
+ 
+-	iommu_tce_xchg_no_kill_rm(kvm->mm, tbl, entry, &hpa, &dir);
++		iommu_tce_xchg_no_kill_rm(kvm->mm, tbl, io_entry + i, &hpa, &dir);
++	}
+ }
+ 
+ static long kvmppc_rm_tce_iommu_mapped_dec(struct kvm *kvm,
+@@ -320,6 +326,8 @@ static long kvmppc_rm_tce_iommu_unmap(struct kvm *kvm,
+ 			break;
+ 	}
+ 
++	iommu_tce_kill_rm(tbl, io_entry, subpages);
++
+ 	return ret;
+ }
+ 
+@@ -383,6 +391,8 @@ static long kvmppc_rm_tce_iommu_map(struct kvm *kvm,
+ 			break;
+ 	}
+ 
++	iommu_tce_kill_rm(tbl, io_entry, subpages);
++
+ 	return ret;
+ }
+ 
+@@ -428,10 +438,8 @@ long kvmppc_rm_h_put_tce(struct kvm_vcpu *vcpu, unsigned long liobn,
+ 			ret = kvmppc_rm_tce_iommu_map(vcpu->kvm, stt,
+ 					stit->tbl, entry, ua, dir);
+ 
+-		iommu_tce_kill_rm(stit->tbl, entry, 1);
+-
+ 		if (ret != H_SUCCESS) {
+-			kvmppc_rm_clear_tce(vcpu->kvm, stit->tbl, entry);
++			kvmppc_rm_clear_tce(vcpu->kvm, stt, stit->tbl, entry);
+ 			return ret;
+ 		}
+ 	}
+@@ -571,7 +579,7 @@ long kvmppc_rm_h_put_tce_indirect(struct kvm_vcpu *vcpu,
+ 		ua = 0;
+ 		if (kvmppc_rm_tce_to_ua(vcpu->kvm, tce, &ua, NULL)) {
+ 			ret = H_PARAMETER;
+-			goto invalidate_exit;
++			goto unlock_exit;
+ 		}
+ 
+ 		list_for_each_entry_lockless(stit, &stt->iommu_tables, next) {
+@@ -580,19 +588,15 @@ long kvmppc_rm_h_put_tce_indirect(struct kvm_vcpu *vcpu,
+ 					iommu_tce_direction(tce));
+ 
+ 			if (ret != H_SUCCESS) {
+-				kvmppc_rm_clear_tce(vcpu->kvm, stit->tbl,
+-						entry);
+-				goto invalidate_exit;
++				kvmppc_rm_clear_tce(vcpu->kvm, stt, stit->tbl,
++						entry + i);
++				goto unlock_exit;
+ 			}
+ 		}
+ 
+ 		kvmppc_rm_tce_put(stt, entry + i, tce);
+ 	}
+ 
+-invalidate_exit:
+-	list_for_each_entry_lockless(stit, &stt->iommu_tables, next)
+-		iommu_tce_kill_rm(stit->tbl, entry, npages);
+-
+ unlock_exit:
+ 	if (rmap)
+ 		unlock_rmap(rmap);
+@@ -635,20 +639,16 @@ long kvmppc_rm_h_stuff_tce(struct kvm_vcpu *vcpu,
+ 				continue;
+ 
+ 			if (ret == H_TOO_HARD)
+-				goto invalidate_exit;
++				return ret;
+ 
+ 			WARN_ON_ONCE_RM(1);
+-			kvmppc_rm_clear_tce(vcpu->kvm, stit->tbl, entry);
++			kvmppc_rm_clear_tce(vcpu->kvm, stt, stit->tbl, entry + i);
+ 		}
+ 	}
+ 
+ 	for (i = 0; i < npages; ++i, ioba += (1ULL << stt->page_shift))
+ 		kvmppc_rm_tce_put(stt, ioba >> stt->page_shift, tce_value);
+ 
+-invalidate_exit:
+-	list_for_each_entry_lockless(stit, &stt->iommu_tables, next)
+-		iommu_tce_kill_rm(stit->tbl, ioba >> stt->page_shift, npages);
+-
+ 	return ret;
+ }
+ 
 -- 
 2.35.1
 
