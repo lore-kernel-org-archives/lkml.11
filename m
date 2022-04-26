@@ -2,52 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5510DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:32:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B682C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:33:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347274AbiDZJf4 (ORCPT
+        id S1347444AbiDZJgF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:35:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38472 "EHLO
+        Tue, 26 Apr 2022 05:36:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347934AbiDZJGY (ORCPT
+        with ESMTP id S1347929AbiDZJGX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:06:24 -0400
+        Tue, 26 Apr 2022 05:06:23 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CCD2B9F2B;
-        Tue, 26 Apr 2022 01:47:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3989AB8985;
+        Tue, 26 Apr 2022 01:47:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 40A51B81CF2;
-        Tue, 26 Apr 2022 08:47:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 809C8C385A0;
-        Tue, 26 Apr 2022 08:47:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F1CDCB81A2F;
+        Tue, 26 Apr 2022 08:47:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FD97C385A0;
+        Tue, 26 Apr 2022 08:47:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962855;
-        bh=ZWkaH3pdNqCq29KU1bW73JViEJ2Ey0ONQ/zc49kpLXQ=;
+        s=korg; t=1650962845;
+        bh=euVy0+SWJLyLoXQycColti30EIyblijkVeISgJbnouw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zu7pA4QbVXpiF+yl1q92yl59YHNg5N6ACQTr9n1WX1cXlS00foRM3ZlRqy4bXvNeQ
-         0ExbknhlZTpfBw6hkaHjimeEvnpTtqvpL9Q86IhPgD4K6v1e0gAlkZM6TDPQqyIcC/
-         YVSXpwpi84AID4FiX8pwtWHWJ38Rp57pUtbSwwek=
+        b=x7w6TOSmBg+c4Rf+WNxsVmeoFLmHkZTBsckfamgxgJEPE9yL+DXZNi651wRt+j6js
+         1exWUUrdZTKhTEu/5YLVozu7077CgMGpunhxEqvJ78fbALmbvMYhij9XPpxQFNZrSo
+         EI5VFgVMfx6A1PikAmLJw3sgVXzZTuO1AM8sT7uE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Leo Yan <leo.yan@linaro.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        German Gomez <german.gomez@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        James Clark <james.clark@arm.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        stable@vger.kernel.org,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        Madhavan Srinivasan <maddy@linux.vnet.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 112/146] perf script: Always allow field data_src for auxtrace
-Date:   Tue, 26 Apr 2022 10:21:47 +0200
-Message-Id: <20220426081753.202534399@linuxfoundation.org>
+Subject: [PATCH 5.17 109/146] powerpc/perf: Fix power9 event alternatives
+Date:   Tue, 26 Apr 2022 10:21:44 +0200
+Message-Id: <20220426081753.120091480@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -59,52 +52,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leo Yan <leo.yan@linaro.org>
+From: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
 
-[ Upstream commit c6d8df01064333dcf140eda996abdb60a60e24b3 ]
+[ Upstream commit 0dcad700bb2776e3886fe0a645a4bf13b1e747cd ]
 
-If use command 'perf script -F,+data_src' to dump memory samples with
-Arm SPE trace data, it reports error:
+When scheduling a group of events, there are constraint checks done to
+make sure all events can go in a group. Example, one of the criteria is
+that events in a group cannot use the same PMC. But platform specific
+PMU supports alternative event for some of the event codes. During
+perf_event_open(), if any event group doesn't match constraint check
+criteria, further lookup is done to find alternative event.
 
-  # perf script -F,+data_src
-  Samples for 'dummy:u' event do not have DATA_SRC attribute set. Cannot print 'data_src' field.
+By current design, the array of alternatives events in PMU code is
+expected to be sorted by column 0. This is because in
+find_alternative() the return criteria is based on event code
+comparison. ie. "event < ev_alt[i][0])". This optimisation is there
+since find_alternative() can be called multiple times. In power9 PMU
+code, the alternative event array is not sorted properly and hence there
+is breakage in finding alternative events.
 
-This is because the 'dummy:u' event is absent DATA_SRC bit in its sample
-type, so if a file contains AUX area tracing data then always allow
-field 'data_src' to be selected as an option for perf script.
+To work with existing logic, fix the alternative event array to be
+sorted by column 0 for power9-pmu.c
 
-Fixes: e55ed3423c1bb29f ("perf arm-spe: Synthesize memory event")
-Signed-off-by: Leo Yan <leo.yan@linaro.org>
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: German Gomez <german.gomez@arm.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: James Clark <james.clark@arm.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Leo Yan <leo.yan@linaro.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220417114837.839896-1-leo.yan@linaro.org
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Results:
+
+With alternative events, multiplexing can be avoided. That is, for
+example, in power9 PM_LD_MISS_L1 (0x3e054) has alternative event,
+PM_LD_MISS_L1_ALT (0x400f0). This is an identical event which can be
+programmed in a different PMC.
+
+Before:
+
+ # perf stat -e r3e054,r300fc
+
+ Performance counter stats for 'system wide':
+
+           1057860      r3e054              (50.21%)
+               379      r300fc              (49.79%)
+
+       0.944329741 seconds time elapsed
+
+Since both the events are using PMC3 in this case, they are
+multiplexed here.
+
+After:
+
+ # perf stat -e r3e054,r300fc
+
+ Performance counter stats for 'system wide':
+
+           1006948      r3e054
+               182      r300fc
+
+Fixes: 91e0bd1e6251 ("powerpc/perf: Add PM_LD_MISS_L1 and PM_BR_2PATH to power9 event list")
+Signed-off-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+Reviewed-by: Madhavan Srinivasan <maddy@linux.vnet.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220419114828.89843-1-atrajeev@linux.vnet.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/builtin-script.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/perf/power9-pmu.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/tools/perf/builtin-script.c b/tools/perf/builtin-script.c
-index fa478ddcd18a..537a552fe6b3 100644
---- a/tools/perf/builtin-script.c
-+++ b/tools/perf/builtin-script.c
-@@ -459,7 +459,7 @@ static int evsel__check_attr(struct evsel *evsel, struct perf_session *session)
- 		return -EINVAL;
+diff --git a/arch/powerpc/perf/power9-pmu.c b/arch/powerpc/perf/power9-pmu.c
+index 4b7c17e36100..37b2860db483 100644
+--- a/arch/powerpc/perf/power9-pmu.c
++++ b/arch/powerpc/perf/power9-pmu.c
+@@ -133,11 +133,11 @@ int p9_dd22_bl_ev[] = {
  
- 	if (PRINT_FIELD(DATA_SRC) &&
--	    evsel__check_stype(evsel, PERF_SAMPLE_DATA_SRC, "DATA_SRC", PERF_OUTPUT_DATA_SRC))
-+	    evsel__do_check_stype(evsel, PERF_SAMPLE_DATA_SRC, "DATA_SRC", PERF_OUTPUT_DATA_SRC, allow_user_set))
- 		return -EINVAL;
+ /* Table of alternatives, sorted by column 0 */
+ static const unsigned int power9_event_alternatives[][MAX_ALT] = {
+-	{ PM_INST_DISP,			PM_INST_DISP_ALT },
+-	{ PM_RUN_CYC_ALT,		PM_RUN_CYC },
+-	{ PM_RUN_INST_CMPL_ALT,		PM_RUN_INST_CMPL },
+-	{ PM_LD_MISS_L1,		PM_LD_MISS_L1_ALT },
+ 	{ PM_BR_2PATH,			PM_BR_2PATH_ALT },
++	{ PM_INST_DISP,			PM_INST_DISP_ALT },
++	{ PM_RUN_CYC_ALT,               PM_RUN_CYC },
++	{ PM_LD_MISS_L1,                PM_LD_MISS_L1_ALT },
++	{ PM_RUN_INST_CMPL_ALT,         PM_RUN_INST_CMPL },
+ };
  
- 	if (PRINT_FIELD(WEIGHT) &&
+ static int power9_get_alternatives(u64 event, unsigned int flags, u64 alt[])
 -- 
 2.35.1
 
