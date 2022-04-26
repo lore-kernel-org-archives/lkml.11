@@ -2,48 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73169C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 875DDC43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:27:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347797AbiDZJ3c (ORCPT
+        id S1347840AbiDZJ3k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:29:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38470 "EHLO
+        Tue, 26 Apr 2022 05:29:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347537AbiDZJFz (ORCPT
+        with ESMTP id S1347544AbiDZJF4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:05:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F144F12FECE;
-        Tue, 26 Apr 2022 01:44:54 -0700 (PDT)
+        Tue, 26 Apr 2022 05:05:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FB34158F96;
+        Tue, 26 Apr 2022 01:44:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A1E36B81CFE;
-        Tue, 26 Apr 2022 08:44:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4494C385A0;
-        Tue, 26 Apr 2022 08:44:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AA19B60EC7;
+        Tue, 26 Apr 2022 08:44:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7EAAC385A0;
+        Tue, 26 Apr 2022 08:44:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962692;
-        bh=5xTDvNXwoCQJk1iKzJHupHTTjUGUOgb2bv+ABVlDzXk=;
+        s=korg; t=1650962695;
+        bh=+2Fi1ILVgr/TXV+c7AXwJyqn3eo8rkvAxRa7kZL1PaY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H4klwte6T2nI2vC5kuR+mRGDbi/Mgc1MoinXI8qmLCc/QCu8iJPtvrUUqvrURBBIa
-         h66/442zMLJhlG+4BvST9K1zx69T9ROsZtpkohZ12SSujha7357hqE7ERJVYYFS2S6
-         ADXTCOILiJ0feq//QeRDDp3bNG3rdHRlzAna5f64=
+        b=PjCHrEjeTKm+1DvRDiGYgGk8gKghwbRe+RL7YLjJCc9WJG8bsVuDcCyk5XV/a8mBl
+         0QJwcz1hPx2DhTSGbGXR2kAahXxHVzwP3o8CGQpEoWuK7tU6sWYnhnVrC1iMWIeQDK
+         2pgm53uAYZ9CrffprotqeD4nhThBudq/BVMj4Pm4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nadav Amit <namit@vmware.com>,
-        Peter Xu <peterx@redhat.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Mike Rapoport <rppt@linux.vnet.ibm.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 055/146] userfaultfd: mark uffd_wp regardless of VM_WRITE flag
-Date:   Tue, 26 Apr 2022 10:20:50 +0200
-Message-Id: <20220426081751.615934458@linuxfoundation.org>
+        stable@vger.kernel.org, Zhang Qilong <zhangqilong3@huawei.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 018/146] dmaengine: mediatek:Fix PM usage reference leak of mtk_uart_apdma_alloc_chan_resources
+Date:   Tue, 26 Apr 2022 10:20:13 +0200
+Message-Id: <20220426081750.577997239@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -55,67 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nadav Amit <namit@vmware.com>
+From: zhangqilong <zhangqilong3@huawei.com>
 
-[ Upstream commit 0e88904cb700a9654c9f0d9ca4967e761e7c9ee8 ]
+[ Upstream commit 545b2baac89b859180e51215468c05d85ea8465a ]
 
-When a PTE is set by UFFD operations such as UFFDIO_COPY, the PTE is
-currently only marked as write-protected if the VMA has VM_WRITE flag
-set.  This seems incorrect or at least would be unexpected by the users.
+pm_runtime_get_sync will increment pm usage counter even it failed.
+Forgetting to putting operation will result in reference leak here.
+We fix it:
+1) Replacing it with pm_runtime_resume_and_get to keep usage counter
+   balanced.
+2) Add putting operation before returning error.
 
-Consider the following sequence of operations that are being performed
-on a certain page:
-
-	mprotect(PROT_READ)
-	UFFDIO_COPY(UFFDIO_COPY_MODE_WP)
-	mprotect(PROT_READ|PROT_WRITE)
-
-At this point the user would expect to still get UFFD notification when
-the page is accessed for write, but the user would not get one, since
-the PTE was not marked as UFFD_WP during UFFDIO_COPY.
-
-Fix it by always marking PTEs as UFFD_WP regardless on the
-write-permission in the VMA flags.
-
-Link: https://lkml.kernel.org/r/20220217211602.2769-1-namit@vmware.com
-Fixes: 292924b26024 ("userfaultfd: wp: apply _PAGE_UFFD_WP bit")
-Signed-off-by: Nadav Amit <namit@vmware.com>
-Acked-by: Peter Xu <peterx@redhat.com>
-Cc: Axel Rasmussen <axelrasmussen@google.com>
-Cc: Mike Rapoport <rppt@linux.vnet.ibm.com>
-Cc: Andrea Arcangeli <aarcange@redhat.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes:9135408c3ace4 ("dmaengine: mediatek: Add MediaTek UART APDMA support")
+Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
+Link: https://lore.kernel.org/r/20220319022142.142709-1-zhangqilong3@huawei.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/userfaultfd.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+ drivers/dma/mediatek/mtk-uart-apdma.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/mm/userfaultfd.c b/mm/userfaultfd.c
-index 0780c2a57ff1..885e5adb0168 100644
---- a/mm/userfaultfd.c
-+++ b/mm/userfaultfd.c
-@@ -72,12 +72,15 @@ int mfill_atomic_install_pte(struct mm_struct *dst_mm, pmd_t *dst_pmd,
- 	_dst_pte = pte_mkdirty(_dst_pte);
- 	if (page_in_cache && !vm_shared)
- 		writable = false;
--	if (writable) {
--		if (wp_copy)
--			_dst_pte = pte_mkuffd_wp(_dst_pte);
--		else
--			_dst_pte = pte_mkwrite(_dst_pte);
--	}
-+
-+	/*
-+	 * Always mark a PTE as write-protected when needed, regardless of
-+	 * VM_WRITE, which the user might change.
-+	 */
-+	if (wp_copy)
-+		_dst_pte = pte_mkuffd_wp(_dst_pte);
-+	else if (writable)
-+		_dst_pte = pte_mkwrite(_dst_pte);
+diff --git a/drivers/dma/mediatek/mtk-uart-apdma.c b/drivers/dma/mediatek/mtk-uart-apdma.c
+index 375e7e647df6..a1517ef1f4a0 100644
+--- a/drivers/dma/mediatek/mtk-uart-apdma.c
++++ b/drivers/dma/mediatek/mtk-uart-apdma.c
+@@ -274,7 +274,7 @@ static int mtk_uart_apdma_alloc_chan_resources(struct dma_chan *chan)
+ 	unsigned int status;
+ 	int ret;
  
- 	dst_pte = pte_offset_map_lock(dst_mm, dst_pmd, dst_addr, &ptl);
+-	ret = pm_runtime_get_sync(mtkd->ddev.dev);
++	ret = pm_runtime_resume_and_get(mtkd->ddev.dev);
+ 	if (ret < 0) {
+ 		pm_runtime_put_noidle(chan->device->dev);
+ 		return ret;
+@@ -288,18 +288,21 @@ static int mtk_uart_apdma_alloc_chan_resources(struct dma_chan *chan)
+ 	ret = readx_poll_timeout(readl, c->base + VFF_EN,
+ 			  status, !status, 10, 100);
+ 	if (ret)
+-		return ret;
++		goto err_pm;
+ 
+ 	ret = request_irq(c->irq, mtk_uart_apdma_irq_handler,
+ 			  IRQF_TRIGGER_NONE, KBUILD_MODNAME, chan);
+ 	if (ret < 0) {
+ 		dev_err(chan->device->dev, "Can't request dma IRQ\n");
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto err_pm;
+ 	}
+ 
+ 	if (mtkd->support_33bits)
+ 		mtk_uart_apdma_write(c, VFF_4G_SUPPORT, VFF_4G_SUPPORT_CLR_B);
+ 
++err_pm:
++	pm_runtime_put_noidle(mtkd->ddev.dev);
+ 	return ret;
+ }
  
 -- 
 2.35.1
