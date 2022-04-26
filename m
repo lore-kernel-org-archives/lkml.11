@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A3ADC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:44:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CDE8C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:44:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353125AbiDZQrv (ORCPT
+        id S1353116AbiDZQr6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 12:47:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40382 "EHLO
+        Tue, 26 Apr 2022 12:47:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353127AbiDZQrs (ORCPT
+        with ESMTP id S1353139AbiDZQrs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 12:47:48 -0400
-Received: from mail-ej1-x64a.google.com (mail-ej1-x64a.google.com [IPv6:2a00:1450:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E27BC19146C
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:44:29 -0700 (PDT)
-Received: by mail-ej1-x64a.google.com with SMTP id 13-20020a170906328d00b006982d0888a4so9271381ejw.9
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:44:29 -0700 (PDT)
+Received: from mail-ed1-x54a.google.com (mail-ed1-x54a.google.com [IPv6:2a00:1450:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B30BE194B0E
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:44:34 -0700 (PDT)
+Received: by mail-ed1-x54a.google.com with SMTP id eg38-20020a05640228a600b00425d61d0302so4457200edb.17
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:44:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=nOhCPOtwmNXODLijzTSO8M7zxl8h4T8Tb26PN26Qq0M=;
-        b=LZKEFbB8TPQO7kgBdpU2j4eYblKuzaR2Gi1xLMal4r01UVgMm32iuP23KamR8oVwXU
-         A0Q2g9OquWtPZUG20Kv+3FzPplKg/UvdC5tL/zaE1RpHoBAA4uWQSRvxSviAcVNValYR
-         atgp44CzDP4JuJCWMVAOztuYyp83xVUCTOdMgjPZtZT/I1G2Uvo4gRCy0vOJEAK515qh
-         z6CoYJ90tMK9fDUC0vXsGNpavg5yM2TgwZG7Lr5lZNNSi4LNKj1E9yf0Md2SkqX4WdS2
-         da8nli8jJ9UvooA1jnZ8RZWFp4syKCdzroiMyC5ygmwL4OY2QmTJ4Viu/eSQqGFOkxbA
-         m6yg==
+        bh=n1CPd29HHKe3iLELt5x5zSxX1l0GlMUVKgGqbXsXPsc=;
+        b=Ul2x8GzRzl3HHeVNodduisFS+GirD7ttp4YhxIfHtZ/wAm96wAOKW0A3UvjvpnRyGE
+         dGIlLM7rLl8SOQncEfIhzWSYbpzWK4FIquce/uniGQa5s5Khmoip2xUEMKpML79SS2Nr
+         fjFDfjY+DOzRzBepJfAOlaHW98Dbj79IrR8+XSS3SP0heVjAw3rhmHavoXW9MHBQKoZG
+         wag5mhU0cWEiD2fbJEejotrtfue9XD44tRsrIfEYSpEORbTnfzF4DdsV8zcndXNrqw8l
+         /BmYauMIADOumK6gR7O9BDkDjdwUZNDb4ZrqS03yp+ROELB3q+NAfod4pzAvjwcIAOW/
+         JTFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=nOhCPOtwmNXODLijzTSO8M7zxl8h4T8Tb26PN26Qq0M=;
-        b=Juc/qqSWjmDspgN/0xyq8NtbE53IipLg1cmvB1b/Fg0GDJj85EnjMWYlYH6I8CwMWn
-         oWRuL2HECakou7s0KkeOUwpXDhEeu3Ab6YwcKpcRpF9qkQr0cLPyv0qxZyjknYioPKlH
-         Zx50Cgt3iIqKymIdZnwfFZBVCBMcVa6HgCFXkw6v3yx/g/u/h/s4szdtauIjFVq2Ih0z
-         jA8+fHVo4JFRxi8yhZp0wVX5nqs3e0fM3nGLJtkiy5/zqbSfLHlNtZxKuehWFjb2AToV
-         VB1ztZDpTU90bXkPQl0PAHB6VVdMBmxPORgYeU4FruXdJTWxL449vPC78mxWkqaI2K3k
-         VCkg==
-X-Gm-Message-State: AOAM533v6eQks/lv7Pkrt5uYqyvv/VtdE3ILcjckgPjPGiDbOLiAZRgb
-        QtqBK7+12bE2HIF5Duqx9UCEEZR6j/0=
-X-Google-Smtp-Source: ABdhPJwSu8anY6YzOERS1Ux22TtxUqNV58xGV4qRNVaMI4J71hTHmmbMpjG+iLMULK2X+phM8pbqjHM5UG4=
+        bh=n1CPd29HHKe3iLELt5x5zSxX1l0GlMUVKgGqbXsXPsc=;
+        b=eiqS5UwvYza7zPJ2ZwGJxiTu81Pkib8v0a9KB9fAeeoCXMWhHeSt/TNkTlx961KG+2
+         EINNGEuCmbEUxM5Zu4bkmHHKUcHVJAPb45bX71rBroMUjEjqEFAiI4gwfSt6fYa4X6E0
+         Wcl+9I+yEVo1Yfucyatui5znjvwuoyj8f9fl4O2GrvaEpPQ7tN+BRGSdxIhA7ZC3lbGs
+         xX6hRn17tGKWlJCDpEteWWoUMLHxscbejlxrXH1GasQb5lq1Da0oc6IRBQBadGE/c+dR
+         KLz41AfKuaOPVIYzbRj6pCv+DmN5bs5PgUoJp8uByuCW5hpI9YYeiuNbBSC+9i+CfQuV
+         nw9w==
+X-Gm-Message-State: AOAM531RQ+keJ0YSak5u1TLwfzpK3oJHrewLmxvSDEipvIHfNtE2mpZx
+        pOUYd2fE3BLp5FtST9miu3iJVPk2UXE=
+X-Google-Smtp-Source: ABdhPJyMKZH4q2GhaVIalO1baxoI+dFp4AmHdfwHW+zpAMwIACuxCiWEQZTqeJmEu9W2AFPYPsdcZ1aQv28=
 X-Received: from glider.muc.corp.google.com ([2a00:79e0:15:13:d580:abeb:bf6d:5726])
- (user=glider job=sendgmr) by 2002:a17:907:7815:b0:6ce:5242:1280 with SMTP id
- la21-20020a170907781500b006ce52421280mr22103960ejc.217.1650991468011; Tue, 26
- Apr 2022 09:44:28 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 18:42:32 +0200
+ (user=glider job=sendgmr) by 2002:a05:6402:1385:b0:413:2bc6:4400 with SMTP id
+ b5-20020a056402138500b004132bc64400mr25986634edv.94.1650991473255; Tue, 26
+ Apr 2022 09:44:33 -0700 (PDT)
+Date:   Tue, 26 Apr 2022 18:42:34 +0200
 In-Reply-To: <20220426164315.625149-1-glider@google.com>
-Message-Id: <20220426164315.625149-4-glider@google.com>
+Message-Id: <20220426164315.625149-6-glider@google.com>
 Mime-Version: 1.0
 References: <20220426164315.625149-1-glider@google.com>
 X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
-Subject: [PATCH v3 03/46] kasan: common: adapt to the new prototype of __stack_depot_save()
+Subject: [PATCH v3 05/46] x86: asm: instrument usercopy in get_user() and __put_user_size()
 From:   Alexander Potapenko <glider@google.com>
 To:     glider@google.com
 Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
@@ -91,29 +91,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Pass extra_bits=0, as KASAN does not intend to store additional
-information in the stack handle. No functional change.
+Use hooks from instrumented.h to notify bug detection tools about
+usercopy events in get_user() and put_user_size().
+
+It's still unclear how to instrument put_user(), which assumes that
+instrumentation code doesn't clobber RAX.
 
 Signed-off-by: Alexander Potapenko <glider@google.com>
 ---
-Link: https://linux-review.googlesource.com/id/I932d8f4f11a41b7483e0d57078744cc94697607a
+Link: https://linux-review.googlesource.com/id/Ia9f12bfe5832623250e20f1859fdf5cc485a2fce
 ---
- mm/kasan/common.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/include/asm/uaccess.h | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/mm/kasan/common.c b/mm/kasan/common.c
-index d9079ec11f313..5d244746ac4fe 100644
---- a/mm/kasan/common.c
-+++ b/mm/kasan/common.c
-@@ -36,7 +36,7 @@ depot_stack_handle_t kasan_save_stack(gfp_t flags, bool can_alloc)
- 	unsigned int nr_entries;
+diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uaccess.h
+index f78e2b3501a19..0373d52a0543e 100644
+--- a/arch/x86/include/asm/uaccess.h
++++ b/arch/x86/include/asm/uaccess.h
+@@ -5,6 +5,7 @@
+  * User space memory access functions
+  */
+ #include <linux/compiler.h>
++#include <linux/instrumented.h>
+ #include <linux/kasan-checks.h>
+ #include <linux/string.h>
+ #include <asm/asm.h>
+@@ -99,11 +100,13 @@ extern int __get_user_bad(void);
+ 	int __ret_gu;							\
+ 	register __inttype(*(ptr)) __val_gu asm("%"_ASM_DX);		\
+ 	__chk_user_ptr(ptr);						\
++	instrument_copy_from_user_before((void *)&(x), ptr, sizeof(*(ptr))); \
+ 	asm volatile("call __" #fn "_%P4"				\
+ 		     : "=a" (__ret_gu), "=r" (__val_gu),		\
+ 			ASM_CALL_CONSTRAINT				\
+ 		     : "0" (ptr), "i" (sizeof(*(ptr))));		\
+ 	(x) = (__force __typeof__(*(ptr))) __val_gu;			\
++	instrument_copy_from_user_after((void *)&(x), ptr, sizeof(*(ptr)), 0); \
+ 	__builtin_expect(__ret_gu, 0);					\
+ })
  
- 	nr_entries = stack_trace_save(entries, ARRAY_SIZE(entries), 0);
--	return __stack_depot_save(entries, nr_entries, flags, can_alloc);
-+	return __stack_depot_save(entries, nr_entries, 0, flags, can_alloc);
- }
+@@ -248,7 +251,9 @@ extern void __put_user_nocheck_8(void);
  
- void kasan_set_track(struct kasan_track *track, gfp_t flags)
+ #define __put_user_size(x, ptr, size, label)				\
+ do {									\
++	__typeof__(*(ptr)) __pus_val = x;				\
+ 	__chk_user_ptr(ptr);						\
++	instrument_copy_to_user(ptr, &(__pus_val), size);		\
+ 	switch (size) {							\
+ 	case 1:								\
+ 		__put_user_goto(x, ptr, "b", "iq", label);		\
+@@ -286,6 +291,7 @@ do {									\
+ #define __get_user_size(x, ptr, size, label)				\
+ do {									\
+ 	__chk_user_ptr(ptr);						\
++	instrument_copy_from_user_before((void *)&(x), ptr, size);	\
+ 	switch (size) {							\
+ 	case 1:	{							\
+ 		unsigned char x_u8__;					\
+@@ -305,6 +311,7 @@ do {									\
+ 	default:							\
+ 		(x) = __get_user_bad();					\
+ 	}								\
++	instrument_copy_from_user_after((void *)&(x), ptr, size, 0);	\
+ } while (0)
+ 
+ #define __get_user_asm(x, addr, itype, ltype, label)			\
 -- 
 2.36.0.rc2.479.g8af0fa9b8e-goog
 
