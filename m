@@ -2,62 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8944FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 14:33:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 556B2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 14:33:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351670AbiDZOgO (ORCPT
+        id S1351327AbiDZOgT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 10:36:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57064 "EHLO
+        Tue, 26 Apr 2022 10:36:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351172AbiDZOgF (ORCPT
+        with ESMTP id S1351647AbiDZOgG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 10:36:05 -0400
+        Tue, 26 Apr 2022 10:36:06 -0400
 Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CAA8DB716A;
-        Tue, 26 Apr 2022 07:32:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8DAB9B7C62;
+        Tue, 26 Apr 2022 07:32:58 -0700 (PDT)
 Received: from uucp (helo=alpha)
         by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1njMFK-0004FF-00; Tue, 26 Apr 2022 16:32:54 +0200
+        id 1njMFK-0004FF-05; Tue, 26 Apr 2022 16:32:54 +0200
 Received: by alpha.franken.de (Postfix, from userid 1000)
-        id D0944C01C5; Tue, 26 Apr 2022 16:30:11 +0200 (CEST)
-Date:   Tue, 26 Apr 2022 16:30:11 +0200
+        id CDD39C01C7; Tue, 26 Apr 2022 16:32:45 +0200 (CEST)
+Date:   Tue, 26 Apr 2022 16:32:45 +0200
 From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Yuanjun Gong <ruc_gongyuanjun@163.com>
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com, linux-mips@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH] MIPS: dts: align SPI NOR node name with dtschema
-Message-ID: <20220426143011.GA18291@alpha.franken.de>
-References: <20220407143328.295762-1-krzysztof.kozlowski@linaro.org>
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] mips: cpc: Fix refcount leak in
+ mips_cpc_default_phys_base
+Message-ID: <20220426143245.GF18291@alpha.franken.de>
+References: <20220407042657.28614-1-ruc_gongyuanjun@163.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220407143328.295762-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220407042657.28614-1-ruc_gongyuanjun@163.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 07, 2022 at 04:33:28PM +0200, Krzysztof Kozlowski wrote:
-> The node names should be generic and SPI NOR dtschema expects "flash".
+On Thu, Apr 07, 2022 at 12:26:57PM +0800, Yuanjun Gong wrote:
+> From: Gong Yuanjun <ruc_gongyuanjun@163.com>
 > 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Add the missing of_node_put() to release the refcount incremented
+> by of_find_compatible_node().
+> 
+> Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
 > ---
->  arch/mips/boot/dts/brcm/bcm97358svmb.dts                   | 2 +-
->  arch/mips/boot/dts/brcm/bcm97360svmb.dts                   | 2 +-
->  arch/mips/boot/dts/brcm/bcm97425svmb.dts                   | 2 +-
->  arch/mips/boot/dts/ralink/gardena_smart_gateway_mt7688.dts | 2 +-
->  arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc1.dts         | 2 +-
->  arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc2.dts         | 2 +-
->  6 files changed, 6 insertions(+), 6 deletions(-)
+>  arch/mips/kernel/mips-cpc.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/arch/mips/kernel/mips-cpc.c b/arch/mips/kernel/mips-cpc.c
+> index 17aff13cd7ce..3e386f7e1545 100644
+> --- a/arch/mips/kernel/mips-cpc.c
+> +++ b/arch/mips/kernel/mips-cpc.c
+> @@ -28,6 +28,7 @@ phys_addr_t __weak mips_cpc_default_phys_base(void)
+>  	cpc_node = of_find_compatible_node(of_root, NULL, "mti,mips-cpc");
+>  	if (cpc_node) {
+>  		err = of_address_to_resource(cpc_node, 0, &res);
+> +		of_node_put(cpc_node);
+>  		if (!err)
+>  			return res.start;
+>  	}
+> -- 
+> 2.17.1
 
 applied to mips-next.
 
