@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AA12C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58D38C43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:24:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349084AbiDZJ01 (ORCPT
+        id S1346883AbiDZJ1a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:26:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44754 "EHLO
+        Tue, 26 Apr 2022 05:27:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345874AbiDZJCp (ORCPT
+        with ESMTP id S1346969AbiDZJFJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:02:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B158CC3E2C;
-        Tue, 26 Apr 2022 01:43:40 -0700 (PDT)
+        Tue, 26 Apr 2022 05:05:09 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BFBAF1368;
+        Tue, 26 Apr 2022 01:44:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E7241B81C76;
-        Tue, 26 Apr 2022 08:43:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A5FDC385A0;
-        Tue, 26 Apr 2022 08:43:37 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B134ACE1BD6;
+        Tue, 26 Apr 2022 08:44:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D69BC385A4;
+        Tue, 26 Apr 2022 08:43:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962617;
-        bh=nyzb5SSmK/jZCYBddQRdW43tebhvDVL3O1UKfr9EU3w=;
+        s=korg; t=1650962639;
+        bh=AxCq9Te8CDy//AGhRuI/uCoayWcvoqpu3VgSru80L8Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RA0DX9TxMNHrEJbnVT+RLRCJF0prFrNgz0cd5HCVqRE8I4zsOnWqHd2C35kIZZyjn
-         4mf7QyR/jNOa7fL27W8oQ6SP1DcOwGdIkqaU7m2xJFvR5dYVxwhSYV3B+MWX4vh2IL
-         RIGAjxBcHbjBMZxzEs0Xh+rrULj7xcNmm62ux70M=
+        b=sPNj2AtAJi+C61Vp6ox+qj8Hla9EaorMZ3I8qiQjiUtxvpT1pINxZTt2GQ616EsIH
+         s/gqDD9+DR6OipkYTnRqXcuYlyJN2lSJdsuw1C5IOXys5jqfoIYoXXBJnUu99t7SUE
+         FGdKokvm00gKmK0ttyuTPWk8e/BibHa3NRgUot+8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Amit Pundir <amit.pundir@linaro.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 015/146] ASoC: codecs: wcd934x: do not switch off SIDO Buck when codec is in use
-Date:   Tue, 26 Apr 2022 10:20:10 +0200
-Message-Id: <20220426081750.493500101@linuxfoundation.org>
+Subject: [PATCH 5.17 039/146] ipv6: make ip6_rt_gc_expire an atomic_t
+Date:   Tue, 26 Apr 2022 10:20:34 +0200
+Message-Id: <20220426081751.167876212@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -51,83 +52,122 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit db6dd1bee63d1d88fbddfe07af800af5948ac28e ]
+[ Upstream commit 9cb7c013420f98fa6fd12fc6a5dc055170c108db ]
 
-SIDO(Single-Inductor Dual-Ouput) Buck powers up both analog and digital
-circuits along with internal memory, powering off this is the last thing
-that codec should do when going to very low power.
+Reads and Writes to ip6_rt_gc_expire always have been racy,
+as syzbot reported lately [1]
 
-Current code was powering off this Buck if there are no users of sysclk,
-which is not correct. Powering off this buck will result in no register access.
-This code path was never tested until recently after adding pm support
-in SoundWire controller. Fix this by removing the buck poweroff when the
-codec is active and also the code that is not used.
+There is a possible risk of under-flow, leading
+to unexpected high value passed to fib6_run_gc(),
+although I have not observed this in the field.
 
-Without this patch all the read/write transactions will never complete and
-results in SLIMBus Errors like:
+Hosts hitting ip6_dst_gc() very hard are under pretty bad
+state anyway.
 
-qcom,slim-ngd qcom,slim-ngd.1: Tx:MT:0x0, MC:0x60, LA:0xcf failed:-110
-wcd934x-codec wcd934x-codec.1.auto: ASoC: error at soc_component_read_no_lock
-	on wcd934x-codec.1.auto for register: [0x00000d05] -110
-qcom,slim-ngd-ctrl 171c0000.slim: Error Interrupt received 0x82000000
+[1]
+BUG: KCSAN: data-race in ip6_dst_gc / ip6_dst_gc
 
-Reported-by: Amit Pundir <amit.pundir@linaro.org>
-Fixes: a61f3b4f476e ("ASoC: wcd934x: add support to wcd9340/wcd9341 codec")
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Tested-by: Amit Pundir <amit.pundir@linaro.org>
-Link: https://lore.kernel.org/r/20220407094313.2880-1-srinivas.kandagatla@linaro.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+read-write to 0xffff888102110744 of 4 bytes by task 13165 on cpu 1:
+ ip6_dst_gc+0x1f3/0x220 net/ipv6/route.c:3311
+ dst_alloc+0x9b/0x160 net/core/dst.c:86
+ ip6_dst_alloc net/ipv6/route.c:344 [inline]
+ icmp6_dst_alloc+0xb2/0x360 net/ipv6/route.c:3261
+ mld_sendpack+0x2b9/0x580 net/ipv6/mcast.c:1807
+ mld_send_cr net/ipv6/mcast.c:2119 [inline]
+ mld_ifc_work+0x576/0x800 net/ipv6/mcast.c:2651
+ process_one_work+0x3d3/0x720 kernel/workqueue.c:2289
+ worker_thread+0x618/0xa70 kernel/workqueue.c:2436
+ kthread+0x1a9/0x1e0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30
+
+read-write to 0xffff888102110744 of 4 bytes by task 11607 on cpu 0:
+ ip6_dst_gc+0x1f3/0x220 net/ipv6/route.c:3311
+ dst_alloc+0x9b/0x160 net/core/dst.c:86
+ ip6_dst_alloc net/ipv6/route.c:344 [inline]
+ icmp6_dst_alloc+0xb2/0x360 net/ipv6/route.c:3261
+ mld_sendpack+0x2b9/0x580 net/ipv6/mcast.c:1807
+ mld_send_cr net/ipv6/mcast.c:2119 [inline]
+ mld_ifc_work+0x576/0x800 net/ipv6/mcast.c:2651
+ process_one_work+0x3d3/0x720 kernel/workqueue.c:2289
+ worker_thread+0x618/0xa70 kernel/workqueue.c:2436
+ kthread+0x1a9/0x1e0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30
+
+value changed: 0x00000bb3 -> 0x00000ba9
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 0 PID: 11607 Comm: kworker/0:21 Not tainted 5.18.0-rc1-syzkaller-00037-g42e7a03d3bad-dirty #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: mld mld_ifc_work
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Link: https://lore.kernel.org/r/20220413181333.649424-1-eric.dumazet@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wcd934x.c | 26 +-------------------------
- 1 file changed, 1 insertion(+), 25 deletions(-)
+ include/net/netns/ipv6.h |  4 ++--
+ net/ipv6/route.c         | 11 ++++++-----
+ 2 files changed, 8 insertions(+), 7 deletions(-)
 
-diff --git a/sound/soc/codecs/wcd934x.c b/sound/soc/codecs/wcd934x.c
-index 1e75e93cf28f..6298ebe96e94 100644
---- a/sound/soc/codecs/wcd934x.c
-+++ b/sound/soc/codecs/wcd934x.c
-@@ -1274,29 +1274,7 @@ static int wcd934x_set_sido_input_src(struct wcd934x_codec *wcd, int sido_src)
- 	if (sido_src == wcd->sido_input_src)
- 		return 0;
+diff --git a/include/net/netns/ipv6.h b/include/net/netns/ipv6.h
+index 6bd7e5a85ce7..ff82983b7ab4 100644
+--- a/include/net/netns/ipv6.h
++++ b/include/net/netns/ipv6.h
+@@ -75,8 +75,8 @@ struct netns_ipv6 {
+ 	struct list_head	fib6_walkers;
+ 	rwlock_t		fib6_walker_lock;
+ 	spinlock_t		fib6_gc_lock;
+-	unsigned int		 ip6_rt_gc_expire;
+-	unsigned long		 ip6_rt_last_gc;
++	atomic_t		ip6_rt_gc_expire;
++	unsigned long		ip6_rt_last_gc;
+ 	unsigned char		flowlabel_has_excl;
+ #ifdef CONFIG_IPV6_MULTIPLE_TABLES
+ 	bool			fib6_has_custom_rules;
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index da1bf48e7937..1caeb1ef2095 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -3303,6 +3303,7 @@ static int ip6_dst_gc(struct dst_ops *ops)
+ 	int rt_elasticity = net->ipv6.sysctl.ip6_rt_gc_elasticity;
+ 	int rt_gc_timeout = net->ipv6.sysctl.ip6_rt_gc_timeout;
+ 	unsigned long rt_last_gc = net->ipv6.ip6_rt_last_gc;
++	unsigned int val;
+ 	int entries;
  
--	if (sido_src == SIDO_SOURCE_INTERNAL) {
--		regmap_update_bits(wcd->regmap, WCD934X_ANA_BUCK_CTL,
--				   WCD934X_ANA_BUCK_HI_ACCU_EN_MASK, 0);
--		usleep_range(100, 110);
--		regmap_update_bits(wcd->regmap, WCD934X_ANA_BUCK_CTL,
--				   WCD934X_ANA_BUCK_HI_ACCU_PRE_ENX_MASK, 0x0);
--		usleep_range(100, 110);
--		regmap_update_bits(wcd->regmap, WCD934X_ANA_RCO,
--				   WCD934X_ANA_RCO_BG_EN_MASK, 0);
--		usleep_range(100, 110);
--		regmap_update_bits(wcd->regmap, WCD934X_ANA_BUCK_CTL,
--				   WCD934X_ANA_BUCK_PRE_EN1_MASK,
--				   WCD934X_ANA_BUCK_PRE_EN1_ENABLE);
--		usleep_range(100, 110);
--		regmap_update_bits(wcd->regmap, WCD934X_ANA_BUCK_CTL,
--				   WCD934X_ANA_BUCK_PRE_EN2_MASK,
--				   WCD934X_ANA_BUCK_PRE_EN2_ENABLE);
--		usleep_range(100, 110);
--		regmap_update_bits(wcd->regmap, WCD934X_ANA_BUCK_CTL,
--				   WCD934X_ANA_BUCK_HI_ACCU_EN_MASK,
--				   WCD934X_ANA_BUCK_HI_ACCU_ENABLE);
--		usleep_range(100, 110);
--	} else if (sido_src == SIDO_SOURCE_RCO_BG) {
-+	if (sido_src == SIDO_SOURCE_RCO_BG) {
- 		regmap_update_bits(wcd->regmap, WCD934X_ANA_RCO,
- 				   WCD934X_ANA_RCO_BG_EN_MASK,
- 				   WCD934X_ANA_RCO_BG_ENABLE);
-@@ -1382,8 +1360,6 @@ static int wcd934x_disable_ana_bias_and_syclk(struct wcd934x_codec *wcd)
- 	regmap_update_bits(wcd->regmap, WCD934X_CLK_SYS_MCLK_PRG,
- 			   WCD934X_EXT_CLK_BUF_EN_MASK |
- 			   WCD934X_MCLK_EN_MASK, 0x0);
--	wcd934x_set_sido_input_src(wcd, SIDO_SOURCE_INTERNAL);
--
- 	regmap_update_bits(wcd->regmap, WCD934X_ANA_BIAS,
- 			   WCD934X_ANA_BIAS_EN_MASK, 0);
- 	regmap_update_bits(wcd->regmap, WCD934X_ANA_BIAS,
+ 	entries = dst_entries_get_fast(ops);
+@@ -3313,13 +3314,13 @@ static int ip6_dst_gc(struct dst_ops *ops)
+ 	    entries <= rt_max_size)
+ 		goto out;
+ 
+-	net->ipv6.ip6_rt_gc_expire++;
+-	fib6_run_gc(net->ipv6.ip6_rt_gc_expire, net, true);
++	fib6_run_gc(atomic_inc_return(&net->ipv6.ip6_rt_gc_expire), net, true);
+ 	entries = dst_entries_get_slow(ops);
+ 	if (entries < ops->gc_thresh)
+-		net->ipv6.ip6_rt_gc_expire = rt_gc_timeout>>1;
++		atomic_set(&net->ipv6.ip6_rt_gc_expire, rt_gc_timeout >> 1);
+ out:
+-	net->ipv6.ip6_rt_gc_expire -= net->ipv6.ip6_rt_gc_expire>>rt_elasticity;
++	val = atomic_read(&net->ipv6.ip6_rt_gc_expire);
++	atomic_set(&net->ipv6.ip6_rt_gc_expire, val - (val >> rt_elasticity));
+ 	return entries > rt_max_size;
+ }
+ 
+@@ -6514,7 +6515,7 @@ static int __net_init ip6_route_net_init(struct net *net)
+ 	net->ipv6.sysctl.ip6_rt_min_advmss = IPV6_MIN_MTU - 20 - 40;
+ 	net->ipv6.sysctl.skip_notify_on_dev_down = 0;
+ 
+-	net->ipv6.ip6_rt_gc_expire = 30*HZ;
++	atomic_set(&net->ipv6.ip6_rt_gc_expire, 30*HZ);
+ 
+ 	ret = 0;
+ out:
 -- 
 2.35.1
 
