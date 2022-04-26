@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31906C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:20:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 187B1C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:23:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243262AbiDZJX2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:23:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56738 "EHLO
+        id S1347146AbiDZJXf (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:23:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346033AbiDZI7T (ORCPT
+        with ESMTP id S1346049AbiDZI7Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:59:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 895E427B03;
-        Tue, 26 Apr 2022 01:42:59 -0700 (PDT)
+        Tue, 26 Apr 2022 04:59:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 354513AA5D;
+        Tue, 26 Apr 2022 01:43:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BF0A0B81D2A;
-        Tue, 26 Apr 2022 08:42:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CB27C385AE;
-        Tue, 26 Apr 2022 08:42:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 38EF761338;
+        Tue, 26 Apr 2022 08:43:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4060EC385AE;
+        Tue, 26 Apr 2022 08:42:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962576;
-        bh=NVsQUUF/tJdoP9yIQoTGPFAQXLh4WYEGBYuFJEQX1SE=;
+        s=korg; t=1650962579;
+        bh=gylZe0XJUpkh0pl4BBjl+oWL65orNRhQm0YgsYC6tBQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1sviPl0r/pFiJiadonEAwNkxPxl1WKc+bzTKjH0xsh2PZSxxy+lws4zsWmSTZpKOg
-         fFJX4QaiYcSALT98xtNC0cj4O9To7Lq+ZmRZvuENqxQOqioHKLsXrtscJsaGfalzjY
-         t/rYzMvW5841Q2Jd0zPtkJnVUBHpNV8FBIc/MgxY=
+        b=ZZU4hwe/1n8xCTQsNy1J7nZe8WNzp9dUx59HIeVbdIIpao04U83RCpBYOi0/qs+YY
+         /N9ms+/rTSYxuUwWt1YMtcqv20x8xeu6s3g4WuYt7004H8Kq6hXJkXHwgJTbYFsYAb
+         mB3VfUoKpxB8bU0aLDiG/FQTM1Aycoh5YlLuDEnM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+70e777a39907d6d5fd0a@syzkaller.appspotmail.com,
+        stable@vger.kernel.org, Maurizio Avogadro <mavoga@gmail.com>,
         Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.17 008/146] ALSA: usb-audio: Clear MIDI port active flag after draining
-Date:   Tue, 26 Apr 2022 10:20:03 +0200
-Message-Id: <20220426081750.297596353@linuxfoundation.org>
+Subject: [PATCH 5.17 009/146] ALSA: usb-audio: add mapping for MSI MAG X570S Torpedo MAX.
+Date:   Tue, 26 Apr 2022 10:20:04 +0200
+Message-Id: <20220426081750.325268107@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -49,41 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Maurizio Avogadro <mavoga@gmail.com>
 
-commit 0665886ad1392e6b5bae85d7a6ccbed48dca1522 upstream.
+commit 4ddef9c4d70aae0c9029bdec7c3f7f1c1c51ff8c upstream.
 
-When a rawmidi output stream is closed, it calls the drain at first,
-then does trigger-off only when the drain returns -ERESTARTSYS as a
-fallback.  It implies that each driver should turn off the stream
-properly after the drain.  Meanwhile, USB-audio MIDI interface didn't
-change the port->active flag after the drain.  This may leave the
-output work picking up the port that is closed right now, which
-eventually leads to a use-after-free for the already released rawmidi
-object.
+The USB audio device 0db0:a073 based on the Realtek ALC4080 chipset
+exposes all playback volume controls as "PCM". This makes
+distinguishing the individual functions hard.
+The mapping already adopted for device 0db0:419c based on the same
+chipset fixes the issue, apply it for this device too.
 
-This patch fixes the bug by properly clearing the port->active flag
-after the output drain.
-
-Reported-by: syzbot+70e777a39907d6d5fd0a@syzkaller.appspotmail.com
+Signed-off-by: Maurizio Avogadro <mavoga@gmail.com>
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/00000000000011555605dceaff03@google.com
-Link: https://lore.kernel.org/r/20220420130247.22062-1-tiwai@suse.de
+Link: https://lore.kernel.org/r/Yl1ykPaGgsFf3SnW@ryzen
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/usb/midi.c |    1 +
- 1 file changed, 1 insertion(+)
+ sound/usb/mixer_maps.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/sound/usb/midi.c
-+++ b/sound/usb/midi.c
-@@ -1194,6 +1194,7 @@ static void snd_usbmidi_output_drain(str
- 		} while (drain_urbs && timeout);
- 		finish_wait(&ep->drain_wait, &wait);
- 	}
-+	port->active = 0;
- 	spin_unlock_irq(&ep->buffer_lock);
- }
- 
+--- a/sound/usb/mixer_maps.c
++++ b/sound/usb/mixer_maps.c
+@@ -599,6 +599,10 @@ static const struct usbmix_ctl_map usbmi
+ 		.id = USB_ID(0x0db0, 0x419c),
+ 		.map = msi_mpg_x570s_carbon_max_wifi_alc4080_map,
+ 	},
++	{	/* MSI MAG X570S Torpedo Max */
++		.id = USB_ID(0x0db0, 0xa073),
++		.map = msi_mpg_x570s_carbon_max_wifi_alc4080_map,
++	},
+ 	{	/* MSI TRX40 */
+ 		.id = USB_ID(0x0db0, 0x543d),
+ 		.map = trx40_mobo_map,
 
 
