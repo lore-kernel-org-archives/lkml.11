@@ -2,95 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86D62C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:33:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35524C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:34:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242157AbiDZKg7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 06:36:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33588 "EHLO
+        id S235046AbiDZKhI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 06:37:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345643AbiDZKgo (ORCPT
+        with ESMTP id S1349093AbiDZKgp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 06:36:44 -0400
-Received: from ixit.cz (ip-94-112-206-30.net.upcbroadband.cz [94.112.206.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 550A212096;
-        Tue, 26 Apr 2022 03:19:17 -0700 (PDT)
-Received: from newone.lan (_gateway [10.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ixit.cz (Postfix) with ESMTPSA id 4677924CD1;
-        Tue, 26 Apr 2022 12:19:15 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ixit.cz; s=dkim;
-        t=1650968355;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gMico/kd/KLGo7kE0Bi8wMvNY3EFFukpNPtGHdicAV8=;
-        b=wXd6SlQ5CH5SoBjd0JNA7xfo3IwCPjZ5M9tTzYhEL7WPRGVaqcexKGmw1Z5EeoMvhmG62x
-        +tVH2HdkXNJq/b9B26AdqQA7iQDWxPYTCDCp1o/yIMuH9o8nKKj0skyyMbhgcJvgwNvreS
-        CkalUN1dO5sY3faHagUpk2uBBzlgppI=
-From:   David Heidelberg <david@ixit.cz>
-To:     Manivannan Sadhasivam <mani@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     David Heidelberg <david@ixit.cz>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: [PATCH v4 2/2] dt-bindings: mailbox: qcom-ipcc: add missing properties into example
-Date:   Tue, 26 Apr 2022 12:18:37 +0200
-Message-Id: <20220426101837.16201-2-david@ixit.cz>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220426101837.16201-1-david@ixit.cz>
-References: <20220426101837.16201-1-david@ixit.cz>
+        Tue, 26 Apr 2022 06:36:45 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2066.outbound.protection.outlook.com [40.107.244.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4862E192A5;
+        Tue, 26 Apr 2022 03:19:44 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YSO6eVPQtfc4jTMyill3zraPxdp1wi8iXalQgc/LBPhXKHVP8fnImfgd+Ukryo7i3I64VObZRwOi2ddfJPgsqU66pd7JUpV2c/dd+y/wtYAleWROA9nOgMLOx5zTktXt2kOPDcZBGXK5uuh8zvxwKWCYzNcGcwUz5ZdPKExWNS5oHCjaC6+/O9koqTakE7p8LI3Lu0wCAUyYD0+52ZBAICAzltoWaet53h4EPnIQktQT6ZAVM+mmt5KrUbVcqiCO3cEIxLbXHY2V3r7sh3qdjShPw49z0lI37B3C/CT2Cn+KmV+IwAV6bWNn/2Re1y6CLyUoiUaY2wP2G71XH7Uo6A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=284CNhf9dO+V94BgmGmgU9geH+kQMWBExW+L0FWyaIw=;
+ b=KXeE11/g+ldrKvFOsgednzarqO/FVKS2d4RfjD6A15MtVfPtY/A4e3sZUiLAzwWrVkd6tyBpuCOxw0IDdzgMUJc4yWMbnq0BOf5kgQtPws2stHM4ZKVtlaPvXiyLWV1RMFGP/jGoRK/qYr6BeWNB42p+t0PlTbDt0fHLkw3cXMCENH4qejmktn+oz5U+UXHQ8EXpwknO7grri2cfC7eVXX6Q4qJT2hs8wKx9MHlQx5/Pw3p8ZpQKfZ0mAcF7WgOJFfcwk8HW9Y0yNBDdCScp/O6gnT3eeSwm1W4u/xfYZR+Shv1OezAIOhPIqOo/q5vTsWgc07h+IaJcpywqX5pksA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.236) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
+ (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
+ (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=284CNhf9dO+V94BgmGmgU9geH+kQMWBExW+L0FWyaIw=;
+ b=otApJaycZ6MnWqDb7uhZf+UKpkEU41y+oyCJMj8roIwTtKHlvaBVs0XS+76jqh4Uwd173N8lfFejQyHMvUMDllT4QfTKOxZgxByqTFATZlxr5SH1ssasM8D6/44S55ysNV9HBrIOWwSoFr1wNuKEDqWFU9AtRNga8y9mE9ZoqUxa8AWZgrEqHAhSoy7bFbnHV5eqwBlJWVi8uK7yScps3SAui+79QfhG58SbuaCcJp6Lg+LWdc3IXny80yiF6dRfWaYzepwHypaESVMv8+6uL7wSQZMFsIkdlAZycvddNCIcpTlANBZOUXlOwDtwTW/IHa3xSVIJj6TjkoKbw9khCg==
+Received: from MW4PR03CA0221.namprd03.prod.outlook.com (2603:10b6:303:b9::16)
+ by SJ0PR12MB5455.namprd12.prod.outlook.com (2603:10b6:a03:3ba::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Tue, 26 Apr
+ 2022 10:19:43 +0000
+Received: from CO1NAM11FT019.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:b9:cafe::6) by MW4PR03CA0221.outlook.office365.com
+ (2603:10b6:303:b9::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14 via Frontend
+ Transport; Tue, 26 Apr 2022 10:19:42 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.236) by
+ CO1NAM11FT019.mail.protection.outlook.com (10.13.175.57) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5186.14 via Frontend Transport; Tue, 26 Apr 2022 10:19:42 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by DRHQMAIL109.nvidia.com
+ (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Tue, 26 Apr
+ 2022 10:19:42 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail203.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 26 Apr
+ 2022 03:19:41 -0700
+Received: from BUILDSERVER-IO-L4T.nvidia.com (10.127.8.14) by mail.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server id 15.2.986.22 via Frontend
+ Transport; Tue, 26 Apr 2022 03:19:37 -0700
+From:   Akhil R <akhilrajeev@nvidia.com>
+To:     <devicetree@vger.kernel.org>, <dmaengine@vger.kernel.org>,
+        <jonathanh@nvidia.com>, <kyarlagadda@nvidia.com>,
+        <ldewangan@nvidia.com>, <linux-kernel@vger.kernel.org>,
+        <linux-tegra@vger.kernel.org>, <p.zabel@pengutronix.de>,
+        <rgumasta@nvidia.com>, <robh+dt@kernel.org>,
+        <thierry.reding@gmail.com>, <nathan@kernel.org>,
+        <vkoul@kernel.org>, <dan.carpenter@oracle.com>
+CC:     <akhilrajeev@nvidia.com>
+Subject: [PATCH v2 2/2] dmaengine: tegra: Remove unused switch case
+Date:   Tue, 26 Apr 2022 15:49:13 +0530
+Message-ID: <20220426101913.43335-3-akhilrajeev@nvidia.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220426101913.43335-1-akhilrajeev@nvidia.com>
+References: <20220426101913.43335-1-akhilrajeev@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4d0695ac-dcaa-46db-8476-08da276e47b8
+X-MS-TrafficTypeDiagnostic: SJ0PR12MB5455:EE_
+X-Microsoft-Antispam-PRVS: <SJ0PR12MB5455DA285637301242117B98C0FB9@SJ0PR12MB5455.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: eOkpRVGfsflBaiIVGI/tZflJbK48GRy28a1m9is8JbZCMerOnx5i7bcfyQyI8tMTXmLA6tFK5KG5zqcuGgJalUYlg0jD7A54FsRaX/nb7se6KOzmTO5qEaY3nXn1U8Y7u2CP815Bk9TySo8fWb7fXeXEnke/0/aXmSCMd3uk/ivvkgFzkrknOz2p630PEfrGrZ0nz9Db9+j9bYuGcJwcAjVyVbRDK9r58+RGkqEPifMij//xuZ2XzscTX8KWMgKXvZXQJcFO9y9RCen7r2sTX61GP276sQR347vk22wRVDk5BlwD7FHlagsIjaT5f/fG9KA//sgiYEE5kEhqycKhnpBMk9ZboIuEP0YuRqhWgN4x16EN8BqktTFgNw8M5sJhf5gbRYwhY9tFEVoKnfAQxcFYiATP+uTaVInojQazvvnbVYwJTR37544RQg1XWMh9x9HGywi9Z88i2JWHl8hGFtkyOfu+xysL+Ru09UvvaeuPsrgLbUe/j3oyJKyx3LFjFWdTBIHDhmwDJ2mdNnN4/9QBnqAtf/sA3PvKwjqEXTSatBmrLTbLVSj5buJiP/taKdiS6/wkzPmJ+aU1g3sMamlYQQICCUh6PUePgBxKSs498ZjO8BVT9dVqxmyvedv3M5NwJsqlHd97X4ILLdDiAyIXQNkNqJt3hAddHwkGo6knkGvlML9QUL5HeCyyUJuTexSocMZrNOrtoMzfLyxg4Nczrz9SNoQ/049ZzTwEcoRGuFuaX7JOK2qZz8aSdDk4wHbOKgezs2Cqv/D9kp4lBQ==
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(7696005)(7416002)(426003)(5660300002)(8936002)(36756003)(83380400001)(26005)(8676002)(4326008)(336012)(2906002)(36860700001)(186003)(4744005)(1076003)(107886003)(47076005)(508600001)(86362001)(2616005)(316002)(70586007)(70206006)(81166007)(40460700003)(921005)(82310400005)(6666004)(356005)(110136005)(36900700001)(83996005)(2101003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Apr 2022 10:19:42.8257
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4d0695ac-dcaa-46db-8476-08da276e47b8
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT019.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB5455
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These missing required properties are needed for
-smp2p binding reference checks.
+Remove unused switch case in get_transfer_param() function.
+The function is not called for MEM_TO_MEM transfers.
 
-Also includes cosmetic change to the example formatting.
-
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: David Heidelberg <david@ixit.cz>
+Signed-off-by: Akhil R <akhilrajeev@nvidia.com>
 ---
-v3:
- - add Krzysztof R-b
----
- .../devicetree/bindings/mailbox/qcom-ipcc.yaml        | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/dma/tegra186-gpc-dma.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml b/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml
-index c57dd423e98c..50f9aa72c670 100644
---- a/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml
-+++ b/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml
-@@ -76,9 +76,14 @@ examples:
- 
-         smp2p-modem {
-                 compatible = "qcom,smp2p";
--                interrupts-extended = <&ipcc_mproc IPCC_CLIENT_MPSS
--                                IPCC_MPROC_SIGNAL_SMP2P IRQ_TYPE_EDGE_RISING>;
--                mboxes = <&ipcc_mproc IPCC_CLIENT_MPSS IPCC_MPROC_SIGNAL_SMP2P>;
-+                qcom,smem = <443>, <429>;
-+                interrupts-extended = <&ipcc IPCC_CLIENT_LPASS
-+                                             IPCC_MPROC_SIGNAL_SMP2P
-+                                             IRQ_TYPE_EDGE_RISING>;
-+                mboxes = <&ipcc IPCC_CLIENT_LPASS
-+                                IPCC_MPROC_SIGNAL_SMP2P>;
- 
-+                qcom,local-pid = <0>;
-+                qcom,remote-pid = <2>;
-                 /* Other SMP2P fields */
-         };
+diff --git a/drivers/dma/tegra186-gpc-dma.c b/drivers/dma/tegra186-gpc-dma.c
+index a0dbafa07ec9..6b8d34165176 100644
+--- a/drivers/dma/tegra186-gpc-dma.c
++++ b/drivers/dma/tegra186-gpc-dma.c
+@@ -830,10 +830,6 @@ static int get_transfer_param(struct tegra_dma_channel *tdc,
+ 		*slave_bw = tdc->dma_sconfig.src_addr_width;
+ 		*csr = TEGRA_GPCDMA_CSR_DMA_IO2MEM_FC;
+ 		return 0;
+-	case DMA_MEM_TO_MEM:
+-		*burst_size = tdc->dma_sconfig.src_addr_width;
+-		*csr = TEGRA_GPCDMA_CSR_DMA_MEM2MEM;
+-		return 0;
+ 	default:
+ 		dev_err(tdc2dev(tdc), "DMA direction is not supported\n");
+ 	}
 -- 
-2.35.1
+2.17.1
 
