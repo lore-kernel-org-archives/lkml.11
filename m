@@ -2,50 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23D89C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:03:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76FD9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:04:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346713AbiDZTG7 (ORCPT
+        id S1353892AbiDZTHH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 15:06:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41868 "EHLO
+        Tue, 26 Apr 2022 15:07:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353754AbiDZTFc (ORCPT
+        with ESMTP id S1353746AbiDZTFc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 15:05:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58A101999D5;
-        Tue, 26 Apr 2022 12:02:23 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B838819982E;
+        Tue, 26 Apr 2022 12:02:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E2D99619C4;
-        Tue, 26 Apr 2022 19:02:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E848C385AD;
-        Tue, 26 Apr 2022 19:02:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6AF1CB8224A;
+        Tue, 26 Apr 2022 19:02:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB72EC385AF;
+        Tue, 26 Apr 2022 19:02:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650999742;
-        bh=pH8kHLg29q84DA3lAKF1knzAlPKUewGQtsmALlQhDkw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sUv44KYMyRgUcmKqs/27GHZ/Y71e5ZCVC0uIqBeuSRj5yiVapBrKYFQC5UhGzBuQZ
-         wZhD/aovSLGSI3C7awdN+oSxT/82X3XMgC2icnNsRPjICN2vU/uHYA2U2aSaCrt2J1
-         Ebrk4YfaeVho8QM14xJZE8Y5ptU4tQX0U5PZXM92XbPIDxsmIYyu/OZQxnSx6GgtO4
-         7VIvV1QgLWQKtwGICLStKG3WLJvXUG1twJA7M1teO/NpiKE6ih+bqTkG/rtSpM9DKr
-         g0utMUEQE3Ce+OnN+qexbY2aftP7Q1JPJKCEhGsnpjM5Jb7eRirplsiUA2b6fOk3c/
-         HoW6nwRe5+ilA==
+        s=k20201202; t=1650999737;
+        bh=nkHXMlkQYvJ0VAZul9wxWujXNsFjkiphNohHPwXVGtE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=HXUp2EYLFyhcwJzOx7VCCl713bZgHz/aFuTOVzHwhn68JBQ1Rb65EJXuXocntQmMH
+         x39P3cyh1p7RsIohxgoN1n/zCJ4FLsQxAghqQnawHgZZlOSFwgGuu+2oDup6w88ynu
+         roNlD0+VH3mdJK2vtOGtvpzmtsADLeOtD9reynorrplTDUV/RJtPxmejIaKPpWMdQR
+         SW2wDMm12QAM4FNm7RA+gORb7L+mPJkYYrF1R+Bb3WNNRHNzqsN+67+RueC5nugdNa
+         vxNjv6kFOgnh0vXPbyTINtRRPxuQUrKrFIwA+8VE5CSA2C31WMsxbAhQX+zzsF1tym
+         SaA1RtsohHSkA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Namjae Jeon <linkinjeon@kernel.org>,
-        Hyunchul Lee <hyc.lee@gmail.com>,
-        Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>, sfrench@samba.org,
-        linux-cifs@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 05/15] ksmbd: increment reference count of parent fp
-Date:   Tue, 26 Apr 2022 15:02:04 -0400
-Message-Id: <20220426190216.2351413-5-sashal@kernel.org>
+Cc:     Chao Song <chao.song@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, cezary.rojewski@intel.com,
+        liam.r.girdwood@linux.intel.com, yang.jie@linux.intel.com,
+        perex@perex.cz, tiwai@suse.com, yung-chuan.liao@linux.intel.com,
+        rander.wang@intel.com, peter.ujfalusi@linux.intel.com,
+        brent.lu@intel.com, balamurugan.c@intel.com,
+        gongjun.song@intel.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.15 01/15] ASoC: Intel: soc-acpi: correct device endpoints for max98373
+Date:   Tue, 26 Apr 2022 15:02:00 -0400
+Message-Id: <20220426190216.2351413-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220426190216.2351413-1-sashal@kernel.org>
-References: <20220426190216.2351413-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,49 +56,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Namjae Jeon <linkinjeon@kernel.org>
+From: Chao Song <chao.song@linux.intel.com>
 
-[ Upstream commit 8510a043d334ecdf83d4604782f288db6bf21d60 ]
+[ Upstream commit 97326be14df7bacc6ba5c62c0556298c27ea0432 ]
 
-Add missing increment reference count of parent fp in
-ksmbd_lookup_fd_inode().
+The left speaker of max98373 uses spk_r_endpoint, and right
+speaker uses spk_l_endpoint, this is obviously wrong.
 
-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
-Reviewed-by: Hyunchul Lee <hyc.lee@gmail.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+This patch corrects the endpoints for max98373 codec.
+
+Signed-off-by: Chao Song <chao.song@linux.intel.com>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220406192341.271465-1-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ksmbd/smb2pdu.c   | 2 ++
- fs/ksmbd/vfs_cache.c | 1 +
- 2 files changed, 3 insertions(+)
+ sound/soc/intel/common/soc-acpi-intel-tgl-match.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/ksmbd/smb2pdu.c b/fs/ksmbd/smb2pdu.c
-index 192d8308afc2..a9fdb47c2791 100644
---- a/fs/ksmbd/smb2pdu.c
-+++ b/fs/ksmbd/smb2pdu.c
-@@ -5768,8 +5768,10 @@ static int set_rename_info(struct ksmbd_work *work, struct ksmbd_file *fp,
- 	if (parent_fp) {
- 		if (parent_fp->daccess & FILE_DELETE_LE) {
- 			pr_err("parent dir is opened with delete access\n");
-+			ksmbd_fd_put(work, parent_fp);
- 			return -ESHARE;
- 		}
-+		ksmbd_fd_put(work, parent_fp);
+diff --git a/sound/soc/intel/common/soc-acpi-intel-tgl-match.c b/sound/soc/intel/common/soc-acpi-intel-tgl-match.c
+index 11801b905ecc..c93d8019b0e5 100644
+--- a/sound/soc/intel/common/soc-acpi-intel-tgl-match.c
++++ b/sound/soc/intel/common/soc-acpi-intel-tgl-match.c
+@@ -127,13 +127,13 @@ static const struct snd_soc_acpi_adr_device mx8373_1_adr[] = {
+ 	{
+ 		.adr = 0x000123019F837300ull,
+ 		.num_endpoints = 1,
+-		.endpoints = &spk_l_endpoint,
++		.endpoints = &spk_r_endpoint,
+ 		.name_prefix = "Right"
+ 	},
+ 	{
+ 		.adr = 0x000127019F837300ull,
+ 		.num_endpoints = 1,
+-		.endpoints = &spk_r_endpoint,
++		.endpoints = &spk_l_endpoint,
+ 		.name_prefix = "Left"
  	}
- next:
- 	return smb2_rename(work, fp, user_ns, rename_info,
-diff --git a/fs/ksmbd/vfs_cache.c b/fs/ksmbd/vfs_cache.c
-index 29c1db66bd0f..8b873d92d785 100644
---- a/fs/ksmbd/vfs_cache.c
-+++ b/fs/ksmbd/vfs_cache.c
-@@ -497,6 +497,7 @@ struct ksmbd_file *ksmbd_lookup_fd_inode(struct inode *inode)
- 	list_for_each_entry(lfp, &ci->m_fp_list, node) {
- 		if (inode == file_inode(lfp->filp)) {
- 			atomic_dec(&ci->m_count);
-+			lfp = ksmbd_fp_get(lfp);
- 			read_unlock(&ci->m_lock);
- 			return lfp;
- 		}
+ };
 -- 
 2.35.1
 
