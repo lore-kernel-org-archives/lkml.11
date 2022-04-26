@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 771AEC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63149C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:58:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346549AbiDZJAs (ORCPT
+        id S1346526AbiDZJAm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:00:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56242 "EHLO
+        Tue, 26 Apr 2022 05:00:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346970AbiDZIpl (ORCPT
+        with ESMTP id S1346886AbiDZIp2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:45:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 338A03B547;
-        Tue, 26 Apr 2022 01:37:02 -0700 (PDT)
+        Tue, 26 Apr 2022 04:45:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4928C3CA6C;
+        Tue, 26 Apr 2022 01:36:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 486556185A;
-        Tue, 26 Apr 2022 08:37:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A74CC385A0;
-        Tue, 26 Apr 2022 08:37:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F1C02B81D09;
+        Tue, 26 Apr 2022 08:36:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A861C385A0;
+        Tue, 26 Apr 2022 08:36:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962221;
-        bh=Fu+nhyd4Ftx9wFwzYrhYVHcQbXFxR67KTnPhaztFH/o=;
+        s=korg; t=1650962168;
+        bh=rxNYrynthAVSNFVZDDnxe1rUHGlVchAhwqVCmHm98Vs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ioOlcu4Yon0HLvaqfsX1toHtpwWb/RQrqy7tQlZxMfR11kPNlvZSrAjBBv8Jj8mN6
-         BQmvtEVpWh06MmOplCeCto83fh8BYWkW9tEJ1ixmLPCN6badU2ZRIatAJpvYEBFNuB
-         K86FcLKdWGlK9BUSMCFsOdwXCm7QQ9Nk0sUEqEqc=
+        b=il94r3FZ40fImGZOiGAgJVGdeNxU0wtLVKAi5eBOGL1EDc13qsRHodplpS+SV9DWV
+         N8q927g6YGlcL6i/TONBSQOoxQl76JIE2yOJ4o+Weo8MtAjIYc3Qhtz/Jq0MTcslmc
+         VH463oK/15DV1eP036XvYhkr2RR9cklzEOBE8lhY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Herve Codina <herve.codina@bootlin.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 025/124] dmaengine: dw-edma: Fix unaligned 64bit access
-Date:   Tue, 26 Apr 2022 10:20:26 +0200
-Message-Id: <20220426081748.020932246@linuxfoundation.org>
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 001/124] fs: remove __sync_filesystem
+Date:   Tue, 26 Apr 2022 10:20:02 +0200
+Message-Id: <20220426081747.332004348@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,58 +52,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Herve Codina <herve.codina@bootlin.com>
+From: Christoph Hellwig <hch@lst.de>
 
-[ Upstream commit 8fc5133d6d4da65cad6b73152fc714ad3d7f91c1 ]
+[ Upstream commit 9a208ba5c9afa62c7b1e9c6f5e783066e84e2d3c ]
 
-On some arch (ie aarch64 iMX8MM) unaligned PCIe accesses are
-not allowed and lead to a kernel Oops.
-  [ 1911.668835] Unable to handle kernel paging request at virtual address ffff80001bc00a8c
-  [ 1911.668841] Mem abort info:
-  [ 1911.668844]   ESR = 0x96000061
-  [ 1911.668847]   EC = 0x25: DABT (current EL), IL = 32 bits
-  [ 1911.668850]   SET = 0, FnV = 0
-  [ 1911.668852]   EA = 0, S1PTW = 0
-  [ 1911.668853] Data abort info:
-  [ 1911.668855]   ISV = 0, ISS = 0x00000061
-  [ 1911.668857]   CM = 0, WnR = 1
-  [ 1911.668861] swapper pgtable: 4k pages, 48-bit VAs, pgdp=0000000040ff4000
-  [ 1911.668864] [ffff80001bc00a8c] pgd=00000000bffff003, pud=00000000bfffe003, pmd=0068000018400705
-  [ 1911.668872] Internal error: Oops: 96000061 [#1] PREEMPT SMP
-  ...
+There is no clear benefit in having this helper vs just open coding it.
 
-The llp register present in the channel group registers is not
-aligned on 64bit.
-
-Fix unaligned 64bit access using two 32bit accesses
-
-Fixes: 04e0a39fc10f ("dmaengine: dw-edma: Add writeq() and readq() for 64 bits architectures")
-Signed-off-by: Herve Codina <herve.codina@bootlin.com>
-Link: https://lore.kernel.org/r/20220225120252.309404-1-herve.codina@bootlin.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Link: https://lore.kernel.org/r/20211019062530.2174626-2-hch@lst.de
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/dw-edma/dw-edma-v0-core.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ fs/sync.c | 38 +++++++++++++++++---------------------
+ 1 file changed, 17 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/dma/dw-edma/dw-edma-v0-core.c b/drivers/dma/dw-edma/dw-edma-v0-core.c
-index 329fc2e57b70..b5b8f8181e77 100644
---- a/drivers/dma/dw-edma/dw-edma-v0-core.c
-+++ b/drivers/dma/dw-edma/dw-edma-v0-core.c
-@@ -415,8 +415,11 @@ void dw_edma_v0_core_start(struct dw_edma_chunk *chunk, bool first)
- 			  (DW_EDMA_V0_CCS | DW_EDMA_V0_LLE));
- 		/* Linked list */
- 		#ifdef CONFIG_64BIT
--			SET_CH_64(dw, chan->dir, chan->id, llp.reg,
--				  chunk->ll_region.paddr);
-+			/* llp is not aligned on 64bit -> keep 32bit accesses */
-+			SET_CH_32(dw, chan->dir, chan->id, llp.lsb,
-+				  lower_32_bits(chunk->ll_region.paddr));
-+			SET_CH_32(dw, chan->dir, chan->id, llp.msb,
-+				  upper_32_bits(chunk->ll_region.paddr));
- 		#else /* CONFIG_64BIT */
- 			SET_CH_32(dw, chan->dir, chan->id, llp.lsb,
- 				  lower_32_bits(chunk->ll_region.paddr));
+diff --git a/fs/sync.c b/fs/sync.c
+index 1373a610dc78..0d6cdc507cb9 100644
+--- a/fs/sync.c
++++ b/fs/sync.c
+@@ -21,25 +21,6 @@
+ #define VALID_FLAGS (SYNC_FILE_RANGE_WAIT_BEFORE|SYNC_FILE_RANGE_WRITE| \
+ 			SYNC_FILE_RANGE_WAIT_AFTER)
+ 
+-/*
+- * Do the filesystem syncing work. For simple filesystems
+- * writeback_inodes_sb(sb) just dirties buffers with inodes so we have to
+- * submit IO for these buffers via __sync_blockdev(). This also speeds up the
+- * wait == 1 case since in that case write_inode() functions do
+- * sync_dirty_buffer() and thus effectively write one block at a time.
+- */
+-static int __sync_filesystem(struct super_block *sb, int wait)
+-{
+-	if (wait)
+-		sync_inodes_sb(sb);
+-	else
+-		writeback_inodes_sb(sb, WB_REASON_SYNC);
+-
+-	if (sb->s_op->sync_fs)
+-		sb->s_op->sync_fs(sb, wait);
+-	return __sync_blockdev(sb->s_bdev, wait);
+-}
+-
+ /*
+  * Write out and wait upon all dirty data associated with this
+  * superblock.  Filesystem data as well as the underlying block
+@@ -61,10 +42,25 @@ int sync_filesystem(struct super_block *sb)
+ 	if (sb_rdonly(sb))
+ 		return 0;
+ 
+-	ret = __sync_filesystem(sb, 0);
++	/*
++	 * Do the filesystem syncing work.  For simple filesystems
++	 * writeback_inodes_sb(sb) just dirties buffers with inodes so we have
++	 * to submit I/O for these buffers via __sync_blockdev().  This also
++	 * speeds up the wait == 1 case since in that case write_inode()
++	 * methods call sync_dirty_buffer() and thus effectively write one block
++	 * at a time.
++	 */
++	writeback_inodes_sb(sb, WB_REASON_SYNC);
++	if (sb->s_op->sync_fs)
++		sb->s_op->sync_fs(sb, 0);
++	ret = __sync_blockdev(sb->s_bdev, 0);
+ 	if (ret < 0)
+ 		return ret;
+-	return __sync_filesystem(sb, 1);
++
++	sync_inodes_sb(sb);
++	if (sb->s_op->sync_fs)
++		sb->s_op->sync_fs(sb, 1);
++	return __sync_blockdev(sb->s_bdev, 1);
+ }
+ EXPORT_SYMBOL(sync_filesystem);
+ 
 -- 
 2.35.1
 
