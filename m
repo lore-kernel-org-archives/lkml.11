@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5643DC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8567EC43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:51:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346109AbiDZIyJ (ORCPT
+        id S1346195AbiDZIyX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:54:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33616 "EHLO
+        Tue, 26 Apr 2022 04:54:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345825AbiDZIjf (ORCPT
+        with ESMTP id S1345816AbiDZIje (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:39:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC10A78FF2;
-        Tue, 26 Apr 2022 01:31:57 -0700 (PDT)
+        Tue, 26 Apr 2022 04:39:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC99E78FF7;
+        Tue, 26 Apr 2022 01:31:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F1522B81CF9;
-        Tue, 26 Apr 2022 08:31:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53305C385A4;
-        Tue, 26 Apr 2022 08:31:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A4E58B81CF3;
+        Tue, 26 Apr 2022 08:31:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAE36C385A0;
+        Tue, 26 Apr 2022 08:31:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961914;
-        bh=bcOTZJMicACjWXiZfXi+DQEm7lArO/AWDfEHBhtc7QE=;
+        s=korg; t=1650961903;
+        bh=+7W/z/NXq+al8Bfg6I1o93fhJ8rD0L8br9mElJvBpog=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DaLBDPZHa/b8Vg5qIdJF7S0XKDQ2B7f0tW4Xi9VRZZZTGUUtUIrPGh29S+EMfW3DS
-         9E51Qn+ipimMVIm1DWz9Xart+Slw8lcbXSBa4b25r4EUBYd3pY8J75Yewpbm8tvSJO
-         YRixkBWoWD/3BgRqlKtG7tVCZdikUKbfak0C2XDQ=
+        b=Xo+38FwCX+Jz9v8TL8/R/qMLZqBVkyAFhrklOMx1hnRpYS2N5d0zmoo7KksnEs8Qk
+         ayzFeO1hPLrS48da+UFP9kLVSO/ItpYE82EKQqQQGSoN6VMr9ZrTpX63wFXA+vu7wc
+         h3cvUkQ+48NXwDL8x1QEwo6Lv3Dcrf16vfW3Ku3k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 11/86] ASoC: msm8916-wcd-digital: Check failure for devm_snd_soc_register_component
-Date:   Tue, 26 Apr 2022 10:20:39 +0200
-Message-Id: <20220426081741.533033818@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Ye Bin <yebin10@huawei.com>, Jan Kara <jack@suse.cz>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.4 52/62] ext4: fix symlink file size not match to file content
+Date:   Tue, 26 Apr 2022 10:21:32 +0200
+Message-Id: <20220426081738.713722480@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
-References: <20220426081741.202366502@linuxfoundation.org>
+In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
+References: <20220426081737.209637816@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,46 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Ye Bin <yebin10@huawei.com>
 
-[ Upstream commit e927b05f3cc20de87f6b7d912a5bbe556931caca ]
+commit a2b0b205d125f27cddfb4f7280e39affdaf46686 upstream.
 
-devm_snd_soc_register_component() may fails, we should check the error
-and do the corresponding error handling.
+We got issue as follows:
+[home]# fsck.ext4  -fn  ram0yb
+e2fsck 1.45.6 (20-Mar-2020)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Symlink /p3/d14/d1a/l3d (inode #3494) is invalid.
+Clear? no
+Entry 'l3d' in /p3/d14/d1a (3383) has an incorrect filetype (was 7, should be 0).
+Fix? no
 
-Fixes: 150db8c5afa1 ("ASoC: codecs: Add msm8916-wcd digital codec")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220403115239.30140-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+As the symlink file size does not match the file content. If the writeback
+of the symlink data block failed, ext4_finish_bio() handles the end of IO.
+However this function fails to mark the buffer with BH_write_io_error and
+so when unmount does journal checkpoint it cannot detect the writeback
+error and will cleanup the journal. Thus we've lost the correct data in the
+journal area. To solve this issue, mark the buffer as BH_write_io_error in
+ext4_finish_bio().
+
+Cc: stable@kernel.org
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220321144438.201685-1-yebin10@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/msm8916-wcd-digital.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ fs/ext4/page-io.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/msm8916-wcd-digital.c b/sound/soc/codecs/msm8916-wcd-digital.c
-index 9ad7fc0baf07..20a07c92b2fc 100644
---- a/sound/soc/codecs/msm8916-wcd-digital.c
-+++ b/sound/soc/codecs/msm8916-wcd-digital.c
-@@ -1206,9 +1206,16 @@ static int msm8916_wcd_digital_probe(struct platform_device *pdev)
- 
- 	dev_set_drvdata(dev, priv);
- 
--	return devm_snd_soc_register_component(dev, &msm8916_wcd_digital,
-+	ret = devm_snd_soc_register_component(dev, &msm8916_wcd_digital,
- 				      msm8916_wcd_digital_dai,
- 				      ARRAY_SIZE(msm8916_wcd_digital_dai));
-+	if (ret)
-+		goto err_mclk;
-+
-+	return 0;
-+
-+err_mclk:
-+	clk_disable_unprepare(priv->mclk);
- err_clk:
- 	clk_disable_unprepare(priv->ahbclk);
- 	return ret;
--- 
-2.35.1
-
+--- a/fs/ext4/page-io.c
++++ b/fs/ext4/page-io.c
+@@ -100,8 +100,10 @@ static void ext4_finish_bio(struct bio *
+ 				continue;
+ 			}
+ 			clear_buffer_async_write(bh);
+-			if (bio->bi_status)
++			if (bio->bi_status) {
++				set_buffer_write_io_error(bh);
+ 				buffer_io_error(bh);
++			}
+ 		} while ((bh = bh->b_this_page) != head);
+ 		bit_spin_unlock(BH_Uptodate_Lock, &head->b_state);
+ 		local_irq_restore(flags);
 
 
