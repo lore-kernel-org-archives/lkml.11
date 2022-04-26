@@ -2,160 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CE59C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 12:58:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D2E0C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 12:58:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349640AbiDZNBM (ORCPT
+        id S1349635AbiDZNBQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 09:01:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44548 "EHLO
+        Tue, 26 Apr 2022 09:01:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242868AbiDZNBD (ORCPT
+        with ESMTP id S1349616AbiDZNBJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 09:01:03 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B53317B3BB;
-        Tue, 26 Apr 2022 05:57:55 -0700 (PDT)
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23QCKC9K022262;
-        Tue, 26 Apr 2022 12:57:43 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=to : cc : subject :
- from : message-id : references : date : in-reply-to : content-type :
- mime-version; s=corp-2021-07-09;
- bh=W0VIsgLh2pj7RNdLcV9deihF8/9yYWMc6SLhBwMxR4E=;
- b=zaSmAww043DKXHlSjKnXyhJLT7hdLn9krPLBVVFw08O/rheKWjDnBkvduR662t5NWn9K
- FOwBf2qNTefju3/+Qe8t8NhpWyiddxuOApaPAeiYapVscubWylzkx6wdR23D+Iaig9N7
- jfgDmx6u5zM3JLGA6t8+KLA+BlCp0BUgYigrNgfyeUAtPEQTX77eoRJadZ5aP97K0vM5
- un8jWafmyV/oEGZoRPGlMqh0Bh6mJvamuHeAMnuGKo9brVB9rEMhiUWJR6j1tx5nEKUN
- 2q0h8BpJnsaLN0PRvHMn0B0I7Nr6Wi3Yq9m9BBBFu1RZcuC5zgsp3AyzMRCaAXLSfN0Q 4w== 
-Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3fmaw4e2cs-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 26 Apr 2022 12:57:43 +0000
-Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 23QCj5VK014642;
-        Tue, 26 Apr 2022 12:57:42 GMT
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2046.outbound.protection.outlook.com [104.47.66.46])
-        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fm7w3bkan-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 26 Apr 2022 12:57:42 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HFVLIef/tHiF0TGwAj+4Dl+OWjfRXYmzPBIIh3JlPxujBmOGzlL7TwPoni3YHp1QnRZNsY0ReplWVqKBOF8boJUHpCUQNHD7Y7ToyRBKnPx3hY3xjfqxBzbxHmE/r6UhxfbJT0Jc2SJttanOYJCJHZzPThA3ytgQclfXWj7JuvNcMpkc5sgY3gpoKRjAuNZBpFWOHLcRGec3wHA8MKwWu12RYFRU70NCY5rcf8adO/MQucEJz9fgyAV+/dufYml05gOzIBqkf6fyNsX3sERM2Ca11SnMITQQ0u/+CDV73k7Va+ylJX6yxFgU4FwkP+9lb1hKzmNLByPHd6MGFrTXJw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=W0VIsgLh2pj7RNdLcV9deihF8/9yYWMc6SLhBwMxR4E=;
- b=XXTzEu3SfIm+DKjZFr1b9+RZU8Ch6PKeHL3iuRUjGTkv/6BiTVyRXw1I27nB62J7Fb1zdwUUXhK2crHTW03EHOQ5w66BBr4UJXQrpZpbC0Wsmqbx+wx3hJyH5DohU1fUyOHH5NN8hzJ5FffvfeNryWEtBYI6eEIkf7cny6wyjiFxFLXr1y90C6kpuWBS0r7CRq1ZhPsEyCzRj6kKvAsV7XBnWzN0NwHUn5NUE+bCjllej12urukO+Pf1VQsTl1vSewV7f8FicUdKMG1wcnse0+N39uOI6GEFadMrQhW/nBky1IahZVMfjnA/+fY9fWQMbE40NZZFnetgZ9ERozwnrw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=W0VIsgLh2pj7RNdLcV9deihF8/9yYWMc6SLhBwMxR4E=;
- b=R41jWJtzHqcv4fPKJ0QG/5DD1T2iCMtzC5LumN7nW9SdfZLKePjaPddpkUaPFvRArYIxDvWuF9vbiUBo7A5V+YgQcnqxrPZlZnhhZkpuqwzWh0/jQiFsKNLhdRuMujkpU+Sbum4qaFtExIaSqlHsFJNDLHPkC1z3jJHEe3dzppE=
-Received: from PH0PR10MB4759.namprd10.prod.outlook.com (2603:10b6:510:3d::12)
- by MWHPR10MB1712.namprd10.prod.outlook.com (2603:10b6:301:8::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Tue, 26 Apr
- 2022 12:57:40 +0000
-Received: from PH0PR10MB4759.namprd10.prod.outlook.com
- ([fe80::d1db:de4e:9b71:3192]) by PH0PR10MB4759.namprd10.prod.outlook.com
- ([fe80::d1db:de4e:9b71:3192%9]) with mapi id 15.20.5186.021; Tue, 26 Apr 2022
- 12:57:40 +0000
-To:     Guo Zhengkui <guozhengkui@vivo.com>
-Cc:     Nilesh Javali <njavali@marvell.com>,
-        GR-QLogic-Storage-Upstream@marvell.com (supporter:QLOGIC QLA2XXX
-        FC-SCSI DRIVER), "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        linux-scsi@vger.kernel.org (open list:QLOGIC QLA2XXX FC-SCSI DRIVER),
-        linux-kernel@vger.kernel.org (open list),
-        zhengkui_guo@outlook.com
-Subject: Re: [PATCH] qla2xxx: edif: remove unneeded variable
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-Organization: Oracle Corporation
-Message-ID: <yq17d7ct32d.fsf@ca-mkp.ca.oracle.com>
-References: <20220426074334.9281-1-guozhengkui@vivo.com>
-Date:   Tue, 26 Apr 2022 08:57:38 -0400
-In-Reply-To: <20220426074334.9281-1-guozhengkui@vivo.com> (Guo Zhengkui's
-        message of "Tue, 26 Apr 2022 15:43:34 +0800")
-Content-Type: text/plain
-X-ClientProxiedBy: SA0PR11CA0139.namprd11.prod.outlook.com
- (2603:10b6:806:131::24) To PH0PR10MB4759.namprd10.prod.outlook.com
- (2603:10b6:510:3d::12)
+        Tue, 26 Apr 2022 09:01:09 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C737E220C3;
+        Tue, 26 Apr 2022 05:58:00 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: nicolas)
+        with ESMTPSA id C94091F43982
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1650977879;
+        bh=NLF+Wg3vuTsJVkd2Ma5B7r7IuEhd9gpW/VBiguTBpto=;
+        h=From:To:Cc:Subject:Date:From;
+        b=HHfEgWFLhTfmmfdVhH68nToC63kARpwBFSuQ1xzbvyhaSmB7Z2CRXCJwli+wncekd
+         wIZ4hHNznr+dNJwqGaSKP7qSLbVi7SdA+pr/jJcE9J+29kvdf1f0QNtO+ZnfIj7eN0
+         JnqVDObUimF2iq8nOi780CBkdrRgl5O38LijLL6ib8a3yBtbxN9lOH2+C0kXLWk4DB
+         ZiPgbElHxN0Z/UTQbKk71DVkugBGuJPpx5xAxLiRmB7c1XlGDO+04xsS84GhZXqTYS
+         CQQZyFCQTLVyz4Ik3Dv0v1om0/Kb92B/r5JFXVmdRCjRRA1kFMT7gwQEFQwxaMtlH3
+         m+WWKuv8DlYiQ==
+From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Cc:     nicolas@ndufresne.ca, linux-media@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v4 00/24] H.264 Field Decoding Support for Frame-based Decoders
+Date:   Tue, 26 Apr 2022 08:57:26 -0400
+Message-Id: <20220426125751.108293-1-nicolas.dufresne@collabora.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 05552106-3515-477a-fa1e-08da278458b6
-X-MS-TrafficTypeDiagnostic: MWHPR10MB1712:EE_
-X-Microsoft-Antispam-PRVS: <MWHPR10MB17127121F1B7EE51615783358EFB9@MWHPR10MB1712.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wQCHAxqt5r1pXhe78oGnww1mS4aFzKs0vKTY6gJpmmluBXn4u/lgkvglbUTsg3oMS7wxhGObB8hm0Ss+R5Q2kAK1hQLFU1+w8osu+F1/qSzV0AV/6Rwkp4rkVCLSKbFoEf24FQvSin4rl9PpZapKA8EoD+78CIK54X4pzYBTK2QfhHqV5UPHTsHq3zh+07yD5W/W0fZMFYGzfKfnEuaDdFduEriufM1LcjgmOQlVeZC7pc0d3PJYSK4GS98qCyvMho7XR1z8asx32LGDpNAyUEbb6+Eyrm54g5QFM/Y7HUlNAalAtuL7LFOa+wMqKOu+SwAr2gCVvWqJV3+4mYmwXQnWEF0laXysuiJ5b0fBWrh1gewkSQTX30R8uwD3wqWfAs26yL0NmFI8HhfsHXsk7sK/amaNTpfGWg8dKgrrzl8x/5JAU85nXsMCH53TJXC6fn8k/lLArQHAM2bsYOEnLutuWl6k40wpUwSSCnKLVW0hW5HD0E/regBfQuZtzUWnNpORF5gOHiO74KmATlRUc0MMNdvSVW5AKNThiohEG3S2EEx+oFrOAK2/2f//HLU/+eAiqmajeM83scuy08l6QA1lXyYchsqAa1oOrIymtbeu3CyWIXDKozN8B22pMFy9ts0gfjizD3Zd/HmcKCNnenVw5GnFc0EJSdzxo7hff89NCoHPDKQ7fn2hIJFGkYkS10PFShCUaJTbFIyI8mY65A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR10MB4759.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(66946007)(508600001)(316002)(8936002)(66476007)(8676002)(6916009)(54906003)(186003)(5660300002)(6512007)(558084003)(86362001)(66556008)(38100700002)(38350700002)(4326008)(6486002)(2906002)(83380400001)(26005)(6506007)(52116002)(36916002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?r7ziB6rYbsmMwfmFhx8JDAfxwdbqUefCPcu4x9BjfNt43ZTM2uf792KWdNUv?=
- =?us-ascii?Q?qA1MK2jAzUDoWcAaH37HPxLs+x9m/KCvO0h0ME02kifGW+k7nmXnDl7lqjA7?=
- =?us-ascii?Q?ocR2vcmXbXRU86MEJ1rfcpRfjn+Q8sF71PCQaqK56rAU1pMMTpAzfzszRmaj?=
- =?us-ascii?Q?VUMArD20G3JHHWegBzZB8yJ/9AT06di/TnWPtmdasTEEQju2CXalsW+g0SFf?=
- =?us-ascii?Q?nGmVjPxJiuUyEa2wEQPgzW2bHNo9bo7a0HGrfCeH1Kc/qw79kCNVazm0aRfm?=
- =?us-ascii?Q?2CXCokhh3hNCqAx7Ct7SUzkyTC9uuHihXqP7jzYh+SoPr+gIVPhKSwP8G2C9?=
- =?us-ascii?Q?nCWU5aAAb73VKHTyLMumv82ejNokf9jcy5I91UqBRSvZCPNASCD0QD3gbPww?=
- =?us-ascii?Q?tdQ8Pt4B2NOzd6lx2ynjok40k1ElQZL6JG5YBGc1rPN9SfiCt0XCRsdnuV8m?=
- =?us-ascii?Q?XKdcTrNXBsv8nQW+90g/v+NukW3ZJXRRTg0DQqwL4wugitCZHj8ciRqp7GYP?=
- =?us-ascii?Q?J8GQGDNMQc9TtElP/nV9yZmn+qroZ1arw2jkQcrAfH3qqqmNU5HCb67goI7B?=
- =?us-ascii?Q?X0BKSPeRcykbvpBZSfinGr0ksSEV8qH+wS/EuUvfBpyWg3G1q/omxCRlE+2D?=
- =?us-ascii?Q?hwgrxJHvyqlokANro87s4JiJpBfU0u4MaTzbGIeVM09fdus2Rz2CJmVxZrUw?=
- =?us-ascii?Q?PcTN5vXa+Iapq4qKg77uSIH0tZa4D81h1l33NaRxbwy7z92JLwHoMUxCbEGr?=
- =?us-ascii?Q?HbYLYrqwf+FECAcAj9r2DhXFl8zlICUQMsRD1yPfH5MPa9rBvDqTyEIqDlqN?=
- =?us-ascii?Q?8yaXjRc+79cem97cWNTgsudjmNAscha571aXOccxn/jbNJNJN1DsYYy1IdkT?=
- =?us-ascii?Q?45Q89FkAsf83fr2S99tNW8eIP9DUvY+AZPezzNzI4fgf9Vt+CSfWlLWzXEk1?=
- =?us-ascii?Q?JCQp6Fu/0IihHVlznLZMqhu06WPpwvjJfkksq9OHyy9x0s0drjdf2tNRxQdp?=
- =?us-ascii?Q?UgPaLQ3fgVtUzJVKD3L5vFtC5mUm0PDUTCaTd118FcXGJTi7cTkwcy4ub+2C?=
- =?us-ascii?Q?Jk8Wxsne3vTFtTEDI00Hogtm1Cn/hP9NhBAe2tOhUqcKUtYtYHDkpCa7U/nB?=
- =?us-ascii?Q?iTuaaXebEc8K7Q4dzUM80ClO39tybyViIb8Wl9+f52YvRaR0q2rS1KcAf9E5?=
- =?us-ascii?Q?BiiL39SRRfRcXrB2O5VRvqx91xj6fElM5KPYby5uhJlJJ3ZThidr2Sjpq6oZ?=
- =?us-ascii?Q?IguaMwOZL1vZ0/Y0ANDPomAHrxALC5fceSslFjbP8kmFnN9T65R2iQ81v5Ne?=
- =?us-ascii?Q?Rjxh5lVNXWg0REfgZqUEl3+FksnT79C4kgrzkr7nswwz+2TbMJFXqqWdwzKj?=
- =?us-ascii?Q?4seLs2pB3cXWiK2L+mPVn9ji8Qnj94MD8tK0z2hVyONaL08EoaOQ2YHwBJLZ?=
- =?us-ascii?Q?hXU9kn7f5rGM2teufHSIkZnXfr5xFqPtXJNgCpT38edHMvamxQr9X9Plry7u?=
- =?us-ascii?Q?mE/IIUC6rvBS7ZYbAE+78TERTQbzEYmHCB0HgbgW4Chn4S1eQOemkPwHKgFJ?=
- =?us-ascii?Q?U5pnGL01n49wt8yXswsibD3wQ6hm+Khe3tmvQTKcWaA0j/taqUcr7Oj9VLxP?=
- =?us-ascii?Q?QMKSkLUDOn0Y5M9saFOrFjRmTDg7V3SvFv4nhKA03TtX658BLS+fV7NAj5Lv?=
- =?us-ascii?Q?0TS1cM9YJroBkEt5WwOfRy3hXwiRcaym4Rv4i9Xujqld6WoTT6WxYkIBYnQz?=
- =?us-ascii?Q?4LlRq5V0zOIcF9FvwZt9LChga11pDoY=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 05552106-3515-477a-fa1e-08da278458b6
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR10MB4759.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Apr 2022 12:57:40.5305
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: yUYcXT8NUzg+K98Lp3w1jTLAuzVITupEL0uzszanQJ3NmgJw0U1Y6enSK4V+SlcknFfo6HiXonGlSKIXpebMQUZTOOtM6IuR3tRqxmdgds4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR10MB1712
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.858
- definitions=2022-04-26_02:2022-04-26,2022-04-26 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 spamscore=0 adultscore=0
- mlxscore=0 bulkscore=0 suspectscore=0 malwarescore=0 mlxlogscore=865
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2204260082
-X-Proofpoint-GUID: nmlLmHUSPqJ88kMzXr6tAn930dl-Dumf
-X-Proofpoint-ORIG-GUID: nmlLmHUSPqJ88kMzXr6tAn930dl-Dumf
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Until now, only Cedrus (a slice base decoder) supported interlaced
+decoding.  In order to support field decoding in our frame-based decoder,
+the v4l2-h264 library needed adaptation to produce the appropriate
+reference lists.
 
-Guo,
+This patch extends the v4l2-h264 library to produce the larger references
+list needed to represent fields separately. Hantro, MTK-VCODEC and RKVDEC
+drivers have been adapted to accommodate the larger lists. Though, only
+Hantro and RKVDEC actually have HW support for field decoding. So only
+these two have been updated to make use of the larger lists. All this work
+has been done using the H.264 specification, LibreELEC downstream kernel
+patches, Rockchip MPP reference software and Hantro reference software.
 
-> Fix the following coccicheck warning:
->
-> drivers/scsi/qla2xxx/qla_edif.c:660:11-15: Unneeded variable: "rval".
-> Return "0" on line 761.
+For reviewers, the following is the map of all commit. Patches that could
+be merge independently of this serie are marked as independent. Note that
+the test results do depend on the generic fixes.
 
-Applied to 5.19/scsi-staging, thanks!
+01    : Documentation fix (independent)
+02-03 : Improving some generic traces (independent)
+04    : Minor v4l2-h264 fix (independent)
+05-11 : v4l2-h264 field decoding support
+12-16 : rkvdec h.264 generic fixes (independent)
+17-20 : rkvdec h.264 field decoding support
+21-24 : hantro h.264 field decoding support
+
+All this work have been tested using GStreamer mainline implementation
+but also with FFMPEG LibreELEC fork using the testing tool fluster
+running through the ITU-T H.264 (2016-02) AVCv2 set of bitstream. Before
+this patch, the scores were:
+
+Hantro:
+  FFMPEG:   88/135
+  GSteamer: 90/135
+RKVDEC:
+  FFMPEG:   73/135
+  GSteamer: 77/135
+
+And after these changes:
+
+Hantro:
+  FFMPEG:   118/135
+  GSteamer: 129/135
+RKVDEC:
+  FFMPEG:   118/135
+  GSteamer: 129/135
+
+Note that a bug in FFMPEG / LibreELEC fork was noticed and fixed with the
+following change:
+
+diff --git a/libavcodec/v4l2_request_h264.c b/libavcodec/v4l2_request_h264.c
+index 88da8f0a2d..394bae0550 100644
+--- a/libavcodec/v4l2_request_h264.c
++++ b/libavcodec/v4l2_request_h264.c
+@@ -66,7 +66,7 @@ static void fill_dpb_entry(struct v4l2_h264_dpb_entry *entry, const H264Picture
+ {
+     entry->reference_ts = ff_v4l2_request_get_capture_timestamp(pic->f);
+     entry->pic_num = pic->pic_id;
+-    entry->frame_num = pic->frame_num;
++    entry->frame_num = pic->long_ref ? pic->pic_id : pic->frame_num;
+     entry->fields = pic->reference & V4L2_H264_FRAME_REF;
+     entry->flags = V4L2_H264_DPB_ENTRY_FLAG_VALID;
+     if (entry->fields)
+
+Some useful links:
+
+Detailed Hantro Results:     https://gitlab.freedesktop.org/-/snippets/5189
+Detailed RKVDEC Results:     https://gitlab.freedesktop.org/-/snippets/5253
+ITU-T H.264 (2016-02) AVCv2: https://www.itu.int/net/itu-t/sigdb/spevideo/VideoForm-s.aspx?val=102002641
+Fluster:                     https://github.com/fluendo/fluster
+GStreamer:                   https://gitlab.freedesktop.org/gstreamer/gstreamer/
+FFMPEG Fork:                 https://github.com/jernejsk/FFmpeg/tree/v4l2-request-hwaccel-4.4
+Rockchip MPP:                https://github.com/rockchip-linux/mpp
+
+Changes in v4:
+- Fixed mtk-vcodec port
+- Ported tegra-vde driver (compiled tested only)
+- Applied Hans' commit message, comment and documentation suggestions
+
+Changes in v3:
+- Improved debug message on timestamp miss-match
+- Moved H264 SPS validation into rkvdec-h264
+- Added more comments around H264 SPS validation
+- Also validate at streamon (rkvdec start())
+- Applied more Review-by and Fixes tag
+- Fixed Signed-off-by chain in Jonas patch
+
+Changes in v2:
+- Applied most of Sebastian's suggestion in comments and commit messages.
+- Use a bool for dpb_valid and dpb_bottom in rkvdec
+- Dropped one wrong typo fix (media: v4l2-mem2mem: Fix typo in trace message)
+- Dropped Alex fix (media: rkvdec-h264: Don't hardcode SPS/PPS parameters
+  + I will carry this one later, it seems cosmetic
+
+Jonas Karlman (5):
+  media: rkvdec: h264: Fix bit depth wrap in pps packet
+  media: rkvdec: h264: Validate and use pic width and height in mbs
+  media: rkvdec: h264: Fix reference frame_num wrap for second field
+  media: rkvdec: Ensure decoded resolution fit coded resolution
+  media: hantro: h264: Make dpb entry management more robust
+
+Nicolas Dufresne (18):
+  media: doc: Document dual use of H.264 pic_num/frame_num
+  media: v4l2-mem2mem: Trace on implicit un-hold
+  media: h264: Avoid wrapping long_term_frame_idx
+  media: h264: Use v4l2_h264_reference for reflist
+  media: h264: Increase reference lists size to 32
+  media: h264: Store current picture fields
+  media: h264: Store all fields into the unordered list
+  media: v4l2: Trace calculated p/b0/b1 initial reflist
+  media: h264: Sort p/b reflist using frame_num
+  media: v4l2: Reorder field reflist
+  media: rkvdec: Stop overclocking the decoder
+  media: rkvdec: h264: Fix dpb_valid implementation
+  media: rkvdec: Move H264 SPS validation in rkvdec-h264
+  media: rkvdec-h264: Add field decoding support
+  media: rkvdec: Enable capture buffer holding for H264
+  media: hantro: Stop using H.264 parameter pic_num
+  media: hantro: Add H.264 field decoding support
+  media: hantro: Enable HOLD_CAPTURE_BUF for H.264
+
+Sebastian Fricke (1):
+  media: videobuf2-v4l2: Warn on holding buffers without support
+
+ .../media/v4l/ext-ctrls-codec-stateless.rst   |  10 +-
+ .../media/common/videobuf2/videobuf2-v4l2.c   |   7 +-
+ .../mediatek/vcodec/vdec/vdec_h264_req_if.c   |  36 ++-
+ .../media/platform/nvidia/tegra-vde/h264.c    |  19 +-
+ drivers/media/v4l2-core/v4l2-h264.c           | 275 +++++++++++++++---
+ drivers/media/v4l2-core/v4l2-mem2mem.c        |   1 +
+ .../staging/media/hantro/hantro_g1_h264_dec.c |  38 +--
+ drivers/staging/media/hantro/hantro_h264.c    | 134 +++++++--
+ drivers/staging/media/hantro/hantro_hw.h      |   7 +-
+ drivers/staging/media/hantro/hantro_v4l2.c    |  25 ++
+ .../media/hantro/rockchip_vpu2_hw_h264_dec.c  |  98 +++----
+ drivers/staging/media/rkvdec/rkvdec-h264.c    | 157 +++++++---
+ drivers/staging/media/rkvdec/rkvdec.c         |  35 +--
+ drivers/staging/media/rkvdec/rkvdec.h         |   2 +
+ include/media/v4l2-h264.h                     |  31 +-
+ 15 files changed, 639 insertions(+), 236 deletions(-)
 
 -- 
-Martin K. Petersen	Oracle Linux Engineering
+2.34.1
+
