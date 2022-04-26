@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8C48C3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99680C46467
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:27:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347462AbiDZJ1q (ORCPT
+        id S1347401AbiDZJ1k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:27:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47586 "EHLO
+        Tue, 26 Apr 2022 05:27:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347175AbiDZJFS (ORCPT
+        with ESMTP id S1347115AbiDZJFP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:05:18 -0400
+        Tue, 26 Apr 2022 05:05:15 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1528A7B138;
-        Tue, 26 Apr 2022 01:44:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82AB0FAD9D;
+        Tue, 26 Apr 2022 01:44:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 70C0CB81A2F;
-        Tue, 26 Apr 2022 08:44:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6101C385A0;
-        Tue, 26 Apr 2022 08:44:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B87BFB81D1C;
+        Tue, 26 Apr 2022 08:44:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28FAFC385A0;
+        Tue, 26 Apr 2022 08:44:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962651;
-        bh=YT0TQpCJuFryPx3YwctFYZLSB1ycbxSfcqaPeBl/pbI=;
+        s=korg; t=1650962645;
+        bh=c4tV8qVMiEPhY0Aru+SR6B5J65uqhDU1LrLy5WMOB+A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lH+SQ90JYrKvWjRIUywAqgCZepPlVOxkN4UyHPSt3RYNlwLY2saStTSyy/gGtJkL+
-         0pTOLlVwZ8WfDOG+szr+AKGH/0jgf4iCCbwHidmH7v7IViZUaHaXsJXG7kQfkmu1vR
-         +S+yXCd8nsD2WlR6M/CHXzKeDVecz7GUy6cFaHaE=
+        b=qK/Xf17KdKuqOibmMix55OlrU7MDrDHr1Uo5xwX5i51xYgWwDnKP36ct/8J8/KZY6
+         eJufuM6Hv/uVnQYzNHEoHsPC0YiN5nQ2WBNkV0PS/iQK29/JgGW5SfItvX3UlQaIXE
+         GNomokC63/sV/hszCAD6ElHjUDsTvUm/3Hz8lZzI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tony Zhu <tony.zhu@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 016/146] dmaengine: idxd: fix device cleanup on disable
-Date:   Tue, 26 Apr 2022 10:20:11 +0200
-Message-Id: <20220426081750.522108976@linuxfoundation.org>
+        stable@vger.kernel.org, Kurt Kanzenbach <kurt@linutronix.de>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 041/146] net: dsa: hellcreek: Calculate checksums in tagger
+Date:   Tue, 26 Apr 2022 10:20:36 +0200
+Message-Id: <20220426081751.223955523@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -50,50 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Jiang <dave.jiang@intel.com>
+From: Kurt Kanzenbach <kurt@linutronix.de>
 
-[ Upstream commit 12e45e89556d7a532120f976081e9e7582addd2b ]
+[ Upstream commit 0763120b090418a5257402754e22a34227ae5f12 ]
 
-There are certain parts of WQ that needs to be cleaned up even after WQ is
-disabled during the device disable. Those are the unchangeable parts for a
-WQ when the device is still enabled. Move the cleanup outside of WQ state
-check. Remove idxd_wq_disable_cleanup() inside idxd_wq_device_reset_cleanup()
-since only the unchangeable parts need to be cleared.
+In case the checksum calculation is offloaded to the DSA master network
+interface, it will include the switch trailing tag. As soon as the switch strips
+that tag on egress, the calculated checksum is wrong.
 
-Fixes: 0f225705cf65 ("dmaengine: idxd: fix wq settings post wq disable")
-Reported-by: Tony Zhu <tony.zhu@intel.com>
-Tested-by: Tony Zhu <tony.zhu@intel.com>
-Signed-off-by: Dave Jiang <dave.jiang@intel.com>
-Link: https://lore.kernel.org/r/164919561905.1455025.13542366389944678346.stgit@djiang5-desk3.ch.intel.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Therefore, add the checksum calculation to the tagger (if required) before
+adding the switch tag. This way, the hellcreek code works with all DSA master
+interfaces regardless of their declared feature set.
+
+Fixes: 01ef09caad66 ("net: dsa: Add tag handling for Hirschmann Hellcreek switches")
+Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220415103320.90657-1-kurt@linutronix.de
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/idxd/device.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ net/dsa/tag_hellcreek.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/dma/idxd/device.c b/drivers/dma/idxd/device.c
-index 3061fe857d69..5a0535a0f850 100644
---- a/drivers/dma/idxd/device.c
-+++ b/drivers/dma/idxd/device.c
-@@ -373,7 +373,6 @@ static void idxd_wq_device_reset_cleanup(struct idxd_wq *wq)
- {
- 	lockdep_assert_held(&wq->wq_lock);
+diff --git a/net/dsa/tag_hellcreek.c b/net/dsa/tag_hellcreek.c
+index f64b805303cd..eb204ad36eee 100644
+--- a/net/dsa/tag_hellcreek.c
++++ b/net/dsa/tag_hellcreek.c
+@@ -21,6 +21,14 @@ static struct sk_buff *hellcreek_xmit(struct sk_buff *skb,
+ 	struct dsa_port *dp = dsa_slave_to_port(dev);
+ 	u8 *tag;
  
--	idxd_wq_disable_cleanup(wq);
- 	wq->size = 0;
- 	wq->group = NULL;
- }
-@@ -701,9 +700,9 @@ static void idxd_device_wqs_clear_state(struct idxd_device *idxd)
- 
- 		if (wq->state == IDXD_WQ_ENABLED) {
- 			idxd_wq_disable_cleanup(wq);
--			idxd_wq_device_reset_cleanup(wq);
- 			wq->state = IDXD_WQ_DISABLED;
- 		}
-+		idxd_wq_device_reset_cleanup(wq);
- 	}
- }
- 
++	/* Calculate checksums (if required) before adding the trailer tag to
++	 * avoid including it in calculations. That would lead to wrong
++	 * checksums after the switch strips the tag.
++	 */
++	if (skb->ip_summed == CHECKSUM_PARTIAL &&
++	    skb_checksum_help(skb))
++		return NULL;
++
+ 	/* Tag encoding */
+ 	tag  = skb_put(skb, HELLCREEK_TAG_LEN);
+ 	*tag = BIT(dp->index);
 -- 
 2.35.1
 
