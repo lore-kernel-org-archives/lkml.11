@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E769DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:34:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0A81C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:34:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234824AbiDZJhk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:37:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54916 "EHLO
+        id S1347897AbiDZJhp (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:37:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233404AbiDZJGq (ORCPT
+        with ESMTP id S1346190AbiDZJHQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:06:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E7911738FB;
-        Tue, 26 Apr 2022 01:48:12 -0700 (PDT)
+        Tue, 26 Apr 2022 05:07:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7377120A0;
+        Tue, 26 Apr 2022 01:48:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ACA9E60C43;
-        Tue, 26 Apr 2022 08:48:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC4DFC385A4;
-        Tue, 26 Apr 2022 08:48:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 651A2B81A2F;
+        Tue, 26 Apr 2022 08:48:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7CA8C385AC;
+        Tue, 26 Apr 2022 08:48:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962891;
-        bh=jxHhvnBGUxwf1Vmi/IZkKa8gPWOhQqbc43zwD+FUAEI=;
+        s=korg; t=1650962897;
+        bh=Wt2pwS5chaUbBRJuBDKVa2Ii4R6pBPHlO8KbXsTNmGU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qAeCewSfKdSFKsfva66Ws2bHC2OSL7q8tymml/OJCgUJBcXdKSgFjqsO5WNZ8Krli
-         WqSPM2xQjtr3XXEcd5xbFuXgZa53IkiuM3bj7PcsmbCAM3rf2vXA2XHC7PwibsZBvq
-         GqRJAIVyyI+bhByEOv4oto7fi2XRurnenGeSqA+U=
+        b=OjWcys8zCWa0OJXcopiGUtpB9JapSiUL/IuSjhZERBaqriyLfb5KpySOTVV8ZlV8R
+         sq7HXCfakbfpJW6XFZSVOOuo4oGecp+2uqz5rAOB+tJ8zJed117J6k4lsLK5hH1OzA
+         L3cwgX2fEZnSu5TOHOnx4FNn5xIGL28wpd0NJ1hs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        James Hutchinson <jahutchinson99@googlemail.com>,
-        Dima Ruinskiy <dima.ruinskiy@intel.com>,
-        Sasha Neftin <sasha.neftin@intel.com>,
-        Naama Meir <naamax.meir@linux.intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.17 123/146] e1000e: Fix possible overflow in LTR decoding
-Date:   Tue, 26 Apr 2022 10:21:58 +0200
-Message-Id: <20220426081753.514499464@linuxfoundation.org>
+        Sergey Matyukevich <sergey.matyukevich@synopsys.com>,
+        Vineet Gupta <vgupta@kernel.org>
+Subject: [PATCH 5.17 125/146] ARC: entry: fix syscall_trace_exit argument
+Date:   Tue, 26 Apr 2022 10:22:00 +0200
+Message-Id: <20220426081753.576231469@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -52,52 +50,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+From: Sergey Matyukevich <sergey.matyukevich@synopsys.com>
 
-commit 04ebaa1cfddae5f240cc7404f009133bb0389a47 upstream.
+commit b1c6ecfdd06907554518ec384ce8e99889d15193 upstream.
 
-When we decode the latency and the max_latency, u16 value may not fit
-the required size and could lead to the wrong LTR representation.
+Function syscall_trace_exit expects pointer to pt_regs. However
+r0 is also used to keep syscall return value. Restore pointer
+to pt_regs before calling syscall_trace_exit.
 
-Scaling is represented as:
-scale 0 - 1         (2^(5*0)) = 2^0
-scale 1 - 32        (2^(5 *1))= 2^5
-scale 2 - 1024      (2^(5 *2)) =2^10
-scale 3 - 32768     (2^(5 *3)) =2^15
-scale 4 - 1048576   (2^(5 *4)) = 2^20
-scale 5 - 33554432  (2^(5 *4)) = 2^25
-scale 4 and scale 5 required 20 and 25 bits respectively.
-scale 6 reserved.
-
-Replace the u16 type with the u32 type and allow corrected LTR
-representation.
-
-Cc: stable@vger.kernel.org
-Fixes: 44a13a5d99c7 ("e1000e: Fix the max snoop/no-snoop latency for 10M")
-Reported-by: James Hutchinson <jahutchinson99@googlemail.com>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215689
-Suggested-by: Dima Ruinskiy <dima.ruinskiy@intel.com>
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Naama Meir <naamax.meir@linux.intel.com>
-Tested-by: James Hutchinson <jahutchinson99@googlemail.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Sergey Matyukevich <sergey.matyukevich@synopsys.com>
+Signed-off-by: Vineet Gupta <vgupta@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/e1000e/ich8lan.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arc/kernel/entry.S |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
-+++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-@@ -1009,8 +1009,8 @@ static s32 e1000_platform_pm_pch_lpt(str
- {
- 	u32 reg = link << (E1000_LTRV_REQ_SHIFT + E1000_LTRV_NOSNOOP_SHIFT) |
- 	    link << E1000_LTRV_REQ_SHIFT | E1000_LTRV_SEND;
--	u16 max_ltr_enc_d = 0;	/* maximum LTR decoded by platform */
--	u16 lat_enc_d = 0;	/* latency decoded */
-+	u32 max_ltr_enc_d = 0;	/* maximum LTR decoded by platform */
-+	u32 lat_enc_d = 0;	/* latency decoded */
- 	u16 lat_enc = 0;	/* latency encoded */
+--- a/arch/arc/kernel/entry.S
++++ b/arch/arc/kernel/entry.S
+@@ -196,6 +196,7 @@ tracesys_exit:
+ 	st  r0, [sp, PT_r0]     ; sys call return value in pt_regs
  
- 	if (link) {
+ 	;POST Sys Call Ptrace Hook
++	mov r0, sp		; pt_regs needed
+ 	bl  @syscall_trace_exit
+ 	b   ret_from_exception ; NOT ret_from_system_call at is saves r0 which
+ 	; we'd done before calling post hook above
 
 
