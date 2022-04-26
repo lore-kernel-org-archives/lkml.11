@@ -2,197 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BC29C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 20:33:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86E58C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 20:33:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355018AbiDZUgw (ORCPT
+        id S1355017AbiDZUgz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 16:36:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45998 "EHLO
+        Tue, 26 Apr 2022 16:36:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355034AbiDZUgq (ORCPT
+        with ESMTP id S1355010AbiDZUg2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 16:36:46 -0400
-Received: from mail-oa1-x2a.google.com (mail-oa1-x2a.google.com [IPv6:2001:4860:4864:20::2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC1781AAB63;
-        Tue, 26 Apr 2022 13:33:28 -0700 (PDT)
-Received: by mail-oa1-x2a.google.com with SMTP id 586e51a60fabf-e2fa360f6dso20645354fac.2;
-        Tue, 26 Apr 2022 13:33:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=VZ4m53/siNJy3szXTYThcPOYpErMJB0pa/nMP6ZGHk4=;
-        b=cixBLl8WkxFLsGtzEnwriihAF1Snv3H0DEFiF30yyvsbVvX3BaQyEkeXtgM/nyizi0
-         gykhgLjvfbL3EM2B+gFp0F3lsS85RRk3wDg7bT+LPzl4zudWhSGNVR5e6Z1atWBSkGu/
-         L5ZbyiRG7Ob0We2rZCmZJvWzUCAIW0c2ASFr7s8r6asqr+FcGTU8Q/t6X6w+pIDBuiUn
-         /5gnK5JcPreXWbThuXvA6fXGBc0GmCZgTalNWS4Yl2L9+6zHvb/vOKK3G6eA8LyBSUWD
-         NqbgDYC3m0ZO+l+65u5/J4IrGP+jfAx0PJs18VC/Cj0DK5MXPPzW3ChzT2xYs0NwbtPw
-         kvdg==
+        Tue, 26 Apr 2022 16:36:28 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0A4C11AB8D5
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 13:33:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651005193;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Av2XJWYSmxJiVQjp5kZR1hfhT+pdVskMA4VQgdFQOaM=;
+        b=WK9VxpmjoLLrOX/Z94nx1NOwSqYuPD0Yy/ZDXQDXPjHYre1pneNPBH0Hauo0Y0QWpGvTMb
+        +K4zJNZYPIhpKXbzbgtxr2VRbkT9VR/kKBbD8wAeyRO3uTBOSr+R6v9VOtV+ttKZXF/l0E
+        10bXil0mPPSh/OJtaTuyPSU4bMqq85c=
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com
+ [209.85.166.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-660-HC9fj3zAOey-BED25hp_Vw-1; Tue, 26 Apr 2022 16:33:12 -0400
+X-MC-Unique: HC9fj3zAOey-BED25hp_Vw-1
+Received: by mail-io1-f71.google.com with SMTP id i19-20020a5d9353000000b006495ab76af6so81415ioo.0
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 13:33:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=VZ4m53/siNJy3szXTYThcPOYpErMJB0pa/nMP6ZGHk4=;
-        b=auvDg0zrQFJ4ZIaJjBVPZT0/UBz3B3nHqErO1iCT/iFukguXUUXx5yO0sLL6PSXGDy
-         nmRZrIupFhlohJF/A1opntQAR7lGf9P0ST2ByFnFE8PXmnphaev9wNb8eVxgG8ZMDWvt
-         J3ghWswT3fHbpm0jsvaMICHtlSaaBGupzd7nc4wZcBNvjDCc6Pz7RxDPgfi8Fs6lLgGV
-         r2d43hFF1TjPJ4Z/G1JEEZTUhttRV76n9Fcl5oaAnvlNasHACwRYR66Gad1URb9TPLMZ
-         G7gfILiG/bWvKXdiEkkPkWkd0dpD7gy8VwB3lIXfW5JnZmHzcS11hioZDOjOkZGEaZ8C
-         hLDQ==
-X-Gm-Message-State: AOAM533SMq735l06scb4hhTqman89Q9BOsaqmIEf3Z8r6bZNsoAqqrh5
-        VvYd2+lAlb3kiQytl0AvFdo=
-X-Google-Smtp-Source: ABdhPJyCtcfZ1jSPkur0xtPK8uPf0o8G0+H6j5Ooe/MmqE+1nIUd0FFIDjFF1cTIEkkqrZTFBF+0HA==
-X-Received: by 2002:a05:6870:c1cd:b0:e6:757f:9a04 with SMTP id i13-20020a056870c1cd00b000e6757f9a04mr10077260oad.265.1651005208188;
-        Tue, 26 Apr 2022 13:33:28 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id k15-20020a4a2a0f000000b0033a34a057c8sm5985507oof.11.2022.04.26.13.33.27
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Av2XJWYSmxJiVQjp5kZR1hfhT+pdVskMA4VQgdFQOaM=;
+        b=exrxsVQPDf0/xOcm34AkwgQ4WOlOk/TT6z8pweCeojWRFjhdGjgAyp+I+M1/i4QCRU
+         c//WRiHzilK+btXkUYOXhZSWORG1QqZUFDNRRLBUBP+SDt5PM54t8Pe4EAuJPmHOYtpW
+         YbC+EgaVS0BY7voP6xRSE49tF15vfyVoXxgqNcXsuugX5PSzWxQH4vvKsK3qHO7RVaab
+         xGLS0m3f+rgOCFvLgMJUUh2L4xARXX7OGDLk/EsXqBo4WhZ2N7tVXkoiQ2XlQCfr96d0
+         pcq+byXSgtmlls8Pv4of80WpZvXm8CS6YyALO0nOtbcsQISuLAF/ldMGgkyaWkQoSptb
+         WUDw==
+X-Gm-Message-State: AOAM533vHK1W1vvSs06NyU1slPK5BKNSGi/+xMlhGF+Ks1cb/tyVUoJv
+        27j12l7OSGQ3tBuSS04E21c+ZRz9k+I2PXPvgKZu294MhgDD5EjxaOMYbuyaRBEW+oCgm/zM3c0
+        XPE/56z7BWMrYbEdGKNyUx/SU
+X-Received: by 2002:a05:6638:272c:b0:32a:f95b:fc77 with SMTP id m44-20020a056638272c00b0032af95bfc77mr4011882jav.179.1651005191544;
+        Tue, 26 Apr 2022 13:33:11 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxd4CFNten6nl0jATzOU1yCBTY6Y58j8Espgob7sbvIFYcRfIXeg+IqFoDNsZPO7cKZaJ3nww==
+X-Received: by 2002:a05:6638:272c:b0:32a:f95b:fc77 with SMTP id m44-20020a056638272c00b0032af95bfc77mr4011865jav.179.1651005191365;
+        Tue, 26 Apr 2022 13:33:11 -0700 (PDT)
+Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
+        by smtp.gmail.com with ESMTPSA id e18-20020a92d752000000b002cd6dae980fsm8497051ilq.13.2022.04.26.13.33.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 13:33:27 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Tue, 26 Apr 2022 13:33:25 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Armin Wolf <W_Armin@gmx.de>
-Cc:     pali@kernel.org, jdelvare@suse.com, linux-hwmon@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] hwmon: (dell-smm) Avoid unnecessary SMM calls during
- init
-Message-ID: <20220426203325.GP4093517@roeck-us.net>
-References: <20220426200320.399435-1-W_Armin@gmx.de>
- <20220426200320.399435-2-W_Armin@gmx.de>
- <20220426202048.GO4093517@roeck-us.net>
+        Tue, 26 Apr 2022 13:33:11 -0700 (PDT)
+Date:   Tue, 26 Apr 2022 16:33:08 -0400
+From:   Peter Xu <peterx@redhat.com>
+To:     Axel Rasmussen <axelrasmussen@google.com>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Charan Teja Reddy <charante@codeaurora.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Dmitry V . Levin" <ldv@altlinux.org>,
+        Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>,
+        Hugh Dickins <hughd@google.com>, Jan Kara <jack@suse.cz>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@kernel.org>, Nadav Amit <namit@vmware.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        zhangyi <yi.zhang@huawei.com>, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v2 1/6] selftests: vm: add hugetlb_shared userfaultfd
+ test to run_vmtests.sh
+Message-ID: <YmhXBHFrXKT/Jqkd@xz-m1.local>
+References: <20220422212945.2227722-1-axelrasmussen@google.com>
+ <20220422212945.2227722-2-axelrasmussen@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220426202048.GO4093517@roeck-us.net>
+In-Reply-To: <20220422212945.2227722-2-axelrasmussen@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 01:20:48PM -0700, Guenter Roeck wrote:
-> On Tue, Apr 26, 2022 at 10:03:18PM +0200, Armin Wolf wrote:
-> > When the driver tries to detect the fan multiplier during
-> > module initialisation, it issues one SMM call for each fan.
-> > Those SMM calls are however redundant and also try to query
-> > fans which may not be present.
-> > Fix that by detecting the fan multiplier during hwmon
-> > initialisation when no extra SMM calls are needed.
-> > Also dont assume the last nominal speed entry to be the
-> > biggest and instead check all entries.
-> > 
-> > Signed-off-by: Armin Wolf <W_Armin@gmx.de>
-> > ---
-> >  drivers/hwmon/dell-smm-hwmon.c | 37 +++++++++++++---------------------
-> >  1 file changed, 14 insertions(+), 23 deletions(-)
-> > 
-> > diff --git a/drivers/hwmon/dell-smm-hwmon.c b/drivers/hwmon/dell-smm-hwmon.c
-> > index 30b6f0c28093..202ee884de9e 100644
-> > --- a/drivers/hwmon/dell-smm-hwmon.c
-> > +++ b/drivers/hwmon/dell-smm-hwmon.c
-> > @@ -50,7 +50,7 @@
-> >  #define I8K_SMM_GET_DELL_SIG2	0xffa3
-> > 
-> >  #define I8K_FAN_MULT		30
-> > -#define I8K_FAN_MAX_RPM		30000
-> > +#define I8K_FAN_RPM_THRESHOLD	1000
-> >  #define I8K_MAX_TEMP		127
-> > 
-> >  #define I8K_FN_NONE		0x00
-> > @@ -326,7 +326,7 @@ static int __init i8k_get_fan_nominal_speed(const struct dell_smm_data *data, u8
-> >  	if (data->disallow_fan_support)
-> >  		return -EINVAL;
-> > 
-> > -	return i8k_smm(&regs) ? : (regs.eax & 0xffff) * data->i8k_fan_mult;
-> > +	return i8k_smm(&regs) ? : (regs.eax & 0xffff);
-> >  }
-> > 
-> >  /*
-> > @@ -776,6 +776,7 @@ static int dell_smm_read(struct device *dev, enum hwmon_sensor_types type, u32 a
-> >  			 long *val)
-> >  {
-> >  	struct dell_smm_data *data = dev_get_drvdata(dev);
-> > +	int mult = data->i8k_fan_mult;
-> >  	int ret;
-> > 
-> >  	switch (type) {
-> > @@ -804,11 +805,11 @@ static int dell_smm_read(struct device *dev, enum hwmon_sensor_types type, u32 a
-> > 
-> >  			return 0;
-> >  		case hwmon_fan_min:
-> > -			*val = data->fan_nominal_speed[channel][0];
-> > +			*val = data->fan_nominal_speed[channel][0] * mult;
-> > 
-> >  			return 0;
-> >  		case hwmon_fan_max:
-> > -			*val = data->fan_nominal_speed[channel][data->i8k_fan_max];
-> > +			*val = data->fan_nominal_speed[channel][data->i8k_fan_max] * mult;
-> > 
-> >  			return 0;
-> >  		case hwmon_fan_target:
-> > @@ -819,7 +820,7 @@ static int dell_smm_read(struct device *dev, enum hwmon_sensor_types type, u32 a
-> >  			if (ret > data->i8k_fan_max)
-> >  				ret = data->i8k_fan_max;
-> > 
-> > -			*val = data->fan_nominal_speed[channel][ret];
-> > +			*val = data->fan_nominal_speed[channel][ret] * mult;
-> > 
-> >  			return 0;
-> >  		default:
-> > @@ -1071,6 +1072,13 @@ static int __init dell_smm_init_hwmon(struct device *dev)
-> >  				break;
-> >  			}
-> >  			data->fan_nominal_speed[i][state] = err;
-> > +			/*
-> > +			 * Autodetect fan multiplier based on nominal rpm if multiplier
-> > +			 * was not specified as module param or in DMI. If fan reports
-> > +			 * rpm value too high then set multiplier to 1.
-> > +			 */
-> > +			if (!fan_mult && err > I8K_FAN_RPM_THRESHOLD)
-> > +				data->i8k_fan_mult = 1;
-> >  		}
-> >  	}
-> > 
-> > @@ -1359,7 +1367,6 @@ static int __init dell_smm_probe(struct platform_device *pdev)
-> >  	struct dell_smm_data *data;
-> >  	const struct dmi_system_id *id, *fan_control;
-> >  	int ret;
-> > -	u8 fan;
-> > 
-> >  	data = devm_kzalloc(&pdev->dev, sizeof(struct dell_smm_data), GFP_KERNEL);
-> >  	if (!data)
-> > @@ -1414,24 +1421,8 @@ static int __init dell_smm_probe(struct platform_device *pdev)
-> >  		dev_info(&pdev->dev, "enabling support for setting automatic/manual fan control\n");
-> >  	}
-> > 
-> > -	if (!fan_mult) {
-> > -		/*
-> > -		 * Autodetect fan multiplier based on nominal rpm
-> > -		 * If fan reports rpm value too high then set multiplier to 1
-> > -		 */
-> > -		for (fan = 0; fan < DELL_SMM_NO_FANS; ++fan) {
-> > -			ret = i8k_get_fan_nominal_speed(data, fan, data->i8k_fan_max);
-> > -			if (ret < 0)
-> > -				continue;
-> > -
-> > -			if (ret > I8K_FAN_MAX_RPM)
-> > -				data->i8k_fan_mult = 1;
-> > -			break;
-> > -		}
-> > -	} else {
-> > -		/* Fan multiplier was specified in module param or in dmi */
-> > +	if (fan_mult)
+On Fri, Apr 22, 2022 at 02:29:40PM -0700, Axel Rasmussen wrote:
+> This not being included was just a simple oversight. There are certain
+> features (like minor fault support) which are only enabled on shared
+> mappings, so without including hugetlb_shared we actually lose a
+> significant amount of test coverage.
 > 
-> Might as well drop the if statement here.
-> 
-Never mind, I see that is removed later anyway.
+> Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
 
-Guenter
+Reviewed-by: Peter Xu <peterx@redhat.com>
 
-> >  		data->i8k_fan_mult = fan_mult;
-> > -	}
-> > 
-> >  	ret = dell_smm_init_hwmon(&pdev->dev);
-> >  	if (ret)
-> > --
-> > 2.30.2
-> > 
+-- 
+Peter Xu
+
