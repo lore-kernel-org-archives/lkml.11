@@ -2,184 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70E0AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 14:22:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 391C4C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 14:23:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351576AbiDZOZ6 (ORCPT
+        id S1351577AbiDZO0I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 10:25:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46454 "EHLO
+        Tue, 26 Apr 2022 10:26:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239214AbiDZOZy (ORCPT
+        with ESMTP id S1347196AbiDZO0E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 10:25:54 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2059.outbound.protection.outlook.com [40.107.236.59])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BAB415714
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 07:22:46 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Z/ZHOIHHZ2zZe+pDrfSiniqRS9cnSBrv82zyuUHIyV1nLJ8LGrevVpK9vXvt3BN6HrB1drwP7K+1GKy8Y7qyutR2lh1M2rBC3rRAKQBpNpzciUgEhYQqibzuIkwetbPg8HAo9OrVwt4qu1GrLfOSndlK5MLr14hrGEuklCjm8ASMKHxkti+YhHYJQfhyWy9CZlGvplmDJ36Q2yl1NhtqhzNwoS6lRelwp4EYt82+cMQrzIvszIXSGrds0AdbJ50A1Z/diE1+7uZdgmX5rTWjP7EpxfcqPwfsej/sQZNIl6xEFmhI5lylwLTPMSPLsGTBNNB8W6vx+SPm/ivtYmrMag==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Lxds7ZBgB2Vcifo8P+TFns+xKefa0lTleeYfQDGyVO4=;
- b=kOWG1gXsr40wYokspgrBXCeg3Se9xF8vFCQphS+nEZ3goG/8jaztqfx6Vb11Kt7pmW25oVEw2TvOicPCVfhivPiVYHZakwjDHkgP2IpCZCpZha17QJo55WFrrFBpUQwyBN+sbpXX+YzKWQgg0AF/SB7UaRrg2FzZODShX8z1MUaJtgfxWoiClffCAC73gqY1fO2BFnCMkksbVgZxXiL8HHNLPR/KN791mdXi7aroY6N0Qh5JL4jqj+KJmoUFzms6UlL9vUKO1vJpc+qvTbDc56J2G+lebwD4a2sBJFPiMX8EYYIbDlP4WtL/7WLHqufLIEKOsVm3aI6i9pMsDmj9aA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Lxds7ZBgB2Vcifo8P+TFns+xKefa0lTleeYfQDGyVO4=;
- b=D4B+WdO6BZBhJk+G5lk2Itbe0C4ryL818Fy6LHCWXc9K+tHDHP2qqlueCbjVyiBaLBx/UyoaOc2D+uk2ox84YT2VE/CJEoPkAqpGJd9CGUwDSI+/v1BS9Fn3ACLu+MuRLrRtEJZgRQKf10Yts3Ppc7cgUxWZOmsvzLz37K3pjEo=
-Received: from MW2PR16CA0034.namprd16.prod.outlook.com (2603:10b6:907::47) by
- MWHPR12MB1598.namprd12.prod.outlook.com (2603:10b6:301:4::23) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5186.15; Tue, 26 Apr 2022 14:22:44 +0000
-Received: from CO1NAM11FT017.eop-nam11.prod.protection.outlook.com
- (2603:10b6:907:0:cafe::49) by MW2PR16CA0034.outlook.office365.com
- (2603:10b6:907::47) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.21 via Frontend
- Transport; Tue, 26 Apr 2022 14:22:44 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT017.mail.protection.outlook.com (10.13.175.108) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5186.14 via Frontend Transport; Tue, 26 Apr 2022 14:22:43 +0000
-Received: from localhost (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 26 Apr
- 2022 09:22:42 -0500
-From:   Michael Roth <michael.roth@amd.com>
-To:     <linux-kernel@vger.kernel.org>
-CC:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Kees Cook <keescook@chromium.org>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        "Nick Desaulniers" <ndesaulniers@google.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Venu Busireddy <venu.busireddy@oracle.com>,
-        "Joerg Roedel" <jroedel@suse.de>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        "Borislav Petkov" <bp@suse.de>
-Subject: [PATCH v4 1/2] x86/sev: Add missing __init annotations to SEV init routines
-Date:   Tue, 26 Apr 2022 09:21:46 -0500
-Message-ID: <20220426142147.338412-2-michael.roth@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220426142147.338412-1-michael.roth@amd.com>
-References: <20220426142147.338412-1-michael.roth@amd.com>
+        Tue, 26 Apr 2022 10:26:04 -0400
+Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36B1E18E18;
+        Tue, 26 Apr 2022 07:22:57 -0700 (PDT)
+Received: by mail-oi1-f170.google.com with SMTP id z8so20829165oix.3;
+        Tue, 26 Apr 2022 07:22:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xvzda8Pfpd3wwPcLRsSY8ulA8iZIYiMmmNvBbB50ZBo=;
+        b=eMtzTu+9uo5RpoE29cwdTplDs7/1J23yJE9Pfj9OMPuzbbx+2yLtEYyr2oi2JWlcwK
+         JnF1dVf0VvgaeP9vlxr/bRvjQWsOJEJmffgAcFlsRagXKFtaC4gYAQfWOXV5zFRcql4a
+         mS5DBqzkUxcV/eE1nRqIqtTQy2JLhO5fwkFrok57mckE6EnqUxV+mm2Q3u+vGsivyN5C
+         IMkF9R+jw25h4Zdy8RRp/A5jz6dRgGOEXuspMC49uHQ3AVlX33wJ7TMdAchfHSrjYqA6
+         xjArKKbB7uO1DlCn5Xlk+isirOxoN6j5U5GytQJrZGB52YbIT7nHAQsMqZPSTvBnlA7H
+         eSwA==
+X-Gm-Message-State: AOAM531qEZiePkPLLikWNob41Mv/KZ2XXKph6xyNORB+/3wiC+IS+8Kr
+        xLTU3NJ9OqZRoLfs2g0jJmPoCn70dg==
+X-Google-Smtp-Source: ABdhPJxhcjFhGIM6Fai/2gb+tvQSLuzGNZLP5mUuf7pSQ1nmqeeR538p3fZzoZhebGXVBtICKYmQTw==
+X-Received: by 2002:a54:4f04:0:b0:325:3659:ee90 with SMTP id e4-20020a544f04000000b003253659ee90mr4880405oiy.199.1650982976502;
+        Tue, 26 Apr 2022 07:22:56 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id s6-20020a4ae546000000b0032480834193sm5599150oot.46.2022.04.26.07.22.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 07:22:56 -0700 (PDT)
+Received: (nullmailer pid 1917494 invoked by uid 1000);
+        Tue, 26 Apr 2022 14:22:55 -0000
+Date:   Tue, 26 Apr 2022 09:22:55 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Bartosz Golaszewski <brgl@bgdev.pl>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: eeprom/at24: Add samsung,s524ad0xd1
+ compatible
+Message-ID: <YmgAP5yrHWJESq8N@robh.at.kernel.org>
+References: <20220422192355.2597523-1-robh@kernel.org>
+ <469d7ac0-7cf6-af91-7e24-1d9df88c9221@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 74820272-d3f1-4d7f-f089-08da27903aa9
-X-MS-TrafficTypeDiagnostic: MWHPR12MB1598:EE_
-X-Microsoft-Antispam-PRVS: <MWHPR12MB15987CB92A6B90CFB3531CC695FB9@MWHPR12MB1598.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: M8dn0myultQgR5J8oTn9rfP3wSG1OjrPyGsmr9a5LvmuaCDcJkfP3SakQ8HJWgppXbAjc1TQv73NGq2InPbgJ4MWk+aX4OZewBMG+TEADoq82X3wJbDTU5D8AmYDkuotCRymngepiNP6ZqoIfxYlx2jmbU8Hp6h7hEsRsRFyWpA6EkEG1JiR8ZqiQoBD2z0T/OvCpepVzQGMRuwhar4s/P6KNpHKbWb53Xzs5Ss75uV+n4SzlVGXOwmg6MPK58ghlLfM+qm3p6JHX4HtChrVyzWolqpFTXnRIpUJkZpAdNYC598bN7cXl6RBHZSufm7rrZ1QMaUzXG+YjhPjWj58CQp8s05f98w0nI9fi3OGjN592ft4JiV08AD266BSsWKq0KI6jEJNyLjocphOEwBbLJWtWx6TTnSaA2BmbDbLrQ7JBEpChym9L/Pib2LO8FTclGPfx5fOr7fxjyPeWmh/aaYhFOPDHKixM9QYxChsgiBxxjckb6mkFyaeIEuk56S5eDU4LYui7t+tK8pvY/X8PP+8Dub+8ef42VcbzjNvM0IKFc/LjpeKR27/LZvplfSwbSZqoCmMM+ssNKuL3pKn8RGJEvTaUQuP2wPiytO5wjSsdNmY7H22/l6hizpnZKumEEs6SHRdsWApSzXPC3YbIbkKEzoDjSb2twV2vi3AGacvN+/qSX/w1frYlSsXFAA0Lf0Oqc+JRMjyzXWdE0f3dA==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(36756003)(47076005)(44832011)(2616005)(1076003)(16526019)(5660300002)(8936002)(356005)(36860700001)(83380400001)(81166007)(186003)(426003)(336012)(7416002)(86362001)(26005)(8676002)(4326008)(2906002)(70206006)(508600001)(70586007)(6916009)(316002)(54906003)(40460700003)(82310400005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Apr 2022 14:22:43.6992
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 74820272-d3f1-4d7f-f089-08da27903aa9
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT017.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1598
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <469d7ac0-7cf6-af91-7e24-1d9df88c9221@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently get_secrets_page() is only reachable from the following call
-chain:
+On Sat, Apr 23, 2022 at 08:44:21PM +0200, Krzysztof Kozlowski wrote:
+> On 22/04/2022 21:23, Rob Herring wrote:
+> > The samsung,s524ad0xd1 compatible is in use, but not documented. According
+> > to arch/arm/mach-s3c/mach-smdk6410.c, the samsung,s524ad0xd1 is compatible
+> > with the 24c128.
+> > 
+> > Signed-off-by: Rob Herring <robh@kernel.org>
+> > ---
+> >  Documentation/devicetree/bindings/eeprom/at24.yaml | 4 +++-
+> >  1 file changed, 3 insertions(+), 1 deletion(-)
+> > 
+> 
+> The compatible - without 24c128 fallback - is used also in
+> arch/arm/boot/dts/exynos5250-smdk5250.dts and
+> Documentation/devicetree/bindings/i2c/samsung,s3c2410-i2c.yaml, so these
+> files should be fixed as well.
 
-  __init snp_init_platform_device():
-    get_secrets_page()
+The dts file I was aware of and I leave that to the Exynos 
+maintainers/users. :)
 
-so mark it as __init as well. This is also needed since it calls
-early_memremap(), which is also an __init routine.
+For some reason samsung,s3c2410-i2c.yaml is not getting a warning. I'll 
+have to investigate.
 
-Similarly, get_jump_table_addr() is only reachable from the following
-call chain:
-
-  __init setup_real_mode():
-    sme_sev_setup_real_mode():
-      sev_es_setup_ap_jump_table():
-        get_jump_table_addr()
-
-so mark get_jump_table_addr() and everything up that call chain as
-__init as well. This is also needed since future patches will add a
-call to get_secrets_page(), which needs to be __init due to the reasons
-stated above.
-
-Suggested-by: Borislav Petkov <bp@suse.de>
-Signed-off-by: Michael Roth <michael.roth@amd.com>
----
- arch/x86/kernel/sev.c    | 6 +++---
- arch/x86/realmode/init.c | 2 +-
- 2 files changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/arch/x86/kernel/sev.c b/arch/x86/kernel/sev.c
-index 2fa87a07ab30..b7fd1915560d 100644
---- a/arch/x86/kernel/sev.c
-+++ b/arch/x86/kernel/sev.c
-@@ -558,7 +558,7 @@ void noinstr __sev_es_nmi_complete(void)
- 	__sev_put_ghcb(&state);
- }
- 
--static u64 get_jump_table_addr(void)
-+static u64 __init get_jump_table_addr(void)
- {
- 	struct ghcb_state state;
- 	unsigned long flags;
-@@ -1077,7 +1077,7 @@ void snp_set_wakeup_secondary_cpu(void)
- 	apic->wakeup_secondary_cpu = wakeup_cpu_via_vmgexit;
- }
- 
--int sev_es_setup_ap_jump_table(struct real_mode_header *rmh)
-+int __init sev_es_setup_ap_jump_table(struct real_mode_header *rmh)
- {
- 	u16 startup_cs, startup_ip;
- 	phys_addr_t jump_table_pa;
-@@ -2171,7 +2171,7 @@ static struct platform_device sev_guest_device = {
- 	.id		= -1,
- };
- 
--static u64 get_secrets_page(void)
-+static u64 __init get_secrets_page(void)
- {
- 	u64 pa_data = boot_params.cc_blob_address;
- 	struct cc_blob_sev_info info;
-diff --git a/arch/x86/realmode/init.c b/arch/x86/realmode/init.c
-index c5e29db02a46..41d7669a97ad 100644
---- a/arch/x86/realmode/init.c
-+++ b/arch/x86/realmode/init.c
-@@ -67,7 +67,7 @@ void __init reserve_real_mode(void)
- 	memblock_reserve(0, SZ_1M);
- }
- 
--static void sme_sev_setup_real_mode(struct trampoline_header *th)
-+static void __init sme_sev_setup_real_mode(struct trampoline_header *th)
- {
- #ifdef CONFIG_AMD_MEM_ENCRYPT
- 	if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT))
--- 
-2.25.1
-
+Rob
