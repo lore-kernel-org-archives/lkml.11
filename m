@@ -2,87 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A30A6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:24:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7690EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:24:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237082AbiDZJ1F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:27:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56198 "EHLO
+        id S1346707AbiDZJ1P (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:27:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346732AbiDZJBL (ORCPT
+        with ESMTP id S1346816AbiDZJFF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:01:11 -0400
-Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.222])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 55C6C78FE6;
-        Tue, 26 Apr 2022 01:43:29 -0700 (PDT)
-HMM_SOURCE_IP: 172.18.0.48:58142.1056067529
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-202.80.192.39 (unknown [172.18.0.48])
-        by chinatelecom.cn (HERMES) with SMTP id AF1122800B7;
-        Tue, 26 Apr 2022 16:43:24 +0800 (CST)
-X-189-SAVE-TO-SEND: +liuxp11@chinatelecom.cn
-Received: from  ([172.18.0.48])
-        by app0024 with ESMTP id 3abfba636edf49a1a199d8e1085c7956 for wim@linux-watchdog.org;
-        Tue, 26 Apr 2022 16:43:27 CST
-X-Transaction-ID: 3abfba636edf49a1a199d8e1085c7956
-X-Real-From: liuxp11@chinatelecom.cn
-X-Receive-IP: 172.18.0.48
-X-MEDUSA-Status: 0
-Sender: liuxp11@chinatelecom.cn
-From:   Liu Xinpeng <liuxp11@chinatelecom.cn>
-To:     wim@linux-watchdog.org, linux@roeck-us.net, tzungbi@kernel.org
-Cc:     linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Liu Xinpeng <liuxp11@chinatelecom.cn>
-Subject: [PATCH v5] watchdog: wdat_wdg: Using the existed function to check parameter timeout
-Date:   Tue, 26 Apr 2022 16:43:09 +0800
-Message-Id: <1650962589-1992-1-git-send-email-liuxp11@chinatelecom.cn>
-X-Mailer: git-send-email 1.8.3.1
+        Tue, 26 Apr 2022 05:05:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6CC8EA1D9;
+        Tue, 26 Apr 2022 01:43:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0ADAEB81CF2;
+        Tue, 26 Apr 2022 08:43:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CEE5C385AC;
+        Tue, 26 Apr 2022 08:43:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650962632;
+        bh=PTHyB/JAPnr23g96J2lvylkfzjNZfe7Uuy9eBoGUcoc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=pUBpH7kkvGTW/xKqeOGNq/Uiqx9Uyf/jeIVHE/EoSThvshZrNGLSq0qNb1nnQDtwu
+         gUFLSXMpt0Uon82/bvGbqdxzXYekQDkEecIG8ckUxsBXoX9ym90FH3fOVkAa8A/c8c
+         i7aPAEfCBAVSqxZHWGa7xR2WnB5xHk55HkN/Dq6s=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 037/146] net/sched: cls_u32: fix possible leak in u32_init_knode()
+Date:   Tue, 26 Apr 2022 10:20:32 +0200
+Message-Id: <20220426081751.112036028@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
+References: <20220426081750.051179617@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Context: If max_hw_heartbeat_ms is provided, the configured maximum timeout
-is not limited by it. The limit check in this driver therefore doesn't make
-much sense. Similar, the watchdog core ensures that minimum timeout limits
-are met if min_hw_heartbeat_ms is set. Using watchdog_timeout_invalid()
-makes more sense because it takes this into account.
+From: Eric Dumazet <edumazet@google.com>
 
-Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
+[ Upstream commit ec5b0f605b105457f257f2870acad4a5d463984b ]
+
+While investigating a related syzbot report,
+I found that whenever call to tcf_exts_init()
+from u32_init_knode() is failing, we end up
+with an elevated refcount on ht->refcnt
+
+To avoid that, only increase the refcount after
+all possible errors have been evaluated.
+
+Fixes: b9a24bb76bf6 ("net_sched: properly handle failure case of tcf_exts_init()")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Cong Wang <xiyou.wangcong@gmail.com>
+Cc: Jiri Pirko <jiri@resnulli.us>
+Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/watchdog/wdat_wdt.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/sched/cls_u32.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/watchdog/wdat_wdt.c b/drivers/watchdog/wdat_wdt.c
-index 195c8c004b69..9db01d165310 100644
---- a/drivers/watchdog/wdat_wdt.c
-+++ b/drivers/watchdog/wdat_wdt.c
-@@ -55,6 +55,7 @@ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
- 		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
+diff --git a/net/sched/cls_u32.c b/net/sched/cls_u32.c
+index fcba6c43ba50..4d27300c287c 100644
+--- a/net/sched/cls_u32.c
++++ b/net/sched/cls_u32.c
+@@ -815,10 +815,6 @@ static struct tc_u_knode *u32_init_knode(struct net *net, struct tcf_proto *tp,
+ 	new->flags = n->flags;
+ 	RCU_INIT_POINTER(new->ht_down, ht);
  
- #define WDAT_DEFAULT_TIMEOUT	30
-+#define WDAT_MIN_TIMEOUT     1
+-	/* bump reference count as long as we hold pointer to structure */
+-	if (ht)
+-		ht->refcnt++;
+-
+ #ifdef CONFIG_CLS_U32_PERF
+ 	/* Statistics may be incremented by readers during update
+ 	 * so we must keep them in tact. When the node is later destroyed
+@@ -840,6 +836,10 @@ static struct tc_u_knode *u32_init_knode(struct net *net, struct tcf_proto *tp,
+ 		return NULL;
+ 	}
  
- static int timeout = WDAT_DEFAULT_TIMEOUT;
- module_param(timeout, int, 0);
-@@ -344,6 +345,7 @@ static int wdat_wdt_probe(struct platform_device *pdev)
- 	wdat->period = tbl->timer_period;
- 	wdat->wdd.min_hw_heartbeat_ms = wdat->period * tbl->min_count;
- 	wdat->wdd.max_hw_heartbeat_ms = wdat->period * tbl->max_count;
-+	wdat->wdd.min_timeout = WDAT_MIN_TIMEOUT;
- 	wdat->stopped_in_sleep = tbl->flags & ACPI_WDAT_STOPPED;
- 	wdat->wdd.info = &wdat_wdt_info;
- 	wdat->wdd.ops = &wdat_wdt_ops;
-@@ -450,8 +452,7 @@ static int wdat_wdt_probe(struct platform_device *pdev)
- 	 * watchdog properly after it has opened the device. In some cases
- 	 * the BIOS default is too short and causes immediate reboot.
- 	 */
--	if (timeout * 1000 < wdat->wdd.min_hw_heartbeat_ms ||
--	    timeout * 1000 > wdat->wdd.max_hw_heartbeat_ms) {
-+	if (watchdog_timeout_invalid(&wdat->wdd, timeout)) {
- 		dev_warn(dev, "Invalid timeout %d given, using %d\n",
- 			 timeout, WDAT_DEFAULT_TIMEOUT);
- 		timeout = WDAT_DEFAULT_TIMEOUT;
++	/* bump reference count as long as we hold pointer to structure */
++	if (ht)
++		ht->refcnt++;
++
+ 	return new;
+ }
+ 
 -- 
-2.23.0
+2.35.1
+
+
 
