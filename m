@@ -2,51 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5CB3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:02:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87C7CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:02:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353489AbiDZTFP (ORCPT
+        id S1353666AbiDZTFT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 15:05:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39568 "EHLO
+        Tue, 26 Apr 2022 15:05:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350456AbiDZTFE (ORCPT
+        with ESMTP id S1350783AbiDZTFJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 15:05:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10CE41597AB;
-        Tue, 26 Apr 2022 12:01:53 -0700 (PDT)
+        Tue, 26 Apr 2022 15:05:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9034F19916B;
+        Tue, 26 Apr 2022 12:02:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 86482B82250;
-        Tue, 26 Apr 2022 19:01:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D7E5C385A0;
-        Tue, 26 Apr 2022 19:01:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B06D9619B9;
+        Tue, 26 Apr 2022 19:02:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDE86C385AA;
+        Tue, 26 Apr 2022 19:01:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650999711;
-        bh=xtg5HxQLcrFUu/kx+UNr01sQ7UEWL3iVhKIKNYCJMaE=;
+        s=k20201202; t=1650999720;
+        bh=0wa8R2ae7L5HvBja6cgYpwoZNRFRA5di92a2dlL7/Zo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=okf88kvoF4C2XfvQIHj+QI1NXemsis2xF9bgrLhDdsj6m9PTlEIz1txs8nGmCv5Ou
-         onZ0kbhhvSeNIBeyXRNEKlQ+oUWaXVpGBmhCC6iVUJeqAQDciI7a6q+IaPmuam5OxA
-         ZfK5g8Cs8GdNSM2qiweBNf2I9Ab3qZ4f1zb5p9a0DMqyuXCsQklaiZ3OhySMHuVFmd
-         YL5nWnARFYFqy4M7WVobpfJNoS4RQVyNTbkUmh4y3eYndd7P+7xGMY3pGLlfjon+Lw
-         bqFjWqlD3YxSHyHigppqgsBE0VVNCBszN+klbUjBc3L5IbQIfAbpskxLTreCh7m4xt
-         BrZFEUDI3hRGw==
+        b=GQrhIvv5cSV+xbheXI4gmS7HafKBEpY1H585Z8pXQuQalOW6Ci+TPUC8MCMJGKqK8
+         s3a2kUS913wA3A05MTT1gSjmtsMwhEkjg7uTKcFv+fkc0/hzJqL5mjhFzI1z8zsGA2
+         zUb3kVUpIyrMkUOR+wNxz5w/B+Fo/ImG6YSI5Iw7UyU5euGVnTuRjf+qN1fdUuwZQy
+         KjaK4QRILGM5e3Mh/BYC2+vzR9wEm2FVHAlXKgVg49r0T718iLQeKgicddpFwzKsCU
+         uh/arpViRmHc0wosCVr0SmVV2fzS2ZFmLdnfYzI4uOEjTNk8DOyE9iynxppNJDbnGA
+         2A2MqiQikPCGw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chao Song <chao.song@linux.intel.com>,
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>, cezary.rojewski@intel.com,
         liam.r.girdwood@linux.intel.com, yang.jie@linux.intel.com,
-        perex@perex.cz, tiwai@suse.com, yung-chuan.liao@linux.intel.com,
-        rander.wang@intel.com, peter.ujfalusi@linux.intel.com,
-        brent.lu@intel.com, gongjun.song@intel.com,
-        balamurugan.c@intel.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.17 04/22] ASoC: Intel: soc-acpi: correct device endpoints for max98373
-Date:   Tue, 26 Apr 2022 15:01:27 -0400
-Message-Id: <20220426190145.2351135-4-sashal@kernel.org>
+        perex@perex.cz, tiwai@suse.com, peter.ujfalusi@linux.intel.com,
+        yung-chuan.liao@linux.intel.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.17 06/22] ASoC: Intel: sof_es8336: Add a quirk for Huawei Matebook D15
+Date:   Tue, 26 Apr 2022 15:01:29 -0400
+Message-Id: <20220426190145.2351135-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220426190145.2351135-1-sashal@kernel.org>
 References: <20220426190145.2351135-1-sashal@kernel.org>
@@ -58,44 +56,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Song <chao.song@linux.intel.com>
+From: Mauro Carvalho Chehab <mchehab@kernel.org>
 
-[ Upstream commit 97326be14df7bacc6ba5c62c0556298c27ea0432 ]
+[ Upstream commit c7cb4717f641db68e8117635bfcf62a9c27dc8d3 ]
 
-The left speaker of max98373 uses spk_r_endpoint, and right
-speaker uses spk_l_endpoint, this is obviously wrong.
+Based on experimental tests, Huawei Matebook D15 actually uses
+both gpio0 and gpio1: the first one controls the speaker, while
+the other one controls the headphone.
 
-This patch corrects the endpoints for max98373 codec.
+Also, the headset is mapped as MIC1, instead of MIC2.
 
-Signed-off-by: Chao Song <chao.song@linux.intel.com>
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/20220406192341.271465-1-pierre-louis.bossart@linux.intel.com
+So, add a quirk for it.
+
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Acked-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/d678aef9fc9a07aced611aa7cb8c9b800c649e5a.1649357263.git.mchehab@kernel.org
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/intel/common/soc-acpi-intel-tgl-match.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/soc/intel/boards/sof_es8336.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/sound/soc/intel/common/soc-acpi-intel-tgl-match.c b/sound/soc/intel/common/soc-acpi-intel-tgl-match.c
-index e2658bca6931..3137cea78d48 100644
---- a/sound/soc/intel/common/soc-acpi-intel-tgl-match.c
-+++ b/sound/soc/intel/common/soc-acpi-intel-tgl-match.c
-@@ -132,13 +132,13 @@ static const struct snd_soc_acpi_adr_device mx8373_1_adr[] = {
- 	{
- 		.adr = 0x000123019F837300ull,
- 		.num_endpoints = 1,
--		.endpoints = &spk_l_endpoint,
-+		.endpoints = &spk_r_endpoint,
- 		.name_prefix = "Right"
+diff --git a/sound/soc/intel/boards/sof_es8336.c b/sound/soc/intel/boards/sof_es8336.c
+index 28d7670b8f8f..b18951a8f309 100644
+--- a/sound/soc/intel/boards/sof_es8336.c
++++ b/sound/soc/intel/boards/sof_es8336.c
+@@ -252,6 +252,15 @@ static const struct dmi_system_id sof_es8336_quirk_table[] = {
+ 					SOF_ES8336_TGL_GPIO_QUIRK |
+ 					SOF_ES8336_ENABLE_DMIC)
  	},
- 	{
- 		.adr = 0x000127019F837300ull,
- 		.num_endpoints = 1,
--		.endpoints = &spk_r_endpoint,
-+		.endpoints = &spk_l_endpoint,
- 		.name_prefix = "Left"
- 	}
++	{
++		.callback = sof_es8336_quirk_cb,
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "HUAWEI"),
++			DMI_MATCH(DMI_BOARD_NAME, "BOHB-WAX9-PCB-B2"),
++		},
++		.driver_data = (void *)(SOF_ES8336_HEADPHONE_GPIO |
++					SOC_ES8336_HEADSET_MIC1)
++	},
+ 	{}
  };
+ 
 -- 
 2.35.1
 
