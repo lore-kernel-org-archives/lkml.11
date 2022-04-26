@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15A6EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:17:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC65EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:17:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344731AbiDZJU1 (ORCPT
+        id S1345546AbiDZJUa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:20:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44646 "EHLO
+        Tue, 26 Apr 2022 05:20:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345848AbiDZI5B (ORCPT
+        with ESMTP id S233983AbiDZI5Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:57:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F71D82D28;
-        Tue, 26 Apr 2022 01:41:38 -0700 (PDT)
+        Tue, 26 Apr 2022 04:57:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4291684EC0;
+        Tue, 26 Apr 2022 01:41:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0452EB81CF0;
-        Tue, 26 Apr 2022 08:41:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43529C385A0;
-        Tue, 26 Apr 2022 08:41:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D0F7D604F5;
+        Tue, 26 Apr 2022 08:41:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0C30C385A0;
+        Tue, 26 Apr 2022 08:41:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962495;
-        bh=sIE4U5sE+hEE75msEzj31tYLgvGjfk9whkhrozyQSo0=;
+        s=korg; t=1650962518;
+        bh=H2GVOsN4Wlnmq7iS7cjQO3AXAVt7hMVJpGRKNMcx78Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FyKcytsf2QBmERB7fyi7oRTYeWhk6WDjCSu8fnmE3+bcprDrfj2Nd6a6/ZRRA6nSb
-         dPoK+58Ayawe9skSEsxq+J4rIDc8vAln2WnGCLkiWx+tZcC27mgxOq9LjC8/B5r7tK
-         tNxmaAUdAD9dVKWhWc2gl/t7y8OptCYMQ3keBCQk=
+        b=Efk5+koe4LapixIGMtkz9ZNP4472FGtfJKdviBhib8Pz/PDRxV1YJ0DmEdSeLO6YI
+         wsyLliVxlhATZq4oMoyfX4lKNd6WcSrhmGVDE6juH7j9tMqxPcHbgj25IsfiJLSzCw
+         uZNbvIoisXCrjoHyH47UEm9ccqJn86mrWiIfkZNs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
-        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
-        stable@kernel.org
-Subject: [PATCH 5.15 115/124] ext4: fix use-after-free in ext4_search_dir
-Date:   Tue, 26 Apr 2022 10:21:56 +0200
-Message-Id: <20220426081750.560571833@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Subject: [PATCH 5.15 083/124] ata: pata_marvell: Check the bmdma_addr beforing reading
+Date:   Tue, 26 Apr 2022 10:21:24 +0200
+Message-Id: <20220426081749.661460232@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -50,125 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Bin <yebin10@huawei.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-commit c186f0887fe7061a35cebef024550ec33ef8fbd8 upstream.
+commit aafa9f958342db36c17ac2a7f1b841032c96feb4 upstream.
 
-We got issue as follows:
-EXT4-fs (loop0): mounted filesystem without journal. Opts: ,errors=continue
-==================================================================
-BUG: KASAN: use-after-free in ext4_search_dir fs/ext4/namei.c:1394 [inline]
-BUG: KASAN: use-after-free in search_dirblock fs/ext4/namei.c:1199 [inline]
-BUG: KASAN: use-after-free in __ext4_find_entry+0xdca/0x1210 fs/ext4/namei.c:1553
-Read of size 1 at addr ffff8881317c3005 by task syz-executor117/2331
+Before detecting the cable type on the dma bar, the driver should check
+whether the 'bmdma_addr' is zero, which means the adapter does not
+support DMA, otherwise we will get the following error:
 
-CPU: 1 PID: 2331 Comm: syz-executor117 Not tainted 5.10.0+ #1
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
-Call Trace:
- __dump_stack lib/dump_stack.c:83 [inline]
- dump_stack+0x144/0x187 lib/dump_stack.c:124
- print_address_description+0x7d/0x630 mm/kasan/report.c:387
- __kasan_report+0x132/0x190 mm/kasan/report.c:547
- kasan_report+0x47/0x60 mm/kasan/report.c:564
- ext4_search_dir fs/ext4/namei.c:1394 [inline]
- search_dirblock fs/ext4/namei.c:1199 [inline]
- __ext4_find_entry+0xdca/0x1210 fs/ext4/namei.c:1553
- ext4_lookup_entry fs/ext4/namei.c:1622 [inline]
- ext4_lookup+0xb8/0x3a0 fs/ext4/namei.c:1690
- __lookup_hash+0xc5/0x190 fs/namei.c:1451
- do_rmdir+0x19e/0x310 fs/namei.c:3760
- do_syscall_64+0x33/0x40 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x445e59
-Code: 4d c7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 1b c7 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fff2277fac8 EFLAGS: 00000246 ORIG_RAX: 0000000000000054
-RAX: ffffffffffffffda RBX: 0000000000400280 RCX: 0000000000445e59
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 00000000200000c0
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000002
-R10: 00007fff2277f990 R11: 0000000000000246 R12: 0000000000000000
-R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
+[    5.146634] Bad IO access at port 0x1 (return inb(port))
+[    5.147206] WARNING: CPU: 2 PID: 303 at lib/iomap.c:44 ioread8+0x4a/0x60
+[    5.150856] RIP: 0010:ioread8+0x4a/0x60
+[    5.160238] Call Trace:
+[    5.160470]  <TASK>
+[    5.160674]  marvell_cable_detect+0x6e/0xc0 [pata_marvell]
+[    5.161728]  ata_eh_recover+0x3520/0x6cc0
+[    5.168075]  ata_do_eh+0x49/0x3c0
 
-The buggy address belongs to the page:
-page:0000000048cd3304 refcount:0 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x1317c3
-flags: 0x200000000000000()
-raw: 0200000000000000 ffffea0004526588 ffffea0004528088 0000000000000000
-raw: 0000000000000001 0000000000000000 00000000ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff8881317c2f00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff8881317c2f80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->ffff8881317c3000: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-                   ^
- ffff8881317c3080: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
- ffff8881317c3100: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-==================================================================
-
-ext4_search_dir:
-  ...
-  de = (struct ext4_dir_entry_2 *)search_buf;
-  dlimit = search_buf + buf_size;
-  while ((char *) de < dlimit) {
-  ...
-    if ((char *) de + de->name_len <= dlimit &&
-	 ext4_match(dir, fname, de)) {
-	    ...
-    }
-  ...
-    de_len = ext4_rec_len_from_disk(de->rec_len, dir->i_sb->s_blocksize);
-    if (de_len <= 0)
-      return -1;
-    offset += de_len;
-    de = (struct ext4_dir_entry_2 *) ((char *) de + de_len);
-  }
-
-Assume:
-de=0xffff8881317c2fff
-dlimit=0x0xffff8881317c3000
-
-If read 'de->name_len' which address is 0xffff8881317c3005, obviously is
-out of range, then will trigger use-after-free.
-To solve this issue, 'dlimit' must reserve 8 bytes, as we will read
-'de->name_len' to judge if '(char *) de + de->name_len' out of range.
-
-Signed-off-by: Ye Bin <yebin10@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220324064816.1209985-1-yebin10@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Cc: stable@kernel.org
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/ext4.h  |    4 ++++
- fs/ext4/namei.c |    4 ++--
- 2 files changed, 6 insertions(+), 2 deletions(-)
+ drivers/ata/pata_marvell.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/fs/ext4/ext4.h
-+++ b/fs/ext4/ext4.h
-@@ -2267,6 +2267,10 @@ static inline int ext4_forced_shutdown(s
-  * Structure of a directory entry
-  */
- #define EXT4_NAME_LEN 255
-+/*
-+ * Base length of the ext4 directory entry excluding the name length
-+ */
-+#define EXT4_BASE_DIR_LEN (sizeof(struct ext4_dir_entry_2) - EXT4_NAME_LEN)
- 
- struct ext4_dir_entry {
- 	__le32	inode;			/* Inode number */
---- a/fs/ext4/namei.c
-+++ b/fs/ext4/namei.c
-@@ -1466,10 +1466,10 @@ int ext4_search_dir(struct buffer_head *
- 
- 	de = (struct ext4_dir_entry_2 *)search_buf;
- 	dlimit = search_buf + buf_size;
--	while ((char *) de < dlimit) {
-+	while ((char *) de < dlimit - EXT4_BASE_DIR_LEN) {
- 		/* this code is executed quadratically often */
- 		/* do minimal checking `by hand' */
--		if ((char *) de + de->name_len <= dlimit &&
-+		if (de->name + de->name_len <= dlimit &&
- 		    ext4_match(dir, fname, de)) {
- 			/* found a match - just to be sure, do
- 			 * a full check */
+--- a/drivers/ata/pata_marvell.c
++++ b/drivers/ata/pata_marvell.c
+@@ -83,6 +83,8 @@ static int marvell_cable_detect(struct a
+ 	switch(ap->port_no)
+ 	{
+ 	case 0:
++		if (!ap->ioaddr.bmdma_addr)
++			return ATA_CBL_PATA_UNK;
+ 		if (ioread8(ap->ioaddr.bmdma_addr + 1) & 1)
+ 			return ATA_CBL_PATA40;
+ 		return ATA_CBL_PATA80;
 
 
