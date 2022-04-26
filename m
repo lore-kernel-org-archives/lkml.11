@@ -2,43 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B24EBC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFD08C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:58:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345942AbiDZI6x (ORCPT
+        id S1346007AbiDZI7S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:58:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56742 "EHLO
+        Tue, 26 Apr 2022 04:59:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346674AbiDZIpR (ORCPT
+        with ESMTP id S1346769AbiDZIpV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:45:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65A1CA18D;
-        Tue, 26 Apr 2022 01:35:19 -0700 (PDT)
+        Tue, 26 Apr 2022 04:45:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC1F275CC;
+        Tue, 26 Apr 2022 01:35:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 388F861899;
-        Tue, 26 Apr 2022 08:35:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48AD5C385A4;
-        Tue, 26 Apr 2022 08:35:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D9825B81CFE;
+        Tue, 26 Apr 2022 08:35:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22AB6C385A0;
+        Tue, 26 Apr 2022 08:35:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962118;
-        bh=l81742xI3Ylbe0ksZLNhZOvPHz47hhqQju7fLSizQAU=;
+        s=korg; t=1650962130;
+        bh=+ylIEXyxmEFD6kOdSurz07QKSSrRnFw6/2NQl7GGrqQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PI7ohQxsEuNsoD38030JiAzgOtMMqh5zWJ9axWO0ghJawdsrtDPJ5KhVG7cjcxC9w
-         3rRRAXxHhnmqfAUkWcVU4uUrI4qoAA7LtRzC3S4IvCOCWaz8/dCHyOleBmjdmocppg
-         WOYl0WMJEbJAAn+yBlWbVTlTlpCa2qn3rv9hMybA=
+        b=CRQ9Or3YV12GxHlns8iwcrpWpfdbc3uoEpVgWhrcx7/vXCdpWYA/fcKjwnT7FLSJw
+         IaTvGWubOSmeQ9CQlquxQ4+ncm+v2NHp5R1Egokn0holIQGcPqIdS7NHBEx4c7PJch
+         yev8xuszJNQkZgFnAK8FKeEwuFSLRN4DC7mDsjpk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
-        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
-        stable@kernel.org
-Subject: [PATCH 5.10 76/86] ext4: fix use-after-free in ext4_search_dir
-Date:   Tue, 26 Apr 2022 10:21:44 +0200
-Message-Id: <20220426081743.403331226@linuxfoundation.org>
+        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
+        Felix Fietkau <nbd@nbd.name>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Shayne Chen <shayne.chen@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 42/86] mt76: Fix undefined behavior due to shift overflowing the constant
+Date:   Tue, 26 Apr 2022 10:21:10 +0200
+Message-Id: <20220426081742.420373413@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
 References: <20220426081741.202366502@linuxfoundation.org>
@@ -50,125 +58,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Bin <yebin10@huawei.com>
+From: Borislav Petkov <bp@suse.de>
 
-commit c186f0887fe7061a35cebef024550ec33ef8fbd8 upstream.
+[ Upstream commit dbc2b1764734857d68425468ffa8486e97ab89df ]
 
-We got issue as follows:
-EXT4-fs (loop0): mounted filesystem without journal. Opts: ,errors=continue
-==================================================================
-BUG: KASAN: use-after-free in ext4_search_dir fs/ext4/namei.c:1394 [inline]
-BUG: KASAN: use-after-free in search_dirblock fs/ext4/namei.c:1199 [inline]
-BUG: KASAN: use-after-free in __ext4_find_entry+0xdca/0x1210 fs/ext4/namei.c:1553
-Read of size 1 at addr ffff8881317c3005 by task syz-executor117/2331
+Fix:
 
-CPU: 1 PID: 2331 Comm: syz-executor117 Not tainted 5.10.0+ #1
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
-Call Trace:
- __dump_stack lib/dump_stack.c:83 [inline]
- dump_stack+0x144/0x187 lib/dump_stack.c:124
- print_address_description+0x7d/0x630 mm/kasan/report.c:387
- __kasan_report+0x132/0x190 mm/kasan/report.c:547
- kasan_report+0x47/0x60 mm/kasan/report.c:564
- ext4_search_dir fs/ext4/namei.c:1394 [inline]
- search_dirblock fs/ext4/namei.c:1199 [inline]
- __ext4_find_entry+0xdca/0x1210 fs/ext4/namei.c:1553
- ext4_lookup_entry fs/ext4/namei.c:1622 [inline]
- ext4_lookup+0xb8/0x3a0 fs/ext4/namei.c:1690
- __lookup_hash+0xc5/0x190 fs/namei.c:1451
- do_rmdir+0x19e/0x310 fs/namei.c:3760
- do_syscall_64+0x33/0x40 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x445e59
-Code: 4d c7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 1b c7 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fff2277fac8 EFLAGS: 00000246 ORIG_RAX: 0000000000000054
-RAX: ffffffffffffffda RBX: 0000000000400280 RCX: 0000000000445e59
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 00000000200000c0
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000002
-R10: 00007fff2277f990 R11: 0000000000000246 R12: 0000000000000000
-R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
+  drivers/net/wireless/mediatek/mt76/mt76x2/pci.c: In function ‘mt76x2e_probe’:
+  ././include/linux/compiler_types.h:352:38: error: call to ‘__compiletime_assert_946’ \
+	declared with attribute error: FIELD_PREP: mask is not constant
+    _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
 
-The buggy address belongs to the page:
-page:0000000048cd3304 refcount:0 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x1317c3
-flags: 0x200000000000000()
-raw: 0200000000000000 ffffea0004526588 ffffea0004528088 0000000000000000
-raw: 0000000000000001 0000000000000000 00000000ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
+See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
+details as to why it triggers with older gccs only.
 
-Memory state around the buggy address:
- ffff8881317c2f00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff8881317c2f80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->ffff8881317c3000: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-                   ^
- ffff8881317c3080: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
- ffff8881317c3100: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-==================================================================
-
-ext4_search_dir:
-  ...
-  de = (struct ext4_dir_entry_2 *)search_buf;
-  dlimit = search_buf + buf_size;
-  while ((char *) de < dlimit) {
-  ...
-    if ((char *) de + de->name_len <= dlimit &&
-	 ext4_match(dir, fname, de)) {
-	    ...
-    }
-  ...
-    de_len = ext4_rec_len_from_disk(de->rec_len, dir->i_sb->s_blocksize);
-    if (de_len <= 0)
-      return -1;
-    offset += de_len;
-    de = (struct ext4_dir_entry_2 *) ((char *) de + de_len);
-  }
-
-Assume:
-de=0xffff8881317c2fff
-dlimit=0x0xffff8881317c3000
-
-If read 'de->name_len' which address is 0xffff8881317c3005, obviously is
-out of range, then will trigger use-after-free.
-To solve this issue, 'dlimit' must reserve 8 bytes, as we will read
-'de->name_len' to judge if '(char *) de + de->name_len' out of range.
-
-Signed-off-by: Ye Bin <yebin10@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220324064816.1209985-1-yebin10@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Cc: stable@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: Felix Fietkau <nbd@nbd.name>
+Cc: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+Cc: Ryder Lee <ryder.lee@mediatek.com>
+Cc: Shayne Chen <shayne.chen@mediatek.com>
+Cc: Sean Wang <sean.wang@mediatek.com>
+Cc: Kalle Valo <kvalo@kernel.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: linux-wireless@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220405151517.29753-9-bp@alien8.de
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/ext4.h  |    4 ++++
- fs/ext4/namei.c |    4 ++--
- 2 files changed, 6 insertions(+), 2 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt76x2/pci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/ext4/ext4.h
-+++ b/fs/ext4/ext4.h
-@@ -2159,6 +2159,10 @@ static inline int ext4_forced_shutdown(s
-  * Structure of a directory entry
-  */
- #define EXT4_NAME_LEN 255
-+/*
-+ * Base length of the ext4 directory entry excluding the name length
-+ */
-+#define EXT4_BASE_DIR_LEN (sizeof(struct ext4_dir_entry_2) - EXT4_NAME_LEN)
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c b/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
+index ecaf85b483ac..e57e49a722dc 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
++++ b/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
+@@ -80,7 +80,7 @@ mt76x2e_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	mt76_rmw_field(dev, 0x15a10, 0x1f << 16, 0x9);
  
- struct ext4_dir_entry {
- 	__le32	inode;			/* Inode number */
---- a/fs/ext4/namei.c
-+++ b/fs/ext4/namei.c
-@@ -1388,10 +1388,10 @@ int ext4_search_dir(struct buffer_head *
+ 	/* RG_SSUSB_G1_CDR_BIC_LTR = 0xf */
+-	mt76_rmw_field(dev, 0x15a0c, 0xf << 28, 0xf);
++	mt76_rmw_field(dev, 0x15a0c, 0xfU << 28, 0xf);
  
- 	de = (struct ext4_dir_entry_2 *)search_buf;
- 	dlimit = search_buf + buf_size;
--	while ((char *) de < dlimit) {
-+	while ((char *) de < dlimit - EXT4_BASE_DIR_LEN) {
- 		/* this code is executed quadratically often */
- 		/* do minimal checking `by hand' */
--		if ((char *) de + de->name_len <= dlimit &&
-+		if (de->name + de->name_len <= dlimit &&
- 		    ext4_match(dir, fname, de)) {
- 			/* found a match - just to be sure, do
- 			 * a full check */
+ 	/* RG_SSUSB_CDR_BR_PE1D = 0x3 */
+ 	mt76_rmw_field(dev, 0x15c58, 0x3 << 6, 0x3);
+-- 
+2.35.1
+
 
 
