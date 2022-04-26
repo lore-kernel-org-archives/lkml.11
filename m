@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2F82C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3C60C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:27:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348067AbiDZJa2 (ORCPT
+        id S1348030AbiDZJaV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:30:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56696 "EHLO
+        Tue, 26 Apr 2022 05:30:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347691AbiDZJGD (ORCPT
+        with ESMTP id S1347681AbiDZJGC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:06:03 -0400
+        Tue, 26 Apr 2022 05:06:02 -0400
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A361015CEF0;
-        Tue, 26 Apr 2022 01:45:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C66BD15CEC5;
+        Tue, 26 Apr 2022 01:45:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 1FBE5CE1BDD;
-        Tue, 26 Apr 2022 08:45:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1355CC385AC;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3EB91CE1BC9;
         Tue, 26 Apr 2022 08:45:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ABEBC385A4;
+        Tue, 26 Apr 2022 08:45:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962721;
-        bh=f78a7N9udEO6WWX9YD5+pQYN4AKP3qbQWx0V0kl2zAQ=;
+        s=korg; t=1650962718;
+        bh=LvnkFNrz/vSm7u8FmLhD5GqqbL3/DLWRoe48drE1qRE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qy1m4J1HSHF/LlDtOwf2zkHenCBU5tcV0u0ow2UsozBV5DohWUCXFbT/PWL6iKV6Y
-         FNSahZNZ8hVNsn3yLi7HP00xdHS0YQfrPdUYFkfHrn+WIUaC5Dq4Aib4jTLHlNvePJ
-         oy7f0uYqbTe3zuP4VqfiV0GI6aheLDDS7PXj7avE=
+        b=TbP1C7aII25AAK0ASNEmU2q68brVw0pwFLqwVdgd5SF6vvl3pmjbpTr8wTpfIWxr4
+         2kM7XT2h70i1+Rl4dFg6N5pxNbpWcYdSTc1r6HScZRtP02CVu+tPgkJYK3P2DpUDyF
+         0sCxpIFYtyWkSPvoOitjBOtuF0Q0SmIfjHGRXCj0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Herring <robh@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 068/146] arm64: dts: imx: Fix imx8*-var-som touchscreen property sizes
-Date:   Tue, 26 Apr 2022 10:21:03 +0200
-Message-Id: <20220426081751.975523867@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 067/146] ALSA: hda: intel-dsp-config: update AlderLake PCI IDs
+Date:   Tue, 26 Apr 2022 10:21:02 +0200
+Message-Id: <20220426081751.947768234@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -49,65 +52,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Herring <robh@kernel.org>
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-[ Upstream commit 1bc12d301594eafde0a8529d28d459af81053b3a ]
+[ Upstream commit d52eee988597ac2a2c5d17d842946616d7d41070 ]
 
-The common touchscreen properties are all 32-bit, not 16-bit. These
-properties must not be too important as they are all ignored in case of an
-error reading them.
+Add missing AlderLake-PS and RaptorLake-S PCI IDs (already in HDaudio
+and SOF drivers), add comments and regroup by skew.
 
-Signed-off-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/Yk3moe6Hz8ELM0iS@robh.at.kernel.org'
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Link: https://lore.kernel.org/r/20220406190418.245044-1-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/freescale/imx8mm-var-som.dtsi | 8 ++++----
- arch/arm64/boot/dts/freescale/imx8mn-var-som.dtsi | 8 ++++----
- 2 files changed, 8 insertions(+), 8 deletions(-)
+ sound/hda/intel-dsp-config.c | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mm-var-som.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-var-som.dtsi
-index 1dc9d187601c..a0bd540f27d3 100644
---- a/arch/arm64/boot/dts/freescale/imx8mm-var-som.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-var-som.dtsi
-@@ -89,12 +89,12 @@
- 		pendown-gpio = <&gpio1 3 GPIO_ACTIVE_LOW>;
+diff --git a/sound/hda/intel-dsp-config.c b/sound/hda/intel-dsp-config.c
+index 70fd8b13938e..8b0a16ba27d3 100644
+--- a/sound/hda/intel-dsp-config.c
++++ b/sound/hda/intel-dsp-config.c
+@@ -390,22 +390,36 @@ static const struct config_entry config_table[] = {
  
- 		ti,x-min = /bits/ 16 <125>;
--		touchscreen-size-x = /bits/ 16 <4008>;
-+		touchscreen-size-x = <4008>;
- 		ti,y-min = /bits/ 16 <282>;
--		touchscreen-size-y = /bits/ 16 <3864>;
-+		touchscreen-size-y = <3864>;
- 		ti,x-plate-ohms = /bits/ 16 <180>;
--		touchscreen-max-pressure = /bits/ 16 <255>;
--		touchscreen-average-samples = /bits/ 16 <10>;
-+		touchscreen-max-pressure = <255>;
-+		touchscreen-average-samples = <10>;
- 		ti,debounce-tol = /bits/ 16 <3>;
- 		ti,debounce-rep = /bits/ 16 <1>;
- 		ti,settle-delay-usec = /bits/ 16 <150>;
-diff --git a/arch/arm64/boot/dts/freescale/imx8mn-var-som.dtsi b/arch/arm64/boot/dts/freescale/imx8mn-var-som.dtsi
-index b16c7caf34c1..87b5e23c766f 100644
---- a/arch/arm64/boot/dts/freescale/imx8mn-var-som.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mn-var-som.dtsi
-@@ -70,12 +70,12 @@
- 		pendown-gpio = <&gpio1 3 GPIO_ACTIVE_LOW>;
- 
- 		ti,x-min = /bits/ 16 <125>;
--		touchscreen-size-x = /bits/ 16 <4008>;
-+		touchscreen-size-x = <4008>;
- 		ti,y-min = /bits/ 16 <282>;
--		touchscreen-size-y = /bits/ 16 <3864>;
-+		touchscreen-size-y = <3864>;
- 		ti,x-plate-ohms = /bits/ 16 <180>;
--		touchscreen-max-pressure = /bits/ 16 <255>;
--		touchscreen-average-samples = /bits/ 16 <10>;
-+		touchscreen-max-pressure = <255>;
-+		touchscreen-average-samples = <10>;
- 		ti,debounce-tol = /bits/ 16 <3>;
- 		ti,debounce-rep = /bits/ 16 <1>;
- 		ti,settle-delay-usec = /bits/ 16 <150>;
+ /* Alder Lake */
+ #if IS_ENABLED(CONFIG_SND_SOC_SOF_ALDERLAKE)
++	/* Alderlake-S */
+ 	{
+ 		.flags = FLAG_SOF | FLAG_SOF_ONLY_IF_DMIC_OR_SOUNDWIRE,
+ 		.device = 0x7ad0,
+ 	},
++	/* RaptorLake-S */
+ 	{
+ 		.flags = FLAG_SOF | FLAG_SOF_ONLY_IF_DMIC_OR_SOUNDWIRE,
+-		.device = 0x51c8,
++		.device = 0x7a50,
+ 	},
++	/* Alderlake-P */
+ 	{
+ 		.flags = FLAG_SOF | FLAG_SOF_ONLY_IF_DMIC_OR_SOUNDWIRE,
+-		.device = 0x51cc,
++		.device = 0x51c8,
+ 	},
+ 	{
+ 		.flags = FLAG_SOF | FLAG_SOF_ONLY_IF_DMIC_OR_SOUNDWIRE,
+ 		.device = 0x51cd,
+ 	},
++	/* Alderlake-PS */
++	{
++		.flags = FLAG_SOF | FLAG_SOF_ONLY_IF_DMIC_OR_SOUNDWIRE,
++		.device = 0x51c9,
++	},
++	/* Alderlake-M */
++	{
++		.flags = FLAG_SOF | FLAG_SOF_ONLY_IF_DMIC_OR_SOUNDWIRE,
++		.device = 0x51cc,
++	},
++	/* Alderlake-N */
+ 	{
+ 		.flags = FLAG_SOF | FLAG_SOF_ONLY_IF_DMIC_OR_SOUNDWIRE,
+ 		.device = 0x54c8,
 -- 
 2.35.1
 
