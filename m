@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40048C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:21:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F0D8C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:21:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343931AbiDZHYt (ORCPT
+        id S1343935AbiDZHY6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 03:24:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43266 "EHLO
+        Tue, 26 Apr 2022 03:24:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343757AbiDZHYo (ORCPT
+        with ESMTP id S236366AbiDZHYy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 03:24:44 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F41ABF18;
-        Tue, 26 Apr 2022 00:21:37 -0700 (PDT)
+        Tue, 26 Apr 2022 03:24:54 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EE933E0F5;
+        Tue, 26 Apr 2022 00:21:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650957698; x=1682493698;
+  t=1650957702; x=1682493702;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=wchRf7uasp3Msv81sa2LxNNZ/QRRHIhp2gjeakQULuA=;
-  b=Q5AwLrqOx3utwQYFz5PX3dOfUoTGgYPPR93TinDaUgiS5KduPLhodPbT
-   ZNmk2LVqlO07p3akXP5FDiQvlYNiV6ns1iqcGdkB4/yBERO1Pkm/AJpp0
-   KF5OEtx/X0tcDlvWmtHad4ETfuuZIX1gf8Nod+D29E47TeKz/B+ePjoWu
-   w=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 26 Apr 2022 00:21:37 -0700
+  bh=VQAfrwuzDtlwTTuGfhgzUc0hDPSgvSrb09EXMVnlhyw=;
+  b=JM8uQFmRt2guHQqZqdZnn7eaGmBHv5OV6MasZdRZwQREcOj3H8+E1rzV
+   5Zq9jT/M8cfB+3F6d3jEvBPZpf0iI3Q7dgNq7mots2VFswI+czG4ZEYLm
+   G5743b0iJuYA2vREF3PGXArnnZOEkn0XLpthejbfrcaGL2B2+q9ARUDOK
+   8=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 26 Apr 2022 00:21:42 -0700
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 00:21:37 -0700
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 00:21:42 -0700
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 26 Apr 2022 00:21:37 -0700
+ 15.2.986.22; Tue, 26 Apr 2022 00:21:41 -0700
 Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 26 Apr 2022 00:21:32 -0700
+ 15.2.986.22; Tue, 26 Apr 2022 00:21:37 -0700
 From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
 To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
         <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
@@ -48,9 +48,9 @@ To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
         <judyhsiao@chromium.org>
 CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
         "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
-Subject: [PATCH v11 1/4] arm64: dts: qcom: sc7280: Add pinmux for I2S speaker and Headset
-Date:   Tue, 26 Apr 2022 12:51:03 +0530
-Message-ID: <1650957666-6266-2-git-send-email-quic_srivasam@quicinc.com>
+Subject: [PATCH v11 2/4] arm64: dts: qcom: sc7280: Add MI2S pinmux specifications for CRD 3.0/3.1
+Date:   Tue, 26 Apr 2022 12:51:04 +0530
+Message-ID: <1650957666-6266-3-git-send-email-quic_srivasam@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1650957666-6266-1-git-send-email-quic_srivasam@quicinc.com>
 References: <1650957666-6266-1-git-send-email-quic_srivasam@quicinc.com>
@@ -63,26 +63,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add pinmux nodes for primary and secondary I2S for SC7280 based platforms.
+Add drive strength property for primary and secondary MI2S on
+sc7280 based platforms of rev5+ (aka CRD 3.0/3.1) boards.
 
 Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
 Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
 Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
 ---
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 14 +++++++++++
- arch/arm64/boot/dts/qcom/sc7280.dtsi     | 40 ++++++++++++++++++++++++++++++++
- 2 files changed, 54 insertions(+)
+ arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi | 34 ++++++++++++++++++++++++++
+ 1 file changed, 34 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-index 015a347..fb1f4ca 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-@@ -359,6 +359,20 @@
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+index d58045d..4c4a0e9 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+@@ -588,6 +588,40 @@ ap_ec_spi: &spi10 {
  	bias-disable;
  };
  
++&mi2s0_data0 {
++	drive-strength = <6>;
++};
++
++&mi2s0_data1 {
++	drive-strength = <6>;
++};
++
++&mi2s0_mclk {
++	drive-strength = <6>;
++};
++
++&mi2s0_sclk {
++	drive-strength = <6>;
++};
++
++&mi2s0_ws {
++	drive-strength = <6>;
++};
++
 +&mi2s1_data0 {
 +	drive-strength = <6>;
 +	bias-disable;
@@ -97,60 +115,9 @@ index 015a347..fb1f4ca 100644
 +	drive-strength = <6>;
 +};
 +
- &pm7325_gpios {
- 	key_vol_up_default: key-vol-up-default {
- 		pins = "gpio6";
-diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-index 00bacc4..0242f1d 100644
---- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-@@ -3713,6 +3713,46 @@
- 				function = "edp_hot";
- 			};
- 
-+			mi2s0_data0: mi2s0-data0 {
-+				pins = "gpio98";
-+				function = "mi2s0_data0";
-+			};
-+
-+			mi2s0_data1: mi2s0-data1 {
-+				pins = "gpio99";
-+				function = "mi2s0_data1";
-+			};
-+
-+			mi2s0_mclk: mi2s0-mclk {
-+				pins = "gpio96";
-+				function = "pri_mi2s";
-+			};
-+
-+			mi2s0_sclk: mi2s0-sclk {
-+				pins = "gpio97";
-+				function = "mi2s0_sck";
-+			};
-+
-+			mi2s0_ws: mi2s0-ws {
-+				pins = "gpio100";
-+				function = "mi2s0_ws";
-+			};
-+
-+			mi2s1_data0: mi2s1-data0 {
-+				pins = "gpio107";
-+				function = "mi2s1_data0";
-+			};
-+
-+			mi2s1_sclk: mi2s1-sclk {
-+				pins = "gpio106";
-+				function = "mi2s1_sck";
-+			};
-+
-+			mi2s1_ws: mi2s1-ws {
-+				pins = "gpio108";
-+				function = "mi2s1_ws";
-+			};
-+
- 			pcie1_clkreq_n: pcie1-clkreq-n {
- 				pins = "gpio79";
- 				function = "pcie1_clkreqn";
+ &pcie1_clkreq_n {
+ 	bias-pull-up;
+ 	drive-strength = <2>;
 -- 
 2.7.4
 
