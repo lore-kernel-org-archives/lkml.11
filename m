@@ -2,246 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1108CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:52:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 095CCC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:52:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230008AbiDZHz4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 03:55:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57536 "EHLO
+        id S1344340AbiDZH4C (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 03:56:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344379AbiDZHzQ (ORCPT
+        with ESMTP id S1344369AbiDZHx2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 03:55:16 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A2101178
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 00:52:09 -0700 (PDT)
-Received: from kwepemi500017.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KnYrR4hkmzCsQH;
-        Tue, 26 Apr 2022 15:47:35 +0800 (CST)
-Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- kwepemi500017.china.huawei.com (7.221.188.110) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Apr 2022 15:52:07 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Apr 2022 15:52:05 +0800
-From:   Tong Tiangen <tongtiangen@huawei.com>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
-CC:     <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-riscv@lists.infradead.org>,
-        Tong Tiangen <tongtiangen@huawei.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Guohanjun <guohanjun@huawei.com>
-Subject: [PATCH -next v6 6/6] riscv/mm: Enable ARCH_SUPPORTS_PAGE_TABLE_CHECK
-Date:   Tue, 26 Apr 2022 08:10:36 +0000
-Message-ID: <20220426081036.1374452-7-tongtiangen@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220426081036.1374452-1-tongtiangen@huawei.com>
-References: <20220426081036.1374452-1-tongtiangen@huawei.com>
+        Tue, 26 Apr 2022 03:53:28 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9364ABBE
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 00:50:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650959419;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cgkVeFtk7kmhzt6NM7uvR8g8Xij0kTOqB1NgwHZ6ZsY=;
+        b=a59q494ptKU78H9wmlev01aL+1O07FEawGMwH+AcNno+vcdP60afKnBN70DQVTupPmPWin
+        jCeddQTo1ptMYgUwTpa+5REUAMusTduh7WV/qzasrj9rdEUHPq2E3i70YUhu5oE9vpMzwl
+        xWa9Cxc6B22gdHc6w327Nh/IvI/C+2g=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-630-QLIHlhc5MOyuKUKEui5Mtw-1; Tue, 26 Apr 2022 03:50:18 -0400
+X-MC-Unique: QLIHlhc5MOyuKUKEui5Mtw-1
+Received: by mail-wm1-f69.google.com with SMTP id az19-20020a05600c601300b003914ac8efb8so513101wmb.2
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 00:50:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=cgkVeFtk7kmhzt6NM7uvR8g8Xij0kTOqB1NgwHZ6ZsY=;
+        b=TvnSHhIt/uaoQBCVh6WIUWZtmUtYt22DIq5VC67ftatkf8F52hZ0jLMGJzdy9DAYDZ
+         l+cy6komuntKKJqzBUNaL6opxtAHghLO3VR/0A1SbwvYG0YomjjKDCSGD3CWPDs8n3Vq
+         F7M8N9enSDcxrtjWBt60U2oE9twuch2Ma+cbO/BIYs4FFWV7zhNQxmIEy3SUN9qmxaBt
+         vW5IvFnsLdxO2U643WBhWbJHfPcXvU9FkjnjLuoAnFLk/5hDdfbaEadECG++h9RZAPsx
+         +kKMl9ukKdlfYpziwk15EtBw/fffoWfMr2Rb+cz30YhsXcEaZnm325zmwLrDjGL3WO5r
+         Gr/Q==
+X-Gm-Message-State: AOAM531AXpZb7K982xEiZj7CwrjvBkQsV67EnF1dQZIdZJUfl6UfBHy5
+        Erp5IlQ46Vannj0FLs3uR/YQMDGN8U/JTggc1nsKqgxywwxjm8+O48ODdh/ciBh2ncRDg8ysRLq
+        Ih6jlRG60o4vwLa7icc1j6+Uu
+X-Received: by 2002:a05:600c:5c9:b0:38e:d44a:4cc1 with SMTP id p9-20020a05600c05c900b0038ed44a4cc1mr28698027wmd.124.1650959417063;
+        Tue, 26 Apr 2022 00:50:17 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxBXOpJmGEWozLGFN1CjEnuirBJfeA0Kz7+BA4MlA0zlr6UKrJpJpE31VOFYGB8/dXFdjuRBg==
+X-Received: by 2002:a05:600c:5c9:b0:38e:d44a:4cc1 with SMTP id p9-20020a05600c05c900b0038ed44a4cc1mr28698015wmd.124.1650959416879;
+        Tue, 26 Apr 2022 00:50:16 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-117-160.dyn.eolo.it. [146.241.117.160])
+        by smtp.gmail.com with ESMTPSA id b14-20020a7bc24e000000b003899c8053e1sm11841188wmj.41.2022.04.26.00.50.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 00:50:16 -0700 (PDT)
+Message-ID: <43773a65a27cb714e3319b06b0215fcb0471aae6.camel@redhat.com>
+Subject: Re: [PATCH] net: dsa: mv88e6xxx: Skip cmode writable for mv88e6*41
+ if unchanged
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Marek =?ISO-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        Nathan Rossi <nathan@nathanrossi.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Date:   Tue, 26 Apr 2022 09:50:15 +0200
+In-Reply-To: <20220423152523.1f38e2d8@thinkpad>
+References: <20220423132035.238704-1-nathan@nathanrossi.com>
+         <20220423152523.1f38e2d8@thinkpad>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600017.china.huawei.com (7.193.23.234)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As commit d283d422c6c4 ("x86: mm: add x86_64 support for page table check")
-, enable ARCH_SUPPORTS_PAGE_TABLE_CHECK on riscv.
+Hello,
 
-Add additional page table check stubs for page table helpers, these stubs
-can be used to check the existing page table entries.
+On Sat, 2022-04-23 at 15:25 +0200, Marek Behún wrote:
+> On Sat, 23 Apr 2022 13:20:35 +0000
+> Nathan Rossi <nathan@nathanrossi.com> wrote:
+> 
+> > The mv88e6341_port_set_cmode function always calls the set writable
+> > regardless of whether the current cmode is different from the desired
+> > cmode. This is problematic for specific configurations of the mv88e6341
+> > and mv88e6141 (in single chip adddressing mode?) where the hidden
+> > registers are not accessible.
+> 
+> I don't have a problem with skipping setting cmode writable if cmode is
+> not being changed. But hidden registers should be accessible regardless
+> of whether you are using single chip addressing mode or not. You need
+> to find why it isn't working for you, this is a bug.
 
-Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
-Reviewed-by: Pasha Tatashin <pasha.tatashin@soleen.com>
----
- arch/riscv/Kconfig               |  1 +
- arch/riscv/include/asm/pgtable.h | 71 +++++++++++++++++++++++++++++---
- 2 files changed, 66 insertions(+), 6 deletions(-)
+For the records, I read the above as requiring a fix the root cause, so
+I'm not applying this patch. Please correct me if I'm wrong.
 
-diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
-index 63f7258984f3..66d241cee52c 100644
---- a/arch/riscv/Kconfig
-+++ b/arch/riscv/Kconfig
-@@ -38,6 +38,7 @@ config RISCV
- 	select ARCH_SUPPORTS_ATOMIC_RMW
- 	select ARCH_SUPPORTS_DEBUG_PAGEALLOC if MMU
- 	select ARCH_SUPPORTS_HUGETLBFS if MMU
-+	select ARCH_SUPPORTS_PAGE_TABLE_CHECK
- 	select ARCH_USE_MEMTEST
- 	select ARCH_WANT_DEFAULT_TOPDOWN_MMAP_LAYOUT if MMU
- 	select ARCH_WANT_FRAME_POINTERS
-diff --git a/arch/riscv/include/asm/pgtable.h b/arch/riscv/include/asm/pgtable.h
-index 046b44225623..5af8aebbdd92 100644
---- a/arch/riscv/include/asm/pgtable.h
-+++ b/arch/riscv/include/asm/pgtable.h
-@@ -114,6 +114,8 @@
- #include <asm/pgtable-32.h>
- #endif /* CONFIG_64BIT */
- 
-+#include <linux/page_table_check.h>
-+
- #ifdef CONFIG_XIP_KERNEL
- #define XIP_FIXUP(addr) ({							\
- 	uintptr_t __a = (uintptr_t)(addr);					\
-@@ -315,6 +317,11 @@ static inline int pte_exec(pte_t pte)
- 	return pte_val(pte) & _PAGE_EXEC;
- }
- 
-+static inline int pte_user(pte_t pte)
-+{
-+	return pte_val(pte) & _PAGE_USER;
-+}
-+
- static inline int pte_huge(pte_t pte)
- {
- 	return pte_present(pte) && (pte_val(pte) & _PAGE_LEAF);
-@@ -446,7 +453,7 @@ static inline void set_pte(pte_t *ptep, pte_t pteval)
- 
- void flush_icache_pte(pte_t pte);
- 
--static inline void set_pte_at(struct mm_struct *mm,
-+static inline void __set_pte_at(struct mm_struct *mm,
- 	unsigned long addr, pte_t *ptep, pte_t pteval)
- {
- 	if (pte_present(pteval) && pte_exec(pteval))
-@@ -455,10 +462,17 @@ static inline void set_pte_at(struct mm_struct *mm,
- 	set_pte(ptep, pteval);
- }
- 
-+static inline void set_pte_at(struct mm_struct *mm,
-+	unsigned long addr, pte_t *ptep, pte_t pteval)
-+{
-+	page_table_check_pte_set(mm, addr, ptep, pteval);
-+	__set_pte_at(mm, addr, ptep, pteval);
-+}
-+
- static inline void pte_clear(struct mm_struct *mm,
- 	unsigned long addr, pte_t *ptep)
- {
--	set_pte_at(mm, addr, ptep, __pte(0));
-+	__set_pte_at(mm, addr, ptep, __pte(0));
- }
- 
- #define __HAVE_ARCH_PTEP_SET_ACCESS_FLAGS
-@@ -479,7 +493,11 @@ static inline int ptep_set_access_flags(struct vm_area_struct *vma,
- static inline pte_t ptep_get_and_clear(struct mm_struct *mm,
- 				       unsigned long address, pte_t *ptep)
- {
--	return __pte(atomic_long_xchg((atomic_long_t *)ptep, 0));
-+	pte_t pte = __pte(atomic_long_xchg((atomic_long_t *)ptep, 0));
-+
-+	page_table_check_pte_clear(mm, address, pte);
-+
-+	return pte;
- }
- 
- #define __HAVE_ARCH_PTEP_TEST_AND_CLEAR_YOUNG
-@@ -546,6 +564,13 @@ static inline unsigned long pmd_pfn(pmd_t pmd)
- 	return ((__pmd_to_phys(pmd) & PMD_MASK) >> PAGE_SHIFT);
- }
- 
-+#define __pud_to_phys(pud)  (pud_val(pud) >> _PAGE_PFN_SHIFT << PAGE_SHIFT)
-+
-+static inline unsigned long pud_pfn(pud_t pud)
-+{
-+	return ((__pud_to_phys(pud) & PUD_MASK) >> PAGE_SHIFT);
-+}
-+
- static inline pmd_t pmd_modify(pmd_t pmd, pgprot_t newprot)
- {
- 	return pte_pmd(pte_modify(pmd_pte(pmd), newprot));
-@@ -567,6 +592,11 @@ static inline int pmd_young(pmd_t pmd)
- 	return pte_young(pmd_pte(pmd));
- }
- 
-+static inline int pmd_user(pmd_t pmd)
-+{
-+	return pte_user(pmd_pte(pmd));
-+}
-+
- static inline pmd_t pmd_mkold(pmd_t pmd)
- {
- 	return pte_pmd(pte_mkold(pmd_pte(pmd)));
-@@ -600,15 +630,39 @@ static inline pmd_t pmd_mkdirty(pmd_t pmd)
- static inline void set_pmd_at(struct mm_struct *mm, unsigned long addr,
- 				pmd_t *pmdp, pmd_t pmd)
- {
--	return set_pte_at(mm, addr, (pte_t *)pmdp, pmd_pte(pmd));
-+	page_table_check_pmd_set(mm, addr, pmdp, pmd);
-+	return __set_pte_at(mm, addr, (pte_t *)pmdp, pmd_pte(pmd));
-+}
-+
-+static inline int pud_user(pud_t pud)
-+{
-+	return pte_user(pud_pte(pud));
- }
- 
- static inline void set_pud_at(struct mm_struct *mm, unsigned long addr,
- 				pud_t *pudp, pud_t pud)
- {
--	return set_pte_at(mm, addr, (pte_t *)pudp, pud_pte(pud));
-+	page_table_check_pud_set(mm, addr, pudp, pud);
-+	return __set_pte_at(mm, addr, (pte_t *)pudp, pud_pte(pud));
-+}
-+
-+#ifdef CONFIG_PAGE_TABLE_CHECK
-+static inline bool pte_user_accessible_page(pte_t pte)
-+{
-+	return pte_present(pte) && pte_user(pte);
-+}
-+
-+static inline bool pmd_user_accessible_page(pmd_t pmd)
-+{
-+	return pmd_leaf(pmd) && pmd_user(pmd);
- }
- 
-+static inline bool pud_user_accessible_page(pud_t pud)
-+{
-+	return pud_leaf(pud) && pud_user(pud);
-+}
-+#endif
-+
- #ifdef CONFIG_TRANSPARENT_HUGEPAGE
- static inline int pmd_trans_huge(pmd_t pmd)
- {
-@@ -634,7 +688,11 @@ static inline int pmdp_test_and_clear_young(struct vm_area_struct *vma,
- static inline pmd_t pmdp_huge_get_and_clear(struct mm_struct *mm,
- 					unsigned long address, pmd_t *pmdp)
- {
--	return pte_pmd(ptep_get_and_clear(mm, address, (pte_t *)pmdp));
-+	pmd_t pmd = pte_pmd(__pte(atomic_long_xchg((atomic_long_t *)(pte_t *)pmdp, 0)));
-+
-+	page_table_check_pmd_clear(mm, address, pmd);
-+
-+	return pmd;
- }
- 
- #define __HAVE_ARCH_PMDP_SET_WRPROTECT
-@@ -648,6 +706,7 @@ static inline void pmdp_set_wrprotect(struct mm_struct *mm,
- static inline pmd_t pmdp_establish(struct vm_area_struct *vma,
- 				unsigned long address, pmd_t *pmdp, pmd_t pmd)
- {
-+	page_table_check_pmd_set(vma->vm_mm, address, pmdp, pmd);
- 	return __pmd(atomic_long_xchg((atomic_long_t *)pmdp, pmd_val(pmd)));
- }
- #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
--- 
-2.25.1
+Thanks,
+
+Paolo
 
