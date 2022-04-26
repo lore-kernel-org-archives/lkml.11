@@ -2,88 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5A68C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:11:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FB12C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:12:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343795AbiDZHOz (ORCPT
+        id S1343691AbiDZHPV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 03:14:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53820 "EHLO
+        Tue, 26 Apr 2022 03:15:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343799AbiDZHOZ (ORCPT
+        with ESMTP id S1343706AbiDZHPR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 03:14:25 -0400
-Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5E4E43917D;
-        Tue, 26 Apr 2022 00:11:18 -0700 (PDT)
-HMM_SOURCE_IP: 172.18.0.188:50678.1670155976
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-202.80.192.39 (unknown [172.18.0.188])
-        by chinatelecom.cn (HERMES) with SMTP id 1EA862800A8;
-        Tue, 26 Apr 2022 15:10:59 +0800 (CST)
-X-189-SAVE-TO-SEND: +liuxp11@chinatelecom.cn
-Received: from  ([172.18.0.188])
-        by app0023 with ESMTP id c6be7f13ea814490a6f255094222d8e3 for wim@linux-watchdog.org;
-        Tue, 26 Apr 2022 15:11:17 CST
-X-Transaction-ID: c6be7f13ea814490a6f255094222d8e3
-X-Real-From: liuxp11@chinatelecom.cn
-X-Receive-IP: 172.18.0.188
-X-MEDUSA-Status: 0
-Sender: liuxp11@chinatelecom.cn
-From:   Liu Xinpeng <liuxp11@chinatelecom.cn>
-To:     wim@linux-watchdog.org, linux@roeck-us.net, tzungbi@kernel.org
-Cc:     linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Liu Xinpeng <liuxp11@chinatelecom.cn>
-Subject: [PATCH v4 4/4] watchdog: iTCO_wdg: Make code more clearly with macro definition
-Date:   Tue, 26 Apr 2022 15:10:29 +0800
-Message-Id: <1650957029-910-5-git-send-email-liuxp11@chinatelecom.cn>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1650957029-910-1-git-send-email-liuxp11@chinatelecom.cn>
-References: <1650957029-910-1-git-send-email-liuxp11@chinatelecom.cn>
+        Tue, 26 Apr 2022 03:15:17 -0400
+Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65B1D3A730;
+        Tue, 26 Apr 2022 00:12:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1650957131;
+  x=1682493131;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=fO9Z+yHYY09DcsKMPz1mk/C4AZ0Cbm0swq59IvDbhoY=;
+  b=SCkzJABVXlgSktYP3rSOsDwi/mLV55zFELINr2stJGY9ig1od8hPS9/Z
+   Y5Go6k54/OxYAzKDMd2ITefeoxsAcFjtKkbWHyL/DYJznjF1dOIMWI44z
+   C9E4U3U9DWRd4hUtliA9Pasc5FhUxjPIQcr6QCNEPYQLQhIANuudpMJGG
+   aWAiOiikhxXWr31Gtkux2/TlBwpnrvvkAbGBy18YJCqL9wc8LjS+UA++G
+   mmUuTyJ7yZO80dC1Z0as9tYJw5X8OMFXin5bFPEVV0bjbvsTCRWcMQKWc
+   G6WGyIJ0NvdRizj44HfZFxz1Gs6SjRy0NqxHdUSmtY8WxzjEWt4bvTG3L
+   g==;
+Message-ID: <96d1e6ab-4faa-05b5-9894-af9971dc0e5e@axis.com>
+Date:   Tue, 26 Apr 2022 09:12:07 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: linux-next: Fixes tag needs some work in the hwmon-staging tree
+Content-Language: en-US
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Guenter Roeck <linux@roeck-us.net>
+CC:     Camel Guo <camel.guo@axis.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20220426082824.04f63d08@canb.auug.org.au>
+From:   Camel Guo <camelg@axis.com>
+In-Reply-To: <20220426082824.04f63d08@canb.auug.org.au>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.0.5.60]
+X-ClientProxiedBy: se-mail01w.axis.com (10.20.40.7) To se-mail03w.axis.com
+ (10.20.40.9)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Using SET_NOIRQ_SYSTEM_SLEEP_PM_OPS reduces redundant code.
+On 4/26/22 00:28, Stephen Rothwell wrote:
+> Hi all,
+> 
+> In commit
+> 
+>    251a486d3a93 ("hwmon: (tmp401) Fix incorrect return value of tmp401_init_client")
+> 
+> Fixes tag
+> 
+>    Fixes: c825ca044988 ("hwmon: (tmp401) Add support of three advanced features")
+> 
+> has these problem(s):
+> 
+>    - Target SHA1 does not exist
+> 
+> Maybe you meant
+> 
+> Fixes: a7e1e934855c ("hwmon: (tmp401) Add support of three advanced features")
+> 
 
-Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
-Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
----
- drivers/watchdog/iTCO_wdt.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/watchdog/iTCO_wdt.c b/drivers/watchdog/iTCO_wdt.c
-index 3f2f4343644f..8d24cf4f4ca3 100644
---- a/drivers/watchdog/iTCO_wdt.c
-+++ b/drivers/watchdog/iTCO_wdt.c
-@@ -635,22 +635,18 @@ static int iTCO_wdt_resume_noirq(struct device *dev)
- 
- 	return 0;
- }
-+#endif /* CONFIG_PM_SLEEP */
- 
- static const struct dev_pm_ops iTCO_wdt_pm = {
--	.suspend_noirq = iTCO_wdt_suspend_noirq,
--	.resume_noirq = iTCO_wdt_resume_noirq,
-+	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(iTCO_wdt_suspend_noirq,
-+				      iTCO_wdt_resume_noirq)
- };
- 
--#define ITCO_WDT_PM_OPS	(&iTCO_wdt_pm)
--#else
--#define ITCO_WDT_PM_OPS	NULL
--#endif /* CONFIG_PM_SLEEP */
--
- static struct platform_driver iTCO_wdt_driver = {
- 	.probe          = iTCO_wdt_probe,
- 	.driver         = {
- 		.name   = DRV_NAME,
--		.pm     = ITCO_WDT_PM_OPS,
-+		.pm     = &iTCO_wdt_pm,
- 	},
- };
- 
--- 
-2.23.0
-
+Saw that this Fixes tag has been removed from hwmon-staging. Sorry for 
+the mess and thanks for this fix.
