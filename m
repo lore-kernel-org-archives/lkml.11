@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0F49C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:14:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8ECAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:14:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234285AbiDZJRb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:17:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52182 "EHLO
+        id S245077AbiDZJQL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:16:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346675AbiDZIuP (ORCPT
+        with ESMTP id S1346694AbiDZIuQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:50:15 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9E22153771;
-        Tue, 26 Apr 2022 01:38:35 -0700 (PDT)
+        Tue, 26 Apr 2022 04:50:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 438C416D991;
+        Tue, 26 Apr 2022 01:38:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 54C9BCE1BC9;
-        Tue, 26 Apr 2022 08:38:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D207C385AC;
-        Tue, 26 Apr 2022 08:38:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B5E85B81D09;
+        Tue, 26 Apr 2022 08:38:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11FD4C385A0;
+        Tue, 26 Apr 2022 08:38:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962312;
-        bh=pCP7/cH25+g3Q4YdnXB4uOJeko31Uwuq9MNMwOC3uoo=;
+        s=korg; t=1650962318;
+        bh=5OERo2r+XXRBZapPjMBAUbdhmImkWNTw4gJreqwgq2c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=diQ3KYmWuvdnJP2u5DQ49TV5xi6KJB5HgtGVXtIZjPwL/QPWt9EiQ0chzJsDcVfXR
-         G0mp++EaeSetGG1XSLUGXpbvt3ReCJcwqMbDVaiMOf8Aluhyu9EKsOPtyurvFVUCRr
-         2OihAvQNYxS0sngKRc9X15dE5XXMT5sS1XKNeafc=
+        b=b7UlclMUYWrYSFr6bo/Y2OPm9Czj9vu6+XJWQMiw4zOinADPpbphqxz1bmTqkpWQJ
+         syKyJgtmL1S3xQb31RsFYqeLPgdyoinInJNQP1Po+IgtGOB/jxKq/0Bl0VHvm+HE4m
+         GXavcG5J3K4rlhYUt+wrBhnloAq6jgc/T5cQs2yI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Feng Zhou <zhoufeng.zf@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Peilin Ye <peilin.ye@bytedance.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Hans de Goede <hdegoede@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 037/124] ip6_gre: Fix skb_under_panic in __gre6_xmit()
-Date:   Tue, 26 Apr 2022 10:20:38 +0200
-Message-Id: <20220426081748.358077005@linuxfoundation.org>
+Subject: [PATCH 5.15 056/124] platform/x86: samsung-laptop: Fix an unsigned comparison which can never be negative
+Date:   Tue, 26 Apr 2022 10:20:57 +0200
+Message-Id: <20220426081748.894268339@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -51,126 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+From: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 
-[ Upstream commit ab198e1d0dd8dc4bc7575fb50758e2cbd51e14e1 ]
+[ Upstream commit 0284d4d1be753f648f28b77bdfbe6a959212af5c ]
 
-Feng reported an skb_under_panic BUG triggered by running
-test_ip6gretap() in tools/testing/selftests/bpf/test_tunnel.sh:
+Eliminate the follow smatch warnings:
 
-[   82.492551] skbuff: skb_under_panic: text:ffffffffb268bb8e len:403 put:12 head:ffff9997c5480000 data:ffff9997c547fff8 tail:0x18b end:0x2c0 dev:ip6gretap11
-<...>
-[   82.607380] Call Trace:
-[   82.609389]  <TASK>
-[   82.611136]  skb_push.cold.109+0x10/0x10
-[   82.614289]  __gre6_xmit+0x41e/0x590
-[   82.617169]  ip6gre_tunnel_xmit+0x344/0x3f0
-[   82.620526]  dev_hard_start_xmit+0xf1/0x330
-[   82.623882]  sch_direct_xmit+0xe4/0x250
-[   82.626961]  __dev_queue_xmit+0x720/0xfe0
-<...>
-[   82.633431]  packet_sendmsg+0x96a/0x1cb0
-[   82.636568]  sock_sendmsg+0x30/0x40
-<...>
+drivers/platform/x86/samsung-laptop.c:1124 kbd_led_set() warn: unsigned
+'value' is never less than zero.
 
-The following sequence of events caused the BUG:
-
-1. During ip6gretap device initialization, tunnel->tun_hlen (e.g. 4) is
-   calculated based on old flags (see ip6gre_calc_hlen());
-2. packet_snd() reserves header room for skb A, assuming
-   tunnel->tun_hlen is 4;
-3. Later (in clsact Qdisc), the eBPF program sets a new tunnel key for
-   skb A using bpf_skb_set_tunnel_key() (see _ip6gretap_set_tunnel());
-4. __gre6_xmit() detects the new tunnel key, and recalculates
-   "tun_hlen" (e.g. 12) based on new flags (e.g. TUNNEL_KEY and
-   TUNNEL_SEQ);
-5. gre_build_header() calls skb_push() with insufficient reserved header
-   room, triggering the BUG.
-
-As sugguested by Cong, fix it by moving the call to skb_cow_head() after
-the recalculation of tun_hlen.
-
-Reproducer:
-
-  OBJ=$LINUX/tools/testing/selftests/bpf/test_tunnel_kern.o
-
-  ip netns add at_ns0
-  ip link add veth0 type veth peer name veth1
-  ip link set veth0 netns at_ns0
-  ip netns exec at_ns0 ip addr add 172.16.1.100/24 dev veth0
-  ip netns exec at_ns0 ip link set dev veth0 up
-  ip link set dev veth1 up mtu 1500
-  ip addr add dev veth1 172.16.1.200/24
-
-  ip netns exec at_ns0 ip addr add ::11/96 dev veth0
-  ip netns exec at_ns0 ip link set dev veth0 up
-  ip addr add dev veth1 ::22/96
-  ip link set dev veth1 up
-
-  ip netns exec at_ns0 \
-  	ip link add dev ip6gretap00 type ip6gretap seq flowlabel 0xbcdef key 2 \
-  	local ::11 remote ::22
-
-  ip netns exec at_ns0 ip addr add dev ip6gretap00 10.1.1.100/24
-  ip netns exec at_ns0 ip addr add dev ip6gretap00 fc80::100/96
-  ip netns exec at_ns0 ip link set dev ip6gretap00 up
-
-  ip link add dev ip6gretap11 type ip6gretap external
-  ip addr add dev ip6gretap11 10.1.1.200/24
-  ip addr add dev ip6gretap11 fc80::200/24
-  ip link set dev ip6gretap11 up
-
-  tc qdisc add dev ip6gretap11 clsact
-  tc filter add dev ip6gretap11 egress bpf da obj $OBJ sec ip6gretap_set_tunnel
-  tc filter add dev ip6gretap11 ingress bpf da obj $OBJ sec ip6gretap_get_tunnel
-
-  ping6 -c 3 -w 10 -q ::11
-
-Fixes: 6712abc168eb ("ip6_gre: add ip6 gre and gretap collect_md mode")
-Reported-by: Feng Zhou <zhoufeng.zf@bytedance.com>
-Co-developed-by: Cong Wang <cong.wang@bytedance.com>
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Link: https://lore.kernel.org/r/20220322061830.105579-1-jiapeng.chong@linux.alibaba.com
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/ip6_gre.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/platform/x86/samsung-laptop.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
-index 288720838329..869c3337e319 100644
---- a/net/ipv6/ip6_gre.c
-+++ b/net/ipv6/ip6_gre.c
-@@ -733,9 +733,6 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
- 	else
- 		fl6->daddr = tunnel->parms.raddr;
+diff --git a/drivers/platform/x86/samsung-laptop.c b/drivers/platform/x86/samsung-laptop.c
+index 7ee010aa740a..404bdb4cbfae 100644
+--- a/drivers/platform/x86/samsung-laptop.c
++++ b/drivers/platform/x86/samsung-laptop.c
+@@ -1121,8 +1121,6 @@ static void kbd_led_set(struct led_classdev *led_cdev,
  
--	if (skb_cow_head(skb, dev->needed_headroom ?: tunnel->hlen))
--		return -ENOMEM;
--
- 	/* Push GRE header. */
- 	protocol = (dev->type == ARPHRD_ETHER) ? htons(ETH_P_TEB) : proto;
+ 	if (value > samsung->kbd_led.max_brightness)
+ 		value = samsung->kbd_led.max_brightness;
+-	else if (value < 0)
+-		value = 0;
  
-@@ -763,6 +760,9 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
- 			(TUNNEL_CSUM | TUNNEL_KEY | TUNNEL_SEQ);
- 		tun_hlen = gre_calc_hlen(flags);
- 
-+		if (skb_cow_head(skb, dev->needed_headroom ?: tun_hlen + tunnel->encap_hlen))
-+			return -ENOMEM;
-+
- 		gre_build_header(skb, tun_hlen,
- 				 flags, protocol,
- 				 tunnel_id_to_key32(tun_info->key.tun_id),
-@@ -773,6 +773,9 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
- 		if (tunnel->parms.o_flags & TUNNEL_SEQ)
- 			tunnel->o_seqno++;
- 
-+		if (skb_cow_head(skb, dev->needed_headroom ?: tunnel->hlen))
-+			return -ENOMEM;
-+
- 		gre_build_header(skb, tunnel->tun_hlen, tunnel->parms.o_flags,
- 				 protocol, tunnel->parms.o_key,
- 				 htonl(tunnel->o_seqno));
+ 	samsung->kbd_led_wk = value;
+ 	queue_work(samsung->led_workqueue, &samsung->kbd_led_work);
 -- 
 2.35.1
 
