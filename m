@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 241B1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:32:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAC25C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:32:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344649AbiDZJfc (ORCPT
+        id S1348379AbiDZJfH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:35:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57336 "EHLO
+        Tue, 26 Apr 2022 05:35:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347907AbiDZJGW (ORCPT
+        with ESMTP id S1347897AbiDZJGV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:06:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A411B53ED;
-        Tue, 26 Apr 2022 01:47:06 -0700 (PDT)
+        Tue, 26 Apr 2022 05:06:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F38EAC073;
+        Tue, 26 Apr 2022 01:46:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3F5F9B81CF2;
-        Tue, 26 Apr 2022 08:47:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96359C385A0;
-        Tue, 26 Apr 2022 08:47:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BDC42604F5;
+        Tue, 26 Apr 2022 08:46:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B04C2C385A4;
+        Tue, 26 Apr 2022 08:46:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962824;
-        bh=PppC3vam2C5Yu3j4i8ueQKhK2ayOhbdqrydENy51b+I=;
+        s=korg; t=1650962812;
+        bh=y4FzcMqIYjP6yJMMswEni40ksnSonHHl5KEbQHYCCgw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=00a66CrW9mTS7hyFGDpboFS7ZkCIUys5fAaiYdr6FpQv97gf6WM9u4SabdTV33EVP
-         hgz6stu87vsCOFEr91/NcQO3Lc+h2UOpiE0FKBIzsPOXnINDqzR1gkdExi9vA0gOWq
-         jPraVY6Eh+RFdJFZSkfcumDuWDjpolYbRnUbYSvY=
+        b=e1osvW2DjRtrupRpOuzwDpRUIqLs7RGXzp3zpV5WE4ERzgMycDPjw3oqY4ce8T0zK
+         UPHA5XDPSY0pLZ54H1lwAJ5FDa0Zylfw5LwvYorRG+axwim90l7AC/k8OYCYOLz+3q
+         N1ZoT6wFx843zWV8CxiX06XK+kGAe7hh7NMPycI0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sameer Pujar <spujar@nvidia.com>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Thierry Reding <treding@nvidia.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
+        stable@vger.kernel.org, Liviu Dudau <liviu.dudau@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Kees Cook <keescook@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 062/146] reset: tegra-bpmp: Restore Handle errors in BPMP response
-Date:   Tue, 26 Apr 2022 10:20:57 +0200
-Message-Id: <20220426081751.808865437@linuxfoundation.org>
+Subject: [PATCH 5.17 060/146] ARM: vexpress/spc: Avoid negative array index when !SMP
+Date:   Tue, 26 Apr 2022 10:20:55 +0200
+Message-Id: <20220426081751.754307470@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -52,56 +54,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sameer Pujar <spujar@nvidia.com>
+From: Kees Cook <keescook@chromium.org>
 
-[ Upstream commit d1da1052ffad63aa5181b69f20a6952e31f339c2 ]
+[ Upstream commit b3f1dd52c991d79118f35e6d1bf4d7cb09882e38 ]
 
-This reverts following commit 69125b4b9440 ("reset: tegra-bpmp: Revert
-Handle errors in BPMP response").
+When building multi_v7_defconfig+CONFIG_SMP=n, -Warray-bounds exposes
+a couple negative array index accesses:
 
-The Tegra194 HDA reset failure is fixed by commit d278dc9151a0 ("ALSA:
-hda/tegra: Fix Tegra194 HDA reset failure"). The temporary revert of
-original commit c045ceb5a145 ("reset: tegra-bpmp: Handle errors in BPMP
-response") can be removed now.
+arch/arm/mach-vexpress/spc.c: In function 've_spc_clk_init':
+arch/arm/mach-vexpress/spc.c:583:21: warning: array subscript -1 is below array bounds of 'bool[2]' {aka '_Bool[2]'} [-Warray-bounds]
+  583 |   if (init_opp_table[cluster])
+      |       ~~~~~~~~~~~~~~^~~~~~~~~
+arch/arm/mach-vexpress/spc.c:556:7: note: while referencing 'init_opp_table'
+  556 |  bool init_opp_table[MAX_CLUSTERS] = { false };
+      |       ^~~~~~~~~~~~~~
+arch/arm/mach-vexpress/spc.c:592:18: warning: array subscript -1 is below array bounds of 'bool[2]' {aka '_Bool[2]'} [-Warray-bounds]
+  592 |    init_opp_table[cluster] = true;
+      |    ~~~~~~~~~~~~~~^~~~~~~~~
+arch/arm/mach-vexpress/spc.c:556:7: note: while referencing 'init_opp_table'
+  556 |  bool init_opp_table[MAX_CLUSTERS] = { false };
+      |       ^~~~~~~~~~~~~~
 
-Signed-off-by: Sameer Pujar <spujar@nvidia.com>
-Tested-by: Jon Hunter <jonathanh@nvidia.com>
-Reviewed-by: Jon Hunter <jonathanh@nvidia.com>
-Acked-by: Thierry Reding <treding@nvidia.com>
-Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
-Link: https://lore.kernel.org/r/1641995806-15245-1-git-send-email-spujar@nvidia.com
+Skip this logic when built !SMP.
+
+Link: https://lore.kernel.org/r/20220331190443.851661-1-keescook@chromium.org
+Cc: Liviu Dudau <liviu.dudau@arm.com>
+Cc: Sudeep Holla <sudeep.holla@arm.com>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: linux-arm-kernel@lists.infradead.org
+Acked-by: Liviu Dudau <liviu.dudau@arm.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/reset/tegra/reset-bpmp.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ arch/arm/mach-vexpress/spc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/reset/tegra/reset-bpmp.c b/drivers/reset/tegra/reset-bpmp.c
-index 24d3395964cc..4c5bba52b105 100644
---- a/drivers/reset/tegra/reset-bpmp.c
-+++ b/drivers/reset/tegra/reset-bpmp.c
-@@ -20,6 +20,7 @@ static int tegra_bpmp_reset_common(struct reset_controller_dev *rstc,
- 	struct tegra_bpmp *bpmp = to_tegra_bpmp(rstc);
- 	struct mrq_reset_request request;
- 	struct tegra_bpmp_message msg;
-+	int err;
+diff --git a/arch/arm/mach-vexpress/spc.c b/arch/arm/mach-vexpress/spc.c
+index 1da11bdb1dfb..1c6500c4e6a1 100644
+--- a/arch/arm/mach-vexpress/spc.c
++++ b/arch/arm/mach-vexpress/spc.c
+@@ -580,7 +580,7 @@ static int __init ve_spc_clk_init(void)
+ 		}
  
- 	memset(&request, 0, sizeof(request));
- 	request.cmd = command;
-@@ -30,7 +31,13 @@ static int tegra_bpmp_reset_common(struct reset_controller_dev *rstc,
- 	msg.tx.data = &request;
- 	msg.tx.size = sizeof(request);
+ 		cluster = topology_physical_package_id(cpu_dev->id);
+-		if (init_opp_table[cluster])
++		if (cluster < 0 || init_opp_table[cluster])
+ 			continue;
  
--	return tegra_bpmp_transfer(bpmp, &msg);
-+	err = tegra_bpmp_transfer(bpmp, &msg);
-+	if (err)
-+		return err;
-+	if (msg.rx.ret)
-+		return -EINVAL;
-+
-+	return 0;
- }
- 
- static int tegra_bpmp_reset_module(struct reset_controller_dev *rstc,
+ 		if (ve_init_opp_table(cpu_dev))
 -- 
 2.35.1
 
