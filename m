@@ -2,166 +2,464 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAF6DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 18:32:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CD6FC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 18:33:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351695AbiDZSfM (ORCPT
+        id S1348551AbiDZSgz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 14:35:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32974 "EHLO
+        Tue, 26 Apr 2022 14:36:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351543AbiDZSfJ (ORCPT
+        with ESMTP id S233081AbiDZSgx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 14:35:09 -0400
-Received: from na01-obe.outbound.protection.outlook.com (mail-cusazon11020026.outbound.protection.outlook.com [52.101.61.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CFF72982C;
-        Tue, 26 Apr 2022 11:32:00 -0700 (PDT)
+        Tue, 26 Apr 2022 14:36:53 -0400
+Received: from esa3.hgst.iphmx.com (esa3.hgst.iphmx.com [216.71.153.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AD1D44A21;
+        Tue, 26 Apr 2022 11:33:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1650998023; x=1682534023;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=17sUipBWUfee0GbO6tPsNvE/Uyx+8SxUoWUtkgWGeaE=;
+  b=B1JUInniXl5TNOfBc+9OdDjoogUyZo2xp8uq3voNzfIO/I9Vx1JLmxqZ
+   plgJpoJ06K1DauqlfOJ8T/i/oQkmDJvyoeUyuxd3wIZfrqswE9bWmr6SS
+   MEv1ZuilUunqhEPSJ7wc4lVZk3B96S1JJGsxkgobiih6SHLS19QX8HVyF
+   w06O5dKxi9v5X4OV37nB8wTCG9cKz3/J8KdYXXHuwaQQBSwuF5pObTMon
+   QxQvR+uZvps5wQSiY4o1Af9ZignL2HQ+9o5dAwrM+TQ1MBpDdRj6PwUzE
+   3Z7lGrFDITpm3mGqgfeMcJYvwx5yJ7JjHKCm/OwgViDBz0KD5vO+9mfay
+   A==;
+X-IronPort-AV: E=Sophos;i="5.90,291,1643644800"; 
+   d="scan'208";a="203749327"
+Received: from mail-bn1nam07lp2040.outbound.protection.outlook.com (HELO NAM02-BN1-obe.outbound.protection.outlook.com) ([104.47.51.40])
+  by ob1.hgst.iphmx.com with ESMTP; 27 Apr 2022 02:33:38 +0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jqIH1tqRDe/qhwnyHCrIi6CcVaGa9SSY5vqdy7x49tLbdzw/YFZozULl6s5BHiWi7TRo0k+HeZBsetQT4OhI2vmuel+2eaQYrc4cUdYAdN0mtgNYt6LtNYqzC4b2tigicj2VM+1ggJHxUwQ0TQ1DFn0zG6I48OJW2r2grcNZlAYk0/tnrSM1gye5Tz6eplFvMz2KRSvXrq8jChtkL+V7IRqH6vvrichRWnXmQaNm1MSzZp9ZFmGwN6yO+O/bBIrSKTcOv5UKGjlUANyjwL8N6p4TX9+T4CbUzvER0Sv8PVLPgeyhnNZCPQAWnx351KBgFkUp6exTL8CWgIlYXybigg==
+ b=PQM4nq8Yv64E7kwYwWS9oFk4JxX6sr5ka50OV/DGbF/oHE3G67fOMNvl19to11axZPdsqlVmuyBucs4e2tpJAkx4L+CITw4xGA48JbMFNelBsCjXyt/5BvrJEwPmCrghxaxGNisUmsuasc4TbfYjnzFNsYHWDJIKxnU8ZfSB+zv+AtSaaCD8sVwcIqzhU4PxybItRAcEreopvg6QMt4EmQRF7k0bF1hOmw8I9m+lHdhHH/icBDZ0EsYd6fYyVrbOEfvEOYX8cbaai9h8pL3IvrGp+dUVpp7fB0jlIgaLPevfXl191LOTyQ7EtSlDtPdaIdzhj1AkhYCyKG/rFtP92g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=s1hD7zUJjy0apFTR5J/F3dQGCv72r5cQZIUyf9Zb/SI=;
- b=elcoNnivYgNe6UJxmNJ1IJyzUZrZceJj+fvzS77SoHFGpu1r7IP/A9Ao8J7bS2ljQn01EBh33k+8935WJUhrOjaNILz0BvPwrh73kuzP83Lc+D7TWSXtzSBwYCyK5B721l2XBS5TqkwD6uHEkmIbz+ec9ZrTzO6dyQXVafRVAFuzpyB+W3DrJlUiDUh23BWGGFkkjSDL0lcdKdQtfj0LtPddk0hJXg6+8O+R7mS0Hiqf/frAOdO74jXULdyFf2WGn78I7t2tZ6jKJAiXVxqPR6if6jaxX6GiAn2B4nSDNrRRwvRjaQT0vCOKwZZvHASWgGvbYdWgVuqS184xkbZozw==
+ bh=IMpK5/WcJO8yvQdmSZ9AUioLB2k2Bb26GyjEQXOshHY=;
+ b=NnYPHojx7NZ4QjljoStP2/QSdADeb7RmGaqiuIh2KLdIOnJ5J0KFvG9YkNu9qPqy8aJN/kYhn37g9bh6n7eS6fQN5GC0pATT0ZGCH1GK8yYwMuNjPBZUukeGSVznYP/kdALydK/sPGE+Td4x6zJRIn/gkrCO+UyR5g0KrvhoZQh08by425K9S2CL009brYuDCcbzqj/4xphaLlJDiThNtR84HdVNu8GigRV6im5WDvZHZdfNbEBfe+9+6WRxK4zZnOdmhqoOmD02I22RiOYZsit8f7nqbrk1XCjGgEyga3EJ+KtvRQcS6B9TSPXTVa6c0vNtwABcQBQM8yj2EKaWow==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
+ smtp.mailfrom=wdc.com; dmarc=pass action=none header.from=wdc.com; dkim=pass
+ header.d=wdc.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=sharedspace.onmicrosoft.com; s=selector2-sharedspace-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=s1hD7zUJjy0apFTR5J/F3dQGCv72r5cQZIUyf9Zb/SI=;
- b=ZUaDokJvQMOB7WSa1mM/3p4fcKxBvWFBDvCkDHPGYd7ak4H0jbL8ToWL3IQfJQtpEWI9LlF80aBkUnUFNcZzgDLGkQRVupoWLdS7rOGAk7GiydoSZN2EuzlKuCYb9S+l9EtGBXnN+74zVSbOTvDE+jE3p/RM8VY9wthklPwc9lo=
-Received: from BYAPR21MB1270.namprd21.prod.outlook.com (2603:10b6:a03:105::15)
- by CY4PR21MB1272.namprd21.prod.outlook.com (2603:10b6:910:7::17) with
+ bh=IMpK5/WcJO8yvQdmSZ9AUioLB2k2Bb26GyjEQXOshHY=;
+ b=xKJgPt7Ecj1Ty5pS/aeu4T4wTsI9GHz4K9KS/qoUy1j++PSQbZzrChcShVEIyWkIPk50p0JJGZ/DD4PZGqLbchjG4jZY+vswc+4tprW5ASzpW6i6X0V64ZOuzrJROrcAIPovdUrriNw6Z4HvZUdU7h4VR0VLw4ttbvvjeIEBDkc=
+Received: from DM6PR04MB6575.namprd04.prod.outlook.com (2603:10b6:5:1b7::7) by
+ MWHPR0401MB3546.namprd04.prod.outlook.com (2603:10b6:301:80::36) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.4; Tue, 26 Apr
- 2022 18:31:56 +0000
-Received: from BYAPR21MB1270.namprd21.prod.outlook.com
- ([fe80::2823:3bd7:8a28:4203]) by BYAPR21MB1270.namprd21.prod.outlook.com
- ([fe80::2823:3bd7:8a28:4203%7]) with mapi id 15.20.5227.004; Tue, 26 Apr 2022
- 18:31:56 +0000
-From:   Dexuan Cui <decui@microsoft.com>
-To:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-CC:     Jake Oshins <jakeo@microsoft.com>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>
-Subject: RE: [PATCH] PCI: hv: Do not set PCI_COMMAND_MEMORY to reduce VM boot
- time
-Thread-Topic: [PATCH] PCI: hv: Do not set PCI_COMMAND_MEMORY to reduce VM boot
- time
-Thread-Index: AdhVrRvIeWjuo4jbQkC6t/9QZsLcgwD39GUAAANHMGA=
-Date:   Tue, 26 Apr 2022 18:31:56 +0000
-Message-ID: <BYAPR21MB127041D9BF1A4708B620BA30BFFB9@BYAPR21MB1270.namprd21.prod.outlook.com>
-References: <BYAPR21MB12705103ED8F2B7024A22438BFF49@BYAPR21MB1270.namprd21.prod.outlook.com>
- <YmgheiPOApuiLcK6@lpieralisi>
-In-Reply-To: <YmgheiPOApuiLcK6@lpieralisi>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Tue, 26 Apr
+ 2022 18:33:38 +0000
+Received: from DM6PR04MB6575.namprd04.prod.outlook.com
+ ([fe80::b049:a979:f614:a5a3]) by DM6PR04MB6575.namprd04.prod.outlook.com
+ ([fe80::b049:a979:f614:a5a3%3]) with mapi id 15.20.5206.012; Tue, 26 Apr 2022
+ 18:33:38 +0000
+From:   Avri Altman <Avri.Altman@wdc.com>
+To:     Srinivasarao Pathipati <quic_spathi@quicinc.com>,
+        "ulf.hansson@linaro.org" <ulf.hansson@linaro.org>,
+        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+        "shawn.lin@rock-chips.com" <shawn.lin@rock-chips.com>,
+        "merez@codeaurora.org" <merez@codeaurora.org>,
+        "s.shtylyov@omp.ru" <s.shtylyov@omp.ru>,
+        "huijin.park@samsung.com" <huijin.park@samsung.com>,
+        "briannorris@chromium.org" <briannorris@chromium.org>,
+        "digetx@gmail.com" <digetx@gmail.com>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC:     Veerabhadrarao Badiganti <vbadigan@codeaurora.org>,
+        Shaik Sajida Bhanu <sbhanu@codeaurora.org>,
+        kamasali <quic_kamasali@quicinc.com>
+Subject: RE: [PATCH V1] mmc: core: Add partial initialization support
+Thread-Topic: [PATCH V1] mmc: core: Add partial initialization support
+Thread-Index: AQHYWUyoCuEqwcrJJUG+ipv40mEWZq0CDgxg
+Date:   Tue, 26 Apr 2022 18:33:38 +0000
+Message-ID: <DM6PR04MB6575541A6720A96997653A6CFCFB9@DM6PR04MB6575.namprd04.prod.outlook.com>
+References: <1650963852-4173-1-git-send-email-quic_spathi@quicinc.com>
+In-Reply-To: <1650963852-4173-1-git-send-email-quic_spathi@quicinc.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=4e64cf5a-7ee8-4ca3-9e7a-b567d41fc5e7;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-04-26T18:18:33Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
 authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
+ header.d=none;dmarc=none action=none header.from=wdc.com;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 8102f0fb-0f66-455a-8a1e-08da27b30b35
-x-ms-traffictypediagnostic: CY4PR21MB1272:EE_
-x-microsoft-antispam-prvs: <CY4PR21MB127212C3A20859F8BB1D5302BFFB9@CY4PR21MB1272.namprd21.prod.outlook.com>
+x-ms-office365-filtering-correlation-id: d41f3669-45af-491d-d794-08da27b347c4
+x-ms-traffictypediagnostic: MWHPR0401MB3546:EE_
+x-microsoft-antispam-prvs: <MWHPR0401MB3546E7F622C48F5DCBD1E33FFCFB9@MWHPR0401MB3546.namprd04.prod.outlook.com>
+wdcipoutbound: EOP-TRUE
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: VBP/WDJf7+aLFrN6sQaQD1SDxx89DUSkUC7mS0TnJBDHJIdj4x0UwBtwC823JzdJ8QxOgNCT1ye8t7G/ZzQPjAxCQMxZs5vuEO/TNL/6ADNtiC3wTLRoKigMUJqc2+qhAP5ZQvcF7EmactOV/+pYEBqHcxafrX3ttLLfqCGb2eH0Ugl3AkDdXPQMt1Lnt0ykPO/AUyakpnmAqMEeZ3kjDx5c0Py9w9NMh2QCQCdrP4woX5ytN0dwMAR7ApGLPIyexGy5a/kBsXQqhqgzbyokzi9csSlOtC9dTQ0S4wEqlavj07iM/rrlHwD94ZL55br3DOMV5XONzMh1D/QN6yWAw3teus8w48Dk7wiQiydSVuTyAEDWHGcFeQ1YaYR8CLRRvilQecVjFWzMJYWyMPWYbljyQcTDr0Hw5/0/aZU/1AYu2crM5R4xJYscpNcDDbfH/WeZFIbFo32JMGdzGOK8eR2jArXySNlmf6c6hzpMLeRUF9Ln/7jnQCgaGuUfCimzL1L/2ewzYq0bGsC6/2GcwxZ55PI9Hol0EAdsPjk8fMovXhHgC/ShiTgstyI8NEsbgCjwYKHzg1Tns+xBN64CpTacdxc4jGKD2+jNsEyJQvNuq531VmoGqDAOpOR3aUGxjOmIkWGoGbxVUM8G43F/n1z2pCgmNZEom8ITFi9D2Zk73Vex85mgjHcTqmLY3pbRFI/AsM6xQe/uInUxd2BZhhE/fItTzUspqdrp0NLVmzOT4DCUeTy9OKT/FZjqVnbS
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR21MB1270.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(451199009)(71200400001)(82950400001)(7696005)(55016003)(8676002)(66476007)(66446008)(76116006)(66946007)(4326008)(8990500004)(38100700002)(38070700005)(26005)(2906002)(9686003)(6506007)(33656002)(64756008)(66556008)(122000001)(8936002)(52536014)(7416002)(82960400001)(508600001)(10290500003)(5660300002)(6916009)(83380400001)(186003)(86362001)(316002)(54906003);DIR:OUT;SFP:1102;
+x-microsoft-antispam-message-info: jlX34McLc6pMkO0r1AraTP23bLs6x0SXlpeSyG4WvjBuyZmTT1T3OHmH9dGtME2yUaUPDc1GFAo47I9ISsaOBnGGmiJ9OMptsIzHxz5Nhnj11cY9MREqEDzaMEdjsck90vb0himdS62V4rwBVpIAfSXxNdQ2XpV4wSQyOXWeVio8z7dc1z3IaCj9oZtnGOdQyGpIlVhOpV+DJoSMNPe6D/kk4RlsaJVseQlT/ho7A8+EinOKTqxeeQuwwnd0QZVuGpTyor+4HA7URVjGTWkWkEaf/urlVDYAEG98nCK52a60DoCD/7P8p16bZKONOsyxLzjk72KliZOCbIysZHk8Z2rJDX8G6jkBNgfg+5JpCnLyuNTUOgH3Yh3bHOpmfUfvu+6VxkAZ1+0eIkAqA+6tGwp00pObot76u+25HDLAzk5KzDe/g8CDWIT3ORsYc+h3Jtw9O/y94uxoUcdtucy3JHo/Fb1VabeOH/Sp7TThs+wlzbtUIsUP8HiP1ABiB/NZ1cVv7Ya/8FbCWRjslYtkFcqVz0kfexNoPr76jjLHybMygcgykQk30hBCnLujVWAWnEXs9bCTSlkWzHId3vgb3IwlPiwmmiJ1VQg3chsuys8GGWwyPa+akQOX7euLMX6CMNn4/d9KnW9bk5tLgJ99nD3d6l2gSj4ON43il5JvrOlRYeP3egaaR1LTgAr7mnIfSmo2CPN17V99oi8Ti6GyuFjB59vALUAXwiq/u2q6zJ4=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR04MB6575.namprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(54906003)(26005)(6506007)(66946007)(66556008)(186003)(7416002)(38100700002)(316002)(2906002)(110136005)(7696005)(9686003)(66476007)(71200400001)(8936002)(86362001)(64756008)(76116006)(82960400001)(66446008)(33656002)(5660300002)(4326008)(8676002)(122000001)(83380400001)(52536014)(921005)(38070700005)(508600001)(55016003);DIR:OUT;SFP:1102;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Lju1jlDijh6YHudx6uWGvoEwu5EEd53008jmvSoWEn9rGTDBKDCRxlCd5/g/?=
- =?us-ascii?Q?D03p95GXkrV4p/x2lNKRxSTLnKlSVmFcROSn7Tl6iPJYAtbsxpwQhCKBIzqz?=
- =?us-ascii?Q?V8kI5blMYlXVvK3O4N4rBFz+ySl1IS3Xd0uIPHU6V2ukZePqrD8Huz1StXeZ?=
- =?us-ascii?Q?ryxVBrSIY29D3Dbi8fAmvDAVM29bN3Zc6KqYQg8WSzmZEwqqRbP5l3nMgI8a?=
- =?us-ascii?Q?o1Qn6/2l77BquEp/xBl917YMVsbhNm76Gtwf3ZY3mzHTYU1zr63k8la0VNYT?=
- =?us-ascii?Q?7TpGG2o9Q4uCAIGQrnTzKUJOcpvKs42yx3TQl7ohlUsPz4OU1s79Gs+Lx/mY?=
- =?us-ascii?Q?xJPsmGTsIPEB1q8YjhXvP9iT7QDpVdMPWwwGzvy5IyYlnjAxCgDYQEJMIa4e?=
- =?us-ascii?Q?hQJQR8k+EnaQdKhaGJw41RMlvhRlhX4XeBawkAsoLzPCHMK8kwru2maaMWTD?=
- =?us-ascii?Q?vEvU464+3JNg2XnQnBGCb+qAfCeOz0jfJMUOOR6MgaWNrv5YJEp5a+r29jku?=
- =?us-ascii?Q?ni9kVcvvl/lUYebRO8uZ9JAyw3sHbKXS5r+E0NlQdgRSAEYx2x0VCN15olum?=
- =?us-ascii?Q?qEtMZr59Ym40vd/8H6srelDKZnMDSr3ZyVTX9OP91Zjb4wWlUzVA3fmvS33Q?=
- =?us-ascii?Q?TzvbsJZ3ONaWOykp+UO1AM+NdVjKVarcLTTUeAvn2DlQoc5Dij2gPzPiMBr5?=
- =?us-ascii?Q?xd8taz9WjVIlChZalo4FLemkhzaDZbP8jafUQZSWuw+c1ip+J6FslurLYZNq?=
- =?us-ascii?Q?R+GX+OUtzDtQpzP/kPSotfKqp6aHO0U1E5IpQrRMD3c1XNo7ylj5kCuT6c5z?=
- =?us-ascii?Q?D5i3y3sjOwEqkgFCeyvXDUdRzGXFjNyrkAAayv7r3Z5nmxZRl/qP4C2+kSOL?=
- =?us-ascii?Q?Egev7eAyxe+s/WDr8M3l4J5esIN2zmbh+Fw6r6MFwIBMQFT1+U1gETHCfG6U?=
- =?us-ascii?Q?NOxQA30VhkirmuSvfRi/h6KJlPHFAQUq+4sak0AMnm6Uyuzz8WLSP3oVIup+?=
- =?us-ascii?Q?CEnIOsJQF4OzodrzqMkQ7CY48wocjOb3znMFUfGPyyrM/NLNXLB06LTPhbTA?=
- =?us-ascii?Q?ZMoQHzJFZKdDfCsVuYSNZvqn8EvYp2uBEtnzWkhu/xcTBFdzDLZXFgCGayJb?=
- =?us-ascii?Q?pwyOafmdo6jeygYnwTQg/wzRexiKVYsIzMl4Q9EnNtMItlngcq6pk2ldZLXb?=
- =?us-ascii?Q?Go78JFUQnrJUVDLCqqdIliAjfKHKet4m9cFPiozrKhAKAcsuxruQijoV4jxW?=
- =?us-ascii?Q?YhJ/dhvADiPkyJMzGR46rcSbsipBFCZkH4LJCx4uk+AIdh6gQy+zCNe9FxkG?=
- =?us-ascii?Q?wgOTpDGm2ppwfTe7IYjPH87IdK2GPYiG2KLnYmQJPRs3+pRlwOFIB/sS108X?=
- =?us-ascii?Q?EQjYoBnXr8eTMsCwM53IuJg/2VKnvM73zYq91VLuq0MB4/o+GlXtq5XGYzzz?=
- =?us-ascii?Q?fdp6lkFI4JH8qGhdNWFB6rdVXquO0/M6UZD+JB22DtG/0DtBpx7mwdnxvS+x?=
- =?us-ascii?Q?h5a3IvyLuxM8o9bdUxK1entgjCXu9Nxfc5LDXI6vHC7iywg1jt9ZdREz5DPG?=
- =?us-ascii?Q?Zzxi0cshHvJdLnqH/DVvVUSnrUMWrj2qfTcL9qmggnCrwniXlCQkyoIiIWWr?=
- =?us-ascii?Q?YGZPf1M/8ek/Z5fTeIj6B/2MFqqy4r+waj3IYbm61nXaUBjittFfYRVnFoM4?=
- =?us-ascii?Q?B2XXyiiXVo8gGNivauw+CVaeFqMl8ci4sRjYWP5/3qsbRwlOmU6atrj+BH8S?=
- =?us-ascii?Q?D8OtrN21nA=3D=3D?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?HO85NmIpqn4Gu5/SkInfHpPo8tppIbgME+COtSVOlcYGrALtQ6KWoKMDE/kf?=
+ =?us-ascii?Q?KoF8P2d5speefWPKbw5/kI2W0txfA3eymBvXWd0l93m7eOGknm6sini0s88n?=
+ =?us-ascii?Q?BzZoLN5Ktsv7na6EeMbzU0zWQHiK4XnxYYF65LeAkJJOQinzr7bzTopD7Pge?=
+ =?us-ascii?Q?mqDkdLEMVi9OJcJM0vGHa9JyT5vqvSoE46KZrk2o0faymVGoKPFUfjjCxrfq?=
+ =?us-ascii?Q?fhdtMZkBbMAjRzuGUBH/pqZr7qi/chkesO1zWQ7EOBUCMWC9f8D8cUHxUAyK?=
+ =?us-ascii?Q?DV2htUQCR3NflTMjo3Z7CC29nbASUkr69aVpgR/2eYaypK7aklXSpHeWt7J8?=
+ =?us-ascii?Q?HE1LPnVt6ThTrgz+srmbIWJRZOQD0QXOkaVlJxi87kfagGbx9x1qa7C6nM/B?=
+ =?us-ascii?Q?zuEpUVPCviuO8FV4+J5UYiJvG+j4XlTYi3W8D72jVPoE+eUjT8Tzr/xsgx/b?=
+ =?us-ascii?Q?6ja1suLp+6sz8H85IVcvv7k+2B+W/Q8CkqPUSKq/3seyjpOG0kM+K89htWjB?=
+ =?us-ascii?Q?CbJPFNof581z36ZQtUUpWD5bWH+QulURZJ8obrpRQO62JfbqljWiZ4urCZfT?=
+ =?us-ascii?Q?asPWMIX1CqcP717L5OXkHbCINkfrjF9bRUt3nyxskDy410hnjc72Y5qbIyP7?=
+ =?us-ascii?Q?SC3b08dCdlm8h+Oa1fY4M9oDRqbevU8lT9OWtl3dc9MAcIWBxiVVtJ+dVBdZ?=
+ =?us-ascii?Q?df+o+XyQjkFGTWj8Y2Nw44VCQ4ZwLwBXFUFIzIp+g9RALrDRbiEVCf3F/VZm?=
+ =?us-ascii?Q?LP5wg2HQ9j38udbEOnMGRqp3ImY7iUr2AqgcK5rzjqfPIejQ3ty3f+fxzfQy?=
+ =?us-ascii?Q?kKwwmZ6LSjPnwK+VKe+zIjg3fdO/QYGE1qvxdGm+ll7UmHfYQk6k3clN/dSZ?=
+ =?us-ascii?Q?3C8jcLiECJSADjONn83vNx5IFNeyadiNVEtvsQ2nMC3Kq9kIGjbHf0kY/qEj?=
+ =?us-ascii?Q?tbz+eb7+eo9wSULsZpH684BVG4jZ+QQGSO6SyP39q9GgnsDLkXd6ZpG0tMFM?=
+ =?us-ascii?Q?G019WTvycF5JXSv5RhrBpEUlxU8AAfPW9HAFtmqIo6GniJMTLRYMu2caQqNa?=
+ =?us-ascii?Q?7FoXOPZk3dpGGtFQSqTpAMasgpXAeCAKMqYSDZCZkej6wUYxGyoWbyrDSBJb?=
+ =?us-ascii?Q?gl6NejN2V5V5X5VDLWuTLI6dnhq0ch0ud4kVy/VmNaNrpzBM3RL2dFhpPNM1?=
+ =?us-ascii?Q?Ben7AqBEk+/UPCJSZgelN3qRy5chTj+xQo0ZfMTMd5ww+UCE3jJpDP7GUYr1?=
+ =?us-ascii?Q?cq6wHiwcs1d+jDnx2NKFSK9gwBD2w02Fq1zS0Q0f+IgNwJhFQ/xeTkDjFZnp?=
+ =?us-ascii?Q?7BsL+O8BcQWxkEb5HFg8g818ehAbLbWIFOrzF91d7EEY4bpHdiiWjZMUpd3X?=
+ =?us-ascii?Q?cLwrasberFl7LAWY1dIVa3FAV0EkwTr5Ko3s+chlc//h1qsctV2Ve36WzovI?=
+ =?us-ascii?Q?2mdyHY69Dn35igp9LRKt/rY/P0vuj57aAN3JIBectfFl/MBn5aiit4llWaRO?=
+ =?us-ascii?Q?aJVV9FGrKTgBVYje6CX1PPzX4La+cujhNnawYwLVjxbKS88xFikZTII5Ykdo?=
+ =?us-ascii?Q?GMGtayTiVLiDbTKs7+aa9VAp4zAKmN7VncY/o51HCNWF7ZwOSfXgoP2jhqok?=
+ =?us-ascii?Q?0ZJuEOS7J31T90s1QArwzP7TfVt6e/DhSG7zq+dn/VM5RfyvJgi63lLNvf56?=
+ =?us-ascii?Q?qOkTYmPoI9oOluplb52lbWx4y2fA6212tz0hj6gtbHdQRcmdDqHja8B39MoR?=
+ =?us-ascii?Q?KKLR0wSzVw=3D=3D?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
+X-OriginatorOrg: wdc.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR21MB1270.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8102f0fb-0f66-455a-8a1e-08da27b30b35
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Apr 2022 18:31:56.5983
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR04MB6575.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d41f3669-45af-491d-d794-08da27b347c4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Apr 2022 18:33:38.2902
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-id: b61c8803-16f3-4c35-9b17-6f65f441df86
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 0nYqXaTaUg1qHUXfgEt2fkloAixwz8bNC6ks3oH+OVgFdPTFFBjrq1rd35fxT1T3cxFxbGS+MoEsqG7iyd1Q6A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR21MB1272
+X-MS-Exchange-CrossTenant-userprincipalname: G/EIWN2MckMbK0MEId/+/Q2F1C+3KPQS3BNBICOt2fSvsy/3wIfHoy1AryaO0/UvnFIfuVdKfDPZwznLRfyxuQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR0401MB3546
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> Sent: Tuesday, April 26, 2022 9:45 AM
-> > ...
-> > Sorry I don't quite follow. pci-hyperv allocates MMIO for the bridge
-> > window in hv_pci_allocate_bridge_windows() and registers the MMIO
-> > ranges to the core PCI driver via pci_add_resource(), and later the
-> > core PCI driver probes the bus/device(s), validates the BAR sizes and
-> > the pre-initialized BAR values, and uses the BAR configuration. IMO
-> > the whole process doesn't require the bit PCI_COMMAND_MEMORY to be
-> > pre-set, and there should be no issue to delay setting the bit to a
-> > PCI device device's .probe() -> pci_enable_device().
+> From: Maya Erez <merez@codeaurora.org>
 >=20
-> IIUC you want to bootstrap devices with PCI_COMMAND_MEMORY clear
-> (otherwise PCI core would toggle it on and off for eg BAR sizing).
+> This change adds the ability to partially initialize
+> the MMC card by using card Sleep/Awake sequence (CMD5).
+> Card will be sent to Sleep state during runtime/system suspend
+> and will be woken up during runtime/system resume.
+> By using this sequence the card doesn't need full initialization
+> which gives time reduction in system/runtime resume path.
 >=20
-> Is that correct ?
+> Signed-off-by: Maya Erez <merez@codeaurora.org>
+> Signed-off-by: Veerabhadrarao Badiganti <vbadigan@codeaurora.org>
+> Signed-off-by: Shaik Sajida Bhanu <sbhanu@codeaurora.org>
+> Signed-off-by: kamasali <quic_kamasali@quicinc.com>
+> Signed-off-by: Srinivasarao Pathipati <quic_spathi@quicinc.com>
+> ---
+>  drivers/mmc/core/mmc.c   | 149
+> ++++++++++++++++++++++++++++++++++++++++++++---
+>  include/linux/mmc/card.h |   4 ++
+>  include/linux/mmc/host.h |   2 +
+>  3 files changed, 146 insertions(+), 9 deletions(-)
+>=20
+> diff --git a/drivers/mmc/core/mmc.c b/drivers/mmc/core/mmc.c
+> index 9ab915b..8691c00 100644
+> --- a/drivers/mmc/core/mmc.c
+> +++ b/drivers/mmc/core/mmc.c
+> @@ -1942,7 +1942,14 @@ static int mmc_sleep_busy_cb(void *cb_data, bool
+> *busy)
+>         return 0;
+>  }
+>=20
+> -static int mmc_sleep(struct mmc_host *host)
+> +static int mmc_can_sleepawake(struct mmc_host *host)
+> +{
+> +       return host && (host->caps2 & MMC_CAP2_SLEEP_AWAKE) && host-
+> >card &&
+> +               (host->card->ext_csd.rev >=3D 3);
+Maybe just:
+return mmc_can_sleep(host->card) && (host->caps2 & MMC_CAP2_SLEEP_AWAKE);
 
-Yes, that's the exact purpose of this patch.
+> +
+> +}
+> +
+> +static int mmc_sleepawake(struct mmc_host *host, bool sleep)
+>  {
+>         struct mmc_command cmd =3D {};
+>         struct mmc_card *card =3D host->card;
+> @@ -1953,14 +1960,17 @@ static int mmc_sleep(struct mmc_host *host)
+>         /* Re-tuning can't be done once the card is deselected */
+>         mmc_retune_hold(host);
+>=20
+> -       err =3D mmc_deselect_cards(host);
+> -       if (err)
+> -               goto out_release;
+> +       if (sleep) {
+> +               err =3D mmc_deselect_cards(host);
+> +               if (err)
+> +                       goto out_release;
+> +       }
+>=20
+>         cmd.opcode =3D MMC_SLEEP_AWAKE;
+>         cmd.arg =3D card->rca << 16;
+> -       cmd.arg |=3D 1 << 15;
+>         use_r1b_resp =3D mmc_prepare_busy_cmd(host, &cmd, timeout_ms);
+> +       if (sleep)
+> +               cmd.arg |=3D 1 << 15;
+>=20
+>         err =3D mmc_wait_for_cmd(host, &cmd, 0);
+>         if (err)
+> @@ -1982,6 +1992,9 @@ static int mmc_sleep(struct mmc_host *host)
+>=20
+>         err =3D __mmc_poll_for_busy(host, 0, timeout_ms, &mmc_sleep_busy_=
+cb,
+> host);
+>=20
+> +       if (!sleep)
+> +               err =3D mmc_select_card(card);
+> +
+>  out_release:
+>         mmc_retune_release(host);
+>         return err;
+> @@ -2080,6 +2093,66 @@ static int _mmc_flush_cache(struct mmc_host
+> *host)
+>                         pr_err("%s: cache flush error %d\n",
+>                                mmc_hostname(host), err);
+>         }
+> +       return err;
+> +}
+> +
+> +static int mmc_cache_card_ext_csd(struct mmc_host *host)
+> +{
+> +       int err;
+> +       u8 *ext_csd;
+> +       struct mmc_card *card =3D host->card;
+> +
+> +       err =3D mmc_get_ext_csd(card, &ext_csd);
+> +       if (err || !ext_csd) {
+> +               pr_err("%s: %s: mmc_get_ext_csd failed (%d)\n",
+> +                       mmc_hostname(host), __func__, err);
+> +               return err;
+> +       }
+> +       /* only cache read/write fields that the sw changes */
+> +       card->ext_csd.raw_ext_csd_cmdq =3D ext_csd[EXT_CSD_CMDQ_MODE_EN];
+> +       card->ext_csd.raw_ext_csd_cache_ctrl =3D ext_csd[EXT_CSD_CACHE_CT=
+RL];
+> +       card->ext_csd.raw_ext_csd_bus_width =3D ext_csd[EXT_CSD_BUS_WIDTH=
+];
+> +       card->ext_csd.raw_ext_csd_hs_timing =3D ext_csd[EXT_CSD_HS_TIMING=
+];
+> +
+> +       kfree(ext_csd);
+> +
+> +       return 0;
+> +}
+> +
+> +static int mmc_test_awake_ext_csd(struct mmc_host *host)
+> +{
+> +       int err;
+> +       u8 *ext_csd;
+> +       struct mmc_card *card =3D host->card;
+> +
+> +       err =3D mmc_get_ext_csd(card, &ext_csd);
+> +       if (err) {
+> +               pr_err("%s: %s: mmc_get_ext_csd failed (%d)\n",
+> +                       mmc_hostname(host), __func__, err);
+> +               return err;
+> +       }
+> +
+> +       /* only compare read/write fields that the sw changes */
+> +       pr_debug("%s: %s: type(cached:current) cmdq(%d:%d) cache_ctrl(%d:=
+%d)
+> bus_width (%d:%d) timing(%d:%d)\n",
+> +               mmc_hostname(host), __func__,
+> +               card->ext_csd.raw_ext_csd_cmdq,
+> +               ext_csd[EXT_CSD_CMDQ_MODE_EN],
+> +               card->ext_csd.raw_ext_csd_cache_ctrl,
+> +               ext_csd[EXT_CSD_CACHE_CTRL],
+> +               card->ext_csd.raw_ext_csd_bus_width,
+> +               ext_csd[EXT_CSD_BUS_WIDTH],
+> +               card->ext_csd.raw_ext_csd_hs_timing,
+> +               ext_csd[EXT_CSD_HS_TIMING]);
+> +       err =3D !((card->ext_csd.raw_ext_csd_cmdq =3D=3D
+> +                       ext_csd[EXT_CSD_CMDQ_MODE_EN]) &&
+> +               (card->ext_csd.raw_ext_csd_cache_ctrl =3D=3D
+> +                       ext_csd[EXT_CSD_CACHE_CTRL]) &&
+> +               (card->ext_csd.raw_ext_csd_bus_width =3D=3D
+> +                       ext_csd[EXT_CSD_BUS_WIDTH]) &&
+> +               (card->ext_csd.raw_ext_csd_hs_timing =3D=3D
+> +                       ext_csd[EXT_CSD_HS_TIMING]));
+> +
+> +       kfree(ext_csd);
+>=20
+>         return err;
+>  }
+> @@ -2103,8 +2176,12 @@ static int _mmc_suspend(struct mmc_host *host,
+> bool is_suspend)
+>             ((host->caps2 & MMC_CAP2_FULL_PWR_CYCLE) || !is_suspend ||
+>              (host->caps2 & MMC_CAP2_FULL_PWR_CYCLE_IN_SUSPEND)))
+>                 err =3D mmc_poweroff_notify(host->card, notify_type);
+> -       else if (mmc_can_sleep(host->card))
+> -               err =3D mmc_sleep(host);
+> +       if (mmc_can_sleepawake(host)) {
+> +               memcpy(&host->cached_ios, &host->ios, sizeof(host->cached=
+_ios));
+> +                mmc_cache_card_ext_csd(host);
+> +       }
+> +       if (mmc_can_sleep(host->card))
+> +               err =3D mmc_sleepawake(host, true);
+>         else if (!mmc_host_is_spi(host))
+>                 err =3D mmc_deselect_cards(host);
+>=20
+> @@ -2117,6 +2194,48 @@ static int _mmc_suspend(struct mmc_host *host,
+> bool is_suspend)
+>         return err;
+>  }
+>=20
+> +static int mmc_partial_init(struct mmc_host *host)
+> +{
+> +       int err =3D 0;
+> +       struct mmc_card *card =3D host->card;
+> +
+> +       mmc_set_bus_width(host, host->cached_ios.bus_width);
+> +       mmc_set_timing(host, host->cached_ios.timing);
+> +       if (host->cached_ios.enhanced_strobe) {
+> +               host->ios.enhanced_strobe =3D true;
+> +               if (host->ops->hs400_enhanced_strobe)
+> +                       host->ops->hs400_enhanced_strobe(host, &host->ios=
+);
+> +       }
+> +       mmc_set_clock(host, host->cached_ios.clock);
+> +       mmc_set_bus_mode(host, host->cached_ios.bus_mode);
+> +
+> +       if (!mmc_card_hs400es(card) &&
+> +                       (mmc_card_hs200(card) || mmc_card_hs400(card))) {
+> +               err =3D mmc_execute_tuning(card);
+> +               if (err) {
+> +                       pr_err("%s: %s: Tuning failed (%d)\n",
+> +                               mmc_hostname(host), __func__, err);
+> +                       goto out;
+> +               }
+> +       }
+> +       /*
+> +        * The ext_csd is read to make sure the card did not went through
+> +        * Power-failure during sleep period.
+> +        * A subset of the W/E_P, W/C_P register will be tested. In case
+> +        * these registers values are different from the values that were
+> +        * cached during suspend, we will conclude that a Power-failure o=
+ccurred
+> +        * and will do full initialization sequence.
+> +        */
+This seems like a strange enough hack.
+Power-failure during sleep period? really?
 
-Do you see any potential architectural issue with the patch?=20
-From my reading of the core PCI code, it looks like this should be safe.
+> +       err =3D mmc_test_awake_ext_csd(host);
+> +       if (err) {
+> +               pr_debug("%s: %s: fail on ext_csd read (%d)\n",
+> +                       mmc_hostname(host), __func__, err);
+> +               goto out;
+Redundant goto
 
-Jake has some concerns that I don't quite follow.=20
-@Jake, could you please explain the concerns with more details?
-
-> If I read PCI core correctly PCI_COMMAND_MEMORY is obviously cleared
-> only if it is set in the first place and that's what your patch is
-> changing, namely you boostrap your devices with PCI_COMMAND_MEMORY
-> clear so that PCI core does not touch it.
-
-Yes, this is what exactly the patch is doing.
+> +       }
+> +out:
+> +       return err;
+> +}
 
 Thanks,
--- Dexuan
+Avri
+
+> +
+>  /*
+>   * Suspend callback
+>   */
+> @@ -2139,7 +2258,7 @@ static int mmc_suspend(struct mmc_host *host)
+>   */
+>  static int _mmc_resume(struct mmc_host *host)
+>  {
+> -       int err =3D 0;
+> +       int err =3D -EINVAL;
+>=20
+>         mmc_claim_host(host);
+>=20
+> @@ -2147,7 +2266,19 @@ static int _mmc_resume(struct mmc_host *host)
+>                 goto out;
+>=20
+>         mmc_power_up(host, host->card->ocr);
+> -       err =3D mmc_init_card(host, host->card->ocr, host->card);
+> +
+> +       if (mmc_can_sleepawake(host)) {
+> +               err =3D mmc_sleepawake(host, false);
+> +               if (!err)
+> +                       err =3D mmc_partial_init(host);
+> +               else
+> +                       pr_err("%s: %s: awake failed (%d), fallback to fu=
+ll init\n",
+> +                               mmc_hostname(host), __func__, err);
+> +       }
+> +
+> +       if (err)
+> +               err =3D mmc_init_card(host, host->card->ocr, host->card);
+> +
+>         mmc_card_clr_suspended(host->card);
+>=20
+>  out:
+> diff --git a/include/linux/mmc/card.h b/include/linux/mmc/card.h
+> index 37f9758..ed7f6f7 100644
+> --- a/include/linux/mmc/card.h
+> +++ b/include/linux/mmc/card.h
+> @@ -86,6 +86,8 @@ struct mmc_ext_csd {
+>         unsigned int            data_tag_unit_size;     /* DATA TAG UNIT =
+size */
+>         unsigned int            boot_ro_lock;           /* ro lock suppor=
+t */
+>         bool                    boot_ro_lockable;
+> +       u8                      raw_ext_csd_cmdq;       /* 15 */
+> +       u8                      raw_ext_csd_cache_ctrl; /* 33 */
+>         bool                    ffu_capable;    /* Firmware upgrade suppo=
+rt */
+>         bool                    cmdq_en;        /* Command Queue enabled =
+*/
+>         bool                    cmdq_support;   /* Command Queue supporte=
+d */
+> @@ -96,7 +98,9 @@ struct mmc_ext_csd {
+>         u8                      raw_partition_support;  /* 160 */
+>         u8                      raw_rpmb_size_mult;     /* 168 */
+>         u8                      raw_erased_mem_count;   /* 181 */
+> +       u8                      raw_ext_csd_bus_width;  /* 183 */
+>         u8                      strobe_support;         /* 184 */
+> +       u8                      raw_ext_csd_hs_timing;  /* 185 */
+>         u8                      raw_ext_csd_structure;  /* 194 */
+>         u8                      raw_card_type;          /* 196 */
+>         u8                      raw_driver_strength;    /* 197 */
+> diff --git a/include/linux/mmc/host.h b/include/linux/mmc/host.h
+> index c38072e..a9ddf7a 100644
+> --- a/include/linux/mmc/host.h
+> +++ b/include/linux/mmc/host.h
+> @@ -422,6 +422,7 @@ struct mmc_host {
+>  #else
+>  #define MMC_CAP2_CRYPTO                0
+>  #endif
+> +#define MMC_CAP2_SLEEP_AWAKE   (1 << 29)       /* Use Sleep/Awake
+> (CMD5) */
+>  #define MMC_CAP2_ALT_GPT_TEGRA (1 << 28)       /* Host with eMMC that
+> has GPT entry at a non-standard location */
+>=20
+>         int                     fixed_drv_type; /* fixed driver type for =
+non-removable
+> media */
+> @@ -441,6 +442,7 @@ struct mmc_host {
+>         spinlock_t              lock;           /* lock for claim and bus=
+ ops */
+>=20
+>         struct mmc_ios          ios;            /* current io bus setting=
+s */
+> +       struct mmc_ios          cached_ios;
+>=20
+>         /* group bitfields together to minimize padding */
+>         unsigned int            use_spi_crc:1;
+> --
+> 2.7.4
+
