@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93EF2C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B876DC4167E
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:42:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346095AbiDZIog (ORCPT
+        id S1346228AbiDZIop (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:44:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37016 "EHLO
+        Tue, 26 Apr 2022 04:44:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345247AbiDZIhj (ORCPT
+        with ESMTP id S1345161AbiDZIgn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:37:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0B428AE44;
-        Tue, 26 Apr 2022 01:29:15 -0700 (PDT)
+        Tue, 26 Apr 2022 04:36:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 323C9887BA;
+        Tue, 26 Apr 2022 01:29:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 403C1B81CFA;
-        Tue, 26 Apr 2022 08:29:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B02CDC385A0;
-        Tue, 26 Apr 2022 08:29:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A76446179E;
+        Tue, 26 Apr 2022 08:29:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98366C385AC;
+        Tue, 26 Apr 2022 08:29:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961753;
-        bh=j3LSbxyHmSGtoPFSSwB6OLLpZaRdH2qT3Oq45BCxkMY=;
+        s=korg; t=1650961741;
+        bh=mud9F3eL7FPIDHVqeDLMl2ZZytg19xmWNOVgF17lylM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QuYOYVsyqyKTAsOpcDMjWbzyNx6jBLppEIbeqPU3Ovaz4i1ahe73JtpYlb2NT/WUX
-         ZBk/LDPJW/Bbcvo+FNFlHfBGv1nPSN15SwSBj6xkSa1rfVi7cdW6cgfE2HbGU5jWcV
-         8HJ4q2n9PSmut8+EQt1nJ5MKCFHJ8G5KeN5XVkZc=
+        b=oKK/nsmpjKLtbk5YAWyNS2ZD0YI+nXm5cXAXyWa/SW8MOHAvw+9NwUoFDBmSpGuzT
+         ZtR+JlZo/G9y1cFv3idWnwTuxo3N23pTeOH+rrWEu7yV9g8ukbLxMwyxavc077QsQ9
+         xKqA2GMWDOpmxccTsSP9WevTqmYRZSSqQBCVq48A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Corinna Vinschen <vinschen@redhat.com>,
+        Dima Ruinskiy <dima.ruinskiy@intel.com>,
+        Sasha Neftin <sasha.neftin@intel.com>,
+        Naama Meir <naamax.meir@linux.intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 19/62] net/sched: cls_u32: fix possible leak in u32_init_knode()
-Date:   Tue, 26 Apr 2022 10:20:59 +0200
-Message-Id: <20220426081737.777719053@linuxfoundation.org>
+Subject: [PATCH 5.4 15/62] igc: Fix BUG: scheduling while atomic
+Date:   Tue, 26 Apr 2022 10:20:55 +0200
+Message-Id: <20220426081737.664529215@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
 References: <20220426081737.209637816@linuxfoundation.org>
@@ -53,55 +53,116 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Sasha Neftin <sasha.neftin@intel.com>
 
-[ Upstream commit ec5b0f605b105457f257f2870acad4a5d463984b ]
+[ Upstream commit c80a29f0fe9b6f5457e0788e27d1110577eba99b ]
 
-While investigating a related syzbot report,
-I found that whenever call to tcf_exts_init()
-from u32_init_knode() is failing, we end up
-with an elevated refcount on ht->refcnt
+Replace usleep_range() method with udelay() method to allow atomic contexts
+in low-level MDIO access functions.
 
-To avoid that, only increase the refcount after
-all possible errors have been evaluated.
+The following issue can be seen by doing the following:
+$ modprobe -r bonding
+$ modprobe -v bonding max_bonds=1 mode=1 miimon=100 use_carrier=0
+$ ip link set bond0 up
+$ ifenslave bond0 eth0 eth1
 
-Fixes: b9a24bb76bf6 ("net_sched: properly handle failure case of tcf_exts_init()")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Cong Wang <xiyou.wangcong@gmail.com>
-Cc: Jiri Pirko <jiri@resnulli.us>
-Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+[  982.357308] BUG: scheduling while atomic: kworker/u64:0/9/0x00000002
+[  982.364431] INFO: lockdep is turned off.
+[  982.368824] Modules linked in: bonding sctp ip6_udp_tunnel udp_tunnel mlx4_ib ib_uverbs ib_core mlx4_en mlx4_core nfp tls sunrpc intel_rapl_msr iTCO_wdt iTCO_vendor_support mxm_wmi dcdbas intel_rapl_common sb_edac x86_pkg_temp_thermal intel_powerclamp coretemp kvm_intel kvm irqbypass crct10dif_pclmul crc32_pclmul ghash_clmulni_intel rapl intel_cstate intel_uncore pcspkr lpc_ich mei_me ipmi_ssif mei ipmi_si ipmi_devintf ipmi_msghandler wmi acpi_power_meter xfs libcrc32c sr_mod cdrom sd_mod t10_pi sg mgag200 drm_kms_helper syscopyarea sysfillrect sysimgblt fb_sys_fops drm ahci libahci crc32c_intel libata i2c_algo_bit tg3 megaraid_sas igc dm_mirror dm_region_hash dm_log dm_mod [last unloaded: bonding]
+[  982.437941] CPU: 25 PID: 9 Comm: kworker/u64:0 Kdump: loaded Tainted: G        W        --------- -  - 4.18.0-348.el8.x86_64+debug #1
+[  982.451333] Hardware name: Dell Inc. PowerEdge R730/0H21J3, BIOS 2.7.0 12/005/2017
+[  982.459791] Workqueue: bond0 bond_mii_monitor [bonding]
+[  982.465622] Call Trace:
+[  982.468355]  dump_stack+0x8e/0xd0
+[  982.472056]  __schedule_bug.cold.60+0x3a/0x60
+[  982.476919]  __schedule+0x147b/0x1bc0
+[  982.481007]  ? firmware_map_remove+0x16b/0x16b
+[  982.485967]  ? hrtimer_fixup_init+0x40/0x40
+[  982.490625]  schedule+0xd9/0x250
+[  982.494227]  schedule_hrtimeout_range_clock+0x10d/0x2c0
+[  982.500058]  ? hrtimer_nanosleep_restart+0x130/0x130
+[  982.505598]  ? hrtimer_init_sleeper_on_stack+0x90/0x90
+[  982.511332]  ? usleep_range+0x88/0x130
+[  982.515514]  ? recalibrate_cpu_khz+0x10/0x10
+[  982.520279]  ? ktime_get+0xab/0x1c0
+[  982.524175]  ? usleep_range+0x88/0x130
+[  982.528355]  usleep_range+0xdd/0x130
+[  982.532344]  ? console_conditional_schedule+0x30/0x30
+[  982.537987]  ? igc_put_hw_semaphore+0x17/0x60 [igc]
+[  982.543432]  igc_read_phy_reg_gpy+0x111/0x2b0 [igc]
+[  982.548887]  igc_phy_has_link+0xfa/0x260 [igc]
+[  982.553847]  ? igc_get_phy_id+0x210/0x210 [igc]
+[  982.558894]  ? lock_acquire+0x34d/0x890
+[  982.563187]  ? lock_downgrade+0x710/0x710
+[  982.567659]  ? rcu_read_unlock+0x50/0x50
+[  982.572039]  igc_check_for_copper_link+0x106/0x210 [igc]
+[  982.577970]  ? igc_config_fc_after_link_up+0x840/0x840 [igc]
+[  982.584286]  ? rcu_read_unlock+0x50/0x50
+[  982.588661]  ? lock_release+0x591/0xb80
+[  982.592939]  ? lock_release+0x591/0xb80
+[  982.597220]  igc_has_link+0x113/0x330 [igc]
+[  982.601887]  ? lock_downgrade+0x710/0x710
+[  982.606362]  igc_ethtool_get_link+0x6d/0x90 [igc]
+[  982.611614]  bond_check_dev_link+0x131/0x2c0 [bonding]
+[  982.617350]  ? bond_time_in_interval+0xd0/0xd0 [bonding]
+[  982.623277]  ? rcu_read_lock_held+0x62/0xc0
+[  982.627944]  ? rcu_read_lock_sched_held+0xe0/0xe0
+[  982.633198]  bond_mii_monitor+0x314/0x2500 [bonding]
+[  982.638738]  ? lock_contended+0x880/0x880
+[  982.643214]  ? bond_miimon_link_change+0xa0/0xa0 [bonding]
+[  982.649336]  ? lock_acquire+0x34d/0x890
+[  982.653615]  ? lock_downgrade+0x710/0x710
+[  982.658089]  ? debug_object_deactivate+0x221/0x340
+[  982.663436]  ? rcu_read_unlock+0x50/0x50
+[  982.667811]  ? debug_print_object+0x2b0/0x2b0
+[  982.672672]  ? __switch_to_asm+0x41/0x70
+[  982.677049]  ? __switch_to_asm+0x35/0x70
+[  982.681426]  ? _raw_spin_unlock_irq+0x24/0x40
+[  982.686288]  ? trace_hardirqs_on+0x20/0x195
+[  982.690956]  ? _raw_spin_unlock_irq+0x24/0x40
+[  982.695818]  process_one_work+0x8f0/0x1770
+[  982.700390]  ? pwq_dec_nr_in_flight+0x320/0x320
+[  982.705443]  ? debug_show_held_locks+0x50/0x50
+[  982.710403]  worker_thread+0x87/0xb40
+[  982.714489]  ? process_one_work+0x1770/0x1770
+[  982.719349]  kthread+0x344/0x410
+[  982.722950]  ? kthread_insert_work_sanity_check+0xd0/0xd0
+[  982.728975]  ret_from_fork+0x3a/0x50
+
+Fixes: 5586838fe9ce ("igc: Add code for PHY support")
+Reported-by: Corinna Vinschen <vinschen@redhat.com>
+Suggested-by: Dima Ruinskiy <dima.ruinskiy@intel.com>
+Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
+Tested-by: Corinna Vinschen <vinschen@redhat.com>
+Tested-by: Naama Meir <naamax.meir@linux.intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sched/cls_u32.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/intel/igc/igc_phy.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/sched/cls_u32.c b/net/sched/cls_u32.c
-index 8cfd5460493c..ed8d26e6468c 100644
---- a/net/sched/cls_u32.c
-+++ b/net/sched/cls_u32.c
-@@ -816,10 +816,6 @@ static struct tc_u_knode *u32_init_knode(struct net *net, struct tcf_proto *tp,
- 	new->flags = n->flags;
- 	RCU_INIT_POINTER(new->ht_down, ht);
- 
--	/* bump reference count as long as we hold pointer to structure */
--	if (ht)
--		ht->refcnt++;
--
- #ifdef CONFIG_CLS_U32_PERF
- 	/* Statistics may be incremented by readers during update
- 	 * so we must keep them in tact. When the node is later destroyed
-@@ -841,6 +837,10 @@ static struct tc_u_knode *u32_init_knode(struct net *net, struct tcf_proto *tp,
- 		return NULL;
- 	}
- 
-+	/* bump reference count as long as we hold pointer to structure */
-+	if (ht)
-+		ht->refcnt++;
-+
- 	return new;
- }
- 
+diff --git a/drivers/net/ethernet/intel/igc/igc_phy.c b/drivers/net/ethernet/intel/igc/igc_phy.c
+index 1a4947e6933c..6156c76d765f 100644
+--- a/drivers/net/ethernet/intel/igc/igc_phy.c
++++ b/drivers/net/ethernet/intel/igc/igc_phy.c
+@@ -569,7 +569,7 @@ static s32 igc_read_phy_reg_mdic(struct igc_hw *hw, u32 offset, u16 *data)
+ 	 * the lower time out
+ 	 */
+ 	for (i = 0; i < IGC_GEN_POLL_TIMEOUT; i++) {
+-		usleep_range(500, 1000);
++		udelay(50);
+ 		mdic = rd32(IGC_MDIC);
+ 		if (mdic & IGC_MDIC_READY)
+ 			break;
+@@ -626,7 +626,7 @@ static s32 igc_write_phy_reg_mdic(struct igc_hw *hw, u32 offset, u16 data)
+ 	 * the lower time out
+ 	 */
+ 	for (i = 0; i < IGC_GEN_POLL_TIMEOUT; i++) {
+-		usleep_range(500, 1000);
++		udelay(50);
+ 		mdic = rd32(IGC_MDIC);
+ 		if (mdic & IGC_MDIC_READY)
+ 			break;
 -- 
 2.35.1
 
