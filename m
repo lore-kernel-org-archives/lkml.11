@@ -2,245 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D24D0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 20:16:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23C44C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 20:16:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354837AbiDZUTz (ORCPT
+        id S1354855AbiDZUT6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 16:19:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54084 "EHLO
+        Tue, 26 Apr 2022 16:19:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354850AbiDZUSz (ORCPT
+        with ESMTP id S1354853AbiDZUSz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 16:18:55 -0400
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57A56EA
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 13:15:42 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id bn33so23437321ljb.6
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 13:15:42 -0700 (PDT)
+Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9140F2729;
+        Tue, 26 Apr 2022 13:15:44 -0700 (PDT)
+Received: by mail-ot1-x331.google.com with SMTP id 88-20020a9d0ee1000000b005d0ae4e126fso13828690otj.5;
+        Tue, 26 Apr 2022 13:15:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=NoH+Q2JRO6SKcFvlMJuCO580Qoh6JOOoycqYQgBg9Ro=;
-        b=cWB0TVSq8VKcPdtkF3M26lXQbeIW1kHtVsp0FDBMnEKF3reK6Q2MuOAyXLaMgZrW7n
-         ijHrNuaCDG/pz5dROHnVVq3xj6N16Rm7onIyGZT6bacYY68GG7+vpd+wHnnabQnAXyB3
-         rWjH3iOHckvnlEFaIw0/go6q29XOrF7nDGopwT98p39Tk88l58PNKSdiAJHdID6G127l
-         FDeGRlU2CeFXqKI8IB48fCse5Jj7jknXvWDO2D++PLSp+Lw1JpILw2JhwMpPB32HV/5V
-         Pp4n5TwBSyrUf3jONeM+VMZxd+H+e5qRkv65DR5S68TotRVguKv3Cq568cYm6GIiDjr9
-         f/eA==
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=1nZK4LL1ygLY1Nj0F4n58Fq2vqu0dCliNETQaPqLm+c=;
+        b=JaIR2Rvou6MXvUbQKIrUi5yzrY7zLCiDR9R2PUNcMoMi7y/t4eFN6OHhJP7JkiC+q8
+         jucncSgW1oFuNuxjmzbZ76s6YlqHQdvpS/IQ7IrSgLaPJlAaCTHm4pckhL1HEj2tkwMV
+         nzTVRg3xJH1UwumLaY48pvUHv5VkoknqfV/dJxBZDeiGUSpENbfcLYJ5cjh5hH5Rvbnt
+         Xvz5Eps7RKqEVxj9CfJ1WrHbwKlyegQUQHvGIBceymC64lPhV3c8H+0PgzwmiH7D6pc4
+         F7RKD9P+IXghyu47vG66JIM6cA26kS07MuzrcgvBLfLA1efTHJmD5dOmmez2QtKmISFM
+         w51g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=NoH+Q2JRO6SKcFvlMJuCO580Qoh6JOOoycqYQgBg9Ro=;
-        b=joUlVHgfxGmThFwe1Zv+8gM556iaZC9zvoiRK7+NXu3D/sLCggtKDCTRVK8VSHSU11
-         VYlMAPPbX36uOc54JwlHrDAzLUGooUPxENet9rwfAmnWA3AheRDT08UxgEzFOuX6NeHf
-         bLbqzOiPeoSzD9nYUg4JM2GISdpOiqQDFVt0xzMb3Q3KAG7SGVctnOCqaEeU0eyfL2vJ
-         YHXoh/t1bPm4da9kgYTCw25uPHcyyyZiSuN50jLJA+1/pq4prbFt0Jbod+HZcrnwrKSg
-         SJhXpZQcCcyAbTxsuTGNesG0XCkAjqc+mm4FKUGk6wfGYx6Gzqc7MdpuN92mj9SVlqi2
-         NwfQ==
-X-Gm-Message-State: AOAM533PUNBP34BXVMSO4IOemtL4U/TBo/qk1C5VgjRNKRBdxd4DTdva
-        9I4vMwwBxughUln7ulc0MbkPjQ==
-X-Google-Smtp-Source: ABdhPJz2e3A8i09zQrnVOpL83T9ubklwt+3pWXhS5CcK/Muf+ApEy2u+oQF0FV2zPUXzGlOs+SgVww==
-X-Received: by 2002:a2e:3e15:0:b0:247:d94b:c004 with SMTP id l21-20020a2e3e15000000b00247d94bc004mr15684754lja.428.1651004140400;
-        Tue, 26 Apr 2022 13:15:40 -0700 (PDT)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id d29-20020a19385d000000b004720e1cc3fasm606630lfj.70.2022.04.26.13.15.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Apr 2022 13:15:40 -0700 (PDT)
-Message-ID: <5915a71f-50fa-8783-f186-7bbf9a5409c8@linaro.org>
-Date:   Tue, 26 Apr 2022 23:15:39 +0300
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=1nZK4LL1ygLY1Nj0F4n58Fq2vqu0dCliNETQaPqLm+c=;
+        b=QeCkQEBpM0GUBIFQWakvdeTpKUlJEUWtlk30p3d7Eggh+gZwSN+Cem3uwRv9Ld1+eu
+         f8IXPn1RQeeSkJD6fOgix8AXKhED1xjh7RDtvJxSP1DRsYDAVmWM91LPWbfkyCC1qwP5
+         nqn/Xe+k+ztkTvEFBkXzHjrdkJuHaRV/WOO+jlPhR1RjVdPnuPwsmqbF5gdYza//UKZC
+         EwUH+SoZVIrosN6UU0eLec8PCGEz67Rw0YGTm2W4vP58K47hPlOOuuYjspjnN1c+77JQ
+         s+KRLLPcjZYVpEOTlWXvrF8Dkx/Ka4Vofm+ADBCvmY61LBiqCQCmjeNL+AC5hlVieEJ7
+         joHQ==
+X-Gm-Message-State: AOAM531HRmPaqh3IXvLJU5qRAF21nOwDTsZhfPL4QSRs0PYeFqXmHf45
+        Sfd2wXXapgE+6eAuDIMsxzM=
+X-Google-Smtp-Source: ABdhPJwYSuHy435B9Z5a5PcfNeVmW0J3NH61zH/JkhPcaTpP4mFb21PM1DgwH6aGr7locf/VelqCJA==
+X-Received: by 2002:a9d:4796:0:b0:601:94e2:ce0b with SMTP id b22-20020a9d4796000000b0060194e2ce0bmr8834819otf.197.1651004143906;
+        Tue, 26 Apr 2022 13:15:43 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id o6-20020a4a84c6000000b0035e5906bcc4sm4190958oog.4.2022.04.26.13.15.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 13:15:42 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Tue, 26 Apr 2022 13:15:41 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Liu Xinpeng <liuxp11@chinatelecom.cn>
+Cc:     wim@linux-watchdog.org, tzungbi@kernel.org,
+        linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v8 3/3] watchdog: wdat_wdt: Stop watchdog when
+ uninstalling module
+Message-ID: <20220426201541.GM4093517@roeck-us.net>
+References: <1650984810-6247-1-git-send-email-liuxp11@chinatelecom.cn>
+ <1650984810-6247-4-git-send-email-liuxp11@chinatelecom.cn>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v4] drm/msm/dp: remove fail safe mode related code
-Content-Language: en-GB
-To:     Kuogee Hsieh <quic_khsieh@quicinc.com>, robdclark@gmail.com,
-        sean@poorly.run, swboyd@chromium.org, dianders@chromium.org,
-        vkoul@kernel.org, daniel@ffwll.ch, airlied@linux.ie,
-        agross@kernel.org, bjorn.andersson@linaro.org
-Cc:     quic_abhinavk@quicinc.com, quic_aravindh@quicinc.com,
-        quic_sbillaka@quicinc.com, freedreno@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1651003453-12282-1-git-send-email-quic_khsieh@quicinc.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <1651003453-12282-1-git-send-email-quic_khsieh@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1650984810-6247-4-git-send-email-liuxp11@chinatelecom.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 26/04/2022 23:04, Kuogee Hsieh wrote:
-> Current DP driver implementation has adding safe mode done at
-> dp_hpd_plug_handle() which is expected to be executed under event
-> thread context.
+On Tue, Apr 26, 2022 at 10:53:30PM +0800, Liu Xinpeng wrote:
+> Test shows that wachdog still reboots machine after the module
+> is removed. Use watchdog_stop_on_unregister to stop the watchdog
+> on removing.
 > 
-> However there is possible circular locking happen (see blow stack trace)
-> after edp driver call dp_hpd_plug_handle() from dp_bridge_enable() which
-> is executed under drm_thread context.
-> 
-> After review all possibilities methods and as discussed on
-> https://patchwork.freedesktop.org/patch/483155/, supporting EDID
-> compliance tests in the driver is quite hacky. As seen with other
-> vendor drivers, supporting these will be much easier with IGT. Hence
-> removing all the related fail safe code for it so that no possibility
-> of circular lock will happen.
-> 
-> ======================================================
->   WARNING: possible circular locking dependency detected
->   5.15.35-lockdep #6 Tainted: G        W
->   ------------------------------------------------------
->   frecon/429 is trying to acquire lock:
->   ffffff808dc3c4e8 (&dev->mode_config.mutex){+.+.}-{3:3}, at:
-> dp_panel_add_fail_safe_mode+0x4c/0xa0
-> 
->   but task is already holding lock:
->   ffffff808dc441e0 (&kms->commit_lock[i]){+.+.}-{3:3}, at: lock_crtcs+0xb4/0x124
-> 
->   which lock already depends on the new lock.
-> 
->   the existing dependency chain (in reverse order) is:
-> 
->   -> #3 (&kms->commit_lock[i]){+.+.}-{3:3}:
->          __mutex_lock_common+0x174/0x1a64
->          mutex_lock_nested+0x98/0xac
->          lock_crtcs+0xb4/0x124
->          msm_atomic_commit_tail+0x330/0x748
->          commit_tail+0x19c/0x278
->          drm_atomic_helper_commit+0x1dc/0x1f0
->          drm_atomic_commit+0xc0/0xd8
->          drm_atomic_helper_set_config+0xb4/0x134
->          drm_mode_setcrtc+0x688/0x1248
->          drm_ioctl_kernel+0x1e4/0x338
->          drm_ioctl+0x3a4/0x684
->          __arm64_sys_ioctl+0x118/0x154
->          invoke_syscall+0x78/0x224
->          el0_svc_common+0x178/0x200
->          do_el0_svc+0x94/0x13c
->          el0_svc+0x5c/0xec
->          el0t_64_sync_handler+0x78/0x108
->          el0t_64_sync+0x1a4/0x1a8
-> 
->   -> #2 (crtc_ww_class_mutex){+.+.}-{3:3}:
->          __mutex_lock_common+0x174/0x1a64
->          ww_mutex_lock+0xb8/0x278
->          modeset_lock+0x304/0x4ac
->          drm_modeset_lock+0x4c/0x7c
->          drmm_mode_config_init+0x4a8/0xc50
->          msm_drm_init+0x274/0xac0
->          msm_drm_bind+0x20/0x2c
->          try_to_bring_up_master+0x3dc/0x470
->          __component_add+0x18c/0x3c0
->          component_add+0x1c/0x28
->          dp_display_probe+0x954/0xa98
->          platform_probe+0x124/0x15c
->          really_probe+0x1b0/0x5f8
->          __driver_probe_device+0x174/0x20c
->          driver_probe_device+0x70/0x134
->          __device_attach_driver+0x130/0x1d0
->          bus_for_each_drv+0xfc/0x14c
->          __device_attach+0x1bc/0x2bc
->          device_initial_probe+0x1c/0x28
->          bus_probe_device+0x94/0x178
->          deferred_probe_work_func+0x1a4/0x1f0
->          process_one_work+0x5d4/0x9dc
->          worker_thread+0x898/0xccc
->          kthread+0x2d4/0x3d4
->          ret_from_fork+0x10/0x20
-> 
->   -> #1 (crtc_ww_class_acquire){+.+.}-{0:0}:
->          ww_acquire_init+0x1c4/0x2c8
->          drm_modeset_acquire_init+0x44/0xc8
->          drm_helper_probe_single_connector_modes+0xb0/0x12dc
->          drm_mode_getconnector+0x5dc/0xfe8
->          drm_ioctl_kernel+0x1e4/0x338
->          drm_ioctl+0x3a4/0x684
->          __arm64_sys_ioctl+0x118/0x154
->          invoke_syscall+0x78/0x224
->          el0_svc_common+0x178/0x200
->          do_el0_svc+0x94/0x13c
->          el0_svc+0x5c/0xec
->          el0t_64_sync_handler+0x78/0x108
->          el0t_64_sync+0x1a4/0x1a8
-> 
->   -> #0 (&dev->mode_config.mutex){+.+.}-{3:3}:
->          __lock_acquire+0x2650/0x672c
->          lock_acquire+0x1b4/0x4ac
->          __mutex_lock_common+0x174/0x1a64
->          mutex_lock_nested+0x98/0xac
->          dp_panel_add_fail_safe_mode+0x4c/0xa0
->          dp_hpd_plug_handle+0x1f0/0x280
->          dp_bridge_enable+0x94/0x2b8
->          drm_atomic_bridge_chain_enable+0x11c/0x168
->          drm_atomic_helper_commit_modeset_enables+0x500/0x740
->          msm_atomic_commit_tail+0x3e4/0x748
->          commit_tail+0x19c/0x278
->          drm_atomic_helper_commit+0x1dc/0x1f0
->          drm_atomic_commit+0xc0/0xd8
->          drm_atomic_helper_set_config+0xb4/0x134
->          drm_mode_setcrtc+0x688/0x1248
->          drm_ioctl_kernel+0x1e4/0x338
->          drm_ioctl+0x3a4/0x684
->          __arm64_sys_ioctl+0x118/0x154
->          invoke_syscall+0x78/0x224
->          el0_svc_common+0x178/0x200
->          do_el0_svc+0x94/0x13c
->          el0_svc+0x5c/0xec
->          el0t_64_sync_handler+0x78/0x108
->          el0t_64_sync+0x1a4/0x1a8
-> 
-> Changes in v2:
-> -- re text commit title
-> -- remove all fail safe mode
-> 
-> Changes in v3:
-> -- remove dp_panel_add_fail_safe_mode() from dp_panel.h
-> -- add Fixes
-> 
-> Changes in v4:
-> --  to=dianders@chromium.org
-> 
-> Fixes: 8b2c181 ("drm/msm/dp: add fail safe mode outside of event_mutex context")
-> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-> 
-> Fixes: f1b47e6a8df8 ("drm/msm/dp: remove fail safe mode related code")
-> Reported-by: Douglas Anderson <dianders@chromium.org>
+> Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
 
-This does not look correct. Your sign-off should be the latest one. Also 
-please recheck the Fixes tags.
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
 
 > ---
->   drivers/gpu/drm/msm/dp/dp_panel.c | 11 -----------
->   1 file changed, 11 deletions(-)
+>  drivers/watchdog/wdat_wdt.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> diff --git a/drivers/gpu/drm/msm/dp/dp_panel.c b/drivers/gpu/drm/msm/dp/dp_panel.c
-> index f141872..26f4b695 100644
-> --- a/drivers/gpu/drm/msm/dp/dp_panel.c
-> +++ b/drivers/gpu/drm/msm/dp/dp_panel.c
-> @@ -206,17 +206,6 @@ int dp_panel_read_sink_caps(struct dp_panel *dp_panel,
->   			rc = -ETIMEDOUT;
->   			goto end;
->   		}
-> -
-> -		/* fail safe edid */
-> -		mutex_lock(&connector->dev->mode_config.mutex);
-> -		if (drm_add_modes_noedid(connector, 640, 480))
-> -			drm_set_preferred_mode(connector, 640, 480);
-> -		mutex_unlock(&connector->dev->mode_config.mutex);
-> -	} else {
-> -		/* always add fail-safe mode as backup mode */
-> -		mutex_lock(&connector->dev->mode_config.mutex);
-> -		drm_add_modes_noedid(connector, 640, 480);
-> -		mutex_unlock(&connector->dev->mode_config.mutex);
->   	}
->   
->   	if (panel->aux_cfg_update_done) {
-
-
--- 
-With best wishes
-Dmitry
+> diff --git a/drivers/watchdog/wdat_wdt.c b/drivers/watchdog/wdat_wdt.c
+> index 6f36a653767b..e6f95e99156d 100644
+> --- a/drivers/watchdog/wdat_wdt.c
+> +++ b/drivers/watchdog/wdat_wdt.c
+> @@ -463,6 +463,7 @@ static int wdat_wdt_probe(struct platform_device *pdev)
+>  
+>  	watchdog_set_nowayout(&wdat->wdd, nowayout);
+>  	watchdog_stop_on_reboot(&wdat->wdd);
+> +	watchdog_stop_on_unregister(&wdat->wdd);
+>  	return devm_watchdog_register_device(dev, &wdat->wdd);
+>  }
+>  
+> -- 
+> 2.23.0
+> 
