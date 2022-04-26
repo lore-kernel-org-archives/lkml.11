@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8097AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:24:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FB7EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:24:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344800AbiDZI1c (ORCPT
+        id S1343838AbiDZI1k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:27:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36178 "EHLO
+        Tue, 26 Apr 2022 04:27:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239221AbiDZI0n (ORCPT
+        with ESMTP id S1344677AbiDZI0o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:26:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C8A13CFEF;
-        Tue, 26 Apr 2022 01:23:13 -0700 (PDT)
+        Tue, 26 Apr 2022 04:26:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13F804249B;
+        Tue, 26 Apr 2022 01:23:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C1152B81CF7;
-        Tue, 26 Apr 2022 08:23:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CB5EC385A0;
-        Tue, 26 Apr 2022 08:23:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 948C7B81CF3;
+        Tue, 26 Apr 2022 08:23:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10D3CC385A0;
+        Tue, 26 Apr 2022 08:23:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961390;
-        bh=egwIRRSMu30r1F9VMK/dU1QtErCVb4A+qEWO9CxAxOg=;
+        s=korg; t=1650961396;
+        bh=2ISxZrpT17ZWO7T7HiPFO4wRa/cI71OHRhKfqvSZPG8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hQ/rRthtzBNv5twHv4GAN/IkHNQV94PL+CxhsjbRkfqiKmNd6luhRtuuWsJougfoR
-         qA38CCwQAHGtw86NSg1tI6rc75BBZgPqEPoxO2/oI36yeIn3kHo59uSe+C+PkxXXut
-         9dOKWrL0gn+8Q4ZRIQa1FSrmu+aSqy2LbdRKEOEo=
+        b=Eb5kiQV1AqMJZ+or2qY1J0SQ76q32SvbKl4R5xhb0NCKDv+ym1TQEQpIFKbLWpHgH
+         cgI01y/LRdxj+6r9sCAYS+Wy2P8wdzgIdvnO4IY4fgDN2JpS+bwzkhuShcyynCXlbH
+         vHO4Aag8x9BTUWkB+D2ZXincoCe41KJA+7j2yq64=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiongwei Song <sxwjean@gmail.com>,
-        Arthur Marsh <arthur.marsh@internode.on.net>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Khem Raj <raj.khem@gmail.com>
-Subject: [PATCH 4.9 02/24] mm: page_alloc: fix building error on -Werror=array-compare
-Date:   Tue, 26 Apr 2022 10:20:56 +0200
-Message-Id: <20220426081731.445639121@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+7a806094edd5d07ba029@syzkaller.appspotmail.com,
+        Tadeusz Struk <tadeusz.struk@linaro.org>,
+        Theodore Tso <tytso@mit.edu>, stable@kernel.org
+Subject: [PATCH 4.9 21/24] ext4: limit length to bitmap_maxbytes - blocksize in punch_hole
+Date:   Tue, 26 Apr 2022 10:21:15 +0200
+Message-Id: <20220426081731.998414820@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081731.370823950@linuxfoundation.org>
 References: <20220426081731.370823950@linuxfoundation.org>
@@ -52,42 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiongwei Song <sxwjean@gmail.com>
+From: Tadeusz Struk <tadeusz.struk@linaro.org>
 
-commit ca831f29f8f25c97182e726429b38c0802200c8f upstream.
+commit 2da376228a2427501feb9d15815a45dbdbdd753e upstream.
 
-Arthur Marsh reported we would hit the error below when building kernel
-with gcc-12:
+Syzbot found an issue [1] in ext4_fallocate().
+The C reproducer [2] calls fallocate(), passing size 0xffeffeff000ul,
+and offset 0x1000000ul, which, when added together exceed the
+bitmap_maxbytes for the inode. This triggers a BUG in
+ext4_ind_remove_space(). According to the comments in this function
+the 'end' parameter needs to be one block after the last block to be
+removed. In the case when the BUG is triggered it points to the last
+block. Modify the ext4_punch_hole() function and add constraint that
+caps the length to satisfy the one before laster block requirement.
 
-  CC      mm/page_alloc.o
-  mm/page_alloc.c: In function `mem_init_print_info':
-  mm/page_alloc.c:8173:27: error: comparison between two arrays [-Werror=array-compare]
-   8173 |                 if (start <= pos && pos < end && size > adj) \
-        |
+LINK: [1] https://syzkaller.appspot.com/bug?id=b80bd9cf348aac724a4f4dff251800106d721331
+LINK: [2] https://syzkaller.appspot.com/text?tag=ReproC&x=14ba0238700000
 
-In C++20, the comparision between arrays should be warned.
-
-Link: https://lkml.kernel.org/r/20211125130928.32465-1-sxwjean@me.com
-Signed-off-by: Xiongwei Song <sxwjean@gmail.com>
-Reported-by: Arthur Marsh <arthur.marsh@internode.on.net>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Khem Raj <raj.khem@gmail.com>
+Fixes: a4bb6b64e39a ("ext4: enable "punch hole" functionality")
+Reported-by: syzbot+7a806094edd5d07ba029@syzkaller.appspotmail.com
+Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+Link: https://lore.kernel.org/r/20220331200515.153214-1-tadeusz.struk@linaro.org
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/page_alloc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ext4/inode.c |   11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -6504,7 +6504,7 @@ void __init mem_init_print_info(const ch
- 	 */
- #define adj_init_size(start, end, size, pos, adj) \
- 	do { \
--		if (start <= pos && pos < end && size > adj) \
-+		if (&start[0] <= &pos[0] && &pos[0] < &end[0] && size > adj) \
- 			size -= adj; \
- 	} while (0)
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -3980,7 +3980,8 @@ int ext4_punch_hole(struct inode *inode,
+ 	struct super_block *sb = inode->i_sb;
+ 	ext4_lblk_t first_block, stop_block;
+ 	struct address_space *mapping = inode->i_mapping;
+-	loff_t first_block_offset, last_block_offset;
++	loff_t first_block_offset, last_block_offset, max_length;
++	struct ext4_sb_info *sbi = EXT4_SB(inode->i_sb);
+ 	handle_t *handle;
+ 	unsigned int credits;
+ 	int ret = 0;
+@@ -4026,6 +4027,14 @@ int ext4_punch_hole(struct inode *inode,
+ 		   offset;
+ 	}
  
++	/*
++	 * For punch hole the length + offset needs to be within one block
++	 * before last range. Adjust the length if it goes beyond that limit.
++	 */
++	max_length = sbi->s_bitmap_maxbytes - inode->i_sb->s_blocksize;
++	if (offset + length > max_length)
++		length = max_length - offset;
++
+ 	if (offset & (sb->s_blocksize - 1) ||
+ 	    (offset + length) & (sb->s_blocksize - 1)) {
+ 		/*
 
 
