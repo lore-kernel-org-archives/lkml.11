@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D995C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:44:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D040C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:44:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232020AbiDZIrl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:47:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60142 "EHLO
+        id S1345776AbiDZIrt (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:47:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345811AbiDZIje (ORCPT
+        with ESMTP id S1345828AbiDZIjg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:39:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D124F7561B;
-        Tue, 26 Apr 2022 01:31:33 -0700 (PDT)
+        Tue, 26 Apr 2022 04:39:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 374827939E;
+        Tue, 26 Apr 2022 01:32:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 81C3EB81CFA;
-        Tue, 26 Apr 2022 08:31:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3DECC385A0;
-        Tue, 26 Apr 2022 08:31:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D8518B81CFA;
+        Tue, 26 Apr 2022 08:31:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40377C385AC;
+        Tue, 26 Apr 2022 08:31:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961891;
-        bh=54ru7jmsYeb+6NcxA9Lx7UBKfdTBBkj99yZhfnF44SM=;
+        s=korg; t=1650961917;
+        bh=ux5p3ZUyAmN3FfAx/4lLP1lb8t6+PA08wwGDVZZzSjE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ca5v25Fe6bOEPOFhVRuskX73f6CuWOTU19rzU11+gEW64ix+Pu5d4B4f1K3M1f+/j
-         JwnGBZy8II/izJMDBg907+34Fdzq1H4AnTMM8V/7Lv9egJpDcU++pcM1dcT7RdUajc
-         0RGCqnhy4l0F6xgeCqPehaIeD+yEzGI0+Q3ELgA8=
+        b=hh5Kuwnh0ggo0S69inyufmXIq29b9RoVQcYAc815PtLw+K1NO195X7Q7Gfc/Kwa3O
+         J78f49yKiAUHBs0JKOsrbe5xsH37szQafzBO04efFAt9nE8vFRWDnq1pJE3863UEgZ
+         pmCtTZBvXyvopjmuq0lo+mO83D5wJ9W17MmLuIyg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.4 48/62] ASoC: soc-dapm: fix two incorrect uses of list iterator
-Date:   Tue, 26 Apr 2022 10:21:28 +0200
-Message-Id: <20220426081738.599580762@linuxfoundation.org>
+        stable@vger.kernel.org, Amit Pundir <amit.pundir@linaro.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 12/86] ASoC: codecs: wcd934x: do not switch off SIDO Buck when codec is in use
+Date:   Tue, 26 Apr 2022 10:20:40 +0200
+Message-Id: <20220426081741.560636212@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
-References: <20220426081737.209637816@linuxfoundation.org>
+In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
+References: <20220426081741.202366502@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,59 +51,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 
-commit f730a46b931d894816af34a0ff8e4ad51565b39f upstream.
+[ Upstream commit db6dd1bee63d1d88fbddfe07af800af5948ac28e ]
 
-These two bug are here:
-	list_for_each_entry_safe_continue(w, n, list,
-					power_list);
-	list_for_each_entry_safe_continue(w, n, list,
-					power_list);
+SIDO(Single-Inductor Dual-Ouput) Buck powers up both analog and digital
+circuits along with internal memory, powering off this is the last thing
+that codec should do when going to very low power.
 
-After the list_for_each_entry_safe_continue() exits, the list iterator
-will always be a bogus pointer which point to an invalid struct objdect
-containing HEAD member. The funciton poniter 'w->event' will be a
-invalid value which can lead to a control-flow hijack if the 'w' can be
-controlled.
+Current code was powering off this Buck if there are no users of sysclk,
+which is not correct. Powering off this buck will result in no register access.
+This code path was never tested until recently after adding pm support
+in SoundWire controller. Fix this by removing the buck poweroff when the
+codec is active and also the code that is not used.
 
-The original intention was to continue the outer list_for_each_entry_safe()
-loop with the same entry if w->event is NULL, but misunderstanding the
-meaning of list_for_each_entry_safe_continue().
+Without this patch all the read/write transactions will never complete and
+results in SLIMBus Errors like:
 
-So just add a 'continue;' to fix the bug.
+qcom,slim-ngd qcom,slim-ngd.1: Tx:MT:0x0, MC:0x60, LA:0xcf failed:-110
+wcd934x-codec wcd934x-codec.1.auto: ASoC: error at soc_component_read_no_lock
+	on wcd934x-codec.1.auto for register: [0x00000d05] -110
+qcom,slim-ngd-ctrl 171c0000.slim: Error Interrupt received 0x82000000
 
-Cc: stable@vger.kernel.org
-Fixes: 163cac061c973 ("ASoC: Factor out DAPM sequence execution")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Link: https://lore.kernel.org/r/20220329012134.9375-1-xiam0nd.tong@gmail.com
+Reported-by: Amit Pundir <amit.pundir@linaro.org>
+Fixes: a61f3b4f476e ("ASoC: wcd934x: add support to wcd9340/wcd9341 codec")
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Tested-by: Amit Pundir <amit.pundir@linaro.org>
+Link: https://lore.kernel.org/r/20220407094313.2880-1-srinivas.kandagatla@linaro.org
 Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/soc-dapm.c |    6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ sound/soc/codecs/wcd934x.c | 26 +-------------------------
+ 1 file changed, 1 insertion(+), 25 deletions(-)
 
---- a/sound/soc/soc-dapm.c
-+++ b/sound/soc/soc-dapm.c
-@@ -1676,8 +1676,7 @@ static void dapm_seq_run(struct snd_soc_
- 		switch (w->id) {
- 		case snd_soc_dapm_pre:
- 			if (!w->event)
--				list_for_each_entry_safe_continue(w, n, list,
--								  power_list);
-+				continue;
+diff --git a/sound/soc/codecs/wcd934x.c b/sound/soc/codecs/wcd934x.c
+index 8540ac230d0e..fd704df9b175 100644
+--- a/sound/soc/codecs/wcd934x.c
++++ b/sound/soc/codecs/wcd934x.c
+@@ -1188,29 +1188,7 @@ static int wcd934x_set_sido_input_src(struct wcd934x_codec *wcd, int sido_src)
+ 	if (sido_src == wcd->sido_input_src)
+ 		return 0;
  
- 			if (event == SND_SOC_DAPM_STREAM_START)
- 				ret = w->event(w,
-@@ -1689,8 +1688,7 @@ static void dapm_seq_run(struct snd_soc_
- 
- 		case snd_soc_dapm_post:
- 			if (!w->event)
--				list_for_each_entry_safe_continue(w, n, list,
--								  power_list);
-+				continue;
- 
- 			if (event == SND_SOC_DAPM_STREAM_START)
- 				ret = w->event(w,
+-	if (sido_src == SIDO_SOURCE_INTERNAL) {
+-		regmap_update_bits(wcd->regmap, WCD934X_ANA_BUCK_CTL,
+-				   WCD934X_ANA_BUCK_HI_ACCU_EN_MASK, 0);
+-		usleep_range(100, 110);
+-		regmap_update_bits(wcd->regmap, WCD934X_ANA_BUCK_CTL,
+-				   WCD934X_ANA_BUCK_HI_ACCU_PRE_ENX_MASK, 0x0);
+-		usleep_range(100, 110);
+-		regmap_update_bits(wcd->regmap, WCD934X_ANA_RCO,
+-				   WCD934X_ANA_RCO_BG_EN_MASK, 0);
+-		usleep_range(100, 110);
+-		regmap_update_bits(wcd->regmap, WCD934X_ANA_BUCK_CTL,
+-				   WCD934X_ANA_BUCK_PRE_EN1_MASK,
+-				   WCD934X_ANA_BUCK_PRE_EN1_ENABLE);
+-		usleep_range(100, 110);
+-		regmap_update_bits(wcd->regmap, WCD934X_ANA_BUCK_CTL,
+-				   WCD934X_ANA_BUCK_PRE_EN2_MASK,
+-				   WCD934X_ANA_BUCK_PRE_EN2_ENABLE);
+-		usleep_range(100, 110);
+-		regmap_update_bits(wcd->regmap, WCD934X_ANA_BUCK_CTL,
+-				   WCD934X_ANA_BUCK_HI_ACCU_EN_MASK,
+-				   WCD934X_ANA_BUCK_HI_ACCU_ENABLE);
+-		usleep_range(100, 110);
+-	} else if (sido_src == SIDO_SOURCE_RCO_BG) {
++	if (sido_src == SIDO_SOURCE_RCO_BG) {
+ 		regmap_update_bits(wcd->regmap, WCD934X_ANA_RCO,
+ 				   WCD934X_ANA_RCO_BG_EN_MASK,
+ 				   WCD934X_ANA_RCO_BG_ENABLE);
+@@ -1296,8 +1274,6 @@ static int wcd934x_disable_ana_bias_and_syclk(struct wcd934x_codec *wcd)
+ 	regmap_update_bits(wcd->regmap, WCD934X_CLK_SYS_MCLK_PRG,
+ 			   WCD934X_EXT_CLK_BUF_EN_MASK |
+ 			   WCD934X_MCLK_EN_MASK, 0x0);
+-	wcd934x_set_sido_input_src(wcd, SIDO_SOURCE_INTERNAL);
+-
+ 	regmap_update_bits(wcd->regmap, WCD934X_ANA_BIAS,
+ 			   WCD934X_ANA_BIAS_EN_MASK, 0);
+ 	regmap_update_bits(wcd->regmap, WCD934X_ANA_BIAS,
+-- 
+2.35.1
+
 
 
