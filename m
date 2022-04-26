@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 857DAC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D95CCC4167B
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:03:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346664AbiDZJEw (ORCPT
+        id S1346974AbiDZJFJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:04:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56554 "EHLO
+        Tue, 26 Apr 2022 05:05:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346757AbiDZIpV (ORCPT
+        with ESMTP id S1347164AbiDZIpy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:45:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA58B17072;
-        Tue, 26 Apr 2022 01:35:27 -0700 (PDT)
+        Tue, 26 Apr 2022 04:45:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 651CD7B54E;
+        Tue, 26 Apr 2022 01:37:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E2056B81CED;
-        Tue, 26 Apr 2022 08:35:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B6FDC385A0;
-        Tue, 26 Apr 2022 08:35:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1BFC1B81D18;
+        Tue, 26 Apr 2022 08:37:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 882E3C385A0;
+        Tue, 26 Apr 2022 08:37:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962124;
-        bh=uKEYDWt3OoW+HTLnKcurD0UcjrAlNyV6usIFyO9hi1U=;
+        s=korg; t=1650962252;
+        bh=OaPySKJByytJen5e1W0EMoC2QsfHMewwNTZ8bZVe6E8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=inmLl7Xbh0MShLQgvz4u2pK41cHrTyXNroEmO4tLOlg4zlMk8C4N8GsoVZVls53XY
-         pCl3cOqJoHCiPVzY/0YRxe8KJr0VxJqMUXCylqvzjCl9MPUPw/gq76Vm8MVf2Bds9N
-         cufpSo1rC7FpJ3S2vTLIECJ28cw5sdT1LjLfH/D4=
+        b=X4MG1tP4f9T64UfIKE550Ek6BADtlxLSRyGa2lt2JJUfV2JVUobGXSNpxf/YWGW9c
+         XT5fcXFqwJ0qK3VxT9Bz0d2jyzDTc5yLLBNDunNISyiTNC4sNud2tRhOTqndyPaCQr
+         DjmtxsZgLy/evMlNJSxc4IAJ1DLzqvTmyXXJWDJE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wang Jianjian <wangjianjian3@huawei.com>,
-        Theodore Tso <tytso@mit.edu>, stable@kernel.org
-Subject: [PATCH 5.10 78/86] ext4, doc: fix incorrect h_reserved size
-Date:   Tue, 26 Apr 2022 10:21:46 +0200
-Message-Id: <20220426081743.459556094@linuxfoundation.org>
+        stable@vger.kernel.org, Tony Lu <tonylu@linux.alibaba.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>,
+        syzbot+6e29a053eb165bd50de5@syzkaller.appspotmail.com
+Subject: [PATCH 5.15 034/124] net/smc: Fix sock leak when release after smc_shutdown()
+Date:   Tue, 26 Apr 2022 10:20:35 +0200
+Message-Id: <20220426081748.274052593@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
-References: <20220426081741.202366502@linuxfoundation.org>
+In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
+References: <20220426081747.286685339@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,32 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: wangjianjian (C) <wangjianjian3@huawei.com>
+From: Tony Lu <tonylu@linux.alibaba.com>
 
-commit 7102ffe4c166ca0f5e35137e9f9de83768c2d27d upstream.
+[ Upstream commit 1a74e99323746353bba11562a2f2d0aa8102f402 ]
 
-According to document and code, ext4_xattr_header's size is 32 bytes, so
-h_reserved size should be 3.
+Since commit e5d5aadcf3cd ("net/smc: fix sk_refcnt underflow on linkdown
+and fallback"), for a fallback connection, __smc_release() does not call
+sock_put() if its state is already SMC_CLOSED.
 
-Signed-off-by: Wang Jianjian <wangjianjian3@huawei.com>
-Link: https://lore.kernel.org/r/92fcc3a6-7d77-8c09-4126-377fcb4c46a5@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Cc: stable@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+When calling smc_shutdown() after falling back, its state is set to
+SMC_CLOSED but does not call sock_put(), so this patch calls it.
+
+Reported-and-tested-by: syzbot+6e29a053eb165bd50de5@syzkaller.appspotmail.com
+Fixes: e5d5aadcf3cd ("net/smc: fix sk_refcnt underflow on linkdown and fallback")
+Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
+Acked-by: Karsten Graul <kgraul@linux.ibm.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/filesystems/ext4/attributes.rst |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/smc/af_smc.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/Documentation/filesystems/ext4/attributes.rst
-+++ b/Documentation/filesystems/ext4/attributes.rst
-@@ -76,7 +76,7 @@ The beginning of an extended attribute b
-      - Checksum of the extended attribute block.
-    * - 0x14
-      - \_\_u32
--     - h\_reserved[2]
-+     - h\_reserved[3]
-      - Zero.
- 
- The checksum is calculated against the FS UUID, the 64-bit block number
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index fa8897497dcc..499058248bdb 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -2332,8 +2332,10 @@ static int smc_shutdown(struct socket *sock, int how)
+ 	if (smc->use_fallback) {
+ 		rc = kernel_sock_shutdown(smc->clcsock, how);
+ 		sk->sk_shutdown = smc->clcsock->sk->sk_shutdown;
+-		if (sk->sk_shutdown == SHUTDOWN_MASK)
++		if (sk->sk_shutdown == SHUTDOWN_MASK) {
+ 			sk->sk_state = SMC_CLOSED;
++			sock_put(sk);
++		}
+ 		goto out;
+ 	}
+ 	switch (how) {
+-- 
+2.35.1
+
 
 
