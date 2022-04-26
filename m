@@ -2,117 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A36B6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 18:18:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3544DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 18:18:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353700AbiDZSVH (ORCPT
+        id S1353694AbiDZSVM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 14:21:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60436 "EHLO
+        Tue, 26 Apr 2022 14:21:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350986AbiDZSVA (ORCPT
+        with ESMTP id S1353714AbiDZSVH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 14:21:00 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66382111149;
-        Tue, 26 Apr 2022 11:17:51 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23QIHfUG107944;
-        Tue, 26 Apr 2022 13:17:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1650997061;
-        bh=xSgEDekT0PvWJkeK2+Mu6QdLHYKX+DJVubgCLn879gU=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=tYSREcFd9GHON91PHp36abjRi0ec7tlNV6v3QiX1raeGxqlUghIioCV0S0ZZeyqFE
-         xH/d1YnxGgERozCGDWnj4EC/6yka9ol82sdm/88sIR0OBSmCAfFWv4xCt6qL3ng5s1
-         5fboemnf+xW7Rw7htKJH3cmvY41JHroQZVzXsZjU=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23QIHf7R096607
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 26 Apr 2022 13:17:41 -0500
-Received: from DFLE113.ent.ti.com (10.64.6.34) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 26
- Apr 2022 13:17:40 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE113.ent.ti.com
- (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 26 Apr 2022 13:17:41 -0500
-Received: from [10.250.235.181] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23QIHaCM015788;
-        Tue, 26 Apr 2022 13:17:37 -0500
-Message-ID: <64d6e4c9-419a-eb31-36cb-ec9faadf6088@ti.com>
-Date:   Tue, 26 Apr 2022 23:47:36 +0530
+        Tue, 26 Apr 2022 14:21:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F95D11C98D;
+        Tue, 26 Apr 2022 11:17:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8F184B821AF;
+        Tue, 26 Apr 2022 18:17:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 486CEC385A0;
+        Tue, 26 Apr 2022 18:17:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650997072;
+        bh=LTInLvgTo3+OPjN1U1BCrFe0lRcYNQO+WZM6UmJz01E=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=QTKJSkz85f2HnAn3fUrN+Evd1XfpCKXJMMhuU/A8jh1t8NqDedWdVXTcCQuf850a7
+         SOorWAVz398djreaZUwUYbrMdyWqNentTR0OagBhYaEZHa3LZLhlSOrUbJxqzE0lKK
+         dc4mbo70mYewMsN1jICaL1x2Ua0gBcsURAMu85bFE60JwP/nrJNHOQBlzULdHJ0K6o
+         fNF+nwda64vPT9op6NMJs/cky24fExdCc53KNqwIEX0THyPlYW1JU+XAXtVxI+Y2DH
+         SFWyfL7GLXbvUykjWnf50hJ1Q4XIXo7lZm0xECXdAw0JRB8aEdQ1t9qxVsqBxOho8u
+         QXy+rjdJmS2Yw==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2 2/2] arm64: dts: ti: k3-am625-sk: Enable on board
- peripherals
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Nishanth Menon <nm@ti.com>, Tero Kristo <kristo@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Aswath Govindraju <a-govindraju@ti.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-References: <20220422065002.387753-1-vigneshr@ti.com>
- <20220422065002.387753-3-vigneshr@ti.com>
- <c40a2dad-c7aa-f778-f1ac-971185691950@linaro.org>
- <8517d504-af9c-53f5-a51b-3bcdbb86d09f@ti.com>
- <c50819cb-8234-670f-c7c0-0507af2f96df@linaro.org>
-From:   Vignesh Raghavendra <vigneshr@ti.com>
-In-Reply-To: <c50819cb-8234-670f-c7c0-0507af2f96df@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220426131539.388382-1-yangyingliang@huawei.com>
+References: <20220426131539.388382-1-yangyingliang@huawei.com>
+Subject: Re: [PATCH -next] clk: en7523: fix wrong pointer check in en7523_clk_probe()
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     mturquette@baylibre.com, nbd@nbd.name, matthias.bgg@gmail.com
+To:     Yang Yingliang <yangyingliang@huawei.com>,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Tue, 26 Apr 2022 11:17:50 -0700
+User-Agent: alot/0.10
+Message-Id: <20220426181752.486CEC385A0@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Quoting Yang Yingliang (2022-04-26 06:15:39)
+> Check the real return value of devm_platform_ioremap_resource()
+> in en7523_clk_probe().
+>=20
+> Fixes: 1e6273179190 ("clk: en7523: Add clock driver for Airoha EN7523 SoC=
+")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> ---
 
-
-On 26/04/22 12:32 am, Krzysztof Kozlowski wrote:
-> On 25/04/2022 11:22, Vignesh Raghavendra wrote:
->>>> +		/* TPS22918DBVR */
->>>> +		compatible = "regulator-fixed";
->>>> +		regulator-name = "vdd_mmc1";
->>>> +		regulator-min-microvolt = <3300000>;
->>>> +		regulator-max-microvolt = <3300000>;
->>>> +		regulator-boot-on;
->>>> +		enable-active-high;
->>>> +		vin-supply = <&vcc_3v3_sys>;
->>>> +		gpio = <&exp1 3 GPIO_ACTIVE_HIGH>;
->>>> +	};
->>>> +
->>>> +	vdd_sd_dv: gpio-regulator-TLV71033 {
->>>
->>> The same + do not mix cases, so regulator-1 or regulator-tlv71033
->>
->> I have fixed this in v3. But had one question though:
->>
->> Per DT spec, 2.2.3 Path Names seems to indicate node-name-N when N is
->> 1,2,3.. So, is it valid to have regulator-tlv71033 as node-name -> does
->> not strictly seem to fit into node-name-N format ?
-> 
-> No, "regulator-tlv71033" does not match DT spec. Indeed better to have
-> some generic suffix, e.g. regulator-vbatt, but strictly speaking DT spec
-> asks for just "regulator-[0-9]".
-> 
-> However several people prefer such descriptive suffix instead of
-> "regulator-[0-9]" because it makes their life easier when extending DTSI
-> (when both DTSI and DTS provide some of such regulators). Therefore I
-> don't think it's that important to keep with the spec. Rob for example
-> does not complain here, so probably I am stricter than him.
-> 
-> In any case it would be good to have only suffix or only prefix, e.g.
-> "regulator-foo-bar" or "foo-bar-regulator", so DT schema can match
-> against it. Several other types of devices already require such naming.
-> 
-
-
-Understood, thanks for the clarification!
-
-Regards
-Vignesh
+Applied to clk-next
