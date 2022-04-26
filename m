@@ -2,108 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A184C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:47:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AD93C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:47:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349231AbiDZKuS (ORCPT
+        id S1349450AbiDZKuW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 06:50:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51088 "EHLO
+        Tue, 26 Apr 2022 06:50:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346220AbiDZKtb (ORCPT
+        with ESMTP id S1346242AbiDZKtb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 06:49:31 -0400
-Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F8682A734
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 03:45:34 -0700 (PDT)
-Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-2f7b815ac06so101244907b3.3
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 03:45:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=nathanrossi.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=1LbavT3LkvBnPpf+Xg/axGsnbaFHBATYMxSGbn93c9A=;
-        b=cIg12B0GcGwK6aaDPRlq4eNs7XBHGZROmNxN9pbLNI2/ziSDKEC4sgQ55w+XG4xL/R
-         MOI39pNJYUAWUqc9Y8BZXm21OQqK26E2NcASnlhKxZkdTBhq/HTiryR/v+4kA7VKbBTg
-         Hsy3CO4GKV89QUNmn9y4KDQ3CFfWtt8sn6GNqty8VscXO2Guj3y1gHCXbOLtj/TN8Qnw
-         rWemHgAeKY+8WK6rlObkeXIqq4Xkt6RAklG0BaqwKncvRGBBruVg2OtY61akuyXqchRI
-         S7bYVLDDlq99ydH3IyvGYTEHFy9KSkm9dDLEfWq0Mx0Mm8ZDfxgMub8sDNIHfSeRGZ4X
-         S9DQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=1LbavT3LkvBnPpf+Xg/axGsnbaFHBATYMxSGbn93c9A=;
-        b=duaE5GKIauYZN4DXfSVjyXn1hXAjEIC0VkFuJlZQY45iOh8xUnV49qEAP2sbRJjNGc
-         0AbxxaWVHN9L8Fau8BJNYaHrbE/VpG2DAVu6/tDn8C+4JMZAMVLlaKCOgMa1Kne2KAr4
-         +Yw6YBSlg3It9zV9YuAHDht2HqlniZNtMYDhURXlbbN+wIQ+vtOWL1gXRigmWUOvOeMw
-         KI7s8v5eMS6kdqplXOR++C+5O/nYCm2/bKx4UhxuSbsfbmwwlNx950rbazxz03mFe4e8
-         lJyzcyYiDNiHfzPOrIGBEDvEILbbzyjRC7BuwIOFUJ3CltlGYQDTodhwskm2vuNmCSrC
-         uEUg==
-X-Gm-Message-State: AOAM530+vRqrtvTwxM58kr/IVyG+UVzEoExduQRbZFp8FCx/6gvxlTin
-        9o9S/OSrv7yUxU7o19FVkugE2+NtYqBrlmj24DeYvA==
-X-Google-Smtp-Source: ABdhPJxSgedRHX+4qH42vMO9+QfPTLyf0S87cc+CNQ2WoHxOmWy0B46391HnRsFebUzXIignQYzmAWSYQ8TO8Btl0mc=
-X-Received: by 2002:a81:3648:0:b0:2eb:c4c2:2920 with SMTP id
- d69-20020a813648000000b002ebc4c22920mr20999279ywa.291.1650969933910; Tue, 26
- Apr 2022 03:45:33 -0700 (PDT)
+Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2135.outbound.protection.outlook.com [40.107.215.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6FBA2AC5E;
+        Tue, 26 Apr 2022 03:45:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=L9fxgtbx2G5rjJKEAAJ4HXzd0go+kIpoYAzKqLswSEtGbxvTejM8iN2ZdoMFzsE6cvDUWoSAtc6jFnArlLoHVncLjsa5eG64yhBPBEp/TfnlJzIX/nmVaptsZ/7J/rGiaTOazrc7hLsiLVwpNa6fv/rHOEydE6uGSA7H9qHoIH31ix3sn/aaXr/ZWMh1/2p31ZpXEzFZE6PjuUJ1tAi1ALm4vzCPpdCGDDV1rWpie5bTsLKfe5h0JWiY8ozGvrC6G8BRoz1swe+Lc7++c3zf6X+ftbMq/XS8SlaSWZIWnox5MCMm07nkZadn7PJ9gn0e1aAHzahEpcQQOEXqXYHJkg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=L9utICEedl47QlQv5XGMQWa9ymmCMkG4s9q0nw9Ruc0=;
+ b=WEVJWYOOyWuCKgeAkmybSmtQ224WGBq+7ZSJIa4NnsQjFZsuYVYXw7KwNojy6axVXTIaNYHD6pJpiPqp+PIP9fsFRHAnPtijAW5VGMn4kPJYoKDZwNlmvfJcvvQq++YIVMoxzUcEYH06w9deDpqDZHgB4RpD9UpxP59cUeRZkQ5NAOrsXAAkEX0bzc2pXVb2iRJ+l2TpptCdkWQdrxG9i80C1XDPSbfCS4Zt8Um53CB44G8Q5fGoIBC2q/vmybPegRwKt1uOQsFKjWysVWxYeaQtor94ei9zQphIspbybVwc7Ue/Wnht33U8TPRuQYMsQuq+nhul0Mo5N/KZxm4Hyw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
+ s=selector2-vivo0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=L9utICEedl47QlQv5XGMQWa9ymmCMkG4s9q0nw9Ruc0=;
+ b=NPNcqnfkN2H4Bb277X2QcSvOVm2T6yljz9hQ6WF8alhsxfhCRlBsUZLwKArcBeWsMRAPcpnwI+KW19m+ox1YiWoqAEqtjZmLLwL0Ovptm6Cf70+ofYO8GaAGzC9i7zVgqouJ0XS6WWnGnZhF8mRinfC3hiBSTbZTrsja5+xN4rg=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vivo.com;
+Received: from SG2PR06MB3367.apcprd06.prod.outlook.com (2603:1096:4:78::19) by
+ PU1PR06MB2200.apcprd06.prod.outlook.com (2603:1096:803:2c::18) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5186.18; Tue, 26 Apr 2022 10:45:28 +0000
+Received: from SG2PR06MB3367.apcprd06.prod.outlook.com
+ ([fe80::4591:4f3e:f951:6c8c]) by SG2PR06MB3367.apcprd06.prod.outlook.com
+ ([fe80::4591:4f3e:f951:6c8c%7]) with mapi id 15.20.5186.021; Tue, 26 Apr 2022
+ 10:45:28 +0000
+From:   Wan Jiabing <wanjiabing@vivo.com>
+To:     Alim Akhtar <alim.akhtar@samsung.com>,
+        Avri Altman <avri.altman@wdc.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Bean Huo <beanhuo@micron.com>,
+        Daejun Park <daejun7.park@samsung.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Can Guo <cang@codeaurora.org>,
+        Asutosh Das <asutoshd@codeaurora.org>,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Wan Jiabing <wanjiabing@vivo.com>
+Subject: [PATCH] scsi: ufs: Remove duplicate include in ufshcd
+Date:   Tue, 26 Apr 2022 18:45:07 +0800
+Message-Id: <20220426104509.621394-1-wanjiabing@vivo.com>
+X-Mailer: git-send-email 2.35.3
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: HK2P15301CA0012.APCP153.PROD.OUTLOOK.COM
+ (2603:1096:202:1::22) To SG2PR06MB3367.apcprd06.prod.outlook.com
+ (2603:1096:4:78::19)
 MIME-Version: 1.0
-References: <20220423132035.238704-1-nathan@nathanrossi.com>
- <20220423152523.1f38e2d8@thinkpad> <43773a65a27cb714e3319b06b0215fcb0471aae6.camel@redhat.com>
-In-Reply-To: <43773a65a27cb714e3319b06b0215fcb0471aae6.camel@redhat.com>
-From:   Nathan Rossi <nathan@nathanrossi.com>
-Date:   Tue, 26 Apr 2022 20:45:22 +1000
-Message-ID: <CA+aJhH0Eg4BnohkQupLW0u473-WmuTXD0u2ShZfU19XN7JD-ew@mail.gmail.com>
-Subject: Re: [PATCH] net: dsa: mv88e6xxx: Skip cmode writable for mv88e6*41 if unchanged
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 82c51568-2648-4cf7-49d0-08da2771e0e9
+X-MS-TrafficTypeDiagnostic: PU1PR06MB2200:EE_
+X-Microsoft-Antispam-PRVS: <PU1PR06MB22001D03BFF83F84A7B5CB01ABFB9@PU1PR06MB2200.apcprd06.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 6N8Dxqd45TKgFlb2rMiNrfFHB5Y3+VDNLTWY99dmOK048Jc5WSEGKqJeepJ45WhKosqIj1jx2FabFn8nkbOyj2w1Y9H5IQRBWeJuFKtEmMo0+62ZQVuLmctURfajpUwRnWW1iI2xFy1uvf8ZsE4NCc7D7kTTPwmG2rLKqh9yhAyV318bOR/XgiD0Dh7CM6qXROdHa+Tw9rSZPAc0mBksgxfBlSsvs8ZM7ZHbo1p/DnHdjGv9kVDQiXYpeQX0ESdSXSweRgl3XW/lxe9nNhjExjl1Ef3c5sbMu36bTDj2UeuALFbVBFnfsOgYZSNxfslri0+pxEXhBcDTQxswapW7qp+m7DUXkCiiip+33Zh+5xCNYC4YpKX80BAe6I+Rj66fl2bn1YIlF4n8QoeYdyKGYfDaLfA8s3U4Rg8+2rTSoU/tOJVkbyywtdibQPCrjXf6fpMfN9jO1zueaXSVYsSDg6v2xlb2guTFi/+0GI3cNPl1b1K4a/XG5SAY7qepo9r/picOzzIy3PuhkJABDuxjenIO7tKJAHUH9q5GN+VX713dtmcjjcjQet/msqUt1WE6R1w+XjVj2YUjm8edTgtDlcAX0BNpMQ0Lv85TIF6kl/E8NBNhM933gJkhzvjBPx0spC1ottKyfrLOuW0Z0slH4U7Fm7U1el+we5mi5UHtWS7R9VktMdH381IeYsxcVeyuQh5Sbz1B1zGLTooquYXQxO0N1+b5YELFPcgGeRHIXLI=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB3367.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38350700002)(2906002)(6506007)(83380400001)(36756003)(38100700002)(52116002)(107886003)(2616005)(1076003)(921005)(8936002)(186003)(6666004)(7416002)(5660300002)(6512007)(26005)(4744005)(508600001)(110136005)(86362001)(66946007)(6486002)(66556008)(66476007)(316002)(4326008)(8676002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?QAPlz+9Dmo/vTKCLMPKBXWPDiZuzmfMh9sziS+nLgbajXGEJaY9AJmkNIyD5?=
+ =?us-ascii?Q?6mJzL8iDbiyVXiOUFisMvGkVD61K0/FTNaGcJBVldkGkcekfW9W08MWbkiCq?=
+ =?us-ascii?Q?1gtYp2ntRYFlwwfXWl7Rt5dKEDuk0YE+kgFQIKunUMTjBk4E+SstVCtnMlom?=
+ =?us-ascii?Q?/HDJ0+Hma20fdTYVsDNjjT2MH9L8zPiBMEBByc/1UODPPporsolt3Bb+WWOk?=
+ =?us-ascii?Q?1mSCh3Hu/LpGbO6er7FwdKxPc4AFVdjwhi6KntoDYY8HGyhaW/ML4PjoOkbT?=
+ =?us-ascii?Q?unyYn4lt3+7rhbFlodaDump5aAd7ATMovbnBEpnCoQikv/59KZ5nNsBiTfcU?=
+ =?us-ascii?Q?dnPziGjDboOQJSXve8vMNMt5Z7RyoSoifi+yrrTWkCUL2ffOVxi3FZtBL86j?=
+ =?us-ascii?Q?HQEdUpdxN+oeojeCHW0J2QOi46KzxMrBm+JS8P7OS6Q5ZZIJGIylrC4EE3ty?=
+ =?us-ascii?Q?gIzl55Vfxb/tVUhXOZ3N+1xSngOyp4Xcprqew4xaBggI3AYpqD+hnwe3Poql?=
+ =?us-ascii?Q?+zrRdKaHwvdyVwpXDCvUorfnVEk8+AEobJxy8aLRwiqO9drkKvKnd3vuZ+E7?=
+ =?us-ascii?Q?jtodBeM+YmdGYAZY7T7CPC6l+C+I6KQYkYhUm0OyBSYsBEbQ6rAa/7ZuUaI1?=
+ =?us-ascii?Q?mIYpDxAN/k6EPBOhfWMSVTxmywZNKFBGBK7dxThNGsce/qBTQ1MK8tOjalEo?=
+ =?us-ascii?Q?IE7RLZkoXHlJ72vEDxuRoZ9UBKQWR9aevapUxIn1+86ADJfZBtpxhytqSzRN?=
+ =?us-ascii?Q?KcQmzl40y298LY93WyhhJv+BvnTKLO3aUlKavEKXHlYLaou+iw0Cx03Yt83o?=
+ =?us-ascii?Q?epGx695Me5n1lAFbEG+l/U/RpApW7waut/gjlSFxmUsnfjrbj8RiMPbIGyCY?=
+ =?us-ascii?Q?GzLpaOqMVjcFc+ueW8p8xnsuJKvrITXOtlP1wQSU1Mef6mhXwGQGfOVcv8wT?=
+ =?us-ascii?Q?kRU7z0qhATS3E4hsszHPaIhlr57MotQxjrgABGTiNF4jG4joofQkhUMFGaFq?=
+ =?us-ascii?Q?q3al/HSigk+zRGevrrSWBUzRD8gEaQWtjp6xLJ9sRx8UPvGCHqoD7ZtONMZG?=
+ =?us-ascii?Q?oYc2f7zVgMTL3uPAMfqWM6UMV9A+Hufw2kFBOAdlEn9U2ZJYuGl9BQM8XkuS?=
+ =?us-ascii?Q?ma/yfvXsr8GSRI29G1BjoQNlLGzZHQ/BrF2upep5UpWau2dwy+KgMiqWGx+i?=
+ =?us-ascii?Q?KYDii8ubE6N4ahSo/11E+XoAW5Zg8jLbWnKrFutIqp/nT2uikeoikerkRLle?=
+ =?us-ascii?Q?anDsxplkeTD2OJm96CZDEk38GixyBsjbxyQbEXopPxChWwukK9LCcmttaX5p?=
+ =?us-ascii?Q?l+TppqZuXroB64DkhGjm4m3gyleexAHBjZZbZjEMoYa67333PuCMfnaGXxL6?=
+ =?us-ascii?Q?+/QruLaGCD7eO7F0ptKgfrqHdYGGTHnUsVqRGLF+2BgjF2/km/LuvQcT7qKO?=
+ =?us-ascii?Q?l6rVg/0Eru0Bv5yuFPm3wrvRCb3ZOe84/erqHtztUngHjOqZHB95w7MHj3Op?=
+ =?us-ascii?Q?NArCDgTdkY95bxyqvxsDNF3jUUzzNlXfG+MG4AXacKSJOHcORlBIIy6SVAyh?=
+ =?us-ascii?Q?oV2+/40h/2WIThUUcv7mVGexYr8TItyG+IiM2ZEtsVyc+5v75l7lzC/JZql5?=
+ =?us-ascii?Q?7i47wRbTg+rgIt700q9tYqhd9y33wvt1UMcWf0SIebXS6UB4ARAbIO+3AaQ+?=
+ =?us-ascii?Q?zUtcalUD1YkpCzQxzAUVSkK9AipwtMGgYcQNCliXmWr+pbEwpU9VPgMSdzdq?=
+ =?us-ascii?Q?ArfakiNUVQ=3D=3D?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 82c51568-2648-4cf7-49d0-08da2771e0e9
+X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB3367.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Apr 2022 10:45:28.7800
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: UDgL57ko6To1oz1ACYiRlJZcmhTy/OKqxM2I0HMo9nmxrCR+cITgInMNT3rNWq18pcXa8yhgKuKCgo+2KSXbAA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PU1PR06MB2200
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 26 Apr 2022 at 17:50, Paolo Abeni <pabeni@redhat.com> wrote:
->
-> Hello,
->
-> On Sat, 2022-04-23 at 15:25 +0200, Marek Beh=C3=BAn wrote:
-> > On Sat, 23 Apr 2022 13:20:35 +0000
-> > Nathan Rossi <nathan@nathanrossi.com> wrote:
-> >
-> > > The mv88e6341_port_set_cmode function always calls the set writable
-> > > regardless of whether the current cmode is different from the desired
-> > > cmode. This is problematic for specific configurations of the mv88e63=
-41
-> > > and mv88e6141 (in single chip adddressing mode?) where the hidden
-> > > registers are not accessible.
-> >
-> > I don't have a problem with skipping setting cmode writable if cmode is
-> > not being changed. But hidden registers should be accessible regardless
-> > of whether you are using single chip addressing mode or not. You need
-> > to find why it isn't working for you, this is a bug.
->
-> For the records, I read the above as requiring a fix the root cause, so
-> I'm not applying this patch. Please correct me if I'm wrong.
+Fix following checkincludes warning:
+drivers/scsi/ufs/ufshcd.c: linux/nls.h is included more than once.
 
-You are correct. Sorry I forgot to reply to this thread after posting
-the root cause fix.
+The include is in line 14. Remove the duplicated here.
 
-For reference the root cause fix to the issue mentioned by this patch
-is https://lore.kernel.org/netdev/20220425070454.348584-1-nathan@nathanross=
-i.com/.
+Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+---
+ drivers/scsi/ufs/ufshcd.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-Thanks,
-Nathan
+diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
+index 1b87f26b5193..73b3dfffabaa 100644
+--- a/drivers/scsi/ufs/ufshcd.c
++++ b/drivers/scsi/ufs/ufshcd.c
+@@ -20,7 +20,6 @@
+ #include <linux/delay.h>
+ #include <linux/interrupt.h>
+ #include <linux/module.h>
+-#include <linux/nls.h>
+ #include <linux/regulator/consumer.h>
+ #include <scsi/scsi_cmnd.h>
+ #include <scsi/scsi_dbg.h>
+-- 
+2.35.3
 
->
-> Thanks,
->
-> Paolo
->
