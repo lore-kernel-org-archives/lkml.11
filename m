@@ -2,188 +2,274 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25ACEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:39:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50FC5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:39:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345097AbiDZJmW (ORCPT
+        id S1346277AbiDZJm0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:42:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60376 "EHLO
+        Tue, 26 Apr 2022 05:42:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347753AbiDZJeD (ORCPT
+        with ESMTP id S1346103AbiDZJky (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:34:03 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E492C3F326;
-        Tue, 26 Apr 2022 01:58:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650963508; x=1682499508;
-  h=from:to:cc:subject:date:message-id;
-  bh=Q251io/kJJuj8uHbuLecwGWxnXivBjY2LaiYPZX3vSQ=;
-  b=Dm+ISPdfrvz4+wBcHt8bX5lwUSop6MKOM4Tc0P72GlAdu1KEf1sulqsc
-   FM1KqSqROIgf2fueCxGkCPtGqlW8NAgM4xbPCzmAKx28juvQINUGDakUm
-   1xHJnUOCciHSaFvohjiCLv9wvunZeG+m/xoW8zTGJgKM7/C2rlbyL9dbB
-   Y=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 26 Apr 2022 01:58:28 -0700
-X-QCInternal: smtphost
-Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 26 Apr 2022 01:58:26 -0700
-X-QCInternal: smtphost
-Received: from hu-c-spathi-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.108.59])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 26 Apr 2022 14:28:09 +0530
-Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 212714)
-        id 621D63085; Tue, 26 Apr 2022 14:28:08 +0530 (+0530)
-From:   Srinivasarao Pathipati <quic_spathi@quicinc.com>
-To:     ulf.hansson@linaro.org, adrian.hunter@intel.com,
-        riteshh@codeaurora.org, asutoshd@codeaurora.org, colyli@suse.de,
-        axboe@kernel.dk, kch@nvidia.com, cw9316.lee@samsung.com,
-        sbhanu@codeaurora.org, joel@jms.id.au, linux-mmc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     kamasali <quic_kamasali@quicinc.com>,
-        Srinivasarao Pathipati <quic_spathi@quicinc.com>
-Subject: [PATCH V1] sdhci-msm: Add err_stat's in CQE path
-Date:   Tue, 26 Apr 2022 14:28:01 +0530
-Message-Id: <1650963481-11139-1-git-send-email-quic_spathi@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Tue, 26 Apr 2022 05:40:54 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E839BE0A6;
+        Tue, 26 Apr 2022 02:00:20 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2a02:3030:3:7d2:2277:ba57:a2c0:3])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: sebastianfricke)
+        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id CD9761F43333;
+        Tue, 26 Apr 2022 10:00:18 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1650963619;
+        bh=JWzHHqsDVjvzoXUfBDOneFZ7mx/VURCmp50B/NxeSuk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DA6X1vGhsm/i5dePTZBlxAzPpOGb8RFbxkY5iUrfjy/GVu165ZCYB6UqN+/DZALcj
+         qfWCX1YP5ZauWR9gBNmqk3yY8yQYbKlV1Fh6Fk1qsAnZU8aoYLWsq5c7LClWv2pITK
+         yH4R1dnsaxoupMljqNHGvAxBCYnl/CpuCoKHkEASYpCon1ObdxdmTDR4+8qdYzzkd6
+         u8MOlm0V1xWv+kCddo1LDh/rEHk6L5diAJI1AcrInPX4FOiw4+kfx082w2S/mqr6aI
+         O74ujZWhMbzgz43hJ5XHbFxxMHCUZtyktJNgW57+6wp/Xwf10F7DIyhmbOikWNIeFs
+         O8yYN7cQ2spNQ==
+Date:   Tue, 26 Apr 2022 11:00:15 +0200
+From:   Sebastian Fricke <sebastian.fricke@collabora.com>
+To:     Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Cc:     mchehab@kernel.org, hverkuil@xs4all.nl,
+        ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de,
+        gregkh@linuxfoundation.org, mripard@kernel.org,
+        paul.kocialkowski@bootlin.com, wens@csie.org,
+        jernej.skrabec@gmail.com, samuel@sholland.org,
+        nicolas.dufresne@collabora.com, linux-media@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        linux-staging@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
+Subject: Re: [PATCH v5 04/17] media: uapi: HEVC: Add missing fields in HEVC
+ controls
+Message-ID: <20220426090015.4xhl5ubkptnvqjr2@basti-XPS-13-9310>
+References: <20220407152940.738159-1-benjamin.gaignard@collabora.com>
+ <20220407152940.738159-5-benjamin.gaignard@collabora.com>
+ <20220425135449.oapsrqqyq34s2ii3@basti-XPS-13-9310>
+ <d1ba4e57-2f13-ab3b-f79a-dc812cd4c2bf@collabora.com>
+ <20220426075234.6gk72hzf2bgaxwqw@basti-XPS-13-9310>
+ <8e6977ac-53bb-53f0-3fdc-75aa2643cb77@collabora.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <8e6977ac-53bb-53f0-3fdc-75aa2643cb77@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shaik Sajida Bhanu <sbhanu@codeaurora.org>
+On 26.04.2022 10:50, Benjamin Gaignard wrote:
+>
+>Le 26/04/2022 à 09:52, Sebastian Fricke a écrit :
+>>Hey Benjamin,
+>>
+>>On 25.04.2022 18:16, Benjamin Gaignard wrote:
+>>>
+>>>Le 25/04/2022 à 15:54, Sebastian Fricke a écrit :
+>>>>On 07.04.2022 17:29, Benjamin Gaignard wrote:
+>>>>>Complete the HEVC controls with missing fields from H.265 
+>>>>>specifications.
+>>>>>Even if these fields aren't used by the current mainlined drivers
+>>>>>they will be need for (at least) rkvdec driver.
+>>>>
+>>>>s/be need/be required/
+>>>>or
+>>>>s/be need/be needed/
+>>>>
+>>>>s/rkvdec/the rkvdec/
+>>>>
+>>>>>
+>>>>>Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+>>>>>---
+>>>>>.../media/v4l/ext-ctrls-codec.rst             | 19 +++++++++++++++++++
+>>>>>include/media/hevc-ctrls.h                    |  6 +++++-
+>>>>>2 files changed, 24 insertions(+), 1 deletion(-)
+>>>>>
+>>>>>diff --git 
+>>>>>a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst 
+>>>>>b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+>>>>>index 4cd7c541fc30..dbb08603217b 100644
+>>>>>--- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+>>>>>+++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+>>>>>@@ -2661,6 +2661,16 @@ enum 
+>>>>>v4l2_mpeg_video_hevc_size_of_length_field -
+>>>>>    :stub-columns: 0
+>>>>>    :widths:       1 1 2
+>>>>>
+>>>>>+    * - __u8
+>>>>>+      - ``video_parameter_set_id``
+>>>>>+      - Specifies the value of the vps_video_parameter_set_id 
+>>>>>of the active VPS
+>>>>>+        as descibed in section "7.4.3.2.1 General sequence 
+>>>>>parameter set RBSP semantics"
+>>>>>+        of H.265 specifications.
+>>>>>+    * - __u8
+>>>>>+      - ``seq_parameter_set_id``
+>>>>>+      - Provides an identifier for the SPS for reference by 
+>>>>>other syntax elements
+>>>>>+        as descibed in section "7.4.3.2.1 General sequence 
+>>>>>parameter set RBSP semantics"
+>>>>>+        of H.265 specifications.
+>>>>>    * - __u16
+>>>>>      - ``pic_width_in_luma_samples``
+>>>>>      -
+>>>>>@@ -2800,6 +2810,9 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
+>>>>>    :stub-columns: 0
+>>>>>    :widths:       1 1 2
+>>>>>
+>>>>>+    * - __u8
+>>>>>+      - ``pic_parameter_set_id``
+>>>>>+      - Identifies the PPS for reference by other syntax elements.
+>>>>>    * - __u8
+>>>>>      - ``num_extra_slice_header_bits``
+>>>>>      -
+>>>>>@@ -3026,6 +3039,12 @@ enum 
+>>>>>v4l2_mpeg_video_hevc_size_of_length_field -
+>>>>>    * - __u8
+>>>>>      - ``ref_idx_l1[V4L2_HEVC_DPB_ENTRIES_NUM_MAX]``
+>>>>>      - The list of L1 reference elements as indices in the DPB.
+>>>>>+    * - __u16
+>>>>>+      - ``short_term_ref_pic_set_size``
+>>>>>+      - Specifies the size of short-term reference pictures 
+>>>>>set included in the SPS.
+>>>>
+>>>>s/size of/size of the/
+>>>>
+>>>>Section 7.4.8 depicts that the st_ref_pic_set syntax
+>>>>structure can be part of the SPS or the slice header.
+>>>>
+>>>>I think we should mention that we talk about the size of the 
+>>>>st_ref_pic_set
+>>>>syntax structure from section 7.4.8 of the specification.
+>>>>>+    * - __u16
+>>>>>+      - ``long_term_ref_pic_set_size``
+>>>>>+      - Specifies the size of long-term reference pictures 
+>>>>>set include in the SPS.
+>>>>
+>>>>s/size of/size of the/
+>>>>
+>>>>Can we make this a bit more helpful? The specification doesn't contain
+>>>>a similar structure to `st_ref_pic_set` for long term pictures. 
+>>>>So, as a
+>>>>programmer this leaves me guessing:
+>>>>- Which syntax structure's size are we talking about?
+>>>>- Does this correlate to any of the existing sections of the
+>>>>specification?
+>>>>Because in the end, I feel like this documentation should be able to
+>>>>help a programmer to provide the correct data for the uABI.
+>>>
+>>>I will reword it like that:
+>>>
+>>>  * - __u16
+>>>    - ``short_term_ref_pic_set_size``
+>>>    - Specifies the size, in bits, of the short-term reference 
+>>>pictures set, described as st_ref_pic_set()
+>>
+>>Just ...
+>>
+>>s/reference pictures set/reference picture set/
+>>
+>>>     in the specification, included in the slice header (section 
+>>>7.3.6.1).
+>>
+>>s/slice header/slice header or SPS/
+>>
+>>
+>>>
+>>>* - __u16
+>>>   - ``long_term_ref_pic_set_size``
+>>>   - Specifies the size, in bits, of the long-term reference 
+>>>pictures set include in the slice header.
+>>
+>>s/reference pictures set/reference picture set/
+>>
+>>Looking at the documentation it looks like: s/slice header/slice 
+>>header or SPS/
+>>(For example in section 7.3.6.1:
+>>```
+>>if( long_term_ref_pics_present_flag ) {
+>>  if( num_long_term_ref_pics_sps > 0 )
+>>    num_long_term_sps
+>>  num_long_term_pics
+>>  for( i = 0; i < num_long_term_sps + num_long_term_pics; i++ ) {
+>>    ...
+>>```
+>>)
+>>
+>>... and then it looks very good!
+>
+>I don't know the syntax to insert this kind of comment inside an array in the documentation
+>so it will remain as before :-)
 
-Add err_stat's in CQE path for eMMC.
+Ah, no I didn't mean the pseudo code, I only gave that as an *example*
+why just `slice header` seems incorrect to me.
+The changes I suggest for that line are only:
 
-Signed-off-by: Shaik Sajida Bhanu <sbhanu@codeaurora.org>
-Signed-off-by: kamasali <quic_kamasali@quicinc.com>
-Signed-off-by: Srinivasarao Pathipati <quic_spathi@quicinc.com>
----
- drivers/mmc/core/queue.c      |  4 ++++
- drivers/mmc/host/cqhci-core.c |  7 +++++++
- drivers/mmc/host/sdhci.c      | 21 ++++++++++++++-------
- include/linux/mmc/host.h      | 22 ++++++++++++++++++++++
- 4 files changed, 47 insertions(+), 7 deletions(-)
+s/reference pictures set/reference picture set/ (grammatical error)
+s/slice header/slice header or SPS/ (correct statement)
 
-diff --git a/drivers/mmc/core/queue.c b/drivers/mmc/core/queue.c
-index a3d4460..7b07520 100644
---- a/drivers/mmc/core/queue.c
-+++ b/drivers/mmc/core/queue.c
-@@ -100,6 +100,10 @@ static enum blk_eh_timer_return mmc_cqe_timed_out(struct request *req)
- 	enum mmc_issue_type issue_type = mmc_issue_type(mq, req);
- 	bool recovery_needed = false;
- 
-+	host->err_stats[MMC_ERR_CMDQ_REQ_TIMEOUT]++;
-+	mmc_log_string(host,
-+	"Request timed out! Active reqs: %d Req: %p Tag: %d\n",
-+	mmc_cqe_qcnt(mq), req, req->tag);
- 	switch (issue_type) {
- 	case MMC_ISSUE_ASYNC:
- 	case MMC_ISSUE_DCMD:
-diff --git a/drivers/mmc/host/cqhci-core.c b/drivers/mmc/host/cqhci-core.c
-index 311b510..03d4064 100644
---- a/drivers/mmc/host/cqhci-core.c
-+++ b/drivers/mmc/host/cqhci-core.c
-@@ -825,6 +825,13 @@ irqreturn_t cqhci_irq(struct mmc_host *mmc, u32 intmask, int cmd_error,
- 	if ((status & (CQHCI_IS_RED | CQHCI_IS_GCE | CQHCI_IS_ICCE)) ||
- 	    cmd_error || data_error || ice_err){
- 		mmc->need_hw_reset = true;
-+		if (status & CQHCI_IS_RED)
-+			mmc->err_stats[MMC_ERR_CMDQ_RED]++;
-+		if (status & CQHCI_IS_GCE)
-+			mmc->err_stats[MMC_ERR_CMDQ_GCE]++;
-+		if (status & CQHCI_IS_ICCE)
-+			mmc->err_stats[MMC_ERR_CMDQ_ICCE]++;
-+
- 		cqhci_error_irq(mmc, status, cmd_error, data_error);
- 	}
- 
-diff --git a/drivers/mmc/host/sdhci.c b/drivers/mmc/host/sdhci.c
-index 2215202..a76c514 100644
---- a/drivers/mmc/host/sdhci.c
-+++ b/drivers/mmc/host/sdhci.c
-@@ -3905,20 +3905,27 @@ bool sdhci_cqe_irq(struct sdhci_host *host, u32 intmask, int *cmd_error,
- 	if (!host->cqe_on)
- 		return false;
- 
--	if (intmask & (SDHCI_INT_INDEX | SDHCI_INT_END_BIT | SDHCI_INT_CRC))
-+	if (intmask & (SDHCI_INT_INDEX | SDHCI_INT_END_BIT | SDHCI_INT_CRC)) {
- 		*cmd_error = -EILSEQ;
--	else if (intmask & SDHCI_INT_TIMEOUT)
-+		if (intmask & SDHCI_INT_CRC)
-+			host->mmc->err_stats[MMC_ERR_CMD_CRC]++;
-+	} else if (intmask & SDHCI_INT_TIMEOUT) {
- 		*cmd_error = -ETIMEDOUT;
--	else
-+		host->mmc->err_stats[MMC_ERR_CMD_TIMEOUT]++;
-+	} else
- 		*cmd_error = 0;
- 
--	if (intmask & (SDHCI_INT_DATA_END_BIT | SDHCI_INT_DATA_CRC))
-+	if (intmask & (SDHCI_INT_DATA_END_BIT | SDHCI_INT_DATA_CRC)) {
- 		*data_error = -EILSEQ;
--	else if (intmask & SDHCI_INT_DATA_TIMEOUT)
-+		if (intmask & SDHCI_INT_DATA_CRC)
-+			host->mmc->err_stats[MMC_ERR_DAT_CRC]++;
-+	} else if (intmask & SDHCI_INT_DATA_TIMEOUT) {
- 		*data_error = -ETIMEDOUT;
--	else if (intmask & SDHCI_INT_ADMA_ERROR)
-+		host->mmc->err_stats[MMC_ERR_DAT_TIMEOUT]++;
-+	} else if (intmask & SDHCI_INT_ADMA_ERROR) {
- 		*data_error = -EIO;
--	else
-+		host->mmc->err_stats[MMC_ERR_ADMA]++;
-+	} else
- 		*data_error = 0;
- 
- 	/* Clear selected interrupts. */
-diff --git a/include/linux/mmc/host.h b/include/linux/mmc/host.h
-index 3d00bcf..c38072e 100644
---- a/include/linux/mmc/host.h
-+++ b/include/linux/mmc/host.h
-@@ -80,6 +80,9 @@ struct mmc_ios {
- 	bool enhanced_strobe;			/* hs400es selection */
- };
- 
-+#define NUM_LOG_PAGES           10
-+#define mmc_log_string(mmc_host, fmt, ...)      do { } while (0)
-+
- struct mmc_clk_phase {
- 	bool valid;
- 	u16 in_deg;
-@@ -93,6 +96,24 @@ struct mmc_clk_phase_map {
- 
- struct mmc_host;
- 
-+enum {
-+	MMC_ERR_CMD_TIMEOUT,
-+	MMC_ERR_CMD_CRC,
-+	MMC_ERR_DAT_TIMEOUT,
-+	MMC_ERR_DAT_CRC,
-+	MMC_ERR_AUTO_CMD,
-+	MMC_ERR_ADMA,
-+	MMC_ERR_TUNING,
-+	MMC_ERR_CMDQ_RED,
-+	MMC_ERR_CMDQ_GCE,
-+	MMC_ERR_CMDQ_ICCE,
-+	MMC_ERR_REQ_TIMEOUT,
-+	MMC_ERR_CMDQ_REQ_TIMEOUT,
-+	MMC_ERR_ICE_CFG,
-+	MMC_ERR_MAX,
-+};
-+
-+
- struct mmc_host_ops {
- 	/*
- 	 * It is optional for the host to implement pre_req and post_req in
-@@ -471,6 +492,7 @@ struct mmc_host {
- 	struct mmc_supply	supply;
- 
- 	struct dentry		*debugfs_root;
-+	u32                     err_stats[MMC_ERR_MAX];
- 
- 	/* Ongoing data transfer that allows commands during transfer */
- 	struct mmc_request	*ongoing_mrq;
--- 
-2.7.4
+>
+>Benjamin
 
+Greetings,
+Sebastian
+
+>
+>>
+>>Greetings,
+>>Sebastian
+>>
+>>>     It is the number of bits in the conditional block if( 
+>>>long_term_ref_pics_present_flag ) {...}
+>>>     in section 7.3.6.1 of the specification.
+>>>
+>>>Benjamin
+>>>
+>>>
+>>>>
+>>>>Greetings,
+>>>>Sebastian
+>>>>
+>>>>>    * - __u8
+>>>>>      - ``padding``
+>>>>>      - Applications and drivers must set this to zero.
+>>>>>diff --git a/include/media/hevc-ctrls.h b/include/media/hevc-ctrls.h
+>>>>>index 01ccda48d8c5..a329e086a89a 100644
+>>>>>--- a/include/media/hevc-ctrls.h
+>>>>>+++ b/include/media/hevc-ctrls.h
+>>>>>@@ -58,6 +58,8 @@ enum v4l2_mpeg_video_hevc_start_code {
+>>>>>/* The controls are not stable at the moment and will likely 
+>>>>>be reworked. */
+>>>>>struct v4l2_ctrl_hevc_sps {
+>>>>>    /* ISO/IEC 23008-2, ITU-T Rec. H.265: Sequence parameter set */
+>>>>>+    __u8    video_parameter_set_id;
+>>>>>+    __u8    seq_parameter_set_id;
+>>>>>    __u16    pic_width_in_luma_samples;
+>>>>>    __u16    pic_height_in_luma_samples;
+>>>>>    __u8    bit_depth_luma_minus8;
+>>>>>@@ -108,6 +110,7 @@ struct v4l2_ctrl_hevc_sps {
+>>>>>
+>>>>>struct v4l2_ctrl_hevc_pps {
+>>>>>    /* ISO/IEC 23008-2, ITU-T Rec. H.265: Picture parameter set */
+>>>>>+    __u8    pic_parameter_set_id;
+>>>>>    __u8    num_extra_slice_header_bits;
+>>>>>    __u8    num_ref_idx_l0_default_active_minus1;
+>>>>>    __u8    num_ref_idx_l1_default_active_minus1;
+>>>>>@@ -199,7 +202,8 @@ struct v4l2_ctrl_hevc_slice_params {
+>>>>>    __u32    slice_segment_addr;
+>>>>>    __u8    ref_idx_l0[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
+>>>>>    __u8    ref_idx_l1[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
+>>>>>-
+>>>>>+    __u16    short_term_ref_pic_set_size;
+>>>>>+    __u16    long_term_ref_pic_set_size;
+>>>>>    __u8    padding;
+>>>>>
+>>>>>    /* ISO/IEC 23008-2, ITU-T Rec. H.265: Weighted prediction 
+>>>>>parameter */
+>>>>>-- 
+>>>>>2.32.0
+>>>>>
