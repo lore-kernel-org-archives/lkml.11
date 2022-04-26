@@ -2,190 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32A55C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 13:51:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6E0CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 13:52:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351174AbiDZNyS (ORCPT
+        id S1351159AbiDZNxl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 09:54:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33966 "EHLO
+        Tue, 26 Apr 2022 09:53:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351147AbiDZNyQ (ORCPT
+        with ESMTP id S245649AbiDZNxi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 09:54:16 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A9986E8D4
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 06:51:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650981066; x=1682517066;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=1V0/3lCFUFvYH380s9fH3oZRP3EJgrr3lCquxLUB5Gk=;
-  b=Ebu1hRDzfCo5ziMPg73shOezXYw1Qr2q3kYwUtgZPCcYYKhk6hUS8B/U
-   UrUCVHRFJWkhQyGAfeBA4DPXpIU/7qpWNtLhuEmnZ/1Ztw3VXa69/xmNZ
-   srszgZV7//mzwHL400OZPP39f13lkbeH6jydluE8FEo4YS53dBRaoV5vy
-   +X5fFTy8VSTRLYyrZVA0fNU053M+9IqREpcJTCaytI1Q03pJAn2yk6gd2
-   SfxhDYsYv3nagPzpvjx9fup6oiKi1YEQJKa3gHseohv9TrHiw7UlfJR5k
-   utUw605pPSENJK9cqk+RM9EcW2k4wpbPdEE8z9w3icFTgfUSAJz4CpviR
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="264426966"
-X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
-   d="scan'208";a="264426966"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 06:51:05 -0700
-X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
-   d="scan'208";a="558317960"
-Received: from liuyujie-mobl.ccr.corp.intel.com ([10.249.168.137])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 06:51:02 -0700
-From:   Yujie Liu <yujie.liu@intel.com>
-To:     Philip Li <philip.li@intel.com>
-Cc:     lkp-devops@eclists.intel.com, Yujie Liu <yujie.liu@intel.com>,
-        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH lkp-cloud] spec/kbuild_bisect_queue: update kismet error id format and reproduce command
-Date:   Tue, 26 Apr 2022 21:51:00 +0800
-Message-Id: <20220426135100.2831-1-yujie.liu@intel.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+        Tue, 26 Apr 2022 09:53:38 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D68D512620;
+        Tue, 26 Apr 2022 06:50:29 -0700 (PDT)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23QCMoCN007323;
+        Tue, 26 Apr 2022 13:50:00 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=Q0jaz1HrIi744S+qWz0aV7c81C4Syn+bjw3DDBg+xBg=;
+ b=YOURaXCX/WgSEuJNYsnCGvTxnCBZDeJN2Z7y0vgfQi9mfndCbDtRrFyppMYPDQHth3bK
+ kKPQAXp3MESMOoR7Wv+Dz5CM4MEuF+b7N5ucZviQT9Sk6645VGoQ3IrhfZqODJTkAdld
+ bw5bIfdMw/lNXch+IfFJGY7E4N/flK5HbWx/Ol2Vq3bhoxr3OfkMQ8iSPRgLO1V/bM1P
+ 6KQPTbgu4wxRM/NaMXbLSjMjrixuCZQT6aNqPPZSHSVUuYtmFkbjLVwF+adpIJXAUSlv
+ 8fhNrWF/s4dQl6imxtMAei//PpDmveLsXhsaqlfQsgLt9q3fAkOYS3+pQsFCgtTzhcXf Xg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fpbyh84wy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 26 Apr 2022 13:50:00 +0000
+Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23QDjJEV018452;
+        Tue, 26 Apr 2022 13:49:59 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fpbyh84w6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 26 Apr 2022 13:49:59 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23QDcaNE017139;
+        Tue, 26 Apr 2022 13:49:57 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma04ams.nl.ibm.com with ESMTP id 3fm938vftu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 26 Apr 2022 13:49:57 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23QDar8P53281270
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 26 Apr 2022 13:36:53 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 77E9A11C050;
+        Tue, 26 Apr 2022 13:49:55 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0617E11C04C;
+        Tue, 26 Apr 2022 13:49:54 +0000 (GMT)
+Received: from sig-9-65-95-142.ibm.com (unknown [9.65.95.142])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 26 Apr 2022 13:49:53 +0000 (GMT)
+Message-ID: <41f9d261a7750e576460360c512a8e4c1492efa3.camel@linux.ibm.com>
+Subject: Re: [PATCH] Carry forward IMA measurement log on kexec on x86_64
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     Jonathan McDowell <noodles@fb.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>
+Date:   Tue, 26 Apr 2022 09:49:53 -0400
+In-Reply-To: <YmfgyyUs6TgM/Czx@noodles-fedora-PC23Y6EG>
+References: <YmKyvlF3my1yWTvK@noodles-fedora-PC23Y6EG>
+         <12108732c287a85a417927de37cb027cefae6e06.camel@linux.ibm.com>
+         <YmfgyyUs6TgM/Czx@noodles-fedora-PC23Y6EG>
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: OUIcOi4QcBjdBfgMowm32ozP-RUVxJur
+X-Proofpoint-GUID: VRi_EdctptlzSEnzmfoupoLW-Qzb43nn
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-26_02,2022-04-26_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 spamscore=0
+ bulkscore=0 adultscore=0 mlxlogscore=999 lowpriorityscore=0 suspectscore=0
+ priorityscore=1501 phishscore=0 mlxscore=0 malwarescore=0 impostorscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2204260085
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-$ rake spec-slow spec=3Dkbuild_bisect_kismet debug=3D1 code=3D1 C_ROOT=3D/h=
-ome/jenkins/rake-spec-test/kernel-tests
-start spec
+On Tue, 2022-04-26 at 12:08 +0000, Jonathan McDowell wrote:
+> On Mon, Apr 25, 2022 at 12:29:17PM -0400, Mimi Zohar wrote:
+> > Hi Jonathan,
+> > 
+> > On Fri, 2022-04-22 at 13:50 +0000, Jonathan McDowell wrote:
+> > > On kexec file load Integrity Measurement Architecture (IMA) subsystem
+> > > may verify the IMA signature of the kernel and initramfs, and measure
+> > > it. The command line parameters passed to the kernel in the kexec call
+> > > may also be measured by IMA. A remote attestation service can verify
+> > > a TPM quote based on the TPM event log, the IMA measurement list, and
+> > > the TPM PCR data. This can be achieved only if the IMA measurement log
+> > > is carried over from the current kernel to the next kernel across
+> > > the kexec call.
+> > > 
+> > > powerpc and ARM64 both achieve this using device tree with a
+> > > "linux,ima-kexec-buffer" node. x86 platforms generally don't make use of
+> > > device tree, so the IMA infrastructure is extended to allow non device
+> > > tree platforms to provide a log buffer. x86 then passes the IMA buffer
+> > > to the new kernel via the setup_data mechanism.
+> > > 
+> > > Signed-off-by: Jonathan McDowell <noodles@fb.com>
+> > 
+> > FYI, after applying, building, and booting a kernel with this patch,
+> > "kexec -s -l /boot/vmlinuz-5.18.0-rc4+ --reuse-cmdline --
+> > initrd=/boot/initramfs-5.18.0-rc4+.img" properly loads the kernel, but
+> > "kexec -s -e" fails to reboot, at least on a test laptop even with only
+> > the "boot_aggregate" measurement record.
+> > 
+> > Without enabling CONFIG_IMA_KEXEC, kexec boots properly.
+> 
+> Thanks for giving it a try. At a guess your laptop is booting with
+> EFI, whereas for my testing I was using qemu with legacy BIOS. I've
+> managed to reproduce the issue with qemu+OVMF and isolated the mistake
+> in the setup data calculation I made when EFI is involved. If you have
+> time can you try with the below on top of the original patch?
 
-/usr/bin/ruby2.5 -I/var/lib/gems/2.5.0/gems/rspec-support-3.11.0/lib:/var/l=
-ib/gems/2.5.0/gems/rspec-core-3.11.0/lib /var/lib/gems/2.5.0/gems/rspec-cor=
-e-3.11.0/exe/rspec --pattern spec/\*\*\{,/\*/\*\*\}/kbuild_bisect_kismet_sp=
-ec.rb --tag speed:slow
-Run options: include {:speed=3D>"slow"}
-/tmp/qa-20220426-21054-w5d450
-latest: Pulling from kbuild
-Digest: sha256:c1bc7056e6b210b81791496bf7987b64edfd12b4d300252edda8f54446c5=
-7334
-Status: Image is up to date for lkp-server:5000/kbuild:latest
-lkp-server:5000/kbuild:latest
-.
+Thank you!  With the change, as expected there are two "boot_aggregate"
+records in the measurement list.  With a custom policy, the measurement
+list verifies.
 
-Finished in 57 minutes 34 seconds (files took 1.12 seconds to load)
-1 example, 0 failures
+# grep boot_aggregate
+/sys/kernel/security/ima/ascii_runtime_measurements 
+10 fe0b821290b1bd229e0d34c5571f48eeff403119 ima-sig
+sha1:a87d47e560d148cd1f4c8da677a84ddbe27f12f8 boot_aggregate 
+10 fe0b821290b1bd229e0d34c5571f48eeff403119 ima-sig
+sha1:a87d47e560d148cd1f4c8da677a84ddbe27f12f8 boot_aggregate 
 
-the final content of report mail is:
+# cat /sys/kernel/security/ima/runtime_measurements_count
+5597
 
-CC: kbuild-all@lists.01.org
-BCC: lkp@intel.com
-CC: linux-kernel@vger.kernel.org
-TO: Artur Rojek <contact@artur-rojek.eu>
-CC: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+# evmctl ima_measurement
+/sys/kernel/security/ima/binary_runtime_measurements
+Matched per TPM
+bank calculated digest(s).
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git =
-master
-head:   d615b5416f8a1afeb82d13b238f8152c572d59c0
-commit: 2c2b364fddd551f0da98953618e264c098dfa140 Input: joystick - add ADC =
-attached joystick driver.
-date:   1 year, 7 months ago
-:::::: branch date: 18 hours ago
-:::::: commit date: 1 year, 7 months ago
-reproduce:
-  download attached .config.gz and extract .config to linux source tree
-  run "make ARCH=3Dx86_64 olddefconfig"
+FYI, the builtin "ima_policy=tcb" results in measurement violations.  
+Normally, the measurement list can still be verified using the evmctl
+"--ignore-violations" option.   For some reason with the "tcb" policy, 
+the measurement list doesn't verify even with the "--ignore-violations" 
+option after kexec.  I assume this is a result of additional
+measurements being added after the kexec load, which aren't being
+carried across kexec.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+thanks,
 
-kismet warnings: (new ones prefixed by >>)
->> WARNING: unmet direct dependencies detected, selectee: CONFIG_IIO_BUFFER=
-_CB, selector: CONFIG_JOYSTICK_ADC
+Mimi
 
-   WARNING: unmet direct dependencies detected for IIO_BUFFER_CB
-     Depends on [n]: IIO [=3Dy] && IIO_BUFFER [=3Dn]
-     Selected by [y]:
-     - JOYSTICK_ADC [=3Dy] && !UML && INPUT [=3Dy] && INPUT_JOYSTICK [=3Dy]=
- && IIO [=3Dy]
+> 
+> diff --git a/arch/x86/kernel/kexec-bzimage64.c b/arch/x86/kernel/kexec-bzimage64.c
+> index 07625da33075..cdc73e081585 100644
+> --- a/arch/x86/kernel/kexec-bzimage64.c
+> +++ b/arch/x86/kernel/kexec-bzimage64.c
+> @@ -277,7 +277,9 @@ setup_boot_parameters(struct kimage *image, struct boot_params *params,
+>  #ifdef CONFIG_IMA_KEXEC
+>  	/* Setup IMA log buffer state */
+>  	setup_ima_state(image, params, params_load_addr,
+> -			efi_setup_data_offset + ALIGN(efi_map_sz, 16) + sizeof(struct setup_data));
+> +			efi_setup_data_offset +
+> +			sizeof(struct setup_data) +
+> +			sizeof(struct efi_setup_data));
+>  #endif
+>  
+>  	/* Setup EDD info */
 
---
-0-DAY CI Kernel Test Service
-https://01.org/lkp
-
---RWj8+mpoThLpL0oB
-Content-Type: application/gzip
-Content-Disposition: attachment; filename=3D".config.gz"
-Content-Transfer-Encoding: base64
-...
-
-Link: https://jira.devtools.intel.com/browse/ZDAYCI-15410
-Signed-off-by: Yujie Liu <yujie.liu@intel.com>
----
- ...d-selectee:CONFIG_IIO_BUFFER_CB-selector:CONFIG_JOYSTICK_ADC | 1 +
- ...-udd-x86_64-CONFIG_IIO_BUFFER_CB-CONFIG_JOYSTICK_ADC-.config | 1 -
- spec/kbuild_bisect_queue/kbuild_bisect_kismet_spec.rb           | 2 +-
- 3 files changed, 2 insertions(+), 2 deletions(-)
- create mode 100644 spec/kbuild_bisect_queue/kbuild/bisect-queue/2c2b364fdd=
-d551f0da98953618e264c098dfa140:gcc-11:x86_64-allnoconfig/.reduce_errors/WAR=
-NING:unmet-direct-dependencies-detected-selectee:CONFIG_IIO_BUFFER_CB-selec=
-tor:CONFIG_JOYSTICK_ADC
- delete mode 100644 spec/kbuild_bisect_queue/kbuild/bisect-queue/2c2b364fdd=
-d551f0da98953618e264c098dfa140:gcc-11:x86_64-allnoconfig/.reduce_errors/x86=
-_64-CONFIG_IIO_BUFFER_CB-CONFIG_JOYSTICK_ADC-UNMET_ALARM-True-kismet-test-c=
-ases-udd-x86_64-CONFIG_IIO_BUFFER_CB-CONFIG_JOYSTICK_ADC-.config
-
-diff --git a/spec/kbuild_bisect_queue/kbuild/bisect-queue/2c2b364fddd551f0d=
-a98953618e264c098dfa140:gcc-11:x86_64-allnoconfig/.reduce_errors/WARNING:un=
-met-direct-dependencies-detected-selectee:CONFIG_IIO_BUFFER_CB-selector:CON=
-FIG_JOYSTICK_ADC b/spec/kbuild_bisect_queue/kbuild/bisect-queue/2c2b364fddd=
-551f0da98953618e264c098dfa140:gcc-11:x86_64-allnoconfig/.reduce_errors/WARN=
-ING:unmet-direct-dependencies-detected-selectee:CONFIG_IIO_BUFFER_CB-select=
-or:CONFIG_JOYSTICK_ADC
-new file mode 100644
-index 0000000..64e3ea7
---- /dev/null
-+++ b/spec/kbuild_bisect_queue/kbuild/bisect-queue/2c2b364fddd551f0da989536=
-18e264c098dfa140:gcc-11:x86_64-allnoconfig/.reduce_errors/WARNING:unmet-dir=
-ect-dependencies-detected-selectee:CONFIG_IIO_BUFFER_CB-selector:CONFIG_JOY=
-STICK_ADC
-@@ -0,0 +1 @@
-+WARNING: unmet direct dependencies detected, selectee: CONFIG_IIO_BUFFER_C=
-B, selector: CONFIG_JOYSTICK_ADC
-diff --git a/spec/kbuild_bisect_queue/kbuild/bisect-queue/2c2b364fddd551f0d=
-a98953618e264c098dfa140:gcc-11:x86_64-allnoconfig/.reduce_errors/x86_64-CON=
-FIG_IIO_BUFFER_CB-CONFIG_JOYSTICK_ADC-UNMET_ALARM-True-kismet-test-cases-ud=
-d-x86_64-CONFIG_IIO_BUFFER_CB-CONFIG_JOYSTICK_ADC-.config b/spec/kbuild_bis=
-ect_queue/kbuild/bisect-queue/2c2b364fddd551f0da98953618e264c098dfa140:gcc-=
-11:x86_64-allnoconfig/.reduce_errors/x86_64-CONFIG_IIO_BUFFER_CB-CONFIG_JOY=
-STICK_ADC-UNMET_ALARM-True-kismet-test-cases-udd-x86_64-CONFIG_IIO_BUFFER_C=
-B-CONFIG_JOYSTICK_ADC-.config
-deleted file mode 100644
-index ec7df3e..0000000
---- a/spec/kbuild_bisect_queue/kbuild/bisect-queue/2c2b364fddd551f0da989536=
-18e264c098dfa140:gcc-11:x86_64-allnoconfig/.reduce_errors/x86_64-CONFIG_IIO=
-_BUFFER_CB-CONFIG_JOYSTICK_ADC-UNMET_ALARM-True-kismet-test-cases-udd-x86_6=
-4-CONFIG_IIO_BUFFER_CB-CONFIG_JOYSTICK_ADC-.config
-+++ /dev/null
-@@ -1 +0,0 @@
--x86_64,CONFIG_IIO_BUFFER_CB,CONFIG_JOYSTICK_ADC,0,0,UNMET_ALARM,True,kisme=
-t-test-cases/udd-x86_64-CONFIG_IIO_BUFFER_CB-CONFIG_JOYSTICK_ADC-0-0.config=
-=0D
-diff --git a/spec/kbuild_bisect_queue/kbuild_bisect_kismet_spec.rb b/spec/k=
-build_bisect_queue/kbuild_bisect_kismet_spec.rb
-index 000233b..736bfc6 100644
---- a/spec/kbuild_bisect_queue/kbuild_bisect_kismet_spec.rb
-+++ b/spec/kbuild_bisect_queue/kbuild_bisect_kismet_spec.rb
-@@ -7,7 +7,7 @@ describe 'kbuild_worker', speed: 'slow' do
-                     commit: '2c2b364fddd551f0da98953618e264c098dfa140',
-                     first_bad_branch: 'linus/master',
-                     first_bad_commit: '2c2b364fddd551f0da98953618e264c098d=
-fa140',
--                    reproduce_command: 'kismet --linux-ksrc=3Dlinux -a=3Dx=
-86_64' }]
-+                    reproduce_command: 'make ARCH=3Dx86_64 olddefconfig' }]
-=20
-   define_kbuild_bisect_queue_spec('bisect_kismet', 'kbuild_bisect_queue', =
-test_options)
- end
---=20
-2.25.1
 
