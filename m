@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F35F2C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:36:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F39CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:36:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344208AbiDZHjM (ORCPT
+        id S1344218AbiDZHjN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 03:39:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45860 "EHLO
+        Tue, 26 Apr 2022 03:39:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344091AbiDZHij (ORCPT
+        with ESMTP id S1344090AbiDZHij (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 03:38:39 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24343BE38
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2420FBC81
         for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 00:35:27 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1njFjB-00056t-0H; Tue, 26 Apr 2022 09:35:17 +0200
+        id 1njFjB-00056q-0I; Tue, 26 Apr 2022 09:35:17 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1njFj8-005InZ-Nc; Tue, 26 Apr 2022 09:35:13 +0200
+        id 1njFj8-005InU-FO; Tue, 26 Apr 2022 09:35:13 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1njFj5-004roq-U5; Tue, 26 Apr 2022 09:35:11 +0200
+        id 1njFj5-004roz-Ug; Tue, 26 Apr 2022 09:35:11 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         Alexandre Torgue <alexandre.torgue@foss.st.com>,
@@ -39,9 +39,9 @@ Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v4 2/4] dt-bindings: net: silabs,wfx: add prt,prtt1c-wfm200 antenna variant
-Date:   Tue, 26 Apr 2022 09:35:09 +0200
-Message-Id: <20220426073511.1160119-3-o.rempel@pengutronix.de>
+Subject: [PATCH v4 3/4] ARM: dts: stm32: stm32mp15-pinctrl: add spi1-1 pinmux group
+Date:   Tue, 26 Apr 2022 09:35:10 +0200
+Message-Id: <20220426073511.1160119-4-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220426073511.1160119-1-o.rempel@pengutronix.de>
 References: <20220426073511.1160119-1-o.rempel@pengutronix.de>
@@ -55,26 +55,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add compatible for wfm200 antenna configuration variant for Protonic PRTT1C
-board.
+Add spi1-1 pingroup as preparation for Protonic PRTT1C board.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- .../devicetree/bindings/staging/net/wireless/silabs,wfx.yaml     | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/boot/dts/stm32mp15-pinctrl.dtsi | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/staging/net/wireless/silabs,wfx.yaml b/Documentation/devicetree/bindings/staging/net/wireless/silabs,wfx.yaml
-index 105725a127ab..ce107fe45d7c 100644
---- a/Documentation/devicetree/bindings/staging/net/wireless/silabs,wfx.yaml
-+++ b/Documentation/devicetree/bindings/staging/net/wireless/silabs,wfx.yaml
-@@ -39,6 +39,7 @@ properties:
-   compatible:
-     items:
-       - enum:
-+          - prt,prtt1c-wfm200 # Protonic PRTT1C Board
-           - silabs,brd4001a # WGM160P Evaluation Board
-           - silabs,brd8022a # WF200 Evaluation Board
-           - silabs,brd8023a # WFM200 Evaluation Board
+diff --git a/arch/arm/boot/dts/stm32mp15-pinctrl.dtsi b/arch/arm/boot/dts/stm32mp15-pinctrl.dtsi
+index f0d66d8c6e3b..67a242b03813 100644
+--- a/arch/arm/boot/dts/stm32mp15-pinctrl.dtsi
++++ b/arch/arm/boot/dts/stm32mp15-pinctrl.dtsi
+@@ -2212,4 +2212,19 @@ pins2 {
+ 			bias-disable;
+ 		};
+ 	};
++
++	spi1_pins_b: spi1-1 {
++		pins1 {
++			pinmux = <STM32_PINMUX('A', 5, AF5)>, /* SPI1_SCK */
++				 <STM32_PINMUX('B', 5, AF5)>; /* SPI1_MOSI */
++			bias-disable;
++			drive-push-pull;
++			slew-rate = <1>;
++		};
++
++		pins2 {
++			pinmux = <STM32_PINMUX('A', 6, AF5)>; /* SPI1_MISO */
++			bias-disable;
++		};
++	};
+ };
 -- 
 2.30.2
 
