@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33B3CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:07:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78067C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:07:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354127AbiDZTIt (ORCPT
+        id S1354311AbiDZTKG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 15:08:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42506 "EHLO
+        Tue, 26 Apr 2022 15:10:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353821AbiDZTFy (ORCPT
+        with ESMTP id S1353864AbiDZTGL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 15:05:54 -0400
+        Tue, 26 Apr 2022 15:06:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37C0C19AD8F;
-        Tue, 26 Apr 2022 12:02:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5818319ADA4;
+        Tue, 26 Apr 2022 12:02:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D823619C4;
-        Tue, 26 Apr 2022 19:02:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6F66C385A4;
-        Tue, 26 Apr 2022 19:02:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E91196199A;
+        Tue, 26 Apr 2022 19:02:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A742C385AD;
+        Tue, 26 Apr 2022 19:02:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650999765;
-        bh=Yi/VZKwBWFltSoUl2IA96DoXBsbE40ytjiMP4EHVQC8=;
-        h=From:To:Cc:Subject:Date:From;
-        b=rn4k2rOTfz0/roH7CmN+b5VvBIURxqAtl/tgMmuQpprSu3X/N51GS4vJrdq4Gdlds
-         7wjWwbNISLkhZXgBiJp85p6BQBPKyAzmyu5cUY8t6ueKTRLa/j9WCndHRiL7sLCb1h
-         v0BvhuyhxG0wKjvXYadqXVOZ40+hsUgm3nt8iNQAX9zQDfRw7XucjLI5ze8MdQ58dR
-         1xekYEcBS6D6p8pEUIU9wOgqaUPQQ3nehvHS56J7RQ+qOGMjbG4HRZKVeZyIsIPZrS
-         p/0/C76OyczFLfV2X2ABFJKrew/8b3CWQE5bARiB4Ly4mp5+LDdxqX9mhxXi340r0u
-         VQqc2fo2kCspg==
+        s=k20201202; t=1650999775;
+        bh=7GAuG015USrv20+qpuwNBVLPVFfXyP5uE6MrbuBZcTg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=uXg0V+yBiipAVpOqDSHidd5gM3LxYxPNTwjWe8/4t55t62H8/gne7F76pXJZ5N8Y8
+         a1BayaJuKRpQGL3zbqpet0NJu6HuDYWMj+8Kl75z+aRgVAZeS7k4y8hw9XmzKdcykk
+         WcZkfRGH6bA9pXzTCJbXjW3m6KkAdOGg+IlNkgLHUweftP6sAy9XzlBvpQlyp+4hJX
+         Mh/5Ky4DaiIdHl7G3UQTqwrkeITeHwlc/GLtLb7IWuo1JkNtj1Kelqzo3NaksWfNx0
+         sEKZ5v9NgmxowUqp/a2cP0H5wKFOBYbhRYJ/Shtl82+eEGUt3GLAexGtp1lvO1SnzH
+         wUhsuuB9Wn8CA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>, Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, ckeepax@opensource.cirrus.com,
-        u.kleine-koenig@pengutronix.de, patches@opensource.cirrus.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.4 1/6] ASoC: wm8731: Disable the regulator when probing fails
-Date:   Tue, 26 Apr 2022 15:02:37 -0400
-Message-Id: <20220426190243.2351733-1-sashal@kernel.org>
+Cc:     Ronnie Sahlberg <lsahlber@redhat.com>,
+        Xiaoli Feng <xifeng@redhat.com>,
+        Steve French <stfrench@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>, sfrench@samba.org,
+        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org
+Subject: [PATCH AUTOSEL 4.19 4/6] cifs: destage any unwritten data to the server before calling copychunk_write
+Date:   Tue, 26 Apr 2022 15:02:47 -0400
+Message-Id: <20220426190251.2351817-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220426190251.2351817-1-sashal@kernel.org>
+References: <20220426190251.2351817-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,88 +54,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Ronnie Sahlberg <lsahlber@redhat.com>
 
-[ Upstream commit 92ccbf17eeacf510cf1eed9c252d9332ca24f02d ]
+[ Upstream commit f5d0f921ea362636e4a2efb7c38d1ead373a8700 ]
 
-When the driver fails during probing, the driver should disable the
-regulator, not just handle it in wm8731_hw_init().
+because the copychunk_write might cover a region of the file that has not yet
+been sent to the server and thus fail.
 
-The following log reveals it:
+A simple way to reproduce this is:
+truncate -s 0 /mnt/testfile; strace -f -o x -ttT xfs_io -i -f -c 'pwrite 0k 128k' -c 'fcollapse 16k 24k' /mnt/testfile
 
-[   17.812483] WARNING: CPU: 1 PID: 364 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
-[   17.815958] RIP: 0010:_regulator_put+0x3ec/0x4e0
-[   17.824467] Call Trace:
-[   17.824774]  <TASK>
-[   17.825040]  regulator_bulk_free+0x82/0xe0
-[   17.825514]  devres_release_group+0x319/0x3d0
-[   17.825882]  i2c_device_probe+0x766/0x940
-[   17.829198]  i2c_register_driver+0xb5/0x130
+the issue is that the 'pwrite 0k 128k' becomes rearranged on the wire with
+the 'fcollapse 16k 24k' due to write-back caching.
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Link: https://lore.kernel.org/r/20220405121038.4094051-1-zheyuma97@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+fcollapse is implemented in cifs.ko as a SMB2 IOCTL(COPYCHUNK_WRITE) call
+and it will fail serverside since the file is still 0b in size serverside
+until the writes have been destaged.
+To avoid this we must ensure that we destage any unwritten data to the
+server before calling COPYCHUNK_WRITE.
+
+Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1997373
+Reported-by: Xiaoli Feng <xifeng@redhat.com>
+Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wm8731.c | 19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+ fs/cifs/smb2ops.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/sound/soc/codecs/wm8731.c b/sound/soc/codecs/wm8731.c
-index 6fd1bef848ed..fa55d79b39b6 100644
---- a/sound/soc/codecs/wm8731.c
-+++ b/sound/soc/codecs/wm8731.c
-@@ -601,7 +601,7 @@ static int wm8731_hw_init(struct device *dev, struct wm8731_priv *wm8731)
- 	ret = wm8731_reset(wm8731->regmap);
- 	if (ret < 0) {
- 		dev_err(dev, "Failed to issue reset: %d\n", ret);
--		goto err_regulator_enable;
-+		goto err;
- 	}
+diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
+index 61955a7c838b..cc34a28aecbc 100644
+--- a/fs/cifs/smb2ops.c
++++ b/fs/cifs/smb2ops.c
+@@ -1144,9 +1144,17 @@ smb2_copychunk_range(const unsigned int xid,
+ 	int chunks_copied = 0;
+ 	bool chunk_sizes_updated = false;
+ 	ssize_t bytes_written, total_bytes_written = 0;
++	struct inode *inode;
  
- 	/* Clear POWEROFF, keep everything else disabled */
-@@ -618,10 +618,7 @@ static int wm8731_hw_init(struct device *dev, struct wm8731_priv *wm8731)
+ 	pcchunk = kmalloc(sizeof(struct copychunk_ioctl), GFP_KERNEL);
  
- 	regcache_mark_dirty(wm8731->regmap);
- 
--err_regulator_enable:
--	/* Regulators will be enabled by bias management */
--	regulator_bulk_disable(ARRAY_SIZE(wm8731->supplies), wm8731->supplies);
--
-+err:
- 	return ret;
- }
- 
-@@ -765,21 +762,27 @@ static int wm8731_i2c_probe(struct i2c_client *i2c,
- 		ret = PTR_ERR(wm8731->regmap);
- 		dev_err(&i2c->dev, "Failed to allocate register map: %d\n",
- 			ret);
--		return ret;
-+		goto err_regulator_enable;
- 	}
- 
- 	ret = wm8731_hw_init(&i2c->dev, wm8731);
- 	if (ret != 0)
--		return ret;
-+		goto err_regulator_enable;
- 
- 	ret = devm_snd_soc_register_component(&i2c->dev,
- 			&soc_component_dev_wm8731, &wm8731_dai, 1);
- 	if (ret != 0) {
- 		dev_err(&i2c->dev, "Failed to register CODEC: %d\n", ret);
--		return ret;
-+		goto err_regulator_enable;
- 	}
- 
- 	return 0;
++	/*
++	 * We need to flush all unwritten data before we can send the
++	 * copychunk ioctl to the server.
++	 */
++	inode = d_inode(trgtfile->dentry);
++	filemap_write_and_wait(inode->i_mapping);
 +
-+err_regulator_enable:
-+	/* Regulators will be enabled by bias management */
-+	regulator_bulk_disable(ARRAY_SIZE(wm8731->supplies), wm8731->supplies);
-+
-+	return ret;
- }
+ 	if (pcchunk == NULL)
+ 		return -ENOMEM;
  
- static int wm8731_i2c_remove(struct i2c_client *client)
 -- 
 2.35.1
 
