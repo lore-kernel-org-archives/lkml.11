@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6860C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:25:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19B39C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:26:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344792AbiDZI2o (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:28:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36326 "EHLO
+        id S238062AbiDZI2v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:28:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344755AbiDZI12 (ORCPT
+        with ESMTP id S1344768AbiDZI1n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:27:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D0B73A186;
-        Tue, 26 Apr 2022 01:23:34 -0700 (PDT)
+        Tue, 26 Apr 2022 04:27:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4663612C8C8;
+        Tue, 26 Apr 2022 01:23:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 52DAE617E8;
-        Tue, 26 Apr 2022 08:23:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E003C385A0;
-        Tue, 26 Apr 2022 08:23:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A9CE961806;
+        Tue, 26 Apr 2022 08:23:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB678C385A0;
+        Tue, 26 Apr 2022 08:23:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961413;
-        bh=fqhTmAqzBRh8HZ0aX6wqEd4AStiCK9N2MoFQSNpn2Rw=;
+        s=korg; t=1650961426;
+        bh=XO+htxcasVjIz8LtHd+6NBfz45Ayc74nohNSB2FcCHY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fjqm4jSSLFGMlkBUmbtX4TDfxiKEJ+3BwMvCxBA8yG76TG+A8SIJRDTHKbl2MYNpz
-         hB9RYvEDe3o0NraBafKrLYVI/oP99O4FLRY49yFDGamI2+BNYMWGDx05OlCxUPFvmr
-         CRLTM0s2//At7EwjBrElgh8R5uRemS0zgiRIL2rk=
+        b=Pod5LRnMUePi1qEHRA14UCWdd2GVEuHsTyuNFt1ojhaHirdFHQOs4PhBwwaXWf+jW
+         M+BdlIGS+NTTA4WNMuOry52FosAH/lj7UdV5Z+22CovCao/kC7KTxYZ9mFiENBk1xo
+         JhELfZWKaqyiOWcA1PiWOC9i7mDf0LrYTLcr0Taw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 05/24] dmaengine: imx-sdma: Fix error checking in sdma_event_remap
-Date:   Tue, 26 Apr 2022 10:20:59 +0200
-Message-Id: <20220426081731.533246482@linuxfoundation.org>
+        stable@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 09/24] platform/x86: samsung-laptop: Fix an unsigned comparison which can never be negative
+Date:   Tue, 26 Apr 2022 10:21:03 +0200
+Message-Id: <20220426081731.647075021@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081731.370823950@linuxfoundation.org>
 References: <20220426081731.370823950@linuxfoundation.org>
@@ -49,44 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 
-[ Upstream commit 7104b9cb35a33ad803a1adbbfa50569b008faf15 ]
+[ Upstream commit 0284d4d1be753f648f28b77bdfbe6a959212af5c ]
 
-of_parse_phandle() returns NULL on errors, rather than error
-pointers. Using NULL check on grp_np to fix this.
+Eliminate the follow smatch warnings:
 
-Fixes: d078cd1b4185 ("dmaengine: imx-sdma: Add imx6sx platform support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220308064952.15743-1-linmq006@gmail.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+drivers/platform/x86/samsung-laptop.c:1124 kbd_led_set() warn: unsigned
+'value' is never less than zero.
+
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Link: https://lore.kernel.org/r/20220322061830.105579-1-jiapeng.chong@linux.alibaba.com
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/imx-sdma.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/platform/x86/samsung-laptop.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/dma/imx-sdma.c b/drivers/dma/imx-sdma.c
-index 558d509b7d85..4337cf9defc2 100644
---- a/drivers/dma/imx-sdma.c
-+++ b/drivers/dma/imx-sdma.c
-@@ -1528,7 +1528,7 @@ static int sdma_event_remap(struct sdma_engine *sdma)
- 	u32 reg, val, shift, num_map, i;
- 	int ret = 0;
+diff --git a/drivers/platform/x86/samsung-laptop.c b/drivers/platform/x86/samsung-laptop.c
+index 8c146e2b6727..4664d3e191c8 100644
+--- a/drivers/platform/x86/samsung-laptop.c
++++ b/drivers/platform/x86/samsung-laptop.c
+@@ -1125,8 +1125,6 @@ static void kbd_led_set(struct led_classdev *led_cdev,
  
--	if (IS_ERR(np) || IS_ERR(gpr_np))
-+	if (IS_ERR(np) || !gpr_np)
- 		goto out;
+ 	if (value > samsung->kbd_led.max_brightness)
+ 		value = samsung->kbd_led.max_brightness;
+-	else if (value < 0)
+-		value = 0;
  
- 	event_remap = of_find_property(np, propname, NULL);
-@@ -1576,7 +1576,7 @@ static int sdma_event_remap(struct sdma_engine *sdma)
- 	}
- 
- out:
--	if (!IS_ERR(gpr_np))
-+	if (gpr_np)
- 		of_node_put(gpr_np);
- 
- 	return ret;
+ 	samsung->kbd_led_wk = value;
+ 	queue_work(samsung->led_workqueue, &samsung->kbd_led_work);
 -- 
 2.35.1
 
