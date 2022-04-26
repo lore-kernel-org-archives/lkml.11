@@ -2,109 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D787C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 11:38:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F7DDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 11:38:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346149AbiDZLlf (ORCPT
+        id S1349574AbiDZLln (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 07:41:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40188 "EHLO
+        Tue, 26 Apr 2022 07:41:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238202AbiDZLld (ORCPT
+        with ESMTP id S1346234AbiDZLlm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 07:41:33 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4355A1EEF5;
-        Tue, 26 Apr 2022 04:38:23 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id ay36-20020a05600c1e2400b0038ebc885115so953782wmb.1;
-        Tue, 26 Apr 2022 04:38:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=l7SZN+gn+w67vIMUfY98UKAbA7uOnpDqNzGrHL+gC5c=;
-        b=eoStLUnb7CeMxd9hbZy/U6QAaT5n5EugAremR3+IdPRp5H5amqgs/NWJ65/XbyxCiV
-         tA/Ghtpc2H3RiqPHoA155YmW+UXiIZtbvlw1Qn7HAk7cBCEY85vBckZprdXODtn72NX4
-         yFLxdwDX1l8JJnRUAroTga4EF3mIaMWj8lgpS9FEPmd6KtD+dFgOQ2khtMwoZ64h3mXr
-         ponXh4dwjbuGcQah0m5tJJK++QdejeORxZin/gto1x9Wsk0WTEOyaXZsO26r9WCErmcC
-         xy93F4s3SEn4/EJNvs//LAEHVpxT2SgHLGIv2xMV6+P5Cq+OsZfeDfHJbHkJtZ/rU+dF
-         zGmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=l7SZN+gn+w67vIMUfY98UKAbA7uOnpDqNzGrHL+gC5c=;
-        b=T8e1Ex1Ma2OazIOVWcznyUlRDADg/JyXHgEk2W3ne9ofSQ48Ok/Uv5oy6qJzv+/hR+
-         7/fgbs58hSLIvuHnI2ZPWyOCQRNtArqdx9alyuZs82wTyoWlrOXBauizBEj8eQ8eMiSl
-         HZw0OYDCOmvezPi8PdqCuxrj+kxGiyJJhbRcXjO37QG60PvvS2ktI3O07UJLrDZvuMvZ
-         CSCQuto61k1C5iCZl/yRsqAplsr6VG+XZ2fAgupiJVIvPLl8xV65mMZMgeG7z3Uwndlu
-         lImTpTUE6wVuUAVzrqahNz9S82BybG61NqLc/+kdhV0sGoPtj4gg3o+BfwEBcE71z4Sb
-         ykVQ==
-X-Gm-Message-State: AOAM533u6+PTvvKbleOJ4fg4O+5UKugIPGpXkPtj8zcu4kBfg423ZYR4
-        2ERbPmyodPfA1MFPAQIAeyo=
-X-Google-Smtp-Source: ABdhPJzlJ/ygsvmUV/0F3Ng+ZTbfSop588wEeRpKx1ZJ5wlB2aCBxL7+8NSqY0vDH3NutnV/DdmyJA==
-X-Received: by 2002:a1c:5401:0:b0:38e:bf1c:d25c with SMTP id i1-20020a1c5401000000b0038ebf1cd25cmr20730810wmb.119.1650973101751;
-        Tue, 26 Apr 2022 04:38:21 -0700 (PDT)
-Received: from [192.168.0.43] (static-35-180-85-188.ipcom.comunitel.net. [188.85.180.35])
-        by smtp.gmail.com with ESMTPSA id e17-20020adfa451000000b0020ada1a7c82sm5508369wra.11.2022.04.26.04.38.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Apr 2022 04:38:21 -0700 (PDT)
-Message-ID: <1e951bad-1f26-6de2-43be-b1b5dc384794@gmail.com>
-Date:   Tue, 26 Apr 2022 13:38:20 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] cpufreq: mediatek: Fix NULL pointer dereference in
- mediatek-cpufreq
-Content-Language: en-US
-To:     Wan Jiabing <wanjiabing@vivo.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tue, 26 Apr 2022 07:41:42 -0400
+Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 679146F9E5;
+        Tue, 26 Apr 2022 04:38:34 -0700 (PDT)
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1njJWa-0002ta-00; Tue, 26 Apr 2022 13:38:32 +0200
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id 8E0F3C01B1; Tue, 26 Apr 2022 11:32:03 +0200 (CEST)
+Date:   Tue, 26 Apr 2022 11:32:03 +0200
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        bcm-kernel-feedback-list@broadcom.com, linux-mips@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
-References: <20220426111715.627609-1-wanjiabing@vivo.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20220426111715.627609-1-wanjiabing@vivo.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] MIPS: dts: align SPI NOR node name with dtschema
+Message-ID: <20220426093203.GA9655@alpha.franken.de>
+References: <20220407143328.295762-1-krzysztof.kozlowski@linaro.org>
+ <249f6136-6dd6-0c03-df86-7da02a1b17f0@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <249f6136-6dd6-0c03-df86-7da02a1b17f0@linaro.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 26/04/2022 13:17, Wan Jiabing wrote:
-> Fix following coccicheck error:
-> drivers/cpufreq/mediatek-cpufreq.c:464:16-23: ERROR: info is NULL but dereferenced.
+On Tue, Apr 26, 2022 at 09:46:33AM +0200, Krzysztof Kozlowski wrote:
+> On 07/04/2022 16:33, Krzysztof Kozlowski wrote:
+> > The node names should be generic and SPI NOR dtschema expects "flash".
+> > 
+> > Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> > ---
+> >  arch/mips/boot/dts/brcm/bcm97358svmb.dts                   | 2 +-
+> >  arch/mips/boot/dts/brcm/bcm97360svmb.dts                   | 2 +-
+> >  arch/mips/boot/dts/brcm/bcm97425svmb.dts                   | 2 +-
+> >  arch/mips/boot/dts/ralink/gardena_smart_gateway_mt7688.dts | 2 +-
+> >  arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc1.dts         | 2 +-
+> >  arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc2.dts         | 2 +-
+> >  6 files changed, 6 insertions(+), 6 deletions(-)
 > 
-> Use pr_err instead of dev_err to avoid dereferring a NULL pointer.
+> Hi all,
 > 
-> Fixes: f52b16ba9fe4 ("cpufreq: mediatek: Use device print to show logs")
-> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+> Anyone from MIPS folks willing to take it? I got three acks, so maybe
+> that means I should handle it?
 
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+I'll take it.
 
-> ---
->   drivers/cpufreq/mediatek-cpufreq.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/cpufreq/mediatek-cpufreq.c b/drivers/cpufreq/mediatek-cpufreq.c
-> index bcabb3726a5b..901042e9a240 100644
-> --- a/drivers/cpufreq/mediatek-cpufreq.c
-> +++ b/drivers/cpufreq/mediatek-cpufreq.c
-> @@ -461,8 +461,8 @@ static int mtk_cpufreq_init(struct cpufreq_policy *policy)
->   
->   	info = mtk_cpu_dvfs_info_lookup(policy->cpu);
->   	if (!info) {
-> -		dev_err(info->cpu_dev,
-> -			"dvfs info for cpu%d is not initialized.\n", policy->cpu);
-> +		pr_err("dvfs info for cpu%d is not initialized.\n",
-> +			policy->cpu);
->   		return -EINVAL;
->   	}
->   
+Thomas.
+
+-- 
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
