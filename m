@@ -2,117 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B91CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:30:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C76A8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:31:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352931AbiDZQdR (ORCPT
+        id S1353009AbiDZQeQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 12:33:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40612 "EHLO
+        Tue, 26 Apr 2022 12:34:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353007AbiDZQdN (ORCPT
+        with ESMTP id S235283AbiDZQeO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 12:33:13 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0221E211
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:30:04 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id s27so6980177ljd.2
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:30:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Yq22b/HAxllmL6hgEgORnDmMTH7ARb+QJMH7dTolZlM=;
-        b=f9JX3iL//TVo3SLhOeUU2LpFUmTDH96Lj++Z7olpnXao0zd/qV0kZifymTBhBvYooF
-         V0KYkCiAuXXOndmp1SvYwVMwnKgeris7HxkMU8406kMsx0IbidjY+T4MkQNUIgGGNCbp
-         QYzHFKqYoE+XTPOE/CSSn2+6n8s/6tmFzijWaJ7pl+2rKbP/NFgG7b+rv48DqWvELyUA
-         ZjwwDQUZBg/2Rhz5V2y0ykguM5AlHWs5klwjHaA48vgvS2BBoyJF3KKtSFW+Txyuxmr1
-         Wl4dii6gNNZl2BmtBltdRHxSoS80T57ZZQbwuU8kuUzB+3tdxMNT3W7tDP0nM4ZsZ6hx
-         kA1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Yq22b/HAxllmL6hgEgORnDmMTH7ARb+QJMH7dTolZlM=;
-        b=RcY7YGMEqAjjzoqLMI6GGq55baeuGCZaPI4XEToA9z5ZUXla+GsKWBugnxjBypeVd2
-         3rQiEwEzBHB9sgjS5Ib5U5ayWHa4+591ULR2dCw/UDtbFtCHDAitrIl5meDRdoPbePfd
-         Xijvg/u2//isRrxX6Exbqzgf8Nl2Kd05wszn1Q7HykUTGh67Pbn1lYx0QzWC256OkDuv
-         B4u3tpx4l2fza8ibYIy6yaNUn27mmF2HDQjoaMFhWkz/y1kTsi5SnJ0rRME6VawyqiEk
-         5w38qNC83O5hpNMeNvE7Dw+R9u+nOy6W7rxu305VujzEfv8mmcLSRYlUWJaHKwVZvk4e
-         4ciQ==
-X-Gm-Message-State: AOAM533WUl9rXsSQ3pc1PVAzjyrnihlzfRC2vKjaXfUpJgyDb1oRnq3O
-        /KQPrRTWGMV3fFVNe8ip9yVr8lUIx7rge069lI9f4b0+frA=
-X-Google-Smtp-Source: ABdhPJxtV0frJu8QtkHSjZ7G17y8dVCS1oHhbqWmGgnLfpgcLuyi2Q2tBOYlosgu/7IoqC6Uh3zrzYlorV3mbCXkJXs=
-X-Received: by 2002:a05:651c:553:b0:24f:18c1:d2a1 with SMTP id
- q19-20020a05651c055300b0024f18c1d2a1mr3429125ljp.239.1650990601997; Tue, 26
- Apr 2022 09:30:01 -0700 (PDT)
+        Tue, 26 Apr 2022 12:34:14 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA3A3157DCE;
+        Tue, 26 Apr 2022 09:31:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description;
+        bh=puEHxiHmekhBokZkfX+PosZYQtXEk03Xp8eQva9Bj+8=; b=rpiKOOQCl+wMo2ZBJybeim/aQ8
+        G1VVuExU8TbuASs4MvNBUwmEdSLk7CyKeYXO87gI/dpVXnNlnd7Y1cbBvBncRr1Y5cx4MLs6xyozY
+        LZMaSZrC0Nv2UOoGmtyOjkSpqHQm8sZm8dPr3re9/byEZCQ8EjNc7KB+RlTSPlLn2qv2hAr8fwyV1
+        OG5rj4Kfo8vNDq8+Id4xcXeR8/ZMbUA2RAh5oWnSUiq9kbtMCMSedGJm37lfjpozOBe+QAacSL4+8
+        xH3bwTp6k+KFgbZZz/OkWRRo3cmV/I6CklqAQrNSUeT8++K+/eCrcuTWoByq+5ImtCef28FjkDHRz
+        xZljr48g==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1njO5h-00FLzL-IP; Tue, 26 Apr 2022 16:31:05 +0000
+Date:   Tue, 26 Apr 2022 09:31:05 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     =?iso-8859-1?Q?Thi=E9baud?= Weksteen <tweek@google.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jeffrey Vander Stoep <jeffv@google.com>,
+        Saravana Kannan <saravanak@google.com>,
+        Alistair Delva <adelva@google.com>,
+        Adam Shih <adamshih@google.com>,
+        SElinux list <selinux@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] firmware_loader: use kernel credentials when reading
+ firmware
+Message-ID: <YmgeSXJ9qWUI3J8/@bombadil.infradead.org>
+References: <20220422013215.2301793-1-tweek@google.com>
+ <YmK9lhEENKFnr6sd@bombadil.infradead.org>
+ <CA+zpnLfS4nTjXYYgE_BNcjQPF1vWynOe_118YgTZa9S5G9dVdg@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220424190811.1678416-1-masahiroy@kernel.org> <20220424190811.1678416-8-masahiroy@kernel.org>
-In-Reply-To: <20220424190811.1678416-8-masahiroy@kernel.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 26 Apr 2022 09:29:50 -0700
-Message-ID: <CAKwvOd=Q5WK1790WZP7fj=jY8b2+u-rEnF6XC3uObYwTtYp_eA@mail.gmail.com>
-Subject: Re: [PATCH 07/27] modpost: import include/linux/list.h
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michal Marek <michal.lkml@markovi.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CA+zpnLfS4nTjXYYgE_BNcjQPF1vWynOe_118YgTZa9S5G9dVdg@mail.gmail.com>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 24, 2022 at 12:09 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> Import include/linux/list.h to use convenient list macros in modpost.
->
-> I dropped kernel-space code such as {WRITE,READ}_ONCE etc. and unneeded
-> macros.
->
-> I also imported container_of() from include/linux/container_of.h and
-> type definitions from include/linux/types.h.
->
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+On Tue, Apr 26, 2022 at 02:18:59PM +1000, Thiébaud Weksteen wrote:
+> > Can you elaborate on the last sentence? It's unclear how what you
+> > describe is used exactly to allow driver to use direct filesystem
+> > firmware loading.
+> 
+> I realize my use of the word "device" here was unfortunate. I meant devices as
+> Android devices/systems. This may have contributed to the confusion.
+> 
+> Previously, Android systems were not setting up the firmware_class.path
+> command line argument. It means that the userspace fallback was always
+> kicking-in when a driver called request_firmware. This was handled by the
+> ueventd process on Android, which is generally given access to all firmware
+> files.
+> 
+> Now that more devices are setting up firmware_class.path, the call to
+> request_firmware will end up using kernel_read_file_from_path_initns, which
+> would have used the current process credentials.
 
-Ok then, just two small nits about two comments, which may have been
-just copied over from the sources.
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+That makes it crystal clear. This would be useful in the commit log.
 
-> ---
->
->  scripts/mod/list.h | 336 +++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 336 insertions(+)
->  create mode 100644 scripts/mod/list.h
->
-> diff --git a/scripts/mod/list.h b/scripts/mod/list.h
-> new file mode 100644
-> index 000000000000..c87583a71714
-> --- /dev/null
-> +++ b/scripts/mod/list.h
-> @@ -0,0 +1,336 @@
+> > And, given the feedback from Android it would seem this is a fix
+> > which likely may be desirable to backport to some stable kernels?
+> 
+> Yes, that's right.
 
-<snip>
+Especially in light of this.
 
-> +/**
-> + * list_for_each_entry -       iterate over list of given type
-
-^ Excessive whitespace after the `-`
-
-> + * @pos:       the type * to use as a loop cursor.
-> + * @head:      the head for your list.
-> + * @member:    the name of the list_head within the struct.
-> + */
-> +#define list_for_each_entry(pos, head, member)                         \
-> +       for (pos = list_first_entry(head, typeof(*pos), member);        \
-> +            !list_entry_is_head(pos, head, member);                    \
-> +            pos = list_next_entry(pos, member))
-> +
-> +/**
-> + * list_for_each_entry_safe - iterate over list of given type safe against removal of list entry
-
-^ This sounds like two sentences and looks like it's missing
-punctuation separating them?
-
-"iterate over list of given type. Safe against removal of list entry"
--- 
-Thanks,
-~Nick Desaulniers
+  Luis
