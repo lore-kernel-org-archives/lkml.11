@@ -2,116 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8533C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 20:56:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62540C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 20:56:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355180AbiDZU7I (ORCPT
+        id S1355190AbiDZVAB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 16:59:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43796 "EHLO
+        Tue, 26 Apr 2022 17:00:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354172AbiDZU7F (ORCPT
+        with ESMTP id S1354172AbiDZU77 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 16:59:05 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7804623BDC;
-        Tue, 26 Apr 2022 13:55:56 -0700 (PDT)
-Received: from mail-yw1-f173.google.com ([209.85.128.173]) by
- mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1Mn2Jj-1oBwtR32BD-00k8AD; Tue, 26 Apr 2022 22:55:54 +0200
-Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-2f7b815ac06so119883017b3.3;
-        Tue, 26 Apr 2022 13:55:54 -0700 (PDT)
-X-Gm-Message-State: AOAM531c/I0RGyxqBLDaVfLZu6TJuKPc6VRH54LNIQzlN53DL9cn5vsO
-        0wocP/GzquO5zE+7873Oz5+kXPlZMU5EgqR4TSc=
-X-Google-Smtp-Source: ABdhPJykVbC51GHiNxSRF22iubyVclEPEIn++KiZqruq+/JC2nxl37pjEPmurLqJ7gUHZrZwTtprNFSeiezKdA6Gjr4=
-X-Received: by 2002:a0d:d804:0:b0:2f4:e47d:1c2c with SMTP id
- a4-20020a0dd804000000b002f4e47d1c2cmr23664046ywe.320.1651006553470; Tue, 26
- Apr 2022 13:55:53 -0700 (PDT)
+        Tue, 26 Apr 2022 16:59:59 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 995363EABB;
+        Tue, 26 Apr 2022 13:56:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651006610; x=1682542610;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Y0ulhIQqzBKXGy12E1sQmGLQd0l893bCe6cbVpbAvyQ=;
+  b=LWJzByo2JNnwo3XpCKOvdwLvPUj4Y5ywzF3swDN8vYSxz6+hVokWI428
+   cmdSHbwOdV7Qe40KgXOAZuo7JwF5EnxMzHvJ+TnGs3fbrjp1PobMNAuNM
+   LHBcbAA/ggLKttOhawqyUdIEVXxTt63fCy+1kNPZQVy7j1FFE9P+E2pS9
+   YFcmIVnzbVDx51/5f0kFKcixqHfrEZc/91lg+D2T7FIlyTiDPfITzQEWJ
+   THFu5b9jOoqQd4mC+IUfg75lscMzMqYlZa7ZmCM1qU7+ZoSNSowYHQtiF
+   cBxwqpF/l+curpmkNuAaKy71j7L1b74kxjYBMW4k72o+GWImjUYlmoF+V
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="265243134"
+X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
+   d="scan'208";a="265243134"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 13:56:50 -0700
+X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
+   d="scan'208";a="580153799"
+Received: from dsocek-mobl2.amr.corp.intel.com (HELO [10.212.69.119]) ([10.212.69.119])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 13:56:48 -0700
+Message-ID: <b3c81b7f-3016-8f4e-3ac5-bff1fc52a879@intel.com>
+Date:   Tue, 26 Apr 2022 13:59:37 -0700
 MIME-Version: 1.0
-References: <20220426201539.12829-1-sven@svenpeter.dev> <20220426201539.12829-5-sven@svenpeter.dev>
-In-Reply-To: <20220426201539.12829-5-sven@svenpeter.dev>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 26 Apr 2022 22:55:37 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a39t-yyhtVKiEvD9_FvLiVxySnJRXaOv4E4q77t6mDesw@mail.gmail.com>
-Message-ID: <CAK8P3a39t-yyhtVKiEvD9_FvLiVxySnJRXaOv4E4q77t6mDesw@mail.gmail.com>
-Subject: Re: [PATCH v3 4/6] soc: apple: Add SART driver
-To:     Sven Peter <sven@svenpeter.dev>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Hector Martin <marcan@marcan.st>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Marc Zyngier <maz@kernel.org>, Janne Grunau <j@jannau.net>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-nvme@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:aCEZ6RBb3tpXSd8jlPQICSalKhz/lcJThhMJ9qtj94Ow0K3Qwv/
- pusAWlNyx3fi4froZHrjvIJL7JdWmeXgU+TAOnk4QNw4+tS1+jquXFQJJmY5mWc1eAEk2lz
- fNPGBZp7Kxbtc1iv2PYOjbQM+OJXdlzDWm9Lr1foO9Yt+3eNWz2gdJjc90sL80MIelVe2m5
- iwa95pM6GQ4ek+hx0ethg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:A2bn5Um674o=:tIiRX89DHd3lVxumZ100zH
- eRHmP3e1wCYkbq8MRref0+xJysSUJxebo3I+ufrjeK0AeCcYCCf3K7I5Brc/7n9qKnCWTN2df
- ahq2FzPtHLRao8HXnPyOPY03EBvyph/NZG0xfFOrKgYq7VZZjJ8l8uuS7P6vr/IwTuv/Fnt07
- P/DCxz7n+/gQmRKPdOH7eLGyC7Gn2uF18S/8l6Z8TAHanC6MjREjDM3ERj+ZpYXLagJuUpUKz
- PCcjUuzaOjgPFVnYG7/vS0zq6H/iSUuna+zLmf6DndhTl9xywWebH2du+eLayAA0xB3OjYjv4
- /nVHH/PbygHzO9IQVZ1aPeQZJPOzuaZtbTcGus/TX82Fi5dPKRRhjASAn2fbqb3Sle+zzyjMS
- cdWiN3JLmZIU8zi3cLipCmmN/ey4D2BRThMFITT1ChCbjIXP1UujmkkscV06MgJ6II94zr9ti
- kk9ZwPzzu6Bu1HitHUaZo1i0dvTlNnY41BM9j80YwR5tW0/9S2XeX+4Rc4DycKYjcD77XcMG1
- F4hFksUdJoBa5Md+cjT62GDsTmFqMp0iJR8fAD3TRO6e8US5P6ycgfldI58wEPQgD0fwbul6O
- Lj+XKXk9aynDJO5oBDxv1s+IjTQjbqtXfw7T0bbdt7ZzAwYxw40q0p8juRdb/4Tu5HwV2rSGl
- czqW9IWEIhhT4H1wKaO5dFbULPfqp9WKH2JTjOBLO3WaR2KhZpv6j/4ItUFCX60ZFgiI=
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 06/21] x86/virt/tdx: Shut down TDX module in case of
+ error
+Content-Language: en-US
+To:     Kai Huang <kai.huang@intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Cc:     seanjc@google.com, pbonzini@redhat.com, len.brown@intel.com,
+        tony.luck@intel.com, rafael.j.wysocki@intel.com,
+        reinette.chatre@intel.com, dan.j.williams@intel.com,
+        peterz@infradead.org, ak@linux.intel.com,
+        kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        isaku.yamahata@intel.com
+References: <cover.1649219184.git.kai.huang@intel.com>
+ <3f19ac995d184e52107e7117a82376cb7ecb35e7.1649219184.git.kai.huang@intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <3f19ac995d184e52107e7117a82376cb7ecb35e7.1649219184.git.kai.huang@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 10:15 PM Sven Peter <sven@svenpeter.dev> wrote:
->
-> The NVMe co-processor on the Apple M1 uses a DMA address filter called
-> SART for some DMA transactions. This adds a simple driver used to
-> configure the memory regions from which DMA transactions are allowed.
->
-> Unlike a real IOMMU, SART does not support any pagetables and can't be
-> implemented inside the IOMMU subsystem using iommu_ops.
->
-> It also can't be implemented using dma_map_ops since not all DMA
-> transactions of the NVMe controller are filtered by SART.
-> Instead, most buffers have to be registered using the integrated NVMe
-> IOMMU and we can't have two separate dma_map_ops implementations for a
-> single device.
->
-> Co-developed-by: Hector Martin <marcan@marcan.st>
-> Signed-off-by: Hector Martin <marcan@marcan.st>
-> Signed-off-by: Sven Peter <sven@svenpeter.dev>
+On 4/5/22 21:49, Kai Huang wrote:
+> TDX supports shutting down the TDX module at any time during its
+> lifetime.  After TDX module is shut down, no further SEAMCALL can be
+> made on any logical cpu.
 
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Is this strictly true?
 
-One more detail I noticed:
+I thought SEAMCALLs were used for the P-SEAMLDR too.
 
-> +#if IS_ENABLED(CONFIG_APPLE_SART)
+> Shut down the TDX module in case of any error happened during the
+> initialization process.  It's pointless to leave the TDX module in some
+> middle state.
+> 
+> Shutting down the TDX module requires calling TDH.SYS.LP.SHUTDOWN on all
+> BIOS-enabled cpus, and the SEMACALL can run concurrently on different
+> cpus.  Implement a mechanism to run SEAMCALL concurrently on all online
+> cpus.  Logical-cpu scope initialization will use it too.
+> 
+> Signed-off-by: Kai Huang <kai.huang@intel.com>
+> ---
+>  arch/x86/virt/vmx/tdx/tdx.c | 40 ++++++++++++++++++++++++++++++++++++-
+>  arch/x86/virt/vmx/tdx/tdx.h |  5 +++++
+>  2 files changed, 44 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/virt/vmx/tdx/tdx.c b/arch/x86/virt/vmx/tdx/tdx.c
+> index 674867bccc14..faf8355965a5 100644
+> --- a/arch/x86/virt/vmx/tdx/tdx.c
+> +++ b/arch/x86/virt/vmx/tdx/tdx.c
+> @@ -11,6 +11,8 @@
+>  #include <linux/cpumask.h>
+>  #include <linux/mutex.h>
+>  #include <linux/cpu.h>
+> +#include <linux/smp.h>
+> +#include <linux/atomic.h>
+>  #include <asm/msr-index.h>
+>  #include <asm/msr.h>
+>  #include <asm/cpufeature.h>
+> @@ -328,6 +330,39 @@ static int seamcall(u64 fn, u64 rcx, u64 rdx, u64 r8, u64 r9,
+>  	return 0;
+>  }
+>  
+> +/* Data structure to make SEAMCALL on multiple CPUs concurrently */
+> +struct seamcall_ctx {
+> +	u64 fn;
+> +	u64 rcx;
+> +	u64 rdx;
+> +	u64 r8;
+> +	u64 r9;
+> +	atomic_t err;
+> +	u64 seamcall_ret;
+> +	struct tdx_module_output out;
+> +};
 > +
-> +struct apple_sart;
+> +static void seamcall_smp_call_function(void *data)
+> +{
+> +	struct seamcall_ctx *sc = data;
+> +	int ret;
+> +
+> +	ret = seamcall(sc->fn, sc->rcx, sc->rdx, sc->r8, sc->r9,
+> +			&sc->seamcall_ret, &sc->out);
+> +	if (ret)
+> +		atomic_set(&sc->err, ret);
+> +}
 > +
 > +/*
-> + * Get a reference to the SART attached to dev.
-> + *
-> + * Looks for the phandle reference in apple,sart and returns a pointer
-> + * to the corresponding apple_sart struct to be used with
-> + * apple_sart_add_allowed_region and apple_sart_remove_allowed_region.
+> + * Call the SEAMCALL on all online cpus concurrently.
+> + * Return error if SEAMCALL fails on any cpu.
 > + */
-> +struct apple_sart *devm_apple_sart_get(struct device *dev);
+> +static int seamcall_on_each_cpu(struct seamcall_ctx *sc)
+> +{
+> +	on_each_cpu(seamcall_smp_call_function, sc, true);
+> +	return atomic_read(&sc->err);
+> +}
+
+Why bother returning something that's not read?
+
+>  static inline bool p_seamldr_ready(void)
+>  {
+>  	return !!p_seamldr_info.p_seamldr_ready;
+> @@ -437,7 +472,10 @@ static int init_tdx_module(void)
+>  
+>  static void shutdown_tdx_module(void)
+>  {
+> -	/* TODO: Shut down the TDX module */
+> +	struct seamcall_ctx sc = { .fn = TDH_SYS_LP_SHUTDOWN };
 > +
+> +	seamcall_on_each_cpu(&sc);
+> +
+>  	tdx_module_status = TDX_MODULE_SHUTDOWN;
+>  }
+>  
+> diff --git a/arch/x86/virt/vmx/tdx/tdx.h b/arch/x86/virt/vmx/tdx/tdx.h
+> index 6990c93198b3..dcc1f6dfe378 100644
+> --- a/arch/x86/virt/vmx/tdx/tdx.h
+> +++ b/arch/x86/virt/vmx/tdx/tdx.h
+> @@ -35,6 +35,11 @@ struct p_seamldr_info {
+>  #define P_SEAMLDR_SEAMCALL_BASE		BIT_ULL(63)
+>  #define P_SEAMCALL_SEAMLDR_INFO		(P_SEAMLDR_SEAMCALL_BASE | 0x0)
+>  
+> +/*
+> + * TDX module SEAMCALL leaf functions
+> + */
+> +#define TDH_SYS_LP_SHUTDOWN	44
+> +
+>  struct tdx_module_output;
+>  u64 __seamcall(u64 fn, u64 rcx, u64 rdx, u64 r8, u64 r9,
+>  	       struct tdx_module_output *out);
 
-In general, I don't like to hide declarations in a header behind an #if. Unless
-there is a good reason for doing this, just make the declaration unconditional,
-which avoids recompiling when the symbol changes.
-
-The only other effect is that you get a link-time error instead of a
-compile-time
-error if you messed up the Kconfig dependencies, but as long as the dependencies
-are correct it will be fine either way.
-
-      Arnd
