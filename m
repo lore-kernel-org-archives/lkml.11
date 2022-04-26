@@ -2,226 +2,261 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E382C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:46:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A060C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:46:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353217AbiDZQtI (ORCPT
+        id S1353226AbiDZQtO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 12:49:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43244 "EHLO
+        Tue, 26 Apr 2022 12:49:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353188AbiDZQs2 (ORCPT
+        with ESMTP id S1353207AbiDZQsn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 12:48:28 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2231B194B0E;
-        Tue, 26 Apr 2022 09:44:50 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9527923A;
-        Tue, 26 Apr 2022 09:44:50 -0700 (PDT)
-Received: from lpieralisi (unknown [10.57.12.182])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 657163F73B;
-        Tue, 26 Apr 2022 09:44:48 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 17:44:42 +0100
-From:   Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-To:     Dexuan Cui <decui@microsoft.com>
-Cc:     Jake Oshins <jakeo@microsoft.com>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>
-Subject: Re: [PATCH] PCI: hv: Do not set PCI_COMMAND_MEMORY to reduce VM boot
- time
-Message-ID: <YmgheiPOApuiLcK6@lpieralisi>
-References: <BYAPR21MB12705103ED8F2B7024A22438BFF49@BYAPR21MB1270.namprd21.prod.outlook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BYAPR21MB12705103ED8F2B7024A22438BFF49@BYAPR21MB1270.namprd21.prod.outlook.com>
+        Tue, 26 Apr 2022 12:48:43 -0400
+Received: from mail-ed1-x54a.google.com (mail-ed1-x54a.google.com [IPv6:2a00:1450:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A90197D52
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:44:55 -0700 (PDT)
+Received: by mail-ed1-x54a.google.com with SMTP id t25-20020a508d59000000b00425d86c2987so4107431edt.21
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:44:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=W9bLVQHqrvNNLkakI5+eXR9eCGhjUZBWMw6dTDyY1eM=;
+        b=BgZrayGSuVAfOhwVEgizv3zHVLAes+gixFFwYt44q0Anb09MOHmi4/yqVFg0co0xDn
+         meP8eUM1Y1cp68Fqnny0uLKF0Qtln5gmkU4uSohGMZYlVmXcU+el8E0u30FueVIIajUM
+         fV0/mRhuiJoD20Efo5TORsSuNROVI//1ETGTAUMCg4QXyCvHkSNJh0BZuJ+MEW//jk5W
+         5zxE3TyPvfyC/+M++78ZImLJvn13Sy60BHii4QN5AI+ODEg/JVu9RvQCDCnkT/RTmnsc
+         5z+2AC9k9WCqo7Z5jf84941KD9T2VCauRnuI4Jr4yEj//ttB99vhdrJTx2BaTgdSpkdR
+         nqtw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=W9bLVQHqrvNNLkakI5+eXR9eCGhjUZBWMw6dTDyY1eM=;
+        b=qQWyqFOcfC84WktSDjWgnNIPnORMklsWAiyibRA3VE9lLhz6D3qz0N6QbS5W3/KhyO
+         2O7wwoSmBjT7gWsEbBulCEOtGORGepVvWLctKHKzZUohcCkogmvHK09g4Bba1kcvOuNF
+         fApORSn4pXxvgd4ynDJahIPiB88BNQh+rlFDgnH8mtuC26qp45UmbZrQbQeGdfuIFTUv
+         /UUD5+3SeDECj4enm4qgC+977eCAM6EVTJna4Wuji8Ri0xAnTs5JQ43WIqUASR6Pop8n
+         U8ZAHdb0bHr8Y0GZ1fQ98ukyZfERyDqPAv41zq6Ns4020TCLDChMG9HKLVgYp6Oj5JX4
+         xBFQ==
+X-Gm-Message-State: AOAM532hZOF+678J9Z7eEdzgh6fGV/q6edz4C1+aGQgdlLmd9zyJaUgG
+        mh1NbiKtQbPMX4LrYUS7ytUZl0Jpky4=
+X-Google-Smtp-Source: ABdhPJwCG6zbeNkNwZsSEqpPcp6mObXzGX3q9XLvEMJvGGRoqht5Amkh6vhwVXvGFlIqKIoGDyBdhsZSVt0=
+X-Received: from glider.muc.corp.google.com ([2a00:79e0:15:13:d580:abeb:bf6d:5726])
+ (user=glider job=sendgmr) by 2002:a05:6402:84a:b0:423:fe99:8c53 with SMTP id
+ b10-20020a056402084a00b00423fe998c53mr25379562edz.195.1650991494081; Tue, 26
+ Apr 2022 09:44:54 -0700 (PDT)
+Date:   Tue, 26 Apr 2022 18:42:42 +0200
+In-Reply-To: <20220426164315.625149-1-glider@google.com>
+Message-Id: <20220426164315.625149-14-glider@google.com>
+Mime-Version: 1.0
+References: <20220426164315.625149-1-glider@google.com>
+X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
+Subject: [PATCH v3 13/46] kmsan: implement kmsan_init(), initialize READ_ONCE_NOCHECK()
+From:   Alexander Potapenko <glider@google.com>
+To:     glider@google.com
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Christoph Hellwig <hch@lst.de>,
+        Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Kees Cook <keescook@chromium.org>,
+        Marco Elver <elver@google.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>, kasan-dev@googlegroups.com,
+        linux-mm@kvack.org, linux-arch@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 06:26:36PM +0000, Dexuan Cui wrote:
-> > From: Jake Oshins <jakeo@microsoft.com>
-> > Sent: Wednesday, April 20, 2022 9:01 AM
-> > To: Bjorn Helgaas <helgaas@kernel.org>; Dexuan Cui <decui@microsoft.com>
-> > Cc: wei.liu@kernel.org; KY Srinivasan <kys@microsoft.com>; Haiyang Zhang
-> > <haiyangz@microsoft.com>; Stephen Hemminger <sthemmin@microsoft.com>;
-> > lorenzo.pieralisi@arm.com; bhelgaas@google.com;
-> > linux-hyperv@vger.kernel.org; linux-pci@vger.kernel.org;
-> > linux-kernel@vger.kernel.org; Michael Kelley (LINUX)
-> > <mikelley@microsoft.com>; robh@kernel.org; kw@linux.com; Alex Williamson
-> > <alex.williamson@redhat.com>; .kvm@vger.kernel.org
-> > Subject: RE: [EXTERNAL] Re: [PATCH] PCI: hv: Do not set
-> > PCI_COMMAND_MEMORY to reduce VM boot time
-> 
-> I removed the "[EXTERNAL]" tag as it looks like that prevents the email from being
-> archived properly. See this link for the archived email thread:
-> https://lwn.net/ml/linux-kernel/20220419220007.26550-1-decui%40microsoft.com/
-> 
-> > > -----Original Message-----
-> > > From: Bjorn Helgaas <helgaas@kernel.org>
-> > > Sent: Wednesday, April 20, 2022 8:36 AM
-> > > To: Dexuan Cui <decui@microsoft.com>
-> > > Cc: wei.liu@kernel.org; KY Srinivasan <kys@microsoft.com>; Haiyang Zhang
-> > > <haiyangz@microsoft.com>; Stephen Hemminger
-> > <sthemmin@microsoft.com>;
-> > > lorenzo.pieralisi@arm.com; bhelgaas@google.com; linux-
-> > > hyperv@vger.kernel.org; linux-pci@vger.kernel.org; linux-
-> > > kernel@vger.kernel.org; Michael Kelley (LINUX) <mikelley@microsoft.com>;
-> > > robh@kernel.org; kw@linux.com; Jake Oshins <jakeo@microsoft.com>; Alex
-> > > Williamson <alex.williamson@redhat.com>; .kvm@vger.kernel.org
-> 
-> I removed the period from ".kvm@" so the KVM list is correctly Cc'd.
-> 
-> > > Subject: [EXTERNAL] Re: [PATCH] PCI: hv: Do not set
-> > PCI_COMMAND_MEMORY
-> > > to reduce VM boot time
-> > >
-> > > [+cc Alex, kvm in case this idea is applicable for more than just Hyper-V]
-> 
-> Alex, your comments are welcome!
-> 
-> > > On Tue, Apr 19, 2022 at 03:00:07PM -0700, Dexuan Cui wrote:
-> > > > A VM on Azure can have 14 GPUs, and each GPU may have a huge MMIO
-> > > BAR,
-> > > > e.g. 128 GB. Currently the boot time of such a VM can be 4+ minutes,
-> > > > and most of the time is used by the host to unmap/map the vBAR from/to
-> > > > pBAR when the VM clears and sets the PCI_COMMAND_MEMORY bit: each
-> > > > unmap/map operation for a 128GB BAR needs about 1.8 seconds, and the
-> > > > pci-hyperv driver and the Linux PCI subsystem flip the
-> > > > PCI_COMMAND_MEMORY bit eight times (see pci_setup_device() ->
-> > > > pci_read_bases() and pci_std_update_resource()), increasing the boot
-> > > > time by 1.8 * 8 = 14.4 seconds per GPU, i.e. 14.4 * 14 = 201.6 seconds in
-> > total.
-> > > >
-> > > > Fix the slowness by not turning on the PCI_COMMAND_MEMORY in
-> > > > pci-hyperv.c, so the bit stays in the off state before the PCI device
-> > > > driver calls
-> > > > pci_enable_device(): when the bit is off, pci_read_bases() and
-> > > > pci_std_update_resource() don't cause Hyper-V to unmap/map the vBARs.
-> > > > With this change, the boot time of such a VM is reduced by
-> > > > 1.8 * (8-1) * 14 = 176.4 seconds.
-> > > >
-> > > > Tested-by: Boqun Feng (Microsoft) <boqun.feng@gmail.com>
-> > > > Signed-off-by: Dexuan Cui <decui@microsoft.com>
-> > > > Cc: Jake Oshins <jakeo@microsoft.com>
-> > > > ---
-> > > >  drivers/pci/controller/pci-hyperv.c | 17 +++++++++++------
-> > > >  1 file changed, 11 insertions(+), 6 deletions(-)
-> > > >
-> > > > diff --git a/drivers/pci/controller/pci-hyperv.c
-> > > > b/drivers/pci/controller/pci-hyperv.c
-> > > > index d270a204324e..f9fbbd8d94db 100644
-> > > > --- a/drivers/pci/controller/pci-hyperv.c
-> > > > +++ b/drivers/pci/controller/pci-hyperv.c
-> > > > @@ -2082,12 +2082,17 @@ static void prepopulate_bars(struct
-> > > hv_pcibus_device *hbus)
-> > > >  				}
-> > > >  			}
-> > > >  			if (high_size <= 1 && low_size <= 1) {
-> > > > -				/* Set the memory enable bit. */
-> > > > -				_hv_pcifront_read_config(hpdev,
-> > > PCI_COMMAND, 2,
-> > > > -							 &command);
-> > > > -				command |= PCI_COMMAND_MEMORY;
-> > > > -				_hv_pcifront_write_config(hpdev,
-> > > PCI_COMMAND, 2,
-> > > > -							  command);
-> > > > +				/*
-> > > > +				 * No need to set the
-> > > PCI_COMMAND_MEMORY bit as
-> > > > +				 * the core PCI driver doesn't require the bit
-> > > > +				 * to be pre-set. Actually here we intentionally
-> > > > +				 * keep the bit off so that the PCI BAR probing
-> > > > +				 * in the core PCI driver doesn't cause Hyper-V
-> > > > +				 * to unnecessarily unmap/map the virtual
-> > > BARs
-> > > > +				 * from/to the physical BARs multiple times.
-> > > > +				 * This reduces the VM boot time significantly
-> > > > +				 * if the BAR sizes are huge.
-> > > > +				 */
-> > > >  				break;
-> > > >  			}
-> > > >  		}
-> > > > --
-> > > > 2.17.1
-> > > >
-> > 
-> > My question about this, directed at the people who know a lot more about the
-> > PCI subsystem in Linux than I do (Bjorn, Alex, etc.), is whether this change can
-> > create a problem.
-> 
-> Bjorn, Lorenzo, Alex, it would be nice to have your insights!
-> 
-> > In a physical computer, you might sometimes want to move
-> > a device from one part of address space to another, typically when another
-> > device is being hot-added to the system.  Imagine a scenario where you have,
-> > in this case a VM, and there are perhaps 15 NVMe SSDs passed through to the
-> > VM.  One of them dies and so it is removed.  The replacement SSD has a
-> > larger BAR than the one that was removed (because it's a different SKU) and
-> > now it doesn't fit neatly into the hole that was vacated by the previous SSD.
-> > 
-> > In this case, will the kernel ever attempt to move some of the existing SSDs to
-> > make room for the new one?  And if so, does this come with the requirement
-> > that they actually get mapped out of the address space while they are being
-> > moved?  (This was the scenario that prompted me to write the code above as
-> > it was, originally.)
-> > 
-> > Thanks,
-> > Jake Oshins
-> 
-> Sorry I don't quite follow. pci-hyperv allocates MMIO for the bridge
-> window in hv_pci_allocate_bridge_windows() and registers the MMIO
-> ranges to the core PCI driver via pci_add_resource(), and later the
-> core PCI driver probes the bus/device(s), validates the BAR sizes and
-> the pre-initialized BAR values, and uses the BAR configuration. IMO
-> the whole process doesn't require the bit PCI_COMMAND_MEMORY to be
-> pre-set, and there should be no issue to delay setting the bit to a
-> PCI device device's .probe() -> pci_enable_device().
+kmsan_init() is a macro that takes a possibly uninitialized value and
+returns an initialized value of the same type. It can be used e.g. in
+cases when a value comes from non-instrumented code to avoid false
+positive reports.
 
-IIUC you want to bootstrap devices with PCI_COMMAND_MEMORY clear
-(otherwise PCI core would toggle it on and off for eg BAR sizing).
+In particular, we use kmsan_init() in READ_ONCE_NOCHECK() so that it
+returns initialized values. This helps defeat false positives e.g. from
+leftover stack contents accessed by stack unwinders.
 
-Is that correct ?
+Signed-off-by: Alexander Potapenko <glider@google.com>
+---
+Link: https://linux-review.googlesource.com/id/Icd1260073666f944922f031bfb6762379ba1fa38
+---
+ include/asm-generic/rwonce.h |  5 +++--
+ include/linux/kmsan-checks.h | 40 ++++++++++++++++++++++++++++++++++++
+ mm/kmsan/Makefile            |  5 ++++-
+ mm/kmsan/annotations.c       | 28 +++++++++++++++++++++++++
+ 4 files changed, 75 insertions(+), 3 deletions(-)
+ create mode 100644 mm/kmsan/annotations.c
 
-If I read PCI core correctly PCI_COMMAND_MEMORY is obviously cleared
-only if it is set in the first place and that's what your patch is
-changing, namely you boostrap your devices with PCI_COMMAND_MEMORY
-clear so that PCI core does not touch it.
+diff --git a/include/asm-generic/rwonce.h b/include/asm-generic/rwonce.h
+index 8d0a6280e9824..7cf993af8e1ea 100644
+--- a/include/asm-generic/rwonce.h
++++ b/include/asm-generic/rwonce.h
+@@ -25,6 +25,7 @@
+ #include <linux/compiler_types.h>
+ #include <linux/kasan-checks.h>
+ #include <linux/kcsan-checks.h>
++#include <linux/kmsan-checks.h>
+ 
+ /*
+  * Yes, this permits 64-bit accesses on 32-bit architectures. These will
+@@ -69,14 +70,14 @@ unsigned long __read_once_word_nocheck(const void *addr)
+ 
+ /*
+  * Use READ_ONCE_NOCHECK() instead of READ_ONCE() if you need to load a
+- * word from memory atomically but without telling KASAN/KCSAN. This is
++ * word from memory atomically but without telling KASAN/KCSAN/KMSAN. This is
+  * usually used by unwinding code when walking the stack of a running process.
+  */
+ #define READ_ONCE_NOCHECK(x)						\
+ ({									\
+ 	compiletime_assert(sizeof(x) == sizeof(unsigned long),		\
+ 		"Unsupported access size for READ_ONCE_NOCHECK().");	\
+-	(typeof(x))__read_once_word_nocheck(&(x));			\
++	kmsan_init((typeof(x))__read_once_word_nocheck(&(x)));		\
+ })
+ 
+ static __no_kasan_or_inline
+diff --git a/include/linux/kmsan-checks.h b/include/linux/kmsan-checks.h
+index a6522a0c28df9..ecd8336190fc0 100644
+--- a/include/linux/kmsan-checks.h
++++ b/include/linux/kmsan-checks.h
+@@ -14,6 +14,44 @@
+ 
+ #ifdef CONFIG_KMSAN
+ 
++/*
++ * Helper functions that mark the return value initialized.
++ * See mm/kmsan/annotations.c.
++ */
++u8 kmsan_init_1(u8 value);
++u16 kmsan_init_2(u16 value);
++u32 kmsan_init_4(u32 value);
++u64 kmsan_init_8(u64 value);
++
++static inline void *kmsan_init_ptr(void *ptr)
++{
++	return (void *)kmsan_init_8((u64)ptr);
++}
++
++static inline char kmsan_init_char(char value)
++{
++	return (u8)kmsan_init_1((u8)value);
++}
++
++#define __decl_kmsan_init_type(type, fn) unsigned type : fn, signed type : fn
++
++/**
++ * kmsan_init - Make the value initialized.
++ * @val: 1-, 2-, 4- or 8-byte integer that may be treated as uninitialized by
++ *       KMSAN.
++ *
++ * Return: value of @val that KMSAN treats as initialized.
++ */
++#define kmsan_init(val)                                                        \
++	(							\
++	(typeof(val))(_Generic((val),				\
++		__decl_kmsan_init_type(char, kmsan_init_1),	\
++		__decl_kmsan_init_type(short, kmsan_init_2),	\
++		__decl_kmsan_init_type(int, kmsan_init_4),	\
++		__decl_kmsan_init_type(long, kmsan_init_8),	\
++		char : kmsan_init_char,				\
++		void * : kmsan_init_ptr)(val)))
++
+ /**
+  * kmsan_poison_memory() - Mark the memory range as uninitialized.
+  * @address: address to start with.
+@@ -48,6 +86,8 @@ void kmsan_check_memory(const void *address, size_t size);
+ 
+ #else
+ 
++#define kmsan_init(value) (value)
++
+ static inline void kmsan_poison_memory(const void *address, size_t size,
+ 				       gfp_t flags)
+ {
+diff --git a/mm/kmsan/Makefile b/mm/kmsan/Makefile
+index a80dde1de7048..73b705cbf75b9 100644
+--- a/mm/kmsan/Makefile
++++ b/mm/kmsan/Makefile
+@@ -1,9 +1,11 @@
+-obj-y := core.o instrumentation.o hooks.o report.o shadow.o
++obj-y := core.o instrumentation.o hooks.o report.o shadow.o annotations.o
+ 
+ KMSAN_SANITIZE := n
+ KCOV_INSTRUMENT := n
+ UBSAN_SANITIZE := n
+ 
++KMSAN_SANITIZE_kmsan_annotations.o := y
++
+ # Disable instrumentation of KMSAN runtime with other tools.
+ CC_FLAGS_KMSAN_RUNTIME := -fno-stack-protector
+ CC_FLAGS_KMSAN_RUNTIME += $(call cc-option,-fno-conserve-stack)
+@@ -11,6 +13,7 @@ CC_FLAGS_KMSAN_RUNTIME += -DDISABLE_BRANCH_PROFILING
+ 
+ CFLAGS_REMOVE.o = $(CC_FLAGS_FTRACE)
+ 
++CFLAGS_annotations.o := $(CC_FLAGS_KMSAN_RUNTIME)
+ CFLAGS_core.o := $(CC_FLAGS_KMSAN_RUNTIME)
+ CFLAGS_hooks.o := $(CC_FLAGS_KMSAN_RUNTIME)
+ CFLAGS_instrumentation.o := $(CC_FLAGS_KMSAN_RUNTIME)
+diff --git a/mm/kmsan/annotations.c b/mm/kmsan/annotations.c
+new file mode 100644
+index 0000000000000..8ccde90bcd12b
+--- /dev/null
++++ b/mm/kmsan/annotations.c
+@@ -0,0 +1,28 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * KMSAN annotations.
++ *
++ * The kmsan_init_SIZE functions reside in a separate translation unit to
++ * prevent inlining them. Clang may inline functions marked with
++ * __no_sanitize_memory attribute into functions without it, which effectively
++ * results in ignoring the attribute.
++ *
++ * Copyright (C) 2017-2022 Google LLC
++ * Author: Alexander Potapenko <glider@google.com>
++ *
++ */
++
++#include <linux/export.h>
++#include <linux/kmsan-checks.h>
++
++#define DECLARE_KMSAN_INIT(size, t)                                            \
++	__no_sanitize_memory t kmsan_init_##size(t value)                      \
++	{                                                                      \
++		return value;                                                  \
++	}                                                                      \
++	EXPORT_SYMBOL(kmsan_init_##size)
++
++DECLARE_KMSAN_INIT(1, u8);
++DECLARE_KMSAN_INIT(2, u16);
++DECLARE_KMSAN_INIT(4, u32);
++DECLARE_KMSAN_INIT(8, u64);
+-- 
+2.36.0.rc2.479.g8af0fa9b8e-goog
 
-I am not familiar with Hyper-V code so forgive me the question.
-
-Thanks,
-Lorenzo
-
-> 
-> When a device is removed, hv_eject_device_work() -> 
-> pci_stop_and_remove_bus_device() triggers the PCI device driver's .remove(),
-> which calls pci_disable_device(), which instructs the hypervisor to unmap
-> the vBAR from the pBAR, so there should not be any issue when a new device
-> is added later. 
-> 
-> With the patch, if no PCI device driver is loaded, the PCI_COMMAND_MEMORY
-> bit stays in the off state, and the hypervisor doesn't map the vBAR to the pBAR.
-> I don't see any issue with this.
-> 
-> hv_pci_allocate_bridge_windows() -> vmbus_allocate_mmio() makes sure
-> that there is enough MMIO space for the devices on the bus, so the core
-> PCI driver doesn't have to worry about any MMIO conflict issue.
-> 
-> Please let me know if I understood and answered the questions.
-> 
-> Thanks,
-> -- Dexuan
-> 
