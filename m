@@ -2,102 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 955D1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:56:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E49AAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 11:04:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349387AbiDZK71 (ORCPT
+        id S1345125AbiDZLH5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 06:59:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45246 "EHLO
+        Tue, 26 Apr 2022 07:07:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349523AbiDZK7H (ORCPT
+        with ESMTP id S233696AbiDZLHy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 06:59:07 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C520E22BFB
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 03:55:57 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id r189so32231636ybr.6
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 03:55:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lh5N6ri51DwailKzgb/YH7eZd1DrCqE9K7kDsBRnCI8=;
-        b=MosuzLtso6KHR9pDz87Eixe6qoHv4im/6cc42kO/SRJWqs9F9epFnC2MC48Pm2G5AW
-         8kAsaxmVVjIPkKGGnWIjZTrh5HdB3rSNmGEs3sgXa8piAnXQFKBIEa06SY6nKTakMdXw
-         pTvSadqvQs9lC2sjz/VQaa4BLE59sFjeAcc25ShL1RkHfxVPMk+/dqYtAKc5hwIAqaAB
-         Hnw2tV8ss+8gHN73H5SIDnHQSPPu8OC7/+rpyO60wG7GHL3o87iCcAVKisvav+PRWQGu
-         3mft9wL8oYf6xmGv2l+bXfnY8W7ySGTR2HkhVfdrtdgtVUQN7ytKKTCCNKX62zSlHyuT
-         S0zw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lh5N6ri51DwailKzgb/YH7eZd1DrCqE9K7kDsBRnCI8=;
-        b=GalVOav8HfqxZzXyM5mbv5ilIw8DkTRSI16rdlDCNy0IN31SPwnu0bhuIShHhePi7u
-         IBffGORzpPRstBHtaA5qxmfButStPrTsq1h/mm8WfZhrioUlDKQ8pNx5Q+zY0ejpz/4J
-         HU2w5fRMRWzjd7MnAgnHHgOMXJ6lG+k5N1ss27+eap9fry0qw/VqDWyH4gOLfi57r7YN
-         8XWU43OQm/K0wRv3Zn6hOx5ykgmvmX7b3I9hSTASeze1N0HaRt79ZQ1AzThSqxOXOSKz
-         HJBitp7unuEyXA+8oXvTqtgcV14gRFrTm7QrvgmwuRSJ8KwTGdUHWzDV6onhUqeZG3Cg
-         c3aA==
-X-Gm-Message-State: AOAM5337nncsrsD0koH/O5D+9gJcZqlVuQxbGS8Vd5QUdL9/cxXQBFj1
-        7aqNpMghdTZeB6bhIAN17JmjRxIkMSVcMnSMGxRQR0qXdJE=
-X-Google-Smtp-Source: ABdhPJzDXVR59f9aiyGdxgYUxXv/+cLIiJGepw6UdhCQNJNbQvyGUEBaQY1Mzw3p2w7ydHt+/xavSIrqAInjliqkC5A=
-X-Received: by 2002:a05:6902:1547:b0:641:fb0b:4830 with SMTP id
- r7-20020a056902154700b00641fb0b4830mr21286407ybu.175.1650970557008; Tue, 26
- Apr 2022 03:55:57 -0700 (PDT)
+        Tue, 26 Apr 2022 07:07:54 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85F7F28E2A;
+        Tue, 26 Apr 2022 04:04:46 -0700 (PDT)
+Date:   Tue, 26 Apr 2022 13:04:42 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1650971084;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=HjyU9NvofkV276yYd3L7iXZQQ0QFvFSNByjHU0uq55c=;
+        b=Gk0yHJbv2aGJ/2l1nIkLLvqz5HrQO/PDPUfAftVbi8s6Pognk8pqJSusRuinaNcx9PpVne
+        BvO49UaWcszJJeLPZXrKe6fsthVJb4qKWfMHX+5PBu8mJm22mABoRt+nVL4ALXXN1MrSNI
+        4DvH3WinatcPub7cgQJPm1IFwbeOwEa0nitf4Nxx1Bfen753d7PDI/2lmXWnlw6rx6uCrL
+        yUVQszsXwdT6wQ4V/QM+1hauVHfnizUJv7/qdkhLMQcTDD6vZKipF0s/0sQPuTnaWYi8EH
+        6MavcUNGD6G5k0uv81GqURnJZsWo9dQNoqH9k9Fd9+CLBcBnWhNTeTTlzH19+w==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1650971084;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=HjyU9NvofkV276yYd3L7iXZQQ0QFvFSNByjHU0uq55c=;
+        b=+b8zV0yo/mXtz/93HGWqiMRgkSpPuzqlcsWqHHG8/yhDsUpHdRxcogSO3dx/Mbs5WnV6Oa
+        x+JjmR6t3PENpcBg==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Cc:     Ira Weiny <ira.weiny@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        outreachy@lists.linux.dev,
+        "Acked-by : Mike Rapoport" <rppt@linux.ibm.com>
+Subject: Re: [PATCH v2 1/4] mm/highmem: Fix kernel-doc warnings in highmem*.h
+Message-ID: <YmfRynAhuSWz9H+e@linutronix.de>
+References: <20220425162400.11334-1-fmdefrancesco@gmail.com>
+ <20220425162400.11334-2-fmdefrancesco@gmail.com>
+ <YmeYzKT8Ikq5SfdE@linutronix.de>
+ <4396926.LvFx2qVVIh@leap>
 MIME-Version: 1.0
-References: <20220426101837.16201-1-david@ixit.cz>
-In-Reply-To: <20220426101837.16201-1-david@ixit.cz>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Tue, 26 Apr 2022 13:55:46 +0300
-Message-ID: <CAA8EJppPg9nQVSV-STyz6TWmX-R45xZqp=UDgsWnyMa6VsdCzw@mail.gmail.com>
-Subject: Re: [PATCH v4 1/2] dt-bindings: mailbox: qcom-ipcc: add missing
- compatible for SM8450
-To:     David Heidelberg <david@ixit.cz>
-Cc:     Manivannan Sadhasivam <mani@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <4396926.LvFx2qVVIh@leap>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 26 Apr 2022 at 13:34, David Heidelberg <david@ixit.cz> wrote:
->
-> Fill missing compatible already used in SM8450 DTS.
->
-> Signed-off-by: David Heidelberg <david@ixit.cz>
+On 2022-04-26 11:43:03 [+0200], Fabio M. De Francesco wrote:
+> I might add "Deprecated!", however Ira Weiny asked me to rephrase an 
+> earlier version of one of the patch which is is this series. I wrote that 
+> "The use of kmap_atomic() is deprecated in favor of kmap_local_page()." and 
+> Ira replied "I'm not sure deprecated is the right word. [] This series 
+> should end up indicating the desire to stop growing kmap() and
+> kmap_atomic() call sites and that their deprecation is on the horizon.".
+> 
+> What Ira suggested is exactly what I'm doing in v2. 
+> 
+> @Ira: what about adding "Deprecated!" for consistency with kmap_atomic() 
+> kdoc?
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+I would prefer to keep the documentation symmetric.
 
-> ---
->  Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml b/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml
-> index 866efb278813..c57dd423e98c 100644
-> --- a/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml
-> +++ b/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml
-> @@ -27,6 +27,7 @@ properties:
->            - qcom,sm6350-ipcc
->            - qcom,sm8250-ipcc
->            - qcom,sm8350-ipcc
-> +          - qcom,sm8450-ipcc
->            - qcom,sc7280-ipcc
->        - const: qcom,ipcc
->
-> --
-> 2.35.1
->
+> > The part about
+> > disabling/ enabling preemption is true for !PREEMPT_RT.
+> 
+> To me it looks that this is not what Thomas Gleixner wrote in the cover 
+> letter of his series ("[patch V2 00/18] mm/highmem: Preemptible variant of 
+> kmap_atomic & friends") at 
+> https://lore.kernel.org/lkml/20201029221806.189523375@linutronix.de/
+> 
+> For your convenience:
+> 
+> "[] there is not a real reason anymore to confine migration disabling to 
+> RT. [] Removing the RT dependency from migrate_disable/enable()".
+> 
+> Is there anything I'm still missing?
 
+Hmm. We had migrate_disable() initially limited to RT for a few reasons.
+Then Linus complained about this and that and mentioned something about
+Highmem is dying or not used that widely anymore (or so) and then the
+local interface came up which required the migrate_disable() interface
+to work for everyone. Back then the atomic interface should go away and
+I remember that hch wanted to remove some of the callers from the DMA
+API.
+That is just on top of my head.
 
--- 
-With best wishes
-Dmitry
+Looking at kmap_atomic() there is this:
+
+| static inline void *kmap_atomic_prot(struct page *page, pgprot_t prot)
+| {
+|         if (IS_ENABLED(CONFIG_PREEMPT_RT))
+|                 migrate_disable();
+|         else
+|                 preempt_disable();
+| 
+|         pagefault_disable();
+|         return __kmap_local_page_prot(page, prot);
+| }
+| 
+| static inline void *kmap_atomic(struct page *page)
+| {
+|         return kmap_atomic_prot(page, kmap_prot);
+| }
+
+as of v5.18-rc4. As you see, pagefaults are disabled for everyone. RT disables
+migration only and !RT disables preemption. 
+Internally __kmap_local_page_prot() ends up in __kmap_local_pfn_prot()
+which uses migrate_disable() for the lifetime of the mapping. So it
+disables additionally migration for the life time of the mapping but
+preemption has been also disabled (and only for !RT).
+
+We _could_ only disable migration in kmap_atomic_prot() for everyone but
+we can't easily proof that none of the kmap_atomic() user rely on the
+preempt-disable part. RT never disabled preemption here so it is safe to
+assume that nothing on RT relies on that.
+
+> > The part that
+> > worries me is that people use it and rely on disabled preemption like
+> > some did in the past. 
+> 
+> This is something I'd prefer to hear also from other developers who are 
+> CC'ed for this patch :) 
+
+Eitherway, according to the code kmap_atomic() does not always disable
+preemption and the other comments around indicate that it is deprecated,
+see commit
+   f3ba3c710ac5a ("mm/highmem: Provide kmap_local*")
+   https://git.kernel.org/torvalds/c/f3ba3c710ac5a
+
+> Thanks for your review,
+> 
+> Fabio
+
+Sebastian
