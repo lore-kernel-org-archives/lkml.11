@@ -2,81 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B4B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:33:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BAE8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:33:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345158AbiDZIgn (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:36:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35620 "EHLO
+        id S242972AbiDZIgy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:36:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345172AbiDZIeL (ORCPT
+        with ESMTP id S1345171AbiDZIeL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:34:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71A956E8FE;
-        Tue, 26 Apr 2022 01:26:20 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0FD66EB22;
+        Tue, 26 Apr 2022 01:26:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 26F98B81CF9;
-        Tue, 26 Apr 2022 08:26:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B103AC385A4;
-        Tue, 26 Apr 2022 08:26:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650961577;
-        bh=NVUJ0VORKi7g0jZiS1qERChpaAaP2AdAWHVP0rm62mI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=RDMfNqTLJeauKUffKk9z6elUttJ2T3yrOJhLD/2W9oSrW/xrzV4m9NyT0ubeMi1vi
-         PzmDKvPgzBbw/Efv5yOeBL45LZvmyFJ0FUESFeWEql3jgE/mKr4DAWRBdzdGp1JCPR
-         I7b6G+KWS/Tbyz1KLRdP5/RL03iYot09ye9uo9r37vz9lFFIUiMcaiIJ1ebY81UMgH
-         2W4DMKjpWPBekpMp4zlYX0wSjt8UZ1PTvelgmSTx2T4fMwGaS/jvcJAshRcdj1uVa4
-         HCT/EV4FwhKZBnK8+CfzFVs9eY4pYiOHYEEeVP8uoTDb0DWboYp76HiuGY46rh3z+R
-         oXAaC81v093Yw==
-From:   Roger Quadros <rogerq@kernel.org>
-To:     krzk@kernel.org
-Cc:     miquel.raynal@bootlin.com, tony@atomide.com, vigneshr@ti.com,
-        kishon@ti.com, nm@ti.com, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Roger Quadros <rogerq@kernel.org>
-Subject: [PATCH v4 0/2] memory: omap-gpmc: Allow module build
-Date:   Tue, 26 Apr 2022 11:26:09 +0300
-Message-Id: <20220426082611.24427-1-rogerq@kernel.org>
-X-Mailer: git-send-email 2.17.1
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 47DC66179E;
+        Tue, 26 Apr 2022 08:26:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4757FC385A0;
+        Tue, 26 Apr 2022 08:26:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650961580;
+        bh=1p1Yb7l2k7G9BT7/XN3WtepUiU/Z/dfOrJ4l6vuEh9U=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=aerxXl9qnbZXmuFa1mh9mOc9bPOEZOZiht+nxKvVU7umdpDwOrSFPAJ9a+gzSLbS3
+         DYLF9BL+zXwQBcx5rVg8oxDePDKaoyv1nq3SOg7AezGRW2Q+E4Y319wosGFsDLcH6X
+         MdPmQhy7B59xpb9MK+JYyX9tgO3U+MPeY6PW+FHE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 15/53] net/sched: cls_u32: fix possible leak in u32_init_knode()
+Date:   Tue, 26 Apr 2022 10:20:55 +0200
+Message-Id: <20220426081736.100870781@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220426081735.651926456@linuxfoundation.org>
+References: <20220426081735.651926456@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Eric Dumazet <edumazet@google.com>
 
-These patches allow OMAP_GPMC config to be visible in menuconfig
-and buildable as a module.
+[ Upstream commit ec5b0f605b105457f257f2870acad4a5d463984b ]
 
-cheers,
--roger
+While investigating a related syzbot report,
+I found that whenever call to tcf_exts_init()
+from u32_init_knode() is failing, we end up
+with an elevated refcount on ht->refcnt
 
-Changelog:
-v4:
-- drop COMPILE_TEST as include/linux/irqdomain.h does not have
-fallbacks if CONFIG_IRQ_DOMAIN is not available. So build will
-fail with COMPILE_TEST on platforms not having CONFIG_IRQ_DOMAIN.
-- use GPL instead of GPL v2 for MODULE_LICENSE. Fixes checkpatch
-warning.
+To avoid that, only increase the refcount after
+all possible errors have been evaluated.
 
-v3:
-- Remove not required MODULE_ALIAS
-- Mention in commit message why we need to remove of_match_node() call
+Fixes: b9a24bb76bf6 ("net_sched: properly handle failure case of tcf_exts_init()")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Cong Wang <xiyou.wangcong@gmail.com>
+Cc: Jiri Pirko <jiri@resnulli.us>
+Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/sched/cls_u32.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-v2:
-- Allow building as a module
-
-Roger Quadros (2):
-  memory: omap-gpmc: Make OMAP_GPMC config visible and selectable
-  memory: omap-gpmc: Allow building as a module
-
- drivers/memory/Kconfig     |  2 +-
- drivers/memory/omap-gpmc.c | 43 ++++++++++++++++++++------------------
- 2 files changed, 24 insertions(+), 21 deletions(-)
-
+diff --git a/net/sched/cls_u32.c b/net/sched/cls_u32.c
+index fe246e03fcd9..5eee26cf9011 100644
+--- a/net/sched/cls_u32.c
++++ b/net/sched/cls_u32.c
+@@ -873,10 +873,6 @@ static struct tc_u_knode *u32_init_knode(struct tcf_proto *tp,
+ 	new->flags = n->flags;
+ 	RCU_INIT_POINTER(new->ht_down, ht);
+ 
+-	/* bump reference count as long as we hold pointer to structure */
+-	if (ht)
+-		ht->refcnt++;
+-
+ #ifdef CONFIG_CLS_U32_PERF
+ 	/* Statistics may be incremented by readers during update
+ 	 * so we must keep them in tact. When the node is later destroyed
+@@ -899,6 +895,10 @@ static struct tc_u_knode *u32_init_knode(struct tcf_proto *tp,
+ 		return NULL;
+ 	}
+ 
++	/* bump reference count as long as we hold pointer to structure */
++	if (ht)
++		ht->refcnt++;
++
+ 	return new;
+ }
+ 
 -- 
-2.17.1
+2.35.1
+
+
 
