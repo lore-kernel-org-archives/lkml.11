@@ -2,261 +2,467 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A060C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:46:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DE74C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:46:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353226AbiDZQtO (ORCPT
+        id S1353245AbiDZQtS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 12:49:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43242 "EHLO
+        Tue, 26 Apr 2022 12:49:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353207AbiDZQsn (ORCPT
+        with ESMTP id S1353197AbiDZQs2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 12:48:43 -0400
-Received: from mail-ed1-x54a.google.com (mail-ed1-x54a.google.com [IPv6:2a00:1450:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A90197D52
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:44:55 -0700 (PDT)
-Received: by mail-ed1-x54a.google.com with SMTP id t25-20020a508d59000000b00425d86c2987so4107431edt.21
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:44:55 -0700 (PDT)
+        Tue, 26 Apr 2022 12:48:28 -0400
+Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF56B1971D3
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:44:53 -0700 (PDT)
+Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-2f7b815ac06so112752247b3.3
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:44:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=W9bLVQHqrvNNLkakI5+eXR9eCGhjUZBWMw6dTDyY1eM=;
-        b=BgZrayGSuVAfOhwVEgizv3zHVLAes+gixFFwYt44q0Anb09MOHmi4/yqVFg0co0xDn
-         meP8eUM1Y1cp68Fqnny0uLKF0Qtln5gmkU4uSohGMZYlVmXcU+el8E0u30FueVIIajUM
-         fV0/mRhuiJoD20Efo5TORsSuNROVI//1ETGTAUMCg4QXyCvHkSNJh0BZuJ+MEW//jk5W
-         5zxE3TyPvfyC/+M++78ZImLJvn13Sy60BHii4QN5AI+ODEg/JVu9RvQCDCnkT/RTmnsc
-         5z+2AC9k9WCqo7Z5jf84941KD9T2VCauRnuI4Jr4yEj//ttB99vhdrJTx2BaTgdSpkdR
-         nqtw==
+        bh=5YolzdQ/RaN8zb0z3UYC2BCPtKKY0DsygYzdEZGVsM0=;
+        b=qu3w9Lv2oWpOlpIS2xz0KvlAo7E5o1egJykT9lEmP91l+7c7eNPiBayrSE4JldqRXk
+         nseiaMmX1ADDvf7UqworHmjxLdYLC1nio33HJwAHLVqWq0KXQHtsko+se8VsmvKRCW6y
+         6xqkGZCp0ykwvdZEho43RBuZzpqswp1SK9l8uhTOVS/jGgxWzoqCtIas2fULzckaP951
+         x4m2Ac7KWIK9e/wW4JFNN312PtTAvllgLzE2cWPFhQbFQqFiuBxBWJWU+Naeth1P8Ygy
+         QbegkZq+iqzT/TYYEGoS5Je2Tx79qoU230sQRbhBqQ9r0S0kdcGLrdPLoz8m0RViMJJA
+         YEZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=W9bLVQHqrvNNLkakI5+eXR9eCGhjUZBWMw6dTDyY1eM=;
-        b=qQWyqFOcfC84WktSDjWgnNIPnORMklsWAiyibRA3VE9lLhz6D3qz0N6QbS5W3/KhyO
-         2O7wwoSmBjT7gWsEbBulCEOtGORGepVvWLctKHKzZUohcCkogmvHK09g4Bba1kcvOuNF
-         fApORSn4pXxvgd4ynDJahIPiB88BNQh+rlFDgnH8mtuC26qp45UmbZrQbQeGdfuIFTUv
-         /UUD5+3SeDECj4enm4qgC+977eCAM6EVTJna4Wuji8Ri0xAnTs5JQ43WIqUASR6Pop8n
-         U8ZAHdb0bHr8Y0GZ1fQ98ukyZfERyDqPAv41zq6Ns4020TCLDChMG9HKLVgYp6Oj5JX4
-         xBFQ==
-X-Gm-Message-State: AOAM532hZOF+678J9Z7eEdzgh6fGV/q6edz4C1+aGQgdlLmd9zyJaUgG
-        mh1NbiKtQbPMX4LrYUS7ytUZl0Jpky4=
-X-Google-Smtp-Source: ABdhPJwCG6zbeNkNwZsSEqpPcp6mObXzGX3q9XLvEMJvGGRoqht5Amkh6vhwVXvGFlIqKIoGDyBdhsZSVt0=
-X-Received: from glider.muc.corp.google.com ([2a00:79e0:15:13:d580:abeb:bf6d:5726])
- (user=glider job=sendgmr) by 2002:a05:6402:84a:b0:423:fe99:8c53 with SMTP id
- b10-20020a056402084a00b00423fe998c53mr25379562edz.195.1650991494081; Tue, 26
- Apr 2022 09:44:54 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 18:42:42 +0200
-In-Reply-To: <20220426164315.625149-1-glider@google.com>
-Message-Id: <20220426164315.625149-14-glider@google.com>
-Mime-Version: 1.0
-References: <20220426164315.625149-1-glider@google.com>
-X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
-Subject: [PATCH v3 13/46] kmsan: implement kmsan_init(), initialize READ_ONCE_NOCHECK()
-From:   Alexander Potapenko <glider@google.com>
-To:     glider@google.com
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>, kasan-dev@googlegroups.com,
-        linux-mm@kvack.org, linux-arch@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5YolzdQ/RaN8zb0z3UYC2BCPtKKY0DsygYzdEZGVsM0=;
+        b=7Mjn3BfVsdbaJXWE3QQ56nHkYZhQTwpb0LC1MlvZrzw8eyULdmfqtMizlMEfSqtePZ
+         J5JVO05kP16S+3gUzJqzSp3BvAz5aT9C8e5k+iV6WITW+f046oR/uXluj7AoVQgnXuZk
+         fBKwI2XXjiBu8MM4+Rw/BqZkDZTrkVd1N35uI/BhKtkOkSZjyBykZlG8WdfJ+DWTFnTn
+         owGmYxEeqrlZ7bQ7q4LgKpdxNE2C/4tzCh8GuIbdfwh0qPEvbaAMRgh1KwVZsZDASGK8
+         LlXyLY1q12MA2XE9bTsd3AzkBXHuCr+rsIp546Mo0AIs9t8TkoWbqA+dPMmkNIL1Q2nr
+         b44g==
+X-Gm-Message-State: AOAM530zp33VlHwEUaU3phu4VbrjUEJnkbm825TsAufticdZgzoW0n1H
+        sNM+Z4LB7TMJ3CAAn73lIePJOi1UXnd4vmvPuyJVyv42J/o=
+X-Google-Smtp-Source: ABdhPJz6BMs3qL8FDXmrDnMspHrNQaTNpkNxjAWAvdmrAI5sNxKMjMbbC2HHYX6VSjRctHs6oHrQwLCemyMjKC53sZA=
+X-Received: by 2002:a81:af59:0:b0:2f4:d869:b5df with SMTP id
+ x25-20020a81af59000000b002f4d869b5dfmr23414994ywj.367.1650991492557; Tue, 26
+ Apr 2022 09:44:52 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220423000328.2103733-1-rananta@google.com> <20220423000328.2103733-3-rananta@google.com>
+ <bbaf7dcf-e776-49df-7a12-04b45e4af881@redhat.com>
+In-Reply-To: <bbaf7dcf-e776-49df-7a12-04b45e4af881@redhat.com>
+From:   Raghavendra Rao Ananta <rananta@google.com>
+Date:   Tue, 26 Apr 2022 09:44:41 -0700
+Message-ID: <CAJHc60w6YngA7iz=mUfjAEjQdwjG_pj2T9Cpd21xzU1Y_APCwQ@mail.gmail.com>
+Subject: Re: [PATCH v6 2/9] KVM: arm64: Setup a framework for hypercall bitmap
+ firmware registers
+To:     Gavin Shan <gshan@redhat.com>
+Cc:     Marc Zyngier <maz@kernel.org>, Andrew Jones <drjones@redhat.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        kvm@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        Peter Shier <pshier@google.com>, linux-kernel@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Will Deacon <will@kernel.org>, kvmarm@lists.cs.columbia.edu,
+        linux-arm-kernel@lists.infradead.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kmsan_init() is a macro that takes a possibly uninitialized value and
-returns an initialized value of the same type. It can be used e.g. in
-cases when a value comes from non-instrumented code to avoid false
-positive reports.
+Hi Gavin,
 
-In particular, we use kmsan_init() in READ_ONCE_NOCHECK() so that it
-returns initialized values. This helps defeat false positives e.g. from
-leftover stack contents accessed by stack unwinders.
+On Mon, Apr 25, 2022 at 11:34 PM Gavin Shan <gshan@redhat.com> wrote:
+>
+> Hi Raghavendra,
+>
+> On 4/23/22 8:03 AM, Raghavendra Rao Ananta wrote:
+> > KVM regularly introduces new hypercall services to the guests without
+> > any consent from the userspace. This means, the guests can observe
+> > hypercall services in and out as they migrate across various host
+> > kernel versions. This could be a major problem if the guest
+> > discovered a hypercall, started using it, and after getting migrated
+> > to an older kernel realizes that it's no longer available. Depending
+> > on how the guest handles the change, there's a potential chance that
+> > the guest would just panic.
+> >
+> > As a result, there's a need for the userspace to elect the services
+> > that it wishes the guest to discover. It can elect these services
+> > based on the kernels spread across its (migration) fleet. To remedy
+> > this, extend the existing firmware pseudo-registers, such as
+> > KVM_REG_ARM_PSCI_VERSION, but by creating a new COPROC register space
+> > for all the hypercall services available.
+> >
+> > These firmware registers are categorized based on the service call
+> > owners, but unlike the existing firmware pseudo-registers, they hold
+> > the features supported in the form of a bitmap.
+> >
+> > During the VM initialization, the registers are set to upper-limit of
+> > the features supported by the corresponding registers. It's expected
+> > that the VMMs discover the features provided by each register via
+> > GET_ONE_REG, and write back the desired values using SET_ONE_REG.
+> > KVM allows this modification only until the VM has started.
+> >
+> > Some of the standard features are not mapped to any bits of the
+> > registers. But since they can recreate the original problem of
+> > making it available without userspace's consent, they need to
+> > be explicitly added to the case-list in
+> > kvm_hvc_call_default_allowed(). Any function-id that's not enabled
+> > via the bitmap, or not listed in kvm_hvc_call_default_allowed, will
+> > be returned as SMCCC_RET_NOT_SUPPORTED to the guest.
+> >
+> > Older userspace code can simply ignore the feature and the
+> > hypercall services will be exposed unconditionally to the guests,
+> > thus ensuring backward compatibility.
+> >
+> > In this patch, the framework adds the register only for ARM's standard
+> > secure services (owner value 4). Currently, this includes support only
+> > for ARM True Random Number Generator (TRNG) service, with bit-0 of the
+> > register representing mandatory features of v1.0. Other services are
+> > momentarily added in the upcoming patches.
+> >
+> > Signed-off-by: Raghavendra Rao Ananta <rananta@google.com>
+> > ---
+> >   arch/arm64/include/asm/kvm_host.h | 12 ++++
+> >   arch/arm64/include/uapi/asm/kvm.h |  9 +++
+> >   arch/arm64/kvm/arm.c              |  1 +
+> >   arch/arm64/kvm/guest.c            |  8 ++-
+> >   arch/arm64/kvm/hypercalls.c       | 94 +++++++++++++++++++++++++++++++
+> >   arch/arm64/kvm/psci.c             | 13 +++++
+> >   include/kvm/arm_hypercalls.h      |  6 ++
+> >   include/kvm/arm_psci.h            |  2 +-
+> >   8 files changed, 142 insertions(+), 3 deletions(-)
+> >
+>
+> Some nits as below, please consider to improve if you need another
+> respin.
+>
+> Reviewed-by: Gavin Shan <gshan@redhat.com>
+>
+> > diff --git a/arch/arm64/include/asm/kvm_host.h b/arch/arm64/include/asm/kvm_host.h
+> > index 94a27a7520f4..df07f4c10197 100644
+> > --- a/arch/arm64/include/asm/kvm_host.h
+> > +++ b/arch/arm64/include/asm/kvm_host.h
+> > @@ -101,6 +101,15 @@ struct kvm_s2_mmu {
+> >   struct kvm_arch_memory_slot {
+> >   };
+> >
+> > +/**
+> > + * struct kvm_smccc_features: Descriptor the hypercall services exposed to the guests
+> > + *
+> > + * @std_bmap: Bitmap of standard secure service calls
+> > + */
+> > +struct kvm_smccc_features {
+> > +     unsigned long std_bmap;
+> > +};
+> > +
+>
+> s/Descriptor/Descriptor of
+>
+Nice catch!
 
-Signed-off-by: Alexander Potapenko <glider@google.com>
----
-Link: https://linux-review.googlesource.com/id/Icd1260073666f944922f031bfb6762379ba1fa38
----
- include/asm-generic/rwonce.h |  5 +++--
- include/linux/kmsan-checks.h | 40 ++++++++++++++++++++++++++++++++++++
- mm/kmsan/Makefile            |  5 ++++-
- mm/kmsan/annotations.c       | 28 +++++++++++++++++++++++++
- 4 files changed, 75 insertions(+), 3 deletions(-)
- create mode 100644 mm/kmsan/annotations.c
+> >   struct kvm_arch {
+> >       struct kvm_s2_mmu mmu;
+> >
+> > @@ -150,6 +159,9 @@ struct kvm_arch {
+> >
+> >       u8 pfr0_csv2;
+> >       u8 pfr0_csv3;
+> > +
+> > +     /* Hypercall features firmware registers' descriptor */
+> > +     struct kvm_smccc_features smccc_feat;
+> >   };
+> >
+> >   struct kvm_vcpu_fault_info {
+> > diff --git a/arch/arm64/include/uapi/asm/kvm.h b/arch/arm64/include/uapi/asm/kvm.h
+> > index c1b6ddc02d2f..0b79d2dc6ffd 100644
+> > --- a/arch/arm64/include/uapi/asm/kvm.h
+> > +++ b/arch/arm64/include/uapi/asm/kvm.h
+> > @@ -332,6 +332,15 @@ struct kvm_arm_copy_mte_tags {
+> >   #define KVM_ARM64_SVE_VLS_WORDS     \
+> >       ((KVM_ARM64_SVE_VQ_MAX - KVM_ARM64_SVE_VQ_MIN) / 64 + 1)
+> >
+> > +/* Bitmap feature firmware registers */
+> > +#define KVM_REG_ARM_FW_FEAT_BMAP             (0x0016 << KVM_REG_ARM_COPROC_SHIFT)
+> > +#define KVM_REG_ARM_FW_FEAT_BMAP_REG(r)              (KVM_REG_ARM64 | KVM_REG_SIZE_U64 | \
+> > +                                             KVM_REG_ARM_FW_FEAT_BMAP |      \
+> > +                                             ((r) & 0xffff))
+> > +
+> > +#define KVM_REG_ARM_STD_BMAP                 KVM_REG_ARM_FW_FEAT_BMAP_REG(0)
+> > +#define KVM_REG_ARM_STD_BIT_TRNG_V1_0                0
+> > +
+> >   /* Device Control API: ARM VGIC */
+> >   #define KVM_DEV_ARM_VGIC_GRP_ADDR   0
+> >   #define KVM_DEV_ARM_VGIC_GRP_DIST_REGS      1
+> > diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
+> > index 523bc934fe2f..a37fadbd617e 100644
+> > --- a/arch/arm64/kvm/arm.c
+> > +++ b/arch/arm64/kvm/arm.c
+> > @@ -156,6 +156,7 @@ int kvm_arch_init_vm(struct kvm *kvm, unsigned long type)
+> >       kvm->arch.max_vcpus = kvm_arm_default_max_vcpus();
+> >
+> >       set_default_spectre(kvm);
+> > +     kvm_arm_init_hypercalls(kvm);
+> >
+> >       return ret;
+> >   out_free_stage2_pgd:
+> > diff --git a/arch/arm64/kvm/guest.c b/arch/arm64/kvm/guest.c
+> > index 0d5cca56cbda..8c607199cad1 100644
+> > --- a/arch/arm64/kvm/guest.c
+> > +++ b/arch/arm64/kvm/guest.c
+> > @@ -756,7 +756,9 @@ int kvm_arm_get_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
+> >
+> >       switch (reg->id & KVM_REG_ARM_COPROC_MASK) {
+> >       case KVM_REG_ARM_CORE:  return get_core_reg(vcpu, reg);
+> > -     case KVM_REG_ARM_FW:    return kvm_arm_get_fw_reg(vcpu, reg);
+> > +     case KVM_REG_ARM_FW:
+> > +     case KVM_REG_ARM_FW_FEAT_BMAP:
+> > +             return kvm_arm_get_fw_reg(vcpu, reg);
+> >       case KVM_REG_ARM64_SVE: return get_sve_reg(vcpu, reg);
+> >       }
+> >
+> > @@ -774,7 +776,9 @@ int kvm_arm_set_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
+> >
+> >       switch (reg->id & KVM_REG_ARM_COPROC_MASK) {
+> >       case KVM_REG_ARM_CORE:  return set_core_reg(vcpu, reg);
+> > -     case KVM_REG_ARM_FW:    return kvm_arm_set_fw_reg(vcpu, reg);
+> > +     case KVM_REG_ARM_FW:
+> > +     case KVM_REG_ARM_FW_FEAT_BMAP:
+> > +             return kvm_arm_set_fw_reg(vcpu, reg);
+> >       case KVM_REG_ARM64_SVE: return set_sve_reg(vcpu, reg);
+> >       }
+> >
+> > diff --git a/arch/arm64/kvm/hypercalls.c b/arch/arm64/kvm/hypercalls.c
+> > index fa6d9378d8e7..df55a04d2fe8 100644
+> > --- a/arch/arm64/kvm/hypercalls.c
+> > +++ b/arch/arm64/kvm/hypercalls.c
+> > @@ -58,6 +58,48 @@ static void kvm_ptp_get_time(struct kvm_vcpu *vcpu, u64 *val)
+> >       val[3] = lower_32_bits(cycles);
+> >   }
+> >
+> > +static bool kvm_arm_fw_reg_feat_enabled(unsigned long *reg_bmap, unsigned long feat_bit)
+> > +{
+> > +     return test_bit(feat_bit, reg_bmap);
+> > +}
+> > +
+>
+> Might be worhty to be 'inline'. This function would be called
+> frequently.
+>
+I was hoping the compiler would optimize it for us as needed.
 
-diff --git a/include/asm-generic/rwonce.h b/include/asm-generic/rwonce.h
-index 8d0a6280e9824..7cf993af8e1ea 100644
---- a/include/asm-generic/rwonce.h
-+++ b/include/asm-generic/rwonce.h
-@@ -25,6 +25,7 @@
- #include <linux/compiler_types.h>
- #include <linux/kasan-checks.h>
- #include <linux/kcsan-checks.h>
-+#include <linux/kmsan-checks.h>
- 
- /*
-  * Yes, this permits 64-bit accesses on 32-bit architectures. These will
-@@ -69,14 +70,14 @@ unsigned long __read_once_word_nocheck(const void *addr)
- 
- /*
-  * Use READ_ONCE_NOCHECK() instead of READ_ONCE() if you need to load a
-- * word from memory atomically but without telling KASAN/KCSAN. This is
-+ * word from memory atomically but without telling KASAN/KCSAN/KMSAN. This is
-  * usually used by unwinding code when walking the stack of a running process.
-  */
- #define READ_ONCE_NOCHECK(x)						\
- ({									\
- 	compiletime_assert(sizeof(x) == sizeof(unsigned long),		\
- 		"Unsupported access size for READ_ONCE_NOCHECK().");	\
--	(typeof(x))__read_once_word_nocheck(&(x));			\
-+	kmsan_init((typeof(x))__read_once_word_nocheck(&(x)));		\
- })
- 
- static __no_kasan_or_inline
-diff --git a/include/linux/kmsan-checks.h b/include/linux/kmsan-checks.h
-index a6522a0c28df9..ecd8336190fc0 100644
---- a/include/linux/kmsan-checks.h
-+++ b/include/linux/kmsan-checks.h
-@@ -14,6 +14,44 @@
- 
- #ifdef CONFIG_KMSAN
- 
-+/*
-+ * Helper functions that mark the return value initialized.
-+ * See mm/kmsan/annotations.c.
-+ */
-+u8 kmsan_init_1(u8 value);
-+u16 kmsan_init_2(u16 value);
-+u32 kmsan_init_4(u32 value);
-+u64 kmsan_init_8(u64 value);
-+
-+static inline void *kmsan_init_ptr(void *ptr)
-+{
-+	return (void *)kmsan_init_8((u64)ptr);
-+}
-+
-+static inline char kmsan_init_char(char value)
-+{
-+	return (u8)kmsan_init_1((u8)value);
-+}
-+
-+#define __decl_kmsan_init_type(type, fn) unsigned type : fn, signed type : fn
-+
-+/**
-+ * kmsan_init - Make the value initialized.
-+ * @val: 1-, 2-, 4- or 8-byte integer that may be treated as uninitialized by
-+ *       KMSAN.
-+ *
-+ * Return: value of @val that KMSAN treats as initialized.
-+ */
-+#define kmsan_init(val)                                                        \
-+	(							\
-+	(typeof(val))(_Generic((val),				\
-+		__decl_kmsan_init_type(char, kmsan_init_1),	\
-+		__decl_kmsan_init_type(short, kmsan_init_2),	\
-+		__decl_kmsan_init_type(int, kmsan_init_4),	\
-+		__decl_kmsan_init_type(long, kmsan_init_8),	\
-+		char : kmsan_init_char,				\
-+		void * : kmsan_init_ptr)(val)))
-+
- /**
-  * kmsan_poison_memory() - Mark the memory range as uninitialized.
-  * @address: address to start with.
-@@ -48,6 +86,8 @@ void kmsan_check_memory(const void *address, size_t size);
- 
- #else
- 
-+#define kmsan_init(value) (value)
-+
- static inline void kmsan_poison_memory(const void *address, size_t size,
- 				       gfp_t flags)
- {
-diff --git a/mm/kmsan/Makefile b/mm/kmsan/Makefile
-index a80dde1de7048..73b705cbf75b9 100644
---- a/mm/kmsan/Makefile
-+++ b/mm/kmsan/Makefile
-@@ -1,9 +1,11 @@
--obj-y := core.o instrumentation.o hooks.o report.o shadow.o
-+obj-y := core.o instrumentation.o hooks.o report.o shadow.o annotations.o
- 
- KMSAN_SANITIZE := n
- KCOV_INSTRUMENT := n
- UBSAN_SANITIZE := n
- 
-+KMSAN_SANITIZE_kmsan_annotations.o := y
-+
- # Disable instrumentation of KMSAN runtime with other tools.
- CC_FLAGS_KMSAN_RUNTIME := -fno-stack-protector
- CC_FLAGS_KMSAN_RUNTIME += $(call cc-option,-fno-conserve-stack)
-@@ -11,6 +13,7 @@ CC_FLAGS_KMSAN_RUNTIME += -DDISABLE_BRANCH_PROFILING
- 
- CFLAGS_REMOVE.o = $(CC_FLAGS_FTRACE)
- 
-+CFLAGS_annotations.o := $(CC_FLAGS_KMSAN_RUNTIME)
- CFLAGS_core.o := $(CC_FLAGS_KMSAN_RUNTIME)
- CFLAGS_hooks.o := $(CC_FLAGS_KMSAN_RUNTIME)
- CFLAGS_instrumentation.o := $(CC_FLAGS_KMSAN_RUNTIME)
-diff --git a/mm/kmsan/annotations.c b/mm/kmsan/annotations.c
-new file mode 100644
-index 0000000000000..8ccde90bcd12b
---- /dev/null
-+++ b/mm/kmsan/annotations.c
-@@ -0,0 +1,28 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * KMSAN annotations.
-+ *
-+ * The kmsan_init_SIZE functions reside in a separate translation unit to
-+ * prevent inlining them. Clang may inline functions marked with
-+ * __no_sanitize_memory attribute into functions without it, which effectively
-+ * results in ignoring the attribute.
-+ *
-+ * Copyright (C) 2017-2022 Google LLC
-+ * Author: Alexander Potapenko <glider@google.com>
-+ *
-+ */
-+
-+#include <linux/export.h>
-+#include <linux/kmsan-checks.h>
-+
-+#define DECLARE_KMSAN_INIT(size, t)                                            \
-+	__no_sanitize_memory t kmsan_init_##size(t value)                      \
-+	{                                                                      \
-+		return value;                                                  \
-+	}                                                                      \
-+	EXPORT_SYMBOL(kmsan_init_##size)
-+
-+DECLARE_KMSAN_INIT(1, u8);
-+DECLARE_KMSAN_INIT(2, u16);
-+DECLARE_KMSAN_INIT(4, u32);
-+DECLARE_KMSAN_INIT(8, u64);
--- 
-2.36.0.rc2.479.g8af0fa9b8e-goog
+> > +static bool kvm_hvc_call_default_allowed(struct kvm_vcpu *vcpu, u32 func_id)
+> > +{
+> > +     switch (func_id) {
+> > +     /*
+> > +      * List of function-ids that are not gated with the bitmapped feature
+> > +      * firmware registers, and are to be allowed for servicing the call by default.
+> > +      */
+> > +     case ARM_SMCCC_VERSION_FUNC_ID:
+> > +     case ARM_SMCCC_ARCH_FEATURES_FUNC_ID:
+> > +     case ARM_SMCCC_HV_PV_TIME_FEATURES:
+> > +     case ARM_SMCCC_HV_PV_TIME_ST:
+> > +     case ARM_SMCCC_VENDOR_HYP_CALL_UID_FUNC_ID:
+> > +     case ARM_SMCCC_VENDOR_HYP_KVM_FEATURES_FUNC_ID:
+> > +     case ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID:
+> > +             return true;
+> > +     default:
+> > +             return kvm_psci_func_id_is_valid(vcpu, func_id);
+> > +     }
+> > +}
+> > +
+> > +static bool kvm_hvc_call_allowed(struct kvm_vcpu *vcpu, u32 func_id)
+> > +{
+> > +     struct kvm_smccc_features *smccc_feat = &vcpu->kvm->arch.smccc_feat;
+> > +
+> > +     switch (func_id) {
+> > +     case ARM_SMCCC_TRNG_VERSION:
+> > +     case ARM_SMCCC_TRNG_FEATURES:
+> > +     case ARM_SMCCC_TRNG_GET_UUID:
+> > +     case ARM_SMCCC_TRNG_RND32:
+> > +     case ARM_SMCCC_TRNG_RND64:
+> > +             return kvm_arm_fw_reg_feat_enabled(&smccc_feat->std_bmap,
+> > +                                             KVM_REG_ARM_STD_BIT_TRNG_V1_0);
+> > +     default:
+> > +             return kvm_hvc_call_default_allowed(vcpu, func_id);
+> > +     }
+> > +}
+> > +
+> >   int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
+> >   {
+> >       u32 func_id = smccc_get_function(vcpu);
+> > @@ -65,6 +107,9 @@ int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
+> >       u32 feature;
+> >       gpa_t gpa;
+> >
+> > +     if (!kvm_hvc_call_allowed(vcpu, func_id))
+> > +             goto out;
+> > +
+> >       switch (func_id) {
+> >       case ARM_SMCCC_VERSION_FUNC_ID:
+> >               val[0] = ARM_SMCCC_VERSION_1_1;
+> > @@ -155,6 +200,7 @@ int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
+> >               return kvm_psci_call(vcpu);
+> >       }
+> >
+> > +out:
+> >       smccc_set_retval(vcpu, val[0], val[1], val[2], val[3]);
+> >       return 1;
+> >   }
+> > @@ -164,8 +210,16 @@ static const u64 kvm_arm_fw_reg_ids[] = {
+> >       KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1,
+> >       KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2,
+> >       KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3,
+> > +     KVM_REG_ARM_STD_BMAP,
+> >   };
+> >
+> > +void kvm_arm_init_hypercalls(struct kvm *kvm)
+> > +{
+> > +     struct kvm_smccc_features *smccc_feat = &kvm->arch.smccc_feat;
+> > +
+> > +     smccc_feat->std_bmap = KVM_ARM_SMCCC_STD_FEATURES;
+> > +}
+> > +
+> >   int kvm_arm_get_fw_num_regs(struct kvm_vcpu *vcpu)
+> >   {
+> >       return ARRAY_SIZE(kvm_arm_fw_reg_ids);
+> > @@ -237,6 +291,7 @@ static int get_kernel_wa_level(u64 regid)
+> >
+> >   int kvm_arm_get_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
+> >   {
+> > +     struct kvm_smccc_features *smccc_feat = &vcpu->kvm->arch.smccc_feat;
+> >       void __user *uaddr = (void __user *)(long)reg->addr;
+> >       u64 val;
+> >
+> > @@ -249,6 +304,9 @@ int kvm_arm_get_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
+> >       case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3:
+> >               val = get_kernel_wa_level(reg->id) & KVM_REG_FEATURE_LEVEL_MASK;
+> >               break;
+> > +     case KVM_REG_ARM_STD_BMAP:
+> > +             val = READ_ONCE(smccc_feat->std_bmap);
+> > +             break;
+> >       default:
+> >               return -ENOENT;
+> >       }
+> > @@ -259,6 +317,40 @@ int kvm_arm_get_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
+> >       return 0;
+> >   }
+> >
+> > +static int kvm_arm_set_fw_reg_bmap(struct kvm_vcpu *vcpu, u64 reg_id, u64 val)
+> > +{
+> > +     int ret = 0;
+> > +     struct kvm *kvm = vcpu->kvm;
+> > +     struct kvm_smccc_features *smccc_feat = &kvm->arch.smccc_feat;
+> > +     unsigned long *fw_reg_bmap, fw_reg_features;
+> > +
+> > +     switch (reg_id) {
+> > +     case KVM_REG_ARM_STD_BMAP:
+> > +             fw_reg_bmap = &smccc_feat->std_bmap;
+> > +             fw_reg_features = KVM_ARM_SMCCC_STD_FEATURES;
+> > +             break;
+> > +     default:
+> > +             return -ENOENT;
+> > +     }
+> > +
+> > +     /* Check for unsupported bit */
+> > +     if (val & ~fw_reg_features)
+> > +             return -EINVAL;
+> > +
+> > +     mutex_lock(&kvm->lock);
+> > +
+> > +     /* Return -EBUSY if the VM (any vCPU) has already started running. */
+> > +     if (test_bit(KVM_ARCH_FLAG_HAS_RAN_ONCE, &kvm->arch.flags)) {
+> > +             ret = -EBUSY;
+> > +             goto out;
+> > +     }
+> > +
+> > +     WRITE_ONCE(*fw_reg_bmap, val);
+> > +out:
+> > +     mutex_unlock(&kvm->lock);
+> > +     return ret;
+> > +}
+> > +
+> >   int kvm_arm_set_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
+> >   {
+> >       void __user *uaddr = (void __user *)(long)reg->addr;
+> > @@ -337,6 +429,8 @@ int kvm_arm_set_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
+> >                       return -EINVAL;
+> >
+> >               return 0;
+> > +     case KVM_REG_ARM_STD_BMAP:
+> > +             return kvm_arm_set_fw_reg_bmap(vcpu, reg->id, val);
+> >       default:
+> >               return -ENOENT;
+> >       }
+> > diff --git a/arch/arm64/kvm/psci.c b/arch/arm64/kvm/psci.c
+> > index 346535169faa..67d1273e8086 100644
+> > --- a/arch/arm64/kvm/psci.c
+> > +++ b/arch/arm64/kvm/psci.c
+> > @@ -436,3 +436,16 @@ int kvm_psci_call(struct kvm_vcpu *vcpu)
+> >               return -EINVAL;
+> >       }
+> >   }
+> > +
+> > +bool kvm_psci_func_id_is_valid(struct kvm_vcpu *vcpu, u32 func_id)
+> > +{
+> > +     /* PSCI 0.1 doesn't comply with the standard SMCCC */
+> > +     if (kvm_psci_version(vcpu) == KVM_ARM_PSCI_0_1)
+> > +             return (func_id == KVM_PSCI_FN_CPU_OFF || func_id == KVM_PSCI_FN_CPU_ON);
+> > +
+> > +     if (ARM_SMCCC_OWNER_NUM(func_id) == ARM_SMCCC_OWNER_STANDARD &&
+> > +             ARM_SMCCC_FUNC_NUM(func_id) >= 0 && ARM_SMCCC_FUNC_NUM(func_id) <= 0x1f)
+> > +             return true;
+> > +
+> > +     return false;
+> > +}
+> > diff --git a/include/kvm/arm_hypercalls.h b/include/kvm/arm_hypercalls.h
+> > index 5d38628a8d04..499b45b607b6 100644
+> > --- a/include/kvm/arm_hypercalls.h
+> > +++ b/include/kvm/arm_hypercalls.h
+> > @@ -6,6 +6,11 @@
+> >
+> >   #include <asm/kvm_emulate.h>
+> >
+> > +/* Last valid bits of the bitmapped firmware registers */
+> > +#define KVM_REG_ARM_STD_BMAP_BIT_MAX         0
+> > +
+> > +#define KVM_ARM_SMCCC_STD_FEATURES           GENMASK(KVM_REG_ARM_STD_BMAP_BIT_MAX, 0)
+> > +
+>
+> s/bits of/bit of
+>
+Great catch again!
 
+> >   int kvm_hvc_call_handler(struct kvm_vcpu *vcpu);
+> >
+> >   static inline u32 smccc_get_function(struct kvm_vcpu *vcpu)
+> > @@ -42,6 +47,7 @@ static inline void smccc_set_retval(struct kvm_vcpu *vcpu,
+> >
+> >   struct kvm_one_reg;
+> >
+> > +void kvm_arm_init_hypercalls(struct kvm *kvm);
+> >   int kvm_arm_get_fw_num_regs(struct kvm_vcpu *vcpu);
+> >   int kvm_arm_copy_fw_reg_indices(struct kvm_vcpu *vcpu, u64 __user *uindices);
+> >   int kvm_arm_get_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg);
+> > diff --git a/include/kvm/arm_psci.h b/include/kvm/arm_psci.h
+> > index 6e55b9283789..c47be3e26965 100644
+> > --- a/include/kvm/arm_psci.h
+> > +++ b/include/kvm/arm_psci.h
+> > @@ -36,7 +36,7 @@ static inline int kvm_psci_version(struct kvm_vcpu *vcpu)
+> >       return KVM_ARM_PSCI_0_1;
+> >   }
+> >
+> > -
+> >   int kvm_psci_call(struct kvm_vcpu *vcpu);
+> > +bool kvm_psci_func_id_is_valid(struct kvm_vcpu *vcpu, u32 func_id);
+> >
+> >   #endif /* __KVM_ARM_PSCI_H__ */
+> >
+>
+> Thanks,
+> Gavin
+>
+
+Thanks for the review, Gavin.
+
+- Raghavendra
