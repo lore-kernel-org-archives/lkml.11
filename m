@@ -2,45 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A489C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31C52C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:17:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347252AbiDZJTv (ORCPT
+        id S1347191AbiDZJTn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:19:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52678 "EHLO
+        Tue, 26 Apr 2022 05:19:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345881AbiDZI4r (ORCPT
+        with ESMTP id S1345986AbiDZIoc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:56:47 -0400
+        Tue, 26 Apr 2022 04:44:32 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00AA0DD947;
-        Tue, 26 Apr 2022 01:41:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF7A015DD70;
+        Tue, 26 Apr 2022 01:33:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CC5660A72;
-        Tue, 26 Apr 2022 08:41:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92632C385A0;
-        Tue, 26 Apr 2022 08:41:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 45B7F618CD;
+        Tue, 26 Apr 2022 08:33:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5739DC385AC;
+        Tue, 26 Apr 2022 08:33:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962490;
-        bh=bTTEixW6BtI8qE3xR7dSh2ppK1QVV9nMDTjkMPr2NA4=;
+        s=korg; t=1650962038;
+        bh=NkjpnB1JMCM3Gxx3RxT3ohoq76DY1JvBF7Ui9nKMvxI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zYISRifi7RcOmVoy/89v+FXR3EzWo+shmUzKgo8wkZrbR/IYFLSswwoDIjEKy0VVO
-         Qw2hPcBCaQWwXA/Z2REUF8RpoVqTuy1g9PzJNf9GzsrQx3bjfn6LJ9F007/gXA2mlv
-         YPchJ91yqUglPiJp9/EBD297BHi/KM5ZZrcxABeY=
+        b=d8M6YVKdS1xKRx4xzW/Yz3beraUpMCvmwv/vRGFdTUaJxVxIQaQcnT47X1QqfXsT8
+         Wp0PoUf3bHPL78Db+WkC09C7j+Sq9Ah3qdPj/MX2jc/AzDkjutamwxssAWnmY3kaHy
+         TvMT2glxb5t3Uz2W6YNYiFNEQ4LbY5bY2v8OCrxg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Darrick J. Wong" <djwong@kernel.org>,
-        Theodore Tso <tytso@mit.edu>, stable@kernel.org
-Subject: [PATCH 5.15 113/124] ext4: fix fallocate to use file_modified to update permissions consistently
-Date:   Tue, 26 Apr 2022 10:21:54 +0200
-Message-Id: <20220426081750.504887067@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Steve Capper <steve.capper@arm.com>,
+        Will Deacon <will.deacon@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.10 52/86] mm, hugetlb: allow for "high" userspace addresses
+Date:   Tue, 26 Apr 2022 10:21:20 +0200
+Message-Id: <20220426081742.705539014@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
-References: <20220426081747.286685339@linuxfoundation.org>
+In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
+References: <20220426081741.202366502@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,170 +54,145 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Darrick J. Wong <djwong@kernel.org>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-commit ad5cd4f4ee4d5fcdb1bfb7a0c073072961e70783 upstream.
+commit 5f24d5a579d1eace79d505b148808a850b417d4c upstream.
 
-Since the initial introduction of (posix) fallocate back at the turn of
-the century, it has been possible to use this syscall to change the
-user-visible contents of files.  This can happen by extending the file
-size during a preallocation, or through any of the newer modes (punch,
-zero, collapse, insert range).  Because the call can be used to change
-file contents, we should treat it like we do any other modification to a
-file -- update the mtime, and drop set[ug]id privileges/capabilities.
+This is a fix for commit f6795053dac8 ("mm: mmap: Allow for "high"
+userspace addresses") for hugetlb.
 
-The VFS function file_modified() does all this for us if pass it a
-locked inode, so let's make fallocate drop permissions correctly.
+This patch adds support for "high" userspace addresses that are
+optionally supported on the system and have to be requested via a hint
+mechanism ("high" addr parameter to mmap).
 
-Signed-off-by: Darrick J. Wong <djwong@kernel.org>
-Link: https://lore.kernel.org/r/20220308185043.GA117678@magnolia
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Cc: stable@kernel.org
+Architectures such as powerpc and x86 achieve this by making changes to
+their architectural versions of hugetlb_get_unmapped_area() function.
+However, arm64 uses the generic version of that function.
+
+So take into account arch_get_mmap_base() and arch_get_mmap_end() in
+hugetlb_get_unmapped_area().  To allow that, move those two macros out
+of mm/mmap.c into include/linux/sched/mm.h
+
+If these macros are not defined in architectural code then they default
+to (TASK_SIZE) and (base) so should not introduce any behavioural
+changes to architectures that do not define them.
+
+For the time being, only ARM64 is affected by this change.
+
+Catalin (ARM64) said
+ "We should have fixed hugetlb_get_unmapped_area() as well when we added
+  support for 52-bit VA. The reason for commit f6795053dac8 was to
+  prevent normal mmap() from returning addresses above 48-bit by default
+  as some user-space had hard assumptions about this.
+
+  It's a slight ABI change if you do this for hugetlb_get_unmapped_area()
+  but I doubt anyone would notice. It's more likely that the current
+  behaviour would cause issues, so I'd rather have them consistent.
+
+  Basically when arm64 gained support for 52-bit addresses we did not
+  want user-space calling mmap() to suddenly get such high addresses,
+  otherwise we could have inadvertently broken some programs (similar
+  behaviour to x86 here). Hence we added commit f6795053dac8. But we
+  missed hugetlbfs which could still get such high mmap() addresses. So
+  in theory that's a potential regression that should have bee addressed
+  at the same time as commit f6795053dac8 (and before arm64 enabled
+  52-bit addresses)"
+
+Link: https://lkml.kernel.org/r/ab847b6edb197bffdfe189e70fb4ac76bfe79e0d.1650033747.git.christophe.leroy@csgroup.eu
+Fixes: f6795053dac8 ("mm: mmap: Allow for "high" userspace addresses")
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Steve Capper <steve.capper@arm.com>
+Cc: Will Deacon <will.deacon@arm.com>
+Cc: <stable@vger.kernel.org>	[5.0.x]
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/ext4.h    |    2 +-
- fs/ext4/extents.c |   32 +++++++++++++++++++++++++-------
- fs/ext4/inode.c   |    7 ++++++-
- 3 files changed, 32 insertions(+), 9 deletions(-)
+ fs/hugetlbfs/inode.c     |    9 +++++----
+ include/linux/sched/mm.h |    8 ++++++++
+ mm/mmap.c                |    8 --------
+ 3 files changed, 13 insertions(+), 12 deletions(-)
 
---- a/fs/ext4/ext4.h
-+++ b/fs/ext4/ext4.h
-@@ -3027,7 +3027,7 @@ extern int ext4_inode_attach_jinode(stru
- extern int ext4_can_truncate(struct inode *inode);
- extern int ext4_truncate(struct inode *);
- extern int ext4_break_layouts(struct inode *);
--extern int ext4_punch_hole(struct inode *inode, loff_t offset, loff_t length);
-+extern int ext4_punch_hole(struct file *file, loff_t offset, loff_t length);
- extern void ext4_set_inode_flags(struct inode *, bool init);
- extern int ext4_alloc_da_blocks(struct inode *inode);
- extern void ext4_set_aops(struct inode *inode);
---- a/fs/ext4/extents.c
-+++ b/fs/ext4/extents.c
-@@ -4504,9 +4504,9 @@ retry:
- 	return ret > 0 ? ret2 : ret;
+--- a/fs/hugetlbfs/inode.c
++++ b/fs/hugetlbfs/inode.c
+@@ -206,7 +206,7 @@ hugetlb_get_unmapped_area_bottomup(struc
+ 	info.flags = 0;
+ 	info.length = len;
+ 	info.low_limit = current->mm->mmap_base;
+-	info.high_limit = TASK_SIZE;
++	info.high_limit = arch_get_mmap_end(addr);
+ 	info.align_mask = PAGE_MASK & ~huge_page_mask(h);
+ 	info.align_offset = 0;
+ 	return vm_unmapped_area(&info);
+@@ -222,7 +222,7 @@ hugetlb_get_unmapped_area_topdown(struct
+ 	info.flags = VM_UNMAPPED_AREA_TOPDOWN;
+ 	info.length = len;
+ 	info.low_limit = max(PAGE_SIZE, mmap_min_addr);
+-	info.high_limit = current->mm->mmap_base;
++	info.high_limit = arch_get_mmap_base(addr, current->mm->mmap_base);
+ 	info.align_mask = PAGE_MASK & ~huge_page_mask(h);
+ 	info.align_offset = 0;
+ 	addr = vm_unmapped_area(&info);
+@@ -237,7 +237,7 @@ hugetlb_get_unmapped_area_topdown(struct
+ 		VM_BUG_ON(addr != -ENOMEM);
+ 		info.flags = 0;
+ 		info.low_limit = current->mm->mmap_base;
+-		info.high_limit = TASK_SIZE;
++		info.high_limit = arch_get_mmap_end(addr);
+ 		addr = vm_unmapped_area(&info);
+ 	}
+ 
+@@ -251,6 +251,7 @@ hugetlb_get_unmapped_area(struct file *f
+ 	struct mm_struct *mm = current->mm;
+ 	struct vm_area_struct *vma;
+ 	struct hstate *h = hstate_file(file);
++	const unsigned long mmap_end = arch_get_mmap_end(addr);
+ 
+ 	if (len & ~huge_page_mask(h))
+ 		return -EINVAL;
+@@ -266,7 +267,7 @@ hugetlb_get_unmapped_area(struct file *f
+ 	if (addr) {
+ 		addr = ALIGN(addr, huge_page_size(h));
+ 		vma = find_vma(mm, addr);
+-		if (TASK_SIZE - len >= addr &&
++		if (mmap_end - len >= addr &&
+ 		    (!vma || addr + len <= vm_start_gap(vma)))
+ 			return addr;
+ 	}
+--- a/include/linux/sched/mm.h
++++ b/include/linux/sched/mm.h
+@@ -106,6 +106,14 @@ static inline void mm_update_next_owner(
+ #endif /* CONFIG_MEMCG */
+ 
+ #ifdef CONFIG_MMU
++#ifndef arch_get_mmap_end
++#define arch_get_mmap_end(addr)	(TASK_SIZE)
++#endif
++
++#ifndef arch_get_mmap_base
++#define arch_get_mmap_base(addr, base) (base)
++#endif
++
+ extern void arch_pick_mmap_layout(struct mm_struct *mm,
+ 				  struct rlimit *rlim_stack);
+ extern unsigned long
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -2140,14 +2140,6 @@ unsigned long vm_unmapped_area(struct vm
+ 	return addr;
  }
  
--static int ext4_collapse_range(struct inode *inode, loff_t offset, loff_t len);
-+static int ext4_collapse_range(struct file *file, loff_t offset, loff_t len);
- 
--static int ext4_insert_range(struct inode *inode, loff_t offset, loff_t len);
-+static int ext4_insert_range(struct file *file, loff_t offset, loff_t len);
- 
- static long ext4_zero_range(struct file *file, loff_t offset,
- 			    loff_t len, int mode)
-@@ -4578,6 +4578,10 @@ static long ext4_zero_range(struct file
- 	/* Wait all existing dio workers, newcomers will block on i_mutex */
- 	inode_dio_wait(inode);
- 
-+	ret = file_modified(file);
-+	if (ret)
-+		goto out_mutex;
-+
- 	/* Preallocate the range including the unaligned edges */
- 	if (partial_begin || partial_end) {
- 		ret = ext4_alloc_file_blocks(file,
-@@ -4696,7 +4700,7 @@ long ext4_fallocate(struct file *file, i
- 	ext4_fc_start_update(inode);
- 
- 	if (mode & FALLOC_FL_PUNCH_HOLE) {
--		ret = ext4_punch_hole(inode, offset, len);
-+		ret = ext4_punch_hole(file, offset, len);
- 		goto exit;
- 	}
- 
-@@ -4705,12 +4709,12 @@ long ext4_fallocate(struct file *file, i
- 		goto exit;
- 
- 	if (mode & FALLOC_FL_COLLAPSE_RANGE) {
--		ret = ext4_collapse_range(inode, offset, len);
-+		ret = ext4_collapse_range(file, offset, len);
- 		goto exit;
- 	}
- 
- 	if (mode & FALLOC_FL_INSERT_RANGE) {
--		ret = ext4_insert_range(inode, offset, len);
-+		ret = ext4_insert_range(file, offset, len);
- 		goto exit;
- 	}
- 
-@@ -4746,6 +4750,10 @@ long ext4_fallocate(struct file *file, i
- 	/* Wait all existing dio workers, newcomers will block on i_mutex */
- 	inode_dio_wait(inode);
- 
-+	ret = file_modified(file);
-+	if (ret)
-+		goto out;
-+
- 	ret = ext4_alloc_file_blocks(file, lblk, max_blocks, new_size, flags);
- 	if (ret)
- 		goto out;
-@@ -5248,8 +5256,9 @@ out:
-  * This implements the fallocate's collapse range functionality for ext4
-  * Returns: 0 and non-zero on error.
-  */
--static int ext4_collapse_range(struct inode *inode, loff_t offset, loff_t len)
-+static int ext4_collapse_range(struct file *file, loff_t offset, loff_t len)
- {
-+	struct inode *inode = file_inode(file);
- 	struct super_block *sb = inode->i_sb;
- 	struct address_space *mapping = inode->i_mapping;
- 	ext4_lblk_t punch_start, punch_stop;
-@@ -5301,6 +5310,10 @@ static int ext4_collapse_range(struct in
- 	/* Wait for existing dio to complete */
- 	inode_dio_wait(inode);
- 
-+	ret = file_modified(file);
-+	if (ret)
-+		goto out_mutex;
-+
- 	/*
- 	 * Prevent page faults from reinstantiating pages we have released from
- 	 * page cache.
-@@ -5394,8 +5407,9 @@ out_mutex:
-  * by len bytes.
-  * Returns 0 on success, error otherwise.
-  */
--static int ext4_insert_range(struct inode *inode, loff_t offset, loff_t len)
-+static int ext4_insert_range(struct file *file, loff_t offset, loff_t len)
- {
-+	struct inode *inode = file_inode(file);
- 	struct super_block *sb = inode->i_sb;
- 	struct address_space *mapping = inode->i_mapping;
- 	handle_t *handle;
-@@ -5452,6 +5466,10 @@ static int ext4_insert_range(struct inod
- 	/* Wait for existing dio to complete */
- 	inode_dio_wait(inode);
- 
-+	ret = file_modified(file);
-+	if (ret)
-+		goto out_mutex;
-+
- 	/*
- 	 * Prevent page faults from reinstantiating pages we have released from
- 	 * page cache.
---- a/fs/ext4/inode.c
-+++ b/fs/ext4/inode.c
-@@ -3939,8 +3939,9 @@ int ext4_break_layouts(struct inode *ino
-  * Returns: 0 on success or negative on failure
-  */
- 
--int ext4_punch_hole(struct inode *inode, loff_t offset, loff_t length)
-+int ext4_punch_hole(struct file *file, loff_t offset, loff_t length)
- {
-+	struct inode *inode = file_inode(file);
- 	struct super_block *sb = inode->i_sb;
- 	ext4_lblk_t first_block, stop_block;
- 	struct address_space *mapping = inode->i_mapping;
-@@ -4002,6 +4003,10 @@ int ext4_punch_hole(struct inode *inode,
- 	/* Wait all existing dio workers, newcomers will block on i_mutex */
- 	inode_dio_wait(inode);
- 
-+	ret = file_modified(file);
-+	if (ret)
-+		goto out_mutex;
-+
- 	/*
- 	 * Prevent page faults from reinstantiating pages we have released from
- 	 * page cache.
+-#ifndef arch_get_mmap_end
+-#define arch_get_mmap_end(addr)	(TASK_SIZE)
+-#endif
+-
+-#ifndef arch_get_mmap_base
+-#define arch_get_mmap_base(addr, base) (base)
+-#endif
+-
+ /* Get an address range which is currently unmapped.
+  * For shmat() with addr=0.
+  *
 
 
