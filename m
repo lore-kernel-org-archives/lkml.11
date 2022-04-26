@@ -2,100 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17EB4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 12:19:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D104BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 12:24:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349891AbiDZMWO (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 08:22:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44938 "EHLO
+        id S234626AbiDZM1f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 08:27:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243957AbiDZMWB (ORCPT
+        with ESMTP id S230126AbiDZM1d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 08:22:01 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69CF81110
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 05:18:33 -0700 (PDT)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23QC0ddm005455;
-        Tue, 26 Apr 2022 12:18:32 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=/9ndkcDfO8Lqxw/f7KbY/x0vThJhHsZ/6ZzRJOU8r2A=;
- b=obE8YqKM31eRCOTr9/D3uN6eIva+uLbdkwZYt1sAdALvNhOMgh2k7vKc04mnrxtcVgGr
- 38hNc2VGRYJ7odL8hRbMK18GLLpb1rtGwQc9xhxAuML/GaHq+dwuuHNp5nhIS64uuvIA
- 4FOOKWXLDK/pgZHI6x80s8D4f8UXxlk+W7yBQfY7wLek7d/OBOzimPbbQ7O/9ZSoOeGT
- soZ9hJRvvDqrkAg2y/3ELljztbkJlGdr83pLCK/bbffLdU5VCg9Rf2aIx/zU5lVEdtMa
- J3gDwmTzEkpnO9QAQy+Vx8xPON3aV3CfEc6GrTmgMDe6NoPfUQy/4E5OjNicKE6IBJ16 vQ== 
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fpbrbe7qe-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 26 Apr 2022 12:18:31 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23QCCk7Q019210;
-        Tue, 26 Apr 2022 12:18:30 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma04fra.de.ibm.com with ESMTP id 3fm938uds0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 26 Apr 2022 12:18:29 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23QCIQxA51708396
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 26 Apr 2022 12:18:26 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C398B52052;
-        Tue, 26 Apr 2022 12:18:26 +0000 (GMT)
-Received: from osiris (unknown [9.145.90.170])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTPS id 7B75E5204F;
-        Tue, 26 Apr 2022 12:18:26 +0000 (GMT)
-Date:   Tue, 26 Apr 2022 14:18:25 +0200
-From:   Heiko Carstens <hca@linux.ibm.com>
-To:     Sven Schnelle <svens@linux.ibm.com>
-Cc:     Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] s390: disable -Warray-bounds
-Message-ID: <YmfjEeUqYoWS2rL2@osiris>
-References: <20220425121742.3222133-1-svens@linux.ibm.com>
+        Tue, 26 Apr 2022 08:27:33 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE12A15AE0E
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 05:24:24 -0700 (PDT)
+X-UUID: 17ee7bb980b1493d881bfe303e9735cf-20220426
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:196787c8-fe27-49ee-9ee2-0ea3e6c128b4,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:100
+X-CID-INFO: VERSION:1.1.4,REQID:196787c8-fe27-49ee-9ee2-0ea3e6c128b4,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,AC
+        TION:quarantine,TS:100
+X-CID-META: VersionHash:faefae9,CLOUDID:4e708ac6-85ee-4ac1-ac05-bd3f1e72e732,C
+        OID:961038ad4c03,Recheck:0,SF:28|16|19|48,TC:nil,Content:0,EDM:-3,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 17ee7bb980b1493d881bfe303e9735cf-20220426
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+        (envelope-from <mark-pk.tsai@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1921622509; Tue, 26 Apr 2022 20:24:17 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Tue, 26 Apr 2022 20:24:16 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 26 Apr
+ 2022 20:24:15 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 26 Apr 2022 20:24:15 +0800
+From:   Mark-PK Tsai <mark-pk.tsai@mediatek.com>
+To:     <rostedt@goodmis.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>, <mark-pk.tsai@mediatek.com>,
+        <matthias.bgg@gmail.com>, <mingo@redhat.com>,
+        <yj.chiang@mediatek.com>
+Subject: [PATCH v4 1/2] tracing: Avoid adding tracer option before update_tracer_options
+Date:   Tue, 26 Apr 2022 20:24:06 +0800
+Message-ID: <20220426122407.17042-2-mark-pk.tsai@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220426122407.17042-1-mark-pk.tsai@mediatek.com>
+References: <20220426122407.17042-1-mark-pk.tsai@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220425121742.3222133-1-svens@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 5tlhAAZOwVaz2tLbTf9Ll4uYGey5aYDK
-X-Proofpoint-ORIG-GUID: 5tlhAAZOwVaz2tLbTf9Ll4uYGey5aYDK
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-26_02,2022-04-26_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=469
- priorityscore=1501 bulkscore=0 phishscore=0 lowpriorityscore=0
- adultscore=0 suspectscore=0 impostorscore=0 clxscore=1015 spamscore=0
- malwarescore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204260078
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 02:17:42PM +0200, Sven Schnelle wrote:
-> gcc-12 shows a lot of array bound warnings on s390. This is caused
-> by our S390_lowcore macro:
-> 
-> which uses an hardcoded address of 0. Wrapping that with
-> absolute_pointer() works, but gcc no longer knows that a 12 bit
-> instruction is sufficient to access lowcore. So it emits instructions
-> like 'lghi %r1,0; l %rx,xxx(%r1)' instead of a single load/store
-> instruction. As s390 stores variables often read/written in lowcore,
-> this is considered problematic. Therefore disable -Warray-bounds on
-> s390 when gcc-12 is used until there is a better real solution.
-> 
-> Signed-off-by: Sven Schnelle <svens@linux.ibm.com>
-> ---
-> Changes in v2:
-> - only remove -Warray-bounds for gcc-12
-> 
->  arch/s390/Makefile | 10 ++++++++++
->  1 file changed, 10 insertions(+)
+To prepare for support asynchronous tracer_init_tracefs initcall,
+avoid calling create_trace_option_files before __update_tracer_options.
+Otherwise, create_trace_option_files will show warning because
+some tracers in trace_types list are already in tr->topts.
 
-Applied, thanks!
+For example, hwlat_tracer call register_tracer in late_initcall,
+and global_trace.dir is already created in tracing_init_dentry,
+hwlat_tracer will be put into tr->topts.
+Then if the __update_tracer_options is executed after hwlat_tracer
+registered, create_trace_option_files find that hwlat_tracer is
+already in tr->topts.
+
+Link: https://lore.kernel.org/lkml/20220322133339.GA32582@xsang-OptiPlex-9020/
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
+---
+ kernel/trace/trace.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+index f4de111fa18f..0ec7b013104a 100644
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -6332,12 +6332,18 @@ static void tracing_set_nop(struct trace_array *tr)
+ 	tr->current_trace = &nop_trace;
+ }
+ 
++static bool tracer_options_updated;
++
+ static void add_tracer_options(struct trace_array *tr, struct tracer *t)
+ {
+ 	/* Only enable if the directory has been created already. */
+ 	if (!tr->dir)
+ 		return;
+ 
++	/* Only create trace option files after update_tracer_options finish */
++	if (!tracer_options_updated)
++		return;
++
+ 	create_trace_option_files(tr, t);
+ }
+ 
+@@ -9176,6 +9182,7 @@ static void __update_tracer_options(struct trace_array *tr)
+ static void update_tracer_options(struct trace_array *tr)
+ {
+ 	mutex_lock(&trace_types_lock);
++	tracer_options_updated = true;
+ 	__update_tracer_options(tr);
+ 	mutex_unlock(&trace_types_lock);
+ }
+-- 
+2.18.0
+
