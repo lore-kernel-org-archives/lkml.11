@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB4E0C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:52:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C23B0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:52:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346344AbiDZIyo (ORCPT
+        id S1346397AbiDZIyq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:54:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59330 "EHLO
+        Tue, 26 Apr 2022 04:54:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345414AbiDZIlE (ORCPT
+        with ESMTP id S1345456AbiDZIlG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:41:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B40E015780E;
-        Tue, 26 Apr 2022 01:32:55 -0700 (PDT)
+        Tue, 26 Apr 2022 04:41:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AB3D157DE4;
+        Tue, 26 Apr 2022 01:33:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 50BAC61805;
-        Tue, 26 Apr 2022 08:32:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BBFEC385A4;
-        Tue, 26 Apr 2022 08:32:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DFAE6B81CAF;
+        Tue, 26 Apr 2022 08:32:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42721C385A4;
+        Tue, 26 Apr 2022 08:32:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961974;
-        bh=vNZER2TKts6PtC4AE54x+Z+1WLkWB0I3R9Zd8FGTmt8=;
+        s=korg; t=1650961977;
+        bh=XC/PxJ890NE8IKU5ycw5MBJnxf3y3mMFkwqlK2hnpFw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LDubHCOzJBEVqkhGD1VukO/zuO0a89V+0Dt1L+Gj9ppIVTA4clCScKBcoGrzTDoZA
-         pJXoivhm+lX13LPUoJzUpBQ+A33J7E6NO8n2P7MtWUUpAGZ3COfQk1MQb9oi+79ruy
-         t+D719WGKtnza7CVQvL6l6tSBsH3wX9CbKdyyut0=
+        b=cL4mWgRStF5NsVgwdFFOqOKA7Gk+mDtduePrqWoeDOZefJ30rV3GSXF7DfGGOj6Ww
+         /I/SjtwxUiEJhwHblEL4aJZS3ebJfAiXZZqRv0u25gsNMG1vPGuastlMAGXQY7lKvv
+         4DUaqfyWsQcfGJzIIezlZSEPOqU0PBIt8utDhKSY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Zanussi <zanussi@kernel.org>,
-        Daniel Bristot de Oliveira <bristot@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.10 03/86] tracing: Dump stacktrace trigger to the corresponding instance
-Date:   Tue, 26 Apr 2022 10:20:31 +0200
-Message-Id: <20220426081741.304298513@linuxfoundation.org>
+        stable@vger.kernel.org, Bernice Zhang <bernice.zhang@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 30/86] dmaengine: idxd: add RO check for wq max_transfer_size write
+Date:   Tue, 26 Apr 2022 10:20:58 +0200
+Message-Id: <20220426081742.078041062@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
 References: <20220426081741.202366502@linuxfoundation.org>
@@ -50,47 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Bristot de Oliveira <bristot@kernel.org>
+From: Dave Jiang <dave.jiang@intel.com>
 
-commit ce33c845b030c9cf768370c951bc699470b09fa7 upstream.
+[ Upstream commit 505a2d1032ae656b0a8c736be110255503941cde ]
 
-The stacktrace event trigger is not dumping the stacktrace to the instance
-where it was enabled, but to the global "instance."
+Block wq_max_transfer_size_store() when the device is configured as
+read-only and not configurable.
 
-Use the private_data, pointing to the trigger file, to figure out the
-corresponding trace instance, and use it in the trigger action, like
-snapshot_trigger does.
-
-Link: https://lkml.kernel.org/r/afbb0b4f18ba92c276865bc97204d438473f4ebc.1645396236.git.bristot@kernel.org
-
-Cc: stable@vger.kernel.org
-Fixes: ae63b31e4d0e2 ("tracing: Separate out trace events from global variables")
-Reviewed-by: Tom Zanussi <zanussi@kernel.org>
-Tested-by: Tom Zanussi <zanussi@kernel.org>
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: d7aad5550eca ("dmaengine: idxd: add support for configurable max wq xfer size")
+Reported-by: Bernice Zhang <bernice.zhang@intel.com>
+Tested-by: Bernice Zhang <bernice.zhang@intel.com>
+Signed-off-by: Dave Jiang <dave.jiang@intel.com>
+Link: https://lore.kernel.org/r/164971488154.2200913.10706665404118545941.stgit@djiang5-desk3.ch.intel.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/trace/trace_events_trigger.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/dma/idxd/sysfs.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/kernel/trace/trace_events_trigger.c
-+++ b/kernel/trace/trace_events_trigger.c
-@@ -1219,7 +1219,14 @@ static void
- stacktrace_trigger(struct event_trigger_data *data, void *rec,
- 		   struct ring_buffer_event *event)
- {
--	trace_dump_stack(STACK_SKIP);
-+	struct trace_event_file *file = data->private_data;
-+	unsigned long flags;
-+
-+	if (file) {
-+		local_save_flags(flags);
-+		__trace_stack(file->tr, flags, STACK_SKIP, preempt_count());
-+	} else
-+		trace_dump_stack(STACK_SKIP);
- }
+diff --git a/drivers/dma/idxd/sysfs.c b/drivers/dma/idxd/sysfs.c
+index 5bf4b4be64e4..51af0dfc3c63 100644
+--- a/drivers/dma/idxd/sysfs.c
++++ b/drivers/dma/idxd/sysfs.c
+@@ -1098,6 +1098,9 @@ static ssize_t wq_max_transfer_size_store(struct device *dev, struct device_attr
+ 	u64 xfer_size;
+ 	int rc;
  
- static void
++	if (!test_bit(IDXD_FLAG_CONFIGURABLE, &idxd->flags))
++		return -EPERM;
++
+ 	if (wq->state != IDXD_WQ_DISABLED)
+ 		return -EPERM;
+ 
+-- 
+2.35.1
+
 
 
