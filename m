@@ -2,117 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D93F3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:02:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F1C4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:02:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344441AbiDZIFF (ORCPT
+        id S1344518AbiDZIFV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:05:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37440 "EHLO
+        Tue, 26 Apr 2022 04:05:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344533AbiDZIE5 (ORCPT
+        with ESMTP id S232960AbiDZIFT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:04:57 -0400
-Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BD872D1DA;
-        Tue, 26 Apr 2022 01:01:41 -0700 (PDT)
-Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-d39f741ba0so18585496fac.13;
-        Tue, 26 Apr 2022 01:01:41 -0700 (PDT)
+        Tue, 26 Apr 2022 04:05:19 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9F4C2FFE2
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 01:02:12 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id q8so6325096plx.3
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 01:02:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=+k/vWst8QqDFSt1ZAyLvE8FjMbyoQWQixLDB5Dm7QsI=;
-        b=Hp59PvT0XPuyWuOddkSu4ENmY7GjFtNdCn58WSscz4g6VOtKytsOrlOe4h52c5RNS8
-         ow0Y3exeppIMyqoJFD2g3KJDJp76xjq4JIQUVt1ub24NAp2Shv57E9JEMMo2Ddzfi1OF
-         cPiX/Znj4n9UVliSAqaSIGna/ikGAYmdyCVSNgfwiciN+0vXwSCPkfz/YcloqW+/r8QR
-         CEDJUfwdHjuk8onzLFDZWDkpiBYvUQhMr1lZZ51718rMSBjDePDeUeAvf+el0mOpdIcm
-         K1pYEyDAhC92GL7PcOsODs82FAYS14JqlY+HW8rXjVi0CyaSY3VkNWZWo+qkbzQLWuSk
-         V9GQ==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=sY4O+RzpKnSGDKBPK1hz7c+s2+2s7DFvtQjl7kYI0kE=;
+        b=km6eMTt1CnWFml1Gs1AUXYBobJZVkLujTH/tO/pU5SLaZN0ICyJbWPIkkcnemP/QA1
+         uBGCV124HoS/Wh6KMj8Bu5BtDPoVSaPwQ7dogVw/boUrG5lzVOGygFntdpO43BdeWIgj
+         mxEaGybKihC0VtzCb6lYr93OCVqwOkho4lehtZ5VCebI10At9BdrvMWR+10mBHXGdSMu
+         eRb9Ee3pU0RYRT0AaKZxOsEo8wJSsATJiI14Dt8w0Tma082AQrxFKQp4EkHJa1kZV9J5
+         ulbznt8l8ertyQxeTNzl+cN3GzGbPl0x5KktVuuQ9FpUKMbsiDEBftTmcS5EaNPBpoa9
+         qCZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=+k/vWst8QqDFSt1ZAyLvE8FjMbyoQWQixLDB5Dm7QsI=;
-        b=MomEbXAJGPk83gxzNLfr4eiaWyH608RsPczmUm4JhqRLy6DNsAVmUk6isgZh/huaLb
-         VUEMGoZ7Qe6JgmjjZ3bNLsQWKyeD4htJ3bFhvJL1Kzm3Y4iwalZs5nJaBns6LBrjM6te
-         oRbYC3upSeQFTOppP30N9nJzmHcTNzJ2UcEdJ1Hun1Lfd1VrV8QTDZMTDCpuu2cU6XGZ
-         4ws4tbjqqFJG14b5gfP3+JFnTa4yNKrvMUg2UHLzPPhYDKJTiV+Qd7QyWmfZASJrpVUS
-         BJa5sFNk2l7jyvZld6v/3RiMK4kn60Ki88h/UyrJbGgIHQZkxe5Q19WBwz68AtaPzU1y
-         /HfA==
-X-Gm-Message-State: AOAM532mfr5NcfLII1Xi6GEN75I3omNX8WEGwU/7liYORF88ajjD+LY3
-        26Rv+zY5iarEqe8qUbVptiG3/knfIvc=
-X-Google-Smtp-Source: ABdhPJyoj3KDX/uI0OjjYkVYttauPzLMsRpHV5Z3cGKt4H+TmaK3IiYsvbcxeMYpyYoJbIs+eyoqdw==
-X-Received: by 2002:a05:6870:4341:b0:d3:1412:8ecb with SMTP id x1-20020a056870434100b000d314128ecbmr8848810oah.36.1650960100917;
-        Tue, 26 Apr 2022 01:01:40 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id z5-20020a0568301da500b006054fd8c847sm4698847oti.11.2022.04.26.01.01.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Apr 2022 01:01:39 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <9f991b4d-8f02-6c07-a8b6-2861837a0224@roeck-us.net>
-Date:   Tue, 26 Apr 2022 01:01:37 -0700
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=sY4O+RzpKnSGDKBPK1hz7c+s2+2s7DFvtQjl7kYI0kE=;
+        b=P+DcmMQcG4cuv7GsHJaSkUAikLCQrJAIvBVo5w/OzM658cFyPSFbGTu0ODxNgH4pVI
+         LFaluJz2A9pSQy9/OPpTuPVdD7UWgrMb7f1le8A87JQfkRmx7xvXiE/zByFZNXohW0cp
+         mfEuaN8jxkR8AY/8LD5LCtwXp7bjVwNtAa311n5vFzcQ/q5dQV8py+jege4GozSWVtX3
+         PEkGAXXIM748gbRrhjO/sTmyKfW/aWWY26zRrzM9NHpa1fmC39xuITkcplzXjlNPkMiZ
+         62E6zLWTVWlS39Hi0DiMED4Vpxczo7LLOJBKF+7DxEprm5XY7mgpvTxxNvh7iqDrxuDk
+         9j9A==
+X-Gm-Message-State: AOAM531o7atb6LEiGX4DTSrPqeCAqjFb8EkoPViXCnVRkAoOUhy+kfFm
+        9xyvNu/MF9fFxAPO2YIXBFRI7X1QxSOSsw==
+X-Google-Smtp-Source: ABdhPJzmefDjeFZNT16cNedZlqvBpDb8CQECn14oYN1fVVbtSKAEykCNzNcCSTqTrif4lsSBsUKE4g==
+X-Received: by 2002:a17:903:1249:b0:154:c472:de6b with SMTP id u9-20020a170903124900b00154c472de6bmr22548931plh.38.1650960132296;
+        Tue, 26 Apr 2022 01:02:12 -0700 (PDT)
+Received: from localhost ([122.177.141.190])
+        by smtp.gmail.com with ESMTPSA id w123-20020a623081000000b005056a4d71e3sm14145005pfw.77.2022.04.26.01.02.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 01:02:11 -0700 (PDT)
+Date:   Tue, 26 Apr 2022 13:32:10 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Lukasz Luba <lukasz.luba@arm.com>
+Cc:     linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
+        rafael@kernel.org, daniel.lezcano@linaro.org, amitk@kernel.org,
+        rui.zhang@intel.com, amit.kachhap@gmail.com,
+        linux-pm@vger.kernel.org
+Subject: Re: [RFC PATCH v3 0/5] Introduce Cpufreq Active Stats
+Message-ID: <20220426080210.hvzrsa4kmxesn6dv@vireshk-i7>
+References: <20220406220809.22555-1-lukasz.luba@arm.com>
+ <20220426031125.ozaxwecwvuby6wo3@vireshk-i7>
+ <f6bb20c6-38a0-57d6-8979-d14e445da623@arm.com>
+ <20220426075402.qjpato6sqy2kes4x@vireshk-i7>
+ <9eac86b6-0221-0f62-ac4f-f9e3b1613422@arm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v4 4/4] watchdog: iTCO_wdg: Make code more clearly with
- macro definition
-Content-Language: en-US
-To:     Liu Xinpeng <liuxp11@chinatelecom.cn>, wim@linux-watchdog.org,
-        tzungbi@kernel.org
-Cc:     linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1650957029-910-1-git-send-email-liuxp11@chinatelecom.cn>
- <1650957029-910-5-git-send-email-liuxp11@chinatelecom.cn>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <1650957029-910-5-git-send-email-liuxp11@chinatelecom.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9eac86b6-0221-0f62-ac4f-f9e3b1613422@arm.com>
+User-Agent: NeoMutt/20180716-391-311a52
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/26/22 00:10, Liu Xinpeng wrote:
-> Using SET_NOIRQ_SYSTEM_SLEEP_PM_OPS reduces redundant code.
-> 
-> Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
-> Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
-> ---
->   drivers/watchdog/iTCO_wdt.c | 12 ++++--------
->   1 file changed, 4 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/watchdog/iTCO_wdt.c b/drivers/watchdog/iTCO_wdt.c
-> index 3f2f4343644f..8d24cf4f4ca3 100644
-> --- a/drivers/watchdog/iTCO_wdt.c
-> +++ b/drivers/watchdog/iTCO_wdt.c
-> @@ -635,22 +635,18 @@ static int iTCO_wdt_resume_noirq(struct device *dev)
->   
->   	return 0;
->   }
-> +#endif /* CONFIG_PM_SLEEP */
->   
->   static const struct dev_pm_ops iTCO_wdt_pm = {
-> -	.suspend_noirq = iTCO_wdt_suspend_noirq,
-> -	.resume_noirq = iTCO_wdt_resume_noirq,
-> +	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(iTCO_wdt_suspend_noirq,
-> +				      iTCO_wdt_resume_noirq)
->   };
->   
-> -#define ITCO_WDT_PM_OPS	(&iTCO_wdt_pm)
-> -#else
-> -#define ITCO_WDT_PM_OPS	NULL
-> -#endif /* CONFIG_PM_SLEEP */
-> -
->   static struct platform_driver iTCO_wdt_driver = {
->   	.probe          = iTCO_wdt_probe,
->   	.driver         = {
->   		.name   = DRV_NAME,
-> -		.pm     = ITCO_WDT_PM_OPS,
-> +		.pm     = &iTCO_wdt_pm,
->   	},
->   };
->   
-Sorry, I fail to see how this is an improvement.
+On 26-04-22, 08:59, Lukasz Luba wrote:
+> :) but I didn't dare to make it sysfs. I don't know if anything in
+> user-space would be interested (apart from my test scripts).
 
-Guenter
+Sure, I was talking about hierarchy in debugfs only. Will be useful if
+you can show how it looks and what all data is exposed.
+
+-- 
+viresh
