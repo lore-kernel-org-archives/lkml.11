@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E639EC43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:33:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BFFDC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:33:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345124AbiDZIgb (ORCPT
+        id S1345136AbiDZIgi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:36:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39894 "EHLO
+        Tue, 26 Apr 2022 04:36:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345140AbiDZIeH (ORCPT
+        with ESMTP id S1345160AbiDZIeK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:34:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1C936E559;
-        Tue, 26 Apr 2022 01:26:14 -0700 (PDT)
+        Tue, 26 Apr 2022 04:34:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A78E23A5E0;
+        Tue, 26 Apr 2022 01:26:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1D0CBB81A2F;
-        Tue, 26 Apr 2022 08:26:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 592C6C385A0;
-        Tue, 26 Apr 2022 08:26:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 445F1617AE;
+        Tue, 26 Apr 2022 08:26:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B942C385AC;
+        Tue, 26 Apr 2022 08:26:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961571;
-        bh=0vZXB5vHkSVgyeqeUig+TmgsDnocBTPVAPB5uaSY2XU=;
+        s=korg; t=1650961577;
+        bh=LeWPxh0IAzIoGKsay5d2EsBqNSqXGDoQrwxNNt9kzI8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xbV9rUjVNKznQTT4CYmGRzLNz6ZNh5vQLCv/6sgsHGV9i+qxVZ+Hac80TH3X6x0Pk
-         azxuNqJ0l7FANYb1oDWVmXjkKm7EeWuRjvrBRitTQaves94vLAB6sVp9EP50zzBSeN
-         hVVtJLEZ09yh/mxiIeLCD+tERfrXekPVVbrYo4r4=
+        b=Z6dbo6i3EkhM8uFWCUYvRBY2/TCF97me3BJF566yr+AYP9LgS5+btv+0FCUqiJ7Fi
+         9nsm5EXmnhBn4iP+qF8GQOo6bIAmOrHxWIszpFKWe402nWF8zGJHmQnIGqm/IQFteD
+         Jo3TS50Z7cVfQSkAgV6Ym6asDhmshltfn5PSGzwE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 12/53] dmaengine: imx-sdma: Fix error checking in sdma_event_remap
-Date:   Tue, 26 Apr 2022 10:20:52 +0200
-Message-Id: <20220426081736.015572465@linuxfoundation.org>
+        stable@vger.kernel.org, Flavio Leitner <fbl@redhat.com>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 14/53] net/packet: fix packet_sock xmit return value checking
+Date:   Tue, 26 Apr 2022 10:20:54 +0200
+Message-Id: <20220426081736.072486186@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081735.651926456@linuxfoundation.org>
 References: <20220426081735.651926456@linuxfoundation.org>
@@ -49,44 +51,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Hangbin Liu <liuhangbin@gmail.com>
 
-[ Upstream commit 7104b9cb35a33ad803a1adbbfa50569b008faf15 ]
+[ Upstream commit 29e8e659f984be00d75ec5fef4e37c88def72712 ]
 
-of_parse_phandle() returns NULL on errors, rather than error
-pointers. Using NULL check on grp_np to fix this.
+packet_sock xmit could be dev_queue_xmit, which also returns negative
+errors. So only checking positive errors is not enough, or userspace
+sendmsg may return success while packet is not send out.
 
-Fixes: d078cd1b4185 ("dmaengine: imx-sdma: Add imx6sx platform support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220308064952.15743-1-linmq006@gmail.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Move the net_xmit_errno() assignment in the braces as checkpatch.pl said
+do not use assignment in if condition.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: Flavio Leitner <fbl@redhat.com>
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/imx-sdma.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/packet/af_packet.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/dma/imx-sdma.c b/drivers/dma/imx-sdma.c
-index eea89c3b54c1..709ead443fc5 100644
---- a/drivers/dma/imx-sdma.c
-+++ b/drivers/dma/imx-sdma.c
-@@ -1771,7 +1771,7 @@ static int sdma_event_remap(struct sdma_engine *sdma)
- 	u32 reg, val, shift, num_map, i;
- 	int ret = 0;
+diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+index b951f411dded..f654f79e3310 100644
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -2791,8 +2791,9 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
  
--	if (IS_ERR(np) || IS_ERR(gpr_np))
-+	if (IS_ERR(np) || !gpr_np)
- 		goto out;
+ 		status = TP_STATUS_SEND_REQUEST;
+ 		err = po->xmit(skb);
+-		if (unlikely(err > 0)) {
+-			err = net_xmit_errno(err);
++		if (unlikely(err != 0)) {
++			if (err > 0)
++				err = net_xmit_errno(err);
+ 			if (err && __packet_get_status(po, ph) ==
+ 				   TP_STATUS_AVAILABLE) {
+ 				/* skb was destructed already */
+@@ -2993,8 +2994,12 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
+ 		skb->no_fcs = 1;
  
- 	event_remap = of_find_property(np, propname, NULL);
-@@ -1819,7 +1819,7 @@ static int sdma_event_remap(struct sdma_engine *sdma)
- 	}
+ 	err = po->xmit(skb);
+-	if (err > 0 && (err = net_xmit_errno(err)) != 0)
+-		goto out_unlock;
++	if (unlikely(err != 0)) {
++		if (err > 0)
++			err = net_xmit_errno(err);
++		if (err)
++			goto out_unlock;
++	}
  
- out:
--	if (!IS_ERR(gpr_np))
-+	if (gpr_np)
- 		of_node_put(gpr_np);
+ 	dev_put(dev);
  
- 	return ret;
 -- 
 2.35.1
 
