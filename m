@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 869B8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:23:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 583B5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:23:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242022AbiDZJ0k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:26:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54960 "EHLO
+        id S1346911AbiDZJ0w (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:26:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345893AbiDZJCp (ORCPT
+        with ESMTP id S1346714AbiDZJBK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:02:45 -0400
+        Tue, 26 Apr 2022 05:01:10 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A0DDDE082;
-        Tue, 26 Apr 2022 01:43:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFABF7DAAF;
+        Tue, 26 Apr 2022 01:43:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D929611BB;
-        Tue, 26 Apr 2022 08:43:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BD9EC385A4;
-        Tue, 26 Apr 2022 08:43:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D3FC60A56;
+        Tue, 26 Apr 2022 08:43:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7411FC385AC;
+        Tue, 26 Apr 2022 08:43:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962620;
-        bh=Urtn68nh2cnrStwYQ2ZjZ6cnqWEIAIE1PNUgiWD29HA=;
+        s=korg; t=1650962605;
+        bh=dMzO9NbcYCk4F9iz1CCQtjpG4YJv/4z7OV6cEnqqQAs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VVgc9mpBpsriNPJYm8w8Cpker9DNrhBMOwggAPaIF3LvUNxWeBLHJpMdf6AcBtMlE
-         S1sohlR4T5ioJSFx+GXvvbVDEKIgiTscXC73ofgAjNarbK5PDXQGjAYhR6wvr7TYIG
-         7NY8lA0HrifQvelyu/skr21qd3CPZJhcSXGxuaWA=
+        b=ZE8chdlzUcDBA5OxvaLbVZNLJ8yaKoXSRF7Vs267gZpFDl+m37RgVvsV5+LHx6kF0
+         nT3MO8L4azSoy5ao0q7CwKP9t1xVRctHMXs1wIa4YY5WPxAwIQZzmwLv440vYnv0XP
+         tdpBlvOHMOeranW3WSZRe9Ymiyu1rIFiqRxmAM7o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Flavio Leitner <fbl@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 033/146] net/packet: fix packet_sock xmit return value checking
-Date:   Tue, 26 Apr 2022 10:20:28 +0200
-Message-Id: <20220426081750.998058054@linuxfoundation.org>
+        stable@vger.kernel.org, Jianglei Nie <niejianglei2021@163.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH 5.17 029/146] ice: Fix memory leak in ice_get_orom_civd_data()
+Date:   Tue, 26 Apr 2022 10:20:24 +0200
+Message-Id: <20220426081750.886273697@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -50,57 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangbin Liu <liuhangbin@gmail.com>
+From: Jianglei Nie <niejianglei2021@163.com>
 
-[ Upstream commit 29e8e659f984be00d75ec5fef4e37c88def72712 ]
+[ Upstream commit 7c8881b77908a51814a050da408c89f1a25b7fb7 ]
 
-packet_sock xmit could be dev_queue_xmit, which also returns negative
-errors. So only checking positive errors is not enough, or userspace
-sendmsg may return success while packet is not send out.
+A memory chunk was allocated for orom_data in ice_get_orom_civd_data()
+by vzmalloc(). But when ice_read_flash_module() fails, the allocated
+memory is not freed, which will lead to a memory leak.
 
-Move the net_xmit_errno() assignment in the braces as checkpatch.pl said
-do not use assignment in if condition.
+We can fix it by freeing the orom_data when ce_read_flash_module() fails.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-by: Flavio Leitner <fbl@redhat.com>
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: af18d8866c80 ("ice: reduce time to read Option ROM CIVD data")
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/packet/af_packet.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_nvm.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index a7273af2d900..e3c60251e708 100644
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -2856,8 +2856,9 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
- 
- 		status = TP_STATUS_SEND_REQUEST;
- 		err = po->xmit(skb);
--		if (unlikely(err > 0)) {
--			err = net_xmit_errno(err);
-+		if (unlikely(err != 0)) {
-+			if (err > 0)
-+				err = net_xmit_errno(err);
- 			if (err && __packet_get_status(po, ph) ==
- 				   TP_STATUS_AVAILABLE) {
- 				/* skb was destructed already */
-@@ -3058,8 +3059,12 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
- 		skb->no_fcs = 1;
- 
- 	err = po->xmit(skb);
--	if (err > 0 && (err = net_xmit_errno(err)) != 0)
--		goto out_unlock;
-+	if (unlikely(err != 0)) {
-+		if (err > 0)
-+			err = net_xmit_errno(err);
-+		if (err)
-+			goto out_unlock;
-+	}
- 
- 	dev_put(dev);
- 
+diff --git a/drivers/net/ethernet/intel/ice/ice_nvm.c b/drivers/net/ethernet/intel/ice/ice_nvm.c
+index 4eb0599714f4..13cdb5ea594d 100644
+--- a/drivers/net/ethernet/intel/ice/ice_nvm.c
++++ b/drivers/net/ethernet/intel/ice/ice_nvm.c
+@@ -641,6 +641,7 @@ ice_get_orom_civd_data(struct ice_hw *hw, enum ice_bank_select bank,
+ 	status = ice_read_flash_module(hw, bank, ICE_SR_1ST_OROM_BANK_PTR, 0,
+ 				       orom_data, hw->flash.banks.orom_size);
+ 	if (status) {
++		vfree(orom_data);
+ 		ice_debug(hw, ICE_DBG_NVM, "Unable to read Option ROM data\n");
+ 		return status;
+ 	}
 -- 
 2.35.1
 
