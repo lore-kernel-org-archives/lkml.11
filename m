@@ -2,129 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1AC9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 12:43:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6FA6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 12:46:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350192AbiDZMqN (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 08:46:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43254 "EHLO
+        id S241520AbiDZMta (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 08:49:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350193AbiDZMqK (ORCPT
+        with ESMTP id S231913AbiDZMt2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 08:46:10 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 979A717B381
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 05:43:02 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 40CBD23A;
-        Tue, 26 Apr 2022 05:43:02 -0700 (PDT)
-Received: from lakrids (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5BD4B3F774;
-        Tue, 26 Apr 2022 05:43:01 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 13:42:31 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Kefeng Wang <wangkefeng.wang@huawei.com>
-Cc:     elver@google.com, catalin.marinas@arm.com, will@kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] arm64: kcsan: Fix kcsan test_barrier fail and panic
-Message-ID: <Ymfot/Le95Enuxqb@lakrids>
-References: <20220426081700.1376542-1-wangkefeng.wang@huawei.com>
+        Tue, 26 Apr 2022 08:49:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF77116E852;
+        Tue, 26 Apr 2022 05:46:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BE446191D;
+        Tue, 26 Apr 2022 12:46:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C915C385AA;
+        Tue, 26 Apr 2022 12:46:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650977180;
+        bh=LzTZF7bfozk4lHwG9l0c5q4GlvxB81IoFKbp6ejgylo=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=CutA1h0W+bRHcor5gFj7LOGk/wAI7QQs/9seUcK4kWPBNV4TZRFhX8Jmq1cjydUuh
+         lIKyXQHWUOUNcsBEWOTGh5aPPtYrgAWYI6qL3ALMXAyHVxAhaB6Tvc29rOzvhhVxCG
+         ZPMc2ya7Bbty80JbE/VHYvtoWUi2HHEowAJ4mTpqgnG/hBOU57TAaZZO+6ZvxhWPd8
+         iGBFkPtHR0nhPyYNjSLnqB+5oI2cDEyhbNTj0KZZai9U/IbuxLpAFEJy+o1PV4jrfN
+         2RLgBVxaHy9VsgiVvd8MaGJ4wmr4O0oArenSBe279AGpGZvo6dA5Yi5hUvub059EQ0
+         mIqV4iGeoHSAw==
+Message-ID: <3ce5f3b8-3c6b-1e83-94c2-84f4ad8aa9dc@kernel.org>
+Date:   Tue, 26 Apr 2022 14:46:14 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220426081700.1376542-1-wangkefeng.wang@huawei.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v4 0/5] add xhci-exynos driver
+Content-Language: en-US
+To:     Daehwan Jung <dh10.jung@samsung.com>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     "open list:USB XHCI DRIVER" <linux-usb@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Howard Yen <howardyen@google.com>,
+        Jack Pham <jackp@codeaurora.org>,
+        Puma Hsu <pumahsu@google.com>,
+        "J . Avila" <elavila@google.com>, sc.suh@samsung.com,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+References: <CGME20220426092019epcas2p2ef5dfde273edaaadc2ff74414f1b2c7a@epcas2p2.samsung.com>
+ <1650964728-175347-1-git-send-email-dh10.jung@samsung.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <1650964728-175347-1-git-send-email-dh10.jung@samsung.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On Tue, Apr 26, 2022 at 08:17:00AM +0000, Kefeng Wang wrote:
-> As "kcsan: Support detecting a subset of missing memory barriers"
-> introduced KCSAN_STRICT which make kcsan detects more missing memory
-> barrier, but arm64 don't have KCSAN instrumentation for barriers, so
-> the new selftest test_barrier() will fail, then panic.
+On 26/04/2022 11:18, Daehwan Jung wrote:
+> This patchset is for Samsung Exynos xhci host conroller. It uses xhci-plat
+> driver mainly and extends some functions by xhci hooks and overrides.
 > 
-> Let's prefix all barriers with __ on arm64, as asm-generic/barriers.h
-> defined the final instrumented version of these barriers, which will
-> fix the above issues.
+> This driver supports USB offload which makes Co-processor to use
+> some memories of xhci. Especially it's useful for USB Audio scenario.
+> Audio stream would get shortcut because Co-processor directly write/read
+> data in xhci memories. It could get speed-up using faster memory like SRAM.
+> That's why this gives vendors flexibilty of memory management. This feature
+> is done with xhci hooks and overrides.
 > 
-> Fixes: dd03762ab608 ("arm64: Enable KCSAN")
-> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
-
-I don't think the Fixes tag is necessary given this is a new feature
-which depends upon EXPERT, and I'm worried it encourages backporting
-this into a kernel where it would be broken, so I'd prefer we drop that
-tag.
-
-IIUC when we originially looked at this the instrumentation wasn't safe
-and would violate noinstr requirements. Looking at linux/kcsan-checks.h,
-the comments block for __KCSAN_BARRIER_TO_SIGNAL_FENCE() say that it
-will respect __nokcsan, so it looks like that might be safe now.
-
-It looks like that's the case as of commit:
-  
-  bd3d5bd1a0ad3864 ("kcsan: Support WEAK_MEMORY with Clang where no objtool support exists")
-
-... which requires clang 14.0.0+.
-
-That looks to have gone in concurrently with dd03762ab608, but is
-clearly a prerequisite, so as above I'd strongly prefer we drop the
-Fixes tag.
-
-It would be good if we could note that explicitly in the commit message.
-
-Have you eyeballed the generated assembly to verify that this works as
-expected for __nokcsan ?
-
-Thanks,
-Mark.
-
-> ---
->  arch/arm64/include/asm/barrier.h | 12 ++++++------
->  include/asm-generic/barrier.h    |  4 ++++
->  2 files changed, 10 insertions(+), 6 deletions(-)
+> Changes in v2 :
+> - Fix commit message by adding Signed-off-by in each patch.
+> - Fix conflict on latest.
 > 
-> diff --git a/arch/arm64/include/asm/barrier.h b/arch/arm64/include/asm/barrier.h
-> index 62217be36217..9760a8d4ed0a 100644
-> --- a/arch/arm64/include/asm/barrier.h
-> +++ b/arch/arm64/include/asm/barrier.h
-> @@ -46,13 +46,13 @@
->  #define pmr_sync()	do {} while (0)
->  #endif
->  
-> -#define mb()		dsb(sy)
-> -#define rmb()		dsb(ld)
-> -#define wmb()		dsb(st)
-> +#define __mb()		dsb(sy)
-> +#define __rmb()		dsb(ld)
-> +#define __wmb()		dsb(st)
->  
-> -#define dma_mb()	dmb(osh)
-> -#define dma_rmb()	dmb(oshld)
-> -#define dma_wmb()	dmb(oshst)
-> +#define __dma_mb()	dmb(osh)
-> +#define __dma_rmb()	dmb(oshld)
-> +#define __dma_wmb()	dmb(oshst)
->  
->  #define io_stop_wc()	dgh()
->  
-> diff --git a/include/asm-generic/barrier.h b/include/asm-generic/barrier.h
-> index fd7e8fbaeef1..18863c50e9ce 100644
-> --- a/include/asm-generic/barrier.h
-> +++ b/include/asm-generic/barrier.h
-> @@ -38,6 +38,10 @@
->  #define wmb()	do { kcsan_wmb(); __wmb(); } while (0)
->  #endif
->  
-> +#ifdef __dma_mb
-> +#define dma_mb()	do { kcsan_mb(); __dma_mb(); } while (0)
-> +#endif
-> +
->  #ifdef __dma_rmb
->  #define dma_rmb()	do { kcsan_rmb(); __dma_rmb(); } while (0)
->  #endif
-> -- 
-> 2.27.0
+> Changes in v3 :
+> - Remove export symbols and xhci hooks which xhci-exynos don't need.
+> - Modify commit message to clarify why it needs to export symbols.
+> - Check compiling of xhci-exynos.
 > 
+> Changes in v4 :
+> - Modify commit message to clarify why it needs to export symbols.
+> - Add a function for override of hc driver in xhci-plat.
+> - Make xhci-exynos extending xhci-plat by xhci hooks and overrides.
+>   (vendor_init / vendor_cleanup hooks are useful from here v4)
+> - Change the term (USB offload -> xhci-exynos) on subject of patches.
+> 
+
+You received comments already that you need to base your work on recent
+Linux kernel and use scripts/get_maintainers.pl to notify necessary
+parties. This is the fourth patchset and still you did not do it.
+
+Maybe there is some misunderstanding or trouble using
+scripts/get_maintainers.pl, so could you clarify:
+
+1. What is this based on? Output of: git describe
+
+2. What does the scripts/get_maintainers.pl print when you run on this
+patchset?
+
+
+Best regards,
+Krzysztof
