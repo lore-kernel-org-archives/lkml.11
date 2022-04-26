@@ -2,95 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D95CCC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A40A7C43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:03:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346974AbiDZJFJ (ORCPT
+        id S1346745AbiDZJEz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:05:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56552 "EHLO
+        Tue, 26 Apr 2022 05:04:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347164AbiDZIpy (ORCPT
+        with ESMTP id S1347166AbiDZIpz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:45:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 651CD7B54E;
+        Tue, 26 Apr 2022 04:45:55 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9A57B552;
         Tue, 26 Apr 2022 01:37:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1BFC1B81D18;
-        Tue, 26 Apr 2022 08:37:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 882E3C385A0;
-        Tue, 26 Apr 2022 08:37:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962252;
-        bh=OaPySKJByytJen5e1W0EMoC2QsfHMewwNTZ8bZVe6E8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X4MG1tP4f9T64UfIKE550Ek6BADtlxLSRyGa2lt2JJUfV2JVUobGXSNpxf/YWGW9c
-         XT5fcXFqwJ0qK3VxT9Bz0d2jyzDTc5yLLBNDunNISyiTNC4sNud2tRhOTqndyPaCQr
-         DjmtxsZgLy/evMlNJSxc4IAJ1DLzqvTmyXXJWDJE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tony Lu <tonylu@linux.alibaba.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        syzbot+6e29a053eb165bd50de5@syzkaller.appspotmail.com
-Subject: [PATCH 5.15 034/124] net/smc: Fix sock leak when release after smc_shutdown()
-Date:   Tue, 26 Apr 2022 10:20:35 +0200
-Message-Id: <20220426081748.274052593@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
-References: <20220426081747.286685339@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KnZxn0XKnzhYqG;
+        Tue, 26 Apr 2022 16:37:17 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 26 Apr 2022 16:37:33 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 26 Apr
+ 2022 16:37:33 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-mtd@lists.infradead.org>,
+        <linux-media@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <linaro-mm-sig@lists.linaro.org>
+CC:     <miquel.raynal@bootlin.com>, <richard@nod.at>
+Subject: [PATCH 2/3] mtd: rawnand: intel: fix possible null-ptr-deref in ebu_nand_probe()
+Date:   Tue, 26 Apr 2022 16:49:12 +0800
+Message-ID: <20220426084913.4021868-2-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220426084913.4021868-1-yangyingliang@huawei.com>
+References: <20220426084913.4021868-1-yangyingliang@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tony Lu <tonylu@linux.alibaba.com>
+It will cause null-ptr-deref when using 'res', if platform_get_resource()
+returns NULL, so move using 'res' after devm_ioremap_resource() that
+will check it to avoid null-ptr-deref.
 
-[ Upstream commit 1a74e99323746353bba11562a2f2d0aa8102f402 ]
-
-Since commit e5d5aadcf3cd ("net/smc: fix sk_refcnt underflow on linkdown
-and fallback"), for a fallback connection, __smc_release() does not call
-sock_put() if its state is already SMC_CLOSED.
-
-When calling smc_shutdown() after falling back, its state is set to
-SMC_CLOSED but does not call sock_put(), so this patch calls it.
-
-Reported-and-tested-by: syzbot+6e29a053eb165bd50de5@syzkaller.appspotmail.com
-Fixes: e5d5aadcf3cd ("net/smc: fix sk_refcnt underflow on linkdown and fallback")
-Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
-Acked-by: Karsten Graul <kgraul@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 0b1039f016e8 ("mtd: rawnand: Add NAND controller support on Intel LGM SoC")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
- net/smc/af_smc.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/mtd/nand/raw/intel-nand-controller.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index fa8897497dcc..499058248bdb 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -2332,8 +2332,10 @@ static int smc_shutdown(struct socket *sock, int how)
- 	if (smc->use_fallback) {
- 		rc = kernel_sock_shutdown(smc->clcsock, how);
- 		sk->sk_shutdown = smc->clcsock->sk->sk_shutdown;
--		if (sk->sk_shutdown == SHUTDOWN_MASK)
-+		if (sk->sk_shutdown == SHUTDOWN_MASK) {
- 			sk->sk_state = SMC_CLOSED;
-+			sock_put(sk);
-+		}
- 		goto out;
- 	}
- 	switch (how) {
+diff --git a/drivers/mtd/nand/raw/intel-nand-controller.c b/drivers/mtd/nand/raw/intel-nand-controller.c
+index 7c1c80dae826..e91b879b32bd 100644
+--- a/drivers/mtd/nand/raw/intel-nand-controller.c
++++ b/drivers/mtd/nand/raw/intel-nand-controller.c
+@@ -619,9 +619,9 @@ static int ebu_nand_probe(struct platform_device *pdev)
+ 	resname = devm_kasprintf(dev, GFP_KERNEL, "nand_cs%d", cs);
+ 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, resname);
+ 	ebu_host->cs[cs].chipaddr = devm_ioremap_resource(dev, res);
+-	ebu_host->cs[cs].nand_pa = res->start;
+ 	if (IS_ERR(ebu_host->cs[cs].chipaddr))
+ 		return PTR_ERR(ebu_host->cs[cs].chipaddr);
++	ebu_host->cs[cs].nand_pa = res->start;
+ 
+ 	ebu_host->clk = devm_clk_get(dev, NULL);
+ 	if (IS_ERR(ebu_host->clk))
 -- 
-2.35.1
-
-
+2.25.1
 
