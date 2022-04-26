@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C7E1C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C69EC41535
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:12:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346965AbiDZJNe (ORCPT
+        id S1347021AbiDZJNj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:13:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52650 "EHLO
+        Tue, 26 Apr 2022 05:13:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347267AbiDZIvQ (ORCPT
+        with ESMTP id S1347531AbiDZIvm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:51:16 -0400
+        Tue, 26 Apr 2022 04:51:42 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4919E55BF;
-        Tue, 26 Apr 2022 01:40:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 196C71402C;
+        Tue, 26 Apr 2022 01:40:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA2E7B81CF0;
-        Tue, 26 Apr 2022 08:40:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16685C385A4;
-        Tue, 26 Apr 2022 08:40:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7A6C4B81D1A;
+        Tue, 26 Apr 2022 08:40:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD4B8C385A0;
+        Tue, 26 Apr 2022 08:40:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962402;
-        bh=rliS89dJcyrybqgaURTUi7V7HnjX9oapKH2QCwTkQFM=;
+        s=korg; t=1650962431;
+        bh=6BWfZPAJuPEtXnQFvxAC3x0F9LeiCMCnFIwNDSglij4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=19pFd4clz6loMObAvdmjh3zADxkvWhf2qz+7YYpqOXadAA3LI0FE9ncyhBHJeoMlU
-         zai9Up9CCiTsBylY4HKXbH17VcdG/8Fk45hxWoNWplKzkLXFAkf5m9oGEvpqK8yKcL
-         tiLbCi0Qf7pHbH5468x14YsT6g/e3mFBTihAvSMc=
+        b=LOaLTrshbapj2/Fx+dyyayWIoT7GQigcn8R//ttdklq4XThZFjbhom509Vi6Q92Gw
+         D/2ovNugStBY2UtBL/Lkh4C0IE+/Wwi6hoDataRNB+0SmBQ7y/b0LViJXrfIAbTMAE
+         DKneEAKEju+DQr1BqWeEmElsgsD9LFMCBelCCxU8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        Madhavan Srinivasan <maddy@linux.vnet.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 044/124] net: mscc: ocelot: fix broken IP multicast flooding
-Date:   Tue, 26 Apr 2022 10:20:45 +0200
-Message-Id: <20220426081748.555271039@linuxfoundation.org>
+Subject: [PATCH 5.15 095/124] powerpc/perf: Fix power9 event alternatives
+Date:   Tue, 26 Apr 2022 10:21:36 +0200
+Message-Id: <20220426081749.999848649@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -50,43 +52,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
 
-[ Upstream commit 4cf35a2b627a020fe1a6b6fc7a6a12394644e474 ]
+[ Upstream commit 0dcad700bb2776e3886fe0a645a4bf13b1e747cd ]
 
-When the user runs:
-bridge link set dev $br_port mcast_flood on
+When scheduling a group of events, there are constraint checks done to
+make sure all events can go in a group. Example, one of the criteria is
+that events in a group cannot use the same PMC. But platform specific
+PMU supports alternative event for some of the event codes. During
+perf_event_open(), if any event group doesn't match constraint check
+criteria, further lookup is done to find alternative event.
 
-this command should affect not only L2 multicast, but also IPv4 and IPv6
-multicast.
+By current design, the array of alternatives events in PMU code is
+expected to be sorted by column 0. This is because in
+find_alternative() the return criteria is based on event code
+comparison. ie. "event < ev_alt[i][0])". This optimisation is there
+since find_alternative() can be called multiple times. In power9 PMU
+code, the alternative event array is not sorted properly and hence there
+is breakage in finding alternative events.
 
-In the Ocelot switch, unknown multicast gets flooded according to
-different PGIDs according to its type, and PGID_MC only handles L2
-multicast. Therefore, by leaving PGID_MCIPV4 and PGID_MCIPV6 at their
-default value of 0, unknown IP multicast traffic is never flooded.
+To work with existing logic, fix the alternative event array to be
+sorted by column 0 for power9-pmu.c
 
-Fixes: 421741ea5672 ("net: mscc: ocelot: offload bridge port flags to device")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Link: https://lore.kernel.org/r/20220415151950.219660-1-vladimir.oltean@nxp.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Results:
+
+With alternative events, multiplexing can be avoided. That is, for
+example, in power9 PM_LD_MISS_L1 (0x3e054) has alternative event,
+PM_LD_MISS_L1_ALT (0x400f0). This is an identical event which can be
+programmed in a different PMC.
+
+Before:
+
+ # perf stat -e r3e054,r300fc
+
+ Performance counter stats for 'system wide':
+
+           1057860      r3e054              (50.21%)
+               379      r300fc              (49.79%)
+
+       0.944329741 seconds time elapsed
+
+Since both the events are using PMC3 in this case, they are
+multiplexed here.
+
+After:
+
+ # perf stat -e r3e054,r300fc
+
+ Performance counter stats for 'system wide':
+
+           1006948      r3e054
+               182      r300fc
+
+Fixes: 91e0bd1e6251 ("powerpc/perf: Add PM_LD_MISS_L1 and PM_BR_2PATH to power9 event list")
+Signed-off-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+Reviewed-by: Madhavan Srinivasan <maddy@linux.vnet.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220419114828.89843-1-atrajeev@linux.vnet.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mscc/ocelot.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/powerpc/perf/power9-pmu.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 6aad0953e8fe..a59300d9e000 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -1932,6 +1932,8 @@ static void ocelot_port_set_mcast_flood(struct ocelot *ocelot, int port,
- 		val = BIT(port);
+diff --git a/arch/powerpc/perf/power9-pmu.c b/arch/powerpc/perf/power9-pmu.c
+index ff3382140d7e..cbdd074ee2a7 100644
+--- a/arch/powerpc/perf/power9-pmu.c
++++ b/arch/powerpc/perf/power9-pmu.c
+@@ -133,11 +133,11 @@ int p9_dd22_bl_ev[] = {
  
- 	ocelot_rmw_rix(ocelot, val, BIT(port), ANA_PGID_PGID, PGID_MC);
-+	ocelot_rmw_rix(ocelot, val, BIT(port), ANA_PGID_PGID, PGID_MCIPV4);
-+	ocelot_rmw_rix(ocelot, val, BIT(port), ANA_PGID_PGID, PGID_MCIPV6);
- }
+ /* Table of alternatives, sorted by column 0 */
+ static const unsigned int power9_event_alternatives[][MAX_ALT] = {
+-	{ PM_INST_DISP,			PM_INST_DISP_ALT },
+-	{ PM_RUN_CYC_ALT,		PM_RUN_CYC },
+-	{ PM_RUN_INST_CMPL_ALT,		PM_RUN_INST_CMPL },
+-	{ PM_LD_MISS_L1,		PM_LD_MISS_L1_ALT },
+ 	{ PM_BR_2PATH,			PM_BR_2PATH_ALT },
++	{ PM_INST_DISP,			PM_INST_DISP_ALT },
++	{ PM_RUN_CYC_ALT,               PM_RUN_CYC },
++	{ PM_LD_MISS_L1,                PM_LD_MISS_L1_ALT },
++	{ PM_RUN_INST_CMPL_ALT,         PM_RUN_INST_CMPL },
+ };
  
- static void ocelot_port_set_bcast_flood(struct ocelot *ocelot, int port,
+ static int power9_get_alternatives(u64 event, unsigned int flags, u64 alt[])
 -- 
 2.35.1
 
