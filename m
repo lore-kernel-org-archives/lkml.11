@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4EA2C352A1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66D30C4707E
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:48:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347697AbiDZIvx (ORCPT
+        id S1346261AbiDZIt7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:51:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59258 "EHLO
+        Tue, 26 Apr 2022 04:49:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345351AbiDZIkR (ORCPT
+        with ESMTP id S1345660AbiDZIjU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:40:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6803F151F32;
-        Tue, 26 Apr 2022 01:32:41 -0700 (PDT)
+        Tue, 26 Apr 2022 04:39:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89B153DA6F;
+        Tue, 26 Apr 2022 01:30:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E2300618A0;
-        Tue, 26 Apr 2022 08:32:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B05DCC385A0;
-        Tue, 26 Apr 2022 08:32:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3936A617A4;
+        Tue, 26 Apr 2022 08:30:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A42FC385A0;
+        Tue, 26 Apr 2022 08:30:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961960;
-        bh=Iy8GuK4pdJNvWwEuvGN26r2gVYg22rACavhfjC3rnwo=;
+        s=korg; t=1650961838;
+        bh=XGSb/BaOFZrY1oZd6WGEMKQ89ZzLJwd0bo7KPM/hLO0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P7UgwYZh7IJmAhr3JfBjKxt4hsmm067xUZ66WnAuOtOSMPLSmjZh2G/Ysxh6XoEtn
-         76S/wzEIpv4rr10rc0a44CaBRu2aDVbHwTQ68+3h0X5Cwl1MGU1bZAfKlFyPubaNpA
-         Jo3A1vPp4tleVNUd9oTJ140stsWp6fq9FRigdWFQ=
+        b=LwFGwYEsJxxYLBIpU6hnO3Vi8ye50WX+rKTytyvXTHarMZo/qWBPZQx8QTSmjwErh
+         T9Bu5spuoWvxnceEQO722F2+FyWKAj51zG2fhLtTPsVMAwk4ZafryEzwLQGvCO5Dke
+         r8SzrOY53O6baMsLKEUUdu2RVMxn4UH5EF2Gz6Cs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ido Schimmel <idosch@idosch.org>,
-        David Ahern <dsahern@kernel.org>,
-        Alexis Bauvin <abauvin@scaleway.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 25/86] l3mdev: l3mdev_master_upper_ifindex_by_index_rcu should be using netdev_master_upper_dev_get_rcu
-Date:   Tue, 26 Apr 2022 10:20:53 +0200
-Message-Id: <20220426081741.936430207@linuxfoundation.org>
+        stable@vger.kernel.org, Ricardo Dias <rdias@singlestore.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Benjamin Herrenschmidt <benh@amazon.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.4 08/62] tcp: Fix potential use-after-free due to double kfree()
+Date:   Tue, 26 Apr 2022 10:20:48 +0200
+Message-Id: <20220426081737.460429927@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
-References: <20220426081741.202366502@linuxfoundation.org>
+In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
+References: <20220426081737.209637816@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,64 +52,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Ahern <dsahern@kernel.org>
+From: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 
-[ Upstream commit 83daab06252ee5d0e1f4373ff28b79304945fc19 ]
+commit c89dffc70b340780e5b933832d8c3e045ef3791e upstream.
 
-Next patch uses l3mdev_master_upper_ifindex_by_index_rcu which throws
-a splat with debug kernels:
+Receiving ACK with a valid SYN cookie, cookie_v4_check() allocates struct
+request_sock and then can allocate inet_rsk(req)->ireq_opt. After that,
+tcp_v4_syn_recv_sock() allocates struct sock and copies ireq_opt to
+inet_sk(sk)->inet_opt. Normally, tcp_v4_syn_recv_sock() inserts the full
+socket into ehash and sets NULL to ireq_opt. Otherwise,
+tcp_v4_syn_recv_sock() has to reset inet_opt by NULL and free the full
+socket.
 
-[13783.087570] ------------[ cut here ]------------
-[13783.093974] RTNL: assertion failed at net/core/dev.c (6702)
-[13783.100761] WARNING: CPU: 3 PID: 51132 at net/core/dev.c:6702 netdev_master_upper_dev_get+0x16a/0x1a0
+The commit 01770a1661657 ("tcp: fix race condition when creating child
+sockets from syncookies") added a new path, in which more than one cores
+create full sockets for the same SYN cookie. Currently, the core which
+loses the race frees the full socket without resetting inet_opt, resulting
+in that both sock_put() and reqsk_put() call kfree() for the same memory:
 
-[13783.184226] CPU: 3 PID: 51132 Comm: kworker/3:3 Not tainted 5.17.0-custom-100090-g6f963aafb1cc #682
-[13783.194788] Hardware name: Mellanox Technologies Ltd. MSN2010/SA002610, BIOS 5.6.5 08/24/2017
-[13783.204755] Workqueue: mld mld_ifc_work [ipv6]
-[13783.210338] RIP: 0010:netdev_master_upper_dev_get+0x16a/0x1a0
-[13783.217209] Code: 0f 85 e3 fe ff ff e8 65 ac ec fe ba 2e 1a 00 00 48 c7 c6 60 6f 38 83 48 c7 c7 c0 70 38 83 c6 05 5e b5 d7 01 01 e8 c6 29 52 00 <0f> 0b e9 b8 fe ff ff e8 5a 6c 35 ff e9 1c ff ff ff 48 89 ef e8 7d
-[13783.238659] RSP: 0018:ffffc9000b37f5a8 EFLAGS: 00010286
-[13783.244995] RAX: 0000000000000000 RBX: ffff88812ee5c000 RCX: 0000000000000000
-[13783.253379] RDX: ffff88811ce09d40 RSI: ffffffff812d0fcd RDI: fffff5200166fea7
-[13783.261769] RBP: 0000000000000000 R08: 0000000000000001 R09: ffff8882375f4287
-[13783.270138] R10: ffffed1046ebe850 R11: 0000000000000001 R12: dffffc0000000000
-[13783.278510] R13: 0000000000000275 R14: ffffc9000b37f688 R15: ffff8881273b4af8
-[13783.286870] FS:  0000000000000000(0000) GS:ffff888237400000(0000) knlGS:0000000000000000
-[13783.296352] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[13783.303177] CR2: 00007ff25fc9b2e8 CR3: 0000000174d23000 CR4: 00000000001006e0
-[13783.311546] Call Trace:
-[13783.314660]  <TASK>
-[13783.317553]  l3mdev_master_upper_ifindex_by_index_rcu+0x43/0xe0
-...
+  sock_put
+    sk_free
+      __sk_free
+        sk_destruct
+          __sk_destruct
+            sk->sk_destruct/inet_sock_destruct
+              kfree(rcu_dereference_protected(inet->inet_opt, 1));
 
-Change l3mdev_master_upper_ifindex_by_index_rcu to use
-netdev_master_upper_dev_get_rcu.
+  reqsk_put
+    reqsk_free
+      __reqsk_free
+        req->rsk_ops->destructor/tcp_v4_reqsk_destructor
+          kfree(rcu_dereference_protected(inet_rsk(req)->ireq_opt, 1));
 
-Fixes: 6a6d6681ac1a ("l3mdev: add function to retreive upper master")
-Signed-off-by: Ido Schimmel <idosch@idosch.org>
-Signed-off-by: David Ahern <dsahern@kernel.org>
-Cc: Alexis Bauvin <abauvin@scaleway.com>
+Calling kmalloc() between the double kfree() can lead to use-after-free, so
+this patch fixes it by setting NULL to inet_opt before sock_put().
+
+As a side note, this kind of issue does not happen for IPv6. This is
+because tcp_v6_syn_recv_sock() clones both ipv6_opt and pktopts which
+correspond to ireq_opt in IPv4.
+
+Fixes: 01770a166165 ("tcp: fix race condition when creating child sockets from syncookies")
+CC: Ricardo Dias <rdias@singlestore.com>
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Reviewed-by: Benjamin Herrenschmidt <benh@amazon.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Link: https://lore.kernel.org/r/20210118055920.82516-1-kuniyu@amazon.co.jp
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/l3mdev/l3mdev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/tcp_ipv4.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/l3mdev/l3mdev.c b/net/l3mdev/l3mdev.c
-index 864326f150e2..f2c3a61ad134 100644
---- a/net/l3mdev/l3mdev.c
-+++ b/net/l3mdev/l3mdev.c
-@@ -147,7 +147,7 @@ int l3mdev_master_upper_ifindex_by_index_rcu(struct net *net, int ifindex)
- 
- 	dev = dev_get_by_index_rcu(net, ifindex);
- 	while (dev && !netif_is_l3_master(dev))
--		dev = netdev_master_upper_dev_get(dev);
-+		dev = netdev_master_upper_dev_get_rcu(dev);
- 
- 	return dev ? dev->ifindex : 0;
- }
--- 
-2.35.1
-
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -1503,6 +1503,8 @@ struct sock *tcp_v4_syn_recv_sock(const
+ 		tcp_move_syn(newtp, req);
+ 		ireq->ireq_opt = NULL;
+ 	} else {
++		newinet->inet_opt = NULL;
++
+ 		if (!req_unhash && found_dup_sk) {
+ 			/* This code path should only be executed in the
+ 			 * syncookie case only
+@@ -1510,8 +1512,6 @@ struct sock *tcp_v4_syn_recv_sock(const
+ 			bh_unlock_sock(newsk);
+ 			sock_put(newsk);
+ 			newsk = NULL;
+-		} else {
+-			newinet->inet_opt = NULL;
+ 		}
+ 	}
+ 	return newsk;
 
 
