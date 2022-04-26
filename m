@@ -2,124 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5CC1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:08:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0B27C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:08:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343715AbiDZHLO (ORCPT
+        id S1343690AbiDZHLu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 03:11:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38188 "EHLO
+        Tue, 26 Apr 2022 03:11:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343739AbiDZHKz (ORCPT
+        with ESMTP id S1343784AbiDZHJa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 03:10:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 72BCE37BC4
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 00:07:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650956852;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=YpftkYZ0lrK3bZQvM1sYPoVVT6SQafc7BkKTLE4CIa8=;
-        b=Genz8sfEFvFJf1ru51dcZAExHAex6tlN2ArGh9m6nLtn9TY64x3UHLqmwJSX3CC9xogc5g
-        GN8Gozk41ANxNviVGbqtBS+7f/yNSpErhqeEWpoRhDqWnNOVC0vwSOU3vQwx1oPYFYqK1d
-        TJXYGLlDWfU3jO1bhLZlpTws2F2CpDw=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-98-mSGwnDNJMK2W-a_4HwW0bg-1; Tue, 26 Apr 2022 03:07:24 -0400
-X-MC-Unique: mSGwnDNJMK2W-a_4HwW0bg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7206A802819;
-        Tue, 26 Apr 2022 07:07:03 +0000 (UTC)
-Received: from starship (unknown [10.40.192.41])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 270D72024CB8;
-        Tue, 26 Apr 2022 07:06:47 +0000 (UTC)
-Message-ID: <b9ee5f62e904a690d7e2d8837ade8ece7e24a359.camel@redhat.com>
-Subject: Re: [PATCH v2 11/12] KVM: SVM: Do not inhibit APICv when x2APIC is
- present
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     pbonzini@redhat.com, seanjc@google.com, joro@8bytes.org,
-        jon.grimm@amd.com, wei.huang2@amd.com, terry.bowman@amd.com
-Date:   Tue, 26 Apr 2022 10:06:46 +0300
-In-Reply-To: <01460b72-1189-fef1-9718-816f2f658d42@amd.com>
-References: <20220412115822.14351-1-suravee.suthikulpanit@amd.com>
-         <20220412115822.14351-12-suravee.suthikulpanit@amd.com>
-         <3fd0aabb6288a5703760da854fd6b09a485a2d69.camel@redhat.com>
-         <01460b72-1189-fef1-9718-816f2f658d42@amd.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        Tue, 26 Apr 2022 03:09:30 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C1F5637033
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 00:06:22 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8EC7E23A;
+        Tue, 26 Apr 2022 00:06:22 -0700 (PDT)
+Received: from e129167.arm.com (unknown [10.57.12.129])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 05D3E3F73B;
+        Tue, 26 Apr 2022 00:06:20 -0700 (PDT)
+From:   Michal Orzel <michal.orzel@arm.com>
+To:     catalin.marinas@arm.com, Will Deacon <will@kernel.org>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        michal.orzel@arm.com, bertrand.marquis@arm.com
+Subject: [PATCH] arm64: cputype: Avoid overflow using MIDR_IMPLEMENTOR_MASK
+Date:   Tue, 26 Apr 2022 09:06:03 +0200
+Message-Id: <20220426070603.56031-1-michal.orzel@arm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-04-26 at 09:25 +0700, Suravee Suthikulpanit wrote:
-> Hi Maim,
-> 
-> On 4/19/22 8:29 PM, Maxim Levitsky wrote:
-> > On Tue, 2022-04-12 at 06:58 -0500, Suravee Suthikulpanit wrote:
-> > 
-> > Hi!
-> > 
-> > 
-> > I just got an idea, while writing a kvm selftest that would use AVIC,
-> > and finding out that selftest code uploads the '-host' cpuid right away
-> > which has x2apic enabled and that inhibits AVIC, and later clearing x2apic
-> > in the cpuid doesn't un-inhibit it.
-> >   
-> > That can be fixed in few ways but that got me thinking:
-> >   
-> > Why do we inhibit AVIC when the guest uses x2apic, even without X2AVIC?
-> > I think that if we didn't it would just work, and even work faster than
-> > pure software x2apic.
-> >   
-> > My thinking is:
-> >   
-> > - when a vcpu itself uses its x2apic, even if its avic is not inhibited,
-> > the guest will write x2apic msrs which kvm intercepts and will correctly emulate a proper x2apic.
-> >   
-> > - vcpu peers will also use x2apic msrs and again it will work correctly
-> > (even when there are more than 256 vcpus).
-> >   
-> > - and the host + iommu will still be able to use AVIC's doorbell to send interrupts to the guest
-> > and that doesn't need apic ids or anything, it should work just fine.
-> > 
-> > Also AVIC should have no issues scanning IRR and injecting interrupts on VM entry,
-> > x2apic mode doesn't matter for that.
-> >   
-> > AVIC mmio can still be though discovered by the guest which is technically against x86 spec
-> > (in x2apic mode, mmio supposed to not work) but that can be fixed easily by disabing
-> > the AVIC memslot if any of the vCPUs are in x2apic mode, or this can be ignored since
-> > it should not cause any issues.
-> > We seem to have a quirk for that KVM_X86_QUIRK_LAPIC_MMIO_HOLE.
-> >   
-> > On top of all this, removing this inhibit will also allow to test AVIC with guest
-> > which does have x2apic in the CPUID but doesn't use it (e.g kvm unit test, or
-> > linux booted with nox2apic, which is also nice IMHO)
-> >   
-> > What do you think?
-> 
-> This is actually a good idea!!! Let's call it hybrid-x2AVIC :)
-> 
-> I am working on prototype and test out the support for this, which will be introduced in V3.
+Value of macro MIDR_IMPLEMENTOR_MASK exceeds the range of integer
+and can lead to overflow. Currently there is no issue as it is used
+in expressions implicitly casting it to u32. To avoid possible
+problems, fix the macro.
 
-Thanks! 
+Signed-off-by: Michal Orzel <michal.orzel@arm.com>
+---
+Should we also add a U suffix to ARM_CPU_IMP_* macros that are also shifted
+by MIDR_IMPLEMENTOR_SHIFT? None of them has bit 7 set but we could take some
+precaution steps.
+---
+ arch/arm64/include/asm/cputype.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Best regards,
-	Maxim Levitsky
-
-> 
-> Regards,
-> Suravee
-> 
-
+diff --git a/arch/arm64/include/asm/cputype.h b/arch/arm64/include/asm/cputype.h
+index ff8f4511df71..92331c07c2d1 100644
+--- a/arch/arm64/include/asm/cputype.h
++++ b/arch/arm64/include/asm/cputype.h
+@@ -36,7 +36,7 @@
+ #define MIDR_VARIANT(midr)	\
+ 	(((midr) & MIDR_VARIANT_MASK) >> MIDR_VARIANT_SHIFT)
+ #define MIDR_IMPLEMENTOR_SHIFT	24
+-#define MIDR_IMPLEMENTOR_MASK	(0xff << MIDR_IMPLEMENTOR_SHIFT)
++#define MIDR_IMPLEMENTOR_MASK	(0xffU << MIDR_IMPLEMENTOR_SHIFT)
+ #define MIDR_IMPLEMENTOR(midr)	\
+ 	(((midr) & MIDR_IMPLEMENTOR_MASK) >> MIDR_IMPLEMENTOR_SHIFT)
+ 
+-- 
+2.25.1
 
