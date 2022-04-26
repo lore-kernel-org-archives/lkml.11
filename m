@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B94E8C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F35F2C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:36:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344192AbiDZHjI (ORCPT
+        id S1344208AbiDZHjM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 03:39:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45662 "EHLO
+        Tue, 26 Apr 2022 03:39:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344081AbiDZHif (ORCPT
+        with ESMTP id S1344091AbiDZHij (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 03:38:35 -0400
+        Tue, 26 Apr 2022 03:38:39 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2408DB1D1
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24343BE38
         for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 00:35:27 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1njFjB-00056p-0H; Tue, 26 Apr 2022 09:35:17 +0200
+        id 1njFjB-00056t-0H; Tue, 26 Apr 2022 09:35:17 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1njFj8-005InS-Eo; Tue, 26 Apr 2022 09:35:13 +0200
+        id 1njFj8-005InZ-Nc; Tue, 26 Apr 2022 09:35:13 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1njFj5-004roY-Sb; Tue, 26 Apr 2022 09:35:11 +0200
+        id 1njFj5-004roq-U5; Tue, 26 Apr 2022 09:35:11 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         Alexandre Torgue <alexandre.torgue@foss.st.com>,
@@ -39,10 +39,12 @@ Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v4 0/4] mainline Protonic PRTT1x boards 
-Date:   Tue, 26 Apr 2022 09:35:07 +0200
-Message-Id: <20220426073511.1160119-1-o.rempel@pengutronix.de>
+Subject: [PATCH v4 2/4] dt-bindings: net: silabs,wfx: add prt,prtt1c-wfm200 antenna variant
+Date:   Tue, 26 Apr 2022 09:35:09 +0200
+Message-Id: <20220426073511.1160119-3-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220426073511.1160119-1-o.rempel@pengutronix.de>
+References: <20220426073511.1160119-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -53,42 +55,26 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-changes v4:
-- reorder prtt1X compatible again
-- remove spaces in stm32mp151a-prtt1c.dts
+Add compatible for wfm200 antenna configuration variant for Protonic PRTT1C
+board.
 
-changes v3:
-- add silabs,wfx compatible
-- move spi pin configuration to stm32mp15-pinctrl.dtsi
-- move prtt1X compatible in alphabetical order
-- add watchdog and thermal nodes
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ .../devicetree/bindings/staging/net/wireless/silabs,wfx.yaml     | 1 +
+ 1 file changed, 1 insertion(+)
 
-changes v2:
-- cleanup mmc nodes
-- disabled dma for uart4 (this is console interface and it should work
-  as simple as possible)
-
-Oleksij Rempel (4):
-  dt-bindings: arm: stm32: Add compatible strings for Protonic T1L
-    boards
-  dt-bindings: net: silabs,wfx: add prt,prtt1c-wfm200 antenna variant
-  ARM: dts: stm32: stm32mp15-pinctrl: add spi1-1 pinmux group
-  ARM: dts: stm32: add support for Protonic PRTT1x boards
-
- .../devicetree/bindings/arm/stm32/stm32.yaml  |   8 +
- .../staging/net/wireless/silabs,wfx.yaml      |   1 +
- arch/arm/boot/dts/Makefile                    |   3 +
- arch/arm/boot/dts/stm32mp15-pinctrl.dtsi      |  15 +
- arch/arm/boot/dts/stm32mp151a-prtt1a.dts      |  52 +++
- arch/arm/boot/dts/stm32mp151a-prtt1c.dts      | 304 ++++++++++++++++++
- arch/arm/boot/dts/stm32mp151a-prtt1l.dtsi     | 229 +++++++++++++
- arch/arm/boot/dts/stm32mp151a-prtt1s.dts      |  63 ++++
- 8 files changed, 675 insertions(+)
- create mode 100644 arch/arm/boot/dts/stm32mp151a-prtt1a.dts
- create mode 100644 arch/arm/boot/dts/stm32mp151a-prtt1c.dts
- create mode 100644 arch/arm/boot/dts/stm32mp151a-prtt1l.dtsi
- create mode 100644 arch/arm/boot/dts/stm32mp151a-prtt1s.dts
-
+diff --git a/Documentation/devicetree/bindings/staging/net/wireless/silabs,wfx.yaml b/Documentation/devicetree/bindings/staging/net/wireless/silabs,wfx.yaml
+index 105725a127ab..ce107fe45d7c 100644
+--- a/Documentation/devicetree/bindings/staging/net/wireless/silabs,wfx.yaml
++++ b/Documentation/devicetree/bindings/staging/net/wireless/silabs,wfx.yaml
+@@ -39,6 +39,7 @@ properties:
+   compatible:
+     items:
+       - enum:
++          - prt,prtt1c-wfm200 # Protonic PRTT1C Board
+           - silabs,brd4001a # WGM160P Evaluation Board
+           - silabs,brd8022a # WF200 Evaluation Board
+           - silabs,brd8023a # WFM200 Evaluation Board
 -- 
 2.30.2
 
