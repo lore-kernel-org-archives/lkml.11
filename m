@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2DBDC4167E
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:58:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38E77C3527E
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:58:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346252AbiDZI7s (ORCPT
+        id S1346395AbiDZJAc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:59:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57814 "EHLO
+        Tue, 26 Apr 2022 05:00:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346823AbiDZIpY (ORCPT
+        with ESMTP id S1346907AbiDZIp3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:45:24 -0400
+        Tue, 26 Apr 2022 04:45:29 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E043A90CF1;
-        Tue, 26 Apr 2022 01:35:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9F4012AEC;
+        Tue, 26 Apr 2022 01:36:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 99298B81CFE;
-        Tue, 26 Apr 2022 08:35:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB3BEC385A4;
-        Tue, 26 Apr 2022 08:35:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 54995B81CFE;
+        Tue, 26 Apr 2022 08:36:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 596C0C385A0;
+        Tue, 26 Apr 2022 08:36:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962148;
-        bh=3aLdmpvxaChLzyHcYZwWLEm72qRpXWXyd7TlPmtCnCM=;
+        s=korg; t=1650962193;
+        bh=Zg0RKzNVnX/cBhF2uFK+M+gvp7hkVVGk/9ryYNxE078=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R0Dwtz/GFhSrIU5JxHSaVxx1zwPOrtb4MQFfxLv7EmXSwrtZWS12iH4MezHhdL/L0
-         h4e2Jo2qqBchjxGB1Z6h43QAA3nlDy1yaq+W/jnak6kVYhpux46xozP2ZX74e28KtP
-         AAjw7b8ahrpqop/G7DDCukGLnLP3etJOFj9Pt1Cc=
+        b=vjx8WOHBqKF/+j3yE2Np1JMshPG1ZuyD7H9EqitDepG8XZmRWTrPqQ+PIQNnTfAfv
+         SjintrtjbY7oowKbd2elZM2kYdlCCdIjl8oNcOJ976r+24YGGjrHa9xANJ1ZBYzLCs
+         U0OID5RJ49Op3WQMbrOkRLB9GqMAoZG2jvs9l724=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+2339c27f5c66c652843e@syzkaller.appspotmail.com,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.10 81/86] can: isotp: stop timeout monitoring when no first frame was sent
-Date:   Tue, 26 Apr 2022 10:21:49 +0200
-Message-Id: <20220426081743.553084500@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 017/124] ASoC: atmel: Remove system clock tree configuration for at91sam9g20ek
+Date:   Tue, 26 Apr 2022 10:20:18 +0200
+Message-Id: <20220426081747.792797472@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
-References: <20220426081741.202366502@linuxfoundation.org>
+In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
+References: <20220426081747.286685339@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,64 +50,142 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+From: Mark Brown <broonie@kernel.org>
 
-commit d73497081710c876c3c61444445512989e102152 upstream.
+[ Upstream commit c775cbf62ed4911e4f0f23880f01815753123690 ]
 
-The first attempt to fix a the 'impossible' WARN_ON_ONCE(1) in
-isotp_tx_timer_handler() focussed on the identical CAN IDs created by
-the syzbot reproducer and lead to upstream fix/commit 3ea566422cbd
-("can: isotp: sanitize CAN ID checks in isotp_bind()"). But this did
-not catch the root cause of the wrong tx.state in the tx_timer handler.
+The MCLK of the WM8731 on the AT91SAM9G20-EK board is connected to the
+PCK0 output of the SoC, intended in the reference software to be supplied
+using PLLB and programmed to 12MHz. As originally written for use with a
+board file the audio driver was responsible for configuring the entire tree
+but in the conversion to the common clock framework the registration of
+the named pck0 and pllb clocks was removed so the driver has failed to
+instantiate ever since.
 
-In the isotp 'first frame' case a timeout monitoring needs to be started
-before the 'first frame' is send. But when this sending failed the timeout
-monitoring for this specific frame has to be disabled too.
+Since the WM8731 driver has had support for managing a MCLK provided via
+the common clock framework for some time we can simply drop all the clock
+management code from the machine driver other than configuration of the
+sysclk rate, the CODEC driver still respects that configuration from the
+machine driver.
 
-Otherwise the tx_timer is fired with the 'warn me' tx.state of ISOTP_IDLE.
-
-Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
-Link: https://lore.kernel.org/all/20220405175112.2682-1-socketcan@hartkopp.net
-Reported-by: syzbot+2339c27f5c66c652843e@syzkaller.appspotmail.com
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: ff78a189b0ae55f ("ARM: at91: remove old at91-specific clock driver")
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Reviewed-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Link: https://lore.kernel.org/r/20220325154241.1600757-2-broonie@kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/can/isotp.c |   10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ sound/soc/atmel/sam9g20_wm8731.c | 61 --------------------------------
+ 1 file changed, 61 deletions(-)
 
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -864,6 +864,7 @@ static int isotp_sendmsg(struct socket *
- 	struct canfd_frame *cf;
- 	int ae = (so->opt.flags & CAN_ISOTP_EXTEND_ADDR) ? 1 : 0;
- 	int wait_tx_done = (so->opt.flags & CAN_ISOTP_WAIT_TX_DONE) ? 1 : 0;
-+	s64 hrtimer_sec = 0;
- 	int off;
- 	int err;
+diff --git a/sound/soc/atmel/sam9g20_wm8731.c b/sound/soc/atmel/sam9g20_wm8731.c
+index 8a55d59a6c2a..d243de5f23dc 100644
+--- a/sound/soc/atmel/sam9g20_wm8731.c
++++ b/sound/soc/atmel/sam9g20_wm8731.c
+@@ -46,35 +46,6 @@
+  */
+ #undef ENABLE_MIC_INPUT
  
-@@ -962,7 +963,9 @@ static int isotp_sendmsg(struct socket *
- 		isotp_create_fframe(cf, so, ae);
+-static struct clk *mclk;
+-
+-static int at91sam9g20ek_set_bias_level(struct snd_soc_card *card,
+-					struct snd_soc_dapm_context *dapm,
+-					enum snd_soc_bias_level level)
+-{
+-	static int mclk_on;
+-	int ret = 0;
+-
+-	switch (level) {
+-	case SND_SOC_BIAS_ON:
+-	case SND_SOC_BIAS_PREPARE:
+-		if (!mclk_on)
+-			ret = clk_enable(mclk);
+-		if (ret == 0)
+-			mclk_on = 1;
+-		break;
+-
+-	case SND_SOC_BIAS_OFF:
+-	case SND_SOC_BIAS_STANDBY:
+-		if (mclk_on)
+-			clk_disable(mclk);
+-		mclk_on = 0;
+-		break;
+-	}
+-
+-	return ret;
+-}
+-
+ static const struct snd_soc_dapm_widget at91sam9g20ek_dapm_widgets[] = {
+ 	SND_SOC_DAPM_MIC("Int Mic", NULL),
+ 	SND_SOC_DAPM_SPK("Ext Spk", NULL),
+@@ -135,7 +106,6 @@ static struct snd_soc_card snd_soc_at91sam9g20ek = {
+ 	.owner = THIS_MODULE,
+ 	.dai_link = &at91sam9g20ek_dai,
+ 	.num_links = 1,
+-	.set_bias_level = at91sam9g20ek_set_bias_level,
  
- 		/* start timeout for FC */
--		hrtimer_start(&so->txtimer, ktime_set(1, 0), HRTIMER_MODE_REL_SOFT);
-+		hrtimer_sec = 1;
-+		hrtimer_start(&so->txtimer, ktime_set(hrtimer_sec, 0),
-+			      HRTIMER_MODE_REL_SOFT);
+ 	.dapm_widgets = at91sam9g20ek_dapm_widgets,
+ 	.num_dapm_widgets = ARRAY_SIZE(at91sam9g20ek_dapm_widgets),
+@@ -148,7 +118,6 @@ static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
+ {
+ 	struct device_node *np = pdev->dev.of_node;
+ 	struct device_node *codec_np, *cpu_np;
+-	struct clk *pllb;
+ 	struct snd_soc_card *card = &snd_soc_at91sam9g20ek;
+ 	int ret;
+ 
+@@ -162,31 +131,6 @@ static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
+ 		return -EINVAL;
  	}
  
- 	/* send the first or only CAN frame */
-@@ -975,6 +978,11 @@ static int isotp_sendmsg(struct socket *
- 	if (err) {
- 		pr_notice_once("can-isotp: %s: can_send_ret %d\n",
- 			       __func__, err);
-+
-+		/* no transmission -> no timeout monitoring */
-+		if (hrtimer_sec)
-+			hrtimer_cancel(&so->txtimer);
-+
- 		goto err_out_drop;
- 	}
+-	/*
+-	 * Codec MCLK is supplied by PCK0 - set it up.
+-	 */
+-	mclk = clk_get(NULL, "pck0");
+-	if (IS_ERR(mclk)) {
+-		dev_err(&pdev->dev, "Failed to get MCLK\n");
+-		ret = PTR_ERR(mclk);
+-		goto err;
+-	}
+-
+-	pllb = clk_get(NULL, "pllb");
+-	if (IS_ERR(pllb)) {
+-		dev_err(&pdev->dev, "Failed to get PLLB\n");
+-		ret = PTR_ERR(pllb);
+-		goto err_mclk;
+-	}
+-	ret = clk_set_parent(mclk, pllb);
+-	clk_put(pllb);
+-	if (ret != 0) {
+-		dev_err(&pdev->dev, "Failed to set MCLK parent\n");
+-		goto err_mclk;
+-	}
+-
+-	clk_set_rate(mclk, MCLK_RATE);
+-
+ 	card->dev = &pdev->dev;
  
+ 	/* Parse device node info */
+@@ -230,9 +174,6 @@ static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
+ 
+ 	return ret;
+ 
+-err_mclk:
+-	clk_put(mclk);
+-	mclk = NULL;
+ err:
+ 	atmel_ssc_put_audio(0);
+ 	return ret;
+@@ -242,8 +183,6 @@ static int at91sam9g20ek_audio_remove(struct platform_device *pdev)
+ {
+ 	struct snd_soc_card *card = platform_get_drvdata(pdev);
+ 
+-	clk_disable(mclk);
+-	mclk = NULL;
+ 	snd_soc_unregister_card(card);
+ 	atmel_ssc_put_audio(0);
+ 
+-- 
+2.35.1
+
 
 
