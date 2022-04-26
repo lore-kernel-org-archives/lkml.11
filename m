@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D40AC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:15:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5612FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:15:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238645AbiDZJSU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:18:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57978 "EHLO
+        id S238612AbiDZJSY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:18:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345948AbiDZIo3 (ORCPT
+        with ESMTP id S1345947AbiDZIo3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:44:29 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F275315E853;
-        Tue, 26 Apr 2022 01:33:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 499AD15DD67;
+        Tue, 26 Apr 2022 01:33:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 55D6261899;
-        Tue, 26 Apr 2022 08:33:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66B0BC385A4;
-        Tue, 26 Apr 2022 08:33:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 48F9A6189F;
+        Tue, 26 Apr 2022 08:33:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FA1DC385A0;
+        Tue, 26 Apr 2022 08:33:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962035;
-        bh=/BAm5NTJdX2tMlaApiM7QAkYP88sHZe13rGjL+RUOcg=;
+        s=korg; t=1650962032;
+        bh=PIttuX7zubSRysD+VGdkK4RbcQDOcg7fcQEYv5OVc9A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fj4oEAhOqMMwbIAlu+X/km143JPzW3XK0nSWeWVwwCKh1njxheUYtMo4hghXDyvNT
-         B3SZbfQcnYRhqUpQApHLbaYcNIK3pArmgTHGmizdYMFMGDaT2ZEL3u4k2Ui7loFboU
-         1aeXJhJuElTpzN2V011EttXYLp0ysX4j/657K0g0=
+        b=C/rVTSnEzIymm4tSYJzkn3NCqRcWkzC/vxEyMFNZ9ILr54NPg/O4d6Kc5R8MfwLNS
+         iitAlsWrkL01v8JPjN7g9mwiIh2VUcy9j0C7kYFnPsu9AQIX0OTslza0zDozdAOzKm
+         Dln1FVN/SO2NMW0Jv74Uj1PozQ1A/AolUK82P28E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
-        Borislav Petkov <bp@suse.de>,
-        Michal Simek <michal.simek@xilinx.com>
-Subject: [PATCH 5.10 51/86] EDAC/synopsys: Read the error count from the correct register
-Date:   Tue, 26 Apr 2022 10:21:19 +0200
-Message-Id: <20220426081742.675332755@linuxfoundation.org>
+        stable@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Keith Busch <kbusch@kernel.org>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 50/86] nvme-pci: disable namespace identifiers for Qemu controllers
+Date:   Tue, 26 Apr 2022 10:21:18 +0200
+Message-Id: <20220426081742.647643793@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
 References: <20220426081741.202366502@linuxfoundation.org>
@@ -50,61 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+From: Christoph Hellwig <hch@lst.de>
 
-commit e2932d1f6f055b2af2114c7e64a26dc1b5593d0c upstream.
+[ Upstream commit 66dd346b84d79fde20832ed691a54f4881eac20d ]
 
-Currently, the error count is read wrongly from the status register. Read
-the count from the proper error count register (ERRCNT).
+Qemu unconditionally reports a UUID, which depending on the qemu version
+is either all-null (which is incorrect but harmless) or contains a single
+bit set for all controllers.  In addition it can also optionally report
+a eui64 which needs to be manually set.  Disable namespace identifiers
+for Qemu controlles entirely even if in some cases they could be set
+correctly through manual intervention.
 
-  [ bp: Massage. ]
-
-Fixes: b500b4a029d5 ("EDAC, synopsys: Add ECC support for ZynqMP DDR controller")
-Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Acked-by: Michal Simek <michal.simek@xilinx.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220414102813.4468-1-shubhrajyoti.datta@xilinx.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Luis Chamberlain <mcgrof@kernel.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Keith Busch <kbusch@kernel.org>
+Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/edac/synopsys_edac.c |   16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
+ drivers/nvme/host/pci.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/drivers/edac/synopsys_edac.c
-+++ b/drivers/edac/synopsys_edac.c
-@@ -163,6 +163,11 @@
- #define ECC_STAT_CECNT_SHIFT		8
- #define ECC_STAT_BITNUM_MASK		0x7F
- 
-+/* ECC error count register definitions */
-+#define ECC_ERRCNT_UECNT_MASK		0xFFFF0000
-+#define ECC_ERRCNT_UECNT_SHIFT		16
-+#define ECC_ERRCNT_CECNT_MASK		0xFFFF
-+
- /* DDR QOS Interrupt register definitions */
- #define DDR_QOS_IRQ_STAT_OFST		0x20200
- #define DDR_QOSUE_MASK			0x4
-@@ -418,15 +423,16 @@ static int zynqmp_get_error_info(struct
- 	base = priv->baseaddr;
- 	p = &priv->stat;
- 
-+	regval = readl(base + ECC_ERRCNT_OFST);
-+	p->ce_cnt = regval & ECC_ERRCNT_CECNT_MASK;
-+	p->ue_cnt = (regval & ECC_ERRCNT_UECNT_MASK) >> ECC_ERRCNT_UECNT_SHIFT;
-+	if (!p->ce_cnt)
-+		goto ue_err;
-+
- 	regval = readl(base + ECC_STAT_OFST);
- 	if (!regval)
- 		return 1;
- 
--	p->ce_cnt = (regval & ECC_STAT_CECNT_MASK) >> ECC_STAT_CECNT_SHIFT;
--	p->ue_cnt = (regval & ECC_STAT_UECNT_MASK) >> ECC_STAT_UECNT_SHIFT;
--	if (!p->ce_cnt)
--		goto ue_err;
--
- 	p->ceinfo.bitpos = (regval & ECC_STAT_BITNUM_MASK);
- 
- 	regval = readl(base + ECC_CEADDR0_OFST);
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index 97afeb898b25..6939b03a16c5 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -3212,7 +3212,10 @@ static const struct pci_device_id nvme_id_table[] = {
+ 		.driver_data = NVME_QUIRK_IGNORE_DEV_SUBNQN, },
+ 	{ PCI_VDEVICE(INTEL, 0x5845),	/* Qemu emulated controller */
+ 		.driver_data = NVME_QUIRK_IDENTIFY_CNS |
+-				NVME_QUIRK_DISABLE_WRITE_ZEROES, },
++				NVME_QUIRK_DISABLE_WRITE_ZEROES |
++				NVME_QUIRK_BOGUS_NID, },
++	{ PCI_VDEVICE(REDHAT, 0x0010),	/* Qemu emulated controller */
++		.driver_data = NVME_QUIRK_BOGUS_NID, },
+ 	{ PCI_DEVICE(0x126f, 0x2263),	/* Silicon Motion unidentified */
+ 		.driver_data = NVME_QUIRK_NO_NS_DESC_LIST, },
+ 	{ PCI_DEVICE(0x1bb1, 0x0100),   /* Seagate Nytro Flash Storage */
+-- 
+2.35.1
+
 
 
