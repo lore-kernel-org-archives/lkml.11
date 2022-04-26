@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE65AC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97FFDC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:48:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346819AbiDZIuf (ORCPT
+        id S1346789AbiDZIuZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:50:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58752 "EHLO
+        Tue, 26 Apr 2022 04:50:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345813AbiDZIje (ORCPT
+        with ESMTP id S1345821AbiDZIje (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:39:34 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67A82762B9;
-        Tue, 26 Apr 2022 01:31:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EF8AA146A;
+        Tue, 26 Apr 2022 01:31:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 02BC5618A0;
-        Tue, 26 Apr 2022 08:31:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C67CCC385A0;
-        Tue, 26 Apr 2022 08:31:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CE77C617D2;
+        Tue, 26 Apr 2022 08:31:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9F73C385A4;
+        Tue, 26 Apr 2022 08:31:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961897;
-        bh=PIbE8wYRzCn0BTyvB9PVYzMMEEQC1HTzIblaKs78ulA=;
+        s=korg; t=1650961906;
+        bh=zzLxfROdWq0Cc24SvURJjLlL4V9CEWV5ldpGU7FrGoc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qW6MB7so/s23bCtHVjetOtLRiRkKW8lnRXGijYY2oQfyTuEJCTLn8SORVoyFCOudj
-         /l1y0k4vpU1eVDrOZ1fRd9cVaS9bHgcn27otPDmLsudhLQgBK2xC7PabQ2Wxw7xfuH
-         5kRlVt9tkMR9LbXVk61u+j76Y6gxG1puvzDPw1XA=
+        b=bQ5fPhZ5OdtwlhhW5iYXmXmWovwhX2B0mYoNmABC4VaZe7yGYS8CigAJuurI8kGjd
+         /Mx17SQaVLDMmJBlun1cV69lH/Md0vSTlvF3B03ZeAEbxOI5kK1kol168r7jQF0Eza
+         dZlIHShC1RlELlPZd7y3kHF2oFnd+y3sbVUgZZQk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sergey Matyukevich <sergey.matyukevich@synopsys.com>,
-        Vineet Gupta <vgupta@kernel.org>
-Subject: [PATCH 5.4 50/62] ARC: entry: fix syscall_trace_exit argument
-Date:   Tue, 26 Apr 2022 10:21:30 +0200
-Message-Id: <20220426081738.656673831@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 43/62] drm/vc4: Use pm_runtime_resume_and_get to fix pm_runtime_get_sync() usage
+Date:   Tue, 26 Apr 2022 10:21:23 +0200
+Message-Id: <20220426081738.457734060@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
 References: <20220426081737.209637816@linuxfoundation.org>
@@ -50,31 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Matyukevich <sergey.matyukevich@synopsys.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit b1c6ecfdd06907554518ec384ce8e99889d15193 upstream.
+[ Upstream commit 3d0b93d92a2790337aa9d18cb332d02356a24126 ]
 
-Function syscall_trace_exit expects pointer to pt_regs. However
-r0 is also used to keep syscall return value. Restore pointer
-to pt_regs before calling syscall_trace_exit.
+If the device is already in a runtime PM enabled state
+pm_runtime_get_sync() will return 1.
 
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Sergey Matyukevich <sergey.matyukevich@synopsys.com>
-Signed-off-by: Vineet Gupta <vgupta@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Also, we need to call pm_runtime_put_noidle() when pm_runtime_get_sync()
+fails, so use pm_runtime_resume_and_get() instead. this function
+will handle this.
+
+Fixes: 4078f5757144 ("drm/vc4: Add DSI driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220420135008.2757-1-linmq006@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arc/kernel/entry.S |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/vc4/vc4_dsi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/arc/kernel/entry.S
-+++ b/arch/arc/kernel/entry.S
-@@ -199,6 +199,7 @@ tracesys_exit:
- 	st  r0, [sp, PT_r0]     ; sys call return value in pt_regs
+diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
+index c78fa8144776..0983949cc8c9 100644
+--- a/drivers/gpu/drm/vc4/vc4_dsi.c
++++ b/drivers/gpu/drm/vc4/vc4_dsi.c
+@@ -831,7 +831,7 @@ static void vc4_dsi_encoder_enable(struct drm_encoder *encoder)
+ 	unsigned long phy_clock;
+ 	int ret;
  
- 	;POST Sys Call Ptrace Hook
-+	mov r0, sp		; pt_regs needed
- 	bl  @syscall_trace_exit
- 	b   ret_from_exception ; NOT ret_from_system_call at is saves r0 which
- 	; we'd done before calling post hook above
+-	ret = pm_runtime_get_sync(dev);
++	ret = pm_runtime_resume_and_get(dev);
+ 	if (ret) {
+ 		DRM_ERROR("Failed to runtime PM enable on DSI%d\n", dsi->port);
+ 		return;
+-- 
+2.35.1
+
 
 
