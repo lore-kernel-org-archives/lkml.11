@@ -2,178 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85A0AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 05:40:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D11D1C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 05:41:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243553AbiDZFnS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 01:43:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44108 "EHLO
+        id S236398AbiDZFoH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 01:44:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244591AbiDZFmw (ORCPT
+        with ESMTP id S230356AbiDZFng (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 01:42:52 -0400
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A2DA32997
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 22:39:26 -0700 (PDT)
-Received: by mail-pf1-x44a.google.com with SMTP id g23-20020aa78197000000b0050adbdbbec8so9740832pfi.23
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 22:39:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=a9VzBJlMLigws4pRoWaDUwEnDDiqJQ0nJjM8cxStkWo=;
-        b=p8mJqCwHacTbFhvYHu8ybGXK2P+PghFMqaxHHJuqdpta07t/m8JQTkdFg82eEvuWYd
-         OdSYMSKPBvO7ptjR046sAX/bHvFVjhg/pzuwVzXmGfoIsID/2GXXQHWYzh25sp8Zhqzf
-         htWeN1iMzxl7/9Pdv1zinxHd6q+dx76sncvVGGjZOTWwwfxxB2qSbB8gn6IY5+O3yc7/
-         BeF9G0WjghrY1fZ5jCmiJkVNg5fp3DJ1BPeCzpmLCtKqzsEWqGLssoJmyaPfwKCC+CiD
-         5TQ/VweVfCM1sVLfYaViWaZEyQtlCxE0YpkORn8opIIBD11EyDSBFcvRbtm+lxTTiRjt
-         7Vwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=a9VzBJlMLigws4pRoWaDUwEnDDiqJQ0nJjM8cxStkWo=;
-        b=J2QwcH07bRYSgCx7VeZrSK+Ke5HMzPX6XGBGVg9L/KDAmNNQoq9JpCelU1J11ztGLE
-         aLX1ZyvZ5s8OW44GScHA37u1w3Jv3rJrbNSSoHblOFSSyH1QLVvYZCkjqKf9sT68FZQr
-         +VhejX2dGzXT5+7nDhjAC3A8z9oGsOKBDNbbDFSCzxonIhBja4MNOxBs022SolDNLtas
-         OyCvt+5kZqoP8TiKN0RaBTVcudpm43FNpY/jcvjGfoS7fgCL1ntIa7EDoEBhOyEfHw42
-         C4fdvCotQK5LENKyYWRfCBE1reCbrn7GCqihb6IC1tiuAk2WO1zLypzKYOKdVuMVBIMT
-         o+tg==
-X-Gm-Message-State: AOAM531pkgp+mQsn95EeWMJgr/iY/N1hI/5dMc8axRoAbsMx+icrh3/d
-        RTyt5MGOC39cCgAbogUKrYwRA9Gwp82tLCsb
-X-Google-Smtp-Source: ABdhPJxYCaRW6ujjy+jD12c3CK0Xph6XJaTEbXPAfsnpbu06l91YAgqtjLNqwlREDx07xf+SlrnmNlHPGW+NrZOR
-X-Received: from yosry.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:2327])
- (user=yosryahmed job=sendgmr) by 2002:a63:de12:0:b0:3ab:7c33:2894 with SMTP
- id f18-20020a63de12000000b003ab7c332894mr3565024pgg.187.1650951565540; Mon,
- 25 Apr 2022 22:39:25 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 05:39:03 +0000
-In-Reply-To: <20220426053904.3684293-1-yosryahmed@google.com>
-Message-Id: <20220426053904.3684293-6-yosryahmed@google.com>
-Mime-Version: 1.0
-References: <20220426053904.3684293-1-yosryahmed@google.com>
-X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
-Subject: [PATCH v3 5/6] KVM: riscv/mmu: count KVM page table pages in
- pagetable stats
-From:   Yosry Ahmed <yosryahmed@google.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Aleksandar Markovic <aleksandar.qemu.devel@gmail.com>,
-        Anup Patel <anup@brainfault.org>,
-        Atish Patra <atishp@atishpatra.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>,
-        James Morse <james.morse@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>
-Cc:     linux-mips@vger.kernel.org, kvm@vger.kernel.org,
-        kvm-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        cgroups@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kvmarm@lists.cs.columbia.edu, Yosry Ahmed <yosryahmed@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 26 Apr 2022 01:43:36 -0400
+Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3259315A35;
+        Mon, 25 Apr 2022 22:40:01 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=hsiangkao@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0VBJMJAQ_1650951594;
+Received: from B-P7TQMD6M-0146.local(mailfrom:hsiangkao@linux.alibaba.com fp:SMTPD_---0VBJMJAQ_1650951594)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 26 Apr 2022 13:39:57 +0800
+Date:   Tue, 26 Apr 2022 13:39:54 +0800
+From:   Gao Xiang <hsiangkao@linux.alibaba.com>
+To:     Jeffle Xu <jefflexu@linux.alibaba.com>
+Cc:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
+        chao@kernel.org, linux-erofs@lists.ozlabs.org,
+        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
+        willy@infradead.org, linux-fsdevel@vger.kernel.org,
+        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
+        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
+        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
+        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
+        fannaihao@baidu.com, zhangjiachen.jaycee@bytedance.com,
+        zhujia.zj@bytedance.com
+Subject: Re: [PATCH v10 17/21] erofs: implement fscache-based metadata read
+Message-ID: <YmeFqhYu5PNYu+8Z@B-P7TQMD6M-0146.local>
+Mail-Followup-To: Jeffle Xu <jefflexu@linux.alibaba.com>,
+        dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
+        chao@kernel.org, linux-erofs@lists.ozlabs.org,
+        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
+        willy@infradead.org, linux-fsdevel@vger.kernel.org,
+        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
+        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
+        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
+        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
+        fannaihao@baidu.com, zhangjiachen.jaycee@bytedance.com,
+        zhujia.zj@bytedance.com
+References: <20220425122143.56815-1-jefflexu@linux.alibaba.com>
+ <20220425122143.56815-18-jefflexu@linux.alibaba.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220425122143.56815-18-jefflexu@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Count the pages used by KVM in riscv for page tables in pagetable stats.
+On Mon, Apr 25, 2022 at 08:21:39PM +0800, Jeffle Xu wrote:
+> Implement the data plane of reading metadata from primary data blob
+> over fscache.
+> 
+> Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
 
-Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
----
- arch/riscv/kvm/mmu.c | 26 +++++++++++++++++++-------
- 1 file changed, 19 insertions(+), 7 deletions(-)
+Reviewed-by: Gao Xiang <hsiangkao@linux.alibaba.com>
 
-diff --git a/arch/riscv/kvm/mmu.c b/arch/riscv/kvm/mmu.c
-index f80a34fbf102..fcfb75713750 100644
---- a/arch/riscv/kvm/mmu.c
-+++ b/arch/riscv/kvm/mmu.c
-@@ -152,6 +152,7 @@ static int stage2_set_pte(struct kvm *kvm, u32 level,
- 			next_ptep = kvm_mmu_memory_cache_alloc(pcache);
- 			if (!next_ptep)
- 				return -ENOMEM;
-+			kvm_account_pgtable_pages((void *)next_ptep, +1);
- 			*ptep = pfn_pte(PFN_DOWN(__pa(next_ptep)),
- 					__pgprot(_PAGE_TABLE));
- 		} else {
-@@ -229,6 +230,7 @@ static void stage2_op_pte(struct kvm *kvm, gpa_t addr,
- 	pte_t *next_ptep;
- 	u32 next_ptep_level;
- 	unsigned long next_page_size, page_size;
-+	struct page *p;
- 
- 	ret = stage2_level_to_page_size(ptep_level, &page_size);
- 	if (ret)
-@@ -252,8 +254,13 @@ static void stage2_op_pte(struct kvm *kvm, gpa_t addr,
- 		for (i = 0; i < PTRS_PER_PTE; i++)
- 			stage2_op_pte(kvm, addr + i * next_page_size,
- 					&next_ptep[i], next_ptep_level, op);
--		if (op == STAGE2_OP_CLEAR)
--			put_page(virt_to_page(next_ptep));
-+		if (op == STAGE2_OP_CLEAR) {
-+			p = virt_to_page(next_ptep);
-+			if (page_count(p) == 1)
-+				kvm_account_pgtable_pages((void *)next_ptep,
-+							  -1);
-+			put_page(p);
-+		}
- 	} else {
- 		if (op == STAGE2_OP_CLEAR)
- 			set_pte(ptep, __pte(0));
-@@ -700,25 +707,27 @@ int kvm_riscv_stage2_map(struct kvm_vcpu *vcpu,
- int kvm_riscv_stage2_alloc_pgd(struct kvm *kvm)
- {
- 	struct page *pgd_page;
-+	int order;
- 
- 	if (kvm->arch.pgd != NULL) {
- 		kvm_err("kvm_arch already initialized?\n");
- 		return -EINVAL;
- 	}
- 
--	pgd_page = alloc_pages(GFP_KERNEL | __GFP_ZERO,
--				get_order(stage2_pgd_size));
-+	order = get_order(stage2_pgd_size);
-+	pgd_page = alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
- 	if (!pgd_page)
- 		return -ENOMEM;
- 	kvm->arch.pgd = page_to_virt(pgd_page);
- 	kvm->arch.pgd_phys = page_to_phys(pgd_page);
--
-+	kvm_account_pgtable_pages((void *)kvm->arch.pgd, +(1UL << order));
- 	return 0;
- }
- 
- void kvm_riscv_stage2_free_pgd(struct kvm *kvm)
- {
- 	void *pgd = NULL;
-+	int order;
- 
- 	spin_lock(&kvm->mmu_lock);
- 	if (kvm->arch.pgd) {
-@@ -729,8 +738,11 @@ void kvm_riscv_stage2_free_pgd(struct kvm *kvm)
- 	}
- 	spin_unlock(&kvm->mmu_lock);
- 
--	if (pgd)
--		free_pages((unsigned long)pgd, get_order(stage2_pgd_size));
-+	if (pgd) {
-+		order = get_order(stage2_pgd_size);
-+		kvm_account_pgtable_pages((void *)pgd, -(1UL << order));
-+		free_pages((unsigned long)pgd, order);
-+	}
- }
- 
- void kvm_riscv_stage2_update_hgatp(struct kvm_vcpu *vcpu)
--- 
-2.36.0.rc2.479.g8af0fa9b8e-goog
+Thanks,
+Gao Xiang
 
+> ---
+>  fs/erofs/data.c    | 19 +++++++++++++++----
+>  fs/erofs/fscache.c | 25 +++++++++++++++++++++++++
+>  2 files changed, 40 insertions(+), 4 deletions(-)
+> 
+> diff --git a/fs/erofs/data.c b/fs/erofs/data.c
+> index 14b64d960541..bb9c1fd48c19 100644
+> --- a/fs/erofs/data.c
+> +++ b/fs/erofs/data.c
+> @@ -6,6 +6,7 @@
+>   */
+>  #include "internal.h"
+>  #include <linux/prefetch.h>
+> +#include <linux/sched/mm.h>
+>  #include <linux/dax.h>
+>  #include <trace/events/erofs.h>
+>  
+> @@ -35,14 +36,20 @@ void *erofs_bread(struct erofs_buf *buf, struct inode *inode,
+>  	erofs_off_t offset = blknr_to_addr(blkaddr);
+>  	pgoff_t index = offset >> PAGE_SHIFT;
+>  	struct page *page = buf->page;
+> +	struct folio *folio;
+> +	unsigned int nofs_flag;
+>  
+>  	if (!page || page->index != index) {
+>  		erofs_put_metabuf(buf);
+> -		page = read_cache_page_gfp(mapping, index,
+> -				mapping_gfp_constraint(mapping, ~__GFP_FS));
+> -		if (IS_ERR(page))
+> -			return page;
+> +
+> +		nofs_flag = memalloc_nofs_save();
+> +		folio = read_cache_folio(mapping, index, NULL, NULL);
+> +		memalloc_nofs_restore(nofs_flag);
+> +		if (IS_ERR(folio))
+> +			return folio;
+> +
+>  		/* should already be PageUptodate, no need to lock page */
+> +		page = folio_file_page(folio, index);
+>  		buf->page = page;
+>  	}
+>  	if (buf->kmap_type == EROFS_NO_KMAP) {
+> @@ -63,6 +70,10 @@ void *erofs_bread(struct erofs_buf *buf, struct inode *inode,
+>  void *erofs_read_metabuf(struct erofs_buf *buf, struct super_block *sb,
+>  			 erofs_blk_t blkaddr, enum erofs_kmap_type type)
+>  {
+> +	if (erofs_is_fscache_mode(sb))
+> +		return erofs_bread(buf, EROFS_SB(sb)->s_fscache->inode,
+> +				   blkaddr, type);
+> +
+>  	return erofs_bread(buf, sb->s_bdev->bd_inode, blkaddr, type);
+>  }
+>  
+> diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
+> index ac02af8cce3e..23d7e862eed8 100644
+> --- a/fs/erofs/fscache.c
+> +++ b/fs/erofs/fscache.c
+> @@ -59,7 +59,32 @@ static int erofs_fscache_read_folios(struct fscache_cookie *cookie,
+>  	return ret;
+>  }
+>  
+> +static int erofs_fscache_meta_readpage(struct file *data, struct page *page)
+> +{
+> +	int ret;
+> +	struct folio *folio = page_folio(page);
+> +	struct super_block *sb = folio_mapping(folio)->host->i_sb;
+> +	struct erofs_map_dev mdev = {
+> +		.m_deviceid = 0,
+> +		.m_pa = folio_pos(folio),
+> +	};
+> +
+> +	ret = erofs_map_dev(sb, &mdev);
+> +	if (ret)
+> +		goto out;
+> +
+> +	ret = erofs_fscache_read_folios(mdev.m_fscache->cookie,
+> +			folio_mapping(folio), folio_pos(folio),
+> +			folio_size(folio), mdev.m_pa);
+> +	if (!ret)
+> +		folio_mark_uptodate(folio);
+> +out:
+> +	folio_unlock(folio);
+> +	return ret;
+> +}
+> +
+>  static const struct address_space_operations erofs_fscache_meta_aops = {
+> +	.readpage = erofs_fscache_meta_readpage,
+>  };
+>  
+>  int erofs_fscache_register_cookie(struct super_block *sb,
+> -- 
+> 2.27.0
