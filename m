@@ -2,105 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D14AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 17:20:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8F8FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 17:20:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232070AbiDZRXO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 13:23:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34082 "EHLO
+        id S230497AbiDZRVp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 13:21:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231994AbiDZRXJ (ORCPT
+        with ESMTP id S1353608AbiDZRVc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 13:23:09 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCBF14B871
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 10:20:00 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id bo5so18563102pfb.4
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 10:20:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=O4FZja9WudcKens4azldCUmjh2etbVq0EGH84l7RjgU=;
-        b=gcOCeXEtfA5bcZ/0OV4XMefXitjP6xuTILazvyaC+XU0gpaBiM0Dlgq0QSn5nnYeDu
-         hhDibZtZpYTsaYC0GBYi9E4xYXa1QxVYXJPTKhW5jEogY9D7brvG/037iX8URKn16x/Y
-         a45/RuOD/U5pb9Hj6+uANTPMZDlDhiPvLhJUfjpngUdOCiueITld9oB5KmFW6mJiK1+S
-         N76z7OfUxd1I62SO1Fu0ejnC4zUVdviKqwRlQv0tkpyGOXmistKqH7Bnmmdly65qfeU7
-         Gnq6Sbk7uyoGGHhUYla7OHHq8l+ncuWcUxttGrpEjVKb9jBI5znDmgB8HDYwHZMvbBfy
-         +6KA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=O4FZja9WudcKens4azldCUmjh2etbVq0EGH84l7RjgU=;
-        b=OBmWN09bTuKWnIIRLkKy8iaMWx2vJ6rAD/mJKxNLqfYguwK6CVu46iyUj0hpsWkiWf
-         N9XJteTP09WVd5QRo8meel27PxA/JA4O6w8k2UDINmqmfjLcOxMjT+CfaqWHh5dfxjR+
-         nslY78v3ZVyvxfZrVgeG97EPB60qx2wCZ6dNzyvc9JLJoOQ8njUSOBw8G6+rYw4z2yb+
-         bpufGxHIgZmIv9XAnlG9Dxm1PC10SBawSq256jb8+Yv0AOhjJnH7c0yVxEfmJswRcTwy
-         go/P4++gf2r/iG5XdAGJFXb7x94WLk4TM6D3c2fvM7n4Ql7zv88QKfbGwPcIlK961B5u
-         7Q/g==
-X-Gm-Message-State: AOAM533tiaXvXXpKUgAdJPHIpMkBrEAmngGUO3a7rNsENKrwjfWKXprz
-        18aO9lN1/krTm3aL/b6PVxv7ZnWJSDYBFi7wJkmWsQ==
-X-Google-Smtp-Source: ABdhPJw41MD54CZn3iFTHAqU/4zXInNZxrbaKEbgqHdskaF06GdYcfMFMso5Ak25IGKvB9HSfzmpK89B5hdyIBaBt1M=
-X-Received: by 2002:a63:8ac7:0:b0:3aa:fa62:5a28 with SMTP id
- y190-20020a638ac7000000b003aafa625a28mr14854945pgd.400.1650993600084; Tue, 26
- Apr 2022 10:20:00 -0700 (PDT)
+        Tue, 26 Apr 2022 13:21:32 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 890EC18E3F
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 10:18:24 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 46898210E7;
+        Tue, 26 Apr 2022 17:18:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1650993503; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ajt+f0TR1g09IOxUO0AgyqstV7MbGLoYiCSqDfVDC6M=;
+        b=RR5LNDdWjNPQ7sSD4i7bRayRqcSZsAwOK23SxD0xjkM5hkfy+7gQbJkiyWl4DDT40iZHdL
+        csGiXkzf5cV1x/w9b8/b42AA4f+aJVHbcDZuIPZ3CgdHURgMBQZoghS7jeEiJLvgQunLXf
+        oKkfjMVyMxoygPq9cy9bD9Sa4JgS1TY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1650993503;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ajt+f0TR1g09IOxUO0AgyqstV7MbGLoYiCSqDfVDC6M=;
+        b=SivkeHU5ufTlO9rNDaA9Hhn/lc9n3/QqlXP4nXJSXybdDPYzF9JWl4pcfShwaaJJthZNXg
+        cLU5iNO2jrR7lkBA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 23C6C13AD5;
+        Tue, 26 Apr 2022 17:18:23 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 1t0HCF8paGJeFgAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Tue, 26 Apr 2022 17:18:23 +0000
+Message-ID: <2e0d0be0-f9c4-a084-8292-507d60faeeb4@suse.cz>
+Date:   Tue, 26 Apr 2022 19:18:22 +0200
 MIME-Version: 1.0
-References: <20220327205803.739336-1-mizhang@google.com> <YkHRYY6x1Ewez/g4@google.com>
- <CAL715WL7ejOBjzXy9vbS_M2LmvXcC-CxmNr+oQtCZW0kciozHA@mail.gmail.com> <YkH7KZbamhKpCidK@google.com>
-In-Reply-To: <YkH7KZbamhKpCidK@google.com>
-From:   Mingwei Zhang <mizhang@google.com>
-Date:   Tue, 26 Apr 2022 10:19:49 -0700
-Message-ID: <CAL715W+6UwO2zgoSLUeTmBHRo1HMSGshA6YMhvBiqfJrejhwFQ@mail.gmail.com>
-Subject: Re: [PATCH] KVM: x86/mmu: add lockdep check before lookup_address_in_mm()
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm <kvm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Ben Gardon <bgardon@google.com>,
-        David Matlack <dmatlack@google.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 09/23] mm/slab_common: cleanup kmalloc_large()
+Content-Language: en-US
+To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Cc:     Marco Elver <elver@google.com>,
+        Matthew WilCox <willy@infradead.org>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+References: <20220414085727.643099-1-42.hyeyoo@gmail.com>
+ <20220414085727.643099-10-42.hyeyoo@gmail.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20220414085727.643099-10-42.hyeyoo@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 11:15 AM Sean Christopherson <seanjc@google.com> wrote:
->
-> On Mon, Mar 28, 2022, Mingwei Zhang wrote:
-> > With that, I start to feel this is a bug. The issue is just so rare
-> > that it has never triggered a problem.
-> >
-> > lookup_address_in_mm() walks the host page table as if it is a
-> > sequence of _static_ memory chunks. This is clearly dangerous.
->
-> Yeah, it's broken.  The proper fix is do something like what perf uses, or maybe
-> just genericize and reuse the code from commit 8af26be06272
-> ("perf/core: Fix arch_perf_get_page_size()).
+On 4/14/22 10:57, Hyeonggon Yoo wrote:
+> Now that kmalloc_large() and kmalloc_large_node() do same job,
+> make kmalloc_large() wrapper of kmalloc_large_node().
+> 
+> Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
 
-hmm, I am thinking about this. We clearly need an adaptor layer if we
-choose to use this function, e.g., size -> layer change; using irq or
-not. Alternatively, I am wondering if we can just modify
-lookup_address_in_mm() to make the code compatible with "lockless"
-walk?
-
-On top of that, since kvm_mmu_max_mapping_level() is used in two
-places: 1) ept violation and 2) disabling dirty logging. The former
-does not require disable/enable irq since it is safe. So maybe add a
-parameter in this function and plumb through towards
-host_pfn_mapping_level()?
->
-> > But right now,  kvm_mmu_max_mapping_level() are used in other places
-> > as well: kvm_mmu_zap_collapsible_spte(), which does not satisfy the
-> > strict requirement of walking the host page table.
->
-> The host pfn size is used only as a hueristic, so false postives/negatives are
-> ok, the only race that needs to be avoided is dereferencing freed page table
-> memory.  lookup_address_in_pgd() is really broken because it doesn't even ensure
-> a given PxE is READ_ONCE().  I suppose one could argue the caller is broken, but
-> I doubt KVM is the only user that doesn't provide the necessary protections.
-
-right. since lookup_address_in_pgd() is so broken. I am thinking about
-just fix it in place instead of switching to a different function.
+This would be fine, but depends on how the previous patch can be fixed up...
