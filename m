@@ -2,126 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ABDEC35295
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:42:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4606C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:42:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347085AbiDZIpr (ORCPT
+        id S1345265AbiDZIp6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:45:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34966 "EHLO
+        Tue, 26 Apr 2022 04:45:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345699AbiDZIjZ (ORCPT
+        with ESMTP id S1345751AbiDZIj2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:39:25 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACDED3F335;
-        Tue, 26 Apr 2022 01:30:45 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Tue, 26 Apr 2022 04:39:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 043B5403C9;
+        Tue, 26 Apr 2022 01:30:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KnZpB4td1z4ySS;
-        Tue, 26 Apr 2022 18:30:42 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1650961843;
-        bh=6qdUyVxgeCgLFwTIptoWNyNCeFYc5FP46XpU2AKVH6g=;
-        h=Date:From:To:Cc:Subject:From;
-        b=kLpjEZwiKBoGP/x65ktIG/TEyWbEceeKdebGPLHMaFS2BLu/Fdd/hwIVf5SmxqVRG
-         oBZIXrtYXnQD8mEd9Xf4f7hJhXbrC/7BhJ0HpEy48T3IlAEmNcGm7E/KZJGLH+IMxo
-         1exdA+RBNpKJAJJTUl2HB08RTjmhJC9bC0sNtVpZO5U5MPSSIPprXa2Q6bj6QMDhGz
-         zKXb1GOV4uVY+7wpLa7x9MOevmMmnrI70H/RDkYcNiOtiIP+QjccWrEdAxHdvGl+rH
-         BcPVbdaIP54Ag0RiJXqry6ZDnESwMZRmznS7PS64PbvJ8PrDX5+TqyyHdNMb1migVN
-         s3O9TNfF0S65Q==
-Date:   Tue, 26 Apr 2022 18:30:41 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>
-Cc:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
-        Tinghan Shen <tinghan.shen@mediatek.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build failure after merge of the sound-asoc tree
-Message-ID: <20220426183041.2593d35f@canb.auug.org.au>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A1766617E8;
+        Tue, 26 Apr 2022 08:30:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FAC0C385A4;
+        Tue, 26 Apr 2022 08:30:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650961847;
+        bh=0tuairVe7q3IaM+IniLAqmeXoRU9B7E4EPF5fzmWeV8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=IU3dlSwgGwt7zdA0jdHj5ZqcEbHUm3GPCyNZmRz/SU0q+0AzEHHl8r7/hO1pWj+vy
+         IHbXSFpwJg5Lc8EMHXkdnz47mehWvMVtw6NJUEuIirhnlcAHM/fDmdU29njV/N4vFb
+         HQFXLgsUNZwwIDtrvO7JYiMtTvWDQZ29ueA65KXo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Kees Cook <keescook@chromium.org>,
+        Khem Raj <raj.khem@gmail.com>
+Subject: [PATCH 5.4 01/62] etherdevice: Adjust ether_addr* prototypes to silence -Wstringop-overead
+Date:   Tue, 26 Apr 2022 10:20:41 +0200
+Message-Id: <20220426081737.254741425@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
+References: <20220426081737.209637816@linuxfoundation.org>
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/NxqUWlCimMaacaTvPYFSjET";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/NxqUWlCimMaacaTvPYFSjET
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+From: Kees Cook <keescook@chromium.org>
 
-Hi all,
+commit 2618a0dae09ef37728dab89ff60418cbe25ae6bd upstream.
 
-After merging the sound-asoc tree, today's linux-next build (powerpc
-allyesconfig) failed like this:
+With GCC 12, -Wstringop-overread was warning about an implicit cast from
+char[6] to char[8]. However, the extra 2 bytes are always thrown away,
+alignment doesn't matter, and the risk of hitting the edge of unallocated
+memory has been accepted, so this prototype can just be converted to a
+regular char *. Silences:
 
-ld: sound/soc/sof/mediatek/mt8186/mt8186-clk.o:(.opd+0x18): multiple defini=
-tion of `adsp_clock_on'; sound/soc/sof/mediatek/mt8195/mt8195-clk.o:(.opd+0=
-x60): first defined here
-ld: sound/soc/sof/mediatek/mt8186/mt8186-clk.o: in function `.adsp_clock_on=
-':
-mt8186-clk.c:(.text.adsp_clock_on+0x0): multiple definition of `.adsp_clock=
-_on'; sound/soc/sof/mediatek/mt8195/mt8195-clk.o:mt8195-clk.c:(.text.adsp_c=
-lock_on+0x0): first defined here
-ld: sound/soc/sof/mediatek/mt8186/mt8186-clk.o:(.opd+0x30): multiple defini=
-tion of `adsp_clock_off'; sound/soc/sof/mediatek/mt8195/mt8195-clk.o:(.opd+=
-0x78): first defined here
-ld: sound/soc/sof/mediatek/mt8186/mt8186-clk.o: in function `.adsp_clock_of=
-f':
-mt8186-clk.c:(.text.adsp_clock_off+0x0): multiple definition of `.adsp_cloc=
-k_off'; sound/soc/sof/mediatek/mt8195/mt8195-clk.o:mt8195-clk.c:(.text.adsp=
-_clock_off+0x0): first defined here
-ld: sound/soc/sof/mediatek/mt8186/mt8186-loader.o:(.opd+0x0): multiple defi=
-nition of `sof_hifixdsp_boot_sequence'; sound/soc/sof/mediatek/mt8195/mt819=
-5-loader.o:(.opd+0x0): first defined here
-ld: sound/soc/sof/mediatek/mt8186/mt8186-loader.o: in function `.sof_hifixd=
-sp_boot_sequence':
-mt8186-loader.c:(.text.sof_hifixdsp_boot_sequence+0x0): multiple definition=
- of `.sof_hifixdsp_boot_sequence'; sound/soc/sof/mediatek/mt8195/mt8195-loa=
-der.o:mt8195-loader.c:(.text.sof_hifixdsp_boot_sequence+0x0): first defined=
- here
-ld: sound/soc/sof/mediatek/mt8186/mt8186-loader.o:(.opd+0x18): multiple def=
-inition of `sof_hifixdsp_shutdown'; sound/soc/sof/mediatek/mt8195/mt8195-lo=
-ader.o:(.opd+0x18): first defined here
-ld: sound/soc/sof/mediatek/mt8186/mt8186-loader.o: in function `.sof_hifixd=
-sp_shutdown':
-mt8186-loader.c:(.text.sof_hifixdsp_shutdown+0x0): multiple definition of `=
-.sof_hifixdsp_shutdown'; sound/soc/sof/mediatek/mt8195/mt8195-loader.o:mt81=
-95-loader.c:(.text.sof_hifixdsp_shutdown+0x0): first defined here
+net/core/dev.c: In function ‘bpf_prog_run_generic_xdp’: net/core/dev.c:4618:21: warning: ‘ether_addr_equal_64bits’ reading 8 bytes from a region of size 6 [-Wstringop-overread]
+ 4618 |         orig_host = ether_addr_equal_64bits(eth->h_dest, > skb->dev->dev_addr);
+      |                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+net/core/dev.c:4618:21: note: referencing argument 1 of type ‘const u8[8]’ {aka ‘const unsigned char[8]’}
+net/core/dev.c:4618:21: note: referencing argument 2 of type ‘const u8[8]’ {aka ‘const unsigned char[8]’}
+In file included from net/core/dev.c:91: include/linux/etherdevice.h:375:20: note: in a call to function ‘ether_addr_equal_64bits’
+  375 | static inline bool ether_addr_equal_64bits(const u8 addr1[6+2],
+      |                    ^~~~~~~~~~~~~~~~~~~~~~~
 
-Caused by commits
+Reported-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Tested-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Link: https://lore.kernel.org/netdev/20220212090811.uuzk6d76agw2vv73@pengutronix.de
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: netdev@vger.kernel.org
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: Khem Raj <raj.khem@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ include/linux/etherdevice.h |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-  570c14dc92d5 ("ASoC: SOF: mediatek: Add mt8186 sof fw loader and dsp ops")
-  210b3ab932f7 ("ASoC: SOF: mediatek: Add mt8186 dsp clock support")
+--- a/include/linux/etherdevice.h
++++ b/include/linux/etherdevice.h
+@@ -127,7 +127,7 @@ static inline bool is_multicast_ether_ad
+ #endif
+ }
+ 
+-static inline bool is_multicast_ether_addr_64bits(const u8 addr[6+2])
++static inline bool is_multicast_ether_addr_64bits(const u8 *addr)
+ {
+ #if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
+ #ifdef __BIG_ENDIAN
+@@ -341,8 +341,7 @@ static inline bool ether_addr_equal(cons
+  * Please note that alignment of addr1 & addr2 are only guaranteed to be 16 bits.
+  */
+ 
+-static inline bool ether_addr_equal_64bits(const u8 addr1[6+2],
+-					   const u8 addr2[6+2])
++static inline bool ether_addr_equal_64bits(const u8 *addr1, const u8 *addr2)
+ {
+ #if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
+ 	u64 fold = (*(const u64 *)addr1) ^ (*(const u64 *)addr2);
 
-I have reverted those commits and the following
 
-  0e0b83cc7ec7 ("ASoC: SOF: mediatek: Add DSP system PM callback for mt8186=
-")
-
-for today.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/NxqUWlCimMaacaTvPYFSjET
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJnrbEACgkQAVBC80lX
-0Gz9egf/bQzoSbhllOei4arxYI2pvPMl/chnh5rTJIvf5PE5nYFNITFpcyZzlxZ3
-gwi2cBvWLM6M89d/c8lP06X6CpFc3HoOl+sNS8Ib+tXlyHw7KBTGO/5W4hXacqpi
-zdodoL4fW/uP956vHEwVG0Fnymt0/YlvL1J22JpUl78xdQh5AyMFB+iAzUoNRAyE
-vADYZ5balFjYiA0MNn7Pi48aLjssqx5+Klf3KVYevIvuOUfOQTwuaS7lyitjCtC2
-1WralgP9RWB216l2gzosjeBY4qIHTWbZczXrFqCLZEnNhQWlC3jemNQkrn4L2dPS
-cScN5UVR75A5L0QRu+ssMuaAUsmDZQ==
-=9T3O
------END PGP SIGNATURE-----
-
---Sig_/NxqUWlCimMaacaTvPYFSjET--
