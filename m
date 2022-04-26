@@ -2,90 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B308C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:24:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73FF1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:24:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344659AbiDZI1V (ORCPT
+        id S1344736AbiDZI1X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:27:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36346 "EHLO
+        Tue, 26 Apr 2022 04:27:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344067AbiDZI0n (ORCPT
+        with ESMTP id S1344673AbiDZI0n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:26:43 -0400
-Received: from mail.meizu.com (unknown [14.29.68.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9321E3B3F3;
-        Tue, 26 Apr 2022 01:23:10 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
- (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Tue, 26 Apr
- 2022 16:23:08 +0800
-Received: from [172.16.137.70] (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Tue, 26 Apr
- 2022 16:23:07 +0800
-Message-ID: <68b68f35-86e5-3f3b-ffd0-bea9c952fc66@meizu.com>
-Date:   Tue, 26 Apr 2022 16:23:07 +0800
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 559333E5FA;
+        Tue, 26 Apr 2022 01:23:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 378C86179E;
+        Tue, 26 Apr 2022 08:23:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15FD1C385B8;
+        Tue, 26 Apr 2022 08:23:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650961393;
+        bh=06XDKZ6eGspf8eNJ01Fmut9oFMZHv1vvkWCZjqwZm/w=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=MOPJVGcvF4RTtXsBmng1LiefEiiEiEwlmyw5fF6yip+ZS9KtJxJtl1p+aC7MT1HJv
+         T7IEkmRrP6amvgbdyAsM1j8XC8WoBwtWB3pHta9bk2mlxoTM7Xt535GeDpysOdjOv9
+         9bvt7W3sYdBbKUvxYnLrrp96KsWAahsg3+C6MNYU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Sergey Matyukevich <sergey.matyukevich@synopsys.com>,
+        Vineet Gupta <vgupta@kernel.org>
+Subject: [PATCH 4.9 20/24] ARC: entry: fix syscall_trace_exit argument
+Date:   Tue, 26 Apr 2022 10:21:14 +0200
+Message-Id: <20220426081731.969641568@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220426081731.370823950@linuxfoundation.org>
+References: <20220426081731.370823950@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 1/2] docs/zh_CN: sync with original text
- Documentation/vm/page_owner.rst
-To:     Alex Shi <seakeel@gmail.com>, <siyanteng01@gmail.com>
-CC:     <alexs@kernel.org>, <corbet@lwn.net>, <linux-doc@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <siyanteng@loongson.cn>
-References: <CAEensMzuQ0uAw8_5Xb7u1n685au=DpaJyPevGCT8GCG7xS42ow@mail.gmail.com>
- <1650424016-7225-1-git-send-email-baihaowen@meizu.com>
- <1650424016-7225-2-git-send-email-baihaowen@meizu.com>
- <30d2f96e-99e1-2976-a294-8e112166afff@gmail.com>
- <049ccac8-c394-0cdc-c2ed-4ea91cab6439@meizu.com>
- <c498b2a7-8f0e-4f6d-10ba-49c4c7794ff9@gmail.com>
- <0be9fe6a-b01e-b355-9283-6ad8372932d6@meizu.com>
- <73d2f4cb-9f38-ac33-b4c0-c4d3b465bf8b@gmail.com>
-From:   baihaowen <baihaowen@meizu.com>
-In-Reply-To: <73d2f4cb-9f38-ac33-b4c0-c4d3b465bf8b@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-在 4/26/22 4:20 PM, Alex Shi 写道:
->
-> On 4/25/22 09:17, baihaowen wrote:
->> 在 4/24/22 11:16 AM, Alex Shi 写道:
->>> On 4/24/22 10:56, baihaowen wrote:
->>>>>> +        ======          ==========      ==================
->>>> hi, Alex
->>>> I can apply local.
->>>> ➜  linux-next git:(heads/next-20220421) ✗ git am doc_pageonwer_patches/0001-docs-zh_CN-sync-with-original-text-Documentation-vm-.patch
->>>> 应用：docs/zh_CN: sync with original text Documentation/vm/page_owner.rst
->>>> ➜  linux-next git:(heads/next-20220421) ✗ git am doc_pageonwer_patches/0002-doc-vm-page_owner.rst-Fix-table-display-confusion.patch   
->>>> 应用：doc/vm/page_owner.rst: Fix table display confusion
->>>>
->>>> I think git send-email will change format by my select. I'll try to resend.
->>> Send to yourself only then get it from your email client and try applying. 
->>>
->>> Thanks
->>> Alex
->> Hi Alex
->>
->> Could you tell me how do you do when you get a patch from email ?
->>
->> I get my patch from email and then copy-patse to a new file, then git am xx.patch.
-> Don't do it. copy usually mess the format of patch.
->
-> Saving the patch email from many kind of email-clients as raw file, like thunderbird etc.
-> Then using 'git am xxx.patch'. It will work. In fact, git can handle the plain email patch well.
->
->
->> It will notice 补丁格式检测失败。
->>
-hi, Alex
-I have sent you an available patch set, plz try to apply.
+From: Sergey Matyukevich <sergey.matyukevich@synopsys.com>
 
--- 
-Haowen Bai
+commit b1c6ecfdd06907554518ec384ce8e99889d15193 upstream.
+
+Function syscall_trace_exit expects pointer to pt_regs. However
+r0 is also used to keep syscall return value. Restore pointer
+to pt_regs before calling syscall_trace_exit.
+
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Sergey Matyukevich <sergey.matyukevich@synopsys.com>
+Signed-off-by: Vineet Gupta <vgupta@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/arc/kernel/entry.S |    1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/arch/arc/kernel/entry.S
++++ b/arch/arc/kernel/entry.S
+@@ -191,6 +191,7 @@ tracesys_exit:
+ 	st  r0, [sp, PT_r0]     ; sys call return value in pt_regs
+ 
+ 	;POST Sys Call Ptrace Hook
++	mov r0, sp		; pt_regs needed
+ 	bl  @syscall_trace_exit
+ 	b   ret_from_exception ; NOT ret_from_system_call at is saves r0 which
+ 	; we'd done before calling post hook above
+
 
