@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69F9BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:18:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76A3EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:18:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343648AbiDZJVD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:21:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44654 "EHLO
+        id S235190AbiDZJVM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:21:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239353AbiDZI5E (ORCPT
+        with ESMTP id S1345841AbiDZI5B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:57:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 040FC8302A;
-        Tue, 26 Apr 2022 01:41:44 -0700 (PDT)
+        Tue, 26 Apr 2022 04:57:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0E7382D1D;
+        Tue, 26 Apr 2022 01:41:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ADEE4B81CF2;
-        Tue, 26 Apr 2022 08:41:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5446C385A0;
-        Tue, 26 Apr 2022 08:41:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 719E3604F5;
+        Tue, 26 Apr 2022 08:41:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 793C6C385A0;
+        Tue, 26 Apr 2022 08:41:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962501;
-        bh=uKEYDWt3OoW+HTLnKcurD0UcjrAlNyV6usIFyO9hi1U=;
+        s=korg; t=1650962492;
+        bh=mt4oTxRDRytd2sDxSUA4c6vTrTy49Qqxkea0a5v82a8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bKtLkeh2Fpc072TkaCKomioVjdSpvtAJTmhoLyWLfTE4pmg6X2HWllCF3uJaHFqgc
-         OBPMuNBc4oTrGy8Qtd1UTcStQHKEP64+LyAvSxjDqxDG33ChM+965QF33vuYvpqNqx
-         ccSCKjSdjvGr7reM2h3i0R6/hx45b/z1z1acD3r0=
+        b=Hto/VQKuTT6FLoJsqjiGUipyRgz/EM2bm64XjNYyGVzdvccCjywhL4hv5405R5wrz
+         cs9gJesRLGhsMigN0w9pF+AGgS3JZVyfFhD1aSy+2e+Dc7ExCm7HkrGTfZztemwKE7
+         EQ/xfnz2DCT/dba0KeO6mpdi4N19Oa62bwdE7dwA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wang Jianjian <wangjianjian3@huawei.com>,
-        Theodore Tso <tytso@mit.edu>, stable@kernel.org
-Subject: [PATCH 5.15 117/124] ext4, doc: fix incorrect h_reserved size
-Date:   Tue, 26 Apr 2022 10:21:58 +0200
-Message-Id: <20220426081750.616408406@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Ye Bin <yebin10@huawei.com>, Jan Kara <jack@suse.cz>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.15 114/124] ext4: fix symlink file size not match to file content
+Date:   Tue, 26 Apr 2022 10:21:55 +0200
+Message-Id: <20220426081750.532641271@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -49,32 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: wangjianjian (C) <wangjianjian3@huawei.com>
+From: Ye Bin <yebin10@huawei.com>
 
-commit 7102ffe4c166ca0f5e35137e9f9de83768c2d27d upstream.
+commit a2b0b205d125f27cddfb4f7280e39affdaf46686 upstream.
 
-According to document and code, ext4_xattr_header's size is 32 bytes, so
-h_reserved size should be 3.
+We got issue as follows:
+[home]# fsck.ext4  -fn  ram0yb
+e2fsck 1.45.6 (20-Mar-2020)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Symlink /p3/d14/d1a/l3d (inode #3494) is invalid.
+Clear? no
+Entry 'l3d' in /p3/d14/d1a (3383) has an incorrect filetype (was 7, should be 0).
+Fix? no
 
-Signed-off-by: Wang Jianjian <wangjianjian3@huawei.com>
-Link: https://lore.kernel.org/r/92fcc3a6-7d77-8c09-4126-377fcb4c46a5@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+As the symlink file size does not match the file content. If the writeback
+of the symlink data block failed, ext4_finish_bio() handles the end of IO.
+However this function fails to mark the buffer with BH_write_io_error and
+so when unmount does journal checkpoint it cannot detect the writeback
+error and will cleanup the journal. Thus we've lost the correct data in the
+journal area. To solve this issue, mark the buffer as BH_write_io_error in
+ext4_finish_bio().
+
 Cc: stable@kernel.org
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220321144438.201685-1-yebin10@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/filesystems/ext4/attributes.rst |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ext4/page-io.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/Documentation/filesystems/ext4/attributes.rst
-+++ b/Documentation/filesystems/ext4/attributes.rst
-@@ -76,7 +76,7 @@ The beginning of an extended attribute b
-      - Checksum of the extended attribute block.
-    * - 0x14
-      - \_\_u32
--     - h\_reserved[2]
-+     - h\_reserved[3]
-      - Zero.
- 
- The checksum is calculated against the FS UUID, the 64-bit block number
+--- a/fs/ext4/page-io.c
++++ b/fs/ext4/page-io.c
+@@ -134,8 +134,10 @@ static void ext4_finish_bio(struct bio *
+ 				continue;
+ 			}
+ 			clear_buffer_async_write(bh);
+-			if (bio->bi_status)
++			if (bio->bi_status) {
++				set_buffer_write_io_error(bh);
+ 				buffer_io_error(bh);
++			}
+ 		} while ((bh = bh->b_this_page) != head);
+ 		spin_unlock_irqrestore(&head->b_uptodate_lock, flags);
+ 		if (!under_io) {
 
 
