@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6CBCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:05:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6EC4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:06:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353754AbiDZTId (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 15:08:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43228 "EHLO
+        id S243750AbiDZTIl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 15:08:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353805AbiDZTFu (ORCPT
+        with ESMTP id S1353802AbiDZTFs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 15:05:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5994F19A48F;
-        Tue, 26 Apr 2022 12:02:42 -0700 (PDT)
+        Tue, 26 Apr 2022 15:05:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF532199835;
+        Tue, 26 Apr 2022 12:02:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E7D0D619C4;
-        Tue, 26 Apr 2022 19:02:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E34AC385A4;
-        Tue, 26 Apr 2022 19:02:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 94D94B81DC2;
+        Tue, 26 Apr 2022 19:02:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F7E8C385A0;
+        Tue, 26 Apr 2022 19:02:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650999761;
-        bh=UzaHSttgxLekgrWJttDuNNC3KNvjaox2XCxdt4LdC0k=;
+        s=k20201202; t=1650999758;
+        bh=aEDMA/3oe/qWVXNiG9wL+UoIZG5uPLMm54IzJ4kwM5c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QI3vajOT1YvTdZvLHeCLJ1Q9a1ZhpnsTwzLY2P224k/kmsjSKCszuPETa/5yT9oW4
-         TRKq0ypZmtq/noeBSIUdyn8KuhPVh1Yat2ezG7+ZZ47YebuE3GLwc3aNqv2hDoP4Q1
-         auQ95KnvojNJNwlzkYwTF+MRSFFUb/s93pOI2C5foCshUfXOsYAqHMSDDECfa4A9Ar
-         +rEmw6PHlhct5GLW801xVOUC0hwsj46YpMcPNEzyOD2L+jMxNG3hHTjl8OxytMQfvG
-         b3D4MkzuH8qdVCW//OuNhYhaBdcVeXn+Ps/c3MvDZqF2JZpoJNDsqyXnH7nj0ThOBF
-         j7Fqh+gSF/eFA==
+        b=pG35yLUEp8QAz5J4G07P6E6ZsKIjwRyjav3VNlRW/HLf1bjcUok7I8ZoLPOED47I0
+         vC35IIwDceEtCRP1pLQS0PFhSg9uYsY1aWTiif/CSqFLGQc5jTL/wk5hfw7M5Yba+M
+         pJxG5e5aaG0wmH3fKJU4d4Rq1tBJ4DyRh06HhuCnEJaoilClKz7pgOLPrELQM06M80
+         OAnyrmiuo+Mj7jeiI+FRZzv75GHOq61hglUKcS4t4PpFfTI8JkOeqV8+WLiiTk4XCH
+         507Un/J9Wqyzicjr9DiaRZ+gSLV00nb8cry/0OVpxFwzCGFO4wQ58JQIkyOE3ZccbT
+         mrneN3wKsP/lQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexey Kardashevskiy <aik@ozlabs.ru>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, nathan@kernel.org,
-        ndesaulniers@google.com, christophe.leroy@csgroup.eu,
-        msuchanek@suse.de, linuxppc-dev@lists.ozlabs.org,
-        llvm@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.10 8/9] powerpc/perf: Fix 32bit compile
-Date:   Tue, 26 Apr 2022 15:02:29 -0400
-Message-Id: <20220426190232.2351606-8-sashal@kernel.org>
+Cc:     Mikulas Patocka <mpatocka@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, peterz@infradead.org, jpoimboe@redhat.com
+Subject: [PATCH AUTOSEL 5.10 5/9] x86: __memcpy_flushcache: fix wrong alignment if size > 2^32
+Date:   Tue, 26 Apr 2022 15:02:26 -0400
+Message-Id: <20220426190232.2351606-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220426190232.2351606-1-sashal@kernel.org>
 References: <20220426190232.2351606-1-sashal@kernel.org>
@@ -55,42 +53,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Kardashevskiy <aik@ozlabs.ru>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-[ Upstream commit bb82c574691daf8f7fa9a160264d15c5804cb769 ]
+[ Upstream commit a6823e4e360fe975bd3da4ab156df7c74c8b07f3 ]
 
-The "read_bhrb" global symbol is only called under CONFIG_PPC64 of
-arch/powerpc/perf/core-book3s.c but it is compiled for both 32 and 64 bit
-anyway (and LLVM fails to link this on 32bit).
+The first "if" condition in __memcpy_flushcache is supposed to align the
+"dest" variable to 8 bytes and copy data up to this alignment.  However,
+this condition may misbehave if "size" is greater than 4GiB.
 
-This fixes it by moving bhrb.o to obj64 targets.
+The statement min_t(unsigned, size, ALIGN(dest, 8) - dest); casts both
+arguments to unsigned int and selects the smaller one.  However, the
+cast truncates high bits in "size" and it results in misbehavior.
 
-Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220421025756.571995-1-aik@ozlabs.ru
+For example:
+
+	suppose that size == 0x100000001, dest == 0x200000002
+	min_t(unsigned, size, ALIGN(dest, 8) - dest) == min_t(0x1, 0xe) == 0x1;
+	...
+	dest += 0x1;
+
+so we copy just one byte "and" dest remains unaligned.
+
+This patch fixes the bug by replacing unsigned with size_t.
+
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/perf/Makefile | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/x86/lib/usercopy_64.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/perf/Makefile b/arch/powerpc/perf/Makefile
-index c02854dea2b2..da9f60ede97b 100644
---- a/arch/powerpc/perf/Makefile
-+++ b/arch/powerpc/perf/Makefile
-@@ -5,11 +5,11 @@ ifdef CONFIG_COMPAT
- obj-$(CONFIG_PERF_EVENTS)	+= callchain_32.o
- endif
+diff --git a/arch/x86/lib/usercopy_64.c b/arch/x86/lib/usercopy_64.c
+index 508c81e97ab1..f1c0befb62df 100644
+--- a/arch/x86/lib/usercopy_64.c
++++ b/arch/x86/lib/usercopy_64.c
+@@ -121,7 +121,7 @@ void __memcpy_flushcache(void *_dst, const void *_src, size_t size)
  
--obj-$(CONFIG_PPC_PERF_CTRS)	+= core-book3s.o bhrb.o
-+obj-$(CONFIG_PPC_PERF_CTRS)	+= core-book3s.o
- obj64-$(CONFIG_PPC_PERF_CTRS)	+= ppc970-pmu.o power5-pmu.o \
- 				   power5+-pmu.o power6-pmu.o power7-pmu.o \
- 				   isa207-common.o power8-pmu.o power9-pmu.o \
--				   generic-compat-pmu.o power10-pmu.o
-+				   generic-compat-pmu.o power10-pmu.o bhrb.o
- obj32-$(CONFIG_PPC_PERF_CTRS)	+= mpc7450-pmu.o
+ 	/* cache copy and flush to align dest */
+ 	if (!IS_ALIGNED(dest, 8)) {
+-		unsigned len = min_t(unsigned, size, ALIGN(dest, 8) - dest);
++		size_t len = min_t(size_t, size, ALIGN(dest, 8) - dest);
  
- obj-$(CONFIG_PPC_POWERNV)	+= imc-pmu.o
+ 		memcpy((void *) dest, (void *) source, len);
+ 		clean_cache_range((void *) dest, len);
 -- 
 2.35.1
 
