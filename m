@@ -2,193 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 580C1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 21:32:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9E16C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 21:32:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355534AbiDZVfk (ORCPT
+        id S1355515AbiDZVfY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 17:35:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46916 "EHLO
+        Tue, 26 Apr 2022 17:35:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355528AbiDZVfd (ORCPT
+        with ESMTP id S1355466AbiDZVfW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 17:35:33 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60D46473B7;
-        Tue, 26 Apr 2022 14:32:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1651008718;
-        bh=NKFKAKCLTOL1m3NDU/BmygYePpH8tCNAz8bh93sKgz0=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=UnWmWUgloGYQyZ3ZSEkzNybE9hnC0VINAmK6KIMHhaBkdfpi742FR/3jIAoWOOuOt
-         2P0Cw/5BZwRjyUPHfVpgGtOJwxlU6+6E5XNN3KdDGegbB2Dn73bJGHLNaEz3G/XDtN
-         hKMuBXv391gzf0jL96xz3gZ7hEUef4Jiyb6HPF/U=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from esprimo-mx.users.agdsn.de ([141.30.226.129]) by mail.gmx.net
- (mrgmx104 [212.227.17.168]) with ESMTPSA (Nemesis) id
- 1Mzyuc-1o7C8m1ZYM-00x2rC; Tue, 26 Apr 2022 23:31:58 +0200
-From:   Armin Wolf <W_Armin@gmx.de>
-To:     pali@kernel.org
-Cc:     jdelvare@suse.com, linux@roeck-us.net, linux-hwmon@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/3] hwmon: (dell-smm) Avoid unnecessary SMM calls during init
-Date:   Tue, 26 Apr 2022 23:31:52 +0200
-Message-Id: <20220426213154.724708-2-W_Armin@gmx.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220426213154.724708-1-W_Armin@gmx.de>
-References: <20220426213154.724708-1-W_Armin@gmx.de>
+        Tue, 26 Apr 2022 17:35:22 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD95942A0A
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 14:32:10 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id gh6so14584270ejb.0
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 14:32:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sTyKSDm8OUEDphbP/fy4/ucOerWUVhiZWBgtnRYZdZw=;
+        b=hrSd0P29IeYe6JLT8G7WLSBdSI48pYOP7RhBuJIBtv4ClnQVYjjErhR34j0o200+qB
+         ZmfPY98iMRNovl+NLZxfdhxJ3/MvNXFHB9ii9TPtVwPFc2KOg2+t3+AWecp78bb59SEs
+         k3gJZOBTeyKxuzsujMgaNfukSda0/QDU6ee1ATJySsYy756ykIh1JNgCMhQSoJ7YcWWt
+         HWPhI/N31gng2lgoFCDipErbgkUNhhm/+YP2rVyQEZ2EWRJ4dWojw4VULFeC+PxD9Ea9
+         plVLdr1s5D3D0Lvs+uEbKotSgi+iVq5gk3V/rOO7Ay5N2JH0Bv9lyryuC7Tr0dznWNXf
+         IQOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sTyKSDm8OUEDphbP/fy4/ucOerWUVhiZWBgtnRYZdZw=;
+        b=DxMEJUu3AmmjKXzi6GkewVrtFBGrqJwG5bQGjrksUO0ov/jtzjuwSVjukqDdZ7NmbK
+         kVsrNzKdgblB0eDgTIDG9vptUA8sy9UOkqGd5LOnln7RsZyezDgpBWzPeThIR6G03k+s
+         jqs8WH0/pcZ9RIePJRlHNkwVfHPwiTVcmwAJImOr5UefwVGmrCWjzixA6Xt6cCfayT4J
+         jH0A8PwQ+5cvUwzNy7NjkybPaJ/lDPXBP7FTGma1ooTkY4PmdwVHknwBfhrrp1piynoS
+         vkBxnvL1Q2ZBmj+3o8Cln8cXw5y/eOry/r/WF4yGEsKEadyyNf7Vw3w+ejPiFdAtGd23
+         D7oQ==
+X-Gm-Message-State: AOAM530EGmtWSSsWOrVu2FEGBmnbuwCxdj8LBFQlyXWcWbQRxpQnTuvd
+        wPsjvtP7EEluwi6myM4yhV8cgNXYb8JOdzr/72mdsw==
+X-Google-Smtp-Source: ABdhPJzOjBqpk5z5nirWqeoop1JfQFBvXl7jX0YyAMqDGlb2b78LJN0qWVUBzbGca1ofOWWZotLWJ7fP4Y1aIixJzhE=
+X-Received: by 2002:a17:907:eab:b0:6da:8ec5:d386 with SMTP id
+ ho43-20020a1709070eab00b006da8ec5d386mr23479103ejc.668.1651008729111; Tue, 26
+ Apr 2022 14:32:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:XczC9ZRL7DOxRk1A1C9yu96lr6ybK1gJs+016LkFsWLDmQwRzSd
- G+xl+rxPJ9DcVS8XWqH+rsEjulourYGF56U5jekakquprj6mnUMhy67Kl/ztDIcnYW/79BK
- bK5wjRjGqYoewjbTWcQGq4v+hFI4dZ3fXDsqZ0V1DXC8hMnMymxuQGtP/WAoCAQg1Fam/JF
- 4uhQwgkeSKPXKsXa0GPWQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:YzSxZhxqQVo=:arID7AYbt4NarKTmdiL+pW
- OEyn4ni2d/Yvg06Frz0bp80AVqd9R4veMTTc3oIPp4thq5Q4cRlLqjcbdm6VCjoEkkuPID276
- AtskAKrGZzaXJM6zpd8XX+32WLeIbDfBvALQheufeS48jnfh974zF+iJLnJj8RdwE9QjDSlo2
- F4GkgEqJiWmAgtt9RGKeDFNi1E/PBrbQdhrSapey5uRfhwy/n/hba+7iygIb3sHK2fSy+kw1b
- sSEy+ZM1B7FZx5pmzlfFWyLwjl7ZSl5u2RRpmV+bAVGf6DE11l5dFRE+shkE9xWd2zUTS8B57
- pgWnCeQhEsdwRDgKCHC78pc8vrdTyh1uzDoRiRc7v4TsZwAUPjBwiUDTtzyCF3PoTP+P8vZMH
- CdzrxmHxz+rMm+hmg9hElnvvOT01A8xWzDb1aGNZXeFc6iFhLDHL8gmo6jAefVr2jx+jYoFER
- JFlorAi//QaQGBx7EpKlWT/MWNM1eeI8/jbjA4rJ2Wme2NgdZnBFhLtYONd5zOFJTpuqhPisf
- wPPMpD/0dDtLsyK8aoa9QOja/QtWy2cX3FTBvU1YsueSoTfXGeo339pPmOB+WlptqOJloshJA
- L+SpePt8DQMdZr1pNNbsglxkatp29jzlmh3RWPumKlKcHLgsgqtyVzKcqThDLI6N6SqyYzO9v
- RPSvQ5iObd/OCz4hn+W62urk5iHphCGlCvMKq2eaZy6AxApcsylI8IijviHUKSCnFlcfcWByw
- CSFU43sHUjznmU+76lnH8msjrXArOQxCL0TF1yZ7QhSuH6B0CPzofafKFjr5Q47oExg1EiInG
- XCFqNt3Fu7DobqrnmfnwgTkVJv6uE6rDrBm4mKIQm102cOFlMSrl+lO3QjaKuRu5F7+XvB7AB
- sOkGQpcUMR//youI1MVDaMD77PPv3GYA6uNKYoWZ0dE4YynmglYFVCeoZYliuF3fZDP3kiX8M
- PS7KYvhfP7sHEXZyQPecOu/hLs88RfPtrchzojF5mTHNDbifpxBEpphyRutYBB8E0McOj/gRU
- EqtfgYkOsoyNU9XIWwF6xGlTDjUh8N3a4YBs5FoLIb5TRjPZI3tqTJahe1l5dpjXsXuLFevtH
- gEpzu2IRbdXBzI=
+References: <20220402043530.923747-1-davidgow@google.com> <20220402043530.923747-2-davidgow@google.com>
+In-Reply-To: <20220402043530.923747-2-davidgow@google.com>
+From:   Brendan Higgins <brendanhiggins@google.com>
+Date:   Tue, 26 Apr 2022 17:31:57 -0400
+Message-ID: <CAFd5g46UfmrE-D9PKfGJsgZBnCUi9-Z82tu1=4ZQzCCj0VcQCw@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] kunit: Rework kunit_resource allocation policy
+To:     David Gow <davidgow@google.com>
+Cc:     Daniel Latypov <dlatypov@google.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When the driver tries to detect the fan multiplier during
-module initialisation, it issues one SMM call for each fan.
-Those SMM calls are however redundant and also try to query
-fans which may not be present.
-Fix that by detecting the fan multiplier during hwmon
-initialisation when no extra SMM calls are needed.
-Also dont assume the last nominal speed entry to be the
-biggest and instead check all entries.
+On Sat, Apr 2, 2022 at 12:35 AM 'David Gow' via KUnit Development
+<kunit-dev@googlegroups.com> wrote:
+>
+> KUnit's test-managed resources can be created in two ways:
+> - Using the kunit_add_resource() family of functions, which accept a
+>   struct kunit_resource pointer, typically allocated statically or on
+>   the stack during the test.
+> - Using the kunit_alloc_resource() family of functions, which allocate a
+>   struct kunit_resource using kzalloc() behind the scenes.
+>
+> Both of these families of functions accept a 'free' function to be
+> called when the resource is finally disposed of.
+>
+> At present, KUnit will kfree() the resource if this 'free' function is
+> specified, and will not if it is NULL. However, this can lead
+> kunit_alloc_resource() to leak memory (if no 'free' function is passed
+> in), or kunit_add_resource() to incorrectly kfree() memory which was
+> allocated by some other means (on the stack, as part of a larger
+> allocation, etc), if a 'free' function is provided.
+>
+> Instead, always kfree() if the resource was allocated with
+> kunit_alloc_resource(), and never kfree() if it was passed into
+> kunit_add_resource() by the user. (If the user of kunit_add_resource()
+> wishes the resource be kfree()ed, they can call kfree() on the resource
+> from within the 'free' function.
+>
+> This is implemented by adding a 'should_free' member to
+> struct kunit_resource and setting it appropriately. To facilitate this,
+> the various resource add/alloc functions have been refactored somewhat,
+> making them all call a __kunit_add_resource() helper after setting the
+> 'should_free' member appropriately. In the process, all other functions
+> have been made static inline functions.
+>
+> Signed-off-by: David Gow <davidgow@google.com>
+> Tested-by: Daniel Latypov <dlatypov@google.com>
 
-Signed-off-by: Armin Wolf <W_Armin@gmx.de>
-=2D--
- drivers/hwmon/dell-smm-hwmon.c | 37 +++++++++++++---------------------
- 1 file changed, 14 insertions(+), 23 deletions(-)
-
-diff --git a/drivers/hwmon/dell-smm-hwmon.c b/drivers/hwmon/dell-smm-hwmon=
-.c
-index 30b6f0c28093..202ee884de9e 100644
-=2D-- a/drivers/hwmon/dell-smm-hwmon.c
-+++ b/drivers/hwmon/dell-smm-hwmon.c
-@@ -50,7 +50,7 @@
- #define I8K_SMM_GET_DELL_SIG2	0xffa3
-
- #define I8K_FAN_MULT		30
--#define I8K_FAN_MAX_RPM		30000
-+#define I8K_FAN_RPM_THRESHOLD	1000
- #define I8K_MAX_TEMP		127
-
- #define I8K_FN_NONE		0x00
-@@ -326,7 +326,7 @@ static int __init i8k_get_fan_nominal_speed(const stru=
-ct dell_smm_data *data, u8
- 	if (data->disallow_fan_support)
- 		return -EINVAL;
-
--	return i8k_smm(&regs) ? : (regs.eax & 0xffff) * data->i8k_fan_mult;
-+	return i8k_smm(&regs) ? : (regs.eax & 0xffff);
- }
-
- /*
-@@ -776,6 +776,7 @@ static int dell_smm_read(struct device *dev, enum hwmo=
-n_sensor_types type, u32 a
- 			 long *val)
- {
- 	struct dell_smm_data *data =3D dev_get_drvdata(dev);
-+	int mult =3D data->i8k_fan_mult;
- 	int ret;
-
- 	switch (type) {
-@@ -804,11 +805,11 @@ static int dell_smm_read(struct device *dev, enum hw=
-mon_sensor_types type, u32 a
-
- 			return 0;
- 		case hwmon_fan_min:
--			*val =3D data->fan_nominal_speed[channel][0];
-+			*val =3D data->fan_nominal_speed[channel][0] * mult;
-
- 			return 0;
- 		case hwmon_fan_max:
--			*val =3D data->fan_nominal_speed[channel][data->i8k_fan_max];
-+			*val =3D data->fan_nominal_speed[channel][data->i8k_fan_max] * mult;
-
- 			return 0;
- 		case hwmon_fan_target:
-@@ -819,7 +820,7 @@ static int dell_smm_read(struct device *dev, enum hwmo=
-n_sensor_types type, u32 a
- 			if (ret > data->i8k_fan_max)
- 				ret =3D data->i8k_fan_max;
-
--			*val =3D data->fan_nominal_speed[channel][ret];
-+			*val =3D data->fan_nominal_speed[channel][ret] * mult;
-
- 			return 0;
- 		default:
-@@ -1071,6 +1072,13 @@ static int __init dell_smm_init_hwmon(struct device=
- *dev)
- 				break;
- 			}
- 			data->fan_nominal_speed[i][state] =3D err;
-+			/*
-+			 * Autodetect fan multiplier based on nominal rpm if multiplier
-+			 * was not specified as module param or in DMI. If fan reports
-+			 * rpm value too high then set multiplier to 1.
-+			 */
-+			if (!fan_mult && err > I8K_FAN_RPM_THRESHOLD)
-+				data->i8k_fan_mult =3D 1;
- 		}
- 	}
-
-@@ -1359,7 +1367,6 @@ static int __init dell_smm_probe(struct platform_dev=
-ice *pdev)
- 	struct dell_smm_data *data;
- 	const struct dmi_system_id *id, *fan_control;
- 	int ret;
--	u8 fan;
-
- 	data =3D devm_kzalloc(&pdev->dev, sizeof(struct dell_smm_data), GFP_KERN=
-EL);
- 	if (!data)
-@@ -1414,24 +1421,8 @@ static int __init dell_smm_probe(struct platform_de=
-vice *pdev)
- 		dev_info(&pdev->dev, "enabling support for setting automatic/manual fan=
- control\n");
- 	}
-
--	if (!fan_mult) {
--		/*
--		 * Autodetect fan multiplier based on nominal rpm
--		 * If fan reports rpm value too high then set multiplier to 1
--		 */
--		for (fan =3D 0; fan < DELL_SMM_NO_FANS; ++fan) {
--			ret =3D i8k_get_fan_nominal_speed(data, fan, data->i8k_fan_max);
--			if (ret < 0)
--				continue;
--
--			if (ret > I8K_FAN_MAX_RPM)
--				data->i8k_fan_mult =3D 1;
--			break;
--		}
--	} else {
--		/* Fan multiplier was specified in module param or in dmi */
-+	if (fan_mult)
- 		data->i8k_fan_mult =3D fan_mult;
--	}
-
- 	ret =3D dell_smm_init_hwmon(&pdev->dev);
- 	if (ret)
-=2D-
-2.30.2
-
+Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
