@@ -2,51 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AF5CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:32:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5510DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:32:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347101AbiDZJfq (ORCPT
+        id S1347274AbiDZJf4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:35:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38492 "EHLO
+        Tue, 26 Apr 2022 05:35:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347935AbiDZJGY (ORCPT
+        with ESMTP id S1347934AbiDZJGY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 05:06:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F81BBAB88;
-        Tue, 26 Apr 2022 01:47:40 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CCD2B9F2B;
+        Tue, 26 Apr 2022 01:47:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1981FB81A2F;
-        Tue, 26 Apr 2022 08:47:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47128C385A0;
-        Tue, 26 Apr 2022 08:47:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 40A51B81CF2;
+        Tue, 26 Apr 2022 08:47:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 809C8C385A0;
+        Tue, 26 Apr 2022 08:47:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962857;
-        bh=6u3Lw04ae7BNxpRscauU4CwkkTx3Rv+lfvEmnyV8btA=;
+        s=korg; t=1650962855;
+        bh=ZWkaH3pdNqCq29KU1bW73JViEJ2Ey0ONQ/zc49kpLXQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1hEcCaKkSBnLUX/rybJP42RQV55GSm+DkG1iQz9xdQ1tjcLOKlJJb/vjrI69BHzU4
-         Vhfj3ytvWq4lcvpopNX5YgT3wkaojKW6G+R3d2RNwkr/1jkmFKFcp55q1qHhtlLjQ3
-         z1VztyxDRAG+2ey9kJgRuNfqPyZv+2lqaloK2d7M=
+        b=Zu7pA4QbVXpiF+yl1q92yl59YHNg5N6ACQTr9n1WX1cXlS00foRM3ZlRqy4bXvNeQ
+         0ExbknhlZTpfBw6hkaHjimeEvnpTtqvpL9Q86IhPgD4K6v1e0gAlkZM6TDPQqyIcC/
+         YVSXpwpi84AID4FiX8pwtWHWJ38Rp57pUtbSwwek=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, James Clark <james.clark@arm.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        German Gomez <german.gomez@arm.com>,
+        stable@vger.kernel.org, Leo Yan <leo.yan@linaro.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
         Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
+        German Gomez <german.gomez@arm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        James Clark <james.clark@arm.com>,
+        Jiri Olsa <jolsa@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
         Namhyung Kim <namhyung@kernel.org>,
         Peter Zijlstra <peterz@infradead.org>,
-        Ravi Bangoria <ravi.bangoria@linux.ibm.com>,
         Arnaldo Carvalho de Melo <acme@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 113/146] perf report: Set PERF_SAMPLE_DATA_SRC bit for Arm SPE event
-Date:   Tue, 26 Apr 2022 10:21:48 +0200
-Message-Id: <20220426081753.230607369@linuxfoundation.org>
+Subject: [PATCH 5.17 112/146] perf script: Always allow field data_src for auxtrace
+Date:   Tue, 26 Apr 2022 10:21:47 +0200
+Message-Id: <20220426081753.202534399@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -60,74 +61,50 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Leo Yan <leo.yan@linaro.org>
 
-[ Upstream commit ccb17caecfbd542f49a2a79ae088136ba8bfb794 ]
+[ Upstream commit c6d8df01064333dcf140eda996abdb60a60e24b3 ]
 
-Since commit bb30acae4c4dacfa ("perf report: Bail out --mem-mode if mem
-info is not available") "perf mem report" and "perf report --mem-mode"
-don't report result if the PERF_SAMPLE_DATA_SRC bit is missed in sample
-type.
+If use command 'perf script -F,+data_src' to dump memory samples with
+Arm SPE trace data, it reports error:
 
-The commit ffab487052054162 ("perf: arm-spe: Fix perf report
---mem-mode") partially fixes the issue.  It adds PERF_SAMPLE_DATA_SRC
-bit for Arm SPE event, this allows the perf data file generated by
-kernel v5.18-rc1 or later version can be reported properly.
+  # perf script -F,+data_src
+  Samples for 'dummy:u' event do not have DATA_SRC attribute set. Cannot print 'data_src' field.
 
-On the other hand, perf tool still fails to be backward compatibility
-for a data file recorded by an older version's perf which contains Arm
-SPE trace data.  This patch is a workaround in reporting phase, when
-detects ARM SPE PMU event and without PERF_SAMPLE_DATA_SRC bit, it will
-force to set the bit in the sample type and give a warning info.
+This is because the 'dummy:u' event is absent DATA_SRC bit in its sample
+type, so if a file contains AUX area tracing data then always allow
+field 'data_src' to be selected as an option for perf script.
 
-Fixes: bb30acae4c4dacfa ("perf report: Bail out --mem-mode if mem info is not available")
-Reviewed-by: James Clark <james.clark@arm.com>
+Fixes: e55ed3423c1bb29f ("perf arm-spe: Synthesize memory event")
 Signed-off-by: Leo Yan <leo.yan@linaro.org>
-Tested-by: German Gomez <german.gomez@arm.com>
+Cc: Adrian Hunter <adrian.hunter@intel.com>
 Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: German Gomez <german.gomez@arm.com>
 Cc: Ingo Molnar <mingo@redhat.com>
+Cc: James Clark <james.clark@arm.com>
 Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Leo Yan <leo.yan@linaro.org>
 Cc: Mark Rutland <mark.rutland@arm.com>
 Cc: Namhyung Kim <namhyung@kernel.org>
 Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Ravi Bangoria <ravi.bangoria@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220414123201.842754-1-leo.yan@linaro.org
+Link: https://lore.kernel.org/r/20220417114837.839896-1-leo.yan@linaro.org
 Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/builtin-report.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ tools/perf/builtin-script.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/perf/builtin-report.c b/tools/perf/builtin-report.c
-index 1dd92d8c9279..a6bb35b0af9f 100644
---- a/tools/perf/builtin-report.c
-+++ b/tools/perf/builtin-report.c
-@@ -349,6 +349,7 @@ static int report__setup_sample_type(struct report *rep)
- 	struct perf_session *session = rep->session;
- 	u64 sample_type = evlist__combined_sample_type(session->evlist);
- 	bool is_pipe = perf_data__is_pipe(session->data);
-+	struct evsel *evsel;
+diff --git a/tools/perf/builtin-script.c b/tools/perf/builtin-script.c
+index fa478ddcd18a..537a552fe6b3 100644
+--- a/tools/perf/builtin-script.c
++++ b/tools/perf/builtin-script.c
+@@ -459,7 +459,7 @@ static int evsel__check_attr(struct evsel *evsel, struct perf_session *session)
+ 		return -EINVAL;
  
- 	if (session->itrace_synth_opts->callchain ||
- 	    session->itrace_synth_opts->add_callchain ||
-@@ -403,6 +404,19 @@ static int report__setup_sample_type(struct report *rep)
- 	}
+ 	if (PRINT_FIELD(DATA_SRC) &&
+-	    evsel__check_stype(evsel, PERF_SAMPLE_DATA_SRC, "DATA_SRC", PERF_OUTPUT_DATA_SRC))
++	    evsel__do_check_stype(evsel, PERF_SAMPLE_DATA_SRC, "DATA_SRC", PERF_OUTPUT_DATA_SRC, allow_user_set))
+ 		return -EINVAL;
  
- 	if (sort__mode == SORT_MODE__MEMORY) {
-+		/*
-+		 * FIXUP: prior to kernel 5.18, Arm SPE missed to set
-+		 * PERF_SAMPLE_DATA_SRC bit in sample type.  For backward
-+		 * compatibility, set the bit if it's an old perf data file.
-+		 */
-+		evlist__for_each_entry(session->evlist, evsel) {
-+			if (strstr(evsel->name, "arm_spe") &&
-+				!(sample_type & PERF_SAMPLE_DATA_SRC)) {
-+				evsel->core.attr.sample_type |= PERF_SAMPLE_DATA_SRC;
-+				sample_type |= PERF_SAMPLE_DATA_SRC;
-+			}
-+		}
-+
- 		if (!is_pipe && !(sample_type & PERF_SAMPLE_DATA_SRC)) {
- 			ui__error("Selected --mem-mode but no mem data. "
- 				  "Did you call perf record without -d?\n");
+ 	if (PRINT_FIELD(WEIGHT) &&
 -- 
 2.35.1
 
