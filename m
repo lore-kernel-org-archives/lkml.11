@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AC55C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:30:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DB10C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:30:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347636AbiDZJdV (ORCPT
+        id S1347209AbiDZJda (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:33:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51480 "EHLO
+        Tue, 26 Apr 2022 05:33:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347560AbiDZJF5 (ORCPT
+        with ESMTP id S1347851AbiDZJGP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:05:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49617D6;
-        Tue, 26 Apr 2022 01:44:58 -0700 (PDT)
+        Tue, 26 Apr 2022 05:06:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45DAE167F12;
+        Tue, 26 Apr 2022 01:46:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 74C5861344;
-        Tue, 26 Apr 2022 08:44:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80739C385A0;
-        Tue, 26 Apr 2022 08:44:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9598460C42;
+        Tue, 26 Apr 2022 08:46:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DDA1C385A4;
+        Tue, 26 Apr 2022 08:46:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962697;
-        bh=Fu+nhyd4Ftx9wFwzYrhYVHcQbXFxR67KTnPhaztFH/o=;
+        s=korg; t=1650962775;
+        bh=YPTj9OOrUeZwZkfCIZpAkWUxMPpzXgHJJrP8oXqzkWs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T5krVWyUWsNw91QjtpY5qQ2B0EMhUES4YdvsSMNgbEGefMQxJArnsAFcazvjC0fhS
-         0d2K8dFxkCgRy6vp4eC1GyRRmRuttasKYi2ifh94eC25VGAV7ya/6YIqsygYHexX96
-         gkTtsFohREiNTW0WNNezQSDrFtf9LQ89sKBaI8go=
+        b=SzBLoDyu7yHHqZZDU7EsskIjk1rrqRD+c9JEXSvO6NsQAgNAt5FVhRpOAffhJhwsT
+         hIUBpsMlYOVlEaRF12P1iD1BU0nTfu9x8rvKMXs5lkfXyB/0P//2j3dsIG4fuslBUp
+         rctaDUejtCGMiYjVkpavvFw1UvwbXB+S2BZYCWYA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Herve Codina <herve.codina@bootlin.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 019/146] dmaengine: dw-edma: Fix unaligned 64bit access
-Date:   Tue, 26 Apr 2022 10:20:14 +0200
-Message-Id: <20220426081750.605299587@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?=E9=87=91=E9=9F=AC?= <me@kingtous.cn>,
+        Christoph Hellwig <hch@lst.de>,
+        Keith Busch <kbusch@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 085/146] nvme-pci: disable namespace identifiers for the MAXIO MAP1002/1202
+Date:   Tue, 26 Apr 2022 10:21:20 +0200
+Message-Id: <20220426081752.450072201@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -49,58 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Herve Codina <herve.codina@bootlin.com>
+From: Christoph Hellwig <hch@lst.de>
 
-[ Upstream commit 8fc5133d6d4da65cad6b73152fc714ad3d7f91c1 ]
+[ Upstream commit a98a945b80f8684121d477ae68ebc01da953da1f ]
 
-On some arch (ie aarch64 iMX8MM) unaligned PCIe accesses are
-not allowed and lead to a kernel Oops.
-  [ 1911.668835] Unable to handle kernel paging request at virtual address ffff80001bc00a8c
-  [ 1911.668841] Mem abort info:
-  [ 1911.668844]   ESR = 0x96000061
-  [ 1911.668847]   EC = 0x25: DABT (current EL), IL = 32 bits
-  [ 1911.668850]   SET = 0, FnV = 0
-  [ 1911.668852]   EA = 0, S1PTW = 0
-  [ 1911.668853] Data abort info:
-  [ 1911.668855]   ISV = 0, ISS = 0x00000061
-  [ 1911.668857]   CM = 0, WnR = 1
-  [ 1911.668861] swapper pgtable: 4k pages, 48-bit VAs, pgdp=0000000040ff4000
-  [ 1911.668864] [ffff80001bc00a8c] pgd=00000000bffff003, pud=00000000bfffe003, pmd=0068000018400705
-  [ 1911.668872] Internal error: Oops: 96000061 [#1] PREEMPT SMP
-  ...
+The MAXIO MAP1002/1202 controllers reports completely bogus Namespace
+identifiers that even change after suspend cycles.  Disable using
+the Identifiers entirely.
 
-The llp register present in the channel group registers is not
-aligned on 64bit.
-
-Fix unaligned 64bit access using two 32bit accesses
-
-Fixes: 04e0a39fc10f ("dmaengine: dw-edma: Add writeq() and readq() for 64 bits architectures")
-Signed-off-by: Herve Codina <herve.codina@bootlin.com>
-Link: https://lore.kernel.org/r/20220225120252.309404-1-herve.codina@bootlin.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Reported-by: 金韬 <me@kingtous.cn>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Keith Busch <kbusch@kernel.org>
+Tested-by: 金韬 <me@kingtous.cn>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/dw-edma/dw-edma-v0-core.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/nvme/host/pci.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/dma/dw-edma/dw-edma-v0-core.c b/drivers/dma/dw-edma/dw-edma-v0-core.c
-index 329fc2e57b70..b5b8f8181e77 100644
---- a/drivers/dma/dw-edma/dw-edma-v0-core.c
-+++ b/drivers/dma/dw-edma/dw-edma-v0-core.c
-@@ -415,8 +415,11 @@ void dw_edma_v0_core_start(struct dw_edma_chunk *chunk, bool first)
- 			  (DW_EDMA_V0_CCS | DW_EDMA_V0_LLE));
- 		/* Linked list */
- 		#ifdef CONFIG_64BIT
--			SET_CH_64(dw, chan->dir, chan->id, llp.reg,
--				  chunk->ll_region.paddr);
-+			/* llp is not aligned on 64bit -> keep 32bit accesses */
-+			SET_CH_32(dw, chan->dir, chan->id, llp.lsb,
-+				  lower_32_bits(chunk->ll_region.paddr));
-+			SET_CH_32(dw, chan->dir, chan->id, llp.msb,
-+				  upper_32_bits(chunk->ll_region.paddr));
- 		#else /* CONFIG_64BIT */
- 			SET_CH_32(dw, chan->dir, chan->id, llp.lsb,
- 				  lower_32_bits(chunk->ll_region.paddr));
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index 6a99ed680915..6be611f49a45 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -3443,6 +3443,10 @@ static const struct pci_device_id nvme_id_table[] = {
+ 		.driver_data = NVME_QUIRK_NO_DEEPEST_PS, },
+ 	{ PCI_DEVICE(0x2646, 0x2263),   /* KINGSTON A2000 NVMe SSD  */
+ 		.driver_data = NVME_QUIRK_NO_DEEPEST_PS, },
++	{ PCI_DEVICE(0x1e4B, 0x1002),   /* MAXIO MAP1002 */
++		.driver_data = NVME_QUIRK_BOGUS_NID, },
++	{ PCI_DEVICE(0x1e4B, 0x1202),   /* MAXIO MAP1202 */
++		.driver_data = NVME_QUIRK_BOGUS_NID, },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_AMAZON, 0x0061),
+ 		.driver_data = NVME_QUIRK_DMA_ADDRESS_BITS_48, },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_AMAZON, 0x0065),
 -- 
 2.35.1
 
