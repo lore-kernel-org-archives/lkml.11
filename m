@@ -2,46 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E59C4C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:38:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 664FFC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:38:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238757AbiDZIlG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:41:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34114 "EHLO
+        id S240544AbiDZIlP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:41:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345090AbiDZIeE (ORCPT
+        with ESMTP id S1345106AbiDZIeF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:34:04 -0400
+        Tue, 26 Apr 2022 04:34:05 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B3C56A02B;
-        Tue, 26 Apr 2022 01:25:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 965476D95E;
+        Tue, 26 Apr 2022 01:26:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1D2D7B81CF5;
-        Tue, 26 Apr 2022 08:25:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74CCEC385AC;
-        Tue, 26 Apr 2022 08:25:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 04426B81CED;
+        Tue, 26 Apr 2022 08:26:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 529B7C385A0;
+        Tue, 26 Apr 2022 08:26:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961556;
-        bh=hQQJexZ4MpOJ5d+Pv/RnkJ5TuHvqDFbTbbPUzM6su/Q=;
+        s=korg; t=1650961562;
+        bh=dkv8QN0gQVSZtZdSD5Khr9zcrthMVra0NtgbZ2JmCHI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N6Hlj63Kb19kWYO86cjgJx3Nass0YQBn9gQbF/UODNKnHd9VW7qIcsROKAZkZlkKC
-         8E5DIVUEIiYw8F2u3RQeseTXvv1arrUm2yTZ/XqJfzvrV6uZaeeR4+ebTVqGgGn3u6
-         e8/lVR0nsRM2w8ZWMbR6YeSaELkLhwF1P+jKavAc=
+        b=EsQBKkLrJOFzoLEamucKtxOZWK2vchdtXJ4MlwDS4YC0aubuy6HO5F1rbcjQM6/Bz
+         HBxKUMCtqReZFLBEIR+ej5uCE8S4RshMvnMFRe6xkjr8dinQd2W2je5l6EEZG2+bhn
+         Jc167B3vV/ywmZHrQSl36LqB8VKL+xmG6bfPkaLs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Duoming Zhou <duoming@zju.edu.cn>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 4.14 35/43] ax25: add refcount in ax25_dev to avoid UAF bugs
-Date:   Tue, 26 Apr 2022 10:21:17 +0200
-Message-Id: <20220426081735.550901087@linuxfoundation.org>
+        stable@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Kees Cook <keescook@chromium.org>,
+        Khem Raj <raj.khem@gmail.com>
+Subject: [PATCH 4.19 01/53] etherdevice: Adjust ether_addr* prototypes to silence -Wstringop-overead
+Date:   Tue, 26 Apr 2022 10:20:41 +0200
+Message-Id: <20220426081735.697201013@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081734.509314186@linuxfoundation.org>
-References: <20220426081734.509314186@linuxfoundation.org>
+In-Reply-To: <20220426081735.651926456@linuxfoundation.org>
+References: <20220426081735.651926456@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,193 +53,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Kees Cook <keescook@chromium.org>
 
-commit d01ffb9eee4af165d83b08dd73ebdf9fe94a519b upstream.
+commit 2618a0dae09ef37728dab89ff60418cbe25ae6bd upstream.
 
-If we dereference ax25_dev after we call kfree(ax25_dev) in
-ax25_dev_device_down(), it will lead to concurrency UAF bugs.
-There are eight syscall functions suffer from UAF bugs, include
-ax25_bind(), ax25_release(), ax25_connect(), ax25_ioctl(),
-ax25_getname(), ax25_sendmsg(), ax25_getsockopt() and
-ax25_info_show().
+With GCC 12, -Wstringop-overread was warning about an implicit cast from
+char[6] to char[8]. However, the extra 2 bytes are always thrown away,
+alignment doesn't matter, and the risk of hitting the edge of unallocated
+memory has been accepted, so this prototype can just be converted to a
+regular char *. Silences:
 
-One of the concurrency UAF can be shown as below:
+net/core/dev.c: In function ‘bpf_prog_run_generic_xdp’: net/core/dev.c:4618:21: warning: ‘ether_addr_equal_64bits’ reading 8 bytes from a region of size 6 [-Wstringop-overread]
+ 4618 |         orig_host = ether_addr_equal_64bits(eth->h_dest, > skb->dev->dev_addr);
+      |                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+net/core/dev.c:4618:21: note: referencing argument 1 of type ‘const u8[8]’ {aka ‘const unsigned char[8]’}
+net/core/dev.c:4618:21: note: referencing argument 2 of type ‘const u8[8]’ {aka ‘const unsigned char[8]’}
+In file included from net/core/dev.c:91: include/linux/etherdevice.h:375:20: note: in a call to function ‘ether_addr_equal_64bits’
+  375 | static inline bool ether_addr_equal_64bits(const u8 addr1[6+2],
+      |                    ^~~~~~~~~~~~~~~~~~~~~~~
 
-  (USE)                       |    (FREE)
-                              |  ax25_device_event
-                              |    ax25_dev_device_down
-ax25_bind                     |    ...
-  ...                         |      kfree(ax25_dev)
-  ax25_fillin_cb()            |    ...
-    ax25_fillin_cb_from_dev() |
-  ...                         |
-
-The root cause of UAF bugs is that kfree(ax25_dev) in
-ax25_dev_device_down() is not protected by any locks.
-When ax25_dev, which there are still pointers point to,
-is released, the concurrency UAF bug will happen.
-
-This patch introduces refcount into ax25_dev in order to
-guarantee that there are no pointers point to it when ax25_dev
-is released.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Reported-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Tested-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Link: https://lore.kernel.org/netdev/20220212090811.uuzk6d76agw2vv73@pengutronix.de
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: netdev@vger.kernel.org
+Signed-off-by: Kees Cook <keescook@chromium.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
-[OP: backport to 4.14: adjusted context]
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Cc: Khem Raj <raj.khem@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/ax25.h    |   10 ++++++++++
- net/ax25/af_ax25.c    |    2 ++
- net/ax25/ax25_dev.c   |   12 ++++++++++--
- net/ax25/ax25_route.c |    3 +++
- 4 files changed, 25 insertions(+), 2 deletions(-)
+ include/linux/etherdevice.h |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
---- a/include/net/ax25.h
-+++ b/include/net/ax25.h
-@@ -235,6 +235,7 @@ typedef struct ax25_dev {
- #if defined(CONFIG_AX25_DAMA_SLAVE) || defined(CONFIG_AX25_DAMA_MASTER)
- 	ax25_dama_info		dama;
+--- a/include/linux/etherdevice.h
++++ b/include/linux/etherdevice.h
+@@ -130,7 +130,7 @@ static inline bool is_multicast_ether_ad
  #endif
-+	refcount_t		refcount;
- } ax25_dev;
- 
- typedef struct ax25_cb {
-@@ -289,6 +290,15 @@ static __inline__ void ax25_cb_put(ax25_
- 	}
  }
  
-+#define ax25_dev_hold(__ax25_dev) \
-+	refcount_inc(&((__ax25_dev)->refcount))
-+
-+static __inline__ void ax25_dev_put(ax25_dev *ax25_dev)
-+{
-+	if (refcount_dec_and_test(&ax25_dev->refcount)) {
-+		kfree(ax25_dev);
-+	}
-+}
- static inline __be16 ax25_type_trans(struct sk_buff *skb, struct net_device *dev)
+-static inline bool is_multicast_ether_addr_64bits(const u8 addr[6+2])
++static inline bool is_multicast_ether_addr_64bits(const u8 *addr)
  {
- 	skb->dev      = dev;
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -101,6 +101,7 @@ again:
- 			spin_unlock_bh(&ax25_list_lock);
- 			lock_sock(sk);
- 			s->ax25_dev = NULL;
-+			ax25_dev_put(ax25_dev);
- 			release_sock(sk);
- 			ax25_disconnect(s, ENETUNREACH);
- 			spin_lock_bh(&ax25_list_lock);
-@@ -450,6 +451,7 @@ static int ax25_ctl_ioctl(const unsigned
- 	  }
+ #if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
+ #ifdef __BIG_ENDIAN
+@@ -344,8 +344,7 @@ static inline bool ether_addr_equal(cons
+  * Please note that alignment of addr1 & addr2 are only guaranteed to be 16 bits.
+  */
  
- out_put:
-+	ax25_dev_put(ax25_dev);
- 	ax25_cb_put(ax25);
- 	return ret;
- 
---- a/net/ax25/ax25_dev.c
-+++ b/net/ax25/ax25_dev.c
-@@ -40,6 +40,7 @@ ax25_dev *ax25_addr_ax25dev(ax25_address
- 	for (ax25_dev = ax25_dev_list; ax25_dev != NULL; ax25_dev = ax25_dev->next)
- 		if (ax25cmp(addr, (ax25_address *)ax25_dev->dev->dev_addr) == 0) {
- 			res = ax25_dev;
-+			ax25_dev_hold(ax25_dev);
- 		}
- 	spin_unlock_bh(&ax25_dev_lock);
- 
-@@ -59,6 +60,7 @@ void ax25_dev_device_up(struct net_devic
- 		return;
- 	}
- 
-+	refcount_set(&ax25_dev->refcount, 1);
- 	dev->ax25_ptr     = ax25_dev;
- 	ax25_dev->dev     = dev;
- 	dev_hold(dev);
-@@ -86,6 +88,7 @@ void ax25_dev_device_up(struct net_devic
- 	spin_lock_bh(&ax25_dev_lock);
- 	ax25_dev->next = ax25_dev_list;
- 	ax25_dev_list  = ax25_dev;
-+	ax25_dev_hold(ax25_dev);
- 	spin_unlock_bh(&ax25_dev_lock);
- 
- 	ax25_register_dev_sysctl(ax25_dev);
-@@ -115,20 +118,22 @@ void ax25_dev_device_down(struct net_dev
- 
- 	if ((s = ax25_dev_list) == ax25_dev) {
- 		ax25_dev_list = s->next;
-+		ax25_dev_put(ax25_dev);
- 		spin_unlock_bh(&ax25_dev_lock);
- 		dev->ax25_ptr = NULL;
- 		dev_put(dev);
--		kfree(ax25_dev);
-+		ax25_dev_put(ax25_dev);
- 		return;
- 	}
- 
- 	while (s != NULL && s->next != NULL) {
- 		if (s->next == ax25_dev) {
- 			s->next = ax25_dev->next;
-+			ax25_dev_put(ax25_dev);
- 			spin_unlock_bh(&ax25_dev_lock);
- 			dev->ax25_ptr = NULL;
- 			dev_put(dev);
--			kfree(ax25_dev);
-+			ax25_dev_put(ax25_dev);
- 			return;
- 		}
- 
-@@ -136,6 +141,7 @@ void ax25_dev_device_down(struct net_dev
- 	}
- 	spin_unlock_bh(&ax25_dev_lock);
- 	dev->ax25_ptr = NULL;
-+	ax25_dev_put(ax25_dev);
- }
- 
- int ax25_fwd_ioctl(unsigned int cmd, struct ax25_fwd_struct *fwd)
-@@ -152,6 +158,7 @@ int ax25_fwd_ioctl(unsigned int cmd, str
- 		if (ax25_dev->forward != NULL)
- 			return -EINVAL;
- 		ax25_dev->forward = fwd_dev->dev;
-+		ax25_dev_put(fwd_dev);
- 		break;
- 
- 	case SIOCAX25DELFWD:
-@@ -164,6 +171,7 @@ int ax25_fwd_ioctl(unsigned int cmd, str
- 		return -EINVAL;
- 	}
- 
-+	ax25_dev_put(ax25_dev);
- 	return 0;
- }
- 
---- a/net/ax25/ax25_route.c
-+++ b/net/ax25/ax25_route.c
-@@ -119,6 +119,7 @@ static int __must_check ax25_rt_add(stru
- 	ax25_rt->dev          = ax25_dev->dev;
- 	ax25_rt->digipeat     = NULL;
- 	ax25_rt->ip_mode      = ' ';
-+	ax25_dev_put(ax25_dev);
- 	if (route->digi_count != 0) {
- 		if ((ax25_rt->digipeat = kmalloc(sizeof(ax25_digi), GFP_ATOMIC)) == NULL) {
- 			write_unlock_bh(&ax25_route_lock);
-@@ -175,6 +176,7 @@ static int ax25_rt_del(struct ax25_route
- 			}
- 		}
- 	}
-+	ax25_dev_put(ax25_dev);
- 	write_unlock_bh(&ax25_route_lock);
- 
- 	return 0;
-@@ -217,6 +219,7 @@ static int ax25_rt_opt(struct ax25_route
- 	}
- 
- out:
-+	ax25_dev_put(ax25_dev);
- 	write_unlock_bh(&ax25_route_lock);
- 	return err;
- }
+-static inline bool ether_addr_equal_64bits(const u8 addr1[6+2],
+-					   const u8 addr2[6+2])
++static inline bool ether_addr_equal_64bits(const u8 *addr1, const u8 *addr2)
+ {
+ #if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
+ 	u64 fold = (*(const u64 *)addr1) ^ (*(const u64 *)addr2);
 
 
