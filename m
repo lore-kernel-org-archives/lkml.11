@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4758FC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:58:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAD89C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:58:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343682AbiDZJBw (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:01:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56506 "EHLO
+        id S242138AbiDZJB5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:01:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346955AbiDZIpk (ORCPT
+        with ESMTP id S1347102AbiDZIps (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:45:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 445BF3DDD8;
-        Tue, 26 Apr 2022 01:36:58 -0700 (PDT)
+        Tue, 26 Apr 2022 04:45:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D60E56EB3D;
+        Tue, 26 Apr 2022 01:37:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 21818618E8;
-        Tue, 26 Apr 2022 08:36:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBBB0C385A4;
-        Tue, 26 Apr 2022 08:36:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5CC2AB81CFA;
+        Tue, 26 Apr 2022 08:37:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B28B1C385A4;
+        Tue, 26 Apr 2022 08:37:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962217;
-        bh=+2Fi1ILVgr/TXV+c7AXwJyqn3eo8rkvAxRa7kZL1PaY=;
+        s=korg; t=1650962237;
+        bh=SMg6yoRpfuB3MQX6qBkXeXgNbYB93FuGVON8CNUrC28=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SGvrIUIgPCHbe/uA5RP1C47y6okoqHtb5PfTNM1dsiYON6KYELtx2o8JhnVIJS/dg
-         5u4DJ2H8vwyH2h+2WFXp3v4xFAYl1NB+wlgEYq1y4Oii8EfPJynxl5rovOQ5gFm2Yv
-         2k6srU7HE5811mWU5o3rTKW7t8OakllT4fd3QXE0=
+        b=EONmBp3cQvWEizASsPMHFQyhZiStyHnGAMKeJQGwv6VFmH4tdjJnQ3EKmZBB0kmEf
+         YlLuMbJJE/EdLnnr4+JvRTu6HKyap7MTjwhHO7ebIHHEgjmt3fA8vhyFxGhBwUMTMY
+         C11MuszIrP6k57k0xBktf9XANNM6DL1dZzZHlYeY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhang Qilong <zhangqilong3@huawei.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 024/124] dmaengine: mediatek:Fix PM usage reference leak of mtk_uart_apdma_alloc_chan_resources
-Date:   Tue, 26 Apr 2022 10:20:25 +0200
-Message-Id: <20220426081747.992031554@linuxfoundation.org>
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 003/124] block: simplify the block device syncing code
+Date:   Tue, 26 Apr 2022 10:20:04 +0200
+Message-Id: <20220426081747.390119497@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -49,62 +48,152 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: zhangqilong <zhangqilong3@huawei.com>
+From: Christoph Hellwig <hch@lst.de>
 
-[ Upstream commit 545b2baac89b859180e51215468c05d85ea8465a ]
+[ Upstream commit 1e03a36bdff4709c1bbf0f57f60ae3f776d51adf ]
 
-pm_runtime_get_sync will increment pm usage counter even it failed.
-Forgetting to putting operation will result in reference leak here.
-We fix it:
-1) Replacing it with pm_runtime_resume_and_get to keep usage counter
-   balanced.
-2) Add putting operation before returning error.
+Get rid of the indirections and just provide a sync_bdevs
+helper for the generic sync code.
 
-Fixes:9135408c3ace4 ("dmaengine: mediatek: Add MediaTek UART APDMA support")
-Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
-Link: https://lore.kernel.org/r/20220319022142.142709-1-zhangqilong3@huawei.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20211019062530.2174626-8-hch@lst.de
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/mediatek/mtk-uart-apdma.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ block/bdev.c           | 17 ++++++++++++++---
+ fs/internal.h          |  6 ------
+ fs/sync.c              | 23 ++++-------------------
+ include/linux/blkdev.h |  4 ++++
+ 4 files changed, 22 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/dma/mediatek/mtk-uart-apdma.c b/drivers/dma/mediatek/mtk-uart-apdma.c
-index 375e7e647df6..a1517ef1f4a0 100644
---- a/drivers/dma/mediatek/mtk-uart-apdma.c
-+++ b/drivers/dma/mediatek/mtk-uart-apdma.c
-@@ -274,7 +274,7 @@ static int mtk_uart_apdma_alloc_chan_resources(struct dma_chan *chan)
- 	unsigned int status;
- 	int ret;
- 
--	ret = pm_runtime_get_sync(mtkd->ddev.dev);
-+	ret = pm_runtime_resume_and_get(mtkd->ddev.dev);
- 	if (ret < 0) {
- 		pm_runtime_put_noidle(chan->device->dev);
- 		return ret;
-@@ -288,18 +288,21 @@ static int mtk_uart_apdma_alloc_chan_resources(struct dma_chan *chan)
- 	ret = readx_poll_timeout(readl, c->base + VFF_EN,
- 			  status, !status, 10, 100);
- 	if (ret)
--		return ret;
-+		goto err_pm;
- 
- 	ret = request_irq(c->irq, mtk_uart_apdma_irq_handler,
- 			  IRQF_TRIGGER_NONE, KBUILD_MODNAME, chan);
- 	if (ret < 0) {
- 		dev_err(chan->device->dev, "Can't request dma IRQ\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto err_pm;
- 	}
- 
- 	if (mtkd->support_33bits)
- 		mtk_uart_apdma_write(c, VFF_4G_SUPPORT, VFF_4G_SUPPORT_CLR_B);
- 
-+err_pm:
-+	pm_runtime_put_noidle(mtkd->ddev.dev);
- 	return ret;
+diff --git a/block/bdev.c b/block/bdev.c
+index 33cac289302e..18abafb135e0 100644
+--- a/block/bdev.c
++++ b/block/bdev.c
+@@ -1017,7 +1017,7 @@ int __invalidate_device(struct block_device *bdev, bool kill_dirty)
  }
+ EXPORT_SYMBOL(__invalidate_device);
+ 
+-void iterate_bdevs(void (*func)(struct block_device *, void *), void *arg)
++void sync_bdevs(bool wait)
+ {
+ 	struct inode *inode, *old_inode = NULL;
+ 
+@@ -1048,8 +1048,19 @@ void iterate_bdevs(void (*func)(struct block_device *, void *), void *arg)
+ 		bdev = I_BDEV(inode);
+ 
+ 		mutex_lock(&bdev->bd_disk->open_mutex);
+-		if (bdev->bd_openers)
+-			func(bdev, arg);
++		if (!bdev->bd_openers) {
++			; /* skip */
++		} else if (wait) {
++			/*
++			 * We keep the error status of individual mapping so
++			 * that applications can catch the writeback error using
++			 * fsync(2). See filemap_fdatawait_keep_errors() for
++			 * details.
++			 */
++			filemap_fdatawait_keep_errors(inode->i_mapping);
++		} else {
++			filemap_fdatawrite(inode->i_mapping);
++		}
+ 		mutex_unlock(&bdev->bd_disk->open_mutex);
+ 
+ 		spin_lock(&blockdev_superblock->s_inode_list_lock);
+diff --git a/fs/internal.h b/fs/internal.h
+index b5caa16f4645..cdd83d4899bb 100644
+--- a/fs/internal.h
++++ b/fs/internal.h
+@@ -23,17 +23,11 @@ struct pipe_inode_info;
+ #ifdef CONFIG_BLOCK
+ extern void __init bdev_cache_init(void);
+ 
+-void iterate_bdevs(void (*)(struct block_device *, void *), void *);
+ void emergency_thaw_bdev(struct super_block *sb);
+ #else
+ static inline void bdev_cache_init(void)
+ {
+ }
+-
+-static inline void iterate_bdevs(void (*f)(struct block_device *, void *),
+-		void *arg)
+-{
+-}
+ static inline int emergency_thaw_bdev(struct super_block *sb)
+ {
+ 	return 0;
+diff --git a/fs/sync.c b/fs/sync.c
+index a621089eb07e..3ce8e2137f31 100644
+--- a/fs/sync.c
++++ b/fs/sync.c
+@@ -78,21 +78,6 @@ static void sync_fs_one_sb(struct super_block *sb, void *arg)
+ 		sb->s_op->sync_fs(sb, *(int *)arg);
+ }
+ 
+-static void fdatawrite_one_bdev(struct block_device *bdev, void *arg)
+-{
+-	filemap_fdatawrite(bdev->bd_inode->i_mapping);
+-}
+-
+-static void fdatawait_one_bdev(struct block_device *bdev, void *arg)
+-{
+-	/*
+-	 * We keep the error status of individual mapping so that
+-	 * applications can catch the writeback error using fsync(2).
+-	 * See filemap_fdatawait_keep_errors() for details.
+-	 */
+-	filemap_fdatawait_keep_errors(bdev->bd_inode->i_mapping);
+-}
+-
+ /*
+  * Sync everything. We start by waking flusher threads so that most of
+  * writeback runs on all devices in parallel. Then we sync all inodes reliably
+@@ -111,8 +96,8 @@ void ksys_sync(void)
+ 	iterate_supers(sync_inodes_one_sb, NULL);
+ 	iterate_supers(sync_fs_one_sb, &nowait);
+ 	iterate_supers(sync_fs_one_sb, &wait);
+-	iterate_bdevs(fdatawrite_one_bdev, NULL);
+-	iterate_bdevs(fdatawait_one_bdev, NULL);
++	sync_bdevs(false);
++	sync_bdevs(true);
+ 	if (unlikely(laptop_mode))
+ 		laptop_sync_completion();
+ }
+@@ -133,10 +118,10 @@ static void do_sync_work(struct work_struct *work)
+ 	 */
+ 	iterate_supers(sync_inodes_one_sb, &nowait);
+ 	iterate_supers(sync_fs_one_sb, &nowait);
+-	iterate_bdevs(fdatawrite_one_bdev, NULL);
++	sync_bdevs(false);
+ 	iterate_supers(sync_inodes_one_sb, &nowait);
+ 	iterate_supers(sync_fs_one_sb, &nowait);
+-	iterate_bdevs(fdatawrite_one_bdev, NULL);
++	sync_bdevs(false);
+ 	printk("Emergency Sync complete\n");
+ 	kfree(work);
+ }
+diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
+index 6bbd393e6bcc..aebe67ed7a73 100644
+--- a/include/linux/blkdev.h
++++ b/include/linux/blkdev.h
+@@ -2000,6 +2000,7 @@ int truncate_bdev_range(struct block_device *bdev, fmode_t mode, loff_t lstart,
+ void invalidate_bdev(struct block_device *bdev);
+ int sync_blockdev(struct block_device *bdev);
+ int sync_blockdev_nowait(struct block_device *bdev);
++void sync_bdevs(bool wait);
+ #else
+ static inline void invalidate_bdev(struct block_device *bdev)
+ {
+@@ -2012,6 +2013,9 @@ static inline int sync_blockdev_nowait(struct block_device *bdev)
+ {
+ 	return 0;
+ }
++static inline void sync_bdevs(bool wait)
++{
++}
+ #endif
+ int fsync_bdev(struct block_device *bdev);
  
 -- 
 2.35.1
