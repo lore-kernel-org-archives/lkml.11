@@ -2,44 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41963C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC92FC4707F
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:07:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347301AbiDZJK3 (ORCPT
+        id S1347404AbiDZJKv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:10:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52764 "EHLO
+        Tue, 26 Apr 2022 05:10:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346718AbiDZIuR (ORCPT
+        with ESMTP id S1346847AbiDZIuo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:50:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 623CE16FE23;
-        Tue, 26 Apr 2022 01:38:46 -0700 (PDT)
+        Tue, 26 Apr 2022 04:50:44 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0243A17035F;
+        Tue, 26 Apr 2022 01:39:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 67F4860A67;
-        Tue, 26 Apr 2022 08:38:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71562C385A0;
-        Tue, 26 Apr 2022 08:38:44 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0F055CE1BBB;
+        Tue, 26 Apr 2022 08:39:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB564C385A0;
+        Tue, 26 Apr 2022 08:38:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962324;
-        bh=T1EzDUfwjggOELHvvCTAYsHts3WIZamAMmLGdfdkNLA=;
+        s=korg; t=1650962340;
+        bh=4Wxgi3OSyAND3xCtQ83fZNlx1WUMKKBOUaA3R2KTe98=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DLtPytgUrjsAdV1fvqDNqoOHDj/386YsDhJunlF+dgsf6XeHP7cSUUuHmyHRW2DOk
-         W0E7/tqgt8au41YwZvxS5M3HdVEOIoqUKU8Cj8ZQ/nBEQb6XNM7wMrnarr3EqRaQE2
-         Arf5cftSqui/FvC9UsN7MGf3xFApOwNBv2I7Xh5A=
+        b=Vs7OClKK8Ch9ScopDyKQM7F4nd7SBqqOBM413HPjZQie6Rum1B07zHQbWf33lhVKD
+         0WzguPzk8yYXMxU/onieZoqcAmmsGeDLwx+DLMX7dj1mgyY5LA7xH/3B4OnpCxb+V2
+         hTFivP2lwk6snZyDoxSxN9NyFxzToc5hoSH/2C8Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaoke Wang <xkernel.wang@foxmail.com>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Rob Clark <robdclark@chromium.org>,
+        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
+        Felix Fietkau <nbd@nbd.name>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Shayne Chen <shayne.chen@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 058/124] drm/msm/disp: check the return value of kzalloc()
-Date:   Tue, 26 Apr 2022 10:20:59 +0200
-Message-Id: <20220426081748.950560919@linuxfoundation.org>
+Subject: [PATCH 5.15 063/124] mt76: Fix undefined behavior due to shift overflowing the constant
+Date:   Tue, 26 Apr 2022 10:21:04 +0200
+Message-Id: <20220426081749.091859619@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -51,36 +58,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+From: Borislav Petkov <bp@suse.de>
 
-[ Upstream commit f75e582b0c3ee8f0bddc2248cc8b9175f29c5937 ]
+[ Upstream commit dbc2b1764734857d68425468ffa8486e97ab89df ]
 
-kzalloc() is a memory allocation function which can return NULL when
-some internal memory errors happen. So it is better to check it to
-prevent potential wrong memory access.
+Fix:
 
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Link: https://lore.kernel.org/r/tencent_B3E19486FF39415098B572B7397C2936C309@qq.com
-Signed-off-by: Rob Clark <robdclark@chromium.org>
+  drivers/net/wireless/mediatek/mt76/mt76x2/pci.c: In function ‘mt76x2e_probe’:
+  ././include/linux/compiler_types.h:352:38: error: call to ‘__compiletime_assert_946’ \
+	declared with attribute error: FIELD_PREP: mask is not constant
+    _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+
+See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
+details as to why it triggers with older gccs only.
+
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: Felix Fietkau <nbd@nbd.name>
+Cc: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+Cc: Ryder Lee <ryder.lee@mediatek.com>
+Cc: Shayne Chen <shayne.chen@mediatek.com>
+Cc: Sean Wang <sean.wang@mediatek.com>
+Cc: Kalle Valo <kvalo@kernel.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: linux-wireless@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220405151517.29753-9-bp@alien8.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/msm_disp_snapshot_util.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/wireless/mediatek/mt76/mt76x2/pci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/msm_disp_snapshot_util.c b/drivers/gpu/drm/msm/disp/msm_disp_snapshot_util.c
-index cabe15190ec1..369e57f73a47 100644
---- a/drivers/gpu/drm/msm/disp/msm_disp_snapshot_util.c
-+++ b/drivers/gpu/drm/msm/disp/msm_disp_snapshot_util.c
-@@ -169,6 +169,8 @@ void msm_disp_snapshot_add_block(struct msm_disp_state *disp_state, u32 len,
- 	va_list va;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c b/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
+index adf288e50e21..5cd0379d86de 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
++++ b/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
+@@ -80,7 +80,7 @@ mt76x2e_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	mt76_rmw_field(dev, 0x15a10, 0x1f << 16, 0x9);
  
- 	new_blk = kzalloc(sizeof(struct msm_disp_state_block), GFP_KERNEL);
-+	if (!new_blk)
-+		return;
+ 	/* RG_SSUSB_G1_CDR_BIC_LTR = 0xf */
+-	mt76_rmw_field(dev, 0x15a0c, 0xf << 28, 0xf);
++	mt76_rmw_field(dev, 0x15a0c, 0xfU << 28, 0xf);
  
- 	va_start(va, fmt);
- 
+ 	/* RG_SSUSB_CDR_BR_PE1D = 0x3 */
+ 	mt76_rmw_field(dev, 0x15c58, 0x3 << 6, 0x3);
 -- 
 2.35.1
 
