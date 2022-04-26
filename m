@@ -2,182 +2,235 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEEA5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 23:19:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9192C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 23:20:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351306AbiDZXWr (ORCPT
+        id S1356048AbiDZXX2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 19:22:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52272 "EHLO
+        Tue, 26 Apr 2022 19:23:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242199AbiDZXWp (ORCPT
+        with ESMTP id S1354061AbiDZXXY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 19:22:45 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFF982FFEC
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 16:19:35 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id d6so36616ede.8
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 16:19:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=I12FseGpNZFjVRmn5cSNRW69oiEmtDZ/uG4cngFYR/E=;
-        b=Tzq1jYp4wkcTjMZv0yfDaecsq7guRfTN1LOyoH5fwLQXplSvz4cqbIV0fpfLsdmSSf
-         nPyfjXDwES9SKAaisER0zCniR91iHngrGAnFsU6OfLKHLzn4Ex6Y5ZFHZLb0oCoEIxln
-         oR1KihGGEWbnC4pv9KeLdcJCz82xXLL/VQwUiFZdNB0CMzKILGGco5fUBY50qJqfFPaL
-         aLibHVvHsLjoXBqbvdQiBRX7nUuj87fh+C553AoJ++6ITz/9asKKAOHLEJOQgA9ZSVXX
-         H+ENhvDMUqTdVTmTKUB43LgIP7eU04AL0rgvAUdmO6PPbW3JIwt6pAdtva7Pli4zvESC
-         /P0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=I12FseGpNZFjVRmn5cSNRW69oiEmtDZ/uG4cngFYR/E=;
-        b=h2mVvy+BdxZeatvHQQSqXxLaAQ+rH6j8n7jKdULKxq7Ixp+kc9SEw4AVXUHig3NBch
-         u0BsfAFeYMZQbJKmaw/+ZPZKvipzMyYqQcDaM+VqHhR6esN6EamG59Kkz1V2Gkv1bKMI
-         8T78vg4uFAM9BdI/Upsc/xg4dlnOTcq8XHYvPaZ0e6kH3kmNU/ihLP+hOsnuu2PNKKxW
-         JckjY9TYa5Ypg7NnpSU4mx1Z0MQAlHh9CH9ju0bt56KxYH2lG+VVgyhCEcp8dce9yR83
-         ayEZM4mNiTkI8m/+8QKQLxVGidmKJgkn4jSB2Eq5hJLEWMYx1uWXEAgEd9A5kA4joP+G
-         eiLA==
-X-Gm-Message-State: AOAM531gq/PhveutTm9+u2u14zPEVNcZCes9SMX+oRcGYuEGFlYOwraT
-        JTFj3bLlrAem5fCVzKFYnLsdqRX/Nfc2ZtG5MHM=
-X-Google-Smtp-Source: ABdhPJxqAHHEcStmtW0maUvW8wuhWOtediVX49nG357iKpxU0MDdLlQ4wVKoPMGgAnPfl4yg9aFZBPO9peiHr9je63g=
-X-Received: by 2002:a05:6402:5106:b0:425:f733:8d9b with SMTP id
- m6-20020a056402510600b00425f7338d9bmr8451468edd.326.1651015174287; Tue, 26
- Apr 2022 16:19:34 -0700 (PDT)
+        Tue, 26 Apr 2022 19:23:24 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2087.outbound.protection.outlook.com [40.107.236.87])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BB2A9FD4
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 16:20:12 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AmxuqGKuOsVYsRRLZmdhl8Sg1djz4ocOgggmDfixMp6ks7WTgVm0yL0AYw2lD2YMDeDWI7jaNtGk7eFkt7gcGyawIGtCrpZVNmuUpJRssXUpas9DUVBLpvig099joY+onPBk1j/MBDN2a5Qi98NHIrTPlJ4NkrneyTRRkFCSx70TUpK/T+1vVACoM3ze5ilItrPPbl7gz66LwJuYyMZiVw+Y98nViQemPXN2n84OgKlgiDsYlrGP6vYS86UE/JtgDFx2AcKE1XfM2uq/rvdgJOTzgeRhchyyOFNxLi7wDQTZ05lgQxLgKzsMiU1ac9KMXIOEB1dEks5HlZmC5tK+Ag==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=aBiEJfSd6vOmrS5QAlNLG2M797NixEyA7FbmQPCNZlk=;
+ b=NrDeoKObHp8lbc2EVOl0NVHNc8tomMuj6JCN+0oNERo6dQybG6nuY/G3rPshwoXdBSW5qvh7v0hwku2esUwCWvadd2Fc2vYzoKv0K2end4MD000uqVlJKITphSQ5jFicimPMp7QF5uBrBGZAcO0dtmGSemPg7s5LoPY39ArAn1WVDvBWuz59ueN0YqsiH0RZINzJcw8OgGWBEbRpPrK/pLE+Z9iPN19SN1GdxpoBYsxoVGKQVLz9panwYid6088KaH7jzE5L4CVkO4wHWX8K2vARbbbdOSGRDz9zTDxntFkBkax4iYPxtFkZFZ/GdwxPz16fmfBL2GfHZJUuSFvGpw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=aBiEJfSd6vOmrS5QAlNLG2M797NixEyA7FbmQPCNZlk=;
+ b=Q/VVEK0Q+iFA80gyIFniKpN5dlh96Bqto6J3kbbKiSpqWaJjNyQszQwZGquBlrzC5xPEGu9o9qD3r/oO04J0QjnyoSQ61kxYeSLJzhBrsSFpDLvPu+/04pA1GfJoUL0FA6FXtvbTD2ko4NhWLwdSa8ZHk1NaS0S+Q1sZN0lKlV4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DM5PR12MB1947.namprd12.prod.outlook.com (2603:10b6:3:111::23)
+ by MN2PR12MB4390.namprd12.prod.outlook.com (2603:10b6:208:26e::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Tue, 26 Apr
+ 2022 23:20:09 +0000
+Received: from DM5PR12MB1947.namprd12.prod.outlook.com
+ ([fe80::1ce8:827f:a09:f6e]) by DM5PR12MB1947.namprd12.prod.outlook.com
+ ([fe80::1ce8:827f:a09:f6e%5]) with mapi id 15.20.5186.021; Tue, 26 Apr 2022
+ 23:20:09 +0000
+Message-ID: <72430dd0-a053-17a2-06e8-65d34f21d01d@amd.com>
+Date:   Tue, 26 Apr 2022 10:48:00 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] gpu: drm: remove redundant dma_fence_put() when
+ drm_sched_job_add_dependency() fails
+Content-Language: en-US
+To:     Hangyu Hua <hbh25y@gmail.com>, yuq825@gmail.com, airlied@linux.ie,
+        daniel@ffwll.ch
+Cc:     dri-devel@lists.freedesktop.org, lima@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+References: <20220425083645.25922-1-hbh25y@gmail.com>
+ <b7d8956e-5ac6-8200-d8b1-4ce828f04665@amd.com>
+ <79b198d0-eff2-d658-4b5e-9084a834fc93@gmail.com>
+From:   Andrey Grodzovsky <andrey.grodzovsky@amd.com>
+In-Reply-To: <79b198d0-eff2-d658-4b5e-9084a834fc93@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: YT1PR01CA0087.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:2d::26) To DM5PR12MB1947.namprd12.prod.outlook.com
+ (2603:10b6:3:111::23)
 MIME-Version: 1.0
-From:   Barry Song <21cnbao@gmail.com>
-Date:   Wed, 27 Apr 2022 11:19:23 +1200
-Message-ID: <CAGsJ_4x_k9009HwpTswEq1ut_co8XYdpZ9k0BVW=0=HRiifxkA@mail.gmail.com>
-Subject: DAMON VA regions don't split on an large Android APP
-To:     sj@kernel.org, Andrew Morton <akpm@linux-foundation.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     Matthew Wilcox <willy@infradead.org>, shuah@kernel.org,
-        brendanhiggins@google.com, foersleo@amazon.de, sieberf@amazon.com,
-        Shakeel Butt <shakeelb@google.com>, sjpark@amazon.de,
-        tuhailong@gmail.com, Song Jiang <sjiang88@gmail.com>,
-        =?UTF-8?B?5byg6K+X5piOKFNpbW9uIFpoYW5nKQ==?= 
-        <zhangshiming@oppo.com>,
-        =?UTF-8?B?5p2O5Z+56ZSLKHdpbmsp?= <lipeifeng@oppo.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: faf3b28c-ec2c-4b12-b886-08da27db4df2
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4390:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR12MB4390F1BE0A0A6016904E3BFEEAFB9@MN2PR12MB4390.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: fR3fsdquHXDs0GurwGkLshcyQbu+TTe6c4dtpMVil8I3SOdiguv2y0W+zWEjTGHZX4gxkaeaU1Bu1yS3AQfsfEZ+aVKR7vyVMI+3PzIzJDFMK7Qs0IXnyoN7k+1s7sQGNIUjPa1kv4RAMQWwaY7xyqzUhsFjz8PnFapwq5NzBlq4DYaFnrCtx3K+n1ve2534Bq4LMdZz3Q3nNuLpkYaWRLZvnsZFj87WSED4/pE7eydvylfz7IBzJBQon9Tn1ZIopvGrwHysnn2wjTEJdGkVFZ7noQpzVx7gf7pV1NCS8F5csRRvffO1ROpKqL7F1keWMHMgLd1ajQEETxut7PU5D1EdwNJKpfZnmCB8I1L2qYahDAHo7q17T3PuXqSlfpDR2+aN4h+L9WYE4tmVMly1eSicDURFyr2YglimE5lD+q/mV0vJtw2MI1tLv1Gk5NzkY+D02G4337s85wKwo4KyOFfRjtLOCxzTQHjownxJFhHlwBZeFcGAmEy9p7gqXklqz3JDsGEZqGBZvaPM7ITM0aowSJHUCVh5P8HSZISHoRqnSvORWilTq6ROHIEi0zma6pjYIKA8B0htWxc2Y1fzEE12fXPDh5zx7h/+zwel1UfkAGctFubivgfG39G+FJscHoB4LRo8cJ1sdJZ+HIjCxmFB7whj5hhqkqcg1nL+UGSJ5jElJcZsegse9l1NfajWof4ixsenmYi2eQjSLAgK3yF5EJuE6GdbLUI9T8HPxuA=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR12MB1947.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38100700002)(6486002)(316002)(66556008)(66476007)(8676002)(2616005)(86362001)(508600001)(6512007)(66946007)(6666004)(4326008)(53546011)(31696002)(5660300002)(8936002)(6506007)(83380400001)(36756003)(31686004)(44832011)(186003)(2906002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VzYxZVNUaFNrV0R5UVoyWE4wMllqYnlCWERTdlN4bi9RcDFkSzlyWGZyWnVC?=
+ =?utf-8?B?ZXZya2pXZ0FwR1FqelNqaW9XeVFZYldteFFoYXI3eExyVTFETE9sRHlDbjZB?=
+ =?utf-8?B?alRGS0lld3djU0FmNlowSFQ5U2pxVTAwY1JNb3JqU2pUN3FpTDR2NjBEOG9s?=
+ =?utf-8?B?L0NuT1QrQTVFZ2tjcFNXc2tkb1VjV1pUOW5FMFVOWHpoeVZ1QU82YVRrUzFK?=
+ =?utf-8?B?ZnhteUtobmlQQm1qUnkxVEpER1hGKytZU0NwOWNIS1c5OTRwNUlDd1BJVXR6?=
+ =?utf-8?B?Q1ZTcVlkb2VBbEdnSWxnTE54SkhMK2hVY3FhaUVJcnlBTldVODRsNXBmeGgr?=
+ =?utf-8?B?ajlvSjVzU0tjOEw5eHdvNlpzQU9CTytLSlNDeE5JdDIzL0ZPNTNLZTBtUlRX?=
+ =?utf-8?B?WWdSbWVDYkJDRnZHYllqbXJiMjlFQ3RqNlBqcVFUZkllbVhzVzVZcXpjR1N5?=
+ =?utf-8?B?emIrYUphSTRLNERPYXQzMmEvRW4xQ25tSXRhVUdhUjl4czZOeUhZc0h3SEZL?=
+ =?utf-8?B?dHdOVWVKMlJuUW1QUU9mZFRKYXpaNytoQ0FSTUpZeU9PWXdyZnpYVDdaTHZx?=
+ =?utf-8?B?eVdQekJFNldFZDgvQ29palF5QjNuQys3b2VMNTFOSXJGWXgvTTFOWkhBNmVq?=
+ =?utf-8?B?bnd5VTBjWHo5SmFXREFxcTIvNm1XblFLQ1o4YlY4ZW94enNna3RHZUFyZ3Fp?=
+ =?utf-8?B?UW5GbDFYaWlpVHhyMXRFMStyQXRjb1NscUxkRVBzUlI4aDA1cmVtenJSYmtM?=
+ =?utf-8?B?cFJYZ2h1T2ppQ3E4empWeWJac1d0WDZBZDdQbU9GbzR4TFdncDcvZ3I2Y0ly?=
+ =?utf-8?B?NjY2NFVjOVdYM3p6bGQ2NGJXdjJ4WEU1QlNNVEhId1ltc1BiUTc3SThPc2pS?=
+ =?utf-8?B?MmdpMDBvQ2tldjV2SjZWVlpHODRSeDF1em45ckw0aUtqZWFEcDluTGxrRG16?=
+ =?utf-8?B?OTI5Qm44V1NOOVJtM0U5Z2Q1a2JtTXR1NjZFaFhITm5BVUxDSGtvdmdJd3dD?=
+ =?utf-8?B?ZkFURTg3SWJONVNla3d0TnYzb2Zld3VlZFU5M0FaVkpjenE1RU02M01DSGhJ?=
+ =?utf-8?B?WmpPOXp4Nm4xYkt2RnBNNXRQay9YQTZLa3RHcUw5K2o4amh0ZDVqbUhOM1dm?=
+ =?utf-8?B?MTlha0hLejZWemdCTjQ5dHRPWnRzbEluY0ZYUENvN1VxZjZKVm1wZVVETmlp?=
+ =?utf-8?B?RGZwTTdsUEdBbHlqWWxXRHlicUJORjNoS1hNUDB0NnVwTTJpc1J3dGhnRUdE?=
+ =?utf-8?B?UnVTSnR5L1pROFNQWUwwNy9FZWd2czh3NTJuNk0vRnRQMlozN0hLSi9PeWxU?=
+ =?utf-8?B?Y3JVSHVWRGNjdUp5aG1Gem9ablRsaThFTGN6MVMrQTNTc2tWNzBob3p4WXdr?=
+ =?utf-8?B?bjN0T3Z0cmlnMXlrMzVPVWc0a0wwQ2ZYSkd2M09sbFBkK24vVmxUVE4raUh4?=
+ =?utf-8?B?UkxON1RBdEFZUU0zdklHWWhDOVNuaXFrYlduYW1qQ2xNUGNUTmVqWDIyRFFv?=
+ =?utf-8?B?emVWMk15SEtlbVFqd2F4b1dKaldRRWU1VDY4VFRSWUlyanhkdnJwNWUwOXk1?=
+ =?utf-8?B?bG13UVpkSnprOG1HUVo0MWlydEk4cXFFQk9DTURqakVTNjNzeEFkOGUxaWda?=
+ =?utf-8?B?OVJZa1l0Sm5IczNITVlqMXBFNC9SVEdpRm1SMWpnVXVieUtyd1Brc3hoVHEy?=
+ =?utf-8?B?OTlEN3JzL2Q5eS9lRk5NMkJjWkRXbkZ2N3lKMTloTzF2ak1RU1VPOUJrUFNN?=
+ =?utf-8?B?M1R2dkErbVpNSDFvMUx5MFgzWm9UeTVtK1o1MG5wZWhpYjc1UDZGWndrTDBh?=
+ =?utf-8?B?bERsZHVzVTE1TDJoeXVUWnQ0bGVRcXl2RHN0eFVOWFhqcUUyS0NiOVpzTHBp?=
+ =?utf-8?B?dVlDODZRK0dvMGMramlLL29KVnFMdEhLN1VkZFNSNTNoMlQxL1I4a293cm5x?=
+ =?utf-8?B?MTRJdmJjVjVRQUIyVE9zQkdYUnFXVnY1ZGJTWElNOFBqbUJXUU0wQ2ptMWhV?=
+ =?utf-8?B?dG9IODFGMHhiNmc1TkxIN3ZSSG9ValVqeVllTTZPMzdYTkNSb2t2bHdsQ1p5?=
+ =?utf-8?B?MHczRURURSt2eDEvVXoxYXFHWVBONDZ0Q1Y4Z1BhUy81RndiTDdXa1BNWEVl?=
+ =?utf-8?B?Vk91Z2o3RUJwelRaQUNBbU9uMGp2ajJGWUIzcTg2a3k1MWJ6OGVhQmpoZ0Na?=
+ =?utf-8?B?a1N0UGg5U0xHeEUwNThmSitHRStWRXRrQmVwU3BIS04yYnhNWTlXQ1BEWmZL?=
+ =?utf-8?B?ZkdHS1RXQXVka0RLUVNJbkhodWFzU2lOQy9KRXAwVDVhelRIVUR4eE4rNTFZ?=
+ =?utf-8?B?eDhjZXZ4czZkcmNMZDVyUlQvbTF5SUpTeEtGUHEwL0UxSS9MRTFvamVwSEJV?=
+ =?utf-8?Q?a9mLtgeLoeLsehpb0B4ZnMCrV84T8MHFu812G8mJiZ8H+?=
+X-MS-Exchange-AntiSpam-MessageData-1: +fga+mm6hhAIHA==
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: faf3b28c-ec2c-4b12-b886-08da27db4df2
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB1947.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Apr 2022 23:20:08.8857
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 13AiYfWsZ+r9NDnrV3sAa2qchZkULASNGSHTSHgH96XKyrAACGyhc7b8VCwYoJyuC9hhqTXdwPYip5BInj7qRw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4390
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi SeongJae & Andrew,
-(also Cc-ed main damon developers)
-On an Android phone, I tried to use the DAMON vaddr monitor and found
-that vaddr regions don't split well on large Android Apps though
-everything works well on native Apps.
 
-I have tried the below two cases on an Android phone with 12GB memory
-and snapdragon 888 CPU.
-1. a native program with small memory working set  as below,
-#define size (1024*1024*100)
-main()
-{
-        volatile int *p = malloc(size);
-        memset(p, 0x55, size);
+On 2022-04-25 22:54, Hangyu Hua wrote:
+> On 2022/4/25 23:42, Andrey Grodzovsky wrote:
+>> On 2022-04-25 04:36, Hangyu Hua wrote:
+>>
+>>> When drm_sched_job_add_dependency() fails, dma_fence_put() will be 
+>>> called
+>>> internally. Calling it again after drm_sched_job_add_dependency() 
+>>> finishes
+>>> may result in a dangling pointer.
+>>>
+>>> Fix this by removing redundant dma_fence_put().
+>>>
+>>> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+>>> ---
+>>>   drivers/gpu/drm/lima/lima_gem.c        | 1 -
+>>>   drivers/gpu/drm/scheduler/sched_main.c | 1 -
+>>>   2 files changed, 2 deletions(-)
+>>>
+>>> diff --git a/drivers/gpu/drm/lima/lima_gem.c 
+>>> b/drivers/gpu/drm/lima/lima_gem.c
+>>> index 55bb1ec3c4f7..99c8e7f6bb1c 100644
+>>> --- a/drivers/gpu/drm/lima/lima_gem.c
+>>> +++ b/drivers/gpu/drm/lima/lima_gem.c
+>>> @@ -291,7 +291,6 @@ static int lima_gem_add_deps(struct drm_file 
+>>> *file, struct lima_submit *submit)
+>>>           err = drm_sched_job_add_dependency(&submit->task->base, 
+>>> fence);
+>>>           if (err) {
+>>> -            dma_fence_put(fence);
+>>>               return err;
+>>
+>>
+>> Makes sense here
+>>
+>>
+>>>           }
+>>>       }
+>>> diff --git a/drivers/gpu/drm/scheduler/sched_main.c 
+>>> b/drivers/gpu/drm/scheduler/sched_main.c
+>>> index b81fceb0b8a2..ebab9eca37a8 100644
+>>> --- a/drivers/gpu/drm/scheduler/sched_main.c
+>>> +++ b/drivers/gpu/drm/scheduler/sched_main.c
+>>> @@ -708,7 +708,6 @@ int 
+>>> drm_sched_job_add_implicit_dependencies(struct drm_sched_job *job,
+>>>           dma_fence_get(fence);
+>>>           ret = drm_sched_job_add_dependency(job, fence);
+>>>           if (ret) {
+>>> -            dma_fence_put(fence);
+>>
+>>
+>>
+>> Not sure about this one since if you look at the relevant commits -
+>> 'drm/scheduler: fix drm_sched_job_add_implicit_dependencies' and
+>> 'drm/scheduler: fix drm_sched_job_add_implicit_dependencies harder'
+>> You will see that the dma_fence_put here balances the extra 
+>> dma_fence_get
+>> above
+>>
+>> Andrey
+>>
+>
+> I don't think so. I checked the call chain and found no additional 
+> dma_fence_get(). But dma_fence_get() needs to be called before 
+> drm_sched_job_add_dependency() to keep the counter balanced. 
 
-        while(1) {
-                int i;
-                for (i = 0; i < size / 4; i++)
-                        (void)*(p + i);
-                usleep(1000);
 
-                for (i = 0; i < size / 16; i++)
-                        (void)*(p + i);
-                usleep(1000);
+I didn't say there is an additional dma_fence_get , from what I 
+understand here drm_sched_job_add_implicit_dependencies->dma_fence_get 
+is not balancing any counter but rather grabs an extra reference to 
+account for adding the fence to the job's dependency array, and so when 
+adding fails then you call dma_fence_put to decrement the count back. 
+This makes sense because drm_sched_job_add_dependency doesn't increment 
+himself refcount for the fences
 
-        }
-}
-For this application, the Damon vaddr monitor works very well.
-I have modified monitor.py in the damo userspace tool a little bit to
-show the raw data getting from the kernel.
-Regions can split decently on this kind of applications, a typical raw
-data is as below,
+> On the other hand, dma_fence_get() and dma_fence_put() are meaningless 
+> here if threre is an extra dma_fence_get() beacause counter will not 
+> decrease to 0 during drm_sched_job_add_dependency().
 
-monitoring_start:             2.224 s
-monitoring_end:               2.329 s
-monitoring_duration:       104.336 ms
-target_id: 0
-nr_regions: 24
-005fb37b2000-005fb734a000(  59.594 MiB): 0
-005fb734a000-005fbaf95000(  60.293 MiB): 0
-005fbaf95000-005fbec0b000(  60.461 MiB): 0
-005fbec0b000-005fc2910000(  61.020 MiB): 0
-005fc2910000-005fc6769000(  62.348 MiB): 0
-005fc6769000-005fca33f000(  59.836 MiB): 0
-005fca33f000-005fcdc8b000(  57.297 MiB): 0
-005fcdc8b000-005fd115a000(  52.809 MiB): 0
-005fd115a000-005fd45bd000(  52.387 MiB): 0
-007661c59000-007661ee4000(   2.543 MiB): 2
-007661ee4000-0076623e4000(   5.000 MiB): 3
-0076623e4000-007662837000(   4.324 MiB): 2
-007662837000-0076630f1000(   8.727 MiB): 3
-0076630f1000-007663494000(   3.637 MiB): 2
-007663494000-007663753000(   2.746 MiB): 1
-007663753000-007664251000(  10.992 MiB): 3
-007664251000-0076666fd000(  36.672 MiB): 2
-0076666fd000-007666e73000(   7.461 MiB): 1
-007666e73000-007667c89000(  14.086 MiB): 2
-007667c89000-007667f97000(   3.055 MiB): 0
-007667f97000-007668112000(   1.480 MiB): 1
-007668112000-00766820f000(1012.000 KiB): 0
-007ff27b7000-007ff27d6000( 124.000 KiB): 0
-007ff27d6000-007ff27d8000(   8.000 KiB): 8
 
-2. a large Android app like Asphalt 9
-For this case, basically regions can't split very well, but monitor
-works on small vma:
+Where is the extra dma_fence_get() ?
 
-monitoring_start:             2.220 s
-monitoring_end:               2.318 s
-monitoring_duration:        98.576 ms
-target_id: 0
-nr_regions: 15
-000012c00000-0001c301e000(   6.754 GiB): 0
-0001c301e000-000371b6c000(   6.730 GiB): 0
-000371b6c000-000400000000(   2.223 GiB): 0
-005c6759d000-005c675a2000(  20.000 KiB): 0
-005c675a2000-005c675a3000(   4.000 KiB): 3
-005c675a3000-005c675a7000(  16.000 KiB): 0
-0072f1e14000-0074928d4000(   6.510 GiB): 0
-0074928d4000-00763c71f000(   6.655 GiB): 0
-00763c71f000-0077e863e000(   6.687 GiB): 0
-0077e863e000-00798e214000(   6.590 GiB): 0
-00798e214000-007b0e48a000(   6.002 GiB): 0
-007b0e48a000-007c62f00000(   5.323 GiB): 0
-007c62f00000-007defb19000(   6.199 GiB): 0
-007defb19000-007f794ef000(   6.150 GiB): 0
-007f794ef000-007fe8f53000(   1.745 GiB): 0
 
-As you can see, we have some regions which are very very big and they
-are losing the chance to be splitted. But
-Damon can still monitor memory access for those small VMA areas very well like:
-005c675a2000-005c675a3000(   4.000 KiB): 3
+>
+> I check the call chain as follows:
+>
+> msm_ioctl_gem_submit()
+> -> submit_fence_sync()
+> -> drm_sched_job_add_implicit_dependencies()
 
-Typical characteristics of a large Android app is that it has
-thousands of vma and very large virtual address spaces:
-~/damo # pmap 2550 | wc -l
-8522
 
-~/damo # pmap 2550
-...
-0000007992bbe000      4K r----   [ anon ]
-0000007992bbf000     24K rw---   [ anon ]
-0000007fe8753000      4K -----   [ anon ]
-0000007fe8754000   8188K rw---   [ stack ]
- total         36742112K
+Could you maybe print the buggy refcount sequence you say you discovered 
+as an example ? Because I fail to follow where is the problem.
 
-Because the whole vma list is too long, I have put the list here for
-you to download:
-wget http://www.linuxep.com/patches/android-app-vmas
+Andrey
 
-I can reproduce this problem on other Apps like youtube as well.
-I suppose we need to boost the algorithm of splitting regions for this
-kind of application.
-Any thoughts?
 
-Thanks
-Barry
+>
+> Thanks,
+> Hangyu
+>
+>>
+>>>               return ret;
+>>>           }
+>>>       }
