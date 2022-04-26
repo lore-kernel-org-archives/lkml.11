@@ -2,94 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E702C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:34:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3A04C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:34:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345001AbiDZIhj (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:37:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36850 "EHLO
+        id S235541AbiDZIho (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:37:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345280AbiDZIe2 (ORCPT
+        with ESMTP id S1345279AbiDZIe2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:34:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19A6873063;
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C48FB73065;
         Tue, 26 Apr 2022 01:26:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A97AB617F1;
-        Tue, 26 Apr 2022 08:26:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B87EEC385AC;
-        Tue, 26 Apr 2022 08:26:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961616;
-        bh=XEncWXOOTgqkk9+t/TZHK1gvF3HW9nBti41MaEMdk0s=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VAt8+Xo6uAuJ7B6tHuMRxYp13DRYtsZWQHXaaW+lVNFWXmi63MvoPe0kHGbVw0sMT
-         zYkILQjpAtYRJSbqlP9mEuivdZ1L7gOPXGAZOk/kUYjKA2QU4nQI4VwiKyFav6k2EE
-         lLDQ/s9Qx96oFO8FW/tYUWRKkdEiN/mXnqaGAJpY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaoke Wang <xkernel.wang@foxmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Rob Clark <robdclark@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 26/53] drm/msm/mdp5: check the return of kzalloc()
-Date:   Tue, 26 Apr 2022 10:21:06 +0200
-Message-Id: <20220426081736.415772090@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081735.651926456@linuxfoundation.org>
-References: <20220426081735.651926456@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Received: by mail-pf1-x434.google.com with SMTP id i24so17305091pfa.7;
+        Tue, 26 Apr 2022 01:26:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=yhLyL+XNsxkwpVleNlagUYPk4ikrWSVwJ5iKvEtm9r4=;
+        b=QhrHokc1cqTSaM8Bm+BwVpjH81YmWkQrBRqiM+8OSkSDQlbidv8n9aGyRD16LTp05s
+         3WChyLlV3VO9IPi13CJKMhT05wEYckITk4L7Xghehtq7K/BS+BiP09vHFsi82wxpXF51
+         cnYzW9J7jWDyDd4NNG9GV4d4G16Er+IhZM+saPSpFcNO3B2T1kKbarnCdmpSiTl75D3w
+         uCu43xKe8ggtAvbg/t0TF+w4PEchRrPd4iiXPJefmSup2qnzNkxiXwWYD27F8miIR70s
+         dTrXz2rFYhLpRm73qjMHmgmOKI5Py9I+fjIY7ZDTvt7sj7Ob7807i7XbyOvTg1YhTVg5
+         cZ4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=yhLyL+XNsxkwpVleNlagUYPk4ikrWSVwJ5iKvEtm9r4=;
+        b=G/koMKj7p+r1r5mBySzqVe96txAtguoz15oNbt35xn9jrA3UG9kCDtqLMnIMsSyc3K
+         BVDAITq9JskNgYahWTrxeSgEjps3nLU3Aa7DGDQ9eg0IxDArT0rTg7a/eER3aUMNvEny
+         a18q5juj49WTtJSA5E8aSxxLPtQT8CE6JsPmwaRnfyrgjnL+aWe4olATxOFc6Ogwr2D4
+         +1yLDGE5U1esNSEplRbI8H+0qy390WJnAT1d9Iw/YtHO3K6ISuNft8usBZE3EZyrdacT
+         ZAwVcUqG1VCzRR/qerFFFgFHQ8QUsaefHSeSavMgSWZuzzExXs8ZvIyl1Y1hLxiPeqj5
+         roDA==
+X-Gm-Message-State: AOAM533NNn7n+oKdCI2xz9ZkeMKdAkwgYexUXFCej1HVk4SuzfhDjwif
+        MLZC1juYxMbCDGNyUth0xi9zNVnltr8=
+X-Google-Smtp-Source: ABdhPJz+74lK30qT8FEbdkFdhMy6GpRLV2X22ikbl7jvT9J2uD4jEhIbrQcWPhnJvO2yG0B2407JDw==
+X-Received: by 2002:a05:6a00:894:b0:4fe:25d7:f59e with SMTP id q20-20020a056a00089400b004fe25d7f59emr23477482pfj.58.1650961617115;
+        Tue, 26 Apr 2022 01:26:57 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.119])
+        by smtp.googlemail.com with ESMTPSA id k15-20020a63ab4f000000b00381eef69bfbsm12024832pgp.3.2022.04.26.01.26.46
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 26 Apr 2022 01:26:56 -0700 (PDT)
+From:   Wanpeng Li <kernellwp@gmail.com>
+X-Google-Original-From: Wanpeng Li <wanpengli@tencent.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH] KVM: LAPIC: Fix advance timer expiration delta trace
+Date:   Tue, 26 Apr 2022 01:25:51 -0700
+Message-Id: <1650961551-38390-1-git-send-email-wanpengli@tencent.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+From: Wanpeng Li <wanpengli@tencent.com>
 
-[ Upstream commit 047ae665577776b7feb11bd4f81f46627cff95e7 ]
+The advance timer expiration delta trace is moved after guest_exit_irqoff()
+since it can avoid to violate RCU extended quiescent state when moving 
+wait_lapic_expire() just before vmentry. Now kvm can enter a guest multiple 
+times since IPI/Timer fastpath, snapshot the delta multiple times before 
+vmentry and trace it one time after vmexit is not accurately this time. 
+Commit 87fa7f3e98a1 (x86/kvm: Move context tracking where it belongs) moves 
+rcu state updates more closer around vmentry/vmexit, we will not violate RCU 
+any more. Let's fix it by keeping the advance timer expiration delta trace 
+in __kvm_wait_lapic_epire() and dropping advance_expire_delta.
 
-kzalloc() is a memory allocation function which can return NULL when
-some internal memory errors happen. So it is better to check it to
-prevent potential wrong memory access.
-
-Besides, since mdp5_plane_reset() is void type, so we should better
-set `plane-state` to NULL after releasing it.
-
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/481055/
-Link: https://lore.kernel.org/r/tencent_8E2A1C78140EE1784AB2FF4B2088CC0AB908@qq.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Rob Clark <robdclark@chromium.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
 ---
- drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/x86/kvm/lapic.c | 4 ++--
+ arch/x86/kvm/lapic.h | 1 -
+ arch/x86/kvm/x86.c   | 8 --------
+ 3 files changed, 2 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
-index 1ddf07514de6..3d8eaa25bea0 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
-@@ -188,7 +188,10 @@ static void mdp5_plane_reset(struct drm_plane *plane)
- 		drm_framebuffer_unreference(plane->state->fb);
+diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+index 66b0eb0bda94..a4e9eb329e42 100644
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
+@@ -1648,10 +1648,10 @@ static void __kvm_wait_lapic_expire(struct kvm_vcpu *vcpu)
+ 	tsc_deadline = apic->lapic_timer.expired_tscdeadline;
+ 	apic->lapic_timer.expired_tscdeadline = 0;
+ 	guest_tsc = kvm_read_l1_tsc(vcpu, rdtsc());
+-	apic->lapic_timer.advance_expire_delta = guest_tsc - tsc_deadline;
++	trace_kvm_wait_lapic_expire(vcpu->vcpu_id, guest_tsc - tsc_deadline);
  
- 	kfree(to_mdp5_plane_state(plane->state));
-+	plane->state = NULL;
- 	mdp5_state = kzalloc(sizeof(*mdp5_state), GFP_KERNEL);
-+	if (!mdp5_state)
-+		return;
+ 	if (lapic_timer_advance_dynamic) {
+-		adjust_lapic_timer_advance(vcpu, apic->lapic_timer.advance_expire_delta);
++		adjust_lapic_timer_advance(vcpu, guest_tsc - tsc_deadline);
+ 		/*
+ 		 * If the timer fired early, reread the TSC to account for the
+ 		 * overhead of the above adjustment to avoid waiting longer
+diff --git a/arch/x86/kvm/lapic.h b/arch/x86/kvm/lapic.h
+index 4e4f8a22754f..65bb2a8cf145 100644
+--- a/arch/x86/kvm/lapic.h
++++ b/arch/x86/kvm/lapic.h
+@@ -38,7 +38,6 @@ struct kvm_timer {
+ 	u64 tscdeadline;
+ 	u64 expired_tscdeadline;
+ 	u32 timer_advance_ns;
+-	s64 advance_expire_delta;
+ 	atomic_t pending;			/* accumulated triggered timers */
+ 	bool hv_timer_in_use;
+ };
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index a6ab19afc638..5fa465b268d2 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -10248,14 +10248,6 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
+ 	 */
+ 	guest_timing_exit_irqoff();
  
- 	/* assign default blend parameters */
- 	mdp5_state->alpha = 255;
+-	if (lapic_in_kernel(vcpu)) {
+-		s64 delta = vcpu->arch.apic->lapic_timer.advance_expire_delta;
+-		if (delta != S64_MIN) {
+-			trace_kvm_wait_lapic_expire(vcpu->vcpu_id, delta);
+-			vcpu->arch.apic->lapic_timer.advance_expire_delta = S64_MIN;
+-		}
+-	}
+-
+ 	local_irq_enable();
+ 	preempt_enable();
+ 
 -- 
-2.35.1
-
-
+2.25.1
 
