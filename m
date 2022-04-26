@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21110C47080
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:37:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4026AC4707A
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:37:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348591AbiDZJkW (ORCPT
+        id S1348432AbiDZJjs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:40:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53034 "EHLO
+        Tue, 26 Apr 2022 05:39:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347384AbiDZJKs (ORCPT
+        with ESMTP id S1346065AbiDZJGo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:10:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88DD017F125;
-        Tue, 26 Apr 2022 01:49:41 -0700 (PDT)
+        Tue, 26 Apr 2022 05:06:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0DE8170E0B;
+        Tue, 26 Apr 2022 01:48:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D9DF860C42;
-        Tue, 26 Apr 2022 08:49:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D20F2C385A0;
-        Tue, 26 Apr 2022 08:49:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 861EEB81CFE;
+        Tue, 26 Apr 2022 08:48:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB03AC385A0;
+        Tue, 26 Apr 2022 08:48:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962980;
-        bh=zMT2bqha3hiEmZn2PZkK+h5nbupE7FfoSqKxXILC13g=;
+        s=korg; t=1650962885;
+        bh=h9nekDnZjVNRaibYw2Ab9HItxmQykDgvxLK3hX4+T2w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Uyg46sB0JVQAABr512IcMJpXW6VHdiYSeYFU77JyriJ6/KYFs0j22A+Oe7BpmMDxk
-         +3AqSQbwdl0sutS/KoC2XK/yHW0en1TGWA29sO38L2ZpWRp1753Z+pfGpo6KQaSQgG
-         WhUMOt4SeAM+2Zkb7H6roKM2Mae6CWjmvsoiFY/w=
+        b=HIUxtZGhe4quKZ872Ie9eg6U5fJmSJIuEQS1vNt5z3REG1BHNmdpdZlYF5K6LWtIO
+         XkXlEfVm8h34q79TF3/28x0OAYNSkirUoQ3rGvfTBTydjMjPqEVdMt5a6EyhyHYDbC
+         H4GFZjN9nR5j4zvi+9N71RcWzYPRCjJllFfG7hfo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Begunkov <asml.silence@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.17 145/146] io_uring: fix leaks on IOPOLL and CQE_SKIP
-Date:   Tue, 26 Apr 2022 10:22:20 +0200
-Message-Id: <20220426081754.135044907@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.17 121/146] ASoC: rt5682: fix an incorrect NULL check on list iterator
+Date:   Tue, 26 Apr 2022 10:21:56 +0200
+Message-Id: <20220426081753.458183153@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -49,42 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Begunkov <asml.silence@gmail.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit c0713540f6d55c53dca65baaead55a5a8b20552d upstream.
+commit c8618d65007ba68d7891130642d73e89372101e8 upstream.
 
-If all completed requests in io_do_iopoll() were marked with
-REQ_F_CQE_SKIP, we'll not only skip CQE posting but also
-io_free_batch_list() leaking memory and resources.
+The bug is here:
+	if (!dai) {
 
-Move @nr_events increment before REQ_F_CQE_SKIP check. We'll potentially
-return the value greater than the real one, but iopolling will deal with
-it and the userspace will re-iopoll if needed. In anyway, I don't think
-there are many use cases for REQ_F_CQE_SKIP + IOPOLL.
+The list iterator value 'dai' will *always* be set and non-NULL
+by for_each_component_dais(), so it is incorrect to assume that
+the iterator value will be NULL if the list is empty or no element
+is found (In fact, it will be a bogus pointer to an invalid struct
+object containing the HEAD). Otherwise it will bypass the check
+'if (!dai) {' (never call dev_err() and never return -ENODEV;)
+and lead to invalid memory access lately when calling
+'rt5682_set_bclk1_ratio(dai, factor);'.
 
-Fixes: 83a13a4181b0e ("io_uring: tweak iopoll CQE_SKIP event counting")
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
-Link: https://lore.kernel.org/r/5072fc8693fbfd595f89e5d4305bfcfd5d2f0a64.1650186611.git.asml.silence@gmail.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+To fix the bug, just return rt5682_set_bclk1_ratio(dai, factor);
+when found the 'dai', otherwise dev_err() and return -ENODEV;
+
+Cc: stable@vger.kernel.org
+Fixes: ebbfabc16d23d ("ASoC: rt5682: Add CCF usage for providing I2S clks")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Link: https://lore.kernel.org/r/20220327081002.12684-1-xiam0nd.tong@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/io_uring.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ sound/soc/codecs/rt5682.c |   11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -2612,11 +2612,10 @@ static int io_do_iopoll(struct io_ring_c
- 		/* order with io_complete_rw_iopoll(), e.g. ->result updates */
- 		if (!smp_load_acquire(&req->iopoll_completed))
- 			break;
-+		nr_events++;
- 		if (unlikely(req->flags & REQ_F_CQE_SKIP))
- 			continue;
--
- 		__io_fill_cqe(ctx, req->user_data, req->result, io_put_kbuf(req));
--		nr_events++;
- 	}
+--- a/sound/soc/codecs/rt5682.c
++++ b/sound/soc/codecs/rt5682.c
+@@ -2822,14 +2822,11 @@ static int rt5682_bclk_set_rate(struct c
  
- 	if (unlikely(!nr_events))
+ 	for_each_component_dais(component, dai)
+ 		if (dai->id == RT5682_AIF1)
+-			break;
+-	if (!dai) {
+-		dev_err(rt5682->i2c_dev, "dai %d not found in component\n",
+-			RT5682_AIF1);
+-		return -ENODEV;
+-	}
++			return rt5682_set_bclk1_ratio(dai, factor);
+ 
+-	return rt5682_set_bclk1_ratio(dai, factor);
++	dev_err(rt5682->i2c_dev, "dai %d not found in component\n",
++		RT5682_AIF1);
++	return -ENODEV;
+ }
+ 
+ static const struct clk_ops rt5682_dai_clk_ops[RT5682_DAI_NUM_CLKS] = {
 
 
