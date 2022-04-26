@@ -2,96 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 108D8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:46:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8AA2C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:47:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344255AbiDZHtx (ORCPT
+        id S1344269AbiDZHuJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 03:49:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37068 "EHLO
+        Tue, 26 Apr 2022 03:50:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343874AbiDZHtw (ORCPT
+        with ESMTP id S1343874AbiDZHuH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 03:49:52 -0400
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91B53193DE;
-        Tue, 26 Apr 2022 00:46:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-type:in-reply-to:
-         references;
-        bh=jdeIL4APlI7ICUopY2YQhQe6o+8TJoupKLnVkfKcSl4=;
-        b=caZLIG7XwxfomNotUAL9qP9VTjUQIRfxK6A662fV6pAh8nRTlrbXhoDl6MX1FoHNzdpI/edmsUVWz
-         ANqh+BZ5kd5pcHTvEmqXXLPDr4Sodl1s9gUtECWbmqIXyZj8ODcuvGhKRoutJ/bUuxBD+XI1wHWqEh
-         u9GKJvP2jH0qLOGJc7P4h1kAi45kNiD4M9NlWL8b/raneXkP1atL1A2AjXOfX4T7DMA25mjeytkXMq
-         oTocpm9oebiGNzy8VRS9ktV4/aDEKGaKsUt2+aUK2gGvtln0bS7fH1uRaTGM5F71HmFbku40i8UR4/
-         C0/HQvE5kusrn2Bf4BY8xtQFuSa3tvA==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.2.1410, Stamp: 3], Multi: [Enabled, t: (0.000008,0.007255)], BW: [Enabled, t: (0.000015,0.000001)], RTDA: [Enabled, t: (0.063913), Hit: No, Details: v2.36.0; Id: 15.52k1ok.1g1idbgdp.3m7n0; mclb], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from h-e2.ddg ([85.143.252.66])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Tue, 26 Apr 2022 10:46:11 +0300
-Date:   Tue, 26 Apr 2022 10:46:00 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, system@metrotek.ru
-Subject: Re: [PATCH net-next RESEND] net: phy: marvell-88x2222: set proper
- phydev->port
-Message-ID: <20220426074600.p3za7apdxxvjbq3z@h-e2.ddg>
-References: <20220405150305.151573-1-i.bornyakov@metrotek.ru>
- <20220425041637.5946-1-i.bornyakov@metrotek.ru>
- <YmcTkkNcDrtdcGTM@shell.armlinux.org.uk>
+        Tue, 26 Apr 2022 03:50:07 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 70F95193F4;
+        Tue, 26 Apr 2022 00:47:00 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3AC2C23A;
+        Tue, 26 Apr 2022 00:47:00 -0700 (PDT)
+Received: from [10.57.12.108] (unknown [10.57.12.108])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AC2743F73B;
+        Tue, 26 Apr 2022 00:46:58 -0700 (PDT)
+Message-ID: <f6bb20c6-38a0-57d6-8979-d14e445da623@arm.com>
+Date:   Tue, 26 Apr 2022 08:46:57 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YmcTkkNcDrtdcGTM@shell.armlinux.org.uk>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v3 0/5] Introduce Cpufreq Active Stats
+Content-Language: en-US
+To:     Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
+        rafael@kernel.org, daniel.lezcano@linaro.org, amitk@kernel.org,
+        rui.zhang@intel.com, amit.kachhap@gmail.com,
+        linux-pm@vger.kernel.org
+References: <20220406220809.22555-1-lukasz.luba@arm.com>
+ <20220426031125.ozaxwecwvuby6wo3@vireshk-i7>
+From:   Lukasz Luba <lukasz.luba@arm.com>
+In-Reply-To: <20220426031125.ozaxwecwvuby6wo3@vireshk-i7>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 10:33:06PM +0100, Russell King (Oracle) wrote:
-> On Mon, Apr 25, 2022 at 07:16:37AM +0300, Ivan Bornyakov wrote:
-> > phydev->port was not set and always reported as PORT_TP.
-> > Set phydev->port according to inserted SFP module.
-> > 
-> > Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
-> > ---
-> >  drivers/net/phy/marvell-88x2222.c | 2 ++
-> >  1 file changed, 2 insertions(+)
-> > 
-> > diff --git a/drivers/net/phy/marvell-88x2222.c b/drivers/net/phy/marvell-88x2222.c
-> > index ec4f1407a78c..9f971b37ec35 100644
-> > --- a/drivers/net/phy/marvell-88x2222.c
-> > +++ b/drivers/net/phy/marvell-88x2222.c
-> > @@ -603,6 +603,7 @@ static int mv2222_sfp_insert(void *upstream, const struct sfp_eeprom_id *id)
-> >  	dev = &phydev->mdio.dev;
-> >  
-> >  	sfp_parse_support(phydev->sfp_bus, id, sfp_supported);
-> > +	phydev->port = sfp_parse_port(phydev->sfp_bus, id, sfp_supported);
-> >  	sfp_interface = sfp_select_interface(phydev->sfp_bus, sfp_supported);
-> >  
-> >  	dev_info(dev, "%s SFP module inserted\n", phy_modes(sfp_interface));
-> > @@ -639,6 +640,7 @@ static void mv2222_sfp_remove(void *upstream)
-> >  
-> >  	priv->line_interface = PHY_INTERFACE_MODE_NA;
-> >  	linkmode_zero(priv->supported);
-> > +	phydev->port = PORT_OTHER;
+
+
+On 4/26/22 04:11, Viresh Kumar wrote:
+> On 06-04-22, 23:08, Lukasz Luba wrote:
+>> Hi all,
+>>
+>> This is the 3rd version of patch set which tries to address issues which are
+>> due to missing proper information about CPU performance in time.
+>>
+>> The issue description:
+>> 1. "Cpufreq statistics cover the time when CPUs are in idle states, so they
+>>     are not suitable for certain purposes, like thermal control." Rafael [2]
+>> 2. Thermal governor Intelligent Power Allocation (IPA) has to estimate power,
+>>     for the last period, e.g. 100ms, for each CPU in the Cluster, to grant new
+>>     power and set max possible frequency. Currently in some cases it gets big
+>>     error, when the frequency of CPU changed in the middle. It is due to the
+>>     fact that IPA reads the current frequency for the CPU, not aware of all
+>>     other frequencies which were actively (not in idle) used in the last 100ms.
+>>
+>> This code focuses on tracking the events of idle entry/exit for each CPU
+>> and combine them with the frequency tracked statistics inside internal
+>> statistics arrays (per-CPU). In the old cpufreq stats we have one shared
+>> statistics array for the policy (all CPUs) and not take into account
+>> periods when each CPU was in idle.
+>>
+>> Sometimes the IPA error between old estimation signal and reality is quite
+>> big (>50%).
 > 
-> Can this PHY be used in dual-media mode, auto-switching between copper
-> and fibre?
+> It would have been useful to show how the stats hierarchy looks in userspace
+> now.
+> 
 
-I believe, it can not.
-
-> If so, is PORT_OTHER actually appropriate here, or should
-> the old value be saved when the module is inserted and restored when
-> it's removed?
-
-Would PORT_NONE be appropriate? Saving old value would be ok also.
-
+I haven't modify your current cpufreq stats, they are still counting
+total time (idle + running) for the given frequency. I think this is
+still useful for some userspace tools. These new proposed stats don't
+have such sysfs interface to read them. I don't know if userspace would
+be interested in this information (the running only time). IIRC Android
+uses bpf mechanisms to get this information to the userspace.
