@@ -2,101 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FC1EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 14:58:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4C6AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 15:01:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351870AbiDZPBv (ORCPT
+        id S1351861AbiDZPE7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 11:01:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40438 "EHLO
+        Tue, 26 Apr 2022 11:04:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351834AbiDZPBo (ORCPT
+        with ESMTP id S229469AbiDZPE5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 11:01:44 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DCA5B1A9B;
-        Tue, 26 Apr 2022 07:58:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1650985071;
-        bh=KLCjLhfQTgA0oKxUS8a8HV/nxwOxtsyC4o79WkTfje8=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=IIcY48H9YK8/QDBNpiRiNIjM5ijvX9dPgdmCPggiTIq7XwNedhwHy18OxeYmKHEoF
-         aTWxmr4FQ9c9f1+BSP3KA3mTvOPXFvrXnR56rwSg8opVpkVDmlW5t7ss7YGXvUhPii
-         MK5BlLt3w1SEQLCrqBWvI62kQpytjOvDD7ZZPMaA=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [80.245.77.37] ([80.245.77.37]) by web-mail.gmx.net
- (3c-app-gmx-bs69.server.lan [172.19.170.214]) (via HTTP); Tue, 26 Apr 2022
- 16:57:50 +0200
+        Tue, 26 Apr 2022 11:04:57 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7B50A3AA6D;
+        Tue, 26 Apr 2022 08:01:49 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2CDF723A;
+        Tue, 26 Apr 2022 08:01:49 -0700 (PDT)
+Received: from [10.57.12.108] (unknown [10.57.12.108])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7B9C63F73B;
+        Tue, 26 Apr 2022 08:01:47 -0700 (PDT)
+Message-ID: <36852629-f803-5ac9-bef5-bcfae3ed947d@arm.com>
+Date:   Tue, 26 Apr 2022 16:01:46 +0100
 MIME-Version: 1.0
-Message-ID: <trinity-8ceec42c-8705-4808-b37b-9e9849ba774e-1650985070928@3c-app-gmx-bs69>
-From:   Frank Wunderlich <frank-w@public-files.de>
-To:     Frank Wunderlich <linux@fw-web.de>
-Cc:     linux-mediatek@lists.infradead.org,
-        linux-rockchip@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Aw: [RFC v1 3/3] arm64: dts: rockchip: Add mt7531 dsa node to
- BPI-R2-Pro board
-Content-Type: text/plain; charset=UTF-8
-Date:   Tue, 26 Apr 2022 16:57:50 +0200
-Importance: normal
-Sensitivity: Normal
-In-Reply-To: <20220426134924.30372-4-linux@fw-web.de>
-References: <20220426134924.30372-1-linux@fw-web.de>
- <20220426134924.30372-4-linux@fw-web.de>
-X-UI-Message-Type: mail
-X-Priority: 3
-X-Provags-ID: V03:K1:wBW5QJYpMHdq3PrMhGinR1AdioQG5dT+v1AUhYrsDygj5o2ETBmB7lzitdogghO9fUJ34
- 7C+S+3eGXblSF48OoeX01rSKkoLZx+5zlIPitqd/reCb/PRwuR3znVtcbV6WiXGQw9fKCED9pXjl
- Yqa7X5QsU8EBNE1dsh3kVNkMGRtDKOoHGLkrRf7GTn8z0SY+JQ6juNUXpn1GZl+laWiX/FtsqqgA
- Ye27fCi0B2ZSew4gY/X1gzmzAfDOgUNCH3qY9mTUMWRxlDCIDxa1Wg084wN8Bg56b4e0IO/LVl4D
- Qc=
-X-UI-Out-Filterresults: notjunk:1;V03:K0:41kc6tKK5sg=:EDOaU6bOsIT1ZaYJ+7rZT4
- ul8RUcVdFNTJTPhR0EmciMDWP/g6o5NGLfUZmDgSUNOU8LhvXxvfMQVPT8xvM5No8QyQIbn8p
- WMKpXo9jDASBQp5oAj0e+GrzTnpb5vgLTshGaXlYY3HoKQ8wAfMaejoi/1ZxTv84/iGtHUGSY
- /G6B35z0oyXoPDsU1l56EIMFgjGcCm183owIWmaTlTRBwLA0GVTzC4JsHMyxRP1gfzIxj22B8
- O/D50GXl1IFfPc01KMVhe04uv3tzA6QtQQVgtRFqxnXtllj2fRbmUos/0Fm/ann/0wlOpOAtZ
- EqUzTxAlRXhQdKgIpYjjYkzfiMcAbUs+oIVACxTJcUBBzzCygQQPs5nhdvhf0E7TZaOjV7oTG
- RXa/eCwTZCoXO/XYcyAZC86TrMQ2sfzX2WRS0uiiEMEUzJt8xYokLe4p79IjT8zZa87WinMsl
- QyFLU1u8cGd1nm5XZ/St9Ujq5DnuhwN67mNGTj+ieasHZSPWubsLPAHfmFtAwIG37FKgvckQn
- KkRLuySR8bhQ99HM8D1hiPo3RvV3NsbQxWxb311FPu0Eh6OSNrZbUE3bxgTHx+HKnDxcV3f35
- tVlt1abs3yLoH4Z3CbvTXV8g8mzJCPirOCEwhH0yv/EtSa+8tmhEsUTZ6TyZaKWp7E8j4+dFv
- CABs6rKSUkmCf6VeZozZk0q83zD29Nep3MjfI1n60J2xSBoq0WVp0ATaLKsXCgso9g5LsjY0a
- z251OrYA/UMD62CBfDskbdcjm/W52tCy/N+3PGEqj/65yPZIeG6Xj8rVvf9/LFDVKHFIN0y5l
- wmiNiYq
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v3 2/5] cpuidle: Add Cpufreq Active Stats calls
+ tracking idle entry/exit
+Content-Language: en-US
+To:     Artem Bityutskiy <dedekind1@gmail.com>
+Cc:     dietmar.eggemann@arm.com, viresh.kumar@linaro.org,
+        rafael@kernel.org, daniel.lezcano@linaro.org, amitk@kernel.org,
+        rui.zhang@intel.com, amit.kachhap@gmail.com,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220406220809.22555-1-lukasz.luba@arm.com>
+ <20220406220809.22555-3-lukasz.luba@arm.com>
+ <97e7e3f5110702fab727b4df7d53511aef5c60b1.camel@gmail.com>
+From:   Lukasz Luba <lukasz.luba@arm.com>
+In-Reply-To: <97e7e3f5110702fab727b4df7d53511aef5c60b1.camel@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> Gesendet: Dienstag, 26. April 2022 um 15:49 Uhr
-> Von: "Frank Wunderlich" <linux@fw-web.de>
+Hi Artem,
 
-> +&mdio0 {
-> +	#address-cells = <1>;
-> +	#size-cells = <0>;
-> +
-> +	switch@0 {
-> +		compatible = "mediatek,mt7531";
-> +		reg = <0>;
-> +		status = "disabled";
+Thanks for comments!
 
-seems i had missed to delete this, but it looks like it was ignored as switch was probed
+On 4/26/22 13:05, Artem Bityutskiy wrote:
+> Hi Lukasz,
+> 
+> On Wed, 2022-04-06 at 23:08 +0100, Lukasz Luba wrote:
+>> @@ -231,6 +232,8 @@ int cpuidle_enter_state(struct cpuidle_device *dev, struct
+>> cpuidle_driver *drv,
+>>          trace_cpu_idle(index, dev->cpu);
+>>          time_start = ns_to_ktime(local_clock());
+>>   
+>> +       cpufreq_active_stats_cpu_idle_enter(time_start);
+>> +
+>>          stop_critical_timings();
+>>          if (!(target_state->flags & CPUIDLE_FLAG_RCU_IDLE))
+>>                  rcu_idle_enter();
+>> @@ -243,6 +246,8 @@ int cpuidle_enter_state(struct cpuidle_device *dev, struct
+>> cpuidle_driver *drv,
+>>          time_end = ns_to_ktime(local_clock());
+>>          trace_cpu_idle(PWR_EVENT_EXIT, dev->cpu);
+>>   
+>> +       cpufreq_active_stats_cpu_idle_exit(time_end);
+>> +
+> 
+> At this point the interrupts are still disabled, and they get enabled later. So
+> the more code you add here and the longer it executes, the longer you delay the
+> interrupts. Therefore, you are effectively increasing IRQ latency from idle by
+> adding more code here.
 
-> +		ports {
-> +			#address-cells = <1>;
-> +			#size-cells = <0>;
+Good point, I've added it just below the trace_cpu_idle().
+
+> 
+> How much? I do not know, depends on how much code you need to execute. But the
+> amount of code in functions like this tends to increase over time.
+> 
+> So the risk is that we'll keep making 'cpufreq_active_stats_cpu_idle_exit()',
+> and (may be unintentionally) increase idle interrupt latency.
+> 
+> This is not ideal.
+
+I agree,  I will try to find a better place to put this call.
+
+> 
+> We use the 'wult' tool (https://github.com/intel/wult) to measure C-states
+> latency and interrupt latency on Intel platforms, and for fast C-states like
+> Intel C1, we can see that even the current code between C-state exit and
+> interrupt re-enabled adds measurable overhead.
+
+Thanks for the hint and the link. I'll check that tool. I don't know if
+that would work with my platforms. I might create some tests for this
+latency measurements.
+
+> 
+> I am worried about adding more stuff here.
+> 
+> Please, consider getting the stats after interrupts are re-enabled. You may lose
+> some "precision" because of that, but it is probably overall better that adding
+> to idle interrupt latency.
+
+Definitely. I don't need such precision, so later when interrupts are
+re-enabled is OK for me.
+
+> 
+>>          /* The cpu is no longer idle or about to enter idle. */
+>>          sched_idle_set_state(NULL);
+> 
+> 
+
+This new call might be empty for your x86 kernels, since probably
+you set the CONFIG_CPU_FREQ_STAT.I can add additional config
+so platforms might still have CONFIG_CPU_FREQ_STAT but avoid this
+new feature and additional overhead in idle exit when e.g.
+CONFIG_CPU_FREQ_ACTIVE_STAT is not set.
+
+The x86 platforms won't use IPA governor, so it's reasonable to
+do this way.
+
+Does this sounds good?
+
+Regards,
+Lukasz
 
