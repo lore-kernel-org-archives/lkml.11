@@ -2,173 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1490DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:22:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE072C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:22:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343959AbiDZHZG (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 03:25:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44194 "EHLO
+        id S234763AbiDZH0C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 03:26:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343932AbiDZHY5 (ORCPT
+        with ESMTP id S230240AbiDZHZ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 03:24:57 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD0033E5D0;
-        Tue, 26 Apr 2022 00:21:50 -0700 (PDT)
+        Tue, 26 Apr 2022 03:25:59 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF5CAD123
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 00:22:51 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id a1so15526951edt.3
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 00:22:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650957711; x=1682493711;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=tkgfhYn3wntTRUfPMP9Ukb6nWf2+DdZVZrZvxyc2pug=;
-  b=OEyEn5o8Ra0xN9yvQPYM4d4Tp3g3whk+0Q/LzAn6QDTvCw5tqwAinvNW
-   QPG11VKkd1bf2XStq/5HK7nWrw5tBZEUL7wR6KXU0c9FhvyiNNeuVOhUG
-   hpEGdxAkb7vM7SzRptEr0qUppPNNntmtZJdcK1I4ss2ESnAM+qro6ktb7
-   g=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 26 Apr 2022 00:21:50 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 00:21:50 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 26 Apr 2022 00:21:50 -0700
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 26 Apr 2022 00:21:45 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_rohkumar@quicinc.com>, <srinivas.kandagatla@linaro.org>,
-        <dianders@chromium.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
-Subject: [PATCH v11 4/4] arm64: dts: qcom: sc7280-herobrine: Add lpi pinmux properties for CRD 3.0/3.1
-Date:   Tue, 26 Apr 2022 12:51:06 +0530
-Message-ID: <1650957666-6266-5-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1650957666-6266-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1650957666-6266-1-git-send-email-quic_srivasam@quicinc.com>
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=MKxnmTE3uOgxAO/+uZwxLwv2U0/Qh3mDlrdirHKM0/A=;
+        b=H2gjdZBOC2dpNIMF+Q8CmNuGnW1EMJQqaDtejdVkfxPiVDP71nSmUPUMuYVusy33yh
+         6W8SCytU7RaPPwdJ6mhjdk56k36sVzaVBnHWb4NASLG4SRhqKOMYTQeHEuR1IB3Bz7DD
+         fSZ7adxHzuDnAKeDLjHb/C+rw/TuthcIJmHq/Qw4pjeGPCWm7epnFT8YBqZ3bCfB8CDS
+         BAwENOVkg04Kd3/FCn4/A3gBgkmG3tfmaJgOCJXgBnS7XaGGtjXoB2tDj6UGBDMp6qxa
+         V+qaFu6ffVxQr1/Cv9Y8rc4Gd2sYDPyEnjhh/M5+p2Eu1JXposGwiT9OSAqBCeeOTlsm
+         1KUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=MKxnmTE3uOgxAO/+uZwxLwv2U0/Qh3mDlrdirHKM0/A=;
+        b=ZORKi4YX/1/zQp+6Enjezqrr0yvB16DYiVEEmUb5t+zBEJs6tZysvGHWq+F2yUEWpk
+         ag2Kq4sxUHE5rQ+Sdmyfu1VrhbhS0mm7zJs/4wVaxXE7p/972tEC8ZvrwiGTpMLCrDax
+         6yHAV8k2YcZA5Gn+8QaMkyLjaq/RTIJtJAMIK7djcNyDNHBrmAKloawLcopGCvDarlr7
+         tcPdbkd8bt0datEVqIH/reafRfWWrqSpyBtt9QhxfsfpKplFNvpXpcwyyYWhzFGCi2Pj
+         2hqcVo8XFS4r8j5Wkb+oqvjYSUNb/xI7aRuzF6Ipdxr5za+MP13JYQ73nYr/lz6rNJUO
+         0rSQ==
+X-Gm-Message-State: AOAM530aduTs8DidS+jbriMtaxz9wmomOniImRkvU6VdAnZ4q/Jx+ro+
+        9BpB/VzMEe7HlhWj3qsuGef/tw==
+X-Google-Smtp-Source: ABdhPJzvu2Vd064kjxJq6VJYtqsPamQ6BFDr3D9T7sP1wZH04kUchD/daCDrNxQkvt9PXDOkYA3e4g==
+X-Received: by 2002:a05:6402:2815:b0:420:c32e:ebe2 with SMTP id h21-20020a056402281500b00420c32eebe2mr22751734ede.1.1650957770522;
+        Tue, 26 Apr 2022 00:22:50 -0700 (PDT)
+Received: from [192.168.0.244] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id ak18-20020a170906889200b006f39a445b93sm1706351ejc.141.2022.04.26.00.22.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Apr 2022 00:22:50 -0700 (PDT)
+Message-ID: <f2fe2b0c-1f57-9bd0-d03a-990c83648a65@linaro.org>
+Date:   Tue, 26 Apr 2022 09:22:49 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v5 10/11] arch: arm: boot: dts: Introduce HPE GXP Device
+ tree
+Content-Language: en-US
+To:     nick.hawkins@hpe.com, verdun@hpe.com, joel@jms.id.au,
+        arnd@arndb.de, openbmc@lists.ozlabs.org
+Cc:     Olof Johansson <olof@lixom.net>, soc@kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220421192132.109954-1-nick.hawkins@hpe.com>
+ <20220421192132.109954-11-nick.hawkins@hpe.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220421192132.109954-11-nick.hawkins@hpe.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add LPASS LPI pinctrl properties, which are required for Audio
-functionality on herobrine based platforms of rev5+
-(aka CRD 3.0/3.1) boards.
+On 21/04/2022 21:21, nick.hawkins@hpe.com wrote:
+> From: Nick Hawkins <nick.hawkins@hpe.com>
+> 
+> The HPE SoC is new to linux. This patch
+> creates the basic device tree layout with minimum required
+> for linux to boot. This includes timer and watchdog
+> support.
+> 
+> The dts file is empty at this point but will be
+> updated in subsequent updates as board specific features
+> are enabled.
+> 
+> Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
+> 
+> ---
+> v5:
+> * Fixed commit message to show previous changes
+> * Fixed typo ehci -> echi
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
----
- arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi | 84 ++++++++++++++++++++++++++
- 1 file changed, 84 insertions(+)
+One more thought, but I am pretty sure we talked about this already:
+please fix your commit subject. git log --oneline.
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
-index 4c4a0e9..1510118 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
-@@ -588,6 +588,90 @@ ap_ec_spi: &spi10 {
- 	bias-disable;
- };
- 
-+&lpass_dmic01 {
-+	clk {
-+		drive-strength = <8>;
-+	};
-+};
-+
-+&lpass_dmic01_sleep {
-+	clk {
-+		drive-strength = <2>;
-+		bias-disable;
-+	};
-+
-+	data {
-+		pull-down;
-+	};
-+};
-+
-+&lpass_dmic23 {
-+	clk {
-+		drive-strength = <8>;
-+	};
-+};
-+
-+&lpass_dmic23_sleep {
-+	clk {
-+		drive-strength = <2>;
-+		bias-disable;
-+	};
-+
-+	data {
-+		pull-down;
-+	};
-+};
-+
-+&lpass_rx_swr {
-+	clk {
-+		drive-strength = <2>;
-+		slew-rate = <1>;
-+		bias-disable;
-+	};
-+
-+	data {
-+		drive-strength = <2>;
-+		slew-rate = <1>;
-+		bias-bus-hold;
-+	};
-+};
-+
-+&lpass_rx_swr_sleep {
-+	clk {
-+		drive-strength = <2>;
-+		bias-pull-down;
-+	};
-+
-+	data {
-+		drive-strength = <2>;
-+		bias-pull-down;
-+	};
-+};
-+
-+&lpass_tx_swr {
-+	clk {
-+		drive-strength = <2>;
-+		slew-rate = <1>;
-+		bias-disable;
-+	};
-+
-+	data {
-+		slew-rate = <1>;
-+		bias-bus-hold;
-+	};
-+};
-+
-+&lpass_tx_swr_sleep {
-+	clk {
-+		drive-strength = <2>;
-+		bias-pull-down;
-+	};
-+
-+	data {
-+		bias-bus-hold;
-+	};
-+};
-+
- &mi2s0_data0 {
- 	drive-strength = <6>;
- };
--- 
-2.7.4
 
+Best regards,
+Krzysztof
