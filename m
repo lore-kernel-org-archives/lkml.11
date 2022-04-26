@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06D3AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:23:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 869B8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:23:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347548AbiDZJYK (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:24:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56276 "EHLO
+        id S242022AbiDZJ0k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:26:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346482AbiDZJAl (ORCPT
+        with ESMTP id S1345893AbiDZJCp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:00:41 -0400
+        Tue, 26 Apr 2022 05:02:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 852553EF20;
-        Tue, 26 Apr 2022 01:43:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A0DDDE082;
+        Tue, 26 Apr 2022 01:43:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 02D8760EC7;
-        Tue, 26 Apr 2022 08:43:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6A72C385A4;
-        Tue, 26 Apr 2022 08:43:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D929611BB;
+        Tue, 26 Apr 2022 08:43:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BD9EC385A4;
+        Tue, 26 Apr 2022 08:43:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962591;
-        bh=GNFNL3ZhbkhaIyz+MakpSwSz+Tb6bvaV12l8xr0FWJU=;
+        s=korg; t=1650962620;
+        bh=Urtn68nh2cnrStwYQ2ZjZ6cnqWEIAIE1PNUgiWD29HA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ddJN76vKk6nD2zbeHmBRcpZU5YSQwxIm0ZhotNujTc/79KPLwIjurINsVUbzuka7G
-         LKunG4I6kRC3EPygIZdW0MzxLxOKMXJl5nW3mcQsYIwlGXMQ0QBugsPoZAyOPoNmae
-         /M6WAP73UcChqwSflVHcHTbYUHf+viPlF6AjnJYo=
+        b=VVgc9mpBpsriNPJYm8w8Cpker9DNrhBMOwggAPaIF3LvUNxWeBLHJpMdf6AcBtMlE
+         S1sohlR4T5ioJSFx+GXvvbVDEKIgiTscXC73ofgAjNarbK5PDXQGjAYhR6wvr7TYIG
+         7NY8lA0HrifQvelyu/skr21qd3CPZJhcSXGxuaWA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dima Ruinskiy <dima.ruinskiy@intel.com>,
-        Sasha Neftin <sasha.neftin@intel.com>,
-        Naama Meir <naamax.meir@linux.intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        stable@vger.kernel.org, Flavio Leitner <fbl@redhat.com>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 024/146] igc: Fix infinite loop in release_swfw_sync
-Date:   Tue, 26 Apr 2022 10:20:19 +0200
-Message-Id: <20220426081750.746074555@linuxfoundation.org>
+Subject: [PATCH 5.17 033/146] net/packet: fix packet_sock xmit return value checking
+Date:   Tue, 26 Apr 2022 10:20:28 +0200
+Message-Id: <20220426081750.998058054@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -52,47 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+From: Hangbin Liu <liuhangbin@gmail.com>
 
-[ Upstream commit 907862e9aef75bf89e2b265efcc58870be06081e ]
+[ Upstream commit 29e8e659f984be00d75ec5fef4e37c88def72712 ]
 
-An infinite loop may occur if we fail to acquire the HW semaphore,
-which is needed for resource release.
-This will typically happen if the hardware is surprise-removed.
-At this stage there is nothing to do, except log an error and quit.
+packet_sock xmit could be dev_queue_xmit, which also returns negative
+errors. So only checking positive errors is not enough, or userspace
+sendmsg may return success while packet is not send out.
 
-Fixes: c0071c7aa5fe ("igc: Add HW initialization code")
-Suggested-by: Dima Ruinskiy <dima.ruinskiy@intel.com>
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Naama Meir <naamax.meir@linux.intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Move the net_xmit_errno() assignment in the braces as checkpatch.pl said
+do not use assignment in if condition.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: Flavio Leitner <fbl@redhat.com>
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/igc/igc_i225.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ net/packet/af_packet.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_i225.c b/drivers/net/ethernet/intel/igc/igc_i225.c
-index 66ea566488d1..59d5c467ea6e 100644
---- a/drivers/net/ethernet/intel/igc/igc_i225.c
-+++ b/drivers/net/ethernet/intel/igc/igc_i225.c
-@@ -156,8 +156,15 @@ void igc_release_swfw_sync_i225(struct igc_hw *hw, u16 mask)
- {
- 	u32 swfw_sync;
+diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+index a7273af2d900..e3c60251e708 100644
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -2856,8 +2856,9 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
  
--	while (igc_get_hw_semaphore_i225(hw))
--		; /* Empty */
-+	/* Releasing the resource requires first getting the HW semaphore.
-+	 * If we fail to get the semaphore, there is nothing we can do,
-+	 * except log an error and quit. We are not allowed to hang here
-+	 * indefinitely, as it may cause denial of service or system crash.
-+	 */
-+	if (igc_get_hw_semaphore_i225(hw)) {
-+		hw_dbg("Failed to release SW_FW_SYNC.\n");
-+		return;
+ 		status = TP_STATUS_SEND_REQUEST;
+ 		err = po->xmit(skb);
+-		if (unlikely(err > 0)) {
+-			err = net_xmit_errno(err);
++		if (unlikely(err != 0)) {
++			if (err > 0)
++				err = net_xmit_errno(err);
+ 			if (err && __packet_get_status(po, ph) ==
+ 				   TP_STATUS_AVAILABLE) {
+ 				/* skb was destructed already */
+@@ -3058,8 +3059,12 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
+ 		skb->no_fcs = 1;
+ 
+ 	err = po->xmit(skb);
+-	if (err > 0 && (err = net_xmit_errno(err)) != 0)
+-		goto out_unlock;
++	if (unlikely(err != 0)) {
++		if (err > 0)
++			err = net_xmit_errno(err);
++		if (err)
++			goto out_unlock;
 +	}
  
- 	swfw_sync = rd32(IGC_SW_FW_SYNC);
- 	swfw_sync &= ~mask;
+ 	dev_put(dev);
+ 
 -- 
 2.35.1
 
