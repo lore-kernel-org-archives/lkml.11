@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B03DC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C7E1C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:12:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244866AbiDZJMW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:12:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55576 "EHLO
+        id S1346965AbiDZJNe (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:13:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347343AbiDZIvU (ORCPT
+        with ESMTP id S1347267AbiDZIvQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:51:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63D8DD0A80;
-        Tue, 26 Apr 2022 01:40:12 -0700 (PDT)
+        Tue, 26 Apr 2022 04:51:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4919E55BF;
+        Tue, 26 Apr 2022 01:40:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B4F776104A;
-        Tue, 26 Apr 2022 08:40:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4291C385B0;
-        Tue, 26 Apr 2022 08:40:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CA2E7B81CF0;
+        Tue, 26 Apr 2022 08:40:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16685C385A4;
+        Tue, 26 Apr 2022 08:40:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962411;
-        bh=QWLitrRvFmVyVyJOX1rFDP8ZYjWDXNK6XBXYNABfqg0=;
+        s=korg; t=1650962402;
+        bh=rliS89dJcyrybqgaURTUi7V7HnjX9oapKH2QCwTkQFM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XiXaC0KUNB1O3jxleJlZFZKueqJY3c2oleBs2Is6VvJypdYjeaP+zESH/P0TBg2Pd
-         3FwbepJyzbiLw3gabea7bT1PZjEKKJiT5o+ypJDYpFnKQEF82UE8pxvCGjWIL0ZCcP
-         Btya+hW8kHPuMKkhD4g9mUtPugBvVg2B5kCyeGVY=
+        b=19pFd4clz6loMObAvdmjh3zADxkvWhf2qz+7YYpqOXadAA3LI0FE9ncyhBHJeoMlU
+         zai9Up9CCiTsBylY4HKXbH17VcdG/8Fk45hxWoNWplKzkLXFAkf5m9oGEvpqK8yKcL
+         tiLbCi0Qf7pHbH5468x14YsT6g/e3mFBTihAvSMc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Tom Rix <trix@redhat.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 088/124] scsi: sr: Do not leak information in ioctl
-Date:   Tue, 26 Apr 2022 10:21:29 +0200
-Message-Id: <20220426081749.801857443@linuxfoundation.org>
+Subject: [PATCH 5.15 044/124] net: mscc: ocelot: fix broken IP multicast flooding
+Date:   Tue, 26 Apr 2022 10:20:45 +0200
+Message-Id: <20220426081748.555271039@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -50,118 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit faad6cebded8e0fd902b672f220449b93db479eb ]
+[ Upstream commit 4cf35a2b627a020fe1a6b6fc7a6a12394644e474 ]
 
-sr_ioctl.c uses this pattern:
+When the user runs:
+bridge link set dev $br_port mcast_flood on
 
-  result = sr_do_ioctl(cd, &cgc);
-  to-user = buffer[];
-  kfree(buffer);
-  return result;
+this command should affect not only L2 multicast, but also IPv4 and IPv6
+multicast.
 
-Use of a buffer without checking leaks information. Check result and jump
-over the use of buffer if there is an error.
+In the Ocelot switch, unknown multicast gets flooded according to
+different PGIDs according to its type, and PGID_MC only handles L2
+multicast. Therefore, by leaving PGID_MCIPV4 and PGID_MCIPV6 at their
+default value of 0, unknown IP multicast traffic is never flooded.
 
-  result = sr_do_ioctl(cd, &cgc);
-  if (result)
-    goto err;
-  to-user = buffer[];
-err:
-  kfree(buffer);
-  return result;
-
-Additionally, initialize the buffer to zero.
-
-This problem can be seen in the 2.4.0 kernel.
-
-Link: https://lore.kernel.org/r/20220411174756.2418435-1-trix@redhat.com
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Tom Rix <trix@redhat.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 421741ea5672 ("net: mscc: ocelot: offload bridge port flags to device")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Link: https://lore.kernel.org/r/20220415151950.219660-1-vladimir.oltean@nxp.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/sr_ioctl.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/mscc/ocelot.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/scsi/sr_ioctl.c b/drivers/scsi/sr_ioctl.c
-index ddd00efc4882..fbdb5124d7f7 100644
---- a/drivers/scsi/sr_ioctl.c
-+++ b/drivers/scsi/sr_ioctl.c
-@@ -41,7 +41,7 @@ static int sr_read_tochdr(struct cdrom_device_info *cdi,
- 	int result;
- 	unsigned char *buffer;
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index 6aad0953e8fe..a59300d9e000 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -1932,6 +1932,8 @@ static void ocelot_port_set_mcast_flood(struct ocelot *ocelot, int port,
+ 		val = BIT(port);
  
--	buffer = kmalloc(32, GFP_KERNEL);
-+	buffer = kzalloc(32, GFP_KERNEL);
- 	if (!buffer)
- 		return -ENOMEM;
- 
-@@ -55,10 +55,13 @@ static int sr_read_tochdr(struct cdrom_device_info *cdi,
- 	cgc.data_direction = DMA_FROM_DEVICE;
- 
- 	result = sr_do_ioctl(cd, &cgc);
-+	if (result)
-+		goto err;
- 
- 	tochdr->cdth_trk0 = buffer[2];
- 	tochdr->cdth_trk1 = buffer[3];
- 
-+err:
- 	kfree(buffer);
- 	return result;
+ 	ocelot_rmw_rix(ocelot, val, BIT(port), ANA_PGID_PGID, PGID_MC);
++	ocelot_rmw_rix(ocelot, val, BIT(port), ANA_PGID_PGID, PGID_MCIPV4);
++	ocelot_rmw_rix(ocelot, val, BIT(port), ANA_PGID_PGID, PGID_MCIPV6);
  }
-@@ -71,7 +74,7 @@ static int sr_read_tocentry(struct cdrom_device_info *cdi,
- 	int result;
- 	unsigned char *buffer;
  
--	buffer = kmalloc(32, GFP_KERNEL);
-+	buffer = kzalloc(32, GFP_KERNEL);
- 	if (!buffer)
- 		return -ENOMEM;
- 
-@@ -86,6 +89,8 @@ static int sr_read_tocentry(struct cdrom_device_info *cdi,
- 	cgc.data_direction = DMA_FROM_DEVICE;
- 
- 	result = sr_do_ioctl(cd, &cgc);
-+	if (result)
-+		goto err;
- 
- 	tocentry->cdte_ctrl = buffer[5] & 0xf;
- 	tocentry->cdte_adr = buffer[5] >> 4;
-@@ -98,6 +103,7 @@ static int sr_read_tocentry(struct cdrom_device_info *cdi,
- 		tocentry->cdte_addr.lba = (((((buffer[8] << 8) + buffer[9]) << 8)
- 			+ buffer[10]) << 8) + buffer[11];
- 
-+err:
- 	kfree(buffer);
- 	return result;
- }
-@@ -384,7 +390,7 @@ int sr_get_mcn(struct cdrom_device_info *cdi, struct cdrom_mcn *mcn)
- {
- 	Scsi_CD *cd = cdi->handle;
- 	struct packet_command cgc;
--	char *buffer = kmalloc(32, GFP_KERNEL);
-+	char *buffer = kzalloc(32, GFP_KERNEL);
- 	int result;
- 
- 	if (!buffer)
-@@ -400,10 +406,13 @@ int sr_get_mcn(struct cdrom_device_info *cdi, struct cdrom_mcn *mcn)
- 	cgc.data_direction = DMA_FROM_DEVICE;
- 	cgc.timeout = IOCTL_TIMEOUT;
- 	result = sr_do_ioctl(cd, &cgc);
-+	if (result)
-+		goto err;
- 
- 	memcpy(mcn->medium_catalog_number, buffer + 9, 13);
- 	mcn->medium_catalog_number[13] = 0;
- 
-+err:
- 	kfree(buffer);
- 	return result;
- }
+ static void ocelot_port_set_bcast_flood(struct ocelot *ocelot, int port,
 -- 
 2.35.1
 
