@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA3F3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:33:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B38FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:33:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344913AbiDZJgX (ORCPT
+        id S1347373AbiDZJgb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:36:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38496 "EHLO
+        Tue, 26 Apr 2022 05:36:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345161AbiDZJG3 (ORCPT
+        with ESMTP id S1345975AbiDZJG3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 05:06:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A919C8AAA;
-        Tue, 26 Apr 2022 01:47:45 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3F0013C285;
+        Tue, 26 Apr 2022 01:47:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB05160C42;
-        Tue, 26 Apr 2022 08:47:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B09E3C385AC;
-        Tue, 26 Apr 2022 08:47:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6D88AB81A2F;
+        Tue, 26 Apr 2022 08:47:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADDA3C385A4;
+        Tue, 26 Apr 2022 08:47:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962864;
-        bh=tmI7oITx1Lz52yEj+WkYtG/SsUK9NT6eScUQX4l7xUE=;
+        s=korg; t=1650962870;
+        bh=wa6DKY7ihCAiI4ORJ4Lemo2W/kJEgxqyoapglfQxiiI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xkTdnbFLrLoFq4VJsqZ+LRN5J5AK5a7hBwjvaYCnwD8Cn+Oq/rAC1WJScNSi309ky
-         sy185+xhBAcG0ql/gPOYpdIc5vsswmxUJQlNbsaRgRRN1ppZsAMAy9hYZ5ZFKXNdQS
-         rRghRz+6ExrUKzXr+nMh4bB0T/pDb2bj8xPP6aqQ=
+        b=fvr2dVtONJ4d3hKOoE34bkvBT2yLepHnQE4/dOVE0tgiSs9DLRO8BpGGj6UOpvevn
+         1efBlLdpTpkukBmhLtSJOmxnhaENb8scq+hf4GgEVrWHVIlvTpVrcR/w0k/pLqOp79
+         tbDj77BbEys31oK0vLFnB4iVlBXK24LYzSWydXlI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.17 115/146] cifs: fix NULL ptr dereference in refresh_mounts()
-Date:   Tue, 26 Apr 2022 10:21:50 +0200
-Message-Id: <20220426081753.288771630@linuxfoundation.org>
+        stable@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
+        Guo Ren <guoren@kernel.org>, Max Filippov <jcmvbkbc@gmail.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Subject: [PATCH 5.17 117/146] xtensa: patch_text: Fixup last cpu should be master
+Date:   Tue, 26 Apr 2022 10:21:52 +0200
+Message-Id: <20220426081753.345440056@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -50,129 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paulo Alcantara <pc@cjr.nz>
+From: Guo Ren <guoren@linux.alibaba.com>
 
-commit 41f10081a92a0ed280008218a8ec18ad8ba0fceb upstream.
+commit ee69d4be8fd064cd08270b4808d2dfece3614ee0 upstream.
 
-Either mount(2) or automount might not have server->origin_fullpath
-set yet while refresh_cache_worker() is attempting to refresh DFS
-referrals.  Add missing NULL check and locking around it.
+These patch_text implementations are using stop_machine_cpuslocked
+infrastructure with atomic cpu_count. The original idea: When the
+master CPU patch_text, the others should wait for it. But current
+implementation is using the first CPU as master, which couldn't
+guarantee the remaining CPUs are waiting. This patch changes the
+last CPU as the master to solve the potential risk.
 
-This fixes bellow crash:
-
-[ 1070.276835] general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN NOPTI
-[ 1070.277676] KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-[ 1070.278219] CPU: 1 PID: 8506 Comm: kworker/u8:1 Not tainted 5.18.0-rc3 #10
-[ 1070.278701] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.15.0-0-g2dd4b9b-rebuilt.opensuse.org 04/01/2014
-[ 1070.279495] Workqueue: cifs-dfscache refresh_cache_worker [cifs]
-[ 1070.280044] RIP: 0010:strcasecmp+0x34/0x150
-[ 1070.280359] Code: 00 00 00 fc ff df 41 54 55 48 89 fd 53 48 83 ec 10 eb 03 4c 89 fe 48 89 ef 48 83 c5 01 48 89 f8 48 89 fa 48 c1 e8 03 83 e2 07 <42> 0f b6 04 28 38 d0 7f 08 84 c0 0f 85 bc 00 00 00 0f b6 45 ff 44
-[ 1070.281729] RSP: 0018:ffffc90008367958 EFLAGS: 00010246
-[ 1070.282114] RAX: 0000000000000000 RBX: dffffc0000000000 RCX: 0000000000000000
-[ 1070.282691] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-[ 1070.283273] RBP: 0000000000000001 R08: 0000000000000000 R09: ffffffff873eda27
-[ 1070.283857] R10: ffffc900083679a0 R11: 0000000000000001 R12: ffff88812624c000
-[ 1070.284436] R13: dffffc0000000000 R14: ffff88810e6e9a88 R15: ffff888119bb9000
-[ 1070.284990] FS:  0000000000000000(0000) GS:ffff888151200000(0000) knlGS:0000000000000000
-[ 1070.285625] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 1070.286100] CR2: 0000561a4d922418 CR3: 000000010aecc000 CR4: 0000000000350ee0
-[ 1070.286683] Call Trace:
-[ 1070.286890]  <TASK>
-[ 1070.287070]  refresh_cache_worker+0x895/0xd20 [cifs]
-[ 1070.287475]  ? __refresh_tcon.isra.0+0xfb0/0xfb0 [cifs]
-[ 1070.287905]  ? __lock_acquire+0xcd1/0x6960
-[ 1070.288247]  ? is_dynamic_key+0x1a0/0x1a0
-[ 1070.288591]  ? lockdep_hardirqs_on_prepare+0x410/0x410
-[ 1070.289012]  ? lock_downgrade+0x6f0/0x6f0
-[ 1070.289318]  process_one_work+0x7bd/0x12d0
-[ 1070.289637]  ? worker_thread+0x160/0xec0
-[ 1070.289970]  ? pwq_dec_nr_in_flight+0x230/0x230
-[ 1070.290318]  ? _raw_spin_lock_irq+0x5e/0x90
-[ 1070.290619]  worker_thread+0x5ac/0xec0
-[ 1070.290891]  ? process_one_work+0x12d0/0x12d0
-[ 1070.291199]  kthread+0x2a5/0x350
-[ 1070.291430]  ? kthread_complete_and_exit+0x20/0x20
-[ 1070.291770]  ret_from_fork+0x22/0x30
-[ 1070.292050]  </TASK>
-[ 1070.292223] Modules linked in: bpfilter cifs cifs_arc4 cifs_md4
-[ 1070.292765] ---[ end trace 0000000000000000 ]---
-[ 1070.293108] RIP: 0010:strcasecmp+0x34/0x150
-[ 1070.293471] Code: 00 00 00 fc ff df 41 54 55 48 89 fd 53 48 83 ec 10 eb 03 4c 89 fe 48 89 ef 48 83 c5 01 48 89 f8 48 89 fa 48 c1 e8 03 83 e2 07 <42> 0f b6 04 28 38 d0 7f 08 84 c0 0f 85 bc 00 00 00 0f b6 45 ff 44
-[ 1070.297718] RSP: 0018:ffffc90008367958 EFLAGS: 00010246
-[ 1070.298622] RAX: 0000000000000000 RBX: dffffc0000000000 RCX: 0000000000000000
-[ 1070.299428] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-[ 1070.300296] RBP: 0000000000000001 R08: 0000000000000000 R09: ffffffff873eda27
-[ 1070.301204] R10: ffffc900083679a0 R11: 0000000000000001 R12: ffff88812624c000
-[ 1070.301932] R13: dffffc0000000000 R14: ffff88810e6e9a88 R15: ffff888119bb9000
-[ 1070.302645] FS:  0000000000000000(0000) GS:ffff888151200000(0000) knlGS:0000000000000000
-[ 1070.303462] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 1070.304131] CR2: 0000561a4d922418 CR3: 000000010aecc000 CR4: 0000000000350ee0
-[ 1070.305004] Kernel panic - not syncing: Fatal exception
-[ 1070.305711] Kernel Offset: disabled
-[ 1070.305971] ---[ end Kernel panic - not syncing: Fatal exception ]---
-
-Signed-off-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
-Cc: stable@vger.kernel.org
-Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Fixes: 64711f9a47d4 ("xtensa: implement jump_label support")
+Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+Signed-off-by: Guo Ren <guoren@kernel.org>
+Reviewed-by: Max Filippov <jcmvbkbc@gmail.com>
+Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: <stable@vger.kernel.org>
+Message-Id: <20220407073323.743224-4-guoren@kernel.org>
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/cifs/connect.c   |    2 ++
- fs/cifs/dfs_cache.c |   19 ++++++++++++-------
- 2 files changed, 14 insertions(+), 7 deletions(-)
+ arch/xtensa/kernel/jump_label.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/cifs/connect.c
-+++ b/fs/cifs/connect.c
-@@ -3675,9 +3675,11 @@ static void setup_server_referral_paths(
+--- a/arch/xtensa/kernel/jump_label.c
++++ b/arch/xtensa/kernel/jump_label.c
+@@ -40,7 +40,7 @@ static int patch_text_stop_machine(void
  {
- 	struct TCP_Server_Info *server = mnt_ctx->server;
+ 	struct patch *patch = data;
  
-+	mutex_lock(&server->refpath_lock);
- 	server->origin_fullpath = mnt_ctx->origin_fullpath;
- 	server->leaf_fullpath = mnt_ctx->leaf_fullpath;
- 	server->current_fullpath = mnt_ctx->leaf_fullpath;
-+	mutex_unlock(&server->refpath_lock);
- 	mnt_ctx->origin_fullpath = mnt_ctx->leaf_fullpath = NULL;
- }
- 
---- a/fs/cifs/dfs_cache.c
-+++ b/fs/cifs/dfs_cache.c
-@@ -1422,12 +1422,14 @@ static int refresh_tcon(struct cifs_ses
- 	struct TCP_Server_Info *server = tcon->ses->server;
- 
- 	mutex_lock(&server->refpath_lock);
--	if (strcasecmp(server->leaf_fullpath, server->origin_fullpath))
--		__refresh_tcon(server->leaf_fullpath + 1, sessions, tcon, force_refresh);
-+	if (server->origin_fullpath) {
-+		if (server->leaf_fullpath && strcasecmp(server->leaf_fullpath,
-+							server->origin_fullpath))
-+			__refresh_tcon(server->leaf_fullpath + 1, sessions, tcon, force_refresh);
-+		__refresh_tcon(server->origin_fullpath + 1, sessions, tcon, force_refresh);
-+	}
- 	mutex_unlock(&server->refpath_lock);
- 
--	__refresh_tcon(server->origin_fullpath + 1, sessions, tcon, force_refresh);
--
- 	return 0;
- }
- 
-@@ -1530,11 +1532,14 @@ static void refresh_mounts(struct cifs_s
- 		list_del_init(&tcon->ulist);
- 
- 		mutex_lock(&server->refpath_lock);
--		if (strcasecmp(server->leaf_fullpath, server->origin_fullpath))
--			__refresh_tcon(server->leaf_fullpath + 1, sessions, tcon, false);
-+		if (server->origin_fullpath) {
-+			if (server->leaf_fullpath && strcasecmp(server->leaf_fullpath,
-+								server->origin_fullpath))
-+				__refresh_tcon(server->leaf_fullpath + 1, sessions, tcon, false);
-+			__refresh_tcon(server->origin_fullpath + 1, sessions, tcon, false);
-+		}
- 		mutex_unlock(&server->refpath_lock);
- 
--		__refresh_tcon(server->origin_fullpath + 1, sessions, tcon, false);
- 		cifs_put_tcon(tcon);
- 	}
- }
+-	if (atomic_inc_return(&patch->cpu_count) == 1) {
++	if (atomic_inc_return(&patch->cpu_count) == num_online_cpus()) {
+ 		local_patch_text(patch->addr, patch->data, patch->sz);
+ 		atomic_inc(&patch->cpu_count);
+ 	} else {
 
 
