@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73D8DC35294
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B84CC4707F
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:42:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346427AbiDZIpB (ORCPT
+        id S1346653AbiDZIpQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:45:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57510 "EHLO
+        Tue, 26 Apr 2022 04:45:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345483AbiDZIjK (ORCPT
+        with ESMTP id S1345512AbiDZIjL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:39:10 -0400
+        Tue, 26 Apr 2022 04:39:11 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45A5813FB57;
-        Tue, 26 Apr 2022 01:29:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3D043FBD7;
+        Tue, 26 Apr 2022 01:30:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E4E77B81A2F;
-        Tue, 26 Apr 2022 08:29:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 417D3C385A0;
-        Tue, 26 Apr 2022 08:29:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 80736B81CAF;
+        Tue, 26 Apr 2022 08:30:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3635C385A0;
+        Tue, 26 Apr 2022 08:29:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961794;
-        bh=M1sk34xlYCQpQot+7xmeV9IzI73vVdZ8Sw1Ikj2J5Cc=;
+        s=korg; t=1650961800;
+        bh=GdhV+M7q++CPNc+w2fY6C6AGEQb4sYzOfXOJmXL+AZM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P0xgsIIsElaDQyOUb+LE+dTO+wxIWIOrsliyWiPK+cpysMs2VGK/5UERF7gTgTkE7
-         ql1cHTDE0WlBWKtZEcXQB+pjlFdWcnaHlXbW5QHe7RTdsi4jti96DQs+1Ftf34ppdz
-         F2fNtbnMDF3SMPE/iBFq/nAG2kTJ2fyPe+jSaUR8=
+        b=WmpSpAeKPnT/1Dyg7jtgepPjO46ObVgwHBKgfmFo+qoDCTHf/pGixKezmKBZ9dc1J
+         MnmUl8N7ywU5jmbw3666FR1cvtzMSkFyeKlw8UJs0BKiRrH8Kvp9l/0KOHlvOyDQeh
+         HBUyd04gu9E6d+Rp/eUgfPMwh4jIEEzyvzBDl5og=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Lv Ruyi <lv.ruyi@zte.com.cn>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Tomas Melin <tomas.melin@vaisala.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 31/62] dpaa_eth: Fix missing of_node_put in dpaa_get_ts_info()
-Date:   Tue, 26 Apr 2022 10:21:11 +0200
-Message-Id: <20220426081738.118345525@linuxfoundation.org>
+Subject: [PATCH 5.4 33/62] net: macb: Restart tx only if queue pointer is lagging
+Date:   Tue, 26 Apr 2022 10:21:13 +0200
+Message-Id: <20220426081738.175168427@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
 References: <20220426081737.209637816@linuxfoundation.org>
@@ -51,44 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Tomas Melin <tomas.melin@vaisala.com>
 
-[ Upstream commit 1a7eb80d170c28be2928433702256fe2a0bd1e0f ]
+[ Upstream commit 5ad7f18cd82cee8e773d40cc7a1465a526f2615c ]
 
-Both of of_get_parent() and of_parse_phandle() return node pointer with
-refcount incremented, use of_node_put() on it to decrease refcount
-when done.
+commit 4298388574da ("net: macb: restart tx after tx used bit read")
+added support for restarting transmission. Restarting tx does not work
+in case controller asserts TXUBR interrupt and TQBP is already at the end
+of the tx queue. In that situation, restarting tx will immediately cause
+assertion of another TXUBR interrupt. The driver will end up in an infinite
+interrupt loop which it cannot break out of.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+For cases where TQBP is at the end of the tx queue, instead
+only clear TX_USED interrupt. As more data gets pushed to the queue,
+transmission will resume.
+
+This issue was observed on a Xilinx Zynq-7000 based board.
+During stress test of the network interface,
+driver would get stuck on interrupt loop within seconds or minutes
+causing CPU to stall.
+
+Signed-off-by: Tomas Melin <tomas.melin@vaisala.com>
+Tested-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Link: https://lore.kernel.org/r/20220407161659.14532-1-tomas.melin@vaisala.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/cadence/macb_main.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
-index 7ce2e99b594d..0a186d16e73f 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
-@@ -506,11 +506,15 @@ static int dpaa_get_ts_info(struct net_device *net_dev,
- 	info->phc_index = -1;
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 480d2ca369e6..002a374f197b 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -1378,6 +1378,7 @@ static void macb_tx_restart(struct macb_queue *queue)
+ 	unsigned int head = queue->tx_head;
+ 	unsigned int tail = queue->tx_tail;
+ 	struct macb *bp = queue->bp;
++	unsigned int head_idx, tbqp;
  
- 	fman_node = of_get_parent(mac_node);
--	if (fman_node)
-+	if (fman_node) {
- 		ptp_node = of_parse_phandle(fman_node, "ptimer-handle", 0);
-+		of_node_put(fman_node);
-+	}
+ 	if (bp->caps & MACB_CAPS_ISR_CLEAR_ON_WRITE)
+ 		queue_writel(queue, ISR, MACB_BIT(TXUBR));
+@@ -1385,6 +1386,13 @@ static void macb_tx_restart(struct macb_queue *queue)
+ 	if (head == tail)
+ 		return;
  
--	if (ptp_node)
-+	if (ptp_node) {
- 		ptp_dev = of_find_device_by_node(ptp_node);
-+		of_node_put(ptp_node);
-+	}
++	tbqp = queue_readl(queue, TBQP) / macb_dma_desc_get_size(bp);
++	tbqp = macb_adj_dma_desc_idx(bp, macb_tx_ring_wrap(bp, tbqp));
++	head_idx = macb_adj_dma_desc_idx(bp, macb_tx_ring_wrap(bp, head));
++
++	if (tbqp == head_idx)
++		return;
++
+ 	macb_writel(bp, NCR, macb_readl(bp, NCR) | MACB_BIT(TSTART));
+ }
  
- 	if (ptp_dev)
- 		ptp = platform_get_drvdata(ptp_dev);
 -- 
 2.35.1
 
