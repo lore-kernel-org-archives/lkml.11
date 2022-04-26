@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38D16C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13538C3527D
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:32:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348446AbiDZJfM (ORCPT
+        id S1348331AbiDZJfD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:35:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44856 "EHLO
+        Tue, 26 Apr 2022 05:35:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346260AbiDZJDZ (ORCPT
+        with ESMTP id S1346398AbiDZJEQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:03:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B2EEE3CD2;
-        Tue, 26 Apr 2022 01:43:46 -0700 (PDT)
+        Tue, 26 Apr 2022 05:04:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09E89E5E30;
+        Tue, 26 Apr 2022 01:43:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB20BB81CF0;
-        Tue, 26 Apr 2022 08:43:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EAF4C385A4;
-        Tue, 26 Apr 2022 08:43:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B3A160C43;
+        Tue, 26 Apr 2022 08:43:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44C7AC385A0;
+        Tue, 26 Apr 2022 08:43:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962623;
-        bh=3xObiHzauvYXUgi+HTKdEGtrc02fLNsKRtvSnMIn7h0=;
+        s=korg; t=1650962629;
+        bh=vdB1mcr+hQGostS7uAzJApdd0uO8++TjEPTRv0E3UK8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PsVTMm1NMFBPpdPF8JpwsoZOCVqPZDuAtx9Okr59KI530+NWfDWMy4557WATYntpS
-         XG9FSwk8HCZbD7J+yNCLR/IxhCkXLhqRHb7zS3m0+6/QGyIsJsYkK3Ot4w5LAPpdLP
-         XAk+zZoUr2mqDU0gQLnMACeRGoZqACgSDfailTQc=
+        b=lDPvC918Bo6GFKKdsoxJpPzvZhOeMiN0k3bzt48awBx2yfHb4FTS4qnR/Ga8peVKY
+         8CiZzhgK1UfFzNjJZA3N6+UXRfZs3iEZPwXJCMrZ5Q3L1MHZkj6PADJr0k4q5nWk8O
+         3727fsBbCUv81S9SdmWqEyhRcrTcrfH4HwUaEVmI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
-        Peilin Ye <peilin.ye@bytedance.com>,
+        stable@vger.kernel.org,
+        Stephen Hemminger <stephen@networkplumber.org>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 034/146] ip6_gre: Avoid updating tunnel->tun_hlen in __gre6_xmit()
-Date:   Tue, 26 Apr 2022 10:20:29 +0200
-Message-Id: <20220426081751.026207653@linuxfoundation.org>
+Subject: [PATCH 5.17 036/146] net: restore alpha order to Ethernet devices in config
+Date:   Tue, 26 Apr 2022 10:20:31 +0200
+Message-Id: <20220426081751.083023077@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -51,46 +51,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+From: Stephen Hemminger <stephen@networkplumber.org>
 
-[ Upstream commit f40c064e933d7787ca7411b699504d7a2664c1f5 ]
+[ Upstream commit da367ac74aecb59b62a9538009d4aee8ce4bdfb3 ]
 
-Do not update tunnel->tun_hlen in data plane code.  Use a local variable
-instead, just like "tunnel_hlen" in net/ipv4/ip_gre.c:gre_fb_xmit().
+The displayed list of Ethernet devices in make menuconfig
+has gotten out of order. This is mostly due to changes in vendor
+names etc, but also because of new Microsoft entry in wrong place.
 
-Co-developed-by: Cong Wang <cong.wang@bytedance.com>
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+This restores so that the display is in order even if the names
+of the sub directories are not.
+
+Fixes: ca9c54d2d6a5 ("net: mana: Add a driver for Microsoft Azure Network Adapter (MANA)")
+Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/ip6_gre.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/Kconfig | 26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
 
-diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
-index 8753e9cec326..b43a46449130 100644
---- a/net/ipv6/ip6_gre.c
-+++ b/net/ipv6/ip6_gre.c
-@@ -743,6 +743,7 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
- 		struct ip_tunnel_info *tun_info;
- 		const struct ip_tunnel_key *key;
- 		__be16 flags;
-+		int tun_hlen;
+diff --git a/drivers/net/ethernet/Kconfig b/drivers/net/ethernet/Kconfig
+index db3ec4768159..7a730c9d4bdf 100644
+--- a/drivers/net/ethernet/Kconfig
++++ b/drivers/net/ethernet/Kconfig
+@@ -35,15 +35,6 @@ source "drivers/net/ethernet/aquantia/Kconfig"
+ source "drivers/net/ethernet/arc/Kconfig"
+ source "drivers/net/ethernet/asix/Kconfig"
+ source "drivers/net/ethernet/atheros/Kconfig"
+-source "drivers/net/ethernet/broadcom/Kconfig"
+-source "drivers/net/ethernet/brocade/Kconfig"
+-source "drivers/net/ethernet/cadence/Kconfig"
+-source "drivers/net/ethernet/calxeda/Kconfig"
+-source "drivers/net/ethernet/cavium/Kconfig"
+-source "drivers/net/ethernet/chelsio/Kconfig"
+-source "drivers/net/ethernet/cirrus/Kconfig"
+-source "drivers/net/ethernet/cisco/Kconfig"
+-source "drivers/net/ethernet/cortina/Kconfig"
  
- 		tun_info = skb_tunnel_info_txcheck(skb);
- 		if (IS_ERR(tun_info) ||
-@@ -760,9 +761,9 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
- 		dsfield = key->tos;
- 		flags = key->tun_flags &
- 			(TUNNEL_CSUM | TUNNEL_KEY | TUNNEL_SEQ);
--		tunnel->tun_hlen = gre_calc_hlen(flags);
-+		tun_hlen = gre_calc_hlen(flags);
+ config CX_ECAT
+ 	tristate "Beckhoff CX5020 EtherCAT master support"
+@@ -57,6 +48,14 @@ config CX_ECAT
+ 	  To compile this driver as a module, choose M here. The module
+ 	  will be called ec_bhf.
  
--		gre_build_header(skb, tunnel->tun_hlen,
-+		gre_build_header(skb, tun_hlen,
- 				 flags, protocol,
- 				 tunnel_id_to_key32(tun_info->key.tun_id),
- 				 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++)
++source "drivers/net/ethernet/broadcom/Kconfig"
++source "drivers/net/ethernet/cadence/Kconfig"
++source "drivers/net/ethernet/calxeda/Kconfig"
++source "drivers/net/ethernet/cavium/Kconfig"
++source "drivers/net/ethernet/chelsio/Kconfig"
++source "drivers/net/ethernet/cirrus/Kconfig"
++source "drivers/net/ethernet/cisco/Kconfig"
++source "drivers/net/ethernet/cortina/Kconfig"
+ source "drivers/net/ethernet/davicom/Kconfig"
+ 
+ config DNET
+@@ -84,7 +83,6 @@ source "drivers/net/ethernet/huawei/Kconfig"
+ source "drivers/net/ethernet/i825xx/Kconfig"
+ source "drivers/net/ethernet/ibm/Kconfig"
+ source "drivers/net/ethernet/intel/Kconfig"
+-source "drivers/net/ethernet/microsoft/Kconfig"
+ source "drivers/net/ethernet/xscale/Kconfig"
+ 
+ config JME
+@@ -127,8 +125,9 @@ source "drivers/net/ethernet/mediatek/Kconfig"
+ source "drivers/net/ethernet/mellanox/Kconfig"
+ source "drivers/net/ethernet/micrel/Kconfig"
+ source "drivers/net/ethernet/microchip/Kconfig"
+-source "drivers/net/ethernet/moxa/Kconfig"
+ source "drivers/net/ethernet/mscc/Kconfig"
++source "drivers/net/ethernet/microsoft/Kconfig"
++source "drivers/net/ethernet/moxa/Kconfig"
+ source "drivers/net/ethernet/myricom/Kconfig"
+ 
+ config FEALNX
+@@ -140,10 +139,10 @@ config FEALNX
+ 	  Say Y here to support the Myson MTD-800 family of PCI-based Ethernet
+ 	  cards. <http://www.myson.com.tw/>
+ 
++source "drivers/net/ethernet/ni/Kconfig"
+ source "drivers/net/ethernet/natsemi/Kconfig"
+ source "drivers/net/ethernet/neterion/Kconfig"
+ source "drivers/net/ethernet/netronome/Kconfig"
+-source "drivers/net/ethernet/ni/Kconfig"
+ source "drivers/net/ethernet/8390/Kconfig"
+ source "drivers/net/ethernet/nvidia/Kconfig"
+ source "drivers/net/ethernet/nxp/Kconfig"
+@@ -163,6 +162,7 @@ source "drivers/net/ethernet/packetengines/Kconfig"
+ source "drivers/net/ethernet/pasemi/Kconfig"
+ source "drivers/net/ethernet/pensando/Kconfig"
+ source "drivers/net/ethernet/qlogic/Kconfig"
++source "drivers/net/ethernet/brocade/Kconfig"
+ source "drivers/net/ethernet/qualcomm/Kconfig"
+ source "drivers/net/ethernet/rdc/Kconfig"
+ source "drivers/net/ethernet/realtek/Kconfig"
+@@ -170,10 +170,10 @@ source "drivers/net/ethernet/renesas/Kconfig"
+ source "drivers/net/ethernet/rocker/Kconfig"
+ source "drivers/net/ethernet/samsung/Kconfig"
+ source "drivers/net/ethernet/seeq/Kconfig"
+-source "drivers/net/ethernet/sfc/Kconfig"
+ source "drivers/net/ethernet/sgi/Kconfig"
+ source "drivers/net/ethernet/silan/Kconfig"
+ source "drivers/net/ethernet/sis/Kconfig"
++source "drivers/net/ethernet/sfc/Kconfig"
+ source "drivers/net/ethernet/smsc/Kconfig"
+ source "drivers/net/ethernet/socionext/Kconfig"
+ source "drivers/net/ethernet/stmicro/Kconfig"
 -- 
 2.35.1
 
