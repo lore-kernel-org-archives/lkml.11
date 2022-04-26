@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0B21C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:25:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F898C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:25:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344752AbiDZI2R (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:28:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38134 "EHLO
+        id S235718AbiDZI21 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:28:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344794AbiDZI13 (ORCPT
+        with ESMTP id S1344545AbiDZI1m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:27:29 -0400
+        Tue, 26 Apr 2022 04:27:42 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C88C6D39C;
-        Tue, 26 Apr 2022 01:23:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 314503A70C;
+        Tue, 26 Apr 2022 01:23:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 727C9617F3;
-        Tue, 26 Apr 2022 08:23:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83965C385A4;
-        Tue, 26 Apr 2022 08:23:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A2C6C617FB;
+        Tue, 26 Apr 2022 08:23:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25FA3C385A4;
+        Tue, 26 Apr 2022 08:23:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961410;
-        bh=rv/GX7icARfrLpZuyE33Cr4F/qHjUe73i7Nfj25q3AY=;
+        s=korg; t=1650961423;
+        bh=aj2MJe6FxnGwrXKvMahFbCQYAaT+4ocJ3YhgWHEGcDc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1XQtaHAGQKMeDRkZF+0CfA/fdxsj8O63U421uMlAnCX3u66GU5gX7w3bdbr+F+T8Y
-         DylIdch8L4WzfhSu1Z36kPyKElzDsSlS2wAP5G829+Zt+BgmbODiBl++nszt66+O/k
-         uvXi9ctEvh3lN6NdPPtNwZRQ+Twqn8C4FTWEjZck=
+        b=F8+7Yo6hcIv6O8EMwlXTCd7RXhCY8c4hcAE1UcQMQdSKBBWI6sTLxGSLSyp8UvCJp
+         xMggNbs+TtSiZtjsCstqmwelO8fu8uz+jsSUsrUFMabIDnFLIYOXdx4L98jM6cLVf6
+         p2G6HiTeWBXq8p9H10CaDwwN6F7yppTRNBwrZVjw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+70e777a39907d6d5fd0a@syzkaller.appspotmail.com,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 4.9 04/24] ALSA: usb-audio: Clear MIDI port active flag after draining
-Date:   Tue, 26 Apr 2022 10:20:58 +0200
-Message-Id: <20220426081731.503169674@linuxfoundation.org>
+        stable@vger.kernel.org, Liviu Dudau <liviu.dudau@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Kees Cook <keescook@chromium.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 08/24] ARM: vexpress/spc: Avoid negative array index when !SMP
+Date:   Tue, 26 Apr 2022 10:21:02 +0200
+Message-Id: <20220426081731.618352989@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081731.370823950@linuxfoundation.org>
 References: <20220426081731.370823950@linuxfoundation.org>
@@ -50,41 +53,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Kees Cook <keescook@chromium.org>
 
-commit 0665886ad1392e6b5bae85d7a6ccbed48dca1522 upstream.
+[ Upstream commit b3f1dd52c991d79118f35e6d1bf4d7cb09882e38 ]
 
-When a rawmidi output stream is closed, it calls the drain at first,
-then does trigger-off only when the drain returns -ERESTARTSYS as a
-fallback.  It implies that each driver should turn off the stream
-properly after the drain.  Meanwhile, USB-audio MIDI interface didn't
-change the port->active flag after the drain.  This may leave the
-output work picking up the port that is closed right now, which
-eventually leads to a use-after-free for the already released rawmidi
-object.
+When building multi_v7_defconfig+CONFIG_SMP=n, -Warray-bounds exposes
+a couple negative array index accesses:
 
-This patch fixes the bug by properly clearing the port->active flag
-after the output drain.
+arch/arm/mach-vexpress/spc.c: In function 've_spc_clk_init':
+arch/arm/mach-vexpress/spc.c:583:21: warning: array subscript -1 is below array bounds of 'bool[2]' {aka '_Bool[2]'} [-Warray-bounds]
+  583 |   if (init_opp_table[cluster])
+      |       ~~~~~~~~~~~~~~^~~~~~~~~
+arch/arm/mach-vexpress/spc.c:556:7: note: while referencing 'init_opp_table'
+  556 |  bool init_opp_table[MAX_CLUSTERS] = { false };
+      |       ^~~~~~~~~~~~~~
+arch/arm/mach-vexpress/spc.c:592:18: warning: array subscript -1 is below array bounds of 'bool[2]' {aka '_Bool[2]'} [-Warray-bounds]
+  592 |    init_opp_table[cluster] = true;
+      |    ~~~~~~~~~~~~~~^~~~~~~~~
+arch/arm/mach-vexpress/spc.c:556:7: note: while referencing 'init_opp_table'
+  556 |  bool init_opp_table[MAX_CLUSTERS] = { false };
+      |       ^~~~~~~~~~~~~~
 
-Reported-by: syzbot+70e777a39907d6d5fd0a@syzkaller.appspotmail.com
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/00000000000011555605dceaff03@google.com
-Link: https://lore.kernel.org/r/20220420130247.22062-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Skip this logic when built !SMP.
+
+Link: https://lore.kernel.org/r/20220331190443.851661-1-keescook@chromium.org
+Cc: Liviu Dudau <liviu.dudau@arm.com>
+Cc: Sudeep Holla <sudeep.holla@arm.com>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: linux-arm-kernel@lists.infradead.org
+Acked-by: Liviu Dudau <liviu.dudau@arm.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/usb/midi.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/mach-vexpress/spc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/sound/usb/midi.c
-+++ b/sound/usb/midi.c
-@@ -1210,6 +1210,7 @@ static void snd_usbmidi_output_drain(str
- 		} while (drain_urbs && timeout);
- 		finish_wait(&ep->drain_wait, &wait);
- 	}
-+	port->active = 0;
- 	spin_unlock_irq(&ep->buffer_lock);
- }
+diff --git a/arch/arm/mach-vexpress/spc.c b/arch/arm/mach-vexpress/spc.c
+index 635b0d549487..c16f39614003 100644
+--- a/arch/arm/mach-vexpress/spc.c
++++ b/arch/arm/mach-vexpress/spc.c
+@@ -584,7 +584,7 @@ static int __init ve_spc_clk_init(void)
+ 		}
  
+ 		cluster = topology_physical_package_id(cpu_dev->id);
+-		if (init_opp_table[cluster])
++		if (cluster < 0 || init_opp_table[cluster])
+ 			continue;
+ 
+ 		if (ve_init_opp_table(cpu_dev))
+-- 
+2.35.1
+
 
 
