@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01CDDC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:39:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDCE5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:39:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345608AbiDZImy (ORCPT
+        id S1345613AbiDZIm5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:42:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39898 "EHLO
+        Tue, 26 Apr 2022 04:42:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345119AbiDZIfR (ORCPT
+        with ESMTP id S1345744AbiDZIfI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:35:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FDD681182;
-        Tue, 26 Apr 2022 01:28:39 -0700 (PDT)
+        Tue, 26 Apr 2022 04:35:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A22157CB2F;
+        Tue, 26 Apr 2022 01:28:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 002C1B81CF7;
-        Tue, 26 Apr 2022 08:28:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BA10C385A4;
-        Tue, 26 Apr 2022 08:28:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 29DB7617D2;
+        Tue, 26 Apr 2022 08:28:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35A6FC385A0;
+        Tue, 26 Apr 2022 08:28:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961716;
-        bh=06XDKZ6eGspf8eNJ01Fmut9oFMZHv1vvkWCZjqwZm/w=;
+        s=korg; t=1650961698;
+        bh=8zcQRO1TfMKy1ISy/dVQKUQ4m7+QROmuMy0BveYpHWI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wgqfPa/Ng2e7Dsuk9tL7T0e3CSeZpgUQzsg/DzcJDUwrrGkcktea5lTjQTrT8T6a/
-         HJ8LE2wagjydPQ8umfTAhHI+TCnlGNtoouuEbtTycpGFTDx9o6vdSAgyx6PqBsA6Y6
-         Rlaa2SZP1BPzez/NmdKX1xZ4Kh5xS5KR7OjshGWc=
+        b=ppzQBJYzaYRCxw8rvD1MDmR3ndITepBpfNMzh8Ng9QomGsL/mrsTyIrWTdoTaLXeG
+         ftReRejrJXE5ntE/zx1nIKLIFF1osOF3Jm5J3IyMNi1oux9vZKTQs4fJAvDXRAgjWm
+         qMWT0mbHM7VFnA+SHHlaJ+ZVkKSz6ksW3/oQfGjQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Sergey Matyukevich <sergey.matyukevich@synopsys.com>,
-        Vineet Gupta <vgupta@kernel.org>
-Subject: [PATCH 4.19 37/53] ARC: entry: fix syscall_trace_exit argument
-Date:   Tue, 26 Apr 2022 10:21:17 +0200
-Message-Id: <20220426081736.735615790@linuxfoundation.org>
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 31/53] drm/panel/raspberrypi-touchscreen: Avoid NULL deref if not initialised
+Date:   Tue, 26 Apr 2022 10:21:11 +0200
+Message-Id: <20220426081736.562268104@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081735.651926456@linuxfoundation.org>
 References: <20220426081735.651926456@linuxfoundation.org>
@@ -50,31 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Matyukevich <sergey.matyukevich@synopsys.com>
+From: Dave Stevenson <dave.stevenson@raspberrypi.com>
 
-commit b1c6ecfdd06907554518ec384ce8e99889d15193 upstream.
+[ Upstream commit f92055ae0acb035891e988ce345d6b81a0316423 ]
 
-Function syscall_trace_exit expects pointer to pt_regs. However
-r0 is also used to keep syscall return value. Restore pointer
-to pt_regs before calling syscall_trace_exit.
+If a call to rpi_touchscreen_i2c_write from rpi_touchscreen_probe
+fails before mipi_dsi_device_register_full is called, then
+in trying to log the error message if uses ts->dsi->dev when
+it is still NULL.
 
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Sergey Matyukevich <sergey.matyukevich@synopsys.com>
-Signed-off-by: Vineet Gupta <vgupta@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Use ts->i2c->dev instead, which is initialised earlier in probe.
+
+Fixes: 2f733d6194bd ("drm/panel: Add support for the Raspberry Pi 7" Touchscreen.")
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220415162513.42190-2-stefan.wahren@i2se.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arc/kernel/entry.S |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/arc/kernel/entry.S
-+++ b/arch/arc/kernel/entry.S
-@@ -191,6 +191,7 @@ tracesys_exit:
- 	st  r0, [sp, PT_r0]     ; sys call return value in pt_regs
+diff --git a/drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c b/drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c
+index 06bd03915973..2073e0e43e2f 100644
+--- a/drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c
++++ b/drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c
+@@ -233,7 +233,7 @@ static void rpi_touchscreen_i2c_write(struct rpi_touchscreen *ts,
  
- 	;POST Sys Call Ptrace Hook
-+	mov r0, sp		; pt_regs needed
- 	bl  @syscall_trace_exit
- 	b   ret_from_exception ; NOT ret_from_system_call at is saves r0 which
- 	; we'd done before calling post hook above
+ 	ret = i2c_smbus_write_byte_data(ts->i2c, reg, val);
+ 	if (ret)
+-		dev_err(&ts->dsi->dev, "I2C write failed: %d\n", ret);
++		dev_err(&ts->i2c->dev, "I2C write failed: %d\n", ret);
+ }
+ 
+ static int rpi_touchscreen_write(struct rpi_touchscreen *ts, u16 reg, u32 val)
+-- 
+2.35.1
+
 
 
