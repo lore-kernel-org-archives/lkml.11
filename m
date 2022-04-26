@@ -2,108 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4971C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:04:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6375C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:04:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346212AbiDZJHU (ORCPT
+        id S1346241AbiDZJH2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:07:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56224 "EHLO
+        Tue, 26 Apr 2022 05:07:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345731AbiDZIrU (ORCPT
+        with ESMTP id S1346414AbiDZIpB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:47:20 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E71E939C4
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 01:37:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650962262; x=1682498262;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=ONb1+pbjsyN5bPS7QVDkoCEdqnxPTHDoI4mJoSKiDE4=;
-  b=ffaFs7LanfozTwJmHsyFDX5OYUWtZ705r4BwxCLvFXnZIWzQX03H0/w3
-   zXYWYtOALafClzLRY3xsg07ct47IZ0ahtmAb+0O2IUgzJCPkHozthEqSf
-   LJWu/sslIf8NTtgJcGl3AU/V5sdMgh04eTmsPvUJURetpsouQTefv5xts
-   kAGuufdXhgyB610GL6kch8wLqvOqX5sLJkP2tFPb0pQ0ymUdsAS98ufTg
-   1fskmnbgoqDLuFcK9tqgj+5fMyn2tFC7Ry43ok3GYHw49sHH01rUf2UQ4
-   AeTaWodEboKAISfE/Y3CYRCdFDePZDyrNHgTia7gURjLD+0laVBQ6+YaR
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="263093173"
-X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
-   d="scan'208";a="263093173"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 01:37:41 -0700
-X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
-   d="scan'208";a="532551364"
-Received: from vhlushch-mobl.ger.corp.intel.com (HELO localhost) ([10.249.132.136])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 01:37:36 -0700
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     "Wang, Zhi A" <zhi.a.wang@intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-Cc:     "intel-gvt-dev@lists.freedesktop.org" 
-        <intel-gvt-dev@lists.freedesktop.org>,
-        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>
-Subject: Re: [PULL] gvt-next
-In-Reply-To: <c5cf6773-e7a2-8ba8-4cde-0bb14007bc6b@intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <c5cf6773-e7a2-8ba8-4cde-0bb14007bc6b@intel.com>
-Date:   Tue, 26 Apr 2022 11:37:34 +0300
-Message-ID: <87zgk8tf3l.fsf@intel.com>
+        Tue, 26 Apr 2022 04:45:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A13A16941E;
+        Tue, 26 Apr 2022 01:34:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A7265B81CF2;
+        Tue, 26 Apr 2022 08:34:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E10BCC385BC;
+        Tue, 26 Apr 2022 08:34:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650962086;
+        bh=KdS1QDOj+LvTKxofeljDe/A2cZ6/6XqlWp6vxJFqwFo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=wC5+FtI3AZAvTTihh41v4FM3ewCs02zqNRAcZdFR5+1N8XpwccQDlYHa/gQuPabSW
+         aOHsXqMi2MtNpoZYBCYrSeRzyWsAPBBuZQnfvkzMWM189FrKLOJL+dRp3F6puNe3Eu
+         oNaNemLab7YtQjt7nCSeD9JfOsAu14S1EuVEofAA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, kuyo chang <kuyo.chang@mediatek.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 66/86] sched/pelt: Fix attach_entity_load_avg() corner case
+Date:   Tue, 26 Apr 2022 10:21:34 +0200
+Message-Id: <20220426081743.113797427@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
+References: <20220426081741.202366502@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 26 Apr 2022, "Wang, Zhi A" <zhi.a.wang@intel.com> wrote:
-> Hi folks:
->
-> Here is the pull of gvt-next which fixs the compilation error when i915 debug
-> is open after the GVT-g refactor patches.
->
-> Thanks so much for the efforts.
+From: kuyo chang <kuyo.chang@mediatek.com>
 
-Pulled, thanks.
+[ Upstream commit 40f5aa4c5eaebfeaca4566217cb9c468e28ed682 ]
 
-BR,
-Jani.
+The warning in cfs_rq_is_decayed() triggered:
 
->
-> Thanks,
-> Zhi.
->
-> The following changes since commit 2917f53113be3b7a0f374e02cebe6d6b749366b5:
->
->   vfio/mdev: Remove mdev drvdata (2022-04-21 07:36:56 -0400)
->
-> are available in the Git repository at:
->
->   https://github.com/intel/gvt-linux tags/gvt-next-2022-04-26
->
-> for you to fetch changes up to 2da299cee780ea797b3f72558687868072cf5eb5:
->
->   drm/i915/gvt: Add missing export of symbols. (2022-04-25 18:03:04 -0400)
->
-> ----------------------------------------------------------------
-> gvt-next-2022-04-26
->
-> - Add two missing exports of symbols when i915 debug is enabled.
->
-> ----------------------------------------------------------------
-> Zhi Wang (1):
->       drm/i915/gvt: Add missing export of symbols.
->
->  drivers/gpu/drm/i915/intel_gvt.c | 2 ++
->  1 file changed, 2 insertions(+)
+    SCHED_WARN_ON(cfs_rq->avg.load_avg ||
+		  cfs_rq->avg.util_avg ||
+		  cfs_rq->avg.runnable_avg)
 
+There exists a corner case in attach_entity_load_avg() which will
+cause load_sum to be zero while load_avg will not be.
+
+Consider se_weight is 88761 as per the sched_prio_to_weight[] table.
+Further assume the get_pelt_divider() is 47742, this gives:
+se->avg.load_avg is 1.
+
+However, calculating load_sum:
+
+  se->avg.load_sum = div_u64(se->avg.load_avg * se->avg.load_sum, se_weight(se));
+  se->avg.load_sum = 1*47742/88761 = 0.
+
+Then enqueue_load_avg() adds this to the cfs_rq totals:
+
+  cfs_rq->avg.load_avg += se->avg.load_avg;
+  cfs_rq->avg.load_sum += se_weight(se) * se->avg.load_sum;
+
+Resulting in load_avg being 1 with load_sum is 0, which will trigger
+the WARN.
+
+Fixes: f207934fb79d ("sched/fair: Align PELT windows between cfs_rq and its se")
+Signed-off-by: kuyo chang <kuyo.chang@mediatek.com>
+[peterz: massage changelog]
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
+Tested-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Link: https://lkml.kernel.org/r/20220414090229.342-1-kuyo.chang@mediatek.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ kernel/sched/fair.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index acd9833b8ec2..1a306ef51bbe 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -3748,11 +3748,11 @@ static void attach_entity_load_avg(struct cfs_rq *cfs_rq, struct sched_entity *s
+ 
+ 	se->avg.runnable_sum = se->avg.runnable_avg * divider;
+ 
+-	se->avg.load_sum = divider;
+-	if (se_weight(se)) {
+-		se->avg.load_sum =
+-			div_u64(se->avg.load_avg * se->avg.load_sum, se_weight(se));
+-	}
++	se->avg.load_sum = se->avg.load_avg * divider;
++	if (se_weight(se) < se->avg.load_sum)
++		se->avg.load_sum = div_u64(se->avg.load_sum, se_weight(se));
++	else
++		se->avg.load_sum = 1;
+ 
+ 	enqueue_load_avg(cfs_rq, se);
+ 	cfs_rq->avg.util_avg += se->avg.util_avg;
 -- 
-Jani Nikula, Intel Open Source Graphics Center
+2.35.1
+
+
+
