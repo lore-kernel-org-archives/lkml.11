@@ -2,90 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C41F8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 14:26:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DAF2C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 14:32:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351637AbiDZO3r (ORCPT
+        id S1349636AbiDZOgE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 10:29:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33542 "EHLO
+        Tue, 26 Apr 2022 10:36:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351430AbiDZO3p (ORCPT
+        with ESMTP id S239628AbiDZOgD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 10:29:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C37C60AAB;
-        Tue, 26 Apr 2022 07:26:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 149EBB8204E;
-        Tue, 26 Apr 2022 14:26:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 916BFC385AA;
-        Tue, 26 Apr 2022 14:26:31 +0000 (UTC)
-Date:   Tue, 26 Apr 2022 15:26:28 +0100
-From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     Zhen Lei <thunder.leizhen@huawei.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        linux-kernel@vger.kernel.org, Dave Young <dyoung@redhat.com>,
-        Baoquan He <bhe@redhat.com>, Vivek Goyal <vgoyal@redhat.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        kexec@lists.infradead.org, Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        devicetree@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        linux-doc@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Feng Zhou <zhoufeng.zf@bytedance.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Chen Zhou <dingguo.cz@antgroup.com>,
-        John Donnelly <John.p.donnelly@oracle.com>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>
-Subject: Re: [PATCH v22 4/9] arm64: kdump: Don't force page-level mappings
- for memory above 4G
-Message-ID: <YmgBFPMbyyOH/52y@arm.com>
-References: <20220414115720.1887-1-thunder.leizhen@huawei.com>
- <20220414115720.1887-5-thunder.leizhen@huawei.com>
+        Tue, 26 Apr 2022 10:36:03 -0400
+Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9ADE2B716A;
+        Tue, 26 Apr 2022 07:32:55 -0700 (PDT)
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1njMFK-0004FF-03; Tue, 26 Apr 2022 16:32:54 +0200
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id 5D5FAC01C7; Tue, 26 Apr 2022 16:32:01 +0200 (CEST)
+Date:   Tue, 26 Apr 2022 16:32:01 +0200
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-mips@vger.kernel.org
+Subject: Re: [PATCH] MIPS: SGI-IP27: Free some unused memory
+Message-ID: <20220426143201.GD18291@alpha.franken.de>
+References: <9bc24670be4b1386c9b5c60f158c6acd7b723e72.1650720222.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220414115720.1887-5-thunder.leizhen@huawei.com>
+In-Reply-To: <9bc24670be4b1386c9b5c60f158c6acd7b723e72.1650720222.git.christophe.jaillet@wanadoo.fr>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 07:57:15PM +0800, Zhen Lei wrote:
-> @@ -540,13 +540,31 @@ static void __init map_mem(pgd_t *pgdp)
->  	for_each_mem_range(i, &start, &end) {
->  		if (start >= end)
->  			break;
-> +
-> +#ifdef CONFIG_KEXEC_CORE
-> +		if (eflags && (end >= SZ_4G)) {
-> +			/*
-> +			 * The memory block cross the 4G boundary.
-> +			 * Forcibly use page-level mappings for memory under 4G.
-> +			 */
-> +			if (start < SZ_4G) {
-> +				__map_memblock(pgdp, start, SZ_4G - 1,
-> +					       pgprot_tagged(PAGE_KERNEL), flags | eflags);
-> +				start  = SZ_4G;
-> +			}
-> +
-> +			/* Page-level mappings is not mandatory for memory above 4G */
-> +			eflags = 0;
-> +		}
-> +#endif
+On Sat, Apr 23, 2022 at 03:24:03PM +0200, Christophe JAILLET wrote:
+> platform_device_add_data() duplicates the memory it is passed. So we can
+> free some memory to save a few bytes that would remain unused otherwise.
+> 
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+>  arch/mips/sgi-ip27/ip27-xtalk.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/arch/mips/sgi-ip27/ip27-xtalk.c b/arch/mips/sgi-ip27/ip27-xtalk.c
+> index 000ede156bdc..e762886d1dda 100644
+> --- a/arch/mips/sgi-ip27/ip27-xtalk.c
+> +++ b/arch/mips/sgi-ip27/ip27-xtalk.c
+> @@ -53,6 +53,8 @@ static void bridge_platform_create(nasid_t nasid, int widget, int masterwid)
+>  	}
+>  	platform_device_add_resources(pdev, &w1_res, 1);
+>  	platform_device_add_data(pdev, wd, sizeof(*wd));
+> +	/* platform_device_add_data() duplicates the data */
+> +	kfree(wd);
+>  	platform_device_add(pdev);
+>  
+>  	bd = kzalloc(sizeof(*bd), GFP_KERNEL);
+> @@ -83,6 +85,8 @@ static void bridge_platform_create(nasid_t nasid, int widget, int masterwid)
+>  	bd->io_offset	= offset;
+>  
+>  	platform_device_add_data(pdev, bd, sizeof(*bd));
+> +	/* platform_device_add_data() duplicates the data */
+> +	kfree(bd);
+>  	platform_device_add(pdev);
+>  	pr_info("xtalk:n%d/%x bridge widget\n", nasid, widget);
+>  	return;
+> -- 
+> 2.32.0
 
-That's a bit tricky if a SoC has all RAM above 4G. IIRC AMD Seattle had
-this layout. See max_zone_phys() for how we deal with this, basically
-extending ZONE_DMA to the whole range if RAM starts above 4GB. In that
-case, crashkernel reservation would fall in the range above 4GB.
+applied to mips-next.
 
-BTW, we changed the max_zone_phys() logic with commit 791ab8b2e3db
-("arm64: Ignore any DMA offsets in the max_zone_phys() calculation").
+Thomas.
 
 -- 
-Catalin
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
