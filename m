@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BF94C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:30:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF32FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:30:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347655AbiDZJdp (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:33:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39086 "EHLO
+        id S236939AbiDZJdu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:33:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347856AbiDZJGQ (ORCPT
+        with ESMTP id S1347478AbiDZJFw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:06:16 -0400
+        Tue, 26 Apr 2022 05:05:52 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0396F167F1E;
-        Tue, 26 Apr 2022 01:46:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF70012EB57;
+        Tue, 26 Apr 2022 01:44:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A75E1604F5;
-        Tue, 26 Apr 2022 08:46:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97777C385A4;
-        Tue, 26 Apr 2022 08:46:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 25E506133B;
+        Tue, 26 Apr 2022 08:44:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30857C385A4;
+        Tue, 26 Apr 2022 08:44:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962778;
-        bh=HHSBzrlIipK0nujA927z1nFCcxi1J+e1mhmEtz+5L5w=;
+        s=korg; t=1650962683;
+        bh=dUgrE0Q2YjSUlSX2gm0emK+Zp2F+VoehNPHJ2f4rLFc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cauXoI3ZmrqtyU8cdJO+L7m7yPyHXwoi+TY8SZpmuUsJwGP+DNIgYh2jOjzryYU42
-         9l0BBUwM4/g0KqITrGwNQsfOYu/CjT9TWA58cMlVYcNuWueKtWmX74gJGK+9JkeaK+
-         p7EaZWyZDnonLlDynN5bQe4DoT5oDzx9gpbuCNEw=
+        b=zZTBY5r7NygjDBbcGUrzayivRGNecJZz5bye9/9H923VR89T9kJnESWxfRGFFXLxg
+         eaIQ9ITCWi4LSBnM2T5lB2HXepC6JRJzBMZeOi0KwprP6lFTse9C9aZpWNBVdSu2D3
+         mkgAZ5anutknTy0OuhEuzNn2XxUViqtiynfzjRxQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 059/146] drm/msm/gpu: Remove mutex from wait_event condition
-Date:   Tue, 26 Apr 2022 10:20:54 +0200
-Message-Id: <20220426081751.726569557@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 017/146] dmaengine: imx-sdma: Fix error checking in sdma_event_remap
+Date:   Tue, 26 Apr 2022 10:20:12 +0200
+Message-Id: <20220426081750.549561193@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -49,50 +48,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Clark <robdclark@chromium.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 7242795d520d3fb48e005e3c96ba54bb59639d6e ]
+[ Upstream commit 7104b9cb35a33ad803a1adbbfa50569b008faf15 ]
 
-The mutex wasn't really protecting anything before.  Before the previous
-patch we could still be racing with the scheduler's kthread, as that is
-not necessarily frozen yet.  Now that we've parked the sched threads,
-the only race is with jobs retiring, and that is harmless, ie.
+of_parse_phandle() returns NULL on errors, rather than error
+pointers. Using NULL check on grp_np to fix this.
 
-Signed-off-by: Rob Clark <robdclark@chromium.org>
-Link: https://lore.kernel.org/r/20220310234611.424743-4-robdclark@gmail.com
+Fixes: d078cd1b4185 ("dmaengine: imx-sdma: Add imx6sx platform support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220308064952.15743-1-linmq006@gmail.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/adreno/adreno_device.c | 11 +----------
- 1 file changed, 1 insertion(+), 10 deletions(-)
+ drivers/dma/imx-sdma.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/adreno/adreno_device.c b/drivers/gpu/drm/msm/adreno/adreno_device.c
-index b93de79000e1..e8a8240a6868 100644
---- a/drivers/gpu/drm/msm/adreno/adreno_device.c
-+++ b/drivers/gpu/drm/msm/adreno/adreno_device.c
-@@ -608,22 +608,13 @@ static int adreno_runtime_resume(struct device *dev)
- 	return gpu->funcs->pm_resume(gpu);
- }
+diff --git a/drivers/dma/imx-sdma.c b/drivers/dma/imx-sdma.c
+index 75ec0754d4ad..0be1171610af 100644
+--- a/drivers/dma/imx-sdma.c
++++ b/drivers/dma/imx-sdma.c
+@@ -1869,7 +1869,7 @@ static int sdma_event_remap(struct sdma_engine *sdma)
+ 	u32 reg, val, shift, num_map, i;
+ 	int ret = 0;
  
--static int active_submits(struct msm_gpu *gpu)
--{
--	int active_submits;
--	mutex_lock(&gpu->active_lock);
--	active_submits = gpu->active_submits;
--	mutex_unlock(&gpu->active_lock);
--	return active_submits;
--}
--
- static int adreno_runtime_suspend(struct device *dev)
- {
- 	struct msm_gpu *gpu = dev_to_gpu(dev);
- 	int remaining;
+-	if (IS_ERR(np) || IS_ERR(gpr_np))
++	if (IS_ERR(np) || !gpr_np)
+ 		goto out;
  
- 	remaining = wait_event_timeout(gpu->retire_event,
--				       active_submits(gpu) == 0,
-+				       gpu->active_submits == 0,
- 				       msecs_to_jiffies(1000));
- 	if (remaining == 0) {
- 		dev_err(dev, "Timeout waiting for GPU to suspend\n");
+ 	event_remap = of_find_property(np, propname, NULL);
+@@ -1917,7 +1917,7 @@ static int sdma_event_remap(struct sdma_engine *sdma)
+ 	}
+ 
+ out:
+-	if (!IS_ERR(gpr_np))
++	if (gpr_np)
+ 		of_node_put(gpr_np);
+ 
+ 	return ret;
 -- 
 2.35.1
 
