@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65A54C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:29:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F7CFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:29:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344852AbiDZIcP (ORCPT
+        id S1344859AbiDZIcY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:32:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36364 "EHLO
+        Tue, 26 Apr 2022 04:32:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344853AbiDZI3t (ORCPT
+        with ESMTP id S242879AbiDZIaF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:29:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 206093AA54;
-        Tue, 26 Apr 2022 01:24:52 -0700 (PDT)
+        Tue, 26 Apr 2022 04:30:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D97441387D8;
+        Tue, 26 Apr 2022 01:24:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8C7ABB81CFA;
-        Tue, 26 Apr 2022 08:24:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA40FC385A0;
-        Tue, 26 Apr 2022 08:24:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FD096183B;
+        Tue, 26 Apr 2022 08:24:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C73D0C385A4;
+        Tue, 26 Apr 2022 08:24:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961489;
-        bh=vH0oPUI929q7UJKCmonAnAdDVGbuH3uYsV6iqH/POTI=;
+        s=korg; t=1650961495;
+        bh=38EtxUTv9KFbIZ+ilmEKeTJXq/tbDGVdDcHLtwfx5ns=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y+4YPVBPiZnALtD0OsQO+rLa5TGjc+U6jM6En54x9ZDdJqeyYShjKDfh4OLrVSrnX
-         z0dC+oqxAo/366H6PpNIQ/6GVfsHNG2TTkAn3zys9Maflt6jSyfA0vcKuLut5Qc1B+
-         u9n2fgTh7O56/nXflJb55pr/YLilqqWVx1pIVczs=
+        b=0mUqVgbQjQcpowahlvpw4K6TfqckeTGE8Q9CvUGAv3JFPwxT+RD+g74QurwfFr3as
+         gb8TercMA4wJFxWLh1WVMxzwU2Qhtjp6Vc3s6+oSa0DGZFrYYSvTkkoSa/5LSoh4GW
+         EK1JstJhdjOFDZ+GraiqtjMDwKYq/+MjB8M3NCRA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Zanussi <zanussi@kernel.org>,
-        Daniel Bristot de Oliveira <bristot@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 4.14 04/43] tracing: Dump stacktrace trigger to the corresponding instance
-Date:   Tue, 26 Apr 2022 10:20:46 +0200
-Message-Id: <20220426081734.644595882@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+c6fd14145e2f62ca0784@syzkaller.appspotmail.com,
+        Bob Peterson <rpeterso@redhat.com>,
+        Andreas Gruenbacher <agruenba@redhat.com>
+Subject: [PATCH 4.14 06/43] gfs2: assign rgrp glock before compute_bitstructs
+Date:   Tue, 26 Apr 2022 10:20:48 +0200
+Message-Id: <20220426081734.703005426@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081734.509314186@linuxfoundation.org>
 References: <20220426081734.509314186@linuxfoundation.org>
@@ -50,47 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Bristot de Oliveira <bristot@kernel.org>
+From: Bob Peterson <rpeterso@redhat.com>
 
-commit ce33c845b030c9cf768370c951bc699470b09fa7 upstream.
+commit 428f651cb80b227af47fc302e4931791f2fb4741 upstream.
 
-The stacktrace event trigger is not dumping the stacktrace to the instance
-where it was enabled, but to the global "instance."
+Before this patch, function read_rindex_entry called compute_bitstructs
+before it allocated a glock for the rgrp. But if compute_bitstructs found
+a problem with the rgrp, it called gfs2_consist_rgrpd, and that called
+gfs2_dump_glock for rgd->rd_gl which had not yet been assigned.
 
-Use the private_data, pointing to the trigger file, to figure out the
-corresponding trace instance, and use it in the trigger action, like
-snapshot_trigger does.
+read_rindex_entry
+   compute_bitstructs
+      gfs2_consist_rgrpd
+         gfs2_dump_glock <---------rgd->rd_gl was not set.
 
-Link: https://lkml.kernel.org/r/afbb0b4f18ba92c276865bc97204d438473f4ebc.1645396236.git.bristot@kernel.org
+This patch changes read_rindex_entry so it assigns an rgrp glock before
+calling compute_bitstructs so gfs2_dump_glock does not reference an
+unassigned pointer. If an error is discovered, the glock must also be
+put, so a new goto and label were added.
 
-Cc: stable@vger.kernel.org
-Fixes: ae63b31e4d0e2 ("tracing: Separate out trace events from global variables")
-Reviewed-by: Tom Zanussi <zanussi@kernel.org>
-Tested-by: Tom Zanussi <zanussi@kernel.org>
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Reported-by: syzbot+c6fd14145e2f62ca0784@syzkaller.appspotmail.com
+Signed-off-by: Bob Peterson <rpeterso@redhat.com>
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace_events_trigger.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ fs/gfs2/rgrp.c |    9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
---- a/kernel/trace/trace_events_trigger.c
-+++ b/kernel/trace/trace_events_trigger.c
-@@ -1196,7 +1196,14 @@ static __init int register_trigger_snaps
- static void
- stacktrace_trigger(struct event_trigger_data *data, void *rec)
- {
--	trace_dump_stack(STACK_SKIP);
-+	struct trace_event_file *file = data->private_data;
-+	unsigned long flags;
-+
-+	if (file) {
-+		local_save_flags(flags);
-+		__trace_stack(file->tr, flags, STACK_SKIP, preempt_count());
-+	} else
-+		trace_dump_stack(STACK_SKIP);
- }
+--- a/fs/gfs2/rgrp.c
++++ b/fs/gfs2/rgrp.c
+@@ -907,15 +907,15 @@ static int read_rindex_entry(struct gfs2
+ 	rgd->rd_bitbytes = be32_to_cpu(buf.ri_bitbytes);
+ 	spin_lock_init(&rgd->rd_rsspin);
  
- static void
+-	error = compute_bitstructs(rgd);
+-	if (error)
+-		goto fail;
+-
+ 	error = gfs2_glock_get(sdp, rgd->rd_addr,
+ 			       &gfs2_rgrp_glops, CREATE, &rgd->rd_gl);
+ 	if (error)
+ 		goto fail;
+ 
++	error = compute_bitstructs(rgd);
++	if (error)
++		goto fail_glock;
++
+ 	rgd->rd_rgl = (struct gfs2_rgrp_lvb *)rgd->rd_gl->gl_lksb.sb_lvbptr;
+ 	rgd->rd_flags &= ~(GFS2_RDF_UPTODATE | GFS2_RDF_PREFERRED);
+ 	if (rgd->rd_data > sdp->sd_max_rg_data)
+@@ -932,6 +932,7 @@ static int read_rindex_entry(struct gfs2
+ 	}
+ 
+ 	error = 0; /* someone else read in the rgrp; free it and ignore it */
++fail_glock:
+ 	gfs2_glock_put(rgd->rd_gl);
+ 
+ fail:
 
 
