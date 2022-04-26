@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 978ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:08:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C796C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:08:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245755AbiDZTLE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 15:11:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42510 "EHLO
+        id S1352313AbiDZTLK (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 15:11:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353924AbiDZTGZ (ORCPT
+        with ESMTP id S1353916AbiDZTGY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 15:06:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 980AA19B557;
-        Tue, 26 Apr 2022 12:03:08 -0700 (PDT)
+        Tue, 26 Apr 2022 15:06:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1600419A48F;
+        Tue, 26 Apr 2022 12:03:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 58347B81DC2;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 84F9D61A04;
         Tue, 26 Apr 2022 19:03:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF0F0C385AA;
-        Tue, 26 Apr 2022 19:03:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6CF0C385B2;
+        Tue, 26 Apr 2022 19:03:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1650999786;
-        bh=IahD/UGbAtp5D8KEjlB7ZHxiAoNcd+ZHPnhmK08V4LI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=mpN08wHHX0pvtH8ZJHsVKngKNRnLy9eYQ4TWteVVN6hBMXtJoSxYSps7YyNibZ9aC
-         l1IsePvFjEp8qOc9owPDmFleX5atvYOxfY7Psm+9L8e3aJa2zHwK9Tzr3jVZfEX1lc
-         J+tjrubbSSASxphBqDrbvAlO1fuYN34HTv7kqdmsdAc3NtX+vL/Y44MbGUjBiG59gC
-         mY8Phx5u3neNE25BG+bwzJ+8Gy8gPVmN45R2zcg452LKe+d7S9GHlExkVEeRkrDPAa
-         gNlIhM/vF0wPDFqVJDQxjJ+86m2oED3OJEVtEwx2Socq7AkmJMpuMZskGVQduqGLym
-         cdasWvhz5EyAA==
+        bh=mptsVlstBe9PgiegdjZZsGPgQatHpBsJM0+b0sy31Is=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RgNX0khZqqBfR/mbD9tASrHelk4oeNR5hjundNRBkVC0aSQojftOPVFWbUKDWpcpQ
+         bsTsCkkYUuCp1zLsxX2wBOW7xm/httwsET1uMz0GtjlVZMBkXZERF0vXGFZuayLEDu
+         LDwXUfgYfsybu04j/RuNAZKlLAWXU4Dij8P2eGhmHxn7k+Z4Lnwe9aQT3HPS2KZbvf
+         VE1bNz77BCRKuLWRwMHLZkOmEYv8Ap8NpgboyoYFhRSX3f7ZaDtftpXogGSsV8Adn/
+         bRoVQdLaBvr/7WfT5QeV5/98XTfrX7Ehqbh6QnIXvG4PAKB1Iw+mQsV0hfi8mRYBPa
+         LW8mSkuY81now==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>, Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, ckeepax@opensource.cirrus.com,
-        u.kleine-koenig@pengutronix.de, patches@opensource.cirrus.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 4.9 1/3] ASoC: wm8731: Disable the regulator when probing fails
-Date:   Tue, 26 Apr 2022 15:03:01 -0400
-Message-Id: <20220426190304.2351976-1-sashal@kernel.org>
+Cc:     Zheyu Ma <zheyuma97@gmail.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Sasha Levin <sashal@kernel.org>, linux-ide@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 3/3] ata: pata_marvell: Check the 'bmdma_addr' beforing reading
+Date:   Tue, 26 Apr 2022 15:03:03 -0400
+Message-Id: <20220426190304.2351976-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220426190304.2351976-1-sashal@kernel.org>
+References: <20220426190304.2351976-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,86 +54,41 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 92ccbf17eeacf510cf1eed9c252d9332ca24f02d ]
+[ Upstream commit aafa9f958342db36c17ac2a7f1b841032c96feb4 ]
 
-When the driver fails during probing, the driver should disable the
-regulator, not just handle it in wm8731_hw_init().
+Before detecting the cable type on the dma bar, the driver should check
+whether the 'bmdma_addr' is zero, which means the adapter does not
+support DMA, otherwise we will get the following error:
 
-The following log reveals it:
-
-[   17.812483] WARNING: CPU: 1 PID: 364 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
-[   17.815958] RIP: 0010:_regulator_put+0x3ec/0x4e0
-[   17.824467] Call Trace:
-[   17.824774]  <TASK>
-[   17.825040]  regulator_bulk_free+0x82/0xe0
-[   17.825514]  devres_release_group+0x319/0x3d0
-[   17.825882]  i2c_device_probe+0x766/0x940
-[   17.829198]  i2c_register_driver+0xb5/0x130
+[    5.146634] Bad IO access at port 0x1 (return inb(port))
+[    5.147206] WARNING: CPU: 2 PID: 303 at lib/iomap.c:44 ioread8+0x4a/0x60
+[    5.150856] RIP: 0010:ioread8+0x4a/0x60
+[    5.160238] Call Trace:
+[    5.160470]  <TASK>
+[    5.160674]  marvell_cable_detect+0x6e/0xc0 [pata_marvell]
+[    5.161728]  ata_eh_recover+0x3520/0x6cc0
+[    5.168075]  ata_do_eh+0x49/0x3c0
 
 Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Link: https://lore.kernel.org/r/20220405121038.4094051-1-zheyuma97@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wm8731.c | 19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+ drivers/ata/pata_marvell.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/sound/soc/codecs/wm8731.c b/sound/soc/codecs/wm8731.c
-index 4f9a1eb28120..abe5e77ba171 100644
---- a/sound/soc/codecs/wm8731.c
-+++ b/sound/soc/codecs/wm8731.c
-@@ -604,7 +604,7 @@ static int wm8731_hw_init(struct device *dev, struct wm8731_priv *wm8731)
- 	ret = wm8731_reset(wm8731->regmap);
- 	if (ret < 0) {
- 		dev_err(dev, "Failed to issue reset: %d\n", ret);
--		goto err_regulator_enable;
-+		goto err;
- 	}
- 
- 	/* Clear POWEROFF, keep everything else disabled */
-@@ -621,10 +621,7 @@ static int wm8731_hw_init(struct device *dev, struct wm8731_priv *wm8731)
- 
- 	regcache_mark_dirty(wm8731->regmap);
- 
--err_regulator_enable:
--	/* Regulators will be enabled by bias management */
--	regulator_bulk_disable(ARRAY_SIZE(wm8731->supplies), wm8731->supplies);
--
-+err:
- 	return ret;
- }
- 
-@@ -768,21 +765,27 @@ static int wm8731_i2c_probe(struct i2c_client *i2c,
- 		ret = PTR_ERR(wm8731->regmap);
- 		dev_err(&i2c->dev, "Failed to allocate register map: %d\n",
- 			ret);
--		return ret;
-+		goto err_regulator_enable;
- 	}
- 
- 	ret = wm8731_hw_init(&i2c->dev, wm8731);
- 	if (ret != 0)
--		return ret;
-+		goto err_regulator_enable;
- 
- 	ret = snd_soc_register_codec(&i2c->dev,
- 			&soc_codec_dev_wm8731, &wm8731_dai, 1);
- 	if (ret != 0) {
- 		dev_err(&i2c->dev, "Failed to register CODEC: %d\n", ret);
--		return ret;
-+		goto err_regulator_enable;
- 	}
- 
- 	return 0;
-+
-+err_regulator_enable:
-+	/* Regulators will be enabled by bias management */
-+	regulator_bulk_disable(ARRAY_SIZE(wm8731->supplies), wm8731->supplies);
-+
-+	return ret;
- }
- 
- static int wm8731_i2c_remove(struct i2c_client *client)
+diff --git a/drivers/ata/pata_marvell.c b/drivers/ata/pata_marvell.c
+index ff468a6fd8dd..677f582cf3d6 100644
+--- a/drivers/ata/pata_marvell.c
++++ b/drivers/ata/pata_marvell.c
+@@ -82,6 +82,8 @@ static int marvell_cable_detect(struct ata_port *ap)
+ 	switch(ap->port_no)
+ 	{
+ 	case 0:
++		if (!ap->ioaddr.bmdma_addr)
++			return ATA_CBL_PATA_UNK;
+ 		if (ioread8(ap->ioaddr.bmdma_addr + 1) & 1)
+ 			return ATA_CBL_PATA40;
+ 		return ATA_CBL_PATA80;
 -- 
 2.35.1
 
