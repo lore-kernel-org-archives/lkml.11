@@ -2,336 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A929FC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B90BEC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:23:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347267AbiDZJXx (ORCPT
+        id S1347343AbiDZJYB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:23:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56196 "EHLO
+        Tue, 26 Apr 2022 05:24:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346445AbiDZJAh (ORCPT
+        with ESMTP id S1346509AbiDZJAm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:00:37 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 760D83C4AF
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 01:43:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650962589; x=1682498589;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=PCKSkgxENXrIx/upYwDnX/aD/0BDc2Wep/1AmAXydiA=;
-  b=Bo2mUW5sZNNhaEzg1cAyqflBEarN17U84adT/J0gjoCKwwH+zmOyTeji
-   KUu/hg0Mvq2Fz9ocoFXvrpF3ga1yc8sJp9NJDL0g4n1d0n7dRp4365jkB
-   H2P0EMu14PH6/EVXcQt4Hi9BsoVZVe+AM5+X1XP4AwjVdxeekZLPXkT00
-   K64tLc9BSj6qaeC5M99dfwe4vFy2ALVKKxjVOyMiLDlhKHHJLRVdC/ztr
-   Rc6Mm/kHPJkTYJ9YdsMHv/d3sdjMEIcue7BsbtNxSeN4t6oKJS02Gllek
-   svjyxh7enF9I3qu9YkkyT/WdX9/obMPk01q01kQOITMqpBQCiCmrQMmP0
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="245424101"
-X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
-   d="scan'208";a="245424101"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 01:42:55 -0700
-X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
-   d="scan'208";a="579771450"
-Received: from yyu16-mobl.ccr.corp.intel.com ([10.254.212.128])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 01:42:51 -0700
-Message-ID: <9a0fe756ae3af78f2612dcf2df9673053a7ebab2.camel@intel.com>
-Subject: Re: [PATCH v2 0/5] mm: demotion: Introduce new node state
- N_DEMOTION_TARGETS
-From:   "ying.huang@intel.com" <ying.huang@intel.com>
-To:     Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Wei Xu <weixugc@google.com>, Yang Shi <shy828301@gmail.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Davidlohr Bueso <dave@stgolabs.net>
-Cc:     Linux MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Greg Thelen <gthelen@google.com>,
-        MichalHocko <mhocko@kernel.org>,
-        Brice Goglin <brice.goglin@gmail.com>
-Date:   Tue, 26 Apr 2022 16:42:49 +0800
-In-Reply-To: <c576a992-5a50-5dd3-644c-a45d4338fc85@linux.ibm.com>
-References: <CAAPL-u_pSWD6U0yQ8Ws+_Yfb_3ZEmNXJsYcRJjAFBkyDk=nq8g@mail.gmail.com>
-         <ea73f6fda9cafdd0cb6ba8351139e6f4b47354a8.camel@intel.com>
-         <CAAPL-u-aeceXFUNdok_GYb2aLhZa0zBBuSqHxFznQob3PbJt7Q@mail.gmail.com>
-         <a80647053bba44623094995730e061f0e6129677.camel@intel.com>
-         <CAAPL-u89Jxutu1VH0LnO5VGdMbkLvc2M9eapuwP-y9oG9QSsrA@mail.gmail.com>
-         <610ccaad03f168440ce765ae5570634f3b77555e.camel@intel.com>
-         <CAAPL-u9ktM82zAW_OVwqTmQsr-XC8XOPmAsjoiCLo18cxUWA=A@mail.gmail.com>
-         <8e31c744a7712bb05dbf7ceb2accf1a35e60306a.camel@intel.com>
-         <CAAPL-u9uP+FUh7Yn0ByOECo+EP32ZABnCvNPKQB9JCA68VHEqQ@mail.gmail.com>
-         <78b5f4cfd86efda14c61d515e4db9424e811c5be.camel@intel.com>
-         <YmKKwXa2XI/nwac0@li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com>
-         <200e95cf36c1642512d99431014db8943fed715d.camel@intel.com>
-         <8735i1zurt.fsf@linux.ibm.com>
-         <ea9d01e16de655af85c0041c96964d83f59fb6d2.camel@intel.com>
-         <c576a992-5a50-5dd3-644c-a45d4338fc85@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        Tue, 26 Apr 2022 05:00:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 066F13F888;
+        Tue, 26 Apr 2022 01:43:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 740D6B81CED;
+        Tue, 26 Apr 2022 08:43:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3570C385A0;
+        Tue, 26 Apr 2022 08:43:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650962594;
+        bh=5KcpyYspc65yLPM90XrcAsYqc6m2k4+FcnSyxqjibCU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=KeECad3DJ074cgplRwX0ZzIYah6uOeZo0DjGvM1oHTtgLotCwumxvIBL4KWGe+HwP
+         Zn6Mv3BbBpRQDgwfUc/bvBimqv8vZrx5XPM9N0iVOuy3ZDkchmR6KFo5NM8q/2mtXb
+         VhHKZtfNuFL0KGxz+3UhCLaCQ0JBYH6/rf1EoDS0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Corinna Vinschen <vinschen@redhat.com>,
+        Dima Ruinskiy <dima.ruinskiy@intel.com>,
+        Sasha Neftin <sasha.neftin@intel.com>,
+        Naama Meir <naamax.meir@linux.intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 025/146] igc: Fix BUG: scheduling while atomic
+Date:   Tue, 26 Apr 2022 10:20:20 +0200
+Message-Id: <20220426081750.774815538@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
+References: <20220426081750.051179617@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-04-25 at 13:39 +0530, Aneesh Kumar K V wrote:
-> On 4/25/22 11:40 AM, ying.huang@intel.com wrote:
-> > On Mon, 2022-04-25 at 09:20 +0530, Aneesh Kumar K.V wrote:
-> > > "ying.huang@intel.com" <ying.huang@intel.com> writes:
-> > > 
-> > > > Hi, All,
-> > > > 
-> > > > On Fri, 2022-04-22 at 16:30 +0530, Jagdish Gediya wrote:
-> > > > 
-> > > > [snip]
-> > > > 
-> > > > > I think it is necessary to either have per node demotion targets
-> > > > > configuration or the user space interface supported by this patch
-> > > > > series. As we don't have clear consensus on how the user interface
-> > > > > should look like, we can defer the per node demotion target set
-> > > > > interface to future until the real need arises.
-> > > > > 
-> > > > > Current patch series sets N_DEMOTION_TARGET from dax device kmem
-> > > > > driver, it may be possible that some memory node desired as demotion
-> > > > > target is not detected in the system from dax-device kmem probe path.
-> > > > > 
-> > > > > It is also possible that some of the dax-devices are not preferred as
-> > > > > demotion target e.g. HBM, for such devices, node shouldn't be set to
-> > > > > N_DEMOTION_TARGETS. In future, Support should be added to distinguish
-> > > > > such dax-devices and not mark them as N_DEMOTION_TARGETS from the
-> > > > > kernel, but for now this user space interface will be useful to avoid
-> > > > > such devices as demotion targets.
-> > > > > 
-> > > > > We can add read only interface to view per node demotion targets
-> > > > > from /sys/devices/system/node/nodeX/demotion_targets, remove
-> > > > > duplicated /sys/kernel/mm/numa/demotion_target interface and instead
-> > > > > make /sys/devices/system/node/demotion_targets writable.
-> > > > > 
-> > > > > Huang, Wei, Yang,
-> > > > > What do you suggest?
-> > > > 
-> > > > We cannot remove a kernel ABI in practice.  So we need to make it right
-> > > > at the first time.  Let's try to collect some information for the kernel
-> > > > ABI definitation.
-> > > > 
-> > > > The below is just a starting point, please add your requirements.
-> > > > 
-> > > > 1. Jagdish has some machines with DRAM only NUMA nodes, but they don't
-> > > > want to use that as the demotion targets.  But I don't think this is a
-> > > > issue in practice for now, because demote-in-reclaim is disabled by
-> > > > default.
-> > > 
-> > > It is not just that the demotion can be disabled. We should be able to
-> > > use demotion on a system where we can find DRAM only NUMA nodes. That
-> > > cannot be achieved by /sys/kernel/mm/numa/demotion_enabled. It needs
-> > > something similar to to N_DEMOTION_TARGETS
-> > > 
-> > 
-> > Can you show NUMA information of your machines with DRAM-only nodes and
-> > PMEM nodes?  We can try to find the proper demotion order for the
-> > system.  If you can not show it, we can defer N_DEMOTION_TARGETS until
-> > the machine is available.
-> 
-> 
-> Sure will find one such config. As you might have noticed this is very 
-> easy to have in a virtualization setup because the hypervisor can assign 
-> memory to a guest VM from a numa node that doesn't have CPU assigned to 
-> the same guest. This depends on the other guest VM instance config 
-> running on the system. So on any virtualization config that has got 
-> persistent memory attached, this can become an easy config to end up with.
-> 
+From: Sasha Neftin <sasha.neftin@intel.com>
 
-Why they want to do that?  I am looking forward to a real issue, not
-theoritical possibility.
+[ Upstream commit c80a29f0fe9b6f5457e0788e27d1110577eba99b ]
 
-> 
-> > > > 2. For machines with PMEM installed in only 1 of 2 sockets, for example,
-> > > > 
-> > > > Node 0 & 2 are cpu + dram nodes and node 1 are slow
-> > > > memory node near node 0,
-> > > > 
-> > > > available: 3 nodes (0-2)
-> > > > node 0 cpus: 0 1
-> > > > node 0 size: n MB
-> > > > node 0 free: n MB
-> > > > node 1 cpus:
-> > > > node 1 size: n MB
-> > > > node 1 free: n MB
-> > > > node 2 cpus: 2 3
-> > > > node 2 size: n MB
-> > > > node 2 free: n MB
-> > > > node distances:
-> > > > node   0   1   2
-> > > >    0:  10  40  20
-> > > >    1:  40  10  80
-> > > >    2:  20  80  10
-> > > > 
-> > > > We have 2 choices,
-> > > > 
-> > > > a)
-> > > > node	demotion targets
-> > > > 0	1
-> > > > 2	1
-> > > 
-> > > This is achieved by
-> > > 
-> > > [PATCH v2 1/5] mm: demotion: Set demotion list differently
-> > > 
-> > > > 
-> > > > b)
-> > > > node	demotion targets
-> > > > 0	1
-> > > > 2	X
-> > > 
-> > > 
-> > > > 
-> > > > a) is good to take advantage of PMEM.  b) is good to reduce cross-socket
-> > > > traffic.  Both are OK as defualt configuration.  But some users may
-> > > > prefer the other one.  So we need a user space ABI to override the
-> > > > default configuration.
-> > > > 
-> > > > 3. For machines with HBM (High Bandwidth Memory), as in
-> > > > 
-> > > > https://lore.kernel.org/lkml/39cbe02a-d309-443d-54c9-678a0799342d@gmail.com/
-> > > > 
-> > > > > [1] local DDR = 10, remote DDR = 20, local HBM = 31, remote HBM = 41
-> > > > 
-> > > > Although HBM has better performance than DDR, in ACPI SLIT, their
-> > > > distance to CPU is longer.  We need to provide a way to fix this.  The
-> > > > user space ABI is one way.  The desired result will be to use local DDR
-> > > > as demotion targets of local HBM.
-> > > 
-> > > 
-> > > IMHO the above (2b and 3) can be done using per node demotion targets. Below is
-> > > what I think we could do with a single slow memory NUMA node 4.
-> > 
-> > If we can use writable per-node demotion targets as ABI, then we don't
-> > need N_DEMOTION_TARGETS.
-> 
-> 
-> Not sure I understand that. Yes, once you have a writeable per node 
-> demotion target it is easy to build any demotion order.
+Replace usleep_range() method with udelay() method to allow atomic contexts
+in low-level MDIO access functions.
 
-Yes.
+The following issue can be seen by doing the following:
+$ modprobe -r bonding
+$ modprobe -v bonding max_bonds=1 mode=1 miimon=100 use_carrier=0
+$ ip link set bond0 up
+$ ifenslave bond0 eth0 eth1
 
-> But that doesn't 
-> mean we should not improve the default unless you have reason to say 
-> that using N_DEMOTTION_TARGETS breaks any existing config.
-> 
+[  982.357308] BUG: scheduling while atomic: kworker/u64:0/9/0x00000002
+[  982.364431] INFO: lockdep is turned off.
+[  982.368824] Modules linked in: bonding sctp ip6_udp_tunnel udp_tunnel mlx4_ib ib_uverbs ib_core mlx4_en mlx4_core nfp tls sunrpc intel_rapl_msr iTCO_wdt iTCO_vendor_support mxm_wmi dcdbas intel_rapl_common sb_edac x86_pkg_temp_thermal intel_powerclamp coretemp kvm_intel kvm irqbypass crct10dif_pclmul crc32_pclmul ghash_clmulni_intel rapl intel_cstate intel_uncore pcspkr lpc_ich mei_me ipmi_ssif mei ipmi_si ipmi_devintf ipmi_msghandler wmi acpi_power_meter xfs libcrc32c sr_mod cdrom sd_mod t10_pi sg mgag200 drm_kms_helper syscopyarea sysfillrect sysimgblt fb_sys_fops drm ahci libahci crc32c_intel libata i2c_algo_bit tg3 megaraid_sas igc dm_mirror dm_region_hash dm_log dm_mod [last unloaded: bonding]
+[  982.437941] CPU: 25 PID: 9 Comm: kworker/u64:0 Kdump: loaded Tainted: G        W        --------- -  - 4.18.0-348.el8.x86_64+debug #1
+[  982.451333] Hardware name: Dell Inc. PowerEdge R730/0H21J3, BIOS 2.7.0 12/005/2017
+[  982.459791] Workqueue: bond0 bond_mii_monitor [bonding]
+[  982.465622] Call Trace:
+[  982.468355]  dump_stack+0x8e/0xd0
+[  982.472056]  __schedule_bug.cold.60+0x3a/0x60
+[  982.476919]  __schedule+0x147b/0x1bc0
+[  982.481007]  ? firmware_map_remove+0x16b/0x16b
+[  982.485967]  ? hrtimer_fixup_init+0x40/0x40
+[  982.490625]  schedule+0xd9/0x250
+[  982.494227]  schedule_hrtimeout_range_clock+0x10d/0x2c0
+[  982.500058]  ? hrtimer_nanosleep_restart+0x130/0x130
+[  982.505598]  ? hrtimer_init_sleeper_on_stack+0x90/0x90
+[  982.511332]  ? usleep_range+0x88/0x130
+[  982.515514]  ? recalibrate_cpu_khz+0x10/0x10
+[  982.520279]  ? ktime_get+0xab/0x1c0
+[  982.524175]  ? usleep_range+0x88/0x130
+[  982.528355]  usleep_range+0xdd/0x130
+[  982.532344]  ? console_conditional_schedule+0x30/0x30
+[  982.537987]  ? igc_put_hw_semaphore+0x17/0x60 [igc]
+[  982.543432]  igc_read_phy_reg_gpy+0x111/0x2b0 [igc]
+[  982.548887]  igc_phy_has_link+0xfa/0x260 [igc]
+[  982.553847]  ? igc_get_phy_id+0x210/0x210 [igc]
+[  982.558894]  ? lock_acquire+0x34d/0x890
+[  982.563187]  ? lock_downgrade+0x710/0x710
+[  982.567659]  ? rcu_read_unlock+0x50/0x50
+[  982.572039]  igc_check_for_copper_link+0x106/0x210 [igc]
+[  982.577970]  ? igc_config_fc_after_link_up+0x840/0x840 [igc]
+[  982.584286]  ? rcu_read_unlock+0x50/0x50
+[  982.588661]  ? lock_release+0x591/0xb80
+[  982.592939]  ? lock_release+0x591/0xb80
+[  982.597220]  igc_has_link+0x113/0x330 [igc]
+[  982.601887]  ? lock_downgrade+0x710/0x710
+[  982.606362]  igc_ethtool_get_link+0x6d/0x90 [igc]
+[  982.611614]  bond_check_dev_link+0x131/0x2c0 [bonding]
+[  982.617350]  ? bond_time_in_interval+0xd0/0xd0 [bonding]
+[  982.623277]  ? rcu_read_lock_held+0x62/0xc0
+[  982.627944]  ? rcu_read_lock_sched_held+0xe0/0xe0
+[  982.633198]  bond_mii_monitor+0x314/0x2500 [bonding]
+[  982.638738]  ? lock_contended+0x880/0x880
+[  982.643214]  ? bond_miimon_link_change+0xa0/0xa0 [bonding]
+[  982.649336]  ? lock_acquire+0x34d/0x890
+[  982.653615]  ? lock_downgrade+0x710/0x710
+[  982.658089]  ? debug_object_deactivate+0x221/0x340
+[  982.663436]  ? rcu_read_unlock+0x50/0x50
+[  982.667811]  ? debug_print_object+0x2b0/0x2b0
+[  982.672672]  ? __switch_to_asm+0x41/0x70
+[  982.677049]  ? __switch_to_asm+0x35/0x70
+[  982.681426]  ? _raw_spin_unlock_irq+0x24/0x40
+[  982.686288]  ? trace_hardirqs_on+0x20/0x195
+[  982.690956]  ? _raw_spin_unlock_irq+0x24/0x40
+[  982.695818]  process_one_work+0x8f0/0x1770
+[  982.700390]  ? pwq_dec_nr_in_flight+0x320/0x320
+[  982.705443]  ? debug_show_held_locks+0x50/0x50
+[  982.710403]  worker_thread+0x87/0xb40
+[  982.714489]  ? process_one_work+0x1770/0x1770
+[  982.719349]  kthread+0x344/0x410
+[  982.722950]  ? kthread_insert_work_sanity_check+0xd0/0xd0
+[  982.728975]  ret_from_fork+0x3a/0x50
 
-Becuase N_DEMOTTION_TARGETS is a new kernel ABI to override the default,
-not the default itself.  [1/5] of this patchset improve the default
-behavior itself, and I think that's good.
+Fixes: 5586838fe9ce ("igc: Add code for PHY support")
+Reported-by: Corinna Vinschen <vinschen@redhat.com>
+Suggested-by: Dima Ruinskiy <dima.ruinskiy@intel.com>
+Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
+Tested-by: Corinna Vinschen <vinschen@redhat.com>
+Tested-by: Naama Meir <naamax.meir@linux.intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/intel/igc/igc_phy.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Because we must maintain the kernel ABI almost for ever, we need to be
-careful about adding new ABI and add less if possible.  If writable per-
-node demotion targets can address your issue.  Then it's unnecessary to
-add another redundant kernel ABI for that.
+diff --git a/drivers/net/ethernet/intel/igc/igc_phy.c b/drivers/net/ethernet/intel/igc/igc_phy.c
+index 40dbf4b43234..6961f65d36b9 100644
+--- a/drivers/net/ethernet/intel/igc/igc_phy.c
++++ b/drivers/net/ethernet/intel/igc/igc_phy.c
+@@ -581,7 +581,7 @@ static s32 igc_read_phy_reg_mdic(struct igc_hw *hw, u32 offset, u16 *data)
+ 	 * the lower time out
+ 	 */
+ 	for (i = 0; i < IGC_GEN_POLL_TIMEOUT; i++) {
+-		usleep_range(500, 1000);
++		udelay(50);
+ 		mdic = rd32(IGC_MDIC);
+ 		if (mdic & IGC_MDIC_READY)
+ 			break;
+@@ -638,7 +638,7 @@ static s32 igc_write_phy_reg_mdic(struct igc_hw *hw, u32 offset, u16 data)
+ 	 * the lower time out
+ 	 */
+ 	for (i = 0; i < IGC_GEN_POLL_TIMEOUT; i++) {
+-		usleep_range(500, 1000);
++		udelay(50);
+ 		mdic = rd32(IGC_MDIC);
+ 		if (mdic & IGC_MDIC_READY)
+ 			break;
+-- 
+2.35.1
 
-> > > /sys/devices/system/node# cat node[0-4]/demotion_targets
-> > > 4
-> > > 4
-> > > 4
-> > > 4
-> > > 
-> > > /sys/devices/system/node# echo 1 > node1/demotion_targets
-> > > bash: echo: write error: Invalid argument
-> > > /sys/devices/system/node# cat node[0-4]/demotion_targets
-> > > 4
-> > > 4
-> > > 4
-> > > 4
-> > > 
-> > > /sys/devices/system/node# echo 0 > node1/demotion_targets
-> > > /sys/devices/system/node# cat node[0-4]/demotion_targets
-> > > 4
-> > > 0
-> > > 4
-> > > 4
-> > > 
-> > > /sys/devices/system/node# echo 1 > node0/demotion_targets
-> > > bash: echo: write error: Invalid argument
-> > > /sys/devices/system/node# cat node[0-4]/demotion_targets
-> > > 4
-> > > 0
-> > > 4
-> > > 4
-> > > 
-> > > Disable demotion for a specific node.
-> > > /sys/devices/system/node# echo > node1/demotion_targets
-> > > /sys/devices/system/node# cat node[0-4]/demotion_targets
-> > > 4
-> > > 
-> > > 4
-> > > 4
-> > > 
-> > > Reset demotion to default
-> > > /sys/devices/system/node# echo -1 > node1/demotion_targets
-> > > /sys/devices/system/node# cat node[0-4]/demotion_targets
-> > > 4
-> > > 4
-> > > 4
-> > > 4
-> > > 
-> > > When a specific device/NUMA node is used for demotion target via the user interface, it is taken
-> > > out of other NUMA node targets.
-> > 
-> > IMHO, we should be careful about interaction between auto-generated and
-> > overridden demotion order.
-> > 
-> 
-> yes, we should avoid loop between that.
-
-In addition to that, we need to get same result after hot-remove then
-hot-add the same node.  That is, the result should be stable after NOOP.
-I guess we can just always,
-
-- Generate the default demotion order automatically without any
-overriding.
-
-- Apply the overriding, after removing the invalid targets, etc.
-
-> But if you agree for the above 
-> ABI we could go ahead and share the implementation code.
-
-I think we need to add a way to distinguish auto-generated and overriden
-demotion targets in the output of nodeX/demotion_targets.  Otherwise it
-looks good to me.
-
-Best Regards,
-Huang, Ying
-
-> > > root@ubuntu-guest:/sys/devices/system/node# cat node[0-4]/demotion_targets
-> > > 4
-> > > 4
-> > > 4
-> > > 4
-> > > 
-> > > /sys/devices/system/node# echo 4 > node1/demotion_targets
-> > > /sys/devices/system/node# cat node[0-4]/demotion_targets
-> > > 
-> > > 4
-> > > 
-> > > 
-> > > 
-> > > If more than one node requies the same demotion target
-> > > /sys/devices/system/node# echo 4 > node0/demotion_targets
-> > > /sys/devices/system/node# cat node[0-4]/demotion_targets
-> > > 4
-> > > 4
-> > > 
-> > > 
-> > > 
-> > > -aneesh
-> > 
-> > 
-> 
-> -aneesh
 
 
