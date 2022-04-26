@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46536C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71946C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:48:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346491AbiDZIuH (ORCPT
+        id S1346557AbiDZIuL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:50:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34184 "EHLO
+        Tue, 26 Apr 2022 04:50:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345943AbiDZIjn (ORCPT
+        with ESMTP id S1345941AbiDZIjn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:39:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67D0F81189;
-        Tue, 26 Apr 2022 01:32:26 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2DF5A76E8;
+        Tue, 26 Apr 2022 01:32:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D296561864;
-        Tue, 26 Apr 2022 08:32:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D985FC385A4;
-        Tue, 26 Apr 2022 08:32:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2E101B81D05;
+        Tue, 26 Apr 2022 08:32:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CA55C385A4;
+        Tue, 26 Apr 2022 08:32:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961945;
-        bh=QQZAwuXtlmYjYbNl4icFk93rp3roE73Z2oPW1+gEZUA=;
+        s=korg; t=1650961942;
+        bh=X0pS4gh3Zv3rER6dN0OBiR7UNOahR/nwgCY0/13gFRs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CHhTJJCqh/RD5ySrB3URc8wfGqpG3JFnwWVMxUB3a5fM8qGpFZIQWOJ8dfQcMgw7j
-         58f1H2pmXzwCgA/eWwzp4qFje3pj3C1vIVo1xaM/0dcwOJAQEtWvrQzfUYcgNXkTh+
-         IHLuM3uAfDDZrmOCpulcvIfh73MT0n0v3rlKZhHY=
+        b=CTnFR8aXgFzNy4qJl/vD2fv/nGX1DPxkwuqcjrXQAJZH95CdYhicqIUShhgU+ByvI
+         TIiS6cBGhiMgFINn6ZqCw55ufYy7Kr02elZ2GlQF+nqlBSKCxKarswoc443NWF9+R3
+         rQWsySkcky1CXnYyc1bva4WKAPwi3xESFGIN1ENw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tony Lu <tonylu@linux.alibaba.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        syzbot+6e29a053eb165bd50de5@syzkaller.appspotmail.com
-Subject: [PATCH 5.10 20/86] net/smc: Fix sock leak when release after smc_shutdown()
-Date:   Tue, 26 Apr 2022 10:20:48 +0200
-Message-Id: <20220426081741.795071079@linuxfoundation.org>
+        stable@vger.kernel.org, Xiongwei Song <sxwjean@gmail.com>,
+        Arthur Marsh <arthur.marsh@internode.on.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Khem Raj <raj.khem@gmail.com>
+Subject: [PATCH 5.10 02/86] mm: page_alloc: fix building error on -Werror=array-compare
+Date:   Tue, 26 Apr 2022 10:20:30 +0200
+Message-Id: <20220426081741.275534591@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
 References: <20220426081741.202366502@linuxfoundation.org>
@@ -52,45 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tony Lu <tonylu@linux.alibaba.com>
+From: Xiongwei Song <sxwjean@gmail.com>
 
-[ Upstream commit 1a74e99323746353bba11562a2f2d0aa8102f402 ]
+commit ca831f29f8f25c97182e726429b38c0802200c8f upstream.
 
-Since commit e5d5aadcf3cd ("net/smc: fix sk_refcnt underflow on linkdown
-and fallback"), for a fallback connection, __smc_release() does not call
-sock_put() if its state is already SMC_CLOSED.
+Arthur Marsh reported we would hit the error below when building kernel
+with gcc-12:
 
-When calling smc_shutdown() after falling back, its state is set to
-SMC_CLOSED but does not call sock_put(), so this patch calls it.
+  CC      mm/page_alloc.o
+  mm/page_alloc.c: In function `mem_init_print_info':
+  mm/page_alloc.c:8173:27: error: comparison between two arrays [-Werror=array-compare]
+   8173 |                 if (start <= pos && pos < end && size > adj) \
+        |
 
-Reported-and-tested-by: syzbot+6e29a053eb165bd50de5@syzkaller.appspotmail.com
-Fixes: e5d5aadcf3cd ("net/smc: fix sk_refcnt underflow on linkdown and fallback")
-Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
-Acked-by: Karsten Graul <kgraul@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+In C++20, the comparision between arrays should be warned.
+
+Link: https://lkml.kernel.org/r/20211125130928.32465-1-sxwjean@me.com
+Signed-off-by: Xiongwei Song <sxwjean@gmail.com>
+Reported-by: Arthur Marsh <arthur.marsh@internode.on.net>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Khem Raj <raj.khem@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/smc/af_smc.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ mm/page_alloc.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 4f16d406ad8e..1b98f3241150 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -2144,8 +2144,10 @@ static int smc_shutdown(struct socket *sock, int how)
- 	if (smc->use_fallback) {
- 		rc = kernel_sock_shutdown(smc->clcsock, how);
- 		sk->sk_shutdown = smc->clcsock->sk->sk_shutdown;
--		if (sk->sk_shutdown == SHUTDOWN_MASK)
-+		if (sk->sk_shutdown == SHUTDOWN_MASK) {
- 			sk->sk_state = SMC_CLOSED;
-+			sock_put(sk);
-+		}
- 		goto out;
- 	}
- 	switch (how) {
--- 
-2.35.1
-
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -7678,7 +7678,7 @@ void __init mem_init_print_info(const ch
+ 	 */
+ #define adj_init_size(start, end, size, pos, adj) \
+ 	do { \
+-		if (start <= pos && pos < end && size > adj) \
++		if (&start[0] <= &pos[0] && &pos[0] < &end[0] && size > adj) \
+ 			size -= adj; \
+ 	} while (0)
+ 
 
 
