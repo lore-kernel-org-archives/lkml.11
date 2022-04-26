@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14023C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:55:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDAC7C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:55:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244499AbiDZI6H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:58:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56504 "EHLO
+        id S1345690AbiDZI6P (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:58:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346325AbiDZIou (ORCPT
+        with ESMTP id S1346423AbiDZIpB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:44:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C3138567C;
-        Tue, 26 Apr 2022 01:34:37 -0700 (PDT)
+        Tue, 26 Apr 2022 04:45:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC955167F1E;
+        Tue, 26 Apr 2022 01:34:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE4E4B81D13;
-        Tue, 26 Apr 2022 08:34:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0894AC385A4;
-        Tue, 26 Apr 2022 08:34:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7090FB81D09;
+        Tue, 26 Apr 2022 08:34:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE140C385A0;
+        Tue, 26 Apr 2022 08:34:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962074;
-        bh=aZKggbzIzkrZzKiqHXtizI9wcyrF2NWorw67sBKovp0=;
+        s=korg; t=1650962083;
+        bh=vbMCQhYpFOrJqjfbCfIgDM/0g8eUs24bpcjR8pwBGS4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PCKXnaE5bRcqbwhDJMLcxtQgeBnskjUQwLOvcf+RJsTN05oCRsT3s9QOzrjtfm3BE
-         4jWM1Zxyei7PuW1q5ar/Dohuro2ae5bJQE6jI9uyAmkgEDtMpajl47+TZIUjT1KMFC
-         IJeUEvk0E2scvluL3Eq3hQ5iMMrAkEFopFhBmg+s=
+        b=YmizzJofKY4RKUVOXtw+4Gul1HmWcPUys6RsvjcOHf2EFZifyZWgfd5+VeSJ3ZW1a
+         b+j4hw0QqkaNRTT2pyZ3tIHGn3JtpcIRrUIBFckdCoL2LCTPkMEuypqH2LznfqY7T4
+         9hVlUEZX7s8rAA4/qKS9uaZ35bl2oyf1/NqGWjmU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        James Hutchinson <jahutchinson99@googlemail.com>,
-        Dima Ruinskiy <dima.ruinskiy@intel.com>,
-        Sasha Neftin <sasha.neftin@intel.com>,
-        Naama Meir <naamax.meir@linux.intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.10 63/86] e1000e: Fix possible overflow in LTR decoding
-Date:   Tue, 26 Apr 2022 10:21:31 +0200
-Message-Id: <20220426081743.025793485@linuxfoundation.org>
+        stable@vger.kernel.org, Hongbin Wang <wh_bin@126.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 39/86] vxlan: fix error return code in vxlan_fdb_append
+Date:   Tue, 26 Apr 2022 10:21:07 +0200
+Message-Id: <20220426081742.334423312@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
 References: <20220426081741.202366502@linuxfoundation.org>
@@ -52,52 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+From: Hongbin Wang <wh_bin@126.com>
 
-commit 04ebaa1cfddae5f240cc7404f009133bb0389a47 upstream.
+[ Upstream commit 7cea5560bf656b84f9ed01c0cc829d4eecd0640b ]
 
-When we decode the latency and the max_latency, u16 value may not fit
-the required size and could lead to the wrong LTR representation.
+When kmalloc and dst_cache_init failed,
+should return ENOMEM rather than ENOBUFS.
 
-Scaling is represented as:
-scale 0 - 1         (2^(5*0)) = 2^0
-scale 1 - 32        (2^(5 *1))= 2^5
-scale 2 - 1024      (2^(5 *2)) =2^10
-scale 3 - 32768     (2^(5 *3)) =2^15
-scale 4 - 1048576   (2^(5 *4)) = 2^20
-scale 5 - 33554432  (2^(5 *4)) = 2^25
-scale 4 and scale 5 required 20 and 25 bits respectively.
-scale 6 reserved.
-
-Replace the u16 type with the u32 type and allow corrected LTR
-representation.
-
-Cc: stable@vger.kernel.org
-Fixes: 44a13a5d99c7 ("e1000e: Fix the max snoop/no-snoop latency for 10M")
-Reported-by: James Hutchinson <jahutchinson99@googlemail.com>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215689
-Suggested-by: Dima Ruinskiy <dima.ruinskiy@intel.com>
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Naama Meir <naamax.meir@linux.intel.com>
-Tested-by: James Hutchinson <jahutchinson99@googlemail.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Hongbin Wang <wh_bin@126.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/e1000e/ich8lan.c |    4 ++--
+ drivers/net/vxlan.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
-+++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-@@ -1006,8 +1006,8 @@ static s32 e1000_platform_pm_pch_lpt(str
- {
- 	u32 reg = link << (E1000_LTRV_REQ_SHIFT + E1000_LTRV_NOSNOOP_SHIFT) |
- 	    link << E1000_LTRV_REQ_SHIFT | E1000_LTRV_SEND;
--	u16 max_ltr_enc_d = 0;	/* maximum LTR decoded by platform */
--	u16 lat_enc_d = 0;	/* latency decoded */
-+	u32 max_ltr_enc_d = 0;	/* maximum LTR decoded by platform */
-+	u32 lat_enc_d = 0;	/* latency decoded */
- 	u16 lat_enc = 0;	/* latency encoded */
+diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
+index 48fbdce6a70e..72d670667f64 100644
+--- a/drivers/net/vxlan.c
++++ b/drivers/net/vxlan.c
+@@ -710,11 +710,11 @@ static int vxlan_fdb_append(struct vxlan_fdb *f,
  
- 	if (link) {
+ 	rd = kmalloc(sizeof(*rd), GFP_ATOMIC);
+ 	if (rd == NULL)
+-		return -ENOBUFS;
++		return -ENOMEM;
+ 
+ 	if (dst_cache_init(&rd->dst_cache, GFP_ATOMIC)) {
+ 		kfree(rd);
+-		return -ENOBUFS;
++		return -ENOMEM;
+ 	}
+ 
+ 	rd->remote_ip = *ip;
+-- 
+2.35.1
+
 
 
