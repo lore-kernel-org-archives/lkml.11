@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 735CFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:13:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FDE4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:13:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235491AbiDZJQl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:16:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55352 "EHLO
+        id S243946AbiDZJQu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:16:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346073AbiDZItu (ORCPT
+        with ESMTP id S1347236AbiDZIvO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:49:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4DDCBB921;
-        Tue, 26 Apr 2022 01:37:52 -0700 (PDT)
+        Tue, 26 Apr 2022 04:51:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FC13158F45;
+        Tue, 26 Apr 2022 01:39:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EABDDB81D19;
-        Tue, 26 Apr 2022 08:37:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58791C385A0;
-        Tue, 26 Apr 2022 08:37:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C46E60C35;
+        Tue, 26 Apr 2022 08:39:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16355C385A0;
+        Tue, 26 Apr 2022 08:39:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962269;
-        bh=qMpCqUCdhyMR/21WSKQ0+DrkxS6S4vYxyQeR11WMz/0=;
+        s=korg; t=1650962396;
+        bh=EOw5hbKDTnYGfUcDibtjJA+xhAnCFPcdHRjqYVUw9Hc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=edtD9RsJV3/srcc+ccAchx3L59gpzXCP/VMZ0nP15Emz7Y3k7byp7Nbpb0/8Pvzur
-         SaNN0kb6xjmAmJ1e+bYyoCP5wwlswrZe3AjTyJYX4PXXKaGqHK6EFhN8KSwTPCxT51
-         ZfjEmAiUd9/zTqS4aDKjvUW4QGg0w4l1nWYyiFNA=
+        b=PDHReWnlzL5qY0lyPxdbsRYQFSqZBa/UMQ6ThLlssWlILesVO6I6ZuMqOkfsRSyJJ
+         5hZwAvekon9Le0CjUcFIbiHyxd59EYr0ijsMb33c2RLp1mlvfnNAZrWoZyIhK8DRMs
+         h6ymvxRifmVbx+kB0VS0A9i60S9usc7ILgIYgk38=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Kees Cook <keescook@chromium.org>,
-        Khem Raj <raj.khem@gmail.com>
-Subject: [PATCH 5.15 008/124] etherdevice: Adjust ether_addr* prototypes to silence -Wstringop-overead
-Date:   Tue, 26 Apr 2022 10:20:09 +0200
-Message-Id: <20220426081747.533483888@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+2339c27f5c66c652843e@syzkaller.appspotmail.com,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 042/124] can: isotp: stop timeout monitoring when no first frame was sent
+Date:   Tue, 26 Apr 2022 10:20:43 +0200
+Message-Id: <20220426081748.498664094@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -51,59 +51,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Oliver Hartkopp <socketcan@hartkopp.net>
 
-commit 2618a0dae09ef37728dab89ff60418cbe25ae6bd upstream.
+[ Upstream commit d73497081710c876c3c61444445512989e102152 ]
 
-With GCC 12, -Wstringop-overread was warning about an implicit cast from
-char[6] to char[8]. However, the extra 2 bytes are always thrown away,
-alignment doesn't matter, and the risk of hitting the edge of unallocated
-memory has been accepted, so this prototype can just be converted to a
-regular char *. Silences:
+The first attempt to fix a the 'impossible' WARN_ON_ONCE(1) in
+isotp_tx_timer_handler() focussed on the identical CAN IDs created by
+the syzbot reproducer and lead to upstream fix/commit 3ea566422cbd
+("can: isotp: sanitize CAN ID checks in isotp_bind()"). But this did
+not catch the root cause of the wrong tx.state in the tx_timer handler.
 
-net/core/dev.c: In function ‘bpf_prog_run_generic_xdp’: net/core/dev.c:4618:21: warning: ‘ether_addr_equal_64bits’ reading 8 bytes from a region of size 6 [-Wstringop-overread]
- 4618 |         orig_host = ether_addr_equal_64bits(eth->h_dest, > skb->dev->dev_addr);
-      |                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-net/core/dev.c:4618:21: note: referencing argument 1 of type ‘const u8[8]’ {aka ‘const unsigned char[8]’}
-net/core/dev.c:4618:21: note: referencing argument 2 of type ‘const u8[8]’ {aka ‘const unsigned char[8]’}
-In file included from net/core/dev.c:91: include/linux/etherdevice.h:375:20: note: in a call to function ‘ether_addr_equal_64bits’
-  375 | static inline bool ether_addr_equal_64bits(const u8 addr1[6+2],
-      |                    ^~~~~~~~~~~~~~~~~~~~~~~
+In the isotp 'first frame' case a timeout monitoring needs to be started
+before the 'first frame' is send. But when this sending failed the timeout
+monitoring for this specific frame has to be disabled too.
 
-Reported-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Tested-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Link: https://lore.kernel.org/netdev/20220212090811.uuzk6d76agw2vv73@pengutronix.de
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: netdev@vger.kernel.org
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Cc: Khem Raj <raj.khem@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Otherwise the tx_timer is fired with the 'warn me' tx.state of ISOTP_IDLE.
+
+Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
+Link: https://lore.kernel.org/all/20220405175112.2682-1-socketcan@hartkopp.net
+Reported-by: syzbot+2339c27f5c66c652843e@syzkaller.appspotmail.com
+Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/etherdevice.h |    5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ net/can/isotp.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
---- a/include/linux/etherdevice.h
-+++ b/include/linux/etherdevice.h
-@@ -127,7 +127,7 @@ static inline bool is_multicast_ether_ad
- #endif
- }
+diff --git a/net/can/isotp.c b/net/can/isotp.c
+index 5bce7c66c121..8c753dcefe7f 100644
+--- a/net/can/isotp.c
++++ b/net/can/isotp.c
+@@ -866,6 +866,7 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
+ 	struct canfd_frame *cf;
+ 	int ae = (so->opt.flags & CAN_ISOTP_EXTEND_ADDR) ? 1 : 0;
+ 	int wait_tx_done = (so->opt.flags & CAN_ISOTP_WAIT_TX_DONE) ? 1 : 0;
++	s64 hrtimer_sec = 0;
+ 	int off;
+ 	int err;
  
--static inline bool is_multicast_ether_addr_64bits(const u8 addr[6+2])
-+static inline bool is_multicast_ether_addr_64bits(const u8 *addr)
- {
- #if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
- #ifdef __BIG_ENDIAN
-@@ -364,8 +364,7 @@ static inline bool ether_addr_equal(cons
-  * Please note that alignment of addr1 & addr2 are only guaranteed to be 16 bits.
-  */
+@@ -964,7 +965,9 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
+ 		isotp_create_fframe(cf, so, ae);
  
--static inline bool ether_addr_equal_64bits(const u8 addr1[6+2],
--					   const u8 addr2[6+2])
-+static inline bool ether_addr_equal_64bits(const u8 *addr1, const u8 *addr2)
- {
- #if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
- 	u64 fold = (*(const u64 *)addr1) ^ (*(const u64 *)addr2);
+ 		/* start timeout for FC */
+-		hrtimer_start(&so->txtimer, ktime_set(1, 0), HRTIMER_MODE_REL_SOFT);
++		hrtimer_sec = 1;
++		hrtimer_start(&so->txtimer, ktime_set(hrtimer_sec, 0),
++			      HRTIMER_MODE_REL_SOFT);
+ 	}
+ 
+ 	/* send the first or only CAN frame */
+@@ -977,6 +980,11 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
+ 	if (err) {
+ 		pr_notice_once("can-isotp: %s: can_send_ret %pe\n",
+ 			       __func__, ERR_PTR(err));
++
++		/* no transmission -> no timeout monitoring */
++		if (hrtimer_sec)
++			hrtimer_cancel(&so->txtimer);
++
+ 		goto err_out_drop;
+ 	}
+ 
+-- 
+2.35.1
+
 
 
