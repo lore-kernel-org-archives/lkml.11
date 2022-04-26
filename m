@@ -2,246 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8047C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 15:36:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEEF2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 15:36:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352435AbiDZPjc (ORCPT
+        id S1352448AbiDZPjj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 11:39:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51784 "EHLO
+        Tue, 26 Apr 2022 11:39:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352410AbiDZPjX (ORCPT
+        with ESMTP id S1352399AbiDZPit (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 11:39:23 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64C8F1570F;
-        Tue, 26 Apr 2022 08:36:15 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23QFa04J095160;
-        Tue, 26 Apr 2022 10:36:00 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1650987360;
-        bh=gRQr7XeEvyTpJ2fKnZIXTDb/h++VKf/bmPBC0uraUJc=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=sGuh4to0LAxqj3w9zBtxCf1z+qoC9WaoGcnOAm9ytIJhX81e0EsCcKJbshnGX41Yt
-         uF5Kd3V+iF/MAF3+3oPFVZ58WP1U0MSXIboenpYVFXAnUo23fTLNN3U49Gog8+qrGU
-         ycy1kkAvtS+TsLIGqaE8j6ftujHN6E1EKEUsOu2o=
-Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23QFa0SE130796
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 26 Apr 2022 10:36:00 -0500
-Received: from DLEE115.ent.ti.com (157.170.170.26) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 26
- Apr 2022 10:35:59 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 26 Apr 2022 10:35:59 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23QFZwmW081638;
-        Tue, 26 Apr 2022 10:35:59 -0500
-From:   Rahul T R <r-ravikumar@ti.com>
-To:     <nm@ti.com>
-CC:     <vigneshr@ti.com>, <kristo@kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski@canonical.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <tomi.valkeinen@ideasonboard.com>,
-        <laurent.pinchart@ideasonboard.com>, <kishon@ti.com>,
-        <r-ravikumar@ti.com>
-Subject: [PATCH v4 1/2] arm64: dts: ti: k3-j721e-*: add DP & DP PHY
-Date:   Tue, 26 Apr 2022 21:05:52 +0530
-Message-ID: <20220426153553.18474-2-r-ravikumar@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220426153553.18474-1-r-ravikumar@ti.com>
-References: <20220426153553.18474-1-r-ravikumar@ti.com>
+        Tue, 26 Apr 2022 11:38:49 -0400
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05B9BFD25
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 08:35:42 -0700 (PDT)
+Received: by mail-yb1-xb33.google.com with SMTP id i38so14636116ybj.13
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 08:35:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VQZiXIxdmiSHbCLJF1D/j7DSaBPKECeHRKKl9HR5UoM=;
+        b=gIVAOUhxi9y7Yo2xEP1k3yvfEjLLjCtl0ov47OXgb2YCXUDGXxTF49I30qX40KpVIm
+         PWJB2dxCEcNfr6k05ghawsu1qtRmlx9cTvrJrx+rnVihvgKCMR8vBZPwk9e0VEt8q+4U
+         NjXgq3Q2vrQYiUVZiAB7lOASwk5Zh83hQ9PxdcAVsBLhCV47LWDcuUvzbm7kXsdD1m3N
+         W1lajCBO/M0wsQhg0lxIM7FhiARI0aiGYKWoHDYAFXy4fhJn5JRqpCiCJdeG8u2kO8cO
+         cPEt+wBCbojy4fJI+skhC/N9MI11C5v1WHRb3WYHJ8jC8vP8TGcNI/J1Tbu79wD82rUH
+         YAdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VQZiXIxdmiSHbCLJF1D/j7DSaBPKECeHRKKl9HR5UoM=;
+        b=Y76oyG7ToUath5IpsUuxn/XPeMjxW9KsyiFDc4795l2jhrQjyFtYqG59mdTyalzKsA
+         5Ed6feLFtbairEhLr3CTmKo+yw7m8O9YCpmv5Mz++lZqTXWoBYjVdM6M+N5EwogMlFwp
+         sE8JK7YJCtkb2aK6CHSPRxwJL4WU44mWVjyxtLpFvZ9A23hAxasUG8Kf35cS7whr+bBl
+         KdgdLQPTKSESyynz5WpjB9sUZq+KdNM0Ys+DvT5IoccuoD4pTlzQ2bHNbQFSgHkFXdK0
+         Q38PhFSjV6JibNaRcdCxDCdTqoHtzaXN6xcDF69eAj/B4LrMFTNjgqps28BqJx/dC8lM
+         rUmw==
+X-Gm-Message-State: AOAM530hcmn7xXaXgwq1UD/KjIWNKeyb5UV7VqIO04sxylznyV5g65o8
+        sVT+pPhkHbw5N09C/Kpy3aTlpRdU4MQRwneW9eAqhw==
+X-Google-Smtp-Source: ABdhPJxfB1kY9NVGiRey7y5jAZNb0HTOXTxJRiyMxZf+112Opk8r9k1XvSYnyKCCkyl+dnyJaWo3Zer8qmQsHZmSOI4=
+X-Received: by 2002:a25:bcc3:0:b0:648:7360:8e75 with SMTP id
+ l3-20020a25bcc3000000b0064873608e75mr8726230ybm.533.1650987341152; Tue, 26
+ Apr 2022 08:35:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+References: <20220423221623.1074556-1-huobean@gmail.com> <20220423221623.1074556-3-huobean@gmail.com>
+ <CAPDyKFrksB_kgrnmcay+ub0nDfmPVZfw-zJihop5N8_6qUqrug@mail.gmail.com>
+In-Reply-To: <CAPDyKFrksB_kgrnmcay+ub0nDfmPVZfw-zJihop5N8_6qUqrug@mail.gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 26 Apr 2022 17:35:29 +0200
+Message-ID: <CACRpkdb-snMG8Aabq_oa43_UQx1CVccQteRa8_Ur6OHDKFAc2g@mail.gmail.com>
+Subject: Re: [PATCH v1 2/2] mmc: core: Allows to override the timeout value
+ for ioctl() path
+To:     Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     Bean Huo <huobean@gmail.com>, adrian.hunter@intel.com,
+        linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        beanhuo@micron.com, stable <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tomi Valkeinen <tomi.valkeinen@ti.com>
+On Tue, Apr 26, 2022 at 3:55 PM Ulf Hansson <ulf.hansson@linaro.org> wrote:
+> On Sun, 24 Apr 2022 at 00:16, Bean Huo <huobean@gmail.com> wrote:
+> >
+> > From: Bean Huo <beanhuo@micron.com>
+> >
+> > Occasionally, user-land applications initiate longer timeout values for certain commands
+> > through ioctl() system call. But so far we are still using a fixed timeout of 10 seconds
+> > in mmc_poll_for_busy() on the ioctl() path, even if a custom timeout is specified in the
+> > userspace application. This patch allows custom timeout values to override this default
+> > timeout values on the ioctl path.
+> >
+> > Cc: stable <stable@vger.kernel.org>
+> > Signed-off-by: Bean Huo <beanhuo@micron.com>
+>
+> Applied for next, thanks!
+>
+> Linus, I interpreted your earlier reply as a reviewed-by tag, so I
+> have added that. Please tell me, if you want me to drop it.
 
-Add DT nodes for DisplayPort and DisplayPort PHY. The DP is Cadence MHDP
-8546 and the PHY is a Cadence Torrent PHY with TI WIZ wrapper.
+That's fine, sorry for being unclear!
 
-Also add the required phy link nodes in the board dts files.
-
-A slight irregularity in the bindings is the DPTX PHY register block,
-which is in the MHDP IP, but is needed and mapped by the PHY.
-
-Signed-off-by: Tomi Valkeinen <tomi.valkeinen@ti.com>
-Signed-off-by: Rahul T R <r-ravikumar@ti.com>
----
- .../dts/ti/k3-j721e-common-proc-board.dts     | 16 ++++
- arch/arm64/boot/dts/ti/k3-j721e-main.dtsi     | 75 ++++++++++++++++++-
- arch/arm64/boot/dts/ti/k3-j721e-sk.dts        | 16 ++++
- 3 files changed, 105 insertions(+), 2 deletions(-)
-
-diff --git a/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts b/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-index f5ca8e26ed99..2f119e94e783 100644
---- a/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-+++ b/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-@@ -793,6 +793,22 @@
- 	};
- };
- 
-+&serdes4 {
-+	torrent_phy_dp: phy@0 {
-+		reg = <0>;
-+		resets = <&serdes_wiz4 1>;
-+		cdns,phy-type = <PHY_TYPE_DP>;
-+		cdns,num-lanes = <4>;
-+		cdns,max-bit-rate = <5400>;
-+		#phy-cells = <0>;
-+	};
-+};
-+
-+&mhdp {
-+	phys = <&torrent_phy_dp>;
-+	phy-names = "dpphy";
-+};
-+
- &pcie0_rc {
- 	reset-gpios = <&exp1 6 GPIO_ACTIVE_HIGH>;
- 	phys = <&serdes0_pcie_link>;
-diff --git a/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi b/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi
-index db0669985e42..43b6cf5791ee 100644
---- a/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi
-@@ -5,6 +5,7 @@
-  * Copyright (C) 2016-2020 Texas Instruments Incorporated - https://www.ti.com/
-  */
- #include <dt-bindings/phy/phy.h>
-+#include <dt-bindings/phy/phy-ti.h>
- #include <dt-bindings/mux/mux.h>
- #include <dt-bindings/mux/ti-serdes.h>
- 
-@@ -789,6 +790,47 @@
- 		#size-cells = <2>;
- 	};
- 
-+	serdes_wiz4: wiz@5050000 {
-+		compatible = "ti,am64-wiz-10g";
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		power-domains = <&k3_pds 297 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 297 1>, <&k3_clks 297 9>, <&cmn_refclk>;
-+		clock-names = "fck", "core_ref_clk", "ext_ref_clk";
-+		assigned-clocks = <&k3_clks 297 9>;
-+		assigned-clock-parents = <&k3_clks 297 10>;
-+		assigned-clock-rates = <19200000>;
-+		num-lanes = <4>;
-+		#reset-cells = <1>;
-+		#clock-cells = <1>;
-+		ranges = <0x05050000 0x00 0x05050000 0x010000>,
-+			<0x0a030a00 0x00 0x0a030a00 0x40>;
-+
-+		serdes4: serdes@5050000 {
-+			/*
-+			 * Note: we also map DPTX PHY registers as the Torrent
-+			 * needs to manage those.
-+			 */
-+			compatible = "ti,j721e-serdes-10g";
-+			reg = <0x05050000 0x010000>,
-+			      <0x0a030a00 0x40>; /* DPTX PHY */
-+			reg-names = "torrent_phy", "dptx_phy";
-+
-+			resets = <&serdes_wiz4 0>;
-+			reset-names = "torrent_reset";
-+			clocks = <&serdes_wiz4 TI_WIZ_PLL0_REFCLK>;
-+			clock-names = "refclk";
-+			assigned-clocks = <&serdes_wiz4 TI_WIZ_PLL0_REFCLK>,
-+					  <&serdes_wiz4 TI_WIZ_PLL1_REFCLK>,
-+					  <&serdes_wiz4 TI_WIZ_REFCLK_DIG>;
-+			assigned-clock-parents = <&k3_clks 297 9>,
-+						 <&k3_clks 297 9>,
-+						 <&k3_clks 297 9>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+		};
-+	};
-+
- 	main_uart0: serial@2800000 {
- 		compatible = "ti,j721e-uart", "ti,am654-uart";
- 		reg = <0x00 0x02800000 0x00 0x100>;
-@@ -1267,6 +1309,37 @@
- 		};
- 	};
- 
-+	mhdp: dp-bridge@a000000 {
-+		compatible = "ti,j721e-mhdp8546";
-+		/*
-+		 * Note: we do not map DPTX PHY area, as that is handled by
-+		 * the PHY driver.
-+		 */
-+		reg = <0x00 0x0a000000 0x00 0x030a00>, /* DSS_EDP0_V2A_CORE_VP_REGS_APB */
-+		      <0x00 0x04f40000 0x00 0x20>;    /* DSS_EDP0_INTG_CFG_VP */
-+		reg-names = "mhdptx", "j721e-intg";
-+
-+		clocks = <&k3_clks 151 36>;
-+
-+		interrupt-parent = <&gic500>;
-+		interrupts = <GIC_SPI 614 IRQ_TYPE_LEVEL_HIGH>;
-+
-+		power-domains = <&k3_pds 151 TI_SCI_PD_EXCLUSIVE>;
-+
-+		dp0_ports: ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			port@0 {
-+			    reg = <0>;
-+			};
-+
-+			port@4 {
-+			    reg = <4>;
-+			};
-+		};
-+	};
-+
- 	dss: dss@4a00000 {
- 		compatible = "ti,j721e-dss";
- 		reg =
-@@ -1317,8 +1390,6 @@
- 				  "common_s2";
- 
- 		dss_ports: ports {
--			#address-cells = <1>;
--			#size-cells = <0>;
- 		};
- 	};
- 
-diff --git a/arch/arm64/boot/dts/ti/k3-j721e-sk.dts b/arch/arm64/boot/dts/ti/k3-j721e-sk.dts
-index f25d85169e0d..98177a20b45f 100644
---- a/arch/arm64/boot/dts/ti/k3-j721e-sk.dts
-+++ b/arch/arm64/boot/dts/ti/k3-j721e-sk.dts
-@@ -624,6 +624,22 @@
- 	};
- };
- 
-+&serdes4 {
-+	torrent_phy_dp: phy@0 {
-+		reg = <0>;
-+		resets = <&serdes_wiz4 1>;
-+		cdns,phy-type = <PHY_TYPE_DP>;
-+		cdns,num-lanes = <4>;
-+		cdns,max-bit-rate = <5400>;
-+		#phy-cells = <0>;
-+	};
-+};
-+
-+&mhdp {
-+	phys = <&torrent_phy_dp>;
-+	phy-names = "dpphy";
-+};
-+
- &usbss0 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&main_usbss0_pins_default>;
--- 
-2.17.1
-
+Yours,
+Linus Walleij
