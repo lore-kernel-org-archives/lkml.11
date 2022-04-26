@@ -2,140 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04F57C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 21:08:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AE19C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 21:10:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355268AbiDZVLq (ORCPT
+        id S1355310AbiDZVOB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 17:11:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36858 "EHLO
+        Tue, 26 Apr 2022 17:14:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241959AbiDZVLm (ORCPT
+        with ESMTP id S1355296AbiDZVN5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 17:11:42 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E39806D849
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 14:08:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651007313; x=1682543313;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=SPjew8K2LP/aFKzQMmxOnyOHAKOzU/L4qyxzZ+S4+m0=;
-  b=m1mDmjotFS1QZsFw3XcDTEc2tnd59eHRmExfEfHeGp+7lxmJKaZm41p1
-   GlMOcdy00yp6HWw934IU5oyuF7WbffIBq0R4F1KXIZnlPFRDdK5wrZDns
-   ar06nxJQD2ElUUMFAU0wyVOVF8bdAQ4R1ob7e/2o2NsUptbW/ya/Hujt3
-   jJJGp1qLQsfuuB+r2U6Nn2hSgomi5/gzfac6AUzd6BT0UTfRUOPU580/L
-   ttUcimlPTly7iag7/lbFjbpmxEA7tdaIfLZRSA4VyYUol+BuAjBIhjW6H
-   ma5deCvpCIKQSl1MYMEuHgNQP012IkNfzkJb9RUhurSP3deQwTHuMFj/B
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="326211422"
-X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
-   d="scan'208";a="326211422"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 14:08:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
-   d="scan'208";a="513349273"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 26 Apr 2022 14:08:30 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1njSQA-0003zG-4u;
-        Tue, 26 Apr 2022 21:08:30 +0000
-Date:   Wed, 27 Apr 2022 05:08:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Daniel Bristot de Oliveira <bristot@redhat.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        "Steven Rostedt (VMware)" <rostedt@goodmis.org>
-Subject: kernel/trace/trace_osnoise.c:131:1: sparse: sparse: symbol
- '__pcpu_scope_per_cpu_timerlat_var' was not declared. Should it be static?
-Message-ID: <202204270534.hS2vHyWX-lkp@intel.com>
+        Tue, 26 Apr 2022 17:13:57 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAC771C90E
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 14:10:48 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id i19so6874240eja.11
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 14:10:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=LGw1GMSb1sdzb8JrXjM5hw7tsCPcx5n6lAvLthnSZYU=;
+        b=fVuWorKxwMArfubMUdtODgEyfmiOek7W75Rf7CVGnm3dpRdqZffae6/UHfyBbt+XT4
+         JWgD0bNwxSqBZ2yM2ZULeEcSMxc0tW6ZpnIKffYTW2oAZjynSzoAI3ZPxHtIjwNI7jpz
+         FklTjZTHKBznF23YwgzSe/92iYCpByG81a86BVVZolhXg39YbnR1wQoZrMH9jS0WRJsQ
+         DjgeSUssLO1jAMhxFX3bV9FE6mFoJDRkWWwbebw2nA549SccaAuGwZVlT6u8RVZD0rDF
+         CeNKOYpqyULLXLWuNqqpftWeZSY4lT9eoNrbmfOUN/75+TSXTYjVO2cMaJg579i6tOgj
+         nRgg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=LGw1GMSb1sdzb8JrXjM5hw7tsCPcx5n6lAvLthnSZYU=;
+        b=lwWxX3Y2N4qaxjLw3D633OHPyRJVVuj9xSnubrDRlZHXOYN6naiTf2jz60HgQuz4Nr
+         sTC9BrnpP7QnEe8LZGEuhKUrG5NaFi9X0qU/HjMcZPe0F461u5XaWFFijdxf8g29PyR3
+         MwP2OX/DvBbh8cUuGdh0ytTssdYwOVoaRNCqlVOFuZVFCdXrdWxT7AIC5/YVOqFGPKZV
+         KnZ7YVphoCbxDXC31CI1VnDRnjnFAIhb0jDuSX5+B4CJxEGLuR+N6rtZUQnoakuzKJig
+         6/mh0a47tyZ4p+/LsPwHL4XX46ewm5xfiW7HBI2g9ygBZtGTLo8+rQPK2e2VM6e4FzOE
+         aKOA==
+X-Gm-Message-State: AOAM533CcJiAYd5WyorC2gOxs2rZdtp7YFna/8XB5ufMKCUaY4O7fG+Z
+        dMY/FdShk/MrHr68+tuv44MdUi5Ejd4=
+X-Google-Smtp-Source: ABdhPJyv9YtRVZ0s5KggJH0S308hDhVO2YSo3XPG1zQ/H7D/V91qMqlii80sYMblFTVX6qTCJePXAw==
+X-Received: by 2002:a17:906:d550:b0:6ec:9ff:8791 with SMTP id cr16-20020a170906d55000b006ec09ff8791mr23192272ejc.494.1651007447291;
+        Tue, 26 Apr 2022 14:10:47 -0700 (PDT)
+Received: from leap.localnet (host-79-50-86-254.retail.telecomitalia.it. [79.50.86.254])
+        by smtp.gmail.com with ESMTPSA id ha8-20020a170906a88800b006f3bc1f1818sm922496ejb.213.2022.04.26.14.10.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 14:10:45 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Ira Weiny <ira.weiny@intel.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Peter Collingbourne <pcc@google.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mm/highmem: VM_BUG_ON() if offset + len > PAGE_SIZE
+Date:   Tue, 26 Apr 2022 23:10:44 +0200
+Message-ID: <5262074.Sb9uPGUboI@leap>
+In-Reply-To: <20220426134811.63a398ea5d2212dfececfd83@linux-foundation.org>
+References: <20220426193020.8710-1-fmdefrancesco@gmail.com> <1790890.atdPhlSkOF@leap> <20220426134811.63a398ea5d2212dfececfd83@linux-foundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   cf424ef014ac30b0da27125dd1fbdf10b0d3a520
-commit: a955d7eac1779b437ceb24fc352026a2cbcec140 trace: Add timerlat tracer
-date:   10 months ago
-config: parisc-randconfig-s031-20220425 (https://download.01.org/0day-ci/archive/20220427/202204270534.hS2vHyWX-lkp@intel.com/config)
-compiler: hppa-linux-gcc (GCC) 11.3.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a955d7eac1779b437ceb24fc352026a2cbcec140
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout a955d7eac1779b437ceb24fc352026a2cbcec140
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=parisc SHELL=/bin/bash
+On marted=C3=AC 26 aprile 2022 22:48:11 CEST Andrew Morton wrote:
+> On Tue, 26 Apr 2022 22:19:57 +0200 "Fabio M. De Francesco"=20
+<fmdefrancesco@gmail.com> wrote:
+>=20
+> > On marted=C3=AC 26 aprile 2022 21:34:12 CEST Andrew Morton wrote:
+> > > On Tue, 26 Apr 2022 21:30:20 +0200 "Fabio M. De Francesco"=20
+> > <fmdefrancesco@gmail.com> wrote:
+> > >=20
+> > > > Add VM_BUG_ON() bounds checking to make sure that, if "offset +=20
+len>
+> > > > PAGE_SIZE", memset() does not corrupt data in adjacent pages.
+> > > >=20
+> > >=20
+> > > hm, why?  To match all the other functions in there?
+> > >=20
+> > > I suppose that's logical.  Or we could just delete all the other
+> > > VM_BUG_ON()s.  Have any of them proven to be at all useful?
+> > >=20
+> > I am not so sure about it being so useful. I just noted that=20
+memzero_page()=20
+> > is the only function of that family that is implemented with no=20
+> > VM_BUG_ON(). I have no actual proofs of usefulness :(=20
+> >=20
+> > This is why yesterday I sent an "RFC Patch" (please see =20
+> > https://lore.kernel.org/lkml/20220424104806.25396-1-fmdefrancesco@gmail=
+=2Ecom/
+> >=20
+> > Soon after sending it I thought that VM_WARN_ON_ONCE() could have been=
+=20
+> > better suited, but Ira Weiny wrote to use VM_BUG_ON() for consistency.
+> >=20
+> > Now I could either delete all other VM_BUG_ON() or replace them with=20
+> > VM_WARN_ON_ONCE() (or some other macro).=20
+> >=20
+> > Ah, a third solution might be to leave highmem.h as it is now :)
+> >=20
+> > What do you prefer?
+>=20
+> Merge this patch as-is, I guess.  Going through and removing unuseful
+> VM_BUG_ON()s is a separable activity.
+>=20
+Thanks!
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+While at this, I've just noted that you sent a confirmation which lists all=
+=20
+the patches of mine that are currently in your tree.
+
+I see that you took v1 of "Extend and reorganize Highmem's documentation".=
+=20
+I suppose that you missed the v2 of that series at
+https://lore.kernel.org/lkml/20220425162400.11334-1-fmdefrancesco@gmail.com=
+/=20
+
+Can you please check it?
+
+Thanks,
+
+=46abio
 
 
-sparse warnings: (new ones prefixed by >>)
-   kernel/trace/trace_osnoise.c:108:1: sparse: sparse: symbol '__pcpu_scope_per_cpu_osnoise_var' was not declared. Should it be static?
->> kernel/trace/trace_osnoise.c:131:1: sparse: sparse: symbol '__pcpu_scope_per_cpu_timerlat_var' was not declared. Should it be static?
-   kernel/trace/trace_osnoise.c:223:14: sparse: sparse: symbol 'interface_lock' was not declared. Should it be static?
-   kernel/trace/trace_osnoise.c:657:6: sparse: sparse: symbol 'osnoise_trace_irq_entry' was not declared. Should it be static?
-   kernel/trace/trace_osnoise.c:680:6: sparse: sparse: symbol 'osnoise_trace_irq_exit' was not declared. Should it be static?
-   kernel/trace/trace_osnoise.c:739:5: sparse: sparse: symbol 'hook_irq_events' was not declared. Should it be static?
-   kernel/trace/trace_osnoise.c:771:6: sparse: sparse: symbol 'unhook_irq_events' was not declared. Should it be static?
-   kernel/trace/trace_osnoise.c:788:6: sparse: sparse: symbol 'trace_softirq_entry_callback' was not declared. Should it be static?
-   kernel/trace/trace_osnoise.c:811:6: sparse: sparse: symbol 'trace_softirq_exit_callback' was not declared. Should it be static?
-   kernel/trace/trace_osnoise.c:953:1: sparse: sparse: symbol 'trace_sched_switch_callback' was not declared. Should it be static?
-   kernel/trace/trace_osnoise.c:971:5: sparse: sparse: symbol 'hook_thread_events' was not declared. Should it be static?
-   kernel/trace/trace_osnoise.c:988:6: sparse: sparse: symbol 'unhook_thread_events' was not declared. Should it be static?
-   kernel/trace/trace_osnoise.c:1000:6: sparse: sparse: symbol 'save_osn_sample_stats' was not declared. Should it be static?
-   kernel/trace/trace_osnoise.c:1015:6: sparse: sparse: symbol 'diff_osn_sample_stats' was not declared. Should it be static?
-   kernel/trace/trace_osnoise.c:1213:17: sparse: sparse: incompatible types in comparison expression (different signedness):
-   kernel/trace/trace_osnoise.c:1213:17: sparse:    signed long long *
-   kernel/trace/trace_osnoise.c:1213:17: sparse:    unsigned long long [usertype] *
-   kernel/trace/trace_osnoise.c:1657:5: sparse: sparse: symbol 'timerlat_min_period' was not declared. Should it be static?
-   kernel/trace/trace_osnoise.c:1658:5: sparse: sparse: symbol 'timerlat_max_period' was not declared. Should it be static?
 
-vim +/__pcpu_scope_per_cpu_timerlat_var +131 kernel/trace/trace_osnoise.c
-
-   112	
-   113	/*
-   114	 *  osnoise_unregister_instance - unregister a registered trace instance
-   115	 *
-   116	 * Remove the trace_array *tr from the list of instances running
-   117	 * osnoise/timerlat tracers.
-   118	 */
-   119	static void osnoise_unregister_instance(struct trace_array *tr)
-   120	{
-   121		struct osnoise_instance *inst;
-   122		int found = 0;
-   123	
-   124		/*
-   125		 * register/unregister serialization is provided by trace's
-   126		 * trace_types_lock.
-   127		 */
-   128		lockdep_assert_held(&trace_types_lock);
-   129	
-   130		list_for_each_entry_rcu(inst, &osnoise_instances, list) {
- > 131			if (inst->tr == tr) {
-   132				list_del_rcu(&inst->list);
-   133				found = 1;
-   134				break;
-   135			}
-   136		}
-   137	
-   138		if (!found)
-   139			return;
-   140	
-   141		kvfree_rcu(inst);
-   142	}
-   143	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
