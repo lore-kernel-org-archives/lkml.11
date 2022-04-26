@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F78DC3527C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A43FC4167D
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:58:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346908AbiDZJBd (ORCPT
+        id S1346709AbiDZJBK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:01:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57816 "EHLO
+        Tue, 26 Apr 2022 05:01:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346899AbiDZIp3 (ORCPT
+        with ESMTP id S1346737AbiDZIpU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:45:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F93611C3D;
-        Tue, 26 Apr 2022 01:36:27 -0700 (PDT)
+        Tue, 26 Apr 2022 04:45:20 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9F5E11179;
+        Tue, 26 Apr 2022 01:35:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C85E617E7;
-        Tue, 26 Apr 2022 08:36:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27257C385AC;
-        Tue, 26 Apr 2022 08:36:25 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 501AFCE1BC3;
+        Tue, 26 Apr 2022 08:35:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DADCC385A4;
+        Tue, 26 Apr 2022 08:35:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962186;
-        bh=NVsQUUF/tJdoP9yIQoTGPFAQXLh4WYEGBYuFJEQX1SE=;
+        s=korg; t=1650962121;
+        bh=XCuP9Q+OSOn4+uv+BWAlyIA6CYtfJW9KurUJLikhzp4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OrL9imO4aqcB3y8aNIZSDL4nxv4eP61jJusEIl6osKeQ1uuLBDK3tBt8LVYviTCK+
-         0ePvMCmRJDinbAXnsiDHusjc5EN51tVREqjR5FHq7Yxgf0XXy7UQExsOb8EDAKd903
-         MqvmpzSztLWCRdYbXD8Dpy2A91D2MYEmr5dhwjz8=
+        b=NtF6vIXlVwIqp9CCrfwFlZACLh1OFK1KI2kiMPb7ECjOIbQEDgpHZD0ILgZQrq3nX
+         PLl5YBEXPY5KbF+161zOZ949CcLs4nRG4fJiKVqsJAMRqcE6wMA8cWCaFU6xwxqVtN
+         I0mOc0xpobPvJfHJtloiv8HhgerL0Az5FgyawKWM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        syzbot+70e777a39907d6d5fd0a@syzkaller.appspotmail.com,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 015/124] ALSA: usb-audio: Clear MIDI port active flag after draining
-Date:   Tue, 26 Apr 2022 10:20:16 +0200
-Message-Id: <20220426081747.734351104@linuxfoundation.org>
+        syzbot+7a806094edd5d07ba029@syzkaller.appspotmail.com,
+        Tadeusz Struk <tadeusz.struk@linaro.org>,
+        Theodore Tso <tytso@mit.edu>, stable@kernel.org
+Subject: [PATCH 5.10 77/86] ext4: limit length to bitmap_maxbytes - blocksize in punch_hole
+Date:   Tue, 26 Apr 2022 10:21:45 +0200
+Message-Id: <20220426081743.431380245@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
-References: <20220426081747.286685339@linuxfoundation.org>
+In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
+References: <20220426081741.202366502@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,41 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Tadeusz Struk <tadeusz.struk@linaro.org>
 
-commit 0665886ad1392e6b5bae85d7a6ccbed48dca1522 upstream.
+commit 2da376228a2427501feb9d15815a45dbdbdd753e upstream.
 
-When a rawmidi output stream is closed, it calls the drain at first,
-then does trigger-off only when the drain returns -ERESTARTSYS as a
-fallback.  It implies that each driver should turn off the stream
-properly after the drain.  Meanwhile, USB-audio MIDI interface didn't
-change the port->active flag after the drain.  This may leave the
-output work picking up the port that is closed right now, which
-eventually leads to a use-after-free for the already released rawmidi
-object.
+Syzbot found an issue [1] in ext4_fallocate().
+The C reproducer [2] calls fallocate(), passing size 0xffeffeff000ul,
+and offset 0x1000000ul, which, when added together exceed the
+bitmap_maxbytes for the inode. This triggers a BUG in
+ext4_ind_remove_space(). According to the comments in this function
+the 'end' parameter needs to be one block after the last block to be
+removed. In the case when the BUG is triggered it points to the last
+block. Modify the ext4_punch_hole() function and add constraint that
+caps the length to satisfy the one before laster block requirement.
 
-This patch fixes the bug by properly clearing the port->active flag
-after the output drain.
+LINK: [1] https://syzkaller.appspot.com/bug?id=b80bd9cf348aac724a4f4dff251800106d721331
+LINK: [2] https://syzkaller.appspot.com/text?tag=ReproC&x=14ba0238700000
 
-Reported-by: syzbot+70e777a39907d6d5fd0a@syzkaller.appspotmail.com
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/00000000000011555605dceaff03@google.com
-Link: https://lore.kernel.org/r/20220420130247.22062-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fixes: a4bb6b64e39a ("ext4: enable "punch hole" functionality")
+Reported-by: syzbot+7a806094edd5d07ba029@syzkaller.appspotmail.com
+Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+Link: https://lore.kernel.org/r/20220331200515.153214-1-tadeusz.struk@linaro.org
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/usb/midi.c |    1 +
- 1 file changed, 1 insertion(+)
+ fs/ext4/inode.c |   11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
---- a/sound/usb/midi.c
-+++ b/sound/usb/midi.c
-@@ -1194,6 +1194,7 @@ static void snd_usbmidi_output_drain(str
- 		} while (drain_urbs && timeout);
- 		finish_wait(&ep->drain_wait, &wait);
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -4034,7 +4034,8 @@ int ext4_punch_hole(struct file *file, l
+ 	struct super_block *sb = inode->i_sb;
+ 	ext4_lblk_t first_block, stop_block;
+ 	struct address_space *mapping = inode->i_mapping;
+-	loff_t first_block_offset, last_block_offset;
++	loff_t first_block_offset, last_block_offset, max_length;
++	struct ext4_sb_info *sbi = EXT4_SB(inode->i_sb);
+ 	handle_t *handle;
+ 	unsigned int credits;
+ 	int ret = 0, ret2 = 0;
+@@ -4077,6 +4078,14 @@ int ext4_punch_hole(struct file *file, l
+ 		   offset;
  	}
-+	port->active = 0;
- 	spin_unlock_irq(&ep->buffer_lock);
- }
  
++	/*
++	 * For punch hole the length + offset needs to be within one block
++	 * before last range. Adjust the length if it goes beyond that limit.
++	 */
++	max_length = sbi->s_bitmap_maxbytes - inode->i_sb->s_blocksize;
++	if (offset + length > max_length)
++		length = max_length - offset;
++
+ 	if (offset & (sb->s_blocksize - 1) ||
+ 	    (offset + length) & (sb->s_blocksize - 1)) {
+ 		/*
 
 
