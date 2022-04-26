@@ -2,85 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E79B0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:42:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3322C41535
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:42:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346396AbiDZIo7 (ORCPT
+        id S1346157AbiDZIoj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:44:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59362 "EHLO
+        Tue, 26 Apr 2022 04:44:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345265AbiDZIib (ORCPT
+        with ESMTP id S1345167AbiDZIgs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:38:31 -0400
-Received: from thorn.bewilderbeest.net (thorn.bewilderbeest.net [71.19.156.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5B71939C5;
-        Tue, 26 Apr 2022 01:29:34 -0700 (PDT)
-Received: from hatter.bewilderbeest.net (174-21-163-222.tukw.qwest.net [174.21.163.222])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Tue, 26 Apr 2022 04:36:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 249E38879A;
+        Tue, 26 Apr 2022 01:29:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: zev)
-        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id 493324F;
-        Tue, 26 Apr 2022 01:29:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
-        s=thorn; t=1650961774;
-        bh=SNEEfzyg9e7zSf3s0KHAajmviT5U9WD7JJYzw4V8nPc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SqRxQbsxJ8p4HT+cwT8K4Q7b5LlTTE6n0e/rtUTR9HdGsjyJV9OqppeQirLCrnoI3
-         tgf8oUElUjUiyi8cP1ZmdF+J4lgpnso36G+aEM1cjtiy982UhhyjTQnR8oHyI6JjiM
-         NvtgdkQtaIUQ2H6ztI3hAfNqZ8o+sc7aj4eaCAZk=
-Date:   Tue, 26 Apr 2022 01:29:22 -0700
-From:   Zev Weiss <zev@bewilderbeest.net>
-To:     Guenter Roeck <linux@roeck-us.net>,
-        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org
-Cc:     Renze Nicolai <renze@rnplus.nl>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        openbmc@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        devicetree@vger.kernel.org, webmaster@kernel.org
-Subject: Re: [PATCH v3 0/6] hwmon: (nct6775) Convert to regmap, add i2c
- support
-Message-ID: <YmetYjSKFs+WWwYz@hatter.bewilderbeest.net>
-References: <20220426071848.11619-1-zev@bewilderbeest.net>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B6D02617E7;
+        Tue, 26 Apr 2022 08:29:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B529AC385AC;
+        Tue, 26 Apr 2022 08:29:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650961744;
+        bh=xekvh54C44ahrLQv498FL4hhn2bRb7cr2r2BeQabwWs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=nXIrbZUk/QhlbwpMdch2ZENXmCTzbZRF7thT34bZPT1coocoPR9lXwms6qxaDeKmY
+         HHOkK6GlmPojLg+aHow2hff97t4y9lPAMFIzT2E80fzM2syN0cfIWlbczvDrlqM9Ng
+         uCbqXFosxdeutcEPXt02j9puOFv8syjnxlLQK1dE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 16/62] rxrpc: Restore removed timer deletion
+Date:   Tue, 26 Apr 2022 10:20:56 +0200
+Message-Id: <20220426081737.692804682@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
+References: <20220426081737.209637816@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220426071848.11619-1-zev@bewilderbeest.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[Adding korg webmaster re: list infrastructure]
+From: David Howells <dhowells@redhat.com>
 
-On Tue, Apr 26, 2022 at 12:18:42AM PDT, Zev Weiss wrote:
->Hello,
->
->This is v3 of my effort to add i2c support to the nct6775 hwmon
->driver.
->
->Changes since v2 [0]:
-> ...
-> - Renamed drivers and Kconfig symbols to keep existing platform
->   driver as "nct6775" (SENSORS_NCT6775) and the core module as
->   "nct6775-core" (SENSORS_NCT6775_CORE) [Guenter]
+[ Upstream commit ee3b0826b4764f6c13ad6db67495c5a1c38e9025 ]
 
-Unfortunately while this was a simple enough change to make (a few 'git 
-mv' commands and a handful of actual text changes), it ballooned the 
-size of the diff for patch 5 to the point that vger bounced it for 
-exceeding the 100K message-size limit.  As far as I can tell it looks 
-like it went through elsewhere, but does leave a bit of a gap in the 
-public list archives -- please let me know if there's anything I should 
-try in terms of re-sending it.  (The only combination of 'git 
-format-patch' flags I've been able to find that gets it back down to 
-approximately its previous size is '-B -D', which isn't so useful for 
-actually applying.)
+A recent patch[1] from Eric Dumazet flipped the order in which the
+keepalive timer and the keepalive worker were cancelled in order to fix a
+syzbot reported issue[2].  Unfortunately, this enables the mirror image bug
+whereby the timer races with rxrpc_exit_net(), restarting the worker after
+it has been cancelled:
 
-I'm not sure how critical a limit that 100K is, or if it's something we 
-might consider raising a bit?
+	CPU 1		CPU 2
+	===============	=====================
+			if (rxnet->live)
+			<INTERRUPT>
+	rxnet->live = false;
+ 	cancel_work_sync(&rxnet->peer_keepalive_work);
+			rxrpc_queue_work(&rxnet->peer_keepalive_work);
+	del_timer_sync(&rxnet->peer_keepalive_timer);
+
+Fix this by restoring the removed del_timer_sync() so that we try to remove
+the timer twice.  If the timer runs again, it should see ->live == false
+and not restart the worker.
+
+Fixes: 1946014ca3b1 ("rxrpc: fix a race in rxrpc_exit_net()")
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Eric Dumazet <edumazet@google.com>
+cc: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+Link: https://lore.kernel.org/r/20220404183439.3537837-1-eric.dumazet@gmail.com/ [1]
+Link: https://syzkaller.appspot.com/bug?extid=724378c4bb58f703b09a [2]
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/rxrpc/net_ns.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/net/rxrpc/net_ns.c b/net/rxrpc/net_ns.c
+index 9a76b74af37b..91a503871116 100644
+--- a/net/rxrpc/net_ns.c
++++ b/net/rxrpc/net_ns.c
+@@ -116,7 +116,9 @@ static __net_exit void rxrpc_exit_net(struct net *net)
+ 	struct rxrpc_net *rxnet = rxrpc_net(net);
+ 
+ 	rxnet->live = false;
++	del_timer_sync(&rxnet->peer_keepalive_timer);
+ 	cancel_work_sync(&rxnet->peer_keepalive_work);
++	/* Remove the timer again as the worker may have restarted it. */
+ 	del_timer_sync(&rxnet->peer_keepalive_timer);
+ 	rxrpc_destroy_all_calls(rxnet);
+ 	rxrpc_destroy_all_connections(rxnet);
+-- 
+2.35.1
 
 
-Thanks,
-Zev
 
