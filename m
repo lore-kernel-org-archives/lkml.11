@@ -2,148 +2,333 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C64C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:45:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0E79C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:47:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345121AbiDZJsV (ORCPT
+        id S1347744AbiDZJuZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:48:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58134 "EHLO
+        Tue, 26 Apr 2022 05:50:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244600AbiDZJqL (ORCPT
+        with ESMTP id S1348770AbiDZJti (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:46:11 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 320E31E2718;
-        Tue, 26 Apr 2022 02:01:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650963688; x=1682499688;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=+xZRHKcwhDmc5PGtGEj5nPEl6roQ+b341vPY2YfKU2U=;
-  b=SVoqDI7aAl5XAVIVJvLdG49kgsU+95EuvFv11mJ7CeTDv8h8IzVg7uBt
-   u4hWlsmkbZTq6GUApBERZtmyl58CEoqZTmaHwEkRl3kUcykKKV4ezwiPQ
-   Y4j8eg59uiJC1/RTS10s6dqPEp0ujnptQm4R/gQ42WhfEGYnfLkGISBpr
-   n32qA58Aa72jc6ueBneyKIRjZkvxmhpwPfw/v2Ci/CT1aIsHsqkCWpGLJ
-   C0x6Q8kZgJPMP+ciV1FppV71ukVma83919zMStuJby6Sux4fWw87CfV1Y
-   znWvnCzEI35oi5VCpI8JaIY3Y+siZqKkUT+0zfRJN6C5ifSvX93tOxC69
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="325995802"
-X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
-   d="scan'208";a="325995802"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 02:01:17 -0700
-X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
-   d="scan'208";a="579780567"
-Received: from aslawinx-mobl.ger.corp.intel.com (HELO [10.99.241.209]) ([10.99.241.209])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 02:01:01 -0700
-Message-ID: <263f190b-b618-4f88-2965-551af939652a@linux.intel.com>
-Date:   Tue, 26 Apr 2022 11:00:59 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: linux-next: build failure after merge of the sound-asoc tree
-Content-Language: en-US
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-References: <20220426183044.4f72059b@canb.auug.org.au>
-From:   =?UTF-8?Q?Amadeusz_S=c5=82awi=c5=84ski?= 
-        <amadeuszx.slawinski@linux.intel.com>
-In-Reply-To: <20220426183044.4f72059b@canb.auug.org.au>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Tue, 26 Apr 2022 05:49:38 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 445DD559B;
+        Tue, 26 Apr 2022 02:05:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1650963904; x=1682499904;
+  h=from:to:cc:subject:date:message-id;
+  bh=7KB1mY/ZPltwoWdk1EE4etbSQeuQjO4pGlCbzmCABGo=;
+  b=maqaNwHpG7xQaStitqdRwa9+iuQrYe4J1g3zjXV/EnegLnqOzWlBPR53
+   YLNqoFB3b3Fv8FhseJUqt3hATz76Zs5UzErZmS94Hlv6mo2EjpxrS2zjP
+   1a2fqPGPzG+QySy4nvvELaJnR0AWeaZ57VHMYltlwqux39hxDHHvoy9S8
+   w=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 26 Apr 2022 02:04:35 -0700
+X-QCInternal: smtphost
+Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/AES256-SHA; 26 Apr 2022 02:04:33 -0700
+X-QCInternal: smtphost
+Received: from hu-c-spathi-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.108.59])
+  by ironmsg01-blr.qualcomm.com with ESMTP; 26 Apr 2022 14:34:15 +0530
+Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 212714)
+        id 2FC083AE1; Tue, 26 Apr 2022 14:34:14 +0530 (+0530)
+From:   Srinivasarao Pathipati <quic_spathi@quicinc.com>
+To:     ulf.hansson@linaro.org, avri.altman@wdc.com,
+        linus.walleij@linaro.org, shawn.lin@rock-chips.com,
+        merez@codeaurora.org, s.shtylyov@omp.ru, huijin.park@samsung.com,
+        briannorris@chromium.org, digetx@gmail.com,
+        linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Veerabhadrarao Badiganti <vbadigan@codeaurora.org>,
+        Shaik Sajida Bhanu <sbhanu@codeaurora.org>,
+        kamasali <quic_kamasali@quicinc.com>,
+        Srinivasarao Pathipati <quic_spathi@quicinc.com>
+Subject: [PATCH V1] mmc: core: Add partial initialization support
+Date:   Tue, 26 Apr 2022 14:34:12 +0530
+Message-Id: <1650963852-4173-1-git-send-email-quic_spathi@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/26/2022 10:30 AM, Stephen Rothwell wrote:
-> Hi all,
-> 
-> After merging the sound-asoc tree, today's linux-next build (powerpc
-> allyesconfig) failed like this:
-> 
-> sound/soc/soc-acpi.c:34:1: error: redefinition of 'snd_soc_acpi_find_machine'
->     34 | snd_soc_acpi_find_machine(struct snd_soc_acpi_mach *machines)
->        | ^~~~~~~~~~~~~~~~~~~~~~~~~
-> In file included from sound/soc/soc-acpi.c:9:
-> include/sound/soc-acpi.h:38:1: note: previous definition of 'snd_soc_acpi_find_machine' with type 'struct snd_soc_acpi_mach *(struct snd_soc_acpi_mach *)'
->     38 | snd_soc_acpi_find_machine(struct snd_soc_acpi_mach *machines)
->        | ^~~~~~~~~~~~~~~~~~~~~~~~~
-> sound/soc/soc-acpi.c: In function 'snd_soc_acpi_find_package':
-> sound/soc/soc-acpi.c:58:36: error: implicit declaration of function 'acpi_fetch_acpi_dev'; did you mean 'device_match_acpi_dev'? [-Werror=implicit-function-declaration]
->     58 |         struct acpi_device *adev = acpi_fetch_acpi_dev(handle);
->        |                                    ^~~~~~~~~~~~~~~~~~~
->        |                                    device_match_acpi_dev
-> sound/soc/soc-acpi.c:58:36: error: initialization of 'struct acpi_device *' from 'int' makes pointer from integer without a cast [-Werror=int-conversion]
-> sound/soc/soc-acpi.c:64:25: error: invalid use of undefined type 'struct acpi_device'
->     64 |         if (adev && adev->status.present && adev->status.functional) {
->        |                         ^~
-> sound/soc/soc-acpi.c:64:49: error: invalid use of undefined type 'struct acpi_device'
->     64 |         if (adev && adev->status.present && adev->status.functional) {
->        |                                                 ^~
-> sound/soc/soc-acpi.c:80:26: error: implicit declaration of function 'acpi_extract_package' [-Werror=implicit-function-declaration]
->     80 |                 status = acpi_extract_package(myobj,
->        |                          ^~~~~~~~~~~~~~~~~~~~
-> sound/soc/soc-acpi.c: At top level:
-> sound/soc/soc-acpi.c:95:6: error: redefinition of 'snd_soc_acpi_find_package_from_hid'
->     95 | bool snd_soc_acpi_find_package_from_hid(const u8 hid[ACPI_ID_LEN],
->        |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> In file included from sound/soc/soc-acpi.c:9:
-> include/sound/soc-acpi.h:44:1: note: previous definition of 'snd_soc_acpi_find_package_from_hid' with type 'bool(const u8 *, struct snd_soc_acpi_package_context *)' {aka '_Bool(const unsigned char *, struct snd_soc_acpi_package_context *)'}
->     44 | snd_soc_acpi_find_package_from_hid(const u8 hid[ACPI_ID_LEN],
->        | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> sound/soc/soc-acpi.c:109:27: error: redefinition of 'snd_soc_acpi_codec_list'
->    109 | struct snd_soc_acpi_mach *snd_soc_acpi_codec_list(void *arg)
->        |                           ^~~~~~~~~~~~~~~~~~~~~~~
-> In file included from sound/soc/soc-acpi.c:9:
-> include/sound/soc-acpi.h:51:41: note: previous definition of 'snd_soc_acpi_codec_list' with type 'struct snd_soc_acpi_mach *(void *)'
->     51 | static inline struct snd_soc_acpi_mach *snd_soc_acpi_codec_list(void *arg)
->        |                                         ^~~~~~~~~~~~~~~~~~~~~~~
-> 
-> Caused by commit
-> 
->    47a1886a610a ("ASoC: Intel: avs: Enable AVS driver only on x86 platforms")
-> 
-> I have applied the following patch for today:
-> 
-> From: Stephen Rothwell <sfr@canb.auug.org.au>
-> Date: Tue, 26 Apr 2022 18:01:06 +1000
-> Subject: [PATCH] partial revert of "ASoC: Intel: avs: Enable AVS driver only on x86 platforms"
-> 
-> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> ---
->   sound/soc/intel/Kconfig | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/sound/soc/intel/Kconfig b/sound/soc/intel/Kconfig
-> index be42c4eff165..b0b46deb25c6 100644
-> --- a/sound/soc/intel/Kconfig
-> +++ b/sound/soc/intel/Kconfig
-> @@ -211,7 +211,7 @@ config SND_SOC_INTEL_KEEMBAY
->   
->   config SND_SOC_INTEL_AVS
->   	tristate "Intel AVS driver"
-> -	depends on (X86 && ACPI) || COMPILE_TEST
-> +	depends on (X86 && ACPI)
->   	depends on PCI
->   	depends on COMMON_CLK
->   	select SND_SOC_ACPI
+From: Maya Erez <merez@codeaurora.org>
 
-Well, I'm surprised, as there are 2 other drivers that have
-depends on ACPI || COMPILE_TEST...
+This change adds the ability to partially initialize
+the MMC card by using card Sleep/Awake sequence (CMD5).
+Card will be sent to Sleep state during runtime/system suspend
+and will be woken up during runtime/system resume.
+By using this sequence the card doesn't need full initialization
+which gives time reduction in system/runtime resume path.
 
-I guess it is ultimately caused by
-  select SND_SOC_ACPI
-as failure is in sound/soc/soc-acpi.c file.
+Signed-off-by: Maya Erez <merez@codeaurora.org>
+Signed-off-by: Veerabhadrarao Badiganti <vbadigan@codeaurora.org>
+Signed-off-by: Shaik Sajida Bhanu <sbhanu@codeaurora.org>
+Signed-off-by: kamasali <quic_kamasali@quicinc.com>
+Signed-off-by: Srinivasarao Pathipati <quic_spathi@quicinc.com>
+---
+ drivers/mmc/core/mmc.c   | 149 ++++++++++++++++++++++++++++++++++++++++++++---
+ include/linux/mmc/card.h |   4 ++
+ include/linux/mmc/host.h |   2 +
+ 3 files changed, 146 insertions(+), 9 deletions(-)
 
-I guess SND_SOC_ACPI could depend on ACPI explicitly, to make sure there 
-is no weird dependency issues?
+diff --git a/drivers/mmc/core/mmc.c b/drivers/mmc/core/mmc.c
+index 9ab915b..8691c00 100644
+--- a/drivers/mmc/core/mmc.c
++++ b/drivers/mmc/core/mmc.c
+@@ -1942,7 +1942,14 @@ static int mmc_sleep_busy_cb(void *cb_data, bool *busy)
+ 	return 0;
+ }
+ 
+-static int mmc_sleep(struct mmc_host *host)
++static int mmc_can_sleepawake(struct mmc_host *host)
++{
++	return host && (host->caps2 & MMC_CAP2_SLEEP_AWAKE) && host->card &&
++		(host->card->ext_csd.rev >= 3);
++
++}
++
++static int mmc_sleepawake(struct mmc_host *host, bool sleep)
+ {
+ 	struct mmc_command cmd = {};
+ 	struct mmc_card *card = host->card;
+@@ -1953,14 +1960,17 @@ static int mmc_sleep(struct mmc_host *host)
+ 	/* Re-tuning can't be done once the card is deselected */
+ 	mmc_retune_hold(host);
+ 
+-	err = mmc_deselect_cards(host);
+-	if (err)
+-		goto out_release;
++	if (sleep) {
++		err = mmc_deselect_cards(host);
++		if (err)
++			goto out_release;
++	}
+ 
+ 	cmd.opcode = MMC_SLEEP_AWAKE;
+ 	cmd.arg = card->rca << 16;
+-	cmd.arg |= 1 << 15;
+ 	use_r1b_resp = mmc_prepare_busy_cmd(host, &cmd, timeout_ms);
++	if (sleep)
++		cmd.arg |= 1 << 15;
+ 
+ 	err = mmc_wait_for_cmd(host, &cmd, 0);
+ 	if (err)
+@@ -1982,6 +1992,9 @@ static int mmc_sleep(struct mmc_host *host)
+ 
+ 	err = __mmc_poll_for_busy(host, 0, timeout_ms, &mmc_sleep_busy_cb, host);
+ 
++	if (!sleep)
++		err = mmc_select_card(card);
++
+ out_release:
+ 	mmc_retune_release(host);
+ 	return err;
+@@ -2080,6 +2093,66 @@ static int _mmc_flush_cache(struct mmc_host *host)
+ 			pr_err("%s: cache flush error %d\n",
+ 			       mmc_hostname(host), err);
+ 	}
++	return err;
++}
++
++static int mmc_cache_card_ext_csd(struct mmc_host *host)
++{
++	int err;
++	u8 *ext_csd;
++	struct mmc_card *card = host->card;
++
++	err = mmc_get_ext_csd(card, &ext_csd);
++	if (err || !ext_csd) {
++		pr_err("%s: %s: mmc_get_ext_csd failed (%d)\n",
++			mmc_hostname(host), __func__, err);
++		return err;
++	}
++	/* only cache read/write fields that the sw changes */
++	card->ext_csd.raw_ext_csd_cmdq = ext_csd[EXT_CSD_CMDQ_MODE_EN];
++	card->ext_csd.raw_ext_csd_cache_ctrl = ext_csd[EXT_CSD_CACHE_CTRL];
++	card->ext_csd.raw_ext_csd_bus_width = ext_csd[EXT_CSD_BUS_WIDTH];
++	card->ext_csd.raw_ext_csd_hs_timing = ext_csd[EXT_CSD_HS_TIMING];
++
++	kfree(ext_csd);
++
++	return 0;
++}
++
++static int mmc_test_awake_ext_csd(struct mmc_host *host)
++{
++	int err;
++	u8 *ext_csd;
++	struct mmc_card *card = host->card;
++
++	err = mmc_get_ext_csd(card, &ext_csd);
++	if (err) {
++		pr_err("%s: %s: mmc_get_ext_csd failed (%d)\n",
++			mmc_hostname(host), __func__, err);
++		return err;
++	}
++
++	/* only compare read/write fields that the sw changes */
++	pr_debug("%s: %s: type(cached:current) cmdq(%d:%d) cache_ctrl(%d:%d) bus_width (%d:%d) timing(%d:%d)\n",
++		mmc_hostname(host), __func__,
++		card->ext_csd.raw_ext_csd_cmdq,
++		ext_csd[EXT_CSD_CMDQ_MODE_EN],
++		card->ext_csd.raw_ext_csd_cache_ctrl,
++		ext_csd[EXT_CSD_CACHE_CTRL],
++		card->ext_csd.raw_ext_csd_bus_width,
++		ext_csd[EXT_CSD_BUS_WIDTH],
++		card->ext_csd.raw_ext_csd_hs_timing,
++		ext_csd[EXT_CSD_HS_TIMING]);
++	err = !((card->ext_csd.raw_ext_csd_cmdq ==
++			ext_csd[EXT_CSD_CMDQ_MODE_EN]) &&
++		(card->ext_csd.raw_ext_csd_cache_ctrl ==
++			ext_csd[EXT_CSD_CACHE_CTRL]) &&
++		(card->ext_csd.raw_ext_csd_bus_width ==
++			ext_csd[EXT_CSD_BUS_WIDTH]) &&
++		(card->ext_csd.raw_ext_csd_hs_timing ==
++			ext_csd[EXT_CSD_HS_TIMING]));
++
++	kfree(ext_csd);
+ 
+ 	return err;
+ }
+@@ -2103,8 +2176,12 @@ static int _mmc_suspend(struct mmc_host *host, bool is_suspend)
+ 	    ((host->caps2 & MMC_CAP2_FULL_PWR_CYCLE) || !is_suspend ||
+ 	     (host->caps2 & MMC_CAP2_FULL_PWR_CYCLE_IN_SUSPEND)))
+ 		err = mmc_poweroff_notify(host->card, notify_type);
+-	else if (mmc_can_sleep(host->card))
+-		err = mmc_sleep(host);
++	if (mmc_can_sleepawake(host)) {
++		memcpy(&host->cached_ios, &host->ios, sizeof(host->cached_ios));
++		 mmc_cache_card_ext_csd(host);
++	}
++	if (mmc_can_sleep(host->card))
++		err = mmc_sleepawake(host, true);
+ 	else if (!mmc_host_is_spi(host))
+ 		err = mmc_deselect_cards(host);
+ 
+@@ -2117,6 +2194,48 @@ static int _mmc_suspend(struct mmc_host *host, bool is_suspend)
+ 	return err;
+ }
+ 
++static int mmc_partial_init(struct mmc_host *host)
++{
++	int err = 0;
++	struct mmc_card *card = host->card;
++
++	mmc_set_bus_width(host, host->cached_ios.bus_width);
++	mmc_set_timing(host, host->cached_ios.timing);
++	if (host->cached_ios.enhanced_strobe) {
++		host->ios.enhanced_strobe = true;
++		if (host->ops->hs400_enhanced_strobe)
++			host->ops->hs400_enhanced_strobe(host, &host->ios);
++	}
++	mmc_set_clock(host, host->cached_ios.clock);
++	mmc_set_bus_mode(host, host->cached_ios.bus_mode);
++
++	if (!mmc_card_hs400es(card) &&
++			(mmc_card_hs200(card) || mmc_card_hs400(card))) {
++		err = mmc_execute_tuning(card);
++		if (err) {
++			pr_err("%s: %s: Tuning failed (%d)\n",
++				mmc_hostname(host), __func__, err);
++			goto out;
++		}
++	}
++	/*
++	 * The ext_csd is read to make sure the card did not went through
++	 * Power-failure during sleep period.
++	 * A subset of the W/E_P, W/C_P register will be tested. In case
++	 * these registers values are different from the values that were
++	 * cached during suspend, we will conclude that a Power-failure occurred
++	 * and will do full initialization sequence.
++	 */
++	err = mmc_test_awake_ext_csd(host);
++	if (err) {
++		pr_debug("%s: %s: fail on ext_csd read (%d)\n",
++			mmc_hostname(host), __func__, err);
++		goto out;
++	}
++out:
++	return err;
++}
++
+ /*
+  * Suspend callback
+  */
+@@ -2139,7 +2258,7 @@ static int mmc_suspend(struct mmc_host *host)
+  */
+ static int _mmc_resume(struct mmc_host *host)
+ {
+-	int err = 0;
++	int err = -EINVAL;
+ 
+ 	mmc_claim_host(host);
+ 
+@@ -2147,7 +2266,19 @@ static int _mmc_resume(struct mmc_host *host)
+ 		goto out;
+ 
+ 	mmc_power_up(host, host->card->ocr);
+-	err = mmc_init_card(host, host->card->ocr, host->card);
++
++	if (mmc_can_sleepawake(host)) {
++		err = mmc_sleepawake(host, false);
++		if (!err)
++			err = mmc_partial_init(host);
++		else
++			pr_err("%s: %s: awake failed (%d), fallback to full init\n",
++				mmc_hostname(host), __func__, err);
++	}
++
++	if (err)
++		err = mmc_init_card(host, host->card->ocr, host->card);
++
+ 	mmc_card_clr_suspended(host->card);
+ 
+ out:
+diff --git a/include/linux/mmc/card.h b/include/linux/mmc/card.h
+index 37f9758..ed7f6f7 100644
+--- a/include/linux/mmc/card.h
++++ b/include/linux/mmc/card.h
+@@ -86,6 +86,8 @@ struct mmc_ext_csd {
+ 	unsigned int            data_tag_unit_size;     /* DATA TAG UNIT size */
+ 	unsigned int		boot_ro_lock;		/* ro lock support */
+ 	bool			boot_ro_lockable;
++	u8			raw_ext_csd_cmdq;	/* 15 */
++	u8			raw_ext_csd_cache_ctrl;	/* 33 */
+ 	bool			ffu_capable;	/* Firmware upgrade support */
+ 	bool			cmdq_en;	/* Command Queue enabled */
+ 	bool			cmdq_support;	/* Command Queue supported */
+@@ -96,7 +98,9 @@ struct mmc_ext_csd {
+ 	u8			raw_partition_support;	/* 160 */
+ 	u8			raw_rpmb_size_mult;	/* 168 */
+ 	u8			raw_erased_mem_count;	/* 181 */
++	u8			raw_ext_csd_bus_width;	/* 183 */
+ 	u8			strobe_support;		/* 184 */
++	u8			raw_ext_csd_hs_timing;	/* 185 */
+ 	u8			raw_ext_csd_structure;	/* 194 */
+ 	u8			raw_card_type;		/* 196 */
+ 	u8			raw_driver_strength;	/* 197 */
+diff --git a/include/linux/mmc/host.h b/include/linux/mmc/host.h
+index c38072e..a9ddf7a 100644
+--- a/include/linux/mmc/host.h
++++ b/include/linux/mmc/host.h
+@@ -422,6 +422,7 @@ struct mmc_host {
+ #else
+ #define MMC_CAP2_CRYPTO		0
+ #endif
++#define MMC_CAP2_SLEEP_AWAKE	(1 << 29)	/* Use Sleep/Awake (CMD5) */
+ #define MMC_CAP2_ALT_GPT_TEGRA	(1 << 28)	/* Host with eMMC that has GPT entry at a non-standard location */
+ 
+ 	int			fixed_drv_type;	/* fixed driver type for non-removable media */
+@@ -441,6 +442,7 @@ struct mmc_host {
+ 	spinlock_t		lock;		/* lock for claim and bus ops */
+ 
+ 	struct mmc_ios		ios;		/* current io bus settings */
++	struct mmc_ios		cached_ios;
+ 
+ 	/* group bitfields together to minimize padding */
+ 	unsigned int		use_spi_crc:1;
+-- 
+2.7.4
 
-On the other hand I guess we can just leave X86 with COMPILE_TEST and 
-move ACPI to depends on, without COMPILE_TEST.
-
-Mark, what do you think?
