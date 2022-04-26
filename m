@@ -2,172 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4567C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:47:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB9B6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:47:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242879AbiDZKuF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 06:50:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44570 "EHLO
+        id S1349148AbiDZKuL (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 06:50:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349792AbiDZKtT (ORCPT
+        with ESMTP id S1349824AbiDZKt0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 06:49:19 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C7DD13DC8;
-        Tue, 26 Apr 2022 03:45:08 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id u7so14469620plg.13;
-        Tue, 26 Apr 2022 03:45:08 -0700 (PDT)
+        Tue, 26 Apr 2022 06:49:26 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 354A8E0C0;
+        Tue, 26 Apr 2022 03:45:16 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id gh6so11134861ejb.0;
+        Tue, 26 Apr 2022 03:45:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1is8Iezkr6s4Ex2hsS25ZUz1zJxOesQz7FGVxmLzzqI=;
-        b=p0DuLhC8Wjy65J2kDplTzS8Gmbx06flEyAu02NmnEa6iLAouiE2jEx/xoupC8cq87d
-         u6GcRCz0FyfcTy5F9x9jJErzZVniFujrqWUTIt+zbovvDIfLFcptXSQOEhTlutIaJfvb
-         karYlh4Ccy9ZRuTY/FD+W4wndDYVaS0vtFnPbqgsS1ZOwh5JT1ZVww2TgOs5WMiHTY97
-         +2vJrfQ9JE6zAlFBp6HddwWtnE0WUHvEuyfqRYnjOL7sw6HnqI0KjEGRzm7gboajj2Y9
-         8DRcpcmW+jgOXuI7CBDZO4KLCqF6lRkGblXoEUlBGtkhXqmxBk4kuZuPGwAjiKEtFBGA
-         fNYQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=yT6MeZr7lrp+pl5JuXM90CrfagSL5tvHFlanqgPjJyY=;
+        b=Eh6AA+i4KyqffI3eRab/pWanLJ7aZW9oDevFcQw82RRV2PPvtunCBBil6y0k9ESIcu
+         SA1DCF4MrUk6nsGxk2OXzp0oQF2Ai+FRR7sDAka3wb/4Vc3v0OLicXbm3+//s2BlQlG0
+         VL7F+GIShYom/wVK6kTpH18/FuspHEebkCzPFvjGDRgmpQMkukDIAm0p61iKs3c6Oc83
+         thOfmaOrKTsudYzWs2LrTbcF/t1P+Yei6gM+d39nVfXxZaz6lDRh0Y6JSbiGK5p9gD5+
+         XAdhGwYjvEdBQ+GeaPN/EOeUWbPV5peKdS2y/+b+qBkV3VX/DKJhGHsrNMJFBpQ/O3y5
+         YI3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1is8Iezkr6s4Ex2hsS25ZUz1zJxOesQz7FGVxmLzzqI=;
-        b=5ifkb1dnwQXc7mLfly+ZW8O4sqFUr547VMgdLY76KVQq5BpYPenF4MVRVISwn0pWIK
-         cD3uZ0QR9UvUu7eBhOAVROQnLPvvpJRA5OCtk/Ke1XQzXonmKfXwTi1RHd9CP6Tb2QZD
-         nIHp9PlyoPPg21G784oOondKqhpK1ys0OLnSG7sFdERf4nBAm/C7Vjr14K5rxYcVprRL
-         7Hokn29LbjBcrw8U2FHs6DycbN2OJ6Li/O6knfOGnkZds1W3NLacTlrHj2Wwe6blqb2E
-         MJ46vZeMhOPnPV/T4tilXPj0yc2ZsVMrqLMSyYde0TbOINvSU5R5NjmVYFtAxvvitpE6
-         p6Og==
-X-Gm-Message-State: AOAM531wIL0kKqsL5UbuJX1nHxtO1W8fuwZrCM3i1F9RTJGaAYOcwFI2
-        raFh6aKiOXGFuh3nd2Yk5Go=
-X-Google-Smtp-Source: ABdhPJywGsD8N8S5nB6bbKsBl/gY28f/6aIIUnZRIYbR5jtlC4ehB0GHOptwChCN5l4sOXbq39ztZw==
-X-Received: by 2002:a17:902:ab96:b0:159:1ff:4ea0 with SMTP id f22-20020a170902ab9600b0015901ff4ea0mr23055359plr.60.1650969908094;
-        Tue, 26 Apr 2022 03:45:08 -0700 (PDT)
-Received: from localhost ([101.86.206.159])
-        by smtp.gmail.com with ESMTPSA id c17-20020a056a00249100b00508389d6a7csm15519196pfv.39.2022.04.26.03.45.06
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=yT6MeZr7lrp+pl5JuXM90CrfagSL5tvHFlanqgPjJyY=;
+        b=x07PmAYKw/wwK6Hp473Fx5iCS8fyccZhltbc9pvGN72LK4k8rlLf6F1dTQ3LmzcJb3
+         0V4HHWy3B1IjB7uOhwpB0CmKmxvr2NRiJ0lte21sJyMriSBEVofD03Ib+x82s5kX9kRb
+         bMJMwfDAS2LruKqg5HW6xYq4Is1uA7Nb8V7GCw6Pp1IQl6M8143Mjygo6BJeL6VpBQvY
+         E/IeN8mYoAkl1Lk9g84UzLIFoml2R/H52nWwY/4uWt9VtuyN7vs8OlRZP5zyIYsy2tgi
+         7quFcECXBBkcxLdmegcVtSYMlH6DFKynqjOZK4YAffVBw8DizNfDNN9zqBhpVsjAc9cc
+         nz5w==
+X-Gm-Message-State: AOAM531Cqr/uhf+n2BCfkX/+jQIs6D0X9K8ryFDHrf1o0dmz34Vzukj4
+        PNa5bfd+U6LyrQ9oXbL03WM=
+X-Google-Smtp-Source: ABdhPJzA5ggTUsN9zCEkiGOvUxl5pVGQ+/cozLKTUfXtLV4X6wR9Kub9ICs5sVUhAX4HWJ/vMNNE4w==
+X-Received: by 2002:a17:907:7da2:b0:6f3:a802:d52d with SMTP id oz34-20020a1709077da200b006f3a802d52dmr4684546ejc.706.1650969914613;
+        Tue, 26 Apr 2022 03:45:14 -0700 (PDT)
+Received: from leap.localnet (host-79-50-86-254.retail.telecomitalia.it. [79.50.86.254])
+        by smtp.gmail.com with ESMTPSA id b16-20020a170906709000b006f3a8aac0eesm1091139ejk.0.2022.04.26.03.45.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 03:45:07 -0700 (PDT)
-From:   Patrick Wang <patrick.wang.shcn@gmail.com>
-To:     paulmck@kernel.org, rostedt@goodmis.org, frederic@kernel.org,
-        quic_neeraju@quicinc.com, josh@joshtriplett.org,
-        mathieu.desnoyers@efficios.com, jiangshanlai@gmail.com,
-        joel@joelfernandes.org
-Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org,
-        patrick.wang.shcn@gmail.com
-Subject: [PATCH v3] rcu: ftrace: avoid tracing a few functions executed in stop machine
-Date:   Tue, 26 Apr 2022 18:45:02 +0800
-Message-Id: <20220426104502.52663-1-patrick.wang.shcn@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 26 Apr 2022 03:45:13 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     Ira Weiny <ira.weiny@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        outreachy@lists.linux.dev, Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH v2 4/4] Documentation/vm: Rework "Temporary Virtual Mappings" section
+Date:   Tue, 26 Apr 2022 12:45:12 +0200
+Message-ID: <3610796.MHq7AAxBmi@leap>
+In-Reply-To: <YmecctAD9XXYG8CR@linutronix.de>
+References: <20220425162400.11334-1-fmdefrancesco@gmail.com> <20220425162400.11334-5-fmdefrancesco@gmail.com> <YmecctAD9XXYG8CR@linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Because of the change of stop machine implementation, there are functions
-being called while waiting currently:
+On marted=C3=AC 26 aprile 2022 09:17:06 CEST Sebastian Andrzej Siewior wrot=
+e:
+> On 2022-04-25 18:24:00 [+0200], Fabio M. De Francesco wrote:
+> > index e05bf5524174..b09f1f9a81f2 100644
+> > --- a/Documentation/vm/highmem.rst
+> > +++ b/Documentation/vm/highmem.rst
+> > @@ -50,26 +50,77 @@ space when they use mm context tags.
+> >  Temporary Virtual Mappings
+> >  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D
+> > =20
+> > -The kernel contains several ways of creating temporary mappings:
+> > +The kernel contains several ways of creating temporary mappings. The=20
+following
+> > +list shows them in order of preference of use.
+> > =20
+> > -* vmap().  This can be used to make a long duration mapping of=20
+multiple
+> > -  physical pages into a contiguous virtual space.  It needs global
+> > -  synchronization to unmap.
+> > +* kmap_local_page().  This function is used to require short term=20
+mappings.
+> > +  It can be invoked from any context (including interrupts) but the=20
+mappings
+> > +  can only be used in the context which acquired them.
+> > +
+> > +  This function should be preferred, where feasible, over all the=20
+others.
+>=20
+> feasible? It should always be used.=20
 
-----------------------------------------------------------------
-Former stop machine wait loop:
-do {
-    cpu_relax(); => macro
-    ...
-} while (curstate != STOPMACHINE_EXIT);
------------------------------------------------------------------
-Current stop machine wait loop:
-do {
-    stop_machine_yield(cpumask); => function (notraced)
-    ...
-    touch_nmi_watchdog(); => function (notraced, inside calls also notraced)
-    ...
-    rcu_momentary_dyntick_idle(); => function (notraced, inside calls traced)
-} while (curstate != MULTI_STOP_EXIT);
-------------------------------------------------------------------
+No, it cannot always be used. Please read again few lines above this that=20
+"The mapping can only be used in the context which acquired them". We=20
+cannot do blind s/kmap/kmap_local_page/.
 
-These functions (including the calls inside) should be marked notrace to avoid
-their codes being updated when they are being called. The calls inside
-rcu_momentary_dyntick_idle() still remain traced, and will cause crash:
+> I don't see a reason why using
+> kmap_local_page() would not be feasible.
 
-  rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
-  rcu: 	1-...!: (0 ticks this GP) idle=14f/1/0x4000000000000000 softirq=3397/3397 fqs=0
-  rcu: 	3-...!: (0 ticks this GP) idle=ee9/1/0x4000000000000000 softirq=5168/5168 fqs=0
-  	(detected by 0, t=8137 jiffies, g=5889, q=2 ncpus=4)
-  Task dump for CPU 1:
-  task:migration/1     state:R  running task     stack:    0 pid:   19 ppid:     2 flags:0x00000000
-  Stopper: multi_cpu_stop+0x0/0x18c <- stop_machine_cpuslocked+0x128/0x174
-  Call Trace:
-  Task dump for CPU 3:
-  task:migration/3     state:R  running task     stack:    0 pid:   29 ppid:     2 flags:0x00000000
-  Stopper: multi_cpu_stop+0x0/0x18c <- stop_machine_cpuslocked+0x128/0x174
-  Call Trace:
-  rcu: rcu_preempt kthread timer wakeup didn't happen for 8136 jiffies! g5889 f0x0 RCU_GP_WAIT_FQS(5) ->state=0x402
-  rcu: 	Possible timer handling issue on cpu=2 timer-softirq=594
-  rcu: rcu_preempt kthread starved for 8137 jiffies! g5889 f0x0 RCU_GP_WAIT_FQS(5) ->state=0x402 ->cpu=2
-  rcu: 	Unless rcu_preempt kthread gets sufficient CPU time, OOM is now expected behavior.
-  rcu: RCU grace-period kthread stack dump:
-  task:rcu_preempt     state:I stack:    0 pid:   14 ppid:     2 flags:0x00000000
-  Call Trace:
-    schedule+0x56/0xc2
-    schedule_timeout+0x82/0x184
-    rcu_gp_fqs_loop+0x19a/0x318
-    rcu_gp_kthread+0x11a/0x140
-    kthread+0xee/0x118
-    ret_from_exception+0x0/0x14
-  rcu: Stack dump where RCU GP kthread last ran:
-  Task dump for CPU 2:
-  task:migration/2     state:R  running task     stack:    0 pid:   24 ppid:     2 flags:0x00000000
-  Stopper: multi_cpu_stop+0x0/0x18c <- stop_machine_cpuslocked+0x128/0x174
-  Call Trace:
+Ditto.
 
-Mark the calls inside rcu_momentary_dyntick_idle():
- rcu_preempt_deferred_qs()
- rcu_preempt_need_deferred_qs()
- rcu_preempt_deferred_qs_irqrestore()
-as notrace to prevent this.
+> > -* kmap().  This permits a short duration mapping of a single page.  It=
+=20
+needs
+> > -  global synchronization, but is amortized somewhat.  It is also prone=
+=20
+to
+> > -  deadlocks when using in a nested fashion, and so it is not=20
+recommended for
+> > -  new code.
+> > +  These mappings are per thread, CPU local (i.e., migration from one=20
+CPU to
+> > +  another is disabled - this is why they are called "local"), but they=
+=20
+don't
+> > +  disable preemption. It's valid to take pagefaults in a local kmap=20
+region,
+> > +  unless the context in which the local mapping is acquired does not=20
+allow
+> > +  it for other reasons.
+> > +
+> > +  kmap_local_page() always returns a valid virtual address and it is=20
+assumed
+> > +  that kunmap_local() will never fail.
+> > +
+> > +  If a task holding local kmaps is preempted, the maps are removed on=
+=20
+context
+> > +  switch and restored when the task comes back on the CPU. As the maps=
+=20
+are
+> > +  strictly CPU local, it is guaranteed that the task stays on the CPU=
+=20
+and
+>=20
+> Maybe "thread local" instead CPU local? Another thread on the same CPU
+> can not use this mapping.
+>=20
 
-Signed-off-by: Patrick Wang <patrick.wang.shcn@gmail.com>
----
-v1->v2:
- - Modify log message.
+Hmm, I might add "thread local" to convey that the local mappings should=20
+stay in the same context that acquired them.=20
 
-v2->v3:
- - Move "notrace" to behind "static" to keep the consistency with the rest of the code.
+However, kmap_local_page() also disable migration. This is how Thomas=20
+Gleixner talks about kmap_local_page() in his patch where it introduced=20
+this function:=20
 
- kernel/rcu/tree_plugin.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+"The kmap_local.*() functions can be invoked from both preemptible and
+atomic context. kmap local sections disable migration to keep the resulting
+virtual mapping address correct, but disable neither pagefaults nor
+preemption.".
 
-diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h
-index c8ba0fe17267..440d9e02a26e 100644
---- a/kernel/rcu/tree_plugin.h
-+++ b/kernel/rcu/tree_plugin.h
-@@ -460,7 +460,7 @@ static bool rcu_preempt_has_tasks(struct rcu_node *rnp)
-  * be quite short, for example, in the case of the call from
-  * rcu_read_unlock_special().
-  */
--static void
-+static notrace void
- rcu_preempt_deferred_qs_irqrestore(struct task_struct *t, unsigned long flags)
- {
- 	bool empty_exp;
-@@ -581,7 +581,7 @@ rcu_preempt_deferred_qs_irqrestore(struct task_struct *t, unsigned long flags)
-  * is disabled.  This function cannot be expected to understand these
-  * nuances, so the caller must handle them.
-  */
--static bool rcu_preempt_need_deferred_qs(struct task_struct *t)
-+static notrace bool rcu_preempt_need_deferred_qs(struct task_struct *t)
- {
- 	return (__this_cpu_read(rcu_data.cpu_no_qs.b.exp) ||
- 		READ_ONCE(t->rcu_read_unlock_special.s)) &&
-@@ -595,7 +595,7 @@ static bool rcu_preempt_need_deferred_qs(struct task_struct *t)
-  * evaluate safety in terms of interrupt, softirq, and preemption
-  * disabling.
-  */
--static void rcu_preempt_deferred_qs(struct task_struct *t)
-+static notrace void rcu_preempt_deferred_qs(struct task_struct *t)
- {
- 	unsigned long flags;
- 
--- 
-2.25.1
+Therefore, if it "disable migration" it is "CPU local". I mean that I might=
+=20
+also add "thread local" but I think (at least at this moment) that I won't=
+=20
+remove "CPU local".
+
+@Ira: what about this proposal?
+
+> > +  that the CPU cannot be unplugged until the local kmaps are released.
+> > +
+> > +  Nesting kmap_local_page() and kmap_atomic() mappings is allowed to a=
+=20
+certain
+> > +  extent (up to KMAP_TYPE_NR) but their invocations have to be=20
+strictly ordered
+> > +  because the map implementation is stack based. See kmap_local_page=20
+() kdocs
+>                                                                        ^
+> > +  (included in the "Functions" section) for details on how to manage=20
+nested
+> > +  mappings.
+>=20
+> While they can be nested I wouldn't encourage that.
+
+I'm not encouraging this kinds of usages. I'm only saying that "it is=20
+allowed to a certain extent".
+
+> >  * kmap_atomic().  This permits a very short duration mapping of a=20
+single
+> >    page.  Since the mapping is restricted to the CPU that issued it, it
+> >    performs well, but the issuing task is therefore required to stay on=
+=20
+that
+> >    CPU until it has finished, lest some other task displace its=20
+mappings.
+> > =20
+> > -  kmap_atomic() may also be used by interrupt contexts, since it is=20
+does not
+> > -  sleep and the caller may not sleep until after kunmap_atomic() is=20
+called.
+> > +  kmap_atomic() may also be used by interrupt contexts, since it does=
+=20
+not
+> > +  sleep and the callers too may not sleep until after kunmap_atomic()=
+=20
+is
+> > +  called.
+> > +
+> > +  Each call of kmap_atomic() in the kernel creates a non-preemptible=20
+section
+> > +  and disable pagefaults. This could be a source of unwanted latency,=
+=20
+so it
+> > +  should be only used if it is absolutely required, otherwise=20
+kmap_local_page()
+> > +  should be used where it is feasible.
+>=20
+> Please add a note this function is deprecated and must not be used in
+> new code.
+
+I have already responded (in my other reply for 1/4) about the possible=20
+addition of a notice of deprecation. But, as said, I also need to take into=
+=20
+account what other people think about it.
+
+However, I agree that, since we have that "deprecated!" in the kdocs of =20
+kmap_atomic(), I should be consistent everywhere.
+
+Please let me wait for more reviews before making further changes.
+
+Thanks,
+
+=46abio
+
+>=20
+> Sebastian
+>=20
+
+
+
 
