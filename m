@@ -2,88 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39FD0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 06:42:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0F37C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 06:42:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245505AbiDZGpK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 02:45:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54624 "EHLO
+        id S245540AbiDZGpO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 02:45:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234973AbiDZGpI (ORCPT
+        with ESMTP id S245306AbiDZGpJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 02:45:08 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E56C911A07
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 23:42:01 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id s21so9257159wrb.8
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 23:42:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1WzZeKjENByENjbHl5ETR6B+MtTKYG2VpY2b2s4rekE=;
-        b=3o3JvKO3CBOkr/VRXV8DwgdmNZqfZhZs+rlCpKHixVD7j38qD0xAdTepiG704mz9y8
-         v/TT86rai1roca6ewS40D9XVAzP22XtA8HuA/Wblnxa/tQycOmexhKGFk9CDzvUrrNim
-         GkuMebBXW+4/FwDlsNi5o0tGZnPOmfNbHm3Hg4XXZt9vYC4CnOLsH7n8IsFNdIgzq6P4
-         2pPAX6LbqPfJfXEoIOMDy3cUSPpWqhFHyqqVq4HSYyRtR6Quo32UAgyBPGfohwl9eukd
-         MKAgnIl3juAxokWN5XGWpGsw7HNPulCLdG5vRm42jkvQrKBHLFUtZo+vyylQOh6SHqia
-         G0fQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1WzZeKjENByENjbHl5ETR6B+MtTKYG2VpY2b2s4rekE=;
-        b=n0He/21Gacv7zLstpEiTdVX/Bc9fgx/pHMlsu4gZpRpilvrRybgnEyQLMFT8erSIZ3
-         v8hrTW8Z+kfIhNP1e3lRjmOCgQUHOApJ2dupjgZ92QXxJhLXh0sJ0WB1er5xrxZHaEeh
-         uYLP0C8v9YUbtbg8jio97aFmIWZSD0/UlmlVwJNbxBomgf3V0DA2avuAjX8hWlwzknqa
-         rJgiCBwts3lPrDf3mIFIniW9b0gf9VR/7Ia7Al8hLoOrZOK5TpCFHjKdX4JgI4V5aTeY
-         q1ehKht9JvWRz6UO5L42uITvMfERgGyKQLaNaeRvY4MCoee/CuJfLDVuMT54sn0+rPmx
-         +bAw==
-X-Gm-Message-State: AOAM531af+fCRtw+XKw3+EcDwDyc4LOkLs1/TN1c+YPek2/e0kquMOn8
-        GTjwIiyZiOrnE2QOsVX0M8eAJQ==
-X-Google-Smtp-Source: ABdhPJyWgMIjDI/U3F55ScfmL9okND/v4Jw3J30PZR6nFbRMFevT+s/tEuK2hCps4ndGPSOLlVpx/g==
-X-Received: by 2002:a05:6000:168d:b0:20a:e3ed:7fde with SMTP id y13-20020a056000168d00b0020ae3ed7fdemr2110384wrd.499.1650955320496;
-        Mon, 25 Apr 2022 23:42:00 -0700 (PDT)
-Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id l14-20020a05600c1d0e00b00393ed37f63bsm4020430wms.26.2022.04.25.23.41.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 23:42:00 -0700 (PDT)
-From:   Corentin Labbe <clabbe@baylibre.com>
-To:     dhowells@redhat.com, dwmw2@infradead.org
-Cc:     keyrings@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH] certs: fix a typo on restrict_link_by_builtin_trusted kernel doc comment
-Date:   Tue, 26 Apr 2022 06:41:55 +0000
-Message-Id: <20220426064155.3788125-1-clabbe@baylibre.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 26 Apr 2022 02:45:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 88C491AF3E
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 23:42:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650955321;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7abwP0OsWtbN83lK5y79QzB8uIny3w43c2wo+0VTZhQ=;
+        b=KTBB4f4JF+q/JVB+V8oJf4r0UFT4BHLj7RV+29ZvkBmiWndWhWniUNKTyKXj7Rf3EGg98K
+        9KgdyAo/8HZZtSotT9u3BASXN89ENHAx6ebH03ik2GeyFwGeA33XOEJ5naEaMOAIgChs61
+        gXlW4G+2bvF82BbqdTLLZHWCGaVpznU=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-328-Rnrn1RSFNQSPcBQeg6zhLQ-1; Tue, 26 Apr 2022 02:41:57 -0400
+X-MC-Unique: Rnrn1RSFNQSPcBQeg6zhLQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7B8AD18A658A;
+        Tue, 26 Apr 2022 06:41:35 +0000 (UTC)
+Received: from [10.72.13.230] (ovpn-13-230.pek2.redhat.com [10.72.13.230])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 63FAC40470C2;
+        Tue, 26 Apr 2022 06:41:26 +0000 (UTC)
+Reply-To: Gavin Shan <gshan@redhat.com>
+Subject: Re: [PATCH v6 5/9] Docs: KVM: Rename psci.rst to hypercalls.rst
+To:     Raghavendra Rao Ananta <rananta@google.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Andrew Jones <drjones@redhat.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>
+Cc:     kvm@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        Peter Shier <pshier@google.com>, linux-kernel@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Will Deacon <will@kernel.org>, kvmarm@lists.cs.columbia.edu,
+        linux-arm-kernel@lists.infradead.org
+References: <20220423000328.2103733-1-rananta@google.com>
+ <20220423000328.2103733-6-rananta@google.com>
+From:   Gavin Shan <gshan@redhat.com>
+Message-ID: <8e67bc1b-05c9-f2d3-1580-2c1f3118a769@redhat.com>
+Date:   Tue, 26 Apr 2022 14:41:23 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220423000328.2103733-6-rananta@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The kernel doc comment use the wrong name for restrict_link_by_builtin_trusted
-This fixes the following sparse warnings:
-certs/system_keyring.c:46: warning: expecting prototype for restrict_link_to_builtin_trusted(). Prototype was for restrict_link_by_builtin_trusted() instead
+On 4/23/22 8:03 AM, Raghavendra Rao Ananta wrote:
+> Since the doc also covers general hypercalls' details,
+> rather than just PSCI, and the fact that the bitmap firmware
+> registers' details will be added to this doc, rename the file
+> to a more appropriate name- hypercalls.rst.
+> 
+> Signed-off-by: Raghavendra Rao Ananta <rananta@google.com>
+> Reviewed-by: Oliver Upton <oupton@google.com>
+> ---
+>   Documentation/virt/kvm/arm/{psci.rst => hypercalls.rst} | 0
+>   1 file changed, 0 insertions(+), 0 deletions(-)
+>   rename Documentation/virt/kvm/arm/{psci.rst => hypercalls.rst} (100%)
+> 
 
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
----
- certs/system_keyring.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Reviewed-by: Gavin Shan <gshan@redhat.com>
 
-diff --git a/certs/system_keyring.c b/certs/system_keyring.c
-index 05b66ce9d1c9..8fb718ef983d 100644
---- a/certs/system_keyring.c
-+++ b/certs/system_keyring.c
-@@ -34,7 +34,7 @@ extern __initconst const unsigned long system_certificate_list_size;
- extern __initconst const unsigned long module_cert_size;
- 
- /**
-- * restrict_link_to_builtin_trusted - Restrict keyring addition by built in CA
-+ * restrict_link_by_builtin_trusted - Restrict keyring addition by built in CA
-  *
-  * Restrict the addition of keys into a keyring based on the key-to-be-added
-  * being vouched for by a key in the built in system keyring.
--- 
-2.35.1
+> diff --git a/Documentation/virt/kvm/arm/psci.rst b/Documentation/virt/kvm/arm/hypercalls.rst
+> similarity index 100%
+> rename from Documentation/virt/kvm/arm/psci.rst
+> rename to Documentation/virt/kvm/arm/hypercalls.rst
+> 
 
