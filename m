@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD2F5C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:58:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2639AC4167E
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:58:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346631AbiDZJBE (ORCPT
+        id S1346795AbiDZJBO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:01:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56480 "EHLO
+        Tue, 26 Apr 2022 05:01:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346558AbiDZIpK (ORCPT
+        with ESMTP id S1346850AbiDZIp0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:45:10 -0400
+        Tue, 26 Apr 2022 04:45:26 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3D98793B9;
-        Tue, 26 Apr 2022 01:35:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27ED8B3695;
+        Tue, 26 Apr 2022 01:35:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 442066185D;
-        Tue, 26 Apr 2022 08:35:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E772C385AC;
-        Tue, 26 Apr 2022 08:35:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B384D618E6;
+        Tue, 26 Apr 2022 08:35:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A393C385A0;
+        Tue, 26 Apr 2022 08:35:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962101;
-        bh=bjbPd82cWm0rkwJc4oMURKkdAE7zlARdRVTqzNKFavA=;
+        s=korg; t=1650962157;
+        bh=KqzuKxuQJCdfP2D+y8yU6DtCUL++GH2XJYDjiu7Erv0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BHb4Fz+tRUFyRi3IAj/V2o4PgEQi/+aZy0GzFsyQQtkBsqSo3m1TS8L3zlYtQnFar
-         0SiEqEssUFGoVHBVGvYf11FyHLUeHPo/peR4zoNNid5XEbrdvqBai+Gth6Wq0UXeqv
-         W95hxLLoo6cdvcI3V2dtiVWF0qvl7s8/wR5kNdro=
+        b=FTtNvxAHpvdACfSnS5rEf2OPCH6N2B7mdfDfDhdKqZPZGF200w/Oyw539pC4/wKS8
+         IpcXBzUR7IXx1L2cU15Sl6B5S29EV2CtrywmKuQTGgz/Z2eIk4i336sOrCtF5KBuOK
+         eOfnIp79XtgqJ1vVo0a/YNDhwnJiPscud8WUJWt4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, lee.jones@linaro.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 71/86] drm/vc4: Use pm_runtime_resume_and_get to fix pm_runtime_get_sync() usage
-Date:   Tue, 26 Apr 2022 10:21:39 +0200
-Message-Id: <20220426081743.258197474@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "stable@vger.kernel.org, Dan Carpenter" <dan.carpenter@oracle.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [PATCH 5.10 84/86] staging: ion: Prevent incorrect reference counting behavour
+Date:   Tue, 26 Apr 2022 10:21:52 +0200
+Message-Id: <20220426081743.639654235@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
 References: <20220426081741.202366502@linuxfoundation.org>
@@ -50,41 +50,28 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 3d0b93d92a2790337aa9d18cb332d02356a24126 ]
+Supply additional check in order to prevent unexpected results.
 
-If the device is already in a runtime PM enabled state
-pm_runtime_get_sync() will return 1.
-
-Also, we need to call pm_runtime_put_noidle() when pm_runtime_get_sync()
-fails, so use pm_runtime_resume_and_get() instead. this function
-will handle this.
-
-Fixes: 4078f5757144 ("drm/vc4: Add DSI driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220420135008.2757-1-linmq006@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: b892bf75b2034 ("ion: Switch ion to use dma-buf")
+Suggested-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/vc4/vc4_dsi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/staging/android/ion/ion.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
-index eaf276978ee7..ad84b56f4091 100644
---- a/drivers/gpu/drm/vc4/vc4_dsi.c
-+++ b/drivers/gpu/drm/vc4/vc4_dsi.c
-@@ -835,7 +835,7 @@ static void vc4_dsi_encoder_enable(struct drm_encoder *encoder)
- 	unsigned long phy_clock;
- 	int ret;
+--- a/drivers/staging/android/ion/ion.c
++++ b/drivers/staging/android/ion/ion.c
+@@ -114,6 +114,9 @@ static void *ion_buffer_kmap_get(struct
+ 	void *vaddr;
  
--	ret = pm_runtime_get_sync(dev);
-+	ret = pm_runtime_resume_and_get(dev);
- 	if (ret) {
- 		DRM_ERROR("Failed to runtime PM enable on DSI%d\n", dsi->port);
- 		return;
--- 
-2.35.1
-
+ 	if (buffer->kmap_cnt) {
++		if (buffer->kmap_cnt == INT_MAX)
++			return ERR_PTR(-EOVERFLOW);
++
+ 		buffer->kmap_cnt++;
+ 		return buffer->vaddr;
+ 	}
 
 
