@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDAC7C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:55:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4272DC43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:55:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345690AbiDZI6P (ORCPT
+        id S1345792AbiDZI62 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:58:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56508 "EHLO
+        Tue, 26 Apr 2022 04:58:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346423AbiDZIpB (ORCPT
+        with ESMTP id S1346583AbiDZIpL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:45:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC955167F1E;
-        Tue, 26 Apr 2022 01:34:45 -0700 (PDT)
+        Tue, 26 Apr 2022 04:45:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB2517DE3A;
+        Tue, 26 Apr 2022 01:35:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7090FB81D09;
-        Tue, 26 Apr 2022 08:34:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE140C385A0;
-        Tue, 26 Apr 2022 08:34:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 364C2618BF;
+        Tue, 26 Apr 2022 08:35:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20B2DC385A4;
+        Tue, 26 Apr 2022 08:35:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962083;
-        bh=vbMCQhYpFOrJqjfbCfIgDM/0g8eUs24bpcjR8pwBGS4=;
+        s=korg; t=1650962104;
+        bh=tl2LK/JQS604tLL9yaUwwYcSn+n1f2Rk9mjlTuRuNoA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YmizzJofKY4RKUVOXtw+4Gul1HmWcPUys6RsvjcOHf2EFZifyZWgfd5+VeSJ3ZW1a
-         b+j4hw0QqkaNRTT2pyZ3tIHGn3JtpcIRrUIBFckdCoL2LCTPkMEuypqH2LznfqY7T4
-         9hVlUEZX7s8rAA4/qKS9uaZ35bl2oyf1/NqGWjmU=
+        b=TSmR/y6yWqLIFgjnL77ERv0LLWvVnA27J8EgQsCjj1hQSp0gQzCcgzAgsUNd1we4+
+         mU/+u2c17fgMoAmveN3o+hvU4Q7BiUl4RhO/ilAeS+xZvmKbVywxakeusqFKbgeLZa
+         fnoESqmX7s26WHcU28iVUzrxcQeIyx8+yFl09oGA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hongbin Wang <wh_bin@126.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        Madhavan Srinivasan <maddy@linux.vnet.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 39/86] vxlan: fix error return code in vxlan_fdb_append
-Date:   Tue, 26 Apr 2022 10:21:07 +0200
-Message-Id: <20220426081742.334423312@linuxfoundation.org>
+Subject: [PATCH 5.10 72/86] powerpc/perf: Fix power9 event alternatives
+Date:   Tue, 26 Apr 2022 10:21:40 +0200
+Message-Id: <20220426081743.287834279@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
 References: <20220426081741.202366502@linuxfoundation.org>
@@ -50,38 +52,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hongbin Wang <wh_bin@126.com>
+From: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
 
-[ Upstream commit 7cea5560bf656b84f9ed01c0cc829d4eecd0640b ]
+[ Upstream commit 0dcad700bb2776e3886fe0a645a4bf13b1e747cd ]
 
-When kmalloc and dst_cache_init failed,
-should return ENOMEM rather than ENOBUFS.
+When scheduling a group of events, there are constraint checks done to
+make sure all events can go in a group. Example, one of the criteria is
+that events in a group cannot use the same PMC. But platform specific
+PMU supports alternative event for some of the event codes. During
+perf_event_open(), if any event group doesn't match constraint check
+criteria, further lookup is done to find alternative event.
 
-Signed-off-by: Hongbin Wang <wh_bin@126.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+By current design, the array of alternatives events in PMU code is
+expected to be sorted by column 0. This is because in
+find_alternative() the return criteria is based on event code
+comparison. ie. "event < ev_alt[i][0])". This optimisation is there
+since find_alternative() can be called multiple times. In power9 PMU
+code, the alternative event array is not sorted properly and hence there
+is breakage in finding alternative events.
+
+To work with existing logic, fix the alternative event array to be
+sorted by column 0 for power9-pmu.c
+
+Results:
+
+With alternative events, multiplexing can be avoided. That is, for
+example, in power9 PM_LD_MISS_L1 (0x3e054) has alternative event,
+PM_LD_MISS_L1_ALT (0x400f0). This is an identical event which can be
+programmed in a different PMC.
+
+Before:
+
+ # perf stat -e r3e054,r300fc
+
+ Performance counter stats for 'system wide':
+
+           1057860      r3e054              (50.21%)
+               379      r300fc              (49.79%)
+
+       0.944329741 seconds time elapsed
+
+Since both the events are using PMC3 in this case, they are
+multiplexed here.
+
+After:
+
+ # perf stat -e r3e054,r300fc
+
+ Performance counter stats for 'system wide':
+
+           1006948      r3e054
+               182      r300fc
+
+Fixes: 91e0bd1e6251 ("powerpc/perf: Add PM_LD_MISS_L1 and PM_BR_2PATH to power9 event list")
+Signed-off-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+Reviewed-by: Madhavan Srinivasan <maddy@linux.vnet.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220419114828.89843-1-atrajeev@linux.vnet.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/vxlan.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/powerpc/perf/power9-pmu.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index 48fbdce6a70e..72d670667f64 100644
---- a/drivers/net/vxlan.c
-+++ b/drivers/net/vxlan.c
-@@ -710,11 +710,11 @@ static int vxlan_fdb_append(struct vxlan_fdb *f,
+diff --git a/arch/powerpc/perf/power9-pmu.c b/arch/powerpc/perf/power9-pmu.c
+index 2a57e93a79dc..7245355bee28 100644
+--- a/arch/powerpc/perf/power9-pmu.c
++++ b/arch/powerpc/perf/power9-pmu.c
+@@ -133,11 +133,11 @@ int p9_dd22_bl_ev[] = {
  
- 	rd = kmalloc(sizeof(*rd), GFP_ATOMIC);
- 	if (rd == NULL)
--		return -ENOBUFS;
-+		return -ENOMEM;
+ /* Table of alternatives, sorted by column 0 */
+ static const unsigned int power9_event_alternatives[][MAX_ALT] = {
+-	{ PM_INST_DISP,			PM_INST_DISP_ALT },
+-	{ PM_RUN_CYC_ALT,		PM_RUN_CYC },
+-	{ PM_RUN_INST_CMPL_ALT,		PM_RUN_INST_CMPL },
+-	{ PM_LD_MISS_L1,		PM_LD_MISS_L1_ALT },
+ 	{ PM_BR_2PATH,			PM_BR_2PATH_ALT },
++	{ PM_INST_DISP,			PM_INST_DISP_ALT },
++	{ PM_RUN_CYC_ALT,               PM_RUN_CYC },
++	{ PM_LD_MISS_L1,                PM_LD_MISS_L1_ALT },
++	{ PM_RUN_INST_CMPL_ALT,         PM_RUN_INST_CMPL },
+ };
  
- 	if (dst_cache_init(&rd->dst_cache, GFP_ATOMIC)) {
- 		kfree(rd);
--		return -ENOBUFS;
-+		return -ENOMEM;
- 	}
- 
- 	rd->remote_ip = *ip;
+ static int power9_get_alternatives(u64 event, unsigned int flags, u64 alt[])
 -- 
 2.35.1
 
