@@ -2,70 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41498C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:08:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10922C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:08:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354078AbiDZTLV (ORCPT
+        id S1354092AbiDZTLY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 15:11:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60942 "EHLO
+        Tue, 26 Apr 2022 15:11:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354006AbiDZTKU (ORCPT
+        with ESMTP id S1354115AbiDZTKv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 15:10:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 440113584F;
-        Tue, 26 Apr 2022 12:07:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF6BAB82252;
-        Tue, 26 Apr 2022 19:07:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AC0C4C385AA;
-        Tue, 26 Apr 2022 19:06:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651000019;
-        bh=oB0PfXfFNyYYN59yI+8k+hxgU+ymNaYK85FvevEPleU=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=c8+hQmuDBqba9roo9nMVxo1NRDvaMZRSuO5pgX33I1+QQBnB0eK/gulCpV0AOWeFH
-         XapDFiJa8ErKUjurLspATxV3WBJ/udblaWkLaXdFjevkfIsRNOMQG5t2lv5FRUiLr5
-         KsokaWPbIvct/yj6sYiGatpshUd4O50BdTXkT0APXFoaoBAec2uRiXqPlRZXLFkPsd
-         HJ0gp4Fo1ZSipUKj6wonapEaZG8ajj3dDecq1H+QguZRt1ZLaKnqm4dM2vqS2JFOu1
-         vRXtyhtO6Jt/ojZADq5vy31uE+ga3neJF9tRoOYSKLneMIxXerBzveJN/ZYCHAt89g
-         lXOlnKbVHS2lA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 97714E8DD85;
-        Tue, 26 Apr 2022 19:06:59 +0000 (UTC)
-Subject: Re: [GIT PULL] fbdev updates & fixes for v5.18-rc5
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YmgNUgK/FeNcX0MG@ls3530>
-References: <YmgNUgK/FeNcX0MG@ls3530>
-X-PR-Tracked-List-Id: <linux-fbdev.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YmgNUgK/FeNcX0MG@ls3530>
-X-PR-Tracked-Remote: http://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-fbdev.git tags/for-5.18/fbdev-2
-X-PR-Tracked-Commit-Id: 6fbe0cc53a1b5f7abe2c44399c18e943adbebe2f
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: cf424ef014ac30b0da27125dd1fbdf10b0d3a520
-Message-Id: <165100001961.21339.1776716463797926143.pr-tracker-bot@kernel.org>
-Date:   Tue, 26 Apr 2022 19:06:59 +0000
-To:     Helge Deller <deller@gmx.de>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        dri-devel@lists.freedesktop.org
+        Tue, 26 Apr 2022 15:10:51 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83E12377D3
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 12:07:11 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id w19so33594016lfu.11
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 12:07:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CMUo75UTC5Zq38VD1DUMdcugqakIxwdJdBuqcLGg5cM=;
+        b=B6l2FCoWUjMTIYAm5BMFDODEvyat9Os9xRTWwN1Y7lxxKOMc7fWsNmyA631uNgIzP5
+         98LOTnMDdjHq1kUQ4BV9Eay7YwgnLnB6KhSzy4SWqKBFpOomK+qQFHsk71vKeqTvP4Ht
+         yMSY2xAUu9haK6Xh9r7uOVsUASl28383s5DS5byk5LPeJW45hquSmvSFMmXJHil0JRhB
+         WeK295aiBwnvCnZrLNwI9Nj/sa/sdvNRiXz/sAILmka6AZl8o8ujlvCpBymzX0YUTOWE
+         KiWLkzTA47UMfsO1C1S+Mai5kNR8Ut28n5Q9bQi4BG/6/+d68wjhiP6mB7B0DYVPAjJ0
+         NKow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CMUo75UTC5Zq38VD1DUMdcugqakIxwdJdBuqcLGg5cM=;
+        b=JWH6eLulRG3ip4U+k+bgcp9k8tR40yOZiHD+A/K0cIC8gWejX/rw4d6gJA33Kv/sfV
+         lh6r1oYKIZaiADsEPNsY6d+gwAsVkrdzS+TAxmm4QnBkalCTxuXjg9bjQUvFSgghpCh2
+         dOzK2jQ8cErDhPy085PztEZ0MPyJyjPkvbOYkLvDOxpDz8QuswC2ddp3cXoPqAPcUBqO
+         PpLtdCKnQkFnWHhYF9/IcqNtLHUFo3nSiCUYncyrCzsBod53pn4b50TUNFeqtiX1thfK
+         oWGN2yQo+qUAjJiWyBHpEOKzPPCXX/21KSFhTk8JbZFYzA/dwHeV7VYxNjR966/c/pSy
+         P78A==
+X-Gm-Message-State: AOAM532hlKjWEc7mDXXdvt+6YRFftnOqRGfNj4WjMoZG8QMkryp0aIy/
+        l1XLP0vbqzHYnkDnQU4oJnoqvy5w7HJ8HyfMm6a+Fw==
+X-Google-Smtp-Source: ABdhPJydBoE/1X8tWwZ7TDirJEYimL8BCKNHbsayDufUP9gWpIaPHn2S15G3loeImJTnQ2dbUjvNGs97dN/VnOeZhBQ=
+X-Received: by 2002:a05:6512:c01:b0:448:6aec:65c5 with SMTP id
+ z1-20020a0565120c0100b004486aec65c5mr18091652lfu.193.1651000029309; Tue, 26
+ Apr 2022 12:07:09 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220407195908.633003-1-pgonda@google.com> <CAFNjLiXC0AdOw5f8Ovu47D==ex7F0=WN_Ocirymz4xL=mWvC5A@mail.gmail.com>
+ <CAMkAt6r-Mc_YN-gVHuCpTj4E1EmcvyYpP9jhtHo5HRHnoNJAdA@mail.gmail.com>
+ <CAMkAt6r+OMPWCbV_svUyGWa0qMzjj2UEG29G6P7jb6uH6yko2w@mail.gmail.com> <62e9ece1-5d71-f803-3f65-2755160cf1d1@redhat.com>
+In-Reply-To: <62e9ece1-5d71-f803-3f65-2755160cf1d1@redhat.com>
+From:   Peter Gonda <pgonda@google.com>
+Date:   Tue, 26 Apr 2022 13:06:57 -0600
+Message-ID: <CAMkAt6q6YLBfo2RceduSXTafckEehawhD4K4hUEuB4ZNqe2kKg@mail.gmail.com>
+Subject: Re: [PATCH v3] KVM: SEV: Mark nested locking of vcpu->lock
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     John Sperbeck <jsperbeck@google.com>,
+        kvm list <kvm@vger.kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Sean Christopherson <seanjc@google.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Tue, 26 Apr 2022 17:18:42 +0200:
+On Thu, Apr 21, 2022 at 9:56 AM Paolo Bonzini <pbonzini@redhat.com> wrote:
+>
+> On 4/20/22 22:14, Peter Gonda wrote:
+> >>>> svm_vm_migrate_from() uses sev_lock_vcpus_for_migration() to lock all
+> >>>> source and target vcpu->locks. Mark the nested subclasses to avoid false
+> >>>> positives from lockdep.
+> >> Nope. Good catch, I didn't realize there was a limit 8 subclasses:
+> > Does anyone have thoughts on how we can resolve this vCPU locking with
+> > the 8 subclass max?
+>
+> The documentation does not have anything.  Maybe you can call
+> mutex_release manually (and mutex_acquire before unlocking).
+>
+> Paolo
 
-> http://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-fbdev.git tags/for-5.18/fbdev-2
+Hmm this seems to be working thanks Paolo. To lock I have been using:
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/cf424ef014ac30b0da27125dd1fbdf10b0d3a520
+...
+                  if (mutex_lock_killable_nested(
+                              &vcpu->mutex, i * SEV_NR_MIGRATION_ROLES + role))
+                          goto out_unlock;
+                  mutex_release(&vcpu->mutex.dep_map, _THIS_IP_);
+...
 
-Thank you!
+To unlock:
+...
+                  mutex_acquire(&vcpu->mutex.dep_map, 0, 0, _THIS_IP_);
+                  mutex_unlock(&vcpu->mutex);
+...
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+If I understand correctly we are fully disabling lockdep by doing
+this. If this is the case should I just remove all the '_nested' usage
+so switch to mutex_lock_killable() and remove the per vCPU subclass?
