@@ -2,209 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A062DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:20:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59388C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:25:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353932AbiDZTYB (ORCPT
+        id S1354053AbiDZT2R (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 15:24:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56516 "EHLO
+        Tue, 26 Apr 2022 15:28:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354122AbiDZTXz (ORCPT
+        with ESMTP id S1354004AbiDZT2M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 15:23:55 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DEBF2A700;
-        Tue, 26 Apr 2022 12:20:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1651000846; x=1682536846;
-  h=message-id:date:mime-version:subject:from:to:cc:
-   references:in-reply-to:content-transfer-encoding;
-  bh=Fmy89Zk4IfdhrvBHV8RGwaA3LuC4mMyB9cHa34B6ROM=;
-  b=xAUQJyoNF7QOYvjCcytxPUKlvs86/Jo1KFsufERmUavaFRIz5AY+xrLt
-   JyStpg5J/iCrYEWpIsIWvCnYGAJYdGWQ4jbQ9T7ckLp41gVAU3Qrq9DSS
-   jD2wsh16JQXMaqUmZ7PqfqSMtcnYAIzlZVvtVZzSlqj5/tiM/GNIYcHac
-   8=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 26 Apr 2022 12:20:45 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 12:20:45 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 26 Apr 2022 12:20:45 -0700
-Received: from [10.111.160.161] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 26 Apr
- 2022 12:20:42 -0700
-Message-ID: <517f71e4-785f-ef6f-d30e-fb18974eed57@quicinc.com>
-Date:   Tue, 26 Apr 2022 12:20:40 -0700
+        Tue, 26 Apr 2022 15:28:12 -0400
+Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 873CEDF3;
+        Tue, 26 Apr 2022 12:25:01 -0700 (PDT)
+Received: from [192.168.192.153] (unknown [50.126.114.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 002703F62C;
+        Tue, 26 Apr 2022 19:24:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1651001099;
+        bh=ZV4VMgEemFkbKsO/BobT4va3EFuCw9GFALUPwGhS2q0=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=SKue6RWYRrNekb15Qc5uEHWG1Vsx8fVmYNJs11V/kH8dF7yn+yUWbt3Wiq9uBMRvK
+         ZByWB7RX/ENeMc7jsEReVBQ81ksBcbRbf0ooalfcVo9M+9rUvnuoj99OEmmCA1I39f
+         TsMzh4SACZYoyt4dk8jSCcSvkvHe+RA4txV2AGF8ezcfvuOZjzQjYGPu3IDgRZajEQ
+         agPb+hVq7SC+WpDw1hODrkCG7PZJ8XaBE0hZcKXns0UcENn4VmEcOEo01xuyMm+OJ9
+         s/pzEt1G42hSG6p2gqSIu+Ad5Z+yS11UHqhzAq/qbPC0GPRwwQfxziAXfdSH2AZnVG
+         DMake7KkcKKKQ==
+Message-ID: <271d9de4-3673-e130-8197-60d8640bca0f@canonical.com>
+Date:   Tue, 26 Apr 2022 12:24:56 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH 2/2] drm/probe-helper: For DP, add 640x480 if all other
- modes are bad
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v35 27/29] Audit: Add record for multiple object contexts
 Content-Language: en-US
-From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
-To:     Douglas Anderson <dianders@chromium.org>,
-        <dri-devel@lists.freedesktop.org>
-CC:     <quic_sbillaka@quicinc.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_khsieh@quicinc.com>, <dmitry.baryshkov@linaro.org>,
-        <quic_aravindh@quicinc.com>, <swboyd@chromium.org>
-References: <20220426114627.1.I2dd93486c6952bd52f2020904de0133970d11b29@changeid>
- <20220426114627.2.I4ac7f55aa446699f8c200a23c10463256f6f439f@changeid>
- <fa49384c-76a5-6686-7d4d-cf11f3e98c75@quicinc.com>
-In-Reply-To: <fa49384c-76a5-6686-7d4d-cf11f3e98c75@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     Casey Schaufler <casey@schaufler-ca.com>,
+        casey.schaufler@intel.com, jmorris@namei.org,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
+        linux-audit@redhat.com, keescook@chromium.org,
+        penguin-kernel@i-love.sakura.ne.jp, stephen.smalley.work@gmail.com,
+        linux-kernel@vger.kernel.org
+References: <20220418145945.38797-1-casey@schaufler-ca.com>
+ <20220418145945.38797-28-casey@schaufler-ca.com>
+ <f2186f22-5bcd-d962-7e49-c816fc5fbd07@canonical.com>
+ <CAHC9VhTXgBTH+7ny-fcMP_HC1ojA1ass38PGHS2tJny0bCGXzA@mail.gmail.com>
+From:   John Johansen <john.johansen@canonical.com>
+Organization: Canonical
+In-Reply-To: <CAHC9VhTXgBTH+7ny-fcMP_HC1ojA1ass38PGHS2tJny0bCGXzA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Missed one more comment.
+On 4/26/22 11:57, Paul Moore wrote:
+> On Mon, Apr 25, 2022 at 11:38 PM John Johansen
+> <john.johansen@canonical.com> wrote:
+>> On 4/18/22 07:59, Casey Schaufler wrote:
+>>> Create a new audit record AUDIT_MAC_OBJ_CONTEXTS.
+>>> An example of the MAC_OBJ_CONTEXTS (1421) record is:
+>>>
+>>>     type=MAC_OBJ_CONTEXTS[1421]
+>>>     msg=audit(1601152467.009:1050):
+>>>     obj_selinux=unconfined_u:object_r:user_home_t:s0
+>>>
+>>> When an audit event includes a AUDIT_MAC_OBJ_CONTEXTS record
+>>> the "obj=" field in other records in the event will be "obj=?".
+>>> An AUDIT_MAC_OBJ_CONTEXTS record is supplied when the system has
+>>> multiple security modules that may make access decisions based
+>>> on an object security context.
+>>>
+>>> Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
+>>> ---
+>>>  include/linux/audit.h      |  5 +++
+>>>  include/uapi/linux/audit.h |  1 +
+>>>  kernel/audit.c             | 47 +++++++++++++++++++++++
+>>>  kernel/auditsc.c           | 79 ++++++++++++--------------------------
+>>>  4 files changed, 77 insertions(+), 55 deletions(-)
+> 
+> ...
+> 
+>>> diff --git a/kernel/audit.c b/kernel/audit.c
+>>> index 8ed2d717c217..a8c3ec6ba60b 100644
+>>> --- a/kernel/audit.c
+>>> +++ b/kernel/audit.c
+>>> @@ -2226,6 +2226,53 @@ static void audit_buffer_aux_end(struct audit_buffer *ab)
+>>>       ab->skb = skb_peek(&ab->skb_list);
+>>>  }
+>>>
+>>> +void audit_log_object_context(struct audit_buffer *ab, struct lsmblob *blob)
+>>> +{
+>>> +     int i;
+>>> +     int error;
+>>> +     struct lsmcontext context;
+>>> +
+>>> +     if (!lsm_multiple_contexts()) {
+>>> +             error = security_secid_to_secctx(blob, &context, LSMBLOB_FIRST);
+>>> +             if (error) {
+>>> +                     if (error != -EINVAL)
+>>> +                             goto error_path;
+>>> +                     return;
+>>> +             }
+>>> +             audit_log_format(ab, " obj=%s", context.context);
+>>> +             security_release_secctx(&context);
+>>> +     } else {
+>>> +             audit_log_format(ab, " obj=?");
+>>> +             error = audit_buffer_aux_new(ab, AUDIT_MAC_OBJ_CONTEXTS);
+>>> +             if (error)
+>>> +                     goto error_path;
+>>> +
+>>> +             for (i = 0; i < LSMBLOB_ENTRIES; i++) {
+>>> +                     if (blob->secid[i] == 0)
+>>> +                             continue;
+>>> +                     error = security_secid_to_secctx(blob, &context, i);
+>>> +                     if (error) {
+>>> +                             audit_log_format(ab, "%sobj_%s=?",
+>>> +                                              i ? " " : "",
+>>> +                                              lsm_slot_to_name(i));
+>>> +                             if (error != -EINVAL)
+>>> +                                     audit_panic("error in audit_log_object_context");
+>>> +                     } else {
+>>> +                             audit_log_format(ab, "%sobj_%s=%s",
+>>> +                                              i ? " " : "",
+>>> +                                              lsm_slot_to_name(i),
+>>> +                                              context.context);
+>>> +                             security_release_secctx(&context);
+>>> +                     }
+>>> +             }
+>>> +
+>>> +             audit_buffer_aux_end(ab);
+>>> +     }
+>>> +     return;
+>>> +
+>>> +error_path:
+>>> +     audit_panic("error in audit_log_object_context");
+>>
+>> This moves the audit_panic around, so certain operations are not
+>> done before the call. I am currently not sure of the implications.
+> 
+> Short version: It's okay.
+> 
+> Longer version: The audit_panic() call is either going to panic the
+> kernel (NOT the default), do a pr_err(), or essentially be a no-op.
+> In the case of the full blown kernel panic we don't really care, the
+> system is going to die before there is any chance of this record in
+> progress getting logged.  In the case of a pr_err() or no-op the key
+> part is making sure we leave the audit_buffer in a consistent state so
+> that we preserve whatever information is already present.  In the
+> !lsm_multiple_contexts case we simply return without making any
+> changes to the audit_buffer so we're good there; in the multiple LSM
+> case we always end the aux record properly (using a "?" when
+> necessary) if an aux record has been successfully created.
+> 
+> Feel free to point out a specific scenario that you think looks wrong
+> - I may have missed it - but I believe this code to be correct.
+> 
 
-On 4/26/2022 12:16 PM, Abhinav Kumar wrote:
-> Hi Doug
-> 
-> One minor comment below.
-> 
-> But otherwise, looking at this change this should work for us acc to me.
-> 
-> We will test this out with our equipment and then provide R-b.
-> 
-> Thanks
-> 
-> Abhinav
-> On 4/26/2022 11:46 AM, Douglas Anderson wrote:
->> As per Displayport spec section 5.2.1.2 ("Video Timing Format") says
->> that all detachable sinks shall support 640x480 @60Hz as a fail safe
->> mode.
->>
->> A DP compliance test expected us to utilize the above fact when all
->> modes it presented to the DP source were not achievable. It presented
->> only modes that would be achievable with more lanes and/or higher
->> speeds than we had available and expected that when we couldn't do
->> that then we'd fall back to 640x480 even though it didn't advertise
->> this size.
->>
->> In order to pass the compliance test (and also support any users who
->> might fall into a similar situation with their display), we need to
->> add 640x480 into the list of modes. However, we don't want to add
->> 640x480 all the time. Despite the fact that the DP spec says all sinks
->> _shall support_ 640x480, they're not guaranteed to support it
->> _well_. Continuing to read the spec you can see that the display is
->> not required to really treat 640x480 equal to all the other modes. It
->> doesn't need to scale or anything--just display the pixels somehow for
->> failsafe purposes. It should also be noted that it's not hard to find
->> a display hooked up via DisplayPort that _doesn't_ support 640x480 at
->> all. The HP ZR30w screen I'm sitting in front of has a native DP port
->> and doesn't work at 640x480. I also plugged in a tiny 800x480 HDMI
->> display via a DP to HDMI adapter and that screen definitely doesn't
->> support 640x480.
->>
->> As a compromise solution, let's only add the 640x480 mode if:
->> * We're on DP.
->> * All other modes have been pruned.
->>
->> This acknowledges that 640x480 might not be the best mode to use but,
->> since sinks are _supposed_ to support it, we will at least fall back
->> to it if there's nothing else.
->>
->> Note that we _don't_ add higher resolution modes like 1024x768 in this
->> case. We only add those modes for a failed EDID read where we have no
->> idea what's going on. In the case where we've pruned all modes then
->> instead we only want 640x480 which is the only defined "Fail Safe"
->> resolution.
->>
->> This patch originated in response to Kuogee Hsieh's patch [1].
->>
->> [1] 
->> https://lore.kernel.org/r/1650671124-14030-1-git-send-email-quic_khsieh@quicinc.com 
->>
->>
->> Signed-off-by: Douglas Anderson <dianders@chromium.org>
->> ---
->>
->>   drivers/gpu/drm/drm_probe_helper.c | 26 +++++++++++++++++++++-----
->>   1 file changed, 21 insertions(+), 5 deletions(-)
->>
->> diff --git a/drivers/gpu/drm/drm_probe_helper.c 
->> b/drivers/gpu/drm/drm_probe_helper.c
->> index 819225629010..90cd46cbfec1 100644
->> --- a/drivers/gpu/drm/drm_probe_helper.c
->> +++ b/drivers/gpu/drm/drm_probe_helper.c
->> @@ -476,7 +476,6 @@ int drm_helper_probe_single_connector_modes(struct 
->> drm_connector *connector,
->>       const struct drm_connector_helper_funcs *connector_funcs =
->>           connector->helper_private;
->>       int count = 0, ret;
->> -    bool verbose_prune = true;
->>       enum drm_connector_status old_status;
->>       struct drm_modeset_acquire_ctx ctx;
->> @@ -556,8 +555,8 @@ int drm_helper_probe_single_connector_modes(struct 
->> drm_connector *connector,
->>           DRM_DEBUG_KMS("[CONNECTOR:%d:%s] disconnected\n",
->>               connector->base.id, connector->name);
->>           drm_connector_update_edid_property(connector, NULL);
->> -        verbose_prune = false;
->> -        goto prune;
->> +        drm_mode_prune_invalid(dev, &connector->modes, false);
->> +        goto exit;
->>       }
->>       count = (*connector_funcs->get_modes)(connector);
->> @@ -580,9 +579,26 @@ int 
->> drm_helper_probe_single_connector_modes(struct drm_connector *connector,
->>           }
->>       }
->> -prune:
->> -    drm_mode_prune_invalid(dev, &connector->modes, verbose_prune);
->> +    drm_mode_prune_invalid(dev, &connector->modes, true);
->> +    /*
->> +     * Displayport spec section 5.2.1.2 ("Video Timing Format") says 
->> that
->> +     * all detachable sinks shall support 640x480 @60Hz as a fail safe
->> +     * mode. If all modes were pruned, perhaps because they need more
->> +     * lanes or a higher pixel clock than available, at least try to add
->> +     * in 640x480.
->> +     */
->> +    if (list_empty(&connector->modes) &&
->> +        connector->connector_type == DRM_MODE_CONNECTOR_DisplayPort) {
->> +        count = drm_add_modes_noedid(connector, 640, 480);
->> +        if (_drm_helper_update_and_validate(connector, maxX, maxY, 
->> &ctx)) {
->> +            drm_modeset_backoff(&ctx);
->> +            goto retry;
-> 
-> Do we need another retry here? This will again repeat everything from
-> get_modes().
-> The fact that we are hitting this code is because we have already tried 
-> that and this is already a second-pass. So I think another retry isnt 
-> needed?
+mostly I am good, I was worried I was missing something since the old
+code made an effort to have the call of audit_panic() at the end.
 
-This will help cover the case of 4.2.2.6 but not fix 4.2.2.1.
+The current change does result in potential multiple calls to
+audit_panic() in a single audit_log_exit(). This doesn't matter in
+the case of a full blown kernel panic, but it could result in multiple
+pr_err() messages where previously the code would only generate one.
 
-For 4.2.2.1, we will have 0 modes and so the original DRM fwk code of 
-adding all modes <= 1024x768 will kick in.
+It does simplify the code, and the case should be quite rare so I
+am fine with the trade-off.
 
-Now, in that list, we will still need to pick/mark 640x480 as the 
-preferred mode.
 
-We still need IGT for that.
 
-So yes, this will cover one of the test but not the other.
+>>> diff --git a/kernel/auditsc.c b/kernel/auditsc.c
+>>> index 557713954a69..04bf3c04ef3d 100644
+>>> --- a/kernel/auditsc.c
+>>> +++ b/kernel/auditsc.c
+>>> @@ -1420,18 +1409,10 @@ static void show_special(struct audit_context *context, int *call_panic)
+>>
+>> If pushing audit_panic into audit_log_object_context() is acceptable then this call_panic arg is
+>> no longer needed. The same goes for the call_panic arg in audit_log_name(). And call_panic can
+>> be dropped from audit_log_exit()
 > 
->> +        }
->> +        drm_mode_prune_invalid(dev, &connector->modes, true);
->> +    }
->> +
->> +exit:
->>       drm_modeset_drop_locks(&ctx);
->>       drm_modeset_acquire_fini(&ctx);
+> Good catch.
+> 
+> I suspect this is a vestige from when audit_log_end() used to do the
+> record's skb write to userspace, meaning it was possible that you
+> might get some of the records written to userspace before the system
+> killed itself.  Now with all of the queuing involved it's less likely
+> that this would be the case, and even if it does happen in some cases,
+> it's basically a toss up depending on how the system is loaded, the
+> scheduler, etc.
+> 
+
