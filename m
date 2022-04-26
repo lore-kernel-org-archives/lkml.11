@@ -2,135 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A985EC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 13:01:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03AFEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 13:01:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348378AbiDZNEh (ORCPT
+        id S1350467AbiDZNEx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 09:04:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60174 "EHLO
+        Tue, 26 Apr 2022 09:04:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345226AbiDZNEf (ORCPT
+        with ESMTP id S241669AbiDZNEt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 09:04:35 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 104D11DA7D;
-        Tue, 26 Apr 2022 06:01:25 -0700 (PDT)
-Received: from kwepemi500007.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KnhlW5VlwzGp36;
-        Tue, 26 Apr 2022 20:58:47 +0800 (CST)
-Received: from kwepemm600001.china.huawei.com (7.193.23.3) by
- kwepemi500007.china.huawei.com (7.221.188.207) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Apr 2022 21:01:23 +0800
-Received: from huawei.com (10.175.113.133) by kwepemm600001.china.huawei.com
- (7.193.23.3) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 26 Apr
- 2022 21:01:22 +0800
-From:   Wang Hai <wanghai38@huawei.com>
-To:     <trond.myklebust@hammerspace.com>, <anna@kernel.org>,
-        <chuck.lever@oracle.com>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <pabeni@redhat.com>
-CC:     <linux-nfs@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <wanghai38@huawei.com>
-Subject: [PATCH net] SUNRPC: Fix local socket leak in xs_local_setup_socket()
-Date:   Tue, 26 Apr 2022 21:20:11 +0800
-Message-ID: <20220426132011.25418-1-wanghai38@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 26 Apr 2022 09:04:49 -0400
+Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CCD724F16
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 06:01:41 -0700 (PDT)
+Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-2f7c424c66cso89407227b3.1
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 06:01:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=eclypsium.com; s=google;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=7U8qS0+N2U3Q5otz/HZN1++iKg/iT5uNuTdkb8n5jkc=;
+        b=TLmJGydE2KBBsr5CCQaiOtLAlF5muH8VV+zjfD59n+L3Zv3Ojm/dSA9BvQGTNdMcNG
+         +gE/78zsC4oozu52jkqdgMV/Y7eYREFBsJJ20IePiWRPpyDC4kgZzmV6HyTMxy8BswWi
+         /wrYmzfpOlFHP6zCETpaxqlzaxHJiD0EuE4A6KV/f92muFwO1zBe+INc8wwEx+t524jW
+         5ayOtvzCGgFL6lJQSFwhXoA82F2J3acL9RA55Ip5z6GtqmIeQy9G1MoX5r2LoCwoz/BY
+         RgA2FUrQNa4A6Beq6LfORF/DSSGmcDhynZsjDFZUvGXArsKWWfRV3OcBIDpIISmzHlWh
+         dCAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=7U8qS0+N2U3Q5otz/HZN1++iKg/iT5uNuTdkb8n5jkc=;
+        b=rmbQJrDdBTOyp4D8O7VEHnWCUcK8xZ0ybUq54kWCl6YEqp71RGS3djFo7EaO/3Zobd
+         IjHgo9jUaXkXYNyE8bQOQFtkrpMcROk2dQxtWNz/lIZ+4kqqjV9gN/hVY1kHohSAswNE
+         xOC12pIH7zGLYH3o/emis2iqb3jHJScZiwyseurSwa3Q1AqXQtRrconiDe8KMvgzL5dp
+         JfmD97C+xD6ieoLOz0raSmuKpjA4M1S+FQNS/tn8gBkaiML7pXloaFyboCDYCCY1LhRO
+         ik/iyXnHmC8hiDvT0m57qRtIpYFvTbw6/GL33bvsbnO3vN55icI4//52zlyUC0wfLlTM
+         LMNw==
+X-Gm-Message-State: AOAM533igKICKZd6+xUR7grCS19ZUa5H4w9zBatRcFgBB8MwMJNomRG9
+        UHwhujeFgmcObFWQDwdOJ/wO5H+RtHZPbELbnP38dg==
+X-Google-Smtp-Source: ABdhPJxrixuEuLJzGGb3wWOmo8aOeK7hJWm6Gw2wZBOhgN5jn0XSBRugRdDxqxN2+b86OfWWA5UEk9IAFBtEcwScaH4=
+X-Received: by 2002:a0d:d953:0:b0:2f7:d5ce:f204 with SMTP id
+ b80-20020a0dd953000000b002f7d5cef204mr12146537ywe.502.1650978100274; Tue, 26
+ Apr 2022 06:01:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.113.133]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600001.china.huawei.com (7.193.23.3)
-X-CFilter-Loop: Reflected
+Received: by 2002:a81:10a:0:0:0:0:0 with HTTP; Tue, 26 Apr 2022 06:01:39 -0700 (PDT)
+In-Reply-To: <YmeOIrINQAN1aZhu@kernel.org>
+References: <20220425171526.44925-1-martin.fernandez@eclypsium.com>
+ <20220425171526.44925-9-martin.fernandez@eclypsium.com> <YmeOIrINQAN1aZhu@kernel.org>
+From:   Martin Fernandez <martin.fernandez@eclypsium.com>
+Date:   Tue, 26 Apr 2022 10:01:39 -0300
+Message-ID: <CAKgze5YC_7tmrJpePH_58gbNADCQYF1S-p4Fcwp_hDy7edGGiQ@mail.gmail.com>
+Subject: Re: [PATCH v7 8/8] drivers/node: Show in sysfs node's crypto capabilities
+To:     Mike Rapoport <rppt@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, linux-mm@kvack.org,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        ardb@kernel.org, dvhart@infradead.org, andy@infradead.org,
+        gregkh@linuxfoundation.org, rafael@kernel.org,
+        akpm@linux-foundation.org, daniel.gutson@eclypsium.com,
+        hughsient@gmail.com, alex.bazhaniuk@eclypsium.com,
+        alison.schofield@intel.com, keescook@chromium.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the connection to a local endpoint in xs_local_setup_socket() fails,
-fput() is missing in the error path, which will result in a socket leak.
-It can be reproduced in simple script below.
+On 4/26/22, Mike Rapoport <rppt@kernel.org> wrote:
+> On Mon, Apr 25, 2022 at 02:15:26PM -0300, Martin Fernandez wrote:
+>> Show in each node in sysfs if its memory is able to do be encrypted by
+>> the CPU, ie. if all its memory is marked with EFI_MEMORY_CPU_CRYPTO in
+>> the EFI memory map.
+>>
+>> Signed-off-by: Martin Fernandez <martin.fernandez@eclypsium.com>
+>> ---
+>>  Documentation/ABI/testing/sysfs-devices-node | 10 ++++++++++
+>>  drivers/base/node.c                          | 10 ++++++++++
+>>  2 files changed, 20 insertions(+)
+>>  create mode 100644 Documentation/ABI/testing/sysfs-devices-node
+>>
+>> diff --git a/Documentation/ABI/testing/sysfs-devices-node
+>> b/Documentation/ABI/testing/sysfs-devices-node
+>> new file mode 100644
+>> index 000000000000..5fd5dc7fc2eb
+>> --- /dev/null
+>> +++ b/Documentation/ABI/testing/sysfs-devices-node
+>> @@ -0,0 +1,10 @@
+>> +What:		/sys/devices/system/node/nodeX/crypto_capable
+>> +Date:		April 2022
+>> +Contact:	Martin Fernandez <martin.fernandez@eclypsium.com>
+>> +Users:		fwupd (https://fwupd.org)
+>> +Description:
+>> +		This value is 1 if all system memory in this node is
+>> +		marked with EFI_MEMORY_CPU_CRYPTO, indicating that the
+>> +		system memory is capable of being protected with the
+>> +		CPU=E2=80=99s memory cryptographic capabilities. It is 0
+>> +		otherwise.
+>
+> I understand that currently this feature is only for x86, but if non-EFI
+> architectures will start using MEMBLOCK_CRYPTO_CAPABLE, the sysfs attribu=
+te
+> for will be relevant form them as well.
+>
+> How about
+> 	This value is 1 if all system memory in this node is capable of
+> 	being protected with the CPU's memory cryptographic capabilities.
+> 	It is 0 otherwise.
+> 	On EFI systems the node will be marked with EFI_MEMORY_CPU_CRYPTO.
+>
 
-while true
-do
-        systemctl stop rpcbind.service
-        systemctl stop rpc-statd.service
-        systemctl stop nfs-server.service
+Good point. I'll change it.
 
-        systemctl restart rpcbind.service
-        systemctl restart rpc-statd.service
-        systemctl restart nfs-server.service
-done
-
-When executing the script, you can observe that the
-"cat /proc/net/unix | wc -l" count keeps growing.
-
-Add the missing fput(), and restore transport to old socket.
-
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
----
- net/sunrpc/xprtsock.c | 20 ++++++++++++++++++--
- 1 file changed, 18 insertions(+), 2 deletions(-)
-
-diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
-index 0f39e08ee580..7219c545385e 100644
---- a/net/sunrpc/xprtsock.c
-+++ b/net/sunrpc/xprtsock.c
-@@ -1819,6 +1819,9 @@ static int xs_local_finish_connecting(struct rpc_xprt *xprt,
- {
- 	struct sock_xprt *transport = container_of(xprt, struct sock_xprt,
- 									xprt);
-+	struct socket *trans_sock = NULL;
-+	struct sock *trans_inet = NULL;
-+	int ret;
- 
- 	if (!transport->inet) {
- 		struct sock *sk = sock->sk;
-@@ -1835,6 +1838,9 @@ static int xs_local_finish_connecting(struct rpc_xprt *xprt,
- 
- 		xprt_clear_connected(xprt);
- 
-+		trans_sock = transport->sock;
-+		trans_inet = transport->inet;
-+
- 		/* Reset to new socket */
- 		transport->sock = sock;
- 		transport->inet = sk;
-@@ -1844,7 +1850,14 @@ static int xs_local_finish_connecting(struct rpc_xprt *xprt,
- 
- 	xs_stream_start_connect(transport);
- 
--	return kernel_connect(sock, xs_addr(xprt), xprt->addrlen, 0);
-+	ret = kernel_connect(sock, xs_addr(xprt), xprt->addrlen, 0);
-+	/* Restore to old socket */
-+	if (ret && trans_inet) {
-+		transport->sock = trans_sock;
-+		transport->inet = trans_inet;
-+	}
-+
-+	return ret;
- }
- 
- /**
-@@ -1887,7 +1900,7 @@ static int xs_local_setup_socket(struct sock_xprt *transport)
- 		xprt->stat.connect_time += (long)jiffies -
- 					   xprt->stat.connect_start;
- 		xprt_set_connected(xprt);
--		break;
-+		goto out;
- 	case -ENOBUFS:
- 		break;
- 	case -ENOENT:
-@@ -1904,6 +1917,9 @@ static int xs_local_setup_socket(struct sock_xprt *transport)
- 				xprt->address_strings[RPC_DISPLAY_ADDR]);
- 	}
- 
-+	transport->file = NULL;
-+	fput(filp);
-+
- out:
- 	xprt_clear_connecting(xprt);
- 	xprt_wake_pending_tasks(xprt, status);
--- 
-2.17.1
-
+>> \ No newline at end of file
+>> diff --git a/drivers/base/node.c b/drivers/base/node.c
+>> index ec8bb24a5a22..1df15ea03c27 100644
+>> --- a/drivers/base/node.c
+>> +++ b/drivers/base/node.c
+>> @@ -560,11 +560,21 @@ static ssize_t node_read_distance(struct device
+>> *dev,
+>>  }
+>>  static DEVICE_ATTR(distance, 0444, node_read_distance, NULL);
+>>
+>> +static ssize_t crypto_capable_show(struct device *dev,
+>> +				   struct device_attribute *attr, char *buf)
+>> +{
+>> +	struct pglist_data *pgdat =3D NODE_DATA(dev->id);
+>> +
+>> +	return sysfs_emit(buf, "%d\n", pgdat->crypto_capable);
+>> +}
+>> +static DEVICE_ATTR_RO(crypto_capable);
+>> +
+>>  static struct attribute *node_dev_attrs[] =3D {
+>>  	&dev_attr_meminfo.attr,
+>>  	&dev_attr_numastat.attr,
+>>  	&dev_attr_distance.attr,
+>>  	&dev_attr_vmstat.attr,
+>> +	&dev_attr_crypto_capable.attr,
+>>  	NULL
+>>  };
+>>
+>> --
+>> 2.30.2
+>>
+>
+> --
+> Sincerely yours,
+> Mike.
+>
