@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 877CFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:34:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76752C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:34:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347866AbiDZJhH (ORCPT
+        id S1347876AbiDZJhM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:37:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49236 "EHLO
+        Tue, 26 Apr 2022 05:37:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347922AbiDZJGX (ORCPT
+        with ESMTP id S1347915AbiDZJGW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:06:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80ED1B7C62;
-        Tue, 26 Apr 2022 01:47:20 -0700 (PDT)
+        Tue, 26 Apr 2022 05:06:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFD25B6E6E;
+        Tue, 26 Apr 2022 01:47:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 11D4860C42;
-        Tue, 26 Apr 2022 08:47:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D299C385A4;
-        Tue, 26 Apr 2022 08:47:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A1DFDB81CF2;
+        Tue, 26 Apr 2022 08:47:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E660DC385AC;
+        Tue, 26 Apr 2022 08:47:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962839;
-        bh=eU63M2Csqic/VCKHXYjcooxY2JHvdkP4DRhbEDkReXA=;
+        s=korg; t=1650962830;
+        bh=Bzgv5WqWQfy17psL16EYWYKGoHPWRb79U3suFi4PhDg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oni03q3bRQ7nKMcCOJU6YZkBYJM4FwrQEsMmHFRYk+dP2BFEWpX16Lmq63Jwuosw0
-         Ao4SesoHEYQ/P+pB8UhmltuNFY1F9X8m2YG/LNqHhDmTZovA9VuNnW2cazUDtZfvJg
-         X6iCaw/XKb+8TgSDZsRSfZMKjbKmxNzIKqlxJWgs=
+        b=hsaS9Hc4thL8tmkqd7F3/ZXCOsC/GgMTDbCipjBzx1phkoMT+imjWEWJ1tXazgDVk
+         WrS7rAB4nU4cuBxgUDYn7/cu/n/ntvY1hIDs/rDN0wKyp9GkjcjhsE0YrReOJKkPzx
+         Yw4NHVdEAb9btsnoPSGjA2Fgw8CIV6yd4YVRilyM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+96b43810dfe9c3bb95ed@syzkaller.appspotmail.com,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 099/146] io_uring: free iovec if file assignment fails
-Date:   Tue, 26 Apr 2022 10:21:34 +0200
-Message-Id: <20220426081752.842825330@linuxfoundation.org>
+        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 064/146] ALSA: usb-audio: Fix undefined behavior due to shift overflowing the constant
+Date:   Tue, 26 Apr 2022 10:20:59 +0200
+Message-Id: <20220426081751.864849229@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -50,50 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: Borislav Petkov <bp@suse.de>
 
-[ Upstream commit 323b190ba2debbcc03c01d2edaf1ec6b43e6ae43 ]
+[ Upstream commit 1ef8715975de8bd481abbd0839ed4f49d9e5b0ff ]
 
-We just return failure in this case, but we need to release the iovec
-first. If we're doing IO with more than FAST_IOV segments, then the
-iovec is allocated and must be freed.
+Fix:
 
-Reported-by: syzbot+96b43810dfe9c3bb95ed@syzkaller.appspotmail.com
-Fixes: 584b0180f0f4 ("io_uring: move read/write file prep state into actual opcode handler")
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+  sound/usb/midi.c: In function ‘snd_usbmidi_out_endpoint_create’:
+  sound/usb/midi.c:1389:2: error: case label does not reduce to an integer constant
+    case USB_ID(0xfc08, 0x0101): /* Unknown vendor Cable */
+    ^~~~
+
+See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
+details as to why it triggers with older gccs only.
+
+[ A slight correction with parentheses around the argument by tiwai ]
+
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220405151517.29753-3-bp@alien8.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/io_uring.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ sound/usb/usbaudio.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 619c67fd456d..9349d7e0754f 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -3622,8 +3622,10 @@ static int io_read(struct io_kiocb *req, unsigned int issue_flags)
- 		iovec = NULL;
- 	}
- 	ret = io_rw_init_file(req, FMODE_READ);
--	if (unlikely(ret))
-+	if (unlikely(ret)) {
-+		kfree(iovec);
- 		return ret;
-+	}
- 	req->result = iov_iter_count(&s->iter);
+diff --git a/sound/usb/usbaudio.h b/sound/usb/usbaudio.h
+index 167834133b9b..b8359a0aa008 100644
+--- a/sound/usb/usbaudio.h
++++ b/sound/usb/usbaudio.h
+@@ -8,7 +8,7 @@
+  */
  
- 	if (force_nonblock) {
-@@ -3742,8 +3744,10 @@ static int io_write(struct io_kiocb *req, unsigned int issue_flags)
- 		iovec = NULL;
- 	}
- 	ret = io_rw_init_file(req, FMODE_WRITE);
--	if (unlikely(ret))
-+	if (unlikely(ret)) {
-+		kfree(iovec);
- 		return ret;
-+	}
- 	req->result = iov_iter_count(&s->iter);
+ /* handling of USB vendor/product ID pairs as 32-bit numbers */
+-#define USB_ID(vendor, product) (((vendor) << 16) | (product))
++#define USB_ID(vendor, product) (((unsigned int)(vendor) << 16) | (product))
+ #define USB_ID_VENDOR(id) ((id) >> 16)
+ #define USB_ID_PRODUCT(id) ((u16)(id))
  
- 	if (force_nonblock) {
 -- 
 2.35.1
 
