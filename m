@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D43F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:34:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72F05C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:35:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242128AbiDZIh5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:37:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60612 "EHLO
+        id S1345154AbiDZIiE (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:38:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345354AbiDZIec (ORCPT
+        with ESMTP id S1345348AbiDZIec (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:34:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8432374867;
-        Tue, 26 Apr 2022 01:27:08 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B2D074DD0;
+        Tue, 26 Apr 2022 01:27:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B70E6179E;
-        Tue, 26 Apr 2022 08:27:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FE22C385A0;
-        Tue, 26 Apr 2022 08:27:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DEC36B81D01;
+        Tue, 26 Apr 2022 08:27:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A281C385A0;
+        Tue, 26 Apr 2022 08:27:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961627;
-        bh=eHIuRoQIdPxgG8oN0IWERZQhX1NYrprx+LxNoPGH7wY=;
+        s=korg; t=1650961624;
+        bh=4opHmGX/BJb/8lmEwtW+ciu8xl6ZK4/OVqFoBf/euXI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fPGWZPo3MAUWuWEmhO8XBeSQ5MQ8CuL/Lh63MkSF6/hSr5AclzXrYBfpHA6I9c/0D
-         mDMq+KUHkA2LCzW6L7CxIHTUA85ln7puaW8gP44EEx9nVUXHQp0Lz+WDgUd/LUXlv0
-         vcgKFXKNgXOy6WOQw42OU60coD45fPvcOY/lCAto=
+        b=DhP/4viQWNypkYQ+kk9YGajkj88UOmuUWOHJ5PCa20CrjqrEo4yngseISBAT7QM7h
+         zIfNWzB5Z7J1j3kqfu/aor+pK2NJHYaOJZL2l843EfNtWrSNxurH2kI7yrNIY7pCpe
+         nTVmvISVNfvtGzyN9hiiKqmjheW56osxm8UFt2rI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 4.19 05/53] dm integrity: fix memory corruption when tag_size is less than digest size
-Date:   Tue, 26 Apr 2022 10:20:45 +0200
-Message-Id: <20220426081735.813142442@linuxfoundation.org>
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Dragos-Marian Panait <dragos.panait@windriver.com>
+Subject: [PATCH 4.19 04/53] can: usb_8dev: usb_8dev_start_xmit(): fix double dev_kfree_skb() in error path
+Date:   Tue, 26 Apr 2022 10:20:44 +0200
+Message-Id: <20220426081735.784246791@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081735.651926456@linuxfoundation.org>
 References: <20220426081735.651926456@linuxfoundation.org>
@@ -48,53 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-commit 08c1af8f1c13bbf210f1760132f4df24d0ed46d6 upstream.
+commit 3d3925ff6433f98992685a9679613a2cc97f3ce2 upstream.
 
-It is possible to set up dm-integrity in such a way that the
-"tag_size" parameter is less than the actual digest size. In this
-situation, a part of the digest beyond tag_size is ignored.
+There is no need to call dev_kfree_skb() when usb_submit_urb() fails
+because can_put_echo_skb() deletes original skb and
+can_free_echo_skb() deletes the cloned skb.
 
-In this case, dm-integrity would write beyond the end of the
-ic->recalc_tags array and corrupt memory. The corruption happened in
-integrity_recalc->integrity_sector_checksum->crypto_shash_final.
-
-Fix this corruption by increasing the tags array so that it has enough
-padding at the end to accomodate the loop in integrity_recalc() being
-able to write a full digest size for the last member of the tags
-array.
-
-Cc: stable@vger.kernel.org # v4.19+
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Fixes: 0024d8ad1639 ("can: usb_8dev: Add support for USB2CAN interface from 8 devices")
+Link: https://lore.kernel.org/all/20220311080614.45229-1-hbh25y@gmail.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+[DP: adjusted params of can_free_echo_skb() for 4.19 stable]
+Signed-off-by: Dragos-Marian Panait <dragos.panait@windriver.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm-integrity.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/net/can/usb/usb_8dev.c |   30 ++++++++++++++----------------
+ 1 file changed, 14 insertions(+), 16 deletions(-)
 
---- a/drivers/md/dm-integrity.c
-+++ b/drivers/md/dm-integrity.c
-@@ -3504,6 +3504,7 @@ try_smaller_buffer:
- 	}
+--- a/drivers/net/can/usb/usb_8dev.c
++++ b/drivers/net/can/usb/usb_8dev.c
+@@ -681,9 +681,20 @@ static netdev_tx_t usb_8dev_start_xmit(s
+ 	atomic_inc(&priv->active_tx_urbs);
  
- 	if (ic->sb->flags & cpu_to_le32(SB_FLAG_RECALCULATING)) {
-+		size_t recalc_tags_size;
- 		if (!ic->internal_hash) {
- 			r = -EINVAL;
- 			ti->error = "Recalculate is only valid with internal hash";
-@@ -3522,8 +3523,10 @@ try_smaller_buffer:
- 			r = -ENOMEM;
- 			goto bad;
- 		}
--		ic->recalc_tags = kvmalloc_array(RECALC_SECTORS >> ic->sb->log2_sectors_per_block,
--						 ic->tag_size, GFP_KERNEL);
-+		recalc_tags_size = (RECALC_SECTORS >> ic->sb->log2_sectors_per_block) * ic->tag_size;
-+		if (crypto_shash_digestsize(ic->internal_hash) > ic->tag_size)
-+			recalc_tags_size += crypto_shash_digestsize(ic->internal_hash) - ic->tag_size;
-+		ic->recalc_tags = kvmalloc(recalc_tags_size, GFP_KERNEL);
- 		if (!ic->recalc_tags) {
- 			ti->error = "Cannot allocate tags for recalculating";
- 			r = -ENOMEM;
+ 	err = usb_submit_urb(urb, GFP_ATOMIC);
+-	if (unlikely(err))
+-		goto failed;
+-	else if (atomic_read(&priv->active_tx_urbs) >= MAX_TX_URBS)
++	if (unlikely(err)) {
++		can_free_echo_skb(netdev, context->echo_index);
++
++		usb_unanchor_urb(urb);
++		usb_free_coherent(priv->udev, size, buf, urb->transfer_dma);
++
++		atomic_dec(&priv->active_tx_urbs);
++
++		if (err == -ENODEV)
++			netif_device_detach(netdev);
++		else
++			netdev_warn(netdev, "failed tx_urb %d\n", err);
++		stats->tx_dropped++;
++	} else if (atomic_read(&priv->active_tx_urbs) >= MAX_TX_URBS)
+ 		/* Slow down tx path */
+ 		netif_stop_queue(netdev);
+ 
+@@ -702,19 +713,6 @@ nofreecontext:
+ 
+ 	return NETDEV_TX_BUSY;
+ 
+-failed:
+-	can_free_echo_skb(netdev, context->echo_index);
+-
+-	usb_unanchor_urb(urb);
+-	usb_free_coherent(priv->udev, size, buf, urb->transfer_dma);
+-
+-	atomic_dec(&priv->active_tx_urbs);
+-
+-	if (err == -ENODEV)
+-		netif_device_detach(netdev);
+-	else
+-		netdev_warn(netdev, "failed tx_urb %d\n", err);
+-
+ nomembuf:
+ 	usb_free_urb(urb);
+ 
 
 
