@@ -2,214 +2,379 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 565ABC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:01:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EAD5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:02:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348016AbiDZKEq (ORCPT
+        id S1348519AbiDZKDx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 06:04:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35164 "EHLO
+        Tue, 26 Apr 2022 06:03:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348453AbiDZKDu (ORCPT
+        with ESMTP id S1344014AbiDZKDZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 06:03:50 -0400
-Received: from repost01.tmes.trendmicro.eu (repost01.tmes.trendmicro.eu [18.185.115.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D36CD62119;
-        Tue, 26 Apr 2022 02:24:16 -0700 (PDT)
-Received: from 104.47.5.52_.trendmicro.com (unknown [172.21.206.109])
-        by repost01.tmes.trendmicro.eu (Postfix) with SMTP id 3CE0B1000125B;
-        Tue, 26 Apr 2022 09:24:15 +0000 (UTC)
-X-TM-MAIL-RECEIVED-TIME: 1650965052.588000
-X-TM-MAIL-UUID: 6fdb132b-385e-400e-891e-685b5ea67b4e
-Received: from EUR02-HE1-obe.outbound.protection.outlook.com (unknown [104.47.5.52])
-        by repre01.tmes.trendmicro.eu (Trend Micro Email Security) with ESMTPS id 8FBA510002184;
-        Tue, 26 Apr 2022 09:24:12 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=n99BRZiHBm0Ne7FF9BH1F2LrYPmFghhMhcWCBhnpbx53z48rBCwUqSUKEv9j9YGiDh7y7cQbYq+fz52EPYbIz/CSS+9d2RaV0DNGHevvRkDNFUxb47/y7nlKKhSYC04FQ7yLIAoRQkeseIvk1PjlBNJsVm5IgH0AlizyO4ZPsxNpexp8L7jNhAgbnJ88+bRBbJ8GETtZi6zTlypJXQBLZXOiLf84Wnle2bYSZpfsrzu394VV3hqo/BuRYlojFfXYqpKwukg0Kg+uasSdgXeZX6VU74IZefnTmScZd+NbBKbs7xZ6KfKT1pvRzzgpey+rZ0pjtdm0TmfG8cTjTlGVcw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Th71CWUWUPueaJF14ZEex3R314WrrLtrwMDZZBnubuU=;
- b=hxCShC8KihVMiAsKo4MVqW6NW9vBciQ7mHMHWJQl/CQUxj4Dubwqto405rKpw/tIyNU+uCh34r4DAZu8X6++3xG9L+/MQKW76A7/kmTW4ur2lECuVqbc9I3jt1rrzbDxgPM6Pd9skhKo2lTcyARRT/Gu7FKwI4MKPGYjh+qdTtP6/Y6G6cFCNVW4mVx0QU2Nq94sN85bvWVLiAgaMIZzeTjolwbD4RyH79gGjqbyjRK8G4kUKaTB/jGro6iX3OW08Bt5X9AeSjZ/FSE9hH494b55aJvtTmrXxQXt6VmoLkAwOpkgI4ptwqXn2csp4bMywqIojt+wJ8v+oRFpoePOUA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=opensynergy.com; dmarc=pass action=none
- header.from=opensynergy.com; dkim=pass header.d=opensynergy.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=opensynergy.com;
-Message-ID: <ea0c7c48-a93b-e0fe-0a1d-e4c88c235f37@opensynergy.com>
-Date:   Tue, 26 Apr 2022 12:24:08 +0300
-Subject: Re: [RFC PATCH] Bluetooth: core: Allow bind HCI socket user channel
- when HCI is UP.
-Content-Language: uk
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Vasyl Vavrychuk <vvavrychuk@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        BlueZ <linux-bluetooth@vger.kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-References: <20220412120945.28862-1-vasyl.vavrychuk@opensynergy.com>
- <9EA1D51C-D316-49CF-A7F8-765C58C18880@holtmann.org>
-From:   Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>
-In-Reply-To: <9EA1D51C-D316-49CF-A7F8-765C58C18880@holtmann.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AM8P189CA0027.EURP189.PROD.OUTLOOK.COM
- (2603:10a6:20b:218::32) To PAXPR04MB9106.eurprd04.prod.outlook.com
- (2603:10a6:102:227::8)
+        Tue, 26 Apr 2022 06:03:25 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE189606DC;
+        Tue, 26 Apr 2022 02:23:59 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id p7-20020a05600c358700b00393e80c59daso975307wmq.0;
+        Tue, 26 Apr 2022 02:23:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=RWY8t79FX5mobNDnI1bF50+VkLrZpXasZBzUixIW9K4=;
+        b=VZ6VEJiVZRHTXHhvHFXRTkhWZ+fqk2la/dHWB4rnTOycqNfs61lc2f5gmlh7sBkqEE
+         IHwX6sQT0xtjzCRN2y6d8OUrKIDaoVHk6iFu5WvBshFmGfvpP0QutUp2j+hZi55R2UMn
+         K6xMsYnRtGFrIWZKEcT4K9PZD49Cz5orQ07mS6gGoEyPUPBUj41kLLCz1YSWOFE6sFAT
+         XqDuPBaKxGtKq7l4roNUGjZA+MYOqo2oGEUUPBGboPY5o+4enUnTnX5HCZqWws8M7ewU
+         pN1zIC50GIr3RC0pGAMYm+Xyiw4NLHCbDGr5jGHs35jMKL9Rx7pekh1HtU93xRoR+OL5
+         YYJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=RWY8t79FX5mobNDnI1bF50+VkLrZpXasZBzUixIW9K4=;
+        b=I4yIMi7iDD7NgsFxk5sCFZOs5uu8P5z7HwF3hiTz30O35NxHtY2kcH48ZNzx1EQZ8N
+         Ww93kBmdgjfpTs+u86YMZzV25xNb4LUCSNgKgjRjESSHyzkR9EbbpcQ1+/TlgVBIcnyh
+         iH6XYYC+WeQWVlU6dAkYtW8osqseYjJoZCnzE4YUA/Sck9n5NHdMPanxElJUbPiQO1Nu
+         6QoDtFNYpp22BNDvoaTtVnZV6D7gsM7GZwPG9sEbAE0z74d3h13ch/NMKcVVKHmPlLOx
+         K9dLXtlcRN94kYSspn++Rc6o6EdVcq+pOPR1CXknLEi5pUbsmxaagp5cjEg28KbbHN9D
+         jhxA==
+X-Gm-Message-State: AOAM533un81xyGLfQ2h9c9I8UemHhl3AhozuQRwm/zSnlzwqwrvpBxNa
+        7qJafr6O+NCj2ZQbY0SxDmc=
+X-Google-Smtp-Source: ABdhPJzW0N5gKqYW8bncy7v5Y5WRaUpPOFzrPibB1GO2Fl08cy4Dgy4vGdc30yOI93tnqN3i1XHnCg==
+X-Received: by 2002:a1c:7703:0:b0:38e:bd95:373c with SMTP id t3-20020a1c7703000000b0038ebd95373cmr28409501wmi.122.1650965038059;
+        Tue, 26 Apr 2022 02:23:58 -0700 (PDT)
+Received: from tiger.museclub.art (p200300cf9f393100d379c1e4199524ea.dip0.t-ipconnect.de. [2003:cf:9f39:3100:d379:c1e4:1995:24ea])
+        by smtp.googlemail.com with ESMTPSA id 9-20020a056000154900b0020a849e1c41sm13125094wry.13.2022.04.26.02.23.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 02:23:57 -0700 (PDT)
+From:   Eugene Shalygin <eugene.shalygin@gmail.com>
+Cc:     Eugene Shalygin <eugene.shalygin@gmail.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 1/4] hwmon: (asus-ec-sensors) introduce ec_board_info struct for board data
+Date:   Tue, 26 Apr 2022 11:23:37 +0200
+Message-Id: <20220426092340.495704-2-eugene.shalygin@gmail.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220426092340.495704-1-eugene.shalygin@gmail.com>
+References: <20220426092340.495704-1-eugene.shalygin@gmail.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d76ee49a-66ff-4f1b-2edd-08da2766854a
-X-MS-TrafficTypeDiagnostic: DB7PR04MB4059:EE_
-X-Microsoft-Antispam-PRVS: <DB7PR04MB40599DFBCDA6F2B676886C7CECFB9@DB7PR04MB4059.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: AKpcARHN/3PJ7bUi4d44vctkioTSQtAh5Xb/lSuAnTpTkLQkTsjQ6JwnoaSTtyEoKHbJm7QpHww6lAsU48LrZT2ZUwr59BH2lyiEKpEooD36PA2TZuw2XNxWwX2suTu4s/wbPtaxGmWIfesJk1i+wjw0OXXTzDQPNyPKCwtakPjsB0TPK5bquNGPvz07Fkt0XmmAx8QB6pc9DgGgJCeykZjevsxgWneC3coHO6v6huJUoeXDPGgTJpOE6/FArqUPRi0FIogFgqn6HoNL3ev366tpdVAsyZIv2cu1jkxPKrvcexM0mINEazYOnOiO/3QPPo+wsDftexpEkX/0dosUgL/fWMIH1R4UHGlxrSb/T1lY7DxuDMLU/vm4ygtnrqFcv4XH55aK1sF2ey++RGweDqW4TkKGODPpp4yrTxNxUqsz5im0749f1Ackj0gY6d36s0DvSq7Rd9PnCZKv6cDTqcAP176JfUogV4fWpDZHUT36B/k4yEvrCKAeLouY9opH6BjXef8eJf0FaUcZA00W0Lhcwl5EMCmY38NuoIs713CcxqKZOdzvcfFlbOOb1lpwNzmilfnQyWJRu4YMVFBvyGPBlKM6OBS25XRGMQBPzV8+dn81gv45LiZ/4l61K6Rp2SfV0Vr58EK6SMmS6XOcT9N7p+Y6WRMWK/nfE86aXo/C95OpHdhViKO8lBJ0gc7cOdXDwprohJNNhxAWGydhUHquwnS54DYuW5623zvN5zk=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB9106.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(39840400004)(376002)(136003)(396003)(346002)(66476007)(8676002)(66556008)(86362001)(42186006)(83380400001)(7416002)(31696002)(44832011)(54906003)(66946007)(38100700002)(2906002)(2616005)(186003)(316002)(110136005)(8936002)(4326008)(31686004)(36756003)(508600001)(966005)(26005)(53546011)(5660300002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?eWdibFdOWTdmTlh1K3UxblR0Y0krREZCTkdNSFV2dFpyUVdoM3hoV0tSU3Js?=
- =?utf-8?B?K05TbTgva2U3S2dRcnNZL05kc0xmVi9kckJBZWozSFowcUdhWU5ydERTb282?=
- =?utf-8?B?a3RGVEhrc2ZoMlNlTml5T25aZzhXS3NHM0w2SnVHcE5EQlprbmhlMS83WWVB?=
- =?utf-8?B?ZWFCdTgwNGZ1WmRNNWNURmdmcFd6ejY3UVZpTE5Kb0V3cCtOanJiMkM2dkpR?=
- =?utf-8?B?QmR5NWJiVWk1czUwOTJzeWFkcWJmM2gzZlJVTktVbDFHVHJ1aWROYXptd2ds?=
- =?utf-8?B?SUVubXdvVHNidTVnSnFvT0RMU2JEWHo4R1BnRzQzWTVucE85MDNTL202TGk1?=
- =?utf-8?B?Q3diS0R0Y1AzSGlMa3dlbzhYSjE3TkxJM2NsRGxCNmxDVkJzUkNrWlh0NmJP?=
- =?utf-8?B?dkVFUkw5UG5HeVZZVW13ZE9CcHpRYnRzNEVZMG1oQXBZYjhUUmQvL3RmTC9C?=
- =?utf-8?B?SnRiR29kZ0xYUmE4ZTR6ZmFXQUVMUkZjYWpFcXlpQmF0aHZRS1cyUHg0cGYz?=
- =?utf-8?B?cG8yVStBVkJPYi9JenVwMHovTWhWRHp3blV5eVhJeHJCaFJGWWE5ZWxZS3k5?=
- =?utf-8?B?Y3ZVYWdaNmVLSzhQVUJZMno1RFlrZ3FZWDQxdmk3bWczQngra2xOazZYLzFm?=
- =?utf-8?B?WlY5a1hPNjMySDRscGZGUlNYK3l1b2lrOUxiOTVKaEF1WnFDTVZvQlhXTE9D?=
- =?utf-8?B?cTMrei9hWUo5Q2N6bC84ekMwSGkrMHJ4YW9jYmNHNUs1R3B4V1dReVRGWm41?=
- =?utf-8?B?WEkrTzJkbFYvcGFiajhvME9yblFma1dGbHF4VSt1Nzg5NzFUQWZXVmU3cFNz?=
- =?utf-8?B?L1l1dnUreWF0UlZnVUJmOFhJSUlobldxbVlSN0tjMjVUMHZPTHhRckFDZVZt?=
- =?utf-8?B?N0xFMFM2aFBDaFdGcmRaSVM3NjNwdGhSZEJ4V2xlS29Ub2xrY0p1NW1CUm0y?=
- =?utf-8?B?cEhBekNTNENmZ014cFdONG0wQnZVZWFHWWNoUVlPNHZXYmwwTmpLZW9CWlhP?=
- =?utf-8?B?WGRYMVVnMWZES0RGTWhOYjd1ZE0zTmUxaS9yWEM0Tm5lM3hzTEJsVVl1STRs?=
- =?utf-8?B?OThQR3YwdHJ0QVB6d1RLczh4U3B4SGxNdVVLdTQ0UW40Wllac3VXWExUVitv?=
- =?utf-8?B?aTdwYmxzWkU1MDM1bTVqNjhva0ZnU0s1d01MUWNvcXhxQzJBN2ZyNWtqcnV3?=
- =?utf-8?B?ejNjdVVOR3dtMEpCN2UvUTc2VzkvaVJibi9nbGRxbVZkV1BCY0pld0prQlVx?=
- =?utf-8?B?bldSWndZbjNQeitmTjNLYUJ3WHJiYzRpNVduYjltbm1nSXV4bVpSbFk3SFlO?=
- =?utf-8?B?SW9TemUrU0d0K2NNVkRKdHU3ZGx5QVZvR3JtVlVIY1d0b2o0d2JBSXpzRFVJ?=
- =?utf-8?B?Q2JwempHemJBaDFwclllQmdub0QwSHNIbTNmWVFhVklVNmZTWkR0T0hGSXpt?=
- =?utf-8?B?MWVCSU1wT3N2N1MvTTg4YUY0YitRbDJZOEwrTHpiNGNYcE4vN0pRZ3pJS3NU?=
- =?utf-8?B?bHB1NUJYazJZVHlhbzhIM0twZkRXWXVkZmZubDhFYjZyTGdQd25LSE1PNmsz?=
- =?utf-8?B?QnlWcllFY0ZFVWpqN3g1OHhOdUR4emk1cWNZdmhYNnl3T2tSNzdsZDlMS1lK?=
- =?utf-8?B?RlZlbkJJS2hYQ2JweCszenFRbW84Y3AvTDRieklFVUNPNXBDbTR1VzZNMEk2?=
- =?utf-8?B?QTFVL0tRbFR2bGZ0ZFlycS9kcjQ2QWhUZ1ZPZlR3WVpmKzM1RUpXZGhNM3J1?=
- =?utf-8?B?T0syU3FGVHdkMjVsY2xoelBFZE1VaHJQU2VnYk1lZVc0N1ZoMTlqNnhFeGl1?=
- =?utf-8?B?c2NONW1KQmVGMUV3SnJpMjBIQkF3aWhqUG5LYWVOZzhISkN5clBYYTNMNW1j?=
- =?utf-8?B?Wk9ETzR5MjlYR2NzTXpIT05Yc1BYaTBpSGRTeXRLajh0R2dHLzIzbWRxTHdS?=
- =?utf-8?B?Sjk1ZlIybysvdGxKVGthZElIRkFhczdBRnNHa0FuRFVQYmR1M3FQUzk5RzJO?=
- =?utf-8?B?S2Z1ZVRRaVhtdEdqZ2VrdEs4ZlhTRlRDYTZQaG52SHd1K3M4WlBWdFN6T3A2?=
- =?utf-8?B?K3BuL3BDZDJ5T2U4WThIWS9ldjliUTdxWnlxSUNadFRHOTF4MlNNbVp1QkRa?=
- =?utf-8?B?c2V5KzhtUDZPT1dqMzJSM0FIcTltS2JtditXQWgrNTIrdzkvS05kNENuY0x4?=
- =?utf-8?B?eENQd2dlTWdHZ0Z4akRqRVcrdUpnT29jbm1wT1VhUHA5YjlEQUlvTGN1WlA1?=
- =?utf-8?B?c2VBQkZ2M3BRMjBLU3pxekY1cktFcVZ6TmFtNzhuVk80b1dFa20yQ3RoV0JT?=
- =?utf-8?B?dUNRYkdCdW5acHlBbXQwT1k0Smh3K3RUOVlTU21NRVhWbzVyWGlHZz09?=
-X-OriginatorOrg: opensynergy.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d76ee49a-66ff-4f1b-2edd-08da2766854a
-X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB9106.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Apr 2022 09:24:10.4599
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 800fae25-9b1b-4edc-993d-c939c4e84a64
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: lH8qmIoKXoEz+4vZXwG41xojhD1+FOAqflUD6upxbcus6iMdVe8eN0MG2O1pubv4wqJ0X3dnOXQlQZ9R+ZYf6A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4059
-X-TM-AS-ERS: 104.47.5.52-0.0.0.0
-X-TMASE-Version: StarCloud-1.3-8.8.1001-26856.006
-X-TMASE-Result: 10--19.108200-4.000000
-X-TMASE-MatchedRID: vbSD0OnL8/IMek0ClnpVp/HkpkyUphL9O8fk7n+zHAzXFJ7W3lIp49o0
-        qNbNhZKlVcLzvvAcZUct/x9i2Zd5RgzkIbwJgE/FEzEoOqAAVLNNLPQl0QAltP4DDXoaCqk7ilJ
-        mlF8p4QfplHhcW5EzjMvY6bQdecIl4FG4Cyz4VuYReM8i8p3vgEyQ5fRSh265TPm/MsQarwPU5x
-        sKpwPfyQpCfWsX3u4oF6dov8Gg2zrxlOJuQNHlfRFbgtHjUWLywqZ0OS45Py5i2IuOMF2AXLnGE
-        on+x/FhqCtC/8fgyE3r23emh+znp49+HWzUuQkw93bduyx/IZw0YL9SJPufX+QuInKvLeQ3MuTw
-        baqEJZN8WT1PvdHHDFl5gHXJcVkKeghDV/oDeqp+yskgwrfsC30tCKdnhB58vqq8s2MNhPCy5/t
-        FZu9S3Ku6xVHLhqfx33fj+sMArfMaMUyeC0staJwDp1OIv3zjQ/yXhuru+WsNTS/FFYL+sdvPwi
-        a2JVHPJpUV89uZZ78+FfDc5UEa8Q==
-X-TMASE-XGENCLOUD: 0d05273e-c75c-4aaf-8da1-b725fce82a95-0-0-200-0
-X-TM-Deliver-Signature: 7C6EE04E4EF2FE8DC664CD3501162682
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=opensynergy.com;
-        s=TM-DKIM-20210503141657; t=1650965055;
-        bh=SwOBDTwwNhfKbjVqKss7bfRJmrW2G3ePdxmtV9hFJcg=; l=2427;
-        h=Date:To:From;
-        b=B4vyy3NTDBMiHAgmu0PMIaO993dXM9TITrzEVbfWNm+M5etRk0CL8aD4FuNVakn1d
-         XUAgp9UQ2xiSYR4cebI9BXJLF7osh2MH+9o5apXFHlJwv4X2sMqCLXtHX6W7F8sfn6
-         eBBb/p28hx/lo9RDf+qlJgfrFIG5eKOpYmE/pg6/BWK2S1oNseWSwaFaEszSh9xJ2X
-         jsFx7MfoA2ISRouD5OiZwS4MFaiRJPSy1B2wrHj030dMrMROqnmULQK4pNkhRg4PBU
-         93rmbXl1KAj2jT/rjPYTG0IPVTuvRKQMOjoJqKo9qg1/5FkObbbdLG1rlFVqpgu37X
-         u/qOOd9Ntky3Q==
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Marcel,
+We need to keep some more information about the current board than just
+the sensors set, and with more boards to add the dmi id array grows
+quickly. Our probe code is always the same so let's switch to a custom
+test code and a custom board info array. That allows us to omit board
+vendor string (ASUS uses two strings that differ in case) in the board
+info and use case-insensitive comparison, and also do not duplicate
+sensor definitions for such board variants as " (WI-FI)" when sensors
+are identical to the base variant.
 
-On 4/22/2022 12:20 PM, Marcel Holtmann wrote:
-> Hi Vasyl,
-> 
->> This is needed for user-space to ensure that HCI init scheduled from
->> hci_register_dev is completed.
->>
->> Function hci_register_dev queues power_on workqueue which will run
->> hci_power_on > hci_dev_do_open. Function hci_dev_do_open sets HCI_INIT
->> for some time.
->>
->> It is not allowed to bind to HCI socket user channel when HCI_INIT is
->> set. As result, bind might fail when user-space program is run early
->> enough during boot.
->>
->> Now, user-space program can first issue HCIDEVUP ioctl to ensure HCI
->> init scheduled at hci_register_dev was completed.
->>
->> Signed-off-by: Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>
->> ---
->> net/bluetooth/hci_sock.c | 4 +---
->> 1 file changed, 1 insertion(+), 3 deletions(-)
->>
->> diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
->> index 33b3c0ffc339..c98de809f856 100644
->> --- a/net/bluetooth/hci_sock.c
->> +++ b/net/bluetooth/hci_sock.c
->> @@ -1194,9 +1194,7 @@ static int hci_sock_bind(struct socket *sock, struct sockaddr *addr,
->>
->> 		if (test_bit(HCI_INIT, &hdev->flags) ||
->> 		    hci_dev_test_flag(hdev, HCI_SETUP) ||
->> -		    hci_dev_test_flag(hdev, HCI_CONFIG) ||
->> -		    (!hci_dev_test_flag(hdev, HCI_AUTO_OFF) &&
->> -		     test_bit(HCI_UP, &hdev->flags))) {
->> +		    hci_dev_test_flag(hdev, HCI_CONFIG)) {
->> 			err = -EBUSY;
->> 			hci_dev_put(hdev);
->> 			goto done;
-> 
-> I am not following the reasoning here. It is true that the device has to run init before you can do something with it. From mgmt interface your device will only be announced when it is really ready.
+Also saves a quarter of the module size by replacing big dmi_system_id
+structs with smaller ones.
 
-Sorry, I am not familiar with mgmt interface. I obtain device using 
-HCIGETDEVLIST.
+Signed-off-by: Eugene Shalygin <eugene.shalygin@gmail.com>
+---
+ drivers/hwmon/asus-ec-sensors.c | 205 ++++++++++++++++++--------------
+ 1 file changed, 116 insertions(+), 89 deletions(-)
 
-BTW. I have pushed related patch [1]. Comparing to this patch, [1] is 
-less intrusive since it does not effect user-space semantics.
+diff --git a/drivers/hwmon/asus-ec-sensors.c b/drivers/hwmon/asus-ec-sensors.c
+index e3d794fb0534..de24dc3d1390 100644
+--- a/drivers/hwmon/asus-ec-sensors.c
++++ b/drivers/hwmon/asus-ec-sensors.c
+@@ -54,8 +54,7 @@ static char *mutex_path_override;
+ /* ACPI mutex for locking access to the EC for the firmware */
+ #define ASUS_HW_ACCESS_MUTEX_ASMX	"\\AMW0.ASMX"
+ 
+-/* There are two variants of the vendor spelling */
+-#define VENDOR_ASUS_UPPER_CASE	"ASUSTeK COMPUTER INC."
++#define MAX_IDENTICAL_BOARD_VARIATIONS	2
+ 
+ typedef union {
+ 	u32 value;
+@@ -164,74 +163,94 @@ static const struct ec_sensor_info known_ec_sensors[] = {
+ 	(SENSOR_TEMP_CHIPSET | SENSOR_TEMP_CPU | SENSOR_TEMP_MB)
+ #define SENSOR_SET_TEMP_WATER (SENSOR_TEMP_WATER_IN | SENSOR_TEMP_WATER_OUT)
+ 
+-#define DMI_EXACT_MATCH_BOARD(vendor, name, sensors) {                         \
+-	.matches = {                                                           \
+-		DMI_EXACT_MATCH(DMI_BOARD_VENDOR, vendor),                     \
+-		DMI_EXACT_MATCH(DMI_BOARD_NAME, name),                         \
+-	},                                                                     \
+-	.driver_data = (void *)(sensors), \
+-}
++struct ec_board_info {
++	const char *board_names[MAX_IDENTICAL_BOARD_VARIATIONS];
++	unsigned long sensors;
++};
+ 
+-static const struct dmi_system_id asus_ec_dmi_table[] __initconst = {
+-	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "PRIME X570-PRO",
+-		SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_VRM |
+-		SENSOR_TEMP_T_SENSOR | SENSOR_FAN_CHIPSET),
+-	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE,
+-			      "ProArt X570-CREATOR WIFI",
+-		SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_VRM |
+-		SENSOR_TEMP_T_SENSOR | SENSOR_FAN_CPU_OPT |
+-		SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
+-	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "Pro WS X570-ACE",
+-		SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_VRM |
+-		SENSOR_TEMP_T_SENSOR | SENSOR_FAN_CHIPSET |
+-		SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
+-	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE,
+-			      "ROG CROSSHAIR VIII DARK HERO",
+-		SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_T_SENSOR |
+-		SENSOR_TEMP_VRM | SENSOR_SET_TEMP_WATER |
+-		SENSOR_FAN_CPU_OPT | SENSOR_FAN_WATER_FLOW |
+-		SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
+-	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE,
+-			      "ROG CROSSHAIR VIII FORMULA",
+-		SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_T_SENSOR |
+-		SENSOR_TEMP_VRM | SENSOR_FAN_CPU_OPT | SENSOR_FAN_CHIPSET |
+-		SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
+-	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG CROSSHAIR VIII HERO",
+-		SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_T_SENSOR |
+-		SENSOR_TEMP_VRM | SENSOR_SET_TEMP_WATER |
+-		SENSOR_FAN_CPU_OPT | SENSOR_FAN_CHIPSET |
+-		SENSOR_FAN_WATER_FLOW | SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
+-	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE,
+-			      "ROG CROSSHAIR VIII HERO (WI-FI)",
+-		SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_T_SENSOR |
+-		SENSOR_TEMP_VRM | SENSOR_SET_TEMP_WATER |
+-		SENSOR_FAN_CPU_OPT | SENSOR_FAN_CHIPSET |
+-		SENSOR_FAN_WATER_FLOW | SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
+-	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE,
+-			      "ROG CROSSHAIR VIII IMPACT",
+-		SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_T_SENSOR |
+-		SENSOR_TEMP_VRM | SENSOR_FAN_CHIPSET |
+-		SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
+-	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG STRIX B550-E GAMING",
+-		SENSOR_SET_TEMP_CHIPSET_CPU_MB |
+-		SENSOR_TEMP_T_SENSOR |
+-		SENSOR_TEMP_VRM | SENSOR_FAN_CPU_OPT),
+-	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG STRIX B550-I GAMING",
+-		SENSOR_SET_TEMP_CHIPSET_CPU_MB |
+-		SENSOR_TEMP_T_SENSOR |
+-		SENSOR_TEMP_VRM | SENSOR_FAN_VRM_HS |
+-		SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
+-	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG STRIX X570-E GAMING",
+-		SENSOR_SET_TEMP_CHIPSET_CPU_MB |
+-		SENSOR_TEMP_T_SENSOR |
+-		SENSOR_TEMP_VRM | SENSOR_FAN_CHIPSET |
+-		SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
+-	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG STRIX X570-F GAMING",
+-		SENSOR_SET_TEMP_CHIPSET_CPU_MB |
+-		SENSOR_TEMP_T_SENSOR | SENSOR_FAN_CHIPSET),
+-	DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG STRIX X570-I GAMING",
+-		SENSOR_TEMP_T_SENSOR | SENSOR_FAN_VRM_HS |
+-		SENSOR_FAN_CHIPSET | SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE),
++static const struct ec_board_info board_info[] = {
++	{
++		.board_names = {"PRIME X570-PRO"},
++		.sensors = SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_VRM |
++			SENSOR_TEMP_T_SENSOR | SENSOR_FAN_CHIPSET,
++	},
++	{
++		.board_names = {"ProArt X570-CREATOR WIFI"},
++		.sensors = SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_VRM |
++			SENSOR_TEMP_T_SENSOR | SENSOR_FAN_CPU_OPT |
++			SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE,
++	},
++	{
++		.board_names = {"Pro WS X570-ACE"},
++		.sensors = SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_VRM |
++			SENSOR_TEMP_T_SENSOR | SENSOR_FAN_CHIPSET |
++			SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE,
++	},
++	{
++		.board_names = {"ROG CROSSHAIR VIII DARK HERO"},
++		.sensors = SENSOR_SET_TEMP_CHIPSET_CPU_MB |
++			SENSOR_TEMP_T_SENSOR |
++			SENSOR_TEMP_VRM | SENSOR_SET_TEMP_WATER |
++			SENSOR_FAN_CPU_OPT | SENSOR_FAN_WATER_FLOW |
++			SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE,
++	},
++	{
++		.board_names = {"ROG CROSSHAIR VIII FORMULA"},
++		.sensors = SENSOR_SET_TEMP_CHIPSET_CPU_MB |
++			SENSOR_TEMP_T_SENSOR | SENSOR_TEMP_VRM |
++			SENSOR_FAN_CPU_OPT | SENSOR_FAN_CHIPSET |
++			SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE,
++	},
++	{
++		.board_names = {
++			"ROG CROSSHAIR VIII HERO",
++			"ROG CROSSHAIR VIII HERO (WI-FI)",
++		},
++		.sensors = SENSOR_SET_TEMP_CHIPSET_CPU_MB |
++			SENSOR_TEMP_T_SENSOR |
++			SENSOR_TEMP_VRM | SENSOR_SET_TEMP_WATER |
++			SENSOR_FAN_CPU_OPT | SENSOR_FAN_CHIPSET |
++			SENSOR_FAN_WATER_FLOW | SENSOR_CURR_CPU |
++			SENSOR_IN_CPU_CORE,
++	},
++	{
++		.board_names = {"ROG CROSSHAIR VIII IMPACT"},
++		.sensors = SENSOR_SET_TEMP_CHIPSET_CPU_MB |
++			SENSOR_TEMP_T_SENSOR | SENSOR_TEMP_VRM |
++			SENSOR_FAN_CHIPSET | SENSOR_CURR_CPU |
++			SENSOR_IN_CPU_CORE,
++	},
++	{
++		.board_names = {"ROG STRIX B550-E GAMING"},
++		.sensors = SENSOR_SET_TEMP_CHIPSET_CPU_MB |
++			SENSOR_TEMP_T_SENSOR | SENSOR_TEMP_VRM |
++			SENSOR_FAN_CPU_OPT,
++	},
++	{
++		.board_names = {"ROG STRIX B550-I GAMING"},
++		.sensors = SENSOR_SET_TEMP_CHIPSET_CPU_MB |
++			SENSOR_TEMP_T_SENSOR | SENSOR_TEMP_VRM |
++			SENSOR_FAN_VRM_HS | SENSOR_CURR_CPU |
++			SENSOR_IN_CPU_CORE,
++	},
++	{
++		.board_names = {"ROG STRIX X570-E GAMING"},
++		.sensors = SENSOR_SET_TEMP_CHIPSET_CPU_MB |
++			SENSOR_TEMP_T_SENSOR | SENSOR_TEMP_VRM |
++			SENSOR_FAN_CHIPSET | SENSOR_CURR_CPU |
++			SENSOR_IN_CPU_CORE,
++	},
++	{
++		.board_names = {"ROG STRIX X570-F GAMING"},
++		.sensors = SENSOR_SET_TEMP_CHIPSET_CPU_MB |
++			SENSOR_TEMP_T_SENSOR | SENSOR_FAN_CHIPSET,
++	},
++	{
++		.board_names = {"ROG STRIX X570-I GAMING"},
++		.sensors = SENSOR_TEMP_T_SENSOR | SENSOR_FAN_VRM_HS |
++			SENSOR_FAN_CHIPSET | SENSOR_CURR_CPU |
++			SENSOR_IN_CPU_CORE,
++	},
+ 	{}
+ };
+ 
+@@ -241,7 +260,7 @@ struct ec_sensor {
+ };
+ 
+ struct ec_sensors_data {
+-	unsigned long board_sensors;
++	const struct ec_board_info *board_info;
+ 	struct ec_sensor *sensors;
+ 	/* EC registers to read from */
+ 	u16 *registers;
+@@ -307,11 +326,6 @@ static int __init bank_compare(const void *a, const void *b)
+ 	return *((const s8 *)a) - *((const s8 *)b);
+ }
+ 
+-static int __init board_sensors_count(unsigned long sensors)
+-{
+-	return hweight_long(sensors);
+-}
+-
+ static void __init setup_sensor_data(struct ec_sensors_data *ec)
+ {
+ 	struct ec_sensor *s = ec->sensors;
+@@ -322,8 +336,8 @@ static void __init setup_sensor_data(struct ec_sensors_data *ec)
+ 	ec->nr_banks = 0;
+ 	ec->nr_registers = 0;
+ 
+-	for_each_set_bit(i, &ec->board_sensors,
+-			  BITS_PER_TYPE(ec->board_sensors)) {
++	for_each_set_bit(i, &ec->board_info->sensors,
++			 BITS_PER_TYPE(ec->board_info->sensors)) {
+ 		s->info_index = i;
+ 		s->cached_value = 0;
+ 		ec->nr_registers +=
+@@ -463,9 +477,10 @@ static inline s32 get_sensor_value(const struct ec_sensor_info *si, u8 *data)
+ static void update_sensor_values(struct ec_sensors_data *ec, u8 *data)
+ {
+ 	const struct ec_sensor_info *si;
+-	struct ec_sensor *s;
++	struct ec_sensor *s, *sensor_end;
+ 
+-	for (s = ec->sensors; s != ec->sensors + ec->nr_sensors; s++) {
++	sensor_end = ec->sensors + ec->nr_sensors;
++	for (s = ec->sensors; s != sensor_end; s++) {
+ 		si = &known_ec_sensors[s->info_index];
+ 		s->cached_value = get_sensor_value(si, data);
+ 		data += si->addr.components.size;
+@@ -603,12 +618,24 @@ static struct hwmon_chip_info asus_ec_chip_info = {
+ 	.ops = &asus_ec_hwmon_ops,
+ };
+ 
+-static unsigned long __init get_board_sensors(void)
++static const struct ec_board_info * __init get_board_info(void)
+ {
+-	const struct dmi_system_id *dmi_entry =
+-		dmi_first_match(asus_ec_dmi_table);
++	const char *dmi_board_vendor = dmi_get_system_info(DMI_BOARD_VENDOR);
++	const char *dmi_board_name = dmi_get_system_info(DMI_BOARD_NAME);
++	const struct ec_board_info *board;
++
++	if (!dmi_board_vendor || !dmi_board_name ||
++	    strcasecmp(dmi_board_vendor, "ASUSTeK COMPUTER INC."))
++		return NULL;
++
++	for (board = board_info; board->sensors; board++) {
++		if (match_string(board->board_names,
++				 MAX_IDENTICAL_BOARD_VARIATIONS,
++				 dmi_board_name) >= 0)
++			return board;
++	}
+ 
+-	return dmi_entry ? (unsigned long)dmi_entry->driver_data : 0;
++	return NULL;
+ }
+ 
+ static int __init asus_ec_probe(struct platform_device *pdev)
+@@ -616,17 +643,17 @@ static int __init asus_ec_probe(struct platform_device *pdev)
+ 	const struct hwmon_channel_info **ptr_asus_ec_ci;
+ 	int nr_count[hwmon_max] = { 0 }, nr_types = 0;
+ 	struct hwmon_channel_info *asus_ec_hwmon_chan;
++	const struct ec_board_info *pboard_info;
+ 	const struct hwmon_chip_info *chip_info;
+ 	struct device *dev = &pdev->dev;
+ 	struct ec_sensors_data *ec_data;
+ 	const struct ec_sensor_info *si;
+ 	enum hwmon_sensor_types type;
+-	unsigned long board_sensors;
+ 	struct device *hwdev;
+ 	unsigned int i;
+ 
+-	board_sensors = get_board_sensors();
+-	if (!board_sensors)
++	pboard_info = get_board_info();
++	if (!pboard_info)
+ 		return -ENODEV;
+ 
+ 	ec_data = devm_kzalloc(dev, sizeof(struct ec_sensors_data),
+@@ -635,8 +662,8 @@ static int __init asus_ec_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	dev_set_drvdata(dev, ec_data);
+-	ec_data->board_sensors = board_sensors;
+-	ec_data->nr_sensors = board_sensors_count(ec_data->board_sensors);
++	ec_data->board_info = pboard_info;
++	ec_data->nr_sensors = hweight_long(ec_data->board_info->sensors);
+ 	ec_data->sensors = devm_kcalloc(dev, ec_data->nr_sensors,
+ 					sizeof(struct ec_sensor), GFP_KERNEL);
+ 
+@@ -709,7 +736,7 @@ static struct platform_driver asus_ec_sensors_platform_driver = {
+ 	},
+ };
+ 
+-MODULE_DEVICE_TABLE(dmi, asus_ec_dmi_table);
++MODULE_DEVICE_TABLE(acpi, acpi_ec_ids);
+ module_platform_driver_probe(asus_ec_sensors_platform_driver, asus_ec_probe);
+ 
+ module_param_named(mutex_path, mutex_path_override, charp, 0);
+-- 
+2.35.1
 
-Patch [1] allows to ensure that device is not in HCI_INIT state by running
-
-     hciconfig hci0 down
-
-This will either wait for HCI_INIT complete and then powers HCI down, or 
-cancels pending power_on.
-
-If we apply [1], we can still consider an optimization to allow binding 
-during HCI_INIT since this optimization will allow me to ommit extra
-
-     hciconfig hci0 down
-
-[1]: 
-https://lore.kernel.org/linux-bluetooth/20220426081823.21557-1-vasyl.vavrychuk@opensynergy.com/T/#u
-
-Kind regards,
-Vasyl
