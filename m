@@ -2,130 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EAB6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 15:14:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68354C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 15:17:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351902AbiDZPRc (ORCPT
+        id S1352318AbiDZPVB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 11:17:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50132 "EHLO
+        Tue, 26 Apr 2022 11:21:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351917AbiDZPPl (ORCPT
+        with ESMTP id S1347518AbiDZPUv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 11:15:41 -0400
-X-Greylist: delayed 1315 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 26 Apr 2022 08:10:28 PDT
-Received: from gateway22.websitewelcome.com (gateway22.websitewelcome.com [192.185.46.234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F288F3A1B1
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 08:10:27 -0700 (PDT)
-Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
-        by gateway22.websitewelcome.com (Postfix) with ESMTP id 583F4BFC8
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:48:32 -0500 (CDT)
-Received: from md-in-79.webhostbox.net ([43.225.55.182])
-        by cmsmtp with SMTP
-        id jMUPntAWH9AGSjMURn0nFw; Tue, 26 Apr 2022 09:48:32 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=linumiz.com
-        ; s=default; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=U80fI97g89tIVJwg/sg9xJdAtkuna8yWHZLH8Fxmdaw=; b=AhujkquVIa5WRrsxj9ZsiXnotP
-        ewOGwNygYhQ0/Ohisj+9nI0Ofnp0zdPHGpE18D/BJ0Lzt3G4Ri4kDUYKWkMFqzT25ZkA6S7rMJQ+o
-        thkMCbDAhTqq39z6nYIFKcWBAEsxsyVSHS+MA6g3/1+m+U9b29Z0d0925jOCPXZVCYACg1iANu85J
-        fVnq8byXhcQOSHIkS1bX0XrIxB6omC1at2yKFE2ilFTXitzRmhdGq/6GHqN06MXGuNUwv1lF6fDUc
-        yEJjsOJ19vcLYzcOSX/cHjGQqVL6cetioaVh/cffc0wmJYMa0X69fUFM0YWYF4LTxkhRH0t/B+I45
-        1qJD+Jig==;
-Received: from p578d29e0.dip0.t-ipconnect.de ([87.141.41.224]:38026 helo=[192.168.10.199])
-        by md-in-79.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <navin@linumiz.com>)
-        id 1njMUP-000KFi-2O; Tue, 26 Apr 2022 14:48:29 +0000
-Message-ID: <80b6a194-53d7-bacc-23f9-7526f51b5463@linumiz.com>
-Date:   Tue, 26 Apr 2022 16:47:20 +0200
+        Tue, 26 Apr 2022 11:20:51 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 371811AC56E
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 08:13:00 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 884381F388;
+        Tue, 26 Apr 2022 15:12:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1650985953; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ilqNI6bkLcv0GvaJ4q+HJDdDtII/9oekltf7dQ89U9Q=;
+        b=mdJ1KGIHs4YiMxBMHho6GPV5nZqr5jlYCgkOB4AePzlZRpANqXVYFptdb/aNuRB3aD4kj/
+        JnLWcxK5t7HMSY5fqQFmVLFk/Im+b4p+TKbJ/w+EoqzvV9FQzj1aR84NhLQCBb+B4g6kha
+        e2HBxErTfMOCG3AoTvFbqOjrqV3jBfw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1650985953;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ilqNI6bkLcv0GvaJ4q+HJDdDtII/9oekltf7dQ89U9Q=;
+        b=AQoCjGFKfzfwH1TlMeEMeRZUDBhzeYSzTBgdOWde+6cgvfmcwbhLV5CEDdifooxTr7jeaZ
+        zWY/tutiR8jcg2AQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 335FF13AD5;
+        Tue, 26 Apr 2022 15:12:33 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id IIraC+ELaGIkXwAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Tue, 26 Apr 2022 15:12:33 +0000
+Message-ID: <147b11c3-dbce-ccd3-3b0c-c5971135f949@suse.cz>
+Date:   Tue, 26 Apr 2022 17:12:32 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH v1 1/1] iio: temperature: max31865: Make use of device
- properties
 Content-Language: en-US
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>
-References: <20220413185335.21743-1-andriy.shevchenko@linux.intel.com>
- <20220416114801.0865fcba@jic23-huawei>
-From:   navin <navin@linumiz.com>
-In-Reply-To: <20220416114801.0865fcba@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     kernel test robot <lkp@intel.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        penberg@kernel.org, roman.gushchin@linux.dev,
+        iamjoonsoo.kim@lge.com, rientjes@google.com,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        Kees Cook <keescook@chromium.org>
+References: <20220422201830.288018-1-pcc@google.com>
+ <202204251346.WbwgrNZw-lkp@intel.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+Subject: Re: [PATCH v3] mm: make minimum slab alignment a runtime property
+In-Reply-To: <202204251346.WbwgrNZw-lkp@intel.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - md-in-79.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - linumiz.com
-X-BWhitelist: no
-X-Source-IP: 87.141.41.224
-X-Source-L: No
-X-Exim-ID: 1njMUP-000KFi-2O
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: p578d29e0.dip0.t-ipconnect.de ([192.168.10.199]) [87.141.41.224]:38026
-X-Source-Auth: navin@linumiz.com
-X-Email-Count: 2
-X-Source-Cap: bGludW1jbWM7aG9zdGdhdG9yO21kLWluLTc5LndlYmhvc3Rib3gubmV0
-X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 4/25/22 07:12, kernel test robot wrote:
+> Hi Peter,
+> 
+> Thank you for the patch! Yet something to improve:
+> 
+> [auto build test ERROR on hnaz-mm/master]
+> 
+> url:    https://github.com/intel-lab-lkp/linux/commits/Peter-Collingbourne/mm-make-minimum-slab-alignment-a-runtime-property/20220423-042024
+> base:   https://github.com/hnaz/linux-mm master
+> config: arm64-buildonly-randconfig-r002-20220425 (https://download.01.org/0day-ci/archive/20220425/202204251346.WbwgrNZw-lkp@intel.com/config)
+> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 1cddcfdc3c683b393df1a5c9063252eb60e52818)
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # install arm64 cross compiling tool for clang build
+>         # apt-get install binutils-aarch64-linux-gnu
+>         # https://github.com/intel-lab-lkp/linux/commit/3aef97055dd4a480e05dff758164f153aaddbb49
+>         git remote add linux-review https://github.com/intel-lab-lkp/linux
+>         git fetch --no-tags linux-review Peter-Collingbourne/mm-make-minimum-slab-alignment-a-runtime-property/20220423-042024
+>         git checkout 3aef97055dd4a480e05dff758164f153aaddbb49
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 prepare
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All errors (new ones prefixed by >>):
+> 
+>    In file included from kernel/bounds.c:10:
+>    In file included from include/linux/page-flags.h:10:
+>    In file included from include/linux/bug.h:5:
+>    In file included from arch/arm64/include/asm/bug.h:26:
+>    In file included from include/asm-generic/bug.h:22:
+>    In file included from include/linux/printk.h:9:
+>    In file included from include/linux/cache.h:6:
+>    In file included from arch/arm64/include/asm/cache.h:56:
+>    In file included from include/linux/kasan-enabled.h:5:
+>    In file included from include/linux/static_key.h:1:
 
-On 16.04.22 12:48, Jonathan Cameron wrote:
-> On Wed, 13 Apr 2022 21:53:35 +0300
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
->
->> Convert the module to be property provider agnostic and allow
->> it to be used on non-OF platforms.
-> This one should call out the addition of missing mod_devicetable.h
-> If nothing else comes up I can add that whilst applying.
-> Looks fine to me but I'd like to give a little time for
-> Navin to comment if they wish.
->
-> Jonathan
+Hmm looks like a circular include, cache.h is too "low-level" in the
+hierarchy to bring in kasan->static_key->jump_label.h definitions?
+jump_label.h does include bug.h, but we have it above already and have
+already passed #define _LINUX_BUG_H.
 
-Looks fine for me. Thanks
+So, a different kind of header with arm64-specific variant?
 
-Navin
+>>> include/linux/jump_label.h:285:2: error: call to undeclared function 'WARN'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+>            STATIC_KEY_CHECK_USE(key);
+>            ^
+>    include/linux/jump_label.h:81:35: note: expanded from macro 'STATIC_KEY_CHECK_USE'
+>    #define STATIC_KEY_CHECK_USE(key) WARN(!static_key_initialized,               \
+>                                      ^
+>    include/linux/jump_label.h:291:2: error: call to undeclared function 'WARN'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+>            STATIC_KEY_CHECK_USE(key);
+>            ^
+>    include/linux/jump_label.h:81:35: note: expanded from macro 'STATIC_KEY_CHECK_USE'
+>    #define STATIC_KEY_CHECK_USE(key) WARN(!static_key_initialized,               \
+>                                      ^
+>    include/linux/jump_label.h:313:2: error: call to undeclared function 'WARN'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+>            STATIC_KEY_CHECK_USE(key);
+>            ^
+>    include/linux/jump_label.h:81:35: note: expanded from macro 'STATIC_KEY_CHECK_USE'
+>    #define STATIC_KEY_CHECK_USE(key) WARN(!static_key_initialized,               \
+>                                      ^
+>>> include/linux/jump_label.h:316:3: error: call to undeclared function 'WARN_ON_ONCE'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+>                    WARN_ON_ONCE(atomic_read(&key->enabled) != 1);
+>                    ^
+>    include/linux/jump_label.h:324:2: error: call to undeclared function 'WARN'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+>            STATIC_KEY_CHECK_USE(key);
+>            ^
+>    include/linux/jump_label.h:81:35: note: expanded from macro 'STATIC_KEY_CHECK_USE'
+>    #define STATIC_KEY_CHECK_USE(key) WARN(!static_key_initialized,               \
+>                                      ^
+>    include/linux/jump_label.h:327:3: error: call to undeclared function 'WARN_ON_ONCE'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+>                    WARN_ON_ONCE(atomic_read(&key->enabled) != 0);
+>                    ^
+>    6 errors generated.
+>    make[2]: *** [scripts/Makefile.build:122: kernel/bounds.s] Error 1
+>    make[2]: Target '__build' not remade because of errors.
+>    make[1]: *** [Makefile:1283: prepare0] Error 2
+>    make[1]: Target 'prepare' not remade because of errors.
+>    make: *** [Makefile:226: __sub-make] Error 2
+>    make: Target 'prepare' not remade because of errors.
+> 
+> 
+> vim +/WARN +285 include/linux/jump_label.h
+> 
+> bf5438fca2950b Jason Baron     2010-09-17  282  
+> c5905afb0ee655 Ingo Molnar     2012-02-24  283  static inline void static_key_slow_inc(struct static_key *key)
+> d430d3d7e646eb Jason Baron     2011-03-16  284  {
+> 5cdda5117e125e Borislav Petkov 2017-10-18 @285  	STATIC_KEY_CHECK_USE(key);
+> d430d3d7e646eb Jason Baron     2011-03-16  286  	atomic_inc(&key->enabled);
+> d430d3d7e646eb Jason Baron     2011-03-16  287  }
+> bf5438fca2950b Jason Baron     2010-09-17  288  
+> c5905afb0ee655 Ingo Molnar     2012-02-24  289  static inline void static_key_slow_dec(struct static_key *key)
+> bf5438fca2950b Jason Baron     2010-09-17  290  {
+> 5cdda5117e125e Borislav Petkov 2017-10-18  291  	STATIC_KEY_CHECK_USE(key);
+> d430d3d7e646eb Jason Baron     2011-03-16  292  	atomic_dec(&key->enabled);
+> bf5438fca2950b Jason Baron     2010-09-17  293  }
+> bf5438fca2950b Jason Baron     2010-09-17  294  
+> ce48c146495a1a Peter Zijlstra  2018-01-22  295  #define static_key_slow_inc_cpuslocked(key) static_key_slow_inc(key)
+> ce48c146495a1a Peter Zijlstra  2018-01-22  296  #define static_key_slow_dec_cpuslocked(key) static_key_slow_dec(key)
+> ce48c146495a1a Peter Zijlstra  2018-01-22  297  
+> 4c3ef6d79328c0 Jason Baron     2010-09-17  298  static inline int jump_label_text_reserved(void *start, void *end)
+> 4c3ef6d79328c0 Jason Baron     2010-09-17  299  {
+> 4c3ef6d79328c0 Jason Baron     2010-09-17  300  	return 0;
+> 4c3ef6d79328c0 Jason Baron     2010-09-17  301  }
+> 4c3ef6d79328c0 Jason Baron     2010-09-17  302  
+> 91bad2f8d30574 Jason Baron     2010-10-01  303  static inline void jump_label_lock(void) {}
+> 91bad2f8d30574 Jason Baron     2010-10-01  304  static inline void jump_label_unlock(void) {}
+> 91bad2f8d30574 Jason Baron     2010-10-01  305  
+> d430d3d7e646eb Jason Baron     2011-03-16  306  static inline int jump_label_apply_nops(struct module *mod)
+> d430d3d7e646eb Jason Baron     2011-03-16  307  {
+> d430d3d7e646eb Jason Baron     2011-03-16  308  	return 0;
+> d430d3d7e646eb Jason Baron     2011-03-16  309  }
+> b202952075f626 Gleb Natapov    2011-11-27  310  
+> e33886b38cc82a Peter Zijlstra  2015-07-24  311  static inline void static_key_enable(struct static_key *key)
+> e33886b38cc82a Peter Zijlstra  2015-07-24  312  {
+> 5cdda5117e125e Borislav Petkov 2017-10-18  313  	STATIC_KEY_CHECK_USE(key);
+> e33886b38cc82a Peter Zijlstra  2015-07-24  314  
+> 1dbb6704de91b1 Paolo Bonzini   2017-08-01  315  	if (atomic_read(&key->enabled) != 0) {
+> 1dbb6704de91b1 Paolo Bonzini   2017-08-01 @316  		WARN_ON_ONCE(atomic_read(&key->enabled) != 1);
+> 1dbb6704de91b1 Paolo Bonzini   2017-08-01  317  		return;
+> 1dbb6704de91b1 Paolo Bonzini   2017-08-01  318  	}
+> 1dbb6704de91b1 Paolo Bonzini   2017-08-01  319  	atomic_set(&key->enabled, 1);
+> e33886b38cc82a Peter Zijlstra  2015-07-24  320  }
+> e33886b38cc82a Peter Zijlstra  2015-07-24  321  
+> 
 
->
->> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
->> ---
->>   drivers/iio/temperature/max31865.c | 4 +++-
->>   1 file changed, 3 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/iio/temperature/max31865.c b/drivers/iio/temperature/max31865.c
->> index 86c3f3509a26..e3bb78184c6e 100644
->> --- a/drivers/iio/temperature/max31865.c
->> +++ b/drivers/iio/temperature/max31865.c
->> @@ -12,9 +12,11 @@
->>   #include <linux/delay.h>
->>   #include <linux/err.h>
->>   #include <linux/init.h>
->> +#include <linux/mod_devicetable.h>
->>   #include <linux/module.h>
->>   #include <linux/iio/iio.h>
->>   #include <linux/iio/sysfs.h>
->> +#include <linux/property.h>
->>   #include <linux/spi/spi.h>
->>   #include <asm/unaligned.h>
->>   
->> @@ -305,7 +307,7 @@ static int max31865_probe(struct spi_device *spi)
->>   	indio_dev->channels = max31865_channels;
->>   	indio_dev->num_channels = ARRAY_SIZE(max31865_channels);
->>   
->> -	if (of_property_read_bool(spi->dev.of_node, "maxim,3-wire")) {
->> +	if (device_property_read_bool(&spi->dev, "maxim,3-wire")) {
->>   		/* select 3 wire */
->>   		data->three_wire = 1;
->>   	} else {
