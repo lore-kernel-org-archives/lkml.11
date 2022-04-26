@@ -2,113 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDD1CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:52:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2832EC35280
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:52:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241965AbiDZIzA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:55:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33634 "EHLO
+        id S1345167AbiDZIzY (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:55:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345478AbiDZIll (ORCPT
+        with ESMTP id S1345526AbiDZIl6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:41:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67943158F6C;
-        Tue, 26 Apr 2022 01:33:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB890B81A2F;
-        Tue, 26 Apr 2022 08:33:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 233F4C385A4;
-        Tue, 26 Apr 2022 08:33:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961983;
-        bh=DMCYpmbUYHI9Ux/XT1Qs2k/p3ox5E4gI9mXm9J3vDx4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w/qwzGownsQFF3RK5jEirW7E0RkgNIlxq8AUsN9d0UctDmw41fvaLwaLP9vYjTPK6
-         haSKpx+jHL88KYboFplWvyS5dF2d1L5tYUBD/OHruk3GavtxbOs2eAopkgRo5qwtwK
-         dkfiLWoQIVb1kNluHm5FJe3xUC/S3TbBll+A/AIc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 32/86] arm64/mm: Remove [PUD|PMD]_TABLE_BIT from [pud|pmd]_bad()
-Date:   Tue, 26 Apr 2022 10:21:00 +0200
-Message-Id: <20220426081742.134773645@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
-References: <20220426081741.202366502@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 26 Apr 2022 04:41:58 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F24CE158F85;
+        Tue, 26 Apr 2022 01:33:08 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id a11so6094040pff.1;
+        Tue, 26 Apr 2022 01:33:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XPCJZevhs8brMYhtAZr8BdWat46UoHpJViKaKdpMRuU=;
+        b=c7vbIQntGD0977Uznsb+oxAGZUTT0lMxHbhYk9ny8G4wzPWoOrh53GXQ7s4xzFZ01f
+         eV0kK1RejcGO0tYo7DEZ52ThTAGY9v/Rn7YkIOOjjb+l4n/m4yXBHk+i2OSF6CJOE05j
+         AP6sQcmEG+dNc5HAV+8T/fhQ04peAYAEmXUtGXR2sFsqht4dGf6d2hvFcP57oLDKrHtF
+         ypxCGEdR4zAJtJ2XsdqDsaxHSk8NB7yXLSvEXdabkat45dZjVGA7w3zbhnUhc0pAc/ue
+         3xOx5leNCKMNmR4tX0M/m9umZl8/caTns2y5uwlnCP8z6sBZhZcZ1cnrjoFBw7+tX/xJ
+         i3eg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XPCJZevhs8brMYhtAZr8BdWat46UoHpJViKaKdpMRuU=;
+        b=5TPBfeZOtYn3Pa5rmID0KaDinKVJU0+LiDcqz0s9oWdPrLqNYcBBZ+uN/p4QIgvp/k
+         ryis3OzA7QC0Lzt8L51LBgm5kJy9gW0UGu72IdpSxLKBxlW+JPUpyOFTe3nfiHDFO0pw
+         +wFwi3/NUmkNLmfsV62BSDOsGEGOzFiV8SKgcz4v85dTTKy1SufD6M6i8rHCtmFvuEjs
+         88nSk9rVeSUrGc8AXkfwg/qQ+Vjih9cMISEgb25822dZmX7VSGxQzlvrD0rZnivGd2Ht
+         ezewvs5Ua0hl2AGRgRYtaaj5Be9FBNGYDcdg0XWK97vyNsIkLeXVKWQMExkB+AWFBH4p
+         T7PQ==
+X-Gm-Message-State: AOAM530v5y2M2gQN9HFwBHOl9uSeADMIkbPAKPu0MJ3iU6zXdGuCiTJi
+        +RFptWlvad6FP9AwkKu9o1E=
+X-Google-Smtp-Source: ABdhPJwD7n+yUCkn32g7caIxVGOr7/fDkuZD+briKdFO0oetqszHzCrrrJwMEBKW3GVoFDHbDd5kWw==
+X-Received: by 2002:a05:6a00:1687:b0:4e1:45d:3ded with SMTP id k7-20020a056a00168700b004e1045d3dedmr23359483pfc.0.1650961988373;
+        Tue, 26 Apr 2022 01:33:08 -0700 (PDT)
+Received: from localhost.localdomain ([103.197.71.140])
+        by smtp.gmail.com with ESMTPSA id f187-20020a6251c4000000b005058e59604csm14317884pfb.217.2022.04.26.01.33.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 01:33:07 -0700 (PDT)
+From:   Stephen Zhang <starzhangzsd@gmail.com>
+To:     tsbogend@alpha.franken.de, liam.howlett@oracle.com,
+        ebiederm@xmission.com, dbueso@suse.de, alobakin@pm.me,
+        f.fainelli@gmail.com
+Cc:     zhangshida@kylinos.cn, starzhangzsd@gmail.com,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org
+Subject: [PATCH] arch/mips/kernel/traps: add CONFIG_MIPS_FP_SUPPORT when using handle_fpe
+Date:   Tue, 26 Apr 2022 16:32:59 +0800
+Message-Id: <20220426083259.526685-1-starzhangzsd@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anshuman Khandual <anshuman.khandual@arm.com>
+From: Shida Zhang <zhangshida@kylinos.cn>
 
-[ Upstream commit e377ab82311af95c99648c6424a6b888a0ccb102 ]
+handle_fpe gets defined when CONFIG_MIPS_FP_SUPPORT is defined. So add
+CONFIG_MIPS_FP_SUPPORT when using handle_fpe.
 
-Semantics wise, [pud|pmd]_bad() have always implied that a given [PUD|PMD]
-entry does not have a pointer to the next level page table. This had been
-made clear in the commit a1c76574f345 ("arm64: mm: use *_sect to check for
-section maps"). Hence explicitly check for a table entry rather than just
-testing a single bit. This basically redefines [pud|pmd]_bad() in terms of
-[pud|pmd]_table() making the semantics clear.
-
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
-Acked-by: Mark Rutland <mark.rutland@arm.com>
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
-Acked-by: Mark Rutland <mark.rutland@arm.com>
-Link: https://lore.kernel.org/r/1620644871-26280-1-git-send-email-anshuman.khandual@arm.com
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Shida Zhang <zhangshida@kylinos.cn>
 ---
- arch/arm64/include/asm/pgtable.h | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ arch/mips/kernel/traps.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pgtable.h
-index f3a70dc7c594..9cf8e304bb56 100644
---- a/arch/arm64/include/asm/pgtable.h
-+++ b/arch/arm64/include/asm/pgtable.h
-@@ -512,13 +512,12 @@ extern pgprot_t phys_mem_access_prot(struct file *file, unsigned long pfn,
+diff --git a/arch/mips/kernel/traps.c b/arch/mips/kernel/traps.c
+index 246c6a6b0261..ef9792261f91 100644
+--- a/arch/mips/kernel/traps.c
++++ b/arch/mips/kernel/traps.c
+@@ -90,7 +90,9 @@ extern asmlinkage void handle_cpu(void);
+ extern asmlinkage void handle_ov(void);
+ extern asmlinkage void handle_tr(void);
+ extern asmlinkage void handle_msa_fpe(void);
++#ifdef CONFIG_MIPS_FP_SUPPORT
+ extern asmlinkage void handle_fpe(void);
++#endif
+ extern asmlinkage void handle_ftlb(void);
+ extern asmlinkage void handle_gsexc(void);
+ extern asmlinkage void handle_msa(void);
+@@ -2489,8 +2491,10 @@ void __init trap_init(void)
+ 	if (board_nmi_handler_setup)
+ 		board_nmi_handler_setup();
  
- #define pmd_none(pmd)		(!pmd_val(pmd))
++#ifdef CONFIG_MIPS_FP_SUPPORT
+ 	if (cpu_has_fpu && !cpu_has_nofpuex)
+ 		set_except_vector(EXCCODE_FPE, handle_fpe);
++#endif
  
--#define pmd_bad(pmd)		(!(pmd_val(pmd) & PMD_TABLE_BIT))
--
- #define pmd_table(pmd)		((pmd_val(pmd) & PMD_TYPE_MASK) == \
- 				 PMD_TYPE_TABLE)
- #define pmd_sect(pmd)		((pmd_val(pmd) & PMD_TYPE_MASK) == \
- 				 PMD_TYPE_SECT)
- #define pmd_leaf(pmd)		pmd_sect(pmd)
-+#define pmd_bad(pmd)		(!pmd_table(pmd))
- 
- #if defined(CONFIG_ARM64_64K_PAGES) || CONFIG_PGTABLE_LEVELS < 3
- static inline bool pud_sect(pud_t pud) { return false; }
-@@ -602,7 +601,7 @@ static inline unsigned long pmd_page_vaddr(pmd_t pmd)
- 	pr_err("%s:%d: bad pmd %016llx.\n", __FILE__, __LINE__, pmd_val(e))
- 
- #define pud_none(pud)		(!pud_val(pud))
--#define pud_bad(pud)		(!(pud_val(pud) & PUD_TABLE_BIT))
-+#define pud_bad(pud)		(!pud_table(pud))
- #define pud_present(pud)	pte_present(pud_pte(pud))
- #define pud_leaf(pud)		pud_sect(pud)
- #define pud_valid(pud)		pte_valid(pud_pte(pud))
+ 	if (cpu_has_ftlbparex)
+ 		set_except_vector(MIPS_EXCCODE_TLBPAR, handle_ftlb);
 -- 
-2.35.1
-
-
+2.30.2
 
