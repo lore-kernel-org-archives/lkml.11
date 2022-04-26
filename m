@@ -2,51 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4606C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:42:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E464C43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:42:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345265AbiDZIp6 (ORCPT
+        id S1346976AbiDZIpl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:45:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60248 "EHLO
+        Tue, 26 Apr 2022 04:45:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345751AbiDZIj2 (ORCPT
+        with ESMTP id S1345616AbiDZIjS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:39:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 043B5403C9;
-        Tue, 26 Apr 2022 01:30:48 -0700 (PDT)
+        Tue, 26 Apr 2022 04:39:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7FFF3E5E3;
+        Tue, 26 Apr 2022 01:30:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A1766617E8;
-        Tue, 26 Apr 2022 08:30:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FAC0C385A4;
-        Tue, 26 Apr 2022 08:30:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 89023B81A2F;
+        Tue, 26 Apr 2022 08:30:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFB46C385AC;
+        Tue, 26 Apr 2022 08:30:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961847;
-        bh=0tuairVe7q3IaM+IniLAqmeXoRU9B7E4EPF5fzmWeV8=;
+        s=korg; t=1650961827;
+        bh=rLw953Az/rZrffvZu8YRdEAaJcsKIzJcS5+keQTz8fM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IU3dlSwgGwt7zdA0jdHj5ZqcEbHUm3GPCyNZmRz/SU0q+0AzEHHl8r7/hO1pWj+vy
-         IHbXSFpwJg5Lc8EMHXkdnz47mehWvMVtw6NJUEuIirhnlcAHM/fDmdU29njV/N4vFb
-         HQFXLgsUNZwwIDtrvO7JYiMtTvWDQZ29ueA65KXo=
+        b=c7o+gvINQpO+zC6Z3D3wdrOxP+BZRfCuIlZOKa3eKu3W7XYJZAHQL2mUqZTjEhqUM
+         SPsjaT8JgX4pRVC7CUN6o0EePKCcx76eb0z9h5uu0+dXBQbdcmXmZYvNYPqGfGSTr3
+         60KgL1h/xskigqaMi53H+GJWoMcIf5P59dd3+kB8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Kees Cook <keescook@chromium.org>,
-        Khem Raj <raj.khem@gmail.com>
-Subject: [PATCH 5.4 01/62] etherdevice: Adjust ether_addr* prototypes to silence -Wstringop-overead
-Date:   Tue, 26 Apr 2022 10:20:41 +0200
-Message-Id: <20220426081737.254741425@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 41/62] drm/panel/raspberrypi-touchscreen: Initialise the bridge in prepare
+Date:   Tue, 26 Apr 2022 10:21:21 +0200
+Message-Id: <20220426081738.399047018@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
 References: <20220426081737.209637816@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -54,59 +52,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Dave Stevenson <dave.stevenson@raspberrypi.com>
 
-commit 2618a0dae09ef37728dab89ff60418cbe25ae6bd upstream.
+[ Upstream commit 5f18c0782b99e26121efa93d20b76c19e17aa1dd ]
 
-With GCC 12, -Wstringop-overread was warning about an implicit cast from
-char[6] to char[8]. However, the extra 2 bytes are always thrown away,
-alignment doesn't matter, and the risk of hitting the edge of unallocated
-memory has been accepted, so this prototype can just be converted to a
-regular char *. Silences:
+The panel has a prepare call which is before video starts, and an
+enable call which is after.
+The Toshiba bridge should be configured before video, so move
+the relevant power and initialisation calls to prepare.
 
-net/core/dev.c: In function ‘bpf_prog_run_generic_xdp’: net/core/dev.c:4618:21: warning: ‘ether_addr_equal_64bits’ reading 8 bytes from a region of size 6 [-Wstringop-overread]
- 4618 |         orig_host = ether_addr_equal_64bits(eth->h_dest, > skb->dev->dev_addr);
-      |                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-net/core/dev.c:4618:21: note: referencing argument 1 of type ‘const u8[8]’ {aka ‘const unsigned char[8]’}
-net/core/dev.c:4618:21: note: referencing argument 2 of type ‘const u8[8]’ {aka ‘const unsigned char[8]’}
-In file included from net/core/dev.c:91: include/linux/etherdevice.h:375:20: note: in a call to function ‘ether_addr_equal_64bits’
-  375 | static inline bool ether_addr_equal_64bits(const u8 addr1[6+2],
-      |                    ^~~~~~~~~~~~~~~~~~~~~~~
-
-Reported-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Tested-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Link: https://lore.kernel.org/netdev/20220212090811.uuzk6d76agw2vv73@pengutronix.de
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: netdev@vger.kernel.org
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Cc: Khem Raj <raj.khem@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 2f733d6194bd ("drm/panel: Add support for the Raspberry Pi 7" Touchscreen.")
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220415162513.42190-3-stefan.wahren@i2se.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/etherdevice.h |    5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
---- a/include/linux/etherdevice.h
-+++ b/include/linux/etherdevice.h
-@@ -127,7 +127,7 @@ static inline bool is_multicast_ether_ad
- #endif
+diff --git a/drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c b/drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c
+index 6906f522521d..a621dd28ff70 100644
+--- a/drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c
++++ b/drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c
+@@ -268,7 +268,7 @@ static int rpi_touchscreen_noop(struct drm_panel *panel)
+ 	return 0;
  }
  
--static inline bool is_multicast_ether_addr_64bits(const u8 addr[6+2])
-+static inline bool is_multicast_ether_addr_64bits(const u8 *addr)
+-static int rpi_touchscreen_enable(struct drm_panel *panel)
++static int rpi_touchscreen_prepare(struct drm_panel *panel)
  {
- #if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
- #ifdef __BIG_ENDIAN
-@@ -341,8 +341,7 @@ static inline bool ether_addr_equal(cons
-  * Please note that alignment of addr1 & addr2 are only guaranteed to be 16 bits.
-  */
+ 	struct rpi_touchscreen *ts = panel_to_ts(panel);
+ 	int i;
+@@ -298,6 +298,13 @@ static int rpi_touchscreen_enable(struct drm_panel *panel)
+ 	rpi_touchscreen_write(ts, DSI_STARTDSI, 0x01);
+ 	msleep(100);
  
--static inline bool ether_addr_equal_64bits(const u8 addr1[6+2],
--					   const u8 addr2[6+2])
-+static inline bool ether_addr_equal_64bits(const u8 *addr1, const u8 *addr2)
- {
- #if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
- 	u64 fold = (*(const u64 *)addr1) ^ (*(const u64 *)addr2);
++	return 0;
++}
++
++static int rpi_touchscreen_enable(struct drm_panel *panel)
++{
++	struct rpi_touchscreen *ts = panel_to_ts(panel);
++
+ 	/* Turn on the backlight. */
+ 	rpi_touchscreen_i2c_write(ts, REG_PWM, 255);
+ 
+@@ -352,7 +359,7 @@ static int rpi_touchscreen_get_modes(struct drm_panel *panel)
+ static const struct drm_panel_funcs rpi_touchscreen_funcs = {
+ 	.disable = rpi_touchscreen_disable,
+ 	.unprepare = rpi_touchscreen_noop,
+-	.prepare = rpi_touchscreen_noop,
++	.prepare = rpi_touchscreen_prepare,
+ 	.enable = rpi_touchscreen_enable,
+ 	.get_modes = rpi_touchscreen_get_modes,
+ };
+-- 
+2.35.1
+
 
 
