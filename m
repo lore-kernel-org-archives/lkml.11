@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 579F2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:30:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF4C9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:30:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347553AbiDZJdD (ORCPT
+        id S1347177AbiDZJdL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:33:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38488 "EHLO
+        Tue, 26 Apr 2022 05:33:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347656AbiDZJGA (ORCPT
+        with ESMTP id S1347613AbiDZJF7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:06:00 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A996515B46E;
-        Tue, 26 Apr 2022 01:45:12 -0700 (PDT)
+        Tue, 26 Apr 2022 05:05:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5036B1D4;
+        Tue, 26 Apr 2022 01:45:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 467C7CE1BC9;
-        Tue, 26 Apr 2022 08:45:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23232C385A4;
-        Tue, 26 Apr 2022 08:45:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D2F361344;
+        Tue, 26 Apr 2022 08:45:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B066C385AE;
+        Tue, 26 Apr 2022 08:45:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962709;
-        bh=LNen/Hol42nJKmCO91F1P60/W/lNiA3tn9i6VwXxB0o=;
+        s=korg; t=1650962706;
+        bh=lGc0mAUhfpdffiH5zcTjJhech/QCb4kZ9Ct3XGwOF3I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g0iOJI1YZbXGxmb3kPo2efPruK1LVXzR2SI+a4pm0zFpQqEC5iyaaWhnEWtNdVuNk
-         X2a3zYF8bhQlna7z3a2VbKbqLOZt/VaqKqBIBd1vFwFffrdTsIgTxkvqfrgckWc/OR
-         SRzHrIhyQHrljYJ90BAyO0olY5hfqxHmqGxUrWO4=
+        b=PhbE+lgqd1vwCT9Fmd4AZtTVeUjOOvtA3p4wonW6eUSu+ZrHVJdQ9JGmMjIXUTen5
+         I7axb67AD0tm/D+I1gVuuRJsKlZo5GUJwutTHzv3DzK8FWkew+6RNzZDvFjFDjDyE+
+         pP+Cfa50pOd8YiZtd2iwZgBsNap9u0XwY1WZ6ChA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Sabrina Dubroca <sd@queasysnail.net>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 013/146] ASoC: rk817: Use devm_clk_get() in rk817_platform_probe
-Date:   Tue, 26 Apr 2022 10:20:08 +0200
-Message-Id: <20220426081750.437199412@linuxfoundation.org>
+Subject: [PATCH 5.17 022/146] esp: limit skb_page_frag_refill use to a single page
+Date:   Tue, 26 Apr 2022 10:20:17 +0200
+Message-Id: <20220426081750.689360960@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -50,36 +50,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Sabrina Dubroca <sd@queasysnail.net>
 
-[ Upstream commit 8ba08d3a367a70f707b7c5d53ad92b98b960ee88 ]
+[ Upstream commit 5bd8baab087dff657e05387aee802e70304cc813 ]
 
-We need to call clk_put() to undo clk_get() in the error path.
-Use devm_clk_get() to obtain a reference to the clock, It has
-the benefit that clk_put() is no longer required.
+Commit ebe48d368e97 ("esp: Fix possible buffer overflow in ESP
+transformation") tried to fix skb_page_frag_refill usage in ESP by
+capping allocsize to 32k, but that doesn't completely solve the issue,
+as skb_page_frag_refill may return a single page. If that happens, we
+will write out of bounds, despite the check introduced in the previous
+patch.
 
-Fixes: 0d6a04da9b25 ("ASoC: Add Rockchip rk817 audio CODEC support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220404090753.17940-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+This patch forces COW in cases where we would end up calling
+skb_page_frag_refill with a size larger than a page (first in
+esp_output_head with tailen, then in esp_output_tail with
+skb->data_len).
+
+Fixes: cac2661c53f3 ("esp4: Avoid skb_cow_data whenever possible")
+Fixes: 03e2a30f6a27 ("esp6: Avoid skb_cow_data whenever possible")
+Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/rk817_codec.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/net/esp.h | 2 --
+ net/ipv4/esp4.c   | 5 ++---
+ net/ipv6/esp6.c   | 5 ++---
+ 3 files changed, 4 insertions(+), 8 deletions(-)
 
-diff --git a/sound/soc/codecs/rk817_codec.c b/sound/soc/codecs/rk817_codec.c
-index 8fffe378618d..cce6f4e7992f 100644
---- a/sound/soc/codecs/rk817_codec.c
-+++ b/sound/soc/codecs/rk817_codec.c
-@@ -489,7 +489,7 @@ static int rk817_platform_probe(struct platform_device *pdev)
+diff --git a/include/net/esp.h b/include/net/esp.h
+index 90cd02ff77ef..9c5637d41d95 100644
+--- a/include/net/esp.h
++++ b/include/net/esp.h
+@@ -4,8 +4,6 @@
  
- 	rk817_codec_parse_dt_property(&pdev->dev, rk817_codec_data);
+ #include <linux/skbuff.h>
  
--	rk817_codec_data->mclk = clk_get(pdev->dev.parent, "mclk");
-+	rk817_codec_data->mclk = devm_clk_get(pdev->dev.parent, "mclk");
- 	if (IS_ERR(rk817_codec_data->mclk)) {
- 		dev_dbg(&pdev->dev, "Unable to get mclk\n");
- 		ret = -ENXIO;
+-#define ESP_SKB_FRAG_MAXSIZE (PAGE_SIZE << SKB_FRAG_PAGE_ORDER)
+-
+ struct ip_esp_hdr;
+ 
+ static inline struct ip_esp_hdr *ip_esp_hdr(const struct sk_buff *skb)
+diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
+index 70e6c87fbe3d..d747166bb291 100644
+--- a/net/ipv4/esp4.c
++++ b/net/ipv4/esp4.c
+@@ -446,7 +446,6 @@ int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
+ 	struct page *page;
+ 	struct sk_buff *trailer;
+ 	int tailen = esp->tailen;
+-	unsigned int allocsz;
+ 
+ 	/* this is non-NULL only with TCP/UDP Encapsulation */
+ 	if (x->encap) {
+@@ -456,8 +455,8 @@ int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
+ 			return err;
+ 	}
+ 
+-	allocsz = ALIGN(skb->data_len + tailen, L1_CACHE_BYTES);
+-	if (allocsz > ESP_SKB_FRAG_MAXSIZE)
++	if (ALIGN(tailen, L1_CACHE_BYTES) > PAGE_SIZE ||
++	    ALIGN(skb->data_len, L1_CACHE_BYTES) > PAGE_SIZE)
+ 		goto cow;
+ 
+ 	if (!skb_cloned(skb)) {
+diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
+index 55d604c9b3b3..f2120e92caf1 100644
+--- a/net/ipv6/esp6.c
++++ b/net/ipv6/esp6.c
+@@ -482,7 +482,6 @@ int esp6_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info
+ 	struct page *page;
+ 	struct sk_buff *trailer;
+ 	int tailen = esp->tailen;
+-	unsigned int allocsz;
+ 
+ 	if (x->encap) {
+ 		int err = esp6_output_encap(x, skb, esp);
+@@ -491,8 +490,8 @@ int esp6_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info
+ 			return err;
+ 	}
+ 
+-	allocsz = ALIGN(skb->data_len + tailen, L1_CACHE_BYTES);
+-	if (allocsz > ESP_SKB_FRAG_MAXSIZE)
++	if (ALIGN(tailen, L1_CACHE_BYTES) > PAGE_SIZE ||
++	    ALIGN(skb->data_len, L1_CACHE_BYTES) > PAGE_SIZE)
+ 		goto cow;
+ 
+ 	if (!skb_cloned(skb)) {
 -- 
 2.35.1
 
