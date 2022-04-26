@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FD29C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A7CFC4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:52:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345695AbiDZIzd (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:55:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58492 "EHLO
+        id S240754AbiDZIzr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:55:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345542AbiDZIl7 (ORCPT
+        with ESMTP id S1345583AbiDZIl7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:41:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A24681594A9;
-        Tue, 26 Apr 2022 01:33:15 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28E01159787;
+        Tue, 26 Apr 2022 01:33:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AC587B81CF2;
-        Tue, 26 Apr 2022 08:33:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16671C385AC;
-        Tue, 26 Apr 2022 08:33:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 67D6B6185D;
+        Tue, 26 Apr 2022 08:33:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FA2BC385A0;
+        Tue, 26 Apr 2022 08:33:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961992;
-        bh=PppC3vam2C5Yu3j4i8ueQKhK2ayOhbdqrydENy51b+I=;
+        s=korg; t=1650961995;
+        bh=/TMUWetx3+P/4PGL0bH92LjO0vr668Ype3Zm2jhJ/4g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A3+NUdDivY3xQfdUuRpGXoV7bYCTad9U7nh7+UAKZiz7PsdHslecn+vAkx5TAdTpG
-         LBqg2FQbjRuU8cOk/sMan51tchDYJ35JNrctRTfP1gN0p3fHF6d03Lj8uZsl7O8yPC
-         nQuHMKTn5H+DCyLFHYm3w7xbXesI1VSaVcTxI0q0=
+        b=brjzEDdeaySDRgMOpVrKt8uamF+zIv0w8PvypiuCVJ4vmRwo/f+oP5qwxMgHfnkaO
+         9Gcy39CjgpJARE5kYQ2pehOUsbfzr1gzjPJSkZLR3ScPfhIx9mnPeLeoSNyM1REiNG
+         LkuRlI8dvkfqaWAamOxsPg3L2GzYI7nKehVT+RbU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sameer Pujar <spujar@nvidia.com>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Thierry Reding <treding@nvidia.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 35/86] reset: tegra-bpmp: Restore Handle errors in BPMP response
-Date:   Tue, 26 Apr 2022 10:21:03 +0200
-Message-Id: <20220426081742.218375941@linuxfoundation.org>
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.10 04/86] perf tools: Fix segfault accessing sample_id xyarray
+Date:   Tue, 26 Apr 2022 10:20:32 +0200
+Message-Id: <20220426081741.332847179@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
 References: <20220426081741.202366502@linuxfoundation.org>
@@ -52,58 +49,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sameer Pujar <spujar@nvidia.com>
+From: Adrian Hunter <adrian.hunter@intel.com>
 
-[ Upstream commit d1da1052ffad63aa5181b69f20a6952e31f339c2 ]
+commit a668cc07f990d2ed19424d5c1a529521a9d1cee1 upstream.
 
-This reverts following commit 69125b4b9440 ("reset: tegra-bpmp: Revert
-Handle errors in BPMP response").
+perf_evsel::sample_id is an xyarray which can cause a segfault when
+accessed beyond its size. e.g.
 
-The Tegra194 HDA reset failure is fixed by commit d278dc9151a0 ("ALSA:
-hda/tegra: Fix Tegra194 HDA reset failure"). The temporary revert of
-original commit c045ceb5a145 ("reset: tegra-bpmp: Handle errors in BPMP
-response") can be removed now.
+  # perf record -e intel_pt// -C 1 sleep 1
+  Segmentation fault (core dumped)
+  #
 
-Signed-off-by: Sameer Pujar <spujar@nvidia.com>
-Tested-by: Jon Hunter <jonathanh@nvidia.com>
-Reviewed-by: Jon Hunter <jonathanh@nvidia.com>
-Acked-by: Thierry Reding <treding@nvidia.com>
-Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
-Link: https://lore.kernel.org/r/1641995806-15245-1-git-send-email-spujar@nvidia.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+That is happening because a dummy event is opened to capture text poke
+events accross all CPUs, however the mmap logic is allocating according
+to the number of user_requested_cpus.
+
+In general, perf sometimes uses the evsel cpus to open events, and
+sometimes the evlist user_requested_cpus. However, it is not necessary
+to determine which case is which because the opened event file
+descriptors are also in an xyarray, the size of whch can be used
+to correctly allocate the size of the sample_id xyarray, because there
+is one ID per file descriptor.
+
+Note, in the affected code path, perf_evsel fd array is subsequently
+used to get the file descriptor for the mmap, so it makes sense for the
+xyarrays to be the same size there.
+
+Fixes: d1a177595b3a824c ("libperf: Adopt perf_evlist__mmap()/munmap() from tools/perf")
+Fixes: 246eba8e9041c477 ("perf tools: Add support for PERF_RECORD_TEXT_POKE")
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Acked-by: Ian Rogers <irogers@google.com>
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: stable@vger.kernel.org # 5.5+
+Link: https://lore.kernel.org/r/20220413114232.26914-1-adrian.hunter@intel.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/reset/tegra/reset-bpmp.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ tools/lib/perf/evlist.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/reset/tegra/reset-bpmp.c b/drivers/reset/tegra/reset-bpmp.c
-index 24d3395964cc..4c5bba52b105 100644
---- a/drivers/reset/tegra/reset-bpmp.c
-+++ b/drivers/reset/tegra/reset-bpmp.c
-@@ -20,6 +20,7 @@ static int tegra_bpmp_reset_common(struct reset_controller_dev *rstc,
- 	struct tegra_bpmp *bpmp = to_tegra_bpmp(rstc);
- 	struct mrq_reset_request request;
- 	struct tegra_bpmp_message msg;
-+	int err;
+--- a/tools/lib/perf/evlist.c
++++ b/tools/lib/perf/evlist.c
+@@ -571,7 +571,6 @@ int perf_evlist__mmap_ops(struct perf_ev
+ {
+ 	struct perf_evsel *evsel;
+ 	const struct perf_cpu_map *cpus = evlist->cpus;
+-	const struct perf_thread_map *threads = evlist->threads;
  
- 	memset(&request, 0, sizeof(request));
- 	request.cmd = command;
-@@ -30,7 +31,13 @@ static int tegra_bpmp_reset_common(struct reset_controller_dev *rstc,
- 	msg.tx.data = &request;
- 	msg.tx.size = sizeof(request);
+ 	if (!ops || !ops->get || !ops->mmap)
+ 		return -EINVAL;
+@@ -583,7 +582,7 @@ int perf_evlist__mmap_ops(struct perf_ev
+ 	perf_evlist__for_each_entry(evlist, evsel) {
+ 		if ((evsel->attr.read_format & PERF_FORMAT_ID) &&
+ 		    evsel->sample_id == NULL &&
+-		    perf_evsel__alloc_id(evsel, perf_cpu_map__nr(cpus), threads->nr) < 0)
++		    perf_evsel__alloc_id(evsel, evsel->fd->max_x, evsel->fd->max_y) < 0)
+ 			return -ENOMEM;
+ 	}
  
--	return tegra_bpmp_transfer(bpmp, &msg);
-+	err = tegra_bpmp_transfer(bpmp, &msg);
-+	if (err)
-+		return err;
-+	if (msg.rx.ret)
-+		return -EINVAL;
-+
-+	return 0;
- }
- 
- static int tegra_bpmp_reset_module(struct reset_controller_dev *rstc,
--- 
-2.35.1
-
 
 
