@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50829C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:20:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7961C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:20:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347029AbiDZJXK (ORCPT
+        id S1347073AbiDZJXU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:23:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55810 "EHLO
+        Tue, 26 Apr 2022 05:23:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345662AbiDZI5p (ORCPT
+        with ESMTP id S1345892AbiDZI5p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:57:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72AF43889;
-        Tue, 26 Apr 2022 01:42:41 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9411015FEC;
+        Tue, 26 Apr 2022 01:42:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2568FB81CFA;
-        Tue, 26 Apr 2022 08:42:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 648B9C385A0;
-        Tue, 26 Apr 2022 08:42:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E4915611B2;
+        Tue, 26 Apr 2022 08:42:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05CA0C385AE;
+        Tue, 26 Apr 2022 08:42:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962558;
-        bh=v3d3wJ8d7he5GKQ/gI1Bji2FZeuuYgCu3YXM/O7M85o=;
+        s=korg; t=1650962573;
+        bh=Y4o65afVrCH4UbGnOdzCqzHswk+z5MG965K5wdHXI3I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1F1sFbSr3M4k/cKzIpGewqR/6N3lrMuYI7WWovAnfpSC7eRLJs3JsNxVCVjn18UeF
-         oViDC96CZUz0fincMCVaM7OAAMuEE0P8pnUUy34KjnA9a03QMsqhyjgDFWMyZuOwC/
-         2g8tfwmmkq+XG649Sr8sYaI6zByCIwCYZYCa1t74=
+        b=PqpCIBDEGv2f9ioKc7pLk5GJhuD3PEQ4tA1nUBIN3b5MhTTFQDssbWC7q7jcydARk
+         zLHxEErPVvKU7/bnb9LwAh321DGGryqA8D/Pqca0lLKA5zQs0TKdcis+MGAVXxYMRo
+         pcunwDsZ2Mi/IWupjsYPtQ7HMpA6JjgZbQ402nJA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 5.17 002/146] perf tools: Fix segfault accessing sample_id xyarray
-Date:   Tue, 26 Apr 2022 10:19:57 +0200
-Message-Id: <20220426081750.123290229@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.17 007/146] net/sched: cls_u32: fix netns refcount changes in u32_change()
+Date:   Tue, 26 Apr 2022 10:20:02 +0200
+Message-Id: <20220426081750.269597052@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -50,64 +53,138 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adrian Hunter <adrian.hunter@intel.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit a668cc07f990d2ed19424d5c1a529521a9d1cee1 upstream.
+commit 3db09e762dc79584a69c10d74a6b98f89a9979f8 upstream.
 
-perf_evsel::sample_id is an xyarray which can cause a segfault when
-accessed beyond its size. e.g.
+We are now able to detect extra put_net() at the moment
+they happen, instead of much later in correct code paths.
 
-  # perf record -e intel_pt// -C 1 sleep 1
-  Segmentation fault (core dumped)
-  #
+u32_init_knode() / tcf_exts_init() populates the ->exts.net
+pointer, but as mentioned in tcf_exts_init(),
+the refcount on netns has not been elevated yet.
 
-That is happening because a dummy event is opened to capture text poke
-events accross all CPUs, however the mmap logic is allocating according
-to the number of user_requested_cpus.
+The refcount is taken only once tcf_exts_get_net()
+is called.
 
-In general, perf sometimes uses the evsel cpus to open events, and
-sometimes the evlist user_requested_cpus. However, it is not necessary
-to determine which case is which because the opened event file
-descriptors are also in an xyarray, the size of whch can be used
-to correctly allocate the size of the sample_id xyarray, because there
-is one ID per file descriptor.
+So the two u32_destroy_key() calls from u32_change()
+are attempting to release an invalid reference on the netns.
 
-Note, in the affected code path, perf_evsel fd array is subsequently
-used to get the file descriptor for the mmap, so it makes sense for the
-xyarrays to be the same size there.
+syzbot report:
 
-Fixes: d1a177595b3a824c ("libperf: Adopt perf_evlist__mmap()/munmap() from tools/perf")
-Fixes: 246eba8e9041c477 ("perf tools: Add support for PERF_RECORD_TEXT_POKE")
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-Acked-by: Ian Rogers <irogers@google.com>
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: stable@vger.kernel.org # 5.5+
-Link: https://lore.kernel.org/r/20220413114232.26914-1-adrian.hunter@intel.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+refcount_t: decrement hit 0; leaking memory.
+WARNING: CPU: 0 PID: 21708 at lib/refcount.c:31 refcount_warn_saturate+0xbf/0x1e0 lib/refcount.c:31
+Modules linked in:
+CPU: 0 PID: 21708 Comm: syz-executor.5 Not tainted 5.18.0-rc2-next-20220412-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:refcount_warn_saturate+0xbf/0x1e0 lib/refcount.c:31
+Code: 1d 14 b6 b2 09 31 ff 89 de e8 6d e9 89 fd 84 db 75 e0 e8 84 e5 89 fd 48 c7 c7 40 aa 26 8a c6 05 f4 b5 b2 09 01 e8 e5 81 2e 05 <0f> 0b eb c4 e8 68 e5 89 fd 0f b6 1d e3 b5 b2 09 31 ff 89 de e8 38
+RSP: 0018:ffffc900051af1b0 EFLAGS: 00010286
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000040000 RSI: ffffffff8160a0c8 RDI: fffff52000a35e28
+RBP: 0000000000000004 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff81604a9e R11: 0000000000000000 R12: 1ffff92000a35e3b
+R13: 00000000ffffffef R14: ffff8880211a0194 R15: ffff8880577d0a00
+FS:  00007f25d183e700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f19c859c028 CR3: 0000000051009000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ __refcount_dec include/linux/refcount.h:344 [inline]
+ refcount_dec include/linux/refcount.h:359 [inline]
+ ref_tracker_free+0x535/0x6b0 lib/ref_tracker.c:118
+ netns_tracker_free include/net/net_namespace.h:327 [inline]
+ put_net_track include/net/net_namespace.h:341 [inline]
+ tcf_exts_put_net include/net/pkt_cls.h:255 [inline]
+ u32_destroy_key.isra.0+0xa7/0x2b0 net/sched/cls_u32.c:394
+ u32_change+0xe01/0x3140 net/sched/cls_u32.c:909
+ tc_new_tfilter+0x98d/0x2200 net/sched/cls_api.c:2148
+ rtnetlink_rcv_msg+0x80d/0xb80 net/core/rtnetlink.c:6016
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2495
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x543/0x7f0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x904/0xe00 net/netlink/af_netlink.c:1921
+ sock_sendmsg_nosec net/socket.c:705 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:725
+ ____sys_sendmsg+0x6e2/0x800 net/socket.c:2413
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2467
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2496
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f25d0689049
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f25d183e168 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007f25d079c030 RCX: 00007f25d0689049
+RDX: 0000000000000000 RSI: 0000000020000340 RDI: 0000000000000005
+RBP: 00007f25d06e308d R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007ffd0b752e3f R14: 00007f25d183e300 R15: 0000000000022000
+ </TASK>
+
+Fixes: 35c55fc156d8 ("cls_u32: use tcf_exts_get_net() before call_rcu()")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Cc: Cong Wang <xiyou.wangcong@gmail.com>
+Cc: Jiri Pirko <jiri@resnulli.us>
+Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/lib/perf/evlist.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ net/sched/cls_u32.c |   16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
---- a/tools/lib/perf/evlist.c
-+++ b/tools/lib/perf/evlist.c
-@@ -577,7 +577,6 @@ int perf_evlist__mmap_ops(struct perf_ev
- {
- 	struct perf_evsel *evsel;
- 	const struct perf_cpu_map *cpus = evlist->cpus;
--	const struct perf_thread_map *threads = evlist->threads;
+--- a/net/sched/cls_u32.c
++++ b/net/sched/cls_u32.c
+@@ -386,14 +386,19 @@ static int u32_init(struct tcf_proto *tp
+ 	return 0;
+ }
  
- 	if (!ops || !ops->get || !ops->mmap)
- 		return -EINVAL;
-@@ -589,7 +588,7 @@ int perf_evlist__mmap_ops(struct perf_ev
- 	perf_evlist__for_each_entry(evlist, evsel) {
- 		if ((evsel->attr.read_format & PERF_FORMAT_ID) &&
- 		    evsel->sample_id == NULL &&
--		    perf_evsel__alloc_id(evsel, perf_cpu_map__nr(cpus), threads->nr) < 0)
-+		    perf_evsel__alloc_id(evsel, evsel->fd->max_x, evsel->fd->max_y) < 0)
- 			return -ENOMEM;
- 	}
+-static int u32_destroy_key(struct tc_u_knode *n, bool free_pf)
++static void __u32_destroy_key(struct tc_u_knode *n)
+ {
+ 	struct tc_u_hnode *ht = rtnl_dereference(n->ht_down);
+ 
+ 	tcf_exts_destroy(&n->exts);
+-	tcf_exts_put_net(&n->exts);
+ 	if (ht && --ht->refcnt == 0)
+ 		kfree(ht);
++	kfree(n);
++}
++
++static void u32_destroy_key(struct tc_u_knode *n, bool free_pf)
++{
++	tcf_exts_put_net(&n->exts);
+ #ifdef CONFIG_CLS_U32_PERF
+ 	if (free_pf)
+ 		free_percpu(n->pf);
+@@ -402,8 +407,7 @@ static int u32_destroy_key(struct tc_u_k
+ 	if (free_pf)
+ 		free_percpu(n->pcpu_success);
+ #endif
+-	kfree(n);
+-	return 0;
++	__u32_destroy_key(n);
+ }
+ 
+ /* u32_delete_key_rcu should be called when free'ing a copied
+@@ -900,13 +904,13 @@ static int u32_change(struct net *net, s
+ 				    extack);
+ 
+ 		if (err) {
+-			u32_destroy_key(new, false);
++			__u32_destroy_key(new);
+ 			return err;
+ 		}
+ 
+ 		err = u32_replace_hw_knode(tp, new, flags, extack);
+ 		if (err) {
+-			u32_destroy_key(new, false);
++			__u32_destroy_key(new);
+ 			return err;
+ 		}
  
 
 
