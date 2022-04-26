@@ -2,152 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 016F8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 21:30:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E978C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 21:31:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355442AbiDZVdx (ORCPT
+        id S1355448AbiDZVe2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 17:33:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40114 "EHLO
+        Tue, 26 Apr 2022 17:34:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351728AbiDZVdr (ORCPT
+        with ESMTP id S1355451AbiDZVe0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 17:33:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 727B2167D1;
-        Tue, 26 Apr 2022 14:30:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0864661768;
-        Tue, 26 Apr 2022 21:30:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B698C385A0;
-        Tue, 26 Apr 2022 21:30:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1651008636;
-        bh=hRBN2iGUWntk6rFDQClPrjJSN1u3Plq5R5MkMdlntzA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=2AgeVAJdYeuPtwz5M/eqMKQsJKokdP1kIZVf0URVWM3SGYun4iiEJslJB0++i7lv+
-         G29Uwsy2kwANU1AUg4BAnaWWNz9Q1s5uGgVhQoLMY6hwbuitH9tHnUinZbWz/b/lia
-         ThO4ZAVemknNsB+RzsmXUH8bOCELau56862WiyuQ=
-Date:   Tue, 26 Apr 2022 14:30:34 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Yu Zhao <yuzhao@google.com>
-Cc:     Stephen Rothwell <sfr@rothwell.id.au>,
-        Linux-MM <linux-mm@kvack.org>, Andi Kleen <ak@linux.intel.com>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Barry Song <21cnbao@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Ying Huang <ying.huang@intel.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Kernel Page Reclaim v2 <page-reclaim@google.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Brian Geffon <bgeffon@google.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        Donald Carr <d@chaos-reins.com>,
-        Holger =?ISO-8859-1?Q?Hoffst=E4tte?= 
-        <holger@applied-asynchrony.com>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>
-Subject: Re: [PATCH v10 12/14] mm: multi-gen LRU: debugfs interface
-Message-Id: <20220426143034.f520c062830f9e3405c890d0@linux-foundation.org>
-In-Reply-To: <CAOUHufa60CVZcXJ937=P4GVtV_Cn76mYCWwcyBNjMAADmyWEwQ@mail.gmail.com>
-References: <20220407031525.2368067-1-yuzhao@google.com>
-        <20220407031525.2368067-13-yuzhao@google.com>
-        <20220411191634.674554d3de2ba37b3db40ca2@linux-foundation.org>
-        <CAOUHufYhhCPFqoRbtn+=OFxZxNWS9yxW9Re_s-2TYGqCEaMXVw@mail.gmail.com>
-        <20220415212024.c682ac000e3e91572d8d6d2b@linux-foundation.org>
-        <CAOUHufa60CVZcXJ937=P4GVtV_Cn76mYCWwcyBNjMAADmyWEwQ@mail.gmail.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Tue, 26 Apr 2022 17:34:26 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DC302559E
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 14:31:16 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id s14so31369404plk.8
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 14:31:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NmMY7ZEC2LA8ubdNrSjDuhNzkyHfOdHj22q0EtJVAhk=;
+        b=iwn2+1yPZJQNhCl3wV5/gS39Q9nngAozD++huA0MMa/5LT8SIawUCZVR2xGpBv21OC
+         htQhbMvQ5EgESv/NODxW48sHdCzxjr58K8N5JHd9yKvHwpvovyqiZp6azlt9+3e3XBqZ
+         qSg6CEWVvNOK6weBaEmSbKbNe+oK1LObykPJk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NmMY7ZEC2LA8ubdNrSjDuhNzkyHfOdHj22q0EtJVAhk=;
+        b=RfKwq6e7rtspT+BvKp6ghbc3Gk2Ii0S7w6r3jCHBX2C74YU17LfaRd1ehbYYjUUV1b
+         h70978csBTZ7dfpiPnm7fv1K8fLmxk90yn35a5FtUw5NsMotholwXuApzMItn/yzSqlK
+         ZAJ/bPseB9YfWzenEuu2gsjI0MvoJDp0BUeJFdOxzkJsZXwRvD6/pE4xZ0p89KwQJUlj
+         xNitAp0jTxXXaHzQYnAWKlH9f1GpZnAb/bNW3XYsmCCidDdcUyFsmXnHULfGCrCk4jfM
+         rO1SSQch9xvQTJhUpLFqsi+ORKTYjGM7E4MqqSfGP022wl01iuwbw0oh2wIPQ6fm5YCB
+         nbIg==
+X-Gm-Message-State: AOAM533HEtkrafgyA9umfgpCNIOtl3pbfAXpdRh3jTFHP8LOyg8H7JpG
+        In21Fjk7hWv0aQ3kF0DS09cwmA==
+X-Google-Smtp-Source: ABdhPJzp4X5v15GE3Zc7zJfgHgDSaqiSDbZ9++70lo/F1w6eUXoCvxD8/KcNhsSXYbz+c+W3/7EE0Q==
+X-Received: by 2002:a17:90a:f3cb:b0:1d9:62d4:25db with SMTP id ha11-20020a17090af3cb00b001d962d425dbmr15694380pjb.222.1651008675551;
+        Tue, 26 Apr 2022 14:31:15 -0700 (PDT)
+Received: from localhost ([2620:15c:202:201:eb63:4211:eb5d:f6b])
+        by smtp.gmail.com with UTF8SMTPSA id d5-20020a056a0024c500b004fae56b2921sm17137609pfv.167.2022.04.26.14.31.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Apr 2022 14:31:15 -0700 (PDT)
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Alasdair Kergon <agk@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        James Morris <jmorris@namei.org>,
+        "Serge E . Hallyn" <serge@hallyn.com>
+Cc:     linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org, dm-devel@redhat.com,
+        linux-raid@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>,
+        Song Liu <song@kernel.org>,
+        Matthias Kaehlcke <mka@chromium.org>
+Subject: [PATCH v2 0/3] LoadPin: Enable loading from trusted dm-verity devices
+Date:   Tue, 26 Apr 2022 14:31:07 -0700
+Message-Id: <20220426213110.3572568-1-mka@chromium.org>
+X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 26 Apr 2022 00:59:37 -0600 Yu Zhao <yuzhao@google.com> wrote:
+As of now LoadPin restricts loading of kernel files to a single
+pinned filesystem, typically the rootfs. This works for many
+systems, however it can result in a bloated rootfs (and OTA
+updates) on platforms where multiple boards with different
+hardware configurations use the same rootfs image. Especially
+when 'optional' files are large it may be preferable to
+download/install them only when they are actually needed by a
+given board. Chrome OS uses Downloadable Content (DLC) [1] to
+deploy certain 'packages' at runtime. As an example a DLC
+package could contain firmware for a peripheral that is not
+present on all boards. DLCs use dm-verity [2] to verify the
+integrity of the DLC content.
 
-> On Fri, Apr 15, 2022 at 10:20 PM Andrew Morton
-> <akpm@linux-foundation.org> wrote:
-> >
-> > On Fri, 15 Apr 2022 18:03:16 -0600 Yu Zhao <yuzhao@google.com> wrote:
-> >
-> > > > Presumably sysfs is the place.  Fully documented and with usage
-> > > > examples in the changelog so we can carefully review the proposed
-> > > > extensions to Linux's ABI.  Extensions which must be maintained
-> > > > unchanged for all time.
-> > >
-> > > Eventually, yes. There still is a long way to go. Rest assured, this
-> > > is something Google will keep investing resources on.
-> >
-> > So.  The plan is to put these interfaces in debugfs for now, with a
-> > view to migrating stabilized interfaces into sysfs (or procfs or
-> > whatever) once end-user requirements and use cases are better
-> > understood?
-> 
-> The requirements are well understood and the use cases are proven,
-> e.g., Google [1], Meta [2] and Alibaba [3].
-> 
-> [1] https://dl.acm.org/doi/10.1145/3297858.3304053
-> [2] https://dl.acm.org/doi/10.1145/3503222.3507731
-> [3] https://gitee.com/anolis/cloud-kernel/blob/release-5.10/mm/kidled.c
+This series extends LoadPin to allow loading of kernel files
+from trusted dm-verity devices. It adds the concept of
+trusted verity devices to LoadPin. Userspace can use the new
+systl file 'loadpin/trusted_verity_root_digests_path' to
+provide LoadPin with the path of a file with a list of root
+digests from dm-verity devices that LoadPin should consider
+as trusted. This file must be located on the pinned root.
 
-So will these interfaces be moved into sysfs?
+When a kernel file is read LoadPin first checks (as usual)
+whether the file is located on the pinned root, if so the
+file can be loaded. Otherwise, if the verity extension is
+enabled, LoadPin determines whether the file is located
+on a verity backed device and whether the root digest of
+that device is in the list of trusted digests. The file
+can be loaded if the verity device has a trusted root
+digest.
 
-> > If so, that sounds totally great to me.  But it should have been in
-> > the darn changelog!  This is the sort of thing which we care about most
-> > keenly.
-> >
-> > It would be helpful for reviewers to understand the proposed timeline
-> > for this process, because the entire feature isn't really real until
-> > this is completed, is it?  I do think we should get this nailed down
-> > relatively rapidly, otherwise people will be reluctant to invest much
-> > into a moving target.
-> >
-> > And I must say, I see dissonance between the overall maturity of the
-> > feature as described in these emails versus the immaturity of these
-> > userspace control interfaces.  What's happening there?
-> 
-> Very observant. To answer both of the questions above: each iteration
-> of the entire stack is a multi-year effort.
-> 
-> Given its ROI, companies I know of constantly pour money into this
-> area. Given its scale, this debugfs is the least of their concerns. A
-> good example is the proactive reclaim sysfs interface [4]. It's been
-> used at Google for many years and at Meta for a few years. We only
-> started finalizing it recently.
-> 
-> [4] https://lore.kernel.org/r/20220425190040.2475377-1-yosryahmed@google.com/
+The path of the file with the trusted root digests can
+only be written once, which is typically done at boot time.
 
-Sure, if one organization is involved in both the userspace code and
-the kernel interfaces then the alteration of kernel interfaces can be
-handled in a coordinated fashion.
+[1] https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/dlcservice/docs/developer.md
+[2] https://www.kernel.org/doc/html/latest/admin-guide/device-mapper/verity.html
 
-But releasing interfaces to the whole world is a different deal.  It's
-acceptable to say "this is in debugfs for now because it's a work
-in progress" but it sounds like mglru's interfaces are beyond that
-stage?
+(no changes since v1)
+
+Matthias Kaehlcke (3):
+  dm: Add verity helpers for LoadPin
+  LoadPin: Enable loading from trusted dm-verity devices
+  dm: verity-loadpin: Use CONFIG_SECURITY_LOADPIN_VERITY for conditional
+    compilation
+
+ drivers/md/Makefile               |   1 +
+ drivers/md/dm-verity-loadpin.c    |  80 ++++++++++++
+ drivers/md/dm-verity-target.c     |  33 +++++
+ drivers/md/dm-verity.h            |   4 +
+ include/linux/dm-verity-loadpin.h |  27 ++++
+ security/loadpin/Kconfig          |  16 +++
+ security/loadpin/loadpin.c        | 200 +++++++++++++++++++++++++++++-
+ 7 files changed, 360 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/md/dm-verity-loadpin.c
+ create mode 100644 include/linux/dm-verity-loadpin.h
+
+-- 
+2.36.0.rc2.479.g8af0fa9b8e-goog
 
