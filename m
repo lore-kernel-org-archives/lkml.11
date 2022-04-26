@@ -2,234 +2,253 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE38AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 00:15:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 131A9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 00:16:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238771AbiDZASc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 20:18:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35612 "EHLO
+        id S236922AbiDZATT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 20:19:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230182AbiDZASb (ORCPT
+        with ESMTP id S232877AbiDZATQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 20:18:31 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B19E18D
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 17:15:25 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650932123;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to; bh=SHLnyye+kmTGtor0bLJF1M3srMoZkuilaHjIoJrpLEU=;
-        b=T7hGqjpu1sS/cAAyib7/RqZHOd5sbw4Pj7nRTHkRGRxwWkImvRzaHvxg4fB/wokC0GwTYO
-        k1LVc8mECT+yL36NNPTag2n1sWnC/50RMyZdWzW3ZGWqmOE5TPsSTmYuODoKW8D8OoLBTH
-        oqmx3fPtAVjh1jSWAU9eVqcGsbsxVOcJI3yXw/avPmFc3buZccVy8CfJepVGVMOkEoE16r
-        GiAf3wquTLX1nrDVpo+qDStB5d6oOgnsPn2an0/IXWvOo82+P3i+zsYfZ7BmIV4mPRJbX/
-        46eu+2PXO79avWJGE1+cWTY5UL81MaNsLKKf9ez7xLcxQz4GFPN9jlIaaVOVdw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650932123;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to; bh=SHLnyye+kmTGtor0bLJF1M3srMoZkuilaHjIoJrpLEU=;
-        b=wgdA9FOLD+dOFFAArK1US7aPymRPSiMvHy2Ys2heVjbyuUF2qZgkU8Ry8fhn8F1mJB7+Sb
-        Xw/5K0v81eC8ADBA==
-To:     Marcelo Tosatti <mtosatti@redhat.com>, linux-kernel@vger.kernel.org
-Cc:     Nitesh Lal <nilal@redhat.com>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Christoph Lameter <cl@linux.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Alex Belits <abelits@belits.com>, Peter Xu <peterx@redhat.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Oscar Shiang <oscar0225@livemail.tw>,
-        Marcelo Tosatti <mtosatti@redhat.com>
-Subject: Re: [patch v12 04/13] add prctl task isolation prctl docs and samples
-In-Reply-To: <20220315153313.908516477@fedora.localdomain>
-Date:   Tue, 26 Apr 2022 02:15:22 +0200
-Message-ID: <87r15kzomd.ffs@tglx>
+        Mon, 25 Apr 2022 20:19:16 -0400
+Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63D531240E8;
+        Mon, 25 Apr 2022 17:16:11 -0700 (PDT)
+Received: by mail-ot1-f50.google.com with SMTP id 88-20020a9d0ee1000000b005d0ae4e126fso11972071otj.5;
+        Mon, 25 Apr 2022 17:16:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qmG4FxwAvEz6wBFjUNLNkTR69mJKypGUFaKOVY8t/50=;
+        b=BQNvLLGulyDaBGec6TBCnfYowmHDhFaj0TNwZBKIK8MoJ/9Gmf01TQSHRBPFwvSCPZ
+         X8NvRZLeLVVHDBEKxfrZRyYeLJ2pPpQpxHgDbk6tMuUXDPPG6DglNETziO6a+07Xhja2
+         Bdwj6P7Bcbo1joNKlVesTfQVW7ih8QtmKcBPRqWmduhxMyJWNvm9Lz65KU96r1PajC7N
+         h9tN5BgzK88d4tIetM0Kek6r8Acv76uop22EPftuvtHV5wGNOK6vX+iKzK3Qxm6Uawrg
+         cHWoSf5xThtC5ex92OvYxEjD2XTWw3yIQpFLvNQNZHw+zxR4orTR7VeQO4bI0XFdal8F
+         Ve+g==
+X-Gm-Message-State: AOAM533jjwtVsVHH638nNSAFGpp6TJkhEK7S4GI2ucS2soLbSQIZG2lD
+        ajwYAU4UqB+/RI7coHl+5w==
+X-Google-Smtp-Source: ABdhPJwZJBlSu2ov0ZfnkPoBaHssVod/BdbYD8pT8ArIst24XfnFgr8LQUVbTgJTFbTQRwyaRorpDQ==
+X-Received: by 2002:a05:6830:4128:b0:605:6729:1ff8 with SMTP id w40-20020a056830412800b0060567291ff8mr7306670ott.143.1650932170611;
+        Mon, 25 Apr 2022 17:16:10 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id o3-20020a056870a50300b000e686d13891sm264071oal.43.2022.04.25.17.16.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Apr 2022 17:16:09 -0700 (PDT)
+Received: (nullmailer pid 592755 invoked by uid 1000);
+        Tue, 26 Apr 2022 00:16:09 -0000
+Date:   Mon, 25 Apr 2022 19:16:09 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Kuldeep Singh <singh.kuldeep87k@gmail.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        dmaengine@vger.kernel.org
+Subject: Re: [PATCH v3 6/6] dt-bindings: dma: Convert Qualcomm BAM DMA
+ binding to json format
+Message-ID: <Ymc5yUq0/YDcFd1w@robh.at.kernel.org>
+References: <20220417210436.6203-1-singh.kuldeep87k@gmail.com>
+ <20220417210436.6203-7-singh.kuldeep87k@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220417210436.6203-7-singh.kuldeep87k@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 15 2022 at 12:31, Marcelo Tosatti wrote:
-> +++ linux-2.6/samples/task_isolation/task_isol.c
-
-> +#ifdef PR_ISOL_FEAT_GET
-
-This ifdef is there because the kernel on which this sample is compiled
-does not support PR_ISOL_FEAT_GET? Try again...
-
-> +int task_isol_setup(int oneshot)
-> +{
-> +	int ret;
-> +	int errnosv;
-> +	unsigned long long fmask;
-> +	struct task_isol_quiesce_extensions qext;
-> +	struct task_isol_quiesce_control qctrl;
+On Mon, Apr 18, 2022 at 02:34:36AM +0530, Kuldeep Singh wrote:
+> Convert Qualcomm BAM DMA controller binding to DT schema format using
+> json schema.
+> 
+> Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+> ---
+> v3:
+> - Address Krzysztof Comments
+> - qcom,ee as required property
+> - Use boolean type instead of flag
+> - Add min/max to qcom,ee
+> - skip clocks, as it's users are not fixed
+> ---
+> v2:
+> - Use dma-cells
+> - Set additionalProperties to false
+> ---
+>  .../devicetree/bindings/dma/qcom,bam-dma.yaml | 97 +++++++++++++++++++
+>  .../devicetree/bindings/dma/qcom_bam_dma.txt  | 52 ----------
+>  2 files changed, 97 insertions(+), 52 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/dma/qcom,bam-dma.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/dma/qcom_bam_dma.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/dma/qcom,bam-dma.yaml b/Documentation/devicetree/bindings/dma/qcom,bam-dma.yaml
+> new file mode 100644
+> index 000000000000..02393ec2eedd
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/dma/qcom,bam-dma.yaml
+> @@ -0,0 +1,97 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/dma/qcom,bam-dma.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
-> +	/* Retrieve supported task isolation features */
-> +	ret = prctl(PR_ISOL_FEAT_GET, 0, &fmask, 0, 0);
-> +	if (ret == -1) {
-> +		perror("prctl PR_ISOL_FEAT");
-> +		return ret;
-> +	}
-> +	printf("supported features bitmask: 0x%llx\n", fmask);
+> +title: Qualcomm Technologies Inc BAM DMA controller
 > +
-> +	/* Retrieve supported ISOL_F_QUIESCE bits */
-> +	ret = prctl(PR_ISOL_FEAT_GET, ISOL_F_QUIESCE, &qext, 0, 0);
-
-It makes a lot of sense to query ISOL_F_QUIESCE if the supported
-features bitmask has not set it, right?
-
-> +	if (ret == -1) {
-> +		perror("prctl PR_ISOL_FEAT (ISOL_F_QUIESCE)");
-> +		return ret;
-> +	}
-> +	printf("supported ISOL_F_QUIESCE bits: 0x%llx\n",
-> +		qext.supported_quiesce_bits);
+> +maintainers:
+> +  - Andy Gross <agross@kernel.org>
+> +  - Bjorn Andersson <bjorn.andersson@linaro.org>
 > +
-> +	fmask = 0;
-> +	ret = prctl(PR_ISOL_CFG_GET, I_CFG_FEAT, 0, &fmask, 0);
-> +	errnosv = errno;
-> +	if (ret != -1 && fmask != 0) {
-> +		printf("Task isolation parameters already configured!\n");
-> +		return ret;
-> +	}
-
-Really useful because if that code is executed after a fork/clone then
-it fails, not in that particular case, but this is _NOT_ a test case,
-this is a sample to demonstrate usage.
-
-> +	if (ret == -1 && errnosv != ENODATA) {
-
-How exactly ends this prctl() up returning ENODATA?
-
-> +		perror("prctl PR_ISOL_GET");
-> +		return ret;
-> +	}
-> +	memset(&qctrl, 0, sizeof(struct task_isol_quiesce_control));
-> +	qctrl.quiesce_mask = ISOL_F_QUIESCE_VMSTATS;
-> +	if (oneshot)
-> +		qctrl.quiesce_oneshot_mask = ISOL_F_QUIESCE_VMSTATS;
+> +allOf:
+> +  - $ref: "dma-controller.yaml#"
 > +
-> +	ret = prctl(PR_ISOL_CFG_SET, I_CFG_FEAT, ISOL_F_QUIESCE,
-> +		    QUIESCE_CONTROL, &qctrl);
-> +	if (ret == -1) {
-> +		perror("prctl PR_ISOL_CFG_SET");
-> +		return ret;
-> +	}
-> +	return ISOL_F_QUIESCE;
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - qcom,bam-v1.3.0
+> +      - qcom,bam-v1.4.0
+> +      - qcom,bam-v1.7.0
 
-Very consistent return value:
+We've lost the mapping to SoCs. Please add as comments.
 
-     int task_isol_setup(int oneshot)
-
-which just works because the whole definition of the ISOL_F_* feature
-space is bogus and inconsistent hackery, but if that ever goes up to bit
-31bit+ then all of this is just crap.
-
-> +}
 > +
-> +int task_isol_activate_set(unsigned long long mask)
-
-While you here make sure that @mask is properly sized. Btw. uint64_t
-exists for a reason...
-
-> +int main(void)
-> +{
-> +	int ret;
-> +	void *buf = malloc(4096);
-> +	unsigned long mask;
-
-Works by chance...
-
-> +	memset(buf, 1, 4096);
-> +	ret = mlock(buf, 4096);
-> +	if (ret) {
-> +		perror("mlock");
-> +		return EXIT_FAILURE;
-> +	}
+> +  clocks:
+> +    maxItems: 1
 > +
-> +	ret = task_isol_setup(0);
-> +	if (ret == -1)
-> +		return EXIT_FAILURE;
+> +  clock-names:
+> +    items:
+> +      - const: bam_clk
 > +
-> +	mask = ret;
-> +	/* enable quiescing on system call return, oneshot */
-> +	ret = task_isol_activate_set(mask);
-> +	if (ret)
-> +		return EXIT_FAILURE;
+> +  "#dma-cells":
+> +    const: 1
 > +
-> +#define NR_LOOPS 999999999
-> +#define NR_PRINT 100000000
-> +	/* busy loop */
-
-Really readable code.... Not.
-
-> +	while (ret < NR_LOOPS)  {
-> +		memset(buf, 0, 4096);
-> +		ret = ret+1;
-
-The kernel has a well define coding style which is not optional for
-samples.
-
-> +int main(void)
-> +{
-> +	write_loops = 0;
-> +	do {
-> +#define NR_LOOPS 999999999
-> +#define NR_PRINT 100000000
-
-Groan.
-
-> +		/* enable quiescing on system call return */
-> +		ret = task_isol_activate_set(mask);
-> +		if (ret)
-> +			return EXIT_FAILURE;
+> +  interrupts:
+> +    maxItems: 1
 > +
-> +		/* busy loop */
-> +		while (ret < NR_LOOPS)  {
-> +			memset(buf, 0xf, 4096);
-> +			ret = ret+1;
-> +			if (!(ret % NR_PRINT))
-> +				printf("wloop=%d loops=%d of %d\n", write_loops,
-> +					ret, NR_LOOPS);
-
-This is really a brilliant example of design fail at the conceptual level:
-
-     task_isol_activate_set()
-       set_thread_flag(TIF_TASK_ISOL);
-       exit_to_user_mode()
-          if (thread_flag(TIF_TASK_ISOL)) {
-             handle_isol_muck() {
-               clear_thread_flag(TIF_TASK_ISOL);
-               ....
-             }
-     printf()
-       sys_write()....
-       exit_to_user_mode()
-         ....
-         
-         --->  which might coincidentaly quiesce stuff or not just
-               because something might have set TIF_TASK_ISOL or not.
-
-Are you serious that setting TIF_TASK_ISOL from each of these envisioned
-facilities which need quiescing is a maintainable approach?
-
-That's a recipe for disaster and a guarantee for hard to diagnose
-problems which ends up with a flood of non-sensical patches sprinkling
-set_thread_flag(TIF_TASK_ISOL) all over the place just to cure the
-symptoms.
-
-Sure you can claim that this did not blow up in your face so far, but
-that's a useless argument because _one_ out of the proposed 64 x 64 is
-perhaps maintainable, but not anything beyond that.
-
-Thanks,
-
-        tglx
-
-
+> +  iommus:
+> +    minItems: 1
+> +    maxItems: 4
+> +
+> +  num-channels:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    description:
+> +      Indicates supported number of DMA channels in a remotely controlled bam.
+> +
+> +  qcom,controlled-remotely:
+> +    type: boolean
+> +    description:
+> +      Indicates that the bam is controlled by remote proccessor i.e. execution
+> +      environment.
+> +
+> +  qcom,ee:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    minimum: 0
+> +    maximum: 7
+> +    description:
+> +      Indicates the active Execution Environment identifier (0-7) used in the
+> +      secure world.
+> +
+> +  qcom,num-ees:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    description:
+> +      Indicates supported number of Execution Environments in a remotely
+> +      controlled bam.
+> +
+> +  qcom,powered-remotely:
+> +    type: boolean
+> +    description:
+> +      Indicates that the bam is powered up by a remote processor but must be
+> +      initialized by the local processor.
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - "#dma-cells"
+> +  - interrupts
+> +  - qcom,ee
+> +  - reg
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    #include <dt-bindings/clock/qcom,gcc-msm8974.h>
+> +
+> +    dma-controller@f9944000 {
+> +        compatible = "qcom,bam-v1.4.0";
+> +        reg = <0xf9944000 0x15000>;
+> +        interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>;
+> +        clocks = <&gcc GCC_BLSP2_AHB_CLK>;
+> +        clock-names = "bam_clk";
+> +        #dma-cells = <1>;
+> +        qcom,ee = <0>;
+> +    };
+> +...
+> diff --git a/Documentation/devicetree/bindings/dma/qcom_bam_dma.txt b/Documentation/devicetree/bindings/dma/qcom_bam_dma.txt
+> deleted file mode 100644
+> index 6e9a5497b3f2..000000000000
+> --- a/Documentation/devicetree/bindings/dma/qcom_bam_dma.txt
+> +++ /dev/null
+> @@ -1,52 +0,0 @@
+> -QCOM BAM DMA controller
+> -
+> -Required properties:
+> -- compatible: must be one of the following:
+> - * "qcom,bam-v1.4.0" for MSM8974, APQ8074 and APQ8084
+> - * "qcom,bam-v1.3.0" for APQ8064, IPQ8064 and MSM8960
+> - * "qcom,bam-v1.7.0" for MSM8916
+> -- reg: Address range for DMA registers
+> -- interrupts: Should contain the one interrupt shared by all channels
+> -- #dma-cells: must be <1>, the cell in the dmas property of the client device
+> -  represents the channel number
+> -- clocks: required clock
+> -- clock-names: must contain "bam_clk" entry
+> -- qcom,ee : indicates the active Execution Environment identifier (0-7) used in
+> -  the secure world.
+> -- qcom,controlled-remotely : optional, indicates that the bam is controlled by
+> -  remote proccessor i.e. execution environment.
+> -- qcom,powered-remotely : optional, indicates that the bam is powered up by
+> -  a remote processor but must be initialized by the local processor.
+> -- num-channels : optional, indicates supported number of DMA channels in a
+> -  remotely controlled bam.
+> -- qcom,num-ees : optional, indicates supported number of Execution Environments
+> -  in a remotely controlled bam.
+> -
+> -Example:
+> -
+> -	uart-bam: dma@f9984000 = {
+> -		compatible = "qcom,bam-v1.4.0";
+> -		reg = <0xf9984000 0x15000>;
+> -		interrupts = <0 94 0>;
+> -		clocks = <&gcc GCC_BAM_DMA_AHB_CLK>;
+> -		clock-names = "bam_clk";
+> -		#dma-cells = <1>;
+> -		qcom,ee = <0>;
+> -	};
+> -
+> -DMA clients must use the format described in the dma.txt file, using a two cell
+> -specifier for each channel.
+> -
+> -Example:
+> -	serial@f991e000 {
+> -		compatible = "qcom,msm-uart";
+> -		reg = <0xf991e000 0x1000>
+> -			<0xf9944000 0x19000>;
+> -		interrupts = <0 108 0>;
+> -		clocks = <&gcc GCC_BLSP1_UART2_APPS_CLK>,
+> -			<&gcc GCC_BLSP1_AHB_CLK>;
+> -		clock-names = "core", "iface";
+> -
+> -		dmas = <&uart-bam 0>, <&uart-bam 1>;
+> -		dma-names = "rx", "tx";
+> -	};
+> -- 
+> 2.25.1
+> 
+> 
