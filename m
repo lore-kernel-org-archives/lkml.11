@@ -2,206 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C02CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 11:54:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCFACC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 11:57:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349715AbiDZL5H (ORCPT
+        id S1349720AbiDZMAT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 07:57:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41684 "EHLO
+        Tue, 26 Apr 2022 08:00:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349707AbiDZL5F (ORCPT
+        with ESMTP id S239509AbiDZMAR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 07:57:05 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2057.outbound.protection.outlook.com [40.107.93.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A950E71A3E;
-        Tue, 26 Apr 2022 04:53:58 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=E0ma7MQByHD5WRgJUCcL9iaMxL+38RBbjn/TCvM5vAwxwNOBesiFQFriybuAaAzGg9TvN0p42Q7L6Pev11l2RFJw34W9pU84zvC45jEp9Vz/mFKJ5ssfi5M99+odfUODqyCg8Tig3lG0Non3Rxath5t9JVe1hbRLwtITv8lvKluOzedYCtfAUcRRgWdIr9v4DbqtABAt0+DhU7NnO2H/PeYfTiKRB+aN73OajRSWVKVz+9Lt4LqClLgSmaYiSsNhSFKgM4clLPW1VlFuGRMEzFpTWJ4eeUfKmDj8wFgkd1EyZvcG36ObJTZvs02s7p2WRQCJLSCeKNU+mWN9TRXkGQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=28I+JFMP55pT7M4/SZoCZQ6qT/lOEt7VxR25MZezPD0=;
- b=mVxPo8hSkeqaafW0OKUWd2pSxKalBqPq59aiytRdrMRwsM0xp/v62aNMs4DyJheOaAz18AvlGbaiyAfenXFC7+INUzsGhLBXFJv+mRCBVuYNrkrSkipdCtt0xnPU6OgWYI2ZNnCgN4N9nqTmvs/nziiec2SN/dfcfyV0A6C6wwWeLOY4G3o5fO46gB+AZNKpd0T2lGi5mz/oplMlAxDQARUdmlnYVZO/kYF5FUEUU9icoMQ+so9lI0IJvepDwltsoJ9iT8qAIf7w6bq5/zVKMTLQcWJFJESpWjYvLD0n63UYkwupIuwJ0GnB/uYMxF49nUMAHOui97KiniI2KAku7A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=28I+JFMP55pT7M4/SZoCZQ6qT/lOEt7VxR25MZezPD0=;
- b=bjQooRxJsnYJhZR3PmfNqlYZX+m0M0CbrTR8aUkrATi2gXTN5dDZhC9Pk8pqkkPzqjGw/H2Sq97EpNNrmlCqAbXydJJ/Sr7HLeCs8PEFnviU9de/sVvRLiKsN6S3r9Oe0jnElNLBRnzPp11fyWtenL0JiHKFTZQf5B1FZOpzB9U=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from MN2PR12MB3053.namprd12.prod.outlook.com (2603:10b6:208:c7::24)
- by MN2PR12MB3293.namprd12.prod.outlook.com (2603:10b6:208:106::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.15; Tue, 26 Apr
- 2022 11:53:56 +0000
-Received: from MN2PR12MB3053.namprd12.prod.outlook.com
- ([fe80::6807:1261:8f60:2449]) by MN2PR12MB3053.namprd12.prod.outlook.com
- ([fe80::6807:1261:8f60:2449%7]) with mapi id 15.20.5186.021; Tue, 26 Apr 2022
- 11:53:56 +0000
-Message-ID: <5fbcc127-cad7-1f8e-31a8-bf71f6f17e13@amd.com>
-Date:   Tue, 26 Apr 2022 17:23:44 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH 4/6] perf/tool: Parse non-cpu pmu capabilities
-Content-Language: en-US
-To:     Robert Richter <rrichter@amd.com>
-Cc:     peterz@infradead.org, acme@kernel.org, mingo@redhat.com,
-        mark.rutland@arm.com, jolsa@kernel.org, namhyung@kernel.org,
-        tglx@linutronix.de, bp@alien8.de, irogers@google.com,
-        yao.jin@linux.intel.com, james.clark@arm.com, leo.yan@linaro.org,
-        kan.liang@linux.intel.com, ak@linux.intel.com, eranian@google.com,
-        like.xu.linux@gmail.com, x86@kernel.org,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        sandipan.das@amd.com, ananth.narayan@amd.com, kim.phillips@amd.com,
-        santosh.shukla@amd.com, Ravi Bangoria <ravi.bangoria@amd.com>
-References: <20220425044323.2830-1-ravi.bangoria@amd.com>
- <20220425044323.2830-5-ravi.bangoria@amd.com>
- <YmfLU/VMQI0g0Ck0@rric.localdomain>
-From:   Ravi Bangoria <ravi.bangoria@amd.com>
-In-Reply-To: <YmfLU/VMQI0g0Ck0@rric.localdomain>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN3PR01CA0014.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:95::23) To MN2PR12MB3053.namprd12.prod.outlook.com
- (2603:10b6:208:c7::24)
+        Tue, 26 Apr 2022 08:00:17 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AA8B53A53;
+        Tue, 26 Apr 2022 04:57:09 -0700 (PDT)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23Q9ZCEe002053;
+        Tue, 26 Apr 2022 11:57:05 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=a3zMhYLA8xJP/xWtcO5iRzbIKMDvtVGp5u0drnw/ibg=;
+ b=lfxkzJGUurXcetmqygvnIpGcoRSEnKIky3jbQutWyUIePuBMtN5/pbGnKkE36Q+E6vX8
+ 2ktEHjB5N7qIFpmx+LTy4ECRYYQYwD7CAdDJZswpuGkANhygnk1vAJcLpjgA0JEN45hp
+ jB/5XpXa6HTsSKuBF6GsoPkPxSjd1Y6eIM3erTDzhU/vYE25Q0oCqiMm39vOqCJu+A6p
+ v0RvIJ82xayvatn5sR7YvnxecAeEfGSs/AnBcs7l2LSucvAVzOsvuG/Ag3mfSH3mhszJ
+ 9V96CFxAO7delV6cXOenhNEpCVjajHSI9v82V4VHqwwMyx4zEZ8LCDDH9yW9Z4iWlnEx QQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fpbyh5fwd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 26 Apr 2022 11:57:05 +0000
+Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23QBv5dk002095;
+        Tue, 26 Apr 2022 11:57:05 GMT
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fpbyh5fvn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 26 Apr 2022 11:57:04 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23QBrmfe027493;
+        Tue, 26 Apr 2022 11:57:03 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma01fra.de.ibm.com with ESMTP id 3fm938uchc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 26 Apr 2022 11:57:03 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23QBuxYJ52429144
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 26 Apr 2022 11:56:59 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 56F6CA405B;
+        Tue, 26 Apr 2022 11:56:59 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3F635A4054;
+        Tue, 26 Apr 2022 11:56:58 +0000 (GMT)
+Received: from [9.171.92.107] (unknown [9.171.92.107])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 26 Apr 2022 11:56:58 +0000 (GMT)
+Message-ID: <80ca4468-6b0a-e8d9-9922-1fae2a1f0fcc@linux.ibm.com>
+Date:   Tue, 26 Apr 2022 13:56:57 +0200
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 499b6b5a-271d-4682-5377-08da277b712b
-X-MS-TrafficTypeDiagnostic: MN2PR12MB3293:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR12MB32933C0C74F449DF684071D7E0FB9@MN2PR12MB3293.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: K4BaDCjspTsvk+iCp92uNgJaIMXR8wRixnRxwTZM1y9Q/Nt2XXnDXqAhxgkhQXTtu6dMfGDhjm57NRx7C/hQ5dJt35ilSCUW0I7R7zdHdFfk3pz++IzdTbC7SroAN3MuiDOl+zrRDEAIpQLvsJ0VROYTTXi5pCTLGNC4Okvq7ia9ebT+Ig810Q65I2fduxXsJHG2AVkEVrgce+3t5M9j8DVyum/RY/jUJGp77JrBybVBcOxmqJTcCHhsmlBnaLIz6S8YTnp/LHxhRxrvcM3W/4JIkOGNpraqlr87qmceqkuy2vuqUTooyCX9uyOGU064/oxGYaID/cOvdufgdKo33BEAFmnVYxPWVqqKflAk4xPBSK3v8UVK4k8S8PRna6fkI9lpy8lK6mX0GrQRu0nbj4sp/CHBKJy/MAburs00xuNg0qD90Z+iizTo+ux79VEOXyZynctlgVc7I6slets5w/IQcJMA27XZxcRZoQjDFLgwUAukSc88BUp2RCuoT8IjltJo7HFrC/ysMsoTO4gCegNF3gPHRInH23gI7Ok5U+PTVZyAv816NTRYf+3c6EykoIpie8Ri3LPvgWRkKxEKhP/paBACeXU+0LRwXbcSQUtDYw9S8q+3u6P8MVsCwy3TYQOLUvn9//gjE+AbRcpCcVQBjPKSFbSzOPxWqdsM8RYsuB0k3kD96nYuGTVIBPGUHCqWMmYMq7XFJsjmF9YQM1eUr/ZdzEYuKjO5H11O3ps=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB3053.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6506007)(53546011)(508600001)(44832011)(8676002)(2906002)(66946007)(2616005)(66556008)(66476007)(31686004)(4326008)(36756003)(6512007)(6862004)(26005)(6666004)(38100700002)(316002)(7416002)(5660300002)(37006003)(6486002)(6636002)(31696002)(186003)(86362001)(8936002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TGlxZTR2YmVsazVNNjV0cHh2dDZRYllUb1YyZU9YUFhHalhjdTZIaDFhRXJ2?=
- =?utf-8?B?c29SWmVoMnFld3QzRjhUa0tBcE5qQ3FFVU5SdmRCYml0dC9YRThFSVpkVW1o?=
- =?utf-8?B?cWtwSVZkZE1PcktOUUgrb2RVL3J2NXNQS3VOTUFHL1BxUmRnVDFCTkd5YVRj?=
- =?utf-8?B?RVVHQUd3eDUvdlNWOXVMd1F4Yk9sSWJOWm5pZXlNbENDM1VPRE1RUXhTLzFC?=
- =?utf-8?B?SjNHMmppSUc5SnptQkRyWEJ4SjhERDJFTkRaQnYyangwMFpvUWhHS3RwNHQ5?=
- =?utf-8?B?NEdhMitxZmIrOS8vVTJ4MjZLKzdYTDBpQnQyNmZlSk0zdEdVa3R0Qi9nbXRj?=
- =?utf-8?B?MkxHeWlKUFFBaG0xOE0wSWt0ZUlscEdOZWJ0MXlWSTdOZXJtL0F6MVZVMEZJ?=
- =?utf-8?B?ekVZRGg1bzA5bHBuQ1diU3RWbkxCTTVzRDZjdGtLdGhpWTg4R25lc2RYTGRT?=
- =?utf-8?B?ekZtbTYzK3FtRXJ6SGp0VDNhc0xyRnBITXZ1ZjU3b0g5emZmVGxGdDY0a3hr?=
- =?utf-8?B?QW5zYnRYbm9RTjVDVzlUc0Rva3V5ektOTlVMbWV2cFYrU25iN29JUUZmcjhJ?=
- =?utf-8?B?QmtDTXNwUGxQRTRLRS9MSGc1bjNRR3h0S044RElQdXdsT29KYVo5R1QxUnFh?=
- =?utf-8?B?cmpwOGNKc3BWdXlqZm5ZK3Q5TUZBY0dQYVJZRlRqNFVlSy9NbmJmeWpaeDlJ?=
- =?utf-8?B?U0o0aXR0c01RT28xOUFCTUp3QmxxaVBHR0RuRGZsQ2tSamVkaituOVV5SGhk?=
- =?utf-8?B?ZlRPWDdRSE1EcGZHMy9CamxCSTRnbHAzVmpMRnVmOFhZYnpuVVBJUUV0M05W?=
- =?utf-8?B?RTRaVjkrVTRBSngzU1NKWkxFbXdjOFA2eFlJSkkyQzhuTXlsc01FN2wvTm5x?=
- =?utf-8?B?UEN0QUMrVHVIakhINHlhTkdORU9zVTNhUCtDVHNiQmdocHpXR0hvMERVdUN3?=
- =?utf-8?B?YlF6cVhtejM4bmpLUjBQMzFnUUJTalJPaERKekNXNlQxN3Rxbzg3anVkbEVz?=
- =?utf-8?B?VS9lNEYrNTAzbURxaUZ4b3lTMGgxb1NjUlVpWFZtVEhKTTVwQjN0OERhZkd5?=
- =?utf-8?B?eVlrNUxNMUZkVHFaTW1Db0tNQjU2b1AvV0ZJUUZpb3QrM240RWNGN2M5c3JL?=
- =?utf-8?B?TklQMUJvaEpaTEl0b21zZnhjTDNITXRKUE1FMzg1ejFHQ040NkI3QUxJRmxU?=
- =?utf-8?B?a200SkhtYkw0WGtzVFdhZFVBd05EMUc1VS9wNExMMkdJSjU2c29mWHljSG9N?=
- =?utf-8?B?eGVQNEg2MGFXSW9CZkxuVjRuZ1g0M0l0cVRvYU5JOTRlTS9na25WaUVPRyth?=
- =?utf-8?B?bk1EaWJ3ODl5NmcrYUc2Q2praUJESUpnQkREeFExZFdBcm1WRVhBcmFvckpC?=
- =?utf-8?B?aitIRGRkSXMrL1UyYXFnWENXYlErZmsvc2JwM0Zid0RjRW5zS05KdFJPMk1R?=
- =?utf-8?B?VlJqNDdkaUE4eElkQTR6VWtUb2p5aldIRVA0RVgwNllvK0ZjcTVYOHEyUlND?=
- =?utf-8?B?Q1kwYWhWc0ZiQVdzSXY3Zmh1N2tRQWtYU0M1ZGpDRnExcFlHNisyVTRLUmpl?=
- =?utf-8?B?Z09rS3BoVHJCVzlZdGpKMXRzLzl2YmM0b3RveVpHclc4dTF6b1ZGbnNpZkNs?=
- =?utf-8?B?OU9JWm9iTGJkb0NvM0FXK3F3azNpMnZaUEYyWEpSMmlqeDVrNmJuSVNLSzFz?=
- =?utf-8?B?MitKczVvMURpV2o5M1JmdHNsMjVCQm5VdFRXZmZDNkkrQzR4ckpqdlBiNVRQ?=
- =?utf-8?B?Vzc1YW1ZWEdqVUMrT0FPcWxYNlg0Ykg0V3ZER3JIMXBhb01Gb0ZsOCtUbllT?=
- =?utf-8?B?VzBCaFR3NGd1Ym1DaGlhK0hrNmFtZkQwcWpObVpDT2Q5YW10b1YyVkhuVWk2?=
- =?utf-8?B?NHRibWYxaS9DSHVBdnZGTnBYcWxtd0I1V3NrV25ScEVLemkzVmxYZ0VtSzZD?=
- =?utf-8?B?aE9TcisxbDNFRUd4MGhWbklaYTVXSENJbVd3R2VMeVhOQTdhL3FIckFCbjhY?=
- =?utf-8?B?OVVmZVJhcVF0ZzRaRWdldXZJOFRXUSt6RFRidGI0OVBHZmgxNXlvdE12SkpM?=
- =?utf-8?B?MmNPNHc3MDR5Z0dWaGxNYm0xS2c0OERDTTE0bWtpdTVSWFhMS1FlUVVqSnlp?=
- =?utf-8?B?V2RRZ2dEbGp2OXUxMzh6TC9UTWRtc1c5QXVtWHJ5Y0k5OE4zcHI0WWhRUnF5?=
- =?utf-8?B?THJ5ZTlGU0w2Y3gzdUs0YkxCUC9rbDVtQ2FpbjVCYzl0YnV4bDY1ZkxZc2hB?=
- =?utf-8?B?YzE5L3ZTY3dEZEVoZ1FMR3lzcHBtdU5mdFNqdEtRRFBwSXlTSGJ6TmNJbnFI?=
- =?utf-8?B?RVpJeFRUTjkxZXRQQ2lWbFVqUWRzalZvcUVkT3JiUlZxbG1aejBDdz09?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 499b6b5a-271d-4682-5377-08da277b712b
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB3053.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Apr 2022 11:53:56.4159
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fHgEE0e4cTw6qLfzgqTAXl7HlWdXVv4M9WXCBxR9IxomO2/eKrZSINfDSxnu4hOViUWtXx7WMAklzY4r6AnYcw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3293
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 0/2] Dirtying, failing memop: don't indicate
+ suppression
+Content-Language: en-US
+To:     Janosch Frank <frankja@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>
+Cc:     David Hildenbrand <david@redhat.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
+        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
+References: <20220425100147.1755340-1-scgl@linux.ibm.com>
+ <8095d0de-dd99-0388-b1d4-e59b01dc4be0@linux.ibm.com>
+ <13d0d706-abc4-3e4d-88c3-6447636fd1fd@linux.ibm.com>
+ <1ccb1333-2233-8832-4102-a6c082b29108@linux.ibm.com>
+ <40038a9a-5647-c355-bad2-297b0a2baf4f@linux.ibm.com>
+From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+In-Reply-To: <40038a9a-5647-c355-bad2-297b0a2baf4f@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 0vrkjp9KAsI56VkB80KM_TaNI0Sf3ufs
+X-Proofpoint-GUID: m2Zua9dnvj6lbL_fTw9YYUs0X7QiWkDl
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-26_02,2022-04-26_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 spamscore=0
+ bulkscore=0 adultscore=0 mlxlogscore=760 lowpriorityscore=0 suspectscore=0
+ priorityscore=1501 phishscore=0 mlxscore=0 malwarescore=0 impostorscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2204260074
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 4/26/22 09:25, Janosch Frank wrote:
+> On 4/26/22 08:19, Christian Borntraeger wrote:
+>>
+>>
+>> Am 25.04.22 um 19:29 schrieb Janis Schoetterl-Glausch:
+>>> On 4/25/22 18:30, Christian Borntraeger wrote:
+>>>> Am 25.04.22 um 12:01 schrieb Janis Schoetterl-Glausch:
+>>>>> If a memop fails due to key checked protection, after already having
+>>>>> written to the guest, don't indicate suppression to the guest, as that
+>>>>> would imply that memory wasn't modified.
+>>>>>
+>>>>> This could be considered a fix to the code introducing storage key
+>>>>> support, however this is a bug in KVM only if we emulate an
+>>>>> instructions writing to an operand spanning multiple pages, which I
+>>>>> don't believe we do.
+>>>>>
+>>>>
+>>>> Thanks applied. I think it makes sense for 5.18 nevertheless.
+>>>
+>>> Janosch had some concerns because the protection code being 000 implies
+>>> that the effective address in the TEID is unpredictable.
+>>> Let's see if he chimes in.
+>>
+>> z/VM does exactly the same on key protection crossing a page boundary. The
+>> architecture was written in a way to allow all zeros exactly for this case.
+>> (hypervisor emulation of key protection crossing pages).
+>> This is even true for ESOP-2. See Figure 3-5 or figure 3-8 (the first line)
+>> which allows to NOT have a valid address in the TEID for key controlled
+>> protection.
 
+The question is if this is the best way to do it. Janosch brought up
+interruptible instructions, for those you would want to just consider
+the current unit of operation to be suppressed. Now this is not actually
+relevant, I guess PFMF is the only interruptible instruction we'd emulate
+and that ignores keys when clearing memory.
+But maybe there are other edge cases.
 
-On 26-Apr-22 4:07 PM, Robert Richter wrote:
-> On 25.04.22 10:13:21, Ravi Bangoria wrote:
+>>
+>> The only question is, do we need to change the suppression parameter in
+>> access_guest_with_key
+>>
+>>    (mode != GACC_STORE) || (idx == 0)
+>>
+>> to also check for prot != PROT_TYPE_KEYC
+>> ? I think we do not need this as we have checked other reasons before.
+
+Yes, it is not necessary, the control flow is such that a protection exception
+implies that is due to keys.
 > 
->> diff --git a/tools/perf/Documentation/perf.data-file-format.txt b/tools/perf/Documentation/perf.data-file-format.txt
->> index f56d0e0fbff6..dea3acb36558 100644
->> --- a/tools/perf/Documentation/perf.data-file-format.txt
->> +++ b/tools/perf/Documentation/perf.data-file-format.txt
->> @@ -435,6 +435,24 @@ struct {
->>  	} [nr_pmu];
->>  };
->>  
->> +	HEADER_PMU_CAPS = 32,
->> +
->> +	List of pmu capabilities (except cpu pmu which is already
->> +	covered by HEADER_CPU_PMU_CAPS)
->> +
->> +struct {
->> +	u32 nr_pmus;
->> +	struct {
->> +		u8 core_type;	/* For hybrid topology */
->> +		char pmu_name[];
->> +		u16 nr_caps;
->> +		struct {
->> +			char name[];
->> +			char value[];
->> +		} [nr_caps];
->> +	} [nr_pmus];
->> +};
->> +
+> To me this measure looks like a last resort option and the POP doesn't state a 100% what is to be done. Some instructions can mandate suppression instead of termination according to the architects.
 > 
-> This looks quite a bit complex and special.
+> My intuition tells me that if we are in a situation where this would happen then we would be much better off just doing it by hand (i.e. in the instruction emulation code) and not letting this function decide.
+
+For the instructions we currently need to emulate in KVM we should be fine.
+So the question is what's best for the future and for instructions emulated by user space.
+Upward in the call stack (including user space), we don't know the failing address,
+which complicates handling it in the emulation code.
+You could chop up the memop in page chunks to find out, but that might have other issues.
+
+Since this behavior is very implicit and easy to overlook maybe we should document it
+in the description of the memop ioctl?
 > 
-> Why not just reusing struct nr_cpu_pmu_caps (id 28)? Rename it and
-> introduce macros for backwards compatability if needed.
+> So I'm not entirely sure if we're replacing something that is not correct with something that also won't be correct for all cases.
 
-No. HEADER_CPU_PMU_CAPS (id 28) is designed only for CPU pmu and can
-not save more than one pmu data. A designed proposed in this patch
-is generic and can be used to save capabilities of multiple pmus
-within single header. Something like:
-
-struct {
-    nr_pmus=2,
-
-    [0] = struct {
-          core_type = 0,
-          pmu_name = "ibs_fetch"
-          nr_caps = 2,
-          [0] = { .name = "cap1", .value = "value1" }
-          [1] = { .name = "cap2", .value = "value2" }
-    },
-
-    [1] = struct {
-          core_type = 0,
-          pmu_name = "ibs_op"
-          nr_caps = 3,
-          [0] = { .name = "cap1", .value = "value1" }
-          [1] = { .name = "cap2", .value = "value2" }
-          [2] = { .name = "cap3", .value = "value3" }
-    },
-}
-
+That may be the case, which option is more correct/less incorrect tho?
+It's hard to say because one would have to consider all instructions/possibilities,
+but indicating not suppression when we've already written to memory, seems to make
+sense more often than not doing so.
 > 
-> pmu_name is already encoded in sysfs and core_type could be a caps
-> value?
+> But to summarize this: I'm not entirely sure even after reading the POP for more than an hour and consulting an architect
 
-pmu_name is needed to map capability with pmu. And core_type is needed
-when same pmu is supported by multiple core types (like P-core / E-core
-on Intel platform) but has different capabilities.
-
-Thanks,
-Ravi
