@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80E9DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:05:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6CBCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:05:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354073AbiDZTIZ (ORCPT
+        id S1353754AbiDZTId (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 15:08:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43066 "EHLO
+        Tue, 26 Apr 2022 15:08:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353798AbiDZTFr (ORCPT
+        with ESMTP id S1353805AbiDZTFu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 15:05:47 -0400
+        Tue, 26 Apr 2022 15:05:50 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C77B61999D4;
-        Tue, 26 Apr 2022 12:02:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5994F19A48F;
+        Tue, 26 Apr 2022 12:02:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6706C619C0;
-        Tue, 26 Apr 2022 19:02:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B43B0C385C0;
-        Tue, 26 Apr 2022 19:02:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E7D0D619C4;
+        Tue, 26 Apr 2022 19:02:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E34AC385A4;
+        Tue, 26 Apr 2022 19:02:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650999758;
-        bh=Fibnfz6UKMUBj//0u9tJTPvRAWqgcl6ZhEU2wPNikR0=;
+        s=k20201202; t=1650999761;
+        bh=UzaHSttgxLekgrWJttDuNNC3KNvjaox2XCxdt4LdC0k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lub7iSDHdAVPAxBmSK4C7cmvLZyXsWzUfpjEwKPQKyQhZn4yTDCh9eYDFF797i06c
-         i47FV6GLRutgeWfBuHf8r1s2QGuXuMRB3bk2HprZhz5cUMPgCCWjZu5Ek6wrK+SUY3
-         02o8f76l/7JubbHr/b35QwkKqUIDBaJrT6k1SEKzrsFNn6ivPz7qtVOp9akDRrGLJ6
-         mTaRjCEeGKdBF6Pa8Zj7Ot0JhFtt2Pg/4wAIPQTsxaeUcOGImvZKmaXRHKRf4c146x
-         WK5j3VcQyeZqQc5YUAb40PIykJv201ecPngq3kXErdr5DTqYm7OIEA2FAhhDSpJcV5
-         YGLdFP9ia4bpg==
+        b=QI3vajOT1YvTdZvLHeCLJ1Q9a1ZhpnsTwzLY2P224k/kmsjSKCszuPETa/5yT9oW4
+         TRKq0ypZmtq/noeBSIUdyn8KuhPVh1Yat2ezG7+ZZ47YebuE3GLwc3aNqv2hDoP4Q1
+         auQ95KnvojNJNwlzkYwTF+MRSFFUb/s93pOI2C5foCshUfXOsYAqHMSDDECfa4A9Ar
+         +rEmw6PHlhct5GLW801xVOUC0hwsj46YpMcPNEzyOD2L+jMxNG3hHTjl8OxytMQfvG
+         b3D4MkzuH8qdVCW//OuNhYhaBdcVeXn+Ps/c3MvDZqF2JZpoJNDsqyXnH7nj0ThOBF
+         j7Fqh+gSF/eFA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ronnie Sahlberg <lsahlber@redhat.com>,
-        Xiaoli Feng <xifeng@redhat.com>,
-        Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>, sfrench@samba.org,
-        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org
-Subject: [PATCH AUTOSEL 5.10 6/9] cifs: destage any unwritten data to the server before calling copychunk_write
-Date:   Tue, 26 Apr 2022 15:02:27 -0400
-Message-Id: <20220426190232.2351606-6-sashal@kernel.org>
+Cc:     Alexey Kardashevskiy <aik@ozlabs.ru>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>, nathan@kernel.org,
+        ndesaulniers@google.com, christophe.leroy@csgroup.eu,
+        msuchanek@suse.de, linuxppc-dev@lists.ozlabs.org,
+        llvm@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.10 8/9] powerpc/perf: Fix 32bit compile
+Date:   Tue, 26 Apr 2022 15:02:29 -0400
+Message-Id: <20220426190232.2351606-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220426190232.2351606-1-sashal@kernel.org>
 References: <20220426190232.2351606-1-sashal@kernel.org>
@@ -54,56 +55,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ronnie Sahlberg <lsahlber@redhat.com>
+From: Alexey Kardashevskiy <aik@ozlabs.ru>
 
-[ Upstream commit f5d0f921ea362636e4a2efb7c38d1ead373a8700 ]
+[ Upstream commit bb82c574691daf8f7fa9a160264d15c5804cb769 ]
 
-because the copychunk_write might cover a region of the file that has not yet
-been sent to the server and thus fail.
+The "read_bhrb" global symbol is only called under CONFIG_PPC64 of
+arch/powerpc/perf/core-book3s.c but it is compiled for both 32 and 64 bit
+anyway (and LLVM fails to link this on 32bit).
 
-A simple way to reproduce this is:
-truncate -s 0 /mnt/testfile; strace -f -o x -ttT xfs_io -i -f -c 'pwrite 0k 128k' -c 'fcollapse 16k 24k' /mnt/testfile
+This fixes it by moving bhrb.o to obj64 targets.
 
-the issue is that the 'pwrite 0k 128k' becomes rearranged on the wire with
-the 'fcollapse 16k 24k' due to write-back caching.
-
-fcollapse is implemented in cifs.ko as a SMB2 IOCTL(COPYCHUNK_WRITE) call
-and it will fail serverside since the file is still 0b in size serverside
-until the writes have been destaged.
-To avoid this we must ensure that we destage any unwritten data to the
-server before calling COPYCHUNK_WRITE.
-
-Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1997373
-Reported-by: Xiaoli Feng <xifeng@redhat.com>
-Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220421025756.571995-1-aik@ozlabs.ru
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/smb2ops.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/powerpc/perf/Makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
-index 0e8f484031da..c758ff41b638 100644
---- a/fs/cifs/smb2ops.c
-+++ b/fs/cifs/smb2ops.c
-@@ -1744,9 +1744,17 @@ smb2_copychunk_range(const unsigned int xid,
- 	int chunks_copied = 0;
- 	bool chunk_sizes_updated = false;
- 	ssize_t bytes_written, total_bytes_written = 0;
-+	struct inode *inode;
+diff --git a/arch/powerpc/perf/Makefile b/arch/powerpc/perf/Makefile
+index c02854dea2b2..da9f60ede97b 100644
+--- a/arch/powerpc/perf/Makefile
++++ b/arch/powerpc/perf/Makefile
+@@ -5,11 +5,11 @@ ifdef CONFIG_COMPAT
+ obj-$(CONFIG_PERF_EVENTS)	+= callchain_32.o
+ endif
  
- 	pcchunk = kmalloc(sizeof(struct copychunk_ioctl), GFP_KERNEL);
+-obj-$(CONFIG_PPC_PERF_CTRS)	+= core-book3s.o bhrb.o
++obj-$(CONFIG_PPC_PERF_CTRS)	+= core-book3s.o
+ obj64-$(CONFIG_PPC_PERF_CTRS)	+= ppc970-pmu.o power5-pmu.o \
+ 				   power5+-pmu.o power6-pmu.o power7-pmu.o \
+ 				   isa207-common.o power8-pmu.o power9-pmu.o \
+-				   generic-compat-pmu.o power10-pmu.o
++				   generic-compat-pmu.o power10-pmu.o bhrb.o
+ obj32-$(CONFIG_PPC_PERF_CTRS)	+= mpc7450-pmu.o
  
-+	/*
-+	 * We need to flush all unwritten data before we can send the
-+	 * copychunk ioctl to the server.
-+	 */
-+	inode = d_inode(trgtfile->dentry);
-+	filemap_write_and_wait(inode->i_mapping);
-+
- 	if (pcchunk == NULL)
- 		return -ENOMEM;
- 
+ obj-$(CONFIG_PPC_POWERNV)	+= imc-pmu.o
 -- 
 2.35.1
 
