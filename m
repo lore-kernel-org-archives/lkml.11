@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45481C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:29:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7262DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:29:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237846AbiDZJcx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:32:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41250 "EHLO
+        id S1347539AbiDZJc4 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:32:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347819AbiDZJGO (ORCPT
+        with ESMTP id S1347670AbiDZJGB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:06:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB72C161A60;
-        Tue, 26 Apr 2022 01:46:04 -0700 (PDT)
+        Tue, 26 Apr 2022 05:06:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BDDA15C3A7;
+        Tue, 26 Apr 2022 01:45:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F1FB60C42;
-        Tue, 26 Apr 2022 08:46:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52A25C385A4;
-        Tue, 26 Apr 2022 08:46:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E214AB81CF0;
+        Tue, 26 Apr 2022 08:45:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50856C385AC;
+        Tue, 26 Apr 2022 08:45:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962762;
-        bh=G1DZZHPxxzY9jiiWaHLSmkavsSyRc4W3bovaeI/JEGk=;
+        s=korg; t=1650962715;
+        bh=zqYE2dBiFpRl4OeuEjvjF+2WlsvVq3M+PLNfL0rUOW0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NmYYwgpas5CyAn5DvnGsfbioikERLjTM291G+eoc05+nxeRF76Ee+fdJFGqKe+ab7
-         H+CTfltQkhufu6X4opdKV3lMM0svAfHm3JzjbGEVz95GrLIKM6D5GqYfqxXeMN/tbu
-         MHTiTmtxZghAVii2KMXghgkWZCkqfxrs2Mx8T7kw=
+        b=0Qcw77QJ89XaQBUmHN54RgYBTS/UnhnkJSj77M3TMO5i8hDqS/BvmyNN6dfp7PXjq
+         tg0B+75xxnGxHT8jxOgibCHVt63lYoIQ6TYUYTNz+ZCqPXpth+6kSCKLqioPMhGaw6
+         hJsLUxlUfdlOF2CKXFH1loyUESyaLKouYBYV++VI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Manish Rangankar <mrangankar@marvell.com>,
-        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
-        Mike Christie <michael.christie@oracle.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 081/146] scsi: qedi: Fix failed disconnect handling
-Date:   Tue, 26 Apr 2022 10:21:16 +0200
-Message-Id: <20220426081752.339186805@linuxfoundation.org>
+        stable@vger.kernel.org, Oliver Upton <oupton@google.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 066/146] selftests: KVM: Free the GIC FD when cleaning up in arch_timer
+Date:   Tue, 26 Apr 2022 10:21:01 +0200
+Message-Id: <20220426081751.920361986@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -51,144 +49,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Christie <michael.christie@oracle.com>
+From: Oliver Upton <oupton@google.com>
 
-[ Upstream commit 857b06527f707f5df634b854898a191b5c1d0272 ]
+[ Upstream commit 21db83846683d3987666505a3ec38f367708199a ]
 
-We set the qedi_ep state to EP_STATE_OFLDCONN_START when the ep is
-created. Then in qedi_set_path we kick off the offload work. If userspace
-times out the connection and calls ep_disconnect, qedi will only flush the
-offload work if the qedi_ep state has transitioned away from
-EP_STATE_OFLDCONN_START. If we can't connect we will not have transitioned
-state and will leave the offload work running, and we will free the qedi_ep
-from under it.
+In order to correctly destroy a VM, all references to the VM must be
+freed. The arch_timer selftest creates a VGIC for the guest, which
+itself holds a reference to the VM.
 
-This patch just has us init the work when we create the ep, then always
-flush it.
+Close the GIC FD when cleaning up a VM.
 
-Link: https://lore.kernel.org/r/20220408001314.5014-10-michael.christie@oracle.com
-Tested-by: Manish Rangankar <mrangankar@marvell.com>
-Reviewed-by: Lee Duncan <lduncan@suse.com>
-Reviewed-by: Chris Leech <cleech@redhat.com>
-Acked-by: Manish Rangankar <mrangankar@marvell.com>
-Signed-off-by: Mike Christie <michael.christie@oracle.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Oliver Upton <oupton@google.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220406235615.1447180-4-oupton@google.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qedi/qedi_iscsi.c | 69 +++++++++++++++++-----------------
- 1 file changed, 34 insertions(+), 35 deletions(-)
+ tools/testing/selftests/kvm/aarch64/arch_timer.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/scsi/qedi/qedi_iscsi.c b/drivers/scsi/qedi/qedi_iscsi.c
-index 282ecb4e39bb..e1fe989ad7b3 100644
---- a/drivers/scsi/qedi/qedi_iscsi.c
-+++ b/drivers/scsi/qedi/qedi_iscsi.c
-@@ -859,6 +859,37 @@ static int qedi_task_xmit(struct iscsi_task *task)
- 	return qedi_iscsi_send_ioreq(task);
+diff --git a/tools/testing/selftests/kvm/aarch64/arch_timer.c b/tools/testing/selftests/kvm/aarch64/arch_timer.c
+index b08d30bf71c5..3b940a101bc0 100644
+--- a/tools/testing/selftests/kvm/aarch64/arch_timer.c
++++ b/tools/testing/selftests/kvm/aarch64/arch_timer.c
+@@ -362,11 +362,12 @@ static void test_init_timer_irq(struct kvm_vm *vm)
+ 	pr_debug("ptimer_irq: %d; vtimer_irq: %d\n", ptimer_irq, vtimer_irq);
  }
  
-+static void qedi_offload_work(struct work_struct *work)
++static int gic_fd;
++
+ static struct kvm_vm *test_vm_create(void)
+ {
+ 	struct kvm_vm *vm;
+ 	unsigned int i;
+-	int ret;
+ 	int nr_vcpus = test_args.nr_vcpus;
+ 
+ 	vm = vm_create_default_with_vcpus(nr_vcpus, 0, 0, guest_code, NULL);
+@@ -383,8 +384,8 @@ static struct kvm_vm *test_vm_create(void)
+ 
+ 	ucall_init(vm, NULL);
+ 	test_init_timer_irq(vm);
+-	ret = vgic_v3_setup(vm, nr_vcpus, 64, GICD_BASE_GPA, GICR_BASE_GPA);
+-	if (ret < 0) {
++	gic_fd = vgic_v3_setup(vm, nr_vcpus, 64, GICD_BASE_GPA, GICR_BASE_GPA);
++	if (gic_fd < 0) {
+ 		print_skip("Failed to create vgic-v3");
+ 		exit(KSFT_SKIP);
+ 	}
+@@ -395,6 +396,12 @@ static struct kvm_vm *test_vm_create(void)
+ 	return vm;
+ }
+ 
++static void test_vm_cleanup(struct kvm_vm *vm)
 +{
-+	struct qedi_endpoint *qedi_ep =
-+		container_of(work, struct qedi_endpoint, offload_work);
-+	struct qedi_ctx *qedi;
-+	int wait_delay = 5 * HZ;
-+	int ret;
-+
-+	qedi = qedi_ep->qedi;
-+
-+	ret = qedi_iscsi_offload_conn(qedi_ep);
-+	if (ret) {
-+		QEDI_ERR(&qedi->dbg_ctx,
-+			 "offload error: iscsi_cid=%u, qedi_ep=%p, ret=%d\n",
-+			 qedi_ep->iscsi_cid, qedi_ep, ret);
-+		qedi_ep->state = EP_STATE_OFLDCONN_FAILED;
-+		return;
-+	}
-+
-+	ret = wait_event_interruptible_timeout(qedi_ep->tcp_ofld_wait,
-+					       (qedi_ep->state ==
-+					       EP_STATE_OFLDCONN_COMPL),
-+					       wait_delay);
-+	if (ret <= 0 || qedi_ep->state != EP_STATE_OFLDCONN_COMPL) {
-+		qedi_ep->state = EP_STATE_OFLDCONN_FAILED;
-+		QEDI_ERR(&qedi->dbg_ctx,
-+			 "Offload conn TIMEOUT iscsi_cid=%u, qedi_ep=%p\n",
-+			 qedi_ep->iscsi_cid, qedi_ep);
-+	}
++	close(gic_fd);
++	kvm_vm_free(vm);
 +}
 +
- static struct iscsi_endpoint *
- qedi_ep_connect(struct Scsi_Host *shost, struct sockaddr *dst_addr,
- 		int non_blocking)
-@@ -907,6 +938,7 @@ qedi_ep_connect(struct Scsi_Host *shost, struct sockaddr *dst_addr,
- 	}
- 	qedi_ep = ep->dd_data;
- 	memset(qedi_ep, 0, sizeof(struct qedi_endpoint));
-+	INIT_WORK(&qedi_ep->offload_work, qedi_offload_work);
- 	qedi_ep->state = EP_STATE_IDLE;
- 	qedi_ep->iscsi_cid = (u32)-1;
- 	qedi_ep->qedi = qedi;
-@@ -1055,12 +1087,11 @@ static void qedi_ep_disconnect(struct iscsi_endpoint *ep)
- 	qedi_ep = ep->dd_data;
- 	qedi = qedi_ep->qedi;
- 
-+	flush_work(&qedi_ep->offload_work);
-+
- 	if (qedi_ep->state == EP_STATE_OFLDCONN_START)
- 		goto ep_exit_recover;
- 
--	if (qedi_ep->state != EP_STATE_OFLDCONN_NONE)
--		flush_work(&qedi_ep->offload_work);
--
- 	if (qedi_ep->conn) {
- 		qedi_conn = qedi_ep->conn;
- 		abrt_conn = qedi_conn->abrt_conn;
-@@ -1234,37 +1265,6 @@ static int qedi_data_avail(struct qedi_ctx *qedi, u16 vlanid)
- 	return rc;
- }
- 
--static void qedi_offload_work(struct work_struct *work)
--{
--	struct qedi_endpoint *qedi_ep =
--		container_of(work, struct qedi_endpoint, offload_work);
--	struct qedi_ctx *qedi;
--	int wait_delay = 5 * HZ;
--	int ret;
--
--	qedi = qedi_ep->qedi;
--
--	ret = qedi_iscsi_offload_conn(qedi_ep);
--	if (ret) {
--		QEDI_ERR(&qedi->dbg_ctx,
--			 "offload error: iscsi_cid=%u, qedi_ep=%p, ret=%d\n",
--			 qedi_ep->iscsi_cid, qedi_ep, ret);
--		qedi_ep->state = EP_STATE_OFLDCONN_FAILED;
--		return;
--	}
--
--	ret = wait_event_interruptible_timeout(qedi_ep->tcp_ofld_wait,
--					       (qedi_ep->state ==
--					       EP_STATE_OFLDCONN_COMPL),
--					       wait_delay);
--	if ((ret <= 0) || (qedi_ep->state != EP_STATE_OFLDCONN_COMPL)) {
--		qedi_ep->state = EP_STATE_OFLDCONN_FAILED;
--		QEDI_ERR(&qedi->dbg_ctx,
--			 "Offload conn TIMEOUT iscsi_cid=%u, qedi_ep=%p\n",
--			 qedi_ep->iscsi_cid, qedi_ep);
--	}
--}
--
- static int qedi_set_path(struct Scsi_Host *shost, struct iscsi_path *path_data)
+ static void test_print_help(char *name)
  {
- 	struct qedi_ctx *qedi;
-@@ -1380,7 +1380,6 @@ static int qedi_set_path(struct Scsi_Host *shost, struct iscsi_path *path_data)
- 			  qedi_ep->dst_addr, qedi_ep->dst_port);
- 	}
+ 	pr_info("Usage: %s [-h] [-n nr_vcpus] [-i iterations] [-p timer_period_ms]\n",
+@@ -478,7 +485,7 @@ int main(int argc, char *argv[])
  
--	INIT_WORK(&qedi_ep->offload_work, qedi_offload_work);
- 	queue_work(qedi->offload_thread, &qedi_ep->offload_work);
+ 	vm = test_vm_create();
+ 	test_run(vm);
+-	kvm_vm_free(vm);
++	test_vm_cleanup(vm);
  
- 	ret = 0;
+ 	return 0;
+ }
 -- 
 2.35.1
 
