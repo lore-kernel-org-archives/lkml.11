@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6CABC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:20:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50829C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:20:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238274AbiDZJXF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:23:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56278 "EHLO
+        id S1347029AbiDZJXK (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:23:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345833AbiDZI5p (ORCPT
+        with ESMTP id S1345662AbiDZI5p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:57:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B55010FD9;
-        Tue, 26 Apr 2022 01:42:51 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72AF43889;
+        Tue, 26 Apr 2022 01:42:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E44C060EC3;
-        Tue, 26 Apr 2022 08:42:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E739EC385AC;
-        Tue, 26 Apr 2022 08:42:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2568FB81CFA;
+        Tue, 26 Apr 2022 08:42:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 648B9C385A0;
+        Tue, 26 Apr 2022 08:42:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962570;
-        bh=ncQvWw7JzRWQcjtbP3A6tVL7qGQSof+qBgIvMduGnZU=;
+        s=korg; t=1650962558;
+        bh=v3d3wJ8d7he5GKQ/gI1Bji2FZeuuYgCu3YXM/O7M85o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2LmuQBBGL4cTIHHQ8OFpXEhdjQDu4rkM5/7/TH+qHUEHD9ZRgH4bo1RrvPla8d1KA
-         L0gftQPFFHNqfJgpiX8/cUn7wP+La4pjQkXYfrh89QAGI8tGGb/UTctWUs8FqNX9ty
-         /WiLV9BvVseteFlqTvZtbgygm5WMbo2NRu/4moF8=
+        b=1F1sFbSr3M4k/cKzIpGewqR/6N3lrMuYI7WWovAnfpSC7eRLJs3JsNxVCVjn18UeF
+         oViDC96CZUz0fincMCVaM7OAAMuEE0P8pnUUy34KjnA9a03QMsqhyjgDFWMyZuOwC/
+         2g8tfwmmkq+XG649Sr8sYaI6zByCIwCYZYCa1t74=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
-        Peter Wang <peter.wang@mediatek.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.17 006/146] scsi: ufs: core: scsi_get_lba() error fix
-Date:   Tue, 26 Apr 2022 10:20:01 +0200
-Message-Id: <20220426081750.240666760@linuxfoundation.org>
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.17 002/146] perf tools: Fix segfault accessing sample_id xyarray
+Date:   Tue, 26 Apr 2022 10:19:57 +0200
+Message-Id: <20220426081750.123290229@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -49,60 +50,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Wang <peter.wang@mediatek.com>
+From: Adrian Hunter <adrian.hunter@intel.com>
 
-commit 2bd3b6b75946db2ace06e145d53988e10ed7e99a upstream.
+commit a668cc07f990d2ed19424d5c1a529521a9d1cee1 upstream.
 
-When ufs initializes without scmd->device->sector_size set, scsi_get_lba()
-will get a wrong shift number and trigger an ubsan error.  The shift
-exponent 4294967286 is too large for the 64-bit type 'sector_t' (aka
-'unsigned long long').
+perf_evsel::sample_id is an xyarray which can cause a segfault when
+accessed beyond its size. e.g.
 
-Call scsi_get_lba() only when opcode is READ_10/WRITE_10/UNMAP.
+  # perf record -e intel_pt// -C 1 sleep 1
+  Segmentation fault (core dumped)
+  #
 
-Link: https://lore.kernel.org/r/20220307111752.10465-1-peter.wang@mediatek.com
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Peter Wang <peter.wang@mediatek.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+That is happening because a dummy event is opened to capture text poke
+events accross all CPUs, however the mmap logic is allocating according
+to the number of user_requested_cpus.
+
+In general, perf sometimes uses the evsel cpus to open events, and
+sometimes the evlist user_requested_cpus. However, it is not necessary
+to determine which case is which because the opened event file
+descriptors are also in an xyarray, the size of whch can be used
+to correctly allocate the size of the sample_id xyarray, because there
+is one ID per file descriptor.
+
+Note, in the affected code path, perf_evsel fd array is subsequently
+used to get the file descriptor for the mmap, so it makes sense for the
+xyarrays to be the same size there.
+
+Fixes: d1a177595b3a824c ("libperf: Adopt perf_evlist__mmap()/munmap() from tools/perf")
+Fixes: 246eba8e9041c477 ("perf tools: Add support for PERF_RECORD_TEXT_POKE")
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Acked-by: Ian Rogers <irogers@google.com>
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: stable@vger.kernel.org # 5.5+
+Link: https://lore.kernel.org/r/20220413114232.26914-1-adrian.hunter@intel.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/ufs/ufshcd.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ tools/lib/perf/evlist.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/drivers/scsi/ufs/ufshcd.c
-+++ b/drivers/scsi/ufs/ufshcd.c
-@@ -367,7 +367,7 @@ static void ufshcd_add_uic_command_trace
- static void ufshcd_add_command_trace(struct ufs_hba *hba, unsigned int tag,
- 				     enum ufs_trace_str_t str_t)
+--- a/tools/lib/perf/evlist.c
++++ b/tools/lib/perf/evlist.c
+@@ -577,7 +577,6 @@ int perf_evlist__mmap_ops(struct perf_ev
  {
--	u64 lba;
-+	u64 lba = 0;
- 	u8 opcode = 0, group_id = 0;
- 	u32 intr, doorbell;
- 	struct ufshcd_lrb *lrbp = &hba->lrb[tag];
-@@ -384,7 +384,6 @@ static void ufshcd_add_command_trace(str
- 		return;
+ 	struct perf_evsel *evsel;
+ 	const struct perf_cpu_map *cpus = evlist->cpus;
+-	const struct perf_thread_map *threads = evlist->threads;
  
- 	opcode = cmd->cmnd[0];
--	lba = scsi_get_lba(cmd);
- 
- 	if (opcode == READ_10 || opcode == WRITE_10) {
- 		/*
-@@ -392,6 +391,7 @@ static void ufshcd_add_command_trace(str
- 		 */
- 		transfer_len =
- 		       be32_to_cpu(lrbp->ucd_req_ptr->sc.exp_data_transfer_len);
-+		lba = scsi_get_lba(cmd);
- 		if (opcode == WRITE_10)
- 			group_id = lrbp->cmd->cmnd[6];
- 	} else if (opcode == UNMAP) {
-@@ -399,6 +399,7 @@ static void ufshcd_add_command_trace(str
- 		 * The number of Bytes to be unmapped beginning with the lba.
- 		 */
- 		transfer_len = blk_rq_bytes(rq);
-+		lba = scsi_get_lba(cmd);
+ 	if (!ops || !ops->get || !ops->mmap)
+ 		return -EINVAL;
+@@ -589,7 +588,7 @@ int perf_evlist__mmap_ops(struct perf_ev
+ 	perf_evlist__for_each_entry(evlist, evsel) {
+ 		if ((evsel->attr.read_format & PERF_FORMAT_ID) &&
+ 		    evsel->sample_id == NULL &&
+-		    perf_evsel__alloc_id(evsel, perf_cpu_map__nr(cpus), threads->nr) < 0)
++		    perf_evsel__alloc_id(evsel, evsel->fd->max_x, evsel->fd->max_y) < 0)
+ 			return -ENOMEM;
  	}
  
- 	intr = ufshcd_readl(hba, REG_INTERRUPT_STATUS);
 
 
