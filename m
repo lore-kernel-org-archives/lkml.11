@@ -2,107 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A14AC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:33:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DB2DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:33:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349222AbiDZKgv (ORCPT
+        id S1349120AbiDZKgz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 06:36:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53756 "EHLO
+        Tue, 26 Apr 2022 06:36:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349169AbiDZKgm (ORCPT
+        with ESMTP id S1349228AbiDZKgm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 06:36:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C83BD1A39C
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 03:18:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650968339;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gkDdSCTbv+qaqOfXuZFTV1kMMzXue7okd2ASSZDnojI=;
-        b=SBE7mTCZ8wflp+Fb8zCp53YgHYds9R3wZtVD0skKztMcdFJW3mIP4EX4oWC16xYquPKBkf
-        lz+Qp6aXy2w/pJnMTynceubIFAkvjpugHHnmzpmLrZXqftouaBugzTxjWEGtbXGqW7mf0s
-        6s9hqxkoNQzmb2lz729qJvqVGHoFxio=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-483-FMrLaG1HMWORpCz4myvbZQ-1; Tue, 26 Apr 2022 06:18:57 -0400
-X-MC-Unique: FMrLaG1HMWORpCz4myvbZQ-1
-Received: by mail-wr1-f71.google.com with SMTP id g7-20020adfbc87000000b0020ac76d254bso2969781wrh.6
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 03:18:57 -0700 (PDT)
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 120E21B7A9;
+        Tue, 26 Apr 2022 03:19:05 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id y3so14684114ejo.12;
+        Tue, 26 Apr 2022 03:19:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=AdKMYq1x4eFZR1761jMnOKfmipBzzsQvF9m6fKna6z4=;
+        b=lDscyfKc/f26HqBYW5qPexzS57/2t5Fem/L8v0LNCuw3VArs/RHcMQrMTFpcDATVix
+         Oxj3ZqfbTTcftOa/bvwgxeQwqYmqYMEvnZn1xFceiYAlXSzVwexcm028oXwPeHm5Cn5b
+         dEki/D9koY1Vi4+3+idJLeArTzRzvb0LbS9P51sH8du51bsi2F2UzbaK5tlQunizK5D+
+         N+Xui1PR8XJXTxpFL/dZZDYt0uIZ9XC+kXT7UyFLixcO+VIUTD23OHFX/VUuGHw1Srj1
+         si8LK/h7EJuYJDyI5tSOwf0eLojJAtVXFae4YC/9MgFpXCmt6mOC864rcTVx8H0W4p1p
+         xsLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=gkDdSCTbv+qaqOfXuZFTV1kMMzXue7okd2ASSZDnojI=;
-        b=A0IsJkPpat44IV47LWGJGYRYJOSepbDbZyKkKIYuW0v0MMBlN9YTQwTmSd2bIZM4uy
-         861WLX99gqm5KSemYVlZ2xnxlsj9CX78WiRuXVPlh6DVgEZhENlpVYoHJwzn1buSh+W8
-         dmOVUOSzM+G9h9SlG9LLvVe7qn7a4h10dze+nPr9Yn9Oy3CFX44M0qecWtg8+sVtH/Ro
-         zTHXFg93G/WmsdHhVBsqxtkrpverJyM4Hi1mzJ3MKBNP45LpYMiu3HxWznfknABcF2h9
-         p5tFZQhorAruM8rbxqMRRDjINrQxKyx6WvmX/u7G22XTpewScIniotSXcPN9RmRieSq4
-         rFig==
-X-Gm-Message-State: AOAM532gZTpn2CBlR1uPejUVqIttHaDoWe/jDUa+EP1xZTYWAMn1zH4+
-        UDUBy3PfBenCywrhQ8izuUfLwUnuvki5+40bPTeuZkgyDhvX9kjHC4pS7/KDdHNiittAtczBUi4
-        Mfcn1rXUJ/DKv31h4Pc6qf9AW
-X-Received: by 2002:a5d:584e:0:b0:20a:9122:2c3c with SMTP id i14-20020a5d584e000000b0020a91222c3cmr17720155wrf.193.1650968336572;
-        Tue, 26 Apr 2022 03:18:56 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyoNazsV0I15fxm/4/Pfpd5hXMjXY+YOXnqJlw6z1+2bYI1a+azURcsXOvUCb6LtTGCyY3GmQ==
-X-Received: by 2002:a5d:584e:0:b0:20a:9122:2c3c with SMTP id i14-20020a5d584e000000b0020a91222c3cmr17720138wrf.193.1650968336373;
-        Tue, 26 Apr 2022 03:18:56 -0700 (PDT)
-Received: from ?IPv6:2a0c:5a80:1306:2f00:cfcf:62cf:6f38:dd92? ([2a0c:5a80:1306:2f00:cfcf:62cf:6f38:dd92])
-        by smtp.gmail.com with ESMTPSA id g3-20020a5d64e3000000b0020aaa0fea8bsm11311776wri.49.2022.04.26.03.18.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 03:18:55 -0700 (PDT)
-Message-ID: <06e0138a526f1fd9fe5b18184163c1ff98f0103b.camel@redhat.com>
-Subject: Re: [PATCH v9 0/6] Raspberry Pi Sense HAT driver
-From:   Nicolas Saenz Julienne <nsaenzju@redhat.com>
-To:     Charles Mirabile <cmirabil@redhat.com>,
-        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        Serge Schneider <serge@raspberrypi.org>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Mattias Brugger <mbrugger@suse.com>,
-        linux-rpi-kernel@lists.infradead.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        fedora-rpi@googlegroups.com, Daniel Bauman <dbauman@redhat.com>,
-        Mwesigwa Guma <mguma@redhat.com>,
-        Joel Savitz <jsavitz@redhat.com>
-Date:   Tue, 26 Apr 2022 12:18:55 +0200
-In-Reply-To: <CABe3_aE-nQzZazLfxk1OnCNRF0sDqcWi6gieYSf4O4aYS_Ahog@mail.gmail.com>
-References: <20220419205158.28088-1-cmirabil@redhat.com>
-         <CANiq72n1gBE+tv3oAF4wjdK2jEJJmU4V=Y1CTZ1PpCEeqLbo9g@mail.gmail.com>
-         <CABe3_aE-nQzZazLfxk1OnCNRF0sDqcWi6gieYSf4O4aYS_Ahog@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AdKMYq1x4eFZR1761jMnOKfmipBzzsQvF9m6fKna6z4=;
+        b=U65/fn08k3+jKExKJYdfZt46YNr8Xqd+bqMBDY0wYO7L4ovcSHjrE5v+RvLPMHb4ec
+         irlEGNsq4Tjv53kq6VYMHXVI1kH2IW3qw9TxBiR1qFS+9AO32ebOLUVFpAjFbV9PMzLA
+         SYk76gveM1aHJC/uPq4KN+sA/jDsNuG2FbBCGU+xYKhbSfekyephYh736VmMHCifSY0S
+         ixZI4tbtUAMUUQn+M3kRgS8h6FmMPJ2kJaGmq9ubj5Vy4o8+wAZO1LrgMTcuJzK0lHZf
+         CFiE3H5DnCmpOZMnKXNUI9z2TNWi1mjKHGTyZPnKp3U+UEpyFbSI0kqSwXogA5c4gzEW
+         057w==
+X-Gm-Message-State: AOAM532Muo7oBxkFcrIOWRuvj9DyUa7hSAXN2ymKiljAPJBGlVjViil0
+        VNtL8+eYg7GmmlEuzncwZJxQNS/uiF7xiWf6fqhGpMDNSefSBUvZ
+X-Google-Smtp-Source: ABdhPJy6Fr2BpVUt3mvcrY4bs3C/CkFzU6RtNNJwhEBMQKR0W447JOKmPFzBbOYfjrz+WVHPvs44GCfQnmXxiqqLsUI=
+X-Received: by 2002:a17:907:628e:b0:6d9:c6fa:6168 with SMTP id
+ nd14-20020a170907628e00b006d9c6fa6168mr20282272ejc.132.1650968343655; Tue, 26
+ Apr 2022 03:19:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220425121340.1362-1-heikki.krogerus@linux.intel.com> <20220425121340.1362-2-heikki.krogerus@linux.intel.com>
+In-Reply-To: <20220425121340.1362-2-heikki.krogerus@linux.intel.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 26 Apr 2022 12:18:24 +0200
+Message-ID: <CAHp75Vdch3shuX6D6YU8=JrFLKq4h_WNYAQPd_bj-hmV6QoQkg@mail.gmail.com>
+Subject: Re: [PATCH v1 1/2] usb: core: acpi: Use the sysdev pointer instead of
+ controller device
+To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        USB <linux-usb@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Charles, Miguel,
+On Mon, Apr 25, 2022 at 3:41 PM Heikki Krogerus
+<heikki.krogerus@linux.intel.com> wrote:
+>
+> The controller device (hcd) does not always have the ACPI
+> companion assigned to it at all. We can not rely on it when
+> finding the ACPI companion for the root hub. Instead we need
+> to use the sysdev pointer here.
 
-On Mon, 2022-04-25 at 19:34 -0400, Charles Mirabile wrote:
-> Hi Miguel—
-> 
-> Thanks for your help in reviewing this patch. I think all of the feedback is cleared up.
-> 
-> I am not sure which tree this should go into, but maybe the Raspberry Pi tree maintained
-> by Nicolas Saenz Julienne (git://git.kernel.org/pub/scm/linux/kernel/git/nsaenz/linux-
-> rpi.git)? What do you think? Thanks!
+...
 
-Since there is no code dependency between the different drivers/patches I
-suggest for each patch to go through its respective maintainer tree. Also, if
-we were to move the whole series through as single tree, it's important to have
-ACKs from all the subsystem maintainers.
+>         if (!udev->parent) {
+>                 /* root hub is only child (_ADR=0) under its parent, the HC */
 
-I'll do a last review during the week.
+I believe the comment can be amended now to point out that we use the
+physical device representing the parent of this child, and not
+(always) a direct parent of the device in terms of Linux device model.
 
-Regards,
+> -               adev = ACPI_COMPANION(udev->dev.parent);
+> +               adev = ACPI_COMPANION(udev->bus->sysdev);
+>                 return acpi_find_child_device(adev, 0, false);
+>         }
+
 
 -- 
-Nicolás Sáenz
-
+With Best Regards,
+Andy Shevchenko
