@@ -2,141 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB565C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 11:43:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0735BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 11:43:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349589AbiDZLqT (ORCPT
+        id S1349598AbiDZLqg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 07:46:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56820 "EHLO
+        Tue, 26 Apr 2022 07:46:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346351AbiDZLqR (ORCPT
+        with ESMTP id S233988AbiDZLqf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 07:46:17 -0400
-Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 749303BA57
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 04:43:08 -0700 (PDT)
-Received: from epcas3p1.samsung.com (unknown [182.195.41.19])
-        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220426114303epoutp03e082a67b9f4f5d4382d59d6dd9a555dd~pb4tvrtPK2777227772epoutp03B
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 11:43:03 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220426114303epoutp03e082a67b9f4f5d4382d59d6dd9a555dd~pb4tvrtPK2777227772epoutp03B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1650973383;
-        bh=YE9iUr9/jWW+X/EahStx2IppwtG/JSA/KIYvvhie8vI=;
-        h=Subject:Reply-To:From:To:CC:In-Reply-To:Date:References:From;
-        b=a4HfZnXByYJq5Y7TqW8ucRa9jsxs4tRbmUuJqaVzRXpGZadHb8UVzBQ3xUMKkemqb
-         yl03YtJq9M0QvPC/18QT2Ls+SdSezXGznZOyPk2mfo/hQYy/Ust/kBBcpobzgdseqw
-         4af5eBxEQXhK2DAM7ySk+VACRMOGcgzNpXVB3u+0=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas3p1.samsung.com (KnoxPortal) with ESMTP id
-        20220426114302epcas3p132d41aac8d00da7937b2f717bbb21188~pb4tBgDT31614516145epcas3p1Z;
-        Tue, 26 Apr 2022 11:43:02 +0000 (GMT)
-Received: from epcpadp4 (unknown [182.195.40.18]) by epsnrtp2.localdomain
-        (Postfix) with ESMTP id 4Kng460ycCz4x9Q3; Tue, 26 Apr 2022 11:43:02 +0000
-        (GMT)
-Mime-Version: 1.0
-Subject: RE: [PATCH v3 6/6] scsi: ufshpb: Cleanup ufshpb_suspend/resume
-Reply-To: keosung.park@samsung.com
-Sender: Keoseong Park <keosung.park@samsung.com>
-From:   Keoseong Park <keosung.park@samsung.com>
-To:     Bean Huo <huobean@gmail.com>,
-        ALIM AKHTAR <alim.akhtar@samsung.com>,
-        "avri.altman@wdc.com" <avri.altman@wdc.com>,
-        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
-        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
-        "stanley.chu@mediatek.com" <stanley.chu@mediatek.com>,
-        "beanhuo@micron.com" <beanhuo@micron.com>,
-        "bvanassche@acm.org" <bvanassche@acm.org>,
-        "tomas.winkler@intel.com" <tomas.winkler@intel.com>,
-        Daejun Park <daejun7.park@samsung.com>,
-        Keoseong Park <keosung.park@samsung.com>,
-        "peter.wang@mediatek.com" <peter.wang@mediatek.com>,
-        "powen.kao@mediatek.com" <powen.kao@mediatek.com>,
-        cpgsproxy3 <cpgsproxy3@samsung.com>
-CC:     "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-X-Priority: 3
-X-Content-Kind-Code: NORMAL
-In-Reply-To: <20220424220713.1253049-7-huobean@gmail.com>
-X-CPGS-Detection: blocking_info_exchange
-X-Drm-Type: N,general
-X-Msg-Generator: Mail
-X-Msg-Type: PERSONAL
-X-Reply-Demand: N
-Message-ID: <1891546521.01650973382114.JavaMail.epsvc@epcpadp4>
-Date:   Mon, 25 Apr 2022 11:25:19 +0900
-X-CMS-MailID: 20220425022519epcms2p1fe1a24e91f1bd69dfe04f8fabb18bbf8
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-X-CPGSPASS: Y
-X-CPGSPASS: Y
-X-Hop-Count: 3
-X-CMS-RootMailID: 20220424220758epcas2p398348a86cb11bced52451da2de09629d
-References: <20220424220713.1253049-7-huobean@gmail.com>
-        <20220424220713.1253049-1-huobean@gmail.com>
-        <CGME20220424220758epcas2p398348a86cb11bced52451da2de09629d@epcms2p1>
+        Tue, 26 Apr 2022 07:46:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 900B93B3E6;
+        Tue, 26 Apr 2022 04:43:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 34450617E0;
+        Tue, 26 Apr 2022 11:43:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9E82C385A0;
+        Tue, 26 Apr 2022 11:43:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650973407;
+        bh=7H2/hjn47utv2t0JfKpspOcDqBY0b6iJY0AQIqJklaw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=tLd5O1d8nJ3zfH7ToUBpdQH8C2QyWG10OcGAzPLlRAKpAZpQ2zv4fObf2OdAsM5kW
+         SxlnxHgwlxWiXC7hebN6jA6Y/qBEhZL7NSC46IFsw+NhnuN7PcEvSVfPAO3KeHIpMH
+         oBCUdSS+XHTGtdkqb7Y6PN2qplGJvz5WX+ibTWg0=
+Date:   Tue, 26 Apr 2022 13:43:24 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: Re: [PATCH v1 0/2] acpi: Remove acpi_release_memory()
+Message-ID: <Ymfa3F83zxgqD2pk@kroah.com>
+References: <20220425114544.37595-1-heikki.krogerus@linux.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220425114544.37595-1-heikki.krogerus@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->From: Bean Huo <beanhuo@micron.com>
+On Mon, Apr 25, 2022 at 02:45:42PM +0300, Heikki Krogerus wrote:
+> Hi,
 > 
->ufshpb_resume() is only called when the HPB state is HPB_SUSPEND, so
->the check statement for "ufshpb_get_state(hpb) != HPB_PRESENT" is useless.
+> It seems there never were and there never will be actual devices that
+> expose the UCSI ACPI mailbox interface. There are now PD controllers
+> that support the UCSI interface, but they do not use the ACPI mailbox.
 > 
->Signed-off-by: Bean Huo <beanhuo@micron.com>
-Reviewed-by: Keoseong Park <keosung.park@samsung.com>
+> So there is no point in mapping the mailbox with ioremap(), we can
+> just use memremap(). That should make it possible to also remove the
+> function acpi_release_memory(). That function was only there to make
+> it possible to use ioremap() in the UCSI ACPI driver.
+> 
+> thanks,
+> 
+> Heikki Krogerus (2):
+>   usb: typec: ucsi: acpi: Map the mailbox with memremap()
+>   acpi: Remove the helper for deactivating memory region
+> 
+>  drivers/acpi/osl.c                 | 86 ------------------------------
+>  drivers/usb/typec/ucsi/ucsi_acpi.c | 19 ++-----
+>  include/linux/acpi.h               |  3 --
+>  3 files changed, 4 insertions(+), 104 deletions(-)
+> 
+> -- 
+> 2.35.1
+> 
 
-Best Regards,
-Keoseong Park
+Look good to me, Rafael, want me to take this through the USB tree?  Or
+if you want to take it through the USB tree, here's my reviewed-by:
+either is fine with me.
 
->---
-> drivers/scsi/ufs/ufshpb.c | 15 ++++-----------
-> 1 file changed, 4 insertions(+), 11 deletions(-)
-> 
->diff --git a/drivers/scsi/ufs/ufshpb.c b/drivers/scsi/ufs/ufshpb.c
->index 7868412054bf..10f40e390dc5 100644
->--- a/drivers/scsi/ufs/ufshpb.c
->+++ b/drivers/scsi/ufs/ufshpb.c
->@@ -2349,11 +2349,9 @@ void ufshpb_suspend(struct ufs_hba *hba)
-> 
->         shost_for_each_device(sdev, hba->host) {
->                 hpb = ufshpb_get_hpb_data(sdev);
->-                if (!hpb)
->+                if (!hpb || ufshpb_get_state(hpb) != HPB_PRESENT)
->                         continue;
-> 
->-                if (ufshpb_get_state(hpb) != HPB_PRESENT)
->-                        continue;
->                 ufshpb_set_state(hpb, HPB_SUSPEND);
->                 ufshpb_cancel_jobs(hpb);
->         }
->@@ -2366,20 +2364,15 @@ void ufshpb_resume(struct ufs_hba *hba)
-> 
->         shost_for_each_device(sdev, hba->host) {
->                 hpb = ufshpb_get_hpb_data(sdev);
->-                if (!hpb)
->+                if (!hpb || ufshpb_get_state(hpb) != HPB_SUSPEND)
->                         continue;
-> 
->-                if ((ufshpb_get_state(hpb) != HPB_PRESENT) &&
->-                    (ufshpb_get_state(hpb) != HPB_SUSPEND))
->-                        continue;
->                 ufshpb_set_state(hpb, HPB_PRESENT);
->                 ufshpb_kick_map_work(hpb);
->                 if (hpb->is_hcm) {
->-                        unsigned int poll =
->-                                hpb->params.timeout_polling_interval_ms;
->+                        unsigned int poll = hpb->params.timeout_polling_interval_ms;
-> 
->-                        schedule_delayed_work(&hpb->ufshpb_read_to_work,
->-                                msecs_to_jiffies(poll));
->+                        schedule_delayed_work(&hpb->ufshpb_read_to_work, msecs_to_jiffies(poll));
->                 }
->         }
-> }
->-- 
->2.34.1
-> 
-> 
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
