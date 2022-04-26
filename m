@@ -2,302 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EED45C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:27:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 743BBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:28:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241998AbiDZKap (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 06:30:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37886 "EHLO
+        id S1345451AbiDZKbQ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 06:31:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348793AbiDZKa2 (ORCPT
+        with ESMTP id S1348967AbiDZKbF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 06:30:28 -0400
-Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AE81CB03B
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 03:06:29 -0700 (PDT)
-Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-2f16645872fso176162487b3.4
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 03:06:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=2mfYh1WYoQqyzbevOyCNmK7afan85oSbTYAVCu2SIpM=;
-        b=VOUCxbzLCayzyG9rVZhrf1FbvbI1qUjD3BCbbOcyigl6JGEmcK4r9hQS3p79EiSFic
-         YkC68djToBM0LCqr21jG6L4DjAQ1oL4ufQVuOB1nzF+WPtK/3mf4I02+Nb3QNOvyqu/y
-         p/jK0B/H1vL8BtNg/oFgIU5NTnbuBJzFE8a0rju2EQh+W3ctsPJC6tsRhul7JXXZMx4o
-         C45hw1i2eYANQdHvVDtdK7DelzUjiC3xS7uBPJYjyNYq/TRvlHb0YacuERxvDwBF25PG
-         nfxoL1WzfxuhuNQ6UXeHDodPwETFS6JikelwPnL2XEJeCLB8LBW9hFQ/5jRN4uF3yciX
-         qCYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=2mfYh1WYoQqyzbevOyCNmK7afan85oSbTYAVCu2SIpM=;
-        b=mMUOdRBpOqGssWrdpdPnIHQ1GOz7PiDtThy1mI1fr2HDMiPBMo+pRN4kqAbKxoU4iA
-         DwKLhZRO+kyryuddmZeD5BFms3HWSiMe0aCpUe8auyZU8EgJuPsLmjWzOT1WlD4SEYj1
-         BxlWaK6YlvNc0L+2KKZIZcRp4wEo/XZ/7MuyRHJpGS7pz17+ECigz/XpurW3pbdYH+87
-         ZOpXZ3E1hVpRhf4Omiq2WaDriv+gSeg/fCYw3H4gPXZfG7FUgyaMfBeu4yWlofSXsjTB
-         1QxngjfifQPhPJZFMQit44Zo5fMucpKD7Dw9wdW3LEtwSXuvkM91LvyUB0j8Dh4RWHaa
-         C2Bw==
-X-Gm-Message-State: AOAM531vU2VdxP218qidqZpimEqKaA/y5wBbEeAtO0nAUCZYUPd7fjlS
-        9exsYNTQbx/fa2OHtv9NK0/ijfpvkb0erZvRas0mpuXCFkU=
-X-Google-Smtp-Source: ABdhPJwFT7DwUaa+lZEIVbNkfPGhmw0NdajXV25JxaZLtr66pVJvmRhJna6916tL8TXv7jEqGZUj5qDWAGYha0kfv80=
-X-Received: by 2002:a0d:df87:0:b0:2f7:cd38:22d7 with SMTP id
- i129-20020a0ddf87000000b002f7cd3822d7mr12980912ywe.67.1650967588657; Tue, 26
- Apr 2022 03:06:28 -0700 (PDT)
+        Tue, 26 Apr 2022 06:31:05 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA6E6FBEAC;
+        Tue, 26 Apr 2022 03:08:40 -0700 (PDT)
+X-UUID: 5d8f2d9f91cb4b38a8a823454d2cbfcd-20220426
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:da8296cb-00b4-4e49-a50e-02011575acaa,OB:0,LO
+        B:0,IP:0,URL:8,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:-12
+X-CID-META: VersionHash:faefae9,CLOUDID:1576bf2e-6199-437e-8ab4-9920b4bc5b76,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: 5d8f2d9f91cb4b38a8a823454d2cbfcd-20220426
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <yunfei.dong@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1177833292; Tue, 26 Apr 2022 18:08:32 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 26 Apr 2022 18:08:31 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 26 Apr 2022 18:08:29 +0800
+From:   Yunfei Dong <yunfei.dong@mediatek.com>
+To:     Yunfei Dong <yunfei.dong@mediatek.com>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        Nicolas Dufresne <nicolas@ndufresne.ca>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        Tiffany Lin <tiffany.lin@mediatek.com>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tomasz Figa <tfiga@google.com>
+CC:     George Sun <george.sun@mediatek.com>,
+        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Fritz Koenig <frkoenig@chromium.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Irui Wang <irui.wang@mediatek.com>,
+        Steve Cho <stevecho@chromium.org>,
+        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: [PATCH v10, 00/15] media: mtk-vcodec: support for M8192 decoder
+Date:   Tue, 26 Apr 2022 18:08:11 +0800
+Message-ID: <20220426100828.13429-1-yunfei.dong@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220407051932.4071-1-xuewen.yan@unisoc.com> <20220420135127.o7ttm5tddwvwrp2a@airbuntu>
- <CAB8ipk-tWjkeAbV=BDhNy04Yq6rdLf80x_7twuLV=HqT4nc1+w@mail.gmail.com>
- <20220421161509.asz25zmh25eurgrk@airbuntu> <CAB8ipk_rZnwDrMaY-zJxR3pByYWD1XOP2waCgU9DZzQNpCN2zA@mail.gmail.com>
- <20220425161209.ydugtrs3b7gyy3kk@airbuntu> <CAB8ipk9hZXDcTV3hakRV+dE5dwKtg-Ka93WZ60ds0=4ErN1-0w@mail.gmail.com>
- <CAKfTPtBswQ6bk8MrvcLmqc-9V2-SeWn3H_-gRvF5isdjL_acqA@mail.gmail.com> <20220426093056.uxnsz4tv4vhvbipe@airbuntu>
-In-Reply-To: <20220426093056.uxnsz4tv4vhvbipe@airbuntu>
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-Date:   Tue, 26 Apr 2022 12:06:17 +0200
-Message-ID: <CAKfTPtDtpYs38aZG8UVkbrrWxbARKwFnV204vjRoyf58K=+4oQ@mail.gmail.com>
-Subject: Re: [PATCH] sched: Take thermal pressure into account when determine
- rt fits capacity
-To:     Qais Yousef <qais.yousef@arm.com>
-Cc:     Xuewen Yan <xuewen.yan94@gmail.com>,
-        Xuewen Yan <xuewen.yan@unisoc.com>, dietmar.eggemann@arm.com,
-        lukasz.luba@arm.com, rafael@kernel.org, viresh.kumar@linaro.org,
-        mingo@redhat.com, peterz@infradead.org, rostedt@goodmis.org,
-        linux-kernel@vger.kernel.org, di.shen@unisoc.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 26 Apr 2022 at 11:31, Qais Yousef <qais.yousef@arm.com> wrote:
->
-> On 04/26/22 10:09, Vincent Guittot wrote:
-> > On Tue, 26 Apr 2022 at 04:07, Xuewen Yan <xuewen.yan94@gmail.com> wrote=
-:
-> > >
-> > > On Tue, Apr 26, 2022 at 12:12 AM Qais Yousef <qais.yousef@arm.com> wr=
-ote:
-> > > >
-> > > > On 04/25/22 09:31, Xuewen Yan wrote:
-> > > > > On Fri, Apr 22, 2022 at 12:15 AM Qais Yousef <qais.yousef@arm.com=
-> wrote:
-> > > > > > Is it okay to share what the capacities of the littles, mediums=
- and bigs on
-> > > > > > your system? And how they change under worst case scenario ther=
-mal pressure?
-> > > > > > Only IF you have these numbers handy :-)
-> > > > >
-> > > > > Okay, the little/mid/big cpu scale capacity is 350/930/1024, but =
-the
-> > > > > cpu frequency point is discrete, the big core's high freq point m=
-ay is
-> > > > > just a few more than the mid core's highest.
-> > > > > In this case, once the thermal decrease the scaling_max_freq, the
-> > > > > maximum frequency of the large core is easily lower than that of =
-the
-> > > > > medium core.
-> > > > > Of course, the corner case is due to the frequency design of the =
-soc
-> > > > > and  our thermal algorithm.
-> > > >
-> > > > Okay, thanks for the info!
-> > > >
-> > > > >
-> > > > > >
-> > > > > > Is it actually an indication of a potential other problem if yo=
-u swing into
-> > > > > > capacity inversion in the bigs that often? I've seen a lot of s=
-ystems where the
-> > > > > > difference between the meds and bigs is small. But frequent inv=
-ersion could be
-> > > > > > suspicious still.
-> > > > > >
-> > > > > > Do the littles and the mediums experience any significant therm=
-al pressure too?
-> > > > >
-> > > > > In our platform, it's not.
-> > > >
-> > > > Good.
-> > > >
-> > > > > > It doesn't seem it'll cause a significant error, but still it s=
-eems to me this
-> > > > > > function wants the original capacity passed to it.
-> > > > > >
-> > > > > > There are similar questions to be asked since you modify sg_cpu=
-->max. Every
-> > > > > > user needs to be audited if they're fine with this change or no=
-t.
-> > > > > >
-> > > > > > I'm not sure still what we are achieving here. You want to forc=
-e schedutil not
-> > > > > > to request higher frequencies if thermal pressure is high? Shou=
-ld schedutil
-> > > > > > actually care? Shouldn't the cpufreq driver reject this request=
- and pick the
-> > > > > > next best thing if it can't satisfy it? I could be missing some=
-thing, I haven't
-> > > > > > looked that hard tbh :-)
-> > > > >
-> > > > > I changed this just want to make it more responsive to the real
-> > > > > capacity of the cpu, if it will cause other problems, maybe it wo=
-uld
-> > > > > be better not to change it.:)
-> > > >
-> > > > There are others who can give you a better opinion. But AFAICS we'r=
-e not fixing
-> > > > anything but risking breaking other things. So I vote for not to ch=
-ange it :)
-> > > >
-> > > > > > It depends on the severity of the problem. The simplest thing I=
- can suggest is
-> > > > > > to check if the cpu is in capacity inversion state, and if it i=
-s, then make
-> > > > > > rt_task_fits_capacity() return false always.
-> > > > > >
-> > > > > > If we need a generic solution to handle thermal pressure omitti=
-ng OPPs, then
-> > > > > > the search needs to become more complex. The proposal in this p=
-atch is not
-> > > > > > adequate because tasks that want to run at capacity_orig_of(cpu=
-) will wrongly
-> > > > > > omit some cpus because of any tiny thermal pressure. For exampl=
-e if the
-> > > > > > capacity_orig_of(medium_cpu) =3D 700, and uclamp_min for RT is =
-set to 700, then
-> > > > > > any small thermal pressure on mediums will cause these tasks to=
- run on big cpus
-> > > > > > only, which is not what we want. Especially if these big cpus c=
-an end up in
-> > > > > > capacity inversion later ;-)
-> > > > > >
-> > > > > > So if we want to handle this case, then we need to ensure the s=
-earch returns
-> > > > > > false only if
-> > > > > >
-> > > > > >         1. Thermal pressure results in real OPP to be omitted.
-> > > > > >         2. Another CPU that can provide this performance level =
-is available.
-> > > > > >
-> > > > > > Otherwise we should still fit it on this CPU because it'll give=
- us the closest
-> > > > > > thing to what was requested.
-> > > > > >
-> > > > > > I can think of 2 ways to implement this, but none of them seem =
-particularly
-> > > > > > pretty :-/
-> > > > >
-> > > > > Maybe as Lukasz Luba said:
-> > > > >
-> > > > > https://lore.kernel.org/all/ae98a861-8945-e630-8d4c-8112723d1007@=
-arm.com/
-> > > > >
-> > > > > > Let's meet in the middle:
-> > > > > > 1) use the thermal PELT signal in RT:
-> > > > > > capacity =3D capacity_orig_of(cpu) - thermal_load_avg(cpu_rq(cp=
-u))
-> > > > > > 2) introduce a more configurable thermal_pressure shifter inste=
-ad
-> > > > > > 'sched_thermal_decay_shift', which would allow not only to make=
- the
-> > > > > > decaying longer, but also shorter when the platform already mig=
-ht do
-> > > > > > that, to not cause too much traffic.
-> > > > >
-> > > > > But even if this is changed, there will still be the same problem=
-, I
-> > > > > look forward to Lukasz's patch:)
-> > > >
-> > > > This will not address my concern unless I missed something.
-> > > >
-> > > > The best (simplest) way forward IMHO is to introduce a new function
-> > > >
-> > > >         bool cpu_in_capacity_inversion(int cpu);
-> > > >
-> > > > (feel free to pick another name) which will detect the scenario you=
-'re in. You
-> > > > can use this function then in rt_task_fits_capacity()
-> > > >
-> > > >         diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
-> > > >         index a32c46889af8..d48811a7e956 100644
-> > > >         --- a/kernel/sched/rt.c
-> > > >         +++ b/kernel/sched/rt.c
-> > > >         @@ -462,6 +462,9 @@ static inline bool rt_task_fits_capacit=
-y(struct task_struct *p, int cpu)
-> > > >                 if (!static_branch_unlikely(&sched_asym_cpucapacity=
-))
-> > > >                         return true;
-> > > >
-> > > >         +       if (cpu_in_capacity_inversion(cpu))
-> > > >         +               return false;
-> > > >         +
-> > > >                 min_cap =3D uclamp_eff_value(p, UCLAMP_MIN);
-> > > >                 max_cap =3D uclamp_eff_value(p, UCLAMP_MAX);
-> > > >
-> > > > You'll probably need to do something similar in dl_task_fits_capaci=
-ty().
-> > > >
-> > > > This might be a bit aggressive though as we'll steer away all RT ta=
-sks from
-> > > > this CPU (as long as there's another CPU that can fit it). I need t=
-o think more
-> > > > about it. But we could do something like this too
-> > > >
-> > > >         diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
-> > > >         index a32c46889af8..f2a34946a7ab 100644
-> > > >         --- a/kernel/sched/rt.c
-> > > >         +++ b/kernel/sched/rt.c
-> > > >         @@ -462,11 +462,14 @@ static inline bool rt_task_fits_capac=
-ity(struct task_struct *p, int cpu)
-> > > >                 if (!static_branch_unlikely(&sched_asym_cpucapacity=
-))
-> > > >                         return true;
-> > > >
-> > > >         +       cpu_cap =3D capacity_orig_of(cpu);
-> > > >         +
-> > > >         +       if (cpu_in_capacity_inversion(cpu))
-> > >
-> > > It's  a good idea, but as you said, in mainline, the
-> > > sysctl_sched_uclamp_util_min_rt_default is always 1024,
-> > > Maybe it's better to add it to the judgment?
-> > >
-> > >  +       if (sysctl_sched_uclamp_util_min_rt_default !=3D
-> > > SCHED_CAPACITY_SCALE && cpu_in_capacity_inversion(cpu))
-> > >
-> > > >         +               cpu_cap -=3D thermal_load_avg(cpu_rq(cpu));
-> > >
-> > > Why use thermal_load_avg? If thermal is always in effect=EF=BC=8Cthe
-> > > thermal_load_avg would get bigger and bigger, as a result, the cpu_ca=
-p
-> > > maybe smaller than (capacity_orig - thermal_pressure).
-> >
-> > For a fixed thermal_pressure(), thermal_load_avg() will not be higher
-> > than thermal_pressure() but will increase to reach thermal_pressure()
-> >
-> > In the current implementation for sched_asym_cpucapacity topology, we
-> > do a 1st iteration trying to find a cpu that fits a task's capacity
-> > but if it fails, we run a normal cpupri_find that doesn't care about
-> > capacity.
-> >
-> > Do I understand correctly that in your case you would like to run
-> > a 1st iteration that takes into account capacity_orig_of(cpu) -
-> > thermal_load_avg(cpu_rq(cpu))
-> > If it fails run another iteration only with capacity_orig_of(cpu)
-> > and finally tries without capacity constraint
->
-> Wouldn't this be expensive to have 3 loops? That was my other suggestion =
-but
-> wasn't sure the complexity was worth it. So I suggested handling the capa=
-city
-> inversion case only.
+This series adds support for mt8192 h264/vp8/vp9 decoder drivers. Firstly, refactor
+power/clock/interrupt interfaces for mt8192 is lat and core architecture.
 
-3 loops might be too expensive. I mainly want to make sure to
-understand what should be done to fix Xuewen case without breaking
-others. Then we can see how to optimize this in a reasonable number of
-loop
+Secondly, add new functions to get frame buffer size and resolution according
+to decoder capability from scp side. Then add callback function to get/put
+capture buffer in order to enable lat and core decoder in parallel, need to
+adjust GStreamer at the same time. 
 
->
->
-> Thanks
->
-> --
-> Qais Yousef
+Then add to support MT21C compressed mode and fix v4l2-compliance fail.
+
+Next, extract H264 request api driver to let mt8183 and mt8192 use the same
+code, and adds mt8192 frame based h264 driver for stateless decoder.
+
+Lastly, add vp8 and vp9 stateless decoder drivers.
+
+Patches 1 refactor power/clock/interrupt interface.
+Patches 2~4 get frame buffer size and resolution according to decoder capability.
+Patches 5 set capture queue bytesused.
+Patches 6 adjust GStreamer.
+Patch 7~11 add to support MT21C compressed mode and fix v4l2-compliance fail.
+patch 12 record capture queue format type.
+Patch 13~14 extract h264 driver and add mt8192 frame based driver for h264 decoder.
+Patch 15~16 add vp8 and vp9 stateless decoder drivers.
+Patch 17 prevent kernel crash when rmmod mtk-vcodec-dec.ko
+---
+changes compared with v9:
+- fix kernel robot build fail for patch 16
+changes compared with v8:
+- fix vp9 build error
+- fix kernel-doc fail
+changes compared with v7:
+- adjust GStreamer, separate src buffer done with v4l2_ctrl_request_complete for patch 6.
+- remove v4l2_m2m_set_dst_buffered.
+- add new patch to set each plane bytesused in buf prepare for patch 5.
+- using upstream interface to update vp9 prob tables for patch 16.
+- fix maintainer comments.
+- test the driver with chrome VD and GStreamer(H264/VP9/VP8/AV1).
+changes compared with v6:
+- rebase to the latest media stage and fix conficts
+- fix memcpy to memcpy_fromio or memcpy_toio
+- fix h264 crash when test field bitstream
+changes compared with v5:
+- fix vp9 comments for patch 15
+- fix vp8 comments for patch 14.
+- fix comments for patch 12.
+- fix build errors.
+changes compared with v4:
+- fix checkpatch.pl fail.
+- fix kernel-doc fail.
+- rebase to the latest media codec driver.
+changes compared with v3:
+- remove enum mtk_chip for patch 2.
+- add vp8 stateless decoder drivers for patch 14.
+- add vp9 stateless decoder drivers for patch 15.
+changes compared with v2:
+- add new patch 11 to record capture queue format type.
+- separate patch 4 according to tzung-bi's suggestion.
+- re-write commit message for patch 5 according to tzung-bi's suggestion.
+changes compared with v1:
+- rewrite commit message for patch 12.
+- rewrite cover-letter message.
+---
+Yunfei Dong (17):
+  media: mediatek: vcodec: Add vdec enable/disable hardware helpers
+  media: mediatek: vcodec: Using firmware type to separate different
+    firmware architecture
+  media: mediatek: vcodec: get capture queue buffer size from scp
+  media: mediatek: vcodec: Read max resolution from dec_capability
+  media: mediatek: vcodec: set each plane bytesused in buf prepare
+  media: mediatek: vcodec: Refactor get and put capture buffer flow
+  media: mediatek: vcodec: Refactor supported vdec formats and
+    framesizes
+  media: mediatek: vcodec: Getting supported decoder format types
+  media: mediatek: vcodec: Add format to support MT21C
+  media: mediatek: vcodec: disable vp8 4K capability
+  media: mediatek: vcodec: Fix v4l2-compliance fail
+  media: mediatek: vcodec: record capture queue format type
+  media: mediatek: vcodec: Extract H264 common code
+  media: mediatek: vcodec: support stateless H.264 decoding for mt8192
+  media: mediatek: vcodec: support stateless VP8 decoding
+  media: mediatek: vcodec: support stateless VP9 decoding
+  media: mediatek: vcodec: prevent kernel crash when rmmod
+    mtk-vcodec-dec.ko
+
+ .../media/platform/mediatek/vcodec/Makefile   |    4 +
+ .../platform/mediatek/vcodec/mtk_vcodec_dec.c |   62 +-
+ .../mediatek/vcodec/mtk_vcodec_dec_drv.c      |    8 +-
+ .../mediatek/vcodec/mtk_vcodec_dec_pm.c       |  166 +-
+ .../mediatek/vcodec/mtk_vcodec_dec_pm.h       |    6 +-
+ .../mediatek/vcodec/mtk_vcodec_dec_stateful.c |   19 +-
+ .../vcodec/mtk_vcodec_dec_stateless.c         |  257 ++-
+ .../platform/mediatek/vcodec/mtk_vcodec_drv.h |   41 +-
+ .../mediatek/vcodec/mtk_vcodec_enc_drv.c      |    5 -
+ .../platform/mediatek/vcodec/mtk_vcodec_fw.c  |    6 +
+ .../platform/mediatek/vcodec/mtk_vcodec_fw.h  |    1 +
+ .../vcodec/vdec/vdec_h264_req_common.c        |  310 +++
+ .../vcodec/vdec/vdec_h264_req_common.h        |  274 +++
+ .../mediatek/vcodec/vdec/vdec_h264_req_if.c   |  438 +---
+ .../vcodec/vdec/vdec_h264_req_multi_if.c      |  626 +++++
+ .../mediatek/vcodec/vdec/vdec_vp8_req_if.c    |  437 ++++
+ .../vcodec/vdec/vdec_vp9_req_lat_if.c         | 2031 +++++++++++++++++
+ .../platform/mediatek/vcodec/vdec_drv_if.c    |   37 +-
+ .../platform/mediatek/vcodec/vdec_drv_if.h    |    3 +
+ .../platform/mediatek/vcodec/vdec_ipi_msg.h   |   36 +
+ .../platform/mediatek/vcodec/vdec_msg_queue.c |    2 +
+ .../platform/mediatek/vcodec/vdec_msg_queue.h |    2 +
+ .../platform/mediatek/vcodec/vdec_vpu_if.c    |   53 +-
+ .../platform/mediatek/vcodec/vdec_vpu_if.h    |   15 +
+ .../platform/mediatek/vcodec/venc_vpu_if.c    |    2 +-
+ include/linux/remoteproc/mtk_scp.h            |    2 +
+ 26 files changed, 4242 insertions(+), 601 deletions(-)
+ create mode 100644 drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_common.c
+ create mode 100644 drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_common.h
+ create mode 100644 drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_multi_if.c
+ create mode 100644 drivers/media/platform/mediatek/vcodec/vdec/vdec_vp8_req_if.c
+ create mode 100644 drivers/media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.c
+
+-- 
+2.18.0
+
