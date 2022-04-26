@@ -2,146 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF142C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:39:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94B44C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:39:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345474AbiDZIm0 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:42:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37116 "EHLO
+        id S240409AbiDZIm3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:42:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345499AbiDZIek (ORCPT
+        with ESMTP id S1345288AbiDZIe3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:34:40 -0400
-Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6281078933;
-        Tue, 26 Apr 2022 01:27:31 -0700 (PDT)
-Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-e93ff05b23so5549026fac.9;
-        Tue, 26 Apr 2022 01:27:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=JyWiIRUPQ2EQSPq1mXaopILM4bH8C27NOUyoSKH0Kx0=;
-        b=GnmfzeNbJetLPcgOVIDW167P97CHVrHZEtM+M2S9wFPQjOUEmoHfTfmzpCm2EjZM0K
-         whuvCP9KJpqrXXQUmXikaAC0v8o2lDEi0kjrpgfsFM3y98aKviiAn+MXpe1N3OdOLlRG
-         xl2/UNLA28EBEjDv7j1N04M6Lt+6ZzTPZc265ucTjKj83saennVZrRWbCx5e8sLGMeVx
-         ygCiGroytXMSHv5y6S0AgYw5vDoXwxPkQA4ow2axQs7VAndznkVgZEmwZpgpfWs6aUQR
-         JpArsopYmKPWSPsnzCHLU1XfQePgiqgCJbV3ZMQU1Qw+qjqnQsUghQM+vF4LFb02MSSr
-         4QYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=JyWiIRUPQ2EQSPq1mXaopILM4bH8C27NOUyoSKH0Kx0=;
-        b=SN9wRxAJAO89dU1lPsl1tsqJLkGIoBzbtlKR7C1XwD7eTb4SxFbhJUd1ZjJRvqRDZh
-         3AxfzV8kcmFqcSZlcVIZJzqFpqYlClPulAPGkF+j36pjRuvEZIDBnRsT4H+Nr7lfZai1
-         TvShU8w8+Thwj98I4BYnLsfwFkPZo3wBFCI6PK4ztHNQfgbOx+dPqzMSobF4wQoTuMBr
-         GBg3Y460hdmcQ/1t9jjsjdrJlSY0GlYbDmph0GSOruC/sXO9y7NSm/76qb8tfCPo5ggF
-         Q1EiWBdMoBELRsDdAWvgTYrFiS/DcTp4ZAgsBXU+m7mFhUQVI0lglItqNmZRkOI/eVzT
-         Wqyg==
-X-Gm-Message-State: AOAM533Mc7McIkChWqLPZYlWcSm/9k4pux+E+C+ifj4wiVGcxx1lgewD
-        cC0ncf2SdwSB7NECy5dZ6EC+lWFrWAQ=
-X-Google-Smtp-Source: ABdhPJxI6qYl36Xp+qPV11OmVb8RL5z0QIOZJOtq0tjrrNmAI9DxIvRi55kIn0SC5Jq7y7Xi1v4n/w==
-X-Received: by 2002:a05:6870:5a5:b0:e2:896a:80c with SMTP id m37-20020a05687005a500b000e2896a080cmr8381464oap.131.1650961651221;
-        Tue, 26 Apr 2022 01:27:31 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id j9-20020a056808056900b0032252797ea4sm4718739oig.6.2022.04.26.01.27.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Apr 2022 01:27:30 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <aaccd71a-64f7-7d8f-f5a7-41164ad80f1e@roeck-us.net>
-Date:   Tue, 26 Apr 2022 01:27:28 -0700
+        Tue, 26 Apr 2022 04:34:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDB2474841;
+        Tue, 26 Apr 2022 01:26:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7633E61840;
+        Tue, 26 Apr 2022 08:26:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8471DC385A4;
+        Tue, 26 Apr 2022 08:26:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650961618;
+        bh=+Io3hLHcIRjPNqlAsc4Dro7jHI0gIfKz6QljcJbbR9M=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=WGLzkJ53g3aZ2PpWq9feDtUKmrGJDWfCGWCUKW8wfaL7zynteHW8LStNgXx7SBl8p
+         aHn+fcQjcWtMxl9JYYWdlxUmhFR0gZb4B66DSFglsRBxEBpjW+e21ZgPTHKwHSv6yt
+         cp2Vm4/jjTSN2Il5NhuVrMeFbcIkYLKndodu1Q/g=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Tomas Melin <tomas.melin@vaisala.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 27/53] net: macb: Restart tx only if queue pointer is lagging
+Date:   Tue, 26 Apr 2022 10:21:07 +0200
+Message-Id: <20220426081736.444644841@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220426081735.651926456@linuxfoundation.org>
+References: <20220426081735.651926456@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v4 4/4] watchdog: iTCO_wdg: Make code more clearly with
- macro definition
-Content-Language: en-US
-To:     "liuxp11@chinatelecom.cn" <liuxp11@chinatelecom.cn>,
-        wim <wim@linux-watchdog.org>, Tzung-Bi Shih <tzungbi@kernel.org>
-Cc:     linux-watchdog <linux-watchdog@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-References: <1650957029-910-1-git-send-email-liuxp11@chinatelecom.cn>
- <1650957029-910-5-git-send-email-liuxp11@chinatelecom.cn>
- <9f991b4d-8f02-6c07-a8b6-2861837a0224@roeck-us.net>
- <2022042616173226700718@chinatelecom.cn>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <2022042616173226700718@chinatelecom.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/26/22 01:17, liuxp11@chinatelecom.cn wrote:
->     On 4/26/22 00:10, Liu Xinpeng wrote:
->      > Using SET_NOIRQ_SYSTEM_SLEEP_PM_OPS reduces redundant code.
->      >
->      > Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
->      > Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
->      > ---
->      >   drivers/watchdog/iTCO_wdt.c | 12 ++++--------
->      >   1 file changed, 4 insertions(+), 8 deletions(-)
->      >
->      > diff --git a/drivers/watchdog/iTCO_wdt.c b/drivers/watchdog/iTCO_wdt.c
->      > index 3f2f4343644f..8d24cf4f4ca3 100644
->      > --- a/drivers/watchdog/iTCO_wdt.c
->      > +++ b/drivers/watchdog/iTCO_wdt.c
->      > @@ -635,22 +635,18 @@ static int iTCO_wdt_resume_noirq(struct device *dev)
->      >
->      >   return 0;
->      >   }
->      > +#endif /* CONFIG_PM_SLEEP */
->      >
->      >   static const struct dev_pm_ops iTCO_wdt_pm = {
->      > - .suspend_noirq = iTCO_wdt_suspend_noirq,
->      > - .resume_noirq = iTCO_wdt_resume_noirq,
->      > + SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(iTCO_wdt_suspend_noirq,
->      > +       iTCO_wdt_resume_noirq)
->      >   };
->      >
->      > -#define ITCO_WDT_PM_OPS (&iTCO_wdt_pm)
->      > -#else
->      > -#define ITCO_WDT_PM_OPS NULL
->      > -#endif /* CONFIG_PM_SLEEP */
->      > -
->      >   static struct platform_driver iTCO_wdt_driver = {
->      >   .probe          = iTCO_wdt_probe,
->      >   .driver         = {
->      >   .name   = DRV_NAME,
->      > - .pm     = ITCO_WDT_PM_OPS,
->      > + .pm     = &iTCO_wdt_pm,
->      >   },
->      >   };
->      >
->     Sorry, I fail to see how this is an improvement.
-> 
->     Guenter
->     --->
->     #define NOIRQ_SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn) \
->              .suspend_noirq = pm_sleep_ptr(suspend_fn), \
->              .resume_noirq = pm_sleep_ptr(resume_fn), \
->              .freeze_noirq = pm_sleep_ptr(suspend_fn), \
->              .thaw_noirq = pm_sleep_ptr(resume_fn), \
->              .poweroff_noirq = pm_sleep_ptr(suspend_fn), \
->              .restore_noirq = pm_sleep_ptr(resume_fn),
-> 
->     NOIRQ_SYSTEM_SLEEP_PM_OPS, defined for CONFIG_PM_SLEEP, will
->       point ->suspend_noirq, ->freeze_noirq and ->poweroff_noirq to the same
->       function. Vice versa happens for ->resume_noirq, ->thaw_noirq and ->restore_noirq.
->       (commit 020af89a41c41fd2c92d0da524968dfaba6269f0)
-> 
->     Some power management occasion needs freeze_noirq/thaw_noirq /poweroff_noirq /restore_noirq.
-> 
+From: Tomas Melin <tomas.melin@vaisala.com>
 
-That isn't what the commit description and subject say. Change description
-and subject to describe what is actually done, use __maybe_unused instead
-of #ifdef as suggested, and do not invent Reviewed-by: tags.
+[ Upstream commit 5ad7f18cd82cee8e773d40cc7a1465a526f2615c ]
 
-Also, this is an independent change, and should not be sent together
-with the other patches.
+commit 4298388574da ("net: macb: restart tx after tx used bit read")
+added support for restarting transmission. Restarting tx does not work
+in case controller asserts TXUBR interrupt and TQBP is already at the end
+of the tx queue. In that situation, restarting tx will immediately cause
+assertion of another TXUBR interrupt. The driver will end up in an infinite
+interrupt loop which it cannot break out of.
 
-Guenter
+For cases where TQBP is at the end of the tx queue, instead
+only clear TX_USED interrupt. As more data gets pushed to the queue,
+transmission will resume.
+
+This issue was observed on a Xilinx Zynq-7000 based board.
+During stress test of the network interface,
+driver would get stuck on interrupt loop within seconds or minutes
+causing CPU to stall.
+
+Signed-off-by: Tomas Melin <tomas.melin@vaisala.com>
+Tested-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Link: https://lore.kernel.org/r/20220407161659.14532-1-tomas.melin@vaisala.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/cadence/macb_main.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 460bb81acf2b..d8e4842af055 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -1364,6 +1364,7 @@ static void macb_tx_restart(struct macb_queue *queue)
+ 	unsigned int head = queue->tx_head;
+ 	unsigned int tail = queue->tx_tail;
+ 	struct macb *bp = queue->bp;
++	unsigned int head_idx, tbqp;
+ 
+ 	if (bp->caps & MACB_CAPS_ISR_CLEAR_ON_WRITE)
+ 		queue_writel(queue, ISR, MACB_BIT(TXUBR));
+@@ -1371,6 +1372,13 @@ static void macb_tx_restart(struct macb_queue *queue)
+ 	if (head == tail)
+ 		return;
+ 
++	tbqp = queue_readl(queue, TBQP) / macb_dma_desc_get_size(bp);
++	tbqp = macb_adj_dma_desc_idx(bp, macb_tx_ring_wrap(bp, tbqp));
++	head_idx = macb_adj_dma_desc_idx(bp, macb_tx_ring_wrap(bp, head));
++
++	if (tbqp == head_idx)
++		return;
++
+ 	macb_writel(bp, NCR, macb_readl(bp, NCR) | MACB_BIT(TSTART));
+ }
+ 
+-- 
+2.35.1
+
+
+
