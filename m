@@ -2,124 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAA2AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 02:50:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7CF4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 02:51:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242549AbiDZCxH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Apr 2022 22:53:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36450 "EHLO
+        id S242661AbiDZCyG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Apr 2022 22:54:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233692AbiDZCxD (ORCPT
+        with ESMTP id S230491AbiDZCyE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Apr 2022 22:53:03 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 844F5222BF
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 19:49:57 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id b15so16652993pfm.5
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 19:49:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HGAx5TP6E+vFvjaPxhYu9IBA2KbCco9Opl8nE6JlHZY=;
-        b=TveONqNNTAMKRK3L5GedChuTwratL2NBA5QmxDHEPJFdUx05XPxL7uzHbRQY1k0VP+
-         QGH4vuhM4l6pRcU6c0G34VDTbDUmPHxvv/2QcICPqvaF2aOfkmv5iDhxDdpNFG2PzDzj
-         pVqxylha350zoMW4sh2LSwIKCi5PJEAchJAFFeCM5Acuy2sM+GxRmKsNJmNPFojYgmX1
-         Tq/Bm1NlqR15AOfXiapXAZ9YImmAVAuDwPA54qd2TKhq011xasmBS0UWXvJ2iYsjQXZ0
-         elsIdKj+CrA5a+ZyziFasVwk+CJcf0z/2JppV5lGCAXx4HLyAoOxvDhbhfY9cGW42Y/S
-         qEvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HGAx5TP6E+vFvjaPxhYu9IBA2KbCco9Opl8nE6JlHZY=;
-        b=gZZ2amL2Z62JSS2p6JUHw58SC3Wc3ob3B9d08brZTzQP/s68ETRAL8F0zdDGrUns3U
-         ChWMIBbviHlcjs6epzMVsmEqi7S8XqW8p7tA7bn5D6NKjl202ySNqs8surEXQxcmeCni
-         BNV0e/BsRq0C6k+P0smjFWi3AK4O/ARuWdyJOdGSGO+Laf+VIVaVu+J/1dRtgiZwLa86
-         d02B5i0aYZPRQL5CXmPZnju3cliSw7ghEyAhkahN+5Z9cwxJm44TvCbNe5PGasTWZ6M4
-         2sSM8DdF+qovYX3kqWQ4U6ixitfGp8wq5RPhVI8iB1ssF2fk/LtwDXzA8x2toKZzTN6M
-         C/+w==
-X-Gm-Message-State: AOAM532sTswkmGKkaLCdCNI3A6LlVZthhpUVmaoP4gYWiNKeTXAeG9Gh
-        BBTfFf9J8J3iBP34JY8EACcRP0+Qz0VMobMe6Tp9MsIc7N8RJg==
-X-Google-Smtp-Source: ABdhPJxuQRhkzahWKLzhvbzo8kOU6fZ3ZFG6NDOaZbwPYeIG96+3TCV/J6Ekta0ZZ7sN6E0Awm1X0rw0AMHSXRG8k3A=
-X-Received: by 2002:a63:89c7:0:b0:3ab:1f12:f807 with SMTP id
- v190-20020a6389c7000000b003ab1f12f807mr9017915pgd.180.1650941396751; Mon, 25
- Apr 2022 19:49:56 -0700 (PDT)
+        Mon, 25 Apr 2022 22:54:04 -0400
+Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 356A910FD6;
+        Mon, 25 Apr 2022 19:50:58 -0700 (PDT)
+Date:   Mon, 25 Apr 2022 19:50:50 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1650941456;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=GXBsNESQZfIaAKadUYOa+SDoc+85t8RLisih8+qEL90=;
+        b=BZEJVGSQbQna5YPVt/zgZb1xcavzGypztWiz7oSNbvFlNBt5UIGE3dm8UcDmm+ONRC98Zj
+        tHzuasQXAuszKFYJ/KRekAxhj5LA/p6kbS+3o1nWoqjCepWBpyZavGJuUW3nqOhABMOI7v
+        Dq9s7knx7Mfj6cTS9Z3wqQuxF5PHLDA=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Roman Gushchin <roman.gushchin@linux.dev>
+To:     Vasily Averin <vvs@openvz.org>
+Cc:     Vlastimil Babka <vbabka@suse.cz>,
+        Shakeel Butt <shakeelb@google.com>, kernel@openvz.org,
+        Florian Westphal <fw@strlen.de>, linux-kernel@vger.kernel.org,
+        Michal Hocko <mhocko@suse.com>, cgroups@vger.kernel.org,
+        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH memcg v3] net: set proper memcg for net_init hooks
+ allocations
+Message-ID: <YmdeCqi6wmgiSiWh@carbon>
+References: <20220424144627.GB13403@xsang-OptiPlex-9020>
+ <c2f0139a-62e2-5985-34e9-d42faac81960@openvz.org>
 MIME-Version: 1.0
-References: <20220420095906.27349-1-mgorman@techsingularity.net>
-In-Reply-To: <20220420095906.27349-1-mgorman@techsingularity.net>
-From:   Suren Baghdasaryan <surenb@google.com>
-Date:   Mon, 25 Apr 2022 19:49:46 -0700
-Message-ID: <CAJuCfpH=U9E-46wZgKEYQZVKjw=2qq_KXDRF=tqDBvqpR+BBbg@mail.gmail.com>
-Subject: Re: [RFC PATCH 0/6] Drain remote per-cpu directly
-To:     Mel Gorman <mgorman@techsingularity.net>
-Cc:     Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Hocko <mhocko@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c2f0139a-62e2-5985-34e9-d42faac81960@openvz.org>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 2:59 AM Mel Gorman <mgorman@techsingularity.net> wrote:
->
-> This series has the same intent as Nicolas' series "mm/page_alloc: Remote
-> per-cpu lists drain support" -- avoid interference of a high priority
-> task due to a workqueue item draining per-cpu page lists. While many
-> workloads can tolerate a brief interruption, it may be cause a real-time
-> task runnning on a NOHZ_FULL CPU to miss a deadline and at minimum,
-> the draining in non-deterministic.
->
-> Currently an IRQ-safe local_lock protects the page allocator per-cpu lists.
-> The local_lock on its own prevents migration and the IRQ disabling protects
-> from corruption due to an interrupt arriving while a page allocation is
-> in progress. The locking is inherently unsafe for remote access unless
-> the CPU is hot-removed.
->
-> This series adjusts the locking. A spin-lock is added to struct
-> per_cpu_pages to protect the list contents while local_lock_irq continues
-> to prevent migration and IRQ reentry. This allows a remote CPU to safely
-> drain a remote per-cpu list.
->
-> This series is a partial series. Follow-on work would allow the
-> local_irq_save to be converted to a local_irq to avoid IRQs being
-> disabled/enabled in most cases. However, there are enough corner cases
-> that it deserves a series on its own separated by one kernel release and
-> the priority right now is to avoid interference of high priority tasks.
->
-> Patch 1 is a cosmetic patch to clarify when page->lru is storing buddy pages
->         and when it is storing per-cpu pages.
->
-> Patch 2 shrinks per_cpu_pages to make room for a spin lock. Strictly speaking
->         this is not necessary but it avoids per_cpu_pages consuming another
->         cache line.
->
-> Patch 3 is a preparation patch to avoid code duplication.
->
-> Patch 4 is a simple micro-optimisation that improves code flow necessary for
->         a later patch to avoid code duplication.
->
-> Patch 5 uses a spin_lock to protect the per_cpu_pages contents while still
->         relying on local_lock to prevent migration, stabilise the pcp
->         lookup and prevent IRQ reentrancy.
->
-> Patch 6 remote drains per-cpu pages directly instead of using a workqueue.
+On Mon, Apr 25, 2022 at 01:56:02PM +0300, Vasily Averin wrote:
 
-This quite possibly solves the issue I was trying to fix in
-https://lore.kernel.org/all/20220225012819.1807147-1-surenb@google.com.
-I will give it a try and see how it looks.
-Thanks!
+Hello, Vasily!
 
->
->  include/linux/mm_types.h |   5 +
->  include/linux/mmzone.h   |  12 +-
->  mm/page_alloc.c          | 333 ++++++++++++++++++++++++---------------
->  3 files changed, 222 insertions(+), 128 deletions(-)
->
-> --
-> 2.34.1
->
->
+> __register_pernet_operations() executes init hook of registered
+> pernet_operation structure in all existing net namespaces.
+> 
+> Typically, these hooks are called by a process associated with
+> the specified net namespace, and all __GFP_ACCOUNTING marked
+> allocation are accounted for corresponding container/memcg.
+
+__GFP_ACCOUNT
+
+> 
+> However __register_pernet_operations() calls the hooks in the same
+> context, and as a result all marked allocations are accounted
+> to one memcg for all processed net namespaces.
+> 
+> This patch adjusts active memcg for each net namespace and helps
+> to account memory allocated inside ops_init() into the proper memcg.
+> 
+> Signed-off-by: Vasily Averin <vvs@openvz.org>
+> ---
+> v3: put_net_memcg() replaced by an alreay existing mem_cgroup_put()
+>     It checks memcg before accessing it, this is required for
+>     __register_pernet_operations() called before memcg initialization.
+>     Additionally fixed leading whitespaces in non-memcg_kmem version
+>     of mem_cgroup_from_obj().
+> 
+> v2: introduced get/put_net_memcg(),
+>     new functions are moved under CONFIG_MEMCG_KMEM
+>     to fix compilation issues reported by Intel's kernel test robot
+> 
+> v1: introduced get_mem_cgroup_from_kmem(), which takes the refcount
+>     for the found memcg, suggested by Shakeel
+> ---
+>  include/linux/memcontrol.h | 29 ++++++++++++++++++++++++++++-
+>  net/core/net_namespace.c   |  7 +++++++
+>  2 files changed, 35 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
+> index 0abbd685703b..cfb68a3f7015 100644
+> --- a/include/linux/memcontrol.h
+> +++ b/include/linux/memcontrol.h
+> @@ -1714,6 +1714,29 @@ static inline int memcg_cache_id(struct mem_cgroup *memcg)
+>  
+>  struct mem_cgroup *mem_cgroup_from_obj(void *p);
+>  
+> +static inline struct mem_cgroup *get_mem_cgroup_from_kmem(void *p)
+> +{
+> +	struct mem_cgroup *memcg;
+> +
+> +	rcu_read_lock();
+> +	do {
+> +		memcg = mem_cgroup_from_obj(p);
+> +	} while (memcg && !css_tryget(&memcg->css));
+> +	rcu_read_unlock();
+> +	return memcg;
+> +}
+
+Please, rename it to get_mem_cgroup_from_obj() for consistency.
+
+> +
+> +static inline struct mem_cgroup *get_net_memcg(void *p)
+> +{
+> +	struct mem_cgroup *memcg;
+> +
+> +	memcg = get_mem_cgroup_from_kmem(p);
+> +
+> +	if (!memcg)
+> +		memcg = root_mem_cgroup;
+> +
+> +	return memcg;
+> +}
+
+I'm not a fan of this helper: it has nothing to do with the networking,
+actually it's a wrapper of get_mem_cgroup_from_kmem() replacing NULL
+with root_mem_cgroup.
+
+Overall the handling of root_mem_cgroup is very messy, I don't blame
+this patch. But I wonder if it's better to simple move this code
+to the call site without introducing a new function?
+
+Alternatively, you can introduce something like:
+struct mem_cgroup *mem_cgroup_or_root(struct mem_cgroup *memcg)
+{
+	return memcg ? memcg : root_mem_cgroup;
+}
+
+>  #else
+>  static inline bool mem_cgroup_kmem_disabled(void)
+>  {
+> @@ -1763,9 +1786,13 @@ static inline void memcg_put_cache_ids(void)
+>  
+>  static inline struct mem_cgroup *mem_cgroup_from_obj(void *p)
+>  {
+> -       return NULL;
+> +	return NULL;
+>  }
+>  
+> +static inline struct mem_cgroup *get_net_memcg(void *p)
+> +{
+> +	return NULL;
+> +}
+>  #endif /* CONFIG_MEMCG_KMEM */
+>  
+>  #endif /* _LINUX_MEMCONTROL_H */
+> diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
+> index a5b5bb99c644..3093b4d5b2b9 100644
+> --- a/net/core/net_namespace.c
+> +++ b/net/core/net_namespace.c
+> @@ -26,6 +26,7 @@
+>  #include <net/net_namespace.h>
+>  #include <net/netns/generic.h>
+>  
+> +#include <linux/sched/mm.h>
+>  /*
+>   *	Our network namespace constructor/destructor lists
+>   */
+> @@ -1147,7 +1148,13 @@ static int __register_pernet_operations(struct list_head *list,
+>  		 * setup_net() and cleanup_net() are not possible.
+>  		 */
+>  		for_each_net(net) {
+> +			struct mem_cgroup *old, *memcg;
+> +
+> +			memcg = get_net_memcg(net);
+> +			old = set_active_memcg(memcg);
+>  			error = ops_init(ops, net);
+> +			set_active_memcg(old);
+> +			mem_cgroup_put(memcg);
+>  			if (error)
+>  				goto out_undo;
+>  			list_add_tail(&net->exit_list, &net_exit_list);
+> -- 
+> 2.31.1
+> 
