@@ -2,119 +2,294 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03A6FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 11:49:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A0F7C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 11:49:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349664AbiDZLw3 (ORCPT
+        id S1349669AbiDZLwu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 07:52:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53488 "EHLO
+        Tue, 26 Apr 2022 07:52:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244202AbiDZLw0 (ORCPT
+        with ESMTP id S242286AbiDZLws (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 07:52:26 -0400
-Received: from spam2.hygon.cn (unknown [110.188.70.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81CFA38DB8
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 04:49:17 -0700 (PDT)
-Received: from MK-DB.hygon.cn ([172.23.18.60])
-        by spam2.hygon.cn with ESMTP id 23QBjhUM002405;
-        Tue, 26 Apr 2022 19:45:43 +0800 (GMT-8)
-        (envelope-from puwen@hygon.cn)
-Received: from cncheex01.Hygon.cn ([172.23.18.10])
-        by MK-DB.hygon.cn with ESMTP id 23QBjavX089615;
-        Tue, 26 Apr 2022 19:45:36 +0800 (GMT-8)
-        (envelope-from puwen@hygon.cn)
-Received: from cncheex01.Hygon.cn (172.23.18.10) by cncheex01.Hygon.cn
- (172.23.18.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 26 Apr
- 2022 19:45:32 +0800
-Received: from cncheex01.Hygon.cn ([172.23.18.10]) by cncheex01.Hygon.cn
- ([172.23.18.10]) with mapi id 15.01.2375.024; Tue, 26 Apr 2022 19:45:32 +0800
-From:   Wen Pu <puwen@hygon.cn>
-To:     Sandipan Das <sandipan.das@amd.com>,
-        Peter Zijlstra <peterz@infradead.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-perf-users@vger.kernel.org" <linux-perf-users@vger.kernel.org>,
-        "x86@kernel.org" <x86@kernel.org>, "bp@alien8.de" <bp@alien8.de>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "acme@kernel.org" <acme@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "alexander.shishkin@linux.intel.com" 
-        <alexander.shishkin@linux.intel.com>,
-        "namhyung@kernel.org" <namhyung@kernel.org>,
-        "jolsa@kernel.org" <jolsa@kernel.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "pbonzini@redhat.com" <pbonzini@redhat.com>,
-        "jmattson@google.com" <jmattson@google.com>,
-        "like.xu.linux@gmail.com" <like.xu.linux@gmail.com>,
-        "eranian@google.com" <eranian@google.com>,
-        "ananth.narayan@amd.com" <ananth.narayan@amd.com>,
-        "ravi.bangoria@amd.com" <ravi.bangoria@amd.com>,
-        "santosh.shukla@amd.com" <santosh.shukla@amd.com>
-Subject: Re: [PATCH v2 7/7] kvm: x86/cpuid: Fix CPUID leaf 0xA
-Thread-Topic: [PATCH v2 7/7] kvm: x86/cpuid: Fix CPUID leaf 0xA
-Thread-Index: AQHYWHxbGifZsj53i0W4Cl6nd1FFc60BVJgAgAAG9ICAADOjAA==
-Date:   Tue, 26 Apr 2022 11:45:32 +0000
-Message-ID: <25e89d27-d7da-2dea-dd20-0a9d8dcdee83@hygon.cn>
-References: <cover.1650515382.git.sandipan.das@amd.com>
- <54bc7fe4cadf6bdef823bab1fba43d4891d2e1a9.1650515382.git.sandipan.das@amd.com>
- <20220426081550.GO2731@worktop.programming.kicks-ass.net>
- <9e6d14a0-a658-195c-c7a3-7d2687a61544@amd.com>
-In-Reply-To: <9e6d14a0-a658-195c-c7a3-7d2687a61544@amd.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.23.18.44]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <E3FFCC354D999045906CD0C0BD9713BF@Hygon.cn>
-Content-Transfer-Encoding: base64
+        Tue, 26 Apr 2022 07:52:48 -0400
+Received: from relay05.th.seeweb.it (relay05.th.seeweb.it [5.144.164.166])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B21463C4B9
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 04:49:39 -0700 (PDT)
+Received: from [10.1.250.9] (riviera.nat.ds.pw.edu.pl [194.29.137.1])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id 66FBB3F67B;
+        Tue, 26 Apr 2022 13:49:35 +0200 (CEST)
+Message-ID: <a5daf7ed-9baa-5684-4823-30b0cca69488@somainline.org>
+Date:   Tue, 26 Apr 2022 13:49:33 +0200
 MIME-Version: 1.0
-X-MAIL: spam2.hygon.cn 23QBjhUM002405
-X-DNSRBL: 
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.8.0
+Subject: Re: [PATCH v6 10/10] ARM: dts: msm: Add tpdm mm/prng for sm8250
+To:     Mao Jinlong <quic_jinlmao@quicinc.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc:     Mike Leach <mike.leach@linaro.org>, Leo Yan <leo.yan@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Tingwei Zhang <quic_tingweiz@quicinc.com>,
+        Yuanfang Zhang <quic_yuanfang@quicinc.com>,
+        Tao Zhang <quic_taozha@quicinc.com>,
+        Trilok Soni <quic_tsoni@quicinc.com>,
+        Hao Zhang <quic_hazha@quicinc.com>,
+        linux-arm-msm@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+References: <20220425040304.37487-1-quic_jinlmao@quicinc.com>
+ <20220425040304.37487-11-quic_jinlmao@quicinc.com>
+From:   Konrad Dybcio <konrad.dybcio@somainline.org>
+In-Reply-To: <20220425040304.37487-11-quic_jinlmao@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gMjAyMi80LzI2IDE2OjQwLCBTYW5kaXBhbiBEYXMgd3JvdGU6DQo+IEhpIFBldGVyLA0KPiAN
-Cj4gT24gNC8yNi8yMDIyIDE6NDUgUE0sIFBldGVyIFppamxzdHJhIHdyb3RlOg0KPj4gT24gVGh1
-LCBBcHIgMjEsIDIwMjIgYXQgMTE6MTY6NTlBTSArMDUzMCwgU2FuZGlwYW4gRGFzIHdyb3RlOg0K
-Pj4+IE9uIHNvbWUgeDg2IHByb2Nlc3NvcnMsIENQVUlEIGxlYWYgMHhBIHByb3ZpZGVzIGluZm9y
-bWF0aW9uDQo+Pj4gb24gQXJjaGl0ZWN0dXJhbCBQZXJmb3JtYW5jZSBNb25pdG9yaW5nIGZlYXR1
-cmVzLiBJdA0KPj4+IGFkdmVydGlzZXMgYSBQTVUgdmVyc2lvbiB3aGljaCBRZW11IHVzZXMgdG8g
-ZGV0ZXJtaW5lIHRoZQ0KPj4+IGF2YWlsYWJpbGl0eSBvZiBhZGRpdGlvbmFsIE1TUnMgdG8gbWFu
-YWdlIHRoZSBQTUNzLg0KPj4+DQo+Pj4gVXBvbiByZWNlaXZpbmcgYSBLVk1fR0VUX1NVUFBPUlRF
-RF9DUFVJRCBpb2N0bCByZXF1ZXN0IGZvcg0KPj4+IHRoZSBzYW1lLCB0aGUga2VybmVsIGNvbnN0
-cnVjdHMgcmV0dXJuIHZhbHVlcyBiYXNlZCBvbiB0aGUNCj4+PiB4ODZfcG11X2NhcGFiaWxpdHkg
-aXJyZXNwZWN0aXZlIG9mIHRoZSB2ZW5kb3IuDQo+Pj4NCj4+PiBUaGlzIGxlYWYgYW5kIHRoZSBh
-ZGRpdGlvbmFsIE1TUnMgYXJlIG5vdCBzdXBwb3J0ZWQgb24gQU1EDQo+Pj4gcHJvY2Vzc29ycy4g
-SWYgUGVyZk1vblYyIGlzIGRldGVjdGVkLCB0aGUgUE1VIHZlcnNpb24gaXMNCj4+PiBzZXQgdG8g
-MiBhbmQgZ3Vlc3Qgc3RhcnR1cCBicmVha3MgYmVjYXVzZSBvZiBhbiBhdHRlbXB0IHRvDQo+Pj4g
-YWNjZXNzIGEgbm9uLWV4aXN0ZW50IE1TUi4gUmV0dXJuIHplcm9zIHRvIGF2b2lkIHRoaXMuDQo+
-Pj4NCj4+PiBGaXhlczogYTZjMDZlZDFhNjBhICgiS1ZNOiBFeHBvc2UgdGhlIGFyY2hpdGVjdHVy
-YWwgcGVyZm9ybWFuY2UgbW9uaXRvcmluZyBDUFVJRCBsZWFmIikNCj4+PiBSZXBvcnRlZC1ieTog
-VmFzYW50IEhlZ2RlIDx2YXNhbnQuaGVnZGVAYW1kLmNvbT4NCj4+PiBTaWduZWQtb2ZmLWJ5OiBT
-YW5kaXBhbiBEYXMgPHNhbmRpcGFuLmRhc0BhbWQuY29tPg0KPj4+IC0tLQ0KPj4+ICAgYXJjaC94
-ODYva3ZtL2NwdWlkLmMgfCA1ICsrKysrDQo+Pj4gICAxIGZpbGUgY2hhbmdlZCwgNSBpbnNlcnRp
-b25zKCspDQo+Pj4NCj4+PiBkaWZmIC0tZ2l0IGEvYXJjaC94ODYva3ZtL2NwdWlkLmMgYi9hcmNo
-L3g4Ni9rdm0vY3B1aWQuYw0KPj4+IGluZGV4IDRiNjJkODBiYjIyZi4uNmJkNjVjYWQ3NWVmIDEw
-MDY0NA0KPj4+IC0tLSBhL2FyY2gveDg2L2t2bS9jcHVpZC5jDQo+Pj4gKysrIGIvYXJjaC94ODYv
-a3ZtL2NwdWlkLmMNCj4+PiBAQCAtODcyLDYgKzg3MiwxMSBAQCBzdGF0aWMgaW5saW5lIGludCBf
-X2RvX2NwdWlkX2Z1bmMoc3RydWN0IGt2bV9jcHVpZF9hcnJheSAqYXJyYXksIHUzMiBmdW5jdGlv
-bikNCj4+PiAgIAkJdW5pb24gY3B1aWQxMF9lYXggZWF4Ow0KPj4+ICAgCQl1bmlvbiBjcHVpZDEw
-X2VkeCBlZHg7DQo+Pj4gICANCj4+PiArCQlpZiAoYm9vdF9jcHVfZGF0YS54ODZfdmVuZG9yID09
-IFg4Nl9WRU5ET1JfQU1EKSB7DQo+Pg0KPj4gVGhpcyBpcyB0aGUgb2JsaWdhdG9yeSBxdWVzdGlv
-biBhYm91dCBIWUdPTjsgc2hvdWxkIHRoZXkgYmUgaW5jbHVkZWQNCj4+IGhlcmU/DQo+Pg0KPj4g
-eDg2IGlzIGdldHRpbmcgYSBudW1iZXIgb2YgbWUtdG9vIHBhdGNoZXMgZnJvbSBib3RoIHNpZGVz
-LCB3aGVyZQ0KPj4gYmVoYXZpb3VyIGhhcyBkaXZlcmdlZCBmb3Igbm8gcmFpc2luIGFuZCB0aGVu
-IG5lZWRzIHRvIGJlIGZpeGVkIHVwDQo+PiBhZ2Fpbi4NCj4+DQo+IA0KPiAgRnJvbSB3aGF0IEkg
-dW5kZXJzdGFuZCwgSHlnb24gcHJvY2Vzc29ycyBhbHNvIGRvIG5vdCBzdXBwb3J0IHRoaXMgbGVh
-Zi4NCj4gQ29weWluZyBQdSBXZW4gZm9yIGNvbmZpcm1hdGlvbi4NCg0KSGkgUGV0ZXIsIFNhbmRp
-cGFu77yaDQoNCkkgaGF2ZSBjb25maXJtZWQgdGhhdCBIeWdvbiBwcm9jZXNzb3JzIGRvIG5vdCBz
-dXBwb3J0IENQVUlEIGxlYWYgMHhBLg0KU2FuZGlwYW4sIGNvdWxkIHlvdSBwbGVhc2UgYWxzbyBh
-ZGQgWDg2X1ZFTkRPUl9IWUdPTiBpbiB0aGUgaWYNCmNvbmRpdGlvbmFsPw0KDQotLSANClJlZ2Fy
-ZHMsDQpQdSBXZW4NCg0KPiAtIFNhbmRpcGFuDQo+IA0KPj4+ICsJCQllbnRyeS0+ZWF4ID0gZW50
-cnktPmVieCA9IGVudHJ5LT5lY3ggPSBlbnRyeS0+ZWR4ID0gMDsNCj4+PiArCQkJYnJlYWs7DQo+
-Pj4gKwkJfQ0KPj4+ICsNCj4+PiAgIAkJcGVyZl9nZXRfeDg2X3BtdV9jYXBhYmlsaXR5KCZjYXAp
-Ow0KPj4+ICAgDQo+Pj4gICAJCS8qDQo+Pj4gLS0gDQo+Pj4gMi4zMi4wDQo+Pj4=
+
+On 25/04/2022 06:03, Mao Jinlong wrote:
+> Add tpdm mm and tpdm prng for sm8250.
+>
+> +---------------+                +-------------+
+> |  tpdm@6c08000 |                |tpdm@684C000 |
+> +-------|-------+                +------|------+
+>          |                               |
+> +-------|-------+                       |
+> | funnel@6c0b000|                       |
+> +-------|-------+                       |
+>          |                               |
+> +-------|-------+                       |
+> |funnel@6c2d000 |                       |
+> +-------|-------+                       |
+>          |                               |
+>          |    +---------------+          |
+>          +----- tpda@6004000  -----------+
+>               +-------|-------+
+>                       |
+>               +-------|-------+
+>               |funnel@6005000 |
+>               +---------------+
+>
+> Signed-off-by: Mao Jinlong <quic_jinlmao@quicinc.com>
+> ---
+>   arch/arm64/boot/dts/qcom/sm8250.dtsi | 170 +++++++++++++++++++++++++++
+>   1 file changed, 170 insertions(+)
+
+Hi,
+
+
+some of the previous comments (uppercase hex instead of lowercase and 
+wrong commit title) still haven't been addressed.
+
+
+Konrad
+
+> diff --git a/arch/arm64/boot/dts/qcom/sm8250.dtsi b/arch/arm64/boot/dts/qcom/sm8250.dtsi
+> index 53ab2b457a2f..ce558a2639e7 100644
+> --- a/arch/arm64/boot/dts/qcom/sm8250.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sm8250.dtsi
+> @@ -4703,6 +4703,73 @@
+>   			};
+>   		};
+>   
+> +		tpda@6004000 {
+> +			compatible = "arm,primecell";
+> +			reg = <0 0x06004000 0 0x1000>;
+> +			reg-names = "tpda-base";
+> +
+> +			clocks = <&aoss_qmp>;
+> +			clock-names = "apb_pclk";
+> +
+> +			out-ports {
+> +				port {
+> +					reg = <0>;
+> +					tpda_out_funnel_qatb: endpoint {
+> +						remote-endpoint = <&funnel_qatb_in_tpda>;
+> +					};
+> +				};
+> +			};
+> +
+> +			in-ports {
+> +				#address-cells = <1>;
+> +				#size-cells = <0>;
+> +
+> +				port@9 {
+> +					reg = <9>;
+> +					tpda_9_in_tpdm_mm: endpoint {
+> +						remote-endpoint = <&tpdm_mm_out_tpda9>;
+> +					};
+> +				};
+> +
+> +				port@23 {
+> +					reg = <23>;
+> +					tpda_23_in_tpdm_prng: endpoint {
+> +						remote-endpoint = <&tpdm_prng_out_tpda_23>;
+> +					};
+> +				};
+> +			};
+> +		};
+> +
+> +		funnel@6005000 {
+> +			compatible = "arm,primecell";
+> +
+> +			reg = <0 0x06005000 0 0x1000>;
+> +			reg-names = "funnel-base";
+> +
+> +			clocks = <&aoss_qmp>;
+> +			clock-names = "apb_pclk";
+> +
+> +			out-ports {
+> +				port {
+> +					funnel_qatb_out_funnel_in0: endpoint {
+> +						remote-endpoint = <&funnel_in0_in_funnel_qatb>;
+> +					};
+> +				};
+> +			};
+> +
+> +			in-ports {
+> +				#address-cells = <1>;
+> +				#size-cells = <0>;
+> +
+> +				port@0 {
+> +					reg = <0>;
+> +					funnel_qatb_in_tpda: endpoint {
+> +						remote-endpoint = <&tpda_out_funnel_qatb>;
+> +					};
+> +				};
+> +			};
+> +		};
+> +
+>   		funnel@6041000 {
+>   			compatible = "arm,coresight-dynamic-funnel", "arm,primecell";
+>   			reg = <0 0x06041000 0 0x1000>;
+> @@ -4722,6 +4789,13 @@
+>   				#address-cells = <1>;
+>   				#size-cells = <0>;
+>   
+> +				port@6 {
+> +					reg = <6>;
+> +					funnel_in0_in_funnel_qatb: endpoint {
+> +						remote-endpoint = <&funnel_qatb_out_funnel_in0>;
+> +					};
+> +				};
+> +
+>   				port@7 {
+>   					reg = <7>;
+>   					funnel0_in7: endpoint {
+> @@ -4836,6 +4910,23 @@
+>   			};
+>   		};
+>   
+> +		tpdm@684C000 {
+> +			compatible = "arm,primecell";
+> +			reg = <0 0x0684C000 0 0x1000>;
+> +			reg-names = "tpdm-base";
+> +
+> +			clocks = <&aoss_qmp>;
+> +			clock-names = "apb_pclk";
+> +
+> +			out-ports {
+> +				port {
+> +					tpdm_prng_out_tpda_23: endpoint {
+> +						remote-endpoint = <&tpda_23_in_tpdm_prng>;
+> +					};
+> +				};
+> +			};
+> +		};
+> +
+>   		funnel@6b04000 {
+>   			compatible = "arm,coresight-dynamic-funnel", "arm,primecell";
+>   			arm,primecell-periphid = <0x000bb908>;
+> @@ -4920,6 +5011,85 @@
+>   			};
+>   		};
+>   
+> +		tpdm@6c08000 {
+> +			compatible = "arm,primecell";
+> +			reg = <0 0x06c08000 0 0x1000>;
+> +			reg-names = "tpdm-base";
+> +
+> +			clocks = <&aoss_qmp>;
+> +			clock-names = "apb_pclk";
+> +
+> +			out-ports {
+> +				port {
+> +					tpdm_mm_out_funnel_dl_mm: endpoint {
+> +						remote-endpoint = <&funnel_dl_mm_in_tpdm_mm>;
+> +					};
+> +				};
+> +			};
+> +		};
+> +
+> +		funnel@6c0b000 {
+> +			compatible = "arm,coresight-dynamic-funnel", "arm,primecell";
+> +
+> +			reg = <0 0x06c0b000 0 0x1000>;
+> +			reg-names = "funnel-base";
+> +
+> +			clocks = <&aoss_qmp>;
+> +			clock-names = "apb_pclk";
+> +
+> +			out-ports {
+> +				port {
+> +					funnel_dl_mm_out_funnel_dl_center: endpoint {
+> +						remote-endpoint = <&funnel_dl_center_in_funnel_dl_mm>;
+> +					};
+> +				};
+> +			};
+> +
+> +			in-ports {
+> +				#address-cells = <1>;
+> +				#size-cells = <0>;
+> +
+> +				port@3 {
+> +					reg = <3>;
+> +					funnel_dl_mm_in_tpdm_mm: endpoint {
+> +						remote-endpoint = <&tpdm_mm_out_funnel_dl_mm>;
+> +					};
+> +				};
+> +			};
+> +		};
+> +
+> +		funnel@6c2d000 {
+> +			compatible = "arm,coresight-dynamic-funnel", "arm,primecell";
+> +
+> +			reg = <0 0x06c2d000 0 0x1000>;
+> +			reg-names = "funnel-base";
+> +
+> +			clocks = <&aoss_qmp>;
+> +			clock-names = "apb_pclk";
+> +
+> +			out-ports {
+> +				#address-cells = <1>;
+> +				#size-cells = <0>;
+> +				port {
+> +					tpdm_mm_out_tpda9: endpoint {
+> +						remote-endpoint = <&tpda_9_in_tpdm_mm>;
+> +					};
+> +				};
+> +			};
+> +
+> +			in-ports {
+> +				#address-cells = <1>;
+> +				#size-cells = <0>;
+> +
+> +				port@2 {
+> +					reg = <2>;
+> +					funnel_dl_center_in_funnel_dl_mm: endpoint {
+> +						remote-endpoint = <&funnel_dl_mm_out_funnel_dl_center>;
+> +					};
+> +				};
+> +			};
+> +		};
+> +
+>   		etm@7040000 {
+>   			compatible = "arm,coresight-etm4x", "arm,primecell";
+>   			reg = <0 0x07040000 0 0x1000>;
