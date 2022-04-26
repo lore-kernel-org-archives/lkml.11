@@ -2,100 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFEC4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:06:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F31E6C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:07:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344460AbiDZIJo (ORCPT
+        id S1344424AbiDZIKr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:09:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53060 "EHLO
+        Tue, 26 Apr 2022 04:10:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344519AbiDZIJQ (ORCPT
+        with ESMTP id S233430AbiDZIKp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:09:16 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E34434B80
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 01:06:02 -0700 (PDT)
-X-UUID: c105b1515d8f4bfcb06b245bcf03ea83-20220426
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:a6e2e7ab-8ac8-4f56-b9c5-3f6ccf239068,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:faefae9,CLOUDID:73a482c6-85ee-4ac1-ac05-bd3f1e72e732,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:-5,EDM:-3,File:nil,QS:0,BEC:ni
-        l
-X-UUID: c105b1515d8f4bfcb06b245bcf03ea83-20220426
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-        (envelope-from <mark-pk.tsai@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 154487007; Tue, 26 Apr 2022 16:05:56 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Tue, 26 Apr 2022 16:05:55 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 26 Apr
- 2022 16:05:54 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 26 Apr 2022 16:05:54 +0800
-From:   Mark-PK Tsai <mark-pk.tsai@mediatek.com>
-To:     <rostedt@goodmis.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <mark-pk.tsai@mediatek.com>,
-        <matthias.bgg@gmail.com>, <mingo@redhat.com>,
-        <yj.chiang@mediatek.com>
-Subject: Re: [PATCH v3 2/2] tracing: make tracer_init_tracefs initcall asynchronous
-Date:   Tue, 26 Apr 2022 16:05:54 +0800
-Message-ID: <20220426080554.13180-1-mark-pk.tsai@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220422180734.225718b7@gandalf.local.home>
-References: <20220422180734.225718b7@gandalf.local.home>
+        Tue, 26 Apr 2022 04:10:45 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72DCB47397;
+        Tue, 26 Apr 2022 01:07:37 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id iq10so4256538pjb.0;
+        Tue, 26 Apr 2022 01:07:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tN8Fv7V1wSS9FUUkH5yob4wTatJoDf357KJgbMmap0U=;
+        b=kIR825Y3M66dLlpjb0POyvAd4SCCglXnT1WGVNN/3Vao+7fnolZa+kG7I5xTCo65UP
+         y6t2Kk1VBhPOiqmLl8qNRa3I/jaWbP9L7Kl3Y7qOaHOJhi3LB3KdJAl7RszuqoTawZOc
+         e3A1JANOBLme/34V4yPT7MtGFtlmpoW8QoVBGL1WoRYYtiTRuYptKyULa3016iOZ2m5o
+         k2LrTnVr18+dwKm75p2TqcAVpDwI3tuUBITG1bbelFSXxGHLJJ9SQ6Tmn0zOB9nph7Ij
+         0u6jS4ist5xAScrKsaTb0zZgZUto4TRXl22pGNC1O/wXAJgdCLDQk5GXrY9h7NXZIfu2
+         GXkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tN8Fv7V1wSS9FUUkH5yob4wTatJoDf357KJgbMmap0U=;
+        b=TgqaLDcRVELCnamFOGm+1vd+GJHgjVJsAcY40RMOX0wOqaTvtSyrrm/KN9GzOxjYbj
+         ErP6EqtzyuhU0rB0kjDFUAjErXKnZ6S2QhlK/Qe9iRf9o04HIqssHP/7VNYTdyp5GFpx
+         upQD+SPkUc7UGehkVgnO6nP5m9n9SI0drps0EKaO1O3YI/N6egWz416v4PRUlIrY1X4P
+         841II4bbniJSpisqVtFH0Y/8m4Gz2XUS4yEIS4dwzlC+hiaRoaUxIjHC1JegVRcUOYqX
+         2H6WU6nhcU6vt6Miz1nFFMG1sk9hmSzZa9gG0yjgYGYw4CXMua4Ia+hGT4e+ZhED8chL
+         OtuA==
+X-Gm-Message-State: AOAM5338P8ccXm1nfBsh4trxmVvBgLPcWNJnFE2cZ+8eWLmyeW/VcCf9
+        MvLpndzbkvAKaMSmNXIiVvpC1YuSZdA=
+X-Google-Smtp-Source: ABdhPJyLfboJtLfSoNg3k0eUH0TWjVm0hvDhFtS1Pw6ROm4Ld96n1h0WtefZDR8U+9ifQik9hFC9XQ==
+X-Received: by 2002:a17:902:ea0b:b0:15c:fbe1:2cdb with SMTP id s11-20020a170902ea0b00b0015cfbe12cdbmr12300810plg.126.1650960456930;
+        Tue, 26 Apr 2022 01:07:36 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.119])
+        by smtp.gmail.com with ESMTPSA id l4-20020a056a0016c400b004f79504ef9csm15134951pfc.3.2022.04.26.01.07.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 01:07:36 -0700 (PDT)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     kuba@kernel.org
+Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, pabeni@redhat.com,
+        benbjiang@tencent.com, flyingpeng@tencent.com,
+        imagedong@tencent.com, edumazet@google.com, kafai@fb.com,
+        talalahmad@google.com, keescook@chromium.org,
+        mengensun@tencent.com, dongli.zhang@oracle.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next 0/2] net: tcp: add skb drop reasons to connect request
+Date:   Tue, 26 Apr 2022 16:07:07 +0800
+Message-Id: <20220426080709.6504-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Menglong Dong <imagedong@tencent.com>
 
-> > +static __init int tracer_init_tracefs(void)
-> > +{
-> > +	int ret;
-> > +
-> > +	trace_access_lock_init();
-> > +
-> > +	ret = tracing_init_dentry();
-> > +	if (ret)
-> > +		return 0;
-> > +
-> > +	INIT_WORK(&tracerfs_init_work, tracer_init_tracefs_work_func);
-> > +	if (!eval_map_wq)
-> > +		tracer_init_tracefs_work_func(&tracerfs_init_work);
-> 
-> Why go through the bother of doing the INIT_WORK if eval_map_wq is not
-> created? Just do:
-> 
-> 	if (eval_map_wq) {
-> 		INIT_WORK(&tracerfs_init_work, tracer_init_tracefs_work_func);
-> 		queue_work(eval_map_wq, &tracerfs_init_work);
-> 	} else {
-> 		tracer_init_tracefs_work_func(NULL);
-> 	}
+Seems now the reasons of skb drop in TCP layer are almost supported,
+except the path of connect requesting. So let's just finish it.
 
-Got it, I will update it in v4.
-Thanks!
+The TCP connect requesting is processed by
+'inet_csk(sk)->icsk_af_ops->conn_request()'. Yeah, it's a function
+pointer, so it's not easy to add function param to it. Luckily, it's
+return value can be reused. For now, 0 means a call of 'consume_skb()'
+and -1 means 'kfree_skb()', with a RESET be send. Therefore, we can
+free skb with 'kfree_skb_reason()' in 'conn_request()' and return 1.
+While 1 is returned, we do nothing outside. This work is done in the
+1th patch.
 
-> 
-> But that's just a nit anyway.
-> 
-> -- Steve
-> 
-> 
-> 
-> > +	else
-> > +		queue_work(eval_map_wq, &tracerfs_init_work);
-> >  
-> >  	return 0;
-> >  }
+And in the 2th patch, skb drop reasons are added to route_req() in
+struct tcp_request_sock_ops by adding a function param to it.
+
+Following new skb drop reasons are added:
+
+  SKB_DROP_REASON_LISTENOVERFLOWS
+  SKB_DROP_REASON_TCP_REQQFULLDROP
+  SKB_DROP_REASON_SECURITY
+
+Menglong Dong (2):
+  net: add skb drop reasons to inet connect request
+  net: tcp: add skb drop reasons to route_req()
+
+ include/linux/skbuff.h     |  5 +++++
+ include/net/tcp.h          |  3 ++-
+ include/trace/events/skb.h |  3 +++
+ net/dccp/input.c           | 12 +++++-------
+ net/ipv4/tcp_input.c       | 23 ++++++++++++++---------
+ net/ipv4/tcp_ipv4.c        | 17 +++++++++++++----
+ net/ipv6/tcp_ipv6.c        | 14 +++++++++++---
+ net/mptcp/subflow.c        | 10 ++++++----
+ 8 files changed, 59 insertions(+), 28 deletions(-)
+
+-- 
+2.36.0
+
