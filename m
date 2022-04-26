@@ -2,199 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A011C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:11:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77F6CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:11:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348720AbiDZKOZ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 06:14:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36500 "EHLO
+        id S239481AbiDZKOj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 06:14:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348759AbiDZKOB (ORCPT
+        with ESMTP id S1348592AbiDZKNY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 06:14:01 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9093C3BBE4
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 02:37:59 -0700 (PDT)
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23Q9ENQC032233;
-        Tue, 26 Apr 2022 09:37:52 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- content-transfer-encoding : in-reply-to; s=pp1;
- bh=N/+I1PjXq/A4RLYQ+1yEAck25zLJOjjxKFXP8Ic0FHU=;
- b=KwSiBZg2gzyYAPzEtFddRv63qQP6uly+XOs3op2bmvS+qAqZu9QMMhqVJ1952+3NmEV1
- cOPHIu4H2dCKuqCiu6AiDgxMJXY0sIuBAKLn92PijighY71az6tfT3AKrcdHkRdNpH4A
- kYxS6R9B5odnDh2duqeSB3r3TnOS9cW5QPz+AJuOoHYFFLBKoXWnQMJJssd+Uql9aY7c
- VUhjy9z2g7thDrOEby8IZTkUroe9kA7KygSgLN8IJLgvHnZzGg/vwnbz8dcepMQibRRL
- er8CGsDGOeMB5VZWAMi8bT0BMovPEE3e7Yt4Z/sA8Nd04MNCKzBP9M/f0GCMEiscRATn yw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fpbhdkc27-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 26 Apr 2022 09:37:51 +0000
-Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23Q9Rdnq022886;
-        Tue, 26 Apr 2022 09:37:51 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fpbhdkc1y-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 26 Apr 2022 09:37:51 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23Q9SWGI022170;
-        Tue, 26 Apr 2022 09:37:49 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma01fra.de.ibm.com with ESMTP id 3fm938u7fe-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 26 Apr 2022 09:37:49 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23Q9bk5a40174018
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 26 Apr 2022 09:37:46 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A54FA11C04A;
-        Tue, 26 Apr 2022 09:37:46 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E8A1D11C050;
-        Tue, 26 Apr 2022 09:37:43 +0000 (GMT)
-Received: from li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com (unknown [9.43.82.112])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Tue, 26 Apr 2022 09:37:43 +0000 (GMT)
-Date:   Tue, 26 Apr 2022 15:07:36 +0530
-From:   Jagdish Gediya <jvgediya@linux.ibm.com>
-To:     "ying.huang@intel.com" <ying.huang@intel.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        akpm@linux-foundation.org, baolin.wang@linux.alibaba.com,
-        dave.hansen@linux.intel.com, aneesh.kumar@linux.ibm.com,
-        shy828301@gmail.com, weixugc@google.com, gthelen@google.com,
-        dan.j.williams@intel.com
-Subject: Re: [PATCH v3 0/7] mm: demotion: Introduce new node state
- N_DEMOTION_TARGETS
-Message-ID: <Yme9YNZIek9dqnCs@li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com>
-References: <20220422195516.10769-1-jvgediya@linux.ibm.com>
- <4b986b46afb2fe888c127d8758221d0f0d3ec55f.camel@intel.com>
- <YmaC2jw6WaQ4X+8W@li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com>
- <085260285e48093f48d889994aaa500a78577bf2.camel@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <085260285e48093f48d889994aaa500a78577bf2.camel@intel.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: gIaS9Mejq4kY3W0X8cQyqJJ4s7N93faE
-X-Proofpoint-GUID: 4nk2Nor40V-4-MeYdlLWR4FLfz-9A7gD
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-26_02,2022-04-25_03,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0
- priorityscore=1501 spamscore=0 mlxscore=0 clxscore=1015 suspectscore=0
- malwarescore=0 mlxlogscore=745 impostorscore=0 phishscore=0 bulkscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204260062
+        Tue, 26 Apr 2022 06:13:24 -0400
+Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.228])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C0EC6229329;
+        Tue, 26 Apr 2022 02:36:11 -0700 (PDT)
+HMM_SOURCE_IP: 172.18.0.218:47276.50558092
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-202.80.192.38 (unknown [172.18.0.218])
+        by chinatelecom.cn (HERMES) with SMTP id D95CC2800ED;
+        Tue, 26 Apr 2022 17:36:01 +0800 (CST)
+X-189-SAVE-TO-SEND: +liuxp11@chinatelecom.cn
+Received: from  ([172.18.0.218])
+        by app0025 with ESMTP id eb70397932ca461d80aeee08fb850ada for wim@linux-watchdog.org;
+        Tue, 26 Apr 2022 17:36:10 CST
+X-Transaction-ID: eb70397932ca461d80aeee08fb850ada
+X-Real-From: liuxp11@chinatelecom.cn
+X-Receive-IP: 172.18.0.218
+X-MEDUSA-Status: 0
+Sender: liuxp11@chinatelecom.cn
+From:   Liu Xinpeng <liuxp11@chinatelecom.cn>
+To:     wim@linux-watchdog.org, linux@roeck-us.net, tzungbi@kernel.org
+Cc:     linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Liu Xinpeng <liuxp11@chinatelecom.cn>
+Subject: [PATCH v5] watchdog: iTCO_wdg: Using existing macro define covers more scenarios
+Date:   Tue, 26 Apr 2022 17:35:46 +0800
+Message-Id: <1650965746-2685-1-git-send-email-liuxp11@chinatelecom.cn>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 03:55:36PM +0800, ying.huang@intel.com wrote:
-> On Mon, 2022-04-25 at 16:45 +0530, Jagdish Gediya wrote:
-> > On Sun, Apr 24, 2022 at 11:19:53AM +0800, ying.huang@intel.com wrote:
-> > > On Sat, 2022-04-23 at 01:25 +0530, Jagdish Gediya wrote:
-> > > > Some systems(e.g. PowerVM) can have both DRAM(fast memory) only
-> > > > NUMA node which are N_MEMORY and slow memory(persistent memory)
-> > > > only NUMA node which are also N_MEMORY. As the current demotion
-> > > > target finding algorithm works based on N_MEMORY and best distance,
-> > > > it will choose DRAM only NUMA node as demotion target instead of
-> > > > persistent memory node on such systems. If DRAM only NUMA node is
-> > > > filled with demoted pages then at some point new allocations can
-> > > > start falling to persistent memory, so basically cold pages are in
-> > > > fast memor (due to demotion) and new pages are in slow memory, this
-> > > > is why persistent memory nodes should be utilized for demotion and
-> > > > dram node should be avoided for demotion so that they can be used
-> > > > for new allocations.
-> > > > 
-> > > > Current implementation can work fine on the system where the memory
-> > > > only numa nodes are possible only for persistent/slow memory but it
-> > > > is not suitable for the like of systems mentioned above.
-> > > 
-> > > Can you share the NUMA topology information of your machine?  And the
-> > > demotion order before and after your change?
-> > > 
-> > > Whether it's good to use the PMEM nodes as the demotion targets of the
-> > > DRAM-only node too?
-> > 
-> > $ numactl -H
-> > available: 2 nodes (0-1)
-> > node 0 cpus: 0 1 2 3 4 5 6 7
-> > node 0 size: 14272 MB
-> > node 0 free: 13392 MB
-> > node 1 cpus:
-> > node 1 size: 2028 MB
-> > node 1 free: 1971 MB
-> > node distances:
-> > node   0   1
-> >   0:  10  40
-> >   1:  40  10
-> > 
-> > 1) without N_DEMOTION_TARGETS patch series, 1 is demotion target
-> >    for 0 even when 1 is DRAM node and there is no demotion targets for 1.
-> > 
-> > $ cat /sys/bus/nd/devices/dax0.0/target_node
-> > 2
-> > $
-> > # cd /sys/bus/dax/drivers/
-> > :/sys/bus/dax/drivers# ls
-> > device_dax  kmem
-> > :/sys/bus/dax/drivers# cd device_dax/
-> > :/sys/bus/dax/drivers/device_dax# echo dax0.0 > unbind
-> > :/sys/bus/dax/drivers/device_dax# echo dax0.0 >  ../kmem/new_id
-> > :/sys/bus/dax/drivers/device_dax# numactl -H
-> > available: 3 nodes (0-2)
-> > node 0 cpus: 0 1 2 3 4 5 6 7
-> > node 0 size: 14272 MB
-> > node 0 free: 13380 MB
-> > node 1 cpus:
-> > node 1 size: 2028 MB
-> > node 1 free: 1961 MB
-> > node 2 cpus:
-> > node 2 size: 0 MB
-> > node 2 free: 0 MB
-> > node distances:
-> > node   0   1   2
-> >   0:  10  40  80
-> >   1:  40  10  80
-> >   2:  80  80  10
-> > 
-> 
-> This looks like a virtual machine, not a real machine.  That's
-> unfortunate.  I am looking forward to a real issue, not a theoritical
-> possible issue.
-> 
-> > 2) Once this new node brought online,  without N_DEMOTION_TARGETS
-> > patch series, 1 is demotion target for 0 and 2 is demotion target
-> > for 1.
-> > 
-> > With this patch series applied,
-> > 1) No demotion target for either 0 or 1 before dax device is online
-> > 2) 2 is demotion target for both 0 and 1 after dax device is online.
-> > 
-> 
-> So with your change, if a node hasn't N_DEMOTION_TARGETS, it will become
-> a top-level demotion source even if it hasn't N_CPU?  If so, I cannot
-> clear N_DEMOTION_TARGETS for a node in middle or bottom level?
+For power management, SET_NOIRQ_SYSTEM_SLEEP_PM_OPS defined for
+CONFIG_PM_SLEEP, will point ->suspend_noirq, ->freeze_noirq and
+->poweroff_noirq to the same function. Vice versa happens for
+->resume_noirq, ->thaw_noirq and ->restore_noirq.
 
-Yes, only N_MEMORY node also become demotion source because it is not
-N_DEMOTION_TARGETS. You can clear N_DEMOTION_TARGETS from middle
-or bottom but in that case, as the implementation works based on the
-passes, cleared node will not be found as demotion target hence
-demotion target will not be found for it, but does it make sense to
-use faster persistent memory as demotion target leaving slowerer
-persistent memory out of demotion list, if not, then it is not an
-issue.
+Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
+---
+ drivers/watchdog/iTCO_wdt.c | 20 +++++++-------------
+ 1 file changed, 7 insertions(+), 13 deletions(-)
 
-> Best Regards,
-> Huang, Ying
-> 
-> > > 
-> [snip]
-> 
-> 
-> 
+diff --git a/drivers/watchdog/iTCO_wdt.c b/drivers/watchdog/iTCO_wdt.c
+index 3f2f4343644f..34693f11385f 100644
+--- a/drivers/watchdog/iTCO_wdt.c
++++ b/drivers/watchdog/iTCO_wdt.c
+@@ -596,7 +596,6 @@ static int iTCO_wdt_probe(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-#ifdef CONFIG_PM_SLEEP
+ /*
+  * Suspend-to-idle requires this, because it stops the ticks and timekeeping, so
+  * the watchdog cannot be pinged while in that state.  In ACPI sleep states the
+@@ -604,15 +603,15 @@ static int iTCO_wdt_probe(struct platform_device *pdev)
+  */
+ 
+ #ifdef CONFIG_ACPI
+-static inline bool need_suspend(void)
++static inline bool __maybe_unused need_suspend(void)
+ {
+ 	return acpi_target_system_state() == ACPI_STATE_S0;
+ }
+ #else
+-static inline bool need_suspend(void) { return true; }
++static inline bool __maybe_unused need_suspend(void) { return true; }
+ #endif
+ 
+-static int iTCO_wdt_suspend_noirq(struct device *dev)
++static int __maybe_unused iTCO_wdt_suspend_noirq(struct device *dev)
+ {
+ 	struct iTCO_wdt_private *p = dev_get_drvdata(dev);
+ 	int ret = 0;
+@@ -626,7 +625,7 @@ static int iTCO_wdt_suspend_noirq(struct device *dev)
+ 	return ret;
+ }
+ 
+-static int iTCO_wdt_resume_noirq(struct device *dev)
++static int __maybe_unused iTCO_wdt_resume_noirq(struct device *dev)
+ {
+ 	struct iTCO_wdt_private *p = dev_get_drvdata(dev);
+ 
+@@ -637,20 +636,15 @@ static int iTCO_wdt_resume_noirq(struct device *dev)
+ }
+ 
+ static const struct dev_pm_ops iTCO_wdt_pm = {
+-	.suspend_noirq = iTCO_wdt_suspend_noirq,
+-	.resume_noirq = iTCO_wdt_resume_noirq,
++	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(iTCO_wdt_suspend_noirq,
++				      iTCO_wdt_resume_noirq)
+ };
+ 
+-#define ITCO_WDT_PM_OPS	(&iTCO_wdt_pm)
+-#else
+-#define ITCO_WDT_PM_OPS	NULL
+-#endif /* CONFIG_PM_SLEEP */
+-
+ static struct platform_driver iTCO_wdt_driver = {
+ 	.probe          = iTCO_wdt_probe,
+ 	.driver         = {
+ 		.name   = DRV_NAME,
+-		.pm     = ITCO_WDT_PM_OPS,
++		.pm     = &iTCO_wdt_pm,
+ 	},
+ };
+ 
+-- 
+2.23.0
+
