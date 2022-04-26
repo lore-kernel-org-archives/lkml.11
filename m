@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3045C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:42:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E95BBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:42:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345600AbiDZIns (ORCPT
+        id S1345686AbiDZInz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:43:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39908 "EHLO
+        Tue, 26 Apr 2022 04:43:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345231AbiDZIfW (ORCPT
+        with ESMTP id S1344935AbiDZIfg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:35:22 -0400
+        Tue, 26 Apr 2022 04:35:36 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A76A782313;
-        Tue, 26 Apr 2022 01:28:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D227B83B23;
+        Tue, 26 Apr 2022 01:28:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 43B42617EB;
-        Tue, 26 Apr 2022 08:28:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AD0AC385AC;
-        Tue, 26 Apr 2022 08:28:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C4626179E;
+        Tue, 26 Apr 2022 08:28:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19647C385A4;
+        Tue, 26 Apr 2022 08:28:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961729;
-        bh=sAv8qm0Z77pvWBsV0ej1topD7SZMzaglwU7qcAK61LY=;
+        s=korg; t=1650961732;
+        bh=Om3yeQJ1NuOJQqrgZNXqUA79TbGB1dOPIWhBpYZttjo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r1jSVmjzV6B6EKuRfLeiaNv2RrNk55/v69txgIPSHFuw4kM72VdmqZn3EM9D2RvVr
-         ITf+aqwH2or/aAFQVP/p/jjW72StkvrijW1z8Lb3+lX2HUuWrprnbuuscR5R5Hp/mu
-         CJqVf+aZmC2i0g4UryMOEU8D2H7TWtH7M0bBJiIo=
+        b=rGnsT03rfmUf5qsF2pUcyEnh8k2dbBpeOCKVLdkX1q7N2RlJIX+Lkux41i/eMmkgH
+         dTwbbqpJ/KZnj+7PUT5TijotwsqFJSlqlGHb1XPFJNmb8GGx+hbZNtH26boBa6SWa9
+         Jd5rHHm7rMx8IgBaxp8tCKZ/195Tr6CVC1led8sU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 11/62] ASoC: msm8916-wcd-digital: Check failure for devm_snd_soc_register_component
-Date:   Tue, 26 Apr 2022 10:20:51 +0200
-Message-Id: <20220426081737.550569415@linuxfoundation.org>
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 12/62] dmaengine: imx-sdma: Fix error checking in sdma_event_remap
+Date:   Tue, 26 Apr 2022 10:20:52 +0200
+Message-Id: <20220426081737.577549166@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
 References: <20220426081737.209637816@linuxfoundation.org>
@@ -52,41 +51,41 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit e927b05f3cc20de87f6b7d912a5bbe556931caca ]
+[ Upstream commit 7104b9cb35a33ad803a1adbbfa50569b008faf15 ]
 
-devm_snd_soc_register_component() may fails, we should check the error
-and do the corresponding error handling.
+of_parse_phandle() returns NULL on errors, rather than error
+pointers. Using NULL check on grp_np to fix this.
 
-Fixes: 150db8c5afa1 ("ASoC: codecs: Add msm8916-wcd digital codec")
+Fixes: d078cd1b4185 ("dmaengine: imx-sdma: Add imx6sx platform support")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220403115239.30140-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20220308064952.15743-1-linmq006@gmail.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/msm8916-wcd-digital.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/dma/imx-sdma.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/codecs/msm8916-wcd-digital.c b/sound/soc/codecs/msm8916-wcd-digital.c
-index d5269ab5f91c..e4cde214b7b2 100644
---- a/sound/soc/codecs/msm8916-wcd-digital.c
-+++ b/sound/soc/codecs/msm8916-wcd-digital.c
-@@ -1206,9 +1206,16 @@ static int msm8916_wcd_digital_probe(struct platform_device *pdev)
+diff --git a/drivers/dma/imx-sdma.c b/drivers/dma/imx-sdma.c
+index cc70da05db4b..801bef83df2a 100644
+--- a/drivers/dma/imx-sdma.c
++++ b/drivers/dma/imx-sdma.c
+@@ -1784,7 +1784,7 @@ static int sdma_event_remap(struct sdma_engine *sdma)
+ 	u32 reg, val, shift, num_map, i;
+ 	int ret = 0;
  
- 	dev_set_drvdata(dev, priv);
+-	if (IS_ERR(np) || IS_ERR(gpr_np))
++	if (IS_ERR(np) || !gpr_np)
+ 		goto out;
  
--	return devm_snd_soc_register_component(dev, &msm8916_wcd_digital,
-+	ret = devm_snd_soc_register_component(dev, &msm8916_wcd_digital,
- 				      msm8916_wcd_digital_dai,
- 				      ARRAY_SIZE(msm8916_wcd_digital_dai));
-+	if (ret)
-+		goto err_mclk;
-+
-+	return 0;
-+
-+err_mclk:
-+	clk_disable_unprepare(priv->mclk);
- err_clk:
- 	clk_disable_unprepare(priv->ahbclk);
+ 	event_remap = of_find_property(np, propname, NULL);
+@@ -1832,7 +1832,7 @@ static int sdma_event_remap(struct sdma_engine *sdma)
+ 	}
+ 
+ out:
+-	if (!IS_ERR(gpr_np))
++	if (gpr_np)
+ 		of_node_put(gpr_np);
+ 
  	return ret;
 -- 
 2.35.1
