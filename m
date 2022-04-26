@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67319C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:12:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E11BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:13:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346488AbiDZJQD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:16:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52030 "EHLO
+        id S229693AbiDZJQ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:16:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346774AbiDZIuU (ORCPT
+        with ESMTP id S1346287AbiDZIt7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:50:20 -0400
+        Tue, 26 Apr 2022 04:49:59 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D28BF13595D;
-        Tue, 26 Apr 2022 01:38:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B776AC8AA8;
+        Tue, 26 Apr 2022 01:38:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8BD49B81D09;
-        Tue, 26 Apr 2022 08:38:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2162C385A0;
-        Tue, 26 Apr 2022 08:38:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5D356B81CF2;
+        Tue, 26 Apr 2022 08:38:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E6F8C385A0;
+        Tue, 26 Apr 2022 08:38:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962337;
-        bh=H/K65kcPAF9yB19mOFMS3alvtqHgVZlcufErG25w8ro=;
+        s=korg; t=1650962282;
+        bh=zqYOifyB1+2RfXC17n0EaY17EgN1FpmF8dJ8qQvDiUE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YFUo6DGg3nes59uIt/06M6kEAxG4wQbHYIP5ubsCfAWOV7OhscQwNSlJ3IwjCR8M0
-         p0BFVzYOX+W2PTP9PqXjdM1MchCKPbsW0Zm5PYlzCNykXt0z8yJTHTHUa4MTJFFoOQ
-         MD3gCfsHLXtwk09+AwOzxPcRzEYxBuAKUrjWcnoo=
+        b=ZDO5UEnD4Hm6aeBSZZPoFXwL9CVe0wR5ITKlxtBCJrkj+03Ku2JMtrkXn5bZHnVF8
+         cUSXKM335oDxPpXfe++gBrroQWxGgLua09KZle9DtZuk7nSLkusocfshr9wG6z65+5
+         e7QSKxp7e7AWc4iNiIRbr4SABx2Sp+LIdvLBqpJs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Igor Russkikh <irusskikh@marvell.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 062/124] net: atlantic: Avoid out-of-bounds indexing
-Date:   Tue, 26 Apr 2022 10:21:03 +0200
-Message-Id: <20220426081749.064463432@linuxfoundation.org>
+Subject: [PATCH 5.15 045/124] netlink: reset network and mac headers in netlink_dump()
+Date:   Tue, 26 Apr 2022 10:20:46 +0200
+Message-Id: <20220426081748.583466228@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -53,125 +50,134 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 8d3a6c37d50d5a0504c126c932cc749e6dd9c78f ]
+[ Upstream commit 99c07327ae11e24886d552dddbe4537bfca2765d ]
 
-UBSAN warnings are observed on atlantic driver:
-[ 294.432996] UBSAN: array-index-out-of-bounds in /build/linux-Qow4fL/linux-5.15.0/drivers/net/ethernet/aquantia/atlantic/aq_nic.c:484:48
-[ 294.433695] index 8 is out of range for type 'aq_vec_s *[8]'
+netlink_dump() is allocating an skb, reserves space in it
+but forgets to reset network header.
 
-The ring is dereferenced right before breaking out the loop, to prevent
-that from happening, only use the index in the loop to fix the issue.
+This allows a BPF program, invoked later from sk_filter()
+to access uninitialized kernel memory from the reserved
+space.
 
-BugLink: https://bugs.launchpad.net/bugs/1958770
-Tested-by: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Reviewed-by: Igor Russkikh <irusskikh@marvell.com>
-Link: https://lore.kernel.org/r/20220408022204.16815-1-kai.heng.feng@canonical.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Theorically mac header reset could be omitted, because
+it is set to a special initial value.
+bpf_internal_load_pointer_neg_helper calls skb_mac_header()
+without checking skb_mac_header_was_set().
+Relying on skb->len not being too big seems fragile.
+We also could add a sanity check in bpf_internal_load_pointer_neg_helper()
+to avoid surprises in the future.
+
+syzbot report was:
+
+BUG: KMSAN: uninit-value in ___bpf_prog_run+0xa22b/0xb420 kernel/bpf/core.c:1637
+ ___bpf_prog_run+0xa22b/0xb420 kernel/bpf/core.c:1637
+ __bpf_prog_run32+0x121/0x180 kernel/bpf/core.c:1796
+ bpf_dispatcher_nop_func include/linux/bpf.h:784 [inline]
+ __bpf_prog_run include/linux/filter.h:626 [inline]
+ bpf_prog_run include/linux/filter.h:633 [inline]
+ __bpf_prog_run_save_cb+0x168/0x580 include/linux/filter.h:756
+ bpf_prog_run_save_cb include/linux/filter.h:770 [inline]
+ sk_filter_trim_cap+0x3bc/0x8c0 net/core/filter.c:150
+ sk_filter include/linux/filter.h:905 [inline]
+ netlink_dump+0xe0c/0x16c0 net/netlink/af_netlink.c:2276
+ netlink_recvmsg+0x1129/0x1c80 net/netlink/af_netlink.c:2002
+ sock_recvmsg_nosec net/socket.c:948 [inline]
+ sock_recvmsg net/socket.c:966 [inline]
+ sock_read_iter+0x5a9/0x630 net/socket.c:1039
+ do_iter_readv_writev+0xa7f/0xc70
+ do_iter_read+0x52c/0x14c0 fs/read_write.c:786
+ vfs_readv fs/read_write.c:906 [inline]
+ do_readv+0x432/0x800 fs/read_write.c:943
+ __do_sys_readv fs/read_write.c:1034 [inline]
+ __se_sys_readv fs/read_write.c:1031 [inline]
+ __x64_sys_readv+0xe5/0x120 fs/read_write.c:1031
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:81
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Uninit was stored to memory at:
+ ___bpf_prog_run+0x96c/0xb420 kernel/bpf/core.c:1558
+ __bpf_prog_run32+0x121/0x180 kernel/bpf/core.c:1796
+ bpf_dispatcher_nop_func include/linux/bpf.h:784 [inline]
+ __bpf_prog_run include/linux/filter.h:626 [inline]
+ bpf_prog_run include/linux/filter.h:633 [inline]
+ __bpf_prog_run_save_cb+0x168/0x580 include/linux/filter.h:756
+ bpf_prog_run_save_cb include/linux/filter.h:770 [inline]
+ sk_filter_trim_cap+0x3bc/0x8c0 net/core/filter.c:150
+ sk_filter include/linux/filter.h:905 [inline]
+ netlink_dump+0xe0c/0x16c0 net/netlink/af_netlink.c:2276
+ netlink_recvmsg+0x1129/0x1c80 net/netlink/af_netlink.c:2002
+ sock_recvmsg_nosec net/socket.c:948 [inline]
+ sock_recvmsg net/socket.c:966 [inline]
+ sock_read_iter+0x5a9/0x630 net/socket.c:1039
+ do_iter_readv_writev+0xa7f/0xc70
+ do_iter_read+0x52c/0x14c0 fs/read_write.c:786
+ vfs_readv fs/read_write.c:906 [inline]
+ do_readv+0x432/0x800 fs/read_write.c:943
+ __do_sys_readv fs/read_write.c:1034 [inline]
+ __se_sys_readv fs/read_write.c:1031 [inline]
+ __x64_sys_readv+0xe5/0x120 fs/read_write.c:1031
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:81
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Uninit was created at:
+ slab_post_alloc_hook mm/slab.h:737 [inline]
+ slab_alloc_node mm/slub.c:3244 [inline]
+ __kmalloc_node_track_caller+0xde3/0x14f0 mm/slub.c:4972
+ kmalloc_reserve net/core/skbuff.c:354 [inline]
+ __alloc_skb+0x545/0xf90 net/core/skbuff.c:426
+ alloc_skb include/linux/skbuff.h:1158 [inline]
+ netlink_dump+0x30f/0x16c0 net/netlink/af_netlink.c:2242
+ netlink_recvmsg+0x1129/0x1c80 net/netlink/af_netlink.c:2002
+ sock_recvmsg_nosec net/socket.c:948 [inline]
+ sock_recvmsg net/socket.c:966 [inline]
+ sock_read_iter+0x5a9/0x630 net/socket.c:1039
+ do_iter_readv_writev+0xa7f/0xc70
+ do_iter_read+0x52c/0x14c0 fs/read_write.c:786
+ vfs_readv fs/read_write.c:906 [inline]
+ do_readv+0x432/0x800 fs/read_write.c:943
+ __do_sys_readv fs/read_write.c:1034 [inline]
+ __se_sys_readv fs/read_write.c:1031 [inline]
+ __x64_sys_readv+0xe5/0x120 fs/read_write.c:1031
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:81
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+CPU: 0 PID: 3470 Comm: syz-executor751 Not tainted 5.17.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+
+Fixes: db65a3aaf29e ("netlink: Trim skb to alloc size to avoid MSG_TRUNC")
+Fixes: 9063e21fb026 ("netlink: autosize skb lengthes")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Link: https://lore.kernel.org/r/20220415181442.551228-1-eric.dumazet@gmail.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/aquantia/atlantic/aq_nic.c   |  8 +++----
- .../net/ethernet/aquantia/atlantic/aq_vec.c   | 24 +++++++++----------
- 2 files changed, 16 insertions(+), 16 deletions(-)
+ net/netlink/af_netlink.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-index 9de0065f89b9..fbb1e05d5878 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-@@ -480,8 +480,8 @@ int aq_nic_start(struct aq_nic_s *self)
- 	if (err < 0)
- 		goto err_exit;
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index 83ca93b32f5f..fb7f7b17c78c 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -2284,6 +2284,13 @@ static int netlink_dump(struct sock *sk)
+ 	 * single netdev. The outcome is MSG_TRUNC error.
+ 	 */
+ 	skb_reserve(skb, skb_tailroom(skb) - alloc_size);
++
++	/* Make sure malicious BPF programs can not read unitialized memory
++	 * from skb->head -> skb->data
++	 */
++	skb_reset_network_header(skb);
++	skb_reset_mac_header(skb);
++
+ 	netlink_skb_set_owner_r(skb, sk);
  
--	for (i = 0U, aq_vec = self->aq_vec[0];
--		self->aq_vecs > i; ++i, aq_vec = self->aq_vec[i]) {
-+	for (i = 0U; self->aq_vecs > i; ++i) {
-+		aq_vec = self->aq_vec[i];
- 		err = aq_vec_start(aq_vec);
- 		if (err < 0)
- 			goto err_exit;
-@@ -511,8 +511,8 @@ int aq_nic_start(struct aq_nic_s *self)
- 		mod_timer(&self->polling_timer, jiffies +
- 			  AQ_CFG_POLLING_TIMER_INTERVAL);
- 	} else {
--		for (i = 0U, aq_vec = self->aq_vec[0];
--			self->aq_vecs > i; ++i, aq_vec = self->aq_vec[i]) {
-+		for (i = 0U; self->aq_vecs > i; ++i) {
-+			aq_vec = self->aq_vec[i];
- 			err = aq_pci_func_alloc_irq(self, i, self->ndev->name,
- 						    aq_vec_isr, aq_vec,
- 						    aq_vec_get_affinity_mask(aq_vec));
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_vec.c b/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
-index f4774cf051c9..6ab1f3212d24 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
-@@ -43,8 +43,8 @@ static int aq_vec_poll(struct napi_struct *napi, int budget)
- 	if (!self) {
- 		err = -EINVAL;
- 	} else {
--		for (i = 0U, ring = self->ring[0];
--			self->tx_rings > i; ++i, ring = self->ring[i]) {
-+		for (i = 0U; self->tx_rings > i; ++i) {
-+			ring = self->ring[i];
- 			u64_stats_update_begin(&ring[AQ_VEC_RX_ID].stats.rx.syncp);
- 			ring[AQ_VEC_RX_ID].stats.rx.polls++;
- 			u64_stats_update_end(&ring[AQ_VEC_RX_ID].stats.rx.syncp);
-@@ -182,8 +182,8 @@ int aq_vec_init(struct aq_vec_s *self, const struct aq_hw_ops *aq_hw_ops,
- 	self->aq_hw_ops = aq_hw_ops;
- 	self->aq_hw = aq_hw;
- 
--	for (i = 0U, ring = self->ring[0];
--		self->tx_rings > i; ++i, ring = self->ring[i]) {
-+	for (i = 0U; self->tx_rings > i; ++i) {
-+		ring = self->ring[i];
- 		err = aq_ring_init(&ring[AQ_VEC_TX_ID], ATL_RING_TX);
- 		if (err < 0)
- 			goto err_exit;
-@@ -224,8 +224,8 @@ int aq_vec_start(struct aq_vec_s *self)
- 	unsigned int i = 0U;
- 	int err = 0;
- 
--	for (i = 0U, ring = self->ring[0];
--		self->tx_rings > i; ++i, ring = self->ring[i]) {
-+	for (i = 0U; self->tx_rings > i; ++i) {
-+		ring = self->ring[i];
- 		err = self->aq_hw_ops->hw_ring_tx_start(self->aq_hw,
- 							&ring[AQ_VEC_TX_ID]);
- 		if (err < 0)
-@@ -248,8 +248,8 @@ void aq_vec_stop(struct aq_vec_s *self)
- 	struct aq_ring_s *ring = NULL;
- 	unsigned int i = 0U;
- 
--	for (i = 0U, ring = self->ring[0];
--		self->tx_rings > i; ++i, ring = self->ring[i]) {
-+	for (i = 0U; self->tx_rings > i; ++i) {
-+		ring = self->ring[i];
- 		self->aq_hw_ops->hw_ring_tx_stop(self->aq_hw,
- 						 &ring[AQ_VEC_TX_ID]);
- 
-@@ -268,8 +268,8 @@ void aq_vec_deinit(struct aq_vec_s *self)
- 	if (!self)
- 		goto err_exit;
- 
--	for (i = 0U, ring = self->ring[0];
--		self->tx_rings > i; ++i, ring = self->ring[i]) {
-+	for (i = 0U; self->tx_rings > i; ++i) {
-+		ring = self->ring[i];
- 		aq_ring_tx_clean(&ring[AQ_VEC_TX_ID]);
- 		aq_ring_rx_deinit(&ring[AQ_VEC_RX_ID]);
- 	}
-@@ -297,8 +297,8 @@ void aq_vec_ring_free(struct aq_vec_s *self)
- 	if (!self)
- 		goto err_exit;
- 
--	for (i = 0U, ring = self->ring[0];
--		self->tx_rings > i; ++i, ring = self->ring[i]) {
-+	for (i = 0U; self->tx_rings > i; ++i) {
-+		ring = self->ring[i];
- 		aq_ring_free(&ring[AQ_VEC_TX_ID]);
- 		if (i < self->rx_rings)
- 			aq_ring_free(&ring[AQ_VEC_RX_ID]);
+ 	if (nlk->dump_done_errno > 0) {
 -- 
 2.35.1
 
