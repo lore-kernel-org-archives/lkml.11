@@ -2,45 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3C60C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F15AAC3527A
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:27:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348030AbiDZJaV (ORCPT
+        id S1348091AbiDZJac (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:30:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39642 "EHLO
+        Tue, 26 Apr 2022 05:30:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347681AbiDZJGC (ORCPT
+        with ESMTP id S1347741AbiDZJGH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:06:02 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C66BD15CEC5;
-        Tue, 26 Apr 2022 01:45:21 -0700 (PDT)
+        Tue, 26 Apr 2022 05:06:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B7BB11168;
+        Tue, 26 Apr 2022 01:45:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 3EB91CE1BC9;
-        Tue, 26 Apr 2022 08:45:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ABEBC385A4;
-        Tue, 26 Apr 2022 08:45:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B3566B81CF0;
+        Tue, 26 Apr 2022 08:45:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0F37C385A0;
+        Tue, 26 Apr 2022 08:45:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962718;
-        bh=LvnkFNrz/vSm7u8FmLhD5GqqbL3/DLWRoe48drE1qRE=;
+        s=korg; t=1650962733;
+        bh=VZzwy19iC7YJm1kTY0EyD2FLrXjSzogP6pPLimC+ZCM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TbP1C7aII25AAK0ASNEmU2q68brVw0pwFLqwVdgd5SF6vvl3pmjbpTr8wTpfIWxr4
-         2kM7XT2h70i1+Rl4dFg6N5pxNbpWcYdSTc1r6HScZRtP02CVu+tPgkJYK3P2DpUDyF
-         0sCxpIFYtyWkSPvoOitjBOtuF0Q0SmIfjHGRXCj0=
+        b=ZYErXwP4/gE/4laXU2tfZbFgHJkWYAqCUgwgSDnXfR+8oOdbrmUnYnEQxVaU+KSKM
+         z/cUxaUTFOR4fqLZFCf1DtGPkRBIaH8QHTYOR66gx0zcvXdrCqnOAGQuGwlwpTX4DO
+         zL16jjCI4H8mGbF0jKm1HU4VImL7ffnHzHtM8028=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 067/146] ALSA: hda: intel-dsp-config: update AlderLake PCI IDs
-Date:   Tue, 26 Apr 2022 10:21:02 +0200
-Message-Id: <20220426081751.947768234@linuxfoundation.org>
+        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
+        Felix Fietkau <nbd@nbd.name>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Shayne Chen <shayne.chen@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 072/146] mt76: Fix undefined behavior due to shift overflowing the constant
+Date:   Tue, 26 Apr 2022 10:21:07 +0200
+Message-Id: <20220426081752.085899297@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -52,66 +58,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Borislav Petkov <bp@suse.de>
 
-[ Upstream commit d52eee988597ac2a2c5d17d842946616d7d41070 ]
+[ Upstream commit dbc2b1764734857d68425468ffa8486e97ab89df ]
 
-Add missing AlderLake-PS and RaptorLake-S PCI IDs (already in HDaudio
-and SOF drivers), add comments and regroup by skew.
+Fix:
 
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Link: https://lore.kernel.org/r/20220406190418.245044-1-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+  drivers/net/wireless/mediatek/mt76/mt76x2/pci.c: In function ‘mt76x2e_probe’:
+  ././include/linux/compiler_types.h:352:38: error: call to ‘__compiletime_assert_946’ \
+	declared with attribute error: FIELD_PREP: mask is not constant
+    _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+
+See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
+details as to why it triggers with older gccs only.
+
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: Felix Fietkau <nbd@nbd.name>
+Cc: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+Cc: Ryder Lee <ryder.lee@mediatek.com>
+Cc: Shayne Chen <shayne.chen@mediatek.com>
+Cc: Sean Wang <sean.wang@mediatek.com>
+Cc: Kalle Valo <kvalo@kernel.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: linux-wireless@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220405151517.29753-9-bp@alien8.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/hda/intel-dsp-config.c | 18 ++++++++++++++++--
- 1 file changed, 16 insertions(+), 2 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt76x2/pci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/hda/intel-dsp-config.c b/sound/hda/intel-dsp-config.c
-index 70fd8b13938e..8b0a16ba27d3 100644
---- a/sound/hda/intel-dsp-config.c
-+++ b/sound/hda/intel-dsp-config.c
-@@ -390,22 +390,36 @@ static const struct config_entry config_table[] = {
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c b/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
+index 8a22ee581674..df85ebc6e1df 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
++++ b/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
+@@ -80,7 +80,7 @@ mt76x2e_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	mt76_rmw_field(dev, 0x15a10, 0x1f << 16, 0x9);
  
- /* Alder Lake */
- #if IS_ENABLED(CONFIG_SND_SOC_SOF_ALDERLAKE)
-+	/* Alderlake-S */
- 	{
- 		.flags = FLAG_SOF | FLAG_SOF_ONLY_IF_DMIC_OR_SOUNDWIRE,
- 		.device = 0x7ad0,
- 	},
-+	/* RaptorLake-S */
- 	{
- 		.flags = FLAG_SOF | FLAG_SOF_ONLY_IF_DMIC_OR_SOUNDWIRE,
--		.device = 0x51c8,
-+		.device = 0x7a50,
- 	},
-+	/* Alderlake-P */
- 	{
- 		.flags = FLAG_SOF | FLAG_SOF_ONLY_IF_DMIC_OR_SOUNDWIRE,
--		.device = 0x51cc,
-+		.device = 0x51c8,
- 	},
- 	{
- 		.flags = FLAG_SOF | FLAG_SOF_ONLY_IF_DMIC_OR_SOUNDWIRE,
- 		.device = 0x51cd,
- 	},
-+	/* Alderlake-PS */
-+	{
-+		.flags = FLAG_SOF | FLAG_SOF_ONLY_IF_DMIC_OR_SOUNDWIRE,
-+		.device = 0x51c9,
-+	},
-+	/* Alderlake-M */
-+	{
-+		.flags = FLAG_SOF | FLAG_SOF_ONLY_IF_DMIC_OR_SOUNDWIRE,
-+		.device = 0x51cc,
-+	},
-+	/* Alderlake-N */
- 	{
- 		.flags = FLAG_SOF | FLAG_SOF_ONLY_IF_DMIC_OR_SOUNDWIRE,
- 		.device = 0x54c8,
+ 	/* RG_SSUSB_G1_CDR_BIC_LTR = 0xf */
+-	mt76_rmw_field(dev, 0x15a0c, 0xf << 28, 0xf);
++	mt76_rmw_field(dev, 0x15a0c, 0xfU << 28, 0xf);
+ 
+ 	/* RG_SSUSB_CDR_BR_PE1D = 0x3 */
+ 	mt76_rmw_field(dev, 0x15c58, 0x3 << 6, 0x3);
 -- 
 2.35.1
 
