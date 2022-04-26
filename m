@@ -2,122 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2283C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 06:11:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38B05C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 06:12:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244899AbiDZGOo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 02:14:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58916 "EHLO
+        id S245114AbiDZGPC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 02:15:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236853AbiDZGOl (ORCPT
+        with ESMTP id S245070AbiDZGOy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 02:14:41 -0400
-Received: from mailgate.ics.forth.gr (mailgate.ics.forth.gr [139.91.1.2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93EF63B6
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 23:11:32 -0700 (PDT)
-Received: from av3.ics.forth.gr (av3in.ics.forth.gr [139.91.1.77])
-        by mailgate.ics.forth.gr (8.15.2/ICS-FORTH/V10-1.8-GATE) with ESMTP id 23Q6BUQN063569
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:11:30 +0300 (EEST)
-DKIM-Signature: v=1; a=rsa-sha256; d=ics.forth.gr; s=av; c=relaxed/simple;
-        q=dns/txt; i=@ics.forth.gr; t=1650953485; x=1653545485;
-        h=From:Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=QkE1Bm53YoFRMFRIYyzcyIpaR/FHwI+8u4IHE6YrgQk=;
-        b=Bn8Nat0Jr0al1fnSyc6ee+fYznGR/5OxQVES9XMFGd7YD0M1qaSRLgxgoT39jDL7
-        tHg8KWKzahD+be/338EEbWgttRqSKm8lActLMnZZeu/XBoZCZ0i8rfM1R5OM9iXH
-        dVYkWKte/6Xl6vVroYUiD0mmNaRv6XLGhNPK888pr1w38asp6Vm9N/Ptpylqc5us
-        Hjmw3NuvsINQsq2Ysp4r13a+JNgE79rSe+ySAYcMRBh2xJYAxwh3jxnrsn2HL97p
-        GFUjO4OC5GcFBUrQ/PfN50s3sUvCGMSJsjDZ5t6ItPp1AmNgpOgc7HzcHbPiDd1O
-        Z7u+HmxBv5VY8paLbtXEqg==;
-X-AuditID: 8b5b014d-f2ab27000000641e-d9-62678d0d15b2
-Received: from enigma.ics.forth.gr (enigma.ics.forth.gr [139.91.151.35])
-        by av3.ics.forth.gr (Symantec Messaging Gateway) with SMTP id 57.D0.25630.D0D87626; Tue, 26 Apr 2022 09:11:25 +0300 (EEST)
-X-ICS-AUTH-INFO: Authenticated user: mick at ics.forth.gr
-Message-ID: <8491e0c3-3e6e-325e-0cc1-5b237ce4f9fd@ics.forth.gr>
-Date:   Tue, 26 Apr 2022 09:11:23 +0300
+        Tue, 26 Apr 2022 02:14:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1FEA36140;
+        Mon, 25 Apr 2022 23:11:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3803B61300;
+        Tue, 26 Apr 2022 06:11:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB566C385A0;
+        Tue, 26 Apr 2022 06:11:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650953506;
+        bh=4AtGfUOOD7eSeXBmH+CWZwnEA9Plcz+reR06sgMw9ao=;
+        h=Date:From:To:Cc:Subject:From;
+        b=oqKVBQHa38u+k5V/hkVv1rWq/L+s5zTOQ99ZMyK0aSgRILWjIu1BPkushPZR95NAW
+         2fEfCPq7z9hD/rdjXvr1tjfFVoJ7j7/hyd/9XYtmkK8WUVEMkIkl5KobrBbWffuNPe
+         nTKSIV/2p+PvNpROLjsJ/phM42xqd8L598FQTN1D+Izo6r9Cu7R8rTXx+bsz210MUy
+         fsxGEX9Z4UST37L0MSi0/hz/4ULd3E0uOeBxstgbOuj9JgmUBDMw9qgARUQNDOZoXh
+         cK9ejjiS0eKDB1qxI2BHvPh+X3QplyTaWABjB5bZRC7yRcig+DYQBj1HK3P97OeOE4
+         TuIzSh7cvgWng==
+Date:   Tue, 26 Apr 2022 01:20:43 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Andy Whitcroft <apw@canonical.com>, Joe Perches <joe@perches.com>,
+        Dwaipayan Ray <dwaipayanray1@gmail.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Cc:     linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] checkpatch: add new alloc functions to alloc with
+ multiplies check
+Message-ID: <20220426062043.GA19970@embeddedor>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] RISC-V-fixes: relocate DTB if it's outside memory region
-Content-Language: el-GR
-To:     palmer@dabbelt.com, paul.walmsley@sifive.com, aou@eecs.berkeley.edu
-Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220322132839.3653682-1-mick@ics.forth.gr>
-From:   Nick Kossifidis <mick@ics.forth.gr>
-In-Reply-To: <20220322132839.3653682-1-mick@ics.forth.gr>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrOLMWRmVeSWpSXmKPExsXSHT1dWZe3Nz3J4OkTHYutv2exW1zeNYfN
-        YtvnFjaLl5d7mC3aZvE7sHq8efmSxeNwxxd2j81L6j0uNV9n9/i8SS6ANYrLJiU1J7MstUjf
-        LoErY+4fq4J/ghUNZ58yNjCe5Oti5OSQEDCRmL/tH3MXIxeHkMBRRok9z5qYIRKWEps/vWQB
-        sXkF7CXmbO5jArFZBFQltsxcygQRF5Q4OfMJWI2oQITEsl1TwWxhAV+JSSt3sILYzALiEkfO
-        /wabKSLgLrF68h8miLijxLSzM8DqhQQsJC58fgVWzyagKTH/0kGgOAcHJ9ANLWcqIMrNJLq2
-        djFC2PIS29/OYZ7AKDALyRWzkGybhaRlFpKWBYwsqxgFEsuM9TKTi/XS8otKMvTSizYxgsOa
-        0XcH4+3Nb/UOMTJxMB5ilOBgVhLhnaqaliTEm5JYWZValB9fVJqTWnyIUZqDRUmcl/1ZeJKQ
-        QHpiSWp2ampBahFMlomDU6qBiVPkws2pTb535/RLyE87cpN/b8uX1qRlDhMn84k1+92TXzBh
-        SVH47gmmlSc2pvxWK3x/i3nehL+Xq2zXih7xdGrdv35j0I00szuJqSH/luQuaXrSvvV46l+R
-        4AgrhY5lx2Nif03vLbq6wDr+WW3zhWdhbds7hAp9ff5sivh7YvKF7M5Uvu37Z7nPN/gs9Wj3
-        p9levTtfsaS2uMpmRLctPbVRx0tFbX3EuS8frPcfWiWrHTtf/YCYUNaeOIeNHE9VQi667FZq
-        ubLGLaPkx6EJlfPUsrcE/UwRKDqoa8dz9vsXY332C5y3byRMl9nw6/1Ndn6hlkiWp61HQvyz
-        vh3k3vrR8LhQwt7fbvtr4h/UrFViKc5INNRiLipOBADX9NJW2gIAAA==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Palmer,
+kvmalloc() and kvzalloc() functions have now 2-factor multiplication
+argument forms kvmalloc_array() and kvcalloc(), correspondingly.
 
-Any updates on this ?
+Add alloc-with-multiplies checks for these new functions.
 
-Regards,
-Nick
+Link: https://github.com/KSPP/linux/issues/187
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ scripts/checkpatch.pl | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-On 3/22/22 15:28, Nick Kossifidis wrote:
-> In case the DTB provided by the bootloader/BootROM is before the kernel
-> image or outside /memory, we won't be able to access it through the
-> linear mapping, and get a segfault on setup_arch(). Currently OpenSBI
-> relocates DTB but that's not always the case (e.g. if FW_JUMP_FDT_ADDR
-> is not specified), and it's also not the most portable approach since
-> the default FW_JUMP_FDT_ADDR of the generic platform relocates the DTB
-> at a specific offset that may not be available. To avoid this situation
-> copy DTB so that it's visible through the linear mapping.
-> 
-> Signed-off-by: Nick Kossifidis <mick@ics.forth.gr>
-> ---
->   arch/riscv/mm/init.c | 21 +++++++++++++++++++--
->   1 file changed, 19 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/riscv/mm/init.c b/arch/riscv/mm/init.c
-> index 0d588032d..697a9aed4 100644
-> --- a/arch/riscv/mm/init.c
-> +++ b/arch/riscv/mm/init.c
-> @@ -206,8 +206,25 @@ static void __init setup_bootmem(void)
->   	 * early_init_fdt_reserve_self() since __pa() does
->   	 * not work for DTB pointers that are fixmap addresses
->   	 */
-> -	if (!IS_ENABLED(CONFIG_BUILTIN_DTB))
-> -		memblock_reserve(dtb_early_pa, fdt_totalsize(dtb_early_va));
-> +	if (!IS_ENABLED(CONFIG_BUILTIN_DTB)) {
-> +		/*
-> +		 * In case the DTB is not located in a memory region we won't
-> +		 * be able to locate it later on via the linear mapping and
-> +		 * get a segfault when accessing it via __va(dtb_early_pa).
-> +		 * To avoid this situation copy DTB to a memory region.
-> +		 * Note that memblock_phys_alloc will also reserve DTB region.
-> +		 */
-> +		if (!memblock_is_memory(dtb_early_pa)) {
-> +			size_t fdt_size = fdt_totalsize(dtb_early_va);
-> +			phys_addr_t new_dtb_early_pa = memblock_phys_alloc(fdt_size, PAGE_SIZE);
-> +			void *new_dtb_early_va = early_memremap(new_dtb_early_pa, fdt_size);
-> +
-> +			memcpy(new_dtb_early_va, dtb_early_va, fdt_size);
-> +			early_memunmap(new_dtb_early_va, fdt_size);
-> +			_dtb_early_pa = new_dtb_early_pa;
-> +		} else
-> +			memblock_reserve(dtb_early_pa, fdt_totalsize(dtb_early_va));
-> +	}
->   
->   	early_init_fdt_scan_reserved_mem();
->   	dma_contiguous_reserve(dma32_phys_limit);
+diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
+index 577e02998701..503e8abbb2c1 100755
+--- a/scripts/checkpatch.pl
++++ b/scripts/checkpatch.pl
+@@ -7033,14 +7033,16 @@ sub process {
+ 			    "Prefer $3(sizeof(*$1)...) over $3($4...)\n" . $herecurr);
+ 		}
+ 
+-# check for k[mz]alloc with multiplies that could be kmalloc_array/kcalloc
++# check for (kv|k)[mz]alloc with multiplies that could be kmalloc_array/kvmalloc_array/kvcalloc/kcalloc
+ 		if ($perl_version_ok &&
+ 		    defined $stat &&
+-		    $stat =~ /^\+\s*($Lval)\s*\=\s*(?:$balanced_parens)?\s*(k[mz]alloc)\s*\(\s*($FuncArg)\s*\*\s*($FuncArg)\s*,/) {
++		    $stat =~ /^\+\s*($Lval)\s*\=\s*(?:$balanced_parens)?\s*((?:kv|k)[mz]alloc)\s*\(\s*($FuncArg)\s*\*\s*($FuncArg)\s*,/) {
+ 			my $oldfunc = $3;
+ 			my $a1 = $4;
+ 			my $a2 = $10;
+ 			my $newfunc = "kmalloc_array";
++			$newfunc = "kvmalloc_array" if ($oldfunc eq "kvmalloc");
++			$newfunc = "kvcalloc" if ($oldfunc eq "kvzalloc");
+ 			$newfunc = "kcalloc" if ($oldfunc eq "kzalloc");
+ 			my $r1 = $a1;
+ 			my $r2 = $a2;
+@@ -7057,7 +7059,7 @@ sub process {
+ 					 "Prefer $newfunc over $oldfunc with multiply\n" . $herectx) &&
+ 				    $cnt == 1 &&
+ 				    $fix) {
+-					$fixed[$fixlinenr] =~ s/\b($Lval)\s*\=\s*(?:$balanced_parens)?\s*(k[mz]alloc)\s*\(\s*($FuncArg)\s*\*\s*($FuncArg)/$1 . ' = ' . "$newfunc(" . trim($r1) . ', ' . trim($r2)/e;
++					$fixed[$fixlinenr] =~ s/\b($Lval)\s*\=\s*(?:$balanced_parens)?\s*((?:kv|k)[mz]alloc)\s*\(\s*($FuncArg)\s*\*\s*($FuncArg)/$1 . ' = ' . "$newfunc(" . trim($r1) . ', ' . trim($r2)/e;
+ 				}
+ 			}
+ 		}
+-- 
+2.27.0
 
