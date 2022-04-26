@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E11BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:13:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 735CFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:13:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229693AbiDZJQ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:16:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55788 "EHLO
+        id S235491AbiDZJQl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:16:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346287AbiDZIt7 (ORCPT
+        with ESMTP id S1346073AbiDZItu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:49:59 -0400
+        Tue, 26 Apr 2022 04:49:50 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B776AC8AA8;
-        Tue, 26 Apr 2022 01:38:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4DDCBB921;
+        Tue, 26 Apr 2022 01:37:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5D356B81CF2;
-        Tue, 26 Apr 2022 08:38:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E6F8C385A0;
-        Tue, 26 Apr 2022 08:38:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EABDDB81D19;
+        Tue, 26 Apr 2022 08:37:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58791C385A0;
+        Tue, 26 Apr 2022 08:37:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962282;
-        bh=zqYOifyB1+2RfXC17n0EaY17EgN1FpmF8dJ8qQvDiUE=;
+        s=korg; t=1650962269;
+        bh=qMpCqUCdhyMR/21WSKQ0+DrkxS6S4vYxyQeR11WMz/0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZDO5UEnD4Hm6aeBSZZPoFXwL9CVe0wR5ITKlxtBCJrkj+03Ku2JMtrkXn5bZHnVF8
-         cUSXKM335oDxPpXfe++gBrroQWxGgLua09KZle9DtZuk7nSLkusocfshr9wG6z65+5
-         e7QSKxp7e7AWc4iNiIRbr4SABx2Sp+LIdvLBqpJs=
+        b=edtD9RsJV3/srcc+ccAchx3L59gpzXCP/VMZ0nP15Emz7Y3k7byp7Nbpb0/8Pvzur
+         SaNN0kb6xjmAmJ1e+bYyoCP5wwlswrZe3AjTyJYX4PXXKaGqHK6EFhN8KSwTPCxT51
+         ZfjEmAiUd9/zTqS4aDKjvUW4QGg0w4l1nWYyiFNA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 045/124] netlink: reset network and mac headers in netlink_dump()
-Date:   Tue, 26 Apr 2022 10:20:46 +0200
-Message-Id: <20220426081748.583466228@linuxfoundation.org>
+        stable@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Kees Cook <keescook@chromium.org>,
+        Khem Raj <raj.khem@gmail.com>
+Subject: [PATCH 5.15 008/124] etherdevice: Adjust ether_addr* prototypes to silence -Wstringop-overead
+Date:   Tue, 26 Apr 2022 10:20:09 +0200
+Message-Id: <20220426081747.533483888@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -50,136 +51,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Kees Cook <keescook@chromium.org>
 
-[ Upstream commit 99c07327ae11e24886d552dddbe4537bfca2765d ]
+commit 2618a0dae09ef37728dab89ff60418cbe25ae6bd upstream.
 
-netlink_dump() is allocating an skb, reserves space in it
-but forgets to reset network header.
+With GCC 12, -Wstringop-overread was warning about an implicit cast from
+char[6] to char[8]. However, the extra 2 bytes are always thrown away,
+alignment doesn't matter, and the risk of hitting the edge of unallocated
+memory has been accepted, so this prototype can just be converted to a
+regular char *. Silences:
 
-This allows a BPF program, invoked later from sk_filter()
-to access uninitialized kernel memory from the reserved
-space.
+net/core/dev.c: In function ‘bpf_prog_run_generic_xdp’: net/core/dev.c:4618:21: warning: ‘ether_addr_equal_64bits’ reading 8 bytes from a region of size 6 [-Wstringop-overread]
+ 4618 |         orig_host = ether_addr_equal_64bits(eth->h_dest, > skb->dev->dev_addr);
+      |                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+net/core/dev.c:4618:21: note: referencing argument 1 of type ‘const u8[8]’ {aka ‘const unsigned char[8]’}
+net/core/dev.c:4618:21: note: referencing argument 2 of type ‘const u8[8]’ {aka ‘const unsigned char[8]’}
+In file included from net/core/dev.c:91: include/linux/etherdevice.h:375:20: note: in a call to function ‘ether_addr_equal_64bits’
+  375 | static inline bool ether_addr_equal_64bits(const u8 addr1[6+2],
+      |                    ^~~~~~~~~~~~~~~~~~~~~~~
 
-Theorically mac header reset could be omitted, because
-it is set to a special initial value.
-bpf_internal_load_pointer_neg_helper calls skb_mac_header()
-without checking skb_mac_header_was_set().
-Relying on skb->len not being too big seems fragile.
-We also could add a sanity check in bpf_internal_load_pointer_neg_helper()
-to avoid surprises in the future.
-
-syzbot report was:
-
-BUG: KMSAN: uninit-value in ___bpf_prog_run+0xa22b/0xb420 kernel/bpf/core.c:1637
- ___bpf_prog_run+0xa22b/0xb420 kernel/bpf/core.c:1637
- __bpf_prog_run32+0x121/0x180 kernel/bpf/core.c:1796
- bpf_dispatcher_nop_func include/linux/bpf.h:784 [inline]
- __bpf_prog_run include/linux/filter.h:626 [inline]
- bpf_prog_run include/linux/filter.h:633 [inline]
- __bpf_prog_run_save_cb+0x168/0x580 include/linux/filter.h:756
- bpf_prog_run_save_cb include/linux/filter.h:770 [inline]
- sk_filter_trim_cap+0x3bc/0x8c0 net/core/filter.c:150
- sk_filter include/linux/filter.h:905 [inline]
- netlink_dump+0xe0c/0x16c0 net/netlink/af_netlink.c:2276
- netlink_recvmsg+0x1129/0x1c80 net/netlink/af_netlink.c:2002
- sock_recvmsg_nosec net/socket.c:948 [inline]
- sock_recvmsg net/socket.c:966 [inline]
- sock_read_iter+0x5a9/0x630 net/socket.c:1039
- do_iter_readv_writev+0xa7f/0xc70
- do_iter_read+0x52c/0x14c0 fs/read_write.c:786
- vfs_readv fs/read_write.c:906 [inline]
- do_readv+0x432/0x800 fs/read_write.c:943
- __do_sys_readv fs/read_write.c:1034 [inline]
- __se_sys_readv fs/read_write.c:1031 [inline]
- __x64_sys_readv+0xe5/0x120 fs/read_write.c:1031
- do_syscall_x64 arch/x86/entry/common.c:51 [inline]
- do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:81
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Uninit was stored to memory at:
- ___bpf_prog_run+0x96c/0xb420 kernel/bpf/core.c:1558
- __bpf_prog_run32+0x121/0x180 kernel/bpf/core.c:1796
- bpf_dispatcher_nop_func include/linux/bpf.h:784 [inline]
- __bpf_prog_run include/linux/filter.h:626 [inline]
- bpf_prog_run include/linux/filter.h:633 [inline]
- __bpf_prog_run_save_cb+0x168/0x580 include/linux/filter.h:756
- bpf_prog_run_save_cb include/linux/filter.h:770 [inline]
- sk_filter_trim_cap+0x3bc/0x8c0 net/core/filter.c:150
- sk_filter include/linux/filter.h:905 [inline]
- netlink_dump+0xe0c/0x16c0 net/netlink/af_netlink.c:2276
- netlink_recvmsg+0x1129/0x1c80 net/netlink/af_netlink.c:2002
- sock_recvmsg_nosec net/socket.c:948 [inline]
- sock_recvmsg net/socket.c:966 [inline]
- sock_read_iter+0x5a9/0x630 net/socket.c:1039
- do_iter_readv_writev+0xa7f/0xc70
- do_iter_read+0x52c/0x14c0 fs/read_write.c:786
- vfs_readv fs/read_write.c:906 [inline]
- do_readv+0x432/0x800 fs/read_write.c:943
- __do_sys_readv fs/read_write.c:1034 [inline]
- __se_sys_readv fs/read_write.c:1031 [inline]
- __x64_sys_readv+0xe5/0x120 fs/read_write.c:1031
- do_syscall_x64 arch/x86/entry/common.c:51 [inline]
- do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:81
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Uninit was created at:
- slab_post_alloc_hook mm/slab.h:737 [inline]
- slab_alloc_node mm/slub.c:3244 [inline]
- __kmalloc_node_track_caller+0xde3/0x14f0 mm/slub.c:4972
- kmalloc_reserve net/core/skbuff.c:354 [inline]
- __alloc_skb+0x545/0xf90 net/core/skbuff.c:426
- alloc_skb include/linux/skbuff.h:1158 [inline]
- netlink_dump+0x30f/0x16c0 net/netlink/af_netlink.c:2242
- netlink_recvmsg+0x1129/0x1c80 net/netlink/af_netlink.c:2002
- sock_recvmsg_nosec net/socket.c:948 [inline]
- sock_recvmsg net/socket.c:966 [inline]
- sock_read_iter+0x5a9/0x630 net/socket.c:1039
- do_iter_readv_writev+0xa7f/0xc70
- do_iter_read+0x52c/0x14c0 fs/read_write.c:786
- vfs_readv fs/read_write.c:906 [inline]
- do_readv+0x432/0x800 fs/read_write.c:943
- __do_sys_readv fs/read_write.c:1034 [inline]
- __se_sys_readv fs/read_write.c:1031 [inline]
- __x64_sys_readv+0xe5/0x120 fs/read_write.c:1031
- do_syscall_x64 arch/x86/entry/common.c:51 [inline]
- do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:81
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-CPU: 0 PID: 3470 Comm: syz-executor751 Not tainted 5.17.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Fixes: db65a3aaf29e ("netlink: Trim skb to alloc size to avoid MSG_TRUNC")
-Fixes: 9063e21fb026 ("netlink: autosize skb lengthes")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Link: https://lore.kernel.org/r/20220415181442.551228-1-eric.dumazet@gmail.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Tested-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Link: https://lore.kernel.org/netdev/20220212090811.uuzk6d76agw2vv73@pengutronix.de
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: netdev@vger.kernel.org
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: Khem Raj <raj.khem@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netlink/af_netlink.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ include/linux/etherdevice.h |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-index 83ca93b32f5f..fb7f7b17c78c 100644
---- a/net/netlink/af_netlink.c
-+++ b/net/netlink/af_netlink.c
-@@ -2284,6 +2284,13 @@ static int netlink_dump(struct sock *sk)
- 	 * single netdev. The outcome is MSG_TRUNC error.
- 	 */
- 	skb_reserve(skb, skb_tailroom(skb) - alloc_size);
-+
-+	/* Make sure malicious BPF programs can not read unitialized memory
-+	 * from skb->head -> skb->data
-+	 */
-+	skb_reset_network_header(skb);
-+	skb_reset_mac_header(skb);
-+
- 	netlink_skb_set_owner_r(skb, sk);
+--- a/include/linux/etherdevice.h
++++ b/include/linux/etherdevice.h
+@@ -127,7 +127,7 @@ static inline bool is_multicast_ether_ad
+ #endif
+ }
  
- 	if (nlk->dump_done_errno > 0) {
--- 
-2.35.1
-
+-static inline bool is_multicast_ether_addr_64bits(const u8 addr[6+2])
++static inline bool is_multicast_ether_addr_64bits(const u8 *addr)
+ {
+ #if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
+ #ifdef __BIG_ENDIAN
+@@ -364,8 +364,7 @@ static inline bool ether_addr_equal(cons
+  * Please note that alignment of addr1 & addr2 are only guaranteed to be 16 bits.
+  */
+ 
+-static inline bool ether_addr_equal_64bits(const u8 addr1[6+2],
+-					   const u8 addr2[6+2])
++static inline bool ether_addr_equal_64bits(const u8 *addr1, const u8 *addr2)
+ {
+ #if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
+ 	u64 fold = (*(const u64 *)addr1) ^ (*(const u64 *)addr2);
 
 
