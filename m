@@ -2,94 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19D77C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 15:29:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4380C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 15:29:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352279AbiDZPc0 (ORCPT
+        id S1352311AbiDZPcp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 11:32:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52656 "EHLO
+        Tue, 26 Apr 2022 11:32:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234269AbiDZPcX (ORCPT
+        with ESMTP id S1352282AbiDZPcm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 11:32:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 043B331DE2
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 08:29:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650986955;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ERALpKB9DaX1cW8EvRCpNXwECZ3wYEIi3CvVE426efA=;
-        b=dk+NBxZ4jkjVtvtvAJwGZYoy3Gfhyxchxd1gsLi5s2DJJEnNyoRMEwGdLzoimyCkNiP5B4
-        lKTGjuOzKa0Lm4a4v6yw32mFB7ewB32uNGL3vjyp3ZoNhQbugZn92Onxg1KbdSk74+uUcZ
-        AbFw0KPgpA0KbtyFzm+gB1O3dUfwgkQ=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-67-RyI-idt9M1CjY84O7BMLyg-1; Tue, 26 Apr 2022 11:29:11 -0400
-X-MC-Unique: RyI-idt9M1CjY84O7BMLyg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3F3DF3811A20;
-        Tue, 26 Apr 2022 15:29:11 +0000 (UTC)
-Received: from file01.intranet.prod.int.rdu2.redhat.com (file01.intranet.prod.int.rdu2.redhat.com [10.11.5.7])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2FC9214682C4;
-        Tue, 26 Apr 2022 15:29:11 +0000 (UTC)
-Received: from file01.intranet.prod.int.rdu2.redhat.com (localhost [127.0.0.1])
-        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4) with ESMTP id 23QFTBWs005239;
-        Tue, 26 Apr 2022 11:29:11 -0400
-Received: from localhost (mpatocka@localhost)
-        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4/Submit) with ESMTP id 23QFTB7b005235;
-        Tue, 26 Apr 2022 11:29:11 -0400
-X-Authentication-Warning: file01.intranet.prod.int.rdu2.redhat.com: mpatocka owned process doing -bs
-Date:   Tue, 26 Apr 2022 11:29:11 -0400 (EDT)
-From:   Mikulas Patocka <mpatocka@redhat.com>
-X-X-Sender: mpatocka@file01.intranet.prod.int.rdu2.redhat.com
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Andy Shevchenko <andy@kernel.org>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        device-mapper development <dm-devel@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mike Snitzer <msnitzer@redhat.com>,
-        Milan Broz <gmazyland@gmail.com>
-Subject: Re: [PATCH v2] hex2bin: fix access beyond string end
-In-Reply-To: <YmfxaB1j65p8dOyj@smile.fi.intel.com>
-Message-ID: <alpine.LRH.2.02.2204261128220.5129@file01.intranet.prod.int.rdu2.redhat.com>
-References: <alpine.LRH.2.02.2204241643030.17244@file01.intranet.prod.int.rdu2.redhat.com> <CAHp75VdHnvv6FH1BKcs8WgGF3nJpj77TsrmsQGBSpsAQU_S-bw@mail.gmail.com> <alpine.LRH.2.02.2204260759540.2737@file01.intranet.prod.int.rdu2.redhat.com>
- <YmfxaB1j65p8dOyj@smile.fi.intel.com>
-User-Agent: Alpine 2.02 (LRH 1266 2009-07-14)
+        Tue, 26 Apr 2022 11:32:42 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4BFC35850
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 08:29:34 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id ay11-20020a05600c1e0b00b0038eb92fa965so1747014wmb.4
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 08:29:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=xmjXZYEvSywyflOdtu3pkNrfJwUdbHNGH7EM0+3lZVs=;
+        b=L4RlUWBCgH/ZB0PeLn4K5fCuKrA+EjjZafQlSs6yEUCypcy55DalUV8m9WbfeKrtvS
+         5Q4VlPCyZeMlTzaUWsjFgpG+zaPwlEbgudXS1o1V+TyKR+1FLfOTFqqiFk1E2fphEBo0
+         2HeQ17FuYkSOCxre2wrdZ+evxgNFg2uJE7japTfSsp1L8GQunxqFdd3mdLKPusHceX8l
+         aBndPSXpW2z4Y1l4t+l9stpfdVb29VAjpphjmv8L9ut/agbry7U+IFzV1RONXXfiBlZD
+         rNnJV0ShMY6uy2OAjkaZGTj3GnqSPleqvQ8c4nzD7TyRH/C3m6dq7HpBKs7H2HvUHSGD
+         XZIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=xmjXZYEvSywyflOdtu3pkNrfJwUdbHNGH7EM0+3lZVs=;
+        b=V3Q9UZbHZYOWy+FyNx5VUjcAFfpq/6DQGAIdMyM111msTn2Aar/IpgZoDimGO8iVoz
+         txalgOd5+Sc8b/Ge7PPtHd9oDolSKCG4ZkOlfzP/AxLUmYq6JF3lPpcWETkcZS87IK7S
+         NHHk5wF76EFmYsEYAj4IPpVl/l7S8ftczD6H76qJEKlN6RQ8HhHxB2kEQRovg2gC6CsA
+         6E2320XIh+r4zFuIXUaWwuxo7oFOR/b0trngAcBRumAKK/cNxsaiodNODINpjDu5YLPH
+         d3KgSGw4H3O/o7jHfxFrpJaOX/4hXETzTTb14qnURBXzZpT1rWUpU+1SWZ9GFH8bIHdg
+         2+7g==
+X-Gm-Message-State: AOAM533cgf0LKumFXDrHM7B/OHRDfQcx1z0FJBDRhrUZMqL4/J+W0xeO
+        P5VilHPwrUfVSHpAERVhqTd4MA==
+X-Google-Smtp-Source: ABdhPJx4o/yWEsHCDJMP2SoLs5GoZgq06izD/asRmKR9qCaO16o7SekLSb5++udJrRAQ0AaonO4vmg==
+X-Received: by 2002:a1c:a181:0:b0:392:8f7e:d2f8 with SMTP id k123-20020a1ca181000000b003928f7ed2f8mr22115472wme.30.1650986973204;
+        Tue, 26 Apr 2022 08:29:33 -0700 (PDT)
+Received: from ?IPV6:2001:861:44c0:66c0:5959:ca32:2e01:b6fc? ([2001:861:44c0:66c0:5959:ca32:2e01:b6fc])
+        by smtp.gmail.com with ESMTPSA id b11-20020adfc74b000000b0020ad84d3fa3sm7251824wrh.44.2022.04.26.08.29.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Apr 2022 08:29:32 -0700 (PDT)
+Message-ID: <fd02a183-bcaa-86a8-8a13-52a9ddb374d5@baylibre.com>
+Date:   Tue, 26 Apr 2022 17:29:31 +0200
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] drm/bridge: ite-it6505: add missing Kconfig option select
+Content-Language: en-US
+To:     Fabien Parent <fparent@baylibre.com>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Hermes Wu <hermes.wu@ite.com.tw>,
+        Allen Chen <allen.chen@ite.com.tw>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+References: <20220426141536.274727-1-fparent@baylibre.com>
+From:   Neil Armstrong <narmstrong@baylibre.com>
+Organization: Baylibre
+In-Reply-To: <20220426141536.274727-1-fparent@baylibre.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On Tue, 26 Apr 2022, Andy Shevchenko wrote:
-
-> On Tue, Apr 26, 2022 at 08:07:44AM -0400, Mikulas Patocka wrote:
-> > On Tue, 26 Apr 2022, Andy Shevchenko wrote:
-> > > On Sun, Apr 24, 2022 at 10:48 PM Mikulas Patocka <mpatocka@redhat.com> wrote:
+On 26/04/2022 16:15, Fabien Parent wrote:
+> The IT6505 is using functions provided by the DRM_DP_HELPER driver.
+> In order to avoid having the bridge enabled but the helper disabled,
+> let's add a select in order to be sure that the DP helper functions are
+> always available.
 > 
-> ...
+> Fixes: b5c84a9edcd4 ("drm/bridge: add it6505 driver")
+> Signed-off-by: Fabien Parent <fparent@baylibre.com>
+> ---
+>   drivers/gpu/drm/bridge/Kconfig | 1 +
+>   1 file changed, 1 insertion(+)
 > 
-> > > You need to provide a Fixes tag.
-> > 
-> > OK. Here I resend it with the "Fixes" tag.
-> 
-> Still shadows error codes.
-> 
-> > +			return -EINVAL;
-> 
-> >  			return -EINVAL;
+> diff --git a/drivers/gpu/drm/bridge/Kconfig b/drivers/gpu/drm/bridge/Kconfig
+> index 007e5a282f67..2145b08f9534 100644
+> --- a/drivers/gpu/drm/bridge/Kconfig
+> +++ b/drivers/gpu/drm/bridge/Kconfig
+> @@ -78,6 +78,7 @@ config DRM_ITE_IT6505
+>           tristate "ITE IT6505 DisplayPort bridge"
+>           depends on OF
+>           select DRM_KMS_HELPER
+> +        select DRM_DP_HELPER
+>           select EXTCON
+>           help
+>             ITE IT6505 DisplayPort bridge chip driver.
 
-What do you mean? What's wrong with "return -EINVAL"?
+http://lore.kernel.org/r/20220403151637.15546-1-rdunlap@infradead.org also select DRM_DP_AUX_BUS,
+can you check if this is really neaded ?
 
-Mikulas
-
+Neil
