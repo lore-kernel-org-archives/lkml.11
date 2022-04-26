@@ -2,134 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3A04C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:34:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23CF2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:34:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235541AbiDZIho (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:37:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35688 "EHLO
+        id S1345014AbiDZIhr (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:37:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345279AbiDZIe2 (ORCPT
+        with ESMTP id S1345297AbiDZIe3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:34:28 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C48FB73065;
-        Tue, 26 Apr 2022 01:26:57 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id i24so17305091pfa.7;
-        Tue, 26 Apr 2022 01:26:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=yhLyL+XNsxkwpVleNlagUYPk4ikrWSVwJ5iKvEtm9r4=;
-        b=QhrHokc1cqTSaM8Bm+BwVpjH81YmWkQrBRqiM+8OSkSDQlbidv8n9aGyRD16LTp05s
-         3WChyLlV3VO9IPi13CJKMhT05wEYckITk4L7Xghehtq7K/BS+BiP09vHFsi82wxpXF51
-         cnYzW9J7jWDyDd4NNG9GV4d4G16Er+IhZM+saPSpFcNO3B2T1kKbarnCdmpSiTl75D3w
-         uCu43xKe8ggtAvbg/t0TF+w4PEchRrPd4iiXPJefmSup2qnzNkxiXwWYD27F8miIR70s
-         dTrXz2rFYhLpRm73qjMHmgmOKI5Py9I+fjIY7ZDTvt7sj7Ob7807i7XbyOvTg1YhTVg5
-         cZ4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=yhLyL+XNsxkwpVleNlagUYPk4ikrWSVwJ5iKvEtm9r4=;
-        b=G/koMKj7p+r1r5mBySzqVe96txAtguoz15oNbt35xn9jrA3UG9kCDtqLMnIMsSyc3K
-         BVDAITq9JskNgYahWTrxeSgEjps3nLU3Aa7DGDQ9eg0IxDArT0rTg7a/eER3aUMNvEny
-         a18q5juj49WTtJSA5E8aSxxLPtQT8CE6JsPmwaRnfyrgjnL+aWe4olATxOFc6Ogwr2D4
-         +1yLDGE5U1esNSEplRbI8H+0qy390WJnAT1d9Iw/YtHO3K6ISuNft8usBZE3EZyrdacT
-         ZAwVcUqG1VCzRR/qerFFFgFHQ8QUsaefHSeSavMgSWZuzzExXs8ZvIyl1Y1hLxiPeqj5
-         roDA==
-X-Gm-Message-State: AOAM533NNn7n+oKdCI2xz9ZkeMKdAkwgYexUXFCej1HVk4SuzfhDjwif
-        MLZC1juYxMbCDGNyUth0xi9zNVnltr8=
-X-Google-Smtp-Source: ABdhPJz+74lK30qT8FEbdkFdhMy6GpRLV2X22ikbl7jvT9J2uD4jEhIbrQcWPhnJvO2yG0B2407JDw==
-X-Received: by 2002:a05:6a00:894:b0:4fe:25d7:f59e with SMTP id q20-20020a056a00089400b004fe25d7f59emr23477482pfj.58.1650961617115;
-        Tue, 26 Apr 2022 01:26:57 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.119])
-        by smtp.googlemail.com with ESMTPSA id k15-20020a63ab4f000000b00381eef69bfbsm12024832pgp.3.2022.04.26.01.26.46
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 26 Apr 2022 01:26:56 -0700 (PDT)
-From:   Wanpeng Li <kernellwp@gmail.com>
-X-Google-Original-From: Wanpeng Li <wanpengli@tencent.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH] KVM: LAPIC: Fix advance timer expiration delta trace
-Date:   Tue, 26 Apr 2022 01:25:51 -0700
-Message-Id: <1650961551-38390-1-git-send-email-wanpengli@tencent.com>
-X-Mailer: git-send-email 2.7.4
+        Tue, 26 Apr 2022 04:34:29 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1602774848;
+        Tue, 26 Apr 2022 01:27:00 -0700 (PDT)
+X-UUID: d252231955874f388ed19aaa27160fc0-20220426
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:12f92259-211b-468d-92b1-beb7f924bcc5,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:45
+X-CID-INFO: VERSION:1.1.4,REQID:12f92259-211b-468d-92b1-beb7f924bcc5,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
+        N:release,TS:45
+X-CID-META: VersionHash:faefae9,CLOUDID:a5e6bb2e-6199-437e-8ab4-9920b4bc5b76,C
+        OID:IGNORED,Recheck:0,SF:13|15|28|17|19|48,TC:nil,Content:0,EDM:-3,File:ni
+        l,QS:0,BEC:nil
+X-UUID: d252231955874f388ed19aaa27160fc0-20220426
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 465555622; Tue, 26 Apr 2022 16:26:55 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Tue, 26 Apr 2022 16:26:54 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 26 Apr 2022 16:26:54 +0800
+Message-ID: <1ec1f18809a75faef249cf2303dd19d26c51afff.camel@mediatek.com>
+Subject: Re: [PATCH V4 01/14] dt-bindings: cpufreq: mediatek: Add MediaTek
+ CCI property
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        <rafael@kernel.org>, <viresh.kumar@linaro.org>,
+        <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
+        <matthias.bgg@gmail.com>
+CC:     <jia-wei.chang@mediatek.com>, <roger.lu@mediatek.com>,
+        <hsinyi@google.com>, <khilman@baylibre.com>,
+        <angelogioacchino.delregno@collabora.com>,
+        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Tue, 26 Apr 2022 16:26:54 +0800
+In-Reply-To: <9ff80bc2-d63b-14aa-5769-20bff6e3a21e@linaro.org>
+References: <20220422075239.16437-1-rex-bc.chen@mediatek.com>
+         <20220422075239.16437-2-rex-bc.chen@mediatek.com>
+         <f2e5a34b-ed02-91a1-bc7b-fecaa95e227e@linaro.org>
+         <811bf944-a230-ab9b-583a-840e57af8a1e@linaro.org>
+         <28f75ac2995b116af9b2accf760786d1d1798c93.camel@mediatek.com>
+         <7873f0fa-25c3-191f-5096-3ceb9afd50cc@linaro.org>
+         <c1b910098a0a5cbe06ec971c1bf745ac37986274.camel@mediatek.com>
+         <9ff80bc2-d63b-14aa-5769-20bff6e3a21e@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wanpeng Li <wanpengli@tencent.com>
+On Mon, 2022-04-25 at 12:52 +0200, Krzysztof Kozlowski wrote:
+> On 25/04/2022 12:20, Rex-BC Chen wrote:
+> > > However I am not sure if you solved your problem... see below:
+> > > 
+> > > > For example:
+> > > > mediatek cci set 1.2V originally. When cpufreq want to adjust
+> > > > lower
+> > > > frequency adn set voltage to 1.0V.
+> > > > The framework will remain using 1.2V to prevent crash of
+> > > > mediatek
+> > > > cci.
+> > > 
+> > > No, regulator_set_voltage() for proc_reg says:
+> > > "NOTE: If the regulator is shared between several devices then
+> > > the
+> > > lowest
+> > >  request voltage that meets the system constraints will be used."
+> > > 
+> > > Not the highest. So when your devfreq and cpufreq boots, calling
+> > > regulator_set_voltage will still cause high frequency and low
+> > > voltage.
+> > > 
+> > 
+> > From the driver comment, I think it still needs to match "meets the
+> > system constraints".
+> > 
+> > From drivers, we can trace the driver and it finally to
+> > regulator_get_optimal_voltage().
+> > In [1], the framework will get max voltage while finding each
+> > device's
+> > voltage.
+> > 
+> > [1]: 
+> > 
+https://urldefense.com/v3/__https://elixir.bootlin.com/linux/latest/source/drivers/regulator/core.c*L3815__;Iw!!CTRNKA9wMg0ARbw!35L9ISPWDpbGPsLEc0935D2nWTLtaLSNfPipvteddPaxwO2i_KaN0wfWegpkyaPjjagW$
+> >  
+> 
+> Right, actually in your case it's the regulator_check_consumers()
+> above
+> that line, because you
+> 
+> I think it's quite generic problem, so would be worth solving for
+> more
+> regulator consumers, but your approach is fine. At least I do not
+> have
+> anything smarter, at the moment.
+> 
+> Best regards,
+> Krzysztof
 
-The advance timer expiration delta trace is moved after guest_exit_irqoff()
-since it can avoid to violate RCU extended quiescent state when moving 
-wait_lapic_expire() just before vmentry. Now kvm can enter a guest multiple 
-times since IPI/Timer fastpath, snapshot the delta multiple times before 
-vmentry and trace it one time after vmexit is not accurately this time. 
-Commit 87fa7f3e98a1 (x86/kvm: Move context tracking where it belongs) moves 
-rcu state updates more closer around vmentry/vmexit, we will not violate RCU 
-any more. Let's fix it by keeping the advance timer expiration delta trace 
-in __kvm_wait_lapic_epire() and dropping advance_expire_delta.
+Hello Krzysztof,
 
-Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
----
- arch/x86/kvm/lapic.c | 4 ++--
- arch/x86/kvm/lapic.h | 1 -
- arch/x86/kvm/x86.c   | 8 --------
- 3 files changed, 2 insertions(+), 11 deletions(-)
+Thanks for your review!
+I will send next version to modify the description of mediatek,cci when
+the driver part is explained clear.
 
-diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-index 66b0eb0bda94..a4e9eb329e42 100644
---- a/arch/x86/kvm/lapic.c
-+++ b/arch/x86/kvm/lapic.c
-@@ -1648,10 +1648,10 @@ static void __kvm_wait_lapic_expire(struct kvm_vcpu *vcpu)
- 	tsc_deadline = apic->lapic_timer.expired_tscdeadline;
- 	apic->lapic_timer.expired_tscdeadline = 0;
- 	guest_tsc = kvm_read_l1_tsc(vcpu, rdtsc());
--	apic->lapic_timer.advance_expire_delta = guest_tsc - tsc_deadline;
-+	trace_kvm_wait_lapic_expire(vcpu->vcpu_id, guest_tsc - tsc_deadline);
- 
- 	if (lapic_timer_advance_dynamic) {
--		adjust_lapic_timer_advance(vcpu, apic->lapic_timer.advance_expire_delta);
-+		adjust_lapic_timer_advance(vcpu, guest_tsc - tsc_deadline);
- 		/*
- 		 * If the timer fired early, reread the TSC to account for the
- 		 * overhead of the above adjustment to avoid waiting longer
-diff --git a/arch/x86/kvm/lapic.h b/arch/x86/kvm/lapic.h
-index 4e4f8a22754f..65bb2a8cf145 100644
---- a/arch/x86/kvm/lapic.h
-+++ b/arch/x86/kvm/lapic.h
-@@ -38,7 +38,6 @@ struct kvm_timer {
- 	u64 tscdeadline;
- 	u64 expired_tscdeadline;
- 	u32 timer_advance_ns;
--	s64 advance_expire_delta;
- 	atomic_t pending;			/* accumulated triggered timers */
- 	bool hv_timer_in_use;
- };
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index a6ab19afc638..5fa465b268d2 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -10248,14 +10248,6 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
- 	 */
- 	guest_timing_exit_irqoff();
- 
--	if (lapic_in_kernel(vcpu)) {
--		s64 delta = vcpu->arch.apic->lapic_timer.advance_expire_delta;
--		if (delta != S64_MIN) {
--			trace_kvm_wait_lapic_expire(vcpu->vcpu_id, delta);
--			vcpu->arch.apic->lapic_timer.advance_expire_delta = S64_MIN;
--		}
--	}
--
- 	local_irq_enable();
- 	preempt_enable();
- 
--- 
-2.25.1
+BRs,
+Rex
 
