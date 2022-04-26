@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EF58C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 12:24:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68AD7C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 12:24:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239701AbiDZM1j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 08:27:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51412 "EHLO
+        id S240719AbiDZM1u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 08:27:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234339AbiDZM1f (ORCPT
+        with ESMTP id S242525AbiDZM1s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 08:27:35 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75F8015AE0E
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 05:24:27 -0700 (PDT)
-X-UUID: 04aee38b8ee7468ba8aba8e641dbf88e-20220426
+        Tue, 26 Apr 2022 08:27:48 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D96915B46A
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 05:24:40 -0700 (PDT)
+X-UUID: 2c58419259d24d078553ea889523f2d8-20220426
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:b1772e2a-f2b1-483c-8415-f0fdec7e7836,OB:0,LO
+X-CID-O-INFO: VERSION:1.1.4,REQID:0dce5ab4-1fac-480d-949c-68865cd4a741,OB:0,LO
         B:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
         TION:release,TS:-20
-X-CID-META: VersionHash:faefae9,CLOUDID:9781c22e-6199-437e-8ab4-9920b4bc5b76,C
+X-CID-META: VersionHash:faefae9,CLOUDID:84718ac6-85ee-4ac1-ac05-bd3f1e72e732,C
         OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: 04aee38b8ee7468ba8aba8e641dbf88e-20220426
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+X-UUID: 2c58419259d24d078553ea889523f2d8-20220426
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
         (envelope-from <mark-pk.tsai@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1964950952; Tue, 26 Apr 2022 20:24:21 +0800
+        with ESMTP id 233419910; Tue, 26 Apr 2022 20:24:33 +0800
 Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Tue, 26 Apr 2022 20:24:20 +0800
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 26 Apr 2022 20:24:11 +0800
 Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb02.mediatek.inc
  (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 26 Apr
- 2022 20:24:19 +0800
+ 2022 20:24:10 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 26 Apr 2022 20:24:19 +0800
+ Transport; Tue, 26 Apr 2022 20:24:10 +0800
 From:   Mark-PK Tsai <mark-pk.tsai@mediatek.com>
 To:     <rostedt@goodmis.org>
 CC:     <linux-arm-kernel@lists.infradead.org>,
@@ -44,12 +43,10 @@ CC:     <linux-arm-kernel@lists.infradead.org>,
         <linux-mediatek@lists.infradead.org>, <mark-pk.tsai@mediatek.com>,
         <matthias.bgg@gmail.com>, <mingo@redhat.com>,
         <yj.chiang@mediatek.com>
-Subject: [PATCH v4 2/2] tracing: make tracer_init_tracefs initcall asynchronous
-Date:   Tue, 26 Apr 2022 20:24:07 +0800
-Message-ID: <20220426122407.17042-3-mark-pk.tsai@mediatek.com>
+Subject: [PATCH v4 0/2] tracing: make tracer_init_tracefs initcall asynchronous
+Date:   Tue, 26 Apr 2022 20:24:05 +0800
+Message-ID: <20220426122407.17042-1-mark-pk.tsai@mediatek.com>
 X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220426122407.17042-1-mark-pk.tsai@mediatek.com>
-References: <20220426122407.17042-1-mark-pk.tsai@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-MTK:  N
@@ -70,84 +67,34 @@ of making tracer_init_tracefs asynchronous.
 On my arm64 platform, it reduce ~20ms of 125ms which total
 time do_initcalls spend.
 
-[1]: https://lore.kernel.org/r/68d7b3327052757d0cd6359a6c9015a85b437232.camel@pengutronix.de
-Signed-off-by: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
----
- kernel/trace/trace.c | 32 ++++++++++++++++++++++----------
- 1 file changed, 22 insertions(+), 10 deletions(-)
+Changes in v2:
+- Fix the use of ftrace_eval_maps in INIT_DATA after initmem_free().
 
-diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index 0ec7b013104a..7f6ad8f06129 100644
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -9615,6 +9615,7 @@ extern struct trace_eval_map *__stop_ftrace_eval_maps[];
- 
- static struct workqueue_struct *eval_map_wq __initdata;
- static struct work_struct eval_map_work __initdata;
-+static struct work_struct tracerfs_init_work __initdata;
- 
- static void __init eval_map_work_func(struct work_struct *work)
- {
-@@ -9640,6 +9641,8 @@ static int __init trace_eval_init(void)
- 	return 0;
- }
- 
-+subsys_initcall(trace_eval_init);
-+
- static int __init trace_eval_sync(void)
- {
- 	/* Make sure the eval map updates are finished */
-@@ -9722,15 +9725,8 @@ static struct notifier_block trace_module_nb = {
- };
- #endif /* CONFIG_MODULES */
- 
--static __init int tracer_init_tracefs(void)
-+static __init void tracer_init_tracefs_work_func(struct work_struct *work)
- {
--	int ret;
--
--	trace_access_lock_init();
--
--	ret = tracing_init_dentry();
--	if (ret)
--		return 0;
- 
- 	event_trace_init();
- 
-@@ -9752,8 +9748,6 @@ static __init int tracer_init_tracefs(void)
- 	trace_create_file("saved_tgids", TRACE_MODE_READ, NULL,
- 			NULL, &tracing_saved_tgids_fops);
- 
--	trace_eval_init();
--
- 	trace_create_eval_file(NULL);
- 
- #ifdef CONFIG_MODULES
-@@ -9768,6 +9762,24 @@ static __init int tracer_init_tracefs(void)
- 	create_trace_instances(NULL);
- 
- 	update_tracer_options(&global_trace);
-+}
-+
-+static __init int tracer_init_tracefs(void)
-+{
-+	int ret;
-+
-+	trace_access_lock_init();
-+
-+	ret = tracing_init_dentry();
-+	if (ret)
-+		return 0;
-+
-+	if (eval_map_wq) {
-+		INIT_WORK(&tracerfs_init_work, tracer_init_tracefs_work_func);
-+		queue_work(eval_map_wq, &tracerfs_init_work);
-+	} else {
-+		tracer_init_tracefs_work_func(NULL);
-+	}
- 
- 	return 0;
- }
+  In v1, a kthread is create for tracer_init_tracefs() which
+  might cause kernel crash if initmem is free before it finish.
+  In v2, the work of tracer_init_tracefs() is separated into 2 parts,
+  one is put to subsys_initcall and the other is queue to eval_map_wq
+  which can make sure it always finish before initmem is free.
+
+Changes in v3:
+- Avoid adding tracer option before __update_tracer_options finish to fix
+  the warning report by kernel test robot.
+
+Reported-by: kernel test robot <oliver.sang@intel.com>
+  https://lore.kernel.org/lkml/20220322133339.GA32582@xsang-OptiPlex-9020/
+
+Changes in v4:
+- Set `tracer_options_updated = true` before calling __update_tracer_options().
+  Otherwise, __update_tracer_options() will skip all the tracer in trace_array.
+- Init tracerfs_init_work only when eval_map_wq is successfully created.
+
+Mark-PK Tsai (2):
+  tracing: Avoid adding tracer option before update_tracer_options
+  tracing: make tracer_init_tracefs initcall asynchronous
+
+ kernel/trace/trace.c | 39 +++++++++++++++++++++++++++++----------
+ 1 file changed, 29 insertions(+), 10 deletions(-)
+
 -- 
 2.18.0
 
