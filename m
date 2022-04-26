@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38E77C3527E
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:58:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D4C4C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:58:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346395AbiDZJAc (ORCPT
+        id S1346434AbiDZJAh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:00:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56568 "EHLO
+        Tue, 26 Apr 2022 05:00:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346907AbiDZIp3 (ORCPT
+        with ESMTP id S1346891AbiDZIp2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:45:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9F4012AEC;
-        Tue, 26 Apr 2022 01:36:35 -0700 (PDT)
+        Tue, 26 Apr 2022 04:45:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90F3965DC;
+        Tue, 26 Apr 2022 01:36:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 54995B81CFE;
-        Tue, 26 Apr 2022 08:36:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 596C0C385A0;
-        Tue, 26 Apr 2022 08:36:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D440617E7;
+        Tue, 26 Apr 2022 08:36:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 236A3C385A0;
+        Tue, 26 Apr 2022 08:36:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962193;
-        bh=Zg0RKzNVnX/cBhF2uFK+M+gvp7hkVVGk/9ryYNxE078=;
+        s=korg; t=1650962177;
+        bh=F9IihVuh+cy8kK9Rt7DkAAR8plTl6SHz8WpoM3/HKzM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vjx8WOHBqKF/+j3yE2Np1JMshPG1ZuyD7H9EqitDepG8XZmRWTrPqQ+PIQNnTfAfv
-         SjintrtjbY7oowKbd2elZM2kYdlCCdIjl8oNcOJ976r+24YGGjrHa9xANJ1ZBYzLCs
-         U0OID5RJ49Op3WQMbrOkRLB9GqMAoZG2jvs9l724=
+        b=TCtTMfd8qH6Mry8nL+vY/wtzFxiPsiHk3BdqPgBZ8esHQRFJlMzCDIKeOMENTydZv
+         12ZQCNsyqSsc6WTjSHf3wSDOP1Yg5h5zaiiPAbyeXE1cJFHF+pWSWzQgUA55NCnN4A
+         OPf/ZrT/jCfH14NChINhb3Jb8o0H7/yMyNxhKTk4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 017/124] ASoC: atmel: Remove system clock tree configuration for at91sam9g20ek
-Date:   Tue, 26 Apr 2022 10:20:18 +0200
-Message-Id: <20220426081747.792797472@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+c6fd14145e2f62ca0784@syzkaller.appspotmail.com,
+        Bob Peterson <rpeterso@redhat.com>,
+        Andreas Gruenbacher <agruenba@redhat.com>
+Subject: [PATCH 5.15 012/124] gfs2: assign rgrp glock before compute_bitstructs
+Date:   Tue, 26 Apr 2022 10:20:13 +0200
+Message-Id: <20220426081747.648707539@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -50,142 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Bob Peterson <rpeterso@redhat.com>
 
-[ Upstream commit c775cbf62ed4911e4f0f23880f01815753123690 ]
+commit 428f651cb80b227af47fc302e4931791f2fb4741 upstream.
 
-The MCLK of the WM8731 on the AT91SAM9G20-EK board is connected to the
-PCK0 output of the SoC, intended in the reference software to be supplied
-using PLLB and programmed to 12MHz. As originally written for use with a
-board file the audio driver was responsible for configuring the entire tree
-but in the conversion to the common clock framework the registration of
-the named pck0 and pllb clocks was removed so the driver has failed to
-instantiate ever since.
+Before this patch, function read_rindex_entry called compute_bitstructs
+before it allocated a glock for the rgrp. But if compute_bitstructs found
+a problem with the rgrp, it called gfs2_consist_rgrpd, and that called
+gfs2_dump_glock for rgd->rd_gl which had not yet been assigned.
 
-Since the WM8731 driver has had support for managing a MCLK provided via
-the common clock framework for some time we can simply drop all the clock
-management code from the machine driver other than configuration of the
-sysclk rate, the CODEC driver still respects that configuration from the
-machine driver.
+read_rindex_entry
+   compute_bitstructs
+      gfs2_consist_rgrpd
+         gfs2_dump_glock <---------rgd->rd_gl was not set.
 
-Fixes: ff78a189b0ae55f ("ARM: at91: remove old at91-specific clock driver")
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Reviewed-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-Link: https://lore.kernel.org/r/20220325154241.1600757-2-broonie@kernel.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This patch changes read_rindex_entry so it assigns an rgrp glock before
+calling compute_bitstructs so gfs2_dump_glock does not reference an
+unassigned pointer. If an error is discovered, the glock must also be
+put, so a new goto and label were added.
+
+Reported-by: syzbot+c6fd14145e2f62ca0784@syzkaller.appspotmail.com
+Signed-off-by: Bob Peterson <rpeterso@redhat.com>
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/atmel/sam9g20_wm8731.c | 61 --------------------------------
- 1 file changed, 61 deletions(-)
+ fs/gfs2/rgrp.c |    9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/sound/soc/atmel/sam9g20_wm8731.c b/sound/soc/atmel/sam9g20_wm8731.c
-index 8a55d59a6c2a..d243de5f23dc 100644
---- a/sound/soc/atmel/sam9g20_wm8731.c
-+++ b/sound/soc/atmel/sam9g20_wm8731.c
-@@ -46,35 +46,6 @@
-  */
- #undef ENABLE_MIC_INPUT
+--- a/fs/gfs2/rgrp.c
++++ b/fs/gfs2/rgrp.c
+@@ -923,15 +923,15 @@ static int read_rindex_entry(struct gfs2
+ 	spin_lock_init(&rgd->rd_rsspin);
+ 	mutex_init(&rgd->rd_mutex);
  
--static struct clk *mclk;
+-	error = compute_bitstructs(rgd);
+-	if (error)
+-		goto fail;
 -
--static int at91sam9g20ek_set_bias_level(struct snd_soc_card *card,
--					struct snd_soc_dapm_context *dapm,
--					enum snd_soc_bias_level level)
--{
--	static int mclk_on;
--	int ret = 0;
--
--	switch (level) {
--	case SND_SOC_BIAS_ON:
--	case SND_SOC_BIAS_PREPARE:
--		if (!mclk_on)
--			ret = clk_enable(mclk);
--		if (ret == 0)
--			mclk_on = 1;
--		break;
--
--	case SND_SOC_BIAS_OFF:
--	case SND_SOC_BIAS_STANDBY:
--		if (mclk_on)
--			clk_disable(mclk);
--		mclk_on = 0;
--		break;
--	}
--
--	return ret;
--}
--
- static const struct snd_soc_dapm_widget at91sam9g20ek_dapm_widgets[] = {
- 	SND_SOC_DAPM_MIC("Int Mic", NULL),
- 	SND_SOC_DAPM_SPK("Ext Spk", NULL),
-@@ -135,7 +106,6 @@ static struct snd_soc_card snd_soc_at91sam9g20ek = {
- 	.owner = THIS_MODULE,
- 	.dai_link = &at91sam9g20ek_dai,
- 	.num_links = 1,
--	.set_bias_level = at91sam9g20ek_set_bias_level,
+ 	error = gfs2_glock_get(sdp, rgd->rd_addr,
+ 			       &gfs2_rgrp_glops, CREATE, &rgd->rd_gl);
+ 	if (error)
+ 		goto fail;
  
- 	.dapm_widgets = at91sam9g20ek_dapm_widgets,
- 	.num_dapm_widgets = ARRAY_SIZE(at91sam9g20ek_dapm_widgets),
-@@ -148,7 +118,6 @@ static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
- {
- 	struct device_node *np = pdev->dev.of_node;
- 	struct device_node *codec_np, *cpu_np;
--	struct clk *pllb;
- 	struct snd_soc_card *card = &snd_soc_at91sam9g20ek;
- 	int ret;
- 
-@@ -162,31 +131,6 @@ static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
- 		return -EINVAL;
++	error = compute_bitstructs(rgd);
++	if (error)
++		goto fail_glock;
++
+ 	rgd->rd_rgl = (struct gfs2_rgrp_lvb *)rgd->rd_gl->gl_lksb.sb_lvbptr;
+ 	rgd->rd_flags &= ~(GFS2_RDF_UPTODATE | GFS2_RDF_PREFERRED);
+ 	if (rgd->rd_data > sdp->sd_max_rg_data)
+@@ -945,6 +945,7 @@ static int read_rindex_entry(struct gfs2
  	}
  
--	/*
--	 * Codec MCLK is supplied by PCK0 - set it up.
--	 */
--	mclk = clk_get(NULL, "pck0");
--	if (IS_ERR(mclk)) {
--		dev_err(&pdev->dev, "Failed to get MCLK\n");
--		ret = PTR_ERR(mclk);
--		goto err;
--	}
--
--	pllb = clk_get(NULL, "pllb");
--	if (IS_ERR(pllb)) {
--		dev_err(&pdev->dev, "Failed to get PLLB\n");
--		ret = PTR_ERR(pllb);
--		goto err_mclk;
--	}
--	ret = clk_set_parent(mclk, pllb);
--	clk_put(pllb);
--	if (ret != 0) {
--		dev_err(&pdev->dev, "Failed to set MCLK parent\n");
--		goto err_mclk;
--	}
--
--	clk_set_rate(mclk, MCLK_RATE);
--
- 	card->dev = &pdev->dev;
+ 	error = 0; /* someone else read in the rgrp; free it and ignore it */
++fail_glock:
+ 	gfs2_glock_put(rgd->rd_gl);
  
- 	/* Parse device node info */
-@@ -230,9 +174,6 @@ static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
- 
- 	return ret;
- 
--err_mclk:
--	clk_put(mclk);
--	mclk = NULL;
- err:
- 	atmel_ssc_put_audio(0);
- 	return ret;
-@@ -242,8 +183,6 @@ static int at91sam9g20ek_audio_remove(struct platform_device *pdev)
- {
- 	struct snd_soc_card *card = platform_get_drvdata(pdev);
- 
--	clk_disable(mclk);
--	mclk = NULL;
- 	snd_soc_unregister_card(card);
- 	atmel_ssc_put_audio(0);
- 
--- 
-2.35.1
-
+ fail:
 
 
