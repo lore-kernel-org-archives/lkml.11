@@ -2,108 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F31ACC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:51:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BE78C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:51:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353325AbiDZQyz (ORCPT
+        id S1353361AbiDZQy7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 12:54:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43282 "EHLO
+        Tue, 26 Apr 2022 12:54:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242264AbiDZQxR (ORCPT
+        with ESMTP id S1346216AbiDZQxc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 12:53:17 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21E7E3F89A
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:48:30 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id m20so16548534ejj.10
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:48:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=D5d/UcR8WWtwm14ZrH9Ny0PXpXXCcP8eFt6zg75qTSg=;
-        b=yMnq6FHdIFP459zaK7zNPCwuRcpBpup0Y1hoR3dAu5PPSw7HQd07CTlTZ9YCPonIId
-         ZQAGvu+x/52Q9qIGRZmn19hqTyWABcsgcKEFHr0tOLHNk1zKpB/zVNVwnUr6cfv8iGoM
-         4eUW78aeT6k0GqobuS7hJJxguXWLDkQCn2gZakfxyOQYb6z8z1t51xjefG3z7RCOVXRN
-         ll2reAII6TC0sdef0SoidM2Fp2/WFZp+kA4p09I3WY8dyGRV1vfNz4aInSOfOlO/7eM6
-         8cWAp66JfasHp/hw7TWyXOglVjWCSUPvzyOs6OaeoBWH6Ez0psTrqiAs4XVQ9AL79CgC
-         PzjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=D5d/UcR8WWtwm14ZrH9Ny0PXpXXCcP8eFt6zg75qTSg=;
-        b=4viuqI1iphXzAnALKri69fC6WPHpvAOC5T2//j8GcvMb3FSt90RqctwqRZTO+pOaWh
-         8vKlGarZfTpD76vVJGXQv74OE2lb9NRWKmdWHUvRZOAxnHwrVbeaPUiry5FBleR64E4I
-         8bLht3QhdVQOb6wvlDZ2dMl95+kmkp76Jj0mj2gmEXSoQo3Z6163qO/j2tGpdeyAGuQC
-         erBFLwinxCd1z1MR2OZgICHAnrQZanfdisJAro8YrHGhoBS/boqimNnUXSZ6jvruo2BG
-         sPIyofpUVKuSlqfZKyU8LRbLhxwWIO8iQvfCxcsDESMvnLpfXpSGkCGTZ10C1+ChJlT1
-         PCoA==
-X-Gm-Message-State: AOAM532T4axLLcShG5afg1UAxY6+sj+jNctpekU6ZTvXbMCc5Pyur+zU
-        IWpq2X6iogjfa9VcVip8Bun96w==
-X-Google-Smtp-Source: ABdhPJzrAtI4rer1zqBksVvk+bjUCWF1lDnl3p29wyqsYQRedTzX6mxZ5ycXF9qp5uSxW7pEKXAXew==
-X-Received: by 2002:a17:907:868c:b0:6f2:d939:630c with SMTP id qa12-20020a170907868c00b006f2d939630cmr19937985ejc.211.1650991708641;
-        Tue, 26 Apr 2022 09:48:28 -0700 (PDT)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
-        by smtp.gmail.com with ESMTPSA id u15-20020a17090617cf00b006f3bf8e69absm133895eje.5.2022.04.26.09.48.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 09:48:27 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 17:48:01 +0100
-From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     "zhangfei.gao@foxmail.com" <zhangfei.gao@foxmail.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Ravi V Shankar <ravi.v.shankar@intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        x86 <x86@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        iommu <iommu@lists.linux-foundation.org>,
+        Tue, 26 Apr 2022 12:53:32 -0400
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EBFF419BF;
+        Tue, 26 Apr 2022 09:48:34 -0700 (PDT)
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23QGQQg4015363;
+        Tue, 26 Apr 2022 09:48:34 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : mime-version; s=facebook;
+ bh=ESDj8ljsYPN/SzqhJ84FQheoFDEhBszaVWHqDY9YjIg=;
+ b=iK/DiTiUFm2JyEKz615BmuQ+JyeOsCvMqaEblhhGxMC/eN4lWgH/xdWQtGxuaFNx/pZC
+ W0pHYAzn6/i3XPQTocobqHU4PdNbqjjHCUhIBugZuU6AYCsmLk3tucF5MiD3jImBmAFH
+ KL3nBr63QYVo4znfITiFtO13VJNzz/afqMo= 
+Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2177.outbound.protection.outlook.com [104.47.59.177])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3fp6f9cm6j-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 26 Apr 2022 09:48:33 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eyGGK48GaUeyPNaQPqJ9C8zS1zj6wGF6JnE2rtQChpTz4mF8zvkpe0nbmX8CPZoufbXzeX+7VMvjxkY72HuBkzz3xAzpo2mZW7qD1akHjtlrUgWOjUJvcx26fN/eCDO78kvOTMJvAsor9kseqbmjHQWS1RRQbHQzGwrANyu32RpI+26qFMxuJGYpC01ORZZL0//iA4tmlCbKFgZKLHe1rIOpzLQAeWkyzVTa7lOiI9c+pAOAtUmnIA2rkMdbwGe+EcsNorVtWTnYKxuePj6Xc057hot14CK9exhOXiIkS76dnI+q7z2IExR7MGpAOmdl0fu9kGlVKeiPqNTPXCr9LA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ESDj8ljsYPN/SzqhJ84FQheoFDEhBszaVWHqDY9YjIg=;
+ b=UaCEZjImLYnXxyI1VHm+NVCIzk27wZF0TLgFr+A7vqO2R57IChoHwYpxLkJq955yY+r2IfyGMMDQBfTvG54b/CUedGNBFXXVlHkKJk3Z8d9okhMHZQZRFzKO1gLIAZKn31U4q0IiGG5Sg+rrnKStD5KERl9Dqare96Hz2w0nVKTAIwW9R/Wg/Lhxu0vR5fT7t89pvUm21Al37aedhCz1zWZkVJlx5AEMeMnaapsHzJGd0buF4Rn12SXZV2vt9lIR5paeNo2gxNFuwvmdIvmE/MdD0ffIUfAvZrrHTDjG5o/ky7II6nBrjbNPeW7MpgSmoThF1HlNIoITaKexZxu7GA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from SJ0PR15MB4552.namprd15.prod.outlook.com (2603:10b6:a03:379::12)
+ by PH0PR15MB5120.namprd15.prod.outlook.com (2603:10b6:510:cb::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.21; Tue, 26 Apr
+ 2022 16:48:31 +0000
+Received: from SJ0PR15MB4552.namprd15.prod.outlook.com
+ ([fe80::af:a5d5:458b:4f4e]) by SJ0PR15MB4552.namprd15.prod.outlook.com
+ ([fe80::af:a5d5:458b:4f4e%9]) with mapi id 15.20.5186.021; Tue, 26 Apr 2022
+ 16:48:31 +0000
+From:   Jonathan McDowell <noodles@fb.com>
+To:     Mimi Zohar <zohar@linux.ibm.com>
+CC:     Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>, will@kernel.org,
-        robin.murphy@arm.com, zhangfei.gao@linaro.org
-Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
- allocation and free it on mm exit
-Message-ID: <YmgiQZZyFxsJ+9um@myrica>
-References: <YmJ/WA6KAQU/xJjA@myrica>
- <tencent_A4E83BA6071B2204B6F5D4E69A50D21C1A09@qq.com>
- <YmLOznyBF0f7COYT@myrica>
- <tencent_2922DAB6F3D5789A1CD3A21A843B4007ED09@qq.com>
- <Yman5hLomw9/c+bi@myrica>
- <76ec6342-0d7c-7c7b-c132-2892e4048fa1@intel.com>
- <YmavoKkVu+hd+x0M@myrica>
- <22b659c7-e972-7a56-2bd7-8df3b4820d4e@intel.com>
- <YmbO/l5IwfBCHrl8@myrica>
- <8c044e49-74bb-df56-8a60-663013c0910e@intel.com>
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>
+Subject: Re: [PATCH] Carry forward IMA measurement log on kexec on x86_64
+Thread-Topic: [PATCH] Carry forward IMA measurement log on kexec on x86_64
+Thread-Index: AQHYVk//Rm0WwwIkeUGnwDIT6Grq2q0A1peAgAFJh4CAABxEgIAAMeMA
+Date:   Tue, 26 Apr 2022 16:48:30 +0000
+Message-ID: <YmgiWpHWH6K1feyt@noodles-fedora-PC23Y6EG>
+References: <YmKyvlF3my1yWTvK@noodles-fedora-PC23Y6EG>
+ <12108732c287a85a417927de37cb027cefae6e06.camel@linux.ibm.com>
+ <YmfgyyUs6TgM/Czx@noodles-fedora-PC23Y6EG>
+ <41f9d261a7750e576460360c512a8e4c1492efa3.camel@linux.ibm.com>
+In-Reply-To: <41f9d261a7750e576460360c512a8e4c1492efa3.camel@linux.ibm.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9114db21-32c8-4d29-8a29-08da27a49868
+x-ms-traffictypediagnostic: PH0PR15MB5120:EE_
+x-microsoft-antispam-prvs: <PH0PR15MB5120414352A5E1F611BFEFD6C1FB9@PH0PR15MB5120.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: l40xHzUa78ZnvGb7sus8Ole+KJafm84Rb+d60sxWVKfhRccH/Vdk3/noDMqEAxXiZENyDkrWYM6bqg1dCv5C/OCKPZW+yUX1ilq1xuPbuMZjiykBVZS0bxHxx3MkrPqvVIW9mLsRoRMPOMwfwGVZu9oRYItkQJfaePtgB7PQEz+3IJ5B+hU34uh/ltA7ul5KZc4r0TfhXF2xvBz87uALbpl0FHKh5OmDq2dckucMKRGCjQwBTM55U177DPfR1Y7Iu3eWB7KUah7ZuKsZkLbRbM0pFdKIDFe91qkHnSONO1uR4agQqfKhkSaql1llI34VTIutTs/X2Dpv7p/yZP20zNsgJhyS4a9+UCwXauCcAZo2U6x7N7OVcQUJgC/0eKqq4OqhT+nHJTTjFo+vwcUdNoHkp8CE6VVO39xHNB6ObInZ5hY6AuJ95pdK0LNydIkHTTMRHsxTSPeBRUD/ZeaFjldj43cdDNjJM1Wa2zKQxcL5wOrgZRVSQ6YW6nE8LIJ72Yse9XLqtpRMrcoKbPlY/oE/X96BYow8PM5a4PGSO3U9nZvh7UOle7EVveMTt804SIOBsDX7S8qXVHMwtCEucd4j7VeDm5m7pSzEiVnsp/nFKZjGGx+zybQ22QzoRiLuA+RnuJ7dg3Kt5N5BDYS06Dp3pAkWk4MAwfApSYcUuj9i1rp7FshwH1BBdswVJe0MTrpaJKpgDAPvxQ5qju5PeQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR15MB4552.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(9686003)(6512007)(71200400001)(66476007)(91956017)(54906003)(2906002)(76116006)(4326008)(122000001)(33716001)(38100700002)(38070700005)(6506007)(6916009)(86362001)(8676002)(316002)(66556008)(64756008)(66946007)(26005)(83380400001)(186003)(6486002)(508600001)(5660300002)(7416002)(66446008)(8936002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?zzUTNlxp+CNwypAZIp8DTexl7RWz7r4MG0KjIn0TpoNvq02nn0kiY/sWRu2n?=
+ =?us-ascii?Q?Hnzgg70p0AQ6vrR8CMsX9QE6GSOe4WMjOW+w0MQ7Sdk1LKtbwJ+cWMgC4Mhr?=
+ =?us-ascii?Q?ELA81OccpUWLgp9/+h7Slk7fNOIdq9IzFBqFUihBRPBB3DTaW2JzrCs0abAP?=
+ =?us-ascii?Q?Dvynl9iYdDYZeJOS8Nqe6JnAaxFhVxkCzfuh76RJUjAeTGfC8BN7TrVXGXm4?=
+ =?us-ascii?Q?RABRXvJc1YiO3gnzxUQw12ntYRjxpJ+O+inOa1zZDHfrbPoEPIQH76cM7JTG?=
+ =?us-ascii?Q?ASRErp3B+0lubzhf0X9JXoW7NznN5gdV8Z74xtCrS81pFXEhT7tj5i/kTmb6?=
+ =?us-ascii?Q?PH8MtmVzOG5vo88E2l1bPn8TNmq19YkhA+/We/vMbb1GMzTEYjv4f2K4UdYM?=
+ =?us-ascii?Q?3iXTHVtIi4N4hMd54GMubSvCrZF2ofzyl+7Hb0J8VveZ1kCFxfGFysN6t2y4?=
+ =?us-ascii?Q?dZjlN/Cp3GoUD5hMcIGLZXnQDevH5GZYDDBRziiCDTonFuum894Aet65xWcg?=
+ =?us-ascii?Q?CqG/OkqH+qEjIirVHcfTqRFawTlYGUubPEmq0Sl+oWMAPfFwLFIhxFmnW8B8?=
+ =?us-ascii?Q?AxvPQdGjXmT6agPSB1oPQ1g+gzEurZ/vnFH44Qdu/mO2QKB1Y5aAMkuh/uvk?=
+ =?us-ascii?Q?pWH0HgI4rLE9gd2hkH3y69d8k9lBopnEeLF/dI71rYzLZ+U8V7yGwDr1fM0F?=
+ =?us-ascii?Q?GoYRr+wKPP/JnJZeXehrLlpzgVBkyICHLVF/5qT12AlyhJB1slzICoy0RJmO?=
+ =?us-ascii?Q?uQvCYbKNpONQlFNjbCpFmoFWpv4nWNizuF1T4Dss2B/yYBcxrQyuOfKJPpTX?=
+ =?us-ascii?Q?rz8NLMVOIq3zbFnmGooMSlhg/69a92WbVbKLvOWrp3VszWy7Lml4q/c3DvpW?=
+ =?us-ascii?Q?2zsQxZYAMO4nNa5CNaMRoJb5DxzZdNdJQIksj9tjVlNNXXLdpSllcMG7/jAs?=
+ =?us-ascii?Q?8F8BGWn1T6kxnELQzFvFY2s9pI4JEIyJU343vlmucaQAzH4Syu2q9c/muNKM?=
+ =?us-ascii?Q?DE3Dd1QhJ4phXcVug5JBXkbV0A5+M8ivSHgj0ok/76qV/m08X2WcFct//usB?=
+ =?us-ascii?Q?bGcokSnLq8lA9sVPZaN/qID+U0QbIeveVx8WuYFZ+o+qU52NXjKweNNcDWfQ?=
+ =?us-ascii?Q?a0Evy8QYT1feCRaXTR0QJqPh5kSatVnow2bxn7YU0/9uE/+ZtfYb2dKrG96T?=
+ =?us-ascii?Q?/HWhckb6gYNqNgUYgecMN7zmUkK+udjXs4ye0gJCrQ7r4mvqeGQrzX+igdzr?=
+ =?us-ascii?Q?IypKALBNdRmt4+4GEafSzwYXsmlpB1oia16JVjDEzdq5uoZ8VZBoAlJ4sxYV?=
+ =?us-ascii?Q?W3BIAKhPE4UAMBRHa/qbmFIRS1rsAl/bIv1e7JASqPNecVOrqlP124Q3sdNy?=
+ =?us-ascii?Q?FvWHFjsnImE4H6X3VAwKb4amkUx37kUw9Pze8t1q3fKw5XaOnlZJpQjW/Ax6?=
+ =?us-ascii?Q?Eiu0lHorB+lQrz1U5cYvhT2See32m2Fu2vY7a26Gx+pdjOiVj/iREvLTp1f5?=
+ =?us-ascii?Q?tH9EpI2RLEYioc6kGkvkeiuhpQNNT9RjhG9Ia+Q4YViiR5pGzLStVHWfFNkn?=
+ =?us-ascii?Q?cECDaIGauDaoRb+Y/KMFdle4XiiK4KTMCwWpVQPMnfXCoMaoUJrIS2He6bdG?=
+ =?us-ascii?Q?xTuJw1kATHrFifXsvspMgN9EDKxX2kgE040/vDI2jSNTAsNpsY+sZf/yFR4L?=
+ =?us-ascii?Q?usTvydAuHAx/UXI4AyN+lopoE/dZWSIcmIuCgbBiv5kR6BuNBgxvyK14AQ2Y?=
+ =?us-ascii?Q?OUWQwBrQgw=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <9244233BC5B92C4FB5734B562001CED5@namprd15.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8c044e49-74bb-df56-8a60-663013c0910e@intel.com>
+X-OriginatorOrg: fb.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR15MB4552.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9114db21-32c8-4d29-8a29-08da27a49868
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Apr 2022 16:48:31.0985
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: S6wMV02Ai6hLOVUDoFLyOCbqudfnYAH5dYFUHBXWTT2GLtLf1Sdx7yQMH10rOm6r
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR15MB5120
+X-Proofpoint-ORIG-GUID: rruNIQ0RDMfw5equIb3UtNTUJ3fmhSL2
+X-Proofpoint-GUID: rruNIQ0RDMfw5equIb3UtNTUJ3fmhSL2
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-26_05,2022-04-26_02,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 08:27:00AM -0700, Dave Hansen wrote:
-> On 4/25/22 09:40, Jean-Philippe Brucker wrote:
-> > The problem is that we'd have to request the device driver to stop DMA
-> > before we can destroy the context and free the PASID. We did consider
-> > doing this in the release() MMU notifier, but there were concerns about
-> > blocking mmput() for too long (for example
-> > https://lore.kernel.org/linux-iommu/4d68da96-0ad5-b412-5987-2f7a6aa796c3@amd.com/
-> > though I think there was a more recent discussion). We also need to drain
-> > the PRI and fault queues to get rid of all references to that PASID.
+On Tue, Apr 26, 2022 at 09:49:53AM -0400, Mimi Zohar wrote:
+> On Tue, 2022-04-26 at 12:08 +0000, Jonathan McDowell wrote:
+> > On Mon, Apr 25, 2022 at 12:29:17PM -0400, Mimi Zohar wrote:
+> > > Hi Jonathan,
+> > > 
+> > > On Fri, 2022-04-22 at 13:50 +0000, Jonathan McDowell wrote:
+> > > > On kexec file load Integrity Measurement Architecture (IMA) subsystem
+> > > > may verify the IMA signature of the kernel and initramfs, and measure
+> > > > it. The command line parameters passed to the kernel in the kexec call
+> > > > may also be measured by IMA. A remote attestation service can verify
+> > > > a TPM quote based on the TPM event log, the IMA measurement list, and
+> > > > the TPM PCR data. This can be achieved only if the IMA measurement log
+> > > > is carried over from the current kernel to the next kernel across
+> > > > the kexec call.
+> > > > 
+> > > > powerpc and ARM64 both achieve this using device tree with a
+> > > > "linux,ima-kexec-buffer" node. x86 platforms generally don't make use of
+> > > > device tree, so the IMA infrastructure is extended to allow non device
+> > > > tree platforms to provide a log buffer. x86 then passes the IMA buffer
+> > > > to the new kernel via the setup_data mechanism.
+> > > > 
+> > > > Signed-off-by: Jonathan McDowell <noodles@fb.com>
+> > > 
+> > > FYI, after applying, building, and booting a kernel with this patch,
+> > > "kexec -s -l /boot/vmlinuz-5.18.0-rc4+ --reuse-cmdline --
+> > > initrd=/boot/initramfs-5.18.0-rc4+.img" properly loads the kernel, but
+> > > "kexec -s -e" fails to reboot, at least on a test laptop even with only
+> > > the "boot_aggregate" measurement record.
+> > > 
+> > > Without enabling CONFIG_IMA_KEXEC, kexec boots properly.
+> > 
+> > Thanks for giving it a try. At a guess your laptop is booting with
+> > EFI, whereas for my testing I was using qemu with legacy BIOS. I've
+> > managed to reproduce the issue with qemu+OVMF and isolated the mistake
+> > in the setup data calculation I made when EFI is involved. If you have
+> > time can you try with the below on top of the original patch?
 > 
-> Is the concern truly about blocking mmput() itself?  Or, is it about
-> releasing the resources associated with the mm?
+> Thank you!  With the change, as expected there are two "boot_aggregate"
+> records in the measurement list.  With a custom policy, the measurement
+> list verifies.
 
-The latter I think, this one was about releasing pages as fast as possible
-if the process is picked by the OOM killer. 
+Excellent, thanks for verifying. I'll get the fixed v2 out.
 
-Thanks,
-Jean
+...
+> FYI, the builtin "ima_policy=tcb" results in measurement violations.  
+> Normally, the measurement list can still be verified using the evmctl
+> "--ignore-violations" option.   For some reason with the "tcb" policy, 
+> the measurement list doesn't verify even with the "--ignore-violations" 
+> option after kexec.  I assume this is a result of additional
+> measurements being added after the kexec load, which aren't being
+> carried across kexec.
+
+I believe with "tcb" things like the subsequent exec of kexec to
+actually do the reboot will end up measured, and as the kexec buffer is
+static it won't include that.
+
+Also there's an issue about the fact that we measure the kexec pieces
+even if we don't actually do the kexec; there's no marker that confirms
+the kexec took place. It's separate to this patch (in that it affects
+the device tree kexec infrastructure too) but it's conceivable that an
+attacker could measure in the new kernel details and not actually do the
+kexec, and that's not distinguishable from the kexec happening.
+
+One approach might be to add a marker in the kexec ima buffer such that
+if it's not present we know the kexec hasn't happened, but I need to
+think through that a bit more.
+
+J.
