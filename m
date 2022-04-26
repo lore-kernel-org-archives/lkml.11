@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4B07C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:43:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB313C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:43:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344175AbiDZIql (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:46:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59622 "EHLO
+        id S230221AbiDZIqs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:46:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345787AbiDZIjb (ORCPT
+        with ESMTP id S1345786AbiDZIjb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:39:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45DF34505A;
-        Tue, 26 Apr 2022 01:31:02 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF3124F9C6;
+        Tue, 26 Apr 2022 01:31:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC41061896;
-        Tue, 26 Apr 2022 08:31:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA0DFC385A4;
-        Tue, 26 Apr 2022 08:31:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 83724B81A2F;
+        Tue, 26 Apr 2022 08:31:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA3EAC385AC;
+        Tue, 26 Apr 2022 08:31:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961861;
-        bh=zlFNlgiWN8d/TLCRFsjLrNWeu1z43hW4bs5yotmPwKM=;
+        s=korg; t=1650961864;
+        bh=EipAMTZF5YuchwXSMNVNeqbz16e87WfypAJBaEy8V9A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wYqYy5gJgdnLazyEUxQeSXMHcM4ZusDBzDw3ZeK1al7MVZsjybpv6HTdmqfYRhovN
-         x5q6CudHGNcbUZzRX1Op5INFC0auwSqyJeh2yN5zTkDiMOiZS4X2k8IGckMLeDYSHt
-         RR0hI+8g130pS3mBg42rPakUPfw3kN5ZdJhXizoQ=
+        b=T7r/quVIQRGUGAC+Qq7U6cWvhc8/X9B0LKoTwAXJsGaA6tNWzzroBfifb7o5fDYL7
+         c0tid83QTjRzndNyQrGFpgH6AZOeNBbPQHtth02VZ5vjRxvWuFnbK/h/wrnydtJXjZ
+         mDDNtazYbgskRCqkBeaK4+I9IBy93Io4LgjOUOzM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
         stable@kernel.org
-Subject: [PATCH 5.4 56/62] ext4: fix overhead calculation to account for the reserved gdt blocks
-Date:   Tue, 26 Apr 2022 10:21:36 +0200
-Message-Id: <20220426081738.828053637@linuxfoundation.org>
+Subject: [PATCH 5.4 57/62] ext4: force overhead calculation if the s_overhead_cluster makes no sense
+Date:   Tue, 26 Apr 2022 10:21:37 +0200
+Message-Id: <20220426081738.856257915@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
 References: <20220426081737.209637816@linuxfoundation.org>
@@ -51,33 +50,42 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Theodore Ts'o <tytso@mit.edu>
 
-commit 10b01ee92df52c8d7200afead4d5e5f55a5c58b1 upstream.
+commit 85d825dbf4899a69407338bae462a59aa9a37326 upstream.
 
-The kernel calculation was underestimating the overhead by not taking
-into account the reserved gdt blocks.  With this change, the overhead
-calculated by the kernel matches the overhead calculation in mke2fs.
+If the file system does not use bigalloc, calculating the overhead is
+cheap, so force the recalculation of the overhead so we don't have to
+trust the precalculated overhead in the superblock.
 
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Cc: stable@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/super.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ fs/ext4/super.c |   15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
 --- a/fs/ext4/super.c
 +++ b/fs/ext4/super.c
-@@ -3485,9 +3485,11 @@ static int count_overhead(struct super_b
- 	ext4_fsblk_t		first_block, last_block, b;
- 	ext4_group_t		i, ngroups = ext4_get_groups_count(sb);
- 	int			s, j, count = 0;
-+	int			has_super = ext4_bg_has_super(sb, grp);
- 
- 	if (!ext4_has_feature_bigalloc(sb))
--		return (ext4_bg_has_super(sb, grp) + ext4_bg_num_gdb(sb, grp) +
-+		return (has_super + ext4_bg_num_gdb(sb, grp) +
-+			(has_super ? le16_to_cpu(sbi->s_es->s_reserved_gdt_blocks) : 0) +
- 			sbi->s_itb_per_group + 2);
- 
- 	first_block = le32_to_cpu(sbi->s_es->s_first_data_block) +
+@@ -4514,9 +4514,18 @@ no_journal:
+ 	 * Get the # of file system overhead blocks from the
+ 	 * superblock if present.
+ 	 */
+-	if (es->s_overhead_clusters)
+-		sbi->s_overhead = le32_to_cpu(es->s_overhead_clusters);
+-	else {
++	sbi->s_overhead = le32_to_cpu(es->s_overhead_clusters);
++	/* ignore the precalculated value if it is ridiculous */
++	if (sbi->s_overhead > ext4_blocks_count(es))
++		sbi->s_overhead = 0;
++	/*
++	 * If the bigalloc feature is not enabled recalculating the
++	 * overhead doesn't take long, so we might as well just redo
++	 * it to make sure we are using the correct value.
++	 */
++	if (!ext4_has_feature_bigalloc(sb))
++		sbi->s_overhead = 0;
++	if (sbi->s_overhead == 0) {
+ 		err = ext4_calculate_overhead(sb);
+ 		if (err)
+ 			goto failed_mount_wq;
 
 
