@@ -2,96 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 066C7C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:01:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C98D1C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:03:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343592AbiDZHEp (ORCPT
+        id S1343613AbiDZHGg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 03:04:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41974 "EHLO
+        Tue, 26 Apr 2022 03:06:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236689AbiDZHEm (ORCPT
+        with ESMTP id S241674AbiDZHGe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 03:04:42 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 888D365D37;
-        Tue, 26 Apr 2022 00:01:36 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 09:01:32 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650956493;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=VTCRMU626wUXdIQdsZJqxEPJIS21IoevEG8EtyqRngs=;
-        b=G1YYFC7b9CA25F5dqZ9G3lB1okaKxhr7ktdUOimKsz4r416XIpu7aqXalKH35lsqmIgocG
-        XtnjaBEKDpwPiIwmZ3fqNBM4Isdnl7FJnPAOj5hbHYVoY9ZT7UGNNBtszOi7+U1+bD3qY2
-        JbPL0FSSpvsfAFkiTeZjCs8vf/Y4gHkdfqNe0H4fGOaJeICEWrx8K9Lm1YR4qwsugidY17
-        8nOAUb5Ztub8G9FAhMj0cG0HjotfyV1EenDdoeb/yfGrwwjV7Ibg1v9PtHo4Er8/V5TBJS
-        uwvSZ3E4pof+F3558WLSX6kvhxZl1Eq6LoisSWDhKx1G8QlD2Gi9TZ344r1a6Q==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650956493;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=VTCRMU626wUXdIQdsZJqxEPJIS21IoevEG8EtyqRngs=;
-        b=lYRgzZbkyghTMsuisYtZfHyNE6sUa/c2MsYt3zCtiyMmsqyoJQbiuBx91lqudW4h3ffaQ1
-        9nxLtOnBF63hLXDw==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Cc:     Ira Weiny <ira.weiny@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        outreachy@lists.linux.dev,
-        "Acked-by : Mike Rapoport" <rppt@linux.ibm.com>
-Subject: Re: [PATCH v2 1/4] mm/highmem: Fix kernel-doc warnings in highmem*.h
-Message-ID: <YmeYzKT8Ikq5SfdE@linutronix.de>
-References: <20220425162400.11334-1-fmdefrancesco@gmail.com>
- <20220425162400.11334-2-fmdefrancesco@gmail.com>
+        Tue, 26 Apr 2022 03:06:34 -0400
+Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF4986D383
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 00:03:26 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R981e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VBK82ax_1650956603;
+Received: from localhost(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VBK82ax_1650956603)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 26 Apr 2022 15:03:24 +0800
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+To:     akpm@linux-foundation.org, mike.kravetz@oracle.com
+Cc:     peterx@redhat.com, songmuchun@bytedance.com,
+        baolin.wang@linux.alibaba.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] mm: hugetlb: Add missing cache flushing in hugetlb_unshare_all_pmds()
+Date:   Tue, 26 Apr 2022 15:03:15 +0800
+Message-Id: <47441086affcabb6ecbe403173e9283b0d904b38.1650956489.git.baolin.wang@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220425162400.11334-2-fmdefrancesco@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-04-25 18:23:57 [+0200], Fabio M. De Francesco wrote:
-> index a77be5630209..aa22daeed617 100644
-> --- a/include/linux/highmem-internal.h
-> +++ b/include/linux/highmem-internal.h
-> @@ -236,9 +236,17 @@ static inline unsigned long totalhigh_pages(void) { return 0UL; }
->  
->  #endif /* CONFIG_HIGHMEM */
->  
-> -/*
-> - * Prevent people trying to call kunmap_atomic() as if it were kunmap()
-> - * kunmap_atomic() should get the return value of kmap_atomic, not the page.
-> +/**
-> + * kunmap_atomic - Unmap the virtual address mapped by kmap_atomic()
-> + * @__addr:       Virtual address to be unmapped
-> + *
-> + * Unmaps an address previously mapped by kmap_atomic() and re-enables
-> + * pagefaults and preemption. Mappings should be unmapped in the reverse
+Missed calling flush_cache_range() before removing the sharing PMD entrires,
+otherwise data consistence issue may be occurred on some architectures whose
+caches are strict and require a virtual–>physical translation to exist for
+a virtual address. Thus add it.
 
-You mind adding "Deprecated!" like kmap_atomic() has? The part about
-disabling/ enabling preemption is true for !PREEMPT_RT. The part that
-worries me is that people use it and rely on disabled preemption like
-some did in the past. 
-I've been told this API is about to be removed (or so I have been told)
-so I hope that it will be gone soon ;)
+Now no architectures enabling PMD sharing will be affected, since they do
+not have a VIVT cache. That means this issue can not be happened in practice
+so far.
 
-> + * order that they were mapped. See kmap_local_page() for details.
-> + * @__addr can be any address within the mapped page, so there is no need
-> + * to subtract any offset that has been added. In contrast to kunmap(),
-> + * this function takes the address returned from kmap_atomic(), not the
-> + * page passed to it. The compiler will warn you if you pass the page.
->   */
->  #define kunmap_atomic(__addr)					\
->  do {								\
+Fixes: 6dfeaff93be1 ("hugetlb/userfaultfd: unshare all pmds for hugetlbfs when register wp")
+Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+---
+Changes from v1:
+ - Add more comments in commit message suggested by Muchun.
+ - Add reviewed-by tag from Muchun.
+---
+ mm/hugetlb.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Sebastian
+diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+index 74c9964..1945dfb 100644
+--- a/mm/hugetlb.c
++++ b/mm/hugetlb.c
+@@ -7058,6 +7058,7 @@ void hugetlb_unshare_all_pmds(struct vm_area_struct *vma)
+ 	if (start >= end)
+ 		return;
+ 
++	flush_cache_range(vma, start, end);
+ 	/*
+ 	 * No need to call adjust_range_if_pmd_sharing_possible(), because
+ 	 * we have already done the PUD_SIZE alignment.
+-- 
+1.8.3.1
+
