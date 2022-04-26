@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D346C4167E
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:07:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEDFCC4707A
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:07:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346748AbiDZJJD (ORCPT
+        id S1347118AbiDZJKA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:09:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55744 "EHLO
+        Tue, 26 Apr 2022 05:10:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346221AbiDZIt6 (ORCPT
+        with ESMTP id S1346533AbiDZIuJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:49:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05256C7EBF;
-        Tue, 26 Apr 2022 01:37:59 -0700 (PDT)
+        Tue, 26 Apr 2022 04:50:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 720D514C3F0;
+        Tue, 26 Apr 2022 01:38:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A6AD60A67;
-        Tue, 26 Apr 2022 08:37:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65F01C385A0;
-        Tue, 26 Apr 2022 08:37:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9AA3160C4A;
+        Tue, 26 Apr 2022 08:38:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A023AC385A4;
+        Tue, 26 Apr 2022 08:38:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962278;
-        bh=CNOrExejcAtrT2uI/EvTsxM/o0aOOv5V/6eM/dQIZFk=;
+        s=korg; t=1650962303;
+        bh=FJrOSWDpdzwdtuPtPjQ59biReYwoyVznx2mr8ink2CE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=esFXcL9XtfPp7Y9Gw2Ul/ptMgjdhsYjwcrR8d7doyFN5FiyESXda8s/vY0jT4TQ+e
-         pPAhitrpVppOOusSnt76PLfqVoBXUYML5rOgDVTWWtyEHaETTPF0ZHNQY8Xm4hRKcj
-         1YV+8SI7wb/N5fLthq5+5vE+7gCprplrPum41K+c=
+        b=RSejPBqGC5hcrnzIYv/vrzlOXnZdREzYEzC2EUuCUSbBr75XoIPlX9714qBV/JSKp
+         oiSZj4JddVEAlqi3VKu8kszrukCx6DPbbjAMaQb6Bf7yLGwVh8AQtUbFLiC2P5q30I
+         a5WCPkF8K2q7Vpb+jrirh7wc0PL5DZTptGu+2KZ0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
-        Peilin Ye <peilin.ye@bytedance.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 036/124] ip6_gre: Avoid updating tunnel->tun_hlen in __gre6_xmit()
-Date:   Tue, 26 Apr 2022 10:20:37 +0200
-Message-Id: <20220426081748.330188844@linuxfoundation.org>
+        stable@vger.kernel.org, Qian Cai <quic_qiancai@quicinc.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 052/124] arm64: mm: fix p?d_leaf()
+Date:   Tue, 26 Apr 2022 10:20:53 +0200
+Message-Id: <20220426081748.781082477@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -51,46 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+From: Muchun Song <songmuchun@bytedance.com>
 
-[ Upstream commit f40c064e933d7787ca7411b699504d7a2664c1f5 ]
+[ Upstream commit 23bc8f69f0eceecbb87c3801d2e48827d2dca92b ]
 
-Do not update tunnel->tun_hlen in data plane code.  Use a local variable
-instead, just like "tunnel_hlen" in net/ipv4/ip_gre.c:gre_fb_xmit().
+The pmd_leaf() is used to test a leaf mapped PMD, however, it misses
+the PROT_NONE mapped PMD on arm64.  Fix it.  A real world issue [1]
+caused by this was reported by Qian Cai. Also fix pud_leaf().
 
-Co-developed-by: Cong Wang <cong.wang@bytedance.com>
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://patchwork.kernel.org/comment/24798260/ [1]
+Fixes: 8aa82df3c123 ("arm64: mm: add p?d_leaf() definitions")
+Reported-by: Qian Cai <quic_qiancai@quicinc.com>
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+Link: https://lore.kernel.org/r/20220422060033.48711-1-songmuchun@bytedance.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/ip6_gre.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ arch/arm64/include/asm/pgtable.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
-index 466a5610e3ca..288720838329 100644
---- a/net/ipv6/ip6_gre.c
-+++ b/net/ipv6/ip6_gre.c
-@@ -743,6 +743,7 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
- 		struct ip_tunnel_info *tun_info;
- 		const struct ip_tunnel_key *key;
- 		__be16 flags;
-+		int tun_hlen;
+diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pgtable.h
+index 08363d3cc1da..ed57717cd004 100644
+--- a/arch/arm64/include/asm/pgtable.h
++++ b/arch/arm64/include/asm/pgtable.h
+@@ -535,7 +535,7 @@ extern pgprot_t phys_mem_access_prot(struct file *file, unsigned long pfn,
+ 				 PMD_TYPE_TABLE)
+ #define pmd_sect(pmd)		((pmd_val(pmd) & PMD_TYPE_MASK) == \
+ 				 PMD_TYPE_SECT)
+-#define pmd_leaf(pmd)		pmd_sect(pmd)
++#define pmd_leaf(pmd)		(pmd_present(pmd) && !pmd_table(pmd))
+ #define pmd_bad(pmd)		(!pmd_table(pmd))
  
- 		tun_info = skb_tunnel_info_txcheck(skb);
- 		if (IS_ERR(tun_info) ||
-@@ -760,9 +761,9 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
- 		dsfield = key->tos;
- 		flags = key->tun_flags &
- 			(TUNNEL_CSUM | TUNNEL_KEY | TUNNEL_SEQ);
--		tunnel->tun_hlen = gre_calc_hlen(flags);
-+		tun_hlen = gre_calc_hlen(flags);
+ #define pmd_leaf_size(pmd)	(pmd_cont(pmd) ? CONT_PMD_SIZE : PMD_SIZE)
+@@ -625,7 +625,7 @@ static inline unsigned long pmd_page_vaddr(pmd_t pmd)
+ #define pud_none(pud)		(!pud_val(pud))
+ #define pud_bad(pud)		(!pud_table(pud))
+ #define pud_present(pud)	pte_present(pud_pte(pud))
+-#define pud_leaf(pud)		pud_sect(pud)
++#define pud_leaf(pud)		(pud_present(pud) && !pud_table(pud))
+ #define pud_valid(pud)		pte_valid(pud_pte(pud))
  
--		gre_build_header(skb, tunnel->tun_hlen,
-+		gre_build_header(skb, tun_hlen,
- 				 flags, protocol,
- 				 tunnel_id_to_key32(tun_info->key.tun_id),
- 				 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++)
+ static inline void set_pud(pud_t *pudp, pud_t pud)
 -- 
 2.35.1
 
