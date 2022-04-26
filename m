@@ -2,108 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BFFDC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:33:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B4B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:33:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345136AbiDZIgi (ORCPT
+        id S1345158AbiDZIgn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:36:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60612 "EHLO
+        Tue, 26 Apr 2022 04:36:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345160AbiDZIeK (ORCPT
+        with ESMTP id S1345172AbiDZIeL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:34:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A78E23A5E0;
-        Tue, 26 Apr 2022 01:26:18 -0700 (PDT)
+        Tue, 26 Apr 2022 04:34:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71A956E8FE;
+        Tue, 26 Apr 2022 01:26:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 445F1617AE;
-        Tue, 26 Apr 2022 08:26:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B942C385AC;
-        Tue, 26 Apr 2022 08:26:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961577;
-        bh=LeWPxh0IAzIoGKsay5d2EsBqNSqXGDoQrwxNNt9kzI8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z6dbo6i3EkhM8uFWCUYvRBY2/TCF97me3BJF566yr+AYP9LgS5+btv+0FCUqiJ7Fi
-         9nsm5EXmnhBn4iP+qF8GQOo6bIAmOrHxWIszpFKWe402nWF8zGJHmQnIGqm/IQFteD
-         Jo3TS50Z7cVfQSkAgV6Ym6asDhmshltfn5PSGzwE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Flavio Leitner <fbl@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 14/53] net/packet: fix packet_sock xmit return value checking
-Date:   Tue, 26 Apr 2022 10:20:54 +0200
-Message-Id: <20220426081736.072486186@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081735.651926456@linuxfoundation.org>
-References: <20220426081735.651926456@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        by ams.source.kernel.org (Postfix) with ESMTPS id 26F98B81CF9;
+        Tue, 26 Apr 2022 08:26:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B103AC385A4;
+        Tue, 26 Apr 2022 08:26:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650961577;
+        bh=NVUJ0VORKi7g0jZiS1qERChpaAaP2AdAWHVP0rm62mI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=RDMfNqTLJeauKUffKk9z6elUttJ2T3yrOJhLD/2W9oSrW/xrzV4m9NyT0ubeMi1vi
+         PzmDKvPgzBbw/Efv5yOeBL45LZvmyFJ0FUESFeWEql3jgE/mKr4DAWRBdzdGp1JCPR
+         I7b6G+KWS/Tbyz1KLRdP5/RL03iYot09ye9uo9r37vz9lFFIUiMcaiIJ1ebY81UMgH
+         2W4DMKjpWPBekpMp4zlYX0wSjt8UZ1PTvelgmSTx2T4fMwGaS/jvcJAshRcdj1uVa4
+         HCT/EV4FwhKZBnK8+CfzFVs9eY4pYiOHYEEeVP8uoTDb0DWboYp76HiuGY46rh3z+R
+         oXAaC81v093Yw==
+From:   Roger Quadros <rogerq@kernel.org>
+To:     krzk@kernel.org
+Cc:     miquel.raynal@bootlin.com, tony@atomide.com, vigneshr@ti.com,
+        kishon@ti.com, nm@ti.com, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Roger Quadros <rogerq@kernel.org>
+Subject: [PATCH v4 0/2] memory: omap-gpmc: Allow module build
+Date:   Tue, 26 Apr 2022 11:26:09 +0300
+Message-Id: <20220426082611.24427-1-rogerq@kernel.org>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangbin Liu <liuhangbin@gmail.com>
+Hi,
 
-[ Upstream commit 29e8e659f984be00d75ec5fef4e37c88def72712 ]
+These patches allow OMAP_GPMC config to be visible in menuconfig
+and buildable as a module.
 
-packet_sock xmit could be dev_queue_xmit, which also returns negative
-errors. So only checking positive errors is not enough, or userspace
-sendmsg may return success while packet is not send out.
+cheers,
+-roger
 
-Move the net_xmit_errno() assignment in the braces as checkpatch.pl said
-do not use assignment in if condition.
+Changelog:
+v4:
+- drop COMPILE_TEST as include/linux/irqdomain.h does not have
+fallbacks if CONFIG_IRQ_DOMAIN is not available. So build will
+fail with COMPILE_TEST on platforms not having CONFIG_IRQ_DOMAIN.
+- use GPL instead of GPL v2 for MODULE_LICENSE. Fixes checkpatch
+warning.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-by: Flavio Leitner <fbl@redhat.com>
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/packet/af_packet.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+v3:
+- Remove not required MODULE_ALIAS
+- Mention in commit message why we need to remove of_match_node() call
 
-diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index b951f411dded..f654f79e3310 100644
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -2791,8 +2791,9 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
- 
- 		status = TP_STATUS_SEND_REQUEST;
- 		err = po->xmit(skb);
--		if (unlikely(err > 0)) {
--			err = net_xmit_errno(err);
-+		if (unlikely(err != 0)) {
-+			if (err > 0)
-+				err = net_xmit_errno(err);
- 			if (err && __packet_get_status(po, ph) ==
- 				   TP_STATUS_AVAILABLE) {
- 				/* skb was destructed already */
-@@ -2993,8 +2994,12 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
- 		skb->no_fcs = 1;
- 
- 	err = po->xmit(skb);
--	if (err > 0 && (err = net_xmit_errno(err)) != 0)
--		goto out_unlock;
-+	if (unlikely(err != 0)) {
-+		if (err > 0)
-+			err = net_xmit_errno(err);
-+		if (err)
-+			goto out_unlock;
-+	}
- 
- 	dev_put(dev);
- 
+v2:
+- Allow building as a module
+
+Roger Quadros (2):
+  memory: omap-gpmc: Make OMAP_GPMC config visible and selectable
+  memory: omap-gpmc: Allow building as a module
+
+ drivers/memory/Kconfig     |  2 +-
+ drivers/memory/omap-gpmc.c | 43 ++++++++++++++++++++------------------
+ 2 files changed, 24 insertions(+), 21 deletions(-)
+
 -- 
-2.35.1
-
-
+2.17.1
 
