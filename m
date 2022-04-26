@@ -2,81 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC98BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:33:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC676C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:33:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345179AbiDZIhA (ORCPT
+        id S1345185AbiDZIhD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:37:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34108 "EHLO
+        Tue, 26 Apr 2022 04:37:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345173AbiDZIeL (ORCPT
+        with ESMTP id S1345199AbiDZIeM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:34:11 -0400
+        Tue, 26 Apr 2022 04:34:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B6026EB21;
-        Tue, 26 Apr 2022 01:26:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78EB56F9D3;
+        Tue, 26 Apr 2022 01:26:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3437E617AE;
-        Tue, 26 Apr 2022 08:26:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69BCCC385AE;
-        Tue, 26 Apr 2022 08:26:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650961580;
-        bh=krMZrWvMwPJVI9cTHoDUkWLh2zEvMrbq5TmpSLtJPAE=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 029AB6179E;
+        Tue, 26 Apr 2022 08:26:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14BEFC385A4;
+        Tue, 26 Apr 2022 08:26:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650961586;
+        bh=e4G0xTSYBF2+KO/eQLTax+MxgRIrhCoscGPppvkspR0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tjQ7bSIznqmBOQFk1emU7ZaPRo5WntOb36802ej6rLrPmcesjyaPm03Y0SxAoq79u
-         7nfLo3v9xICM5AB3Mz04uAJpSGDgGXTbO3ZR/U4enJEkH/dlHzMGnd1zVlqkCpjIWj
-         f2J2uZGRJdJT7sxDY+z5sLAzkk0vlhRtnrsgkKVc+2lNYo970wGYg47c7jJTw1Ea74
-         NQL4MgrXWK5WDmQc+pO+l7q1CUM3VSGun4Gwz5gA3dGtbECRfkLipK0ekqIo9UCw4G
-         mEOoV5ErocHqJ3ViMSeNRO5YcKuzd5wEa/bidK8Znt1H5Sni6ZD20aXDC7kjMSSH/7
-         5UlTDiqWewXQg==
-From:   Roger Quadros <rogerq@kernel.org>
-To:     krzk@kernel.org
-Cc:     miquel.raynal@bootlin.com, tony@atomide.com, vigneshr@ti.com,
-        kishon@ti.com, nm@ti.com, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Roger Quadros <rogerq@kernel.org>
-Subject: [PATCH v4 1/2] memory: omap-gpmc: Make OMAP_GPMC config visible and selectable
-Date:   Tue, 26 Apr 2022 11:26:10 +0300
-Message-Id: <20220426082611.24427-2-rogerq@kernel.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220426082611.24427-1-rogerq@kernel.org>
-References: <20220426082611.24427-1-rogerq@kernel.org>
+        b=W323hOfnl1kfWlr3cw6gYwVm6cm+p0I0RwmcoWDhGki/Sn7SG/zrXQDBNDglPzLVm
+         YCneBLUTqJwJqZPCaYarupYEUWEOt1mzRnGK9rhlo1sOnINY6OFl9JBTX8vDaXxXcE
+         Bzfz5sAK+50cP7rTdivj9x2pVy41moOPpgCiL2NQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Liviu Dudau <liviu.dudau@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Kees Cook <keescook@chromium.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 17/53] ARM: vexpress/spc: Avoid negative array index when !SMP
+Date:   Tue, 26 Apr 2022 10:20:57 +0200
+Message-Id: <20220426081736.157427205@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220426081735.651926456@linuxfoundation.org>
+References: <20220426081735.651926456@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-So far for armv7 TI platforms, GPMC was being selected by
-arch/arm/mach-* architecture Kconfig files.
+From: Kees Cook <keescook@chromium.org>
 
-For K3 platforms, GPMC is no longer required for basic boot
-and cannot be always enabled by default by mach- Kconfig.
+[ Upstream commit b3f1dd52c991d79118f35e6d1bf4d7cb09882e38 ]
 
-We need a way for user (or board defconfig) to enable
-it if required so make OMAP_GPMC Kconfig option always visible.
+When building multi_v7_defconfig+CONFIG_SMP=n, -Warray-bounds exposes
+a couple negative array index accesses:
 
-Drop COMPILE_TEST as build fails if IRQ_DOMAIN is not enabled.
+arch/arm/mach-vexpress/spc.c: In function 've_spc_clk_init':
+arch/arm/mach-vexpress/spc.c:583:21: warning: array subscript -1 is below array bounds of 'bool[2]' {aka '_Bool[2]'} [-Warray-bounds]
+  583 |   if (init_opp_table[cluster])
+      |       ~~~~~~~~~~~~~~^~~~~~~~~
+arch/arm/mach-vexpress/spc.c:556:7: note: while referencing 'init_opp_table'
+  556 |  bool init_opp_table[MAX_CLUSTERS] = { false };
+      |       ^~~~~~~~~~~~~~
+arch/arm/mach-vexpress/spc.c:592:18: warning: array subscript -1 is below array bounds of 'bool[2]' {aka '_Bool[2]'} [-Warray-bounds]
+  592 |    init_opp_table[cluster] = true;
+      |    ~~~~~~~~~~~~~~^~~~~~~~~
+arch/arm/mach-vexpress/spc.c:556:7: note: while referencing 'init_opp_table'
+  556 |  bool init_opp_table[MAX_CLUSTERS] = { false };
+      |       ^~~~~~~~~~~~~~
 
-Signed-off-by: Roger Quadros <rogerq@kernel.org>
+Skip this logic when built !SMP.
+
+Link: https://lore.kernel.org/r/20220331190443.851661-1-keescook@chromium.org
+Cc: Liviu Dudau <liviu.dudau@arm.com>
+Cc: Sudeep Holla <sudeep.holla@arm.com>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: linux-arm-kernel@lists.infradead.org
+Acked-by: Liviu Dudau <liviu.dudau@arm.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/memory/Kconfig | 2 +-
+ arch/arm/mach-vexpress/spc.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/memory/Kconfig b/drivers/memory/Kconfig
-index 30bff6cb1b8d..da9634daad04 100644
---- a/drivers/memory/Kconfig
-+++ b/drivers/memory/Kconfig
-@@ -103,7 +103,7 @@ config TI_EMIF
- 	  temperature changes
+diff --git a/arch/arm/mach-vexpress/spc.c b/arch/arm/mach-vexpress/spc.c
+index 55bbbc3b328f..e65c04be86cc 100644
+--- a/arch/arm/mach-vexpress/spc.c
++++ b/arch/arm/mach-vexpress/spc.c
+@@ -580,7 +580,7 @@ static int __init ve_spc_clk_init(void)
+ 		}
  
- config OMAP_GPMC
--	bool "Texas Instruments OMAP SoC GPMC driver" if COMPILE_TEST
-+	bool "Texas Instruments OMAP SoC GPMC driver"
- 	depends on OF_ADDRESS
- 	select GPIOLIB
- 	help
+ 		cluster = topology_physical_package_id(cpu_dev->id);
+-		if (init_opp_table[cluster])
++		if (cluster < 0 || init_opp_table[cluster])
+ 			continue;
+ 
+ 		if (ve_init_opp_table(cpu_dev))
 -- 
-2.17.1
+2.35.1
+
+
 
