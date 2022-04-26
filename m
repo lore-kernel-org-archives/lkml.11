@@ -2,163 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C2CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 23:33:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8B29C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 23:33:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356146AbiDZXgd (ORCPT
+        id S1356156AbiDZXgf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 19:36:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45146 "EHLO
+        Tue, 26 Apr 2022 19:36:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356126AbiDZXgY (ORCPT
+        with ESMTP id S1356144AbiDZXgc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 19:36:24 -0400
-Received: from mail-oa1-x2c.google.com (mail-oa1-x2c.google.com [IPv6:2001:4860:4864:20::2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5163B3191D
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 16:33:15 -0700 (PDT)
-Received: by mail-oa1-x2c.google.com with SMTP id 586e51a60fabf-e2fa360f6dso307116fac.2
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 16:33:15 -0700 (PDT)
+        Tue, 26 Apr 2022 19:36:32 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2E0B37000
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 16:33:22 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id y19so487867ljd.4
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 16:33:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=mPLQqqv78H4vpATnizZrr8k/pThUI48bHzxuZTk6fwo=;
-        b=wX1c0JS3y92QFPGUeiWHj+woXNrE7erTJk1Ex1Fdj0oLhGeW9WijdzMooVfBdRU8/w
-         xsy7sCPjHKmvPO6vxB5Gj0LrX9a4k5539SnsgDlw9uIP/3YZSbfSfPOODmfkhe+xjtuB
-         qNDjL4sT24F6tM7p+iqXuUJk/mMzofIPrc/1ZZojc77kJmhbZuiKPWZrKvwALm3tqiBB
-         yyi/tKSqfNHHhA7CmBivBsydaiVENxDTGhckVAMknF2PZIIkGxbkhyTDJZrwWs43AmUx
-         4riM15Fj3ccawuBPlYgeJt4IiZZUo/LvlxRCzE0qA9SXNCYbwcn1XLtmRJxkK6+cOoab
-         u7ow==
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YVvIQh6F4l539Ju82FbPOXOwgPIjKwZXSPtA68ehILI=;
+        b=bQ7chrN+CgDUyPpEzhWRxIbKhfeo+K9pDNSblFNsuyxAaM+EiF79z2/X2jr7SR/nlg
+         MdaJKcmBZJQD/VoJfWZsy7qLTPyT3zkjCh9r7ws+STzLLUbolOMzidAD48MeqSUm3YVc
+         G4tDLURnElsWyzf98HA0nIt6sMdJYpfTLyFYE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=mPLQqqv78H4vpATnizZrr8k/pThUI48bHzxuZTk6fwo=;
-        b=ROqOKfbIbS3QP+GIJXwtYHBa5+bO1LmaPfjvw4FRzdDvrAlUVFsR/zQc9WC6wWjGzI
-         wIL/1pslw+TUOkAkCv0TYd/hl7SohrgiLsMgbCknLGdzzQlGS3onuPA4QKvRcfDSZVZv
-         qtnY4Q7r+g7PFINVwwGUQqggqe8Xj1kRzRq+2Lb4GGSSw8DEONgJ8mmtqUCQr7nx0OcD
-         w4jf9UmWGu9DMp44xr/cq8Wi9ldE5OJphWn65OHYucWY4+HdJI+CPwCWQjXv8zec0ESI
-         WzJCTbc7z8Oe1JBm/6vcnWDw5xXRQi/REqIWEDN5a2Bgy31NDAsUqjCwdCEbCrteq8Cw
-         zsLg==
-X-Gm-Message-State: AOAM531cCeJwSF2cLQEYgmqSzf2ppJ7HgQb9rJcSzRFBt5OfbGGddx6c
-        Sqc4zBIqPMVN24RwFdt8Yn8YDg==
-X-Google-Smtp-Source: ABdhPJyFzx5w7Bc5hjOwS1ur3aTP5yIT4qlqeVoSB/Ri8LWJ2hKuoMOgzDxIeA7qxam0MS/2BSW8mg==
-X-Received: by 2002:a05:6870:471f:b0:e9:5b13:3881 with SMTP id b31-20020a056870471f00b000e95b133881mr3603134oaq.106.1651015994714;
-        Tue, 26 Apr 2022 16:33:14 -0700 (PDT)
-Received: from ripper.. ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id k2-20020a4adfa2000000b0033a3381a7f1sm6151658ook.44.2022.04.26.16.33.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 16:33:14 -0700 (PDT)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Johan Hovold <johan+linaro@kernel.org>
-Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 3/3] soc: qcom: rpmhpd: add sc8280xp & sa8540p rpmh power-domains
-Date:   Tue, 26 Apr 2022 16:35:08 -0700
-Message-Id: <20220426233508.1762345-4-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220426233508.1762345-1-bjorn.andersson@linaro.org>
-References: <20220426233508.1762345-1-bjorn.andersson@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YVvIQh6F4l539Ju82FbPOXOwgPIjKwZXSPtA68ehILI=;
+        b=tMDy4YBqS5sZCxa0LRdcvcXaZsQrNm1B0VEZUrPdx5lhq01YKmZdSiWsW+U1+9SAXf
+         fEPqTlClE7MjBC5ghQYpkZho/esf9gkfWn7yzzqT+P+Pct+UmFHj3GsJ/EStWgvzTarP
+         2uhJJP7S4/XZZb4ljMRILINy4Vm4W5XndM8Q0f5UnzFfwQu5vu/WnvCS7fW4WVkQ0sHL
+         lWRGItwACdvQ/YNaUOsKca6ARkTrZfqlpvGHAKFYNy6arPjAe/zH2X8FutFEoxHLW6/R
+         NbzykU6u/gXr+VWF+TKYHgCVWS6nBaQSmbNaPnI8SuBXa5xy4wve1fXkQswVDDzdYXmW
+         4tgg==
+X-Gm-Message-State: AOAM53067VTlIBq85zwgF6WwQwP+qSmCB3dTVnKqBIzxl389g11hsFHR
+        tS4q1cAZ2zoNKk4o5JsQVg+bE2JfiCPEEMyM
+X-Google-Smtp-Source: ABdhPJwa2exffenMIx3sng8vr0YFz2WGn6rmlz/4M8ZUp7/l1TQT4XAKPR2Uk00fBA0jjFqZLBqbVw==
+X-Received: by 2002:a2e:9101:0:b0:24b:554b:1203 with SMTP id m1-20020a2e9101000000b0024b554b1203mr16068289ljg.508.1651016000801;
+        Tue, 26 Apr 2022 16:33:20 -0700 (PDT)
+Received: from mail-lj1-f180.google.com (mail-lj1-f180.google.com. [209.85.208.180])
+        by smtp.gmail.com with ESMTPSA id p8-20020a056512328800b0047205ddcf7csm938612lfe.35.2022.04.26.16.33.19
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Apr 2022 16:33:19 -0700 (PDT)
+Received: by mail-lj1-f180.google.com with SMTP id m23so464016ljb.8
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 16:33:19 -0700 (PDT)
+X-Received: by 2002:a2e:8789:0:b0:24f:124c:864a with SMTP id
+ n9-20020a2e8789000000b0024f124c864amr7581754lji.164.1651015999161; Tue, 26
+ Apr 2022 16:33:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220426145445.2282274-1-agruenba@redhat.com> <CAHk-=wi7o+fHYBTuCQQdHD112YHQtO21Y3+wxNYypjdo8feKFg@mail.gmail.com>
+ <CAHc6FU48681X8aUK+g7UUN7q5b6rkVBzTP7h_zbE4XqZYAiw3g@mail.gmail.com>
+In-Reply-To: <CAHc6FU48681X8aUK+g7UUN7q5b6rkVBzTP7h_zbE4XqZYAiw3g@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 26 Apr 2022 16:33:02 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjMB1-xCOCBtsSMmQuFV9G+vNyCY1O_LsoqOd=0QS4yYg@mail.gmail.com>
+Message-ID: <CAHk-=wjMB1-xCOCBtsSMmQuFV9G+vNyCY1O_LsoqOd=0QS4yYg@mail.gmail.com>
+Subject: Re: [GIT PULL] gfs2 fix
+To:     Andreas Gruenbacher <agruenba@redhat.com>
+Cc:     cluster-devel <cluster-devel@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Qualcomm sc8280xp platform has 13 and the sa8540p platform has 11
-power-domains. Add compatibles, the typically used ones power-domains
-and their relevant active-only variants, to the RPMh power-domain
-driver.
+On Tue, Apr 26, 2022 at 2:28 PM Andreas Gruenbacher <agruenba@redhat.com> wrote:
+>
+> Btrfs has a comment in that place that reads:
+>
+>     /* No increment (+=) because iomap returns a cumulative value. */
 
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
----
+What a truly horrid interface. But you are triggering repressed
+childhood memories:
 
-Changes since v1:
-- Added QPHY
-- Split out sa8540
-- Sorted the entries alphabetically
+> That's so that we can complete the tail of an asynchronous write
+> asynchronously after a failed page fault and subsequent fault-in.
 
- drivers/soc/qcom/rpmhpd.c | 53 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 53 insertions(+)
+yeah, that makes me go "I remember something like that".
 
-diff --git a/drivers/soc/qcom/rpmhpd.c b/drivers/soc/qcom/rpmhpd.c
-index f8d28e902942..05fff8691ee3 100644
---- a/drivers/soc/qcom/rpmhpd.c
-+++ b/drivers/soc/qcom/rpmhpd.c
-@@ -180,6 +180,36 @@ static struct rpmhpd mxc_ao = {
- 	.res_name = "mxc.lvl",
- };
- 
-+static struct rpmhpd nsp = {
-+	.pd = { .name = "nsp", },
-+	.res_name = "nsp.lvl",
-+};
-+
-+static struct rpmhpd qphy = {
-+	.pd = { .name = "qphy", },
-+	.res_name = "qphy.lvl",
-+};
-+
-+/* SA8540P RPMH powerdomains */
-+static struct rpmhpd *sa8540p_rpmhpds[] = {
-+	[SC8280XP_CX] = &cx,
-+	[SC8280XP_CX_AO] = &cx_ao,
-+	[SC8280XP_EBI] = &ebi,
-+	[SC8280XP_GFX] = &gfx,
-+	[SC8280XP_LCX] = &lcx,
-+	[SC8280XP_LMX] = &lmx,
-+	[SC8280XP_MMCX] = &mmcx,
-+	[SC8280XP_MMCX_AO] = &mmcx_ao,
-+	[SC8280XP_MX] = &mx,
-+	[SC8280XP_MX_AO] = &mx_ao,
-+	[SC8280XP_NSP] = &nsp,
-+};
-+
-+static const struct rpmhpd_desc sa8540p_desc = {
-+	.rpmhpds = sa8540p_rpmhpds,
-+	.num_pds = ARRAY_SIZE(sa8540p_rpmhpds),
-+};
-+
- /* SDM845 RPMH powerdomains */
- static struct rpmhpd *sdm845_rpmhpds[] = {
- 	[SDM845_CX] = &cx_w_mx_parent,
-@@ -378,10 +408,33 @@ static const struct rpmhpd_desc sc8180x_desc = {
- 	.num_pds = ARRAY_SIZE(sc8180x_rpmhpds),
- };
- 
-+/* SC8280xp RPMH powerdomains */
-+static struct rpmhpd *sc8280xp_rpmhpds[] = {
-+	[SC8280XP_CX] = &cx,
-+	[SC8280XP_CX_AO] = &cx_ao,
-+	[SC8280XP_EBI] = &ebi,
-+	[SC8280XP_GFX] = &gfx,
-+	[SC8280XP_LCX] = &lcx,
-+	[SC8280XP_LMX] = &lmx,
-+	[SC8280XP_MMCX] = &mmcx,
-+	[SC8280XP_MMCX_AO] = &mmcx_ao,
-+	[SC8280XP_MX] = &mx,
-+	[SC8280XP_MX_AO] = &mx_ao,
-+	[SC8280XP_NSP] = &nsp,
-+	[SC8280XP_QPHY] = &qphy,
-+};
-+
-+static const struct rpmhpd_desc sc8280xp_desc = {
-+	.rpmhpds = sc8280xp_rpmhpds,
-+	.num_pds = ARRAY_SIZE(sc8280xp_rpmhpds),
-+};
-+
- static const struct of_device_id rpmhpd_match_table[] = {
-+	{ .compatible = "qcom,sa8540p-rpmhpd", .data = &sa8540p_desc },
- 	{ .compatible = "qcom,sc7180-rpmhpd", .data = &sc7180_desc },
- 	{ .compatible = "qcom,sc7280-rpmhpd", .data = &sc7280_desc },
- 	{ .compatible = "qcom,sc8180x-rpmhpd", .data = &sc8180x_desc },
-+	{ .compatible = "qcom,sc8280xp-rpmhpd", .data = &sc8280xp_desc },
- 	{ .compatible = "qcom,sdm845-rpmhpd", .data = &sdm845_desc },
- 	{ .compatible = "qcom,sdx55-rpmhpd", .data = &sdx55_desc},
- 	{ .compatible = "qcom,sdx65-rpmhpd", .data = &sdx65_desc},
--- 
-2.35.1
+> That would be great, but applications don't seem to be able to cope
+> with short direct writes, so we must turn partial failure into total
+> failure here. There's at least one xfstest that checks for that as
+> well.
 
+What a complete crock. You're telling me that you did some writes, but
+then you can't tell user space that writes happened because that would
+confuse things.
+
+Direct-IO is some truly hot disgusting garbage.
+
+Happily it's only used for things like databases that nobody sane
+would care about anyway.
+
+Anyway, none of that makes any sense, since you do this:
+
+                ret = gfs2_file_direct_write(iocb, from, &gh);
+                if (ret < 0 || !iov_iter_count(from))
+                        goto out_unlock;
+
+                iocb->ki_flags |= IOCB_DSYNC;
+                buffered = gfs2_file_buffered_write(iocb, from, &gh);
+
+so you're saying that the direct write will never partially succeed,
+but then in gfs2_file_write_iter() it very much looks like it's
+falling back to buffered writes for that case.
+
+Hmm. Very odd.
+
+I assume this is all due to that
+
+        /* Silently fall back to buffered I/O when writing beyond EOF */
+        if (iocb->ki_pos + iov_iter_count(from) > i_size_read(&ip->i_inode))
+
+thing, so this all makes some perverse kind of sense, but it still
+looks like this code just needs some serious serious commentary.
+
+So you *can* have a partial write if you hit the end of the file, and
+then you'll continue that partial write with the buffered code.
+
+But an actual _failure_ will not do that, and instead return an error
+even if the write was partially done.
+
+But then *some* failures aren't failures at all, and without any
+comments do this
+
+        if (ret == -ENOTBLK)
+                ret = 0;
+
+
+And remind me again - this all is meant for applications that
+supposedly care about consistency on disk?
+
+And the xfs tests actually have a *test* for that case, to make sure
+that nobody can sanely *really* know how much of the write succeeded
+if it was a DIO write?
+
+Gotcha.
+
+> > The reason I think I'm full of sh*t is that you say that the problem
+> > occurs in gfs2_file_buffered_write(), not in that
+> > gfs2_file_direct_write() case.
+>
+> Right, we're having that issue with buffered writes.
+
+I have to say, compared to all the crazy things I see in the DIO path,
+the buffered write path actually looks almost entirely sane.
+
+Of course, gfs2_file_read_iter() counts how many bytes it has read in
+a variable called 'written', and gfs2_file_buffered_write() counts the
+bytes it has written in a variable called 'read', so "entirely sane"
+is all very very relative.
+
+I'm sure there's some good reason (job security?) for all this insanity.
+
+But I now have to go dig my eyes out with a rusty spoon.
+
+But before I do that, I have one more question (I'm going to regret
+this, aren't I?):
+
+In gfs2_file_buffered_write(), when it has done that
+fault_in_iov_iter_readable(), and it decides that that succeeded, it
+does
+
+                        if (gfs2_holder_queued(gh))
+                                goto retry_under_glock;
+                        if (read && !(iocb->ki_flags & IOCB_DIRECT))
+                                goto out_uninit;
+                        goto retry;
+
+so if it still has that lock (if I understand correctly), it will always retry.
+
+But if it *lost* the lock, it will retry only if was a direct write,
+and return a partial success for a regular write() rather than
+continue the write.
+
+Whaa? I'm assuming that this is more of that "direct writes have to
+succeed fully or not at all", but according to POSIX *regular* writes
+should also succeed fully, unless some error happens.
+
+Losing the lock doesn't sound like an error to me.
+
+And there are a lot of applications that do assume "write to a regular
+file didn't complete fully means that the disk is full" etc. Because
+that's the traditional meaning.
+
+This doesn't seem to be related to any data corruption issue, but it does smell.
+
+             Linus
