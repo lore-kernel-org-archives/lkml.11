@@ -2,44 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EC57C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:44:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C210C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:44:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345667AbiDZIrH (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:47:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36542 "EHLO
+        id S233297AbiDZIrY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:47:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345817AbiDZIje (ORCPT
+        with ESMTP id S1345810AbiDZIje (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:39:34 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB2319E9F0;
-        Tue, 26 Apr 2022 01:31:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F0E873052;
+        Tue, 26 Apr 2022 01:31:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 990C9B81CF3;
-        Tue, 26 Apr 2022 08:31:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7619C385A0;
-        Tue, 26 Apr 2022 08:31:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 05836B81CAF;
+        Tue, 26 Apr 2022 08:31:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F241C385A4;
+        Tue, 26 Apr 2022 08:31:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961900;
-        bh=7ZPOPnk1sXaTQkRJX3y14F/k4Em2x0E9p1XyCR9NRpY=;
+        s=korg; t=1650961885;
+        bh=9suHw5+SWHdmWsxPweh/tT0DhUYAvl+IrasUurygaMc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oRobJJGQIvFbCZ5ZlmpZIAjsKFMDAWNDv2hdk4JK6DXToA7K9hpdDC4nv2GG+kuq8
-         l5HsQTTNOu0Ph764VossAwJfuPhz6jWv6gxUCyed5B6MZhwz7IXV1K5AOdDyavLUJ6
-         2xVFJg0FIpYOCul89T2eLI+G5v77tQK5ZgEaXT5g=
+        b=j7gI/PWkj/HNsNuiViQGYC8F5dvrF2YqCHDXnEfn6cdl4LBL7Jgmj/xMten3vmLoa
+         9qOWSQ5E33236J8UDypU5vdZBitEme1xNul6OhpEExfCtGrQcxnseR4W0eZsTms0RN
+         4erSCO+N7z6Mf63sthVl+Zw6NHY+Wt3kYkr1gYcw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Al Grant <al.grant@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH 5.4 51/62] arm_pmu: Validate single/group leader events
-Date:   Tue, 26 Apr 2022 10:21:31 +0200
-Message-Id: <20220426081738.684978378@linuxfoundation.org>
+        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>
+Subject: [PATCH 5.4 46/62] xtensa: fix a7 clobbering in coprocessor context load/store
+Date:   Tue, 26 Apr 2022 10:21:26 +0200
+Message-Id: <20220426081738.542798080@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
 References: <20220426081737.209637816@linuxfoundation.org>
@@ -51,54 +47,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Herring <robh@kernel.org>
+From: Max Filippov <jcmvbkbc@gmail.com>
 
-commit e5c23779f93d45e39a52758ca593bd7e62e9b4be upstream.
+commit 839769c35477d4acc2369e45000ca7b0b6af39a7 upstream.
 
-In the case where there is only a cycle counter available (i.e.
-PMCR_EL0.N is 0) and an event other than CPU cycles is opened, the open
-should fail as the event can never possibly be scheduled. However, the
-event validation when an event is opened is skipped when the group
-leader is opened. Fix this by always validating the group leader events.
+Fast coprocessor exception handler saves a3..a6, but coprocessor context
+load/store code uses a4..a7 as temporaries, potentially clobbering a7.
+'Potentially' because coprocessor state load/store macros may not use
+all four temporary registers (and neither FPU nor HiFi macros do).
+Use a3..a6 as intended.
 
-Reported-by: Al Grant <al.grant@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Acked-by: Mark Rutland <mark.rutland@arm.com>
-Link: https://lore.kernel.org/r/20220408203330.4014015-1-robh@kernel.org
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Will Deacon <will@kernel.org>
+Cc: stable@vger.kernel.org
+Fixes: c658eac628aa ("[XTENSA] Add support for configurable registers and coprocessors")
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/perf/arm_pmu.c |   10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ arch/xtensa/kernel/coprocessor.S |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/perf/arm_pmu.c
-+++ b/drivers/perf/arm_pmu.c
-@@ -322,6 +322,9 @@ validate_group(struct perf_event *event)
- 	if (!validate_event(event->pmu, &fake_pmu, leader))
- 		return -EINVAL;
+--- a/arch/xtensa/kernel/coprocessor.S
++++ b/arch/xtensa/kernel/coprocessor.S
+@@ -37,7 +37,7 @@
+ 	.if XTENSA_HAVE_COPROCESSOR(x);					\
+ 		.align 4;						\
+ 	.Lsave_cp_regs_cp##x:						\
+-		xchal_cp##x##_store a2 a4 a5 a6 a7;			\
++		xchal_cp##x##_store a2 a3 a4 a5 a6;			\
+ 		jx	a0;						\
+ 	.endif
  
-+	if (event == leader)
-+		return 0;
-+
- 	for_each_sibling_event(sibling, leader) {
- 		if (!validate_event(event->pmu, &fake_pmu, sibling))
- 			return -EINVAL;
-@@ -411,12 +414,7 @@ __hw_perf_event_init(struct perf_event *
- 		local64_set(&hwc->period_left, hwc->sample_period);
- 	}
+@@ -54,7 +54,7 @@
+ 	.if XTENSA_HAVE_COPROCESSOR(x);					\
+ 		.align 4;						\
+ 	.Lload_cp_regs_cp##x:						\
+-		xchal_cp##x##_load a2 a4 a5 a6 a7;			\
++		xchal_cp##x##_load a2 a3 a4 a5 a6;			\
+ 		jx	a0;						\
+ 	.endif
  
--	if (event->group_leader != event) {
--		if (validate_group(event) != 0)
--			return -EINVAL;
--	}
--
--	return 0;
-+	return validate_group(event);
- }
- 
- static int armpmu_event_init(struct perf_event *event)
 
 
