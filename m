@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94476C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:28:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D8ADC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:29:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231855AbiDZIcC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:32:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36070 "EHLO
+        id S1344470AbiDZIcG (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:32:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344831AbiDZI3Y (ORCPT
+        with ESMTP id S1344870AbiDZI3Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:29:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 452496D3A5;
-        Tue, 26 Apr 2022 01:24:46 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 328D26D3B3;
+        Tue, 26 Apr 2022 01:24:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D4BCBB81CF9;
-        Tue, 26 Apr 2022 08:24:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 326A5C385A0;
-        Tue, 26 Apr 2022 08:24:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0709361778;
+        Tue, 26 Apr 2022 08:24:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A076C385AE;
+        Tue, 26 Apr 2022 08:24:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961483;
-        bh=o/IWPVY5ARGqzh4upZ5GQxmhxJmgd9wldiluqkdNIF0=;
+        s=korg; t=1650961486;
+        bh=KhnqbTI40bcgc+gv8MN7+miV4cr/0b8bQdQ739nQbUw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mNp2UDrgmWnvdgq2+TfW3G0dWLU524sj9d40Fnv6joRob7sClFvyo1cVJQ9F7tdHw
-         mV3xK2TnZ/DTF5/XkkzTQoo3Cyfpegcy5dSaH5taNkBRQ/dEsWnlmA03wKkr3Bbi3z
-         hlDxtHBmZf0pjOthZlEX0R9MKbpK82yfQSxkvyhA=
+        b=Y3QKlu19lenvs9DjfBcCCNB9UKXNvCT/+bpiaJUEHtiwQ/KitZeeib8DR5yNzLSHr
+         eqchgDvHIzsngaAO5hh0kBAmQk2twhwHa7jKTI6KTB60VAbexrV9ysUMkHZtZFtyIk
+         sHgdJYTSYGxRrcbA6qAJ6bSCIeeXJbbB5XMKilTw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paolo Valerio <pvalerio@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.14 25/43] openvswitch: fix OOB access in reserve_sfa_size()
-Date:   Tue, 26 Apr 2022 10:21:07 +0200
-Message-Id: <20220426081735.261088738@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Tom Zanussi <zanussi@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 4.14 03/43] tracing: Have traceon and traceoff trigger honor the instance
+Date:   Tue, 26 Apr 2022 10:20:45 +0200
+Message-Id: <20220426081734.615461663@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081734.509314186@linuxfoundation.org>
 References: <20220426081734.509314186@linuxfoundation.org>
@@ -49,83 +51,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Valerio <pvalerio@redhat.com>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-commit cefa91b2332d7009bc0be5d951d6cbbf349f90f8 upstream.
+commit 302e9edd54985f584cfc180098f3554774126969 upstream.
 
-Given a sufficiently large number of actions, while copying and
-reserving memory for a new action of a new flow, if next_offset is
-greater than MAX_ACTIONS_BUFSIZE, the function reserve_sfa_size() does
-not return -EMSGSIZE as expected, but it allocates MAX_ACTIONS_BUFSIZE
-bytes increasing actions_len by req_size. This can then lead to an OOB
-write access, especially when further actions need to be copied.
+If a trigger is set on an event to disable or enable tracing within an
+instance, then tracing should be disabled or enabled in the instance and
+not at the top level, which is confusing to users.
 
-Fix it by rearranging the flow action size check.
-
-KASAN splat below:
-
-==================================================================
-BUG: KASAN: slab-out-of-bounds in reserve_sfa_size+0x1ba/0x380 [openvswitch]
-Write of size 65360 at addr ffff888147e4001c by task handler15/836
-
-CPU: 1 PID: 836 Comm: handler15 Not tainted 5.18.0-rc1+ #27
-...
-Call Trace:
- <TASK>
- dump_stack_lvl+0x45/0x5a
- print_report.cold+0x5e/0x5db
- ? __lock_text_start+0x8/0x8
- ? reserve_sfa_size+0x1ba/0x380 [openvswitch]
- kasan_report+0xb5/0x130
- ? reserve_sfa_size+0x1ba/0x380 [openvswitch]
- kasan_check_range+0xf5/0x1d0
- memcpy+0x39/0x60
- reserve_sfa_size+0x1ba/0x380 [openvswitch]
- __add_action+0x24/0x120 [openvswitch]
- ovs_nla_add_action+0xe/0x20 [openvswitch]
- ovs_ct_copy_action+0x29d/0x1130 [openvswitch]
- ? __kernel_text_address+0xe/0x30
- ? unwind_get_return_address+0x56/0xa0
- ? create_prof_cpu_mask+0x20/0x20
- ? ovs_ct_verify+0xf0/0xf0 [openvswitch]
- ? prep_compound_page+0x198/0x2a0
- ? __kasan_check_byte+0x10/0x40
- ? kasan_unpoison+0x40/0x70
- ? ksize+0x44/0x60
- ? reserve_sfa_size+0x75/0x380 [openvswitch]
- __ovs_nla_copy_actions+0xc26/0x2070 [openvswitch]
- ? __zone_watermark_ok+0x420/0x420
- ? validate_set.constprop.0+0xc90/0xc90 [openvswitch]
- ? __alloc_pages+0x1a9/0x3e0
- ? __alloc_pages_slowpath.constprop.0+0x1da0/0x1da0
- ? unwind_next_frame+0x991/0x1e40
- ? __mod_node_page_state+0x99/0x120
- ? __mod_lruvec_page_state+0x2e3/0x470
- ? __kasan_kmalloc_large+0x90/0xe0
- ovs_nla_copy_actions+0x1b4/0x2c0 [openvswitch]
- ovs_flow_cmd_new+0x3cd/0xb10 [openvswitch]
- ...
+Link: https://lkml.kernel.org/r/20220223223837.14f94ec3@rorschach.local.home
 
 Cc: stable@vger.kernel.org
-Fixes: f28cd2af22a0 ("openvswitch: fix flow actions reallocation")
-Signed-off-by: Paolo Valerio <pvalerio@redhat.com>
-Acked-by: Eelco Chaudron <echaudro@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: ae63b31e4d0e2 ("tracing: Separate out trace events from global variables")
+Tested-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Reviewed-by: Tom Zanussi <zanussi@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/openvswitch/flow_netlink.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/trace/trace_events_trigger.c |   52 +++++++++++++++++++++++++++++++-----
+ 1 file changed, 46 insertions(+), 6 deletions(-)
 
---- a/net/openvswitch/flow_netlink.c
-+++ b/net/openvswitch/flow_netlink.c
-@@ -1977,7 +1977,7 @@ static struct nlattr *reserve_sfa_size(s
- 	new_acts_size = max(next_offset + req_size, ksize(*sfa) * 2);
+--- a/kernel/trace/trace_events_trigger.c
++++ b/kernel/trace/trace_events_trigger.c
+@@ -932,6 +932,16 @@ void set_named_trigger_data(struct event
+ static void
+ traceon_trigger(struct event_trigger_data *data, void *rec)
+ {
++	struct trace_event_file *file = data->private_data;
++
++	if (file) {
++		if (tracer_tracing_is_on(file->tr))
++			return;
++
++		tracer_tracing_on(file->tr);
++		return;
++	}
++
+ 	if (tracing_is_on())
+ 		return;
  
- 	if (new_acts_size > MAX_ACTIONS_BUFSIZE) {
--		if ((MAX_ACTIONS_BUFSIZE - next_offset) < req_size) {
-+		if ((next_offset + req_size) > MAX_ACTIONS_BUFSIZE) {
- 			OVS_NLERR(log, "Flow action size exceeds max %u",
- 				  MAX_ACTIONS_BUFSIZE);
- 			return ERR_PTR(-EMSGSIZE);
+@@ -941,8 +951,15 @@ traceon_trigger(struct event_trigger_dat
+ static void
+ traceon_count_trigger(struct event_trigger_data *data, void *rec)
+ {
+-	if (tracing_is_on())
+-		return;
++	struct trace_event_file *file = data->private_data;
++
++	if (file) {
++		if (tracer_tracing_is_on(file->tr))
++			return;
++	} else {
++		if (tracing_is_on())
++			return;
++	}
+ 
+ 	if (!data->count)
+ 		return;
+@@ -950,12 +967,25 @@ traceon_count_trigger(struct event_trigg
+ 	if (data->count != -1)
+ 		(data->count)--;
+ 
+-	tracing_on();
++	if (file)
++		tracer_tracing_on(file->tr);
++	else
++		tracing_on();
+ }
+ 
+ static void
+ traceoff_trigger(struct event_trigger_data *data, void *rec)
+ {
++	struct trace_event_file *file = data->private_data;
++
++	if (file) {
++		if (!tracer_tracing_is_on(file->tr))
++			return;
++
++		tracer_tracing_off(file->tr);
++		return;
++	}
++
+ 	if (!tracing_is_on())
+ 		return;
+ 
+@@ -965,8 +995,15 @@ traceoff_trigger(struct event_trigger_da
+ static void
+ traceoff_count_trigger(struct event_trigger_data *data, void *rec)
+ {
+-	if (!tracing_is_on())
+-		return;
++	struct trace_event_file *file = data->private_data;
++
++	if (file) {
++		if (!tracer_tracing_is_on(file->tr))
++			return;
++	} else {
++		if (!tracing_is_on())
++			return;
++	}
+ 
+ 	if (!data->count)
+ 		return;
+@@ -974,7 +1011,10 @@ traceoff_count_trigger(struct event_trig
+ 	if (data->count != -1)
+ 		(data->count)--;
+ 
+-	tracing_off();
++	if (file)
++		tracer_tracing_off(file->tr);
++	else
++		tracing_off();
+ }
+ 
+ static int
 
 
