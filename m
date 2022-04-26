@@ -2,148 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EC91C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:00:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85F88C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:00:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343587AbiDZHD2 (ORCPT
+        id S1343590AbiDZHDb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 03:03:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38452 "EHLO
+        Tue, 26 Apr 2022 03:03:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343592AbiDZHDX (ORCPT
+        with ESMTP id S1343583AbiDZHD1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 03:03:23 -0400
-Received: from mail-ua1-x935.google.com (mail-ua1-x935.google.com [IPv6:2607:f8b0:4864:20::935])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04DC8DF70
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 00:00:15 -0700 (PDT)
-Received: by mail-ua1-x935.google.com with SMTP id 63so6516463uaw.10
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 00:00:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YiJEB0dRG8Vs28wunrpsUd3aNm5kWfCeFbd3eFY3as0=;
-        b=d5Yk9vkBLEnKHZ514Yf7ffIGn1EMaNSf9hcUKn32e7vRywUbt99pLhvqkR7Liz+aP8
-         sozJ0ZzYbXQ8jrjtb5NyDXRaai+A2UT7dybpsV4vswDl9pVDBXrK/HvM3tdK+vBkDas5
-         u4pRqvPtK619yrrKfHNYAPBOddzYm/XqjOCWEjmKcIw/YcsNrgtftJEl3A3Oi2uBHlct
-         5CuoeK/L0Cllvp3/1VRIoE8zAUKrSBpPnBfrcSMd+oMFDLlxx4rRX3k8CStKnzUDvgg3
-         ie8x7Q5M7PPH+2xHukY2sM0rSNrnhtRnbfH/ZxmsCnuQx3BIO4btY8/oYwhwTKq9U8dB
-         XJsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YiJEB0dRG8Vs28wunrpsUd3aNm5kWfCeFbd3eFY3as0=;
-        b=IlwJOZQ//RKHLsPt5oykobCEEzYpWuoqQFYEOUsIvHnjP8++M6r3GZCZ5F6FYOrNU9
-         iCKxj4e2xPR0/aOQ5RJ/fm2FU5Q5LmkG6uzhjJ/Y5LIM84QsTECDdu0H+TDucfTMCTxU
-         O39utp9yOkfNodH78i9g+cUslczBW/ya0eoPPTvXbZfHvW6DijEdNg/29s9hiLrzxwj8
-         EHc8nZPxQLz37Wwn97A+f1Qih1iIwPZ43euhFQhDLSzkZxWhDjxq03P8g20btg820I0x
-         OdFd+Jr8XXuqZOIRFOzYvfPUM7UWXmDhWAwzFIvQjXDdxd0Z3j+Tri9ao/7DhJ1CYHBw
-         GbMg==
-X-Gm-Message-State: AOAM533zaQkiSRvrERF/we3/5URqcOB2EVyZTSgfwZnCuW/iRdluKPa8
-        TXdI3oJWpzlxk5HGKQZXD4gxkjjqkaeUOx2NXP6uwg==
-X-Google-Smtp-Source: ABdhPJzkXr9BOqsgJAkCTK7/ifPaSnlqKx7Ilm0RuLZ18kZbUoUwyM07wgDkFY+vVJrPQc3/yTK2PG51XyTTjydMhQs=
-X-Received: by 2002:ab0:482d:0:b0:35d:1e5e:ed19 with SMTP id
- b42-20020ab0482d000000b0035d1e5eed19mr6553573uad.17.1650956413953; Tue, 26
- Apr 2022 00:00:13 -0700 (PDT)
+        Tue, 26 Apr 2022 03:03:27 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34DD165A7;
+        Tue, 26 Apr 2022 00:00:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650956420; x=1682492420;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=9I1hHVxk/98J86IJBuypvXdSk+3wv9Y4DMZ0GVE3jy4=;
+  b=Xhby8Fq1Btgib//VT9f/q1O7Wkbe44DJ5IBOg/3+Uk6EK2Jin1s4f2i7
+   Mlfu0Cw6KGhbKogU3ktsB+FYH/Y+OVbGco9Xzq0nQWfIzzXQQ0ByYAtf0
+   3F9RbpliBooGUSix9Ss16vjZ9D8RvwlzVSMoG2/6K7Lt4wIdnZqPL5qtP
+   +fZr/1XK+YecncZDmB/UBA+asJGPf+1nZmwYQfzTF6Nlh8DM+zUdF6pxD
+   SGKcSQTqKwgzTUpTl7mQAd5i3ZnH2B4NcPpt60pye/fWcVWpY79OYXL+t
+   I5Aes4rkifmynhSETxD5e+YZdphrpG/mvyXngBLT2SbnQHgAXUq+DRQd4
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="264999090"
+X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
+   d="scan'208";a="264999090"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 00:00:18 -0700
+X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
+   d="scan'208";a="579722327"
+Received: from zq-optiplex-7090.bj.intel.com ([10.238.156.125])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 00:00:16 -0700
+From:   Zqiang <qiang1.zhang@intel.com>
+To:     paulmck@kernel.org, frederic@kernel.org
+Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH v2] rcu: Add nocb_cb_kthread check to rcu_is_callbacks_kthread()
+Date:   Tue, 26 Apr 2022 15:00:31 +0800
+Message-Id: <20220426070031.3759998-1-qiang1.zhang@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220407031525.2368067-1-yuzhao@google.com> <20220407031525.2368067-13-yuzhao@google.com>
- <20220411191634.674554d3de2ba37b3db40ca2@linux-foundation.org>
- <CAOUHufYhhCPFqoRbtn+=OFxZxNWS9yxW9Re_s-2TYGqCEaMXVw@mail.gmail.com> <20220415212024.c682ac000e3e91572d8d6d2b@linux-foundation.org>
-In-Reply-To: <20220415212024.c682ac000e3e91572d8d6d2b@linux-foundation.org>
-From:   Yu Zhao <yuzhao@google.com>
-Date:   Tue, 26 Apr 2022 00:59:37 -0600
-Message-ID: <CAOUHufa60CVZcXJ937=P4GVtV_Cn76mYCWwcyBNjMAADmyWEwQ@mail.gmail.com>
-Subject: Re: [PATCH v10 12/14] mm: multi-gen LRU: debugfs interface
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Stephen Rothwell <sfr@rothwell.id.au>,
-        Linux-MM <linux-mm@kvack.org>, Andi Kleen <ak@linux.intel.com>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Barry Song <21cnbao@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Ying Huang <ying.huang@intel.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Kernel Page Reclaim v2 <page-reclaim@google.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Brian Geffon <bgeffon@google.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        Donald Carr <d@chaos-reins.com>,
-        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 15, 2022 at 10:20 PM Andrew Morton
-<akpm@linux-foundation.org> wrote:
->
-> On Fri, 15 Apr 2022 18:03:16 -0600 Yu Zhao <yuzhao@google.com> wrote:
->
-> > > Presumably sysfs is the place.  Fully documented and with usage
-> > > examples in the changelog so we can carefully review the proposed
-> > > extensions to Linux's ABI.  Extensions which must be maintained
-> > > unchanged for all time.
-> >
-> > Eventually, yes. There still is a long way to go. Rest assured, this
-> > is something Google will keep investing resources on.
->
-> So.  The plan is to put these interfaces in debugfs for now, with a
-> view to migrating stabilized interfaces into sysfs (or procfs or
-> whatever) once end-user requirements and use cases are better
-> understood?
+At present, there are two situations which the rcu callback function
+be exectued in the kthreads, one is if the use_softirq is set to zero,
+the RCU_SOFTIRQ processing is carried out by the per-CPU rcuc kthreads,
+for non-offload rdp, the rdp's rcu callback function be exectued in rcuc
+kthreads. another one is if the rdp is set to offloaded, the rdp's rcu
+callback function be exectued in the rcuop kthreads.
 
-The requirements are well understood and the use cases are proven,
-e.g., Google [1], Meta [2] and Alibaba [3].
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+---
+ v1->v2:
+ fix compilation error when CONFIG_RCU_NOCB_CPU is no define
 
-[1] https://dl.acm.org/doi/10.1145/3297858.3304053
-[2] https://dl.acm.org/doi/10.1145/3503222.3507731
-[3] https://gitee.com/anolis/cloud-kernel/blob/release-5.10/mm/kidled.c
+ kernel/rcu/tree.c        |  4 ++--
+ kernel/rcu/tree.h        |  2 +-
+ kernel/rcu/tree_plugin.h | 12 +++++++++---
+ 3 files changed, 12 insertions(+), 6 deletions(-)
 
-> If so, that sounds totally great to me.  But it should have been in
-> the darn changelog!  This is the sort of thing which we care about most
-> keenly.
->
-> It would be helpful for reviewers to understand the proposed timeline
-> for this process, because the entire feature isn't really real until
-> this is completed, is it?  I do think we should get this nailed down
-> relatively rapidly, otherwise people will be reluctant to invest much
-> into a moving target.
->
-> And I must say, I see dissonance between the overall maturity of the
-> feature as described in these emails versus the immaturity of these
-> userspace control interfaces.  What's happening there?
+diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
+index 5c587e00811c..9dc4c4e82db6 100644
+--- a/kernel/rcu/tree.c
++++ b/kernel/rcu/tree.c
+@@ -2610,7 +2610,7 @@ static void rcu_do_batch(struct rcu_data *rdp)
+ 		trace_rcu_batch_end(rcu_state.name, 0,
+ 				    !rcu_segcblist_empty(&rdp->cblist),
+ 				    need_resched(), is_idle_task(current),
+-				    rcu_is_callbacks_kthread());
++				    rcu_is_callbacks_kthread(rdp));
+ 		return;
+ 	}
+ 
+@@ -2688,7 +2688,7 @@ static void rcu_do_batch(struct rcu_data *rdp)
+ 	rcu_nocb_lock_irqsave(rdp, flags);
+ 	rdp->n_cbs_invoked += count;
+ 	trace_rcu_batch_end(rcu_state.name, count, !!rcl.head, need_resched(),
+-			    is_idle_task(current), rcu_is_callbacks_kthread());
++			    is_idle_task(current), rcu_is_callbacks_kthread(rdp));
+ 
+ 	/* Update counts and requeue any remaining callbacks. */
+ 	rcu_segcblist_insert_done_cbs(&rdp->cblist, &rcl);
+diff --git a/kernel/rcu/tree.h b/kernel/rcu/tree.h
+index 996387962de3..3cdc18997a38 100644
+--- a/kernel/rcu/tree.h
++++ b/kernel/rcu/tree.h
+@@ -433,7 +433,7 @@ static void rcu_flavor_sched_clock_irq(int user);
+ static void dump_blkd_tasks(struct rcu_node *rnp, int ncheck);
+ static void rcu_initiate_boost(struct rcu_node *rnp, unsigned long flags);
+ static void rcu_preempt_boost_start_gp(struct rcu_node *rnp);
+-static bool rcu_is_callbacks_kthread(void);
++static bool rcu_is_callbacks_kthread(struct rcu_data *rdp);
+ static void rcu_cpu_kthread_setup(unsigned int cpu);
+ static void rcu_spawn_one_boost_kthread(struct rcu_node *rnp);
+ static bool rcu_preempt_has_tasks(struct rcu_node *rnp);
+diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h
+index 971bb6a00ede..120bade40e02 100644
+--- a/kernel/rcu/tree_plugin.h
++++ b/kernel/rcu/tree_plugin.h
+@@ -1155,9 +1155,15 @@ static void rcu_initiate_boost(struct rcu_node *rnp, unsigned long flags)
+  * Is the current CPU running the RCU-callbacks kthread?
+  * Caller must have preemption disabled.
+  */
+-static bool rcu_is_callbacks_kthread(void)
++static bool rcu_is_callbacks_kthread(struct rcu_data *rdp)
+ {
+-	return __this_cpu_read(rcu_data.rcu_cpu_kthread_task) == current;
++	bool ret;
++#ifdef CONFIG_RCU_NOCB_CPU
++	ret = rdp->rcu_cpu_kthread_task == current || rdp->nocb_cb_kthread == current;
++#else
++	ret = rdp->rcu_cpu_kthread_task == current;
++#endif
++	return ret;
+ }
+ 
+ #define RCU_BOOST_DELAY_JIFFIES DIV_ROUND_UP(CONFIG_RCU_BOOST_DELAY * HZ, 1000)
+@@ -1242,7 +1248,7 @@ static void rcu_initiate_boost(struct rcu_node *rnp, unsigned long flags)
+ 	raw_spin_unlock_irqrestore_rcu_node(rnp, flags);
+ }
+ 
+-static bool rcu_is_callbacks_kthread(void)
++static bool rcu_is_callbacks_kthread(struct rcu_data *rdp)
+ {
+ 	return false;
+ }
+-- 
+2.25.1
 
-Very observant. To answer both of the questions above: each iteration
-of the entire stack is a multi-year effort.
-
-Given its ROI, companies I know of constantly pour money into this
-area. Given its scale, this debugfs is the least of their concerns. A
-good example is the proactive reclaim sysfs interface [4]. It's been
-used at Google for many years and at Meta for a few years. We only
-started finalizing it recently.
-
-[4] https://lore.kernel.org/r/20220425190040.2475377-1-yosryahmed@google.com/
