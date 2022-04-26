@@ -2,94 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 952F2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:09:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 356F5C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:09:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346958AbiDZJMS (ORCPT
+        id S1347005AbiDZJM2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:12:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55570 "EHLO
+        Tue, 26 Apr 2022 05:12:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347329AbiDZIvT (ORCPT
+        with ESMTP id S1347375AbiDZIvV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:51:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6341CCFE7C;
-        Tue, 26 Apr 2022 01:40:12 -0700 (PDT)
+        Tue, 26 Apr 2022 04:51:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C648CC53A;
+        Tue, 26 Apr 2022 01:40:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C26896104C;
-        Tue, 26 Apr 2022 08:40:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 698CDC385A0;
-        Tue, 26 Apr 2022 08:40:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650962411;
-        bh=Y7Z7dCVcyqeGFz/D8avQ0iiz2pUwlgEGs0PVOgs5IEA=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=NANSNwZkt/EfQS56azmPlB8nVmpUB66Z8uLjasEMUUqLLHm4Tw5AN3jT+obncTvyC
-         FetNX0sx8R8KQBnQZKBJUJtwd4lFVIZtDcNmF/RhX2BVqVlxPJHWfk/Pjz3Cl+Q0mR
-         gZ+/f0yicISQ1hHO385w0YYsXFtGA/8hwBe58Hn6rokt4PG0oc3fA4u4ZmOtSnXn2N
-         8HRzpkijUJIeKxs2Msb/HQDZvIlBssN8RZ9t5+B2EwH3Iis9Odh+XQkKBwcYc8S8/k
-         k6st0KAcxKibgib8FayExvP8CzF8BBh0oRGKSbLYW8Y5HYJqUwwGw8DVDtgyrohA5j
-         j/Hy85DxKV2nA==
-Message-ID: <063c09f5-bb70-11cf-0a20-662c1b7f07fb@kernel.org>
-Date:   Tue, 26 Apr 2022 11:40:06 +0300
+        by ams.source.kernel.org (Postfix) with ESMTPS id 04D6CB81CF0;
+        Tue, 26 Apr 2022 08:40:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E1C3C385A0;
+        Tue, 26 Apr 2022 08:40:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650962413;
+        bh=LBQetF4/ux8fiSOBE2AAcfdUo7KiTbfNvfiJn5KCkqE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=XtL8vP4fouSPCzzPlzHBLuY6TC3Fu46A6B9EPIdry46LV0KmbGBshowIDQ3YCZTsM
+         ovs+PiPYqEidF33mqOywsFnniXNslHS3hCpc8npqZKfP7wGkaFKF9AIEGqcT90MJzD
+         ILADZLeC/ir6YqtxjzS6Cxh/8DFKoELwi/msD7u8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, kuyo chang <kuyo.chang@mediatek.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 089/124] sched/pelt: Fix attach_entity_load_avg() corner case
+Date:   Tue, 26 Apr 2022 10:21:30 +0200
+Message-Id: <20220426081749.829862114@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
+References: <20220426081747.286685339@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v4 0/2] memory: omap-gpmc: Allow module build
-Content-Language: en-US
-To:     krzk@kernel.org
-Cc:     miquel.raynal@bootlin.com, tony@atomide.com, vigneshr@ti.com,
-        kishon@ti.com, nm@ti.com, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220426082611.24427-1-rogerq@kernel.org>
-From:   Roger Quadros <rogerq@kernel.org>
-In-Reply-To: <20220426082611.24427-1-rogerq@kernel.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: kuyo chang <kuyo.chang@mediatek.com>
 
-I've asked LKP bot to test my tree.
-We should get a report if there are any surprises.
+[ Upstream commit 40f5aa4c5eaebfeaca4566217cb9c468e28ed682 ]
 
-cheers,
--roger
+The warning in cfs_rq_is_decayed() triggered:
 
-On 26/04/2022 11:26, Roger Quadros wrote:
-> Hi,
-> 
-> These patches allow OMAP_GPMC config to be visible in menuconfig
-> and buildable as a module.
-> 
-> cheers,
-> -roger
-> 
-> Changelog:
-> v4:
-> - drop COMPILE_TEST as include/linux/irqdomain.h does not have
-> fallbacks if CONFIG_IRQ_DOMAIN is not available. So build will
-> fail with COMPILE_TEST on platforms not having CONFIG_IRQ_DOMAIN.
-> - use GPL instead of GPL v2 for MODULE_LICENSE. Fixes checkpatch
-> warning.
-> 
-> v3:
-> - Remove not required MODULE_ALIAS
-> - Mention in commit message why we need to remove of_match_node() call
-> 
-> v2:
-> - Allow building as a module
-> 
-> Roger Quadros (2):
->   memory: omap-gpmc: Make OMAP_GPMC config visible and selectable
->   memory: omap-gpmc: Allow building as a module
-> 
->  drivers/memory/Kconfig     |  2 +-
->  drivers/memory/omap-gpmc.c | 43 ++++++++++++++++++++------------------
->  2 files changed, 24 insertions(+), 21 deletions(-)
-> 
+    SCHED_WARN_ON(cfs_rq->avg.load_avg ||
+		  cfs_rq->avg.util_avg ||
+		  cfs_rq->avg.runnable_avg)
+
+There exists a corner case in attach_entity_load_avg() which will
+cause load_sum to be zero while load_avg will not be.
+
+Consider se_weight is 88761 as per the sched_prio_to_weight[] table.
+Further assume the get_pelt_divider() is 47742, this gives:
+se->avg.load_avg is 1.
+
+However, calculating load_sum:
+
+  se->avg.load_sum = div_u64(se->avg.load_avg * se->avg.load_sum, se_weight(se));
+  se->avg.load_sum = 1*47742/88761 = 0.
+
+Then enqueue_load_avg() adds this to the cfs_rq totals:
+
+  cfs_rq->avg.load_avg += se->avg.load_avg;
+  cfs_rq->avg.load_sum += se_weight(se) * se->avg.load_sum;
+
+Resulting in load_avg being 1 with load_sum is 0, which will trigger
+the WARN.
+
+Fixes: f207934fb79d ("sched/fair: Align PELT windows between cfs_rq and its se")
+Signed-off-by: kuyo chang <kuyo.chang@mediatek.com>
+[peterz: massage changelog]
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
+Tested-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Link: https://lkml.kernel.org/r/20220414090229.342-1-kuyo.chang@mediatek.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ kernel/sched/fair.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 02766f3fe206..9a4fa22a69ed 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -3794,11 +3794,11 @@ static void attach_entity_load_avg(struct cfs_rq *cfs_rq, struct sched_entity *s
+ 
+ 	se->avg.runnable_sum = se->avg.runnable_avg * divider;
+ 
+-	se->avg.load_sum = divider;
+-	if (se_weight(se)) {
+-		se->avg.load_sum =
+-			div_u64(se->avg.load_avg * se->avg.load_sum, se_weight(se));
+-	}
++	se->avg.load_sum = se->avg.load_avg * divider;
++	if (se_weight(se) < se->avg.load_sum)
++		se->avg.load_sum = div_u64(se->avg.load_sum, se_weight(se));
++	else
++		se->avg.load_sum = 1;
+ 
+ 	enqueue_load_avg(cfs_rq, se);
+ 	cfs_rq->avg.util_avg += se->avg.util_avg;
+-- 
+2.35.1
+
+
+
