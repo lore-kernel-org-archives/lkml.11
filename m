@@ -2,111 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03962C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 14:00:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E60B5C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 14:01:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351387AbiDZODv (ORCPT
+        id S1351406AbiDZOD6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 10:03:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44206 "EHLO
+        Tue, 26 Apr 2022 10:03:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351375AbiDZODs (ORCPT
+        with ESMTP id S1351368AbiDZODu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 10:03:48 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DBC41A82C;
-        Tue, 26 Apr 2022 07:00:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650981634; x=1682517634;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=cAoqrdeOsrq5KtUjQou6zsgNtf+NljDbb1uC4qNAX4I=;
-  b=EKRG4Rs6rByl/BCPkLHuPQ3gwMyImthUV5swwUBzOyghtaZ7KJ2RjULR
-   Y/00oTXml/7KcWCSAnahE4r7lVEdS00h8xwDKTBRtoi/ampnTrSNLdUxG
-   0fpcaQ21MDgm7eMY2+biuDzna/nRcobegXGdJfQ3dPG4KMhuLkA8R1nmv
-   Ls3Y9LoCeRXUnJKUSx1lFho0HhTNOOS4hYj1gX/3f5e2WQs7/OYXNgTUC
-   815Y/gzZmrm6JujvrI+KycyL041Hrw8yFIs+7bTRc847urLz4AAFgdjXM
-   0o3UiV2P6nvquwskOe2K8JMGux/GN/RttIap+S+haBnRfLYz9+e/8d7qc
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="265390910"
-X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
-   d="scan'208";a="265390910"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 07:00:29 -0700
-X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
-   d="scan'208";a="558322013"
-Received: from gao-cwp.sh.intel.com (HELO gao-cwp) ([10.239.159.23])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 07:00:23 -0700
-Date:   Tue, 26 Apr 2022 22:00:18 +0800
-From:   Chao Gao <chao.gao@intel.com>
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Zeng Guang <guang.zeng@intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jethro Beekman <jethro@fortanix.com>,
-        Kai Huang <kai.huang@intel.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, Robert Hu <robert.hu@intel.com>
-Subject: Re: [PATCH v8 6/9] KVM: x86: lapic: don't allow to change APIC ID
- unconditionally
-Message-ID: <20220426140013.GA11796@gao-cwp>
-References: <20220411090447.5928-1-guang.zeng@intel.com>
- <20220411090447.5928-7-guang.zeng@intel.com>
- <YlmDtC73u/AouMsu@google.com>
- <080d6ced254e56dbad2910447f81c5ea976fc419.camel@redhat.com>
- <6475522c58aec5db3ee0a5ccd3230c63a2f013a9.camel@redhat.com>
+        Tue, 26 Apr 2022 10:03:50 -0400
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF759186D1;
+        Tue, 26 Apr 2022 07:00:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1650981643; x=1682517643;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=IC8noDBK4X51feo0Vpeik5XnaP2Xw/g4NSKwFbVg0tA=;
+  b=NP3ek2pwqwhRffJ2VNm/OFqCFEx8v8oWLcwV90vGZMudJtqC4Vpn6/Gj
+   AQZlnkZJ4yi+AJgpjbJRT3KDx3JsCFAYOBsOOlyLHIDO1Bckp3BzFrgji
+   xAL+T6I6Cgq4EMtlh8YO65d6++SnVGZzlkccLe4xmdupfCBsy2EzKTqzJ
+   s=;
+X-IronPort-AV: E=Sophos;i="5.90,291,1643673600"; 
+   d="scan'208";a="83172116"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-b27d4a00.us-east-1.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 26 Apr 2022 14:00:18 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1a-b27d4a00.us-east-1.amazon.com (Postfix) with ESMTPS id EF84281111;
+        Tue, 26 Apr 2022 14:00:11 +0000 (UTC)
+Received: from EX13D02UWB003.ant.amazon.com (10.43.161.48) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.32; Tue, 26 Apr 2022 13:59:47 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (10.43.61.77) by
+ EX13D02UWB003.ant.amazon.com (10.43.161.48) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.32; Tue, 26 Apr 2022 13:59:46 +0000
+Received: from dev-dsk-alisaidi-1d-b9a0e636.us-east-1.amazon.com
+ (172.19.181.128) by mail-relay.amazon.com (10.43.61.169) with Microsoft SMTP
+ Server id 15.0.1497.32 via Frontend Transport; Tue, 26 Apr 2022 13:59:46
+ +0000
+Received: by dev-dsk-alisaidi-1d-b9a0e636.us-east-1.amazon.com (Postfix, from userid 5131138)
+        id 4F93D20E9; Tue, 26 Apr 2022 13:59:45 +0000 (UTC)
+From:   Ali Saidi <alisaidi@amazon.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <german.gomez@arm.com>,
+        <leo.yan@linaro.org>, <acme@kernel.org>
+CC:     <alisaidi@amazon.com>, <benh@kernel.crashing.org>,
+        <Nick.Forrington@arm.com>, <alexander.shishkin@linux.intel.com>,
+        <andrew.kilroy@arm.com>, <james.clark@arm.com>,
+        <john.garry@huawei.com>, <jolsa@kernel.org>, <kjain@linux.ibm.com>,
+        <lihuafei1@huawei.com>, <mark.rutland@arm.com>,
+        <mathieu.poirier@linaro.org>, <mingo@redhat.com>,
+        <namhyung@kernel.org>, <peterz@infradead.org>, <will@kernel.org>
+Subject: [PATCH v7 3/5] perf mem: Print snoop peer flag
+Date:   Tue, 26 Apr 2022 13:59:35 +0000
+Message-ID: <20220426135937.18497-4-alisaidi@amazon.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220426135937.18497-1-alisaidi@amazon.com>
+References: <20220426135937.18497-1-alisaidi@amazon.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6475522c58aec5db3ee0a5ccd3230c63a2f013a9.camel@redhat.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->Palo, Sean, Any update?
->
->After thinking more about this, I actualy think I will do something
->different, something that actually was proposed here, and I was against it:
->
->
->1. I will add new inhibit APICV_INHIBIT_REASON_RO_SETTINGS, which will be set
->first time any vCPU touches apic id and/or apic base because why not...
->
->That will take care of non nested case cleanly, and will take care of IPIv
->for now (as long as it does't support nesting).
+From: Leo Yan <leo.yan@linaro.org>
 
-Yes. This works well with intel IPIv.
+Since PERF_MEM_SNOOPX_PEER flag is a new snoop type, print this flag if
+it is set.
 
->
->2. For my nested AVIC, I will do 2 things:
->
->   a. My code never reads L1 apic ids, and always uses vcpu_id, thus
->      in theory, if I just ignore the problem, and the guest changes apic ids,
->      the nested AVIC will just keep on using initial apic ids, thus there is  no danger
->      of CVE like issue if the guest tries to change theses ids in the 'right' time.
->
->   b. on each nested vm entry I'll just check that apic id is not changed from the default,
->      if AVIC is enabled for the nested guest.
->
->      if so the nested entry will fail (best with kvm_vm_bugged) to get attention of
->      the user, but I can just fail it with standard vm exit reason of 0xFFFFFFFF.
+Before:
+       memstress  3603 [020]   122.463754:          1            l1d-miss:       8688000842 |OP LOAD|LVL L3 or L3 hit|SNP N/A|TLB Walker hit|LCK No|BLK  N/A               aaaac17c3e88 [unknown] (/home/ubuntu/memstress)
+       memstress  3603 [020]   122.463754:          1          l1d-access:       8688000842 |OP LOAD|LVL L3 or L3 hit|SNP N/A|TLB Walker hit|LCK No|BLK  N/A               aaaac17c3e88 [unknown] (/home/ubuntu/memstress)
+       memstress  3603 [020]   122.463754:          1            llc-miss:       8688000842 |OP LOAD|LVL L3 or L3 hit|SNP N/A|TLB Walker hit|LCK No|BLK  N/A               aaaac17c3e88 [unknown] (/home/ubuntu/memstress)
+       memstress  3603 [020]   122.463754:          1          llc-access:       8688000842 |OP LOAD|LVL L3 or L3 hit|SNP N/A|TLB Walker hit|LCK No|BLK  N/A               aaaac17c3e88 [unknown] (/home/ubuntu/memstress)
+       memstress  3603 [020]   122.463754:          1          tlb-access:       8688000842 |OP LOAD|LVL L3 or L3 hit|SNP N/A|TLB Walker hit|LCK No|BLK  N/A               aaaac17c3e88 [unknown] (/home/ubuntu/memstress)
+       memstress  3603 [020]   122.463754:          1              memory:       8688000842 |OP LOAD|LVL L3 or L3 hit|SNP N/A|TLB Walker hit|LCK No|BLK  N/A               aaaac17c3e88 [unknown] (/home/ubuntu/memstress)
 
-For sake of simplicity, I prefer to make APIC ID read-only for VMs that
-supports (nested) AVIC or IPIv (KVM can check guest CPUID/MSR to know
-this). When guest attempts to change read-only APIC ID, KVM can raise an
-internal error, saying KVM cannot emulate this action. To get rid of such
-an error, users should launch the VM with nested AVIC/IPIv disabled or
-upgrade VM kernel to not change APIC ID.
+After:
+
+       memstress  3603 [020]   122.463754:          1            l1d-miss:       8688000842 |OP LOAD|LVL L3 or L3 hit|SNP Peer|TLB Walker hit|LCK No|BLK  N/A              aaaac17c3e88 [unknown] (/home/ubuntu/memstress)
+       memstress  3603 [020]   122.463754:          1          l1d-access:       8688000842 |OP LOAD|LVL L3 or L3 hit|SNP Peer|TLB Walker hit|LCK No|BLK  N/A              aaaac17c3e88 [unknown] (/home/ubuntu/memstress)
+       memstress  3603 [020]   122.463754:          1            llc-miss:       8688000842 |OP LOAD|LVL L3 or L3 hit|SNP Peer|TLB Walker hit|LCK No|BLK  N/A              aaaac17c3e88 [unknown] (/home/ubuntu/memstress)
+       memstress  3603 [020]   122.463754:          1          llc-access:       8688000842 |OP LOAD|LVL L3 or L3 hit|SNP Peer|TLB Walker hit|LCK No|BLK  N/A              aaaac17c3e88 [unknown] (/home/ubuntu/memstress)
+       memstress  3603 [020]   122.463754:          1          tlb-access:       8688000842 |OP LOAD|LVL L3 or L3 hit|SNP Peer|TLB Walker hit|LCK No|BLK  N/A              aaaac17c3e88 [unknown] (/home/ubuntu/memstress)
+       memstress  3603 [020]   122.463754:          1              memory:       8688000842 |OP LOAD|LVL L3 or L3 hit|SNP Peer|TLB Walker hit|LCK No|BLK  N/A              aaaac17c3e88 [unknown] (/home/ubuntu/memstress)
+
+Signed-off-by: Leo Yan <leo.yan@linaro.org>
+Reviewed-by: Ali Saidi <alisaidi@amazon.com>
+Tested-by: Ali Saidi <alisaidi@amazon.com>
+---
+ tools/perf/util/mem-events.c | 18 +++++++++++++++---
+ 1 file changed, 15 insertions(+), 3 deletions(-)
+
+diff --git a/tools/perf/util/mem-events.c b/tools/perf/util/mem-events.c
+index efaf263464b9..db5225caaabe 100644
+--- a/tools/perf/util/mem-events.c
++++ b/tools/perf/util/mem-events.c
+@@ -410,6 +410,11 @@ static const char * const snoop_access[] = {
+ 	"HitM",
+ };
+ 
++static const char * const snoopx_access[] = {
++	"Fwd",
++	"Peer",
++};
++
+ int perf_mem__snp_scnprintf(char *out, size_t sz, struct mem_info *mem_info)
+ {
+ 	size_t i, l = 0;
+@@ -430,13 +435,20 @@ int perf_mem__snp_scnprintf(char *out, size_t sz, struct mem_info *mem_info)
+ 		}
+ 		l += scnprintf(out + l, sz - l, snoop_access[i]);
+ 	}
+-	if (mem_info &&
+-	     (mem_info->data_src.mem_snoopx & PERF_MEM_SNOOPX_FWD)) {
++
++	m = 0;
++	if (mem_info)
++		m = mem_info->data_src.mem_snoopx;
++
++	for (i = 0; m && i < ARRAY_SIZE(snoopx_access); i++, m >>= 1) {
++		if (!(m & 0x1))
++			continue;
++
+ 		if (l) {
+ 			strcat(out, " or ");
+ 			l += 4;
+ 		}
+-		l += scnprintf(out + l, sz - l, "Fwd");
++		l += scnprintf(out + l, sz - l, snoopx_access[i]);
+ 	}
+ 
+ 	if (*out == '\0')
+-- 
+2.32.0
+
