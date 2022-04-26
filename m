@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BFD6C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73169C43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:27:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347955AbiDZJ3q (ORCPT
+        id S1347797AbiDZJ3c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:29:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57334 "EHLO
+        Tue, 26 Apr 2022 05:29:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347591AbiDZJF6 (ORCPT
+        with ESMTP id S1347537AbiDZJFz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:05:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD605BCC;
-        Tue, 26 Apr 2022 01:45:03 -0700 (PDT)
+        Tue, 26 Apr 2022 05:05:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F144F12FECE;
+        Tue, 26 Apr 2022 01:44:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 53A68B81C76;
-        Tue, 26 Apr 2022 08:45:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96B34C385A4;
-        Tue, 26 Apr 2022 08:45:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A1E36B81CFE;
+        Tue, 26 Apr 2022 08:44:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4494C385A0;
+        Tue, 26 Apr 2022 08:44:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962701;
-        bh=trXIu8XHmAnC0fElf80oY0FbsOH2cP1tf1pUgA0Dk4Q=;
+        s=korg; t=1650962692;
+        bh=5xTDvNXwoCQJk1iKzJHupHTTjUGUOgb2bv+ABVlDzXk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t0ZUfzrP8LlImrxQlbAMd7QDXs9ALZ5yMCksW0BOSUOUMd/rTINPRdma0485eyGmn
-         eUjqj/SQBuW+5boeNzSjcoIYBraZoYppjglgEm+4GeIHwPca5cgtMEG2rLPKX06vh9
-         N4l42XPXZnQZgGevUUrfqOs0CqeMkDbFvckEfAHQ=
+        b=H4klwte6T2nI2vC5kuR+mRGDbi/Mgc1MoinXI8qmLCc/QCu8iJPtvrUUqvrURBBIa
+         h66/442zMLJhlG+4BvST9K1zx69T9ROsZtpkohZ12SSujha7357hqE7ERJVYYFS2S6
+         ADXTCOILiJ0feq//QeRDDp3bNG3rdHRlzAna5f64=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Nadav Amit <namit@vmware.com>,
+        Peter Xu <peterx@redhat.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Mike Rapoport <rppt@linux.vnet.ibm.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 020/146] spi: spi-mtk-nor: initialize spi controller after resume
-Date:   Tue, 26 Apr 2022 10:20:15 +0200
-Message-Id: <20220426081750.633307968@linuxfoundation.org>
+Subject: [PATCH 5.17 055/146] userfaultfd: mark uffd_wp regardless of VM_WRITE flag
+Date:   Tue, 26 Apr 2022 10:20:50 +0200
+Message-Id: <20220426081751.615934458@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -52,51 +55,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+From: Nadav Amit <namit@vmware.com>
 
-[ Upstream commit 317c2045618cc1f8d38beb8c93a7bdb6ad8638c6 ]
+[ Upstream commit 0e88904cb700a9654c9f0d9ca4967e761e7c9ee8 ]
 
-After system resumes, the registers of nor controller are
-initialized with default values. The nor controller will
-not function properly.
+When a PTE is set by UFFD operations such as UFFDIO_COPY, the PTE is
+currently only marked as write-protected if the VMA has VM_WRITE flag
+set.  This seems incorrect or at least would be unexpected by the users.
 
-To handle both issues above, we add mtk_nor_init() in
-mtk_nor_resume after pm_runtime_force_resume().
+Consider the following sequence of operations that are being performed
+on a certain page:
 
-Fixes: 3bfd9103c7af ("spi: spi-mtk-nor: Add power management support")
+	mprotect(PROT_READ)
+	UFFDIO_COPY(UFFDIO_COPY_MODE_WP)
+	mprotect(PROT_READ|PROT_WRITE)
 
-Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Link: https://lore.kernel.org/r/20220412115743.22641-1-allen-kh.cheng@mediatek.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+At this point the user would expect to still get UFFD notification when
+the page is accessed for write, but the user would not get one, since
+the PTE was not marked as UFFD_WP during UFFDIO_COPY.
+
+Fix it by always marking PTEs as UFFD_WP regardless on the
+write-permission in the VMA flags.
+
+Link: https://lkml.kernel.org/r/20220217211602.2769-1-namit@vmware.com
+Fixes: 292924b26024 ("userfaultfd: wp: apply _PAGE_UFFD_WP bit")
+Signed-off-by: Nadav Amit <namit@vmware.com>
+Acked-by: Peter Xu <peterx@redhat.com>
+Cc: Axel Rasmussen <axelrasmussen@google.com>
+Cc: Mike Rapoport <rppt@linux.vnet.ibm.com>
+Cc: Andrea Arcangeli <aarcange@redhat.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-mtk-nor.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ mm/userfaultfd.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/spi/spi-mtk-nor.c b/drivers/spi/spi-mtk-nor.c
-index 5c93730615f8..6d203477c04b 100644
---- a/drivers/spi/spi-mtk-nor.c
-+++ b/drivers/spi/spi-mtk-nor.c
-@@ -909,7 +909,17 @@ static int __maybe_unused mtk_nor_suspend(struct device *dev)
+diff --git a/mm/userfaultfd.c b/mm/userfaultfd.c
+index 0780c2a57ff1..885e5adb0168 100644
+--- a/mm/userfaultfd.c
++++ b/mm/userfaultfd.c
+@@ -72,12 +72,15 @@ int mfill_atomic_install_pte(struct mm_struct *dst_mm, pmd_t *dst_pmd,
+ 	_dst_pte = pte_mkdirty(_dst_pte);
+ 	if (page_in_cache && !vm_shared)
+ 		writable = false;
+-	if (writable) {
+-		if (wp_copy)
+-			_dst_pte = pte_mkuffd_wp(_dst_pte);
+-		else
+-			_dst_pte = pte_mkwrite(_dst_pte);
+-	}
++
++	/*
++	 * Always mark a PTE as write-protected when needed, regardless of
++	 * VM_WRITE, which the user might change.
++	 */
++	if (wp_copy)
++		_dst_pte = pte_mkuffd_wp(_dst_pte);
++	else if (writable)
++		_dst_pte = pte_mkwrite(_dst_pte);
  
- static int __maybe_unused mtk_nor_resume(struct device *dev)
- {
--	return pm_runtime_force_resume(dev);
-+	struct spi_controller *ctlr = dev_get_drvdata(dev);
-+	struct mtk_nor *sp = spi_controller_get_devdata(ctlr);
-+	int ret;
-+
-+	ret = pm_runtime_force_resume(dev);
-+	if (ret)
-+		return ret;
-+
-+	mtk_nor_init(sp);
-+
-+	return 0;
- }
+ 	dst_pte = pte_offset_map_lock(dst_mm, dst_pmd, dst_addr, &ptl);
  
- static const struct dev_pm_ops mtk_nor_pm_ops = {
 -- 
 2.35.1
 
