@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18C2EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:00:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED88BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:00:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346222AbiDZJDN (ORCPT
+        id S1346342AbiDZJDX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:03:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57818 "EHLO
+        Tue, 26 Apr 2022 05:03:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346915AbiDZIpa (ORCPT
+        with ESMTP id S1346916AbiDZIpa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:45:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAE7F13F73;
-        Tue, 26 Apr 2022 01:36:44 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DFB913DD8;
+        Tue, 26 Apr 2022 01:36:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6DE7DB81CFE;
-        Tue, 26 Apr 2022 08:36:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0497C385A4;
-        Tue, 26 Apr 2022 08:36:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A0AA06185C;
+        Tue, 26 Apr 2022 08:36:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DADBC385A0;
+        Tue, 26 Apr 2022 08:36:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962202;
-        bh=HmfFJivqIOqkgG4jXS9YrYHWjOYRZEUNs3qyybS+uNU=;
+        s=korg; t=1650962199;
+        bh=LNen/Hol42nJKmCO91F1P60/W/lNiA3tn9i6VwXxB0o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i/RnP+6/gaw56bxAKA22B2+buSwmsmLHmCrr+18fH+BYh2gqh0qyLgOd+X9hNCMPp
-         M+mCGOIjvyMRb3NCqNFM+WisIt2ungKfRnLeb22grBCCnT82IHWSMQBKgqjdfrvdUq
-         dMH4t20BUQJKopLlpCzoq+/TEkNZ3ytJFY5YZn0M=
+        b=2UrutGPySF6NkR3ee6eZ8xZW0bvaLGv79ODSop2B4fuMSU+eiN6RqNj+dd5+lOkbj
+         A4TIx8erexbJMjzz3AKhdG2DEKfK/9in6qVzccckO6Shxdt+FaXopm17pmWeM1HYJo
+         BMx1h1B4ZEQLV+7DkxV8PB0HujF18giXEyzyv58M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 002/124] block: remove __sync_blockdev
-Date:   Tue, 26 Apr 2022 10:20:03 +0200
-Message-Id: <20220426081747.360900178@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 019/124] ASoC: rk817: Use devm_clk_get() in rk817_platform_probe
+Date:   Tue, 26 Apr 2022 10:20:20 +0200
+Message-Id: <20220426081747.851459886@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -49,141 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 70164eb6ccb76ab679b016b4b60123bf4ec6c162 ]
+[ Upstream commit 8ba08d3a367a70f707b7c5d53ad92b98b960ee88 ]
 
-Instead offer a new sync_blockdev_nowait helper for the !wait case.
-This new helper is exported as it will grow modular callers in a bit.
+We need to call clk_put() to undo clk_get() in the error path.
+Use devm_clk_get() to obtain a reference to the clock, It has
+the benefit that clk_put() is no longer required.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20211019062530.2174626-3-hch@lst.de
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 0d6a04da9b25 ("ASoC: Add Rockchip rk817 audio CODEC support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220404090753.17940-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/bdev.c           | 11 ++++++-----
- fs/internal.h          |  5 -----
- fs/sync.c              |  7 ++++---
- include/linux/blkdev.h |  5 +++++
- 4 files changed, 15 insertions(+), 13 deletions(-)
+ sound/soc/codecs/rk817_codec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/block/bdev.c b/block/bdev.c
-index 485a258b0ab3..33cac289302e 100644
---- a/block/bdev.c
-+++ b/block/bdev.c
-@@ -184,14 +184,13 @@ int sb_min_blocksize(struct super_block *sb, int size)
+diff --git a/sound/soc/codecs/rk817_codec.c b/sound/soc/codecs/rk817_codec.c
+index 8fffe378618d..cce6f4e7992f 100644
+--- a/sound/soc/codecs/rk817_codec.c
++++ b/sound/soc/codecs/rk817_codec.c
+@@ -489,7 +489,7 @@ static int rk817_platform_probe(struct platform_device *pdev)
  
- EXPORT_SYMBOL(sb_min_blocksize);
+ 	rk817_codec_parse_dt_property(&pdev->dev, rk817_codec_data);
  
--int __sync_blockdev(struct block_device *bdev, int wait)
-+int sync_blockdev_nowait(struct block_device *bdev)
- {
- 	if (!bdev)
- 		return 0;
--	if (!wait)
--		return filemap_flush(bdev->bd_inode->i_mapping);
--	return filemap_write_and_wait(bdev->bd_inode->i_mapping);
-+	return filemap_flush(bdev->bd_inode->i_mapping);
- }
-+EXPORT_SYMBOL_GPL(sync_blockdev_nowait);
- 
- /*
-  * Write out and wait upon all the dirty data associated with a block
-@@ -199,7 +198,9 @@ int __sync_blockdev(struct block_device *bdev, int wait)
-  */
- int sync_blockdev(struct block_device *bdev)
- {
--	return __sync_blockdev(bdev, 1);
-+	if (!bdev)
-+		return 0;
-+	return filemap_write_and_wait(bdev->bd_inode->i_mapping);
- }
- EXPORT_SYMBOL(sync_blockdev);
- 
-diff --git a/fs/internal.h b/fs/internal.h
-index 3cd065c8a66b..b5caa16f4645 100644
---- a/fs/internal.h
-+++ b/fs/internal.h
-@@ -23,7 +23,6 @@ struct pipe_inode_info;
- #ifdef CONFIG_BLOCK
- extern void __init bdev_cache_init(void);
- 
--extern int __sync_blockdev(struct block_device *bdev, int wait);
- void iterate_bdevs(void (*)(struct block_device *, void *), void *);
- void emergency_thaw_bdev(struct super_block *sb);
- #else
-@@ -31,10 +30,6 @@ static inline void bdev_cache_init(void)
- {
- }
- 
--static inline int __sync_blockdev(struct block_device *bdev, int wait)
--{
--	return 0;
--}
- static inline void iterate_bdevs(void (*f)(struct block_device *, void *),
- 		void *arg)
- {
-diff --git a/fs/sync.c b/fs/sync.c
-index 0d6cdc507cb9..a621089eb07e 100644
---- a/fs/sync.c
-+++ b/fs/sync.c
-@@ -3,6 +3,7 @@
-  * High-level sync()-related operations
-  */
- 
-+#include <linux/blkdev.h>
- #include <linux/kernel.h>
- #include <linux/file.h>
- #include <linux/fs.h>
-@@ -45,7 +46,7 @@ int sync_filesystem(struct super_block *sb)
- 	/*
- 	 * Do the filesystem syncing work.  For simple filesystems
- 	 * writeback_inodes_sb(sb) just dirties buffers with inodes so we have
--	 * to submit I/O for these buffers via __sync_blockdev().  This also
-+	 * to submit I/O for these buffers via sync_blockdev().  This also
- 	 * speeds up the wait == 1 case since in that case write_inode()
- 	 * methods call sync_dirty_buffer() and thus effectively write one block
- 	 * at a time.
-@@ -53,14 +54,14 @@ int sync_filesystem(struct super_block *sb)
- 	writeback_inodes_sb(sb, WB_REASON_SYNC);
- 	if (sb->s_op->sync_fs)
- 		sb->s_op->sync_fs(sb, 0);
--	ret = __sync_blockdev(sb->s_bdev, 0);
-+	ret = sync_blockdev_nowait(sb->s_bdev);
- 	if (ret < 0)
- 		return ret;
- 
- 	sync_inodes_sb(sb);
- 	if (sb->s_op->sync_fs)
- 		sb->s_op->sync_fs(sb, 1);
--	return __sync_blockdev(sb->s_bdev, 1);
-+	return sync_blockdev(sb->s_bdev);
- }
- EXPORT_SYMBOL(sync_filesystem);
- 
-diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
-index 413c0148c0ce..6bbd393e6bcc 100644
---- a/include/linux/blkdev.h
-+++ b/include/linux/blkdev.h
-@@ -1999,6 +1999,7 @@ int truncate_bdev_range(struct block_device *bdev, fmode_t mode, loff_t lstart,
- #ifdef CONFIG_BLOCK
- void invalidate_bdev(struct block_device *bdev);
- int sync_blockdev(struct block_device *bdev);
-+int sync_blockdev_nowait(struct block_device *bdev);
- #else
- static inline void invalidate_bdev(struct block_device *bdev)
- {
-@@ -2007,6 +2008,10 @@ static inline int sync_blockdev(struct block_device *bdev)
- {
- 	return 0;
- }
-+static inline int sync_blockdev_nowait(struct block_device *bdev)
-+{
-+	return 0;
-+}
- #endif
- int fsync_bdev(struct block_device *bdev);
- 
+-	rk817_codec_data->mclk = clk_get(pdev->dev.parent, "mclk");
++	rk817_codec_data->mclk = devm_clk_get(pdev->dev.parent, "mclk");
+ 	if (IS_ERR(rk817_codec_data->mclk)) {
+ 		dev_dbg(&pdev->dev, "Unable to get mclk\n");
+ 		ret = -ENXIO;
 -- 
 2.35.1
 
