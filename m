@@ -2,107 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BAE8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:33:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC98BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:33:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242972AbiDZIgy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:36:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34060 "EHLO
+        id S1345179AbiDZIhA (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:37:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345171AbiDZIeL (ORCPT
+        with ESMTP id S1345173AbiDZIeL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:34:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0FD66EB22;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B6026EB21;
         Tue, 26 Apr 2022 01:26:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 47DC66179E;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3437E617AE;
         Tue, 26 Apr 2022 08:26:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4757FC385A0;
-        Tue, 26 Apr 2022 08:26:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961580;
-        bh=1p1Yb7l2k7G9BT7/XN3WtepUiU/Z/dfOrJ4l6vuEh9U=;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69BCCC385AE;
+        Tue, 26 Apr 2022 08:26:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650961580;
+        bh=krMZrWvMwPJVI9cTHoDUkWLh2zEvMrbq5TmpSLtJPAE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aerxXl9qnbZXmuFa1mh9mOc9bPOEZOZiht+nxKvVU7umdpDwOrSFPAJ9a+gzSLbS3
-         DYLF9BL+zXwQBcx5rVg8oxDePDKaoyv1nq3SOg7AezGRW2Q+E4Y319wosGFsDLcH6X
-         MdPmQhy7B59xpb9MK+JYyX9tgO3U+MPeY6PW+FHE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 15/53] net/sched: cls_u32: fix possible leak in u32_init_knode()
-Date:   Tue, 26 Apr 2022 10:20:55 +0200
-Message-Id: <20220426081736.100870781@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081735.651926456@linuxfoundation.org>
-References: <20220426081735.651926456@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        b=tjQ7bSIznqmBOQFk1emU7ZaPRo5WntOb36802ej6rLrPmcesjyaPm03Y0SxAoq79u
+         7nfLo3v9xICM5AB3Mz04uAJpSGDgGXTbO3ZR/U4enJEkH/dlHzMGnd1zVlqkCpjIWj
+         f2J2uZGRJdJT7sxDY+z5sLAzkk0vlhRtnrsgkKVc+2lNYo970wGYg47c7jJTw1Ea74
+         NQL4MgrXWK5WDmQc+pO+l7q1CUM3VSGun4Gwz5gA3dGtbECRfkLipK0ekqIo9UCw4G
+         mEOoV5ErocHqJ3ViMSeNRO5YcKuzd5wEa/bidK8Znt1H5Sni6ZD20aXDC7kjMSSH/7
+         5UlTDiqWewXQg==
+From:   Roger Quadros <rogerq@kernel.org>
+To:     krzk@kernel.org
+Cc:     miquel.raynal@bootlin.com, tony@atomide.com, vigneshr@ti.com,
+        kishon@ti.com, nm@ti.com, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Roger Quadros <rogerq@kernel.org>
+Subject: [PATCH v4 1/2] memory: omap-gpmc: Make OMAP_GPMC config visible and selectable
+Date:   Tue, 26 Apr 2022 11:26:10 +0300
+Message-Id: <20220426082611.24427-2-rogerq@kernel.org>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220426082611.24427-1-rogerq@kernel.org>
+References: <20220426082611.24427-1-rogerq@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+So far for armv7 TI platforms, GPMC was being selected by
+arch/arm/mach-* architecture Kconfig files.
 
-[ Upstream commit ec5b0f605b105457f257f2870acad4a5d463984b ]
+For K3 platforms, GPMC is no longer required for basic boot
+and cannot be always enabled by default by mach- Kconfig.
 
-While investigating a related syzbot report,
-I found that whenever call to tcf_exts_init()
-from u32_init_knode() is failing, we end up
-with an elevated refcount on ht->refcnt
+We need a way for user (or board defconfig) to enable
+it if required so make OMAP_GPMC Kconfig option always visible.
 
-To avoid that, only increase the refcount after
-all possible errors have been evaluated.
+Drop COMPILE_TEST as build fails if IRQ_DOMAIN is not enabled.
 
-Fixes: b9a24bb76bf6 ("net_sched: properly handle failure case of tcf_exts_init()")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Cong Wang <xiyou.wangcong@gmail.com>
-Cc: Jiri Pirko <jiri@resnulli.us>
-Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Roger Quadros <rogerq@kernel.org>
 ---
- net/sched/cls_u32.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/memory/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/sched/cls_u32.c b/net/sched/cls_u32.c
-index fe246e03fcd9..5eee26cf9011 100644
---- a/net/sched/cls_u32.c
-+++ b/net/sched/cls_u32.c
-@@ -873,10 +873,6 @@ static struct tc_u_knode *u32_init_knode(struct tcf_proto *tp,
- 	new->flags = n->flags;
- 	RCU_INIT_POINTER(new->ht_down, ht);
+diff --git a/drivers/memory/Kconfig b/drivers/memory/Kconfig
+index 30bff6cb1b8d..da9634daad04 100644
+--- a/drivers/memory/Kconfig
++++ b/drivers/memory/Kconfig
+@@ -103,7 +103,7 @@ config TI_EMIF
+ 	  temperature changes
  
--	/* bump reference count as long as we hold pointer to structure */
--	if (ht)
--		ht->refcnt++;
--
- #ifdef CONFIG_CLS_U32_PERF
- 	/* Statistics may be incremented by readers during update
- 	 * so we must keep them in tact. When the node is later destroyed
-@@ -899,6 +895,10 @@ static struct tc_u_knode *u32_init_knode(struct tcf_proto *tp,
- 		return NULL;
- 	}
- 
-+	/* bump reference count as long as we hold pointer to structure */
-+	if (ht)
-+		ht->refcnt++;
-+
- 	return new;
- }
- 
+ config OMAP_GPMC
+-	bool "Texas Instruments OMAP SoC GPMC driver" if COMPILE_TEST
++	bool "Texas Instruments OMAP SoC GPMC driver"
+ 	depends on OF_ADDRESS
+ 	select GPIOLIB
+ 	help
 -- 
-2.35.1
-
-
+2.17.1
 
