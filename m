@@ -2,114 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 296DFC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:08:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 819BFC4167D
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:08:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346677AbiDZJIv (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:08:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56502 "EHLO
+        id S242536AbiDZJKz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:10:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346111AbiDZIoh (ORCPT
+        with ESMTP id S1346882AbiDZIuw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:44:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 576CD161A40;
-        Tue, 26 Apr 2022 01:34:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1932F61899;
-        Tue, 26 Apr 2022 08:34:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B993C385A0;
-        Tue, 26 Apr 2022 08:34:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962050;
-        bh=R82ErtDtIxlzedC2y3MdbnpPynCkL8CpxzBC7d7J2+Q=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hG00I2gyQWLDBo3YfRQQmHVgeutdX6grDLbUDEklWsxv/EsNeAmJ8rvZIRu9bdkJ6
-         QL8mN2lG1n69ghGLOAYaOjds9+UKV9PRw0vH8JgDyeobJfu66294iqA67oyu1gHBi3
-         JhcD3mhnZpYk3g21aNHyabZECKVv3yYOFIxbwoeM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Herring <robh@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 38/86] arm64: dts: imx: Fix imx8*-var-som touchscreen property sizes
-Date:   Tue, 26 Apr 2022 10:21:06 +0200
-Message-Id: <20220426081742.305896496@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
-References: <20220426081741.202366502@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 26 Apr 2022 04:50:52 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8878017046D;
+        Tue, 26 Apr 2022 01:39:08 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id z21so7875789pgj.1;
+        Tue, 26 Apr 2022 01:39:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=8hQiUxEHPoPMzr0fdipBcROtlqL5WATwPbocz4CZxMY=;
+        b=oa1yQ657IWZ34HxrFzrPDPNLXqUheEVfdkQd44cPIbSRD8ymf0Ej3ty2grcBCQH5Rw
+         jyOsA0zGoJXAoa3sNtD5hD/pI4RMUWZD0dlin74TWBtcly3RR1VP422N9013f+Vru1rr
+         jNb6HMgZ2zIm+7niWrkPGZd3wap+poai8QNeQDLafP5e0bvUE+ODzbWnX/VaAtzXoZrg
+         LrrBt3iipmzC5vUoL2WDq+TMnMfF4QK2LO9UgO057mT2JXYZgL91nFDF9u4oUFQ4Fa4A
+         ydW/OAPkgx6hmZZuhA//WakOmZcSwhtO5lIQgFce5nfbWh0TDSd6HmJc0XQbfI5xaQmd
+         t/Xw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=8hQiUxEHPoPMzr0fdipBcROtlqL5WATwPbocz4CZxMY=;
+        b=6B7s9JUUY/xjLH0De2Ajn0cvYOolCt2wuQtAOkO1Qzko/NF5BZDjGdaWzsC5wIRke1
+         GeUc71b38erCMZn1tZWkJS6RWfiGtgeVGxD9+maFNBtbZS87C3OpTSWkvZRolasoiUHP
+         p5sr1Kgaw3sx2SIdtzl95o82aLW0MXUQittwlXhkFFa29x2eGluomgPg8az8ikGJP1BZ
+         BEtpirtK9NiHF+dUthiZCKbv2sU0bWA0Teq1CQ3kKirOkZ2K5C8z8hKucjxVD/uZnfAx
+         7GXR2zsEFF7PN9ythYK6tJCkuudPuSxegqDQJHJvm5mTRAijG/Bft3c5Y68gPPifcX+K
+         1FHw==
+X-Gm-Message-State: AOAM5331SJJYjIoQ8Tox/+ivjIEdWbPLC53nt9OQZlc5CEn2BRnEQf2E
+        0INpYtB2B0rRf1savEqvsc8=
+X-Google-Smtp-Source: ABdhPJx+aUt5+dTkkkAww5P2DvCGQ61G+vdHyEud+z2Rmek/4uoU1iic122tBEoYYRlUN9YH50QZ6Q==
+X-Received: by 2002:a65:5c81:0:b0:3aa:494c:6668 with SMTP id a1-20020a655c81000000b003aa494c6668mr18865499pgt.603.1650962347722;
+        Tue, 26 Apr 2022 01:39:07 -0700 (PDT)
+Received: from [192.168.2.225] (93.179.119.173.16clouds.com. [93.179.119.173])
+        by smtp.gmail.com with ESMTPSA id a38-20020a056a001d2600b004fae885424dsm15272012pfx.72.2022.04.26.01.39.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Apr 2022 01:39:07 -0700 (PDT)
+Message-ID: <043f8d6c-ecae-bbb9-922a-93422d9a21c7@gmail.com>
+Date:   Tue, 26 Apr 2022 16:39:01 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 2/2] doc/vm/page_owner.rst: Fix table display confusion
+Content-Language: en-US
+To:     Akira Yokosawa <akiyks@gmail.com>, baihaowen@meizu.com
+Cc:     alexs@kernel.org, corbet@lwn.net, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, siyanteng01@gmail.com,
+        siyanteng@loongson.cn
+References: <1650424016-7225-3-git-send-email-baihaowen@meizu.com>
+ <3ce4feb9-5477-e7fb-e98c-3d6342ddc7b5@gmail.com>
+From:   Alex Shi <seakeel@gmail.com>
+In-Reply-To: <3ce4feb9-5477-e7fb-e98c-3d6342ddc7b5@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Herring <robh@kernel.org>
-
-[ Upstream commit 1bc12d301594eafde0a8529d28d459af81053b3a ]
-
-The common touchscreen properties are all 32-bit, not 16-bit. These
-properties must not be too important as they are all ignored in case of an
-error reading them.
-
-Signed-off-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/Yk3moe6Hz8ELM0iS@robh.at.kernel.org'
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/arm64/boot/dts/freescale/imx8mm-var-som.dtsi | 8 ++++----
- arch/arm64/boot/dts/freescale/imx8mn-var-som.dtsi | 8 ++++----
- 2 files changed, 8 insertions(+), 8 deletions(-)
-
-diff --git a/arch/arm64/boot/dts/freescale/imx8mm-var-som.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-var-som.dtsi
-index 49082529764f..0fac1f3f7f47 100644
---- a/arch/arm64/boot/dts/freescale/imx8mm-var-som.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-var-som.dtsi
-@@ -89,12 +89,12 @@
- 		pendown-gpio = <&gpio1 3 GPIO_ACTIVE_LOW>;
- 
- 		ti,x-min = /bits/ 16 <125>;
--		touchscreen-size-x = /bits/ 16 <4008>;
-+		touchscreen-size-x = <4008>;
- 		ti,y-min = /bits/ 16 <282>;
--		touchscreen-size-y = /bits/ 16 <3864>;
-+		touchscreen-size-y = <3864>;
- 		ti,x-plate-ohms = /bits/ 16 <180>;
--		touchscreen-max-pressure = /bits/ 16 <255>;
--		touchscreen-average-samples = /bits/ 16 <10>;
-+		touchscreen-max-pressure = <255>;
-+		touchscreen-average-samples = <10>;
- 		ti,debounce-tol = /bits/ 16 <3>;
- 		ti,debounce-rep = /bits/ 16 <1>;
- 		ti,settle-delay-usec = /bits/ 16 <150>;
-diff --git a/arch/arm64/boot/dts/freescale/imx8mn-var-som.dtsi b/arch/arm64/boot/dts/freescale/imx8mn-var-som.dtsi
-index 7f356edf9f91..f6287f174355 100644
---- a/arch/arm64/boot/dts/freescale/imx8mn-var-som.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mn-var-som.dtsi
-@@ -70,12 +70,12 @@
- 		pendown-gpio = <&gpio1 3 GPIO_ACTIVE_LOW>;
- 
- 		ti,x-min = /bits/ 16 <125>;
--		touchscreen-size-x = /bits/ 16 <4008>;
-+		touchscreen-size-x = <4008>;
- 		ti,y-min = /bits/ 16 <282>;
--		touchscreen-size-y = /bits/ 16 <3864>;
-+		touchscreen-size-y = <3864>;
- 		ti,x-plate-ohms = /bits/ 16 <180>;
--		touchscreen-max-pressure = /bits/ 16 <255>;
--		touchscreen-average-samples = /bits/ 16 <10>;
-+		touchscreen-max-pressure = <255>;
-+		touchscreen-average-samples = <10>;
- 		ti,debounce-tol = /bits/ 16 <3>;
- 		ti,debounce-rep = /bits/ 16 <1>;
- 		ti,settle-delay-usec = /bits/ 16 <150>;
--- 
-2.35.1
 
 
+On 4/24/22 11:38, Akira Yokosawa wrote:
+> This patch looks like against akpm's tree (or linux-next).
+> So it is not applicable to docs-next of Jonathan's tree at the
+> moment.
+> 
+> You need to wait until docs-next catches up akpm's tree.
+> 
+> Patch 1/2 should wait until the English doc is updated,
+> I suppose.
+> 
+> By the way, I don't think the list of options need tables.
+> Literal blocks should suffice.
+> 
+> I mean, How about the simpler changes:
+> 
+>>  For --sort option:
+>    For --sort option::
+> 
+>>  For --curl option:
+>    For --curl option::
+> 
+> Thoughts?
+
+
+Hi haowen,
+
+Don't ignore review suggestions, Akira is right here, then
+you don't repeat the same issue many times:
+
+$ g am \[PATCH\ 2_2\]\ doc_vm_page_owner.rst\:\ Fix\ table\ display\ confusion\ -\ Haowen\ Bai\ \<baihaowen@meizu.com\>\ -\ 2022-04-26\ 1507.eml 
+
+Applying: doc/vm/page_owner.rst: Fix table display confusion
+
+.git/rebase-apply/patch:21: indent with spaces.
+
+        ====            ==========      ============================================
+
+.git/rebase-apply/patch:22: indent with spaces.
+
+        KEY             LONG            DESCRIPTION
+
+.git/rebase-apply/patch:23: indent with spaces.
+
+        ====            ==========      ============================================
+
+.git/rebase-apply/patch:24: indent with spaces.
+
+        p               pid             process ID
+
+.git/rebase-apply/patch:25: indent with spaces.
+
+        tg              tgid            thread group ID
+
+warning: squelched 15 whitespace errors
+
+warning: 20 lines add whitespace errors.
 
