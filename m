@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B097C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:08:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1348C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:08:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346572AbiDZJLV (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:11:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55566 "EHLO
+        id S245341AbiDZJLP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:11:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347215AbiDZIvO (ORCPT
+        with ESMTP id S1347191AbiDZIvM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:51:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AE4C175328;
-        Tue, 26 Apr 2022 01:39:44 -0700 (PDT)
+        Tue, 26 Apr 2022 04:51:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22BA7175334;
+        Tue, 26 Apr 2022 01:39:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 495C5B81CED;
-        Tue, 26 Apr 2022 08:39:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B954C385A0;
-        Tue, 26 Apr 2022 08:39:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ABDF860C35;
+        Tue, 26 Apr 2022 08:39:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3E77C385A4;
+        Tue, 26 Apr 2022 08:39:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962382;
-        bh=blG1BoqgDz4cY3SBTCFsQD2tkAE2zYDC7RKtOQpGP2s=;
+        s=korg; t=1650962379;
+        bh=B3InioJ0s1BEfhArgbznDw7Flh+9DO//FvrKmxvR5iU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E4YGKBM1vdSBv3dsILBgFeCbdkjuDU8SDAuEWR5Lu3jQvHLZgH7n3A8a5H6sFLuxO
-         YarFR3/3PLQb0UNNp8A462S+NOZwP+NtQaHU5De00OKukFlh86adBrM/2Bfbs6W61k
-         antUvKFZt4w/lcDTf2IfuzS+3Tm54aiAuwUvctUI=
+        b=n8tejNDOrBlRX4S3tasIQzvU2wom/Gbr54b9BoUccnLysiRoJaZG72iWV3nHcgGO6
+         9HkzB6qR0iozrI5u3ZQN4a0/OvwAAO2+WYp6bcI3W2HxDM65urJ64vTpoX0DxomgpH
+         99lcOH/NA0T76X1iV19yBdX72g3TG14U5WM9Q2kQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?=E9=87=91=E9=9F=AC?= <me@kingtous.cn>,
-        Christoph Hellwig <hch@lst.de>,
-        Keith Busch <kbusch@kernel.org>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 075/124] nvme-pci: disable namespace identifiers for the MAXIO MAP1002/1202
-Date:   Tue, 26 Apr 2022 10:21:16 +0200
-Message-Id: <20220426081749.433897361@linuxfoundation.org>
+Subject: [PATCH 5.15 039/124] net/sched: cls_u32: fix possible leak in u32_init_knode()
+Date:   Tue, 26 Apr 2022 10:20:40 +0200
+Message-Id: <20220426081748.414495702@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -52,38 +52,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit a98a945b80f8684121d477ae68ebc01da953da1f ]
+[ Upstream commit ec5b0f605b105457f257f2870acad4a5d463984b ]
 
-The MAXIO MAP1002/1202 controllers reports completely bogus Namespace
-identifiers that even change after suspend cycles.  Disable using
-the Identifiers entirely.
+While investigating a related syzbot report,
+I found that whenever call to tcf_exts_init()
+from u32_init_knode() is failing, we end up
+with an elevated refcount on ht->refcnt
 
-Reported-by: 金韬 <me@kingtous.cn>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Keith Busch <kbusch@kernel.org>
-Tested-by: 金韬 <me@kingtous.cn>
+To avoid that, only increase the refcount after
+all possible errors have been evaluated.
+
+Fixes: b9a24bb76bf6 ("net_sched: properly handle failure case of tcf_exts_init()")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Cong Wang <xiyou.wangcong@gmail.com>
+Cc: Jiri Pirko <jiri@resnulli.us>
+Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/pci.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ net/sched/cls_u32.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index b925a5f4afc3..61f01f5afdc1 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -3352,6 +3352,10 @@ static const struct pci_device_id nvme_id_table[] = {
- 		.driver_data = NVME_QUIRK_NO_DEEPEST_PS, },
- 	{ PCI_DEVICE(0x2646, 0x2263),   /* KINGSTON A2000 NVMe SSD  */
- 		.driver_data = NVME_QUIRK_NO_DEEPEST_PS, },
-+	{ PCI_DEVICE(0x1e4B, 0x1002),   /* MAXIO MAP1002 */
-+		.driver_data = NVME_QUIRK_BOGUS_NID, },
-+	{ PCI_DEVICE(0x1e4B, 0x1202),   /* MAXIO MAP1202 */
-+		.driver_data = NVME_QUIRK_BOGUS_NID, },
- 	{ PCI_DEVICE(PCI_VENDOR_ID_AMAZON, 0x0061),
- 		.driver_data = NVME_QUIRK_DMA_ADDRESS_BITS_48, },
- 	{ PCI_DEVICE(PCI_VENDOR_ID_AMAZON, 0x0065),
+diff --git a/net/sched/cls_u32.c b/net/sched/cls_u32.c
+index 81f933ebee05..5d30db0d7157 100644
+--- a/net/sched/cls_u32.c
++++ b/net/sched/cls_u32.c
+@@ -814,10 +814,6 @@ static struct tc_u_knode *u32_init_knode(struct net *net, struct tcf_proto *tp,
+ 	new->flags = n->flags;
+ 	RCU_INIT_POINTER(new->ht_down, ht);
+ 
+-	/* bump reference count as long as we hold pointer to structure */
+-	if (ht)
+-		ht->refcnt++;
+-
+ #ifdef CONFIG_CLS_U32_PERF
+ 	/* Statistics may be incremented by readers during update
+ 	 * so we must keep them in tact. When the node is later destroyed
+@@ -839,6 +835,10 @@ static struct tc_u_knode *u32_init_knode(struct net *net, struct tcf_proto *tp,
+ 		return NULL;
+ 	}
+ 
++	/* bump reference count as long as we hold pointer to structure */
++	if (ht)
++		ht->refcnt++;
++
+ 	return new;
+ }
+ 
 -- 
 2.35.1
 
