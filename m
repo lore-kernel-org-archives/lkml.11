@@ -2,109 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 293ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:32:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5631C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 10:32:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349123AbiDZKfh (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 06:35:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41636 "EHLO
+        id S239196AbiDZKfm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 06:35:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349145AbiDZKfD (ORCPT
+        with ESMTP id S1349158AbiDZKfV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 06:35:03 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F22212AC5;
-        Tue, 26 Apr 2022 03:14:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650968040; x=1682504040;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=s3e2Mol8Q7Ae9bok6W3oQgnE6nys4q61z67ZOj7oV0U=;
-  b=RT02AiyiT1j3tEeCXpMRciNCpW9TzMErKMQqz+9xyUEqETnrvbLQhcbL
-   v7OnO8Ghr3xI8pnmAZSn9uXLWFJs2f7JTLxNlvPrLHd3lfeCe2X0EPR99
-   6hPoPS/SIlhuPxNywcPoOalXi6J1ELaOU+Qhs+GVotHCZkX3aI2MiUE23
-   x3wMV9NXnDpS8YUhXDo0/yHircDRjMFq7Kxfl1kqB04RFKAAEahDAcsg+
-   ZzgVbWCx06iWsRYl+6ev2rUSPELK3wUvdek4U+sy/UqxOKsfGARQClt54
-   e3X1AXdgiLBsbuTizpe9QVHY20WI3r13Vfpt+4t8bzDwzK2XcDsZndb7D
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="328471148"
-X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
-   d="scan'208";a="328471148"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 03:13:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
-   d="scan'208";a="595693115"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 26 Apr 2022 03:13:56 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1njICh-0003Py-RN;
-        Tue, 26 Apr 2022 10:13:55 +0000
-Date:   Tue, 26 Apr 2022 18:12:58 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Cai Huoqing <cai.huoqing@linux.dev>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org
-Subject: Re: [PATCH v2 4/4] drm/nvdla/uapi: Add UAPI of NVDLA driver
-Message-ID: <202204261827.CMHZCsOI-lkp@intel.com>
-References: <20220426060808.78225-5-cai.huoqing@linux.dev>
+        Tue, 26 Apr 2022 06:35:21 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7523CBC0C;
+        Tue, 26 Apr 2022 03:15:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1650968154; x=1682504154;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ED9E86mWaIi1Q6en5l7HRo4ItpanEZ0wiCJUj9mkLTE=;
+  b=rpMHai2H4YFP3BRCQlPmaEf6Y6Hsqp+hK1g89J2CNJcTGW0vZROEfVmM
+   2B37wM/yee9D4FKMdDZk4s2hyMk12KwITYE7yKcQFPRcbsoQ+Z0VCJugA
+   gTR26YAgXlLY100hJEL9B0rnF6Qzt0XbpsmelVzddgCgs1ZyG7FjpK5QD
+   A=;
+Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 26 Apr 2022 03:15:51 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 03:15:51 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 26 Apr 2022 03:15:51 -0700
+Received: from [10.216.37.34] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 26 Apr
+ 2022 03:15:47 -0700
+Message-ID: <7a9fb53f-61a8-0e1e-decf-60629be0a478@quicinc.com>
+Date:   Tue, 26 Apr 2022 15:45:42 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220426060808.78225-5-cai.huoqing@linux.dev>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] remoteproc: qcom: Add fallback mechanism for full
+ coredump collection
+Content-Language: en-US
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+CC:     "Sibi Sankar (QUIC)" <quic_sibis@quicinc.com>,
+        "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
+        "linux-remoteproc@vger.kernel.org" <linux-remoteproc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <1649269662-20338-1-git-send-email-quic_ylal@quicinc.com>
+ <YmLIMG62vPv4qtVe@builder.lan>
+From:   Yogesh Lal <quic_ylal@quicinc.com>
+In-Reply-To: <YmLIMG62vPv4qtVe@builder.lan>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Cai,
 
-I love your patch! Yet something to improve:
+On 4/22/2022 8:52 PM, Bjorn Andersson wrote:
+> WARNING: This email originated from outside of Qualcomm. Please be wary of any links or attachments, and do not enable macros.
+>
+> On Wed 06 Apr 13:27 CDT 2022, Yogesh Lal wrote:
+>
+>> In case remoteproc's firmware missing minidump support, during crash
+>> scenario coredump does not collected. This change adds a fallback
+>> mechanism for full coredump collection in the event of a crash.
+>>
+>> Signed-off-by: Yogesh Lal <quic_ylal@quicinc.com>
+>> ---
+>>   drivers/remoteproc/qcom_common.c   | 11 ++++++++---
+>>   drivers/remoteproc/qcom_q6v5_pas.c |  1 +
+>>   2 files changed, 9 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/remoteproc/qcom_common.c b/drivers/remoteproc/qcom_common.c
+>> index 4b91e3c..68bd0bc 100644
+>> --- a/drivers/remoteproc/qcom_common.c
+>> +++ b/drivers/remoteproc/qcom_common.c
+>> @@ -162,13 +162,18 @@ void qcom_minidump(struct rproc *rproc, unsigned int minidump_id)
+>>         * is initialized in memory and encryption status is set.
+>>         */
+>>        if (subsystem->regions_baseptr == 0 ||
+>> -         le32_to_cpu(subsystem->status) != 1 ||
+>> -         le32_to_cpu(subsystem->enabled) != MD_SS_ENABLED ||
+>> -         le32_to_cpu(subsystem->encryption_status) != MD_SS_ENCR_DONE) {
+>> +             le32_to_cpu(subsystem->status) != 1 ||
+>> +             le32_to_cpu(subsystem->enabled) != MD_SS_ENABLED) {
+>> +                     return rproc_coredump(rproc);
+>> +             }
+>> +
+>> +     if (le32_to_cpu(subsystem->encryption_status) != MD_SS_ENCR_DONE) {
+>>                dev_err(&rproc->dev, "Minidump not ready, skipping\n");
+>>                return;
+>>        }
+>>
+>> +     rproc_coredump_cleanup(rproc);
+> The patch looks good, but could you please explain in the commit message
+> why this needs to be added? If the thing described in the message
+> happens this code path wouldn't be taken.
+>
+> Should it be a separate patch, or is it needed because of the fallback
+> etc?
+>
+> Thanks,
+> Bjorn
 
-[auto build test ERROR on drm/drm-next]
-[also build test ERROR on linus/master linux/master v5.18-rc4 next-20220422]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Will push separate patch for it.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Cai-Huoqing/drm-nvdla-Add-driver-support-for-NVDLA/20220426-141148
-base:   git://anongit.freedesktop.org/drm/drm drm-next
-config: i386-randconfig-a003-20220425 (https://download.01.org/0day-ci/archive/20220426/202204261827.CMHZCsOI-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 1cddcfdc3c683b393df1a5c9063252eb60e52818)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/a54587f7637b8ee11ad624794af3b409e6306e07
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Cai-Huoqing/drm-nvdla-Add-driver-support-for-NVDLA/20220426-141148
-        git checkout a54587f7637b8ee11ad624794af3b409e6306e07
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 prepare
+Thanks
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Yogesh Lal
 
-All errors (new ones prefixed by >>):
 
->> error: include/uapi/drm/nvdla_drm.h: missing "WITH Linux-syscall-note" for SPDX-License-Identifier
-   make[2]: *** [scripts/Makefile.headersinst:63: usr/include/drm/nvdla_drm.h] Error 1
-   make[2]: Target '__headers' not remade because of errors.
-   make[1]: *** [Makefile:1280: headers] Error 2
-   make[1]: Target 'prepare' not remade because of errors.
-   make: *** [Makefile:219: __sub-make] Error 2
-   make: Target 'prepare' not remade because of errors.
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+>> +
+>>        ret = qcom_add_minidump_segments(rproc, subsystem);
+>>        if (ret) {
+>>                dev_err(&rproc->dev, "Failed with error: %d while adding minidump entries\n", ret);
+>> diff --git a/drivers/remoteproc/qcom_q6v5_pas.c b/drivers/remoteproc/qcom_q6v5_pas.c
+>> index 1ae47cc..40bf747 100644
+>> --- a/drivers/remoteproc/qcom_q6v5_pas.c
+>> +++ b/drivers/remoteproc/qcom_q6v5_pas.c
+>> @@ -293,6 +293,7 @@ static const struct rproc_ops adsp_minidump_ops = {
+>>        .start = adsp_start,
+>>        .stop = adsp_stop,
+>>        .da_to_va = adsp_da_to_va,
+>> +     .parse_fw = qcom_register_dump_segments,
+>>        .load = adsp_load,
+>>        .panic = adsp_panic,
+>>        .coredump = adsp_minidump,
+>> --
+>> 2.7.4
+>>
