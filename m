@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEC8AC3527E
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:37:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42266C35296
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:37:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348535AbiDZJkL (ORCPT
+        id S1348607AbiDZJkY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:40:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53112 "EHLO
+        Tue, 26 Apr 2022 05:40:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346043AbiDZJGn (ORCPT
+        with ESMTP id S1346496AbiDZJLT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:06:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F930151F32;
-        Tue, 26 Apr 2022 01:47:57 -0700 (PDT)
+        Tue, 26 Apr 2022 05:11:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8504E17FBFA;
+        Tue, 26 Apr 2022 01:49:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E02EA61344;
-        Tue, 26 Apr 2022 08:47:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 016C1C385AF;
-        Tue, 26 Apr 2022 08:47:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D4BD6142A;
+        Tue, 26 Apr 2022 08:49:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F0D6C385A4;
+        Tue, 26 Apr 2022 08:49:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962876;
-        bh=I7E4f3rFKZQ0HQraiuVyxk/qYySAiRYvtrWeIKvVc1c=;
+        s=korg; t=1650962986;
+        bh=SKZ70ocCGQMjXnK+lWqgjKDRpLy/0CK15+nNC8oyUdA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NZMTo0fg+VL/hIDnqGc/LLtwKiM5qZll6JN7trq809j84M/gy1OC/ThE8uJb2UEy1
-         UmNW0P5Z2zhCrux7JsLwGNV5lOwxgfPQDuOWQ3Y2lMRYaSTXGyqeu+xMHnYYRJAgwf
-         +CZ2jg/Q/yVBDw2SDfP36xDTj7ioOpvyrZ2LEBnQ=
+        b=xVJyyPeD9cGAMRX/YURx3Y5/+BqH3t5FZW/jYtFHPMdoVWStKM/70LQLfoHxtjjmS
+         PYpGlW/0zO5aE6ic/5oG51Bvb5PHWiQfly79EwIEE0LnyBIkGO7KquFIwBxG8Kh8N3
+         ISFZcHdmiKvZ6AYNsRxV0OrdmU8jmQcflxkQKjJQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PATCH 5.17 118/146] xtensa: fix a7 clobbering in coprocessor context load/store
-Date:   Tue, 26 Apr 2022 10:21:53 +0200
-Message-Id: <20220426081753.374086021@linuxfoundation.org>
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        stable@kernel.org
+Subject: [PATCH 5.17 141/146] ext4: update the cached overhead value in the superblock
+Date:   Tue, 26 Apr 2022 10:22:16 +0200
+Message-Id: <20220426081754.022193929@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -48,43 +49,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Max Filippov <jcmvbkbc@gmail.com>
+From: Theodore Ts'o <tytso@mit.edu>
 
-commit 839769c35477d4acc2369e45000ca7b0b6af39a7 upstream.
+commit eb7054212eac8b451d727bf079eae3db8c88f9d3 upstream.
 
-Fast coprocessor exception handler saves a3..a6, but coprocessor context
-load/store code uses a4..a7 as temporaries, potentially clobbering a7.
-'Potentially' because coprocessor state load/store macros may not use
-all four temporary registers (and neither FPU nor HiFi macros do).
-Use a3..a6 as intended.
+If we (re-)calculate the file system overhead amount and it's
+different from the on-disk s_overhead_clusters value, update the
+on-disk version since this can take potentially quite a while on
+bigalloc file systems.
 
-Cc: stable@vger.kernel.org
-Fixes: c658eac628aa ("[XTENSA] Add support for configurable registers and coprocessors")
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/xtensa/kernel/coprocessor.S |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/ext4/ext4.h  |    1 +
+ fs/ext4/ioctl.c |   16 ++++++++++++++++
+ fs/ext4/super.c |    2 ++
+ 3 files changed, 19 insertions(+)
 
---- a/arch/xtensa/kernel/coprocessor.S
-+++ b/arch/xtensa/kernel/coprocessor.S
-@@ -29,7 +29,7 @@
- 	.if XTENSA_HAVE_COPROCESSOR(x);					\
- 		.align 4;						\
- 	.Lsave_cp_regs_cp##x:						\
--		xchal_cp##x##_store a2 a4 a5 a6 a7;			\
-+		xchal_cp##x##_store a2 a3 a4 a5 a6;			\
- 		jx	a0;						\
- 	.endif
+--- a/fs/ext4/ext4.h
++++ b/fs/ext4/ext4.h
+@@ -3066,6 +3066,7 @@ int ext4_fileattr_set(struct user_namesp
+ 		      struct dentry *dentry, struct fileattr *fa);
+ int ext4_fileattr_get(struct dentry *dentry, struct fileattr *fa);
+ extern void ext4_reset_inode_seed(struct inode *inode);
++int ext4_update_overhead(struct super_block *sb);
  
-@@ -46,7 +46,7 @@
- 	.if XTENSA_HAVE_COPROCESSOR(x);					\
- 		.align 4;						\
- 	.Lload_cp_regs_cp##x:						\
--		xchal_cp##x##_load a2 a4 a5 a6 a7;			\
-+		xchal_cp##x##_load a2 a3 a4 a5 a6;			\
- 		jx	a0;						\
- 	.endif
+ /* migrate.c */
+ extern int ext4_ext_migrate(struct inode *);
+--- a/fs/ext4/ioctl.c
++++ b/fs/ext4/ioctl.c
+@@ -1652,3 +1652,19 @@ long ext4_compat_ioctl(struct file *file
+ 	return ext4_ioctl(file, cmd, (unsigned long) compat_ptr(arg));
+ }
+ #endif
++
++static void set_overhead(struct ext4_super_block *es, const void *arg)
++{
++	es->s_overhead_clusters = cpu_to_le32(*((unsigned long *) arg));
++}
++
++int ext4_update_overhead(struct super_block *sb)
++{
++	struct ext4_sb_info *sbi = EXT4_SB(sb);
++
++	if (sb_rdonly(sb) || sbi->s_overhead == 0 ||
++	    sbi->s_overhead == le32_to_cpu(sbi->s_es->s_overhead_clusters))
++		return 0;
++
++	return ext4_update_superblocks_fn(sb, set_overhead, &sbi->s_overhead);
++}
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -5597,6 +5597,8 @@ static int ext4_fill_super(struct super_
+ 		ext4_msg(sb, KERN_INFO, "mounted filesystem with%s. "
+ 			 "Quota mode: %s.", descr, ext4_quota_mode(sb));
  
++	/* Update the s_overhead_clusters if necessary */
++	ext4_update_overhead(sb);
+ 	return 0;
+ 
+ free_sbi:
 
 
