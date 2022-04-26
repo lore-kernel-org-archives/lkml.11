@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97FFDC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0B86C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:48:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346789AbiDZIuZ (ORCPT
+        id S1346848AbiDZIuq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:50:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59644 "EHLO
+        Tue, 26 Apr 2022 04:50:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345821AbiDZIje (ORCPT
+        with ESMTP id S1345814AbiDZIje (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 04:39:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EF8AA146A;
-        Tue, 26 Apr 2022 01:31:47 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9D9A76293;
+        Tue, 26 Apr 2022 01:31:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CE77C617D2;
-        Tue, 26 Apr 2022 08:31:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9F73C385A4;
-        Tue, 26 Apr 2022 08:31:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 76BA4B81CF3;
+        Tue, 26 Apr 2022 08:31:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDAADC385A0;
+        Tue, 26 Apr 2022 08:31:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961906;
-        bh=zzLxfROdWq0Cc24SvURJjLlL4V9CEWV5ldpGU7FrGoc=;
+        s=korg; t=1650961894;
+        bh=5T3eTfQO08G5FmqikWHLKnbCUxqKl/QAJjfaLnqdXfE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bQ5fPhZ5OdtwlhhW5iYXmXmWovwhX2B0mYoNmABC4VaZe7yGYS8CigAJuurI8kGjd
-         /Mx17SQaVLDMmJBlun1cV69lH/Md0vSTlvF3B03ZeAEbxOI5kK1kol168r7jQF0Eza
-         dZlIHShC1RlELlPZd7y3kHF2oFnd+y3sbVUgZZQk=
+        b=Lor8HovSYpCupsAKpoNvLwgEjct/lfADAIBhqEG18IinOIqKe4mmMY7wtxGeco/zH
+         JJ7Yw31t6dKPky4MAvSjBqwSDNEG6fQqnU1O45FZ5XZnOtCx+gZWuRRHlqPyCBospy
+         DQQAuXpK38xHgS/nfXVCRu+mKnAbUlDUmIxH32X0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 43/62] drm/vc4: Use pm_runtime_resume_and_get to fix pm_runtime_get_sync() usage
-Date:   Tue, 26 Apr 2022 10:21:23 +0200
-Message-Id: <20220426081738.457734060@linuxfoundation.org>
+        stable@vger.kernel.org,
+        James Hutchinson <jahutchinson99@googlemail.com>,
+        Dima Ruinskiy <dima.ruinskiy@intel.com>,
+        Sasha Neftin <sasha.neftin@intel.com>,
+        Naama Meir <naamax.meir@linux.intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [PATCH 5.4 49/62] e1000e: Fix possible overflow in LTR decoding
+Date:   Tue, 26 Apr 2022 10:21:29 +0200
+Message-Id: <20220426081738.628092897@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
 References: <20220426081737.209637816@linuxfoundation.org>
@@ -50,41 +53,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Sasha Neftin <sasha.neftin@intel.com>
 
-[ Upstream commit 3d0b93d92a2790337aa9d18cb332d02356a24126 ]
+commit 04ebaa1cfddae5f240cc7404f009133bb0389a47 upstream.
 
-If the device is already in a runtime PM enabled state
-pm_runtime_get_sync() will return 1.
+When we decode the latency and the max_latency, u16 value may not fit
+the required size and could lead to the wrong LTR representation.
 
-Also, we need to call pm_runtime_put_noidle() when pm_runtime_get_sync()
-fails, so use pm_runtime_resume_and_get() instead. this function
-will handle this.
+Scaling is represented as:
+scale 0 - 1         (2^(5*0)) = 2^0
+scale 1 - 32        (2^(5 *1))= 2^5
+scale 2 - 1024      (2^(5 *2)) =2^10
+scale 3 - 32768     (2^(5 *3)) =2^15
+scale 4 - 1048576   (2^(5 *4)) = 2^20
+scale 5 - 33554432  (2^(5 *4)) = 2^25
+scale 4 and scale 5 required 20 and 25 bits respectively.
+scale 6 reserved.
 
-Fixes: 4078f5757144 ("drm/vc4: Add DSI driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220420135008.2757-1-linmq006@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Replace the u16 type with the u32 type and allow corrected LTR
+representation.
+
+Cc: stable@vger.kernel.org
+Fixes: 44a13a5d99c7 ("e1000e: Fix the max snoop/no-snoop latency for 10M")
+Reported-by: James Hutchinson <jahutchinson99@googlemail.com>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215689
+Suggested-by: Dima Ruinskiy <dima.ruinskiy@intel.com>
+Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
+Tested-by: Naama Meir <naamax.meir@linux.intel.com>
+Tested-by: James Hutchinson <jahutchinson99@googlemail.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/vc4/vc4_dsi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/intel/e1000e/ich8lan.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
-index c78fa8144776..0983949cc8c9 100644
---- a/drivers/gpu/drm/vc4/vc4_dsi.c
-+++ b/drivers/gpu/drm/vc4/vc4_dsi.c
-@@ -831,7 +831,7 @@ static void vc4_dsi_encoder_enable(struct drm_encoder *encoder)
- 	unsigned long phy_clock;
- 	int ret;
+--- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
++++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
+@@ -995,8 +995,8 @@ static s32 e1000_platform_pm_pch_lpt(str
+ {
+ 	u32 reg = link << (E1000_LTRV_REQ_SHIFT + E1000_LTRV_NOSNOOP_SHIFT) |
+ 	    link << E1000_LTRV_REQ_SHIFT | E1000_LTRV_SEND;
+-	u16 max_ltr_enc_d = 0;	/* maximum LTR decoded by platform */
+-	u16 lat_enc_d = 0;	/* latency decoded */
++	u32 max_ltr_enc_d = 0;	/* maximum LTR decoded by platform */
++	u32 lat_enc_d = 0;	/* latency decoded */
+ 	u16 lat_enc = 0;	/* latency encoded */
  
--	ret = pm_runtime_get_sync(dev);
-+	ret = pm_runtime_resume_and_get(dev);
- 	if (ret) {
- 		DRM_ERROR("Failed to runtime PM enable on DSI%d\n", dsi->port);
- 		return;
--- 
-2.35.1
-
+ 	if (link) {
 
 
