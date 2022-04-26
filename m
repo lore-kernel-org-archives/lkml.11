@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE0B5C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:23:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 838C4C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347439AbiDZJYG (ORCPT
+        id S1347674AbiDZJYb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:24:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41470 "EHLO
+        Tue, 26 Apr 2022 05:24:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346521AbiDZJAm (ORCPT
+        with ESMTP id S1345701AbiDZI5p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:00:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E67F434BC;
-        Tue, 26 Apr 2022 01:43:18 -0700 (PDT)
+        Tue, 26 Apr 2022 04:57:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0247ABC06;
+        Tue, 26 Apr 2022 01:42:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B708560EC5;
-        Tue, 26 Apr 2022 08:43:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9AA9C385A0;
-        Tue, 26 Apr 2022 08:43:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 985B7B81CF2;
+        Tue, 26 Apr 2022 08:42:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBD11C385A0;
+        Tue, 26 Apr 2022 08:42:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962597;
-        bh=al/DNcmU9VRxip2sAs9qrDdhoQhbuDVPjqT3XjVExbY=;
+        s=korg; t=1650962567;
+        bh=9DMqKIUau+tacJlrTRXRHwG1oWX/0ZctgKCyawm2tGI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sZKg4IpTrA1D9SSFzKRkV38IhAU/9cdOBaMsuUa1InpoFn+jDOJISbi2K1vUO91Kv
-         WhImvhi3ZZWT2CawGNjZIqje+W+1JAuAHX8rfp3THIHXgk7CSLPdqFe1ErNupsdiJE
-         0GA1jZTFFl69BBTgwZ+p9PSZL5aZkdhOcZhqVmD0=
+        b=L1BZb+YqUmPMVqjHTQKWqhD9eXzD6qWqMEico+99CU2+x1z5oJnErgiP/5LaBDCrs
+         rtq+nzgaBVd1zHRKnHZ07n0l0joLLhEYv0Sd6V3gGlUWxkUyaORx7Qrzqg743uopjZ
+         n72xYyK7b4zkvLqG2PguXbid2NQzkngr7ul52yHM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Naama Meir <naamax.meir@linux.intel.com>,
-        Paul Menzel <pmenzel@molgen.mpg.de>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 026/146] igc: Fix suspending when PTM is active
-Date:   Tue, 26 Apr 2022 10:20:21 +0200
-Message-Id: <20220426081750.802783379@linuxfoundation.org>
+        syzbot+c6fd14145e2f62ca0784@syzkaller.appspotmail.com,
+        Bob Peterson <rpeterso@redhat.com>,
+        Andreas Gruenbacher <agruenba@redhat.com>
+Subject: [PATCH 5.17 005/146] gfs2: assign rgrp glock before compute_bitstructs
+Date:   Tue, 26 Apr 2022 10:20:00 +0200
+Message-Id: <20220426081750.212223244@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -53,65 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+From: Bob Peterson <rpeterso@redhat.com>
 
-[ Upstream commit 822f52e7efdc88fccffb9fbf6250a4b7666a0b0f ]
+commit 428f651cb80b227af47fc302e4931791f2fb4741 upstream.
 
-Some mainboard/CPU combinations, in particular, Alder Lake-S with a
-W680 mainboard, have shown problems (system hangs usually, no kernel
-logs) with suspend/resume when PCIe PTM is enabled and active. In some
-cases, it could be reproduced when removing the igc module.
+Before this patch, function read_rindex_entry called compute_bitstructs
+before it allocated a glock for the rgrp. But if compute_bitstructs found
+a problem with the rgrp, it called gfs2_consist_rgrpd, and that called
+gfs2_dump_glock for rgd->rd_gl which had not yet been assigned.
 
-The best we can do is to stop PTM dialogs from the downstream/device
-side before the interface is brought down. PCIe PTM will be re-enabled
-when the interface is being brought up.
+read_rindex_entry
+   compute_bitstructs
+      gfs2_consist_rgrpd
+         gfs2_dump_glock <---------rgd->rd_gl was not set.
 
-Fixes: a90ec8483732 ("igc: Add support for PTP getcrosststamp()")
-Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Tested-by: Naama Meir <naamax.meir@linux.intel.com>
-Acked-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This patch changes read_rindex_entry so it assigns an rgrp glock before
+calling compute_bitstructs so gfs2_dump_glock does not reference an
+unassigned pointer. If an error is discovered, the glock must also be
+put, so a new goto and label were added.
+
+Reported-by: syzbot+c6fd14145e2f62ca0784@syzkaller.appspotmail.com
+Signed-off-by: Bob Peterson <rpeterso@redhat.com>
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/igc/igc_ptp.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+ fs/gfs2/rgrp.c |    9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_ptp.c b/drivers/net/ethernet/intel/igc/igc_ptp.c
-index 0d6e3215e98f..653e9f1e35b5 100644
---- a/drivers/net/ethernet/intel/igc/igc_ptp.c
-+++ b/drivers/net/ethernet/intel/igc/igc_ptp.c
-@@ -992,6 +992,17 @@ static void igc_ptp_time_restore(struct igc_adapter *adapter)
- 	igc_ptp_write_i225(adapter, &ts);
- }
+--- a/fs/gfs2/rgrp.c
++++ b/fs/gfs2/rgrp.c
+@@ -923,15 +923,15 @@ static int read_rindex_entry(struct gfs2
+ 	spin_lock_init(&rgd->rd_rsspin);
+ 	mutex_init(&rgd->rd_mutex);
  
-+static void igc_ptm_stop(struct igc_adapter *adapter)
-+{
-+	struct igc_hw *hw = &adapter->hw;
-+	u32 ctrl;
-+
-+	ctrl = rd32(IGC_PTM_CTRL);
-+	ctrl &= ~IGC_PTM_CTRL_EN;
-+
-+	wr32(IGC_PTM_CTRL, ctrl);
-+}
-+
- /**
-  * igc_ptp_suspend - Disable PTP work items and prepare for suspend
-  * @adapter: Board private structure
-@@ -1009,8 +1020,10 @@ void igc_ptp_suspend(struct igc_adapter *adapter)
- 	adapter->ptp_tx_skb = NULL;
- 	clear_bit_unlock(__IGC_PTP_TX_IN_PROGRESS, &adapter->state);
+-	error = compute_bitstructs(rgd);
+-	if (error)
+-		goto fail;
+-
+ 	error = gfs2_glock_get(sdp, rgd->rd_addr,
+ 			       &gfs2_rgrp_glops, CREATE, &rgd->rd_gl);
+ 	if (error)
+ 		goto fail;
  
--	if (pci_device_is_present(adapter->pdev))
-+	if (pci_device_is_present(adapter->pdev)) {
- 		igc_ptp_time_save(adapter);
-+		igc_ptm_stop(adapter);
-+	}
- }
++	error = compute_bitstructs(rgd);
++	if (error)
++		goto fail_glock;
++
+ 	rgd->rd_rgl = (struct gfs2_rgrp_lvb *)rgd->rd_gl->gl_lksb.sb_lvbptr;
+ 	rgd->rd_flags &= ~GFS2_RDF_PREFERRED;
+ 	if (rgd->rd_data > sdp->sd_max_rg_data)
+@@ -945,6 +945,7 @@ static int read_rindex_entry(struct gfs2
+ 	}
  
- /**
--- 
-2.35.1
-
+ 	error = 0; /* someone else read in the rgrp; free it and ignore it */
++fail_glock:
+ 	gfs2_glock_put(rgd->rd_gl);
+ 
+ fail:
 
 
