@@ -2,137 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C61D9C3527E
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:12:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 519E6C35294
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:12:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347386AbiDZJOJ (ORCPT
+        id S1347618AbiDZJOs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:14:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52176 "EHLO
+        Tue, 26 Apr 2022 05:14:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347475AbiDZIvi (ORCPT
+        with ESMTP id S1347249AbiDZIvP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:51:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 224DDCD675;
-        Tue, 26 Apr 2022 01:40:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 26 Apr 2022 04:51:15 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 21C5A11095F
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 01:39:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650962399;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=iDe4GeW+sgo3wBzL48yLmlazZisZ7asxKfRKJCrYQo4=;
+        b=CCzp2rnjTWsIQshqPJMBJbH2DekmkTz4k6atASbfPogqMXBKeM9qT1tHtk7to/hppXiWa8
+        pPTu2JD5hkli/3FS59hMh+cs2J++eItbKXVGt+Favo0WEG5iEz2G4yar3qAHTIh3xSZDaD
+        PlXj8iMouSB4jehza8+Z6uT70NbGwOs=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-655-DjBUPTttMNWsheLIp98nKQ-1; Tue, 26 Apr 2022 04:39:55 -0400
+X-MC-Unique: DjBUPTttMNWsheLIp98nKQ-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C95E3B81D0B;
-        Tue, 26 Apr 2022 08:40:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32D75C385A0;
-        Tue, 26 Apr 2022 08:40:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962416;
-        bh=ANemBF0bfxRf6RmGxUxmDlZxuSUU9ownLlWMAlAyxEM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yjN08sDuwdOeq9SMr42V4tEMiHXL5LPTltMUlubaj+Gf8/ahPzFwlPZEpCuG6cpRT
-         KIzmLZfDBgDpYAhnUEs8ckgnSvVWz3nnaKEf7zUuL/zMVkugwQ4x208GEEaRYREcFJ
-         sVyD4vO5Z1rJvMFOAmsYR4IvNYPYCE9HclLjOVUg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhipeng Xie <xiezhipeng1@huawei.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 090/124] perf/core: Fix perf_mmap fail when CONFIG_PERF_USE_VMALLOC enabled
-Date:   Tue, 26 Apr 2022 10:21:31 +0200
-Message-Id: <20220426081749.857987874@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
-References: <20220426081747.286685339@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 449C038337E0;
+        Tue, 26 Apr 2022 08:39:55 +0000 (UTC)
+Received: from rotkaeppchen (unknown [10.39.193.220])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4702441617F;
+        Tue, 26 Apr 2022 08:39:54 +0000 (UTC)
+Date:   Tue, 26 Apr 2022 10:39:52 +0200
+From:   Philipp Rudo <prudo@redhat.com>
+To:     lizhe <sensor1010@163.com>
+Cc:     bhe@redhat.com, vgoyal@redhat.com, dyoung@redhat.com,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] kernel/crash_core.c : Remove redundant checks for
+ ck_cmdline is NULL
+Message-ID: <20220426103952.0a080eb8@rotkaeppchen>
+In-Reply-To: <20220425153857.21922-1-sensor1010@163.com>
+References: <20220425153857.21922-1-sensor1010@163.com>
+Organization: Red Hat inc.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhipeng Xie <xiezhipeng1@huawei.com>
+Hi lizhe,
 
-[ Upstream commit 60490e7966659b26d74bf1fa4aa8693d9a94ca88 ]
+On Mon, 25 Apr 2022 08:38:57 -0700
+lizhe <sensor1010@163.com> wrote:
 
-This problem can be reproduced with CONFIG_PERF_USE_VMALLOC enabled on
-both x86_64 and aarch64 arch when using sysdig -B(using ebpf)[1].
-sysdig -B works fine after rebuilding the kernel with
-CONFIG_PERF_USE_VMALLOC disabled.
+>  When ck_cmdline is NULL, the only caller of get_last_crashkernel()
+>  has already done non-NULL check(see __parse_crashkernel()),
+>  so it doesn't make any sense to make a check here
 
-I tracked it down to the if condition event->rb->nr_pages != nr_pages
-in perf_mmap is true when CONFIG_PERF_USE_VMALLOC is enabled where
-event->rb->nr_pages = 1 and nr_pages = 2048 resulting perf_mmap to
-return -EINVAL. This is because when CONFIG_PERF_USE_VMALLOC is
-enabled, rb->nr_pages is always equal to 1.
+sorry, but I still don't like the description. What I don't understand
+in particular is why you are mentioning the caller (__parse_crashkernel)
+here. ck_cmdline is a local variable to get_last_crashkernel. So the
+caller cannot perform any check on the variable but only the return
+value of the function. So the patch description should describe why we
+can remove the additional return NULL without changing the behavior of
+the function.
 
-Arch with CONFIG_PERF_USE_VMALLOC enabled by default:
-	arc/arm/csky/mips/sh/sparc/xtensa
+Thanks
+Philipp
 
-Arch with CONFIG_PERF_USE_VMALLOC disabled by default:
-	x86_64/aarch64/...
-
-Fix this problem by using data_page_nr()
-
-[1] https://github.com/draios/sysdig
-
-Fixes: 906010b2134e ("perf_event: Provide vmalloc() based mmap() backing")
-Signed-off-by: Zhipeng Xie <xiezhipeng1@huawei.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220209145417.6495-1-xiezhipeng1@huawei.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- kernel/events/core.c        | 2 +-
- kernel/events/internal.h    | 5 +++++
- kernel/events/ring_buffer.c | 5 -----
- 3 files changed, 6 insertions(+), 6 deletions(-)
-
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 699446d60b6b..7c891a8eb323 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -6348,7 +6348,7 @@ static int perf_mmap(struct file *file, struct vm_area_struct *vma)
- again:
- 	mutex_lock(&event->mmap_mutex);
- 	if (event->rb) {
--		if (event->rb->nr_pages != nr_pages) {
-+		if (data_page_nr(event->rb) != nr_pages) {
- 			ret = -EINVAL;
- 			goto unlock;
- 		}
-diff --git a/kernel/events/internal.h b/kernel/events/internal.h
-index 228801e20788..aa23ffdaf819 100644
---- a/kernel/events/internal.h
-+++ b/kernel/events/internal.h
-@@ -116,6 +116,11 @@ static inline int page_order(struct perf_buffer *rb)
- }
- #endif
- 
-+static inline int data_page_nr(struct perf_buffer *rb)
-+{
-+	return rb->nr_pages << page_order(rb);
-+}
-+
- static inline unsigned long perf_data_size(struct perf_buffer *rb)
- {
- 	return rb->nr_pages << (PAGE_SHIFT + page_order(rb));
-diff --git a/kernel/events/ring_buffer.c b/kernel/events/ring_buffer.c
-index 52868716ec35..fb35b926024c 100644
---- a/kernel/events/ring_buffer.c
-+++ b/kernel/events/ring_buffer.c
-@@ -859,11 +859,6 @@ void rb_free(struct perf_buffer *rb)
- }
- 
- #else
--static int data_page_nr(struct perf_buffer *rb)
--{
--	return rb->nr_pages << page_order(rb);
--}
--
- static struct page *
- __perf_mmap_to_page(struct perf_buffer *rb, unsigned long pgoff)
- {
--- 
-2.35.1
-
-
+> Signed-off-by: lizhe <sensor1010@163.com>
+> ---
+>  kernel/crash_core.c | 3 ---
+>  1 file changed, 3 deletions(-)
+> 
+> diff --git a/kernel/crash_core.c b/kernel/crash_core.c
+> index 256cf6db573c..c232f01a2c54 100644
+> --- a/kernel/crash_core.c
+> +++ b/kernel/crash_core.c
+> @@ -222,9 +222,6 @@ static __init char *get_last_crashkernel(char *cmdline,
+>  		p = strstr(p+1, name);
+>  	}
+>  
+> -	if (!ck_cmdline)
+> -		return NULL;
+> -
+>  	return ck_cmdline;
+>  }
+>  
 
