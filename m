@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B8D8C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8919C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:06:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354113AbiDZTIn (ORCPT
+        id S1354195AbiDZTJG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 15:08:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43244 "EHLO
+        Tue, 26 Apr 2022 15:09:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353806AbiDZTFu (ORCPT
+        with ESMTP id S1353240AbiDZTF7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 15:05:50 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A76A719A4AF;
-        Tue, 26 Apr 2022 12:02:42 -0700 (PDT)
+        Tue, 26 Apr 2022 15:05:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 222421999D9;
+        Tue, 26 Apr 2022 12:02:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0A873CE20EA;
-        Tue, 26 Apr 2022 19:02:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C23AC385B0;
-        Tue, 26 Apr 2022 19:02:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CA3A5B8224F;
+        Tue, 26 Apr 2022 19:02:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AD27C385A4;
+        Tue, 26 Apr 2022 19:02:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650999759;
-        bh=xCiJZCZ9ZeZ92LkRF+pni1gvqdOIeeTL+TY9tYDqNAY=;
+        s=k20201202; t=1650999768;
+        bh=C3Yvy/qzZwrx37raEwVDeS3Z2P4nQvqPOYKe2HSqq5s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hsGdXgn1j08bU7TQSxiH2Ms1QZ+gIL3C6m4Puogyk3iaN+G9Ho8IadtsKIVV3iUzz
-         Q4+WnDdAxbxQ1ivC+fD5ACwQugrDDMfHxcnl4iowo8XErQOCrypw1EElF9kZxS8oLC
-         /kdskgmZB9WqVEDDl5M43Jj7WMCcu7S/xzxLR1UQbneiSqwbDYk+DffetNDl9xShLx
-         rWbRubkpiuVJzM8onPeRjGddVA9ZJ031PU/G/FWhuNWkvvi/0HauL8WpZhLP2vksGL
-         CV/Tck/hEibm1XkGkuAqlwNf804V8PEuKsUAy4qCWC0KPFV2wwZ/AjP9r88toeET4P
-         WrDbf6FD27dew==
+        b=RPBDwM8n4x2rN3NvLVKicha0Zo9qIy6CBL1Li6i+7B7OqiqzqewEQ2urmFPPAtFsD
+         57/j7g9/0986ZkK0VVZCxYuAqY1XhOTouU2oCxOMG2HU38EgaaQyCmsx1vH5RLESHz
+         +aCaw6vnG3eZUFQSPSDll4ibGjkaAHtGL8vHIP6RhQiEO1QRvwK1KVEqXREVe1cxHD
+         jiXenTBgkjj8QG/B9EXPT7Swc/dwWIAXq9VfqIGrE1hcDOH3NzDyjDaxve8/Dsc9OK
+         z5N+eZvEvyh1J4gp2+JPJfUP/EByhszOjfv6cJVn8h4TbkJlLKsxaVMBvskAWofLEv
+         sVM+k9yvUZcyQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Duoming Zhou <duoming@zju.edu.cn>, Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>, jes@trained-monkey.org,
         davem@davemloft.net, kuba@kernel.org, linux-hippi@sunsite.dk,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 7/9] drivers: net: hippi: Fix deadlock in rr_close()
-Date:   Tue, 26 Apr 2022 15:02:28 -0400
-Message-Id: <20220426190232.2351606-7-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 5/6] drivers: net: hippi: Fix deadlock in rr_close()
+Date:   Tue, 26 Apr 2022 15:02:41 -0400
+Message-Id: <20220426190243.2351733-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220426190232.2351606-1-sashal@kernel.org>
-References: <20220426190232.2351606-1-sashal@kernel.org>
+In-Reply-To: <20220426190243.2351733-1-sashal@kernel.org>
+References: <20220426190243.2351733-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -85,10 +85,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 2 insertions(+)
 
 diff --git a/drivers/net/hippi/rrunner.c b/drivers/net/hippi/rrunner.c
-index 22010384c4a3..b9646b369f8e 100644
+index a4b3fce69ecd..6016e182f008 100644
 --- a/drivers/net/hippi/rrunner.c
 +++ b/drivers/net/hippi/rrunner.c
-@@ -1353,7 +1353,9 @@ static int rr_close(struct net_device *dev)
+@@ -1346,7 +1346,9 @@ static int rr_close(struct net_device *dev)
  
  	rrpriv->fw_running = 0;
  
