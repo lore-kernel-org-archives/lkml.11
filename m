@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0117DC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:37:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98B66C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:37:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345348AbiDZIkR (ORCPT
+        id S1345383AbiDZIkW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:40:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60308 "EHLO
+        Tue, 26 Apr 2022 04:40:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345019AbiDZIfO (ORCPT
+        with ESMTP id S1344918AbiDZIfN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:35:14 -0400
+        Tue, 26 Apr 2022 04:35:13 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8857E3A5FE;
-        Tue, 26 Apr 2022 01:28:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E7407F211;
+        Tue, 26 Apr 2022 01:28:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 22892617EB;
-        Tue, 26 Apr 2022 08:28:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 246EFC385A0;
-        Tue, 26 Apr 2022 08:28:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C46B561864;
+        Tue, 26 Apr 2022 08:28:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D14E3C385A0;
+        Tue, 26 Apr 2022 08:28:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961710;
-        bh=rvD413YDWinJu95LA5qjGrVuTs33M0xttuur9tqA9ks=;
+        s=korg; t=1650961704;
+        bh=/xxwTARog4nsNtTU4Kw8BDH+DOxCXvEIoJd0Sjp398M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bV/9MPN5aM7RNab9ZB6J14i7ZzL/vhQN8P+5U5PVyNeeFmPXZAznoyWiG0XETbi49
-         MaySrbwEWqiUtzK8QYWoj6aBkXbXpLT2dbme/RSd92vwKtUnILrdq9DQMPjyoVneRX
-         CmQNXQzjA79GcHEarG77rrcUru+ZynPZooAD8RCA=
+        b=o5+SnyuSig3GPbR9uf8fmk8YGEc2+Oif02/qOYrTB3HbwQzwOCu79sLAyCWmCeie1
+         aUdAvx7miGraL6aOv1yeWpUQj4wupgHtDk0J+bC5XrfKz4iKTR1Py0HXy3ZeptapIP
+         Nl7EUlQknB9Kv6I74pDkXXWc+uz/btqsNDctMQJU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 4.19 35/53] ASoC: soc-dapm: fix two incorrect uses of list iterator
-Date:   Tue, 26 Apr 2022 10:21:15 +0200
-Message-Id: <20220426081736.677475672@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        Madhavan Srinivasan <maddy@linux.vnet.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 33/53] powerpc/perf: Fix power9 event alternatives
+Date:   Tue, 26 Apr 2022 10:21:13 +0200
+Message-Id: <20220426081736.620247833@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081735.651926456@linuxfoundation.org>
 References: <20220426081735.651926456@linuxfoundation.org>
@@ -49,59 +52,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
 
-commit f730a46b931d894816af34a0ff8e4ad51565b39f upstream.
+[ Upstream commit 0dcad700bb2776e3886fe0a645a4bf13b1e747cd ]
 
-These two bug are here:
-	list_for_each_entry_safe_continue(w, n, list,
-					power_list);
-	list_for_each_entry_safe_continue(w, n, list,
-					power_list);
+When scheduling a group of events, there are constraint checks done to
+make sure all events can go in a group. Example, one of the criteria is
+that events in a group cannot use the same PMC. But platform specific
+PMU supports alternative event for some of the event codes. During
+perf_event_open(), if any event group doesn't match constraint check
+criteria, further lookup is done to find alternative event.
 
-After the list_for_each_entry_safe_continue() exits, the list iterator
-will always be a bogus pointer which point to an invalid struct objdect
-containing HEAD member. The funciton poniter 'w->event' will be a
-invalid value which can lead to a control-flow hijack if the 'w' can be
-controlled.
+By current design, the array of alternatives events in PMU code is
+expected to be sorted by column 0. This is because in
+find_alternative() the return criteria is based on event code
+comparison. ie. "event < ev_alt[i][0])". This optimisation is there
+since find_alternative() can be called multiple times. In power9 PMU
+code, the alternative event array is not sorted properly and hence there
+is breakage in finding alternative events.
 
-The original intention was to continue the outer list_for_each_entry_safe()
-loop with the same entry if w->event is NULL, but misunderstanding the
-meaning of list_for_each_entry_safe_continue().
+To work with existing logic, fix the alternative event array to be
+sorted by column 0 for power9-pmu.c
 
-So just add a 'continue;' to fix the bug.
+Results:
 
-Cc: stable@vger.kernel.org
-Fixes: 163cac061c973 ("ASoC: Factor out DAPM sequence execution")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Link: https://lore.kernel.org/r/20220329012134.9375-1-xiam0nd.tong@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+With alternative events, multiplexing can be avoided. That is, for
+example, in power9 PM_LD_MISS_L1 (0x3e054) has alternative event,
+PM_LD_MISS_L1_ALT (0x400f0). This is an identical event which can be
+programmed in a different PMC.
+
+Before:
+
+ # perf stat -e r3e054,r300fc
+
+ Performance counter stats for 'system wide':
+
+           1057860      r3e054              (50.21%)
+               379      r300fc              (49.79%)
+
+       0.944329741 seconds time elapsed
+
+Since both the events are using PMC3 in this case, they are
+multiplexed here.
+
+After:
+
+ # perf stat -e r3e054,r300fc
+
+ Performance counter stats for 'system wide':
+
+           1006948      r3e054
+               182      r300fc
+
+Fixes: 91e0bd1e6251 ("powerpc/perf: Add PM_LD_MISS_L1 and PM_BR_2PATH to power9 event list")
+Signed-off-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+Reviewed-by: Madhavan Srinivasan <maddy@linux.vnet.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220419114828.89843-1-atrajeev@linux.vnet.ibm.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/soc-dapm.c |    6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ arch/powerpc/perf/power9-pmu.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/sound/soc/soc-dapm.c
-+++ b/sound/soc/soc-dapm.c
-@@ -1635,8 +1635,7 @@ static void dapm_seq_run(struct snd_soc_
- 		switch (w->id) {
- 		case snd_soc_dapm_pre:
- 			if (!w->event)
--				list_for_each_entry_safe_continue(w, n, list,
--								  power_list);
-+				continue;
+diff --git a/arch/powerpc/perf/power9-pmu.c b/arch/powerpc/perf/power9-pmu.c
+index c07b1615ee39..1aa083db77f1 100644
+--- a/arch/powerpc/perf/power9-pmu.c
++++ b/arch/powerpc/perf/power9-pmu.c
+@@ -143,11 +143,11 @@ int p9_dd22_bl_ev[] = {
  
- 			if (event == SND_SOC_DAPM_STREAM_START)
- 				ret = w->event(w,
-@@ -1648,8 +1647,7 @@ static void dapm_seq_run(struct snd_soc_
+ /* Table of alternatives, sorted by column 0 */
+ static const unsigned int power9_event_alternatives[][MAX_ALT] = {
+-	{ PM_INST_DISP,			PM_INST_DISP_ALT },
+-	{ PM_RUN_CYC_ALT,		PM_RUN_CYC },
+-	{ PM_RUN_INST_CMPL_ALT,		PM_RUN_INST_CMPL },
+-	{ PM_LD_MISS_L1,		PM_LD_MISS_L1_ALT },
+ 	{ PM_BR_2PATH,			PM_BR_2PATH_ALT },
++	{ PM_INST_DISP,			PM_INST_DISP_ALT },
++	{ PM_RUN_CYC_ALT,               PM_RUN_CYC },
++	{ PM_LD_MISS_L1,                PM_LD_MISS_L1_ALT },
++	{ PM_RUN_INST_CMPL_ALT,         PM_RUN_INST_CMPL },
+ };
  
- 		case snd_soc_dapm_post:
- 			if (!w->event)
--				list_for_each_entry_safe_continue(w, n, list,
--								  power_list);
-+				continue;
- 
- 			if (event == SND_SOC_DAPM_STREAM_START)
- 				ret = w->event(w,
+ static int power9_get_alternatives(u64 event, unsigned int flags, u64 alt[])
+-- 
+2.35.1
+
 
 
