@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCC9BC43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:23:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D155C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:23:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347609AbiDZJYR (ORCPT
+        id S1347643AbiDZJYW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:24:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56738 "EHLO
+        Tue, 26 Apr 2022 05:24:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346455AbiDZJAh (ORCPT
+        with ESMTP id S1346461AbiDZJAh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 05:00:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B5963EF1B;
-        Tue, 26 Apr 2022 01:43:08 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8BAB3F326;
+        Tue, 26 Apr 2022 01:43:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DA82EB81D1D;
-        Tue, 26 Apr 2022 08:43:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 382CFC385A0;
-        Tue, 26 Apr 2022 08:43:04 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 1B3C9CE1BC9;
+        Tue, 26 Apr 2022 08:43:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07900C385A0;
+        Tue, 26 Apr 2022 08:43:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962585;
-        bh=bcOTZJMicACjWXiZfXi+DQEm7lArO/AWDfEHBhtc7QE=;
+        s=korg; t=1650962588;
+        bh=TtTnQKhdU8HQ67xMPTU0sa9FR8Yxr1MJiU8Vwdxpc0E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BSFtUbNrvt7DqCtLJmxyVp21x7UxOyp3ho0b6aGfZGgSx7B3dgOjkq5NAI1RlmBEu
-         Qy/OzzeMR+Yxes31EMUJyPRfaxUJCpBdNOuDZIwmnOvWrK1C2Q6ab0omOH/HUvwDC+
-         yIYt9Oc6GxtpTLZIYd10Gjsp1Y9Pkf675jiVjlsY=
+        b=PKh/+6awDvBGd9sJELZYk8ETLjYhN+RC5LtEehA3Gswowqr4I6IFidVUvY4D0KEVO
+         hyhZWsmU24mzp61yEEGNhfuvsIIK7Q6lATPr103BwWUa1EVnE8ZiPhJ6hnXr/f9Zl8
+         iSdwIrl25WOHaZbGGDcHSVrZPOAxy7AcaPThGcdg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        stable@vger.kernel.org,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 014/146] ASoC: msm8916-wcd-digital: Check failure for devm_snd_soc_register_component
-Date:   Tue, 26 Apr 2022 10:20:09 +0200
-Message-Id: <20220426081750.465590569@linuxfoundation.org>
+Subject: [PATCH 5.17 023/146] spi: cadence-quadspi: fix incorrect supports_op() return value
+Date:   Tue, 26 Apr 2022 10:20:18 +0200
+Message-Id: <20220426081750.717969684@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -50,44 +51,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 
-[ Upstream commit e927b05f3cc20de87f6b7d912a5bbe556931caca ]
+[ Upstream commit f1d388f216aeb41a5df518815ae559d14a6d438e ]
 
-devm_snd_soc_register_component() may fails, we should check the error
-and do the corresponding error handling.
+Since the conversion to spi-mem, the driver advertised support for
+various operations that cqspi_set_protocol() was never expected to handle
+correctly - in particuar all non-DTR operations with command or address
+buswidth > 1. For DTR, all operations except for 8-8-8 would fail, as
+cqspi_set_protocol() returns -EINVAL.
 
-Fixes: 150db8c5afa1 ("ASoC: codecs: Add msm8916-wcd digital codec")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220403115239.30140-1-linmq006@gmail.com
+In non-DTR mode, this resulted in data corruption for SPI-NOR flashes that
+support such operations. As a minimal fix that can be backported to stable
+kernels, simply disallow the unsupported operations again to avoid this
+issue.
+
+Fixes: a314f6367787 ("mtd: spi-nor: Convert cadence-quadspi to use spi-mem framework")
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Link: https://lore.kernel.org/r/20220406132832.199777-1-matthias.schiffer@ew.tq-group.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/msm8916-wcd-digital.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/spi/spi-cadence-quadspi.c | 19 +++++++++++++++++--
+ 1 file changed, 17 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/codecs/msm8916-wcd-digital.c b/sound/soc/codecs/msm8916-wcd-digital.c
-index 9ad7fc0baf07..20a07c92b2fc 100644
---- a/sound/soc/codecs/msm8916-wcd-digital.c
-+++ b/sound/soc/codecs/msm8916-wcd-digital.c
-@@ -1206,9 +1206,16 @@ static int msm8916_wcd_digital_probe(struct platform_device *pdev)
+diff --git a/drivers/spi/spi-cadence-quadspi.c b/drivers/spi/spi-cadence-quadspi.c
+index 75f356041138..b8ac24318cb3 100644
+--- a/drivers/spi/spi-cadence-quadspi.c
++++ b/drivers/spi/spi-cadence-quadspi.c
+@@ -1415,9 +1415,24 @@ static bool cqspi_supports_mem_op(struct spi_mem *mem,
+ 	all_false = !op->cmd.dtr && !op->addr.dtr && !op->dummy.dtr &&
+ 		    !op->data.dtr;
  
- 	dev_set_drvdata(dev, priv);
+-	/* Mixed DTR modes not supported. */
+-	if (!(all_true || all_false))
++	if (all_true) {
++		/* Right now we only support 8-8-8 DTR mode. */
++		if (op->cmd.nbytes && op->cmd.buswidth != 8)
++			return false;
++		if (op->addr.nbytes && op->addr.buswidth != 8)
++			return false;
++		if (op->data.nbytes && op->data.buswidth != 8)
++			return false;
++	} else if (all_false) {
++		/* Only 1-1-X ops are supported without DTR */
++		if (op->cmd.nbytes && op->cmd.buswidth > 1)
++			return false;
++		if (op->addr.nbytes && op->addr.buswidth > 1)
++			return false;
++	} else {
++		/* Mixed DTR modes are not supported. */
+ 		return false;
++	}
  
--	return devm_snd_soc_register_component(dev, &msm8916_wcd_digital,
-+	ret = devm_snd_soc_register_component(dev, &msm8916_wcd_digital,
- 				      msm8916_wcd_digital_dai,
- 				      ARRAY_SIZE(msm8916_wcd_digital_dai));
-+	if (ret)
-+		goto err_mclk;
-+
-+	return 0;
-+
-+err_mclk:
-+	clk_disable_unprepare(priv->mclk);
- err_clk:
- 	clk_disable_unprepare(priv->ahbclk);
- 	return ret;
+ 	if (all_true)
+ 		return spi_mem_dtr_supports_op(mem, op);
 -- 
 2.35.1
 
