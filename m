@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 768D8C47081
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:37:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFF72C35294
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:37:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348668AbiDZJka (ORCPT
+        id S1348559AbiDZJkP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:40:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33272 "EHLO
+        Tue, 26 Apr 2022 05:40:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346597AbiDZJLd (ORCPT
+        with ESMTP id S1345987AbiDZJHC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:11:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21D4A18073D;
-        Tue, 26 Apr 2022 01:49:49 -0700 (PDT)
+        Tue, 26 Apr 2022 05:07:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6A543AA4C;
+        Tue, 26 Apr 2022 01:48:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6EEB5B81CF2;
-        Tue, 26 Apr 2022 08:49:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D69A4C385A4;
-        Tue, 26 Apr 2022 08:49:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 70F69B81CF2;
+        Tue, 26 Apr 2022 08:48:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B68A1C385A4;
+        Tue, 26 Apr 2022 08:48:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962977;
-        bh=UWC72dGlqRXg6M7M3WA8IxxrcfepfpHwL+5g3PuDktc=;
+        s=korg; t=1650962894;
+        bh=4AXazc0jgDq/CltRhbfOjP6IiwafM5rb0c14XsM8sU8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E5d8wj8CJINQvRxmnGUXDGDAkbud3+Nt9iyxhBZDZyH/yfW5id9F60CyPM8S87gQo
-         mShdhonId5OMB+eph8OJDHaQ+SaoaJ8EzYt8ITA8dXQiHRwPYQnB04wIQluTDOAklh
-         mzJZBrjt3miAG2Jmmrwf3aL6kxnnjl4eln1zCUx4=
+        b=ij+CAe8pojujSsAQDQNGEHSlZGrzVOCO81tKQ/YnjzlKslumDTs5t8AuxjMrV059o
+         ZUL1UlGC8lX5Fx0JyWwA09/JxEGNon4iUyy/UVb2mzlmSxrLbNQvaiDfV0huhDXtcw
+         FLQRYARlQrFjXXf5rgddAd0kB0BMg53eNlHyFB48=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
         Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.17 144/146] ASoC: SOF: topology: cleanup dailinks on widget unload
-Date:   Tue, 26 Apr 2022 10:22:19 +0200
-Message-Id: <20220426081754.107256382@linuxfoundation.org>
+Subject: [PATCH 5.17 124/146] codecs: rt5682s: fix an incorrect NULL check on list iterator
+Date:   Tue, 26 Apr 2022 10:21:59 +0200
+Message-Id: <20220426081753.548650313@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -53,85 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit 20744617bdbafe2e7fb7bf5401f616e24bde4471 upstream.
+commit acc72863e0f11cd0bedc888b663700229f9ba5ff upstream.
 
-We set the cpu_dai capture_ or playback_widget on widget_ready but
-never clear them, which leads to failures when unloading/reloading a
-topology in modprobe/rmmod tests
+The bug is here:
+            if (!dai) {
 
-BugLink: https://github.com/thesofproject/linux/issues/3535
-Fixes: 311ce4fe7637 ("ASoC: SOF: Add support for loading topologies")
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Link: https://lore.kernel.org/r/20220406191606.254576-1-pierre-louis.bossart@linux.intel.com
+The list iterator value 'dai' will *always* be set and non-NULL
+by for_each_component_dais(), so it is incorrect to assume that
+the iterator value will be NULL if the list is empty or no element
+is found (In fact, it will be a bogus pointer to an invalid struct
+object containing the HEAD). Otherwise it will bypass the check
+'if (!dai) {' (never call dev_err() and never return -ENODEV;)
+and lead to invalid memory access lately when calling
+'rt5682s_set_bclk1_ratio(dai, factor);'.
+
+To fix the bug, just return rt5682s_set_bclk1_ratio(dai, factor);
+when found the 'dai', otherwise dev_err() and return -ENODEV;
+
+Cc: stable@vger.kernel.org
+Fixes: bdd229ab26be9 ("ASoC: rt5682s: Add driver for ALC5682I-VS codec")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Link: https://lore.kernel.org/r/20220327081300.12962-1-xiam0nd.tong@gmail.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/sof/topology.c |   43 +++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 43 insertions(+)
+ sound/soc/codecs/rt5682s.c |   11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
---- a/sound/soc/sof/topology.c
-+++ b/sound/soc/sof/topology.c
-@@ -1569,6 +1569,46 @@ static int sof_widget_load_buffer(struct
- 	return 0;
+--- a/sound/soc/codecs/rt5682s.c
++++ b/sound/soc/codecs/rt5682s.c
+@@ -2679,14 +2679,11 @@ static int rt5682s_bclk_set_rate(struct
+ 
+ 	for_each_component_dais(component, dai)
+ 		if (dai->id == RT5682S_AIF1)
+-			break;
+-	if (!dai) {
+-		dev_err(component->dev, "dai %d not found in component\n",
+-			RT5682S_AIF1);
+-		return -ENODEV;
+-	}
++			return rt5682s_set_bclk1_ratio(dai, factor);
+ 
+-	return rt5682s_set_bclk1_ratio(dai, factor);
++	dev_err(component->dev, "dai %d not found in component\n",
++		RT5682S_AIF1);
++	return -ENODEV;
  }
  
-+static void sof_disconnect_dai_widget(struct snd_soc_component *scomp,
-+				      struct snd_soc_dapm_widget *w)
-+{
-+	struct snd_soc_card *card = scomp->card;
-+	struct snd_soc_pcm_runtime *rtd;
-+	struct snd_soc_dai *cpu_dai;
-+	int i;
-+
-+	if (!w->sname)
-+		return;
-+
-+	list_for_each_entry(rtd, &card->rtd_list, list) {
-+		/* does stream match DAI link ? */
-+		if (!rtd->dai_link->stream_name ||
-+		    strcmp(w->sname, rtd->dai_link->stream_name))
-+			continue;
-+
-+		switch (w->id) {
-+		case snd_soc_dapm_dai_out:
-+			for_each_rtd_cpu_dais(rtd, i, cpu_dai) {
-+				if (cpu_dai->capture_widget == w) {
-+					cpu_dai->capture_widget = NULL;
-+					break;
-+				}
-+			}
-+			break;
-+		case snd_soc_dapm_dai_in:
-+			for_each_rtd_cpu_dais(rtd, i, cpu_dai) {
-+				if (cpu_dai->playback_widget == w) {
-+					cpu_dai->playback_widget = NULL;
-+					break;
-+				}
-+			}
-+			break;
-+		default:
-+			break;
-+		}
-+	}
-+}
-+
- /* bind PCM ID to host component ID */
- static int spcm_bind(struct snd_soc_component *scomp, struct snd_sof_pcm *spcm,
- 		     int dir)
-@@ -2449,6 +2489,9 @@ static int sof_widget_unload(struct snd_
- 			kfree(dai->dai_config);
- 			list_del(&dai->list);
- 		}
-+
-+		sof_disconnect_dai_widget(scomp, widget);
-+
- 		break;
- 	default:
- 		break;
+ static const struct clk_ops rt5682s_dai_clk_ops[RT5682S_DAI_NUM_CLKS] = {
 
 
