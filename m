@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58D38C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 490EAC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:24:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346883AbiDZJ1a (ORCPT
+        id S1346328AbiDZJ0p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:27:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44958 "EHLO
+        Tue, 26 Apr 2022 05:26:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346969AbiDZJFJ (ORCPT
+        with ESMTP id S1346707AbiDZJBK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:05:09 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BFBAF1368;
-        Tue, 26 Apr 2022 01:44:02 -0700 (PDT)
+        Tue, 26 Apr 2022 05:01:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA24370911;
+        Tue, 26 Apr 2022 01:43:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B134ACE1BD6;
-        Tue, 26 Apr 2022 08:44:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D69BC385A4;
-        Tue, 26 Apr 2022 08:43:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3C97CB81CFA;
+        Tue, 26 Apr 2022 08:43:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96D53C385A0;
+        Tue, 26 Apr 2022 08:43:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962639;
-        bh=AxCq9Te8CDy//AGhRuI/uCoayWcvoqpu3VgSru80L8Y=;
+        s=korg; t=1650962603;
+        bh=gY03yRQVgo2o+50+mkECFHvIIzQVh3HNSNFQU6Ptln8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sPNj2AtAJi+C61Vp6ox+qj8Hla9EaorMZ3I8qiQjiUtxvpT1pINxZTt2GQ616EsIH
-         s/gqDD9+DR6OipkYTnRqXcuYlyJN2lSJdsuw1C5IOXys5jqfoIYoXXBJnUu99t7SUE
-         FGdKokvm00gKmK0ttyuTPWk8e/BibHa3NRgUot+8=
+        b=AoSnJ0O1kxKfYJMD+wmCzcNw7NPLRTa2XzBinZqyXKy1Zd5q1EBWsB/bjn3yGpeGn
+         QxXAD6bvA6BmEm7DW2HA5/O/WVJNDW/MjyDam0B78q6ggP9NhKZeRSvPdHo6KPyHFx
+         wp7K/LaV7BfNt7i7v8IfnrfRGOxrw0Kzz73JFeUM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Wojciech Drewek <wojciech.drewek@intel.com>,
+        Marcin Szycik <marcin.szycik@linux.intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Sandeep Penigalapati <sandeep.penigalapati@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 039/146] ipv6: make ip6_rt_gc_expire an atomic_t
-Date:   Tue, 26 Apr 2022 10:20:34 +0200
-Message-Id: <20220426081751.167876212@linuxfoundation.org>
+Subject: [PATCH 5.17 028/146] ice: fix crash in switchdev mode
+Date:   Tue, 26 Apr 2022 10:20:23 +0200
+Message-Id: <20220426081750.858905110@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -52,122 +54,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Wojciech Drewek <wojciech.drewek@intel.com>
 
-[ Upstream commit 9cb7c013420f98fa6fd12fc6a5dc055170c108db ]
+[ Upstream commit d201665147ae788b7cca9fab58a1826f64152034 ]
 
-Reads and Writes to ip6_rt_gc_expire always have been racy,
-as syzbot reported lately [1]
+Below steps end up with crash:
+- modprobe ice
+- devlink dev eswitch set $PF1_PCI mode switchdev
+- echo 64 > /sys/class/net/$PF1/device/sriov_numvfs
+- rmmod ice
 
-There is a possible risk of under-flow, leading
-to unexpected high value passed to fib6_run_gc(),
-although I have not observed this in the field.
+Calling ice_eswitch_port_start_xmit while the process of removing
+VFs is in progress ends up with NULL pointer dereference.
+That's because PR netdev is not released but some resources
+are already freed. Fix it by checking if ICE_VF_DIS bit is set.
 
-Hosts hitting ip6_dst_gc() very hard are under pretty bad
-state anyway.
+Call trace:
+[ 1379.595146] BUG: kernel NULL pointer dereference, address: 0000000000000040
+[ 1379.595284] #PF: supervisor read access in kernel mode
+[ 1379.595410] #PF: error_code(0x0000) - not-present page
+[ 1379.595535] PGD 0 P4D 0
+[ 1379.595657] Oops: 0000 [#1] PREEMPT SMP PTI
+[ 1379.595783] CPU: 4 PID: 974 Comm: NetworkManager Kdump: loaded Tainted: G           OE     5.17.0-rc8_mrq_dev-queue+ #12
+[ 1379.595926] Hardware name: Intel Corporation S1200SP/S1200SP, BIOS S1200SP.86B.03.01.0042.013020190050 01/30/2019
+[ 1379.596063] RIP: 0010:ice_eswitch_port_start_xmit+0x46/0xd0 [ice]
+[ 1379.596292] Code: c7 c8 09 00 00 e8 9a c9 fc ff 84 c0 0f 85 82 00 00 00 4c 89 e7 e8 ca 70 fe ff 48 8b 7d 58 48 89 c3 48 85 ff 75 5e 48 8b 53 20 <8b> 42 40 85 c0 74 78 8d 48 01 f0 0f b1 4a 40 75 f2 0f b6 95 84 00
+[ 1379.596456] RSP: 0018:ffffaba0c0d7bad0 EFLAGS: 00010246
+[ 1379.596584] RAX: ffff969c14c71680 RBX: ffff969c14c71680 RCX: 000100107a0f0000
+[ 1379.596715] RDX: 0000000000000000 RSI: ffff969b9d631000 RDI: 0000000000000000
+[ 1379.596846] RBP: ffff969c07b46500 R08: ffff969becfca8ac R09: 0000000000000001
+[ 1379.596977] R10: 0000000000000004 R11: ffffaba0c0d7bbec R12: ffff969b9d631000
+[ 1379.597106] R13: ffffffffc08357a0 R14: ffff969c07b46500 R15: ffff969b9d631000
+[ 1379.597237] FS:  00007f72c0e25c80(0000) GS:ffff969f13500000(0000) knlGS:0000000000000000
+[ 1379.597414] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[ 1379.597562] CR2: 0000000000000040 CR3: 000000012b316006 CR4: 00000000003706e0
+[ 1379.597713] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[ 1379.597863] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[ 1379.598015] Call Trace:
+[ 1379.598153]  <TASK>
+[ 1379.598294]  dev_hard_start_xmit+0xd9/0x220
+[ 1379.598444]  sch_direct_xmit+0x8a/0x340
+[ 1379.598592]  __dev_queue_xmit+0xa3c/0xd30
+[ 1379.598739]  ? packet_parse_headers+0xb4/0xf0
+[ 1379.598890]  packet_sendmsg+0xa15/0x1620
+[ 1379.599038]  ? __check_object_size+0x46/0x140
+[ 1379.599186]  sock_sendmsg+0x5e/0x60
+[ 1379.599330]  ____sys_sendmsg+0x22c/0x270
+[ 1379.599474]  ? import_iovec+0x17/0x20
+[ 1379.599622]  ? sendmsg_copy_msghdr+0x59/0x90
+[ 1379.599771]  ___sys_sendmsg+0x81/0xc0
+[ 1379.599917]  ? __pollwait+0xd0/0xd0
+[ 1379.600061]  ? preempt_count_add+0x68/0xa0
+[ 1379.600210]  ? _raw_write_lock_irq+0x1a/0x40
+[ 1379.600369]  ? ep_done_scan+0xc9/0x110
+[ 1379.600494]  ? _raw_spin_unlock_irqrestore+0x25/0x40
+[ 1379.600622]  ? preempt_count_add+0x68/0xa0
+[ 1379.600747]  ? _raw_spin_lock_irq+0x1a/0x40
+[ 1379.600899]  ? __fget_light+0x8f/0x110
+[ 1379.601024]  __sys_sendmsg+0x49/0x80
+[ 1379.601148]  ? release_ds_buffers+0x50/0xe0
+[ 1379.601274]  do_syscall_64+0x3b/0x90
+[ 1379.601399]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[ 1379.601525] RIP: 0033:0x7f72c1e2e35d
 
-[1]
-BUG: KCSAN: data-race in ip6_dst_gc / ip6_dst_gc
-
-read-write to 0xffff888102110744 of 4 bytes by task 13165 on cpu 1:
- ip6_dst_gc+0x1f3/0x220 net/ipv6/route.c:3311
- dst_alloc+0x9b/0x160 net/core/dst.c:86
- ip6_dst_alloc net/ipv6/route.c:344 [inline]
- icmp6_dst_alloc+0xb2/0x360 net/ipv6/route.c:3261
- mld_sendpack+0x2b9/0x580 net/ipv6/mcast.c:1807
- mld_send_cr net/ipv6/mcast.c:2119 [inline]
- mld_ifc_work+0x576/0x800 net/ipv6/mcast.c:2651
- process_one_work+0x3d3/0x720 kernel/workqueue.c:2289
- worker_thread+0x618/0xa70 kernel/workqueue.c:2436
- kthread+0x1a9/0x1e0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30
-
-read-write to 0xffff888102110744 of 4 bytes by task 11607 on cpu 0:
- ip6_dst_gc+0x1f3/0x220 net/ipv6/route.c:3311
- dst_alloc+0x9b/0x160 net/core/dst.c:86
- ip6_dst_alloc net/ipv6/route.c:344 [inline]
- icmp6_dst_alloc+0xb2/0x360 net/ipv6/route.c:3261
- mld_sendpack+0x2b9/0x580 net/ipv6/mcast.c:1807
- mld_send_cr net/ipv6/mcast.c:2119 [inline]
- mld_ifc_work+0x576/0x800 net/ipv6/mcast.c:2651
- process_one_work+0x3d3/0x720 kernel/workqueue.c:2289
- worker_thread+0x618/0xa70 kernel/workqueue.c:2436
- kthread+0x1a9/0x1e0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30
-
-value changed: 0x00000bb3 -> 0x00000ba9
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 0 PID: 11607 Comm: kworker/0:21 Not tainted 5.18.0-rc1-syzkaller-00037-g42e7a03d3bad-dirty #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: mld mld_ifc_work
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Link: https://lore.kernel.org/r/20220413181333.649424-1-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: f5396b8a663f ("ice: switchdev slow path")
+Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
+Reported-by: Marcin Szycik <marcin.szycik@linux.intel.com>
+Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/netns/ipv6.h |  4 ++--
- net/ipv6/route.c         | 11 ++++++-----
- 2 files changed, 8 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_eswitch.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/include/net/netns/ipv6.h b/include/net/netns/ipv6.h
-index 6bd7e5a85ce7..ff82983b7ab4 100644
---- a/include/net/netns/ipv6.h
-+++ b/include/net/netns/ipv6.h
-@@ -75,8 +75,8 @@ struct netns_ipv6 {
- 	struct list_head	fib6_walkers;
- 	rwlock_t		fib6_walker_lock;
- 	spinlock_t		fib6_gc_lock;
--	unsigned int		 ip6_rt_gc_expire;
--	unsigned long		 ip6_rt_last_gc;
-+	atomic_t		ip6_rt_gc_expire;
-+	unsigned long		ip6_rt_last_gc;
- 	unsigned char		flowlabel_has_excl;
- #ifdef CONFIG_IPV6_MULTIPLE_TABLES
- 	bool			fib6_has_custom_rules;
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index da1bf48e7937..1caeb1ef2095 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -3303,6 +3303,7 @@ static int ip6_dst_gc(struct dst_ops *ops)
- 	int rt_elasticity = net->ipv6.sysctl.ip6_rt_gc_elasticity;
- 	int rt_gc_timeout = net->ipv6.sysctl.ip6_rt_gc_timeout;
- 	unsigned long rt_last_gc = net->ipv6.ip6_rt_last_gc;
-+	unsigned int val;
- 	int entries;
+diff --git a/drivers/net/ethernet/intel/ice/ice_eswitch.c b/drivers/net/ethernet/intel/ice/ice_eswitch.c
+index 73edc24d81d5..c54b72f9fd34 100644
+--- a/drivers/net/ethernet/intel/ice/ice_eswitch.c
++++ b/drivers/net/ethernet/intel/ice/ice_eswitch.c
+@@ -342,7 +342,8 @@ ice_eswitch_port_start_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 	np = netdev_priv(netdev);
+ 	vsi = np->vsi;
  
- 	entries = dst_entries_get_fast(ops);
-@@ -3313,13 +3314,13 @@ static int ip6_dst_gc(struct dst_ops *ops)
- 	    entries <= rt_max_size)
- 		goto out;
+-	if (ice_is_reset_in_progress(vsi->back->state))
++	if (ice_is_reset_in_progress(vsi->back->state) ||
++	    test_bit(ICE_VF_DIS, vsi->back->state))
+ 		return NETDEV_TX_BUSY;
  
--	net->ipv6.ip6_rt_gc_expire++;
--	fib6_run_gc(net->ipv6.ip6_rt_gc_expire, net, true);
-+	fib6_run_gc(atomic_inc_return(&net->ipv6.ip6_rt_gc_expire), net, true);
- 	entries = dst_entries_get_slow(ops);
- 	if (entries < ops->gc_thresh)
--		net->ipv6.ip6_rt_gc_expire = rt_gc_timeout>>1;
-+		atomic_set(&net->ipv6.ip6_rt_gc_expire, rt_gc_timeout >> 1);
- out:
--	net->ipv6.ip6_rt_gc_expire -= net->ipv6.ip6_rt_gc_expire>>rt_elasticity;
-+	val = atomic_read(&net->ipv6.ip6_rt_gc_expire);
-+	atomic_set(&net->ipv6.ip6_rt_gc_expire, val - (val >> rt_elasticity));
- 	return entries > rt_max_size;
- }
- 
-@@ -6514,7 +6515,7 @@ static int __net_init ip6_route_net_init(struct net *net)
- 	net->ipv6.sysctl.ip6_rt_min_advmss = IPV6_MIN_MTU - 20 - 40;
- 	net->ipv6.sysctl.skip_notify_on_dev_down = 0;
- 
--	net->ipv6.ip6_rt_gc_expire = 30*HZ;
-+	atomic_set(&net->ipv6.ip6_rt_gc_expire, 30*HZ);
- 
- 	ret = 0;
- out:
+ 	repr = ice_netdev_to_repr(netdev);
 -- 
 2.35.1
 
