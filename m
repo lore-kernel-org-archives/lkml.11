@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8910C46467
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:42:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A809AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:42:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346281AbiDZIor (ORCPT
+        id S1346454AbiDZIpC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:44:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58644 "EHLO
+        Tue, 26 Apr 2022 04:45:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345296AbiDZIhs (ORCPT
+        with ESMTP id S1345470AbiDZIjJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:37:48 -0400
+        Tue, 26 Apr 2022 04:39:09 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CF3C9137B;
-        Tue, 26 Apr 2022 01:29:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA6E213BD4D;
+        Tue, 26 Apr 2022 01:29:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7639E617E1;
-        Tue, 26 Apr 2022 08:29:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83966C385A0;
-        Tue, 26 Apr 2022 08:29:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D7D06179E;
+        Tue, 26 Apr 2022 08:29:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AA4CC385A4;
+        Tue, 26 Apr 2022 08:29:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961767;
-        bh=y4FzcMqIYjP6yJMMswEni40ksnSonHHl5KEbQHYCCgw=;
+        s=korg; t=1650961791;
+        bh=/wgBA+hpXo+XQmSZi+TUIb/xyayLMsJe0/EHsoAHXsU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hZCEePbLwTskMA3u36MCYGY5Pna+DKIXaIkOolQwlZW8DIJmoZVF2Byioog9Vw4I8
-         2jmd2tmdQ9B9OP5EvMEVVr+pO0BN0WevnnPWDQ9dcz02euQYMgozH07Mn6uYczEbmV
-         e9LtSn0Miez7MyC33RE8d1KJWkZjyEqsdoNVK1zk=
+        b=izku0X6LoNJrvcnxRKOM7FX6eOpdN+kp1V05rl2poJfwg5pPvoQikxr5OgaZlBP30
+         bc49b7c9BPGco2v9J+uID0y86flgyKB0+0ySyT032wLZxhw76vzGtmY9/Pq/yncq+r
+         OG4VvEY7+u8cjApWhtzP5A71WygY0DX/W8MwipTM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liviu Dudau <liviu.dudau@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
-        Kees Cook <keescook@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 23/62] ARM: vexpress/spc: Avoid negative array index when !SMP
-Date:   Tue, 26 Apr 2022 10:21:03 +0200
-Message-Id: <20220426081737.892454125@linuxfoundation.org>
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Dragos-Marian Panait <dragos.panait@windriver.com>
+Subject: [PATCH 5.4 04/62] can: usb_8dev: usb_8dev_start_xmit(): fix double dev_kfree_skb() in error path
+Date:   Tue, 26 Apr 2022 10:20:44 +0200
+Message-Id: <20220426081737.348112880@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
 References: <20220426081737.209637816@linuxfoundation.org>
@@ -54,58 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit b3f1dd52c991d79118f35e6d1bf4d7cb09882e38 ]
+commit 3d3925ff6433f98992685a9679613a2cc97f3ce2 upstream.
 
-When building multi_v7_defconfig+CONFIG_SMP=n, -Warray-bounds exposes
-a couple negative array index accesses:
+There is no need to call dev_kfree_skb() when usb_submit_urb() fails
+because can_put_echo_skb() deletes original skb and
+can_free_echo_skb() deletes the cloned skb.
 
-arch/arm/mach-vexpress/spc.c: In function 've_spc_clk_init':
-arch/arm/mach-vexpress/spc.c:583:21: warning: array subscript -1 is below array bounds of 'bool[2]' {aka '_Bool[2]'} [-Warray-bounds]
-  583 |   if (init_opp_table[cluster])
-      |       ~~~~~~~~~~~~~~^~~~~~~~~
-arch/arm/mach-vexpress/spc.c:556:7: note: while referencing 'init_opp_table'
-  556 |  bool init_opp_table[MAX_CLUSTERS] = { false };
-      |       ^~~~~~~~~~~~~~
-arch/arm/mach-vexpress/spc.c:592:18: warning: array subscript -1 is below array bounds of 'bool[2]' {aka '_Bool[2]'} [-Warray-bounds]
-  592 |    init_opp_table[cluster] = true;
-      |    ~~~~~~~~~~~~~~^~~~~~~~~
-arch/arm/mach-vexpress/spc.c:556:7: note: while referencing 'init_opp_table'
-  556 |  bool init_opp_table[MAX_CLUSTERS] = { false };
-      |       ^~~~~~~~~~~~~~
-
-Skip this logic when built !SMP.
-
-Link: https://lore.kernel.org/r/20220331190443.851661-1-keescook@chromium.org
-Cc: Liviu Dudau <liviu.dudau@arm.com>
-Cc: Sudeep Holla <sudeep.holla@arm.com>
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: Russell King <linux@armlinux.org.uk>
-Cc: linux-arm-kernel@lists.infradead.org
-Acked-by: Liviu Dudau <liviu.dudau@arm.com>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 0024d8ad1639 ("can: usb_8dev: Add support for USB2CAN interface from 8 devices")
+Link: https://lore.kernel.org/all/20220311080614.45229-1-hbh25y@gmail.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+[DP: adjusted params of can_free_echo_skb() for 5.4 stable]
+Signed-off-by: Dragos-Marian Panait <dragos.panait@windriver.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/mach-vexpress/spc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/can/usb/usb_8dev.c |   30 ++++++++++++++----------------
+ 1 file changed, 14 insertions(+), 16 deletions(-)
 
-diff --git a/arch/arm/mach-vexpress/spc.c b/arch/arm/mach-vexpress/spc.c
-index 1da11bdb1dfb..1c6500c4e6a1 100644
---- a/arch/arm/mach-vexpress/spc.c
-+++ b/arch/arm/mach-vexpress/spc.c
-@@ -580,7 +580,7 @@ static int __init ve_spc_clk_init(void)
- 		}
+--- a/drivers/net/can/usb/usb_8dev.c
++++ b/drivers/net/can/usb/usb_8dev.c
+@@ -670,9 +670,20 @@ static netdev_tx_t usb_8dev_start_xmit(s
+ 	atomic_inc(&priv->active_tx_urbs);
  
- 		cluster = topology_physical_package_id(cpu_dev->id);
--		if (init_opp_table[cluster])
-+		if (cluster < 0 || init_opp_table[cluster])
- 			continue;
+ 	err = usb_submit_urb(urb, GFP_ATOMIC);
+-	if (unlikely(err))
+-		goto failed;
+-	else if (atomic_read(&priv->active_tx_urbs) >= MAX_TX_URBS)
++	if (unlikely(err)) {
++		can_free_echo_skb(netdev, context->echo_index);
++
++		usb_unanchor_urb(urb);
++		usb_free_coherent(priv->udev, size, buf, urb->transfer_dma);
++
++		atomic_dec(&priv->active_tx_urbs);
++
++		if (err == -ENODEV)
++			netif_device_detach(netdev);
++		else
++			netdev_warn(netdev, "failed tx_urb %d\n", err);
++		stats->tx_dropped++;
++	} else if (atomic_read(&priv->active_tx_urbs) >= MAX_TX_URBS)
+ 		/* Slow down tx path */
+ 		netif_stop_queue(netdev);
  
- 		if (ve_init_opp_table(cpu_dev))
--- 
-2.35.1
-
+@@ -691,19 +702,6 @@ nofreecontext:
+ 
+ 	return NETDEV_TX_BUSY;
+ 
+-failed:
+-	can_free_echo_skb(netdev, context->echo_index);
+-
+-	usb_unanchor_urb(urb);
+-	usb_free_coherent(priv->udev, size, buf, urb->transfer_dma);
+-
+-	atomic_dec(&priv->active_tx_urbs);
+-
+-	if (err == -ENODEV)
+-		netif_device_detach(netdev);
+-	else
+-		netdev_warn(netdev, "failed tx_urb %d\n", err);
+-
+ nomembuf:
+ 	usb_free_urb(urb);
+ 
 
 
