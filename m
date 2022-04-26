@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97E55C47081
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAE5BC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:12:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348324AbiDZJPo (ORCPT
+        id S1347264AbiDZJOF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:15:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52194 "EHLO
+        Tue, 26 Apr 2022 05:14:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346911AbiDZIux (ORCPT
+        with ESMTP id S1347664AbiDZIvu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:50:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B501E16FAEE;
-        Tue, 26 Apr 2022 01:39:10 -0700 (PDT)
+        Tue, 26 Apr 2022 04:51:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45E53D3461;
+        Tue, 26 Apr 2022 01:40:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EC1160A67;
-        Tue, 26 Apr 2022 08:39:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57732C385B0;
-        Tue, 26 Apr 2022 08:39:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AAA91B81CED;
+        Tue, 26 Apr 2022 08:40:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CFA5C385A4;
+        Tue, 26 Apr 2022 08:40:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962349;
-        bh=qmlk7RokZF/lJHMgXkXxFzwtYZ21SxX7MjgtQRqnqr8=;
+        s=korg; t=1650962439;
+        bh=yrz634SKK8EvvvYZtNuQN4/pV4DUqznbrz0LEtwRHZ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2W1HFwTcL3rGskj3pGtryjabPqvF/aVnjBfTpxDZz09hEGTHRbqBL+BQ3sGx/72Do
-         ss+lyln0ubeNAwUjIZHK7mkId05Cqbulv2R+u+0BMqb8AvN9TSPvO30DOke0L6kJtf
-         eoqlTuNAjhC+LX+wxxvH0J4alu5ILwvl3nbojbaA=
+        b=xb4YOwW/doixedyLX5P9FLD9AdlSSmXv5Vff9/0U5F1t0Vj0Zr1ZU5PO1jlrImFdf
+         yJFBrakCvupTAdPCA89SMpw4YPzEOs/jKgVHDHa5HRuprdP+ODmwDzbZWIO1SuwkTt
+         01hfiIPZH2WQ0E4IF5fRucAkaNb3NQL5MVR47Tys=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Lv Ruyi <lv.ruyi@zte.com.cn>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 065/124] dpaa_eth: Fix missing of_node_put in dpaa_get_ts_info()
-Date:   Tue, 26 Apr 2022 10:21:06 +0200
-Message-Id: <20220426081749.149686263@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Steve Capper <steve.capper@arm.com>,
+        Will Deacon <will.deacon@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.15 080/124] mm, hugetlb: allow for "high" userspace addresses
+Date:   Tue, 26 Apr 2022 10:21:21 +0200
+Message-Id: <20220426081749.574702876@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -51,46 +54,145 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-[ Upstream commit 1a7eb80d170c28be2928433702256fe2a0bd1e0f ]
+commit 5f24d5a579d1eace79d505b148808a850b417d4c upstream.
 
-Both of of_get_parent() and of_parse_phandle() return node pointer with
-refcount incremented, use of_node_put() on it to decrease refcount
-when done.
+This is a fix for commit f6795053dac8 ("mm: mmap: Allow for "high"
+userspace addresses") for hugetlb.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This patch adds support for "high" userspace addresses that are
+optionally supported on the system and have to be requested via a hint
+mechanism ("high" addr parameter to mmap).
+
+Architectures such as powerpc and x86 achieve this by making changes to
+their architectural versions of hugetlb_get_unmapped_area() function.
+However, arm64 uses the generic version of that function.
+
+So take into account arch_get_mmap_base() and arch_get_mmap_end() in
+hugetlb_get_unmapped_area().  To allow that, move those two macros out
+of mm/mmap.c into include/linux/sched/mm.h
+
+If these macros are not defined in architectural code then they default
+to (TASK_SIZE) and (base) so should not introduce any behavioural
+changes to architectures that do not define them.
+
+For the time being, only ARM64 is affected by this change.
+
+Catalin (ARM64) said
+ "We should have fixed hugetlb_get_unmapped_area() as well when we added
+  support for 52-bit VA. The reason for commit f6795053dac8 was to
+  prevent normal mmap() from returning addresses above 48-bit by default
+  as some user-space had hard assumptions about this.
+
+  It's a slight ABI change if you do this for hugetlb_get_unmapped_area()
+  but I doubt anyone would notice. It's more likely that the current
+  behaviour would cause issues, so I'd rather have them consistent.
+
+  Basically when arm64 gained support for 52-bit addresses we did not
+  want user-space calling mmap() to suddenly get such high addresses,
+  otherwise we could have inadvertently broken some programs (similar
+  behaviour to x86 here). Hence we added commit f6795053dac8. But we
+  missed hugetlbfs which could still get such high mmap() addresses. So
+  in theory that's a potential regression that should have bee addressed
+  at the same time as commit f6795053dac8 (and before arm64 enabled
+  52-bit addresses)"
+
+Link: https://lkml.kernel.org/r/ab847b6edb197bffdfe189e70fb4ac76bfe79e0d.1650033747.git.christophe.leroy@csgroup.eu
+Fixes: f6795053dac8 ("mm: mmap: Allow for "high" userspace addresses")
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Steve Capper <steve.capper@arm.com>
+Cc: Will Deacon <will.deacon@arm.com>
+Cc: <stable@vger.kernel.org>	[5.0.x]
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ fs/hugetlbfs/inode.c     |    9 +++++----
+ include/linux/sched/mm.h |    8 ++++++++
+ mm/mmap.c                |    8 --------
+ 3 files changed, 13 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
-index 763d2c7b5fb1..5750f9a56393 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
-@@ -489,11 +489,15 @@ static int dpaa_get_ts_info(struct net_device *net_dev,
- 	info->phc_index = -1;
+--- a/fs/hugetlbfs/inode.c
++++ b/fs/hugetlbfs/inode.c
+@@ -206,7 +206,7 @@ hugetlb_get_unmapped_area_bottomup(struc
+ 	info.flags = 0;
+ 	info.length = len;
+ 	info.low_limit = current->mm->mmap_base;
+-	info.high_limit = TASK_SIZE;
++	info.high_limit = arch_get_mmap_end(addr);
+ 	info.align_mask = PAGE_MASK & ~huge_page_mask(h);
+ 	info.align_offset = 0;
+ 	return vm_unmapped_area(&info);
+@@ -222,7 +222,7 @@ hugetlb_get_unmapped_area_topdown(struct
+ 	info.flags = VM_UNMAPPED_AREA_TOPDOWN;
+ 	info.length = len;
+ 	info.low_limit = max(PAGE_SIZE, mmap_min_addr);
+-	info.high_limit = current->mm->mmap_base;
++	info.high_limit = arch_get_mmap_base(addr, current->mm->mmap_base);
+ 	info.align_mask = PAGE_MASK & ~huge_page_mask(h);
+ 	info.align_offset = 0;
+ 	addr = vm_unmapped_area(&info);
+@@ -237,7 +237,7 @@ hugetlb_get_unmapped_area_topdown(struct
+ 		VM_BUG_ON(addr != -ENOMEM);
+ 		info.flags = 0;
+ 		info.low_limit = current->mm->mmap_base;
+-		info.high_limit = TASK_SIZE;
++		info.high_limit = arch_get_mmap_end(addr);
+ 		addr = vm_unmapped_area(&info);
+ 	}
  
- 	fman_node = of_get_parent(mac_node);
--	if (fman_node)
-+	if (fman_node) {
- 		ptp_node = of_parse_phandle(fman_node, "ptimer-handle", 0);
-+		of_node_put(fman_node);
-+	}
+@@ -251,6 +251,7 @@ hugetlb_get_unmapped_area(struct file *f
+ 	struct mm_struct *mm = current->mm;
+ 	struct vm_area_struct *vma;
+ 	struct hstate *h = hstate_file(file);
++	const unsigned long mmap_end = arch_get_mmap_end(addr);
  
--	if (ptp_node)
-+	if (ptp_node) {
- 		ptp_dev = of_find_device_by_node(ptp_node);
-+		of_node_put(ptp_node);
-+	}
+ 	if (len & ~huge_page_mask(h))
+ 		return -EINVAL;
+@@ -266,7 +267,7 @@ hugetlb_get_unmapped_area(struct file *f
+ 	if (addr) {
+ 		addr = ALIGN(addr, huge_page_size(h));
+ 		vma = find_vma(mm, addr);
+-		if (TASK_SIZE - len >= addr &&
++		if (mmap_end - len >= addr &&
+ 		    (!vma || addr + len <= vm_start_gap(vma)))
+ 			return addr;
+ 	}
+--- a/include/linux/sched/mm.h
++++ b/include/linux/sched/mm.h
+@@ -106,6 +106,14 @@ static inline void mm_update_next_owner(
+ #endif /* CONFIG_MEMCG */
  
- 	if (ptp_dev)
- 		ptp = platform_get_drvdata(ptp_dev);
--- 
-2.35.1
-
+ #ifdef CONFIG_MMU
++#ifndef arch_get_mmap_end
++#define arch_get_mmap_end(addr)	(TASK_SIZE)
++#endif
++
++#ifndef arch_get_mmap_base
++#define arch_get_mmap_base(addr, base) (base)
++#endif
++
+ extern void arch_pick_mmap_layout(struct mm_struct *mm,
+ 				  struct rlimit *rlim_stack);
+ extern unsigned long
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -2113,14 +2113,6 @@ unsigned long vm_unmapped_area(struct vm
+ 	return addr;
+ }
+ 
+-#ifndef arch_get_mmap_end
+-#define arch_get_mmap_end(addr)	(TASK_SIZE)
+-#endif
+-
+-#ifndef arch_get_mmap_base
+-#define arch_get_mmap_base(addr, base) (base)
+-#endif
+-
+ /* Get an address range which is currently unmapped.
+  * For shmat() with addr=0.
+  *
 
 
