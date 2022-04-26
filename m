@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34449C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3BA9C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:07:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346583AbiDZJIi (ORCPT
+        id S1346717AbiDZJI5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:08:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57734 "EHLO
+        Tue, 26 Apr 2022 05:08:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345764AbiDZIra (ORCPT
+        with ESMTP id S1346060AbiDZIof (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:47:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 271E6A76FB;
-        Tue, 26 Apr 2022 01:37:44 -0700 (PDT)
+        Tue, 26 Apr 2022 04:44:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DD16160972;
+        Tue, 26 Apr 2022 01:34:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AE3C3B81CFA;
-        Tue, 26 Apr 2022 08:37:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B769C385A0;
-        Tue, 26 Apr 2022 08:37:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 38F37618BF;
+        Tue, 26 Apr 2022 08:34:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36E06C385A4;
+        Tue, 26 Apr 2022 08:34:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962261;
-        bh=jFm8Koe9x0fNpJvJozkZL3Fjf/sZ/Xq/QG5v5NdJk2U=;
+        s=korg; t=1650962047;
+        bh=H2GVOsN4Wlnmq7iS7cjQO3AXAVt7hMVJpGRKNMcx78Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NiVnhdl66aFSCoTogcV1sAhXCMyXdu8DQ7cU95KdE9zeJej5T9huth6otwgd4/jM5
-         6UfhGYps6FNIxSPfaGlzgWAoHfqpoRUN0jaImKmMB0nOIM2pmsBiSfY1cLAHs/RaU3
-         hM6hZWuIGt1TZIp1695JUKCxawPD58akJK2Tlp7U=
+        b=oC9My93RObaDp8OXP2VpMvgrliqw0lDOyx/VR3HAVtXDyX9+pQisP6mb9YrSUXsc/
+         cD6qLLnLzGe83VInIF4+EJntPjZCFl145ZoaF/c0t+smeupOU6NGOn4/yHCTSVE1rr
+         d73iNTppz6e329zM4t6z2Ji4+e57FeO0lNoFpE08=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mike Rapoport <rppt@linux.ibm.com>,
-        Christoph Hellwig <hch@lst.de>,
-        David Hildenbrand <david@redhat.com>,
-        Will Deacon <will@kernel.org>,
-        Georgi Djakov <quic_c_gdjako@quicinc.com>
-Subject: [PATCH 5.15 006/124] dma-mapping: remove bogus test for pfn_valid from dma_map_resource
-Date:   Tue, 26 Apr 2022 10:20:07 +0200
-Message-Id: <20220426081747.474819433@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Subject: [PATCH 5.10 55/86] ata: pata_marvell: Check the bmdma_addr beforing reading
+Date:   Tue, 26 Apr 2022 10:21:23 +0200
+Message-Id: <20220426081742.794341917@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
-References: <20220426081747.286685339@linuxfoundation.org>
+In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
+References: <20220426081741.202366502@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,43 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Rapoport <rppt@linux.ibm.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-commit a9c38c5d267cb94871dfa2de5539c92025c855d7 upstream.
+commit aafa9f958342db36c17ac2a7f1b841032c96feb4 upstream.
 
-dma_map_resource() uses pfn_valid() to ensure the range is not RAM.
-However, pfn_valid() only checks for availability of the memory map for a
-PFN but it does not ensure that the PFN is actually backed by RAM.
+Before detecting the cable type on the dma bar, the driver should check
+whether the 'bmdma_addr' is zero, which means the adapter does not
+support DMA, otherwise we will get the following error:
 
-As dma_map_resource() is the only method in DMA mapping APIs that has this
-check, simply drop the pfn_valid() test from dma_map_resource().
+[    5.146634] Bad IO access at port 0x1 (return inb(port))
+[    5.147206] WARNING: CPU: 2 PID: 303 at lib/iomap.c:44 ioread8+0x4a/0x60
+[    5.150856] RIP: 0010:ioread8+0x4a/0x60
+[    5.160238] Call Trace:
+[    5.160470]  <TASK>
+[    5.160674]  marvell_cable_detect+0x6e/0xc0 [pata_marvell]
+[    5.161728]  ata_eh_recover+0x3520/0x6cc0
+[    5.168075]  ata_do_eh+0x49/0x3c0
 
-Link: https://lore.kernel.org/all/20210824173741.GC623@arm.com/
-Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Acked-by: David Hildenbrand <david@redhat.com>
-Link: https://lore.kernel.org/r/20210930013039.11260-2-rppt@kernel.org
-Signed-off-by: Will Deacon <will@kernel.org>
-Fixes: 859a85ddf90e ("mm: remove pfn_valid_within() and CONFIG_HOLES_IN_ZONE")
-Link: https://lore.kernel.org/r/Yl0IZWT2nsiYtqBT@linux.ibm.com
-Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/dma/mapping.c |    4 ----
- 1 file changed, 4 deletions(-)
+ drivers/ata/pata_marvell.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/kernel/dma/mapping.c
-+++ b/kernel/dma/mapping.c
-@@ -296,10 +296,6 @@ dma_addr_t dma_map_resource(struct devic
- 	if (WARN_ON_ONCE(!dev->dma_mask))
- 		return DMA_MAPPING_ERROR;
- 
--	/* Don't allow RAM to be mapped */
--	if (WARN_ON_ONCE(pfn_valid(PHYS_PFN(phys_addr))))
--		return DMA_MAPPING_ERROR;
--
- 	if (dma_map_direct(dev, ops))
- 		addr = dma_direct_map_resource(dev, phys_addr, size, dir, attrs);
- 	else if (ops->map_resource)
+--- a/drivers/ata/pata_marvell.c
++++ b/drivers/ata/pata_marvell.c
+@@ -83,6 +83,8 @@ static int marvell_cable_detect(struct a
+ 	switch(ap->port_no)
+ 	{
+ 	case 0:
++		if (!ap->ioaddr.bmdma_addr)
++			return ATA_CBL_PATA_UNK;
+ 		if (ioread8(ap->ioaddr.bmdma_addr + 1) & 1)
+ 			return ATA_CBL_PATA40;
+ 		return ATA_CBL_PATA80;
 
 
