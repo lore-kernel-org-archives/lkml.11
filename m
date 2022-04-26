@@ -2,182 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F04B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 06:59:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD60BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 06:59:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343569AbiDZHCF (ORCPT
+        id S1343570AbiDZHCn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 03:02:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33506 "EHLO
+        Tue, 26 Apr 2022 03:02:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245547AbiDZHB5 (ORCPT
+        with ESMTP id S1343552AbiDZHCk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 03:01:57 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84B0B6004A
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 23:58:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650956330; x=1682492330;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=S7V3v/7UWkopynZgkR2PGjmZ12APeM3bchRJABsI+ic=;
-  b=CMKiXVaM1mKaha0MXpEn3k5Ddypn2XFprNmkvgVtwyTASl3tEAGP87V3
-   HNl+kr33cFpFXTIRKgrBGxRUMZfHK8hx1zGDxu73WFEso3TUQE2VE2NbG
-   Dpe4fErF+AdIPjmJJufK7ZTT/pajWdr4kDsIUkEyZzdbCvJmMwHFfpk2S
-   9F389Z2FieGtqOOG871UGGpiumFJrr7VwStf+JYlPgy7v4wFdQkl1mruL
-   P5dBQLBBkPCd8atAYe81Aua8IyBdNjGePAHcrTOYULk5PRhFoWYVA5moV
-   /UqlzQYeBwnQJxYtGE5o9STDpN0/bNmAnqomy6ey/4vC39EYHEQSf0W4i
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="252851382"
-X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
-   d="scan'208";a="252851382"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 23:58:50 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
-   d="scan'208";a="650057648"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 25 Apr 2022 23:58:48 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1njF9r-0003J7-PH;
-        Tue, 26 Apr 2022 06:58:47 +0000
-Date:   Tue, 26 Apr 2022 14:58:43 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Masahiro Yamada <yamada.masahiro@socionext.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Sean Paul <seanpaul@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>
-Subject: [jsarha:topic/chromeos-4.19-s0ix 6418/9999] cc1: warning:
- arch/arm/plat-iop/include: No such file or directory
-Message-ID: <202204261409.CTcsyD1M-lkp@intel.com>
+        Tue, 26 Apr 2022 03:02:40 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31A4C60055
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 23:59:33 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id ADF3B1F388;
+        Tue, 26 Apr 2022 06:59:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1650956371; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dQZAfakINXXUF6QkmKLshpcGVsJFPzKHe9GL9BtpKHQ=;
+        b=gCaf9t121tHQp1fEYxinnaNc7/2/j88so7AtrAFXPKKCZKHFB15rIc0owCHyFx+J7ojKCy
+        aXivEz47i1AhOBwwKe+ytyEcoOJ+8hqqjtifEmWnraD/Yb7gfZodnr2Chyz2YxDjZziKLU
+        TVGMsvLaRRGTbV3wfG3YGche3u1h1h0=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 601DC2C149;
+        Tue, 26 Apr 2022 06:59:31 +0000 (UTC)
+Date:   Tue, 26 Apr 2022 08:59:29 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Nico Pache <npache@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        David Rientjes <rientjes@google.com>,
+        Andrea Arcangeli <aarcange@redhat.com>
+Subject: Re: [RFC 3/3] exit: Check for MMF_OOM_SKIP in exit_mmap
+Message-ID: <YmeYUX7Nh47j3gKc@dhcp22.suse.cz>
+References: <20220421190533.1601879-1-npache@redhat.com>
+ <20220421190533.1601879-4-npache@redhat.com>
+ <YmLMBDkHmcjf9Nem@dhcp22.suse.cz>
+ <19303483-5700-fb6e-ba4a-398913370100@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <19303483-5700-fb6e-ba4a-398913370100@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Masahiro,
+On Mon 25-04-22 15:00:24, Nico Pache wrote:
+> 
+> 
+> On 4/22/22 11:38, Michal Hocko wrote:
+> > On Thu 21-04-22 15:05:33, Nico Pache wrote:
+> >> The MMF_OOM_SKIP bit is used to indicate weather a mm_struct can not be
+> >> invalided or has already been invalided. exit_mmap currently calls
+> >> __oom_reap_task_mm unconditionally despite the fact that the oom reaper
+> >> may have already called this.
+> >>
+> >> Add a check for the MMF_OOM_SKIP bit being set in exit_mmap to avoid
+> >> unnessary calls to the invalidate code.
+> > 
+> > Why do we care about this?
+> Is there no cost to the MMU/TLB invalidation? The MMU notifier contains a lock
+> too so perhaps we can also avoids some unnecessary MMU notifier lock contention.
 
-FYI, the error/warning still remains.
+I am pretty sure that this area can be micro optimized but I do not
+really see a strong reason for that. OOM victims are/should be really
+rare so I do not think that any performance optimization would be really
+visible.
 
-tree:   https://github.com/jsarha/linux topic/chromeos-4.19-s0ix
-head:   430bdaa0a8c38697780f45a148964d71951df11f
-commit: 4fae0a1dc645742f2ecd6238813b2d30d4fb31cd [6418/9999] UPSTREAM: kbuild: add some extra warning flags unconditionally
-config: arm-iop32x_defconfig (https://download.01.org/0day-ci/archive/20220426/202204261409.CTcsyD1M-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/jsarha/linux/commit/4fae0a1dc645742f2ecd6238813b2d30d4fb31cd
-        git remote add jsarha https://github.com/jsarha/linux
-        git fetch --no-tags jsarha topic/chromeos-4.19-s0ix
-        git checkout 4fae0a1dc645742f2ecd6238813b2d30d4fb31cd
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm prepare
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> cc1: warning: arch/arm/plat-iop/include: No such file or directory [-Wmissing-include-dirs]
---
->> cc1: warning: arch/arm/plat-iop/include: No such file or directory [-Wmissing-include-dirs]
-   init/main.c:485:20: warning: no previous prototype for 'arch_post_acpi_subsys_init' [-Wmissing-prototypes]
-     485 | void __init __weak arch_post_acpi_subsys_init(void) { }
-         |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~
-   init/main.c:497:20: warning: no previous prototype for 'mem_encrypt_init' [-Wmissing-prototypes]
-     497 | void __init __weak mem_encrypt_init(void) { }
-         |                    ^~~~~~~~~~~~~~~~
---
->> cc1: warning: arch/arm/plat-iop/include: No such file or directory [-Wmissing-include-dirs]
-   init/do_mounts.c: In function 'change_floppy':
-   init/do_mounts.c:480:9: warning: function 'change_floppy' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
-     480 |         vsprintf(buf, fmt, args);
-         |         ^~~~~~~~
---
->> cc1: warning: arch/arm/plat-iop/include: No such file or directory [-Wmissing-include-dirs]
-   init/calibrate.c:261:37: warning: no previous prototype for 'calibrate_delay_is_known' [-Wmissing-prototypes]
-     261 | unsigned long __attribute__((weak)) calibrate_delay_is_known(void)
-         |                                     ^~~~~~~~~~~~~~~~~~~~~~~~
-   init/calibrate.c:271:28: warning: no previous prototype for 'calibration_delay_done' [-Wmissing-prototypes]
-     271 | void __attribute__((weak)) calibration_delay_done(void)
-         |                            ^~~~~~~~~~~~~~~~~~~~~~
---
->> cc1: warning: arch/arm/plat-iop/include: No such file or directory [-Wmissing-include-dirs]
-   arch/arm/nwfpe/softfloat.c: In function 'float32_rem':
-   arch/arm/nwfpe/softfloat.c:1349:17: warning: variable 'bSign' set but not used [-Wunused-but-set-variable]
-    1349 |     flag aSign, bSign, zSign;
-         |                 ^~~~~
-   arch/arm/nwfpe/softfloat.c: In function 'float64_rem':
-   arch/arm/nwfpe/softfloat.c:2247:17: warning: variable 'bSign' set but not used [-Wunused-but-set-variable]
-    2247 |     flag aSign, bSign, zSign;
-         |                 ^~~~~
---
->> cc1: warning: arch/arm/plat-iop/include: No such file or directory [-Wmissing-include-dirs]
-   arch/arm/kernel/process.c:321:15: warning: no previous prototype for 'arch_randomize_brk' [-Wmissing-prototypes]
-     321 | unsigned long arch_randomize_brk(struct mm_struct *mm)
-         |               ^~~~~~~~~~~~~~~~~~
---
->> cc1: warning: arch/arm/plat-iop/include: No such file or directory [-Wmissing-include-dirs]
-   arch/arm/kernel/ptrace.c:927:16: warning: no previous prototype for 'syscall_trace_enter' [-Wmissing-prototypes]
-     927 | asmlinkage int syscall_trace_enter(struct pt_regs *regs, int scno)
-         |                ^~~~~~~~~~~~~~~~~~~
-   arch/arm/kernel/ptrace.c:955:17: warning: no previous prototype for 'syscall_trace_exit' [-Wmissing-prototypes]
-     955 | asmlinkage void syscall_trace_exit(struct pt_regs *regs)
-         |                 ^~~~~~~~~~~~~~~~~~
---
->> cc1: warning: arch/arm/plat-iop/include: No such file or directory [-Wmissing-include-dirs]
-   arch/arm/kernel/reboot.c:82:6: warning: no previous prototype for 'soft_restart' [-Wmissing-prototypes]
-      82 | void soft_restart(unsigned long addr)
-         |      ^~~~~~~~~~~~
---
->> cc1: warning: arch/arm/plat-iop/include: No such file or directory [-Wmissing-include-dirs]
-   arch/arm/kernel/setup.c: In function 'early_print':
-   arch/arm/kernel/setup.c:374:9: warning: function 'early_print' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
-     374 |         vsnprintf(buf, sizeof(buf), str, ap);
-         |         ^~~~~~~~~
---
->> cc1: warning: arch/arm/plat-iop/include: No such file or directory [-Wmissing-include-dirs]
-   arch/arm/kernel/signal.c: In function 'restore_sigframe':
-   arch/arm/kernel/signal.c:179:22: warning: variable 'aux' set but not used [-Wunused-but-set-variable]
-     179 |         char __user *aux;
-         |                      ^~~
-   arch/arm/kernel/signal.c: At top level:
-   arch/arm/kernel/signal.c:227:16: warning: no previous prototype for 'sys_sigreturn' [-Wmissing-prototypes]
-     227 | asmlinkage int sys_sigreturn(struct pt_regs *regs)
-         |                ^~~~~~~~~~~~~
-   arch/arm/kernel/signal.c:257:16: warning: no previous prototype for 'sys_rt_sigreturn' [-Wmissing-prototypes]
-     257 | asmlinkage int sys_rt_sigreturn(struct pt_regs *regs)
-         |                ^~~~~~~~~~~~~~~~
-   arch/arm/kernel/signal.c:646:1: warning: no previous prototype for 'do_work_pending' [-Wmissing-prototypes]
-     646 | do_work_pending(struct pt_regs *regs, unsigned int thread_flags, int syscall)
-         | ^~~~~~~~~~~~~~~
-   arch/arm/kernel/signal.c:686:14: warning: no previous prototype for 'get_signal_page' [-Wmissing-prototypes]
-     686 | struct page *get_signal_page(void)
-         |              ^~~~~~~~~~~~~~~
-   arch/arm/kernel/signal.c:717:17: warning: no previous prototype for 'addr_limit_check_failed' [-Wmissing-prototypes]
-     717 | asmlinkage void addr_limit_check_failed(void)
-         |                 ^~~~~~~~~~~~~~~~~~~~~~~
-   arch/arm/kernel/signal.c: In function 'do_signal':
-   arch/arm/kernel/signal.c:602:33: warning: this statement may fall through [-Wimplicit-fallthrough=]
-     602 |                         restart -= 2;
-         |                         ~~~~~~~~^~~~
-   arch/arm/kernel/signal.c:603:17: note: here
-     603 |                 case -ERESTARTNOHAND:
-         |                 ^~~~
---
->> cc1: warning: arch/arm/plat-iop/include: No such file or directory [-Wmissing-include-dirs]
-   arch/arm/kernel/sys_arm.c:35:17: warning: no previous prototype for 'sys_arm_fadvise64_64' [-Wmissing-prototypes]
-      35 | asmlinkage long sys_arm_fadvise64_64(int fd, int advice,
-         |                 ^~~~~~~~~~~~~~~~~~~~
-..
-
+If you want to improve the code then I think a much better plan would be
+to get rid of the whole oom special case altogether. This might be much
+closer than ever after Hugh's recent m{un}lock changes. I didn't have
+time to think that through though. I believe Suren Baghdasaryan has been
+looking into that as well.
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Michal Hocko
+SUSE Labs
