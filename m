@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1253DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:25:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54F96C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:25:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235546AbiDZJ2U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:28:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57760 "EHLO
+        id S236119AbiDZJ21 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:28:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347259AbiDZJFX (ORCPT
+        with ESMTP id S1347348AbiDZJFa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:05:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DB5910771F;
-        Tue, 26 Apr 2022 01:44:20 -0700 (PDT)
+        Tue, 26 Apr 2022 05:05:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CDFF11096A;
+        Tue, 26 Apr 2022 01:44:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D4F560A56;
-        Tue, 26 Apr 2022 08:44:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A84AC385A4;
-        Tue, 26 Apr 2022 08:44:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 25EF3B81C76;
+        Tue, 26 Apr 2022 08:44:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62271C385A4;
+        Tue, 26 Apr 2022 08:44:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962660;
-        bh=ac3HYVGc0CjlMIGOg7yoMrHUVzc5WDX2OrhG5mg8J5w=;
+        s=korg; t=1650962665;
+        bh=1OWTHQQH1jcO8sBBchXhD6ZyJQdD/B6PmUizs65gAqU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HZK2KR/goc4OVnlT/GsKigYus0RVWbXWC2Gb9ZMAGVD0qS/j0K1WHuJiloI7V+QS3
-         AmRx0IOlhsqknRMIZg/vWZtz164IJb8T45GYMYqDcc76Um2GTev3zEabnZMR7rhVip
-         YuL4Zo4cFo9+vICsTuhFR/EugJ5yjMWAFf4XMT8A=
+        b=h51o3B+bUFpDVWirLVqsdkGhQuLMCHK9XiG10FIxQo6lmY7dlQdAEEzS64szSc5PM
+         tbFzIVPSQOOevkSE5uXXMfib3LifNTMI81bLqLNBYzUwp7oQs5TH78ruXqGH/skDRz
+         mUG0j5+t/tNkVflL+P9Xs8bNtifNZX8JztgZFizY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Atish Patra <atishp@rivosinc.com>,
-        Anup Patel <anup@brainfault.org>,
+        stable@vger.kernel.org, Kevin Hao <haokexin@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 045/146] RISC-V: KVM: Remove s & u as valid ISA extension
-Date:   Tue, 26 Apr 2022 10:20:40 +0200
-Message-Id: <20220426081751.336985407@linuxfoundation.org>
+Subject: [PATCH 5.17 047/146] net: stmmac: Use readl_poll_timeout_atomic() in atomic state
+Date:   Tue, 26 Apr 2022 10:20:42 +0200
+Message-Id: <20220426081751.394223497@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -49,40 +49,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Atish Patra <atishp@rivosinc.com>
+From: Kevin Hao <haokexin@gmail.com>
 
-[ Upstream commit 3ab75a793e4939519d288ef1994db73b8e2d1d86 ]
+[ Upstream commit 234901de2bc6847eaa0aeb4aba62c31ffb8d3ad6 ]
 
-There are no ISA extension defined as 's' & 'u' in RISC-V specifications.
-The misa register defines 's' & 'u' bit as Supervisor/User privilege mode
-enabled. But it should not appear in the ISA extension in the device tree.
+The init_systime() may be invoked in atomic state. We have observed the
+following call trace when running "phc_ctl /dev/ptp0 set" on a Intel
+Agilex board.
+  BUG: sleeping function called from invalid context at drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c:74
+  in_atomic(): 1, irqs_disabled(): 128, non_block: 0, pid: 381, name: phc_ctl
+  preempt_count: 1, expected: 0
+  RCU nest depth: 0, expected: 0
+  Preemption disabled at:
+  [<ffff80000892ef78>] stmmac_set_time+0x34/0x8c
+  CPU: 2 PID: 381 Comm: phc_ctl Not tainted 5.18.0-rc2-next-20220414-yocto-standard+ #567
+  Hardware name: SoCFPGA Agilex SoCDK (DT)
+  Call trace:
+   dump_backtrace.part.0+0xc4/0xd0
+   show_stack+0x24/0x40
+   dump_stack_lvl+0x7c/0xa0
+   dump_stack+0x18/0x34
+   __might_resched+0x154/0x1c0
+   __might_sleep+0x58/0x90
+   init_systime+0x78/0x120
+   stmmac_set_time+0x64/0x8c
+   ptp_clock_settime+0x60/0x9c
+   pc_clock_settime+0x6c/0xc0
+   __arm64_sys_clock_settime+0x88/0xf0
+   invoke_syscall+0x5c/0x130
+   el0_svc_common.constprop.0+0x4c/0x100
+   do_el0_svc+0x7c/0xa0
+   el0_svc+0x58/0xcc
+   el0t_64_sync_handler+0xa4/0x130
+   el0t_64_sync+0x18c/0x190
 
-Remove those from the allowed ISA extension for kvm.
+So we should use readl_poll_timeout_atomic() here instead of
+readl_poll_timeout().
 
-Fixes: a33c72faf2d7 ("RISC-V: KVM: Implement VCPU create, init and
-destroy functions")
-Signed-off-by: Atish Patra <atishp@rivosinc.com>
-Signed-off-by: Anup Patel <anup@brainfault.org>
+Also adjust the delay time to 10us to fix a "__bad_udelay" build error
+reported by "kernel test robot <lkp@intel.com>". I have tested this on
+Intel Agilex and NXP S32G boards, there is no delay needed at all.
+So the 10us delay should be long enough for most cases.
+
+Fixes: ff8ed737860e ("net: stmmac: use readl_poll_timeout() function in init_systime()")
+Signed-off-by: Kevin Hao <haokexin@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/riscv/kvm/vcpu.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/riscv/kvm/vcpu.c b/arch/riscv/kvm/vcpu.c
-index 6785aef4cbd4..2e25a7b83a1b 100644
---- a/arch/riscv/kvm/vcpu.c
-+++ b/arch/riscv/kvm/vcpu.c
-@@ -43,9 +43,7 @@ const struct kvm_stats_header kvm_vcpu_stats_header = {
- 				 riscv_isa_extension_mask(d) | \
- 				 riscv_isa_extension_mask(f) | \
- 				 riscv_isa_extension_mask(i) | \
--				 riscv_isa_extension_mask(m) | \
--				 riscv_isa_extension_mask(s) | \
--				 riscv_isa_extension_mask(u))
-+				 riscv_isa_extension_mask(m))
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
+index a7ec9f4d46ce..d68ef72dcdde 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
+@@ -71,9 +71,9 @@ static int init_systime(void __iomem *ioaddr, u32 sec, u32 nsec)
+ 	writel(value, ioaddr + PTP_TCR);
  
- static void kvm_riscv_reset_vcpu(struct kvm_vcpu *vcpu)
- {
+ 	/* wait for present system time initialize to complete */
+-	return readl_poll_timeout(ioaddr + PTP_TCR, value,
++	return readl_poll_timeout_atomic(ioaddr + PTP_TCR, value,
+ 				 !(value & PTP_TCR_TSINIT),
+-				 10000, 100000);
++				 10, 100000);
+ }
+ 
+ static int config_addend(void __iomem *ioaddr, u32 addend)
 -- 
 2.35.1
 
