@@ -2,105 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB751C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 21:32:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C9BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 21:34:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355549AbiDZVfu (ORCPT
+        id S1355520AbiDZVhP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 17:35:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46954 "EHLO
+        Tue, 26 Apr 2022 17:37:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355533AbiDZVfi (ORCPT
+        with ESMTP id S1346480AbiDZVhN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 17:35:38 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B845848889;
-        Tue, 26 Apr 2022 14:32:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1651008721;
-        bh=Mcqr/T0kmWqg4nAlzOns1D7VSNQP91XAT2oZ/smVtZg=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=coZxAAm3p5l3OCIUnUP3qzKkt/u4crbDsUnOxI/vq9/YCes/7sCHhnXHv2vo4w5Dp
-         tP/f1Fu9R81fCxssP6uSpnKuNsxWm3HL03YP/WE4X6c84qFmWXqFcT30FkzoiMjUPr
-         3hHAJ56xU3MOE78J+sCQPi3yekWPgN83cpKdzesQ=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from esprimo-mx.users.agdsn.de ([141.30.226.129]) by mail.gmx.net
- (mrgmx104 [212.227.17.168]) with ESMTPSA (Nemesis) id
- 1MFsYx-1nemMg0KSd-00HQ3s; Tue, 26 Apr 2022 23:32:01 +0200
-From:   Armin Wolf <W_Armin@gmx.de>
-To:     pali@kernel.org
-Cc:     jdelvare@suse.com, linux@roeck-us.net, linux-hwmon@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 3/3] hwmon: (dell-smm) Warn if SMM call took a very long time to execute
-Date:   Tue, 26 Apr 2022 23:31:54 +0200
-Message-Id: <20220426213154.724708-4-W_Armin@gmx.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220426213154.724708-1-W_Armin@gmx.de>
-References: <20220426213154.724708-1-W_Armin@gmx.de>
+        Tue, 26 Apr 2022 17:37:13 -0400
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7811B1A5DD1
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 14:34:04 -0700 (PDT)
+Received: by mail-io1-xd2d.google.com with SMTP id h8so203285iov.12
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 14:34:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zJHneikLXEGfJde4krQasd9PQhsFRpApoS4ZRag7+RU=;
+        b=EdwxR0V/0R58E5VQDj0HrytGDcfRa0ZaI7Me6rDBjirAgNHRbWWWvGaw7HmQEIGzu+
+         8UTTpBJpVmtohKiGL5cVYIq8PicWJvFUQVly2vSP4TS+56W86k/aX6l5WCrdoFzyILM+
+         1Yehf40AqvUszrZodWCBswvT50v8vrsYb0CT9VT0ik1assb3s50rjI/Ghc6ERMC0+hQS
+         kngQQpUrenrx0Z/CG7kuYI7vOHHB9pxCvklytawOfmTdu9cTLRddizluzNirEjBtvgHq
+         /7wjZvrPSoiAuTCiyBqcBwBGz7SjzYicglmkQ0p2ZcHJZmj17y1/IkCZAoejAg68UMHJ
+         xOsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zJHneikLXEGfJde4krQasd9PQhsFRpApoS4ZRag7+RU=;
+        b=Q5QFQj4dxDIG6cf96TDDZ5+F2QYB1kxwsrhABAnl0j1PVcdrhp8RSezTmQEkDs6b5D
+         yEke2c737a9BkozNhGWq+um6og4bOAlQdP9dAfia9VB2A6Xgj6f/jd7EM0eygzR/D2md
+         dmHFX2k7Mj/2xf9qQfvHs53/qpFOLb1/zKyxEV+kq7T5hAH7hASOkHgBGIFtYCJcnbxs
+         CJ0CKybUj+ppjrX8aNuLW7Z7KlGLkT9zJkT2oi2tmElGbQ0a3HqQdf06suQkVyzNmVx2
+         x9ud7z2Kk848BNm2ET6b624Ay6frvhjYuN08NNoqC5Q4oFpodFcCEyD26vN/5E/JsGFJ
+         LawQ==
+X-Gm-Message-State: AOAM531gOpLvITMdDCchWPYUA7O/1r3dtUl3aV53D0Qs7iULnOPD24+S
+        3utShs+/n2mVRSbrhBQhBipE6ek7KgmkS177xokT/EPE7DA=
+X-Google-Smtp-Source: ABdhPJyGNR5sOXzGqUeKg6keEazd9H9Z8L/jAzBgMCoHI+lyyK7gNjS+2erCu0X4dzgJTpnr7YSLg3mNpJ5fsfcJHI0=
+X-Received: by 2002:a5d:9448:0:b0:657:24e0:c0b2 with SMTP id
+ x8-20020a5d9448000000b0065724e0c0b2mr10388348ior.167.1651008843696; Tue, 26
+ Apr 2022 14:34:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:dVutyZY/BCiotHB/A+1poWq9QgmxatrUFyL3SR9Mal2aDAeVzw8
- k/l3fTLlCyKGohW64XTyP4CqBoeQCNHB03/Vnz2iiRa3HwhS//VF0sNLJHEA7PFDn5MAk8H
- 4qtKE9EitMbQZvK2rkD5bb4Ic0AhFJunvhDydcoRoNvy4c8e6iJW/B9u8gDjiNYGuqNg8tT
- xw3UpiysP4REs+L8nVd+A==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:9FCWAqq+1vc=:36INr/9RMhrgYme2ZgAqBY
- AvEHpE5W1PyPQuELki3mxfdlI1JKTl0U9XPh04xIAkEww5Ii4Tchw2nwSSZFXhK4MtIDkx8eQ
- WgQYRJBbqrwBuACSHItWSettvE6c1uOces9zJw8fpLeOt9Z6n1i2aNrtP5GhbqlRE2jD68VBd
- qHNg9kB0aj+3uXTgWCfe0QZtmeGOM/uwQz6cE/v3liMv8c7wek0nx886NOkZejX3hjq8dc9jO
- HPOdtcdRicANBjzNK7wjgkv5MtvlCuL0N89d6ZNZ981FRhV4mzrVSfeMV9m1dCHhvm6rBuThQ
- 46wDqKdp+yWutbfJ8K8D9cqfWl9yIQwTRD+9o55/ZmixL+JahBOubRMR+nSbzNP3mxVOkhqOS
- 7+ITIvfy4tzZpDDmFK/HOfZ/T6B9AdKxuL7aq8zlafrhga38HglQSi91Tg1MheYYxTvfFYkVB
- Ir1TBBdqmlEPNQ/jUYuVAoOSE2lt0nvEswefPkxH7BAeuye3A47T+7YOBDwHQBx6jXRGu9Z4o
- HjN4KxtO5IhCDK87t39xs479RvN3wTOK9Hw5mOY7R2lUgfxZqSVsF4+TS+3IpXZO6yshTpwxI
- czywqJ8LzU7D4JchRBcQQphVzoe1puixfr18LlQN4xu5jPiT1oCuq6uCciryJ3djrZkohoQr5
- igThxe9hs7fDW1BzY4ltJeS+ExaE76yHG7N02oP6XYtJqdoT0JelNqJRAdnTDoM6N/9CPC+v9
- getWSQRlI43H3B7XCZk0zNxVRo7ceAXV2rcTdyXCBjuddGuZZ7U8PCWCglORaujyGMDNaEEW2
- 9+pWl3lwrtD4m5httc0gR2+1WW8YS82VrEwRFMG6XAPp6e4Z2NSGxbSmGcEQtMjTj7szoSPJz
- peePJ399I6+WIl8Uejxqtm4usv3DbKD25iNdv++x8U+F3AHV7hCbbFg7FnpjaenL89hmSsiAx
- uwSd97WAZ+cbmv7jgc2qkd5rWw7UB5OTYJBUt6hEtHezIvC7zMZieVjNchMY07udusGqJ3+Hq
- FI3bzv87PkqaDOAaZwg0lrUlcPlQ05Y0bOa6mXsZ/iZBkeH0eMU5j7oFJMMGs4g3mn1Nv5pUv
- 3ygE4FSWhV4qCI=
+References: <20220422212945.2227722-1-axelrasmussen@google.com>
+ <20220422212945.2227722-3-axelrasmussen@google.com> <YmhW+mOuQUWsByj4@xz-m1.local>
+In-Reply-To: <YmhW+mOuQUWsByj4@xz-m1.local>
+From:   Axel Rasmussen <axelrasmussen@google.com>
+Date:   Tue, 26 Apr 2022 14:33:27 -0700
+Message-ID: <CAJHvVch=8znnY-u1PbPb1qUeczn+9AR_eZOP5z9kD6PgtPQjrQ@mail.gmail.com>
+Subject: Re: [PATCH v2 2/6] userfaultfd: add /dev/userfaultfd for fine grained
+ access control
+To:     Peter Xu <peterx@redhat.com>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Charan Teja Reddy <charante@codeaurora.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Dmitry V . Levin" <ldv@altlinux.org>,
+        Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>,
+        Hugh Dickins <hughd@google.com>, Jan Kara <jack@suse.cz>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@kernel.org>, Nadav Amit <namit@vmware.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        zhangyi <yi.zhang@huawei.com>, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Linuxkselftest <linux-kselftest@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If a particular SMM call takes a very long time to execute,
-the user might experience audio problems. Print a warning
-if a particular SMM call took over 0.250 seconds to execute,
-so the user can check whether or not possible audio problems
-are caused by this driver.
+On Tue, Apr 26, 2022 at 1:33 PM Peter Xu <peterx@redhat.com> wrote:
+>
+> Axel,
+>
+> On Fri, Apr 22, 2022 at 02:29:41PM -0700, Axel Rasmussen wrote:
+> > @@ -65,6 +66,8 @@ struct userfaultfd_ctx {
+> >       unsigned int flags;
+> >       /* features requested from the userspace */
+> >       unsigned int features;
+> > +     /* whether or not to handle kernel faults */
+> > +     bool handle_kernel_faults;
+>
+> Could you help explain why we need this bool?  I failed to figure out
+> myself on the difference against "!(ctx->flags & UFFD_USER_MODE_ONLY)".
 
-Signed-off-by: Armin Wolf <W_Armin@gmx.de>
-=2D--
- drivers/hwmon/dell-smm-hwmon.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+Ah, yeah you're right, we can get rid of it and just rely on
+UFFD_USER_MODE_ONLY.
 
-diff --git a/drivers/hwmon/dell-smm-hwmon.c b/drivers/hwmon/dell-smm-hwmon=
-.c
-index f13902414615..071aa6f4e109 100644
-=2D-- a/drivers/hwmon/dell-smm-hwmon.c
-+++ b/drivers/hwmon/dell-smm-hwmon.c
-@@ -49,6 +49,9 @@
- #define I8K_SMM_GET_DELL_SIG1	0xfea3
- #define I8K_SMM_GET_DELL_SIG2	0xffa3
+Just to add context, in a previous version I never sent out, I had:
 
-+/* in usecs */
-+#define DELL_SMM_MAX_DURATION  250000
-+
- #define I8K_FAN_MULT		30
- #define I8K_FAN_RPM_THRESHOLD	1000
- #define I8K_MAX_TEMP		127
-@@ -239,6 +242,9 @@ static int i8k_smm_func(void *par)
- 	pr_debug("smm(0x%.4x 0x%.4x) =3D 0x%.4x  (took %7lld usecs)\n", eax, ebx=
-,
- 		 (rc ? 0xffff : regs->eax & 0xffff), duration);
+ctx->handle_kernel_faults = userfaultfd_allowed(...);
 
-+	if (duration > DELL_SMM_MAX_DURATION)
-+		pr_warn_once("SMM call took %lld usecs!\n", duration);
-+
- 	return rc;
- }
+That's wrong for other reasons, but if we were going to do that we'd
+have to store the result, since it's a function not just of the flags,
+but also of the method used to create the userfaultfd. I changed this
+without also dropping the boolean, which can now be cleaned up. I'll
+include this change in a v3.
 
-=2D-
-2.30.2
-
+>
+> Thanks,
+>
+> --
+> Peter Xu
+>
