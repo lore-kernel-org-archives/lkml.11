@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 490EAC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:24:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1253DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:25:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346328AbiDZJ0p (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:26:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44738 "EHLO
+        id S235546AbiDZJ2U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:28:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346707AbiDZJBK (ORCPT
+        with ESMTP id S1347259AbiDZJFX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:01:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA24370911;
-        Tue, 26 Apr 2022 01:43:25 -0700 (PDT)
+        Tue, 26 Apr 2022 05:05:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DB5910771F;
+        Tue, 26 Apr 2022 01:44:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3C97CB81CFA;
-        Tue, 26 Apr 2022 08:43:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96D53C385A0;
-        Tue, 26 Apr 2022 08:43:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D4F560A56;
+        Tue, 26 Apr 2022 08:44:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A84AC385A4;
+        Tue, 26 Apr 2022 08:44:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962603;
-        bh=gY03yRQVgo2o+50+mkECFHvIIzQVh3HNSNFQU6Ptln8=;
+        s=korg; t=1650962660;
+        bh=ac3HYVGc0CjlMIGOg7yoMrHUVzc5WDX2OrhG5mg8J5w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AoSnJ0O1kxKfYJMD+wmCzcNw7NPLRTa2XzBinZqyXKy1Zd5q1EBWsB/bjn3yGpeGn
-         QxXAD6bvA6BmEm7DW2HA5/O/WVJNDW/MjyDam0B78q6ggP9NhKZeRSvPdHo6KPyHFx
-         wp7K/LaV7BfNt7i7v8IfnrfRGOxrw0Kzz73JFeUM=
+        b=HZK2KR/goc4OVnlT/GsKigYus0RVWbXWC2Gb9ZMAGVD0qS/j0K1WHuJiloI7V+QS3
+         AmRx0IOlhsqknRMIZg/vWZtz164IJb8T45GYMYqDcc76Um2GTev3zEabnZMR7rhVip
+         YuL4Zo4cFo9+vICsTuhFR/EugJ5yjMWAFf4XMT8A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Wojciech Drewek <wojciech.drewek@intel.com>,
-        Marcin Szycik <marcin.szycik@linux.intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Sandeep Penigalapati <sandeep.penigalapati@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        stable@vger.kernel.org, Atish Patra <atishp@rivosinc.com>,
+        Anup Patel <anup@brainfault.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 028/146] ice: fix crash in switchdev mode
-Date:   Tue, 26 Apr 2022 10:20:23 +0200
-Message-Id: <20220426081750.858905110@linuxfoundation.org>
+Subject: [PATCH 5.17 045/146] RISC-V: KVM: Remove s & u as valid ISA extension
+Date:   Tue, 26 Apr 2022 10:20:40 +0200
+Message-Id: <20220426081751.336985407@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -54,94 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wojciech Drewek <wojciech.drewek@intel.com>
+From: Atish Patra <atishp@rivosinc.com>
 
-[ Upstream commit d201665147ae788b7cca9fab58a1826f64152034 ]
+[ Upstream commit 3ab75a793e4939519d288ef1994db73b8e2d1d86 ]
 
-Below steps end up with crash:
-- modprobe ice
-- devlink dev eswitch set $PF1_PCI mode switchdev
-- echo 64 > /sys/class/net/$PF1/device/sriov_numvfs
-- rmmod ice
+There are no ISA extension defined as 's' & 'u' in RISC-V specifications.
+The misa register defines 's' & 'u' bit as Supervisor/User privilege mode
+enabled. But it should not appear in the ISA extension in the device tree.
 
-Calling ice_eswitch_port_start_xmit while the process of removing
-VFs is in progress ends up with NULL pointer dereference.
-That's because PR netdev is not released but some resources
-are already freed. Fix it by checking if ICE_VF_DIS bit is set.
+Remove those from the allowed ISA extension for kvm.
 
-Call trace:
-[ 1379.595146] BUG: kernel NULL pointer dereference, address: 0000000000000040
-[ 1379.595284] #PF: supervisor read access in kernel mode
-[ 1379.595410] #PF: error_code(0x0000) - not-present page
-[ 1379.595535] PGD 0 P4D 0
-[ 1379.595657] Oops: 0000 [#1] PREEMPT SMP PTI
-[ 1379.595783] CPU: 4 PID: 974 Comm: NetworkManager Kdump: loaded Tainted: G           OE     5.17.0-rc8_mrq_dev-queue+ #12
-[ 1379.595926] Hardware name: Intel Corporation S1200SP/S1200SP, BIOS S1200SP.86B.03.01.0042.013020190050 01/30/2019
-[ 1379.596063] RIP: 0010:ice_eswitch_port_start_xmit+0x46/0xd0 [ice]
-[ 1379.596292] Code: c7 c8 09 00 00 e8 9a c9 fc ff 84 c0 0f 85 82 00 00 00 4c 89 e7 e8 ca 70 fe ff 48 8b 7d 58 48 89 c3 48 85 ff 75 5e 48 8b 53 20 <8b> 42 40 85 c0 74 78 8d 48 01 f0 0f b1 4a 40 75 f2 0f b6 95 84 00
-[ 1379.596456] RSP: 0018:ffffaba0c0d7bad0 EFLAGS: 00010246
-[ 1379.596584] RAX: ffff969c14c71680 RBX: ffff969c14c71680 RCX: 000100107a0f0000
-[ 1379.596715] RDX: 0000000000000000 RSI: ffff969b9d631000 RDI: 0000000000000000
-[ 1379.596846] RBP: ffff969c07b46500 R08: ffff969becfca8ac R09: 0000000000000001
-[ 1379.596977] R10: 0000000000000004 R11: ffffaba0c0d7bbec R12: ffff969b9d631000
-[ 1379.597106] R13: ffffffffc08357a0 R14: ffff969c07b46500 R15: ffff969b9d631000
-[ 1379.597237] FS:  00007f72c0e25c80(0000) GS:ffff969f13500000(0000) knlGS:0000000000000000
-[ 1379.597414] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 1379.597562] CR2: 0000000000000040 CR3: 000000012b316006 CR4: 00000000003706e0
-[ 1379.597713] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[ 1379.597863] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[ 1379.598015] Call Trace:
-[ 1379.598153]  <TASK>
-[ 1379.598294]  dev_hard_start_xmit+0xd9/0x220
-[ 1379.598444]  sch_direct_xmit+0x8a/0x340
-[ 1379.598592]  __dev_queue_xmit+0xa3c/0xd30
-[ 1379.598739]  ? packet_parse_headers+0xb4/0xf0
-[ 1379.598890]  packet_sendmsg+0xa15/0x1620
-[ 1379.599038]  ? __check_object_size+0x46/0x140
-[ 1379.599186]  sock_sendmsg+0x5e/0x60
-[ 1379.599330]  ____sys_sendmsg+0x22c/0x270
-[ 1379.599474]  ? import_iovec+0x17/0x20
-[ 1379.599622]  ? sendmsg_copy_msghdr+0x59/0x90
-[ 1379.599771]  ___sys_sendmsg+0x81/0xc0
-[ 1379.599917]  ? __pollwait+0xd0/0xd0
-[ 1379.600061]  ? preempt_count_add+0x68/0xa0
-[ 1379.600210]  ? _raw_write_lock_irq+0x1a/0x40
-[ 1379.600369]  ? ep_done_scan+0xc9/0x110
-[ 1379.600494]  ? _raw_spin_unlock_irqrestore+0x25/0x40
-[ 1379.600622]  ? preempt_count_add+0x68/0xa0
-[ 1379.600747]  ? _raw_spin_lock_irq+0x1a/0x40
-[ 1379.600899]  ? __fget_light+0x8f/0x110
-[ 1379.601024]  __sys_sendmsg+0x49/0x80
-[ 1379.601148]  ? release_ds_buffers+0x50/0xe0
-[ 1379.601274]  do_syscall_64+0x3b/0x90
-[ 1379.601399]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[ 1379.601525] RIP: 0033:0x7f72c1e2e35d
-
-Fixes: f5396b8a663f ("ice: switchdev slow path")
-Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
-Reported-by: Marcin Szycik <marcin.szycik@linux.intel.com>
-Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: a33c72faf2d7 ("RISC-V: KVM: Implement VCPU create, init and
+destroy functions")
+Signed-off-by: Atish Patra <atishp@rivosinc.com>
+Signed-off-by: Anup Patel <anup@brainfault.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_eswitch.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/riscv/kvm/vcpu.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_eswitch.c b/drivers/net/ethernet/intel/ice/ice_eswitch.c
-index 73edc24d81d5..c54b72f9fd34 100644
---- a/drivers/net/ethernet/intel/ice/ice_eswitch.c
-+++ b/drivers/net/ethernet/intel/ice/ice_eswitch.c
-@@ -342,7 +342,8 @@ ice_eswitch_port_start_xmit(struct sk_buff *skb, struct net_device *netdev)
- 	np = netdev_priv(netdev);
- 	vsi = np->vsi;
+diff --git a/arch/riscv/kvm/vcpu.c b/arch/riscv/kvm/vcpu.c
+index 6785aef4cbd4..2e25a7b83a1b 100644
+--- a/arch/riscv/kvm/vcpu.c
++++ b/arch/riscv/kvm/vcpu.c
+@@ -43,9 +43,7 @@ const struct kvm_stats_header kvm_vcpu_stats_header = {
+ 				 riscv_isa_extension_mask(d) | \
+ 				 riscv_isa_extension_mask(f) | \
+ 				 riscv_isa_extension_mask(i) | \
+-				 riscv_isa_extension_mask(m) | \
+-				 riscv_isa_extension_mask(s) | \
+-				 riscv_isa_extension_mask(u))
++				 riscv_isa_extension_mask(m))
  
--	if (ice_is_reset_in_progress(vsi->back->state))
-+	if (ice_is_reset_in_progress(vsi->back->state) ||
-+	    test_bit(ICE_VF_DIS, vsi->back->state))
- 		return NETDEV_TX_BUSY;
- 
- 	repr = ice_netdev_to_repr(netdev);
+ static void kvm_riscv_reset_vcpu(struct kvm_vcpu *vcpu)
+ {
 -- 
 2.35.1
 
