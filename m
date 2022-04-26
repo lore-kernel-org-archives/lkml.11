@@ -2,130 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34339C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73635C3527E
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:48:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347091AbiDZIvG (ORCPT
+        id S1347250AbiDZIvP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:51:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58646 "EHLO
+        Tue, 26 Apr 2022 04:51:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345801AbiDZIjc (ORCPT
+        with ESMTP id S1345790AbiDZIjb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:39:32 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72AF8996A1;
-        Tue, 26 Apr 2022 01:31:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650961881; x=1682497881;
-  h=from:to:cc:subject:date:message-id;
-  bh=ey2DEjx+AwyO6kemYE9A9R1iln2K570othjBxqTPYqY=;
-  b=YMmPAOq6g3ITUqKsSgvvDdhuQfYVjeyHV9yzYYsnrQjMX2MbZaOZmsCV
-   7fVJhUr+CK4cR0fppYGMSyQS4vks+438FIodfukQxCbE1wtoW8CHXS+P8
-   U6GZUFgDnchYP7ERpEpG0rGwhpe5O69FBkhQW6KqDei6tk6LguPYSDYIj
-   g=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 26 Apr 2022 01:31:20 -0700
-X-QCInternal: smtphost
-Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 26 Apr 2022 01:31:18 -0700
-X-QCInternal: smtphost
-Received: from hu-c-spathi-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.108.59])
-  by ironmsg01-blr.qualcomm.com with ESMTP; 26 Apr 2022 14:00:59 +0530
-Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 212714)
-        id 3A599DD9; Tue, 26 Apr 2022 14:00:58 +0530 (+0530)
-From:   Srinivasarao Pathipati <quic_spathi@quicinc.com>
-To:     ulf.hansson@linaro.org, adrian.hunter@intel.com,
-        riteshh@codeaurora.org, asutoshd@codeaurora.org, axboe@kernel.dk,
-        avri.altman@wdc.com, kch@nvidia.com, CLoehle@hyperstone.com,
-        swboyd@chromium.org, digetx@gmail.com, bigeasy@linutronix.de,
-        linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Shaik Sajida Bhanu <sbhanu@codeaurora.org>,
-        kamasali <quic_kamasali@quicinc.com>,
-        Srinivasarao Pathipati <quic_spathi@quicinc.com>
-Subject: [PATCH V1] mmc: core: Enable force hw reset
-Date:   Tue, 26 Apr 2022 14:00:18 +0530
-Message-Id: <1650961818-13452-1-git-send-email-quic_spathi@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Tue, 26 Apr 2022 04:39:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE8CB939CD;
+        Tue, 26 Apr 2022 01:31:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 826F3B81CFA;
+        Tue, 26 Apr 2022 08:31:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5938C385A0;
+        Tue, 26 Apr 2022 08:31:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650961870;
+        bh=I8jUk6UlJme96tx2y02LVwef7dIYYkmsMzlL41Kj7dw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=OTLVBlW6JiOku/3ryoC7C8qpv9FEYqxuSpJUVLRiNJJ3b8W72t4jpB3iaaRxZNWp6
+         C6or+H/NAAfnn5Mt+9jkycjmUdPoSUd7luVew+2rI2JGbtZHUF6yE+UO3AAtI8RSUA
+         SJnkKv8c/BS6iaNbSC763JtLbjreWs7tOHpCplNg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.4 59/62] spi: atmel-quadspi: Fix the buswidth adjustment between spi-mem and controller
+Date:   Tue, 26 Apr 2022 10:21:39 +0200
+Message-Id: <20220426081738.914423153@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
+References: <20220426081737.209637816@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shaik Sajida Bhanu <sbhanu@codeaurora.org>
+From: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-During error recovery set need hw reset to handle
-ICE error where cqe reset is must.
+commit 8c235cc25087495c4288d94f547e9d3061004991 upstream.
 
-Signed-off-by: Shaik Sajida Bhanu <sbhanu@codeaurora.org>
-Signed-off-by: kamasali <quic_kamasali@quicinc.com>
-Signed-off-by: Srinivasarao Pathipati <quic_spathi@quicinc.com>
+Use the spi_mem_default_supports_op() core helper in order to take into
+account the buswidth specified by the user in device tree.
+
+Cc: <stable@vger.kernel.org>
+Fixes: 0e6aae08e9ae ("spi: Add QuadSPI driver for Atmel SAMA5D2")
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Link: https://lore.kernel.org/r/20220406133604.455356-1-tudor.ambarus@microchip.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/core/block.c      | 8 +++++---
- drivers/mmc/host/cqhci-core.c | 7 +++++--
- include/linux/mmc/host.h      | 1 +
- 3 files changed, 11 insertions(+), 5 deletions(-)
+ drivers/spi/atmel-quadspi.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/mmc/core/block.c b/drivers/mmc/core/block.c
-index b35e7a9..f63bf33 100644
---- a/drivers/mmc/core/block.c
-+++ b/drivers/mmc/core/block.c
-@@ -1482,10 +1482,12 @@ void mmc_blk_cqe_recovery(struct mmc_queue *mq)
- 	pr_debug("%s: CQE recovery start\n", mmc_hostname(host));
- 
- 	err = mmc_cqe_recovery(host);
--	if (err)
-+	if (err || host->need_hw_reset) {
- 		mmc_blk_reset(mq->blkdata, host, MMC_BLK_CQE_RECOVERY);
--	else
--		mmc_blk_reset_success(mq->blkdata, MMC_BLK_CQE_RECOVERY);
-+		if (host->need_hw_reset)
-+			host->need_hw_reset = false;
-+	}
-+	mmc_blk_reset_success(mq->blkdata, MMC_BLK_CQE_RECOVERY);
- 
- 	pr_debug("%s: CQE recovery done\n", mmc_hostname(host));
- }
-diff --git a/drivers/mmc/host/cqhci-core.c b/drivers/mmc/host/cqhci-core.c
-index b0d30c3..311b510 100644
---- a/drivers/mmc/host/cqhci-core.c
-+++ b/drivers/mmc/host/cqhci-core.c
-@@ -812,18 +812,21 @@ static void cqhci_finish_mrq(struct mmc_host *mmc, unsigned int tag)
- irqreturn_t cqhci_irq(struct mmc_host *mmc, u32 intmask, int cmd_error,
- 		      int data_error)
+--- a/drivers/spi/atmel-quadspi.c
++++ b/drivers/spi/atmel-quadspi.c
+@@ -202,6 +202,9 @@ static int atmel_qspi_find_mode(const st
+ static bool atmel_qspi_supports_op(struct spi_mem *mem,
+ 				   const struct spi_mem_op *op)
  {
--	u32 status;
-+	u32 status, ice_err;
- 	unsigned long tag = 0, comp_status;
- 	struct cqhci_host *cq_host = mmc->cqe_private;
++	if (!spi_mem_default_supports_op(mem, op))
++		return false;
++
+ 	if (atmel_qspi_find_mode(op) < 0)
+ 		return false;
  
- 	status = cqhci_readl(cq_host, CQHCI_IS);
- 	cqhci_writel(cq_host, status, CQHCI_IS);
-+	ice_err = status & (CQHCI_IS_GCE | CQHCI_IS_ICCE);
- 
- 	pr_debug("%s: cqhci: IRQ status: 0x%08x\n", mmc_hostname(mmc), status);
- 
- 	if ((status & (CQHCI_IS_RED | CQHCI_IS_GCE | CQHCI_IS_ICCE)) ||
--	    cmd_error || data_error)
-+	    cmd_error || data_error || ice_err){
-+		mmc->need_hw_reset = true;
- 		cqhci_error_irq(mmc, status, cmd_error, data_error);
-+	}
- 
- 	if (status & CQHCI_IS_TCC) {
- 		/* read TCN and complete the request */
-diff --git a/include/linux/mmc/host.h b/include/linux/mmc/host.h
-index c193c50..3d00bcf 100644
---- a/include/linux/mmc/host.h
-+++ b/include/linux/mmc/host.h
-@@ -492,6 +492,7 @@ struct mmc_host {
- 	int			cqe_qdepth;
- 	bool			cqe_enabled;
- 	bool			cqe_on;
-+	bool                    need_hw_reset;
- 
- 	/* Inline encryption support */
- #ifdef CONFIG_MMC_CRYPTO
--- 
-2.7.4
+
 
