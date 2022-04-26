@@ -2,269 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45A0FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 20:58:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2166C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 21:00:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355197AbiDZVBG (ORCPT
+        id S1355219AbiDZVDY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 17:01:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51680 "EHLO
+        Tue, 26 Apr 2022 17:03:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355187AbiDZVBC (ORCPT
+        with ESMTP id S1349114AbiDZVDV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 17:01:02 -0400
-Received: from mail-ua1-x92c.google.com (mail-ua1-x92c.google.com [IPv6:2607:f8b0:4864:20::92c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D38564926F
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 13:57:52 -0700 (PDT)
-Received: by mail-ua1-x92c.google.com with SMTP id p1so4433806uak.1
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 13:57:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=acSONY7PP2jxfx8qQHXfWpOHe20HF0xIP8aPzje00+M=;
-        b=JpNU2w+DsXQSncx5zG+Ikno8ZWXS25SA6eFSzK6/TW3MxvGsN8ddRCtT/YaZM3xt0F
-         gaJJMy5bD4/gXwhwYtaKTdGcwgb5l1EX+cC3STdJCqdoid8BcTt/Ac1JU4mo71qBFscX
-         KKf58dnBkUP4FXIcESPAy9AkO25CiIZCUrBcg0mJafNTeTbBgr7j2vFSSyK8c3DSX3GK
-         mQoiDCvTyffrIGGuRHAF0SkZgSQ+iYF3+7/VHtflGihitBqY1xEHACdj5DFTMZGpr5aP
-         TZ+vU9SHqT0eg6IW8kp0IwNrHi2QNPWmwJhrg5Mro8+0jozhjwgc5ifw9MYPNvDYOhW9
-         j0DA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=acSONY7PP2jxfx8qQHXfWpOHe20HF0xIP8aPzje00+M=;
-        b=UFdHJ+dxLPSZoCV4RXJXc/4ar4DBGAzOxj8+nBWh/3t+C5/G1vbVteLuP8prlvGBVD
-         xzoDAUugLbnR2X5Ttmre+kHTgDfJCJeX8PpHs6ksXz5eJDqiYITaVRoppMgI6gZMIEQl
-         SxdB/JhoxIugLbo1QZVnzbX1+1dwp9zPEu/9Qcw9zFbPYo2ArtmE439uaFbrr27e9QeL
-         krgRbHbYZG7wDGoEpCjHWPLtxuePW5C5JOSOuSceEPU3XbO6C8TZFWuCyKpkLCupXoTU
-         mNuJHbVQWgnu3/Q5Bf0PV01hc1ui8Rpz2GTuRWfzJFWOKJxdjXOcfaUvLRhDsMvhwjcL
-         gN5g==
-X-Gm-Message-State: AOAM530CAa81x6kL5UPabtGwYi2CYCm1VbNV4ZZgTbWcRGRXXr0eKD/b
-        AYeZV49YesaKtVXEAxkHS0t8w+SHG7ScK2kPpui9iQ==
-X-Google-Smtp-Source: ABdhPJy5myAb5fqj4bnCfcgkTFURiD2z7LFGeZlFl3dLh4JqOCbjKAEjQx0QB9WUjBvY6m/QWrutDjviJulyK20Kdmk=
-X-Received: by 2002:ab0:2008:0:b0:352:2b3a:6bce with SMTP id
- v8-20020ab02008000000b003522b3a6bcemr7833585uak.19.1651006671757; Tue, 26 Apr
- 2022 13:57:51 -0700 (PDT)
+        Tue, 26 Apr 2022 17:03:21 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D1B5BC11;
+        Tue, 26 Apr 2022 14:00:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A794DCE2193;
+        Tue, 26 Apr 2022 21:00:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C432DC385A0;
+        Tue, 26 Apr 2022 21:00:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651006808;
+        bh=QxPQiDVyvyboQhb7hQg8egZCDBIE9qPfnk2lOel1mkA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hHfywpbDKaiIA+fVMnwKtNcMVk1eg8P8ocioCAYf46wZZ6qFH46Nr4JMwaMpjxbhI
+         59zSmCUibSb6RUX46rByC1vS5y147UwUI9gtevvehdbPKze2VpZJTnpu1yEunlWzr8
+         uMJlquUantp3QdT6iaRubNfhDNaOJgpkdI2DvYEI9B762H8XmbZZPU+kBkiR6Gcg44
+         7h/CRMLmpP1EUIzXExSw0A7OB0mggP/e5NMvEp7yGkVIFXtjXX+V5p/B6NLSVam9sk
+         gXPzTX+EZ3x3ooShAyIzTqU8Koo5mSbB9su7vgkZL4aT1iWdp5N6k4hmkw0TvI77Np
+         iyPC0Regq0J2A==
+Date:   Tue, 26 Apr 2022 15:00:04 -0600
+From:   Keith Busch <kbusch@kernel.org>
+To:     Sven Peter <sven@svenpeter.dev>
+Cc:     Jens Axboe <axboe@fb.com>, Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Hector Martin <marcan@marcan.st>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <maz@kernel.org>,
+        Janne Grunau <j@jannau.net>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-nvme@lists.infradead.org
+Subject: Re: [PATCH v3 6/6] nvme-apple: Add initial Apple SoC NVMe driver
+Message-ID: <YmhdVJgd6DGRHPXd@kbusch-mbp.dhcp.thefacebook.com>
+References: <20220426201539.12829-1-sven@svenpeter.dev>
+ <20220426201539.12829-7-sven@svenpeter.dev>
 MIME-Version: 1.0
-References: <20220407031525.2368067-1-yuzhao@google.com> <20220407031525.2368067-11-yuzhao@google.com>
- <20220411191627.629f21de83cd0a520ef4a142@linux-foundation.org>
-In-Reply-To: <20220411191627.629f21de83cd0a520ef4a142@linux-foundation.org>
-From:   Yu Zhao <yuzhao@google.com>
-Date:   Tue, 26 Apr 2022 14:57:15 -0600
-Message-ID: <CAOUHufbtFj0Hez7wkw3DHGDwo6wudCzCvACt2GfgrFcubW_DYg@mail.gmail.com>
-Subject: Re: [PATCH v10 10/14] mm: multi-gen LRU: kill switch
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Tejun Heo <tj@kernel.org>
-Cc:     Stephen Rothwell <sfr@rothwell.id.au>,
-        Linux-MM <linux-mm@kvack.org>, Andi Kleen <ak@linux.intel.com>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Barry Song <21cnbao@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Ying Huang <ying.huang@intel.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Kernel Page Reclaim v2 <page-reclaim@google.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Brian Geffon <bgeffon@google.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        Donald Carr <d@chaos-reins.com>,
-        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220426201539.12829-7-sven@svenpeter.dev>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 8:16 PM Andrew Morton <akpm@linux-foundation.org> wrote:
->
-> On Wed,  6 Apr 2022 21:15:22 -0600 Yu Zhao <yuzhao@google.com> wrote:
->
-> > Add /sys/kernel/mm/lru_gen/enabled as a kill switch. Components that
-> > can be disabled include:
-> >   0x0001: the multi-gen LRU core
-> >   0x0002: walking page table, when arch_has_hw_pte_young() returns
-> >           true
-> >   0x0004: clearing the accessed bit in non-leaf PMD entries, when
-> >           CONFIG_ARCH_HAS_NONLEAF_PMD_YOUNG=y
-> >   [yYnN]: apply to all the components above
-> > E.g.,
-> >   echo y >/sys/kernel/mm/lru_gen/enabled
-> >   cat /sys/kernel/mm/lru_gen/enabled
-> >   0x0007
-> >   echo 5 >/sys/kernel/mm/lru_gen/enabled
-> >   cat /sys/kernel/mm/lru_gen/enabled
-> >   0x0005
->
-> I'm shocked that this actually works.  How does it work?  Existing
-> pages & folios are drained over time or synchrnously?
+On Tue, Apr 26, 2022 at 10:15:39PM +0200, Sven Peter wrote:
+> +static enum blk_eh_timer_return apple_nvme_timeout(struct request *req,
+> +						   bool reserved)
+> +{
+> +	struct apple_nvme_iod *iod = blk_mq_rq_to_pdu(req);
+> +	struct apple_nvme_queue *q = iod->q;
+> +	struct apple_nvme *anv = queue_to_apple_nvme(q);
+> +	unsigned long flags;
+> +	u32 csts = readl(anv->mmio_nvme + NVME_REG_CSTS);
+> +
+> +	if (anv->ctrl.state != NVME_CTRL_LIVE) {
+> +		/*
+> +		 * From rdma.c:
+> +		 * If we are resetting, connecting or deleting we should
+> +		 * complete immediately because we may block controller
+> +		 * teardown or setup sequence
+> +		 * - ctrl disable/shutdown fabrics requests
+> +		 * - connect requests
+> +		 * - initialization admin requests
+> +		 * - I/O requests that entered after unquiescing and
+> +		 *   the controller stopped responding
+> +		 *
+> +		 * All other requests should be cancelled by the error
+> +		 * recovery work, so it's fine that we fail it here.
+> +		 */
+> +		dev_warn(anv->dev,
+> +			 "I/O %d(aq:%d) timeout while not in live state\n",
+> +			 req->tag, q->is_adminq);
+> +		if (blk_mq_request_started(req) &&
+> +		    !blk_mq_request_completed(req)) {
+> +			nvme_req(req)->status = NVME_SC_HOST_ABORTED_CMD;
+> +			blk_mq_complete_request(req);
 
-Basically we have a double-throw way, and once flipped, new (isolated)
-pages can only be added to the lists of the current implementation.
-Existing pages on the lists of the previous implementation are
-synchronously drained (isolated and then re-added), with
-cond_resched() of course.
+I think you need a 'nvme_req(req)->flags |= NVME_REQ_CANCELLED' here to get the
+expected -EINTR for any admin command timeouts during a reset. Without it, the
+resetting task is going to think it got a real response from the controller.
 
-> Supporting
-> structures remain allocated, available for reenablement?
-
-Correct.
-
-> Why is it thought necessary to have this?  Is it expected to be
-> permanent?
-
-This is almost a must for large scale deployments/experiments.
-
-For deployments, we need to keep fix rollout (high priority) and
-feature enabling (low priority) separate. Rolling out multiple
-binaries works but will make the process slower and more painful. So
-generally for each release, there is only one binary to roll out, and
-unless it's impossible, new features are disabled by default. Once a
-rollout completes, i.e., reaches enough population and remains stable,
-new features are turned on gradually. If something goes wrong with a
-new feature, we turn off that feature rather than roll back the
-kernel.
-
-Similarly, for A/B experiments, we don't want to use two binaries.
-
-
-> > NB: the page table walks happen on the scale of seconds under heavy
-> > memory pressure, in which case the mmap_lock contention is a lesser
-> > concern, compared with the LRU lock contention and the I/O congestion.
-> > So far the only well-known case of the mmap_lock contention happens on
-> > Android, due to Scudo [1] which allocates several thousand VMAs for
-> > merely a few hundred MBs. The SPF and the Maple Tree also have
-> > provided their own assessments [2][3]. However, if walking page tables
-> > does worsen the mmap_lock contention, the kill switch can be used to
-> > disable it. In this case the multi-gen LRU will suffer a minor
-> > performance degradation, as shown previously.
-> >
-> > Clearing the accessed bit in non-leaf PMD entries can also be
-> > disabled, since this behavior was not tested on x86 varieties other
-> > than Intel and AMD.
-> >
-> > ...
-> >
-> > --- a/include/linux/cgroup.h
-> > +++ b/include/linux/cgroup.h
-> > @@ -432,6 +432,18 @@ static inline void cgroup_put(struct cgroup *cgrp)
-> >       css_put(&cgrp->self);
-> >  }
-> >
-> > +extern struct mutex cgroup_mutex;
-> > +
-> > +static inline void cgroup_lock(void)
-> > +{
-> > +     mutex_lock(&cgroup_mutex);
-> > +}
-> > +
-> > +static inline void cgroup_unlock(void)
-> > +{
-> > +     mutex_unlock(&cgroup_mutex);
-> > +}
->
-> It's a tad rude to export mutex_lock like this without (apparently)
-> informing its owner (Tejun).
-
-Looping in Tejun.
-
-> And if we're going to wrap its operations via helper fuctions then
->
-> - presumably all cgroup_mutex operations should be wrapped and
->
-> - exiting open-coded operations on this mutex should be converted.
-
-I wrapped cgroup_mutex here because I'm not a big fan of #ifdefs
-(CONFIG_CGROUPs). Internally for cgroup code, it seems superfluous to
-me to use these wrappers, e.g., for developers who work on cgroup
-code, they might not be interested in looking up these wrappers.
-
-> > +static bool drain_evictable(struct lruvec *lruvec)
-> > +{
-> > +     int gen, type, zone;
-> > +     int remaining = MAX_LRU_BATCH;
-> > +
-> > +     for_each_gen_type_zone(gen, type, zone) {
-> > +             struct list_head *head = &lruvec->lrugen.lists[gen][type][zone];
-> > +
-> > +             while (!list_empty(head)) {
-> > +                     bool success;
-> > +                     struct folio *folio = lru_to_folio(head);
-> > +
-> > +                     VM_BUG_ON_FOLIO(folio_test_unevictable(folio), folio);
-> > +                     VM_BUG_ON_FOLIO(folio_test_active(folio), folio);
-> > +                     VM_BUG_ON_FOLIO(folio_is_file_lru(folio) != type, folio);
-> > +                     VM_BUG_ON_FOLIO(folio_zonenum(folio) != zone, folio);
->
-> So many new BUG_ONs to upset Linus :(
-
-I'll replace them with VM_WARN_ON_ONCE_FOLIO(), based on the previous
-discussion.
-
-> > +                     success = lru_gen_del_folio(lruvec, folio, false);
-> > +                     VM_BUG_ON(!success);
-> > +                     lruvec_add_folio(lruvec, folio);
-> > +
-> > +                     if (!--remaining)
-> > +                             return false;
-> > +             }
-> > +     }
-> > +
-> > +     return true;
-> > +}
-> > +
-> >
-> > ...
-> >
-> > +static ssize_t store_enable(struct kobject *kobj, struct kobj_attribute *attr,
-> > +                         const char *buf, size_t len)
-> > +{
-> > +     int i;
-> > +     unsigned int caps;
-> > +
-> > +     if (tolower(*buf) == 'n')
-> > +             caps = 0;
-> > +     else if (tolower(*buf) == 'y')
-> > +             caps = -1;
-> > +     else if (kstrtouint(buf, 0, &caps))
-> > +             return -EINVAL;
->
-> See kstrtobool()
-
-`caps` is not a boolean, hence the plural and the below.
-
-> > +     for (i = 0; i < NR_LRU_GEN_CAPS; i++) {
-> > +             bool enable = caps & BIT(i);
-> > +
-> > +             if (i == LRU_GEN_CORE)
-> > +                     lru_gen_change_state(enable);
-> > +             else if (enable)
-> > +                     static_branch_enable(&lru_gen_caps[i]);
-> > +             else
-> > +                     static_branch_disable(&lru_gen_caps[i]);
-> > +     }
-> > +
-> > +     return len;
-> > +}
+Other than that, this looks good.
