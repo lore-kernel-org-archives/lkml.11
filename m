@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 138ABC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:33:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 877CFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:34:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347833AbiDZJhC (ORCPT
+        id S1347866AbiDZJhH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:37:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38490 "EHLO
+        Tue, 26 Apr 2022 05:37:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347930AbiDZJGX (ORCPT
+        with ESMTP id S1347922AbiDZJGX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 05:06:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB73CB89AB;
-        Tue, 26 Apr 2022 01:47:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80ED1B7C62;
+        Tue, 26 Apr 2022 01:47:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8670760C42;
-        Tue, 26 Apr 2022 08:47:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78BB8C385A0;
-        Tue, 26 Apr 2022 08:47:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 11D4860C42;
+        Tue, 26 Apr 2022 08:47:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D299C385A4;
+        Tue, 26 Apr 2022 08:47:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962848;
-        bh=2VVE/+sLnLWpQLloAt4kJUL1Cb8HZ2aTkZ01T7yi/a8=;
+        s=korg; t=1650962839;
+        bh=eU63M2Csqic/VCKHXYjcooxY2JHvdkP4DRhbEDkReXA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1zmKE7g9FgFOI9Q85TvcExMZuWjUgG0M2j5hDxt6Ss1GTbTeKGCac6SmlNg1mKNCa
-         ptZWrdHiFBAMAbwzXmZVNFjAGXjAhBbi7KJXvSAOr1qpW/oaI1/Cbl4swlE4hRG6E7
-         XaGEx/0XnhQ4t7xq4rAhdfOWbkKaIbise6Y6qtjQ=
+        b=oni03q3bRQ7nKMcCOJU6YZkBYJM4FwrQEsMmHFRYk+dP2BFEWpX16Lmq63Jwuosw0
+         Ao4SesoHEYQ/P+pB8UhmltuNFY1F9X8m2YG/LNqHhDmTZovA9VuNnW2cazUDtZfvJg
+         X6iCaw/XKb+8TgSDZsRSfZMKjbKmxNzIKqlxJWgs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
-        Madhavan Srinivasan <maddy@linux.vnet.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 110/146] powerpc/perf: Fix power10 event alternatives
-Date:   Tue, 26 Apr 2022 10:21:45 +0200
-Message-Id: <20220426081753.148393358@linuxfoundation.org>
+        syzbot+96b43810dfe9c3bb95ed@syzkaller.appspotmail.com,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 099/146] io_uring: free iovec if file assignment fails
+Date:   Tue, 26 Apr 2022 10:21:34 +0200
+Message-Id: <20220426081752.842825330@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -52,96 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+From: Jens Axboe <axboe@kernel.dk>
 
-[ Upstream commit c6cc9a852f123301d5271f1484df8e961b2b64f1 ]
+[ Upstream commit 323b190ba2debbcc03c01d2edaf1ec6b43e6ae43 ]
 
-When scheduling a group of events, there are constraint checks done to
-make sure all events can go in a group. Example, one of the criteria is
-that events in a group cannot use the same PMC. But platform specific
-PMU supports alternative event for some of the event codes. During
-perf_event_open(), if any event group doesn't match constraint check
-criteria, further lookup is done to find alternative event.
+We just return failure in this case, but we need to release the iovec
+first. If we're doing IO with more than FAST_IOV segments, then the
+iovec is allocated and must be freed.
 
-By current design, the array of alternatives events in PMU code is
-expected to be sorted by column 0. This is because in
-find_alternative() the return criteria is based on event code
-comparison. ie. "event < ev_alt[i][0])". This optimisation is there
-since find_alternative() can be called multiple times. In power10 PMU
-code, the alternative event array is not sorted properly and hence there
-is breakage in finding alternative event.
-
-To work with existing logic, fix the alternative event array to be
-sorted by column 0 for power10-pmu.c
-
-Results:
-
-In case where an alternative event is not chosen when we could, events
-will be multiplexed. ie, time sliced where it could actually run
-concurrently.
-
-Example, in power10 PM_INST_CMPL_ALT(0x00002) has alternative event,
-PM_INST_CMPL(0x500fa). Without the fix, if a group of events with PMC1
-to PMC4 is used along with PM_INST_CMPL_ALT, it will be time sliced
-since all programmable PMC's are consumed already. But with the fix,
-when it picks alternative event on PMC5, all events will run
-concurrently.
-
-Before:
-
- # perf stat -e r00002,r100fc,r200fa,r300fc,r400fc
-
- Performance counter stats for 'system wide':
-
-         328668935      r00002               (79.94%)
-          56501024      r100fc               (79.95%)
-          49564238      r200fa               (79.95%)
-               376      r300fc               (80.19%)
-               660      r400fc               (79.97%)
-
-       4.039150522 seconds time elapsed
-
-With the fix, since alternative event is chosen to run on PMC6, events
-will be run concurrently.
-
-After:
-
- # perf stat -e r00002,r100fc,r200fa,r300fc,r400fc
-
- Performance counter stats for 'system wide':
-
-          23596607      r00002
-           4907738      r100fc
-           2283608      r200fa
-               135      r300fc
-               248      r400fc
-
-       1.664671390 seconds time elapsed
-
-Fixes: a64e697cef23 ("powerpc/perf: power10 Performance Monitoring support")
-Signed-off-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
-Reviewed-by: Madhavan Srinivasan <maddy@linux.vnet.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220419114828.89843-2-atrajeev@linux.vnet.ibm.com
+Reported-by: syzbot+96b43810dfe9c3bb95ed@syzkaller.appspotmail.com
+Fixes: 584b0180f0f4 ("io_uring: move read/write file prep state into actual opcode handler")
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/perf/power10-pmu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/io_uring.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/perf/power10-pmu.c b/arch/powerpc/perf/power10-pmu.c
-index 0975ad0b42c4..69b4565d1a8f 100644
---- a/arch/powerpc/perf/power10-pmu.c
-+++ b/arch/powerpc/perf/power10-pmu.c
-@@ -91,8 +91,8 @@ extern u64 PERF_REG_EXTENDED_MASK;
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 619c67fd456d..9349d7e0754f 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -3622,8 +3622,10 @@ static int io_read(struct io_kiocb *req, unsigned int issue_flags)
+ 		iovec = NULL;
+ 	}
+ 	ret = io_rw_init_file(req, FMODE_READ);
+-	if (unlikely(ret))
++	if (unlikely(ret)) {
++		kfree(iovec);
+ 		return ret;
++	}
+ 	req->result = iov_iter_count(&s->iter);
  
- /* Table of alternatives, sorted by column 0 */
- static const unsigned int power10_event_alternatives[][MAX_ALT] = {
--	{ PM_CYC_ALT,			PM_CYC },
- 	{ PM_INST_CMPL_ALT,		PM_INST_CMPL },
-+	{ PM_CYC_ALT,			PM_CYC },
- };
+ 	if (force_nonblock) {
+@@ -3742,8 +3744,10 @@ static int io_write(struct io_kiocb *req, unsigned int issue_flags)
+ 		iovec = NULL;
+ 	}
+ 	ret = io_rw_init_file(req, FMODE_WRITE);
+-	if (unlikely(ret))
++	if (unlikely(ret)) {
++		kfree(iovec);
+ 		return ret;
++	}
+ 	req->result = iov_iter_count(&s->iter);
  
- static int power10_get_alternatives(u64 event, unsigned int flags, u64 alt[])
+ 	if (force_nonblock) {
 -- 
 2.35.1
 
