@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61A73C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 879A6C43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 07:52:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344326AbiDZHzN (ORCPT
+        id S1344481AbiDZHzk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 03:55:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56972 "EHLO
+        Tue, 26 Apr 2022 03:55:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343867AbiDZHzJ (ORCPT
+        with ESMTP id S1344022AbiDZHzM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 03:55:09 -0400
+        Tue, 26 Apr 2022 03:55:12 -0400
 Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7920EBCA9
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 00:52:02 -0700 (PDT)
-Received: from kwepemi500026.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KnYxJ0lFDzhYnh;
-        Tue, 26 Apr 2022 15:51:48 +0800 (CST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70F5E6479
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 00:52:06 -0700 (PDT)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KnYxN1LKWzhYrQ;
+        Tue, 26 Apr 2022 15:51:52 +0800 (CST)
 Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- kwepemi500026.china.huawei.com (7.221.188.247) with Microsoft SMTP Server
+ kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Apr 2022 15:52:00 +0800
+ 15.1.2375.24; Tue, 26 Apr 2022 15:52:04 +0800
 Received: from localhost.localdomain (10.175.112.125) by
  kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Apr 2022 15:51:58 +0800
+ 15.1.2375.24; Tue, 26 Apr 2022 15:52:03 +0800
 From:   Tong Tiangen <tongtiangen@huawei.com>
 To:     Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
@@ -46,9 +46,9 @@ CC:     <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
         Tong Tiangen <tongtiangen@huawei.com>,
         Kefeng Wang <wangkefeng.wang@huawei.com>,
         Guohanjun <guohanjun@huawei.com>
-Subject: [PATCH -next v6 1/6] mm: page_table_check: using PxD_SIZE instead of PxD_PAGE_SIZE
-Date:   Tue, 26 Apr 2022 08:10:31 +0000
-Message-ID: <20220426081036.1374452-2-tongtiangen@huawei.com>
+Subject: [PATCH -next v6 4/6] mm: remove __HAVE_ARCH_PTEP_CLEAR in pgtable.h
+Date:   Tue, 26 Apr 2022 08:10:34 +0000
+Message-ID: <20220426081036.1374452-5-tongtiangen@huawei.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220426081036.1374452-1-tongtiangen@huawei.com>
 References: <20220426081036.1374452-1-tongtiangen@huawei.com>
@@ -63,60 +63,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Compared with PxD_PAGE_SIZE, which is defined and used only on X86,
-PxD_SIZE is more common in each architecture. Therefore, it is more
-reasonable to use PxD_SIZE instead of PxD_PAGE_SIZE in page_table_check.c.
-At the same time, it is easier to support page table check in other
-architectures. The substitution has no functional impact on the x86.
+Currently, there is no architecture definition __HAVE_ARCH_PTEP_CLEAR,
+Generic ptep_clear() is the only definition for all architecture, So
+drop the "#ifndef __HAVE_ARCH_PTEP_CLEAR".
 
 Suggested-by: Anshuman Khandual <anshuman.khandual@arm.com>
 Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
-Acked-by: Pasha Tatashin <pasha.tatashin@soleen.com>
-Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
 ---
- mm/page_table_check.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ include/linux/pgtable.h | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/mm/page_table_check.c b/mm/page_table_check.c
-index 2458281bff89..eb0d0b71cdf6 100644
---- a/mm/page_table_check.c
-+++ b/mm/page_table_check.c
-@@ -177,7 +177,7 @@ void __page_table_check_pmd_clear(struct mm_struct *mm, unsigned long addr,
+diff --git a/include/linux/pgtable.h b/include/linux/pgtable.h
+index 3c825162c8da..b7a785e787b5 100644
+--- a/include/linux/pgtable.h
++++ b/include/linux/pgtable.h
+@@ -272,13 +272,11 @@ static inline pte_t ptep_get_and_clear(struct mm_struct *mm,
+ }
+ #endif
  
- 	if (pmd_user_accessible_page(pmd)) {
- 		page_table_check_clear(mm, addr, pmd_pfn(pmd),
--				       PMD_PAGE_SIZE >> PAGE_SHIFT);
-+				       PMD_SIZE >> PAGE_SHIFT);
- 	}
+-#ifndef __HAVE_ARCH_PTEP_CLEAR
+ static inline void ptep_clear(struct mm_struct *mm, unsigned long addr,
+ 			      pte_t *ptep)
+ {
+ 	ptep_get_and_clear(mm, addr, ptep);
  }
- EXPORT_SYMBOL(__page_table_check_pmd_clear);
-@@ -190,7 +190,7 @@ void __page_table_check_pud_clear(struct mm_struct *mm, unsigned long addr,
+-#endif
  
- 	if (pud_user_accessible_page(pud)) {
- 		page_table_check_clear(mm, addr, pud_pfn(pud),
--				       PUD_PAGE_SIZE >> PAGE_SHIFT);
-+				       PUD_SIZE >> PAGE_SHIFT);
- 	}
- }
- EXPORT_SYMBOL(__page_table_check_pud_clear);
-@@ -219,7 +219,7 @@ void __page_table_check_pmd_set(struct mm_struct *mm, unsigned long addr,
- 	__page_table_check_pmd_clear(mm, addr, *pmdp);
- 	if (pmd_user_accessible_page(pmd)) {
- 		page_table_check_set(mm, addr, pmd_pfn(pmd),
--				     PMD_PAGE_SIZE >> PAGE_SHIFT,
-+				     PMD_SIZE >> PAGE_SHIFT,
- 				     pmd_write(pmd));
- 	}
- }
-@@ -234,7 +234,7 @@ void __page_table_check_pud_set(struct mm_struct *mm, unsigned long addr,
- 	__page_table_check_pud_clear(mm, addr, *pudp);
- 	if (pud_user_accessible_page(pud)) {
- 		page_table_check_set(mm, addr, pud_pfn(pud),
--				     PUD_PAGE_SIZE >> PAGE_SHIFT,
-+				     PUD_SIZE >> PAGE_SHIFT,
- 				     pud_write(pud));
- 	}
- }
+ #ifndef __HAVE_ARCH_PTEP_GET
+ static inline pte_t ptep_get(pte_t *ptep)
 -- 
 2.25.1
 
