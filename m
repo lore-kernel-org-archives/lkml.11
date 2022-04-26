@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4880AC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:37:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0117DC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:37:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345283AbiDZIkP (ORCPT
+        id S1345348AbiDZIkR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:40:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60526 "EHLO
+        Tue, 26 Apr 2022 04:40:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345058AbiDZIfP (ORCPT
+        with ESMTP id S1345019AbiDZIfO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:35:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 856038020E;
-        Tue, 26 Apr 2022 01:28:34 -0700 (PDT)
+        Tue, 26 Apr 2022 04:35:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8857E3A5FE;
+        Tue, 26 Apr 2022 01:28:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EDE1261861;
-        Tue, 26 Apr 2022 08:28:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01186C385A0;
-        Tue, 26 Apr 2022 08:28:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 22892617EB;
+        Tue, 26 Apr 2022 08:28:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 246EFC385A0;
+        Tue, 26 Apr 2022 08:28:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961713;
-        bh=5T3eTfQO08G5FmqikWHLKnbCUxqKl/QAJjfaLnqdXfE=;
+        s=korg; t=1650961710;
+        bh=rvD413YDWinJu95LA5qjGrVuTs33M0xttuur9tqA9ks=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BhvQttUe6asurancf6SEYYBUdDZ0FnL3kHrDjIyDzPFNgSCAgGQK+y1t5Iw9f2bDk
-         +9d6Dkn4NlUAJPDt49nTrO6X4Kz4Lcks7/ABEDwq9thIAhT9b7CTMoScMhvG0jq//7
-         4VydgbvX/OGKS2NILgIuPaUBWyJ8ivR4gB6vuUz8=
+        b=bV/9MPN5aM7RNab9ZB6J14i7ZzL/vhQN8P+5U5PVyNeeFmPXZAznoyWiG0XETbi49
+         MaySrbwEWqiUtzK8QYWoj6aBkXbXpLT2dbme/RSd92vwKtUnILrdq9DQMPjyoVneRX
+         CmQNXQzjA79GcHEarG77rrcUru+ZynPZooAD8RCA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        James Hutchinson <jahutchinson99@googlemail.com>,
-        Dima Ruinskiy <dima.ruinskiy@intel.com>,
-        Sasha Neftin <sasha.neftin@intel.com>,
-        Naama Meir <naamax.meir@linux.intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 4.19 36/53] e1000e: Fix possible overflow in LTR decoding
-Date:   Tue, 26 Apr 2022 10:21:16 +0200
-Message-Id: <20220426081736.706339573@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 4.19 35/53] ASoC: soc-dapm: fix two incorrect uses of list iterator
+Date:   Tue, 26 Apr 2022 10:21:15 +0200
+Message-Id: <20220426081736.677475672@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081735.651926456@linuxfoundation.org>
 References: <20220426081735.651926456@linuxfoundation.org>
@@ -53,52 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit 04ebaa1cfddae5f240cc7404f009133bb0389a47 upstream.
+commit f730a46b931d894816af34a0ff8e4ad51565b39f upstream.
 
-When we decode the latency and the max_latency, u16 value may not fit
-the required size and could lead to the wrong LTR representation.
+These two bug are here:
+	list_for_each_entry_safe_continue(w, n, list,
+					power_list);
+	list_for_each_entry_safe_continue(w, n, list,
+					power_list);
 
-Scaling is represented as:
-scale 0 - 1         (2^(5*0)) = 2^0
-scale 1 - 32        (2^(5 *1))= 2^5
-scale 2 - 1024      (2^(5 *2)) =2^10
-scale 3 - 32768     (2^(5 *3)) =2^15
-scale 4 - 1048576   (2^(5 *4)) = 2^20
-scale 5 - 33554432  (2^(5 *4)) = 2^25
-scale 4 and scale 5 required 20 and 25 bits respectively.
-scale 6 reserved.
+After the list_for_each_entry_safe_continue() exits, the list iterator
+will always be a bogus pointer which point to an invalid struct objdect
+containing HEAD member. The funciton poniter 'w->event' will be a
+invalid value which can lead to a control-flow hijack if the 'w' can be
+controlled.
 
-Replace the u16 type with the u32 type and allow corrected LTR
-representation.
+The original intention was to continue the outer list_for_each_entry_safe()
+loop with the same entry if w->event is NULL, but misunderstanding the
+meaning of list_for_each_entry_safe_continue().
+
+So just add a 'continue;' to fix the bug.
 
 Cc: stable@vger.kernel.org
-Fixes: 44a13a5d99c7 ("e1000e: Fix the max snoop/no-snoop latency for 10M")
-Reported-by: James Hutchinson <jahutchinson99@googlemail.com>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215689
-Suggested-by: Dima Ruinskiy <dima.ruinskiy@intel.com>
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Naama Meir <naamax.meir@linux.intel.com>
-Tested-by: James Hutchinson <jahutchinson99@googlemail.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: 163cac061c973 ("ASoC: Factor out DAPM sequence execution")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Link: https://lore.kernel.org/r/20220329012134.9375-1-xiam0nd.tong@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/e1000e/ich8lan.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/soc/soc-dapm.c |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
---- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
-+++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-@@ -995,8 +995,8 @@ static s32 e1000_platform_pm_pch_lpt(str
- {
- 	u32 reg = link << (E1000_LTRV_REQ_SHIFT + E1000_LTRV_NOSNOOP_SHIFT) |
- 	    link << E1000_LTRV_REQ_SHIFT | E1000_LTRV_SEND;
--	u16 max_ltr_enc_d = 0;	/* maximum LTR decoded by platform */
--	u16 lat_enc_d = 0;	/* latency decoded */
-+	u32 max_ltr_enc_d = 0;	/* maximum LTR decoded by platform */
-+	u32 lat_enc_d = 0;	/* latency decoded */
- 	u16 lat_enc = 0;	/* latency encoded */
+--- a/sound/soc/soc-dapm.c
++++ b/sound/soc/soc-dapm.c
+@@ -1635,8 +1635,7 @@ static void dapm_seq_run(struct snd_soc_
+ 		switch (w->id) {
+ 		case snd_soc_dapm_pre:
+ 			if (!w->event)
+-				list_for_each_entry_safe_continue(w, n, list,
+-								  power_list);
++				continue;
  
- 	if (link) {
+ 			if (event == SND_SOC_DAPM_STREAM_START)
+ 				ret = w->event(w,
+@@ -1648,8 +1647,7 @@ static void dapm_seq_run(struct snd_soc_
+ 
+ 		case snd_soc_dapm_post:
+ 			if (!w->event)
+-				list_for_each_entry_safe_continue(w, n, list,
+-								  power_list);
++				continue;
+ 
+ 			if (event == SND_SOC_DAPM_STREAM_START)
+ 				ret = w->event(w,
 
 
