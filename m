@@ -2,180 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1991C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:29:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F413C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:31:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238080AbiDZTcR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 15:32:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59844 "EHLO
+        id S1354210AbiDZTfA (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 15:35:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346703AbiDZTcG (ORCPT
+        with ESMTP id S1354270AbiDZTen (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 15:32:06 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E65FAC04F
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 12:28:42 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id q20so11864733wmq.1
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 12:28:42 -0700 (PDT)
+        Tue, 26 Apr 2022 15:34:43 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80F7DEDB52
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 12:30:44 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id l18so11472278ejc.7
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 12:30:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iQFCk4jvRcDNbkwKt80r8M9Ev1zqOHCdGqGh5NtELGk=;
-        b=kXX2A5pPeYzQ7cMHjUay8+MRco1JY+qcFRaRS08NAVmtfBRdvFVDmNjStpeUWkd6Zl
-         vQU5f0FWDf6xsz3RbldyIy9/g5QXdZSQZuDeQifodlFGCf1YGsKpdQYyR2g9y7Y6oB7V
-         /fsu0vO21DVFRug79wN6ff9wbCwuMNbpj0fPxn9wyJ+3cQTLW9PimSQ9f6xgnaxtH2fO
-         AlrXyAXCzlK49e6n1Ju/HDLsl9jTbgxFH3GdBJYGeSidfswDSkOpdP8/KDLnQJLtqZUp
-         IpGuwUWRrQLmAANIliRHGcWrJVnvTEjLAdmNwn2651HlpB30PBm/qWLfwGYSI3Qrg/mB
-         i7nw==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ank2mYd3nSanKxmSKtm5nAH75fQy/ZfiLRmnMjWOP70=;
+        b=hljtTzJZV5Vpzx7ZO/4Vrk6T9shB81K8wF8W8pjg9AeZnKBiAosysk/4y7WsUSm7jL
+         NhuUJP/F5a40XCHB0ORRdbWVXxqgyjYecHAIbRUs0jCCijSxny6QSWOq1nmneLfK9ryT
+         CYhnjcQHYMNTyk8is9BShruZMqmowZ4HIExB6MJpj7HUARret27yD62Yoz51eqjnZvYv
+         5+xIJDzT0QLc9ANImAuavrFXO/MIrTz/1kKXuD0vnJVWLqLk5dR+oih+rc/9MUTEXpvs
+         D+WBExvgsYwQjxIeya5YU3GQ1ZPgie/W4N6GysfgPmWi96RLsxVoBFKQUNUWSFzQokyE
+         +t4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iQFCk4jvRcDNbkwKt80r8M9Ev1zqOHCdGqGh5NtELGk=;
-        b=WvljTzucjF0uhGH2Np1aZkTR4AGgHmRV6ti0rrXkyHDI1xfIoaGsquqlMYdPXEyyy+
-         m5+BpfTBqFvfi5pMJ2Q8lAolqVr8ahsVbrZhZG+/YgotDJw71S+WzZd74H5OQvFowTwS
-         xuX4w5CoUvXvtWZ8e/8+ZxCr84G4uGEAsrbzK+o3p/zeo3Db4qvbsMYpKuE3Qa2aOfWQ
-         VBWR5ZDd9nMsQupPYhp5DPy+L9SJn2NPd2xUHZoFTOyhoTh2QwITw5hzCttNyKdb6NTL
-         PjO4MkrPtqLmt1zLXvIKPQtd63NbUuJuH12UThVbno+NBmZ+NhbDjM/V/FGxVQsWUvUh
-         +kpw==
-X-Gm-Message-State: AOAM531t0GhjCWcsAqKPokIU/3iua1sYjj3P1qDudVAlLpg5IwyfLNyi
-        Ua9bAQrafXlYDEr6D0Rq+ZD0DXS986sI53NeWebW+Q==
-X-Google-Smtp-Source: ABdhPJxE4uF7k63kUhII0yfWNs5hqWLsW6+10S6JtH7VxMkI6vG6IvE9QqtG19aVEP77InoCW4FL0NJd1Gr2ps0f3PU=
-X-Received: by 2002:a05:600c:1c90:b0:393:e5b9:b567 with SMTP id
- k16-20020a05600c1c9000b00393e5b9b567mr16137822wms.27.1651001314470; Tue, 26
- Apr 2022 12:28:34 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220426053904.3684293-1-yosryahmed@google.com>
- <20220426053904.3684293-5-yosryahmed@google.com> <YmegoB/fBkfwaE5z@google.com>
-In-Reply-To: <YmegoB/fBkfwaE5z@google.com>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Tue, 26 Apr 2022 12:27:57 -0700
-Message-ID: <CAJD7tkY-WZKcyer=TbWF0dVfOhvZO7hqPN=AYCDZe1f+2HA-QQ@mail.gmail.com>
-Subject: Re: [PATCH v3 4/6] KVM: arm64/mmu: count KVM page table pages in
- pagetable stats
-To:     Oliver Upton <oupton@google.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Aleksandar Markovic <aleksandar.qemu.devel@gmail.com>,
-        Anup Patel <anup@brainfault.org>,
-        Atish Patra <atishp@atishpatra.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>,
-        James Morse <james.morse@arm.com>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ank2mYd3nSanKxmSKtm5nAH75fQy/ZfiLRmnMjWOP70=;
+        b=t5y32su3wIc49ReluBWOfy7LjKR5lngxE+m8nwNA2jbZVmyqdtsybFYegxD5Ew33TA
+         HyCEJs1+eQ7d9z07JrbJYJIbBTr1EFoKHZaKeC3GcCQYf2+ks8sedkbrKKxfHQcbgXu0
+         X/UIwDxfpfMRJaDY1Gy1G7hS6jJr0gWGgPsRVJe+E6Yyn4AHFUYohRi+z9cHhCwnLysX
+         oKaEwY9OoPjAAcXCH7CvPaKHsuonHKHaNYZ/rYYTSV39Jx7D6P3p15wbqjYGJG4zmVaA
+         3uwM/oEykMKpkmLb0tuGGkKn4wc4kl+qU1UFalnHb6toraRp3OvzexfbaVvkY0FU1ARX
+         iC8w==
+X-Gm-Message-State: AOAM5308zZhbIRTflit1VVbqw3/Ta7dDjMMkNZ/DItiRdz0tBHaFcEm3
+        AfpHcV8YT2CRtRSBUZBnCys=
+X-Google-Smtp-Source: ABdhPJyGAKs/1fi8OP0JmZVoAeRo5gj73FlEUM++3oj7p/D5a1GiB7hWfafMbvunvxZ9VCI3cStydw==
+X-Received: by 2002:a17:907:2d24:b0:6f3:91fd:db8f with SMTP id gs36-20020a1709072d2400b006f391fddb8fmr11905250ejc.150.1651001424316;
+        Tue, 26 Apr 2022 12:30:24 -0700 (PDT)
+Received: from localhost.localdomain (host-79-50-86-254.retail.telecomitalia.it. [79.50.86.254])
+        by smtp.gmail.com with ESMTPSA id s2-20020a1709066c8200b006e4e1b1f875sm5406140ejr.199.2022.04.26.12.30.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 12:30:23 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Ira Weiny <ira.weiny@intel.com>,
         Catalin Marinas <catalin.marinas@arm.com>,
-        Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        linux-mips@vger.kernel.org, kvm@vger.kernel.org,
-        kvm-riscv@lists.infradead.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, Linux-MM <linux-mm@kvack.org>,
-        cgroups@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kvmarm@lists.cs.columbia.edu
-Content-Type: text/plain; charset="UTF-8"
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Peter Collingbourne <pcc@google.com>,
+        linux-kernel@vger.kernel.org
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Subject: [PATCH] mm/highmem: VM_BUG_ON() if offset + len > PAGE_SIZE
+Date:   Tue, 26 Apr 2022 21:30:20 +0200
+Message-Id: <20220426193020.8710-1-fmdefrancesco@gmail.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Oliver,
-Thanks so much for taking the time to take a look at this!
+Add VM_BUG_ON() bounds checking to make sure that, if "offset + len>
+PAGE_SIZE", memset() does not corrupt data in adjacent pages.
 
-On Tue, Apr 26, 2022 at 12:35 AM Oliver Upton <oupton@google.com> wrote:
->
-> Hi Yosry,
->
-> On Tue, Apr 26, 2022 at 05:39:02AM +0000, Yosry Ahmed wrote:
-> > Count the pages used by KVM in arm64 for page tables in pagetable stats.
-> >
-> > Account pages allocated for PTEs in pgtable init functions and
-> > kvm_set_table_pte().
-> >
-> > Since most page table pages are freed using put_page(), add a helper
-> > function put_pte_page() that checks if this is the last ref for a pte
-> > page before putting it, and unaccounts stats accordingly.
-> >
-> > Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
-> > ---
-> >  arch/arm64/kernel/image-vars.h |  3 ++
-> >  arch/arm64/kvm/hyp/pgtable.c   | 50 +++++++++++++++++++++-------------
-> >  2 files changed, 34 insertions(+), 19 deletions(-)
-> >
-> > diff --git a/arch/arm64/kernel/image-vars.h b/arch/arm64/kernel/image-vars.h
-> > index 241c86b67d01..25bf058714f6 100644
-> > --- a/arch/arm64/kernel/image-vars.h
-> > +++ b/arch/arm64/kernel/image-vars.h
-> > @@ -143,6 +143,9 @@ KVM_NVHE_ALIAS(__hyp_rodata_end);
-> >  /* pKVM static key */
-> >  KVM_NVHE_ALIAS(kvm_protected_mode_initialized);
-> >
-> > +/* Called by kvm_account_pgtable_pages() to update pagetable stats */
-> > +KVM_NVHE_ALIAS(__mod_lruvec_page_state);
-> > +
-> >  #endif /* CONFIG_KVM */
-> >
-> >  #endif /* __ARM64_KERNEL_IMAGE_VARS_H */
-> > diff --git a/arch/arm64/kvm/hyp/pgtable.c b/arch/arm64/kvm/hyp/pgtable.c
-> > index 2cb3867eb7c2..53e13c3313e9 100644
-> > --- a/arch/arm64/kvm/hyp/pgtable.c
-> > +++ b/arch/arm64/kvm/hyp/pgtable.c
-> > @@ -152,6 +152,7 @@ static void kvm_set_table_pte(kvm_pte_t *ptep, kvm_pte_t *childp,
-> >
-> >       WARN_ON(kvm_pte_valid(old));
-> >       smp_store_release(ptep, pte);
-> > +     kvm_account_pgtable_pages((void *)childp, +1);
->
-> What page tables do we want to account? KVM on ARM manages several page
-> tables.
->
-> For regular KVM, the host kernel manages allocations for the hyp stage 1
-> tables in addition to the stage 2 tables used for a particular VM. The
-> former is system overhead whereas the latter could be attributed to a
-> guest VM.
+Cc: Ira Weiny <ira.weiny@intel.com>
+Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+---
+ include/linux/highmem.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Honestly I would love to get your input on this. The main motivation
-here is to give users insights on the kernel memory usage on their
-system (or in a cgroup). We currently have NR_PAGETABLE stats for
-normal kernel page tables (allocated using
-__pte_alloc_one()/pte_free()), this shows up in /proc/meminfo,
-/path/to/cgroup/memory.stat, and node stats. The idea is to add
-NR_SECONDARY_PAGETABLE that should include the memory used for kvm
-pagetables, which should be a separate category (no overlap). What
-gets included or not depends on the semantics of KVM and what exactly
-falls under the category of secondary pagetables from the user's pov.
+diff --git a/include/linux/highmem.h b/include/linux/highmem.h
+index 6b2d59e025c5..d54dbaae9a5e 100644
+--- a/include/linux/highmem.h
++++ b/include/linux/highmem.h
+@@ -380,6 +380,8 @@ static inline void memcpy_to_page(struct page *page, size_t offset,
+ static inline void memzero_page(struct page *page, size_t offset, size_t len)
+ {
+ 	char *addr = kmap_local_page(page);
++
++	VM_BUG_ON(offset + len > PAGE_SIZE);
+ 	memset(addr + offset, 0, len);
+ 	flush_dcache_page(page);
+ 	kunmap_local(addr);
+-- 
+2.34.1
 
-Currently it looks like s2 page table allocations get accounted to
-kmem of memory control groups (GFP_KERNEL_ACCOUNT), while hyp page
-table allocations do not (GFP_KERNEL). So we could either follow this
-and only account s2 page table allocations in the stats, or make hyp
-allocations use GFP_KERNEL_ACCOUNT as well and add them to the stats.
-Let me know what you think.
-
->
-> I imagine protected KVM is out of scope, since it actually manages its
-> own allocations outside of the host kernel.
->
-> Given this, I would recommend adding the accounting hooks to mmu.c as
-> that is where we alloc/free table pages and it is in the host address
-> space. kvm_s2_mm_ops and kvm_hyp_mm_ops point to all the relevant
-> functions, though the latter is only relevant if we want to count system
-> page tables too.
-
-Yeah moving the accounting hooks to mmu.c is much cleaner, I will do
-this in the next version. The only reason I did not do this is that I
-found other kvm_pgtable_mm_ops structs (such as pkvm_pgtable_mm_ops),
-but it looks like these may be irrelevant here.
-
->
-> --
-> Thanks,
-> Oliver
