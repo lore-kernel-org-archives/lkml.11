@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C00CEC3527E
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:07:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6217CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:07:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347154AbiDZJKG (ORCPT
+        id S1347324AbiDZJKf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:10:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55538 "EHLO
+        Tue, 26 Apr 2022 05:10:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346503AbiDZIuH (ORCPT
+        with ESMTP id S1346751AbiDZIuU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:50:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59C68139771;
-        Tue, 26 Apr 2022 01:38:13 -0700 (PDT)
+        Tue, 26 Apr 2022 04:50:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DBD9156E19;
+        Tue, 26 Apr 2022 01:38:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3F249B81D18;
-        Tue, 26 Apr 2022 08:38:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88FD5C385A0;
-        Tue, 26 Apr 2022 08:38:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EE5460A29;
+        Tue, 26 Apr 2022 08:38:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A1D6C385A0;
+        Tue, 26 Apr 2022 08:38:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962291;
-        bh=BUttM4dMS6czkW5l9y8+dh5aeIjVbPYhm+0ip0mHMOg=;
+        s=korg; t=1650962330;
+        bh=E3YA0VDkKR9MVzQZUwZQbMCrslKr57iOaOn7doSJ9vs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eaG4ZsOFnn+EQgBT6elZSNtg/9aC4vv0tqM+XXMoiVkoLk3RyALsSVTH3v6Ash4Wm
-         AzLtKTNBtSLMOA6r14UAhpSU+PZ6mFjkPVX7Wjht1rUM0sfIH5YwCfXouA/GLt6W3+
-         gfRZ2letTKNXPaCkY1J4HTLJIGpQxzNa4dcRRUiM=
+        b=Rvvgv8eVzjyhHL/PssLzMXTlloXInxu7MSactj3fySNoKYcC9IS8LNevLzDq4FMX0
+         j+TgEwfseiCghqMnLhzbNp0jFMMQK+sQsw2q1dve4v/36YghvShd3pI+k4x0Rq7n9K
+         0RYfllRJSD8ZsIjdK+ZkfPm29w1Xdzevn/NDDeRo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bernice Zhang <bernice.zhang@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 048/124] dmaengine: idxd: add RO check for wq max_batch_size write
-Date:   Tue, 26 Apr 2022 10:20:49 +0200
-Message-Id: <20220426081748.667036725@linuxfoundation.org>
+        stable@vger.kernel.org, Hongbin Wang <wh_bin@126.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 060/124] vxlan: fix error return code in vxlan_fdb_append
+Date:   Tue, 26 Apr 2022 10:21:01 +0200
+Message-Id: <20220426081749.007506940@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -50,38 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Jiang <dave.jiang@intel.com>
+From: Hongbin Wang <wh_bin@126.com>
 
-[ Upstream commit 66903461ffed0b66fc3e0200082d4e09365aacdc ]
+[ Upstream commit 7cea5560bf656b84f9ed01c0cc829d4eecd0640b ]
 
-Block wq_max_batch_size_store() when the device is configured as read-only
-and not configurable.
+When kmalloc and dst_cache_init failed,
+should return ENOMEM rather than ENOBUFS.
 
-Fixes: e7184b159dd3 ("dmaengine: idxd: add support for configurable max wq batch size")
-Reported-by: Bernice Zhang <bernice.zhang@intel.com>
-Tested-by: Bernice Zhang <bernice.zhang@intel.com>
-Signed-off-by: Dave Jiang <dave.jiang@intel.com>
-Link: https://lore.kernel.org/r/164971493551.2201159.1942042593642155209.stgit@djiang5-desk3.ch.intel.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Hongbin Wang <wh_bin@126.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/idxd/sysfs.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/vxlan.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/dma/idxd/sysfs.c b/drivers/dma/idxd/sysfs.c
-index 999ce13a93ad..f7ab5c077a2b 100644
---- a/drivers/dma/idxd/sysfs.c
-+++ b/drivers/dma/idxd/sysfs.c
-@@ -876,6 +876,9 @@ static ssize_t wq_max_batch_size_store(struct device *dev, struct device_attribu
- 	u64 batch_size;
- 	int rc;
+diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
+index 141635a35c28..129e270e9a7c 100644
+--- a/drivers/net/vxlan.c
++++ b/drivers/net/vxlan.c
+@@ -711,11 +711,11 @@ static int vxlan_fdb_append(struct vxlan_fdb *f,
  
-+	if (!test_bit(IDXD_FLAG_CONFIGURABLE, &idxd->flags))
-+		return -EPERM;
-+
- 	if (wq->state != IDXD_WQ_DISABLED)
- 		return -EPERM;
+ 	rd = kmalloc(sizeof(*rd), GFP_ATOMIC);
+ 	if (rd == NULL)
+-		return -ENOBUFS;
++		return -ENOMEM;
  
+ 	if (dst_cache_init(&rd->dst_cache, GFP_ATOMIC)) {
+ 		kfree(rd);
+-		return -ENOBUFS;
++		return -ENOMEM;
+ 	}
+ 
+ 	rd->remote_ip = *ip;
 -- 
 2.35.1
 
