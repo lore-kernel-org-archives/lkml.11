@@ -2,209 +2,794 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87FA1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 22:07:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FBDBC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 22:12:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355654AbiDZWKs (ORCPT
+        id S1355656AbiDZWPW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 18:10:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36830 "EHLO
+        Tue, 26 Apr 2022 18:15:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355644AbiDZWKo (ORCPT
+        with ESMTP id S232124AbiDZWPV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 18:10:44 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 687871EAF0
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 15:07:34 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id w4so27263174wrg.12
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 15:07:34 -0700 (PDT)
+        Tue, 26 Apr 2022 18:15:21 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 262773BFA4
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 15:12:11 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id bd19-20020a17090b0b9300b001d98af6dcd1so3368143pjb.4
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 15:12:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linexp-org.20210112.gappssmtp.com; s=20210112;
+        d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Yy7WWv+wo0N+N8WMs6A4Tlr4aeP0/wiZ8RqZd5hVwfs=;
-        b=cTgTD0SrzGzn63KkZo0AOJqVghLtuvjREiR8Sa/hAZ5d5rVjRNMoLw01/P8wNU1n+A
-         fj84+NZlAKIa0cgAAtvVM8Am2XLv8EwTNgQaPvQr2loaEwTy8ewfTmUWfRwjaYXU62vZ
-         2vii/2I6UzbdlvyWBJHreTAfuS7gypIPfp0l6VykFqqwbT0CzOAIk99g4NELUIZv+AzW
-         SKmRKxdzxk6vY+D8cNL1RupFjRVwFzwvZZEZY/Ek7VCUKXGcYbexELYWxSkNZy0vnw+n
-         Ln/rvsYMXlp/zrKxcWpck4VhNW9tuw3fXzwrrmRQ2h/w2n/OtM0eHY/TlF2Z/ofLJrwN
-         UlQw==
+        bh=v80r4FDgVrXRkVazOkRDHiK1W9dA+AjqJcVKcwauyO8=;
+        b=k2064FBTz4UA8RWDnHuOLkPtt8hIqrJCKIWdy9IpijOO/e28GnkZ4xU3DacV+Ct8uz
+         zztz4h9oXTwyuCbcz0hvMQOg2O/igzBSjI0odCtXUyCnv7MyuMMiahmeInyezjC0jsZh
+         4JqLRz9jrX0SJjtcx3U+lnu1jvnXEBsWHGfxI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Yy7WWv+wo0N+N8WMs6A4Tlr4aeP0/wiZ8RqZd5hVwfs=;
-        b=ZLvGzFhnJGX1rz3dF3zQ7WQlakXWz13MGiZUOpgLuzw47sTjJxZf9VkR/CMoipdVNR
-         CV7N3BtSoRFvoiuXlv9g66g+tJy+hvb+Rj4igz8nakszsgPVg541qaVVqMVaUh/4rPYh
-         4cKmsZnBcwqRBNZ6pycuxJWWJYRsEaAxBzbjG4lhdAxS08Y6WDh3ziKwW6JvbWEjGR9j
-         GcIWkn7m0iAQlhQbkHqGc0IewOciGythKGPzVFsXH/7S7uiQbEreRuEiskKO8XXLJ8ol
-         FLp2wzavIMU44ybu0FKjCzrDLn7+LV7+fP/ZE/vJjccvxKu3c7ob3rZ6W5Qqs14J0qbi
-         A8Zw==
-X-Gm-Message-State: AOAM531IQRSgSxsZY1PxN+XKFEmLREIcTYqQ81HQArFpYQ2SMjR+XdIh
-        Ks4JXF2QGDoh4A439p5Yv6f7QA==
-X-Google-Smtp-Source: ABdhPJxvyg9Ld5uTWbOJmcZxbrbTWRxH6ggvKr0Q/daaB+MQ9bPaNy1JlivmRV0FYp/v81fCKvOsCA==
-X-Received: by 2002:a5d:584e:0:b0:20a:9122:2c3c with SMTP id i14-20020a5d584e000000b0020a91222c3cmr19873724wrf.193.1651010852928;
-        Tue, 26 Apr 2022 15:07:32 -0700 (PDT)
-Received: from localhost.localdomain (176-182-171-101.abo.bbox.fr. [176.182.171.101])
-        by smtp.gmail.com with ESMTPSA id z14-20020a7bc14e000000b00392a3e62b66sm202694wmi.33.2022.04.26.15.07.32
+        bh=v80r4FDgVrXRkVazOkRDHiK1W9dA+AjqJcVKcwauyO8=;
+        b=BrOqD8btl/GcFkRIklDOBt0tNjzYJUzrFByIdy+FL1ro3yqcQCmReCN0sMQQiWfCL+
+         JsSUXr8LTAx22j5b9sniORSWPZV8/f8QLN4F/siuZjh5zIpGqcnDJzUQkxo1uUPMFZS8
+         +EMew66pBZXOrbA3kIgMICpMV2MSauIR3UEx8SHFR6IE0I1Rb1nAaASNqlf5AYrnY2YE
+         tZaO7EIYTid8UlsXY/XIbO/KYmfY0FHQKDyvtXFngayp6xrv2c2gxOlYaIX8GPG96VKj
+         +a4OWr9769mXxQqYgf3BUk+EIeeMg0nWaOrDLWEmvhk8XiR79Xz2IR0tfx+Iwz7BXNQh
+         vQTA==
+X-Gm-Message-State: AOAM531aEtpxB52S0VKPA7D7nHG3GpH9eWv28i8S2yMHGiDqX6l7b2Io
+        m2mVc/okLYyBClgj4UH9zh3kxKJyNVSQlQ==
+X-Google-Smtp-Source: ABdhPJxPb+7HbHhjIv/6RRxL86NT4yH4vjPG/iAWon6JyhY5sVgG6Dg+gOAW3emWAt4ps2R+UtWZGQ==
+X-Received: by 2002:a17:90b:4b45:b0:1d9:b448:a925 with SMTP id mi5-20020a17090b4b4500b001d9b448a925mr5224974pjb.7.1651011130192;
+        Tue, 26 Apr 2022 15:12:10 -0700 (PDT)
+Received: from joebar-glaptop.lan (c-71-202-34-56.hsd1.ca.comcast.net. [71.202.34.56])
+        by smtp.gmail.com with ESMTPSA id v17-20020a62c311000000b0050d4f9560b9sm4636952pfg.19.2022.04.26.15.12.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 15:07:32 -0700 (PDT)
-From:   Daniel Lezcano <daniel.lezcano@linexp.org>
-To:     rafael@kernel.org, daniel.lezcano@linaro.org
-Cc:     khilman@baylibre.com, abailon@baylibre.com,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 00/15] thermal OF rework
-Date:   Wed, 27 Apr 2022 00:06:54 +0200
-Message-Id: <20220426220709.3055703-1-daniel.lezcano@linexp.org>
-X-Mailer: git-send-email 2.25.1
+        Tue, 26 Apr 2022 15:12:09 -0700 (PDT)
+From:   "Joseph S. Barrera III" <joebar@chromium.org>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Douglas Anderson <dianders@chromium.org>,
+        Alexandru M Stan <amstan@chromium.org>,
+        "Joseph S. Barrera III" <joebar@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+Subject: [PATCH] arm64: dts: qcom: sc7180: wormdingler: Add wormdingler dts files.
+Date:   Tue, 26 Apr 2022 15:12:06 -0700
+Message-Id: <20220426151204.1.Id2821de5fde55ebe928e8fc87a71c8d535edb383@changeid>
+X-Mailer: git-send-email 2.31.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The thermal framework initialization with the device tree appears to
-be complicated and hard to make it to evolve.
+Wormdingler is a trogdor-based board, shipping to customers as the Lenovo IdeaPad Chromebook Duet 3. These dts files are copies from the downstream Chrome OS 5.4 kernel, but with the camera (sc7180-trogdor-mipi-camera.dtsi) #include removed.
 
-It contains duplication of almost the same thermal generic structures
-and has an assymetric initialization making hard any kind of serious
-changes for more complex features. One of them is the multiple sensors
-support per thermal zone.
+Author: Joseph S. Barrera III <joebar@chromium.org>
+Signed-off-by: Joseph S. Barrera III <joebar@chromium.org>
+---
 
-In order to set the scene for the aforementioned feature with generic
-code, we need to cleanup and rework the device tree initialization.
+ arch/arm64/boot/dts/qcom/Makefile             |   6 +
+ .../sc7180-trogdor-wormdingler-rev0-boe.dts   |  22 +
+ .../sc7180-trogdor-wormdingler-rev0-inx.dts   |  22 +
+ .../qcom/sc7180-trogdor-wormdingler-rev0.dtsi |  53 +++
+ ...0-trogdor-wormdingler-rev1-boe-rt5682s.dts |  39 ++
+ .../sc7180-trogdor-wormdingler-rev1-boe.dts   |  28 ++
+ ...0-trogdor-wormdingler-rev1-inx-rt5682s.dts |  33 ++
+ .../sc7180-trogdor-wormdingler-rev1-inx.dts   |  22 +
+ .../dts/qcom/sc7180-trogdor-wormdingler.dtsi  | 416 ++++++++++++++++++
+ 9 files changed, 641 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev0-boe.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev0-inx.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev0.dtsi
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-boe-rt5682s.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-boe.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-inx-rt5682s.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-inx.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler.dtsi
 
-However this rework is not obvious because of the multiple components
-entering in the composition of a thermal zone and being initialized at
-different moments. For instance, a cooling device can be initialized
-before a sensor, so the thermal zones must exist before the cooling
-device as well as the sensor. This asynchonous initialization forces
-the thermal zone to be created with fake ops because they are
-mandotory and build a list of cooling devices which is used to lookup
-afterwards when the cooling device driver is registering itself.
-
-Actually, the correct behavior IMHO, would be having a sensor
-registration resulting in the thermal zone creation. If the cooling
-device is registered before, it won't find the thermal zone and should
-return -EPROBE_DEFER.
-
-As there could be a large number of changes, this first series provide
-some steps forward for a simpler device tree initialization.
-
-The first patch could appear scary as it touches a big number of files
-but it is actually just renaming a structure name
-
-Daniel Lezcano (15):
-  thermal/core: Rename thermal_zone_device to thermal_zone
-  thermal/core: Change thermal_zone_ops to thermal_sensor_ops
-  thermal/core: Add a thermal sensor structure in the thermal zone
-  thermal/core: Remove duplicate information when an error occurs
-  thermal/of: Replace device node match with device node search
-  thermal/of: Remove the device node pointer for thermal_trip
-  thermal/of: Move thermal_trip structure to thermal.h
-  thermal/core: Remove unneeded EXPORT_SYMBOLS
-  thermal/core: Move thermal_set_delay_jiffies to static
-  thermal/core: Rename trips to ntrips
-  thermal/core: Add thermal_trip in thermal_zone
-  thermal/core: Register with the trip points
-  thermal/of: Store the trips in the thermal zone
-  thermal/of: Use thermal trips stored in the thermal zone
-  thermal/of: Initialize trip points separately
-
- .../driver-api/thermal/power_allocator.rst    |  10 +-
- .../driver-api/thermal/sysfs-api.rst          |  28 +-
- drivers/acpi/thermal.c                        |  46 +--
- drivers/gpu/drm/tiny/repaper.c                |   2 +-
- drivers/hwmon/hwmon.c                         |   6 +-
- drivers/hwmon/scpi-hwmon.c                    |   2 +-
- drivers/iio/adc/sun4i-gpadc-iio.c             |   2 +-
- drivers/input/touchscreen/sun4i-ts.c          |   2 +-
- drivers/mmc/host/sdhci-omap.c                 |   2 +-
- drivers/net/ethernet/chelsio/cxgb4/cxgb4.h    |   2 +-
- .../ethernet/chelsio/cxgb4/cxgb4_thermal.c    |  16 +-
- .../ethernet/mellanox/mlxsw/core_thermal.c    |  78 ++---
- drivers/net/wireless/intel/iwlwifi/mvm/mvm.h  |   2 +-
- drivers/net/wireless/intel/iwlwifi/mvm/tt.c   |  20 +-
- drivers/platform/x86/acerhdf.c                |  30 +-
- drivers/platform/x86/gpd-pocket-fan.c         |   4 +-
- drivers/power/supply/power_supply_core.c      |  12 +-
- drivers/regulator/max8973-regulator.c         |   6 +-
- drivers/thermal/amlogic_thermal.c             |   2 +-
- drivers/thermal/armada_thermal.c              |  24 +-
- drivers/thermal/broadcom/bcm2711_thermal.c    |   4 +-
- drivers/thermal/broadcom/bcm2835_thermal.c    |   8 +-
- drivers/thermal/broadcom/brcmstb_thermal.c    |   6 +-
- drivers/thermal/broadcom/ns-thermal.c         |   2 +-
- drivers/thermal/broadcom/sr-thermal.c         |   2 +-
- drivers/thermal/da9062-thermal.c              |  22 +-
- drivers/thermal/db8500_thermal.c              |   6 +-
- drivers/thermal/dove_thermal.c                |  16 +-
- drivers/thermal/gov_bang_bang.c               |  12 +-
- drivers/thermal/gov_fair_share.c              |  18 +-
- drivers/thermal/gov_power_allocator.c         |  44 +--
- drivers/thermal/gov_step_wise.c               |  12 +-
- drivers/thermal/gov_user_space.c              |   6 +-
- drivers/thermal/hisi_thermal.c                |  10 +-
- drivers/thermal/imx8mm_thermal.c              |   2 +-
- drivers/thermal/imx_sc_thermal.c              |   2 +-
- drivers/thermal/imx_thermal.c                 |  36 +--
- .../intel/int340x_thermal/int3400_thermal.c   |  14 +-
- .../intel/int340x_thermal/int3402_thermal.c   |   2 +-
- .../intel/int340x_thermal/int3403_thermal.c   |   4 +-
- .../int340x_thermal/int340x_thermal_zone.c    |  26 +-
- .../int340x_thermal/int340x_thermal_zone.h    |  10 +-
- .../processor_thermal_device.c                |   8 +-
- .../processor_thermal_device_pci.c            |  26 +-
- .../thermal/intel/intel_bxt_pmic_thermal.c    |   4 +-
- drivers/thermal/intel/intel_menlow.c          |   2 +-
- drivers/thermal/intel/intel_pch_thermal.c     |  20 +-
- .../thermal/intel/intel_quark_dts_thermal.c   |  28 +-
- drivers/thermal/intel/intel_soc_dts_iosf.c    |  20 +-
- drivers/thermal/intel/intel_soc_dts_iosf.h    |   2 +-
- drivers/thermal/intel/x86_pkg_temp_thermal.c  |  26 +-
- drivers/thermal/k3_bandgap.c                  |   2 +-
- drivers/thermal/kirkwood_thermal.c            |  16 +-
- drivers/thermal/max77620_thermal.c            |   4 +-
- drivers/thermal/mtk_thermal.c                 |   2 +-
- drivers/thermal/qcom/qcom-spmi-adc-tm5.c      |   6 +-
- drivers/thermal/qcom/qcom-spmi-temp-alarm.c   |   6 +-
- drivers/thermal/qcom/tsens.c                  |   6 +-
- drivers/thermal/qcom/tsens.h                  |   2 +-
- drivers/thermal/qoriq_thermal.c               |   2 +-
- drivers/thermal/rcar_gen3_thermal.c           |  16 +-
- drivers/thermal/rcar_thermal.c                |  22 +-
- drivers/thermal/rockchip_thermal.c            |  10 +-
- drivers/thermal/rzg2l_thermal.c               |   4 +-
- drivers/thermal/samsung/exynos_tmu.c          |  22 +-
- drivers/thermal/spear_thermal.c               |  20 +-
- drivers/thermal/sprd_thermal.c                |   8 +-
- drivers/thermal/st/st_thermal.c               |  16 +-
- drivers/thermal/st/st_thermal.h               |   2 +-
- drivers/thermal/st/st_thermal_memmap.c        |   2 +-
- drivers/thermal/st/stm_thermal.c              |   6 +-
- drivers/thermal/sun8i_thermal.c               |   4 +-
- drivers/thermal/tegra/soctherm.c              |  38 +--
- drivers/thermal/tegra/tegra-bpmp-thermal.c    |   6 +-
- drivers/thermal/tegra/tegra30-tsensor.c       |  20 +-
- drivers/thermal/thermal-generic-adc.c         |   2 +-
- drivers/thermal/thermal_core.c                | 246 ++++++++-------
- drivers/thermal/thermal_core.h                |  59 ++--
- drivers/thermal/thermal_helpers.c             |  51 ++--
- drivers/thermal/thermal_hwmon.c               |  26 +-
- drivers/thermal/thermal_hwmon.h               |  12 +-
- drivers/thermal/thermal_mmio.c                |   2 +-
- drivers/thermal/thermal_netlink.c             |  18 +-
- drivers/thermal/thermal_of.c                  | 286 ++++++++++--------
- drivers/thermal/thermal_sysfs.c               | 116 +++----
- .../ti-soc-thermal/ti-thermal-common.c        |  10 +-
- drivers/thermal/uniphier_thermal.c            |   4 +-
- include/linux/power/charger-manager.h         |   2 +-
- include/linux/power_supply.h                  |   2 +-
- include/linux/thermal.h                       | 144 +++++----
- include/trace/events/thermal.h                |   4 +-
- .../trace/events/thermal_power_allocator.h    |   4 +-
- 92 files changed, 988 insertions(+), 938 deletions(-)
-
+diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
+index f9e6343acd03..5f51452e3dc1 100644
+--- a/arch/arm64/boot/dts/qcom/Makefile
++++ b/arch/arm64/boot/dts/qcom/Makefile
+@@ -81,6 +81,12 @@ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pompom-r2.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pompom-r2-lte.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pompom-r3.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pompom-r3-lte.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-wormdingler-rev0-boe.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-wormdingler-rev0-inx.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-wormdingler-rev1-boe.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-wormdingler-rev1-inx.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-wormdingler-rev1-inx-rt5682s.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-wormdingler-rev1-boe-rt5682s.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-r1.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-r1-lte.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-herobrine-herobrine-r0.dtb
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev0-boe.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev0-boe.dts
+new file mode 100644
+index 000000000000..d6ed7d0afe4a
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev0-boe.dts
+@@ -0,0 +1,22 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Google Wormdingler board device tree source
++ *
++ * Copyright 2021 Google LLC.
++ *
++ * SKU: 0x10 => 16
++ *  - bits 7..4: Panel ID: 0x1 (BOE)
++ */
++
++/dts-v1/;
++
++#include "sc7180-trogdor-wormdingler-rev0.dtsi"
++
++/ {
++	model = "Google Wormdingler rev0 BOE panel board";
++	compatible = "google,wormdingler-rev0-sku16", "qcom,sc7180";
++};
++
++&panel {
++	compatible = "boe,tv110c9m-ll3";
++};
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev0-inx.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev0-inx.dts
+new file mode 100644
+index 000000000000..c03525ea64ca
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev0-inx.dts
+@@ -0,0 +1,22 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Google Wormdingler board device tree source
++ *
++ * Copyright 2021 Google LLC.
++ *
++ * SKU: 0x0 => 0
++ *  - bits 7..4: Panel ID: 0x0 (INX)
++ */
++
++/dts-v1/;
++
++#include "sc7180-trogdor-wormdingler-rev0.dtsi"
++
++/ {
++	model = "Google Wormdingler rev0 INX panel board";
++	compatible = "google,wormdingler-rev0-sku0", "qcom,sc7180";
++};
++
++&panel {
++	compatible = "innolux,hj110iz-01a";
++};
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev0.dtsi b/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev0.dtsi
+new file mode 100644
+index 000000000000..db29e0cba29d
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev0.dtsi
+@@ -0,0 +1,53 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Google Wormdingler board device tree source
++ *
++ * Copyright 2021 Google LLC.
++ *
++ */
++
++/dts-v1/;
++
++#include "sc7180-trogdor-wormdingler.dtsi"
++
++&avdd_lcd {
++	gpio = <&tlmm 80 GPIO_ACTIVE_HIGH>;
++};
++
++&panel {
++	enable-gpios = <&tlmm 76 GPIO_ACTIVE_HIGH>;
++};
++
++&v1p8_mipi {
++	gpio = <&tlmm 81 GPIO_ACTIVE_HIGH>;
++};
++
++/* PINCTRL - modifications to sc7180-trogdor-wormdingler.dtsi */
++&avdd_lcd_en {
++	pinmux {
++		pins = "gpio80";
++	};
++
++	pinconf {
++		pins = "gpio80";
++	};
++};
++
++&mipi_1800_en {
++	pinmux {
++		pins = "gpio81";
++	};
++
++	pinconf {
++		pins = "gpio81";
++	};
++};
++&vdd_reset_1800 {
++	pinmux {
++		pins = "gpio76";
++	};
++
++	pinconf {
++		pins = "gpio76";
++	};
++};
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-boe-rt5682s.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-boe-rt5682s.dts
+new file mode 100644
+index 000000000000..1a921a540075
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-boe-rt5682s.dts
+@@ -0,0 +1,39 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Google Wormdingler board device tree source
++ *
++ * Copyright 2021 Google LLC.
++ *
++ * SKU: 0x401 => 1025
++ *  - bits 11..8: Panel ID: 0x4 (BOE)
++ */
++
++/dts-v1/;
++
++#include "sc7180-trogdor-wormdingler.dtsi"
++
++/ {
++	model = "Google Wormdingler rev1+ (BOE, rt5682s)";
++	compatible = "google,wormdingler-sku1025", "qcom,sc7180";
++};
++
++&panel {
++	compatible = "boe,tv110c9m-ll3";
++};
++
++&alc5682 {
++	compatible = "realtek,rt5682s";
++	realtek,dmic1-clk-pin = <2>;
++	realtek,dmic-clk-rate-hz = <2048000>;
++};
++
++&dsi_phy {
++	qcom,phy-rescode-offset-top = /bits/ 8 <31 31 31 31 (-32)>;
++	qcom,phy-rescode-offset-bot = /bits/ 8 <31 31 31 31 (-32)>;
++	qcom,phy-drive-ldo-level = <450>;
++};
++
++&sound {
++	compatible = "google,sc7180-trogdor";
++	model = "sc7180-rt5682s-max98357a-1mic";
++};
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-boe.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-boe.dts
+new file mode 100644
+index 000000000000..c5b0658bd632
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-boe.dts
+@@ -0,0 +1,28 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Google Wormdingler board device tree source
++ *
++ * Copyright 2021 Google LLC.
++ *
++ * SKU: 0x400 => 1024
++ *  - bits 11..8: Panel ID: 0x4 (BOE)
++ */
++
++/dts-v1/;
++
++#include "sc7180-trogdor-wormdingler.dtsi"
++
++/ {
++	model = "Google Wormdingler rev1+ BOE panel board";
++	compatible = "google,wormdingler-sku1024", "qcom,sc7180";
++};
++
++&dsi_phy {
++	qcom,phy-rescode-offset-top = /bits/ 8 <31 31 31 31 (-32)>;
++	qcom,phy-rescode-offset-bot = /bits/ 8 <31 31 31 31 (-32)>;
++	qcom,phy-drive-ldo-level = <450>;
++};
++
++&panel {
++	compatible = "boe,tv110c9m-ll3";
++};
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-inx-rt5682s.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-inx-rt5682s.dts
+new file mode 100644
+index 000000000000..1129e3fed165
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-inx-rt5682s.dts
+@@ -0,0 +1,33 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Google Wormdingler board device tree source
++ *
++ * Copyright 2021 Google LLC.
++ *
++ * SKU: 0x0001 => 1
++ *  - bits 11..8: Panel ID: 0x0 (INX)
++ */
++
++/dts-v1/;
++
++#include "sc7180-trogdor-wormdingler.dtsi"
++
++/ {
++	model = "Google Wormdingler rev1+ (INX, rt5682s)";
++	compatible = "google,wormdingler-sku1", "qcom,sc7180";
++};
++
++&panel {
++	compatible = "innolux,hj110iz-01a";
++};
++
++&alc5682 {
++	compatible = "realtek,rt5682s";
++	realtek,dmic1-clk-pin = <2>;
++	realtek,dmic-clk-rate-hz = <2048000>;
++};
++
++&sound {
++	compatible = "google,sc7180-trogdor";
++	model = "sc7180-rt5682s-max98357a-1mic";
++};
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-inx.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-inx.dts
+new file mode 100644
+index 000000000000..dd34a2297ea0
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-inx.dts
+@@ -0,0 +1,22 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Google Wormdingler board device tree source
++ *
++ * Copyright 2021 Google LLC.
++ *
++ * SKU: 0x0000 => 0
++ *  - bits 11..8: Panel ID: 0x0 (INX)
++ */
++
++/dts-v1/;
++
++#include "sc7180-trogdor-wormdingler.dtsi"
++
++/ {
++	model = "Google Wormdingler rev1+ INX panel board";
++	compatible = "google,wormdingler-sku0", "qcom,sc7180";
++};
++
++&panel {
++	compatible = "innolux,hj110iz-01a";
++};
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler.dtsi b/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler.dtsi
+new file mode 100644
+index 000000000000..945caa21962f
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler.dtsi
+@@ -0,0 +1,416 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Google Wormdingler board device tree source
++ *
++ * Copyright 2021 Google LLC.
++ */
++
++/dts-v1/;
++
++#include "sc7180.dtsi"
++
++ap_ec_spi: &spi6 {};
++ap_h1_spi: &spi0 {};
++
++#include "sc7180-trogdor.dtsi"
++
++/ {
++	avdd_lcd: avdd-lcd {
++		compatible = "regulator-fixed";
++		regulator-name = "avdd_lcd";
++
++		gpio = <&tlmm 88 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++		pinctrl-names = "default";
++		pinctrl-0 = <&avdd_lcd_en>;
++
++		vin-supply = <&pp5000_a>;
++	};
++
++	avee_lcd: avee-lcd {
++		compatible = "regulator-fixed";
++		regulator-name = "avee_lcd";
++
++		gpio = <&tlmm 21 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++		pinctrl-names = "default";
++		pinctrl-0 = <&avee_lcd_en>;
++
++		vin-supply = <&pp5000_a>;
++	};
++
++	pp1800_ts:
++	v1p8_mipi: v1p8-mipi {
++		compatible = "regulator-fixed";
++		regulator-name = "v1p8_mipi";
++
++		gpio = <&tlmm 86 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++		pinctrl-names = "default";
++		pinctrl-0 = <&mipi_1800_en>;
++
++		vin-supply = <&pp3300_a>;
++	};
++
++	thermal-zones {
++		skin_temp_thermal: skin-temp-thermal {
++			polling-delay-passive = <250>;
++			polling-delay = <0>;
++
++			thermal-sensors = <&pm6150_adc_tm 1>;
++			sustainable-power = <574>;
++
++			trips {
++				skin_temp_alert0: trip-point0 {
++					temperature = <58000>;
++					hysteresis = <1000>;
++					type = "passive";
++				};
++
++				skin_temp_alert1: trip-point1 {
++					temperature = <62500>;
++					hysteresis = <1000>;
++					type = "passive";
++				};
++
++				skin-temp-crit {
++					temperature = <68000>;
++					hysteresis = <1000>;
++					type = "critical";
++				};
++			};
++
++			cooling-maps {
++				map0 {
++					trip = <&skin_temp_alert0>;
++					cooling-device = <&CPU6 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
++							 <&CPU7 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
++				};
++
++				map1 {
++					trip = <&skin_temp_alert1>;
++					cooling-device = <&CPU6 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
++							 <&CPU7 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
++				};
++			};
++		};
++	};
++};
++
++&ap_tp_i2c {
++	status = "disabled";
++};
++
++&backlight {
++	pwms = <&cros_ec_pwm 0>;
++};
++
++&camcc {
++	status = "okay";
++};
++
++&cros_ec {
++	base_detection: cbas {
++		compatible = "google,cros-cbas";
++	};
++};
++
++&dsi0 {
++
++	panel: panel@0 {
++		reg = <0>;
++		enable-gpios = <&tlmm 87 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&vdd_reset_1800>;
++		avdd-supply = <&avdd_lcd>;
++		avee-supply = <&avee_lcd>;
++		pp1800-supply = <&v1p8_mipi>;
++		pp3300-supply = <&pp3300_dx_edp>;
++		backlight = <&backlight>;
++		rotation = <270>;
++
++		ports {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			port@0 {
++				reg = <0>;
++				panel_in: endpoint {
++					remote-endpoint = <&dsi0_out>;
++				};
++			};
++		};
++	};
++
++	ports {
++		port@1 {
++			endpoint {
++				remote-endpoint = <&panel_in>;
++				data-lanes = <0 1 2 3>;
++			};
++		};
++	};
++};
++
++&i2c4 {
++	status = "okay";
++	clock-frequency = <400000>;
++
++	ap_ts: touchscreen@1 {
++		compatible = "hid-over-i2c";
++		reg = <0x01>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&ts_int_l>;
++
++		interrupt-parent = <&tlmm>;
++		interrupts = <9 IRQ_TYPE_EDGE_FALLING>;
++
++		post-power-on-delay-ms = <70>;
++		hid-descr-addr = <0x0001>;
++
++		vdd-supply = <&pp3300_ts>;
++		vddl-supply = <&pp1800_ts>;
++	};
++};
++
++&pm6150_adc {
++	skin-temp-thermistor@4d {
++		reg = <ADC5_AMUX_THM1_100K_PU>;
++		qcom,ratiometric;
++		qcom,hw-settle-time = <200>;
++	};
++};
++
++&pm6150_adc_tm {
++	status = "okay";
++
++	skin-temp-thermistor@1 {
++		reg = <1>;
++		io-channels = <&pm6150_adc ADC5_AMUX_THM1_100K_PU>;
++		qcom,ratiometric;
++		qcom,hw-settle-time-us = <200>;
++	};
++};
++
++&pp1800_uf_cam {
++	status = "okay";
++};
++
++&pp1800_wf_cam {
++	status = "okay";
++};
++
++&pp2800_uf_cam {
++	status = "okay";
++};
++
++&pp2800_wf_cam {
++	status = "okay";
++};
++
++&wifi {
++	qcom,ath10k-calibration-variant = "GO_WORMDINGLER";
++};
++
++/*
++ * No eDP on this board but it's logically the same signal so just give it
++ * a new name and assign the proper GPIO.
++ */
++pp3300_disp_on: &pp3300_dx_edp {
++	gpio = <&tlmm 85 GPIO_ACTIVE_HIGH>;
++};
++
++/* PINCTRL - modifications to sc7180-trogdor.dtsi */
++
++/*
++ * No eDP on this board but it's logically the same signal so just give it
++ * a new name and assign the proper GPIO.
++ */
++
++tp_en: &en_pp3300_dx_edp {
++	pinmux {
++		pins = "gpio85";
++		};
++	pinconf {
++		pins = "gpio85";
++	};
++};
++
++/* PINCTRL - board-specific pinctrl */
++
++&tlmm {
++	gpio-line-names = "HUB_RST_L",
++			  "AP_RAM_ID0",
++			  "AP_SKU_ID2",
++			  "AP_RAM_ID1",
++			  "",
++			  "AP_RAM_ID2",
++			  "UF_CAM_EN",
++			  "WF_CAM_EN",
++			  "TS_RESET_L",
++			  "TS_INT_L",
++			  "",
++			  "",
++			  "AP_EDP_BKLTEN",
++			  "UF_CAM_MCLK",
++			  "WF_CAM_CLK",
++			  "",
++			  "",
++			  "UF_CAM_SDA",
++			  "UF_CAM_SCL",
++			  "WF_CAM_SDA",
++			  "WF_CAM_SCL",
++			  "AVEE_LCD_EN",
++			  "",
++			  "AMP_EN",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "HP_IRQ",
++			  "WF_CAM_RST_L",
++			  "UF_CAM_RST_L",
++			  "AP_BRD_ID2",
++			  "",
++			  "AP_BRD_ID0",
++			  "AP_H1_SPI_MISO",
++			  "AP_H1_SPI_MOSI",
++			  "AP_H1_SPI_CLK",
++			  "AP_H1_SPI_CS_L",
++			  "BT_UART_CTS",
++			  "BT_UART_RTS",
++			  "BT_UART_TXD",
++			  "BT_UART_RXD",
++			  "H1_AP_INT_ODL",
++			  "",
++			  "UART_AP_TX_DBG_RX",
++			  "UART_DBG_TX_AP_RX",
++			  "HP_I2C_SDA",
++			  "HP_I2C_SCL",
++			  "FORCED_USB_BOOT",
++			  "AMP_BCLK",
++			  "AMP_LRCLK",
++			  "AMP_DIN",
++			  "",
++			  "HP_BCLK",
++			  "HP_LRCLK",
++			  "HP_DOUT",
++			  "HP_DIN",
++			  "HP_MCLK",
++			  "AP_SKU_ID0",
++			  "AP_EC_SPI_MISO",
++			  "AP_EC_SPI_MOSI",
++			  "AP_EC_SPI_CLK",
++			  "AP_EC_SPI_CS_L",
++			  "AP_SPI_CLK",
++			  "AP_SPI_MOSI",
++			  "AP_SPI_MISO",
++			  /*
++			   * AP_FLASH_WP_L is crossystem ABI. Schematics
++			   * call it BIOS_FLASH_WP_L.
++			   */
++			  "AP_FLASH_WP_L",
++			  "",
++			  "AP_SPI_CS0_L",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "WLAN_SW_CTRL",
++			  "",
++			  "REPORT_E",
++			  "",
++			  "ID0",
++			  "",
++			  "ID1",
++			  "",
++			  "",
++			  "",
++			  "CODEC_PWR_EN",
++			  "HUB_EN",
++			  "TP_EN",
++			  "MIPI_1.8V_EN",
++			  "VDD_RESET_1.8V",
++			  "AVDD_LCD_EN",
++			  "",
++			  "AP_SKU_ID1",
++			  "AP_RST_REQ",
++			  "",
++			  "AP_BRD_ID1",
++			  "AP_EC_INT_L",
++			  "SDM_GRFC_3",
++			  "",
++			  "",
++			  "BOOT_CONFIG_4",
++			  "BOOT_CONFIG_2",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "BOOT_CONFIG_3",
++			  "WCI2_LTE_COEX_TXD",
++			  "WCI2_LTE_COEX_RXD",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "FORCED_USB_BOOT_POL",
++			  "AP_TS_PEN_I2C_SDA",
++			  "AP_TS_PEN_I2C_SCL",
++			  "DP_HOT_PLUG_DET",
++			  "EC_IN_RW_ODL";
++
++	vdd_reset_1800: vdd-reset-1800 {
++		pinmux {
++			pins = "gpio87";
++			function = "gpio";
++		};
++
++		pinconf {
++			pins = "gpio87";
++			drive-strength = <2>;
++			bias-disable;
++		};
++	};
++
++	avdd_lcd_en: avdd-lcd-en {
++		pinmux {
++			pins = "gpio88";
++			function = "gpio";
++		};
++
++		pinconf {
++			pins = "gpio88";
++			drive-strength = <2>;
++			bias-disable;
++		};
++	};
++
++	avee_lcd_en: avee-lcd_en {
++		pinmux {
++			pins = "gpio21";
++			function = "gpio";
++		};
++
++		pinconf {
++			pins = "gpio21";
++			drive-strength = <2>;
++			bias-disable;
++		};
++	};
++
++	mipi_1800_en: mipi-1800-en {
++		pinmux {
++			pins = "gpio86";
++			function = "gpio";
++		};
++
++		pinconf {
++			pins = "gpio86";
++			drive-strength = <2>;
++			bias-disable;
++		};
++	};
++};
 -- 
-2.25.1
+2.31.0
 
