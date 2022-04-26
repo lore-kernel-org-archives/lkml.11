@@ -2,95 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A15DC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 20:17:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4608FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 20:18:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354899AbiDZUUi (ORCPT
+        id S1354896AbiDZUVL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 16:20:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57534 "EHLO
+        Tue, 26 Apr 2022 16:21:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355032AbiDZUTd (ORCPT
+        with ESMTP id S242807AbiDZUVG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 16:19:33 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0527F29826
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 13:16:25 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id y38so3223182pfa.6
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 13:16:24 -0700 (PDT)
+        Tue, 26 Apr 2022 16:21:06 -0400
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 810F7366A7;
+        Tue, 26 Apr 2022 13:17:58 -0700 (PDT)
+Received: by mail-oi1-x22f.google.com with SMTP id v65so17247170oig.10;
+        Tue, 26 Apr 2022 13:17:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=sender:date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=uvJxHyXfgLj1ZgKVawFWQdRMgkOnfWjoHaxt/IGWjk8=;
-        b=UTbLbXRNJ0dAd026mrJNwVSpoYi1Cdsph/ZnyFL5LkZ6PaGTmkK5tePkW5vAI4PhHe
-         xG8C70wpuoZYzxz6L5wCi4vClB3C+gNK5yvCACYd9V6sv6ibU04j1wSWE65e5TXg4OX1
-         pTfT82P1KQnVnZDuF63yABZM4xbXevoLv87bORkeAm4kS4BLvGBi+1X0wscUSmMvG3O7
-         J1N4/j4i6oiVVEGJEtyguAs0v54ZVTsV82qCezDOCxvA83erRrqIpdXuSuBsdwk92/Jr
-         w1JPY0PCiU/syvAq8zKD/wHO8vpO4ZA93we8likeyc4jZgwQr/giwqg6ZzOKd8RVOb8O
-         0CzA==
+        bh=5CTXaz+V6AADkCyMRViJwbGXG2CrQ/Q0Z8NFjTN9J94=;
+        b=WqjlarLpd346YItChEmX1w1yTnpCSQvtL62OnCdSsFFteTGymSg1O5fZ3b/6Gy9E/d
+         /EUOL1uRAjD+zJ/b3Ekm79vyfpl9c0JmDYRPS9hpUF5OXa6FNcQ8uRfp0GVbYWqNDDFD
+         lg6JGxxkzaCPbGrriu4hqDk7oZBA31wW7B9jfjaQHQJ7rWENHTK3CqbcDSANrBlBcXGr
+         3EXpAf10Cecy3nzRH39rnFeD+jDzG06J2+LiDox7Ts/7XA2ZE7bZ7q27K+g4XdPcJMnu
+         ByfgYqbh7VMCKwDtYqLheWh9KciQAHaod4LQLrOz9y0UfvgNtVd8bzmQ6qDJEzuff/4e
+         Ggag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
          :references:mime-version:content-disposition:in-reply-to;
-        bh=uvJxHyXfgLj1ZgKVawFWQdRMgkOnfWjoHaxt/IGWjk8=;
-        b=ureO9wnLRgs4iRqN2myxd+gZXT6tNIGNcBtWVxk15Cvn9b+TBmrF3gwm9bI9wQW+E0
-         Nsma4XjXi9XkAnDjLWst4AY4jZdtAatUMPS04HZqpJOENnLvC3tGExbxWMQTYyw3lf66
-         Q6Wgf67ekM+hA8XZoVsiO4KCpfq6Nu2fNLR78XvUQE8ZfYX2iFh2EEwU9HQNBqqqFmKO
-         ZC02bJetAavIWiGqRUmR2U/tDzgla31/Lwui1jnxkd14lB3t8J25nVbGYjln8I4fNfYn
-         3WtKUG4sMItsiJoEC8oBYFVtlEuxzbuHob27h7nbwcTN5yR+K90KLRTrqYUEvaGT9y6Y
-         96qw==
-X-Gm-Message-State: AOAM532J6HXvJPAIPvEYa5vNC+lOBN0Xgnn4t5/kqWGIPPhbBFujImQZ
-        8yW5P9o5dYD/dBkfBLuJpwk=
-X-Google-Smtp-Source: ABdhPJzHkxcGsfj1J9sFWJfFLme527CXJJ0r0HD/JQCnI0bQ1SneyVCF4mOhjCSyoyVXOXSZLZCqSA==
-X-Received: by 2002:aa7:9852:0:b0:50d:6d10:2094 with SMTP id n18-20020aa79852000000b0050d6d102094mr1721384pfq.4.1651004184324;
-        Tue, 26 Apr 2022 13:16:24 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::5:7a3e])
-        by smtp.gmail.com with ESMTPSA id co21-20020a17090afe9500b001cd4989fedcsm3713684pjb.40.2022.04.26.13.16.23
+        bh=5CTXaz+V6AADkCyMRViJwbGXG2CrQ/Q0Z8NFjTN9J94=;
+        b=mKvSQRPN12+30ZCORhmZepdtqeH4z7Yb1pLHeiwyJe9ly0/vrNgZhSWfolrOWwIOeM
+         2po+BeZpxMZQ/NNS4KB/Rv6aS9XfDqhCQlR9vDBdnBN3BJp+DI9mhmJyrHpYRMOTafUZ
+         xecVBZ075A/DJnIks2M91Zt4t2f2HbfKXhuvdZcQSf7EFDzvlN/b/bhJh+prV0PEQuYL
+         /kh+uiWr8qd3D8LMeOUCzB+yIstMkr13xL931G+O7hxScJL8WipmB/gm8qEH5yId3HsJ
+         9vjaPPj66XAFIJ+XeDkbgjQYJvFJHrjJPpm33166zQjWG7GKuo/OUjcOzpPMjobsqRNu
+         9IuQ==
+X-Gm-Message-State: AOAM5305hEXBS2FQFz7rLqYB9SWx3f27xuCNzB7CTfEHiVqB+jNhRgB9
+        uIinizTLHA81CMycrpSijgc=
+X-Google-Smtp-Source: ABdhPJxlVQ24ZRLfHmX0K72G/7Bd7V0I9z01BMMNhFrpjI25E6aMB2ih6RvjvUQw1Qf992I1nEvEXw==
+X-Received: by 2002:a05:6808:1202:b0:2f9:c7b4:fd56 with SMTP id a2-20020a056808120200b002f9c7b4fd56mr11287188oil.55.1651004277905;
+        Tue, 26 Apr 2022 13:17:57 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id k124-20020aca3d82000000b002ef4c5bb9dbsm5171253oia.0.2022.04.26.13.17.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 13:16:23 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Tue, 26 Apr 2022 10:16:21 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     Imran Khan <imran.f.khan@oracle.com>, gregkh@linuxfoundation.org,
-        ebiederm@xmission.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v8 01/10] kernfs: Remove reference counting for
- kernfs_open_node.
-Message-ID: <YmhTFZ5zCGhWJOry@slm.duckdns.org>
-References: <20220410023719.1752460-1-imran.f.khan@oracle.com>
- <20220410023719.1752460-2-imran.f.khan@oracle.com>
- <YmLRxWUnF/zflEO2@slm.duckdns.org>
- <e30f95c3-ab55-bb1b-75c1-8bd2f91787b5@oracle.com>
- <Ymg6AazfnwdZXkXx@slm.duckdns.org>
- <YmhSYkXp0KBXOyFc@zeniv-ca.linux.org.uk>
+        Tue, 26 Apr 2022 13:17:57 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Tue, 26 Apr 2022 13:17:55 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Armin Wolf <W_Armin@gmx.de>
+Cc:     pali@kernel.org, jdelvare@suse.com, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] hwmon: (dell-smm) Warn if SMM call took a very long
+ time to execute
+Message-ID: <20220426201755.GN4093517@roeck-us.net>
+References: <20220426200320.399435-1-W_Armin@gmx.de>
+ <20220426200320.399435-4-W_Armin@gmx.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YmhSYkXp0KBXOyFc@zeniv-ca.linux.org.uk>
+In-Reply-To: <20220426200320.399435-4-W_Armin@gmx.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 08:13:22PM +0000, Al Viro wrote:
-> On Tue, Apr 26, 2022 at 08:29:21AM -1000, Tejun Heo wrote:
+On Tue, Apr 26, 2022 at 10:03:20PM +0200, Armin Wolf wrote:
+> If a particular SMM call takes a very long time to execute,
+> the user might experience audio problems. Print a warning
+> if a particular SMM call took over 0.250 seconds to execute,
+> so the user can check whether or not possible audio problems
+> are caused by this driver.
 > 
-> > The code is just wrong. You can end up:
-> > 
-> >         on = kn->attr.open;
-> >         if (!on)
-> >                 return;
-> > 
-> >         // we get preempted here and someone else puts @on and then
-> >         // recreates it
+> Signed-off-by: Armin Wolf <W_Armin@gmx.de>
+> ---
+>  drivers/hwmon/dell-smm-hwmon.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
 > 
-> Can't happen - the caller has guaranteed that no new openers will be
-> coming.  Look at the call chain of kernfs_drain_open_files()...
+> diff --git a/drivers/hwmon/dell-smm-hwmon.c b/drivers/hwmon/dell-smm-hwmon.c
+> index f13902414615..b960330eaded 100644
+> --- a/drivers/hwmon/dell-smm-hwmon.c
+> +++ b/drivers/hwmon/dell-smm-hwmon.c
+> @@ -49,6 +49,9 @@
+>  #define I8K_SMM_GET_DELL_SIG1	0xfea3
+>  #define I8K_SMM_GET_DELL_SIG2	0xffa3
+> 
+> +/* in usecs */
+> +#define DELL_SMM_MAX_DURATION  250000
+> +
+>  #define I8K_FAN_MULT		30
+>  #define I8K_FAN_RPM_THRESHOLD	1000
+>  #define I8K_MAX_TEMP		127
+> @@ -239,6 +242,9 @@ static int i8k_smm_func(void *par)
+>  	pr_debug("smm(0x%.4x 0x%.4x) = 0x%.4x  (took %7lld usecs)\n", eax, ebx,
+>  		 (rc ? 0xffff : regs->eax & 0xffff), duration);
+> 
+> +	if (duration > DELL_SMM_MAX_DURATION)
+> +		pr_warn("SMM call took %lld usecs!\n", duration);
 
-Ah, okay. It can only transition to NULL from there. It's still a weird way
-to go about it tho.
+pr_warn_once, maybe ? If this happens, it will happen a lot, and it doesn't
+add much if any value to keep reporting the problem.
 
-Thanks.
-
--- 
-tejun
+Guenter
