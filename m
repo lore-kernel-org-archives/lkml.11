@@ -2,96 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7388DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 12:42:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C912EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 12:42:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350127AbiDZMpp (ORCPT
+        id S1350177AbiDZMqF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 08:45:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37806 "EHLO
+        Tue, 26 Apr 2022 08:46:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350154AbiDZMpS (ORCPT
+        with ESMTP id S1350176AbiDZMqB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 08:45:18 -0400
-Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53134179EAC;
-        Tue, 26 Apr 2022 05:42:10 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id B70EC5C0179;
-        Tue, 26 Apr 2022 08:42:09 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Tue, 26 Apr 2022 08:42:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm3; t=1650976929; x=
-        1651063329; bh=Wb+25M7xx2p2SmeIdQwbkpvz636pV7/mTVUJPzyS+Po=; b=X
-        CwdTWP4xEv+ypybCM2kUm3obTHGWQ5rJBAJAW+ZAxaU1A/BDl+3laeEd+LtDHSHQ
-        teYu8V2/nvHg+OAT6JmpU+2Tqz/SQ6tKsQ8baQTxAx930PS6onRbbKsP8odxqwdM
-        hrt82dBgSuk546/wjyLq3A/Iy9YbiPtIhEHbylln4Z9GAJJpMHFOtL+FhvD8VcSc
-        CfwqG9sZfkXbNBY7uTLxIgopDDe6xtH4MICgzWgd7fM2d8/2HKqaL99nVscPz4sf
-        mdyOiwh6+4C6kyvBbmqF88tidILRr7WxdUqVT+L2+qsWHJYrgVQ8nquS3BJTzfJJ
-        RdS4B50gABUuw/NoyG2Pg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; t=1650976929; x=1651063329; bh=Wb+25M7xx2p2S
-        meIdQwbkpvz636pV7/mTVUJPzyS+Po=; b=NGo9Lv01NdmncPtJ4qzak6Gv3X2ts
-        yKGLjKzUzWIA/jo4QyJdU+v9yDMVdT+hYynv472i3Ox0gHcOfuEae8ZvVdKrWsA0
-        0GVKmvh/HsFnisBzm0sgV7Fz5M0rof9EKNRNau6GSNTBKRBABfJ8Z18AswMfVmH6
-        0QGmO8mMbz3R9bxXtByDPrZrwnwlEZR8cEzupDg2CtIKUXNn1qYoU7sB53ycY3k5
-        OIJ2bO2mkIugO3CMxuYy8iX6gBAEMJ9QyVbNwBIo50D8Bt5K05dR1/OldrqcBXNL
-        PNdTteckD/0dAocqoy5oBtq69cwt6OjJHtAG6n9we2DpEVl3iJUQe0aew==
-X-ME-Sender: <xms:oehnYouPhN80lOT6fhcuz_38FtC7R1ngoB4_J8wSLZOgMmCmyExszw>
-    <xme:oehnYlccgmpN4Ff3nAmecA3iCGwOCHSzcNdlBCHS_ToXkf8HxQU225e3-uOK9GqOU
-    iB1p2mEUTZd8Ny0rBI>
-X-ME-Received: <xmr:oehnYjyTcMhRlQ0F48Ka-CzmRm5Dq1726a8yNNgSS6XL8dO9u5au6yr8osrPDXIKbhBwCbgzxuFAUE0V2DuJp51tw7IXUb2QUzXdy3w>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudefgdehvdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefhvfevufffkffojghfgggtgfesthekredtredtjeenucfhrhhomhepofgrgihi
-    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
-    htthgvrhhnpeeuieeggffhffffieefheduieeuvdetgeeufeffvefgtedvffehheekffev
-    udefieenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    hmrgigihhmvgestggvrhhnohdrthgvtghh
-X-ME-Proxy: <xmx:oehnYrMEaoRFrkd_VbEp9CcFuHe2mjW3eg0NAwTwPl-JQCjo9-wZKA>
-    <xmx:oehnYo-WpGz294-KVmcTAlLS5OTS128wWkeQ9cXmc2VQkcieB9p1Dw>
-    <xmx:oehnYjUxE3BAfYId7ikrOGKXlsYFjep317oEPdAJ1GlgUghGUMoQjA>
-    <xmx:oehnYjUXApa2d7Q0tuOqT8FcuV_o5vuTF3Y5IJfZ5X-BUPGEZS0rxA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 26 Apr 2022 08:42:09 -0400 (EDT)
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Chen-Yu Tsai <wens@csie.org>, Maxime Ripard <mripard@kernel.org>,
-        Samuel Holland <samuel@sholland.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>
-Cc:     Maxime Ripard <maxime@cerno.tech>, David Airlie <airlied@linux.ie>,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-sunxi@lists.linux.dev, dri-devel@lists.freedesktop.org,
-        devicetree@vger.kernel.org, Daniel Vetter <daniel@ffwll.ch>
-Subject: Re: (subset) [PATCH v3 14/14] drm/sun4i: Add compatible for D1 display engine
-Date:   Tue, 26 Apr 2022 14:41:43 +0200
-Message-Id: <165097689886.514433.18208103148925115786.b4-ty@cerno.tech>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220424162633.12369-15-samuel@sholland.org>
-References: <20220424162633.12369-1-samuel@sholland.org> <20220424162633.12369-15-samuel@sholland.org>
+        Tue, 26 Apr 2022 08:46:01 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D526179E88
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 05:42:54 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id z19so8916313edx.9
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 05:42:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Q6idSsBE4s9Qn9LKOd9OqUBxM1sdnuFs7ORWkA+7A74=;
+        b=c+/ElPomAoi5ALGJ65fOGERmODHjI9yROekwY6i/fJVcpOqZQX1HbO56eTOrix+Hg3
+         Yb/bInAxZBdub64ffByXoqjdeuPLumYWSZvY5W1mPGqvzyW/7aqyxgJIW4omsB5SC2PD
+         c13Uv1YOnnEJW8sv3LF9LIOWyNTezrlXfg2fXiIeJ3sySwCYcwbzrxQm6KovxNx//ey4
+         bdSoI6/kcZFqZudjdMM+TgUiStdeUIUVC9BBILNzJtXFIqwuAVp5Y2w3nYc726OZWdh1
+         O7iYTqAhkNB8U5UbbZW5kSNJ/K48ZkDoZIyLUegBp9kPv1nIfoyK+Hfy7Snz9jjBX1cw
+         XyGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Q6idSsBE4s9Qn9LKOd9OqUBxM1sdnuFs7ORWkA+7A74=;
+        b=crHu7jllRAkl3aCRRiwfdwfLn6EklPKeL+GoOjJOa8lT4MqRPvST5gffC5xoWV266i
+         ePgS60NVRYfl+QD4k8PevOeen3KbOyTSOvYJn2yaEGziUiezM/GxajrmL9L1j8IelJVr
+         FBGsxoy+8yzm3zr9MMHtHS0JzlA3R9hbA9JjANDoUzOwpofLQ9vJ+TzFBPaQxjGxBCsR
+         WrrPHfKFBGqeyt8OxG8GO1gPmLoDHf8rB4ZG1axGagMTtYguXBS5Q5iWoVQ7va3ujC6k
+         XHSqZeLcnKoho3XUhSbrE44Zbe/SorDyazHU0twTvfgUJeq0RY+a8PjuLbJCvVEVajg2
+         xe1Q==
+X-Gm-Message-State: AOAM533avI7QZOO3Enbgq+A8tmNrR4Mn16IMmDDaV59Bm7z9F0VjH4+w
+        aIk0XNxgRXOiMXk2TaAKbzGHg4Nxqi5naGPAczMVNoyjhVQ=
+X-Google-Smtp-Source: ABdhPJyqH5kCE6sQVhsfUeIoDwi2MnR8OMOBFkqTD9nFnCle9xl4NcSkY/u0xOdUxL4Wl5vy9q/E3mt+VCskbEd4Eug=
+X-Received: by 2002:a05:6402:1941:b0:413:2b5f:9074 with SMTP id
+ f1-20020a056402194100b004132b5f9074mr24260778edz.414.1650976972972; Tue, 26
+ Apr 2022 05:42:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+References: <20220425180540.880632-1-jcmvbkbc@gmail.com> <63deb092-4002-d798-410e-1db2081f0ef8@arm.com>
+In-Reply-To: <63deb092-4002-d798-410e-1db2081f0ef8@arm.com>
+From:   Max Filippov <jcmvbkbc@gmail.com>
+Date:   Tue, 26 Apr 2022 05:42:41 -0700
+Message-ID: <CAMo8BfKe0WLOaCiDopyr-JH6JSG2X0FTMDgON=KynKdyYt4L7A@mail.gmail.com>
+Subject: Re: [PATCH] xtensa: enable ARCH_HAS_DEBUG_VM_PGTABLE
+To:     Anshuman Khandual <anshuman.khandual@arm.com>
+Cc:     "open list:TENSILICA XTENSA PORT (xtensa)" 
+        <linux-xtensa@linux-xtensa.org>, Chris Zankel <chris@zankel.net>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 24 Apr 2022 11:26:32 -0500, Samuel Holland wrote:
-> Now that the various blocks in the D1 display engine pipeline are
-> supported, we can enable the overall engine.
-> 
-> 
+Anshuman,
 
-Applied to drm/drm-misc (drm-misc-next).
+On Mon, Apr 25, 2022 at 11:07 PM Anshuman Khandual
+<anshuman.khandual@arm.com> wrote:
+> Thanks for the patch. Just wondering if you ran with different config
+> options (which might impact test case selection) on/off during testing ?
 
-Thanks!
-Maxime
+I went through the code in the mm/debug_vm_pgtable.c and saw that most
+variations are related to the huge page support which xtensa doesn't have.
+I've tested it with and without CMA.
+I haven't found anything else interesting that I could tweak -- have I missed
+anything?
+
+-- 
+Thanks.
+-- Max
