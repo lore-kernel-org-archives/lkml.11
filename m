@@ -2,113 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56F33C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:29:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0855C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:29:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344694AbiDZJca (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:32:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39642 "EHLO
+        id S245449AbiDZJcl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:32:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347777AbiDZJGK (ORCPT
+        with ESMTP id S1347802AbiDZJGN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:06:10 -0400
-Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E93718B2E;
-        Tue, 26 Apr 2022 01:45:44 -0700 (PDT)
-Received: by mail-qv1-xf2f.google.com with SMTP id q13so4669870qvk.3;
-        Tue, 26 Apr 2022 01:45:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=jms.id.au; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=s8JC263FgFy3jyxA285+ySjFZq/wFTiKMNVDc/5kVhk=;
-        b=nt1HXhudCOieSH/ymuSaNTnhqUd/Yn/oVUEEYb3qthVUMbdwFvIw1v0rc1C1Tp+WPw
-         UJWxenWHUbFlqtiaar8qbKkHXa6imluukeApPMlTrfLlhVpvNewvoHvuIml4/HByW/yT
-         SbUZp/GU+AxFM2GbY9mOu3wrneuQnRKWo1rNg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=s8JC263FgFy3jyxA285+ySjFZq/wFTiKMNVDc/5kVhk=;
-        b=A7006gB/6uliZT16r9BmaNo704b/t6cFMbHSqFSeZSY2xZ67WboSGS6bTNtSV2NsT6
-         /zMFp+spygDQ9c1VnvRwbXDI4Lja8Og4y7OKuRKs126Lp+RB48VcZvgdu3bi4j5L1dka
-         S+A84qGNhmCAamq+UDihY8q7W/picAo2v4vABIr/HW4g1dBpoBt3FWMcHcupp88gNVvR
-         gpgwuJ1XZzKnZYnlrH5LKmNabsURZJPu+iWfXAWqtzfb1LG0Ty4b3QYdjazKrTVRFzDE
-         y07kqCfWI1SSTR0UKoIBibEq1l5gU0va4F18nkqKV4VgbsUN89YRUeFtDiM75EsI7bZy
-         iUDQ==
-X-Gm-Message-State: AOAM532JRvuIN5iKnS5id8qLkOKdWsZ9awQAkf+hUIcD9o3WUG32A8EQ
-        vHfatmv0uzzoo1U1sQcNhKvBzg8lNewzXOhzTAk=
-X-Google-Smtp-Source: ABdhPJy/a7R5QcfkDGNvXevfex9gGYiGDw8Vgm3NWqkPXA+VHo8PUgOW+SRHNkzWV1ncHmUfOz8hiw4ynmpzy6AWqSo=
-X-Received: by 2002:ad4:53c5:0:b0:42d:7bb4:a8e8 with SMTP id
- k5-20020ad453c5000000b0042d7bb4a8e8mr15201215qvv.8.1650962743952; Tue, 26 Apr
- 2022 01:45:43 -0700 (PDT)
+        Tue, 26 Apr 2022 05:06:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 276327A9B3;
+        Tue, 26 Apr 2022 01:45:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B0BC260C42;
+        Tue, 26 Apr 2022 08:45:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE0D9C385A4;
+        Tue, 26 Apr 2022 08:45:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650962751;
+        bh=6XrpGVlxZRQMH2piwBjcyIk7Ss1WGEjnozd6xtink/w=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=qv6WManyp2UoknN8knYKw+F+C5WdxmjM80ezkuuKq7VGNsYdzbBJQC37js09A1L1B
+         9j5JLu9FWHOT7i9LKsFZl8TcOan0uDt0OfG8K74ZYildAIpaWZXRaW7+CnfJBs/yBk
+         o9j9CpzRyEqNxyptLf3sVfahagyQwDlwCwS6ZTf0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Tomas Melin <tomas.melin@vaisala.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 077/146] net: macb: Restart tx only if queue pointer is lagging
+Date:   Tue, 26 Apr 2022 10:21:12 +0200
+Message-Id: <20220426081752.229885874@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
+References: <20220426081750.051179617@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220426071848.11619-1-zev@bewilderbeest.net> <YmetYjSKFs+WWwYz@hatter.bewilderbeest.net>
-In-Reply-To: <YmetYjSKFs+WWwYz@hatter.bewilderbeest.net>
-From:   Joel Stanley <joel@jms.id.au>
-Date:   Tue, 26 Apr 2022 08:45:32 +0000
-Message-ID: <CACPK8Xf2a2tC-u_9CjLVoh9iJmUdOKveLfjy1UNKQbqYPr0Zhw@mail.gmail.com>
-Subject: Re: [PATCH v3 0/6] hwmon: (nct6775) Convert to regmap, add i2c support
-To:     Zev Weiss <zev@bewilderbeest.net>
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org,
-        devicetree <devicetree@vger.kernel.org>, webmaster@kernel.org,
-        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Rob Herring <robh+dt@kernel.org>,
-        Renze Nicolai <renze@rnplus.nl>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 26 Apr 2022 at 08:29, Zev Weiss <zev@bewilderbeest.net> wrote:
->
-> [Adding korg webmaster re: list infrastructure]
->
-> On Tue, Apr 26, 2022 at 12:18:42AM PDT, Zev Weiss wrote:
-> >Hello,
-> >
-> >This is v3 of my effort to add i2c support to the nct6775 hwmon
-> >driver.
-> >
-> >Changes since v2 [0]:
-> > ...
-> > - Renamed drivers and Kconfig symbols to keep existing platform
-> >   driver as "nct6775" (SENSORS_NCT6775) and the core module as
-> >   "nct6775-core" (SENSORS_NCT6775_CORE) [Guenter]
->
-> Unfortunately while this was a simple enough change to make (a few 'git
-> mv' commands and a handful of actual text changes), it ballooned the
-> size of the diff for patch 5 to the point that vger bounced it for
-> exceeding the 100K message-size limit.  As far as I can tell it looks
-> like it went through elsewhere, but does leave a bit of a gap in the
-> public list archives -- please let me know if there's anything I should
-> try in terms of re-sending it.  (The only combination of 'git
-> format-patch' flags I've been able to find that gets it back down to
-> approximately its previous size is '-B -D', which isn't so useful for
-> actually applying.)
+From: Tomas Melin <tomas.melin@vaisala.com>
 
-FWIW, I moderated it through to the openbmc list, which is on lore:
+[ Upstream commit 5ad7f18cd82cee8e773d40cc7a1465a526f2615c ]
 
- https://lore.kernel.org/openbmc/YmetYjSKFs+WWwYz@hatter.bewilderbeest.net/
+commit 4298388574da ("net: macb: restart tx after tx used bit read")
+added support for restarting transmission. Restarting tx does not work
+in case controller asserts TXUBR interrupt and TQBP is already at the end
+of the tx queue. In that situation, restarting tx will immediately cause
+assertion of another TXUBR interrupt. The driver will end up in an infinite
+interrupt loop which it cannot break out of.
 
-So the series can be fetched with eg. b4.
+For cases where TQBP is at the end of the tx queue, instead
+only clear TX_USED interrupt. As more data gets pushed to the queue,
+transmission will resume.
 
-Aside from the mega-diff in patch 5 the changes look good to me (If
-you can think of a way that makes patch 5 easier to review then let me
-know).
+This issue was observed on a Xilinx Zynq-7000 based board.
+During stress test of the network interface,
+driver would get stuck on interrupt loop within seconds or minutes
+causing CPU to stall.
 
-Reviewed-by: Joel Stanley <joel@jms.id.au>
+Signed-off-by: Tomas Melin <tomas.melin@vaisala.com>
+Tested-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Link: https://lore.kernel.org/r/20220407161659.14532-1-tomas.melin@vaisala.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/cadence/macb_main.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
->
-> I'm not sure how critical a limit that 100K is, or if it's something we
-> might consider raising a bit?
->
->
-> Thanks,
-> Zev
->
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index d13f06cf0308..c4f4b13ac469 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -1656,6 +1656,7 @@ static void macb_tx_restart(struct macb_queue *queue)
+ 	unsigned int head = queue->tx_head;
+ 	unsigned int tail = queue->tx_tail;
+ 	struct macb *bp = queue->bp;
++	unsigned int head_idx, tbqp;
+ 
+ 	if (bp->caps & MACB_CAPS_ISR_CLEAR_ON_WRITE)
+ 		queue_writel(queue, ISR, MACB_BIT(TXUBR));
+@@ -1663,6 +1664,13 @@ static void macb_tx_restart(struct macb_queue *queue)
+ 	if (head == tail)
+ 		return;
+ 
++	tbqp = queue_readl(queue, TBQP) / macb_dma_desc_get_size(bp);
++	tbqp = macb_adj_dma_desc_idx(bp, macb_tx_ring_wrap(bp, tbqp));
++	head_idx = macb_adj_dma_desc_idx(bp, macb_tx_ring_wrap(bp, head));
++
++	if (tbqp == head_idx)
++		return;
++
+ 	macb_writel(bp, NCR, macb_readl(bp, NCR) | MACB_BIT(TSTART));
+ }
+ 
+-- 
+2.35.1
+
+
+
