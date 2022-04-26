@@ -2,189 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A931C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 04:29:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35CB0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 04:35:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244106AbiDZEcZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 00:32:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40586 "EHLO
+        id S244132AbiDZEim (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 00:38:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243726AbiDZEcU (ORCPT
+        with ESMTP id S233208AbiDZEib (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 00:32:20 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52EC360D9A
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 21:29:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650947354; x=1682483354;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=AKckjXYaxQGxTNPTsQ7PBu5TUGPg1ZpPQG3uCju+UvI=;
-  b=M4jaAzTuNPt2FAOR4DfxzND0+08TqtBNGXriGhHwYT59K5S2ai8LwPvW
-   +rSWnxYGlJJmC56l8uPZGlsgw0Byl6RLHKjaSa4p//es02ccfBJoPhlML
-   Hhal7iNOYT70N6PP7hcPRZa9Ck4KofZzrnr3u1zUCCcmVg9HZFCd2EDxd
-   qyI4OXmF9KxLl+ZRkwaPB8mIaHszoDByCP9jIuAWxhAxm00tVYc6I/skb
-   WfCDy4Zes/ivci00eOqAHGm8kXHKiW/6wLTckrvbWlRAYEspWIxOP0ouu
-   dffa9fDjshLKqM9ySxGvxWKWWJF6+s+oUeW8JDacUWUQ1geKTCiBEaa3S
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="351891210"
-X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
-   d="scan'208";a="351891210"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 21:28:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
-   d="scan'208";a="512955263"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 25 Apr 2022 21:28:23 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1njCoJ-0003DC-0L;
-        Tue, 26 Apr 2022 04:28:23 +0000
-Date:   Tue, 26 Apr 2022 12:27:41 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:ras/core] BUILD SUCCESS
- fa619f5156cf1ee3773edc6d756be262c9ef35de
-Message-ID: <626774bd.EvNTJxOMGUjgEeXy%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Tue, 26 Apr 2022 00:38:31 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEDB46831A;
+        Mon, 25 Apr 2022 21:35:24 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id c125so18122129iof.9;
+        Mon, 25 Apr 2022 21:35:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=frgqbBmEnlLOFkP5YQ4kOPLeHQM9VGrk+Z9lDLuwteY=;
+        b=fuTPWvdIbbSrrzCFmPB61LaqlpMmWCsBW+Cf6tVztqhkjWbmHtHWh4YGNFpvI0KN34
+         wMYjp2l8kUJocGct62qVYItbLFTQu8I6nPuG6MX+PIhwzrjc4STlMVYVFxOzO0Iteh/A
+         7VmkgIM+whoQZUjfyLYLhCmPii+tQE6RyVD1nfIa/H/gTde0jvwfav5G4iB+92Jrduhi
+         4DqwmfTTktTwD0txUHLKIpR5GS13pXR1QtyhEgxVHiSPmsgDftVbvcu6lVYc6KMVmRtX
+         wmuW6kId0zUTMKMZlIHYMzfa1y4qUHcqBTG8tOQ2he+DYzHQr2OD77aXkqtXIQrgugWZ
+         VNCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=frgqbBmEnlLOFkP5YQ4kOPLeHQM9VGrk+Z9lDLuwteY=;
+        b=v1BiyliNqx1Zmn+1nsPj+0CEzrzjhzdrRCHyErw4xcrDtMijJMKR28gs1S7krJOzij
+         HdSpY+RbYMLp8SHOVrTlNIoswYQ9lZncW5LC8jmjQMLy78WSGPiDR3J/prKRZKk44Gvx
+         jS6mwebKbHsMMNxBD1yUuXmM+TaGSBjT/tDZPdE8acuhZCg2X4Wx+VODMdd5VNuky7fV
+         5stzEzM4T2VaWBiMOBokDVzmzQXy9doFJkcq22Hz7h5oqbLlMgWFvYfdRaYNX9P+O2In
+         R43McAzwRYDq6ysUTFP//CDil7/iX4nM8cuHxlKatPrDx1PnKXrFQpPcYQ2erIh5x0JM
+         L1hQ==
+X-Gm-Message-State: AOAM530QonFaBW3JNfypgKvRzSf5R7sYrT0KBP9hxqXqjSUm1/ABBPmN
+        jRGOhKlQeOmB+l0k3t7Z55QJiZrHz2P0nkdZOGk=
+X-Google-Smtp-Source: ABdhPJwI43GdLiN5OgE0tsEwSFiZuSsR4oCVXkxjdQsO9ddZcNUD4npdTkeiSjKpGxZ5IIlNeb0ri3TiIaOTH2wlsFo=
+X-Received: by 2002:a5d:9f4e:0:b0:652:2323:2eb8 with SMTP id
+ u14-20020a5d9f4e000000b0065223232eb8mr8494566iot.79.1650947724372; Mon, 25
+ Apr 2022 21:35:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+References: <20220421120925.330160-1-shaozhengchao@huawei.com>
+In-Reply-To: <20220421120925.330160-1-shaozhengchao@huawei.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 25 Apr 2022 21:35:13 -0700
+Message-ID: <CAEf4BzY=VajaEH_09FX0-wuPFCJ6te=shZa0jj2Jc7ukL-WzMQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] samples/bpf: detach xdp prog when program exits
+ unexpectedly in xdp_rxq_info_user
+To:     Zhengchao Shao <shaozhengchao@huawei.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        john fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Wei Yongjun <weiyongjun1@huawei.com>,
+        YueHaibing <yuehaibing@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git ras/core
-branch HEAD: fa619f5156cf1ee3773edc6d756be262c9ef35de  x86/mce: Add messages for panic errors in AMD's MCE grading
+On Thu, Apr 21, 2022 at 5:07 AM Zhengchao Shao <shaozhengchao@huawei.com> w=
+rote:
+>
+> When xdp_rxq_info_user program exits unexpectedly, it doesn't detach xdp
+> prog of device, and other xdp prog can't be attached to the device. So
+> call init_exit() to detach xdp prog when program exits unexpectedly.
+>
+> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> ---
+>  samples/bpf/xdp_rxq_info_user.c | 21 +++++++++++++++------
+>  1 file changed, 15 insertions(+), 6 deletions(-)
+>
 
-elapsed time: 740m
+you are introducing a new compilation warning, please fix it
 
-configs tested: 110
-configs skipped: 87
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+/data/users/andriin/linux/samples/bpf/xdp_rxq_info_user.c: In function
+=E2=80=98options2str=E2=80=99:
+/data/users/andriin/linux/samples/bpf/xdp_rxq_info_user.c:153:1:
+warning: control reaches end of non-void function [-Wreturn-type]
+  153 | }
+      | ^
 
-gcc tested configs:
-arm64                               defconfig
-arm64                            allyesconfig
-arm                              allmodconfig
-arm                                 defconfig
-arm                              allyesconfig
-mips                 randconfig-c004-20220425
-i386                 randconfig-c001-20220425
-powerpc                       ppc64_defconfig
-sh                  sh7785lcr_32bit_defconfig
-powerpc                    sam440ep_defconfig
-sh                           se7619_defconfig
-powerpc                      pasemi_defconfig
-sh                        sh7785lcr_defconfig
-powerpc                    amigaone_defconfig
-um                               alldefconfig
-sh                              ul2_defconfig
-sh                          sdk7786_defconfig
-arm                           viper_defconfig
-mips                      loongson3_defconfig
-parisc64                            defconfig
-sparc                               defconfig
-arm                         lubbock_defconfig
-h8300                       h8s-sim_defconfig
-arc                     haps_hs_smp_defconfig
-arm                           h3600_defconfig
-xtensa                  nommu_kc705_defconfig
-x86_64               randconfig-c001-20220425
-arm                  randconfig-c002-20220425
-m68k                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-csky                                defconfig
-nios2                            allyesconfig
-alpha                               defconfig
-alpha                            allyesconfig
-h8300                            allyesconfig
-xtensa                           allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-nios2                               defconfig
-arc                              allyesconfig
-s390                                defconfig
-s390                             allmodconfig
-parisc                              defconfig
-parisc                           allyesconfig
-s390                             allyesconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-x86_64               randconfig-a015-20220425
-x86_64               randconfig-a014-20220425
-x86_64               randconfig-a011-20220425
-x86_64               randconfig-a013-20220425
-x86_64               randconfig-a012-20220425
-x86_64               randconfig-a016-20220425
-i386                 randconfig-a011-20220425
-i386                 randconfig-a014-20220425
-i386                 randconfig-a015-20220425
-i386                 randconfig-a012-20220425
-i386                 randconfig-a013-20220425
-i386                 randconfig-a016-20220425
-arc                  randconfig-r043-20220425
-s390                 randconfig-r044-20220425
-riscv                randconfig-r042-20220425
-riscv                               defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                             allnoconfig
-riscv                            allmodconfig
-riscv                            allyesconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                         rhel-8.3-kunit
-x86_64                               rhel-8.3
+It also would be good to instead use bpf_link-based XDP attachment
+that would be auto-detached automatically on process crash
+(bpf_link_create() FTW). Please consider also converting this sample
+to skeleton (and then bpf_program__attach_xdp() as high-level
+alternative to bpf_link_create()).
 
-clang tested configs:
-riscv                randconfig-c006-20220425
-mips                 randconfig-c004-20220425
-x86_64               randconfig-c007-20220425
-arm                  randconfig-c002-20220425
-i386                 randconfig-c001-20220425
-powerpc              randconfig-c003-20220425
-arm                        magician_defconfig
-powerpc                       ebony_defconfig
-arm                     davinci_all_defconfig
-mips                        workpad_defconfig
-mips                           ip27_defconfig
-x86_64               randconfig-a002-20220425
-x86_64               randconfig-a004-20220425
-x86_64               randconfig-a003-20220425
-x86_64               randconfig-a001-20220425
-x86_64               randconfig-a005-20220425
-x86_64               randconfig-a006-20220425
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-i386                 randconfig-a003-20220425
-i386                 randconfig-a002-20220425
-i386                 randconfig-a001-20220425
-i386                 randconfig-a005-20220425
-i386                 randconfig-a004-20220425
-i386                 randconfig-a006-20220425
+> diff --git a/samples/bpf/xdp_rxq_info_user.c b/samples/bpf/xdp_rxq_info_u=
+ser.c
+> index f2d90cba5164..6378007e085a 100644
+> --- a/samples/bpf/xdp_rxq_info_user.c
+> +++ b/samples/bpf/xdp_rxq_info_user.c
+> @@ -18,7 +18,7 @@ static const char *__doc__ =3D " XDP RX-queue info extr=
+act example\n\n"
+>  #include <getopt.h>
+>  #include <net/if.h>
+>  #include <time.h>
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+[...]
