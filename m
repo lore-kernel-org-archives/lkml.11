@@ -2,54 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC92FC4707F
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:07:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17F68C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:08:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347404AbiDZJKv (ORCPT
+        id S1346636AbiDZJIu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:10:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55676 "EHLO
+        Tue, 26 Apr 2022 05:08:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346847AbiDZIuo (ORCPT
+        with ESMTP id S1346152AbiDZIoj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:50:44 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0243A17035F;
-        Tue, 26 Apr 2022 01:39:03 -0700 (PDT)
+        Tue, 26 Apr 2022 04:44:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF9BD161EBE;
+        Tue, 26 Apr 2022 01:34:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0F055CE1BBB;
-        Tue, 26 Apr 2022 08:39:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB564C385A0;
-        Tue, 26 Apr 2022 08:38:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3AFAB6185C;
+        Tue, 26 Apr 2022 08:34:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43E3CC385A4;
+        Tue, 26 Apr 2022 08:34:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962340;
-        bh=4Wxgi3OSyAND3xCtQ83fZNlx1WUMKKBOUaA3R2KTe98=;
+        s=korg; t=1650962056;
+        bh=RGoE0lV4Gt1FzGtH18FsPre8pQCqlrkKwqFydH7HAbA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vs7OClKK8Ch9ScopDyKQM7F4nd7SBqqOBM413HPjZQie6Rum1B07zHQbWf33lhVKD
-         0WzguPzk8yYXMxU/onieZoqcAmmsGeDLwx+DLMX7dj1mgyY5LA7xH/3B4OnpCxb+V2
-         hTFivP2lwk6snZyDoxSxN9NyFxzToc5hoSH/2C8Y=
+        b=aqdDdhjpbyMb8yx7TbBq5mtmqLSbWesjbfM9Ch1NHK3ffn5uSFxf+JsU/2YQD6Rfg
+         Cuyp3FXHpbyNTN2fJtFoaW3HJ0VjQ8piojljg+aAWCfX3YVQiP68AeFKUiZjo9t8CH
+         HJAdowvaM4CIHOdj9tGOEMcH8jHl3LlqfzgYUp6o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
-        Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Shayne Chen <shayne.chen@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 063/124] mt76: Fix undefined behavior due to shift overflowing the constant
-Date:   Tue, 26 Apr 2022 10:21:04 +0200
-Message-Id: <20220426081749.091859619@linuxfoundation.org>
+        stable@vger.kernel.org, koo5 <kolman.jindrich@gmail.com>,
+        Manuel Ullmann <labre@posteo.de>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.10 57/86] net: atlantic: invert deep par in pm functions, preventing null derefs
+Date:   Tue, 26 Apr 2022 10:21:25 +0200
+Message-Id: <20220426081742.851286029@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
-References: <20220426081747.286685339@linuxfoundation.org>
+In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
+References: <20220426081741.202366502@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -58,53 +50,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Manuel Ullmann <labre@posteo.de>
 
-[ Upstream commit dbc2b1764734857d68425468ffa8486e97ab89df ]
+commit cbe6c3a8f8f4315b96e46e1a1c70393c06d95a4c upstream.
 
-Fix:
+This will reset deeply on freeze and thaw instead of suspend and
+resume and prevent null pointer dereferences of the uninitialized ring
+0 buffer while thawing.
 
-  drivers/net/wireless/mediatek/mt76/mt76x2/pci.c: In function ‘mt76x2e_probe’:
-  ././include/linux/compiler_types.h:352:38: error: call to ‘__compiletime_assert_946’ \
-	declared with attribute error: FIELD_PREP: mask is not constant
-    _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+The impact is an indefinitely hanging kernel. You can't switch
+consoles after this and the only possible user interaction is SysRq.
 
-See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
-details as to why it triggers with older gccs only.
+BUG: kernel NULL pointer dereference
+RIP: 0010:aq_ring_rx_fill+0xcf/0x210 [atlantic]
+aq_vec_init+0x85/0xe0 [atlantic]
+aq_nic_init+0xf7/0x1d0 [atlantic]
+atl_resume_common+0x4f/0x100 [atlantic]
+pci_pm_thaw+0x42/0xa0
 
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: Felix Fietkau <nbd@nbd.name>
-Cc: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-Cc: Ryder Lee <ryder.lee@mediatek.com>
-Cc: Shayne Chen <shayne.chen@mediatek.com>
-Cc: Sean Wang <sean.wang@mediatek.com>
-Cc: Kalle Valo <kvalo@kernel.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: linux-wireless@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220405151517.29753-9-bp@alien8.de
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+resolves in aq_ring.o to
+
+```
+0000000000000ae0 <aq_ring_rx_fill>:
+{
+/* ... */
+ baf:	48 8b 43 08          	mov    0x8(%rbx),%rax
+ 		buff->flags = 0U; /* buff is NULL */
+```
+
+The bug has been present since the introduction of the new pm code in
+8aaa112a57c1 ("net: atlantic: refactoring pm logic") and was hidden
+until 8ce84271697a ("net: atlantic: changes for multi-TC support"),
+which refactored the aq_vec_{free,alloc} functions into
+aq_vec_{,ring}_{free,alloc}, but is technically not wrong. The
+original functions just always reinitialized the buffers on S3/S4. If
+the interface is down before freezing, the bug does not occur. It does
+not matter, whether the initrd contains and loads the module before
+thawing.
+
+So the fix is to invert the boolean parameter deep in all pm function
+calls, which was clearly intended to be set like that.
+
+First report was on Github [1], which you have to guess from the
+resume logs in the posted dmesg snippet. Recently I posted one on
+Bugzilla [2], since I did not have an AQC device so far.
+
+#regzbot introduced: 8ce84271697a
+#regzbot from: koo5 <kolman.jindrich@gmail.com>
+#regzbot monitor: https://github.com/Aquantia/AQtion/issues/32
+
+Fixes: 8aaa112a57c1 ("net: atlantic: refactoring pm logic")
+Link: https://github.com/Aquantia/AQtion/issues/32 [1]
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215798 [2]
+Cc: stable@vger.kernel.org
+Reported-by: koo5 <kolman.jindrich@gmail.com>
+Signed-off-by: Manuel Ullmann <labre@posteo.de>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt76x2/pci.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c b/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
-index adf288e50e21..5cd0379d86de 100644
---- a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
-@@ -80,7 +80,7 @@ mt76x2e_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	mt76_rmw_field(dev, 0x15a10, 0x1f << 16, 0x9);
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
+@@ -450,22 +450,22 @@ err_exit:
  
- 	/* RG_SSUSB_G1_CDR_BIC_LTR = 0xf */
--	mt76_rmw_field(dev, 0x15a0c, 0xf << 28, 0xf);
-+	mt76_rmw_field(dev, 0x15a0c, 0xfU << 28, 0xf);
+ static int aq_pm_freeze(struct device *dev)
+ {
+-	return aq_suspend_common(dev, false);
++	return aq_suspend_common(dev, true);
+ }
  
- 	/* RG_SSUSB_CDR_BR_PE1D = 0x3 */
- 	mt76_rmw_field(dev, 0x15c58, 0x3 << 6, 0x3);
--- 
-2.35.1
-
+ static int aq_pm_suspend_poweroff(struct device *dev)
+ {
+-	return aq_suspend_common(dev, true);
++	return aq_suspend_common(dev, false);
+ }
+ 
+ static int aq_pm_thaw(struct device *dev)
+ {
+-	return atl_resume_common(dev, false);
++	return atl_resume_common(dev, true);
+ }
+ 
+ static int aq_pm_resume_restore(struct device *dev)
+ {
+-	return atl_resume_common(dev, true);
++	return atl_resume_common(dev, false);
+ }
+ 
+ static const struct dev_pm_ops aq_pm_ops = {
 
 
