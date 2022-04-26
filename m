@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76C67C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:33:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52E99C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:33:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235755AbiDZJgi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:36:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41346 "EHLO
+        id S1347804AbiDZJgs (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:36:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347931AbiDZJGX (ORCPT
+        with ESMTP id S1347927AbiDZJGX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 05:06:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35451B9F07;
-        Tue, 26 Apr 2022 01:47:33 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 587CBB82DF;
+        Tue, 26 Apr 2022 01:47:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C4DC860C42;
-        Tue, 26 Apr 2022 08:47:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89F26C385A0;
-        Tue, 26 Apr 2022 08:47:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E93C7B81A2F;
+        Tue, 26 Apr 2022 08:47:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39A52C385A0;
+        Tue, 26 Apr 2022 08:47:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962852;
-        bh=4sPhDbCQx1zPEz4C3yDJVaZMcs36wzOetBzsjQaMW1w=;
+        s=korg; t=1650962842;
+        bh=pPUGC2QOI+p+xw95cth8tUH43wg/hfGzB4GQieCVmOY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XInRp8yAzZ2E74xNgHbGlaX3nj8zY6aqL7nhw+HJmBTFlBjF32miLELNWOJuzw/Fe
-         VI46djLsfP1u4LJRX+sCDdNNWQn6Ez2GKOiAZ/v0TxAgVUnk+hM+LsC3coGJvHe19a
-         XCOYguCQgn5VD67Ab8oQE8/9/YeS7Qy+//Lt9GoM=
+        b=TjaybJkubdRaXsHzGYy6A9HRzKUKMJ+ZTu1EP7UwPABgf1wCHqEhDrTsM6K601WKU
+         jAGOhL8PkYIgTvCo2n1D2dpNJudbVnnna96wdrtDEBRRrJy33/bKncCO70rMr5vp2/
+         oVSK3r/EN8/cnwGoMiGispCMsZCSIaIhK7SBkauU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Stefano Stabellini <stefano.stabellini@xilinx.com>,
+        Maxime Ripard <maxime@cerno.tech>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 111/146] arm/xen: Fix some refcount leaks
-Date:   Tue, 26 Apr 2022 10:21:46 +0200
-Message-Id: <20220426081753.175577347@linuxfoundation.org>
+Subject: [PATCH 5.17 108/146] drm/vc4: Use pm_runtime_resume_and_get to fix pm_runtime_get_sync() usage
+Date:   Tue, 26 Apr 2022 10:21:43 +0200
+Message-Id: <20220426081753.093144757@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -52,64 +52,37 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 533bec143a4c32f7b2014a159d0f5376226e5b4d ]
+[ Upstream commit 3d0b93d92a2790337aa9d18cb332d02356a24126 ]
 
-The of_find_compatible_node() function returns a node pointer with
-refcount incremented, We should use of_node_put() on it when done
-Add the missing of_node_put() to release the refcount.
+If the device is already in a runtime PM enabled state
+pm_runtime_get_sync() will return 1.
 
-Fixes: 9b08aaa3199a ("ARM: XEN: Move xen_early_init() before efi_init()")
-Fixes: b2371587fe0c ("arm/xen: Read extended regions from DT and init Xen resource")
+Also, we need to call pm_runtime_put_noidle() when pm_runtime_get_sync()
+fails, so use pm_runtime_resume_and_get() instead. this function
+will handle this.
+
+Fixes: 4078f5757144 ("drm/vc4: Add DSI driver")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Stefano Stabellini <sstabellini@kernel.org>
-Signed-off-by: Stefano Stabellini <stefano.stabellini@xilinx.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220420135008.2757-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/xen/enlighten.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/vc4/vc4_dsi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/xen/enlighten.c b/arch/arm/xen/enlighten.c
-index ec5b082f3de6..07eb69f9e7df 100644
---- a/arch/arm/xen/enlighten.c
-+++ b/arch/arm/xen/enlighten.c
-@@ -337,12 +337,15 @@ int __init arch_xen_unpopulated_init(struct resource **res)
+diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
+index 9300d3354c51..64dfefeb03f5 100644
+--- a/drivers/gpu/drm/vc4/vc4_dsi.c
++++ b/drivers/gpu/drm/vc4/vc4_dsi.c
+@@ -846,7 +846,7 @@ static void vc4_dsi_encoder_enable(struct drm_encoder *encoder)
+ 	unsigned long phy_clock;
+ 	int ret;
  
- 	if (!nr_reg) {
- 		pr_err("No extended regions are found\n");
-+		of_node_put(np);
- 		return -EINVAL;
- 	}
- 
- 	regs = kcalloc(nr_reg, sizeof(*regs), GFP_KERNEL);
--	if (!regs)
-+	if (!regs) {
-+		of_node_put(np);
- 		return -ENOMEM;
-+	}
- 
- 	/*
- 	 * Create resource from extended regions provided by the hypervisor to be
-@@ -403,8 +406,8 @@ int __init arch_xen_unpopulated_init(struct resource **res)
- 	*res = &xen_resource;
- 
- err:
-+	of_node_put(np);
- 	kfree(regs);
--
- 	return rc;
- }
- #endif
-@@ -424,8 +427,10 @@ static void __init xen_dt_guest_init(void)
- 
- 	if (of_address_to_resource(xen_node, GRANT_TABLE_INDEX, &res)) {
- 		pr_err("Xen grant table region is not found\n");
-+		of_node_put(xen_node);
+-	ret = pm_runtime_get_sync(dev);
++	ret = pm_runtime_resume_and_get(dev);
+ 	if (ret) {
+ 		DRM_ERROR("Failed to runtime PM enable on DSI%d\n", dsi->variant->port);
  		return;
- 	}
-+	of_node_put(xen_node);
- 	xen_grant_frames = res.start;
- }
- 
 -- 
 2.35.1
 
