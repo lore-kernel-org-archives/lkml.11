@@ -2,134 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23CF2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:34:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D43F2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:34:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345014AbiDZIhr (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:37:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36920 "EHLO
+        id S242128AbiDZIh5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 04:37:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345297AbiDZIe3 (ORCPT
+        with ESMTP id S1345354AbiDZIec (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:34:29 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1602774848;
-        Tue, 26 Apr 2022 01:27:00 -0700 (PDT)
-X-UUID: d252231955874f388ed19aaa27160fc0-20220426
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:12f92259-211b-468d-92b1-beb7f924bcc5,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:45
-X-CID-INFO: VERSION:1.1.4,REQID:12f92259-211b-468d-92b1-beb7f924bcc5,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
-        N:release,TS:45
-X-CID-META: VersionHash:faefae9,CLOUDID:a5e6bb2e-6199-437e-8ab4-9920b4bc5b76,C
-        OID:IGNORED,Recheck:0,SF:13|15|28|17|19|48,TC:nil,Content:0,EDM:-3,File:ni
-        l,QS:0,BEC:nil
-X-UUID: d252231955874f388ed19aaa27160fc0-20220426
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 465555622; Tue, 26 Apr 2022 16:26:55 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Tue, 26 Apr 2022 16:26:54 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 26 Apr 2022 16:26:54 +0800
-Message-ID: <1ec1f18809a75faef249cf2303dd19d26c51afff.camel@mediatek.com>
-Subject: Re: [PATCH V4 01/14] dt-bindings: cpufreq: mediatek: Add MediaTek
- CCI property
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        <rafael@kernel.org>, <viresh.kumar@linaro.org>,
-        <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
-        <matthias.bgg@gmail.com>
-CC:     <jia-wei.chang@mediatek.com>, <roger.lu@mediatek.com>,
-        <hsinyi@google.com>, <khilman@baylibre.com>,
-        <angelogioacchino.delregno@collabora.com>,
-        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Tue, 26 Apr 2022 16:26:54 +0800
-In-Reply-To: <9ff80bc2-d63b-14aa-5769-20bff6e3a21e@linaro.org>
-References: <20220422075239.16437-1-rex-bc.chen@mediatek.com>
-         <20220422075239.16437-2-rex-bc.chen@mediatek.com>
-         <f2e5a34b-ed02-91a1-bc7b-fecaa95e227e@linaro.org>
-         <811bf944-a230-ab9b-583a-840e57af8a1e@linaro.org>
-         <28f75ac2995b116af9b2accf760786d1d1798c93.camel@mediatek.com>
-         <7873f0fa-25c3-191f-5096-3ceb9afd50cc@linaro.org>
-         <c1b910098a0a5cbe06ec971c1bf745ac37986274.camel@mediatek.com>
-         <9ff80bc2-d63b-14aa-5769-20bff6e3a21e@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Tue, 26 Apr 2022 04:34:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8432374867;
+        Tue, 26 Apr 2022 01:27:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B70E6179E;
+        Tue, 26 Apr 2022 08:27:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FE22C385A0;
+        Tue, 26 Apr 2022 08:27:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650961627;
+        bh=eHIuRoQIdPxgG8oN0IWERZQhX1NYrprx+LxNoPGH7wY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fPGWZPo3MAUWuWEmhO8XBeSQ5MQ8CuL/Lh63MkSF6/hSr5AclzXrYBfpHA6I9c/0D
+         mDMq+KUHkA2LCzW6L7CxIHTUA85ln7puaW8gP44EEx9nVUXHQp0Lz+WDgUd/LUXlv0
+         vcgKFXKNgXOy6WOQw42OU60coD45fPvcOY/lCAto=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>
+Subject: [PATCH 4.19 05/53] dm integrity: fix memory corruption when tag_size is less than digest size
+Date:   Tue, 26 Apr 2022 10:20:45 +0200
+Message-Id: <20220426081735.813142442@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220426081735.651926456@linuxfoundation.org>
+References: <20220426081735.651926456@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-04-25 at 12:52 +0200, Krzysztof Kozlowski wrote:
-> On 25/04/2022 12:20, Rex-BC Chen wrote:
-> > > However I am not sure if you solved your problem... see below:
-> > > 
-> > > > For example:
-> > > > mediatek cci set 1.2V originally. When cpufreq want to adjust
-> > > > lower
-> > > > frequency adn set voltage to 1.0V.
-> > > > The framework will remain using 1.2V to prevent crash of
-> > > > mediatek
-> > > > cci.
-> > > 
-> > > No, regulator_set_voltage() for proc_reg says:
-> > > "NOTE: If the regulator is shared between several devices then
-> > > the
-> > > lowest
-> > >  request voltage that meets the system constraints will be used."
-> > > 
-> > > Not the highest. So when your devfreq and cpufreq boots, calling
-> > > regulator_set_voltage will still cause high frequency and low
-> > > voltage.
-> > > 
-> > 
-> > From the driver comment, I think it still needs to match "meets the
-> > system constraints".
-> > 
-> > From drivers, we can trace the driver and it finally to
-> > regulator_get_optimal_voltage().
-> > In [1], the framework will get max voltage while finding each
-> > device's
-> > voltage.
-> > 
-> > [1]: 
-> > 
-https://urldefense.com/v3/__https://elixir.bootlin.com/linux/latest/source/drivers/regulator/core.c*L3815__;Iw!!CTRNKA9wMg0ARbw!35L9ISPWDpbGPsLEc0935D2nWTLtaLSNfPipvteddPaxwO2i_KaN0wfWegpkyaPjjagW$
-> >  
-> 
-> Right, actually in your case it's the regulator_check_consumers()
-> above
-> that line, because you
-> 
-> I think it's quite generic problem, so would be worth solving for
-> more
-> regulator consumers, but your approach is fine. At least I do not
-> have
-> anything smarter, at the moment.
-> 
-> Best regards,
-> Krzysztof
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-Hello Krzysztof,
+commit 08c1af8f1c13bbf210f1760132f4df24d0ed46d6 upstream.
 
-Thanks for your review!
-I will send next version to modify the description of mediatek,cci when
-the driver part is explained clear.
+It is possible to set up dm-integrity in such a way that the
+"tag_size" parameter is less than the actual digest size. In this
+situation, a part of the digest beyond tag_size is ignored.
 
-BRs,
-Rex
+In this case, dm-integrity would write beyond the end of the
+ic->recalc_tags array and corrupt memory. The corruption happened in
+integrity_recalc->integrity_sector_checksum->crypto_shash_final.
+
+Fix this corruption by increasing the tags array so that it has enough
+padding at the end to accomodate the loop in integrity_recalc() being
+able to write a full digest size for the last member of the tags
+array.
+
+Cc: stable@vger.kernel.org # v4.19+
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/md/dm-integrity.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+--- a/drivers/md/dm-integrity.c
++++ b/drivers/md/dm-integrity.c
+@@ -3504,6 +3504,7 @@ try_smaller_buffer:
+ 	}
+ 
+ 	if (ic->sb->flags & cpu_to_le32(SB_FLAG_RECALCULATING)) {
++		size_t recalc_tags_size;
+ 		if (!ic->internal_hash) {
+ 			r = -EINVAL;
+ 			ti->error = "Recalculate is only valid with internal hash";
+@@ -3522,8 +3523,10 @@ try_smaller_buffer:
+ 			r = -ENOMEM;
+ 			goto bad;
+ 		}
+-		ic->recalc_tags = kvmalloc_array(RECALC_SECTORS >> ic->sb->log2_sectors_per_block,
+-						 ic->tag_size, GFP_KERNEL);
++		recalc_tags_size = (RECALC_SECTORS >> ic->sb->log2_sectors_per_block) * ic->tag_size;
++		if (crypto_shash_digestsize(ic->internal_hash) > ic->tag_size)
++			recalc_tags_size += crypto_shash_digestsize(ic->internal_hash) - ic->tag_size;
++		ic->recalc_tags = kvmalloc(recalc_tags_size, GFP_KERNEL);
+ 		if (!ic->recalc_tags) {
+ 			ti->error = "Cannot allocate tags for recalculating";
+ 			r = -ENOMEM;
+
 
