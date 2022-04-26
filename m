@@ -2,152 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7687C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 06:42:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAB1DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 06:42:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245585AbiDZGpT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 02:45:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54756 "EHLO
+        id S245759AbiDZGoO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 02:44:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245495AbiDZGpK (ORCPT
+        with ESMTP id S245641AbiDZGoG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 02:45:10 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E954C11A07
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 23:42:03 -0700 (PDT)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23Q6Jns3030019;
-        Tue, 26 Apr 2022 06:41:59 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=CdxO9k+K2Z3VdCfoUGvq9FT5yhNnrm3bVlXSkf9eM/8=;
- b=YLlUiQum92F1671/tem474cxYakdOptJBURq37hazB6C8ljX3iwIQTF2oKAvabnT5VRS
- TlW+f2sq441dbHOfGl0DaP3YUlyjx4qYX5id8ygc/ocyFw1AIVVgkzy8sekVib/F8Cjc
- 5oQwoOC/DFc9FhaqFA+AjjhFxOWtJQY/ZIxGOYMhl3l270hK10xvuY4ODGdhS2pBAZpc
- s7WiE/hjIDzNZ1LuhUPNhy5BPHm7Kqmo2Yb8dC5xBx32Y1zThNR5l2wNcukeZq7AKaXR
- 9h1HvrcWxkgQA1QdE6AJAjDEWgYoad/BLxVDoUDoIU2rH0bMPdjjy+xaoa8aqSZuUnir Zw== 
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fpbcerbpx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 26 Apr 2022 06:41:59 +0000
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23Q6abl3005102;
-        Tue, 26 Apr 2022 06:41:56 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma06fra.de.ibm.com with ESMTP id 3fm8qhjxnd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 26 Apr 2022 06:41:56 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23Q6fseK39256400
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 26 Apr 2022 06:41:54 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0F69FA405F;
-        Tue, 26 Apr 2022 06:41:54 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 14ED4A4062;
-        Tue, 26 Apr 2022 06:41:52 +0000 (GMT)
-Received: from li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com (unknown [9.43.82.112])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Tue, 26 Apr 2022 06:41:51 +0000 (GMT)
-Date:   Tue, 26 Apr 2022 12:11:46 +0530
-From:   Jagdish Gediya <jvgediya@linux.ibm.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     andy@kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        minchan@kernel.org, ying.huang@intel.com, dave.hansen@intel.com
-Subject: Re: [RESEND PATCH] string_helpers: sysfs: Add helper to get bool
- from string
-Message-ID: <YmeUKg9s5AZUKXj8@li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com>
-References: <20220425085233.82576-1-jvgediya@linux.ibm.com>
- <20220425150046.e23a0198e0076221549eb7cf@linux-foundation.org>
+        Tue, 26 Apr 2022 02:44:06 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 097701B784
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Apr 2022 23:40:59 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C686623A;
+        Mon, 25 Apr 2022 23:40:58 -0700 (PDT)
+Received: from bogus (unknown [10.57.11.83])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8CC343F5A1;
+        Mon, 25 Apr 2022 23:40:57 -0700 (PDT)
+Date:   Tue, 26 Apr 2022 07:40:53 +0100
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     =?utf-8?B?546L5pOO?= <wangqing@vivo.com>
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "vincent.guittot@linaro.org" <vincent.guittot@linaro.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "dietmar.eggemann@arm.com" <dietmar.eggemann@arm.com>
+Subject: Re: [PATCH V2] arm64: add SCHED_CLUSTER's dependency on ACPI
+Message-ID: <20220426064053.h4rwvcdvmwxj2hmt@bogus>
+References: <1650855303-91388-1-git-send-email-wangqing@vivo.com>
+ <20220425100635.ig4dxvlflglfagpx@bogus>
+ <SL2PR06MB308217E24459AB685FBF6FD2BDF89@SL2PR06MB3082.apcprd06.prod.outlook.com>
+ <20220425165946.qb6xilgmjahdh4pa@bogus>
+ <SL2PR06MB3082544EFB9C6F518A2EBF04BDFB9@SL2PR06MB3082.apcprd06.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220425150046.e23a0198e0076221549eb7cf@linux-foundation.org>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: qUmtZk5Kj0EMTaM7g0W9Wr6IsEkS7pCi
-X-Proofpoint-ORIG-GUID: qUmtZk5Kj0EMTaM7g0W9Wr6IsEkS7pCi
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-26_02,2022-04-25_03,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- lowpriorityscore=0 phishscore=0 mlxlogscore=999 malwarescore=0
- suspectscore=0 bulkscore=0 mlxscore=0 clxscore=1015 adultscore=0
- spamscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2202240000 definitions=main-2204260042
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <SL2PR06MB3082544EFB9C6F518A2EBF04BDFB9@SL2PR06MB3082.apcprd06.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 03:00:46PM -0700, Andrew Morton wrote:
-> On Mon, 25 Apr 2022 14:22:33 +0530 Jagdish Gediya <jvgediya@linux.ibm.com> wrote:
+On Tue, Apr 26, 2022 at 02:23:25AM +0000, 王擎 wrote:
 > 
-> > At many places in kernel, It is necessary to convert sysfs input
-> > to corrosponding bool value e.g. "false" or "0" need to be converted
-> > to bool false, "true" or "1" need to be converted to bool true,
-> > places where such conversion is needed currently check the input
-> > string manually. Also, such conversions compare sysfs input using
-> > strncmp functions so even if certain number of character match in the
-> > beginning, they assume the string as valid bool, which is not the
-> > right semantic e.g. false is bool but falseX is not.
-> > 
-> > Introduce new string helper function to convert sysfs input to
-> > corrosponding bool value. Modify existing such conversions to use
-> > this new function.
-> > 
-> > logs,
-> > $ cat /sys/kernel/mm/numa/demotion_enabled
-> > false
-> > $ echo true > /sys/kernel/mm/numa/demotion_enabled
-> > $ cat demotion_enabled
-> > true
-> > $ echo truex > /sys/kernel/mm/numa/demotion_enabled
-> > -bash: echo: write error: Invalid argument
-> > $ echo 10 > /sys/kernel/mm/numa/demotion_enabled
-> > -bash: echo: write error: Invalid argument
-> > $ echo false > /sys/kernel/mm/numa/demotion_enabled
-> > $ cat demotion_enabled
-> > false
-> > $ echo falseabc > /sys/kernel/mm/numa/demotion_enabled
-> > -bash: echo: write error: Invalid argument
-> > $ echo 1 > /sys/kernel/mm/numa/demotion_enabled
-> > $ cat demotion_enabled
-> > true
-> > $ echo 0 > /sys/kernel/mm/numa/demotion_enabled
-> > $ cat demotion_enabled
-> > false
-> > 
-> > This patch doesn't have any functionality change.
-> > 
-> > ...
+> >> 
+> >> >> From: Wang Qing <wangqing@vivo.com>
+> >> >> 
+> >> >> cluster sched_domain configured by cpu_topology[].cluster_sibling, 
+> >> >> which is set by cluster_id, cluster_id can only get from ACPI.
+> >> >> 
+> >> >> If the system does not enable ACPI, cluster_id is always -1, even enable
+> >> >> SCHED_CLUSTER is invalid, this is misleading. 
+> >> >> 
+> >> >> So we add SCHED_CLUSTER's dependency on ACPI here.
+> >> >>
+> >> >
+> >> >Any reason why this can't be extended to support DT based systems via
+> >> >cpu-map in the device tree. IMO we almost have everything w.r.t topology
+> >> >in DT and no reason to deviate this feature between ACPI and DT.
+> >> >
+> >> That's the problem, we parse out "cluster" info according to the
+> >> description in cpu-map, but do assign it to package_id, which used to
+> >> configure the MC sched domain, not cluster sched domain.
+> >>
 > >
-> > --- a/lib/string_helpers.c
-> > +++ b/lib/string_helpers.c
-> > @@ -967,6 +967,26 @@ void memcpy_and_pad(void *dest, size_t dest_len, const void *src, size_t count,
-> >  }
-> >  EXPORT_SYMBOL(memcpy_and_pad);
-> >  
-> > +/**
-> > + * sysfs_strbool - Get bool value corrosponding to string
-> > + * @s: The string to operate on.
-> > + * @output: Pointer to fill resulting bool value
-> > + *
-> > + * Returns 1 if string represents bool value, 0 otherwise
-> > + */
-> > +int sysfs_strbool(const char *s, bool *output)
-> > +{
-> > +	if (sysfs_streq(s, "1") || sysfs_streq(s, "true"))
-> > +		*output = true;
-> > +	else if (sysfs_streq(s, "0") || sysfs_streq(s, "false"))
-> > +		*output = false;
-> > +	else
-> > +		return 0;
-> > +
-> > +	return 1;
-> > +}
-> > +EXPORT_SYMBOL(sysfs_strbool);
-> > +
-> 
-> Can we teach kstrtobool() about "true" and "false" then use that?
+> >Right, we haven't updated the code after updating the bindings to match
+> >ACPI sockets which are the physical package boundaries. Clusters are not
+> >the physical boundaries and the current topology code is not 100% aligned
+> >with the bindings after Commit 849b384f92bc ("Documentation: DT: arm: add
+> >support for sockets defining package boundaries")
+>
+> I see, but this commit is a long time ago, why hasn't it been used widely.
+> Maybe I can help about it if you need.
+>
 
-I think we can do that, I have sent v2. Thanks
+I assume no one cared or had a requirement for the same.
+
+--
+Regards,
+Sudeep
