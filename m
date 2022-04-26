@@ -2,165 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F33DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 22:22:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48287C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 22:22:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353684AbiDZWXq (ORCPT
+        id S1355059AbiDZWZx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 18:23:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58046 "EHLO
+        Tue, 26 Apr 2022 18:25:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345638AbiDZWXi (ORCPT
+        with ESMTP id S1347064AbiDZWZv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 18:23:38 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED3F01DA78
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 15:20:29 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id s137so17164pgs.5
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 15:20:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JVRFURdG76Dl9sspocpqmwwFtBArwWcQWqjE+72v8EI=;
-        b=d1V64UADOytbZfDzDvJ3VfAxmezyXbcsGjfZlN6KFb9k94Y8qkdpcxCILHBfHoIv9Z
-         2p2c4EuBMpr1yUDRGvvafKoyb2R1/Xd1I2D+0IbIL92O+pMDCjQ+1HkUZusQ8tws7BOb
-         31dCkpLYVicv+Ok4o8bMN5GU/tu4pwAvuS3Cc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JVRFURdG76Dl9sspocpqmwwFtBArwWcQWqjE+72v8EI=;
-        b=A1QI8YBC99wryX04OlYxRoOMLAK6Te0ILSwCSBt+MYhKwhSTyTe72b5hOLSfb/Ofsl
-         8DRyvxZLvJMBmxL+3QfJvJNJ9kkBhMRUTiVp2SQ3JUpBAAY7Cqjo4O1G8tq46Wni7MlN
-         vxIPhCuEXfKUrMvGmR6A5mIMt0QNQ9c0xegwFK9dAFk7RrmsiuYd9n/F0higbBOLo8x0
-         pQEl2Ri1b2JIwjI6pXFCUqF7VWb0fDmf2Hgf+/eOb5YbojKiMMRtp6OsC0FivuWBAFdf
-         XgHh5LD+VSoMano34mAWm7B+dPqSCV76hrn0YkUP8b8tE8VkT6qa7csaDgRBDUf+Y2Wv
-         g+iA==
-X-Gm-Message-State: AOAM530Kx7WNd+b/bqxtYkI5ehkLqoN4oETE5I+Jy3b8etI6d54BQrvr
-        i+6YgFBFbHPWLrn8hqFDDdl6yg==
-X-Google-Smtp-Source: ABdhPJzHnDPpa/XWh62VMiNx0ZNq8fNu0fcxeXXhNFJA5lFTWuZ6hQZaUyNDQQ3ibJy4N+tQ1Y+u/g==
-X-Received: by 2002:aa7:8096:0:b0:50c:e24a:3bf8 with SMTP id v22-20020aa78096000000b0050ce24a3bf8mr26662983pff.29.1651011628708;
-        Tue, 26 Apr 2022 15:20:28 -0700 (PDT)
-Received: from kuabhs-cdev.c.googlers.com.com (240.111.247.35.bc.googleusercontent.com. [35.247.111.240])
-        by smtp.gmail.com with ESMTPSA id u2-20020a62d442000000b0050d404f837fsm8029107pfl.156.2022.04.26.15.20.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 15:20:27 -0700 (PDT)
-From:   Abhishek Kumar <kuabhs@chromium.org>
-To:     kvalo@kernel.org
-Cc:     quic_wgong@quicinc.com, kuabhs@chromium.org,
-        briannorris@chromium.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, ath10k@lists.infradead.org,
-        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH v2] ath10k: skip ath10k_halt during suspend for driver state RESTARTING
-Date:   Tue, 26 Apr 2022 22:19:55 +0000
-Message-Id: <20220426221859.v2.1.I650b809482e1af8d0156ed88b5dc2677a0711d46@changeid>
-X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Tue, 26 Apr 2022 18:25:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE0601FA60;
+        Tue, 26 Apr 2022 15:22:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 884F5B8219D;
+        Tue, 26 Apr 2022 22:22:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2701C385A4;
+        Tue, 26 Apr 2022 22:22:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1651011759;
+        bh=lYfUppC7lZmr5zSo7kS0sPDNwx4JInbK68kqdDwnp4Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=2qNdPSDjZ1dr6qUYrlw2odyTjrXmCOrYFxnBkwScJqQRstVEbT4zCaOdUVfRgdo1U
+         GsaUofEarLA66SHZVJNMkOgTrGoiw7n6o7oKbmiYtSCaSAg/Lnjolb6loUTPDzExsv
+         XAv5D1nvf7laYuEyO2ulqHwlD07joJA861bR61CM=
+Date:   Tue, 26 Apr 2022 15:22:37 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Yu Zhao <yuzhao@google.com>
+Cc:     Tejun Heo <tj@kernel.org>, Stephen Rothwell <sfr@rothwell.id.au>,
+        Linux-MM <linux-mm@kvack.org>, Andi Kleen <ak@linux.intel.com>,
+        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
+        Barry Song <21cnbao@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Rik van Riel <riel@surriel.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        Ying Huang <ying.huang@intel.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Kernel Page Reclaim v2 <page-reclaim@google.com>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Brian Geffon <bgeffon@google.com>,
+        Jan Alexander Steffens <heftig@archlinux.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Steven Barrett <steven@liquorix.net>,
+        Suleiman Souhlal <suleiman@google.com>,
+        Daniel Byrne <djbyrne@mtu.edu>,
+        Donald Carr <d@chaos-reins.com>,
+        Holger =?ISO-8859-1?Q?Hoffst=E4tte?= 
+        <holger@applied-asynchrony.com>,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
+        Shuang Zhai <szhai2@cs.rochester.edu>,
+        Sofia Trinh <sofia.trinh@edi.works>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>
+Subject: Re: [PATCH v10 10/14] mm: multi-gen LRU: kill switch
+Message-Id: <20220426152237.21d3f173eded69c0f63911f0@linux-foundation.org>
+In-Reply-To: <CAOUHufbtFj0Hez7wkw3DHGDwo6wudCzCvACt2GfgrFcubW_DYg@mail.gmail.com>
+References: <20220407031525.2368067-1-yuzhao@google.com>
+        <20220407031525.2368067-11-yuzhao@google.com>
+        <20220411191627.629f21de83cd0a520ef4a142@linux-foundation.org>
+        <CAOUHufbtFj0Hez7wkw3DHGDwo6wudCzCvACt2GfgrFcubW_DYg@mail.gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Double free crash is observed when FW recovery(caused by wmi
-timeout/crash) is followed by immediate suspend event. The FW recovery
-is triggered by ath10k_core_restart() which calls driver clean up via
-ath10k_halt(). When the suspend event occurs between the FW recovery,
-the restart worker thread is put into frozen state until suspend completes.
-The suspend event triggers ath10k_stop() which again triggers ath10k_halt()
-The double invocation of ath10k_halt() causes ath10k_htt_rx_free() to be
-called twice(Note: ath10k_htt_rx_alloc was not called by restart worker
-thread because of its frozen state), causing the crash.
+On Tue, 26 Apr 2022 14:57:15 -0600 Yu Zhao <yuzhao@google.com> wrote:
 
-To fix this, during the suspend flow, skip call to ath10k_halt() in
-ath10k_stop() when the current driver state is ATH10K_STATE_RESTARTING.
-Also, for driver state ATH10K_STATE_RESTARTING, call
-ath10k_wait_for_suspend() in ath10k_stop(). This is because call to
-ath10k_wait_for_suspend() is skipped later in
-[ath10k_halt() > ath10k_core_stop()] for the driver state
-ATH10K_STATE_RESTARTING.
+> On Mon, Apr 11, 2022 at 8:16 PM Andrew Morton <akpm@linux-foundation.org> wrote:
+> >
+> > On Wed,  6 Apr 2022 21:15:22 -0600 Yu Zhao <yuzhao@google.com> wrote:
+> >
+> > > Add /sys/kernel/mm/lru_gen/enabled as a kill switch. Components that
+> > > can be disabled include:
+> > >   0x0001: the multi-gen LRU core
+> > >   0x0002: walking page table, when arch_has_hw_pte_young() returns
+> > >           true
+> > >   0x0004: clearing the accessed bit in non-leaf PMD entries, when
+> > >           CONFIG_ARCH_HAS_NONLEAF_PMD_YOUNG=y
+> > >   [yYnN]: apply to all the components above
+> > > E.g.,
+> > >   echo y >/sys/kernel/mm/lru_gen/enabled
+> > >   cat /sys/kernel/mm/lru_gen/enabled
+> > >   0x0007
+> > >   echo 5 >/sys/kernel/mm/lru_gen/enabled
+> > >   cat /sys/kernel/mm/lru_gen/enabled
+> > >   0x0005
+> >
+> > I'm shocked that this actually works.  How does it work?  Existing
+> > pages & folios are drained over time or synchrnously?
+> 
+> Basically we have a double-throw way, and once flipped, new (isolated)
+> pages can only be added to the lists of the current implementation.
+> Existing pages on the lists of the previous implementation are
+> synchronously drained (isolated and then re-added), with
+> cond_resched() of course.
+> 
+> > Supporting
+> > structures remain allocated, available for reenablement?
+> 
+> Correct.
+> 
+> > Why is it thought necessary to have this?  Is it expected to be
+> > permanent?
+> 
+> This is almost a must for large scale deployments/experiments.
+> 
+> For deployments, we need to keep fix rollout (high priority) and
+> feature enabling (low priority) separate. Rolling out multiple
+> binaries works but will make the process slower and more painful. So
+> generally for each release, there is only one binary to roll out, and
+> unless it's impossible, new features are disabled by default. Once a
+> rollout completes, i.e., reaches enough population and remains stable,
+> new features are turned on gradually. If something goes wrong with a
+> new feature, we turn off that feature rather than roll back the
+> kernel.
+> 
+> Similarly, for A/B experiments, we don't want to use two binaries.
 
-The frozen restart worker thread will be cancelled during resume when the
-device comes out of suspend.
+Please let's spell out this sort of high-level thinking in the
+changelogging.
 
-Below is the crash stack for reference:
+From what you're saying, this is a transient thing.  It sounds that
+this enablement is only needed when mglru is at an early stage.  Once
+it has matured more then successive rollouts will have essentially the
+same mglru implementation and being able to disable mglru at runtime
+will no longer be required?
 
-[  428.469167] ------------[ cut here ]------------
-[  428.469180] kernel BUG at mm/slub.c:4150!
-[  428.469193] invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
-[  428.469219] Workqueue: events_unbound async_run_entry_fn
-[  428.469230] RIP: 0010:kfree+0x319/0x31b
-[  428.469241] RSP: 0018:ffffa1fac015fc30 EFLAGS: 00010246
-[  428.469247] RAX: ffffedb10419d108 RBX: ffff8c05262b0000
-[  428.469252] RDX: ffff8c04a8c07000 RSI: 0000000000000000
-[  428.469256] RBP: ffffa1fac015fc78 R08: 0000000000000000
-[  428.469276] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  428.469285] Call Trace:
-[  428.469295]  ? dma_free_attrs+0x5f/0x7d
-[  428.469320]  ath10k_core_stop+0x5b/0x6f
-[  428.469336]  ath10k_halt+0x126/0x177
-[  428.469352]  ath10k_stop+0x41/0x7e
-[  428.469387]  drv_stop+0x88/0x10e
-[  428.469410]  __ieee80211_suspend+0x297/0x411
-[  428.469441]  rdev_suspend+0x6e/0xd0
-[  428.469462]  wiphy_suspend+0xb1/0x105
-[  428.469483]  ? name_show+0x2d/0x2d
-[  428.469490]  dpm_run_callback+0x8c/0x126
-[  428.469511]  ? name_show+0x2d/0x2d
-[  428.469517]  __device_suspend+0x2e7/0x41b
-[  428.469523]  async_suspend+0x1f/0x93
-[  428.469529]  async_run_entry_fn+0x3d/0xd1
-[  428.469535]  process_one_work+0x1b1/0x329
-[  428.469541]  worker_thread+0x213/0x372
-[  428.469547]  kthread+0x150/0x15f
-[  428.469552]  ? pr_cont_work+0x58/0x58
-[  428.469558]  ? kthread_blkcg+0x31/0x31
+I guess the capability is reasonable simple/small and is livable with,
+but does it have a long-term future?
 
-Tested-on: QCA6174 hw3.2 PCI WLAN.RM.4.4.1-00288-QCARMSWPZ-1
-Co-developed-by: Wen Gong <quic_wgong@quicinc.com>
-Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
-Signed-off-by: Abhishek Kumar <kuabhs@chromium.org>
----
-
-Changes in v2:
-- Fixed typo, replaced ath11k by ath10k in the comments.
-- Adjusted the position of my S-O-B tag.
-- Added the Tested-on tag.
-
- drivers/net/wireless/ath/ath10k/mac.c | 18 ++++++++++++++++--
- 1 file changed, 16 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
-index d804e19a742a..e9c1f11fef0a 100644
---- a/drivers/net/wireless/ath/ath10k/mac.c
-+++ b/drivers/net/wireless/ath/ath10k/mac.c
-@@ -5345,8 +5345,22 @@ static void ath10k_stop(struct ieee80211_hw *hw)
- 
- 	mutex_lock(&ar->conf_mutex);
- 	if (ar->state != ATH10K_STATE_OFF) {
--		if (!ar->hw_rfkill_on)
--			ath10k_halt(ar);
-+		if (!ar->hw_rfkill_on) {
-+			/* If the current driver state is RESTARTING but not yet
-+			 * fully RESTARTED because of incoming suspend event,
-+			 * then ath10k_halt is already called via
-+			 * ath10k_core_restart and should not be called here.
-+			 */
-+			if (ar->state != ATH10K_STATE_RESTARTING)
-+				ath10k_halt(ar);
-+			else
-+				/* Suspending here, because when in RESTARTING
-+				 * state, ath10k_core_stop skips
-+				 * ath10k_wait_for_suspend.
-+				 */
-+				ath10k_wait_for_suspend(ar,
-+							WMI_PDEV_SUSPEND_AND_DISABLE_INTR);
-+		}
- 		ar->state = ATH10K_STATE_OFF;
- 	}
- 	mutex_unlock(&ar->conf_mutex);
--- 
-2.36.0.464.gb9c8b46e94-goog
-
+I mean, when organizations such as google start adopting the mglru
+implementation which is present in Linus's tree we're, what, a year or
+more into the future?  Will they still need a kill switch then?
