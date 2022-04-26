@@ -2,142 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E60B5C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 14:01:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D9BEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 14:02:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351406AbiDZOD6 (ORCPT
+        id S1351365AbiDZOFV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 10:03:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43810 "EHLO
+        Tue, 26 Apr 2022 10:05:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351368AbiDZODu (ORCPT
+        with ESMTP id S237262AbiDZOFS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 10:03:50 -0400
-Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF759186D1;
-        Tue, 26 Apr 2022 07:00:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1650981643; x=1682517643;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=IC8noDBK4X51feo0Vpeik5XnaP2Xw/g4NSKwFbVg0tA=;
-  b=NP3ek2pwqwhRffJ2VNm/OFqCFEx8v8oWLcwV90vGZMudJtqC4Vpn6/Gj
-   AQZlnkZJ4yi+AJgpjbJRT3KDx3JsCFAYOBsOOlyLHIDO1Bckp3BzFrgji
-   xAL+T6I6Cgq4EMtlh8YO65d6++SnVGZzlkccLe4xmdupfCBsy2EzKTqzJ
-   s=;
-X-IronPort-AV: E=Sophos;i="5.90,291,1643673600"; 
-   d="scan'208";a="83172116"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-b27d4a00.us-east-1.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 26 Apr 2022 14:00:18 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1a-b27d4a00.us-east-1.amazon.com (Postfix) with ESMTPS id EF84281111;
-        Tue, 26 Apr 2022 14:00:11 +0000 (UTC)
-Received: from EX13D02UWB003.ant.amazon.com (10.43.161.48) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.32; Tue, 26 Apr 2022 13:59:47 +0000
-Received: from EX13MTAUEA002.ant.amazon.com (10.43.61.77) by
- EX13D02UWB003.ant.amazon.com (10.43.161.48) with Microsoft SMTP Server (TLS)
- id 15.0.1497.32; Tue, 26 Apr 2022 13:59:46 +0000
-Received: from dev-dsk-alisaidi-1d-b9a0e636.us-east-1.amazon.com
- (172.19.181.128) by mail-relay.amazon.com (10.43.61.169) with Microsoft SMTP
- Server id 15.0.1497.32 via Frontend Transport; Tue, 26 Apr 2022 13:59:46
- +0000
-Received: by dev-dsk-alisaidi-1d-b9a0e636.us-east-1.amazon.com (Postfix, from userid 5131138)
-        id 4F93D20E9; Tue, 26 Apr 2022 13:59:45 +0000 (UTC)
-From:   Ali Saidi <alisaidi@amazon.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <german.gomez@arm.com>,
-        <leo.yan@linaro.org>, <acme@kernel.org>
-CC:     <alisaidi@amazon.com>, <benh@kernel.crashing.org>,
-        <Nick.Forrington@arm.com>, <alexander.shishkin@linux.intel.com>,
-        <andrew.kilroy@arm.com>, <james.clark@arm.com>,
-        <john.garry@huawei.com>, <jolsa@kernel.org>, <kjain@linux.ibm.com>,
-        <lihuafei1@huawei.com>, <mark.rutland@arm.com>,
-        <mathieu.poirier@linaro.org>, <mingo@redhat.com>,
-        <namhyung@kernel.org>, <peterz@infradead.org>, <will@kernel.org>
-Subject: [PATCH v7 3/5] perf mem: Print snoop peer flag
-Date:   Tue, 26 Apr 2022 13:59:35 +0000
-Message-ID: <20220426135937.18497-4-alisaidi@amazon.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220426135937.18497-1-alisaidi@amazon.com>
-References: <20220426135937.18497-1-alisaidi@amazon.com>
+        Tue, 26 Apr 2022 10:05:18 -0400
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36D9D32EDC;
+        Tue, 26 Apr 2022 07:02:10 -0700 (PDT)
+Received: (Authenticated sender: maxime.chevallier@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 78A2BC0008;
+        Tue, 26 Apr 2022 14:02:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1650981728;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7PQZCwiv2zEHTrq79VR/VdsVP2v14TZgynrsHMuTV/0=;
+        b=GqrophupVFhOrusBv9A1zJ+E8bt3QYe/6VKg+dF4uAcEDBOcMdPM/ms2t2RY7ms+XfPhqE
+        TKY4kXPXOQxkdjJ9AocBAj4EHj2bGV+Iox7dkQtp4mcFwCBv+15WFpRXnBqyzXo1yG1TWI
+        lcv+9wSjnqcjjiiVWzWmgKgAH86bZCUfQ7QgQHTlQzYALRjxuc2zBNHwstmIrCY0b7WhQ8
+        mCORk9Kzwq5iFkouEnUyEYEzNqArXLc1B98EoHbOZHaWhlAeE0hqRqjL1X0PYS3B088MDy
+        COySCDCntcmYyoWU3Cd35fvgbjT49Ov9b+H4AFQRCCKUBdYlGgdCJ5wdqDDpFg==
+Date:   Tue, 26 Apr 2022 16:02:06 +0200
+From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Luka Perkov <luka.perkov@sartura.hr>,
+        Robert Marko <robert.marko@sartura.hr>
+Subject: Re: [PATCH net-next 4/5] net: dt-bindings: Introduce the Qualcomm
+ IPQESS Ethernet controller
+Message-ID: <20220426160206.1a8d425c@pc-19.home>
+In-Reply-To: <34d3bfdc-cf8c-bf63-4f67-57c8d6c9b780@linaro.org>
+References: <20220422180305.301882-1-maxime.chevallier@bootlin.com>
+        <20220422180305.301882-5-maxime.chevallier@bootlin.com>
+        <34d3bfdc-cf8c-bf63-4f67-57c8d6c9b780@linaro.org>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leo Yan <leo.yan@linaro.org>
+Hi Krzysztof
 
-Since PERF_MEM_SNOOPX_PEER flag is a new snoop type, print this flag if
-it is set.
+On Sat, 23 Apr 2022 19:49:30 +0200
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
 
-Before:
-       memstress  3603 [020]   122.463754:          1            l1d-miss:       8688000842 |OP LOAD|LVL L3 or L3 hit|SNP N/A|TLB Walker hit|LCK No|BLK  N/A               aaaac17c3e88 [unknown] (/home/ubuntu/memstress)
-       memstress  3603 [020]   122.463754:          1          l1d-access:       8688000842 |OP LOAD|LVL L3 or L3 hit|SNP N/A|TLB Walker hit|LCK No|BLK  N/A               aaaac17c3e88 [unknown] (/home/ubuntu/memstress)
-       memstress  3603 [020]   122.463754:          1            llc-miss:       8688000842 |OP LOAD|LVL L3 or L3 hit|SNP N/A|TLB Walker hit|LCK No|BLK  N/A               aaaac17c3e88 [unknown] (/home/ubuntu/memstress)
-       memstress  3603 [020]   122.463754:          1          llc-access:       8688000842 |OP LOAD|LVL L3 or L3 hit|SNP N/A|TLB Walker hit|LCK No|BLK  N/A               aaaac17c3e88 [unknown] (/home/ubuntu/memstress)
-       memstress  3603 [020]   122.463754:          1          tlb-access:       8688000842 |OP LOAD|LVL L3 or L3 hit|SNP N/A|TLB Walker hit|LCK No|BLK  N/A               aaaac17c3e88 [unknown] (/home/ubuntu/memstress)
-       memstress  3603 [020]   122.463754:          1              memory:       8688000842 |OP LOAD|LVL L3 or L3 hit|SNP N/A|TLB Walker hit|LCK No|BLK  N/A               aaaac17c3e88 [unknown] (/home/ubuntu/memstress)
+Thanks a lot for the review, I'll address all your comments in a V2.
 
-After:
+> On 22/04/2022 20:03, Maxime Chevallier wrote:
+> > Add the DT binding for the IPQESS Ethernet Controller. This is a
+> > simple controller, only requiring the phy-mode, interrupts, clocks,
+> > and possibly a MAC address setting.
+> > 
+> > Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+> > ---
+> >  .../devicetree/bindings/net/qcom,ipqess.yaml  | 94
+> > +++++++++++++++++++ 1 file changed, 94 insertions(+)
+> >  create mode 100644
+> > Documentation/devicetree/bindings/net/qcom,ipqess.yaml
+> > 
+> > diff --git a/Documentation/devicetree/bindings/net/qcom,ipqess.yaml
+> > b/Documentation/devicetree/bindings/net/qcom,ipqess.yaml new file
+> > mode 100644 index 000000000000..8fec5633692f
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/net/qcom,ipqess.yaml
+> > @@ -0,0 +1,94 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/net/qcom,ipqess.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Qualcomm IPQ ESS EDMA Ethernet Controller Device Tree
+> > Bindings  
+> 
+> s/Device Tree Bindings//
+> 
+> > +
+> > +allOf:
+> > +  - $ref: "ethernet-controller.yaml#"  
+> 
+> allOf goes after maintainers.
+> 
+> > +
+> > +maintainers:
+> > +  - Maxime Chevallier <maxime.chevallier@bootlin.com>
+> > +
+> > +properties:
+> > +  compatible:
+> > +    const: qcom,ipq4019e-ess-edma
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +  interrupts:
+> > +    minItems: 2
+> > +    maxItems: 32
+> > +    description: One interrupt per tx and rx queue, with up to 16
+> > queues. +
+> > +  clocks:
+> > +    maxItems: 1
+> > +
+> > +  phy-mode: true
+> > +
+> > +  fixed-link: true
+> > +
+> > +  mac-address: true  
+> 
+> You don't need all these three. They come from ethernet-controller and
+> you use unevaluatedProperties.
+> 
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +  - interrupts
+> > +  - clocks
+> > +  - phy-mode
+> > +
+> > +unevaluatedProperties: false
+> > +
+> > +examples:
+> > +  - |
+> > +    gmac: ethernet@c080000 {
+> > +        compatible = "qcom,ipq4019-ess-edma";
+> > +        reg = <0xc080000 0x8000>;
+> > +        interrupts = <GIC_SPI  65 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI  66 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI  67 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI  68 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI  69 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI  70 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI  71 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI  72 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI  73 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI  74 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI  75 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI  76 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI  77 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI  78 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI  79 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI  80 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI 240 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI 241 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI 242 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI 243 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI 244 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI 245 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI 246 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI 247 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI 248 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI 249 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI 250 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI 251 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI 252 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI 253 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI 254 IRQ_TYPE_EDGE_RISING>,
+> > +                     <GIC_SPI 255 IRQ_TYPE_EDGE_RISING>;
+> > +
+> > +        status = "okay";  
+> 
+> No status in the example.
+> 
+> > +
+> > +        phy-mode = "internal";
+> > +        fixed-link {
+> > +            speed = <1000>;
+> > +            full-duplex;
+> > +            pause;
+> > +            asym-pause;
+> > +        };
+> > +    };
+> > +
+> > +...  
+> 
+> 
+> Best regards,
+> Krzysztof
 
-       memstress  3603 [020]   122.463754:          1            l1d-miss:       8688000842 |OP LOAD|LVL L3 or L3 hit|SNP Peer|TLB Walker hit|LCK No|BLK  N/A              aaaac17c3e88 [unknown] (/home/ubuntu/memstress)
-       memstress  3603 [020]   122.463754:          1          l1d-access:       8688000842 |OP LOAD|LVL L3 or L3 hit|SNP Peer|TLB Walker hit|LCK No|BLK  N/A              aaaac17c3e88 [unknown] (/home/ubuntu/memstress)
-       memstress  3603 [020]   122.463754:          1            llc-miss:       8688000842 |OP LOAD|LVL L3 or L3 hit|SNP Peer|TLB Walker hit|LCK No|BLK  N/A              aaaac17c3e88 [unknown] (/home/ubuntu/memstress)
-       memstress  3603 [020]   122.463754:          1          llc-access:       8688000842 |OP LOAD|LVL L3 or L3 hit|SNP Peer|TLB Walker hit|LCK No|BLK  N/A              aaaac17c3e88 [unknown] (/home/ubuntu/memstress)
-       memstress  3603 [020]   122.463754:          1          tlb-access:       8688000842 |OP LOAD|LVL L3 or L3 hit|SNP Peer|TLB Walker hit|LCK No|BLK  N/A              aaaac17c3e88 [unknown] (/home/ubuntu/memstress)
-       memstress  3603 [020]   122.463754:          1              memory:       8688000842 |OP LOAD|LVL L3 or L3 hit|SNP Peer|TLB Walker hit|LCK No|BLK  N/A              aaaac17c3e88 [unknown] (/home/ubuntu/memstress)
+Best Regards,
 
-Signed-off-by: Leo Yan <leo.yan@linaro.org>
-Reviewed-by: Ali Saidi <alisaidi@amazon.com>
-Tested-by: Ali Saidi <alisaidi@amazon.com>
----
- tools/perf/util/mem-events.c | 18 +++++++++++++++---
- 1 file changed, 15 insertions(+), 3 deletions(-)
-
-diff --git a/tools/perf/util/mem-events.c b/tools/perf/util/mem-events.c
-index efaf263464b9..db5225caaabe 100644
---- a/tools/perf/util/mem-events.c
-+++ b/tools/perf/util/mem-events.c
-@@ -410,6 +410,11 @@ static const char * const snoop_access[] = {
- 	"HitM",
- };
- 
-+static const char * const snoopx_access[] = {
-+	"Fwd",
-+	"Peer",
-+};
-+
- int perf_mem__snp_scnprintf(char *out, size_t sz, struct mem_info *mem_info)
- {
- 	size_t i, l = 0;
-@@ -430,13 +435,20 @@ int perf_mem__snp_scnprintf(char *out, size_t sz, struct mem_info *mem_info)
- 		}
- 		l += scnprintf(out + l, sz - l, snoop_access[i]);
- 	}
--	if (mem_info &&
--	     (mem_info->data_src.mem_snoopx & PERF_MEM_SNOOPX_FWD)) {
-+
-+	m = 0;
-+	if (mem_info)
-+		m = mem_info->data_src.mem_snoopx;
-+
-+	for (i = 0; m && i < ARRAY_SIZE(snoopx_access); i++, m >>= 1) {
-+		if (!(m & 0x1))
-+			continue;
-+
- 		if (l) {
- 			strcat(out, " or ");
- 			l += 4;
- 		}
--		l += scnprintf(out + l, sz - l, "Fwd");
-+		l += scnprintf(out + l, sz - l, snoopx_access[i]);
- 	}
- 
- 	if (*out == '\0')
--- 
-2.32.0
-
+Maxime
