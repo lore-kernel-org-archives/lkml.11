@@ -2,93 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58516C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:28:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E0F6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:28:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346714AbiDZJbb (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:31:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38458 "EHLO
+        id S239119AbiDZJbm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:31:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347826AbiDZJGO (ORCPT
+        with ESMTP id S1347818AbiDZJGN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:06:14 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53B181632C0;
-        Tue, 26 Apr 2022 01:46:05 -0700 (PDT)
-Received: from zn.tnic (p5de8eeb4.dip0.t-ipconnect.de [93.232.238.180])
+        Tue, 26 Apr 2022 05:06:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 343B5161A40;
+        Tue, 26 Apr 2022 01:46:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 055C41EC0426;
-        Tue, 26 Apr 2022 10:46:00 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1650962760;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ytJ8gqI6iL6hkQ4cMkAqnHDUUazMUuvlLkFKabJ8Vj8=;
-        b=WTOQOMUpowORo4Pf9B+Tvvwl+QopiWxJjwOoMc71wqQkg60NwYuRA9QHk03Y1Y8fhAnYE1
-        mNVaBgrJPPvn0dZOlq9FHBi/pb91TDPht54XBIvWhpEsrB+3GsDE37suRWXOFGNZG8RZmY
-        pBPDmRPRF2/4XnXIn7U022uQcbDxYjs=
-Date:   Tue, 26 Apr 2022 10:46:00 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>, bpf@vger.kernel.org
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH] x86/speculation: Add missing prototype for
- unpriv_ebpf_notify()
-Message-ID: <YmexSIL5pqNK63iH@zn.tnic>
-References: <5689d065f739602ececaee1e05e68b8644009608.1650930000.git.jpoimboe@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id D6008B81CF0;
+        Tue, 26 Apr 2022 08:46:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45463C385A4;
+        Tue, 26 Apr 2022 08:45:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650962759;
+        bh=mr2/bn7rC0Ek6PkiPueDBSA3Gm7unUsYP2KMsSeNKts=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ftIVDj7FJ8Ytq8jkkTd7mId3u9XP36kktTZ9bpUanKyaAnm6A8u45oh6eL1yPqSHV
+         irxyJXlsW2D0BLWbeJO3E7sVSLc0iY7W6m0bmAHEA5qj8RrdX2PDlmK1nhPcNqqwkP
+         w4MphvYoVJcMmMhoFqDDU9UwQXdfvEuXGH+AFhdA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Manish Rangankar <mrangankar@marvell.com>,
+        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 080/146] scsi: iscsi: Fix NOP handling during conn recovery
+Date:   Tue, 26 Apr 2022 10:21:15 +0200
+Message-Id: <20220426081752.311421282@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
+References: <20220426081750.051179617@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <5689d065f739602ececaee1e05e68b8644009608.1650930000.git.jpoimboe@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+ bpf@vger.kernel.org
+From: Mike Christie <michael.christie@oracle.com>
 
-Let's sync with bpf folks on who takes this. I could route it through tip ...
+[ Upstream commit 44ac97109e42f87b1a34954704b81b6c8eca80c4 ]
 
-On Mon, Apr 25, 2022 at 04:40:02PM -0700, Josh Poimboeuf wrote:
-> Fix the following warnings seen with "make W=1":
-> 
->   kernel/sysctl.c:183:13: warning: no previous prototype for ‘unpriv_ebpf_notify’ [-Wmissing-prototypes]
->     183 | void __weak unpriv_ebpf_notify(int new_state)
->         |             ^~~~~~~~~~~~~~~~~~
-> 
->   arch/x86/kernel/cpu/bugs.c:659:6: warning: no previous prototype for ‘unpriv_ebpf_notify’ [-Wmissing-prototypes]
->     659 | void unpriv_ebpf_notify(int new_state)
->         |      ^~~~~~~~~~~~~~~~~~
-> 
-> Fixes: 44a3918c8245 ("x86/speculation: Include unprivileged eBPF status in Spectre v2 mitigation reporting")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-> ---
->  include/linux/bpf.h | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index bdb5298735ce..ecc3d3ec41cf 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -2085,6 +2085,8 @@ void bpf_offload_dev_netdev_unregister(struct bpf_offload_dev *offdev,
->  				       struct net_device *netdev);
->  bool bpf_offload_dev_match(struct bpf_prog *prog, struct net_device *netdev);
->  
-> +void unpriv_ebpf_notify(int new_state);
-> +
->  #if defined(CONFIG_NET) && defined(CONFIG_BPF_SYSCALL)
->  int bpf_prog_offload_init(struct bpf_prog *prog, union bpf_attr *attr);
->  
-> -- 
+If a offload driver doesn't use the xmit workqueue, then when we are doing
+ep_disconnect libiscsi can still inject PDUs to the driver. This adds a
+check for if the connection is bound before trying to inject PDUs.
 
+Link: https://lore.kernel.org/r/20220408001314.5014-9-michael.christie@oracle.com
+Tested-by: Manish Rangankar <mrangankar@marvell.com>
+Reviewed-by: Lee Duncan <lduncan@suse.com>
+Reviewed-by: Chris Leech <cleech@redhat.com>
+Signed-off-by: Mike Christie <michael.christie@oracle.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/scsi/libiscsi.c | 7 ++++++-
+ include/scsi/libiscsi.h | 2 +-
+ 2 files changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/scsi/libiscsi.c b/drivers/scsi/libiscsi.c
+index 073c4db79094..f228d991038a 100644
+--- a/drivers/scsi/libiscsi.c
++++ b/drivers/scsi/libiscsi.c
+@@ -678,7 +678,8 @@ __iscsi_conn_send_pdu(struct iscsi_conn *conn, struct iscsi_hdr *hdr,
+ 	struct iscsi_task *task;
+ 	itt_t itt;
+ 
+-	if (session->state == ISCSI_STATE_TERMINATE)
++	if (session->state == ISCSI_STATE_TERMINATE ||
++	    !test_bit(ISCSI_CONN_FLAG_BOUND, &conn->flags))
+ 		return NULL;
+ 
+ 	if (opcode == ISCSI_OP_LOGIN || opcode == ISCSI_OP_TEXT) {
+@@ -2214,6 +2215,8 @@ void iscsi_conn_unbind(struct iscsi_cls_conn *cls_conn, bool is_active)
+ 	iscsi_suspend_tx(conn);
+ 
+ 	spin_lock_bh(&session->frwd_lock);
++	clear_bit(ISCSI_CONN_FLAG_BOUND, &conn->flags);
++
+ 	if (!is_active) {
+ 		/*
+ 		 * if logout timed out before userspace could even send a PDU
+@@ -3311,6 +3314,8 @@ int iscsi_conn_bind(struct iscsi_cls_session *cls_session,
+ 	spin_lock_bh(&session->frwd_lock);
+ 	if (is_leading)
+ 		session->leadconn = conn;
++
++	set_bit(ISCSI_CONN_FLAG_BOUND, &conn->flags);
+ 	spin_unlock_bh(&session->frwd_lock);
+ 
+ 	/*
+diff --git a/include/scsi/libiscsi.h b/include/scsi/libiscsi.h
+index bdb0ae11682d..d1e282f0d6f1 100644
+--- a/include/scsi/libiscsi.h
++++ b/include/scsi/libiscsi.h
+@@ -55,7 +55,7 @@ enum {
+ /* Connection flags */
+ #define ISCSI_CONN_FLAG_SUSPEND_TX	BIT(0)
+ #define ISCSI_CONN_FLAG_SUSPEND_RX	BIT(1)
+-
++#define ISCSI_CONN_FLAG_BOUND		BIT(2)
+ 
+ #define ISCSI_ITT_MASK			0x1fff
+ #define ISCSI_TOTAL_CMDS_MAX		4096
 -- 
-Regards/Gruss,
-    Boris.
+2.35.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
+
+
