@@ -2,58 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EBB0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:48:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74518C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:48:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353456AbiDZQvg (ORCPT
+        id S1353286AbiDZQvq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 12:51:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45096 "EHLO
+        Tue, 26 Apr 2022 12:51:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346708AbiDZQuo (ORCPT
+        with ESMTP id S1353354AbiDZQu7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 12:50:44 -0400
-Received: from mail-ed1-x54a.google.com (mail-ed1-x54a.google.com [IPv6:2a00:1450:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2615348302
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:45:45 -0700 (PDT)
-Received: by mail-ed1-x54a.google.com with SMTP id l24-20020a056402231800b00410f19a3103so10612285eda.5
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:45:45 -0700 (PDT)
+        Tue, 26 Apr 2022 12:50:59 -0400
+Received: from mail-ed1-x549.google.com (mail-ed1-x549.google.com [IPv6:2a00:1450:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B11C34833B
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:45:57 -0700 (PDT)
+Received: by mail-ed1-x549.google.com with SMTP id dn26-20020a05640222fa00b00425e4b8efa9so3782638edb.1
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:45:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=KgfdOYR2+eRzwy3N1nFbXjWhZjMyNN/8KPMy2HvUIiA=;
-        b=DiXJaiB8AJMG8+A1MDOZ3VuBShHUCaL1GlKQxcD6mV0R7Av/UajF571MXN7vKcH+xJ
-         B9d0v8KhVCzlQ+z94pkBBtVLTSnlc2yIkyIXP0B+bFCdaqtmHA9pe8/5NYuKcmD5Vy3L
-         fA34cdtJjSamNgh5dsmbUVd7b9zA7hnjKOjdt88/6jqxc/UG3ZHi4m5Nam5rWzqbzqPm
-         cd06DBJ3ACVxlq9XrgpCh+wVKQori1dj0NvbQ7HSZw0NjHsIf9jtgKdLkxo1euBXeZpk
-         ExnDMib7ea+byjuGF4JqXiPnkpgw3Zh2HRRI3cVSjxCjQ97crsBXKlz1IuJlZ96GONPP
-         Cgcw==
+        bh=Fx98fFr6n4NVKGBzav2AZaWX3VRzhlrRB+7m3pCHiSE=;
+        b=XHfBp7Cl9xVO2N8a97yhZbWVDGYXssOGKoCjey19oDLs3NuPvKFqJlX77OVyMj94Gt
+         2jjyaOrHBMMVqPlV8iHx1esMbi+0FDIhnzF7Cykz5C7cq/uxOyLSo3F2oQbehHxHtWWq
+         J0Gr9w+xpCyeNSmgjOjL6MaF2r1Jb+P68Kxo24lt3IECVMYNwPiYSWt8f1OWxVrhhtpd
+         NO15cOsJnLjPuQEWdNOcUO0Xa9QVwX7bjyI3Sb7JSEshKJQJE+Pg0L1D80PFDwJ2uTlH
+         nrRZFhYPzn8Skr3KSaxneh2u7R3qXEV++ExcIhKQSHekMMa2AQX+GQFmuIwyxjASi21j
+         HPqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=KgfdOYR2+eRzwy3N1nFbXjWhZjMyNN/8KPMy2HvUIiA=;
-        b=BGou/RkgZRvdZWK5APnCgjMVwxJrQ0C2f6hhmhd91xVzoXAxo6a4toYA3/5jgUrgK4
-         15VHCK2Y6Mq+gs/YgaDZPrVqvvXjzWya0ofAqS7GPAeD5uz3MiEOnjS+ACrUweyBvVG3
-         wRUvxNBAF3CZmKesjiw2z67FJ8tYV1lEKhCRSJv6xR9Zj9y/JVaM377xDko3kVV541Ny
-         2Khl/8V74AqtRgTQrKGPDw4cDL/cQFL4H/2HrAzq6HXJ99LokU3Jl/exQQgKu06UigJY
-         S61dACCbvfigUUNtJmWV2muhDjKD6F6vS3+7OA9bHTtoeyHaDoCq/N07SOfGhxv+LEnL
-         /w/g==
-X-Gm-Message-State: AOAM532msI6eWpTZ3R3O7wHB5sQVdWSwMGmzZuDTO5ZTxY0GJbrEYh06
-        woA4h2mn1JpOivt4AxvZhvWolMXH6EQ=
-X-Google-Smtp-Source: ABdhPJzCT8fH32RoUVNaiZCyh2VQrj6uF5kLZlCQX+kBGFsZsTKhLxpnKoIswBSqwHZF0t1dzIj5uX6h2dU=
+        bh=Fx98fFr6n4NVKGBzav2AZaWX3VRzhlrRB+7m3pCHiSE=;
+        b=CP1RoppJKCsVGHZz1UW9wZff7LQD6AsJW41JGTZ2fXUsJ2vAIY5EKJHK1XnkRQYwZS
+         DWEoTSVL3wk2a0LH32tAGx6tJgNA/V+7KBeU+PhrO0stolESH8yWrEZOxSnTpo5EX4cA
+         LvsyDAxtWiupy0+r4fg1qXVN55XhEZOoYL0PJ2okTj++NHgEA1KDMIFgX+qlpbc44dYY
+         jPbSsHeP5WWNojTRCrtrf7j/AHoJ2RaAT9KN88d2yCThhYo19KPt4dSLNpBRK51MWuSJ
+         9trFFkzrVQV8QftcYZEe5oDNzIXPjOUisSKqy/Op2xI283H6UTgSCrRLPFlA+5jMJjwU
+         wY7w==
+X-Gm-Message-State: AOAM533t8dpP10I+a1DjE3bJbzp0j3MSQ8LYxAAMEz5+X7IJhATV1y0V
+        WYCDdNEMD9cs7ALsrP0pSs8l5kXMnqo=
+X-Google-Smtp-Source: ABdhPJz3WWkOPsikmC1Af3Hb7X8sg1uvJjDWagM85J5s9I3Wdek2Bn8waW8w9Db/kDe/JuhNTPmAIxhWeNI=
 X-Received: from glider.muc.corp.google.com ([2a00:79e0:15:13:d580:abeb:bf6d:5726])
- (user=glider job=sendgmr) by 2002:a05:6402:26c7:b0:423:e5d6:b6c6 with SMTP id
- x7-20020a05640226c700b00423e5d6b6c6mr25480700edd.61.1650991543391; Tue, 26
- Apr 2022 09:45:43 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 18:43:01 +0200
+ (user=glider job=sendgmr) by 2002:a05:6402:34d2:b0:423:e6c4:3e9 with SMTP id
+ w18-20020a05640234d200b00423e6c403e9mr26328332edc.372.1650991556120; Tue, 26
+ Apr 2022 09:45:56 -0700 (PDT)
+Date:   Tue, 26 Apr 2022 18:43:06 +0200
 In-Reply-To: <20220426164315.625149-1-glider@google.com>
-Message-Id: <20220426164315.625149-33-glider@google.com>
+Message-Id: <20220426164315.625149-38-glider@google.com>
 Mime-Version: 1.0
 References: <20220426164315.625149-1-glider@google.com>
 X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
-Subject: [PATCH v3 32/46] kmsan: disable physical page merging in biovec
+Subject: [PATCH v3 37/46] x86: kmsan: make READ_ONCE_TASK_STACK() return
+ initialized values
 From:   Alexander Potapenko <glider@google.com>
 To:     glider@google.com
 Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
@@ -91,37 +92,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-KMSAN metadata for adjacent physical pages may not be adjacent,
-therefore accessing such pages together may lead to metadata
-corruption.
-We disable merging pages in biovec to prevent such corruptions.
+To avoid false positives, assume that reading from the task stack
+always produces initialized values.
 
 Signed-off-by: Alexander Potapenko <glider@google.com>
 ---
-
-Link: https://linux-review.googlesource.com/id/Iece16041be5ee47904fbc98121b105e5be5fea5c
+Link: https://linux-review.googlesource.com/id/I9e2350bf3e88688dd83537e12a23456480141997
 ---
- block/blk.h | 7 +++++++
- 1 file changed, 7 insertions(+)
+ arch/x86/include/asm/unwind.h | 23 ++++++++++++-----------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
 
-diff --git a/block/blk.h b/block/blk.h
-index 8ccbc6e076369..95815ac559743 100644
---- a/block/blk.h
-+++ b/block/blk.h
-@@ -93,6 +93,13 @@ static inline bool biovec_phys_mergeable(struct request_queue *q,
- 	phys_addr_t addr1 = page_to_phys(vec1->bv_page) + vec1->bv_offset;
- 	phys_addr_t addr2 = page_to_phys(vec2->bv_page) + vec2->bv_offset;
+diff --git a/arch/x86/include/asm/unwind.h b/arch/x86/include/asm/unwind.h
+index 7cede4dc21f00..87acc90875b74 100644
+--- a/arch/x86/include/asm/unwind.h
++++ b/arch/x86/include/asm/unwind.h
+@@ -128,18 +128,19 @@ unsigned long unwind_recover_ret_addr(struct unwind_state *state,
+ }
  
-+	/*
-+	 * Merging adjacent physical pages may not work correctly under KMSAN
-+	 * if their metadata pages aren't adjacent. Just disable merging.
-+	 */
-+	if (IS_ENABLED(CONFIG_KMSAN))
-+		return false;
-+
- 	if (addr1 + vec1->bv_len != addr2)
- 		return false;
- 	if (xen_domain() && !xen_biovec_phys_mergeable(vec1, vec2->bv_page))
+ /*
+- * This disables KASAN checking when reading a value from another task's stack,
+- * since the other task could be running on another CPU and could have poisoned
+- * the stack in the meantime.
++ * This disables KASAN/KMSAN checking when reading a value from another task's
++ * stack, since the other task could be running on another CPU and could have
++ * poisoned the stack in the meantime. Frame pointers are uninitialized by
++ * default, so for KMSAN we mark the return value initialized unconditionally.
+  */
+-#define READ_ONCE_TASK_STACK(task, x)			\
+-({							\
+-	unsigned long val;				\
+-	if (task == current)				\
+-		val = READ_ONCE(x);			\
+-	else						\
+-		val = READ_ONCE_NOCHECK(x);		\
+-	val;						\
++#define READ_ONCE_TASK_STACK(task, x)				\
++({								\
++	unsigned long val;					\
++	if (task == current && !IS_ENABLED(CONFIG_KMSAN))	\
++		val = READ_ONCE(x);				\
++	else							\
++		val = READ_ONCE_NOCHECK(x);			\
++	val;							\
+ })
+ 
+ static inline bool task_on_another_cpu(struct task_struct *task)
 -- 
 2.36.0.rc2.479.g8af0fa9b8e-goog
 
