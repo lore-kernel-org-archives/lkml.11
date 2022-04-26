@@ -2,104 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14E9AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 13:54:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5A77C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 13:54:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351259AbiDZN5P (ORCPT
+        id S1351274AbiDZN5S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 09:57:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43728 "EHLO
+        Tue, 26 Apr 2022 09:57:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351207AbiDZN4s (ORCPT
+        with ESMTP id S1351228AbiDZN4y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 09:56:48 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7453C15CEC8
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 06:53:40 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id e24so5708979wrc.9
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 06:53:40 -0700 (PDT)
+        Tue, 26 Apr 2022 09:56:54 -0400
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4A4C15CF61
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 06:53:46 -0700 (PDT)
+Received: by mail-yb1-xb2c.google.com with SMTP id y76so3819213ybe.1
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 06:53:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=hO8uVhyORBvP7WeUtfTUf8CcXBR+w7H1dVOkhTVX69o=;
-        b=5D3rmP5iwuE4GBHqGlhm38hSdktR2BWc+S8PxwVXPsTLn7jTcYbbwNacLE9HBYiXqO
-         K7UqaSli/+RrDZMbUxSb+ef7+U0pkLlIZdLu42FAlMACYLy9CnPxoPymmOZoiMVF+5zR
-         tMdSw3e+vvwXLKN61gt5RPMCrL3X1DoaMpq3MIwpPcexrcfPFqbZPx5q2CANFs2Mizcn
-         KrciwOwA+N5X0ulwHbcXHvZTdYZHu8shJ2ocNsfUj6nNFjj3axvIuT0iaDKhDaFL0nqy
-         6/6YDGalUCpGPaS2ahHjiT9qcwAtLqVCxTzOGV9/a9HTKB7Iwjccj5r/PlD29FHAnFcS
-         NosA==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ckCZvmbeyyn635mnaKqXxsF4H+ghoyHwVYsC+7BA0B0=;
+        b=igwGqJ1N3E7ODSLycDSaVr0WbIXpPlLVINt+CdifwDAJ4gIawXS0nViMwM0ZwMz3cM
+         Y4fR5DEtmjMEWumRDWtc4A2/YhCv7x7gKR5KpZZeUJycaCRjTGf9T1tDKw3HDHO92/Cq
+         WypqODghI7Sd8bMnc4Jr9OPbxjmKS+4p/vl2XRKZ7E/Xt51ZoyMaNx1ZCNVkqnPdYoIF
+         m5umgOdDFSMrF1FGHf8mhUZl+LrEInUPltAY8fuNVAAt5GTePYWc5uYbtvPG7igxz2SU
+         by93u6+dbEw46318P4HWU5ZgTv2R08XF+cESh81A43oG2yFIlMBgKK0J52dOiASLqyeC
+         tGjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=hO8uVhyORBvP7WeUtfTUf8CcXBR+w7H1dVOkhTVX69o=;
-        b=mjoGIII5w0eeMDrFFEQvjS+scigYLInDmCVLW8OqKpJa4cNW6X4Wyn49NXxJvnzq3t
-         0uMtwfSFiSs//y3ACK3izPGYSD6+4KI+ZAE7bpygpCUCxnV9hTmTa7G6/lW2fTO8gUvB
-         qNOWefrOPJQ2CJ4r0+V12x96p4wlyCiScPSbv4MwBL8lqzciTOkXZx+Xu4m03In57C2r
-         rln+wLS7BIVgAHN2N6YFqPFG1Xj8hKtGpZ4L1UTWWO/8Djoi9+v1iAMzcBa91996vLEP
-         uCb6fJOPA0Ieb8eR3H0ZBL6Dq4hmhJbwopH2ZKWZI0cZ4zH8Q/qNOeEt74Gi4Hfg3fpP
-         TC3Q==
-X-Gm-Message-State: AOAM530oGyKQT1bl9KcVTgPjpR/P+joS/npuIT6qLTOS7mQ+hvRSTzG9
-        zI+xz00fkKcsdBFHffOzV1qcjw==
-X-Google-Smtp-Source: ABdhPJxNSjH6bRtukJ+ygK8xFIc9+tMEJYgqCui66uTCUWv9AFUaOwJ7lqJtvUQL5d0DJj+7ZiZa3Q==
-X-Received: by 2002:a5d:64a3:0:b0:20a:7931:5b91 with SMTP id m3-20020a5d64a3000000b0020a79315b91mr18423211wrp.388.1650981219106;
-        Tue, 26 Apr 2022 06:53:39 -0700 (PDT)
-Received: from localhost.localdomain ([88.160.162.107])
-        by smtp.gmail.com with ESMTPSA id m35-20020a05600c3b2300b00393ebe201a6sm5504775wms.44.2022.04.26.06.53.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 06:53:38 -0700 (PDT)
-From:   Fabien Parent <fparent@baylibre.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Fabien Parent <fparent@baylibre.com>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 8/8] arm64: dts: mediatek: mt8195-demo: define PMIC keys available
-Date:   Tue, 26 Apr 2022 15:53:13 +0200
-Message-Id: <20220426135313.245466-9-fparent@baylibre.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426135313.245466-1-fparent@baylibre.com>
-References: <20220426135313.245466-1-fparent@baylibre.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ckCZvmbeyyn635mnaKqXxsF4H+ghoyHwVYsC+7BA0B0=;
+        b=1xFS+MLTCM6YeErmA/LCgbbGagzJ85Lfv1yb9OVCqr3t8CPZUA98p5hWME6dB3Z9kV
+         28TGzmHItsN5KEDhnYx33pufG7hWl7kYMvF7JWP0bhBTf/CXKVdWcLQiJydoefRc571N
+         Y31hVCriIVrLbm3Y1H39s/ubp+jw9i/dDcOBhschhH78xVfLUkCko13sc1T8xwiGtMUB
+         otf0aItHzwWwbLzQmK+h3gYET7h60eYjN4K3rOC5PAWLOTZeCXYO9Plt8xkad1IOuNun
+         no/Dj4xQ+Hq42vAd6RGjOVG+AI3wDyA39GzT8deQff4QTSRvie2JMIrPKHOFJ1JyzYNR
+         GehA==
+X-Gm-Message-State: AOAM531RV3RHRGKFIgLsXLnqp1oYEoQWTIYfQSE4Fm0xnHloPH1fYSrs
+        3aPp20mV7pZvYRxKXLPtD2BFx3gLxzGTwBNBiZWA1g==
+X-Google-Smtp-Source: ABdhPJwF18W/ckSAQP+Lb7KRodHA2ZrpGoAfo3MnAwZd2GoH5aVP8IC0RDmP+BEupKkL+maFSkUIUbxWV/ny/0vfhno=
+X-Received: by 2002:a25:77c1:0:b0:648:3fb0:d5cf with SMTP id
+ s184-20020a2577c1000000b006483fb0d5cfmr13072913ybc.511.1650981225960; Tue, 26
+ Apr 2022 06:53:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220424090422.97070-1-wanjiabing@vivo.com>
+In-Reply-To: <20220424090422.97070-1-wanjiabing@vivo.com>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Tue, 26 Apr 2022 15:53:09 +0200
+Message-ID: <CAPDyKFreW44ou8O4R53XUf7iZTGBBMM+1jmrOeh9cyEOTU-r1Q@mail.gmail.com>
+Subject: Re: [PATCH] mmc: atmel-mci: simplify if-if to if-else
+To:     Wan Jiabing <wanjiabing@vivo.com>
+Cc:     Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        linux-mmc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, kael_w@yeah.net
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The MT8195 Demo board has two push buttons connected to the PMIC: Home
-button and Power button. This commit adds support for both.
+On Sun, 24 Apr 2022 at 11:04, Wan Jiabing <wanjiabing@vivo.com> wrote:
+>
+> Use if and else instead of if(A) and if (!A).
+>
+> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+> ---
+>  drivers/mmc/host/atmel-mci.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+>
+> diff --git a/drivers/mmc/host/atmel-mci.c b/drivers/mmc/host/atmel-mci.c
+> index 807177c953f3..98893ccad4bd 100644
+> --- a/drivers/mmc/host/atmel-mci.c
+> +++ b/drivers/mmc/host/atmel-mci.c
+> @@ -1125,8 +1125,7 @@ atmci_prepare_data_dma(struct atmel_mci *host, struct mmc_data *data)
+>         chan = host->dma.chan;
+>         if (chan)
+>                 host->data_chan = chan;
+> -
+> -       if (!chan)
+> +       else
+>                 return -ENODEV;
 
-Signed-off-by: Fabien Parent <fparent@baylibre.com>
----
-v2: new patch
+To make a slightly better improvement of the code, I suggest we add an
+early bail out point in the atmci_prepare_data_dma() function. Like
+below:
 
- arch/arm64/boot/dts/mediatek/mt8195-demo.dts | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+if (!host->dma.chan)
+     return -ENODEV;
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8195-demo.dts b/arch/arm64/boot/dts/mediatek/mt8195-demo.dts
-index aa41df865c9c..810e69c5f7e0 100644
---- a/arch/arm64/boot/dts/mediatek/mt8195-demo.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt8195-demo.dts
-@@ -246,6 +246,17 @@ &mmc1 {
- 	status = "okay";
- };
- 
-+&mt6359keys {
-+	key-0 {
-+		linux,keycodes = <KEY_POWER>;
-+		wakeup-source;
-+	};
-+
-+	key-1 {
-+		linux,keycodes = <KEY_HOME>;
-+	};
-+};
-+
- &mt6359_vbbck_ldo_reg {
- 	regulator-always-on;
- };
--- 
-2.36.0
+[...]
 
+Kind regards
+Uffe
