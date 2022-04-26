@@ -2,42 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3AD8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:14:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1CA0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:14:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244513AbiDZJRk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:17:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50432 "EHLO
+        id S239761AbiDZJRv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:17:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346347AbiDZIuB (ORCPT
+        with ESMTP id S1346015AbiDZIxw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:50:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B49CC90C3;
-        Tue, 26 Apr 2022 01:38:08 -0700 (PDT)
+        Tue, 26 Apr 2022 04:53:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 596CBD64DA;
+        Tue, 26 Apr 2022 01:41:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 718036090C;
-        Tue, 26 Apr 2022 08:38:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77142C385A0;
-        Tue, 26 Apr 2022 08:38:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B65E860A29;
+        Tue, 26 Apr 2022 08:40:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4315C385A0;
+        Tue, 26 Apr 2022 08:40:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962287;
-        bh=1OWTHQQH1jcO8sBBchXhD6ZyJQdD/B6PmUizs65gAqU=;
+        s=korg; t=1650962454;
+        bh=3A1i8MzKkFsqMtigRC0ncBLbLhWH3+rRTK5SrBZ6KJY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1S55xpgUGNP+j5OvUz2ON9E5LZZsm09oJH9uUZ0ITM/7N9PM8NRrq737iceWeQwSp
-         +tjBIH0J9xou8UpbaQ/KpaYWzebMypI5klYNtzXnTKS4yLF3YgVlqoWytn/orUnqLa
-         /r2GVNroBiwAD7+KNR4wtTgO9GpO661FBYJJSkV0=
+        b=yjYC252xtnaIuochww0U2p6hWPwRjfVDmtby5v+Dpop15D1uRIBdoeNprPmVDuv+t
+         XcwRpnvB9dc2XgMTHRE/mfrLeAI/iYdSDHqWzAbqCzo0lnv8J+f0gAm/umitHxgF/T
+         sBdWKqkStc15Rs1ND3pDd/FtKY12rlZgHqj/kwY8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kevin Hao <haokexin@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 047/124] net: stmmac: Use readl_poll_timeout_atomic() in atomic state
-Date:   Tue, 26 Apr 2022 10:20:48 +0200
-Message-Id: <20220426081748.638899495@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Shreeya Patel <shreeya.patel@collabora.com>,
+        =?UTF-8?q?Samuel=20=C4=8Cavoj?= <samuel@cavoj.net>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        lukeluk498@gmail.com, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.15 102/124] gpio: Request interrupts after IRQ is initialized
+Date:   Tue, 26 Apr 2022 10:21:43 +0200
+Message-Id: <20220426081750.196950196@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
 References: <20220426081747.286685339@linuxfoundation.org>
@@ -49,74 +54,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kevin Hao <haokexin@gmail.com>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-[ Upstream commit 234901de2bc6847eaa0aeb4aba62c31ffb8d3ad6 ]
+commit 06fb4ecfeac7e00d6704fa5ed19299f2fefb3cc9 upstream.
 
-The init_systime() may be invoked in atomic state. We have observed the
-following call trace when running "phc_ctl /dev/ptp0 set" on a Intel
-Agilex board.
-  BUG: sleeping function called from invalid context at drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c:74
-  in_atomic(): 1, irqs_disabled(): 128, non_block: 0, pid: 381, name: phc_ctl
-  preempt_count: 1, expected: 0
-  RCU nest depth: 0, expected: 0
-  Preemption disabled at:
-  [<ffff80000892ef78>] stmmac_set_time+0x34/0x8c
-  CPU: 2 PID: 381 Comm: phc_ctl Not tainted 5.18.0-rc2-next-20220414-yocto-standard+ #567
-  Hardware name: SoCFPGA Agilex SoCDK (DT)
-  Call trace:
-   dump_backtrace.part.0+0xc4/0xd0
-   show_stack+0x24/0x40
-   dump_stack_lvl+0x7c/0xa0
-   dump_stack+0x18/0x34
-   __might_resched+0x154/0x1c0
-   __might_sleep+0x58/0x90
-   init_systime+0x78/0x120
-   stmmac_set_time+0x64/0x8c
-   ptp_clock_settime+0x60/0x9c
-   pc_clock_settime+0x6c/0xc0
-   __arm64_sys_clock_settime+0x88/0xf0
-   invoke_syscall+0x5c/0x130
-   el0_svc_common.constprop.0+0x4c/0x100
-   do_el0_svc+0x7c/0xa0
-   el0_svc+0x58/0xcc
-   el0t_64_sync_handler+0xa4/0x130
-   el0t_64_sync+0x18c/0x190
+Commit 5467801f1fcb ("gpio: Restrict usage of GPIO chip irq members
+before initialization") attempted to fix a race condition that lead to a
+NULL pointer, but in the process caused a regression for _AEI/_EVT
+declared GPIOs.
 
-So we should use readl_poll_timeout_atomic() here instead of
-readl_poll_timeout().
+This manifests in messages showing deferred probing while trying to
+allocate IRQs like so:
 
-Also adjust the delay time to 10us to fix a "__bad_udelay" build error
-reported by "kernel test robot <lkp@intel.com>". I have tested this on
-Intel Agilex and NXP S32G boards, there is no delay needed at all.
-So the 10us delay should be long enough for most cases.
+  amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x0000 to IRQ, err -517
+  amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x002C to IRQ, err -517
+  amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x003D to IRQ, err -517
+  [ .. more of the same .. ]
 
-Fixes: ff8ed737860e ("net: stmmac: use readl_poll_timeout() function in init_systime()")
-Signed-off-by: Kevin Hao <haokexin@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The code for walking _AEI doesn't handle deferred probing and so this
+leads to non-functional GPIO interrupts.
+
+Fix this issue by moving the call to `acpi_gpiochip_request_interrupts`
+to occur after gc->irc.initialized is set.
+
+Fixes: 5467801f1fcb ("gpio: Restrict usage of GPIO chip irq members before initialization")
+Link: https://lore.kernel.org/linux-gpio/BL1PR12MB51577A77F000A008AA694675E2EF9@BL1PR12MB5157.namprd12.prod.outlook.com/
+Link: https://bugzilla.suse.com/show_bug.cgi?id=1198697
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215850
+Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1979
+Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1976
+Reported-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Reviewed-by: Shreeya Patel <shreeya.patel@collabora.com>
+Tested-By: Samuel Čavoj <samuel@cavoj.net>
+Tested-By: lukeluk498@gmail.com Link:
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-and-tested-by: Takashi Iwai <tiwai@suse.de>
+Cc: Shreeya Patel <shreeya.patel@collabora.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c | 4 ++--
+ drivers/gpio/gpiolib.c |    4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
-index a7ec9f4d46ce..d68ef72dcdde 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
-@@ -71,9 +71,9 @@ static int init_systime(void __iomem *ioaddr, u32 sec, u32 nsec)
- 	writel(value, ioaddr + PTP_TCR);
+--- a/drivers/gpio/gpiolib.c
++++ b/drivers/gpio/gpiolib.c
+@@ -1560,8 +1560,6 @@ static int gpiochip_add_irqchip(struct g
  
- 	/* wait for present system time initialize to complete */
--	return readl_poll_timeout(ioaddr + PTP_TCR, value,
-+	return readl_poll_timeout_atomic(ioaddr + PTP_TCR, value,
- 				 !(value & PTP_TCR_TSINIT),
--				 10000, 100000);
-+				 10, 100000);
+ 	gpiochip_set_irq_hooks(gc);
+ 
+-	acpi_gpiochip_request_interrupts(gc);
+-
+ 	/*
+ 	 * Using barrier() here to prevent compiler from reordering
+ 	 * gc->irq.initialized before initialization of above
+@@ -1571,6 +1569,8 @@ static int gpiochip_add_irqchip(struct g
+ 
+ 	gc->irq.initialized = true;
+ 
++	acpi_gpiochip_request_interrupts(gc);
++
+ 	return 0;
  }
  
- static int config_addend(void __iomem *ioaddr, u32 addend)
--- 
-2.35.1
-
 
 
