@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41184C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 758EBC4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 08:42:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345856AbiDZIoP (ORCPT
+        id S1345933AbiDZIo2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 04:44:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37010 "EHLO
+        Tue, 26 Apr 2022 04:44:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345241AbiDZIhh (ORCPT
+        with ESMTP id S1345254AbiDZIhj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 04:37:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E445889CC2;
-        Tue, 26 Apr 2022 01:29:12 -0700 (PDT)
+        Tue, 26 Apr 2022 04:37:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD30F8BF29;
+        Tue, 26 Apr 2022 01:29:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 735C2B81CFA;
-        Tue, 26 Apr 2022 08:29:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1EB7C385BA;
-        Tue, 26 Apr 2022 08:29:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A68F6185C;
+        Tue, 26 Apr 2022 08:29:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 502DDC385A0;
+        Tue, 26 Apr 2022 08:29:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961750;
-        bh=ufe3XXIcnualJH+O2NTLc5JOijDBsJnOr9dxfRX5pj0=;
+        s=korg; t=1650961758;
+        bh=vNZER2TKts6PtC4AE54x+Z+1WLkWB0I3R9Zd8FGTmt8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uj/1Kj3NCTuzFcL/JJwXn3BRwVOFkZBieVk2fbgHKcSeMAuTmAX/zg8+gEh5r1HEN
-         2E27PDqWv4GoKmtqMUtledTvYYMZjXc51kN3KUU7mD+UScTXGs2B0kUAHmPEzx158d
-         d/YMpU9VijFjBFReStM9n6szSNuyacg0lka2Wd8U=
+        b=B6pF4sED2h88tn0bQQumQOJO3GkuIbOQhse5mgBmxYHY5u3dexcfqWso+eYDTZo24
+         hBiCeUdDnNjX/KvJXjPNjkkxPWmn5cXrCKOfZgYXKaDp5YZKEfLnYe80y0yze0PRzq
+         QOm8wYCJwNIgop+jLW9aSG/123tYZbLUbfDW0NZw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Flavio Leitner <fbl@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 18/62] net/packet: fix packet_sock xmit return value checking
-Date:   Tue, 26 Apr 2022 10:20:58 +0200
-Message-Id: <20220426081737.749339656@linuxfoundation.org>
+        stable@vger.kernel.org, Tom Zanussi <zanussi@kernel.org>,
+        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.4 03/62] tracing: Dump stacktrace trigger to the corresponding instance
+Date:   Tue, 26 Apr 2022 10:20:43 +0200
+Message-Id: <20220426081737.313078461@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
 References: <20220426081737.209637816@linuxfoundation.org>
@@ -51,59 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangbin Liu <liuhangbin@gmail.com>
+From: Daniel Bristot de Oliveira <bristot@kernel.org>
 
-[ Upstream commit 29e8e659f984be00d75ec5fef4e37c88def72712 ]
+commit ce33c845b030c9cf768370c951bc699470b09fa7 upstream.
 
-packet_sock xmit could be dev_queue_xmit, which also returns negative
-errors. So only checking positive errors is not enough, or userspace
-sendmsg may return success while packet is not send out.
+The stacktrace event trigger is not dumping the stacktrace to the instance
+where it was enabled, but to the global "instance."
 
-Move the net_xmit_errno() assignment in the braces as checkpatch.pl said
-do not use assignment in if condition.
+Use the private_data, pointing to the trigger file, to figure out the
+corresponding trace instance, and use it in the trigger action, like
+snapshot_trigger does.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-by: Flavio Leitner <fbl@redhat.com>
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lkml.kernel.org/r/afbb0b4f18ba92c276865bc97204d438473f4ebc.1645396236.git.bristot@kernel.org
+
+Cc: stable@vger.kernel.org
+Fixes: ae63b31e4d0e2 ("tracing: Separate out trace events from global variables")
+Reviewed-by: Tom Zanussi <zanussi@kernel.org>
+Tested-by: Tom Zanussi <zanussi@kernel.org>
+Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/packet/af_packet.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ kernel/trace/trace_events_trigger.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index 70c102359bfe..a2696acbcd9d 100644
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -2791,8 +2791,9 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+--- a/kernel/trace/trace_events_trigger.c
++++ b/kernel/trace/trace_events_trigger.c
+@@ -1219,7 +1219,14 @@ static void
+ stacktrace_trigger(struct event_trigger_data *data, void *rec,
+ 		   struct ring_buffer_event *event)
+ {
+-	trace_dump_stack(STACK_SKIP);
++	struct trace_event_file *file = data->private_data;
++	unsigned long flags;
++
++	if (file) {
++		local_save_flags(flags);
++		__trace_stack(file->tr, flags, STACK_SKIP, preempt_count());
++	} else
++		trace_dump_stack(STACK_SKIP);
+ }
  
- 		status = TP_STATUS_SEND_REQUEST;
- 		err = po->xmit(skb);
--		if (unlikely(err > 0)) {
--			err = net_xmit_errno(err);
-+		if (unlikely(err != 0)) {
-+			if (err > 0)
-+				err = net_xmit_errno(err);
- 			if (err && __packet_get_status(po, ph) ==
- 				   TP_STATUS_AVAILABLE) {
- 				/* skb was destructed already */
-@@ -2993,8 +2994,12 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
- 		skb->no_fcs = 1;
- 
- 	err = po->xmit(skb);
--	if (err > 0 && (err = net_xmit_errno(err)) != 0)
--		goto out_unlock;
-+	if (unlikely(err != 0)) {
-+		if (err > 0)
-+			err = net_xmit_errno(err);
-+		if (err)
-+			goto out_unlock;
-+	}
- 
- 	dev_put(dev);
- 
--- 
-2.35.1
-
+ static void
 
 
