@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86CA4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:27:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A4B3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:28:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344761AbiDZJa7 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:30:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55036 "EHLO
+        id S242880AbiDZJbG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:31:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347782AbiDZJGK (ORCPT
+        with ESMTP id S1347807AbiDZJGN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:06:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 390A419290;
-        Tue, 26 Apr 2022 01:45:46 -0700 (PDT)
+        Tue, 26 Apr 2022 05:06:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6A7F939D1;
+        Tue, 26 Apr 2022 01:45:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BF29060A56;
-        Tue, 26 Apr 2022 08:45:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD409C385A0;
-        Tue, 26 Apr 2022 08:45:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 12CF0B81A2F;
+        Tue, 26 Apr 2022 08:45:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7962EC385A0;
+        Tue, 26 Apr 2022 08:45:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962745;
-        bh=6JIV9bAl3AlhOIFiWtU+aC2MWdNmcLlPqJm+dbFnVFU=;
+        s=korg; t=1650962753;
+        bh=+KolcSOmUT8nfhzFWRnBxV23DouA6VHrhRtYpSvkK5k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GtjE06vTMbP5TGqXnBNEbuz4n7TDPWe3zYZYc2B+Fr7ITDFHJx7yMYi+mndlYaHrx
-         6n1y2PAF1jX+k3DX3MD13Bbzd/MDhpe/u3McXjXQu1QqO0XpQlD1kwFjX8wt5ZR45l
-         Qqj3V0EMpBAtiUJyc3A+7X8XBQqlPQjG7wtmMbrA=
+        b=0bwTUt1UFD7Lfn4gw/WYsX8VyIIrBfhp67f6hSaQ4eXlKrTJdBIT1hKdQctNH06bt
+         LyMrsZS+4KEyTI3/ihcngvIQc4pC1JijGUS61kFo51Uqx2Xa5Axk3cGOBNGSLtdBkq
+         OW3z7DDZNxCRhGe7SpKZ6tr1qblVfrqU39L65B7A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
+        stable@vger.kernel.org, Manish Rangankar <mrangankar@marvell.com>,
+        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
+        Wu Bo <wubo40@huawei.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 058/146] drm/msm/gpu: Rename runtime suspend/resume functions
-Date:   Tue, 26 Apr 2022 10:20:53 +0200
-Message-Id: <20220426081751.698990532@linuxfoundation.org>
+Subject: [PATCH 5.17 078/146] scsi: iscsi: Release endpoint ID when its freed
+Date:   Tue, 26 Apr 2022 10:21:13 +0200
+Message-Id: <20220426081752.257290930@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -49,48 +52,174 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Clark <robdclark@chromium.org>
+From: Mike Christie <michael.christie@oracle.com>
 
-[ Upstream commit f7eab1ddb9f8bc99206e3efa8d34ca1d2faca209 ]
+[ Upstream commit 3c6ae371b8a1ffba1fc415989fd581ebf841ed0a ]
 
-Signed-off-by: Rob Clark <robdclark@chromium.org>
-Link: https://lore.kernel.org/r/20220310234611.424743-2-robdclark@gmail.com
+We can't release the endpoint ID until all references to the endpoint have
+been dropped or it could be allocated while in use. This has us use an idr
+instead of looping over all conns to find a free ID and then free the ID
+when all references have been dropped instead of when the device is only
+deleted.
+
+Link: https://lore.kernel.org/r/20220408001314.5014-4-michael.christie@oracle.com
+Tested-by: Manish Rangankar <mrangankar@marvell.com>
+Reviewed-by: Lee Duncan <lduncan@suse.com>
+Reviewed-by: Chris Leech <cleech@redhat.com>
+Reviewed-by: Wu Bo <wubo40@huawei.com>
+Signed-off-by: Mike Christie <michael.christie@oracle.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/adreno/adreno_device.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/scsi/scsi_transport_iscsi.c | 71 ++++++++++++++---------------
+ include/scsi/scsi_transport_iscsi.h |  2 +-
+ 2 files changed, 36 insertions(+), 37 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/adreno/adreno_device.c b/drivers/gpu/drm/msm/adreno/adreno_device.c
-index fb261930ad1c..b93de79000e1 100644
---- a/drivers/gpu/drm/msm/adreno/adreno_device.c
-+++ b/drivers/gpu/drm/msm/adreno/adreno_device.c
-@@ -601,7 +601,7 @@ static const struct of_device_id dt_match[] = {
+diff --git a/drivers/scsi/scsi_transport_iscsi.c b/drivers/scsi/scsi_transport_iscsi.c
+index c7b1b2e8bb02..bcdfcb25349a 100644
+--- a/drivers/scsi/scsi_transport_iscsi.c
++++ b/drivers/scsi/scsi_transport_iscsi.c
+@@ -86,6 +86,9 @@ struct iscsi_internal {
+ 	struct transport_container session_cont;
  };
  
- #ifdef CONFIG_PM
--static int adreno_resume(struct device *dev)
-+static int adreno_runtime_resume(struct device *dev)
- {
- 	struct msm_gpu *gpu = dev_to_gpu(dev);
++static DEFINE_IDR(iscsi_ep_idr);
++static DEFINE_MUTEX(iscsi_ep_idr_mutex);
++
+ static atomic_t iscsi_session_nr; /* sysfs session id for next new session */
+ static struct workqueue_struct *iscsi_eh_timer_workq;
  
-@@ -617,7 +617,7 @@ static int active_submits(struct msm_gpu *gpu)
- 	return active_submits;
+@@ -169,6 +172,11 @@ struct device_attribute dev_attr_##_prefix##_##_name =	\
+ static void iscsi_endpoint_release(struct device *dev)
+ {
+ 	struct iscsi_endpoint *ep = iscsi_dev_to_endpoint(dev);
++
++	mutex_lock(&iscsi_ep_idr_mutex);
++	idr_remove(&iscsi_ep_idr, ep->id);
++	mutex_unlock(&iscsi_ep_idr_mutex);
++
+ 	kfree(ep);
  }
  
--static int adreno_suspend(struct device *dev)
-+static int adreno_runtime_suspend(struct device *dev)
+@@ -181,7 +189,7 @@ static ssize_t
+ show_ep_handle(struct device *dev, struct device_attribute *attr, char *buf)
  {
- 	struct msm_gpu *gpu = dev_to_gpu(dev);
- 	int remaining;
-@@ -636,7 +636,7 @@ static int adreno_suspend(struct device *dev)
+ 	struct iscsi_endpoint *ep = iscsi_dev_to_endpoint(dev);
+-	return sysfs_emit(buf, "%llu\n", (unsigned long long) ep->id);
++	return sysfs_emit(buf, "%d\n", ep->id);
+ }
+ static ISCSI_ATTR(ep, handle, S_IRUGO, show_ep_handle, NULL);
  
- static const struct dev_pm_ops adreno_pm_ops = {
- 	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend, pm_runtime_force_resume)
--	SET_RUNTIME_PM_OPS(adreno_suspend, adreno_resume, NULL)
-+	SET_RUNTIME_PM_OPS(adreno_runtime_suspend, adreno_runtime_resume, NULL)
+@@ -194,48 +202,32 @@ static struct attribute_group iscsi_endpoint_group = {
+ 	.attrs = iscsi_endpoint_attrs,
  };
  
- static struct platform_driver adreno_driver = {
+-#define ISCSI_MAX_EPID -1
+-
+-static int iscsi_match_epid(struct device *dev, const void *data)
+-{
+-	struct iscsi_endpoint *ep = iscsi_dev_to_endpoint(dev);
+-	const uint64_t *epid = data;
+-
+-	return *epid == ep->id;
+-}
+-
+ struct iscsi_endpoint *
+ iscsi_create_endpoint(int dd_size)
+ {
+-	struct device *dev;
+ 	struct iscsi_endpoint *ep;
+-	uint64_t id;
+-	int err;
+-
+-	for (id = 1; id < ISCSI_MAX_EPID; id++) {
+-		dev = class_find_device(&iscsi_endpoint_class, NULL, &id,
+-					iscsi_match_epid);
+-		if (!dev)
+-			break;
+-		else
+-			put_device(dev);
+-	}
+-	if (id == ISCSI_MAX_EPID) {
+-		printk(KERN_ERR "Too many connections. Max supported %u\n",
+-		       ISCSI_MAX_EPID - 1);
+-		return NULL;
+-	}
++	int err, id;
+ 
+ 	ep = kzalloc(sizeof(*ep) + dd_size, GFP_KERNEL);
+ 	if (!ep)
+ 		return NULL;
+ 
++	mutex_lock(&iscsi_ep_idr_mutex);
++	id = idr_alloc(&iscsi_ep_idr, ep, 0, -1, GFP_NOIO);
++	if (id < 0) {
++		mutex_unlock(&iscsi_ep_idr_mutex);
++		printk(KERN_ERR "Could not allocate endpoint ID. Error %d.\n",
++		       id);
++		goto free_ep;
++	}
++	mutex_unlock(&iscsi_ep_idr_mutex);
++
+ 	ep->id = id;
+ 	ep->dev.class = &iscsi_endpoint_class;
+-	dev_set_name(&ep->dev, "ep-%llu", (unsigned long long) id);
++	dev_set_name(&ep->dev, "ep-%d", id);
+ 	err = device_register(&ep->dev);
+         if (err)
+-                goto free_ep;
++		goto free_id;
+ 
+ 	err = sysfs_create_group(&ep->dev.kobj, &iscsi_endpoint_group);
+ 	if (err)
+@@ -249,6 +241,10 @@ iscsi_create_endpoint(int dd_size)
+ 	device_unregister(&ep->dev);
+ 	return NULL;
+ 
++free_id:
++	mutex_lock(&iscsi_ep_idr_mutex);
++	idr_remove(&iscsi_ep_idr, id);
++	mutex_unlock(&iscsi_ep_idr_mutex);
+ free_ep:
+ 	kfree(ep);
+ 	return NULL;
+@@ -276,14 +272,17 @@ EXPORT_SYMBOL_GPL(iscsi_put_endpoint);
+  */
+ struct iscsi_endpoint *iscsi_lookup_endpoint(u64 handle)
+ {
+-	struct device *dev;
++	struct iscsi_endpoint *ep;
+ 
+-	dev = class_find_device(&iscsi_endpoint_class, NULL, &handle,
+-				iscsi_match_epid);
+-	if (!dev)
+-		return NULL;
++	mutex_lock(&iscsi_ep_idr_mutex);
++	ep = idr_find(&iscsi_ep_idr, handle);
++	if (!ep)
++		goto unlock;
+ 
+-	return iscsi_dev_to_endpoint(dev);
++	get_device(&ep->dev);
++unlock:
++	mutex_unlock(&iscsi_ep_idr_mutex);
++	return ep;
+ }
+ EXPORT_SYMBOL_GPL(iscsi_lookup_endpoint);
+ 
+diff --git a/include/scsi/scsi_transport_iscsi.h b/include/scsi/scsi_transport_iscsi.h
+index 037c77fb5dc5..3ecf9702287b 100644
+--- a/include/scsi/scsi_transport_iscsi.h
++++ b/include/scsi/scsi_transport_iscsi.h
+@@ -296,7 +296,7 @@ extern void iscsi_host_for_each_session(struct Scsi_Host *shost,
+ struct iscsi_endpoint {
+ 	void *dd_data;			/* LLD private data */
+ 	struct device dev;
+-	uint64_t id;
++	int id;
+ 	struct iscsi_cls_conn *conn;
+ };
+ 
 -- 
 2.35.1
 
