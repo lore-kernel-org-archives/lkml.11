@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90EE5C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:03:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E1ABC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:03:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353912AbiDZTGX (ORCPT
+        id S1353930AbiDZTG0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 15:06:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40708 "EHLO
+        Tue, 26 Apr 2022 15:06:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353558AbiDZTFS (ORCPT
+        with ESMTP id S1353711AbiDZTFY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 15:05:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40DB519916B;
-        Tue, 26 Apr 2022 12:02:08 -0700 (PDT)
+        Tue, 26 Apr 2022 15:05:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 640F9199168;
+        Tue, 26 Apr 2022 12:02:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC7A16199D;
-        Tue, 26 Apr 2022 19:02:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D44BC385A0;
-        Tue, 26 Apr 2022 19:02:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 060BFB8224A;
+        Tue, 26 Apr 2022 19:02:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89551C385AF;
+        Tue, 26 Apr 2022 19:02:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650999727;
-        bh=XtYdCKKZ7/RbwsonQHN6VD23oGwc3Zi25SgQJ6Oj4q8=;
+        s=k20201202; t=1650999733;
+        bh=o3fwiYNUByskOnAIx26ubpASTmCmxwMLzU8e5rSfD0U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hWH7gK9BR0aQ+BfmPPzfWtkz2UGwmd0XpBJsmd8wdj6cuTYKvbnpaXBumpaJ9bDej
-         AgsW9dXwuzj9HJmHBqxmI/HuRzKDsnnY9zyOp96Jrz0D5FxG/3vP5U5gTqK9CG3fHU
-         2zdlvlCkjvAGJNXhV0EfPoU0d+axJgUwG/6fF8bV91HrPchQwKO8hWgP/eIEaeJBoW
-         QMdmuXj0aoM5+c01hV2+9cJ2q3KJgDufCLCaQ+9WoSMu1fZJCWmjxqdLikjpTmrS77
-         2CvsoQo8g0LJ5wwMOweLuocs57unZsyV/1UnxHZ+72p+Zchq2xoytHvjYtGDu38Jgo
-         E8Ao4z8sYupbA==
+        b=X0Wy/Ncb/n0uLyBGZPvVpU45AlM4qDdBv3f51lYLOjcFr65/G68LgGeC3I54y7nwV
+         FLifrpwRcF3dnao2BWhNnGhIJkbxnqH6B4jen7w3aCvwTvtatiHn6gg6JwuGTmzufV
+         DGb/UZaEpT3jA0iKxSecif6UUcpHL/aGBPUrrM78UN8B/5bn3dLFMP1aVSiUQM6aki
+         XxK34w7Pgz4SIJsPF3auD+kt464rrTyIR9sSTmdvNRrtZdKl+CIt4Bc/qVjBSgrWyO
+         lOjUWsU2Vf6jb7vx4yMuQUKqnvAu4uJ2bGZcy4cqfaQ5i7Va6Q9urMGszRVslqPKWp
+         kU7eWJC4w5gBw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mikulas Patocka <mpatocka@redhat.com>,
+Cc:     Sidhartha Kumar <sidhartha.kumar@oracle.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, peterz@infradead.org, jpoimboe@redhat.com
-Subject: [PATCH AUTOSEL 5.17 15/22] x86: __memcpy_flushcache: fix wrong alignment if size > 2^32
-Date:   Tue, 26 Apr 2022 15:01:38 -0400
-Message-Id: <20220426190145.2351135-15-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        linux-mm@kvack.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 22/22] selftest/vm: verify remap destination address in mremap_test
+Date:   Tue, 26 Apr 2022 15:01:45 -0400
+Message-Id: <20220426190145.2351135-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220426190145.2351135-1-sashal@kernel.org>
 References: <20220426190145.2351135-1-sashal@kernel.org>
@@ -54,49 +55,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Sidhartha Kumar <sidhartha.kumar@oracle.com>
 
-[ Upstream commit a6823e4e360fe975bd3da4ab156df7c74c8b07f3 ]
+[ Upstream commit 18d609daa546c919fd36b62a7b510c18de4b4af8 ]
 
-The first "if" condition in __memcpy_flushcache is supposed to align the
-"dest" variable to 8 bytes and copy data up to this alignment.  However,
-this condition may misbehave if "size" is greater than 4GiB.
+Because mremap does not have a MAP_FIXED_NOREPLACE flag, it can destroy
+existing mappings.  This causes a segfault when regions such as text are
+remapped and the permissions are changed.
 
-The statement min_t(unsigned, size, ALIGN(dest, 8) - dest); casts both
-arguments to unsigned int and selects the smaller one.  However, the
-cast truncates high bits in "size" and it results in misbehavior.
+Verify the requested mremap destination address does not overlap any
+existing mappings by using mmap's MAP_FIXED_NOREPLACE flag.  Keep
+incrementing the destination address until a valid mapping is found or
+fail the current test once the max address is reached.
 
-For example:
-
-	suppose that size == 0x100000001, dest == 0x200000002
-	min_t(unsigned, size, ALIGN(dest, 8) - dest) == min_t(0x1, 0xe) == 0x1;
-	...
-	dest += 0x1;
-
-so we copy just one byte "and" dest remains unaligned.
-
-This patch fixes the bug by replacing unsigned with size_t.
-
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Link: https://lkml.kernel.org/r/20220420215721.4868-2-sidhartha.kumar@oracle.com
+Signed-off-by: Sidhartha Kumar <sidhartha.kumar@oracle.com>
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/lib/usercopy_64.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/testing/selftests/vm/mremap_test.c | 42 ++++++++++++++++++++++--
+ 1 file changed, 39 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/lib/usercopy_64.c b/arch/x86/lib/usercopy_64.c
-index 0402a749f3a0..0ae6cf804197 100644
---- a/arch/x86/lib/usercopy_64.c
-+++ b/arch/x86/lib/usercopy_64.c
-@@ -119,7 +119,7 @@ void __memcpy_flushcache(void *_dst, const void *_src, size_t size)
+diff --git a/tools/testing/selftests/vm/mremap_test.c b/tools/testing/selftests/vm/mremap_test.c
+index 9a518fee6306..58775dab3cc6 100644
+--- a/tools/testing/selftests/vm/mremap_test.c
++++ b/tools/testing/selftests/vm/mremap_test.c
+@@ -10,6 +10,7 @@
+ #include <string.h>
+ #include <sys/mman.h>
+ #include <time.h>
++#include <stdbool.h>
  
- 	/* cache copy and flush to align dest */
- 	if (!IS_ALIGNED(dest, 8)) {
--		unsigned len = min_t(unsigned, size, ALIGN(dest, 8) - dest);
-+		size_t len = min_t(size_t, size, ALIGN(dest, 8) - dest);
+ #include "../kselftest.h"
  
- 		memcpy((void *) dest, (void *) source, len);
- 		clean_cache_range((void *) dest, len);
+@@ -64,6 +65,30 @@ enum {
+ 	.expect_failure = should_fail				\
+ }
+ 
++/*
++ * Returns false if the requested remap region overlaps with an
++ * existing mapping (e.g text, stack) else returns true.
++ */
++static bool is_remap_region_valid(void *addr, unsigned long long size)
++{
++	void *remap_addr = NULL;
++	bool ret = true;
++
++	/* Use MAP_FIXED_NOREPLACE flag to ensure region is not mapped */
++	remap_addr = mmap(addr, size, PROT_READ | PROT_WRITE,
++					 MAP_FIXED_NOREPLACE | MAP_ANONYMOUS | MAP_SHARED,
++					 -1, 0);
++
++	if (remap_addr == MAP_FAILED) {
++		if (errno == EEXIST)
++			ret = false;
++	} else {
++		munmap(remap_addr, size);
++	}
++
++	return ret;
++}
++
+ /* Returns mmap_min_addr sysctl tunable from procfs */
+ static unsigned long long get_mmap_min_addr(void)
+ {
+@@ -111,8 +136,8 @@ static void *get_source_mapping(struct config c)
+ 		goto retry;
+ 
+ 	src_addr = mmap((void *) addr, c.region_size, PROT_READ | PROT_WRITE,
+-			MAP_FIXED_NOREPLACE | MAP_ANONYMOUS | MAP_SHARED,
+-			-1, 0);
++					MAP_FIXED_NOREPLACE | MAP_ANONYMOUS | MAP_SHARED,
++					-1, 0);
+ 	if (src_addr == MAP_FAILED) {
+ 		if (errno == EPERM || errno == EEXIST)
+ 			goto retry;
+@@ -179,9 +204,20 @@ static long long remap_region(struct config c, unsigned int threshold_mb,
+ 	if (!((unsigned long long) addr & c.dest_alignment))
+ 		addr = (void *) ((unsigned long long) addr | c.dest_alignment);
+ 
++	/* Don't destroy existing mappings unless expected to overlap */
++	while (!is_remap_region_valid(addr, c.region_size) && !c.overlapping) {
++		/* Check for unsigned overflow */
++		if (addr + c.dest_alignment < addr) {
++			ksft_print_msg("Couldn't find a valid region to remap to\n");
++			ret = -1;
++			goto out;
++		}
++		addr += c.dest_alignment;
++	}
++
+ 	clock_gettime(CLOCK_MONOTONIC, &t_start);
+ 	dest_addr = mremap(src_addr, c.region_size, c.region_size,
+-			MREMAP_MAYMOVE|MREMAP_FIXED, (char *) addr);
++					  MREMAP_MAYMOVE|MREMAP_FIXED, (char *) addr);
+ 	clock_gettime(CLOCK_MONOTONIC, &t_end);
+ 
+ 	if (dest_addr == MAP_FAILED) {
 -- 
 2.35.1
 
