@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C847C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:04:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99A63C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:04:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354029AbiDZTH3 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 15:07:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42516 "EHLO
+        id S229807AbiDZTHh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 15:07:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353774AbiDZTFk (ORCPT
+        with ESMTP id S1353778AbiDZTFl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 15:05:40 -0400
+        Tue, 26 Apr 2022 15:05:41 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D9D61999E6;
-        Tue, 26 Apr 2022 12:02:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 827D51999F0;
+        Tue, 26 Apr 2022 12:02:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 36C3B6199A;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F5FE619C0;
+        Tue, 26 Apr 2022 19:02:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65473C385B2;
         Tue, 26 Apr 2022 19:02:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75078C385B0;
-        Tue, 26 Apr 2022 19:02:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650999748;
-        bh=+Rmjm5j+NVCX092c+nELx71iEIRBfHPkU0zB4Hx6TB8=;
+        s=k20201202; t=1650999749;
+        bh=uU32vsAIlQhNOwiz7baeDmqduhS8jWk8Pq/Li7uhVgw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KWAyOTy/S9i6LkNMyyS1a24WIB1omL8tm73edyXQVEC1jEekeNIT3rzk57gzhXLtl
-         Mu43jnBN8dWyo+rxsVTFMHGVYs8ahrgp3YGGTJeXtKtvO/WvDeWKCrCQddBTZfLLFr
-         C11h9rtUcdjOD+YjmN6OFkTVrct/08sFn3rKOQ9ib7eG38zw4VU4YGyj9abcPkvO9z
-         jYKZ4v/k8epbG1D+a8DkAUlbisUKwadLTO1urhfnN4RxrbnJ2x1nl/qk7OFZVfDTEK
-         l9z0emhfJX5kg93h+JBLojK8C9xxgDwXim8wvEi0W3BTXBqzHwdrTopaKleah7hym+
-         aMfGUhjFuoz2g==
+        b=FOxfkei9PuHjOX+C1ynXKtSebr2Qg3tU7of6QoT90N4YsnuQXR/O+G9hWIJbaeJQd
+         iwkFIdM0hTcEgJB2Tusw5R+jVLHqdccdp8aoIORXe4Ys65KUwRYdX56n+s3PqaDrgD
+         pOCxiG5x19ExTKle/xl3V4uTLEEh3ZnohgR5eQ06N2a6Iw67bhDtRR47iNX7vGrB6k
+         5AYOLBVEB98/+hoG1lKxiTiuSLUJ5cWy0BM5AvuW9VT+TVhyY7hE1VK4Ga5gUc8tzN
+         ktHFpYmsVyiI44M+igBimpCSOF6GpBVBJUGpy9c7cdQKekOYPC3kRUzu17fRoqb0LV
+         PGwzz2EBNgXqA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexey Kardashevskiy <aik@ozlabs.ru>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, nathan@kernel.org,
-        ndesaulniers@google.com, christophe.leroy@csgroup.eu,
-        msuchanek@suse.de, linuxppc-dev@lists.ozlabs.org,
-        llvm@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.15 12/15] powerpc/perf: Fix 32bit compile
-Date:   Tue, 26 Apr 2022 15:02:11 -0400
-Message-Id: <20220426190216.2351413-12-sashal@kernel.org>
+Cc:     Sidhartha Kumar <sidhartha.kumar@oracle.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        linux-mm@kvack.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 14/15] selftest/vm: verify mmap addr in mremap_test
+Date:   Tue, 26 Apr 2022 15:02:13 -0400
+Message-Id: <20220426190216.2351413-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220426190216.2351413-1-sashal@kernel.org>
 References: <20220426190216.2351413-1-sashal@kernel.org>
@@ -55,42 +54,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Kardashevskiy <aik@ozlabs.ru>
+From: Sidhartha Kumar <sidhartha.kumar@oracle.com>
 
-[ Upstream commit bb82c574691daf8f7fa9a160264d15c5804cb769 ]
+[ Upstream commit 9c85a9bae267f6b5e5e374d0d023bbbe9db096d3 ]
 
-The "read_bhrb" global symbol is only called under CONFIG_PPC64 of
-arch/powerpc/perf/core-book3s.c but it is compiled for both 32 and 64 bit
-anyway (and LLVM fails to link this on 32bit).
+Avoid calling mmap with requested addresses that are less than the
+system's mmap_min_addr.  When run as root, mmap returns EACCES when
+trying to map addresses < mmap_min_addr.  This is not one of the error
+codes for the condition to retry the mmap in the test.
 
-This fixes it by moving bhrb.o to obj64 targets.
+Rather than arbitrarily retrying on EACCES, don't attempt an mmap until
+addr > vm.mmap_min_addr.
 
-Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220421025756.571995-1-aik@ozlabs.ru
+Add a munmap call after an alignment check as the mappings are retained
+after the retry and can reach the vm.max_map_count sysctl.
+
+Link: https://lkml.kernel.org/r/20220420215721.4868-1-sidhartha.kumar@oracle.com
+Signed-off-by: Sidhartha Kumar <sidhartha.kumar@oracle.com>
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/perf/Makefile | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ tools/testing/selftests/vm/mremap_test.c | 41 +++++++++++++++++++++++-
+ 1 file changed, 40 insertions(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/perf/Makefile b/arch/powerpc/perf/Makefile
-index 2f46e31c7612..4f53d0b97539 100644
---- a/arch/powerpc/perf/Makefile
-+++ b/arch/powerpc/perf/Makefile
-@@ -3,11 +3,11 @@
- obj-y				+= callchain.o callchain_$(BITS).o perf_regs.o
- obj-$(CONFIG_COMPAT)		+= callchain_32.o
+diff --git a/tools/testing/selftests/vm/mremap_test.c b/tools/testing/selftests/vm/mremap_test.c
+index 0624d1bd71b5..2b3b4f15185f 100644
+--- a/tools/testing/selftests/vm/mremap_test.c
++++ b/tools/testing/selftests/vm/mremap_test.c
+@@ -6,6 +6,7 @@
  
--obj-$(CONFIG_PPC_PERF_CTRS)	+= core-book3s.o bhrb.o
-+obj-$(CONFIG_PPC_PERF_CTRS)	+= core-book3s.o
- obj64-$(CONFIG_PPC_PERF_CTRS)	+= ppc970-pmu.o power5-pmu.o \
- 				   power5+-pmu.o power6-pmu.o power7-pmu.o \
- 				   isa207-common.o power8-pmu.o power9-pmu.o \
--				   generic-compat-pmu.o power10-pmu.o
-+				   generic-compat-pmu.o power10-pmu.o bhrb.o
- obj32-$(CONFIG_PPC_PERF_CTRS)	+= mpc7450-pmu.o
+ #include <errno.h>
+ #include <stdlib.h>
++#include <stdio.h>
+ #include <string.h>
+ #include <sys/mman.h>
+ #include <time.h>
+@@ -64,6 +65,35 @@ enum {
+ 	.expect_failure = should_fail				\
+ }
  
- obj-$(CONFIG_PPC_POWERNV)	+= imc-pmu.o
++/* Returns mmap_min_addr sysctl tunable from procfs */
++static unsigned long long get_mmap_min_addr(void)
++{
++	FILE *fp;
++	int n_matched;
++	static unsigned long long addr;
++
++	if (addr)
++		return addr;
++
++	fp = fopen("/proc/sys/vm/mmap_min_addr", "r");
++	if (fp == NULL) {
++		ksft_print_msg("Failed to open /proc/sys/vm/mmap_min_addr: %s\n",
++			strerror(errno));
++		exit(KSFT_SKIP);
++	}
++
++	n_matched = fscanf(fp, "%llu", &addr);
++	if (n_matched != 1) {
++		ksft_print_msg("Failed to read /proc/sys/vm/mmap_min_addr: %s\n",
++			strerror(errno));
++		fclose(fp);
++		exit(KSFT_SKIP);
++	}
++
++	fclose(fp);
++	return addr;
++}
++
+ /*
+  * Returns the start address of the mapping on success, else returns
+  * NULL on failure.
+@@ -72,8 +102,15 @@ static void *get_source_mapping(struct config c)
+ {
+ 	unsigned long long addr = 0ULL;
+ 	void *src_addr = NULL;
++	unsigned long long mmap_min_addr;
++
++	mmap_min_addr = get_mmap_min_addr();
++
+ retry:
+ 	addr += c.src_alignment;
++	if (addr < mmap_min_addr)
++		goto retry;
++
+ 	src_addr = mmap((void *) addr, c.region_size, PROT_READ | PROT_WRITE,
+ 			MAP_FIXED_NOREPLACE | MAP_ANONYMOUS | MAP_SHARED,
+ 			-1, 0);
+@@ -91,8 +128,10 @@ static void *get_source_mapping(struct config c)
+ 	 * alignment in the tests.
+ 	 */
+ 	if (((unsigned long long) src_addr & (c.src_alignment - 1)) ||
+-			!((unsigned long long) src_addr & c.src_alignment))
++			!((unsigned long long) src_addr & c.src_alignment)) {
++		munmap(src_addr, c.region_size);
+ 		goto retry;
++	}
+ 
+ 	if (!src_addr)
+ 		goto error;
 -- 
 2.35.1
 
