@@ -2,93 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B62CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 13:49:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04E2EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 13:49:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350413AbiDZNwc (ORCPT
+        id S1351082AbiDZNwp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 09:52:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55510 "EHLO
+        Tue, 26 Apr 2022 09:52:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234454AbiDZNwa (ORCPT
+        with ESMTP id S234454AbiDZNwn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 09:52:30 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B63D6D84D
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 06:49:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650980963; x=1682516963;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=+1AaMUKz7U1/QUWjG1naPByn71Ih8gIWJmcdLnyBoi8=;
-  b=bxM+KnRK+gZN8w5ZFYMF1QBiS+7Aef+w0bI7sTgu4sm6JPnZadkUjoPh
-   49vfc2tULpZu3aHmfjHZCDDP6FLdfxNkXbWQY/My3huxvJhQDW+wsml0j
-   xoRaBEqNXrAG/24qaV+y9ascwxSANcem1/7J76fo5MKHjpe5gp9eIzoF2
-   0PWqCFswxRun4xlvO+XAd4HFmaDLLtcypqhJFFuaJMtqVT73vEomPpPmN
-   hT5+bO/hemj25R4Xlr4L6+Mhu2oNv8ddDOigfINtUP6NB4DVRR+ksXNxu
-   Wssyjw92nipLT7QTdi2OB4TA6Rx9CyT2HejJDLe0rAY3asf1RDBi9VsxE
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="265105770"
-X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
-   d="scan'208";a="265105770"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 06:49:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
-   d="scan'208";a="579902914"
-Received: from ubuntu.bj.intel.com ([10.238.155.108])
-  by orsmga008.jf.intel.com with ESMTP; 26 Apr 2022 06:49:19 -0700
-From:   Jun Miao <jun.miao@intel.com>
-To:     peterz@infradead.org
-Cc:     bigeasy@linutronix.de, qiang1.zhang@intel.com,
-        linux-kernel@vger.kernel.org, jun.miao@intel.com
-Subject: [PATCH] irq_work: Make irq_work_queue_on() NMI-safe again
-Date:   Tue, 26 Apr 2022 21:49:24 +0800
-Message-Id: <20220426134924.736104-1-jun.miao@intel.com>
-X-Mailer: git-send-email 2.32.0
+        Tue, 26 Apr 2022 09:52:43 -0400
+Received: from mxout2.routing.net (mxout2.routing.net [IPv6:2a03:2900:1:a::b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93A3C6E546;
+        Tue, 26 Apr 2022 06:49:35 -0700 (PDT)
+Received: from mxbox3.masterlogin.de (unknown [192.168.10.78])
+        by mxout2.routing.net (Postfix) with ESMTP id B5E135FC22;
+        Tue, 26 Apr 2022 13:49:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
+        s=20200217; t=1650980973;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=dSlDPKAzzaq/bDB/Mgjeeep8HHzSjpH4wNIELJEgfLY=;
+        b=LBiqkBfyO3csDUhz/CIEgnSBcuuuHGsWvMRPZhVFTXREB4nAuAtBCmuvSAmJMdixMLlfwF
+        yJ+gxir5TiFHoD8FZhza5dtT3Ea4ieFA88Hr5yKcLVR4uVurPxRdpyOocrR8FOuA237Mg+
+        Tl1ug0CnEWkG3QuboucXbgvJlRseWSs=
+Received: from localhost.localdomain (fttx-pool-80.245.77.37.bambit.de [80.245.77.37])
+        by mxbox3.masterlogin.de (Postfix) with ESMTPSA id 5D074360630;
+        Tue, 26 Apr 2022 13:49:32 +0000 (UTC)
+From:   Frank Wunderlich <linux@fw-web.de>
+To:     linux-mediatek@lists.infradead.org,
+        linux-rockchip@lists.infradead.org
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [RFC v1 0/3] Add MT7531 switch to BPI-R2Pro Board
+Date:   Tue, 26 Apr 2022 15:49:21 +0200
+Message-Id: <20220426134924.30372-1-linux@fw-web.de>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Mail-ID: a0cd959c-79df-41a0-9cf6-bfb567398990
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We should not put NMI unsafe code in irq_work_queue_on().
+From: Frank Wunderlich <frank-w@public-files.de>
 
-The KASAN of kasan_record_aux_stack_noalloc() is not NMI safe. Because which
-will call the spinlock. While the irq_work_queue_on() is also very carefully
-carafted to be exactly that.
-When unable CONFIG_SM or local CPU, the irq_work_queue_on() is even same to
-irq_work_queue(). So delete KASAN instantly.
+The Rockchip-Board Bananapi-R2-Pro has a Mediatek MT7531 connected to
+the GMAC0.
+This series changes DSA driver where needed to work on the Board and
+adds necessary Devicetree node.
 
-Fixes: e2b5bcf9f5ba ("irq_work: record irq_work_queue() call stack")
-Suggested by: "Huang, Ying" <ying.huang@intel.com>
-Signed-off-by: Jun Miao <jun.miao@intel.com>
----
- kernel/irq_work.c | 3 ---
- 1 file changed, 3 deletions(-)
+Frank Wunderlich (3):
+  net: dsa: mt753x: make reset optional
+  net: dsa: mt753x: make CPU-Port dynamic
+  arm64: dts: rockchip: Add mt7531 dsa node to BPI-R2-Pro board
 
-diff --git a/kernel/irq_work.c b/kernel/irq_work.c
-index 7afa40fe5cc4..e7f48aa8d8af 100644
---- a/kernel/irq_work.c
-+++ b/kernel/irq_work.c
-@@ -20,7 +20,6 @@
- #include <linux/smp.h>
- #include <linux/smpboot.h>
- #include <asm/processor.h>
--#include <linux/kasan.h>
- 
- static DEFINE_PER_CPU(struct llist_head, raised_list);
- static DEFINE_PER_CPU(struct llist_head, lazy_list);
-@@ -137,8 +136,6 @@ bool irq_work_queue_on(struct irq_work *work, int cpu)
- 	if (!irq_work_claim(work))
- 		return false;
- 
--	kasan_record_aux_stack_noalloc(work);
--
- 	preempt_disable();
- 	if (cpu != smp_processor_id()) {
- 		/* Arch remote IPI send/receive backend aren't NMI safe */
+ .../boot/dts/rockchip/rk3568-bpi-r2-pro.dts   | 49 +++++++++++++++++
+ drivers/net/dsa/mt7530.c                      | 53 ++++++++++---------
+ drivers/net/dsa/mt7530.h                      |  2 +-
+ 3 files changed, 78 insertions(+), 26 deletions(-)
+
 -- 
-2.32.0
+2.25.1
 
