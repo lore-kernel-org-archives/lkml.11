@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B38FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:33:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76C67C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 09:33:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347373AbiDZJgb (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 05:36:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38556 "EHLO
+        id S235755AbiDZJgi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Apr 2022 05:36:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345975AbiDZJG3 (ORCPT
+        with ESMTP id S1347931AbiDZJGX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 05:06:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3F0013C285;
-        Tue, 26 Apr 2022 01:47:52 -0700 (PDT)
+        Tue, 26 Apr 2022 05:06:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35451B9F07;
+        Tue, 26 Apr 2022 01:47:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6D88AB81A2F;
-        Tue, 26 Apr 2022 08:47:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADDA3C385A4;
-        Tue, 26 Apr 2022 08:47:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C4DC860C42;
+        Tue, 26 Apr 2022 08:47:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89F26C385A0;
+        Tue, 26 Apr 2022 08:47:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962870;
-        bh=wa6DKY7ihCAiI4ORJ4Lemo2W/kJEgxqyoapglfQxiiI=;
+        s=korg; t=1650962852;
+        bh=4sPhDbCQx1zPEz4C3yDJVaZMcs36wzOetBzsjQaMW1w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fvr2dVtONJ4d3hKOoE34bkvBT2yLepHnQE4/dOVE0tgiSs9DLRO8BpGGj6UOpvevn
-         1efBlLdpTpkukBmhLtSJOmxnhaENb8scq+hf4GgEVrWHVIlvTpVrcR/w0k/pLqOp79
-         tbDj77BbEys31oK0vLFnB4iVlBXK24LYzSWydXlI=
+        b=XInRp8yAzZ2E74xNgHbGlaX3nj8zY6aqL7nhw+HJmBTFlBjF32miLELNWOJuzw/Fe
+         VI46djLsfP1u4LJRX+sCDdNNWQn6Ez2GKOiAZ/v0TxAgVUnk+hM+LsC3coGJvHe19a
+         XCOYguCQgn5VD67Ab8oQE8/9/YeS7Qy+//Lt9GoM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
-        Guo Ren <guoren@kernel.org>, Max Filippov <jcmvbkbc@gmail.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Subject: [PATCH 5.17 117/146] xtensa: patch_text: Fixup last cpu should be master
-Date:   Tue, 26 Apr 2022 10:21:52 +0200
-Message-Id: <20220426081753.345440056@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Stefano Stabellini <stefano.stabellini@xilinx.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 111/146] arm/xen: Fix some refcount leaks
+Date:   Tue, 26 Apr 2022 10:21:46 +0200
+Message-Id: <20220426081753.175577347@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
 References: <20220426081750.051179617@linuxfoundation.org>
@@ -50,40 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Ren <guoren@linux.alibaba.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit ee69d4be8fd064cd08270b4808d2dfece3614ee0 upstream.
+[ Upstream commit 533bec143a4c32f7b2014a159d0f5376226e5b4d ]
 
-These patch_text implementations are using stop_machine_cpuslocked
-infrastructure with atomic cpu_count. The original idea: When the
-master CPU patch_text, the others should wait for it. But current
-implementation is using the first CPU as master, which couldn't
-guarantee the remaining CPUs are waiting. This patch changes the
-last CPU as the master to solve the potential risk.
+The of_find_compatible_node() function returns a node pointer with
+refcount incremented, We should use of_node_put() on it when done
+Add the missing of_node_put() to release the refcount.
 
-Fixes: 64711f9a47d4 ("xtensa: implement jump_label support")
-Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-Signed-off-by: Guo Ren <guoren@kernel.org>
-Reviewed-by: Max Filippov <jcmvbkbc@gmail.com>
-Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
-Cc: <stable@vger.kernel.org>
-Message-Id: <20220407073323.743224-4-guoren@kernel.org>
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 9b08aaa3199a ("ARM: XEN: Move xen_early_init() before efi_init()")
+Fixes: b2371587fe0c ("arm/xen: Read extended regions from DT and init Xen resource")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Stefano Stabellini <sstabellini@kernel.org>
+Signed-off-by: Stefano Stabellini <stefano.stabellini@xilinx.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/xtensa/kernel/jump_label.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/xen/enlighten.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
---- a/arch/xtensa/kernel/jump_label.c
-+++ b/arch/xtensa/kernel/jump_label.c
-@@ -40,7 +40,7 @@ static int patch_text_stop_machine(void
- {
- 	struct patch *patch = data;
+diff --git a/arch/arm/xen/enlighten.c b/arch/arm/xen/enlighten.c
+index ec5b082f3de6..07eb69f9e7df 100644
+--- a/arch/arm/xen/enlighten.c
++++ b/arch/arm/xen/enlighten.c
+@@ -337,12 +337,15 @@ int __init arch_xen_unpopulated_init(struct resource **res)
  
--	if (atomic_inc_return(&patch->cpu_count) == 1) {
-+	if (atomic_inc_return(&patch->cpu_count) == num_online_cpus()) {
- 		local_patch_text(patch->addr, patch->data, patch->sz);
- 		atomic_inc(&patch->cpu_count);
- 	} else {
+ 	if (!nr_reg) {
+ 		pr_err("No extended regions are found\n");
++		of_node_put(np);
+ 		return -EINVAL;
+ 	}
+ 
+ 	regs = kcalloc(nr_reg, sizeof(*regs), GFP_KERNEL);
+-	if (!regs)
++	if (!regs) {
++		of_node_put(np);
+ 		return -ENOMEM;
++	}
+ 
+ 	/*
+ 	 * Create resource from extended regions provided by the hypervisor to be
+@@ -403,8 +406,8 @@ int __init arch_xen_unpopulated_init(struct resource **res)
+ 	*res = &xen_resource;
+ 
+ err:
++	of_node_put(np);
+ 	kfree(regs);
+-
+ 	return rc;
+ }
+ #endif
+@@ -424,8 +427,10 @@ static void __init xen_dt_guest_init(void)
+ 
+ 	if (of_address_to_resource(xen_node, GRANT_TABLE_INDEX, &res)) {
+ 		pr_err("Xen grant table region is not found\n");
++		of_node_put(xen_node);
+ 		return;
+ 	}
++	of_node_put(xen_node);
+ 	xen_grant_frames = res.start;
+ }
+ 
+-- 
+2.35.1
+
 
 
