@@ -2,59 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24062C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:49:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D102EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 16:49:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353473AbiDZQwS (ORCPT
+        id S1353479AbiDZQwW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 12:52:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44704 "EHLO
+        Tue, 26 Apr 2022 12:52:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353369AbiDZQvB (ORCPT
+        with ESMTP id S1353219AbiDZQu7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 12:51:01 -0400
-Received: from mail-wm1-x34a.google.com (mail-wm1-x34a.google.com [IPv6:2a00:1450:4864:20::34a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91AC248384
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:46:13 -0700 (PDT)
-Received: by mail-wm1-x34a.google.com with SMTP id m125-20020a1c2683000000b00391893a2febso8285568wmm.4
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:46:13 -0700 (PDT)
+        Tue, 26 Apr 2022 12:50:59 -0400
+Received: from mail-ed1-x549.google.com (mail-ed1-x549.google.com [IPv6:2a00:1450:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 972D44832B
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:45:52 -0700 (PDT)
+Received: by mail-ed1-x549.google.com with SMTP id cf16-20020a0564020b9000b00425d543c75dso4625358edb.11
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 09:45:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=moZadDgSRgKTD5MeByPAKBz5Srz/DkBZpKo67JL3wX4=;
-        b=cLDKsrGhoorGl3SRzelVo1PAO7x1RBOazkv5nVbG4NDdcGaRorPOu46pd1i1ETj6hN
-         h0UoOHWi4fDikLK9zi9pBoTbj7p+CVMiVtA02QDHib8yzyjhlFhzlbs1tKotmp8GIt+Z
-         r2bf7wmpqHdZBIZZAh4b+ySUHf+iXX37i29FxIhHYiYKb5VpzMQRfnvof2MvgAVVQ1ZM
-         l3T7Qhx+uQ95eC8Y0ZpGlX0jRuN6gIrOSGpaYLHVjLemQwrYlnZaTUKaYJkL5xFg5tCv
-         Q6JZbOy6PYMZBzBVtPmEhtlM/aUknABDbunmxBkt5+imBTxAI6SQwQQpEK8i4YNCCxax
-         ihqQ==
+        bh=qfycs5WHoOJISCgVkz4aOXJI06Vi4G56am9I/vqcS5Q=;
+        b=fRwDF91Cl56NtYnfVRrrwWq+ACk34XnpCPgWDJNhxkPf0+jyG4t7SUqyZkxziScoD6
+         nlS+/T0kxR6PQ7wQlPhgkRdK+OAhXkwXjvWT5GdxHtziDcUCsqgfbLBiAQg7R4lxOA+S
+         b1h3WJe9vuCUveQdnRjvIleLSdoXjd5T81AR3B/d6sysyhegK2IbBH7cJDKBoPbngE01
+         jvw+rllOIeEdhzy+uxIADb7nx6kl7sAhRpV9EXPjMlnyR573JuNml4rWiL8PIe9a6qEW
+         epw0ifH48szv7cq73qPvPsJ2sXpbRFaPAhln/IK2M8zSSWNmDvdbyCHkb2G+fh3x7wwt
+         zbNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=moZadDgSRgKTD5MeByPAKBz5Srz/DkBZpKo67JL3wX4=;
-        b=QEFsSxMlowfb1SCR8DmMvPiRUVZCZzcQC0U6UW+Qpifj7vN3GNxTfnQlE44HqMIIyB
-         GDRFT/tRsuRqRuWlG5PnDj6mfd/1gWZd9W2tk1GHUgFroYv8WQJdF6tbBkTUovkHUQSk
-         lmEXfzE36/4NctJreqEnacMo/wn5LbfIqcTK5sOXGtI9+pJ8y+DfUy23451ZtYxBFzKX
-         Cg/fGFIGqgKh5QJR7VvUXe3n/4g18poEpAfEN/sr4ghmUeDU5TSbTDkWaI4bE4fsjllN
-         kZktW2NhU9l+HGyTFsjbJvEV/nwILONrSy7QbMDje2vel3CoqRbBYgAwPdFK17vRwmTH
-         pxFQ==
-X-Gm-Message-State: AOAM5321JOdyzLebWHWSw67bg+RKFu3NDsy9r59iv3Bw613nOPbWaCmx
-        u1C44O6od0/gD9glcioqTOKub1SWC0k=
-X-Google-Smtp-Source: ABdhPJz0bSNwPRs9Vl+Yh0K5Bv3M9FkaOEwa9c2Exw9QMq+QGEH5+ihGPtHZ0GCKCcmwZaaizGJA4g9/QAo=
+        bh=qfycs5WHoOJISCgVkz4aOXJI06Vi4G56am9I/vqcS5Q=;
+        b=oDu0iONaHPE/onrD7cf4x+iTm6TJkajUF6zI68YuEERd6hAxrpA/Crm829twaOpPD6
+         10fpczJz/W4AHE7/BdAfjH/DeHPT3qTHGErihK8nN1eQHoiez8WgEYVAwA302Lj3SjdP
+         zSO/bgjU/oEdU1AIJVPsj9J3NGxrEYrUPV51CvKK5GkVxFbORBAjtMjR1HmvVU9aRNhW
+         cPsbmPB5I1rppDDdt1Ap6fpUFL7ShJo9bt7OiIC/cql+em3kNamEmYflt2BPgFQfh74Z
+         /2AjZjEHAvqbdhwKEehUqE6wy2ZA3GuSD7pL+4EddysMVTaD+oMmUASWGvpb5SqA4csH
+         hXaw==
+X-Gm-Message-State: AOAM531EykexQRiwTrkBEDQ7jY8UTJ2paqQW2nkIal1f62WaqO5DDGL7
+        3Tq/WysNiZvbNjGupowhz7qZgA3cNsQ=
+X-Google-Smtp-Source: ABdhPJyO5IzITq1Md/msOkFe5QpCMXnvVTw7Eg5gyXSwTxjpxMvbx88JMdeRNdS+uJ66Z5Deghmk2VEGLtk=
 X-Received: from glider.muc.corp.google.com ([2a00:79e0:15:13:d580:abeb:bf6d:5726])
- (user=glider job=sendgmr) by 2002:adf:d1ce:0:b0:20a:e668:8927 with SMTP id
- b14-20020adfd1ce000000b0020ae6688927mr3156284wrd.508.1650991572003; Tue, 26
- Apr 2022 09:46:12 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 18:43:12 +0200
+ (user=glider job=sendgmr) by 2002:a17:906:a08b:b0:6b9:2e20:f139 with SMTP id
+ q11-20020a170906a08b00b006b92e20f139mr23252089ejy.463.1650991550999; Tue, 26
+ Apr 2022 09:45:50 -0700 (PDT)
+Date:   Tue, 26 Apr 2022 18:43:04 +0200
 In-Reply-To: <20220426164315.625149-1-glider@google.com>
-Message-Id: <20220426164315.625149-44-glider@google.com>
+Message-Id: <20220426164315.625149-36-glider@google.com>
 Mime-Version: 1.0
 References: <20220426164315.625149-1-glider@google.com>
 X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
-Subject: [PATCH v3 43/46] x86: kasan: kmsan: support CONFIG_GENERIC_CSUM on
- x86, enable it for KASAN/KMSAN
+Subject: [PATCH v3 35/46] security: kmsan: fix interoperability with auto-initialization
 From:   Alexander Potapenko <glider@google.com>
 To:     glider@google.com
 Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
@@ -92,78 +91,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is needed to allow memory tools like KASAN and KMSAN see the
-memory accesses from the checksum code. Without CONFIG_GENERIC_CSUM the
-tools can't see memory accesses originating from handwritten assembly
-code.
-For KASAN it's a question of detecting more bugs, for KMSAN using the C
-implementation also helps avoid false positives originating from
-seemingly uninitialized checksum values.
+Heap and stack initialization is great, but not when we are trying
+uses of uninitialized memory. When the kernel is built with KMSAN,
+having kernel memory initialization enabled may introduce false
+negatives.
+
+We disable CONFIG_INIT_STACK_ALL_PATTERN and CONFIG_INIT_STACK_ALL_ZERO
+under CONFIG_KMSAN, making it impossible to auto-initialize stack
+variables in KMSAN builds. We also disable CONFIG_INIT_ON_ALLOC_DEFAULT_ON
+and CONFIG_INIT_ON_FREE_DEFAULT_ON to prevent accidental use of heap
+auto-initialization.
+
+We however still let the users enable heap auto-initialization at
+boot-time (by setting init_on_alloc=1 or init_on_free=1), in which case
+a warning is printed.
 
 Signed-off-by: Alexander Potapenko <glider@google.com>
-
 ---
-
-Link: https://linux-review.googlesource.com/id/I3e95247be55b1112af59dbba07e8cbf34e50a581
+Link: https://linux-review.googlesource.com/id/I86608dd867018683a14ae1870f1928ad925f42e9
 ---
- arch/x86/Kconfig                |  4 ++++
- arch/x86/include/asm/checksum.h | 16 ++++++++++------
- arch/x86/lib/Makefile           |  2 ++
- 3 files changed, 16 insertions(+), 6 deletions(-)
+ mm/page_alloc.c            | 4 ++++
+ security/Kconfig.hardening | 4 ++++
+ 2 files changed, 8 insertions(+)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index b0142e01002e3..ee5e6fd65bf1d 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -319,6 +319,10 @@ config GENERIC_ISA_DMA
- 	def_bool y
- 	depends on ISA_DMA_API
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 35b1fedb2f09c..4c89729cac7ac 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -849,6 +849,10 @@ void init_mem_debugging_and_hardening(void)
+ 	else
+ 		static_branch_disable(&init_on_free);
  
-+config GENERIC_CSUM
-+	bool
-+	default y if KMSAN || KASAN
++	if (IS_ENABLED(CONFIG_KMSAN) &&
++	    (_init_on_alloc_enabled_early || _init_on_free_enabled_early))
++		pr_info("mem auto-init: please make sure init_on_alloc and init_on_free are disabled when running KMSAN\n");
 +
- config GENERIC_BUG
- 	def_bool y
- 	depends on BUG
-diff --git a/arch/x86/include/asm/checksum.h b/arch/x86/include/asm/checksum.h
-index bca625a60186c..6df6ece8a28ec 100644
---- a/arch/x86/include/asm/checksum.h
-+++ b/arch/x86/include/asm/checksum.h
-@@ -1,9 +1,13 @@
- /* SPDX-License-Identifier: GPL-2.0 */
--#define  _HAVE_ARCH_COPY_AND_CSUM_FROM_USER 1
--#define HAVE_CSUM_COPY_USER
--#define _HAVE_ARCH_CSUM_AND_COPY
--#ifdef CONFIG_X86_32
--# include <asm/checksum_32.h>
-+#ifdef CONFIG_GENERIC_CSUM
-+# include <asm-generic/checksum.h>
- #else
--# include <asm/checksum_64.h>
-+# define  _HAVE_ARCH_COPY_AND_CSUM_FROM_USER 1
-+# define HAVE_CSUM_COPY_USER
-+# define _HAVE_ARCH_CSUM_AND_COPY
-+# ifdef CONFIG_X86_32
-+#  include <asm/checksum_32.h>
-+# else
-+#  include <asm/checksum_64.h>
-+# endif
- #endif
-diff --git a/arch/x86/lib/Makefile b/arch/x86/lib/Makefile
-index f76747862bd2e..7ba5f61d72735 100644
---- a/arch/x86/lib/Makefile
-+++ b/arch/x86/lib/Makefile
-@@ -65,7 +65,9 @@ ifneq ($(CONFIG_X86_CMPXCHG64),y)
- endif
- else
-         obj-y += iomap_copy_64.o
-+ifneq ($(CONFIG_GENERIC_CSUM),y)
-         lib-y += csum-partial_64.o csum-copy_64.o csum-wrappers_64.o
-+endif
-         lib-y += clear_page_64.o copy_page_64.o
-         lib-y += memmove_64.o memset_64.o
-         lib-y += copy_user_64.o
+ #ifdef CONFIG_DEBUG_PAGEALLOC
+ 	if (!debug_pagealloc_enabled())
+ 		return;
+diff --git a/security/Kconfig.hardening b/security/Kconfig.hardening
+index ded4d7c0d1322..d6cce64899d13 100644
+--- a/security/Kconfig.hardening
++++ b/security/Kconfig.hardening
+@@ -106,6 +106,7 @@ choice
+ 	config INIT_STACK_ALL_PATTERN
+ 		bool "pattern-init everything (strongest)"
+ 		depends on CC_HAS_AUTO_VAR_INIT_PATTERN
++		depends on !KMSAN
+ 		help
+ 		  Initializes everything on the stack (including padding)
+ 		  with a specific debug value. This is intended to eliminate
+@@ -124,6 +125,7 @@ choice
+ 	config INIT_STACK_ALL_ZERO
+ 		bool "zero-init everything (strongest and safest)"
+ 		depends on CC_HAS_AUTO_VAR_INIT_ZERO
++		depends on !KMSAN
+ 		help
+ 		  Initializes everything on the stack (including padding)
+ 		  with a zero value. This is intended to eliminate all
+@@ -218,6 +220,7 @@ config STACKLEAK_RUNTIME_DISABLE
+ 
+ config INIT_ON_ALLOC_DEFAULT_ON
+ 	bool "Enable heap memory zeroing on allocation by default"
++	depends on !KMSAN
+ 	help
+ 	  This has the effect of setting "init_on_alloc=1" on the kernel
+ 	  command line. This can be disabled with "init_on_alloc=0".
+@@ -230,6 +233,7 @@ config INIT_ON_ALLOC_DEFAULT_ON
+ 
+ config INIT_ON_FREE_DEFAULT_ON
+ 	bool "Enable heap memory zeroing on free by default"
++	depends on !KMSAN
+ 	help
+ 	  This has the effect of setting "init_on_free=1" on the kernel
+ 	  command line. This can be disabled with "init_on_free=0".
 -- 
 2.36.0.rc2.479.g8af0fa9b8e-goog
 
