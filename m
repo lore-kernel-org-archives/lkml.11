@@ -2,108 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C243C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 13:00:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7742C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 13:00:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350617AbiDZNDH (ORCPT
+        id S1345720AbiDZNDN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 09:03:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48778 "EHLO
+        Tue, 26 Apr 2022 09:03:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350446AbiDZNB5 (ORCPT
+        with ESMTP id S1350486AbiDZNCR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 09:01:57 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3379617F130;
-        Tue, 26 Apr 2022 05:58:47 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: nicolas)
-        with ESMTPSA id DCF2E1F439A0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1650977922;
-        bh=OT93d1YFbCsPl7b/q8Q9Ng7KBwuAX7su/L0Pt2JnS6E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cBZN0vuWa0CQYiFTtznCmJ69cnWWpBJjUsOTglusEeiqSVayUvm4THtei/qrnz+XU
-         sxKfjpwT+fa/HTO2lmpV7wL724s3r+9mMdahR1qJH2P8t1iXck7NuGbaxaJly5vKqm
-         +CnjtVkTT3iaegGldibqCE7Vq/khasZDDfEUwlJxfHfFV8bcR5uN90Z9I3HPpzsrwr
-         H5DMc5649WTvQ9vq9OrnHgzL20sr2Z3Y9i6F2AjFq/IVQ6dGlbdqjLCg5i3ua4vQp1
-         94j5HRwXA2ySzWD6Zqm1P5Cu2nEMfyBeoAfYWvwy7OQ8HM7PJJY/Mr1lI+iWwHPo40
-         nEC1lF3RULBxw==
-From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
-To:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     nicolas@ndufresne.ca, linux-media@vger.kernel.org,
-        Sebastian Fricke <sebastian.fricke@collabora.com>,
-        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v4 24/24] media: hantro: Enable HOLD_CAPTURE_BUF for H.264
-Date:   Tue, 26 Apr 2022 08:57:50 -0400
-Message-Id: <20220426125751.108293-25-nicolas.dufresne@collabora.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220426125751.108293-1-nicolas.dufresne@collabora.com>
-References: <20220426125751.108293-1-nicolas.dufresne@collabora.com>
+        Tue, 26 Apr 2022 09:02:17 -0400
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C59C1815F6
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 05:59:05 -0700 (PDT)
+Received: by mail-yb1-xb29.google.com with SMTP id w17so1207089ybh.9
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 05:59:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=eclypsium.com; s=google;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc;
+        bh=klvWna6aVMmD5xzd2dumZFpFxfWMKshDlMPwR9QCUhU=;
+        b=Snve9f0KfXixZ+c8vg5EYkQfEnS0VOwMlEfbjzSmmLeKl3CV3QY7OoAEGlUCMMiKpD
+         R3uI1qO6ciPKkLK5vtAtgpjFqwIkNnMkoTIIlq14jZ76GdxyOBwkxciG6k+P3CLvjiiz
+         d+oMOO+GBwo5DcLFG2CBUSHN7gROk7mk7kOsagRBNNw+0te+8pMeTBDhlZ8z6gI8V1nB
+         OwcO7pjnH+wqR7qbdlDmbAwik4TDeQZ2HGgpg4HMQ78iHj0vjE5dn+I5qeu85IiTJdFW
+         vB92ZbAXdrOk8XW/osb3yXoM0AJ/fCZoICH/8pvrXNcyr3lJ561gTCb3ThZOCTE8HCXH
+         NdAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to:cc;
+        bh=klvWna6aVMmD5xzd2dumZFpFxfWMKshDlMPwR9QCUhU=;
+        b=GDX7DGHBaDuwD4ZPC82nDDL98nPc7s9EWEXQvfPfN3b8viTFnhgSdEwlOrwT2pad8R
+         AqpGiCZt1unmRYsyXe49wYlTSZUQuoXvhZGKbwz3jBDDXx4FTJx+5qTjG6qAuJJ591Nk
+         c3stg/vIP0FReLDM58iNiaBlWAa+T3/TlPWPE7m88Uy68BXTQRTmoXcFMVdyJbBD7+On
+         Cb0VelPSIWZjgRYrG4Ge8qjk7mYj4vxuno60cvhcKuOs/C1LvKuiGMBSoN27Mlzz2zWj
+         FlaNilop/1YQmvSqtAm6gjH/IrGt904n0w2wAtf6A6Id6rhxRkg3Vh3VcxAGaS0IKW8V
+         V6AQ==
+X-Gm-Message-State: AOAM530uHbPWS0yjvZ0fLJIH7IRGltGcJKMksrz4U7mXyLsosq2phNoz
+        E1KMkXgdth6XovOT2nki5QzL234YWLr5SkUqfENz0w==
+X-Google-Smtp-Source: ABdhPJySiRxTZpBhh3bZw12NdC/YImhj5Q/qK8XHR85blgIx7xY01atU3xGEYkhR1DoyFQ8iXTAaEH22Gry149h26oE=
+X-Received: by 2002:a25:8b03:0:b0:628:8cff:ed6c with SMTP id
+ i3-20020a258b03000000b006288cffed6cmr21036112ybl.513.1650977944764; Tue, 26
+ Apr 2022 05:59:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: by 2002:a81:10a:0:0:0:0:0 with HTTP; Tue, 26 Apr 2022 05:59:04 -0700 (PDT)
+In-Reply-To: <YmeM5fklUssR/74e@kernel.org>
+References: <20220425171526.44925-1-martin.fernandez@eclypsium.com>
+ <20220425171526.44925-2-martin.fernandez@eclypsium.com> <YmeM5fklUssR/74e@kernel.org>
+From:   Martin Fernandez <martin.fernandez@eclypsium.com>
+Date:   Tue, 26 Apr 2022 09:59:04 -0300
+Message-ID: <CAKgze5YwTD3neYjKNZzLz6DLWxpGPohGCDGT6oJn-KUdAxyCfg@mail.gmail.com>
+Subject: Re: [PATCH v7 1/8] mm/memblock: Tag memblocks with crypto capabilities
+To:     Mike Rapoport <rppt@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, linux-mm@kvack.org,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        ardb@kernel.org, dvhart@infradead.org, andy@infradead.org,
+        gregkh@linuxfoundation.org, rafael@kernel.org,
+        akpm@linux-foundation.org, daniel.gutson@eclypsium.com,
+        hughsient@gmail.com, alex.bazhaniuk@eclypsium.com,
+        alison.schofield@intel.com, keescook@chromium.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is needed to optimize field decoding. Each field will be
-decoded into the same capture buffer. To be able to queue multiple
-buffers, we need to be able to ask the driver to hold the capture
-buffer.
+On 4/26/22, Mike Rapoport <rppt@kernel.org> wrote:
+> On Mon, Apr 25, 2022 at 02:15:19PM -0300, Martin Fernandez wrote:
+>> Add the capability to mark regions of the memory memory_type able of
+>> hardware memory encryption.
+>>
+>> Also add the capability to query if all regions of a memory node are
+>> able to do hardware memory encryption to call it when initializing the
+>> nodes. Warn the user if a node has both encryptable and
+>> non-encryptable regions.
+>>
+>> Signed-off-by: Martin Fernandez <martin.fernandez@eclypsium.com>
+>> ---
+>>  include/linux/memblock.h |  5 ++++
+>>  mm/memblock.c            | 62 ++++++++++++++++++++++++++++++++++++++++
+>>  2 files changed, 67 insertions(+)
+>>
+>> diff --git a/include/linux/memblock.h b/include/linux/memblock.h
+>> index 50ad19662a32..00c4f1a20335 100644
+>> --- a/include/linux/memblock.h
+>> +++ b/include/linux/memblock.h
+>> @@ -40,6 +40,7 @@ extern unsigned long long max_possible_pfn;
+>>   * via a driver, and never indicated in the firmware-provided memory map
+>> as
+>>   * system RAM. This corresponds to IORESOURCE_SYSRAM_DRIVER_MANAGED in
+>> the
+>>   * kernel resource tree.
+>> + * @MEMBLOCK_CRYPTO_CAPABLE: capable of hardware encryption
+>>   */
+>>  enum memblock_flags {
+>>  	MEMBLOCK_NONE		= 0x0,	/* No special request */
+>> @@ -47,6 +48,7 @@ enum memblock_flags {
+>>  	MEMBLOCK_MIRROR		= 0x2,	/* mirrored region */
+>>  	MEMBLOCK_NOMAP		= 0x4,	/* don't add to kernel direct mapping */
+>>  	MEMBLOCK_DRIVER_MANAGED = 0x8,	/* always detected via a driver */
+>> +	MEMBLOCK_CRYPTO_CAPABLE = 0x10,	/* capable of hardware encryption */
+>>  };
+>>
+>>  /**
+>> @@ -120,6 +122,9 @@ int memblock_physmem_add(phys_addr_t base, phys_addr_t
+>> size);
+>>  void memblock_trim_memory(phys_addr_t align);
+>>  bool memblock_overlaps_region(struct memblock_type *type,
+>>  			      phys_addr_t base, phys_addr_t size);
+>> +bool memblock_node_is_crypto_capable(int nid);
+>> +int memblock_mark_crypto_capable(phys_addr_t base, phys_addr_t size);
+>> +int memblock_clear_crypto_capable(phys_addr_t base, phys_addr_t size);
+>>  int memblock_mark_hotplug(phys_addr_t base, phys_addr_t size);
+>>  int memblock_clear_hotplug(phys_addr_t base, phys_addr_t size);
+>>  int memblock_mark_mirror(phys_addr_t base, phys_addr_t size);
+>> diff --git a/mm/memblock.c b/mm/memblock.c
+>> index e4f03a6e8e56..fe62f81572e6 100644
+>> --- a/mm/memblock.c
+>> +++ b/mm/memblock.c
+>> @@ -191,6 +191,40 @@ bool __init_memblock memblock_overlaps_region(struct
+>> memblock_type *type,
+>>  	return i < type->cnt;
+>>  }
+>>
+>> +/**
+>> + * memblock_node_is_crypto_capable - get if whole node is capable
+>> + * of encryption
+>> + * @nid: number of node
+>> + *
+>> + * Iterate over all memory memblock_type and find if all regions under
+>> + * node @nid are capable of hardware encryption.
+>> + *
+>> + * Return:
+>> + * true if every region in memory memblock_type is capable of
+>
+> I'd s/in memory memblock_type/in @nid
+>
 
-Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Reviewed-by: Sebastian Fricke <sebastian.fricke@collabora.com>
----
- drivers/staging/media/hantro/hantro_v4l2.c | 25 ++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+Good, thanks.
 
-diff --git a/drivers/staging/media/hantro/hantro_v4l2.c b/drivers/staging/media/hantro/hantro_v4l2.c
-index 67148ba346f5..50d636678ff3 100644
---- a/drivers/staging/media/hantro/hantro_v4l2.c
-+++ b/drivers/staging/media/hantro/hantro_v4l2.c
-@@ -409,6 +409,30 @@ hantro_update_requires_request(struct hantro_ctx *ctx, u32 fourcc)
- 	}
- }
- 
-+static void
-+hantro_update_requires_hold_capture_buf(struct hantro_ctx *ctx, u32 fourcc)
-+{
-+	struct vb2_queue *vq;
-+
-+	vq = v4l2_m2m_get_vq(ctx->fh.m2m_ctx,
-+			     V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
-+
-+	switch (fourcc) {
-+	case V4L2_PIX_FMT_JPEG:
-+	case V4L2_PIX_FMT_MPEG2_SLICE:
-+	case V4L2_PIX_FMT_VP8_FRAME:
-+	case V4L2_PIX_FMT_HEVC_SLICE:
-+	case V4L2_PIX_FMT_VP9_FRAME:
-+		vq->subsystem_flags &= ~(VB2_V4L2_FL_SUPPORTS_M2M_HOLD_CAPTURE_BUF);
-+		break;
-+	case V4L2_PIX_FMT_H264_SLICE:
-+		vq->subsystem_flags |= VB2_V4L2_FL_SUPPORTS_M2M_HOLD_CAPTURE_BUF;
-+		break;
-+	default:
-+		break;
-+	}
-+}
-+
- static int hantro_set_fmt_out(struct hantro_ctx *ctx,
- 			      struct v4l2_pix_format_mplane *pix_mp)
- {
-@@ -472,6 +496,7 @@ static int hantro_set_fmt_out(struct hantro_ctx *ctx,
- 	ctx->dst_fmt.quantization = pix_mp->quantization;
- 
- 	hantro_update_requires_request(ctx, pix_mp->pixelformat);
-+	hantro_update_requires_hold_capture_buf(ctx, pix_mp->pixelformat);
- 
- 	vpu_debug(0, "OUTPUT codec mode: %d\n", ctx->vpu_src_fmt->codec_mode);
- 	vpu_debug(0, "fmt - w: %d, h: %d\n",
--- 
-2.34.1
+>> + * encryption, false otherwise.
+>> + */
+>> +bool __init_memblock memblock_node_is_crypto_capable(int nid)
+>> +{
+>> +	struct memblock_region *region;
+>> +	int crypto_capables = 0;
+>> +	int not_crypto_capables = 0;
+>> +
+>> +	for_each_mem_region(region) {
+>> +		if (memblock_get_region_node(region) == nid) {
+>> +			if (region->flags & MEMBLOCK_CRYPTO_CAPABLE)
+>> +				crypto_capables++;
+>> +			else
+>> +				not_crypto_capables++;
+>> +		}
+>> +	}
+>> +
+>> +	if (crypto_capables > 0 && not_crypto_capables > 0)
+>> +		pr_warn("Node %d has %d regions that are encryptable and %d regions
+>> that aren't",
+>> +			nid, not_crypto_capables, crypto_capables);
+>> +
+>> +	return not_crypto_capables == 0;
+>
+> This will return true for memoryless nodes as well. Do you mean to consider
+> them as capable of encryption?
+>
 
+Not really, I didn't think about that to be honest. I don't think it's
+a good idea to consider them as capable, right?
