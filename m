@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AB90C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:07:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A975C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Apr 2022 19:07:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352386AbiDZTKO (ORCPT
+        id S1354013AbiDZTKU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 15:10:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44814 "EHLO
+        Tue, 26 Apr 2022 15:10:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353875AbiDZTGO (ORCPT
+        with ESMTP id S1353884AbiDZTGP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 15:06:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82EE919ADB1;
-        Tue, 26 Apr 2022 12:02:57 -0700 (PDT)
+        Tue, 26 Apr 2022 15:06:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14A4F1999F0;
+        Tue, 26 Apr 2022 12:03:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3568BB81DC2;
-        Tue, 26 Apr 2022 19:02:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BED8EC385A4;
-        Tue, 26 Apr 2022 19:02:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CB194B821FC;
+        Tue, 26 Apr 2022 19:03:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 681EBC385AA;
+        Tue, 26 Apr 2022 19:03:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650999774;
-        bh=Q4Y3SyK/jeyCZmbyzItTJ1Zzlro6NPXoyjvomzCp6lw=;
+        s=k20201202; t=1650999781;
+        bh=vCU5qEkJjk+EcRlpBM/zbmu5Bbw3XDvJpwb9pfhgSjI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W87+kEnJWcXdg6jAMsD9Jfe9IxnzJibXIBT/WL1+WwVPYGDdLuvYA4hsQmjOH72hR
-         uGfV4+3L2l9ylRkhDjhTWGELRtzyl6EGzl1bfAyWBB/tPNYHnMwkFClQ2xtMgqHaRa
-         Opwym4sd9UztVldmPLwa0y0giXL1JXxhWPV9/KfY5NTjEoPb5rz878CNS8v0qatRzX
-         LxsGKl9FxIMXUU39rHKyyBfImWyMkgW/8A4x6F+fF8htTL75o+GykyNkZ9mzAGH/FG
-         4a5E75HqI9NtDN+FCjsc3av4B/OX9GbIneMxoaa0CtdSWUBiw5JYbZrTkgK5Z04jbi
-         WnBrOSi0rlUmw==
+        b=DDKjvS+VKeBKXvQXUJeJ2VL2wuFQTjHcJcp9areryxFTdEfDpH9P8TC+enMaGzeCK
+         CE21amW4wFdNR6PCAvdP3mKF2qkZ6RIIRLQI+g6zMOnAiZMgfT9hXtB2iatumJ/hM6
+         CTvk9LjM8fMQsAePmqXj2Bg6N7dw+zZQpRb2A3+0xK1X9Kg9C5sSuJY0ttLMEZlw4c
+         b7vNE7+YgpPENCazPyOKFcLixhONtyrGcLM3qktIK6h4206IA67mZzqaNj1HGYsNMb
+         u0S4vHJd2JZHUbJgnwvl9zLZDIR8lEkbKOk2TCzoIyYZ7F7xOJlr3diq7Bv+BLjLU0
+         VTXuURFZ85bug==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Mikulas Patocka <mpatocka@redhat.com>,
         Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
         mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, peterz@infradead.org, jpoimboe@redhat.com
-Subject: [PATCH AUTOSEL 4.19 3/6] x86: __memcpy_flushcache: fix wrong alignment if size > 2^32
-Date:   Tue, 26 Apr 2022 15:02:46 -0400
-Message-Id: <20220426190251.2351817-3-sashal@kernel.org>
+        x86@kernel.org, jpoimboe@redhat.com, peterz@infradead.org
+Subject: [PATCH AUTOSEL 4.14 2/5] x86: __memcpy_flushcache: fix wrong alignment if size > 2^32
+Date:   Tue, 26 Apr 2022 15:02:53 -0400
+Message-Id: <20220426190258.2351902-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220426190251.2351817-1-sashal@kernel.org>
-References: <20220426190251.2351817-1-sashal@kernel.org>
+In-Reply-To: <20220426190258.2351902-1-sashal@kernel.org>
+References: <20220426190258.2351902-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -85,10 +85,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/x86/lib/usercopy_64.c b/arch/x86/lib/usercopy_64.c
-index 40dbbd8f1fe4..8c6d0fb72b3a 100644
+index 2c3b4bcbe8f2..0650b440b389 100644
 --- a/arch/x86/lib/usercopy_64.c
 +++ b/arch/x86/lib/usercopy_64.c
-@@ -161,7 +161,7 @@ void memcpy_flushcache(void *_dst, const void *_src, size_t size)
+@@ -140,7 +140,7 @@ void memcpy_flushcache(void *_dst, const void *_src, size_t size)
  
  	/* cache copy and flush to align dest */
  	if (!IS_ALIGNED(dest, 8)) {
