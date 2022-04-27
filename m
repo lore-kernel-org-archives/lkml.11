@@ -2,123 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A59BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 17:38:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B74EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 17:38:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244154AbiD0Rlm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 13:41:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55608 "EHLO
+        id S244445AbiD0RmE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 13:42:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244245AbiD0Rlg (ORCPT
+        with ESMTP id S244216AbiD0Rlw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 13:41:36 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 973535BD15
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 10:38:23 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id j4so4401769lfh.8
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 10:38:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=d4ythIy+4BMKhrFRBWTelImtvnFliKqEsbPbAXakWNA=;
-        b=Rxz8TwmTciAgk1vS6UVXjQfgsSd8NJiPicC44NHYEYvHeQX7PQS/0HS2mJ+k7bNa84
-         x53Unulgrzln1EX8siAcPHSTO3dO3fw/ORCo2UB0bhnxc8u4lR5UHlgeSUMqHYw90idd
-         L7js8ruFeWcajOx0UHQaehE+rXPO8+cDUZWtzEy0Lr+m7YSOJw6QQEE9A19CP1f+zUUa
-         WFWm5YgxUnybu3a29ZGqv0LhOKHlq+71fNx+PBKNh8W5eN6cYmQnkB9pD7hxF9G4VW0J
-         IAKPDEF3vHBYHAf4mz7EsiokQlwOoV3fWtKYbJsM5Zz/rpeAMqZP+0KkHpwrztvekH6/
-         ly7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=d4ythIy+4BMKhrFRBWTelImtvnFliKqEsbPbAXakWNA=;
-        b=xFlwY7MqD7gGPN8g45V9S97Q44bnKxr5Z9AwNZSZ1bwoIwPm5VytF0NLJSHtYXVmxt
-         /vtkODQw38bU9bGaBctoQRu5dWScOj0i7IGLyfzABdQtFru38ztwmu67Cc57qqvHzI90
-         Labo02E075Ke5pVt2rgcGTg+l8i5HR4IT0Vb6RRmFIknOySbgDCczkF51uOWDQqd1fFv
-         bx9p3tX5ahf3nivM3+d6oB+JPrdMI54iuXxOuFJ8+YIDwYfsa4YRCefWLr1Q1GPIOjpo
-         K8098lh/5/wH6zQ+gKfXhlto2oKgpgjPKc639PNTuzhS5wNzTJmxPMsxhSTABU7U4ff0
-         kTLQ==
-X-Gm-Message-State: AOAM533CQEz53TXt7Z5tZB2Z/wY0YC8ql0tZZDjqpIbEPgfinm599dbS
-        ExBknfsxC7MmEuSkZ0hc0VqD/sEycXttN7dB+Ga71Q==
-X-Google-Smtp-Source: ABdhPJwUwyoKDXmd/Qnsb0PVaPczo3M9ZqbxWCO8Yi39M/Y51Dl62QA24fZkYYZ77+w8PmuO+NTXk881VpoPaApgnfY=
-X-Received: by 2002:a05:6512:3f89:b0:44a:f5bf:ec7e with SMTP id
- x9-20020a0565123f8900b0044af5bfec7emr21200622lfa.671.1651081101604; Wed, 27
- Apr 2022 10:38:21 -0700 (PDT)
+        Wed, 27 Apr 2022 13:41:52 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 588F262A14;
+        Wed, 27 Apr 2022 10:38:34 -0700 (PDT)
+Received: from [IPV6:2a01:e0a:120:3210:2c00:b769:f52a:a984] (unknown [IPv6:2a01:e0a:120:3210:2c00:b769:f52a:a984])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: benjamin.gaignard)
+        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 3F3731F44BC0;
+        Wed, 27 Apr 2022 18:38:31 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1651081111;
+        bh=DKHT+3N2E30sQ+PZIQ0blxIyuVP2/Uome7ooaaXpxNA=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=mmK1gZ/wxcjHozltOtbc3hRng/GwOYfuG/Pnj9Xq2dBsnswthlPxyldLcJrowabzC
+         Fi2JheDigb5BfzflWWDexy2+1gNIzpebO8BOM0jyt2vE3ZbyeN4C2DApqp1yizIS14
+         BUkQ2WHtPfKs1OUbtPKyAEtO/7G86oBDY3rVmrnUhijupep3tM+jdelh0pDyG+afgx
+         KL8ri5g+NpURL3VN4zEMCS5suUjcnTXLs+eHPj+D5ZWH0uXyUN3rNnO5I52WfiFRpm
+         PN8Cy5Zeo13kMm8gUuvfUZpXXIOfh8U9PFxrO9n9UH9sosfGWBuy2zVGjfQz+yVu9m
+         0cbzH8JuILEbw==
+Message-ID: <5091e44e-6b44-be2e-f53e-29368009f30d@collabora.com>
+Date:   Wed, 27 Apr 2022 19:38:28 +0200
 MIME-Version: 1.0
-References: <20220425094708.2769275-1-mw@semihalf.com> <20220427172514.n4musn42dhygzbu2@skbuf>
-In-Reply-To: <20220427172514.n4musn42dhygzbu2@skbuf>
-From:   Marcin Wojtas <mw@semihalf.com>
-Date:   Wed, 27 Apr 2022 19:38:09 +0200
-Message-ID: <CAPv3WKeFudAqSrPbxeFLvs=myo1UDhBo+GPOZ6dGgpwC-eq8eg@mail.gmail.com>
-Subject: Re: [net: PATCH] net: dsa: add missing refcount decrementation
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        vivien.didelot@gmail.com, Florian Fainelli <f.fainelli@gmail.com>,
-        upstream@semihalf.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] media: hantro: HEVC: Fix tile info buffer value
+ computation
+Content-Language: en-US
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de,
+        mchehab@kernel.org, gregkh@linuxfoundation.org,
+        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        jon@nanocrew.net, aford173@gmail.com, kernel@collabora.com
+References: <20220427135517.381959-1-benjamin.gaignard@collabora.com>
+ <20220427142233.GS2462@kadam>
+From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
+In-Reply-To: <20220427142233.GS2462@kadam>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-=C5=9Br., 27 kwi 2022 o 19:25 Vladimir Oltean <olteanv@gmail.com> napisa=C5=
-=82(a):
->
-> On Mon, Apr 25, 2022 at 11:47:08AM +0200, Marcin Wojtas wrote:
-> > After obtaining the "phy-handle" node, decrementing
-> > refcount is required. Fix that.
-> >
-> > Fixes: a20f997010c4 ("net: dsa: Don't instantiate phylink for CPU/DSA p=
-orts unless needed")
-> > Signed-off-by: Marcin Wojtas <mw@semihalf.com>
-> > ---
-> >  net/dsa/port.c | 2 ++
-> >  1 file changed, 2 insertions(+)
-> >
-> > diff --git a/net/dsa/port.c b/net/dsa/port.c
-> > index 32d472a82241..cdc56ba11f52 100644
-> > --- a/net/dsa/port.c
-> > +++ b/net/dsa/port.c
-> > @@ -1620,8 +1620,10 @@ int dsa_port_link_register_of(struct dsa_port *d=
-p)
-> >                       if (ds->ops->phylink_mac_link_down)
-> >                               ds->ops->phylink_mac_link_down(ds, port,
-> >                                       MLO_AN_FIXED, PHY_INTERFACE_MODE_=
-NA);
-> > +                     of_node_put(phy_np);
-> >                       return dsa_port_phylink_register(dp);
-> >               }
-> > +             of_node_put(phy_np);
-> >               return 0;
-> >       }
-> >
-> > --
-> > 2.29.0
-> >
->
-> Thanks for the patch.
->
-> commit fc06b2867f4cea543505acfb194c2be4ebf0c7d3
-> Author: Miaoqian Lin <linmq006@gmail.com>
-> Date:   Wed Apr 20 19:04:08 2022 +0800
->
->     net: dsa: Add missing of_node_put() in dsa_port_link_register_of
->
->     The device_node pointer is returned by of_parse_phandle()  with refco=
-unt
->     incremented. We should use of_node_put() on it when done.
->     of_node_put() will check for NULL value.
->
->     Fixes: a20f997010c4 ("net: dsa: Don't instantiate phylink for CPU/DSA=
- ports unless needed")
->     Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
->     Signed-off-by: David S. Miller <davem@davemloft.net>
 
-Great, I'll rebase then and I can drop my patch.
+Le 27/04/2022 à 16:22, Dan Carpenter a écrit :
+> On Wed, Apr 27, 2022 at 03:55:17PM +0200, Benjamin Gaignard wrote:
+>> Use pps->column_width_minus1[j] + 1 as value for the tile info buffer
+>> instead of pps->column_width_minus1[j + 1].
+>> The patch fix DBLK_E_VIXS_2, DBLK_F_VIXS_2, DBLK_G_VIXS_2,
+>> SAO_B_MediaTek_5, TILES_A_Cisco_2 and TILES_B_Cisco_1 tests in fluster.
+>>
+>> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+> Fixes: cb5dd5a0fa51 ("media: hantro: Introduce G2/HEVC decoder")
+>
+>> ---
+>>   drivers/staging/media/hantro/hantro_g2_hevc_dec.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+>> index bb512389c1a5..ffeb2fbeefd2 100644
+>> --- a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+>> +++ b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+>> @@ -74,7 +74,7 @@ static void prepare_tile_info_buffer(struct hantro_ctx *ctx)
+>>   					no_chroma = 1;
+>>   				for (j = 0, tmp_w = 0; j < num_tile_cols - 1; j++) {
+>                                                                          ^^^^
+> Is this "- 1" still required?  I would have assumed the "- 1" here was
+> connected with the [j + 1].  What is stored in the last element of the
+> ->column_width_minus1 array?
 
-Thanks,
-Marcin
+No "- 1" comes from the definition of the field in H.265 which is pps->num_tile_columns_minus1
+We add 1 to fill the registers so we need the "- 1" in the loop.
+Data ordering isn't documented anywhere so that part is directly inspired by
+Hantro/G2 proprietary stack.
+
+Regards,
+Benjamin
+
+>
+>>   					tmp_w += pps->column_width_minus1[j] + 1;
+>> -					*p++ = pps->column_width_minus1[j + 1];
+>                                                                          ^^^^^
+>
+>> +					*p++ = pps->column_width_minus1[j] + 1;
+>>   					*p++ = h;
+>>   					if (i == 0 && h == 1 && ctb_size == 16)
+>>   						no_chroma = 1;
+> regards,
+> dan carpenter
