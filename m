@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DF3EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:56:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B2C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:56:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241145AbiD0P6x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 11:58:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56828 "EHLO
+        id S241104AbiD0P7p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 11:59:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240815AbiD0P6P (ORCPT
+        with ESMTP id S240605AbiD0P6P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Apr 2022 11:58:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D886D712EB;
-        Wed, 27 Apr 2022 08:54:43 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0283D78385;
+        Wed, 27 Apr 2022 08:54:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1C61DB82881;
-        Wed, 27 Apr 2022 15:54:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0E46C385A9;
-        Wed, 27 Apr 2022 15:54:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E5F4361B49;
+        Wed, 27 Apr 2022 15:54:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91FD7C385AC;
+        Wed, 27 Apr 2022 15:54:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651074879;
-        bh=Q2Wg0f11Q6IIlcPJ/b7UtaXwtP9iKWdEGB/4BG3k6bo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Ld29gQkjZjkZZYoY/ffWgvKnH+yrSCwQI5NhsMJMqFuGmIiUcpb8hkiGM+xEttCmM
-         kaPX7XaEzgBAgGeZ6XXZX0xkg4NL78ENNPGf3OAB1s82d8TBU94JpIc3Cj4Gk9xAQx
-         7jzQsy1A8bDl6fAJIzu49tmgicCUjj7zk8yGrop2HlIzIhaMATu1a8TdNKw54voBqY
-         bKViKj7V5imM+/lJFLoH/H1noYW/WyAsYlT78Owaku5pQvVeiGJ5TXFH2gFBtBfOty
-         /y7+wVn5ruJTyx4g95N2dmjKu8i0E8PhCJ03rPs01BZaPjBl+1gU0VHcsRTdz75M3u
-         ErTjb3fIolqoQ==
+        s=k20201202; t=1651074874;
+        bh=sl9Pb4DXc7gRUL5a3faT/UaiHOw0prFpxyvgZ2bEQhI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=H8yrB8l76l6jqX8Q2FBLgokqrXF26yrz3ERh5gkmRxdGypegGx1CfaLo1ud471PiB
+         wynu17fheQ6JsYU9SfwojBquMC67PmckhMi5ILjixZGNR66VvjDQ+dDi1A4aRn+f7c
+         l0ycK9n2FsA/dQa1vGm5zQAy68Srt8wUel3KrTuG64lT2LnK+iHiBvUNXdediLwhKO
+         NnvZ8OYJpnWZYRnbu0f82yxK+hBUSy0ZGiZdxMimhpLGUr2H5uugT41hkaQeBzDPAq
+         pQ2GNQDFz3pZyDGk+OPnbaHIvPTUTg1tWKnG8jiovWi7/3FjRl3j4owitpMgPJWEel
+         30ogcDuF1zmcg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wanpeng Li <wanpengli@tencent.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
         Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
         mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
         x86@kernel.org, kvm@vger.kernel.org
-Subject: [PATCH MANUALSEL 5.4 1/2] x86/kvm: Preserve BSP MSR_KVM_POLL_CONTROL across suspend/resume
-Date:   Wed, 27 Apr 2022 11:54:37 -0400
-Message-Id: <20220427155438.19612-1-sashal@kernel.org>
+Subject: [PATCH MANUALSEL 5.15 6/7] KVM: x86/mmu: avoid NULL-pointer dereference on page freeing bugs
+Date:   Wed, 27 Apr 2022 11:54:26 -0400
+Message-Id: <20220427155431.19458-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220427155431.19458-1-sashal@kernel.org>
+References: <20220427155431.19458-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,69 +53,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wanpeng Li <wanpengli@tencent.com>
+From: Paolo Bonzini <pbonzini@redhat.com>
 
-[ Upstream commit 0361bdfddca20c8855ea3bdbbbc9c999912b10ff ]
+[ Upstream commit 9191b8f0745e63edf519e4a54a4aaae1d3d46fbd ]
 
-MSR_KVM_POLL_CONTROL is cleared on reset, thus reverting guests to
-host-side polling after suspend/resume.  Non-bootstrap CPUs are
-restored correctly by the haltpoll driver because they are hot-unplugged
-during suspend and hot-plugged during resume; however, the BSP
-is not hotpluggable and remains in host-sde polling mode after
-the guest resume.  The makes the guest pay for the cost of vmexits
-every time the guest enters idle.
+WARN and bail if KVM attempts to free a root that isn't backed by a shadow
+page.  KVM allocates a bare page for "special" roots, e.g. when using PAE
+paging or shadowing 2/3/4-level page tables with 4/5-level, and so root_hpa
+will be valid but won't be backed by a shadow page.  It's all too easy to
+blindly call mmu_free_root_page() on root_hpa, be nice and WARN instead of
+crashing KVM and possibly the kernel.
 
-Fix it by recording BSP's haltpoll state and resuming it during guest
-resume.
-
-Cc: Marcelo Tosatti <mtosatti@redhat.com>
-Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
-Message-Id: <1650267752-46796-1-git-send-email-wanpengli@tencent.com>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/kvm.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ arch/x86/kvm/mmu/mmu.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
-index 408b51aba293..f582dda8dd34 100644
---- a/arch/x86/kernel/kvm.c
-+++ b/arch/x86/kernel/kvm.c
-@@ -59,6 +59,7 @@ static DEFINE_PER_CPU_DECRYPTED(struct kvm_vcpu_pv_apf_data, apf_reason) __align
- DEFINE_PER_CPU_DECRYPTED(struct kvm_steal_time, steal_time) __aligned(64) __visible;
- static int has_steal_clock = 0;
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index 34e828badc51..806f9d42bcce 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -3314,6 +3314,8 @@ static void mmu_free_root_page(struct kvm *kvm, hpa_t *root_hpa,
+ 		return;
  
-+static int has_guest_poll = 0;
- /*
-  * No need for any "IO delay" on KVM
-  */
-@@ -584,14 +585,26 @@ static int kvm_cpu_down_prepare(unsigned int cpu)
+ 	sp = to_shadow_page(*root_hpa & PT64_BASE_ADDR_MASK);
++	if (WARN_ON(!sp))
++		return;
  
- static int kvm_suspend(void)
- {
-+	u64 val = 0;
-+
- 	kvm_guest_cpu_offline(false);
- 
-+#ifdef CONFIG_ARCH_CPUIDLE_HALTPOLL
-+	if (kvm_para_has_feature(KVM_FEATURE_POLL_CONTROL))
-+		rdmsrl(MSR_KVM_POLL_CONTROL, val);
-+	has_guest_poll = !(val & 1);
-+#endif
- 	return 0;
- }
- 
- static void kvm_resume(void)
- {
- 	kvm_cpu_online(raw_smp_processor_id());
-+
-+#ifdef CONFIG_ARCH_CPUIDLE_HALTPOLL
-+	if (kvm_para_has_feature(KVM_FEATURE_POLL_CONTROL) && has_guest_poll)
-+		wrmsrl(MSR_KVM_POLL_CONTROL, 0);
-+#endif
- }
- 
- static struct syscore_ops kvm_syscore_ops = {
+ 	if (is_tdp_mmu_page(sp))
+ 		kvm_tdp_mmu_put_root(kvm, sp, false);
 -- 
 2.35.1
 
