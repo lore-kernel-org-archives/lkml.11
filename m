@@ -2,102 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23B32C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:48:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C418FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:48:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230327AbiD0Kv2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 06:51:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38970 "EHLO
+        id S230259AbiD0Kvj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 06:51:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229964AbiD0KvN (ORCPT
+        with ESMTP id S230286AbiD0Kve (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 06:51:13 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3FBB48DEC8
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 03:22:31 -0700 (PDT)
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23RA81ma025510;
-        Wed, 27 Apr 2022 10:22:05 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=mSV32sp7cJhcsos5Ovf87FuQrg2T/M26sICQvRjZKQM=;
- b=dyF6dMnew8xgXK6WOquOzkbH5YRxeipcqw23pz+DVZA8KMN3A/GaQUCqTwJaK6jzcUEO
- KGsPCX7zY2TjVV11EK+eW+UsK7Uiuwduv2z/zUYDMYkYt9+NcXKVTCu+ZWDhgs7QyyUL
- vcbT/kNDPtsgg297B79YrfRGrHIoqkvl717rYWS1Y5OFA7jRaYlWgi6zGCrZL5jUtEq9
- sW3gcIhbyi54yMjJGO9OJ9jZdQu67B+VZ1YHbjwy0GL1O7JzoLFftVuJRf/8mbHbLzCC
- kzB3BGRnM5UXT8HjRBD1o5cW7vUsh7Q9StPyibWps7iYCbvD7ozCdCahEuGC1IRa0Jpr +g== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fpsdpjw02-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 27 Apr 2022 10:22:04 +0000
-Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23RALYge032105;
-        Wed, 27 Apr 2022 10:22:04 GMT
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fpsdpjvys-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 27 Apr 2022 10:22:04 +0000
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23RAIcpY015710;
-        Wed, 27 Apr 2022 10:22:02 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma06fra.de.ibm.com with ESMTP id 3fm8qhmhq7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 27 Apr 2022 10:22:02 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23RALxDl49938876
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 27 Apr 2022 10:21:59 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A0A3FA4054;
-        Wed, 27 Apr 2022 10:21:59 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 64AE6A405F;
-        Wed, 27 Apr 2022 10:21:56 +0000 (GMT)
-Received: from li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com (unknown [9.43.114.217])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Wed, 27 Apr 2022 10:21:56 +0000 (GMT)
-Date:   Wed, 27 Apr 2022 15:51:49 +0530
-From:   Jagdish Gediya <jvgediya@linux.ibm.com>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        ying.huang@intel.com, dave.hansen@intel.com,
-        Jonathan.Cameron@huawei.com, adobriyan@gmail.com,
-        akpm@linux-foundation.org, andriy.shevchenko@linux.intel.com,
-        rf@opensource.cirrus.com, pmladek@suse.com
-Subject: Re: [PATCH v3 1/2] lib/kstrtox.c: Add "false"/"true" support to
- kstrtobool()
-Message-ID: <YmkZPYqIpIOfu8Ce@li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com>
-References: <20220426180203.70782-1-jvgediya@linux.ibm.com>
- <YmhEqCCfUvYYPmci@casper.infradead.org>
+        Wed, 27 Apr 2022 06:51:34 -0400
+Received: from mail-qv1-f51.google.com (mail-qv1-f51.google.com [209.85.219.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19CAA3AB7CF;
+        Wed, 27 Apr 2022 03:22:57 -0700 (PDT)
+Received: by mail-qv1-f51.google.com with SMTP id ke5so733441qvb.5;
+        Wed, 27 Apr 2022 03:22:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DFvDs4UX2zax4adbziwn0RYfIrK/tqgpmI5wyJl9xWk=;
+        b=txl9N971Mitb19L/rporh9pX+gSFiofYsUEsWQqmAP8yoWcvMfaiKi0HoyXVykX9YZ
+         +BVFExqw44qOaaUGTGPFgGsoZAAXlnhsT5fnc8/c3iMQJjWJ1gcKbNW5isoK/0ed9a1b
+         mwZFgZW4D/xhp6dg6tRjHzCNE0fvbrW0PVeReKZ86PIzkjJ62+uQDDjd13yID1y7rgh0
+         jh2EvZt07FXfG5Ifg0KIiw0NjqR5xgMV05b08n6HiwsVYmmC2NEeqmxF2inFogQrb/k6
+         3lepXM4uGARxFNsaXcicxgi49dphhOZZPDSvttlPoIZYo7AzgPgLL26ZxY4aQDlUykCy
+         abHA==
+X-Gm-Message-State: AOAM530unhwEdaKc69mkv3lc8vhloUsAkN+WoZkhGEIadOmoln2zpnhq
+        qFdW2V/89CK7ahJkCjNVzhtZt5Xkje/Fag==
+X-Google-Smtp-Source: ABdhPJz6UTZZL4BURTn67KGPUyleLdhEDIehR5hbmEP7UX3/qw0Fi0yopLbmmzlkt/pHta1qP3CD8w==
+X-Received: by 2002:a05:6214:248c:b0:441:2a61:659d with SMTP id gi12-20020a056214248c00b004412a61659dmr19331590qvb.59.1651054976735;
+        Wed, 27 Apr 2022 03:22:56 -0700 (PDT)
+Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com. [209.85.128.174])
+        by smtp.gmail.com with ESMTPSA id q17-20020a05622a031100b002f1d478c218sm10090861qtw.62.2022.04.27.03.22.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Apr 2022 03:22:56 -0700 (PDT)
+Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-2f7bb893309so12858617b3.12;
+        Wed, 27 Apr 2022 03:22:56 -0700 (PDT)
+X-Received: by 2002:a81:8489:0:b0:2f7:edff:239f with SMTP id
+ u131-20020a818489000000b002f7edff239fmr14119456ywf.256.1651054976217; Wed, 27
+ Apr 2022 03:22:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YmhEqCCfUvYYPmci@casper.infradead.org>
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: eYYxBJq2nS7cbuxCNHN0-PCJsqsMqnuR
-X-Proofpoint-GUID: _uy774HE_0Tj2AqL0lnTKdlHrLbqCDZW
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-27_03,2022-04-27_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxlogscore=689
- priorityscore=1501 adultscore=0 mlxscore=0 malwarescore=0 bulkscore=0
- impostorscore=0 spamscore=0 suspectscore=0 lowpriorityscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204270067
+References: <20210922091007.5516-1-wsa+renesas@sang-engineering.com>
+In-Reply-To: <20210922091007.5516-1-wsa+renesas@sang-engineering.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 27 Apr 2022 12:22:43 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWJZM=-Py=W+qKUfCQU=Y5=G6qdp9uubNv56o+5JztaGA@mail.gmail.com>
+Message-ID: <CAMuHMdWJZM=-Py=W+qKUfCQU=Y5=G6qdp9uubNv56o+5JztaGA@mail.gmail.com>
+Subject: Re: [RFC PATCH] memory: renesas-rpc-if: Correct QSPI data transfer in
+ Manual mode
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 08:14:48PM +0100, Matthew Wilcox wrote:
-> On Tue, Apr 26, 2022 at 11:32:02PM +0530, Jagdish Gediya wrote:
-> > Signed-off-by: Jagdish Gediya <jvgediya@linux.ibm.com>
-> > Reviewed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-> 
-> HEY!  You still have the buggy IFF -> IF change.  FIX IT.
-> My R-b was very clearly conditional on you fixing it.
+Hi Wolfram,
 
-My bad, I forgot to correct it. Andrew has corrected it.
+On Wed, Sep 22, 2021 at 11:10 AM Wolfram Sang
+<wsa+renesas@sang-engineering.com> wrote:
+> This patch fixes 2 problems:
+> [1] The output warning logs and data loss when performing
+> mount/umount then remount the device with jffs2 format.
+> [2] The access width of SMWDR[0:1]/SMRDR[0:1] register is wrong.
 
-> > - * This routine returns 0 iff the first character is one of 'Yy1Nn0', or
-> > + * This routine returns 0 if the first character is one of 'YyTt1NnFf0', or
+Revisiting commit fff53a551db50f5e ("memory: renesas-rpc-if: Correct
+QSPI data transfer in Manual mode") in  v5.16-rc1...
+
+> --- a/drivers/memory/renesas-rpc-if.c
+> +++ b/drivers/memory/renesas-rpc-if.c
+
+>  int rpcif_manual_xfer(struct rpcif *rpc)
+>  {
+> -       u32 smenr, smcr, pos = 0, max = 4;
+> +       u32 smenr, smcr, pos = 0, max = rpc->bus_size == 2 ? 8 : 4;
+>         int ret = 0;
+>
+> -       if (rpc->bus_size == 2)
+> -               max = 8;
+> -
+>         pm_runtime_get_sync(rpc->dev);
+>
+>         regmap_update_bits(rpc->regmap, RPCIF_PHYCNT,
+> @@ -378,37 +424,36 @@ int rpcif_manual_xfer(struct rpcif *rpc)
+>         regmap_write(rpc->regmap, RPCIF_SMOPR, rpc->option);
+>         regmap_write(rpc->regmap, RPCIF_SMDMCR, rpc->dummy);
+>         regmap_write(rpc->regmap, RPCIF_SMDRENR, rpc->ddr);
+> +       regmap_write(rpc->regmap, RPCIF_SMADR, rpc->smadr);
+>         smenr = rpc->enable;
+>
+>         switch (rpc->dir) {
+>         case RPCIF_DATA_OUT:
+>                 while (pos < rpc->xferlen) {
+> -                       u32 nbytes = rpc->xferlen - pos;
+> -                       u32 data[2];
+> +                       u32 bytes_left = rpc->xferlen - pos;
+> +                       u32 nbytes, data[2];
+>
+>                         smcr = rpc->smcr | RPCIF_SMCR_SPIE;
+> -                       if (nbytes > max) {
+> -                               nbytes = max;
+> +
+> +                       /* nbytes may only be 1, 2, 4, or 8 */
+> +                       nbytes = bytes_left >= max ? max : (1 << ilog2(bytes_left));
+> +                       if (bytes_left > nbytes)
+>                                 smcr |= RPCIF_SMCR_SSLKP;
+> -                       }
+> +
+> +                       smenr |= RPCIF_SMENR_SPIDE(rpcif_bits_set(rpc, nbytes));
+> +                       regmap_write(rpc->regmap, RPCIF_SMENR, smenr);
+>
+>                         memcpy(data, rpc->buffer + pos, nbytes);
+> -                       if (nbytes > 4) {
+> +                       if (nbytes == 8) {
+>                                 regmap_write(rpc->regmap, RPCIF_SMWDR1,
+>                                              data[0]);
+>                                 regmap_write(rpc->regmap, RPCIF_SMWDR0,
+>                                              data[1]);
+> -                       } else if (nbytes > 2) {
+> +                       } else {
+>                                 regmap_write(rpc->regmap, RPCIF_SMWDR0,
+>                                              data[0]);
+> -                       } else  {
+> -                               regmap_write(rpc->regmap, RPCIF_SMWDR0,
+> -                                            data[0] << 16);
+>                         }
+>
+> -                       regmap_write(rpc->regmap, RPCIF_SMADR,
+> -                                    rpc->smadr + pos);
+
+Removing this implies SMADR is auto-incrementing for writes...
+
+> -                       regmap_write(rpc->regmap, RPCIF_SMENR, smenr);
+>                         regmap_write(rpc->regmap, RPCIF_SMCR, smcr);
+>                         ret = wait_msg_xfer_end(rpc);
+>                         if (ret)
+> @@ -448,14 +493,16 @@ int rpcif_manual_xfer(struct rpcif *rpc)
+>                         break;
+>                 }
+>                 while (pos < rpc->xferlen) {
+> -                       u32 nbytes = rpc->xferlen - pos;
+> -                       u32 data[2];
+> +                       u32 bytes_left = rpc->xferlen - pos;
+> +                       u32 nbytes, data[2];
+>
+> -                       if (nbytes > max)
+> -                               nbytes = max;
+> +                       /* nbytes may only be 1, 2, 4, or 8 */
+> +                       nbytes = bytes_left >= max ? max : (1 << ilog2(bytes_left));
+>
+>                         regmap_write(rpc->regmap, RPCIF_SMADR,
+>                                      rpc->smadr + pos);
+
+... while keeping this assumes SMADR is not auto-incrementing for
+reads?
+
+Figure 62.17 "Example of Data Transfer Setting Flow in Manual Operating
+Mode" does show writing SMADR in each loop iteration.
+I cannot find anything about auto-incrementing in the documentation,
+except for Figure 62.28 "Write Buffer Usage Sequence", which does
+not apply as Linux does not support the write buffer yet.
+
+Given you tested this, and the BSP commit 0d37f69cacb33435 ("memory:
+renesas-rpc-if: Correct QSPI data transfer in Manual mode") does the
+same, I assume it's working fine?
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
