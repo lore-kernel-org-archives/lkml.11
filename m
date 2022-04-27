@@ -2,124 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6249C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:50:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E54B8C4321E
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:50:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240397AbiD0Pxj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 11:53:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33724 "EHLO
+        id S240418AbiD0PyG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 11:54:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240216AbiD0Pxf (ORCPT
+        with ESMTP id S240705AbiD0Px7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 11:53:35 -0400
-X-Greylist: delayed 560 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 27 Apr 2022 08:50:20 PDT
-Received: from srv6.fidu.org (srv6.fidu.org [IPv6:2a01:4f8:231:de0::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5C5B255B8;
-        Wed, 27 Apr 2022 08:50:19 -0700 (PDT)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by srv6.fidu.org (Postfix) with ESMTP id DC539C8009E;
-        Wed, 27 Apr 2022 17:40:56 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        tuxedocomputers.com; h=content-transfer-encoding:mime-version
-        :x-mailer:message-id:date:date:subject:subject:from:from; s=
-        default; t=1651074056; x=1652888457; bh=ui/bYejcnY9R7gBn0GwVOE0a
-        OmURfjgUyCjFPF6MREo=; b=n8XCr1STHK241socn1WHSfKD21WWP2LAGi7MTPGU
-        j/Uq1oAycVmT5ZSnrm/4BzD2zdqa8OtmRrhdBlAS4lW2sQWvjFdBe2lCogdTtCmp
-        hu57SHi1r8B6u6ADkGGtvT/nxPlnXdvSj+SPfrfSLxBiDDZvNUMv89PmRDOR40Pi
-        lwY=
-X-Virus-Scanned: Debian amavisd-new at srv6.fidu.org
-Received: from srv6.fidu.org ([127.0.0.1])
-        by localhost (srv6.fidu.org [127.0.0.1]) (amavisd-new, port 10026)
-        with LMTP id Y-ujsk8TkqNA; Wed, 27 Apr 2022 17:40:56 +0200 (CEST)
-Received: from wsembach-tuxedo.fritz.box (host-212-18-30-247.customer.m-online.net [212.18.30.247])
-        (Authenticated sender: wse@tuxedocomputers.com)
-        by srv6.fidu.org (Postfix) with ESMTPA id 7B75DC8006F;
-        Wed, 27 Apr 2022 17:40:56 +0200 (CEST)
-From:   Werner Sembach <wse@tuxedocomputers.com>
-To:     rafael@kernel.org, lenb@kernel.org, linux-acpi@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] acpi/battery: Make "not-charging" the default on no charging or full info
-Date:   Wed, 27 Apr 2022 17:40:53 +0200
-Message-Id: <20220427154053.499203-1-wse@tuxedocomputers.com>
+        Wed, 27 Apr 2022 11:53:59 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FD7A5418D
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 08:50:46 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id u9so1286205plf.6
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 08:50:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=mfKXbZgTIWEbTeJVhX3se1YhLuBecr8QQNQtzkisZ/M=;
+        b=FynZD/Nxe3Kd36w7ZFjddUbEH+HlByXx87gtJ4W57LZLaRmUOK1HRcfbyB6Ql8llP3
+         Lnjwql8fWqr9XFPpLWm66YB+ZbPyCJH87wO59ONmwO3sQ3q/NHljKCCBH2rEGeqf1+TS
+         pos6vXQ78YWj6iqWkEfIaM7qSt37Y7ukFGvPiW3ELILfmRZSy+bCMJyxnZOwiIS67gZY
+         qKQqJTD8UAXCD7mQHEwN2qigtUxK49DEXsMosJbcFv7CT9iPjVHTXOiuCJ7seygl50FK
+         /vbqM8DHshD2+mhEuXaIJT4uvpgiuqgWoQKX0p3uJR+ES+VPb/UMINH8W3sI8v6Od8QK
+         UPog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=mfKXbZgTIWEbTeJVhX3se1YhLuBecr8QQNQtzkisZ/M=;
+        b=QSTjZNgcktaeouQIoEvv7+SqhUwzukIoc3NCENgJ5fFHQ9BpEBm3pGjwOysUHdDXkG
+         qEzy6orHglqowmZiZrTh0mpo8ZUakzCU8Yh0xQ2FZ3W8FUdicp9HOpj1zhlGBoV/7iTa
+         thk5jZol5lhyaG8eVppO8rdr9KfanXPjbR3Y8UEMpYCGIazON6y7SZjEDl/dDuKGlVU3
+         SupwFjDr8Vztv+R9oa4jkN3ohzCMuMoAsmafF8BS1X+rkFGFoHOkjMI5jsvf2q0QXanP
+         1JlMKnPEIyTE3eO/AsrRLD5eQPwLRqinV/WUZHuMGDCsyCZL0NwEe+kk3/5qOe9m4bIc
+         WXQw==
+X-Gm-Message-State: AOAM5335wthqaJcEm3NvntMkPYu0uRRezH5r86852/2FIBg7XWcGFOBk
+        TRGzDNsYRKr2P03DHTFDO0FSUg==
+X-Google-Smtp-Source: ABdhPJzyg4F/AeRn63E0UEHpjQyBVkOG2K2klpoV5R1ukWxPZZMkych35g8pp0R8H2elq8bJi8QzTA==
+X-Received: by 2002:a17:90b:1c8e:b0:1bf:364c:dd7a with SMTP id oo14-20020a17090b1c8e00b001bf364cdd7amr33215082pjb.103.1651074646401;
+        Wed, 27 Apr 2022 08:50:46 -0700 (PDT)
+Received: from localhost.localdomain ([134.195.101.46])
+        by smtp.gmail.com with ESMTPSA id v65-20020a626144000000b0050a839e490bsm19164127pfb.185.2022.04.27.08.50.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 08:50:46 -0700 (PDT)
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>, Alyssa Ross <hi@alyssa.is>,
+        Like Xu <likexu@tencent.com>, Kajol Jain <kjain@linux.ibm.com>,
+        Li Huafei <lihuafei1@huawei.com>,
+        Ali Saidi <alisaidi@amazon.com>,
+        German Gomez <german.gomez@arm.com>,
+        James Clark <james.clark@arm.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Leo Yan <leo.yan@linaro.org>
+Subject: [PATCH v1 03/11] perf c2c: Update documentation for store metric 'Any Lvl'
+Date:   Wed, 27 Apr 2022 23:50:05 +0800
+Message-Id: <20220427155013.1833222-4-leo.yan@linaro.org>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220427155013.1833222-1-leo.yan@linaro.org>
+References: <20220427155013.1833222-1-leo.yan@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When the battery is neither charging or discharging and is not full,
-"not-charging" is a useful status description for the case in general.
-Currently this state is set as "unknown" by default, expect when this is
-explicitly replaced with "not-charging" on a per device or per vendor
-basis.
+The 'Any Lvl' metric is added for store operations, update documentation
+to reflect changes in the report table.
 
-A lot of devices have this state without a BIOS specification available
-explicitly describing it. e.g. some current Clevo barebones have a BIOS
-setting to stop charging at a user defined battery level.
-
-Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
+Signed-off-by: Leo Yan <leo.yan@linaro.org>
+Tested-by: Ali Saidi <alisaidi@amazon.com>
 ---
- drivers/acpi/battery.c | 24 +-----------------------
- 1 file changed, 1 insertion(+), 23 deletions(-)
+ tools/perf/Documentation/perf-c2c.txt | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/acpi/battery.c b/drivers/acpi/battery.c
-index dc208f5f5a1f..306513fec1e1 100644
---- a/drivers/acpi/battery.c
-+++ b/drivers/acpi/battery.c
-@@ -52,7 +52,6 @@ static bool battery_driver_registered;
- static int battery_bix_broken_package;
- static int battery_notification_delay_ms;
- static int battery_ac_is_broken;
--static int battery_quirk_notcharging;
- static unsigned int cache_time = 1000;
- module_param(cache_time, uint, 0644);
- MODULE_PARM_DESC(cache_time, "cache time in milliseconds");
-@@ -216,10 +215,8 @@ static int acpi_battery_get_property(struct power_supply *psy,
- 			val->intval = POWER_SUPPLY_STATUS_CHARGING;
- 		else if (acpi_battery_is_charged(battery))
- 			val->intval = POWER_SUPPLY_STATUS_FULL;
--		else if (battery_quirk_notcharging)
--			val->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
- 		else
--			val->intval = POWER_SUPPLY_STATUS_UNKNOWN;
-+			val->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
- 		break;
- 	case POWER_SUPPLY_PROP_PRESENT:
- 		val->intval = acpi_battery_present(battery);
-@@ -1105,12 +1102,6 @@ battery_ac_is_broken_quirk(const struct dmi_system_id *d)
- 	return 0;
- }
+diff --git a/tools/perf/Documentation/perf-c2c.txt b/tools/perf/Documentation/perf-c2c.txt
+index 3b6a2c84ea02..b39e3f3df272 100644
+--- a/tools/perf/Documentation/perf-c2c.txt
++++ b/tools/perf/Documentation/perf-c2c.txt
+@@ -189,9 +189,10 @@ For each cacheline in the 1) list we display following data:
+   Total stores
+   - sum of all store accesses
  
--static int __init battery_quirk_not_charging(const struct dmi_system_id *d)
--{
--	battery_quirk_notcharging = 1;
--	return 0;
--}
--
- static const struct dmi_system_id bat_dmi_table[] __initconst = {
- 	{
- 		/* NEC LZ750/LS */
-@@ -1139,19 +1130,6 @@ static const struct dmi_system_id bat_dmi_table[] __initconst = {
- 			DMI_MATCH(DMI_BIOS_DATE, "08/22/2014"),
- 		},
- 	},
--	{
--		/*
--		 * On Lenovo ThinkPads the BIOS specification defines
--		 * a state when the bits for charging and discharging
--		 * are both set to 0. That state is "Not Charging".
--		 */
--		.callback = battery_quirk_not_charging,
--		.ident = "Lenovo ThinkPad",
--		.matches = {
--			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
--			DMI_MATCH(DMI_PRODUCT_VERSION, "ThinkPad"),
--		},
--	},
- 	{
- 		/* Microsoft Surface Go 3 */
- 		.callback = battery_notification_delay_quirk,
+-  Store Reference - L1Hit, L1Miss
++  Store Reference - L1Hit, L1Miss, AnyLvl
+     L1Hit - store accesses that hit L1
+     L1Miss - store accesses that missed L1
++    AnyLvl - store accesses which is possible to hit any cache level
+ 
+   Core Load Hit - FB, L1, L2
+   - count of load hits in FB (Fill Buffer), L1 and L2 cache
+@@ -210,8 +211,9 @@ For each offset in the 2) list we display following data:
+   HITM - Rmt, Lcl
+   - % of Remote/Local HITM accesses for given offset within cacheline
+ 
+-  Store Refs - L1 Hit, L1 Miss
+-  - % of store accesses that hit/missed L1 for given offset within cacheline
++  Store Refs - L1 Hit, L1 Miss, Any Lvl
++  - % of store accesses that hit L1, missed L1 and any cache level for given
++    offset within cacheline
+ 
+   Data address - Offset
+   - offset address
 -- 
 2.25.1
 
