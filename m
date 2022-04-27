@@ -2,91 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ADC3C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 06:38:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38D1EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 06:40:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358197AbiD0GlX (ORCPT
+        id S1344139AbiD0Gn1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 02:41:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42376 "EHLO
+        Wed, 27 Apr 2022 02:43:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229945AbiD0GlW (ORCPT
+        with ESMTP id S235406AbiD0GnW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 02:41:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D13CB10FF12;
-        Tue, 26 Apr 2022 23:38:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C97E618F6;
-        Wed, 27 Apr 2022 06:38:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94C6EC385A7;
-        Wed, 27 Apr 2022 06:38:08 +0000 (UTC)
-Message-ID: <3cdf47f5-ad38-44ca-1720-d70a96432045@xs4all.nl>
-Date:   Wed, 27 Apr 2022 08:38:06 +0200
+        Wed, 27 Apr 2022 02:43:22 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D02A11A2B;
+        Tue, 26 Apr 2022 23:40:12 -0700 (PDT)
+Date:   Wed, 27 Apr 2022 08:40:09 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651041610;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=paVLZO6SgCr0UrGdptVCdFgDeX99cTy3N3P6FwSbTBw=;
+        b=K8VniVrJBXCsLkpIlUyoIsTG5YFfmiBAt8TmItXQuFesgztwqexbeirZYaYOlFVHNbwZ7k
+        IFhO3XxZAWQjObCXEWg+5vf3/mhZFWl4kSgyrpPOyX3KF9FsOUVfePppMHwVfGU6PtU3M2
+        42KW0lHZpNnfub4qV5IZ7feKlaenTqTdYm7PBqqA18xb+hlVvxAP44j93c19RS3UTGDia8
+        S1EnQJkIGrVtz5TttK80imHjWt7SqRXg564kXoWf8KXoVE4B/e/IBNUkp4JYlZwZ3rFXjA
+        o+CIGiakM92KDYXNDoafiMbQiXYQGfqljPAq/yhI5jklqn2EN5KVg9RYGffiZw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651041610;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=paVLZO6SgCr0UrGdptVCdFgDeX99cTy3N3P6FwSbTBw=;
+        b=J9IKWy/WLpTIswdEoFBB+X2iQg6lwnZd/dAkiijii0UAHZFsmezsTIfM5plk5NNQQyxhvV
+        AJeN60d+QCAYBCAg==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net,
+        Oleg Nesterov <oleg@redhat.com>, mingo@kernel.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, mgorman@suse.de,
+        Will Deacon <will@kernel.org>, tj@kernel.org,
+        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        inux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>
+Subject: Re: [PATCH 5/9] signal: Protect parent child relationships by childs
+ siglock
+Message-ID: <YmjlScztfmfWBfGi@linutronix.de>
+References: <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
+ <20220426225211.308418-5-ebiederm@xmission.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] media: amphion: ensure the buffer count is not less than
- min_buffer
-Content-Language: en-US
-To:     Ming Qian <ming.qian@nxp.com>, mchehab@kernel.org,
-        shawnguo@kernel.org
-Cc:     robh+dt@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        festevam@gmail.com, linux-imx@nxp.com, aisheng.dong@nxp.com,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-References: <20220322082859.9834-1-ming.qian@nxp.com>
-From:   Hans Verkuil <hverkuil-cisco@xs4all.nl>
-In-Reply-To: <20220322082859.9834-1-ming.qian@nxp.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220426225211.308418-5-ebiederm@xmission.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Ming Qian,
+On 2022-04-26 17:52:07 [-0500], Eric W. Biederman wrote:
+> The functions ptrace_stop and do_signal_stop have to drop siglock
+> and grab tasklist_lock because the parent/child relation ship
+> is guarded by siglock and not siglock.
 
-On 22/03/2022 09:28, Ming Qian wrote:
-> the output buffer count should >= min_buffer_out
-> the capture buffer count should >= min_buffer_cap
+ "is guarded by tasklist_lock and not siglock." ?
+
+> Simplify things by guarding the parent/child relationship
+> with siglock.  For the most part this just requires a little bit
+> of code motion.  In a couple of places more locking was needed.
 > 
-> Signed-off-by: Ming Qian <ming.qian@nxp.com>
-> ---
->  drivers/media/platform/amphion/vpu_v4l2.c | 4 ++++
->  1 file changed, 4 insertions(+)
 > 
-> diff --git a/drivers/media/platform/amphion/vpu_v4l2.c b/drivers/media/platform/amphion/vpu_v4l2.c
-> index cbf3315605a9..72a0544f4da3 100644
-> --- a/drivers/media/platform/amphion/vpu_v4l2.c
-> +++ b/drivers/media/platform/amphion/vpu_v4l2.c
-> @@ -355,6 +355,10 @@ static int vpu_vb2_queue_setup(struct vb2_queue *vq,
->  		return 0;
->  	}
->  
-> +	if (V4L2_TYPE_IS_OUTPUT(vq->type))
-> +		*buf_count = max_t(unsigned int, *buf_count, inst->min_buffer_out);
-> +	else
-> +		*buf_count = max_t(unsigned int, *buf_count, inst->min_buffer_cap);
+> Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 
-I noticed that min_buffer_out/cap is set to 2, but min_buffers_needed
-is set to 1. Wouldn't it make more sense to set min_buffers_needed to
-2 as well?
-
-If you do that, then the vb2 core will already take care of ensuring that
-the buf_count is adjusted.
-
-If you *do* have to do this manually, then you need to place the whole
-if-else under 'if (!*num_planes) {', otherwise it will mess up the
-VIDIOC_CREATE_BUFS ioctl. See the queue_setup in include/media/videobuf2-core.h
-documentation for the sordid details.
-
-Regards,
-
-	Hans
-
->  	*plane_count = cur_fmt->num_planes;
->  	for (i = 0; i < cur_fmt->num_planes; i++)
->  		psize[i] = cur_fmt->sizeimage[i];
-
+Sebastian
