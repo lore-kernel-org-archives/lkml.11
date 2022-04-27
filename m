@@ -2,121 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 961F0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:04:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3F9EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:04:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241757AbiD0QHM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:07:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49126 "EHLO
+        id S241796AbiD0QHW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:07:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241587AbiD0QGx (ORCPT
+        with ESMTP id S241411AbiD0QGx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Apr 2022 12:06:53 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8293BAD111
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:03:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651075381; x=1682611381;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=rXX+rT71J5egDkFCr0XNgCNM2Ip7kcs7C+TCy0oaa2o=;
-  b=FffLmXJs/5qFZRNJUdkuoIxA3oti9hWheD7AVoggIYYcGN1IWWPUVk9j
-   51LkYK9quVzsk6nKPTUVb4gLK5WtpwWgytZNsUBDlM5uIEEqGmY8U/MsM
-   FU0/i7EDJkg/RtLSB1UfkX13fASHil5AEGP5nN+mj4ilUvCVmKRAkqiii
-   FflY+5PA7hwUzm2VxPsr8S1L4RpoeWBBZE2YSDxZCd5UUeNUbI0RpOn2c
-   t3KXSnGydsqNuVMMWEZ32MhtGRADIZnQnYlQ3OwRvLW1q2zv+5Jpx4A57
-   iuW7ZXhQbBl2+FOj5EJanYTmrLKpIZTIuY50fPSRkCCg09WnzAbmskAIy
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="253360575"
-X-IronPort-AV: E=Sophos;i="5.90,293,1643702400"; 
-   d="scan'208";a="253360575"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 08:56:39 -0700
-X-IronPort-AV: E=Sophos;i="5.90,293,1643702400"; 
-   d="scan'208";a="559008157"
-Received: from dktowns1-mobl2.amr.corp.intel.com (HELO [10.209.20.44]) ([10.209.20.44])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 08:56:34 -0700
-Message-ID: <7213fec3-6844-6913-b63e-2be8fc6df626@linux.intel.com>
-Date:   Wed, 27 Apr 2022 10:39:15 -0500
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19D143CDE02
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:03:06 -0700 (PDT)
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20220427160301euoutp017eaed584f31bcb2e5795e889108c6f37~pzE-UNmPF0746107461euoutp01U
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 16:03:01 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20220427160301euoutp017eaed584f31bcb2e5795e889108c6f37~pzE-UNmPF0746107461euoutp01U
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1651075381;
+        bh=BWD7vHeyj4CQ5Yi8P8N3Y/UNmrAcLUZCdK4xuanhqxM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GjtnpqS6TFmG2lS3q3AvbSUlERHkrFUlQO9oURtx63Y8neTC073fmMr39BfnCvCBw
+         DTvzJ0X8IPJMoeRECHcpODziirNBHPHsusQTuxwb6EylE22GYnBKu6saD8rcytElZS
+         FMexbXBDvDOgUTbirA0LbgEUR7hJIW8gG1tIYbU8=
+Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+        20220427160300eucas1p2fc7475012e90a1a33a382c42587b4446~pzE9zxJ3a2333423334eucas1p2i;
+        Wed, 27 Apr 2022 16:03:00 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+        eusmges1new.samsung.com (EUCPMTA) with SMTP id 48.D7.10009.33969626; Wed, 27
+        Apr 2022 17:02:59 +0100 (BST)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220427160259eucas1p25aab0637fec229cd1140e6aa08678f38~pzE9RHMr30646906469eucas1p2D;
+        Wed, 27 Apr 2022 16:02:59 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220427160259eusmtrp23acd8a811248a150d7112d6be62c6f22~pzE9QGU2h2598325983eusmtrp2e;
+        Wed, 27 Apr 2022 16:02:59 +0000 (GMT)
+X-AuditID: cbfec7f2-e95ff70000002719-74-6269693374d0
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+        eusmgms1.samsung.com (EUCPMTA) with SMTP id 5F.71.09522.33969626; Wed, 27
+        Apr 2022 17:02:59 +0100 (BST)
+Received: from localhost (unknown [106.210.248.162]) by eusmtip2.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220427160259eusmtip2e40409a4ed4d05babb2748470116c200~pzE85iTMw3126231262eusmtip23;
+        Wed, 27 Apr 2022 16:02:59 +0000 (GMT)
+From:   Pankaj Raghav <p.raghav@samsung.com>
+To:     jaegeuk@kernel.org, axboe@kernel.dk, snitzer@kernel.org,
+        hch@lst.de, mcgrof@kernel.org, naohiro.aota@wdc.com,
+        sagi@grimberg.me, damien.lemoal@opensource.wdc.com,
+        dsterba@suse.com, johannes.thumshirn@wdc.com
+Cc:     linux-kernel@vger.kernel.org, linux-btrfs@vger.kernel.org,
+        clm@fb.com, gost.dev@samsung.com, chao@kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net, josef@toxicpanda.com,
+        jonathan.derrick@linux.dev, agk@redhat.com, kbusch@kernel.org,
+        kch@nvidia.com, linux-nvme@lists.infradead.org,
+        dm-devel@redhat.com, bvanassche@acm.org, jiangbo.365@bytedance.com,
+        linux-fsdevel@vger.kernel.org, matias.bjorling@wdc.com,
+        linux-block@vger.kernel.org, Pankaj Raghav <p.raghav@samsung.com>
+Subject: [PATCH 03/16] block: add bdev_zone_no helper
+Date:   Wed, 27 Apr 2022 18:02:42 +0200
+Message-Id: <20220427160255.300418-4-p.raghav@samsung.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220427160255.300418-1-p.raghav@samsung.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.5.0
-Subject: Re: [PATCH v2] ASoC: SOF: mediatek: Fix allyesconfig build error
-Content-Language: en-US
-To:     Tinghan Shen <tinghan.shen@mediatek.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Daniel Baluta <daniel.baluta@nxp.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Yaochun Hung <yc.hung@mediatek.com>,
-        Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
-        Yang Yingliang <yangyingliang@huawei.com>
-Cc:     sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220427071030.10172-1-tinghan.shen@mediatek.com>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-In-Reply-To: <20220427071030.10172-1-tinghan.shen@mediatek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA02Sf1CTdRzH7/t8H549rOY9bBTfUDN3l1eoEAceX9PrSkue8vJE7Yf5B0x4
+        hOkYuDGjqGsEIySRwSUojvxR5JzhgBE1kY6gGAgEMWf8/nGwUgqGsJkcCTGeefnf+/P5vj7v
+        9+dz96Wh+CoVTMuVaZxKKVNIKSFZ2zz368YIufzgC5MjUdh8oxniK4MFFC6enoO47VQHgYsK
+        TgvwfEcnxPVTZ/1w1/1MAvc2WAl8+covBB43l0J8omGaxA/yhpZ62aMQ/zsajosabwHsdJQS
+        uL5vPe4eMwpw98VofL2+lcT2awYKn/vGKcD6HA/EPXonwIU2ix+eLc8W4Kt/uUjc0rfy5dWs
+        /eZOdqHlW4otzJoSsJ1DVSRr79Cw1abjFHtBewqylq8/YevOzxJsXa+WYvOzpijWqhv2Y10/
+        Oij2ZI0JsOYaB8nqLVV+u8XvCbcmcAr5MU4V9lKcMOm3wX6YOken5485BFpQK8gD/jRiIlFJ
+        xQiRB4S0mDECZMo5LuALN0Anqv6EXkrMzALkaoh4ONHuaoU8dAmg03dnfcUdgMp198g8QNMU
+        E4IyeadApgegwsrK5QzITEDUVfM74bWSMJvQ9125pFeTzLPojilzWYuYF9ED4xjBx61BZ7r/
+        EXhN/ZktSD/zLo8EoNYz48s4XEKyvju7vARiyoXINHmb5GdfRe6Fdp+PBE3YanxHr0KL1nO+
+        fgZy9sz7hrMBKrCaKW8YWgo72a7wSsg8j8zXwnj8FZT/uQvyxArUMxnAr7ACFdWW+NoilJsj
+        5mkpss6N+0IRsn9qIHmERc6hBD1YW/rILaWP3FL6f+x5AE0giNOokxM5dbiSez9ULUtWa5SJ
+        ofEpydVg6Uu3LdhmfgBlE3dDGwFBg0aAaCgNFLnrkg6KRQmyDz7kVCmxKo2CUzeClTQpDRLF
+        yytlYiZRlsYd4bhUTvXwlaD9g7WEZEPMvg0HYtvagz8e3rar2FLzUcxUncjWJ4RNnkPF15ty
+        5bWBm9clWDXRbz9WWZ9Rvcm9TfFl01f3IzcrRpvTKy7Z9yy8ufPnXmtq5eEDhpm9uuDwzoCn
+        oqV1sh7wmkdOr6eTYmy3d/8d8kV7Q5lsY7UkdvsR+b7Fxcv9Eap17tyS/bqBsB1vGLWBcdNp
+        yqwKGf1H1XaDZcD/aFOacWtUimo6zdAR6XzL03XjyVXPVe1N2ZL62XDGgHH/4Ux7/457T+9a
+        kGgCgn4yzN8kPU90DXvWONzR8HXz6rX6fvqornsw9NCI5FZUR8tkWbzNZCMvuGKPse/ERT0j
+        0CY/3qhKL+m3SEl1kiw8BKrUsv8AISTrFkEEAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprPKsWRmVeSWpSXmKPExsVy+t/xe7rGmZlJBrf3CVusP3WM2WL13X42
+        i2kffjJbnJ56lsliUv8MdovfZ88zW+x9N5vV4sKPRiaLmwd2MlmsXH2UyeLJ+lnMFj0HPrBY
+        /O26BxRrechs8eehocWkQ9cYLZ5encVksfeWtsWlxyvYLS4tcrfYs/cki8XlXXPYLOYve8pu
+        MaHtK7PFjQlPGS0mHt/MavF5aQu7xbrX71ksTtySdpD1uHzF2+PfiTVsHhOb37F7nL+3kcXj
+        8tlSj02rOtk8FjZMZfbYvKTeY/eCz0weu282sHn0Nr9j89jZep/V4/2+q2wefVtWMXqs33KV
+        xWPC5o2sAUJRejZF+aUlqQoZ+cUltkrRhhZGeoaWFnpGJpZ6hsbmsVZGpkr6djYpqTmZZalF
+        +nYJehkX795mLvjJUdH7+Cp7A+M29i5GTg4JAROJM+9PMncxcnEICSxllNjxYCMbREJC4vbC
+        JkYIW1jiz7UuNoii54wSXe8OAiU4ONgEtCQaO9lB4iICTxgl7v98zALiMAs0sEjcmriLCaRb
+        WMBUYvuFDhYQm0VAVeLlqkYwm1fASuLvisdMEBvkJWZe+s4OMpRTwFpiwqcIkLAQUEn3olus
+        EOWCEidnPgFrZQYqb946m3kCo8AsJKlZSFILGJlWMYqklhbnpucWG+oVJ+YWl+al6yXn525i
+        BKaUbcd+bt7BOO/VR71DjEwcjIcYJTiYlUR4v+zOSBLiTUmsrEotyo8vKs1JLT7EaAp09kRm
+        KdHkfGBSyyuJNzQzMDU0MbM0MLU0M1YS5/Us6EgUEkhPLEnNTk0tSC2C6WPi4JRqYNrIxBaw
+        Sy67r63yerDW7GjF6Z/3hq64+z+gLHfPf97UvG3l3H80rxz+mefGVa23MNb2RKru/orLi/tN
+        z3z3cN/UVPiYZ0foLudwrnx/OfV2+9tHrqn8NVovFP3hueHTTUyeAT/uqKpx9O3daHzgVfi/
+        faF66SdDju+60LTy4bWk5m9a7ow1Xgyq9+vyu1YEPlEJVUzZ0L1i/u8tTJd/mRxSKvvMvI3j
+        d55F8FohnR9qzZXlMvfYLiZJRJmvYG2K8bwxo/1e5OTK9evt/bOm3Jit5CH4+o78hvNM964s
+        SWa92MliZFcX9Oqdzbwvem15DxN4zxxjvCvwR9j3zGNjUZG7WgErmRpLu0pXxgVkKrEUZyQa
+        ajEXFScCAJFoJ62yAwAA
+X-CMS-MailID: 20220427160259eucas1p25aab0637fec229cd1140e6aa08678f38
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20220427160259eucas1p25aab0637fec229cd1140e6aa08678f38
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20220427160259eucas1p25aab0637fec229cd1140e6aa08678f38
+References: <20220427160255.300418-1-p.raghav@samsung.com>
+        <CGME20220427160259eucas1p25aab0637fec229cd1140e6aa08678f38@eucas1p2.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Many places in the filesystem for zoned devices open code this function
+to find the zone number for a given sector with power of 2 assumption.
+This generic helper can be used to calculate zone number for a given
+sector in a block device
 
+This helper internally uses blk_queue_zone_no to find the zone number.
 
-On 4/27/22 02:10, Tinghan Shen wrote:
-> ld: sound/soc/sof/mediatek/mt8186/mt8186-clk.o:(.opd+0x18): multiple
-> definition of `adsp_clock_on';
-> sound/soc/sof/mediatek/mt8195/mt8195-clk.o:(.opd+0x60): first defined
-> here
-> ld: sound/soc/sof/mediatek/mt8186/mt8186-clk.o: in function
-> `.adsp_clock_on':
-> 
-> ld: sound/soc/sof/mediatek/mt8186/mt8186-clk.o:(.opd+0x30): multiple
-> definition of `adsp_clock_off';
-> sound/soc/sof/mediatek/mt8195/mt8195-clk.o:(.opd+0x78): first defined
-> here
-> ld: sound/soc/sof/mediatek/mt8186/mt8186-clk.o: in function
-> `.adsp_clock_off':
-> 
-> ld: sound/soc/sof/mediatek/mt8186/mt8186-loader.o:(.opd+0x0): multiple
-> definition of `sof_hifixdsp_boot_sequence';
-> sound/soc/sof/mediatek/mt8195/mt8195-loader.o:(.opd+0x0): first defined
-> here
-> ld: sound/soc/sof/mediatek/mt8186/mt8186-loader.o: in function
-> `.sof_hifixdsp_boot_sequence':
-> 
-> ld: sound/soc/sof/mediatek/mt8186/mt8186-loader.o:(.opd+0x18): multiple
-> definition of `sof_hifixdsp_shutdown';
->  sound/soc/sof/mediatek/mt8195/mt8195-loader.o:(.opd+0x18): first defined
-> here
-> ld: sound/soc/sof/mediatek/mt8186/mt8186-loader.o: in function
-> `.sof_hifixdsp_shutdown':
-> 
-> Fixes: 570c14dc92d5 ("ASoC: SOF: mediatek: Add mt8186 sof fw loader and
-> dsp ops")
-> Fixes: 210b3ab932f7 ("ASoC: SOF: mediatek: Add mt8186 dsp clock support")
-> 
-> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+Reviewed-by: Luis Chamberlain <mcgrof@kernel.org>
+Signed-off-by: Pankaj Raghav <p.raghav@samsung.com>
+---
+ include/linux/blkdev.h | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
+index f8f2d2998afb..55293e0a8702 100644
+--- a/include/linux/blkdev.h
++++ b/include/linux/blkdev.h
+@@ -1392,6 +1392,15 @@ static inline bool bdev_zone_aligned(struct block_device *bdev, sector_t sec)
+ 	return false;
+ }
+ 
++static inline unsigned int bdev_zone_no(struct block_device *bdev, sector_t sec)
++{
++	struct request_queue *q = bdev_get_queue(bdev);
++
++	if (q)
++		return blk_queue_zone_no(q, sec);
++	return 0;
++}
++
+ static inline unsigned int bdev_max_open_zones(struct block_device *bdev)
+ {
+ 	struct request_queue *q = bdev_get_queue(bdev);
+-- 
+2.25.1
 
-> ---
-> 
-> Changes since v1:
-> Rebase on Mark's for-next and update "Fixes" commit id
-> 
-> ---
->  sound/soc/sof/mediatek/mt8186/mt8186-clk.c    |  4 ++--
->  sound/soc/sof/mediatek/mt8186/mt8186-clk.h    |  4 ++--
->  sound/soc/sof/mediatek/mt8186/mt8186-loader.c |  4 ++--
->  sound/soc/sof/mediatek/mt8186/mt8186.c        | 18 +++++++++---------
->  sound/soc/sof/mediatek/mt8186/mt8186.h        |  4 ++--
->  5 files changed, 17 insertions(+), 17 deletions(-)
