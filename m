@@ -2,92 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52482C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 19:32:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A9D7C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 19:33:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232876AbiD0Tfy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 15:35:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52518 "EHLO
+        id S233581AbiD0Tg5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 15:36:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234868AbiD0TeC (ORCPT
+        with ESMTP id S233209AbiD0Tgz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 15:34:02 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7500AD5
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 12:30:40 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id c23so2479593plo.0
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 12:30:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nqHaRTfHThJkqhALCqIT5LeqKtw4VE1vM52q4z/IlSc=;
-        b=SMZS3v8YjUqrZkSPCI7d6K3hmAKcRimgium9aZBybxcLq1tbveraUj7dWHzdXP7i0t
-         xh7dWhI1nMlp1JbdH0Ge8BcDE5OInxMlN3sHeZIwCeWWp9kZz/mbkwtNxs5bys+l8bD6
-         1tQRWQJyzayy6s5kujObAT5jVzswctCcB2p2S+WWRUSaL9aGNbuy6DKNXnU2kCQnCwe8
-         T921ZaJZGoaSl/0JSAHrlBKheRoNZYTuQxgH0TLnwy6Z++J1to049cDDBDc+MK+k0+8K
-         Ioksu8Sa1g7ylWGlxrV4PqDQP0FYRgSgKiBOEvoh5R/jI4Q6WRWSeEi/ViH4LoxwjTp6
-         s4qA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nqHaRTfHThJkqhALCqIT5LeqKtw4VE1vM52q4z/IlSc=;
-        b=pK71d2RHB6dqTzHKPpyCqEYWa52VHFWIu5dd8aWZKmqK6/dCc8tiPPcgunj1H++6gg
-         xWyinQ7X1WPph1FtJlx/gEU/OzPCht86dgo4SJxsV0+gtenLiYZopu9Ko0FA50CPVlYr
-         egXrXXEwQ5ULfAdalANK3IcWwO2NBp48ZzP4ivjG2pyRxQvQWyljOiTw557twhitG4JB
-         SwlV13EYfVKzxtZY9l97mOsEY13xbUPQwwgn08kEsJdTh7moGn3WK69hcppbMnL4yjsX
-         BST/pXjVrjEB5I4GhOVau6ZTaOfzIjiW89pY90GGxKQnqiBhQA2W8KDpuxW2U/2jG0p5
-         LgeA==
-X-Gm-Message-State: AOAM531iryl0P3KtalPKyjEtnXM8sLALC/9pjgTniVkrwZR3JMtO0KP3
-        GG76N0CS7Ai7FNiEB2E5cO1UNDLMMd6qE9FuNI5xKQ==
-X-Google-Smtp-Source: ABdhPJzPt2me5zAU0/rrKiJB9unrBPzqakZtEinMjw00JI2fGizxCw95qhMp2gcDUpMIssgcgnDYOfYxVS/ePSoGLoU=
-X-Received: by 2002:a17:902:8306:b0:158:ea27:307d with SMTP id
- bd6-20020a170902830600b00158ea27307dmr29744990plb.164.1651087839950; Wed, 27
- Apr 2022 12:30:39 -0700 (PDT)
+        Wed, 27 Apr 2022 15:36:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9C8A13D
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 12:33:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6243261A51
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 19:33:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 281B4C385A7;
+        Wed, 27 Apr 2022 19:33:41 +0000 (UTC)
+Date:   Wed, 27 Apr 2022 15:33:39 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Tom Zanussi <zanussi@kernel.org>
+Subject: [PATCH] ring-buffer: Have absolute time stamps handle large numbers
+Message-ID: <20220427153339.16c33f75@gandalf.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220427161533.647837-1-krzysztof.kozlowski@linaro.org> <YmmLRbb4XNmpEn1b@robh.at.kernel.org>
-In-Reply-To: <YmmLRbb4XNmpEn1b@robh.at.kernel.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Date:   Wed, 27 Apr 2022 21:30:27 +0200
-Message-ID: <CAGE=qrrg-9v+4o31ZGDDOZuAHMVTUbo1dNLJDcFYdi0amWeUxA@mail.gmail.com>
-Subject: Re: [PATCH 0/2] dmaengine/ARM: use proper 'dma-channels/requests' properties
-To:     Rob Herring <robh@kernel.org>
-Cc:     Vinod Koul <vkoul@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 27 Apr 2022 at 20:28, Rob Herring <robh@kernel.org> wrote:
->
-> On Wed, Apr 27, 2022 at 06:15:31PM +0200, Krzysztof Kozlowski wrote:
-> > Hi,
-> >
-> > The core DT schema defines generic 'dma-channels' and 'dma-requests'
-> > properties, so in preparation to moving bindings to DT schema, convert
-> > existing users of '#dma-channels' and '#dma-requests' to the generic
-> > variant.
-> >
-> > Not tested on hardware.
-> >
-> > IMPORTANT
-> > =========
-> > The patchset is not bisectable! The DTS patches should be applied a
-> > release *after* driver change is accepted.
->
-> There's no driver change though...
+From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 
-Indeed, copy paste cover letter. This FSL dma driver does not use the
-properties, so it's only in the bindings and in the DTS. The patchset
-can be taken as-is, without in-kernel ABI break. Only out-of-tree
-users of DTSI will be affected.
+There's an absolute timestamp event in the ring buffer, but this only
+saves 59 bits of the timestamp, as the 5 MSB is used for meta data
+(stating it is an absolute time stamp). This was never an issue as all the
+clocks currently in use never used those 5 MSB. But now there's a new
+clock (TAI) that does.
 
-Best regards,
-Krzysztof
+To handle this case, when reading an absolute timestamp, a previous full
+timestamp is passed in, and the 5 MSB of that timestamp is OR'd to the
+absolute timestamp (if any of the 5 MSB are set), and then to test for
+overflow, if the new result is smaller than the passed in previous
+timestamp, then 1 << 59 is added to it.
+
+All the extra processing is done on the reader "slow" path, with the
+exception of the "too big delta" check, and the reading of timestamps
+for histograms.
+
+Note, libtraceevent will need to be updated to handle this case as well.
+But this is not a user space regression, as user space was never able to
+handle any timestamps that used more than 59 bits.
+
+Link: https://lore.kernel.org/all/20220426175338.3807ca4f@gandalf.local.home/
+
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Kurt Kanzenbach <kurt@linutronix.de>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+---
+ kernel/trace/ring_buffer.c | 49 ++++++++++++++++++++++++++++++++++----
+ 1 file changed, 44 insertions(+), 5 deletions(-)
+
+diff --git a/kernel/trace/ring_buffer.c b/kernel/trace/ring_buffer.c
+index 655d6db3e3c3..3a0c7ed0e93f 100644
+--- a/kernel/trace/ring_buffer.c
++++ b/kernel/trace/ring_buffer.c
+@@ -29,6 +29,14 @@
+ 
+ #include <asm/local.h>
+ 
++/*
++ * The "absolute" timestamp in the buffer is only 59 bits.
++ * If a clock has the 5 MSBs set, it needs to be saved and
++ * reinserted.
++ */
++#define TS_MSB		(0xf8ULL << 56)
++#define ABS_TS_MASK	(~TS_MSB)
++
+ static void update_pages_handler(struct work_struct *work);
+ 
+ /*
+@@ -783,6 +791,24 @@ static inline void verify_event(struct ring_buffer_per_cpu *cpu_buffer,
+ }
+ #endif
+ 
++/*
++ * The absolute time stamp drops the 5 MSBs and some clocks may
++ * require them. The rb_fix_abs_ts() will take a previous full
++ * time stamp, and add the 5 MSB of that time stamp on to the
++ * saved absolute time stamp. Then they are compared in case of
++ * the unlikely event that the latest time stamp incremented
++ * the 5 MSB.
++ */
++static inline u64 rb_fix_abs_ts(u64 abs, u64 save_ts)
++{
++	if (save_ts & TS_MSB) {
++		abs |= save_ts & TS_MSB;
++		/* Check for overflow */
++		if (unlikely(abs < save_ts))
++			abs += 1ULL << 59;
++	}
++	return abs;
++}
+ 
+ static inline u64 rb_time_stamp(struct trace_buffer *buffer);
+ 
+@@ -811,8 +837,10 @@ u64 ring_buffer_event_time_stamp(struct trace_buffer *buffer,
+ 	u64 ts;
+ 
+ 	/* If the event includes an absolute time, then just use that */
+-	if (event->type_len == RINGBUF_TYPE_TIME_STAMP)
+-		return rb_event_time_stamp(event);
++	if (event->type_len == RINGBUF_TYPE_TIME_STAMP) {
++		ts = rb_event_time_stamp(event);
++		return rb_fix_abs_ts(ts, cpu_buffer->tail_page->page->time_stamp);
++	}
+ 
+ 	nest = local_read(&cpu_buffer->committing);
+ 	verify_event(cpu_buffer, event);
+@@ -2754,8 +2782,15 @@ static void rb_add_timestamp(struct ring_buffer_per_cpu *cpu_buffer,
+ 		(RB_ADD_STAMP_FORCE | RB_ADD_STAMP_ABSOLUTE);
+ 
+ 	if (unlikely(info->delta > (1ULL << 59))) {
++		/*
++		 * Some timers can use more than 59 bits, and when a timestamp
++		 * is added to the buffer, it will lose those bits.
++		 */
++		if (abs && (info->ts & TS_MSB)) {
++			info->delta &= ABS_TS_MASK;
++
+ 		/* did the clock go backwards */
+-		if (info->before == info->after && info->before > info->ts) {
++		} else if (info->before == info->after && info->before > info->ts) {
+ 			/* not interrupted */
+ 			static int once;
+ 
+@@ -3304,7 +3339,7 @@ static void dump_buffer_page(struct buffer_data_page *bpage,
+ 
+ 		case RINGBUF_TYPE_TIME_STAMP:
+ 			delta = rb_event_time_stamp(event);
+-			ts = delta;
++			ts = rb_fix_abs_ts(delta, ts);
+ 			pr_warn("  [%lld] absolute:%lld TIME STAMP\n", ts, delta);
+ 			break;
+ 
+@@ -3380,7 +3415,7 @@ static void check_buffer(struct ring_buffer_per_cpu *cpu_buffer,
+ 
+ 		case RINGBUF_TYPE_TIME_STAMP:
+ 			delta = rb_event_time_stamp(event);
+-			ts = delta;
++			ts = rb_fix_abs_ts(delta, ts);
+ 			break;
+ 
+ 		case RINGBUF_TYPE_PADDING:
+@@ -4367,6 +4402,7 @@ rb_update_read_stamp(struct ring_buffer_per_cpu *cpu_buffer,
+ 
+ 	case RINGBUF_TYPE_TIME_STAMP:
+ 		delta = rb_event_time_stamp(event);
++		delta = rb_fix_abs_ts(delta, cpu_buffer->read_stamp);
+ 		cpu_buffer->read_stamp = delta;
+ 		return;
+ 
+@@ -4397,6 +4433,7 @@ rb_update_iter_read_stamp(struct ring_buffer_iter *iter,
+ 
+ 	case RINGBUF_TYPE_TIME_STAMP:
+ 		delta = rb_event_time_stamp(event);
++		delta = rb_fix_abs_ts(delta, iter->read_stamp);
+ 		iter->read_stamp = delta;
+ 		return;
+ 
+@@ -4650,6 +4687,7 @@ rb_buffer_peek(struct ring_buffer_per_cpu *cpu_buffer, u64 *ts,
+ 	case RINGBUF_TYPE_TIME_STAMP:
+ 		if (ts) {
+ 			*ts = rb_event_time_stamp(event);
++			*ts = rb_fix_abs_ts(*ts, reader->page->time_stamp);
+ 			ring_buffer_normalize_time_stamp(cpu_buffer->buffer,
+ 							 cpu_buffer->cpu, ts);
+ 		}
+@@ -4741,6 +4779,7 @@ rb_iter_peek(struct ring_buffer_iter *iter, u64 *ts)
+ 	case RINGBUF_TYPE_TIME_STAMP:
+ 		if (ts) {
+ 			*ts = rb_event_time_stamp(event);
++			*ts = rb_fix_abs_ts(*ts, iter->head_page->page->time_stamp);
+ 			ring_buffer_normalize_time_stamp(cpu_buffer->buffer,
+ 							 cpu_buffer->cpu, ts);
+ 		}
+-- 
+2.35.1
+
