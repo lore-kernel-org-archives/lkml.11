@@ -2,545 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E91C6C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:08:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48CE0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:08:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239296AbiD0PLr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 11:11:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40486 "EHLO
+        id S239314AbiD0PLv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 11:11:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239006AbiD0PK6 (ORCPT
+        with ESMTP id S238982AbiD0PK6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Apr 2022 11:10:58 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CAC954BC7
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 08:07:45 -0700 (PDT)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23R6M8vj014103;
-        Wed, 27 Apr 2022 10:07:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=PODMain02222019;
- bh=ZFbBmmpTjl/Vq2+nzJvMH6GVEdM6lotyERekmMtL4Oo=;
- b=nxZo+LTwOJM7Jjd54+vI9MtJLb+/lwNit96yDdm9tIq3Wls6JjVh2hNGYxEJ+CHNApSa
- PP2zT2pFSeBJwSFc7zXcAEsCW9lthza52KRxd0FSRgpLujshmJSYGuCZRHqyHIfJGh5K
- wWhHihOzLZF6BGRhx1XDT5dxZX2ZgJHCAUi6My9KV0RqJc5SlUJXZ68Uz5cusJX1XBIx
- j8PMRcegBp+bH+amjJq9j8H7XOYzRm/6qXuD4bOcoRRbTN/J+QIUGumUB6xA8ew/T7IL
- ns3Lk/27LGGAOyqk2E/qXPiXPvDqEOvfSyPi2ivc/E6OhA1tmDjp93KK46lMvCwGzSaz Sw== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3fprt60xth-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 27 Apr 2022 10:07:30 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 27 Apr
- 2022 16:07:26 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
- Transport; Wed, 27 Apr 2022 16:07:26 +0100
-Received: from vitaly-Legion-7-16ACHg6.ad.cirrus.com (unknown [198.90.238.170])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 4593BB1A;
-        Wed, 27 Apr 2022 15:07:26 +0000 (UTC)
-From:   Vitaly Rodionov <vitalyr@opensource.cirrus.com>
-To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-        Mark Brown <broonie@kernel.org>
-CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
-        <linux-kernel@vger.kernel.org>,
-        Stefan Binding <sbinding@opensource.cirrus.com>
-Subject: [PATCH 10/26] ALSA: hda: hda_cs_dsp_ctl: Add Library to support CS_DSP ALSA controls
-Date:   Wed, 27 Apr 2022 16:07:04 +0100
-Message-ID: <20220427150720.9194-11-vitalyr@opensource.cirrus.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220427150720.9194-1-vitalyr@opensource.cirrus.com>
-References: <20220427150720.9194-1-vitalyr@opensource.cirrus.com>
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0B1853B5E;
+        Wed, 27 Apr 2022 08:07:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 86DF6B827F8;
+        Wed, 27 Apr 2022 15:07:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93703C385AF;
+        Wed, 27 Apr 2022 15:07:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651072062;
+        bh=d9DFE77Zqv/ohPrixgPGqV4DVHAWzktLocb8mZeYLRk=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=BAbJ8Yp4LS53fdmTiHI3VhQvxjVbA3if54n/L2bOLGC4nRWJlXWMJhlxSZMYqEFIe
+         yBFrkmmYL/dLKcsN2fiR+d4ZpiPcRg+0fWolnYfmBYVfXKmaahngRzrxe4K0UQlYyG
+         WODCx8mD821dsoj1x2i9HlwXQwaMEFRw/RenoFo4A671I5O+w4qGxBsu3rbrJl5Oa3
+         nzL/mewcycYhMcMIk1jDG3XiUnU4KJaeglHKLeasiq4HP6qKrcADRvvUtPk95C/a68
+         3XqKGYy+sVHqTFsjtcWW8QmhbkZlQlBbmfK9ZCoCyXEBRSsZwsURQZL5lDh197Wbnp
+         MS53wD24XxsIw==
+Message-ID: <9beddcc315595751d5fbcb83f73cd94533b62cbd.camel@kernel.org>
+Subject: Re: [PATCH v2] ceph: fix statfs for subdir mounts
+From:   Jeff Layton <jlayton@kernel.org>
+To:     =?ISO-8859-1?Q?Lu=EDs?= Henriques <lhenriques@suse.de>,
+        Xiubo Li <xiubli@redhat.com>, Ilya Dryomov <idryomov@gmail.com>
+Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Ryan Taylor <rptaylor@uvic.ca>
+Date:   Wed, 27 Apr 2022 11:07:40 -0400
+In-Reply-To: <20220427143303.950-1-lhenriques@suse.de>
+References: <20220427143303.950-1-lhenriques@suse.de>
+Content-Type: text/plain; charset="ISO-8859-15"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: ihxfNNyHIMWNu54D0YxHyRaasAlr4-s7
-X-Proofpoint-ORIG-GUID: ihxfNNyHIMWNu54D0YxHyRaasAlr4-s7
-X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Binding <sbinding@opensource.cirrus.com>
+On Wed, 2022-04-27 at 15:33 +0100, Luís Henriques wrote:
+> When doing a mount using as base a directory that has 'max_bytes' quotas
+> statfs uses that value as the total; if a subdirectory is used instead,
+> the same 'max_bytes' too in statfs, unless there is another quota set.
+> 
+> Unfortunately, if this subdirectory only has the 'max_files' quota set,
+> then statfs uses the filesystem total.  Fix this by making sure we only
+> lookup realms that contain the 'max_bytes' quota.
+> 
+> Link: https://tracker.ceph.com/issues/55090
+> Cc: Ryan Taylor <rptaylor@uvic.ca>
+> Signed-off-by: Luís Henriques <lhenriques@suse.de>
+> ---
+> As I mentioned in v1, I do *not* think this really fixes the tracker
+> above, as the bug reporter never mentioned setting quotas in the subdir.
+> 
+> Changes since v1:
+> Moved some more logic into __ceph_has_any_quota() function.
+> 
+>  fs/ceph/inode.c |  2 +-
+>  fs/ceph/quota.c | 19 +++++++++++--------
+>  fs/ceph/super.h | 28 ++++++++++++++++++++++++----
+>  3 files changed, 36 insertions(+), 13 deletions(-)
+> 
+> diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
+> index 5de7bb9048b7..4b7406d6fbe4 100644
+> --- a/fs/ceph/inode.c
+> +++ b/fs/ceph/inode.c
+> @@ -691,7 +691,7 @@ void ceph_evict_inode(struct inode *inode)
+>  
+>  	__ceph_remove_caps(ci);
+>  
+> -	if (__ceph_has_any_quota(ci))
+> +	if (__ceph_has_any_quota(ci, QUOTA_GET_ANY))
+>  		ceph_adjust_quota_realms_count(inode, false);
+>  
+>  	/*
+> diff --git a/fs/ceph/quota.c b/fs/ceph/quota.c
+> index a338a3ec0dc4..e9f7ca18cdb7 100644
+> --- a/fs/ceph/quota.c
+> +++ b/fs/ceph/quota.c
+> @@ -195,9 +195,9 @@ void ceph_cleanup_quotarealms_inodes(struct ceph_mds_client *mdsc)
+>  
+>  /*
+>   * This function walks through the snaprealm for an inode and returns the
+> - * ceph_snap_realm for the first snaprealm that has quotas set (either max_files
+> - * or max_bytes).  If the root is reached, return the root ceph_snap_realm
+> - * instead.
+> + * ceph_snap_realm for the first snaprealm that has quotas set (max_files,
+> + * max_bytes, or any, depending on the 'which_quota' argument).  If the root is
+> + * reached, return the root ceph_snap_realm instead.
+>   *
+>   * Note that the caller is responsible for calling ceph_put_snap_realm() on the
+>   * returned realm.
+> @@ -209,7 +209,9 @@ void ceph_cleanup_quotarealms_inodes(struct ceph_mds_client *mdsc)
+>   * will be restarted.
+>   */
+>  static struct ceph_snap_realm *get_quota_realm(struct ceph_mds_client *mdsc,
+> -					       struct inode *inode, bool retry)
+> +					       struct inode *inode,
+> +					       enum quota_get_realm which_quota,
+> +					       bool retry)
+>  {
+>  	struct ceph_inode_info *ci = NULL;
+>  	struct ceph_snap_realm *realm, *next;
+> @@ -248,7 +250,7 @@ static struct ceph_snap_realm *get_quota_realm(struct ceph_mds_client *mdsc,
+>  		}
+>  
+>  		ci = ceph_inode(in);
+> -		has_quota = __ceph_has_any_quota(ci);
+> +		has_quota = __ceph_has_any_quota(ci, which_quota);
+>  		iput(in);
+>  
+>  		next = realm->parent;
+> @@ -279,8 +281,8 @@ bool ceph_quota_is_same_realm(struct inode *old, struct inode *new)
+>  	 * dropped and we can then restart the whole operation.
+>  	 */
+>  	down_read(&mdsc->snap_rwsem);
+> -	old_realm = get_quota_realm(mdsc, old, true);
+> -	new_realm = get_quota_realm(mdsc, new, false);
+> +	old_realm = get_quota_realm(mdsc, old, QUOTA_GET_ANY, true);
+> +	new_realm = get_quota_realm(mdsc, new, QUOTA_GET_ANY, false);
+>  	if (PTR_ERR(new_realm) == -EAGAIN) {
+>  		up_read(&mdsc->snap_rwsem);
+>  		if (old_realm)
+> @@ -483,7 +485,8 @@ bool ceph_quota_update_statfs(struct ceph_fs_client *fsc, struct kstatfs *buf)
+>  	bool is_updated = false;
+>  
+>  	down_read(&mdsc->snap_rwsem);
+> -	realm = get_quota_realm(mdsc, d_inode(fsc->sb->s_root), true);
+> +	realm = get_quota_realm(mdsc, d_inode(fsc->sb->s_root),
+> +				QUOTA_GET_MAX_BYTES, true);
+>  	up_read(&mdsc->snap_rwsem);
+>  	if (!realm)
+>  		return false;
+> diff --git a/fs/ceph/super.h b/fs/ceph/super.h
+> index a2e1c83ab29a..3cd96720f14a 100644
+> --- a/fs/ceph/super.h
+> +++ b/fs/ceph/super.h
+> @@ -1317,9 +1317,29 @@ extern void ceph_fs_debugfs_init(struct ceph_fs_client *client);
+>  extern void ceph_fs_debugfs_cleanup(struct ceph_fs_client *client);
+>  
+>  /* quota.c */
+> -static inline bool __ceph_has_any_quota(struct ceph_inode_info *ci)
+> +
+> +enum quota_get_realm {
+> +	QUOTA_GET_MAX_FILES,
+> +	QUOTA_GET_MAX_BYTES,
+> +	QUOTA_GET_ANY
+> +};
+> +
+> +static inline bool __ceph_has_any_quota(struct ceph_inode_info *ci,
+> +					enum quota_get_realm which)
+>  {
+> -	return ci->i_max_files || ci->i_max_bytes;
+> +	bool has_quota = false;
+> +
+> +	switch (which) {
+> +	case QUOTA_GET_MAX_BYTES:
+> +		has_quota = !!ci->i_max_bytes;
+> +		break;
+> +	case QUOTA_GET_MAX_FILES:
+> +		has_quota = !!ci->i_max_files;
+> +		break;
+> +	default:
+> +		has_quota = !!(ci->i_max_files || ci->i_max_bytes);
+> +	}
+> +	return has_quota;
+>  }
+>  
+>  extern void ceph_adjust_quota_realms_count(struct inode *inode, bool inc);
+> @@ -1328,10 +1348,10 @@ static inline void __ceph_update_quota(struct ceph_inode_info *ci,
+>  				       u64 max_bytes, u64 max_files)
+>  {
+>  	bool had_quota, has_quota;
+> -	had_quota = __ceph_has_any_quota(ci);
+> +	had_quota = __ceph_has_any_quota(ci, QUOTA_GET_ANY);
+>  	ci->i_max_bytes = max_bytes;
+>  	ci->i_max_files = max_files;
+> -	has_quota = __ceph_has_any_quota(ci);
+> +	has_quota = __ceph_has_any_quota(ci, QUOTA_GET_ANY);
+>  
+>  	if (had_quota != has_quota)
+>  		ceph_adjust_quota_realms_count(&ci->vfs_inode, has_quota);
 
-The cs35l41 part contains a DSP which is able to run firmware.
-The cs_dsp library can be used to control the DSP.
-These controls can be exposed to userspace using ALSA controls.
-This library adds apis to be able to interface between
-cs_dsp and hda drivers and expose the relevant controls as
-ALSA controls.
+Code looks fine. I think Xiubo had suggested renaming the funtion to
+__ceph_has_quota(), but other than that this looks good.
 
-Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
-Signed-off-by: Vitaly Rodionov <vitalyr@opensource.cirrus.com>
----
- MAINTAINERS                    |   1 +
- sound/pci/hda/Kconfig          |   4 +
- sound/pci/hda/Makefile         |   2 +
- sound/pci/hda/hda_cs_dsp_ctl.c | 364 +++++++++++++++++++++++++++++++++
- sound/pci/hda/hda_cs_dsp_ctl.h |  34 +++
- 5 files changed, 405 insertions(+)
- create mode 100644 sound/pci/hda/hda_cs_dsp_ctl.c
- create mode 100644 sound/pci/hda/hda_cs_dsp_ctl.h
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 61d9f114c37f..10bcb9fba3eb 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -4693,6 +4693,7 @@ L:	patches@opensource.cirrus.com
- S:	Maintained
- F:	Documentation/devicetree/bindings/sound/cirrus,cs*
- F:	sound/pci/hda/cs*
-+F:	sound/pci/hda/hda_cs_dsp_ctl.*
- F:	sound/soc/codecs/cs*
- 
- CIRRUS LOGIC DSP FIRMWARE DRIVER
-diff --git a/sound/pci/hda/Kconfig b/sound/pci/hda/Kconfig
-index 79ade4787d95..d1fd6cf82beb 100644
---- a/sound/pci/hda/Kconfig
-+++ b/sound/pci/hda/Kconfig
-@@ -94,6 +94,10 @@ config SND_HDA_PATCH_LOADER
- config SND_HDA_SCODEC_CS35L41
- 	tristate
- 
-+config SND_HDA_CS_DSP_CONTROLS
-+	tristate
-+	depends on CS_DSP
-+
- config SND_HDA_SCODEC_CS35L41_I2C
- 	tristate "Build CS35L41 HD-audio side codec support for I2C Bus"
- 	depends on I2C
-diff --git a/sound/pci/hda/Makefile b/sound/pci/hda/Makefile
-index 3e7bc608d45f..00d306104484 100644
---- a/sound/pci/hda/Makefile
-+++ b/sound/pci/hda/Makefile
-@@ -31,6 +31,7 @@ snd-hda-codec-hdmi-objs :=	patch_hdmi.o hda_eld.o
- snd-hda-scodec-cs35l41-objs :=		cs35l41_hda.o
- snd-hda-scodec-cs35l41-i2c-objs :=	cs35l41_hda_i2c.o
- snd-hda-scodec-cs35l41-spi-objs :=	cs35l41_hda_spi.o
-+snd-hda-cs-dsp-ctls-objs :=		hda_cs_dsp_ctl.o
- 
- # common driver
- obj-$(CONFIG_SND_HDA) := snd-hda-codec.o
-@@ -54,6 +55,7 @@ obj-$(CONFIG_SND_HDA_CODEC_HDMI) += snd-hda-codec-hdmi.o
- obj-$(CONFIG_SND_HDA_SCODEC_CS35L41) += snd-hda-scodec-cs35l41.o
- obj-$(CONFIG_SND_HDA_SCODEC_CS35L41_I2C) += snd-hda-scodec-cs35l41-i2c.o
- obj-$(CONFIG_SND_HDA_SCODEC_CS35L41_SPI) += snd-hda-scodec-cs35l41-spi.o
-+obj-$(CONFIG_SND_HDA_CS_DSP_CONTROLS) += snd-hda-cs-dsp-ctls.o
- 
- # this must be the last entry after codec drivers;
- # otherwise the codec patches won't be hooked before the PCI probe
-diff --git a/sound/pci/hda/hda_cs_dsp_ctl.c b/sound/pci/hda/hda_cs_dsp_ctl.c
-new file mode 100644
-index 000000000000..e94740c5557a
---- /dev/null
-+++ b/sound/pci/hda/hda_cs_dsp_ctl.c
-@@ -0,0 +1,364 @@
-+// SPDX-License-Identifier: GPL-2.0
-+//
-+// HDA DSP ALSA Control Driver
-+//
-+// Copyright 2022 Cirrus Logic, Inc.
-+//
-+// Author: Stefan Binding <sbinding@opensource.cirrus.com>
-+
-+#include <linux/module.h>
-+#include <sound/soc.h>
-+#include <linux/firmware/cirrus/cs_dsp.h>
-+#include <linux/firmware/cirrus/wmfw.h>
-+#include "hda_cs_dsp_ctl.h"
-+
-+struct hda_cs_dsp_coeff_ctl {
-+	const char *name;
-+	struct cs_dsp_coeff_ctl *cs_ctl;
-+	struct snd_card *card;
-+	struct soc_bytes_ext bytes_ext;
-+	struct work_struct add_work;
-+	struct work_struct remove_work;
-+};
-+
-+static const char * const hda_cs_dsp_fw_text[HDA_CS_DSP_NUM_FW] = {
-+	[HDA_CS_DSP_FW_SPK_PROT] = "Prot",
-+	[HDA_CS_DSP_FW_SPK_CALI] = "Cali",
-+	[HDA_CS_DSP_FW_SPK_DIAG] = "Diag",
-+	[HDA_CS_DSP_FW_MISC] =     "Misc",
-+};
-+
-+static inline struct hda_cs_dsp_coeff_ctl *bytes_ext_to_ctl(struct soc_bytes_ext *ext)
-+{
-+	return container_of(ext, struct hda_cs_dsp_coeff_ctl, bytes_ext);
-+}
-+
-+static int hda_cs_dsp_coeff_info(struct snd_kcontrol *kctl, struct snd_ctl_elem_info *uinfo)
-+{
-+	struct soc_bytes_ext *bytes_ext =
-+		(struct soc_bytes_ext *)kctl->private_value;
-+	struct hda_cs_dsp_coeff_ctl *ctl = bytes_ext_to_ctl(bytes_ext);
-+	struct cs_dsp_coeff_ctl *cs_ctl = ctl->cs_ctl;
-+
-+	switch (cs_ctl->type) {
-+	case WMFW_CTL_TYPE_ACKED:
-+		uinfo->type = SNDRV_CTL_ELEM_TYPE_INTEGER;
-+		uinfo->value.integer.min = CS_DSP_ACKED_CTL_MIN_VALUE;
-+		uinfo->value.integer.max = CS_DSP_ACKED_CTL_MAX_VALUE;
-+		uinfo->value.integer.step = 1;
-+		uinfo->count = 1;
-+		break;
-+	default:
-+		uinfo->type = SNDRV_CTL_ELEM_TYPE_BYTES;
-+		uinfo->count = cs_ctl->len;
-+		break;
-+	}
-+
-+	return 0;
-+}
-+
-+static int hda_cs_dsp_coeff_put(struct snd_kcontrol *kctl, struct snd_ctl_elem_value *ucontrol)
-+{
-+	struct soc_bytes_ext *bytes_ext =
-+		(struct soc_bytes_ext *)kctl->private_value;
-+	struct hda_cs_dsp_coeff_ctl *ctl = bytes_ext_to_ctl(bytes_ext);
-+	struct cs_dsp_coeff_ctl *cs_ctl = ctl->cs_ctl;
-+	char *p = ucontrol->value.bytes.data;
-+	int ret = 0;
-+
-+	mutex_lock(&cs_ctl->dsp->pwr_lock);
-+	ret = cs_dsp_coeff_write_ctrl(cs_ctl, 0, p, cs_ctl->len);
-+	mutex_unlock(&cs_ctl->dsp->pwr_lock);
-+
-+	return ret;
-+}
-+
-+static int hda_cs_dsp_coeff_tlv_put(struct snd_kcontrol *kctl,
-+				    const unsigned int __user *bytes, unsigned int size)
-+{
-+	struct soc_bytes_ext *bytes_ext =
-+		(struct soc_bytes_ext *)kctl->private_value;
-+	struct hda_cs_dsp_coeff_ctl *ctl = bytes_ext_to_ctl(bytes_ext);
-+	struct cs_dsp_coeff_ctl *cs_ctl = ctl->cs_ctl;
-+	int ret = 0;
-+
-+	mutex_lock(&cs_ctl->dsp->pwr_lock);
-+
-+	if (copy_from_user(cs_ctl->cache, bytes, size))
-+		ret = -EFAULT;
-+	else
-+		ret = cs_dsp_coeff_write_ctrl(cs_ctl, 0, cs_ctl->cache, size);
-+
-+	mutex_unlock(&cs_ctl->dsp->pwr_lock);
-+
-+	return ret;
-+}
-+
-+static int hda_cs_dsp_coeff_put_acked(struct snd_kcontrol *kctl,
-+				      struct snd_ctl_elem_value *ucontrol)
-+{
-+	struct soc_bytes_ext *bytes_ext =
-+		(struct soc_bytes_ext *)kctl->private_value;
-+	struct hda_cs_dsp_coeff_ctl *ctl = bytes_ext_to_ctl(bytes_ext);
-+	struct cs_dsp_coeff_ctl *cs_ctl = ctl->cs_ctl;
-+	unsigned int val = ucontrol->value.integer.value[0];
-+	int ret;
-+
-+	if (val == 0)
-+		return 0;	/* 0 means no event */
-+
-+	mutex_lock(&cs_ctl->dsp->pwr_lock);
-+
-+	if (cs_ctl->enabled)
-+		ret = cs_dsp_coeff_write_acked_control(cs_ctl, val);
-+	else
-+		ret = -EPERM;
-+
-+	mutex_unlock(&cs_ctl->dsp->pwr_lock);
-+
-+	return ret;
-+}
-+
-+static int hda_cs_dsp_coeff_get(struct snd_kcontrol *kctl, struct snd_ctl_elem_value *ucontrol)
-+{
-+	struct soc_bytes_ext *bytes_ext =
-+		(struct soc_bytes_ext *)kctl->private_value;
-+	struct hda_cs_dsp_coeff_ctl *ctl = bytes_ext_to_ctl(bytes_ext);
-+	struct cs_dsp_coeff_ctl *cs_ctl = ctl->cs_ctl;
-+	char *p = ucontrol->value.bytes.data;
-+	int ret;
-+
-+	mutex_lock(&cs_ctl->dsp->pwr_lock);
-+	ret = cs_dsp_coeff_read_ctrl(cs_ctl, 0, p, cs_ctl->len);
-+	mutex_unlock(&cs_ctl->dsp->pwr_lock);
-+
-+	return ret;
-+}
-+
-+static int hda_cs_dsp_coeff_tlv_get(struct snd_kcontrol *kctl,
-+				    unsigned int __user *bytes, unsigned int size)
-+{
-+	struct soc_bytes_ext *bytes_ext =
-+		(struct soc_bytes_ext *)kctl->private_value;
-+	struct hda_cs_dsp_coeff_ctl *ctl = bytes_ext_to_ctl(bytes_ext);
-+	struct cs_dsp_coeff_ctl *cs_ctl = ctl->cs_ctl;
-+	int ret = 0;
-+
-+	mutex_lock(&cs_ctl->dsp->pwr_lock);
-+
-+	ret = cs_dsp_coeff_read_ctrl(cs_ctl, 0, cs_ctl->cache, size);
-+
-+	if (!ret && copy_to_user(bytes, cs_ctl->cache, size))
-+		ret = -EFAULT;
-+
-+	mutex_unlock(&cs_ctl->dsp->pwr_lock);
-+
-+	return ret;
-+}
-+
-+static int hda_cs_dsp_coeff_get_acked(struct snd_kcontrol *kcontrol,
-+				      struct snd_ctl_elem_value *ucontrol)
-+{
-+	/*
-+	 * Although it's not useful to read an acked control, we must satisfy
-+	 * user-side assumptions that all controls are readable and that a
-+	 * write of the same value should be filtered out (it's valid to send
-+	 * the same event number again to the firmware). We therefore return 0,
-+	 * meaning "no event" so valid event numbers will always be a change
-+	 */
-+	ucontrol->value.integer.value[0] = 0;
-+
-+	return 0;
-+}
-+#define ADSP_MAX_STD_CTRL_SIZE               512
-+
-+static unsigned int wmfw_convert_flags(unsigned int in, unsigned int len)
-+{
-+	unsigned int out, rd, wr, vol;
-+
-+	if (len > ADSP_MAX_STD_CTRL_SIZE) {
-+		rd = SNDRV_CTL_ELEM_ACCESS_TLV_READ;
-+		wr = SNDRV_CTL_ELEM_ACCESS_TLV_WRITE;
-+		vol = SNDRV_CTL_ELEM_ACCESS_VOLATILE;
-+
-+		out = SNDRV_CTL_ELEM_ACCESS_TLV_CALLBACK;
-+	} else {
-+		rd = SNDRV_CTL_ELEM_ACCESS_READ;
-+		wr = SNDRV_CTL_ELEM_ACCESS_WRITE;
-+		vol = SNDRV_CTL_ELEM_ACCESS_VOLATILE;
-+
-+		out = 0;
-+	}
-+
-+	if (in) {
-+		out |= rd;
-+		if (in & WMFW_CTL_FLAG_WRITEABLE)
-+			out |= wr;
-+		if (in & WMFW_CTL_FLAG_VOLATILE)
-+			out |= vol;
-+	} else {
-+		out |= rd | wr | vol;
-+	}
-+
-+	return out;
-+}
-+
-+static void hda_cs_dsp_ctl_add_work(struct work_struct *work)
-+{
-+	struct hda_cs_dsp_coeff_ctl *ctl = container_of(work,
-+							struct hda_cs_dsp_coeff_ctl,
-+							add_work);
-+	struct cs_dsp_coeff_ctl *cs_ctl = ctl->cs_ctl;
-+	struct snd_kcontrol_new *kcontrol;
-+
-+	kcontrol = kzalloc(sizeof(*kcontrol), GFP_KERNEL);
-+	if (!kcontrol)
-+		return;
-+
-+	kcontrol->name = ctl->name;
-+	kcontrol->info = hda_cs_dsp_coeff_info;
-+	kcontrol->iface = SNDRV_CTL_ELEM_IFACE_MIXER;
-+	kcontrol->tlv.c = snd_soc_bytes_tlv_callback;
-+	kcontrol->private_value = (unsigned long)&ctl->bytes_ext;
-+	kcontrol->access = wmfw_convert_flags(cs_ctl->flags, cs_ctl->len);
-+
-+	switch (cs_ctl->type) {
-+	case WMFW_CTL_TYPE_ACKED:
-+		kcontrol->get = hda_cs_dsp_coeff_get_acked;
-+		kcontrol->put = hda_cs_dsp_coeff_put_acked;
-+		break;
-+	default:
-+		if (kcontrol->access & SNDRV_CTL_ELEM_ACCESS_TLV_CALLBACK) {
-+			ctl->bytes_ext.max = cs_ctl->len;
-+			ctl->bytes_ext.get = hda_cs_dsp_coeff_tlv_get;
-+			ctl->bytes_ext.put = hda_cs_dsp_coeff_tlv_put;
-+		} else {
-+			kcontrol->get = hda_cs_dsp_coeff_get;
-+			kcontrol->put = hda_cs_dsp_coeff_put;
-+		}
-+		break;
-+	}
-+
-+	if (snd_ctl_add(ctl->card, snd_ctl_new1(kcontrol, NULL)))
-+		dev_err(cs_ctl->dsp->dev, "Failed to add KControl: %s\n", kcontrol->name);
-+	else
-+		dev_dbg(cs_ctl->dsp->dev, "Added KControl: %s\n", kcontrol->name);
-+
-+	kfree(kcontrol);
-+}
-+
-+int hda_cs_dsp_control_add(struct cs_dsp_coeff_ctl *cs_ctl, struct hda_cs_dsp_ctl_info *info)
-+{
-+	struct cs_dsp *cs_dsp = cs_ctl->dsp;
-+	char name[SNDRV_CTL_ELEM_ID_NAME_MAXLEN];
-+	struct hda_cs_dsp_coeff_ctl *ctl;
-+	const char *region_name;
-+	int ret;
-+
-+	if (cs_ctl->flags & WMFW_CTL_FLAG_SYS) {
-+		dev_dbg(cs_dsp->dev, "cs_ctl->flags = WMFW_CTL_FLAG_SYS\n");
-+		return 0;
-+	}
-+
-+	region_name = cs_dsp_mem_region_name(cs_ctl->alg_region.type);
-+	if (!region_name) {
-+		dev_err(cs_dsp->dev, "Unknown region type: %d\n", cs_ctl->alg_region.type);
-+		return -EINVAL;
-+	}
-+
-+	switch (cs_dsp->fw_ver) {
-+	case 0:
-+	case 1:
-+		ret = scnprintf(name, SNDRV_CTL_ELEM_ID_NAME_MAXLEN,
-+				"%s %s %s %x", info->amp_name, cs_dsp->name, region_name,
-+				cs_ctl->alg_region.alg);
-+		break;
-+	case 2:
-+		ret = scnprintf(name, SNDRV_CTL_ELEM_ID_NAME_MAXLEN,
-+				"%s %s%c %.12s %x", info->amp_name, cs_dsp->name, *region_name,
-+				hda_cs_dsp_fw_text[info->fw_type], cs_ctl->alg_region.alg);
-+		break;
-+	default:
-+		ret = scnprintf(name, SNDRV_CTL_ELEM_ID_NAME_MAXLEN,
-+				"%s %s %.12s %x", info->amp_name, cs_dsp->name,
-+				hda_cs_dsp_fw_text[info->fw_type], cs_ctl->alg_region.alg);
-+		break;
-+	}
-+
-+	if (cs_ctl->subname) {
-+		int avail = SNDRV_CTL_ELEM_ID_NAME_MAXLEN - ret - 2;
-+		int skip = 0;
-+
-+		/* Truncate the subname from the start if it is too long */
-+		if (cs_ctl->subname_len > avail)
-+			skip = cs_ctl->subname_len - avail;
-+
-+		snprintf(name + ret, SNDRV_CTL_ELEM_ID_NAME_MAXLEN - ret,
-+			 " %.*s", cs_ctl->subname_len - skip, cs_ctl->subname + skip);
-+	}
-+
-+	ctl = kzalloc(sizeof(*ctl), GFP_KERNEL);
-+	if (!ctl)
-+		return -ENOMEM;
-+	ctl->cs_ctl = cs_ctl;
-+	ctl->card = info->card;
-+
-+	ctl->name = kmemdup(name, strlen(name) + 1, GFP_KERNEL);
-+	if (!ctl->name) {
-+		ret = -ENOMEM;
-+		dev_err(cs_dsp->dev, "Cannot save ctl name\n");
-+		goto err_ctl;
-+	}
-+
-+	cs_ctl->priv = ctl;
-+
-+	INIT_WORK(&ctl->add_work, hda_cs_dsp_ctl_add_work);
-+	schedule_work(&ctl->add_work);
-+
-+	return 0;
-+
-+err_ctl:
-+	dev_err(cs_dsp->dev, "Error adding control: %s\n", name);
-+	kfree(ctl);
-+	return ret;
-+}
-+EXPORT_SYMBOL_NS_GPL(hda_cs_dsp_control_add, SND_HDA_CS_DSP_CONTROLS);
-+
-+int hda_cs_dsp_remove_kcontrol(struct snd_card *card, const char *name)
-+{
-+	struct snd_kcontrol *kctl;
-+
-+	list_for_each_entry(kctl, &card->controls, list)
-+		if (!strncmp(kctl->id.name, name, sizeof(kctl->id.name)))
-+			return snd_ctl_remove_id(card, &kctl->id);
-+
-+	return -EINVAL;
-+}
-+EXPORT_SYMBOL_NS_GPL(hda_cs_dsp_remove_kcontrol, SND_HDA_CS_DSP_CONTROLS);
-+
-+static void hda_cs_dsp_ctl_del_work(struct work_struct *work)
-+{
-+	struct hda_cs_dsp_coeff_ctl *ctl = container_of(work,
-+							struct hda_cs_dsp_coeff_ctl,
-+							remove_work);
-+
-+	cancel_work_sync(&ctl->add_work);
-+
-+	hda_cs_dsp_remove_kcontrol(ctl->card, ctl->name);
-+
-+	kfree(ctl->name);
-+	kfree(ctl);
-+}
-+
-+void hda_cs_dsp_control_remove(struct cs_dsp_coeff_ctl *cs_ctl)
-+{
-+	struct hda_cs_dsp_coeff_ctl *ctl = cs_ctl->priv;
-+
-+	INIT_WORK(&ctl->remove_work, hda_cs_dsp_ctl_del_work);
-+	schedule_work(&ctl->remove_work);
-+}
-+EXPORT_SYMBOL_NS_GPL(hda_cs_dsp_control_remove, SND_HDA_CS_DSP_CONTROLS);
-+
-+MODULE_DESCRIPTION("CS_DSP ALSA Control HDA Library");
-+MODULE_AUTHOR("Stefan Binding, <sbinding@opensource.cirrus.com>");
-+MODULE_LICENSE("GPL");
-diff --git a/sound/pci/hda/hda_cs_dsp_ctl.h b/sound/pci/hda/hda_cs_dsp_ctl.h
-new file mode 100644
-index 000000000000..3c90312b45d6
---- /dev/null
-+++ b/sound/pci/hda/hda_cs_dsp_ctl.h
-@@ -0,0 +1,34 @@
-+/* SPDX-License-Identifier: GPL-2.0
-+ *
-+ * HDA DSP ALSA Control Driver
-+ *
-+ * Copyright 2022 Cirrus Logic, Inc.
-+ *
-+ * Author: Stefan Binding <sbinding@opensource.cirrus.com>
-+ */
-+
-+#ifndef __HDA_CS_DSP_CTL_H__
-+#define __HDA_CS_DSP_CTL_H__
-+
-+#include <sound/soc.h>
-+#include <linux/firmware/cirrus/cs_dsp.h>
-+
-+enum hda_cs_dsp_fw_id {
-+	HDA_CS_DSP_FW_SPK_PROT,
-+	HDA_CS_DSP_FW_SPK_CALI,
-+	HDA_CS_DSP_FW_SPK_DIAG,
-+	HDA_CS_DSP_FW_MISC,
-+	HDA_CS_DSP_NUM_FW
-+};
-+
-+struct hda_cs_dsp_ctl_info {
-+	struct snd_card *card;
-+	enum hda_cs_dsp_fw_id fw_type;
-+	const char *amp_name;
-+};
-+
-+int hda_cs_dsp_control_add(struct cs_dsp_coeff_ctl *cs_ctl, struct hda_cs_dsp_ctl_info *info);
-+void hda_cs_dsp_control_remove(struct cs_dsp_coeff_ctl *cs_ctl);
-+int hda_cs_dsp_remove_kcontrol(struct snd_card *card, const char *name);
-+
-+#endif /*__HDA_CS_DSP_CTL_H__*/
--- 
-2.32.0
-
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
