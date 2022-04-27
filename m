@@ -2,93 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A184C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 06:52:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D168C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 06:53:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358405AbiD0Gy2 (ORCPT
+        id S1358370AbiD0G4T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 02:54:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37556 "EHLO
+        Wed, 27 Apr 2022 02:56:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358561AbiD0GyX (ORCPT
+        with ESMTP id S1351656AbiD0G4Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 02:54:23 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F246A4F47D
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 23:51:12 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id z19so796698edx.9
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 23:51:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9tXY7FD2xlJXeOyqnkyBzs+L6RjZzs4jMiP6VRkCYU8=;
-        b=NrUAonw/vsFOjLJ+1Y+dvE4aXHpnoVxDX1cG3C4Uyk5LZln3yXe4wR/a22SVSzWlT0
-         V370AvYav97L3XVdDvYtA8O70DCcEj4pCrdmvOplKW9YM1y/RB4hsPHh/Zo4GPaQLn8U
-         wLCIJ2+GsPLh8o3YgcWtXN/OrmnVUJL+d2QEAHcZKVsdHTEZm2ADI6sN/3iehbYv76eN
-         yp/O6YZH5WbP31GgaELb2ZGGbg4fZP6//WGnyzejqr5GJWy7N3EHzGlchyEqVOdfq2Xp
-         VzPsEnY9gN/TEd4zC/qPyhfGGi92/cHwQxF+aiG+tctl6AdSmkTTZ70DgFaBcwiguCxm
-         Gdug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9tXY7FD2xlJXeOyqnkyBzs+L6RjZzs4jMiP6VRkCYU8=;
-        b=Hlp/v9HXhybx/dkyd5HezVPl7z64VcvJTmhKMdpigi8iyh8nibgb5vsfvPw39pPuUm
-         ZQjppxG3eRu+sGxSUjnmosoqhgR62Wz3tiQv0MwKeruGeaOMPFcdw1BqDzKxWW/s4Jyr
-         M9vNSdb02vTVed/GiG5/frtTglAVbQAAVQ1nD69e+hoLHw0TwQz+E2cAR5rgcuXaIpNr
-         9pQyHKWN/ggYDwrAb0rm/KLHmGD86oz7ox8/IpECmP0qbIQyerY/eeCFGLTtSF2L5506
-         8CzgT5N1zogLnydpkaL3FCldu2z5Zyp/Bo+pDdrPGDmwXJ/+t8QYtph8lBZMqKEb8J8F
-         F3dg==
-X-Gm-Message-State: AOAM531yRAulEm9/Qh1doU1l9MSqs74n1KabGrTCHx/NpaKgm0cjNaiN
-        jX1fEZbTI2QRJZ8+DKO/w+YzP11t53inmA==
-X-Google-Smtp-Source: ABdhPJyGCnUiduZivOC1w+7W4FQfSyalfBDvYgNvHlMISTw50/MAjuqBwBinEq3sd88Xhclhi67tnw==
-X-Received: by 2002:a05:6402:2214:b0:425:d6ed:de5d with SMTP id cq20-20020a056402221400b00425d6edde5dmr19544230edb.383.1651042271590;
-        Tue, 26 Apr 2022 23:51:11 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id l26-20020a1709062a9a00b006e7ee7ad20bsm6303094eje.149.2022.04.26.23.51.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 23:51:10 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        - <patches@opensource.cirrus.com>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH] dt-bindings: mfd: wlf,arizona: Add spi-max-frequency
-Date:   Wed, 27 Apr 2022 08:51:02 +0200
-Message-Id: <20220427065102.109046-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 27 Apr 2022 02:56:16 -0400
+Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0EF13DCE;
+        Tue, 26 Apr 2022 23:53:04 -0700 (PDT)
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 23R6qosB002127;
+        Wed, 27 Apr 2022 08:52:50 +0200
+From:   Willy Tarreau <w@1wt.eu>
+To:     netdev@vger.kernel.org
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Moshe Kol <moshe.kol@mail.huji.ac.il>,
+        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
+        Amit Klein <aksecurity@gmail.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH net 3/7] tcp: resalt the secret every 10 seconds
+Date:   Wed, 27 Apr 2022 08:52:29 +0200
+Message-Id: <20220427065233.2075-4-w@1wt.eu>
+X-Mailer: git-send-email 2.17.5
+In-Reply-To: <20220427065233.2075-1-w@1wt.eu>
+References: <20220427065233.2075-1-w@1wt.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Wolfson Microelectronics Arizona audio can be connected via SPI bus
-(e.g. WM5110 on Exynos5433 TM2 board), so allow spi-max-frequency
-property.
+From: Eric Dumazet <edumazet@google.com>
 
-Reported-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In order to limit the ability for an observer to recognize the source
+ports sequence used to contact a set of destinations, we should
+periodically shuffle the secret. 10 seconds looks effective enough
+without causing particular issues.
+
+Cc: Moshe Kol <moshe.kol@mail.huji.ac.il>
+Cc: Yossi Gilad <yossi.gilad@mail.huji.ac.il>
+Cc: Amit Klein <aksecurity@gmail.com>
+Tested-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- Documentation/devicetree/bindings/mfd/wlf,arizona.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+ net/core/secure_seq.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/mfd/wlf,arizona.yaml b/Documentation/devicetree/bindings/mfd/wlf,arizona.yaml
-index 9e762d474218..0d1835c657a2 100644
---- a/Documentation/devicetree/bindings/mfd/wlf,arizona.yaml
-+++ b/Documentation/devicetree/bindings/mfd/wlf,arizona.yaml
-@@ -193,6 +193,8 @@ properties:
-   reset-gpios:
-     maxItems: 1
+diff --git a/net/core/secure_seq.c b/net/core/secure_seq.c
+index 2cdd43a63f64..200ab4686275 100644
+--- a/net/core/secure_seq.c
++++ b/net/core/secure_seq.c
+@@ -22,6 +22,8 @@
+ static siphash_aligned_key_t net_secret;
+ static siphash_aligned_key_t ts_secret;
  
-+  spi-max-frequency: true
++#define EPHEMERAL_PORT_SHUFFLE_PERIOD (10 * HZ)
 +
-   wlf,reset:
-     description:
-       GPIO specifier for the GPIO controlling RESET
+ static __always_inline void net_secret_init(void)
+ {
+ 	net_get_random_once(&net_secret, sizeof(net_secret));
+@@ -101,10 +103,12 @@ u32 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
+ 		struct in6_addr saddr;
+ 		struct in6_addr daddr;
+ 		__be16 dport;
++		unsigned int timeseed;
+ 	} __aligned(SIPHASH_ALIGNMENT) combined = {
+ 		.saddr = *(struct in6_addr *)saddr,
+ 		.daddr = *(struct in6_addr *)daddr,
+-		.dport = dport
++		.dport = dport,
++		.timeseed = jiffies / EPHEMERAL_PORT_SHUFFLE_PERIOD,
+ 	};
+ 	net_secret_init();
+ 	return siphash(&combined, offsetofend(typeof(combined), dport),
+@@ -145,8 +149,10 @@ EXPORT_SYMBOL_GPL(secure_tcp_seq);
+ u64 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport)
+ {
+ 	net_secret_init();
+-	return siphash_3u32((__force u32)saddr, (__force u32)daddr,
+-			    (__force u16)dport, &net_secret);
++	return siphash_4u32((__force u32)saddr, (__force u32)daddr,
++			    (__force u16)dport,
++			    jiffies / EPHEMERAL_PORT_SHUFFLE_PERIOD,
++			    &net_secret);
+ }
+ EXPORT_SYMBOL_GPL(secure_ipv4_port_ephemeral);
+ #endif
 -- 
-2.32.0
+2.17.5
 
