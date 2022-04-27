@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B44BC43217
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:55:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6964C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:55:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240864AbiD0P6R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 11:58:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55532 "EHLO
+        id S240946AbiD0P6W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 11:58:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240577AbiD0P5v (ORCPT
+        with ESMTP id S240701AbiD0P54 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 11:57:51 -0400
+        Wed, 27 Apr 2022 11:57:56 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC4D8737BD;
-        Wed, 27 Apr 2022 08:54:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88A89771C5;
+        Wed, 27 Apr 2022 08:54:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DDAC8B82881;
-        Wed, 27 Apr 2022 15:54:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AC5BC385AC;
-        Wed, 27 Apr 2022 15:54:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 92496B82883;
+        Wed, 27 Apr 2022 15:54:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32586C385B2;
+        Wed, 27 Apr 2022 15:54:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651074861;
-        bh=cCZFMNJ7sc4kval9MNFBp8yBF+FZbUz3Tw4iKsgYzLI=;
+        s=k20201202; t=1651074867;
+        bh=SMMW/xa9C8D5vurAKOeqVtrr7C7izTSMHjwXwWpZJXA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U1ouTdQnremIxFpmyaboRGSRLQKNR1RgfsOhNKdsB4uAdq/5TL+n8+g/i1d5Ci1WP
-         H2ajL4W1Wt/tqhIBfy9S5qhDXuWGndnHVGeynn04I4TSVdw2CmkcAI9++va1RC+H7g
-         bOiBryLq+l6MqSvqcSBpYFcUO0lcdfRNmkQmEYhP6oph/OMxMD/Tuj1ixPmnLxst6B
-         0HWDi8r1JxY8HfbDDXo8hN3zr7tVfY66tSpaVU44WNs3/V6zvKeghoc9e4YYeYLPXL
-         bE+e1MOwMg2e1dejpaZiF/yiShfnUak+tPUmNs6sNAY5zWgbROdIFdu9fTfwMH78a6
-         0FHKlbAa7+nwQ==
+        b=oCh2HVLGGkhXuunUVGw1ZozflMJnfhtqPsXZFOBSbVW68j7N7TxYtgRaGFqUPsG6C
+         YtQIOaej9FVpHQqzq95bGHI/v+RARkQTwyeOMDOJCNLp5CsgTGUxKYmpwa4VnReEhm
+         M/i5/QbDZrk/xMYYpSqYVIIZzlCpVOAZ+O7WavTh47kcNkYr2e6aCuq5+EldJJKK4G
+         K+OIv14PyTH77uEeP6ObhTyG5y98Qa1aeObv7ZvzHXzckeqRep+FlpEoK6o4mZxUBV
+         XYdXcVsrSopRL/1G0ML85OAw/il61SycZYMZQipPhTP6rfaSA7EQronCx2Tl15fPXB
+         P/Of2FCn1Vljw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+Cc:     Wanpeng Li <wanpengli@tencent.com>,
+        Aili Yao <yaoaili@kingsoft.com>,
         Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
         mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
         x86@kernel.org, kvm@vger.kernel.org
-Subject: [PATCH MANUALSEL 5.17 5/7] KVM: x86/mmu: avoid NULL-pointer dereference on page freeing bugs
-Date:   Wed, 27 Apr 2022 11:54:01 -0400
-Message-Id: <20220427155408.19352-5-sashal@kernel.org>
+Subject: [PATCH MANUALSEL 5.17 7/7] KVM: LAPIC: Enable timer posted-interrupt only when mwait/hlt is advertised
+Date:   Wed, 27 Apr 2022 11:54:03 -0400
+Message-Id: <20220427155408.19352-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220427155408.19352-1-sashal@kernel.org>
 References: <20220427155408.19352-1-sashal@kernel.org>
@@ -53,37 +55,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Bonzini <pbonzini@redhat.com>
+From: Wanpeng Li <wanpengli@tencent.com>
 
-[ Upstream commit 9191b8f0745e63edf519e4a54a4aaae1d3d46fbd ]
+[ Upstream commit 1714a4eb6fb0cb79f182873cd011a8ed60ac65e8 ]
 
-WARN and bail if KVM attempts to free a root that isn't backed by a shadow
-page.  KVM allocates a bare page for "special" roots, e.g. when using PAE
-paging or shadowing 2/3/4-level page tables with 4/5-level, and so root_hpa
-will be valid but won't be backed by a shadow page.  It's all too easy to
-blindly call mmu_free_root_page() on root_hpa, be nice and WARN instead of
-crashing KVM and possibly the kernel.
+As commit 0c5f81dad46 ("KVM: LAPIC: Inject timer interrupt via posted
+interrupt") mentioned that the host admin should well tune the guest
+setup, so that vCPUs are placed on isolated pCPUs, and with several pCPUs
+surplus for *busy* housekeeping.  In this setup, it is preferrable to
+disable mwait/hlt/pause vmexits to keep the vCPUs in non-root mode.
 
+However, if only some guests isolated and others not, they would not
+have any benefit from posted timer interrupts, and at the same time lose
+VMX preemption timer fast paths because kvm_can_post_timer_interrupt()
+returns true and therefore forces kvm_can_use_hv_timer() to false.
+
+By guaranteeing that posted-interrupt timer is only used if MWAIT or
+HLT are done without vmexit, KVM can make a better choice and use the
+VMX preemption timer and the corresponding fast paths.
+
+Reported-by: Aili Yao <yaoaili@kingsoft.com>
 Reviewed-by: Sean Christopherson <seanjc@google.com>
+Cc: Aili Yao <yaoaili@kingsoft.com>
+Cc: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
+Message-Id: <1643112538-36743-1-git-send-email-wanpengli@tencent.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/mmu/mmu.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/x86/kvm/lapic.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 7f009ebb319a..e7cd16e1e0a0 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -3239,6 +3239,8 @@ static void mmu_free_root_page(struct kvm *kvm, hpa_t *root_hpa,
- 		return;
+diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+index 6b6f9359d29e..970d5c740b00 100644
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
+@@ -113,7 +113,8 @@ static inline u32 kvm_x2apic_id(struct kvm_lapic *apic)
  
- 	sp = to_shadow_page(*root_hpa & PT64_BASE_ADDR_MASK);
-+	if (WARN_ON(!sp))
-+		return;
+ static bool kvm_can_post_timer_interrupt(struct kvm_vcpu *vcpu)
+ {
+-	return pi_inject_timer && kvm_vcpu_apicv_active(vcpu);
++	return pi_inject_timer && kvm_vcpu_apicv_active(vcpu) &&
++		(kvm_mwait_in_guest(vcpu->kvm) || kvm_hlt_in_guest(vcpu->kvm));
+ }
  
- 	if (is_tdp_mmu_page(sp))
- 		kvm_tdp_mmu_put_root(kvm, sp, false);
+ bool kvm_can_use_hv_timer(struct kvm_vcpu *vcpu)
 -- 
 2.35.1
 
