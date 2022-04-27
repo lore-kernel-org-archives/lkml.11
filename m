@@ -2,120 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C6BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 04:31:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7E09C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 04:34:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236382AbiD0Eeh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 00:34:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59134 "EHLO
+        id S1357696AbiD0EiD (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 00:38:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233953AbiD0Eeg (ORCPT
+        with ESMTP id S233953AbiD0EiA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 00:34:36 -0400
-Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 202FC17047
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 21:31:26 -0700 (PDT)
-Received: by mail-qk1-x72e.google.com with SMTP id 79so527321qkk.10
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 21:31:26 -0700 (PDT)
+        Wed, 27 Apr 2022 00:38:00 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72C0F1D0D1
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 21:34:50 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id e2so766845wrh.7
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 21:34:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eDJ/TKi8MJj4cRz3lASeVWI34QxPexXoDljXobkQyGg=;
-        b=ZYSazkTWKQgXrTiBOPxNdhzCsnwoyOqM4V2N9vOQDG6HRKnC+gKK7I+aN0EPVfp3pH
-         j7jBmnk/fvOdyR4xI9ms8Ab++PWx5/p71SrZahPgOOdOaGA9EI7HhKnJxv5GkR/CpuZu
-         PX59oxiLlPIqvkE7FjDXFM6Z8ipB/iweREssM=
+         :cc:content-transfer-encoding;
+        bh=TTJXiSDWHIQWPf5FraUDqTlRR8Y6SgL6OHC9Il99X2U=;
+        b=JxePzmarDHATgXyxfsx8xj1Je7OSZmAGXbzPlPFbaLD4c3f5Y8nWhFcw5bulM6z9ai
+         Vf9bWMSRKaI4kUFwP4nC9ce9hdb0l6CgU3r2obwHoV/rLotPq80lxKHsS3djL/ardRoi
+         Asa17Uvk2TUBoCUa8SPA9cfEiz2PyCXy1KYGSIjxaQpxkjr4HtZxdYhy8WgY6aeuoaly
+         jXHKxdOsDyTrdJ2y12p38gQz9833Wb+C+10ZOQLRzxudBdCRXNRG3gHujmLUMhcGBxHn
+         TJ08m992tQwLIABKcCPxaxCLpcMDpD7VfgRIAMzgH+bUEGPFQm9sBV9Pk7WHK4WiI/eL
+         t2zA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eDJ/TKi8MJj4cRz3lASeVWI34QxPexXoDljXobkQyGg=;
-        b=HcCQE8QoNoj87ZtipjImx57qUgwfKsQr+S+GeotzmH1StHY0bMX67ql4uA20bHwnsE
-         igDVFSfStR8D+0Pon3LptIVsm+p5IV7G5GtptJchzpBPCzBrm0c7Kg1hlKNrsni2PIfH
-         UcvZihhhUrkBLXPfNOI5d7MQkD1/pzmzMSC526WzZeK5EKqclbLIiCaVsGX4A6jvyueK
-         xUrvSIQiaQ/4yVrRXKodxjJEljYukSDA3HO7yc04eAVhk8gErCk7KnnU0niss29XHU3v
-         eKczPWDt0BmRcM2W27DlW2s8Yq74jk9Kb1KzpmtDHuCOFmcN9GLGM0eoSaSxS4JCqhge
-         lOIA==
-X-Gm-Message-State: AOAM532bCP6EE0G+l2erv68d1FbiH/gjywbSeM7EeAhZ+8WqZoltoi4i
-        ou6x2PbZb2TJ7v7wKnWrLyQRdW8WDfgzDg==
-X-Google-Smtp-Source: ABdhPJxuAE2BtQBf4ewHiSv7XRNhL9wsn3+C9ClAM4/uoUwz5FV3h1mKjKU0hGr8Hut/2eXcj+uncA==
-X-Received: by 2002:a05:620a:2087:b0:69f:8a92:bdf3 with SMTP id e7-20020a05620a208700b0069f8a92bdf3mr1081446qka.443.1651033885130;
-        Tue, 26 Apr 2022 21:31:25 -0700 (PDT)
-Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com. [209.85.128.175])
-        by smtp.gmail.com with ESMTPSA id v67-20020a379346000000b0069bdb3bb132sm7681292qkd.37.2022.04.26.21.31.23
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Apr 2022 21:31:24 -0700 (PDT)
-Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-2f7c57ee6feso5923327b3.2
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 21:31:23 -0700 (PDT)
-X-Received: by 2002:a0d:cb41:0:b0:2f7:d205:9c99 with SMTP id
- n62-20020a0dcb41000000b002f7d2059c99mr17141871ywd.417.1651033882822; Tue, 26
- Apr 2022 21:31:22 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=TTJXiSDWHIQWPf5FraUDqTlRR8Y6SgL6OHC9Il99X2U=;
+        b=nJJb+fA6fS0A0MY/HtW+wAxijildXk1E8fkKzqlrX3en9slsMOLUvzaskaS1/1QbW2
+         3ha8HPUUTJx1BI8UQLEqnZHLMTQ/1s7i0jaCZICa0vRg25+r3AVJ9+bx0AjNx+X91x0K
+         yLwe/DbzN00NoJw1rTYG5Or3Rh48wwGqAUvlysAl7RfcC07o/GjigZ9Hb/tvwWzbP9CZ
+         UiB+HYEhrslUt3JMD50UZQrOwr+QUt9jMoiYYbBMrhCkQEMffpncg+bFIE6AJU0vuY+e
+         6sw3IG6TLcpFQS/IQoLsmPg+xIH2GBEsmz3BBujvFarSASzVov7guuCw6MDhBVWYrHl4
+         Ckow==
+X-Gm-Message-State: AOAM530sa2xTBkt5cAUthdCiD/PVynFeN7fK5BM7/ipjSkh4eHq0Vycf
+        DijrxswTQGYbsESwWObYvwx67aa/l7qpOhKIimrB6Q==
+X-Google-Smtp-Source: ABdhPJyhiHSjESWU751fDEw8Ck6ArMasesVf1PgUxSMH/mWwqDSNuGBfFb8cqDhVknfE36f9yQYQWkiNOwDmi83QDEY=
+X-Received: by 2002:adf:fb05:0:b0:20a:e113:8f3f with SMTP id
+ c5-20020adffb05000000b0020ae1138f3fmr7312720wrr.534.1651034088776; Tue, 26
+ Apr 2022 21:34:48 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220426125751.108293-1-nicolas.dufresne@collabora.com> <20220426125751.108293-4-nicolas.dufresne@collabora.com>
-In-Reply-To: <20220426125751.108293-4-nicolas.dufresne@collabora.com>
-From:   Tomasz Figa <tfiga@chromium.org>
-Date:   Wed, 27 Apr 2022 13:31:11 +0900
-X-Gmail-Original-Message-ID: <CAAFQd5C6qmxmn4y=cx5Mtb3p8vcTAFm6Jfc1vMAE8+x9iwhDZg@mail.gmail.com>
-Message-ID: <CAAFQd5C6qmxmn4y=cx5Mtb3p8vcTAFm6Jfc1vMAE8+x9iwhDZg@mail.gmail.com>
-Subject: Re: [PATCH v4 03/24] media: videobuf2-v4l2: Warn on holding buffers
- without support
-To:     Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Hans Verkuil <hverkuil@xs4all.nl>
-Cc:     nicolas@ndufresne.ca,
-        Sebastian Fricke <sebastian.fricke@collabora.com>,
-        linux-media@vger.kernel.org,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        linux-kernel@vger.kernel.org
+References: <20220420055807.GA16310@xsang-OptiPlex-9020> <43598597-72e1-6750-9bee-031fd463fc3b@intel.com>
+In-Reply-To: <43598597-72e1-6750-9bee-031fd463fc3b@intel.com>
+From:   Yosry Ahmed <yosryahmed@google.com>
+Date:   Tue, 26 Apr 2022 21:34:12 -0700
+Message-ID: <CAJD7tkaDWtgy3Ckhgo+vcbM7oYA8saPCVRvXLDKYHvRGYkKvoQ@mail.gmail.com>
+Subject: Re: [memcg] a8c49af3be: hackbench.throughput -13.7% regression
+To:     Yin Fengwei <fengwei.yin@intel.com>
+Cc:     kernel test robot <oliver.sang@intel.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
+        lkp@intel.com, Ying <ying.huang@intel.com>, feng.tang@intel.com,
+        zhengjun.xing@linux.intel.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Nicolas, Sebastian,
+Hi Yin,
 
-On Tue, Apr 26, 2022 at 9:58 PM Nicolas Dufresne
-<nicolas.dufresne@collabora.com> wrote:
+On Tue, Apr 26, 2022 at 7:53 PM Yin Fengwei <fengwei.yin@intel.com> wrote:
 >
-> From: Sebastian Fricke <sebastian.fricke@collabora.com>
+> Hi Yosry,
 >
-> Using V4L2_BUF_FLAG_M2M_HOLD_CAPTURE_BUF flag without specifying the
-> subsystem flag VB2_V4L2_FL_SUPPORTS_M2M_HOLD_CAPTURE_BUF, results in
-> silently ignoring it.
-> Warn the user via a debug print when the flag is requested but ignored
-> by the videobuf2 framework.
+> On 4/20/2022 1:58 PM, kernel test robot wrote:
+> >
+> >
+> > Greeting,
+> >
+> > FYI, we noticed a -13.7% regression of hackbench.throughput due to comm=
+it:
+> >
+> >
+> > commit: a8c49af3be5f0b4e105ef678bcf14ef102c270be ("memcg: add per-memcg=
+ total kernel memory stat")
+> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> >
+> > in testcase: hackbench
+> > on test machine: 144 threads 4 sockets Intel(R) Xeon(R) Gold 5318H CPU =
+@ 2.50GHz with 128G memory
+> > with following parameters:
+> >
+> >       nr_threads: 100%
+> >       iterations: 4
+> >       mode: process
+> >       ipc: socket
+> >       cpufreq_governor: performance
+> >       ucode: 0x7002402
+> >
+> > test-description: Hackbench is both a benchmark and a stress test for t=
+he Linux kernel scheduler.
+> > test-url: https://github.com/linux-test-project/ltp/blob/master/testcas=
+es/kernel/sched/cfs-scheduler/hackbench.c
+> >
+> >
+> >
+> > If you fix the issue, kindly add following tag
+> > Reported-by: kernel test robot <oliver.sang@intel.com>
+> >
+> >
+> > Details are as below:
+> > -----------------------------------------------------------------------=
+--------------------------->
+> >
+> >
+> > To reproduce:
+> >
+> >         git clone https://github.com/intel/lkp-tests.git
+> >         cd lkp-tests
+> >         sudo bin/lkp install job.yaml           # job file is attached =
+in this email
+> >         bin/lkp split-job --compatible job.yaml # generate the yaml fil=
+e for lkp run
+> >         sudo bin/lkp run generated-yaml-file
+> >
+> >         # if come across any failure that blocks the test,
+> >         # please remove ~/.lkp and /lkp dir to run from a clean state.
+> >
+> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > compiler/cpufreq_governor/ipc/iterations/kconfig/mode/nr_threads/rootfs=
+/tbox_group/testcase/ucode:
+> >   gcc-11/performance/socket/4/x86_64-rhel-8.3/process/100%/debian-10.4-=
+x86_64-20200603.cgz/lkp-cpl-4sp1/hackbench/0x7002402
+> >
+> > commit:
+> >   086f694a75 ("memcg: replace in_interrupt() with !in_task()")
+> >   a8c49af3be ("memcg: add per-memcg total kernel memory stat")
+> >
+> > 086f694a75e1a283 a8c49af3be5f0b4e105ef678bcf
+> > ---------------- ---------------------------
+> >          %stddev     %change         %stddev
+> >              \          |                \
+> >     146519           -13.7%     126397        hackbench.throughput
+> >     465.89           +16.0%     540.43        hackbench.time.elapsed_ti=
+me
+> >     465.89           +16.0%     540.43        hackbench.time.elapsed_ti=
+me.max
+> >  1.365e+08          +134.1%  3.195e+08 =C2=B1  4%  hackbench.time.invol=
+untary_context_switches
+> >    1081515            -1.2%    1068489        hackbench.time.minor_page=
+_faults
+> >      64911           +16.3%      75465        hackbench.time.system_tim=
+e
 >
-> Signed-off-by: Sebastian Fricke <sebastian.fricke@collabora.com>
-> Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-> Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-> ---
->  drivers/media/common/videobuf2/videobuf2-v4l2.c | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
+> Just FYI.
 >
+> If I comment out one line added by the commit <a8c49af3be> :
+> static void memcg_account_kmem(struct mem_cgroup *memcg, int nr_pages)
+> {
+>         /* mod_memcg_state(memcg, MEMCG_KMEM, nr_pages); */  <--- comment=
+ out this line.
 
-Thanks for the patch. Please see my comments inline.
+Thanks so much for looking into this. Unfortunately this line is
+essentially the commit core, all the other changes are more or less
+refactoring or adding interfaces to read this stat through.
 
-> diff --git a/drivers/media/common/videobuf2/videobuf2-v4l2.c b/drivers/media/common/videobuf2/videobuf2-v4l2.c
-> index 6edf4508c636..812c8d1962e0 100644
-> --- a/drivers/media/common/videobuf2/videobuf2-v4l2.c
-> +++ b/drivers/media/common/videobuf2/videobuf2-v4l2.c
-> @@ -329,8 +329,13 @@ static int vb2_fill_vb2_v4l2_buffer(struct vb2_buffer *vb, struct v4l2_buffer *b
->                  */
->                 vbuf->flags &= ~V4L2_BUF_FLAG_TIMECODE;
->                 vbuf->field = b->field;
-> -               if (!(q->subsystem_flags & VB2_V4L2_FL_SUPPORTS_M2M_HOLD_CAPTURE_BUF))
-> +               if (!(q->subsystem_flags & VB2_V4L2_FL_SUPPORTS_M2M_HOLD_CAPTURE_BUF)) {
-> +                       if (vbuf->flags & V4L2_BUF_FLAG_M2M_HOLD_CAPTURE_BUF)
-> +                               dprintk(q, 1,
-> +                                       "Request holding buffer (%d), unsupported on output queue\n",
-> +                                       b->index);
+I am not sure why this specific callsite causes regression, there are
+many callsites that modify stats similarly (whether through
+mod_memcg_state() directly or through other variants like
+mod_lruvec_state()). Maybe the kmem call path is exercised more
+heavily in this benchmark than other call paths that update stats.
 
-I wonder if we shouldn't just fail such a QBUF operation. Otherwise
-the application would get unexpected behavior from the kernel.
-Although it might be too late to do it now if there are applications
-that rely on this implicit ignore...
+The only seemingly expensive operation in the mod_memcg_state() path
+is the call to cgroup_rstat_updated() (through memcg_rstat_updated()).
+One idea off the top of my head is to batch calls to
+cgroup_rstat_updated(), similar to what 11192d9c124d ("memcg: flush
+stats only if updated") did on the flush side. I am interested to see
+what memcg maintainers think about this problem (and the proposed
+solution).
 
-Best regards,
-Tomasz
+>         if (!cgroup_subsys_on_dfl(memory_cgrp_subsys)) {
+>                 if (nr_pages > 0)
+>                         page_counter_charge(&memcg->kmem, nr_pages);
+>                 else
+>                         page_counter_uncharge(&memcg->kmem, -nr_pages);
+>         }
+> }
+>
+> The regression is almost gone:
+>
+> 086f694a75e1a283 9ff9ec89a6dcf39f901ff0a84fd
+> ---------------- ---------------------------
+>        fail:runs  %reproduction    fail:runs
+>            |             |             |
+>        7632:13      -44932%        1791:3     dmesg.timestamp:last
+>           1:13          -8%            :3     kmsg.common_interrupt:#No_i=
+rq_handler_for_vector
+>           2:13         -20%            :3     kmsg.timestamp:common_inter=
+rupt:#No_irq_handler_for_vector
+>        4072:13      -24827%         844:3     kmsg.timestamp:last
+>          %stddev     %change         %stddev
+>              \          |                \
+>     144327 =C2=B1  3%      -1.9%     141594 =C2=B1  5%  hackbench.through=
+put
+>                       regression dropped to -1.9% from -13.7%
+>
+>     473.44 =C2=B1  3%      +1.9%     482.23 =C2=B1  5%  hackbench.time.el=
+apsed_time
+>
+>
+> Regards
+> Yin, Fengwei
