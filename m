@@ -2,136 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A238C43219
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 12:47:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D429C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 12:47:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234879AbiD0Mub (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 08:50:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34164 "EHLO
+        id S234897AbiD0Muy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 08:50:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234709AbiD0Mu2 (ORCPT
+        with ESMTP id S234874AbiD0Mux (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 08:50:28 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A88323BDD2;
-        Wed, 27 Apr 2022 05:47:16 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id p18so1798057edr.7;
-        Wed, 27 Apr 2022 05:47:16 -0700 (PDT)
+        Wed, 27 Apr 2022 08:50:53 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BD541C123
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 05:47:42 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id y21so1090850wmi.2
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 05:47:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=pxItn8uzU19tEpsefwPd2jxTqRmvUDlDREf7wYHJfdg=;
-        b=CXkNbYYgYNHxgTxdNOzgFTCOU2NMsqO/TKr936VUpRbby2VubmlgXWqCtlEMWtwK1e
-         wloJnjxv+1cwH8DmY3Y9UlkdiKP7n6aOqq5YfgMQUQC+wb2GjXkyl+DD1nihTzCYQoVM
-         iCd5ExfhiNAnbOQORAKYGQoFkPosH7bKwFIytrcVXirUZiz8oQyHVFqQSvgIdgueEBI0
-         9ud4u15wIlilt5XejQ33QThUrt4OSQaredPiM05UhWuVRxAJex6qMhqVYjWxXwoDA11C
-         FNpmOzU0BzNw09jrkBWsFXeoffARsMIxUfsQ7J8H9cRX1J4MwlTd523BybkGjqSuAOA2
-         ZuIQ==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=4ZU7ssA0uBUIH6XIuoYvcPvJ99ZnRQPUGmPQtpNi76c=;
+        b=IW2c9joHq/hwifhAacbBVc1qzogNoXNAxtBDcYWCPJ6fPOM9y6yKnxL7LpTymyi1Mw
+         hjMcixIyPI70Pi2PTqQlosHfCg1E8SnZ5l0ArWRvMWodQsPK5LhTsudvfWJN9kI4hau8
+         q0lDTsSvPRBac4hfb3TQ0orhvL6MUxOyjUvtvP5Yq/D4+mHZPSQn08XLD3G61YIjeSEa
+         M4MO+l2LtH2/6N7jEwuGc9ZS+61BVh/gEjsKIastxGEQjzGbgP8+YNOkNsjzSS3tgsLX
+         VM7ssK8zNESBLZCy1G0Aser5Eb5kq6GNeP6Wm6p+hwwD3361fyDBWfdauodf69g0q6sq
+         eP3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=pxItn8uzU19tEpsefwPd2jxTqRmvUDlDREf7wYHJfdg=;
-        b=bkbIj5Vxtgaj6LTbmnjY3yavHY+cR8oQ0i/BOeWhHP90kbAwGqQQ25TRQ1aRl0NY1K
-         R4cpfbXHy7qhGTTZGK2/QtatNvRNfH8J0ndv042b0HxZkoEkn7CcYCeBNO7d4hAT2Icc
-         +fwSgEuykTtGKZBm8VQ5+S2CKWsZuPCqQwstc8ewA2wOECMkR9rKJgUFeF5pucbMR08S
-         hOXLItCCGZrhf7XBLVBiRdHtumLWcWGpFqMz3NwWFa18VKz/tn0AjyjzZDahG+o3pe9c
-         N3JDnW+Nzq7JIG773xceKTJhFu7jEs7DGhqtu14/vkB31OFecghq5ExW0xODr7YqLVMK
-         zrrg==
-X-Gm-Message-State: AOAM530RIglVrkxBdXwFtlm8XYIyrrrvjMXJbQAaVJTtG5asxOZoionU
-        FWlDSLoI0Yp6olWgpF0tbqA=
-X-Google-Smtp-Source: ABdhPJxQMSY+w304Fi5oIOF8QBwBTgSsoPU4u45kfsGscIhsbsuehDlNaU3LSglXfqNZ62/JJIQqaA==
-X-Received: by 2002:a05:6402:2309:b0:41f:a5a9:fe13 with SMTP id l9-20020a056402230900b0041fa5a9fe13mr30286679eda.123.1651063634731;
-        Wed, 27 Apr 2022 05:47:14 -0700 (PDT)
-Received: from [192.168.0.182] ([188.24.22.234])
-        by smtp.gmail.com with ESMTPSA id u8-20020a170906654800b006f38daa8447sm4683138ejn.145.2022.04.27.05.47.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Apr 2022 05:47:14 -0700 (PDT)
-Message-ID: <a4ba3f7e-6d03-36c7-e98a-3bed7db69fc6@gmail.com>
-Date:   Wed, 27 Apr 2022 15:47:13 +0300
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=4ZU7ssA0uBUIH6XIuoYvcPvJ99ZnRQPUGmPQtpNi76c=;
+        b=uXKqet+W9I12zXcLf3GJQGSyfyipBMnQph1KQJWU0vev/zEoRKwL0PwYj/YVDnFBCW
+         6PHbC5J34wedtvX+6d9NoeTuE+DUTRgMA6EHKz/OLg31htt1L4qNTDBpnOMwUM8qSyep
+         tYU349/VqiPtQklY5uMcodgMrIGcXLCv06/U6XpsRt92GZOSWNnhOyUm8Dzp/WA3cvwH
+         jZZ9d2eBF5Z8J11OInniYbObn4ypz2MXTzKOrGWkwZPqc3J4dZmq9H1yXpmgBGhTV0ON
+         mbMW0T+i1xUfOkYNnh70bvlZuP3IfhPKH+XuJlU+cqX01XLeUYpQ28hrpLlg6HikrcbU
+         ryIQ==
+X-Gm-Message-State: AOAM5321CTz887oNnYaq65ZAwr/nNILJ9SMVz3VRRoQ74mbOjNx/2Yhc
+        A2mLCh3hRRKHepl1D+IwjTmzgQ==
+X-Google-Smtp-Source: ABdhPJz5NK+Ha567qr3bpxGvIn7U9ze3IwWfwIo5TY6HK+pg7ceZbULrFiJZ/aDUS4aMuFui3oFWlQ==
+X-Received: by 2002:a05:600c:1584:b0:38e:c80e:b8b5 with SMTP id r4-20020a05600c158400b0038ec80eb8b5mr34457739wmf.99.1651063660964;
+        Wed, 27 Apr 2022 05:47:40 -0700 (PDT)
+Received: from elver.google.com ([2a00:79e0:15:13:493f:cd0f:324a:323c])
+        by smtp.gmail.com with ESMTPSA id w12-20020adf8bcc000000b002060e3da33fsm13564171wra.66.2022.04.27.05.47.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 05:47:40 -0700 (PDT)
+Date:   Wed, 27 Apr 2022 14:47:34 +0200
+From:   Marco Elver <elver@google.com>
+To:     Alexander Potapenko <glider@google.com>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Christoph Hellwig <hch@lst.de>,
+        Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Kees Cook <keescook@chromium.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>, kasan-dev@googlegroups.com,
+        linux-mm@kvack.org, linux-arch@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 03/46] kasan: common: adapt to the new prototype of
+ __stack_depot_save()
+Message-ID: <Ymk7ZkkIq6rF+BmI@elver.google.com>
+References: <20220426164315.625149-1-glider@google.com>
+ <20220426164315.625149-4-glider@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v3 1/2] dt-bindings: iio: adc: add AD4130
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-iio@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Cosmin Tanislav <cosmin.tanislav@analog.com>
-References: <20220419150828.191933-1-cosmin.tanislav@analog.com>
- <20220419150828.191933-2-cosmin.tanislav@analog.com>
- <Ymc+urR3N8eLLKxl@robh.at.kernel.org>
-From:   Cosmin Tanislav <demonsingur@gmail.com>
-In-Reply-To: <Ymc+urR3N8eLLKxl@robh.at.kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220426164315.625149-4-glider@google.com>
+User-Agent: Mutt/2.1.4 (2021-12-11)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 4/26/22 03:37, Rob Herring wrote:
-> On Tue, Apr 19, 2022 at 06:08:27PM +0300, Cosmin Tanislav wrote:
->> AD4130-8 is an ultra-low power, high precision, measurement solution for
->> low bandwidth battery operated applications.
->>
->> The fully integrated AFE (Analog Front-End) includes a multiplexer for up
->> to 16 single-ended or 8 differential inputs, PGA (Programmable Gain
->> Amplifier), 24-bit Sigma-Delta ADC, on-chip reference and oscillator,
->> selectable filter options, smart sequencer, sensor biasing and excitation
->> options, diagnostics, and a FIFO buffer.
->>
->> Signed-off-by: Cosmin Tanislav <cosmin.tanislav@analog.com>
->> ---
->>   .../bindings/iio/adc/adi,ad4130.yaml          | 264 ++++++++++++++++++
->>   1 file changed, 264 insertions(+)
->>   create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad4130.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad4130.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad4130.yaml
->> new file mode 100644
->> index 000000000000..32996b62cd20
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad4130.yaml
->> @@ -0,0 +1,264 @@
->> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
->> +# Copyright 2022 Analog Devices Inc.
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/iio/adc/adi,ad4130.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Analog Devices AD4130 ADC device driver
->> +
->> +maintainers:
->> +  - Cosmin Tanislav <cosmin.tanislav@analog.com>
->> +
->> +description: |
->> +  Bindings for the Analog Devices AD4130 ADC. Datasheet can be found here:
->> +    https://www.analog.com/media/en/technical-documentation/data-sheets/AD4130-8.pdf
->> +
->> +properties:
->> +  compatible:
->> +    enum:
->> +      - adi,ad4130-8-16-lfcsp
->> +      - adi,ad4130-8-16-wlcsp
->> +      - adi,ad4130-8-24-lfcsp
->> +      - adi,ad4130-8-24-wlcsp
+On Tue, Apr 26, 2022 at 06:42PM +0200, Alexander Potapenko wrote:
+> Pass extra_bits=0, as KASAN does not intend to store additional
+> information in the stack handle. No functional change.
 > 
-> What is lfcsp? wlcsp seems to be the package type which generally
-> shouldn't be part of the compatible.
+> Signed-off-by: Alexander Potapenko <glider@google.com>
 
-lfcsp is a different package type. Sadly, lfcsp provides less interrupt
-options. On lfcsp, dout-int inside interrupt-names actually only means
-DOUT, while on wlcsp, it means INT. This is why we need to distinguish
-between the different package types. I can't think of any way around it,
-see my reply to Nathan for V1.
+I think this patch needs to be folded into the previous one, otherwise
+bisection will be broken.
 
-dout support is not implemented in the driver right now because when the 
-interrupt pin is configured as dout, FIFO interrupts are unsupported, so
-the entire buffered part of the driver is useless, and extra logic is
-needed for IRQ detection then.
+> ---
+> Link: https://linux-review.googlesource.com/id/I932d8f4f11a41b7483e0d57078744cc94697607a
+> ---
+>  mm/kasan/common.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/mm/kasan/common.c b/mm/kasan/common.c
+> index d9079ec11f313..5d244746ac4fe 100644
+> --- a/mm/kasan/common.c
+> +++ b/mm/kasan/common.c
+> @@ -36,7 +36,7 @@ depot_stack_handle_t kasan_save_stack(gfp_t flags, bool can_alloc)
+>  	unsigned int nr_entries;
+>  
+>  	nr_entries = stack_trace_save(entries, ARRAY_SIZE(entries), 0);
+> -	return __stack_depot_save(entries, nr_entries, flags, can_alloc);
+> +	return __stack_depot_save(entries, nr_entries, 0, flags, can_alloc);
+>  }
+>  
+>  void kasan_set_track(struct kasan_track *track, gfp_t flags)
+> -- 
+> 2.36.0.rc2.479.g8af0fa9b8e-goog
+> 
