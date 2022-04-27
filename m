@@ -2,179 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA030C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 18:50:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F5EEC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 18:51:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230318AbiD0SxQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 14:53:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43094 "EHLO
+        id S231697AbiD0SzF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 14:55:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231288AbiD0SwY (ORCPT
+        with ESMTP id S233726AbiD0Syj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 14:52:24 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D392DD3731;
-        Wed, 27 Apr 2022 11:38:29 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id m20so5096844ejj.10;
-        Wed, 27 Apr 2022 11:38:29 -0700 (PDT)
+        Wed, 27 Apr 2022 14:54:39 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3E04D0838
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 11:41:16 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id t6so3723826wra.4
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 11:41:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=3A9Xsphph+SQIianXjBh4+4o7zyb9BLunLh+E/0CQio=;
-        b=UnfU+HKtW2D06NU0bNOq17sb224h2OOputwJe94u41Qt8hwta0lHaQFIp972VNxMxw
-         NidlrzU1EDNDzfMvPXwIjMrmvr1NjR37cOhY1nYV+roOMxaNJKralBkSBGKZ/BN5Th8s
-         N9lRPYTPjGbr0cSTjbxEspuArLVLDdoBPgK6+upGAizAiELcdp5a9hMp/Xoahvusgq57
-         Th2ISXRFFfvep7ONNLZ0oteYokL2E120n27AHTizXeVhQ6Z8Bx7kArRZNl0nJnyk3Zz+
-         9wm2qfNSgd9FOpItl1vN8l1QYWQbKpnNcH79auchDN29l0o91cDPqLo/49TJ8Kt/t9PO
-         5Vvg==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xT6txhcZ4EAYI9nKnuJpvrA0CPSdpDykVcMt05FEgHg=;
+        b=EswJAvgjaKozP6htlI/2qYoE8tJVhxcnL/Cm6agqSaL8bFMdpp+q0oFRGze+oL9mgo
+         /121Tbm74STe1XQcUStNRDslRQ4sUrMlYVqVLVlbIf3OpJLEufsVDjHMhndoaNhJwByO
+         wI5e3Wf7qOtwf/AEPZUSRRw+kEJuJbSJg7NvfGts0uohsnQgOhUdzZ7TBS2rD+x5rmE7
+         7wBmk4HBbRKtxLaS8NaIajD+9KL+ZLU3V9JxB06Xjo0O/meaZ7yEA9AXxGhuA6Cmam4U
+         nJkhed3MbLkIqA4vmCzot0NkSHAkos3jsIkZUZZVPKtLxWUYio55iyThoc+jpWpCK3tJ
+         ce5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=3A9Xsphph+SQIianXjBh4+4o7zyb9BLunLh+E/0CQio=;
-        b=vdh5uG0cCkMHAU/TaFvgEZOTPuQtb/u1By18gXovY/oQYHoN/IZweRiMbQ7xB5XNWL
-         jxvW1nIit6SRlUsY4uITjp1pus3z9lirClGUZIgvkaItYQLNMr5fpzRyobrig2dZhNrj
-         GXxoIEcAbUiNemxDF0ibRMZsXtHs7YarBytjmFe7SYaEH4mziBXOQOIrULORlH2nM2fi
-         TtcrVwP7mlT9jwS5TKqLipYvoeo8E3bZqqNtbkCfo2doxGDNKh3AT8bvQ83Bfup/uzLj
-         Uaej56kkE5UyFEBsQ1K4fczf0KowK44eJ/BM2u9S/8N+z7aCYjS7gmSXWZTmhiTqx6np
-         329g==
-X-Gm-Message-State: AOAM5327NR0Q6Iwf/2IDNOnHVcGR7IQIBJ/BrbgdQ90Q9SErMmFQP5lM
-        iM1bDzqCrAfhqcCOy1hyZfo=
-X-Google-Smtp-Source: ABdhPJwbRHA28mPeqny4TiNCbUmpYR75vpZN6jbYw41zpIX7FDWDTPi4S99nZfjEdPb0JJjaOjNyZw==
-X-Received: by 2002:a17:907:da0:b0:6df:d4a4:9d0f with SMTP id go32-20020a1709070da000b006dfd4a49d0fmr29043562ejc.407.1651084708394;
-        Wed, 27 Apr 2022 11:38:28 -0700 (PDT)
-Received: from localhost.localdomain (host-79-50-86-254.retail.telecomitalia.it. [79.50.86.254])
-        by smtp.gmail.com with ESMTPSA id ig8-20020a1709072e0800b006f38f2e9ebesm4691667ejc.64.2022.04.27.11.38.26
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xT6txhcZ4EAYI9nKnuJpvrA0CPSdpDykVcMt05FEgHg=;
+        b=6e0nPO+Xu+WTU11QoVXv0BawKLUhV76WV/mBlxRVgNoOmM+XcZgyY1U4B/QpRhrE9M
+         70gezoM5lWyqhmoNRwezQzCD9VeeFLlku3Qtwr9sEYyPJ0F7bydsPM0oi+Ki1SGNV/DU
+         39fllaTsPSB8XYmv2HqEdkUEgLt954xmyNTGc3w65XbUZvMagvwKkG04OsaBANlnA0Ck
+         zkgydY2aC+fDy4ZM5V7IGzCqJxiWeDb5A61RfZbL3U4a95bm0PXUNqdkQp7EZ80oVQuI
+         Z+F/+bMx5jUhfOVxiYBnwXNKRjUjjvmHkYiwAR9XZflgrN9MkY3R4RDAT3z8cqCUjYiU
+         tOMg==
+X-Gm-Message-State: AOAM532XaqX4mMgNBcDRxUlxpWAi8g2dXy6xOTsMd5s33bxexcSWEum1
+        QBioPHCXcy1dcsGwbl6UaUTHDA==
+X-Google-Smtp-Source: ABdhPJzvbaV+wwo7MxJ0teCNB2ZGmw4TVSxz76aUQwyPZh37nT/hcqzCXeDhNTeUICS6Nt/IrG4TfQ==
+X-Received: by 2002:a5d:64ce:0:b0:20a:e769:d282 with SMTP id f14-20020a5d64ce000000b0020ae769d282mr7143577wri.655.1651084875133;
+        Wed, 27 Apr 2022 11:41:15 -0700 (PDT)
+Received: from localhost.localdomain (cpc78119-cwma10-2-0-cust590.7-3.cable.virginm.net. [81.96.50.79])
+        by smtp.gmail.com with ESMTPSA id f3-20020a5d64c3000000b0020aef267950sm1992798wri.49.2022.04.27.11.41.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 11:38:27 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Ira Weiny <ira.weiny@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        outreachy@lists.linux.dev
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Mike Rapoport <rppt@linux.ibm.com>
-Subject: [PATCH v3 1/4] mm/highmem: Fix kernel-doc warnings in highmem*.h
-Date:   Wed, 27 Apr 2022 20:38:18 +0200
-Message-Id: <20220427183821.1979-2-fmdefrancesco@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220427183821.1979-1-fmdefrancesco@gmail.com>
-References: <20220427183821.1979-1-fmdefrancesco@gmail.com>
+        Wed, 27 Apr 2022 11:41:13 -0700 (PDT)
+From:   Caleb Connolly <caleb.connolly@linaro.org>
+To:     caleb.connolly@linaro.org, Sebastian Reichel <sre@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Cc:     Amit Pundir <amit.pundir@linaro.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>
+Subject: [PATCH 0/6] power: supply: introduce support for the Qualcomm smb2 charger
+Date:   Wed, 27 Apr 2022 19:40:25 +0100
+Message-Id: <20220427184031.2569442-1-caleb.connolly@linaro.org>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-`scripts/kernel-doc -v -none include/linux/highmem*` reports the following
-warnings:
+Add a driver for the Qualcomm PMI8998/PM660 Switch-Mode Battery Charger.
+This is the second generation SMB charger, and replaces the previous
+SMBB hardware found in older PMICs.
 
-include/linux/highmem.h:160: warning: expecting prototype for kunmap_atomic(). Prototype was for nr_free_highpages() instead
-include/linux/highmem.h:204: warning: No description found for return value of 'alloc_zeroed_user_highpage_movable'
-include/linux/highmem-internal.h:256: warning: Function parameter or member '__addr' not described in 'kunmap_atomic'
-include/linux/highmem-internal.h:256: warning: Excess function parameter 'addr' description in 'kunmap_atomic'
+This driver provides basic support for initialising the hardware,
+configuring the USB input current limit and reporting information about
+the state of the charger. Features like type-c dual role support and OTG
+switching will be added in future patches.
 
-Fix these warnings by (1) moving the kernel-doc comments from highmem.h to
-highmem-internal.h (which is the file were the kunmap_atomic() macro is
-actually defined), (2) extending and merging it with the comment which was
-already in highmem-internal.h, (3) using correct parameter names, (4)
-adding description of return value of alloc_zeroed_user_highpage_movable(),
-(5) correcting some technical inaccuracies in comments, and (5) adding a
-deprecation notice in kunmap_atomic() for consistency with kmap_atomic().
+This patch series depends on my previous series adding support for
+the Round Robin ADC which is used for reading the USB voltage and
+current, it can be found here:
+https://lore.kernel.org/linux-arm-msm/20220323162820.110806-1-caleb@connolly.tech/
 
-Cc: Matthew Wilcox <willy@infradead.org>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Acked-by: Mike Rapoport <rppt@linux.ibm.com>
-Reviewed-by: Ira Weiny <ira.weiny@intel.com>
-Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+Changes since v1:
+ * Rename the driver to pmi8998_charger
+ * Drop unnecessary (and very broken) mutex
+ * Rework the driver based on feedback to v1
+ * Fix some minor bugs and improve Automatic Input Current Limit support
+
 ---
- include/linux/highmem-internal.h | 15 ++++++++++++---
- include/linux/highmem.h          | 20 ++++++--------------
- 2 files changed, 18 insertions(+), 17 deletions(-)
+Caleb Connolly (6):
+  power: supply: add Qualcomm PMI8998 SMB2 Charger driver
+  arm64: dts: qcom: pmi8998: add charger node
+  arm64: dts: sdm845-oneplus: enable pmi8998 charger
+  arm64: dts: qcom: sdm845-db845c: enable pmi8998 charger
+  arm64: dts: qcom: sdm845-xiaomi-beryllium enable pmi8998 charger
+  dt-bindings: power: supply: qcom,pmi8998-charger: add bindings for
+    smb2 driver
 
-diff --git a/include/linux/highmem-internal.h b/include/linux/highmem-internal.h
-index a77be5630209..9968a1282317 100644
---- a/include/linux/highmem-internal.h
-+++ b/include/linux/highmem-internal.h
-@@ -236,9 +236,18 @@ static inline unsigned long totalhigh_pages(void) { return 0UL; }
- 
- #endif /* CONFIG_HIGHMEM */
- 
--/*
-- * Prevent people trying to call kunmap_atomic() as if it were kunmap()
-- * kunmap_atomic() should get the return value of kmap_atomic, not the page.
-+/**
-+ * kunmap_atomic - Unmap the virtual address mapped by kmap_atomic() - deprecated!
-+ * @__addr:       Virtual address to be unmapped
-+ *
-+ * Unmaps an address previously mapped by kmap_atomic() and re-enables
-+ * pagefaults, migration, preemption (the latter was disabled only for
-+ * !PREEMP_RT configurations). Mappings should be unmapped in the reverse
-+ * order that they were mapped. See kmap_local_page() for details.
-+ * @__addr can be any address within the mapped page, so there is no need
-+ * to subtract any offset that has been added. In contrast to kunmap(),
-+ * this function takes the address returned from kmap_atomic(), not the
-+ * page passed to it. The compiler will warn you if you pass the page.
-  */
- #define kunmap_atomic(__addr)					\
- do {								\
-diff --git a/include/linux/highmem.h b/include/linux/highmem.h
-index 39bb9b47fa9c..3623319a659d 100644
---- a/include/linux/highmem.h
-+++ b/include/linux/highmem.h
-@@ -37,7 +37,7 @@ static inline void *kmap(struct page *page);
- 
- /**
-  * kunmap - Unmap the virtual address mapped by kmap()
-- * @addr:	Virtual address to be unmapped
-+ * @page:	Pointer to the page which was mapped by kmap()
-  *
-  * Counterpart to kmap(). A NOOP for CONFIG_HIGHMEM=n and for mappings of
-  * pages in the low memory area.
-@@ -138,24 +138,14 @@ static inline void *kmap_local_folio(struct folio *folio, size_t offset);
-  *
-  * Returns: The virtual address of the mapping
-  *
-- * Effectively a wrapper around kmap_local_page() which disables pagefaults
-- * and preemption.
-+ * In fact a wrapper around kmap_local_page() which disables pagefaults,
-+ * migration, preemption (the latter disabled only for !PREEMP_RT
-+ * configurations).
-  *
-  * Do not use in new code. Use kmap_local_page() instead.
-  */
- static inline void *kmap_atomic(struct page *page);
- 
--/**
-- * kunmap_atomic - Unmap the virtual address mapped by kmap_atomic()
-- * @addr:	Virtual address to be unmapped
-- *
-- * Counterpart to kmap_atomic().
-- *
-- * Effectively a wrapper around kunmap_local() which additionally undoes
-- * the side effects of kmap_atomic(), i.e. reenabling pagefaults and
-- * preemption.
-- */
--
- /* Highmem related interfaces for management code */
- static inline unsigned int nr_free_highpages(void);
- static inline unsigned long totalhigh_pages(void);
-@@ -191,6 +181,8 @@ static inline void clear_user_highpage(struct page *page, unsigned long vaddr)
-  * @vma: The VMA the page is to be allocated for
-  * @vaddr: The virtual address the page will be inserted into
-  *
-+ * Returns: The allocated and zeroed HIGHMEM page
-+ *
-  * This function will allocate a page for a VMA that the caller knows will
-  * be able to migrate in the future using move_pages() or reclaimed
-  *
+ .../power/supply/qcom,pmi8998-charger.yaml    |   83 ++
+ arch/arm64/boot/dts/qcom/pmi8998.dtsi         |   17 +
+ arch/arm64/boot/dts/qcom/sdm845-db845c.dts    |   18 +
+ .../boot/dts/qcom/sdm845-oneplus-common.dtsi  |    4 +
+ .../dts/qcom/sdm845-oneplus-enchilada.dts     |    4 +
+ .../boot/dts/qcom/sdm845-oneplus-fajita.dts   |    4 +
+ .../boot/dts/qcom/sdm845-xiaomi-beryllium.dts |   13 +
+ drivers/power/supply/Kconfig                  |    9 +
+ drivers/power/supply/Makefile                 |    1 +
+ drivers/power/supply/qcom_pmi8998_charger.c   | 1070 +++++++++++++++++
+ 10 files changed, 1223 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/power/supply/qcom,pmi8998-charger.yaml
+ create mode 100644 drivers/power/supply/qcom_pmi8998_charger.c
+
 -- 
-2.34.1
+2.36.0
 
