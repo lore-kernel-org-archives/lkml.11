@@ -2,75 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73B7BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 18:44:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 095A2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 18:44:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229468AbiD0SrQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 14:47:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36506 "EHLO
+        id S231475AbiD0Srt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 14:47:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229563AbiD0SqE (ORCPT
+        with ESMTP id S230432AbiD0Srd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 14:46:04 -0400
-Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C4AD5C874;
-        Wed, 27 Apr 2022 11:27:14 -0700 (PDT)
-Received: by mail-oi1-f178.google.com with SMTP id r1so2721797oie.4;
-        Wed, 27 Apr 2022 11:27:14 -0700 (PDT)
+        Wed, 27 Apr 2022 14:47:33 -0400
+Received: from mail-oo1-f52.google.com (mail-oo1-f52.google.com [209.85.161.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B80478BE0F;
+        Wed, 27 Apr 2022 11:28:41 -0700 (PDT)
+Received: by mail-oo1-f52.google.com with SMTP id bg34-20020a056820082200b0035e7cd94e46so506042oob.1;
+        Wed, 27 Apr 2022 11:28:41 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=DVPr9hJN7pB7OqeO85qbYNVEch6Kb+Covs4dB2TnhNY=;
-        b=FkS/YbAUvUcDSkjJDiMp3nYAd8gq+xkM+tJZWnBXYXTeRDUfi1d3Tq9OT+YgaQ1gwk
-         OJz5561B3WVKTuQBMQG+1B4Kaj8c6FdsUK+lxtS8oKXnQMdAn1u9FEJpQic+B57/gdwm
-         avtPAEVbDTsotLOnKRElGBiU06LPDIZUGM9Jtda1aSXW6r+2xBxvZJhcn00Mq2AHv32z
-         ZvL5IAANc9SwRTTOTjg7ovwm8iFDeQa7wcXvG3ZDsX63Z17BRJj0WqGxBOhaHY+yZk/Y
-         vLGjiRyTm9tYfjxj3ZjaXzWHuBD+TKNN9qwMS3SsWn0PCN6U59CH90isDL8/I4I0egYY
-         xQ+Q==
-X-Gm-Message-State: AOAM532LvtP1eF9p2rqfnpdvoGTgZVsB1IgN24fpp+X89vL/+unR8r+4
-        am7GtUsV1FxVTWm8VqASyw==
-X-Google-Smtp-Source: ABdhPJyqzxZZirHT0c4zRDtdeH7rpWWaxTYlc17RdpmWu3GeMGyEEtyMpgbcoNUvUqdK7lwztEgUaw==
-X-Received: by 2002:a05:6808:11c4:b0:2d9:c395:f15e with SMTP id p4-20020a05680811c400b002d9c395f15emr17938884oiv.47.1651084033895;
-        Wed, 27 Apr 2022 11:27:13 -0700 (PDT)
+        bh=P5kdAy6l5fQgy5oRjZpIpF/FBNl0f3sT9FqFWBZTT70=;
+        b=QRPBKAOdcQFreZwR3mBDFaVTArGsMtriziQqx0cPPnD53W8r5P418haluc2Vhqnf79
+         zUYE3TvaOg0p60AVBfiejjMqVkde0m87f6X2ShSF413259E4Kganq/XDqH8aqYNuGez7
+         vflmDQ0lk8LRB2HVh8IOsrBEjg6DTPj/myJr13lhuyLP4V5vooKK7wmTFBdvw5v6QKNc
+         4BS4LbRmflCV7kZ6SKf7IU9tD/sgDN0zJmF7F+r7nzq+RKI7upHqZpWmkX7TuAhY0xoi
+         yqnfjZTvZ+W2KSa5IWaPCblwaMeP1PKwdj3opAqzzct6LTwBOYI1YVXjmvyzz2lscXeM
+         MBng==
+X-Gm-Message-State: AOAM532Ia/WFv+EUk1h0y4sx6c83OeCHrXDj2fgl9UDY8a0GApH3ne7c
+        DnCsgSgj7ZtOnT/TbzN4WQ==
+X-Google-Smtp-Source: ABdhPJzAu2igpKowQ3WRX/sIT1h69LNzRLVN4nvHjTR1CBbJ7cV91jmkBT0aRa5mB2Ln4/8ITDHZFg==
+X-Received: by 2002:a4a:d74a:0:b0:33a:2e4d:1b85 with SMTP id h10-20020a4ad74a000000b0033a2e4d1b85mr10657047oot.7.1651084121029;
+        Wed, 27 Apr 2022 11:28:41 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id z1-20020a056830128100b0060542867875sm6235035otp.70.2022.04.27.11.27.13
+        by smtp.gmail.com with ESMTPSA id b14-20020a056870160e00b000e915a9121csm986012oae.52.2022.04.27.11.28.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 11:27:13 -0700 (PDT)
-Received: (nullmailer pid 410640 invoked by uid 1000);
-        Wed, 27 Apr 2022 18:27:12 -0000
-Date:   Wed, 27 Apr 2022 13:27:12 -0500
+        Wed, 27 Apr 2022 11:28:40 -0700 (PDT)
+Received: (nullmailer pid 412647 invoked by uid 1000);
+        Wed, 27 Apr 2022 18:28:39 -0000
+Date:   Wed, 27 Apr 2022 13:28:39 -0500
 From:   Rob Herring <robh@kernel.org>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Vinod Koul <vkoul@kernel.org>,
+Cc:     NXP Linux Team <linux-imx@nxp.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Vinod Koul <vkoul@kernel.org>,
+        Fabio Estevam <festevam@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
-        Haojian Zhuang <haojian.zhuang@gmail.com>,
-        dmaengine@vger.kernel.org, Daniel Mack <daniel@zonque.org>,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        Lubomir Rintel <lkundrak@v3.sk>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/4] dt-bindings: dmaengine: mmp: deprecate
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        linux-kernel@vger.kernel.org, Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        linux-arm-kernel@lists.infradead.org, dmaengine@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH 1/2] dt-bindings: dmaengine: fsl-imx: deprecate
  '#dma-channels' and '#dma-requests'
-Message-ID: <YmmLALJ3d1ssI7sz@robh.at.kernel.org>
-References: <20220427161459.647676-1-krzysztof.kozlowski@linaro.org>
- <20220427161459.647676-2-krzysztof.kozlowski@linaro.org>
+Message-ID: <YmmLV3l+5nz8z+qT@robh.at.kernel.org>
+References: <20220427161533.647837-1-krzysztof.kozlowski@linaro.org>
+ <20220427161533.647837-2-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220427161459.647676-2-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220427161533.647837-2-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 27 Apr 2022 18:14:56 +0200, Krzysztof Kozlowski wrote:
+On Wed, 27 Apr 2022 18:15:32 +0200, Krzysztof Kozlowski wrote:
 > The generic properties, used in most of the drivers and defined in
 > generic dma-common DT bindings, are 'dma-channels' and 'dma-requests'.
 > 
 > Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 > ---
->  Documentation/devicetree/bindings/dma/mmp-dma.txt | 10 ++++++----
->  1 file changed, 6 insertions(+), 4 deletions(-)
+>  Documentation/devicetree/bindings/dma/fsl-imx-dma.txt | 8 +++++---
+>  1 file changed, 5 insertions(+), 3 deletions(-)
 > 
 
 Reviewed-by: Rob Herring <robh@kernel.org>
