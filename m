@@ -2,82 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AC51C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:13:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03A56C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:13:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241836AbiD0QQd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:16:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56158 "EHLO
+        id S242067AbiD0QQz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:16:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241771AbiD0QNP (ORCPT
+        with ESMTP id S243765AbiD0QPY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:13:15 -0400
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 483D448387C;
-        Wed, 27 Apr 2022 09:08:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=deltatee.com; s=20200525; h=Subject:In-Reply-To:From:References:Cc:To:
-        MIME-Version:Date:Message-ID:content-disposition;
-        bh=hQoXPJPquqTb2kGaaKxCiuhimB4ekAN7xqBn0QNyaIQ=; b=UVxvYoMfT1vstULD4aRMpZehu9
-        RUBZ7/wz2W723JIdfjGXwMMJAI9xgxn7ytl+ozmyWnrvUO6BfKQOT0N6FrUqfmHBROUoWp0VjK3ws
-        aB5ztde2c7VPF4WvEp/UhnVdawFz9KyJ0u54Z0YjnlQOObmCN293Ez7rYgfLvqC5EIr4QcOpIc48p
-        CqA3tFX6S0dg0+AlpjB90XZvdB/UrvEN/FRQBp97GfOoG2kkzTI/ZBjWeDjbDMOU00Mwkaz/UATmh
-        jAdwCqoRiE/6gpFdRRvlqi+2LLpcmu6kuP/+UgzddB3Yl9U2+4j3cKi0wEvIpxkUtJYopy03PJXsU
-        CdQHwv0A==;
-Received: from s0106ac1f6bb1ecac.cg.shawcable.net ([70.73.163.230] helo=[192.168.11.155])
-        by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <logang@deltatee.com>)
-        id 1njkCl-000K8X-FT; Wed, 27 Apr 2022 10:07:52 -0600
-Message-ID: <fe7f6d8a-8c66-3e90-1c52-140fe9d4cf1a@deltatee.com>
-Date:   Wed, 27 Apr 2022 10:07:48 -0600
+        Wed, 27 Apr 2022 12:15:24 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 688163BD053
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:11:43 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id b24so2499996edu.10
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:11:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FHQXh9gRHSuCtKpw4S8gNEXf40YtVi/37N45wueEtCE=;
+        b=whQlgOgZ1T4nh5vFwqRU4TA9h4eZzMhFhfvjD1KFTbysCz1xTn36hj8mp0McdsPks0
+         hfh6AymX7rYfW6UPr06z0ltHndyGPdP2oMwtiqrhFyYt6Kp7xDItzu1cCiLUK9wXmMSi
+         KB17ptN8Yagim/pv3z0Qd5PP/3XfuXvfO2znNw4Gq0l5gZTHLsiKAvbUZ8Myr71028Jr
+         1ReMRE/IZsMmJqBGrFZnWzIeLdyybOmS6ZtjJWsyGsin41kMW35dKxzqELef5NQVbGqe
+         MZYYlw0zdvbglPcQxzqEjR9/73RCe3Z2N5Ytp0mOeFE6NacKQLdIxyHTPdXz1wcg47/l
+         pzsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FHQXh9gRHSuCtKpw4S8gNEXf40YtVi/37N45wueEtCE=;
+        b=nFvjjTnTq6mGoQRbRKxRxlMca2orUc0A0cevnuY+jnqFwPoRlkFzLlyy2KB8NKGCB1
+         R+zDOp9b4yU9FIanR/FdZGSCWWarHC4cX4B3SV+yzqSveQZg6gs0t7HNHYZixhw+7AnW
+         B/HQY06RUs1LRgVKdYO2ZE0WhQk7LZBwczJb/yNjn9ONRrS+4xV1yQufvOE98ekYR23K
+         m53TuqrRDYLPyLUDTKTOQ4UIsrKLAgn7GIa2OhRnBsrmc4G0F10dTMADBpf3xZTf/VD1
+         dP0RW3zdapogG5yQwLbCzNML4hnbMxTn125wpdrcZAPEN/FlKgGqyQXbMRE2XQReaoI8
+         7Ssw==
+X-Gm-Message-State: AOAM530TuQCri3gtEdgyRhLpZdPp151eynOj+0afqLwVfI6CkQ84/o+t
+        o7YW64z6PwfAwQ6DubK3qFVCwQ==
+X-Google-Smtp-Source: ABdhPJy/QgE4GcAklbebq4FtmcUymveQXY2Wss5nt06fNQ1+geuX8b6wnTlKKIZ0cRgMRpDbpMGaEQ==
+X-Received: by 2002:aa7:c70f:0:b0:425:f70d:b34 with SMTP id i15-20020aa7c70f000000b00425f70d0b34mr12765572edq.306.1651075899438;
+        Wed, 27 Apr 2022 09:11:39 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id m1-20020a170906234100b006ef83025804sm7124610eja.87.2022.04.27.09.11.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 09:11:37 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>, Sekhar Nori <nsekhar@ti.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Vinod Koul <vkoul@kernel.org>, linux-usb@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        dmaengine@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v2 0/6] dmaengine/ARM: use proper 'dma-channels/requests' properties
+Date:   Wed, 27 Apr 2022 18:11:20 +0200
+Message-Id: <20220427161126.647073-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Content-Language: en-US
-To:     Guoqing Jiang <guoqing.jiang@linux.dev>,
-        linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
-        Song Liu <song@kernel.org>
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        Stephen Bates <sbates@raithlin.com>,
-        Martin Oliveira <Martin.Oliveira@eideticom.com>,
-        David Sloan <David.Sloan@eideticom.com>,
-        Christoph Hellwig <hch@lst.de>
-References: <20220420195425.34911-1-logang@deltatee.com>
- <20220420195425.34911-2-logang@deltatee.com>
- <2a6d5554-4f71-6476-6d14-031da52005f5@linux.dev>
-From:   Logan Gunthorpe <logang@deltatee.com>
-In-Reply-To: <2a6d5554-4f71-6476-6d14-031da52005f5@linux.dev>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 70.73.163.230
-X-SA-Exim-Rcpt-To: guoqing.jiang@linux.dev, linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org, song@kernel.org, hch@infradead.org, sbates@raithlin.com, Martin.Oliveira@eideticom.com, David.Sloan@eideticom.com, hch@lst.de
-X-SA-Exim-Mail-From: logang@deltatee.com
-Subject: Re: [PATCH v2 01/12] md/raid5: Factor out ahead_of_reshape() function
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi,
 
+The core DT schema defines generic 'dma-channels' and 'dma-requests'
+properties, so in preparation to moving bindings to DT schema, convert
+existing users of '#dma-channels' and '#dma-requests' to the generic
+variant.
 
-On 2022-04-26 19:28, Guoqing Jiang wrote:
->>   +static bool ahead_of_reshape(struct mddev *mddev, sector_t sector,
->> +                 sector_t reshape_sector)
->> +{
->> +    if (mddev->reshape_backwards)
->> +        return sector < reshape_sector;
->> +    else
->> +        return sector >= reshape_sector;
->> +}
-> 
-> I think it can be an inline function.
+Not tested on hardware.
 
-Marking static functions in C files as inline is not recommended. GCC
-will inline it, if it is appropriate.
+IMPORTANT
+=========
+The patchset is not bisectable! The DTS patches should be applied a
+release *after* driver change is accepted.
 
-https://yarchive.net/comp/linux/inline.html
-https://www.kernel.org/doc/local/inline.html
+Changes since v1
+================
+1. Add missing TI patches.
 
-Logan
+See also:
+[1] https://lore.kernel.org/linux-devicetree/fedb56be-f275-aabb-cdf5-dbd394b8a7bd@linaro.org/T/#m6235f451045c337d70a62dc65eab9a716618550b
+
+Best regards,
+Krzysztof
