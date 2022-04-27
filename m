@@ -2,74 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 472E5C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 18:43:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33FC0C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 18:43:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229575AbiD0SqR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 14:46:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49904 "EHLO
+        id S229500AbiD0SqW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 14:46:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229655AbiD0SqD (ORCPT
+        with ESMTP id S229929AbiD0SqG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 14:46:03 -0400
-Received: from mail-oa1-f53.google.com (mail-oa1-f53.google.com [209.85.160.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A013B7B57E;
-        Wed, 27 Apr 2022 11:26:59 -0700 (PDT)
-Received: by mail-oa1-f53.google.com with SMTP id 586e51a60fabf-e67799d278so2828222fac.11;
-        Wed, 27 Apr 2022 11:26:59 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pC1H3gQSVhE1zYfEMXMiP8EV077iw37StdCg5LtTNPQ=;
-        b=asjecNBysgBbyXrvRuZuN0eh6bLxpfNP8k4qOZTdAmYCK1zIVPx77Qur7arRXvNpvr
-         5Cy1P48QzfSpLw1/Yq3yZtGpAmJd4gxYx77lLJx7hn+37k8y8JwKEKHWOi0JxTkB6Bhp
-         Bb4TRkjEvo1Xc4Hk/hndK3tKXuk87lGSnf/vbj/Vjbgi0lnU/B1LT4Zuu7ODYboZPuqH
-         HnRxNcRzK4LbkhrXXEzrGGh+XKZpQcZSNbJnkbaURMBik1339QoAiTLGmp3dhNaHy2c8
-         vL75BtWUuOLCGRzpedXA1wCphkpv4u+h8JmalaMImBttAaR4deI1AOhYcME5GLqZUa3C
-         ZQTA==
-X-Gm-Message-State: AOAM530wJF5MFDyA00A7ubY1yhABeO6upnHeCNO5/8qkKWHqj0jHAARs
-        u4r5u0mzr8RIBf+ROAV3rQ==
-X-Google-Smtp-Source: ABdhPJwe9vcxst1opjE36JoQI7jrSaQ3NCspkzUQRETmCJRLZa/X7qNkafHyk3LSObIvXrACyBOKNw==
-X-Received: by 2002:a05:6870:478f:b0:e9:8c5c:3c37 with SMTP id c15-20020a056870478f00b000e98c5c3c37mr1395124oaq.217.1651084018882;
-        Wed, 27 Apr 2022 11:26:58 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id z3-20020a056830290300b005b2316db9c9sm6051090otu.30.2022.04.27.11.26.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 11:26:58 -0700 (PDT)
-Received: (nullmailer pid 410278 invoked by uid 1000);
-        Wed, 27 Apr 2022 18:26:57 -0000
-Date:   Wed, 27 Apr 2022 13:26:57 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>, dmaengine@vger.kernel.org,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH 1/3] dt-bindings: dmaengine: sprd: deprecate
- '#dma-channels'
-Message-ID: <YmmK8WMGI6J1IRQ/@robh.at.kernel.org>
-References: <20220427161423.647534-1-krzysztof.kozlowski@linaro.org>
- <20220427161423.647534-2-krzysztof.kozlowski@linaro.org>
+        Wed, 27 Apr 2022 14:46:06 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C72E7A998;
+        Wed, 27 Apr 2022 11:27:25 -0700 (PDT)
+Date:   Wed, 27 Apr 2022 18:27:23 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651084044;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qeSoISKEydPM4LAhn8UqmgfRicAEvFi1E2X9P5Nf5xI=;
+        b=TUa51QK1AefrxkP2b8m0e72wdlGIXdgvfJ3fOVutoEAbrrxykzXcQ4lL6+5+1c9xJEzCK+
+        4t4V04pUL/wHTZ5kxqQoJue6sEM7Xguqx7yUTq8BMyzoFJY4BmtunoeqBShjuJ9mZvZD2I
+        OyKDjWGZuKKSO684LkrP/tiAKLWZALIFWDyd3NYxFw0GaX5MHbfaXPrxcb+UAU/AJoDWBA
+        Kk16JjNvgpTEGUnSSSzAbemuOPi8cxSsJmxWI7m5NaRL4KaNU8CrxBPraKyJcDDZJO906G
+        jfZyTCz8Agd6x3Aac+ue2OW97F4SdpD5/5IhwZA75Zn+xJOvW5QizYrIrqdPkA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651084044;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qeSoISKEydPM4LAhn8UqmgfRicAEvFi1E2X9P5Nf5xI=;
+        b=wRCVNkaHB/5gPsrykRXg7w+Rw+xjaiZl+fmTyahZBOAKpakkegt7Z+YpbvvQC1bnii/S0o
+        GiZ1YO24fZzl+xBw==
+From:   "tip-bot2 for Thomas Gleixner" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/cleanups] x86/aperfmperf: Store aperf/mperf data for cpu
+ frequency reads
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220415161206.817702355@linutronix.de>
+References: <20220415161206.817702355@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220427161423.647534-2-krzysztof.kozlowski@linaro.org>
+Message-ID: <165108404302.4207.11864273936460943270.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 27 Apr 2022 18:14:21 +0200, Krzysztof Kozlowski wrote:
-> The generic property, used in most of the drivers and defined in generic
-> dma-common DT bindings, is 'dma-channels'.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
->  Documentation/devicetree/bindings/dma/sprd-dma.txt | 7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
-> 
+The following commit has been merged into the x86/cleanups branch of tip:
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Commit-ID:     cd8c0e142daf9de9ce594e61b75509b0af7bfb26
+Gitweb:        https://git.kernel.org/tip/cd8c0e142daf9de9ce594e61b75509b0af7bfb26
+Author:        Thomas Gleixner <tglx@linutronix.de>
+AuthorDate:    Fri, 15 Apr 2022 21:20:01 +02:00
+Committer:     Thomas Gleixner <tglx@linutronix.de>
+CommitterDate: Wed, 27 Apr 2022 20:22:19 +02:00
+
+x86/aperfmperf: Store aperf/mperf data for cpu frequency reads
+
+Now that the MSR readout is unconditional, store the results in the per CPU
+data structure along with a jiffies timestamp for the CPU frequency readout
+code.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Paul E. McKenney <paulmck@kernel.org>
+Link: https://lore.kernel.org/r/20220415161206.817702355@linutronix.de
+
+---
+ arch/x86/kernel/cpu/aperfmperf.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/kernel/cpu/aperfmperf.c b/arch/x86/kernel/cpu/aperfmperf.c
+index df528a4..963c069 100644
+--- a/arch/x86/kernel/cpu/aperfmperf.c
++++ b/arch/x86/kernel/cpu/aperfmperf.c
+@@ -24,11 +24,17 @@
+ #include "cpu.h"
+ 
+ struct aperfmperf {
++	seqcount_t	seq;
++	unsigned long	last_update;
++	u64		acnt;
++	u64		mcnt;
+ 	u64		aperf;
+ 	u64		mperf;
+ };
+ 
+-static DEFINE_PER_CPU_SHARED_ALIGNED(struct aperfmperf, cpu_samples);
++static DEFINE_PER_CPU_SHARED_ALIGNED(struct aperfmperf, cpu_samples) = {
++	.seq = SEQCNT_ZERO(cpu_samples.seq)
++};
+ 
+ struct aperfmperf_sample {
+ 	unsigned int	khz;
+@@ -515,6 +521,12 @@ void arch_scale_freq_tick(void)
+ 	s->aperf = aperf;
+ 	s->mperf = mperf;
+ 
++	raw_write_seqcount_begin(&s->seq);
++	s->last_update = jiffies;
++	s->acnt = acnt;
++	s->mcnt = mcnt;
++	raw_write_seqcount_end(&s->seq);
++
+ 	scale_freq_tick(acnt, mcnt);
+ }
+ 
