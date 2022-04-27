@@ -2,132 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F1E3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 07:30:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 224EAC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 07:32:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358874AbiD0HeF (ORCPT
+        id S1358862AbiD0Hf0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 03:34:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53418 "EHLO
+        Wed, 27 Apr 2022 03:35:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358867AbiD0Hdp (ORCPT
+        with ESMTP id S242894AbiD0HfY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 03:33:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB2C6B0B5;
-        Wed, 27 Apr 2022 00:30:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3861861B07;
-        Wed, 27 Apr 2022 07:30:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 421C8C385A7;
-        Wed, 27 Apr 2022 07:30:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651044633;
-        bh=7IUrdMT9kbbx0DsJsKPAR8psLkzAWpMBFfCUfqBAWig=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=xbzbCx2hvF0hCGkEqxhiO5N0HqXdEGddWDPvYd71bPKnrs6HqtmHS0TASeReeiO0j
-         i4aT5usH7V80GDFG0lzHtx5UIgYhS/htq3wRaYnzp+JyQAqZHFOOh8zR1ThgICjmXu
-         HJT3dURy+l7VwWqgQKv1K/cPA0HBFjWtr44P76og=
-Date:   Wed, 27 Apr 2022 09:30:30 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc:     Benson Leung <bleung@google.com>,
-        Prashant Malani <pmalani@chromium.org>,
-        Jameson Thies <jthies@google.com>,
-        "Regupathy, Rajaram" <rajaram.regupathy@intel.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Won Chung <wonchung@google.com>, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/3] usb: typec: Separate USB Power Delivery from USB
- Type-C
-Message-ID: <YmjxFkpCwxz4fgqb@kroah.com>
-References: <20220425124946.13064-1-heikki.krogerus@linux.intel.com>
- <20220425124946.13064-2-heikki.krogerus@linux.intel.com>
- <YmfgfRA1ecJwf12i@kroah.com>
- <YmjlyxLk8wfziq9l@kuha.fi.intel.com>
+        Wed, 27 Apr 2022 03:35:24 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 918F884ED3;
+        Wed, 27 Apr 2022 00:32:13 -0700 (PDT)
+Received: from [2a02:8108:963f:de38:6624:6d8d:f790:d5c]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1njc9f-0005I9-AK; Wed, 27 Apr 2022 09:32:07 +0200
+Message-ID: <60d2a5b8-7e25-3020-6092-64afe7abc186@leemhuis.info>
+Date:   Wed, 27 Apr 2022 09:32:05 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YmjlyxLk8wfziq9l@kuha.fi.intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH] Revert "mt76: mt7921: enable aspm by default"
+Content-Language: en-US
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     Philippe Schenker <dev@pschenker.ch>,
+        linux-wireless@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
+        "David S. Miller" <davem@davemloft.net>,
+        Deren Wu <deren.wu@mediatek.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Shayne Chen <shayne.chen@mediatek.com>,
+        YN Chen <YN.Chen@mediatek.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, netdev@vger.kernel.org,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
+References: <20220412090415.17541-1-dev@pschenker.ch>
+ <87y20aod5d.fsf@kernel.org>
+ <7aa0bbd0-5498-ba74-ad6d-6dacbade8a3d@leemhuis.info>
+ <87o816oaez.fsf@kernel.org>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <87o816oaez.fsf@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1651044733;3de9c336;
+X-HE-SMSGID: 1njc9f-0005I9-AK
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 09:42:19AM +0300, Heikki Krogerus wrote:
-> Hi,
-> 
-> On Tue, Apr 26, 2022 at 02:07:25PM +0200, Greg Kroah-Hartman wrote:
-> > On Mon, Apr 25, 2022 at 03:49:44PM +0300, Heikki Krogerus wrote:
-> > > --- /dev/null
-> > > +++ b/drivers/usb/typec/pd.h
-> > > @@ -0,0 +1,30 @@
-> > > +/* SPDX-License-Identifier: GPL-2.0 */
-> > > +
-> > > +#ifndef __USB_POWER_DELIVERY__
-> > > +#define __USB_POWER_DELIVERY__
-> > > +
-> > > +#include <linux/kobject.h>
-> > 
-> > Why kobject.h when:
-> 
-> Oops, that should now be "#include <linux/device.h>".
-> 
-> > > +
-> > > +struct pd_capabilities {
-> > > +	struct device dev;
-> > 
-> > This is a device?
-> > 
-> > > +	struct pd *pd;
-> > > +	enum typec_role role;
-> > > +};
-> > > +
-> > > +struct pd {
-> > > +	struct device		dev;
-> > > +	int			id;
-> > > +
-> > > +	u16			revision; /* 0300H = "3.0" */
-> > 
-> > So BCD?
-> 
-> Yes.
-> 
-> > > +	u16			version;
-> > > +};
-> > 
-> > > +
-> > > +#define to_pd_capabilities(o) container_of(o, struct pd_capabilities, dev)
-> > > +#define to_pd(o) container_of(o, struct pd, dev)
-> > > +
-> > > +struct pd *pd_find(const char *name);
-> > 
-> > "struct pd" is just about the shortest structure name I've seen in the
-> > kernel so far.  How about using some more letters?  :)
-> 
-> Okay, I'll make it usbpd.
+On 12.04.22 12:36, Kalle Valo wrote:
+>> Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+>> [...]
+>> P.S.: As the Linux kernel's regression tracker I'm getting a lot of
+>> reports on my table. I can only look briefly into most of them and lack
+>> knowledge about most of the areas they concern. I thus unfortunately
+>> will sometimes get things wrong or miss something important. I hope
+>> that's not the case here; if you think it is, don't hesitate to tell me
+>> in a public reply, it's in everyone's interest to set the public record
+>> straight.
+> BTW, maybe you could add that boilerplace text after P.S. into the
+> signature (ie. under "-- " line)? That way your mails would more
+> readable and make it more clear that you didn't write the boilerplate
+> text specifically for this mail.
 
-How about some more vowels: "struct usb_power_delivery" please.  This
-isn't the 1980's :)
+Late reply:
 
-> > > +
-> > > +int pd_init(void);
-> > > +void pd_exit(void);
-> > 
-> > The kobject question above goes to the code as well.  You are creating a
-> > bunch of raw kobjects still, why?  This should all fit into the driver
-> > model and kobjects shouldn't be needed.  Are you trying to nest too deep
-> > in the attributes?  If so, kobjects will not work as userspace tools
-> > will not realize they are there and are attributes at all.
-> 
-> They are not raw kobjects, they are all devices now. That header just
-> needs to be fixed.
+FYI, I thought back and forth about the boilerplace text and how to
+handle that when I started using it. I deliberately decided against
+putting it under a "-- " line, as that wouldn't work well for some of
+the mails I write -- for example those where I deliberately use
+top-posting (which I hate and kinda feels wrong, but nevertheless right
+at the same time) to make this as easy to grasp as possible.
 
-You have loads of kobject attributes in the .c file.  Either I read it
-wrong, or you are doing something wrong, as that should never be the
-case for a driver or device.
+After your comment I have thought about it again for a while but in the
+end for now decided to mostly stick to the approach I used, but your
+comment made me shorten the text a bit.
 
-thanks,
+Ciao, Thorsten
 
-greg k-h
