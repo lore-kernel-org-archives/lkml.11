@@ -2,400 +2,277 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0190BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 23:17:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE24EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 23:17:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236971AbiD0XU6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 19:20:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53400 "EHLO
+        id S237842AbiD0XVE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 19:21:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233004AbiD0XUw (ORCPT
+        with ESMTP id S235645AbiD0XU4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 19:20:52 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 654E620189
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 16:17:39 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id t11-20020a17090ad50b00b001d95bf21996so6174253pju.2
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 16:17:39 -0700 (PDT)
+        Wed, 27 Apr 2022 19:20:56 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B19114030
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 16:17:44 -0700 (PDT)
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23RKI0DD015475;
+        Wed, 27 Apr 2022 23:17:18 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2021-07-09;
+ bh=bzM6PJjhKah2phTkjxNQeC6aRvae7GMXmPgzLSdakOg=;
+ b=wbv2gDAR/y7vHE5wRNf+qXg2cJj8o4ollifGM8zaeGhxdWVe32cU9daB/aniVvVfK14O
+ O+AsjoLf3q5/9DaWEf8jSlWrhgDLEhPjNybA30TE2BUf6RiYGooMNVMyDBABY48qUyFl
+ BkAG5VhkTU9Jje7ojFn49uON8W4SJt8vGT6Wtpht0qgiuZZwljKBbEBRnpn2sWG0Vr1X
+ G4bo5zvApnnQE8VzVL8b/lk3UY4NH5cCUPAN/fBeGvZ68jA4jdkQjCkZ2lAVb12k5+S5
+ 18jJmfHefrOumfmM8+P/6pVONmCcYCWRgKHC2ihBl3FCqbjsNHjtIXbDTRcNMsTpjM2g Nw== 
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3fmb9atf2e-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 27 Apr 2022 23:17:17 +0000
+Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 23RNB9lv008637;
+        Wed, 27 Apr 2022 23:17:16 GMT
+Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2100.outbound.protection.outlook.com [104.47.55.100])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fm7w5nxsj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 27 Apr 2022 23:17:16 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RHuJ/CvFiqII/6mDgnHreQXZm245i1ngdBJvWZp4l3iU8ISXLhqWrcLjAlJoORzOJnZlKIr9jTMB91KWXoMeZ8wDefXfQCnBscMH3YswJBAyjNvBZhHQpwIg4gbLCR0MSamH9IhiWVV1VQFykJAvo2M0fv13B3BCeVAVUpgi+UN68IDcWIl3Lbuk5INd6Pk8Pv5qeD3uCVx6kjdNSJv3uT0i3mFiI+f3UVyNHetE75huHj+MY12Q+4AT63or0oTHg2HPERNWsoNmd5kN+lY+Lg4VpfbxHoQlhuLIRKZts6OCUOQ/r9lz/kayXvQ31QXXXQgupC/JGwzu2fz//B6acw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=bzM6PJjhKah2phTkjxNQeC6aRvae7GMXmPgzLSdakOg=;
+ b=g1uhGx/BeaTbSzQ77JCV+wl7VmDQeMl0Cl4o9llDYTfwrEPvPsv0nbpfeD3rPvaMmiFKJEzsI7/fXczojCLSwSuesd0z07/qSck/1Ak7+26XylNr3XdnjS66ct6RlkN2yh1MBgTHRKgM+u9/r0pvQZPWUIJgN0+B3AkqujVOMkUG04dMljlJtt1sGZEyagXUABa4DGMeNeXfJnVOu19WSJXx/LTBmUejSQohrrGQnPERu9CMFXEOJvYfhLXjAPxRBwRoQhGC9CWIJ1TOjXaJEtdTZO91Xf/RQssoJ6dtjO6xZ1CkH39XysmzsyZXbbuc5+NOxJN9WCIgvIkdvI4psw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=R+/bqWJg7T14mKuHwGW3xnv5pKzpByVECS5kQ1wJ6UA=;
-        b=nRPBLrzh/m4LOOBHyNOjNjYSFRm96ocVsKxuCCmZDBrrXcxCmU2lfUQNeTd3K7rfkq
-         OLvtwgzGR8bQdouG3zvuLsI80CUuP/762LgRHl3uHZy0Z3tdb8tm/HcZo1F8pTe9YUhe
-         oDV0Kz2yrAh4TvJFqyGJAZbj2poqvF0nT8t5Q=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=R+/bqWJg7T14mKuHwGW3xnv5pKzpByVECS5kQ1wJ6UA=;
-        b=dZW51vy7CVytSoZAd5oBfAj1gqoQrUx5zDLfa3+7/Hhi+AnYHAbVQjT3zK/kQNCD8U
-         gMyzIfuz71MeggpoeddvbSIW62oGIvEBhqmGiUIkZaiPjQmG7pALnaQISsy1VCCwkMkb
-         SchCF+z3u7VZa1tgLYe26416fCepUC8bSNprGR1RBWDWeee60izK/D28LD45fwfKb4eR
-         C77HeSQpgeTT26Jdh5FDHL8DRwc1gaYkYpn8mHOPp9AACuRaLZa13eZLa1Wllz9rkJ/9
-         P4z7zb3dZ6fUSAgwD8yyk5gh6IETWcucq1JXYIstKqx0SnQNgZDC2mFdNbHEv9177SsR
-         FNAA==
-X-Gm-Message-State: AOAM531my1LAwDImo7yjXbKB5iQh3MCoPAn4/0yqBsTBTss5XCPlgXny
-        BDa5/2nPRLbF0w9HgZOcqDvdcpYCn6R+7Q==
-X-Google-Smtp-Source: ABdhPJzNq7QqnblVd+NqFql/xetKz56+fAlqRSs7rOkFq9pVx+0SD6VU5F8rNbyIj3moU6466YE+Sw==
-X-Received: by 2002:a17:902:8ec8:b0:154:5ecb:eb05 with SMTP id x8-20020a1709028ec800b001545ecbeb05mr30926985plo.56.1651101458662;
-        Wed, 27 Apr 2022 16:17:38 -0700 (PDT)
-Received: from joebar-glaptop.lan (c-71-202-34-56.hsd1.ca.comcast.net. [71.202.34.56])
-        by smtp.gmail.com with ESMTPSA id j9-20020aa78009000000b004fde2dd78b0sm19134132pfi.109.2022.04.27.16.17.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 16:17:38 -0700 (PDT)
-From:   "Joseph S. Barrera III" <joebar@chromium.org>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Douglas Anderson <dianders@chromium.org>,
-        Alexandru M Stan <amstan@chromium.org>,
-        "Joseph S. Barrera III" <joebar@chromium.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org
-Subject: [PATCH v1] arm64: dts: qcom: sc7180: Add kingoftown dts files from v5.4 branch
-Date:   Wed, 27 Apr 2022 16:17:33 -0700
-Message-Id: <20220427161717.v1.1.I300757d61810c5e9aa60ff964d09251cb4422c73@changeid>
-X-Mailer: git-send-email 2.31.0
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bzM6PJjhKah2phTkjxNQeC6aRvae7GMXmPgzLSdakOg=;
+ b=UZ+E7VVB+nzphiETabDN6lLcf4Y2aQPynWv/w9sBs1wcui6gXTrOg1TBxjJsN8SibFghJ1QVZlYrcmqeWoMNQLqXbjr7//ZQ8CCvm9rePOBKw2jXz7bEfDaQEPK5guFSDjmZTiQR2ViQfJH+XAoJ+AjalwW2apcBpIX6Hl29L/k=
+Received: from CO1PR10MB4722.namprd10.prod.outlook.com (2603:10b6:303:9e::12)
+ by MN2PR10MB3902.namprd10.prod.outlook.com (2603:10b6:208:184::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.15; Wed, 27 Apr
+ 2022 23:17:12 +0000
+Received: from CO1PR10MB4722.namprd10.prod.outlook.com
+ ([fe80::4427:92a2:50a5:50b6]) by CO1PR10MB4722.namprd10.prod.outlook.com
+ ([fe80::4427:92a2:50a5:50b6%8]) with mapi id 15.20.5206.013; Wed, 27 Apr 2022
+ 23:17:12 +0000
+Message-ID: <cd1da3e3-9024-2c97-3343-2569f74018be@oracle.com>
+Date:   Wed, 27 Apr 2022 18:16:18 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH] locking/rwsem: Allow slowpath writer to ignore handoff
+ bit if not set by first waiter
+Content-Language: en-US
+To:     Waiman Long <longman@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, Hillf Danton <hdanton@sina.com>
+References: <20220427173124.1428050-1-longman@redhat.com>
+From:   John Donnelly <John.p.donnelly@oracle.com>
+In-Reply-To: <20220427173124.1428050-1-longman@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: YT3PR01CA0053.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:82::20) To CO1PR10MB4722.namprd10.prod.outlook.com
+ (2603:10b6:303:9e::12)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 50d79be4-10cf-4ee8-9cb1-08da28a40f28
+X-MS-TrafficTypeDiagnostic: MN2PR10MB3902:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR10MB3902434230A4C58725CBA79CC7FA9@MN2PR10MB3902.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: pk5tDJbKE9Kc9GErdquKUcCphbxndtgUhIBpCjPaQ5Z5CNAimA6BYxD+cOZJFzSZlsNXCkb2TQLDNSma7qwtn0FNoHZC5Qh5HWo9GBUaNEV0AmAyV3Daasr4CIG9F2vXty39UDK7g6zNRqkAbEn9Pe3AUAYJ09/lWFNlJgPGgNbCGGOU72iKnMn8nmqJTL/QBoAjsxRElguqCvs+AiPcwBAthYxvRhpuSPLo/yxs8+2IJsKBWyh9PE1OVIn4zAQvXUhtSS48KOxVZTNxvX7vnDcMHg9xCCXS+Lznft1XJwchsYVeMtGP+iYfqdd055pfKmxWTOOT6LRmMDbCrZu0GS11IDWdh4zT9cKj+5dtOkHKhEmpl8ZVeBFj0ft9OEtOnJV3vEMQfbQ8WOPLCYQ7wv50hjCixGd4DYzvQXgNl4RW8pBR4vclmwxiJ628jdsV1Rd3kXDyi/Mn358KvPaTRWovyRZOMe10WJZBI0eC8II7LrstNSwwzstqYpzRr1xIm9KNTQAxsN5RLc/pubrHS91z20u1fiaEKAwwinigCJIm/kuSycvpeym0H28ImEJwk00dwksnW5IwitAJtWZfWqaZt5UTgQoKDu9sPc8heXDMuEJ/gaVUpcEx8j97+UPhqFLshkL/1V7I7J23aQFPpmZ2XVvvJylW/GjdGlxrs/+lRO7jU7s9LNFA7gwn1yeILPqJMRfvQuO6egZUfZMXTzs66v4S6ch5+MnB8KhlnLTvfTCqs0o+3CuTNuBE4AON
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR10MB4722.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(110136005)(86362001)(38100700002)(83380400001)(26005)(6506007)(53546011)(508600001)(186003)(31686004)(8936002)(6486002)(5660300002)(2906002)(2616005)(4326008)(31696002)(66476007)(66556008)(8676002)(66946007)(6512007)(316002)(36756003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?RFBsNGhiOXlab0tXZkJnSVdEN0dnU1dieURpbkpxNlV5WEErcmh3ZzJVeFNK?=
+ =?utf-8?B?eElQdldmNndnZUxaU0JnM1QvajJJR1MxcjFzSWt0bHpyRTNyMVJ5TloySmoy?=
+ =?utf-8?B?aUI0Y0FQQm1jK3o4R1JldUg0OEQ3T0Y3OTVRdnp5d09BQXkwQm9xTmExdGRS?=
+ =?utf-8?B?VkJkUjU2MWNsdTIvNjk0dHJ4MmhPK0tmUFYwTit5eitBUEtmS0VMcCs0OTdP?=
+ =?utf-8?B?TW93ME5CNkJVSlpIRVRaNG16STQvT1hpZXNyRldTcE8wOFJQRHJQRXlzRHgz?=
+ =?utf-8?B?UlF2WGYyQVN2cmJyUzdIOXFsUDZJcHluUUJ4aFRlelJjSG9zWHRnMVFQNTNp?=
+ =?utf-8?B?a3hlak1PdmpnM2RmZzM2cG9xMlN6RUVSTkJSaEhPMDVtQUYvZEcramFjdmtQ?=
+ =?utf-8?B?dEdzTnhxN3VrUEgwUXRnVVQ4MnhVNzlUQlJEdTI2U2w4TmN0MTNLblNwNHBi?=
+ =?utf-8?B?SG95Qkp3RkJvTU5TZTZ0ZEYrQVFNdzE3VmZGamNTTHhiMzVhZnJsQXBibWZH?=
+ =?utf-8?B?Ti82NzVsUGVMZzNycFhHelNVZUx6eGp6Q0lWWlZLYTVzRFFBMW1acmNUS3dK?=
+ =?utf-8?B?UndWMGxLOGZaZFJvNU9uQVdFejV4TjhzaUdMRDlFQWFCSkw0N1pzZXpjS0lq?=
+ =?utf-8?B?YlhVL09maUNYdmVSYVh3MXZYKzdPVEpHb2hacnpOZXMvWFhnb3BLMTZnSHdw?=
+ =?utf-8?B?eElPcVl4RmNEblVNZThaN1h0RGdxQUZONU91ZUs4bEdxekhZR0UvV2pVY215?=
+ =?utf-8?B?bjJpWEV6RnlIMDRNOVA3bE11akZWOGx1aGlTT1ZkTThKK3B2ejZqQzFTZ00y?=
+ =?utf-8?B?S1l6SVhHK05LQlhTNEo1dUE5NjF3RjcwNXY4T004eWVDdUVqNFN2L3JYNHZu?=
+ =?utf-8?B?V2s4RWg1MVdlQ0pNeHhmYlFKVFRqSGJkaFFoeFlZbmZ2L2hDRkZ3Z3htUVVl?=
+ =?utf-8?B?UGcxbkdQVDlINlZqS1d4ZjVtQzBDUVhlSnIyKzJPRkM0SG9Ta2NnZ2t5cmZ3?=
+ =?utf-8?B?ZTU1OGdlcWNhOWUxbC8rSVRoME8vaWFmNGdVN2RqbURLS2xoci9EdkJYcWpE?=
+ =?utf-8?B?TUo3ZUxScHdkNHhPUDFuRGFxVjFuT1V1S0N5Rm9lLytqVVNFWEJuY3N6TkhY?=
+ =?utf-8?B?TTFYZzYzUHk0T050WUFXdW9GKzQ2SVJFRFgzdWpLajE3SXFOcVRYWm1nbWVs?=
+ =?utf-8?B?SVQ2VkJZcFJJcW8wQUoxSmNxWVoyQ0JsYjhhL2hOQldpSWthSEFmdEFrNXl2?=
+ =?utf-8?B?VTd3NHZBOVNPZjJ5QWp5Vm1uME1MZDB3T01MWDNDQWRFUWxHYm4wdGlVWUMz?=
+ =?utf-8?B?TFlKSmNMNGUxWWZmSW10WEJ1WVRpR0l5dzZ6QW1jcXVJLzJnS3R2NjYzUEdQ?=
+ =?utf-8?B?T2ppclVpN1RRS2xhUnluREdiOUVNMkNMOVloc2NkUWxKOXl5Tm1RdStmRU96?=
+ =?utf-8?B?ditlNDdnN1M2Z0lFZkVnVGJHQlVWNExscnh0dGp5WWVtM2JVT3ppSVFqZVc5?=
+ =?utf-8?B?Tno1V3F1OHRsRGt5M1JzMTB3eG12Slo1T0RLRkZjaEVUY2kzMUpzZEZQRE9G?=
+ =?utf-8?B?UUU2bm96d3NzclU1NzkyMlNjUFp5NTdnbzNzTnNXVWZML1NKb0lGVzFsejhi?=
+ =?utf-8?B?QzVpUENxaWhLUzhRaHFvWGtEVXhxTjZoWWFkS1hZYlJ6WE4zSTB5NnFUWWky?=
+ =?utf-8?B?NjZyV0NtUDZRbW9RWWxRY2lnMWdXa2ViYlJaWU1sNkIybFRUU3ArcGx5M1NS?=
+ =?utf-8?B?RDZ4VU8xT2h4SkJ0SVUzQXZnYkxRa2RDSzZlcTNLNmhnYXB0SEV4dk9hc01C?=
+ =?utf-8?B?OWMzcHZMUkNoTUNIaDVqR2VYa3cwQlJRbWppeHVEL1B1NWhuMXpxcUFUVGxm?=
+ =?utf-8?B?bU5ac25OWWFIRFFHbjFxZ2RYRDZvVUd0aS9IbzZYbGlxME5KVVZzekVXZVV0?=
+ =?utf-8?B?OWVYcGd3WlJod24yczV5OXROZER2OFBhQXVuNkxmamFxazYxSFJ1bnhFSDZF?=
+ =?utf-8?B?RDJLeWRKYVZNWmJsdkordkEzT0JuUExBZWNJWi9BVVp6Um5KOGxRQTJaWG9I?=
+ =?utf-8?B?Wk4yVzlHR0Y5dHFSV2FFOHJDSi9laUNpSnpxS0RESWNxV2Jmc1YxY01PWkN4?=
+ =?utf-8?B?MDNXSGxTSzhYRzBacTNNbXpzY25yemhnT1NoZ2ZyYk1iM0M2bkk0VjBZMFNR?=
+ =?utf-8?B?cUx4V0NJUy9KakRQWTRDOURtQmdjUnZTSitxbUcrOVl2NHVEOUYyMHFSNW1H?=
+ =?utf-8?B?WTRFSEtENkdycnUrVlhJUGduOWIzU09yclBOYkQwZDNjRFFvSmpSTGxtOEFt?=
+ =?utf-8?B?VTBLdHBTN29wSkpxdzRiTUZhajYxdTZvbXhRODJDcllMRUVvU0xFSmJXdU1N?=
+ =?utf-8?Q?d0PegTGpSz7W3Rl0=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 50d79be4-10cf-4ee8-9cb1-08da28a40f28
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR10MB4722.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Apr 2022 23:17:12.2600
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: emjY75qg7sROYxL5V7NWeZPUygEorJUC2FGWUS5lx5Sd8ontGO2f4Yt7T++z+u3k4Z1GdsDp6D0CmbS40doarphSkQBO2Bd2WihKcMnbbj8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR10MB3902
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.858
+ definitions=2022-04-27_04:2022-04-27,2022-04-27 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 spamscore=0 adultscore=0
+ mlxscore=0 bulkscore=0 suspectscore=0 malwarescore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2204270136
+X-Proofpoint-ORIG-GUID: z875l7Qs1kPXINmoIaUdqJhfG-1KfVqK
+X-Proofpoint-GUID: z875l7Qs1kPXINmoIaUdqJhfG-1KfVqK
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Kingoftown is a trogdor-based board, shipping to customers as the
-HP Fortis 11 G9 Q Chromebook. These dts files are unchanged copies
-from the downstream Chrome OS 5.4 kernel.
+On 4/27/22 12:31 PM, Waiman Long wrote:
+> With commit d257cc8cb8d5 ("locking/rwsem: Make handoff bit handling more
+> consistent"), the writer that sets the handoff bit can be interrupted
+> out without clearing the bit if the wait queue isn't empty. This disables
+> reader and writer optimistic lock spinning and stealing.
+> 
+> Now if a non-first writer in the queue is somehow woken up or first
+> entering the waiting loop, it can't acquire the lock.  This is not
+> the case before that commit as the writer that set the handoff bit
+> will clear it when exiting out via the out_nolock path. This is less
+> efficient as the busy rwsem stays in an unlock state for a longer time.
+> 
+> This patch allows a non-first writer to ignore the handoff bit if it
+> is not originally set or initiated by the first waiter.
+> 
+> Fixes: d257cc8cb8d5 ("locking/rwsem: Make handoff bit handling more consistent")
 
-Signed-off-by: Joseph S. Barrera III <joebar@chromium.org>
----
+Hi Waiman,
 
- arch/arm64/boot/dts/qcom/Makefile             |   2 +
- .../dts/qcom/sc7180-trogdor-kingoftown-r0.dts |  44 ++++
- .../dts/qcom/sc7180-trogdor-kingoftown-r1.dts |  17 ++
- .../dts/qcom/sc7180-trogdor-kingoftown.dtsi   | 223 ++++++++++++++++++
- 4 files changed, 286 insertions(+)
- create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-kingoftown-r0.dts
- create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-kingoftown-r1.dts
- create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-kingoftown.dtsi
+1. You likely need :
 
-diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
-index f9e6343acd03..ab67846de0d1 100644
---- a/arch/arm64/boot/dts/qcom/Makefile
-+++ b/arch/arm64/boot/dts/qcom/Makefile
-@@ -60,6 +60,8 @@ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-coachz-r3-lte.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-homestar-r2.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-homestar-r3.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-homestar-r4.dtb
-+dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-kingoftown-r0.dtb
-+dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-kingoftown-r1.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-lazor-r0.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-lazor-r1.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-lazor-r1-kb.dtb
-diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-kingoftown-r0.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-kingoftown-r0.dts
-new file mode 100644
-index 000000000000..85aec1be98fc
---- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-kingoftown-r0.dts
-@@ -0,0 +1,44 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * Google Kingoftown board device tree source
-+ *
-+ * Copyright 2021 Google LLC.
-+ */
-+
-+/dts-v1/;
-+
-+#include "sc7180.dtsi"
-+#include "sc7180-trogdor-ti-sn65dsi86.dtsi"
-+#include "sc7180-trogdor-kingoftown.dtsi"
-+
-+/ {
-+	model = "Google Kingoftown (rev0)";
-+	compatible = "google,kingoftown-rev0", "qcom,sc7180";
-+};
-+
-+/*
-+ * In rev1+, the enable pin of pp3300_fp_tp will be tied to pp1800_l10a
-+ * power rail instead, since kingoftown does not have FP.
-+ */
-+&pp3300_fp_tp {
-+	gpio = <&tlmm 74 GPIO_ACTIVE_HIGH>;
-+	enable-active-high;
-+
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&en_fp_rails>;
-+};
-+
-+&tlmm {
-+	en_fp_rails: en-fp-rails {
-+		pinmux {
-+			pins = "gpio74";
-+			function = "gpio";
-+		};
-+
-+		pinconf {
-+			pins = "gpio74";
-+			drive-strength = <2>;
-+			bias-disable;
-+		};
-+	};
-+};
-diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-kingoftown-r1.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-kingoftown-r1.dts
-new file mode 100644
-index 000000000000..2be9138ba89f
---- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-kingoftown-r1.dts
-@@ -0,0 +1,17 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * Google Kingoftown board device tree source
-+ *
-+ * Copyright 2021 Google LLC.
-+ */
-+
-+/dts-v1/;
-+
-+#include "sc7180.dtsi"
-+#include "sc7180-trogdor-parade-ps8640.dtsi"
-+#include "sc7180-trogdor-kingoftown.dtsi"
-+
-+/ {
-+	model = "Google Kingoftown (rev1+)";
-+	compatible = "google,kingoftown", "qcom,sc7180";
-+};
-diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-kingoftown.dtsi b/arch/arm64/boot/dts/qcom/sc7180-trogdor-kingoftown.dtsi
-new file mode 100644
-index 000000000000..e7503a5b0403
---- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-kingoftown.dtsi
-@@ -0,0 +1,223 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * Google Kingoftown board device tree source
-+ *
-+ * Copyright 2021 Google LLC.
-+ */
-+
-+ap_ec_spi: &spi6 {};
-+ap_h1_spi: &spi0 {};
-+
-+#include "sc7180-trogdor.dtsi"
-+#include "sc7180-trogdor-lte-sku.dtsi"
-+
-+&alc5682 {
-+	compatible = "realtek,rt5682s";
-+	realtek,dmic1-clk-pin = <2>;
-+	realtek,dmic-clk-rate-hz = <2048000>;
-+};
-+
-+ap_ts_pen_1v8: &i2c4 {
-+	status = "okay";
-+	clock-frequency = <400000>;
-+
-+	ap_ts: touchscreen@10 {
-+		compatible = "elan,ekth3500";
-+		reg = <0x10>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&ts_int_l>, <&ts_reset_l>;
-+
-+		interrupt-parent = <&tlmm>;
-+		interrupts = <9 IRQ_TYPE_LEVEL_LOW>;
-+
-+		vcc33-supply = <&pp3300_ts>;
-+
-+		reset-gpios = <&tlmm 8 GPIO_ACTIVE_LOW>;
-+	};
-+};
-+
-+&keyboard_controller {
-+	function-row-physmap = <
-+		MATRIX_KEY(0x00, 0x02, 0)       /* T1 */
-+		MATRIX_KEY(0x03, 0x02, 0)       /* T2 */
-+		MATRIX_KEY(0x02, 0x02, 0)       /* T3 */
-+		MATRIX_KEY(0x01, 0x02, 0)       /* T4 */
-+		MATRIX_KEY(0x03, 0x04, 0)       /* T5 */
-+		MATRIX_KEY(0x02, 0x04, 0)       /* T6 */
-+		MATRIX_KEY(0x01, 0x04, 0)       /* T7 */
-+		MATRIX_KEY(0x02, 0x09, 0)       /* T8 */
-+		MATRIX_KEY(0x01, 0x09, 0)       /* T9 */
-+		MATRIX_KEY(0x00, 0x04, 0)       /* T10 */
-+	>;
-+	linux,keymap = <
-+		MATRIX_KEY(0x00, 0x02, KEY_BACK)
-+		MATRIX_KEY(0x03, 0x02, KEY_REFRESH)
-+		MATRIX_KEY(0x02, 0x02, KEY_ZOOM)
-+		MATRIX_KEY(0x01, 0x02, KEY_SCALE)
-+		MATRIX_KEY(0x03, 0x04, KEY_SYSRQ)
-+		MATRIX_KEY(0x02, 0x04, KEY_BRIGHTNESSDOWN)
-+		MATRIX_KEY(0x01, 0x04, KEY_BRIGHTNESSUP)
-+		MATRIX_KEY(0x02, 0x09, KEY_MUTE)
-+		MATRIX_KEY(0x01, 0x09, KEY_VOLUMEDOWN)
-+		MATRIX_KEY(0x00, 0x04, KEY_VOLUMEUP)
-+
-+		CROS_STD_MAIN_KEYMAP
-+	>;
-+};
-+
-+&panel {
-+	compatible = "edp-panel";
-+};
-+
-+&pp3300_dx_edp {
-+	gpio = <&tlmm 67 GPIO_ACTIVE_HIGH>;
-+};
-+
-+&sound {
-+	compatible = "google,sc7180-trogdor";
-+	model = "sc7180-rt5682s-max98357a-1mic";
-+};
-+
-+&wifi {
-+	qcom,ath10k-calibration-variant = "GO_KINGOFTOWN";
-+};
-+
-+/* PINCTRL - modifications to sc7180-trogdor.dtsi */
-+
-+&en_pp3300_dx_edp {
-+	pinmux {
-+		pins = "gpio67";
-+	};
-+
-+	pinconf {
-+		pins = "gpio67";
-+	};
-+};
-+
-+/* PINCTRL - board-specific pinctrl */
-+
-+&tlmm {
-+	gpio-line-names = "TP_INT_L",		/* 0 */
-+			  "AP_RAM_ID0",
-+			  "AP_SKU_ID2",
-+			  "AP_RAM_ID1",
-+			  "",
-+			  "AP_RAM_ID2",
-+			  "AP_TP_I2C_SDA",
-+			  "AP_TP_I2C_SCL",
-+			  "TS_RESET_L",
-+			  "TS_INT_L",
-+			  "",			/* 10 */
-+			  "EDP_BRIJ_IRQ",
-+			  "AP_EDP_BKLTEN",
-+			  "",
-+			  "",
-+			  "EDP_BRIJ_I2C_SDA",
-+			  "EDP_BRIJ_I2C_SCL",
-+			  "HUB_RST_L",
-+			  "",
-+			  "",
-+			  "",			/* 20 */
-+			  "",
-+			  "",
-+			  "AMP_EN",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "HP_IRQ",
-+			  "",
-+			  "",			/* 30 */
-+			  "AP_BRD_ID2",
-+			  "BRIJ_SUSPEND",
-+			  "AP_BRD_ID0",
-+			  "AP_H1_SPI_MISO",
-+			  "AP_H1_SPI_MOSI",
-+			  "AP_H1_SPI_CLK",
-+			  "AP_H1_SPI_CS_L",
-+			  "BT_UART_CTS",
-+			  "BT_UART_RTS",
-+			  "BT_UART_TXD",	/* 40 */
-+			  "BT_UART_RXD",
-+			  "H1_AP_INT_ODL",
-+			  "",
-+			  "UART_AP_TX_DBG_RX",
-+			  "UART_DBG_TX_AP_RX",
-+			  "HP_I2C_SDA",
-+			  "HP_I2C_SCL",
-+			  "FORCED_USB_BOOT",
-+			  "AMP_BCLK",
-+			  "AMP_LRCLK",		/* 50 */
-+			  "AMP_DIN",
-+			  "",
-+			  "HP_BCLK",
-+			  "HP_LRCLK",
-+			  "HP_DOUT",
-+			  "HP_DIN",
-+			  "HP_MCLK",
-+			  "AP_SKU_ID0",
-+			  "AP_EC_SPI_MISO",
-+			  "AP_EC_SPI_MOSI",	/* 60 */
-+			  "AP_EC_SPI_CLK",
-+			  "AP_EC_SPI_CS_L",
-+			  "AP_SPI_CLK",
-+			  "AP_SPI_MOSI",
-+			  "AP_SPI_MISO",
-+			  /*
-+			   * AP_FLASH_WP_L is crossystem ABI. Schematics
-+			   * call it BIOS_FLASH_WP_L.
-+			   */
-+			  "AP_FLASH_WP_L",
-+			  "EN_PP3300_DX_EDP",
-+			  "AP_SPI_CS0_L",
-+			  "",
-+			  "",			/* 70 */
-+			  "",
-+			  "",
-+			  "",
-+			  "EN_FP_RAILS",
-+			  "UIM2_DATA",
-+			  "UIM2_CLK",
-+			  "UIM2_RST",
-+			  "UIM2_PRESENT_L",
-+			  "UIM1_DATA",
-+			  "UIM1_CLK",		/* 80 */
-+			  "UIM1_RST",
-+			  "",
-+			  "CODEC_PWR_EN",
-+			  "HUB_EN",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "AP_SKU_ID1",		/* 90 */
-+			  "AP_RST_REQ",
-+			  "",
-+			  "AP_BRD_ID1",
-+			  "AP_EC_INT_L",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",			/* 100 */
-+			  "",
-+			  "",
-+			  "",
-+			  "EDP_BRIJ_EN",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",			/* 110 */
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "AP_TS_PEN_I2C_SDA",
-+			  "AP_TS_PEN_I2C_SCL",
-+			  "DP_HOT_PLUG_DET",
-+			  "EC_IN_RW_ODL";
-+};
--- 
-2.31.0
+Cc: <stable@vger.kernel.org>
+
+Since d257cc8cb8d5 has been migrated to other LTS threads (5.15.y for 
+sure) .
+
+2. I had posted this earlier:
+
+[PATCH 5.15 1/1] Revert "locking/rwsem: Make handoff bit handling more 
+consistent"
+
+That is likely not needed now.
+
+
+3. Please add :
+
+Reported-by: Jorge Lopez <jorge.jo.lopez@oracle.com>
+
+We can likely test this, but I can't give a ETA when that will happen.
+
+
+> Signed-off-by: Waiman Long <longman@redhat.com>
+
+Acked-by: John Donnelly <john.p.donnelly@oracle.com>
+> ---
+>   kernel/locking/rwsem.c | 30 ++++++++++++++++++++----------
+>   1 file changed, 20 insertions(+), 10 deletions(-)
+> 
+> diff --git a/kernel/locking/rwsem.c b/kernel/locking/rwsem.c
+> index 9d1db4a54d34..65f0262f635e 100644
+> --- a/kernel/locking/rwsem.c
+> +++ b/kernel/locking/rwsem.c
+> @@ -335,8 +335,6 @@ struct rwsem_waiter {
+>   	struct task_struct *task;
+>   	enum rwsem_waiter_type type;
+>   	unsigned long timeout;
+> -
+> -	/* Writer only, not initialized in reader */
+>   	bool handoff_set;
+>   };
+>   #define rwsem_first_waiter(sem) \
+> @@ -459,10 +457,12 @@ static void rwsem_mark_wake(struct rw_semaphore *sem,
+>   			 * to give up the lock), request a HANDOFF to
+>   			 * force the issue.
+>   			 */
+> -			if (!(oldcount & RWSEM_FLAG_HANDOFF) &&
+> -			    time_after(jiffies, waiter->timeout)) {
+> -				adjustment -= RWSEM_FLAG_HANDOFF;
+> -				lockevent_inc(rwsem_rlock_handoff);
+> +			if (time_after(jiffies, waiter->timeout)) {
+> +				if (!(oldcount & RWSEM_FLAG_HANDOFF)) {
+> +					adjustment -= RWSEM_FLAG_HANDOFF;
+> +					lockevent_inc(rwsem_rlock_handoff);
+> +				}
+> +				waiter->handoff_set = true;
+>   			}
+>   
+>   			atomic_long_add(-adjustment, &sem->count);
+> @@ -599,7 +599,7 @@ rwsem_del_wake_waiter(struct rw_semaphore *sem, struct rwsem_waiter *waiter,
+>   static inline bool rwsem_try_write_lock(struct rw_semaphore *sem,
+>   					struct rwsem_waiter *waiter)
+>   {
+> -	bool first = rwsem_first_waiter(sem) == waiter;
+> +	struct rwsem_waiter *first = rwsem_first_waiter(sem);
+>   	long count, new;
+>   
+>   	lockdep_assert_held(&sem->wait_lock);
+> @@ -609,11 +609,20 @@ static inline bool rwsem_try_write_lock(struct rw_semaphore *sem,
+>   		bool has_handoff = !!(count & RWSEM_FLAG_HANDOFF);
+>   
+>   		if (has_handoff) {
+> -			if (!first)
+> +			/*
+> +			 * Honor handoff bit and yield only when the first
+> +			 * waiter is the one that set it. Otherwisee, we
+> +			 * still try to acquire the rwsem.
+> +			 */
+> +			if (first->handoff_set && (waiter != first))
+>   				return false;
+>   
+> -			/* First waiter inherits a previously set handoff bit */
+> -			waiter->handoff_set = true;
+> +			/*
+> +			 * First waiter can inherit a previously set handoff
+> +			 * bit and spin on rwsem if lock acquisition fails.
+> +			 */
+> +			if (waiter == first)
+> +				waiter->handoff_set = true;
+>   		}
+>   
+>   		new = count;
+> @@ -1027,6 +1036,7 @@ rwsem_down_read_slowpath(struct rw_semaphore *sem, long count, unsigned int stat
+>   	waiter.task = current;
+>   	waiter.type = RWSEM_WAITING_FOR_READ;
+>   	waiter.timeout = jiffies + RWSEM_WAIT_TIMEOUT;
+> +	waiter.handoff_set = false;
+>   
+>   	raw_spin_lock_irq(&sem->wait_lock);
+>   	if (list_empty(&sem->wait_list)) {
 
