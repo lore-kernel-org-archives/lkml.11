@@ -2,118 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCCF8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:33:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7E0AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:33:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238109AbiD0Og3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 10:36:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40184 "EHLO
+        id S238112AbiD0Oge (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 10:36:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238053AbiD0OgY (ORCPT
+        with ESMTP id S238027AbiD0OgZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 10:36:24 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4BBA762EC
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 07:33:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651069991;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pCszdxGtpE1ozcn4mZloZJWxhovKrd6sE3m0QUQcezY=;
-        b=KHM522vAqW5YlYhVROlL1ykFj+obrSloZko7efXqFHscQrykt4p4gtkEG+nresV7Ktd/QU
-        MIlstMabkI/VKMAaQipYcEJMfCzIewYiMEctaZffEmD7WxIW+MF6eWV+KVj0kmuxVRsWn2
-        ICHvwwtPceQCzFTZuFyOVvAgueGGb1k=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-441-Ntlq1A14PxCINLPDU2k1Ag-1; Wed, 27 Apr 2022 10:33:07 -0400
-X-MC-Unique: Ntlq1A14PxCINLPDU2k1Ag-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 199A818A6592;
-        Wed, 27 Apr 2022 14:33:06 +0000 (UTC)
-Received: from [10.22.11.205] (unknown [10.22.11.205])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4E09257D274;
-        Wed, 27 Apr 2022 14:33:04 +0000 (UTC)
-Message-ID: <3791e950-d997-23c0-07ff-909fd170d0a7@redhat.com>
-Date:   Wed, 27 Apr 2022 10:33:04 -0400
+        Wed, 27 Apr 2022 10:36:25 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 97AFE1D310
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 07:33:14 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6390EED1;
+        Wed, 27 Apr 2022 07:33:14 -0700 (PDT)
+Received: from localhost.localdomain (unknown [10.57.44.232])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id C36E93F5A1;
+        Wed, 27 Apr 2022 07:33:12 -0700 (PDT)
+From:   Vincent Donnefort <vincent.donnefort@arm.com>
+To:     peterz@infradead.org, mingo@redhat.com, vincent.guittot@linaro.org
+Cc:     linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
+        morten.rasmussen@arm.com, chris.redpath@arm.com,
+        qperret@google.com, Vincent Donnefort <vincent.donnefort@arm.com>
+Subject: [PATCH v7 0/7] feec() energy margin removal
+Date:   Wed, 27 Apr 2022 15:32:57 +0100
+Message-Id: <20220427143304.3950488-1-vincent.donnefort@arm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2] cgroup/cpuset: Remove cpus_allowed/mems_allowed setup
- in cpuset_init_smp()
-Content-Language: en-US
-To:     =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
-Cc:     Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>, cgroups@vger.kernel.org,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Feng Tang <feng.tang@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Dave Hansen <dave.hansen@intel.com>, ying.huang@intel.com,
-        stable@vger.kernel.org
-References: <20220425155505.1292896-1-longman@redhat.com>
- <20220427135324.GB9823@blackbody.suse.cz>
-From:   Waiman Long <longman@redhat.com>
-In-Reply-To: <20220427135324.GB9823@blackbody.suse.cz>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/27/22 09:53, Michal Koutný wrote:
-> Hello.
->
-> On Mon, Apr 25, 2022 at 11:55:05AM -0400, Waiman Long <longman@redhat.com> wrote:
->> smp_init() is called after the first two init functions.  So we don't
->> have a complete list of active cpus and memory nodes until later in
->> cpuset_init_smp() which is the right time to set up effective_cpus
->> and effective_mems.
-> Yes.
->
-> 	setup_arch
-> 	  prefill_possible_map
-> 	cpuset_init (1)
-> 	cgroup_init
-> 	  cpuset_bind (2a)
-> 	...
-> 	kernel_init
-> 	  kernel_init_freeable
-> 	    ...
-> 	      cpuset_init_smp (3)
-> 	...
-> 	...
-> 	cpuset_bind (2b)
->
->
->> diff --git a/kernel/cgroup/cpuset.c b/kernel/cgroup/cpuset.c
->> index 9390bfd9f1cd..6bd8f5ef40fe 100644
->> --- a/kernel/cgroup/cpuset.c
->> +++ b/kernel/cgroup/cpuset.c
->> @@ -3390,8 +3390,9 @@ static struct notifier_block cpuset_track_online_nodes_nb = {
->>    */
->>   void __init cpuset_init_smp(void)
->>   {
->> -	cpumask_copy(top_cpuset.cpus_allowed, cpu_active_mask);
->> -	top_cpuset.mems_allowed = node_states[N_MEMORY];
->> +	/*
->> +	 * cpus_allowd/mems_allowed will be properly set up in cpuset_bind().
->> +	 */
-> IIUC, the comment should say
->
->> +	 * cpus_allowed/mems_allowed were (v2) or will be (v1) properly set up in cpuset_bind().
-> (nit)
->
-> Reviewed-by: Michal Koutný <mkoutny@suse.com>
->
-Thanks for the review. I plan to post v3 with updated commit log and 
-comment soon.
+find_energy_efficient() (feec()) will migrate a task to save energy only
+if it saves at least 6% of the total energy consumed by the system. This
+conservative approach is a problem on a system where a lot of small tasks
+create a huge load on the overall: very few of them will be allowed to migrate
+to a smaller CPU, wasting a lot of energy. Instead of trying to determine yet
+another margin, let's try to remove it.
 
-Cheers,
-Longman
+The first elements of this patch-set are various fixes and improvement that
+stabilizes task_util and ensures energy comparison fairness across all CPUs of
+the topology. Only once those fixed, we can completely remove the margin and
+let feec() aggressively place task and save energy.
+
+This has been validated by two different ways:
+
+First using LISA's eas_behaviour test suite. This is composed of a set of
+scenario and verify if the task placement is optimum. No failure have been
+observed and it also improved some tests such as Ramp-Down (as the placement
+is now more energy oriented) and *ThreeSmall (as no bouncing between clusters
+happen anymore).
+
+  * Hikey960: 100% PASSED
+  * DB-845C:  100% PASSED
+  * RB5:      100% PASSED
+
+Second, using an Android benchmark: PCMark2 on a Pixel4, with a lot of
+backports to have a scheduler as close as we can from mainline. 
+
+  +------------+-----------------+-----------------+
+  |    Test    |      Perf       |    Energy [1]   |
+  +------------+-----------------+-----------------+
+  | Web2       | -0.3% pval 0.03 | -1.8% pval 0.00 |
+  | Video2     | -0.3% pval 0.13 | -5.6% pval 0.00 |
+  | Photo2 [2] | -3.8% pval 0.00 | -1%   pval 0.00 |
+  | Writing2   |  0%   pval 0.13 | -1%   pval 0.00 |
+  | Data2      |  0%   pval 0.8  | -0.43 pval 0.00 |
+  +------------+-----------------+-----------------+ 
+
+The margin removal let the kernel make the best use of the Energy Model,
+tasks are more likely to be placed where they fit and this saves a 
+substantial amount of energy, while having a limited impact on performances.
+
+[1] This is an energy estimation based on the CPU activity and the Energy Model
+for this device. "All models are wrong but some are useful"; yes, this is an
+imperfect estimation that doesn't take into account some idle states and shared
+power rails. Nonetheless this is based on the information the kernel has during
+runtime and it proves the scheduler can take better decisions based solely on
+those data.
+
+[2] This is the only performance impact observed. The debugging of this test
+showed no issue with task placement. The better score was solely due to some
+critical threads held on better performing CPUs. If a thread needs a higher
+capacity CPU, the placement must result from a user input (with e.g. uclamp
+min) instead of being artificially held on less efficient CPUs by feec().
+Notice also, the experiment didn't use the Android only latency_sensitive
+feature which would hide this problem on a real-life device.
+
+v6 -> v7:
+  - PELT migration decay: Add missing clock_pelt_idle updates.
+  - PELT migration decay: Fix PELT scaling delta for CONFIG_CFS_BANDWIDTH.
+
+v5 -> v6:
+  - Fix !CONFIG_SMP build.
+
+v4 -> v5:
+  - PELT migration decay: timestamp only at idle time (Vincent G.)
+  - PELT migration decay: split timestamp values (enter_idle / clock_pelt_idle)
+    (Vincent G.)
+
+v3 -> v4:
+  - Minor cosmetic changes (Dietmar)
+
+v2 -> v3:
+  - feec(): introduce energy_env struct (Dietmar)
+  - PELT migration decay: Only apply when src CPU is idle (Vincent G.)
+  - PELT migration decay: Do not apply when cfs_rq is throttled
+  - PELT migration decay: Snapshot the lag at cfs_rq's level
+
+v1 -> v2:
+  - Fix PELT migration last_update_time (previously root cfs_rq's).
+  - Add Dietmar's patches to refactor feec()'s CPU loop.
+  - feec(): renaming busy time functions get_{pd,tsk}_busy_time()
+  - feec(): pd_cap computation in the first for_each_cpu loop.
+  - feec(): create get_pd_max_util() function (previously within compute_energy())
+  - feec(): rename base_energy_pd to base_energy.
+
+Dietmar Eggemann (3):
+  sched, drivers: Remove max param from
+    effective_cpu_util()/sched_cpu_util()
+  sched/fair: Rename select_idle_mask to select_rq_mask
+  sched/fair: Use the same cpumask per-PD throughout
+    find_energy_efficient_cpu()
+
+Vincent Donnefort (4):
+  sched/fair: Provide u64 read for 32-bits arch helper
+  sched/fair: Decay task PELT values during wakeup migration
+  sched/fair: Remove task_util from effective utilization in feec()
+  sched/fair: Remove the energy margin in feec()
+
+ drivers/powercap/dtpm_cpu.c       |  33 +--
+ drivers/thermal/cpufreq_cooling.c |   6 +-
+ include/linux/sched.h             |   2 +-
+ kernel/sched/core.c               |  15 +-
+ kernel/sched/cpufreq_schedutil.c  |   5 +-
+ kernel/sched/fair.c               | 379 ++++++++++++++++++------------
+ kernel/sched/pelt.h               |  28 ++-
+ kernel/sched/sched.h              |  53 ++++-
+ 8 files changed, 318 insertions(+), 203 deletions(-)
+
+-- 
+2.25.1
 
