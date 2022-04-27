@@ -2,114 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B209C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 01:38:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB5D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 01:38:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356786AbiD0BlN convert rfc822-to-8bit (ORCPT
+        id S1356807AbiD0Blt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 21:41:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46868 "EHLO
+        Tue, 26 Apr 2022 21:41:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356792AbiD0BlK (ORCPT
+        with ESMTP id S1356792AbiD0Bls (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 21:41:10 -0400
-X-Greylist: delayed 482 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 26 Apr 2022 18:37:56 PDT
-Received: from rtits2.realtek.com.tw (unknown [122.146.120.2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4297BFDD3C;
-        Tue, 26 Apr 2022 18:37:55 -0700 (PDT)
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 23R1T7Q80001571, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 23R1T7Q80001571
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 27 Apr 2022 09:29:07 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 27 Apr 2022 09:29:07 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 27 Apr 2022 09:29:06 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6]) by
- RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6%5]) with mapi id
- 15.01.2308.021; Wed, 27 Apr 2022 09:29:06 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     Yang Li <yang.lee@linux.alibaba.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "kvalo@kernel.org" <kvalo@kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: RE: [PATCH -next] rtw89: remove unneeded semicolon
-Thread-Topic: [PATCH -next] rtw89: remove unneeded semicolon
-Thread-Index: AQHYWc42Nr9Q9fn5+kKBPYJ4G5aYIa0C+LAQ
-Date:   Wed, 27 Apr 2022 01:29:06 +0000
-Message-ID: <ef7a754fa9a04bb09b355d9e063eb950@realtek.com>
-References: <20220427003142.107916-1-yang.lee@linux.alibaba.com>
-In-Reply-To: <20220427003142.107916-1-yang.lee@linux.alibaba.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS04.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/4/26_=3F=3F_11:20:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        Tue, 26 Apr 2022 21:41:48 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07487FDD3C
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 18:38:39 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id p12so630327lfs.5
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 18:38:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6m5EHrFngIj7a8PPgOziSOXfTBY72BssfH/5Kk6E1D4=;
+        b=PVJfNSNmwOFSwuRQYJl7lRIWs85Ihb8IB/CXKjJ/hTifHzTqyOwGYGtunthhHXZyNq
+         9Xv2EAynR4aE6fg/gYDTv/fNdk0R7qDP/SZopBaqX1/La+/4OnlVTbmohoFdfgfyJYas
+         v/wEOvwinXJN9jziMsAEYFq5T/nSePXu2/zVTVZjFDPtc9G85zITyQBUjCbM26SekN9w
+         NipTfo/DiPMzDOAZHukq7Of5Za+PbVBkGmjrRII9HD1qNojrTAgMbI03vPYHTJVr9fLr
+         vkXG5DbfKIX0Z3o5d3xmGrtqWZBVcI1KCcUzvLiPPF1BhlVwXolmPc7AhO5nP1DSasXZ
+         IlIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6m5EHrFngIj7a8PPgOziSOXfTBY72BssfH/5Kk6E1D4=;
+        b=nDGD5m4/Pc72CPvrrmArqLyKwk+FyaP6k55HWfRoFv9MPGUa8unDF2Yjj8EUBysDJT
+         6gc+0dztZ7YdF0+PwTJPF4O7fT9hq617tdGBROLmCjof5WxKdqsSWs6IzkfegYXQcYiS
+         yZOPIhfuE6N1mU4A9ygqhgT8dp8UoxIq/i1zC081Gk1KDJN7aQowMkdw3V5a8AqzJuKD
+         tMxYbGlyv/usc1awQFpLxcY9yZv3wiQj1p1y7FmL7mACLbrdMsdi8x3vmclu11Iw1RYc
+         +kYQts9dlxe6SlwnMubN9cpXaFEtKUAJ9M2SLARg27LtRGPuJiTmQfnFobFfyZBGeSoK
+         vqrQ==
+X-Gm-Message-State: AOAM531A64OSvwL+AGGnzXhEtCrNS40A7S9ygl0aH7fjqMq/G6SyA3uk
+        GDMhI9mxN8qSojIWiMVpDJDys6ms6ViJ761uP40=
+X-Google-Smtp-Source: ABdhPJyUWynFQtuLaJtH6v3lSTh02LJWIR3EDRz2nvzQjjg6lR+d9YiaHCxT6Dhb9NzpYBwQD1VnAzzyp8Idg448Q/E=
+X-Received: by 2002:a05:6512:13a1:b0:448:887e:da38 with SMTP id
+ p33-20020a05651213a100b00448887eda38mr19011317lfa.298.1651023517177; Tue, 26
+ Apr 2022 18:38:37 -0700 (PDT)
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+References: <20220407051932.4071-1-xuewen.yan@unisoc.com> <20220420135127.o7ttm5tddwvwrp2a@airbuntu>
+ <CAB8ipk-tWjkeAbV=BDhNy04Yq6rdLf80x_7twuLV=HqT4nc1+w@mail.gmail.com>
+ <20220421161509.asz25zmh25eurgrk@airbuntu> <CAB8ipk_rZnwDrMaY-zJxR3pByYWD1XOP2waCgU9DZzQNpCN2zA@mail.gmail.com>
+ <20220425161209.ydugtrs3b7gyy3kk@airbuntu> <CAB8ipk9hZXDcTV3hakRV+dE5dwKtg-Ka93WZ60ds0=4ErN1-0w@mail.gmail.com>
+ <20220426092142.lppfj5eqgt3d24nb@airbuntu>
+In-Reply-To: <20220426092142.lppfj5eqgt3d24nb@airbuntu>
+From:   Xuewen Yan <xuewen.yan94@gmail.com>
+Date:   Wed, 27 Apr 2022 09:38:26 +0800
+Message-ID: <CAB8ipk_tM8WhZOLwURkqyi5XDSNJ=twOg1Zub=dsTB_b9N9BRg@mail.gmail.com>
+Subject: Re: [PATCH] sched: Take thermal pressure into account when determine
+ rt fits capacity
+To:     Qais Yousef <qais.yousef@arm.com>
+Cc:     Xuewen Yan <xuewen.yan@unisoc.com>, dietmar.eggemann@arm.com,
+        lukasz.luba@arm.com, rafael@kernel.org, viresh.kumar@linaro.org,
+        mingo@redhat.com, peterz@infradead.org, vincent.guittot@linaro.org,
+        rostedt@goodmis.org, linux-kernel@vger.kernel.org,
+        di.shen@unisoc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+> > > The best (simplest) way forward IMHO is to introduce a new function
+> > >
+> > >         bool cpu_in_capacity_inversion(int cpu);
+> > >
+> > > (feel free to pick another name) which will detect the scenario you're in. You
+> > > can use this function then in rt_task_fits_capacity()
+> > >
+> > >         diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
+> > >         index a32c46889af8..d48811a7e956 100644
+> > >         --- a/kernel/sched/rt.c
+> > >         +++ b/kernel/sched/rt.c
+> > >         @@ -462,6 +462,9 @@ static inline bool rt_task_fits_capacity(struct task_struct *p, int cpu)
+> > >                 if (!static_branch_unlikely(&sched_asym_cpucapacity))
+> > >                         return true;
+> > >
+> > >         +       if (cpu_in_capacity_inversion(cpu))
+> > >         +               return false;
+> > >         +
+> > >                 min_cap = uclamp_eff_value(p, UCLAMP_MIN);
+> > >                 max_cap = uclamp_eff_value(p, UCLAMP_MAX);
+> > >
+> > > You'll probably need to do something similar in dl_task_fits_capacity().
+> > >
+> > > This might be a bit aggressive though as we'll steer away all RT tasks from
+> > > this CPU (as long as there's another CPU that can fit it). I need to think more
+> > > about it. But we could do something like this too
+> > >
+> > >         diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
+> > >         index a32c46889af8..f2a34946a7ab 100644
+> > >         --- a/kernel/sched/rt.c
+> > >         +++ b/kernel/sched/rt.c
+> > >         @@ -462,11 +462,14 @@ static inline bool rt_task_fits_capacity(struct task_struct *p, int cpu)
+> > >                 if (!static_branch_unlikely(&sched_asym_cpucapacity))
+> > >                         return true;
+> > >
+> > >         +       cpu_cap = capacity_orig_of(cpu);
+> > >         +
+> > >         +       if (cpu_in_capacity_inversion(cpu))
+> >
+> > It's  a good idea, but as you said, in mainline, the
+> > sysctl_sched_uclamp_util_min_rt_default is always 1024,
+> > Maybe it's better to add it to the judgment?
+>
+> I don't think so. If we want to handle finding the next best thing, we need to
+> make the search more complex than that. This is no worse than having 2 RT tasks
+> waking up at the same time while there's only a single big CPU. One of them
+> will end up on a medium or a little and we don't provide better guarantees
+> here.
 
+I may have misunderstood your patch before, do you mean this:
+1. the cpu has to be inversion, if not, the cpu's capacity is still
+the biggest, although the sysctl_sched_uclamp_util_min_rt_default
+=1024, it still can put on the cpu.
+2. If the cpu is inversion, the thermal pressure should be considered,
+at this time, if the sysctl_sched_uclamp_util_min_rt_default is not
+1024, make the rt still have chance to select the cpu.
+    If the sysctl_sched_uclamp_util_min_rt_default is 1024, all of the
+cpu actually can not fit the rt, at this time, select cpu without
+considering the cap_orig_of(cpu). The worst thing may be that  rt
+would put on the small core.
 
-> -----Original Message-----
-> From: Yang Li <yang.lee@linux.alibaba.com>
-> Sent: Wednesday, April 27, 2022 8:32 AM
-> To: davem@davemloft.net
-> Cc: kuba@kernel.org; pabeni@redhat.com; kvalo@kernel.org; Pkshih <pkshih@realtek.com>;
-> linux-wireless@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Yang Li
-> <yang.lee@linux.alibaba.com>; Abaci Robot <abaci@linux.alibaba.com>
-> Subject: [PATCH -next] rtw89: remove unneeded semicolon
-> 
-> Eliminate the following coccicheck warning:
-> ./drivers/net/wireless/realtek/rtw89/rtw8852c.c:2556:2-3: Unneeded
-> semicolon
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+I understand right? If so, Perhaps this approach has the least impact
+on the current code complexity.
 
-Acked-by: Ping-Ke Shih <pkshih@realtek.com>
-
-> ---
->  drivers/net/wireless/realtek/rtw89/rtw8852c.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/wireless/realtek/rtw89/rtw8852c.c
-> b/drivers/net/wireless/realtek/rtw89/rtw8852c.c
-> index 858611c64e6b..275568468212 100644
-> --- a/drivers/net/wireless/realtek/rtw89/rtw8852c.c
-> +++ b/drivers/net/wireless/realtek/rtw89/rtw8852c.c
-> @@ -2553,7 +2553,7 @@ do {								\
->  	default:
->  		val = arg.gnt_bt.data;
->  		break;
-> -	};
-> +	}
-> 
->  	__write_ctrl(R_AX_PWR_COEXT_CTRL, B_AX_TXAGC_BT_MASK, val,
->  		     B_AX_TXAGC_BT_EN, arg.ctrl_gnt_bt != 0xffff);
-> --
-> 2.20.1.7.g153144c
-
+Thanks!
+BR
+---
+xuewen
