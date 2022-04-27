@@ -2,100 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 568AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 08:54:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44E10C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 08:59:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233922AbiD0I5Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 04:57:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52160 "EHLO
+        id S231477AbiD0JCH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 05:02:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231565AbiD0I5W (ORCPT
+        with ESMTP id S231465AbiD0JCF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 04:57:22 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02F95C3EAE
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 01:54:07 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KpCGL2FgtzhYhM;
-        Wed, 27 Apr 2022 16:53:46 +0800 (CST)
-Received: from dggpemm500015.china.huawei.com (7.185.36.181) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 27 Apr 2022 16:54:04 +0800
-Received: from [10.174.177.133] (10.174.177.133) by
- dggpemm500015.china.huawei.com (7.185.36.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 27 Apr 2022 16:54:03 +0800
-Subject: Re: [RFC PATCH -next v2 3/4] arm64/ftrace: support dynamically
- allocated trampolines
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        Mark Rutland <mark.rutland@arm.com>
-CC:     <cj.chengjian@huawei.com>, <huawei.libin@huawei.com>,
-        <xiexiuqi@huawei.com>, <liwei391@huawei.com>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <catalin.marinas@arm.com>,
-        <will@kernel.org>, <zengshun.wu@outlook.com>
-References: <20220316100132.244849-1-bobo.shaobowang@huawei.com>
- <20220316100132.244849-4-bobo.shaobowang@huawei.com>
- <YmFXrBG5AmX3+4f8@lakrids> <20220421100639.03c0d123@gandalf.local.home>
-From:   "Wangshaobo (bobo)" <bobo.shaobowang@huawei.com>
-Message-ID: <57b0c058-963b-fa9e-453c-b29165e13b45@huawei.com>
-Date:   Wed, 27 Apr 2022 16:54:03 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.0
+        Wed, 27 Apr 2022 05:02:05 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 584751E8A0E;
+        Wed, 27 Apr 2022 01:58:43 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 79C9380E4;
+        Wed, 27 Apr 2022 08:55:36 +0000 (UTC)
+Date:   Wed, 27 Apr 2022 11:58:38 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc:     Discussions about the Letux Kernel <letux-kernel@openphoenux.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-OMAP <linux-omap@vger.kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Ard Biesheuvel <ardb@kernel.org>, Arnd Bergmann <arnd@arndb.de>
+Subject: Re: kernel panic with v5.18-rc1 on OpenPandora (only)
+Message-ID: <YmkFvmE+2CD3Bjs+@atomide.com>
+References: <FA654A0D-29B7-4B6B-B613-73598A92ADA8@goldelico.com>
+ <YmkBAsa+fKlp/GcV@atomide.com>
 MIME-Version: 1.0
-In-Reply-To: <20220421100639.03c0d123@gandalf.local.home>
-Content-Type: text/plain; charset="gbk"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.133]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500015.china.huawei.com (7.185.36.181)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YmkBAsa+fKlp/GcV@atomide.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+* Tony Lindgren <tony@atomide.com> [220427 08:40]:
+> Hi,
+> 
+> * H. Nikolaus Schaller <hns@goldelico.com> [220426 20:16]:
+> > Hi Tony,
+> > I ran across a new issue on the OpenPandora (omap3530) first appearing with v5.18-rc1.
+> > It seems as if there is something happening within the omap3 L3 irq handler which
+> > is used (only?) for the wl1251. And this triggers the timeout BUG_ON() in
+> > omap3_l3_app_irq().
+> > 
+> > I have not seen this issue on the GTA04.
+> > 
+> > It goes away if I remove the wlan interrupt from omap3-pandora-common.dtsi.
+> > Interestingly, removing the wl1251.ko does NOT stop it. So it is not the driver.
+> > 
+> > git bisect reported:
+> > 
+> > a1c510d0adc604bb143c86052bc5be48cbcfa17c is the first bad commit
+> > commit a1c510d0adc604bb143c86052bc5be48cbcfa17c
+> > Author: Ard Biesheuvel <ardb@kernel.org>
+> > Date:   Thu Sep 23 09:15:53 2021 +0200
+> > 
+> >     ARM: implement support for vmap'ed stacks
+> >     
+> > Any ideas?
+> 
+> We had to add commit 8cf8df89678a ("ARM: OMAP2+: Fix regression for smc
+> calls for vmap stack") to fix vmap related issues in case you have not
+> seen that one yet. This seems different though, it's like the L3 interrupt
+> handler is not reading the right register?
+> 
+> Not sure why the L3 interrupt is triggering, that could be caused by
+> another issue with the wl1251 somewhere.
 
-ÔÚ 2022/4/21 22:06, Steven Rostedt Ð´µÀ:
-> On Thu, 21 Apr 2022 14:10:04 +0100
-> Mark Rutland <mark.rutland@arm.com> wrote:
->
->> On Wed, Mar 16, 2022 at 06:01:31PM +0800, Wang ShaoBo wrote:
->>> From: Cheng Jian <cj.chengjian@huawei.com>
->>>
->>> When tracing multiple functions customly, a list function is called
->>> in ftrace_(regs)_caller, which makes all the other traced functions
->>> recheck the hash of the ftrace_ops when tracing happend, apparently
->>> it is inefficient.
->> ... and when does that actually matter? Who does this and why?
-> I don't think it was explained properly. What dynamically allocated
-> trampolines give you is this.
->
-> Let's say you have 10 ftrace_ops registered (with bpf and kprobes this can
-> be quite common). But each of these ftrace_ops traces a function (or
-> functions) that are not being traced by the other ftrace_ops. That is, each
-> ftrace_ops has its own unique function(s) that they are tracing. One could
-> be tracing schedule, the other could be tracing ksoftirqd_should_run
-> (whatever).
->
-> Without this change, because the arch does not support dynamically
-> allocated trampolines, it means that all these ftrace_ops will be
-> registered to the same trampoline. That means, for every function that is
-> traced, it will loop through all 10 of theses ftrace_ops and check their
-> hashes to see if their callback should be called or not.
->
-> With dynamically allocated trampolines, each ftrace_ops will have their own
-> trampoline, and that trampoline will be called directly if the function
-> is only being traced by the one ftrace_ops. This is much more efficient.
->
-> If a function is traced by more than one ftrace_ops, then it falls back to
-> the loop.
->
-> -- Steve
-> .
+Can you maybe try to temporarily disable the L3 driver and see if the stack
+trace is more accurate on what goes wrong? Just comment out the line for
+postcore_initcall_sync(omap3_l3_init) in drivers/bus/omap_l3_smx.c. The
+system will hang on the invalid access rather than triggering the L3
+error first.
 
-yes, this explanation is easier to understand, I will update commit 
-description according to this.
+Regards,
 
--- Wang ShaoBo
-
+Tony
