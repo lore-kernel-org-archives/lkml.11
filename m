@@ -2,102 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8462C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:06:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25126C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:07:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239345AbiD0PJh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 11:09:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35018 "EHLO
+        id S238987AbiD0PK6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 11:10:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238923AbiD0PJd (ORCPT
+        with ESMTP id S236491AbiD0PK4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 11:09:33 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFFCB506D4
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 08:06:22 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id p6so1773522plf.9
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 08:06:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=XS75V+e2Ct78C2HTr9fzu0rvESRlSHMev5cWIVD79uw=;
-        b=r/YR+XZjsNKfW6ntLhVS2qvC7q4aKCieabb65nb4ICf0i6WPU76Rc+tkeTTxtOSp4r
-         Cp4ikH5UOnW0RwHI0VWzuKZyB2yx+/3AEW56212jW8nk916NwlrBUrYbb5yh6HFUn/3g
-         7C24RG1alHoU/CY45Nv2Q+KqmGQGYipv6EK7gRTDqW9eWMqt2je5/dYX0pSpvobCGJ2U
-         T++YUMItnBRWW3mLRtwxTf5lcgwHzksUW2ykha3mFO2hChZdUZ9YL6VgaQRSBgXZJ1CA
-         KE42kd5aMrtcbglmkWfum3XmBqsylzcpg0FRfxBDKbVvhz6YeFwQIJ/RD9fCyF/VAJ6e
-         4lcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=XS75V+e2Ct78C2HTr9fzu0rvESRlSHMev5cWIVD79uw=;
-        b=1F1MmfBkW/lp87t9HxPdrkVKRSpNM4rd/mz71zSWPl4fld2smamZsr7HQKb8Dq7nzc
-         19WG5K17eMsAtUL7fWKmPkf+2bVNU0eXZB0Lf6Q3x/E5FeXVPbIEK/kNT7bSXHVXHAmx
-         ekfrkIQ6gTyVQ9cQ0CnqtodSRlNwskyZLFqE1mAu0Vuy047ybe5oYngSSgcYxSyLlbjr
-         zaX3DaYWbPr02GF+zvH/eprSehaYBu4bKAcUmJa56s3Arz6Y2Qn5gOmWj7uGz4kunpvx
-         b6ed/+Q5x9Y52X0I9AyogJRAorBm/zUIncRaPcJE1HrodVpg2evKjLh5n0dplPMUmriQ
-         bHww==
-X-Gm-Message-State: AOAM532o/KeO2AkD1b3N5eJ8SiLhrsFP2i8OA6S+2zwQPcvoSqmmUqB1
-        u17KxCI4Wa07z8CEzN52ZaT9W89mFjUTgSSjzAxPnRIh9T4BRw==
-X-Google-Smtp-Source: ABdhPJyhFsA6EuYCCsjkboZqyERAvCzNstvehUDrJwgfZmF4YkAReKOkOhEXO+4ruAdhtV07MECBNmLql1kgnul+17A=
-X-Received: by 2002:a17:903:2285:b0:15b:cd9e:f018 with SMTP id
- b5-20020a170903228500b0015bcd9ef018mr27793510plh.106.1651071981975; Wed, 27
- Apr 2022 08:06:21 -0700 (PDT)
+        Wed, 27 Apr 2022 11:10:56 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B610133E07
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 08:07:44 -0700 (PDT)
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23R6M8vo014103;
+        Wed, 27 Apr 2022 10:07:36 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=PODMain02222019;
+ bh=rC1I/YxoZvpUioOZX42tJOCa5yR61WbSa3yvtsC5Zdw=;
+ b=d1N/G6AjNnIRThXsbxyZL1lav5XGbbiOn9e3b4AqECLkWKRhPY6HWgR3NnzhLhuZqFCl
+ rUmm+pK8CJTTucPvkp5qDboBfmeKqTaRsSuNiyEcsVhay8mxl4PI4PX3/S/J2sshGy+Y
+ Dg3NZv5Waq06RYSB8tgeX6sS8ssEw09WgWPxCBPR73PGFfi64A0wuyrdpH7NMdurVBsD
+ bgcTMeZc1MBtCAnfhKhEPWswq0achlpTsnAAXQt1sNxEE9OjdXMty9/RDxCyFQ3pcsHf
+ 2VPCDXea4udQxNehTp8esRkrcpM43q6Wew8lheSIh8qvhfECgD9RAnZbYe23yUR1wzWs UQ== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3fprt60xth-8
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 27 Apr 2022 10:07:36 -0500
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 27 Apr
+ 2022 16:07:30 +0100
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
+ Transport; Wed, 27 Apr 2022 16:07:30 +0100
+Received: from vitaly-Legion-7-16ACHg6.ad.cirrus.com (unknown [198.90.238.170])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 6565446C;
+        Wed, 27 Apr 2022 15:07:30 +0000 (UTC)
+From:   Vitaly Rodionov <vitalyr@opensource.cirrus.com>
+To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        Mark Brown <broonie@kernel.org>
+CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
+        <linux-kernel@vger.kernel.org>,
+        Stefan Binding <sbinding@opensource.cirrus.com>
+Subject: [PATCH 19/26] ALSA: cs35l41: Do not print error when waking from hibernation
+Date:   Wed, 27 Apr 2022 16:07:13 +0100
+Message-ID: <20220427150720.9194-20-vitalyr@opensource.cirrus.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220427150720.9194-1-vitalyr@opensource.cirrus.com>
+References: <20220427150720.9194-1-vitalyr@opensource.cirrus.com>
 MIME-Version: 1.0
-References: <YmdeCqi6wmgiSiWh@carbon> <33085523-a8b9-1bf6-2726-f456f59015ef@openvz.org>
- <CALvZod4oaj9MpBDVUp9KGmnqu4F3UxjXgOLkrkvmRfFjA7F1dw@mail.gmail.com> <20220427122232.GA9823@blackbody.suse.cz>
-In-Reply-To: <20220427122232.GA9823@blackbody.suse.cz>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Wed, 27 Apr 2022 08:06:10 -0700
-Message-ID: <CALvZod7v0taU51TNRu=OM5iJ-bnm1ryu9shjs80PuE-SWobqFg@mail.gmail.com>
-Subject: Re: [PATCH memcg v4] net: set proper memcg for net_init hooks allocations
-To:     =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>
-Cc:     Vasily Averin <vvs@openvz.org>, Vlastimil Babka <vbabka@suse.cz>,
-        Roman Gushchin <roman.gushchin@linux.dev>, kernel@openvz.org,
-        Florian Westphal <fw@strlen.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Michal Hocko <mhocko@suse.com>,
-        Cgroups <cgroups@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-GUID: spaYy79zCg5QNdFGXUjmWboqJAd8xoK3
+X-Proofpoint-ORIG-GUID: spaYy79zCg5QNdFGXUjmWboqJAd8xoK3
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 5:22 AM Michal Koutn=C3=BD <mkoutny@suse.com> wrote=
-:
->
-> On Tue, Apr 26, 2022 at 10:23:32PM -0700, Shakeel Butt <shakeelb@google.c=
-om> wrote:
-> > [...]
-> > >
-> > > +static inline struct mem_cgroup *get_mem_cgroup_from_obj(void *p)
-> > > +{
-> > > +       struct mem_cgroup *memcg;
-> > > +
-> >
-> > Do we need memcg_kmem_enabled() check here or maybe
-> > mem_cgroup_from_obj() should be doing memcg_kmem_enabled() instead of
-> > mem_cgroup_disabled() as we can have "cgroup.memory=3Dnokmem" boot
-> > param.
->
-> I reckon such a guard is on the charge side and readers should treat
-> NULL and root_mem_group equally. Or is there a case when these two are
-> different?
->
-> (I can see it's different semantics when stored in current->active_memcg
-> (and active_memcg() getter) but for such "outer" callers like here it
-> seems equal.)
+From: Stefan Binding <sbinding@opensource.cirrus.com>
 
-I was more thinking about possible shortcut optimization and unrelated
-to this patch.
+When waking from hibernation, it is possible for the function
+which sends the wake command to fail initially, but after a
+retry it will succeed. There is no need to print an error if
+the initial attempts fail.
 
-Vasily, can you please add documentation for get_mem_cgroup_from_obj()
-similar to get_mem_cgroup_from_mm()? Also for mem_cgroup_or_root().
-Please note that root_mem_cgroup can be NULL during early boot.
+Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
+Signed-off-by: Vitaly Rodionov <vitalyr@opensource.cirrus.com>
+---
+ sound/soc/codecs/cs35l41-lib.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/sound/soc/codecs/cs35l41-lib.c b/sound/soc/codecs/cs35l41-lib.c
+index dc4654f43157..8a796dbe0718 100644
+--- a/sound/soc/codecs/cs35l41-lib.c
++++ b/sound/soc/codecs/cs35l41-lib.c
+@@ -1300,7 +1300,8 @@ int cs35l41_set_cspl_mbox_cmd(struct device *dev, struct regmap *regmap,
+ 			return 0;
+ 	}
+ 
+-	dev_err(dev, "Failed to set mailbox cmd %u (status %u)\n", cmd, sts);
++	if (cmd != CSPL_MBOX_CMD_OUT_OF_HIBERNATE)
++		dev_err(dev, "Failed to set mailbox cmd %u (status %u)\n", cmd, sts);
+ 
+ 	return -ENOMSG;
+ }
+-- 
+2.32.0
+
