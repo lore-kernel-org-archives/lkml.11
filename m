@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B958C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 19:38:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E20A3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 19:38:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229585AbiD0Tlt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 15:41:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45800 "EHLO
+        id S234470AbiD0Tly (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 15:41:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233552AbiD0Tj5 (ORCPT
+        with ESMTP id S233247AbiD0Tj4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 15:39:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7819510D9
+        Wed, 27 Apr 2022 15:39:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C7E3F34
         for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 12:36:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5991B61B72
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 19:36:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35D51C385AF;
-        Wed, 27 Apr 2022 19:36:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CBBF61B8D
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 19:36:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17B71C385B3;
+        Wed, 27 Apr 2022 19:36:43 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1njnSt-002IzN-AN;
-        Wed, 27 Apr 2022 15:36:43 -0400
-Message-ID: <20220427193643.160375389@goodmis.org>
+        id 1njnSs-002Ivz-6R;
+        Wed, 27 Apr 2022 15:36:42 -0400
+Message-ID: <20220427193642.030264509@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Wed, 27 Apr 2022 15:36:43 -0400
+Date:   Wed, 27 Apr 2022 15:36:37 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        kernel test robot <oliver.sang@intel.com>,
-        Mark-PK Tsai <mark-pk.tsai@mediatek.com>
-Subject: [for-next][PATCH 20/21] tracing: Avoid adding tracer option before update_tracer_options
+        Jeff Xie <xiehuan09@gmail.com>
+Subject: [for-next][PATCH 14/21] tracing: Make tp_printk work on syscall tracepoints
 References: <20220427193623.529296556@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -43,60 +42,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
+From: Jeff Xie <xiehuan09@gmail.com>
 
-To prepare for support asynchronous tracer_init_tracefs initcall,
-avoid calling create_trace_option_files before __update_tracer_options.
-Otherwise, create_trace_option_files will show warning because
-some tracers in trace_types list are already in tr->topts.
+Currently the tp_printk option has no effect on syscall tracepoint.
+When adding the kernel option parameter tp_printk, then:
 
-For example, hwlat_tracer call register_tracer in late_initcall,
-and global_trace.dir is already created in tracing_init_dentry,
-hwlat_tracer will be put into tr->topts.
-Then if the __update_tracer_options is executed after hwlat_tracer
-registered, create_trace_option_files find that hwlat_tracer is
-already in tr->topts.
+echo 1 > /sys/kernel/debug/tracing/events/syscalls/enable
 
-Link: https://lkml.kernel.org/r/20220426122407.17042-2-mark-pk.tsai@mediatek.com
+When running any application, no trace information is printed on the
+terminal.
 
-Link: https://lore.kernel.org/lkml/20220322133339.GA32582@xsang-OptiPlex-9020/
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Signed-off-by: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
+Now added printk for syscall tracepoints.
+
+Link: https://lkml.kernel.org/r/20220410145025.681144-1-xiehuan09@gmail.com
+
+Signed-off-by: Jeff Xie <xiehuan09@gmail.com>
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- kernel/trace/trace.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ kernel/trace/trace_syscalls.c | 35 +++++++++++------------------------
+ 1 file changed, 11 insertions(+), 24 deletions(-)
 
-diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index 27bb486c3f97..7275173c55d0 100644
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -6332,12 +6332,18 @@ static void tracing_set_nop(struct trace_array *tr)
- 	tr->current_trace = &nop_trace;
- }
+diff --git a/kernel/trace/trace_syscalls.c b/kernel/trace/trace_syscalls.c
+index f755bde42fd0..b69e207012c9 100644
+--- a/kernel/trace/trace_syscalls.c
++++ b/kernel/trace/trace_syscalls.c
+@@ -154,7 +154,7 @@ print_syscall_enter(struct trace_iterator *iter, int flags,
+ 			goto end;
  
-+static bool tracer_options_updated;
-+
- static void add_tracer_options(struct trace_array *tr, struct tracer *t)
- {
- 	/* Only enable if the directory has been created already. */
- 	if (!tr->dir)
+ 		/* parameter types */
+-		if (tr->trace_flags & TRACE_ITER_VERBOSE)
++		if (tr && tr->trace_flags & TRACE_ITER_VERBOSE)
+ 			trace_seq_printf(s, "%s ", entry->types[i]);
+ 
+ 		/* parameter values */
+@@ -296,9 +296,7 @@ static void ftrace_syscall_enter(void *data, struct pt_regs *regs, long id)
+ 	struct trace_event_file *trace_file;
+ 	struct syscall_trace_enter *entry;
+ 	struct syscall_metadata *sys_data;
+-	struct ring_buffer_event *event;
+-	struct trace_buffer *buffer;
+-	unsigned int trace_ctx;
++	struct trace_event_buffer fbuffer;
+ 	unsigned long args[6];
+ 	int syscall_nr;
+ 	int size;
+@@ -321,20 +319,16 @@ static void ftrace_syscall_enter(void *data, struct pt_regs *regs, long id)
+ 
+ 	size = sizeof(*entry) + sizeof(unsigned long) * sys_data->nb_args;
+ 
+-	trace_ctx = tracing_gen_ctx();
+-
+-	event = trace_event_buffer_lock_reserve(&buffer, trace_file,
+-			sys_data->enter_event->event.type, size, trace_ctx);
+-	if (!event)
++	entry = trace_event_buffer_reserve(&fbuffer, trace_file, size);
++	if (!entry)
  		return;
  
-+	/* Only create trace option files after update_tracer_options finish */
-+	if (!tracer_options_updated)
-+		return;
-+
- 	create_trace_option_files(tr, t);
+-	entry = ring_buffer_event_data(event);
++	entry = ring_buffer_event_data(fbuffer.event);
+ 	entry->nr = syscall_nr;
+ 	syscall_get_arguments(current, regs, args);
+ 	memcpy(entry->args, args, sizeof(unsigned long) * sys_data->nb_args);
+ 
+-	event_trigger_unlock_commit(trace_file, buffer, event, entry,
+-				    trace_ctx);
++	trace_event_buffer_commit(&fbuffer);
  }
  
-@@ -9176,6 +9182,7 @@ static void __update_tracer_options(struct trace_array *tr)
- static void update_tracer_options(struct trace_array *tr)
- {
- 	mutex_lock(&trace_types_lock);
-+	tracer_options_updated = true;
- 	__update_tracer_options(tr);
- 	mutex_unlock(&trace_types_lock);
+ static void ftrace_syscall_exit(void *data, struct pt_regs *regs, long ret)
+@@ -343,9 +337,7 @@ static void ftrace_syscall_exit(void *data, struct pt_regs *regs, long ret)
+ 	struct trace_event_file *trace_file;
+ 	struct syscall_trace_exit *entry;
+ 	struct syscall_metadata *sys_data;
+-	struct ring_buffer_event *event;
+-	struct trace_buffer *buffer;
+-	unsigned int trace_ctx;
++	struct trace_event_buffer fbuffer;
+ 	int syscall_nr;
+ 
+ 	syscall_nr = trace_get_syscall_nr(current, regs);
+@@ -364,20 +356,15 @@ static void ftrace_syscall_exit(void *data, struct pt_regs *regs, long ret)
+ 	if (!sys_data)
+ 		return;
+ 
+-	trace_ctx = tracing_gen_ctx();
+-
+-	event = trace_event_buffer_lock_reserve(&buffer, trace_file,
+-			sys_data->exit_event->event.type, sizeof(*entry),
+-			trace_ctx);
+-	if (!event)
++	entry = trace_event_buffer_reserve(&fbuffer, trace_file, sizeof(*entry));
++	if (!entry)
+ 		return;
+ 
+-	entry = ring_buffer_event_data(event);
++	entry = ring_buffer_event_data(fbuffer.event);
+ 	entry->nr = syscall_nr;
+ 	entry->ret = syscall_get_return_value(current, regs);
+ 
+-	event_trigger_unlock_commit(trace_file, buffer, event, entry,
+-				    trace_ctx);
++	trace_event_buffer_commit(&fbuffer);
  }
+ 
+ static int reg_event_syscall_enter(struct trace_event_file *file,
 -- 
 2.35.1
