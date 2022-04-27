@@ -2,129 +2,268 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32319C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:46:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 119F2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:46:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238582AbiD0Otw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 10:49:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42572 "EHLO
+        id S238603AbiD0Oty (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 10:49:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238526AbiD0Oto (ORCPT
+        with ESMTP id S238516AbiD0Oto (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Apr 2022 10:49:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 249BF39153
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 07:46:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651070792;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=YdEl5gFbNnh3pr0/DmoxHJ2wZUi5cPzRQ6e5jHf14Hs=;
-        b=CoDocGMPw+czgBX8fuuL/fHwpGTVjcmFBCb9bxpkeKUQ4HhKRE+b5wxfEtkmX4jEdYUW5D
-        71ghVS0WYQdZh9iQhJbYjFvz1lJTuyAhivnX69wWwUsIl1vvm/yKoJHUtV5EvQdAxqrSpE
-        v8Q2rN1crwSaZ0CVwWy6oDY9xEBvqMM=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-373-pLbraYebPaO7E-a_LYIxlw-1; Wed, 27 Apr 2022 10:46:29 -0400
-X-MC-Unique: pLbraYebPaO7E-a_LYIxlw-1
-Received: by mail-ej1-f71.google.com with SMTP id hp17-20020a1709073e1100b006ef69a535c3so1299011ejc.10
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 07:46:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=YdEl5gFbNnh3pr0/DmoxHJ2wZUi5cPzRQ6e5jHf14Hs=;
-        b=d5jLA61bDyUkcO3fPnVCOgTplU941MgpaZTA7lC+9tqcmvJREWpYy3nh9onvOPJ125
-         Qmi154UV0YkrDemz199Tm99CHIGVtpd8lr1hq5CcXnDMmyWge+0aXy19nQjjOgDUAKee
-         OWjZP2DsfKTFG5voHK8Xx6oKRSh4CvXtqVKujUWraP+MYlZBIp/CGDGxxrc/HwTrOyGQ
-         +UZB56ysYezyUfYILPXaxRYfsLXn6MSFrgJzAgtDebQRqYIVW8pCuQO+xwu5aoQjKxdF
-         uZLDRKq8fyhjeK5fXmplaYLJ32n9oznNIEsA0zLZSiW3dgWlx/gaub1VPWo1apPqHyEK
-         VXbw==
-X-Gm-Message-State: AOAM5335HfcqOu1QNhzMVZG/A4zPWBwgfmc30IWhazHKPQXfEc+dgtBJ
-        DwKoqATGwI7F49XVdtzxyk7jxOH0jwlLEHGqVmAEEf1OWkMFZ9CNn4s8G0VH3I/YmN60b+8Zuui
-        AbE25jRPzYVoRuNDR/5eIjveW
-X-Received: by 2002:a17:907:94c9:b0:6e8:ab67:829e with SMTP id dn9-20020a17090794c900b006e8ab67829emr26309668ejc.313.1651070787938;
-        Wed, 27 Apr 2022 07:46:27 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxjASHi6OBZZvgVZRJZu1gcVmJ/GgM/O5qUp6TeB4OjWCUhJ1CUpRZy/z4MHGkXZfLGS8B2tw==
-X-Received: by 2002:a17:907:94c9:b0:6e8:ab67:829e with SMTP id dn9-20020a17090794c900b006e8ab67829emr26309647ejc.313.1651070787722;
-        Wed, 27 Apr 2022 07:46:27 -0700 (PDT)
-Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
-        by smtp.gmail.com with ESMTPSA id p5-20020a1709066a8500b006f3bdf3a2f4sm2142221ejr.105.2022.04.27.07.46.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Apr 2022 07:46:27 -0700 (PDT)
-Message-ID: <9df369cb-db52-d8be-c244-1f3ec04b063b@redhat.com>
-Date:   Wed, 27 Apr 2022 16:46:26 +0200
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8938A39149;
+        Wed, 27 Apr 2022 07:46:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651070791; x=1682606791;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=PyxzdMNHi5SNpD/gU2LCc0lK3E+ymcTdlRxMk2lgO8o=;
+  b=AXWZK2UHoI5YXfJhu7FvNjF7LOQL9GCl9zHoX7n8ovqMG/ulE8VrSufc
+   MZCSupTgn6LRqORCVu5hPhk1QMg5Urtzwt3O/u41vRX6jxdMn5YrSD5U9
+   Kt5rz9W4uQdm8M/B7ohrmjtEof/hDSmq5lR/L8KoOOqsNLknR9R0FhvC/
+   8Sdjo7s4RjesqJd3ZCabGOSxyUVr+yhO0GyIpdqrLx4uno9Owiqa1DYRH
+   YiN+7zXCxBGOqHcJ1ZHx7mvIbeiCbRs0IFwmmx1y7+hhzrquNJjEDFgK0
+   5rPpvYAAL60WnagovszliJ8ZlN1kABAjjuqW6XTpstVbKRAOOQz5AfWx9
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="352384332"
+X-IronPort-AV: E=Sophos;i="5.90,293,1643702400"; 
+   d="scan'208";a="352384332"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 07:46:30 -0700
+X-IronPort-AV: E=Sophos;i="5.90,293,1643702400"; 
+   d="scan'208";a="533239142"
+Received: from pcurcohe-mobl.amr.corp.intel.com (HELO [10.212.68.237]) ([10.212.68.237])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 07:46:29 -0700
+Message-ID: <c833aff2-b459-a1d7-431f-bce5c5f29182@intel.com>
+Date:   Wed, 27 Apr 2022 07:49:50 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] platform/x86: intel-uncore-freq: Prevent driver loading
- in guests
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 04/21] x86/virt/tdx: Add skeleton for detecting and
+ initializing TDX on demand
 Content-Language: en-US
-To:     Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        markgross@kernel.org
-Cc:     platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Borislav Petkov <bp@suse.de>
-References: <20220421184154.747721-1-srinivas.pandruvada@linux.intel.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220421184154.747721-1-srinivas.pandruvada@linux.intel.com>
+To:     Kai Huang <kai.huang@intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Cc:     seanjc@google.com, pbonzini@redhat.com, len.brown@intel.com,
+        tony.luck@intel.com, rafael.j.wysocki@intel.com,
+        reinette.chatre@intel.com, dan.j.williams@intel.com,
+        peterz@infradead.org, ak@linux.intel.com,
+        kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        isaku.yamahata@intel.com
+References: <cover.1649219184.git.kai.huang@intel.com>
+ <32dcf4c7acc95244a391458d79cd6907125c5c29.1649219184.git.kai.huang@intel.com>
+ <ac482f2b-d2d1-0643-faa4-1b36340268c5@intel.com>
+ <22e3adf42b8ea2cae3aabc26f762acb983133fea.camel@intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <22e3adf42b8ea2cae3aabc26f762acb983133fea.camel@intel.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On 4/21/22 20:41, Srinivas Pandruvada wrote:
-> Loading this driver in guests results in unchecked MSR access error for
-> MSR 0x620.
+On 4/26/22 17:43, Kai Huang wrote:
+> On Tue, 2022-04-26 at 13:53 -0700, Dave Hansen wrote:
+>> On 4/5/22 21:49, Kai Huang wrote:
+...
+>>> +static bool tdx_keyid_sufficient(void)
+>>> +{
+>>> +	if (!cpumask_equal(&cpus_booted_once_mask,
+>>> +					cpu_present_mask))
+>>> +		return false;
+>>
+>> I'd move this cpumask_equal() to a helper.
 > 
-> There is no use of reading and modifying package/die scoped uncore MSRs
-> in guests. So check for CPU feature X86_FEATURE_HYPERVISOR to prevent
-> loading of this driver in guests.
+> Sorry to double confirm, do you want something like:
 > 
-> Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=215870
-> Suggested-by: Borislav Petkov <bp@suse.de>
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> static bool tdx_detected_on_all_cpus(void)
+> {
+> 	/*
+> 	 * To detect any BIOS misconfiguration among cores, all logical
+> 	 * cpus must have been brought up at least once.  This is true
+> 	 * unless 'maxcpus' kernel command line is used to limit the
+> 	 * number of cpus to be brought up during boot time.  However
+> 	 * 'maxcpus' is basically an invalid operation mode due to the
+> 	 * MCE broadcast problem, and it should not be used on a TDX
+> 	 * capable machine.  Just do paranoid check here and do not
+> 	 * report SEAMRR as enabled in this case.
+> 	 */
+> 	return cpumask_equal(&cpus_booted_once_mask, cpu_present_mask);
+> }
 
-Thank you for your patch, I've applied this patch to my review-hans 
-branch:
-https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git/log/?h=review-hans
+That's logically the right idea, but I hate the name since the actual
+test has nothing to do with TDX being detected.  The comment is also
+rather verbose and rambling.
 
-Note it will show up in my review-hans branch once I've pushed my
-local branch there, which might take a while.
+It should be named something like:
 
-Once I've run some tests on this branch the patches there will be
-added to the platform-drivers-x86/for-next branch and eventually
-will be included in the pdx86 pull-request to Linus for the next
-merge-window.
+	all_cpus_booted()
 
-Regards,
+and with a comment like this:
 
-Hans
+/*
+ * To initialize TDX, the kernel needs to run some code on every
+ * present CPU.  Detect cases where present CPUs have not been
+ * booted, like when maxcpus=N is used.
+ */
 
-
-
-> ---
->  drivers/platform/x86/intel/uncore-frequency/uncore-frequency.c | 3 +++
->  1 file changed, 3 insertions(+)
+> static bool seamrr_enabled(void)
+> {
+> 	if (!tdx_detected_on_all_cpus())
+> 		return false;
 > 
-> diff --git a/drivers/platform/x86/intel/uncore-frequency/uncore-frequency.c b/drivers/platform/x86/intel/uncore-frequency/uncore-frequency.c
-> index c61f804dd44e..8f9c571d7257 100644
-> --- a/drivers/platform/x86/intel/uncore-frequency/uncore-frequency.c
-> +++ b/drivers/platform/x86/intel/uncore-frequency/uncore-frequency.c
-> @@ -212,6 +212,9 @@ static int __init intel_uncore_init(void)
->  	const struct x86_cpu_id *id;
->  	int ret;
->  
-> +	if (cpu_feature_enabled(X86_FEATURE_HYPERVISOR))
-> +		return -ENODEV;
-> +
->  	id = x86_match_cpu(intel_uncore_cpu_ids);
->  	if (!id)
->  		return -ENODEV;
+> 	return __seamrr_enabled();
+> }
+> 
+> static bool tdx_keyid_sufficient()
+> {
+> 	if (!tdx_detected_on_all_cpus())
+> 		return false;
+> 
+> 	...
+> }
 
+Although, looking at those, it's *still* unclear why you need this.  I
+assume it's because some later TDX SEAMCALL will fail if you get this
+wrong, and you want to be able to provide a better error message.
+
+*BUT* this code doesn't actually provide halfway reasonable error
+messages.  If someone uses maxcpus=99, then this code will report:
+
+	pr_info("SEAMRR not enabled.\n");
+
+right?  That's bonkers.
+
+>>> +	/*
+>>> +	 * TDX requires at least two KeyIDs: one global KeyID to
+>>> +	 * protect the metadata of the TDX module and one or more
+>>> +	 * KeyIDs to run TD guests.
+>>> +	 */
+>>> +	return tdx_keyid_num >= 2;
+>>> +}
+>>> +
+>>> +static int __tdx_detect(void)
+>>> +{
+>>> +	/* The TDX module is not loaded if SEAMRR is disabled */
+>>> +	if (!seamrr_enabled()) {
+>>> +		pr_info("SEAMRR not enabled.\n");
+>>> +		goto no_tdx_module;
+>>> +	}
+>>
+>> Why even bother with the SEAMRR stuff?  It sounded like you can "ping"
+>> the module with SEAMCALL.  Why not just use that directly?
+> 
+> SEAMCALL will cause #GP if SEAMRR is not enabled.  We should check whether
+> SEAMRR is enabled before making SEAMCALL.
+
+So...  You could actually get rid of all this code.  if SEAMCALL #GP's,
+then you say, "Whoops, the firmware didn't load the TDX module
+correctly, sorry."
+
+Why is all this code here?  What is it for?
+
+>>> +	/*
+>>> +	 * Also do not report the TDX module as loaded if there's
+>>> +	 * no enough TDX private KeyIDs to run any TD guests.
+>>> +	 */
+>>> +	if (!tdx_keyid_sufficient()) {
+>>> +		pr_info("Number of TDX private KeyIDs too small: %u.\n",
+>>> +				tdx_keyid_num);
+>>> +		goto no_tdx_module;
+>>> +	}
+>>> +
+>>> +	/* Return -ENODEV until the TDX module is detected */
+>>> +no_tdx_module:
+>>> +	tdx_module_status = TDX_MODULE_NONE;
+>>> +	return -ENODEV;
+>>> +}
+
+Again, if someone uses maxcpus=1234 and we get down here, then it
+reports to the user:
+	
+	Number of TDX private KeyIDs too small: ...
+
+????  When the root of the problem has nothing to do with KeyIDs.
+
+>>> +static int init_tdx_module(void)
+>>> +{
+>>> +	/*
+>>> +	 * Return -EFAULT until all steps of TDX module
+>>> +	 * initialization are done.
+>>> +	 */
+>>> +	return -EFAULT;
+>>> +}
+>>> +
+>>> +static void shutdown_tdx_module(void)
+>>> +{
+>>> +	/* TODO: Shut down the TDX module */
+>>> +	tdx_module_status = TDX_MODULE_SHUTDOWN;
+>>> +}
+>>> +
+>>> +static int __tdx_init(void)
+>>> +{
+>>> +	int ret;
+>>> +
+>>> +	/*
+>>> +	 * Logical-cpu scope initialization requires calling one SEAMCALL
+>>> +	 * on all logical cpus enabled by BIOS.  Shutting down the TDX
+>>> +	 * module also has such requirement.  Further more, configuring
+>>> +	 * the key of the global KeyID requires calling one SEAMCALL for
+>>> +	 * each package.  For simplicity, disable CPU hotplug in the whole
+>>> +	 * initialization process.
+>>> +	 *
+>>> +	 * It's perhaps better to check whether all BIOS-enabled cpus are
+>>> +	 * online before starting initializing, and return early if not.
+>>
+>> But you did some of this cpumask checking above.  Right?
+> 
+> Above check only guarantees SEAMRR/TDX KeyID has been detected on all presnet
+> cpus.  the 'present' cpumask doesn't equal to all BIOS-enabled CPUs.
+
+I have no idea what this is saying.  In general, I have no idea what the
+comment is saying.  It makes zero sense.  The locking pattern for stuff
+like this is:
+
+	cpus_read_lock();
+
+	for_each_online_cpu()
+		do_something();
+
+	cpus_read_unlock();
+
+because you need to make sure that you don't miss "do_something()" on a
+CPU that comes online during the loop.
+
+But, now that I think about it, all of the checks I've seen so far are
+for *booted* CPUs.  While the lock (I assume) would keep new CPUs from
+booting, it doesn't do any good really since the "cpus_booted_once_mask"
+bits are only set and not cleared.  A CPU doesn't un-become booted once.
+
+Again, we seem to have a long, verbose comment that says very little and
+only confuses me.
+
+...
+>> Why does this need both a tdx_detect() and a tdx_init()?  Shouldn't the
+>> interface from outside just be "get TDX up and running, please?"
+> 
+> We can have a single tdx_init().  However tdx_init() can be heavy, and having a
+> separate non-heavy tdx_detect() may be useful if caller wants to separate
+> "detecting the TDX module" and "initializing the TDX module", i.e. to do
+> something in the middle.
+
+<Sigh>  So, this "design" went unmentioned, *and* I can't review if the
+actual callers of this need the functionality or not because they're not
+in this series.
+
+> However tdx_detect() basically only detects P-SEAMLDR.  If we move P-SEAMLDR
+> detection to tdx_init(), or we git rid of P-SEAMLDR completely, then we don't
+> need tdx_detect() anymore.  We can expose seamrr_enabled() and TDX KeyID
+> variables or functions so caller can use them to see whether it should do TDX
+> related staff and then call tdx_init().
+
+I don't think you've made a strong case for why P-SEAMLDR detection is
+even necessary in this series.
