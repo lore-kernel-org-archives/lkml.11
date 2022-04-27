@@ -2,136 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28F83C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 22:51:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E651C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 22:52:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238896AbiD0WzG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 18:55:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35912 "EHLO
+        id S234784AbiD0WzN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 18:55:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237853AbiD0Wyi (ORCPT
+        with ESMTP id S238416AbiD0Wyf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 18:54:38 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30A968CCF2;
-        Wed, 27 Apr 2022 15:51:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=/X9VGFpkqSi0Xw+sb2fnqT5ti0fEX/+xmh5q7q7MhDY=; b=p3QOIFADQeeHCVp8bxPKwO62s+
-        EGcZOVKN2qbhBt1Pf/EZXw+tkBx2x9DRVMO1uTp94JqIADubO77jiICP/E04L/nn99FEYBzZb+44L
-        /kz24xVDrX4FFqomkvxzWUTFlHhE4ZhZCfkHWBQr0/Lzkqr3CE/w4r7fAtX83L8f0pEarK5Qx6XYH
-        4zbdyCjIZQkKS6mh2t53k79tPqORut15Ek94GDPyIzx6i+d57M9a0UcH7EVEXkkbVPk2r+5s4ram2
-        N0+1/N2WpK9qFZ8QFj+vJFSqHIZNJD4YgbbIqqLYxl+DJIQthPO2tybUvOHdIFVD8Tw3e7+DHlkve
-        LuLH0yww==;
-Received: from [179.113.53.197] (helo=localhost)
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1njqV1-000228-53; Thu, 28 Apr 2022 00:51:08 +0200
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-To:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
-        kexec@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
-        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
-        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
-        xen-devel@lists.xenproject.org, x86@kernel.org,
-        kernel-dev@igalia.com, gpiccoli@igalia.com, kernel@gpiccoli.net,
-        halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
-        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
-        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
-        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Mihai Carabas <mihai.carabas@oracle.com>,
-        Shile Zhang <shile.zhang@linux.alibaba.com>,
-        Wang ShaoBo <bobo.shaobowang@huawei.com>,
-        zhenwei pi <pizhenwei@bytedance.com>
-Subject: [PATCH 05/30] misc/pvpanic: Convert regular spinlock into trylock on panic path
-Date:   Wed, 27 Apr 2022 19:48:59 -0300
-Message-Id: <20220427224924.592546-6-gpiccoli@igalia.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220427224924.592546-1-gpiccoli@igalia.com>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
+        Wed, 27 Apr 2022 18:54:35 -0400
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2C048CCCA
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:50:58 -0700 (PDT)
+Received: by mail-oi1-x231.google.com with SMTP id m11so3575216oib.11
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:50:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uO1mjNT4t8QFE2H4UTWyMQ/O+XjoVk8wmcfJNXUjbrc=;
+        b=SgqFgdXosM/ZYsAUz16MKVkJJBdinSAq5DNb8Wfpvs6H36XROkz/tVPkTu6r0qbWKC
+         W3EMwHETOmhuJAJPXayfGbXzUYzGsQLRRP6gDoh6MdqvZmBtm3zYnfYLJatRV/pLeTPP
+         +RzlgD1IS4LZAJR1eL5lkO4KHr1YxJ9pDDpK8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uO1mjNT4t8QFE2H4UTWyMQ/O+XjoVk8wmcfJNXUjbrc=;
+        b=segJ+/ZiHu4y2027Oq8U1Vslur8CndStCYwja7tcIeORYrA4o0HesN7+YHd+9PJmuk
+         kNhTRlgk9+wuz2/ezjZdb/UhSvCoygqexgq23qIfVBq8T0r3Zq37t+SvoCZpYan/al2R
+         yfhIU4oPsCqonaTA0Ka6I8KpAoe8heHucnCFs9UH9oRLqK74PsPiqzsNEQ/gtvzET5aJ
+         NyntecQNZRQCYtoVKrZfZ/X3ownA45LbOEgOnHGQPDc0raik9pQ4TrxjJzGSwLyaPEOq
+         IOHmCk1b7yoiyqiLi3l/EsdZbAD0OCUynSByDg3YyycUDt37SPEAm0u8osQTgQ3ERPKf
+         97VA==
+X-Gm-Message-State: AOAM5304CMqslLcwKbZdw0Z8UYQmUtSV28Nm5mXY4D6B4qr12t3FoJjT
+        GHz15/zUJlzNYkR1DNtEuxVMh6RZCyGWZg==
+X-Google-Smtp-Source: ABdhPJwGQsxcEYHsElbh2khGaacRxR9nbyIgxqzl06IrsWFZAjxk7PRRQAWnOisR1XouvQSGymxDbg==
+X-Received: by 2002:a05:6808:114c:b0:322:a749:2d1b with SMTP id u12-20020a056808114c00b00322a7492d1bmr18616781oiu.64.1651099858023;
+        Wed, 27 Apr 2022 15:50:58 -0700 (PDT)
+Received: from mail-oa1-f41.google.com (mail-oa1-f41.google.com. [209.85.160.41])
+        by smtp.gmail.com with ESMTPSA id t11-20020a9d7f8b000000b00605e7880924sm221559otp.58.2022.04.27.15.50.57
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Apr 2022 15:50:57 -0700 (PDT)
+Received: by mail-oa1-f41.google.com with SMTP id 586e51a60fabf-e68392d626so3555012fac.4
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:50:57 -0700 (PDT)
+X-Received: by 2002:a05:6870:4201:b0:e6:47c4:e104 with SMTP id
+ u1-20020a056870420100b000e647c4e104mr16438606oac.257.1651096086895; Wed, 27
+ Apr 2022 14:48:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220426014545.628100-1-briannorris@chromium.org>
+ <20220426014545.628100-2-briannorris@chromium.org> <CAMdYzYqyDr1HFYB4p8NK8ssq60qfjR2jyoSJ=tcRn8CWsZr16g@mail.gmail.com>
+ <d72eb7a7-f922-3270-422b-4e27505de530@arm.com>
+In-Reply-To: <d72eb7a7-f922-3270-422b-4e27505de530@arm.com>
+From:   Brian Norris <briannorris@chromium.org>
+Date:   Wed, 27 Apr 2022 14:47:55 -0700
+X-Gmail-Original-Message-ID: <CA+ASDXNFPfp6J9bLpYh4uyZDtmhrbSb6Y3=T26_qxd4-YDMtcw@mail.gmail.com>
+Message-ID: <CA+ASDXNFPfp6J9bLpYh4uyZDtmhrbSb6Y3=T26_qxd4-YDMtcw@mail.gmail.com>
+Subject: Re: [PATCH v3 2/3] soc: rockchip: power-domain: Replace dsb() with smb()
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     Peter Geis <pgwipeout@gmail.com>, Heiko Stuebner <heiko@sntech.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pvpanic driver relies on panic notifiers to execute a callback
-on panic event. Such function is executed in atomic context - the
-panic function disables local IRQs, preemption and all other CPUs
-that aren't running the panic code.
+On Tue, Apr 26, 2022 at 5:25 PM Robin Murphy <robin.murphy@arm.com> wrote:
+> On 2022-04-27 00:55, Peter Geis wrote:
+> > On Mon, Apr 25, 2022 at 9:46 PM Brian Norris <briannorris@chromium.org> wrote:
+> >>
+> >> It's unclear if these are really needed at all, but seemingly their
+> >> purpose is only as a write barrier. Use the general macro instead of the
+> >> ARM-specific one.
+...
+> >> -       dsb(sy);
+> >> +       wmb();
+> >
+> > Just curious, shouldn't this be mb() instead of wmb()?
+> >  From the arm64 barrier.h:
+> >
+> > #define mb() dsb(sy)
+> > #define wmb() dsb(st)
+>
+> As I mentioned on v2, that would be the literal translation, however
+> there's no concurrency since this is happening under a mutex, so there's
+> no other agent against whose accesses loads would need to be
+> synchronised, therefore the only logical reason those DSBs were ever
+> there at all must be to ensure that the prior store(s) have been issued
+> to their destination before proceeding. The history implies that this
+> dates all the way back to RK3288, where Armv7's argument-less DSB lacked
+> that distinction anyway.
 
-With that said, it's dangerous to use regular spinlocks in such path,
-as introduced by commit b3c0f8774668 ("misc/pvpanic: probe multiple instances").
-This patch fixes that by replacing regular spinlocks with the trylock
-safer approach.
+Thanks Robin. I already tried to capture part of this in the commit message:
 
-It also fixes an old comment (about a long gone framebuffer code) and
-the notifier priority - we should execute hypervisor notifiers early,
-deferring this way the panic action to the hypervisor, as expected by
-the users that are setting up pvpanic.
+"It's unclear if these are really needed at all, but seemingly their
+purpose is only as a write barrier."
 
-Fixes: b3c0f8774668 ("misc/pvpanic: probe multiple instances")
-Cc: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc: Mihai Carabas <mihai.carabas@oracle.com>
-Cc: Shile Zhang <shile.zhang@linux.alibaba.com>
-Cc: Wang ShaoBo <bobo.shaobowang@huawei.com>
-Cc: zhenwei pi <pizhenwei@bytedance.com>
-Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
----
- drivers/misc/pvpanic/pvpanic.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+i.e., it's intentional that I'm making a change, not a literal translation.
 
-diff --git a/drivers/misc/pvpanic/pvpanic.c b/drivers/misc/pvpanic/pvpanic.c
-index 4b8f1c7d726d..049a12006348 100644
---- a/drivers/misc/pvpanic/pvpanic.c
-+++ b/drivers/misc/pvpanic/pvpanic.c
-@@ -34,7 +34,9 @@ pvpanic_send_event(unsigned int event)
- {
- 	struct pvpanic_instance *pi_cur;
- 
--	spin_lock(&pvpanic_lock);
-+	if (!spin_trylock(&pvpanic_lock))
-+		return;
-+
- 	list_for_each_entry(pi_cur, &pvpanic_list, list) {
- 		if (event & pi_cur->capability & pi_cur->events)
- 			iowrite8(event, pi_cur->base);
-@@ -55,9 +57,13 @@ pvpanic_panic_notify(struct notifier_block *nb, unsigned long code, void *unused
- 	return NOTIFY_DONE;
- }
- 
-+/*
-+ * Call our notifier very early on panic, deferring the
-+ * action taken to the hypervisor.
-+ */
- static struct notifier_block pvpanic_panic_nb = {
- 	.notifier_call = pvpanic_panic_notify,
--	.priority = 1, /* let this called before broken drm_fb_helper() */
-+	.priority = INT_MAX,
- };
- 
- static void pvpanic_remove(void *param)
--- 
-2.36.0
+I ran through a few tests on Rockchip RK3399, FWIW, although I suppose
+some nasty memory ordering bugs are not exactly the kind of thing that
+would fall out in smoke tests.
 
+Brian
