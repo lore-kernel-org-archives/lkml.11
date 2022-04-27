@@ -2,177 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3EB4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:31:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2161C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:32:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238120AbiD0Oev (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 10:34:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59128 "EHLO
+        id S238024AbiD0OfU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 10:35:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238142AbiD0Oee (ORCPT
+        with ESMTP id S237766AbiD0OfS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 10:34:34 -0400
-Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC8AC1A82F
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 07:31:12 -0700 (PDT)
-Received: from epcas5p2.samsung.com (unknown [182.195.41.40])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220427143111epoutp043c9012495135f974378f85fc0e48f548~px0zJ5S1W1817418174epoutp04U
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 14:31:11 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220427143111epoutp043c9012495135f974378f85fc0e48f548~px0zJ5S1W1817418174epoutp04U
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1651069871;
-        bh=crH6lA8CKSr3raD35a8WNJj9gNhvnxzuqz4w8DLYYGk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fBEiAL09DVN+6O96oSHfHYfLa/Y0rXC6OWr8HMjDqmKMbmsTHamZ3k97hKG7YmF2/
-         U2vK9ejkjv+6eatRrTbT5IhEm0Ymzg9tCefEY7cdhkQDb+GNpT7eoaHbK5wQ3IVfid
-         FrF7T1W5R4YAg2LFLwPW7VJslUT919RYSUn/PsoI=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas5p4.samsung.com (KnoxPortal) with ESMTP id
-        20220427143110epcas5p40c88d0aed948bf707494648074071e87~px0yta3Zx2356823568epcas5p4v;
-        Wed, 27 Apr 2022 14:31:10 +0000 (GMT)
-Received: from epsmges5p1new.samsung.com (unknown [182.195.38.183]) by
-        epsnrtp2.localdomain (Postfix) with ESMTP id 4KpLlZ5wJ5z4x9Pt; Wed, 27 Apr
-        2022 14:31:06 +0000 (GMT)
-Received: from epcas5p4.samsung.com ( [182.195.41.42]) by
-        epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        05.DD.10063.9A359626; Wed, 27 Apr 2022 23:31:05 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas5p3.samsung.com (KnoxPortal) with ESMTPA id
-        20220427130824epcas5p38594effe1d648be050ff00284e115014~pwshxFhMl2087820878epcas5p35;
-        Wed, 27 Apr 2022 13:08:24 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220427130824epsmtrp14e26381493d2df92a583d1f425e97e0c~pwshwRhe_3201832018epsmtrp1G;
-        Wed, 27 Apr 2022 13:08:24 +0000 (GMT)
-X-AuditID: b6c32a49-4b5ff7000000274f-c5-626953a9862a
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        D8.A4.08853.84049626; Wed, 27 Apr 2022 22:08:24 +0900 (KST)
-Received: from test-zns (unknown [107.110.206.5]) by epsmtip2.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220427130823epsmtip2faace445336901ad6bad32c4c8c06a3d~pwsghFvIJ1516015160epsmtip2s;
-        Wed, 27 Apr 2022 13:08:23 +0000 (GMT)
-Date:   Wed, 27 Apr 2022 18:33:15 +0530
-From:   Nitesh Shetty <nj.shetty@samsung.com>
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Cc:     linux-block@vger.kernel.org, linux-scsi@vger.kernel.org,
-        dm-devel@redhat.com, linux-nvme@lists.infradead.org,
-        linux-fsdevel@vger.kernel.org, nitheshshetty@gmail.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 03/10] block: Introduce a new ioctl for copy
-Message-ID: <20220427130315.GB9558@test-zns>
+        Wed, 27 Apr 2022 10:35:18 -0400
+Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01on2133.outbound.protection.outlook.com [40.107.114.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A465C1FA6F;
+        Wed, 27 Apr 2022 07:32:05 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EkcUTNYEziQEaHYE/2n7+3eagM3cypNz3FqJ1F6kZ6padx2kBzUPSiXM8TVS9cOj8NJ3TMX3b8dsGcvRATjim92qn4L2ARc+o3o1PgoGovonBHd/FOUbhnS9w50JLT3ZCYClpc5XTteIK6ps6dRTUdEEFLjR3qJd+odiMmpPjTmwO8fFIAGsZga2h3ZtyUTEs0cJtvLwjgnTfme0Z59tgAzh3YUgH5GnhwznYHXrb3sR5bY+5kHHTkHirBjbsYXFIsCteonIzfJprb3yeYcV+vVKOgAGwd5BjIUArieQPWBf3mu91BKGZWUDbbjidguxkeN/0rR3HbjY+K4sIiOn9Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9xt1Af93NnvzZI+ZBc34yLt27w4pz9djae310iRmfvY=;
+ b=Xv3m5VTMO6yWLpzf9ISAAc/xIudBhMv2Sfukz1j5EXZUSaOqQpGwJlV+ovlPEwPDlkccI9CWNobj+iaPouVheYXgLMPC5haLdo8H69jgl3RA2TmwEPLYsKXmWJkKJnGPknztPf/nMKApa+I3KkU0pHNo1pjXMyGTouGl6Xwtbtqg422n6pPf/T3+kVjx3xl60B2LjLAFLtrWz6JVWRrjKszAEjQVMemnWUoU8Vc2LyQLXzGXPJk7G4ea36wbpwWVfPL/fLEaNS68ixJkl3W5RdCDmv2gExEiIctEDlj9mBkmf5EgjNFk6jXeXJ06usSPWLW7OZzCC4lKAjgCYNLWEg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9xt1Af93NnvzZI+ZBc34yLt27w4pz9djae310iRmfvY=;
+ b=fiBPlhrW0zDyrVkXYzs6YiIvg96gS4kwRSsDGIVOKDHpE0/y0Vux1ye/7MAIxfcrL5Ya8Xvp3DcnTjFPaZyv5Ml2ajNPLjyZve1+fFny2jayO3VFoyxRxCovqoYIPt1gNSZm0D4ur6rhSedD9jmv8U+fyncFtygjzj+DFeZH/+A=
+Received: from OS3PR01MB6593.jpnprd01.prod.outlook.com (2603:1096:604:101::7)
+ by OS3PR01MB8090.jpnprd01.prod.outlook.com (2603:1096:604:170::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Wed, 27 Apr
+ 2022 14:32:03 +0000
+Received: from OS3PR01MB6593.jpnprd01.prod.outlook.com
+ ([fe80::a07c:4b38:65f3:6663]) by OS3PR01MB6593.jpnprd01.prod.outlook.com
+ ([fe80::a07c:4b38:65f3:6663%9]) with mapi id 15.20.5206.012; Wed, 27 Apr 2022
+ 14:32:03 +0000
+From:   Min Li <min.li.xe@renesas.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        "lee.jones@linaro.org" <lee.jones@linaro.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH net 1/2] ptp: ptp_clockmatrix: Add PTP_CLK_REQ_EXTTS
+ support
+Thread-Topic: [PATCH net 1/2] ptp: ptp_clockmatrix: Add PTP_CLK_REQ_EXTTS
+ support
+Thread-Index: AQHYWaR3Qsdc/gnqv0WbXtgKN/pPKa0Cs/8AgAEffxA=
+Date:   Wed, 27 Apr 2022 14:32:03 +0000
+Message-ID: <OS3PR01MB6593BE917485C87E32D1E5FDBAFA9@OS3PR01MB6593.jpnprd01.prod.outlook.com>
+References: <1651001574-32457-1-git-send-email-min.li.xe@renesas.com>
+ <20220426142150.47b057a3@kernel.org>
+In-Reply-To: <20220426142150.47b057a3@kernel.org>
+Accept-Language: en-CA, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=renesas.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 76414dc4-6bdb-4a80-4615-08da285ab2d2
+x-ms-traffictypediagnostic: OS3PR01MB8090:EE_
+x-microsoft-antispam-prvs: <OS3PR01MB8090A50A83935D63B5A1DC97BAFA9@OS3PR01MB8090.jpnprd01.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 97ZhPUHaxP+iXRGsfPs/1m+be5UtRIXMA9pYCG1RH9UTmUYRSCSXHa5LytBfsjIenn8O0SAZ0dOzFLWtMtmmZEJJxh9z0iUU2qfHGmoo27Uu/5vOXL8aM070KXEHQhzPQ5ADuiHu3mR2h5x9qugzkYSRh1hTprxGyQwhNA+LJG7PhGZFLZ6iLi3uNLMspkcCnhn7EqXcRZYULD9wwdBmLGlV+u4vqYr3oy+vVaCIn7sS1Bpq1CmpJZtxcKxbVOFkaTNd0JU5Z4FV5wqSHsSzVlJm7CuiP16/J/Q2J930vNxkOCizuJuc8eYWB+vTHccJM8WzSA/XJIRnbFUklPO8YpuBBTp+UXcqeVGWjGP+uWgkRyKsW9uTgfZUQ5jl/ia8Z4++h4RE7xVHDTjAVO8B9ug6UkZf629WEO8ssnd1L7vqO4f4ijqcBvd0FL1R06BKtdkYJ6fOhuqg0Yh3WviB6lGuo04mGUnZGcK4Fdga9Up0yjIw3rdzit82tpzGS7rOFg1BOp+5zSJJ5Ia05XDSDukVZIHgiDS0N/oe15Cjxa67mLjLzk61PlmfXscoNPMrYfGAJ+U/SKPToieSAWScKlUmWx4duQQay5Cdeq0sk1YfbSb576sQ9gcZ/yJIPPQbWtaDvAQEaOTWc4QJszf1cNdzmVPtU1j9DlAAT3FJ+2fZZ/A15mm2RX8im2mFKe6lGHcfnRSUrkLnwPJGRTmgIg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS3PR01MB6593.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(9686003)(4326008)(66446008)(71200400001)(38100700002)(558084003)(86362001)(38070700005)(26005)(7696005)(66476007)(66556008)(6506007)(2906002)(122000001)(52536014)(5660300002)(33656002)(64756008)(8936002)(8676002)(508600001)(55016003)(66946007)(316002)(186003)(76116006)(6916009)(54906003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ga5oHeF0iTFzBa6NuJIFmZlCff5J3qA5oUa0LBL9AMrmRDk1MgR2tkESLbjj?=
+ =?us-ascii?Q?cz31jJUTQUawu+zEqJIgTk6DP26hP3UMt9YEPU/ZcJ+95G55EkpRz4atSYHX?=
+ =?us-ascii?Q?y3Vwt3aQQsFdxz1VHMOV4osgKRolkgZIEd/XgQVfUFkXdOoiyx7gmZScA8JP?=
+ =?us-ascii?Q?sFvWRrKIQdxua4a5g4567LPARnBZWN+b4IAceEC46Tsnc/DR+Sj98uegXfH8?=
+ =?us-ascii?Q?MQholJAX+XgcAshSs6Nl/uJjozsx2CMll1q2+6B5T7YDRIoXE7y8mK06jOiH?=
+ =?us-ascii?Q?HpGbL6l/jyAru9t0FFmhxB9zClbhi6/JAysEhspXs7fZ+SIIUUNHR3CJEWj6?=
+ =?us-ascii?Q?JlW3FalE1vAFWXgPCV7ouD0TCta77gVMVyo2z9bMS+E9FeL8YgrEGWsfqGk3?=
+ =?us-ascii?Q?djnIpZod7wa+nkbMoLadIXT0W7XWmzX6988w05XXfhsTb+XJVCgRVCMXJuEW?=
+ =?us-ascii?Q?QS9SsL8KwcOhLEh1xjgex5880G9ayYTxLjE8Tb0DCnstxqkFYGsWiMV3hd5Y?=
+ =?us-ascii?Q?2rMz+fpEMH3C0He9WW65qPaprDpwhWuDpNCPFVjbPRv4qSAuGO+ii53FFpV3?=
+ =?us-ascii?Q?bow/jYq73XnfQdikbuqXo9lVqfFWy1K6N71bg9pThVyOl6hjZpzeNjE3tZpY?=
+ =?us-ascii?Q?MsnNyXC8+x2KmMT+Pnfp+GzwTGQJ/m6r9Vv5+VL1AgCVY82UFsTRg5todL0l?=
+ =?us-ascii?Q?p5eFHwjRAE1PtGX/yG9VvbDSU4ChNF7sUFGyph364dC4DD8sB6MwOIHr7llu?=
+ =?us-ascii?Q?8aF7Nhq8BhIJivz9GMQ+nJXxUCKCP2lOeUTBYKQOZxQTdoyOpkKEeXGG70pg?=
+ =?us-ascii?Q?c8bGhhS9mERH6WxNepxkV9PMnh5fy6cDF3BywzLtWC5ERWCgf7oj8cSqhHEL?=
+ =?us-ascii?Q?kW8euJiX2o+SoP5nh5nrGtZtm6NTBNrHnGM54rI/eQhMiE15us4LO6SMeJnY?=
+ =?us-ascii?Q?ieqhkT/In1eIYRwh0udfqAqUYunTkqw2HO2XKcevFfJHUCTyRfB3CCsEWz7N?=
+ =?us-ascii?Q?4oz3D+HNjQymURVlr53yFf4xe87IJHAjnHmpe64AbVVnpvw+2CAhcsZYXnZd?=
+ =?us-ascii?Q?loJq7R63o+5KvMgJW9/T9pJU0M3fJvsIGJVfqTM/nGy02ZnS+LDI/NsnHKqj?=
+ =?us-ascii?Q?MKezc1v8g7LmenSGDPvzRAuGwcCaZenRwt7DGvvNfL/myIxHPipDv7p7beMR?=
+ =?us-ascii?Q?8Dh/mzMpw3gs8b36QzkKO6PrIOqp7nHNBhoHKK3whLzcpnx23hTubgCYMa/U?=
+ =?us-ascii?Q?S6xRkbvQH/Fkgh9BL8wJ3eA+wuUBuYpr7fdB0fevfB7mpJY1uE2qWiN+xyTL?=
+ =?us-ascii?Q?FzICqkE9DCTnTclSUEqJqEDvxCrkPFpIm5iCAT1PVh5lVa7VSbwwkC952vxN?=
+ =?us-ascii?Q?pDGpcRJZsOhCWC7g1IBLq/qbutjQ8y3+C6L+8jR4/NcRrJAYrgWt67kV7jbr?=
+ =?us-ascii?Q?DdLMtoBqUOoYgZuofpR7JavUEa1OkYljMYmTAnVY+ek0Xleq/wqQV/2oAPBj?=
+ =?us-ascii?Q?do8rYaERBFeC9hqdSdhCIPakOpmGs7dyIW5VdNWJXM0FNLdVneny0yKy9Lsu?=
+ =?us-ascii?Q?3/xeSCVcXJnGH3o8BMZZAasJ4wqmpOrQtfch13+OMjve2qjRE9PGqk+8z7dR?=
+ =?us-ascii?Q?6Tu5tYZvXwb8wysNv+EPAonx2Mj0THow0J3n3YQfZ3YPXJnNfkbQ9JWODkWT?=
+ =?us-ascii?Q?9NK9i43MGjNP1qmUBll214qPTlpb3br8GBkXWVnyv4UfPz5+KKG6viIj5eNc?=
+ =?us-ascii?Q?cWNIie3Wow=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <513edc25-1c73-6c85-9a50-0e267a106ec0@opensource.wdc.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrAJsWRmVeSWpSXmKPExsWy7bCmlu7K4Mwkg83dbBa/z55nttj7bjar
-        xd5b2hZ79p5ksbi8aw6bxfxlT9ktuq/vYLPY8aSR0YHDY+esu+wem5fUe+xsvc/q8X7fVTaP
-        z5vkAlijsm0yUhNTUosUUvOS81My89JtlbyD453jTc0MDHUNLS3MlRTyEnNTbZVcfAJ03TJz
-        gC5RUihLzCkFCgUkFhcr6dvZFOWXlqQqZOQXl9gqpRak5BSYFOgVJ+YWl+al6+WlllgZGhgY
-        mQIVJmRnbOndwFrwUrBiw71fjA2MLXxdjJwcEgImEkv3zWDtYuTiEBLYzSjRvXYulPOJUeLs
-        wd9sEM43RomWxYcYYVpWX5sKVbWXUaK1+zhU1TNGieM7vrGDVLEIqEr0LF8AlODgYBPQljj9
-        nwMkLCJgKvG2p5UFpJ5Z4AyjRPv7XWD1wgLOEv0XbzOD2LwCOhJ7D2xlg7AFJU7OfMICYnMK
-        uElMPbaRCcQWFVCWOLDtOBPIIAmBVg6J91P2sUOc5yKx/Np3NghbWOLV8S1QcSmJl/1tUHa5
-        xPa2BVDNLYwSXadOsUAk7CUu7vkLtoFZIEPiZP8TqEGyElNPrYOK80n0/n7CBBHnldgxD8ZW
-        llizfgFUvaTEte+NULaHxJ9fkLATEvjNKHFuecQERvlZSJ6bhWQdhK0jsWD3JyCbA8iWllj+
-        jwPC1JRYv0t/ASPrKkbJ1ILi3PTUYtMCw7zUcniUJ+fnbmIEJ1Utzx2Mdx980DvEyMTBeIhR
-        goNZSYT3y+6MJCHelMTKqtSi/Pii0pzU4kOMpsDImsgsJZqcD0zreSXxhiaWBiZmZmYmlsZm
-        hkrivKfTNyQKCaQnlqRmp6YWpBbB9DFxcEo1MDHuZMtnCveS5dyplbLtQ6yT1cyrqp+jNV78
-        td50UtihS2znQbNss6ct9y5WSj7h4r/YvvP4l4mq586arxDgNPK0nbt2++XpMSyzTzCcP7bl
-        5Ga9AMnSCYdmflilkdHO6ZLZYi2mdeBXw/qNYccOMUeXMonf3vhNMHH187VXs/esU5gVdm+R
-        QH7+vZSl3Et/rs9sdvogqivX0XT8L7/GDZcT0a5aIZtfbT5d3nVm9QtZWSuWxw7PjrLxsXB6
-        ZAepV1oo5Jr3P3lwnr2ghq1ZxsBld7Y03/5b/IwP31969ER6+s043U+n6j5ylorx68Wd7luj
-        tu5F4JUE58n38kyZ060niWXO15t/W6h4z12VDCWW4oxEQy3mouJEAIGbFNYzBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrALMWRmVeSWpSXmKPExsWy7bCSvK6HQ2aSwaIl0ha/z55nttj7bjar
-        xd5b2hZ79p5ksbi8aw6bxfxlT9ktuq/vYLPY8aSR0YHDY+esu+wem5fUe+xsvc/q8X7fVTaP
-        z5vkAlijuGxSUnMyy1KL9O0SuDKaL3IXrOSv2LThL2MD413uLkZODgkBE4nV16aydjFycQgJ
-        7GaUeHP7DSNEQlJi2d8jzBC2sMTKf8/ZIYqeMEo03poDlmARUJXoWb6ArYuRg4NNQFvi9H8O
-        kLCIgKnE255WFpB6ZoEzjBLt73exgySEBZwl+i/eBuvlFdCR2HtgKxvE0N+MEkveTmaFSAhK
-        nJz5hAXEZhbQkrjx7yUTyAJmAWmJ5f/AFnAKuElMPbaRCcQWFVCWOLDtONMERsFZSLpnIeme
-        hdC9gJF5FaNkakFxbnpusWGBYV5quV5xYm5xaV66XnJ+7iZGcCRoae5g3L7qg94hRiYOxkOM
-        EhzMSiK8X3ZnJAnxpiRWVqUW5ccXleakFh9ilOZgURLnvdB1Ml5IID2xJDU7NbUgtQgmy8TB
-        KdXAdHDXNQfr76ea8g6xxHUXtj65+s76sFXCrNy02EbZflWt4s8m8WmWhQxPPdznWvr0qJo5
-        Zdl8rf1zY1c1R/y1JZ82m/OuXpJrPi9hS23woU4/0/Lo1nXzLrLdWXPw+pSD+Rk7bu3XYXDP
-        P6ZzU9qc1UTn5oMFWsuZp9vy5K7NW5w8V/286MKagv+9svKreO4v+lszVWWhb+8WvuP+G3Ym
-        nG8q/h5b8l38wV/NvALj/cZTT3quXejR71hYe6g79UiOzdrSezVVklPsvNUmu2qEVNfYPZ/y
-        ovWVfEzu76ojTfskD5v4KDZznLvU9rdpsWa19anSOSXHvrBI9QcbR2+MCWdc7zc5J/o8m5/l
-        pjQlluKMREMt5qLiRACj4ob+8wIAAA==
-X-CMS-MailID: 20220427130824epcas5p38594effe1d648be050ff00284e115014
-X-Msg-Generator: CA
-Content-Type: multipart/mixed;
-        boundary="----s9reHD3dvq.Swzu4OgS99nNlXP7CLa0djtt04wdzZepsPVyA=_17950_"
-X-Sendblock-Type: REQ_APPROVE
-CMS-TYPE: 105P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220426101938epcas5p291690dd1f0e931cd9f8139daaf3f9296
-References: <20220426101241.30100-1-nj.shetty@samsung.com>
-        <CGME20220426101938epcas5p291690dd1f0e931cd9f8139daaf3f9296@epcas5p2.samsung.com>
-        <20220426101241.30100-4-nj.shetty@samsung.com>
-        <513edc25-1c73-6c85-9a50-0e267a106ec0@opensource.wdc.com>
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: OS3PR01MB6593.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 76414dc4-6bdb-4a80-4615-08da285ab2d2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Apr 2022 14:32:03.8483
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: t4bSDYWhxr+UNBEFyYPGoKINMdV98NRac6rtDDZxCOhXdchpj7nNM6V19dVeUS/na02epORv3RUKAMwbIY229g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: OS3PR01MB8090
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-------s9reHD3dvq.Swzu4OgS99nNlXP7CLa0djtt04wdzZepsPVyA=_17950_
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
+> On Tue, 26 Apr 2022 15:32:53 -0400 Min Li wrote:
+> > Use TOD_READ_SECONDARY for extts to keep TOD_READ_PRIMARY for
+> gettime
+> > and settime exclusively
+>=20
+> Does not build on 32 bit.
+>=20
 
-O Wed, Apr 27, 2022 at 11:48:57AM +0900, Damien Le Moal wrote:
-> On 4/26/22 19:12, Nitesh Shetty wrote:
-> > Add new BLKCOPY ioctl that offloads copying of one or more sources ranges
-> > to one or more destination in a device. COPY ioctl accepts a 'copy_range'
-> > structure that contains no of range, a reserved field , followed by an
-> > array of ranges. Each source range is represented by 'range_entry' that
-> > contains source start offset, destination start offset and length of
-> > source ranges (in bytes)
-> > 
-> > MAX_COPY_NR_RANGE, limits the number of entries for the IOCTL and
-> > MAX_COPY_TOTAL_LENGTH limits the total copy length, IOCTL can handle.
-> > 
-> > Example code, to issue BLKCOPY:
-> > /* Sample example to copy three entries with [dest,src,len],
-> > * [32768, 0, 4096] [36864, 4096, 4096] [40960,8192,4096] on same device */
-> > 
-> > int main(void)
-> > {
-> > 	int i, ret, fd;
-> > 	unsigned long src = 0, dst = 32768, len = 4096;
-> > 	struct copy_range *cr;
-> > 	cr = (struct copy_range *)malloc(sizeof(*cr)+
-> > 					(sizeof(struct range_entry)*3));
-> > 	cr->nr_range = 3;
-> > 	cr->reserved = 0;
-> > 	for (i = 0; i< cr->nr_range; i++, src += len, dst += len) {
-> > 		cr->range_list[i].dst = dst;
-> > 		cr->range_list[i].src = src;
-> > 		cr->range_list[i].len = len;
-> > 		cr->range_list[i].comp_len = 0;
-> > 	}
-> > 	fd = open("/dev/nvme0n1", O_RDWR);
-> > 	if (fd < 0) return 1;
-> > 	ret = ioctl(fd, BLKCOPY, cr);
-> > 	if (ret != 0)
-> > 	       printf("copy failed, ret= %d\n", ret);
-> > 	for (i=0; i< cr->nr_range; i++)
-> > 		if (cr->range_list[i].len != cr->range_list[i].comp_len)
-> > 			printf("Partial copy for entry %d: requested %llu, completed %llu\n",
-> > 								i, cr->range_list[i].len,
-> > 								cr->range_list[i].comp_len);
-> > 	close(fd);
-> > 	free(cr);
-> > 	return ret;
-> > }
-> 
-> Nice to have a code example. But please format it correctly.
->
+Hi Jakub
 
-acked
+I compiled with arm-linux-gnueabi-
 
---
-Nitesh Shetty
+By 32 bit, did you mean x86?
 
-------s9reHD3dvq.Swzu4OgS99nNlXP7CLa0djtt04wdzZepsPVyA=_17950_
-Content-Type: text/plain; charset="utf-8"
-
-
-------s9reHD3dvq.Swzu4OgS99nNlXP7CLa0djtt04wdzZepsPVyA=_17950_--
+Min=20
