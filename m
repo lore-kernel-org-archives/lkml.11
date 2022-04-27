@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08BE6C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:03:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DD82C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:03:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241486AbiD0QGa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:06:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36020 "EHLO
+        id S241505AbiD0QGf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:06:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242344AbiD0QEh (ORCPT
+        with ESMTP id S242419AbiD0QEn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:04:37 -0400
-Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 603D936AF36
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:01:14 -0700 (PDT)
-Received: by mail-qk1-x72c.google.com with SMTP id b189so1594738qkf.11
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:01:14 -0700 (PDT)
+        Wed, 27 Apr 2022 12:04:43 -0400
+Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F7453A0F87
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:01:22 -0700 (PDT)
+Received: by mail-qt1-x82a.google.com with SMTP id bz24so1463455qtb.2
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:01:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9GL3COHv0leHgkc2xj8IFg2MOsyvROczlu9iqFQTi6c=;
-        b=EyNosu86WZBzUC9jjE+BB/6+rRUePVNB5D6ZLweYK0cFIUWcYSagiZotbV3kGhvIlS
-         aSvmf4EfGitZgrEkXNDGgBgiz1HC8zvbqhEgPDUnOPd4hguA+FT8asyo6S3j5oDYIoGo
-         8i8blQjc96SokqKzFW3yhgqj9t2hCvOPMNnicEa5sb4XEiaLxO8ipgY23jPrzflTCMCj
-         e/QXaswu/EhhZnxUl3ooWdUkmRJ2DPmY42IUXuA03tcMHr/j8BJn49Zny7U2+x5RZUMc
-         5GK7mdC+N0Gj6dvbpJN0oMAU2pAmBPbv0TW1TyQBbPT7Db08uuswrZhBl7kJzgp+QWcy
-         Qw3w==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ZBgzXdZ466rlUwUQs0EI6DMIFSVYYfxcwIa0A3d1nko=;
+        b=fhTowtKO2j1gIyehsLjMg/Ft2943puC7KRcfEZIVbM5qcRk82f1+ST9TguF/qrnxuX
+         a9bXww4C8aR196N7uarXdk5H0jokAohUVeAKI/HORyHGmZ//sbuDt6+a4Qwp1azl2rUE
+         JIbm07to9H1IyQkS8DuWRRfE++12PUX7Sghe34t7kNHf57BKJBB1N2CWsKgZ9C2CMBZ7
+         e422CKVuaMPKW92Hel8KMu/yHBGk762q8V3UB3iN2J1MjkSaZaEcKTsvc7W5hDRyVK07
+         WHsfe42LQ8R/fNSho0yYxEdItM0KgOI//PeSkQ2WQ4B8zqqSFuNG6r4uzD/9r/CZiWcC
+         0SSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9GL3COHv0leHgkc2xj8IFg2MOsyvROczlu9iqFQTi6c=;
-        b=OXTHtAzyg6f7nPaVxIxISU+2EAJQzwnf1x14Go2gmoCS+jU0ngCQOlTqwaw/4l/iGg
-         SmIiST1tTyWqHk6aPNKSz8ohbg6LvagAyCbuQBYajjUa5YnM0KB9F2k10CHpvVHs1VOi
-         hdtbbrW0AFOfZZMAHwPJmixE+0P+04wZi3QSP0xGPP/OVPBmzACtKj4vjH60gwY8Pd56
-         +dzUBwn1yM7VzO6XhysWWA9HESmVvTW9aXmvX+++61PxojS8qeCo+4jK27uxvn4gZyCg
-         /lpFA4nG+eAfpXAZMvMnFYQ2fMh2pcHqJuXnlIHz3PSY8M96dstj8EevWLP0GSOHGVnP
-         5tRQ==
-X-Gm-Message-State: AOAM532Zhtd4JuqdG64KDX1CJj1a3yRt3aAnKkThApwnJcIz/8xkleLt
-        0c35PlP3c/mMwjFTOjKICJbIMg==
-X-Google-Smtp-Source: ABdhPJxf17+/YxgQAbE/TSRufq++NTLpwlkrr6HcG5ZWLe4C60zjvMCj2EQOO6Z99OmnWn9WV/8HRA==
-X-Received: by 2002:a05:620a:404f:b0:69f:1160:73e6 with SMTP id i15-20020a05620a404f00b0069f116073e6mr16720445qko.690.1651075256344;
-        Wed, 27 Apr 2022 09:00:56 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ZBgzXdZ466rlUwUQs0EI6DMIFSVYYfxcwIa0A3d1nko=;
+        b=FMhZ7oZKX1ir4b2ne7AT++haLVthdzBwXv0Evxug/HT/kNLF7nHLvEdG9pTqHDRDvW
+         Tf6+UvN54nzy6DIYgBBsaky6pX1L0Tnc5yM1e/0gFvMEpY6zAEP+4bjHviyRIAQ4jz0I
+         DF0MPDN7suuZYvRtIBoYJPtM82/hE3teLGUex4S0oaRyNSsjSYdxqxokD4eZJTFK8g8u
+         OkmH7flAVvDBM71ieVOavAgHdEeEvaX8LG1TPaVQQtEK/ySH33ZqZE8mjjrJMuqU9pti
+         ubW4iWJm4iwyA8ExuDQhw8WknQPWBGo4GLmn1iHOLq2VM0ysOyiAi4dxa0G6/hC0Lrfi
+         GbLg==
+X-Gm-Message-State: AOAM533ccpVFkKcYKRhhTCLP/qYIwWTGQrZ7XqIf0iqKj6gqAzlO0uKk
+        IWEiMPtySRia3cSMG9KP08xO4g==
+X-Google-Smtp-Source: ABdhPJxXvzVjG81fUfBnZdK0tLhIy90Z/zLg6n1UAWZwTJ3z7Kz21ZTF6uUj9GZ0GVWofbPhgz5MPQ==
+X-Received: by 2002:a05:622a:342:b0:2f3:5c21:1bed with SMTP id r2-20020a05622a034200b002f35c211bedmr17432648qtw.123.1651075263679;
+        Wed, 27 Apr 2022 09:01:03 -0700 (PDT)
 Received: from localhost ([2620:10d:c091:480::1:f617])
-        by smtp.gmail.com with ESMTPSA id v67-20020a376146000000b0069ec181a0c6sm8304072qkb.10.2022.04.27.09.00.55
+        by smtp.gmail.com with ESMTPSA id y7-20020a05620a0e0700b00699a30d6d10sm7837059qkm.111.2022.04.27.09.01.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 09:00:56 -0700 (PDT)
+        Wed, 27 Apr 2022 09:01:03 -0700 (PDT)
 From:   Johannes Weiner <hannes@cmpxchg.org>
 To:     Andrew Morton <akpm@linux-foundation.org>
 Cc:     Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>,
@@ -56,48 +56,157 @@ Cc:     Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>,
         Dan Streetman <ddstreet@ieee.org>, linux-mm@kvack.org,
         cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
         kernel-team@fb.com
-Subject: [PATCH 0/5] zswap: cgroup accounting & control
-Date:   Wed, 27 Apr 2022 12:00:11 -0400
-Message-Id: <20220427160016.144237-1-hannes@cmpxchg.org>
+Subject: [PATCH 4/5] mm: zswap: add basic meminfo and vmstat coverage
+Date:   Wed, 27 Apr 2022 12:00:15 -0400
+Message-Id: <20220427160016.144237-5-hannes@cmpxchg.org>
 X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220427160016.144237-1-hannes@cmpxchg.org>
+References: <20220427160016.144237-1-hannes@cmpxchg.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Zswap backing memory is currently not tracked (and limited) on a
-per-cgroup basis. As a result, workloads can escape their memory
-containment and cause resource priority inversions on a shared host.
-E.g. a lo-pri group fills the global zswap pool and forces a hi-pri
-group out to disk.
+Currently it requires poking at debugfs to figure out the size and
+population of the zswap cache on a host. There are no counters for
+reads and writes against the cache. As a result, it's difficult to
+understand zswap behavior on production systems.
 
-Also, zswap doesn't benefit all workloads equally. Some even suffer
-when memory contents compress poorly, and are better off going to disk
-swap directly. On a host with mixed workloads, it's currently not
-possible to enable zswap for one workload but not for the other.
+Print zswap memory consumption and how many pages are zswapped out in
+/proc/meminfo. Count zswapouts and zswapins in /proc/vmstat.
 
-This series implements missing cgroup awareness and control for zswap
-to address both issues.
+Signed-off-by: Johannes Weiner <hannes@cmpxchg.org>
+---
+ fs/proc/meminfo.c             |  7 +++++++
+ include/linux/swap.h          |  5 +++++
+ include/linux/vm_event_item.h |  4 ++++
+ mm/vmstat.c                   |  4 ++++
+ mm/zswap.c                    | 13 ++++++-------
+ 5 files changed, 26 insertions(+), 7 deletions(-)
 
-More details on interface and implementation in patch 5.
-
-Patches 1-3 clean up related and adjacent options in Kconfig. Not
-dependencies, just things I noticed during development.
-
-Based on v5.18-rc4-mmots-2022-04-26-19-34-5-g5e1fdb02de7a.
-
- Documentation/admin-guide/cgroup-v2.rst |  21 ++
- drivers/block/zram/Kconfig              |   3 +-
- fs/proc/meminfo.c                       |   7 +
- include/linux/memcontrol.h              |  54 +++
- include/linux/swap.h                    |   5 +
- include/linux/vm_event_item.h           |   4 +
- init/Kconfig                            | 123 -------
- mm/Kconfig                              | 523 +++++++++++++++++++-----------
- mm/memcontrol.c                         | 196 ++++++++++-
- mm/vmstat.c                             |   4 +
- mm/zswap.c                              |  50 ++-
- 11 files changed, 648 insertions(+), 342 deletions(-)
-
+diff --git a/fs/proc/meminfo.c b/fs/proc/meminfo.c
+index 6fa761c9cc78..6e89f0e2fd20 100644
+--- a/fs/proc/meminfo.c
++++ b/fs/proc/meminfo.c
+@@ -86,6 +86,13 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
+ 
+ 	show_val_kb(m, "SwapTotal:      ", i.totalswap);
+ 	show_val_kb(m, "SwapFree:       ", i.freeswap);
++#ifdef CONFIG_ZSWAP
++	seq_printf(m,  "Zswap:          %8lu kB\n",
++		   (unsigned long)(zswap_pool_total_size >> 10));
++	seq_printf(m,  "Zswapped:       %8lu kB\n",
++		   (unsigned long)atomic_read(&zswap_stored_pages) <<
++		   (PAGE_SHIFT - 10));
++#endif
+ 	show_val_kb(m, "Dirty:          ",
+ 		    global_node_page_state(NR_FILE_DIRTY));
+ 	show_val_kb(m, "Writeback:      ",
+diff --git a/include/linux/swap.h b/include/linux/swap.h
+index b82c196d8867..07074afa79a7 100644
+--- a/include/linux/swap.h
++++ b/include/linux/swap.h
+@@ -632,6 +632,11 @@ static inline int mem_cgroup_swappiness(struct mem_cgroup *mem)
+ }
+ #endif
+ 
++#ifdef CONFIG_ZSWAP
++extern u64 zswap_pool_total_size;
++extern atomic_t zswap_stored_pages;
++#endif
++
+ #if defined(CONFIG_SWAP) && defined(CONFIG_MEMCG) && defined(CONFIG_BLK_CGROUP)
+ extern void __cgroup_throttle_swaprate(struct page *page, gfp_t gfp_mask);
+ static inline  void cgroup_throttle_swaprate(struct page *page, gfp_t gfp_mask)
+diff --git a/include/linux/vm_event_item.h b/include/linux/vm_event_item.h
+index 5e80138ce624..1ce8fadb2b1c 100644
+--- a/include/linux/vm_event_item.h
++++ b/include/linux/vm_event_item.h
+@@ -132,6 +132,10 @@ enum vm_event_item { PGPGIN, PGPGOUT, PSWPIN, PSWPOUT,
+ #ifdef CONFIG_KSM
+ 		COW_KSM,
+ #endif
++#ifdef CONFIG_ZSWAP
++		ZSWPIN,
++		ZSWPOUT,
++#endif
+ #ifdef CONFIG_X86
+ 		DIRECT_MAP_LEVEL2_SPLIT,
+ 		DIRECT_MAP_LEVEL3_SPLIT,
+diff --git a/mm/vmstat.c b/mm/vmstat.c
+index 4a2aa2fa88db..da7e389cf33c 100644
+--- a/mm/vmstat.c
++++ b/mm/vmstat.c
+@@ -1392,6 +1392,10 @@ const char * const vmstat_text[] = {
+ #ifdef CONFIG_KSM
+ 	"cow_ksm",
+ #endif
++#ifdef CONFIG_ZSWAP
++	"zswpin",
++	"zswpout",
++#endif
+ #ifdef CONFIG_X86
+ 	"direct_map_level2_splits",
+ 	"direct_map_level3_splits",
+diff --git a/mm/zswap.c b/mm/zswap.c
+index 2c5db4cbedea..e3c16a70f533 100644
+--- a/mm/zswap.c
++++ b/mm/zswap.c
+@@ -42,9 +42,9 @@
+ * statistics
+ **********************************/
+ /* Total bytes used by the compressed storage */
+-static u64 zswap_pool_total_size;
++u64 zswap_pool_total_size;
+ /* The number of compressed pages currently stored in zswap */
+-static atomic_t zswap_stored_pages = ATOMIC_INIT(0);
++atomic_t zswap_stored_pages = ATOMIC_INIT(0);
+ /* The number of same-value filled pages currently stored in zswap */
+ static atomic_t zswap_same_filled_pages = ATOMIC_INIT(0);
+ 
+@@ -1243,6 +1243,7 @@ static int zswap_frontswap_store(unsigned type, pgoff_t offset,
+ 	/* update stats */
+ 	atomic_inc(&zswap_stored_pages);
+ 	zswap_update_total_size();
++	count_vm_event(ZSWPOUT);
+ 
+ 	return 0;
+ 
+@@ -1285,11 +1286,10 @@ static int zswap_frontswap_load(unsigned type, pgoff_t offset,
+ 		zswap_fill_page(dst, entry->value);
+ 		kunmap_atomic(dst);
+ 		ret = 0;
+-		goto freeentry;
++		goto stats;
+ 	}
+ 
+ 	if (!zpool_can_sleep_mapped(entry->pool->zpool)) {
+-
+ 		tmp = kmalloc(entry->length, GFP_ATOMIC);
+ 		if (!tmp) {
+ 			ret = -ENOMEM;
+@@ -1304,10 +1304,8 @@ static int zswap_frontswap_load(unsigned type, pgoff_t offset,
+ 		src += sizeof(struct zswap_header);
+ 
+ 	if (!zpool_can_sleep_mapped(entry->pool->zpool)) {
+-
+ 		memcpy(tmp, src, entry->length);
+ 		src = tmp;
+-
+ 		zpool_unmap_handle(entry->pool->zpool, entry->handle);
+ 	}
+ 
+@@ -1326,7 +1324,8 @@ static int zswap_frontswap_load(unsigned type, pgoff_t offset,
+ 		kfree(tmp);
+ 
+ 	BUG_ON(ret);
+-
++stats:
++	count_vm_event(ZSWPIN);
+ freeentry:
+ 	spin_lock(&tree->lock);
+ 	zswap_entry_put(tree, entry);
+-- 
+2.35.3
 
