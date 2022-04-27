@@ -2,56 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAC85C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 18:18:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D51CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 18:20:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244716AbiD0SV0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 14:21:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47776 "EHLO
+        id S244757AbiD0SXL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 14:23:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237775AbiD0SVX (ORCPT
+        with ESMTP id S232738AbiD0SXI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 14:21:23 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3552343495
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 11:18:12 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id y21so2920156edo.2
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 11:18:12 -0700 (PDT)
+        Wed, 27 Apr 2022 14:23:08 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1318B55482
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 11:19:57 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id i19so5008754eja.11
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 11:19:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Rvi/o1fbKb1kGp3W3Hpq6Cgdph8ZZoNwuRiCmIxLQS0=;
-        b=pBdisntTtPoXxlIXySp5mL/t1MbXSPXNh6/5Su37ufFnYiIhDuZSj6PNsnAX4XZOLz
-         wQ8huaEX1oU3I7XFZw/Ephk0aHFyOqLMy6HJ+qQsjgLt+7ga3TKPq50ym1KPFsiHOcJf
-         cmKLTdWjFqeZ/Fshqy0yokQrA/Cp+J+hwh03cA9o1LD+eEYm54Uc/HWd57WPWRsuutZu
-         M08bIihmHF//JVjnWsmU0LWu4iOPG9/w7GWALV2iWzeaQCjROcGlrQj/Ub7NTafB1uee
-         Fd0wiFhLFvKQ/ipDrnztrQy5asxgirYq4jw81hfxrQDlzPmYlMt43yhUTsrBt4mg5QCC
-         mB6w==
+        bh=BKLrlWDdze4fALIExihCdax2sj1CA1dAjWvhqA4fcdE=;
+        b=OC7XubjWFESQ3nHL9PAiwh8ORcR785icOv4rLY6pciNqk/sYywA5nLX3pKo95l8He9
+         Xl6BMozv7995amYQgYI7A0fqrSxPwV9JZKYHgcNkYqfef56mnu4mg5vFZ/MCTd7h6+AJ
+         WQyIsM8WMl6uQPIF5u0d13artTaNxxbh0xG5WvnJ9XCNw22EeCnZJ4mZXk+6l8bPa/jB
+         HCPH3/sigfwTr30iUY13Y5IALbLE7sk1I7qC0YwjQmYNq/AJ/IJUCk9RZHiuCWxBd6Hj
+         cJOoSj38FHEWrA3oj8zi8Hh+M9a0qovM5Zb7sQvu3ifm3vFlslsuSd+YORDH1vtHfHz2
+         fCwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Rvi/o1fbKb1kGp3W3Hpq6Cgdph8ZZoNwuRiCmIxLQS0=;
-        b=cBLOy4CjVtTYSqkdBD1+BzQI/I+T8th04xZ5AR2Pm9zHPajdnK88iGVAAvzn2MN356
-         GKB6KYpCSnr9KuOY/OAqaXenG0lx40py6O1wDq2AIDJ0+QT/fgDxmUwd59D4cPFgRoL4
-         m2/J/nJHRThDNEXzXG9w/CJ5pwXH4JC3cn5kdIhowiUwZsMgZlZakw5M9QtVczV7+v6C
-         KmEOjGpeaKUsjP/A5VeL/JYlFXTHZxhOubusseKubi6uMXvOx72juSoPOQJVtCFbx+OA
-         aQ3Baey7Up8wdjmxZB3sOvGmhV0NWFlmZuFFqNWxw7HI3QgGhoCgbEGsTyNsxAkbn/Ky
-         I5YA==
-X-Gm-Message-State: AOAM53365ecqC9g2TeB0FHAtD0KNcvUflVglf1kzk4QQK/Z1yJHDcmIY
-        ogLOqZrhtuu4bAEC4d8vjwvw1f3AgRl2eIhodEo=
-X-Google-Smtp-Source: ABdhPJwBg5JBuCYhr2CwOxgiJIV7XYFH0Ov9PfOGsOLwVUduuD7nLUnyG1DDrABzRJ0dxX4lKJYGEr2O60HVzgyzwxI=
-X-Received: by 2002:a05:6402:d51:b0:425:d5e1:e9f0 with SMTP id
- ec17-20020a0564020d5100b00425d5e1e9f0mr23229672edb.125.1651083490635; Wed, 27
- Apr 2022 11:18:10 -0700 (PDT)
+        bh=BKLrlWDdze4fALIExihCdax2sj1CA1dAjWvhqA4fcdE=;
+        b=mAD/2LvubR8HcpSfcDnGGQ1OqNvlxBtergkNJLTcXHQyB9+3bdKFOFSCOFpZlt6Y5P
+         /JAdsB+2IRqOebASeqODexVkmMWWIJv+LXjNCFNw79DGf4+kCD6tflQ7Pr31c9XS+oEg
+         DitYrlHeyHrHqJGw6cYB7KA5+0CbeUdHizhp2lHRE+2SWVTVkfJZqQUddaUoPmpEOtz7
+         kPFXJZaEBYCb6n7Ry/vFAoNp+ERFT54aLzwzDU6eZGoVsiI9cFl52iGJRqe7x8N3/gIq
+         vSNpAZun6OrYh+X0KmEWJNqAIQ9h2BwPEzUnlZ9hzJWtLo7EAFK4fM0dW+reUgEYZl/+
+         7iZA==
+X-Gm-Message-State: AOAM531kFjCuqEXhRGHHn4Bf3BODW2JHMASbcKgsAtQ26W51JVVd+IEq
+        4jjnwjrYHSRWGXkutGtKK0BMicBd8uC33t17Mz4=
+X-Google-Smtp-Source: ABdhPJyy501pwbeKqbIz9m0A3mZwUkZ4p0dBCZtARyEklGkg3Z72LhIFKi76QqCiO8NAJnNPRmjRwlISESyWvcE0UiA=
+X-Received: by 2002:a17:906:3ce9:b0:6ef:a8aa:ab46 with SMTP id
+ d9-20020a1709063ce900b006efa8aaab46mr27288500ejh.579.1651083595490; Wed, 27
+ Apr 2022 11:19:55 -0700 (PDT)
 MIME-Version: 1.0
 References: <20220426180203.70782-1-jvgediya@linux.ibm.com>
  <Ymldp7E3j29iVlMN@smile.fi.intel.com> <20220427103901.7567e7058dcaa3068056b2ed@linux-foundation.org>
-In-Reply-To: <20220427103901.7567e7058dcaa3068056b2ed@linux-foundation.org>
+ <CAHp75VesfSdiR8naGLAfLCJ4mvMarXSQ+6PEoQcgMfgMpBSkNQ@mail.gmail.com>
+In-Reply-To: <CAHp75VesfSdiR8naGLAfLCJ4mvMarXSQ+6PEoQcgMfgMpBSkNQ@mail.gmail.com>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 27 Apr 2022 20:17:34 +0200
-Message-ID: <CAHp75VesfSdiR8naGLAfLCJ4mvMarXSQ+6PEoQcgMfgMpBSkNQ@mail.gmail.com>
+Date:   Wed, 27 Apr 2022 20:19:19 +0200
+Message-ID: <CAHp75Vf+=2jF8p8FFJTLWAKwy7gLPfcNYNUWz8y2pU9rdVFseA@mail.gmail.com>
 Subject: Re: [PATCH v3 1/2] lib/kstrtox.c: Add "false"/"true" support to kstrtobool()
 To:     Andrew Morton <akpm@linux-foundation.org>
 Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -69,33 +70,17 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 8:06 PM Andrew Morton <akpm@linux-foundation.org> wrote:
->
-> On Wed, 27 Apr 2022 18:13:43 +0300 Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
->
-> > On Tue, Apr 26, 2022 at 11:32:02PM +0530, Jagdish Gediya wrote:
-> > > At many places in kernel, It is necessary to convert sysfs input
-> > > to corrosponding bool value e.g. "false" or "0" need to be converted
-> >
-> > corresponding
-> >
-> > > to bool false, "true" or "1" need to be converted to bool true,
-> > > places where such conversion is needed currently check the input
-> > > string manually, kstrtobool() can be utilized at such places but
-> > > currently it doesn't have support to accept "false"/"true".
-> > >
-> > > Add support to accept "false"/"true" as valid string in kstrtobool().
-> >
-> > Andrew, this patch still needs a bit of work.
->
-> I fixed the two issues you identified in this email.  Is there more to do?
+On Wed, Apr 27, 2022 at 8:17 PM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+> On Wed, Apr 27, 2022 at 8:06 PM Andrew Morton <akpm@linux-foundation.org> wrote:
 
-I think the rest is fine, esp. taking into account Matthew's review.
-Feel free to add
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+...
 
-(It might be better to check the second character as well to be sure
-we avoid typos like 'talse' and 'frue', anyone to comment?)
+> (It might be better to check the second character as well to be sure
+> we avoid typos like 'talse' and 'frue', anyone to comment?)
+
+Note that T and F on the keyboard are quite close to each other, so
+there is non-zero probability of the above mentioned typo(s).
 
 -- 
 With Best Regards,
