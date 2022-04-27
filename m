@@ -2,105 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2DDBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:50:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 496E0C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:51:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243470AbiD0QyA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:54:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43374 "EHLO
+        id S243499AbiD0QzI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:55:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243415AbiD0Qx5 (ORCPT
+        with ESMTP id S243396AbiD0QzF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:53:57 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5C5D43236D
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:50:37 -0700 (PDT)
+        Wed, 27 Apr 2022 12:55:05 -0400
+Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9DD3480C92;
+        Wed, 27 Apr 2022 09:51:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
-        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=up+7K7g3RZ5HWiJMS7CKYP5oo+B8bzi8wBADoM+J4Mk=; b=L0bhrH6AvVQxQbRpvYlQNg3Pug
-        ajJq/j7QhDlutG9+HE80te3ZBHdH9KwGn5eUwyMQliZQQLYPcgIY4y/+du0w7V4FdY+X2rdlvwBoN
-        +1ZB9jv78EJRdjuKNS0bWTEU4MrdkUJZEt9CDtfOiMflQoD2tdK9t32ttiah3JLPmwtUvilrhJvKo
-        /WRMq20wGqnDKY++cDz7MiytRdhFsDMYccHq1XHwVIHN4IeoTmab6hrd5hOpXdwTXoa+DoQhqqz1H
-        SxNolN1KSophz7q1gciSOQnc+mmHgdO5zCgqnkX89NV/ihr4JawG4A1Q5CCD38GpWfUOmzIy93jK2
-        XjKeKyyg==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1njkry-0096rL-9h; Wed, 27 Apr 2022 16:50:26 +0000
-Message-ID: <5fec414a-fa12-6c14-3c36-486959aa04ef@infradead.org>
-Date:   Wed, 27 Apr 2022 09:50:20 -0700
+        d=deltatee.com; s=20200525; h=Subject:In-Reply-To:From:References:Cc:To:
+        MIME-Version:Date:Message-ID:content-disposition;
+        bh=qPV3GAutYS1USEKN2DLYVcHIf/3CMspob9f64O94K9s=; b=tYsy3EBGWgOHTFK2epLpskbkim
+        NoLL0yo6mR70L1KzhaQ3sM3DHIifX2jjI56LneTbkuYwPZUYrn7bIWLQ9UA2prF5NPNxANy3QK4dN
+        IZ2WXIaJfOrzQ/FqFc0ziPv3iInuIn1I3BIgR2KppRk4tCywZWla/Mb3lxeqs14PhddwQ88fJ0UST
+        Q85sKcJKFFY727t1MxzB0XKn5DaoDV2LF0y2sQXfzpptFEFj+63y3edwfw4fe0eZjm/ORTXQZxFQV
+        eB/Q3I9W0DiZXP4ogozcnYUZ1kGbDaCyP5Fc1QSAiQkESqy9CJpiRGXSD3BIwVWtMJaeO6pBJcVey
+        Yv/BJnbw==;
+Received: from s0106ac1f6bb1ecac.cg.shawcable.net ([70.73.163.230] helo=[192.168.11.155])
+        by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <logang@deltatee.com>)
+        id 1njkDE-000K8u-Lb; Wed, 27 Apr 2022 10:08:21 -0600
+Message-ID: <7db3cc87-c491-1ba4-d778-1c7dbbf34c47@deltatee.com>
+Date:   Wed, 27 Apr 2022 10:08:20 -0600
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 3/3] block: remove last remaining traces of IDE
- documentation
+ Thunderbird/91.8.0
 Content-Language: en-US
-To:     Jonathan Corbet <corbet@lwn.net>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>,
-        Phillip Potter <phil@philpotter.co.uk>
-References: <20220427132436.12795-1-paul.gortmaker@windriver.com>
- <20220427132436.12795-4-paul.gortmaker@windriver.com>
- <87wnfaa8ce.fsf@meer.lwn.net>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <87wnfaa8ce.fsf@meer.lwn.net>
+To:     Guoqing Jiang <guoqing.jiang@linux.dev>,
+        linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
+        Song Liu <song@kernel.org>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Stephen Bates <sbates@raithlin.com>,
+        Martin Oliveira <Martin.Oliveira@eideticom.com>,
+        David Sloan <David.Sloan@eideticom.com>
+References: <20220420195425.34911-1-logang@deltatee.com>
+ <20220420195425.34911-3-logang@deltatee.com>
+ <eb1d70f6-0cfc-20e9-8fb3-84e3076025f7@linux.dev>
+From:   Logan Gunthorpe <logang@deltatee.com>
+In-Reply-To: <eb1d70f6-0cfc-20e9-8fb3-84e3076025f7@linux.dev>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 70.73.163.230
+X-SA-Exim-Rcpt-To: guoqing.jiang@linux.dev, linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org, song@kernel.org, hch@infradead.org, sbates@raithlin.com, Martin.Oliveira@eideticom.com, David.Sloan@eideticom.com
+X-SA-Exim-Mail-From: logang@deltatee.com
+Subject: Re: [PATCH v2 02/12] md/raid5: Refactor raid5_make_request loop
+X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
 
-On 4/27/22 07:50, Jonathan Corbet wrote:
-> Paul Gortmaker <paul.gortmaker@windriver.com> writes:
+On 2022-04-26 19:32, Guoqing Jiang wrote:
 > 
->> The last traces of the IDE driver went away in commit b7fb14d3ac63
->> ("ide: remove the legacy ide driver") but it left behind some traces
->> of old documentation.  This removes/updates anything with a reference
->> to ide-cd or ide-tape appropriately.
+> 
+> On 4/21/22 3:54 AM, Logan Gunthorpe wrote:
+>> Break immediately if raid5_get_active_stripe() returns NULL and deindent
+>> the rest of the loop. Annotate this check with an unlikely().
 >>
->> Cc: Jens Axboe <axboe@kernel.dk>
->> Cc: Christoph Hellwig <hch@lst.de>
->> Cc: Jonathan Corbet <corbet@lwn.net>
->> Cc: Phillip Potter <phil@philpotter.co.uk>
->> Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+>> This makes the code easier to read and reduces the indentation level.
+>>
+>> No functional changes intended.
+>>
+>> Signed-off-by: Logan Gunthorpe<logang@deltatee.com>
 >> ---
->>  .../admin-guide/kernel-parameters.txt         |  21 -
->>  Documentation/cdrom/ide-cd.rst                | 538 ------------------
->>  Documentation/cdrom/index.rst                 |   1 -
->>  Documentation/filesystems/proc.rst            |  92 +--
->>  Documentation/ide/ChangeLog.ide-cd.1994-2004  | 268 ---------
->>  .../ide/ChangeLog.ide-floppy.1996-2002        |  63 --
->>  .../ide/ChangeLog.ide-tape.1995-2002          | 257 ---------
->>  Documentation/ide/changelogs.rst              |  17 -
->>  Documentation/ide/ide-tape.rst                |  68 ---
->>  Documentation/ide/ide.rst                     | 265 ---------
->>  Documentation/ide/index.rst                   |  21 -
->>  Documentation/ide/warm-plug-howto.rst         |  18 -
->>  drivers/block/pktcdvd.c                       |   2 +-
->>  13 files changed, 8 insertions(+), 1623 deletions(-)
->>  delete mode 100644 Documentation/cdrom/ide-cd.rst
->>  delete mode 100644 Documentation/ide/ChangeLog.ide-cd.1994-2004
->>  delete mode 100644 Documentation/ide/ChangeLog.ide-floppy.1996-2002
->>  delete mode 100644 Documentation/ide/ChangeLog.ide-tape.1995-2002
->>  delete mode 100644 Documentation/ide/changelogs.rst
->>  delete mode 100644 Documentation/ide/ide-tape.rst
->>  delete mode 100644 Documentation/ide/ide.rst
->>  delete mode 100644 Documentation/ide/index.rst
->>  delete mode 100644 Documentation/ide/warm-plug-howto.rst
+>>   drivers/md/raid5.c | 109 +++++++++++++++++++++++----------------------
+>>   1 file changed, 55 insertions(+), 54 deletions(-)
+>>
+>> diff --git a/drivers/md/raid5.c b/drivers/md/raid5.c
+>> index 97b23c18402b..cda6857e6207 100644
+>> --- a/drivers/md/raid5.c
+>> +++ b/drivers/md/raid5.c
+>> @@ -5906,68 +5906,69 @@ static bool raid5_make_request(struct mddev
+>> *mddev, struct bio * bi)
 > 
-> The Documentation/ide part of this is already dealt with in docs-next;
-> obviously there was more to do, though :)
+> ...
+> 
+>> +        if (unlikely(!sh)) {
+>> +            /* cannot get stripe, just give-up */
+>> +            bi->bi_status = BLK_STS_IOERR;
+>> +            break;
+>> +        }
+> 
+> 
+> Nit, I would suggest to keep below original comment.
 
-Yes -- thanks.
+But the original comment was plainly wrong...
 
-I have also sent a patch for the admin-guide/kernel-parameters.txt part
-of this on 2022 Apr 23:
-https://lore.kernel.org/linux-doc/20220424033701.7988-1-rdunlap@infradead.org/T/#u
-
-
--- 
-~Randy
+Logan
