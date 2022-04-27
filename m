@@ -2,352 +2,511 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D7B1C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CE2AC433F5
 	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:27:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242940AbiD0Qax (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:30:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43140 "EHLO
+        id S242744AbiD0Qai (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:30:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243839AbiD0Q3N (ORCPT
+        with ESMTP id S244408AbiD0Q3q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:29:13 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45F8040A06;
-        Wed, 27 Apr 2022 09:24:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1651076698; x=1682612698;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=rorp3JLF+Ms4Vu/B7Z8P2oQsOtG0/dL6kRZVglyDxEo=;
-  b=JFo6E5c6kNR3UbSTeNfXf5w9yH9n6skVCd4du8IEMbKnaCWj/uahzRA7
-   PgOX6S3DlgHQnnzihNixjV8PJtvoSVFNGxHoFncj7HmcXfqxlCDOHXtJU
-   +8K1xKLWZKCGMp0l0OLlFKQ1vLXiTcFqoKuB3mtdWujpJxHmkaRLO04YG
-   Xo3XzGPhlPQiuqRb9XsriSn0GpSG90r0Tr+p57MF4wT0JqWn8igWa3GRZ
-   rjLaPS9otHKYZ7gitEyGd2FVGqr+KVkM8jdxS4r5QRPiJ4ThOtvP7gNZS
-   GkHPVwdp/a+/oExoKbyzaxSbNDf8U4ALTNdsqP/Q3oHK4roXiYqZRD+Kl
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,293,1643698800"; 
-   d="scan'208";a="161536403"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Apr 2022 09:24:57 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 27 Apr 2022 09:24:55 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 27 Apr 2022 09:24:45 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, <UNGLinuxDriver@microchip.com>,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: [RFC patch net-next 3/3] net: dsa: ksz: moved ksz9477 port mirror to ksz_common.c
-Date:   Wed, 27 Apr 2022 21:53:43 +0530
-Message-ID: <20220427162343.18092-4-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220427162343.18092-1-arun.ramadoss@microchip.com>
-References: <20220427162343.18092-1-arun.ramadoss@microchip.com>
+        Wed, 27 Apr 2022 12:29:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C251F222BD
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:25:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651076733;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sRv3Tm/YxvbVyc+FieRrE6e6WGvD5VYoIbrExTxqxIc=;
+        b=bx6liOXwYBErIXYKAv9issxnAknRgWMt4pBZ3gqqhb+jB971MEFvqehg2zTdt0TTv1dpDu
+        d/uEVznSV4+yq5Fz4WTRw3PBzsCkJYEZIGItBnjYLRmc7gvM9XAtXXqtuASa8VpT459TqQ
+        yrVd+u4BZH4WAi5rUvGIFqohoEXVvxM=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-516-4kv7JYx1Mua51XAVpsgsuQ-1; Wed, 27 Apr 2022 12:19:26 -0400
+X-MC-Unique: 4kv7JYx1Mua51XAVpsgsuQ-1
+Received: by mail-ed1-f70.google.com with SMTP id t25-20020a508d59000000b00425d86c2987so1249559edt.21
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:19:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=sRv3Tm/YxvbVyc+FieRrE6e6WGvD5VYoIbrExTxqxIc=;
+        b=1NmyIkow1wVRNNosZ5h1U8qabwx3qYDx54e+2Nwmg8KKVIQqYKrdBV62SQOqxioZoN
+         RJDPCNObioXCnM3t7YChJ3xFJ5NI47abkn8cCVhuqg33vnwfXXL5XyyyU8vU3y6OE098
+         uQ3/f4RCybNxpJvtOHPFhODatuDwqJ37kimXr94tcRcPLzOfiEh23SqheimOzMKtZmyG
+         uIzVnwtqP8LTzwFHT+a1zsvm5tk/1iZn5yeAWzAa40kjtKWf8ExBRsvgrwfHzkb8KkrW
+         foHO0GVhJctmCym9RIJlfVNZ7PLiw96cFABwHHR8D1cSCzp5/LsgOGBGKdAzJntKbAL9
+         Od/A==
+X-Gm-Message-State: AOAM531VxDHx+HNF7SXC5hCavtTLYuWXLgJPjwckwv4F6Letj4TqiTZj
+        YvdGxyY71NttbycXFy/riobBRN78XcEATL8DnKnJBcURdvBn3zXMT/s3D37FCCyNrtKHLNGLjIl
+        +BwAoa95a2FRcxR3gFLl+bMFC
+X-Received: by 2002:a17:906:36c8:b0:6e7:a66f:766e with SMTP id b8-20020a17090636c800b006e7a66f766emr28037681ejc.354.1651076365295;
+        Wed, 27 Apr 2022 09:19:25 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxm5BaMBzoGtQo5IQdMhRfeY4QxolpdShU/5txFlpx42/oLivNC1lmGXxVf9+6OnL64aCieYg==
+X-Received: by 2002:a17:906:36c8:b0:6e7:a66f:766e with SMTP id b8-20020a17090636c800b006e7a66f766emr28037634ejc.354.1651076364904;
+        Wed, 27 Apr 2022 09:19:24 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:1c09:f536:3de6:228c? ([2001:b07:6468:f312:1c09:f536:3de6:228c])
+        by smtp.googlemail.com with ESMTPSA id n21-20020a170906725500b006e10a7d6d03sm7039199ejk.219.2022.04.27.09.19.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Apr 2022 09:19:23 -0700 (PDT)
+Message-ID: <5dae6922-d957-bd84-dcee-e970b77ce159@redhat.com>
+Date:   Wed, 27 Apr 2022 18:19:21 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH MANUALSEL 5.15 1/7] kvm: selftests: do not use bitfields
+ larger than 32-bits for PTEs
+Content-Language: en-US
+To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Cc:     Nana Liu <nanliu@redhat.com>, Peter Xu <peterx@redhat.com>,
+        shuah@kernel.org, nathan@kernel.org, ndesaulniers@google.com,
+        jmattson@google.com, oupton@google.com, seanjc@google.com,
+        ricarkol@google.com, yang.zhong@intel.com, aaronlewis@google.com,
+        wei.w.wang@intel.com, kvm@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, llvm@lists.linux.dev
+References: <20220427155431.19458-1-sashal@kernel.org>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220427155431.19458-1-sashal@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Moved the port_mirror_add and port_mirror_del function from ksz9477 to
-ksz_common, to make it generic function which can be used by KSZ9477
-based switch.
+On 4/27/22 17:54, Sasha Levin wrote:
+> From: Paolo Bonzini <pbonzini@redhat.com>
+> 
+> [ Upstream commit f18b4aebe107d092e384b1ae680b1e1de7a0196d ]
+> 
+> Red Hat's QE team reported test failure on access_tracking_perf_test:
+> 
+> Testing guest mode: PA-bits:ANY, VA-bits:48,  4K pages
+> guest physical test memory offset: 0x3fffbffff000
+> 
+> Populating memory             : 0.684014577s
+> Writing to populated memory   : 0.006230175s
+> Reading from populated memory : 0.004557805s
+> ==== Test Assertion Failure ====
+>    lib/kvm_util.c:1411: false
+>    pid=125806 tid=125809 errno=4 - Interrupted system call
+>       1  0x0000000000402f7c: addr_gpa2hva at kvm_util.c:1411
+>       2   (inlined by) addr_gpa2hva at kvm_util.c:1405
+>       3  0x0000000000401f52: lookup_pfn at access_tracking_perf_test.c:98
+>       4   (inlined by) mark_vcpu_memory_idle at access_tracking_perf_test.c:152
+>       5   (inlined by) vcpu_thread_main at access_tracking_perf_test.c:232
+>       6  0x00007fefe9ff81ce: ?? ??:0
+>       7  0x00007fefe9c64d82: ?? ??:0
+>    No vm physical memory at 0xffbffff000
+> 
+> I can easily reproduce it with a Intel(R) Xeon(R) CPU E5-2630 with 46 bits
+> PA.
+> 
+> It turns out that the address translation for clearing idle page tracking
+> returned a wrong result; addr_gva2gpa()'s last step, which is based on
+> "pte[index[0]].pfn", did the calculation with 40 bits length and the
+> high 12 bits got truncated.  In above case the GPA address to be returned
+> should be 0x3fffbffff000 for GVA 0xc0000000, but it got truncated into
+> 0xffbffff000 and the subsequent gpa2hva lookup failed.
+> 
+> The width of operations on bit fields greater than 32-bit is
+> implementation defined, and differs between GCC (which uses the bitfield
+> precision) and clang (which uses 64-bit arithmetic), so this is a
+> potential minefield.  Remove the bit fields and using manual masking
+> instead.
+> 
+> Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=2075036
+> Reported-by: Nana Liu <nanliu@redhat.com>
+> Reviewed-by: Peter Xu <peterx@redhat.com>
+> Tested-by: Peter Xu <peterx@redhat.com>
+> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>   .../selftests/kvm/include/x86_64/processor.h  |  15 ++
+>   .../selftests/kvm/lib/x86_64/processor.c      | 192 +++++++-----------
+>   2 files changed, 92 insertions(+), 115 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/kvm/include/x86_64/processor.h b/tools/testing/selftests/kvm/include/x86_64/processor.h
+> index 05e65ca1c30c..23861c8faa61 100644
+> --- a/tools/testing/selftests/kvm/include/x86_64/processor.h
+> +++ b/tools/testing/selftests/kvm/include/x86_64/processor.h
+> @@ -58,6 +58,21 @@
+>   /* CPUID.0x8000_0001.EDX */
+>   #define CPUID_GBPAGES		(1ul << 26)
+>   
+> +/* Page table bitfield declarations */
+> +#define PTE_PRESENT_MASK        BIT_ULL(0)
+> +#define PTE_WRITABLE_MASK       BIT_ULL(1)
+> +#define PTE_USER_MASK           BIT_ULL(2)
+> +#define PTE_ACCESSED_MASK       BIT_ULL(5)
+> +#define PTE_DIRTY_MASK          BIT_ULL(6)
+> +#define PTE_LARGE_MASK          BIT_ULL(7)
+> +#define PTE_GLOBAL_MASK         BIT_ULL(8)
+> +#define PTE_NX_MASK             BIT_ULL(63)
+> +
+> +#define PAGE_SHIFT		12
+> +
+> +#define PHYSICAL_PAGE_MASK      GENMASK_ULL(51, 12)
+> +#define PTE_GET_PFN(pte)        (((pte) & PHYSICAL_PAGE_MASK) >> PAGE_SHIFT)
+> +
+>   /* General Registers in 64-Bit Mode */
+>   struct gpr64_regs {
+>   	u64 rax;
+> diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+> index da73b97e1e6d..46057079d8bb 100644
+> --- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
+> +++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+> @@ -19,38 +19,6 @@
+>   
+>   vm_vaddr_t exception_handlers;
+>   
+> -/* Virtual translation table structure declarations */
+> -struct pageUpperEntry {
+> -	uint64_t present:1;
+> -	uint64_t writable:1;
+> -	uint64_t user:1;
+> -	uint64_t write_through:1;
+> -	uint64_t cache_disable:1;
+> -	uint64_t accessed:1;
+> -	uint64_t ignored_06:1;
+> -	uint64_t page_size:1;
+> -	uint64_t ignored_11_08:4;
+> -	uint64_t pfn:40;
+> -	uint64_t ignored_62_52:11;
+> -	uint64_t execute_disable:1;
+> -};
+> -
+> -struct pageTableEntry {
+> -	uint64_t present:1;
+> -	uint64_t writable:1;
+> -	uint64_t user:1;
+> -	uint64_t write_through:1;
+> -	uint64_t cache_disable:1;
+> -	uint64_t accessed:1;
+> -	uint64_t dirty:1;
+> -	uint64_t reserved_07:1;
+> -	uint64_t global:1;
+> -	uint64_t ignored_11_09:3;
+> -	uint64_t pfn:40;
+> -	uint64_t ignored_62_52:11;
+> -	uint64_t execute_disable:1;
+> -};
+> -
+>   void regs_dump(FILE *stream, struct kvm_regs *regs,
+>   	       uint8_t indent)
+>   {
+> @@ -195,23 +163,21 @@ static void *virt_get_pte(struct kvm_vm *vm, uint64_t pt_pfn, uint64_t vaddr,
+>   	return &page_table[index];
+>   }
+>   
+> -static struct pageUpperEntry *virt_create_upper_pte(struct kvm_vm *vm,
+> -						    uint64_t pt_pfn,
+> -						    uint64_t vaddr,
+> -						    uint64_t paddr,
+> -						    int level,
+> -						    enum x86_page_size page_size)
+> +static uint64_t *virt_create_upper_pte(struct kvm_vm *vm,
+> +				       uint64_t pt_pfn,
+> +				       uint64_t vaddr,
+> +				       uint64_t paddr,
+> +				       int level,
+> +				       enum x86_page_size page_size)
+>   {
+> -	struct pageUpperEntry *pte = virt_get_pte(vm, pt_pfn, vaddr, level);
+> -
+> -	if (!pte->present) {
+> -		pte->writable = true;
+> -		pte->present = true;
+> -		pte->page_size = (level == page_size);
+> -		if (pte->page_size)
+> -			pte->pfn = paddr >> vm->page_shift;
+> +	uint64_t *pte = virt_get_pte(vm, pt_pfn, vaddr, level);
+> +
+> +	if (!(*pte & PTE_PRESENT_MASK)) {
+> +		*pte = PTE_PRESENT_MASK | PTE_WRITABLE_MASK;
+> +		if (level == page_size)
+> +			*pte |= PTE_LARGE_MASK | (paddr & PHYSICAL_PAGE_MASK);
+>   		else
+> -			pte->pfn = vm_alloc_page_table(vm) >> vm->page_shift;
+> +			*pte |= vm_alloc_page_table(vm) & PHYSICAL_PAGE_MASK;
+>   	} else {
+>   		/*
+>   		 * Entry already present.  Assert that the caller doesn't want
+> @@ -221,7 +187,7 @@ static struct pageUpperEntry *virt_create_upper_pte(struct kvm_vm *vm,
+>   		TEST_ASSERT(level != page_size,
+>   			    "Cannot create hugepage at level: %u, vaddr: 0x%lx\n",
+>   			    page_size, vaddr);
+> -		TEST_ASSERT(!pte->page_size,
+> +		TEST_ASSERT(!(*pte & PTE_LARGE_MASK),
+>   			    "Cannot create page table at level: %u, vaddr: 0x%lx\n",
+>   			    level, vaddr);
+>   	}
+> @@ -232,8 +198,8 @@ void __virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr,
+>   		   enum x86_page_size page_size)
+>   {
+>   	const uint64_t pg_size = 1ull << ((page_size * 9) + 12);
+> -	struct pageUpperEntry *pml4e, *pdpe, *pde;
+> -	struct pageTableEntry *pte;
+> +	uint64_t *pml4e, *pdpe, *pde;
+> +	uint64_t *pte;
+>   
+>   	TEST_ASSERT(vm->mode == VM_MODE_PXXV48_4K,
+>   		    "Unknown or unsupported guest mode, mode: 0x%x", vm->mode);
+> @@ -257,24 +223,22 @@ void __virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr,
+>   	 */
+>   	pml4e = virt_create_upper_pte(vm, vm->pgd >> vm->page_shift,
+>   				      vaddr, paddr, 3, page_size);
+> -	if (pml4e->page_size)
+> +	if (*pml4e & PTE_LARGE_MASK)
+>   		return;
+>   
+> -	pdpe = virt_create_upper_pte(vm, pml4e->pfn, vaddr, paddr, 2, page_size);
+> -	if (pdpe->page_size)
+> +	pdpe = virt_create_upper_pte(vm, PTE_GET_PFN(*pml4e), vaddr, paddr, 2, page_size);
+> +	if (*pdpe & PTE_LARGE_MASK)
+>   		return;
+>   
+> -	pde = virt_create_upper_pte(vm, pdpe->pfn, vaddr, paddr, 1, page_size);
+> -	if (pde->page_size)
+> +	pde = virt_create_upper_pte(vm, PTE_GET_PFN(*pdpe), vaddr, paddr, 1, page_size);
+> +	if (*pde & PTE_LARGE_MASK)
+>   		return;
+>   
+>   	/* Fill in page table entry. */
+> -	pte = virt_get_pte(vm, pde->pfn, vaddr, 0);
+> -	TEST_ASSERT(!pte->present,
+> +	pte = virt_get_pte(vm, PTE_GET_PFN(*pde), vaddr, 0);
+> +	TEST_ASSERT(!(*pte & PTE_PRESENT_MASK),
+>   		    "PTE already present for 4k page at vaddr: 0x%lx\n", vaddr);
+> -	pte->pfn = paddr >> vm->page_shift;
+> -	pte->writable = true;
+> -	pte->present = 1;
+> +	*pte = PTE_PRESENT_MASK | PTE_WRITABLE_MASK | (paddr & PHYSICAL_PAGE_MASK);
+>   }
+>   
+>   void virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr)
+> @@ -282,12 +246,12 @@ void virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr)
+>   	__virt_pg_map(vm, vaddr, paddr, X86_PAGE_SIZE_4K);
+>   }
+>   
+> -static struct pageTableEntry *_vm_get_page_table_entry(struct kvm_vm *vm, int vcpuid,
+> +static uint64_t *_vm_get_page_table_entry(struct kvm_vm *vm, int vcpuid,
+>   						       uint64_t vaddr)
+>   {
+>   	uint16_t index[4];
+> -	struct pageUpperEntry *pml4e, *pdpe, *pde;
+> -	struct pageTableEntry *pte;
+> +	uint64_t *pml4e, *pdpe, *pde;
+> +	uint64_t *pte;
+>   	struct kvm_cpuid_entry2 *entry;
+>   	struct kvm_sregs sregs;
+>   	int max_phy_addr;
+> @@ -329,30 +293,29 @@ static struct pageTableEntry *_vm_get_page_table_entry(struct kvm_vm *vm, int vc
+>   	index[3] = (vaddr >> 39) & 0x1ffu;
+>   
+>   	pml4e = addr_gpa2hva(vm, vm->pgd);
+> -	TEST_ASSERT(pml4e[index[3]].present,
+> +	TEST_ASSERT(pml4e[index[3]] & PTE_PRESENT_MASK,
+>   		"Expected pml4e to be present for gva: 0x%08lx", vaddr);
+> -	TEST_ASSERT((*(uint64_t*)(&pml4e[index[3]]) &
+> -		(rsvd_mask | (1ull << 7))) == 0,
+> +	TEST_ASSERT((pml4e[index[3]] & (rsvd_mask | PTE_LARGE_MASK)) == 0,
+>   		"Unexpected reserved bits set.");
+>   
+> -	pdpe = addr_gpa2hva(vm, pml4e[index[3]].pfn * vm->page_size);
+> -	TEST_ASSERT(pdpe[index[2]].present,
+> +	pdpe = addr_gpa2hva(vm, PTE_GET_PFN(pml4e[index[3]]) * vm->page_size);
+> +	TEST_ASSERT(pdpe[index[2]] & PTE_PRESENT_MASK,
+>   		"Expected pdpe to be present for gva: 0x%08lx", vaddr);
+> -	TEST_ASSERT(pdpe[index[2]].page_size == 0,
+> +	TEST_ASSERT(!(pdpe[index[2]] & PTE_LARGE_MASK),
+>   		"Expected pdpe to map a pde not a 1-GByte page.");
+> -	TEST_ASSERT((*(uint64_t*)(&pdpe[index[2]]) & rsvd_mask) == 0,
+> +	TEST_ASSERT((pdpe[index[2]] & rsvd_mask) == 0,
+>   		"Unexpected reserved bits set.");
+>   
+> -	pde = addr_gpa2hva(vm, pdpe[index[2]].pfn * vm->page_size);
+> -	TEST_ASSERT(pde[index[1]].present,
+> +	pde = addr_gpa2hva(vm, PTE_GET_PFN(pdpe[index[2]]) * vm->page_size);
+> +	TEST_ASSERT(pde[index[1]] & PTE_PRESENT_MASK,
+>   		"Expected pde to be present for gva: 0x%08lx", vaddr);
+> -	TEST_ASSERT(pde[index[1]].page_size == 0,
+> +	TEST_ASSERT(!(pde[index[1]] & PTE_LARGE_MASK),
+>   		"Expected pde to map a pte not a 2-MByte page.");
+> -	TEST_ASSERT((*(uint64_t*)(&pde[index[1]]) & rsvd_mask) == 0,
+> +	TEST_ASSERT((pde[index[1]] & rsvd_mask) == 0,
+>   		"Unexpected reserved bits set.");
+>   
+> -	pte = addr_gpa2hva(vm, pde[index[1]].pfn * vm->page_size);
+> -	TEST_ASSERT(pte[index[0]].present,
+> +	pte = addr_gpa2hva(vm, PTE_GET_PFN(pde[index[1]]) * vm->page_size);
+> +	TEST_ASSERT(pte[index[0]] & PTE_PRESENT_MASK,
+>   		"Expected pte to be present for gva: 0x%08lx", vaddr);
+>   
+>   	return &pte[index[0]];
+> @@ -360,7 +323,7 @@ static struct pageTableEntry *_vm_get_page_table_entry(struct kvm_vm *vm, int vc
+>   
+>   uint64_t vm_get_page_table_entry(struct kvm_vm *vm, int vcpuid, uint64_t vaddr)
+>   {
+> -	struct pageTableEntry *pte = _vm_get_page_table_entry(vm, vcpuid, vaddr);
+> +	uint64_t *pte = _vm_get_page_table_entry(vm, vcpuid, vaddr);
+>   
+>   	return *(uint64_t *)pte;
+>   }
+> @@ -368,18 +331,17 @@ uint64_t vm_get_page_table_entry(struct kvm_vm *vm, int vcpuid, uint64_t vaddr)
+>   void vm_set_page_table_entry(struct kvm_vm *vm, int vcpuid, uint64_t vaddr,
+>   			     uint64_t pte)
+>   {
+> -	struct pageTableEntry *new_pte = _vm_get_page_table_entry(vm, vcpuid,
+> -								  vaddr);
+> +	uint64_t *new_pte = _vm_get_page_table_entry(vm, vcpuid, vaddr);
+>   
+>   	*(uint64_t *)new_pte = pte;
+>   }
+>   
+>   void virt_dump(FILE *stream, struct kvm_vm *vm, uint8_t indent)
+>   {
+> -	struct pageUpperEntry *pml4e, *pml4e_start;
+> -	struct pageUpperEntry *pdpe, *pdpe_start;
+> -	struct pageUpperEntry *pde, *pde_start;
+> -	struct pageTableEntry *pte, *pte_start;
+> +	uint64_t *pml4e, *pml4e_start;
+> +	uint64_t *pdpe, *pdpe_start;
+> +	uint64_t *pde, *pde_start;
+> +	uint64_t *pte, *pte_start;
+>   
+>   	if (!vm->pgd_created)
+>   		return;
+> @@ -389,58 +351,58 @@ void virt_dump(FILE *stream, struct kvm_vm *vm, uint8_t indent)
+>   	fprintf(stream, "%*s      index hvaddr         gpaddr         "
+>   		"addr         w exec dirty\n",
+>   		indent, "");
+> -	pml4e_start = (struct pageUpperEntry *) addr_gpa2hva(vm, vm->pgd);
+> +	pml4e_start = (uint64_t *) addr_gpa2hva(vm, vm->pgd);
+>   	for (uint16_t n1 = 0; n1 <= 0x1ffu; n1++) {
+>   		pml4e = &pml4e_start[n1];
+> -		if (!pml4e->present)
+> +		if (!(*pml4e & PTE_PRESENT_MASK))
+>   			continue;
+> -		fprintf(stream, "%*spml4e 0x%-3zx %p 0x%-12lx 0x%-10lx %u "
+> +		fprintf(stream, "%*spml4e 0x%-3zx %p 0x%-12lx 0x%-10llx %u "
+>   			" %u\n",
+>   			indent, "",
+>   			pml4e - pml4e_start, pml4e,
+> -			addr_hva2gpa(vm, pml4e), (uint64_t) pml4e->pfn,
+> -			pml4e->writable, pml4e->execute_disable);
+> +			addr_hva2gpa(vm, pml4e), PTE_GET_PFN(*pml4e),
+> +			!!(*pml4e & PTE_WRITABLE_MASK), !!(*pml4e & PTE_NX_MASK));
+>   
+> -		pdpe_start = addr_gpa2hva(vm, pml4e->pfn * vm->page_size);
+> +		pdpe_start = addr_gpa2hva(vm, *pml4e & PHYSICAL_PAGE_MASK);
+>   		for (uint16_t n2 = 0; n2 <= 0x1ffu; n2++) {
+>   			pdpe = &pdpe_start[n2];
+> -			if (!pdpe->present)
+> +			if (!(*pdpe & PTE_PRESENT_MASK))
+>   				continue;
+> -			fprintf(stream, "%*spdpe  0x%-3zx %p 0x%-12lx 0x%-10lx "
+> +			fprintf(stream, "%*spdpe  0x%-3zx %p 0x%-12lx 0x%-10llx "
+>   				"%u  %u\n",
+>   				indent, "",
+>   				pdpe - pdpe_start, pdpe,
+>   				addr_hva2gpa(vm, pdpe),
+> -				(uint64_t) pdpe->pfn, pdpe->writable,
+> -				pdpe->execute_disable);
+> +				PTE_GET_PFN(*pdpe), !!(*pdpe & PTE_WRITABLE_MASK),
+> +				!!(*pdpe & PTE_NX_MASK));
+>   
+> -			pde_start = addr_gpa2hva(vm, pdpe->pfn * vm->page_size);
+> +			pde_start = addr_gpa2hva(vm, *pdpe & PHYSICAL_PAGE_MASK);
+>   			for (uint16_t n3 = 0; n3 <= 0x1ffu; n3++) {
+>   				pde = &pde_start[n3];
+> -				if (!pde->present)
+> +				if (!(*pde & PTE_PRESENT_MASK))
+>   					continue;
+>   				fprintf(stream, "%*spde   0x%-3zx %p "
+> -					"0x%-12lx 0x%-10lx %u  %u\n",
+> +					"0x%-12lx 0x%-10llx %u  %u\n",
+>   					indent, "", pde - pde_start, pde,
+>   					addr_hva2gpa(vm, pde),
+> -					(uint64_t) pde->pfn, pde->writable,
+> -					pde->execute_disable);
+> +					PTE_GET_PFN(*pde), !!(*pde & PTE_WRITABLE_MASK),
+> +					!!(*pde & PTE_NX_MASK));
+>   
+> -				pte_start = addr_gpa2hva(vm, pde->pfn * vm->page_size);
+> +				pte_start = addr_gpa2hva(vm, *pde & PHYSICAL_PAGE_MASK);
+>   				for (uint16_t n4 = 0; n4 <= 0x1ffu; n4++) {
+>   					pte = &pte_start[n4];
+> -					if (!pte->present)
+> +					if (!(*pte & PTE_PRESENT_MASK))
+>   						continue;
+>   					fprintf(stream, "%*spte   0x%-3zx %p "
+> -						"0x%-12lx 0x%-10lx %u  %u "
+> +						"0x%-12lx 0x%-10llx %u  %u "
+>   						"    %u    0x%-10lx\n",
+>   						indent, "",
+>   						pte - pte_start, pte,
+>   						addr_hva2gpa(vm, pte),
+> -						(uint64_t) pte->pfn,
+> -						pte->writable,
+> -						pte->execute_disable,
+> -						pte->dirty,
+> +						PTE_GET_PFN(*pte),
+> +						!!(*pte & PTE_WRITABLE_MASK),
+> +						!!(*pte & PTE_NX_MASK),
+> +						!!(*pte & PTE_DIRTY_MASK),
+>   						((uint64_t) n1 << 27)
+>   							| ((uint64_t) n2 << 18)
+>   							| ((uint64_t) n3 << 9)
+> @@ -558,8 +520,8 @@ static void kvm_seg_set_kernel_data_64bit(struct kvm_vm *vm, uint16_t selector,
+>   vm_paddr_t addr_gva2gpa(struct kvm_vm *vm, vm_vaddr_t gva)
+>   {
+>   	uint16_t index[4];
+> -	struct pageUpperEntry *pml4e, *pdpe, *pde;
+> -	struct pageTableEntry *pte;
+> +	uint64_t *pml4e, *pdpe, *pde;
+> +	uint64_t *pte;
+>   
+>   	TEST_ASSERT(vm->mode == VM_MODE_PXXV48_4K, "Attempt to use "
+>   		"unknown or unsupported guest mode, mode: 0x%x", vm->mode);
+> @@ -572,22 +534,22 @@ vm_paddr_t addr_gva2gpa(struct kvm_vm *vm, vm_vaddr_t gva)
+>   	if (!vm->pgd_created)
+>   		goto unmapped_gva;
+>   	pml4e = addr_gpa2hva(vm, vm->pgd);
+> -	if (!pml4e[index[3]].present)
+> +	if (!(pml4e[index[3]] & PTE_PRESENT_MASK))
+>   		goto unmapped_gva;
+>   
+> -	pdpe = addr_gpa2hva(vm, pml4e[index[3]].pfn * vm->page_size);
+> -	if (!pdpe[index[2]].present)
+> +	pdpe = addr_gpa2hva(vm, PTE_GET_PFN(pml4e[index[3]]) * vm->page_size);
+> +	if (!(pdpe[index[2]] & PTE_PRESENT_MASK))
+>   		goto unmapped_gva;
+>   
+> -	pde = addr_gpa2hva(vm, pdpe[index[2]].pfn * vm->page_size);
+> -	if (!pde[index[1]].present)
+> +	pde = addr_gpa2hva(vm, PTE_GET_PFN(pdpe[index[2]]) * vm->page_size);
+> +	if (!(pde[index[1]] & PTE_PRESENT_MASK))
+>   		goto unmapped_gva;
+>   
+> -	pte = addr_gpa2hva(vm, pde[index[1]].pfn * vm->page_size);
+> -	if (!pte[index[0]].present)
+> +	pte = addr_gpa2hva(vm, PTE_GET_PFN(pde[index[1]]) * vm->page_size);
+> +	if (!(pte[index[0]] & PTE_PRESENT_MASK))
+>   		goto unmapped_gva;
+>   
+> -	return (pte[index[0]].pfn * vm->page_size) + (gva & 0xfffu);
+> +	return (PTE_GET_PFN(pte[index[0]]) * vm->page_size) + (gva & 0xfffu);
+>   
+>   unmapped_gva:
+>   	TEST_FAIL("No mapping for vm virtual address, gva: 0x%lx", gva);
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
----
- drivers/net/dsa/microchip/ksz9477.c     | 74 +------------------------
- drivers/net/dsa/microchip/ksz9477_reg.h | 15 -----
- drivers/net/dsa/microchip/ksz_common.c  | 72 ++++++++++++++++++++++++
- drivers/net/dsa/microchip/ksz_common.h  |  5 ++
- drivers/net/dsa/microchip/ksz_reg.h     | 29 ++++++++++
- 5 files changed, 108 insertions(+), 87 deletions(-)
- create mode 100644 drivers/net/dsa/microchip/ksz_reg.h
-
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index f762120ce3fd..d568ebfaf8c1 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -973,76 +973,6 @@ static int ksz9477_port_mdb_del(struct dsa_switch *ds, int port,
- 	return ret;
- }
- 
--static int ksz9477_port_mirror_add(struct dsa_switch *ds, int port,
--				   struct dsa_mall_mirror_tc_entry *mirror,
--				   bool ingress, struct netlink_ext_ack *extack)
--{
--	struct ksz_device *dev = ds->priv;
--	u8 data;
--	int p;
--
--	/* Limit to one sniffer port
--	 * Check if any of the port is already set for sniffing
--	 * If yes, instruct the user to remove the previous entry & exit
--	 */
--	for (p = 0; p < dev->port_cnt; p++) {
--		/* Skip the current sniffing port */
--		if (p == mirror->to_local_port)
--			continue;
--
--		ksz_pread8(dev, p, P_MIRROR_CTRL, &data);
--
--		if (data & PORT_MIRROR_SNIFFER) {
--			NL_SET_ERR_MSG_MOD(extack,
--					   "Sniffer port is already configured, delete existing rules & retry");
--			return -EBUSY;
--		}
--	}
--
--	if (ingress)
--		ksz_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_RX, true);
--	else
--		ksz_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_TX, true);
--
--	/* configure mirror port */
--	ksz_port_cfg(dev, mirror->to_local_port, P_MIRROR_CTRL,
--		     PORT_MIRROR_SNIFFER, true);
--
--	ksz_cfg(dev, S_MIRROR_CTRL, SW_MIRROR_RX_TX, false);
--
--	return 0;
--}
--
--static void ksz9477_port_mirror_del(struct dsa_switch *ds, int port,
--				    struct dsa_mall_mirror_tc_entry *mirror)
--{
--	struct ksz_device *dev = ds->priv;
--	bool in_use = false;
--	u8 data;
--	int p;
--
--	if (mirror->ingress)
--		ksz_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_RX, false);
--	else
--		ksz_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_TX, false);
--
--
--	/* Check if any of the port is still referring to sniffer port */
--	for (p = 0; p < dev->port_cnt; p++) {
--		ksz_pread8(dev, p, P_MIRROR_CTRL, &data);
--
--		if ((data & (PORT_MIRROR_RX | PORT_MIRROR_TX))) {
--			in_use = true;
--			break;
--		}
--	}
--
--	/* delete sniffing if there are no other mirroring rule exist */
--	if (!in_use)
--		ksz_port_cfg(dev, mirror->to_local_port, P_MIRROR_CTRL,
--			     PORT_MIRROR_SNIFFER, false);
--}
--
- static bool ksz9477_get_gbit(struct ksz_device *dev, u8 data)
- {
- 	bool gbit;
-@@ -1478,8 +1408,8 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
- 	.port_fdb_del		= ksz9477_port_fdb_del,
- 	.port_mdb_add           = ksz9477_port_mdb_add,
- 	.port_mdb_del           = ksz9477_port_mdb_del,
--	.port_mirror_add	= ksz9477_port_mirror_add,
--	.port_mirror_del	= ksz9477_port_mirror_del,
-+	.port_mirror_add	= ksz_port_mirror_add,
-+	.port_mirror_del	= ksz_port_mirror_del,
- 	.get_stats64		= ksz9477_get_stats64,
- 	.port_change_mtu	= ksz9477_change_mtu,
- 	.port_max_mtu		= ksz9477_max_mtu,
-diff --git a/drivers/net/dsa/microchip/ksz9477_reg.h b/drivers/net/dsa/microchip/ksz9477_reg.h
-index 7a2c8d4767af..abdd653a2f39 100644
---- a/drivers/net/dsa/microchip/ksz9477_reg.h
-+++ b/drivers/net/dsa/microchip/ksz9477_reg.h
-@@ -345,13 +345,6 @@
- #define REG_SW_MAC_TOS_PRIO_30		0x035E
- #define REG_SW_MAC_TOS_PRIO_31		0x035F
- 
--#define REG_SW_MRI_CTRL_0		0x0370
--
--#define SW_IGMP_SNOOP			BIT(6)
--#define SW_IPV6_MLD_OPTION		BIT(3)
--#define SW_IPV6_MLD_SNOOP		BIT(2)
--#define SW_MIRROR_RX_TX			BIT(0)
--
- #define REG_SW_CLASS_D_IP_CTRL__4	0x0374
- 
- #define SW_CLASS_D_IP_ENABLE		BIT(31)
-@@ -1406,12 +1399,6 @@
- #define REG_PORT_ACL_CTRL_1		0x0613
- 
- /* 8 - Classification and Policing */
--#define REG_PORT_MRI_MIRROR_CTRL	0x0800
--
--#define PORT_MIRROR_RX			BIT(6)
--#define PORT_MIRROR_TX			BIT(5)
--#define PORT_MIRROR_SNIFFER		BIT(1)
--
- #define REG_PORT_MRI_PRIO_CTRL		0x0801
- 
- #define PORT_HIGHEST_PRIO		BIT(7)
-@@ -1628,7 +1615,6 @@
- 
- #define P_BCAST_STORM_CTRL		REG_PORT_MAC_CTRL_0
- #define P_PRIO_CTRL			REG_PORT_MRI_PRIO_CTRL
--#define P_MIRROR_CTRL			REG_PORT_MRI_MIRROR_CTRL
- #define P_STP_CTRL			REG_PORT_LUE_MSTP_STATE
- #define P_PHY_CTRL			REG_PORT_PHY_CTRL
- #define P_NEG_RESTART_CTRL		REG_PORT_PHY_CTRL
-@@ -1637,7 +1623,6 @@
- #define P_RATE_LIMIT_CTRL		REG_PORT_MAC_IN_RATE_LIMIT
- 
- #define S_LINK_AGING_CTRL		REG_SW_LUE_CTRL_1
--#define S_MIRROR_CTRL			REG_SW_MRI_CTRL_0
- #define S_REPLACE_VID_CTRL		REG_SW_MAC_CTRL_2
- #define S_802_1P_PRIO_CTRL		REG_SW_MAC_802_1P_MAP_0
- #define S_TOS_PRIO_CTRL			REG_SW_MAC_TOS_PRIO_0
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 9b9f570ebb0b..ec5759b017d9 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -19,6 +19,78 @@
- #include <net/switchdev.h>
- 
- #include "ksz_common.h"
-+#include "ksz_reg.h"
-+
-+int ksz_port_mirror_add(struct dsa_switch *ds, int port,
-+			struct dsa_mall_mirror_tc_entry *mirror,
-+			bool ingress, struct netlink_ext_ack *extack)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	u8 data;
-+	int p;
-+
-+	/* Limit to one sniffer port
-+	 * Check if any of the port is already set for sniffing
-+	 * If yes, instruct the user to remove the previous entry & exit
-+	 */
-+	for (p = 0; p < dev->port_cnt; p++) {
-+		/* Skip the current sniffing port */
-+		if (p == mirror->to_local_port)
-+			continue;
-+
-+		ksz_pread8(dev, p, P_MIRROR_CTRL, &data);
-+
-+		if (data & PORT_MIRROR_SNIFFER) {
-+			NL_SET_ERR_MSG_MOD(extack,
-+					   "Sniffer port is already configured, delete existing rules & retry");
-+			return -EBUSY;
-+		}
-+	}
-+
-+	if (ingress)
-+		ksz_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_RX, true);
-+	else
-+		ksz_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_TX, true);
-+
-+	/* configure mirror port */
-+	ksz_port_cfg(dev, mirror->to_local_port, P_MIRROR_CTRL,
-+		     PORT_MIRROR_SNIFFER, true);
-+
-+	ksz_cfg(dev, S_MIRROR_CTRL, SW_MIRROR_RX_TX, false);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(ksz_port_mirror_add);
-+
-+void ksz_port_mirror_del(struct dsa_switch *ds, int port,
-+			 struct dsa_mall_mirror_tc_entry *mirror)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	bool in_use = false;
-+	u8 data;
-+	int p;
-+
-+	if (mirror->ingress)
-+		ksz_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_RX, false);
-+	else
-+		ksz_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_TX, false);
-+
-+	/* Check if any of the port is still referring to sniffer port */
-+	for (p = 0; p < dev->port_cnt; p++) {
-+		ksz_pread8(dev, p, P_MIRROR_CTRL, &data);
-+
-+		if ((data & (PORT_MIRROR_RX | PORT_MIRROR_TX))) {
-+			in_use = true;
-+			break;
-+		}
-+	}
-+
-+	/* delete sniffing if there are no other mirroring rule exist */
-+	if (!in_use)
-+		ksz_port_cfg(dev, mirror->to_local_port, P_MIRROR_CTRL,
-+			     PORT_MIRROR_SNIFFER, false);
-+}
-+EXPORT_SYMBOL(ksz_port_mirror_del);
- 
- void ksz_update_port_member(struct ksz_device *dev, int port)
- {
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 4f049e9d8952..e8eeafc03bf7 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -177,6 +177,11 @@ int ksz_port_mdb_del(struct dsa_switch *ds, int port,
- 		     const struct switchdev_obj_port_mdb *mdb,
- 		     struct dsa_db db);
- int ksz_enable_port(struct dsa_switch *ds, int port, struct phy_device *phy);
-+int ksz_port_mirror_add(struct dsa_switch *ds, int port,
-+			struct dsa_mall_mirror_tc_entry *mirror,
-+			bool ingress, struct netlink_ext_ack *extack);
-+void ksz_port_mirror_del(struct dsa_switch *ds, int port,
-+			 struct dsa_mall_mirror_tc_entry *mirror);
- 
- /* Common register access functions */
- 
-diff --git a/drivers/net/dsa/microchip/ksz_reg.h b/drivers/net/dsa/microchip/ksz_reg.h
-new file mode 100644
-index 000000000000..ccd4a6568e34
---- /dev/null
-+++ b/drivers/net/dsa/microchip/ksz_reg.h
-@@ -0,0 +1,29 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Microchip KSZ Switch register definitions
-+ *
-+ * Copyright (C) 2017-2022 Microchip Technology Inc.
-+ */
-+
-+#ifndef __KSZ_REGS_H
-+#define __KSZ_REGS_H
-+
-+#define REG_SW_MRI_CTRL_0		0x0370
-+
-+#define SW_IGMP_SNOOP			BIT(6)
-+#define SW_IPV6_MLD_OPTION		BIT(3)
-+#define SW_IPV6_MLD_SNOOP		BIT(2)
-+#define SW_MIRROR_RX_TX			BIT(0)
-+
-+/* 8 - Classification and Policing */
-+#define REG_PORT_MRI_MIRROR_CTRL	0x0800
-+
-+#define PORT_MIRROR_RX			BIT(6)
-+#define PORT_MIRROR_TX			BIT(5)
-+#define PORT_MIRROR_SNIFFER		BIT(1)
-+
-+#define P_MIRROR_CTRL			REG_PORT_MRI_MIRROR_CTRL
-+
-+#define S_MIRROR_CTRL			REG_SW_MRI_CTRL_0
-+
-+#endif
--- 
-2.33.0
+Acked-by: Paolo Bonzini <pbonzini@redhat.com>
 
