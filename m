@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32159C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 17:32:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFD55C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 17:32:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244458AbiD0Rfz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 13:35:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55288 "EHLO
+        id S244395AbiD0Rf7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 13:35:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244359AbiD0RfW (ORCPT
+        with ESMTP id S244363AbiD0RfW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Apr 2022 13:35:22 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 999C3240669
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 10:31:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D9D312360C5
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 10:31:55 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7F854ED1;
-        Wed, 27 Apr 2022 10:31:59 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C1BA9143D;
+        Wed, 27 Apr 2022 10:31:55 -0700 (PDT)
 Received: from lakrids.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 426D33F73B;
-        Wed, 27 Apr 2022 10:31:58 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 8DA463F73B;
+        Wed, 27 Apr 2022 10:31:54 -0700 (PDT)
 From:   Mark Rutland <mark.rutland@arm.com>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     akpm@linux-foundation.org, alex.popov@linux.com,
         catalin.marinas@arm.com, keescook@chromium.org,
         linux-kernel@vger.kernel.org, luto@kernel.org,
         mark.rutland@arm.com, will@kernel.org
-Subject: [PATCH v2 13/13] arm64: entry: use stackleak_erase_on_task_stack()
-Date:   Wed, 27 Apr 2022 18:31:28 +0100
-Message-Id: <20220427173128.2603085-14-mark.rutland@arm.com>
+Subject: [PATCH v2 11/13] lkdtm/stackleak: check stack boundaries
+Date:   Wed, 27 Apr 2022 18:31:26 +0100
+Message-Id: <20220427173128.2603085-12-mark.rutland@arm.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220427173128.2603085-1-mark.rutland@arm.com>
 References: <20220427173128.2603085-1-mark.rutland@arm.com>
@@ -39,10 +39,10 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On arm64 we always call stackleak_erase() on a task stack, and never
-call it on another stack. We can avoid some redundant work by using
-stackleak_erase_on_task_stack(), telling the stackleak code that it's
-being called on a task stack.
+The stackleak code relies upon the current SP and lowest recorded SP
+falling within expected task stack boundaries.
+
+Check this at the start of the test.
 
 Signed-off-by: Mark Rutland <mark.rutland@arm.com>
 Cc: Alexander Popov <alex.popov@linux.com>
@@ -52,22 +52,47 @@ Cc: Catalin Marinas <catalin.marinas@arm.com>
 Cc: Kees Cook <keescook@chromium.org>
 Cc: Will Deacon <will@kernel.org>
 ---
- arch/arm64/kernel/entry.S | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/misc/lkdtm/stackleak.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-diff --git a/arch/arm64/kernel/entry.S b/arch/arm64/kernel/entry.S
-index ede028dee81b0..5b82b92924005 100644
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -596,7 +596,7 @@ SYM_CODE_START_LOCAL(ret_to_user)
- 	ldr	x19, [tsk, #TSK_TI_FLAGS]	// re-check for single-step
- 	enable_step_tsk x19, x2
- #ifdef CONFIG_GCC_PLUGIN_STACKLEAK
--	bl	stackleak_erase
-+	bl	stackleak_erase_on_task_stack
- #endif
- 	kernel_exit 0
- SYM_CODE_END(ret_to_user)
+diff --git a/drivers/misc/lkdtm/stackleak.c b/drivers/misc/lkdtm/stackleak.c
+index 46c60761a05ea..52800583fd051 100644
+--- a/drivers/misc/lkdtm/stackleak.c
++++ b/drivers/misc/lkdtm/stackleak.c
+@@ -35,6 +35,25 @@ static void noinstr check_stackleak_irqoff(void)
+ 	unsigned long poison_high, poison_low;
+ 	bool test_failed = false;
+ 
++	/*
++	 * Check that the current and lowest recorded stack pointer values fall
++	 * within the expected task stack boundaries. These tests should never
++	 * fail unless the boundaries are incorrect or we're clobbering the
++	 * STACK_END_MAGIC, and in either casee something is seriously wrong.
++	 */
++	if (current_sp < task_stack_low || current_sp >= task_stack_high) {
++		pr_err("FAIL: current_stack_pointer (0x%lx) outside of task stack bounds [0x%lx..0x%lx]\n",
++		       current_sp, task_stack_low, task_stack_high - 1);
++		test_failed = true;
++		goto out;
++	}
++	if (lowest_sp < task_stack_low || lowest_sp >= task_stack_high) {
++		pr_err("FAIL: current->lowest_stack (0x%lx) outside of task stack bounds [0x%lx..0x%lx]\n",
++		       lowest_sp, task_stack_low, task_stack_high - 1);
++		test_failed = true;
++		goto out;
++	}
++
+ 	/*
+ 	 * Depending on what has run prior to this test, the lowest recorded
+ 	 * stack pointer could be above or below the current stack pointer.
+@@ -87,6 +106,7 @@ static void noinstr check_stackleak_irqoff(void)
+ 		poison_high - task_stack_low,
+ 		task_stack_low - task_stack_base);
+ 
++out:
+ 	if (test_failed) {
+ 		pr_err("FAIL: the thread stack is NOT properly erased!\n");
+ 		pr_expected_config(CONFIG_GCC_PLUGIN_STACKLEAK);
 -- 
 2.30.2
 
