@@ -2,118 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27675C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:25:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D885FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:27:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242947AbiD0Q2g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:28:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43514 "EHLO
+        id S243136AbiD0Qat (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:30:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242991AbiD0Q2I (ORCPT
+        with ESMTP id S241552AbiD0Q2p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:28:08 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25D8336B4C
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:22:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651076552; x=1682612552;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=xbVkhqUprSffI6k9578RyOtKLKT5PDGpfnHI0RkdbJg=;
-  b=JVUdczBuYwTQhyiAmWr9YqIp/5bBFtV7HkGSuMKGPJxvtaM1l//LSmLJ
-   QOSeQxxrwyKUqF14p6nXU++SdkoJPFWgcPZB6+ab+sVyqbxls3xwtu88F
-   9EVX43CHW1HQVd3LQxecgZui6v+ybP42d2GqwojrzuDA30P2t6vOVtXzt
-   D6Bn+eRXJq84S7yvi+egR64dpsukeX4YvQ7Hl+IRqrc8ZaKHbeoOQBmyO
-   +57MdplUdF9FI8hvCw6Qr0/kwZbdV3c9rzWHiiLjN+vQZR7r+745NsHzl
-   MB1Wgkrw2if/dess860uBBjCWWzQE2gK9i2BTwmc7awLe/17Hsq2yTF54
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="247919498"
-X-IronPort-AV: E=Sophos;i="5.90,293,1643702400"; 
-   d="scan'208";a="247919498"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 09:15:06 -0700
-X-IronPort-AV: E=Sophos;i="5.90,293,1643702400"; 
-   d="scan'208";a="533293590"
-Received: from alison-desk.jf.intel.com (HELO alison-desk) ([10.54.74.41])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 09:15:06 -0700
-Date:   Wed, 27 Apr 2022 09:16:33 -0700
-From:   Alison Schofield <alison.schofield@intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Bruno Moreira-Guedes <codeagain@codeagain.dev>,
-        Martyn Welch <martyn@welchs.me.uk>,
-        Manohar Vanga <manohar.vanga@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        outreachy@lists.linux.dev,
-        Bruno's Patch Watchbox <patch-reply@codeagain.dev>
-Subject: Re: [PATCH v3 0/3] staging: vme: Cleanup driver tree old structures
-Message-ID: <20220427161633.GA1314857@alison-desk>
-References: <cover.1650321310.git.codeagain@codeagain.dev>
- <YmA4QIRfx2QPhEJi@kroah.com>
- <3e91b72a86294b542acf460657d0fd94adeb252e.camel@welchs.me.uk>
- <YmJNqMjXEc4KGrJ8@kroah.com>
- <20220427121851.4e2rjbbabw5sh3lk@AN5Bruno>
- <Ymk3qimGl1tTjpSL@kroah.com>
- <20220427124114.woiiuxr6pnxvadwg@AN5Bruno>
- <YmlA1w124Ws2z/RV@kroah.com>
+        Wed, 27 Apr 2022 12:28:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7541A3C72D
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:23:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651076581;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+nitdFLclz4hCiKOCughHUd8fSeC+5gYj0I0ve8svvE=;
+        b=VfI7oAFd/63q690ygBSvG3PQe8yKOBDrVG1DWF/I8d+Di/8IwvOmkHXralw24aNgaB8p0i
+        WznUDkbo18fOTlrXwTQKqniVRspHd/y4HUQJm9LGHbhHsYkRtrrX4rFD152VrGIMZdZ4aw
+        KP9TL1hpyvS4RFL0EQhV2ARhIr4aWB4=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-393-lxP975C-OkSFx90ibXa9zQ-1; Wed, 27 Apr 2022 12:19:01 -0400
+X-MC-Unique: lxP975C-OkSFx90ibXa9zQ-1
+Received: by mail-ej1-f71.google.com with SMTP id sc26-20020a1709078a1a00b006effb6a81b9so1453378ejc.6
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:19:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=+nitdFLclz4hCiKOCughHUd8fSeC+5gYj0I0ve8svvE=;
+        b=5MZZRjW7LMY1SQD5STWFO1vk2HBibYv6GYnVigsQKoEnYWyz7g9QJhMJ292aGlLEbe
+         hiMeQn1T5+8XlvjAF7VlWN5S6MThQqJ4uEaP+i9HtIDfHCUE32OtUBl4uOQktiNwky0p
+         lZ3rHfWx2hyimRtDs3zcqfxNDSLl5GBGhxVduVbhCKaJ+VpWkkD5VyIo4e6NHL6zbQFP
+         gtTOXar6M0onChVfwf+XBMGsXrvR/j4yAz8j9FKnwP1EAKf/UbBJX9asOyKQX55F6eS9
+         PXFO3IhUykef1MUAqRhVbZAASb4+IeLmsbVfzdJr80X7cLraZCgsGED/DG7+Uwyh+9Oz
+         aifg==
+X-Gm-Message-State: AOAM5305wcUrhTX3JnrwKR4A7NRJuWDAzjDvo9jUgy0CnYcLk6D3HGn7
+        P1pHgJi+Mr7x90PAcf4HraMkmh2C25F++NUX3mq7PRJZeV6D1z07vVojEn14o4b3FUr5GZV2He6
+        XCPeRrRC/DgWFHRExG54GNf7w
+X-Received: by 2002:a05:6402:510c:b0:424:2fe:62c4 with SMTP id m12-20020a056402510c00b0042402fe62c4mr31563230edd.293.1651076340077;
+        Wed, 27 Apr 2022 09:19:00 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwTyVenoACrt8z4k8jOAcABQOrZ08jKt1Kb295SQ02vUCx/pQpGBB+ohT8+i8Xz0BHx0nAMbQ==
+X-Received: by 2002:a05:6402:510c:b0:424:2fe:62c4 with SMTP id m12-20020a056402510c00b0042402fe62c4mr31563203edd.293.1651076339869;
+        Wed, 27 Apr 2022 09:18:59 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:1c09:f536:3de6:228c? ([2001:b07:6468:f312:1c09:f536:3de6:228c])
+        by smtp.googlemail.com with ESMTPSA id mf1-20020a1709071a4100b006f39f556011sm3840985ejc.125.2022.04.27.09.18.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Apr 2022 09:18:59 -0700 (PDT)
+Message-ID: <acab87c6-cbfc-63e1-1bc0-7f963432c412@redhat.com>
+Date:   Wed, 27 Apr 2022 18:18:54 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YmlA1w124Ws2z/RV@kroah.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH MANUALSEL 5.4 2/2] KVM: LAPIC: Enable timer
+ posted-interrupt only when mwait/hlt is advertised
+Content-Language: en-US
+To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Cc:     Wanpeng Li <wanpengli@tencent.com>,
+        Aili Yao <yaoaili@kingsoft.com>,
+        Sean Christopherson <seanjc@google.com>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, kvm@vger.kernel.org
+References: <20220427155438.19612-1-sashal@kernel.org>
+ <20220427155438.19612-2-sashal@kernel.org>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220427155438.19612-2-sashal@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 03:10:47PM +0200, Greg Kroah-Hartman wrote:
-> On Wed, Apr 27, 2022 at 09:41:14AM -0300, Bruno Moreira-Guedes wrote:
-> > On Wed, Apr 27, 2022 at 02:31:38PM +0200, Greg Kroah-Hartman wrote:
-> > > On Wed, Apr 27, 2022 at 09:18:51AM -0300, Bruno Moreira-Guedes wrote:
-> > > > Hello,
-> > > > 
-> > > > On Fri, Apr 22, 2022 at 08:39:36AM +0200, Greg Kroah-Hartman wrote:
-> > > > > On Thu, Apr 21, 2022 at 08:16:05PM +0100, Martyn Welch wrote:
-> > > > > > On Wed, 2022-04-20 at 18:43 +0200, Greg Kroah-Hartman wrote:
-> > > > > > > On Mon, Apr 18, 2022 at 08:29:49PM -0300, Bruno Moreira-Guedes wrote:
-> > > > > > > > This patch series modify the vme_user driver's place in
-> > > > > > > > menuconfig (1/3), fixes a missing `depends on` line in a Kconfig
-> > > > > > > > file
-> > > > > > > > (2/3), and rearrages the directory tree for the driver allowing a
-> > > > > > > > more
-> > > > > > > > straightforward comprehension of its contents (3/3).
-> > > > > > > > 
-> > > > > > > > The 'vme_user/' driver is the only remaining vme-family driver in
-> > > > > > > > the
-> > > > > > > > 'staging/' tree, but its structure, entry in menuconfig and
-> > > > > > > > building
-> > > > > > > > routines are still attached to the 'vme/' subtree now outside
-> > > > > > > > 'staging/'. The present patchset fixes it.
-> > > > > > > > 
-> > > > > > > > Signed-off-by: Bruno Moreira-Guedes <codeagain@codeagain.dev>
-> > > > > > > 
-> > > > > > > What about deleting the vme drivers entirely?
-> > > > > > 
-> > > > > > I assume you're suggesting deleting the "vme_user" driver from the
-> > > > > > staging directory?
-> > > > > 
-> > > > > Yes, at the very least given that no one has tried to fix it up and get
-> > > > > it out of staging in many years.
-> > > > 
-> > > > While I cannot comment anything on that regard, I imagine the v4 I sent
-> > > > a couple of days ago will wait for that decision, right?
-> > > 
-> > > I do not know what you are referring to, sorry.  My staging patch queue
-> > > is empty right now.
-> > Ohhh, okay, no problem, I have sent a v4 around 6 days ago and thought
-> > you were waiting on this definition.
+On 4/27/22 17:54, Sasha Levin wrote:
+> From: Wanpeng Li <wanpengli@tencent.com>
+> 
+> [ Upstream commit 1714a4eb6fb0cb79f182873cd011a8ed60ac65e8 ]
+> 
+> As commit 0c5f81dad46 ("KVM: LAPIC: Inject timer interrupt via posted
+> interrupt") mentioned that the host admin should well tune the guest
+> setup, so that vCPUs are placed on isolated pCPUs, and with several pCPUs
+> surplus for *busy* housekeeping.  In this setup, it is preferrable to
+> disable mwait/hlt/pause vmexits to keep the vCPUs in non-root mode.
+> 
+> However, if only some guests isolated and others not, they would not
+> have any benefit from posted timer interrupts, and at the same time lose
+> VMX preemption timer fast paths because kvm_can_post_timer_interrupt()
+> returns true and therefore forces kvm_can_use_hv_timer() to false.
+> 
+> By guaranteeing that posted-interrupt timer is only used if MWAIT or
+> HLT are done without vmexit, KVM can make a better choice and use the
+> VMX preemption timer and the corresponding fast paths.
+> 
+> Reported-by: Aili Yao <yaoaili@kingsoft.com>
+> Reviewed-by: Sean Christopherson <seanjc@google.com>
+> Cc: Aili Yao <yaoaili@kingsoft.com>
+> Cc: Sean Christopherson <seanjc@google.com>
+> Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
+> Message-Id: <1643112538-36743-1-git-send-email-wanpengli@tencent.com>
+> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>   arch/x86/kvm/lapic.c | 3 ++-
+>   1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+> index afe3b8e61514..3696b4de9d99 100644
+> --- a/arch/x86/kvm/lapic.c
+> +++ b/arch/x86/kvm/lapic.c
+> @@ -118,7 +118,8 @@ static inline u32 kvm_x2apic_id(struct kvm_lapic *apic)
+>   
+>   bool kvm_can_post_timer_interrupt(struct kvm_vcpu *vcpu)
+>   {
+> -	return pi_inject_timer && kvm_vcpu_apicv_active(vcpu);
+> +	return pi_inject_timer && kvm_vcpu_apicv_active(vcpu) &&
+> +		(kvm_mwait_in_guest(vcpu->kvm) || kvm_hlt_in_guest(vcpu->kvm));
+>   }
+>   EXPORT_SYMBOL_GPL(kvm_can_post_timer_interrupt);
+>   
 
-Bruno - I see your patches was applied to staging-testing
-https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git/log/?h=staging-testing
+Acked-by: Paolo Bonzini <pbonzini@redhat.com>
 
-
-> 
-> If I did not take it, please resend.
-> 
-> thanks,
-> 
-> greg k-h
-> 
