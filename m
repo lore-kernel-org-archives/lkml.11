@@ -2,523 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BC87C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:12:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC31CC43219
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:12:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235604AbiD0NPQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 09:15:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43774 "EHLO
+        id S235663AbiD0NPr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 09:15:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235549AbiD0NO7 (ORCPT
+        with ESMTP id S235554AbiD0NPh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 09:14:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 882531F47A2;
-        Wed, 27 Apr 2022 06:11:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1566E61B98;
-        Wed, 27 Apr 2022 13:11:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B5D3C385A9;
-        Wed, 27 Apr 2022 13:11:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651065105;
-        bh=o5SeGzIHtTDN5VxQOrsu+pOQ4v5T0M32FreqVft6FXs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=XJFadAI5FIE0Gk1yZxnuM0dDInNelotZU9gspkj9LFrf93elqfGzDhq/l5sh3ckgV
-         /1yp1ztkJ70rk1e4qUNqMdpU6GIUwYPFXzGXv9ILlq/NjyKEQNzVJRn55jrE5euSPJ
-         dlEVjOIRysrtxzvzbgW+vQz5WF6y2gIWZUA8dsU4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
-        torvalds@linux-foundation.org, stable@vger.kernel.org
-Cc:     lwn@lwn.net, jslaby@suse.cz,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Linux 5.15.36
-Date:   Wed, 27 Apr 2022 15:11:35 +0200
-Message-Id: <165106509613250@kroah.com>
-X-Mailer: git-send-email 2.36.0
+        Wed, 27 Apr 2022 09:15:37 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C0E16D4F1
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 06:11:59 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id a21so1908310edb.1
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 06:11:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=B6yWm7+Ar/4/8ayNYRDPQr7wAj2ROmSNoWWzHAVHw54=;
+        b=ij/XleydR+SleEyXBjGFG/HQA1aEsJeShqUBA6BtP4LpAowu7b1m0FdAzyd8gU9LC2
+         +kMxCJbDAn6n30PjehDqb/meI9B5aGprQ6ijfY6vUlvdcvr3L2F0M3kTXgKaOi1Q8M+U
+         AuObFWNrehCnSoAfkOf0bdKX4IocNMV5QpWKahUlvi0RshJpTxKngRu31/SND4JnDIuJ
+         h5GZ0K4xsqbXE9iX+bMtHgKNA57TytK0qy+b7zmMwGpznu+SC80C/3m0BQXtQfxsojRQ
+         vP8hP0yQ86olMlhPU0EhPh9Vmii6O4/P6R1O+nsKC+uQAQhajScG6ES+xCsNn74ZYs/P
+         VuSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=B6yWm7+Ar/4/8ayNYRDPQr7wAj2ROmSNoWWzHAVHw54=;
+        b=XZ+8z+15NWTGwTL31r/D9dwQklAZX8QSm3A5ftSqfB03E5oFMLaPKbS3xGX4TcAkjL
+         76Jo018jo0cH3+Jvdye5hhc4btpG+S5h7cThyWcZQsulcUomGmkFIr+GIk/LeoLpvQeU
+         xdur94E2mcenY6kG7Z11Q+xw3if/0kV1cwoBKmwZX2P1Tr02vra7mdCTWGJUyW2wYoTQ
+         0IZmTEBd/5ShlMBLz34xtmNyoONfOrGRqVJfmoeIIfb9oRlRHmPXPqVmseadLujftTCi
+         OVeM4pyR22sUc1WQ3XbImqZiTQ3QXoDEUwcBY2tg6Lfbstq+hUDl/bTJj/S6Kq2Vi+dP
+         C4SA==
+X-Gm-Message-State: AOAM533nLQqXOt1kCVT+UXOY4ZLgZpq1zT61PD3VRKQjEUxV6T5QQNTy
+        +Xl1nZ4dS8jS8Et6imBBgMLsSw==
+X-Google-Smtp-Source: ABdhPJz5+9LnLTZP1P6DGBG7H11HpFJTuxT+GgXeaAOHBUOkEJhdxgwd9iWi5Prh4Wh/wAEdmNl7iw==
+X-Received: by 2002:a05:6402:50d0:b0:423:f4a1:597d with SMTP id h16-20020a05640250d000b00423f4a1597dmr30107203edb.228.1651065117534;
+        Wed, 27 Apr 2022 06:11:57 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id o23-20020a509b17000000b00425edfe72a3sm4881031edi.43.2022.04.27.06.11.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 06:11:57 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Georgi Djakov <djakov@kernel.org>,
+        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 1/3] interconnect: qcom: sc8280xp: constify qcom_icc_desc
+Date:   Wed, 27 Apr 2022 15:11:52 +0200
+Message-Id: <20220427131154.302581-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I'm announcing the release of the 5.15.36 kernel.
-
-All users of the 5.15 kernel series must upgrade.
-
-The updated 5.15.y git tree can be found at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.15.y
-and can be browsed at the normal kernel.org git web browser:
-	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
-
-thanks,
-
-greg k-h
-
-------------
-
- Documentation/filesystems/ext4/attributes.rst               |    2 
- Makefile                                                    |    2 
- arch/arc/kernel/entry.S                                     |    1 
- arch/arm/mach-vexpress/spc.c                                |    2 
- arch/arm64/Kconfig                                          |    1 
- arch/arm64/boot/dts/freescale/imx8mm-var-som.dtsi           |    8 -
- arch/arm64/boot/dts/freescale/imx8mn-var-som.dtsi           |    8 -
- arch/arm64/boot/dts/qcom/sc7180.dtsi                        |    2 
- arch/arm64/boot/dts/qcom/sc7280.dtsi                        |    2 
- arch/arm64/boot/dts/qcom/sm8350.dtsi                        |    2 
- arch/arm64/include/asm/page.h                               |    1 
- arch/arm64/include/asm/pgtable.h                            |    4 
- arch/arm64/mm/init.c                                        |   37 ------
- arch/powerpc/kvm/book3s_64_vio.c                            |   45 +++----
- arch/powerpc/kvm/book3s_64_vio_hv.c                         |   44 +++----
- arch/powerpc/perf/power10-pmu.c                             |    2 
- arch/powerpc/perf/power9-pmu.c                              |    8 -
- arch/x86/include/asm/compat.h                               |    6 -
- arch/x86/kvm/pmu.h                                          |    9 +
- arch/x86/kvm/svm/pmu.c                                      |    1 
- arch/x86/kvm/svm/sev.c                                      |    9 +
- arch/x86/kvm/vmx/nested.c                                   |    5 
- arch/x86/kvm/vmx/pmu_intel.c                                |    8 -
- arch/x86/kvm/vmx/vmx.c                                      |    5 
- arch/x86/kvm/vmx/vmx.h                                      |    1 
- arch/x86/kvm/x86.c                                          |   15 ++
- arch/xtensa/kernel/coprocessor.S                            |    4 
- arch/xtensa/kernel/jump_label.c                             |    2 
- block/bdev.c                                                |   28 +++-
- block/ioctl.c                                               |    2 
- drivers/ata/pata_marvell.c                                  |    2 
- drivers/dma/at_xdmac.c                                      |   12 +-
- drivers/dma/dw-edma/dw-edma-v0-core.c                       |    7 -
- drivers/dma/idxd/device.c                                   |    6 -
- drivers/dma/idxd/sysfs.c                                    |    6 +
- drivers/dma/imx-sdma.c                                      |   32 ++---
- drivers/dma/mediatek/mtk-uart-apdma.c                       |    9 +
- drivers/edac/synopsys_edac.c                                |   16 +-
- drivers/gpio/gpiolib.c                                      |    4 
- drivers/gpu/drm/i915/display/intel_psr.c                    |   38 +++---
- drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c                  |    3 
- drivers/gpu/drm/msm/disp/msm_disp_snapshot_util.c           |    2 
- drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c       |   13 +-
- drivers/gpu/drm/vc4/vc4_dsi.c                               |    2 
- drivers/input/keyboard/omap4-keypad.c                       |    2 
- drivers/net/ethernet/Kconfig                                |   26 ++--
- drivers/net/ethernet/aquantia/atlantic/aq_nic.c             |    8 -
- drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c        |    8 -
- drivers/net/ethernet/aquantia/atlantic/aq_vec.c             |   24 ++--
- drivers/net/ethernet/cadence/macb_main.c                    |    8 +
- drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c          |    8 +
- drivers/net/ethernet/intel/e1000e/ich8lan.c                 |    4 
- drivers/net/ethernet/intel/igc/igc_i225.c                   |   11 +
- drivers/net/ethernet/intel/igc/igc_phy.c                    |    4 
- drivers/net/ethernet/intel/igc/igc_ptp.c                    |   15 ++
- drivers/net/ethernet/mscc/ocelot.c                          |    2 
- drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c       |    4 
- drivers/net/vxlan.c                                         |    4 
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c     |    2 
- drivers/net/wireless/mediatek/mt76/mt76x2/pci.c             |    2 
- drivers/nvme/host/core.c                                    |   24 +++-
- drivers/nvme/host/nvme.h                                    |    5 
- drivers/nvme/host/pci.c                                     |    9 +
- drivers/perf/arm_pmu.c                                      |   10 -
- drivers/platform/x86/samsung-laptop.c                       |    2 
- drivers/reset/reset-rzg2l-usbphy-ctrl.c                     |    4 
- drivers/reset/tegra/reset-bpmp.c                            |    9 +
- drivers/scsi/bnx2i/bnx2i_hwi.c                              |    2 
- drivers/scsi/bnx2i/bnx2i_iscsi.c                            |    2 
- drivers/scsi/cxgbi/libcxgbi.c                               |    6 -
- drivers/scsi/libiscsi.c                                     |   27 ++--
- drivers/scsi/libiscsi_tcp.c                                 |    2 
- drivers/scsi/qedi/qedi_iscsi.c                              |   69 +++++------
- drivers/scsi/scsi_transport_iscsi.c                         |   71 +++++------
- drivers/scsi/sr_ioctl.c                                     |   15 ++
- drivers/scsi/ufs/ufshcd.c                                   |    5 
- drivers/spi/atmel-quadspi.c                                 |    3 
- drivers/spi/spi-cadence-quadspi.c                           |   19 ++-
- drivers/spi/spi-mtk-nor.c                                   |   12 +-
- fs/cifs/cifsfs.c                                            |    2 
- fs/ext4/ext4.h                                              |    6 -
- fs/ext4/extents.c                                           |   32 ++++-
- fs/ext4/inode.c                                             |   18 ++-
- fs/ext4/namei.c                                             |    4 
- fs/ext4/page-io.c                                           |    4 
- fs/ext4/super.c                                             |   19 ++-
- fs/gfs2/rgrp.c                                              |    9 -
- fs/hugetlbfs/inode.c                                        |    9 -
- fs/internal.h                                               |   11 -
- fs/jbd2/commit.c                                            |    4 
- fs/namei.c                                                  |   22 +--
- fs/stat.c                                                   |   19 +--
- fs/sync.c                                                   |   72 +++++-------
- fs/xfs/xfs_super.c                                          |    6 -
- include/linux/blkdev.h                                      |    9 +
- include/linux/etherdevice.h                                 |    5 
- include/linux/kfence.h                                      |   24 ++++
- include/linux/memcontrol.h                                  |    5 
- include/linux/netfilter/nf_conntrack_common.h               |   10 +
- include/linux/sched.h                                       |    1 
- include/linux/sched/mm.h                                    |    8 +
- include/net/esp.h                                           |    2 
- include/net/netfilter/nf_conntrack.h                        |    8 +
- include/net/netns/ipv6.h                                    |    4 
- include/scsi/libiscsi.h                                     |    9 -
- include/scsi/scsi_transport_iscsi.h                         |    2 
- kernel/dma/mapping.c                                        |    4 
- kernel/events/core.c                                        |    2 
- kernel/events/internal.h                                    |    5 
- kernel/events/ring_buffer.c                                 |    5 
- kernel/sched/fair.c                                         |   10 -
- mm/kfence/core.c                                            |   21 ---
- mm/kfence/kfence.h                                          |   21 +++
- mm/kfence/report.c                                          |   47 +++++++
- mm/memcontrol.c                                             |   12 +-
- mm/memory-failure.c                                         |   13 ++
- mm/mmap.c                                                   |    8 -
- mm/mmu_notifier.c                                           |   14 ++
- mm/oom_kill.c                                               |   54 ++++++---
- mm/page_alloc.c                                             |    2 
- mm/slab.c                                                   |    2 
- mm/slab.h                                                   |    2 
- mm/slab_common.c                                            |    9 +
- mm/slob.c                                                   |    2 
- mm/slub.c                                                   |    2 
- mm/workingset.c                                             |    2 
- net/can/isotp.c                                             |   10 +
- net/dsa/tag_hellcreek.c                                     |    8 +
- net/ipv4/esp4.c                                             |    5 
- net/ipv6/esp6.c                                             |    5 
- net/ipv6/ip6_gre.c                                          |   14 +-
- net/ipv6/route.c                                            |   11 +
- net/l3mdev/l3mdev.c                                         |    2 
- net/netfilter/nf_conntrack_core.c                           |   38 +++---
- net/netfilter/nf_conntrack_expect.c                         |    4 
- net/netfilter/nf_conntrack_netlink.c                        |    6 -
- net/netfilter/nf_conntrack_standalone.c                     |    4 
- net/netfilter/nf_flow_table_core.c                          |    2 
- net/netfilter/nf_synproxy_core.c                            |    1 
- net/netfilter/nft_ct.c                                      |    9 -
- net/netfilter/xt_CT.c                                       |    3 
- net/netlink/af_netlink.c                                    |    7 +
- net/openvswitch/conntrack.c                                 |    1 
- net/openvswitch/flow_netlink.c                              |    2 
- net/packet/af_packet.c                                      |   13 +-
- net/rxrpc/net_ns.c                                          |    2 
- net/sched/act_ct.c                                          |    1 
- net/sched/cls_u32.c                                         |   24 ++--
- net/smc/af_smc.c                                            |    4 
- sound/pci/hda/patch_hdmi.c                                  |    6 -
- sound/pci/hda/patch_realtek.c                               |    1 
- sound/soc/atmel/sam9g20_wm8731.c                            |   61 ----------
- sound/soc/codecs/msm8916-wcd-digital.c                      |    9 +
- sound/soc/codecs/rk817_codec.c                              |    2 
- sound/soc/codecs/wcd934x.c                                  |   26 ----
- sound/soc/soc-dapm.c                                        |    6 -
- sound/soc/soc-topology.c                                    |    4 
- sound/usb/midi.c                                            |    1 
- sound/usb/usbaudio.h                                        |    2 
- tools/lib/perf/evlist.c                                     |    3 
- tools/perf/builtin-report.c                                 |   14 ++
- tools/perf/builtin-script.c                                 |    2 
- tools/testing/selftests/drivers/net/mlxsw/vxlan_flooding.sh |   17 ++
- 163 files changed, 1036 insertions(+), 701 deletions(-)
-
-Adrian Hunter (1):
-      perf tools: Fix segfault accessing sample_id xyarray
-
-Alex Elder (1):
-      arm64: dts: qcom: add IPA qcom,qmp property
-
-Alexey Kardashevskiy (1):
-      KVM: PPC: Fix TCE handling for VFIO
-
-Alistair Popple (1):
-      mm/mmu_notifier.c: fix race in mmu_interval_notifier_remove()
-
-Allen-KH Cheng (1):
-      spi: spi-mtk-nor: initialize spi controller after resume
-
-Anshuman Khandual (1):
-      arm64/mm: drop HAVE_ARCH_PFN_VALID
-
-Athira Rajeev (2):
-      powerpc/perf: Fix power9 event alternatives
-      powerpc/perf: Fix power10 event alternatives
-
-Bob Peterson (1):
-      gfs2: assign rgrp glock before compute_bitstructs
-
-Borislav Petkov (3):
-      ALSA: usb-audio: Fix undefined behavior due to shift overflowing the constant
-      mt76: Fix undefined behavior due to shift overflowing the constant
-      brcmfmac: sdio: Fix undefined behavior due to shift overflowing the constant
-
-Christoph Hellwig (6):
-      fs: remove __sync_filesystem
-      block: remove __sync_blockdev
-      block: simplify the block device syncing code
-      nvme: add a quirk to disable namespace identifiers
-      nvme-pci: disable namespace identifiers for the MAXIO MAP1002/1202
-      nvme-pci: disable namespace identifiers for Qemu controllers
-
-Christophe Leroy (1):
-      mm, hugetlb: allow for "high" userspace addresses
-
-Darrick J. Wong (3):
-      vfs: make sync_filesystem return errors from ->sync_fs
-      xfs: return errors in xfs_fs_sync_fs
-      ext4: fix fallocate to use file_modified to update permissions consistently
-
-Dave Jiang (4):
-      dmaengine: idxd: fix device cleanup on disable
-      dmaengine: idxd: add RO check for wq max_batch_size write
-      dmaengine: idxd: add RO check for wq max_transfer_size write
-      dmaengine: idxd: skip clearing device context when device is read-only
-
-Dave Stevenson (2):
-      drm/panel/raspberrypi-touchscreen: Avoid NULL deref if not initialised
-      drm/panel/raspberrypi-touchscreen: Initialise the bridge in prepare
-
-David Ahern (1):
-      l3mdev: l3mdev_master_upper_ifindex_by_index_rcu should be using netdev_master_upper_dev_get_rcu
-
-David Howells (2):
-      rxrpc: Restore removed timer deletion
-      cifs: Check the IOCB_DIRECT flag, not O_DIRECT
-
-Eric Dumazet (4):
-      net/sched: cls_u32: fix netns refcount changes in u32_change()
-      net/sched: cls_u32: fix possible leak in u32_init_knode()
-      ipv6: make ip6_rt_gc_expire an atomic_t
-      netlink: reset network and mac headers in netlink_dump()
-
-Florian Westphal (3):
-      netfilter: conntrack: convert to refcount_t api
-      netfilter: conntrack: avoid useless indirection during conntrack destruction
-      netfilter: nft_ct: fix use after free when attaching zone template
-
-Greg Kroah-Hartman (1):
-      Linux 5.15.36
-
-Guo Ren (1):
-      xtensa: patch_text: Fixup last cpu should be master
-
-Hangbin Liu (1):
-      net/packet: fix packet_sock xmit return value checking
-
-Heiner Kallweit (1):
-      reset: renesas: Check return value of reset_control_deassert()
-
-Herve Codina (1):
-      dmaengine: dw-edma: Fix unaligned 64bit access
-
-Hongbin Wang (1):
-      vxlan: fix error return code in vxlan_fdb_append
-
-Ido Schimmel (1):
-      selftests: mlxsw: vxlan_flooding: Prevent flooding of unwanted packets
-
-Jiapeng Chong (1):
-      platform/x86: samsung-laptop: Fix an unsigned comparison which can never be negative
-
-José Roberto de Souza (1):
-      drm/i915/display/psr: Unset enable_psr2_sel_fetch if other checks in intel_psr2_config_valid() fails
-
-Kai Vehmanen (1):
-      ALSA: hda/hdmi: fix warning about PCM count when used with SOF
-
-Kai-Heng Feng (1):
-      net: atlantic: Avoid out-of-bounds indexing
-
-Kees Cook (2):
-      etherdevice: Adjust ether_addr* prototypes to silence -Wstringop-overead
-      ARM: vexpress/spc: Avoid negative array index when !SMP
-
-Kevin Groeneveld (1):
-      dmaengine: imx-sdma: fix init of uart scripts
-
-Kevin Hao (1):
-      net: stmmac: Use readl_poll_timeout_atomic() in atomic state
-
-Khazhismel Kumykov (1):
-      block/compat_ioctl: fix range check in BLKGETSIZE
-
-Kurt Kanzenbach (1):
-      net: dsa: hellcreek: Calculate checksums in tagger
-
-Leo Yan (2):
-      perf script: Always allow field 'data_src' for auxtrace
-      perf report: Set PERF_SAMPLE_DATA_SRC bit for Arm SPE event
-
-Like Xu (1):
-      KVM: x86/pmu: Update AMD PMC sample period to fix guest NMI-watchdog
-
-Lv Ruyi (1):
-      dpaa_eth: Fix missing of_node_put in dpaa_get_ts_info()
-
-Manuel Ullmann (1):
-      net: atlantic: invert deep par in pm functions, preventing null derefs
-
-Marco Elver (1):
-      mm, kfence: support kmem_dump_obj() for KFENCE objects
-
-Mario Limonciello (1):
-      gpio: Request interrupts after IRQ is initialized
-
-Mark Brown (1):
-      ASoC: atmel: Remove system clock tree configuration for at91sam9g20ek
-
-Matthias Schiffer (1):
-      spi: cadence-quadspi: fix incorrect supports_op() return value
-
-Max Filippov (1):
-      xtensa: fix a7 clobbering in coprocessor context load/store
-
-Miaoqian Lin (5):
-      ASoC: rk817: Use devm_clk_get() in rk817_platform_probe
-      ASoC: msm8916-wcd-digital: Check failure for devm_snd_soc_register_component
-      dmaengine: imx-sdma: Fix error checking in sdma_event_remap
-      Input: omap4-keypad - fix pm_runtime_get_sync() error checking
-      drm/vc4: Use pm_runtime_resume_and_get to fix pm_runtime_get_sync() usage
-
-Mike Christie (4):
-      scsi: iscsi: Release endpoint ID when its freed
-      scsi: iscsi: Merge suspend fields
-      scsi: iscsi: Fix NOP handling during conn recovery
-      scsi: qedi: Fix failed disconnect handling
-
-Mike Rapoport (1):
-      dma-mapping: remove bogus test for pfn_valid from dma_map_resource
-
-Mikulas Patocka (1):
-      stat: fix inconsistency between struct stat and struct compat_stat
-
-Mingwei Zhang (1):
-      KVM: SVM: Flush when freeing encrypted pages even on SME_COHERENT CPUs
-
-Muchun Song (1):
-      arm64: mm: fix p?d_leaf()
-
-NeilBrown (1):
-      VFS: filename_create(): fix incorrect intent.
-
-Nico Pache (1):
-      oom_kill.c: futex: delay the OOM reaper to allow time for proper futex cleanup
-
-Oliver Hartkopp (1):
-      can: isotp: stop timeout monitoring when no first frame was sent
-
-Paolo Valerio (1):
-      openvswitch: fix OOB access in reserve_sfa_size()
-
-Peilin Ye (2):
-      ip6_gre: Avoid updating tunnel->tun_hlen in __gre6_xmit()
-      ip6_gre: Fix skb_under_panic in __gre6_xmit()
-
-Peter Ujfalusi (1):
-      ASoC: topology: Correct error handling in soc_tplg_dapm_widget_create()
-
-Peter Wang (1):
-      scsi: ufs: core: scsi_get_lba() error fix
-
-Rob Herring (2):
-      arm64: dts: imx: Fix imx8*-var-som touchscreen property sizes
-      arm_pmu: Validate single/group leader events
-
-Sabrina Dubroca (1):
-      esp: limit skb_page_frag_refill use to a single page
-
-Sameer Pujar (1):
-      reset: tegra-bpmp: Restore Handle errors in BPMP response
-
-Sasha Neftin (3):
-      igc: Fix infinite loop in release_swfw_sync
-      igc: Fix BUG: scheduling while atomic
-      e1000e: Fix possible overflow in LTR decoding
-
-Sean Christopherson (2):
-      KVM: x86: Pend KVM_REQ_APICV_UPDATE during vCPU creation to fix a race
-      KVM: nVMX: Defer APICv updates while L2 is active until L1 is active
-
-Sergey Matyukevich (1):
-      ARC: entry: fix syscall_trace_exit argument
-
-Shakeel Butt (1):
-      memcg: sync flush only if periodic flush is delayed
-
-Shubhrajyoti Datta (1):
-      EDAC/synopsys: Read the error count from the correct register
-
-Srinivas Kandagatla (1):
-      ASoC: codecs: wcd934x: do not switch off SIDO Buck when codec is in use
-
-Stephen Hemminger (1):
-      net: restore alpha order to Ethernet devices in config
-
-Tadeusz Struk (1):
-      ext4: limit length to bitmap_maxbytes - blocksize in punch_hole
-
-Takashi Iwai (1):
-      ALSA: usb-audio: Clear MIDI port active flag after draining
-
-Theodore Ts'o (2):
-      ext4: fix overhead calculation to account for the reserved gdt blocks
-      ext4: force overhead calculation if the s_overhead_cluster makes no sense
-
-Tim Crawford (1):
-      ALSA: hda/realtek: Add quirk for Clevo NP70PNP
-
-Tom Rix (1):
-      scsi: sr: Do not leak information in ioctl
-
-Tomas Melin (1):
-      net: macb: Restart tx only if queue pointer is lagging
-
-Tony Lu (1):
-      net/smc: Fix sock leak when release after smc_shutdown()
-
-Tudor Ambarus (1):
-      spi: atmel-quadspi: Fix the buswidth adjustment between spi-mem and controller
-
-Vinicius Costa Gomes (1):
-      igc: Fix suspending when PTM is active
-
-Vladimir Oltean (1):
-      net: mscc: ocelot: fix broken IP multicast flooding
-
-Xiaoke Wang (2):
-      drm/msm/disp: check the return value of kzalloc()
-      drm/msm/mdp5: check the return of kzalloc()
-
-Xiaomeng Tong (2):
-      dma: at_xdmac: fix a missing check on list iterator
-      ASoC: soc-dapm: fix two incorrect uses of list iterator
-
-Xiongwei Song (1):
-      mm: page_alloc: fix building error on -Werror=array-compare
-
-Xu Yu (1):
-      mm/memory-failure.c: skip huge_zero_page in memory_failure()
-
-Ye Bin (3):
-      ext4: fix symlink file size not match to file content
-      ext4: fix use-after-free in ext4_search_dir
-      jbd2: fix a potential race while discarding reserved buffers after an abort
-
-Zheyu Ma (1):
-      ata: pata_marvell: Check the 'bmdma_addr' beforing reading
-
-Zhipeng Xie (1):
-      perf/core: Fix perf_mmap fail when CONFIG_PERF_USE_VMALLOC enabled
-
-kuyo chang (1):
-      sched/pelt: Fix attach_entity_load_avg() corner case
-
-wangjianjian (C) (1):
-      ext4, doc: fix incorrect h_reserved size
-
-zhangqilong (1):
-      dmaengine: mediatek:Fix PM usage reference leak of mtk_uart_apdma_alloc_chan_resources
+struct qcom_icc_desc is not modified so it can be made const for safety.
+
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ drivers/interconnect/qcom/sc8280xp.c | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/interconnect/qcom/sc8280xp.c b/drivers/interconnect/qcom/sc8280xp.c
+index 07dae4043986..7e6967d7b4a7 100644
+--- a/drivers/interconnect/qcom/sc8280xp.c
++++ b/drivers/interconnect/qcom/sc8280xp.c
+@@ -2033,7 +2033,7 @@ static struct qcom_icc_node *aggre1_noc_nodes[] = {
+ 	[SLAVE_SERVICE_A1NOC] = &srvc_aggre1_noc,
+ };
+ 
+-static struct qcom_icc_desc sc8280xp_aggre1_noc = {
++static const struct qcom_icc_desc sc8280xp_aggre1_noc = {
+ 	.nodes = aggre1_noc_nodes,
+ 	.num_nodes = ARRAY_SIZE(aggre1_noc_nodes),
+ 	.bcms = aggre1_noc_bcms,
+@@ -2069,7 +2069,7 @@ static struct qcom_icc_node *aggre2_noc_nodes[] = {
+ 	[SLAVE_SERVICE_A2NOC] = &srvc_aggre2_noc,
+ };
+ 
+-static struct qcom_icc_desc sc8280xp_aggre2_noc = {
++static const struct qcom_icc_desc sc8280xp_aggre2_noc = {
+ 	.nodes = aggre2_noc_nodes,
+ 	.num_nodes = ARRAY_SIZE(aggre2_noc_nodes),
+ 	.bcms = aggre2_noc_bcms,
+@@ -2094,7 +2094,7 @@ static struct qcom_icc_node *clk_virt_nodes[] = {
+ 	[SLAVE_QUP_CORE_2] = &qup2_core_slave,
+ };
+ 
+-static struct qcom_icc_desc sc8280xp_clk_virt = {
++static const struct qcom_icc_desc sc8280xp_clk_virt = {
+ 	.nodes = clk_virt_nodes,
+ 	.num_nodes = ARRAY_SIZE(clk_virt_nodes),
+ 	.bcms = clk_virt_bcms,
+@@ -2198,7 +2198,7 @@ static struct qcom_icc_node *config_noc_nodes[] = {
+ 	[SLAVE_TCU] = &xs_sys_tcu_cfg,
+ };
+ 
+-static struct qcom_icc_desc sc8280xp_config_noc = {
++static const struct qcom_icc_desc sc8280xp_config_noc = {
+ 	.nodes = config_noc_nodes,
+ 	.num_nodes = ARRAY_SIZE(config_noc_nodes),
+ 	.bcms = config_noc_bcms,
+@@ -2214,7 +2214,7 @@ static struct qcom_icc_node *dc_noc_nodes[] = {
+ 	[SLAVE_GEM_NOC_CFG] = &qns_gemnoc,
+ };
+ 
+-static struct qcom_icc_desc sc8280xp_dc_noc = {
++static const struct qcom_icc_desc sc8280xp_dc_noc = {
+ 	.nodes = dc_noc_nodes,
+ 	.num_nodes = ARRAY_SIZE(dc_noc_nodes),
+ 	.bcms = dc_noc_bcms,
+@@ -2248,7 +2248,7 @@ static struct qcom_icc_node *gem_noc_nodes[] = {
+ 	[SLAVE_SERVICE_GEM_NOC] = &srvc_sys_gemnoc,
+ };
+ 
+-static struct qcom_icc_desc sc8280xp_gem_noc = {
++static const struct qcom_icc_desc sc8280xp_gem_noc = {
+ 	.nodes = gem_noc_nodes,
+ 	.num_nodes = ARRAY_SIZE(gem_noc_nodes),
+ 	.bcms = gem_noc_bcms,
+@@ -2271,7 +2271,7 @@ static struct qcom_icc_node *lpass_ag_noc_nodes[] = {
+ 	[SLAVE_SERVICE_LPASS_AG_NOC] = &srvc_niu_lpass_agnoc,
+ };
+ 
+-static struct qcom_icc_desc sc8280xp_lpass_ag_noc = {
++static const struct qcom_icc_desc sc8280xp_lpass_ag_noc = {
+ 	.nodes = lpass_ag_noc_nodes,
+ 	.num_nodes = ARRAY_SIZE(lpass_ag_noc_nodes),
+ 	.bcms = lpass_ag_noc_bcms,
+@@ -2288,7 +2288,7 @@ static struct qcom_icc_node *mc_virt_nodes[] = {
+ 	[SLAVE_EBI1] = &ebi,
+ };
+ 
+-static struct qcom_icc_desc sc8280xp_mc_virt = {
++static const struct qcom_icc_desc sc8280xp_mc_virt = {
+ 	.nodes = mc_virt_nodes,
+ 	.num_nodes = ARRAY_SIZE(mc_virt_nodes),
+ 	.bcms = mc_virt_bcms,
+@@ -2319,7 +2319,7 @@ static struct qcom_icc_node *mmss_noc_nodes[] = {
+ 	[SLAVE_SERVICE_MNOC] = &srvc_mnoc,
+ };
+ 
+-static struct qcom_icc_desc sc8280xp_mmss_noc = {
++static const struct qcom_icc_desc sc8280xp_mmss_noc = {
+ 	.nodes = mmss_noc_nodes,
+ 	.num_nodes = ARRAY_SIZE(mmss_noc_nodes),
+ 	.bcms = mmss_noc_bcms,
+@@ -2339,7 +2339,7 @@ static struct qcom_icc_node *nspa_noc_nodes[] = {
+ 	[SLAVE_SERVICE_NSP_NOC] = &service_nsp_noc,
+ };
+ 
+-static struct qcom_icc_desc sc8280xp_nspa_noc = {
++static const struct qcom_icc_desc sc8280xp_nspa_noc = {
+ 	.nodes = nspa_noc_nodes,
+ 	.num_nodes = ARRAY_SIZE(nspa_noc_nodes),
+ 	.bcms = nspa_noc_bcms,
+@@ -2359,7 +2359,7 @@ static struct qcom_icc_node *nspb_noc_nodes[] = {
+ 	[SLAVE_SERVICE_NSPB_NOC] = &service_nspb_noc,
+ };
+ 
+-static struct qcom_icc_desc sc8280xp_nspb_noc = {
++static const struct qcom_icc_desc sc8280xp_nspb_noc = {
+ 	.nodes = nspb_noc_nodes,
+ 	.num_nodes = ARRAY_SIZE(nspb_noc_nodes),
+ 	.bcms = nspb_noc_bcms,
+@@ -2388,7 +2388,7 @@ static struct qcom_icc_node *system_noc_main_nodes[] = {
+ 	[SLAVE_SERVICE_SNOC] = &srvc_snoc,
+ };
+ 
+-static struct qcom_icc_desc sc8280xp_system_noc_main = {
++static const struct qcom_icc_desc sc8280xp_system_noc_main = {
+ 	.nodes = system_noc_main_nodes,
+ 	.num_nodes = ARRAY_SIZE(system_noc_main_nodes),
+ 	.bcms = system_noc_main_bcms,
+-- 
+2.32.0
 
