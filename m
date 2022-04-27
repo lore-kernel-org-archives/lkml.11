@@ -2,140 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAE1EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 22:35:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2A32C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 22:36:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236362AbiD0Wig (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 18:38:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43910 "EHLO
+        id S238191AbiD0WjY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 18:39:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229647AbiD0Wia (ORCPT
+        with ESMTP id S233410AbiD0WjL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 18:38:30 -0400
-Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4479DA7;
-        Wed, 27 Apr 2022 15:35:16 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:39804)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1njqFe-004CCe-1P; Wed, 27 Apr 2022 16:35:14 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:35990 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1njqFc-00Bd4H-Ux; Wed, 27 Apr 2022 16:35:13 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Oleg Nesterov <oleg@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
-        Will Deacon <will@kernel.org>, tj@kernel.org,
-        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        inux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>
-References: <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
-        <20220426225211.308418-9-ebiederm@xmission.com>
-        <20220427154158.GG17421@redhat.com>
-Date:   Wed, 27 Apr 2022 17:35:05 -0500
-In-Reply-To: <20220427154158.GG17421@redhat.com> (Oleg Nesterov's message of
-        "Wed, 27 Apr 2022 17:41:59 +0200")
-Message-ID: <87mtg62m06.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Wed, 27 Apr 2022 18:39:11 -0400
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD183A7
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:35:57 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id l19so4472371ljb.7
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:35:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=openvz-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=zxjODgdLfXb5bMGzaUtB+izM+jyIRFXXBicqRczakdE=;
+        b=kOgHkvcXiKDHcf0FPKISXEY5HqGfG/C3VTxC3r+qCyDNb58YQ2Ffm1EN+ZlnNbcklN
+         3xuHlw7dI5IAdFE/+iGt8WZvjfO7q6k8VKBoPN743YhsElb89sF9gZKHOWTWzA2c3Rwd
+         54YF4aIVaLRZWzwG0KTZKcgCLNVNHLGg3rCWfTKevXQPCDYDJ2IZuZKHtRmaqsYwSR5p
+         XpJhcPiWYNEZefwnTjp4pe/ygtOPWtd5Talc9/MypxxDHY+1wSUIaXiRzkx85TXRbhgt
+         S+SnpKe5BVSbjw/sLPVHQ/cE9dacC5fnJ8dVd88zXJ4RowaAf8I5IZSkR41CoM++9DjB
+         nvZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=zxjODgdLfXb5bMGzaUtB+izM+jyIRFXXBicqRczakdE=;
+        b=vJ12BnkDroH+4Y8v+pyKJAm9sUKsxU3DpeiVR7EYASyBwVr4tbstjF9UhRfC2ldHoA
+         ysSTkmsaLAqh3pLgpo+5FnnHLKaCsQ4SODmq9QwKNgc8Rw37G+aBUqK2T/FIfyDhzP1E
+         Zv/VSTarkbH/i3uxkYdZjJAfaPfqLx/VJ5xYislDSJWdKmQWW3l3t7qVv3epvasJE31g
+         JbmxmhoSygA3dIgRnfdRtGAHgohqPCP/tLK+903OCmxCu1w0xV0YTlIaZdTV2RXmHEnJ
+         wO+HK4Lf81aEQ8Kb23NcwE2qMhtvWs/8NlPUHCZM+RAxm5eTPyEXBWXjZ+8XhRdwv2jB
+         u80Q==
+X-Gm-Message-State: AOAM530Leywx7f/cU+sk1sOPoegBR9HKcQKt0r9s5dj8JcVMhSV9QKGH
+        9Jl9RCHNdAZjLRDZUpsAj0roSQ==
+X-Google-Smtp-Source: ABdhPJxTIRQmVTxGXf9Qi7GP7rRR0+iZpZJAWqZv6M4gFYfPHkUDB+SbCZAFITpdjJXyLHa2cnkymA==
+X-Received: by 2002:a05:651c:1542:b0:249:5d86:3164 with SMTP id y2-20020a05651c154200b002495d863164mr20114887ljp.500.1651098956152;
+        Wed, 27 Apr 2022 15:35:56 -0700 (PDT)
+Received: from [192.168.1.65] ([46.188.121.177])
+        by smtp.gmail.com with ESMTPSA id f1-20020a056512322100b00472285d5a74sm362884lfe.147.2022.04.27.15.35.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Apr 2022 15:35:55 -0700 (PDT)
+Message-ID: <53613f02-75f2-0546-d84c-a5ed989327b6@openvz.org>
+Date:   Thu, 28 Apr 2022 01:35:54 +0300
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1njqFc-00Bd4H-Ux;;;mid=<87mtg62m06.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX18S5RmCcBMZtZ5La6DbmgpHNqUhFhXjeT0=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH 9/9] ptrace: Don't change __state
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] memcg: accounting for objects allocated for new netdevice
+Content-Language: en-US
+To:     Shakeel Butt <shakeelb@google.com>,
+        =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
+Cc:     Roman Gushchin <roman.gushchin@linux.dev>,
+        Vlastimil Babka <vbabka@suse.cz>, kernel@openvz.org,
+        Florian Westphal <fw@strlen.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Michal Hocko <mhocko@suse.com>,
+        Cgroups <cgroups@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tejun Heo <tj@kernel.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Iurii Zaikin <yzaikin@google.com>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>
+References: <7e867cb0-89d6-402c-33d2-9b9ba0ba1523@openvz.org>
+ <20220427140153.GC9823@blackbody.suse.cz>
+ <CALvZod6Dz7iw=gyiQ2pDVe2RJxF-7PbVoptwFZCw=sWtxpBBGQ@mail.gmail.com>
+From:   Vasily Averin <vvs@openvz.org>
+In-Reply-To: <CALvZod6Dz7iw=gyiQ2pDVe2RJxF-7PbVoptwFZCw=sWtxpBBGQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Oleg Nesterov <oleg@redhat.com> writes:
-
-2> On 04/26, Eric W. Biederman wrote:
+On 4/27/22 19:52, Shakeel Butt wrote:
+> On Wed, Apr 27, 2022 at 7:01 AM Michal Koutný <mkoutny@suse.com> wrote:
 >>
->>  static void ptrace_unfreeze_traced(struct task_struct *task)
->>  {
->> -	if (READ_ONCE(task->__state) != __TASK_TRACED)
->> +	if (!(READ_ONCE(task->jobctl) & JOBCTL_DELAY_WAKEKILL))
->>  		return;
+>> Hello Vasily.
 >>
->>  	WARN_ON(!task->ptrace || task->parent != current);
->> @@ -213,11 +213,10 @@ static void ptrace_unfreeze_traced(struct task_struct *task)
->>  	 * Recheck state under the lock to close this race.
->>  	 */
->>  	spin_lock_irq(&task->sighand->siglock);
->
-> Now that we do not check __state = __TASK_TRACED, we need lock_task_sighand().
-> The tracee can be already woken up by ptrace_resume(), but it is possible that
-> it didn't clear DELAY_WAKEKILL yet.
-
-Yes.  The subtle differences in when __TASK_TRACED and
-JOBCTL_DELAY_WAKEKILL are cleared are causing me some minor issues.
-
-This "WARN_ON(!task->ptrace || task->parent != current);" also now
-needs to be inside siglock, because the __TASK_TRACED is insufficient.
-
-
-> Now, before we take ->siglock, the tracee can exit and another thread can do
-> wait() and reap this task.
->
-> Also, I think the comment above should be updated. I agree, it makes sense to
-> re-check JOBCTL_DELAY_WAKEKILL under siglock just for clarity, but we no longer
-> need to do this to close the race; jobctl &= ~JOBCTL_DELAY_WAKEKILL and
-> wake_up_state() are safe even if JOBCTL_DELAY_WAKEKILL was already
-> cleared.
-
-I think you are right about it being safe, but I am having a hard time
-convincing myself that is true.  I want to be very careful sending
-__TASK_TRACED wake_ups as ptrace_stop fundamentally can't handle
-spurious wake_ups.
-
-So I think adding task_is_traced to the test to verify the task
-is still frozen.
-
-static void ptrace_unfreeze_traced(struct task_struct *task)
-{
-	unsigned long flags;
-
-	/*
-	 * Verify the task is still frozen before unfreezing it,
-	 * ptrace_resume could have unfrozen us.
-	 */
-	if (lock_task_sighand(task, &flags)) {
-		if ((task->jobctl & JOBCTL_DELAY_WAKEKILL) &&
-		    task_is_traced(task)) {
-			task->jobctl &= ~JOBCTL_DELAY_WAKEKILL;
-			if (__fatal_signal_pending(task))
-				wake_up_state(task, __TASK_TRACED);
-		}
-		unlock_task_sighand(task, &flags);
-	}
-}
-
->> @@ -2307,6 +2307,7 @@ static int ptrace_stop(int exit_code, int why, int clear_code,
+>> On Wed, Apr 27, 2022 at 01:37:50PM +0300, Vasily Averin <vvs@openvz.org> wrote:
+>>> diff --git a/fs/kernfs/mount.c b/fs/kernfs/mount.c
+>>> index cfa79715fc1a..2881aeeaa880 100644
+>>> --- a/fs/kernfs/mount.c
+>>> +++ b/fs/kernfs/mount.c
+>>> @@ -391,7 +391,7 @@ void __init kernfs_init(void)
+>>>  {
+>>>       kernfs_node_cache = kmem_cache_create("kernfs_node_cache",
+>>>                                             sizeof(struct kernfs_node),
+>>> -                                           0, SLAB_PANIC, NULL);
+>>> +                                           0, SLAB_PANIC | SLAB_ACCOUNT, NULL);
 >>
->>  	/* LISTENING can be set only during STOP traps, clear it */
->>  	current->jobctl &= ~JOBCTL_LISTENING;
->> +	current->jobctl &= ~JOBCTL_DELAY_WAKEKILL;
->
-> minor, but
->
-> 	current->jobctl &= ~(JOBCTL_LISTENING | JOBCTL_DELAY_WAKEKILL);
->
-> looks better.
+>> kernfs accounting you say?
+>> kernfs backs up also cgroups, so the parent-child accounting comes to my
+>> mind.
+>> See the temporary switch to parent memcg in mem_cgroup_css_alloc().
+>>
+>> (I mean this makes some sense but I'd suggest unlumping the kernfs into
+>> a separate path for possible discussion and its not-only-netdevice
+>> effects.)
+> 
+> I agree with Michal that kernfs accounting should be its own patch.
+> Internally at Google, we actually have enabled the memcg accounting of
+> kernfs nodes. We have workloads which create 100s of subcontainers and
+> without memcg accounting of kernfs we see high system overhead.
 
-Yes.
+I had this idea (i.e. move kernfs accounting into separate patch) too, 
+but finally decided to include it into current patch.
 
+Kernfs accounting is critical for described scenario. Without it typical
+netdevice creating will charge only ~50% of allocated memory, and the rest
+of patch does not allow to protect the host properly.
 
-Eric
+Now I'm going to follow your recommendation and split the patch.
+
+Thank you,
+	Vasily Averin
