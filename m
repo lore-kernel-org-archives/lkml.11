@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7743C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 20:03:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9D92C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 20:04:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235549AbiD0UHG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 16:07:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59026 "EHLO
+        id S235560AbiD0UHL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 16:07:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235406AbiD0UHA (ORCPT
+        with ESMTP id S235434AbiD0UHE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 16:07:00 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 347C565A1
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 13:03:44 -0700 (PDT)
+        Wed, 27 Apr 2022 16:07:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B947C18E04
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 13:03:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651089823;
+        s=mimecast20190719; t=1651089830;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=d3HuyXBj7sbCyPJII4k+rhKVq+N2QJKVq0tQDMGX/Io=;
-        b=HsDxQPiDKpBQkYzT4F2n6cv4sRmyO/cWlQo2sLy5qBO+hx1pJDnGEZe00qQu/hihw5aXvS
-        D9pePdHxrKtblKuRd06dnOtUZmgA3V+p5+AW0Vpu36FnckFbunvTgirdZONKf/afbKcOlL
-        lNXVT9viYDMZRWxhuFYMThK/7UxWcpI=
+        bh=q/G/1I1AFGV7/M3Oqa7HyuoKCDAEb6r9zT6yudtrsQI=;
+        b=NaGVpYV9OABk0Aan3G2dWyqKKgol5cF02sKZ32XQPZvztzhdEkbZeNq4UhLnlG+h5Rx5uR
+        jDIkHRGO70ov02JMqujSk1uO4R1AkL8c49xgb/doECTesqX4r2wFwYbwxwwLlHbKH7mgpZ
+        iOqZ9DFg8+s220d3/CpFPbm222nzS7U=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-99-gDqYxOC3NJe1YVvQKWXlBQ-1; Wed, 27 Apr 2022 16:03:36 -0400
-X-MC-Unique: gDqYxOC3NJe1YVvQKWXlBQ-1
+ us-mta-280-cESqV5ndMp6vWCOPK914cw-1; Wed, 27 Apr 2022 16:03:47 -0400
+X-MC-Unique: cESqV5ndMp6vWCOPK914cw-1
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 92F9D101AA44;
-        Wed, 27 Apr 2022 20:03:34 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2F8B785A5BC;
+        Wed, 27 Apr 2022 20:03:46 +0000 (UTC)
 Received: from localhost.localdomain (unknown [10.40.192.41])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2AE3D9E82;
-        Wed, 27 Apr 2022 20:03:28 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B6D479E74;
+        Wed, 27 Apr 2022 20:03:40 +0000 (UTC)
 From:   Maxim Levitsky <mlevitsk@redhat.com>
 To:     kvm@vger.kernel.org
 Cc:     Wanpeng Li <wanpengli@tencent.com>,
@@ -64,9 +64,9 @@ Cc:     Wanpeng Li <wanpengli@tencent.com>,
         intel-gvt-dev@lists.freedesktop.org,
         dri-devel@lists.freedesktop.org,
         Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [RFC PATCH v3 02/19] KVM: x86: inhibit APICv/AVIC when the guest and/or host changes apic id/base from the defaults.
-Date:   Wed, 27 Apr 2022 23:02:57 +0300
-Message-Id: <20220427200314.276673-3-mlevitsk@redhat.com>
+Subject: [RFC PATCH v3 04/19] KVM: x86: mmu: allow to enable write tracking externally
+Date:   Wed, 27 Apr 2022 23:02:59 +0300
+Message-Id: <20220427200314.276673-5-mlevitsk@redhat.com>
 In-Reply-To: <20220427200314.276673-1-mlevitsk@redhat.com>
 References: <20220427200314.276673-1-mlevitsk@redhat.com>
 MIME-Version: 1.0
@@ -76,116 +76,172 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Neither of these settings should be changed by the guest and it is
-a burden to support it in the acceleration code, so just inhibit
-it instead.
+This will be used to enable write tracking from nested AVIC code
+and can also be used to enable write tracking in GVT-g module
+when it actually uses it as opposed to always enabling it,
+when the module is compiled in the kernel.
 
-Also add a boolean 'apic_id_changed' to indicate if apic id ever changed.
+No functional change intended.
 
 Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
 ---
- arch/x86/include/asm/kvm_host.h |  3 +++
- arch/x86/kvm/lapic.c            | 25 ++++++++++++++++++++++---
- arch/x86/kvm/lapic.h            |  8 ++++++++
- 3 files changed, 33 insertions(+), 3 deletions(-)
+ arch/x86/include/asm/kvm_host.h       |  2 +-
+ arch/x86/include/asm/kvm_page_track.h |  1 +
+ arch/x86/kvm/mmu.h                    |  8 +++++---
+ arch/x86/kvm/mmu/mmu.c                | 17 ++++++++++-------
+ arch/x86/kvm/mmu/page_track.c         | 10 ++++++++--
+ 5 files changed, 25 insertions(+), 13 deletions(-)
 
 diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 63eae00625bda..636df87542555 100644
+index 636df87542555..fc7df778a3d71 100644
 --- a/arch/x86/include/asm/kvm_host.h
 +++ b/arch/x86/include/asm/kvm_host.h
-@@ -1070,6 +1070,8 @@ enum kvm_apicv_inhibit {
- 	APICV_INHIBIT_REASON_ABSENT,
- 	/* AVIC is disabled because SEV doesn't support it */
- 	APICV_INHIBIT_REASON_SEV,
-+	/* APIC ID and/or APIC base was changed by the guest */
-+	APICV_INHIBIT_REASON_RO_SETTINGS,
- };
+@@ -1254,7 +1254,7 @@ struct kvm_arch {
+ 	 * is used as one input when determining whether certain memslot
+ 	 * related allocations are necessary.
+ 	 */
+-	bool shadow_root_allocated;
++	bool mmu_page_tracking_enabled;
  
- struct kvm_arch {
-@@ -1258,6 +1260,7 @@ struct kvm_arch {
+ #if IS_ENABLED(CONFIG_HYPERV)
  	hpa_t	hv_root_tdp;
- 	spinlock_t hv_root_tdp_lock;
- #endif
-+	bool apic_id_changed;
- };
+diff --git a/arch/x86/include/asm/kvm_page_track.h b/arch/x86/include/asm/kvm_page_track.h
+index eb186bc57f6a9..955a5ae07b10e 100644
+--- a/arch/x86/include/asm/kvm_page_track.h
++++ b/arch/x86/include/asm/kvm_page_track.h
+@@ -50,6 +50,7 @@ int kvm_page_track_init(struct kvm *kvm);
+ void kvm_page_track_cleanup(struct kvm *kvm);
  
- struct kvm_vm_stat {
-diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-index 66b0eb0bda94e..8996675b3ef4c 100644
---- a/arch/x86/kvm/lapic.c
-+++ b/arch/x86/kvm/lapic.c
-@@ -2038,6 +2038,19 @@ static void apic_manage_nmi_watchdog(struct kvm_lapic *apic, u32 lvt0_val)
- 	}
- }
+ bool kvm_page_track_write_tracking_enabled(struct kvm *kvm);
++int kvm_page_track_write_tracking_enable(struct kvm *kvm);
+ int kvm_page_track_write_tracking_alloc(struct kvm_memory_slot *slot);
  
-+static void kvm_lapic_check_initial_apic_id(struct kvm_lapic *apic)
-+{
-+	if (kvm_apic_has_initial_apic_id(apic))
-+		return;
-+
-+	pr_warn_once("APIC ID change is unsupported by KVM");
-+
-+	kvm_set_apicv_inhibit(apic->vcpu->kvm,
-+			APICV_INHIBIT_REASON_RO_SETTINGS);
-+
-+	apic->vcpu->kvm->arch.apic_id_changed = true;
-+}
-+
- static int kvm_lapic_reg_write(struct kvm_lapic *apic, u32 reg, u32 val)
+ void kvm_page_track_free_memslot(struct kvm_memory_slot *slot);
+diff --git a/arch/x86/kvm/mmu.h b/arch/x86/kvm/mmu.h
+index 671cfeccf04e9..44d15551f7156 100644
+--- a/arch/x86/kvm/mmu.h
++++ b/arch/x86/kvm/mmu.h
+@@ -269,7 +269,7 @@ int kvm_arch_write_log_dirty(struct kvm_vcpu *vcpu);
+ int kvm_mmu_post_init_vm(struct kvm *kvm);
+ void kvm_mmu_pre_destroy_vm(struct kvm *kvm);
+ 
+-static inline bool kvm_shadow_root_allocated(struct kvm *kvm)
++static inline bool mmu_page_tracking_enabled(struct kvm *kvm)
  {
- 	int ret = 0;
-@@ -2046,9 +2059,11 @@ static int kvm_lapic_reg_write(struct kvm_lapic *apic, u32 reg, u32 val)
- 
- 	switch (reg) {
- 	case APIC_ID:		/* Local APIC ID */
--		if (!apic_x2apic_mode(apic))
-+		if (!apic_x2apic_mode(apic)) {
-+
- 			kvm_apic_set_xapic_id(apic, val >> 24);
--		else
-+			kvm_lapic_check_initial_apic_id(apic);
-+		} else
- 			ret = 1;
- 		break;
- 
-@@ -2335,8 +2350,11 @@ void kvm_lapic_set_base(struct kvm_vcpu *vcpu, u64 value)
- 			     MSR_IA32_APICBASE_BASE;
- 
- 	if ((value & MSR_IA32_APICBASE_ENABLE) &&
--	     apic->base_address != APIC_DEFAULT_PHYS_BASE)
-+	     apic->base_address != APIC_DEFAULT_PHYS_BASE) {
-+		kvm_set_apicv_inhibit(apic->vcpu->kvm,
-+				APICV_INHIBIT_REASON_RO_SETTINGS);
- 		pr_warn_once("APIC base relocation is unsupported by KVM");
-+	}
+ 	/*
+ 	 * Read shadow_root_allocated before related pointers. Hence, threads
+@@ -277,9 +277,11 @@ static inline bool kvm_shadow_root_allocated(struct kvm *kvm)
+ 	 * see the pointers. Pairs with smp_store_release in
+ 	 * mmu_first_shadow_root_alloc.
+ 	 */
+-	return smp_load_acquire(&kvm->arch.shadow_root_allocated);
++	return smp_load_acquire(&kvm->arch.mmu_page_tracking_enabled);
  }
  
- void kvm_apic_update_apicv(struct kvm_vcpu *vcpu)
-@@ -2649,6 +2667,7 @@ static int kvm_apic_state_fixup(struct kvm_vcpu *vcpu,
++int mmu_enable_write_tracking(struct kvm *kvm);
++
+ #ifdef CONFIG_X86_64
+ static inline bool is_tdp_mmu_enabled(struct kvm *kvm) { return kvm->arch.tdp_mmu_enabled; }
+ #else
+@@ -288,7 +290,7 @@ static inline bool is_tdp_mmu_enabled(struct kvm *kvm) { return false; }
+ 
+ static inline bool kvm_memslots_have_rmaps(struct kvm *kvm)
+ {
+-	return !is_tdp_mmu_enabled(kvm) || kvm_shadow_root_allocated(kvm);
++	return !is_tdp_mmu_enabled(kvm) || mmu_page_tracking_enabled(kvm);
+ }
+ 
+ static inline gfn_t gfn_to_index(gfn_t gfn, gfn_t base_gfn, int level)
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index 904f0faff2186..fb744616bf7df 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -3389,7 +3389,7 @@ static int mmu_alloc_direct_roots(struct kvm_vcpu *vcpu)
+ 	return r;
+ }
+ 
+-static int mmu_first_shadow_root_alloc(struct kvm *kvm)
++int mmu_enable_write_tracking(struct kvm *kvm)
+ {
+ 	struct kvm_memslots *slots;
+ 	struct kvm_memory_slot *slot;
+@@ -3399,21 +3399,20 @@ static int mmu_first_shadow_root_alloc(struct kvm *kvm)
+ 	 * Check if this is the first shadow root being allocated before
+ 	 * taking the lock.
+ 	 */
+-	if (kvm_shadow_root_allocated(kvm))
++	if (mmu_page_tracking_enabled(kvm))
+ 		return 0;
+ 
+ 	mutex_lock(&kvm->slots_arch_lock);
+ 
+ 	/* Recheck, under the lock, whether this is the first shadow root. */
+-	if (kvm_shadow_root_allocated(kvm))
++	if (mmu_page_tracking_enabled(kvm))
+ 		goto out_unlock;
+ 
+ 	/*
+ 	 * Check if anything actually needs to be allocated, e.g. all metadata
+ 	 * will be allocated upfront if TDP is disabled.
+ 	 */
+-	if (kvm_memslots_have_rmaps(kvm) &&
+-	    kvm_page_track_write_tracking_enabled(kvm))
++	if (kvm_memslots_have_rmaps(kvm) && mmu_page_tracking_enabled(kvm))
+ 		goto out_success;
+ 
+ 	for (i = 0; i < KVM_ADDRESS_SPACE_NUM; i++) {
+@@ -3443,7 +3442,7 @@ static int mmu_first_shadow_root_alloc(struct kvm *kvm)
+ 	 * all the related pointers are set.
+ 	 */
+ out_success:
+-	smp_store_release(&kvm->arch.shadow_root_allocated, true);
++	smp_store_release(&kvm->arch.mmu_page_tracking_enabled, true);
+ 
+ out_unlock:
+ 	mutex_unlock(&kvm->slots_arch_lock);
+@@ -3480,7 +3479,7 @@ static int mmu_alloc_shadow_roots(struct kvm_vcpu *vcpu)
  		}
  	}
  
-+	kvm_lapic_check_initial_apic_id(vcpu->arch.apic);
+-	r = mmu_first_shadow_root_alloc(vcpu->kvm);
++	r = mmu_enable_write_tracking(vcpu->kvm);
+ 	if (r)
+ 		return r;
+ 
+@@ -5753,6 +5752,10 @@ int kvm_mmu_init_vm(struct kvm *kvm)
+ 	node->track_write = kvm_mmu_pte_write;
+ 	node->track_flush_slot = kvm_mmu_invalidate_zap_pages_in_memslot;
+ 	kvm_page_track_register_notifier(kvm, node);
++
++	if (IS_ENABLED(CONFIG_KVM_EXTERNAL_WRITE_TRACKING) || !tdp_enabled)
++		mmu_enable_write_tracking(kvm);
++
  	return 0;
  }
  
-diff --git a/arch/x86/kvm/lapic.h b/arch/x86/kvm/lapic.h
-index 4e4f8a22754f9..b9c406d383080 100644
---- a/arch/x86/kvm/lapic.h
-+++ b/arch/x86/kvm/lapic.h
-@@ -252,4 +252,12 @@ static inline u8 kvm_xapic_id(struct kvm_lapic *apic)
- 	return kvm_lapic_get_reg(apic, APIC_ID) >> 24;
+diff --git a/arch/x86/kvm/mmu/page_track.c b/arch/x86/kvm/mmu/page_track.c
+index 2e09d1b6249f3..8857d629036d7 100644
+--- a/arch/x86/kvm/mmu/page_track.c
++++ b/arch/x86/kvm/mmu/page_track.c
+@@ -21,10 +21,16 @@
+ 
+ bool kvm_page_track_write_tracking_enabled(struct kvm *kvm)
+ {
+-	return IS_ENABLED(CONFIG_KVM_EXTERNAL_WRITE_TRACKING) ||
+-	       !tdp_enabled || kvm_shadow_root_allocated(kvm);
++	return mmu_page_tracking_enabled(kvm);
  }
  
-+static inline bool kvm_apic_has_initial_apic_id(struct kvm_lapic *apic)
++int kvm_page_track_write_tracking_enable(struct kvm *kvm)
 +{
-+	if (apic_x2apic_mode(apic))
-+		return true;
-+
-+	return kvm_xapic_id(apic) == apic->vcpu->vcpu_id;
++	return mmu_enable_write_tracking(kvm);
 +}
++EXPORT_SYMBOL_GPL(kvm_page_track_write_tracking_enable);
 +
- #endif
++
+ void kvm_page_track_free_memslot(struct kvm_memory_slot *slot)
+ {
+ 	int i;
 -- 
 2.26.3
 
