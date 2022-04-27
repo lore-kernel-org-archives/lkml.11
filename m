@@ -2,197 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82DC2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:28:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8672C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:29:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243309AbiD0Qbi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:31:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43458 "EHLO
+        id S243565AbiD0QcU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:32:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244887AbiD0QaK (ORCPT
+        with ESMTP id S243385AbiD0QcK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:30:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C076DDFB5;
-        Wed, 27 Apr 2022 09:26:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 506EE61DB3;
-        Wed, 27 Apr 2022 16:26:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F3F6C385A9;
-        Wed, 27 Apr 2022 16:26:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651076817;
-        bh=+OKlmgWgdB+jhvrK301YGaf77tLtn1CuLBwYTY305wY=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=aqNYgc5miFVZD/qMi5HRONesbzvwbbU4e9Oo/2xvgNh/B/iMJ08os7ubDGhnxj+qD
-         KAJw1LDv2JGcF99wuJAW/bWLj4UcrpnXVa6wKNngIfgQz8p441ON3YbnLfpwh8tbxK
-         JoObX2LOJJ30uTydMhljm7JAMU2GmRtKchKsllyIFXgRdyZf5RlBt8taIRlhukACvX
-         Z+okLtvkST1TO4DaGDs1QlyiwQoCKGpUZ3cDlo8wN2WkytIL/zIcGYbUlTvy+TUxRY
-         SK8Qqy2DtQnz6IKkIs06db+ypxhzE5/5kj5LKYPh1DaJZ82O34o+Fwl10uhOWwYDdX
-         btBOm1o59dvyQ==
-Message-ID: <878e726c3caf36c624d2f43d6b8e6f8a488f97b0.camel@kernel.org>
-Subject: Re: [PATCH v3] ceph: fix statfs for subdir mounts
-From:   Jeff Layton <jlayton@kernel.org>
-To:     =?ISO-8859-1?Q?Lu=EDs?= Henriques <lhenriques@suse.de>,
-        Xiubo Li <xiubli@redhat.com>, Ilya Dryomov <idryomov@gmail.com>
-Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Ryan Taylor <rptaylor@uvic.ca>
-Date:   Wed, 27 Apr 2022 12:26:55 -0400
-In-Reply-To: <20220427155704.4758-1-lhenriques@suse.de>
-References: <20220427155704.4758-1-lhenriques@suse.de>
-Content-Type: text/plain; charset="ISO-8859-15"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Wed, 27 Apr 2022 12:32:10 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C51373F320;
+        Wed, 27 Apr 2022 09:27:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651076866; x=1682612866;
+  h=to:cc:references:from:subject:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=CPMjo6U9PUtaGVa14pO3sunqUrDh79MQUPdvmaVu8cw=;
+  b=jU0eryoMSnwcYapAxLMjSKRkRC3kQQS7YfZGBMI2pApcKN8IbGoXiG4D
+   GB2leEQdH8+jU2kNx06EHwOwbPPcHVtlaEwtTFf0s4cRUeaCFFvlR00lx
+   FHHEu9N0aVlSO/fWg1uLD5JnVTJIypV/UvUJqQ0uo2Z5kfhM4qKT37+Jr
+   7+FXZpCt53t4awT6mTRekMbAq51f/duCHKJsqZgvJhWf4f63IfP+s6jHd
+   9TXyzHc5taI87pG23dgH2KaijOFUOx+XOe8HZ0/rXOgU/Njnj5U/oah1e
+   XDO27ggkrHirf4MN3z+cc4sy8hNgLZbPpVW2qlXqkf1LyEkycPgxAxSUA
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="253372372"
+X-IronPort-AV: E=Sophos;i="5.90,293,1643702400"; 
+   d="scan'208";a="253372372"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 09:23:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,293,1643702400"; 
+   d="scan'208";a="876729017"
+Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
+  by fmsmga005.fm.intel.com with ESMTP; 27 Apr 2022 09:23:22 -0700
+To:     Daehwan Jung <dh10.jung@samsung.com>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     "open list:USB XHCI DRIVER" <linux-usb@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Howard Yen <howardyen@google.com>,
+        Jack Pham <jackp@codeaurora.org>,
+        Puma Hsu <pumahsu@google.com>,
+        "J . Avila" <elavila@google.com>, sc.suh@samsung.com,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+References: <1650964728-175347-1-git-send-email-dh10.jung@samsung.com>
+ <CGME20220426092023epcas2p32946c087135ca4b7e63b03915060c55d@epcas2p3.samsung.com>
+ <1650964728-175347-6-git-send-email-dh10.jung@samsung.com>
+From:   Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: Re: [PATCH v4 5/5] usb: host: add xhci-exynos driver
+Message-ID: <b9fcc518-cc0d-d346-774e-3a9472e664bc@linux.intel.com>
+Date:   Wed, 27 Apr 2022 19:25:21 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.14.0
 MIME-Version: 1.0
+In-Reply-To: <1650964728-175347-6-git-send-email-dh10.jung@samsung.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-04-27 at 16:57 +0100, Luís Henriques wrote:
-> When doing a mount using as base a directory that has 'max_bytes' quotas
-> statfs uses that value as the total; if a subdirectory is used instead,
-> the same 'max_bytes' too in statfs, unless there is another quota set.
+On 26.4.2022 12.18, Daehwan Jung wrote:
+> This driver is for Samsung Exynos xhci host conroller. It uses xhci-plat
+> driver mainly and extends some functions by xhci hooks and overrides.
 > 
-> Unfortunately, if this subdirectory only has the 'max_files' quota set,
-> then statfs uses the filesystem total.  Fix this by making sure we only
-> lookup realms that contain the 'max_bytes' quota.
+> It supports USB Audio offload with Co-processor. It only cares DCBAA,
+> Device Context, Transfer Ring, Event Ring, and ERST. They are allocated
+> on specific address with xhci hooks. Co-processor could use them directly
+> without xhci driver after then.
 > 
-> Link: https://tracker.ceph.com/issues/55090
-> Cc: Ryan Taylor <rptaylor@uvic.ca>
-> Signed-off-by: Luís Henriques <lhenriques@suse.de>
-> ---
-> Changes since v2:
-> Renamed function __ceph_has_any_quota() to __ceph_has_quota()
-> 
-> Changes since v1:
-> Moved some more logic into __ceph_has_any_quota() function.
-> 
->  fs/ceph/inode.c |  2 +-
->  fs/ceph/quota.c | 19 +++++++++++--------
->  fs/ceph/super.h | 28 ++++++++++++++++++++++++----
->  3 files changed, 36 insertions(+), 13 deletions(-)
-> 
-> diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
-> index 5de7bb9048b7..1067209cf6f6 100644
-> --- a/fs/ceph/inode.c
-> +++ b/fs/ceph/inode.c
-> @@ -691,7 +691,7 @@ void ceph_evict_inode(struct inode *inode)
->  
->  	__ceph_remove_caps(ci);
->  
-> -	if (__ceph_has_any_quota(ci))
-> +	if (__ceph_has_quota(ci, QUOTA_GET_ANY))
->  		ceph_adjust_quota_realms_count(inode, false);
->  
->  	/*
-> diff --git a/fs/ceph/quota.c b/fs/ceph/quota.c
-> index a338a3ec0dc4..64592adfe48f 100644
-> --- a/fs/ceph/quota.c
-> +++ b/fs/ceph/quota.c
-> @@ -195,9 +195,9 @@ void ceph_cleanup_quotarealms_inodes(struct ceph_mds_client *mdsc)
->  
->  /*
->   * This function walks through the snaprealm for an inode and returns the
-> - * ceph_snap_realm for the first snaprealm that has quotas set (either max_files
-> - * or max_bytes).  If the root is reached, return the root ceph_snap_realm
-> - * instead.
-> + * ceph_snap_realm for the first snaprealm that has quotas set (max_files,
-> + * max_bytes, or any, depending on the 'which_quota' argument).  If the root is
-> + * reached, return the root ceph_snap_realm instead.
->   *
->   * Note that the caller is responsible for calling ceph_put_snap_realm() on the
->   * returned realm.
-> @@ -209,7 +209,9 @@ void ceph_cleanup_quotarealms_inodes(struct ceph_mds_client *mdsc)
->   * will be restarted.
->   */
->  static struct ceph_snap_realm *get_quota_realm(struct ceph_mds_client *mdsc,
-> -					       struct inode *inode, bool retry)
-> +					       struct inode *inode,
-> +					       enum quota_get_realm which_quota,
-> +					       bool retry)
->  {
->  	struct ceph_inode_info *ci = NULL;
->  	struct ceph_snap_realm *realm, *next;
-> @@ -248,7 +250,7 @@ static struct ceph_snap_realm *get_quota_realm(struct ceph_mds_client *mdsc,
->  		}
->  
->  		ci = ceph_inode(in);
-> -		has_quota = __ceph_has_any_quota(ci);
-> +		has_quota = __ceph_has_quota(ci, which_quota);
->  		iput(in);
->  
->  		next = realm->parent;
-> @@ -279,8 +281,8 @@ bool ceph_quota_is_same_realm(struct inode *old, struct inode *new)
->  	 * dropped and we can then restart the whole operation.
->  	 */
->  	down_read(&mdsc->snap_rwsem);
-> -	old_realm = get_quota_realm(mdsc, old, true);
-> -	new_realm = get_quota_realm(mdsc, new, false);
-> +	old_realm = get_quota_realm(mdsc, old, QUOTA_GET_ANY, true);
-> +	new_realm = get_quota_realm(mdsc, new, QUOTA_GET_ANY, false);
->  	if (PTR_ERR(new_realm) == -EAGAIN) {
->  		up_read(&mdsc->snap_rwsem);
->  		if (old_realm)
-> @@ -483,7 +485,8 @@ bool ceph_quota_update_statfs(struct ceph_fs_client *fsc, struct kstatfs *buf)
->  	bool is_updated = false;
->  
->  	down_read(&mdsc->snap_rwsem);
-> -	realm = get_quota_realm(mdsc, d_inode(fsc->sb->s_root), true);
-> +	realm = get_quota_realm(mdsc, d_inode(fsc->sb->s_root),
-> +				QUOTA_GET_MAX_BYTES, true);
->  	up_read(&mdsc->snap_rwsem);
->  	if (!realm)
->  		return false;
-> diff --git a/fs/ceph/super.h b/fs/ceph/super.h
-> index a2e1c83ab29a..0ecde1c12fee 100644
-> --- a/fs/ceph/super.h
-> +++ b/fs/ceph/super.h
-> @@ -1317,9 +1317,29 @@ extern void ceph_fs_debugfs_init(struct ceph_fs_client *client);
->  extern void ceph_fs_debugfs_cleanup(struct ceph_fs_client *client);
->  
->  /* quota.c */
-> -static inline bool __ceph_has_any_quota(struct ceph_inode_info *ci)
-> +
-> +enum quota_get_realm {
-> +	QUOTA_GET_MAX_FILES,
-> +	QUOTA_GET_MAX_BYTES,
-> +	QUOTA_GET_ANY
-> +};
-> +
-> +static inline bool __ceph_has_quota(struct ceph_inode_info *ci,
-> +				    enum quota_get_realm which)
->  {
-> -	return ci->i_max_files || ci->i_max_bytes;
-> +	bool has_quota = false;
-> +
-> +	switch (which) {
-> +	case QUOTA_GET_MAX_BYTES:
-> +		has_quota = !!ci->i_max_bytes;
-> +		break;
-> +	case QUOTA_GET_MAX_FILES:
-> +		has_quota = !!ci->i_max_files;
-> +		break;
-> +	default:
-> +		has_quota = !!(ci->i_max_files || ci->i_max_bytes);
-> +	}
-> +	return has_quota;
->  }
->  
->  extern void ceph_adjust_quota_realms_count(struct inode *inode, bool inc);
-> @@ -1328,10 +1348,10 @@ static inline void __ceph_update_quota(struct ceph_inode_info *ci,
->  				       u64 max_bytes, u64 max_files)
->  {
->  	bool had_quota, has_quota;
-> -	had_quota = __ceph_has_any_quota(ci);
-> +	had_quota = __ceph_has_quota(ci, QUOTA_GET_ANY);
->  	ci->i_max_bytes = max_bytes;
->  	ci->i_max_files = max_files;
-> -	has_quota = __ceph_has_any_quota(ci);
-> +	has_quota = __ceph_has_quota(ci, QUOTA_GET_ANY);
->  
->  	if (had_quota != has_quota)
->  		ceph_adjust_quota_realms_count(&ci->vfs_inode, has_quota);
+> Signed-off-by: Daehwan Jung <dh10.jung@samsung.com>
 
-Reviewed-by: Jeff Layton <jlayton@kernel.org>
+I have to agree with Krzysztof's comments, this is an odd driver stub.
+
+Perhaps open up a bit how the Exynos offloading works so we can figure out
+in more detail what the hardware needs from software.  
+
+(...)
+
+> +
+> +static void xhci_exynos_alloc_container_ctx(struct xhci_hcd *xhci, struct xhci_container_ctx *ctx,
+> +						int type, gfp_t flags)
+> +{
+> +	/* Only first Device Context uses URAM */
+> +	int i;
+> +
+> +	ctx->bytes = ioremap(EXYNOS_URAM_DEVICE_CTX_ADDR, EXYNOS_URAM_CTX_SIZE);
+> +	if (!ctx->bytes)
+> +		return;
+> +
+> +	for (i = 0; i < EXYNOS_URAM_CTX_SIZE; i++)
+> +		ctx->bytes[i] = 0;
+> +
+> +	ctx->dma = EXYNOS_URAM_DEVICE_CTX_ADDR;
+
+This can't work with more than one USB device.
+This hardcodes the same context address for every usb device.
+
+
+> +static void xhci_exynos_parse_endpoint(struct xhci_hcd *xhci, struct usb_device *udev,
+> +		struct usb_endpoint_descriptor *desc, struct xhci_container_ctx *ctx)
+> +{
+> +	struct xhci_plat_priv *priv = xhci_to_priv(xhci);
+> +	struct xhci_hcd_exynos *xhci_exynos = priv->vendor_priv;
+> +	struct usb_endpoint_descriptor *d = desc;
+> +	unsigned int ep_index;
+> +	struct xhci_ep_ctx *ep_ctx;
+> +
+> +	ep_index = xhci_get_endpoint_index(d);
+> +	ep_ctx = xhci_get_ep_ctx(xhci, ctx, ep_index);
+> +
+> +	if ((d->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK) ==
+> +				USB_ENDPOINT_XFER_ISOC) {
+> +		if (d->bEndpointAddress & USB_ENDPOINT_DIR_MASK)
+> +			xhci_exynos->in_ep = d->bEndpointAddress;
+> +		else
+> +			xhci_exynos->out_ep = d->bEndpointAddress;
+> +	}
+
+This won't work if more than one device that has isoc endpoints, or even 
+if that device has more than one in/out isoc endpoint pair.
+
+
+> +static int xhci_alloc_segments_for_ring_uram(struct xhci_hcd *xhci,
+> +		struct xhci_segment **first, struct xhci_segment **last,
+> +		unsigned int num_segs, unsigned int cycle_state,
+> +		enum xhci_ring_type type, unsigned int max_packet, gfp_t flags,
+> +		u32 endpoint_type)
+> +{
+> +	struct xhci_segment *prev;
+> +	bool chain_links = false;
+> +
+> +	while (num_segs > 0) {
+> +		struct xhci_segment *next = NULL;
+> +
+> +		if (!next) {
+> +			prev = *first;
+> +			while (prev) {
+> +				next = prev->next;
+> +				xhci_segment_free(xhci, prev);
+> +				prev = next;
+> +			}
+> +			return -ENOMEM;
+
+This always return -ENOMEM
+
+Also this whole function never allocates or remaps any memory.
+
+> +		}
+> +		xhci_link_segments(prev, next, type, chain_links);
+> +
+> +		prev = next;
+> +		num_segs--;
+> +	}
+> +	xhci_link_segments(prev, *first, type, chain_links);
+> +	*last = prev;
+> +
+> +	return 0;
+> +}
+> +
+> +static struct xhci_ring *xhci_ring_alloc_uram(struct xhci_hcd *xhci,
+> +		unsigned int num_segs, unsigned int cycle_state,
+> +		enum xhci_ring_type type, unsigned int max_packet, gfp_t flags,
+> +		u32 endpoint_type)
+> +{
+> +	struct xhci_ring	*ring;
+> +	int ret;
+> +	struct device *dev = xhci_to_hcd(xhci)->self.sysdev;
+> +
+> +	ring = kzalloc_node(sizeof(*ring), flags, dev_to_node(dev));
+> +	if (!ring)
+> +		return NULL;
+> +
+> +	ring->num_segs = num_segs;
+> +	ring->bounce_buf_len = max_packet;
+> +	INIT_LIST_HEAD(&ring->td_list);
+> +	ring->type = type;
+> +	if (num_segs == 0)
+> +		return ring;
+> +
+> +	ret = xhci_alloc_segments_for_ring_uram(xhci, &ring->first_seg,
+> +			&ring->last_seg, num_segs, cycle_state, type,
+> +			max_packet, flags, endpoint_type);
+> +	if (ret)
+> +		goto fail;
+> +
+> +	/* Only event ring does not use link TRB */
+> +	if (type != TYPE_EVENT) {
+> +		/* See section 4.9.2.1 and 6.4.4.1 */
+> +		ring->last_seg->trbs[TRBS_PER_SEGMENT - 1].link.control |=
+> +			cpu_to_le32(LINK_TOGGLE);
+
+No memory was allocated for trbs
+
+A lot of this code seems to exists just to avoid xhci driver from allocating
+dma capable memory, we can refactor the existing xhci_mem_init() and move
+dcbaa and event ring allocation and other code to their own overridable
+functions.
+
+This way we can probably get rid of a lot of the code in this series.
+
+Thanks
+Mathias
