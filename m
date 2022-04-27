@@ -2,128 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B237C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:03:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7358C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:03:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241531AbiD0QGo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:06:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44022 "EHLO
+        id S241727AbiD0QG5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:06:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243373AbiD0QFw (ORCPT
+        with ESMTP id S241543AbiD0QGw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:05:52 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AFBC3C305F
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:02:34 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id q23so3178692wra.1
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:02:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tuXdH3mbYd4Gnl44e//+j/klraKOvkpgOliwGw+YZ7s=;
-        b=BnT4/TnG/yQ41vtWz0BFedhJxhOAqjpLvHN9LNyXhyV8m+8PnZpCz0iC3bfWLFc8PQ
-         Jxw2c4EagSdCNgndlDqapohrwulYpJAwBMaP3C6yZpshJxRG6Sd92TyOVPOVZloVMfo1
-         grZekdjRWmzxzm7BLam6dnAFrfMnghKS5GrLT32H8wSh5EbfG+4gXEvNzkcpEwnMqrk6
-         sUCctJvhvEeGZJXctjBr06vKK30nynGDVRhNXBjTLUBENOBiXnKBsX0DmtPbi6Mwi5Rs
-         JEnp1p5+QxWZusg6F/RzyB1pyHNHvhIymslg5vMAabB6TXqTlwYj2F5oMN9pM3f1trzw
-         p5dA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tuXdH3mbYd4Gnl44e//+j/klraKOvkpgOliwGw+YZ7s=;
-        b=UmeB2g4Dx4WB1Ek4oGmlcXhi8CsbJYWEHCoFcnJkhHcm6dDFfo7wHQf2A1UpHFAV/G
-         AIy9Wh5xKTcSe2WSNiqQCyH2WQ6Ba0GHseObjIpjhgVPiCNUdPs1kft7R7g9TsK7q953
-         3cSMUlp62jLSBWz+63CFJ/8LfCHOpWHeKgnK/o+Gvb8kenIe1PyseAK3PWlWYS7eC2O9
-         yi3XzteOnaxnCbxzypdXTxZi3k7JyBZGfSpGlU6cM9HUSyVJ8UF3UDEnTUfn+RG4V2c3
-         WpeUqHqR5/Sk8qIVh88RHYs+dILALZXQ2dPV7h2cTFJZdG8OMXoCqd+Z7OZFr8putZ04
-         9mnw==
-X-Gm-Message-State: AOAM533zyviVhz+Zzhk2azHzxOyQtLVRoIZAw6deliQLiuDIQjxzTSYu
-        4LwdQ4czBgYpoSBwEykjLVAqhNyqb5LrAfYfnWv5
-X-Google-Smtp-Source: ABdhPJzYoyxpMLnD9ubmid4unahg+b0PsIWIS3wxLIoFgmxDjN1rv/qVRxVkpAaGGwTHUHfo5yOg/ZMc8seG7EODIqc=
-X-Received: by 2002:a5d:590d:0:b0:20a:c3eb:2584 with SMTP id
- v13-20020a5d590d000000b0020ac3eb2584mr22239195wrd.18.1651075352543; Wed, 27
- Apr 2022 09:02:32 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220418145945.38797-1-casey@schaufler-ca.com>
- <20220418145945.38797-24-casey@schaufler-ca.com> <a1702622-5980-1eb4-1cf8-b6fc6cd98b25@canonical.com>
- <CAHC9VhRzJKAARW1rnUMu0Y6RVo_uq=i=Jzh4LmA9grtQ1W2C1Q@mail.gmail.com>
- <26eca0aa-111a-9473-8925-e4b12cadbd79@canonical.com> <CAHC9VhQQysL8aEt8w5G-nemJzapY-Q4pYKn0TCdnVjpuiTKqhw@mail.gmail.com>
- <4ec176c6-1f66-3951-f40f-1eb0d5b66a09@schaufler-ca.com>
-In-Reply-To: <4ec176c6-1f66-3951-f40f-1eb0d5b66a09@schaufler-ca.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Wed, 27 Apr 2022 12:02:21 -0400
-Message-ID: <CAHC9VhQow5MaC0O-YJHxXh_=SR5eo3+97pznVyUq4YhkTuBBmg@mail.gmail.com>
-Subject: Re: [PATCH v35 23/29] Audit: Create audit_stamp structure
-To:     Casey Schaufler <casey@schaufler-ca.com>
-Cc:     John Johansen <john.johansen@canonical.com>, jmorris@namei.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
-        linux-audit@redhat.com, keescook@chromium.org,
-        penguin-kernel@i-love.sakura.ne.jp, stephen.smalley.work@gmail.com,
+        Wed, 27 Apr 2022 12:06:52 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AA183C9D7D;
+        Wed, 27 Apr 2022 09:03:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651075380; x=1682611380;
+  h=from:to:cc:subject:date:message-id;
+  bh=VYULZm1ptnSTDWX7g9iwC8F1X12CH5Sh9VvlyVesL2U=;
+  b=kLvGfw2WrVFj7l2PBxJzqfWpxLmd2WRHbQujR/vCH+7Yu4ozN5zepqO+
+   PSdS/4pa8r7dfE1YQ/VnrbEzJfz5c8fb8mt/vl1NopxMRjyC0LHWdBO5c
+   Y+NG2QfZBgVjjk7/029Hj4L6tziSGyhmHuhEpBqvl7wRdrWM4ZXriGeMT
+   LqXJsznOzTF3PUQF72tVsEgs/zLxOKITVHxg/wUNY264/+CrcwSqShsur
+   /lv1rw/hqUQxUrWJQn80G/ljk88TdTwO5xFz0GuTNU4knecF1qztJylQL
+   u0YrAkPxjXdl33iA36V8agoG4VaZc5hN2knQyQZ2HNbfWaR4xeWb5btPt
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="291131603"
+X-IronPort-AV: E=Sophos;i="5.90,293,1643702400"; 
+   d="scan'208";a="291131603"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 08:53:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,293,1643702400"; 
+   d="scan'208";a="808096549"
+Received: from srpawnik.iind.intel.com ([10.99.123.68])
+  by fmsmga006.fm.intel.com with ESMTP; 27 Apr 2022 08:53:37 -0700
+From:   Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
+To:     rafael@kernel.org, lenb@kernel.org,
+        srinivas.pandruvada@linux.intel.com, linux-acpi@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Cc:     sumeet.r.pawnikar@intel.com
+Subject: [PATCH] ACPI: DPTF: Add support for high frequency impedance notification
+Date:   Wed, 27 Apr 2022 21:21:30 +0530
+Message-Id: <20220427155130.8023-1-sumeet.r.pawnikar@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 11:49 AM Casey Schaufler <casey@schaufler-ca.com> wrote:
->
-> On 4/26/2022 12:18 PM, Paul Moore wrote:
-> > On Tue, Apr 26, 2022 at 2:58 PM John Johansen
-> > <john.johansen@canonical.com> wrote:
-> >> On 4/26/22 11:03, Paul Moore wrote:
-> >>> On Mon, Apr 25, 2022 at 7:31 PM John Johansen
-> >>> <john.johansen@canonical.com> wrote:
-> >>>> On 4/18/22 07:59, Casey Schaufler wrote:
-> >>>>> Replace the timestamp and serial number pair used in audit records
-> >>>>> with a structure containing the two elements.
-> >>>>>
-> >>>>> Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
-> >>>>> Acked-by: Paul Moore <paul@paul-moore.com>
-> >>>>> ---
-> >>>>>   kernel/audit.c   | 17 +++++++++--------
-> >>>>>   kernel/audit.h   | 12 +++++++++---
-> >>>>>   kernel/auditsc.c | 22 +++++++++-------------
-> >>>>>   3 files changed, 27 insertions(+), 24 deletions(-)
-> >>> ...
-> >>>
-> >>>>> diff --git a/kernel/audit.h b/kernel/audit.h
-> >>>>> index 4af63e7dde17..260dab6e0e15 100644
-> >>>>> --- a/kernel/audit.h
-> >>>>> +++ b/kernel/audit.h
-> >>>>> @@ -108,10 +114,10 @@ struct audit_context {
-> >>>>>                AUDIT_CTX_URING,        /* in use by io_uring */
-> >>>>>        } context;
-> >>>>>        enum audit_state    state, current_state;
-> >>>>> +     struct audit_stamp  stamp;      /* event identifier */
-> >>>>>        unsigned int        serial;     /* serial number for record */
-> >>>> shouldn't we be dropping serial from the audit_context, since we have
-> >>>> moved it into the audit_stamp?
-> >>> Unless we make some significant changes to audit_log_start() we still
-> >>> need to preserve a timestamp in the audit_context so that regularly
-> >>> associated audit records can share a common timestamp (which is what
-> >>> groups multiple records into a single "event").
-> >>>
-> >> sure, but the patch changes things to use ctx->stamp.serial instead of
-> >> ctx->serial ...
-> > My apologies, I read your original comment wrong; I was thinking you
-> > were suggesting removing the timestamp info from audit_context in
-> > favor of using the timestamp info contained in the audit_buffer.
-> >
-> > Yes, audit_context:serial is no longer needed with audit_context:stamp.
->
-> Thank you for catching that. Easy (I expect) fix.
-> BTW, I'm not supposed to be working the next few weeks,
-> but I should be able to sneak v36 in before the next merge
-> window.
+Add high frequency impedance notification support under DPTF.
+This returns high frequency impedance value that can be obtained
+from battery fuel gauge whenever there is change over a threshold.
 
-Enjoy the time away :)
+Signed-off-by: Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
+---
+ drivers/acpi/dptf/dptf_power.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-FWIW, this isn't my call to make, but I would strongly prefer if this
-got a *full* run in linux-next before it was merged into Linus' tree
-during the merge window.  For example, get this into the LSM -next
-tree at -rc1 instead of -rc6.
-
+diff --git a/drivers/acpi/dptf/dptf_power.c b/drivers/acpi/dptf/dptf_power.c
+index dc1f52a5b3f4..2ef53ca88714 100644
+--- a/drivers/acpi/dptf/dptf_power.c
++++ b/drivers/acpi/dptf/dptf_power.c
+@@ -117,7 +117,7 @@ static const struct attribute_group dptf_battery_attribute_group = {
+ #define POWER_STATE_CHANGED		0x81
+ #define STEADY_STATE_POWER_CHANGED	0x83
+ #define POWER_PROP_CHANGE_EVENT	0x84
+-#define IMPEDANCED_CHNGED		0x85
++#define IMPEDANCE_CHANGED		0x85
+ #define VOLTAGE_CURRENT_CHANGED	0x86
+ 
+ static long long dptf_participant_type(acpi_handle handle)
+@@ -150,6 +150,9 @@ static void dptf_power_notify(acpi_handle handle, u32 event, void *data)
+ 	case STEADY_STATE_POWER_CHANGED:
+ 		attr = "max_steady_state_power_mw";
+ 		break;
++	case IMPEDANCE_CHANGED:
++		attr = "high_freq_impedance_mohm";
++		break;
+ 	case VOLTAGE_CURRENT_CHANGED:
+ 		attr = "no_load_voltage_mv";
+ 		break;
 -- 
-paul-moore.com
+2.17.1
+
