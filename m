@@ -2,116 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52B2CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:29:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C486C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:29:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235994AbiD0Nch (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 09:32:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60706 "EHLO
+        id S236020AbiD0Ncl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 09:32:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235911AbiD0Ncc (ORCPT
+        with ESMTP id S235846AbiD0Ncc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Apr 2022 09:32:32 -0400
-Received: from mo-csw.securemx.jp (mo-csw1515.securemx.jp [210.130.202.154])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6422D2BEC;
-        Wed, 27 Apr 2022 06:29:18 -0700 (PDT)
-Received: by mo-csw.securemx.jp (mx-mo-csw1515) id 23RDSs89009903; Wed, 27 Apr 2022 22:28:54 +0900
-X-Iguazu-Qid: 34tMbOxKTy7RKtoKbU
-X-Iguazu-QSIG: v=2; s=0; t=1651066134; q=34tMbOxKTy7RKtoKbU; m=S20lVmlaMRvIdZ7s5PtXo0QvAorFu/Sfmvlyb+fSM/U=
-Received: from imx12-a.toshiba.co.jp (imx12-a.toshiba.co.jp [61.202.160.135])
-        by relay.securemx.jp (mx-mr1510) id 23RDSrPY023236
-        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 27 Apr 2022 22:28:53 +0900
-X-SA-MID: 3264136
-From:   Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org, yuji2.ishikawa@toshiba.co.jp
-Subject: [PATCH v2 0/4] Add Toshiba Visconti AFFINE image processing accelerator driver
-Date:   Wed, 27 Apr 2022 22:23:41 +0900
-X-TSB-HOP2: ON
-Message-Id: <20220427132345.27327-1-yuji2.ishikawa@toshiba.co.jp>
-X-Mailer: git-send-email 2.17.1
+Received: from bedivere.hansenpartnership.com (bedivere.hansenpartnership.com [IPv6:2607:fcd0:100:8a00::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CE343F896;
+        Wed, 27 Apr 2022 06:29:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+        d=hansenpartnership.com; s=20151216; t=1651066159;
+        bh=svw2QKLySLeBa5NNG/2lDGa1cC2jheHbjip4Kiq8SFo=;
+        h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
+        b=QLwApHFr3nCbCYTm5CWgFeivIHf2YkzTif89S0W47Cy9Y2o2vuu66MxF4aeS4ilfg
+         GXAzMul1I56L0CYwOM5XA8WQ1isTAWoNasqrgdNrGpiaU3oRh+5odJiuCa127KQlIS
+         3vfSlWiDzLbLMEwrOYGlP41vjdLtYhAtOBlIZGhk=
+Received: from localhost (localhost [127.0.0.1])
+        by bedivere.hansenpartnership.com (Postfix) with ESMTP id 852711288C2B;
+        Wed, 27 Apr 2022 09:29:19 -0400 (EDT)
+Received: from bedivere.hansenpartnership.com ([127.0.0.1])
+        by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 66aQ9DCPgOss; Wed, 27 Apr 2022 09:29:19 -0400 (EDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+        d=hansenpartnership.com; s=20151216; t=1651066158;
+        bh=svw2QKLySLeBa5NNG/2lDGa1cC2jheHbjip4Kiq8SFo=;
+        h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
+        b=OB4HmMNFTRjCCWJIUeVZMKQsCcrkIEiWCs7jRmR5UbxTOyyWe3grkEMqiwmm3UkTl
+         oCz2+xF1VurT45hfyL0kOmice0jPJcJTVwPoweLGHWNqN8HyQejxi6R/Ytvh3NIcue
+         15gce1pryuw4ME8biooP3KzK9NTzL0RuN2t6B8VI=
+Received: from lingrow.int.hansenpartnership.com (unknown [IPv6:2601:5c4:4300:c551::c14])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id 5AA8C1288C2F;
+        Wed, 27 Apr 2022 09:29:15 -0400 (EDT)
+Message-ID: <d134571f381868e1cec74aca905012d8aec9fec8.camel@HansenPartnership.com>
+Subject: Re: Race-free block device opening
+From:   James Bottomley <James.Bottomley@HansenPartnership.com>
+To:     Demi Marie Obenour <demi@invisiblethingslab.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Block Mailing List <linux-block@vger.kernel.org>,
+        Linux Filesystem Mailing List <linux-fsdevel@vger.kernel.org>
+Date:   Wed, 27 Apr 2022 09:29:12 -0400
+In-Reply-To: <Ymg2HIc8NGraPNbM@itl-email>
+References: <Ymg2HIc8NGraPNbM@itl-email>
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-m2/yxg2jUsj/Q2J7p/Oh"
+User-Agent: Evolution 3.34.4 
+MIME-Version: 1.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series is the AFFINE image processing accelerator driver for Toshiba's ARM SoC, Visconti[0].
-This provides DT binding documentation, device driver, MAINTAINER files.
 
-The second patch "soc: visconti: Add Toshiba Visconti image processing accelerator common source"
-is commonly used among acclerator drivers (affine, dnn, dspif, pyramid).
+--=-m2/yxg2jUsj/Q2J7p/Oh
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Best regards,
-Yuji
+On Tue, 2022-04-26 at 14:12 -0400, Demi Marie Obenour wrote:
+> Right now, opening block devices in a race-free way is incredibly
+> hard.
 
-[0]: https://toshiba.semicon-storage.com/ap-en/semiconductor/product/image-recognition-processors-visconti.html
-  
-  dt-bindings: soc: visconti: Add Toshiba Visconti AFFINE image
-    v1 -> v2:
-      - No update
+Could you be more specific about what the race you're having problems
+with is?  What is racing.
 
-  soc: visconti: Add Toshiba Visconti image processing accelerator common source
-    v1 -> v2:
-      - apply checkpatch.pl --strict
-  
-  soc: visconti: Add Toshiba Visconti AFFINE image processing accelerator
-    v1 -> v2:
-      - apply checkpatch.pl --strict
-      - rename hwd_AFFINE_xxxx to hwd_affine_xxxx
+> The only reasonable approach I know of is sd_device_new_from_path() +
+> sd_device_open(), and is only available in systemd git main.  It also
+> requires waiting on systemd-udev to have processed udev rules, which
+> can be a bottleneck.
 
-  MAINTAINERS: Add entries for Toshiba Visconti AFFINE image processing accelerator
-    v1 -> v2:
-      - No update
+This doesn't actually seem to be in my copy of systemd.
 
-Change in V2:
-  - apply checkpatch.pl --strict
-  - rename hwd_AFFINE_xxxx to hwd_affine_xxxx
+>   There are better approaches in various special cases, such as using
+> device-mapper ioctls to check that the device one has opened still
+> has the name and/or UUID one expects.  However, none of them works
+> for a plain call to open(2).
 
-Yuji Ishikawa (4):
-  dt-bindings: soc: visconti: Add Toshiba Visconti AFFINE image
-    processing accelerator bindings
-  soc: visconti: Add Toshiba Visconti image processing accelerator
-    common source
-  soc: visconti: Add Toshiba Visconti AFFINE image processing
-    accelerator
-  MAINTAINERS: Add entries for Toshiba Visconti AFFINE image processing
-    accelerator
+Just so we're clear: if you call open on, say /dev/sdb1 and something
+happens to hot unplug and then replug a different device under that
+node, the file descriptor you got at open does *not* point to the new
+node.  It points to a dead device responder that errors everything.
 
- .../soc/visconti/toshiba,visconti-affine.yaml |  53 ++
- MAINTAINERS                                   |   2 +
- drivers/soc/Kconfig                           |   1 +
- drivers/soc/Makefile                          |   1 +
- drivers/soc/visconti/Kconfig                  |   7 +
- drivers/soc/visconti/Makefile                 |   8 +
- drivers/soc/visconti/affine/Makefile          |   6 +
- drivers/soc/visconti/affine/affine.c          | 451 ++++++++++++++++++
- drivers/soc/visconti/affine/hwd_affine.c      | 206 ++++++++
- drivers/soc/visconti/affine/hwd_affine.h      |  83 ++++
- drivers/soc/visconti/affine/hwd_affine_reg.h  |  45 ++
- drivers/soc/visconti/ipa_common.c             |  55 +++
- drivers/soc/visconti/ipa_common.h             |  18 +
- drivers/soc/visconti/uapi/affine.h            |  87 ++++
- drivers/soc/visconti/uapi/ipa.h               |  88 ++++
- 15 files changed, 1111 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/soc/visconti/toshiba,visconti-affine.yaml
- create mode 100644 drivers/soc/visconti/Kconfig
- create mode 100644 drivers/soc/visconti/Makefile
- create mode 100644 drivers/soc/visconti/affine/Makefile
- create mode 100644 drivers/soc/visconti/affine/affine.c
- create mode 100644 drivers/soc/visconti/affine/hwd_affine.c
- create mode 100644 drivers/soc/visconti/affine/hwd_affine.h
- create mode 100644 drivers/soc/visconti/affine/hwd_affine_reg.h
- create mode 100644 drivers/soc/visconti/ipa_common.c
- create mode 100644 drivers/soc/visconti/ipa_common.h
- create mode 100644 drivers/soc/visconti/uapi/affine.h
- create mode 100644 drivers/soc/visconti/uapi/ipa.h
+The point being once you open() something, the file descriptor is
+guaranteed to point to the same device (or error).
 
--- 
-2.17.1
+> A much better approach would be for udev to point its symlinks at
+> "/dev/disk/by-diskseq/$DISKSEQ" for non-partition disk devices, or at
+> "/dev/disk/by-diskseq/${DISKSEQ}p${PARTITION}" for partitions.  A
+> filesystem would then be mounted at "/dev/disk/by-diskseq" that
+> provides for race-free opening of these paths.  This could be
+> implemented in userspace using FUSE, either with difficulty using the
+> current kernel API, or easily and efficiently using a new kernel API
+> for opening a block device by diskseq + partition.  However, I think
+> this should be handled by the Linux kernel itself.
+>=20
+> What would be necessary to get this into the kernel?  I would like to
+> implement this, but I don=E2=80=99t have the time to do so anytime soon. =
+ Is
+> anyone else interested in taking this on?  I suspect the kernel code
+> needed to implement this would be quite a bit smaller than the FUSE
+> implementation.
 
+So it sounds like the problem is you want to be sure that the device
+doesn't change after you've called libblkid to identify it but before
+you call open?  If that's so, the way you do this in userspace is to
+call libblkid again after the open.  If the before and after id match,
+you're as sure as you can be the open was of the right device.
+
+James
+
+
+--=-m2/yxg2jUsj/Q2J7p/Oh
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABMIAB0WIQTnYEDbdso9F2cI+arnQslM7pishQUCYmlFKAAKCRDnQslM7pis
+hUPRAP9pjLs7yDBOO2c5Li9a7Pn7ceWfSbT5gPoE+EHnc411EAD+ILidPuqJQpgK
+dqmy5RX/RG/fj7Tt6j8VKRMWYrsXFbk=
+=fhrO
+-----END PGP SIGNATURE-----
+
+--=-m2/yxg2jUsj/Q2J7p/Oh--
 
