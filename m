@@ -2,136 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8028C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 18:45:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 664C3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 18:45:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231194AbiD0SsO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 14:48:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48936 "EHLO
+        id S229759AbiD0SsU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 14:48:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230329AbiD0Srt (ORCPT
+        with ESMTP id S231537AbiD0Srt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Apr 2022 14:47:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99AFE98F4E;
+Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36EAB98F52;
+        Wed, 27 Apr 2022 11:29:43 -0700 (PDT)
+Received: by mail-oi1-f176.google.com with SMTP id s131so2928591oie.1;
+        Wed, 27 Apr 2022 11:29:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vjPJA+HsT3O8e7pT007nOpwyAA0Fc4ItG808mQNfBcI=;
+        b=Ua4a/O69UXJkOAiGSGXufHJOmtV6AFe/P2N2TceLzdkAWFqO4DLoZucNNE+ICfNNZN
+         lqE4Xv2brsxzVDtjoHybRazaH5oadsUyJURPZZO155aiMIvuxevoRNPPyx2Z2D4smieW
+         DK5tu5bsSMwUIaqqvXjzSUDdINJS3Icj3HBSdWpFuCMRo3ck/6ZJrepxxGXWMdN4ippj
+         uZqHI4QWpFtO966jTVze6iNnmIyDoo+5RifQR97DZ6AtT0gzeRkP6ah8tYlAGjsVAOoK
+         DRfOr4YSywDQ9VovakanKeKkYIsZqYNfK5jZn5CBsjgEEASAyjimIAItC8MTme4sdpo0
+         XepA==
+X-Gm-Message-State: AOAM533DjfkoRqlllLcWoT3ZTgc9fVQ+5FHpVcHYJ2dCdMbNOVcoTYAT
+        a0Aci3daYfq0A+BPFZz5CQ==
+X-Google-Smtp-Source: ABdhPJxZ3SeCvrv8dS2qxIX+0bcfLBlYMQ95fdA79/7DvoLxrCcOHN1VHc6+L5T34OAY+/zprWp1dg==
+X-Received: by 2002:a05:6808:11c9:b0:2f9:b01b:17f0 with SMTP id p9-20020a05680811c900b002f9b01b17f0mr13800053oiv.233.1651084182549;
         Wed, 27 Apr 2022 11:29:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 355F861EE0;
-        Wed, 27 Apr 2022 18:29:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A3E0C385A7;
-        Wed, 27 Apr 2022 18:29:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651084181;
-        bh=fRl5QBRUFoyxdbbm3vGEjIHcST0fn5HSwLbzywIOR88=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=S8NLpJlqQOJyElbKUJJOnr+U4ja2LlNcd+OC4joCmAKAScIa70Ye091wNYNzN5DRe
-         KjP7YG8mqFdNbFUr/EJs2+oPXu2WJo1Y9Re09xyPlQmvdtq7fB6Fa7VyUY2DEp62t7
-         aA7xm2Aad+zOw7UkxhDEJVPkgDNkOaBsxMpQ2XpW4lKkpediuXDLIGMfHzWsSJFog2
-         TpM06F+bNcPxOTlgDSUK1eCEKBM/LXpbEKFGtegRgnEXydGd8mrUA4hs85HecPwJHd
-         7RBrXPqFiatb3CZJF8pdREpRd6LFaxiPItMnyeybMvPP7gr4vKevqnRykBvGN92Bfe
-         d3bYarlrLQ+4A==
-Date:   Wed, 27 Apr 2022 19:37:50 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>
-Subject: Re: [PATCH v2 3/3] iio: imu: adis16480: Improve getting the
- optional clocks
-Message-ID: <20220427193750.33d271be@jic23-huawei>
-In-Reply-To: <20220414131559.24694-3-andriy.shevchenko@linux.intel.com>
-References: <20220414131559.24694-1-andriy.shevchenko@linux.intel.com>
-        <20220414131559.24694-3-andriy.shevchenko@linux.intel.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id e4-20020a0568301e4400b006054dca5442sm6229280otj.28.2022.04.27.11.29.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 11:29:41 -0700 (PDT)
+Received: (nullmailer pid 414596 invoked by uid 1000);
+        Wed, 27 Apr 2022 18:29:41 -0000
+Date:   Wed, 27 Apr 2022 13:29:41 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>, Gene Chen <gene_chen@richtek.com>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-leds@vger.kernel.org,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH] dt-bindings: leds-mt6360: Drop redundant
+ 'unevaluateProperties'
+Message-ID: <YmmLldJcJ2tOOCO7@robh.at.kernel.org>
+References: <20220426133508.1849580-1-robh@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220426133508.1849580-1-robh@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 14 Apr 2022 16:15:59 +0300
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-
-> The extended clocks are optional and may not be present for some
-> configurations supported by this driver. Nevertheless, in case
-> the clock is provided but some error happens during its getting,
-> that error handling should be done properly.
->=20
-> Use devm_clk_get_optional() API and report possible errors using
-> dev_err_probe() to handle properly -EPROBE_DEFER error.
->=20
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
-Series applied with Nuno's Tested-by as sent to v1.
-
-Thanks,
-
-Jonathan
-
+On Tue, 26 Apr 2022 08:35:08 -0500, Rob Herring wrote:
+> The binding has both 'unevaluateProperties: false' and
+> 'additionalProperties: false' which is redundant. 'additionalProperties'
+> is the stricter of the two, so drop 'unevaluateProperties'.
+> 
+> Fixes: e05cab34e417 ("dt-bindings: leds: Add bindings for MT6360 LED")
+> Signed-off-by: Rob Herring <robh@kernel.org>
 > ---
-> v2: added tag (Nuno), massaged commit message (Nuno)
->  drivers/iio/imu/adis16480.c | 26 ++++++++++----------------
->  1 file changed, 10 insertions(+), 16 deletions(-)
->=20
-> diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
-> index 287914016f28..fe520194a837 100644
-> --- a/drivers/iio/imu/adis16480.c
-> +++ b/drivers/iio/imu/adis16480.c
-> @@ -1362,31 +1362,25 @@ static int adis16480_get_ext_clocks(struct adis16=
-480 *st)
->  {
->  	struct device *dev =3D &st->adis.spi->dev;
-> =20
-> -	st->clk_mode =3D ADIS16480_CLK_INT;
-> -	st->ext_clk =3D devm_clk_get(dev, "sync");
-> -	if (!IS_ERR_OR_NULL(st->ext_clk)) {
-> +	st->ext_clk =3D devm_clk_get_optional(dev, "sync");
-> +	if (IS_ERR(st->ext_clk))
-> +		return dev_err_probe(dev, PTR_ERR(st->ext_clk), "failed to get ext clk=
-\n");
-> +	if (st->ext_clk) {
->  		st->clk_mode =3D ADIS16480_CLK_SYNC;
->  		return 0;
->  	}
-> =20
-> -	if (PTR_ERR(st->ext_clk) !=3D -ENOENT) {
-> -		dev_err(dev, "failed to get ext clk\n");
-> -		return PTR_ERR(st->ext_clk);
-> -	}
-> -
->  	if (st->chip_info->has_pps_clk_mode) {
-> -		st->ext_clk =3D devm_clk_get(dev, "pps");
-> -		if (!IS_ERR_OR_NULL(st->ext_clk)) {
-> +		st->ext_clk =3D devm_clk_get_optional(dev, "pps");
-> +		if (IS_ERR(st->ext_clk))
-> +			return dev_err_probe(dev, PTR_ERR(st->ext_clk), "failed to get ext cl=
-k\n");
-> +		if (st->ext_clk) {
->  			st->clk_mode =3D ADIS16480_CLK_PPS;
->  			return 0;
->  		}
-> -
-> -		if (PTR_ERR(st->ext_clk) !=3D -ENOENT) {
-> -			dev_err(dev, "failed to get ext clk\n");
-> -			return PTR_ERR(st->ext_clk);
-> -		}
->  	}
-> =20
-> +	st->clk_mode =3D ADIS16480_CLK_INT;
->  	return 0;
->  }
-> =20
-> @@ -1447,7 +1441,7 @@ static int adis16480_probe(struct spi_device *spi)
->  	if (ret)
->  		return ret;
-> =20
-> -	if (!IS_ERR_OR_NULL(st->ext_clk)) {
-> +	if (st->ext_clk) {
->  		ret =3D adis16480_ext_clk_config(st, true);
->  		if (ret)
->  			return ret;
+>  Documentation/devicetree/bindings/leds/leds-mt6360.yaml | 2 --
+>  1 file changed, 2 deletions(-)
+> 
 
+Applied, thanks!
