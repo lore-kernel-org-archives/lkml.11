@@ -2,133 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B07BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 18:59:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C2E0C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 18:59:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232124AbiD0TCq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 15:02:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51526 "EHLO
+        id S231857AbiD0TCy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 15:02:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231532AbiD0TCe (ORCPT
+        with ESMTP id S229644AbiD0TCh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 15:02:34 -0400
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55EA86393
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 11:49:26 -0700 (PDT)
-Received: by mail-oi1-x22f.google.com with SMTP id e189so2938309oia.8
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 11:49:26 -0700 (PDT)
+        Wed, 27 Apr 2022 15:02:37 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 096263B56B
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 11:49:34 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2d7eaa730d9so24402337b3.13
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 11:49:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=ELW/tf+z/1Ae63zOagnlWVkh4PSOlMUTlo/HVvH7uaM=;
-        b=Dgy3mKUtoNPc4Iqgr22Pa3IK6L6cNQqoX6GR7sg3iFFzKy/yMoF7rVIPvv303q8zc8
-         uonfRGS2gKFrTwkO3T3j6WLMqJdBXJCDoENXqDdiBbR3KXCxC116joPNCkVNplsy0Pxb
-         8i45xwI0lF72jZhYwTDYX+avjz0RG9Hhj2VDg=
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:cc;
+        bh=Niw+TDgV2KxWJ6fEGzYEc3H0fJbmY41W2p5431uZWR8=;
+        b=H5K4dvngFXeGToSiwJyc5gDMiauBTyAgTQcKNgijqRH4fda+ZalAnwFobgqTFx5m95
+         07PESfGxsSypAvapcr9tVD1Dv5o7rLLVvBo/jR0R6LXTRctJIeTqK614GBBJ7Xs1iS25
+         CY+xTyd2ftGYZh42x0clk4C/Bd/F8zBbHQ621AQ+E6V2xC8gGfH7/9MLLQKlnYkkUb/n
+         LT7qd9n3S9QukrbaySOFwUwrig26yKbRGD/TnCYnSAqsDS3VhHTCZDVjsyAiuQjkV/VF
+         +4z8HcP9gGcur7U6uJKwMpqRHKql3EVYLOGSUMYxAaBTcuIG3mHlfWRs4GZo8Gb7ivJE
+         yEzA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=ELW/tf+z/1Ae63zOagnlWVkh4PSOlMUTlo/HVvH7uaM=;
-        b=Uc1GAQpyn/fi/6DnQbRwMzkHDRlv1/jjCYZkna7BkFgX+8Ej0xfPv4XXPo69sxx/IO
-         sY9ZsfqbQAhfwqc2ll6Gw62tZCGcMvp2ZZUbRAZ3PV2M8s2D8XQK23WBGJQDmBr70hrF
-         tujTyxzzBu3f0IscRuKhKlfbfEzpwqaq6DCGa4OpYS/HEEEQdMJrzxk6CcQxg2AIzmiZ
-         Sq7LFyBfruMRBk86835jwbCdCwHfYepFlc/Vz16KBqKfjBiCr70FsBvhKWoC+fd/y814
-         i7h9loa3Kd+qf9NIF4QFOfuLDPdbEK8V4rElA++psUxJ6ZoQeLNPfkWRY7/aHsYBlgta
-         OkOQ==
-X-Gm-Message-State: AOAM532iawM76FvvwKQS6jy8jSMoTS+nS1faUg/4lpEWXZUNOdUW9pwE
-        ilrPjAANczngKvimDzc7zF99PmWO+d/4FKpOMwDPZg==
-X-Google-Smtp-Source: ABdhPJwBZc4Xq0O073eFjKmpGc3WTQxpzFxv1yR2Wgae5nOcQVpcCOXvbI96rlyTiEjgefh4ntPJFnlnNmq8jdYb4qQ=
-X-Received: by 2002:a05:6808:1296:b0:325:8fb:68f3 with SMTP id
- a22-20020a056808129600b0032508fb68f3mr9887308oiw.193.1651085365678; Wed, 27
- Apr 2022 11:49:25 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Wed, 27 Apr 2022 11:49:25 -0700
-MIME-Version: 1.0
-In-Reply-To: <CAD=FV=Wey2P_=3Lp6M8GEaoyCn1XcYFhfJwfx43a5f_8H0obwg@mail.gmail.com>
-References: <20220426225748.324759-1-swboyd@chromium.org> <CAD=FV=WMf0Jc9oD7CGoLthguzt2aV31sZmFoenbjn72MfwFYEA@mail.gmail.com>
- <CAD=FV=Wey2P_=3Lp6M8GEaoyCn1XcYFhfJwfx43a5f_8H0obwg@mail.gmail.com>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Wed, 27 Apr 2022 11:49:25 -0700
-Message-ID: <CAE-0n53sfUMiCzEgRwVRuxwnf_BLJi+cL-PoZ_ha_3EfEW1X_A@mail.gmail.com>
-Subject: Re: [PATCH] arm64: dts: qcom: sc7180-trogdor: Remove cros-ec keyboard
- from detachables
-To:     Doug Anderson <dianders@chromium.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        LKML <linux-kernel@vger.kernel.org>, patches@lists.linux.dev,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        "Joseph S. Barrera III" <joebar@chromium.org>,
-        devicetree@vger.kernel.org
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:cc;
+        bh=Niw+TDgV2KxWJ6fEGzYEc3H0fJbmY41W2p5431uZWR8=;
+        b=08kmK3DaftjBbQ1LgDsFUmcwXm5hgIKieO6HVzFe0RWXkqFySyc35u4ZZTMnAi6tzA
+         hEeO/VPZR00yVECKBmeQAngsVWdB3nRRnoCBGFrl+UgXPsDoAGGS6/RUgXLIXctqW43R
+         M+Ga8+noeuP0v6UuFZaeetiP5F4XjLnuRgTANYOUMP1nsLpraG/hzTaeYi6BMozX8IAs
+         qRJ90Bghi1A/i1K/nYR/bWC/Awie+/DGgz5HOe4f9QpWBosufOsxcux6epSIobwWvfld
+         ymKieWKRiPNr4k5aTJXlctlTYsE+42r3ZDRa5VSBvWG70Phj5fQjDnEsC7ldMyllWBRb
+         id5Q==
+X-Gm-Message-State: AOAM531sPjDb8U035nhPwtVEfzaL8cL7eyVZsxUScFMOGIxioKWfmNmQ
+        LJg7RrYZLDVUvpsIyBJS/NZgHYf4o5nQzl0Kjw==
+X-Google-Smtp-Source: ABdhPJwQ9wuOJWR/zy4bZTJ2QdVCC1H5SyRAsiNowolDxo1lYvW9cV81p5PcXpipjoSEMhqkjHq4UkjNMEefFsqN/Q==
+X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:16ec:6da0:8cc5:5f24])
+ (user=kaleshsingh job=sendgmr) by 2002:a25:d44e:0:b0:648:3d5b:fbd5 with SMTP
+ id m75-20020a25d44e000000b006483d5bfbd5mr20470009ybf.363.1651085374068; Wed,
+ 27 Apr 2022 11:49:34 -0700 (PDT)
+Date:   Wed, 27 Apr 2022 11:46:58 -0700
+In-Reply-To: <20220427184716.1949239-1-kaleshsingh@google.com>
+Message-Id: <20220427184716.1949239-4-kaleshsingh@google.com>
+Mime-Version: 1.0
+References: <20220427184716.1949239-1-kaleshsingh@google.com>
+X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
+Subject: [PATCH 3/4] KVM: arm64: Allocate shared stacktrace pages
+From:   Kalesh Singh <kaleshsingh@google.com>
+Cc:     mark.rutland@arm.com, will@kernel.org, maz@kernel.org,
+        qperret@google.com, tabba@google.com, surenb@google.com,
+        kernel-team@android.com, Kalesh Singh <kaleshsingh@google.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
+        Andrew Jones <drjones@redhat.com>,
+        Marco Elver <elver@google.com>, Keir Fraser <keirf@google.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Zenghui Yu <yuzenghui@huawei.com>,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Doug Anderson (2022-04-27 08:09:59)
-> Hi,
->
-> On Tue, Apr 26, 2022 at 5:17 PM Doug Anderson <dianders@chromium.org> wrote:
-> >
-> > Hi,
-> >
-> > On Tue, Apr 26, 2022 at 3:57 PM Stephen Boyd <swboyd@chromium.org> wrote:
-> > >
-> > > Trogdor devices that have a detachable keyboard still have a
-> > > non-detachable keyboard input device present because we include the
-> > > cros-ec-keyboard.dtsi snippet in the top-level sc7180-trogdor.dtsi file
-> > > that every variant board includes. We do this because the
-> > > keyboard-controller node also provides some buttons like the power
-> > > button and volume buttons. Unfortunately, this means we register a
-> > > keyboard input device that doesn't do anything on boards with a
-> > > detachable keyboard. Let's delete the rows/columns properties of the
-> > > device node to indicate that there isn't a matrix keyboard on these
-> > > boards.
-> > >
-> > > Cc: Benson Leung <bleung@chromium.org>
-> > > Cc: Guenter Roeck <groeck@chromium.org>
-> > > Cc: Douglas Anderson <dianders@chromium.org>
-> > > Cc: Hsin-Yi Wang <hsinyi@chromium.org>
-> > > Cc: "Joseph S. Barrera III" <joebar@chromium.org>
-> > > Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-> > > ---
-> > >  arch/arm64/boot/dts/qcom/sc7180-trogdor-coachz.dtsi   | 5 +++++
-> > >  arch/arm64/boot/dts/qcom/sc7180-trogdor-homestar.dtsi | 5 +++++
-> > >  2 files changed, 10 insertions(+)
-> >
-> > Presumably we need to do this same thing for wormdingler [1]
-> >
-> > [1] https://lore.kernel.org/r/20220426151204.1.Id2821de5fde55ebe928e8fc87a71c8d535edb383@changeid
-> >
-> > Reviewed-by: Douglas Anderson <dianders@chromium.org>
->
-> Do we need to delay landing this patch for a release? I haven't tested
-> myself, but from re-reading through the code it looks as if
-> cros_ec_keyb_register_matrix() will return an error code if we have
-> the device tree patch _without_ commit 4352e23a7ff2 ("Input:
-> cros-ec-keyb - only register keyboard if rows/columns exist"). That
-> will cause it to skip registering the buttons/switches, right?
+The nVHE hypervisor can use this shared area to dump its stacktrace
+addresses on hyp_panic(). Symbolization and printing the stacktrace can
+then be handled by the host in EL1 (done in a later patch in this series).
 
-Yes, if the driver patch isn't applied then we'll skip registering
-switches when these properties are removed. I suppose a better way to
-gracefully migrate the logic here would be to add another compatible
-string. Then we could make the compatible be
+Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
+---
+ arch/arm64/include/asm/kvm_asm.h |  1 +
+ arch/arm64/kvm/arm.c             | 34 ++++++++++++++++++++++++++++++++
+ arch/arm64/kvm/hyp/nvhe/setup.c  | 11 +++++++++++
+ 3 files changed, 46 insertions(+)
 
-	compatible = "google,cros-ec-keyb-switches", "google,cros-ec-keyb";
+diff --git a/arch/arm64/include/asm/kvm_asm.h b/arch/arm64/include/asm/kvm_asm.h
+index 2e277f2ed671..ad31ac68264f 100644
+--- a/arch/arm64/include/asm/kvm_asm.h
++++ b/arch/arm64/include/asm/kvm_asm.h
+@@ -174,6 +174,7 @@ struct kvm_nvhe_init_params {
+ 	unsigned long hcr_el2;
+ 	unsigned long vttbr;
+ 	unsigned long vtcr;
++	unsigned long stacktrace_hyp_va;
+ };
+ 
+ /* Translate a kernel address @ptr into its equivalent linear mapping */
+diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
+index dd257d9f21a2..1b21d5a99bfc 100644
+--- a/arch/arm64/kvm/arm.c
++++ b/arch/arm64/kvm/arm.c
+@@ -50,6 +50,7 @@ DEFINE_STATIC_KEY_FALSE(kvm_protected_mode_initialized);
+ DECLARE_KVM_HYP_PER_CPU(unsigned long, kvm_hyp_vector);
+ 
+ static DEFINE_PER_CPU(unsigned long, kvm_arm_hyp_stack_page);
++DEFINE_PER_CPU(unsigned long, kvm_arm_hyp_stacktrace_page);
+ unsigned long kvm_arm_hyp_percpu_base[NR_CPUS];
+ DECLARE_KVM_NVHE_PER_CPU(struct kvm_nvhe_init_params, kvm_init_params);
+ 
+@@ -1483,6 +1484,7 @@ static void cpu_prepare_hyp_mode(int cpu)
+ 	tcr |= (idmap_t0sz & GENMASK(TCR_TxSZ_WIDTH - 1, 0)) << TCR_T0SZ_OFFSET;
+ 	params->tcr_el2 = tcr;
+ 
++	params->stacktrace_hyp_va = kern_hyp_va(per_cpu(kvm_arm_hyp_stacktrace_page, cpu));
+ 	params->pgd_pa = kvm_mmu_get_httbr();
+ 	if (is_protected_kvm_enabled())
+ 		params->hcr_el2 = HCR_HOST_NVHE_PROTECTED_FLAGS;
+@@ -1776,6 +1778,7 @@ static void teardown_hyp_mode(void)
+ 	free_hyp_pgds();
+ 	for_each_possible_cpu(cpu) {
+ 		free_page(per_cpu(kvm_arm_hyp_stack_page, cpu));
++		free_page(per_cpu(kvm_arm_hyp_stacktrace_page, cpu));
+ 		free_pages(kvm_arm_hyp_percpu_base[cpu], nvhe_percpu_order());
+ 	}
+ }
+@@ -1867,6 +1870,23 @@ static int init_hyp_mode(void)
+ 		per_cpu(kvm_arm_hyp_stack_page, cpu) = stack_page;
+ 	}
+ 
++	/*
++	 * Allocate stacktrace pages for Hypervisor-mode.
++	 * This is used by the hypervisor to share its stacktrace
++	 * with the host on a hyp_panic().
++	 */
++	for_each_possible_cpu(cpu) {
++		unsigned long stacktrace_page;
++
++		stacktrace_page = __get_free_page(GFP_KERNEL);
++		if (!stacktrace_page) {
++			err = -ENOMEM;
++			goto out_err;
++		}
++
++		per_cpu(kvm_arm_hyp_stacktrace_page, cpu) = stacktrace_page;
++	}
++
+ 	/*
+ 	 * Allocate and initialize pages for Hypervisor-mode percpu regions.
+ 	 */
+@@ -1974,6 +1994,20 @@ static int init_hyp_mode(void)
+ 		params->stack_hyp_va = hyp_addr + (2 * PAGE_SIZE);
+ 	}
+ 
++	/*
++	 * Map the hyp stacktrace pages.
++	 */
++	for_each_possible_cpu(cpu) {
++		char *stacktrace_page = (char *)per_cpu(kvm_arm_hyp_stacktrace_page, cpu);
++
++		err = create_hyp_mappings(stacktrace_page, stacktrace_page + PAGE_SIZE,
++					  PAGE_HYP);
++		if (err) {
++			kvm_err("Cannot map hyp stacktrace page\n");
++			goto out_err;
++		}
++	}
++
+ 	for_each_possible_cpu(cpu) {
+ 		char *percpu_begin = (char *)kvm_arm_hyp_percpu_base[cpu];
+ 		char *percpu_end = percpu_begin + nvhe_percpu_size();
+diff --git a/arch/arm64/kvm/hyp/nvhe/setup.c b/arch/arm64/kvm/hyp/nvhe/setup.c
+index e8d4ea2fcfa0..9b81bf2d40d7 100644
+--- a/arch/arm64/kvm/hyp/nvhe/setup.c
++++ b/arch/arm64/kvm/hyp/nvhe/setup.c
+@@ -135,6 +135,17 @@ static int recreate_hyp_mappings(phys_addr_t phys, unsigned long size,
+ 
+ 		/* Update stack_hyp_va to end of the stack's private VA range */
+ 		params->stack_hyp_va = hyp_addr + (2 * PAGE_SIZE);
++
++		/*
++		 * Map the stacktrace pages as shared and transfer ownership to
++		 * the hypervisor.
++		 */
++		prot = pkvm_mkstate(PAGE_HYP, PKVM_PAGE_SHARED_OWNED);
++		start = (void *)params->stacktrace_hyp_va;
++		end = start + PAGE_SIZE;
++		ret = pkvm_create_mappings(start, end, prot);
++		if (ret)
++			return ret;
+ 	}
+ 
+ 	/*
+-- 
+2.36.0.rc2.479.g8af0fa9b8e-goog
 
-on detachables and the driver can skip registering the keyboard if the more
-specific "google,cros-ec-keyb-switches" compatible is present. The
-driver will continue to probe and we don't have to remove any
-properties.
-
-The driver patch has been accepted[1] so in theory this patch can be
-applied and when the two meet up in linux-next things will work but when
-bisecting down the DTS the switches won't work. Not a huge problem but
-sort of annoying that the switches are busted.
-
-[1] https://lore.kernel.org/all/Ymh1J9zQ+5EyQadE@google.com/
