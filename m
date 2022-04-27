@@ -2,131 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5C4EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 12:48:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4F86C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 12:48:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234690AbiD0Mvl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 08:51:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39312 "EHLO
+        id S234754AbiD0Mvw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 08:51:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234615AbiD0Mvj (ORCPT
+        with ESMTP id S234714AbiD0Mvk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 08:51:39 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 391BC26C863;
-        Wed, 27 Apr 2022 05:48:23 -0700 (PDT)
-X-UUID: 5917b268006e45f1976d8b434ea000c7-20220427
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:9e99f4f5-d715-4c70-b744-26556485b26a,OB:10,L
-        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,A
-        CTION:release,TS:100
-X-CID-INFO: VERSION:1.1.4,REQID:9e99f4f5-d715-4c70-b744-26556485b26a,OB:10,LOB
-        :0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,A
-        CTION:quarantine,TS:100
-X-CID-META: VersionHash:faefae9,CLOUDID:36a5b0c6-85ee-4ac1-ac05-bd3f1e72e732,C
-        OID:414e160774dc,Recheck:0,SF:28|16|19|48,TC:nil,Content:0,EDM:-3,File:nil
-        ,QS:0,BEC:nil
-X-UUID: 5917b268006e45f1976d8b434ea000c7-20220427
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
-        (envelope-from <sam.shih@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 224945697; Wed, 27 Apr 2022 20:48:16 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Wed, 27 Apr 2022 20:48:15 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 27 Apr 2022 20:48:15 +0800
-From:   Sam Shih <sam.shih@mediatek.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     John Crispin <john@phrozen.org>, Ryder Lee <ryder.lee@kernel.org>,
-        "Sam Shih" <sam.shih@mediatek.com>, Vic Wu <vic.wu@mediatek.com>
-Subject: [PATCH 5/5] arm64: dts: mt7986: add crypto related device nodes
-Date:   Wed, 27 Apr 2022 20:47:41 +0800
-Message-ID: <20220427124741.18245-6-sam.shih@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220427124741.18245-1-sam.shih@mediatek.com>
-References: <20220427124741.18245-1-sam.shih@mediatek.com>
+        Wed, 27 Apr 2022 08:51:40 -0400
+X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 27 Apr 2022 05:48:28 PDT
+Received: from bin-mail-out-05.binero.net (bin-mail-out-05.binero.net [195.74.38.228])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD4C62CC8A
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 05:48:28 -0700 (PDT)
+X-Halon-ID: 28f2a90e-c628-11ec-9da0-005056917f90
+Authorized-sender: andreas@gaisler.com
+Received: from [192.168.0.25] (h-98-128-223-123.na.cust.bahnhof.se [98.128.223.123])
+        by bin-vsp-out-02.atm.binero.net (Halon) with ESMTPA
+        id 28f2a90e-c628-11ec-9da0-005056917f90;
+        Wed, 27 Apr 2022 14:47:14 +0200 (CEST)
+Message-ID: <2f5295c1-d787-84a5-1b3e-813f96dd4ae2@gaisler.com>
+Date:   Wed, 27 Apr 2022 14:47:12 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net] drivers: net: can: Fix deadlock in grcan_close()
+Content-Language: en-US
+To:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        Duoming Zhou <duoming@zju.edu.cn>, linux-kernel@vger.kernel.org
+Cc:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20220425042400.66517-1-duoming@zju.edu.cn>
+ <caaa6059-6172-e562-e48e-5987884052b9@hartkopp.net>
+From:   Andreas Larsson <andreas@gaisler.com>
+In-Reply-To: <caaa6059-6172-e562-e48e-5987884052b9@hartkopp.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds crypto engine support for MT7986.
+On 2022-04-26 21:12, Oliver Hartkopp wrote:
+> On 25.04.22 06:24, Duoming Zhou wrote:
+>> There are deadlocks caused by del_timer_sync(&priv->hang_timer)
+>> and del_timer_sync(&priv->rr_timer) in grcan_close(), one of
+>> the deadlocks are shown below:
+>>
+>>     (Thread 1)              |      (Thread 2)
+>>                             | grcan_reset_timer()
+>> grcan_close()              |  mod_timer()
+>>   spin_lock_irqsave() //(1) |  (wait a time)
+>>   ...                       | grcan_initiate_running_reset()
+>>   del_timer_sync()          |  spin_lock_irqsave() //(2)
+>>   (wait timer to stop)      |  ...
+>>
+>> We hold priv->lock in position (1) of thread 1 and use
+>> del_timer_sync() to wait timer to stop, but timer handler
+>> also need priv->lock in position (2) of thread 2.
+>> As a result, grcan_close() will block forever.
+>>
+>> This patch extracts del_timer_sync() from the protection of
+>> spin_lock_irqsave(), which could let timer handler to obtain
+>> the needed lock.
+>>
+>> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+>> ---
+>>   drivers/net/can/grcan.c | 2 ++
+>>   1 file changed, 2 insertions(+)
+>>
+>> diff --git a/drivers/net/can/grcan.c b/drivers/net/can/grcan.c
+>> index d0c5a7a60da..1189057b5d6 100644
+>> --- a/drivers/net/can/grcan.c
+>> +++ b/drivers/net/can/grcan.c
+>> @@ -1102,8 +1102,10 @@ static int grcan_close(struct net_device *dev)
+>>       priv->closing = true;
+>>       if (priv->need_txbug_workaround) {
+>> +        spin_unlock_irqrestore(&priv->lock, flags);
+>>           del_timer_sync(&priv->hang_timer);
+>>           del_timer_sync(&priv->rr_timer);
+>> +        spin_lock_irqsave(&priv->lock, flags);
+> 
+> It looks weird to unlock and re-lock the operations like this. This 
+> breaks the intended locking for the closing process.
+> 
+> Isn't there any possibility to e.g. move that entire if-section before 
+> the lock?
 
-Signed-off-by: Vic Wu <vic.wu@mediatek.com>
-Signed-off-by: Sam Shih <sam.shih@mediatek.com>
----
- arch/arm64/boot/dts/mediatek/mt7986a-rfb.dts |  4 ++++
- arch/arm64/boot/dts/mediatek/mt7986a.dtsi    | 15 +++++++++++++++
- arch/arm64/boot/dts/mediatek/mt7986b-rfb.dts |  4 ++++
- 3 files changed, 23 insertions(+)
+All functions wishing to start the timers both check priv->closing and
+then, if false, start the timer within the priv->lock spinlock. Given
+that, it should be ok that del_timer_sync is not done within the
+spinlock as therefore no one can restart any timers after priv->closing
+has been set to true.
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt7986a-rfb.dts b/arch/arm64/boot/dts/mediatek/mt7986a-rfb.dts
-index de6475078568..714a4e73fe0b 100644
---- a/arch/arm64/boot/dts/mediatek/mt7986a-rfb.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt7986a-rfb.dts
-@@ -43,6 +43,10 @@
- 	};
- };
- 
-+&crypto {
-+	status = "okay";
-+};
-+
- &pcie {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pcie_pins>;
-diff --git a/arch/arm64/boot/dts/mediatek/mt7986a.dtsi b/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-index ff685900baa4..6de9b941a513 100644
---- a/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-@@ -200,6 +200,21 @@
- 			status = "disabled";
- 		};
- 
-+		crypto: crypto@10320000 {
-+			compatible = "inside-secure,safexcel-eip97";
-+			reg = <0 0x10320000 0 0x40000>;
-+			interrupts = <GIC_SPI 116 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 117 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 118 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 119 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "ring0", "ring1", "ring2", "ring3";
-+			clocks = <&infracfg CLK_INFRA_EIP97_CK>;
-+			clock-names = "infra_eip97_ck";
-+			assigned-clocks = <&topckgen CLK_TOP_EIP_B_SEL>;
-+			assigned-clock-parents = <&apmixedsys CLK_APMIXED_NET2PLL>;
-+			status = "disabled";
-+		};
-+
- 		uart0: serial@11002000 {
- 			compatible = "mediatek,mt7986-uart",
- 				     "mediatek,mt6577-uart";
-diff --git a/arch/arm64/boot/dts/mediatek/mt7986b-rfb.dts b/arch/arm64/boot/dts/mediatek/mt7986b-rfb.dts
-index 6bd477e1f484..d4078feb4aad 100644
---- a/arch/arm64/boot/dts/mediatek/mt7986b-rfb.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt7986b-rfb.dts
-@@ -43,6 +43,10 @@
- 	};
- };
- 
-+&crypto {
-+	status = "okay";
-+};
-+
- &pio {
- 	spi_flash_pins: spi-flash-pins {
- 		mux {
+It looks a bit weird, but setting priv->closing to true needs to happen
+within the priv->lock spinlock protection and needs to happen before
+del_timer_sync to avoid a race between grcan_close and someone starting
+the timer.
+
+Reviewed-by: Andreas Larsson <andreas@gaisler.com>
+
 -- 
-2.18.0
-
+Andreas Larsson
