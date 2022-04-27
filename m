@@ -2,43 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFE39C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 09:03:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF882C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 09:03:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232152AbiD0JGX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 05:06:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47204 "EHLO
+        id S233891AbiD0JGs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 05:06:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234870AbiD0JGU (ORCPT
+        with ESMTP id S234760AbiD0JGp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 05:06:20 -0400
-Received: from localhost.localdomain (unknown [219.141.250.2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2A4EC8677
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 02:02:50 -0700 (PDT)
-Received: from localhost.localdomain (localhost [127.0.0.1])
-        by localhost.localdomain (8.15.2/8.15.2) with ESMTPS id 23R8ss0F006841
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Wed, 27 Apr 2022 16:54:54 +0800
-Received: (from root@localhost)
-        by localhost.localdomain (8.15.2/8.15.2/Submit) id 23R8sVfJ006840;
-        Wed, 27 Apr 2022 16:54:31 +0800
-Date:   Wed, 27 Apr 2022 16:54:31 +0800
-From:   Li kunyu <kunyu@nfschina.com>
-To:     elver@google.com
-Cc:     ebiederm@xmission.com, keescook@chromium.org, tglx@linutronix.de,
-        oleg@redhat.com, legion@kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] kernel: Optimize unused integer return values
-Message-ID: <20220427085431.GB6812@localhost.localdomain>
+        Wed, 27 Apr 2022 05:06:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6473E1E2730
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 02:03:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EFB161C5D
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:03:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9720BC385A7;
+        Wed, 27 Apr 2022 09:03:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1651050207;
+        bh=+UW4jAqfFuauhXMLKLKHOttXSnjvT0HfZAAZisUcDi4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Iwa9OaiTP+cx39/Pj73i+duAt6fSplWS26ygk2bMuVXm4b58bl7P+AidhGU0hsIjj
+         jqvVgJXD11ZJKUWzmklEcN+0fH+J5yKtpLiqYalZoW3ElcUukThZip+7nUHLoWBxv0
+         Av+f3ltUkK+/qXX9BhZlbxWNTBT+oNwmcdQQYI1M=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Jessica Yu <jeyu@kernel.org>,
+        Matthias Maennich <maennich@google.com>
+Subject: [PATCH] module.h: simplify MODULE_IMPORT_NS
+Date:   Wed, 27 Apr 2022 11:03:21 +0200
+Message-Id: <20220427090321.2105373-1-gregkh@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1428; i=gregkh@linuxfoundation.org; h=from:subject; bh=+UW4jAqfFuauhXMLKLKHOttXSnjvT0HfZAAZisUcDi4=; b=owGbwMvMwCRo6H6F97bub03G02pJDEmZbNfmzGkrOnrg2pr8ff8VDn06GpjbHuP67ugP1sVWq9OP bba+2xHLwiDIxCArpsjyZRvP0f0VhxS9DG1Pw8xhZQIZwsDFKQAT8T/GsOBCfl33vFRbvzxunwm/+r Mv8Vm7JzPMld9+I/QXe6HvgWi7kr3/HxxWnclQDwA=
+X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sorry, this patch is incomplete. I have the following ideas
+In commit ca321ec74322 ("module.h: allow #define strings to work with
+MODULE_IMPORT_NS") I fixed up the MODULE_IMPORT_NS() macro to allow
+defined strings to work with it.  Unfortunatly I did it in a two-stage
+process, when it could just be done with the __stringify() macro as
+pointed out by Masahiro Yamada.
 
-post_copy_siginfo_from_User32 function can change the integer return value 0 to void return type, and its caller return value is based on it. Can the return type of related function be changed to void.
+Clean this up to only be one macro instead of two steps to achieve the
+same end result.
 
-If you agree with this idea, I will resend the patc
+Fixes: ca321ec74322 ("module.h: allow #define strings to work with MODULE_IMPORT_NS")
+Reported-by: Masahiro Yamada <masahiroy@kernel.org>
+Cc: Luis Chamberlain <mcgrof@kernel.org>
+Cc: Jessica Yu <jeyu@kernel.org>
+Cc: Matthias Maennich <maennich@google.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ include/linux/module.h | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/include/linux/module.h b/include/linux/module.h
+index 1e135fd5c076..d5e9066990ca 100644
+--- a/include/linux/module.h
++++ b/include/linux/module.h
+@@ -290,8 +290,7 @@ extern typeof(name) __mod_##type##__##name##_device_table		\
+  * files require multiple MODULE_FIRMWARE() specifiers */
+ #define MODULE_FIRMWARE(_firmware) MODULE_INFO(firmware, _firmware)
+ 
+-#define _MODULE_IMPORT_NS(ns)	MODULE_INFO(import_ns, #ns)
+-#define MODULE_IMPORT_NS(ns)	_MODULE_IMPORT_NS(ns)
++#define MODULE_IMPORT_NS(ns)	MODULE_INFO(import_ns, __stringify(ns))
+ 
+ struct notifier_block;
+ 
+-- 
+2.36.0
+
