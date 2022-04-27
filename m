@@ -2,94 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40EA7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 08:04:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C1AAC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 08:04:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359239AbiD0IHM (ORCPT
+        id S1359276AbiD0IHl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 04:07:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42830 "EHLO
+        Wed, 27 Apr 2022 04:07:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243567AbiD0IHL (ORCPT
+        with ESMTP id S1359245AbiD0IHg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 04:07:11 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A70151585
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 01:04:00 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1651046639;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=NVrj/IozLz+YLWMa6Aoyk1/gX+kCZfAflMvOSoBkH+U=;
-        b=hRfN7NDAQ6mU9wp5eFxj+DYfCHPs9azOITyD2BKrRWG0JFePx7KCJTmu+rNLr5KB3sXW5m
-        vD/VA9RgieHmpARGPQt4YAUGCf0frQwHN3SPu+ooQNKpBLtV0wEgIGpF5mEEq0Jpw+mBOG
-        +bCQM8MpHbOGL61wq2Iru3KuEqA5ZaRI1f+1RhkI6xuO2jDNkldnVpBIu/ertS1HOUp+xB
-        vH1KfL8RhmkqWeLBMeKAUFX5CT72lcolpIDSGbWepumi2Onr8hsbJK3SLPmTp1jtxV+Xyk
-        i+Q2GSF6aEMASPkWEzy2NYL5DM8vwRCievUk/6Xh4aoaqAUl7eqh+2b/sERsIQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1651046639;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=NVrj/IozLz+YLWMa6Aoyk1/gX+kCZfAflMvOSoBkH+U=;
-        b=IPl5zJQ4XmUiSpIBPJlMNPVh+Fw5TE3wmL6lz2+trLDTLAUelYj15SAtSOpdktYrXScZCb
-        eP50UJN3nNpdjkAw==
-To:     Marcelo Tosatti <mtosatti@redhat.com>, linux-kernel@vger.kernel.org
-Cc:     Nitesh Lal <nilal@redhat.com>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Christoph Lameter <cl@linux.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Alex Belits <abelits@belits.com>, Peter Xu <peterx@redhat.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Oscar Shiang <oscar0225@livemail.tw>,
-        Marcelo Tosatti <mtosatti@redhat.com>
-Subject: Re: [patch v12 07/13] task isolation: sync vmstats conditional on
- changes
-In-Reply-To: <20220315153314.042469218@fedora.localdomain>
-References: <20220315153132.717153751@fedora.localdomain>
- <20220315153314.042469218@fedora.localdomain>
-Date:   Wed, 27 Apr 2022 10:03:58 +0200
-Message-ID: <87tuafx89d.ffs@tglx>
+        Wed, 27 Apr 2022 04:07:36 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D28A153761;
+        Wed, 27 Apr 2022 01:04:26 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id iq2-20020a17090afb4200b001d93cf33ae9so4328768pjb.5;
+        Wed, 27 Apr 2022 01:04:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3VtMI1S/LllZ+nmEBlE73tPnnG9CJxB6us7YB7jLnx8=;
+        b=VXYi68QhjRyOoK2LnsYtdP9DRRFpzKenrkxdXPYHzSgZ8JdhUAI4cS+/nx0KaZiBvz
+         0CLJ6Ph1qVtRf+I7SLxzmWnWLCZpkWWHSgtH8HJto4ngcPfDNgeJ6Sw0FK8RrG912eZc
+         Op4AMbt5/H4rCjY4NvJksUcPijmBTeCmq38LVChmEBSmFe66YzRka7ASuTIgdQEmbt/1
+         Ra+ltZ/EKrmPg783D5pmKWlMBa0uPJ/UtNkCPXWiQh3DooVqgB8HHPWtGF/s5dDN0+SU
+         D98hSS7LHF5JgtuOjiEE+QHNCrhBhlgDfZKe0b83+VfMe2rrsH1NnD247o0i+OWV33f4
+         MUbw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3VtMI1S/LllZ+nmEBlE73tPnnG9CJxB6us7YB7jLnx8=;
+        b=GVtmxv1Zncn2SEpJXqNkFiIA961wO5XfTXQQwb1pkKtZ5sOHXiT5GMJDZYy/cc1eOU
+         Sc8WB5pIGNQ1PF1I0b71Mh9KcJysiOhGIPNIiH029yLLCgVjR/aLNPK62KbY1eGYxhNH
+         fCGzhWmBZGEdWfzbJuDYj2Uo1PLBSp8ZPRMQO2ilQM2Lqb8tK4c++m+YBzyw8YTfEgu3
+         SNEzK7BMaV4NRSGJ8DlUESoFV9P925TcwSectPaEzSN7JYNbjHAt4c/Ol8VIkCE4ffTi
+         J3oAJIS/Whh5N79P3JONeJQZaLsnNshRS84dzPB6d+1Ex/dLMYybfM9WsJpM2VmZyoo+
+         x0Ag==
+X-Gm-Message-State: AOAM532a1539Sr5n2IxRxEyjnDE2TeEzsiYuJ0DlChtdB8eUy/EKj5lh
+        DK85Hqb8Tv4pqe2AGeS+SCQ=
+X-Google-Smtp-Source: ABdhPJxQbosizE4aDS4kiUqMh2r5ZAGQxKQgEgRpq9qoqpBAj/UEpD/n50y9BsNASt2BOmdAFRZI6Q==
+X-Received: by 2002:a17:902:7684:b0:156:25b3:ef6b with SMTP id m4-20020a170902768400b0015625b3ef6bmr27057189pll.39.1651046664600;
+        Wed, 27 Apr 2022 01:04:24 -0700 (PDT)
+Received: from genechen-System-Product-Name.richtek.com ([2402:7500:469:f77c:f4fa:b753:7807:4e40])
+        by smtp.gmail.com with ESMTPSA id a11-20020a17090a70cb00b001cd4989ff50sm1746750pjm.23.2022.04.27.01.04.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 01:04:24 -0700 (PDT)
+From:   Gene Chen <gene.chen.richtek@gmail.com>
+To:     lee.jones@linaro.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        pavel@ucw.cz
+Cc:     devicetree@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        gene_chen@richtek.com, cy_huang@richtek.com
+Subject: [PATCH 0/2] dt-bindings: mfd: Add bindings for the Mediatek MT6360
+Date:   Wed, 27 Apr 2022 16:03:28 +0800
+Message-Id: <20220427080330.40136-1-gene.chen.richtek@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 15 2022 at 12:31, Marcelo Tosatti wrote:
->  
-> +#ifdef CONFIG_TASK_ISOLATION
-> +struct static_key vmstat_sync_enabled;
 
-jump_label.h:
+This patch series add binding documen for mt6360 mfd architecture and
+fix sub-device MT6360 LED
 
-"The use of 'struct static_key' directly, is now DEPRECATED."
+Link: https://lore.kernel.org/lkml/YmHK02g1pC19Oyh6@robh.at.kernel.org/
 
-> +DEFINE_PER_CPU_ALIGNED(bool, vmstat_dirty);
-> +
-> +static inline void mark_vmstat_dirty(void)
-> +{
-> +	if (!static_key_false(&vmstat_sync_enabled))
-> +		return;
-> +
-> +	raw_cpu_write(vmstat_dirty, true);
+leds/leds-mt6360.yaml |    2 -
+ mfd/mt6360.yaml       |  258 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 258 insertions(+), 2 deletions(-)
 
-What's the justification for raw_cpu_write()?
-
->  
-> @@ -1512,6 +1543,7 @@ static void pagetypeinfo_showfree_print(
->  		}
->  		seq_putc(m, '\n');
->  	}
-> +	mark_vmstat_dirty();
-
-Why does a function which just dumps information via /proc/pagetypeinfo
-make vmstats dirty?
-
-Thanks,
-
-        tglx
