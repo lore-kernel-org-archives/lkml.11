@@ -2,215 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 577C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:58:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1E89C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:58:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231801AbiD0LB3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 07:01:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37922 "EHLO
+        id S232016AbiD0LBp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 07:01:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231717AbiD0LAm (ORCPT
+        with ESMTP id S231919AbiD0LAp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 07:00:42 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01A2040B0EC
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 03:47:37 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id z19so1434964edx.9
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 03:47:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=+uQXRxF8+iECYsyuX3FAGjlPg6lPCQesnoPfKb3uAD0=;
-        b=kXbjCRl/9jCP6u+NnPcF+Y+vLZZ93vjJjPpewfEem9AN45JCCBgFIYmupbdh+RCrDn
-         DfFERC8GbtZ7/LuJ3cwY+2TQ3N/16e3duX+/vbSsSZZfSEKEsClf93+aAu13KB5ccIVo
-         K0Nk1jsbzBUv8hgDNnQGwDyIVtNqazsdhYBhfXcpsrZThCGdxtNa6My9UJie4OOCr85T
-         7h/tLCHC3svkj6kedl/5rD8vmKNyBVKrhg+TOFtKiaU2G0j5J5SH7BvGpjNCjntKaMdN
-         9T8DoOGrmKRBiBISkgr/2kahjg8prXsa5Mmh/UDQWyncfeXG4lRvGE7YABwkArrdn3ql
-         0UWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=+uQXRxF8+iECYsyuX3FAGjlPg6lPCQesnoPfKb3uAD0=;
-        b=416Q0I2/VewZXmgfzUQJ9K+w5Vv2kvMlnXtNdjLBDub2QO8PkWkerD8Fh+WcNeCcaj
-         pSpoNt2aZ1bnr0ULmNHYCVEROnrPI7lNZaAiU5C5jyO8kPLTjlwu0dagcb9Jp5ECcVtE
-         uxCoea+kWvykzbo4TDUseOJMDIbvQO7KAnTHjlHaBBlmsdD6byn9RWtCf7ebkKDytjP9
-         MzTCrDEmL7yZRFkm+Z6yHaYTy9oQZHVd+TN28I87lc4TPP1BS6+gEzXYjyBIYCajjRCh
-         w+3YWD5i4qOlD4BrlHFoUWJdmYgRmbP9nP2aNUmYz+44dLnSKhnnFwS2rdSsTKcB2kI1
-         3eVw==
-X-Gm-Message-State: AOAM533XwfT8iANrU+VOvtx20/Ig+Jf6U4hCOO9+0AtnaUuuORZeYb5N
-        VsewisnfjsUtLoVrwHT5++DrfXqyV2TA1g==
-X-Google-Smtp-Source: ABdhPJwH2qoOAKjvHzPASguxWPUSxx7wD6r6JTmOguOcxLLGBTjoSo5P0ASVcbtW8KFZbarsO1KlnQ==
-X-Received: by 2002:aa7:d916:0:b0:425:d75f:ae68 with SMTP id a22-20020aa7d916000000b00425d75fae68mr20198174edr.270.1651052384008;
-        Wed, 27 Apr 2022 02:39:44 -0700 (PDT)
-Received: from [192.168.0.253] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id p27-20020a50cd9b000000b00425d5219372sm6378024edi.50.2022.04.27.02.39.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Apr 2022 02:39:43 -0700 (PDT)
-Message-ID: <0c63c24a-8014-2491-095c-77893d2141d9@linaro.org>
-Date:   Wed, 27 Apr 2022 11:39:42 +0200
+        Wed, 27 Apr 2022 07:00:45 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D626C99180
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 03:47:15 -0700 (PDT)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23R6VCDW018516;
+        Wed, 27 Apr 2022 09:36:25 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : content-transfer-encoding : mime-version; s=pp1;
+ bh=wOYOBQTDmKHJ9iGvYwffbRu0unw8UKjjQnVlXqJp8/k=;
+ b=GBc/FfkpBdOM3LQFUOi1wVsV0l4bv8W8SdM9yVhLNGff5q1JxYkZVoCPRa2lXQW/LTDF
+ XDKc2/QrVVJEd2s7Z2PLBxPG/QigC1NWCgObvSx+e3xJXqURCI9fBWNfHZocG2u1q5JZ
+ XC2wTxwHW1rrADXvcPwTR3l01h2JqaEA9Pt0LzPSbOgTDRU09aF0RsSsE8KdhLOjyUAH
+ H1/wgSrcDIUMmi7oUtCvdaXiFEVp2HaDKX74Ez0jcwYEsn2ga8qo7En+/sqPH99tKelH
+ Ac6s51b0pXOT7nqIoUO4bdW5Tqyh5aRco0jZnVJICiu6OuyoXjiL5j4MVXKBaJVHCFt/ xQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fpvpgevs1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 27 Apr 2022 09:36:25 +0000
+Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23R9NYYL011352;
+        Wed, 27 Apr 2022 09:36:24 GMT
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fpvpgevr4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 27 Apr 2022 09:36:24 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23R9SceU002254;
+        Wed, 27 Apr 2022 09:36:22 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma06fra.de.ibm.com with ESMTP id 3fm8qhmg34-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 27 Apr 2022 09:36:22 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23R9aJYv31785448
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 27 Apr 2022 09:36:19 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7ADC04C044;
+        Wed, 27 Apr 2022 09:36:19 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 454574C040;
+        Wed, 27 Apr 2022 09:36:17 +0000 (GMT)
+Received: from li-NotSettable.ibm.com.com (unknown [9.43.116.196])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 27 Apr 2022 09:36:16 +0000 (GMT)
+From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
+To:     Michael Ellerman <mpe@ellerman.id.au>,
+        Steven Rostedt <rostedt@goodmis.org>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        <linux-kernel@vger.kernel.org>, <linuxppc-dev@lists.ozlabs.org>,
+        llvm@lists.linux.dev
+Subject: [PATCH 0/2] ftrace/recordmcount: Handle object files without section symbols
+Date:   Wed, 27 Apr 2022 15:01:20 +0530
+Message-Id: <cover.1651047542.git.naveen.n.rao@linux.vnet.ibm.com>
+X-Mailer: git-send-email 2.27.0
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 0I5l914qw2sjcEy8vcTwnFx6QDGpb4Lt
+X-Proofpoint-ORIG-GUID: ZqHIazna3rCWKJ56c0qlH5HWZkmHM3oS
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 1/1] dt-bindings: nvmem: mediatek: Convert mtk-efuse
- binding to YAML
-Content-Language: en-US
-To:     "allen-kh.cheng" <allen-kh.cheng@mediatek.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Lala Lin <lala.lin@mediatek.com>,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Ryder Lee <ryder.lee@kernel.org>
-References: <20220425084800.2021-1-allen-kh.cheng@mediatek.com>
- <20220425084800.2021-2-allen-kh.cheng@mediatek.com>
- <e64bdca8-7b18-b450-830c-ca07946a73fb@linaro.org>
- <9d65b713e3ffdd34dcca532c4c97fa98b124bde4.camel@mediatek.com>
- <0169c4ac-fdce-29b7-553a-14dc7df532d1@linaro.org>
- <a8e212a0e0449e015a33e76b320266376d4b9be6.camel@mediatek.com>
- <89609af9-5feb-0553-5e39-c97c4750b5a1@linaro.org>
- <33c754a7b6e4cd631bb2aeef002d34a6c25d6689.camel@mediatek.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <33c754a7b6e4cd631bb2aeef002d34a6c25d6689.camel@mediatek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-27_03,2022-04-26_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ malwarescore=0 phishscore=0 mlxscore=0 mlxlogscore=999 bulkscore=0
+ impostorscore=0 spamscore=0 adultscore=0 clxscore=1011 suspectscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204270063
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27/04/2022 11:28, allen-kh.cheng wrote:
-> Hi Krzysztof,
-> 
-> On Tue, 2022-04-26 at 12:14 +0200, Krzysztof Kozlowski wrote:
->> On 26/04/2022 12:02, allen-kh.cheng wrote:
->>> Hi Krzysztof,
->>>
->>> On Tue, 2022-04-26 at 08:31 +0200, Krzysztof Kozlowski wrote:
->>>> On 26/04/2022 08:23, allen-kh.cheng wrote:
->>>>>>> +properties:
->>>>>>> +  compatible:
->>>>>>> +    oneOf:
->>>>>>> +      - enum:
->>>>>>> +          - mediatek,mt8173-efuse
->>>>>>> +          - mediatek,efuse
->>>>>>
->>>>>> Still no changes...
->>>>>>
->>>>>
->>>>> I just want to confirm again.
->>>>>
->>>>> "Generic compatibles should not be used standalone"
->>>>>
->>>>> It seems we should remove mediatek,efuse and keep
->>>>> "mediatek,mt8173-
->>>>> efuse"in binding. have I got that right?
->>>>
->>>> You should comment for which chipsets this compatible is and add
->>>> a
->>>> deprecated:true. In such case it cannot be part of enum but
->>>> separate
->>>> item in this oneOf.
->>>>
->>>>
->>>> Best regards,
->>>> Krzysztof
->>>
->>> Thanks for your suggestions, I would plan to send PATCHs as below,
->>>
->>> We have a PATCH 01 for current accepted dts
->>>
->>> properties:
->>>   compatible:
->>>     oneOf:
->>>       - enum:
->>>         - mediatek,efuse
->>>
->>>         - mediatek,mt8173-efuse
->>>         description: Only mt8173-efuse
->>> with generic fallback should be used
->>>       - items:
->>>           - enum:
->>>     
->>> - mediatek,mt7622-efuse
->>> 			  ...
->>>           - const: mediatek,efuse
->>>
->>> Then add PATCH 02 to deprecate it
->>>
->>> properties:
->>>   compatible:
->>>     oneOf:
->>>       - enum:
->>>         - mediatek,efuse
->>>         - mediatek,mt8173-efuse
->>>         deprecated: true
->>>         description: The mediatek,efuse is a generic fallback for
->>> other
->>> Chipset. Do not use the single compatible such as mediatek,efuse
->>> or mediatek,mt8173-efuse. It is deprecated.
->>>       - items:
->>>           - enum:
->>>               - mediatek,mt7622-efuse
->>>               ...
->>>           - const: mediatek,efuse
->>>
->>>
->>> PATCH 03 for 8173
->>>
->>> update mt8173.dtsi 
->>>
->>> change compatible from "mediatek,mt8173-efuse" to "mediatek,mt8173-
->>> efuse", "mediatek,efuse";
->>>
->>>
->>> Do you think it'd be okay ?
->>
->> The idea is correct, but as I said it cannot be part of enum, but
->> separate item in oneOf. You should see an error when testing your
->> patch.
->>
->>
->> Best regards,
->> Krzysztof
-> 
-> I have tested 
-> make DT_CHECKER_FLAGS=-m dt_binding_check
-> DT_SCHEMA_FILES=Documentation/devicetree/bindings/nvmem/mtk,efuse.yaml
-> 
-> make ARCH=arm64 dtbs_check
-> DT_SCHEMA_FILES=Documentation/devicetree/bindings/nvmem/mtk,efuse.yaml
-> 
-> Is the following correct as final version ?
+This solves a build issue on powerpc with binutils v2.36 and newer [1].
+Since commit d1bcae833b32f1 ("ELF: Don't generate unused section
+symbols") [2], binutils started dropping section symbols that it thought
+were unused. Due to this, in certain scenarios, recordmcount is unable 
+to find a non-weak symbol to generate a relocation record against.
 
-Almost :)
+Clang integrated assembler is also aggressive in dropping section 
+symbols [3].
 
-> 
-> properties:
->   compatible:
->     oneOf:
->       - const: mediatek,mt8173-efuse
-> #Don't use this in new dts files
+In the past, there have been various workarounds to address this. See 
+commits 55d5b7dd6451b5 ("initramfs: fix clang build failure") and 
+6e7b64b9dd6d96 ("elfcore: fix building with clang") and a recent patch:
+https://lore.kernel.org/linuxppc-dev/20220425174128.11455-1-naveen.n.rao@linux.vnet.ibm.com/T/#u
 
-This compatible above is correct for mt8173, isn't it?
+Fix this issue by using the weak symbol in the relocation record. This 
+can result in duplicate locations in the mcount table if those weak 
+functions are overridden, so have ftrace skip dupicate entries.
 
->         deprecated: true
->       - const:
-> mediatek,efuse
->         deprecated: true
->         description:
->          
-> Please use mediatek,efuse as fallback.
+Objtool already follows this approach, so patch 2 updates recordmcount 
+to do the same. Patch 1 updates ftrace to skip duplicate entries.
 
-Description does not match. This should be something like:
-"MediaTek efuse for MT8173. Deprecated, use mediatek,mt8173-efuse instead"
+- Naveen
 
 
+[1] https://github.com/linuxppc/issues/issues/388
+[2] https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=d1bcae833b32f1
+[3] https://github.com/ClangBuiltLinux/linux/issues/981
 
-Best regards,
-Krzysztof
+
+Naveen N. Rao (2):
+  ftrace: Drop duplicate mcount locations
+  recordmcount: Handle sections with no non-weak symbols
+
+ kernel/trace/ftrace.c  | 13 ++++++-
+ scripts/recordmcount.h | 86 +++++++++++++++++++++++++++++++++++-------
+ 2 files changed, 85 insertions(+), 14 deletions(-)
+
+
+base-commit: 83d8a0d166119de813cad27ae7d61f54f9aea707
+-- 
+2.35.1
+
