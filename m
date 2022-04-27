@@ -2,75 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4287FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 07:32:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 018D0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 07:34:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358871AbiD0Hfg (ORCPT
+        id S1358886AbiD0HhM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 03:35:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60818 "EHLO
+        Wed, 27 Apr 2022 03:37:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358872AbiD0Hfa (ORCPT
+        with ESMTP id S1358872AbiD0HhK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 03:35:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B9B9888C6;
-        Wed, 27 Apr 2022 00:32:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A60B861AE1;
-        Wed, 27 Apr 2022 07:32:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09083C385AA;
-        Wed, 27 Apr 2022 07:32:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651044738;
-        bh=Re0RgXJGnca1jXG71eZZH/Isy2xvfbR7ESV6L/VsEoo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=konfTTjIek83M/SNfWhqBvJPMcgWRw0Ikpd/4gNseDywbPJ7aFFI3nmppWXQNoD+Y
-         Sj8jckpuyhXkAH/DBDUyvjSecumjX/zA4Uf2f9bl1RFm0r3PvSAWyJV4f9/1vIPXHe
-         kn0hLlZsLS0TuoJVaxEcyvu0b0hOJxEPsEZQCSsDt4cXYKG2r47BRaSRvJ/vYj3gRw
-         +5Mrjhji/KshE8GF6v2ABexREhoZUmjrE7pQZrnmNY0OW4c++r1orBZz4e0g2hfq/O
-         9ceyc0LGxDWJyefXN+E8WhPDgqCFlo7A9NRi2NwIn2qvwCyeoVnEFcxQeIOrlwMFut
-         1uB5fzSY4qkdQ==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan+linaro@kernel.org>)
-        id 1njc9r-0004Li-M2; Wed, 27 Apr 2022 09:32:19 +0200
-From:   Johan Hovold <johan+linaro@kernel.org>
-To:     Jonathan Corbet <corbet@lwn.net>
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH] Documentation: devres: fix typo in interface list
-Date:   Wed, 27 Apr 2022 09:31:42 +0200
-Message-Id: <20220427073142.16700-1-johan+linaro@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Wed, 27 Apr 2022 03:37:10 -0400
+Received: from mail-40134.protonmail.ch (mail-40134.protonmail.ch [185.70.40.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 396748D6AC
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 00:34:00 -0700 (PDT)
+Date:   Wed, 27 Apr 2022 07:33:53 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
+        s=protonmail2; t=1651044838;
+        bh=piUpAc0wGe60Avq75CM5bLwVBo2lSgqrOZtXltVybnw=;
+        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
+         References:Feedback-ID:From:To:Cc:Date:Subject:Reply-To:
+         Feedback-ID:Message-ID;
+        b=p5TANCxWDN0iWpN28SVEjXN5FOsv0HnWN0jkP8EzNU7VQ3k4FHpfhTDHYZbusqW1I
+         QSEKXWs3y3ROFkOIkVYN3/HBbZpgjUDRY8rwdWT0neQfuB+uPCIsuS1vNigmatzbIz
+         ve5aIKNnBb8W1o0+592wRjya+EPvbTrCkWZoBLpD8+iXoLuPGfwZ5SfuNhnJVL6slm
+         P9fQe+2kBAG61MPiQrIDCDJITmA55lmTjLOweohHWGmSU4zbeVPXcxnS4d+RQIFvvR
+         74hNiU2XMxGgM06UAkHGux0MF9PbIBw5Nvr5hiCzHg9OaB9kRYxUKWd9P+5FESAJV1
+         MQZJ6REW/w6JA==
+To:     Antoine Tenart <atenart@kernel.org>
+From:   Juerg Haefliger <juergh@protonmail.com>
+Cc:     Juerg Haefliger <juerg.haefliger@canonical.com>,
+        davem@davemloft.net, herbert@gondor.apana.org.au,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
+Reply-To: Juerg Haefliger <juergh@protonmail.com>
+Subject: Re: [PATCH] crypto: inside-secure - Add MODULE_FIRMWARE macros
+Message-ID: <20220427093252.00d013c9@smeagol>
+In-Reply-To: <165104455443.3327.8052402101857118285@kwain>
+References: <20220427070349.388246-1-juergh@protonmail.com> <165104455443.3327.8052402101857118285@kwain>
+Feedback-ID: 10260306:user:proton
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed;
+ boundary="b1_xJCHnbO4zpyNtxSqi4ebN97ZiN1dTAelSXPpKazELCM"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the misspelled devm_get_clk_from_child() helper name in the devres
-interface list.
+This is a multi-part message in MIME format.
 
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
----
- Documentation/driver-api/driver-model/devres.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+--b1_xJCHnbO4zpyNtxSqi4ebN97ZiN1dTAelSXPpKazELCM
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/Documentation/driver-api/driver-model/devres.rst b/Documentation/driver-api/driver-model/devres.rst
-index 5018403fe82f..2d39967bafcc 100644
---- a/Documentation/driver-api/driver-model/devres.rst
-+++ b/Documentation/driver-api/driver-model/devres.rst
-@@ -249,7 +249,7 @@ CLOCK
-   devm_clk_bulk_get()
-   devm_clk_bulk_get_all()
-   devm_clk_bulk_get_optional()
--  devm_get_clk_from_childl()
-+  devm_get_clk_from_child()
-   devm_clk_hw_register()
-   devm_of_clk_add_hw_provider()
-   devm_clk_hw_register_clkdev()
--- 
-2.35.1
+On Wed, 27 Apr 2022 09:29:14 +0200
+"Antoine Tenart" <atenart@kernel.org> wrote:
+
+> Hello Juerg,
+>
+> Quoting Juerg Haefliger (2022-04-27 09:03:49)
+> > +
+> > +MODULE_FIRMWARE("inside-secure/eip197b/ifpp.bin");
+> > +MODULE_FIRMWARE("inside-secure/eip197b/ipue.bin");
+> > +MODULE_FIRMWARE("inside-secure/eip197d/ifpp.bin");
+> > +MODULE_FIRMWARE("inside-secure/eip197d/ipue.bin");
+> > +MODULE_FIRMWARE("inside-secure/eip197_minifw/ifpp.bin");
+> > +MODULE_FIRMWARE("inside-secure/eip197_minifw/ipue.bin");
+>
+> There's also the old location when the EIP197b firmwares were at the
+> root of the linux-firmware repo. The driver still supports it, so I
+> guess those two should have a MODULE_FIRMWARE entry too.
+
+Hi Antoine,
+
+Yeah, I was wondering about that myself but wasn't sure if it should be add=
+ed.
+Will add it then and send a v2.
+
+...Juerg
+
+
+> Thanks,
+> Antoine
+
+
+--b1_xJCHnbO4zpyNtxSqi4ebN97ZiN1dTAelSXPpKazELCM
+Content-Type: application/pgp-signature; name=attachment.sig
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename=attachment.sig
+
+LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0NCg0KaVFJekJBRUJDZ0FkRmlFRWhaZlU5Nkl1
+cHJ2aUxkZUxEOU9MQ1F1bVFyY0ZBbUpvOGFRQUNna1FEOU9MQ1F1bQ0KUXJlYm1BLzlHeDV5M2NG
+V1Uvd3dsUXQrM3dQcUlXNndJWEV4UWxLdEdueVJiMEhka1gwakxBWXJna29OYldaTw0KbC9GdXZz
+RVg5T0Qya3JWWUFEWElLSExFdVVVbnc1bHlGT3Vvd2UzalE0YWhYSGVJc3FPYmp2ZEpKQUh3OWd4
+Yw0KeGpXYmpIRC9kQ0dtcmpaNjZUWHBzY0hhRmN4YnQvVXBxVjRLd1BiRzRoY0U4cFduV2ZSYis3
+eG9Ib0NhaGg3ZA0KVVY2RVVBS0pZNWg0bFNsWG40T2ttWW9tRXlDT2RKbXM2bmluZDNTbXZWV1lw
+TlZxU1diRmtQWTRqOFpIenVrTQ0KMXVXNHpaYityL01CaGprUTV5Q3VGbmYwcys5NnR5OVRBVnoz
+VGdmdWwvUTl1bGlPTmJVenBoNHRrRm9MenRoeg0KOVpmT3RHODFHbnpjRGczL3E3b0pwRXYvUzNq
+K1NxQ2FUUWRIVzJZSFBKSmMrbzFoQ3J4OFNYdUVhbDNHdHlueA0Kc1MzQkh0eUtEdUhrYmt4b1Qw
+dXJtZkdDYW1HVDlEM21tOEptd0tXdy81aFlHSWwrdzFIZ3B5Qm92eno1Y0cveg0KL2gyN3l4bUli
+YkVEdHFnZFVQVS9XcjNaL2s1cWZCQjFDZGE5L0g5dWx1Zmw2bzRUZ3RUdzl5d3k4QkQ2L3BuYw0K
+V1VZSjdLRHJZU1pwZ3ZQRlR2Um40N3NhbHpBbmt2RHZ2a2krN0x5ZlV1dkJObVBLUEVhL2t4Ymlm
+UW9tNW9ScA0KNUE0eHJhRm5OY2FhTDVaMmU1YzlKSDlwRzVGQWJsK1VmVmI2MkJKeGovMlEzVVBE
+ZmVkSUtpa0J0WUNUc2VDTg0Kc1pySGZBMTN1QmRNaTM3R1VVRDZVNGE1dy94NFdXTHVBUENIZEhs
+WVk5YlNYb0VObEE0PQ0KPVczZ04NCi0tLS0tRU5EIFBHUCBTSUdOQVRVUkUtLS0tLQ0K
+
+--b1_xJCHnbO4zpyNtxSqi4ebN97ZiN1dTAelSXPpKazELCM--
 
