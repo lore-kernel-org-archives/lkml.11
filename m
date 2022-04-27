@@ -2,142 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81AEDC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:51:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BCB4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:51:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240702AbiD0Pyq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 11:54:46 -0400
+        id S240789AbiD0Pyu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 11:54:50 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240786AbiD0Pym (ORCPT
+        with ESMTP id S240706AbiD0Pyl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 11:54:42 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9024A56200
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 08:51:19 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id j6so1898485pfe.13
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 08:51:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=dzfHiLB7CMSdbaalokwtZ2LWRfH0lNk/KKqxPTmoSuo=;
-        b=h2hw3BAWYLo7gwsVCC3X5xKVrVECZ5NtG0dbvqGGzeGsdOD/9P4Gvrg48lm9oyEmXg
-         CEWLgj+2SjFYmTy+H6RF0jwp4ssvdS/OA+aKeQV04IVAse5olhopXzKAth2xnT1LHllq
-         a3fCsJrnbJkOc3srjd4djLwGlAomYHH2lz37KT19FJbbloqmaRImethqKa3Gcc/AaOm8
-         lZ6ILkEjIWkLCLXIwezktoQhwpg6l5NGOHH15y8bOOmnlDmu8Nv7ukWf2v9eqayK5SYj
-         v7RBh0fZA9lbjC1nNNdGwyYiQGAMmfU35c5AS6e6bwvjFTCRQ1JiMPr72X5UFLHkGgLw
-         km7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=dzfHiLB7CMSdbaalokwtZ2LWRfH0lNk/KKqxPTmoSuo=;
-        b=bWJ8QA7sBG5DB/Ijalb3Wy9Hn4Myl/ShXFcIyd9KBSrfqyhe/vYOGR0NHbkfwxIPYR
-         AcMjDzgC6q4m2cKyWD0bZ7BFrsQtScTUujE57hoU6bipBz57kJVbC/jz7+jTvXP4szEI
-         WVfTseQmrn/X7HPs0+DIfwjv0qOBBcVFmsVhZ2BXM/2fV5zy1bw9PzVlN0KZWnzr90SI
-         c7a2zVg0SVrqOY3Vfk9Yd0hrhjMoi1t05SkLpkhULf6bR4Hch5hJLPUTIMA4xmQSiBO+
-         Zu3/6Axm5nPqptx29bONlqc3NPi0JG4wFAh02HTbO9KnNrdnOmqO+VhVx5fgvfPGS0wN
-         iG4w==
-X-Gm-Message-State: AOAM532CC73xwbPfuLMRm6smQpQcoaLVJYsUlbqqCtNuHAt/F5l99ghX
-        7TJeuycOovgBB6IRJhAFmiBx6g==
-X-Google-Smtp-Source: ABdhPJwd0eP81/BAql0hYsxa5z5vyl3c+tnqi++MAivKD4G8MKe8VdUQPVnigq/v0blD2Kq/Maug+A==
-X-Received: by 2002:a63:e80a:0:b0:3c1:6c84:de53 with SMTP id s10-20020a63e80a000000b003c16c84de53mr460981pgh.224.1651074678368;
-        Wed, 27 Apr 2022 08:51:18 -0700 (PDT)
-Received: from localhost.localdomain ([134.195.101.46])
-        by smtp.gmail.com with ESMTPSA id v65-20020a626144000000b0050a839e490bsm19164127pfb.185.2022.04.27.08.51.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 08:51:18 -0700 (PDT)
-From:   Leo Yan <leo.yan@linaro.org>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>, Alyssa Ross <hi@alyssa.is>,
-        Like Xu <likexu@tencent.com>, Kajol Jain <kjain@linux.ibm.com>,
-        Li Huafei <lihuafei1@huawei.com>,
-        Ali Saidi <alisaidi@amazon.com>,
-        German Gomez <german.gomez@arm.com>,
-        James Clark <james.clark@arm.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH v1 08/11] perf c2c: Refactor node header
-Date:   Wed, 27 Apr 2022 23:50:10 +0800
-Message-Id: <20220427155013.1833222-9-leo.yan@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220427155013.1833222-1-leo.yan@linaro.org>
-References: <20220427155013.1833222-1-leo.yan@linaro.org>
+        Wed, 27 Apr 2022 11:54:41 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC91D55234
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 08:51:17 -0700 (PDT)
+Received: from mail-yw1-f182.google.com ([209.85.128.182]) by
+ mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1N7gfa-1nxXST1xT8-014kRE; Wed, 27 Apr 2022 17:51:15 +0200
+Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-2f7c57ee6feso23870207b3.2;
+        Wed, 27 Apr 2022 08:51:15 -0700 (PDT)
+X-Gm-Message-State: AOAM533rrCUH6IJcp5DF3XdAVfDG6sQ8oZ1gHSZ3ZNCoVzgNijJjmiTM
+        ye9MCteio7kbdvJu7BPPYKNc+N7D0ev57bhMp6A=
+X-Google-Smtp-Source: ABdhPJwBNg6CpYFtUIKnpc/Rw8f1CBuXpCeXNKFcU4p5clk+M9zAP7ztHnapftV8iB5Ue4CUulJ/G3F9UTFN2azYVGk=
+X-Received: by 2002:a81:2305:0:b0:2f7:dadb:2162 with SMTP id
+ j5-20020a812305000000b002f7dadb2162mr16669826ywj.42.1651074674179; Wed, 27
+ Apr 2022 08:51:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <cover.1644824638.git.quic_saipraka@quicinc.com>
+ <20220408111707.2488-1-quic_saipraka@quicinc.com> <bb99b615-cc76-9591-a610-fb4841d41d62@quicinc.com>
+In-Reply-To: <bb99b615-cc76-9591-a610-fb4841d41d62@quicinc.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 27 Apr 2022 17:50:58 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1b0K4hJC9esuznqDdcBoX6+QqD74nVh91-iYbkZxiqbQ@mail.gmail.com>
+Message-ID: <CAK8P3a1b0K4hJC9esuznqDdcBoX6+QqD74nVh91-iYbkZxiqbQ@mail.gmail.com>
+Subject: Re: [PATCHv10 0/6] lib/rwmmio/arm64: Add support to trace register reads/writes
+To:     Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        gregkh <gregkh@linuxfoundation.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Marc Zyngier <maz@kernel.org>, quic_psodagud@quicinc.com,
+        quic_tsoni@quicinc.com, Steven Rostedt <rostedt@goodmis.org>,
+        Will Deacon <will@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:pncfSqlqmkLGmXVT6iOeX9Q1Y5SrTfn+p6zxB0RcOvbHs6h4IJU
+ e/TgQwSwn14JJi3z+ibkbDWNEe1SPl2Xq87Ingxlw63795fkBjpPgxQpvVoTFe1sGJWQDaL
+ r8s1lprZyJUoMFxIb2Z2qQ5UbLgpk22TH3aWz4Et6BV+eRcwiUtaiOupnINB9nkEUEFg2hC
+ kwudHN4G6BlH2NXA7GmOA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Tw7R17oJm/o=:LgYM77CSfmBXtIdveIe9eJ
+ 27nQS5nq6x1fKaqazsr35qsZd8XBeKmPnDwu0S43DGUtt+UgHSI+J/FNVAQosZzYR+arEMlXu
+ AcQPh6OQ9lirXYkGMkSWUiW7qla65AI74agTzNi8Uok9GXMEf4H56cenHrdJk+ssfcHYKLRx+
+ KCF7TXUnjW+EhXIPLrZqd/Za1jBVxucdxv/RvSA1zB1O88FNnVHu2MRM6VQXLqKrLNihFT1Sw
+ 5owwe3HaIyy1M/mgl6qTBdGTX13Jq/lHgO9jlW6uhqVhbohBV91cmrQvEAzZqMjgWda1veZ4M
+ 9AXDhmrz7c2cqL3lJ+MW/i3kFCRrQnkVS8sAODFsFPq98FxFCU/cTBR7Jimo/TVK5HSFrb1bR
+ 0JR8AJNL67Vs9A2db3F2V8ZDBFCmzOrzH23P5UtxB2oVrO5qSGBCtG2kNKVgvt4Snl446+ioL
+ 7MUY3kxv/AzHi+HVvMK/TP2CDHuaQdnrmCw/p7a8KDFIcryC74VtvyGXbn9/e26Npuhk8aYK/
+ qiL2mvik0RvBd0QRe/y0RiZ+XHIXActXQmvkVo5JJgWHesDS6JL7/lxEMwqawtXlhbeZRvLp4
+ +sSzkdJmI9Q+m6aW0D2pJhe+11pZdtrRzWc4gSEwBC1k2NFqjVfhkcJ/YziWR7X7pf3WQi5aI
+ rKOipwopqGVD7ywQI57AcJlDfhABvNY58F0Q80UA2XAPiIfyaQfyRec/wpY3YxlNe8vYrfUgy
+ BIDyvgJfok+98jW6CJXJIHGlI3l6MmUywYwYrn9Jpndyk431xk/o8OFka8+Wg8czck5r4HHi1
+ k/u02kXKxCG1IdmAb9pzz496eaANfxhem+/rrvk3PXhP7NNE7Y=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The node header array contains 3 items, each item is used for one of
-the 3 flavors for node accessing info.  To extend sorting on other
-snooping type and not always stick to HITMs, the second header string
-"Node{cpus %hitms %stores}" should be adjusted (e.g. it's changed as
-"Node{cpus %peer %stores}").
+On Thu, Apr 21, 2022 at 4:00 AM Sai Prakash Ranjan
+<quic_saipraka@quicinc.com> wrote:
+> On 4/8/2022 4:47 PM, Sai Prakash Ranjan wrote:
 
-For this reason, this patch changes the node header array to three
-flat variables and uses switch-case in function setup_nodes_header(),
-thus it is easier for altering the header string.
+> > Gentle ping, could you please take a look at this, would appreciate your reviews.
+> >
+>
+> Gentle Ping !!
+>
 
-Signed-off-by: Leo Yan <leo.yan@linaro.org>
-Tested-by: Ali Saidi <alisaidi@amazon.com>
----
- tools/perf/builtin-c2c.c | 26 +++++++++++++++++++-------
- 1 file changed, 19 insertions(+), 7 deletions(-)
+Sorry for dropping the ball on this. I'll go through the patches again
+now. From a new
+look, this all seems fine, but I'll need to take a little extra time
+to understand why we
+are getting the warnings that you are fixing, and how one will use the
+tracepoints
+in the end.
 
-diff --git a/tools/perf/builtin-c2c.c b/tools/perf/builtin-c2c.c
-index b90696ebfbc9..52542cfec80c 100644
---- a/tools/perf/builtin-c2c.c
-+++ b/tools/perf/builtin-c2c.c
-@@ -1653,12 +1653,6 @@ static struct c2c_dimension dim_dso = {
- 	.se		= &sort_dso,
- };
- 
--static struct c2c_header header_node[3] = {
--	HEADER_LOW("Node"),
--	HEADER_LOW("Node{cpus %hitms %stores}"),
--	HEADER_LOW("Node{cpu list}"),
--};
--
- static struct c2c_dimension dim_node = {
- 	.name		= "node",
- 	.cmp		= empty_cmp,
-@@ -2146,9 +2140,27 @@ static int resort_cl_cb(struct hist_entry *he, void *arg __maybe_unused)
- 	return 0;
- }
- 
-+static struct c2c_header header_node_0 = HEADER_LOW("Node");
-+static struct c2c_header header_node_1 = HEADER_LOW("Node{cpus %hitms %stores}");
-+static struct c2c_header header_node_2 = HEADER_LOW("Node{cpu list}");
-+
- static void setup_nodes_header(void)
- {
--	dim_node.header = header_node[c2c.node_info];
-+	switch (c2c.node_info) {
-+	case 0:
-+		dim_node.header = header_node_0;
-+		break;
-+	case 1:
-+		dim_node.header = header_node_1;
-+		break;
-+	case 2:
-+		dim_node.header = header_node_2;
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	return;
- }
- 
- static int setup_nodes(struct perf_session *session)
--- 
-2.25.1
-
+       Arnd
