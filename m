@@ -2,159 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FBD5C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 17:31:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1968C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 17:31:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244134AbiD0RfC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 13:35:02 -0400
+        id S244281AbiD0RfF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 13:35:05 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244186AbiD0Rew (ORCPT
+        with ESMTP id S244138AbiD0Rey (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 13:34:52 -0400
+        Wed, 27 Apr 2022 13:34:54 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E8E601F3534
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 10:31:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 580971F4798
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 10:31:39 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D9119ED1;
-        Wed, 27 Apr 2022 10:31:34 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1B9EA1474;
+        Wed, 27 Apr 2022 10:31:39 -0700 (PDT)
 Received: from lakrids.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id A3B203F73B;
-        Wed, 27 Apr 2022 10:31:33 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id DBCD03F73B;
+        Wed, 27 Apr 2022 10:31:37 -0700 (PDT)
 From:   Mark Rutland <mark.rutland@arm.com>
-To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        alex.popov@linux.com, keescook@chromium.org
-Cc:     akpm@linux-foundation.org, catalin.marinas@arm.com,
-        luto@kernel.org, mark.rutland@arm.com, will@kernel.org
-Subject: [PATCH v2 00/13] stackleak: fixes and rework
-Date:   Wed, 27 Apr 2022 18:31:15 +0100
-Message-Id: <20220427173128.2603085-1-mark.rutland@arm.com>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     akpm@linux-foundation.org, alex.popov@linux.com,
+        catalin.marinas@arm.com, keescook@chromium.org,
+        linux-kernel@vger.kernel.org, luto@kernel.org,
+        mark.rutland@arm.com, will@kernel.org
+Subject: [PATCH v2 02/13] stackleak: move skip_erasing() check earlier
+Date:   Wed, 27 Apr 2022 18:31:17 +0100
+Message-Id: <20220427173128.2603085-3-mark.rutland@arm.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220427173128.2603085-1-mark.rutland@arm.com>
+References: <20220427173128.2603085-1-mark.rutland@arm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Alexander, Kees,
+In stackleak_erase() we check skip_erasing() after accessing some fields
+from current. As generating the address of current uses asm which
+hazards with the static branch asm, this work is always performed, even
+when the static branch is patched to jump to the return a the end of the
+function.
 
-This is the vs I promised. Since Alexander wanted to look at this in
-more detail (and since this is subtle and needs review), I'm assuming
-that Kees will pick this up some time next week after that's happened,
-if all goes well. :)
+This patch avoids this redundant work by moving the skip_erasing() check
+earlier.
 
-This series reworks the stackleak code and the associated LKDTM test.
-The first patch fixes some latent issues on arm64, and the subsequent
-patches improve the code to improve clarity and permit better code
-generation. Patches 8-10 address some latent issues in the LKDTM test
-and add more diagnostic output.
+To avoid complicating initialization within stackleak_erase(), the body
+of the function is split out into a __stackleak_erase() helper, with the
+check left in a wrapper function. The __stackleak_erase() helper is
+marked __always_inline to ensure that this is inlined into
+stackleak_erase() and not instrumented.
 
-Since v1 [1]:
-* Fix and rework the LKDTM test
-* Rework the poison scan
+Before this patch, on x86-64 w/ GCC 11.1.0 the start of the function is:
 
-[1] https://lore.kernel.org/lkml/20220425115603.781311-1-mark.rutland@arm.com/
+<stackleak_erase>:
+   65 48 8b 04 25 00 00    mov    %gs:0x0,%rax
+   00 00
+   48 8b 48 20             mov    0x20(%rax),%rcx
+   48 8b 80 98 0a 00 00    mov    0xa98(%rax),%rax
+   66 90                   xchg   %ax,%ax  <------------ static branch
+   48 89 c2                mov    %rax,%rdx
+   48 29 ca                sub    %rcx,%rdx
+   48 81 fa ff 3f 00 00    cmp    $0x3fff,%rdx
 
-Benchmarking arm64 with a QEMU HVF VM on an M1 Macbook Pro shows a
-reasonable improvement when stackleak is enabled. I've included figures
-for when stackleak is dynamically disabled with v2:
+After this patch, on x86-64 w/ GCC 11.1.0 the start of the function is:
 
-* Calling getpid 1^22 times in a loop (avg 50 runs)
-  
-  5.18-rc1/on: 0.652099387s ( +-  0.13% )
-  v1/on:       0.641005661s ( +-  0.13% ) ; 1.7% improvement
-  v2/on:       0.611699824s ( +-  0.08% ) ; 6.2% improvement
-  v2/off:      0.507505632s ( +-  0.15% )
+<stackleak_erase>:
+   0f 1f 44 00 00          nopl   0x0(%rax,%rax,1)  <--- static branch
+   65 48 8b 04 25 00 00    mov    %gs:0x0,%rax
+   00 00
+   48 8b 48 20             mov    0x20(%rax),%rcx
+   48 8b 80 98 0a 00 00    mov    0xa98(%rax),%rax
+   48 89 c2                mov    %rax,%rdx
+   48 29 ca                sub    %rcx,%rdx
+   48 81 fa ff 3f 00 00    cmp    $0x3fff,%rdx
 
-* perf bench sched pipe (single run)
+Before this patch, on arm64 w/ GCC 11.1.0 the start of the function is:
 
-  5.18-rc1/on: 2.138s total
-  v1/on:       2.118s total ; 0.93% improvement
-  v2/on:       2.116s total ; 1.03% improvement
-  v2/off:      1.708s total
+<stackleak_erase>:
+   d503245f        bti     c
+   d5384100        mrs     x0, sp_el0
+   f9401003        ldr     x3, [x0, #32]
+   f9451000        ldr     x0, [x0, #2592]
+   d503201f        nop  <------------------------------- static branch
+   d503233f        paciasp
+   cb030002        sub     x2, x0, x3
+   d287ffe1        mov     x1, #0x3fff
+   eb01005f        cmp     x2, x1
 
-The large jump between v1 and v2 is largely due to the changes to poison
-scanning avoiding redundantly overwriting poison. For the getpid syscall
-the poison which gets overwritten is a substantial fraction of the stack
-usage, and for more involved syscalls this may be a trivial fraction, so
-the average benefit is fairly small.
+After this patch, on arm64 w/ GCC 11.1.0 the start of the function is:
 
-With the whole series applied, the LKDTM test reliably passes on both
-arm64 and x86_64, e.g.
+<stackleak_erase>:
+   d503245f        bti     c
+   d503201f        nop  <------------------------------- static branch
+   d503233f        paciasp
+   d5384100        mrs     x0, sp_el0
+   f9401003        ldr     x3, [x0, #32]
+   d287ffe1        mov     x1, #0x3fff
+   f9451000        ldr     x0, [x0, #2592]
+   cb030002        sub     x2, x0, x3
+   eb01005f        cmp     x2, x1
 
-| # uname -a
-| Linux buildroot 5.18.0-rc1-00013-g26f638ab0d7c #3 SMP PREEMPT Wed Apr 27 16:21:37 BST 2022 aarch64 GNU/Linux
-| # echo STACKLEAK_ERASING > /sys/kernel/debug/provoke-crash/DIRECT 
-| lkdtm: Performing direct entry STACKLEAK_ERASING
-| lkdtm: stackleak stack usage:
-|   high offset: 336 bytes
-|   current:     688 bytes
-|   lowest:      1232 bytes
-|   tracked:     1232 bytes
-|   untracked:   672 bytes
-|   poisoned:    14136 bytes
-|   low offset:  8 bytes
-| lkdtm: OK: the rest of the thread stack is properly erased
+While this may not be a huge win on its own, moving the static branch
+will permit further optimization of the body of the function in
+subsequent patches.
 
-The first patch fixes the major issues on arm64, and is Cc'd to stable
-for backporting.
+Signed-off-by: Mark Rutland <mark.rutland@arm.com>
+Cc: Alexander Popov <alex.popov@linux.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Kees Cook <keescook@chromium.org>
+---
+ kernel/stackleak.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-The second patch is a trivial optimization for when stackleak is
-dynamically disabled.
-
-The subsequent patches rework the way stackleak manipulates the stack
-boundary values. This is partially for clarity (e.g. with separate 'low'
-and 'high' boundary variables), and also permits the compiler to
-generate more optimal assembly by generating the high and low bounds
-from the same base.
-
-Patch 6 changes the way that `current->lowest_stack` is reset prior to
-return to userspace. The existing code uses an undocumented offset
-relative to the top of the stack which doesn't make much sense (as thie
-sometimes falls within the task's pt_regs, or sometimes adds 600+ bytes
-to erase upon the next exit to userspace). For now I've removed the
-offset entirely.
-
-Patch 7 changes the way we scan for poison. This fixes what I believe
-are fencepost errors, and also avoids the need to redundantly overwrite
-poison.
-
-Patches 8-11 rework the LKDTM test, fixing cases where the test could
-spuriously fail and improving the diagnostic output.
-
-Patches 12 and 13 add stackleak_erase_on_task_stack() and
-stackleak_erase_off_task_stack() that can be used when a caller knows
-they're always on or off the task stack respectively, avoiding redundant
-logic to check this and generate the high boundary value. The former is
-used on arm64 where we always perform the erase on the task stack, and
-I've included the latter for completeness (as e.g. it could be used on
-x86) given it is trivial.
-
-Thanks,
-Mark.
-
-Mark Rutland (13):
-  arm64: stackleak: fix current_top_of_stack()
-  stackleak: move skip_erasing() check earlier
-  stackleak: remove redundant check
-  stackleak: rework stack low bound handling
-  stackleak: clarify variable names
-  stackleak: rework stack high bound handling
-  stackleak: rework poison scanning
-  lkdtm/stackleak: avoid spurious failure
-  lkdtm/stackleak: rework boundary management
-  lkdtm/stackleak: prevent unexpected stack usage
-  lkdtm/stackleak: check stack boundaries
-  stackleak: add on/off stack variants
-  arm64: entry: use stackleak_erase_on_task_stack()
-
- arch/arm64/include/asm/processor.h |  10 +--
- arch/arm64/kernel/entry.S          |   2 +-
- drivers/misc/lkdtm/stackleak.c     | 133 +++++++++++++++++++----------
- include/linux/stackleak.h          |  55 +++++++++++-
- kernel/stackleak.c                 | 105 ++++++++++++++---------
- 5 files changed, 210 insertions(+), 95 deletions(-)
-
+diff --git a/kernel/stackleak.c b/kernel/stackleak.c
+index ddb5a7f48d69e..753eab797a04d 100644
+--- a/kernel/stackleak.c
++++ b/kernel/stackleak.c
+@@ -70,7 +70,7 @@ late_initcall(stackleak_sysctls_init);
+ #define skip_erasing()	false
+ #endif /* CONFIG_STACKLEAK_RUNTIME_DISABLE */
+ 
+-asmlinkage void noinstr stackleak_erase(void)
++static __always_inline void __stackleak_erase(void)
+ {
+ 	/* It would be nice not to have 'kstack_ptr' and 'boundary' on stack */
+ 	unsigned long kstack_ptr = current->lowest_stack;
+@@ -78,9 +78,6 @@ asmlinkage void noinstr stackleak_erase(void)
+ 	unsigned int poison_count = 0;
+ 	const unsigned int depth = STACKLEAK_SEARCH_DEPTH / sizeof(unsigned long);
+ 
+-	if (skip_erasing())
+-		return;
+-
+ 	/* Check that 'lowest_stack' value is sane */
+ 	if (unlikely(kstack_ptr - boundary >= THREAD_SIZE))
+ 		kstack_ptr = boundary;
+@@ -125,6 +122,14 @@ asmlinkage void noinstr stackleak_erase(void)
+ 	current->lowest_stack = current_top_of_stack() - THREAD_SIZE/64;
+ }
+ 
++asmlinkage void noinstr stackleak_erase(void)
++{
++	if (skip_erasing())
++		return;
++
++	__stackleak_erase();
++}
++
+ void __used __no_caller_saved_registers noinstr stackleak_track_stack(void)
+ {
+ 	unsigned long sp = current_stack_pointer;
 -- 
 2.30.2
 
