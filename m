@@ -2,92 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEFFEC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 06:55:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 210CCC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 06:56:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356571AbiD0G6W (ORCPT
+        id S1358426AbiD0G7Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 02:58:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56086 "EHLO
+        Wed, 27 Apr 2022 02:59:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358482AbiD0G6U (ORCPT
+        with ESMTP id S1358486AbiD0G6m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 02:58:20 -0400
-Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5306FD5A;
-        Tue, 26 Apr 2022 23:55:08 -0700 (PDT)
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 23R6qowc002130;
-        Wed, 27 Apr 2022 08:52:50 +0200
-From:   Willy Tarreau <w@1wt.eu>
-To:     netdev@vger.kernel.org
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Moshe Kol <moshe.kol@mail.huji.ac.il>,
-        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
-        Amit Klein <aksecurity@gmail.com>,
-        linux-kernel@vger.kernel.org, Willy Tarreau <w@1wt.eu>
-Subject: [PATCH net 6/7] tcp: increase source port perturb table to 2^16
-Date:   Wed, 27 Apr 2022 08:52:32 +0200
-Message-Id: <20220427065233.2075-7-w@1wt.eu>
-X-Mailer: git-send-email 2.17.5
-In-Reply-To: <20220427065233.2075-1-w@1wt.eu>
-References: <20220427065233.2075-1-w@1wt.eu>
+        Wed, 27 Apr 2022 02:58:42 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0465416582
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 23:55:22 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id r83so751385pgr.2
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 23:55:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/H/dr1bU3IWO2Zz3V0TPFg82hzHtg38B7AemVKe2A0M=;
+        b=Swzf4xKjfP1XA2e+DubAp3b10kwTb8AthU76bMCJuIkF5WelHZd8ki7PyrmZBVV73h
+         7V0jsT/TNILRELnOmATKXQELGQt181VCk812Hg2n6tfah6g6r7R2L/PSsTy2SWXPPtYc
+         VLmH7wlBiSjVx2ZkoP8BNPMn9iXWfbmvOKFZg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/H/dr1bU3IWO2Zz3V0TPFg82hzHtg38B7AemVKe2A0M=;
+        b=SR6LwFlgxpby03lz1xpNO5IGKEeCB8EQ4/2EG66+EqKGE5HeXSNnXNxOzED/EuxTT4
+         lAAZEV5ST//pMZCVQNVuOWflin1Mju3ilE3QozbL3MV8uQvj0kPt3tMrfHtwM7d2M092
+         TQQLuqiWMwgaGn/YZaEtSjA+ftYoyg6ND/xAQ/9crU7BUPqYiDYtc1fDV1/LgiWUBWZ5
+         QXPHtQ42C5CSAU+HtMZt68mSaZfYwRpzdoRTIO6SumZlhzeRQluL8yjAeHxXnymuiZlh
+         +mJLMYN/dj6E91tEgxy/m+qo8FaXCLWsCvOYzZ3BnmYEE++JF21D7cyk7df0zVB80qa1
+         MSHw==
+X-Gm-Message-State: AOAM533lzUR9tpYxArpDIRkRKNvOcP/9ivkn8Ygbr+CeqFMAYoZLvloE
+        IONYmxjZcyHA2iFzQk16+Ch/Aw==
+X-Google-Smtp-Source: ABdhPJxAbcUOPHGpu19WyFlEpx1bs/thLds4ctz1Fli9HAULfa6p4OeS6pNFkws8wrL4iVVeIVrnCw==
+X-Received: by 2002:a63:df18:0:b0:3ab:938b:e6c5 with SMTP id u24-20020a63df18000000b003ab938be6c5mr5157870pgg.165.1651042522409;
+        Tue, 26 Apr 2022 23:55:22 -0700 (PDT)
+Received: from google.com ([2401:fa00:8f:203:8e2d:263:26e7:c039])
+        by smtp.gmail.com with ESMTPSA id 7-20020a17090a000700b001da3920d985sm1276416pja.12.2022.04.26.23.55.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 23:55:21 -0700 (PDT)
+Date:   Wed, 27 Apr 2022 15:55:17 +0900
+From:   Sergey Senozhatsky <senozhatsky@chromium.org>
+To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Cc:     =?iso-8859-1?Q?P=E9ter?= Ujfalusi 
+        <peter.ujfalusi@linux.intel.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Jaska Uimonen <jaska.uimonen@linux.intel.com>,
+        alsa-devel@alsa-project.org, Takashi Iwai <tiwai@suse.com>,
+        linux-kernel@vger.kernel.org, Tomasz Figa <tfiga@chromium.org>,
+        Mark Brown <broonie@kernel.org>,
+        Ricardo Ribalda <ribalda@chromium.org>,
+        sound-open-firmware@alsa-project.org
+Subject: Re: out-of-bounds access in sound/soc/sof/topology.c
+Message-ID: <Ymjo1aHD4V6bNHz7@google.com>
+References: <Ylk5o3EC/hyX5UQ0@google.com>
+ <8eeb08ec-4836-cf7d-2285-8ed74ccfc1cb@linux.intel.com>
+ <8986a1c6-b546-7a66-a778-048487624c95@linux.intel.com>
+ <e31ff7c4-7cdc-fdaf-b12c-fc1e51798a1b@linux.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e31ff7c4-7cdc-fdaf-b12c-fc1e51798a1b@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Moshe Kol, Amit Klein, and Yossi Gilad reported being able to accurately
-identify a client by forcing it to emit only 40 times more connections
-than there are entries in the table_perturb[] table. The previous two
-improvements consisting in resalting the secret every 10s and adding
-randomness to each port selection only slightly improved the situation,
-and the current value of 2^8 was too small as it's not very difficult
-to make a client emit 10k connections in less than 10 seconds.
+On (22/04/19 08:07), Pierre-Louis Bossart wrote:
+> > Your analyzes are spot on, unfortunately. But...
+> > 
+> > As of today, the sof_get_control_data() is in the call path of
+> > (ipc3-topology.c):
+> > 
+> > sof_widget_update_ipc_comp_process() -> sof_process_load() ->
+> > sof_get_control_data()
+> > 
+> > sof_widget_update_ipc_comp_process() is the ipc_setup callback for
+> > snd_soc_dapm_effect. If I'm not mistaken these only carries bin payload
+> > and never MIXER/ENUM/SWITCH/VOLUME.
+> > This means that the sof_get_control_data() is only called with
+> > SND_SOC_TPLG_TYPE_BYTES and for that the allocated data area is correct.
+> > 
+> > This can explain why we have not seen any issues so far. This does not
+> > renders the code right, as how it is written atm is wrong.
+> 
+> 
+> Sergey's results with KASAN show that there's a real-life problem though. I also don't understand how that might happen.
+> 
+> Could it be that these results are with a specific topology where our assumptions are incorrect?
 
-Thus we're increasing the perturb table from 2^8 to 2^16 so that the the
-same precision now requires 2.6M connections, which is more difficult in
-this time frame and harder to hide as a background activity. The impact
-is that the table now uses 256 kB instead of 1 kB, which could mostly
-affect devices making frequent outgoing connections. However such
-components usually target a small set of destinations (load balancers,
-database clients, perf assessment tools), and in practice only a few
-entries will be visited, like before.
-
-A live test at 1 million connections per second showed no performance
-difference from the previous value.
-
-Reported-by: Moshe Kol <moshe.kol@mail.huji.ac.il>
-Reported-by: Yossi Gilad <yossi.gilad@mail.huji.ac.il>
-Reported-by: Amit Klein <aksecurity@gmail.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Willy Tarreau <w@1wt.eu>
----
- net/ipv4/inet_hashtables.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
-
-diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-index d746e5656baf..f30c50aaf8e2 100644
---- a/net/ipv4/inet_hashtables.c
-+++ b/net/ipv4/inet_hashtables.c
-@@ -726,11 +726,12 @@ EXPORT_SYMBOL_GPL(inet_unhash);
-  * Note that we use 32bit integers (vs RFC 'short integers')
-  * because 2^16 is not a multiple of num_ephemeral and this
-  * property might be used by clever attacker.
-- * RFC claims using TABLE_LENGTH=10 buckets gives an improvement,
-- * we use 256 instead to really give more isolation and
-- * privacy, this only consumes 1 KB of kernel memory.
-+ * RFC claims using TABLE_LENGTH=10 buckets gives an improvement, though
-+ * attacks were since demonstrated, thus we use 65536 instead to really
-+ * give more isolation and privacy, at the expense of 256kB of kernel
-+ * memory.
-  */
--#define INET_TABLE_PERTURB_SHIFT 8
-+#define INET_TABLE_PERTURB_SHIFT 16
- #define INET_TABLE_PERTURB_SIZE (1 << INET_TABLE_PERTURB_SHIFT)
- static u32 *table_perturb;
- 
--- 
-2.17.5
-
+Is there anything I can do to help?
