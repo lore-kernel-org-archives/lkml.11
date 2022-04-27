@@ -2,86 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D51CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 18:20:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A3C5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 18:20:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244757AbiD0SXL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 14:23:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55034 "EHLO
+        id S244808AbiD0SYC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 14:24:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232738AbiD0SXI (ORCPT
+        with ESMTP id S244725AbiD0SX6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 14:23:08 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1318B55482
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 11:19:57 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id i19so5008754eja.11
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 11:19:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BKLrlWDdze4fALIExihCdax2sj1CA1dAjWvhqA4fcdE=;
-        b=OC7XubjWFESQ3nHL9PAiwh8ORcR785icOv4rLY6pciNqk/sYywA5nLX3pKo95l8He9
-         Xl6BMozv7995amYQgYI7A0fqrSxPwV9JZKYHgcNkYqfef56mnu4mg5vFZ/MCTd7h6+AJ
-         WQyIsM8WMl6uQPIF5u0d13artTaNxxbh0xG5WvnJ9XCNw22EeCnZJ4mZXk+6l8bPa/jB
-         HCPH3/sigfwTr30iUY13Y5IALbLE7sk1I7qC0YwjQmYNq/AJ/IJUCk9RZHiuCWxBd6Hj
-         cJOoSj38FHEWrA3oj8zi8Hh+M9a0qovM5Zb7sQvu3ifm3vFlslsuSd+YORDH1vtHfHz2
-         fCwQ==
+        Wed, 27 Apr 2022 14:23:58 -0400
+Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71C5B35843;
+        Wed, 27 Apr 2022 11:20:46 -0700 (PDT)
+Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-e5ca5c580fso2845814fac.3;
+        Wed, 27 Apr 2022 11:20:46 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BKLrlWDdze4fALIExihCdax2sj1CA1dAjWvhqA4fcdE=;
-        b=mAD/2LvubR8HcpSfcDnGGQ1OqNvlxBtergkNJLTcXHQyB9+3bdKFOFSCOFpZlt6Y5P
-         /JAdsB+2IRqOebASeqODexVkmMWWIJv+LXjNCFNw79DGf4+kCD6tflQ7Pr31c9XS+oEg
-         DitYrlHeyHrHqJGw6cYB7KA5+0CbeUdHizhp2lHRE+2SWVTVkfJZqQUddaUoPmpEOtz7
-         kPFXJZaEBYCb6n7Ry/vFAoNp+ERFT54aLzwzDU6eZGoVsiI9cFl52iGJRqe7x8N3/gIq
-         vSNpAZun6OrYh+X0KmEWJNqAIQ9h2BwPEzUnlZ9hzJWtLo7EAFK4fM0dW+reUgEYZl/+
-         7iZA==
-X-Gm-Message-State: AOAM531kFjCuqEXhRGHHn4Bf3BODW2JHMASbcKgsAtQ26W51JVVd+IEq
-        4jjnwjrYHSRWGXkutGtKK0BMicBd8uC33t17Mz4=
-X-Google-Smtp-Source: ABdhPJyy501pwbeKqbIz9m0A3mZwUkZ4p0dBCZtARyEklGkg3Z72LhIFKi76QqCiO8NAJnNPRmjRwlISESyWvcE0UiA=
-X-Received: by 2002:a17:906:3ce9:b0:6ef:a8aa:ab46 with SMTP id
- d9-20020a1709063ce900b006efa8aaab46mr27288500ejh.579.1651083595490; Wed, 27
- Apr 2022 11:19:55 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=erT8GaO5VJG+GW9l/VolBcF/EAyslpb9BP1kfnKesbQ=;
+        b=HwbO4/mftBDDaZsyCpd7QWBYOiG2tw0p83olRh2g3ZNkOdEt5BvZXLh5ndYhDAdgHW
+         KQVqVAz9NIBd2o0cENZCYZTbLbpuXgvXBMtqzIRJkEikoZoLty2PrCgfTckQOgU/CnKr
+         9tSZHWA5Dv7fnKX12lK/YxbenmaszV/JL8ivhXJlibRSa6r8dyW7QvHzBUgxX39LfQXc
+         0dU6bridxsRji9rGbLUPvCro4C83nGp7QxKRg+c9FO1bIv45Sz2GI7D624dsUoqTvuEA
+         dmIleks7qtHudNXFSWCFZEfrRiAUbJvN9Af3YsL31KbZDTu9C4UPYzZb5/JwvsI9z/45
+         MbrA==
+X-Gm-Message-State: AOAM530izG8CG2H/JfNa/WYzvJYzsXyE5wSQMoWxgkiFfWIsgldTKkPH
+        rCajitqeqF5xIUS0efWOuQ==
+X-Google-Smtp-Source: ABdhPJwD3AlwDSbDDJxgnqmixNW2BPvjNJ83aCGRkV3w9EnlDDeJMSilHkwvvkRGfHszHyhiPM7+Vg==
+X-Received: by 2002:a05:6870:b402:b0:d3:3712:efa7 with SMTP id x2-20020a056870b40200b000d33712efa7mr11833514oap.88.1651083645769;
+        Wed, 27 Apr 2022 11:20:45 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id t3-20020a05687044c300b000e686d13892sm952200oai.44.2022.04.27.11.20.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 11:20:45 -0700 (PDT)
+Received: (nullmailer pid 400627 invoked by uid 1000);
+        Wed, 27 Apr 2022 18:20:44 -0000
+Date:   Wed, 27 Apr 2022 13:20:44 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        =?iso-8859-1?Q?Beno=EEt?= Cousson <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>, Sekhar Nori <nsekhar@ti.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Vinod Koul <vkoul@kernel.org>, linux-usb@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        dmaengine@vger.kernel.org
+Subject: Re: [PATCH v2 4/6] ARM: dts: am33xx: use new 'dma-channels/requests'
+ properties
+Message-ID: <YmmJfInA0hNQOhDN@robh.at.kernel.org>
+References: <20220427161126.647073-1-krzysztof.kozlowski@linaro.org>
+ <20220427161126.647073-5-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-References: <20220426180203.70782-1-jvgediya@linux.ibm.com>
- <Ymldp7E3j29iVlMN@smile.fi.intel.com> <20220427103901.7567e7058dcaa3068056b2ed@linux-foundation.org>
- <CAHp75VesfSdiR8naGLAfLCJ4mvMarXSQ+6PEoQcgMfgMpBSkNQ@mail.gmail.com>
-In-Reply-To: <CAHp75VesfSdiR8naGLAfLCJ4mvMarXSQ+6PEoQcgMfgMpBSkNQ@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 27 Apr 2022 20:19:19 +0200
-Message-ID: <CAHp75Vf+=2jF8p8FFJTLWAKwy7gLPfcNYNUWz8y2pU9rdVFseA@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] lib/kstrtox.c: Add "false"/"true" support to kstrtobool()
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>,
-        Matthew Wilcox <willy@infradead.org>, ying.huang@intel.com,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>,
-        Petr Mladek <pmladek@suse.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220427161126.647073-5-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 8:17 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
-> On Wed, Apr 27, 2022 at 8:06 PM Andrew Morton <akpm@linux-foundation.org> wrote:
+On Wed, Apr 27, 2022 at 06:11:24PM +0200, Krzysztof Kozlowski wrote:
+> The '#dma-channels' and '#dma-requests' properties were deprecated in
+> favor of these defined by generic dma-common DT bindings.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  arch/arm/boot/dts/am33xx.dtsi | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/arm/boot/dts/am33xx.dtsi b/arch/arm/boot/dts/am33xx.dtsi
+> index f6ec85d58dd1..55ffb0813ded 100644
+> --- a/arch/arm/boot/dts/am33xx.dtsi
+> +++ b/arch/arm/boot/dts/am33xx.dtsi
+> @@ -461,8 +461,8 @@ cppi41dma: dma-controller@2000 {
+>  				interrupts = <17>;
+>  				interrupt-names = "glue";
+>  				#dma-cells = <2>;
+> -				#dma-channels = <30>;
+> -				#dma-requests = <256>;
+> +				dma-channels = <30>;
+> +				dma-requests = <256>;
 
-...
+You could keep the old properties for compatibility and to apply 
+immediately.
 
-> (It might be better to check the second character as well to be sure
-> we avoid typos like 'talse' and 'frue', anyone to comment?)
-
-Note that T and F on the keyboard are quite close to each other, so
-there is non-zero probability of the above mentioned typo(s).
-
--- 
-With Best Regards,
-Andy Shevchenko
+>  			};
+>  		};
+>  
+> -- 
+> 2.32.0
+> 
+> 
