@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5439C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 17:32:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1154EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 17:32:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244389AbiD0Rfs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 13:35:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56652 "EHLO
+        id S244437AbiD0Rfx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 13:35:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244288AbiD0RfP (ORCPT
+        with ESMTP id S244275AbiD0RfP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Apr 2022 13:35:15 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1D3602245B9
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 10:31:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6433323E832
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 10:31:57 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E06B3ED1;
-        Wed, 27 Apr 2022 10:31:53 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9F8F01474;
+        Wed, 27 Apr 2022 10:31:57 -0700 (PDT)
 Received: from lakrids.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id AC4123F73B;
-        Wed, 27 Apr 2022 10:31:52 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 6B58E3F73B;
+        Wed, 27 Apr 2022 10:31:56 -0700 (PDT)
 From:   Mark Rutland <mark.rutland@arm.com>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     akpm@linux-foundation.org, alex.popov@linux.com,
         catalin.marinas@arm.com, keescook@chromium.org,
         linux-kernel@vger.kernel.org, luto@kernel.org,
         mark.rutland@arm.com, will@kernel.org
-Subject: [PATCH v2 10/13] lkdtm/stackleak: prevent unexpected stack usage
-Date:   Wed, 27 Apr 2022 18:31:25 +0100
-Message-Id: <20220427173128.2603085-11-mark.rutland@arm.com>
+Subject: [PATCH v2 12/13] stackleak: add on/off stack variants
+Date:   Wed, 27 Apr 2022 18:31:27 +0100
+Message-Id: <20220427173128.2603085-13-mark.rutland@arm.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220427173128.2603085-1-mark.rutland@arm.com>
 References: <20220427173128.2603085-1-mark.rutland@arm.com>
@@ -39,67 +39,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The lkdtm_STACKLEAK_ERASING() test is instrumentable and runs with IRQs
-unmasked, so it's possible for unrelated code to clobber the task stack
-and/or manipulate current->lowest_stack while the test is running,
-resulting in spurious failures.
+The stackleak_erase() code dynamically handles being on a task stack or
+another stack. In most cases, this is a fixed property of the caller,
+which the caller is aware of, as an architecture might always return
+using the task stack, or might always return using a trampoline stack.
 
-The regular stackleak erasing code is non-instrumentable and runs with
-IRQs masked, preventing similar issues.
+This patch adds stackleak_erase_on_task_stack() and
+stackleak_erase_off_task_stack() functions which callers can use to
+avoid on_thread_stack() check and associated redundant work when the
+calling stack is known. The existing stackleak_erase() is retained as a
+safe default.
 
-Make the body of the test non-instrumentable, and run it with IRQs
-masked, avoiding such spurious failures.
+There should be no functional change as a result of this patch.
 
 Signed-off-by: Mark Rutland <mark.rutland@arm.com>
 Cc: Alexander Popov <alex.popov@linux.com>
 Cc: Andrew Morton <akpm@linux-foundation.org>
 Cc: Andy Lutomirski <luto@kernel.org>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
 Cc: Kees Cook <keescook@chromium.org>
-Cc: Will Deacon <will@kernel.org>
 ---
- drivers/misc/lkdtm/stackleak.c | 24 +++++++++++++++++++++++-
- 1 file changed, 23 insertions(+), 1 deletion(-)
+ kernel/stackleak.c | 35 ++++++++++++++++++++++++++++++++---
+ 1 file changed, 32 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/misc/lkdtm/stackleak.c b/drivers/misc/lkdtm/stackleak.c
-index 0aafa46ced7d6..46c60761a05ea 100644
---- a/drivers/misc/lkdtm/stackleak.c
-+++ b/drivers/misc/lkdtm/stackleak.c
-@@ -11,7 +11,20 @@
- #include "lkdtm.h"
- #include <linux/stackleak.h>
+diff --git a/kernel/stackleak.c b/kernel/stackleak.c
+index afd54b8e10b83..c2c33d2202e9a 100644
+--- a/kernel/stackleak.c
++++ b/kernel/stackleak.c
+@@ -70,7 +70,7 @@ late_initcall(stackleak_sysctls_init);
+ #define skip_erasing()	false
+ #endif /* CONFIG_STACKLEAK_RUNTIME_DISABLE */
  
--void lkdtm_STACKLEAK_ERASING(void)
-+/*
-+ * Check that stackleak tracks the lowest stack pointer and erases the stack
-+ * below this as expected.
-+ *
-+ * To prevent the lowest stack pointer changing during the test, IRQs are
-+ * masked and instrumentation of this function is disabled. We assume that the
-+ * compiler will create a fixed-size stack frame for this function.
-+ *
-+ * Any non-inlined function may make further use of the stack, altering the
-+ * lowest stack pointer and/or clobbering poison values. To avoid spurious
-+ * failures we must avoid printing until the end of the test or have already
-+ * encountered a failure condition.
-+ */
-+static void noinstr check_stackleak_irqoff(void)
+-static __always_inline void __stackleak_erase(void)
++static __always_inline void __stackleak_erase(bool on_task_stack)
  {
- 	const unsigned long task_stack_base = (unsigned long)task_stack_page(current);
  	const unsigned long task_stack_low = stackleak_task_low_bound(current);
-@@ -81,3 +94,12 @@ void lkdtm_STACKLEAK_ERASING(void)
- 		pr_info("OK: the rest of the thread stack is properly erased\n");
- 	}
+ 	const unsigned long task_stack_high = stackleak_task_high_bound(current);
+@@ -96,7 +96,7 @@ static __always_inline void __stackleak_erase(void)
+ 	 * function has a fixed-size stack frame, and the current stack pointer
+ 	 * doesn't change while we write poison.
+ 	 */
+-	if (on_thread_stack())
++	if (on_task_stack)
+ 		erase_high = current_stack_pointer;
+ 	else
+ 		erase_high = task_stack_high;
+@@ -110,12 +110,41 @@ static __always_inline void __stackleak_erase(void)
+ 	current->lowest_stack = task_stack_high;
  }
-+
-+void lkdtm_STACKLEAK_ERASING(void)
-+{
-+	unsigned long flags;
-+
-+	local_irq_save(flags);
-+	check_stackleak_irqoff();
-+	local_irq_restore(flags);
+ 
++/*
++ * Erase and poison the portion of the task stack used since the last erase.
++ * Can be called from the task stack or an entry stack when the task stack is
++ * no longer in use.
++ */
+ asmlinkage void noinstr stackleak_erase(void)
+ {
+ 	if (skip_erasing())
+ 		return;
+ 
+-	__stackleak_erase();
++	__stackleak_erase(on_thread_stack());
 +}
++
++/*
++ * Erase and poison the portion of the task stack used since the last erase.
++ * Can only be called from the task stack.
++ */
++asmlinkage void noinstr stackleak_erase_on_task_stack(void)
++{
++	if (skip_erasing())
++		return;
++
++	__stackleak_erase(true);
++}
++
++/*
++ * Erase and poison the portion of the task stack used since the last erase.
++ * Can only be called from a stack other than the task stack.
++ */
++asmlinkage void noinstr stackleak_erase_off_task_stack(void)
++{
++	if (skip_erasing())
++		return;
++
++	__stackleak_erase(false);
+ }
+ 
+ void __used __no_caller_saved_registers noinstr stackleak_track_stack(void)
 -- 
 2.30.2
 
