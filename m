@@ -2,67 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C905BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 04:53:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B6BBC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 04:55:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357735AbiD0E4L (ORCPT
+        id S1357743AbiD0E6R (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 00:56:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53134 "EHLO
+        Wed, 27 Apr 2022 00:58:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237234AbiD0E4I (ORCPT
+        with ESMTP id S237234AbiD0E6O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 00:56:08 -0400
+        Wed, 27 Apr 2022 00:58:14 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5609B5641C
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 21:52:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 330FB2665;
+        Tue, 26 Apr 2022 21:55:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD8D5612DB
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 04:52:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14116C385A7;
-        Wed, 27 Apr 2022 04:52:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3000260BD6;
+        Wed, 27 Apr 2022 04:55:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6872CC385A9;
+        Wed, 27 Apr 2022 04:55:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651035177;
-        bh=DxCUyl9p44smzXQftcVWir2mw4zf6/UMSiRlQ4twW6k=;
+        s=korg; t=1651035302;
+        bh=lb0749tNeujoajvrbWKtsMVUVmfSzSAh3mOQ5OSWbws=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ag0XENDOV5yFKAC9dzETXOjBBqj+UP190wk2Xfl+oSr4qSpFf5wx6mOCAWyGrqs8T
-         58wVf+JgqNixbOiROO2gGFUPzWynnQCbDBWkJd+zFHf5dmnMAr26ibSBwjT4lF/ihk
-         NniF2jZsF2kosB0bx4oTWU7J6kO9JeDRTAFj2zQE=
-Date:   Wed, 27 Apr 2022 06:52:52 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Philipp Hortmann <philipp.g.hortmann@gmail.com>
-Cc:     Forest Bond <forest@alittletooquiet.net>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] staging: vt6655: Replace MACvReadMIBCounter with
- VNSvInPortD
-Message-ID: <YmjMJHup1TJohVZd@kroah.com>
-References: <cover.1651001609.git.philipp.g.hortmann@gmail.com>
- <50cbf7b87759dbfe023554fc42a499dd923b7f8c.1651001609.git.philipp.g.hortmann@gmail.com>
+        b=r7wYa8F18+PZLTDUmJKFzhLYYO74EtPmmL3519tYSUTYar7ruzcYYcSW3ukXFgBRj
+         eP0aKTMAlRWZ+qVsuW85TATNJpZJBLVZ3CNb4Vum8W2xpAgk95jYFmr9BFPjaaQc8L
+         odJZTZuVF4tTUZAFoESZOQNg6Jnyvi2WVwr9MDXg=
+Date:   Wed, 27 Apr 2022 06:54:57 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Wan Jiabing <wanjiabing@vivo.com>
+Cc:     Hartley Sweeten <hsweeten@visionengravers.com>,
+        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Nikita Shubin <nikita.shubin@maquefel.me>,
+        Arnd Bergmann <arnd@arndb.de>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH] ep93xx: clock: Fix UAF in mach-ep93xx/clock.c
+Message-ID: <YmjMoeDNd2cNMjRt@kroah.com>
+References: <20220427022111.772457-1-wanjiabing@vivo.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <50cbf7b87759dbfe023554fc42a499dd923b7f8c.1651001609.git.philipp.g.hortmann@gmail.com>
+In-Reply-To: <20220427022111.772457-1-wanjiabing@vivo.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 10:02:17PM +0200, Philipp Hortmann wrote:
-> Replace macro MACvReadMIBCounter with VNSvInPortD and as it
-> was the only user, it can now be removed.
+On Wed, Apr 27, 2022 at 10:21:11AM +0800, Wan Jiabing wrote:
+> Fix following coccicheck errors:
+> ./arch/arm/mach-ep93xx/clock.c:351:9-12: ERROR: reference preceded by free on line 349
+> ./arch/arm/mach-ep93xx/clock.c:458:9-12: ERROR: reference preceded by free on line 456
 > 
-> Signed-off-by: Philipp Hortmann <philipp.g.hortmann@gmail.com>
+> Fix two more potential UAF errors.
+> 
+> Link: https://lore.kernel.org/all/20220418121212.634259061@linuxfoundation.org/
+> Fixes: 9645ccc7bd7a ("ep93xx: clock: convert in-place to COMMON_CLK")
+> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
 > ---
-> V1 -> V2: Shorted and simplified patch description
+>  arch/arm/mach-ep93xx/clock.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
 
-There is no "v2" in the subject lines in this thread anywhere :(
+<formletter>
 
-git will create it automatically for you if you use the '-v' option to
-git format-patch.
+This is not the correct way to submit patches for inclusion in the
+stable kernel tree.  Please read:
+    https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
+for how to do this properly.
 
-Please fix up and send a v3 series.
-
-thanks,
-
-greg k-h
+</formletter>
