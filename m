@@ -2,117 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF1C9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:47:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7B34C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:47:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230242AbiD0Kuk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 06:50:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35256 "EHLO
+        id S230167AbiD0Kuo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 06:50:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229999AbiD0KuH (ORCPT
+        with ESMTP id S230098AbiD0KuN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 06:50:07 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 282ED36A647
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 03:20:53 -0700 (PDT)
-X-UUID: 3e1c3739de0b45bd9e456dfe0070ed7c-20220427
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:e6ff2951-49ff-4921-a4da-7f6959bb91d0,OB:20,L
-        OB:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,
-        ACTION:release,TS:75
-X-CID-INFO: VERSION:1.1.4,REQID:e6ff2951-49ff-4921-a4da-7f6959bb91d0,OB:20,LOB
-        :0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,
-        ACTION:quarantine,TS:75
-X-CID-META: VersionHash:faefae9,CLOUDID:975bacc6-85ee-4ac1-ac05-bd3f1e72e732,C
-        OID:055001bf033d,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil
-        ,QS:0,BEC:nil
-X-UUID: 3e1c3739de0b45bd9e456dfe0070ed7c-20220427
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
-        (envelope-from <lecopzer.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1732903374; Wed, 27 Apr 2022 17:59:36 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Wed, 27 Apr 2022 17:59:34 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 27 Apr
- 2022 17:59:32 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 27 Apr 2022 17:59:32 +0800
-From:   Lecopzer Chen <lecopzer.chen@mediatek.com>
-To:     <linus.walleij@linaro.org>, <linux@armlinux.org.uk>
-CC:     <lecopzer.chen@mediatek.com>, <andreyknvl@gmail.com>,
-        <anshuman.khandual@arm.com>, <ardb@kernel.org>, <arnd@arndb.de>,
-        <dvyukov@google.com>, <geert+renesas@glider.be>,
-        <glider@google.com>, <kasan-dev@googlegroups.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <lukas.bulwahn@gmail.com>,
-        <mark.rutland@arm.com>, <masahiroy@kernel.org>,
-        <matthias.bgg@gmail.com>, <rmk+kernel@armlinux.org.uk>,
-        <ryabinin.a.a@gmail.com>, <yj.chiang@mediatek.com>
-Subject: [PATCH v5 1/2] arm: kasan: support CONFIG_KASAN_VMALLOC
-Date:   Wed, 27 Apr 2022 17:59:15 +0800
-Message-ID: <20220427095916.17515-2-lecopzer.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220427095916.17515-1-lecopzer.chen@mediatek.com>
-References: <20220427095916.17515-1-lecopzer.chen@mediatek.com>
+        Wed, 27 Apr 2022 06:50:13 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3225E36CE00
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 03:21:06 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7F5D2143D;
+        Wed, 27 Apr 2022 02:21:47 -0700 (PDT)
+Received: from [10.57.7.196] (unknown [10.57.7.196])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 06DFB3F5A1;
+        Wed, 27 Apr 2022 02:21:45 -0700 (PDT)
+Message-ID: <c24afde6-9f78-155e-c3ec-629e4e832005@arm.com>
+Date:   Wed, 27 Apr 2022 10:21:44 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v4] arch_topology: Trace the update thermal pressure
+Content-Language: en-US
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, sudeep.holla@arm.com,
+        dietmar.eggemann@arm.com, vincent.guittot@linaro.org,
+        rafael@kernel.org, rostedt@goodmis.org, mingo@redhat.com
+References: <20220427080806.1906-1-lukasz.luba@arm.com>
+ <YmkK32iEJ6bVyoMU@kroah.com>
+From:   Lukasz Luba <lukasz.luba@arm.com>
+In-Reply-To: <YmkK32iEJ6bVyoMU@kroah.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Simply make shadow of vmalloc area mapped on demand.
 
-Since the virtual address of vmalloc for Arm is also between
-MODULE_VADDR and 0x100000000 (ZONE_HIGHMEM), which means the shadow
-address has already included between KASAN_SHADOW_START and
-KASAN_SHADOW_END.
-Thus we need to change nothing for memory map of Arm.
 
-This can fix ARM_MODULE_PLTS with KASan, support KASan for higmem
-and support CONFIG_VMAP_STACK with KASan.
+On 4/27/22 10:20, Greg KH wrote:
+> On Wed, Apr 27, 2022 at 09:08:06AM +0100, Lukasz Luba wrote:
+>> Add trace event to capture the moment of the call for updating the thermal
+>> pressure value. It's helpful to investigate how often those events occur
+>> in a system dealing with throttling. This trace event is needed since the
+>> old 'cdev_update' might not be used by some drivers.
+>>
+>> The old 'cdev_update' trace event only provides a cooling state
+>> value: [0, n]. That state value then needs additional tools to translate
+>> it: state -> freq -> capacity -> thermal pressure. This new trace event
+>> just stores proper thermal pressure value in the trace buffer, no need
+>> for additional logic. This is helpful for cooperation when someone can
+>> simply sends to the list the trace buffer output from the platform (no
+>> need from additional information from other subsystems).
+>>
+>> There are also platforms which due to some design reasons don't use
+>> cooling devices and thus don't trigger old 'cdev_update' trace event.
+>> They are also important and measuring latency for the thermal signal
+>> raising/decaying characteristics is in scope. This new trace event
+>> would cover them as well.
+>>
+>> We already have a trace point 'pelt_thermal_tp' which after a change to
+>> trace event can be paired with this new 'thermal_pressure_update' and
+>> derive more insight what is going on in the system under thermal pressure
+>> (and why).
+>>
+>> Signed-off-by: Lukasz Luba <lukasz.luba@arm.com>
+> 
+> Much better, thanks.  I'll wait for Sudeep's comments/review before
+> taking it into my tree.
+> 
+> greg k-h
 
-Signed-off-by: Lecopzer Chen <lecopzer.chen@mediatek.com>
-Tested-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
----
- arch/arm/Kconfig         | 1 +
- arch/arm/mm/kasan_init.c | 6 +++++-
- 2 files changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 2e8091e2d8a8..f440cf59cea1 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -75,6 +75,7 @@ config ARM
- 	select HAVE_ARCH_KFENCE if MMU && !XIP_KERNEL
- 	select HAVE_ARCH_KGDB if !CPU_ENDIAN_BE32 && MMU
- 	select HAVE_ARCH_KASAN if MMU && !XIP_KERNEL
-+	select HAVE_ARCH_KASAN_VMALLOC if HAVE_ARCH_KASAN
- 	select HAVE_ARCH_MMAP_RND_BITS if MMU
- 	select HAVE_ARCH_PFN_VALID
- 	select HAVE_ARCH_SECCOMP
-diff --git a/arch/arm/mm/kasan_init.c b/arch/arm/mm/kasan_init.c
-index 5ad0d6c56d56..29caee9c79ce 100644
---- a/arch/arm/mm/kasan_init.c
-+++ b/arch/arm/mm/kasan_init.c
-@@ -236,7 +236,11 @@ void __init kasan_init(void)
- 
- 	clear_pgds(KASAN_SHADOW_START, KASAN_SHADOW_END);
- 
--	kasan_populate_early_shadow(kasan_mem_to_shadow((void *)VMALLOC_START),
-+	if (!IS_ENABLED(CONFIG_KASAN_VMALLOC))
-+		kasan_populate_early_shadow(kasan_mem_to_shadow((void *)VMALLOC_START),
-+					    kasan_mem_to_shadow((void *)VMALLOC_END));
-+
-+	kasan_populate_early_shadow(kasan_mem_to_shadow((void *)VMALLOC_END),
- 				    kasan_mem_to_shadow((void *)-1UL) + 1);
- 
- 	for_each_mem_range(i, &pa_start, &pa_end) {
--- 
-2.18.0
-
+Thank you Greg!
