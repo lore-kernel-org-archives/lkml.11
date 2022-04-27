@@ -2,109 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C11EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 12:59:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49A49C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:02:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235200AbiD0NC4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 09:02:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56172 "EHLO
+        id S235218AbiD0NFT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 09:05:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235165AbiD0NCy (ORCPT
+        with ESMTP id S235177AbiD0NFQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 09:02:54 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C548250053
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 05:59:42 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id e23so1830538eda.11
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 05:59:42 -0700 (PDT)
+        Wed, 27 Apr 2022 09:05:16 -0400
+Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1660522E1
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 06:02:04 -0700 (PDT)
+Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-2ebf4b91212so17556677b3.8
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 06:02:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=T0hxnuRgL9NeQFiMioCyH45+WQ2S28ZgAPm0mFEWbLE=;
-        b=MeiX9AY/6qkAvXGxzi5UU0gh6sd8cIlgkzkD94AXxkdyAlmdyQSYgjUWZavU45/Ec/
-         3W5w5HbpX17VdLQJmVnJ0/7FqlFICHRSCqmeZrOeYyKEOjsD8x2JcvpSlp2CMpL2kc6N
-         k+8J9IM3w4OD6AklioYFEHQJLaxOFYx/lI7xBlGxH1mj0y8USlaPjY3CWtok1kX2CzmM
-         ufVfmXOznt9/E/vVMrgfhXP2N9xmw5lTNvluvgNu6uX9PMaoZLSSJvo2mhURlQzzpP8H
-         HrQrGbb/hpOltrE6Luh6bfq4SaleG59aU/lu1QPvdCak6tCKZ7x5Nj3mM5m4g9/5bD8g
-         g1/g==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=S0RACex1YHTJ+EcaotG2ytIq1qh8idLDc1lxrpTPFYM=;
+        b=LPG4LILxXvwmTf642SEgiBjDLvZGjS+owvYXlX3fFL80Pk+GUwO1hPJl/k7zAc2/Ly
+         xDRw36YuY0vfW5VfkD1aHt6oCMPBvYQbtG2TxuzBffQhdaudzgjDL0ADII35FkTbKBsU
+         ZJ/EWGSKBI+obQA48nFWbZo1AOQCIArCKApP+6UNEpLG4aPfq8RcG4vaJt0WHMS7pIVd
+         TnRYmdIaUn3lJNOUUqGaYFlu6GXPYeSmegd8SF/YsKpJYzXVSJdJD6E/YFHeEHtAsyi7
+         KLZKZZhHtNKN152KGKWFcePR/PtoFMKCml0yNzMmb4NBs/ambkUWCawjE48kjMV5Nx8A
+         DjNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=T0hxnuRgL9NeQFiMioCyH45+WQ2S28ZgAPm0mFEWbLE=;
-        b=qSDO1XDasNutRZ/r/fma5vMaZ5NLMQJoejZ6+A82IEX7AoQPq6zY/d5NJewrBYGYj6
-         zlplLEPTfsCp51ywMfJwJAnm0uKmPU9BuzXK5pugI5VN67F9UKgVpgVeqPeed4j9khHO
-         AXd5eQv34KD6LQi8Y7hCVEu6u7FltWM02It4RhufxGuoBPGntz8fEVe/K/bTmv6B2Bgv
-         7ajA07wKa565dZXUMS/luXLlH/AS7l1cymGI+En1U+kaAvJWTRrL1pB2lXePsYkBow5E
-         shO1NXEghQ/bCyKYNJ9+wKF9nvKXI3ck+IW/KlqXT0FI1Id1A0riNQsuntVs0L1wVnhV
-         VAiA==
-X-Gm-Message-State: AOAM533orpWGbJuicVnWLQQ1OWcBQg6H6j9PSujU93dZyfKK8ivgNh8r
-        ErfPFg9rq1fosnIHVoe9z81nLQ==
-X-Google-Smtp-Source: ABdhPJz98Md50Ai8wsdX8vX3fIUcCf+jcYhugjdBDzvzUy2U50EWkV+3GUFmIxe2wv2oo/XH6r1d3A==
-X-Received: by 2002:a05:6402:5201:b0:426:124:a40b with SMTP id s1-20020a056402520100b004260124a40bmr6090702edd.198.1651064381331;
-        Wed, 27 Apr 2022 05:59:41 -0700 (PDT)
-Received: from [192.168.0.153] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id z14-20020a170906944e00b006f38c33b6e3sm4829572ejx.68.2022.04.27.05.59.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Apr 2022 05:59:40 -0700 (PDT)
-Message-ID: <6d9ded33-f5fc-6346-51ca-2de8e7a644ec@linaro.org>
-Date:   Wed, 27 Apr 2022 14:59:39 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=S0RACex1YHTJ+EcaotG2ytIq1qh8idLDc1lxrpTPFYM=;
+        b=wq+tymiguxodocH/4W9+XIH5qSvhqNhBHq/sCJ/3uLxDcNBPPO8thGifis+46qjPn0
+         Ux4M3sZBjXK/7hr2j+1lps7/4DKcJSQiCQyNU3ojxLB9WiVNAwaQH9trZis1Nlpj3oK4
+         VCAM0OH5Z09Yk4bulWzpZz+IrY/r0oYMPemcoG10t1S38fYC7cI0M+yhHWLI/xw0Hidb
+         AVNxNgteLzcE88D97tGpJHPKNVA0BCJkftj0uVbrUxvOz3fgGAsnu2ZuBuWKBvvUc2PK
+         4K7hFLKEGoDnuOFvxLdPqah4crpsBuyD6/SHIMiQ7FTpzvgnWBLBu/Od1wqkL4MoAvj6
+         ciGw==
+X-Gm-Message-State: AOAM531TybUnNQ6AptVCFIN2yxuKPaxu8AEScFagfy0fy7CoK6v66pva
+        ya4AtcoEF8t38xP1XhrAfRCnU/X+Bt4bA5WuT6S5oA==
+X-Google-Smtp-Source: ABdhPJxt74YVl9/zO3ocwML4C6FJIcGgQIJEkdkH5timGk2DZI3l8oao0wnH2sabMwxlqzVZMNY4lYMUSYU33E4tabI=
+X-Received: by 2002:a81:2108:0:b0:2f5:6938:b2b8 with SMTP id
+ h8-20020a812108000000b002f56938b2b8mr26219124ywh.151.1651064520075; Wed, 27
+ Apr 2022 06:02:00 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 1/3] interconnect: qcom: constify qcom_icc_desc
-Content-Language: en-US
-To:     Georgi Djakov <djakov@kernel.org>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220412102623.227607-1-krzysztof.kozlowski@linaro.org>
- <b96fd335-df13-6657-c2ff-38ff677555a4@linaro.org>
- <12570c36-d005-f51c-654b-01d52c50205c@kernel.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <12570c36-d005-f51c-654b-01d52c50205c@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220427095916.17515-1-lecopzer.chen@mediatek.com>
+In-Reply-To: <20220427095916.17515-1-lecopzer.chen@mediatek.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Wed, 27 Apr 2022 15:01:48 +0200
+Message-ID: <CACRpkda_hpTVxKftKBqRvBtC-KN8c9NWHFJDV10TN4JOR7CQCw@mail.gmail.com>
+Subject: Re: [PATCH v5 0/2] arm: kasan: support CONFIG_KASAN_VMALLOC
+To:     Lecopzer Chen <lecopzer.chen@mediatek.com>
+Cc:     linux@armlinux.org.uk, andreyknvl@gmail.com,
+        anshuman.khandual@arm.com, ardb@kernel.org, arnd@arndb.de,
+        dvyukov@google.com, geert+renesas@glider.be, glider@google.com,
+        kasan-dev@googlegroups.com, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, lukas.bulwahn@gmail.com,
+        mark.rutland@arm.com, masahiroy@kernel.org, matthias.bgg@gmail.com,
+        rmk+kernel@armlinux.org.uk, ryabinin.a.a@gmail.com,
+        yj.chiang@mediatek.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27/04/2022 14:17, Georgi Djakov wrote:
-> On 22.04.22 18:25, Krzysztof Kozlowski wrote:
->> On 12/04/2022 12:26, Krzysztof Kozlowski wrote:
->>> struct qcom_icc_desc is not modified so it can be made const for safety.
->>>
->>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->>> ---
->>>   drivers/interconnect/qcom/msm8916.c |  6 +++---
->>>   drivers/interconnect/qcom/msm8939.c |  8 ++++----
->>>   drivers/interconnect/qcom/msm8974.c | 12 ++++++------
->>>   drivers/interconnect/qcom/qcm2290.c | 12 ++++++------
->>>   drivers/interconnect/qcom/qcs404.c  |  6 +++---
->>>   drivers/interconnect/qcom/sc7180.c  | 26 +++++++++++++-------------
->>>   drivers/interconnect/qcom/sc7280.c  | 24 ++++++++++++------------
->>>   drivers/interconnect/qcom/sdm660.c  | 12 ++++++------
->>>   drivers/interconnect/qcom/sm8150.c  | 22 +++++++++++-----------
->>>   drivers/interconnect/qcom/sm8250.c  | 22 +++++++++++-----------
->>>   drivers/interconnect/qcom/sm8350.c  | 20 ++++++++++----------
->>>   drivers/interconnect/qcom/sm8450.c  | 22 +++++++++++-----------
->>
->> Hi folks,
->>
->> Any comments here?
-> 
-> Thanks for the patches! I had actually some of these changes in my local tree
-> for a long time.
+On Wed, Apr 27, 2022 at 11:59 AM Lecopzer Chen
+<lecopzer.chen@mediatek.com> wrote:
 
-Indeed I see them now in linux-next. Sorry for pinging, I just did not
-get any notification they got applied.
+> Since the framework of KASAN_VMALLOC is well-developed,
+> It's easy to support for ARM that simply not to map shadow of VMALLOC
+> area on kasan_init.
+>
+> Since the virtual address of vmalloc for Arm is also between
+> MODULE_VADDR and 0x100000000 (ZONE_HIGHMEM), which means the shadow
+> address has already included between KASAN_SHADOW_START and
+> KASAN_SHADOW_END.
+> Thus we need to change nothing for memory map of Arm.
+>
+> This can fix ARM_MODULE_PLTS with KASan, support KASan for higmem
+> and support CONFIG_VMAP_STACK with KASan.
 
-> Do you want to send a follow-up patch also for sc8280xp?
+Excellent Lecopzer,
 
-Yes, sir! I'll constify that one as well.
+can you put these patches into Russell's patch tracker so he can pick them?
+https://www.armlinux.org.uk/developer/patches/
 
-
-Best regards,
-Krzysztof
+Yours,
+Linus Walleij
