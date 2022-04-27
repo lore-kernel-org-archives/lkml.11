@@ -2,123 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E3B1C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:48:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12FE3C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:48:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238745AbiD0Ovo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 10:51:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46526 "EHLO
+        id S238648AbiD0Ovr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 10:51:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238666AbiD0Ouc (ORCPT
+        with ESMTP id S238693AbiD0Oud (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 10:50:32 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1D443BA7D;
-        Wed, 27 Apr 2022 07:47:19 -0700 (PDT)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 23R81vYl014965;
-        Wed, 27 Apr 2022 07:47:16 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=pfpt0220;
- bh=6MEYlmBcPq8kn+ACy0R3VgoyuZ15TXQIe6ar9+vlJRk=;
- b=Ui3dNPF2QluBYoN8SECKk8HOGQs8RyrQIqKffCrahjBOhImtMPq2vOSN7D97V3FCZqsV
- LCV40YZs6R5LsDksVYagX74SBFA7UG+rRrFpKudH7QAiTydnq80Ht5RVgkC0XSr8m/kI
- 5wKBS/INEDMDbW6gUlFDTN8esOPKErkc8Wgui8NEVhoffHyS7nveZobVWcf6Q4OXKee3
- 2UVpBw7Upm+fIt8z/HZjMtRZkF+PhSGQR/K8ZX+S7SLm1NBIdCePMIWH0gUVGuZSoDtE
- 8ijJWO5a1G6gfITOslnWC72pX2kUpst259yWpiibFcaGXJG+1vYp7oeSdEzm43jJys6j 5w== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3fprt4k6v2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 27 Apr 2022 07:47:16 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 27 Apr
- 2022 07:47:14 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Wed, 27 Apr 2022 07:47:14 -0700
-Received: from localhost.localdomain (unknown [10.110.150.250])
-        by maili.marvell.com (Postfix) with ESMTP id 6CFFA5B6948;
-        Wed, 27 Apr 2022 07:47:14 -0700 (PDT)
-From:   Piyush Malgujar <pmalgujar@marvell.com>
-To:     <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>
-CC:     <linus.walleij@linaro.org>, <brgl@bgdev.pl>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <rric@kernel.org>,
-        <cchavva@marvell.com>, <wsadowski@marvell.com>,
-        Piyush Malgujar <pmalgujar@marvell.com>
-Subject: [PATCH 3/5] gpio: thunderx: Configure GPIO pins at probe
-Date:   Wed, 27 Apr 2022 07:46:18 -0700
-Message-ID: <20220427144620.9105-4-pmalgujar@marvell.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220427144620.9105-1-pmalgujar@marvell.com>
-References: <20220427144620.9105-1-pmalgujar@marvell.com>
+        Wed, 27 Apr 2022 10:50:33 -0400
+Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BFA43B297;
+        Wed, 27 Apr 2022 07:47:21 -0700 (PDT)
+Received: from in02.mta.xmission.com ([166.70.13.52]:55074)
+        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1njiwo-00H7U3-OG; Wed, 27 Apr 2022 08:47:18 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:35882 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1njiwn-00AnmM-Hj; Wed, 27 Apr 2022 08:47:18 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Oleg Nesterov <oleg@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
+        Will Deacon <will@kernel.org>, tj@kernel.org,
+        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        inux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>
+References: <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
+        <20220426225211.308418-6-ebiederm@xmission.com>
+        <20220427141018.GA17421@redhat.com>
+        <874k2ea9q4.fsf@email.froward.int.ebiederm.org>
+Date:   Wed, 27 Apr 2022 09:47:10 -0500
+In-Reply-To: <874k2ea9q4.fsf@email.froward.int.ebiederm.org> (Eric
+        W. Biederman's message of "Wed, 27 Apr 2022 09:20:51 -0500")
+Message-ID: <87zgk67fdd.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: 14M_RTwEzwoHuUHAtoOCpcRGZbihR07T
-X-Proofpoint-GUID: 14M_RTwEzwoHuUHAtoOCpcRGZbihR07T
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-27_04,2022-04-27_01,2022-02-23_01
+X-XM-SPF: eid=1njiwn-00AnmM-Hj;;;mid=<87zgk67fdd.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX1/9mpdQTyplIkPxPVrXFUt3r9iizls3AWY=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH 6/9] signal: Always call do_notify_parent_cldstop with
+ siglock held
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support to configure GPIO pins using DTS 'pin-cfg'
+"Eric W. Biederman" <ebiederm@xmission.com> writes:
 
-Signed-off-by: Piyush Malgujar <pmalgujar@marvell.com>
----
- drivers/gpio/gpio-thunderx.c | 29 +++++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+> Oleg Nesterov <oleg@redhat.com> writes:
+>
+>> On 04/26, Eric W. Biederman wrote:
+>>>
+>>> @@ -2164,7 +2166,9 @@ static void do_notify_parent_cldstop(struct task_struct *tsk,
+>>>   	}
+>>>
+>>>  	sighand = parent->sighand;
+>>> -	spin_lock_irqsave(&sighand->siglock, flags);
+>>> +	lock = tsk->sighand != sighand;
+>>> +	if (lock)
+>>> +		spin_lock_nested(&sighand->siglock, SINGLE_DEPTH_NESTING);
+>>
+>> But why is it safe?
+>>
+>> Suppose we have two tasks, they both trace each other, both call
+>> ptrace_stop() at the same time. Of course this is ugly, they both
+>> will block.
+>>
+>> But with this patch in this case we have the trivial ABBA deadlock,
+>> no?
+>
+> I was thinking in terms of the process tree (which is fine).
+>
+> The ptrace parental relationship definitely has the potential to be a
+> graph with cycles.  Which as you point out is not fine.
+>
+>
+> The result is very nice and I don't want to give it up.  I suspect
+> something ptrace cycles are always a problem and can simply be
+> forbidden.  That is going to take some analsysis and some additional
+> code in ptrace_attach.
+>
+> I will go look at that.
 
-diff --git a/drivers/gpio/gpio-thunderx.c b/drivers/gpio/gpio-thunderx.c
-index bb2b40e4033b00134af35592b6b7c7f83cf6c737..451c412512450fea717937376002d2ba35d1c508 100644
---- a/drivers/gpio/gpio-thunderx.c
-+++ b/drivers/gpio/gpio-thunderx.c
-@@ -426,6 +426,32 @@ static void *thunderx_gpio_populate_parent_alloc_info(struct gpio_chip *chip,
- 	return info;
- }
- 
-+static void thunderx_gpio_pinsel(struct device *dev,
-+				 struct thunderx_gpio *txgpio)
-+{
-+	struct device_node *node;
-+	const __be32 *pinsel;
-+	int npins, rlen, i;
-+	u32 pin, sel;
-+
-+	node = dev_of_node(dev);
-+	if (!node)
-+		return;
-+
-+	pinsel = of_get_property(node, "pin-cfg", &rlen);
-+	if (!pinsel || rlen % 2)
-+		return;
-+
-+	npins = rlen / sizeof(__be32) / 2;
-+
-+	for (i = 0; i < npins; i++) {
-+		pin = of_read_number(pinsel++, 1);
-+		sel = of_read_number(pinsel++, 1);
-+		dev_dbg(dev, "Set GPIO pin %d CFG register to %x\n", pin, sel);
-+		writeq(sel, txgpio->register_base + bit_cfg_reg(pin));
-+	}
-+}
-+
- static int thunderx_gpio_probe(struct pci_dev *pdev,
- 			       const struct pci_device_id *id)
- {
-@@ -548,6 +574,9 @@ static int thunderx_gpio_probe(struct pci_dev *pdev,
- 	if (err)
- 		goto out;
- 
-+	/* Configure default functions of GPIO pins */
-+	thunderx_gpio_pinsel(dev, txgpio);
-+
- 	/* Push on irq_data and the domain for each line. */
- 	for (i = 0; i < ngpio; i++) {
- 		struct irq_fwspec fwspec;
--- 
-2.17.1
+
+Hmm.  If we have the following process tree.
+
+    A
+     \
+      B
+       \
+        C
+
+Process A, B, and C are all in the same process group.
+Process A and B are setup to receive SIGCHILD when
+their process stops.
+
+Process C traces process A.
+
+When a sigstop is delivered to the group we can have:
+
+Process B takes siglock(B) siglock(A) to notify the real_parent
+Process C takes siglock(C) siglock(B) to notify the real_parent
+Process A takes siglock(A) siglock(C) to notify the tracer
+
+If they all take their local lock at the same time there is
+a deadlock.
+
+I don't think the restriction that you can never ptrace anyone
+up the process tree is going to fly.  So it looks like I am back to the
+drawing board for this one.
+
+Eric
+
+
+
+
+    
+
 
