@@ -2,1009 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C156BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:29:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60BC5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:31:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236101AbiD0Ncx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 09:32:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33532 "EHLO
+        id S235860AbiD0NeO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 09:34:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236081AbiD0Ncp (ORCPT
+        with ESMTP id S236131AbiD0Nd5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 09:32:45 -0400
-Received: from mo-csw.securemx.jp (mo-csw1514.securemx.jp [210.130.202.153])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49E1143AE5;
-        Wed, 27 Apr 2022 06:29:27 -0700 (PDT)
-Received: by mo-csw.securemx.jp (mx-mo-csw1514) id 23RDSsXO001891; Wed, 27 Apr 2022 22:28:54 +0900
-X-Iguazu-Qid: 34tKMNGQI7XTpuRrbk
-X-Iguazu-QSIG: v=2; s=0; t=1651066134; q=34tKMNGQI7XTpuRrbk; m=jaTS3+mnfMLU4holnXdOhIE32hf6PMV7iMp2cWpZfqw=
-Received: from imx12-a.toshiba.co.jp (imx12-a.toshiba.co.jp [61.202.160.135])
-        by relay.securemx.jp (mx-mr1511) id 23RDSrI3004341
-        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 27 Apr 2022 22:28:53 +0900
-X-SA-MID: 3264137
-From:   Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org, yuji2.ishikawa@toshiba.co.jp
-Subject: [PATCH v2 3/4] soc: visconti: Add Toshiba Visconti AFFINE image processing accelerator
-Date:   Wed, 27 Apr 2022 22:23:44 +0900
-X-TSB-HOP2: ON
-Message-Id: <20220427132345.27327-4-yuji2.ishikawa@toshiba.co.jp>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220427132345.27327-1-yuji2.ishikawa@toshiba.co.jp>
-References: <20220427132345.27327-1-yuji2.ishikawa@toshiba.co.jp>
+        Wed, 27 Apr 2022 09:33:57 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2072.outbound.protection.outlook.com [40.107.223.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C27E47ACA
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 06:30:46 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MC0+hB1cwyX64i1jFmuhzkqcWYGvu863CUkuUx+QEtzBcsoxX6R/7H7ybosXpDBrHt4nC2d9XED7w2fgwouX2f8lnDCDD/hd/IJiw0ad2GqN0JTQc9hu3vvlXx13EO7PHyWVn4Mb40mgfG/eX/tFjKSnQ0zAaBi0fxjhKJ0ubkRamqI9Uz6tG9dnMiTPMc+MCdIcE5AG98+ijugWz42H3NLMXNxERf2tgkshlMIjef6m3cZqFMwAPkW0pFIOgjmDBX1Nbt3DTF6xETtogWzUVfncVUXhN/8jGKjVXP0RFvVUlC4FUdvZp4+Lbm50oyQ/YVpj9YsyRRm+TCjJ+iKjJw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=AF08QgFJ+b3+2ughpEGnkgzgCAGM2cMpZLowjOWHwwM=;
+ b=G2JauI/Il7hO4C4kyUyKP0Uh/QDgKi+wSd35iy1M05yh1J9KXX7L/S1sIdjc81j7cjkGOOM6qWWM+cjtIUsugSd8spPp4kzUQnznel2YGuGXTz7R4uu98Kw/hKYZK1SsRyM3MB6NwBCdeM86MZP3loHuzSDDPjCxgrXz4aDrR4uS2tcG/mD7HMJKBM/wXmxJrSiUtqxwM70t25jukAD2l0I86dH53Ax3kJXiGYk8iGhz8DKcLA/U6JmEaK9Od6Ohs81FMhBvMURgc66h0c00oyQyDxKFWj0LLexht401VlIAFpuKMbEHC8wk6yaBIgViSkFxv61XJCUtXzl2Rf+nEw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AF08QgFJ+b3+2ughpEGnkgzgCAGM2cMpZLowjOWHwwM=;
+ b=S7TGHpyZapMsw9CtZjN8egmCnL1Z+I+B6oagMCig2dgW2wnc1gRirWc3di+r2Zw6m0uwZwnddwgMtVlVF5Ks0DI6hLb7h0CTidRcTFKShC9bW+VzxB4dYBByZJSTL8q0hphPxvx+J+psDrcnbrmv3KJ0TK5LuvvEW7n49eAjNmpNket1jOr+Z4RiLQ5xiYXBCY/19mAZlfHoTsZXzVk2fHBeAQLyydV2plhfVTRfWokbRPB18I0v5vVOPfR6ooG/ENGHPTlMvGLXCnHWezFHHjoa+jSNMpU4My0HZN5y/al7aUxNVbGROm4nR8A3IpYBNiyDCVqVo00QJRNT5g5y+w==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB3823.namprd12.prod.outlook.com (2603:10b6:208:168::26)
+ by MN2PR12MB3008.namprd12.prod.outlook.com (2603:10b6:208:c8::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.13; Wed, 27 Apr
+ 2022 13:30:43 +0000
+Received: from MN2PR12MB3823.namprd12.prod.outlook.com
+ ([fe80::920:970d:6f94:1f10]) by MN2PR12MB3823.namprd12.prod.outlook.com
+ ([fe80::920:970d:6f94:1f10%4]) with mapi id 15.20.5206.013; Wed, 27 Apr 2022
+ 13:30:43 +0000
+From:   Zi Yan <ziy@nvidia.com>
+To:     Qian Cai <quic_qiancai@quicinc.com>
+Cc:     David Hildenbrand <david@redhat.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Eric Ren <renzhengeek@gmail.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        Oscar Salvador <osalvador@suse.de>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH v11 0/6] Use pageblock_order for cma and alloc_contig_range alignment.
+Date:   Wed, 27 Apr 2022 09:30:41 -0400
+X-Mailer: MailMate (1.14r5870)
+Message-ID: <1D88AE1B-4DFC-400F-A054-662E3824C9AF@nvidia.com>
+In-Reply-To: <20220427132720.GC71@qian>
+References: <20220425143118.2850746-1-zi.yan@sent.com>
+ <20220426201855.GA1014@qian>
+ <B621B4DD-5D11-4F0E-AFF5-F8684AE37E57@nvidia.com>
+ <20220426210801.GA1038@qian>
+ <2B9844C8-6D35-41E2-ACB2-9854E7A9C29F@nvidia.com> <20220427132720.GC71@qian>
+Content-Type: multipart/signed;
+ boundary="=_MailMate_0AB0F1C2-2034-487C-BA7A-581A3A5B18CC_=";
+ micalg=pgp-sha512; protocol="application/pgp-signature"
+X-ClientProxiedBy: BL1PR13CA0396.namprd13.prod.outlook.com
+ (2603:10b6:208:2c2::11) To MN2PR12MB3823.namprd12.prod.outlook.com
+ (2603:10b6:208:168::26)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: afef5d9f-f250-4d62-7282-08da28522116
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3008:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR12MB30086CD7BE57FAB44AFE25A4C2FA9@MN2PR12MB3008.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: UUBFljBLbkyW1kyfP/tq6x27beLYf17yRA7BVMG2QEPKTZ0cGFnAd0/92iNofh1LFbKhl/PefiL5LJqi7SXboeJ05cPFz2q1R2BzXXcpAjTHVwBl3/k5lR2jaq+b0nOA/WiV8WSoOyGvIz2yA3uRpJjMkmoKiwNZb3+s78OPh/4dp/9Ffki6HbeqowE3TA/EAqaUwlXlV7ByaLT4NrFu67Ea3PGKoQCpSo4G75ooOU14QZ/y8B/ko4JywXiBp88ZrhThwRisfMoXV9NxAt7ofQzbSjRXbropMHPbADoSJClVXRjmL4QaeAriapyIVDs0AR2q0jX77OLAc7tMOff9oCgnhZa0FQQiVGfyqsVxbZv1qO5eyTz/x524eGE6BvTD+Op87P9skobfwXuzfS5rWPrFAvBcwOSxLQ1f/tNcR2Hsjy23kas1lHqnhNzvk1k1U/puKoJVa+ywWBQ+1WUQM7cZOEhEW1q0oR9IAI0oMmZo+Y+RgoXdNpTGFfzSdkO0G0pIfivxoYenLt+vYCnLufTS8RTAYKxs1F1JmdlqbhltDH/NjxEMbfOKPbCNtiG25shb2qoUaH6BOWD6A+RXHt/iymskKXYNzux45w2RhDcuGDz81HndaTElsIeFrN46yxSKflkd188mbPiDPQz0uauFTBHXg2YImje4U92UEcbxPOzkTFU5Xpg5utsvcXtRIR9suvY5YXzWgwPdFxkP7TjvQx7UNOfWjJRX0ITsxuo=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB3823.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6916009)(66476007)(53546011)(26005)(21480400003)(6512007)(8936002)(83380400001)(66556008)(66946007)(6506007)(316002)(54906003)(4326008)(6486002)(38100700002)(508600001)(86362001)(2616005)(8676002)(7416002)(235185007)(5660300002)(186003)(36756003)(33656002)(2906002)(45980500001)(72826004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?cyrPS4zvkTXM0tAZ68/detitRpdhXJeCrXVXe41m+AnqvylXIq2wHOlJN5pR?=
+ =?us-ascii?Q?5fiWUbJdMEW3EaK7aoHFhplRHgsBXeRO3CrBwqwW9m8ub6lTXhMBJQ5XG5dO?=
+ =?us-ascii?Q?x/Bg8Y8Ft2NPmaIvkKM7BH6e4g9bN69qTGyUXoJn+d9j96yliIQIWuNJWzLq?=
+ =?us-ascii?Q?gw6hyodG3p9BrKIcOaMKPItrexShiw5s97Vt4UOfLrWYHv4TUMCM6sDXWQjV?=
+ =?us-ascii?Q?o/JPZUEUgmz5u9Lbz02LRSrFp526TNex7R399sG9zMIXpO4ZITa1ct9c9mlp?=
+ =?us-ascii?Q?wJcY3wFKjS25FYMEHNrtHigcxhN2R0GozNff8X8fA1Ml8dIYxvHAaLBGXshp?=
+ =?us-ascii?Q?gZ+VxW2bG6PZXoE7UaIO8sHiE28hukzO78OgbXgd3X1+9We2qu+N8jlSFbdy?=
+ =?us-ascii?Q?EV7rMpHpehTPuCiGly1EOYuolnUlKBJyRoQqkLjAAgNAH2M+cJl7ERJYScdu?=
+ =?us-ascii?Q?8LFugr4ZK4mUCnbwhDwYqGp5TPnNYuDKayZcThT+Do7Rk/+zfO864ExFU4PL?=
+ =?us-ascii?Q?AZJ8qapMgZKwuMyJZCpW/Iq6f75vuXvNCPoEhfWOxKyA0iwwzrCGgkdLxXLH?=
+ =?us-ascii?Q?ipnTrYOLtkFbAqYyGLGIPiDVDqU2f6JpXozCJC0nxuBhr7kvTOCsJAHwy48x?=
+ =?us-ascii?Q?5BV4sRQ4rAzk4sLUrkWV91Rz5KTt2TiiAeS/G4A1j3LbhBfKbJN8RS+MZ5YT?=
+ =?us-ascii?Q?9hpO7YzQ7mb6lAIF+qHQod5qws2kfqOML2dTrFzwyE15xPuN2WoZbscyG4hP?=
+ =?us-ascii?Q?g1iCNucIKRBV07QkTsmme0CNO9YezvhU1f5GZP7L4I9zdmU4vQ9xvT6ZuZeu?=
+ =?us-ascii?Q?niKULIOe8TRREg80wHwdpnc9bL4zHlcZt1C54BpXG1j3sIp9vxe/1j/kSVMG?=
+ =?us-ascii?Q?px7fsN2w4p/4FfrZwl+Vh6LXnGKGkFjGXjqdCIfSeh4HAEaZdTAagMMenCWv?=
+ =?us-ascii?Q?kcDWLrOg2R2ojml2i50D3ZWQ+pXCwabQHJzqMsFeHE4VnmgRMs/kmeBwNcSg?=
+ =?us-ascii?Q?3tfLydRr1wYAwFJnCyx9BlTIhAI/4nwNTOJQANUbZi1xBEgAW1wI6WZ11Co+?=
+ =?us-ascii?Q?2rJTB/yMvmiNF6B2JfSjCpdanwFkeWTcELOpgTldvh5/EmqMEJXoeY0YZgVd?=
+ =?us-ascii?Q?jpt36LqS2temkbvTl55nqR3tAFPO11F3eTnFtjTEOgAJOiwv72n2e95fOuWk?=
+ =?us-ascii?Q?2RkiGL+xogkajy32ymMOVkusLMZWuPutYXTo61tf+bLryMWfeZXTDs1a/vJc?=
+ =?us-ascii?Q?idr9FF/1bVzmNXsYHiQ45ASm/APMvoCWmNu28vmjOm54xBgwKeIeYpsNtYs9?=
+ =?us-ascii?Q?F/+lgJ0pAuHIga+2H/C+DmtyMYlp4N/ILtr+71qRnA26Bcs5Lvtmk9WbZJMi?=
+ =?us-ascii?Q?Yt+Zhs4nB/fLqwT+CYDi+9T6vcbJucYS3Ros+tP1K77WUpxj31EZi2NCv5QC?=
+ =?us-ascii?Q?VWRoJ1AG6/hqgfPmtJf6uZVSSLE2mGXHzOjaaDjQbkCpm+pzVC5WTSwQ6nyH?=
+ =?us-ascii?Q?hKnr42ym6XJ5RHiAIIhubeB74bS1gabArnyK3LEQ6t6oy1uHXG3OBpzWk+kK?=
+ =?us-ascii?Q?hopUAEh9xGJT4pXpFfXcaqeNUqYAkcQFIE78wDmnsagpJjYNdIJrWItBEtn0?=
+ =?us-ascii?Q?bdFsmK+hBvok68d1v/b/vmI23//C6wQdcyqq558WMsLkc2CZVWmDTXuuivu8?=
+ =?us-ascii?Q?Qs4OcocqBcywjqofNF2WERLFxNUC7pRPnTDNx7VeULrJ8x+qKQobgDAmpbUf?=
+ =?us-ascii?Q?5z9yh7rPjQ=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: afef5d9f-f250-4d62-7282-08da28522116
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB3823.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Apr 2022 13:30:43.5769
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7/EgzbDR66FpLz7Ly3ecN1ROMqD3b416yqqVa3KSaVwChmmXgKRMT10UV2LN/oR2
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3008
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adds support to AFFINE image processing accelerator on Toshiba Visconti ARM SoCs.
-This accelerator supoorts affine transform, lens undistortion and LUT transform.
+--=_MailMate_0AB0F1C2-2034-487C-BA7A-581A3A5B18CC_=
+Content-Type: text/plain
 
-Signed-off-by: Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
-Reviewed-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
----
-v1 -> v2:
-  - apply checkpatch.pl --strict
-  - renamed identifiers; hwd_AFFINE_xxxx to hwd_affine_xxxx
----
- drivers/soc/visconti/Kconfig                 |   6 +
- drivers/soc/visconti/Makefile                |   2 +
- drivers/soc/visconti/affine/Makefile         |   6 +
- drivers/soc/visconti/affine/affine.c         | 451 +++++++++++++++++++
- drivers/soc/visconti/affine/hwd_affine.c     | 206 +++++++++
- drivers/soc/visconti/affine/hwd_affine.h     |  83 ++++
- drivers/soc/visconti/affine/hwd_affine_reg.h |  45 ++
- drivers/soc/visconti/uapi/affine.h           |  87 ++++
- 8 files changed, 886 insertions(+)
- create mode 100644 drivers/soc/visconti/affine/Makefile
- create mode 100644 drivers/soc/visconti/affine/affine.c
- create mode 100644 drivers/soc/visconti/affine/hwd_affine.c
- create mode 100644 drivers/soc/visconti/affine/hwd_affine.h
- create mode 100644 drivers/soc/visconti/affine/hwd_affine_reg.h
- create mode 100644 drivers/soc/visconti/uapi/affine.h
+On 27 Apr 2022, at 9:27, Qian Cai wrote:
 
-diff --git a/drivers/soc/visconti/Kconfig b/drivers/soc/visconti/Kconfig
-index 8b1378917..01583d407 100644
---- a/drivers/soc/visconti/Kconfig
-+++ b/drivers/soc/visconti/Kconfig
-@@ -1 +1,7 @@
-+if ARCH_VISCONTI
-+
-+config VISCONTI_AFFINE
-+    bool "Visconti Affine driver"
-+
-+endif
- 
-diff --git a/drivers/soc/visconti/Makefile b/drivers/soc/visconti/Makefile
-index 8d710da08..b25a726c3 100644
---- a/drivers/soc/visconti/Makefile
-+++ b/drivers/soc/visconti/Makefile
-@@ -4,3 +4,5 @@
- #
- 
- obj-y += ipa_common.o
-+
-+obj-$(CONFIG_VISCONTI_AFFINE) += affine/
-diff --git a/drivers/soc/visconti/affine/Makefile b/drivers/soc/visconti/affine/Makefile
-new file mode 100644
-index 000000000..82f83b2d6
---- /dev/null
-+++ b/drivers/soc/visconti/affine/Makefile
-@@ -0,0 +1,6 @@
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Makefile for the Visconti AFFINE driver
-+#
-+
-+obj-y += affine.o hwd_affine.o
-diff --git a/drivers/soc/visconti/affine/affine.c b/drivers/soc/visconti/affine/affine.c
-new file mode 100644
-index 000000000..eea045dcf
---- /dev/null
-+++ b/drivers/soc/visconti/affine/affine.c
-@@ -0,0 +1,451 @@
-+// SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
-+/* Toshiba Visconti Affine Accelerator Support
-+ *
-+ * (C) Copyright 2022 TOSHIBA CORPORATION
-+ * (C) Copyright 2022 Toshiba Electronic Devices & Storage Corporation
-+ */
-+
-+#include <linux/delay.h>
-+#include <linux/init.h>
-+#include <linux/interrupt.h>
-+#include <linux/iommu.h>
-+#include <linux/kernel.h>
-+#include <linux/miscdevice.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
-+#include <linux/of_device.h>
-+#include <linux/platform_device.h>
-+#include <linux/poll.h>
-+#include <linux/wait.h>
-+
-+#include "hwd_affine.h"
-+#include "../ipa_common.h"
-+#include "../uapi/affine.h"
-+
-+struct affine_priv {
-+	struct device *dev;
-+	struct miscdevice miscdev;
-+	struct mutex lock;
-+	void __iomem *regs;
-+	int irq;
-+	wait_queue_head_t waitq;
-+	enum drv_ipa_state status;
-+	unsigned int hwd_event;
-+	unsigned int poll_event;
-+	int id;
-+	char name[16];
-+	bool dma_coherent;
-+	struct hwd_affine_status hwd_status;
-+
-+	struct dma_buf_attachment *dba[DRV_AFFINE_BUFFER_INDEX_MAX];
-+	struct sg_table *sgt[DRV_AFFINE_BUFFER_INDEX_MAX];
-+	enum dma_data_direction dma_dir[DRV_AFFINE_BUFFER_INDEX_MAX];
-+	unsigned int dma_count;
-+
-+	dma_addr_t buffer_iova[DRV_AFFINE_BUFFER_INDEX_MAX];
-+};
-+
-+static u32 affine_ipa_addr_to_iova(struct affine_priv *priv, struct drv_ipa_addr addr)
-+{
-+	u32 iova = 0;
-+
-+	if (addr.buffer_index < priv->dma_count &&
-+	    addr.offset < priv->dba[addr.buffer_index]->dmabuf->size)
-+		iova = priv->buffer_iova[addr.buffer_index] + addr.offset;
-+	return iova;
-+}
-+
-+static int affine_attach_dma_buf(struct affine_priv *priv, unsigned int buffer_index,
-+				 struct drv_ipa_buffer_info *buffer_info)
-+{
-+	int ret = 0;
-+	dma_addr_t addr;
-+
-+	if (buffer_index >= DRV_AFFINE_BUFFER_INDEX_MAX) {
-+		dev_err(priv->dev, "Buffer index invalid: index=%d\n", buffer_index);
-+		return -EINVAL;
-+	}
-+
-+	switch (buffer_info[buffer_index].direction) {
-+	case DRV_IPA_DIR_NONE:
-+		priv->dma_dir[priv->dma_count] = DMA_NONE;
-+		break;
-+	case DRV_IPA_DIR_TO_DEVICE:
-+		priv->dma_dir[priv->dma_count] = DMA_TO_DEVICE;
-+		break;
-+	case DRV_IPA_DIR_FROM_DEVICE:
-+		priv->dma_dir[priv->dma_count] = DMA_FROM_DEVICE;
-+		break;
-+	case DRV_IPA_DIR_BIDIRECTION:
-+		priv->dma_dir[priv->dma_count] = DMA_BIDIRECTIONAL;
-+		break;
-+	default:
-+		dev_err(priv->dev, "DMA direction invalid: index=%d dir=%d\n", buffer_index,
-+			buffer_info[buffer_index].direction);
-+		return -EINVAL;
-+	}
-+
-+	if (!buffer_info[buffer_index].coherent) {
-+		priv->dev->dma_coherent = false;
-+		if (priv->dma_coherent)
-+			priv->dma_dir[priv->dma_count] = DMA_NONE;
-+	}
-+
-+	ret = ipa_attach_dmabuf(priv->dev, buffer_info[buffer_index].fd,
-+				&priv->dba[priv->dma_count], &priv->sgt[priv->dma_count], &addr,
-+				priv->dma_dir[priv->dma_count]);
-+	if (ret == 0) {
-+		priv->dma_count++;
-+		priv->buffer_iova[buffer_index] = addr;
-+	}
-+
-+	priv->dev->dma_coherent = priv->dma_coherent;
-+
-+	return ret;
-+}
-+
-+static void affine_detach_dma_buf(struct affine_priv *priv)
-+{
-+	struct dma_buf *dmabuf;
-+	int i;
-+
-+	for (i = 0; i < priv->dma_count; i++) {
-+		dmabuf = priv->dba[i]->dmabuf;
-+		dma_buf_unmap_attachment(priv->dba[i], priv->sgt[i], priv->dma_dir[i]);
-+		dma_buf_detach(dmabuf, priv->dba[i]);
-+		dma_buf_put(dmabuf);
-+	}
-+}
-+
-+static irqreturn_t affine_irq(int irq, void *dev_id)
-+{
-+	struct affine_priv *priv = dev_id;
-+
-+	priv->hwd_event = hwd_affine_irq_handler(priv->id);
-+
-+	disable_irq_nosync(priv->irq);
-+
-+	return IRQ_WAKE_THREAD;
-+}
-+
-+static irqreturn_t affine_irq_thread(int irq, void *dev_id)
-+{
-+	struct affine_priv *priv = dev_id;
-+	unsigned long delay = 1;
-+
-+	mutex_lock(&priv->lock);
-+	affine_detach_dma_buf(priv);
-+
-+	hwd_affine_get_status(priv->id, &priv->hwd_status);
-+
-+	priv->status = DRV_IPA_STATE_IDLE;
-+
-+	/* status should be updated before poll_event so that
-+	 * when poll() returns, user context must observe state as idle
-+	 */
-+	smp_wmb();
-+
-+	if (priv->hwd_event == HWD_AFFINE_EVENT_DONE)
-+		priv->poll_event = IPA_POLL_EVENT_DONE;
-+	else
-+		priv->poll_event = IPA_POLL_EVENT_ERROR;
-+
-+	/* General barrier to avoid re-ordering of priv->poll_event=N and
-+	 * waitqueue_active()
-+	 */
-+	smp_mb();
-+
-+	/* Threads going to sleep in poll() can miss wakeup, when wakeup is done
-+	 * between event check in ipa_poll() and sleeping. Wakeup repeatedly.
-+	 */
-+	while (waitqueue_active(&priv->waitq)) {
-+		wake_up_interruptible(&priv->waitq);
-+
-+		WARN_ON(delay > IPA_WAKEUP_RETRY_DELAY);
-+		usleep_range(delay, delay + 1);
-+		delay += delay;
-+	}
-+
-+	mutex_unlock(&priv->lock);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static void affine_start(struct affine_priv *priv, struct hwd_affine_descriptor *desc)
-+{
-+	hwd_affine_start(priv->id, desc);
-+}
-+
-+static int affine_ioctl_start(struct affine_priv *priv, unsigned long arg)
-+{
-+	struct hwd_affine_descriptor hwd_desc;
-+	struct drv_affine_descriptor desc;
-+	int ret = 0;
-+	int i;
-+
-+	ret = mutex_lock_interruptible(&priv->lock);
-+	if (ret)
-+		return ret;
-+
-+	if (priv->status == DRV_IPA_STATE_BUSY) {
-+		dev_dbg(priv->dev, "busy: %d\n", priv->status);
-+		ret = -EBUSY;
-+		goto err1;
-+	}
-+
-+	if (copy_from_user(&desc, (void __user *)arg, sizeof(struct drv_affine_descriptor))) {
-+		dev_err(priv->dev, "Descriptor memory access error\n");
-+		ret = -EFAULT;
-+		goto err1;
-+	}
-+
-+	if (DRV_AFFINE_BIT_CONFIG_DESC_FINAL !=
-+	    (desc.config_done & DRV_AFFINE_BIT_CONFIG_DESC_FINAL)) {
-+		dev_err(priv->dev, "Descriptor configuration not complete\n");
-+		ret = -EINVAL;
-+		goto err1;
-+	}
-+
-+	priv->dma_count = 0;
-+
-+	/* setup buffer */
-+	for (i = 0; i < desc.buffer_info_num; i++) {
-+		ret = affine_attach_dma_buf(priv, i, desc.buffer_info);
-+		if (ret) {
-+			dev_err(priv->dev, "dma buf attach error: index=%d\n", i);
-+			goto err2;
-+		}
-+		dev_dbg(priv->dev, "@buffer[%d]@: fd=%d %s iova=%llx\n", i, desc.buffer_info[i].fd,
-+			desc.buffer_info[i].coherent ? "coherent" : "non-coherent",
-+			(uint64_t)priv->buffer_iova[i]);
-+	}
-+
-+	memcpy(&hwd_desc, &desc, sizeof(struct hwd_affine_descriptor));
-+
-+	hwd_desc.src_addr = affine_ipa_addr_to_iova(priv, desc.src_addr);
-+	if (hwd_desc.src_addr == 0) {
-+		dev_err(priv->dev, "IPA address to iova conversion error: src_addr %s: %d\n",
-+			__func__, __LINE__);
-+		ret = -EINVAL;
-+		goto err2;
-+	}
-+
-+	hwd_desc.dst_addr = affine_ipa_addr_to_iova(priv, desc.dst_addr);
-+	if (hwd_desc.dst_addr == 0) {
-+		dev_err(priv->dev, "IPA address to iova conversion error: dst_addr %s: %d\n",
-+			__func__, __LINE__);
-+		ret = -EINVAL;
-+		goto err2;
-+	}
-+
-+	hwd_desc.tbl_addr = 0;
-+	if (desc.tbl_ptch != 0) {
-+		hwd_desc.tbl_addr = affine_ipa_addr_to_iova(priv, desc.tbl_addr);
-+		if (hwd_desc.tbl_addr == 0) {
-+			dev_err(priv->dev,
-+				"IPA address to iova conversion error: tbl_addr %s: %d\n", __func__,
-+				__LINE__);
-+			ret = -EINVAL;
-+			goto err2;
-+		}
-+	}
-+
-+	dev_dbg(priv->dev, "src: 0x%x\n", hwd_desc.src_addr);
-+	dev_dbg(priv->dev, "dst: 0x%x\n", hwd_desc.dst_addr);
-+	dev_dbg(priv->dev, "tbl: 0x%x\n", hwd_desc.tbl_addr);
-+
-+	affine_start(priv, &hwd_desc);
-+
-+	priv->poll_event = IPA_POLL_EVENT_NONE;
-+	priv->hwd_event = 0;
-+	priv->status = DRV_IPA_STATE_BUSY;
-+	/* Barrier to prevent affine_irq() from setting priv->hwd_event
-+	 * before it is reset above
-+	 */
-+	smp_wmb();
-+	enable_irq(priv->irq);
-+
-+	mutex_unlock(&priv->lock);
-+
-+	return ret;
-+
-+err2:
-+	affine_detach_dma_buf(priv);
-+err1:
-+	mutex_unlock(&priv->lock);
-+	return ret;
-+}
-+
-+static int affine_ioctl_get_status(struct affine_priv *priv, unsigned long arg)
-+{
-+	struct drv_affine_status status;
-+	struct hwd_affine_status hwd_status;
-+	int ret = 0;
-+
-+	ret = mutex_lock_interruptible(&priv->lock);
-+	if (ret)
-+		return ret;
-+
-+	if (priv->status == DRV_IPA_STATE_BUSY)
-+		hwd_affine_get_status(priv->id, &hwd_status);
-+	else
-+		hwd_status = priv->hwd_status;
-+
-+	status.state = priv->status;
-+	mutex_unlock(&priv->lock);
-+
-+	status.comp_lack_data = hwd_status.comp_lack_data;
-+	status.comp_over_coordinate = hwd_status.comp_over_coordinate;
-+	status.comp_over_data = hwd_status.comp_over_data;
-+	status.comp_size = hwd_status.comp_size;
-+	status.comp_syntax_error = hwd_status.comp_syntax_error;
-+	if (copy_to_user((void __user *)arg, &status, sizeof(struct drv_affine_status))) {
-+		dev_err(priv->dev, "status memory access error\n");
-+		ret = -EFAULT;
-+	}
-+
-+	return ret;
-+}
-+
-+static long affine_ioctl(struct file *fp, unsigned int cmd, unsigned long arg)
-+{
-+	struct affine_priv *priv = container_of(fp->private_data, struct affine_priv, miscdev);
-+	int ret = 0;
-+
-+	switch (cmd) {
-+	case IOC_IPA_START:
-+		ret = affine_ioctl_start(priv, arg);
-+		break;
-+	case IOC_IPA_GET_STATUS:
-+		ret = affine_ioctl_get_status(priv, arg);
-+		break;
-+	default:
-+		ret = -ENOIOCTLCMD;
-+		break;
-+	}
-+
-+	return ret;
-+}
-+
-+static __poll_t affine_poll(struct file *fp, poll_table *wait)
-+{
-+	struct affine_priv *priv = container_of(fp->private_data, struct affine_priv, miscdev);
-+	__poll_t mask = 0;
-+	unsigned int poll_event;
-+
-+	poll_wait(fp, &priv->waitq, wait);
-+
-+	/* Barrier to avoid re-ordering of poll_wait() and event load
-+	 * Read barrier here and release barrier in poll_wait() together will
-+	 * prevent re-ordering
-+	 */
-+	smp_rmb();
-+	poll_event = priv->poll_event;
-+	if (poll_event != IPA_POLL_EVENT_NONE) {
-+		if (poll_event == IPA_POLL_EVENT_DONE)
-+			mask = EPOLLIN | EPOLLRDNORM;
-+		else
-+			mask = EPOLLERR;
-+	}
-+	return mask;
-+}
-+
-+static const struct file_operations affine_fops = {
-+	.owner = THIS_MODULE,
-+	.unlocked_ioctl = affine_ioctl,
-+	.poll = affine_poll,
-+};
-+
-+static int affine_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct affine_priv *priv;
-+	int ret;
-+
-+	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	mutex_init(&priv->lock);
-+
-+	/* update DMA mask */
-+	priv->dma_coherent = dev->dma_coherent;
-+	ret = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(36));
-+	if (ret)
-+		return ret;
-+
-+	priv->regs = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(priv->regs))
-+		return PTR_ERR(priv->regs);
-+
-+	priv->irq = platform_get_irq(pdev, 0);
-+	if (priv->irq < 0) {
-+		dev_err(dev, "failed to acquire irq resource\n");
-+		return -ENOENT;
-+	}
-+	ret = devm_request_threaded_irq(dev, priv->irq, affine_irq, affine_irq_thread, 0, "affine",
-+					priv);
-+	if (ret) {
-+		dev_err(dev, "irq request failed\n");
-+		return ret;
-+	}
-+	disable_irq(priv->irq);
-+
-+	ret = of_property_read_u32(dev->of_node, "index", &priv->id);
-+	if (ret) {
-+		dev_err(dev, "failed to acquire irq resource\n");
-+		return ret;
-+	}
-+
-+	hwd_affine_initialize(priv->id, priv->regs);
-+
-+	snprintf(priv->name, sizeof(priv->name), "affine%d", priv->id);
-+	priv->miscdev.minor = MISC_DYNAMIC_MINOR;
-+	priv->miscdev.name = priv->name;
-+	priv->miscdev.fops = &affine_fops;
-+	ret = misc_register(&priv->miscdev);
-+	if (ret) {
-+		dev_err(dev, "misc registration failed\n");
-+		hwd_affine_uninitialize(priv->id);
-+		return ret;
-+	}
-+
-+	priv->dev = dev;
-+	platform_set_drvdata(pdev, priv);
-+
-+	init_waitqueue_head(&priv->waitq);
-+
-+	priv->status = DRV_IPA_STATE_IDLE;
-+	return 0;
-+}
-+
-+static int affine_remove(struct platform_device *pdev)
-+{
-+	struct affine_priv *priv = platform_get_drvdata(pdev);
-+
-+	misc_deregister(&priv->miscdev);
-+	hwd_affine_uninitialize(priv->id);
-+	return 0;
-+}
-+
-+static const struct of_device_id affine_of_match[] = {
-+	{
-+		.compatible = "toshiba,visconti-affine",
-+	},
-+	{},
-+};
-+MODULE_DEVICE_TABLE(platform, affine_of_match);
-+
-+static struct platform_driver affine_driver = {
-+	.probe = affine_probe,
-+	.remove = affine_remove,
-+	.driver = {
-+		.name = "visconti_affine",
-+		.of_match_table = of_match_ptr(affine_of_match),
-+	},
-+};
-+module_platform_driver(affine_driver);
-+
-+MODULE_AUTHOR("Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>");
-+MODULE_DESCRIPTION("Toshiba Visconti affine driver");
-+MODULE_LICENSE("Dual BSD/GPL");
-diff --git a/drivers/soc/visconti/affine/hwd_affine.c b/drivers/soc/visconti/affine/hwd_affine.c
-new file mode 100644
-index 000000000..6720a0212
---- /dev/null
-+++ b/drivers/soc/visconti/affine/hwd_affine.c
-@@ -0,0 +1,206 @@
-+// SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
-+/* Toshiba Visconti Affine Accelerator Support
-+ *
-+ * (C) Copyright 2022 TOSHIBA CORPORATION
-+ * (C) Copyright 2022 Toshiba Electronic Devices & Storage Corporation
-+ */
-+
-+#include <linux/delay.h>
-+#include <linux/io.h>
-+
-+#include "hwd_affine.h"
-+#include "hwd_affine_reg.h"
-+
-+#define HWD_AFFINE_CLEAR_BITS	  GENMASK(15, 0)
-+#define HWD_AFFINE_INTMASK_NORMAL (0x04100)
-+
-+#define HWD_AFFINE_INT_END	  BIT(0)
-+#define HWD_AFFINE_INT_TCOMP_ERR0 BIT(16)
-+#define HWD_AFFINE_INT_TCOMP_ERR1 BIT(17)
-+#define HWD_AFFINE_INT_TCOMP_ERR2 BIT(18)
-+#define HWD_AFFINE_INT_TCOMP_ERR3 BIT(19)
-+#define HWD_AFFINE_INT_TCOMP_SIZE BIT(20)
-+
-+#define HWD_AFFINE_HWD_MASK_ADDR GENMASK(31, 0)
-+
-+#define HWD_AFFINE_START_CMD BIT(0)
-+
-+/**
-+ * struct hwd_affine_resources - HWD driver internal resource structure
-+ */
-+struct hwd_affine_resources {
-+	struct hwd_affine_reg *reg;
-+	struct hwd_affine_status status;
-+};
-+
-+/* HWD driver internal resource */
-+static struct hwd_affine_resources hwd_affine_resources[HWD_AFFINE_DEVICE_MAX] = {};
-+
-+/**
-+ * hwd_affine_initialize() - Initialize AFFINE device
-+ *
-+ * @module_id: @ref hwd_affine_device "id" of the h/w module
-+ * @vaddr: register base virtual address
-+ */
-+void hwd_affine_initialize(u32 module_id, void *vaddr)
-+{
-+	struct hwd_affine_resources *res = &hwd_affine_resources[module_id];
-+
-+	/* Initialize the device */
-+	res->reg = (struct hwd_affine_reg *)vaddr;
-+}
-+
-+/**
-+ * hwd_affine_uninitialize() - Uninitialize AFFINE device
-+ *
-+ * @module_id: @ref hwd_affine_device "id" of the h/w module
-+ */
-+void hwd_affine_uninitialize(u32 module_id)
-+{
-+	struct hwd_affine_resources *res = &hwd_affine_resources[module_id];
-+
-+	/* Deinitialize the device */
-+	res->reg = NULL;
-+}
-+
-+#define NUM_AFFINE_PARAMS  6
-+#define NUM_HOMO_PARAMS	   3
-+#define NUM_DISTORT_PARAMS 12
-+
-+/**
-+ * hwd_affine_start() - Start AFFINE device
-+ *
-+ * @module_id: @ref hwd_affine_device "id" of the h/w module
-+ * @desc: Pointer to AFFINE descriptor structure
-+ */
-+void hwd_affine_start(u32 module_id, const struct hwd_affine_descriptor *desc)
-+{
-+	struct hwd_affine_resources *res = &hwd_affine_resources[module_id];
-+	struct hwd_affine_reg *reg;
-+	int i;
-+
-+	reg = res->reg;
-+
-+	/* Initialize status */
-+	res->status.comp_syntax_error = 0;
-+	res->status.comp_over_coordinate = 0;
-+	res->status.comp_over_data = 0;
-+	res->status.comp_lack_data = 0;
-+	res->status.comp_size = 0;
-+
-+	/* Clear interrupt status */
-+	writel(HWD_AFFINE_CLEAR_BITS, &reg->statc);
-+
-+	/* Reset T_RST bit, C_RST bit, and O_RST bits*/
-+	writel(desc->ctrl, &reg->ctrl);
-+	readl(&reg->ctrl);
-+
-+	writel(desc->src_size, &reg->src_size);
-+	writel((u32)(desc->src_addr & HWD_AFFINE_HWD_MASK_ADDR), &reg->src_addr);
-+	writel(desc->dst_bgn, &reg->dst_bgn);
-+	writel(desc->dst_size, &reg->dst_size);
-+	writel((u32)(desc->dst_addr & HWD_AFFINE_HWD_MASK_ADDR), &reg->dst_addr);
-+	writel(desc->l_ptch, &reg->l_ptch);
-+
-+	for (i = 0; i < NUM_AFFINE_PARAMS; i++)
-+		writel(desc->affine_param[i], &reg->affine_param[i]);
-+
-+	for (i = 0; i < NUM_HOMO_PARAMS; i++)
-+		writel(desc->homo_param[i], &reg->homo_param[i]);
-+
-+	/* AFFINE Table */
-+	writel((u32)(desc->tbl_addr & HWD_AFFINE_HWD_MASK_ADDR), &reg->tbl_addr);
-+	writel(desc->tbl_ptch, &reg->tbl_ptch);
-+	writel(desc->tbl_comp_size, &reg->tbl_comp_size);
-+
-+	for (i = 0; i < NUM_DISTORT_PARAMS; i++)
-+		writel(desc->dist_param[i], &reg->dist_param[i]);
-+
-+	writel(HWD_AFFINE_INTMASK_NORMAL, &reg->intm);
-+
-+	writel(desc->mode, &reg->mode);
-+	writel(desc->mode2, &reg->mode2);
-+	writel(desc->adj_p, &reg->adj_p);
-+
-+	/* Data Sync */
-+	dsb(st);
-+
-+	/* Kick AFFINE */
-+	writel(HWD_AFFINE_START_CMD, &reg->ctrl);
-+}
-+
-+/**
-+ * hwd_affine_irq_handler() - HWD AFFINE interrupt handler
-+ *
-+ * @module_id: @ref hwd_affine_device "id" of the h/w module
-+ * Return: following bitfields
-+ * - HWD_AFFINE_EVENT_DONE: HW processing is completed
-+ * - HWD_AFFINE_EVENT_SYNTAX_ERROR: HW Table Syntax error
-+ * - HWD_AFFINE_EVENT_OVER_COORD: HW Table decoding coordinate error
-+ * - HWD_AFFINE_EVENT_OVER_DATA: HW Table over compressed data error
-+ * - HWD_AFFINE_EVENT_LACK_DATA: HW Table compressed data insufficient error
-+ * - HWD_AFFINE_EVENT_SIZE_ERROR: HW Table smaller than the size actual size of compressed data
-+ */
-+u32 hwd_affine_irq_handler(u32 module_id)
-+{
-+	u32 event = 0;
-+	struct hwd_affine_resources *res = &hwd_affine_resources[module_id];
-+	struct hwd_affine_reg *reg;
-+	u32 cause;
-+
-+	reg = res->reg;
-+
-+	/* Read and Clear the interrupt causes */
-+	cause = readl(&reg->statc);
-+	writel(cause, &reg->statc);
-+
-+	if (cause & HWD_AFFINE_INT_END)
-+		/* Execution End */
-+		event |= HWD_AFFINE_EVENT_DONE;
-+
-+	if (cause & HWD_AFFINE_INT_TCOMP_ERR0) {
-+		/* Syntax error */
-+		res->status.comp_syntax_error = 1;
-+		event |= HWD_AFFINE_EVENT_SYNTAX_ERROR;
-+	}
-+
-+	if (cause & HWD_AFFINE_INT_TCOMP_ERR1) {
-+		/* Decoding coordinate error */
-+		res->status.comp_over_coordinate = 1;
-+		event |= HWD_AFFINE_EVENT_OVER_COORD;
-+	}
-+
-+	if (cause & HWD_AFFINE_INT_TCOMP_ERR2) {
-+		/* Over compressed data error */
-+		res->status.comp_over_data = 1;
-+		event |= HWD_AFFINE_EVENT_OVER_DATA;
-+	}
-+
-+	if (cause & HWD_AFFINE_INT_TCOMP_ERR3) {
-+		/* Compressed data insufficient error */
-+		res->status.comp_lack_data = 1;
-+		event |= HWD_AFFINE_EVENT_LACK_DATA;
-+	}
-+
-+	if (cause & HWD_AFFINE_INT_TCOMP_SIZE) {
-+		/* Smaller than the actual size of compressed data */
-+		res->status.comp_size = 1;
-+		event |= HWD_AFFINE_EVENT_SIZE_ERROR;
-+	}
-+
-+	return event;
-+}
-+
-+/**
-+ * hwd_affine_get_status() - HWD AFFINE Get Status
-+ *
-+ * @module_id: @ref hwd_affine_device "id" of the h/w module
-+ * @status: Pointer to status structure
-+ * Return: RETURN_OK operation completed successfully
-+ */
-+void hwd_affine_get_status(u32 module_id, struct hwd_affine_status *status)
-+{
-+	const struct hwd_affine_resources *res = &hwd_affine_resources[module_id];
-+
-+	*status = res->status;
-+}
-diff --git a/drivers/soc/visconti/affine/hwd_affine.h b/drivers/soc/visconti/affine/hwd_affine.h
-new file mode 100644
-index 000000000..ed17b1116
---- /dev/null
-+++ b/drivers/soc/visconti/affine/hwd_affine.h
-@@ -0,0 +1,83 @@
-+/* SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause */
-+/* Toshiba Visconti Affine Accelerator Support
-+ *
-+ * (C) Copyright 2022 TOSHIBA CORPORATION
-+ * (C) Copyright 2022 Toshiba Electronic Devices & Storage Corporation
-+ */
-+
-+#ifndef HWD_AFFINE_H
-+#define HWD_AFFINE_H
-+
-+/**
-+ * enum hwd_affine_device_id - AFFINE HWD Device ID
-+ */
-+enum hwd_affine_device_id {
-+	HWD_AFFINE_DEVICE_0 = 0,
-+	HWD_AFFINE_DEVICE_1 = 1,
-+	HWD_AFFINE_DEVICE_MAX = 2,
-+};
-+
-+/* hwd_affine_event_flags - Macro for Affine driver events */
-+#define HWD_AFFINE_EVENT_DONE	      BIT(0)
-+#define HWD_AFFINE_EVENT_SYNTAX_ERROR BIT(1)
-+#define HWD_AFFINE_EVENT_OVER_COORD   BIT(2)
-+#define HWD_AFFINE_EVENT_OVER_DATA    BIT(3)
-+#define HWD_AFFINE_EVENT_LACK_DATA    BIT(4)
-+#define HWD_AFFINE_EVENT_SIZE_ERROR   BIT(5)
-+#define HWD_AFFINE_EVENT_MAX	      BIT(6)
-+
-+/* hwd_affine_param_num_flags Macro for Affine parameter number */
-+#define HWD_AFFINE_AFFINE_PARAM_NUM	 (6U)
-+#define HWD_AFFINE_UNDIST_PARAM_NUM	 (12U)
-+#define HWD_AFFINE_HOMO_PARAM_NUM	 (3U)
-+#define HWD_AFFINE_TEMP_UNDIST_PARAM_NUM (10U)
-+
-+/**
-+ * struct hwd_affine_status - HWD Affine status
-+ * @comp_size: Setting size is smaller than actual size
-+ * @comp_lack_data: Compressed table is lacking enough data for processing
-+ * @comp_over_data: Compressed table is exceeding the limit of data that can be processed
-+ * @comp_over_coordinate: Number of coordinates in compressed table data exceeded the limit
-+ * @comp_syntax_error: Syntax error of compressed table has occurred
-+ * @reserved: Padding
-+ */
-+struct hwd_affine_status {
-+	u32 comp_size : 1;
-+	u32 comp_lack_data : 1;
-+	u32 comp_over_data : 1;
-+	u32 comp_over_coordinate : 1;
-+	u32 comp_syntax_error : 1;
-+	u32 reserved : 27;
-+};
-+
-+/**
-+ * struct hwd_affine_descriptor - HWD AFFINE Descriptor
-+ */
-+struct hwd_affine_descriptor {
-+	u32 ctrl;
-+	u32 mode2;
-+	u32 mode;
-+	u32 adj_p;
-+	u32 src_size;
-+	u32 src_addr;
-+	u32 dst_bgn;
-+	u32 dst_size;
-+	u32 dst_addr;
-+	u32 l_ptch;
-+	u32 tbl_addr;
-+	u32 tbl_ptch;
-+	u32 affine_param[HWD_AFFINE_AFFINE_PARAM_NUM];
-+	u32 dist_param[HWD_AFFINE_UNDIST_PARAM_NUM];
-+	u32 homo_param[HWD_AFFINE_HOMO_PARAM_NUM];
-+	u32 tbl_comp_size;
-+	float temp_dist_p[HWD_AFFINE_TEMP_UNDIST_PARAM_NUM];
-+	u16 config_done;
-+};
-+
-+void hwd_affine_initialize(u32 module_id, void *vaddr);
-+void hwd_affine_uninitialize(u32 module_id);
-+void hwd_affine_start(u32 module_id, const struct hwd_affine_descriptor *desc);
-+u32 hwd_affine_irq_handler(u32 module_id);
-+void hwd_affine_get_status(u32 module_id, struct hwd_affine_status *status);
-+
-+#endif /* HWD_AFFINE_H */
-diff --git a/drivers/soc/visconti/affine/hwd_affine_reg.h b/drivers/soc/visconti/affine/hwd_affine_reg.h
-new file mode 100644
-index 000000000..407d898fa
---- /dev/null
-+++ b/drivers/soc/visconti/affine/hwd_affine_reg.h
-@@ -0,0 +1,45 @@
-+/* SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause */
-+/* Toshiba Visconti Affine Accelerator Support
-+ *
-+ * (C) Copyright 2022 TOSHIBA CORPORATION
-+ * (C) Copyright 2022 Toshiba Electronic Devices & Storage Corporation
-+ */
-+
-+#ifndef HWD_AFFINE_REG_H
-+#define HWD_AFFINE_REG_H
-+
-+/* hwd_affine_params_num_flags - Macro for Affine parameter number */
-+#define HWD_AFFINE_AFFINE_PARAMS_NUM (6)
-+#define HWD_AFFINE_UNDIST_PARAMS_NUM (12)
-+#define HWD_AFFINE_HOMO_PARAMS_NUM   (3)
-+#define HWD_AFFINE_RESERVED	     (472)
-+
-+/**
-+ * struct hwd_affine_reg - Structure of Affine register descriptor
-+ */
-+struct hwd_affine_reg {
-+	u32 ctrl;
-+	u32 reserved0[2];
-+	u32 mode2;
-+	u32 mode;
-+	u32 adj_p;
-+	u32 intm;
-+	u32 statc;
-+	u32 out_lpos;
-+	u32 src_size;
-+	u32 src_addr;
-+	u32 dst_bgn;
-+	u32 dst_size;
-+	u32 dst_addr;
-+	u32 l_ptch;
-+	u32 tbl_addr;
-+	u32 tbl_ptch;
-+	u32 affine_param[HWD_AFFINE_AFFINE_PARAMS_NUM];
-+	u32 dist_param[HWD_AFFINE_UNDIST_PARAMS_NUM];
-+	u32 reserved1;
-+	u32 homo_param[HWD_AFFINE_HOMO_PARAMS_NUM];
-+	u32 tbl_comp_size;
-+	u32 reserved2[HWD_AFFINE_RESERVED];
-+};
-+
-+#endif /* HWD_AFFINE_REG_H */
-diff --git a/drivers/soc/visconti/uapi/affine.h b/drivers/soc/visconti/uapi/affine.h
-new file mode 100644
-index 000000000..539261483
---- /dev/null
-+++ b/drivers/soc/visconti/uapi/affine.h
-@@ -0,0 +1,87 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * (C) Copyright 2020 Toshiba Electronic Devices & Storage Corporation
-+ */
-+
-+#ifndef _UAPI_LINUX_AFIINE_H
-+#define _UAPI_LINUX_AFIINE_H
-+
-+#include <linux/ioctl.h>
-+#include <linux/types.h>
-+#include "ipa.h"
-+
-+#define DRV_AFFINE_BIT_CONFIG_DESC_FINAL (0x8000U)
-+#define DRV_AFFINE_BUFFER_INDEX_MAX	 (3)
-+
-+#define DRV_AFFINE_AFFINE_PARAM_NUM	 (6U)
-+#define DRV_AFFINE_UNDIST_PARAM_NUM	 (12U)
-+#define DRV_AFFINE_HOMO_PARAM_NUM	 (3U)
-+#define DRV_AFFINE_TEMP_UNDIST_PARAM_NUM (10U)
-+
-+/**
-+ * struct drv_affine_status - AFFINE IPA status for IOC_IPA_GET_STATUS
-+ * @state:                State of driver
-+ * @comp_size:            Setting size is smaller than actual size
-+ * @comp_lack_data:       Compressed table is lacking enough data for processing
-+ * @comp_over_data:       Compressed table is exceeding the limit of data that can be processed
-+ * @comp_over_coordinate: Number of coordinates in compressed table data exceeded the limit
-+ * @comp_syntax_error:    Syntax error of compressed table has occurred
-+ * @reserved:             Padding
-+ */
-+struct drv_affine_status {
-+	enum drv_ipa_state state;
-+	uint32_t comp_size : 1;
-+	uint32_t comp_lack_data : 1;
-+	uint32_t comp_over_data : 1;
-+	uint32_t comp_over_coordinate : 1;
-+	uint32_t comp_syntax_error : 1;
-+	uint32_t reserved : 27;
-+};
-+
-+/**
-+ * struct drv_affine_descriptor - AFFINE IPA descriptor for IOC_IPA_START
-+ * @ctrl:            Operation control of AFFINE
-+ * @mode2:           Operation mode for the AFFINE execution
-+ * @mode:            Operation mode for the AFFINE execution
-+ * @adj_p:           Output Pixel Value Adjustment
-+ * @src_size:        Input image size
-+ * @src_addr:        Start address of input image
-+ * @dst_bgn:         Start coordinate of the output rectangle area
-+ * @dst_size:        Size of the output rectangle area
-+ * @dst_addr:        Address of the output rectangle area
-+ * @l_ptch:          Line pitch of both the input image and output rectangle area
-+ * @tbl_addr:        Start address of the table used in the table conversion mode.
-+ * @tbl_ptch:        Line pitch of the table used in the table conversion mode
-+ * @affine_param:    Parameters for Affine transformation
-+ * @dist_param:      Parameters for Distortion correction
-+ * @homo_param:      Parameters Homography transformation
-+ * @tbl_comp_size:   Table compression size
-+ * @temp_dist_p:     Temporary buffer to hold distortion input parameters
-+ * @config_done:     Flags of called configuration
-+ * @buffer_info:     Table of buffer information
-+ * @buffer_info_num: Number of buffer_info
-+ */
-+struct drv_affine_descriptor {
-+	uint32_t ctrl;
-+	uint32_t mode2;
-+	uint32_t mode;
-+	uint32_t adj_p;
-+	uint32_t src_size;
-+	struct drv_ipa_addr src_addr;
-+	uint32_t dst_bgn;
-+	uint32_t dst_size;
-+	struct drv_ipa_addr dst_addr;
-+	uint32_t l_ptch;
-+	struct drv_ipa_addr tbl_addr;
-+	uint32_t tbl_ptch;
-+	uint32_t affine_param[DRV_AFFINE_AFFINE_PARAM_NUM];
-+	uint32_t dist_param[DRV_AFFINE_UNDIST_PARAM_NUM];
-+	uint32_t homo_param[DRV_AFFINE_HOMO_PARAM_NUM];
-+	uint32_t tbl_comp_size;
-+	float temp_dist_p[DRV_AFFINE_TEMP_UNDIST_PARAM_NUM];
-+	uint16_t config_done;
-+	struct drv_ipa_buffer_info buffer_info[DRV_AFFINE_BUFFER_INDEX_MAX];
-+	int32_t buffer_info_num;
-+};
-+
-+#endif /* _UAPI_LINUX_AFIINE_H */
--- 
-2.17.1
+> On Tue, Apr 26, 2022 at 05:38:58PM -0400, Zi Yan wrote:
+>> Thanks. Do you mind attaching your config file? I cannot reproduce
+>> the deadlock locally using my own config. I also see kmemleak_scan
+>> in the dumped stack, so it must be something else in addition to
+>> memory online/offline causing the issue.
+>
+> Actually, it is one of those *offline* operations, i.e.,
+>
+> echo 0 > /sys/devices/system/memory/memoryNNN/online
+>
+> looping forever which never finish after more than 2-hour.
 
+Thank you for the detailed information. I am able to reproduce the
+issue locally. I will update the patch once I fix the bug.
 
+--
+Best Regards,
+Yan, Zi
+
+--=_MailMate_0AB0F1C2-2034-487C-BA7A-581A3A5B18CC_=
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQJDBAEBCgAtFiEE6rR4j8RuQ2XmaZol4n+egRQHKFQFAmJpRYEPHHppeUBudmlk
+aWEuY29tAAoJEOJ/noEUByhU1BYP/0/PWRYgJrza56Dfa4mGN/ezdRD6aVh3dkVY
+nCiA6+rK9k47zYKxHgbtPvR8AxHa9NK+hkP5QtK2XRux+Pz+T8GkYZhrNX4PpxLz
+VyWyijsCZpj7Hq4YgJX2xJeQiq3Crj+7oD6ZNyO3Mb7grqm3R1NSTlh71qRNXHSJ
+qReEA6Soc6z4ur6l1oR8G5gakbog475q8znuiWx/LHiT8/g0wnqs+eK0eEHkeqvJ
+iueOC2GoqN9gjGiFGr3yQdkgNEhOXi1/vlVkf+0b5NDua8EXIP29N7N65p7FHE00
+nBi+GdejduxozkExojM8nm6TpltwShSarA0IaNne22ofgb6weAlvgjuFxrm+nq52
+D1fGcmAnApNsW/fhaVsN7kbXmbYC1cxuntZNsF6/S9tC3IcTvcda/4GGpn7GPz+L
+tPKqWp39tpCV6mXr+defK+C+YMH/R0kGaTh48ntf2TAekML7kk1NUIQUVKLD1STE
+f6SYG7urGUelNRu9a2A0uk4mSjYcHI8kgTW8KwoFSJC4kPeBtw6UaFOTLduxij9D
+6mTrwa9e+Q9eqSLB4h2q/vO53OWYUm7wlmZtmTM9ioqJVX4Fed//WFrLyH/munwi
+j3OPrjMMtFnyC5BBTVrcZhXywPLjqa/veqFQylQZNmD6Z1oEHWd3wK05Nq8WyeWZ
+xJXs1rNH
+=5sJ1
+-----END PGP SIGNATURE-----
+
+--=_MailMate_0AB0F1C2-2034-487C-BA7A-581A3A5B18CC_=--
