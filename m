@@ -2,411 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17BC7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 07:30:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F1E3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 07:30:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358857AbiD0HeB (ORCPT
+        id S1358874AbiD0HeF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 03:34:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52904 "EHLO
+        Wed, 27 Apr 2022 03:34:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358854AbiD0Hdd (ORCPT
+        with ESMTP id S1358867AbiD0Hdp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 03:33:33 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D0A33C735;
-        Wed, 27 Apr 2022 00:30:20 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23R7U5Oe101251;
-        Wed, 27 Apr 2022 02:30:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1651044605;
-        bh=h5vpA0JsuDhhaLmk2ZVRB8gydMs4d14FG1bucmnFl4k=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=DIT9W1ikNJ77WXdbpg7Cc0YFW29ivuJMpWLIymsL/lgaBae9T6qP1faQ2HO0GMjEE
-         ueinTQrYALWE8vAfapvYa5U5BS4YDFI4b45vv/AHxEFBQ5hhw1dcm7f60zm4gigJgD
-         pjjV5cNAiwISJ3XJ1DUxfoVy98gG/1hTNhceUT6E=
-Received: from DLEE111.ent.ti.com (dlee111.ent.ti.com [157.170.170.22])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23R7U5TC065535
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 27 Apr 2022 02:30:05 -0500
-Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE111.ent.ti.com
- (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 27
- Apr 2022 02:30:05 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE108.ent.ti.com
- (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 27 Apr 2022 02:30:05 -0500
-Received: from ula0132425.dhcp.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23R7TujJ090553;
-        Wed, 27 Apr 2022 02:30:02 -0500
-From:   Vignesh Raghavendra <vigneshr@ti.com>
-To:     Nishanth Menon <nm@ti.com>, Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero Kristo <kristo@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Aswath Govindraju <a-govindraju@ti.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: [PATCH v4 1/2] arm64: dts: ti: k3-am62: Add more peripheral nodes
-Date:   Wed, 27 Apr 2022 12:59:53 +0530
-Message-ID: <20220427072954.8821-2-vigneshr@ti.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220427072954.8821-1-vigneshr@ti.com>
-References: <20220427072954.8821-1-vigneshr@ti.com>
+        Wed, 27 Apr 2022 03:33:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB2C6B0B5;
+        Wed, 27 Apr 2022 00:30:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3861861B07;
+        Wed, 27 Apr 2022 07:30:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 421C8C385A7;
+        Wed, 27 Apr 2022 07:30:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1651044633;
+        bh=7IUrdMT9kbbx0DsJsKPAR8psLkzAWpMBFfCUfqBAWig=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=xbzbCx2hvF0hCGkEqxhiO5N0HqXdEGddWDPvYd71bPKnrs6HqtmHS0TASeReeiO0j
+         i4aT5usH7V80GDFG0lzHtx5UIgYhS/htq3wRaYnzp+JyQAqZHFOOh8zR1ThgICjmXu
+         HJT3dURy+l7VwWqgQKv1K/cPA0HBFjWtr44P76og=
+Date:   Wed, 27 Apr 2022 09:30:30 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc:     Benson Leung <bleung@google.com>,
+        Prashant Malani <pmalani@chromium.org>,
+        Jameson Thies <jthies@google.com>,
+        "Regupathy, Rajaram" <rajaram.regupathy@intel.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Won Chung <wonchung@google.com>, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/3] usb: typec: Separate USB Power Delivery from USB
+ Type-C
+Message-ID: <YmjxFkpCwxz4fgqb@kroah.com>
+References: <20220425124946.13064-1-heikki.krogerus@linux.intel.com>
+ <20220425124946.13064-2-heikki.krogerus@linux.intel.com>
+ <YmfgfRA1ecJwf12i@kroah.com>
+ <YmjlyxLk8wfziq9l@kuha.fi.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YmjlyxLk8wfziq9l@kuha.fi.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add nodes for McSPI, OSPI, DMA, CPSW, MMC and On Chip SRAM nodes.
+On Wed, Apr 27, 2022 at 09:42:19AM +0300, Heikki Krogerus wrote:
+> Hi,
+> 
+> On Tue, Apr 26, 2022 at 02:07:25PM +0200, Greg Kroah-Hartman wrote:
+> > On Mon, Apr 25, 2022 at 03:49:44PM +0300, Heikki Krogerus wrote:
+> > > --- /dev/null
+> > > +++ b/drivers/usb/typec/pd.h
+> > > @@ -0,0 +1,30 @@
+> > > +/* SPDX-License-Identifier: GPL-2.0 */
+> > > +
+> > > +#ifndef __USB_POWER_DELIVERY__
+> > > +#define __USB_POWER_DELIVERY__
+> > > +
+> > > +#include <linux/kobject.h>
+> > 
+> > Why kobject.h when:
+> 
+> Oops, that should now be "#include <linux/device.h>".
+> 
+> > > +
+> > > +struct pd_capabilities {
+> > > +	struct device dev;
+> > 
+> > This is a device?
+> > 
+> > > +	struct pd *pd;
+> > > +	enum typec_role role;
+> > > +};
+> > > +
+> > > +struct pd {
+> > > +	struct device		dev;
+> > > +	int			id;
+> > > +
+> > > +	u16			revision; /* 0300H = "3.0" */
+> > 
+> > So BCD?
+> 
+> Yes.
+> 
+> > > +	u16			version;
+> > > +};
+> > 
+> > > +
+> > > +#define to_pd_capabilities(o) container_of(o, struct pd_capabilities, dev)
+> > > +#define to_pd(o) container_of(o, struct pd, dev)
+> > > +
+> > > +struct pd *pd_find(const char *name);
+> > 
+> > "struct pd" is just about the shortest structure name I've seen in the
+> > kernel so far.  How about using some more letters?  :)
+> 
+> Okay, I'll make it usbpd.
 
-Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
-Reviewed-by: Bryan Brattlof <bb@ti.com>
----
- arch/arm64/boot/dts/ti/k3-am62-main.dtsi | 266 +++++++++++++++++++++++
- arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi  |  20 ++
- 2 files changed, 286 insertions(+)
+How about some more vowels: "struct usb_power_delivery" please.  This
+isn't the 1980's :)
 
-diff --git a/arch/arm64/boot/dts/ti/k3-am62-main.dtsi b/arch/arm64/boot/dts/ti/k3-am62-main.dtsi
-index c68472c692f4..eec8dae65e7c 100644
---- a/arch/arm64/boot/dts/ti/k3-am62-main.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-am62-main.dtsi
-@@ -6,6 +6,14 @@
-  */
- 
- &cbass_main {
-+	oc_sram: sram@70000000 {
-+		compatible = "mmio-sram";
-+		reg = <0x00 0x70000000 0x00 0x10000>;
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		ranges = <0x0 0x00 0x70000000 0x10000>;
-+	};
-+
- 	gic500: interrupt-controller@1800000 {
- 		compatible = "arm,gic-v3";
- 		#address-cells = <2>;
-@@ -40,6 +48,12 @@ main_conf: syscon@100000 {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
- 		ranges = <0x0 0x00 0x00100000 0x20000>;
-+
-+		phy_gmii_sel: phy@4044 {
-+			compatible = "ti,am654-phy-gmii-sel";
-+			reg = <0x4044 0x8>;
-+			#phy-cells = <1>;
-+		};
- 	};
- 
- 	dmss: bus@48000000 {
-@@ -61,6 +75,69 @@ secure_proxy_main: mailbox@4d000000 {
- 			interrupt-names = "rx_012";
- 			interrupts = <GIC_SPI 34 IRQ_TYPE_LEVEL_HIGH>;
- 		};
-+
-+		inta_main_dmss: interrupt-controller@48000000 {
-+			compatible = "ti,sci-inta";
-+			reg = <0x00 0x48000000 0x00 0x100000>;
-+			#interrupt-cells = <0>;
-+			interrupt-controller;
-+			interrupt-parent = <&gic500>;
-+			msi-controller;
-+			ti,sci = <&dmsc>;
-+			ti,sci-dev-id = <28>;
-+			ti,interrupt-ranges = <4 68 36>;
-+			ti,unmapped-event-sources = <&main_bcdma>, <&main_pktdma>;
-+		};
-+
-+		main_bcdma: dma-controller@485c0100 {
-+			compatible = "ti,am64-dmss-bcdma";
-+			reg = <0x00 0x485c0100 0x00 0x100>,
-+			      <0x00 0x4c000000 0x00 0x20000>,
-+			      <0x00 0x4a820000 0x00 0x20000>,
-+			      <0x00 0x4aa40000 0x00 0x20000>,
-+			      <0x00 0x4bc00000 0x00 0x100000>;
-+			reg-names = "gcfg", "bchanrt", "rchanrt", "tchanrt", "ringrt";
-+			msi-parent = <&inta_main_dmss>;
-+			#dma-cells = <3>;
-+
-+			ti,sci = <&dmsc>;
-+			ti,sci-dev-id = <26>;
-+			ti,sci-rm-range-bchan = <0x20>; /* BLOCK_COPY_CHAN */
-+			ti,sci-rm-range-rchan = <0x21>; /* SPLIT_TR_RX_CHAN */
-+			ti,sci-rm-range-tchan = <0x22>; /* SPLIT_TR_TX_CHAN */
-+		};
-+
-+		main_pktdma: dma-controller@485c0000 {
-+			compatible = "ti,am64-dmss-pktdma";
-+			reg = <0x00 0x485c0000 0x00 0x100>,
-+			      <0x00 0x4a800000 0x00 0x20000>,
-+			      <0x00 0x4aa00000 0x00 0x40000>,
-+			      <0x00 0x4b800000 0x00 0x400000>;
-+			reg-names = "gcfg", "rchanrt", "tchanrt", "ringrt";
-+			msi-parent = <&inta_main_dmss>;
-+			#dma-cells = <2>;
-+
-+			ti,sci = <&dmsc>;
-+			ti,sci-dev-id = <30>;
-+			ti,sci-rm-range-tchan = <0x23>, /* UNMAPPED_TX_CHAN */
-+						<0x24>, /* CPSW_TX_CHAN */
-+						<0x25>, /* SAUL_TX_0_CHAN */
-+						<0x26>; /* SAUL_TX_1_CHAN */
-+			ti,sci-rm-range-tflow = <0x10>, /* RING_UNMAPPED_TX_CHAN */
-+						<0x11>, /* RING_CPSW_TX_CHAN */
-+						<0x12>, /* RING_SAUL_TX_0_CHAN */
-+						<0x13>; /* RING_SAUL_TX_1_CHAN */
-+			ti,sci-rm-range-rchan = <0x29>, /* UNMAPPED_RX_CHAN */
-+						<0x2b>, /* CPSW_RX_CHAN */
-+						<0x2d>, /* SAUL_RX_0_CHAN */
-+						<0x2f>, /* SAUL_RX_1_CHAN */
-+						<0x31>, /* SAUL_RX_2_CHAN */
-+						<0x33>; /* SAUL_RX_3_CHAN */
-+			ti,sci-rm-range-rflow = <0x2a>, /* FLOW_UNMAPPED_RX_CHAN */
-+						<0x2c>, /* FLOW_CPSW_RX_CHAN */
-+						<0x2e>, /* FLOW_SAUL_RX_0/1_CHAN */
-+						<0x32>; /* FLOW_SAUL_RX_2/3_CHAN */
-+		};
- 	};
- 
- 	dmsc: system-controller@44043000 {
-@@ -203,6 +280,36 @@ main_i2c3: i2c@20030000 {
- 		clock-names = "fck";
- 	};
- 
-+	main_spi0: spi@20100000 {
-+		compatible = "ti,am654-mcspi", "ti,omap4-mcspi";
-+		reg = <0x00 0x20100000 0x00 0x400>;
-+		interrupts = <GIC_SPI 172 IRQ_TYPE_LEVEL_HIGH>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		power-domains = <&k3_pds 141 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 172 0>;
-+	};
-+
-+	main_spi1: spi@20110000 {
-+		compatible = "ti,am654-mcspi","ti,omap4-mcspi";
-+		reg = <0x00 0x20110000 0x00 0x400>;
-+		interrupts = <GIC_SPI 173 IRQ_TYPE_LEVEL_HIGH>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		power-domains = <&k3_pds 142 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 173 0>;
-+	};
-+
-+	main_spi2: spi@20120000 {
-+		compatible = "ti,am654-mcspi","ti,omap4-mcspi";
-+		reg = <0x00 0x20120000 0x00 0x400>;
-+		interrupts = <GIC_SPI 174 IRQ_TYPE_LEVEL_HIGH>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		power-domains = <&k3_pds 143 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 174 0>;
-+	};
-+
- 	main_gpio_intr: interrupt-controller@a00000 {
- 		compatible = "ti,sci-intr";
- 		reg = <0x00 0x00a00000 0x00 0x800>;
-@@ -249,6 +356,165 @@ main_gpio1: gpio@601000 {
- 		clock-names = "gpio";
- 	};
- 
-+	sdhci0: mmc@fa10000 {
-+		compatible = "ti,am62-sdhci";
-+		reg = <0x00 0x0fa10000 0x00 0x1000>, <0x00 0x0fa18000 0x00 0x400>;
-+		interrupts = <GIC_SPI 133 IRQ_TYPE_LEVEL_HIGH>;
-+		power-domains = <&k3_pds 57 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 57 5>, <&k3_clks 57 6>;
-+		clock-names = "clk_ahb", "clk_xin";
-+		assigned-clocks = <&k3_clks 57 6>;
-+		assigned-clock-parents = <&k3_clks 57 8>;
-+		mmc-ddr-1_8v;
-+		mmc-hs200-1_8v;
-+		ti,trm-icp = <0x2>;
-+		bus-width = <8>;
-+		ti,clkbuf-sel = <0x7>;
-+		ti,otap-del-sel-legacy = <0x0>;
-+		ti,otap-del-sel-mmc-hs = <0x0>;
-+		ti,otap-del-sel-ddr52 = <0x9>;
-+		ti,otap-del-sel-hs200 = <0x6>;
-+	};
-+
-+	sdhci1: mmc@fa00000 {
-+		compatible = "ti,am62-sdhci";
-+		reg = <0x00 0x0fa00000 0x00 0x1000>, <0x00 0x0fa08000 0x00 0x400>;
-+		interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
-+		power-domains = <&k3_pds 58 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 58 5>, <&k3_clks 58 6>;
-+		clock-names = "clk_ahb", "clk_xin";
-+		ti,trm-icp = <0x2>;
-+		ti,otap-del-sel-legacy = <0x0>;
-+		ti,otap-del-sel-sd-hs = <0x0>;
-+		ti,otap-del-sel-sdr12 = <0xf>;
-+		ti,otap-del-sel-sdr25 = <0xf>;
-+		ti,otap-del-sel-sdr50 = <0xc>;
-+		ti,otap-del-sel-sdr104 = <0x6>;
-+		ti,otap-del-sel-ddr50 = <0x9>;
-+		ti,itap-del-sel-legacy = <0x0>;
-+		ti,itap-del-sel-sd-hs = <0x0>;
-+		ti,itap-del-sel-sdr12 = <0x0>;
-+		ti,itap-del-sel-sdr25 = <0x0>;
-+		ti,clkbuf-sel = <0x7>;
-+		bus-width = <4>;
-+	};
-+
-+	sdhci2: mmc@fa20000 {
-+		compatible = "ti,am62-sdhci";
-+		reg = <0x00 0x0fa20000 0x00 0x1000>, <0x00 0x0fa28000 0x00 0x400>;
-+		interrupts = <GIC_SPI 82 IRQ_TYPE_LEVEL_HIGH>;
-+		power-domains = <&k3_pds 184 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 184 5>, <&k3_clks 184 6>;
-+		clock-names = "clk_ahb", "clk_xin";
-+		ti,trm-icp = <0x2>;
-+		ti,otap-del-sel-legacy = <0x0>;
-+		ti,otap-del-sel-sd-hs = <0x0>;
-+		ti,otap-del-sel-sdr12 = <0xf>;
-+		ti,otap-del-sel-sdr25 = <0xf>;
-+		ti,otap-del-sel-sdr50 = <0xc>;
-+		ti,otap-del-sel-sdr104 = <0x6>;
-+		ti,otap-del-sel-ddr50 = <0x9>;
-+		ti,itap-del-sel-legacy = <0x0>;
-+		ti,itap-del-sel-sd-hs = <0x0>;
-+		ti,itap-del-sel-sdr12 = <0x0>;
-+		ti,itap-del-sel-sdr25 = <0x0>;
-+		ti,clkbuf-sel = <0x7>;
-+	};
-+
-+	fss: bus@fc00000 {
-+		compatible = "simple-bus";
-+		reg = <0x00 0x0fc00000 0x00 0x70000>;
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		ranges;
-+
-+		ospi0: spi@fc40000 {
-+			compatible = "ti,am654-ospi", "cdns,qspi-nor";
-+			reg = <0x00 0x0fc40000 0x00 0x100>,
-+			      <0x05 0x00000000 0x01 0x00000000>;
-+			interrupts = <GIC_SPI 139 IRQ_TYPE_LEVEL_HIGH>;
-+			cdns,fifo-depth = <256>;
-+			cdns,fifo-width = <4>;
-+			cdns,trigger-address = <0x0>;
-+			clocks = <&k3_clks 75 7>;
-+			assigned-clocks = <&k3_clks 75 7>;
-+			assigned-clock-parents = <&k3_clks 75 8>;
-+			assigned-clock-rates = <166666666>;
-+			power-domains = <&k3_pds 75 TI_SCI_PD_EXCLUSIVE>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+		};
-+	};
-+
-+	cpsw3g: ethernet@8000000 {
-+		compatible = "ti,am642-cpsw-nuss";
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		reg = <0x00 0x08000000 0x00 0x200000>;
-+		reg-names = "cpsw_nuss";
-+		ranges = <0x00 0x00 0x00 0x08000000 0x00 0x200000>;
-+		clocks = <&k3_clks 13 0>;
-+		assigned-clocks = <&k3_clks 13 3>;
-+		assigned-clock-parents = <&k3_clks 13 11>;
-+		clock-names = "fck";
-+		power-domains = <&k3_pds 13 TI_SCI_PD_EXCLUSIVE>;
-+
-+		dmas = <&main_pktdma 0xc600 15>,
-+		       <&main_pktdma 0xc601 15>,
-+		       <&main_pktdma 0xc602 15>,
-+		       <&main_pktdma 0xc603 15>,
-+		       <&main_pktdma 0xc604 15>,
-+		       <&main_pktdma 0xc605 15>,
-+		       <&main_pktdma 0xc606 15>,
-+		       <&main_pktdma 0xc607 15>,
-+		       <&main_pktdma 0x4600 15>;
-+		dma-names = "tx0", "tx1", "tx2", "tx3", "tx4", "tx5", "tx6",
-+			    "tx7", "rx";
-+
-+		ethernet-ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			cpsw_port1: port@1 {
-+				reg = <1>;
-+				ti,mac-only;
-+				label = "port1";
-+				phys = <&phy_gmii_sel 1>;
-+				mac-address = [00 00 00 00 00 00];
-+				ti,syscon-efuse = <&wkup_conf 0x200>;
-+			};
-+
-+			cpsw_port2: port@2 {
-+				reg = <2>;
-+				ti,mac-only;
-+				label = "port2";
-+				phys = <&phy_gmii_sel 2>;
-+				mac-address = [00 00 00 00 00 00];
-+			};
-+		};
-+
-+		cpsw3g_mdio: mdio@f00 {
-+			compatible = "ti,cpsw-mdio","ti,davinci_mdio";
-+			reg = <0x00 0xf00 0x00 0x100>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			clocks = <&k3_clks 13 0>;
-+			clock-names = "fck";
-+			bus_freq = <1000000>;
-+		};
-+
-+		cpts@3d000 {
-+			compatible = "ti,j721e-cpts";
-+			reg = <0x00 0x3d000 0x00 0x400>;
-+			clocks = <&k3_clks 13 3>;
-+			clock-names = "cpts";
-+			interrupts-extended = <&gic500 GIC_SPI 102 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "cpts";
-+			ti,cpts-ext-ts-inputs = <4>;
-+			ti,cpts-periodic-outputs = <2>;
-+		};
-+	};
-+
- 	hwspinlock: spinlock@2a000000 {
- 		compatible = "ti,am64-hwspinlock";
- 		reg = <0x00 0x2a000000 0x00 0x1000>;
-diff --git a/arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi b/arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi
-index 9d210d55fc71..d103824c963f 100644
---- a/arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi
-@@ -33,4 +33,24 @@ mcu_i2c0: i2c@4900000 {
- 		clocks = <&k3_clks 106 2>;
- 		clock-names = "fck";
- 	};
-+
-+	mcu_spi0: spi@4b00000 {
-+		compatible = "ti,am654-mcspi", "ti,omap4-mcspi";
-+		reg = <0x00 0x04b00000 0x00 0x400>;
-+		interrupts = <GIC_SPI 176 IRQ_TYPE_LEVEL_HIGH>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		power-domains = <&k3_pds 147 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 147 0>;
-+	};
-+
-+	mcu_spi1: spi@4b10000 {
-+		compatible = "ti,am654-mcspi","ti,omap4-mcspi";
-+		reg = <0x00 0x04b10000 0x00 0x400>;
-+		interrupts = <GIC_SPI 177 IRQ_TYPE_LEVEL_HIGH>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		power-domains = <&k3_pds 148 TI_SCI_PD_EXCLUSIVE>;
-+		clocks = <&k3_clks 148 0>;
-+	};
- };
--- 
-2.36.0
+> > > +
+> > > +int pd_init(void);
+> > > +void pd_exit(void);
+> > 
+> > The kobject question above goes to the code as well.  You are creating a
+> > bunch of raw kobjects still, why?  This should all fit into the driver
+> > model and kobjects shouldn't be needed.  Are you trying to nest too deep
+> > in the attributes?  If so, kobjects will not work as userspace tools
+> > will not realize they are there and are attributes at all.
+> 
+> They are not raw kobjects, they are all devices now. That header just
+> needs to be fixed.
 
+You have loads of kobject attributes in the .c file.  Either I read it
+wrong, or you are doing something wrong, as that should never be the
+case for a driver or device.
+
+thanks,
+
+greg k-h
