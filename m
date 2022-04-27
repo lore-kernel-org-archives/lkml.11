@@ -2,99 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19E22C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:58:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71212C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:58:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243650AbiD0RBp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 13:01:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38606 "EHLO
+        id S243654AbiD0RB6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 13:01:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243639AbiD0RAX (ORCPT
+        with ESMTP id S243708AbiD0RBz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 13:00:23 -0400
-Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1C939638B;
-        Wed, 27 Apr 2022 09:57:03 -0700 (PDT)
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 23RGunuo003835;
-        Wed, 27 Apr 2022 18:56:49 +0200
-Date:   Wed, 27 Apr 2022 18:56:49 +0200
-From:   Willy Tarreau <w@1wt.eu>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     kernel test robot <lkp@intel.com>, netdev <netdev@vger.kernel.org>,
-        kbuild-all@lists.01.org, Jakub Kicinski <kuba@kernel.org>,
-        Moshe Kol <moshe.kol@mail.huji.ac.il>,
-        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
-        Amit Klein <aksecurity@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>
-Subject: Re: [PATCH net 1/7] secure_seq: return the full 64-bit of the siphash
-Message-ID: <20220427165649.GA3756@1wt.eu>
-References: <20220427065233.2075-2-w@1wt.eu>
- <202204271705.VrWNPv7n-lkp@intel.com>
- <20220427100714.GC1724@1wt.eu>
- <20220427163554.GA3746@1wt.eu>
- <CANn89iJTg8KZvDQ2wY=psThvS5eFzv0N15FF3CTf3i6qui=wsQ@mail.gmail.com>
+        Wed, 27 Apr 2022 13:01:55 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F3B54F9CA
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:58:42 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id d15so2088333plh.2
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:58:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=y/JwM83vEyJYw4lhNwuusBWh1f+jSke6lCkPjly6Ebc=;
+        b=cjLxjZ5pPM/pB7JnFzLZXYKAccowQfJbaFGPyDuax5hjiGW8t39TNg6rtkpShjEIC2
+         iRsEDGwejDrW222GwsVt6E7/hz/MnB1FhiKwFYq/WAZTB0G5fpqWzXTbgVOLU95jUwo9
+         V1XdeM2tBzhDz1Lw5jRcxLTi/4iKhiDorhwJApIT2fzfEBE/4PEmjHRlR/hK6pdN3Fbf
+         byTeUyjzVC24F0W48i7MkUCL/a1VebVEQG/AVZ4cXq/iU2wg+LNWvkI85IahkpnrUjhm
+         G+Yt3nFRy6+OfAujsvis2Gy2DVEO1lpMRDGFPXmCsbutYWOO+3TdY4A08SEksQ7NByyw
+         faTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=y/JwM83vEyJYw4lhNwuusBWh1f+jSke6lCkPjly6Ebc=;
+        b=PHT8ZybEh2qOr5aorfTWPqNU1p2RfHAqSFUGcSQjCFaPDigB59EqdV18334r8oX080
+         ChXl6KP48AqlEepBjxaiiX0xkvCHbMYlrc+menpK6j+8dTCfNTRkMO5UT96C42atvnkO
+         o6vaj4tjYtL3+yvZb70CqAAabT0DAx0EtBW15HZfmVu509+01fCoFGv/N/bVVHE3PsTH
+         CAFoPAhAOqgHz/R/JwjmMpplWvkN/62HQYV7r8PGdic9z53YhzfLVjf0Ei1yjWF1ipId
+         43GKUZLp3LMsr1OEP08NeUZ7MVOkUyb18GgAPn5+kmLd2l0fBo/6cyaVdceIO2uXn6PQ
+         1oQQ==
+X-Gm-Message-State: AOAM533jt/6BoQhITBGiP5Cb332v2YDxcBfDmowGMFK26nN/vqkumSPT
+        lYihpTtVqRyi0sCGzvxDzII=
+X-Google-Smtp-Source: ABdhPJzrsOeX9sw7o07/w+XFOTLhvPc45yPbOC5DIw81qtPrtiKqiDsXw9GVHNrIhLFVqpN37G6Hww==
+X-Received: by 2002:a17:90a:d584:b0:1bc:e520:91f2 with SMTP id v4-20020a17090ad58400b001bce52091f2mr45201814pju.192.1651078721541;
+        Wed, 27 Apr 2022 09:58:41 -0700 (PDT)
+Received: from makvihas.localhost.com ([2405:201:202b:15:e0d6:603e:265d:6bf])
+        by smtp.gmail.com with ESMTPSA id t15-20020a62d14f000000b0050d3846c538sm13050483pfl.57.2022.04.27.09.58.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 09:58:41 -0700 (PDT)
+From:   Vihas Makwana <makvihas@gmail.com>
+To:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Michael Straube <straube.linux@gmail.com>
+Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Vihas Makwana <makvihas@gmail.com>
+Subject: [PATCH v2] staging: r8188eu: drop redundant check in _rtw_free_mlme_priv
+Date:   Wed, 27 Apr 2022 22:27:49 +0530
+Message-Id: <20220427165748.10584-1-makvihas@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANn89iJTg8KZvDQ2wY=psThvS5eFzv0N15FF3CTf3i6qui=wsQ@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 09:50:06AM -0700, Eric Dumazet wrote:
-> On Wed, Apr 27, 2022 at 9:35 AM Willy Tarreau <w@1wt.eu> wrote:
-> >
-> > On Wed, Apr 27, 2022 at 12:07:14PM +0200, Willy Tarreau wrote:
-> > > On Wed, Apr 27, 2022 at 05:56:41PM +0800, kernel test robot wrote:
-> > > > Hi Willy,
-> > > >
-> > > > I love your patch! Yet something to improve:
-> > > >
-> > > > [auto build test ERROR on net/master]
-> > > >
-> > > > url:    https://github.com/intel-lab-lkp/linux/commits/Willy-Tarreau/insufficient-TCP-source-port-randomness/20220427-145651
-> > > > base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 71cffebf6358a7f5031f5b208bbdc1cb4db6e539
-> > > > config: i386-randconfig-r026-20220425 (https://download.01.org/0day-ci/archive/20220427/202204271705.VrWNPv7n-lkp@intel.com/config)
-> > > > compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
-> > > > reproduce (this is a W=1 build):
-> > > >         # https://github.com/intel-lab-lkp/linux/commit/01b26e522b598adf346b809075880feab3dcdc08
-> > > >         git remote add linux-review https://github.com/intel-lab-lkp/linux
-> > > >         git fetch --no-tags linux-review Willy-Tarreau/insufficient-TCP-source-port-randomness/20220427-145651
-> > > >         git checkout 01b26e522b598adf346b809075880feab3dcdc08
-> > > >         # save the config file
-> > > >         mkdir build_dir && cp config build_dir/.config
-> > > >         make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
-> > > >
-> > > > If you fix the issue, kindly add following tag as appropriate
-> > > > Reported-by: kernel test robot <lkp@intel.com>
-> > > >
-> > > > All errors (new ones prefixed by >>):
-> > > >
-> > > >    ld: net/ipv4/inet_hashtables.o: in function `__inet_hash_connect':
-> > > > >> inet_hashtables.c:(.text+0x187d): undefined reference to `__umoddi3'
-> > >
-> > > Argh! indeed, we spoke about using div_u64_rem() at the beginning and
-> > > that one vanished over time. Will respin it.
-> >
-> > I fixed it, built it for i386 and x86_64, tested it on x86_64 and confirmed
-> > that it still does what I need. The change is only this:
-> >
-> > -       offset = (READ_ONCE(table_perturb[index]) + (port_offset >> 32)) % remaining;
-> > +       div_u64_rem(READ_ONCE(table_perturb[index]) + (port_offset >> 32), remaining, &offset);
-> >
-> > I'll send a v2 series in a few hours if there are no more comments.
-> 
-> We really do not need 33 bits here.
-> 
-> I would suggest using a 32bit divide.
-> 
-> offset = READ_ONCE(table_perturb[index]) + (port_offset >> 32));
-> offset %= remaining;
+There's a NULL check on pmlmepriv in rtw_mlme.c:112 which makes no sense
+as rtw_free_mlme_priv_ie_data() dereferences it unconditionally and it
+would have already crashed at this point.
+Remove this redundant check.
 
-Yeah much better indeed, I'll do that. Thanks Eric!
+Signed-off-by: Vihas Makwana <makvihas@gmail.com>
+---
+ v2 -> v1:
+    drop the redundant check
+ drivers/staging/r8188eu/core/rtw_mlme.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-Willy
+diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/r8188eu/core/rtw_mlme.c
+index 080e07385..353f3eaed 100644
+--- a/drivers/staging/r8188eu/core/rtw_mlme.c
++++ b/drivers/staging/r8188eu/core/rtw_mlme.c
+@@ -248,9 +248,7 @@ int rtw_init_mlme_priv(struct adapter *padapter)/* struct	mlme_priv *pmlmepriv)
+ void rtw_free_mlme_priv(struct mlme_priv *pmlmepriv)
+ {
+ 	rtw_free_mlme_priv_ie_data(pmlmepriv);
+-
+-	if (pmlmepriv)
+-		vfree(pmlmepriv->free_bss_buf);
++	vfree(pmlmepriv->free_bss_buf);
+ }
+ 
+ struct wlan_network *rtw_alloc_network(struct mlme_priv *pmlmepriv)
+-- 
+2.30.2
 
