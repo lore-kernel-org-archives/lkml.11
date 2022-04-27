@@ -2,100 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2288EC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 12:52:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7B16C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 12:54:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234924AbiD0M4G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 08:56:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59416 "EHLO
+        id S234947AbiD0M51 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 08:57:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234805AbiD0M4E (ORCPT
+        with ESMTP id S234805AbiD0M5Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 08:56:04 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 749893BA5F;
-        Wed, 27 Apr 2022 05:52:53 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 30C3C210F4;
-        Wed, 27 Apr 2022 12:52:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1651063972; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=yhhsQZ/apy3ajEmL5BMkQH4udIsKMO/zX6YXUvskbjo=;
-        b=HKwz9nxCbcYcqN9QwfH1r/OK8igSL7ddbDwQPY0FTJ9uWwqeDCyym37BrWo7AuYPgFyIfr
-        ZZUi0JysOo5F8s8wa3Efo0O62vpkwufpcdX5yjShpE8Nb6w+Qo8LJrQ/J/IQwp1cmsbITY
-        30oslwuMsB2FRM+EppyUlA2FiA7c9DM=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1651063972;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=yhhsQZ/apy3ajEmL5BMkQH4udIsKMO/zX6YXUvskbjo=;
-        b=HMVy/XOhIcTAl6OpMei3jxWEDWxT8+4SiZ5FoEVgdmSiCFbi8a8tlLNJLhHJTzd2g71rRw
-        2X9PmFajXjj4N0Cw==
-Received: from quack3.suse.cz (unknown [10.100.224.230])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 1FD2B2C141;
-        Wed, 27 Apr 2022 12:52:51 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id 718DBA0620; Wed, 27 Apr 2022 14:52:51 +0200 (CEST)
-Date:   Wed, 27 Apr 2022 14:52:51 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     Yu Kuai <yukuai3@huawei.com>
-Cc:     jack@suse.cz, tj@kernel.org, axboe@kernel.dk,
-        paolo.valente@linaro.org, cgroups@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yi.zhang@huawei.com
-Subject: Re: [PATCH -next v3 1/3] block, bfq: record how many queues are busy
- in bfq_group
-Message-ID: <20220427125251.yl7ff4ti33w6ktrf@quack3.lan>
-References: <20220427124722.48465-1-yukuai3@huawei.com>
- <20220427124722.48465-2-yukuai3@huawei.com>
-MIME-Version: 1.0
+        Wed, 27 Apr 2022 08:57:25 -0400
+Received: from EUR02-HE1-obe.outbound.protection.outlook.com (mail-eopbgr10071.outbound.protection.outlook.com [40.107.1.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C3CBD97;
+        Wed, 27 Apr 2022 05:54:14 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PCn8HLWWTBXdBoUnwO+PELcg4OOOhNSH7Ly1AgUyhaNtOzz3uWlPsa30vASQtQGRFkuob/KiLilYClqB4OGqjvCZzefkcwosnNBAN9Cdml6MNqW85hrqg33JMSk9+K0zWN/qf4yOeCHRrUnesglXDiRy0JvchzqTQJSp6EpFWVADwlB2SOaUZAUslRA/hYK5cWYRiBmduWNGUm8kqCSMtVWAXRFhZ4omXrUJNpPubC6tLwEpwmJqWwoTzSFhozGbzgF4DIlG5RCS5Xt2NmmQ16w9RqvZtZDqu/Yl/LBNYKv7S81zSsdAsbPD/FTCT5VTCMfNR9FsFZDte8T70Hveag==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=wBPMkyPdqIFAZA5AgZh9XO/wbIZb0VOhSB/qr1jxeR4=;
+ b=RNX3PFE/P4oDX02YncA00tQVMM0Kg4Jo8iM0MEMN2gI54MfQCbfpeZ4GlbROmWGWdsXYmGsrGL5t6RU2gU3CGMTiinjgW9zuAsBW8+jJUy7rU3sK0nZ89YLZ/5b5T/OJBVI8ZJmhOqxDCsonJmdjfyVfmz7ghvWb2LA1og6FQq8k8zz2YfIKcR69EopdTlDxsk2CV6Hpozd4UTYVEV6mfuwJguyxJD6BPT/t+ZJsK6wAHwqVxZlkbugCncKtjvq3o9btOt+UOlTztMchnc08Mu9bqrCe6LOy6WXFoMmAYDB2Mt/TqUYlyAgSAcCKH6oW6QQLh8sNM36cxjW+kHbXcw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wBPMkyPdqIFAZA5AgZh9XO/wbIZb0VOhSB/qr1jxeR4=;
+ b=FNY8O8PFb4hq5w61rWUjznTlNQOHZnyIhWImJM739WsEnKQsc8oNo/YD17lYI4vp2MsB9Qh7nZfl3HPggVm6OMpUbIducrtoh0GBWF2wv5etG5GT07SPifkVLfm/DxPHxJKCAzLDTyhABpQjtq7WyK04UY3kx1RID7U/q7HcTms=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB4688.eurprd04.prod.outlook.com (2603:10a6:803:6a::30)
+ by AM5PR0401MB2563.eurprd04.prod.outlook.com (2603:10a6:203:36::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.13; Wed, 27 Apr
+ 2022 12:54:11 +0000
+Received: from VI1PR04MB4688.eurprd04.prod.outlook.com
+ ([fe80::78d8:955a:7946:fd78]) by VI1PR04MB4688.eurprd04.prod.outlook.com
+ ([fe80::78d8:955a:7946:fd78%6]) with mapi id 15.20.5206.013; Wed, 27 Apr 2022
+ 12:54:11 +0000
+Date:   Wed, 27 Apr 2022 15:54:09 +0300
+From:   Abel Vesa <abel.vesa@nxp.com>
+To:     Miaoqian Lin <linmq006@gmail.com>
+Cc:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Dong Aisheng <aisheng.dong@nxp.com>, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [RESEND PATCH v2] clk: imx: scu: Use pm_runtime_resume_and_get
+ to fix pm_runtime_get_sync() usage
+Message-ID: <Ymk88RJ2v9cwJvU2@abelvesa>
+References: <20220425011117.25093-1-linmq006@gmail.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220427124722.48465-2-yukuai3@huawei.com>
+In-Reply-To: <20220425011117.25093-1-linmq006@gmail.com>
+X-ClientProxiedBy: VI1PR02CA0068.eurprd02.prod.outlook.com
+ (2603:10a6:802:14::39) To VI1PR04MB4688.eurprd04.prod.outlook.com
+ (2603:10a6:803:6a::30)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a4b7848b-84d5-4680-41f8-08da284d067f
+X-MS-TrafficTypeDiagnostic: AM5PR0401MB2563:EE_
+X-Microsoft-Antispam-PRVS: <AM5PR0401MB2563553C599A1A6FB915F27DF6FA9@AM5PR0401MB2563.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ItZLjDfAOjqtlUmZkBWGn1xDQndqJ0uC9F01vTW9GJ0YJMT3J+OO8k/Uqmy55HMH4w24Fzo/f3R9E5bKlTf0uBNVsz40dwbUqK2tJ+FyDAF9/1BSDfGf6jwhDCfkJZ695VPcR+Nq6zToT622hvse361hG4pgvGFfJBIp3qpVtkyhG/PIK8qb2E9Y9qe/A8Z+Du+aiQkaZuiXeSoIOMtMg0b4zrECdhELuC7wDPb1Ei/4cHJnLmndoDma02SNlo3L1LwMQHUj1O4TTOatKFNv0r/TKfycbiWLxaoXUz3XMs75atRnSvqdM1aJfaFFoie5attZw9R0jQbIlRUGv+VMXg2XtsQYWGF31N+ughOBXYu36QPLdhWHsOeEozfm/0oXophkjS+siVo698TUcrgBxQu7n7XSI4WtdwMBcSGtIhywccazBAF+nmaePUPC1sLM0HSohulcXq6DruIPGcn3faLXy9l+MB4miLEbZhiA9Ml6a0/+1WycKzL0j4xfUnMciYKul6SlRPRwJQX8uUp+JUaC7Z69Kh9w5NlVmoiQ0BXaBwy3fc3RHiZAwVDUyRU5ptZY3QYx8zEtHcadVKRU3erZyzsAsUCKgEsBvEP2sTdT6nmdIU+653/1vIAUwLPF44tG0tdjH18iHDIwJSIMR31s1PkAbt81v/bSFLG34m86gPRrscyBM13e6vbjqs2qwuOWY4pFYO2pcTdLKRHsj/RxShK5j3jQlHLHxWT5eOnTnQMfVteEaPUhvWUDiMbjpYVv1hLw/4WpU7endWFFt71QnRNpJCsxrPzfc3fSWOo=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB4688.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(7916004)(366004)(966005)(6486002)(508600001)(83380400001)(86362001)(6512007)(9686003)(26005)(53546011)(6506007)(38350700002)(38100700002)(186003)(316002)(44832011)(2906002)(66946007)(66556008)(33716001)(5660300002)(7416002)(8936002)(54906003)(6916009)(66476007)(4326008)(8676002)(52116002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?fLfayIgIwR2S1kCGVZZanFV5zghWzfsJUVqudpNNsECO4xiE3sav7coMAHGS?=
+ =?us-ascii?Q?6y8DVra4yv9i5BQEysp+oSjsXxZrpq4sPhXla5LT1MMwiIZsztQr5pirX/5T?=
+ =?us-ascii?Q?m8Y6p54K5xy6dutk4kpg2AP5sIe6B2uWv94rHqMtUxrLWs+KNFTlosu7rep1?=
+ =?us-ascii?Q?UGINHr3LUdY/yKKPnac7UJbvpEGdoZeSKPZix1R9I+K1iJk9atrm7sJK5Pgd?=
+ =?us-ascii?Q?73I0We5Jtv9W3Jg54I41fh2Hqbx7LSw9Afk0OXzltA3Gjwrj39KexlO5aGXd?=
+ =?us-ascii?Q?k4v9J+pvxrXQuvj5/2Wder7jwdR+jUK2KxWkIAogkmJnywKc11/cDCspE0tP?=
+ =?us-ascii?Q?kgeKio/YCFV2Bo4FJJFw45gwvYY7PIbeX9RJpBzkcuqgTIOUzxVsudrhtZFH?=
+ =?us-ascii?Q?pMZ5etVPtyh7o4pcxZLWnhu4LIl2EDn56/U8FpuOT7o4JAj2K51/Aqfl7xfl?=
+ =?us-ascii?Q?kfJrdZYyv3HC6ooQb6tdf3MWDAEXz03WAZq1tj2StJNFxFYS+dVr3lXL9FvA?=
+ =?us-ascii?Q?phAjF2dHO24IK52qrhj+ffDq1AEPUD/Q/N3YTIhOmsrHrFYvX+BOs6gxjWmN?=
+ =?us-ascii?Q?qqx7QM5RQM1j9N5ztFc0gLffYCUAmcxsHFkh3d/4al1PV4JgVpOr9Y7aC6WX?=
+ =?us-ascii?Q?L67R0ZnfTZhs5Ni0x72yNfqhyR1Ufv93ouNC5zQsgq1IfUp9HOLJIIjuNSB1?=
+ =?us-ascii?Q?mhqlCJL+z5lzLInnyBBCKM18V60ytP9NVHntbfA0PfyU4DGpJqj20c0PTDgy?=
+ =?us-ascii?Q?2/RAavMn74vrVIFoU1JzHchqtCM7yrV5/s691m63W4Swxy3OAqnlHtOcihSB?=
+ =?us-ascii?Q?UOTsqXmdB2EK5+/Gs0DGVX434e6NBo/H/nyQoYi3Sbju9mb/dEnFKn8MdEYI?=
+ =?us-ascii?Q?cMMLgTsWVgMvGC28QczLsv+Ojvem68VLI+0p/XvCSM/ZCNdgqCDWutlbfkRx?=
+ =?us-ascii?Q?LSW319H/8ZkQRdY7hcAEy46uc+YPyJTSv8qZILJIQSojOLJ7cNlTLx30+jeB?=
+ =?us-ascii?Q?5m0x9bRz403rpHf3W9DNB7IiX9oGU3HW6X0XZnOyt4xOim8JOkMSvIGggpnN?=
+ =?us-ascii?Q?dNw1qpblCEeapISusVV5k2IwD5CkmzA3EHUQmnOlpvVMQHJwMMZLRQIK1fhf?=
+ =?us-ascii?Q?juQyPiYvseHrqqroZvOF4DUk4f5T9rYi/EtidkJSv3Y4RWrDk83X9IWNR9d2?=
+ =?us-ascii?Q?1lH9jHQSEnqs8P+LT3O44xKHTb+0aW3DmWy1Hwt4yA3vj/GQ6hr+ADPuHwOx?=
+ =?us-ascii?Q?Q/JSZ9ElNyrQUnTYu1M3U3PkI+qku+7XOVhXcPr/+XwzBmVZZbMBQhWtSpPp?=
+ =?us-ascii?Q?jflKgH7o0BvXhDl2AMJFiiCqMIVQThbJvIIwiPbEeWEZcOKMLeR4IkYops72?=
+ =?us-ascii?Q?lvrar8vh+vHZ7XbIxjOq8R92ACrp38tFYQ460qasbDPtbYAsATL1X7eKFq7b?=
+ =?us-ascii?Q?7CAFuQs+o6QX1ohe3xv7K6vdAjo1TxTlYqNFJ6g/ah8TI3t+tDqRRJJOFWMj?=
+ =?us-ascii?Q?N6Vba6uxea57CI6xCvBaiRRN/mTugeFGsMHZ9gaov84te3LJ2R/p6+vn4vv9?=
+ =?us-ascii?Q?hADllgClP+xBe7MNiN0HDWI/w0POvtWe7+NzjEFqrvokux30lG/QaankAmRu?=
+ =?us-ascii?Q?7Vzigiw2uYfnfbYGwnPvqS4c8Kk7fXgNP2xWRon/Kra2YuL8Kg++o2un5Ly/?=
+ =?us-ascii?Q?MSU2BmFosxrXaRCMOYohlwclesP7zolKlIAWmvr1+FokZGJdy4s9LfzMfpB9?=
+ =?us-ascii?Q?j3M2nh363g=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a4b7848b-84d5-4680-41f8-08da284d067f
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB4688.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Apr 2022 12:54:11.4192
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: bQ0GC7y2xxeJaAiE8HqFfrCccLFLLWtz1zsR1C49X7ztk7FiTTX6IwHfYaLTh9o62NdBX56v+X+wJnHlm/931g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM5PR0401MB2563
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 27-04-22 20:47:20, Yu Kuai wrote:
-> Prepare to refactor the counting of 'num_groups_with_pending_reqs'.
-> 
-> Add a counter 'busy_queues' in bfq_group, and update it in
-> bfq_add/del_bfqq_busy().
-> 
-> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+On 22-04-25 09:11:17, Miaoqian Lin wrote:
+> If the device is already in a runtime PM enabled state
+> pm_runtime_get_sync() will return 1.
+>
+> Also, we need to call pm_runtime_put_noidle() when pm_runtime_get_sync()
+> fails, so use pm_runtime_resume_and_get() instead. this function
+> will handle this.
+>
+> Fixes: 78edeb080330 ("clk: imx: scu: add runtime pm support")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 
-...
+I'm fine with this.
 
-> diff --git a/block/bfq-wf2q.c b/block/bfq-wf2q.c
-> index f8eb340381cf..53826797430f 100644
-> --- a/block/bfq-wf2q.c
-> +++ b/block/bfq-wf2q.c
-> @@ -218,6 +218,14 @@ static bool bfq_no_longer_next_in_service(struct bfq_entity *entity)
->  	return false;
->  }
->  
-> +static void bfq_update_busy_queues(struct bfq_queue *bfqq, bool is_add)
-> +{
-> +	if (is_add)
-> +		bfqq_group(bfqq)->busy_queues++;
-> +	else
-> +		bfqq_group(bfqq)->busy_queues--;
-> +}
-> +
->  #else /* CONFIG_BFQ_GROUP_IOSCHED */
+Reviewed-by: Abel Vesa <abel.vesa@nxp.com>
 
-I think the bool argument here unnecessarily hurts readability (it's
-difficult to see what the argument means without looking into the
-implementation). I'd rather create two functions bfq_{inc,dec}_busy_queues()
-or if you really insist on a single function, we can have
-bfq_add_busy_queues() and have 'int' argument that will be +1 or -1.
-
-								Honza
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+> ---
+> changes in v2:
+> - change pm_runtime_get_sync to pm_runtime_resume_and_get
+> - current check works fine for pm_runtime_resume_and_get() so stay the
+> same.
+> Link: https://lore.kernel.org/all/20220412065719.17735-1-linmq006@gmail.com/
+> ---
+>  drivers/clk/imx/clk-scu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/clk/imx/clk-scu.c b/drivers/clk/imx/clk-scu.c
+> index 083da31dc3ea..2044e62980e3 100644
+> --- a/drivers/clk/imx/clk-scu.c
+> +++ b/drivers/clk/imx/clk-scu.c
+> @@ -528,7 +528,7 @@ static int imx_clk_scu_probe(struct platform_device *pdev)
+>  		pm_runtime_use_autosuspend(&pdev->dev);
+>  		pm_runtime_enable(dev);
+>
+> -		ret = pm_runtime_get_sync(dev);
+> +		ret = pm_runtime_resume_and_get(dev);
+>  		if (ret) {
+>  			pm_genpd_remove_device(dev);
+>  			pm_runtime_disable(dev);
+> --
+> 2.17.1
+>
