@@ -2,209 +2,260 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8672C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:29:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C7DDC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:29:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243565AbiD0QcU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:32:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38908 "EHLO
+        id S243166AbiD0QdD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:33:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243385AbiD0QcK (ORCPT
+        with ESMTP id S243380AbiD0QcK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Apr 2022 12:32:10 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C51373F320;
-        Wed, 27 Apr 2022 09:27:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651076866; x=1682612866;
-  h=to:cc:references:from:subject:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=CPMjo6U9PUtaGVa14pO3sunqUrDh79MQUPdvmaVu8cw=;
-  b=jU0eryoMSnwcYapAxLMjSKRkRC3kQQS7YfZGBMI2pApcKN8IbGoXiG4D
-   GB2leEQdH8+jU2kNx06EHwOwbPPcHVtlaEwtTFf0s4cRUeaCFFvlR00lx
-   FHHEu9N0aVlSO/fWg1uLD5JnVTJIypV/UvUJqQ0uo2Z5kfhM4qKT37+Jr
-   7+FXZpCt53t4awT6mTRekMbAq51f/duCHKJsqZgvJhWf4f63IfP+s6jHd
-   9TXyzHc5taI87pG23dgH2KaijOFUOx+XOe8HZ0/rXOgU/Njnj5U/oah1e
-   XDO27ggkrHirf4MN3z+cc4sy8hNgLZbPpVW2qlXqkf1LyEkycPgxAxSUA
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="253372372"
-X-IronPort-AV: E=Sophos;i="5.90,293,1643702400"; 
-   d="scan'208";a="253372372"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 09:23:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,293,1643702400"; 
-   d="scan'208";a="876729017"
-Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
-  by fmsmga005.fm.intel.com with ESMTP; 27 Apr 2022 09:23:22 -0700
-To:     Daehwan Jung <dh10.jung@samsung.com>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     "open list:USB XHCI DRIVER" <linux-usb@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Howard Yen <howardyen@google.com>,
-        Jack Pham <jackp@codeaurora.org>,
-        Puma Hsu <pumahsu@google.com>,
-        "J . Avila" <elavila@google.com>, sc.suh@samsung.com,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-References: <1650964728-175347-1-git-send-email-dh10.jung@samsung.com>
- <CGME20220426092023epcas2p32946c087135ca4b7e63b03915060c55d@epcas2p3.samsung.com>
- <1650964728-175347-6-git-send-email-dh10.jung@samsung.com>
-From:   Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: Re: [PATCH v4 5/5] usb: host: add xhci-exynos driver
-Message-ID: <b9fcc518-cc0d-d346-774e-3a9472e664bc@linux.intel.com>
-Date:   Wed, 27 Apr 2022 19:25:21 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.14.0
+Received: from mail-ua1-x934.google.com (mail-ua1-x934.google.com [IPv6:2607:f8b0:4864:20::934])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BF6941618
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:27:53 -0700 (PDT)
+Received: by mail-ua1-x934.google.com with SMTP id 63so809548uaw.10
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:27:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0chTaOs/FvT4IueAFIpm6Ya7+U1r4sTeoNEBWAhZDBE=;
+        b=tTdGpFJBZp3mgwi4fFQsizeD6EyKtGXYyWc1zQseX4VfYD9Wo10xVM8CpUK0mii7EN
+         vcCbSIrvTzh/KWFT7oZNJqJSh2pt+rLn6oVdvr/tIdLsRCKqahV+GLZjmjlMIch5SDoF
+         dPcZ8/aAeIHQyU35d/yT/BkLk9b1YkwvVj9RR2zKKcOpsSxvwzlltbsQVz6JBXJMPwV+
+         tc/HDyhzLgwk3WWW5RdybBsDm1K3N3pkAY/vxAbW9zoeBuQppEM/7WsrlfV52FyD+kbL
+         lKpcDcSzY3bEwJEQMwCbHQVswuum8pz07N+OSmQY20tR5y17G5iOZBZsFIxFLk3ouc9p
+         MQxg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0chTaOs/FvT4IueAFIpm6Ya7+U1r4sTeoNEBWAhZDBE=;
+        b=Z5KpsxDdY+LfCtaJ17qUHSNfYPbTbSjpIz8sriqzRqsZONhWTu0Ewx60MVRo75iZal
+         t8kGrfi7a32OTgMeuKpNhhQgNA7bZIWStKQmR5PLvi6dQX6ZGcR/hNqLNhkRWzsiHd/q
+         YkTcELDTr66MVkSVeD3nbvJ3qTFNGcSRr2fUmPgvVXZAB6IdS14HuPVG5Zjf4vhtc2O4
+         hpoJEv+bN1prK3NiIjiwv5HZmMoEkmx1jpA/EGbAWdqzuH+VusiKTnTXat6QzbTh+kUP
+         ayxuc4AzF1INpq5PS++wn1KuW7jXasY3p2DXJwmAtAhN5TSfh4FPVVXYa6i0FFRKL3qa
+         d3ZQ==
+X-Gm-Message-State: AOAM531dIlq01+Mmo66rHnuFW7I49wY4qkAK6nVAVsftUK43FEZ9ZaiS
+        dhgLBHDuieDt2kaNS8nVFITb44jjwIzpudKjJd9r5w==
+X-Google-Smtp-Source: ABdhPJwjlefNeOCn8gd4GV6SobBwF3RydObrORU5Icae2V3utYKIIulUzMOmiPoJt2g9Kx3+xHjeX5wXlWxSGwHN+K4=
+X-Received: by 2002:ab0:349a:0:b0:35c:b898:a733 with SMTP id
+ c26-20020ab0349a000000b0035cb898a733mr8699835uar.85.1651076871346; Wed, 27
+ Apr 2022 09:27:51 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <1650964728-175347-6-git-send-email-dh10.jung@samsung.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <CAAPL-u_pSWD6U0yQ8Ws+_Yfb_3ZEmNXJsYcRJjAFBkyDk=nq8g@mail.gmail.com>
+ <ea73f6fda9cafdd0cb6ba8351139e6f4b47354a8.camel@intel.com>
+ <CAAPL-u-aeceXFUNdok_GYb2aLhZa0zBBuSqHxFznQob3PbJt7Q@mail.gmail.com>
+ <a80647053bba44623094995730e061f0e6129677.camel@intel.com>
+ <CAAPL-u89Jxutu1VH0LnO5VGdMbkLvc2M9eapuwP-y9oG9QSsrA@mail.gmail.com>
+ <610ccaad03f168440ce765ae5570634f3b77555e.camel@intel.com>
+ <CAAPL-u9ktM82zAW_OVwqTmQsr-XC8XOPmAsjoiCLo18cxUWA=A@mail.gmail.com>
+ <8e31c744a7712bb05dbf7ceb2accf1a35e60306a.camel@intel.com>
+ <CAAPL-u9uP+FUh7Yn0ByOECo+EP32ZABnCvNPKQB9JCA68VHEqQ@mail.gmail.com>
+ <78b5f4cfd86efda14c61d515e4db9424e811c5be.camel@intel.com>
+ <YmKKwXa2XI/nwac0@li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com>
+ <200e95cf36c1642512d99431014db8943fed715d.camel@intel.com>
+ <CAAPL-u94H9FLjVtYLhi_A2AqLTOCTMRh6=Sx9cX8A3WGNM-OdA@mail.gmail.com> <a1b875913df743355e1ff3752c0eb7ddf74bae91.camel@intel.com>
+In-Reply-To: <a1b875913df743355e1ff3752c0eb7ddf74bae91.camel@intel.com>
+From:   Wei Xu <weixugc@google.com>
+Date:   Wed, 27 Apr 2022 09:27:40 -0700
+Message-ID: <CAAPL-u8b3m2yx8A-MhPmJUasuz8Ra9mW2E2dwT2KvJ06FeZofQ@mail.gmail.com>
+Subject: Re: [PATCH v2 0/5] mm: demotion: Introduce new node state N_DEMOTION_TARGETS
+To:     "ying.huang@intel.com" <ying.huang@intel.com>
+Cc:     Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Linux MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Greg Thelen <gthelen@google.com>,
+        MichalHocko <mhocko@kernel.org>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Tim C Chen <tim.c.chen@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 26.4.2022 12.18, Daehwan Jung wrote:
-> This driver is for Samsung Exynos xhci host conroller. It uses xhci-plat
-> driver mainly and extends some functions by xhci hooks and overrides.
-> 
-> It supports USB Audio offload with Co-processor. It only cares DCBAA,
-> Device Context, Transfer Ring, Event Ring, and ERST. They are allocated
-> on specific address with xhci hooks. Co-processor could use them directly
-> without xhci driver after then.
-> 
-> Signed-off-by: Daehwan Jung <dh10.jung@samsung.com>
+On Wed, Apr 27, 2022 at 12:11 AM ying.huang@intel.com
+<ying.huang@intel.com> wrote:
+>
+> On Mon, 2022-04-25 at 09:56 -0700, Wei Xu wrote:
+> > On Sat, Apr 23, 2022 at 8:02 PM ying.huang@intel.com
+> > <ying.huang@intel.com> wrote:
+> > >
+> > > Hi, All,
+> > >
+> > > On Fri, 2022-04-22 at 16:30 +0530, Jagdish Gediya wrote:
+> > >
+> > > [snip]
+> > >
+> > > > I think it is necessary to either have per node demotion targets
+> > > > configuration or the user space interface supported by this patch
+> > > > series. As we don't have clear consensus on how the user interface
+> > > > should look like, we can defer the per node demotion target set
+> > > > interface to future until the real need arises.
+> > > >
+> > > > Current patch series sets N_DEMOTION_TARGET from dax device kmem
+> > > > driver, it may be possible that some memory node desired as demotion
+> > > > target is not detected in the system from dax-device kmem probe path.
+> > > >
+> > > > It is also possible that some of the dax-devices are not preferred as
+> > > > demotion target e.g. HBM, for such devices, node shouldn't be set to
+> > > > N_DEMOTION_TARGETS. In future, Support should be added to distinguish
+> > > > such dax-devices and not mark them as N_DEMOTION_TARGETS from the
+> > > > kernel, but for now this user space interface will be useful to avoid
+> > > > such devices as demotion targets.
+> > > >
+> > > > We can add read only interface to view per node demotion targets
+> > > > from /sys/devices/system/node/nodeX/demotion_targets, remove
+> > > > duplicated /sys/kernel/mm/numa/demotion_target interface and instead
+> > > > make /sys/devices/system/node/demotion_targets writable.
+> > > >
+> > > > Huang, Wei, Yang,
+> > > > What do you suggest?
+> > >
+> > > We cannot remove a kernel ABI in practice.  So we need to make it right
+> > > at the first time.  Let's try to collect some information for the kernel
+> > > ABI definitation.
+> > >
+> > > The below is just a starting point, please add your requirements.
+> > >
+> > > 1. Jagdish has some machines with DRAM only NUMA nodes, but they don't
+> > > want to use that as the demotion targets.  But I don't think this is a
+> > > issue in practice for now, because demote-in-reclaim is disabled by
+> > > default.
+> > >
+> > > 2. For machines with PMEM installed in only 1 of 2 sockets, for example,
+> > >
+> > > Node 0 & 2 are cpu + dram nodes and node 1 are slow
+> > > memory node near node 0,
+> > >
+> > > available: 3 nodes (0-2)
+> > > node 0 cpus: 0 1
+> > > node 0 size: n MB
+> > > node 0 free: n MB
+> > > node 1 cpus:
+> > > node 1 size: n MB
+> > > node 1 free: n MB
+> > > node 2 cpus: 2 3
+> > > node 2 size: n MB
+> > > node 2 free: n MB
+> > > node distances:
+> > > node   0   1   2
+> > >   0:  10  40  20
+> > >   1:  40  10  80
+> > >   2:  20  80  10
+> > >
+> > > We have 2 choices,
+> > >
+> > > a)
+> > > node    demotion targets
+> > > 0       1
+> > > 2       1
+> > >
+> > > b)
+> > > node    demotion targets
+> > > 0       1
+> > > 2       X
+> > >
+> > > a) is good to take advantage of PMEM.  b) is good to reduce cross-socket
+> > > traffic.  Both are OK as defualt configuration.  But some users may
+> > > prefer the other one.  So we need a user space ABI to override the
+> > > default configuration.
+> >
+> > I think 2(a) should be the system-wide configuration and 2(b) can be
+> > achieved with NUMA mempolicy (which needs to be added to demotion).
+>
+> Unfortunately, some NUMA mempolicy information isn't available at
+> demotion time, for example, mempolicy enforced via set_mempolicy() is
+> for thread. But I think that cpusets can work for demotion.
+>
+> > In general, we can view the demotion order in a way similar to
+> > allocation fallback order (after all, if we don't demote or demotion
+> > lags behind, the allocations will go to these demotion target nodes
+> > according to the allocation fallback order anyway).  If we initialize
+> > the demotion order in that way (i.e. every node can demote to any node
+> > in the next tier, and the priority of the target nodes is sorted for
+> > each source node), we don't need per-node demotion order override from
+> > the userspace.  What we need is to specify what nodes should be in
+> > each tier and support NUMA mempolicy in demotion.
+>
+> This sounds interesting. Tier sounds like a natural and general concept
+> for these memory types. It's attracting to use it for user space
+> interface too. For example, we may use that for mem_cgroup limits of a
+> specific memory type (tier).
+>
+> And if we take a look at the N_DEMOTION_TARGETS again from the "tier"
+> point of view. The nodes are divided to 2 classes via
+> N_DEMOTION_TARGETS.
+>
+> - The nodes without N_DEMOTION_TARGETS are top tier (or tier 0).
+>
+> - The nodes with N_DEMOTION_TARGETS are non-top tier (or tier 1, 2, 3,
+> ...)
+>
 
-I have to agree with Krzysztof's comments, this is an odd driver stub.
+Yes, this is one of the main reasons why we (Google) want this interface.
 
-Perhaps open up a bit how the Exynos offloading works so we can figure out
-in more detail what the hardware needs from software.  
+> So, another possibility is to fit N_DEMOTION_TARGETS and its overriding
+> into "tier" concept too.  !N_DEMOTION_TARGETS == TIER0.
+>
+> - All nodes start with TIER0
+>
+> - TIER0 can be cleared for some nodes via e.g. kmem driver
+>
+> TIER0 node list can be read or overriden by the user space via the
+> following interface,
+>
+>   /sys/devices/system/node/tier0
+>
+> In the future, if we want to customize more tiers, we can add tier1,
+> tier2, tier3, .....  For now, we can add just tier0.  That is, the
+> interface is extensible in the future compared with
+> .../node/demote_targets.
+>
 
-(...)
+This more explicit tier definition interface works, too.
 
-> +
-> +static void xhci_exynos_alloc_container_ctx(struct xhci_hcd *xhci, struct xhci_container_ctx *ctx,
-> +						int type, gfp_t flags)
-> +{
-> +	/* Only first Device Context uses URAM */
-> +	int i;
-> +
-> +	ctx->bytes = ioremap(EXYNOS_URAM_DEVICE_CTX_ADDR, EXYNOS_URAM_CTX_SIZE);
-> +	if (!ctx->bytes)
-> +		return;
-> +
-> +	for (i = 0; i < EXYNOS_URAM_CTX_SIZE; i++)
-> +		ctx->bytes[i] = 0;
-> +
-> +	ctx->dma = EXYNOS_URAM_DEVICE_CTX_ADDR;
+> This isn't as flexible as the writable per-node demotion targets.  But
+> it may be enough for most requirements?
 
-This can't work with more than one USB device.
-This hardcodes the same context address for every usb device.
+I would think so. Besides, it doesn't really conflict with the
+per-node demotion target interface if we really want to introduce the
+latter.
 
-
-> +static void xhci_exynos_parse_endpoint(struct xhci_hcd *xhci, struct usb_device *udev,
-> +		struct usb_endpoint_descriptor *desc, struct xhci_container_ctx *ctx)
-> +{
-> +	struct xhci_plat_priv *priv = xhci_to_priv(xhci);
-> +	struct xhci_hcd_exynos *xhci_exynos = priv->vendor_priv;
-> +	struct usb_endpoint_descriptor *d = desc;
-> +	unsigned int ep_index;
-> +	struct xhci_ep_ctx *ep_ctx;
-> +
-> +	ep_index = xhci_get_endpoint_index(d);
-> +	ep_ctx = xhci_get_ep_ctx(xhci, ctx, ep_index);
-> +
-> +	if ((d->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK) ==
-> +				USB_ENDPOINT_XFER_ISOC) {
-> +		if (d->bEndpointAddress & USB_ENDPOINT_DIR_MASK)
-> +			xhci_exynos->in_ep = d->bEndpointAddress;
-> +		else
-> +			xhci_exynos->out_ep = d->bEndpointAddress;
-> +	}
-
-This won't work if more than one device that has isoc endpoints, or even 
-if that device has more than one in/out isoc endpoint pair.
-
-
-> +static int xhci_alloc_segments_for_ring_uram(struct xhci_hcd *xhci,
-> +		struct xhci_segment **first, struct xhci_segment **last,
-> +		unsigned int num_segs, unsigned int cycle_state,
-> +		enum xhci_ring_type type, unsigned int max_packet, gfp_t flags,
-> +		u32 endpoint_type)
-> +{
-> +	struct xhci_segment *prev;
-> +	bool chain_links = false;
-> +
-> +	while (num_segs > 0) {
-> +		struct xhci_segment *next = NULL;
-> +
-> +		if (!next) {
-> +			prev = *first;
-> +			while (prev) {
-> +				next = prev->next;
-> +				xhci_segment_free(xhci, prev);
-> +				prev = next;
-> +			}
-> +			return -ENOMEM;
-
-This always return -ENOMEM
-
-Also this whole function never allocates or remaps any memory.
-
-> +		}
-> +		xhci_link_segments(prev, next, type, chain_links);
-> +
-> +		prev = next;
-> +		num_segs--;
-> +	}
-> +	xhci_link_segments(prev, *first, type, chain_links);
-> +	*last = prev;
-> +
-> +	return 0;
-> +}
-> +
-> +static struct xhci_ring *xhci_ring_alloc_uram(struct xhci_hcd *xhci,
-> +		unsigned int num_segs, unsigned int cycle_state,
-> +		enum xhci_ring_type type, unsigned int max_packet, gfp_t flags,
-> +		u32 endpoint_type)
-> +{
-> +	struct xhci_ring	*ring;
-> +	int ret;
-> +	struct device *dev = xhci_to_hcd(xhci)->self.sysdev;
-> +
-> +	ring = kzalloc_node(sizeof(*ring), flags, dev_to_node(dev));
-> +	if (!ring)
-> +		return NULL;
-> +
-> +	ring->num_segs = num_segs;
-> +	ring->bounce_buf_len = max_packet;
-> +	INIT_LIST_HEAD(&ring->td_list);
-> +	ring->type = type;
-> +	if (num_segs == 0)
-> +		return ring;
-> +
-> +	ret = xhci_alloc_segments_for_ring_uram(xhci, &ring->first_seg,
-> +			&ring->last_seg, num_segs, cycle_state, type,
-> +			max_packet, flags, endpoint_type);
-> +	if (ret)
-> +		goto fail;
-> +
-> +	/* Only event ring does not use link TRB */
-> +	if (type != TYPE_EVENT) {
-> +		/* See section 4.9.2.1 and 6.4.4.1 */
-> +		ring->last_seg->trbs[TRBS_PER_SEGMENT - 1].link.control |=
-> +			cpu_to_le32(LINK_TOGGLE);
-
-No memory was allocated for trbs
-
-A lot of this code seems to exists just to avoid xhci driver from allocating
-dma capable memory, we can refactor the existing xhci_mem_init() and move
-dcbaa and event ring allocation and other code to their own overridable
-functions.
-
-This way we can probably get rid of a lot of the code in this series.
-
-Thanks
-Mathias
+> Best Regards,
+> Huang, Ying
+>
+> > Cross-socket demotion should not be too big a problem in practice
+> > because we can optimize the code to do the demotion from the local CPU
+> > node (i.e. local writes to the target node and remote read from the
+> > source node).  The bigger issue is cross-socket memory access onto the
+> > demoted pages from the applications, which is why NUMA mempolicy is
+> > important here.
+> >
+> > > 3. For machines with HBM (High Bandwidth Memory), as in
+> > >
+> > > https://lore.kernel.org/lkml/39cbe02a-d309-443d-54c9-678a0799342d@gmail.com/
+> > >
+> > > > [1] local DDR = 10, remote DDR = 20, local HBM = 31, remote HBM = 41
+> > >
+> > > Although HBM has better performance than DDR, in ACPI SLIT, their
+> > > distance to CPU is longer.  We need to provide a way to fix this.  The
+> > > user space ABI is one way.  The desired result will be to use local DDR
+> > > as demotion targets of local HBM.
+> > >
+> > > Best Regards,
+> > > Huang, Ying
+> > >
+>
+>
+>
