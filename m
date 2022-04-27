@@ -2,111 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E651C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 22:52:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44CD6C4167D
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 22:52:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234784AbiD0WzN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 18:55:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35754 "EHLO
+        id S238429AbiD0Wzn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 18:55:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238416AbiD0Wyf (ORCPT
+        with ESMTP id S238242AbiD0Wxo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 18:54:35 -0400
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2C048CCCA
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:50:58 -0700 (PDT)
-Received: by mail-oi1-x231.google.com with SMTP id m11so3575216oib.11
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:50:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uO1mjNT4t8QFE2H4UTWyMQ/O+XjoVk8wmcfJNXUjbrc=;
-        b=SgqFgdXosM/ZYsAUz16MKVkJJBdinSAq5DNb8Wfpvs6H36XROkz/tVPkTu6r0qbWKC
-         W3EMwHETOmhuJAJPXayfGbXzUYzGsQLRRP6gDoh6MdqvZmBtm3zYnfYLJatRV/pLeTPP
-         +RzlgD1IS4LZAJR1eL5lkO4KHr1YxJ9pDDpK8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uO1mjNT4t8QFE2H4UTWyMQ/O+XjoVk8wmcfJNXUjbrc=;
-        b=segJ+/ZiHu4y2027Oq8U1Vslur8CndStCYwja7tcIeORYrA4o0HesN7+YHd+9PJmuk
-         kNhTRlgk9+wuz2/ezjZdb/UhSvCoygqexgq23qIfVBq8T0r3Zq37t+SvoCZpYan/al2R
-         yfhIU4oPsCqonaTA0Ka6I8KpAoe8heHucnCFs9UH9oRLqK74PsPiqzsNEQ/gtvzET5aJ
-         NyntecQNZRQCYtoVKrZfZ/X3ownA45LbOEgOnHGQPDc0raik9pQ4TrxjJzGSwLyaPEOq
-         IOHmCk1b7yoiyqiLi3l/EsdZbAD0OCUynSByDg3YyycUDt37SPEAm0u8osQTgQ3ERPKf
-         97VA==
-X-Gm-Message-State: AOAM5304CMqslLcwKbZdw0Z8UYQmUtSV28Nm5mXY4D6B4qr12t3FoJjT
-        GHz15/zUJlzNYkR1DNtEuxVMh6RZCyGWZg==
-X-Google-Smtp-Source: ABdhPJwGQsxcEYHsElbh2khGaacRxR9nbyIgxqzl06IrsWFZAjxk7PRRQAWnOisR1XouvQSGymxDbg==
-X-Received: by 2002:a05:6808:114c:b0:322:a749:2d1b with SMTP id u12-20020a056808114c00b00322a7492d1bmr18616781oiu.64.1651099858023;
-        Wed, 27 Apr 2022 15:50:58 -0700 (PDT)
-Received: from mail-oa1-f41.google.com (mail-oa1-f41.google.com. [209.85.160.41])
-        by smtp.gmail.com with ESMTPSA id t11-20020a9d7f8b000000b00605e7880924sm221559otp.58.2022.04.27.15.50.57
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Apr 2022 15:50:57 -0700 (PDT)
-Received: by mail-oa1-f41.google.com with SMTP id 586e51a60fabf-e68392d626so3555012fac.4
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:50:57 -0700 (PDT)
-X-Received: by 2002:a05:6870:4201:b0:e6:47c4:e104 with SMTP id
- u1-20020a056870420100b000e647c4e104mr16438606oac.257.1651096086895; Wed, 27
- Apr 2022 14:48:06 -0700 (PDT)
+        Wed, 27 Apr 2022 18:53:44 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 379BE8A30C;
+        Wed, 27 Apr 2022 15:50:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=r/T7YOY0VHwWAfHSEqxJa3Wt3qfvSExYRCUKLKE/qpM=; b=XhhicIlaxPAENQgGkNSZu/8JWa
+        MoKMtLET2WEey/cUMjdoOeeZp/qIHF9AnIAQ1U9UG9ceTx5YsNvbqlEug3W8sTqjMADP3kqZkWGXE
+        81ePHhsZB9/Fl6O5VwXVIzqdUd2GxbFqpTJI3oISOjep5UHhEIJ1gEAyfbzeKWGz11qqm1H8SqNmy
+        PIXViapEJaVN3g1qVA0ll8xOHoXY2Fth5HpQAgahG3Orvdyx32C20SUgZY0+6ymNqW2eIcskQ9hv0
+        PnRYqaVu+GNdXU/wxDKHHXg22u4+P2b/VN7O5/RK6RnCNvbziWOBIpkgY1JIKXd1EMfFHtVMCWu3y
+        LPmztM1w==;
+Received: from [179.113.53.197] (helo=localhost)
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
+        id 1njqTt-0001xj-VW; Thu, 28 Apr 2022 00:49:58 +0200
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+To:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
+        kexec@lists.infradead.org
+Cc:     linux-kernel@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
+        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
+        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
+        xen-devel@lists.xenproject.org, x86@kernel.org,
+        kernel-dev@igalia.com, gpiccoli@igalia.com, kernel@gpiccoli.net,
+        halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
+        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
+        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, "David P . Reed" <dpreed@deepplum.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Subject: [PATCH 01/30] x86/crash,reboot: Avoid re-disabling VMX in all CPUs on crash/restart
+Date:   Wed, 27 Apr 2022 19:48:55 -0300
+Message-Id: <20220427224924.592546-2-gpiccoli@igalia.com>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220427224924.592546-1-gpiccoli@igalia.com>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
 MIME-Version: 1.0
-References: <20220426014545.628100-1-briannorris@chromium.org>
- <20220426014545.628100-2-briannorris@chromium.org> <CAMdYzYqyDr1HFYB4p8NK8ssq60qfjR2jyoSJ=tcRn8CWsZr16g@mail.gmail.com>
- <d72eb7a7-f922-3270-422b-4e27505de530@arm.com>
-In-Reply-To: <d72eb7a7-f922-3270-422b-4e27505de530@arm.com>
-From:   Brian Norris <briannorris@chromium.org>
-Date:   Wed, 27 Apr 2022 14:47:55 -0700
-X-Gmail-Original-Message-ID: <CA+ASDXNFPfp6J9bLpYh4uyZDtmhrbSb6Y3=T26_qxd4-YDMtcw@mail.gmail.com>
-Message-ID: <CA+ASDXNFPfp6J9bLpYh4uyZDtmhrbSb6Y3=T26_qxd4-YDMtcw@mail.gmail.com>
-Subject: Re: [PATCH v3 2/3] soc: rockchip: power-domain: Replace dsb() with smb()
-To:     Robin Murphy <robin.murphy@arm.com>
-Cc:     Peter Geis <pgwipeout@gmail.com>, Heiko Stuebner <heiko@sntech.de>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 5:25 PM Robin Murphy <robin.murphy@arm.com> wrote:
-> On 2022-04-27 00:55, Peter Geis wrote:
-> > On Mon, Apr 25, 2022 at 9:46 PM Brian Norris <briannorris@chromium.org> wrote:
-> >>
-> >> It's unclear if these are really needed at all, but seemingly their
-> >> purpose is only as a write barrier. Use the general macro instead of the
-> >> ARM-specific one.
-...
-> >> -       dsb(sy);
-> >> +       wmb();
-> >
-> > Just curious, shouldn't this be mb() instead of wmb()?
-> >  From the arm64 barrier.h:
-> >
-> > #define mb() dsb(sy)
-> > #define wmb() dsb(st)
->
-> As I mentioned on v2, that would be the literal translation, however
-> there's no concurrency since this is happening under a mutex, so there's
-> no other agent against whose accesses loads would need to be
-> synchronised, therefore the only logical reason those DSBs were ever
-> there at all must be to ensure that the prior store(s) have been issued
-> to their destination before proceeding. The history implies that this
-> dates all the way back to RK3288, where Armv7's argument-less DSB lacked
-> that distinction anyway.
+In the panic path we have a list of functions to be called, the panic
+notifiers - such callbacks perform various actions in the machine's
+last breath, and sometimes users want them to run before kdump. We
+have the parameter "crash_kexec_post_notifiers" for that. When such
+parameter is used, the function "crash_smp_send_stop()" is executed
+to poweroff all secondary CPUs through the NMI-shootdown mechanism;
+part of this process involves disabling virtualization features in
+all CPUs (except the main one).
 
-Thanks Robin. I already tried to capture part of this in the commit message:
+Now, in the emergency restart procedure we have also a way of
+disabling VMX in all CPUs, using the same NMI-shootdown mechanism;
+what happens though is that in case we already NMI-disabled all CPUs,
+the emergency restart fails due to a second addition of the same items
+in the NMI list, as per the following log output:
 
-"It's unclear if these are really needed at all, but seemingly their
-purpose is only as a write barrier."
+sysrq: Trigger a crash
+Kernel panic - not syncing: sysrq triggered crash
+[...]
+Rebooting in 2 seconds..
+list_add double add: new=<addr1>, prev=<addr2>, next=<addr1>.
+------------[ cut here ]------------
+kernel BUG at lib/list_debug.c:29!
+invalid opcode: 0000 [#1] PREEMPT SMP PTI
 
-i.e., it's intentional that I'm making a change, not a literal translation.
+In order to reproduce the problem, users just need to set the kernel
+parameter "crash_kexec_post_notifiers" *without* kdump set in any
+system with the VMX feature present.
 
-I ran through a few tests on Rockchip RK3399, FWIW, although I suppose
-some nasty memory ordering bugs are not exactly the kind of thing that
-would fall out in smoke tests.
+Since there is no benefit in re-disabling VMX in all CPUs in case
+it was already done, this patch prevents that by guarding the restart
+routine against doubly issuing NMIs unnecessarily. Notice we still
+need to disable VMX locally in the emergency restart.
 
-Brian
+Fixes: ed72736183c4 ("x86/reboot: Force all cpus to exit VMX root if VMX is supported)
+Fixes: 0ee59413c967 ("x86/panic: replace smp_send_stop() with kdump friendly version in panic path")
+Cc: David P. Reed <dpreed@deepplum.com>
+Cc: Hidehiro Kawai <hidehiro.kawai.ez@hitachi.com>
+Cc: Paolo Bonzini <pbonzini@redhat.com>
+Cc: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+---
+ arch/x86/include/asm/cpu.h |  1 +
+ arch/x86/kernel/crash.c    |  8 ++++----
+ arch/x86/kernel/reboot.c   | 14 ++++++++++++--
+ 3 files changed, 17 insertions(+), 6 deletions(-)
+
+diff --git a/arch/x86/include/asm/cpu.h b/arch/x86/include/asm/cpu.h
+index 86e5e4e26fcb..b6a9062d387f 100644
+--- a/arch/x86/include/asm/cpu.h
++++ b/arch/x86/include/asm/cpu.h
+@@ -36,6 +36,7 @@ extern int _debug_hotplug_cpu(int cpu, int action);
+ #endif
+ #endif
+ 
++extern bool crash_cpus_stopped;
+ int mwait_usable(const struct cpuinfo_x86 *);
+ 
+ unsigned int x86_family(unsigned int sig);
+diff --git a/arch/x86/kernel/crash.c b/arch/x86/kernel/crash.c
+index e8326a8d1c5d..71dd1a990e8d 100644
+--- a/arch/x86/kernel/crash.c
++++ b/arch/x86/kernel/crash.c
+@@ -42,6 +42,8 @@
+ #include <asm/crash.h>
+ #include <asm/cmdline.h>
+ 
++bool crash_cpus_stopped;
++
+ /* Used while preparing memory map entries for second kernel */
+ struct crash_memmap_data {
+ 	struct boot_params *params;
+@@ -108,9 +110,7 @@ void kdump_nmi_shootdown_cpus(void)
+ /* Override the weak function in kernel/panic.c */
+ void crash_smp_send_stop(void)
+ {
+-	static int cpus_stopped;
+-
+-	if (cpus_stopped)
++	if (crash_cpus_stopped)
+ 		return;
+ 
+ 	if (smp_ops.crash_stop_other_cpus)
+@@ -118,7 +118,7 @@ void crash_smp_send_stop(void)
+ 	else
+ 		smp_send_stop();
+ 
+-	cpus_stopped = 1;
++	crash_cpus_stopped = true;
+ }
+ 
+ #else
+diff --git a/arch/x86/kernel/reboot.c b/arch/x86/kernel/reboot.c
+index fa700b46588e..2fc42b8402ac 100644
+--- a/arch/x86/kernel/reboot.c
++++ b/arch/x86/kernel/reboot.c
+@@ -589,8 +589,18 @@ static void native_machine_emergency_restart(void)
+ 	int orig_reboot_type = reboot_type;
+ 	unsigned short mode;
+ 
+-	if (reboot_emergency)
+-		emergency_vmx_disable_all();
++	/*
++	 * We can reach this point in the end of panic path, having
++	 * NMI-disabled all secondary CPUs. This process involves
++	 * disabling the CPU virtualization technologies, so if that
++	 * is the case, we only miss disabling the local CPU VMX...
++	 */
++	if (reboot_emergency) {
++		if (!crash_cpus_stopped)
++			emergency_vmx_disable_all();
++		else
++			cpu_emergency_vmxoff();
++	}
+ 
+ 	tboot_shutdown(TB_SHUTDOWN_REBOOT);
+ 
+-- 
+2.36.0
+
