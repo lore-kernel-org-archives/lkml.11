@@ -2,109 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8045DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:50:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AD09C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:50:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238740AbiD0OyD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 10:54:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34520 "EHLO
+        id S238751AbiD0OyF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 10:54:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238782AbiD0Oxu (ORCPT
+        with ESMTP id S238867AbiD0Oxx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 10:53:50 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 365DF4093A
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 07:50:37 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id y3so3867958ejo.12
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 07:50:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TopemPKnePhFBvdQyVlRU2YsgkU6mC/ZFyaLpAEWb+8=;
-        b=l1S8Szb6YcnjZdnVaz8zzSfr+dPrbZYHvwGnZbhtsZEwiNom8Ypifffv3sNqsjqKRg
-         h0ddvg9NIF707QQrfjXr0lPbL+Rw+kElQKXli8kFttoj4zIcDlYZS2RxqHaT+xqmYyOu
-         ujpXiXJ+fQ9oe4lLFNbP42Z1h9ZadEeN0kQhNwibhY3cQnurVmDXsFxL7S7TylQ69+nb
-         OyDnahkiwXZZrNWSB3r06C6YfMHE4pSWE7nqRbQ32NTLj+VENsQ+SCCLoQCf5tm0G1hF
-         VSvIlX64IZa6ajuuWOU93ZE2NQZ/fYitiEg9AKO10SkCWInJjTesRmgbeCLelOD6/S+y
-         Erwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TopemPKnePhFBvdQyVlRU2YsgkU6mC/ZFyaLpAEWb+8=;
-        b=KfEXTi3SsyzuisZH53t0d7bLVeah7KqHymUBXjzGBFisSw0U1olXX3qRNXgTRpkZYa
-         RYK0HjPilX5yQcV/snAYmg+uF95dyUeZdzLVaZAJ7Fw1Kb7C1AmbcQ59oRX5RRyYBU/6
-         7YElu8IPd5IC/x9a7SoPi5BYqSqhSTmcovhp8OSkQEjYgjlScAFDvq6EE2uWooXsWSoi
-         xti8paah0PbFbLNbR/eb6PbAO/Q9VCsC5w8515db1oTczKE6bcK6wr1cUtaVBrYXCqlV
-         Y0IK/f10WFEY2YIgz2nHmLOQuHVHvN6NbNfdC3haAgIhtClgQsg9NxhLcdJrE+Bin9ba
-         lvJg==
-X-Gm-Message-State: AOAM530G5sgBa/bIzWYxdshzYde+d/ORrORP6wazeUrKtgIPXhxs/YLJ
-        iJ6nJd6abk5Zcd8d6uxnUHNn/NJcyzmeBlB9NSA=
-X-Google-Smtp-Source: ABdhPJze0rrE09zpTtnC3kY/fQaGWUjOnEIxVfQjERch64qFczOtwWFYXf/NmUkjW0AubSZi4EJKq9liLxcZi/rCYqU=
-X-Received: by 2002:a17:907:6d22:b0:6f3:a9e5:d074 with SMTP id
- sa34-20020a1709076d2200b006f3a9e5d074mr9978050ejc.639.1651071035761; Wed, 27
- Apr 2022 07:50:35 -0700 (PDT)
+        Wed, 27 Apr 2022 10:53:53 -0400
+Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A76B740936
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 07:50:42 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:3d::5f6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id DFF304FA;
+        Wed, 27 Apr 2022 14:50:41 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net DFF304FA
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1651071042; bh=hlu8PGcHZuP0zBSWDbHIqFXuineEIkirOaqet9rn/BE=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=aER+/uXTHpFN7DZVZoCPzaz9KvxQN+fjErYxHxMN++Zpb6lMdc8F0xZ98+JzylX+v
+         pgyRAGEdGe63wxwKT6/M9Dox9+QOHsRfVKQ7S9khMQHg6ln4uWwGhAubcJD3Dxei9k
+         RT3AhO3z1hlTOLFHu7KBkCZWFxFk/vjaVC5+Ehn8w2bBJQNP6tbp9LVttIJJ3g0XOW
+         O0gUoQTHPuVUSwFDR0Jg8Jm+wRuiPpAoTB/GXPQGUH7J2iIS5Y+Mjjvfe03y3efvX0
+         M6JvoFnf35KJTD1GSAx48csRE1DzlwqGepzBDA8l4o0/Wgk2C9NtUp4paWEmJZgk4e
+         YQBvQRTwK22Lg==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Paul Gortmaker <paul.gortmaker@windriver.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>,
+        Phillip Potter <phil@philpotter.co.uk>
+Subject: Re: [PATCH 3/3] block: remove last remaining traces of IDE
+ documentation
+In-Reply-To: <20220427132436.12795-4-paul.gortmaker@windriver.com>
+References: <20220427132436.12795-1-paul.gortmaker@windriver.com>
+ <20220427132436.12795-4-paul.gortmaker@windriver.com>
+Date:   Wed, 27 Apr 2022 08:50:41 -0600
+Message-ID: <87wnfaa8ce.fsf@meer.lwn.net>
 MIME-Version: 1.0
-References: <alpine.LRH.2.02.2204241643030.17244@file01.intranet.prod.int.rdu2.redhat.com>
- <CAHp75VdHnvv6FH1BKcs8WgGF3nJpj77TsrmsQGBSpsAQU_S-bw@mail.gmail.com>
- <alpine.LRH.2.02.2204260759540.2737@file01.intranet.prod.int.rdu2.redhat.com>
- <YmfxaB1j65p8dOyj@smile.fi.intel.com> <alpine.LRH.2.02.2204261128220.5129@file01.intranet.prod.int.rdu2.redhat.com>
- <CAHp75Vc8kb+dpT_i93No+0_==tLuYKxu9t1Nnv1KRomRc+Ke1w@mail.gmail.com> <alpine.LRH.2.02.2204271000020.1114@file01.intranet.prod.int.rdu2.redhat.com>
-In-Reply-To: <alpine.LRH.2.02.2204271000020.1114@file01.intranet.prod.int.rdu2.redhat.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 27 Apr 2022 16:49:59 +0200
-Message-ID: <CAHp75Vf=sEeoHwzb2RdVFsmZ_mWAyg2zdMKgtW9RQFM_bTMHPw@mail.gmail.com>
-Subject: Re: [PATCH v2] hex2bin: fix access beyond string end
-To:     Mikulas Patocka <mpatocka@redhat.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Andy Shevchenko <andy@kernel.org>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        device-mapper development <dm-devel@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mike Snitzer <msnitzer@redhat.com>,
-        Milan Broz <gmazyland@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 4:10 PM Mikulas Patocka <mpatocka@redhat.com> wrote:
-> On Wed, 27 Apr 2022, Andy Shevchenko wrote:
-> > On Tue, Apr 26, 2022 at 5:29 PM Mikulas Patocka <mpatocka@redhat.com> wrote:
-> > > On Tue, 26 Apr 2022, Andy Shevchenko wrote:
-> > > > On Tue, Apr 26, 2022 at 08:07:44AM -0400, Mikulas Patocka wrote:
-> > > > > On Tue, 26 Apr 2022, Andy Shevchenko wrote:
-> > > > > > On Sun, Apr 24, 2022 at 10:48 PM Mikulas Patocka <mpatocka@redhat.com> wrote:
-> >
-> > ...
-> >
-> > > > Still shadows error codes.
-> > > >
-> > > > > +                   return -EINVAL;
-> > > >
-> > > > >                     return -EINVAL;
-> > >
-> > > What do you mean? What's wrong with "return -EINVAL"?
-> >
-> > The actual error code is returned by hex_to_bin(). What is the point
-> > of shadowing it with the explicit value?
->
-> hex_to_bin returns -1 on error, hex2bin returns -EINVAL on error.
->
-> This is inconsistent and it may be fixed (after verifying all the
-> hex_to_bin callers - a quick grep over the source shows that there is "if
-> ((k = hex_to_bin(in_str[j--])) != -1)").
->
-> But for the purpose of fixing this bug, we should preserve the behavior
-> and return -1 and -EINVAL just like it was before.
+Paul Gortmaker <paul.gortmaker@windriver.com> writes:
 
-This is clear now to me. So, by improving a commit message you may
-make it clear to everybody who reads your change.
+> The last traces of the IDE driver went away in commit b7fb14d3ac63
+> ("ide: remove the legacy ide driver") but it left behind some traces
+> of old documentation.  This removes/updates anything with a reference
+> to ide-cd or ide-tape appropriately.
+>
+> Cc: Jens Axboe <axboe@kernel.dk>
+> Cc: Christoph Hellwig <hch@lst.de>
+> Cc: Jonathan Corbet <corbet@lwn.net>
+> Cc: Phillip Potter <phil@philpotter.co.uk>
+> Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+> ---
+>  .../admin-guide/kernel-parameters.txt         |  21 -
+>  Documentation/cdrom/ide-cd.rst                | 538 ------------------
+>  Documentation/cdrom/index.rst                 |   1 -
+>  Documentation/filesystems/proc.rst            |  92 +--
+>  Documentation/ide/ChangeLog.ide-cd.1994-2004  | 268 ---------
+>  .../ide/ChangeLog.ide-floppy.1996-2002        |  63 --
+>  .../ide/ChangeLog.ide-tape.1995-2002          | 257 ---------
+>  Documentation/ide/changelogs.rst              |  17 -
+>  Documentation/ide/ide-tape.rst                |  68 ---
+>  Documentation/ide/ide.rst                     | 265 ---------
+>  Documentation/ide/index.rst                   |  21 -
+>  Documentation/ide/warm-plug-howto.rst         |  18 -
+>  drivers/block/pktcdvd.c                       |   2 +-
+>  13 files changed, 8 insertions(+), 1623 deletions(-)
+>  delete mode 100644 Documentation/cdrom/ide-cd.rst
+>  delete mode 100644 Documentation/ide/ChangeLog.ide-cd.1994-2004
+>  delete mode 100644 Documentation/ide/ChangeLog.ide-floppy.1996-2002
+>  delete mode 100644 Documentation/ide/ChangeLog.ide-tape.1995-2002
+>  delete mode 100644 Documentation/ide/changelogs.rst
+>  delete mode 100644 Documentation/ide/ide-tape.rst
+>  delete mode 100644 Documentation/ide/ide.rst
+>  delete mode 100644 Documentation/ide/index.rst
+>  delete mode 100644 Documentation/ide/warm-plug-howto.rst
 
-With the updated commit message,
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+The Documentation/ide part of this is already dealt with in docs-next;
+obviously there was more to do, though :)
 
--- 
-With Best Regards,
-Andy Shevchenko
+Thanks,
+
+jon
