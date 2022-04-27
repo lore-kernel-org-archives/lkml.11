@@ -2,148 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D3D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:19:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18E17C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:19:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243162AbiD0QWp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:22:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35234 "EHLO
+        id S243170AbiD0QWs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:22:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243906AbiD0QUB (ORCPT
+        with ESMTP id S243960AbiD0QUD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:20:01 -0400
+        Wed, 27 Apr 2022 12:20:03 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 60A7686E27
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:16:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 947C34199F
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:16:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651076185;
+        s=mimecast20190719; t=1651076209;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=4DJyESBBKfv4Cx6IqvqpIfsWyZ1HDqBgutDwdLC0W60=;
-        b=cqnJCd4hqA4jDDfPcCNdONKW92+STSJhSMnhTB9FdPasTv6azwFtgzY+kfNvh0lYeKKXHt
-        naryIG2+DM4z47Vhfd6AAUtGPsMeyrhJ7PaFJTJsQQNvuIARft3du9Q8BCTOiJBwaeqsr0
-        EYhPRP5gB2yMuMAJz/yemWhB+iwEFso=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=lnbYpT3n4B6RsMs/mx0BEjUPavBjzVBVGqKnbmYGpK8=;
+        b=CnaUT1bq+Ho92y54tAoIPww1RCLQBy4g0oLedSKY+usueG2qeqbBBUo1ruNo6l6wBeKtud
+        FRgxQC82KXDQsmxXEg355cXSb6JL0zpfdY0YxlhT5vNUf6Plp4xeG98fdy5E4AtxX+btdW
+        9Ef6rmNLG45qR3LMkplWw72oixeHu34=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-62-J2pTK5aKN42SOdxOUyJxjQ-1; Wed, 27 Apr 2022 12:16:24 -0400
-X-MC-Unique: J2pTK5aKN42SOdxOUyJxjQ-1
-Received: by mail-ed1-f71.google.com with SMTP id l14-20020aa7cace000000b003f7f8e1cbbdso1245536edt.20
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:16:24 -0700 (PDT)
+ us-mta-642-K8nW3o77OgKZlqk4oySVKA-1; Wed, 27 Apr 2022 12:16:47 -0400
+X-MC-Unique: K8nW3o77OgKZlqk4oySVKA-1
+Received: by mail-ej1-f72.google.com with SMTP id mp18-20020a1709071b1200b006e7f314ecb3so1423488ejc.23
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:16:47 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=4DJyESBBKfv4Cx6IqvqpIfsWyZ1HDqBgutDwdLC0W60=;
-        b=JKCWuHqk5YhR5P0tRZpTsRnmwSC6t1Ja4vKhNwTv/fmaDKDnUpCxIozhV0Qz2E7qFM
-         8eRgEmT/+pyR6tk0EzL3OMkwnD83PkX8jpyezFy3bYwG3ahFlW+wc+KxStiOtksfiOh+
-         TtdLQk7PtxZO7AyY4l4SydkxwfZYd4BCfhwOE4t3Q6H00Qqbn88d92seq2Y48TqHc4jn
-         rO5933ASqXeuCwV1Vt2GCh/5FP7bAc55Vzjm8sSdJ3de0lBu0S22im6B9myu4Kr9lVj6
-         hEgyKRTq98a/kffl7Vqt/eklIHDROsmeTAXZFLAGZVQpCMFsgLoFWMhaWn1PtSEyFvrk
-         JKuw==
-X-Gm-Message-State: AOAM531eWESahU0NjlWKson7y1udyWivp437ENWoyaOseMMIkqhl0NnI
-        XyFm1nr2Ys3g2elq77ANNMbEOskWresV1qZ5DloNSWjbq7h66p5xHQaL9P6EkNUUI6VdCA6YHD/
-        3Ecdn9UMJrvPVmwhziRoQvvVV
-X-Received: by 2002:a17:907:3f25:b0:6b0:5e9a:83 with SMTP id hq37-20020a1709073f2500b006b05e9a0083mr28543242ejc.659.1651076183061;
-        Wed, 27 Apr 2022 09:16:23 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxbHnMwhrUavgLAEph26Pn2TGlnZOPdIVTeG1iNt5jyDcQ5EQHMMAe9gdm9OdyjsGwOTF1XZw==
-X-Received: by 2002:a17:907:3f25:b0:6b0:5e9a:83 with SMTP id hq37-20020a1709073f2500b006b05e9a0083mr28543217ejc.659.1651076182735;
-        Wed, 27 Apr 2022 09:16:22 -0700 (PDT)
+        bh=lnbYpT3n4B6RsMs/mx0BEjUPavBjzVBVGqKnbmYGpK8=;
+        b=IORozmd9HUt7pI1cr83CodpDDhAGj8iBDWioe9ovtJcFgOAkDbNcZ/eEH9mAF6wUrh
+         7WkA0o0LxbfJiWrMl/G17mviFURQpsau8WOGV27BuqU+3rzZBeP7YCT5o7LPYwo0l4MP
+         QLzJwKVqPIACaUQ7TzH6jZemtBQoPEttZ4XtqEhWTACCaa9nWwgFAa0e++ApMwLzSBJM
+         wJuS+YmzukYvKTla/iFFNilCZcWtkmaqH+PW8xLIsq5aKiyLo20pgGEDaaZfcONUvMS6
+         dwd98WLtKO64S4R8XZiUZa9Fp+obi3h9VWto7HVutGtckDXyBLYmA3gdez/yY0KU9XVR
+         qzFw==
+X-Gm-Message-State: AOAM530zdIB75Zz0lGVNUQGN6wJtxystjDiy7Ew7O1kaK8d0zfplpdP6
+        iqnZ/5GVzndaEvTtGq52V3LOesUeua15+kAzWYCMuFG0wNRaVyBDvT0bAwz7zJS8WOBZOSftRLn
+        ptg2ommuIz2zG33gZKQviueJE
+X-Received: by 2002:a05:6402:1385:b0:413:2bc6:4400 with SMTP id b5-20020a056402138500b004132bc64400mr31644134edv.94.1651076206797;
+        Wed, 27 Apr 2022 09:16:46 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwN04JdY7dXcDoRLxwm8dz33jXMrEZAL6VpDpEQyqIpRZoNCQH0xB7s555bdSekIj0FSocVQg==
+X-Received: by 2002:a05:6402:1385:b0:413:2bc6:4400 with SMTP id b5-20020a056402138500b004132bc64400mr31644110edv.94.1651076206540;
+        Wed, 27 Apr 2022 09:16:46 -0700 (PDT)
 Received: from ?IPV6:2001:b07:6468:f312:1c09:f536:3de6:228c? ([2001:b07:6468:f312:1c09:f536:3de6:228c])
-        by smtp.googlemail.com with ESMTPSA id t27-20020a1709063e5b00b006f3a94f5194sm3343922eji.77.2022.04.27.09.16.21
+        by smtp.googlemail.com with ESMTPSA id kx5-20020a170907774500b006e1382b8192sm7299037ejc.147.2022.04.27.09.16.45
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Apr 2022 09:16:22 -0700 (PDT)
-Message-ID: <5847c4b7-aaae-e090-cdf3-2275a8f08685@redhat.com>
-Date:   Wed, 27 Apr 2022 18:16:21 +0200
+        Wed, 27 Apr 2022 09:16:45 -0700 (PDT)
+Message-ID: <99b2369b-9433-641f-053e-f1f5b7fe8717@redhat.com>
+Date:   Wed, 27 Apr 2022 18:16:44 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.0
-Subject: Re: [PATCH MANUALSEL 5.17 3/7] x86/kvm: Preserve BSP
- MSR_KVM_POLL_CONTROL across suspend/resume
+Subject: Re: [PATCH MANUALSEL 5.17 4/7] KVM: x86: Do not change ICR on write
+ to APIC_SELF_IPI
 Content-Language: en-US
 To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
         stable@vger.kernel.org
-Cc:     Wanpeng Li <wanpengli@tencent.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>, tglx@linutronix.de,
+Cc:     Chao Gao <chao.gao@intel.com>,
+        Sean Christopherson <seanjc@google.com>, tglx@linutronix.de,
         mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
         x86@kernel.org, kvm@vger.kernel.org
 References: <20220427155408.19352-1-sashal@kernel.org>
- <20220427155408.19352-3-sashal@kernel.org>
+ <20220427155408.19352-4-sashal@kernel.org>
 From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220427155408.19352-3-sashal@kernel.org>
+In-Reply-To: <20220427155408.19352-4-sashal@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/27/22 17:53, Sasha Levin wrote:
-> From: Wanpeng Li <wanpengli@tencent.com>
+On 4/27/22 17:54, Sasha Levin wrote:
+> From: Paolo Bonzini <pbonzini@redhat.com>
 > 
-> [ Upstream commit 0361bdfddca20c8855ea3bdbbbc9c999912b10ff ]
+> [ Upstream commit d22a81b304a27fca6124174a8e842e826c193466 ]
 > 
-> MSR_KVM_POLL_CONTROL is cleared on reset, thus reverting guests to
-> host-side polling after suspend/resume.  Non-bootstrap CPUs are
-> restored correctly by the haltpoll driver because they are hot-unplugged
-> during suspend and hot-plugged during resume; however, the BSP
-> is not hotpluggable and remains in host-sde polling mode after
-> the guest resume.  The makes the guest pay for the cost of vmexits
-> every time the guest enters idle.
+> Emulating writes to SELF_IPI with a write to ICR has an unwanted side effect:
+> the value of ICR in vAPIC page gets changed.  The lists SELF_IPI as write-only,
+> with no associated MMIO offset, so any write should have no visible side
+> effect in the vAPIC page.
 > 
-> Fix it by recording BSP's haltpoll state and resuming it during guest
-> resume.
-> 
-> Cc: Marcelo Tosatti <mtosatti@redhat.com>
-> Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
-> Message-Id: <1650267752-46796-1-git-send-email-wanpengli@tencent.com>
+> Reported-by: Chao Gao <chao.gao@intel.com>
+> Reviewed-by: Sean Christopherson <seanjc@google.com>
 > Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 > Signed-off-by: Sasha Levin <sashal@kernel.org>
 > ---
->   arch/x86/kernel/kvm.c | 13 +++++++++++++
->   1 file changed, 13 insertions(+)
+>   arch/x86/kvm/lapic.c | 7 +++----
+>   1 file changed, 3 insertions(+), 4 deletions(-)
 > 
-> diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
-> index ed8a13ac4ab2..4c2a158bb6c4 100644
-> --- a/arch/x86/kernel/kvm.c
-> +++ b/arch/x86/kernel/kvm.c
-> @@ -69,6 +69,7 @@ static DEFINE_PER_CPU_DECRYPTED(struct kvm_vcpu_pv_apf_data, apf_reason) __align
->   DEFINE_PER_CPU_DECRYPTED(struct kvm_steal_time, steal_time) __aligned(64) __visible;
->   static int has_steal_clock = 0;
+> diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+> index 2a10d0033c96..6b6f9359d29e 100644
+> --- a/arch/x86/kvm/lapic.c
+> +++ b/arch/x86/kvm/lapic.c
+> @@ -2125,10 +2125,9 @@ int kvm_lapic_reg_write(struct kvm_lapic *apic, u32 reg, u32 val)
+>   		break;
 >   
-> +static int has_guest_poll = 0;
->   /*
->    * No need for any "IO delay" on KVM
->    */
-> @@ -706,14 +707,26 @@ static int kvm_cpu_down_prepare(unsigned int cpu)
->   
->   static int kvm_suspend(void)
->   {
-> +	u64 val = 0;
-> +
->   	kvm_guest_cpu_offline(false);
->   
-> +#ifdef CONFIG_ARCH_CPUIDLE_HALTPOLL
-> +	if (kvm_para_has_feature(KVM_FEATURE_POLL_CONTROL))
-> +		rdmsrl(MSR_KVM_POLL_CONTROL, val);
-> +	has_guest_poll = !(val & 1);
-> +#endif
->   	return 0;
->   }
->   
->   static void kvm_resume(void)
->   {
->   	kvm_cpu_online(raw_smp_processor_id());
-> +
-> +#ifdef CONFIG_ARCH_CPUIDLE_HALTPOLL
-> +	if (kvm_para_has_feature(KVM_FEATURE_POLL_CONTROL) && has_guest_poll)
-> +		wrmsrl(MSR_KVM_POLL_CONTROL, 0);
-> +#endif
->   }
->   
->   static struct syscore_ops kvm_syscore_ops = {
+>   	case APIC_SELF_IPI:
+> -		if (apic_x2apic_mode(apic)) {
+> -			kvm_lapic_reg_write(apic, APIC_ICR,
+> -					    APIC_DEST_SELF | (val & APIC_VECTOR_MASK));
+> -		} else
+> +		if (apic_x2apic_mode(apic))
+> +			kvm_apic_send_ipi(apic, APIC_DEST_SELF | (val & APIC_VECTOR_MASK), 0);
+> +		else
+>   			ret = 1;
+>   		break;
+>   	default:
 
 Acked-by: Paolo Bonzini <pbonzini@redhat.com>
 
