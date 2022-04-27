@@ -2,173 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B89B8C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:18:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B497C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:18:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237549AbiD0OWA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 10:22:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35648 "EHLO
+        id S237606AbiD0OWH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 10:22:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237492AbiD0OV5 (ORCPT
+        with ESMTP id S237492AbiD0OWG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 10:21:57 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 443836D3B0;
-        Wed, 27 Apr 2022 07:18:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651069125; x=1682605125;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=f3gCp6qyk8NqaNuvfkI84Ui7SxfBniFczh0ujm8S5o8=;
-  b=cwVky221lGzBbopNMBTBt+uzTxaLM7fmf5iXQRXGwp7LjTtNWuiFXIbT
-   SiPbzLfnvhgWU2/Pk+FVYHy1YySQQgOw2BT+KITQJ9RjopanCIVrw0EPD
-   L/Swn/OrPyC/f/C2Ymg84bpnlHVlvWCgw1a8WQe3yHlqW3VtNihpXGMCe
-   xBq7auuckg/zFfkoZmZuvciX0SAFWgT/28aolNCvpXi64voZidUJV9UhU
-   MOhHbPppI70GFUPNdUxM8+Sh6YBAtE60nA/xrOiVEaCP7Of89h9AxOOoW
-   6XYsftdky2OxAcC+FbU5kz5ETBEuJnAbjIuLblq5IM9fpZzJQfSW3+yph
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="263529385"
-X-IronPort-AV: E=Sophos;i="5.90,293,1643702400"; 
-   d="scan'208";a="263529385"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 07:18:44 -0700
-X-IronPort-AV: E=Sophos;i="5.90,293,1643702400"; 
-   d="scan'208";a="533227064"
-Received: from pcurcohe-mobl.amr.corp.intel.com (HELO [10.212.68.237]) ([10.212.68.237])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 07:18:42 -0700
-Message-ID: <e50706db-e625-8b91-2e5c-a59cda6478f1@intel.com>
-Date:   Wed, 27 Apr 2022 07:22:03 -0700
+        Wed, 27 Apr 2022 10:22:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2D066EC4D;
+        Wed, 27 Apr 2022 07:18:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4640761DDC;
+        Wed, 27 Apr 2022 14:18:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 149FFC385A9;
+        Wed, 27 Apr 2022 14:18:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1651069134;
+        bh=P8Re4rNifMUZz02aR6/5ZozvQhzoiFhDq0hEGf/tYts=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MJRGjGMv6tJ4OmJ+tITFtZxSrxV+Z9f+GNWODbIlt5TvtckI4h7rtBbFHoeaQDCWU
+         /y+VgPCgKm32JQbTeJXvsn+aoJIcan79HYsiE/wBhTnJM8rDyBtlcW61w+X5c+YLLg
+         Le+quAgvn64nWhhnjUD58tzQJTBOm3uRq7orBR4o=
+Date:   Wed, 27 Apr 2022 16:18:51 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Qian Cai <quic_qiancai@quicinc.com>
+Cc:     =?iso-8859-1?Q?Thi=E9baud?= Weksteen <tweek@google.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Jeffrey Vander Stoep <jeffv@google.com>,
+        Saravana Kannan <saravanak@google.com>,
+        Alistair Delva <adelva@google.com>,
+        Adam Shih <adamshih@google.com>, selinux@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] firmware_loader: use kernel credentials when reading
+ firmware
+Message-ID: <YmlQy7jnIY6Wh7/2@kroah.com>
+References: <20220422013215.2301793-1-tweek@google.com>
+ <20220427135823.GD71@qian>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 01/21] x86/virt/tdx: Detect SEAM
-Content-Language: en-US
-To:     Kai Huang <kai.huang@intel.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Cc:     seanjc@google.com, pbonzini@redhat.com, len.brown@intel.com,
-        tony.luck@intel.com, rafael.j.wysocki@intel.com,
-        reinette.chatre@intel.com, dan.j.williams@intel.com,
-        peterz@infradead.org, ak@linux.intel.com,
-        kirill.shutemov@linux.intel.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com,
-        isaku.yamahata@intel.com
-References: <cover.1649219184.git.kai.huang@intel.com>
- <ab118fb9bd39b200feb843660a9b10421943aa70.1649219184.git.kai.huang@intel.com>
- <334c4b90-52c4-cffc-f3e2-4bd6a987eb69@intel.com>
- <ce325155bada13c829b6213a3ec65294902c72c8.camel@intel.com>
- <15b34b16-b0e9-b1de-4de8-d243834caf9a@intel.com>
- <79ad9dd9373d1d4064e28d3a25bfe0f9e8e55558.camel@intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <79ad9dd9373d1d4064e28d3a25bfe0f9e8e55558.camel@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220427135823.GD71@qian>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/26/22 16:49, Kai Huang wrote:
-> On Tue, 2022-04-26 at 16:28 -0700, Dave Hansen wrote:
->> What about a dependency?  Isn't this dead code without CONFIG_KVM=y/m?
+On Wed, Apr 27, 2022 at 09:58:23AM -0400, Qian Cai wrote:
+> On Fri, Apr 22, 2022 at 11:32:15AM +1000, Thiébaud Weksteen wrote:
+> >  drivers/base/firmware_loader/main.c | 16 ++++++++++++++++
+> >  1 file changed, 16 insertions(+)
+> > 
+> > diff --git a/drivers/base/firmware_loader/main.c b/drivers/base/firmware_loader/main.c
+> > index 94d1789a233e..8f3c2b2cfc61 100644
+> > --- a/drivers/base/firmware_loader/main.c
+> > +++ b/drivers/base/firmware_loader/main.c
+> > @@ -735,6 +735,8 @@ _request_firmware(const struct firmware **firmware_p, const char *name,
+> >  		  size_t offset, u32 opt_flags)
+> >  {
+> >  	struct firmware *fw = NULL;
+> > +	struct cred *kern_cred = NULL;
+> > +	const struct cred *old_cred;
+> >  	bool nondirect = false;
+> >  	int ret;
+> >  
+> > @@ -751,6 +753,18 @@ _request_firmware(const struct firmware **firmware_p, const char *name,
+> >  	if (ret <= 0) /* error or already assigned */
+> >  		goto out;
+> >  
+> > +	/*
+> > +	 * We are about to try to access the firmware file. Because we may have been
+> > +	 * called by a driver when serving an unrelated request from userland, we use
+> > +	 * the kernel credentials to read the file.
+> > +	 */
+> > +	kern_cred = prepare_kernel_cred(NULL);
 > 
-> Conceptually, KVM is one user of the TDX module, so it doesn't seem correct to
-> make CONFIG_INTEL_TDX_HOST depend on CONFIG_KVM.  But so far KVM is the only
-> user of TDX, so in practice the code is dead w/o KVM.
+> This triggers quite some leak reports from kmemleak.
 > 
-> What's your opinion?
+> unreferenced object 0xffff0801e47690c0 (size 176):
+>   comm "kworker/0:1", pid 14, jiffies 4294904047 (age 2208.624s)
+>   hex dump (first 32 bytes):
+>     01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>   backtrace:
+>      kmem_cache_alloc
+>      prepare_kernel_cred
+>      _request_firmware
+>      firmware_request_nowarn
+>      firmware_request_nowarn at drivers/base/firmware_loader/main.c:933
+>      nvkm_firmware_get [nouveau]
+>      nvkm_firmware_get at drivers/gpu/drm/nouveau/nvkm/core/firmware.c:92
+>      nvkm_firmware_load_name [nouveau]
+>      nvkm_acr_lsfw_load_bl_inst_data_sig [nouveau]
+>      gm200_gr_load [nouveau]
+>      gf100_gr_new_ [nouveau]
+>      tu102_gr_new [nouveau]
+>      nvkm_device_ctor [nouveau]
+>      nvkm_device_pci_new [nouveau]
+>      nouveau_drm_probe [nouveau]
+>      local_pci_probe
+>      work_for_cpu_fn
+>      process_one_work
 
-You're stuck in some really weird fantasy world.  Sure, we can dream up
-more than one user of the TDX module.  But, in the real world, there's
-only one.  Plus, code can have multiple dependencies!
+Ugh, yeah, a put_cred() is not called after this.
 
-	depends on FOO || BAR
+I'll go revert this commit for now as it needs more work.
 
-This TDX cruft is dead code in today's real-world kernel without KVM.
-You should add a dependency.
+thanks,
 
->>>>> +static bool __seamrr_enabled(void)
->>>>> +{
->>>>> +	return (seamrr_mask & SEAMRR_ENABLED_BITS) == SEAMRR_ENABLED_BITS;
->>>>> +}
->>>>
->>>> But there's no case where seamrr_mask is non-zero and where
->>>> _seamrr_enabled().  Why bother checking the SEAMRR_ENABLED_BITS?
->>>
->>> seamrr_mask will only be non-zero when SEAMRR is enabled by BIOS, otherwise it
->>> is 0.  It will also be cleared when BIOS mis-configuration is detected on any
->>> AP.  SEAMRR_ENABLED_BITS is used to check whether SEAMRR is enabled.
->>
->> The point is that this could be:
->>
->> 	return !!seamrr_mask;
-> 
-> The definition of this SEAMRR_MASK MSR defines "ENABLED" and "LOCKED" bits. 
-> Explicitly checking the two bits, instead of !!seamrr_mask roles out other
-> incorrect configurations.  For instance, we should not treat SEAMRR being
-> enabled if we only have "ENABLED" bit set or "LOCKED" bit set.
-
-You're confusing two different things:
- * The state of the variable
- * The actual correct hardware state
-
-The *VARIABLE* can't be non-zero and also denote that SEAMRR is enabled.
- Does this *CODE* ever set ENABLED or LOCKED without each other?
-
->>>>> +static void detect_seam_ap(struct cpuinfo_x86 *c)
->>>>> +{
->>>>> +	u64 base, mask;
->>>>> +
->>>>> +	/*
->>>>> +	 * Don't bother to detect this AP if SEAMRR is not
->>>>> +	 * enabled after earlier detections.
->>>>> +	 */
->>>>> +	if (!__seamrr_enabled())
->>>>> +		return;
->>>>> +
->>>>> +	rdmsrl(MSR_IA32_SEAMRR_PHYS_BASE, base);
->>>>> +	rdmsrl(MSR_IA32_SEAMRR_PHYS_MASK, mask);
->>>>> +
->>>>
->>>> This is the place for a comment about why the values have to be equal.
->>>
->>> I'll add below:
->>>
->>> /* BIOS must configure SEAMRR consistently across all cores */
->>
->> What happens if the BIOS doesn't do this?  What actually breaks?  In
->> other words, do we *NEED* error checking here?
-> 
-> AFAICT the spec doesn't explicitly mention what will happen if BIOS doesn't
-> configure them consistently among cores.  But for safety I think it's better to
-> detect.
-
-Safety?  Safety of what?
-
->>>>> +void tdx_detect_cpu(struct cpuinfo_x86 *c)
->>>>> +{
->>>>> +	detect_seam(c);
->>>>> +}
->>>>
->>>> The extra function looks a bit silly here now.  Maybe this gets filled
->>>> out later, but it's goofy-looking here.
->>>
->>> Thomas suggested to put all TDX detection related in one function call, so I
->>> added tdx_detect_cpu().  I'll move this to the next patch when detecting TDX
->>> KeyIDs.
->>
->> That's fine, or just add a comment or a changelog sentence about this
->> being filled out later.
-> 
-> There's already one sentence in the changelog:
-> 
-> "......Add a function to detect all TDX preliminaries (SEAMRR, TDX private
-> KeyIDs) for a given cpu when it is brought up.  As the first step, detect the
-> validity of SEAMRR."
-> 
-> Does this look good to you?
-
-No, that doesn't provide enough context.
-
-There are two single-line wrapper functions.  One calls the other.  That
-looks entirely silly in this patch.  You need to explain the silliness,
-explicitly.
+greg k-h
