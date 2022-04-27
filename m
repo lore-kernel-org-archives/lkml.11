@@ -2,84 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C6C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 01:00:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEB5AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 01:02:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356552AbiD0BDY (ORCPT
+        id S1356570AbiD0BFu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 21:03:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52424 "EHLO
+        Tue, 26 Apr 2022 21:05:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349706AbiD0BDW (ORCPT
+        with ESMTP id S1349706AbiD0BFt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 21:03:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93FE364D6;
-        Tue, 26 Apr 2022 18:00:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 26 Apr 2022 21:05:49 -0400
+Received: from thorn.bewilderbeest.net (thorn.bewilderbeest.net [IPv6:2605:2700:0:5::4713:9cab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 259EB46654;
+        Tue, 26 Apr 2022 18:02:38 -0700 (PDT)
+Received: from hatter.bewilderbeest.net (174-21-163-222.tukw.qwest.net [174.21.163.222])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F417D61B05;
-        Wed, 27 Apr 2022 01:00:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 46476C385A4;
-        Wed, 27 Apr 2022 01:00:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651021211;
-        bh=vqm946qqQBJwF4axpR8b2V8FU1H9J0rGyX36fxlNm+s=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=qgtBcxhELUXZae4iTZjvYvtosPPCmxCUlTGl9uHYezDjYNMq2ImBF+KmC5skQeRoM
-         6sK1VNwL8VBIMXlzUMFFJTS7q0866ndzDVCQRbD6lQWX0Vtg4D6Wp0BN9EYRRxQcgM
-         uelVN85qp3z2uinhJtlUqgWdBj5IYQ7b8Fe4ZfCYvR7UCIPWfqMBOBZl2IZxob8IIU
-         R/9hR6hkLHnpcQe4kWh02tr6m3wP1HN0On3+l8029qIgMYBSOeLsDNM+NtIybDlmLt
-         hLJZzPj6jy3HvaQ4Zds9GIxqPCUjtpP6hzFQ1LERpFIfgUn7RSQz2LRXNsgxBK+24l
-         QM0Ggc2Jwp/3w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1E0D7F67CA0;
-        Wed, 27 Apr 2022 01:00:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        (Authenticated sender: zev)
+        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id E9170531;
+        Tue, 26 Apr 2022 18:02:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
+        s=thorn; t=1651021358;
+        bh=KjNq5t3ZggJMTEA4a0oXHVCceTPLdKxXT7fm3v60f1w=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=gafOJureGwkGdS7oF7iP8Cp1CJP2vVttE+zYcskh3RqjGczu0rfVyAJoxigGTN8Wj
+         aY1Hk/8JX2e8n29X59ujcrOWe7B7t4aZEkLa2vKUfQ1nRucOnxnJZGsFhjpwSKEl7R
+         nUs2CGHnWyZdpRZigyon5Gz2eR70mQAbaRrz3NWI=
+From:   Zev Weiss <zev@bewilderbeest.net>
+To:     Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Cc:     Zev Weiss <zev@bewilderbeest.net>, Renze Nicolai <renze@rnplus.nl>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        openbmc@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzk@kernel.org>
+Subject: [PATCH v4 1/7] dt-bindings: hwmon: Add nuvoton,nct6775
+Date:   Tue, 26 Apr 2022 18:01:48 -0700
+Message-Id: <20220427010154.29749-2-zev@bewilderbeest.net>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220427010154.29749-1-zev@bewilderbeest.net>
+References: <20220427010154.29749-1-zev@bewilderbeest.net>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: dsa: lantiq_gswip: Don't set GSWIP_MII_CFG_RMII_CLK
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165102121112.22539.16102240739312593513.git-patchwork-notify@kernel.org>
-Date:   Wed, 27 Apr 2022 01:00:11 +0000
-References: <20220425152027.2220750-1-martin.blumenstingl@googlemail.com>
-In-Reply-To: <20220425152027.2220750-1-martin.blumenstingl@googlemail.com>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     netdev@vger.kernel.org, hauke@hauke-m.de,
-        linux-kernel@vger.kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, stable@vger.kernel.org,
-        jan@3e8.eu
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+These Super I/O chips have an i2c interface that some systems expose
+to a BMC; the BMC's device tree can now describe that via this
+binding.
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
+---
+ .../bindings/hwmon/nuvoton,nct6775.yaml       | 56 +++++++++++++++++++
+ 1 file changed, 56 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/hwmon/nuvoton,nct6775.yaml
 
-On Mon, 25 Apr 2022 17:20:27 +0200 you wrote:
-> Commit 4b5923249b8fa4 ("net: dsa: lantiq_gswip: Configure all remaining
-> GSWIP_MII_CFG bits") added all known bits in the GSWIP_MII_CFGp
-> register. It helped bring this register into a well-defined state so the
-> driver has to rely less on the bootloader to do things right.
-> Unfortunately it also sets the GSWIP_MII_CFG_RMII_CLK bit without any
-> possibility to configure it. Upon further testing it turns out that all
-> boards which are supported by the GSWIP driver in OpenWrt which use an
-> RMII PHY have a dedicated oscillator on the board which provides the
-> 50MHz RMII reference clock.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net] net: dsa: lantiq_gswip: Don't set GSWIP_MII_CFG_RMII_CLK
-    https://git.kernel.org/netdev/net/c/71cffebf6358
-
-You are awesome, thank you!
+diff --git a/Documentation/devicetree/bindings/hwmon/nuvoton,nct6775.yaml b/Documentation/devicetree/bindings/hwmon/nuvoton,nct6775.yaml
+new file mode 100644
+index 000000000000..418477374fdb
+--- /dev/null
++++ b/Documentation/devicetree/bindings/hwmon/nuvoton,nct6775.yaml
+@@ -0,0 +1,56 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++
++$id: http://devicetree.org/schemas/hwmon/nuvoton,nct6775.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Nuvoton NCT6775 and compatible Super I/O chips
++
++maintainers:
++  - Zev Weiss <zev@bewilderbeest.net>
++
++properties:
++  compatible:
++    enum:
++      - nuvoton,nct6106
++      - nuvoton,nct6116
++      - nuvoton,nct6775
++      - nuvoton,nct6776
++      - nuvoton,nct6779
++      - nuvoton,nct6791
++      - nuvoton,nct6792
++      - nuvoton,nct6793
++      - nuvoton,nct6795
++      - nuvoton,nct6796
++      - nuvoton,nct6797
++      - nuvoton,nct6798
++
++  reg:
++    maxItems: 1
++
++  nuvoton,tsi-channel-mask:
++    description:
++      Bitmask indicating which TSI temperature sensor channels are
++      active.  LSB is TSI0, bit 1 is TSI1, etc.
++    maximum: 0xff
++    default: 0
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        superio@4d {
++            compatible = "nuvoton,nct6779";
++            reg = <0x4d>;
++            nuvoton,tsi-channel-mask = <0x03>;
++        };
++    };
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.36.0
 
