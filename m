@@ -2,202 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 970E9C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:43:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC4E3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:43:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229946AbiD0KqP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 06:46:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51756 "EHLO
+        id S229995AbiD0KqW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 06:46:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229930AbiD0KqC (ORCPT
+        with ESMTP id S229996AbiD0KqM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 06:46:02 -0400
-Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25F3F284DB6
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 03:29:28 -0700 (PDT)
-Received: from epcas2p4.samsung.com (unknown [182.195.41.56])
-        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220427095116epoutp032d217dd899e6d1d15c13a5d70d4ca407~puAZsoK8L2124521245epoutp03V
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:51:16 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220427095116epoutp032d217dd899e6d1d15c13a5d70d4ca407~puAZsoK8L2124521245epoutp03V
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1651053076;
-        bh=toikZkWvgf3TsW9HrpdB/VW96mbkCmI+ZUJJ8BdL1vY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oKlUGyhpOlKUaS5HfmvWAtn5CJoiHntwnjdbKDSR8pE0TBMthXJO2ENOJFEYUi1B4
-         tGGeGKhAWcX6xZtrYvQe/7Nb4sQAP67ErtIvZzRGQ/fGGz9MZMK/89copVrDV1c+rx
-         oZtuho034IMCO5n5P/yYkBpm30vbl5qf9neAyVf0=
-Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
-        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
-        20220427095115epcas2p129811a3526d13bd86a48d685ea82ef9b~puAZLkMeY1310213102epcas2p1B;
-        Wed, 27 Apr 2022 09:51:15 +0000 (GMT)
-Received: from epsmges2p3.samsung.com (unknown [182.195.36.68]) by
-        epsnrtp3.localdomain (Postfix) with ESMTP id 4KpDXc0hgjz4x9QB; Wed, 27 Apr
-        2022 09:51:12 +0000 (GMT)
-Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
-        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
-        F2.04.10028.F0219626; Wed, 27 Apr 2022 18:51:11 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas2p3.samsung.com (KnoxPortal) with ESMTPA id
-        20220427095111epcas2p3b20b677d07fb99f738a83acf4107638d~puAVB7Ndc1069310693epcas2p34;
-        Wed, 27 Apr 2022 09:51:11 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220427095111epsmtrp2a0b011af334c469215f0fad5470eae86~puAVBK16f0395603956epsmtrp2O;
-        Wed, 27 Apr 2022 09:51:11 +0000 (GMT)
-X-AuditID: b6c32a47-573ff7000000272c-08-6269120f9538
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        E8.1D.08924.E0219626; Wed, 27 Apr 2022 18:51:11 +0900 (KST)
-Received: from ubuntu (unknown [10.229.95.128]) by epsmtip2.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220427095110epsmtip2bcb9ed1ed08fea0ed034674121200c58~puAU2Sz5L2747927479epsmtip2V;
-        Wed, 27 Apr 2022 09:51:10 +0000 (GMT)
-Date:   Wed, 27 Apr 2022 18:49:42 +0900
-From:   Jung Daehwan <dh10.jung@samsung.com>
-To:     Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     Mathias Nyman <mathias.nyman@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "open list:USB XHCI DRIVER" <linux-usb@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Howard Yen <howardyen@google.com>,
-        Jack Pham <jackp@codeaurora.org>,
-        Puma Hsu <pumahsu@google.com>,
-        "J . Avila" <elavila@google.com>, sc.suh@samsung.com,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Subject: Re: [PATCH v4 0/5] add xhci-exynos driver
-Message-ID: <20220427094942.GE145620@ubuntu>
+        Wed, 27 Apr 2022 06:46:12 -0400
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2042.outbound.protection.outlook.com [40.107.20.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 115A930D48B;
+        Wed, 27 Apr 2022 03:28:39 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Wf9QefI+gQp5i/OrprvZ3kPkKts5Bskvz7R8Sz1mYzRLxJexXiEZ8rAAfsU7DG2G4eYIyaW2rfT3VU50w7/9jCZnXE81TL4lujerZlV/fJVnw6rJYolmuX0SLefE2AOgfBMwvaogsqivK4rdAfx/xQsG7N3wr4REvJZ3ITAK01Mt2Mxv5byvQoDBCe5UMsc0H7tetZBHJZDvUKldtBodWNrNb06QTS1LayJ9OuxJbWtS+ZC6tCXuqjRqP10/9jILKawZvgiz5xpLoOH+67WWHLMEqlgh2kDIi0/s+Aq452+R47GwfrH3HUdLGiugnxUVxuEopxcU61jt/v5rlrcBHg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4RSdnDiSPbqqAZNDSi0sbe2T1tHx2wiJkhvp5GhLJIk=;
+ b=a0bUCezeN+zJlaHX0lAvj/USuM7ylDHBpZmTUUAlEds/ydaAlt8S+jazC83eiQuiYWYo9ilLCq5phI1a1lVoTTxm7AL9ioIYlqPTctaS0dtoflokkpTSo4sO52wJIe4oAdl6UZM0bCwzMY14DZOQ6F9V1+1d89vZKqLULYFW1sjf39yKhKmtCwzMchZHCkThbeYf9xLRTrljyavLC0VQ2+qp+6FrBIaMt7ah/vWQnAoJfo/3XLao4QOlBLPi3CvJc6t8x6IXlHP/P0mNqli+v0zjmo8FFGCH8f3JEE5qaGma29AhwqmHM/nMRPupGp1ijYOLwj7ZgnAoyUhQ+jy+oQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4RSdnDiSPbqqAZNDSi0sbe2T1tHx2wiJkhvp5GhLJIk=;
+ b=cL7ivwRVtDKTGKGcpCY1VP9PmQ1+HjtVLVTHaXp8GyeRfqinw4FZRghzeNH89PwPZ6HmpARF4E5aJtMwCv3mBeTNaWGZAg31eRPdC+xTXamrw8sruDbV3zErvGO5N1theK0HZYSIgOplhkZmuH0rh/3RLH1xpFdFZ4El6R/tpyU=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from PA4PR04MB9416.eurprd04.prod.outlook.com (2603:10a6:102:2ab::21)
+ by VI1PR04MB6848.eurprd04.prod.outlook.com (2603:10a6:803:13c::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.13; Wed, 27 Apr
+ 2022 09:19:22 +0000
+Received: from PA4PR04MB9416.eurprd04.prod.outlook.com
+ ([fe80::587c:b068:1987:da36]) by PA4PR04MB9416.eurprd04.prod.outlook.com
+ ([fe80::587c:b068:1987:da36%4]) with mapi id 15.20.5186.021; Wed, 27 Apr 2022
+ 09:19:22 +0000
+From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+To:     bjorn.andersson@linaro.org, mathieu.poirier@linaro.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com,
+        linux-remoteproc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Peng Fan <peng.fan@nxp.com>
+Subject: [PATCH 1/2] dt-bindings: remoteproc: imx_rproc: support i.MX93
+Date:   Wed, 27 Apr 2022 17:20:53 +0800
+Message-Id: <20220427092054.3765690-2-peng.fan@oss.nxp.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220427092054.3765690-1-peng.fan@oss.nxp.com>
+References: <20220427092054.3765690-1-peng.fan@oss.nxp.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SGBP274CA0023.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b0::35)
+ To PA4PR04MB9416.eurprd04.prod.outlook.com (2603:10a6:102:2ab::21)
 MIME-Version: 1.0
-In-Reply-To: <3ce5f3b8-3c6b-1e83-94c2-84f4ad8aa9dc@kernel.org>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrFJsWRmVeSWpSXmKPExsWy7bCmmS6/UGaSwY4XshZPjixit2hevJ7N
-        4vqf94wW7c8vsFmcP7+B3WLj2x9MFpd3zWGzWLSsldmiedMUVouZa5Utuu7eYHTg9pjV0Mvm
-        cbmvl8ljwaZSj8V7XjJ5bFrVyeaxf+4ado++LasYPT5vkgvgiMq2yUhNTEktUkjNS85PycxL
-        t1XyDo53jjc1MzDUNbS0MFdSyEvMTbVVcvEJ0HXLzAG6U0mhLDGnFCgUkFhcrKRvZ1OUX1qS
-        qpCRX1xiq5RakJJTYF6gV5yYW1yal66Xl1piZWhgYGQKVJiQnfGxfwl7wX/JitbX91gaGC+I
-        djFyckgImEhcX/iItYuRi0NIYAejxMb2LSwQzidGieYn8xghnM+MEo+WNTHBtCzad5oJIrGL
-        UWLBt0VQLU8YJb4s+M0KUsUioCrx9cxFdhCbTUBL4t6PE8wgtoiApsT1v9/BFjILzGGWuLbk
-        BgtIQljASOLW7nVgRbwCOhIr56yEsgUlTs58AlbDKWAncf77QSCbg0NUQEXi1cF6kDkSAis5
-        JDa/bmGHOM9FYn5fDwuELSzx6vgWqLiUxOd3e9kg7GKJXZ9amSCaGxglGh9AXCchYCwx61k7
-        I4jNLJAh8ezPGVaQZRICyhJHbrFAhPkkOg7/ZYcI80p0tAlBdCpLTL88gRXClpQ4+Poc1EQP
-        iYvLlrJDAugco8TJ2RfYJzDKz0Ly2iwk2yBsHYkFuz+xzQJawSwgLbH8HweEqSmxfpf+AkbW
-        VYxiqQXFuempxUYFxvDoTs7P3cQITsRa7jsYZ7z9oHeIkYmD8RCjBAezkgjvl90ZSUK8KYmV
-        ValF+fFFpTmpxYcYTYERNZFZSjQ5H5gL8kriDU0sDUzMzAzNjUwNzJXEeb1SNiQKCaQnlqRm
-        p6YWpBbB9DFxcEo1MC0KPH/t5R1HmYI1trvq+NvXFKdnxwRyaPXUfDnGdd8scsGK/d69u1bt
-        /+74oidyykqmpV8Xxa1Mmf19Uqno8yb5FW3uOh2xNycdSRPyPHReWOxFy8lWNkYj1mLBO0yx
-        ylPL4rdy/5H53XLobdTMSFPHD17Jrx4Y3j2wNP3bjvWPXj2LSZLgLVXYIHD06s7pE7IPcO1Q
-        cZtk/kkx91njy1jOHV9bjV5K8NTVrdCqFlVJuft9Z2IYr9GCbrnK+ZtuV09J/3Og6vKciCqb
-        r5+znlvXn3ZiVd565pvAx/dFdxcymT0ziN3ccsZLTdKSJe/jn8A/LYfSz//W/ft1zqX8w4wF
-        LxblMO5+ESn7PejDxH9KLMUZiYZazEXFiQC4FJXWTQQAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrLLMWRmVeSWpSXmKPExsWy7bCSvC6/UGaSwYKvjBZPjixit2hevJ7N
-        4vqf94wW7c8vsFmcP7+B3WLj2x9MFpd3zWGzWLSsldmiedMUVouZa5Utuu7eYHTg9pjV0Mvm
-        cbmvl8ljwaZSj8V7XjJ5bFrVyeaxf+4ado++LasYPT5vkgvgiOKySUnNySxLLdK3S+DKWD1d
-        smC/eMWZf1YNjCuFuxg5OSQETCQW7TvN1MXIxSEksINR4tK2rWwQCUmJpXNvsEPYwhL3W46w
-        QhQ9YpTo/PQaLMEioCrx9cxFMJtNQEvi3o8TzCC2iICmxPW/38EamAUWMEuca5sHNlVYwEji
-        1u51YEW8AjoSK+esZIaYeo5RYv7jFUwQCUGJkzOfsIDYzEBTb/x7CRTnALKlJZb/4wAJcwrY
-        SZz/fpAFJCwqoCLx6mD9BEbBWUiaZyFpnoXQvICReRWjZGpBcW56brFhgVFearlecWJucWle
-        ul5yfu4mRnAMaWntYNyz6oPeIUYmDsZDjBIczEoivF92ZyQJ8aYkVlalFuXHF5XmpBYfYpTm
-        YFES573QdTJeSCA9sSQ1OzW1ILUIJsvEwSnVwKQQdTvm26XQ7yui95wyWS4RrJneFnqF4bJX
-        dld7QvDVF6V1po//vYm9vFBF7NikS90LzzNGehiFtD/d+KtGYYLBg/PaP/009kUEndqV0jmp
-        5f76H36bFy+akfcsPTdhaeCxB1Hr5no8XGjktnrjr6urry728A4simf+ufXRwceFz3X4qmcu
-        Tvq/ak5HyS8+3Wtn9shrnw8V2WlZa5y3mWdXmO+7afFVTxu/HD+pGLYg/fik2oZIVy3ZeRkf
-        eGoenW7eI6ig8cpZ/Vzy3zdzex0X2+rqveg4fXlj/CrOSQt+zekyONYjlG5q6baReZXNrLMO
-        zZOXHj4ou1TqoXrUp+/Cv9/ny0tzyXEyfHi9WbpXiaU4I9FQi7moOBEA2wgTcxADAAA=
-X-CMS-MailID: 20220427095111epcas2p3b20b677d07fb99f738a83acf4107638d
-X-Msg-Generator: CA
-Content-Type: multipart/mixed;
-        boundary="----s9reHD3dvq.Swzu4OgS99nNlXP7CLa0djtt04wdzZepsPVyA=_2720f_"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220426092019epcas2p2ef5dfde273edaaadc2ff74414f1b2c7a
-References: <CGME20220426092019epcas2p2ef5dfde273edaaadc2ff74414f1b2c7a@epcas2p2.samsung.com>
-        <1650964728-175347-1-git-send-email-dh10.jung@samsung.com>
-        <3ce5f3b8-3c6b-1e83-94c2-84f4ad8aa9dc@kernel.org>
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a2929eb5-dcf7-48bb-dd26-08da282f03d9
+X-MS-TrafficTypeDiagnostic: VI1PR04MB6848:EE_
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-Microsoft-Antispam-PRVS: <VI1PR04MB6848F89528D8440044E620B6C9FA9@VI1PR04MB6848.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: qbeTc1TSwGEHiIsdMK6pCnPRzu06G4Q6sOjdiSx/FWkJnrHC90rUAxpiTuNYtTCe2ETi+Z/xuknN03098Svy04YSG97Nc4rACpHSv5lZvBl1mUnwxRGkbw0DI0JWNOe/RGUXN9pajql8uzIfvSnmRID7Xx75dQscZsfqgxz1nBCLT6uNra0aLA4kWPckK9CKiWPfk10w17equGr2Icz0hFE9emP4qiRj6JtAHEcMfyrs9zJShYAG4hBGDDkLiPr/Ziut0EwmKEGYxSGrz67w2hs489wk4xxKlGUcSfuD10hCQQBWeqQ7vBORd5AKrsoF4mMnEPmSM5E2m5tbYro/XSZYe2+tY4wTufWkqwoR0kvHjtKWgNqbs59n+w+Xtu17f9nRsIbqzkPefL0A9Gq1A3u3y2VJllIouPmv//xVxDmqMypb1zwkgVhDA2TWCv544MVfqAZ9e0ndKgPkk8pmxotmgzT0c3W38t0xCqukA4/nYCfDOZVr0PY3JyfJtf88kyCjqUeKKkuef3dbkSF/Ig6LPZ1ikOuVjprJCHEWWSKl9+Ucz06EuQfmBjMgDbcQDed1VN+K5nGdywPoS+tW4qFeeDfIZzgqXkDoj7pijYxDhJ5ZGXzveoUeV97VEpwjSHG+wsCpiwv0ll+y/TOeKBXssxanMbv1GBQZSjrfw6D+uzTessMa8LQoB8sD9ejlAnTEFGhjTYxaDXL/gCYkygtbsLqqOq/uq8IqW38IqBI=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PA4PR04MB9416.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38100700002)(38350700002)(921005)(2616005)(508600001)(6486002)(52116002)(316002)(6666004)(6512007)(5660300002)(4744005)(26005)(2906002)(6506007)(86362001)(186003)(66476007)(1076003)(66556008)(8676002)(66946007)(4326008)(8936002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?jZFs8GDCPjgUSRZvlg+diz/Z6Pyr2eqzMCKU8PxZkLMnFUirp8xwJup2pY1s?=
+ =?us-ascii?Q?KXg6XJA4J4IhIJm1PNRQ+9ZPBQuBaO5dRfPBS9CuOlr09P9oiqkJ6BaADDtc?=
+ =?us-ascii?Q?huvvmhJ3wvKjKGB9kP3T05OjG1ZB5iLtzP+3xbj4aa3lCip9iAYw/rw3JKyw?=
+ =?us-ascii?Q?CgHYHQoEQ05JmdElHE+ObLkYKzGTE+C5daRGrIgHxn0tBvAxZGGXnSHpNOqr?=
+ =?us-ascii?Q?AXC3Rm9feSHDYhB+tKhu/BfL/uZQyy1ys/V2KJwOsM/EAO8B1nflIxn5uBKz?=
+ =?us-ascii?Q?1p7NiMBWg48/BiqWyeHrhGARwgBUxGSnWZ3fspIKSDLkfuBLlwSgYPg4V2l7?=
+ =?us-ascii?Q?yZ3o2ynDUVNPEknoEJ6TRZFCldRGSdutFLMTkUrHEptLud6PiozjRe/a38lJ?=
+ =?us-ascii?Q?072Xzx3s+h+3fLj4FZYeWd1tcvUi+oKdPn/E4IQejsPjB9cBfBpnQmU/wxE+?=
+ =?us-ascii?Q?DAImK5HwC5Mj4ZTcKKYBHgI0JHM3TE+8VYwtbQ+Om2QNI6KFGrNhE1n8wVMC?=
+ =?us-ascii?Q?oOlAwtYG2TD68f4ky2vcpjkj1HYCg79ID1CpZcZ0HQwBn1yqarPdQhc5kSQW?=
+ =?us-ascii?Q?QFZ2RfvSB9PPxBPSSPUfLqy77qA6VxNS/9IvQhOdSeGiEOZIilGHl6kutx4S?=
+ =?us-ascii?Q?WIWaX+Siog3XcPPySX95YKjhZEkrxpt/LL+4vOePfTXIZM5GO0pHZ2ZLUuon?=
+ =?us-ascii?Q?g3OANL38+513uosja95Lq7fwyCr9K++fXxDaxdX7itmWQMMuzArMYlPB0ycD?=
+ =?us-ascii?Q?uHv0rW/T+kV9K40EPTRKeKjnTUGob1TphK1knbPbu0dlrmbQGK75F9fV9qag?=
+ =?us-ascii?Q?riw6/RaWn1kINgiwoT1EzhXAPWSVe0ZhELMNnhkNF1P6StYf4oyoGvMTorQf?=
+ =?us-ascii?Q?+IUKwqJ1V3SJaNxnNz7a9ZfMJci5EaAL2uHZHvkzgEMmFvL0FG2257gKKomm?=
+ =?us-ascii?Q?jVnV/Jqdh6Q7aKyXgUn6ufW7l6AlmDo/9VFTUbjOCIq9t2jAP02A6nvC2qr1?=
+ =?us-ascii?Q?SDRTGLS3ZihWJi1mTQrRnRQRNyYBfh6DKYMzlFnkZDFMdW6owDSrXvA/6jCj?=
+ =?us-ascii?Q?hgd3yrZP0pWamMCIns2WWxepbOG/6QoR32yvcfWGaPv864bVDwT7UITGOVst?=
+ =?us-ascii?Q?TNTlx2vH+3SniYGHeXojENEgD0liafP2+hF2+zbtZkxrj/m6V7VhNLOaLvbW?=
+ =?us-ascii?Q?9WV0ujwyahpU29vupfFN0o9pNj38zKK/+jozo9SA26Oqjtl3nWsObTvx1HwZ?=
+ =?us-ascii?Q?9vzCxRr19mde0ByaZfdhQsInRmWZQJvXkuSdkt2HBch79z9vgBkisT/I4wwb?=
+ =?us-ascii?Q?MggSa5pg9+h3eipv16YRw2fq9mL0AHM1RjoKJ9mBF7NQgLXoiwdVyrBnyG46?=
+ =?us-ascii?Q?AYv6QwHEhsWeytl5qVU5t3yRYkKzKl7VnlrxXUz2NYGTJzXrWAP1TR3m8R1Q?=
+ =?us-ascii?Q?8FuiRvQG/tG5RXJ6ihp1ffeAg5u6YmIMuOmnbCN7xy4qvYh8+w1tVkedfstZ?=
+ =?us-ascii?Q?7k4e0Jd7RncTPI5kTaEZepNSntQkjBvVsQvqGcsTUbYYcThh/ZoikkE/KbtX?=
+ =?us-ascii?Q?opRMp+OcQK2YkrdqM1HsAlSLu6syIwOSQ9ngJ1QatlDD7DKHHajZ3/dHj9WQ?=
+ =?us-ascii?Q?RbJjnL13qmUSg1gJdMdQGdAS27cyzVV8o/ia9BUUITMlJVT+W+cmhvC7ZWmg?=
+ =?us-ascii?Q?mJ54amkXUyiPuF9wPGpTUg0jexL4Ub4nUWljWqZmp+fst5zb1/8emlkCEojy?=
+ =?us-ascii?Q?QNQZObe3yw=3D=3D?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a2929eb5-dcf7-48bb-dd26-08da282f03d9
+X-MS-Exchange-CrossTenant-AuthSource: PA4PR04MB9416.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Apr 2022 09:19:22.3123
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: /CgyRWJG0m4RiUi4gpbPX9vefzkw0MNoVtQClwNHQp9xUU8v/WszbZWDiloOhmsSqXgmgZVsjtHZ49qS3Ho3FA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6848
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-------s9reHD3dvq.Swzu4OgS99nNlXP7CLa0djtt04wdzZepsPVyA=_2720f_
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
+From: Peng Fan <peng.fan@nxp.com>
 
-On Tue, Apr 26, 2022 at 02:46:14PM +0200, Krzysztof Kozlowski wrote:
-> On 26/04/2022 11:18, Daehwan Jung wrote:
-> > This patchset is for Samsung Exynos xhci host conroller. It uses xhci-plat
-> > driver mainly and extends some functions by xhci hooks and overrides.
-> > 
-> > This driver supports USB offload which makes Co-processor to use
-> > some memories of xhci. Especially it's useful for USB Audio scenario.
-> > Audio stream would get shortcut because Co-processor directly write/read
-> > data in xhci memories. It could get speed-up using faster memory like SRAM.
-> > That's why this gives vendors flexibilty of memory management. This feature
-> > is done with xhci hooks and overrides.
-> > 
-> > Changes in v2 :
-> > - Fix commit message by adding Signed-off-by in each patch.
-> > - Fix conflict on latest.
-> > 
-> > Changes in v3 :
-> > - Remove export symbols and xhci hooks which xhci-exynos don't need.
-> > - Modify commit message to clarify why it needs to export symbols.
-> > - Check compiling of xhci-exynos.
-> > 
-> > Changes in v4 :
-> > - Modify commit message to clarify why it needs to export symbols.
-> > - Add a function for override of hc driver in xhci-plat.
-> > - Make xhci-exynos extending xhci-plat by xhci hooks and overrides.
-> >   (vendor_init / vendor_cleanup hooks are useful from here v4)
-> > - Change the term (USB offload -> xhci-exynos) on subject of patches.
-> > 
-> 
-> You received comments already that you need to base your work on recent
-> Linux kernel and use scripts/get_maintainers.pl to notify necessary
-> parties. This is the fourth patchset and still you did not do it.
-> 
-> Maybe there is some misunderstanding or trouble using
-> scripts/get_maintainers.pl, so could you clarify:
-> 
-> 1. What is this based on? Output of: git describe
+Add i.MX93 remote processor(Cortex-M33) compatible string
 
-url = https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next
-fetch = +refs/heads/*:refs/remotes/origin/*
+Signed-off-by: Peng Fan <peng.fan@nxp.com>
+---
+ Documentation/devicetree/bindings/remoteproc/fsl,imx-rproc.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-or
+diff --git a/Documentation/devicetree/bindings/remoteproc/fsl,imx-rproc.yaml b/Documentation/devicetree/bindings/remoteproc/fsl,imx-rproc.yaml
+index fc16d903353e..38ffb9ec3c69 100644
+--- a/Documentation/devicetree/bindings/remoteproc/fsl,imx-rproc.yaml
++++ b/Documentation/devicetree/bindings/remoteproc/fsl,imx-rproc.yaml
+@@ -15,6 +15,7 @@ maintainers:
+ properties:
+   compatible:
+     enum:
++      - fsl,imx93-cm33
+       - fsl,imx8mq-cm4
+       - fsl,imx8mm-cm4
+       - fsl,imx8mn-cm7
+-- 
+2.25.1
 
-url = https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-fetch = +refs/heads/*:refs/remotes/origin/*
-
-> 
-> 2. What does the scripts/get_maintainers.pl print when you run on this
-> patchset?
-
-I don't see your name in xhci even for whole usb/host directory.
-I see same result on above 2 gits.
-
-jdh@PlatFormDev3:~/works/mainline/linux-next$ ./scripts/get_maintainer.pl drivers/usb/host/
-Greg Kroah-Hartman <gregkh@linuxfoundation.org> (supporter:USB SUBSYSTEM,commit_signer:170/184=92%)
-Mathias Nyman <mathias.nyman@linux.intel.com> (commit_signer:52/184=28%,authored:25/184=14%)
-Alan Stern <stern@rowland.harvard.edu> (commit_signer:30/184=16%)
-Chunfeng Yun <chunfeng.yun@mediatek.com> (commit_signer:23/184=12%,authored:21/184=11%)
-linux-usb@vger.kernel.org (open list:USB SUBSYSTEM)
-linux-kernel@vger.kernel.org (open list)
-
-> 
-
-In fact, I manually tried adding you as you commendted previous patchset.
-But, It seems you changed email id and domain..
-
-Best Regards,
-Jung Daehwan
-
-> 
-> Best regards,
-> Krzysztof
-> 
-
-------s9reHD3dvq.Swzu4OgS99nNlXP7CLa0djtt04wdzZepsPVyA=_2720f_
-Content-Type: text/plain; charset="utf-8"
-
-
-------s9reHD3dvq.Swzu4OgS99nNlXP7CLa0djtt04wdzZepsPVyA=_2720f_--
