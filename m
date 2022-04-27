@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4864EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:55:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B44BC43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:55:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240863AbiD0P6O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 11:58:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55592 "EHLO
+        id S240864AbiD0P6R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 11:58:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240605AbiD0P5w (ORCPT
+        with ESMTP id S240577AbiD0P5v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 11:57:52 -0400
+        Wed, 27 Apr 2022 11:57:51 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16B915B88B;
-        Wed, 27 Apr 2022 08:54:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC4D8737BD;
+        Wed, 27 Apr 2022 08:54:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 711CDB8287D;
+        by ams.source.kernel.org (Postfix) with ESMTPS id DDAC8B82881;
+        Wed, 27 Apr 2022 15:54:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AC5BC385AC;
         Wed, 27 Apr 2022 15:54:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FA34C385A9;
-        Wed, 27 Apr 2022 15:54:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651074860;
-        bh=vq6a1fG3vO1KR35Jg16mN5QOD1teXM12MIU7i8SU6zk=;
+        s=k20201202; t=1651074861;
+        bh=cCZFMNJ7sc4kval9MNFBp8yBF+FZbUz3Tw4iKsgYzLI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B6vvC5GarUYhovlg/d85BZt3bxdycNZnp+BdxEVru4fdFMN5wZ0t5NBwwAhgQy+/y
-         GSKo9bdFWnIfGlN2lzupSRA5YBqShWj8fsJFCeI9c0Wvc3Fkca5xuEpkFcwiuRG5x+
-         HmuNF8+gSlVyM0NpWM7RzF7C2BJymQUBEqB8K5dq2N7HL8PoO3aCamDGPjwGB3bxuj
-         FZUlMeW4fM+lYzQKi5Yco8V0qxxxiIJWUfoReho35qK2nYrQ/tq5RIiSSB4lDCvL/e
-         OGnkDyDCmTU71V3NkIrAU/fViXRpMkBWRoeSNGcSQy4msJJlITnEBMeGD3VIZVnMRA
-         ++ZjZIcYAVDBA==
+        b=U1ouTdQnremIxFpmyaboRGSRLQKNR1RgfsOhNKdsB4uAdq/5TL+n8+g/i1d5Ci1WP
+         H2ajL4W1Wt/tqhIBfy9S5qhDXuWGndnHVGeynn04I4TSVdw2CmkcAI9++va1RC+H7g
+         bOiBryLq+l6MqSvqcSBpYFcUO0lcdfRNmkQmEYhP6oph/OMxMD/Tuj1ixPmnLxst6B
+         0HWDi8r1JxY8HfbDDXo8hN3zr7tVfY66tSpaVU44WNs3/V6zvKeghoc9e4YYeYLPXL
+         bE+e1MOwMg2e1dejpaZiF/yiShfnUak+tPUmNs6sNAY5zWgbROdIFdu9fTfwMH78a6
+         0FHKlbAa7+nwQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Thomas Huth <thuth@redhat.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
-        kvm@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH MANUALSEL 5.17 2/7] KVM: selftests: Silence compiler warning in the kvm_page_table_test
-Date:   Wed, 27 Apr 2022 11:53:58 -0400
-Message-Id: <20220427155408.19352-2-sashal@kernel.org>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, kvm@vger.kernel.org
+Subject: [PATCH MANUALSEL 5.17 5/7] KVM: x86/mmu: avoid NULL-pointer dereference on page freeing bugs
+Date:   Wed, 27 Apr 2022 11:54:01 -0400
+Message-Id: <20220427155408.19352-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220427155408.19352-1-sashal@kernel.org>
 References: <20220427155408.19352-1-sashal@kernel.org>
@@ -53,46 +53,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Huth <thuth@redhat.com>
+From: Paolo Bonzini <pbonzini@redhat.com>
 
-[ Upstream commit 266a19a0bc4fbfab4d981a47640ca98972a01865 ]
+[ Upstream commit 9191b8f0745e63edf519e4a54a4aaae1d3d46fbd ]
 
-When compiling kvm_page_table_test.c, I get this compiler warning
-with gcc 11.2:
+WARN and bail if KVM attempts to free a root that isn't backed by a shadow
+page.  KVM allocates a bare page for "special" roots, e.g. when using PAE
+paging or shadowing 2/3/4-level page tables with 4/5-level, and so root_hpa
+will be valid but won't be backed by a shadow page.  It's all too easy to
+blindly call mmu_free_root_page() on root_hpa, be nice and WARN instead of
+crashing KVM and possibly the kernel.
 
-kvm_page_table_test.c: In function 'pre_init_before_test':
-../../../../tools/include/linux/kernel.h:44:24: warning: comparison of
- distinct pointer types lacks a cast
-   44 |         (void) (&_max1 == &_max2);              \
-      |                        ^~
-kvm_page_table_test.c:281:21: note: in expansion of macro 'max'
-  281 |         alignment = max(0x100000, alignment);
-      |                     ^~~
-
-Fix it by adjusting the type of the absolute value.
-
-Signed-off-by: Thomas Huth <thuth@redhat.com>
-Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-Message-Id: <20220414103031.565037-1-thuth@redhat.com>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/kvm/kvm_page_table_test.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/mmu/mmu.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/tools/testing/selftests/kvm/kvm_page_table_test.c b/tools/testing/selftests/kvm/kvm_page_table_test.c
-index ba1fdc3dcf4a..2c4a7563a4f8 100644
---- a/tools/testing/selftests/kvm/kvm_page_table_test.c
-+++ b/tools/testing/selftests/kvm/kvm_page_table_test.c
-@@ -278,7 +278,7 @@ static struct kvm_vm *pre_init_before_test(enum vm_guest_mode mode, void *arg)
- 	else
- 		guest_test_phys_mem = p->phys_offset;
- #ifdef __s390x__
--	alignment = max(0x100000, alignment);
-+	alignment = max(0x100000UL, alignment);
- #endif
- 	guest_test_phys_mem = align_down(guest_test_phys_mem, alignment);
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index 7f009ebb319a..e7cd16e1e0a0 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -3239,6 +3239,8 @@ static void mmu_free_root_page(struct kvm *kvm, hpa_t *root_hpa,
+ 		return;
  
+ 	sp = to_shadow_page(*root_hpa & PT64_BASE_ADDR_MASK);
++	if (WARN_ON(!sp))
++		return;
+ 
+ 	if (is_tdp_mmu_page(sp))
+ 		kvm_tdp_mmu_put_root(kvm, sp, false);
 -- 
 2.35.1
 
