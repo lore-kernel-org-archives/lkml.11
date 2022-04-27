@@ -2,133 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CD8BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 19:24:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0095C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 19:24:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233108AbiD0T1p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 15:27:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57932 "EHLO
+        id S233519AbiD0T1v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 15:27:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232026AbiD0T1k (ORCPT
+        with ESMTP id S230311AbiD0T1k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Apr 2022 15:27:40 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA1A12BA;
-        Wed, 27 Apr 2022 12:24:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1651087450;
-        bh=1WKkkz5boexGE66WyTcovc/q02JTNjhvC/STKssriU4=;
-        h=X-UI-Sender-Class:Date:Subject:To:References:From:In-Reply-To;
-        b=apKY7mes5fswU3jsc/S4frysod3jkRqFfa2ItTU/o9PvnYpvIxrTD3ziwrAFnrUe5
-         eZdneCHeTeyw5ct/o3k6e0w5aVFmftdnAnGR38K60tVaqVarO/sexOtgp1JtT8Td55
-         lh8CDgtor0VuWwn0lUSGhfbVYcnO4OFcGgkEXDHM=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.160.126]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1Mq2jC-1oF1YZ0Dxq-00nBKD; Wed, 27
- Apr 2022 21:24:09 +0200
-Message-ID: <91effdc2-c357-5bd9-a355-7f1ad0a848e4@gmx.de>
-Date:   Wed, 27 Apr 2022 21:24:02 +0200
+Received: from mxout03.lancloud.ru (mxout03.lancloud.ru [45.84.86.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF52EF12;
+        Wed, 27 Apr 2022 12:24:27 -0700 (PDT)
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout03.lancloud.ru D466720EC9A3
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [PATCH v3] sh: avoid using IRQ0 on SH3/4
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+To:     Rich Felker <dalias@libc.org>, <linux-sh@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+References: <2584ba18-9653-9310-efc1-8b3b3e221eea@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <9b29866e-70c1-1b0d-bfd7-1b03ea9e4e89@omp.ru>
+Date:   Wed, 27 Apr 2022 22:24:24 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] video: hyperv_fb: Allow resolutions with size > 64 MB for
- Gen1
+In-Reply-To: <2584ba18-9653-9310-efc1-8b3b3e221eea@omp.ru>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-To:     Saurabh Sengar <ssengar@linux.microsoft.com>,
-        ssengar@microsoft.com, kys@microsoft.com, haiyangz@microsoft.com,
-        sthemmin@microsoft.com, wei.liu@kernel.org, decui@microsoft.com,
-        linux-hyperv@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-References: <1651067273-6635-1-git-send-email-ssengar@linux.microsoft.com>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <1651067273-6635-1-git-send-email-ssengar@linux.microsoft.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:NP4L8msLdx8U0e+e7GVTQMFgO+dSXP/dsRIEL8hi8jeBIkovLvr
- tcgSZoxdyj48iwVzSbK1NAkZ2oYl+JzJowLnh0Bi/JHYA5awF0KtkLszeUflH6L44P312bN
- Menb8S2Ftw17Nhx16qd6aZcJ/HHBs00l6P35mJuc3AqReQlz/8z9v+rP3GDnGpeBnqOZybd
- D0WAAvwuR96PXrWW5YRbw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:UYU+qHpzt3w=:1u10l18WQsM8REM+mJ+FwL
- 4A8xAvNR15Un7kaO6S44gkkK6RUdZljuVqDMUNVjWWGU3n8lgnz6b3s+cUyZc5d0L1GdSCIFk
- y+J79Qgg/JNdbU319Y4kDtpusuTQGYo6b1ck8enShtLL1lXrWIaAsyaSIu6lfOWFvSaaUbTKg
- TLS63Wq6lBwWadQc7WTTR2zF5Uebk+gAiHZQWL/2NqfnCpHg59/1gnSxZjy75YuVgApUhJCHU
- 0N0vIvMzUPDmuYs3ohcEZdLOIy/yBKz8pX56yRNSZpesxXPmOnBUiNNVgKHH3iNAmEMmY5fOe
- GItaXjqIrP9ybEaGPIO55pG5RGLhh/DiJMunc3EQ6+W4xXbJhDcoMQqOyxvoYN4Nz+D2bvP6g
- exeK1dWIlCcpI4OlMsjmHfRr+xsAReDIzNcII3MyAkEQ5R0TLc5VC+Lo6BnSl2spHng5Q3Q9O
- DoctzYcUac76uzRDEBJrw1GVmUNtG3ddB//gAWngsGIp0+SyxBuS5jUoiE5VgSMuAqKeggGWZ
- yDwYSjr46KtoBHSfJyWouo65J17YVG9ugni+vxvTyt0eYrVBLTPIQpxVSsu4xkN03o2M8rbVI
- M6Cs0VbOgcQimx06KSZQXDQGoB1XBpJbDVueZia20kXv1sh7IttnF+KL3MK3/Se11l6fppCYI
- iygaJJhekdLLF4ly/L4i0HUiFsKCz2J0e8Fv8Ozp8lXy8qVcYdx+OVhQO+DoNOVa66ahCLQId
- DOeIoXWt3dxbLaaXPSF9+u40NPQ3XNuvDu6HN+XwSwTavQ3jDLEiGB7i53UUohVL969Ro+n7O
- ZzXexFTYnOSdHtOWJscM/S/0a/gnSHMaQpLXX2FXGcXTdlrUsekSEY5O1vy/OSAhnuoIIOvZ5
- zX4v973fUoIbwyY1pnml86SUN+5P8CwmBjwtSS6ybgc/VJ1HufYgLNB2aaSi7/4NFH7nHMKlG
- j5T3WfibQ6VLvmxYxOYwD55tPSCWfrcAvy6NytG2Ra/Bd7FaZ96elnhwv+zH+6su5bn8o4HIB
- fTZp/wiG60/sI/dFwdl8FaHYVFxqmQfRQaJ+8JjwmNXdRGe27rByGvhI/A0xTRS1N6dfTAi3d
- tUzSP3ba6CCYNU=
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/27/22 15:47, Saurabh Sengar wrote:
-> This patch fixes a bug where GEN1 VMs doesn't allow resolutions greater
-> than 64 MB size (eg 7680x4320). Unnecessary PCI check limits Gen1 VRAM
-> to legacy PCI BAR size only (ie 64MB). Thus any, resolution requesting
-> greater then 64MB (eg 7680x4320) would fail. MMIO region assigning this
-> memory shouldn't be limited by PCI bar size.
+On 4/27/22 9:46 PM, Sergey Shtylyov wrote:
 
-Is that right?
-Allocating more memory than what the PCI bar states?
-That sounds to me that theoretically the "now bigger" memory framebuffer c=
-ould
-overwrite other memory areas or mapped PCI bars.
-I'd like to see some other person from Microsoft to please comment/ack/nac=
-k.
+> Using IRQ0 by the platform devices is going to be disallowed soon (see [1])
+> and even now, when IRQ0 is about to be returned by platfrom_get_irq(), you
 
-Helge
+   Oops, it's platform_get_irq(). :-/
 
-> Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
-> ---
->  drivers/video/fbdev/hyperv_fb.c | 19 +------------------
->  1 file changed, 1 insertion(+), 18 deletions(-)
->
-> diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyper=
-v_fb.c
-> index c8e0ea2..58c304a 100644
-> --- a/drivers/video/fbdev/hyperv_fb.c
-> +++ b/drivers/video/fbdev/hyperv_fb.c
-> @@ -1009,7 +1009,6 @@ static int hvfb_getmem(struct hv_device *hdev, str=
-uct fb_info *info)
->  	struct pci_dev *pdev  =3D NULL;
->  	void __iomem *fb_virt;
->  	int gen2vm =3D efi_enabled(EFI_BOOT);
-> -	resource_size_t pot_start, pot_end;
->  	phys_addr_t paddr;
->  	int ret;
->
-> @@ -1060,23 +1059,7 @@ static int hvfb_getmem(struct hv_device *hdev, st=
-ruct fb_info *info)
->  	dio_fb_size =3D
->  		screen_width * screen_height * screen_depth / 8;
->
-> -	if (gen2vm) {
-> -		pot_start =3D 0;
-> -		pot_end =3D -1;
-> -	} else {
-> -		if (!(pci_resource_flags(pdev, 0) & IORESOURCE_MEM) ||
-> -		    pci_resource_len(pdev, 0) < screen_fb_size) {
-> -			pr_err("Resource not available or (0x%lx < 0x%lx)\n",
-> -			       (unsigned long) pci_resource_len(pdev, 0),
-> -			       (unsigned long) screen_fb_size);
-> -			goto err1;
-> -		}
-> -
-> -		pot_end =3D pci_resource_end(pdev, 0);
-> -		pot_start =3D pot_end - screen_fb_size + 1;
-> -	}
-> -
-> -	ret =3D vmbus_allocate_mmio(&par->mem, hdev, pot_start, pot_end,
-> +	ret =3D vmbus_allocate_mmio(&par->mem, hdev, 0, -1,
->  				  screen_fb_size, 0x100000, true);
->  	if (ret !=3D 0) {
->  		pr_err("Unable to allocate framebuffer memory\n");
+> see a big warning.  The code supporting SH3/4 SoCs maps the IRQ #s starting
+> at 0 -- modify that code to start the IRQ #s from 16 instead.
+> 
+> The patch should mostly affect the AP-SH4A-3A/AP-SH4AD-0A boards as they
+> indeed use IRQ0 for the SMSC911x compatible Ethernet chip...
+> 
+> [1] https://lore.kernel.org/all/025679e1-1f0a-ae4b-4369-01164f691511@omp.ru/
+> 
+> Fixes: a85a6c86c25b ("driver core: platform: Clarify that IRQ 0 is invalid")
+> Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Tested-by: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
 
+[...]
+
+MBR, Sergey
