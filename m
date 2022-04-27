@@ -2,140 +2,224 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB356C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 18:15:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E602DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 18:18:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232997AbiD0SSS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 14:18:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36452 "EHLO
+        id S244706AbiD0SVN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 14:21:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230084AbiD0SSP (ORCPT
+        with ESMTP id S234546AbiD0SVK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 14:18:15 -0400
-Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com [209.85.167.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1706119C02;
-        Wed, 27 Apr 2022 11:15:02 -0700 (PDT)
-Received: by mail-lf1-f45.google.com with SMTP id w1so4589888lfa.4;
-        Wed, 27 Apr 2022 11:15:02 -0700 (PDT)
+        Wed, 27 Apr 2022 14:21:10 -0400
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46B433B01A
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 11:17:58 -0700 (PDT)
+Received: by mail-io1-xd32.google.com with SMTP id e15so4165508iob.3
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 11:17:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sL4vEViaGmdDH6ehXDPKHTAIP+PJPH77g6jVoGZSKd8=;
+        b=NPyzZ/khaqbUlyfJ9tNo/+vzU/Xod8XdjRDR0zgMeidunts2uS/5dAMQojH85H++Dw
+         OwziMW7ZERXiXeQRSZQDEoBJrnRvcHHi1unZEg1LSMvGTFljN/t2/TKUOMZqMD1/LFaK
+         PIKBOzLzknlwaZUmKBfoHP77wA9DlvAJWOytu2Lkp0KcXj94opKmj2SqGNC2xER3MmYt
+         hqW1W1zkmFUZdfcpIfcKsAmBqAWz7CgNrSNMEsp4Vb/q54fjJDwAm1XgJGaUlWF/A7mQ
+         Ov0Cccm28gun/aQa2DKJFbDG4vyklu4f5s54GD0X5KhIbj4vjyh1PSWXXkV0sOkySiou
+         EIpg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Okm5dD/Oc33gIv0yVRc1fgY/+IJnnsOYTp9Pczt09uQ=;
-        b=m7OMcPDJcmgUIU3bf+FXbNeg7c+ela3KHvKmg9fBQ1qWlg317zDddDI81aj44pz+AA
-         Vo46wfrGZmi02QXSKnYBrRcSlpNYFNXtM/aJjSjqnZSbkY98ccCW3DM2NgusQzzHZEa6
-         pClvWGz1NoW0weSFrTpp9FkqrhK6K1RTQDjIye5CgemlFu5kT2O5mRMMfzPhj0BQzCxx
-         //i7QOQzCIG6JsUgMIwpfNftUsNdgMu8h08Lv/h1YfhnAjOLj/PXYiJQHBVFxbDXR0PB
-         igCudI5x//A+QB7l0Y/frG/0reTaHy1cYa4kBboob14QtywZkgQCmEJ8bAZBDKXFl5My
-         7K9g==
-X-Gm-Message-State: AOAM530r1axzXZ3julBaRIZza1OHFfDpZrf4A/sQgoeTZxrvmZwAJaun
-        GmtXpSonOGkNW9qPB7fIL46IHgfn4WNCw9lZ0zE=
-X-Google-Smtp-Source: ABdhPJzaf+QMWy4arMCMk4NdpXvr5yt3ItrfK0d+nJtIt/Jb8/lofL0/THaA2G1M2/vvUksET/j07HAXd5AjWTAETZY=
-X-Received: by 2002:a05:6512:321c:b0:46b:b7fd:1eca with SMTP id
- d28-20020a056512321c00b0046bb7fd1ecamr8012902lfe.481.1651083300256; Wed, 27
- Apr 2022 11:15:00 -0700 (PDT)
+        bh=sL4vEViaGmdDH6ehXDPKHTAIP+PJPH77g6jVoGZSKd8=;
+        b=DkbD440hXgimQQqI245dm4V6BBWyzeyXDDHw4T+3U7/ndREIRM5GRh7rIg67l/FS3R
+         o8JZHhKOPGJB0rzcRELIvdETIpXHLwTXsTInFs9deXWkqEvJzTGGdxdsKprKVZRXLTOY
+         VsW6SmWblku+DzEg9AyMbozFnHTJnOcgFx41sIR+aezuFtznURSHsaYEkktqbUcFnjLC
+         pjal0bwYcSuHzetdxhkyz5ZI2o/yUaPl+Q6VYtVbZOhTqLG8hVmiW2JkJkOENIr98txo
+         FbChyQF6oCRzS3/FfyIahD8c0pFoKiZwzV0C75bZa58k+EGe81haqZvp5yF8AVXeUr3E
+         CSyQ==
+X-Gm-Message-State: AOAM531U6F96bD4lOaFH2K07DJF/KxuFD6VmB8Q7ai9V1oilDcHyqkyx
+        DvXhvA7m7Mc5csQd0uhdDJ7bw+i1YD702GPLB4U=
+X-Google-Smtp-Source: ABdhPJzMFCpTOI7S0gquvTs4tSMBjYlkhhvdXlo4NIbiegHTqm8QI+taqj5+WVfWff/A1TsjcaL6ea30aXTrQsornw0=
+X-Received: by 2002:a05:6638:3393:b0:32a:93cd:7e48 with SMTP id
+ h19-20020a056638339300b0032a93cd7e48mr12720994jav.93.1651083477589; Wed, 27
+ Apr 2022 11:17:57 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220422150507.222488-1-namhyung@kernel.org> <20220422150507.222488-5-namhyung@kernel.org>
- <CAEf4Bzbdh-wbQQLzoXGGKkqqE=+qz19C4tCq4Ynb-_PXzRYM1w@mail.gmail.com>
-In-Reply-To: <CAEf4Bzbdh-wbQQLzoXGGKkqqE=+qz19C4tCq4Ynb-_PXzRYM1w@mail.gmail.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-Date:   Wed, 27 Apr 2022 11:14:49 -0700
-Message-ID: <CAM9d7chos3xgxPMOMwgSh6nCNfqk8k2tXO=0JsdL4KgN_yngCA@mail.gmail.com>
-Subject: Re: [PATCH 4/4] perf record: Handle argument change in sched_switch
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>, Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Ian Rogers <irogers@google.com>,
-        Song Liu <songliubraving@fb.com>, Hao Luo <haoluo@google.com>,
-        bpf <bpf@vger.kernel.org>,
-        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
-        Blake Jones <blakejones@google.com>
+References: <20220120162520.570782-1-valentin.schneider@arm.com>
+ <93a20759600c05b6d9e4359a1517c88e06b44834.camel@fb.com> <20220422110903.GW2731@worktop.programming.kicks-ass.net>
+ <056e9bb0d0e3fc20572d42db7386face1d0665d6.camel@fb.com> <CAADnVQKsah4aka-LJ+X+5XHHESKbbw36D8fXTLqcYp2io3PN_w@mail.gmail.com>
+ <YmflVPQlwpiBuxRc@hirez.programming.kicks-ass.net> <20220426140959.op6u5m7id57aq7yc@wubuntu>
+ <CAEf4BzaoL5HVc8U16kz7m--RiPhBwuLt8ZGZppwfxV85AXXrcw@mail.gmail.com> <20220427103458.ecnqtaj3af63625h@wubuntu>
+In-Reply-To: <20220427103458.ecnqtaj3af63625h@wubuntu>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 27 Apr 2022 11:17:46 -0700
+Message-ID: <CAEf4BzYc3f2-9hvuGL_mTO8qNxZjdQn8AabEb-N6Q7XjmEQQ1A@mail.gmail.com>
+Subject: Re: [PATCH] sched/tracing: append prev_state to tp args instead
+To:     Qais Yousef <qais.yousef@arm.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Delyan Kratunov <delyank@fb.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        "bigeasy@linutronix.de" <bigeasy@linutronix.de>,
+        "dietmar.eggemann@arm.com" <dietmar.eggemann@arm.com>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>,
+        "vincent.guittot@linaro.org" <vincent.guittot@linaro.org>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "mingo@kernel.org" <mingo@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "rdunlap@infradead.org" <rdunlap@infradead.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "Kenta.Tada@sony.com" <Kenta.Tada@sony.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "bristot@redhat.com" <bristot@redhat.com>,
+        "ebiederm@xmission.com" <ebiederm@xmission.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "legion@kernel.org" <legion@kernel.org>,
+        "adharmap@quicinc.com" <adharmap@quicinc.com>,
+        "valentin.schneider@arm.com" <valentin.schneider@arm.com>,
+        "ed.tsai@mediatek.com" <ed.tsai@mediatek.com>,
+        "juri.lelli@redhat.com" <juri.lelli@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
-
-On Tue, Apr 26, 2022 at 4:55 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
+On Wed, Apr 27, 2022 at 3:35 AM Qais Yousef <qais.yousef@arm.com> wrote:
 >
-> On Fri, Apr 22, 2022 at 3:49 PM Namhyung Kim <namhyung@kernel.org> wrote:
+> On 04/26/22 08:54, Andrii Nakryiko wrote:
+> > On Tue, Apr 26, 2022 at 7:10 AM Qais Yousef <qais.yousef@arm.com> wrote:
+> > >
+> > > On 04/26/22 14:28, Peter Zijlstra wrote:
+> > > > On Fri, Apr 22, 2022 at 11:30:12AM -0700, Alexei Starovoitov wrote:
+> > > > > On Fri, Apr 22, 2022 at 10:22 AM Delyan Kratunov <delyank@fb.com> wrote:
+> > > > > >
+> > > > > > On Fri, 2022-04-22 at 13:09 +0200, Peter Zijlstra wrote:
+> > > > > > > And on the other hand; those users need to be fixed anyway, right?
+> > > > > > > Accessing prev->__state is equally broken.
+> > > > > >
+> > > > > > The users that access prev->__state would most likely have to be fixed, for sure.
+> > > > > >
+> > > > > > However, not all users access prev->__state. `offcputime` for example just takes a
+> > > > > > stack trace and associates it with the switched out task. This kind of user
+> > > > > > would continue working with the proposed patch.
+> > > > > >
+> > > > > > > If bpf wants to ride on them, it needs to suffer the pain of doing so.
+> > > > > >
+> > > > > > Sure, I'm just advocating for a fairly trivial patch to avoid some of the suffering,
+> > > > > > hopefully without being a burden to development. If that's not the case, then it's a
+> > > > > > clear no-go.
+> > > > >
+> > > > >
+> > > > > Namhyung just sent this patch set:
+> > > > > https://patchwork.kernel.org/project/netdevbpf/patch/20220422053401.208207-3-namhyung@kernel.org/
+> > > >
+> > > > That has:
+> > > >
+> > > > + * recently task_struct->state renamed to __state so it made an incompatible
+> > > > + * change.
+> > > >
+> > > > git tells me:
+> > > >
+> > > >   2f064a59a11f ("sched: Change task_struct::state")
+> > > >
+> > > > is almost a year old by now. That don't qualify as recently in my book.
+> > > > That says that 'old kernels used to call this...'.
+> > > >
+> > > > > to add off-cpu profiling to perf.
+> > > > > It also hooks into sched_switch tracepoint.
+> > > > > Notice it deals with state->__state rename just fine.
+> > > >
+> > > > So I don't speak BPF much; it always takes me more time to make bpf work
+> > > > than to just hack up the kernel, which makes it hard to get motivated.
+> > > >
+> > > > However, it was not just a rename, state changed type too, which is why I
+> > > > did the rename, to make sure all users would get a compile fail and
+> > > > could adjust.
+> > > >
+> > > > If you're silently making it work by frobbing the name, you loose that.
+> > > >
+> > > > Specifically, task_struct::state used to be 'volatile long', while
+> > > > task_struct::__state is 'unsigned int'. As such, any user must now be
+> > > > very careful to use READ_ONCE(). I don't see that happening with just
+> > > > frobbing the name.
+> > > >
+> > > > Additinoally, by shrinking the field, I suppose BE systems get to keep
+> > > > the pieces?
+> > > >
+> > > > > But it will have a hard time without this patch
+> > > > > until we add all the extra CO-RE features to detect
+> > > > > and automatically adjust bpf progs when tracepoint
+> > > > > arguments order changed.
+> > > >
+> > > > Could be me, but silently making it work sounds like fail :/ There's a
+> > > > reason code changes, users need to adapt, not silently pretend stuff is
+> > > > as before.
+> > > >
+> > > > How will you know you need to fix your tool?
+> > >
+> > > If libbpf doesn't fail, then yeah it's a big problem. I wonder how users of
+> > > kprobe who I suppose are more prone to this kind of problems have been coping.
 > >
-> > Recently sched_switch tracepoint added a new argument for prev_state,
-> > but it's hard to handle the change in a BPF program.  Instead, we can
-> > check the function prototype in BTF before loading the program.
-> >
-> > Thus I make two copies of the tracepoint handler and select one based
-> > on the BTF info.
-> >
-> > Signed-off-by: Namhyung Kim <namhyung@kernel.org>
-> > ---
-> >  tools/perf/util/bpf_off_cpu.c          | 32 +++++++++++++++
-> >  tools/perf/util/bpf_skel/off_cpu.bpf.c | 55 ++++++++++++++++++++------
-> >  2 files changed, 76 insertions(+), 11 deletions(-)
-> >
+> > See my reply to Peter. libbpf can't know user's intent to fail this
+> > automatically, in general. In some cases when it can it does
+> > accommodate this automatically. In other cases it provides instruments
+> > for user to handle this (bpf_core_field_size(),
+> > BPF_CORE_READ_BITFIELD(), etc).
 >
-> [...]
->
-> >
-> > +SEC("tp_btf/sched_switch")
-> > +int on_switch3(u64 *ctx)
-> > +{
-> > +       struct task_struct *prev, *next;
-> > +       int state;
-> > +
-> > +       if (!enabled)
-> > +               return 0;
-> > +
-> > +       /*
-> > +        * TP_PROTO(bool preempt, struct task_struct *prev,
-> > +        *          struct task_struct *next)
-> > +        */
-> > +       prev = (struct task_struct *)ctx[1];
-> > +       next = (struct task_struct *)ctx[2];
->
->
-> you don't have to have two BPF programs for this, you can use
-> read-only variable to make this choice.
->
-> On BPF side
->
-> const volatile bool has_prev_state = false;
->
-> ...
->
-> if (has_prev_state) {
->     prev = (struct task_struct *)ctx[2];
->     next = (struct task_struct *)ctx[3];
-> } else {
->     prev = (struct task_struct *)ctx[1];
->     next = (struct task_struct *)ctx[2];
-> }
->
->
-> And from user-space side you do your detection and before skeleton is loaded:
->
-> skel->rodata->has_prev_state = <whatever you detected>
+> My naiive thinking is that the function signature has changed (there's 1 extra
+> arg not just a subtle swap of args of the same type) - so I thought that can be
+> detected. But maybe it is harder said than done.
 
-Nice, thanks for the tip!
+It is. We don't have number of arguments either:
 
-Actually I tried something similar but it was with a variable (in bss)
-so the verifier in an old kernel rejected it due to invalid arg access.
+struct bpf_raw_tracepoint_args {
+        __u64 args[0];
+};
 
-I guess now the const makes the verifier ignore the branch as if
-it's dead but the compiler still generates the code, right?
+What BPF program is getting is just an array of u64s.
 
 >
-> But I'm still hoping that this prev_state argument can be moved to the
-> end ([0]) to make all this unnecessary.
+> I am trying to remember as I've used this before; I think you get the arg list
+> as part of ctx when you attach to a function?
 >
->   [0] https://lore.kernel.org/lkml/93a20759600c05b6d9e4359a1517c88e06b44834.camel@fb.com/
+> I wonder if it'd be hard to provide a macro for the user to provide the
+> signature of the function they expect; this macro can try then to verify/assert
+> the number, type and order is the same. Not bullet proof and requires opt-in,
+> but could be useful?
+>
+>
+> // dummy pseudo-code
+>
+>         BPF_CORE_ASSERT_SIG(sched_switch, NR_ARGS, ARG0, ARG1, ...)
+>                 if (ctx->nr_args != NR_ARGS)
+>                         assert()
+>                 if (type_of(ctx->args[0]) != type_of(ARG0))
+>                         assert()
+>                 ...
+>
+> I'm not sure if you have any info about the type though..
 
-Yeah, that would make life easier. :)
+What we have now under discussion is more generic way for user to
+check signature of function prototype, struct/union, etc. But all that
+will take some time to implement and finalize. So this patch is a way
+to stop/prevent the bleeding until we have that available to users.
 
-Thanks,
-Namhyung
+>
+> > But in the end no one eliminated the need for testing your application
+> > for correctness. Tracing programs do break on kernel changes and BPF
+> > users do adapt to them. Sometimes adapting is easy (like state ->
+> > __state transition), sometimes it's much more involved (like this
+> > argument order change).
+>
+> It's not just an arg re-order, it's a new argument inserted in the middle. But
+> fair enough :-)
+>
+> Cheers
+>
+> --
+> Qais Yousef
