@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EB7DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:56:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 901E1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:56:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240987AbiD0P7X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 11:59:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57024 "EHLO
+        id S241045AbiD0P71 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 11:59:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240899AbiD0P6P (ORCPT
+        with ESMTP id S240915AbiD0P6P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Apr 2022 11:58:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BA7B703D1;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3728703D6;
         Wed, 27 Apr 2022 08:54:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E86F561B53;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8C2EFB8287D;
         Wed, 27 Apr 2022 15:54:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C9BEC385A7;
-        Wed, 27 Apr 2022 15:54:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 336C6C385B0;
+        Wed, 27 Apr 2022 15:54:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651074878;
-        bh=KSEJ+saCnB7wp+Oq1NcgEnSORri1ySBk4CdULLq8XTc=;
+        s=k20201202; t=1651074877;
+        bh=dhkW1ASMyZWLN/zK5ccMxBpm7mwVmOaNbaYYAvXnbn4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BbQd5jc8puJkou5Ls+FBgSysHyXdzGbHCu82Zoz4nXTjcQsj496Xd42L8XtVv4WjI
-         Ip7OIpfJm/xyFx7QyANfPOii8qBm9PSrXN1SaJ76Fv0Ik3y9Z+2AvbQo0PBBVNZFef
-         ZVFLMAJqTa0Vr75/x+ky+rXmQ2Ftd8qf/F+rKL2CjoSX/YuNuVMVkLhS2hj2nR0k+1
-         fzpEVvHLfayUUOe5v6HvW+hbURIfzdTTkH6bN0TBhCffNrT/OfELN3kbYUOwIKMPU2
-         6BlOFqhc93xIwZtZNxFh/J8Jr1ZBOtVuV7GfaOsbN8YtoT2tPrRk4ZWTbVNDpFiNPM
-         tvyfZGo8ycvQw==
+        b=jpNQCdbuOS7xe43lJpT7YJaM+/Y3kjCcdYUm6Ipphx336FXJygrzF37UieG8lawa4
+         NY+737P2qtHnovgJEnz+XRIm93tnV63FDECJmDNhlSoXmIeJahnguL8PaVbATDixHX
+         eGGs3TiCDyXULbXY+mod+iN55pYVaDE7mIiy+Vu4oyEjRq61wETSHFakVp80yXzVtv
+         QfeueOFZ+9sWCTGkD14WWGYzJZK3x721KPavSO4a6IHclgNL/t54beO0LMwgnZCYp9
+         gShVhp6EOrnuResyYkftVMRb92tUw21tu9qAJC6CC1Zbd+pCW9U8VdQvZV7dW3ELuu
+         uyERlr2FYkOLA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wanpeng Li <wanpengli@tencent.com>,
-        Aili Yao <yaoaili@kingsoft.com>,
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, Chao Gao <chao.gao@intel.com>,
         Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
         mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
         x86@kernel.org, kvm@vger.kernel.org
-Subject: [PATCH MANUALSEL 5.10 4/4] KVM: LAPIC: Enable timer posted-interrupt only when mwait/hlt is advertised
-Date:   Wed, 27 Apr 2022 11:54:35 -0400
-Message-Id: <20220427155435.19554-4-sashal@kernel.org>
+Subject: [PATCH MANUALSEL 5.10 2/4] KVM: x86: Do not change ICR on write to APIC_SELF_IPI
+Date:   Wed, 27 Apr 2022 11:54:33 -0400
+Message-Id: <20220427155435.19554-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220427155435.19554-1-sashal@kernel.org>
 References: <20220427155435.19554-1-sashal@kernel.org>
@@ -55,51 +53,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wanpeng Li <wanpengli@tencent.com>
+From: Paolo Bonzini <pbonzini@redhat.com>
 
-[ Upstream commit 1714a4eb6fb0cb79f182873cd011a8ed60ac65e8 ]
+[ Upstream commit d22a81b304a27fca6124174a8e842e826c193466 ]
 
-As commit 0c5f81dad46 ("KVM: LAPIC: Inject timer interrupt via posted
-interrupt") mentioned that the host admin should well tune the guest
-setup, so that vCPUs are placed on isolated pCPUs, and with several pCPUs
-surplus for *busy* housekeeping.  In this setup, it is preferrable to
-disable mwait/hlt/pause vmexits to keep the vCPUs in non-root mode.
+Emulating writes to SELF_IPI with a write to ICR has an unwanted side effect:
+the value of ICR in vAPIC page gets changed.  The lists SELF_IPI as write-only,
+with no associated MMIO offset, so any write should have no visible side
+effect in the vAPIC page.
 
-However, if only some guests isolated and others not, they would not
-have any benefit from posted timer interrupts, and at the same time lose
-VMX preemption timer fast paths because kvm_can_post_timer_interrupt()
-returns true and therefore forces kvm_can_use_hv_timer() to false.
-
-By guaranteeing that posted-interrupt timer is only used if MWAIT or
-HLT are done without vmexit, KVM can make a better choice and use the
-VMX preemption timer and the corresponding fast paths.
-
-Reported-by: Aili Yao <yaoaili@kingsoft.com>
+Reported-by: Chao Gao <chao.gao@intel.com>
 Reviewed-by: Sean Christopherson <seanjc@google.com>
-Cc: Aili Yao <yaoaili@kingsoft.com>
-Cc: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
-Message-Id: <1643112538-36743-1-git-send-email-wanpengli@tencent.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/lapic.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/x86/kvm/lapic.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
 diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-index e45ebf0870b6..a3ef793fce5f 100644
+index de11149e28e0..e45ebf0870b6 100644
 --- a/arch/x86/kvm/lapic.c
 +++ b/arch/x86/kvm/lapic.c
-@@ -113,7 +113,8 @@ static inline u32 kvm_x2apic_id(struct kvm_lapic *apic)
+@@ -2106,10 +2106,9 @@ int kvm_lapic_reg_write(struct kvm_lapic *apic, u32 reg, u32 val)
+ 		break;
  
- static bool kvm_can_post_timer_interrupt(struct kvm_vcpu *vcpu)
- {
--	return pi_inject_timer && kvm_vcpu_apicv_active(vcpu);
-+	return pi_inject_timer && kvm_vcpu_apicv_active(vcpu) &&
-+		(kvm_mwait_in_guest(vcpu->kvm) || kvm_hlt_in_guest(vcpu->kvm));
- }
- 
- bool kvm_can_use_hv_timer(struct kvm_vcpu *vcpu)
+ 	case APIC_SELF_IPI:
+-		if (apic_x2apic_mode(apic)) {
+-			kvm_lapic_reg_write(apic, APIC_ICR,
+-					    APIC_DEST_SELF | (val & APIC_VECTOR_MASK));
+-		} else
++		if (apic_x2apic_mode(apic))
++			kvm_apic_send_ipi(apic, APIC_DEST_SELF | (val & APIC_VECTOR_MASK), 0);
++		else
+ 			ret = 1;
+ 		break;
+ 	default:
 -- 
 2.35.1
 
