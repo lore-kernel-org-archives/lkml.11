@@ -2,249 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7028C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 07:15:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07B07C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 07:16:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358689AbiD0HS2 (ORCPT
+        id S1358717AbiD0HSv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 03:18:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51462 "EHLO
+        Wed, 27 Apr 2022 03:18:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358686AbiD0HSW (ORCPT
+        with ESMTP id S1358692AbiD0HSi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 03:18:22 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0284013EB0
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 00:15:06 -0700 (PDT)
-X-UUID: ee196ef9134c4ae7b0be0a341beb4f6d-20220427
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:7cb683a5-a8fc-48d8-97bd-0393bb816b16,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:-20
-X-CID-META: VersionHash:faefae9,CLOUDID:87a8a5c6-85ee-4ac1-ac05-bd3f1e72e732,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: ee196ef9134c4ae7b0be0a341beb4f6d-20220427
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
-        (envelope-from <tinghan.shen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1066266900; Wed, 27 Apr 2022 15:15:00 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Wed, 27 Apr 2022 15:14:59 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 27 Apr
- 2022 15:14:59 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 27 Apr 2022 15:14:59 +0800
-From:   Tinghan Shen <tinghan.shen@mediatek.com>
-To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Daniel Baluta <daniel.baluta@nxp.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tinghan Shen <tinghan.shen@mediatek.com>,
-        "Yaochun Hung" <yc.hung@mediatek.com>,
-        Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
-        Yang Yingliang <yangyingliang@huawei.com>
-CC:     <sound-open-firmware@alsa-project.org>,
-        <alsa-devel@alsa-project.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v2] ASoC: SOF: mediatek: Fix allyesconfig build error
-Date:   Wed, 27 Apr 2022 15:10:30 +0800
-Message-ID: <20220427071030.10172-1-tinghan.shen@mediatek.com>
-X-Mailer: git-send-email 2.15.GIT
+        Wed, 27 Apr 2022 03:18:38 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CABB18361;
+        Wed, 27 Apr 2022 00:15:17 -0700 (PDT)
+Received: from mail-yb1-f180.google.com ([209.85.219.180]) by
+ mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MJVU0-1nPjat3wIS-00JqT6; Wed, 27 Apr 2022 09:15:16 +0200
+Received: by mail-yb1-f180.google.com with SMTP id w17so1715863ybh.9;
+        Wed, 27 Apr 2022 00:15:15 -0700 (PDT)
+X-Gm-Message-State: AOAM533E2K1UKjQFKhxNn/wdImyAEmBaafMaXYWOvCMulOdDVFdC9ijE
+        Zm/D+8CvgAwimat2r9gkZmpVLphVqGAuYeO5QqQ=
+X-Google-Smtp-Source: ABdhPJwaD1kOWmwPG8YXCJoPZvqoD54e+nnssat4O6xYNRUCaG64TDt/4SOl6wpW8DE+BePexx2QnPchQt4gdqTD0N8=
+X-Received: by 2002:a25:c604:0:b0:645:d969:97a7 with SMTP id
+ k4-20020a25c604000000b00645d96997a7mr20381066ybf.134.1651043704287; Wed, 27
+ Apr 2022 00:15:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+References: <20220426164315.625149-1-glider@google.com> <20220426164315.625149-6-glider@google.com>
+In-Reply-To: <20220426164315.625149-6-glider@google.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 27 Apr 2022 09:14:48 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a2eDDAAQ8RiQi0B+Jk4KvGeMk+pe78RB+bB9qwTTyhuag@mail.gmail.com>
+Message-ID: <CAK8P3a2eDDAAQ8RiQi0B+Jk4KvGeMk+pe78RB+bB9qwTTyhuag@mail.gmail.com>
+Subject: Re: [PATCH v3 05/46] x86: asm: instrument usercopy in get_user() and __put_user_size()
+To:     Alexander Potapenko <glider@google.com>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Christoph Hellwig <hch@lst.de>,
+        Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Kees Cook <keescook@chromium.org>,
+        Marco Elver <elver@google.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        Linux-MM <linux-mm@kvack.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:X825Nodsp/CILpTFtsaUc0WqmlMiOdJWzevNH4xFQGBXKufG+O9
+ DShGp8pTm7eRlyTooBJO8zwF/De5Wf7IvyAFn0Gog4gPQ0f+3onWS2ZWVKVgf1sP3OD7cjc
+ aaGMv0hF/PZbLWkRZ+lSqMbnh+dJqCqfF2O0Zlas+maOkYQrJJO0FBS8VcUi3fAQEkvtJFo
+ jetBEutOri6z3WtTCzMPA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:12eyt6cQDXI=:8QIbwNy4LP8WPQWFVHlWHU
+ e/YPQYO3s12X/fDA6oxZ3hCKFlp8qR04u+RkK57XAvRjtYAEq517/fuEjA4PCWy1Hwwvl1F6c
+ ++XWcZLbnjCh7SXkZ1SJ3iUME/7yBmjptkHCKmJQ+5pepHcGs2eDvI+Cqqaegt2fxRw4XZCHt
+ D2vyr62TtToYwOeSUI02/gf859OzVFMs4Az960I4nFiYQrP1DdlePOVR5XFy1QRdRTSU1M7cT
+ 0db8mDjL1z8ZStXuQOrYp3JXkTDwzXHC6TnyEQR7krnmLXHANvfvncE3TGk8DocG+3dtovCEZ
+ cfIj+mcbeDgsqmS3LeW9VX19CBY5QYrZxbEJWIeL+UyizIEGAPjAOcexTrgVP2Z8NBen2JaDs
+ A120nq7iJmfagKAeaATAF414EqqkCHiUlIPFaEdyXPN+F4HL13k+iRfkyw4zf0HGYUI0oQuCR
+ 6nuVEiKFHVgXMH41Gq8711UNohSjWfVr853Csiz6D9HW30zTrqMD4p5cCCGAX2/LnpdJE+rT6
+ 1ZsVA46LEeQo4k2wIcpvjnkpUqGcxwJLj+Fk+GxkTFrORaFqQJcYes/QsTFO+AcOo3wQBoxEC
+ wYGAdehiyGui/UMvXkU5MB55PlzlytpjDsH0XxsRs5me29OsZKqPqxWXOSO7/okvPpiiQtpD+
+ b514fgcGooNVehZcW1LGBXB4I+Gz9e4Q8HiunEueeWS72w/ZmmGPLjbiebCsmmDzx+X8Mdz7U
+ 0DY8Kb1oboqDlOAtOCtqF8b/fELc0/AgA/QjMacS0u8Lp/ZrFQIyhfcE95l0AwVs7octblUmf
+ XjfsqZIGo0NeODzJASPK3SVFrhg6R4kjIloqCIVOOzAHHAvGD0=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ld: sound/soc/sof/mediatek/mt8186/mt8186-clk.o:(.opd+0x18): multiple
-definition of `adsp_clock_on';
-sound/soc/sof/mediatek/mt8195/mt8195-clk.o:(.opd+0x60): first defined
-here
-ld: sound/soc/sof/mediatek/mt8186/mt8186-clk.o: in function
-`.adsp_clock_on':
+On Tue, Apr 26, 2022 at 6:42 PM Alexander Potapenko <glider@google.com> wrote:
+> @@ -99,11 +100,13 @@ extern int __get_user_bad(void);
+>         int __ret_gu;                                                   \
+>         register __inttype(*(ptr)) __val_gu asm("%"_ASM_DX);            \
+>         __chk_user_ptr(ptr);                                            \
+> +       instrument_copy_from_user_before((void *)&(x), ptr, sizeof(*(ptr))); \
+>         asm volatile("call __" #fn "_%P4"                               \
+>                      : "=a" (__ret_gu), "=r" (__val_gu),                \
+>                         ASM_CALL_CONSTRAINT                             \
+>                      : "0" (ptr), "i" (sizeof(*(ptr))));                \
+>         (x) = (__force __typeof__(*(ptr))) __val_gu;                    \
+> +       instrument_copy_from_user_after((void *)&(x), ptr, sizeof(*(ptr)), 0); \
 
-ld: sound/soc/sof/mediatek/mt8186/mt8186-clk.o:(.opd+0x30): multiple
-definition of `adsp_clock_off';
-sound/soc/sof/mediatek/mt8195/mt8195-clk.o:(.opd+0x78): first defined
-here
-ld: sound/soc/sof/mediatek/mt8186/mt8186-clk.o: in function
-`.adsp_clock_off':
+Isn't "ptr" the original pointer here? I think what happened with the
+reported warning is that you get one output line for every instance this
+is used in. There should probably be a
 
-ld: sound/soc/sof/mediatek/mt8186/mt8186-loader.o:(.opd+0x0): multiple
-definition of `sof_hifixdsp_boot_sequence';
-sound/soc/sof/mediatek/mt8195/mt8195-loader.o:(.opd+0x0): first defined
-here
-ld: sound/soc/sof/mediatek/mt8186/mt8186-loader.o: in function
-`.sof_hifixdsp_boot_sequence':
+      __auto_type __ptr = (ptr);
 
-ld: sound/soc/sof/mediatek/mt8186/mt8186-loader.o:(.opd+0x18): multiple
-definition of `sof_hifixdsp_shutdown';
- sound/soc/sof/mediatek/mt8195/mt8195-loader.o:(.opd+0x18): first defined
-here
-ld: sound/soc/sof/mediatek/mt8186/mt8186-loader.o: in function
-`.sof_hifixdsp_shutdown':
+at the beginning of the macro to ensure that 'ptr' is only evaluated once.
 
-Fixes: 570c14dc92d5 ("ASoC: SOF: mediatek: Add mt8186 sof fw loader and
-dsp ops")
-Fixes: 210b3ab932f7 ("ASoC: SOF: mediatek: Add mt8186 dsp clock support")
+>>> arch/x86/kernel/signal.c:360:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void [noderef] __user *to @@     got unsigned long long [usertype] * @@
 
-Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
----
+It would also make sense to add the missing __user annotation in this line, but
+I suspect there are others like it in drivers.
 
-Changes since v1:
-Rebase on Mark's for-next and update "Fixes" commit id
-
----
- sound/soc/sof/mediatek/mt8186/mt8186-clk.c    |  4 ++--
- sound/soc/sof/mediatek/mt8186/mt8186-clk.h    |  4 ++--
- sound/soc/sof/mediatek/mt8186/mt8186-loader.c |  4 ++--
- sound/soc/sof/mediatek/mt8186/mt8186.c        | 18 +++++++++---------
- sound/soc/sof/mediatek/mt8186/mt8186.h        |  4 ++--
- 5 files changed, 17 insertions(+), 17 deletions(-)
-
-diff --git a/sound/soc/sof/mediatek/mt8186/mt8186-clk.c b/sound/soc/sof/mediatek/mt8186/mt8186-clk.c
-index 5f805981b8e6..22220fd50b62 100644
---- a/sound/soc/sof/mediatek/mt8186/mt8186-clk.c
-+++ b/sound/soc/sof/mediatek/mt8186/mt8186-clk.c
-@@ -74,7 +74,7 @@ static void adsp_disable_all_clock(struct snd_sof_dev *sdev)
- 	clk_disable_unprepare(priv->clk[CLK_TOP_AUDIODSP]);
- }
- 
--int adsp_clock_on(struct snd_sof_dev *sdev)
-+int mt8186_adsp_clock_on(struct snd_sof_dev *sdev)
- {
- 	struct device *dev = sdev->dev;
- 	int ret;
-@@ -92,7 +92,7 @@ int adsp_clock_on(struct snd_sof_dev *sdev)
- 	return 0;
- }
- 
--void adsp_clock_off(struct snd_sof_dev *sdev)
-+void mt8186_adsp_clock_off(struct snd_sof_dev *sdev)
- {
- 	snd_sof_dsp_write(sdev, DSP_REG_BAR, ADSP_CK_EN, 0);
- 	snd_sof_dsp_write(sdev, DSP_REG_BAR, ADSP_UART_CTRL, 0);
-diff --git a/sound/soc/sof/mediatek/mt8186/mt8186-clk.h b/sound/soc/sof/mediatek/mt8186/mt8186-clk.h
-index fa174dfceff0..89c23caf0fee 100644
---- a/sound/soc/sof/mediatek/mt8186/mt8186-clk.h
-+++ b/sound/soc/sof/mediatek/mt8186/mt8186-clk.h
-@@ -19,6 +19,6 @@ enum adsp_clk_id {
- };
- 
- int mt8186_adsp_init_clock(struct snd_sof_dev *sdev);
--int adsp_clock_on(struct snd_sof_dev *sdev);
--void adsp_clock_off(struct snd_sof_dev *sdev);
-+int mt8186_adsp_clock_on(struct snd_sof_dev *sdev);
-+void mt8186_adsp_clock_off(struct snd_sof_dev *sdev);
- #endif
-diff --git a/sound/soc/sof/mediatek/mt8186/mt8186-loader.c b/sound/soc/sof/mediatek/mt8186/mt8186-loader.c
-index 6ab4921b1010..548b12c33d8a 100644
---- a/sound/soc/sof/mediatek/mt8186/mt8186-loader.c
-+++ b/sound/soc/sof/mediatek/mt8186/mt8186-loader.c
-@@ -11,7 +11,7 @@
- #include "mt8186.h"
- #include "../../ops.h"
- 
--void sof_hifixdsp_boot_sequence(struct snd_sof_dev *sdev, u32 boot_addr)
-+void mt8186_sof_hifixdsp_boot_sequence(struct snd_sof_dev *sdev, u32 boot_addr)
- {
- 	/* set RUNSTALL to stop core */
- 	snd_sof_dsp_update_bits(sdev, DSP_REG_BAR, ADSP_HIFI_IO_CONFIG,
-@@ -39,7 +39,7 @@ void sof_hifixdsp_boot_sequence(struct snd_sof_dev *sdev, u32 boot_addr)
- 				RUNSTALL, 0);
- }
- 
--void sof_hifixdsp_shutdown(struct snd_sof_dev *sdev)
-+void mt8186_sof_hifixdsp_shutdown(struct snd_sof_dev *sdev)
- {
- 	/* set RUNSTALL to stop core */
- 	snd_sof_dsp_update_bits(sdev, DSP_REG_BAR, ADSP_HIFI_IO_CONFIG,
-diff --git a/sound/soc/sof/mediatek/mt8186/mt8186.c b/sound/soc/sof/mediatek/mt8186/mt8186.c
-index c8faa63497c6..6d574fd4492e 100644
---- a/sound/soc/sof/mediatek/mt8186/mt8186.c
-+++ b/sound/soc/sof/mediatek/mt8186/mt8186.c
-@@ -211,7 +211,7 @@ static int mt8186_run(struct snd_sof_dev *sdev)
- 
- 	adsp_bootup_addr = SRAM_PHYS_BASE_FROM_DSP_VIEW;
- 	dev_dbg(sdev->dev, "HIFIxDSP boot from base : 0x%08X\n", adsp_bootup_addr);
--	sof_hifixdsp_boot_sequence(sdev, adsp_bootup_addr);
-+	mt8186_sof_hifixdsp_boot_sequence(sdev, adsp_bootup_addr);
- 
- 	return 0;
- }
-@@ -284,9 +284,9 @@ static int mt8186_dsp_probe(struct snd_sof_dev *sdev)
- 		return ret;
- 	}
- 
--	ret = adsp_clock_on(sdev);
-+	ret = mt8186_adsp_clock_on(sdev);
- 	if (ret) {
--		dev_err(sdev->dev, "adsp_clock_on fail!\n");
-+		dev_err(sdev->dev, "mt8186_adsp_clock_on fail!\n");
- 		return ret;
- 	}
- 
-@@ -297,18 +297,18 @@ static int mt8186_dsp_probe(struct snd_sof_dev *sdev)
- 
- static int mt8186_dsp_remove(struct snd_sof_dev *sdev)
- {
--	sof_hifixdsp_shutdown(sdev);
-+	mt8186_sof_hifixdsp_shutdown(sdev);
- 	adsp_sram_power_off(sdev);
--	adsp_clock_off(sdev);
-+	mt8186_adsp_clock_off(sdev);
- 
- 	return 0;
- }
- 
- static int mt8186_dsp_suspend(struct snd_sof_dev *sdev, u32 target_state)
- {
--	sof_hifixdsp_shutdown(sdev);
-+	mt8186_sof_hifixdsp_shutdown(sdev);
- 	adsp_sram_power_off(sdev);
--	adsp_clock_off(sdev);
-+	mt8186_adsp_clock_off(sdev);
- 
- 	return 0;
- }
-@@ -317,9 +317,9 @@ static int mt8186_dsp_resume(struct snd_sof_dev *sdev)
- {
- 	int ret;
- 
--	ret = adsp_clock_on(sdev);
-+	ret = mt8186_adsp_clock_on(sdev);
- 	if (ret) {
--		dev_err(sdev->dev, "adsp_clock_on fail!\n");
-+		dev_err(sdev->dev, "mt8186_adsp_clock_on fail!\n");
- 		return ret;
- 	}
- 
-diff --git a/sound/soc/sof/mediatek/mt8186/mt8186.h b/sound/soc/sof/mediatek/mt8186/mt8186.h
-index df52ae9659e4..98b2965e5ba6 100644
---- a/sound/soc/sof/mediatek/mt8186/mt8186.h
-+++ b/sound/soc/sof/mediatek/mt8186/mt8186.h
-@@ -75,6 +75,6 @@ struct snd_sof_dev;
- #define SIZE_SHARED_DRAM_UL			0x40000 /*Shared buffer for Uplink*/
- #define TOTAL_SIZE_SHARED_DRAM_FROM_TAIL	(SIZE_SHARED_DRAM_DL + SIZE_SHARED_DRAM_UL)
- 
--void sof_hifixdsp_boot_sequence(struct snd_sof_dev *sdev, u32 boot_addr);
--void sof_hifixdsp_shutdown(struct snd_sof_dev *sdev);
-+void mt8186_sof_hifixdsp_boot_sequence(struct snd_sof_dev *sdev, u32 boot_addr);
-+void mt8186_sof_hifixdsp_shutdown(struct snd_sof_dev *sdev);
- #endif
--- 
-2.18.0
-
+      Arnd
