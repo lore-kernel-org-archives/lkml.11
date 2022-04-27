@@ -2,75 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 984C5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 02:16:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E567C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 02:17:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357126AbiD0CTg (ORCPT
+        id S1357129AbiD0CUI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 22:19:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48828 "EHLO
+        Tue, 26 Apr 2022 22:20:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357113AbiD0CTd (ORCPT
+        with ESMTP id S1354611AbiD0CUH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 22:19:33 -0400
-Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A680F40903;
-        Tue, 26 Apr 2022 19:16:21 -0700 (PDT)
-Received: by mail-qv1-xf2a.google.com with SMTP id k12so230847qvc.4;
-        Tue, 26 Apr 2022 19:16:21 -0700 (PDT)
+        Tue, 26 Apr 2022 22:20:07 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60EBB48E41;
+        Tue, 26 Apr 2022 19:16:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=d1Feh6IaZR9DHKl42tREyqF5nX3nYCBXgtD+DtXyr3w=;
-        b=GBZy9X7eS0lzdZRWjRuJrUBm/4KbNj5CLzL8Qm2mAai/GlTsjtyAjo+SaaJ7fZdMIf
-         8FuoT7FSyc7mCQudoxXY7s4b5jwXsVM76zXy+Peh5RVVhPJuhJJXPke7WHq5GRT1Oq4k
-         M3rDlxghRg21sFQhyKqmPOwuJ7+AIzHd2UaVEhgiyBbh/UrtXYoXpjcn086aj/E2nfsI
-         FCSzsM1DQWkMiN+59onAI7EGtfgwKe9Q3p0o8uvK/87CpoUL99ncCMRVIq4YL/tRB3q+
-         84cv85AHABLjF92tuHb/7mhfLn1wlTSW6+gzcqfHv+nH/s6l6BXS7AJaLYttAWqfEvvS
-         91eg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=d1Feh6IaZR9DHKl42tREyqF5nX3nYCBXgtD+DtXyr3w=;
-        b=mhapvSObgaP57iNO6GoCa5Yzf0BtJdhDGkVkeN39f9KbZFSYok8sspsD36I7Isy6u4
-         uMVKOS3nN6h1Noun+1hjO75zzEFZTKgEV2XzTlbuz90RxWTwYlf7L4KClq7GPV54lvlz
-         f36GZieH5B6uxyuCMPlAunDyCE3pLO5SCjfkGRjGKc0awhWKcncc55whA9hYMEvrCHvh
-         yQJ3biafT+tuQstVlxBf4uHYaiO4/eyceA7QtPp6Ix6kAiGEIuHfDEIuyJwWLw+PVt+x
-         D8R4bJqcODzwhpKoIcOfLPdNmoiuSI0+8xKwCPFpSfzvo80/s3fGfj2VacSdY3PmoIfW
-         lufw==
-X-Gm-Message-State: AOAM532DlMXFGugz4z9FjTZUez79vVDgCaDhUNzYPKiihltRgKkwzMnA
-        uS1TfPfpR7s+DIsrjfhaZS0=
-X-Google-Smtp-Source: ABdhPJz/IY28MzEl1Bf7c2ZXR7ZuSlFP9dZ72dnGO8sglPz+kVSvebWF0aRR8wm/Zznu2fA35HDMPg==
-X-Received: by 2002:a05:6214:d0e:b0:456:4bf3:bb01 with SMTP id 14-20020a0562140d0e00b004564bf3bb01mr2958615qvh.61.1651025780885;
-        Tue, 26 Apr 2022 19:16:20 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id x10-20020a37630a000000b0069ecbe5dd32sm7223512qkb.130.2022.04.26.19.16.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 19:16:19 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: lv.ruyi@zte.com.cn
-To:     martin.petersen@oracle.com
-Cc:     cgel.zte@gmail.com, dick.kennedy@broadcom.com,
-        james.smart@broadcom.com, jejb@linux.ibm.com,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        lv.ruyi@zte.com.cn
-Subject: Re: [PATCH] scsi: lpfc: fix error check return value of debugfs_create_file()
-Date:   Wed, 27 Apr 2022 02:16:14 +0000
-Message-Id: <20220427021614.3841074-1-lv.ruyi@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <yq1v8uwro3h.fsf@ca-mkp.ca.oracle.com>
-References: <yq1v8uwro3h.fsf@ca-mkp.ca.oracle.com>
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1651025817; x=1682561817;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=0LtVdpu7TJxwRWqQgenACGRyVEfd/HIaPAbCNLD3QxI=;
+  b=aQtsfs6M+e9NpTxON4pdayxAhT3cVFuu2CUI/4z6N6rDWUtKxVQqILV1
+   o3u4wkLOOC5jekJymDujwPiRCDUkN16CMGU6J+Hgz8X/zrrwiafHd9XVk
+   7udk1FuiZWDLQtuIt8vnYWsku/+VmShJ2jq/Ei9ZQAEgo4+gFppwe4Pfl
+   c=;
+Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 26 Apr 2022 19:16:57 -0700
+X-QCInternal: smtphost
+Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
+  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 19:16:57 -0700
+Received: from zijuhu-gv.qualcomm.com (10.80.80.8) by
+ nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 26 Apr 2022 19:16:55 -0700
+From:   Zijun Hu <quic_zijuhu@quicinc.com>
+To:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>,
+        <luiz.dentz@gmail.com>
+CC:     <linux-kernel@vger.kernel.org>, <linux-bluetooth@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, Zijun Hu <quic_zijuhu@quicinc.com>
+Subject: [PATCH v2] Bluetooth: btusb: Set HCI_QUIRK_BROKEN_ERR_DATA_REPORTING for QCA
+Date:   Wed, 27 Apr 2022 10:16:51 +0800
+Message-ID: <1651025811-10680-1-git-send-email-quic_zijuhu@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-So sorry, please ignore this patch.
-Andrew pointed that we shouldn't check return value of debugfs_.
-https://lore.kernel.org/all/Yl8v6OcArfqmVYj%2F@lunn.ch/
+Set HCI_QUIRK_BROKEN_ERR_DATA_REPORTING for QCA controllers since
+they answer HCI_OP_READ_DEF_ERR_DATA_REPORTING with error code
+"UNKNOWN HCI COMMAND" as shown below:
 
-Thanks
-Ruyi
+[  580.517552] Bluetooth: hci0: unexpected cc 0x0c5a length: 1 < 2
+[  580.517660] Bluetooth: hci0: Opcode 0x c5a failed: -38
+
+hcitool -i hci0 cmd 0x03 0x5a
+< HCI Command: ogf 0x03, ocf 0x005a, plen 0
+> HCI Event: 0x0e plen 4
+  01 5A 0C 01
+
+btmon log:
+< HCI Command: Read Default Erroneous Data Reporting (0x03|0x005a) plen 0
+> HCI Event: Command Complete (0x0e) plen 4
+      Read Default Erroneous Data Reporting (0x03|0x005a) ncmd 1
+        Status: Unknown HCI Command (0x01)
+
+Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
+---
+ drivers/bluetooth/btusb.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+index e6e28d3d1683..428843dbcf32 100644
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -3346,6 +3346,8 @@ static int btusb_setup_qca(struct hci_dev *hdev)
+ 	 */
+ 	set_bit(HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN, &hdev->quirks);
+ 
++	set_bit(HCI_QUIRK_BROKEN_ERR_DATA_REPORTING, &hdev->quirks);
++
+ 	return 0;
+ }
+ 
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project
+
