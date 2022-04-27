@@ -2,73 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49FB4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 18:41:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5342BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 18:42:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229974AbiD0SoM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 14:44:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35352 "EHLO
+        id S229437AbiD0SpT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 14:45:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229739AbiD0Snl (ORCPT
+        with ESMTP id S229839AbiD0SpG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 14:43:41 -0400
-Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96117E49FC;
-        Wed, 27 Apr 2022 11:24:32 -0700 (PDT)
-Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-e2fa360f6dso2864024fac.2;
-        Wed, 27 Apr 2022 11:24:32 -0700 (PDT)
+        Wed, 27 Apr 2022 14:45:06 -0400
+Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DEF3D891B;
+        Wed, 27 Apr 2022 11:25:29 -0700 (PDT)
+Received: by mail-oi1-f173.google.com with SMTP id r1so2716729oie.4;
+        Wed, 27 Apr 2022 11:25:29 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=c/GnVwnwo3swW/L/hGOyOJtE6p0V0pOOR6iVj+FsDdg=;
-        b=cwIdCPKZ91V+jL/RXBOmlwHxXfGYs4sS0tgW9VFwFmAthi+vPyG+9EAiKUOVw+n4pM
-         vDgh4Do5W5nC6uEVU/Yp3G0p5imu7kmEMPY23+0GRmCmur/Aol7QyoUi6xHkivNPshRQ
-         83pOdJCN54ZEL40OfJbJweswbr34eQJI3BLHIgih4UCxgYoNEbuiZtnPw8sRx+2mNsEO
-         iIFO7j+9uYcWZsAoDwwPj31cyDiKBoOS8BUavMDyeRvobt34eQytMSCKU+kmlgUPdlNe
-         Qpw0TCnHH8sm+UjnTbuPTnJc9SgyWhGk7A+CzK3Wg4XhD8j+IqzH9MQSRahc0gT+Qkwt
-         5KHw==
-X-Gm-Message-State: AOAM533TGzqSM+gbLWoA8Ybj+2S/NZkSZoX3/KuTOdkBjsMX8ec8sGzA
-        /cUQirZDh7ZXj2R4H6z4euzRwTW/Mg==
-X-Google-Smtp-Source: ABdhPJy3516HzZA9HqzDNS3+2KEHA9tbv+VMkBH8NqyFmymWYl8qrC2BTdv1Cci5bujI6bC3dRkaCA==
-X-Received: by 2002:a05:6871:89e:b0:e9:5368:10ed with SMTP id r30-20020a056871089e00b000e9536810edmr5840479oaq.182.1651083871893;
-        Wed, 27 Apr 2022 11:24:31 -0700 (PDT)
+        bh=FsKq1stserEZzVCN2awh2jKdYumDzZmZFSRvm+soDl8=;
+        b=5BfELmWNRYqbHsGCjprnN+C9Vgt/fPqXY+ksbufbQBuEdvG/YvfVQ37uY0jbrG6M/B
+         AWuglRqKEaq2OjIDutjrdgFK5qDWmNKGb8+r2dPvz+xKNzPppyH9wuInpNF+cm3CdXTz
+         BduZKL5I1gvAyItC8Xv7VvIN7ZW5xhL2yd1n4Lsk1uonQIwYR5539fjsenmurry/uMlh
+         gkhWe87RhEqDrjPeHsWIUM6+8d/rmjh2VZumF/CPcCyRHt7K+7TL3Pf64IDGnIl1bcRT
+         xpnkSYHqA29tApxJyuNO2ScOAw1vV0VsoKvMTi49laeCPl81U3DKTEaUeK/kRKEg9EzC
+         HxRA==
+X-Gm-Message-State: AOAM533o1O/1Qc3sD0iyHr7GcObmFZ3qlbYKn+m4V07nvlxAdf9Yr0JB
+        n1z7D4qPIAuFUjtxow/Mbw==
+X-Google-Smtp-Source: ABdhPJzQ2SbK7Xv9TeZI7HkgxHJNbFyUL2AOTzGbWNmH45NkPY+PWSkKrLbW/xrsnzpPd3c01+s3GA==
+X-Received: by 2002:a05:6808:11cf:b0:2f9:b01b:1800 with SMTP id p15-20020a05680811cf00b002f9b01b1800mr17641981oiv.258.1651083928347;
+        Wed, 27 Apr 2022 11:25:28 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id eg20-20020a056870989400b000e686d1387asm972903oab.20.2022.04.27.11.24.31
+        by smtp.gmail.com with ESMTPSA id p15-20020a4adfcf000000b0033a48bce3afsm6885319ood.18.2022.04.27.11.25.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 11:24:31 -0700 (PDT)
-Received: (nullmailer pid 406603 invoked by uid 1000);
-        Wed, 27 Apr 2022 18:24:30 -0000
-Date:   Wed, 27 Apr 2022 13:24:30 -0500
+        Wed, 27 Apr 2022 11:25:27 -0700 (PDT)
+Received: (nullmailer pid 408056 invoked by uid 1000);
+        Wed, 27 Apr 2022 18:25:27 -0000
+Date:   Wed, 27 Apr 2022 13:25:27 -0500
 From:   Rob Herring <robh@kernel.org>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Jan Kotas <jank@cadence.com>,
+Cc:     Lee Jones <lee.jones@linaro.org>, Ray Jui <rjui@broadcom.com>,
+        linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        Michal Simek <michal.simek@xilinx.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Broadcom Kernel Team <bcm-kernel-feedback-list@broadcom.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Avri Altman <avri.altman@wdc.com>,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        devicetree@vger.kernel.org, Alim Akhtar <alim.akhtar@samsung.com>
-Subject: Re: [PATCH] dt-bindings: ufs: cdns,ufshc: Add power-domains
-Message-ID: <YmmKXqIRrXWJ1wvD@robh.at.kernel.org>
-References: <20220427065802.110402-1-krzysztof.kozlowski@linaro.org>
+        Liviu Dudau <liviu.dudau@arm.com>
+Subject: Re: [PATCH 06/10] dt-bindings: mfd: samsung,exynos5433-lpass: fix
+ 'dma-channels/requests' properties
+Message-ID: <YmmKl78AmUQ8JKJF@robh.at.kernel.org>
+References: <20220427155840.596535-1-krzysztof.kozlowski@linaro.org>
+ <20220427155840.596535-7-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220427065802.110402-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220427155840.596535-7-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 27 Apr 2022 08:58:02 +0200, Krzysztof Kozlowski wrote:
-> The Cadence UFS controller can be part of power domain (as it is in
-> example DTS of TI J721e UFS Host Controller Glue), so allow such
-> property.
+On Wed, 27 Apr 2022 17:58:36 +0200, Krzysztof Kozlowski wrote:
+> pl330 DMA controller bindings documented 'dma-channels' and
+> 'dma-requests' properties (without leading hash sign), so fix the DTS to
+> match the bindings.
 > 
 > Reported-by: Rob Herring <robh@kernel.org>
+> Fixes: e18183cefc8b ("mfd: Add DT bindings documentation for Samsung Exynos LPASS")
 > Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 > ---
->  Documentation/devicetree/bindings/ufs/cdns,ufshc.yaml | 3 +++
->  1 file changed, 3 insertions(+)
+>  .../devicetree/bindings/mfd/samsung,exynos5433-lpass.yaml     | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
 
-Applied, thanks!
+Acked-by: Rob Herring <robh@kernel.org>
