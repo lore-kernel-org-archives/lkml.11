@@ -2,85 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C13DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:28:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97BC9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243272AbiD0Qb0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:31:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38176 "EHLO
+        id S243296AbiD0Qbd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:31:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243564AbiD0Q26 (ORCPT
+        with ESMTP id S242999AbiD0Q2p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:28:58 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 867025AED4;
-        Wed, 27 Apr 2022 09:24:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1651076655; x=1682612655;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=nObokQIoYpRw/WHE7DGQWpfFGZTCam2DoGA1QQvbnLI=;
-  b=TP5h2TLLEjRuZwJ6fACkWQCF4AbfDVrEf324XUCLf/8GiHMnU5r+b0Hm
-   INivHzXhu74Q60OZN+7IXgm8riBFormSGmQlmHVePkTh4r7yflOYytyGs
-   j2Pixo+WMk7FPDcPYXnu/OH8cLsZz05p2u+fxObunqyjt2WOcjRjscGwj
-   CUPNTtbVldH8wb56g3H0ki8mmqmAMJjGIaf9qDBg79tmAei1+a6bosyfR
-   KCvboPwKf9Df0t+wt7B5XdtxqjkadWeiZq1+4xbuskZteC8LsJwrdh1Kj
-   X68rnr9NX+efGdlIVTJv8ilhelGr0P651FhZA/S9lSXWRJ7Rh38TI4pNq
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,293,1643698800"; 
-   d="scan'208";a="161536278"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Apr 2022 09:24:14 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 27 Apr 2022 09:24:01 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 27 Apr 2022 09:23:51 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, <UNGLinuxDriver@microchip.com>,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: [RFC patch net-next 0/3] net: dsa: ksz: generic port mirror function for ksz9477 based switch
-Date:   Wed, 27 Apr 2022 21:53:40 +0530
-Message-ID: <20220427162343.18092-1-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.33.0
+        Wed, 27 Apr 2022 12:28:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A06AC3CFF3
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:23:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651076582;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=vJ4wAPj8Ho9F1Ue1RXAlHhGRCBLfJzK2cfRA2KGgk4Q=;
+        b=DxVEFEjOs9W0Xwq9k8wIrpH9EWuCoew232Cr1axtSmRPOJdfaOJoGzeYBjzT3GPz4gwRPm
+        Mz+MZpgDCYL0jYvwncfxr69NVf0lvQMhDYdvUNC9qRnUcjeeL4l5uHT2x8OtzphEz8r5UQ
+        +ZsDO4uQSMP625kMWURuyZCxZTuUyfY=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-219-S7QBKZW9MeC1RENIrcyCsQ-1; Wed, 27 Apr 2022 12:19:12 -0400
+X-MC-Unique: S7QBKZW9MeC1RENIrcyCsQ-1
+Received: by mail-ej1-f69.google.com with SMTP id sb36-20020a1709076da400b006f3d4b12d3aso328982ejc.5
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:19:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=vJ4wAPj8Ho9F1Ue1RXAlHhGRCBLfJzK2cfRA2KGgk4Q=;
+        b=4aYg6pmQp5Wpm0zLkyTOD7Fim2VLRjYC3z7SNEdSn31bohVBTxIYG0I8ckihehx9Bk
+         ZQ5y3V01TVodcL+egpqZ7UnAeeREdraqK6FlPRNm24VMgWPpxoCoyOfTeHkMcVnR3MN/
+         Gz93uZuMrGvxV0N9X+0AsImS6dYdDb94HCeOdQ3qG9murB33hUjiDXr2+N9v+nObb3NN
+         5vx0IQFC2zcF52/LFYduvAmlbqm3UJ54RWVz8mTAq9xKPJnMWcVJybqBeEdcceRW4a/+
+         YINMf2i1J3rJmItgcDYx16tQmKzR+6EmStjL9bSDLV129yOJJiTBpjZbzkIoEgMUNZrO
+         c3qg==
+X-Gm-Message-State: AOAM530RceXbcQX9htH4VHRIlmRG5yPaciQKzFnZzkw1/KDkGwzuACei
+        rJ01leUJASvPlFldD7VO8OkuiinlIuoNBGGqKXsnj3baP7LO+9IXlAe1+3UWipx6WnDjClcD46d
+        S53o15ahavQahAChKUFnS+DWk
+X-Received: by 2002:a05:6402:1d51:b0:41f:cf6c:35a5 with SMTP id dz17-20020a0564021d5100b0041fcf6c35a5mr31370550edb.25.1651076351005;
+        Wed, 27 Apr 2022 09:19:11 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyHUHDxQ9+2qIBaoLcdz/3ksJr5tgaS0nsKWd3kKPdVGWUJLj9DAEqv/3NFmIQNKEAv6vnpkA==
+X-Received: by 2002:a05:6402:1d51:b0:41f:cf6c:35a5 with SMTP id dz17-20020a0564021d5100b0041fcf6c35a5mr31370529edb.25.1651076350810;
+        Wed, 27 Apr 2022 09:19:10 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:1c09:f536:3de6:228c? ([2001:b07:6468:f312:1c09:f536:3de6:228c])
+        by smtp.googlemail.com with ESMTPSA id 17-20020a508751000000b004260124ab84sm2596414edv.90.2022.04.27.09.19.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Apr 2022 09:19:09 -0700 (PDT)
+Message-ID: <26c10626-b6a2-9be4-6565-c9fbaf1955d3@redhat.com>
+Date:   Wed, 27 Apr 2022 18:19:07 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH MANUALSEL 5.10 2/4] KVM: x86: Do not change ICR on write
+ to APIC_SELF_IPI
+Content-Language: en-US
+To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Cc:     Chao Gao <chao.gao@intel.com>,
+        Sean Christopherson <seanjc@google.com>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, kvm@vger.kernel.org
+References: <20220427155435.19554-1-sashal@kernel.org>
+ <20220427155435.19554-2-sashal@kernel.org>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220427155435.19554-2-sashal@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch series updates the ksz9477 port_mirror_add and port_mirror_del as
-per the LAN937x patch submission. It allows only one port to be sniffing port.
-Then moves the function to ksz_common.c file, to have it referenced by LAN937x
-based switch. And add new header file ksz_reg.h which has common register
-address between them.
+On 4/27/22 17:54, Sasha Levin wrote:
+> From: Paolo Bonzini <pbonzini@redhat.com>
+> 
+> [ Upstream commit d22a81b304a27fca6124174a8e842e826c193466 ]
+> 
+> Emulating writes to SELF_IPI with a write to ICR has an unwanted side effect:
+> the value of ICR in vAPIC page gets changed.  The lists SELF_IPI as write-only,
+> with no associated MMIO offset, so any write should have no visible side
+> effect in the vAPIC page.
+> 
+> Reported-by: Chao Gao <chao.gao@intel.com>
+> Reviewed-by: Sean Christopherson <seanjc@google.com>
+> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>   arch/x86/kvm/lapic.c | 7 +++----
+>   1 file changed, 3 insertions(+), 4 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+> index de11149e28e0..e45ebf0870b6 100644
+> --- a/arch/x86/kvm/lapic.c
+> +++ b/arch/x86/kvm/lapic.c
+> @@ -2106,10 +2106,9 @@ int kvm_lapic_reg_write(struct kvm_lapic *apic, u32 reg, u32 val)
+>   		break;
+>   
+>   	case APIC_SELF_IPI:
+> -		if (apic_x2apic_mode(apic)) {
+> -			kvm_lapic_reg_write(apic, APIC_ICR,
+> -					    APIC_DEST_SELF | (val & APIC_VECTOR_MASK));
+> -		} else
+> +		if (apic_x2apic_mode(apic))
+> +			kvm_apic_send_ipi(apic, APIC_DEST_SELF | (val & APIC_VECTOR_MASK), 0);
+> +		else
+>   			ret = 1;
+>   		break;
+>   	default:
 
-Arun Ramadoss (3):
-  net: dsa: ksz9477: port mirror sniffing limited to one port
-  net: dsa: ksz: remove duplicate ksz_cfg and ksz_port_cfg
-  net: dsa: ksz: moved ksz9477 port mirror to ksz_common.c
-
- drivers/net/dsa/microchip/ksz8795.c     | 12 -----
- drivers/net/dsa/microchip/ksz9477.c     | 56 +------------------
- drivers/net/dsa/microchip/ksz9477_reg.h | 15 ------
- drivers/net/dsa/microchip/ksz_common.c  | 72 +++++++++++++++++++++++++
- drivers/net/dsa/microchip/ksz_common.h  | 18 +++++++
- drivers/net/dsa/microchip/ksz_reg.h     | 29 ++++++++++
- 6 files changed, 121 insertions(+), 81 deletions(-)
- create mode 100644 drivers/net/dsa/microchip/ksz_reg.h
-
-
-base-commit: 03fa8fc93e443e6caa485cc741328a1386c63630
--- 
-2.33.0
+Acked-by: Paolo Bonzini <pbonzini@redhat.com>
 
