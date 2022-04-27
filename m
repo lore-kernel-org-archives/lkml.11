@@ -2,88 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2E2BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:14:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48B9AC43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:14:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242483AbiD0QRz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:17:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54122 "EHLO
+        id S242690AbiD0QSE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:18:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243947AbiD0QPm (ORCPT
+        with ESMTP id S243903AbiD0QPf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:15:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 581FA3BD079
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:11:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651075756;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=q/SkBNsoTUPyKMGhRFoyh0ykNNAvugZJ3bBfN9M/MEU=;
-        b=PyGhNwXGadN2LpgTJBvTwUgqz7RBix+aUDcfwcNRQYEs2bEJjwE4SLcJzJa60XAdobO5zy
-        dL8t9Zt1207X6+/fwm16om4ZYQXPxqa0jmuay6B1rGD0WgCu/Z9blI5bplgaakrmUIYLl6
-        9HLypceRWYDjC7CIoDgz84sbEEsXyz0=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-381-fIC6HcHzNF2SRSCXM6IoTQ-1; Wed, 27 Apr 2022 12:09:10 -0400
-X-MC-Unique: fIC6HcHzNF2SRSCXM6IoTQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 36B103820F6E;
-        Wed, 27 Apr 2022 16:09:09 +0000 (UTC)
-Received: from dhcp-27-174.brq.redhat.com (unknown [10.40.192.128])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 45EE62024CB8;
-        Wed, 27 Apr 2022 16:09:04 +0000 (UTC)
-Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
-        oleg@redhat.com; Wed, 27 Apr 2022 18:09:08 +0200 (CEST)
-Date:   Wed, 27 Apr 2022 18:09:03 +0200
-From:   Oleg Nesterov <oleg@redhat.com>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
-        Will Deacon <will@kernel.org>, tj@kernel.org,
-        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        inux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>
-Subject: Re: [PATCH 9/9] ptrace: Don't change __state
-Message-ID: <20220427160901.GI17421@redhat.com>
-References: <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
- <20220426225211.308418-9-ebiederm@xmission.com>
+        Wed, 27 Apr 2022 12:15:35 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3DA63BD046
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:11:55 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id y3so4351700ejo.12
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:11:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=1p5Gf/ZzMBda/+Dyw0bd70cBiwm1tqXf7hCWQtWqsEE=;
+        b=smFD5V6J9pPL6PEJv25+/3PFL2X+WQ3Kyn12ozctaStrdNKV5sG6aqFI8JCZ5ddHCE
+         ECQCPe/hY0ENMJzK8NjAefYL1znjAJ4MC0z1veVjm+99Lhv2bilZNlhaRLpH6+C0/lXu
+         XEqzIKVhXU0tE3DPOvCEFtlpxfU0OysHyIPl0jFQczRGCf3kmrLen7e9QYBaPdxYH7P2
+         66rd4jZu47gMnjCXc4UhX8wxezYzOrgLwYJJhsL+BiSRNlaUep00H2hYHjn5RV/6yzoT
+         zosfmLTcVVMmTWTu9hBDTeN9YP40ueo8rpZldzL7wxzQ59cl7iMDrXlYTo5PoJgjmWpn
+         MEng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=1p5Gf/ZzMBda/+Dyw0bd70cBiwm1tqXf7hCWQtWqsEE=;
+        b=QcGJWMfvVO+LlqfzNLDe6p+JUf5Uy5fd22dFBdI6wAIfwHbG6qEtJzo+J4JB82OdQB
+         pKtqqKIzU1C3xOjRy8OoKCixmyxcJP/dIxuf8c1/6uUqol3jkbxjzU6C0YV8Z8IaEFvs
+         cZlS1J4U4DgNEiOidDar+NZzEmnaO9UC0qNUB5ZAIk7QS8OtIxK4OA9QBo1RAxq/ZdMX
+         FL7WogZl89OF3eRYVCBemTvpeS+76wk+tiKOoiLFKta/7CEPuy77rA6CCN97ohRfTTwO
+         WqGoFQdC5A8rk+3SRP6k8YR9oL5bO2/FOzfXX/hegTRwbw06EEocCiLnZ6bhUR+d1CYJ
+         IVSg==
+X-Gm-Message-State: AOAM533NNasnP84aQYWeiupo9OpxfS+kYt0rPOIU74yZR2NPf2PFMWGx
+        yz6NXtigQz4hp7rFTaobxYLccQ==
+X-Google-Smtp-Source: ABdhPJwXKEYcbdCdmGX9YcKJChevv92DETVDL64z5HohA/FFcRgldB5wG73bsS8XPMg1i6ElPuKMIQ==
+X-Received: by 2002:a17:907:629a:b0:6d7:b33e:43f4 with SMTP id nd26-20020a170907629a00b006d7b33e43f4mr27742808ejc.149.1651075910203;
+        Wed, 27 Apr 2022 09:11:50 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id m1-20020a170906234100b006ef83025804sm7124610eja.87.2022.04.27.09.11.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 09:11:47 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>, Sekhar Nori <nsekhar@ti.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Vinod Koul <vkoul@kernel.org>, linux-usb@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        dmaengine@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v2 4/6] ARM: dts: am33xx: use new 'dma-channels/requests' properties
+Date:   Wed, 27 Apr 2022 18:11:24 +0200
+Message-Id: <20220427161126.647073-5-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220427161126.647073-1-krzysztof.kozlowski@linaro.org>
+References: <20220427161126.647073-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220426225211.308418-9-ebiederm@xmission.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/26, Eric W. Biederman wrote:
->
-> @@ -253,7 +252,7 @@ static int ptrace_check_attach(struct task_struct *child, bool ignore_state)
->  	 */
->  	if (lock_task_sighand(child, &flags)) {
->  		if (child->ptrace && child->parent == current) {
-> -			WARN_ON(READ_ONCE(child->__state) == __TASK_TRACED);
-> +			WARN_ON(child->jobctl & JOBCTL_DELAY_WAKEKILL);
+The '#dma-channels' and '#dma-requests' properties were deprecated in
+favor of these defined by generic dma-common DT bindings.
 
-This WARN_ON() doesn't look right.
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ arch/arm/boot/dts/am33xx.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-It is possible that this child was traced by another task and PTRACE_DETACH'ed,
-but it didn't clear DELAY_WAKEKILL.
-
-If the new debugger attaches and calls ptrace() before the child takes siglock
-ptrace_freeze_traced() will fail, but we can hit this WARN_ON().
-
-Oleg.
+diff --git a/arch/arm/boot/dts/am33xx.dtsi b/arch/arm/boot/dts/am33xx.dtsi
+index f6ec85d58dd1..55ffb0813ded 100644
+--- a/arch/arm/boot/dts/am33xx.dtsi
++++ b/arch/arm/boot/dts/am33xx.dtsi
+@@ -461,8 +461,8 @@ cppi41dma: dma-controller@2000 {
+ 				interrupts = <17>;
+ 				interrupt-names = "glue";
+ 				#dma-cells = <2>;
+-				#dma-channels = <30>;
+-				#dma-requests = <256>;
++				dma-channels = <30>;
++				dma-requests = <256>;
+ 			};
+ 		};
+ 
+-- 
+2.32.0
 
