@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D41CC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:07:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BC51C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:07:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242179AbiD0QKZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:10:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51430 "EHLO
+        id S242294AbiD0QKd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:10:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242659AbiD0QJt (ORCPT
+        with ESMTP id S242666AbiD0QJt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Apr 2022 12:09:49 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 707E748BD4F
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:05:53 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id l7so4387351ejn.2
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:05:53 -0700 (PDT)
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1866D48C721
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:05:55 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id kq17so4370526ejb.4
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:05:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nlWv3bBsoiqmnFKZVf0cWitj0rFj51ESVAm5rIPY47s=;
-        b=PDsMRn/5mDiml5+/eTgHLrOU2ewvUp8TWOz42SlPHphdVURmqr7igb7PelTKMlmORH
-         FKjbTQUDeEfzZpV9bfEhAKesOOS6/J+7QI+IjAAu4iti6lHJNWx/6ZViyQlybO5FUaar
-         b1mJ5y72XeQdzY27dNKRs2w/bA+bxly62eWBrV3oEp4q9ZQpGQTo1Kz0eiyNCtUNbHzD
-         aRohzb0w+5CKokFAae6RKPSUjoIDHHUl6JD3XKzJjVIUL4cNnEhsNa9yksxOIOtv3xVN
-         6nuql8+6zCFx4JYnXJiPWUzvA14RbRCY0g/2kfqPGG9DirdGeRXOlYR+8DbSmBpS5Iq1
-         mn6w==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=CJ0Q0VIVseR/Xb4PlIow7xAWcCO8wMqCFaxsrqIqI0E=;
+        b=CyT86LbMuLmP2a0EUvz1E/PXFMHcggaxNvy/RctILZfaRgIleePezM7eCYc9bvPz0g
+         gjkXCHknC9dwuDLoQN6MsTBqPjn01f+gMaZbjDMDxsBDcLbYdJC5ECFNOy4pu7fL9aeN
+         VYK4S12SW7tfyTixOcbJ/KEeUDDDFQ2Pjgwx27I31oV9lSh9vglu7Mu6jkmTDcEaHy8K
+         qPuLraY+hgE5Kwzv/WynE+wxNUKCsNUKSTh+iWiwyidHONoJsJOQfh2eHLuIqvOf/JYX
+         8idt0SmjiUrJI2GLMHgqS2P/EVvsJ/Tcc4T/1KRoYUsiHwldOLFaEs2AbZhhrz7aYI6W
+         sAng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nlWv3bBsoiqmnFKZVf0cWitj0rFj51ESVAm5rIPY47s=;
-        b=QdpWMlXzfKVWlgaAP18xBbUFHhM+e998JU/bEwTkedOdcjF0RRkHBG5mVQX+1S/ox9
-         P2h9kMlhkTWk6ih3m2KvpisASN0u3vRZPWMFMXjlx7N9kg+WwnAoIHtH4h5FXlbMjEXO
-         J8q5ciquJS/RpEZdH294DSMDwxtqmhDLR7m9MLnmtNw3bmZWjNTd3VpPSmkQjaPw9SLW
-         D9XetSeZ7ovc8GwsX//MMQpbkycX4UfOLBBtiXb4lLlh3KsDf/eADc8mRjt8RiwfSzMP
-         syKC8bf2CJRNChC3FBuo0hYTZGf9NHbYiqyZNzl2gENFRxx65+2MFjY6Ci0zR/Tdqq7A
-         9VUw==
-X-Gm-Message-State: AOAM531bmDcyLbRvOaf7g9HiuQa25x0i6ZKK1fhAL/5EIbuRbZDfg9zl
-        6uNKhMpuOZ7mCYtzqxbsXOOOWA==
-X-Google-Smtp-Source: ABdhPJyoPwa+1tp5ouz1f/FVaGPLFM+jVwC8NcaNu76aEiPeEMLaU8YRvOFeVI9ju2FNzJ62VQSTqw==
-X-Received: by 2002:a17:907:8694:b0:6f3:8e7e:fcfa with SMTP id qa20-20020a170907869400b006f38e7efcfamr16648939ejc.82.1651075546697;
-        Wed, 27 Apr 2022 09:05:46 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=CJ0Q0VIVseR/Xb4PlIow7xAWcCO8wMqCFaxsrqIqI0E=;
+        b=VwpI7EiJWaQgRB2KZe9k8HsY5eo4dAOE85FjwCjB6UQgjTQ63Ii4enEJGdJD+i5K3I
+         FHw3HW3FJZNTp0l/99kjJ4dldXSfWkwk9MyJyjk3idH77HDneCww9qPKCNVY+HVTROmw
+         72mdwK/rMtLOcygMJYRqccS4KxwHj640+h4xLQV9ZPStzfHZPkT9uuHzysRCpyVpVPmr
+         tHaDrhDLRsj6hN91BeKNnLWp3+vxHxVRbGJ7ci4t8FMDyHPy7KHikoTMFTsMmY7tgGEU
+         neA6f9SZBcFp1wZqxNQci9GbwfGtRLaX4zNltDgnptA+jgVyI+GaPrdn9Gb7HEgawTwZ
+         aaPA==
+X-Gm-Message-State: AOAM530uRkZeko3oR4yqBrc+Nfc4BqkFZ9/y3Xr0tWdPsgoR2wEXHdbM
+        /Y5fKy3Q2U6uewUm7Jj8aJOk7Q==
+X-Google-Smtp-Source: ABdhPJwWxW3RPJbnXbqUc4FtIVtMXsr0fm3DFLB6KBeF9ALk49qujynev18Dega95cbb3zdyazAEjQ==
+X-Received: by 2002:a17:906:2753:b0:6f0:22ba:92d3 with SMTP id a19-20020a170906275300b006f022ba92d3mr28539217ejd.655.1651075549434;
+        Wed, 27 Apr 2022 09:05:49 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id b17-20020aa7dc11000000b00412ae7fda95sm8571437edu.44.2022.04.27.09.05.45
+        by smtp.gmail.com with ESMTPSA id b17-20020aa7dc11000000b00412ae7fda95sm8571437edu.44.2022.04.27.09.05.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 09:05:46 -0700 (PDT)
+        Wed, 27 Apr 2022 09:05:48 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -57,32 +57,39 @@ To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 00/0x] dmaengine/ARM: use proper 'dma-channels/requests' properties
-Date:   Wed, 27 Apr 2022 18:05:35 +0200
-Message-Id: <20220427160538.646044-1-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 2/3] ARM: dts: da850: use new 'dma-channels' property
+Date:   Wed, 27 Apr 2022 18:05:37 +0200
+Message-Id: <20220427160538.646044-3-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220427160538.646044-1-krzysztof.kozlowski@linaro.org>
+References: <20220427160538.646044-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+The '#dma-channels' property was deprecated in favor of one defined by
+generic dma-common DT bindings.
 
-The core DT schema defines generic 'dma-channels' and 'dma-requests'
-properties, so in preparation to moving bindings to DT schema, convert
-existing users of '#dma-channels' and '#dma-requests' to the generic
-variant.
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ arch/arm/boot/dts/da850.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Not tested on hardware.
+diff --git a/arch/arm/boot/dts/da850.dtsi b/arch/arm/boot/dts/da850.dtsi
+index c3942b4e82ad..0e8b42a95ba4 100644
+--- a/arch/arm/boot/dts/da850.dtsi
++++ b/arch/arm/boot/dts/da850.dtsi
+@@ -679,7 +679,7 @@ cppi41dma: dma-controller@201000 {
+ 					    "scheduler", "queuemgr";
+ 				interrupts = <58>;
+ 				#dma-cells = <2>;
+-				#dma-channels = <4>;
++				dma-channels = <4>;
+ 				power-domains = <&psc1 1>;
+ 				status = "okay";
+ 			};
+-- 
+2.32.0
 
-IMPORTANT
-=========
-The patchset is not bisectable! The DTS patch should be applied a
-release *after* driver change is accepted.
-
-See also:
-[1] https://lore.kernel.org/linux-devicetree/fedb56be-f275-aabb-cdf5-dbd394b8a7bd@linaro.org/T/#m6235f451045c337d70a62dc65eab9a716618550b
-
-Best regards,
-Krzysztof
