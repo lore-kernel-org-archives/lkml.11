@@ -2,141 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC4E3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:43:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCA52C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:43:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229995AbiD0KqW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 06:46:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52392 "EHLO
+        id S230037AbiD0Kq0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 06:46:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229996AbiD0KqM (ORCPT
+        with ESMTP id S230034AbiD0KqM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Apr 2022 06:46:12 -0400
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2042.outbound.protection.outlook.com [40.107.20.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 115A930D48B;
-        Wed, 27 Apr 2022 03:28:39 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Wf9QefI+gQp5i/OrprvZ3kPkKts5Bskvz7R8Sz1mYzRLxJexXiEZ8rAAfsU7DG2G4eYIyaW2rfT3VU50w7/9jCZnXE81TL4lujerZlV/fJVnw6rJYolmuX0SLefE2AOgfBMwvaogsqivK4rdAfx/xQsG7N3wr4REvJZ3ITAK01Mt2Mxv5byvQoDBCe5UMsc0H7tetZBHJZDvUKldtBodWNrNb06QTS1LayJ9OuxJbWtS+ZC6tCXuqjRqP10/9jILKawZvgiz5xpLoOH+67WWHLMEqlgh2kDIi0/s+Aq452+R47GwfrH3HUdLGiugnxUVxuEopxcU61jt/v5rlrcBHg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4RSdnDiSPbqqAZNDSi0sbe2T1tHx2wiJkhvp5GhLJIk=;
- b=a0bUCezeN+zJlaHX0lAvj/USuM7ylDHBpZmTUUAlEds/ydaAlt8S+jazC83eiQuiYWYo9ilLCq5phI1a1lVoTTxm7AL9ioIYlqPTctaS0dtoflokkpTSo4sO52wJIe4oAdl6UZM0bCwzMY14DZOQ6F9V1+1d89vZKqLULYFW1sjf39yKhKmtCwzMchZHCkThbeYf9xLRTrljyavLC0VQ2+qp+6FrBIaMt7ah/vWQnAoJfo/3XLao4QOlBLPi3CvJc6t8x6IXlHP/P0mNqli+v0zjmo8FFGCH8f3JEE5qaGma29AhwqmHM/nMRPupGp1ijYOLwj7ZgnAoyUhQ+jy+oQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4RSdnDiSPbqqAZNDSi0sbe2T1tHx2wiJkhvp5GhLJIk=;
- b=cL7ivwRVtDKTGKGcpCY1VP9PmQ1+HjtVLVTHaXp8GyeRfqinw4FZRghzeNH89PwPZ6HmpARF4E5aJtMwCv3mBeTNaWGZAg31eRPdC+xTXamrw8sruDbV3zErvGO5N1theK0HZYSIgOplhkZmuH0rh/3RLH1xpFdFZ4El6R/tpyU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from PA4PR04MB9416.eurprd04.prod.outlook.com (2603:10a6:102:2ab::21)
- by VI1PR04MB6848.eurprd04.prod.outlook.com (2603:10a6:803:13c::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.13; Wed, 27 Apr
- 2022 09:19:22 +0000
-Received: from PA4PR04MB9416.eurprd04.prod.outlook.com
- ([fe80::587c:b068:1987:da36]) by PA4PR04MB9416.eurprd04.prod.outlook.com
- ([fe80::587c:b068:1987:da36%4]) with mapi id 15.20.5186.021; Wed, 27 Apr 2022
- 09:19:22 +0000
-From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-To:     bjorn.andersson@linaro.org, mathieu.poirier@linaro.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        festevam@gmail.com, linux-imx@nxp.com,
-        linux-remoteproc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Peng Fan <peng.fan@nxp.com>
-Subject: [PATCH 1/2] dt-bindings: remoteproc: imx_rproc: support i.MX93
-Date:   Wed, 27 Apr 2022 17:20:53 +0800
-Message-Id: <20220427092054.3765690-2-peng.fan@oss.nxp.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220427092054.3765690-1-peng.fan@oss.nxp.com>
-References: <20220427092054.3765690-1-peng.fan@oss.nxp.com>
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 674DD394E2F
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 03:28:44 -0700 (PDT)
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23R73lCq025540;
+        Wed, 27 Apr 2022 09:36:30 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : content-transfer-encoding
+ : mime-version; s=pp1; bh=/w+KC+YY9q0y/zt+m9HGRNZ4xIPkZ4LVCXJ5Evns0V8=;
+ b=r6brKZonFr8o3yzrMC0gzmj4zpmjRLjZj/69r82JLEqprDk4mADtyW5aG3kTy/P9wPqB
+ 5XdPYkA9Gt5m6/hYvElyYui9zevHDE+WDKHmriiSOgkd6vELDj4F+R0N0Ztg6fYvb7Nm
+ ZkbwZfpW1fWmSRl98uvDrhjCRWIgMJgn0CxHNqbTPJN3qGJb6nXdgdwlAh6g0q5NDrXc
+ 1JmV0ueu7JF+dC9nfsDfJpLOEizjxGxPkMJW1kX//1uqh3YZvgebnM52JlGMg7FnerQj
+ U3v8U3OFQj/RF8dQ8IZGK0KmI8SbihScnO8WEG2Xf4ST46rKiE62dEjefpwCIgCkjxHq kA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fpsdpj1js-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 27 Apr 2022 09:36:29 +0000
+Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23R9aTth010556;
+        Wed, 27 Apr 2022 09:36:29 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fpsdpj1hy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 27 Apr 2022 09:36:29 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23R9Sr6R020336;
+        Wed, 27 Apr 2022 09:36:27 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma04ams.nl.ibm.com with ESMTP id 3fm938wq4k-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 27 Apr 2022 09:36:27 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23R9abMt10617428
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 27 Apr 2022 09:36:38 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 11CE64C044;
+        Wed, 27 Apr 2022 09:36:25 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4DF2C4C040;
+        Wed, 27 Apr 2022 09:36:22 +0000 (GMT)
+Received: from li-NotSettable.ibm.com.com (unknown [9.43.116.196])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 27 Apr 2022 09:36:21 +0000 (GMT)
+From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
+To:     Michael Ellerman <mpe@ellerman.id.au>,
+        Steven Rostedt <rostedt@goodmis.org>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        <linux-kernel@vger.kernel.org>, <linuxppc-dev@lists.ozlabs.org>,
+        llvm@lists.linux.dev
+Subject: [PATCH 1/2] ftrace: Drop duplicate mcount locations
+Date:   Wed, 27 Apr 2022 15:01:21 +0530
+Message-Id: <9b1b816cff1f479c8de0e9baa5a6ac680b84e17e.1651047542.git.naveen.n.rao@linux.vnet.ibm.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <cover.1651047542.git.naveen.n.rao@linux.vnet.ibm.com>
+References: <cover.1651047542.git.naveen.n.rao@linux.vnet.ibm.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: xOD5Je7fuvdMKVm_hwjuxnSEunGOm4QJ
+X-Proofpoint-GUID: qOWJyvUDBeYDjXs0ou5OOdL3rgKWBUIA
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SGBP274CA0023.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b0::35)
- To PA4PR04MB9416.eurprd04.prod.outlook.com (2603:10a6:102:2ab::21)
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a2929eb5-dcf7-48bb-dd26-08da282f03d9
-X-MS-TrafficTypeDiagnostic: VI1PR04MB6848:EE_
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-Microsoft-Antispam-PRVS: <VI1PR04MB6848F89528D8440044E620B6C9FA9@VI1PR04MB6848.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: qbeTc1TSwGEHiIsdMK6pCnPRzu06G4Q6sOjdiSx/FWkJnrHC90rUAxpiTuNYtTCe2ETi+Z/xuknN03098Svy04YSG97Nc4rACpHSv5lZvBl1mUnwxRGkbw0DI0JWNOe/RGUXN9pajql8uzIfvSnmRID7Xx75dQscZsfqgxz1nBCLT6uNra0aLA4kWPckK9CKiWPfk10w17equGr2Icz0hFE9emP4qiRj6JtAHEcMfyrs9zJShYAG4hBGDDkLiPr/Ziut0EwmKEGYxSGrz67w2hs489wk4xxKlGUcSfuD10hCQQBWeqQ7vBORd5AKrsoF4mMnEPmSM5E2m5tbYro/XSZYe2+tY4wTufWkqwoR0kvHjtKWgNqbs59n+w+Xtu17f9nRsIbqzkPefL0A9Gq1A3u3y2VJllIouPmv//xVxDmqMypb1zwkgVhDA2TWCv544MVfqAZ9e0ndKgPkk8pmxotmgzT0c3W38t0xCqukA4/nYCfDOZVr0PY3JyfJtf88kyCjqUeKKkuef3dbkSF/Ig6LPZ1ikOuVjprJCHEWWSKl9+Ucz06EuQfmBjMgDbcQDed1VN+K5nGdywPoS+tW4qFeeDfIZzgqXkDoj7pijYxDhJ5ZGXzveoUeV97VEpwjSHG+wsCpiwv0ll+y/TOeKBXssxanMbv1GBQZSjrfw6D+uzTessMa8LQoB8sD9ejlAnTEFGhjTYxaDXL/gCYkygtbsLqqOq/uq8IqW38IqBI=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PA4PR04MB9416.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38100700002)(38350700002)(921005)(2616005)(508600001)(6486002)(52116002)(316002)(6666004)(6512007)(5660300002)(4744005)(26005)(2906002)(6506007)(86362001)(186003)(66476007)(1076003)(66556008)(8676002)(66946007)(4326008)(8936002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?jZFs8GDCPjgUSRZvlg+diz/Z6Pyr2eqzMCKU8PxZkLMnFUirp8xwJup2pY1s?=
- =?us-ascii?Q?KXg6XJA4J4IhIJm1PNRQ+9ZPBQuBaO5dRfPBS9CuOlr09P9oiqkJ6BaADDtc?=
- =?us-ascii?Q?huvvmhJ3wvKjKGB9kP3T05OjG1ZB5iLtzP+3xbj4aa3lCip9iAYw/rw3JKyw?=
- =?us-ascii?Q?CgHYHQoEQ05JmdElHE+ObLkYKzGTE+C5daRGrIgHxn0tBvAxZGGXnSHpNOqr?=
- =?us-ascii?Q?AXC3Rm9feSHDYhB+tKhu/BfL/uZQyy1ys/V2KJwOsM/EAO8B1nflIxn5uBKz?=
- =?us-ascii?Q?1p7NiMBWg48/BiqWyeHrhGARwgBUxGSnWZ3fspIKSDLkfuBLlwSgYPg4V2l7?=
- =?us-ascii?Q?yZ3o2ynDUVNPEknoEJ6TRZFCldRGSdutFLMTkUrHEptLud6PiozjRe/a38lJ?=
- =?us-ascii?Q?072Xzx3s+h+3fLj4FZYeWd1tcvUi+oKdPn/E4IQejsPjB9cBfBpnQmU/wxE+?=
- =?us-ascii?Q?DAImK5HwC5Mj4ZTcKKYBHgI0JHM3TE+8VYwtbQ+Om2QNI6KFGrNhE1n8wVMC?=
- =?us-ascii?Q?oOlAwtYG2TD68f4ky2vcpjkj1HYCg79ID1CpZcZ0HQwBn1yqarPdQhc5kSQW?=
- =?us-ascii?Q?QFZ2RfvSB9PPxBPSSPUfLqy77qA6VxNS/9IvQhOdSeGiEOZIilGHl6kutx4S?=
- =?us-ascii?Q?WIWaX+Siog3XcPPySX95YKjhZEkrxpt/LL+4vOePfTXIZM5GO0pHZ2ZLUuon?=
- =?us-ascii?Q?g3OANL38+513uosja95Lq7fwyCr9K++fXxDaxdX7itmWQMMuzArMYlPB0ycD?=
- =?us-ascii?Q?uHv0rW/T+kV9K40EPTRKeKjnTUGob1TphK1knbPbu0dlrmbQGK75F9fV9qag?=
- =?us-ascii?Q?riw6/RaWn1kINgiwoT1EzhXAPWSVe0ZhELMNnhkNF1P6StYf4oyoGvMTorQf?=
- =?us-ascii?Q?+IUKwqJ1V3SJaNxnNz7a9ZfMJci5EaAL2uHZHvkzgEMmFvL0FG2257gKKomm?=
- =?us-ascii?Q?jVnV/Jqdh6Q7aKyXgUn6ufW7l6AlmDo/9VFTUbjOCIq9t2jAP02A6nvC2qr1?=
- =?us-ascii?Q?SDRTGLS3ZihWJi1mTQrRnRQRNyYBfh6DKYMzlFnkZDFMdW6owDSrXvA/6jCj?=
- =?us-ascii?Q?hgd3yrZP0pWamMCIns2WWxepbOG/6QoR32yvcfWGaPv864bVDwT7UITGOVst?=
- =?us-ascii?Q?TNTlx2vH+3SniYGHeXojENEgD0liafP2+hF2+zbtZkxrj/m6V7VhNLOaLvbW?=
- =?us-ascii?Q?9WV0ujwyahpU29vupfFN0o9pNj38zKK/+jozo9SA26Oqjtl3nWsObTvx1HwZ?=
- =?us-ascii?Q?9vzCxRr19mde0ByaZfdhQsInRmWZQJvXkuSdkt2HBch79z9vgBkisT/I4wwb?=
- =?us-ascii?Q?MggSa5pg9+h3eipv16YRw2fq9mL0AHM1RjoKJ9mBF7NQgLXoiwdVyrBnyG46?=
- =?us-ascii?Q?AYv6QwHEhsWeytl5qVU5t3yRYkKzKl7VnlrxXUz2NYGTJzXrWAP1TR3m8R1Q?=
- =?us-ascii?Q?8FuiRvQG/tG5RXJ6ihp1ffeAg5u6YmIMuOmnbCN7xy4qvYh8+w1tVkedfstZ?=
- =?us-ascii?Q?7k4e0Jd7RncTPI5kTaEZepNSntQkjBvVsQvqGcsTUbYYcThh/ZoikkE/KbtX?=
- =?us-ascii?Q?opRMp+OcQK2YkrdqM1HsAlSLu6syIwOSQ9ngJ1QatlDD7DKHHajZ3/dHj9WQ?=
- =?us-ascii?Q?RbJjnL13qmUSg1gJdMdQGdAS27cyzVV8o/ia9BUUITMlJVT+W+cmhvC7ZWmg?=
- =?us-ascii?Q?mJ54amkXUyiPuF9wPGpTUg0jexL4Ub4nUWljWqZmp+fst5zb1/8emlkCEojy?=
- =?us-ascii?Q?QNQZObe3yw=3D=3D?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a2929eb5-dcf7-48bb-dd26-08da282f03d9
-X-MS-Exchange-CrossTenant-AuthSource: PA4PR04MB9416.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Apr 2022 09:19:22.3123
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /CgyRWJG0m4RiUi4gpbPX9vefzkw0MNoVtQClwNHQp9xUU8v/WszbZWDiloOhmsSqXgmgZVsjtHZ49qS3Ho3FA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6848
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-27_03,2022-04-26_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxlogscore=866
+ priorityscore=1501 adultscore=0 mlxscore=0 malwarescore=0 bulkscore=0
+ impostorscore=0 spamscore=0 suspectscore=0 lowpriorityscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204270063
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Fan <peng.fan@nxp.com>
+In the absence of section symbols [1], objtool (today) and recordmcount
+(with a subsequent patch) generate __mcount_loc relocation records with
+weak symbols as the base. This works fine as long as those weak symbols
+are not overridden, but if they are, these can result in duplicate
+entries in the final vmlinux mcount location table. This will cause
+ftrace to fail when trying to patch the same location twice. Fix this by
+dropping duplicate locations during ftrace init.
 
-Add i.MX93 remote processor(Cortex-M33) compatible string
+[1] https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=d1bcae833b32f1
 
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
+Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
 ---
- Documentation/devicetree/bindings/remoteproc/fsl,imx-rproc.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ kernel/trace/ftrace.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/remoteproc/fsl,imx-rproc.yaml b/Documentation/devicetree/bindings/remoteproc/fsl,imx-rproc.yaml
-index fc16d903353e..38ffb9ec3c69 100644
---- a/Documentation/devicetree/bindings/remoteproc/fsl,imx-rproc.yaml
-+++ b/Documentation/devicetree/bindings/remoteproc/fsl,imx-rproc.yaml
-@@ -15,6 +15,7 @@ maintainers:
- properties:
-   compatible:
-     enum:
-+      - fsl,imx93-cm33
-       - fsl,imx8mq-cm4
-       - fsl,imx8mm-cm4
-       - fsl,imx8mn-cm7
+diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+index 4f1d2f5e726341..8bc4f282bb3ff4 100644
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -6496,7 +6496,7 @@ static int ftrace_process_locs(struct module *mod,
+ 	struct dyn_ftrace *rec;
+ 	unsigned long count;
+ 	unsigned long *p;
+-	unsigned long addr;
++	unsigned long addr, prev_addr = 0;
+ 	unsigned long flags = 0; /* Shut up gcc */
+ 	int ret = -ENOMEM;
+ 
+@@ -6550,6 +6550,16 @@ static int ftrace_process_locs(struct module *mod,
+ 	while (p < end) {
+ 		unsigned long end_offset;
+ 		addr = ftrace_call_adjust(*p++);
++
++		/*
++		 * Drop duplicate entries, which can happen when weak
++		 * functions are overridden, and __mcount_loc relocation
++		 * records were generated against function names due to
++		 * absence of non-weak section symbols
++		 */
++		if (addr == prev_addr)
++			addr = 0;
++
+ 		/*
+ 		 * Some architecture linkers will pad between
+ 		 * the different mcount_loc sections of different
+@@ -6569,6 +6579,7 @@ static int ftrace_process_locs(struct module *mod,
+ 
+ 		rec = &pg->records[pg->index++];
+ 		rec->ip = addr;
++		prev_addr = addr;
+ 	}
+ 
+ 	/* We should have used all pages */
 -- 
-2.25.1
+2.35.1
 
