@@ -2,91 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0E4EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:47:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F8CEC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:47:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238653AbiD0Ous (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 10:50:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47352 "EHLO
+        id S238773AbiD0OvC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 10:51:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238536AbiD0Oup (ORCPT
+        with ESMTP id S238648AbiD0OvA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 10:50:45 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A8C63BA59;
-        Wed, 27 Apr 2022 07:47:34 -0700 (PDT)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 23R8jpda029645;
-        Wed, 27 Apr 2022 07:47:31 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=pfpt0220;
- bh=gsxpG4RiXnCTCF6V9lo/7D//jaoYpWLGlyTjAD+8/qk=;
- b=koGcsTh8SpOBk2r6NfOSKOAo4RsmzmAnH5jn03a2QcYMlA9fxXDUpspTfDNk8qjBIS1T
- MnUSAw/JBmQWKSt9j/0gBs09AIQxjWb96zVW+YqZczWukuwwLY7EmJA8J4uvHBrlbKU1
- yiYozr/5xmBdZP2JIrSTF1oxhDNcv3omS+fTrBctxjZpn0GoaH0Bt8gS5ECuBxeIalwm
- UUkvtKWoBi3gpI0AZYaYTJTvodESnxQcwDJ+sselMYF24CPxQALfX+96SSGP2MNikLJj
- yuxML5Wep0pyJ5Ls4TpBxbUBWJbJBteqUYorrdM8rmKFx3yCg3cqCS3WNL2Ny4fqSZG2 XQ== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3fprsqu7ca-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 27 Apr 2022 07:47:31 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 27 Apr
- 2022 07:47:30 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Wed, 27 Apr 2022 07:47:30 -0700
-Received: from localhost.localdomain (unknown [10.110.150.250])
-        by maili.marvell.com (Postfix) with ESMTP id ADFAF3F7063;
-        Wed, 27 Apr 2022 07:47:29 -0700 (PDT)
-From:   Piyush Malgujar <pmalgujar@marvell.com>
-To:     <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>
-CC:     <linus.walleij@linaro.org>, <brgl@bgdev.pl>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <rric@kernel.org>,
-        <cchavva@marvell.com>, <wsadowski@marvell.com>,
-        Piyush Malgujar <pmalgujar@marvell.com>
-Subject: [PATCH 5/5] gpio: thunderx: change handler for level interrupt
-Date:   Wed, 27 Apr 2022 07:46:20 -0700
-Message-ID: <20220427144620.9105-6-pmalgujar@marvell.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220427144620.9105-1-pmalgujar@marvell.com>
-References: <20220427144620.9105-1-pmalgujar@marvell.com>
+        Wed, 27 Apr 2022 10:51:00 -0400
+Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 896C33C4AD;
+        Wed, 27 Apr 2022 07:47:48 -0700 (PDT)
+Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-e2442907a1so2156895fac.8;
+        Wed, 27 Apr 2022 07:47:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=47QrNpfa52VRAC22Iw7llWY6NibddnutqiXI8UWF5ZM=;
+        b=BdJa1sqLVKb1yE4G6mdcb+IrXimsh9k5VFXCHYO+xamM3nHZHMPfWXsOGISyvqSyNo
+         nj/hprdtte/D+dyo5UFYWHWD0JqP/tyYtAypuVFKL/355jiVI8mIAOZOnM+zEgOpPyjJ
+         zVlYcc1Vkdo7mdLZU45vCRQ3kA7/qECRXtUtRMM2KyWBpqLpegiBA4FlZlUlLOF4OzTy
+         5C7zE+/I6B+H0BWA4ES7h6gBKoldpZlVCdzNrvv7Ye8vpasDV3FApa6mu3BCPMvClwAb
+         k9ozUssb2Rlv9vN2YbP6OZ+2AVnpwmmh15Vhq9VnkzqVtlV6i3R8EEh6tycLjcSEhi13
+         nZjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=47QrNpfa52VRAC22Iw7llWY6NibddnutqiXI8UWF5ZM=;
+        b=5LKs2YXc9kZtBNwNUnkI4fAS137p80G4/k6LmTr0hexbQSaG2obmWQDhwb1GS83qUj
+         Z8mBZ+yiIS2IjqTosDIoJNbwFg8Gm+pjI/MG10JDDOphkwKHAMCcPRR5efyOt8tgV/7m
+         Pz0WqSHyH0t1lYVpfJGDvVP2mzMa75FinA+TOeYnKxN03ypRUBmatrP/YV5nCb92by8l
+         fUCsVyQKdAQnQ6crGN6ZJSPH7jPFr/cX098IB/xbO3F/3frnBg3WzhP7sozD3d6kQFMO
+         xEykk96x4QQVmU1pxi+ToDASlPWi0soD0KreOfJ11YwX2qNn5I8tZNXVRJwaq2HShzLs
+         YYoQ==
+X-Gm-Message-State: AOAM531DRGUEtON+1RebNnqEWC9+/+aJJ0ZBJOihqil1CmUFhablIuAw
+        iAuaxHQ287Q3AkpY2PpETcLRY17Ju/uvnNq9k/w=
+X-Google-Smtp-Source: ABdhPJydWVQo9tj6Nu9xcJ7dQNUmdfr2cmUvOyyF9AuD6pmYXXsyxO9TpTngDTsG+9sTvqz8Na6H+DpwNnJxqzKT5+8=
+X-Received: by 2002:a05:6870:311d:b0:de:9b6c:362b with SMTP id
+ v29-20020a056870311d00b000de9b6c362bmr15164301oaa.200.1651070867943; Wed, 27
+ Apr 2022 07:47:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: 0uaggkiGNeQvQqwE58ua4JEIRGRBqzNm
-X-Proofpoint-GUID: 0uaggkiGNeQvQqwE58ua4JEIRGRBqzNm
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-27_04,2022-04-27_01,2022-02-23_01
+References: <20220426235718.1634359-1-marmarek@invisiblethingslab.com>
+In-Reply-To: <20220426235718.1634359-1-marmarek@invisiblethingslab.com>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Wed, 27 Apr 2022 10:47:36 -0400
+Message-ID: <CADnq5_Pbaz9omsd6sHmOzTM=7c9fNBa5PAUfW4GOT=rtT4Anjg@mail.gmail.com>
+Subject: Re: [PATCH] drm/amdgpu: do not use passthrough mode in Xen dom0
+To:     =?UTF-8?Q?Marek_Marczykowski=2DG=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Lijo Lazar <lijo.lazar@amd.com>,
+        "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+        Guchun Chen <guchun.chen@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Bokun Zhang <bokun.zhang@amd.com>,
+        Jingwen Chen <Jingwen.Chen2@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        "for 3.8" <stable@vger.kernel.org>,
+        Victor Skvortsov <victor.skvortsov@amd.com>,
+        =?UTF-8?Q?Michel_D=C3=A4nzer?= <mdaenzer@redhat.com>,
+        "open list:RADEON and AMDGPU DRM DRIVERS" 
+        <amd-gfx@lists.freedesktop.org>, Bernard Zhao <bernard@vivo.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Candice Li <candice.li@amd.com>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        Hawking Zhang <Hawking.Zhang@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The current level interrupt handler is masking the GPIO interrupt
-and not unmasking it, to resolve that, handle_level_irq is used.
+Applied.  Thanks!
 
-Signed-off-by: Witold Sadowski <wsadowski@marvell.com>
-Signed-off-by: Piyush Malgujar <pmalgujar@marvell.com>
----
- drivers/gpio/gpio-thunderx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Alex
 
-diff --git a/drivers/gpio/gpio-thunderx.c b/drivers/gpio/gpio-thunderx.c
-index 87ab1ad7e652347a67b7747ea497b944498a8b41..b1063e53ceb8edf26ca1a6ecab8035aad62128a1 100644
---- a/drivers/gpio/gpio-thunderx.c
-+++ b/drivers/gpio/gpio-thunderx.c
-@@ -343,7 +343,7 @@ static int thunderx_gpio_irq_set_type(struct irq_data *d,
- 		irq_set_handler_locked(d, handle_fasteoi_ack_irq);
- 		bit_cfg |= GPIO_BIT_CFG_INT_TYPE;
- 	} else {
--		irq_set_handler_locked(d, handle_fasteoi_mask_irq);
-+		irq_set_handler_locked(d, handle_level_irq);
- 	}
- 
- 	raw_spin_lock_irqsave(&txgpio->lock, flags);
--- 
-2.17.1
-
+On Wed, Apr 27, 2022 at 3:12 AM Marek Marczykowski-G=C3=B3recki
+<marmarek@invisiblethingslab.com> wrote:
+>
+> While technically Xen dom0 is a virtual machine too, it does have
+> access to most of the hardware so it doesn't need to be considered a
+> "passthrough". Commit b818a5d37454 ("drm/amdgpu/gmc: use PCI BARs for
+> APUs in passthrough") changed how FB is accessed based on passthrough
+> mode. This breaks amdgpu in Xen dom0 with message like this:
+>
+>     [drm:dc_dmub_srv_wait_idle [amdgpu]] *ERROR* Error waiting for DMUB i=
+dle: status=3D3
+>
+> While the reason for this failure is unclear, the passthrough mode is
+> not really necessary in Xen dom0 anyway. So, to unbreak booting affected
+> kernels, disable passthrough mode in this case.
+>
+> Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1985
+> Fixes: b818a5d37454 ("drm/amdgpu/gmc: use PCI BARs for APUs in passthroug=
+h")
+> Signed-off-by: Marek Marczykowski-G=C3=B3recki <marmarek@invisiblethingsl=
+ab.com>
+> Cc: stable@vger.kernel.org
+> ---
+>  drivers/gpu/drm/amd/amdgpu/amdgpu_virt.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_virt.c b/drivers/gpu/drm/a=
+md/amdgpu/amdgpu_virt.c
+> index a025f080aa6a..5e3756643da3 100644
+> --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_virt.c
+> +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_virt.c
+> @@ -24,6 +24,7 @@
+>  #include <linux/module.h>
+>
+>  #include <drm/drm_drv.h>
+> +#include <xen/xen.h>
+>
+>  #include "amdgpu.h"
+>  #include "amdgpu_ras.h"
+> @@ -710,7 +711,8 @@ void amdgpu_detect_virtualization(struct amdgpu_devic=
+e *adev)
+>                 adev->virt.caps |=3D AMDGPU_SRIOV_CAPS_ENABLE_IOV;
+>
+>         if (!reg) {
+> -               if (is_virtual_machine())       /* passthrough mode exclu=
+s sriov mod */
+> +               /* passthrough mode exclus sriov mod */
+> +               if (is_virtual_machine() && !xen_initial_domain())
+>                         adev->virt.caps |=3D AMDGPU_PASSTHROUGH_MODE;
+>         }
+>
+> --
+> 2.35.1
+>
