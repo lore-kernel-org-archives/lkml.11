@@ -2,79 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4846C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 00:50:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86C5DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 00:50:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356514AbiD0Axg (ORCPT
+        id S1356524AbiD0Axk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 20:53:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44056 "EHLO
+        Tue, 26 Apr 2022 20:53:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356495AbiD0Ax1 (ORCPT
+        with ESMTP id S1356499AbiD0Ax1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Apr 2022 20:53:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E5912089;
-        Tue, 26 Apr 2022 17:50:14 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7CD611A1E;
+        Tue, 26 Apr 2022 17:50:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5E53DB8244F;
-        Wed, 27 Apr 2022 00:50:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0FC73C385AD;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AB6AB61AF2;
         Wed, 27 Apr 2022 00:50:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id F3C28C385A0;
+        Wed, 27 Apr 2022 00:50:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1651020612;
-        bh=5ugFcVFrOmmS9Q8uSz+4TjYa6aVuDjAntW4uD8UynZY=;
+        bh=MwmPAc3mXaQAY/JmKfl1Jub/wzo0Wnhd1Nmr194igt8=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=pAPNnXXEyE4nya2VSXNhs71bxP9T1wlsCGw2bB0EXVMLkKAC5Nqlks3ZaXRf0f8/m
-         S94m0uJHdR9Mx2KuO36FJ8iGA4x7kTrA3+OSrll1ogDiEh802lN/UY2BgR3ZRcpJJm
-         XmyTJyO/PWbP2M8Lw2TECVCLljVKaSkuiEvfwm8XW96VDmcAuGtjOcWrqDDIdXu6mu
-         ROTZRernPK8Y94H0cFIsqjH/gIdEgpqRjtEErV0m4WHkoO//n9QeeA4FxWmSV/XLg5
-         DO191wF4qG5MKs1Z/cUIAOYUtXyTjm8RqcfF+tW9ZoeL6NE8PhcpLe5b7ufPNIwoqt
-         qbz7PxPJ8XaNA==
+        b=icpqaKWtspwfdxK9xOUr1MbWPsuY8jjKeZ+UQe+NccevNL7RjOomJBDZFLUxiI5iM
+         yNnkz/mRFMFTr96/NjHCzZebJeWAak0+uuC7Vx+vMwg49upQzAQ6Sj4YnOvrJeD9Rd
+         T41rUsM7CsVBcZ6vHqojYRMxRGNHiaCpn8AcQqJeu/zTxbIUB/TPTeRDp/3fbaV20x
+         ZvhMsTuOHugl9OfSkNMjAa12EvV/V9elKraPz1fr4tPrBT1tnt0+BEMKbREX7yAfNZ
+         4FIiH/+XkhIfGKf6xJceladMSgEtfxAs63NlcLP6Vaikd6UtC9LxMEHm6/6G2DCFvX
+         2F6lFAuJmInYg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EA21EF03840;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D4EB1E8DD67;
         Wed, 27 Apr 2022 00:50:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 0/2] net: Remove unused __SLOW_DOWN_IO
+Subject: Re: [PATCH v1] net: stmmac: dwmac-imx: comment spelling fix
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165102061195.18100.14728173281862395377.git-patchwork-notify@kernel.org>
+Message-Id: <165102061186.18100.14886294105816558907.git-patchwork-notify@kernel.org>
 Date:   Wed, 27 Apr 2022 00:50:11 +0000
-References: <20220425212644.1659070-1-helgaas@kernel.org>
-In-Reply-To: <20220425212644.1659070-1-helgaas@kernel.org>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     kuba@kernel.org, davem@davemloft.net, pabeni@redhat.com,
-        3chas3@gmail.com, linux-atm-general@lists.sourceforge.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bhelgaas@google.com
+References: <20220425154856.169499-1-marcel@ziswiler.com>
+In-Reply-To: <20220425154856.169499-1-marcel@ziswiler.com>
+To:     Marcel Ziswiler <marcel@ziswiler.com>
+Cc:     netdev@vger.kernel.org, marcel.ziswiler@toradex.com,
+        alexandre.torgue@foss.st.com, davem@davemloft.net,
+        festevam@gmail.com, fugang.duan@nxp.com, peppe.cavallaro@st.com,
+        kuba@kernel.org, joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
+        linux-imx@nxp.com, pabeni@redhat.com, kernel@pengutronix.de,
+        s.hauer@pengutronix.de, shawnguo@kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (master)
+This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Mon, 25 Apr 2022 16:26:42 -0500 you wrote:
-> From: Bjorn Helgaas <bhelgaas@google.com>
+On Mon, 25 Apr 2022 17:48:56 +0200 you wrote:
+> From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 > 
-> Remove unused mentions of __SLOW_DOWN_IO.
+> Fix spelling in comment.
 > 
-> Bjorn Helgaas (2):
->   net: wan: atp: remove unused eeprom_delay()
->   net: remove comments that mention obsolete __SLOW_DOWN_IO
+> Fixes: 94abdad6974a ("net: ethernet: dwmac: add ethernet glue logic for NXP imx8 chip")
+> Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [1/2] net: wan: atp: remove unused eeprom_delay()
-    https://git.kernel.org/netdev/net-next/c/dac173db114d
-  - [2/2] net: remove comments that mention obsolete __SLOW_DOWN_IO
-    https://git.kernel.org/netdev/net-next/c/e39f63fe0d94
+  - [v1] net: stmmac: dwmac-imx: comment spelling fix
+    https://git.kernel.org/netdev/net-next/c/b1190d5175ac
 
 You are awesome, thank you!
 -- 
