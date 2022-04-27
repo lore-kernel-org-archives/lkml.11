@@ -2,42 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18058C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 19:38:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6E87C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 19:38:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230417AbiD0TlP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 15:41:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46326 "EHLO
+        id S230160AbiD0Tl0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 15:41:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233540AbiD0Tj4 (ORCPT
+        with ESMTP id S233554AbiD0Tj5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 15:39:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DF7210B1
+        Wed, 27 Apr 2022 15:39:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B81B8B65
         for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 12:36:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 71E2361BA7
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 19:36:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CFACC385A7;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DC2561B44
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 19:36:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB2BDC385A9;
         Wed, 27 Apr 2022 19:36:43 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1njnSs-002IwX-CX;
+        id 1njnSs-002IyF-V1;
         Wed, 27 Apr 2022 15:36:42 -0400
-Message-ID: <20220427193642.218154566@goodmis.org>
+Message-ID: <20220427193642.789373510@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Wed, 27 Apr 2022 15:36:38 -0400
+Date:   Wed, 27 Apr 2022 15:36:41 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Subject: [for-next][PATCH 15/21] tracing: Return -EINVAL if WARN_ON(!glob) triggered in
- event_hist_trigger_parse()
+        Guo Zhengkui <guozhengkui@vivo.com>
+Subject: [for-next][PATCH 18/21] tracing: Use WARN instead of printk and WARN_ON
 References: <20220427193623.529296556@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -45,37 +42,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+From: Guo Zhengkui <guozhengkui@vivo.com>
 
-If `WARN_ON(!glob)` is ever triggered, we will still continue executing
-the next lines. This will trigger the more serious problem, a NULL
-pointer dereference bug.
+Use `WARN(cond, ...)` instead of `if (cond)` + `printk(...)` +
+`WARN_ON(1)`.
 
-Just return -EINVAL if @glob is NULL.
+Link: https://lkml.kernel.org/r/20220424131932.3606-1-guozhengkui@vivo.com
 
-Link: https://lkml.kernel.org/r/20220417185630.199062-2-ammarfaizi2@gnuweeb.org
-
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>
-Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Suggested-by: Steven Rostedt <rostedt@goodmis.org>
+Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- kernel/trace/trace_events_hist.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ kernel/trace/trace_output.c | 12 +++---------
+ 1 file changed, 3 insertions(+), 9 deletions(-)
 
-diff --git a/kernel/trace/trace_events_hist.c b/kernel/trace/trace_events_hist.c
-index 998dfe2162fc..80c25be23c45 100644
---- a/kernel/trace/trace_events_hist.c
-+++ b/kernel/trace/trace_events_hist.c
-@@ -6214,7 +6214,8 @@ static int event_hist_trigger_parse(struct event_command *cmd_ops,
+diff --git a/kernel/trace/trace_output.c b/kernel/trace/trace_output.c
+index 8aa493d25c73..d89e3f7e26eb 100644
+--- a/kernel/trace/trace_output.c
++++ b/kernel/trace/trace_output.c
+@@ -778,9 +778,8 @@ int register_trace_event(struct trace_event *event)
  
- 	lockdep_assert_held(&event_mutex);
+ 		list_add_tail(&event->list, list);
  
--	WARN_ON(!glob);
-+	if (WARN_ON(!glob))
-+		return -EINVAL;
+-	} else if (event->type > __TRACE_LAST_TYPE) {
+-		printk(KERN_WARNING "Need to add type to trace.h\n");
+-		WARN_ON(1);
++	} else if (WARN(event->type > __TRACE_LAST_TYPE,
++			"Need to add type to trace.h")) {
+ 		goto out;
+ 	} else {
+ 		/* Is this event already used */
+@@ -1571,13 +1570,8 @@ __init static int init_events(void)
  
- 	if (strlen(glob)) {
- 		hist_err_clear();
+ 	for (i = 0; events[i]; i++) {
+ 		event = events[i];
+-
+ 		ret = register_trace_event(event);
+-		if (!ret) {
+-			printk(KERN_WARNING "event %d failed to register\n",
+-			       event->type);
+-			WARN_ON_ONCE(1);
+-		}
++		WARN_ONCE(!ret, "event %d failed to register", event->type);
+ 	}
+ 
+ 	return 0;
 -- 
 2.35.1
