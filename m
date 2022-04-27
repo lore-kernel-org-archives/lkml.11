@@ -2,93 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3CF6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:32:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D65A5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:33:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239743AbiD0PfX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 11:35:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33556 "EHLO
+        id S239940AbiD0PhE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 11:37:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239700AbiD0PfV (ORCPT
+        with ESMTP id S239699AbiD0Pg4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 11:35:21 -0400
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94C0F35248
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 08:32:08 -0700 (PDT)
-Received: by mail-qk1-x729.google.com with SMTP id z126so1556195qkb.2
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 08:32:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:subject:message-id:mime-version:content-disposition;
-        bh=cyrolNltUUpbs4yZr4ZZ4cVcFuuThjMYIy0lsDeAp/M=;
-        b=ga7PA3xJYU6LHhoM5kPggCpCEGKJ5eM6EcSGUEXJtH4FpksmzO2XBrq+/HeMYvYFj8
-         X3BoK8dWB5ySh81Nftik79G1npYH1rdTU87BqwpYU6iRheaSm46R4tt+Tyd+S7WusV5m
-         2280iBykRrNhWzK5CQQqzsqBE/sjQVg88IMabVMIz8rGHyKZjNplv8KS0P/oNK9cshYI
-         niTk4ChR7fCfNGXiD6KVwZYcQSyWReXYe/PRoRKVM0L9GU1dw/z72QxGlS4nLHJKFs+N
-         hKrAM2Rbj+1XmZpHMKsXQ1w0NaOZP7eMRS118X7QN0OoxCIKzTkWLU260dQfAn0CI70o
-         7PoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-disposition;
-        bh=cyrolNltUUpbs4yZr4ZZ4cVcFuuThjMYIy0lsDeAp/M=;
-        b=lsUXTnybmZ8QXoLgdr5MJ/yJ9l16k7nBWTyEvkaOt6Znmb7DPuqVXwo9TR47xzPZhW
-         sPIL1X3C+4Y8CImA/9WkgigNRvH0tnNxQG7pM/vERNkIbP0Mq3rm+09qJYz+WX6wQTkD
-         wDIP1y2W/RLtX9Kbs51QAFe9MFxj96UomohWDDH+bs2tJHGhTKA+9NTI4TaltS3kmmfz
-         7s06pCujIn6Wcf8jCHkzsGLZROji21BlscTkiFtI9kRhgfvmHO3/fCbvVPfqlUqbM+u7
-         6kolqmtKVbkTjs4ayzrRaIXMVj6uZcKLwbCAsU/H8E4ovHc/83z5xFpqOBM/q0ROl0g4
-         5GKA==
-X-Gm-Message-State: AOAM530JXD6xbiZxxt1fdk+nXiZlTkuCg45QAQjUjVes9ZIP0l7FJUcm
-        fiBxMhjFW6KbSDwfGKiprdo=
-X-Google-Smtp-Source: ABdhPJzKwLjFN7Ly4bvVQUi+eZxIcuebllqbHq6gOW3POQq235Srnx5TCcRCVB9tKQ65UO6DO/3ZwQ==
-X-Received: by 2002:a37:a853:0:b0:69f:7f28:d90f with SMTP id r80-20020a37a853000000b0069f7f28d90fmr4672410qke.385.1651073527688;
-        Wed, 27 Apr 2022 08:32:07 -0700 (PDT)
-Received: from jaehee-ThinkPad-X1-Extreme ([4.34.18.218])
-        by smtp.gmail.com with ESMTPSA id x9-20020a05622a000900b002f37b3537eesm3085759qtw.1.2022.04.27.08.32.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 08:32:07 -0700 (PDT)
-Date:   Wed, 27 Apr 2022 11:32:03 -0400
-From:   Jaehee Park <jhpark1013@gmail.com>
-To:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        jhpark1013@gmail.com
-Subject: [PATCH v2] staging: r8188eu: remove unused else condition
-Message-ID: <20220427153203.GA503502@jaehee-ThinkPad-X1-Extreme>
+        Wed, 27 Apr 2022 11:36:56 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFA7518E03;
+        Wed, 27 Apr 2022 08:33:41 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 606521F37B;
+        Wed, 27 Apr 2022 15:33:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1651073620; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=965VOzWPOSqiz/FVdHSc1d6WxEXfxy/o1f+Q37vGoEA=;
+        b=JkjXrQviRiBzCpZXWo6IO3biwOk7skXF+2ssuOF3BhgHz0RehOgTNPG1HeWdD5RWvoA9lq
+        e1HM3ao1d2T9SDhzGc6mTseotmYWi40y9Nc/PVuw23QecM4ufpDHuA2Vt14tgpEn4Ld53x
+        AO5SGbXkr/dGQ1mLMlH1m9MuDbOQeOw=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id A8CE513AED;
+        Wed, 27 Apr 2022 15:33:39 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id gM0HKFNiaWIRFwAAMHmgww
+        (envelope-from <jgross@suse.com>); Wed, 27 Apr 2022 15:33:39 +0000
+From:   Juergen Gross <jgross@suse.com>
+To:     linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        x86@kernel.org, linux-s390@vger.kernel.org,
+        linux-hyperv@vger.kernel.org,
+        virtualization@lists.linux-foundation.org
+Cc:     Juergen Gross <jgross@suse.com>, Arnd Bergmann <arnd@arndb.de>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Oleksandr Tyshchenko <olekstysh@gmail.com>
+Subject: [PATCH v2 1/2] kernel: add platform_has() infrastructure
+Date:   Wed, 27 Apr 2022 17:33:35 +0200
+Message-Id: <20220427153336.11091-2-jgross@suse.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220427153336.11091-1-jgross@suse.com>
+References: <20220427153336.11091-1-jgross@suse.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-rtw_select_and_join_from_scanned_queue() cannot return '2' so this
-else condition is unused. Remove this unnecessary else statement.
+Add a simple infrastructure for setting, resetting and querying
+platform feature flags.
 
-Suggested-by: Pavel Skripkin <paskripkin@gmail.com>
-Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
+Flags can be either global or architecture specific.
+
+Signed-off-by: Juergen Gross <jgross@suse.com>
 ---
-patch v2:
-- fixed the patch message 
+V2:
+- rename set/reset functions to platform_[set|clear]() (Boris Petkov,
+  Heiko Carstens)
+- move function implementations to c file (Boris Petkov)
+---
+ MAINTAINERS                            |  8 ++++++++
+ include/asm-generic/Kbuild             |  1 +
+ include/asm-generic/platform-feature.h |  8 ++++++++
+ include/linux/platform-feature.h       | 15 ++++++++++++++
+ kernel/Makefile                        |  2 +-
+ kernel/platform-feature.c              | 27 ++++++++++++++++++++++++++
+ 6 files changed, 60 insertions(+), 1 deletion(-)
+ create mode 100644 include/asm-generic/platform-feature.h
+ create mode 100644 include/linux/platform-feature.h
+ create mode 100644 kernel/platform-feature.c
 
- drivers/staging/r8188eu/core/rtw_mlme.c | 3 ---
- 1 file changed, 3 deletions(-)
-
-diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/r8188eu/core/rtw_mlme.c
-index d422ce87ba7c..29b8b101180b 100644
---- a/drivers/staging/r8188eu/core/rtw_mlme.c
-+++ b/drivers/staging/r8188eu/core/rtw_mlme.c
-@@ -723,9 +723,6 @@ void rtw_surveydone_event_callback(struct adapter	*adapter, u8 *pbuf)
- 			s_ret = rtw_select_and_join_from_scanned_queue(pmlmepriv);
- 			if (s_ret == _SUCCESS) {
- 				_set_timer(&pmlmepriv->assoc_timer, MAX_JOIN_TIMEOUT);
--			} else if (s_ret == 2) { /* there is no need to wait for join */
--				_clr_fwstate_(pmlmepriv, _FW_UNDER_LINKING);
--				rtw_indicate_connect(adapter);
- 			} else {
- 				if (rtw_to_roaming(adapter) != 0) {
- 					if (--pmlmepriv->to_roaming == 0 ||
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 5e8c2f611766..eb943f089eda 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -15650,6 +15650,14 @@ S:	Maintained
+ F:	Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.yaml
+ F:	drivers/iio/chemical/pms7003.c
+ 
++PLATFORM FEATURE INFRASTRUCTURE
++M:	Juergen Gross <jgross@suse.com>
++S:	Maintained
++F:	arch/*/include/asm/platform-feature.h
++F:	include/asm-generic/platform-feature.h
++F:	include/linux/platform-feature.h
++F:	kernel/platform-feature.c
++
+ PLDMFW LIBRARY
+ M:	Jacob Keller <jacob.e.keller@intel.com>
+ S:	Maintained
+diff --git a/include/asm-generic/Kbuild b/include/asm-generic/Kbuild
+index 302506bbc2a4..8e47d483b524 100644
+--- a/include/asm-generic/Kbuild
++++ b/include/asm-generic/Kbuild
+@@ -44,6 +44,7 @@ mandatory-y += msi.h
+ mandatory-y += pci.h
+ mandatory-y += percpu.h
+ mandatory-y += pgalloc.h
++mandatory-y += platform-feature.h
+ mandatory-y += preempt.h
+ mandatory-y += rwonce.h
+ mandatory-y += sections.h
+diff --git a/include/asm-generic/platform-feature.h b/include/asm-generic/platform-feature.h
+new file mode 100644
+index 000000000000..4b0af3d51588
+--- /dev/null
++++ b/include/asm-generic/platform-feature.h
+@@ -0,0 +1,8 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _ASM_GENERIC_PLATFORM_FEATURE_H
++#define _ASM_GENERIC_PLATFORM_FEATURE_H
++
++/* Number of arch specific feature flags. */
++#define PLATFORM_ARCH_FEAT_N	0
++
++#endif /* _ASM_GENERIC_PLATFORM_FEATURE_H */
+diff --git a/include/linux/platform-feature.h b/include/linux/platform-feature.h
+new file mode 100644
+index 000000000000..6ed859928b97
+--- /dev/null
++++ b/include/linux/platform-feature.h
+@@ -0,0 +1,15 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _PLATFORM_FEATURE_H
++#define _PLATFORM_FEATURE_H
++
++#include <linux/bitops.h>
++#include <asm/platform-feature.h>
++
++/* The platform features are starting with the architecture specific ones. */
++#define PLATFORM_FEAT_N				(0 + PLATFORM_ARCH_FEAT_N)
++
++void platform_set(unsigned int feature);
++void platform_clear(unsigned int feature);
++bool platform_has(unsigned int feature);
++
++#endif /* _PLATFORM_FEATURE_H */
+diff --git a/kernel/Makefile b/kernel/Makefile
+index 847a82bfe0e3..2f412f80110d 100644
+--- a/kernel/Makefile
++++ b/kernel/Makefile
+@@ -7,7 +7,7 @@ obj-y     = fork.o exec_domain.o panic.o \
+ 	    cpu.o exit.o softirq.o resource.o \
+ 	    sysctl.o capability.o ptrace.o user.o \
+ 	    signal.o sys.o umh.o workqueue.o pid.o task_work.o \
+-	    extable.o params.o \
++	    extable.o params.o platform-feature.o \
+ 	    kthread.o sys_ni.o nsproxy.o \
+ 	    notifier.o ksysfs.o cred.o reboot.o \
+ 	    async.o range.o smpboot.o ucount.o regset.o
+diff --git a/kernel/platform-feature.c b/kernel/platform-feature.c
+new file mode 100644
+index 000000000000..cb6a6c3e4fed
+--- /dev/null
++++ b/kernel/platform-feature.c
+@@ -0,0 +1,27 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include <linux/bitops.h>
++#include <linux/cache.h>
++#include <linux/export.h>
++#include <linux/platform-feature.h>
++
++#define PLATFORM_FEAT_ARRAY_SZ  BITS_TO_LONGS(PLATFORM_FEAT_N)
++static unsigned long __read_mostly platform_features[PLATFORM_FEAT_ARRAY_SZ];
++
++void platform_set(unsigned int feature)
++{
++	set_bit(feature, platform_features);
++}
++EXPORT_SYMBOL_GPL(platform_set);
++
++void platform_clear(unsigned int feature)
++{
++	clear_bit(feature, platform_features);
++}
++EXPORT_SYMBOL_GPL(platform_clear);
++
++bool platform_has(unsigned int feature)
++{
++	return test_bit(feature, platform_features);
++}
++EXPORT_SYMBOL_GPL(platform_has);
 -- 
-2.25.1
+2.34.1
 
