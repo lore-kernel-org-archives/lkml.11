@@ -2,146 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F91DC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:42:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEFAAC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:43:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238432AbiD0Opb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 10:45:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54230 "EHLO
+        id S238434AbiD0Oqj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 10:46:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238319AbiD0Op3 (ORCPT
+        with ESMTP id S238429AbiD0Oq0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 10:45:29 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5534B35878;
-        Wed, 27 Apr 2022 07:42:18 -0700 (PDT)
-Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23RCh5FA014600;
-        Wed, 27 Apr 2022 14:42:16 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=k+GrStm0Ysu+JMQMOJRXy4Xc+c0DmeROAWKzUIFx2OI=;
- b=guAshWAXrH1xD/9nK/Ha65c1rzDE4LFaM1shEsCAK4SzKn/Ve97tA7VSHhHZa+T/A3Jo
- QBgK80SF5Y5hRXjdRucfF3ZMEsl71fqgHZiuv+wg9mVomSCIl2ac/IBJNp59NJbnEOeV
- A0XwHUJ5inHR+ho7f75YxA/QjL7H/4/iXMQ+1Uxvp3l0Q9YPHB8TN0mwISkKg8E5uerD
- 4QlEw8F9Q/aqnSi7QSL0xDXqas1Llz0Q6sJGXsUIiK4q/jBI4hpsPeoRxNcspNBBjABc
- gFLWqP1+IG6Zg4ou1s561CwiWspyt09sdJ/afRzPmrzwyW7p898XWGqf9Z5a44EDGMAy GA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fpvf2n5vp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 27 Apr 2022 14:42:16 +0000
-Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23REXrLx026641;
-        Wed, 27 Apr 2022 14:42:15 GMT
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fpvf2n5vc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 27 Apr 2022 14:42:15 +0000
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23REcSWQ028307;
-        Wed, 27 Apr 2022 14:42:14 GMT
-Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
-        by ppma04dal.us.ibm.com with ESMTP id 3fm93abs84-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 27 Apr 2022 14:42:14 +0000
-Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com [9.57.199.111])
-        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23REgDwm55902600
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 27 Apr 2022 14:42:13 GMT
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8E693AC065;
-        Wed, 27 Apr 2022 14:42:13 +0000 (GMT)
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C838CAC05E;
-        Wed, 27 Apr 2022 14:42:08 +0000 (GMT)
-Received: from [9.211.73.42] (unknown [9.211.73.42])
-        by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTP;
-        Wed, 27 Apr 2022 14:42:08 +0000 (GMT)
-Message-ID: <f6c78792-9cf7-0cde-f760-76166f9b7eb7@linux.ibm.com>
-Date:   Wed, 27 Apr 2022 10:42:07 -0400
+        Wed, 27 Apr 2022 10:46:26 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 36A2E3669C
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 07:43:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651070593;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=G9DkRJaDUMwY7Wxq8Elonr7u7Py6sFY37e6s/qu71Og=;
+        b=U6jPjTHqtOYnBdUDhggW/2RRQNwqgVs7uR/Hxao2tXmwsaEOiUPjsQSUuqyaLHIxUBrX/z
+        2qopU8u8pETruwle7t7EmgU8fVT1ZPoYpx37rC5kbFeLzD4IrPmq481bFbFdt/pvaiv81o
+        Rgq5V0qMnOu0avx5UQ4M7YWBhB5FFo4=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-553-0sTi6ypeNaG65Sxn8qbA6A-1; Wed, 27 Apr 2022 10:43:07 -0400
+X-MC-Unique: 0sTi6ypeNaG65Sxn8qbA6A-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7798D802803;
+        Wed, 27 Apr 2022 14:43:06 +0000 (UTC)
+Received: from dhcp-27-174.brq.redhat.com (unknown [10.40.192.128])
+        by smtp.corp.redhat.com (Postfix) with SMTP id A174E40D282F;
+        Wed, 27 Apr 2022 14:43:01 +0000 (UTC)
+Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
+        oleg@redhat.com; Wed, 27 Apr 2022 16:43:06 +0200 (CEST)
+Date:   Wed, 27 Apr 2022 16:43:00 +0200
+From:   Oleg Nesterov <oleg@redhat.com>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
+        Will Deacon <will@kernel.org>, tj@kernel.org,
+        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        inux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>
+Subject: Re: [PATCH 6/9] signal: Always call do_notify_parent_cldstop with
+ siglock held
+Message-ID: <20220427144259.GB17421@redhat.com>
+References: <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
+ <20220426225211.308418-6-ebiederm@xmission.com>
+ <20220427141018.GA17421@redhat.com>
+ <874k2ea9q4.fsf@email.froward.int.ebiederm.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v6 16/21] vfio-pci/zdev: add open/close device hooks
-Content-Language: en-US
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     linux-s390@vger.kernel.org, alex.williamson@redhat.com,
-        cohuck@redhat.com, schnelle@linux.ibm.com, farman@linux.ibm.com,
-        pmorel@linux.ibm.com, borntraeger@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-        agordeev@linux.ibm.com, svens@linux.ibm.com, frankja@linux.ibm.com,
-        david@redhat.com, imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
-        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
-        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org
-References: <20220426200842.98655-1-mjrosato@linux.ibm.com>
- <20220426200842.98655-17-mjrosato@linux.ibm.com>
- <20220427140410.GX2125828@nvidia.com>
-From:   Matthew Rosato <mjrosato@linux.ibm.com>
-In-Reply-To: <20220427140410.GX2125828@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: GxVsMEQcXGhlmQ992YWp9KhgwHCvcuKx
-X-Proofpoint-ORIG-GUID: R49eDuTDRAQg8XPIhpr4WkOX4mWpEJrd
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-27_04,2022-04-27_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxlogscore=749
- lowpriorityscore=0 spamscore=0 malwarescore=0 bulkscore=0 phishscore=0
- mlxscore=0 priorityscore=1501 adultscore=0 impostorscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2204270092
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <874k2ea9q4.fsf@email.froward.int.ebiederm.org>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/27/22 10:04 AM, Jason Gunthorpe wrote:
-> On Tue, Apr 26, 2022 at 04:08:37PM -0400, Matthew Rosato wrote:
-> 
->> +static int vfio_pci_zdev_group_notifier(struct notifier_block *nb,
->> +					unsigned long action, void *data)
->> +{
->> +	struct zpci_dev *zdev = container_of(nb, struct zpci_dev, nb);
->> +	int (*fn)(struct zpci_dev *zdev, struct kvm *kvm);
->> +	int rc = NOTIFY_OK;
->> +
->> +	if (action == VFIO_GROUP_NOTIFY_SET_KVM) {
->> +		if (!zdev)
->> +			return NOTIFY_DONE;
->> +
->> +		fn = symbol_get(kvm_s390_pci_register_kvm);
->> +		if (!fn)
->> +			return NOTIFY_DONE;
->> +
->> +		if (fn(zdev, (struct kvm *)data))
->> +			rc = NOTIFY_BAD;
->> +
->> +		symbol_put(kvm_s390_pci_register_kvm);
-> 
-> Is it possible this function can be in statically linked arch code?
-> 
-> Or, actually, is zPCI useful anyhow without kvm ie can you just have a
-> direct dependency here?
-> 
+On 04/27, Eric W. Biederman wrote:
+>
+> The ptrace parental relationship definitely has the potential to be a
+> graph with cycles.  Which as you point out is not fine.
+>
+> The result is very nice and I don't want to give it up.  I suspect
+> something ptrace cycles are always a problem and can simply be
+> forbidden.
 
-zPCI devices (zpci_dev) exist regardless of whether kvm is configured or 
-not, and you can e.g. bind the associated PCI device to vfio-pci when 
-KVM is not configured (or module not loaded) and get the existing 
-vfio-pci-zdev extensions for that device (extra VFIO_DEVICE_INFO 
-response data).  Making a direct dependency on KVM would remove that; 
-this was discussed in a prior version because this extra info is not 
-used today outside of a KVM usecase -- but it could be useful in the 
-future (or we may have other s390-isms that are not specific to kvm that 
-need vfio-pci-zdev).
+OK, please consider another case.
 
-As far as statically linking in arch...  The fundamental 
-(un)registration task being done here -- (dis)associating the guest GISA 
-with the firmware and thus allowing this particular guest to use 
-firmware assists (or turning it off when kvm == 0) -- is only relevant 
-to guest passthrough with kvm and calls a number of different routines 
-that reside in the kvm module during the (un)registration process. 
-Without a direct dependency I think a symbol lookup still has to 
-inevitably happen at some point in the call chain.
+We have a parent P and its child C. C traces P.
+
+This is not that unusual, I don't think we can forbid this case.
+
+P reports an event and calls do_notify_parent_cldstop().
+
+C receives SIGSTOP and calls do_notify_parent_cldstop() too.
+
+Oleg.
+
