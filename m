@@ -2,91 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32E08C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 07:27:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E909C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 07:28:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358786AbiD0Han (ORCPT
+        id S1358798AbiD0HcF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 03:30:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40728 "EHLO
+        Wed, 27 Apr 2022 03:32:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358765AbiD0Haf (ORCPT
+        with ESMTP id S1358790AbiD0HcD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 03:30:35 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CDC34579B;
-        Wed, 27 Apr 2022 00:27:25 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23R7RLFf069288;
-        Wed, 27 Apr 2022 02:27:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1651044441;
-        bh=NpGexD1UFG5t4/zbSWlZsOFh1ESxB6cMXNhFQ5GSDfI=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=JsAxZUM+fIeRdhWxJQDBE/+MOHBDrffTHDhnqdIqy67TQMviVwH95PmYB6jmy235P
-         LK47+3KoLiOw7luHGFkOuIRaheVcfjq2gMAP9K1Nc6qb10PmoZ3JNkxQlXyhhFkmgM
-         qsowkrsZU5UxXq5spfYTRo83QGAzUaSXuul3RNhQ=
-Received: from DFLE102.ent.ti.com (dfle102.ent.ti.com [10.64.6.23])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23R7RLge010727
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 27 Apr 2022 02:27:21 -0500
-Received: from DFLE115.ent.ti.com (10.64.6.36) by DFLE102.ent.ti.com
- (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 27
- Apr 2022 02:27:21 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 27 Apr 2022 02:27:21 -0500
-Received: from a0393678ub.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23R7RBgR088380;
-        Wed, 27 Apr 2022 02:27:18 -0500
-From:   Kishon Vijay Abraham I <kishon@ti.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Nishanth Menon <nm@ti.com>
-CC:     Santosh Shilimkar <ssantosh@kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>
-Subject: [PATCH 2/2] soc: ti: pruss: Enable support for PRUSS-M subsystem on K3 AM62x SoCs
-Date:   Wed, 27 Apr 2022 12:57:03 +0530
-Message-ID: <20220427072703.4898-3-kishon@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220427072703.4898-1-kishon@ti.com>
-References: <20220427072703.4898-1-kishon@ti.com>
+        Wed, 27 Apr 2022 03:32:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B23E75E52;
+        Wed, 27 Apr 2022 00:28:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B2D7B82522;
+        Wed, 27 Apr 2022 07:28:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26D72C385A7;
+        Wed, 27 Apr 2022 07:28:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651044530;
+        bh=xLk9XWu/k/y+HAMQv3vTG9xohoGfdtDQLMATOYpRQt8=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=gS3OoIK9EZ1RArYZjN1MapVRm+myv9AfvjD12vQoZzNIv2tKOdcHRbgcLllfy57yZ
+         VIKB8I35g9XDZve+1WoZv2IWtFdVVPR2sEmEvShFk1YOfdWpvidlynDMX0sCtRhMB+
+         QIQRNJBjsOTSJB0YtCd4r4HVxMua2Y4K7V/v5Vy8XYVyZ0TFawXSzbqTEIf8SAAQm6
+         LALClRl3YCxMMzpIv5d/c2XnR0hhAE/5x8m3RQBdP+dR3thLFOfLrSTWx0Q0A2mTI6
+         G51yWjUTc9/9q8duMV+gLKr3FVSnJhELLcZ7VM4Q2HNpyOlNeHLyyZufzOPtVo20/x
+         ZUpsMUOQPov8w==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] ath10k: simplify if-if to if-else
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20220424094522.105262-1-wanjiabing@vivo.com>
+References: <20220424094522.105262-1-wanjiabing@vivo.com>
+To:     Wan Jiabing <wanjiabing@vivo.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kael_w@yeah.net,
+        Wan Jiabing <wanjiabing@vivo.com>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <165104452604.30072.1720851618351508731.kvalo@kernel.org>
+Date:   Wed, 27 Apr 2022 07:28:47 +0000 (UTC)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The K3 AM62x family of SoC has one PRUSS-M instance and it has two
-Programmable Real-Time Units (PRU0 and PRU1). This does not support
-Industrial Communications Subsystem features like Ethernet.
+Wan Jiabing <wanjiabing@vivo.com> wrote:
 
-The existing pruss platform driver has been updated to support this
-through a new AM62x specific compatible.
+> Use if and else instead of if(A) and if (!A).
+> 
+> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
 
-Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
----
- drivers/soc/ti/pruss.c | 1 +
- 1 file changed, 1 insertion(+)
+Patch applied to ath-next branch of ath.git, thanks.
 
-diff --git a/drivers/soc/ti/pruss.c b/drivers/soc/ti/pruss.c
-index b36779309e49..7c8111ca2b72 100644
---- a/drivers/soc/ti/pruss.c
-+++ b/drivers/soc/ti/pruss.c
-@@ -339,6 +339,7 @@ static const struct of_device_id pruss_of_match[] = {
- 	{ .compatible = "ti,am654-icssg", .data = &am65x_j721e_pruss_data, },
- 	{ .compatible = "ti,j721e-icssg", .data = &am65x_j721e_pruss_data, },
- 	{ .compatible = "ti,am642-icssg", .data = &am65x_j721e_pruss_data, },
-+	{ .compatible = "ti,am625-pruss", .data = &am65x_j721e_pruss_data, },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, pruss_of_match);
+7471f7d273ac ath10k: simplify if-if to if-else
+
 -- 
-2.17.1
+https://patchwork.kernel.org/project/linux-wireless/patch/20220424094522.105262-1-wanjiabing@vivo.com/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
