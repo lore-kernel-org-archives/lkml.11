@@ -2,173 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67E71C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:13:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AC51C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:13:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242545AbiD0QOH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:14:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49656 "EHLO
+        id S241836AbiD0QQd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:16:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242152AbiD0QMB (ORCPT
+        with ESMTP id S241771AbiD0QNP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:12:01 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FE1F494BDD;
-        Wed, 27 Apr 2022 09:08:16 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id j6so4311623ejc.13;
-        Wed, 27 Apr 2022 09:08:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=LXuHnml0JyQ7WUWtSyqxCdcrvdOAihH7ECEcB+ac3FQ=;
-        b=dydbqc5J60BLLi30zbMUbH7rkOREmVuwqXYM7KqyVJ5PTePK07uL1it2F3ppOULrQp
-         XOnGBiUiY9fCOnKmRENfByrA63YlpbGpanCw0uQnd+ZXKWb23Fe+VUM+HBSvz3hbwYb0
-         fxxJkdmou9OPPb6NqqihMEGz7guVzyP7lwViOWdEg5SiEssRFwqsPO1dwSNHPc6DCXEQ
-         WAwUQSN/dMR6z/a2sieXWO8H3XWqgFIVTl5X+QYo6IQ1GO4xbn9k1OYHY55/FLUVZJaQ
-         unv/NKd2hSzV1Yo9IFcRabSOEMNPfdQuZFplMoMO96GBvThfkSmcQUo5mcHy0G6nPCHE
-         39gA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=LXuHnml0JyQ7WUWtSyqxCdcrvdOAihH7ECEcB+ac3FQ=;
-        b=X/tXXMn0pBL8Izd8jUlCHxB4HQlgZtYHS76F439I6OoxmwfCd2y0kFxb5lhq5Y5BNw
-         uqm0NblYChIXbLj4fVO2dA0euTAqz1d+vqHtzlHpKd2GQnvmnJqO/vccuPPeFGXuoozb
-         l2rRnYt4c7VNm9VgDEMNoDx6WuGLxiLqv7RyT1iNKD73FyjdY8rkQAgTZtffJLOqT4j7
-         p7ib9MrqvWErUVp56uBtfrKe8V8TYO4oHD54Mi3kd7NxzLylm5q3fQL/2KyL7YyLHCZQ
-         jXUU9wfqYd28GXzCHO2Yvqx9ROfKEYhcDsCD41tbwkCwRI2CYtueZiPdjZQqX6vxnTqR
-         s+nw==
-X-Gm-Message-State: AOAM532+MtzALs+ku8KNfia60oULy9MwhVjlqbdZVMoqJX6ZUt10giD5
-        fTeoQXQokq0Y+m6GR4inOqI=
-X-Google-Smtp-Source: ABdhPJy3vcafoHiVPbX6lh1POBOoAQAfG6usQdpjwle19kzFa7yL07Q0av8Z+KNsAtfAW8A2iujkhw==
-X-Received: by 2002:a17:907:3f02:b0:6f3:5c42:321a with SMTP id hq2-20020a1709073f0200b006f35c42321amr25692644ejc.521.1651075647581;
-        Wed, 27 Apr 2022 09:07:27 -0700 (PDT)
-Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id n5-20020a170906378500b006efb4ab6f59sm6984098ejc.86.2022.04.27.09.07.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 09:07:27 -0700 (PDT)
-From:   Jakob Koschel <jakobkoschel@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com, Ariel Elior <aelior@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Casper Andersson <casper.casan@gmail.com>,
-        Jakob Koschel <jakobkoschel@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Colin Ian King <colin.king@intel.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Xu Wang <vulab@iscas.ac.cn>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org, bpf@vger.kernel.org,
-        Mike Rapoport <rppt@kernel.org>,
-        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Subject: [PATCH net-next v5 10/18] qed: Replace usage of found with dedicated list iterator variable
-Date:   Wed, 27 Apr 2022 18:06:27 +0200
-Message-Id: <20220427160635.420492-11-jakobkoschel@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220427160635.420492-1-jakobkoschel@gmail.com>
-References: <20220427160635.420492-1-jakobkoschel@gmail.com>
+        Wed, 27 Apr 2022 12:13:15 -0400
+Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 483D448387C;
+        Wed, 27 Apr 2022 09:08:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=deltatee.com; s=20200525; h=Subject:In-Reply-To:From:References:Cc:To:
+        MIME-Version:Date:Message-ID:content-disposition;
+        bh=hQoXPJPquqTb2kGaaKxCiuhimB4ekAN7xqBn0QNyaIQ=; b=UVxvYoMfT1vstULD4aRMpZehu9
+        RUBZ7/wz2W723JIdfjGXwMMJAI9xgxn7ytl+ozmyWnrvUO6BfKQOT0N6FrUqfmHBROUoWp0VjK3ws
+        aB5ztde2c7VPF4WvEp/UhnVdawFz9KyJ0u54Z0YjnlQOObmCN293Ez7rYgfLvqC5EIr4QcOpIc48p
+        CqA3tFX6S0dg0+AlpjB90XZvdB/UrvEN/FRQBp97GfOoG2kkzTI/ZBjWeDjbDMOU00Mwkaz/UATmh
+        jAdwCqoRiE/6gpFdRRvlqi+2LLpcmu6kuP/+UgzddB3Yl9U2+4j3cKi0wEvIpxkUtJYopy03PJXsU
+        CdQHwv0A==;
+Received: from s0106ac1f6bb1ecac.cg.shawcable.net ([70.73.163.230] helo=[192.168.11.155])
+        by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <logang@deltatee.com>)
+        id 1njkCl-000K8X-FT; Wed, 27 Apr 2022 10:07:52 -0600
+Message-ID: <fe7f6d8a-8c66-3e90-1c52-140fe9d4cf1a@deltatee.com>
+Date:   Wed, 27 Apr 2022 10:07:48 -0600
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Content-Language: en-US
+To:     Guoqing Jiang <guoqing.jiang@linux.dev>,
+        linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
+        Song Liu <song@kernel.org>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Stephen Bates <sbates@raithlin.com>,
+        Martin Oliveira <Martin.Oliveira@eideticom.com>,
+        David Sloan <David.Sloan@eideticom.com>,
+        Christoph Hellwig <hch@lst.de>
+References: <20220420195425.34911-1-logang@deltatee.com>
+ <20220420195425.34911-2-logang@deltatee.com>
+ <2a6d5554-4f71-6476-6d14-031da52005f5@linux.dev>
+From:   Logan Gunthorpe <logang@deltatee.com>
+In-Reply-To: <2a6d5554-4f71-6476-6d14-031da52005f5@linux.dev>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 70.73.163.230
+X-SA-Exim-Rcpt-To: guoqing.jiang@linux.dev, linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org, song@kernel.org, hch@infradead.org, sbates@raithlin.com, Martin.Oliveira@eideticom.com, David.Sloan@eideticom.com, hch@lst.de
+X-SA-Exim-Mail-From: logang@deltatee.com
+Subject: Re: [PATCH v2 01/12] md/raid5: Factor out ahead_of_reshape() function
+X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To move the list iterator variable into the list_for_each_entry_*()
-macro in the future it should be avoided to use the list iterator
-variable after the loop body.
 
-To *never* use the list iterator variable after the loop it was
-concluded to use a separate iterator variable instead of a
-found boolean [1].
 
-This removes the need to use a found variable and simply checking if
-the variable was set, can determine if the break/goto was hit.
+On 2022-04-26 19:28, Guoqing Jiang wrote:
+>>   +static bool ahead_of_reshape(struct mddev *mddev, sector_t sector,
+>> +                 sector_t reshape_sector)
+>> +{
+>> +    if (mddev->reshape_backwards)
+>> +        return sector < reshape_sector;
+>> +    else
+>> +        return sector >= reshape_sector;
+>> +}
+> 
+> I think it can be an inline function.
 
-Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
----
- drivers/net/ethernet/qlogic/qed/qed_iwarp.c | 26 ++++++++++-----------
- 1 file changed, 12 insertions(+), 14 deletions(-)
+Marking static functions in C files as inline is not recommended. GCC
+will inline it, if it is appropriate.
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
-index 1d1d4caad680..198c9321bf51 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
-@@ -1630,38 +1630,36 @@ static struct qed_iwarp_listener *
- qed_iwarp_get_listener(struct qed_hwfn *p_hwfn,
- 		       struct qed_iwarp_cm_info *cm_info)
- {
--	struct qed_iwarp_listener *listener = NULL;
-+	struct qed_iwarp_listener *listener = NULL, *iter;
- 	static const u32 ip_zero[4] = { 0, 0, 0, 0 };
--	bool found = false;
- 
--	list_for_each_entry(listener,
-+	list_for_each_entry(iter,
- 			    &p_hwfn->p_rdma_info->iwarp.listen_list,
- 			    list_entry) {
--		if (listener->port == cm_info->local_port) {
--			if (!memcmp(listener->ip_addr,
-+		if (iter->port == cm_info->local_port) {
-+			if (!memcmp(iter->ip_addr,
- 				    ip_zero, sizeof(ip_zero))) {
--				found = true;
-+				listener = iter;
- 				break;
- 			}
- 
--			if (!memcmp(listener->ip_addr,
-+			if (!memcmp(iter->ip_addr,
- 				    cm_info->local_ip,
- 				    sizeof(cm_info->local_ip)) &&
--			    (listener->vlan == cm_info->vlan)) {
--				found = true;
-+			    iter->vlan == cm_info->vlan) {
-+				listener = iter;
- 				break;
- 			}
- 		}
- 	}
- 
--	if (found) {
-+	if (listener)
- 		DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "listener found = %p\n",
- 			   listener);
--		return listener;
--	}
-+	else
-+		DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "listener not found\n");
- 
--	DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "listener not found\n");
--	return NULL;
-+	return listener;
- }
- 
- static int
--- 
-2.25.1
+https://yarchive.net/comp/linux/inline.html
+https://www.kernel.org/doc/local/inline.html
 
+Logan
