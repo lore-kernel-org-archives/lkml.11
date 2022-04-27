@@ -2,220 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD40CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 11:06:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64463C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 11:06:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232716AbiD0LIn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 07:08:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33980 "EHLO
+        id S232131AbiD0LKD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 07:10:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232625AbiD0LIM (ORCPT
+        with ESMTP id S232179AbiD0LHo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 07:08:12 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10FBB3C9D7C
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 04:03:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651057401; x=1682593401;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=4o0UHgvGu8OD3M/sb8BWbyJCu2+OXfzKJRyCZAr6T9Q=;
-  b=foSTcApJWNbUdit51B1HDvQtePFwZSroWx5+XjhqOX4G/zXv8rHpqbwf
-   HXAjD+NGMLyb8zzNxYj5C3C5/Ngnu2ogLW5RIVs4k5yEq1PTUa4U8NoDK
-   C4NQsxdv6/w+rCUbf2Rp4c3HKa7O70wFTPhEExBSKtS/KBWPjNyziZGnk
-   a1+4kCT6Bncckkz6SF8/YmknspIugSNT5kBsLrZ1hlIO+6WKwyIvMcGHA
-   EcF2O6IffDJMDjs4H1i1T3VQw2pfuH9coJRyLMWW+D3Oo09t7mZFli01/
-   +X5n3YPO2CtHUwt7BuZnqBZwHUDQDnzcQ35CiONAwPkk0ny5XEoe1BzQ8
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="328827036"
-X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
-   d="scan'208";a="328827036"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 03:14:07 -0700
-X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
-   d="scan'208";a="596214496"
-Received: from apiotrox-mobl.ger.corp.intel.com (HELO [10.249.254.91]) ([10.249.254.91])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 03:14:02 -0700
-Message-ID: <8c4494b2b4c0d1017219d1d75f98fcbba4c6f72d.camel@linux.intel.com>
-Subject: Re: [PATCH v2 4/5] drm/i915: ttm backend dont provide mmap_offset
- for kernel buffers
-From:   Thomas =?ISO-8859-1?Q?Hellstr=F6m?= 
-        <thomas.hellstrom@linux.intel.com>
-To:     Robert Beckett <bob.beckett@collabora.com>,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     Matthew Auld <matthew.auld@intel.com>, linux-kernel@vger.kernel.org
-Date:   Wed, 27 Apr 2022 12:14:00 +0200
-In-Reply-To: <cc56e644-f20f-27ae-7a21-e40c173dfe1e@collabora.com>
-References: <20220412151838.1298956-1-bob.beckett@collabora.com>
-         <20220412151838.1298956-5-bob.beckett@collabora.com>
-         <07e5b1dc442e0b318ee0314f90a433216ed38dcb.camel@linux.intel.com>
-         <cc56e644-f20f-27ae-7a21-e40c173dfe1e@collabora.com>
-Organization: Intel Sweden AB, Registration Number: 556189-6027
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-3.fc34) 
+        Wed, 27 Apr 2022 07:07:44 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C61E222A6;
+        Wed, 27 Apr 2022 03:59:32 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 3B736210E8;
+        Wed, 27 Apr 2022 09:41:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1651052467; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=TuraDcwXXKi2cRnXfRzWlMeYV5vNom2TtBxlGkwTBtM=;
+        b=OhaACAbnzlQzYj3kadKxn23D86fCwFIVEw4Ilz4OvUjPxnWYYZoRpMM19uCnkAo75xHO9t
+        RmjHWD+I/rlxXWuBzEJ8jM9Q2jqGaFgKx4CtngGJ0k1evb/AYzMRmvfVNj9IotZYxhpUJ0
+        rfxU/ckvRGf7BXSWiaN/nHxbU8TTtpM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1651052467;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=TuraDcwXXKi2cRnXfRzWlMeYV5vNom2TtBxlGkwTBtM=;
+        b=Q08CHfZpCFR6XTWhfxUoKV+sZm6RsUm2xPblimsRIua3OuMo5hPBSE80QRvW4lvAJW6+ve
+        uQNYjh4+jK650LAw==
+Received: from quack3.suse.cz (unknown [10.100.224.230])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id E998D2C141;
+        Wed, 27 Apr 2022 09:41:06 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id 79407A0620; Wed, 27 Apr 2022 11:41:06 +0200 (CEST)
+Date:   Wed, 27 Apr 2022 11:41:06 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     yebin <yebin10@huawei.com>
+Cc:     tytso@mit.edu, adilger.kernel@dilger.ca,
+        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jack@suse.cz
+Subject: Re: [PATCH -next v2] jbd2: Fix null-ptr-deref when process reserved
+ list in jbd2_journal_commit_transaction
+Message-ID: <20220427094106.5lmyockklpckkbs3@quack3.lan>
+References: <20220317142137.1821590-1-yebin10@huawei.com>
+ <6268B72A.6080506@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6268B72A.6080506@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sorry for late reply,
+On Wed 27-04-22 11:23:22, yebin wrote:
+> Friendly ping...
 
-On Thu, 2022-04-14 at 17:13 +0100, Robert Beckett wrote:
-> 
-> 
-> On 14/04/2022 15:05, Thomas Hellström wrote:
-> > On Tue, 2022-04-12 at 15:18 +0000, Robert Beckett wrote:
-> > > stolen/kernel buffers should not be mmapable by userland.
-> > > do not provide callbacks to facilitate this for these buffers.
-> > > 
-> > > Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
-> > > ---
-> > >   drivers/gpu/drm/i915/gem/i915_gem_ttm.c | 32
-> > > +++++++++++++++++++++--
-> > > --
-> > >   1 file changed, 27 insertions(+), 5 deletions(-)
-> > > 
-> > > diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-> > > b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-> > > index a878910a563c..b20f81836c54 100644
-> > > --- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-> > > +++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-> > > @@ -1092,8 +1092,8 @@ static void i915_ttm_unmap_virtual(struct
-> > > drm_i915_gem_object *obj)
-> > >          ttm_bo_unmap_virtual(i915_gem_to_ttm(obj));
-> > >   }
-> > >   
-> > > -static const struct drm_i915_gem_object_ops i915_gem_ttm_obj_ops
-> > > = {
-> > > -       .name = "i915_gem_object_ttm",
-> > > +static const struct drm_i915_gem_object_ops
-> > > i915_gem_ttm_user_obj_ops = {
-> > > +       .name = "i915_gem_object_ttm_user",
-> > >          .flags = I915_GEM_OBJECT_IS_SHRINKABLE |
-> > >                   I915_GEM_OBJECT_SELF_MANAGED_SHRINK_LIST,
-> > >   
-> > > @@ -1111,6 +1111,21 @@ static const struct
-> > > drm_i915_gem_object_ops
-> > > i915_gem_ttm_obj_ops = {
-> > >          .mmap_ops = &vm_ops_ttm,
-> > >   };
-> > >   
-> > > +static const struct drm_i915_gem_object_ops
-> > > i915_gem_ttm_kern_obj_ops = {
-> > > +       .name = "i915_gem_object_ttm_kern",
-> > > +       .flags = I915_GEM_OBJECT_IS_SHRINKABLE |
-> > > +                I915_GEM_OBJECT_SELF_MANAGED_SHRINK_LIST,
-> > > +
-> > > +       .get_pages = i915_ttm_get_pages,
-> > > +       .put_pages = i915_ttm_put_pages,
-> > > +       .truncate = i915_ttm_truncate,
-> > > +       .shrink = i915_ttm_shrink,
-> > > +
-> > > +       .adjust_lru = i915_ttm_adjust_lru,
-> > > +       .delayed_free = i915_ttm_delayed_free,
-> > > +       .migrate = i915_ttm_migrate,
-> > > +};
-> > 
-> > Do we really need two different ops here?
-> > 
-> > Since if we don't have mmap ops, basically that tells GEM it should
-> > do
-> > the mmapping rather than TTM.
-> > 
-> > That might of course come in handy for the shmem backend, but I
-> > don't
-> > fully follow why we need this for stolen.
-> 
-> the main rationale for doing this was to avoid 
-> drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c:can_mmap()
-> presuming 
-> that is can use I915_MMAP_TYPE_FIXED
-> 
-> As the original backend also did not have mmap_offset handlers for 
-> stolen, this seemed like a reasonable design.
-> 
-> If desired, we could add a special case for the testing logic, but
-> those 
-> special cases have tendency to multiply.
-> 
-> > 
-> > Also for the framebuffer handed over from BIOS to fbdev, Does that
-> > need
-> > mmapping and if so, how do we handle that?
-> > 
-> 
-> I'm not sure of the usecase there. Do you know of any igt test that 
-> tests this? I can investigate further if you do not.
+Ted probably forgot to send his standard email but your patch is already in
+with a slightly edited message: 23e3d7f7061f86 ("jbd2: fix a potential race
+while discarding reserved buffers after an abort")
 
-It would be if we the fbdev driver at startup inherits some image that
-bios has preloaded into stolen, and then a client tries to write into
-it. Not sure that this is a real use case though, or whether, in that
-case, that takes a separate path for user-space mappings.
-
-/Thomas
-
-
+								Honza
 
 > 
+> On 2022/3/17 22:21, Ye Bin wrote:
+> > we got issue as follows:
+> > [   72.796117] EXT4-fs error (device sda): ext4_journal_check_start:83: comm fallocate: Detected aborted journal
+> > [   72.826847] EXT4-fs (sda): Remounting filesystem read-only
+> > fallocate: fallocate failed: Read-only file system
+> > [   74.791830] jbd2_journal_commit_transaction: jh=0xffff9cfefe725d90 bh=0x0000000000000000 end delay
+> > [   74.793597] ------------[ cut here ]------------
+> > [   74.794203] kernel BUG at fs/jbd2/transaction.c:2063!
+> > [   74.794886] invalid opcode: 0000 [#1] PREEMPT SMP PTI
+> > [   74.795533] CPU: 4 PID: 2260 Comm: jbd2/sda-8 Not tainted 5.17.0-rc8-next-20220315-dirty #150
+> > [   74.798327] RIP: 0010:__jbd2_journal_unfile_buffer+0x3e/0x60
+> > [   74.801971] RSP: 0018:ffffa828c24a3cb8 EFLAGS: 00010202
+> > [   74.802694] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+> > [   74.803601] RDX: 0000000000000001 RSI: ffff9cfefe725d90 RDI: ffff9cfefe725d90
+> > [   74.804554] RBP: ffff9cfefe725d90 R08: 0000000000000000 R09: ffffa828c24a3b20
+> > [   74.805471] R10: 0000000000000001 R11: 0000000000000001 R12: ffff9cfefe725d90
+> > [   74.806385] R13: ffff9cfefe725d98 R14: 0000000000000000 R15: ffff9cfe833a4d00
+> > [   74.807301] FS:  0000000000000000(0000) GS:ffff9d01afb00000(0000) knlGS:0000000000000000
+> > [   74.808338] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > [   74.809084] CR2: 00007f2b81bf4000 CR3: 0000000100056000 CR4: 00000000000006e0
+> > [   74.810047] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > [   74.810981] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > [   74.811897] Call Trace:
+> > [   74.812241]  <TASK>
+> > [   74.812566]  __jbd2_journal_refile_buffer+0x12f/0x180
+> > [   74.813246]  jbd2_journal_refile_buffer+0x4c/0xa0
+> > [   74.813869]  jbd2_journal_commit_transaction.cold+0xa1/0x148
+> > [   74.817550]  kjournald2+0xf8/0x3e0
+> > [   74.819056]  kthread+0x153/0x1c0
+> > [   74.819963]  ret_from_fork+0x22/0x30
 > > 
-> > /Thomas
+> > Above issue may happen as follows:
+> >          write                   truncate                   kjournald2
+> > generic_perform_write
+> >   ext4_write_begin
+> >    ext4_walk_page_buffers
+> >     do_journal_get_write_access ->add BJ_Reserved list
+> >   ext4_journalled_write_end
+> >    ext4_walk_page_buffers
+> >     write_end_fn
+> >      ext4_handle_dirty_metadata
+> >                  ***************JBD2 ABORT**************
+> >       jbd2_journal_dirty_metadata
+> >   -> return -EROFS, jh in reserved_list
+> >                                                     jbd2_journal_commit_transaction
+> >                                                      while (commit_transaction->t_reserved_list)
+> >                                                        jh = commit_transaction->t_reserved_list;
+> >                          truncate_pagecache_range
+> >                           do_invalidatepage
+> > 			  ext4_journalled_invalidatepage
+> > 			   jbd2_journal_invalidatepage
+> > 			    journal_unmap_buffer
+> > 			     __dispose_buffer
+> > 			      __jbd2_journal_unfile_buffer
+> > 			       jbd2_journal_put_journal_head ->put last ref_count
+> > 			        __journal_remove_journal_head
+> > 				 bh->b_private = NULL;
+> > 				 jh->b_bh = NULL;
+> > 				                      jbd2_journal_refile_buffer(journal, jh);
+> > 							bh = jh2bh(jh);
+> > 							->bh is NULL, later will trigger null-ptr-deref
+> > 				 journal_free_journal_head(jh);
 > > 
+> > As after 96f1e0974575 commit, handle reserved list will not hold "journal->j_state_lock"
+> > when kjournald2 commit transaction. So journal_unmap_buffer maybe free
+> > journal_head when handle reserved list. And lead to null-ptr-deref or some
+> > strange errors.
+> > As reserved list almost time is empty. Use "journal->j_state_lock" to protect
+> > handle reserved list can simply solve above issue.
 > > 
+> > Fixes: 96f1e0974575("jbd2: avoid long hold times of j_state_lock while committing a transaction")
+> > Signed-off-by: Ye Bin <yebin10@huawei.com>
+> > ---
+> >   fs/jbd2/commit.c | 4 +++-
+> >   1 file changed, 3 insertions(+), 1 deletion(-)
 > > 
-> > 
-> > > +
-> > >   void i915_ttm_bo_destroy(struct ttm_buffer_object *bo)
-> > >   {
-> > >          struct drm_i915_gem_object *obj = i915_ttm_to_gem(bo);
-> > > @@ -1165,10 +1180,19 @@ int __i915_gem_ttm_object_init(struct
-> > > intel_memory_region *mem,
-> > >                  .no_wait_gpu = false,
-> > >          };
-> > >          enum ttm_bo_type bo_type;
-> > > +       const struct drm_i915_gem_object_ops *ops;
-> > >          int ret;
-> > >   
-> > >          drm_gem_private_object_init(&i915->drm, &obj->base,
-> > > size);
-> > > -       i915_gem_object_init(obj, &i915_gem_ttm_obj_ops,
-> > > &lock_class,
-> > > flags);
-> > > +
-> > > +       if (flags & I915_BO_ALLOC_USER &&
-> > > intel_region_to_ttm_type(mem) != I915_PL_STOLEN) {
-> > > +               bo_type = ttm_bo_type_device;
-> > > +               ops = &i915_gem_ttm_user_obj_ops;
-> > > +       } else {
-> > > +               bo_type = ttm_bo_type_kernel;
-> > > +               ops = &i915_gem_ttm_kern_obj_ops;
-> > > +       }
-> > > +       i915_gem_object_init(obj, ops, &lock_class, flags);
-> > >   
-> > >          obj->bo_offset = offset;
-> > >   
-> > > @@ -1178,8 +1202,6 @@ int __i915_gem_ttm_object_init(struct
-> > > intel_memory_region *mem,
-> > >   
-> > >          INIT_RADIX_TREE(&obj->ttm.get_io_page.radix, GFP_KERNEL
-> > > |
-> > > __GFP_NOWARN);
-> > >          mutex_init(&obj->ttm.get_io_page.lock);
-> > > -       bo_type = (obj->flags & I915_BO_ALLOC_USER) ?
-> > > ttm_bo_type_device :
-> > > -               ttm_bo_type_kernel;
-> > >   
-> > >          obj->base.vma_node.driver_private =
-> > > i915_gem_to_ttm(obj);
-> > >   
-> > 
-> > 
-
-
+> > diff --git a/fs/jbd2/commit.c b/fs/jbd2/commit.c
+> > index 5b9408e3b370..ac7f067b7bdd 100644
+> > --- a/fs/jbd2/commit.c
+> > +++ b/fs/jbd2/commit.c
+> > @@ -488,7 +488,6 @@ void jbd2_journal_commit_transaction(journal_t *journal)
+> >   	jbd2_journal_wait_updates(journal);
+> >   	commit_transaction->t_state = T_SWITCH;
+> > -	write_unlock(&journal->j_state_lock);
+> >   	J_ASSERT (atomic_read(&commit_transaction->t_outstanding_credits) <=
+> >   			journal->j_max_transaction_buffers);
+> > @@ -508,6 +507,8 @@ void jbd2_journal_commit_transaction(journal_t *journal)
+> >   	 * has reserved.  This is consistent with the existing behaviour
+> >   	 * that multiple jbd2_journal_get_write_access() calls to the same
+> >   	 * buffer are perfectly permissible.
+> > +	 * We use journal->j_state_lock here to serialize processing of
+> > +	 * t_reserved_list with eviction of buffers from journal_unmap_buffer().
+> >   	 */
+> >   	while (commit_transaction->t_reserved_list) {
+> >   		jh = commit_transaction->t_reserved_list;
+> > @@ -527,6 +528,7 @@ void jbd2_journal_commit_transaction(journal_t *journal)
+> >   		jbd2_journal_refile_buffer(journal, jh);
+> >   	}
+> > +	write_unlock(&journal->j_state_lock);
+> >   	/*
+> >   	 * Now try to drop any written-back buffers from the journal's
+> >   	 * checkpoint lists.  We do this *before* commit because it potentially
+> 
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
