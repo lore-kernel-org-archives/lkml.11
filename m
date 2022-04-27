@@ -2,231 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B64A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:54:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66BCBC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:55:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236858AbiD0N56 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 09:57:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53882 "EHLO
+        id S236839AbiD0N6b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 09:58:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236841AbiD0N5x (ORCPT
+        with ESMTP id S236807AbiD0N63 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 09:57:53 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2087.outbound.protection.outlook.com [40.107.237.87])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B30F320F6C;
-        Wed, 27 Apr 2022 06:54:37 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=W7qVCD0/sXb6enBNJ7sM2ofyMxGRaIOhuusGEhHpUWCI7AthGJG6xSllZ+mH/WzCuU1scDwiqQvZMhAvm5KZgyuP+RmiNkgCCXqlkJO3BbGNeEoF6sfB0NLscFNveX/vUd1+0M1CYYZTjddZQXgQfQ0KvumhTMmWlmIpYrWtG6vVSh70uL/myfdafCfudB6+5mgEToGjUaH1s3oyAeoKZ86LkxNzQrLmlLxgxQWiHClcFT512jcZDw89XbZMWfrfb7SPXNy6DND6Q+gppQpPD85/1HS9DgtTpfvRbKVWWDy60p3kR2tSaZ70kwCgT/btSjncAF20zfTPLPL3yfd+0Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qvOLDAbToXcmfOhr5nY7lrSGWT/PWx74q9X6rcB8jNM=;
- b=JWY2mt8UYp0fhRrFkGfk+1+4/rSjCuWlVCRHXq4a4Y9NJEJUECo/ZXprNONMGKk8WDF09leT0ORFRAQ1Bse+8HWOfjO5uJkP0gNYOVbqhTnTiyERFYY4ohs16JLwIYZ/he7JpLABqjItf8MJ4Py27GmfW4+Ez83oOzuxXz1mAp1DMQBEy8afTXnYVO8ygn/ithSgu4uPiCXRFP9T+1P5O1BaLNJZv8Wc7X7IEV6x9NEswpyNAOHXefahwetRZXv39tiLyM36jFNynpipgpremuLyPaAUEdLAcjaxF0zhXIyssSX1Dsct0BGu7kgf6/c3ko52Y3cIJIKZQStkLf+UCA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=linuxfoundation.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qvOLDAbToXcmfOhr5nY7lrSGWT/PWx74q9X6rcB8jNM=;
- b=bJ/0LfGXHcN79SWcdKjBfRUz5cYA6m5eW4Fu/lzokv2EM4+cYKGYuPERRZFFY8QAL289pW67dKq9HHpMeC3iU6QbZ1Ek53fAyJxtoPmh+PIoEWxLhEVNeolGr2MKmZgSuzZxI1Ki9KoK9FAf809LrL9bFNJlEYTffZ3ds96bA2c=
-Received: from BN9PR03CA0923.namprd03.prod.outlook.com (2603:10b6:408:107::28)
- by DM6PR12MB3979.namprd12.prod.outlook.com (2603:10b6:5:1cd::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.12; Wed, 27 Apr
- 2022 13:54:34 +0000
-Received: from BN8NAM11FT060.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:107:cafe::21) by BN9PR03CA0923.outlook.office365.com
- (2603:10b6:408:107::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.12 via Frontend
- Transport; Wed, 27 Apr 2022 13:54:34 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT060.mail.protection.outlook.com (10.13.177.211) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5206.12 via Frontend Transport; Wed, 27 Apr 2022 13:54:34 +0000
-Received: from jasmine-meng.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 27 Apr
- 2022 08:54:29 -0500
-From:   Meng Li <li.meng@amd.com>
-To:     Shuah Khan <skhan@linuxfoundation.org>,
-        Huang Rui <ray.huang@amd.com>, <linux-pm@vger.kernel.org>
-CC:     "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Nathan Fontenot <nathan.fontenot@amd.com>,
-        Deepak Sharma <deepak.sharma@amd.com>,
-        "Alex Deucher" <alexander.deucher@amd.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Jinzhou Su <Jinzhou.Su@amd.com>,
-        Perry Yuan <Perry.Yuan@amd.com>,
-        Xiaojian Du <Xiaojian.Du@amd.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Borislav Petkov <bp@alien8.de>, <linux-kernel@vger.kernel.org>,
-        Meng Li <li.meng@amd.com>
-Subject: [PATCH V4 3/3] Documentation: amd-pstate: Add unit test introduction
-Date:   Wed, 27 Apr 2022 21:53:15 +0800
-Message-ID: <20220427135315.3447550-4-li.meng@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220427135315.3447550-1-li.meng@amd.com>
-References: <20220427135315.3447550-1-li.meng@amd.com>
+        Wed, 27 Apr 2022 09:58:29 -0400
+Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3C1530562
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 06:55:17 -0700 (PDT)
+Received: from janitor.denx.de (unknown [62.91.23.180])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: noc@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 78ABA83EAF
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:55:16 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1651067716;
+        bh=lT0gwdo2NDZXehIpqBlbV2nnBX11PUSnb4XZExSkFqg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Y53uAHxxUkp6lFHEhR0iTwkXJuCXQ75AT6wjkGGgiHpAd0A5b6PuEH3mZxMmjXSbK
+         Kq60upcm032ePwxV/hQ35JyFo3iPVgITvqSoemkUlETmH9WpTavLBhpGw4wqPRyQTG
+         Ox7ZuRy58WwFdn6bhKuaNM29DPednm4gL2js3T8vegsMd+F+KkRx3WIvKrZx6kk63k
+         PgOgyEwGPj350i3ZhJy2uN1l/56HKoy4BA1TJx85vcWFSItfPQNRpCNOhorewhr2yP
+         vHuSJhhLOtFAqeuNVJzy68vKg6YCbg6rflTjUawq34jupHGQq9K5FPPXfH5a35wzLq
+         rRt+uVtWZMabg==
+Received: by janitor.denx.de (Postfix, from userid 108)
+        id 2EEA8A0228; Wed, 27 Apr 2022 15:55:16 +0200 (CEST)
+Received: from xpert.denx.de (xpert.denx.de [192.168.0.4])
+        by janitor.denx.de (Postfix) with ESMTPS id DA3BEA00A4;
+        Wed, 27 Apr 2022 15:55:05 +0200 (CEST)
+Received: by xpert.denx.de (Postfix, from userid 535)
+        id 8B69D3E0407; Wed, 27 Apr 2022 15:55:05 +0200 (CEST)
+From:   Philip Oberfichtner <pro@denx.de>
+Cc:     Philip Oberfichtner <pro@denx.de>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        matthias.winker@de.bosch.com
+Subject: [PATCH v3 2/4] drm/panel: simple: Add DataImage FG1001L0DSSWMG01 panel support
+Date:   Wed, 27 Apr 2022 15:52:29 +0200
+Message-Id: <20220427135229.2339865-2-pro@denx.de>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220427135229.2339865-1-pro@denx.de>
+References: <20220427135229.2339865-1-pro@denx.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 13ca91ca-ba2e-4442-d472-08da285575d9
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3979:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB3979C7B60B3981424A53A0DAF7FA9@DM6PR12MB3979.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: xVHAG7DdMD5AO+SVI+8luf+Kok4SjH4bTRSPXvRfWq4meD2jVHDK1+nSBvx6qNaxu61i/brE2XbmrRxPfikmGUZNQhwDTUo7QzICoff6VhbRM5zUDM6ofb7fozWSxQzOwB5PScZfk9gBSYSy1Xmjgm6AtRCsr04zaao8eSkaX6QYLz3ca57TWNGq69W+fE09KQ/ZJ28QMTqyaFYqtnI9Zxnu64tzSh9LB1kJSbYUjORDBIfO7JQof0HONwj87YFg4YkC7V61VYyIifOQzJDjX+/a7Qq5tHUXZQ/FNUtDs3AaCrw1RX3YKr99ioTiIzq/CsCv7uyHC8T2X7RAXNFbzWiOCeZQ8nyBCVF7mmGVNyqksKDlgKY4ewofsWMLzk46iCgJB6x2bzNxMkkOgD0zagIuCDlKv38zIzPH2AkNGY0jWH7Ylxo0cyUjPQrWdDlrVfZ2ch2NDqG4PH+wfFWpKJYtnoqybPEP3oWq+AgfiN2YpKH/h96b5U1bLu0K0YYGykxHOq47xMkyQ8rt7Gla1gDWd+8wxd7DoHP+0TD0oJeC77kU3g0FIF5zrWY55hcs4SzraEhBLFalskcheEi9CO6QZ7kazdcztukr+30PxvIDyAhA4sky/gGzJQdC4RQ61BHmA83jAZczxkAUI1fXVMLcJPm+eMNwA33i0f8FgGWk/ck6K5Fm0C0/XBN9CogJPkkvgcS7p94u33LihtFBQOW0n0paNlaGMurAd3Us2CAra6qRtdlfA1Z52nyE5xkD2rAJxL3Z+6GHF06NyXv/3bxNB0ubP6wtX+NPtGLC5TLExtVhtjeIXiAz6BBM8OEM9d+HXIK+64TKEBfaOBgtqA==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(7696005)(2906002)(6666004)(5660300002)(356005)(54906003)(26005)(36756003)(8936002)(1076003)(2616005)(336012)(426003)(47076005)(83380400001)(186003)(82310400005)(16526019)(508600001)(966005)(36860700001)(70206006)(70586007)(86362001)(81166007)(316002)(4326008)(40460700003)(8676002)(110136005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Apr 2022 13:54:34.0106
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 13ca91ca-ba2e-4442-d472-08da285575d9
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT060.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3979
+X-Virus-Scanned: clamav-milter 0.103.5 at phobos.denx.de
+X-Virus-Status: Clean
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce the AMD P-State unit test module design and implementation.
+Add DataImage FG1001L0DSSWMG01 10.1" 1280x800 TFT LCD panel support.
 
-Signed-off-by: Meng Li <li.meng@amd.com>
+Signed-off-by: Philip Oberfichtner <pro@denx.de>
+
 ---
- Documentation/admin-guide/pm/amd-pstate.rst | 87 +++++++++++++++++++++
- 1 file changed, 87 insertions(+)
 
-diff --git a/Documentation/admin-guide/pm/amd-pstate.rst b/Documentation/admin-guide/pm/amd-pstate.rst
-index 83b58eb4ab4d..395b8b5c680c 100644
---- a/Documentation/admin-guide/pm/amd-pstate.rst
-+++ b/Documentation/admin-guide/pm/amd-pstate.rst
-@@ -182,6 +182,7 @@ to the ``struct sugov_cpu`` that the utilization update belongs to.
- Then, ``amd-pstate`` updates the desired performance according to the CPU
- scheduler assigned.
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Cc: Sam Ravnborg <sam@ravnborg.org>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: dri-devel@lists.freedesktop.org
+Cc: linux-kernel@vger.kernel.org
+Cc: matthias.winker@de.bosch.com
+
+---
+
+Changes in v3: new
+---
+ drivers/gpu/drm/panel/panel-simple.c | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
+
+diff --git a/drivers/gpu/drm/panel/panel-simple.c b/drivers/gpu/drm/panel/panel-simple.c
+index a34f4198a534..e6d0aaddc14c 100644
+--- a/drivers/gpu/drm/panel/panel-simple.c
++++ b/drivers/gpu/drm/panel/panel-simple.c
+@@ -1402,6 +1402,30 @@ static const struct panel_desc chunghwa_claa101wb01 = {
+ 	.connector_type = DRM_MODE_CONNECTOR_LVDS,
+ };
  
-+.. _processor_support:
- 
- Processor Support
- =======================
-@@ -282,6 +283,8 @@ efficiency frequency management method on AMD processors.
- Kernel Module Options for ``amd-pstate``
- =========================================
- 
-+.. _shared_mem:
++static const struct display_timing dataimage_fg1001l0dsswmg01_timing = {
++	.pixelclock = { 68900000, 71110000, 73400000 },
++	.hactive = { 1280, 1280, 1280 },
++	.vactive = { 800, 800, 800 },
++	.hback_porch = { 100, 100, 100 },
++	.hfront_porch = { 100, 100, 100 },
++	.vback_porch = { 5, 5, 5 },
++	.vfront_porch = { 5, 5, 5 },
++	.hsync_len = { 24, 24, 24 },
++	.vsync_len = { 3, 3, 3 },
++	.flags = DISPLAY_FLAGS_DE_HIGH | DISPLAY_FLAGS_PIXDATA_POSEDGE |
++		 DISPLAY_FLAGS_HSYNC_LOW | DISPLAY_FLAGS_VSYNC_LOW,
++};
 +
- ``shared_mem``
- Use a module param (shared_mem) to enable related processors manually with
- **amd_pstate.shared_mem=1**.
-@@ -393,6 +396,87 @@ about part of the output. ::
-  CPU_005     712          116384        39        49        166       0.7565  9645075 2214891 38431470  25.1   11.646       469         2.496         kworker/5:0-40
-  CPU_006     712          116408        39        49        166       0.6769  8950227 1839034 37192089  24.06  11.272       470         2.496         kworker/6:0-1264
- 
-+Unit Tests for amd-pstate
-+-------------------------
++static const struct panel_desc dataimage_fg1001l0dsswmg01 = {
++	.timings = &dataimage_fg1001l0dsswmg01_timing,
++	.num_timings = 1,
++	.bpc = 8,
++	.size = {
++		.width = 217,
++		.height = 136,
++	},
++};
 +
-+``amd-pstate-ut`` is a test module for testing the ``amd-pstate`` driver.
-+
-+ * It can help all users to verify their processor support (SBIOS/Firmware or Hardware).
-+
-+ * Kernel can have a basic function test to avoid the kernel regression during the update.
-+
-+ * We can introduce more functional or performance tests to align the result together, it will benefit power and performance scale optimization.
-+
-+1. Test case decriptions
-+
-+        +---------+--------------------------------+------------------------------------------------------------------------------------+
-+        | Index   | Functions                      | Description                                                                        |
-+        +=========+================================+====================================================================================+
-+        | 0       | aput_acpi_cpc                  || Check whether the _CPC object is present in SBIOS.                                |
-+        |         |                                ||                                                                                   |
-+        |         |                                || The detail refer to `Processor Support <processor_support_>`_.                    |
-+        +---------+--------------------------------+------------------------------------------------------------------------------------+
-+        | 1       | aput_check_enabled             || Check whether AMD P-State is enabled.                                             |
-+        |         |                                ||                                                                                   |
-+        |         |                                || AMD P-States and ACPI hardware P-States always can be supported in one processor. |
-+        |         |                                | But AMD P-States has the higher priority and if it is enabled with                 |
-+        |         |                                | :c:macro:`MSR_AMD_CPPC_ENABLE` or ``cppc_set_enable``, it will respond to the      |
-+        |         |                                | request from AMD P-States.                                                         |
-+        +---------+--------------------------------+------------------------------------------------------------------------------------+
-+        | 2       | aput_check_perf                || Check if the each performance values are reasonable.                              |
-+        |         |                                || highest_perf >= nominal_perf > lowest_nonlinear_perf > lowest_perf > 0.           |
-+        +---------+--------------------------------+------------------------------------------------------------------------------------+
-+        | 3       | aput_check_freq                || Check if the each frequency values and max freq when set support boost mode       |
-+        |         |                                | are reasonable.                                                                    |
-+        |         |                                || max_freq >= nominal_freq > lowest_nonlinear_freq > min_freq > 0                   |
-+        |         |                                || If boost is not active but supported, this maximum frequency will be larger than  |
-+        |         |                                | the one in ``cpuinfo``.                                                            |
-+        +---------+--------------------------------+------------------------------------------------------------------------------------+
-+
-+#. How to execute the tests
-+
-+   We use test module in the kselftest frameworks to implement it.
-+   We create amd-pstate-ut module and tie it into kselftest.(for
-+   details refer to Linux Kernel Selftests [4]_).
-+
-+    1. Build ::
-+
-+        jasminemeng@jasmine-meng:~/amd-brahma$ cd linux
-+        jasminemeng@jasmine-meng:~/amd-brahma/linux$ make modules M=tools/testing/selftests/amd-pstate/amd-pstate-ut
-+          CC [M]  tools/testing/selftests/amd-pstate/amd-pstate-ut/amd-pstate-ut.o
-+          MODPOST tools/testing/selftests/amd-pstate/amd-pstate-ut/Module.symvers
-+          CC [M]  tools/testing/selftests/amd-pstate/amd-pstate-ut/amd-pstate-ut.mod.o
-+          LD [M]  tools/testing/selftests/amd-pstate/amd-pstate-ut/amd-pstate-ut.ko
-+          BTF [M] tools/testing/selftests/amd-pstate/amd-pstate-ut/amd-pstate-ut.ko
-+        jasminemeng@jasmine-meng:~/amd-brahma/linux$ make -C tools/testing/selftests
-+
-+    #. Installation & Steps ::
-+
-+        jasmine@jasmine-MayanDAP-RMB:~/amd-brahma/linux$ make -C tools/testing/selftests install INSTALL_PATH=~/kselftest
-+        jasmine@jasmine-MayanDAP-RMB:~$ sudo cp amd-pstate-ut.ko /lib/modules/5.18.0-rc2+/
-+        jasmine@jasmine-MayanDAP-RMB:~$ sudo depmod
-+        jasmine@jasmine-MayanDAP-RMB:~$ sudo ./kselftest/run_kselftest.sh -c amd-pstate
-+        TAP version 13
-+        1..1
-+        # selftests: amd-pstate: amd-pstate-ut.sh
-+        # amd-pstate-ut: ok
-+        ok 1 selftests: amd-pstate: amd-pstate-ut.sh
-+
-+    #. Results ::
-+
-+         jasmine@jasmine-MayanDAP-RMB:~$ dmesg | grep "amd-pstate-ut" | tee log.txt
-+         [76697.480217] amd-pstate-ut: loaded.
-+         [76697.480222] amd-pstate-ut: ****** Begin 1             acpi_cpc_valid          ******
-+         [76697.480227] amd-pstate-ut: ****** End   1             acpi_cpc_valid          ******
-+         [76697.480228] amd-pstate-ut: ****** Begin 2             check_enabled           ******
-+         [76697.480253] amd-pstate-ut: ****** End   2             check_enabled           ******
-+         [76697.480255] amd-pstate-ut: ****** Begin 3             check_perf              ******
-+         [76697.480554] amd-pstate-ut: ****** End   3             check_perf              ******
-+         [76697.480556] amd-pstate-ut: ****** Begin 4             check_freq              ******
-+         [76697.480558] amd-pstate-ut: ****** End   4             check_freq              ******
-+         [76697.480559] amd-pstate-ut: all 4 tests passed
-+         [76697.482507] amd-pstate-ut: unloaded.
-+
- 
- Reference
- ===========
-@@ -405,3 +489,6 @@ Reference
- 
- .. [3] Processor Programming Reference (PPR) for AMD Family 19h Model 51h, Revision A1 Processors
-        https://www.amd.com/system/files/TechDocs/56569-A1-PUB.zip
-+
-+.. [4] Linux Kernel Selftests,
-+       https://www.kernel.org/doc/html/latest/dev-tools/kselftest.html
+ static const struct drm_display_mode dataimage_scf0700c48ggu18_mode = {
+ 	.clock = 33260,
+ 	.hdisplay = 800,
+@@ -3768,6 +3792,9 @@ static const struct of_device_id platform_of_match[] = {
+ 	}, {
+ 		.compatible = "chunghwa,claa101wb01",
+ 		.data = &chunghwa_claa101wb01
++	}, {
++		.compatible = "dataimage,fg1001l0dsswmg01",
++		.data = &dataimage_fg1001l0dsswmg01,
+ 	}, {
+ 		.compatible = "dataimage,scf0700c48ggu18",
+ 		.data = &dataimage_scf0700c48ggu18,
 -- 
-2.25.1
+2.34.1
 
