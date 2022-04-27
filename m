@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AB54C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 18:52:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 741D1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 18:52:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231694AbiD0Szh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 14:55:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54320 "EHLO
+        id S232011AbiD0Szs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 14:55:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233936AbiD0Syp (ORCPT
+        with ESMTP id S234027AbiD0Syx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 14:54:45 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFF873E4FB0
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 11:41:19 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id v12so3693222wrv.10
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 11:41:19 -0700 (PDT)
+        Wed, 27 Apr 2022 14:54:53 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9AD4D64F2
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 11:41:22 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id j15so3741255wrb.2
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 11:41:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=5PDc4kwfq5Abwa8nZKwgraCJqPwJeISvtFvxURCWRYI=;
-        b=UIIGGWXC9ZO6cN8r+a6HL16fNGfaaAhzbI0lQF/wnSlSs/t9eMVYFSuzoAKmV3ZtH/
-         0dLq+LCinVd1U4eap4xBmPvz4nW5j0iVD0obOY7K5bu5EI/u+sGkXOuNjCPep7TEasfg
-         aBybdJwTaX6LRsFz8T/4Ny40jViAfrFMPHdc/HyPiX6vKOouUGZ9cAHvqjZwGZG17p0T
-         SK9skiIx6abasTdI2vQ7YGhdTI9UBDC3q2idGpA3lATiHM+0T8ZwuGnLA2m3DWvULaLm
-         GxRR2qiSV1S4DsknDdVCeDHtw95mrLO/imrrLsyayq1IgZPLyDBiTmkz69ZLw94QQPgO
-         dV3w==
+        bh=N6G/xcwWCTxvb9G73B2XRdjPPr2MF5UR6WrCerpPvtI=;
+        b=Eq8RmBUa6QZIrPBoaS4wU4l9ksQhkbE+j9QQwicFPr7ea96HlDJXhgWVybK81lp291
+         A32tb/pPMKlpwfXAfDCIpaEPK+Hx5xBCZuDGPJlnk2iAT5Vhu59xnuFOJok//ATLLCkB
+         st01pOkCOOY5SiT9Xx0G9FC4T9dc7TthrvU/JlKqINfASBOYtr6fQmn6IrEGGtLSPBe0
+         HpwmdfsuvUwQ8dYQFEiGjuHmGQNVUDYibL1rHMy7Ki1GTKyG9mbFszIVfe6/spogSqw9
+         CWq/TX7YQM4l9Xza2E9f8Wo/+xRdzrcbZsLTUHqpNib8ebjuILDJWkJDmue6HGx6gXqJ
+         1phA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=5PDc4kwfq5Abwa8nZKwgraCJqPwJeISvtFvxURCWRYI=;
-        b=qiy6YCrnm6KV50zRlDQFcYxlcv/A/sazI3xFi9CaDi56Fu/m+BClcUXq2vz94OcIq/
-         FJZBCvmB1l1xnH5TYUlBDROPK8m4Zu2bT7TWi40jyjigYUljsZUZ4Q/MzBpZu79ElFOt
-         v+w9Z5cjFjJLMPEkFpOQXnIY4j1ys3rnlnJOUOwU+ePbtWwnNMrUBAAqCdR/o0/csa8U
-         8asVJFGgkVrWSwRtQWgiR0t93EdL21raURtwrs0M4aa+fW/UhKtx9GTA+qH9wDZrcA9C
-         MfQD4l+B5rSDdo2guY+7e3EOq33w/1Xd92feeO9CSqm1lfY2fj0/OvGXpI649BNZW/bg
-         JF7A==
-X-Gm-Message-State: AOAM531bsCD5kpq5GO/jcL8Mst92DhlVz2HVBiIPQDysVOre6TRGU6K/
-        3Z+VPcmCk5gmkwNmFbEHUndIEg==
-X-Google-Smtp-Source: ABdhPJwdbeKT5kUGKCBIIYgVJXJw7u8BrPYYn/BNsEx7tG7fC2SfT3HwQAiYCTj6e0KUfK0qGjjVAg==
-X-Received: by 2002:a5d:610b:0:b0:20a:e00b:5e46 with SMTP id v11-20020a5d610b000000b0020ae00b5e46mr10875426wrt.293.1651084878587;
-        Wed, 27 Apr 2022 11:41:18 -0700 (PDT)
+        bh=N6G/xcwWCTxvb9G73B2XRdjPPr2MF5UR6WrCerpPvtI=;
+        b=q2Lc3TV+OzwPNQ+RI6OkpdJFNfaBGIzq7wxJxEdq0dwjMvqclx9Cba6kAbfbd0oEcC
+         lEnETQ0f4sUVSZi+3dmmJACHsV5mSoSQZ/r+UF2XfUDD90B+cLDzGHEOvl9kSGJZdoVg
+         2OP1ic6y2oIVKI9KBqMp3UbPJScwlqOOAStG3FZW2Wj+136Vc2yZcLFyZnz3eUwfXPd6
+         Y4WyxdcmU1L/uaAJ1rHDA3WBngtfLBre+QVTWKAxn55CcJF/bKiixOT3qIb6ulj4rJmG
+         +56J8PC66bvirSaNEexQIHpygolZTgrZUK3YJRjjHCNERCDmXflveFYyuO/8YiWqCqev
+         OnBw==
+X-Gm-Message-State: AOAM530yVKOM/B5tiOBXfq9oYUcU81N0yKZpbzQWjHaCkfMJcxK9kpE6
+        6WojTVwYXo8EE4X5HKv76Ds4kg==
+X-Google-Smtp-Source: ABdhPJwZVKozldr6zcXz35GYlRTsb+89wBHEbE1Uy4aFsPphD87s+fTEG/jHqJh2dUUwdOsRDpNklA==
+X-Received: by 2002:a5d:6752:0:b0:20a:ce1f:2ceb with SMTP id l18-20020a5d6752000000b0020ace1f2cebmr20539629wrw.715.1651084881147;
+        Wed, 27 Apr 2022 11:41:21 -0700 (PDT)
 Received: from localhost.localdomain (cpc78119-cwma10-2-0-cust590.7-3.cable.virginm.net. [81.96.50.79])
-        by smtp.gmail.com with ESMTPSA id f3-20020a5d64c3000000b0020aef267950sm1992798wri.49.2022.04.27.11.41.17
+        by smtp.gmail.com with ESMTPSA id f3-20020a5d64c3000000b0020aef267950sm1992798wri.49.2022.04.27.11.41.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 11:41:17 -0700 (PDT)
+        Wed, 27 Apr 2022 11:41:20 -0700 (PDT)
 From:   Caleb Connolly <caleb.connolly@linaro.org>
 To:     caleb.connolly@linaro.org, Sebastian Reichel <sre@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -58,9 +58,9 @@ To:     caleb.connolly@linaro.org, Sebastian Reichel <sre@kernel.org>,
         linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
 Cc:     Amit Pundir <amit.pundir@linaro.org>,
         Sumit Semwal <sumit.semwal@linaro.org>
-Subject: [PATCH 2/6] arm64: dts: qcom: pmi8998: add charger node
-Date:   Wed, 27 Apr 2022 19:40:27 +0100
-Message-Id: <20220427184031.2569442-3-caleb.connolly@linaro.org>
+Subject: [PATCH 4/6] arm64: dts: qcom: sdm845-db845c: enable pmi8998 charger
+Date:   Wed, 27 Apr 2022 19:40:29 +0100
+Message-Id: <20220427184031.2569442-5-caleb.connolly@linaro.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220427184031.2569442-1-caleb.connolly@linaro.org>
 References: <20220427184031.2569442-1-caleb.connolly@linaro.org>
@@ -70,41 +70,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a node for the smb2 charger hardware found on the pmi8998.
+Enable the smb2 charger driver on the db845c and add a simple-battery
+node to report the correct VBAT voltage.
 
 Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
 ---
- arch/arm64/boot/dts/qcom/pmi8998.dtsi | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ arch/arm64/boot/dts/qcom/sdm845-db845c.dts | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/pmi8998.dtsi b/arch/arm64/boot/dts/qcom/pmi8998.dtsi
-index da10668c361d..962a8719b07a 100644
---- a/arch/arm64/boot/dts/qcom/pmi8998.dtsi
-+++ b/arch/arm64/boot/dts/qcom/pmi8998.dtsi
-@@ -9,6 +9,23 @@ pmi8998_lsid0: pmic@2 {
- 		#address-cells = <1>;
- 		#size-cells = <0>;
+diff --git a/arch/arm64/boot/dts/qcom/sdm845-db845c.dts b/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
+index 40a290b6d4f3..3b73b5305c51 100644
+--- a/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
++++ b/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
+@@ -240,6 +240,18 @@ vph_pwr: vph-pwr-regulator {
  
-+		pmi8998_charger: charger@1000 {
-+			compatible = "qcom,pmi8998-charger";
-+			reg = <0x1000>;
+ 		vin-supply = <&vbat_som>;
+ 	};
 +
-+			interrupts = <0x2 0x13 0x4 IRQ_TYPE_EDGE_BOTH>,
-+				     <0x2 0x12 0x2 IRQ_TYPE_EDGE_BOTH>,
-+				     <0x2 0x16 0x1 IRQ_TYPE_EDGE_RISING>,
-+				     <0x2 0x13 0x6 IRQ_TYPE_EDGE_RISING>;
-+			interrupt-names = "usb-plugin", "bat-ov", "wdog-bark", "usbin-icl-change";
++	/*
++	 * The db845c doesn't actually have a battery, but the charger circuitry
++	 * is still wired up to support one, it needs to be programmed for nominal
++	 * vbat voltage. See the vbat-regulator above.
++	 */
++	battery: battery {
++		compatible = "simple-battery";
 +
-+			io-channels = <&pmi8998_rradc 3>,
-+				      <&pmi8998_rradc 4>;
-+			io-channel-names = "usbin_i", "usbin_v";
++		voltage-min-design-microvolt = <4200000>;
++		voltage-max-design-microvolt = <4200000>;
++	};
+ };
+ 
+ &adsp_pas {
+@@ -603,6 +615,12 @@ &pmi8998_rradc {
+ 	status = "okay";
+ };
+ 
++&pmi8998_charger {
++	status = "okay";
 +
-+			status = "disabled";
-+		};
++	monitored-battery = <&battery>;
++};
 +
- 		pmi8998_gpio: gpios@c000 {
- 			compatible = "qcom,pmi8998-gpio", "qcom,spmi-gpio";
- 			reg = <0xc000>;
+ /* QUAT I2S Uses 4 I2S SD Lines for audio on LT9611 HDMI Bridge */
+ &q6afedai {
+ 	qi2s@22 {
 -- 
 2.36.0
 
