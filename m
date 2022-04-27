@@ -2,173 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEDEBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 09:10:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CADB1C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 09:10:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234955AbiD0JNZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 05:13:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56178 "EHLO
+        id S232432AbiD0JNa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 05:13:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233205AbiD0JND (ORCPT
+        with ESMTP id S233690AbiD0JNL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 05:13:03 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 588E4245E6F;
-        Wed, 27 Apr 2022 02:09:43 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23R98xZS095481;
-        Wed, 27 Apr 2022 04:08:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1651050539;
-        bh=kupnSmCLa8ukKSu5s2c5515veWPch3RoCk/juFoT/6Q=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=KQLf9wV0dRUKRDV92bduBg3H2KjUfK739e7Ig2QfBKLkdLQ7+kQIWEAjikKqZRkvA
-         z3yzPgqiipGHSObsUQ69Yob2lsmFqY9W6C+eaDrzh9t/Sz7isplESuY/9WVoyVxa9x
-         NG8w5Z4hSwpUZEXbZKgK/gclYt5nQGRH8vR0eps8=
-Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23R98xeu122332
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 27 Apr 2022 04:08:59 -0500
-Received: from DLEE107.ent.ti.com (157.170.170.37) by DLEE114.ent.ti.com
- (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 27
- Apr 2022 04:08:59 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE107.ent.ti.com
- (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 27 Apr 2022 04:08:59 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23R98ws5058588;
-        Wed, 27 Apr 2022 04:08:59 -0500
-From:   Aradhya Bhatia <a-bhatia1@ti.com>
-To:     Vignesh Raghavendra <vigneshr@ti.com>
-CC:     Nishanth Menon <nm@ti.com>, Rob Herring <robh+dt@kernel.org>,
-        Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>,
-        Devicetree List <devicetree@vger.kernel.org>,
-        Linux Kernel List <linux-kernel@vger.kernel.org>,
-        Aradhya Bhatia <a-bhatia1@ti.com>
-Subject: [PATCH 4/4] arm64: dts: ti: k3-am625-sk: Add DSS ports, HDMI tx & peripherals
-Date:   Wed, 27 Apr 2022 14:38:50 +0530
-Message-ID: <20220427090850.32280-5-a-bhatia1@ti.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220427090850.32280-1-a-bhatia1@ti.com>
-References: <20220427090850.32280-1-a-bhatia1@ti.com>
+        Wed, 27 Apr 2022 05:13:11 -0400
+Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 20C29939B4;
+        Wed, 27 Apr 2022 02:09:54 -0700 (PDT)
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1njdfk-0000Hv-00; Wed, 27 Apr 2022 11:09:20 +0200
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id E3A75C01C7; Wed, 27 Apr 2022 10:59:14 +0200 (CEST)
+Date:   Wed, 27 Apr 2022 10:59:14 +0200
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc:     Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-mips@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] mips: dts: ralink: mt7621: add mdio label to
+ mdio-bus
+Message-ID: <20220427085914.GA8404@alpha.franken.de>
+References: <20220411112049.18001-1-arinc.unal@arinc9.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+In-Reply-To: <20220411112049.18001-1-arinc.unal@arinc9.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add DT nodes for sil9022 HDMI transmitter (tx), HDMI connector and the
-HDMI fixed master clock on the am625-sk board.
+On Mon, Apr 11, 2022 at 02:20:47PM +0300, Arınç ÜNAL wrote:
+> Add mdio label to the mdio-bus node to easily refer to it.
+> 
+> Use the newly created label on the GB-PC2 devicetree.
+> 
+> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> Reviewed-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
+> ---
+> v2: add "ralink:" to the commit summary
+> 
+> ---
+>  .../boot/dts/ralink/mt7621-gnubee-gb-pc2.dts   | 18 ++++++++----------
+>  arch/mips/boot/dts/ralink/mt7621.dtsi          |  2 +-
+>  2 files changed, 9 insertions(+), 11 deletions(-)
 
-Additionally, add and connect output port for DSS (vp2), input and output
-ports for the sil9022 HDMI tx and the input port for the HDMI connector.
+series applied to mips-next.
 
-The sil9022 HDMI tx is connected on the i2c1 bus. The HDMI connector on
-the board is of type "a". The clock frequency of the master clock that
-supports the HDMI tx is 12.288 MHz.
+Thomas.
 
-The dpi output signals from the vp2 of DSS are fed into the sil9022 HDMI
-transmitter. These signals are converted into HDMI signals which are
-further passed on to the HDMI connector on the board, on which display
-can be connected via appropriate HDMI cables.
-
-Signed-off-by: Aradhya Bhatia <a-bhatia1@ti.com>
----
- arch/arm64/boot/dts/ti/k3-am625-sk.dts | 63 ++++++++++++++++++++++++++
- 1 file changed, 63 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/ti/k3-am625-sk.dts b/arch/arm64/boot/dts/ti/k3-am625-sk.dts
-index 96414c5dacf7..9567fa4a447b 100644
---- a/arch/arm64/boot/dts/ti/k3-am625-sk.dts
-+++ b/arch/arm64/boot/dts/ti/k3-am625-sk.dts
-@@ -134,6 +134,23 @@ led-0 {
- 			default-state = "off";
- 		};
- 	};
-+
-+	hdmi_mstrclk: hdmi-mstrclk {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <12288000>;
-+	};
-+
-+	hdmi: connector {
-+		compatible = "hdmi-connector";
-+		label = "hdmi";
-+		type = "a";
-+		port {
-+			hdmi_connector_in: endpoint {
-+				remote-endpoint = <&sii9022_out>;
-+			};
-+		};
-+	};
- };
- 
- &main_pmx0 {
-@@ -385,6 +402,38 @@ exp1: gpio@22 {
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&main_gpio1_ioexp_intr_pins_default>;
- 	};
-+
-+	sii9022: sii9022@3b {
-+		compatible = "sil,sii9022";
-+		reg = <0x3b>;
-+
-+		clocks = <&hdmi_mstrclk>;
-+		clock-names = "mclk";
-+
-+		interrupt-parent = <&exp1>;
-+		interrupts = <16 IRQ_TYPE_EDGE_FALLING>;
-+
-+		ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			port@0 {
-+				reg = <0>;
-+
-+				sii9022_in: endpoint {
-+					remote-endpoint = <&dpi1_out>;
-+				};
-+			};
-+
-+			port@1 {
-+				reg = <1>;
-+
-+				sii9022_out: endpoint {
-+					remote-endpoint = <&hdmi_connector_in>;
-+				};
-+			};
-+		};
-+	};
- };
- 
- &main_i2c2 {
-@@ -450,6 +499,20 @@ &dss {
- 	pinctrl-0 = <&main_dss0_pins_default>;
- };
- 
-+&dss_ports {
-+	#address-cells = <1>;
-+	#size-cells = <0>;
-+
-+	/* VP2: DPI Output */
-+	port@1 {
-+		reg = <1>;
-+
-+		dpi1_out: endpoint {
-+			remote-endpoint = <&sii9022_in>;
-+		};
-+	};
-+};
-+
- &mailbox0_cluster0 {
- 	mbox_m4_0: mbox-m4-0 {
- 		ti,mbox-rx = <0 0 0>;
 -- 
-2.36.0
-
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
