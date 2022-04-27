@@ -2,97 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C54FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:00:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B3E0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:02:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241638AbiD0QDn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:03:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54158 "EHLO
+        id S241655AbiD0QDv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:03:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241571AbiD0QDX (ORCPT
+        with ESMTP id S241160AbiD0QDg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:03:23 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 44635170E33;
-        Wed, 27 Apr 2022 08:59:35 -0700 (PDT)
-Received: from smtpclient.apple (d66-183-91-182.bchsia.telus.net [66.183.91.182])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 6DA7720E97CA;
-        Wed, 27 Apr 2022 08:58:53 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6DA7720E97CA
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1651075134;
-        bh=LOLk8KFWAb5rXU/Jm0ZFnROrkWq5xdzno1Ze707Mg8Q=;
-        h=Subject:From:In-Reply-To:Date:Cc:References:To:From;
-        b=lCin7lh3eOWoC8NOgWTsOU0C03Zh/WxRxATeRAsLc9arDLmXdbC8Xz3cFZXKGqkcf
-         DfBeM6nu6FeQm0CloG/1lp+Jr4MIPORFywV2OmiQ61fJFZoc5aJpPjVsFbvFPSlF4R
-         uU8SBBkMZMrfVfX7uVGZLvABbGZFb3L5JMNn+Qfs=
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
-Subject: Re: [RFC 1/1] drivers/dma/*: replace tasklets with workqueue
-From:   Allen Pais <apais@linux.microsoft.com>
-In-Reply-To: <e8cb3d63-f5b9-d067-af66-86f7a7c7f76c@intel.com>
-Date:   Wed, 27 Apr 2022 08:58:52 -0700
-Cc:     Vinod Koul <vkoul@kernel.org>, olivier.dautricourt@orolia.com,
-        sr@denx.de, Kees Cook <keescook@chromium.org>,
-        linux-hardening@vger.kernel.org, ludovic.desroches@microchip.com,
-        tudor.ambarus@microchip.com, f.fainelli@gmail.com,
-        rjui@broadcom.com, sbranden@broadcom.com,
-        bcm-kernel-feedback-list@broadcom.com, nsaenz@kernel.org,
-        paul@crapouillou.net, Eugeniy.Paltsev@synopsys.com,
-        gustavo.pimentel@synopsys.com, vireshk@kernel.org,
-        andriy.shevchenko@linux.intel.com, leoyang.li@nxp.com,
-        zw@zh-kernel.org, wangzhou1@hisilicon.com, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, sean.wang@mediatek.com,
-        matthias.bgg@gmail.com, afaerber@suse.de, mani@kernel.org,
-        logang@deltatee.com, sanju.mehta@amd.com, daniel@zonque.org,
-        haojian.zhuang@gmail.com, robert.jarzmik@free.fr,
-        agross@kernel.org, bjorn.andersson@linaro.org,
-        krzysztof.kozlowski@linaro.org, green.wan@sifive.com,
-        orsonzhai@gmail.com, baolin.wang7@gmail.com, zhang.lyra@gmail.com,
-        patrice.chotard@foss.st.com, linus.walleij@linaro.org,
-        wens@csie.org, jernej.skrabec@gmail.com, samuel@sholland.org,
-        dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <27B51CB8-FCC0-49FB-AA28-93594943423E@linux.microsoft.com>
-References: <20220419211658.11403-1-apais@linux.microsoft.com>
- <20220419211658.11403-2-apais@linux.microsoft.com> <YmiuUy+PAjKEq6uE@matsya>
- <e8cb3d63-f5b9-d067-af66-86f7a7c7f76c@intel.com>
-To:     Dave Jiang <dave.jiang@intel.com>
-X-Mailer: Apple Mail (2.3696.80.82.1.1)
+        Wed, 27 Apr 2022 12:03:36 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA560288EE4
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 08:59:49 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id z16so1955173pfh.3
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 08:59:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=B7bCPSAqni/eXnk1LqJkGqy1IOK7BdN/WKgexnP+sSs=;
+        b=wm5xTSYCz9ImGQOBbgtUP1ff6okO5z5MEKS4Ra9Q+9ZGRX4Sh2LozU7GiIrBErvXAR
+         3+Sv9iMqS+IT+wyhnbLG1cg59xi8BU96rjrfGqmrslU5A1fQ8/9xQpyxAsqScgLnvusw
+         haUA8dCRMZgbI5h2voBta7cefY4wYB+UQRRLm9fESog4XJpY0cjCQHVsNN+H7teOrdSU
+         SSajLEtZzEFwrOHv6JT22Qdii4pXDEzZwU5bxCebqkwdMdpJegLzdSOd3+GQUfjhqiSu
+         iGt31/fPbboUzAhv9SpTWYKuJ9HhuIu1o6fNCofEufP/1VaBAOrVOauzGH3I7cq+f0uv
+         EXnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=B7bCPSAqni/eXnk1LqJkGqy1IOK7BdN/WKgexnP+sSs=;
+        b=1Ee8SXUCSOJFSGc4kT7FO+C7BBwFcMi8lFPtq9DUoyXpMbMmK69EDWMdnT3o3a4zqO
+         YANQ3wBXZtEwbjsxjtvRKcrR2iaD2Iyr/80Q3k1kbkrlfU1VfTWfQbpfy/ul3/yGbDeP
+         TvsJryZ2FyDEA8NHzHsgapr9bR7Ozw0ccdSMbIgjLB/1qrkkpkbNxcbMJkwjM3s6Hssp
+         GIJSnwz402ofO8EFVsFevmm6L9MG3lOdLaBe9VGFtBS2OKBSkhhtGXQd7jizht1E5giJ
+         Yz6SrMf4eqDd3eeXzBfHmI62jRfqf43UHbXdBPTum6Sesikq8o0eeIiL3z2ErsOxJcGD
+         Q//g==
+X-Gm-Message-State: AOAM530XB8NtJNdOXR9PS3gOp0oJtkYLxerF0eahSKvDwqJDj7eEPkoQ
+        qrX9hPmCEwrlsenaO6BksziivA==
+X-Google-Smtp-Source: ABdhPJymOsPeD6HUMpzYXIRJtQHQErVz91u2xNJ09OSkyp0fxCsF6Ms6ClrJB2T8aUxViCrzVmZqNQ==
+X-Received: by 2002:a62:2742:0:b0:505:89a5:2023 with SMTP id n63-20020a622742000000b0050589a52023mr30923743pfn.18.1651075183688;
+        Wed, 27 Apr 2022 08:59:43 -0700 (PDT)
+Received: from leoy-ThinkPad-X240s ([134.195.101.46])
+        by smtp.gmail.com with ESMTPSA id k198-20020a633dcf000000b003aa9116ba17sm16707374pga.35.2022.04.27.08.59.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 08:59:43 -0700 (PDT)
+Date:   Wed, 27 Apr 2022 23:59:34 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Ali Saidi <alisaidi@amazon.com>
+Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, german.gomez@arm.com,
+        acme@kernel.org, benh@kernel.crashing.org, Nick.Forrington@arm.com,
+        alexander.shishkin@linux.intel.com, andrew.kilroy@arm.com,
+        james.clark@arm.com, john.garry@huawei.com, jolsa@kernel.org,
+        kjain@linux.ibm.com, lihuafei1@huawei.com, mark.rutland@arm.com,
+        mathieu.poirier@linaro.org, mingo@redhat.com, namhyung@kernel.org,
+        peterz@infradead.org, will@kernel.org
+Subject: Re: [PATCH v7 5/5] perf arm-spe: Use SPE data source for neoverse
+ cores
+Message-ID: <20220427155934.GC562576@leoy-ThinkPad-X240s>
+References: <20220426135937.18497-1-alisaidi@amazon.com>
+ <20220426135937.18497-6-alisaidi@amazon.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220426135937.18497-6-alisaidi@amazon.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Apr 26, 2022 at 01:59:37PM +0000, Ali Saidi wrote:
+> When synthesizing data from SPE, augment the type with source information
+> for Arm Neoverse cores. The field is IMPLDEF but the Neoverse cores all use
+> the same encoding. I can't find encoding information for any other SPE
+> implementations to unify their choices with Arm's thus that is left for
+> future work.
+> 
+> This change populates the mem_lvl_num for Neoverse cores as well as the
+> deprecated mem_lvl namespace.
+> 
+> Signed-off-by: Ali Saidi <alisaidi@amazon.com>
 
->> On 19-04-22, 21:16, Allen Pais wrote:
->>> The tasklet is an old API which will be deprecated, workqueue API
->>> cab be used instead of them.
->> What is the reason for tasklet removal, I am not sure old is a reason =
-to
->> remove an API...
->>=20
->>> This patch replaces the tasklet usage in drivers/dma/* with a
->>> simple work.
->> Dmaengines need very high throughput, one of the reasons in dmaengine
->> API design to use tasklet was higher priority given to them. Will the
->> workqueue allow that...?
->=20
-> Wouldn't the logical move be to convert threaded irq IF tasklets are =
-being deprecated rather than using workqueue as replacement?
+I tested this patch and also did the integration testing with perf ć2c
+tool, this patch looks good to me:
 
-  Logically yes. Would all tasklets need to be moved to threaded irq, =
-that I am not sure. I think
-Workqueues does the job.
+Reviewed-by: Leo Yan <leo.yan@linaro.org>
+Tested-by: Leo Yan <leo.yan@linaro.org>
 
->=20
-> Also, wouldn't all the spin_lock_bh() calls need to be changed to =
-spin_lock_irqsave() now? Probably not as simple as just replace tasklet =
-with workqueue.
->=20
+James, German, it's better if this patch set can get the green light
+from you.  So please take a look, thanks!
 
-Yes, this was carefully looked at as we have moved from the =
-interrupt/softirq context to process context.
-
-Thanks.
-
+Leo
