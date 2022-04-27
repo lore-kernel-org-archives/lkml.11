@@ -2,135 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2161C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:32:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6784AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:32:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238024AbiD0OfU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 10:35:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35134 "EHLO
+        id S238216AbiD0Oep (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 10:34:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237766AbiD0OfS (ORCPT
+        with ESMTP id S238112AbiD0Oe2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 10:35:18 -0400
-Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01on2133.outbound.protection.outlook.com [40.107.114.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A465C1FA6F;
-        Wed, 27 Apr 2022 07:32:05 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EkcUTNYEziQEaHYE/2n7+3eagM3cypNz3FqJ1F6kZ6padx2kBzUPSiXM8TVS9cOj8NJ3TMX3b8dsGcvRATjim92qn4L2ARc+o3o1PgoGovonBHd/FOUbhnS9w50JLT3ZCYClpc5XTteIK6ps6dRTUdEEFLjR3qJd+odiMmpPjTmwO8fFIAGsZga2h3ZtyUTEs0cJtvLwjgnTfme0Z59tgAzh3YUgH5GnhwznYHXrb3sR5bY+5kHHTkHirBjbsYXFIsCteonIzfJprb3yeYcV+vVKOgAGwd5BjIUArieQPWBf3mu91BKGZWUDbbjidguxkeN/0rR3HbjY+K4sIiOn9Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9xt1Af93NnvzZI+ZBc34yLt27w4pz9djae310iRmfvY=;
- b=Xv3m5VTMO6yWLpzf9ISAAc/xIudBhMv2Sfukz1j5EXZUSaOqQpGwJlV+ovlPEwPDlkccI9CWNobj+iaPouVheYXgLMPC5haLdo8H69jgl3RA2TmwEPLYsKXmWJkKJnGPknztPf/nMKApa+I3KkU0pHNo1pjXMyGTouGl6Xwtbtqg422n6pPf/T3+kVjx3xl60B2LjLAFLtrWz6JVWRrjKszAEjQVMemnWUoU8Vc2LyQLXzGXPJk7G4ea36wbpwWVfPL/fLEaNS68ixJkl3W5RdCDmv2gExEiIctEDlj9mBkmf5EgjNFk6jXeXJ06usSPWLW7OZzCC4lKAjgCYNLWEg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9xt1Af93NnvzZI+ZBc34yLt27w4pz9djae310iRmfvY=;
- b=fiBPlhrW0zDyrVkXYzs6YiIvg96gS4kwRSsDGIVOKDHpE0/y0Vux1ye/7MAIxfcrL5Ya8Xvp3DcnTjFPaZyv5Ml2ajNPLjyZve1+fFny2jayO3VFoyxRxCovqoYIPt1gNSZm0D4ur6rhSedD9jmv8U+fyncFtygjzj+DFeZH/+A=
-Received: from OS3PR01MB6593.jpnprd01.prod.outlook.com (2603:1096:604:101::7)
- by OS3PR01MB8090.jpnprd01.prod.outlook.com (2603:1096:604:170::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Wed, 27 Apr
- 2022 14:32:03 +0000
-Received: from OS3PR01MB6593.jpnprd01.prod.outlook.com
- ([fe80::a07c:4b38:65f3:6663]) by OS3PR01MB6593.jpnprd01.prod.outlook.com
- ([fe80::a07c:4b38:65f3:6663%9]) with mapi id 15.20.5206.012; Wed, 27 Apr 2022
- 14:32:03 +0000
-From:   Min Li <min.li.xe@renesas.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "lee.jones@linaro.org" <lee.jones@linaro.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH net 1/2] ptp: ptp_clockmatrix: Add PTP_CLK_REQ_EXTTS
- support
-Thread-Topic: [PATCH net 1/2] ptp: ptp_clockmatrix: Add PTP_CLK_REQ_EXTTS
- support
-Thread-Index: AQHYWaR3Qsdc/gnqv0WbXtgKN/pPKa0Cs/8AgAEffxA=
-Date:   Wed, 27 Apr 2022 14:32:03 +0000
-Message-ID: <OS3PR01MB6593BE917485C87E32D1E5FDBAFA9@OS3PR01MB6593.jpnprd01.prod.outlook.com>
-References: <1651001574-32457-1-git-send-email-min.li.xe@renesas.com>
- <20220426142150.47b057a3@kernel.org>
-In-Reply-To: <20220426142150.47b057a3@kernel.org>
-Accept-Language: en-CA, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=renesas.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 76414dc4-6bdb-4a80-4615-08da285ab2d2
-x-ms-traffictypediagnostic: OS3PR01MB8090:EE_
-x-microsoft-antispam-prvs: <OS3PR01MB8090A50A83935D63B5A1DC97BAFA9@OS3PR01MB8090.jpnprd01.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 97ZhPUHaxP+iXRGsfPs/1m+be5UtRIXMA9pYCG1RH9UTmUYRSCSXHa5LytBfsjIenn8O0SAZ0dOzFLWtMtmmZEJJxh9z0iUU2qfHGmoo27Uu/5vOXL8aM070KXEHQhzPQ5ADuiHu3mR2h5x9qugzkYSRh1hTprxGyQwhNA+LJG7PhGZFLZ6iLi3uNLMspkcCnhn7EqXcRZYULD9wwdBmLGlV+u4vqYr3oy+vVaCIn7sS1Bpq1CmpJZtxcKxbVOFkaTNd0JU5Z4FV5wqSHsSzVlJm7CuiP16/J/Q2J930vNxkOCizuJuc8eYWB+vTHccJM8WzSA/XJIRnbFUklPO8YpuBBTp+UXcqeVGWjGP+uWgkRyKsW9uTgfZUQ5jl/ia8Z4++h4RE7xVHDTjAVO8B9ug6UkZf629WEO8ssnd1L7vqO4f4ijqcBvd0FL1R06BKtdkYJ6fOhuqg0Yh3WviB6lGuo04mGUnZGcK4Fdga9Up0yjIw3rdzit82tpzGS7rOFg1BOp+5zSJJ5Ia05XDSDukVZIHgiDS0N/oe15Cjxa67mLjLzk61PlmfXscoNPMrYfGAJ+U/SKPToieSAWScKlUmWx4duQQay5Cdeq0sk1YfbSb576sQ9gcZ/yJIPPQbWtaDvAQEaOTWc4QJszf1cNdzmVPtU1j9DlAAT3FJ+2fZZ/A15mm2RX8im2mFKe6lGHcfnRSUrkLnwPJGRTmgIg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS3PR01MB6593.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(9686003)(4326008)(66446008)(71200400001)(38100700002)(558084003)(86362001)(38070700005)(26005)(7696005)(66476007)(66556008)(6506007)(2906002)(122000001)(52536014)(5660300002)(33656002)(64756008)(8936002)(8676002)(508600001)(55016003)(66946007)(316002)(186003)(76116006)(6916009)(54906003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ga5oHeF0iTFzBa6NuJIFmZlCff5J3qA5oUa0LBL9AMrmRDk1MgR2tkESLbjj?=
- =?us-ascii?Q?cz31jJUTQUawu+zEqJIgTk6DP26hP3UMt9YEPU/ZcJ+95G55EkpRz4atSYHX?=
- =?us-ascii?Q?y3Vwt3aQQsFdxz1VHMOV4osgKRolkgZIEd/XgQVfUFkXdOoiyx7gmZScA8JP?=
- =?us-ascii?Q?sFvWRrKIQdxua4a5g4567LPARnBZWN+b4IAceEC46Tsnc/DR+Sj98uegXfH8?=
- =?us-ascii?Q?MQholJAX+XgcAshSs6Nl/uJjozsx2CMll1q2+6B5T7YDRIoXE7y8mK06jOiH?=
- =?us-ascii?Q?HpGbL6l/jyAru9t0FFmhxB9zClbhi6/JAysEhspXs7fZ+SIIUUNHR3CJEWj6?=
- =?us-ascii?Q?JlW3FalE1vAFWXgPCV7ouD0TCta77gVMVyo2z9bMS+E9FeL8YgrEGWsfqGk3?=
- =?us-ascii?Q?djnIpZod7wa+nkbMoLadIXT0W7XWmzX6988w05XXfhsTb+XJVCgRVCMXJuEW?=
- =?us-ascii?Q?QS9SsL8KwcOhLEh1xjgex5880G9ayYTxLjE8Tb0DCnstxqkFYGsWiMV3hd5Y?=
- =?us-ascii?Q?2rMz+fpEMH3C0He9WW65qPaprDpwhWuDpNCPFVjbPRv4qSAuGO+ii53FFpV3?=
- =?us-ascii?Q?bow/jYq73XnfQdikbuqXo9lVqfFWy1K6N71bg9pThVyOl6hjZpzeNjE3tZpY?=
- =?us-ascii?Q?MsnNyXC8+x2KmMT+Pnfp+GzwTGQJ/m6r9Vv5+VL1AgCVY82UFsTRg5todL0l?=
- =?us-ascii?Q?p5eFHwjRAE1PtGX/yG9VvbDSU4ChNF7sUFGyph364dC4DD8sB6MwOIHr7llu?=
- =?us-ascii?Q?8aF7Nhq8BhIJivz9GMQ+nJXxUCKCP2lOeUTBYKQOZxQTdoyOpkKEeXGG70pg?=
- =?us-ascii?Q?c8bGhhS9mERH6WxNepxkV9PMnh5fy6cDF3BywzLtWC5ERWCgf7oj8cSqhHEL?=
- =?us-ascii?Q?kW8euJiX2o+SoP5nh5nrGtZtm6NTBNrHnGM54rI/eQhMiE15us4LO6SMeJnY?=
- =?us-ascii?Q?ieqhkT/In1eIYRwh0udfqAqUYunTkqw2HO2XKcevFfJHUCTyRfB3CCsEWz7N?=
- =?us-ascii?Q?4oz3D+HNjQymURVlr53yFf4xe87IJHAjnHmpe64AbVVnpvw+2CAhcsZYXnZd?=
- =?us-ascii?Q?loJq7R63o+5KvMgJW9/T9pJU0M3fJvsIGJVfqTM/nGy02ZnS+LDI/NsnHKqj?=
- =?us-ascii?Q?MKezc1v8g7LmenSGDPvzRAuGwcCaZenRwt7DGvvNfL/myIxHPipDv7p7beMR?=
- =?us-ascii?Q?8Dh/mzMpw3gs8b36QzkKO6PrIOqp7nHNBhoHKK3whLzcpnx23hTubgCYMa/U?=
- =?us-ascii?Q?S6xRkbvQH/Fkgh9BL8wJ3eA+wuUBuYpr7fdB0fevfB7mpJY1uE2qWiN+xyTL?=
- =?us-ascii?Q?FzICqkE9DCTnTclSUEqJqEDvxCrkPFpIm5iCAT1PVh5lVa7VSbwwkC952vxN?=
- =?us-ascii?Q?pDGpcRJZsOhCWC7g1IBLq/qbutjQ8y3+C6L+8jR4/NcRrJAYrgWt67kV7jbr?=
- =?us-ascii?Q?DdLMtoBqUOoYgZuofpR7JavUEa1OkYljMYmTAnVY+ek0Xleq/wqQV/2oAPBj?=
- =?us-ascii?Q?do8rYaERBFeC9hqdSdhCIPakOpmGs7dyIW5VdNWJXM0FNLdVneny0yKy9Lsu?=
- =?us-ascii?Q?3/xeSCVcXJnGH3o8BMZZAasJ4wqmpOrQtfch13+OMjve2qjRE9PGqk+8z7dR?=
- =?us-ascii?Q?6Tu5tYZvXwb8wysNv+EPAonx2Mj0THow0J3n3YQfZ3YPXJnNfkbQ9JWODkWT?=
- =?us-ascii?Q?9NK9i43MGjNP1qmUBll214qPTlpb3br8GBkXWVnyv4UfPz5+KKG6viIj5eNc?=
- =?us-ascii?Q?cWNIie3Wow=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Wed, 27 Apr 2022 10:34:28 -0400
+Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D10DF1901C
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 07:31:08 -0700 (PDT)
+Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
+        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220427143103epoutp04c4a0a71adfe5187e8bf50457fa0887cd~px0sV5h-k1817418174epoutp04S
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 14:31:03 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220427143103epoutp04c4a0a71adfe5187e8bf50457fa0887cd~px0sV5h-k1817418174epoutp04S
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1651069863;
+        bh=MH0TUpJmd6Xn0TDs3wbYY50xoN/FUQag8q/ZfmgP1iI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=i8ZdI+gKcT3sdt3HmnIHuvWHcj0t0iZH0pVj6s8dOYLz4OX21bPI8MzjwoWXvqsTw
+         yL/Qy955dY/q43hOORMoDzvBM0e49Xl5IeZc6S9tWA3nvZh7PO4qc2hsJ7kGGlmhS2
+         NRBP6upHgZYAFU+rwn0NdJjY680lNBBCp5qW0Y20=
+Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
+        epcas5p2.samsung.com (KnoxPortal) with ESMTP id
+        20220427143102epcas5p29b596e5d8e6e014fbed587a068543a20~px0rRj7Yu2595925959epcas5p2B;
+        Wed, 27 Apr 2022 14:31:02 +0000 (GMT)
+Received: from epsmges5p3new.samsung.com (unknown [182.195.38.175]) by
+        epsnrtp1.localdomain (Postfix) with ESMTP id 4KpLlR0WZ2z4x9Pp; Wed, 27 Apr
+        2022 14:30:59 +0000 (GMT)
+Received: from epcas5p3.samsung.com ( [182.195.41.41]) by
+        epsmges5p3new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        46.88.09762.2A359626; Wed, 27 Apr 2022 23:30:58 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas5p1.samsung.com (KnoxPortal) with ESMTPA id
+        20220427125500epcas5p189ef3a038115f13840f8992a79fb2e3d~pwg002FDZ1031610316epcas5p1G;
+        Wed, 27 Apr 2022 12:55:00 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220427125500epsmtrp18381e20d6e38ffd4eb28b8ea3234fa63~pwg0y5X4H2300323003epsmtrp1O;
+        Wed, 27 Apr 2022 12:55:00 +0000 (GMT)
+X-AuditID: b6c32a4b-1fdff70000002622-70-626953a2579d
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        0D.34.08853.42D39626; Wed, 27 Apr 2022 21:55:00 +0900 (KST)
+Received: from test-zns (unknown [107.110.206.5]) by epsmtip1.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220427125459epsmtip19208f23035104a9c8446a86c8c32dcd3~pwgzmZAtj1493614936epsmtip1J;
+        Wed, 27 Apr 2022 12:54:58 +0000 (GMT)
+Date:   Wed, 27 Apr 2022 18:19:51 +0530
+From:   Nitesh Shetty <nj.shetty@samsung.com>
+To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Cc:     linux-block@vger.kernel.org, linux-scsi@vger.kernel.org,
+        dm-devel@redhat.com, linux-nvme@lists.infradead.org,
+        linux-fsdevel@vger.kernel.org, nitheshshetty@gmail.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 00/10] Add Copy offload support
+Message-ID: <20220427124951.GA9558@test-zns>
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OS3PR01MB6593.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 76414dc4-6bdb-4a80-4615-08da285ab2d2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Apr 2022 14:32:03.8483
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: t4bSDYWhxr+UNBEFyYPGoKINMdV98NRac6rtDDZxCOhXdchpj7nNM6V19dVeUS/na02epORv3RUKAMwbIY229g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OS3PR01MB8090
+In-Reply-To: <6a85e8c8-d9d1-f192-f10d-09052703c99a@opensource.wdc.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrDJsWRmVeSWpSXmKPExsWy7bCmpu6i4Mwkg3fbLS1+nz3PbLH33WxW
+        i723tC327D3JYnF51xw2i/nLnrJbdF/fwWax40kjowOHx85Zd9k9Ni+p99jZep/V4/2+q2we
+        nzfJBbBGZdtkpCampBYppOYl56dk5qXbKnkHxzvHm5oZGOoaWlqYKynkJeam2iq5+AToumXm
+        AF2ipFCWmFMKFApILC5W0rezKcovLUlVyMgvLrFVSi1IySkwKdArTswtLs1L18tLLbEyNDAw
+        MgUqTMjOmPj9CnPBOY6Knz1vGBsY+9i7GDk5JARMJF7e7WXsYuTiEBLYzSgxce1zVgjnE6PE
+        8nX72SCcb4wSjZeuscK0tGw9B1W1l1Fi26zjUP3PGCWWte5nBKliEVCVWLRuPlMXIwcHm4C2
+        xOn/HCBhEQFTibc9rSwg9cwCZxgl2t/vAjtEWMBMYnVnKxuIzSugI3Hzy19WCFtQ4uTMJywg
+        NqeAm0THgUnMILaogLLEgW3HmUAGSQhM5ZA4sWsFC8R5LhIf7s1hhrCFJV4d3wL1qZTEy/42
+        KLtcYnvbAqjmFkaJrlOnoJrtJS7u+csEYjMLZEj8fzkV6mdZiamn1kHF+SR6fz9hgojzSuyY
+        B2MrS6xZv4ANwpaUuPa9Ecr2kNj5cSU0vE4Bg3jlHMYJjPKzkHw3C8m+WcAQYxbQlFi/Sx8i
+        LC/RvHU2M0RYWmL5Pw4kFQsY2VYxSqYWFOempxabFhjnpZbDoz85P3cTIzjZannvYHz04IPe
+        IUYmDsZDjBIczEoivF92ZyQJ8aYkVlalFuXHF5XmpBYfYjQFRtxEZinR5Hxgus8riTc0sTQw
+        MTMzM7E0NjNUEuc9lb4hUUggPbEkNTs1tSC1CKaPiYNTqoFJ/sXyv8flM4vyjuwxY1rg5f7V
+        /9PC2qtRz00K7tQGHgyfd79y+q5Vt3ZZqa4/z7Qjwv34g2nb7mf/KvrDs2J35YPFBls+phh5
+        Kj4wmWk8c92//z4WkbdfvuB8+tAlU3BHDpfP2+OPuVJ+P9tsYnzRb3PUYo8jWy8zXz5fe2Ti
+        FtsGP7Wgfr0snydfjEP/vps92+n9qjUCjnP89QRXz98z2dewxrpyqfUSO++Pcx7VzXEJsLQT
+        +vRNM9tSM+ax6YE9b6eZRam4a00uF7nkk7i7eW765hPLglMWajFIRC/cp11Wuslml6sQX+xN
+        qV/2CcdjHh0S1RCKq1l3x91Wdr3cJfbdPFuPX1bvWu5gOXtRmRJLcUaioRZzUXEiAJsamEE/
+        BAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrBLMWRmVeSWpSXmKPExsWy7bCSnK6KbWaSwZMuIYvfZ88zW+x9N5vV
+        Yu8tbYs9e0+yWFzeNYfNYv6yp+wW3dd3sFnseNLI6MDhsXPWXXaPzUvqPXa23mf1eL/vKpvH
+        501yAaxRXDYpqTmZZalF+nYJXBnv1l9kLPjAWrGkYRZTA+MZli5GTg4JAROJlq3nWEFsIYHd
+        jBJXf/pBxCUllv09wgxhC0us/PecvYuRC6jmCaNEx5HH7CAJFgFViUXr5jN1MXJwsAloS5z+
+        zwESFhEwlXjb08oCUs8scIZRov39LrB6YQEzidWdrWwgNq+AjsTNL39ZIYaeYpTofHqRFSIh
+        KHFy5hOw65gF1CX+zLvEDLKAWUBaYvk/DoiwvETz1tlgx3EKuEl0HJgEZosKKEsc2HacaQKj
+        0Cwkk2YhmTQLYdIsJJMWMLKsYpRMLSjOTc8tNiwwzEst1ytOzC0uzUvXS87P3cQIjhwtzR2M
+        21d90DvEyMTBeIhRgoNZSYT3y+6MJCHelMTKqtSi/Pii0pzU4kOM0hwsSuK8F7pOxgsJpCeW
+        pGanphakFsFkmTg4pRqY3E4HJove7NU0V7A9sZ11R157x+KgZU7PWx9lvNdqnSV0Katz3/bd
+        qxRYBTvLRENTZxnWXox4ta7whvj/268VGQ23TZG9+Ovy0izWsn8LH2hrJ208VLHiIMukjZdf
+        9Au12G5aLub9wmBp/ox8xxkX9JROneMWa826cC7U7v2Rf29EjD/Mjf7q8u7e9ZR4hXPJStwa
+        bdcXLfU8YqS+VM9WKSJ8ncP5U5znSri7t5ntLJk/WXVnqaa52nEvD6+zhitE5z9oDbMJk9j+
+        /KKyG4/iPNGIIp2zMpulRDnvb6lUS5Xjjt681vBMiceTFU7rvM5v+zVdvozz4vuXNw+q7fp2
+        VODNqvlHDuVrcp976l+rqcRSnJFoqMVcVJwIAPtAlfYLAwAA
+X-CMS-MailID: 20220427125500epcas5p189ef3a038115f13840f8992a79fb2e3d
+X-Msg-Generator: CA
+Content-Type: multipart/mixed;
+        boundary="----SFNbypxiwiYv2mFj5qNI3mkL0EyMW--LFKYa8svGKq9OOQ6W=_1770c_"
+X-Sendblock-Type: REQ_APPROVE
+CMS-TYPE: 105P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220426101804epcas5p4a0a325d3ce89e868e4924bbdeeba6d15
+References: <CGME20220426101804epcas5p4a0a325d3ce89e868e4924bbdeeba6d15@epcas5p4.samsung.com>
+        <20220426101241.30100-1-nj.shetty@samsung.com>
+        <6a85e8c8-d9d1-f192-f10d-09052703c99a@opensource.wdc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> On Tue, 26 Apr 2022 15:32:53 -0400 Min Li wrote:
-> > Use TOD_READ_SECONDARY for extts to keep TOD_READ_PRIMARY for
-> gettime
-> > and settime exclusively
->=20
-> Does not build on 32 bit.
->=20
+------SFNbypxiwiYv2mFj5qNI3mkL0EyMW--LFKYa8svGKq9OOQ6W=_1770c_
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
 
-Hi Jakub
+O Wed, Apr 27, 2022 at 11:19:48AM +0900, Damien Le Moal wrote:
+> On 4/26/22 19:12, Nitesh Shetty wrote:
+> > The patch series covers the points discussed in November 2021 virtual call
+> > [LSF/MM/BFP TOPIC] Storage: Copy Offload[0].
+> > We have covered the Initial agreed requirements in this patchset.
+> > Patchset borrows Mikulas's token based approach for 2 bdev
+> > implementation.
+> > 
+> > Overall series supports –
+> > 
+> > 1. Driver
+> > - NVMe Copy command (single NS), including support in nvme-target (for
+> >     block and file backend)
+> 
+> It would also be nice to have copy offload emulation in null_blk for testing.
+>
 
-I compiled with arm-linux-gnueabi-
+We can plan this in next phase of copy support, once this series settles down.
 
-By 32 bit, did you mean x86?
+--
+Nitesh Shetty
 
-Min=20
+------SFNbypxiwiYv2mFj5qNI3mkL0EyMW--LFKYa8svGKq9OOQ6W=_1770c_
+Content-Type: text/plain; charset="utf-8"
+
+
+------SFNbypxiwiYv2mFj5qNI3mkL0EyMW--LFKYa8svGKq9OOQ6W=_1770c_--
