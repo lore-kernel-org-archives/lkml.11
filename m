@@ -2,88 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CD36C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 09:10:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEDEBC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 09:10:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231984AbiD0JNR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 05:13:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55772 "EHLO
+        id S234955AbiD0JNZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 05:13:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231453AbiD0JM6 (ORCPT
+        with ESMTP id S233205AbiD0JND (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 05:12:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BF51973066
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 02:09:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651050444;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=VlP3askR5SLt3D/mCVopQREcxnxlzFTELhmls5ml/4o=;
-        b=cEBeAVxtrpzlaoAdq40g/5/8Jv9uM3NNPf7WvlAHoMo7fqx58h76RIFpg8OcfneJNczTxr
-        kzFd7u+PHgQ289qmsizBAMFCUhjEGQ+ValjjqpFYmieYyup9YZzTB654PlCpJiXr4E9h8/
-        nh3CFRu4zaz5jjLL7jS8VaUIYl29NX8=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-279-4WmW6tzYMVCH1HfXcgfZfA-1; Wed, 27 Apr 2022 05:07:22 -0400
-X-MC-Unique: 4WmW6tzYMVCH1HfXcgfZfA-1
-Received: by mail-wm1-f72.google.com with SMTP id c125-20020a1c3583000000b0038e3f6e871aso493066wma.8
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 02:07:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=VlP3askR5SLt3D/mCVopQREcxnxlzFTELhmls5ml/4o=;
-        b=EyIXzFB3240v97ZlAtwBUSxqjliuDTHNCWyXqGd/zc+Ly/1ZjsXlkL8UrBIloc6R2j
-         8ZHuOv5tOF+UxOadGkRahR9RkMa/AwgeUJ8VUuqfuq37RM92gO4ENdJ2h5i9xS27exbT
-         6OVmnwkHE9jWulkp/HdEyjGTUqd/OI1f9fm6M9iIllMcPyrxiZFxuXz5IoB9K5/gn1CW
-         4RYk7iguDGDAvnebyVU0l+Nym/eLVg5omS5MCPbl8cU05oOnUz6QHgsDuQ33Lyqz9EBs
-         ityTDC6JC4KReOhJtK41gmdINoAhO6FH2XqmRtu+GOcaB/7k25qKHAAxE1bU/vsyj2yx
-         C7/A==
-X-Gm-Message-State: AOAM532y/P9EBmCdZbYmtUtHfMdP5rEWKODRMzDLhsnnrJCkBmUPGzZC
-        RaYhdnUtcMbUJoVZUErmmcABpTv2hD/2w5DHA3DlrUDXp1TD3hr2FZosyg98wjcCb2KVaC556WW
-        BZz49Badx5NjGcYESIXXQd4Y=
-X-Received: by 2002:a5d:6102:0:b0:20a:db89:724f with SMTP id v2-20020a5d6102000000b0020adb89724fmr11259445wrt.59.1651050441660;
-        Wed, 27 Apr 2022 02:07:21 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyS6PdfRBkjuFq+2OuKCjksKEbdx1UuoLoYLoAqcMXQdqjUwnhJzSb/Jr7tt/piyg/czfgP9w==
-X-Received: by 2002:a5d:6102:0:b0:20a:db89:724f with SMTP id v2-20020a5d6102000000b0020adb89724fmr11259419wrt.59.1651050441433;
-        Wed, 27 Apr 2022 02:07:21 -0700 (PDT)
-Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
-        by smtp.gmail.com with ESMTPSA id j19-20020adfb313000000b0020aed8ece65sm1302186wrd.32.2022.04.27.02.07.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 02:07:20 -0700 (PDT)
-Date:   Wed, 27 Apr 2022 10:07:19 +0100
-From:   Aaron Tomlin <atomlin@redhat.com>
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     k@ava.usersys.com, cl@linux.com, pmladek@suse.com, mbenes@suse.cz,
-        christophe.leroy@csgroup.eu, akpm@linux-foundation.org,
-        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
-        atomlin@atomlin.com, ghalat@redhat.com, oleksandr@natalenko.name,
-        neelx@redhat.com
-Subject: Re: [PATCH v4 0/2] module: Introduce module unload taint tracking
-Message-ID: <20220427090719.qbtjwvde4wwzmruh@ava.usersys.com>
-X-PGP-Key: http://pgp.mit.edu/pks/lookup?search=atomlin%40redhat.com
-X-PGP-Fingerprint: 7906 84EB FA8A 9638 8D1E  6E9B E2DE 9658 19CC 77D6
-References: <20220425090841.3958494-1-atomlin@redhat.com>
- <YmcvZQSiu95MUvxI@bombadil.infradead.org>
- <20220426083930.hltsfxoe6ax6dspj@ava.usersys.com>
- <YmgcXSXTM80/3R8b@bombadil.infradead.org>
+        Wed, 27 Apr 2022 05:13:03 -0400
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 588E4245E6F;
+        Wed, 27 Apr 2022 02:09:43 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23R98xZS095481;
+        Wed, 27 Apr 2022 04:08:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1651050539;
+        bh=kupnSmCLa8ukKSu5s2c5515veWPch3RoCk/juFoT/6Q=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=KQLf9wV0dRUKRDV92bduBg3H2KjUfK739e7Ig2QfBKLkdLQ7+kQIWEAjikKqZRkvA
+         z3yzPgqiipGHSObsUQ69Yob2lsmFqY9W6C+eaDrzh9t/Sz7isplESuY/9WVoyVxa9x
+         NG8w5Z4hSwpUZEXbZKgK/gclYt5nQGRH8vR0eps8=
+Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23R98xeu122332
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 27 Apr 2022 04:08:59 -0500
+Received: from DLEE107.ent.ti.com (157.170.170.37) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 27
+ Apr 2022 04:08:59 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE107.ent.ti.com
+ (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Wed, 27 Apr 2022 04:08:59 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23R98ws5058588;
+        Wed, 27 Apr 2022 04:08:59 -0500
+From:   Aradhya Bhatia <a-bhatia1@ti.com>
+To:     Vignesh Raghavendra <vigneshr@ti.com>
+CC:     Nishanth Menon <nm@ti.com>, Rob Herring <robh+dt@kernel.org>,
+        Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>,
+        Devicetree List <devicetree@vger.kernel.org>,
+        Linux Kernel List <linux-kernel@vger.kernel.org>,
+        Aradhya Bhatia <a-bhatia1@ti.com>
+Subject: [PATCH 4/4] arm64: dts: ti: k3-am625-sk: Add DSS ports, HDMI tx & peripherals
+Date:   Wed, 27 Apr 2022 14:38:50 +0530
+Message-ID: <20220427090850.32280-5-a-bhatia1@ti.com>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220427090850.32280-1-a-bhatia1@ti.com>
+References: <20220427090850.32280-1-a-bhatia1@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YmgcXSXTM80/3R8b@bombadil.infradead.org>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 2022-04-26 09:22 -0700, Luis Chamberlain wrote:
-> I'd rather see the effort than not, given all the effort to already split things.
-> I think it keeps things pretty tidy and it can scale / and its easier to review.
+Add DT nodes for sil9022 HDMI transmitter (tx), HDMI connector and the
+HDMI fixed master clock on the am625-sk board.
 
-Fair enough. I'll create another iteration of the series.
+Additionally, add and connect output port for DSS (vp2), input and output
+ports for the sil9022 HDMI tx and the input port for the HDMI connector.
 
+The sil9022 HDMI tx is connected on the i2c1 bus. The HDMI connector on
+the board is of type "a". The clock frequency of the master clock that
+supports the HDMI tx is 12.288 MHz.
+
+The dpi output signals from the vp2 of DSS are fed into the sil9022 HDMI
+transmitter. These signals are converted into HDMI signals which are
+further passed on to the HDMI connector on the board, on which display
+can be connected via appropriate HDMI cables.
+
+Signed-off-by: Aradhya Bhatia <a-bhatia1@ti.com>
+---
+ arch/arm64/boot/dts/ti/k3-am625-sk.dts | 63 ++++++++++++++++++++++++++
+ 1 file changed, 63 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/ti/k3-am625-sk.dts b/arch/arm64/boot/dts/ti/k3-am625-sk.dts
+index 96414c5dacf7..9567fa4a447b 100644
+--- a/arch/arm64/boot/dts/ti/k3-am625-sk.dts
++++ b/arch/arm64/boot/dts/ti/k3-am625-sk.dts
+@@ -134,6 +134,23 @@ led-0 {
+ 			default-state = "off";
+ 		};
+ 	};
++
++	hdmi_mstrclk: hdmi-mstrclk {
++		compatible = "fixed-clock";
++		#clock-cells = <0>;
++		clock-frequency = <12288000>;
++	};
++
++	hdmi: connector {
++		compatible = "hdmi-connector";
++		label = "hdmi";
++		type = "a";
++		port {
++			hdmi_connector_in: endpoint {
++				remote-endpoint = <&sii9022_out>;
++			};
++		};
++	};
+ };
+ 
+ &main_pmx0 {
+@@ -385,6 +402,38 @@ exp1: gpio@22 {
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&main_gpio1_ioexp_intr_pins_default>;
+ 	};
++
++	sii9022: sii9022@3b {
++		compatible = "sil,sii9022";
++		reg = <0x3b>;
++
++		clocks = <&hdmi_mstrclk>;
++		clock-names = "mclk";
++
++		interrupt-parent = <&exp1>;
++		interrupts = <16 IRQ_TYPE_EDGE_FALLING>;
++
++		ports {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			port@0 {
++				reg = <0>;
++
++				sii9022_in: endpoint {
++					remote-endpoint = <&dpi1_out>;
++				};
++			};
++
++			port@1 {
++				reg = <1>;
++
++				sii9022_out: endpoint {
++					remote-endpoint = <&hdmi_connector_in>;
++				};
++			};
++		};
++	};
+ };
+ 
+ &main_i2c2 {
+@@ -450,6 +499,20 @@ &dss {
+ 	pinctrl-0 = <&main_dss0_pins_default>;
+ };
+ 
++&dss_ports {
++	#address-cells = <1>;
++	#size-cells = <0>;
++
++	/* VP2: DPI Output */
++	port@1 {
++		reg = <1>;
++
++		dpi1_out: endpoint {
++			remote-endpoint = <&sii9022_in>;
++		};
++	};
++};
++
+ &mailbox0_cluster0 {
+ 	mbox_m4_0: mbox-m4-0 {
+ 		ti,mbox-rx = <0 0 0>;
 -- 
-Aaron Tomlin
+2.36.0
 
