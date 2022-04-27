@@ -2,93 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50478C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 08:07:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AE33C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 08:08:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359310AbiD0IKr convert rfc822-to-8bit (ORCPT
+        id S1359322AbiD0IL3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 04:10:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56422 "EHLO
+        Wed, 27 Apr 2022 04:11:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354468AbiD0IKn (ORCPT
+        with ESMTP id S1354468AbiD0IL0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 04:10:43 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 59EC051E7B
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 01:07:33 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-261-c1VjfSuEMBeiHVaCN1aObw-1; Wed, 27 Apr 2022 09:07:30 +0100
-X-MC-Unique: c1VjfSuEMBeiHVaCN1aObw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.32; Wed, 27 Apr 2022 09:07:29 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.033; Wed, 27 Apr 2022 09:07:29 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Willy Tarreau' <w@1wt.eu>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Eric Dumazet" <edumazet@google.com>,
-        Moshe Kol <moshe.kol@mail.huji.ac.il>,
-        "Yossi Gilad" <yossi.gilad@mail.huji.ac.il>,
-        Amit Klein <aksecurity@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net 6/7] tcp: increase source port perturb table to 2^16
-Thread-Topic: [PATCH net 6/7] tcp: increase source port perturb table to 2^16
-Thread-Index: AQHYWgPN4CV2FTUQB025UCKyP5Su7q0DZwmg
-Date:   Wed, 27 Apr 2022 08:07:29 +0000
-Message-ID: <7372f788762140d496c157813b0173e5@AcuMS.aculab.com>
-References: <20220427065233.2075-1-w@1wt.eu> <20220427065233.2075-7-w@1wt.eu>
-In-Reply-To: <20220427065233.2075-7-w@1wt.eu>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
-MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+        Wed, 27 Apr 2022 04:11:26 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7EAE551E71
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 01:08:16 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3FC8AED1;
+        Wed, 27 Apr 2022 01:08:16 -0700 (PDT)
+Received: from e123648.arm.com (unknown [10.57.7.196])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 1B42C3F5A1;
+        Wed, 27 Apr 2022 01:08:13 -0700 (PDT)
+From:   Lukasz Luba <lukasz.luba@arm.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     sudeep.holla@arm.com, dietmar.eggemann@arm.com,
+        vincent.guittot@linaro.org, gregkh@linuxfoundation.org,
+        rafael@kernel.org, rostedt@goodmis.org, mingo@redhat.com,
+        lukasz.luba@arm.com
+Subject: [PATCH v4] arch_topology: Trace the update thermal pressure
+Date:   Wed, 27 Apr 2022 09:08:06 +0100
+Message-Id: <20220427080806.1906-1-lukasz.luba@arm.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Willy Tarreau
-> Sent: 27 April 2022 07:53
-> 
-> Moshe Kol, Amit Klein, and Yossi Gilad reported being able to accurately
-> identify a client by forcing it to emit only 40 times more connections
-> than there are entries in the table_perturb[] table. The previous two
-> improvements consisting in resalting the secret every 10s and adding
-> randomness to each port selection only slightly improved the situation,
-> and the current value of 2^8 was too small as it's not very difficult
-> to make a client emit 10k connections in less than 10 seconds.
-> 
-> Thus we're increasing the perturb table from 2^8 to 2^16 so that the the
-> same precision now requires 2.6M connections, which is more difficult in
-> this time frame and harder to hide as a background activity. The impact
-> is that the table now uses 256 kB instead of 1 kB, which could mostly
-> affect devices making frequent outgoing connections. However such
-> components usually target a small set of destinations (load balancers,
-> database clients, perf assessment tools), and in practice only a few
-> entries will be visited, like before.
+Add trace event to capture the moment of the call for updating the thermal
+pressure value. It's helpful to investigate how often those events occur
+in a system dealing with throttling. This trace event is needed since the
+old 'cdev_update' might not be used by some drivers.
 
-Increasing the table size has a bigger impact on anyone trying
-to get the kernel to run in a limited memory footprint.
+The old 'cdev_update' trace event only provides a cooling state
+value: [0, n]. That state value then needs additional tools to translate
+it: state -> freq -> capacity -> thermal pressure. This new trace event
+just stores proper thermal pressure value in the trace buffer, no need
+for additional logic. This is helpful for cooperation when someone can
+simply sends to the list the trace buffer output from the platform (no
+need from additional information from other subsystems).
 
-All these large tables (often hash tables) soon add up.
+There are also platforms which due to some design reasons don't use
+cooling devices and thus don't trigger old 'cdev_update' trace event.
+They are also important and measuring latency for the thermal signal
+raising/decaying characteristics is in scope. This new trace event
+would cover them as well.
 
-	David
+We already have a trace point 'pelt_thermal_tp' which after a change to
+trace event can be paired with this new 'thermal_pressure_update' and
+derive more insight what is going on in the system under thermal pressure
+(and why).
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+Signed-off-by: Lukasz Luba <lukasz.luba@arm.com>
+---
+
+Changes v4:
+- following Greg's comment, removed the test robot tag 'Reported-by'
+  which is not need for this patch; the compilation issue was captured
+  in v1 not in mainline code
+
+The v3 is here:
+https://lore.kernel.org/lkml/20220427073551.19032-1-lukasz.luba@arm.com/
+
+The v2 is here:
+https://lore.kernel.org/lkml/20220425135317.5880-1-lukasz.luba@arm.com/
+
+The v1 and discussion can be found here at:
+https://lore.kernel.org/lkml/20220419164801.29078-1-lukasz.luba@arm.com/
+
+Regards,
+Lukasz
+
+ drivers/base/arch_topology.c            |  5 +++++
+ include/trace/events/thermal_pressure.h | 29 +++++++++++++++++++++++++
+ 2 files changed, 34 insertions(+)
+ create mode 100644 include/trace/events/thermal_pressure.h
+
+diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
+index f73b836047cf..579c851a2bd7 100644
+--- a/drivers/base/arch_topology.c
++++ b/drivers/base/arch_topology.c
+@@ -19,6 +19,9 @@
+ #include <linux/rcupdate.h>
+ #include <linux/sched.h>
+ 
++#define CREATE_TRACE_POINTS
++#include <trace/events/thermal_pressure.h>
++
+ static DEFINE_PER_CPU(struct scale_freq_data __rcu *, sft_data);
+ static struct cpumask scale_freq_counters_mask;
+ static bool scale_freq_invariant;
+@@ -195,6 +198,8 @@ void topology_update_thermal_pressure(const struct cpumask *cpus,
+ 
+ 	th_pressure = max_capacity - capacity;
+ 
++	trace_thermal_pressure_update(cpu, th_pressure);
++
+ 	for_each_cpu(cpu, cpus)
+ 		WRITE_ONCE(per_cpu(thermal_pressure, cpu), th_pressure);
+ }
+diff --git a/include/trace/events/thermal_pressure.h b/include/trace/events/thermal_pressure.h
+new file mode 100644
+index 000000000000..b68680201360
+--- /dev/null
++++ b/include/trace/events/thermal_pressure.h
+@@ -0,0 +1,29 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#undef TRACE_SYSTEM
++#define TRACE_SYSTEM thermal_pressure
++
++#if !defined(_TRACE_THERMAL_PRESSURE_H) || defined(TRACE_HEADER_MULTI_READ)
++#define _TRACE_THERMAL_PRESSURE_H
++
++#include <linux/tracepoint.h>
++
++TRACE_EVENT(thermal_pressure_update,
++	TP_PROTO(int cpu, unsigned long thermal_pressure),
++	TP_ARGS(cpu, thermal_pressure),
++
++	TP_STRUCT__entry(
++		__field(unsigned long, thermal_pressure)
++		__field(int, cpu)
++	),
++
++	TP_fast_assign(
++		__entry->thermal_pressure = thermal_pressure;
++		__entry->cpu = cpu;
++	),
++
++	TP_printk("cpu=%d thermal_pressure=%lu", __entry->cpu, __entry->thermal_pressure)
++);
++#endif /* _TRACE_THERMAL_PRESSURE_H */
++
++/* This part must be outside protection */
++#include <trace/define_trace.h>
+-- 
+2.17.1
 
