@@ -2,75 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2538C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:55:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74A86C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:55:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236813AbiD0N6m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 09:58:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58122 "EHLO
+        id S236886AbiD0N7F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 09:59:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236807AbiD0N6j (ORCPT
+        with ESMTP id S236897AbiD0N6s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 09:58:39 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D210EA7;
-        Wed, 27 Apr 2022 06:55:28 -0700 (PDT)
-Received: from benjamin-XPS-13-9310.. (unknown [IPv6:2a01:e0a:120:3210:a50b:1f6f:4fce:a4b])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        Wed, 27 Apr 2022 09:58:48 -0400
+Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCB17AE44;
+        Wed, 27 Apr 2022 06:55:33 -0700 (PDT)
+Received: from janitor.denx.de (unknown [62.91.23.180])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: benjamin.gaignard)
-        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id C71DF1F44800;
-        Wed, 27 Apr 2022 14:55:26 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1651067727;
-        bh=ipCjbGKYkux+/ojU36BdkoNBWKXYuJDGrkOmJsKx1ig=;
-        h=From:To:Cc:Subject:Date:From;
-        b=M0xTcz5QKH9w9GcgU87+Ap9lLq4wMXK4YxTmePcmhfJ2I65J9GcKNr1KEFijMb3zS
-         UKzUjI5tmVRGjiOEjdaiyvhJgRFX83YPdhjjbXjjYLFlOfkmytXhXLNJFycFojKOAN
-         L4uN88LYRYTn88d4ioqVpoVXwjjx9Dg1aLV5rvksRlf0GB66V2QgaLMr6eYV4pCROM
-         N8eRwZAj3cZm6w948CeiHYClXCKR+a4YgVciGvG2AkXnYbFwRA7YAht6oj1Y7lwf4k
-         RXgPsDQGy+fkoEV2/WWVI5PgA/AQIr5lYXx2Vya5m0+/En1p+VRMJeUIc09tozF1EO
-         yJSi+Z5+ZmFVg==
-From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
-To:     ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de,
-        mchehab@kernel.org, gregkh@linuxfoundation.org
-Cc:     linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        jon@nanocrew.net, aford173@gmail.com, kernel@collabora.com,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Subject: [PATCH] media: hantro: HEVC: Fix tile info buffer value computation
-Date:   Wed, 27 Apr 2022 15:55:17 +0200
-Message-Id: <20220427135517.381959-1-benjamin.gaignard@collabora.com>
-X-Mailer: git-send-email 2.32.0
+        (Authenticated sender: noc@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 7995E83E9E;
+        Wed, 27 Apr 2022 15:55:32 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1651067732;
+        bh=8eYvVBd/3DpcmHQqYetFdTfTTiOdFCR9Rown27tb0EE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=e7L4iTXLuiajqZfBlTEBSf1IBTUllPmmHPSBnSFELKZXC9zroOQ2U8prp9nBPUmjh
+         s4oLl/5pBVQM4Db837ilGmUG055VTjc2qYta09NAhEQCVjABXU2q59DlEI27a86bYf
+         IflFC2lllOoOxdEe8+TEBCDfqU3gxqp95RsTpeo56X8rVt/wV+9UVRP1dM8eRJDXZ7
+         mjTRRdVHjvxgM/aO1+6j6SZcvRIACcnmwBMhh4ckPwDLFpZRkDLsLXqXilM7+Jf3V0
+         TDn3RfCnKhC2JeKPxOfKU+530ozWzup0q5HbBe1UZB/rCBa9GtE6sleMEOXdTs6acp
+         CFrPSU9WldxJQ==
+Received: by janitor.denx.de (Postfix, from userid 108)
+        id 33130A030E; Wed, 27 Apr 2022 15:55:32 +0200 (CEST)
+Received: from xpert.denx.de (xpert.denx.de [192.168.0.4])
+        by janitor.denx.de (Postfix) with ESMTPS id BE178A00A4;
+        Wed, 27 Apr 2022 15:55:17 +0200 (CEST)
+Received: by xpert.denx.de (Postfix, from userid 535)
+        id AF0EA3E0540; Wed, 27 Apr 2022 15:55:17 +0200 (CEST)
+From:   Philip Oberfichtner <pro@denx.de>
+Cc:     Philip Oberfichtner <pro@denx.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Tim Harvey <tharvey@gateworks.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        "Ariel D'Alessandro" <ariel.dalessandro@collabora.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Christoph Niedermaier <cniedermaier@dh-electronics.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Li Yang <leoyang.li@nxp.com>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, matthias.winker@de.bosch.com
+Subject: [PATCH v3 3/4] dt-bindings: arm: Add bosch acc board
+Date:   Wed, 27 Apr 2022 15:52:31 +0200
+Message-Id: <20220427135229.2339865-3-pro@denx.de>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220427135229.2339865-1-pro@denx.de>
+References: <20220427135229.2339865-1-pro@denx.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.103.5 at phobos.denx.de
+X-Virus-Status: Clean
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use pps->column_width_minus1[j] + 1 as value for the tile info buffer
-instead of pps->column_width_minus1[j + 1].
-The patch fix DBLK_E_VIXS_2, DBLK_F_VIXS_2, DBLK_G_VIXS_2,
-SAO_B_MediaTek_5, TILES_A_Cisco_2 and TILES_B_Cisco_1 tests in fluster.
+Add device tree binding for the Bosch ACC board, based on i.MX6 Dual.
 
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Signed-off-by: Philip Oberfichtner <pro@denx.de>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
 ---
- drivers/staging/media/hantro/hantro_g2_hevc_dec.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
-index bb512389c1a5..ffeb2fbeefd2 100644
---- a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
-+++ b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
-@@ -74,7 +74,7 @@ static void prepare_tile_info_buffer(struct hantro_ctx *ctx)
- 					no_chroma = 1;
- 				for (j = 0, tmp_w = 0; j < num_tile_cols - 1; j++) {
- 					tmp_w += pps->column_width_minus1[j] + 1;
--					*p++ = pps->column_width_minus1[j + 1];
-+					*p++ = pps->column_width_minus1[j] + 1;
- 					*p++ = h;
- 					if (i == 0 && h == 1 && ctb_size == 16)
- 						no_chroma = 1;
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: Tim Harvey <tharvey@gateworks.com>
+Cc: Lucas Stach <l.stach@pengutronix.de>
+Cc: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Cc: Alexander Stein <alexander.stein@ew.tq-group.com>
+Cc: "Ariel D'Alessandro" <ariel.dalessandro@collabora.com>
+Cc: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Cc: Christoph Niedermaier <cniedermaier@dh-electronics.com>
+Cc: Sebastian Reichel <sebastian.reichel@collabora.com>
+Cc: Li Yang <leoyang.li@nxp.com>
+Cc: devicetree@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: matthias.winker@de.bosch.com
+
+---
+
+Changes in v3: none
+Changes in v2: Acked-by Krzysztof
+---
+ Documentation/devicetree/bindings/arm/fsl.yaml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentation/devicetree/bindings/arm/fsl.yaml
+index 08bdd30e511c..9deb568761c1 100644
+--- a/Documentation/devicetree/bindings/arm/fsl.yaml
++++ b/Documentation/devicetree/bindings/arm/fsl.yaml
+@@ -192,6 +192,7 @@ properties:
+         items:
+           - enum:
+               - auvidea,h100              # Auvidea H100
++              - bosch,imx6q-acc           # Bosch ACC i.MX6 Dual
+               - boundary,imx6q-nitrogen6_max
+               - boundary,imx6q-nitrogen6_som2
+               - boundary,imx6q-nitrogen6x
 -- 
-2.32.0
+2.34.1
 
