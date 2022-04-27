@@ -2,126 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21DE4C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 18:53:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 726EEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 18:56:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231996AbiD0S4R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 14:56:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50942 "EHLO
+        id S232164AbiD0S7p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 14:59:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233976AbiD0Syq (ORCPT
+        with ESMTP id S231502AbiD0S7Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 14:54:46 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC493D1CF8
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 11:41:21 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id p7-20020a05600c358700b00393e80c59daso3002842wmq.0
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 11:41:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=EOzQqgz02aXb8qIj3DdqRtK5QB4xG5+T1rYPUXMs6Ec=;
-        b=sMQ00jB4PYRaPkQFfSUvqdUjsB0t3kmViFDoJ9Nk7BFqGwnnMheHWVshL7y0+Tmmkv
-         BQijD9LFsYNhnZS3CofuWAG8kKQrWLrfmJK7I5qqOZjnFJ1bz8Z+BvKmiNC59kU7sMEm
-         SwBR2YOgkKYGKs0WHP4GkGslf7XKbXzESEGZkHJaM7rV6YPOl/WIaZDyFdr2C6pocRkS
-         ohBgMwbx3sadc37rGKAjCLwxZ6xBqUWXzG+VsCh5p1eiukH3ufwMwaulSu4FDmfFPo5+
-         MEZnSnn1atHDMaiVgsSzRrdBj0WMKTZFKadPj+KC5PsfngMTIFDejnVM5f6h65J/Xhst
-         Tcjw==
+        Wed, 27 Apr 2022 14:59:24 -0400
+Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E67561611DF;
+        Wed, 27 Apr 2022 11:44:53 -0700 (PDT)
+Received: by mail-oi1-f181.google.com with SMTP id q8so2517951oif.13;
+        Wed, 27 Apr 2022 11:44:53 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=EOzQqgz02aXb8qIj3DdqRtK5QB4xG5+T1rYPUXMs6Ec=;
-        b=NGj39+onFV6VLxVXEhTo8/Nn6dhHrYwWg63P/Q3o2J2MaEnRltCCd+VLfe9G33BJX/
-         zs9uBGEPYVUtSh2btEd3vtCsbpP0C/jElFHRCYpBuu3t6ThR9wKF7D3plxcDadvg6e9I
-         MgLRBt5lnMdZQCrvtYy5/6unhdZeZS0ZJpY72YnD9e55lfeL7d5O/JX3iq4Wd/4mkI3D
-         rh3sBAR6GrLTcREaxe8UqwqY/nZ5/57G78qySu0rrlYSD/pgWzvGLNCL36fwXQH2L71a
-         NeVuh2L9xOmHOWqhcC8SzW3vdPipAejsObLvpPSeyUoNWGMZG+lV239hDXcGKkYTAM7Y
-         Gg3g==
-X-Gm-Message-State: AOAM531qbOim60Ym5cKK/EgCitYXxiL7ge2Upvxgp//uW+whg4iTXITV
-        yYKgil06L1q9+Aa7qkKJH/jUpw==
-X-Google-Smtp-Source: ABdhPJwdERY7gYet7KuRWi7VwbXro7/zG2+D1IXT5t5ZUhGspXNqQd3r9PXr52s1VjbV51PZ00PFPg==
-X-Received: by 2002:a7b:c30d:0:b0:381:4bb9:eede with SMTP id k13-20020a7bc30d000000b003814bb9eedemr36195672wmj.74.1651084880025;
-        Wed, 27 Apr 2022 11:41:20 -0700 (PDT)
-Received: from localhost.localdomain (cpc78119-cwma10-2-0-cust590.7-3.cable.virginm.net. [81.96.50.79])
-        by smtp.gmail.com with ESMTPSA id f3-20020a5d64c3000000b0020aef267950sm1992798wri.49.2022.04.27.11.41.18
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/sIxYWvFlMoHReoMPfX2NBRTuxsiKhz/pal5GhylPqg=;
+        b=PN/WCN/lJCiNMu10xuaOmS9MxjYy07TYnJnbrxcJxLZ1TetHbPoXZQtIfiGNYcxKtD
+         lh3/cwwSi0xfgQxrTnIyDXEaRD/wMRqiN6NcusaHLhw+A9kvsWOfH2Y5uUgPciYzEgWU
+         RtA5WbOPgWpURhbmCrMoZ85lPvmLo+w63G6yJP4A1uUpXWUijK/sYZ8pwb+tN5vTmyb0
+         mClV+PlUfZimMiAfTqOvbIet7GAB+LuJguREm3pu7i6KWwrq5cBdbehwRL9jFj+ut3SZ
+         951R6nbqKUJihdotbl6MQzzXG+aSTSZnsAQgde5y1V5kuGZcZRvFnFIOsoSHYjm2UaKw
+         2Axg==
+X-Gm-Message-State: AOAM532FkCy6BldeuvC7cvcCzGG6kmifJNV4yPSX/SvNxTYXZOT3c1Rl
+        R6SKLatMnpp0kukK0paBXg==
+X-Google-Smtp-Source: ABdhPJz6nKdb0AwwSKP/n1AYikKnnui7VO1eKjkTuDHiUj8S52Lm4O++NP3zOk3jiqIIDRQN/19pQA==
+X-Received: by 2002:aca:1a09:0:b0:325:90ab:a812 with SMTP id a9-20020aca1a09000000b0032590aba812mr1384519oia.131.1651085093218;
+        Wed, 27 Apr 2022 11:44:53 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id m4-20020a056870030400b000e686d13890sm963611oaf.42.2022.04.27.11.44.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 11:41:19 -0700 (PDT)
-From:   Caleb Connolly <caleb.connolly@linaro.org>
-To:     caleb.connolly@linaro.org, Sebastian Reichel <sre@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
+        Wed, 27 Apr 2022 11:44:52 -0700 (PDT)
+Received: (nullmailer pid 436853 invoked by uid 1000);
+        Wed, 27 Apr 2022 18:44:52 -0000
+Date:   Wed, 27 Apr 2022 13:44:52 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Joel Stanley <joel@jms.id.au>
+Cc:     Andrew Jeffery <andrew@aj.id.au>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Cc:     Amit Pundir <amit.pundir@linaro.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>
-Subject: [PATCH 3/6] arm64: dts: sdm845-oneplus: enable pmi8998 charger
-Date:   Wed, 27 Apr 2022 19:40:28 +0100
-Message-Id: <20220427184031.2569442-4-caleb.connolly@linaro.org>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220427184031.2569442-1-caleb.connolly@linaro.org>
-References: <20220427184031.2569442-1-caleb.connolly@linaro.org>
+        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] dt-bindings: pinctrl: aspeed: Drop referenced nodes in
+ examples
+Message-ID: <YmmPJLcI7PnsBtXn@robh.at.kernel.org>
+References: <20220422192139.2592632-1-robh@kernel.org>
+ <CACPK8XcQNJNyzqdjMQuCP+z-L-A9mcMqs-HJJrh9MscasV+D=A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACPK8XcQNJNyzqdjMQuCP+z-L-A9mcMqs-HJJrh9MscasV+D=A@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable the smb2 charger to expose usb attach/detach events, charging
-stats etc.
+On Wed, Apr 27, 2022 at 08:40:31AM +0000, Joel Stanley wrote:
+> On Fri, 22 Apr 2022 at 19:21, Rob Herring <robh@kernel.org> wrote:
+> >
+> > The additional nodes in the example referenced from the pinctrl node
+> > 'aspeed,external-nodes' properties are either incorrect (aspeed,ast2500-lpc)
+> > or not documented with a schema (aspeed,ast2500-gfx). There's no need to
+> > show these nodes as part of the pinctrl example, so just remove them.
+> >
+> > Signed-off-by: Rob Herring <robh@kernel.org>
+> 
+> Nak.
 
-Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
----
- arch/arm64/boot/dts/qcom/sdm845-oneplus-common.dtsi   | 4 ++++
- arch/arm64/boot/dts/qcom/sdm845-oneplus-enchilada.dts | 4 ++++
- arch/arm64/boot/dts/qcom/sdm845-oneplus-fajita.dts    | 4 ++++
- 3 files changed, 12 insertions(+)
+I welcome patches that add schemas for the undocumented compatibles 
+instead. Otherwise, I will be turning on this check by default and 
+nagging people to fix them.
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm845-oneplus-common.dtsi b/arch/arm64/boot/dts/qcom/sdm845-oneplus-common.dtsi
-index 9c91ddc766af..b1fa00a8047b 100644
---- a/arch/arm64/boot/dts/qcom/sdm845-oneplus-common.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sdm845-oneplus-common.dtsi
-@@ -461,6 +461,10 @@ pinconf {
- 	};
- };
- 
-+&pmi8998_charger {
-+	status = "okay";
-+};
-+
- &pmi8998_rradc {
- 	status = "okay";
- };
-diff --git a/arch/arm64/boot/dts/qcom/sdm845-oneplus-enchilada.dts b/arch/arm64/boot/dts/qcom/sdm845-oneplus-enchilada.dts
-index bf2cf92e8976..4e119a78c568 100644
---- a/arch/arm64/boot/dts/qcom/sdm845-oneplus-enchilada.dts
-+++ b/arch/arm64/boot/dts/qcom/sdm845-oneplus-enchilada.dts
-@@ -32,3 +32,7 @@ &display_panel {
- &bq27441_fg {
- 	monitored-battery = <&battery>;
- };
-+
-+&pmi8998_charger {
-+	monitored-battery = <&battery>;
-+};
-diff --git a/arch/arm64/boot/dts/qcom/sdm845-oneplus-fajita.dts b/arch/arm64/boot/dts/qcom/sdm845-oneplus-fajita.dts
-index 1b6b5bf368df..0b610e3a8d9c 100644
---- a/arch/arm64/boot/dts/qcom/sdm845-oneplus-fajita.dts
-+++ b/arch/arm64/boot/dts/qcom/sdm845-oneplus-fajita.dts
-@@ -33,6 +33,10 @@ &bq27441_fg {
- 	monitored-battery = <&battery>;
- };
- 
-+&pmi8998_charger {
-+	monitored-battery = <&battery>;
-+};
-+
- &rmi4_f12 {
- 	touchscreen-y-mm = <148>;
- };
--- 
-2.36.0
+> This removes the information on how to use the bindings. Surely we
+> prefer to over document rather than under document?
 
+How is what the 'gfx' and 'lpc' nodes contain relevant to how the 
+pinctrl binding works? If a user wants to know, then they should go look 
+at the aspeed,ast2500-lpc/aspeed,ast2500-gfx bindings and their 
+examples. Which brings up my secondary issue which is having the same 
+example multiple times. It is multiple chances for errors (that I end 
+up fixing).
+
+How do we know the example is even correct without any schema checks? 
+The 'framebuffer' node is not in a valid location is the most obvious 
+thing I see.
+
+Rob
