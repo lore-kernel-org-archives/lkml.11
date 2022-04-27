@@ -2,104 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DF84C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:53:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C6F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:54:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236791AbiD0N4t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 09:56:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49162 "EHLO
+        id S236797AbiD0N5K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 09:57:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236700AbiD0N4r (ORCPT
+        with ESMTP id S236768AbiD0N5H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 09:56:47 -0400
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E02A6B1C1;
-        Wed, 27 Apr 2022 06:53:32 -0700 (PDT)
-Received: from janitor.denx.de (unknown [62.91.23.180])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: noc@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id A2E3883E9E;
-        Wed, 27 Apr 2022 15:53:31 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1651067611;
-        bh=lRN//q0RUoYn1Nk0c/CSAhY6Ns1dN94oveT7N6gNYOc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=UKD7v97iqQW00zjNHA2sR5ASMdAL5Pis2HZldKuWw8fS79MTIz3/kYJg4FoNNDhfu
-         uXv9aomSij7K7HMzc2weVwLxVC137NT1maOSz59xzRfTzw5d8A83Jn/8mvQYom2x+0
-         78j83nAVwgcmli2rXyoyIIhzu4WGtDU45TwgM/2XGi1vTHuuZTjXxF9K0l+fZ/G2Sy
-         CtylI4309qJrr84zbQGIG1B0GRCUsf+e/YDNEMuOHXMvF+OCp70aP6pUF94uJEPsd9
-         9lslKFWQGnh/DURkAxTICPOnFnwYIviZCEr1SjDkFE8UhS2gu6E0GnV7oBVZ92hBuJ
-         EF9mvcHZaZMdg==
-Received: by janitor.denx.de (Postfix, from userid 108)
-        id 581D6A01E1; Wed, 27 Apr 2022 15:53:31 +0200 (CEST)
-Received: from xpert.denx.de (xpert.denx.de [192.168.0.4])
-        by janitor.denx.de (Postfix) with ESMTPS id 73C3FA00A4;
-        Wed, 27 Apr 2022 15:53:17 +0200 (CEST)
-Received: by xpert.denx.de (Postfix, from userid 535)
-        id EC9F83E0398; Wed, 27 Apr 2022 15:53:16 +0200 (CEST)
-From:   Philip Oberfichtner <pro@denx.de>
-Cc:     Philip Oberfichtner <pro@denx.de>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, matthias.winker@de.bosch.com
-Subject: [PATCH v3 1/4] dt-bindings: display: simple: Add DataImage FG1001L0DSSWMG01 compatible string
-Date:   Wed, 27 Apr 2022 15:52:27 +0200
-Message-Id: <20220427135229.2339865-1-pro@denx.de>
-X-Mailer: git-send-email 2.34.1
+        Wed, 27 Apr 2022 09:57:07 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A0133B54E
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 06:53:56 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id l18so3543587ejc.7
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 06:53:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=/VHZPsVMAFIMi2pBbLfD5fKKNKqKbuM/A2SGKvxDgK4=;
+        b=AwyCfjozdBWESOd/ALQolQKJzimk9604uiUm6wDtCOrm5sOppI0nnP7ziMhAz/f51o
+         yUoGs5n7teJKcGbtpp4NaCK1/YbXG4P0YRKx0GchwQ9vgRF3UzfbEWkpW6xKyra3pN1l
+         PnkWJfEI6GymVqL/stEHO/IxUCTYRc23BDHctj09QFj9iz4132J3vnRtPknCK5c+jcpX
+         LqdBOHmvHmX3UBdujsR9oaGfVGw6exZ+FyeGxLo3un9Y9FzaEGgaGIPtXu3p+HBW1Ko4
+         xhja6WXow4QKqlI9wX3Qd7Z0kLokBkl8Z0hIyMTDjmsUsMc8TcluX6xUkaT8/fgTZJOm
+         AGTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=/VHZPsVMAFIMi2pBbLfD5fKKNKqKbuM/A2SGKvxDgK4=;
+        b=mC7+w3UST9WoXABo/rk818jStXbDZqhdBdp2qajwgF90dP+lae5/6QppG9hy1Ej3CA
+         8ESUfNzhnhertmSKMp/E7uB/xVKeq12nU9Q6e+S5o3oXkcnuXcA2TWHekxaH4K9WHG/w
+         ptkxVqmSHD8hPrG4qMpYIbGwVSrYLPvMJ9uoK0m2ndNK1aWjuKKMSf3XXykfGWhSP6WM
+         sZ4/sfYjnhVLEI9YlsN24UolZ42dld790VZXFS5RR9F7q8FqBgZD4Av6fBhEFu/Jh8fw
+         pKzjEBkNDjZItwHYSP2uqAcCsSgiE5byCRPc/XbvBVp2nTzpA7dytLD6htGNzUTXh65q
+         fLbg==
+X-Gm-Message-State: AOAM533Rt+06QM/WZ14C3B8t6I0xRzKYJxVurNKlfhGOjnpmGzfJyrAv
+        h8WNPzTemxEfIzxpIsa0r34LYiFkRdAR2g==
+X-Google-Smtp-Source: ABdhPJylNBSCvH5CoQ2choSP7+rTzl3z8DvUVHYaOOrw5yxaVm205jVSxTlZqO9OF2mULcAztWn0nw==
+X-Received: by 2002:a17:907:7f0a:b0:6f3:9712:dfed with SMTP id qf10-20020a1709077f0a00b006f39712dfedmr14448010ejc.557.1651067634774;
+        Wed, 27 Apr 2022 06:53:54 -0700 (PDT)
+Received: from [192.168.0.154] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id jt24-20020a170906ca1800b006ef606fe5f2sm6762723ejb.61.2022.04.27.06.53.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Apr 2022 06:53:53 -0700 (PDT)
+Message-ID: <51be638b-e12d-b9ae-c14b-f51e33d2503e@linaro.org>
+Date:   Wed, 27 Apr 2022 15:53:52 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 1/1] dt-bindings: nvmem: mediatek: Convert mtk-efuse
+ binding to YAML
+Content-Language: en-US
+To:     "allen-kh.cheng" <allen-kh.cheng@mediatek.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Lala Lin <lala.lin@mediatek.com>,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Ryder Lee <ryder.lee@kernel.org>
+References: <20220425084800.2021-1-allen-kh.cheng@mediatek.com>
+ <20220425084800.2021-2-allen-kh.cheng@mediatek.com>
+ <e64bdca8-7b18-b450-830c-ca07946a73fb@linaro.org>
+ <9d65b713e3ffdd34dcca532c4c97fa98b124bde4.camel@mediatek.com>
+ <0169c4ac-fdce-29b7-553a-14dc7df532d1@linaro.org>
+ <a8e212a0e0449e015a33e76b320266376d4b9be6.camel@mediatek.com>
+ <89609af9-5feb-0553-5e39-c97c4750b5a1@linaro.org>
+ <33c754a7b6e4cd631bb2aeef002d34a6c25d6689.camel@mediatek.com>
+ <0c63c24a-8014-2491-095c-77893d2141d9@linaro.org>
+ <daca88d63fa844179a3d44affee124584353bec9.camel@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <daca88d63fa844179a3d44affee124584353bec9.camel@mediatek.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.103.5 at phobos.denx.de
-X-Virus-Status: Clean
-To:     unlisted-recipients:; (no To-header on input)
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add DataImage FG1001L0DSSWMG01 10.1" 1280x800 TFT LCD panel compatible
-string.
+On 27/04/2022 12:00, allen-kh.cheng wrote:
+> I think there are two cases in mediatek efuse dirver now.
+> 
+> Case 1, 
+> const: mediatek,efuse is deprecated.
+> const: mediatek,mt8173-efuse is remained. All mediatek chipsets will
+> use mediatek,mt8173-efuse as fallback.
+> 
+> Case 2,
+> const: mediatek,efuse is deprecated.
+> const: mediatek,mt8173-efuse is deprecated.
+> 
+> All mediatek chipsets(include ediatek,mt8173-efuse) will use
+> mediatek,efuse as fallback.
+> 
+> Which one do you think is better?
 
-Signed-off-by: Philip Oberfichtner <pro@denx.de>
+Indeed, I forgot that mt8173 would also fallback to generic efuse.
+Indeed let's go with case 2, so your proposal before was correct.
 
----
 
-Cc: Thierry Reding <thierry.reding@gmail.com>
-Cc: Sam Ravnborg <sam@ravnborg.org>
-Cc: David Airlie <airlied@linux.ie>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: Rob Herring <robh+dt@kernel.org>
-Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc: dri-devel@lists.freedesktop.org
-Cc: devicetree@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: matthias.winker@de.bosch.com
-
----
-
-Changes in v3: new
----
- .../devicetree/bindings/display/panel/panel-simple.yaml         | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/display/panel/panel-simple.yaml b/Documentation/devicetree/bindings/display/panel/panel-simple.yaml
-index 1eb9dd4f8f58..a6db3eff3b1a 100644
---- a/Documentation/devicetree/bindings/display/panel/panel-simple.yaml
-+++ b/Documentation/devicetree/bindings/display/panel/panel-simple.yaml
-@@ -105,6 +105,8 @@ properties:
-       - chunghwa,claa101wb01
-         # Chunghwa Picture Tubes Ltd. 10.1" WXGA TFT LCD panel
-       - chunghwa,claa101wb03
-+        # DataImage, Inc. 10.1" WXGA (1280×800) TFT LCD panel
-+      - dataimage,fg1001l0dsswmg01
-         # DataImage, Inc. 7" WVGA (800x480) TFT LCD panel with 24-bit parallel interface.
-       - dataimage,scf0700c48ggu18
-         # DLC Display Co. DLC1010GIG 10.1" WXGA TFT LCD Panel
--- 
-2.34.1
-
+Best regards,
+Krzysztof
