@@ -2,146 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6784AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:32:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF91AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:32:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238216AbiD0Oep (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 10:34:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55492 "EHLO
+        id S238048AbiD0Ofw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 10:35:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238112AbiD0Oe2 (ORCPT
+        with ESMTP id S238010AbiD0Ofs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 10:34:28 -0400
-Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D10DF1901C
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 07:31:08 -0700 (PDT)
-Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220427143103epoutp04c4a0a71adfe5187e8bf50457fa0887cd~px0sV5h-k1817418174epoutp04S
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 14:31:03 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220427143103epoutp04c4a0a71adfe5187e8bf50457fa0887cd~px0sV5h-k1817418174epoutp04S
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1651069863;
-        bh=MH0TUpJmd6Xn0TDs3wbYY50xoN/FUQag8q/ZfmgP1iI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=i8ZdI+gKcT3sdt3HmnIHuvWHcj0t0iZH0pVj6s8dOYLz4OX21bPI8MzjwoWXvqsTw
-         yL/Qy955dY/q43hOORMoDzvBM0e49Xl5IeZc6S9tWA3nvZh7PO4qc2hsJ7kGGlmhS2
-         NRBP6upHgZYAFU+rwn0NdJjY680lNBBCp5qW0Y20=
-Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
-        epcas5p2.samsung.com (KnoxPortal) with ESMTP id
-        20220427143102epcas5p29b596e5d8e6e014fbed587a068543a20~px0rRj7Yu2595925959epcas5p2B;
-        Wed, 27 Apr 2022 14:31:02 +0000 (GMT)
-Received: from epsmges5p3new.samsung.com (unknown [182.195.38.175]) by
-        epsnrtp1.localdomain (Postfix) with ESMTP id 4KpLlR0WZ2z4x9Pp; Wed, 27 Apr
-        2022 14:30:59 +0000 (GMT)
-Received: from epcas5p3.samsung.com ( [182.195.41.41]) by
-        epsmges5p3new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        46.88.09762.2A359626; Wed, 27 Apr 2022 23:30:58 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas5p1.samsung.com (KnoxPortal) with ESMTPA id
-        20220427125500epcas5p189ef3a038115f13840f8992a79fb2e3d~pwg002FDZ1031610316epcas5p1G;
-        Wed, 27 Apr 2022 12:55:00 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220427125500epsmtrp18381e20d6e38ffd4eb28b8ea3234fa63~pwg0y5X4H2300323003epsmtrp1O;
-        Wed, 27 Apr 2022 12:55:00 +0000 (GMT)
-X-AuditID: b6c32a4b-1fdff70000002622-70-626953a2579d
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        0D.34.08853.42D39626; Wed, 27 Apr 2022 21:55:00 +0900 (KST)
-Received: from test-zns (unknown [107.110.206.5]) by epsmtip1.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220427125459epsmtip19208f23035104a9c8446a86c8c32dcd3~pwgzmZAtj1493614936epsmtip1J;
-        Wed, 27 Apr 2022 12:54:58 +0000 (GMT)
-Date:   Wed, 27 Apr 2022 18:19:51 +0530
-From:   Nitesh Shetty <nj.shetty@samsung.com>
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Cc:     linux-block@vger.kernel.org, linux-scsi@vger.kernel.org,
-        dm-devel@redhat.com, linux-nvme@lists.infradead.org,
-        linux-fsdevel@vger.kernel.org, nitheshshetty@gmail.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 00/10] Add Copy offload support
-Message-ID: <20220427124951.GA9558@test-zns>
+        Wed, 27 Apr 2022 10:35:48 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E827C1B9;
+        Wed, 27 Apr 2022 07:32:36 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 829BF21122;
+        Wed, 27 Apr 2022 14:32:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1651069955; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=i/KJP+44iudIC+WcuC2nIb/z3EQuXQtWQd5UTDcPQTs=;
+        b=RyET7+oNDgi2ZXLUior/Ne6UXO3HdPEr07aDMFH4PtpAOpP33zyVDEVHUp3HW8avYVOozI
+        rN7+AWuDvBTed8b2tAe3vggF78CQ3Ie9N84F/fEa4pTI58mhVh78XlNp2EUcIWo64jHukY
+        xkBUnJMQxfVKEDTVQSNIExJCxjrvkXI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1651069955;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=i/KJP+44iudIC+WcuC2nIb/z3EQuXQtWQd5UTDcPQTs=;
+        b=jfY/6Nt5pZVzjT3TDrhJQmX8pEeTBvelR36nJbujlnPKjT1eyNCefX46jFb5D/rK4IE0kB
+        Z85PtwNW9yJaAFCg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 1525013A39;
+        Wed, 27 Apr 2022 14:32:35 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id xUJlAgNUaWIKeQAAMHmgww
+        (envelope-from <lhenriques@suse.de>); Wed, 27 Apr 2022 14:32:35 +0000
+Received: from localhost (brahms.olymp [local])
+        by brahms.olymp (OpenSMTPD) with ESMTPA id 8dfb1ff8;
+        Wed, 27 Apr 2022 14:33:05 +0000 (UTC)
+From:   =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
+To:     Jeff Layton <jlayton@kernel.org>, Xiubo Li <xiubli@redhat.com>,
+        Ilya Dryomov <idryomov@gmail.com>
+Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>,
+        Ryan Taylor <rptaylor@uvic.ca>
+Subject: [PATCH v2] ceph: fix statfs for subdir mounts
+Date:   Wed, 27 Apr 2022 15:33:03 +0100
+Message-Id: <20220427143303.950-1-lhenriques@suse.de>
 MIME-Version: 1.0
-In-Reply-To: <6a85e8c8-d9d1-f192-f10d-09052703c99a@opensource.wdc.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrDJsWRmVeSWpSXmKPExsWy7bCmpu6i4Mwkg3fbLS1+nz3PbLH33WxW
-        i723tC327D3JYnF51xw2i/nLnrJbdF/fwWax40kjowOHx85Zd9k9Ni+p99jZep/V4/2+q2we
-        nzfJBbBGZdtkpCampBYppOYl56dk5qXbKnkHxzvHm5oZGOoaWlqYKynkJeam2iq5+AToumXm
-        AF2ipFCWmFMKFApILC5W0rezKcovLUlVyMgvLrFVSi1IySkwKdArTswtLs1L18tLLbEyNDAw
-        MgUqTMjOmPj9CnPBOY6Knz1vGBsY+9i7GDk5JARMJF7e7WXsYuTiEBLYzSgxce1zVgjnE6PE
-        8nX72SCcb4wSjZeuscK0tGw9B1W1l1Fi26zjUP3PGCWWte5nBKliEVCVWLRuPlMXIwcHm4C2
-        xOn/HCBhEQFTibc9rSwg9cwCZxgl2t/vAjtEWMBMYnVnKxuIzSugI3Hzy19WCFtQ4uTMJywg
-        NqeAm0THgUnMILaogLLEgW3HmUAGSQhM5ZA4sWsFC8R5LhIf7s1hhrCFJV4d3wL1qZTEy/42
-        KLtcYnvbAqjmFkaJrlOnoJrtJS7u+csEYjMLZEj8fzkV6mdZiamn1kHF+SR6fz9hgojzSuyY
-        B2MrS6xZv4ANwpaUuPa9Ecr2kNj5cSU0vE4Bg3jlHMYJjPKzkHw3C8m+WcAQYxbQlFi/Sx8i
-        LC/RvHU2M0RYWmL5Pw4kFQsY2VYxSqYWFOempxabFhjnpZbDoz85P3cTIzjZannvYHz04IPe
-        IUYmDsZDjBIczEoivF92ZyQJ8aYkVlalFuXHF5XmpBYfYjQFRtxEZinR5Hxgus8riTc0sTQw
-        MTMzM7E0NjNUEuc9lb4hUUggPbEkNTs1tSC1CKaPiYNTqoFJ/sXyv8flM4vyjuwxY1rg5f7V
-        /9PC2qtRz00K7tQGHgyfd79y+q5Vt3ZZqa4/z7Qjwv34g2nb7mf/KvrDs2J35YPFBls+phh5
-        Kj4wmWk8c92//z4WkbdfvuB8+tAlU3BHDpfP2+OPuVJ+P9tsYnzRb3PUYo8jWy8zXz5fe2Ti
-        FtsGP7Wgfr0snydfjEP/vps92+n9qjUCjnP89QRXz98z2dewxrpyqfUSO++Pcx7VzXEJsLQT
-        +vRNM9tSM+ax6YE9b6eZRam4a00uF7nkk7i7eW765hPLglMWajFIRC/cp11Wuslml6sQX+xN
-        qV/2CcdjHh0S1RCKq1l3x91Wdr3cJfbdPFuPX1bvWu5gOXtRmRJLcUaioRZzUXEiAJsamEE/
-        BAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrBLMWRmVeSWpSXmKPExsWy7bCSnK6KbWaSwZMuIYvfZ88zW+x9N5vV
-        Yu8tbYs9e0+yWFzeNYfNYv6yp+wW3dd3sFnseNLI6MDhsXPWXXaPzUvqPXa23mf1eL/vKpvH
-        501yAaxRXDYpqTmZZalF+nYJXBnv1l9kLPjAWrGkYRZTA+MZli5GTg4JAROJlq3nWEFsIYHd
-        jBJXf/pBxCUllv09wgxhC0us/PecvYuRC6jmCaNEx5HH7CAJFgFViUXr5jN1MXJwsAloS5z+
-        zwESFhEwlXjb08oCUs8scIZRov39LrB6YQEzidWdrWwgNq+AjsTNL39ZIYaeYpTofHqRFSIh
-        KHFy5hOw65gF1CX+zLvEDLKAWUBaYvk/DoiwvETz1tlgx3EKuEl0HJgEZosKKEsc2HacaQKj
-        0Cwkk2YhmTQLYdIsJJMWMLKsYpRMLSjOTc8tNiwwzEst1ytOzC0uzUvXS87P3cQIjhwtzR2M
-        21d90DvEyMTBeIhRgoNZSYT3y+6MJCHelMTKqtSi/Pii0pzU4kOM0hwsSuK8F7pOxgsJpCeW
-        pGanphakFsFkmTg4pRqY3E4HJove7NU0V7A9sZ11R157x+KgZU7PWx9lvNdqnSV0Katz3/bd
-        qxRYBTvLRENTZxnWXox4ta7whvj/268VGQ23TZG9+Ovy0izWsn8LH2hrJ208VLHiIMukjZdf
-        9Au12G5aLub9wmBp/ox8xxkX9JROneMWa826cC7U7v2Rf29EjD/Mjf7q8u7e9ZR4hXPJStwa
-        bdcXLfU8YqS+VM9WKSJ8ncP5U5znSri7t5ntLJk/WXVnqaa52nEvD6+zhitE5z9oDbMJk9j+
-        /KKyG4/iPNGIIp2zMpulRDnvb6lUS5Xjjt681vBMiceTFU7rvM5v+zVdvozz4vuXNw+q7fp2
-        VODNqvlHDuVrcp976l+rqcRSnJFoqMVcVJwIAPtAlfYLAwAA
-X-CMS-MailID: 20220427125500epcas5p189ef3a038115f13840f8992a79fb2e3d
-X-Msg-Generator: CA
-Content-Type: multipart/mixed;
-        boundary="----SFNbypxiwiYv2mFj5qNI3mkL0EyMW--LFKYa8svGKq9OOQ6W=_1770c_"
-X-Sendblock-Type: REQ_APPROVE
-CMS-TYPE: 105P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220426101804epcas5p4a0a325d3ce89e868e4924bbdeeba6d15
-References: <CGME20220426101804epcas5p4a0a325d3ce89e868e4924bbdeeba6d15@epcas5p4.samsung.com>
-        <20220426101241.30100-1-nj.shetty@samsung.com>
-        <6a85e8c8-d9d1-f192-f10d-09052703c99a@opensource.wdc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-------SFNbypxiwiYv2mFj5qNI3mkL0EyMW--LFKYa8svGKq9OOQ6W=_1770c_
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
+When doing a mount using as base a directory that has 'max_bytes' quotas
+statfs uses that value as the total; if a subdirectory is used instead,
+the same 'max_bytes' too in statfs, unless there is another quota set.
 
-O Wed, Apr 27, 2022 at 11:19:48AM +0900, Damien Le Moal wrote:
-> On 4/26/22 19:12, Nitesh Shetty wrote:
-> > The patch series covers the points discussed in November 2021 virtual call
-> > [LSF/MM/BFP TOPIC] Storage: Copy Offload[0].
-> > We have covered the Initial agreed requirements in this patchset.
-> > Patchset borrows Mikulas's token based approach for 2 bdev
-> > implementation.
-> > 
-> > Overall series supports –
-> > 
-> > 1. Driver
-> > - NVMe Copy command (single NS), including support in nvme-target (for
-> >     block and file backend)
-> 
-> It would also be nice to have copy offload emulation in null_blk for testing.
->
+Unfortunately, if this subdirectory only has the 'max_files' quota set,
+then statfs uses the filesystem total.  Fix this by making sure we only
+lookup realms that contain the 'max_bytes' quota.
 
-We can plan this in next phase of copy support, once this series settles down.
+Link: https://tracker.ceph.com/issues/55090
+Cc: Ryan Taylor <rptaylor@uvic.ca>
+Signed-off-by: Luís Henriques <lhenriques@suse.de>
+---
+As I mentioned in v1, I do *not* think this really fixes the tracker
+above, as the bug reporter never mentioned setting quotas in the subdir.
 
---
-Nitesh Shetty
+Changes since v1:
+Moved some more logic into __ceph_has_any_quota() function.
 
-------SFNbypxiwiYv2mFj5qNI3mkL0EyMW--LFKYa8svGKq9OOQ6W=_1770c_
-Content-Type: text/plain; charset="utf-8"
+ fs/ceph/inode.c |  2 +-
+ fs/ceph/quota.c | 19 +++++++++++--------
+ fs/ceph/super.h | 28 ++++++++++++++++++++++++----
+ 3 files changed, 36 insertions(+), 13 deletions(-)
 
-
-------SFNbypxiwiYv2mFj5qNI3mkL0EyMW--LFKYa8svGKq9OOQ6W=_1770c_--
+diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
+index 5de7bb9048b7..4b7406d6fbe4 100644
+--- a/fs/ceph/inode.c
++++ b/fs/ceph/inode.c
+@@ -691,7 +691,7 @@ void ceph_evict_inode(struct inode *inode)
+ 
+ 	__ceph_remove_caps(ci);
+ 
+-	if (__ceph_has_any_quota(ci))
++	if (__ceph_has_any_quota(ci, QUOTA_GET_ANY))
+ 		ceph_adjust_quota_realms_count(inode, false);
+ 
+ 	/*
+diff --git a/fs/ceph/quota.c b/fs/ceph/quota.c
+index a338a3ec0dc4..e9f7ca18cdb7 100644
+--- a/fs/ceph/quota.c
++++ b/fs/ceph/quota.c
+@@ -195,9 +195,9 @@ void ceph_cleanup_quotarealms_inodes(struct ceph_mds_client *mdsc)
+ 
+ /*
+  * This function walks through the snaprealm for an inode and returns the
+- * ceph_snap_realm for the first snaprealm that has quotas set (either max_files
+- * or max_bytes).  If the root is reached, return the root ceph_snap_realm
+- * instead.
++ * ceph_snap_realm for the first snaprealm that has quotas set (max_files,
++ * max_bytes, or any, depending on the 'which_quota' argument).  If the root is
++ * reached, return the root ceph_snap_realm instead.
+  *
+  * Note that the caller is responsible for calling ceph_put_snap_realm() on the
+  * returned realm.
+@@ -209,7 +209,9 @@ void ceph_cleanup_quotarealms_inodes(struct ceph_mds_client *mdsc)
+  * will be restarted.
+  */
+ static struct ceph_snap_realm *get_quota_realm(struct ceph_mds_client *mdsc,
+-					       struct inode *inode, bool retry)
++					       struct inode *inode,
++					       enum quota_get_realm which_quota,
++					       bool retry)
+ {
+ 	struct ceph_inode_info *ci = NULL;
+ 	struct ceph_snap_realm *realm, *next;
+@@ -248,7 +250,7 @@ static struct ceph_snap_realm *get_quota_realm(struct ceph_mds_client *mdsc,
+ 		}
+ 
+ 		ci = ceph_inode(in);
+-		has_quota = __ceph_has_any_quota(ci);
++		has_quota = __ceph_has_any_quota(ci, which_quota);
+ 		iput(in);
+ 
+ 		next = realm->parent;
+@@ -279,8 +281,8 @@ bool ceph_quota_is_same_realm(struct inode *old, struct inode *new)
+ 	 * dropped and we can then restart the whole operation.
+ 	 */
+ 	down_read(&mdsc->snap_rwsem);
+-	old_realm = get_quota_realm(mdsc, old, true);
+-	new_realm = get_quota_realm(mdsc, new, false);
++	old_realm = get_quota_realm(mdsc, old, QUOTA_GET_ANY, true);
++	new_realm = get_quota_realm(mdsc, new, QUOTA_GET_ANY, false);
+ 	if (PTR_ERR(new_realm) == -EAGAIN) {
+ 		up_read(&mdsc->snap_rwsem);
+ 		if (old_realm)
+@@ -483,7 +485,8 @@ bool ceph_quota_update_statfs(struct ceph_fs_client *fsc, struct kstatfs *buf)
+ 	bool is_updated = false;
+ 
+ 	down_read(&mdsc->snap_rwsem);
+-	realm = get_quota_realm(mdsc, d_inode(fsc->sb->s_root), true);
++	realm = get_quota_realm(mdsc, d_inode(fsc->sb->s_root),
++				QUOTA_GET_MAX_BYTES, true);
+ 	up_read(&mdsc->snap_rwsem);
+ 	if (!realm)
+ 		return false;
+diff --git a/fs/ceph/super.h b/fs/ceph/super.h
+index a2e1c83ab29a..3cd96720f14a 100644
+--- a/fs/ceph/super.h
++++ b/fs/ceph/super.h
+@@ -1317,9 +1317,29 @@ extern void ceph_fs_debugfs_init(struct ceph_fs_client *client);
+ extern void ceph_fs_debugfs_cleanup(struct ceph_fs_client *client);
+ 
+ /* quota.c */
+-static inline bool __ceph_has_any_quota(struct ceph_inode_info *ci)
++
++enum quota_get_realm {
++	QUOTA_GET_MAX_FILES,
++	QUOTA_GET_MAX_BYTES,
++	QUOTA_GET_ANY
++};
++
++static inline bool __ceph_has_any_quota(struct ceph_inode_info *ci,
++					enum quota_get_realm which)
+ {
+-	return ci->i_max_files || ci->i_max_bytes;
++	bool has_quota = false;
++
++	switch (which) {
++	case QUOTA_GET_MAX_BYTES:
++		has_quota = !!ci->i_max_bytes;
++		break;
++	case QUOTA_GET_MAX_FILES:
++		has_quota = !!ci->i_max_files;
++		break;
++	default:
++		has_quota = !!(ci->i_max_files || ci->i_max_bytes);
++	}
++	return has_quota;
+ }
+ 
+ extern void ceph_adjust_quota_realms_count(struct inode *inode, bool inc);
+@@ -1328,10 +1348,10 @@ static inline void __ceph_update_quota(struct ceph_inode_info *ci,
+ 				       u64 max_bytes, u64 max_files)
+ {
+ 	bool had_quota, has_quota;
+-	had_quota = __ceph_has_any_quota(ci);
++	had_quota = __ceph_has_any_quota(ci, QUOTA_GET_ANY);
+ 	ci->i_max_bytes = max_bytes;
+ 	ci->i_max_files = max_files;
+-	has_quota = __ceph_has_any_quota(ci);
++	has_quota = __ceph_has_any_quota(ci, QUOTA_GET_ANY);
+ 
+ 	if (had_quota != has_quota)
+ 		ceph_adjust_quota_realms_count(&ci->vfs_inode, has_quota);
