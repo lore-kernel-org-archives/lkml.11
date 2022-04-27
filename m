@@ -2,108 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F396C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:49:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9BF9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:51:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236686AbiD0NxI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 09:53:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35296 "EHLO
+        id S236671AbiD0NyJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 09:54:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236685AbiD0NxG (ORCPT
+        with ESMTP id S236744AbiD0Nxy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 09:53:06 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68A7250E09
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 06:49:54 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id kq17so3547016ejb.4
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 06:49:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=QFNQrA32fuYd2F5FV6KhiOUfB8l/5BedQGZrfnsP4yI=;
-        b=Q8sDVTiOtwfCFN6Y1i78Wb2+hSJz8MldDwCCvg1H08T9lEkzx/7tU5utplVJzPZPAD
-         /5UXHNlu63/oDW0cjU2Aph8GqH13LXUkXY8GyW/rx6oBnNC7V5SX6NTU+CVsdiS0mgKx
-         cOGYJoxcuQWTgy3hCrIBiEdZ/Ux/VzEJe29JpvueNHKalwqClVwSKfR9kzCx+WKtz9UT
-         mgzgas/8b8QY/E9II84+5exRU50GdDR7/aJKWIE6C62NS34fa3xse8ZefKtLirjb+Bv4
-         DL7mgfaqV0oT/WAewapi8HyT+FnHrfWP5M7RQULiu1RHSpCCfbNvBpwC5h/OJ7cw15EJ
-         HAjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=QFNQrA32fuYd2F5FV6KhiOUfB8l/5BedQGZrfnsP4yI=;
-        b=3gaklXHX4k9O/JXWe7JVFx8aWQm0DY+hD85NjJsMhoyuPBUYlJ9MUgTvdn4TslOQlA
-         tzMRi2ifS8NXLRMaGRebPq/3BuUHoGJiGC5CTVl6aEJ6zobGX5fbZgmUO/DIMSxqMG7V
-         JH20inr/ghoahF/ZbJeMSPyyhCXy832b82cqs3q/dSDR4gDaFlh3pFZeFz9Co1cIzkqv
-         OgQQkcyeohvInx03wJ8z4e9Q12zoU+OjBukFuGXZ+b+x31mhSfodMtkImJFSGWuU/eZP
-         DhuISt9R+tZuQkBAac2QRsyyIrZOAjrr4Lm9VorzRFClP9wKE0mj6b8i2CvhiEQJoRq5
-         5rZw==
-X-Gm-Message-State: AOAM533QTX2b4e+zIhBI44jYlF+HBTtkW5ZVEhPRJOeyu6u75eLc+PXA
-        T+1Vw8rJL0azvV7ikT+8Rgegvg==
-X-Google-Smtp-Source: ABdhPJz+P7BK3aoOx/zpYvDHz+oF6jP0divRXrX3SJm+BoaLMDLEd64XLg5K3Qi7ul6dN4sVmqVXQw==
-X-Received: by 2002:a17:907:86a8:b0:6f0:1f97:d7da with SMTP id qa40-20020a17090786a800b006f01f97d7damr26851297ejc.663.1651067393017;
-        Wed, 27 Apr 2022 06:49:53 -0700 (PDT)
-Received: from [192.168.0.154] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id li18-20020a170906f99200b006f3a79f51f0sm3201684ejb.207.2022.04.27.06.49.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Apr 2022 06:49:52 -0700 (PDT)
-Message-ID: <d43d7e40-40d7-a89e-115f-04a305d7239b@linaro.org>
-Date:   Wed, 27 Apr 2022 15:49:51 +0200
+        Wed, 27 Apr 2022 09:53:54 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9478D25292
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 06:50:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651067443; x=1682603443;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=HopieV5ZHZK0eaCU80aYwEPJ5IP7myIfEMk8757Yeow=;
+  b=UIgoIHZSs54VQJDZLcNCEd2cs2WbPKVAkK1AsibRbZOINm36ffNAr07Z
+   voVp9cfYLStMytoj1/SJf7Dm3/k4kT5MvdKkAv1Y2XFVHgfVZk1cIkuEe
+   PqylGBklyBt1HrgJL72HhPibwkfbBeX11TkwfV4DRXy6U0pkTWFY41TZN
+   PYa3PtNuMKh6HePDqIioMEUmwzstO0vD/GCTayL7O29j9L0VJBY1b/0OT
+   sozYi8/u8JcEAUGF0cUjt85pGUEsadml12B1vk6thT/n8c4fcW8+wOogw
+   2dkv38JwDLtE03vvAUc38xi2Apl45ayii/K4rAB3GPpvLivXhh0j03+rB
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="266092704"
+X-IronPort-AV: E=Sophos;i="5.90,293,1643702400"; 
+   d="scan'208";a="266092704"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 06:50:42 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,293,1643702400"; 
+   d="scan'208";a="730808148"
+Received: from ubuntu.bj.intel.com ([10.238.155.108])
+  by orsmga005.jf.intel.com with ESMTP; 27 Apr 2022 06:50:39 -0700
+From:   Jun Miao <jun.miao@intel.com>
+To:     elver@google.com, dvyukov@google.com, ryabinin.a.a@gmail.com,
+        peterz@infradead.org
+Cc:     bigeasy@linutronix.de, qiang1.zhang@intel.com,
+        andreyknvl@gmail.com, kasan-dev@googlegroups.com,
+        linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
+        jun.miao@intel.com
+Subject: [PATCH] irq_work: Make irq_work_queue_on() NMI-safe again
+Date:   Wed, 27 Apr 2022 21:50:50 +0800
+Message-Id: <20220427135050.20566-1-jun.miao@intel.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] dt-bindings: mfd: wlf,arizona: Add spi-max-frequency
-Content-Language: en-US
-To:     Charles Keepax <ckeepax@opensource.cirrus.com>
-Cc:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        - <patches@opensource.cirrus.com>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Rob Herring <robh@kernel.org>
-References: <20220427065102.109046-1-krzysztof.kozlowski@linaro.org>
- <20220427122143.GB38351@ediswmail.ad.cirrus.com>
- <20220427125801.GC38351@ediswmail.ad.cirrus.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220427125801.GC38351@ediswmail.ad.cirrus.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27/04/2022 14:58, Charles Keepax wrote:
-> On Wed, Apr 27, 2022 at 12:21:43PM +0000, Charles Keepax wrote:
->> On Wed, Apr 27, 2022 at 08:51:02AM +0200, Krzysztof Kozlowski wrote:
->>> The Wolfson Microelectronics Arizona audio can be connected via SPI bus
->>> (e.g. WM5110 on Exynos5433 TM2 board), so allow spi-max-frequency
->>> property.
->>>
->>> Reported-by: Rob Herring <robh@kernel.org>
->>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->>> ---
->>
->> Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
->>
-> 
-> Apologies but looking at this again I can't quite see why this is
-> necessary. The Arizona schema should allow properties that arn't
-> specified. Do you have an example of what failed to warrant this?
+We should not put NMI unsafe code in irq_work_queue_on().
 
-The Arizona schema has unevaluatedProperties: false, which means unknown
-properties will not be accepted. Neither Arizona schema nor other
-referenced schemas define spi-max-frequency, so when the schema is run,
-the property will be unevaluated, thus cause a warning.
+The KASAN of kasan_record_aux_stack_noalloc() is not NMI safe. Because which
+will call the spinlock. While the irq_work_queue_on() is also very carefully
+carfted to be exactly that.
+When unable CONFIG_SMP or local CPU, the irq_work_queue_on() is even same to
+irq_work_queue(). So delete KASAN instantly.
 
-This is visible here at the bottom (with Rob's work-in-progress):
-https://lore.kernel.org/linux-devicetree/345716e9-5624-5ba0-09f0-46e9850c546c@linaro.org/T/#m4b5d7cfdf34dbd410003b2faae4d840113050c51
+Fixes: e2b5bcf9f5ba ("irq_work: record irq_work_queue() call stack")
+Suggested by: "Huang, Ying" <ying.huang@intel.com>
+Signed-off-by: Jun Miao <jun.miao@intel.com>
+Acked-by: Marco Elver <elver@google.com>
+---
+ kernel/irq_work.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-Although I think that I did not fix it properly, because I missed
-'controller-data', so instead this should be fixed with referencing
-spi-peripheral-props like here:
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?h=linux-5.17.y&id=f412fe11c1a9d815565f3918c56f3fd02167c734
+diff --git a/kernel/irq_work.c b/kernel/irq_work.c
+index 7afa40fe5cc4..e7f48aa8d8af 100644
+--- a/kernel/irq_work.c
++++ b/kernel/irq_work.c
+@@ -20,7 +20,6 @@
+ #include <linux/smp.h>
+ #include <linux/smpboot.h>
+ #include <asm/processor.h>
+-#include <linux/kasan.h>
+ 
+ static DEFINE_PER_CPU(struct llist_head, raised_list);
+ static DEFINE_PER_CPU(struct llist_head, lazy_list);
+@@ -137,8 +136,6 @@ bool irq_work_queue_on(struct irq_work *work, int cpu)
+ 	if (!irq_work_claim(work))
+ 		return false;
+ 
+-	kasan_record_aux_stack_noalloc(work);
+-
+ 	preempt_disable();
+ 	if (cpu != smp_processor_id()) {
+ 		/* Arch remote IPI send/receive backend aren't NMI safe */
+-- 
+2.32.0
 
-
-
-Best regards,
-Krzysztof
