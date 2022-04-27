@@ -2,114 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C251C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 19:49:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AD0BC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 19:51:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234783AbiD0Twe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 15:52:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35754 "EHLO
+        id S234846AbiD0TyL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 15:54:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233814AbiD0Tw2 (ORCPT
+        with ESMTP id S232064AbiD0TyJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 15:52:28 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64C8F49C8B;
-        Wed, 27 Apr 2022 12:49:16 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id h12so2459041plf.12;
-        Wed, 27 Apr 2022 12:49:16 -0700 (PDT)
+        Wed, 27 Apr 2022 15:54:09 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1349F5BD36;
+        Wed, 27 Apr 2022 12:50:57 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id p4so3207691edx.0;
+        Wed, 27 Apr 2022 12:50:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=dHyaJhWWV2/0XVRasONV/Ot6Fn0AQBDrxMk4qZE1NjE=;
-        b=j2ccc9/tmPk1fdAf55kkSQPYg5qtpni4v4AYOGGuRC5Kc275Wz1QP0LZk6VSEAomca
-         LJ45O+/bKjIV8dVSZXzuyea5d1YHbou1nsPuHMfJVJXv7EGS4CyWTJyS52gkMqqntX5N
-         ybMZx6PAE1e2RF4VOQlALzstvb4Ja3mYTJiI3GFPU82iFnHIGEhOC1oH92roLwG0gu3v
-         E6Kc5bFKoAxaemNUCt3Yo5K/rPaqIXn5GqHaRVLjnwptdArBBUAbJeU2IivJVomYoxO2
-         nwbN+bg518RRO6yq4EKPISyZXVhnboeJh73dYApkF7Yf/Q3d+IuJwH2w3Nd3vl7YDhKj
-         fYTg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=33j4YNSNaU5u59fgSber6SgSZ1FYBjfWnCsj8i53xiY=;
+        b=paqZNLRh816sci8wvt4ZMNGemC8tLQEZQbrY9GK0GF+9tda40M4Hbqk6a0iBrMeUWR
+         pFZw8B9zMxIKU4oUgr8+nrR6asJ3HHqlfrm/haG45dyuWn4dCJtZo9iXZTnfySlgXT3t
+         hfWQrG+tpXivhbySzfp7k6Rk5PR2rVcj6riFEWVUFsFoTt/5h7OvNo2+YpjEVTZ2xbUC
+         c10ykpZtbfcdncFg30IrZLX8FfLSEHT6hnStz8jts0Luz3Lxkcny6oyP0KExznklnIZU
+         VYhJCy5QIq7gG+pKuyC/cj25vXJGb4q9Sa9LyBnXyRWxTevQJuTPOWyWGT0vXxA0M61N
+         uP7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :mime-version:content-disposition;
-        bh=dHyaJhWWV2/0XVRasONV/Ot6Fn0AQBDrxMk4qZE1NjE=;
-        b=jqmSRHw8IiBJekRQ1GjfMfM9+LzzDAWyn682IBavQCF44DcuFwcGfpzC9A7F/NXZyG
-         uXrU7G3zj4ZxH6vF+KVCvBvkEnIwS7RirksGVBoWtxnr093G1Jr4ET9i+GWoToTXhxTp
-         iLxk/E1hntNro2mz+cjucGzpzP1piM5vNmCwzXTA1/wAY076l41A0NWJRm9q6ax0ZZL3
-         oI3qcpVveF7dZPU5SdNmxNXF3UTUS519gTo17uu7ugs0NOL4wfCY41n2qsSZ9Jr+1Qmz
-         9EVU189V2rmzRNKm6TyB+sADpvJ568GipjfKseOgC0rNdoG8RfFDrM+2OJ0M3TyHOujK
-         cn3w==
-X-Gm-Message-State: AOAM531DvMXzWmElVZDyXLsF2ZiDYJjPwz/DGzwxgJjAB5Zlyj7ukG9g
-        3INorDF3Sr/fDBj8fc1SPU4=
-X-Google-Smtp-Source: ABdhPJwzV7jGfLMkNkr7Nc4QrooBYL9PbbBZexVN3BcRMkRjddWyw7MQE+tpvgzPcSSWq11ciWNqZg==
-X-Received: by 2002:a17:902:f64d:b0:151:3895:46bf with SMTP id m13-20020a170902f64d00b00151389546bfmr30687221plg.31.1651088955577;
-        Wed, 27 Apr 2022 12:49:15 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::5:4f81])
-        by smtp.gmail.com with ESMTPSA id w11-20020a17090a4f4b00b001d8abe4bb17sm3569076pjl.32.2022.04.27.12.49.14
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=33j4YNSNaU5u59fgSber6SgSZ1FYBjfWnCsj8i53xiY=;
+        b=saSJc719rt9UWFXnBeQvSSbkCfrHbE+2pm8ekP7cuXA8B1uLSyDx7w79ewhlepXsgD
+         XFPy1krwA7ki4p2k/qrZQYmgutknf5uWz6skbgP+qo8kFSLXq4/GP9WE6kDG/x1ciEB0
+         q28ST1m+nZ1ae+poK7MLarF4IJPC4GpijsdFfeU0/u09litotzk2yuEtIHgDNC1fxIUi
+         l7WG7k27JTeoNLTEjrCfzbPOYbzA419IZcZlEhbXCK5pdNmyOUAzpCvnSxRx4aP5/3MM
+         xVchAbWdSCiKMY0hxOd3BWCd5YQlmqEMBVhogYB8yTrHARgB8Rar25WaNYgOnfQoGo4o
+         zcnw==
+X-Gm-Message-State: AOAM530HxWv3vqH+FUDjXVueOlUIskBGccTE/cPCJIvKmBAMcvWoJBHp
+        8aNZ1P0kitWBX9YgvyCFn1MdOtkxtFamew==
+X-Google-Smtp-Source: ABdhPJw1YgYtwx9aqlQwyWIGlVQaBzLeEYF1CEFQZPIzcHlqxRakh1b8DdGiXc19hCSJewwbYeHPOA==
+X-Received: by 2002:a05:6402:5286:b0:425:f0fb:5d23 with SMTP id en6-20020a056402528600b00425f0fb5d23mr15599225edb.243.1651089055670;
+        Wed, 27 Apr 2022 12:50:55 -0700 (PDT)
+Received: from jernej-laptop.localnet (89-212-118-115.static.t-2.net. [89.212.118.115])
+        by smtp.gmail.com with ESMTPSA id j12-20020aa7de8c000000b0042617ba63b2sm104085edv.60.2022.04.27.12.50.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 12:49:14 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Wed, 27 Apr 2022 09:49:12 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-team@fb.com, Saravanan D <saravanand@fb.com>,
-        Christopher Obbard <chris.obbard@collabora.com>
-Subject: [PATCH block-5.18] Revert "block: inherit request start time from
- bio for BLK_CGROUP"
-Message-ID: <YmmeOLfo5lzc+8yI@slm.duckdns.org>
+        Wed, 27 Apr 2022 12:50:55 -0700 (PDT)
+From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
+To:     linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Cc:     Yong Deng <yong.deng@magewell.com>,
+        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Samuel Holland <samuel@sholland.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v4 37/45] media: sun6i-csi: Rename the capture video device to sun6i-csi-capture
+Date:   Wed, 27 Apr 2022 21:50:54 +0200
+Message-ID: <14612220.tv2OnDr8pf@jernej-laptop>
+In-Reply-To: <20220415152811.636419-38-paul.kocialkowski@bootlin.com>
+References: <20220415152811.636419-1-paul.kocialkowski@bootlin.com> <20220415152811.636419-38-paul.kocialkowski@bootlin.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit 0006707723233cb2a9a23ca19fc3d0864835704c. It has a
-couple problems:
+Dne petek, 15. april 2022 ob 17:28:03 CEST je Paul Kocialkowski napisal(a):
+> Now that the driver is properly split between bridge and capture,
+> rename the video device to highlight its role and be in line with
+> the bridge entity naming.
+> 
+> Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
 
-* bio_issue_time() is stored in bio->bi_issue truncated to 51 bits. This
-  overflows in slightly over 26 days. Setting rq->io_start_time_ns with it
-  means that io duration calculation would yield >26days after 26 days of
-  uptime. This, for example, confuses kyber making it cause high IO
-  latencies.
+Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 
-* rq->io_start_time_ns should record the time that the IO is issued to the
-  device so that on-device latency can be measured. However,
-  bio_issue_time() is set before the bio goes through the rq-qos controllers
-  (wbt, iolatency, iocost), so when the bio gets throttled in any of the
-  mechanisms, the measured latencies make no sense - on-device latencies end
-  up higher than request-alloc-to-completion latencies.
+Best regards,
+Jernej
 
-We'll need a smarter way to avoid calling ktime_get_ns() repeatedly
-back-to-back. For now, let's revert the commit.
+> ---
+>  drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c | 3 ++-
+>  drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h | 2 ++
+>  2 files changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
+> b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c index
+> a6619d083308..c3b1e1411da4 100644
+> --- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
+> +++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
+> @@ -1027,7 +1027,8 @@ int sun6i_csi_capture_setup(struct sun6i_csi_device
+> *csi_dev)
+> 
+>  	/* Video Device */
+> 
+> -	strscpy(video_dev->name, SUN6I_CSI_NAME, sizeof(video_dev->name));
+> +	strscpy(video_dev->name, SUN6I_CSI_CAPTURE_NAME,
+> +		sizeof(video_dev->name));
+>  	video_dev->device_caps = V4L2_CAP_VIDEO_CAPTURE | 
+V4L2_CAP_STREAMING;
+>  	video_dev->vfl_dir = VFL_DIR_RX;
+>  	video_dev->release = video_device_release_empty;
+> diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h
+> b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h index
+> a61db3bc72e5..59c57bcefeec 100644
+> --- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h
+> +++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h
+> @@ -11,6 +11,8 @@
+>  #include <media/v4l2-dev.h>
+>  #include <media/videobuf2-core.h>
+> 
+> +#define SUN6I_CSI_CAPTURE_NAME	"sun6i-csi-capture"
+> +
+>  #define SUN6I_CSI_CAPTURE_WIDTH_MIN	32
+>  #define SUN6I_CSI_CAPTURE_WIDTH_MAX	4800
+>  #define SUN6I_CSI_CAPTURE_HEIGHT_MIN	32
 
-Signed-off-by: Tejun Heo <tj@kernel.org>
-Cc: stable@vger.kernel.org # v5.16+
----
- block/blk-mq.c | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
 
-diff --git a/block/blk-mq.c b/block/blk-mq.c
-index c4370d2761706..84d749511f551 100644
---- a/block/blk-mq.c
-+++ b/block/blk-mq.c
-@@ -1131,14 +1131,7 @@ void blk_mq_start_request(struct request *rq)
- 	trace_block_rq_issue(rq);
- 
- 	if (test_bit(QUEUE_FLAG_STATS, &q->queue_flags)) {
--		u64 start_time;
--#ifdef CONFIG_BLK_CGROUP
--		if (rq->bio)
--			start_time = bio_issue_time(&rq->bio->bi_issue);
--		else
--#endif
--			start_time = ktime_get_ns();
--		rq->io_start_time_ns = start_time;
-+		rq->io_start_time_ns = ktime_get_ns();
- 		rq->stats_sectors = blk_rq_sectors(rq);
- 		rq->rq_flags |= RQF_STATS;
- 		rq_qos_issue(q, rq);
--- 
-2.36.0
+
 
