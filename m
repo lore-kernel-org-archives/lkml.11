@@ -2,80 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9524C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 21:13:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 773C3C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 21:14:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237308AbiD0VQT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 17:16:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52580 "EHLO
+        id S233920AbiD0VSC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 17:18:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237175AbiD0VQO (ORCPT
+        with ESMTP id S230457AbiD0VSA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 17:16:14 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F1042B1BC;
-        Wed, 27 Apr 2022 14:13:01 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1651093979;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=NeS+l8WEdxmC3iVZmp9QGW6zT93E8/xcQVx8QLCkU5I=;
-        b=FVFEFsyqTdRpC2PY+JRCpM6q7DwT3JkdOvd5DBDcUp0L9RY4bDLotZn9aSIRs5UU4m0/ti
-        Q1UrvRXEZYyNX1GTAddDGqtcJSKQ/UxHp9qwhjtEXX55N17fXiPAjux/7wCDKjcDpWL0mb
-        gjQe+izroNYC4KS7docDuy9p9EY/GAiNThq95KPNQoXfSEOqh5o72t39cBUn5xYbhuohGQ
-        KPUapRQ4CxJgwygUuyNz9cE6a0kHpumASnhlFSv50v9GKOk9uGsM4eFq9ofsLWiwmq9MMW
-        WX6TAlry0LeyEQ2LgHACjnW2+vh0bwXeADGy6AfyqTwtvC4NJtrGF2/UQLxN5w==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1651093979;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=NeS+l8WEdxmC3iVZmp9QGW6zT93E8/xcQVx8QLCkU5I=;
-        b=vaEo9sOfHUdgWt2ArDJKVf7pZKrmtV15jLq50JOW7QKFRB/biO+QCdMrU6iQ/0mHZ+tpvo
-        pSJFAx8VCq7lXzCQ==
-To:     Kurt Kanzenbach <kurt@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>
-Cc:     John Stultz <john.stultz@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Richard Cochran <richardcochran@gmail.com>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/3] timekeeping: Introduce fast accessor to clock tai
-In-Reply-To: <87fslyw94e.fsf@kurt>
-References: <20220414091805.89667-1-kurt@linutronix.de>
- <20220414091805.89667-2-kurt@linutronix.de>
- <20220426175338.3807ca4f@gandalf.local.home> <87r15i9azg.fsf@kurt>
- <20220427112759.1cedda69@gandalf.local.home> <87fslyw94e.fsf@kurt>
-Date:   Wed, 27 Apr 2022 23:12:58 +0200
-Message-ID: <87mtg6w7qd.ffs@tglx>
+        Wed, 27 Apr 2022 17:18:00 -0400
+Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 881E44D9E3;
+        Wed, 27 Apr 2022 14:14:48 -0700 (PDT)
+Received: by mail-oi1-x233.google.com with SMTP id z2so3383162oic.6;
+        Wed, 27 Apr 2022 14:14:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=561YrT69nk0DWKNHd3eP9JJUDLgbOiO8rQpf04ht9Wg=;
+        b=JJwp5TRlxexJwAz0C+j3WowYh4glfTn16Pr/+8luldcUWvTc0hW5dPurNQkd34v59Q
+         CvNVqjtFINCmc9YHgI6NhSEClIZqPSMxUqccL5kiNFxc73nYRyZ2FbkOQkcK8pg7YzdO
+         Arau/41aEs4ccIxz3jsE4laoK24EKff+VFcTDmq3HL+cdLrn7mBfS9zKB6y7ySVK9hNW
+         ZBIi7SgUFmMMlOrcI7fcR4ogWuurTKKen+AjiwD1CtzKUR2xtL8GtY8jkVZ2YT3ShzIn
+         kdV9aFBTs5VUdunmGMMBWv4LHjEloXSo3KecSqmAf6WUhenwMSHdUA4sD5TFqviXlkQT
+         liHw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=561YrT69nk0DWKNHd3eP9JJUDLgbOiO8rQpf04ht9Wg=;
+        b=4Xq6HgvyIgyvr95yYDGrqAm7hIIPBorpg02E4iPic+hJ2fdWD31TbQAMutBZQjE5/X
+         kJvIWPJd/1cnSPj835GTpSfwRFOPJ0msCJx+Mg30wXn4l2fdRhryg/1lGMNWkqG6j+Eb
+         VbSxyN9xaBupqNP7Ig+oOEaOLocEKONWKAb/YS07s8jCK3/vklqNJJXXbTkvaEDe878t
+         REuCKjj5UhQsIqKlHfFrimzQDQh9wXwCbd3YU/nzF8SwfODTST770bjXZ75c4tBAJ8cr
+         WF0k9QPxNmcTGtO4O5VRMd0GrZJvCIbk5rpKo21vr49ryFPjG5k3Oa/Q5FnlR4eYuEDv
+         pCXw==
+X-Gm-Message-State: AOAM532dBX/Sdmnz79Na8u7ZtDK9yOe4pCZNd4ZleljohAQiS0CIhqZA
+        ou4lzDRiKNXtyE9alnq/xu4=
+X-Google-Smtp-Source: ABdhPJycktFkkpNFRLymu2HEinZsWKpanCsXFrtS7XBY2e4q8HiAymex8cKpfMNj3rJgvA0fI4zH9g==
+X-Received: by 2002:a05:6808:15a7:b0:322:be0d:556a with SMTP id t39-20020a05680815a700b00322be0d556amr14053788oiw.85.1651094087917;
+        Wed, 27 Apr 2022 14:14:47 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id e7-20020a056808148700b003252f1da45bsm3953124oiw.38.2022.04.27.14.14.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 14:14:46 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Wed, 27 Apr 2022 14:14:45 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Eugene Shalygin <eugene.shalygin@gmail.com>
+Cc:     Jean Delvare <jdelvare@suse.com>, Jonathan Corbet <corbet@lwn.net>,
+        linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] hwmon: (asus-ec-sensors) add doc entry for PRIME X470-PRO
+Message-ID: <20220427211445.GA3217307@roeck-us.net>
+References: <20220427180237.1475954-1-eugene.shalygin@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220427180237.1475954-1-eugene.shalygin@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27 2022 at 22:42, Kurt Kanzenbach wrote:
-> Anyway, with your patch applied [1] and the one below it looks way
-> better:
->
-> commit 81c4f2de420cc4ac08efc39e78ffd80e146bfbd7
-> Author: Kurt Kanzenbach <kurt@linutronix.de>
-> Date:   Wed Apr 27 21:59:58 2022 +0200
->
->     timekeeping: Mark mono fast time accessors as notrace
+On Wed, Apr 27, 2022 at 08:02:36PM +0200, Eugene Shalygin wrote:
+> Add PRIME X470-PRO to the list of supported boards.
+> 
+> Signed-off-by: Eugene Shalygin <eugene.shalygin@gmail.com>
 
-Can you please post that proper?
-     
->     Mark the CLOCK_MONOTONIC fast time accessors as notrace. These functions are
->     used in tracing to retrieve timestamps.
->
-
-That lacks a Fixes: tag. These accessors should have been notrace from
-day one.
+Applied to hwmon-next.
 
 Thanks,
+Guenter
 
-        tglx
+> ---
+>  Documentation/hwmon/asus_ec_sensors.rst | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/hwmon/asus_ec_sensors.rst b/Documentation/hwmon/asus_ec_sensors.rst
+> index 36ca531d32dd..1700fe619597 100644
+> --- a/Documentation/hwmon/asus_ec_sensors.rst
+> +++ b/Documentation/hwmon/asus_ec_sensors.rst
+> @@ -4,6 +4,7 @@ Kernel driver asus_ec_sensors
+>  =================================
+>  
+>  Supported boards:
+> + * PRIME X470-PRO,
+>   * PRIME X570-PRO,
+>   * Pro WS X570-ACE,
+>   * ProArt X570-CREATOR WIFI
