@@ -2,134 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8C36C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 22:31:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B9B5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 22:33:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232128AbiD0WeV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 18:34:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34466 "EHLO
+        id S234624AbiD0Wgq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 18:36:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229774AbiD0WeR (ORCPT
+        with ESMTP id S229452AbiD0Wgo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 18:34:17 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B36846B641
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:31:04 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id d15so2772531plh.2
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:31:04 -0700 (PDT)
+        Wed, 27 Apr 2022 18:36:44 -0400
+Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 927F1266F;
+        Wed, 27 Apr 2022 15:33:32 -0700 (PDT)
+Received: by mail-il1-x134.google.com with SMTP id r11so887093ila.1;
+        Wed, 27 Apr 2022 15:33:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Jf9KoOg1H3jqjBGppZ/xxewMSo8dDOurdWUb3cYmU3c=;
-        b=J86DG36ucbx0DlDChH/QyA2qGW9ZzuTV7lPr4Yhhk3+pV9+Qw+iYZfs23hrlx4+rfD
-         giclbY4+1PxmOyj+mAHsv9VmlcODeRZorL+++DJBAt9RJIWnhq1wlvZL0JvKpHuHICLm
-         dxEKItjNOKe2JxdIPAzsQ5baFAnBGf2Vh3niiGtwf9zwcMz93g13wjD3YEk9QkeLE+YK
-         eFBdwJmwsg7s6P8IKgVpVGlIcKASf75RQGMzBKCQ7cQziovaXYvVEqGxP7AJ5aMa2M26
-         RzZiEP14nT+f6jEpI0c9BCalzL328U8Fwv1zPeSnLj5NaVl3egPq1TcLnDuB8YzNCPxq
-         C43g==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ze1S9fJCbP+SQ+dCw4Iqsjhp3PBB+vQnP1mqNNiw9Yk=;
+        b=jpne0KILeFpCLLGk/X4BHuWQlCaBxKpQ8nUBd3cSKrhCRauHUfDXp9NWtLmRg6HYCB
+         PYZM0VIXHka2E0z4BLs/y5NUOol4SLgKQcwsygjSmmcEiwS2YdctRp7wT6YgkiqvpfRf
+         eIvQooZ1PjdEXAHfL2EdxXfFz6qKNFCW3yLTaKJ+5nLVco6rgEk5z0qvXM0Yq7LH4MXs
+         1dsi0ypR6StgahAXlewYA8dBFoSnsyF8zm34NIlOPewwuvzCowoMkqntubAiE9qfvoeN
+         EmKh4s/ml7CbXrweaLfiXtFb7LpADS8LI3E9Ik2wDWVqQxzHs//nuohFmSnKKFdVlyEc
+         DHEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Jf9KoOg1H3jqjBGppZ/xxewMSo8dDOurdWUb3cYmU3c=;
-        b=MkfbtjqZyE+gJRijcvPf3O1aQS5vLNI8BNDJB3KabMqtIkv6Xokdio+2KsJoCu9Z7p
-         S6p4bjWUnF3AzRrGdszXzi0oJBFxjAR/1HYtd/0nFd7iCexXXhGIc03kiOq3GPnYdqjI
-         aJYT3Woil5M0zS9Y2EbcmTzgUQwRi0CqYG8UHBPxNGFMX8SxLIxi8EbjgO9dRsrWnUYr
-         Yp4Bqbf3oNqgI1XSaKOiQ/oJW/eZ7I+uk0gZTXDXHsQrrPE9ZDd7TGYdl2sfHKsijSD7
-         98CrQRUtl3kwRWwW0h9dZROjEeS6KEAaXmiXjusmgizaPhAEZDmXRzszCKKb4T4YhO48
-         huaw==
-X-Gm-Message-State: AOAM531y6xtnaBKqOleF1Cf9mQ6wxeCVN9ouovBWhXQmkGEVeKISvEIj
-        FKz6t9tyaRGnN81KP97VHVvKzIpdKBP2XQ==
-X-Google-Smtp-Source: ABdhPJyq+J76gHLpln3JZEsplM+ovXJH6AdQaG55HLv9cJpdF5NGETNJmQVeoVqtoV2YZmZe7GOcPQ==
-X-Received: by 2002:a0c:f3d2:0:b0:456:34aa:5978 with SMTP id f18-20020a0cf3d2000000b0045634aa5978mr13519939qvm.59.1651095423111;
-        Wed, 27 Apr 2022 14:37:03 -0700 (PDT)
-Received: from localhost ([2620:10d:c091:480::1:d588])
-        by smtp.gmail.com with ESMTPSA id b9-20020a05620a0f8900b0069e84c5352asm8370423qkn.47.2022.04.27.14.37.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 14:37:02 -0700 (PDT)
-Date:   Wed, 27 Apr 2022 17:36:26 -0400
-From:   Johannes Weiner <hannes@cmpxchg.org>
-To:     Minchan Kim <minchan@kernel.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Seth Jennings <sjenning@redhat.com>,
-        Dan Streetman <ddstreet@ieee.org>, linux-mm@kvack.org,
-        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-team@fb.com
-Subject: Re: [PATCH 4/5] mm: zswap: add basic meminfo and vmstat coverage
-Message-ID: <Ymm3WpvJWby4gaD/@cmpxchg.org>
-References: <20220427160016.144237-1-hannes@cmpxchg.org>
- <20220427160016.144237-5-hannes@cmpxchg.org>
- <Ymmnrkn0mSWcuvmH@google.com>
- <YmmznQ8AO5RLxicA@cmpxchg.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ze1S9fJCbP+SQ+dCw4Iqsjhp3PBB+vQnP1mqNNiw9Yk=;
+        b=T09A7uKV/C/VaozzmqvwkHPXwKQqNFknWERpPI2umqEbCcy6sefW8n4O5kxVhFzdBE
+         qkXqFTo0o6OQVCBmn5E6Ev4jHkhiKL5tY5O7pKDO+NmMpciAYkX7N3ndSJCw7qUGzpmj
+         eVhJNXcjOa9bNxTTEHY4xpgiLIzCaruptu/Li+mGl4Vl0fKKZ1IsNTbf+UWATDJ+K7WH
+         UxXiYB3EaIolUoQJHwW4X8PEXxDe9U02fjfRzUwcUJIBpgYMZ4zQSLMOHRymjo2qv5Qh
+         mf1BLxbCq/neCWRw05BdTEXCiID7RWtqKSUcNeIVQbZIdMt0VCuSTAFyK5t6gB+MI6J6
+         vsfw==
+X-Gm-Message-State: AOAM530FcKcrImCpAUD4hFP0HpshYXwVVqOjA/xazSkwmyiGXyMQ+iaS
+        1mPByBotwOZo5kfcHfxrb+Y71t7H2EaVDBs6B+0=
+X-Google-Smtp-Source: ABdhPJwNjCiR1cOhJEbvgqBq1X2aGYcmfd1x1i8bvBKs2ZFHXF+g1U0Lf2gMZVMtgJM/Ibu4U4z2NasT4fTCmF5jq8E=
+X-Received: by 2002:a05:6e02:1ba3:b0:2cc:4158:d3ff with SMTP id
+ n3-20020a056e021ba300b002cc4158d3ffmr11902890ili.98.1651098811875; Wed, 27
+ Apr 2022 15:33:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YmmznQ8AO5RLxicA@cmpxchg.org>
+References: <20220426140924.3308472-1-pulehui@huawei.com> <20220426140924.3308472-2-pulehui@huawei.com>
+In-Reply-To: <20220426140924.3308472-2-pulehui@huawei.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 27 Apr 2022 15:33:21 -0700
+Message-ID: <CAEf4BzYvGaskrquK1hsKv6h7iz0NXWCNYn_zJEHvYUBYC=2UoA@mail.gmail.com>
+Subject: Re: [PATCH -next 1/2] bpf: Unify data extension operation of
+ jited_ksyms and jited_linfo
+To:     Pu Lehui <pulehui@huawei.com>
+Cc:     bpf <bpf@vger.kernel.org>, linux-riscv@lists.infradead.org,
+        Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Luke Nelson <luke.r.nels@gmail.com>,
+        Xi Wang <xi.wang@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 05:20:31PM -0400, Johannes Weiner wrote:
-> On Wed, Apr 27, 2022 at 01:29:34PM -0700, Minchan Kim wrote:
-> > Hi Johannes,
-> > 
-> > On Wed, Apr 27, 2022 at 12:00:15PM -0400, Johannes Weiner wrote:
-> > > Currently it requires poking at debugfs to figure out the size and
-> > > population of the zswap cache on a host. There are no counters for
-> > > reads and writes against the cache. As a result, it's difficult to
-> > > understand zswap behavior on production systems.
-> > > 
-> > > Print zswap memory consumption and how many pages are zswapped out in
-> > > /proc/meminfo. Count zswapouts and zswapins in /proc/vmstat.
-> > > 
-> > > Signed-off-by: Johannes Weiner <hannes@cmpxchg.org>
-> > > ---
-> > >  fs/proc/meminfo.c             |  7 +++++++
-> > >  include/linux/swap.h          |  5 +++++
-> > >  include/linux/vm_event_item.h |  4 ++++
-> > >  mm/vmstat.c                   |  4 ++++
-> > >  mm/zswap.c                    | 13 ++++++-------
-> > >  5 files changed, 26 insertions(+), 7 deletions(-)
-> > > 
-> > > diff --git a/fs/proc/meminfo.c b/fs/proc/meminfo.c
-> > > index 6fa761c9cc78..6e89f0e2fd20 100644
-> > > --- a/fs/proc/meminfo.c
-> > > +++ b/fs/proc/meminfo.c
-> > > @@ -86,6 +86,13 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
-> > >  
-> > >  	show_val_kb(m, "SwapTotal:      ", i.totalswap);
-> > >  	show_val_kb(m, "SwapFree:       ", i.freeswap);
-> > > +#ifdef CONFIG_ZSWAP
-> > > +	seq_printf(m,  "Zswap:          %8lu kB\n",
-> > > +		   (unsigned long)(zswap_pool_total_size >> 10));
-> > > +	seq_printf(m,  "Zswapped:       %8lu kB\n",
-> > > +		   (unsigned long)atomic_read(&zswap_stored_pages) <<
-> > > +		   (PAGE_SHIFT - 10));
-> > > +#endif
-> > 
-> > I agree it would be very handy to have the memory consumption in meminfo
-> > 
-> > https://lore.kernel.org/all/YYwZXrL3Fu8%2FvLZw@google.com/
-> > 
-> > If we really go this Zswap only metric instead of general term
-> > "Compressed", I'd like to post maybe "Zram:" with same reason
-> > in this patchset. Do you think that's better idea instead of
-> > introducing general term like "Compressed:" or something else?
-> 
-> I'm fine with changing it to Compressed. If somebody cares about a
-> more detailed breakdown, we can add Zswap, Zram subsets as needed.
+On Tue, Apr 26, 2022 at 6:40 AM Pu Lehui <pulehui@huawei.com> wrote:
+>
+> We found that 32-bit environment can not print bpf line info due
+> to data inconsistency between jited_ksyms[0] and jited_linfo[0].
+>
+> For example:
+> jited_kyms[0] = 0xb800067c, jited_linfo[0] = 0xffffffffb800067c
+>
+> We know that both of them store bpf func address, but due to the
+> different data extension operations when extended to u64, they may
+> not be the same. We need to unify the data extension operations of
+> them.
+>
+> Signed-off-by: Pu Lehui <pulehui@huawei.com>
+> ---
+>  kernel/bpf/syscall.c                         |  5 ++++-
+>  tools/lib/bpf/bpf_prog_linfo.c               |  8 ++++----
+>  tools/testing/selftests/bpf/prog_tests/btf.c | 18 +++++++++---------
 
-It does raise the question what to do about cgroup, though. Should the
-control files (memory.zswap.current & memory.zswap.max) apply to zram
-in the future? If so, we should rename them, too.
+please split kernel changes, libbpf changes, and selftests/bpf changes
+into separate patches
 
-I'm not too familiar with zram, maybe you can provide some
-background. AFAIU, Google uses zram quite widely; all the more
-confusing why there is no container support for it yet.
+>  3 files changed, 17 insertions(+), 14 deletions(-)
+>
+> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> index e9621cfa09f2..4c417c806d92 100644
+> --- a/kernel/bpf/syscall.c
+> +++ b/kernel/bpf/syscall.c
+> @@ -3868,13 +3868,16 @@ static int bpf_prog_get_info_by_fd(struct file *file,
+>                 info.nr_jited_line_info = 0;
+>         if (info.nr_jited_line_info && ulen) {
+>                 if (bpf_dump_raw_ok(file->f_cred)) {
+> +                       unsigned long jited_linfo_addr;
+>                         __u64 __user *user_linfo;
+>                         u32 i;
+>
+>                         user_linfo = u64_to_user_ptr(info.jited_line_info);
+>                         ulen = min_t(u32, info.nr_jited_line_info, ulen);
+>                         for (i = 0; i < ulen; i++) {
+> -                               if (put_user((__u64)(long)prog->aux->jited_linfo[i],
+> +                               jited_linfo_addr = (unsigned long)
+> +                                       prog->aux->jited_linfo[i];
+> +                               if (put_user((__u64) jited_linfo_addr,
+>                                              &user_linfo[i]))
+>                                         return -EFAULT;
+>                         }
+> diff --git a/tools/lib/bpf/bpf_prog_linfo.c b/tools/lib/bpf/bpf_prog_linfo.c
+> index 5c503096ef43..5cf41a563ef5 100644
+> --- a/tools/lib/bpf/bpf_prog_linfo.c
+> +++ b/tools/lib/bpf/bpf_prog_linfo.c
+> @@ -127,7 +127,7 @@ struct bpf_prog_linfo *bpf_prog_linfo__new(const struct bpf_prog_info *info)
+>         prog_linfo->raw_linfo = malloc(data_sz);
+>         if (!prog_linfo->raw_linfo)
+>                 goto err_free;
+> -       memcpy(prog_linfo->raw_linfo, (void *)(long)info->line_info, data_sz);
+> +       memcpy(prog_linfo->raw_linfo, (void *)(unsigned long)info->line_info, data_sz);
+>
+>         nr_jited_func = info->nr_jited_ksyms;
+>         if (!nr_jited_func ||
+> @@ -148,7 +148,7 @@ struct bpf_prog_linfo *bpf_prog_linfo__new(const struct bpf_prog_info *info)
+>         if (!prog_linfo->raw_jited_linfo)
+>                 goto err_free;
+>         memcpy(prog_linfo->raw_jited_linfo,
+> -              (void *)(long)info->jited_line_info, data_sz);
+> +              (void *)(unsigned long)info->jited_line_info, data_sz);
+>
+>         /* Number of jited_line_info per jited func */
+>         prog_linfo->nr_jited_linfo_per_func = malloc(nr_jited_func *
+> @@ -166,8 +166,8 @@ struct bpf_prog_linfo *bpf_prog_linfo__new(const struct bpf_prog_info *info)
+>                 goto err_free;
+>
+>         if (dissect_jited_func(prog_linfo,
+> -                              (__u64 *)(long)info->jited_ksyms,
+> -                              (__u32 *)(long)info->jited_func_lens))
+> +                              (__u64 *)(unsigned long)info->jited_ksyms,
+> +                              (__u32 *)(unsigned long)info->jited_func_lens))
 
-Could you shed some light?
+so I'm trying to understand how this is changing anything for 32-bit
+architecture and I must be missing something, sorry if I'm being
+dense. The example you used below
 
-Thanks
+jited_kyms[0] = 0xb800067c, jited_linfo[0] = 0xffffffffb800067c
+
+Wouldn't (unsigned long)0xffffffffb800067c == (long)0xffffffffb800067c
+== 0xb800067c ?
+
+isn't sizeof(long) == sizeof(void*) == 4?
+
+It would be nice if you could elaborate a bit more on what problems
+did you see in practice?
+
+>                 goto err_free;
+>
+>         return prog_linfo;
+> diff --git a/tools/testing/selftests/bpf/prog_tests/btf.c b/tools/testing/selftests/bpf/prog_tests/btf.c
+> index 84aae639ddb5..d9ba1ec1d5b3 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/btf.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/btf.c
+> @@ -6451,8 +6451,8 @@ static int test_get_linfo(const struct prog_info_raw_test *test,
+>                   info.nr_jited_line_info, jited_cnt,
+>                   info.line_info_rec_size, rec_size,
+>                   info.jited_line_info_rec_size, jited_rec_size,
+> -                 (void *)(long)info.line_info,
+> -                 (void *)(long)info.jited_line_info)) {
+> +                 (void *)(unsigned long)info.line_info,
+> +                 (void *)(unsigned long)info.jited_line_info)) {
+>                 err = -1;
+>                 goto done;
+>         }
+> @@ -6500,8 +6500,8 @@ static int test_get_linfo(const struct prog_info_raw_test *test,
+>         }
+>
+>         if (CHECK(jited_linfo[0] != jited_ksyms[0],
+> -                 "jited_linfo[0]:%lx != jited_ksyms[0]:%lx",
+> -                 (long)(jited_linfo[0]), (long)(jited_ksyms[0]))) {
+> +                 "jited_linfo[0]:%llx != jited_ksyms[0]:%llx",
+> +                 jited_linfo[0], jited_ksyms[0])) {
+>                 err = -1;
+>                 goto done;
+>         }
+> @@ -6519,16 +6519,16 @@ static int test_get_linfo(const struct prog_info_raw_test *test,
+>                 }
+>
+>                 if (CHECK(jited_linfo[i] <= jited_linfo[i - 1],
+> -                         "jited_linfo[%u]:%lx <= jited_linfo[%u]:%lx",
+> -                         i, (long)jited_linfo[i],
+> -                         i - 1, (long)(jited_linfo[i - 1]))) {
+> +                         "jited_linfo[%u]:%llx <= jited_linfo[%u]:%llx",
+> +                         i, jited_linfo[i],
+> +                         i - 1, (jited_linfo[i - 1]))) {
+>                         err = -1;
+>                         goto done;
+>                 }
+>
+>                 if (CHECK(jited_linfo[i] - cur_func_ksyms > cur_func_len,
+> -                         "jited_linfo[%u]:%lx - %lx > %u",
+> -                         i, (long)jited_linfo[i], (long)cur_func_ksyms,
+> +                         "jited_linfo[%u]:%llx - %llx > %u",
+> +                         i, jited_linfo[i], cur_func_ksyms,
+>                           cur_func_len)) {
+>                         err = -1;
+>                         goto done;
+> --
+> 2.25.1
+>
