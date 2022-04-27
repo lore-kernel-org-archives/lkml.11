@@ -2,162 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01B07C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 22:20:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A0CEC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 22:22:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236539AbiD0WXk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 18:23:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34808 "EHLO
+        id S231990AbiD0WZS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 18:25:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236200AbiD0WXg (ORCPT
+        with ESMTP id S232043AbiD0WZO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 18:23:36 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BEEA17E3A
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:20:24 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id q185so4435761ljb.5
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:20:24 -0700 (PDT)
+        Wed, 27 Apr 2022 18:25:14 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39ED62AE19
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:22:00 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id y3so5996469ejo.12
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:22:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yCYL9g4VwJRI+kOW4bU4UPGTSqELiJ7re1kAOeB0fTc=;
-        b=KgH/l6N237SRBI92F2IRVx6f+6Hd2ZgAHQ4IuWldsWhmMGaJJbynZm31cQW3H1uxTW
-         0bPzdyMEMbXsR+SVDjs9Hrd+92T9sLnBkiOYld02Hi02N5GfWZB8mK26MESZ8SRH72/A
-         jloqi/91tVO55EmWGuu/ZTRiDk/1ONuWthJzU=
+        d=openvz-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=oLug1+azcE2h7QMeDbpYAnTwrafPSTpRFVPk0zNJveg=;
+        b=zI/nSf1n1K3Do1i5nBCb7lwViY+DJKmUvfVcoGHl/Q5SvQj83PNn1mVYoRuClPrpw9
+         sCkAImuE2tFKtQFVPcYA9jGml9m/Bwy/ymA5Te4m1zi4dRCXKacQNmNJgYeS0VEfkWbh
+         FvpiNqvdCThOvFYOiROhJZSsBkCxP0ox1W6C1im3DrClwe4LGTwoTkmKjqIyNiDE7bF0
+         IWrLpdiZfx31n46ZBikenK9K101cENCfFgSuYqLOkJ+QkFHBJEC++7GoEDz9r43mo8AA
+         LxJWR0R9yV0SBiYBa/bFhSnWkwE1pEHgs0W4l9FVYG8LeYNpO4bMEe33NvulIrzx7+7e
+         S/ew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yCYL9g4VwJRI+kOW4bU4UPGTSqELiJ7re1kAOeB0fTc=;
-        b=TYXjDqqq/siSl8KiCzbTcY+PJoDaJ4weRrLuFwaP0p6pXm597BQOZYr9yKMyCvFrNo
-         sPi+JtqeeRlRK5ohPVovMzehMkIV2e8yAkvyvohotRTYqEx/pEzxSIJTipgz8IxFxvuz
-         2fL5qjztLEscT+xIEVSEtqEYk4a4z2DnNu9I7r7pc/koT/ObkGvj008tTMiHrfJXaG76
-         e313oFoB2yLT+WhFwA9UFZS/mpJRSYwtrDsdzuA55kUDqOVcPvqEKdG8eiL6xdM7U6zY
-         TC/4R6pBClIcBQJkIJkrv7zcEVnHQnukCwZ0dVuuVXIzOsUVWeabadg+7k9TfdodET0J
-         s68g==
-X-Gm-Message-State: AOAM530Zey9FNiYjYkcOEAyhoUU/H0zn2VTjxyPtcV3vXXf4GJs+gvYo
-        gqeOyzUI4GxenYaRveaoquXve2HnPRDvMQbI1xM=
-X-Google-Smtp-Source: ABdhPJzNk4Xd5PEhXNyrJOCGp9EW82QRdHzMrWBUmmIU6HdE7RU28hoBIlTfcJsx9iSpBBygO8726w==
-X-Received: by 2002:a2e:a88b:0:b0:24b:5714:213d with SMTP id m11-20020a2ea88b000000b0024b5714213dmr19248431ljq.412.1651098021612;
-        Wed, 27 Apr 2022 15:20:21 -0700 (PDT)
-Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com. [209.85.167.54])
-        by smtp.gmail.com with ESMTPSA id a13-20020a19e30d000000b00471ea64d877sm2026082lfh.102.2022.04.27.15.20.20
-        for <linux-kernel@vger.kernel.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=oLug1+azcE2h7QMeDbpYAnTwrafPSTpRFVPk0zNJveg=;
+        b=1vlm2r18JoAyCNA3TYQ6LDP+OhL7r8xjpTX8B5V0Hs9TvBpBr2CH4t2yNwXSCOvxsp
+         oJHUgSA9Cm9aDrLsNi0vUsDQV/HmPTod8C5xxwpn2YgXUAKp3XTFcU8uo9qHSbpp0kmk
+         txH5xH7lOZnkBrjr0xVoaV+yWy1sGdpEKrD1vHnFz+gjNsVxZ2C6y5L8g5BybILTtfow
+         l4EoA1JO6Pxm7rkliVkG4nkqMJTfunCkTYVoMewmyS8/0hmp0HJYtwlN2BwqSAjbUlVX
+         JuflzcbQff9i/Jp1XASKs+59TQ5CiP8N8YGmbUktKjiLrVlPkRcAyzJ1cWtSfHkPWbYj
+         8JHA==
+X-Gm-Message-State: AOAM533Xr7cDgvr4gx6FtXfkLF9OCMJ3NxpYB7q0Xh36f5Jcnb/4C4BQ
+        RIqSlnBiG5bqY471fsH3c0ykQLizCngtfRrD
+X-Google-Smtp-Source: ABdhPJz1TeiDRK9Dtg2V4JeedZUcQpLNTqRFf/nLyars8/MHGhWw+9q7854+9snyo0BcYh5sVqbLYg==
+X-Received: by 2002:a2e:a593:0:b0:24d:b9a6:b85c with SMTP id m19-20020a2ea593000000b0024db9a6b85cmr5137954ljp.309.1651097815894;
+        Wed, 27 Apr 2022 15:16:55 -0700 (PDT)
+Received: from [192.168.1.65] ([46.188.121.177])
+        by smtp.gmail.com with ESMTPSA id a5-20020a2e9805000000b0024f12f0eb37sm999061ljj.95.2022.04.27.15.16.54
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Apr 2022 15:20:20 -0700 (PDT)
-Received: by mail-lf1-f54.google.com with SMTP id g19so5520881lfv.2
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:20:20 -0700 (PDT)
-X-Received: by 2002:a05:6512:6c6:b0:472:296e:6dfb with SMTP id
- u6-20020a05651206c600b00472296e6dfbmr4066529lff.542.1651098018218; Wed, 27
- Apr 2022 15:20:18 -0700 (PDT)
+        Wed, 27 Apr 2022 15:16:55 -0700 (PDT)
+Message-ID: <6b18f82d-1950-b38e-f3f5-94f6c23f0edb@openvz.org>
+Date:   Thu, 28 Apr 2022 01:16:53 +0300
 MIME-Version: 1.0
-References: <20220426145445.2282274-1-agruenba@redhat.com> <CAHk-=wi7o+fHYBTuCQQdHD112YHQtO21Y3+wxNYypjdo8feKFg@mail.gmail.com>
- <CAHc6FU48681X8aUK+g7UUN7q5b6rkVBzTP7h_zbE4XqZYAiw3g@mail.gmail.com>
- <CAHk-=wjMB1-xCOCBtsSMmQuFV9G+vNyCY1O_LsoqOd=0QS4yYg@mail.gmail.com>
- <CAHc6FU5Bag5W2t79+WzUq=NibtEF+7z6=jyNCkLMMp9Yqvpmqw@mail.gmail.com>
- <CAHk-=whaz-g_nOOoo8RRiWNjnv2R+h6_xk2F1J4TuSRxk1MtLw@mail.gmail.com>
- <CAHc6FU5654k7QBU97g_Ubj8cJEWuA_bXPuXOPpBBYoXVPMJG=g@mail.gmail.com>
- <CAHk-=wgSYSNc5sF2EVxhjbSc+c4LTs90aYaK2wavNd_m2bUkGg@mail.gmail.com> <CAHc6FU69E4ke4Xg3zQ2MqjLbfM65D9ZajdY5MRDLN0azZOGmVQ@mail.gmail.com>
-In-Reply-To: <CAHc6FU69E4ke4Xg3zQ2MqjLbfM65D9ZajdY5MRDLN0azZOGmVQ@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 27 Apr 2022 15:20:01 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whQxvMvty8SjiGMh+gM4VmCYvqn6EAwmrDXJaHT2Aa+UA@mail.gmail.com>
-Message-ID: <CAHk-=whQxvMvty8SjiGMh+gM4VmCYvqn6EAwmrDXJaHT2Aa+UA@mail.gmail.com>
-Subject: Re: [GIT PULL] gfs2 fix
-To:     Andreas Gruenbacher <agruenba@redhat.com>
-Cc:     cluster-devel <cluster-devel@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH memcg v4] net: set proper memcg for net_init hooks
+ allocations
+Content-Language: en-US
+To:     Shakeel Butt <shakeelb@google.com>,
+        =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
+Cc:     Vlastimil Babka <vbabka@suse.cz>,
+        Roman Gushchin <roman.gushchin@linux.dev>, kernel@openvz.org,
+        Florian Westphal <fw@strlen.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Michal Hocko <mhocko@suse.com>,
+        Cgroups <cgroups@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+References: <YmdeCqi6wmgiSiWh@carbon>
+ <33085523-a8b9-1bf6-2726-f456f59015ef@openvz.org>
+ <CALvZod4oaj9MpBDVUp9KGmnqu4F3UxjXgOLkrkvmRfFjA7F1dw@mail.gmail.com>
+ <20220427122232.GA9823@blackbody.suse.cz>
+ <CALvZod7v0taU51TNRu=OM5iJ-bnm1ryu9shjs80PuE-SWobqFg@mail.gmail.com>
+From:   Vasily Averin <vvs@openvz.org>
+In-Reply-To: <CALvZod7v0taU51TNRu=OM5iJ-bnm1ryu9shjs80PuE-SWobqFg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 2:26 PM Andreas Gruenbacher <agruenba@redhat.com> wrote:
->
-> Well, POSIX explicitly mentions those atomicity expectations, e.g.,
-> for read [1]:
+On 4/27/22 18:06, Shakeel Butt wrote:
+> On Wed, Apr 27, 2022 at 5:22 AM Michal Koutný <mkoutny@suse.com> wrote:
+>>
+>> On Tue, Apr 26, 2022 at 10:23:32PM -0700, Shakeel Butt <shakeelb@google.com> wrote:
+>>> [...]
+>>>>
+>>>> +static inline struct mem_cgroup *get_mem_cgroup_from_obj(void *p)
+>>>> +{
+>>>> +       struct mem_cgroup *memcg;
+>>>> +
+>>>
+>>> Do we need memcg_kmem_enabled() check here or maybe
+>>> mem_cgroup_from_obj() should be doing memcg_kmem_enabled() instead of
+>>> mem_cgroup_disabled() as we can have "cgroup.memory=nokmem" boot
+>>> param.
 
-Yes. I'm aware. And my point is that we've never done _that_ kind of atomicity.
+Shakeel, unfortunately I'm not ready to answer this question right now.
+I even did not noticed that memcg_kmem_enabled() and mem_cgroup_disabled()
+have a different nature.
+If you have no objections I'm going to keep this place as is and investigate
+this question later. 
 
-It's also somewhat ambiguous what it actually means, since what it
-then talks about is "all bytes that started out together ends
-together" and "interleaving".
+>> I reckon such a guard is on the charge side and readers should treat
+>> NULL and root_mem_group equally. Or is there a case when these two are
+>> different?
+>>
+>> (I can see it's different semantics when stored in current->active_memcg
+>> (and active_memcg() getter) but for such "outer" callers like here it
+>> seems equal.)
 
-That all implies that it's about the *position* of the reads and
-writes being atomic, not the *data* of the reads and writes.
+Dear Michal,
+I may have misunderstood your point of view, so let me explain my vision
+in more detail.
+I do not think that NULL and root_mem_cgroup are equal here:
+- we have enabled cgroups and well-defined root_mem_cgroup,
+- this function is called from inside memcg-limited container,
+- we tried to get memcg from net, but without success,
+  and as result got NULL from  mem_cgroup_from_obj()
+  (frankly speaking I do not think this situation is really possible)
+If we keep memcg = NULL, then current's memcg will not be masked and
+net_init's allocations will be accounted to current's memcg. 
+So we need to set active_memcg to root_mem_cgroup, it helps to avoid
+incorrect accounting.
 
-That, btw, was something we honored even before we had the locking
-around f_pos accesses - a read or write system call would get its own
-local *copy* the file position, the read or write would then do that
-IO based on that copied position - so that things that "started out
-together ends together" - and then after the operation is done it
-would *update* the file position atomically.
+> I was more thinking about possible shortcut optimization and unrelated
+> to this patch.
+> 
+> Vasily, can you please add documentation for get_mem_cgroup_from_obj()
+> similar to get_mem_cgroup_from_mm()? Also for mem_cgroup_or_root().
+> Please note that root_mem_cgroup can be NULL during early boot.
 
-Note that that is exactly so that data would end up "together". But it
-would mean that two concurrent reads using the same file position
-might read the *same* area of the file.
+Ok, thank you for the remark, I'll improve it in next patch version.
 
-Which still honors that "the read is atomic wrt the range", but
-obviously the actual values of "f_pos" is basically random after the
-read (ie is it the end of the first read, or the end of the second
-read?).
-
-The same paragraph also explicitly mentions pipes and FIFOs, despite
-an earlier paragraph dismissing them, which is all just a sign of
-things being very confused.
-
-Anyway, I'm not objecting very sternously to making it very clear in
-some documentation that this "data atomicity" is not what Linux has
-ever done. If you do overlapping IO, you get what you deserve.
-
-But I do have objections.
-
-On one hand, it's not all that different from some of the other notes
-we have in the man-pages (ie documenting that whole "just under 2GB"
-limit on the read size, although that's actually using the wrong
-constant: it's not 0x7ffff000 bytes, it's MAX_RW_COUNT, which is
-"INT_MAX & PAGE_MASK" and that constant in the man-page is as such
-only true on a system with 4kB page sizes)
-
-BUT! I'm 100% convinced that NOBODY HAS EVER given the kind of
-atomicity guarantees that you would see from reading that document as
-a language-lawyer.
-
-For example, that section "2.9.7 Thread Interactions with Regular File
-Operations" says that "fstat()" is atomic wrt "write()", and that you
-should see "all or nothing".
-
-I *GUARANTEE* that no operating system ever has done that, and I
-further claim that reading it the way you read it is not only against
-reality, it's against sanity.
-
-Example: if I do a big write to a file that I just created, do you
-really want "fstat()" in another thread or process to not even be able
-to see how the file grows as the write happens?
-
-It's not what anybody has *EVER* done, I'm pretty sure.
-
-So I really think
-
- (a) you are mis-reading the standard by attributing too strong logic
-to paperwork that is English prose and not so exact
-
- (b) documenting Linux as not doing what you are mis-reading it for is
-only encouraging others to mis-read it too
-
-The whole "arbitrary writes have to be all-or-nothing wrt all other
-system calls" is simply not realistic, and has never been. Not just
-not in Linux, but in *ANY* operating system that POSIX was meant to
-describe.
-
-And equally importantly: if some crazy person were to actually try to
-implement such "true atomicity" things, the end result would be
-objectively worse. Because you literally *want* to see a big write()
-updating the file length as the write happens.
-
-The fact that the standard then doesn't take those kinds of details
-into account is simply because the standard isn't meant to be read as
-a language lawyer, but as a "realistically .."
-
-             Linus
+Thank you,
+	Vasily Averin
