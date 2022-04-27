@@ -2,142 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED90CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:38:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95905C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:39:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236526AbiD0Nlt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 09:41:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42584 "EHLO
+        id S236549AbiD0NmL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 09:42:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236450AbiD0Nls (ORCPT
+        with ESMTP id S236391AbiD0NmJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 09:41:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B2AF156765
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 06:38:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651066716;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=pASs2MCvHDKO6IuV9YUAJxKscoYhMe+WGgBrqsLgpeA=;
-        b=fGWs2UipOXI0bq5z5BTx/krWoXgrYR4zEVGekhtofcbbdrdFhC+p3azkKTScqUpTZyR/pP
-        gTyqtLzuDnTB8v/g7ZE4BHYs69NrR2f/JR4ylsmhnckUEuxocCx7C07xX+dTUUHWVDDk+O
-        n6MCL6A6cmoSZhrPzNc3x5KVAOFeZ3w=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-324-54HMfd3OMFmlmho_8I4FSw-1; Wed, 27 Apr 2022 09:38:35 -0400
-X-MC-Unique: 54HMfd3OMFmlmho_8I4FSw-1
-Received: by mail-wm1-f72.google.com with SMTP id h65-20020a1c2144000000b0038e9ce3b29cso2845090wmh.2
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 06:38:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pASs2MCvHDKO6IuV9YUAJxKscoYhMe+WGgBrqsLgpeA=;
-        b=klWoPqC3FWpXEr753BvBkAga7Twz4USGGFNaGPpwbVX884CBFerqi0t+vJCCduV+dE
-         PMdWQYlUqUJIWRyI9k8r3Mvgw61NVmpsTepOm05w64+LGJ3lg/USU+ONOAKXnBEJgCd0
-         C0L2vtz/t1MwtlGuwmP6pUvvIVOAaAII6RCcd8iTD8i4rQoYp/VxG8/iueQ8Qv2FGLN/
-         zKUTV4MseLHdKUe6T/bqaL3C6oF9WCCgXnR67td3oxmpZN5mayUaIoR/navGmh0i5Vv6
-         XQN8+NYVL/itge+npYGic8S1gv6XtXDMV3prsaIN5MmPMXWWwDMjcSBIOrIQuUWNVkes
-         oUVQ==
-X-Gm-Message-State: AOAM532OQdNnJwd/63W/vIfNJlqTtSWMhGfPEf1pvgJ9pJrbdCWqWJaD
-        IKfxxFTgKwqFhoyl2kTEJbFTHR4XSUGpffs1fb+OjNA1cxtT2L1LOYqveDYUtjdawg0/WV55Fhr
-        DIxO3/En2amjgExGC28lYhF4o
-X-Received: by 2002:a1c:19c1:0:b0:393:a19f:8f95 with SMTP id 184-20020a1c19c1000000b00393a19f8f95mr25986330wmz.149.1651066714186;
-        Wed, 27 Apr 2022 06:38:34 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxyZHIKV3c3j9uqHgcGZ8eA8TvBTNFbmTsiNROeafQbnIh2surKm1WpizXdg1ibVysWg5ZlMw==
-X-Received: by 2002:a1c:19c1:0:b0:393:a19f:8f95 with SMTP id 184-20020a1c19c1000000b00393a19f8f95mr25986295wmz.149.1651066713905;
-        Wed, 27 Apr 2022 06:38:33 -0700 (PDT)
-Received: from sgarzare-redhat (host-87-11-6-234.retail.telecomitalia.it. [87.11.6.234])
-        by smtp.gmail.com with ESMTPSA id n38-20020a05600c502600b00393d946aef4sm1548556wmr.10.2022.04.27.06.38.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 06:38:32 -0700 (PDT)
-Date:   Wed, 27 Apr 2022 15:38:29 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
-Cc:     KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-hyperv@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/5] hv_sock: Add validation for untrusted Hyper-V
- values
-Message-ID: <20220427133829.w5biauq2omc5xvuu@sgarzare-redhat>
-References: <20220427131225.3785-1-parri.andrea@gmail.com>
- <20220427131225.3785-4-parri.andrea@gmail.com>
+        Wed, 27 Apr 2022 09:42:09 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A880C6D948;
+        Wed, 27 Apr 2022 06:38:57 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 956B71F442A0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1651066736;
+        bh=1QN1p0eSZK217vpy0gh2KrOhLqzPHhjrtvyCvtKYhTw=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=a8JjF3xZKEK8YYakI94IeHbit/xUc+NIVPgf34JNUrK2ASU/PqnZ2Rz2AUqkWDv4G
+         Yb7ZhR/WEIB/3pk6KNLowcOCyBHXOHohxyW4SPvsUROWFUuXj9fhgLSCk4s8ut6WUO
+         N5bWehMn06s/zLun16wWL8cf3+oo0UNg6sc1l/jE63Z+RMN/2FbTZbVghViVHaltX9
+         YOyEgD/p28wmGR2ekTpzJoO93MfmQ91qbInCdwlISlmK5K18pfZ+37zoy727SYdf4v
+         4q+CXFkOQBFMj55XWfTA0WyynWgtkTfRLlNuWKJJArAb1DsTC3bwPGRYCprTXZdziM
+         ak8gZYZ6iGJ0w==
+Message-ID: <c643d877-bc0a-a92c-d366-bd27bf580739@collabora.com>
+Date:   Wed, 27 Apr 2022 15:38:52 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220427131225.3785-4-parri.andrea@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH V4 07/15] clk: mediatek: reset: Support nonsequence base
+ offsets of reset registers
+Content-Language: en-US
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, mturquette@baylibre.com,
+        sboyd@kernel.org, matthias.bgg@gmail.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     p.zabel@pengutronix.de, chun-jie.chen@mediatek.com,
+        wenst@chromium.org, runyang.chen@mediatek.com,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220427030950.23395-1-rex-bc.chen@mediatek.com>
+ <20220427030950.23395-8-rex-bc.chen@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220427030950.23395-8-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 03:12:23PM +0200, Andrea Parri (Microsoft) wrote:
->For additional robustness in the face of Hyper-V errors or malicious
->behavior, validate all values that originate from packets that Hyper-V
->has sent to the guest in the host-to-guest ring buffer.  Ensure that
->invalid values cannot cause data being copied out of the bounds of the
->source buffer in hvs_stream_dequeue().
->
->Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
->Reviewed-by: Michael Kelley <mikelley@microsoft.com>
->---
-> include/linux/hyperv.h           |  5 +++++
-> net/vmw_vsock/hyperv_transport.c | 10 ++++++++--
-> 2 files changed, 13 insertions(+), 2 deletions(-)
->
->diff --git a/include/linux/hyperv.h b/include/linux/hyperv.h
->index fe2e0179ed51e..55478a6810b60 100644
->--- a/include/linux/hyperv.h
->+++ b/include/linux/hyperv.h
->@@ -1663,6 +1663,11 @@ static inline u32 hv_pkt_datalen(const struct vmpacket_descriptor *desc)
-> 	return (desc->len8 << 3) - (desc->offset8 << 3);
-> }
->
->+/* Get packet length associated with descriptor */
->+static inline u32 hv_pkt_len(const struct vmpacket_descriptor *desc)
->+{
->+	return desc->len8 << 3;
->+}
->
-> struct vmpacket_descriptor *
-> hv_pkt_iter_first_raw(struct vmbus_channel *channel);
->diff --git a/net/vmw_vsock/hyperv_transport.c b/net/vmw_vsock/hyperv_transport.c
->index 8c37d07017fc4..fd98229e3db30 100644
->--- a/net/vmw_vsock/hyperv_transport.c
->+++ b/net/vmw_vsock/hyperv_transport.c
->@@ -577,12 +577,18 @@ static bool hvs_dgram_allow(u32 cid, u32 port)
-> static int hvs_update_recv_data(struct hvsock *hvs)
-> {
-> 	struct hvs_recv_buf *recv_buf;
->-	u32 payload_len;
->+	u32 pkt_len, payload_len;
->+
->+	pkt_len = hv_pkt_len(hvs->recv_desc);
->+
->+	if (pkt_len < HVS_HEADER_LEN)
->+		return -EIO;
->
-> 	recv_buf = (struct hvs_recv_buf *)(hvs->recv_desc + 1);
-> 	payload_len = recv_buf->hdr.data_size;
->
->-	if (payload_len > HVS_MTU_SIZE)
->+	if (payload_len > pkt_len - HVS_HEADER_LEN ||
->+	    payload_len > HVS_MTU_SIZE)
-> 		return -EIO;
->
-> 	if (payload_len == 0)
->-- 
->2.25.1
->
+Il 27/04/22 05:09, Rex-BC Chen ha scritto:
+> The bank offsets are not serial for all reset registers.
+> For example, there are five infra reset banks for MT8192: 0x120, 0x130,
+> 0x140, 0x150 and 0x730.
+> 
+> To support this,
+> - Change reg_ofs to rst_bank_ofs which is a pointer to base offsets of
+>    the reset register.
+> - Add a new define RST_NR_PER_BANK to define reset number for each
+>    reset bank.
+> 
+> Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+> ---
+>   drivers/clk/mediatek/clk-mt2701-eth.c |  6 ++++--
+>   drivers/clk/mediatek/clk-mt2701-g3d.c |  6 ++++--
+>   drivers/clk/mediatek/clk-mt2701-hif.c |  6 ++++--
+>   drivers/clk/mediatek/clk-mt2701.c     | 11 +++++++----
+>   drivers/clk/mediatek/clk-mt2712.c     | 15 +++++++++------
+>   drivers/clk/mediatek/clk-mt7622-eth.c |  6 ++++--
+>   drivers/clk/mediatek/clk-mt7622-hif.c |  6 ++++--
+>   drivers/clk/mediatek/clk-mt7622.c     | 11 +++++++----
+>   drivers/clk/mediatek/clk-mt7629-eth.c |  6 ++++--
+>   drivers/clk/mediatek/clk-mt7629-hif.c |  6 ++++--
+>   drivers/clk/mediatek/clk-mt8135.c     | 11 +++++++----
+>   drivers/clk/mediatek/clk-mt8173.c     | 11 +++++++----
+>   drivers/clk/mediatek/clk-mt8183.c     | 14 ++++++++++++--
+>   drivers/clk/mediatek/reset.c          | 11 ++++++-----
+>   drivers/clk/mediatek/reset.h          |  6 ++++--
+>   15 files changed, 87 insertions(+), 45 deletions(-)
+> 
 
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+..snip..
 
+> diff --git a/drivers/clk/mediatek/clk-mt2701.c b/drivers/clk/mediatek/clk-mt2701.c
+> index 70a934faa529..ebb1b9975ab0 100644
+> --- a/drivers/clk/mediatek/clk-mt2701.c
+> +++ b/drivers/clk/mediatek/clk-mt2701.c
+> @@ -735,18 +735,21 @@ static const struct mtk_fixed_factor infra_fixed_divs[] = {
+>   	FACTOR(CLK_INFRA_CLK_13M, "clk13m", "clk26m", 1, 2),
+>   };
+>   
+> +static u16 infrasys_rst_ofs[] = { 0x30, 0x34, };
+> +static u16 perfcfg_rst_ofs[] = { 0x0, 0x4, };
+
+Typo: perfcfg -> pericfg ... here and in some more files :))
+
+> +
+>   static const struct mtk_clk_rst_desc clk_rst_desc[] = {
+>   	/* infrasys */
+>   	{
+>   		.version = MTK_RST_SIMPLE,
+> -		.rst_bank_nr = 2,
+> -		.reg_ofs = 0x30,
+> +		.rst_bank_ofs = infrasys_rst_ofs,
+> +		.rst_bank_nr = ARRAY_SIZE(infrasys_rst_ofs),
+>   	},
+>   	/* pericfg */
+>   	{
+>   		.version = MTK_RST_SIMPLE,
+> -		.rst_bank_nr = 2,
+> -		.reg_ofs = 0x0,
+> +		.rst_bank_ofs = perfcfg_rst_ofs,
+> +		.rst_bank_nr = ARRAY_SIZE(perfcfg_rst_ofs),
+>   	},
+>   };
+>   
+> diff --git a/drivers/clk/mediatek/clk-mt2712.c b/drivers/clk/mediatek/clk-mt2712.c
+> index cef7c79788ec..2a9d70dd97d6 100644
+> --- a/drivers/clk/mediatek/clk-mt2712.c
+> +++ b/drivers/clk/mediatek/clk-mt2712.c
+> @@ -1258,18 +1258,21 @@ static const struct mtk_pll_data plls[] = {
+>   		0, 31, 0x0300, 4, 0, 0, 0, 0x0304, 0),
+>   };
+>   
+> +static u16 infrasys_rst_ofs[] = { 0x30, 0x34, };
+> +static u16 perfcfg_rst_ofs[] = { 0x0, 0x4, };
+> +
+>   static const struct mtk_clk_rst_desc clk_rst_desc[] = {
+> -	/* infra */
+> +	/* infrasys */
+
+Instead of renaming these here, if you really want this renamed, can you please
+do that in patch [06/15]?
+
+>   	{
+>   		.version = MTK_RST_SIMPLE,
+> -		.rst_bank_nr = 2,
+> -		.reg_ofs = 0x30,
+> +		.rst_bank_ofs = infrasys_rst_ofs,
+> +		.rst_bank_nr = ARRAY_SIZE(infrasys_rst_ofs),
+>   	},
+
+..snip..
+
+> diff --git a/drivers/clk/mediatek/reset.h b/drivers/clk/mediatek/reset.h
+> index 91358e8cb851..83840ecf8b27 100644
+> --- a/drivers/clk/mediatek/reset.h
+> +++ b/drivers/clk/mediatek/reset.h
+> @@ -9,6 +9,8 @@
+>   #include <linux/reset-controller.h>
+>   #include <linux/types.h>
+>   
+> +#define RST_NR_PER_BANK 32
+> +
+>   /**
+>    * enum mtk_reset_version - Version of MediaTek clock reset controller.
+>    * @MTK_RST_SIMPLE: Use the same registers for bit set and clear.
+> @@ -24,12 +26,12 @@ enum mtk_reset_version {
+>   /**
+>    * struct mtk_clk_rst_desc - Description of MediaTek clock reset.
+>    * @version: Reset version which is defined in enum mtk_reset_version.
+> - * @reg_ofs: Base offset of the reset register.
+> + * @rst_bank_ofs: Pointer to base offsets of the reset register.
+
+Instead of generically saying that this is a pointer, it would be more
+appropriate to say that this is a pointer to an array containing base
+offsets (etc).
+
+Thanks,
+Angelo
+
+>    * @rst_bank_nr: Quantity of reset bank.
+>    */
+>   struct mtk_clk_rst_desc {
+>   	u8 version;
+> -	u16 reg_ofs;
+> +	u16 *rst_bank_ofs;
+>   	u32 rst_bank_nr;
+>   };
+>   
