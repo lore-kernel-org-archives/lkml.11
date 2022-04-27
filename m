@@ -2,100 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D9A8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:14:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2E2BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:14:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242046AbiD0QRt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:17:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48876 "EHLO
+        id S242483AbiD0QRz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:17:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243980AbiD0QPo (ORCPT
+        with ESMTP id S243947AbiD0QPm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:15:44 -0400
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9C7345AAB8;
-        Wed, 27 Apr 2022 09:12:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=deltatee.com; s=20200525; h=Subject:In-Reply-To:From:References:Cc:To:
-        MIME-Version:Date:Message-ID:content-disposition;
-        bh=gRRhOj8clhoH6+uFPZPq6FKVuwIU2733V3ei3eBIRbg=; b=Oq819TCDeE6yL49nBZVyUsKifS
-        aA4DAOIzEvh8tNIfGAThXAwWn/6NCXpzPFH0BJmHsXT+RGIxV3R+Zz2kSyG9kcTM+nYg/9cAtBQnQ
-        Iyb8GTTxHJlwDqLO8fxgTawTJJc1fFttGgX8QV+eWVsDsy+SbClTkmOzd064qMqG9x4ZFpa1IW/GS
-        Y8CoOz9ZhU0CfLLmHVQyk0cvs42TjS7vM0k0Lm/66hxsj3rTiCsSzExqiME1LCJGDNuw7x5awL5hQ
-        e8B6Y8NAdGV/XB+Rd/C1bmLwAIUQCd8ia9/R8JGeMM5uxEStuolnpIHBlpm6kCro5ceJ6WnJ+1lZo
-        YnQzoXmQ==;
-Received: from s0106ac1f6bb1ecac.cg.shawcable.net ([70.73.163.230] helo=[192.168.11.155])
-        by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <logang@deltatee.com>)
-        id 1njkG2-000KCB-1s; Wed, 27 Apr 2022 10:11:14 -0600
-Message-ID: <78b4b92f-ae89-2e54-f96f-21d338ca042b@deltatee.com>
-Date:   Wed, 27 Apr 2022 10:11:13 -0600
+        Wed, 27 Apr 2022 12:15:42 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 581FA3BD079
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:11:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651075756;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=q/SkBNsoTUPyKMGhRFoyh0ykNNAvugZJ3bBfN9M/MEU=;
+        b=PyGhNwXGadN2LpgTJBvTwUgqz7RBix+aUDcfwcNRQYEs2bEJjwE4SLcJzJa60XAdobO5zy
+        dL8t9Zt1207X6+/fwm16om4ZYQXPxqa0jmuay6B1rGD0WgCu/Z9blI5bplgaakrmUIYLl6
+        9HLypceRWYDjC7CIoDgz84sbEEsXyz0=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-381-fIC6HcHzNF2SRSCXM6IoTQ-1; Wed, 27 Apr 2022 12:09:10 -0400
+X-MC-Unique: fIC6HcHzNF2SRSCXM6IoTQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 36B103820F6E;
+        Wed, 27 Apr 2022 16:09:09 +0000 (UTC)
+Received: from dhcp-27-174.brq.redhat.com (unknown [10.40.192.128])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 45EE62024CB8;
+        Wed, 27 Apr 2022 16:09:04 +0000 (UTC)
+Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
+        oleg@redhat.com; Wed, 27 Apr 2022 18:09:08 +0200 (CEST)
+Date:   Wed, 27 Apr 2022 18:09:03 +0200
+From:   Oleg Nesterov <oleg@redhat.com>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
+        Will Deacon <will@kernel.org>, tj@kernel.org,
+        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        inux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>
+Subject: Re: [PATCH 9/9] ptrace: Don't change __state
+Message-ID: <20220427160901.GI17421@redhat.com>
+References: <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
+ <20220426225211.308418-9-ebiederm@xmission.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Content-Language: en-US
-To:     Guoqing Jiang <guoqing.jiang@linux.dev>,
-        linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
-        Song Liu <song@kernel.org>
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        Stephen Bates <sbates@raithlin.com>,
-        Martin Oliveira <Martin.Oliveira@eideticom.com>,
-        David Sloan <David.Sloan@eideticom.com>
-References: <20220420195425.34911-1-logang@deltatee.com>
- <20220420195425.34911-12-logang@deltatee.com>
- <7f61aacd-d378-092c-1291-f2aaf42a5537@linux.dev>
-From:   Logan Gunthorpe <logang@deltatee.com>
-In-Reply-To: <7f61aacd-d378-092c-1291-f2aaf42a5537@linux.dev>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 70.73.163.230
-X-SA-Exim-Rcpt-To: guoqing.jiang@linux.dev, linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org, song@kernel.org, hch@infradead.org, sbates@raithlin.com, Martin.Oliveira@eideticom.com, David.Sloan@eideticom.com
-X-SA-Exim-Mail-From: logang@deltatee.com
-Subject: Re: [PATCH v2 11/12] md/raid5: Check all disks in a stripe_head for
- reshape progress
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220426225211.308418-9-ebiederm@xmission.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 04/26, Eric W. Biederman wrote:
+>
+> @@ -253,7 +252,7 @@ static int ptrace_check_attach(struct task_struct *child, bool ignore_state)
+>  	 */
+>  	if (lock_task_sighand(child, &flags)) {
+>  		if (child->ptrace && child->parent == current) {
+> -			WARN_ON(READ_ONCE(child->__state) == __TASK_TRACED);
+> +			WARN_ON(child->jobctl & JOBCTL_DELAY_WAKEKILL);
 
+This WARN_ON() doesn't look right.
 
-On 2022-04-26 19:53, Guoqing Jiang wrote:
->> +static bool stripe_ahead_of_reshape(struct mddev *mddev, struct
->> r5conf *conf,
->> +                    struct stripe_head *sh)
->> +{
->> +    sector_t max_sector = 0, min_sector = MaxSector;
->> +    bool ret = false;
->> +    int dd_idx;
->> +
->> +    for (dd_idx = 0; dd_idx < sh->disks; dd_idx++) {
->> +        if (dd_idx == sh->pd_idx)
->> +            continue;
->> +
->> +        min_sector = min(min_sector, sh->dev[dd_idx].sector);
->> +        max_sector = min(max_sector, sh->dev[dd_idx].sector);
->> +    }
->> +
->> +    spin_lock_irq(&conf->device_lock);
->> +
->> +    if (!range_ahead_of_reshape(mddev, min_sector, max_sector,
->> +                     conf->reshape_progress))
->> +        /* mismatch, need to try again */
->> +        ret = true;
-> 
-> I think we can just open code range_ahead_of_reshape.
+It is possible that this child was traced by another task and PTRACE_DETACH'ed,
+but it didn't clear DELAY_WAKEKILL.
 
-I think this way is much easier to read. GCC is much
+If the new debugger attaches and calls ptrace() before the child takes siglock
+ptrace_freeze_traced() will fail, but we can hit this WARN_ON().
 
-> And seems the above is not same as below original checking which compare
-> logical_sector with reshape_progress. Is it intentional or am I miss
-> something?
+Oleg.
 
-Yes, this was intentional, the change is necessary for the next patch to
-ensure that all pages in a stripe are ahead of the reshape. This was not
-intended as just a cleanup patch.
-
-Logan
