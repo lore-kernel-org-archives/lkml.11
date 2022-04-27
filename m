@@ -2,207 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE5F1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:47:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AF0EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:50:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240372AbiD0Puz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 11:50:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49040 "EHLO
+        id S240370AbiD0Pwm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 11:52:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240225AbiD0Pux (ORCPT
+        with ESMTP id S240321AbiD0Pwh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 11:50:53 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7CF4353A57
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 08:47:33 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 62764ED1;
-        Wed, 27 Apr 2022 08:47:33 -0700 (PDT)
-Received: from [192.168.178.6] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1D8753F73B;
-        Wed, 27 Apr 2022 08:47:31 -0700 (PDT)
-Message-ID: <9f0589d5-ab0a-9203-b961-984c61cc7283@arm.com>
-Date:   Wed, 27 Apr 2022 17:47:22 +0200
+        Wed, 27 Apr 2022 11:52:37 -0400
+Received: from sonic309-26.consmr.mail.ne1.yahoo.com (sonic309-26.consmr.mail.ne1.yahoo.com [66.163.184.152])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9575541A6
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 08:49:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1651074562; bh=Y7LuXCXCj4prJ+BaAZCbNYn2yB8vuw8uDwfrZ9Al/T0=; h=Date:Subject:To:Cc:References:From:In-Reply-To:From:Subject:Reply-To; b=WEFQxOsjgK9Qr14KQqgE6/iuLTN1c2D2302f3Gv+ox2DJgmFt0saZfjwL6YaMtDEBTUpYN+Z3v0akLllc2F8bvsVN/+xqG+dlW/CrKv7Gl4LXOZxwSkEinoG+u1TaoxWuCAmoVfWvBwDvp/aRwDNf8s6j8juz33zlortve0DN0utgvk4GmVD8MKdxP/9fZ2aqOn1ARFAmKsYTZ+aTVauXlNrctaHNiO33GVFxo6vvo6/FQB/olk4QdARTIf+J+IHvmNeRft5NM8EtX/tkkx9QrX1mQMHgccqxuu2loH5/vomxDNdveVLiqonBN1Qosdt7oOVcr1VSsgz7JBl5RXAlw==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1651074562; bh=LfNP/Qkgqg3VwuBXkXlNnSryf6SR+YNHoc/bHqszSMM=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=Sy2nm+635RtR5FvBR827xVAINX1dZZSvjeNSZaQUlNVKvCMvhLoTx3Hnc22GHhDEbr1xblZ8Fbi47lX/lmuA3VUUio7IvLIIVq3o6pl74ai+vsRkzY6lD6NIqe+lNumVRDQGqGgORTJM7m/NyF4q0HcUXQi+y8xvXgSa+qD559/iLb4lS70of46HZ+GDJmUgh0xJZk42/I0cddU3d6w6kwv+dmqlrerieUdbsNigpNy46cGsyvSUoT7+P4jNpi0nUS6xnFPKCIEoZ8t/E7FM03IPtznfo0r1rnTCHETEmhwtbZhdUwTxAhfvi7iBaMOgMbkQ/pJ3w7rsUguJnaZSuw==
+X-YMail-OSG: 3dg1ND0VM1lM2wC7bNxPXYC6bl1XvCfyaPuiZoCDcoEu3t05QQC5tWYYX2.6sQd
+ _1jmOW3URwaaw81TqpYX1yThXM80pQYkEvyTF1dGOkAtp06ZHKlupz.b_x1gLfBNlRNEMjRZEEOF
+ U5qwOqXf5I1SpZAYSitxke8U1OHt.kGvSqO8kVff..7BKLlQsuib5zAystgPszQBeCpvv9aG.FrE
+ SDmxTfQWPTbgTUDiquTQIyB4BdGLd3jN6ngksIUnxf.hlYRQ4Gj.LEC4psHBNxfCcsiqkPeqW4Wn
+ SOrmmLq7M0Uei28h1P660d.64uOnBKEtubr1vLPFjdfJn3tJF.y82s6zwnFe.4JjMe32QXI.Z7c4
+ EF.Em_M.Dgohzm9.V12d0ip.0g8amSVO04HMBCYDgAlEBgqxX2JdcWXmgBXg1qBL0Y1anu8jcdoq
+ KXKziUwlre0ZbNxWbR4sv16Z7JYJrSFyd52UW6NXwbF3FjW38jCTnmOL8kjyWb1j70SihnmO6SMQ
+ OBc0XBuX3AGwh2FEEeeYMtS_mQVJGdgOPC62o01GQR2GYmmKd3Ojmx.JmHrLpLaK.HeWaBiR88wK
+ oqH5KvJ.l0aRoldDuq_wuSk4EDUSA60aZR1U6h5Qy6VpQ3lSTHU00Hhu3zJMWmEy769NB0dt_Dnx
+ XkM7a56AjuUi7hH.sdk6pIWpU7yfPGCdj0fjLKoeYzTJWmwVP4OE1nyIxSTU3fkqBaiUFmzZ24WL
+ oPPtlx3vhkAQqxSsGtlLtPXeNkJ9mfEVJkbtU0xNwyNqV4TOBYQ6W4xwbkOkNUrcGyvWu3SKqVqW
+ hVreoBql0SARG4xQr8rOum4e5nblzEGWP2xi2cvZL.e5bGsweqrSJWyfHc8c_tN_k5z5sJi9KbN8
+ bwVnvoXdE2B02KcAIgYYjjrvLsJ7S6XilSHkohBOegy.5TQF4Iz5.P_qxJ9wp9Oklx4Kqh8g8kCT
+ RyDYtvKGuRTjbCmdzhgJl7u0z9kleJZ3ZX2zbC6HNE64loLZNaITJj.TBWD6mc0OfT6bQiPwGptQ
+ hGkILVRPx3knAcO_FSRR.KmbTy90IaUpvVMAU4F.bPiZMGFJuOjBy28cQS9BUGWtlEBb5LKVXgba
+ Be3pJnESr6KF5oNjaJsOrJ0UD.afeugUX6F2q5l7MLWykwhtXRi7aWEkZzXebWrKzFMkfTMekItn
+ EokAjDKkCCs98Nm4cUOCMQL8Uny3cymn.0ROwU6XhselhFGGciZOskS4g1KINKXAYOGjg3jvHHK5
+ A55lF5yDm00AE1ov.tIYUP0DzL28U6CQx4Fcf1S2H4sL7Yre7Ch4LjaqyjxmowBiZY.Q.6EIUEfl
+ 6Cw4dMrm6NyOxCXp5.Y0Xb1APwf6KSm60fSeryUfGeGgeqP43QNVKMJ19y5tyBC.8.SQT8Zula7V
+ VZyjnKlI7ZnJ3Gf_4Nr4_nH7Hg8qMk6ieiASg7OUAfunifrj097x0JrE65v4zJ28TbyDsMDvdkQi
+ JgILc3NHiJ9kX6ewIZ9MM7XMDN6n8Ko_.A8LnLu4Q1j_GPrFqdV.dwGqxu5o373ZG1VGCNzwIJIZ
+ _RGl5EpkeJgOUC4ZDqn1OFNiuEfr2DK.Y656DnfxEiJWK2A2KDRtDjMwnEXftJ_HkUNNcUSeS5AV
+ xDIa47PrQAOqPMfJjYB.aoHPZn4qIXM0Lr5q.ba8KPhNU54kZEaMsE3sgoBYZESKfPdeexD3lqcQ
+ Ga0n98zVfngQSvqZkL_i6fuGWkoCzuJuoJML_TSbZlTJkfDjHlrJD36U_WGnYnw2uNvB14LNSCdz
+ 04lUsGRfJiXFmno1t5Owyqkc6wgzlUqtAE7VoYl3nxg.iTn2Yi10moeXYHhsA5vLk6gs5z6g7CPL
+ 9r82BGBdplrsEhD2c4K33qXxbzYKCcTi.MbfvM.hfyMYvvX.b3PNw_.PT2wK4K63SyyiHZVy1PJC
+ kl_9OOXZvGkEWPf_e8ielxDNzRLMntDOfI5EDEDb2Xaewdcaq2SEAhojoWTcJRpRUw8KXLY34TeB
+ Kbx56.ptUCw5QVFZ93FYxa_3yCdG77veQ15VcsrdJ6_gteEalxzu3Y.BTRpLK_mgxO3qtZpUH0_D
+ D.nwAfL_FaVHntmx2q3mZEhV18UVVixFYTUuHNbgul6S_Q9Lx4.2cWdqE4DTCZxDLdWBqhn1d_K4
+ UoB9EtNIpfcKBX5nIFAsLYrJZKTWkuOF3z3TfijCAxrFA6DPzdAKAlI1ql8D5BY27XsLUbbg7wG6
+ 0iJEKPOygevOuMfxuNmcunOxMP8PikDVmiDzF6ioLfK.1ZmRi_cuxRgouKbBS_vGST06EuRLnRDh
+ 8TRBbmWdcCwjExzPnrhoRLl8-
+X-Sonic-MF: <casey@schaufler-ca.com>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic309.consmr.mail.ne1.yahoo.com with HTTP; Wed, 27 Apr 2022 15:49:22 +0000
+Received: by hermes--canary-production-ne1-75b69fcf97-h6f5j (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 5cf646cccb8d779f95f2cd60c8c8f25d;
+          Wed, 27 Apr 2022 15:49:17 +0000 (UTC)
+Message-ID: <4ec176c6-1f66-3951-f40f-1eb0d5b66a09@schaufler-ca.com>
+Date:   Wed, 27 Apr 2022 08:49:16 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH V2] arm64: add SCHED_CLUSTER's dependency on ACPI
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v35 23/29] Audit: Create audit_stamp structure
 Content-Language: en-US
-To:     =?UTF-8?B?546L5pOO?= <wangqing@vivo.com>,
-        Sudeep Holla <sudeep.holla@arm.com>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "vincent.guittot@linaro.org" <vincent.guittot@linaro.org>,
-        "peterz@infradead.org" <peterz@infradead.org>
-References: <1650855303-91388-1-git-send-email-wangqing@vivo.com>
- <20220425100635.ig4dxvlflglfagpx@bogus>
- <SL2PR06MB308217E24459AB685FBF6FD2BDF89@SL2PR06MB3082.apcprd06.prod.outlook.com>
- <20220425165946.qb6xilgmjahdh4pa@bogus>
- <SL2PR06MB3082544EFB9C6F518A2EBF04BDFB9@SL2PR06MB3082.apcprd06.prod.outlook.com>
- <20220426064053.h4rwvcdvmwxj2hmt@bogus>
- <SL2PR06MB3082F1AEE684E638C1B5F226BDFB9@SL2PR06MB3082.apcprd06.prod.outlook.com>
- <20220426132511.7zo4w42kauvrq26n@bogus>
- <2244a7f7-9894-06a0-ea51-edf84f6caada@arm.com>
- <SL2PR06MB3082EA14946F2E207B3043E2BDFA9@SL2PR06MB3082.apcprd06.prod.outlook.com>
-From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
-In-Reply-To: <SL2PR06MB3082EA14946F2E207B3043E2BDFA9@SL2PR06MB3082.apcprd06.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+To:     Paul Moore <paul@paul-moore.com>,
+        John Johansen <john.johansen@canonical.com>
+Cc:     jmorris@namei.org, linux-security-module@vger.kernel.org,
+        selinux@vger.kernel.org, linux-audit@redhat.com,
+        keescook@chromium.org, penguin-kernel@i-love.sakura.ne.jp,
+        stephen.smalley.work@gmail.com, linux-kernel@vger.kernel.org,
+        Casey Schaufler <casey@schaufler-ca.com>
+References: <20220418145945.38797-1-casey@schaufler-ca.com>
+ <20220418145945.38797-24-casey@schaufler-ca.com>
+ <a1702622-5980-1eb4-1cf8-b6fc6cd98b25@canonical.com>
+ <CAHC9VhRzJKAARW1rnUMu0Y6RVo_uq=i=Jzh4LmA9grtQ1W2C1Q@mail.gmail.com>
+ <26eca0aa-111a-9473-8925-e4b12cadbd79@canonical.com>
+ <CAHC9VhQQysL8aEt8w5G-nemJzapY-Q4pYKn0TCdnVjpuiTKqhw@mail.gmail.com>
+From:   Casey Schaufler <casey@schaufler-ca.com>
+In-Reply-To: <CAHC9VhQQysL8aEt8w5G-nemJzapY-Q4pYKn0TCdnVjpuiTKqhw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Mailer: WebService/1.1.20118 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27/04/2022 04:18, 王擎 wrote:
-> 
->>> On Tue, Apr 26, 2022 at 06:52:34AM +0000, 王擎 wrote:
->>>>
->>>>>>>>>> From: Wang Qing <wangqing@vivo.com>
+On 4/26/2022 12:18 PM, Paul Moore wrote:
+> On Tue, Apr 26, 2022 at 2:58 PM John Johansen
+> <john.johansen@canonical.com> wrote:
+>> On 4/26/22 11:03, Paul Moore wrote:
+>>> On Mon, Apr 25, 2022 at 7:31 PM John Johansen
+>>> <john.johansen@canonical.com> wrote:
+>>>> On 4/18/22 07:59, Casey Schaufler wrote:
+>>>>> Replace the timestamp and serial number pair used in audit records
+>>>>> with a structure containing the two elements.
+>>>>>
+>>>>> Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
+>>>>> Acked-by: Paul Moore <paul@paul-moore.com>
+>>>>> ---
+>>>>>   kernel/audit.c   | 17 +++++++++--------
+>>>>>   kernel/audit.h   | 12 +++++++++---
+>>>>>   kernel/auditsc.c | 22 +++++++++-------------
+>>>>>   3 files changed, 27 insertions(+), 24 deletions(-)
+>>> ...
+>>>
+>>>>> diff --git a/kernel/audit.h b/kernel/audit.h
+>>>>> index 4af63e7dde17..260dab6e0e15 100644
+>>>>> --- a/kernel/audit.h
+>>>>> +++ b/kernel/audit.h
+>>>>> @@ -108,10 +114,10 @@ struct audit_context {
+>>>>>                AUDIT_CTX_URING,        /* in use by io_uring */
+>>>>>        } context;
+>>>>>        enum audit_state    state, current_state;
+>>>>> +     struct audit_stamp  stamp;      /* event identifier */
+>>>>>        unsigned int        serial;     /* serial number for record */
+>>>> shouldn't we be dropping serial from the audit_context, since we have
+>>>> moved it into the audit_stamp?
+>>> Unless we make some significant changes to audit_log_start() we still
+>>> need to preserve a timestamp in the audit_context so that regularly
+>>> associated audit records can share a common timestamp (which is what
+>>> groups multiple records into a single "event").
+>>>
+>> sure, but the patch changes things to use ctx->stamp.serial instead of
+>> ctx->serial ...
+> My apologies, I read your original comment wrong; I was thinking you
+> were suggesting removing the timestamp info from audit_context in
+> favor of using the timestamp info contained in the audit_buffer.
+>
+> Yes, audit_context:serial is no longer needed with audit_context:stamp.
 
-[...]
+Thank you for catching that. Easy (I expect) fix.
+BTW, I'm not supposed to be working the next few weeks,
+but I should be able to sneak v36 in before the next merge
+window.
 
->>      .---------------.
->> CPU   |0 1 2 3 4 5 6 7|
->>      +---------------+
->> uarch |l l l l m m m b| (so called tri-gear: little, medium, big)
->>      +---------------+
->>  L2  |   |   | | | | |
->>      +---------------+
->>  L3  |<--         -->|
->>      +---------------+
->>      |<-- cluster -->|
->>      +---------------+
->>      |<--   DSU   -->|
->>      '---------------'
->>
->> (and I'm not saying here it does!) then the existing SCHED_CLUSTER
->> should be used in DT as well. Since it provides exactly the same
->> functionality for the task scheduler no matter whether it's setup from
->> ACPI or DT.
->>
->> parse_cluster() -> parse_core() should be changed to be able to decode
->> both id's (package_id and cluster_id) in this case.
-> 
-> Totally agree, but not implemented yet. Because now cluster_id is used
-> to describe the package/socket, the modification will involve all DTS.
-
-You're talking about the fact that 1. level clusterX (1) in cpu_map is
-used to set `cpu_topology[cpu].package_id`, right? That's the
-information for the DIE layer.
-The first level cluster[0,1,2] spawn all 8 CPUs and form 3 groups of
-CPUS (0-3, 4-6, 7), the later sched groups of the DIE sched domain.
-We don't have any socketN since it is a single socket system. Think
-about a system with 2 DSUs where you would have socket[0,1].
-
-Sub-chapter 4 in `Documentation/devicetree/bindings/cpu/cpu-topology.txt`:
-
-cpu-map {
-        socket0 {
-                cluster0 { <--- (1)
-
-Sub-chapter 3 says:
-
-  - cluster node
-
-    ... A system can contain several layers of clustering within a   
-    single physical socket and cluster nodes can be contained in parent 
-    cluster nodes.
-
-    A cluster node's child nodes must be:
-      one or more cluster nodes
-
-This multi-level cluster thing hasn't been coded yet.
-
-parse_cluster()
-
-    ...
-    /*
-     * First check for child clusters; we currently ignore any
-     * information about the nesting of clusters and present the
-     * scheduler with a flat list of them.
-     */
-    ...
-
-[...]
-
->> I pimped my Hikey 960 to look like one of those Armv9 4-3-1 systems with
->> L2-complexes on the LITTLES and I get:
-> 
-> This system is exactly what I mentioned, but I have a question,
-> How did you parse out the cluster_id based on foo0/foo2?
-> Because if ACPI is not used, cluster_id is always -1.
-
-I haven't put in the extension to decode a 2-level clusterX cpu_map in
-parse_cluster() -> parse_core(). I just did a mock-up for illustration
-purpose inside parse_core() for my H960 with a 4-3-1 cpu-map:
-
-cpu-map
-    cluster0
-        core0
-        core1
-        core2
-        core3
-    cluster1
-        core0
-        core1
-        core2
-    cluster2
-        core0
-
-diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
-index 1d6636ebaac5..8af40f13fdb5 100644
---- a/drivers/base/arch_topology.c
-+++ b/drivers/base/arch_topology.c
-@@ -529,6 +529,11 @@ static int __init parse_core(struct device_node *core, int package_id,
- 
-                cpu_topology[cpu].package_id = package_id;
-                cpu_topology[cpu].core_id = core_id;
-+
-+               /* mock-up CLS SD on 4-3-1 Armv9 DSU cluster w/ L2-complexes */
-+               if (cpu <= 3)
-+                       cpu_topology[cpu].cluster_id = cpu / 2;
-+
-        } else if (leaf && cpu != -ENODEV) {
-                pr_err("%pOF: Can't get CPU for leaf core\n", core);
-                return -EINVAL;
-
-And on the scheduler-side I only had to enable CONFIG_SCHED_CLUSTER and
-everything worked just fine, no need for any arm64-specific topo table
-and alike.
-
-IMHO, this is what you have to do. Make a 2 level cluster cpumap:
-
-cpu-map
-    cluster0
-        cluster0
-            core0
-            core1
-        cluster1
-            core2
-            core3
-    cluster1
-        core0
-        core1
-        core2
-    cluster2
-        core0
-
-parse-able and set `cpu_topology[cpu].cluster_id` in parse_core().
- 
-> What I want to do is to change the foo0/foo2 to complex0/complex2 here,
-> then parse it like parse_cluster() -> parse_complex() -> parse_core().
-
-You should read `Documentation/devicetree/bindings/cpu/cpu-topology.txt`
-and implement the multi-level cluster approach instead. Big advantage
-would be that there won't be any DT related changes/extensions needed.
-
-[...]
-
-> Yes, that's what I want, but still a little confused, why we use MC to
-> describe "cluster" and use CLS describe "complex", can you show some details?
-
-The DT entity `cluster` has nothing to do with the task scheduler domain
-name `SCHED_CLUSTER`. The name is actually meaningless and just there for
-debug purposes.
