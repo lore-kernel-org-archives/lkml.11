@@ -2,109 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43058C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:07:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD160C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:07:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242057AbiD0QKQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:10:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51402 "EHLO
+        id S241566AbiD0QKW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:10:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242595AbiD0QJq (ORCPT
+        with ESMTP id S242653AbiD0QJt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:09:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2A2B3E4FBA;
-        Wed, 27 Apr 2022 09:05:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3663661BE9;
-        Wed, 27 Apr 2022 16:04:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25C52C385A9;
-        Wed, 27 Apr 2022 16:04:25 +0000 (UTC)
-Date:   Wed, 27 Apr 2022 17:04:22 +0100
-From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        linux-kernel@vger.kernel.org, Dave Young <dyoung@redhat.com>,
-        Baoquan He <bhe@redhat.com>, Vivek Goyal <vgoyal@redhat.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        kexec@lists.infradead.org, Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
+        Wed, 27 Apr 2022 12:09:49 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77DC648BD52
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:05:53 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id p4so2543571edx.0
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:05:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=TVilUoRevfZDW2H5vRfurHd/Fm2AVNqP5L2gftL/36g=;
+        b=qpVbyeYuO4LCJ5SSsF5RijFwZxkYPRC0v6k/uMkgp5wOFL+4LEtCWQlL44qoPvPCfa
+         sI2sGnEFkD1rSmeh5RqWZcG9Qdwggdi0AvSVFX38EFDDGaj+Jhd863UvACC8xAmC6Wsi
+         3nR6vH8SeaMPmz0HCcaasimo/9rqkwMa8JxZXUtEXPOfVLQ7G77zfjKT8brewxL9bfdF
+         tTqMK/Sp6FlYMAqnzoQBJQGRfbe6zsTQa4P2ZWTQpSRQFpNpktvTDoDc7E5kqrwe8xYc
+         tbKVAScrZ9rrBdbsUwR1IzcLkRHarVsN+WHCwnXjt0uNK7jJ6rdw0tbUWi6JSL+hJ8/X
+         ZqzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=TVilUoRevfZDW2H5vRfurHd/Fm2AVNqP5L2gftL/36g=;
+        b=M/7eFlKmkvY+CXy3UVSC4LbFHwJUnWUjTvjPZnLIBOkcPYoPEXxWslU/6q6j6a/ra3
+         SCVWUuTSdrnxRe0YVm+mVHiKj1cRWwCH3sWNxItawZDNsVE10yWPXP+1mmwVUztFDXHJ
+         0Kz6Ka3+4Z9bTcTZJAg8XCUvdBIMBpc48UWiIwEAVNVILsjLbeqyDsoxbWAPKT/H2Yng
+         58TEM+0Vo6B9Kyt/iYL1nkvk8tack9xh16MRnW+UoF6yulZE431uXtdW9XSF+LgxRxXh
+         g66Ts0qmkHlM2aUUtpk2ZjTzpfjIp+0KiLWM+x4DidrsmGPi5VMQ8pgkkaEvOyjfMcgE
+         wF9w==
+X-Gm-Message-State: AOAM532GNNEcmY864qlUx9q5uMLT1ODoetyChO/6+n5HY/6SLiUFuNmU
+        4IWzd3Ragui+0AHJGuRs8KfKZA==
+X-Google-Smtp-Source: ABdhPJwM944DVN2HVU25GzB2ouiP2jllWWb9bWolo4DktBx2+XEqObqS5DA32Eccp9haJmC4z2DrYw==
+X-Received: by 2002:a05:6402:254e:b0:424:244:faf with SMTP id l14-20020a056402254e00b0042402440fafmr31144868edb.260.1651075548037;
+        Wed, 27 Apr 2022 09:05:48 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id b17-20020aa7dc11000000b00412ae7fda95sm8571437edu.44.2022.04.27.09.05.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 09:05:47 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        devicetree@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        linux-doc@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Feng Zhou <zhoufeng.zf@bytedance.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Chen Zhou <dingguo.cz@antgroup.com>,
-        John Donnelly <John.p.donnelly@oracle.com>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>
-Subject: Re: [PATCH v22 5/9] arm64: kdump: Reimplement crashkernel=X
-Message-ID: <YmlphvZVMsGfFksp@arm.com>
-References: <20220414115720.1887-1-thunder.leizhen@huawei.com>
- <20220414115720.1887-6-thunder.leizhen@huawei.com>
- <YmgzxsrrMlCDYsWp@arm.com>
- <ee8daaa9-3258-e7e8-e5c4-c51dc9841580@huawei.com>
- <Ymk34NsIFqUgfk3b@arm.com>
- <ae7211ad-e2ac-f5b1-5aa0-701802132e73@huawei.com>
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Sekhar Nori <nsekhar@ti.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>, linux-usb@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 1/3] dt-bindings: usb: da8xx-usb: deprecate '#dma-channels'
+Date:   Wed, 27 Apr 2022 18:05:36 +0200
+Message-Id: <20220427160538.646044-2-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220427160538.646044-1-krzysztof.kozlowski@linaro.org>
+References: <20220427160538.646044-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ae7211ad-e2ac-f5b1-5aa0-701802132e73@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 09:49:20PM +0800, Leizhen (ThunderTown) wrote:
-> On 2022/4/27 20:32, Catalin Marinas wrote:
-> > I think one could always pass a default command line like:
-> > 
-> > 	crashkernel=1G,high crashkernel=128M,low
-> > 
-> > without much knowledge of the SoC memory layout.
-> 
-> Yes, that's what the end result is. The user specify crashkernel=128M,low
-> and the implementation ensure the 128M low memory is allocated from DMA zone.
-> We use arm64_dma_phys_limit as the upper limit for crash low memory.
-> 
-> +#define CRASH_ADDR_LOW_MAX             arm64_dma_phys_limit
-> +       unsigned long long crash_max = CRASH_ADDR_LOW_MAX;
-> +       crash_base = memblock_phys_alloc_range(crash_size, CRASH_ALIGN,
->                                                crash_base, crash_max);
-> 
-> > Another option is to only introduce crashkernel=Y,low and, when that is
-> > passed, crashkernel=Y can go above arm64_dma_phys_limit. We won't need a
-> > 'high' option at all:
-> > 
-> > 	crashkernel=1G				- all within ZONE_DMA
-> > 	crashkernel=1G crashkernel=128M,low	- 128M in ZONE_DMA
-> > 						  1G above ZONE_DMA
-> > 
-> > If ZONE_DMA is not present or it extends to the whole RAM, we can ignore
-> > the 'low' option.
-> 
-> I think although the code is hard to make generic, the interface is better to
-> be relatively uniform. A user might have to maintain both x86 and arm64, and
-> so on. It's not a good thing that the difference is too big.
+The generic property, used in most of the drivers and defined in generic
+dma-common DT bindings, is 'dma-channels'.
 
-There will be some difference as the 4G limit doesn't always hold for
-arm64 (though it's true in most cases). Anyway, we can probably simplify
-things a bit while following the documented behaviour:
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ Documentation/devicetree/bindings/usb/da8xx-usb.txt | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-	crashkernel=Y		- current behaviour within ZONE_DMA
-	crashkernel=Y,high	- allocate from above ZONE_DMA
-	crashkernel=Y,low	- allocate within ZONE_DMA
-
-There is no fallback from crashkernel=Y.
-
-The question is whether we still want a default low allocation if
-crashkernel=Y,low is missing but 'high' is present. If we add this, I
-think we'd be consistent with kernel-parameters.txt for the 'low'
-description. A default 'low' is probably not that bad but I'm tempted to
-always mandate both 'high' and 'low'.
-
+diff --git a/Documentation/devicetree/bindings/usb/da8xx-usb.txt b/Documentation/devicetree/bindings/usb/da8xx-usb.txt
+index 9ce22551b2b3..fb2027a7d80d 100644
+--- a/Documentation/devicetree/bindings/usb/da8xx-usb.txt
++++ b/Documentation/devicetree/bindings/usb/da8xx-usb.txt
+@@ -36,7 +36,8 @@ DMA
+ - #dma-cells: should be set to 2. The first number represents the
+   channel number (0 … 3 for endpoints 1 … 4).
+   The second number is 0 for RX and 1 for TX transfers.
+-- #dma-channels: should be set to 4 representing the 4 endpoints.
++- dma-channels: should be set to 4 representing the 4 endpoints.
++- #dma-channels: deprecated
+ 
+ Example:
+ 	usb_phy: usb-phy {
+@@ -74,7 +75,7 @@ Example:
+ 			reg-names = "controller", "scheduler", "queuemgr";
+ 			interrupts = <58>;
+ 			#dma-cells = <2>;
+-			#dma-channels = <4>;
++			dma-channels = <4>;
+ 		};
+ 
+ 	};
 -- 
-Catalin
+2.32.0
+
