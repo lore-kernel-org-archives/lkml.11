@@ -2,98 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36A13C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:28:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52B2CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:29:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235959AbiD0Nbo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 09:31:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56612 "EHLO
+        id S235994AbiD0Nch (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 09:32:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235860AbiD0Nbm (ORCPT
+        with ESMTP id S235911AbiD0Ncc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 09:31:42 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 574C633E23;
-        Wed, 27 Apr 2022 06:28:26 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1651066104;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=XeLkj9226T84S9BXMt19LKkxjN+pWXBCLzkSQX80Wy0=;
-        b=CnD8+0uDIKN5dkS4D3kOiZHg/aTrcuU3CSgu/18pNHX4Bq8eAM1hY3aI4Xu+WNh8Jmn/j7
-        R+SzJ5YdJvI5nC5LZnNvdrrvEC1pm6pUjngAw2WcmmOvWeilo9o88BsPnZiOq5IP7iVI/U
-        Ld+1XVU5417idG7bq4A6e0TRt8nItIYLaV0EYBB8dfsEPPtRua6GcUSKSQk5VEUw7RDcyu
-        sGfWU16My8O6Qii/arx971F7FyOPp6CQNVj3UlU8KnyEdjlbltkVPpGGF181Oy1zG3PJcb
-        dlAkAuEeKrWfS/iDZAZL6H5bcANyx5Px2Bs4sti+fqx2XT88qk8IB+qGc5NGQA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1651066104;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=XeLkj9226T84S9BXMt19LKkxjN+pWXBCLzkSQX80Wy0=;
-        b=mqNvTWF9p2Pn5UfW0rssM+TDypdzsffTK7XDNT84SfjwuIlFAdc4suevqEXX1MmYnM9rdo
-        Ccy/wwrc6gkF4WCA==
-To:     Alexander Potapenko <glider@google.com>, glider@google.com
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>, kasan-dev@googlegroups.com,
-        linux-mm@kvack.org, linux-arch@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 27/46] kmsan: instrumentation.h: add
- instrumentation_begin_with_regs()
-In-Reply-To: <20220426164315.625149-28-glider@google.com>
-References: <20220426164315.625149-1-glider@google.com>
- <20220426164315.625149-28-glider@google.com>
-Date:   Wed, 27 Apr 2022 15:28:23 +0200
-Message-ID: <87bkwmy7t4.ffs@tglx>
-MIME-Version: 1.0
-Content-Type: text/plain
+        Wed, 27 Apr 2022 09:32:32 -0400
+Received: from mo-csw.securemx.jp (mo-csw1515.securemx.jp [210.130.202.154])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6422D2BEC;
+        Wed, 27 Apr 2022 06:29:18 -0700 (PDT)
+Received: by mo-csw.securemx.jp (mx-mo-csw1515) id 23RDSs89009903; Wed, 27 Apr 2022 22:28:54 +0900
+X-Iguazu-Qid: 34tMbOxKTy7RKtoKbU
+X-Iguazu-QSIG: v=2; s=0; t=1651066134; q=34tMbOxKTy7RKtoKbU; m=S20lVmlaMRvIdZ7s5PtXo0QvAorFu/Sfmvlyb+fSM/U=
+Received: from imx12-a.toshiba.co.jp (imx12-a.toshiba.co.jp [61.202.160.135])
+        by relay.securemx.jp (mx-mr1510) id 23RDSrPY023236
+        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 27 Apr 2022 22:28:53 +0900
+X-SA-MID: 3264136
+From:   Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org, yuji2.ishikawa@toshiba.co.jp
+Subject: [PATCH v2 0/4] Add Toshiba Visconti AFFINE image processing accelerator driver
+Date:   Wed, 27 Apr 2022 22:23:41 +0900
+X-TSB-HOP2: ON
+Message-Id: <20220427132345.27327-1-yuji2.ishikawa@toshiba.co.jp>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26 2022 at 18:42, Alexander Potapenko wrote:
-> +void kmsan_instrumentation_begin(struct pt_regs *regs)
-> +{
-> +	struct kmsan_context_state *state = &kmsan_get_context()->cstate;
-> +
-> +	if (state)
-> +		__memset(state, 0, sizeof(struct kmsan_context_state));
+This series is the AFFINE image processing accelerator driver for Toshiba's ARM SoC, Visconti[0].
+This provides DT binding documentation, device driver, MAINTAINER files.
 
-  sizeof(*state) please
+The second patch "soc: visconti: Add Toshiba Visconti image processing accelerator common source"
+is commonly used among acclerator drivers (affine, dnn, dspif, pyramid).
 
-> +	if (!kmsan_enabled || !regs)
-> +		return;
+Best regards,
+Yuji
 
-Why has state to be cleared when kmsan is not enabled and how do you end up
-with regs == NULL here?
+[0]: https://toshiba.semicon-storage.com/ap-en/semiconductor/product/image-recognition-processors-visconti.html
+  
+  dt-bindings: soc: visconti: Add Toshiba Visconti AFFINE image
+    v1 -> v2:
+      - No update
 
-Thanks,
+  soc: visconti: Add Toshiba Visconti image processing accelerator common source
+    v1 -> v2:
+      - apply checkpatch.pl --strict
+  
+  soc: visconti: Add Toshiba Visconti AFFINE image processing accelerator
+    v1 -> v2:
+      - apply checkpatch.pl --strict
+      - rename hwd_AFFINE_xxxx to hwd_affine_xxxx
 
-        tglx
+  MAINTAINERS: Add entries for Toshiba Visconti AFFINE image processing accelerator
+    v1 -> v2:
+      - No update
+
+Change in V2:
+  - apply checkpatch.pl --strict
+  - rename hwd_AFFINE_xxxx to hwd_affine_xxxx
+
+Yuji Ishikawa (4):
+  dt-bindings: soc: visconti: Add Toshiba Visconti AFFINE image
+    processing accelerator bindings
+  soc: visconti: Add Toshiba Visconti image processing accelerator
+    common source
+  soc: visconti: Add Toshiba Visconti AFFINE image processing
+    accelerator
+  MAINTAINERS: Add entries for Toshiba Visconti AFFINE image processing
+    accelerator
+
+ .../soc/visconti/toshiba,visconti-affine.yaml |  53 ++
+ MAINTAINERS                                   |   2 +
+ drivers/soc/Kconfig                           |   1 +
+ drivers/soc/Makefile                          |   1 +
+ drivers/soc/visconti/Kconfig                  |   7 +
+ drivers/soc/visconti/Makefile                 |   8 +
+ drivers/soc/visconti/affine/Makefile          |   6 +
+ drivers/soc/visconti/affine/affine.c          | 451 ++++++++++++++++++
+ drivers/soc/visconti/affine/hwd_affine.c      | 206 ++++++++
+ drivers/soc/visconti/affine/hwd_affine.h      |  83 ++++
+ drivers/soc/visconti/affine/hwd_affine_reg.h  |  45 ++
+ drivers/soc/visconti/ipa_common.c             |  55 +++
+ drivers/soc/visconti/ipa_common.h             |  18 +
+ drivers/soc/visconti/uapi/affine.h            |  87 ++++
+ drivers/soc/visconti/uapi/ipa.h               |  88 ++++
+ 15 files changed, 1111 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/soc/visconti/toshiba,visconti-affine.yaml
+ create mode 100644 drivers/soc/visconti/Kconfig
+ create mode 100644 drivers/soc/visconti/Makefile
+ create mode 100644 drivers/soc/visconti/affine/Makefile
+ create mode 100644 drivers/soc/visconti/affine/affine.c
+ create mode 100644 drivers/soc/visconti/affine/hwd_affine.c
+ create mode 100644 drivers/soc/visconti/affine/hwd_affine.h
+ create mode 100644 drivers/soc/visconti/affine/hwd_affine_reg.h
+ create mode 100644 drivers/soc/visconti/ipa_common.c
+ create mode 100644 drivers/soc/visconti/ipa_common.h
+ create mode 100644 drivers/soc/visconti/uapi/affine.h
+ create mode 100644 drivers/soc/visconti/uapi/ipa.h
+
+-- 
+2.17.1
+
+
