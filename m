@@ -2,90 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F349C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 02:56:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 149AEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Apr 2022 03:02:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241668AbiD1C7S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 22:59:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42040 "EHLO
+        id S241682AbiD1DFl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 23:05:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241634AbiD1C7Q (ORCPT
+        with ESMTP id S229538AbiD1DFi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 22:59:16 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44225986F8
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 19:56:03 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id cu23-20020a17090afa9700b001d98d8e53b7so5143647pjb.0
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 19:56:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=IvwH9xbsu6FeuNLim9woHWyD9ldcfxEbIcF/eG8AgJw=;
-        b=P2vJUR2qlxWOLpkcSYZd+hHtix4PhqAD8cPpOe1GZUsDrWejpdCJqLq6253y0W/c6y
-         CO7ZAQH/Kxad7GkOY41UiVo3bOCYQ+VnBNeTRk18ZMjx6bzwiJNzUTfOK1KXgi8K3XF/
-         VNiXmoLsEdrPKIY0TvEJWDVDu0G7LBJh1BMSPxX0ZeTG+LixGXrW2pgvLo2Jh5CU8tBY
-         4SrVSVLPxy85LskI7qAZkuXtyAG+vAPb6OPfV/aa6Nvq6tpFegpoDK75XMqqUE6j/osV
-         t0NVdb3KjKJaVbkGJ98KigDHRRIMCdkPqkhaY7Icr+7GaOY0FX/a4BEhGBv1CvyBhPLn
-         On9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=IvwH9xbsu6FeuNLim9woHWyD9ldcfxEbIcF/eG8AgJw=;
-        b=b27NRE6ot/onZhlObkuquHO5/hm+oB456QCBcERVudwsOFafoCgrc3jp7XXDYj/Y5d
-         n6MQUdONQya45KwMBZZL41npxJtRAYIKy0yUgQd4Ke6eMRmhYZOdBHNHYQrAbQZ1WeuK
-         hyQ+CH0qspkrzAJvrcsf2z5yjpUwksEdRgMCSuAPjQ4shsS3YIfLfIoP08oTJdohq6k8
-         g1jNDWOQSGniEX/ffUYfBE3cvRw+2RRTvkliT+VzCLip9aUsObHKXmdA1qeo/NAeuVpm
-         Gqaqsrx6/1bnkL5ZJMsXYdSkKBKchUHsT18rYPrbJhn9MrP4EoMFks5uUcu3qWzyDbYE
-         AddQ==
-X-Gm-Message-State: AOAM531eDjMjZaiMWNM5o0/7sS8noRYZ7lIvczM+kie4XxthWLhtBzGs
-        ymRB0i3XE24bz4BDUWuBFnPKGw==
-X-Google-Smtp-Source: ABdhPJy1ESR8MK5eh/CTeJwke24+N9wQZVarAEzXV+tdbYLw16YrJcUNcoHvMx8HVxPNgTxxTtbXvg==
-X-Received: by 2002:a17:90b:1d85:b0:1d9:c22a:e8c with SMTP id pf5-20020a17090b1d8500b001d9c22a0e8cmr10934560pjb.211.1651114562750;
-        Wed, 27 Apr 2022 19:56:02 -0700 (PDT)
-Received: from localhost ([139.177.225.255])
-        by smtp.gmail.com with ESMTPSA id p27-20020a056a000a1b00b004f3f63e3cf2sm23472856pfh.58.2022.04.27.19.56.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 19:56:02 -0700 (PDT)
-Date:   Thu, 28 Apr 2022 10:55:59 +0800
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     Baolin Wang <baolin.wang@linux.alibaba.com>
-Cc:     akpm@linux-foundation.org, mike.kravetz@oracle.com,
-        almasrymina@google.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/3] mm: hugetlb: Considering PMD sharing when
- flushing cache/TLBs
-Message-ID: <YmoCP4PoFbMVZ0AK@FVFYT0MHHV2J.usts.net>
-References: <cover.1651056365.git.baolin.wang@linux.alibaba.com>
- <0443c8cf20db554d3ff4b439b30e0ff26c0181dd.1651056365.git.baolin.wang@linux.alibaba.com>
+        Wed, 27 Apr 2022 23:05:38 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38E5825587;
+        Wed, 27 Apr 2022 20:02:18 -0700 (PDT)
+Received: from leknes.fjasle.eu ([46.142.49.32]) by mrelayeu.kundenserver.de
+ (mreue109 [212.227.15.183]) with ESMTPSA (Nemesis) id
+ 1McY0J-1oIQrJ3lWf-00cumw; Thu, 28 Apr 2022 04:56:12 +0200
+Received: from localhost.fjasle.eu (bergen.fjasle.eu [IPv6:fdda:8718:be81:0:6f0:21ff:fe91:394])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (Client did not present a certificate)
+        by leknes.fjasle.eu (Postfix) with ESMTPS id 7D1C33C088;
+        Thu, 28 Apr 2022 04:56:11 +0200 (CEST)
+Authentication-Results: leknes.fjasle.eu; dkim=none; dkim-atps=neutral
+Received: by localhost.fjasle.eu (Postfix, from userid 1000)
+        id D1CB9629; Wed, 27 Apr 2022 22:14:06 +0200 (CEST)
+Date:   Wed, 27 Apr 2022 22:14:06 +0200
+From:   Nicolas Schier <nicolas@fjasle.eu>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Subject: Re: [PATCH 22/27] kbuild: generate a list of objects in vmlinux
+Message-ID: <YmmkDoPsE5pfSxbG@bergen.fjasle.eu>
+References: <20220424190811.1678416-1-masahiroy@kernel.org>
+ <20220424190811.1678416-23-masahiroy@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <0443c8cf20db554d3ff4b439b30e0ff26c0181dd.1651056365.git.baolin.wang@linux.alibaba.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220424190811.1678416-23-masahiroy@kernel.org>
+Jabber-ID: nicolas@jabber.no
+X-Operating-System: Debian GNU/Linux bookworm/sid
+X-Provags-ID: V03:K1:zsQnuj5QPMduf9Z3utw/5/B4WqdrbKRtjktCwmitc2XZkk62u8q
+ LpdWEqyOkLWcMqIRCQ7+JrSakoUJyzstD5TfkJmAe55nhDvUZu7zcnLvjWp8AINUmqs12v+
+ Ge/ZVbpBV+87CxfVOKwDSNINol3XF61Mb0HjTdsFvHhkXrEke6ep9h7gl+JHX0UQ3PbUxvc
+ ktOX6muIDH3NYCqrIuJ/A==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:GaNRZgc9xEo=:AxQoY+wyOs38HQF/iVPamf
+ cvJ5mafdzNYXrJ6e0jyb8NaLrvB6LCPrVPUBk7E2S+uqPF9OH+1i1hiYRvTq4hqm/qBSf9//f
+ 1dF3AT4ALFFEKSX8Y4XpQKC7uc8m62mV9PzWZe3HAYEGJx5gGLLHj4kumFVjVh0wB0UMaZhp0
+ GkCZsQ3PuFc2MBP3QQRohJDCL3UuulLGK3xBoZL9FgmCp1t+rCLdEcEvIG5Ni2H0PD4YWXWvE
+ XpkMjfvZtB1GoM1ACAk+Nzz3POVp8JSVSxXaVQWLQElNhxtEzYXzyMDD7zZAhIMyYbYZB18O7
+ xlxKEA3MFra0p1ArahhmfCOk2sE4lN+rGue19A9hyoci1eAoqzP4aPOL+lzztoJjN5z38pGf2
+ 78K05KdnWdeynvFycaimqO4sYfjg2hHvhpVERYjCPjNSzVqUo+0TmuYiMMWFOJTkhLNK6gWmI
+ oL4G7yEPaMwdL5juNYRE3zB56CDZZ8zqPhlhvH8z+kWXaA6tB0rdKMBMz07oz2KRUp8ZMqCZ/
+ EWTmGWfMFpPRwFRsEHtapXy9HWAVcGQSGPArMrO8qwWtJq3GaFCLKjR1LamJNQe2puGzpn1uF
+ ozec0H2QXdsWv8A0XJthpPyR+CsJlxSQAj6G0om7AwPbO+85JiBUAtsq3EgKcxgz0T++nbvgc
+ s5LvTH8694Gsaus/7d6KN1lGZKx218HjDYIMaFk2eqCJObWSxxYWijhJZZ+wnLGUnFOM=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 06:52:05PM +0800, Baolin Wang wrote:
-> When moving hugetlb page tables, the cache flushing is called in
-> move_page_tables() without considering the shared PMDs, which may
-> be cause cache issues on some architectures.
+On Mon 25 Apr 2022 04:08:06 GMT Masahiro Yamada wrote:
+> A *.mod file lists the member objects of a module, but vmlinux does
+> not have such a file to list out all the member objects.
 > 
-> Thus we should move the hugetlb cache flushing into
-> move_hugetlb_page_tables() with considering the shared PMDs ranges,
-> calculated by adjust_range_if_pmd_sharing_possible(). Meanwhile also
-> expanding the TLBs flushing range in case of shared PMDs.
+> Generate this list to allow modpost to know all the member objects.
 > 
-> Note this is discovered via code inspection, and did not meet a real
-> problem in practice so far.
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> ---
 > 
-> Fixes: 550a7d60bd5e ("mm, hugepages: add mremap() support for hugepage backed vma")
-> Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-> Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
+>  scripts/link-vmlinux.sh | 15 ++++++++++++++-
+>  1 file changed, 14 insertions(+), 1 deletion(-)
+> 
+> diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+> index 20f44504a644..d2c193f82004 100755
+> --- a/scripts/link-vmlinux.sh
+> +++ b/scripts/link-vmlinux.sh
+> @@ -310,7 +310,7 @@ cleanup()
+>  	rm -f vmlinux
+>  	rm -f vmlinux.map
+>  	rm -f vmlinux.o
+> -	rm -f .vmlinux.d
+> +	rm -f .vmlinux*
 
-LGTM.
+Wouldn't it be safer to keep the removal of .vmlinux.d for some time 
+and just add .vmlinux.objs?  Somehow I do not like the wildcard here.
 
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+>  }
+>  
+>  # Use "make V=1" to debug this script
+> @@ -342,6 +342,19 @@ ${MAKE} -f "${srctree}/scripts/Makefile.build" obj=init need-builtin=1
+>  modpost_link vmlinux.o
+>  objtool_link vmlinux.o
+>  
+> +# Generate the list of objects in vmlinux
+> +rm -f .vmlinux.objs
+> +for f in ${KBUILD_VMLINUX_OBJS} ${KBUILD_VMLINUX_LIBS}; do
+> +	case ${f} in
+> +	*.a)
+> +		${AR} t ${f} >> .vmlinux.objs
+> +		;;
+> +	*)
+> +		echo ${f} >> .vmlinux.objs
+> +		;;
+> +	esac
+> +done
 
-Thanks.
+just some bike shedding comment:  I would have left out the 'rm -f 
+.vmlinux.objs' and moved the redirection to the end of the for loop:
+
+for f in ...
+    ...
+    ${AR}
+    echo
+done > .vmlinux.objs
+
+but it probably not worth.
+
+Reviewed-by: Nicolas Schier <nicolas@fjasle.eu>
+
+> +
+>  # modpost vmlinux.o to check for section mismatches
+>  ${MAKE} -f "${srctree}/scripts/Makefile.modpost" MODPOST_VMLINUX=1
+>  
+> -- 
+> 2.32.0
+
+-- 
+epost|xmpp: nicolas@fjasle.eu          irc://oftc.net/nsc
+↳ gpg: 18ed 52db e34f 860e e9fb  c82b 7d97 0932 55a0 ce7f
+     -- frykten for herren er opphav til kunnskap --
