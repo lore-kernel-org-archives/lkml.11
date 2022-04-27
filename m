@@ -2,131 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66BCBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:55:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2538C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:55:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236839AbiD0N6b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 09:58:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57326 "EHLO
+        id S236813AbiD0N6m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 09:58:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236807AbiD0N63 (ORCPT
+        with ESMTP id S236807AbiD0N6j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 09:58:29 -0400
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3C1530562
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 06:55:17 -0700 (PDT)
-Received: from janitor.denx.de (unknown [62.91.23.180])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        Wed, 27 Apr 2022 09:58:39 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D210EA7;
+        Wed, 27 Apr 2022 06:55:28 -0700 (PDT)
+Received: from benjamin-XPS-13-9310.. (unknown [IPv6:2a01:e0a:120:3210:a50b:1f6f:4fce:a4b])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        (Authenticated sender: noc@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 78ABA83EAF
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:55:16 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1651067716;
-        bh=lT0gwdo2NDZXehIpqBlbV2nnBX11PUSnb4XZExSkFqg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y53uAHxxUkp6lFHEhR0iTwkXJuCXQ75AT6wjkGGgiHpAd0A5b6PuEH3mZxMmjXSbK
-         Kq60upcm032ePwxV/hQ35JyFo3iPVgITvqSoemkUlETmH9WpTavLBhpGw4wqPRyQTG
-         Ox7ZuRy58WwFdn6bhKuaNM29DPednm4gL2js3T8vegsMd+F+KkRx3WIvKrZx6kk63k
-         PgOgyEwGPj350i3ZhJy2uN1l/56HKoy4BA1TJx85vcWFSItfPQNRpCNOhorewhr2yP
-         vHuSJhhLOtFAqeuNVJzy68vKg6YCbg6rflTjUawq34jupHGQq9K5FPPXfH5a35wzLq
-         rRt+uVtWZMabg==
-Received: by janitor.denx.de (Postfix, from userid 108)
-        id 2EEA8A0228; Wed, 27 Apr 2022 15:55:16 +0200 (CEST)
-Received: from xpert.denx.de (xpert.denx.de [192.168.0.4])
-        by janitor.denx.de (Postfix) with ESMTPS id DA3BEA00A4;
-        Wed, 27 Apr 2022 15:55:05 +0200 (CEST)
-Received: by xpert.denx.de (Postfix, from userid 535)
-        id 8B69D3E0407; Wed, 27 Apr 2022 15:55:05 +0200 (CEST)
-From:   Philip Oberfichtner <pro@denx.de>
-Cc:     Philip Oberfichtner <pro@denx.de>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        matthias.winker@de.bosch.com
-Subject: [PATCH v3 2/4] drm/panel: simple: Add DataImage FG1001L0DSSWMG01 panel support
-Date:   Wed, 27 Apr 2022 15:52:29 +0200
-Message-Id: <20220427135229.2339865-2-pro@denx.de>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220427135229.2339865-1-pro@denx.de>
-References: <20220427135229.2339865-1-pro@denx.de>
+        (Authenticated sender: benjamin.gaignard)
+        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id C71DF1F44800;
+        Wed, 27 Apr 2022 14:55:26 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1651067727;
+        bh=ipCjbGKYkux+/ojU36BdkoNBWKXYuJDGrkOmJsKx1ig=;
+        h=From:To:Cc:Subject:Date:From;
+        b=M0xTcz5QKH9w9GcgU87+Ap9lLq4wMXK4YxTmePcmhfJ2I65J9GcKNr1KEFijMb3zS
+         UKzUjI5tmVRGjiOEjdaiyvhJgRFX83YPdhjjbXjjYLFlOfkmytXhXLNJFycFojKOAN
+         L4uN88LYRYTn88d4ioqVpoVXwjjx9Dg1aLV5rvksRlf0GB66V2QgaLMr6eYV4pCROM
+         N8eRwZAj3cZm6w948CeiHYClXCKR+a4YgVciGvG2AkXnYbFwRA7YAht6oj1Y7lwf4k
+         RXgPsDQGy+fkoEV2/WWVI5PgA/AQIr5lYXx2Vya5m0+/En1p+VRMJeUIc09tozF1EO
+         yJSi+Z5+ZmFVg==
+From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
+To:     ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de,
+        mchehab@kernel.org, gregkh@linuxfoundation.org
+Cc:     linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        jon@nanocrew.net, aford173@gmail.com, kernel@collabora.com,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Subject: [PATCH] media: hantro: HEVC: Fix tile info buffer value computation
+Date:   Wed, 27 Apr 2022 15:55:17 +0200
+Message-Id: <20220427135517.381959-1-benjamin.gaignard@collabora.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.103.5 at phobos.denx.de
-X-Virus-Status: Clean
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add DataImage FG1001L0DSSWMG01 10.1" 1280x800 TFT LCD panel support.
+Use pps->column_width_minus1[j] + 1 as value for the tile info buffer
+instead of pps->column_width_minus1[j + 1].
+The patch fix DBLK_E_VIXS_2, DBLK_F_VIXS_2, DBLK_G_VIXS_2,
+SAO_B_MediaTek_5, TILES_A_Cisco_2 and TILES_B_Cisco_1 tests in fluster.
 
-Signed-off-by: Philip Oberfichtner <pro@denx.de>
-
+Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
 ---
+ drivers/staging/media/hantro/hantro_g2_hevc_dec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Cc: Thierry Reding <thierry.reding@gmail.com>
-Cc: Sam Ravnborg <sam@ravnborg.org>
-Cc: David Airlie <airlied@linux.ie>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: dri-devel@lists.freedesktop.org
-Cc: linux-kernel@vger.kernel.org
-Cc: matthias.winker@de.bosch.com
-
----
-
-Changes in v3: new
----
- drivers/gpu/drm/panel/panel-simple.c | 27 +++++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
-
-diff --git a/drivers/gpu/drm/panel/panel-simple.c b/drivers/gpu/drm/panel/panel-simple.c
-index a34f4198a534..e6d0aaddc14c 100644
---- a/drivers/gpu/drm/panel/panel-simple.c
-+++ b/drivers/gpu/drm/panel/panel-simple.c
-@@ -1402,6 +1402,30 @@ static const struct panel_desc chunghwa_claa101wb01 = {
- 	.connector_type = DRM_MODE_CONNECTOR_LVDS,
- };
- 
-+static const struct display_timing dataimage_fg1001l0dsswmg01_timing = {
-+	.pixelclock = { 68900000, 71110000, 73400000 },
-+	.hactive = { 1280, 1280, 1280 },
-+	.vactive = { 800, 800, 800 },
-+	.hback_porch = { 100, 100, 100 },
-+	.hfront_porch = { 100, 100, 100 },
-+	.vback_porch = { 5, 5, 5 },
-+	.vfront_porch = { 5, 5, 5 },
-+	.hsync_len = { 24, 24, 24 },
-+	.vsync_len = { 3, 3, 3 },
-+	.flags = DISPLAY_FLAGS_DE_HIGH | DISPLAY_FLAGS_PIXDATA_POSEDGE |
-+		 DISPLAY_FLAGS_HSYNC_LOW | DISPLAY_FLAGS_VSYNC_LOW,
-+};
-+
-+static const struct panel_desc dataimage_fg1001l0dsswmg01 = {
-+	.timings = &dataimage_fg1001l0dsswmg01_timing,
-+	.num_timings = 1,
-+	.bpc = 8,
-+	.size = {
-+		.width = 217,
-+		.height = 136,
-+	},
-+};
-+
- static const struct drm_display_mode dataimage_scf0700c48ggu18_mode = {
- 	.clock = 33260,
- 	.hdisplay = 800,
-@@ -3768,6 +3792,9 @@ static const struct of_device_id platform_of_match[] = {
- 	}, {
- 		.compatible = "chunghwa,claa101wb01",
- 		.data = &chunghwa_claa101wb01
-+	}, {
-+		.compatible = "dataimage,fg1001l0dsswmg01",
-+		.data = &dataimage_fg1001l0dsswmg01,
- 	}, {
- 		.compatible = "dataimage,scf0700c48ggu18",
- 		.data = &dataimage_scf0700c48ggu18,
+diff --git a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+index bb512389c1a5..ffeb2fbeefd2 100644
+--- a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
++++ b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+@@ -74,7 +74,7 @@ static void prepare_tile_info_buffer(struct hantro_ctx *ctx)
+ 					no_chroma = 1;
+ 				for (j = 0, tmp_w = 0; j < num_tile_cols - 1; j++) {
+ 					tmp_w += pps->column_width_minus1[j] + 1;
+-					*p++ = pps->column_width_minus1[j + 1];
++					*p++ = pps->column_width_minus1[j] + 1;
+ 					*p++ = h;
+ 					if (i == 0 && h == 1 && ctb_size == 16)
+ 						no_chroma = 1;
 -- 
-2.34.1
+2.32.0
 
