@@ -2,90 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B90A7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:13:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85718C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:13:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242474AbiD0QN5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:13:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49806 "EHLO
+        id S242511AbiD0QOE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:14:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242256AbiD0QMD (ORCPT
+        with ESMTP id S242154AbiD0QMB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:12:03 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E18953ECC92
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:08:23 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id p18so2497830edr.7
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:08:23 -0700 (PDT)
+        Wed, 27 Apr 2022 12:12:01 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5533D494BE4;
+        Wed, 27 Apr 2022 09:08:17 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id r13so4370068ejd.5;
+        Wed, 27 Apr 2022 09:08:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=EH19v7uRS5y35PzgKTDX53x9j+gtyqhUDRdsKb/IaUM=;
-        b=ybse66WgmNsBI29z+NNV6x8EFLgtMxe6qFw8I8vTnLFgoYkWXlVyNDekvdljpmae8Q
-         dWx62rAf7xRwXPxV2X1FxO0/4/DGvPc3zYbb7OBAkhzjuut4c1v1tt7ty/2dghm+TWlj
-         YvTykt8HW80i/plhDgwxbKz2P3lgZwGSamHjUBUgkqlc8X/LxHQQf0tzR7dKt8P8/VNs
-         YSLddjait6XwavUyJTWWmCHCZKqdJQ9hl3Lc5bizgtcR9SM/6pV82NuKUZurRSj2xVa+
-         rUNNtTz4LyQdK8OVzomJzlLjGro0iItms1bu/vXzchVgW0jMPG/NVM0TqpQKodPoJCZM
-         yeAQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=JrLemglUST4WORuuuukktAwV8TRd9yLyGflAl3xl1zc=;
+        b=P7ArfueFfqb+nsrBlYp2Z856X99lZCDM/QPiYaspWe/aoZAfnFhi0ej7wLBT4hCcfL
+         77k4+v50MSgxLOvjNPnIhYfOBW4FQFYVlZiYujNH+pqRygBvfUrRQ3FV/jFtqBJKS/2b
+         Lx93egMHRueiT7MNxTOXGno/PUsnNMD3V7O++/DXMseaGxU16Wm96460Dus2hzo+sGA0
+         +bJ6hDMpHDm4BqEA3s2WCFCDC6qlZiwzBTRuauQoibdYSZYp81HTcc3V4uhwItLxrziD
+         VaUpGDXAGkwEXQIB658hbO3HrqsFXij7V0DZUhMsQ5/sihqgnJtuLyZupaLA8yDcY1MF
+         Xbug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=EH19v7uRS5y35PzgKTDX53x9j+gtyqhUDRdsKb/IaUM=;
-        b=jy5gMYIafcghDfFTqCBQP2THgZdTlOUflYttWc3nfTDkYKDmVN/SrDxqToTA+LfQ+8
-         etPu6Wtj99HQMAWuAfHOAjvwl74OK3c0/5kzbv8/zn0yMoXWkU+/N/gI3MXxw1+44IwW
-         jblQqFz5wF1eUkotJ2KRsqHFD7+4ju04yObFVmK0bzAgBNUUZf3k3lxyEFkjMF3S67Ej
-         4K7Vc5/uJLHi6l3fbWp8cxqVYgoTei/JB5BO4Cir6MbqUXkMRaXP/f8X6YM6vuEhE8cE
-         xDxhjhIrCRiAYxThmYekbEo91StPL/jDgmiuDIWqs1w84uY5Wu+FWuVnr3wgl74dCRnX
-         V/rw==
-X-Gm-Message-State: AOAM533s/bAc750Aqj72s7dGwV8Tg5oFSISTuSfXs4+931t+J+zYqA+c
-        nOA76vZ0eDljIfjbS7mJKQKbXg/H3Kstxw==
-X-Google-Smtp-Source: ABdhPJx/S8bwtVp+agXtCpxr/09KbDVlmln3NcFIhrjgot+hU0xUEJktlvNVH4ZgcBbXYGegOatVTQ==
-X-Received: by 2002:a05:6402:400b:b0:425:f59a:c221 with SMTP id d11-20020a056402400b00b00425f59ac221mr13269412eda.307.1651075652996;
-        Wed, 27 Apr 2022 09:07:32 -0700 (PDT)
-Received: from [192.168.0.155] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id e17-20020a170906505100b006f3beab8af8sm2074452ejk.204.2022.04.27.09.07.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Apr 2022 09:07:32 -0700 (PDT)
-Message-ID: <a8472edd-388c-7bcf-de6a-9924dee6f959@linaro.org>
-Date:   Wed, 27 Apr 2022 18:07:31 +0200
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=JrLemglUST4WORuuuukktAwV8TRd9yLyGflAl3xl1zc=;
+        b=MifsBbGYumA9Nj4UdRyDN3zyR67nOHOWCrY6pWtbuk+zLC05ZdC+ivIE7iEf79/mQj
+         QgqWZ3hLPcb0koyDMmBCYAfNz8rWeBLxdqMeA4W8o2CAbJNyRCx2nHo+ruoMD1uZYmfQ
+         oGbYKVksxa6UjgvWey5QQdqTaj1neYKgb8B7qY++DgMFndgM1HPKB91+KoERmau1ujSU
+         +PjH0qFeK89vQYG94WD8T7SrVrC7iPzqjlGcLE9CVtCTu9Dkp1fSachNkp8pLOVZ36oP
+         slayyGlin90z4cvdiG8kvB3f/7OonkughpN5M5bKsjh/4jyO9TJZrKJXQY6HYFnTfRDl
+         /2+A==
+X-Gm-Message-State: AOAM531R7pMG5zVF5a1jv6i9JNC4xdd8QfCx5LNPDEuw6dOPIpowbibt
+        xZ+6s5AbPDG0vtFLmlau/Mw=
+X-Google-Smtp-Source: ABdhPJymUyAuP9S3z9f8SGZ0ibdaRIW+1KvXVMPgBEGCfB3jsk37oMAvhNa2911ZCug37bA6orWp7w==
+X-Received: by 2002:a17:907:97cd:b0:6f3:aeb8:6002 with SMTP id js13-20020a17090797cd00b006f3aeb86002mr9157397ejc.530.1651075648894;
+        Wed, 27 Apr 2022 09:07:28 -0700 (PDT)
+Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
+        by smtp.googlemail.com with ESMTPSA id n5-20020a170906378500b006efb4ab6f59sm6984098ejc.86.2022.04.27.09.07.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 09:07:28 -0700 (PDT)
+From:   Jakob Koschel <jakobkoschel@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com, Ariel Elior <aelior@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Casper Andersson <casper.casan@gmail.com>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Colin Ian King <colin.king@intel.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Xu Wang <vulab@iscas.ac.cn>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, bpf@vger.kernel.org,
+        Mike Rapoport <rppt@kernel.org>,
+        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>
+Subject: [PATCH net-next v5 11/18] qed: Remove usage of list iterator variable after the loop
+Date:   Wed, 27 Apr 2022 18:06:28 +0200
+Message-Id: <20220427160635.420492-12-jakobkoschel@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220427160635.420492-1-jakobkoschel@gmail.com>
+References: <20220427160635.420492-1-jakobkoschel@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 00/0x] dmaengine/ARM: use proper 'dma-channels/requests'
- properties
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Sekhar Nori <nsekhar@ti.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>, linux-usb@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-References: <20220427160538.646044-1-krzysztof.kozlowski@linaro.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220427160538.646044-1-krzysztof.kozlowski@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27/04/2022 18:05, Krzysztof Kozlowski wrote:
-> Hi,
-> 
-> The core DT schema defines generic 'dma-channels' and 'dma-requests'
-> properties, so in preparation to moving bindings to DT schema, convert
-> existing users of '#dma-channels' and '#dma-requests' to the generic
-> variant.
-> 
-> Not tested on hardware.
+To move the list iterator variable into the list_for_each_entry_*()
+macro in the future it should be avoided to use the list iterator
+variable after the loop body.
 
-Sorry for the mess, but I missed here one patch.
+Since "found" and "p_ent" need to be equal, "found" should be used
+consistently to limit the scope of "p_ent" to the list traversal in
+the future.
 
-I will resend.
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+---
+ drivers/net/ethernet/qlogic/qed/qed_spq.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Best regards,
-Krzysztof
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_spq.c b/drivers/net/ethernet/qlogic/qed/qed_spq.c
+index d01b9245f811..cbaa2abed660 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_spq.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_spq.c
+@@ -934,10 +934,10 @@ int qed_spq_completion(struct qed_hwfn *p_hwfn,
+ 		       u8 fw_return_code,
+ 		       union event_ring_data *p_data)
+ {
++	struct qed_spq_entry	*found = NULL;
+ 	struct qed_spq		*p_spq;
+-	struct qed_spq_entry	*p_ent = NULL;
++	struct qed_spq_entry	*p_ent;
+ 	struct qed_spq_entry	*tmp;
+-	struct qed_spq_entry	*found = NULL;
+ 
+ 	if (!p_hwfn)
+ 		return -EINVAL;
+@@ -980,7 +980,7 @@ int qed_spq_completion(struct qed_hwfn *p_hwfn,
+ 	DP_VERBOSE(p_hwfn, QED_MSG_SPQ,
+ 		   "Complete EQE [echo %04x]: func %p cookie %p)\n",
+ 		   le16_to_cpu(echo),
+-		   p_ent->comp_cb.function, p_ent->comp_cb.cookie);
++		   found->comp_cb.function, found->comp_cb.cookie);
+ 	if (found->comp_cb.function)
+ 		found->comp_cb.function(p_hwfn, found->comp_cb.cookie, p_data,
+ 					fw_return_code);
+-- 
+2.25.1
+
