@@ -2,98 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56E11C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 07:52:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85FE6C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 07:52:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359131AbiD0Hzc (ORCPT
+        id S1359101AbiD0H4H (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 03:55:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55054 "EHLO
+        Wed, 27 Apr 2022 03:56:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244093AbiD0Hza (ORCPT
+        with ESMTP id S1359090AbiD0H4E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 03:55:30 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E7A788B3F
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 00:52:20 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id t13so938234pfg.2
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 00:52:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2rvDZbBDA6+4uzAH76fZ3kFLE9a9v7X2eun+8bu8ABA=;
-        b=nv8hZjQmc8nZqur1WSfPeCGh+4kLRik3Jg/Yw1w3vnxKTtVx5b5tQ88WzojPqYrk8E
-         hoHAJSF/edDeWyP6H8COsaZ5D3uXuyq9KchcE9WnBe4itmWQc27tkA2XqtBI4c6fU9r6
-         OpjNOWrFuTY02shGKHPG+JZOvMgcf2T2TIAJzCXzbPlTlTEpkBsKUodAVI8cH/j0/maq
-         Y888rO1kOAvkpbUZt+9mRVwgbyHNX5cdrewIAKEfRTjblnzPyzggwkpR7/2tAW4bvwNG
-         XmU4Eh7ADBlpggWDX/S3FroMTNN+HZsKg+Crt+9hGbQinPM7F98gMbjUuU3c4LXqujGj
-         6Ceg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2rvDZbBDA6+4uzAH76fZ3kFLE9a9v7X2eun+8bu8ABA=;
-        b=nicsJa3d8RNLEXqIeQOeIDzwymRmSX9vySnLKW8cAvEOjRu+8106c3O7C/QEuE97sC
-         kq1pNdydnbaFJdqY9miqaor3AtWqw81uwbIe3nO6aR4ObWfDG/TS0XD8viS/wkalxKdk
-         diU7Xj5VOB+i7trdDwvCykpPWPvHOq8W+ZODg8zAKu4n54Z/j0SJjty+O3DZUM3uPcxk
-         Df67q9lLgOJbp1Zy1aSHeKY0bFLoXVgNmdpDoxlNvHJbwwvP0T/qPkH1hWVGcB28cYfL
-         2/de9TA9AqynBm4UwcQjhewYMJP9K2dJvfOxULma57xJ4tY3bxEt58v4a8f7gtvSnTOr
-         vxpw==
-X-Gm-Message-State: AOAM531ld01tuT5p/5Vj92am5D8Kqr8A5PsytG6M3VtVHFPKkMWQ542B
-        xqMPOIpnheVSUMv4kaQc1Bc=
-X-Google-Smtp-Source: ABdhPJzfx2BmKTDhlgtytFet1cDd0UztmeYh3uEPYkybXAyku50I3+aeY/pWrPpK8/PvIxXUPFbnJw==
-X-Received: by 2002:aa7:9852:0:b0:50d:6d10:2094 with SMTP id n18-20020aa79852000000b0050d6d102094mr4133485pfq.4.1651045939843;
-        Wed, 27 Apr 2022 00:52:19 -0700 (PDT)
-Received: from tj10039pcu.spreadtrum.com ([117.18.48.102])
-        by smtp.gmail.com with ESMTPSA id m11-20020a17090a71cb00b001cd4989feebsm5671738pjs.55.2022.04.27.00.52.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 00:52:19 -0700 (PDT)
-From:   Cixi Geng <gengcixi@gmail.com>
-To:     lee.jones@linaro.org, orsonzhai@gmail.com, baolin.wang7@gmail.com,
-        zhang.lyra@gmail.com
-Cc:     linux-kernel@vger.kernel.org
-Subject: [PATCH] mfd: sprd: change the device_id data order
-Date:   Wed, 27 Apr 2022 15:52:12 +0800
-Message-Id: <20220427075212.3409407-1-gengcixi@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 27 Apr 2022 03:56:04 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6CC1B13FDA0
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 00:52:54 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 383FCED1;
+        Wed, 27 Apr 2022 00:52:54 -0700 (PDT)
+Received: from [10.57.7.196] (unknown [10.57.7.196])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BF4A63F5A1;
+        Wed, 27 Apr 2022 00:52:52 -0700 (PDT)
+Message-ID: <38c8a684-5fcc-cfb3-424c-d353a7bafe03@arm.com>
+Date:   Wed, 27 Apr 2022 08:52:50 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3] arch_topology: Trace the update thermal pressure
+Content-Language: en-US
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, sudeep.holla@arm.com,
+        dietmar.eggemann@arm.com, vincent.guittot@linaro.org,
+        rafael@kernel.org, rostedt@goodmis.org, mingo@redhat.com
+References: <20220427073551.19032-1-lukasz.luba@arm.com>
+ <Ymj0ZZeUnhq4W/Ws@kroah.com>
+From:   Lukasz Luba <lukasz.luba@arm.com>
+In-Reply-To: <Ymj0ZZeUnhq4W/Ws@kroah.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cixi Geng <cixi.geng1@unisoc.com>
 
-Ordered with the smallest number at the top.
 
-Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
----
- drivers/mfd/sprd-sc27xx-spi.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+On 4/27/22 08:44, Greg KH wrote:
+> On Wed, Apr 27, 2022 at 08:35:51AM +0100, Lukasz Luba wrote:
+>> Add trace event to capture the moment of the call for updating the thermal
+>> pressure value. It's helpful to investigate how often those events occur
+>> in a system dealing with throttling. This trace event is needed since the
+>> old 'cdev_update' might not be used by some drivers.
+>>
+>> The old 'cdev_update' trace event only provides a cooling state
+>> value: [0, n]. That state value then needs additional tools to translate
+>> it: state -> freq -> capacity -> thermal pressure. This new trace event
+>> just stores proper thermal pressure value in the trace buffer, no need
+>> for additional logic. This is helpful for cooperation when someone can
+>> simply sends to the list the trace buffer output from the platform (no
+>> need from additional information from other subsystems).
+>>
+>> There are also platforms which due to some design reasons don't use
+>> cooling devices and thus don't trigger old 'cdev_update' trace event.
+>> They are also important and measuring latency for the thermal signal
+>> raising/decaying characteristics is in scope. This new trace event
+>> would cover them as well.
+>>
+>> We already have a trace point 'pelt_thermal_tp' which after a change to
+>> trace event can be paired with this new 'thermal_pressure_update' and
+>> derive more insight what is going on in the system under thermal pressure
+>> (and why).
+>>
+>> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> The kernel test robot did not report that you needed to add a new trace
+> event :(
+> 
 
-diff --git a/drivers/mfd/sprd-sc27xx-spi.c b/drivers/mfd/sprd-sc27xx-spi.c
-index cf4f89114ae4..d05a47c5187f 100644
---- a/drivers/mfd/sprd-sc27xx-spi.c
-+++ b/drivers/mfd/sprd-sc27xx-spi.c
-@@ -240,15 +240,15 @@ static int sprd_pmic_resume(struct device *dev)
- static SIMPLE_DEV_PM_OPS(sprd_pmic_pm_ops, sprd_pmic_suspend, sprd_pmic_resume);
- 
- static const struct of_device_id sprd_pmic_match[] = {
--	{ .compatible = "sprd,sc2731", .data = &sc2731_data },
- 	{ .compatible = "sprd,sc2730", .data = &sc2730_data },
-+	{ .compatible = "sprd,sc2731", .data = &sc2731_data },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, sprd_pmic_match);
- 
- static const struct spi_device_id sprd_pmic_spi_ids[] = {
--	{ .name = "sc2731", .driver_data = (unsigned long)&sc2731_data },
- 	{ .name = "sc2730", .driver_data = (unsigned long)&sc2730_data },
-+	{ .name = "sc2731", .driver_data = (unsigned long)&sc2731_data },
- 	{},
- };
- MODULE_DEVICE_TABLE(spi, sprd_pmic_spi_ids);
--- 
-2.25.1
+I got feedback from the test robot for v1, which figured out that
+the riscv configuration is broken. You can find it here
+https://lore.kernel.org/lkml/202204201654.vcszVDGb-lkp@intel.com/
 
+So, I've added that tag following:
+"If you fix the issue, kindly add following tag as appropriate"
+
+Should this only be honored when a patch actually got into next
+and then following patch with a fix would have that tag?
