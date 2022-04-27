@@ -2,80 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3210C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:21:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECD6EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:22:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235741AbiD0NXf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 09:23:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53572 "EHLO
+        id S236178AbiD0NYV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 09:24:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235583AbiD0NXb (ORCPT
+        with ESMTP id S235781AbiD0NXn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 09:23:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94722B6B;
-        Wed, 27 Apr 2022 06:20:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EDC9961C15;
-        Wed, 27 Apr 2022 13:20:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5579EC385A9;
-        Wed, 27 Apr 2022 13:20:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651065611;
-        bh=8jDvOoUcxtpGB0tdinnHwv098qHQH4gTR6DYWTw4rRg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=RSDRqnD/zRJj+XcN16ov46AL22k2e9qtlII8Na8I/QTf95+l4NkDJrZI3mwcbXKw5
-         Gf5LNDmKF5AxxOJVP4NIdyccgYUe9tUrZlJsJlbLiB6ec9bAyWsEVxH3KLeAgMWKfc
-         J7Hu82X+dg3gsHQdg8zHwmIraBsEEpole6OOXpIf6WWJp27AMtV2YyWECUsS/ZyGNB
-         ntSFpUF8XuLcU0ARJUbtJt5NGhbQ5OBNSHKm91GPDHJyOK4rDRQVXnZ4S69KsI2liO
-         oruKjqmhjw6rqQux3H9MWwoYd3RD6fJWqHtj1TaCwseRoUjSQBtdA4C3iEQkmWo4tI
-         sVRqYQVf43zcg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3C4BFE8DD67;
-        Wed, 27 Apr 2022 13:20:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Wed, 27 Apr 2022 09:23:43 -0400
+Received: from mail-io1-xd46.google.com (mail-io1-xd46.google.com [IPv6:2607:f8b0:4864:20::d46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DFD2D7A
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 06:20:21 -0700 (PDT)
+Received: by mail-io1-xd46.google.com with SMTP id d19-20020a0566022d5300b0065499cd4a73so2272117iow.14
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 06:20:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=0HeRjMQ5Gk682aDL8RE02ZjSUks4bcwfNrNycajs9W4=;
+        b=31YhJHIVZ5snNwnuZeXYTuf4SBhhvHOyz7hm5l3L1D4aWgjwPUZUhC0ER1/tVAAZ7t
+         TSu99wa7gH8lQHV3chzny5Vs6Qf7Bti3QNT5RxBYrihFzFwKdj8S8+U4zy0AyiDnWL1E
+         aaEEX88rk2rI/EgjAr2DCmXs8xwucRfGodM4JnVJErT7kDoVVhcKURQwnAuS5D6G0HhP
+         7C+Gg6lKRjqaPeCcGRcQwer1VK3/VEis8PCo8s6GyRT1AbxKb3f0dOdZSaLqRJY488z8
+         YGgEsHdDjvQ8ixNgh7FdivljSlr24bET6cbNgIXxxmq/eeyr+0dBLDvGZTYR3UVweGu3
+         4Peg==
+X-Gm-Message-State: AOAM533iqwKuysxDOV+6YAOzvmImGfFNgH1+7g0FsVsbop5Qg22wvQU+
+        TeZbzZXJiPQyPGHb0LoNfI4B0wT5GeyM6p7XAEC/zYRgj7AQ
+X-Google-Smtp-Source: ABdhPJwEYdyTfbYiVy/vKw1D8ERT/PZgdQPVn4H4ontcFJyzHBTy3UJBtaghDc5OxxTuRqFSxTpPUyHeWyJ7ZhDykCQxRz+AdbhC
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] Bluetooth: btusb: Add 0x0bda:0x8771 Realtek 8761BUV
- devices
-From:   patchwork-bot+bluetooth@kernel.org
-Message-Id: <165106561124.26395.8057057839532424333.git-patchwork-notify@kernel.org>
-Date:   Wed, 27 Apr 2022 13:20:11 +0000
-References: <20220427125947.10429-1-ismael@iodev.co.uk>
-In-Reply-To: <20220427125947.10429-1-ismael@iodev.co.uk>
-To:     Ismael Luceno <ismael@iodev.co.uk>
-Cc:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
-        johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        linux-kernel@vger.kernel.org
+X-Received: by 2002:a05:6602:1409:b0:5e7:487:133c with SMTP id
+ t9-20020a056602140900b005e70487133cmr3368591iov.196.1651065320802; Wed, 27
+ Apr 2022 06:15:20 -0700 (PDT)
+Date:   Wed, 27 Apr 2022 06:15:20 -0700
+In-Reply-To: <000000000000a23c8505dda227eb@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000f28f0005dda29992@google.com>
+Subject: Re: [syzbot] WARNING in vma_merge
+From:   syzbot <syzbot+7728e4ab5371cebc9c00@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+syzbot has found a reproducer for the following issue on:
 
-This patch was applied to bluetooth/bluetooth-next.git (master)
-by Marcel Holtmann <marcel@holtmann.org>:
+HEAD commit:    f02ac5c95dfd Add linux-next specific files for 20220427
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=105a33a2f00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e9256c70f586da8a
+dashboard link: https://syzkaller.appspot.com/bug?extid=7728e4ab5371cebc9c00
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15f76f82f00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12b42c3cf00000
 
-On Wed, 27 Apr 2022 14:59:48 +0200 you wrote:
-> Identifies as just "Realtek Semiconductor Corp. Bluetooth Radio"; it's
-> used in many adapters, e.g.:
-> 
-> - UGREEN CM390
-> - C-TECH BTD-01
-> - Orico BTA-508
-> - KS-is KS-457
-> 
-> [...]
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+7728e4ab5371cebc9c00@syzkaller.appspotmail.com
 
-Here is the summary with links:
-  - [v2] Bluetooth: btusb: Add 0x0bda:0x8771 Realtek 8761BUV devices
-    https://git.kernel.org/bluetooth/bluetooth-next/c/fb4b8a352656
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 3593 at mm/mmap.c:1072 vma_merge+0x428/0x950 mm/mmap.c:1072
+Modules linked in:
+CPU: 1 PID: 3593 Comm: syz-executor549 Not tainted 5.18.0-rc4-next-20220427-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:vma_merge+0x428/0x950 mm/mmap.c:1072
+Code: 00 e8 5c 1f c4 ff e8 57 1f c4 ff 45 31 f6 e8 4f 1f c4 ff 4c 89 f0 48 83 c4 28 5b 5d 41 5c 41 5d 41 5e 41 5f c3 e8 38 1f c4 ff <0f> 0b e9 6c fd ff ff e8 2c 1f c4 ff 48 8d bd 88 00 00 00 48 b8 00
+RSP: 0018:ffffc90002edfd10 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: 0000000008102073 RCX: 0000000000000000
+RDX: ffff88801d0a3a80 RSI: ffffffff81b62968 RDI: 0000000000000003
+RBP: ffff88807e550bd0 R08: 0000000021001000 R09: 0000000000000000
+R10: ffffffff81b626ce R11: 0000000000000000 R12: 0000555557211000
+R13: 00005555571ef000 R14: ffff88807e550d80 R15: ffff88807e550d80
+FS:  00005555571ef300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00005564400b0df0 CR3: 0000000073d7f000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ mlock_fixup+0x349/0x7f0 mm/mlock.c:420
+ apply_mlockall_flags+0x2be/0x440 mm/mlock.c:691
+ __do_sys_mlockall+0x222/0x4b0 mm/mlock.c:719
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f9cdd5a1f99
+Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffecfa63c98 EFLAGS: 00000246 ORIG_RAX: 0000000000000097
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f9cdd5a1f99
+RDX: 00007f9cdd5a1f99 RSI: 0000000000000000 RDI: 0000000000000003
+RBP: 00007f9cdd565f80 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007f9cdd566010
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
 
