@@ -2,73 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26EDAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 21:43:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7945FC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 21:44:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237647AbiD0Vqx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 17:46:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55510 "EHLO
+        id S234749AbiD0Vrb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 17:47:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229959AbiD0Vqt (ORCPT
+        with ESMTP id S234135AbiD0Vr3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 17:46:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EA0B90CED;
-        Wed, 27 Apr 2022 14:43:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 27 Apr 2022 17:47:29 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59F3590CFA;
+        Wed, 27 Apr 2022 14:44:17 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F1199B82AC2;
-        Wed, 27 Apr 2022 21:43:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88EF9C385A7;
-        Wed, 27 Apr 2022 21:43:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651095814;
-        bh=VsDx9yNbJhTBwkE2mj7Zjsj6YSBkvaaPCEpYyfmHl/g=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=PvCHxaJpxPqJ37By5sZzYGLeGoZEfel2HtTjnWVM3cxayeHwIwf1+RoFlwbuThrfA
-         tp3mmcp5ljQKuu41GksrK8Dbv24EgNdFYzPWBxcCvt5t3MJyLc9wyd3mCJ4kx+Qae+
-         pKxjeAplVH2y7iDyndXkXLUJklA5WTZWlQqyW+tg9UmKg0DmoQe5iV5XfI0/m967BY
-         +bMillZMXaOVdofWRvYq95seKda5YG21qLnygrveRiCYaWkFtWs2EvaL6k1VsjUNi0
-         t4lHXh9OJCOdq5tpNN9v8l7JArMeveEvtcTgPbby+N1OrrLhaldlIKMBUzJf40FJN/
-         uyUG1/wjous9Q==
-Message-ID: <b079a211-d387-7958-bbe2-c41cac00d269@kernel.org>
-Date:   Thu, 28 Apr 2022 00:43:28 +0300
-MIME-Version: 1.0
-Subject: Re: [PATCH 4/4] arm64: dts: qcom: sm6350: Add interconnect support
-Content-Language: en-US
-To:     Luca Weiss <luca.weiss@fairphone.com>,
-        linux-arm-msm@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        by ssl.serverraum.org (Postfix) with ESMTPSA id BF68A2224E;
+        Wed, 27 Apr 2022 23:44:15 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1651095855;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HeKJkEt71bPubaeR0ycQvqtsMk9+SsEa9Z7AHhT5DRY=;
+        b=Ip8NKiKDkDXeOimKLZyz1lCJlyT8FF+bqmxZsTRAB60biA70Yg0rry2fvDz4LgvUQ01xZS
+        5W3ukYcCA8zyry815LGwnbh/c6+r+3iWRml3ZsjiWKLAFZIVxQ30FmQVmucCCiUzTrl0Fj
+        NBdM79vREfzwAtUVjXI7itiyj+pUhbs=
+From:   Michael Walle <michael@walle.cc>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220422144021.232993-1-luca.weiss@fairphone.com>
- <20220422144021.232993-5-luca.weiss@fairphone.com>
-From:   Georgi Djakov <djakov@kernel.org>
-In-Reply-To: <20220422144021.232993-5-luca.weiss@fairphone.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
+Subject: [PATCH net-next v1 2/3] net: phy: micrel: move the PHY timestamping check
+Date:   Wed, 27 Apr 2022 23:44:05 +0200
+Message-Id: <20220427214406.1348872-3-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220427214406.1348872-1-michael@walle.cc>
+References: <20220427214406.1348872-1-michael@walle.cc>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22.04.22 17:40, Luca Weiss wrote:
-> Add all the different NoC providers that are found in SM6350 and
-> populate different nodes that use the interconnect properties.
-> 
-> Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
-> ---
-> Newer SoCs seem to have switched to using #interconnect-cells = <2>;
-> Is this something that should be done for all new implementations as
-> well? The 'tag' in the second cell seems to be 0 for all cases in
-> mainline except CPU.
+Both lan8814_ptp_init() and lan8814_ptp_probe_once() are only used if
+PTP and PHY timestamping is enabed. Up until now the probe function just
+returns early, if they are not needed. But we need the
+phy_package_init_once() functionality for the coma mode GPIO setup. Move
+the check into the functions itself.
 
-Yes, it's recommended to use #interconnect-cells = <2> (if you care about
-power management). This is to support different bandwidth configurations
-that are toggled by RPMh, depending on the power state of the CPU.
+Signed-off-by: Michael Walle <michael@walle.cc>
+---
+ drivers/net/phy/micrel.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-Thanks,
-Georgi
+diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+index 96840695debd..b981c5eaac33 100644
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -2729,6 +2729,10 @@ static void lan8814_ptp_init(struct phy_device *phydev)
+ 	struct kszphy_ptp_priv *ptp_priv = &priv->ptp_priv;
+ 	u32 temp;
+ 
++	if (!IS_ENABLED(CONFIG_PTP_1588_CLOCK) ||
++	    !IS_ENABLED(CONFIG_NETWORK_PHY_TIMESTAMPING))
++		return;
++
+ 	lanphy_write_page_reg(phydev, 5, TSU_HARD_RESET, TSU_HARD_RESET_);
+ 
+ 	temp = lanphy_read_page_reg(phydev, 5, PTP_TX_MOD);
+@@ -2767,6 +2771,10 @@ static int lan8814_ptp_probe_once(struct phy_device *phydev)
+ {
+ 	struct lan8814_shared_priv *shared = phydev->shared->priv;
+ 
++	if (!IS_ENABLED(CONFIG_PTP_1588_CLOCK) ||
++	    !IS_ENABLED(CONFIG_NETWORK_PHY_TIMESTAMPING))
++		return 0;
++
+ 	/* Initialise shared lock for clock*/
+ 	mutex_init(&shared->shared_lock);
+ 
+@@ -2843,10 +2851,6 @@ static int lan8814_probe(struct phy_device *phydev)
+ 
+ 	phydev->priv = priv;
+ 
+-	if (!IS_ENABLED(CONFIG_PTP_1588_CLOCK) ||
+-	    !IS_ENABLED(CONFIG_NETWORK_PHY_TIMESTAMPING))
+-		return 0;
+-
+ 	/* Strap-in value for PHY address, below register read gives starting
+ 	 * phy address value
+ 	 */
+-- 
+2.30.2
+
