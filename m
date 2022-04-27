@@ -2,122 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72226C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 22:29:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8C36C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 22:31:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232818AbiD0Wcw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 18:32:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58350 "EHLO
+        id S232128AbiD0WeV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 18:34:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230270AbiD0Wcu (ORCPT
+        with ESMTP id S229774AbiD0WeR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 18:32:50 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D21DB65400
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:29:38 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id p6so2634010pjm.1
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:29:38 -0700 (PDT)
+        Wed, 27 Apr 2022 18:34:17 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B36846B641
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:31:04 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id d15so2772531plh.2
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:31:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5hA8Xq3m1wbXqH/a0qmeDa8TEICOu26xCCl40xL9zKg=;
-        b=Herq3K81McYpTzvqFagSy1plhq9FEVLAQJ8qC9KUf2XMhZskLHV+XWGU0n9cS2agrU
-         D6RecRZ2Jyfts5heQzpiDSjrRR9yonolcoSQa443BAV7XZEIXu68BLoZMXCDeHcLBn5A
-         vfFKGPQchZCaphz6AWPPGj9aO/w9OMOMNKPMkktWvyZDkfK7NZjzEf+T8SbzT+ln1uvB
-         vEiK5SGg6/OKPeqYdRumwdTnaQgsS+8TNm+xEHlqSfsJVY2mE2RSGGc4iXI7z01gm5Fg
-         cmsuRvENz6YUo7aMZv7ltCb+c/uBoGKV+Ine5BIA1cY7/L1wI0dM4j/O0fw0xrKzABv6
-         dvLA==
+        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Jf9KoOg1H3jqjBGppZ/xxewMSo8dDOurdWUb3cYmU3c=;
+        b=J86DG36ucbx0DlDChH/QyA2qGW9ZzuTV7lPr4Yhhk3+pV9+Qw+iYZfs23hrlx4+rfD
+         giclbY4+1PxmOyj+mAHsv9VmlcODeRZorL+++DJBAt9RJIWnhq1wlvZL0JvKpHuHICLm
+         dxEKItjNOKe2JxdIPAzsQ5baFAnBGf2Vh3niiGtwf9zwcMz93g13wjD3YEk9QkeLE+YK
+         eFBdwJmwsg7s6P8IKgVpVGlIcKASf75RQGMzBKCQ7cQziovaXYvVEqGxP7AJ5aMa2M26
+         RzZiEP14nT+f6jEpI0c9BCalzL328U8Fwv1zPeSnLj5NaVl3egPq1TcLnDuB8YzNCPxq
+         C43g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5hA8Xq3m1wbXqH/a0qmeDa8TEICOu26xCCl40xL9zKg=;
-        b=a1a9VI9iIAmyeO9EbLI/1V37kx5IEjL3JQg/Z1prSDTYagTOEqSbUeXzA4WtEObNHP
-         jYseeKdAoSx9elmYzGS327MLSMcIjmrs8tee8MDfD7ZYdJlkSJ9CbjMSNLWZJvZB8FF0
-         Wx3ZXm/X/1LSxomsEQjPbvivVsvEr5ZVq9yh/SRrle0jPqpd4gifgvGcvlDLvSP1KfTB
-         Gr3jBJYHBWAA3pKaf2gqG5BWaRXsRDsktfJs9luJjdnO+49Pw+6HOZkGduaXgGJJkyll
-         d2tONryB8NuPQEks7zJ7ZEszNhfpGcvCE9YFQxZVssNLApH4azQDNVLVveZKkaZg5But
-         cNIg==
-X-Gm-Message-State: AOAM532gzgHTPnj307JsvHngqffpb7oqvlfGoOF6aDv7Z82jM/LX8JQ1
-        Ig6nFCm1uSJ06djjAHMMUJwzre6wA8aZ2sScMv4JTgroKGA=
-X-Google-Smtp-Source: ABdhPJxXGAMdkbpoJkYXcXbM4mJ3u4915SZ/ZExCjr10hG0A0gbchKsFGHeRE5A4+UcYOsXETcMs1KPF7CUx29sBu9E=
-X-Received: by 2002:a17:903:32d2:b0:15d:ea5:3e0f with SMTP id
- i18-20020a17090332d200b0015d0ea53e0fmr18844184plr.117.1651098578376; Wed, 27
- Apr 2022 15:29:38 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Jf9KoOg1H3jqjBGppZ/xxewMSo8dDOurdWUb3cYmU3c=;
+        b=MkfbtjqZyE+gJRijcvPf3O1aQS5vLNI8BNDJB3KabMqtIkv6Xokdio+2KsJoCu9Z7p
+         S6p4bjWUnF3AzRrGdszXzi0oJBFxjAR/1HYtd/0nFd7iCexXXhGIc03kiOq3GPnYdqjI
+         aJYT3Woil5M0zS9Y2EbcmTzgUQwRi0CqYG8UHBPxNGFMX8SxLIxi8EbjgO9dRsrWnUYr
+         Yp4Bqbf3oNqgI1XSaKOiQ/oJW/eZ7I+uk0gZTXDXHsQrrPE9ZDd7TGYdl2sfHKsijSD7
+         98CrQRUtl3kwRWwW0h9dZROjEeS6KEAaXmiXjusmgizaPhAEZDmXRzszCKKb4T4YhO48
+         huaw==
+X-Gm-Message-State: AOAM531y6xtnaBKqOleF1Cf9mQ6wxeCVN9ouovBWhXQmkGEVeKISvEIj
+        FKz6t9tyaRGnN81KP97VHVvKzIpdKBP2XQ==
+X-Google-Smtp-Source: ABdhPJyq+J76gHLpln3JZEsplM+ovXJH6AdQaG55HLv9cJpdF5NGETNJmQVeoVqtoV2YZmZe7GOcPQ==
+X-Received: by 2002:a0c:f3d2:0:b0:456:34aa:5978 with SMTP id f18-20020a0cf3d2000000b0045634aa5978mr13519939qvm.59.1651095423111;
+        Wed, 27 Apr 2022 14:37:03 -0700 (PDT)
+Received: from localhost ([2620:10d:c091:480::1:d588])
+        by smtp.gmail.com with ESMTPSA id b9-20020a05620a0f8900b0069e84c5352asm8370423qkn.47.2022.04.27.14.37.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 14:37:02 -0700 (PDT)
+Date:   Wed, 27 Apr 2022 17:36:26 -0400
+From:   Johannes Weiner <hannes@cmpxchg.org>
+To:     Minchan Kim <minchan@kernel.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Seth Jennings <sjenning@redhat.com>,
+        Dan Streetman <ddstreet@ieee.org>, linux-mm@kvack.org,
+        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-team@fb.com
+Subject: Re: [PATCH 4/5] mm: zswap: add basic meminfo and vmstat coverage
+Message-ID: <Ymm3WpvJWby4gaD/@cmpxchg.org>
+References: <20220427160016.144237-1-hannes@cmpxchg.org>
+ <20220427160016.144237-5-hannes@cmpxchg.org>
+ <Ymmnrkn0mSWcuvmH@google.com>
+ <YmmznQ8AO5RLxicA@cmpxchg.org>
 MIME-Version: 1.0
-References: <20220317065024.2635069-1-maobibo@loongson.cn> <20220427134843.576f0a18bea28de9e798004a@linux-foundation.org>
-In-Reply-To: <20220427134843.576f0a18bea28de9e798004a@linux-foundation.org>
-From:   Yang Shi <shy828301@gmail.com>
-Date:   Wed, 27 Apr 2022 15:29:25 -0700
-Message-ID: <CAHbLzkoVdxyxKopu7D=VzvnHoiA=KYgxVWwwZwahzTcfXfcg5g@mail.gmail.com>
-Subject: Re: [PATCH v3] mm/khugepaged: sched to numa node when collapse huge page
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Bibo Mao <maobibo@loongson.cn>, Linux MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        David Hildenbrand <david@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YmmznQ8AO5RLxicA@cmpxchg.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 1:48 PM Andrew Morton <akpm@linux-foundation.org> wrote:
->
-> On Thu, 17 Mar 2022 02:50:24 -0400 Bibo Mao <maobibo@loongson.cn> wrote:
->
-> > collapse huge page will copy huge page from general small pages,
-> > dest node is calculated from most one of source pages, however
-> > THP daemon is not scheduled on dest node. The performance may be
-> > poor since huge page copying across nodes, also cache is not used
-> > for target node. With this patch, khugepaged daemon switches to
-> > the same numa node with huge page. It saves copying time and makes
-> > use of local cache better.
-> >
-> > With this patch, specint 2006 base performance is improved with 6%
-> > on Loongson 3C5000L platform with 32 cores and 8 numa nodes.
-> >
->
-> Are there any acks for this one please?
+On Wed, Apr 27, 2022 at 05:20:31PM -0400, Johannes Weiner wrote:
+> On Wed, Apr 27, 2022 at 01:29:34PM -0700, Minchan Kim wrote:
+> > Hi Johannes,
+> > 
+> > On Wed, Apr 27, 2022 at 12:00:15PM -0400, Johannes Weiner wrote:
+> > > Currently it requires poking at debugfs to figure out the size and
+> > > population of the zswap cache on a host. There are no counters for
+> > > reads and writes against the cache. As a result, it's difficult to
+> > > understand zswap behavior on production systems.
+> > > 
+> > > Print zswap memory consumption and how many pages are zswapped out in
+> > > /proc/meminfo. Count zswapouts and zswapins in /proc/vmstat.
+> > > 
+> > > Signed-off-by: Johannes Weiner <hannes@cmpxchg.org>
+> > > ---
+> > >  fs/proc/meminfo.c             |  7 +++++++
+> > >  include/linux/swap.h          |  5 +++++
+> > >  include/linux/vm_event_item.h |  4 ++++
+> > >  mm/vmstat.c                   |  4 ++++
+> > >  mm/zswap.c                    | 13 ++++++-------
+> > >  5 files changed, 26 insertions(+), 7 deletions(-)
+> > > 
+> > > diff --git a/fs/proc/meminfo.c b/fs/proc/meminfo.c
+> > > index 6fa761c9cc78..6e89f0e2fd20 100644
+> > > --- a/fs/proc/meminfo.c
+> > > +++ b/fs/proc/meminfo.c
+> > > @@ -86,6 +86,13 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
+> > >  
+> > >  	show_val_kb(m, "SwapTotal:      ", i.totalswap);
+> > >  	show_val_kb(m, "SwapFree:       ", i.freeswap);
+> > > +#ifdef CONFIG_ZSWAP
+> > > +	seq_printf(m,  "Zswap:          %8lu kB\n",
+> > > +		   (unsigned long)(zswap_pool_total_size >> 10));
+> > > +	seq_printf(m,  "Zswapped:       %8lu kB\n",
+> > > +		   (unsigned long)atomic_read(&zswap_stored_pages) <<
+> > > +		   (PAGE_SHIFT - 10));
+> > > +#endif
+> > 
+> > I agree it would be very handy to have the memory consumption in meminfo
+> > 
+> > https://lore.kernel.org/all/YYwZXrL3Fu8%2FvLZw@google.com/
+> > 
+> > If we really go this Zswap only metric instead of general term
+> > "Compressed", I'd like to post maybe "Zram:" with same reason
+> > in this patchset. Do you think that's better idea instead of
+> > introducing general term like "Compressed:" or something else?
+> 
+> I'm fine with changing it to Compressed. If somebody cares about a
+> more detailed breakdown, we can add Zswap, Zram subsets as needed.
 
-TBH, I'm a little bit reluctant to this patch. I agree running
-khugepaged on the same node with the source and dest pages could
-reduce cross socket traffic and use cache more efficiently. But I'm
-not sure whether it is really worth it or not. For example, on a busy
-system, khugepaged may jump from cpus to cpus, that may interfere with
-the scheduler, and khugepaged has to wait to run on the target cpu, it
-may take indefinite time. In addition the yield also depends on the
-locality of source pages (how many of them are on the same node), how
-often khugepaged is woken up on a different node, etc.
+It does raise the question what to do about cgroup, though. Should the
+control files (memory.zswap.current & memory.zswap.max) apply to zram
+in the future? If so, we should rename them, too.
 
-Even though it was proved worth it, I'd prefer set_cpus_allowed_ptr()
-is called between mmap_read_unlock() and mmap_write_lock() in order to
-avoid waste effort for some error paths.
+I'm not too familiar with zram, maybe you can provide some
+background. AFAIU, Google uses zram quite widely; all the more
+confusing why there is no container support for it yet.
 
->
-> > --- a/mm/khugepaged.c
-> > +++ b/mm/khugepaged.c
-> > @@ -1066,6 +1066,7 @@ static void collapse_huge_page(struct mm_struct *mm,
-> >       struct vm_area_struct *vma;
-> >       struct mmu_notifier_range range;
-> >       gfp_t gfp;
-> > +     const struct cpumask *cpumask;
-> >
-> >       VM_BUG_ON(address & ~HPAGE_PMD_MASK);
-> >
-> > @@ -1079,6 +1080,13 @@ static void collapse_huge_page(struct mm_struct *mm,
-> >        * that. We will recheck the vma after taking it again in write mode.
-> >        */
-> >       mmap_read_unlock(mm);
-> > +
-> > +     /* sched to specified node before huage page memory copy */
-> > +     if (task_node(current) != node) {
-> > +             cpumask = cpumask_of_node(node);
-> > +             if (!cpumask_empty(cpumask))
-> > +                     set_cpus_allowed_ptr(current, cpumask);
-> > +     }
-> >       new_page = khugepaged_alloc_page(hpage, gfp, node);
-> >       if (!new_page) {
-> >               result = SCAN_ALLOC_HUGE_PAGE_FAIL;
-> > --
-> > 2.31.1
-> >
+Could you shed some light?
+
+Thanks
