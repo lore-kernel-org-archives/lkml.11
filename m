@@ -2,123 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A2DEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 08:34:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DADAFC4321E
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 08:35:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359426AbiD0Ihu (ORCPT
+        id S1359440AbiD0Iig (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 04:37:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49192 "EHLO
+        Wed, 27 Apr 2022 04:38:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229945AbiD0Iht (ORCPT
+        with ESMTP id S1359124AbiD0Iie (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 04:37:49 -0400
-Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 132E6644E3;
-        Wed, 27 Apr 2022 01:34:38 -0700 (PDT)
-Received: by mail-qv1-xf33.google.com with SMTP id ke5so605016qvb.5;
-        Wed, 27 Apr 2022 01:34:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=jms.id.au; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mts8+CXZqKYubrygYyfb7XAxGiHuoGj/BQDg0sBg5ck=;
-        b=OEX1iqG5lS2jmxcFVAzAelcABrA0I4peMSmRW2z2OBvH+oCukYbw5WA7jWS1NODyxU
-         dKZGQiFy8LQSexpzD0Hgn42J1xF5DEW1ragAF+9UIGLgc7Xj9yAQVau55vfsLM/b/eX7
-         VeYrDKtzCH2mJrSWAeOcJaV4g5J8fG+3D5i30=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mts8+CXZqKYubrygYyfb7XAxGiHuoGj/BQDg0sBg5ck=;
-        b=QmaGJpJlAs0zqT37lpgKp8SLk87Ax9FDAGrxrtKCbWTnkAHEqPbp0Wx4yBcBc4BvuO
-         31j+XgCmKd3uN/jmICd1tNu8jSRZKE7dJW09urhl9/82H2/OKRgJPXe9kh+fCjsKr7fS
-         urDFo/VhKLDHQMPU0+8BUy7AOr0WO9w9kxk8yEbSc6PJs1AEV2r2MqsYGt2aIQXVx39Y
-         yxI/P26hprmL2kB162ZXEFQjLT6fD/ibSa7gCQHYuwf6XMfFj2g58Hk6hn8ag2bCtemU
-         BU8EZMxrYdUa/WIrS/4GXQfTA3cV+WU10NpKBZNiUUwcznvIP+JSb5LBQTuWV3mjd18n
-         iLAQ==
-X-Gm-Message-State: AOAM53028d28dDeNIad1YkEPZoV2O5gpYQMDz802rkjcZleC6ahYWGcE
-        M/gzb6JDADk7JiYAbyd/JwSzClP/PY7vPGULhxU=
-X-Google-Smtp-Source: ABdhPJyidkYZn3pks7qlaDMc3LwEDY1SYiqlg58dC9/l3UNI6GnmoBiDPuyd2UEkY/eAHDPGkC/Q10O6MS/Vv02VDYk=
-X-Received: by 2002:a05:6214:624:b0:441:84f3:24e3 with SMTP id
- a4-20020a056214062400b0044184f324e3mr19162202qvx.27.1651048477102; Wed, 27
- Apr 2022 01:34:37 -0700 (PDT)
+        Wed, 27 Apr 2022 04:38:34 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF9F641F80;
+        Wed, 27 Apr 2022 01:35:22 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23R8ZIvb071615;
+        Wed, 27 Apr 2022 03:35:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1651048518;
+        bh=/V2lAezG8ZDZkl3aUCo7fcu7p89u7vy2ng7qAeayCao=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=NEsoj7O7B47SPV9Vr2MBuUz74O/oSszCvFJOrZeydqnNOms1fvX2wYiEqWeEV3cHt
+         fcMd6AOBq2RWGLpwTk4AXMd3PexZjtsfKBz9dLstAODLTgEQgquFX79sjKbWhZs4Z1
+         r7TAg+HDAQ7o/p8y9EgjTJuXG5wGCK8NoTTZ7KmE=
+Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23R8ZI74064607
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 27 Apr 2022 03:35:18 -0500
+Received: from DFLE103.ent.ti.com (10.64.6.24) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 27
+ Apr 2022 03:35:17 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE103.ent.ti.com
+ (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Wed, 27 Apr 2022 03:35:17 -0500
+Received: from a0393678ub.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23R8ZBCg009219;
+        Wed, 27 Apr 2022 03:35:15 -0500
+From:   Kishon Vijay Abraham I <kishon@ti.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+CC:     Suman Anna <s-anna@ti.com>, <linux-remoteproc@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>
+Subject: [PATCH 1/2] dt-bindings: remoteproc: pru: Update bindings for K3 AM62x SoCs
+Date:   Wed, 27 Apr 2022 14:05:08 +0530
+Message-ID: <20220427083509.14458-2-kishon@ti.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220427083509.14458-1-kishon@ti.com>
+References: <20220427083509.14458-1-kishon@ti.com>
 MIME-Version: 1.0
-References: <20220426154956.27205-1-eajames@linux.ibm.com> <20220426154956.27205-3-eajames@linux.ibm.com>
-In-Reply-To: <20220426154956.27205-3-eajames@linux.ibm.com>
-From:   Joel Stanley <joel@jms.id.au>
-Date:   Wed, 27 Apr 2022 08:34:25 +0000
-Message-ID: <CACPK8XdzznuHFZ_sj3zt4CKcsi02Af4COqa0-JP7=w6Mw_EjVQ@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] hwmon (occ): Retry for checksum failure
-To:     Eddie James <eajames@linux.ibm.com>
-Cc:     linux-fsi@lists.ozlabs.org, linux-hwmon@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jeremy Kerr <jk@ozlabs.org>,
-        David Laight <David.Laight@aculab.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 26 Apr 2022 at 15:50, Eddie James <eajames@linux.ibm.com> wrote:
->
-> Due to the OCC communication design with a shared SRAM area,
-> checkum errors are expected due to corrupted buffer from OCC
-> communications with other system components. Therefore, retry
-> the command twice in the event of a checksum failure.
->
-> Signed-off-by: Eddie James <eajames@linux.ibm.com>
-> Acked-by: Guenter Roeck <linux@roeck-us.net>
-> ---
->  drivers/hwmon/occ/p9_sbe.c | 15 +++++++++++----
->  1 file changed, 11 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/hwmon/occ/p9_sbe.c b/drivers/hwmon/occ/p9_sbe.c
-> index 49b13cc01073..e6ccef2af659 100644
-> --- a/drivers/hwmon/occ/p9_sbe.c
-> +++ b/drivers/hwmon/occ/p9_sbe.c
-> @@ -14,6 +14,8 @@
->
->  #include "common.h"
->
-> +#define OCC_CHECKSUM_RETRIES   3
-> +
->  struct p9_sbe_occ {
->         struct occ occ;
->         bool sbe_error;
-> @@ -83,17 +85,22 @@ static int p9_sbe_occ_send_cmd(struct occ *occ, u8 *cmd, size_t len)
->         struct occ_response *resp = &occ->resp;
->         struct p9_sbe_occ *ctx = to_p9_sbe_occ(occ);
->         size_t resp_len = sizeof(*resp);
-> +       int i;
->         int rc;
->
-> -       rc = fsi_occ_submit(ctx->sbe, cmd, len, resp, &resp_len);
-> -       if (rc < 0) {
-> +       for (i = 0; i < OCC_CHECKSUM_RETRIES; ++i) {
-> +               rc = fsi_occ_submit(ctx->sbe, cmd, len, resp, &resp_len);
-> +               if (rc >= 0)
-> +                       break;
->                 if (resp_len) {
->                         if (p9_sbe_occ_save_ffdc(ctx, resp, resp_len))
->                                 sysfs_notify(&occ->bus_dev->kobj, NULL,
->                                              bin_attr_ffdc.attr.name);
-> -               }
->
-> -               return rc;
-> +                       return rc;
-> +               }
-> +               if (rc != -EBADE)
-> +                       return rc;
+Update the PRU remoteproc bindings for the PRU cores on AM62x SoCs.
 
-Future you might appreciate a comment above the EBADE check clarifying
-why that error is being special cased.
+Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
+---
+ Documentation/devicetree/bindings/remoteproc/ti,pru-rproc.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
->         }
->
->         switch (resp->return_status) {
-> --
-> 2.27.0
->
+diff --git a/Documentation/devicetree/bindings/remoteproc/ti,pru-rproc.yaml b/Documentation/devicetree/bindings/remoteproc/ti,pru-rproc.yaml
+index d7c3a78e37e6..e351550b012c 100644
+--- a/Documentation/devicetree/bindings/remoteproc/ti,pru-rproc.yaml
++++ b/Documentation/devicetree/bindings/remoteproc/ti,pru-rproc.yaml
+@@ -47,6 +47,7 @@ properties:
+       - ti,j721e-pru    # for PRUs in K3 J721E SoC family
+       - ti,j721e-rtu    # for RTUs in K3 J721E SoC family
+       - ti,j721e-tx-pru # for Tx_PRUs in K3 J721E SoC family
++      - ti,am625-pru    # for PRUs in K3 AM62x SoC family
+ 
+   reg:
+     items:
+-- 
+2.17.1
+
