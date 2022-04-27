@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB528C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:13:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67E71C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:13:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242706AbiD0QOY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:14:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52542 "EHLO
+        id S242545AbiD0QOH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:14:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242021AbiD0QMR (ORCPT
+        with ESMTP id S242152AbiD0QMB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:12:17 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BF033ECC97;
-        Wed, 27 Apr 2022 09:08:32 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id l7so4398045ejn.2;
-        Wed, 27 Apr 2022 09:08:31 -0700 (PDT)
+        Wed, 27 Apr 2022 12:12:01 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FE1F494BDD;
+        Wed, 27 Apr 2022 09:08:16 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id j6so4311623ejc.13;
+        Wed, 27 Apr 2022 09:08:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=/A0b7QXPnRxcdjzjvBy95srF3RhPajcOL797uVjW17k=;
-        b=djNzVmRevWSY+hIiC1/H30PkHbSU6xqUomoS6vNxNxSsA2vgIsDJmjFdrGiJt1K8MS
-         XvJVUBQenTNDmnRY1OxwRpXMU6eq8+3j9NKMg8A0/fSUm/OXLuHTuvFMOxq1tfiv5/lo
-         PETw/pty71e5r7Z5xql/U9OyQrFDpphWq0AKn82ZX5A9j9EvNXqncx1kGerazGaEhlhW
-         BtwUHrzoVQidChJdfESgX4ChoMs1jqCIz+LCsesKzeGmJ4AwqLUMeAhlcZ0ui7hA1ca6
-         FYrGCeBuXiEVcQ+uN5Ej2ozdZDqA9mtVVLC0RLXFL7lInO3enpCUsINJFZgSSzcJVwCF
-         jf8Q==
+        bh=LXuHnml0JyQ7WUWtSyqxCdcrvdOAihH7ECEcB+ac3FQ=;
+        b=dydbqc5J60BLLi30zbMUbH7rkOREmVuwqXYM7KqyVJ5PTePK07uL1it2F3ppOULrQp
+         XOnGBiUiY9fCOnKmRENfByrA63YlpbGpanCw0uQnd+ZXKWb23Fe+VUM+HBSvz3hbwYb0
+         fxxJkdmou9OPPb6NqqihMEGz7guVzyP7lwViOWdEg5SiEssRFwqsPO1dwSNHPc6DCXEQ
+         WAwUQSN/dMR6z/a2sieXWO8H3XWqgFIVTl5X+QYo6IQ1GO4xbn9k1OYHY55/FLUVZJaQ
+         unv/NKd2hSzV1Yo9IFcRabSOEMNPfdQuZFplMoMO96GBvThfkSmcQUo5mcHy0G6nPCHE
+         39gA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/A0b7QXPnRxcdjzjvBy95srF3RhPajcOL797uVjW17k=;
-        b=ax4xdyuB4aYs1fiKzYaHSXT5IzIHn9Iu8zyMFLMGhJlFd6k3qtX19JN+N+rZanY8kc
-         giD4qTQlh+Te94peFoTHxnXafnAWKQiVglB2kWWebFUzX1Zbs2T+SGkYwbEhi7sapiMc
-         9htSuSD8i/SxQEWeBHal56l5OOep7kTc9EbotTdwwDEdwKbXyUKxD775zUQkLkKjFa+i
-         FjGpVGRG6yhKBivdGrzoDlNS4IEDJ6+p2PynGOFXIKT3lC3ThZisk8d8pchlpTIu5Kw3
-         InfoMkH9p871xmAUr9WKpvG7heYa2IUAp3KURkXSIwIicoBPpdfIJq0VuNicso3/xeK2
-         YNiQ==
-X-Gm-Message-State: AOAM532boLg2Ni0TXEbSMKVR1+mco7wB8z1GkIfrVzUwEQwJRLGqqkIn
-        ROtB2BUaPQfLrWTxNdlm7n4=
-X-Google-Smtp-Source: ABdhPJzZ9GK5JMKIlGUFt2skqXUpBcMIDshg75p8eWcFCf8XLqwMsnXkioKQLmTu+ChB5hH1wuiIcQ==
-X-Received: by 2002:a17:907:98eb:b0:6f3:ce56:c1a2 with SMTP id ke11-20020a17090798eb00b006f3ce56c1a2mr2984393ejc.173.1651075659037;
-        Wed, 27 Apr 2022 09:07:39 -0700 (PDT)
+        bh=LXuHnml0JyQ7WUWtSyqxCdcrvdOAihH7ECEcB+ac3FQ=;
+        b=X/tXXMn0pBL8Izd8jUlCHxB4HQlgZtYHS76F439I6OoxmwfCd2y0kFxb5lhq5Y5BNw
+         uqm0NblYChIXbLj4fVO2dA0euTAqz1d+vqHtzlHpKd2GQnvmnJqO/vccuPPeFGXuoozb
+         l2rRnYt4c7VNm9VgDEMNoDx6WuGLxiLqv7RyT1iNKD73FyjdY8rkQAgTZtffJLOqT4j7
+         p7ib9MrqvWErUVp56uBtfrKe8V8TYO4oHD54Mi3kd7NxzLylm5q3fQL/2KyL7YyLHCZQ
+         jXUU9wfqYd28GXzCHO2Yvqx9ROfKEYhcDsCD41tbwkCwRI2CYtueZiPdjZQqX6vxnTqR
+         s+nw==
+X-Gm-Message-State: AOAM532+MtzALs+ku8KNfia60oULy9MwhVjlqbdZVMoqJX6ZUt10giD5
+        fTeoQXQokq0Y+m6GR4inOqI=
+X-Google-Smtp-Source: ABdhPJy3vcafoHiVPbX6lh1POBOoAQAfG6usQdpjwle19kzFa7yL07Q0av8Z+KNsAtfAW8A2iujkhw==
+X-Received: by 2002:a17:907:3f02:b0:6f3:5c42:321a with SMTP id hq2-20020a1709073f0200b006f35c42321amr25692644ejc.521.1651075647581;
+        Wed, 27 Apr 2022 09:07:27 -0700 (PDT)
 Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id n5-20020a170906378500b006efb4ab6f59sm6984098ejc.86.2022.04.27.09.07.37
+        by smtp.googlemail.com with ESMTPSA id n5-20020a170906378500b006efb4ab6f59sm6984098ejc.86.2022.04.27.09.07.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 09:07:38 -0700 (PDT)
+        Wed, 27 Apr 2022 09:07:27 -0700 (PDT)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
@@ -85,9 +85,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
         "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
         "Bos, H.J." <h.j.bos@vu.nl>
-Subject: [PATCH net-next v5 18/18] team: Remove use of list iterator variable for list_for_each_entry_from()
-Date:   Wed, 27 Apr 2022 18:06:35 +0200
-Message-Id: <20220427160635.420492-19-jakobkoschel@gmail.com>
+Subject: [PATCH net-next v5 10/18] qed: Replace usage of found with dedicated list iterator variable
+Date:   Wed, 27 Apr 2022 18:06:27 +0200
+Message-Id: <20220427160635.420492-11-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220427160635.420492-1-jakobkoschel@gmail.com>
 References: <20220427160635.420492-1-jakobkoschel@gmail.com>
@@ -97,103 +97,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In preparation to limit the scope of the list iterator variable to the
-list traversal loop, use a dedicated pointer to iterate through the
-list [1].
+To move the list iterator variable into the list_for_each_entry_*()
+macro in the future it should be avoided to use the list iterator
+variable after the loop body.
 
-Since that variable should not be used past the loop iteration, a
-separate variable is used to 'remember the current location within the
-loop'.
+To *never* use the list iterator variable after the loop it was
+concluded to use a separate iterator variable instead of a
+found boolean [1].
 
-To either continue iterating from that position or skip the iteration
-(if the previous iteration was complete) list_prepare_entry() is used.
+This removes the need to use a found variable and simply checking if
+the variable was set, can determine if the break/goto was hit.
 
 Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- drivers/net/team/team.c | 20 +++++++++++++-------
- 1 file changed, 13 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/qlogic/qed/qed_iwarp.c | 26 ++++++++++-----------
+ 1 file changed, 12 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
-index b07dde6f0abf..688c4393f099 100644
---- a/drivers/net/team/team.c
-+++ b/drivers/net/team/team.c
-@@ -2425,17 +2425,17 @@ static int team_nl_send_options_get(struct team *team, u32 portid, u32 seq,
- 				    int flags, team_nl_send_func_t *send_func,
- 				    struct list_head *sel_opt_inst_list)
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
+index 1d1d4caad680..198c9321bf51 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
+@@ -1630,38 +1630,36 @@ static struct qed_iwarp_listener *
+ qed_iwarp_get_listener(struct qed_hwfn *p_hwfn,
+ 		       struct qed_iwarp_cm_info *cm_info)
  {
-+	struct team_option_inst *opt_inst, *tmp = NULL;
- 	struct nlattr *option_list;
- 	struct nlmsghdr *nlh;
- 	void *hdr;
--	struct team_option_inst *opt_inst;
- 	int err;
- 	struct sk_buff *skb = NULL;
- 	bool incomplete;
- 	int i;
+-	struct qed_iwarp_listener *listener = NULL;
++	struct qed_iwarp_listener *listener = NULL, *iter;
+ 	static const u32 ip_zero[4] = { 0, 0, 0, 0 };
+-	bool found = false;
  
--	opt_inst = list_first_entry(sel_opt_inst_list,
--				    struct team_option_inst, tmp_list);
-+	tmp = list_first_entry(sel_opt_inst_list,
-+			       struct team_option_inst, tmp_list);
- 
- start_again:
- 	err = __send_and_alloc_skb(&skb, team, portid, send_func);
-@@ -2456,7 +2456,9 @@ static int team_nl_send_options_get(struct team *team, u32 portid, u32 seq,
- 		goto nla_put_failure;
- 
- 	i = 0;
-+	opt_inst = list_prepare_entry(tmp, sel_opt_inst_list, tmp_list);
- 	incomplete = false;
-+	tmp = NULL;
- 	list_for_each_entry_from(opt_inst, sel_opt_inst_list, tmp_list) {
- 		err = team_nl_fill_one_option_get(skb, team, opt_inst);
- 		if (err) {
-@@ -2464,6 +2466,7 @@ static int team_nl_send_options_get(struct team *team, u32 portid, u32 seq,
- 				if (!i)
- 					goto errout;
- 				incomplete = true;
-+				tmp = opt_inst;
+-	list_for_each_entry(listener,
++	list_for_each_entry(iter,
+ 			    &p_hwfn->p_rdma_info->iwarp.listen_list,
+ 			    list_entry) {
+-		if (listener->port == cm_info->local_port) {
+-			if (!memcmp(listener->ip_addr,
++		if (iter->port == cm_info->local_port) {
++			if (!memcmp(iter->ip_addr,
+ 				    ip_zero, sizeof(ip_zero))) {
+-				found = true;
++				listener = iter;
  				break;
  			}
- 			goto errout;
-@@ -2707,14 +2710,14 @@ static int team_nl_send_port_list_get(struct team *team, u32 portid, u32 seq,
- 	struct nlattr *port_list;
- 	struct nlmsghdr *nlh;
- 	void *hdr;
--	struct team_port *port;
-+	struct team_port *port, *tmp = NULL;
- 	int err;
- 	struct sk_buff *skb = NULL;
- 	bool incomplete;
- 	int i;
  
--	port = list_first_entry_or_null(&team->port_list,
--					struct team_port, list);
-+	tmp = list_first_entry_or_null(&team->port_list,
-+				       struct team_port, list);
+-			if (!memcmp(listener->ip_addr,
++			if (!memcmp(iter->ip_addr,
+ 				    cm_info->local_ip,
+ 				    sizeof(cm_info->local_ip)) &&
+-			    (listener->vlan == cm_info->vlan)) {
+-				found = true;
++			    iter->vlan == cm_info->vlan) {
++				listener = iter;
+ 				break;
+ 			}
+ 		}
+ 	}
  
- start_again:
- 	err = __send_and_alloc_skb(&skb, team, portid, send_func);
-@@ -2744,7 +2747,9 @@ static int team_nl_send_port_list_get(struct team *team, u32 portid, u32 seq,
- 		err = team_nl_fill_one_port_get(skb, one_port);
- 		if (err)
- 			goto errout;
--	} else if (port) {
-+	} else {
-+		port = list_prepare_entry(tmp, &team->port_list, list);
-+		tmp = NULL;
- 		list_for_each_entry_from(port, &team->port_list, list) {
- 			err = team_nl_fill_one_port_get(skb, port);
- 			if (err) {
-@@ -2752,6 +2757,7 @@ static int team_nl_send_port_list_get(struct team *team, u32 portid, u32 seq,
- 					if (!i)
- 						goto errout;
- 					incomplete = true;
-+					tmp = port;
- 					break;
- 				}
- 				goto errout;
+-	if (found) {
++	if (listener)
+ 		DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "listener found = %p\n",
+ 			   listener);
+-		return listener;
+-	}
++	else
++		DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "listener not found\n");
+ 
+-	DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "listener not found\n");
+-	return NULL;
++	return listener;
+ }
+ 
+ static int
 -- 
 2.25.1
 
