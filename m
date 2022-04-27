@@ -2,107 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9658C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 03:11:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CF0DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 03:12:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353065AbiD0DO5 (ORCPT
+        id S1357243AbiD0DPb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 23:14:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49996 "EHLO
+        Tue, 26 Apr 2022 23:15:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231515AbiD0DOy (ORCPT
+        with ESMTP id S1346423AbiD0DP2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 23:14:54 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4433812089
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 20:11:45 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id p6so446653plf.9
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 20:11:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=QeLNBCirVB+9azObthHDc+zDjnH2MBnHQLYuB1xHpSg=;
-        b=LauZkNXFuJxaHO6AZzzSQgT1RBnzkVe5AbyhIWjE+cpUPZuWrYw7k821kWGkOnIuE3
-         m/JeFVATc5PxS0lQ887DbBw5TVS/eqya/BvOe3aA6XPgTag2bL9kb7jEf/kMG4bgT9+n
-         nZ4Pz/7m5DTWrrhU+lVyo01hBxzoezE3kQRPJtik54IIGjq118i9mOUrWBOOqsEzyOMX
-         ig2zp9I6b1JafAnW9a+BENcFZ4C2riyTniq/P446KJ60roW7SyNUDvtC1mYPejb7zbKT
-         sT6Q5G19soERJMdKju6fH5HpCCcnGBh6ZC1knxH5n9BRqbbiYBU6dJDqTM/+fmMdDQwv
-         rovQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=QeLNBCirVB+9azObthHDc+zDjnH2MBnHQLYuB1xHpSg=;
-        b=fe07K1+u2jd/WqI4whnlZvjiBUGTqicfyc9PBbQisXpSd1RdzpvlIsan1+f6+y9UTZ
-         IRTzAgHopW9OZ6u/yFOz0+GNb7zDLfxL/XTaBxQMbp+1zhn7dSlWwTjQKdcsJ4Iby4Wb
-         BQILpOeHHuMH/uoY9bdiBTKUxFeEgeyMrbh8B3tuo8F0YjFUqeNztrn/8mBso91GYuTs
-         6hFrXLTWn6BFIAGc6At44Mhi/zbucoIvJL3jBQfprujuCJ/TGUa34684ED+aATLbm8jz
-         Vq0P5thgcYbqt1Vk9fPKAg5hyA6GWEYh5Mo4hi2zp30B1yPb+IgWqjeB2FxDYjqB0kTI
-         2ZKg==
-X-Gm-Message-State: AOAM532s2LqhhmUNCPdNnc8oYX5TwaLezIi+cPim6LugpjO+wO350cGv
-        ohPzxDFplNqPeRVyISzY8NPjWQ==
-X-Google-Smtp-Source: ABdhPJzIzlWaNfocqWrXkXaX43UuhbhI/L6BzhFoDVBeU6ZHYI+09qW0rRQP2y7SIq2VIL6q5Hfmtw==
-X-Received: by 2002:a17:90a:3486:b0:1d9:3abd:42ed with SMTP id p6-20020a17090a348600b001d93abd42edmr22017909pjb.32.1651029104494;
-        Tue, 26 Apr 2022 20:11:44 -0700 (PDT)
-Received: from localhost ([122.177.141.190])
-        by smtp.gmail.com with ESMTPSA id u25-20020a62ed19000000b004f140515d56sm16544735pfh.46.2022.04.26.20.11.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 20:11:43 -0700 (PDT)
-Date:   Wed, 27 Apr 2022 08:41:41 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>
-Cc:     rafael@kernel.org, robh+dt@kernel.org, krzk+dt@kernel.org,
-        matthias.bgg@gmail.com, jia-wei.chang@mediatek.com,
-        roger.lu@mediatek.com, hsinyi@google.com, khilman@baylibre.com,
-        angelogioacchino.delregno@collabora.com, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-Subject: Re: [PATCH V4 07/14] cpufreq: mediatek: Add .get function
-Message-ID: <20220427031141.or2owu5wrh2cadfo@vireshk-i7>
-References: <20220422075239.16437-1-rex-bc.chen@mediatek.com>
- <20220422075239.16437-8-rex-bc.chen@mediatek.com>
- <20220425053548.72w2jh2g6lpzgz6g@vireshk-i7>
- <64c690e8edf493ec0a4a14e0fdaad2d8e88e6da7.camel@mediatek.com>
- <20220425100058.4kbvmpi63ygni6k5@vireshk-i7>
- <078b1f9b39690da98cbd3c4528ba28374a097083.camel@mediatek.com>
+        Tue, 26 Apr 2022 23:15:28 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7145B120B3;
+        Tue, 26 Apr 2022 20:12:18 -0700 (PDT)
+X-UUID: 3be7f0f1650143e2be50c0f2079b59f1-20220427
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:8bce5474-d1c5-41d6-96ea-e4402a10e93c,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:-20
+X-CID-META: VersionHash:faefae9,CLOUDID:6e01d42e-6199-437e-8ab4-9920b4bc5b76,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: 3be7f0f1650143e2be50c0f2079b59f1-20220427
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 842767396; Wed, 27 Apr 2022 11:12:13 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Wed, 27 Apr 2022 11:12:13 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 27 Apr 2022 11:12:13 +0800
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     <mturquette@baylibre.com>, <sboyd@kernel.org>,
+        <matthias.bgg@gmail.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>
+CC:     <p.zabel@pengutronix.de>,
+        <angelogioacchino.delregno@collabora.com>,
+        <chun-jie.chen@mediatek.com>, <wenst@chromium.org>,
+        <runyang.chen@mediatek.com>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-clk@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>
+Subject: [PATCH V4 01/15] clk: mediatek: reset: Add reset.h
+Date:   Wed, 27 Apr 2022 11:09:36 +0800
+Message-ID: <20220427030950.23395-2-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220427030950.23395-1-rex-bc.chen@mediatek.com>
+References: <20220427030950.23395-1-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <078b1f9b39690da98cbd3c4528ba28374a097083.camel@mediatek.com>
-User-Agent: NeoMutt/20180716-391-311a52
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 26-04-22, 19:13, Rex-BC Chen wrote:
-> We have a non-upstream driver which tries to get frequency by
-> 'cpufreq_get'.
+Add a new file "reset.h" to place some definitions for clock reset.
 
-This is the right thing to do there.
+Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ drivers/clk/mediatek/clk-mtk.h |  8 ++------
+ drivers/clk/mediatek/reset.c   |  9 +--------
+ drivers/clk/mediatek/reset.h   | 24 ++++++++++++++++++++++++
+ 3 files changed, 27 insertions(+), 14 deletions(-)
+ create mode 100644 drivers/clk/mediatek/reset.h
 
-> When we use that non-upstream driver, 'cpufreq_verify_current_freq'
-> will be further invoked by 'cpufreq_get' and it would cause voltage
-> pulse issue as I described previously.
-
-I see this will eventually resolve to __cpufreq_driver_target(), which
-should return without any frequency updates.
-
-What do you mean by "voltage pulse" here? What actually happens which
-you want to avoid.
-
-> Therefore, we apply the solution in this series.
-
-I won't call it a solution but a Bug as .get() is supposed to read
-real freq of the hardware.
-
-> Recently, we found that using 'cpufreq_generic_get' directly in our
-> non-upstream driver can do the same thing without pulse issue.
-
-That would be an abuse of the cpufreq_generic_get() API. It is ONLY
-allowed to be used while setting .get callback in the driver.
-
+diff --git a/drivers/clk/mediatek/clk-mtk.h b/drivers/clk/mediatek/clk-mtk.h
+index bf6565aa7319..a6d0f24c62fa 100644
+--- a/drivers/clk/mediatek/clk-mtk.h
++++ b/drivers/clk/mediatek/clk-mtk.h
+@@ -13,6 +13,8 @@
+ #include <linux/spinlock.h>
+ #include <linux/types.h>
+ 
++#include "reset.h"
++
+ #define MAX_MUX_GATE_BIT	31
+ #define INVALID_MUX_GATE_BIT	(MAX_MUX_GATE_BIT + 1)
+ 
+@@ -190,12 +192,6 @@ void mtk_free_clk_data(struct clk_onecell_data *clk_data);
+ struct clk *mtk_clk_register_ref2usb_tx(const char *name,
+ 			const char *parent_name, void __iomem *reg);
+ 
+-void mtk_register_reset_controller(struct device_node *np,
+-			unsigned int num_regs, int regofs);
+-
+-void mtk_register_reset_controller_set_clr(struct device_node *np,
+-	unsigned int num_regs, int regofs);
+-
+ struct mtk_clk_desc {
+ 	const struct mtk_gate *clks;
+ 	size_t num_clks;
+diff --git a/drivers/clk/mediatek/reset.c b/drivers/clk/mediatek/reset.c
+index bcec4b89f449..9f3cb22aea1b 100644
+--- a/drivers/clk/mediatek/reset.c
++++ b/drivers/clk/mediatek/reset.c
+@@ -8,16 +8,9 @@
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
+ #include <linux/regmap.h>
+-#include <linux/reset-controller.h>
+ #include <linux/slab.h>
+ 
+-#include "clk-mtk.h"
+-
+-struct mtk_reset {
+-	struct regmap *regmap;
+-	int regofs;
+-	struct reset_controller_dev rcdev;
+-};
++#include "reset.h"
+ 
+ static int mtk_reset_assert_set_clr(struct reset_controller_dev *rcdev,
+ 	unsigned long id)
+diff --git a/drivers/clk/mediatek/reset.h b/drivers/clk/mediatek/reset.h
+new file mode 100644
+index 000000000000..764a8affe206
+--- /dev/null
++++ b/drivers/clk/mediatek/reset.h
+@@ -0,0 +1,24 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Copyright (c) 2022 MediaTek Inc.
++ */
++
++#ifndef __DRV_CLK_MTK_RESET_H
++#define __DRV_CLK_MTK_RESET_H
++
++#include <linux/reset-controller.h>
++#include <linux/types.h>
++
++struct mtk_reset {
++	struct regmap *regmap;
++	int regofs;
++	struct reset_controller_dev rcdev;
++};
++
++void mtk_register_reset_controller(struct device_node *np,
++				   unsigned int num_regs, int regofs);
++
++void mtk_register_reset_controller_set_clr(struct device_node *np,
++					   unsigned int num_regs, int regofs);
++
++#endif /* __DRV_CLK_MTK_RESET_H */
 -- 
-viresh
+2.18.0
+
