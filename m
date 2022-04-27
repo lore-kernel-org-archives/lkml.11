@@ -2,86 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96094C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:47:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF1C9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:47:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230234AbiD0Kub (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 06:50:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35300 "EHLO
+        id S230242AbiD0Kuk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 06:50:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230078AbiD0KuH (ORCPT
+        with ESMTP id S229999AbiD0KuH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Apr 2022 06:50:07 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B8A43AE09;
-        Wed, 27 Apr 2022 03:20:54 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id s21so1793571wrb.8;
-        Wed, 27 Apr 2022 03:20:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=YpngR4n4Vedu6z5a5k/BhmCiHm7z2H0f6uU18kyeCSk=;
-        b=Ydnwfs5ZFvzstOL4mZcUIcvZik2KN8U7L6ffdUGLBg6HeGTR3AnOj3P361A4EO8w+L
-         DWgIzYlRlM15DR98bPZNiTI/umszdYf8q+emO6IOw+t+yPwDg3vhokWlVucCexx56/yP
-         2ujV5MkybDr6Alz1WPjU96vs7/uCGww4c+UTuhJcxm5Lhqf+ETMyO5QV7PKMqsa7ImM7
-         M0f1uqtoSf7r90QXRCGkKlYuxynQNd8oS17Vsq9i7gpFh/wYKeqvfxLaS0rh/sK4nIAc
-         CuF373jNykgAgIefGdtoXN6PK4qEY9W0gzAUCGnFtbZeCcmw+4mnOD8mswUiY1xeFp5j
-         uRtA==
-X-Gm-Message-State: AOAM533UubrxR7R17k7QmBIsqRg6RqqmII2iZpD/jZrxKOhT58v26kwv
-        mQwep8EnHg/l4qHixZmaKvqAmuaRkiI=
-X-Google-Smtp-Source: ABdhPJydNWOBreqCBQqJ3hGd3bZH28njhPnqbvszt/1SR/tJ1Zv9LgKUiSxIUD7zogUjzT8tsOpkeg==
-X-Received: by 2002:a05:6402:128b:b0:425:d1d7:b321 with SMTP id w11-20020a056402128b00b00425d1d7b321mr22866633edv.179.1651053701125;
-        Wed, 27 Apr 2022 03:01:41 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id z21-20020a05640240d500b004261a2a0ec5sm526804edb.54.2022.04.27.03.01.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Apr 2022 03:01:39 -0700 (PDT)
-Message-ID: <8bd7804b-a38d-47b5-c9d3-1f5dca578260@kernel.org>
-Date:   Wed, 27 Apr 2022 12:01:37 +0200
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 282ED36A647
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 03:20:53 -0700 (PDT)
+X-UUID: 3e1c3739de0b45bd9e456dfe0070ed7c-20220427
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:e6ff2951-49ff-4921-a4da-7f6959bb91d0,OB:20,L
+        OB:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,
+        ACTION:release,TS:75
+X-CID-INFO: VERSION:1.1.4,REQID:e6ff2951-49ff-4921-a4da-7f6959bb91d0,OB:20,LOB
+        :0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,
+        ACTION:quarantine,TS:75
+X-CID-META: VersionHash:faefae9,CLOUDID:975bacc6-85ee-4ac1-ac05-bd3f1e72e732,C
+        OID:055001bf033d,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 3e1c3739de0b45bd9e456dfe0070ed7c-20220427
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+        (envelope-from <lecopzer.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1732903374; Wed, 27 Apr 2022 17:59:36 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Wed, 27 Apr 2022 17:59:34 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 27 Apr
+ 2022 17:59:32 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 27 Apr 2022 17:59:32 +0800
+From:   Lecopzer Chen <lecopzer.chen@mediatek.com>
+To:     <linus.walleij@linaro.org>, <linux@armlinux.org.uk>
+CC:     <lecopzer.chen@mediatek.com>, <andreyknvl@gmail.com>,
+        <anshuman.khandual@arm.com>, <ardb@kernel.org>, <arnd@arndb.de>,
+        <dvyukov@google.com>, <geert+renesas@glider.be>,
+        <glider@google.com>, <kasan-dev@googlegroups.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <lukas.bulwahn@gmail.com>,
+        <mark.rutland@arm.com>, <masahiroy@kernel.org>,
+        <matthias.bgg@gmail.com>, <rmk+kernel@armlinux.org.uk>,
+        <ryabinin.a.a@gmail.com>, <yj.chiang@mediatek.com>
+Subject: [PATCH v5 1/2] arm: kasan: support CONFIG_KASAN_VMALLOC
+Date:   Wed, 27 Apr 2022 17:59:15 +0800
+Message-ID: <20220427095916.17515-2-lecopzer.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220427095916.17515-1-lecopzer.chen@mediatek.com>
+References: <20220427095916.17515-1-lecopzer.chen@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 5.17 000/146] 5.17.5-rc1 review
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-References: <20220426081750.051179617@linuxfoundation.org>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 26. 04. 22, 10:19, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.17.5 release.
-> There are 146 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Thu, 28 Apr 2022 08:17:22 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.17.5-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.17.y
-> and the diffstat can be found below.
+Simply make shadow of vmalloc area mapped on demand.
 
-openSUSE configs¹⁾ all green.
+Since the virtual address of vmalloc for Arm is also between
+MODULE_VADDR and 0x100000000 (ZONE_HIGHMEM), which means the shadow
+address has already included between KASAN_SHADOW_START and
+KASAN_SHADOW_END.
+Thus we need to change nothing for memory map of Arm.
 
-Tested-by: Jiri Slaby <jirislaby@kernel.org>
+This can fix ARM_MODULE_PLTS with KASan, support KASan for higmem
+and support CONFIG_VMAP_STACK with KASan.
 
-¹⁾ armv6hl armv7hl arm64 i386 ppc64 ppc64le riscv64 s390x x86_64
+Signed-off-by: Lecopzer Chen <lecopzer.chen@mediatek.com>
+Tested-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ arch/arm/Kconfig         | 1 +
+ arch/arm/mm/kasan_init.c | 6 +++++-
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index 2e8091e2d8a8..f440cf59cea1 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -75,6 +75,7 @@ config ARM
+ 	select HAVE_ARCH_KFENCE if MMU && !XIP_KERNEL
+ 	select HAVE_ARCH_KGDB if !CPU_ENDIAN_BE32 && MMU
+ 	select HAVE_ARCH_KASAN if MMU && !XIP_KERNEL
++	select HAVE_ARCH_KASAN_VMALLOC if HAVE_ARCH_KASAN
+ 	select HAVE_ARCH_MMAP_RND_BITS if MMU
+ 	select HAVE_ARCH_PFN_VALID
+ 	select HAVE_ARCH_SECCOMP
+diff --git a/arch/arm/mm/kasan_init.c b/arch/arm/mm/kasan_init.c
+index 5ad0d6c56d56..29caee9c79ce 100644
+--- a/arch/arm/mm/kasan_init.c
++++ b/arch/arm/mm/kasan_init.c
+@@ -236,7 +236,11 @@ void __init kasan_init(void)
+ 
+ 	clear_pgds(KASAN_SHADOW_START, KASAN_SHADOW_END);
+ 
+-	kasan_populate_early_shadow(kasan_mem_to_shadow((void *)VMALLOC_START),
++	if (!IS_ENABLED(CONFIG_KASAN_VMALLOC))
++		kasan_populate_early_shadow(kasan_mem_to_shadow((void *)VMALLOC_START),
++					    kasan_mem_to_shadow((void *)VMALLOC_END));
++
++	kasan_populate_early_shadow(kasan_mem_to_shadow((void *)VMALLOC_END),
+ 				    kasan_mem_to_shadow((void *)-1UL) + 1);
+ 
+ 	for_each_mem_range(i, &pa_start, &pa_end) {
 -- 
-js
-suse labs
+2.18.0
+
