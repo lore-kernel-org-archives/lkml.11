@@ -2,169 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8D9FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:06:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92FCFC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:06:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241843AbiD0QKD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:10:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45324 "EHLO
+        id S241872AbiD0QKG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:10:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241857AbiD0QHb (ORCPT
+        with ESMTP id S242389AbiD0QJh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:07:31 -0400
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D313A3CF57C
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:03:19 -0700 (PDT)
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20220427160313euoutp02ddd1e98ed746b29525c72af62b1e3f00~pzFKML7TV1400814008euoutp02C
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 16:03:13 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20220427160313euoutp02ddd1e98ed746b29525c72af62b1e3f00~pzFKML7TV1400814008euoutp02C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1651075393;
-        bh=a76qyKknkM0wvqdFNEHw+s8BT16u2uGhpV7aO9NKOYY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uTmyJt/Fj7B4+/K/zKEUMK6Ipat+TX8HPxfYnEo40bgAUnZbIsbpsqzG5w9+P2wVG
-         TRJQ+J0CtnKw4bAxDzstGzuT7ljO7vhp4g1vXOvaydPr2cFfbL34VktgitNST7VJd0
-         0cjytuutkeUKGQMoeGLw6Zp66yTyHmeihbn02hnY=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20220427160311eucas1p292a05a97a5799178d307b83156d7614c~pzFInhDTQ0627806278eucas1p2B;
-        Wed, 27 Apr 2022 16:03:11 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-        eusmges2new.samsung.com (EUCPMTA) with SMTP id 46.14.09887.F3969626; Wed, 27
-        Apr 2022 17:03:11 +0100 (BST)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20220427160311eucas1p151141fc73adc590b40ad6f935b1ac214~pzFIDq05j2685026850eucas1p1l;
-        Wed, 27 Apr 2022 16:03:11 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220427160311eusmtrp19ad138dbf7fe61a8204739883754e403~pzFICnC7Y2142221422eusmtrp1I;
-        Wed, 27 Apr 2022 16:03:11 +0000 (GMT)
-X-AuditID: cbfec7f4-45bff7000000269f-66-6269693f394f
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-        eusmgms2.samsung.com (EUCPMTA) with SMTP id F9.A7.09404.E3969626; Wed, 27
-        Apr 2022 17:03:10 +0100 (BST)
-Received: from localhost (unknown [106.210.248.162]) by eusmtip1.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220427160310eusmtip1f0d4275814b6fa6855728a90524835ba~pzFHtPgBm1783517835eusmtip1O;
-        Wed, 27 Apr 2022 16:03:10 +0000 (GMT)
-From:   Pankaj Raghav <p.raghav@samsung.com>
-To:     jaegeuk@kernel.org, axboe@kernel.dk, snitzer@kernel.org,
-        hch@lst.de, mcgrof@kernel.org, naohiro.aota@wdc.com,
-        sagi@grimberg.me, damien.lemoal@opensource.wdc.com,
-        dsterba@suse.com, johannes.thumshirn@wdc.com
-Cc:     linux-kernel@vger.kernel.org, linux-btrfs@vger.kernel.org,
-        clm@fb.com, gost.dev@samsung.com, chao@kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net, josef@toxicpanda.com,
-        jonathan.derrick@linux.dev, agk@redhat.com, kbusch@kernel.org,
-        kch@nvidia.com, linux-nvme@lists.infradead.org,
-        dm-devel@redhat.com, bvanassche@acm.org, jiangbo.365@bytedance.com,
-        linux-fsdevel@vger.kernel.org, matias.bjorling@wdc.com,
-        linux-block@vger.kernel.org, Pankaj Raghav <p.raghav@samsung.com>
-Subject: [PATCH 14/16] f2fs: call bdev_zone_sectors() only once on
- init_blkz_info()
-Date:   Wed, 27 Apr 2022 18:02:53 +0200
-Message-Id: <20220427160255.300418-15-p.raghav@samsung.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220427160255.300418-1-p.raghav@samsung.com>
+        Wed, 27 Apr 2022 12:09:37 -0400
+Received: from beige.elm.relay.mailchannels.net (beige.elm.relay.mailchannels.net [23.83.212.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AF32405140
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:04:58 -0700 (PDT)
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id 0B2D7223E7;
+        Wed, 27 Apr 2022 16:04:10 +0000 (UTC)
+Received: from pdx1-sub0-mail-a219.dreamhost.com (unknown [127.0.0.6])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id 61D2D21F9F;
+        Wed, 27 Apr 2022 16:04:07 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1651075447; a=rsa-sha256;
+        cv=none;
+        b=oE4/eYuVeaJ2KYE9fSE0kD4JCcam6C1aYfdxXTxV44ibAtsvaZyNyu6aMKO/FzKEELIrWa
+        YL/RDivFomk6dQ+Pw3a0MRQjGUk3j5M5tUYx7gFaeD/V1N184ckl7HZRB3VvlmuZJMGZjX
+        g6oplm2Tf8MellBAQMjG4/EP9iZ9MP9TDb/Y0gZTnhSwvWkPVH0fcRPWxHttQonMDzkTWe
+        NgJYpZjpohhCZ/Cm+k7iHyZjPc2GTrw9ffPaWEDzB9RRgZ3jn1RUHwSN9sSUsHrAzV+Gmc
+        /7/Y9pTQmWO+QU0LlpE/J58z+sgl/bZ+m9nBM/NuvoQ3X706sO799tgT5FUvjQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+        s=arc-2022; t=1651075447;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:dkim-signature;
+        bh=Uvp1MoIDxRwfyiiSGHGRQ4gYo8x9mwyv7eCgEPV1zO0=;
+        b=RbHqLHXtEwPcNNv3suFUs6Gp5uNblrlSbNsaioYDCh4WmPM2HLM2TkenlkOTZ2D6T6QNGj
+        I435ikvkZp6UnC/rlT+kqGBQt9dgyISDJmjwPz3lIcwLMN3zs8DLZqY4vBQbE8sgn1x/I9
+        1SMr20Cp6CA6+GEHuu3YPUdIlIsQNNiev7a7UdZZ4hOND5nJMUdRJe+t6DSJYTAQ7sbGTV
+        WDwg0yMhM16qKjP8JSh7wAsBsydxIqPFHXiSol8lgMHKy5z+K6BbcdP+Az2naJFI3qSUeR
+        dq+yT92M6l/tEKOFPRUudtxa6keKj43xtNvzX8+H4GgAAVDz67b0yC3b8pl70w==
+ARC-Authentication-Results: i=1;
+        rspamd-67b64f579b-bjm76;
+        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from pdx1-sub0-mail-a219.dreamhost.com (pop.dreamhost.com
+ [64.90.62.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+        by 100.112.55.219 (trex/6.7.1);
+        Wed, 27 Apr 2022 16:04:09 +0000
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
+X-MailChannels-Auth-Id: dreamhost
+X-Spicy-Whimsical: 246176ba0657823e_1651075449593_3172805847
+X-MC-Loop-Signature: 1651075449593:2693619741
+X-MC-Ingress-Time: 1651075449592
+Received: from localhost.localdomain (50-203-181-99-static.hfc.comcastbusiness.net [50.203.181.99])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: dave@stgolabs.net)
+        by pdx1-sub0-mail-a219.dreamhost.com (Postfix) with ESMTPSA id 4KpNpt4rXGz18t;
+        Wed, 27 Apr 2022 09:04:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
+        s=dreamhost; t=1651075446;
+        bh=Uvp1MoIDxRwfyiiSGHGRQ4gYo8x9mwyv7eCgEPV1zO0=;
+        h=From:To:Cc:Subject:Date:Content-Transfer-Encoding;
+        b=WEzxdZn3Ln8nNYYdCh0hV4gGGCq8BWKzLo0IzIcpfHskebXwtGDni8hL+UxuHV+gB
+         hxIEm11RkfDo8IkRnQdrJuGJ/QHJAs8n80wMzoSSRI6jqJjRjWIwuqmX8+5HmEDcv0
+         JpNrLA+gCcusmGl/1+aWaEHmGuD/NGiGbzUR90yXJ9BcaHE4Do1NcVbw2XCDmng8Fc
+         FRP8xQvHEJnnlGesjeywt/m1FrLzmAXi3DfHvJG0ISvQ5r4mSfMj1ZsMRmTrI17oYf
+         TXTxzrZee7e4iqI0N0zWi8PJKG9WFfWxX/gPZslTi9YG/8DAfG3W2x/DUNx5FJilu/
+         uIgK8ybVHmvOQ==
+From:   Davidlohr Bueso <dave@stgolabs.net>
+To:     peterz@infradead.org
+Cc:     namhyung@kernel.org, longman@redhat.com, will@kernel.org,
+        boqun.feng@gmail.com, mingo@kernel.org, dave@stgolabs.net,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] locking/rwsem: Teach contention tracing about optimistic spinning
+Date:   Wed, 27 Apr 2022 08:52:40 -0700
+Message-Id: <20220427155241.26410-1-dave@stgolabs.net>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA01Se0xTVxzOuef2tnSrXKqZZ8iyUbYs8hIfM2dCxtgjXjcz56Jm0S1Q4QKd
-        BVkLc5vJVsZjwoA+HKhtNx3hJTBbaWGWVwhDqmCl4yEgAeRRHciACXsQpq7drZn/fd/3+77f
-        d37JEUDxBcpfIEtNZxWpUrmEEpINnSvXw6JlssMRhrsB2NTVCXHNqJrCJYsrEHcXOwisU5/m
-        41VHD8Qt8wYedv6dSeDhNhuBz9dcJvC0SQ9xQdsiie/nj7m17AmI/5nYjHXtNwB2DegJ3HIz
-        BPdOVfFxb+lO3NxylcR9jUYKn61w8bEm9w+IhzQugLV2Cw8vlWfz8YW7CyS+cnPDq88wff1v
-        Mw+u1FKMNmuez/SMXSSZPkcGU1edRzE/qIohYyn7kmk6t0QwTcMqiinMmqcYW844j1loHaCY
-        Ims1YEzWAZLRWC7y3hUfFEYlsHLZJ6xi0ytxwmR9jgGmTT/5af7iHhW4JcwHPgJEb0P25hGQ
-        D4QCMV0F0NySy0uWAbpudvI4sgRQ22A/9SgyMvo9xQ0qAWpwLXrJDECFtTX8fCAQUHQwyszj
-        e/R19BBAWrOZ8BBIz0LktA4SnlVr6f1IvWDkezBJv4AmS8ZJT1hER6LVzBiu7Vl0pvev/3b6
-        uGXNvfc9soj2Q1fPTJMeDN2WrHoD9KxHdLkQdU1e5nHZN5C6fgxyeC2atVv5HA5A3ScLSA4f
-        R66hVW84GyC1zUR5ypC7rOia3AMhvRGZGjdx9hg0XjAIOccaNPSbH/eENUjXcMori9CJXDHn
-        liDbyrS3FKG+r4zeUgYNnzAQGhCof+wY/WPH6P/vPQdgNVjPZihTkljlllT2WLhSmqLMSE0K
-        jz+aUgfcX7r7gX35Eqic/T28HRAC0A6QAErWiZabkg+LRQnSzz5nFUdjFRlyVtkONghIyXpR
-        vMwsFdNJ0nT2CMumsYpHU0Lg468ishfnfCMqYk5Flh3acYw4GMvL2Tb28M3nf/w1pEQVNzzX
-        fMeQbh8N3eV8qZc3c+DQvedeL9+nfahzRvPf2R4+aiwITe7v8A0+re/YutvRa90SPev6uWhi
-        pz12qmdk5sWQRPOB2+aBRPvGnBu7nBOWJ1oDS32PNObWyW//cqd//uOG4qDK9rDIn3I+CMr1
-        N1effe/+7FP74lt9dLjRFhVhvKayde6teuu77KEEXn1YkJ9oIr4UEfDb2K3irCILO3Up7tYX
-        Fefj7DVpNsq4P/Q1eeBHe3oKd3fUlk1KC4dt30BHRGJASODTsj8TurZH7/gQxxRrm7XHv9Ys
-        kFEv750LrqzPM1ESUpks3RwMFUrpv+/LY11BBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprLKsWRmVeSWpSXmKPExsVy+t/xu7p2mZlJBv1PLC3WnzrGbLH6bj+b
-        xbQPP5ktTk89y2QxqX8Gu8Xvs+eZLfa+m81qceFHI5PFzQM7mSxWrj7KZPFk/Sxmi54DH1gs
-        /nbdA4q1PGS2+PPQ0GLSoWuMFk+vzmKy2HtL2+LS4xXsFpcWuVvs2XuSxeLyrjlsFvOXPWW3
-        mND2ldnixoSnjBYTj29mtfi8tIXdYt3r9ywWJ25JO8h6XL7i7fHvxBo2j4nN79g9zt/byOJx
-        +Wypx6ZVnWweCxumMntsXlLvsXvBZyaP3Tcb2Dx6m9+xeexsvc/q8X7fVTaPvi2rGD3Wb7nK
-        4jFh80bWAKEoPZui/NKSVIWM/OISW6VoQwsjPUNLCz0jE0s9Q2PzWCsjUyV9O5uU1JzMstQi
-        fbsEvYxZrbOZC57wVHR98G9gfMDVxcjJISFgInH77jy2LkYuDiGBpYwSJ7tmM0EkJCRuL2xi
-        hLCFJf5c64Iqes4osb/5KVARBwebgJZEYyc7SFxE4AmjxP2fj1lAHGaBBhaJWxN3gU0SFgiW
-        +LPzKBuIzSKgKvFo2n0WkGZeAWuJ342OEAvkJWZe+s4OEuYECk/4FAESFhKwkuhedIsVxOYV
-        EJQ4OfMJC4jNDFTevHU28wRGgVlIUrOQpBYwMq1iFEktLc5Nzy020itOzC0uzUvXS87P3cQI
-        TCfbjv3csoNx5auPeocYmTgYDzFKcDArifB+2Z2RJMSbklhZlVqUH19UmpNafIjRFOjqicxS
-        osn5wISWVxJvaGZgamhiZmlgamlmrCTO61nQkSgkkJ5YkpqdmlqQWgTTx8TBKdXAtKfn//y8
-        /uJTqw+fsrirF7fqvdE3B42bVc5X82SyOFT4M+SP8m91/mrY9/Op6sbdO7sm9t4Qil4s5l64
-        UmnjntXTbM+9vnze5eQnkfKyjZe3WIQ6uu6W7n5zuWRW6Zk/0yY1/dzU4c2w3CHMiE9swo5M
-        qbDrLy683XZWfZnuqSkfFjPfbdsX9UdRRcGIX0/0BluZX/cZH44VwilTVV/8XL2uMrruopIx
-        n5SOldf0VV4NNxPT5N8uMLtUGvdAZV7Q5CXmL5tqtI4FxFZkXdozjeHW1Ec9ezUOf5y1xlgn
-        oszwi7JpXoxPnErd79RHPCqd9y6Ub47n91vsUL9gT9S9tpsMUVwXt6vuE+jTrzslqcRSnJFo
-        qMVcVJwIAAeEaE6wAwAA
-X-CMS-MailID: 20220427160311eucas1p151141fc73adc590b40ad6f935b1ac214
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20220427160311eucas1p151141fc73adc590b40ad6f935b1ac214
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20220427160311eucas1p151141fc73adc590b40ad6f935b1ac214
-References: <20220427160255.300418-1-p.raghav@samsung.com>
-        <CGME20220427160311eucas1p151141fc73adc590b40ad6f935b1ac214@eucas1p1.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luis Chamberlain <mcgrof@kernel.org>
+Similar to the mutex counterpart, we can further distinguish the
+types of contention. Similarly this patch also introduces potentially
+various _begin() tracepoints with a single respective _end().
 
-Instead of calling bdev_zone_sectors() multiple times, call
-it once and cache the value locally. This will make the
-subsequent change easier to read.
+- The original _begin() for down_write() is moved further up,
+right after we know optimistic spinning is bust.
 
-Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
-Signed-off-by: Pankaj Raghav <p.raghav@samsung.com>
+- For the scenario that spins after setting the hand-off bit and
+failing to grab the lock the code is change to duplicate the
+rwsem_try_write_lock() upon a OWNER_NULL, which minimizes the
+amounts of _begin() in the wait-loop - but also gets rid of a
+goto label and the logic is pretty encapsulated in the branch.
+In such cases the common case will be to acquire the lock,
+but if it is stolen in that window, this path won't see the
+signal_pending() now in the iteration and block. This should
+be benign as the check will come in after waking if the lock
+can still not be taken.
+
+Signed-off-by: Davidlohr Bueso <dave@stgolabs.net>
 ---
- fs/f2fs/super.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+rtmutexes' top waiter will also do optimitic spinning, but
+I don't think it is worth adding tracepoints here as it
+is quite minimal, unlike the osq stuff.
 
-diff --git a/fs/f2fs/super.c b/fs/f2fs/super.c
-index ea939db18f88..f64761a15df7 100644
---- a/fs/f2fs/super.c
-+++ b/fs/f2fs/super.c
-@@ -3678,22 +3678,25 @@ static int init_blkz_info(struct f2fs_sb_info *sbi, int devi)
- 	struct block_device *bdev = FDEV(devi).bdev;
- 	sector_t nr_sectors = bdev_nr_sectors(bdev);
- 	struct f2fs_report_zones_args rep_zone_arg;
-+	u64 zone_sectors;
- 	int ret;
+ include/trace/events/lock.h |  4 +++-
+ kernel/locking/rwsem.c      | 29 +++++++++++++++++++++--------
+ 2 files changed, 24 insertions(+), 9 deletions(-)
+
+diff --git a/include/trace/events/lock.h b/include/trace/events/lock.h
+index 9ebd081e057e..0f68a3e69a9f 100644
+--- a/include/trace/events/lock.h
++++ b/include/trace/events/lock.h
+@@ -15,6 +15,7 @@
+ #define LCB_F_RT	(1U << 3)
+ #define LCB_F_PERCPU	(1U << 4)
+ #define LCB_F_MUTEX	(1U << 5)
++#define LCB_F_RWSEM	(1U << 6)
  
- 	if (!f2fs_sb_has_blkzoned(sbi))
- 		return 0;
  
-+	zone_sectors = bdev_zone_sectors(bdev);
+ #ifdef CONFIG_LOCKDEP
+@@ -115,7 +116,8 @@ TRACE_EVENT(contention_begin,
+ 				{ LCB_F_WRITE,		"WRITE" },
+ 				{ LCB_F_RT,		"RT" },
+ 				{ LCB_F_PERCPU,		"PERCPU" },
+-				{ LCB_F_MUTEX,		"MUTEX" }
++				{ LCB_F_MUTEX,		"MUTEX" },
++				{ LCB_F_RWSEM,		"RWSEM" }
+ 			  ))
+ );
+ 
+diff --git a/kernel/locking/rwsem.c b/kernel/locking/rwsem.c
+index 9d1db4a54d34..c38f990cacea 100644
+--- a/kernel/locking/rwsem.c
++++ b/kernel/locking/rwsem.c
+@@ -1057,7 +1057,7 @@ rwsem_down_read_slowpath(struct rw_semaphore *sem, long count, unsigned int stat
+ 	if (!wake_q_empty(&wake_q))
+ 		wake_up_q(&wake_q);
+ 
+-	trace_contention_begin(sem, LCB_F_READ);
++	trace_contention_begin(sem, LCB_F_RWSEM | LCB_F_READ);
+ 
+ 	/* wait to be given the lock */
+ 	for (;;) {
+@@ -1101,9 +1101,14 @@ rwsem_down_write_slowpath(struct rw_semaphore *sem, int state)
+ 	DEFINE_WAKE_Q(wake_q);
+ 
+ 	/* do optimistic spinning and steal lock if possible */
+-	if (rwsem_can_spin_on_owner(sem) && rwsem_optimistic_spin(sem)) {
+-		/* rwsem_optimistic_spin() implies ACQUIRE on success */
+-		return sem;
++	if (rwsem_can_spin_on_owner(sem)) {
++		trace_contention_begin(sem,
++				       LCB_F_RWSEM | LCB_F_WRITE | LCB_F_SPIN);
++		if (rwsem_optimistic_spin(sem)) {
++			/* rwsem_optimistic_spin() implies ACQUIRE on success */
++			trace_contention_end(sem, 0);
++			return sem;
++		}
+ 	}
+ 
+ 	/*
+@@ -1115,6 +1120,8 @@ rwsem_down_write_slowpath(struct rw_semaphore *sem, int state)
+ 	waiter.timeout = jiffies + RWSEM_WAIT_TIMEOUT;
+ 	waiter.handoff_set = false;
+ 
++	trace_contention_begin(sem, LCB_F_RWSEM | LCB_F_WRITE);
 +
- 	if (sbi->blocks_per_blkz && sbi->blocks_per_blkz !=
--				SECTOR_TO_BLOCK(bdev_zone_sectors(bdev)))
-+				SECTOR_TO_BLOCK(zone_sectors))
- 		return -EINVAL;
--	sbi->blocks_per_blkz = SECTOR_TO_BLOCK(bdev_zone_sectors(bdev));
-+	sbi->blocks_per_blkz = SECTOR_TO_BLOCK(zone_sectors);
- 	if (sbi->log_blocks_per_blkz && sbi->log_blocks_per_blkz !=
- 				__ilog2_u32(sbi->blocks_per_blkz))
- 		return -EINVAL;
- 	sbi->log_blocks_per_blkz = __ilog2_u32(sbi->blocks_per_blkz);
- 	FDEV(devi).nr_blkz = SECTOR_TO_BLOCK(nr_sectors) >>
- 					sbi->log_blocks_per_blkz;
--	if (nr_sectors & (bdev_zone_sectors(bdev) - 1))
-+	if (nr_sectors & (zone_sectors - 1))
- 		FDEV(devi).nr_blkz++;
+ 	raw_spin_lock_irq(&sem->wait_lock);
+ 	rwsem_add_waiter(sem, &waiter);
  
- 	FDEV(devi).blkz_seq = f2fs_kvzalloc(sbi,
+@@ -1137,7 +1144,6 @@ rwsem_down_write_slowpath(struct rw_semaphore *sem, int state)
+ 
+ 	/* wait until we successfully acquire the lock */
+ 	set_current_state(state);
+-	trace_contention_begin(sem, LCB_F_WRITE);
+ 
+ 	for (;;) {
+ 		if (rwsem_try_write_lock(sem, &waiter)) {
+@@ -1161,18 +1167,25 @@ rwsem_down_write_slowpath(struct rw_semaphore *sem, int state)
+ 		if (waiter.handoff_set) {
+ 			enum owner_state owner_state;
+ 
++			trace_contention_begin(sem, LCB_F_RWSEM |
++					       LCB_F_WRITE | LCB_F_SPIN);
+ 			preempt_disable();
+ 			owner_state = rwsem_spin_on_owner(sem);
+ 			preempt_enable();
+ 
+-			if (owner_state == OWNER_NULL)
+-				goto trylock_again;
++			if (owner_state == OWNER_NULL) {
++				raw_spin_lock_irq(&sem->wait_lock);
++				if (rwsem_try_write_lock(sem, &waiter))
++					break;
++				raw_spin_unlock_irq(&sem->wait_lock);
++			}
++
++			trace_contention_begin(sem, LCB_F_RWSEM | LCB_F_WRITE);
+ 		}
+ 
+ 		schedule();
+ 		lockevent_inc(rwsem_sleep_writer);
+ 		set_current_state(state);
+-trylock_again:
+ 		raw_spin_lock_irq(&sem->wait_lock);
+ 	}
+ 	__set_current_state(TASK_RUNNING);
 -- 
-2.25.1
+2.36.0
 
