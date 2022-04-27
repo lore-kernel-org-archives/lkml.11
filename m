@@ -2,96 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9077AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:20:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62F73C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:21:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237665AbiD0OX7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 10:23:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43038 "EHLO
+        id S237641AbiD0OYT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 10:24:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237618AbiD0OX4 (ORCPT
+        with ESMTP id S237492AbiD0OYP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 10:23:56 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F15E22DF90;
-        Wed, 27 Apr 2022 07:20:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651069244; x=1682605244;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=FF9dZMsdhcirHLT0yX4WRrKdmuQYa58gNDfW0zo81+Q=;
-  b=eUOPG2lZk3Lu1Kt0pX3CbEA6EB1X9P3JPzw0R7bDNcYNx6Zw1sxCgmfG
-   Dq1Z8Q4/mnLTrJP9Ve1qpGw9NyMNHmDx3uxYC+JfV4gsrBz9LiZtf2CMd
-   ASURZUGu69iZnaDzU4J9mY3zBX84KTaubYCqxCl9rDlZQs3lFX3kVvvRE
-   o0rIo9+akUYgyj3x3QNDmWWBn1Ypn3Q8IfT0BqI0BJzaKH0T/ZBjrr9Zz
-   LlpC7ebd+lWsNWQ6J3zYwu47kwNYQxWw1q5VYbm4q03VyGxLSvYiBXyJL
-   p+qGgxlCoatJAiwdqygsY86OAt/bKvKt2fXTWTGsdTS583mLk6egYpUbR
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="265752153"
-X-IronPort-AV: E=Sophos;i="5.90,293,1643702400"; 
-   d="scan'208";a="265752153"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 07:20:44 -0700
-X-IronPort-AV: E=Sophos;i="5.90,293,1643702400"; 
-   d="scan'208";a="533227804"
-Received: from pcurcohe-mobl.amr.corp.intel.com (HELO [10.212.68.237]) ([10.212.68.237])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 07:20:42 -0700
-Message-ID: <49cc6848-47ae-9c25-f479-c5aed8c892df@intel.com>
-Date:   Wed, 27 Apr 2022 07:24:03 -0700
+        Wed, 27 Apr 2022 10:24:15 -0400
+Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E603B236E02;
+        Wed, 27 Apr 2022 07:21:02 -0700 (PDT)
+Received: from in01.mta.xmission.com ([166.70.13.51]:40666)
+        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1njiXM-002Wzw-Se; Wed, 27 Apr 2022 08:21:00 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:35860 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1njiXL-008Zam-HK; Wed, 27 Apr 2022 08:21:00 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Oleg Nesterov <oleg@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
+        Will Deacon <will@kernel.org>, tj@kernel.org,
+        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        inux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>
+References: <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
+        <20220426225211.308418-6-ebiederm@xmission.com>
+        <20220427141018.GA17421@redhat.com>
+Date:   Wed, 27 Apr 2022 09:20:51 -0500
+In-Reply-To: <20220427141018.GA17421@redhat.com> (Oleg Nesterov's message of
+        "Wed, 27 Apr 2022 16:10:25 +0200")
+Message-ID: <874k2ea9q4.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 05/21] x86/virt/tdx: Detect P-SEAMLDR and TDX module
-Content-Language: en-US
-To:     Kai Huang <kai.huang@intel.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Cc:     seanjc@google.com, pbonzini@redhat.com, len.brown@intel.com,
-        tony.luck@intel.com, rafael.j.wysocki@intel.com,
-        reinette.chatre@intel.com, dan.j.williams@intel.com,
-        peterz@infradead.org, ak@linux.intel.com,
-        kirill.shutemov@linux.intel.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com,
-        isaku.yamahata@intel.com
-References: <cover.1649219184.git.kai.huang@intel.com>
- <b9f4d4afd244d685182ce9ab5ffdd0bf245be6e2.1649219184.git.kai.huang@intel.com>
- <104a6959-3bd4-1e75-5e3d-5dc3ef025ed0@intel.com>
- <98af78402861b1982607c5fd14b0c89403c042a6.camel@intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <98af78402861b1982607c5fd14b0c89403c042a6.camel@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-XM-SPF: eid=1njiXL-008Zam-HK;;;mid=<874k2ea9q4.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX1+ttFsmGa6fQpHiGgFn4PTrxP8NleRq2Pw=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH 6/9] signal: Always call do_notify_parent_cldstop with
+ siglock held
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/26/22 17:01, Kai Huang wrote:
-> On Tue, 2022-04-26 at 13:56 -0700, Dave Hansen wrote:
->> On 4/5/22 21:49, Kai Huang wrote:
->>> The P-SEAMLDR (persistent SEAM loader) is the first software module that
->>> runs in SEAM VMX root, responsible for loading and updating the TDX
->>> module.  Both the P-SEAMLDR and the TDX module are expected to be loaded
->>> before host kernel boots.
+Oleg Nesterov <oleg@redhat.com> writes:
+
+> On 04/26, Eric W. Biederman wrote:
 >>
->> Why bother with the P-SEAMLDR here at all?  The kernel isn't loading the
->> TDX module in this series.  Why not just call into the TDX module directly?
-> 
-> It's not absolutely needed in this series.  I choose to detect P-SEAMLDR because
-> detecting it can also detect the TDX module, and eventually we will need to
-> support P-SEAMLDR because the TDX module runtime update uses P-SEAMLDR's
-> SEAMCALL to do that.
-> 
-> Also, even for this series, detecting the P-SEAMLDR allows us to provide the P-
-> SEAMLDR information to user at a basic level in dmesg:
-> 
-> [..] tdx: P-SEAMLDR: version 0x0, vendor_id: 0x8086, build_date: 20211209,
-> build_num 160, major 1, minor 0
-> 
-> This may be useful to users, but it's not a hard requirement for this series.
+>> @@ -2164,7 +2166,9 @@ static void do_notify_parent_cldstop(struct task_struct *tsk,
+>>   	}
+>>
+>>  	sighand = parent->sighand;
+>> -	spin_lock_irqsave(&sighand->siglock, flags);
+>> +	lock = tsk->sighand != sighand;
+>> +	if (lock)
+>> +		spin_lock_nested(&sighand->siglock, SINGLE_DEPTH_NESTING);
+>
+> But why is it safe?
+>
+> Suppose we have two tasks, they both trace each other, both call
+> ptrace_stop() at the same time. Of course this is ugly, they both
+> will block.
+>
+> But with this patch in this case we have the trivial ABBA deadlock,
+> no?
 
-We've had a lot of problems in general with this code trying to do too
-much at once.  I thought we agreed that this was going to only contain
-the minimum code to make TDX functional.  It seems to be creeping to
-grow bigger and bigger.
+I was thinking in terms of the process tree (which is fine).
 
-Am I remembering this wrong?
+The ptrace parental relationship definitely has the potential to be a
+graph with cycles.  Which as you point out is not fine.
+
+
+The result is very nice and I don't want to give it up.  I suspect
+something ptrace cycles are always a problem and can simply be
+forbidden.  That is going to take some analsysis and some additional
+code in ptrace_attach.
+
+I will go look at that.
+
+Eric
+
