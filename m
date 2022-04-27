@@ -2,118 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FC34C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 11:53:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92893C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 11:55:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233206AbiD0L4w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 07:56:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35952 "EHLO
+        id S233214AbiD0L63 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 07:58:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233145AbiD0L4t (ORCPT
+        with ESMTP id S233207AbiD0L61 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 07:56:49 -0400
-Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13AC212085;
-        Wed, 27 Apr 2022 04:53:38 -0700 (PDT)
-Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-d39f741ba0so1616542fac.13;
-        Wed, 27 Apr 2022 04:53:38 -0700 (PDT)
+        Wed, 27 Apr 2022 07:58:27 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ADF926AC1
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 04:55:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=lDcZaNu3s46BCfyK8AGIWunVVLL0K103UCBfoUiQuSg=;
-        b=PICN4L/bpRW0Ywnxp6EKdRxBPCzwU7brnkiRpdkxe9lXWNaE4lTzPUkUshVAWLTe/N
-         oNxKJ15ESYMJ1IWAQj7eAPSMVvhEvW+ZsVAuaZmliL1pg9Jnx9eacqGVfOzvPrUSGWnZ
-         UWLb0os8sSiInNnyHiHdtt7bXjtVue/jhqp9gJqzj+wVDBNcExTnCjmpS2i1gW3+DoE5
-         nXM6WltKKK1Km8+3wWS1x0YzzPWfDV4y6WWt7BGN2jCv0tjPfkciRgRc1U8l4P3HbEKv
-         8auJ3vFVfpc2iLwnPF1l6lZ4znNqDqASmphwBOE9hCmVPRMTMb8uea5nYIYN9Yx0FBae
-         pDTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=lDcZaNu3s46BCfyK8AGIWunVVLL0K103UCBfoUiQuSg=;
-        b=VqB/jkNci1VKAx3/t+5zy2hz0kn8J8qj8GKzLgze/BHu8UU98L1ZBQPA99T3cJLFvv
-         tBi05tbbClx1HgfRe86IadMt9rb9waj4H+FW7rFMy7IpkrCex6jFXq+ktbqmi0a5rRTI
-         cHg2CmFku2O97ajf3HLZkFRamQiy4Ek60HJmAczS0hkNMKN4jlpYpHz+6ctwhIXPawg6
-         2yOZSOWBf3LOIYE+QfvCF6cYW1DtRsZMr/Tbg+Rh/Tmt9bshxDtwsC0Gs4VXgMMkj8t5
-         XH+XHo2oh0cyDgUmc1KPd0qTHrCxae+j7T/asEa4IRp+hg6GlkFNLlVbzeGCKDw8kONQ
-         QWRQ==
-X-Gm-Message-State: AOAM531JXfgyliSJ0bssAj0zMlWeCsVyMGyjQYkiBFKu6sBTSRX8BYJ6
-        kkspg6hya6ejVQjvUAW73vE=
-X-Google-Smtp-Source: ABdhPJxqdW1u4b+HYMVRCPgoviFhCC1pBVd4W3nXiChpfznNK9sGQAYLA/Qj8VRLsCahCdXVQ3ARfw==
-X-Received: by 2002:a05:6870:6324:b0:e9:16de:4053 with SMTP id s36-20020a056870632400b000e916de4053mr8701723oao.164.1651060417408;
-        Wed, 27 Apr 2022 04:53:37 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id m22-20020a9d73d6000000b006028f49a6fcsm5779329otk.4.2022.04.27.04.53.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 04:53:35 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Wed, 27 Apr 2022 04:53:33 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Zev Weiss <zev@bewilderbeest.net>
-Cc:     Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org,
-        linux-kernel@vger.kernel.org, openbmc@lists.ozlabs.org
-Subject: Re: [PATCH] hwmon: (pmbus) delta-ahe50dc-fan: work around hardware
- quirk
-Message-ID: <20220427115333.GA2686708@roeck-us.net>
-References: <20220427035109.3819-1-zev@bewilderbeest.net>
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1651060516; x=1682596516;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ZNCiNIQAyV/m3JwZ4wRhFlE2NyRcCwA6zWxfN5c5hCM=;
+  b=SXESnswvr0X/pkySicpNS0AQWfE7zdsfO81Uwe6YA/F1JU/Zae+B7HdW
+   2ngq7UKKLR5lv89sEZqH3fJl7/D7asGOMUwJdCOhm4W5j+sFtRdjbAu8s
+   6xjxMNfJRQ+jfzJ9LTqLNfU/Gvv2vpfwlB7Q+hU7JQytwrz/nkkrhyYbq
+   w=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 27 Apr 2022 04:55:16 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 04:55:14 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 27 Apr 2022 04:55:14 -0700
+Received: from [10.253.39.88] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 27 Apr
+ 2022 04:55:11 -0700
+Message-ID: <2dc9e778-b237-8dc7-6b3b-af2308e7084e@quicinc.com>
+Date:   Wed, 27 Apr 2022 19:55:08 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220427035109.3819-1-zev@bewilderbeest.net>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [ammarfaizi2-block:kvalo/ath/pending 36/40]
+ drivers/net/wireless/ath/ath11k/mac.c:8293 ath11k_mac_op_set_bios_sar_specs()
+ warn: variable dereferenced before check 'sar' (see line 8280)
+Content-Language: en-US
+To:     Kalle Valo <quic_kvalo@quicinc.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+CC:     <kbuild@lists.01.org>, <lkp@intel.com>, <kbuild-all@lists.01.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        <linux-kernel@vger.kernel.org>, <ath11k@lists.infradead.org>
+References: <202204182315.h96VPgso-lkp@intel.com>
+ <o5hy1zqhiyh.fsf@quicinc.com>
+From:   Baochen Qiang <quic_bqiang@quicinc.com>
+In-Reply-To: <o5hy1zqhiyh.fsf@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 08:51:09PM -0700, Zev Weiss wrote:
-> CLEAR_FAULTS commands can apparently sometimes trigger catastrophic
-> power output glitches on the ahe-50dc, so block them from being sent
-> at all.
-> 
-> Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
-> Cc: stable@vger.kernel.org
 
-Applied.
+On 4/27/2022 7:19 PM, Kalle Valo wrote:
+> + ath11k list
+>
+> Dan Carpenter <dan.carpenter@oracle.com> writes:
+>
+>> tree:   https://github.com/ammarfaizi2/linux-block kvalo/ath/pending
+>> head:   c9a8efc35304a89fc0751649945909caf03eeb29
+>> commit: 5ad5b356e75f402fec930cf0d77b6c7862850b55 [36/40] ath11k: Add support for SAR
+>> config: x86_64-randconfig-m001-20220418 (https://download.01.org/0day-ci/archive/20220418/202204182315.h96VPgso-lkp@intel.com/config)
+>> compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
+>>
+>> If you fix the issue, kindly add following tag as appropriate
+>> Reported-by: kernel test robot <lkp@intel.com>
+>> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+>>
+>> New smatch warnings:
+>> drivers/net/wireless/ath/ath11k/mac.c:8293 ath11k_mac_op_set_bios_sar_specs() warn: variable dereferenced before check 'sar' (see line 8280)
+>>
+>> vim +/sar +8293 drivers/net/wireless/ath/ath11k/mac.c
+>>
+>> 5ad5b356e75f40 Baochen Qiang 2022-04-12  8276  static int ath11k_mac_op_set_bios_sar_specs(struct ieee80211_hw *hw,
+>> 5ad5b356e75f40 Baochen Qiang 2022-04-12  8277  					    const struct cfg80211_sar_specs *sar)
+>> 5ad5b356e75f40 Baochen Qiang 2022-04-12  8278  {
+>> 5ad5b356e75f40 Baochen Qiang 2022-04-12  8279  	struct ath11k *ar = hw->priv;
+>> 5ad5b356e75f40 Baochen Qiang 2022-04-12 @8280  	const struct cfg80211_sar_sub_specs *sspec = sar->sub_specs;
+>>                                                                                               ^^^^^^^^^^^^^^
+>> Dereference
+>>
+>> 5ad5b356e75f40 Baochen Qiang 2022-04-12  8281  	int ret, index;
+>> 5ad5b356e75f40 Baochen Qiang 2022-04-12  8282  	u8 *sar_tbl;
+>> 5ad5b356e75f40 Baochen Qiang 2022-04-12  8283  	u32 i;
+>> 5ad5b356e75f40 Baochen Qiang 2022-04-12  8284
+>> 5ad5b356e75f40 Baochen Qiang 2022-04-12  8285  	mutex_lock(&ar->conf_mutex);
+>> 5ad5b356e75f40 Baochen Qiang 2022-04-12  8286
+>> 5ad5b356e75f40 Baochen Qiang 2022-04-12  8287  	if (!test_bit(WMI_TLV_SERVICE_BIOS_SAR_SUPPORT, ar->ab->wmi_ab.svc_map) ||
+>> 5ad5b356e75f40 Baochen Qiang 2022-04-12  8288  	    !ar->ab->hw_params.bios_sar_capa) {
+>> 5ad5b356e75f40 Baochen Qiang 2022-04-12  8289  		ret = -EOPNOTSUPP;
+>> 5ad5b356e75f40 Baochen Qiang 2022-04-12  8290  		goto exit;
+>> 5ad5b356e75f40 Baochen Qiang 2022-04-12  8291  	}
+>> 5ad5b356e75f40 Baochen Qiang 2022-04-12  8292
+>> 5ad5b356e75f40 Baochen Qiang 2022-04-12 @8293  	if (!sar || sar->type != NL80211_SAR_TYPE_POWER ||
+>>                                                       ^^^
+>> Checked too late
+> Baochen, please submit a fix for this.
 
-Thanks,
-Guenter
+Sure, Kalle. I just sent the fix patch named "ath11k: Fix warning on 
+variable 'sar' dereference before check" to internal review.
 
-> ---
->  drivers/hwmon/pmbus/delta-ahe50dc-fan.c | 16 ++++++++++++++++
->  1 file changed, 16 insertions(+)
-> 
-> diff --git a/drivers/hwmon/pmbus/delta-ahe50dc-fan.c b/drivers/hwmon/pmbus/delta-ahe50dc-fan.c
-> index 40dffd9c4cbf..f546f0c12497 100644
-> --- a/drivers/hwmon/pmbus/delta-ahe50dc-fan.c
-> +++ b/drivers/hwmon/pmbus/delta-ahe50dc-fan.c
-> @@ -14,6 +14,21 @@
->  
->  #define AHE50DC_PMBUS_READ_TEMP4 0xd0
->  
-> +static int ahe50dc_fan_write_byte(struct i2c_client *client, int page, u8 value)
-> +{
-> +	/*
-> +	 * The CLEAR_FAULTS operation seems to sometimes (unpredictably, perhaps
-> +	 * 5% of the time or so) trigger a problematic phenomenon in which the
-> +	 * fan speeds surge momentarily and at least some (perhaps all?) of the
-> +	 * system's power outputs experience a glitch.
-> +	 *
-> +	 * However, according to Delta it should be OK to simply not send any
-> +	 * CLEAR_FAULTS commands (the device doesn't seem to be capable of
-> +	 * reporting any faults anyway), so just blackhole them unconditionally.
-> +	 */
-> +	return value == PMBUS_CLEAR_FAULTS ? -EOPNOTSUPP : -ENODATA;
-> +}
-> +
->  static int ahe50dc_fan_read_word_data(struct i2c_client *client, int page, int phase, int reg)
->  {
->  	/* temp1 in (virtual) page 1 is remapped to mfr-specific temp4 */
-> @@ -68,6 +83,7 @@ static struct pmbus_driver_info ahe50dc_fan_info = {
->  		PMBUS_HAVE_VIN | PMBUS_HAVE_FAN12 | PMBUS_HAVE_FAN34 |
->  		PMBUS_HAVE_STATUS_FAN12 | PMBUS_HAVE_STATUS_FAN34 | PMBUS_PAGE_VIRTUAL,
->  	.func[1] = PMBUS_HAVE_TEMP | PMBUS_PAGE_VIRTUAL,
-> +	.write_byte = ahe50dc_fan_write_byte,
->  	.read_word_data = ahe50dc_fan_read_word_data,
->  };
->  
