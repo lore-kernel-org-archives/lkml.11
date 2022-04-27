@@ -2,118 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 741D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 18:52:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 609C0C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 18:52:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232011AbiD0Szs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 14:55:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46028 "EHLO
+        id S231754AbiD0Szy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 14:55:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234027AbiD0Syx (ORCPT
+        with ESMTP id S232034AbiD0SzH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 14:54:53 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9AD4D64F2
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 11:41:22 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id j15so3741255wrb.2
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 11:41:22 -0700 (PDT)
+        Wed, 27 Apr 2022 14:55:07 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E60335C670;
+        Wed, 27 Apr 2022 11:42:10 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id z19so2952672edx.9;
+        Wed, 27 Apr 2022 11:42:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=N6G/xcwWCTxvb9G73B2XRdjPPr2MF5UR6WrCerpPvtI=;
-        b=Eq8RmBUa6QZIrPBoaS4wU4l9ksQhkbE+j9QQwicFPr7ea96HlDJXhgWVybK81lp291
-         A32tb/pPMKlpwfXAfDCIpaEPK+Hx5xBCZuDGPJlnk2iAT5Vhu59xnuFOJok//ATLLCkB
-         st01pOkCOOY5SiT9Xx0G9FC4T9dc7TthrvU/JlKqINfASBOYtr6fQmn6IrEGGtLSPBe0
-         HpwmdfsuvUwQ8dYQFEiGjuHmGQNVUDYibL1rHMy7Ki1GTKyG9mbFszIVfe6/spogSqw9
-         CWq/TX7YQM4l9Xza2E9f8Wo/+xRdzrcbZsLTUHqpNib8ebjuILDJWkJDmue6HGx6gXqJ
-         1phA==
+        bh=kM7QKgAFBW1YvmaUCZRsC0/6t1UvkOHugGgZxLi1Vr0=;
+        b=S+kHBI/504UiUBVwrLTFGKBKaowxmoONKDYMlQIV4s6mofRVbccXVXAXj8K8BXLa55
+         PKPXRzXNTv7UPUOFRBnPq0CsvYN8ufGPVTnQg7zCGVX7dBsIBvweiLQZKoNC2kGHoNb4
+         Gn+9odGqMMu9c04/gJYxVhVh2ixOrzAu3Zl/Mu+/eviXikF2zSs9HCzA1bzDxjU6ONDO
+         IHbqsqDFjkpRpyKLWsujzupJKuRBPnlTuFDxCrWs0OAVAXMXeVPw1XtRYa2stKmZNcXd
+         1z+bK1OVuUcDn7Mk8cKdsnS95xTJpBq75UmfQ1nObO6NkLmInR0yKfGPGGoqzz9MKZ8U
+         o53g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=N6G/xcwWCTxvb9G73B2XRdjPPr2MF5UR6WrCerpPvtI=;
-        b=q2Lc3TV+OzwPNQ+RI6OkpdJFNfaBGIzq7wxJxEdq0dwjMvqclx9Cba6kAbfbd0oEcC
-         lEnETQ0f4sUVSZi+3dmmJACHsV5mSoSQZ/r+UF2XfUDD90B+cLDzGHEOvl9kSGJZdoVg
-         2OP1ic6y2oIVKI9KBqMp3UbPJScwlqOOAStG3FZW2Wj+136Vc2yZcLFyZnz3eUwfXPd6
-         Y4WyxdcmU1L/uaAJ1rHDA3WBngtfLBre+QVTWKAxn55CcJF/bKiixOT3qIb6ulj4rJmG
-         +56J8PC66bvirSaNEexQIHpygolZTgrZUK3YJRjjHCNERCDmXflveFYyuO/8YiWqCqev
-         OnBw==
-X-Gm-Message-State: AOAM530yVKOM/B5tiOBXfq9oYUcU81N0yKZpbzQWjHaCkfMJcxK9kpE6
-        6WojTVwYXo8EE4X5HKv76Ds4kg==
-X-Google-Smtp-Source: ABdhPJwZVKozldr6zcXz35GYlRTsb+89wBHEbE1Uy4aFsPphD87s+fTEG/jHqJh2dUUwdOsRDpNklA==
-X-Received: by 2002:a5d:6752:0:b0:20a:ce1f:2ceb with SMTP id l18-20020a5d6752000000b0020ace1f2cebmr20539629wrw.715.1651084881147;
-        Wed, 27 Apr 2022 11:41:21 -0700 (PDT)
-Received: from localhost.localdomain (cpc78119-cwma10-2-0-cust590.7-3.cable.virginm.net. [81.96.50.79])
-        by smtp.gmail.com with ESMTPSA id f3-20020a5d64c3000000b0020aef267950sm1992798wri.49.2022.04.27.11.41.20
+        bh=kM7QKgAFBW1YvmaUCZRsC0/6t1UvkOHugGgZxLi1Vr0=;
+        b=b67p7FNUMC20Yqq6BffC5S/Rj4G5jTT+zVo78JbSOQjocTxWENP+UAPtYyTd3xT8Rh
+         d5fcCZKdznCghPXRKBybHPxKJJfH+DXnpKbBO3BWgMpKl72x1JtOHNijJmJRlm2KNHSs
+         C1z6PMHNz5jE7yyhx7rienmDmckP8sGlv0C94qtMe3UWOSih+ZHgHMJPt6Y9cis0wCbx
+         3VLPLjHEGiFFv5DVFA9mgt2w3UI/49ADMy4vksxKEe/woYhiyYE2vsUtttkcj2WcFYMx
+         2mdB1zxNmC9cVaDzFwR+7iUJnVxDABSiT9J/zHeTKHgvtmdLQ9SYwk+YDR3dUF1nFpL4
+         jx0A==
+X-Gm-Message-State: AOAM530ociJqu3be0vDU917qEU0pv5im2uPJwqk/Gws05IwCyxN8FXz+
+        kLtgGFqbWvBVfqNgUmIrT4eXL9dtM3HtxA==
+X-Google-Smtp-Source: ABdhPJwXgfYi2dTLT9QE2lh91WC5EwoIzb7cZ7ysQtl/DgiXIIGDXTWRE8w1/uoxyG/OsjUPhQ/wCA==
+X-Received: by 2002:a05:6402:364:b0:425:f88d:7d4a with SMTP id s4-20020a056402036400b00425f88d7d4amr11968554edw.68.1651084929330;
+        Wed, 27 Apr 2022 11:42:09 -0700 (PDT)
+Received: from jernej-laptop.localnet (89-212-118-115.static.t-2.net. [89.212.118.115])
+        by smtp.gmail.com with ESMTPSA id e19-20020a056402105300b0042617ba6384sm7099edu.14.2022.04.27.11.42.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 11:41:20 -0700 (PDT)
-From:   Caleb Connolly <caleb.connolly@linaro.org>
-To:     caleb.connolly@linaro.org, Sebastian Reichel <sre@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Cc:     Amit Pundir <amit.pundir@linaro.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>
-Subject: [PATCH 4/6] arm64: dts: qcom: sdm845-db845c: enable pmi8998 charger
-Date:   Wed, 27 Apr 2022 19:40:29 +0100
-Message-Id: <20220427184031.2569442-5-caleb.connolly@linaro.org>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220427184031.2569442-1-caleb.connolly@linaro.org>
-References: <20220427184031.2569442-1-caleb.connolly@linaro.org>
+        Wed, 27 Apr 2022 11:42:08 -0700 (PDT)
+From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
+To:     linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Cc:     Yong Deng <yong.deng@magewell.com>,
+        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Samuel Holland <samuel@sholland.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v4 12/45] media: sun6i-csi: Add media ops with link notify callback
+Date:   Wed, 27 Apr 2022 20:42:07 +0200
+Message-ID: <1813200.tdWV9SEqCh@jernej-laptop>
+In-Reply-To: <20220415152811.636419-13-paul.kocialkowski@bootlin.com>
+References: <20220415152811.636419-1-paul.kocialkowski@bootlin.com> <20220415152811.636419-13-paul.kocialkowski@bootlin.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable the smb2 charger driver on the db845c and add a simple-battery
-node to report the correct VBAT voltage.
+Dne petek, 15. april 2022 ob 17:27:38 CEST je Paul Kocialkowski napisal(a):
+> In order to keep the power use count fields balanced when link changes
+> happen between v4l2_pipeline_pm_get/set calls (in open/close),
+> the link_notify media operation callback needs to be registered.
+> 
+> Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
 
-Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
----
- arch/arm64/boot/dts/qcom/sdm845-db845c.dts | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm845-db845c.dts b/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
-index 40a290b6d4f3..3b73b5305c51 100644
---- a/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
-+++ b/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
-@@ -240,6 +240,18 @@ vph_pwr: vph-pwr-regulator {
- 
- 		vin-supply = <&vbat_som>;
- 	};
-+
-+	/*
-+	 * The db845c doesn't actually have a battery, but the charger circuitry
-+	 * is still wired up to support one, it needs to be programmed for nominal
-+	 * vbat voltage. See the vbat-regulator above.
-+	 */
-+	battery: battery {
-+		compatible = "simple-battery";
-+
-+		voltage-min-design-microvolt = <4200000>;
-+		voltage-max-design-microvolt = <4200000>;
-+	};
- };
- 
- &adsp_pas {
-@@ -603,6 +615,12 @@ &pmi8998_rradc {
- 	status = "okay";
- };
- 
-+&pmi8998_charger {
-+	status = "okay";
-+
-+	monitored-battery = <&battery>;
-+};
-+
- /* QUAT I2S Uses 4 I2S SD Lines for audio on LT9611 HDMI Bridge */
- &q6afedai {
- 	qi2s@22 {
--- 
-2.36.0
+Best regards,
+Jernej
+
+> ---
+>  drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
+> b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c index
+> e59ee3e3f372..578714606c2f 100644
+> --- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
+> +++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
+> @@ -23,6 +23,7 @@
+>  #include <linux/sched.h>
+>  #include <linux/sizes.h>
+>  #include <linux/slab.h>
+> +#include <media/v4l2-mc.h>
+> 
+>  #include "sun6i_csi.h"
+>  #include "sun6i_csi_reg.h"
+> @@ -574,6 +575,12 @@ void sun6i_csi_set_stream(struct sun6i_csi_device
+> *csi_dev, bool enable) CSI_CAP_CH0_VCAP_ON);
+>  }
+> 
+> +/* Media */
+> +
+> +static const struct media_device_ops sun6i_csi_media_ops = {
+> +	.link_notify = v4l2_pipeline_link_notify,
+> +};
+> +
+>  /* V4L2 */
+> 
+>  static int sun6i_csi_link_entity(struct sun6i_csi_device *csi_dev,
+> @@ -683,6 +690,7 @@ static int sun6i_csi_v4l2_setup(struct sun6i_csi_device
+> *csi_dev) snprintf(media_dev->bus_info, sizeof(media_dev->bus_info),
+>  		 "platform:%s", dev_name(dev));
+>  	media_dev->hw_revision = 0;
+> +	media_dev->ops = &sun6i_csi_media_ops;
+>  	media_dev->dev = dev;
+> 
+>  	media_device_init(media_dev);
+
+
+
 
