@@ -2,61 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3895C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 22:46:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4582C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 22:46:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237072AbiD0Wtp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 18:49:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49328 "EHLO
+        id S237966AbiD0Wtw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 18:49:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236994AbiD0Wtj (ORCPT
+        with ESMTP id S237074AbiD0Wto (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 18:49:39 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11BE23FBDB
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:46:21 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id g20so3548999edw.6
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:46:20 -0700 (PDT)
+        Wed, 27 Apr 2022 18:49:44 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 517284339B
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:46:23 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id y3so6097649ejo.12
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:46:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Ue6rVu6i+LhfCao8kUR1Z6Jfs0LQjlJynwWVcrWd6VM=;
-        b=Gndc1RCGkDncdLnhWZGKEMfSDA6RiY6gYsq2cfbAeZNK4nrXaz/6N1hr6sqvdr311j
-         JWoa0bmCoQ403+CD/hq+Sfq2bCXRvGzfLvjnwjye9dkw8VgX78EKPb1PHzbS6qOQ4x67
-         IfrxMTZCU0wjTwJB4VIaKx7ERPHXDEo7k7W8VQosJNY/stX38nDCk3GR6BRnaPrk7dmm
-         6fFhd/zSnRznh4bRhxzaNHYIxwfYNBvel6PUZnkpkDdpVak3IFPGVWSZ5NWYIn9gwwkR
-         ZxNPOZKzDXvQu/0bdtnoy4oXB1JsUhap5CcqYbV3WUp3mfjo3KFJ+zFdt4MxQlGAZ+4Q
-         G55w==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=hDNmZdaTEeDFa+SYiy2FhMpx+6VvsSpHDLR10ll6ANk=;
+        b=UMzpsSwwPouW1UdBJS7hpyHQxIRy9nsYXCcr9W+7hljC2F5PSqtNm+jQpv/doXqgu3
+         HHNb11Aqbv0E91en3I4gFKU/Ii3fTqFvtEZBSNF5NiNzxy7j5SmPrYkyEuZJEcgk+vHR
+         ZBYuesRRia/y2TI4iP0yu4jutPxojq52zbsFu2RdahZURM8L2tUCeQzAxKnM83oJ703S
+         XUBGD5Uv6V3JfnkZAjpopKPf+H6oN1OCemBpy3EBanwiEmr7AqU8d74HMf1j0Q6bg1NO
+         TqQ6GfwQPXaSRTzatjK+ukk+PboYm1k7ZbL+p3l8tZoxaVsNYsQRJdofW2p1p6w8K24i
+         05qg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Ue6rVu6i+LhfCao8kUR1Z6Jfs0LQjlJynwWVcrWd6VM=;
-        b=UMd2BBO5xHUx6ZBgYmfeMdKaxi+L+oYTjAgnc6Gd7EPEhzzx223h8oi8TVNu58LMZX
-         XM/hlGft+e3iqBjDr5hDJZcJvrpD1AzwQ1TdU1otyC3VA5iPPx+XP1nmDXmM+tMF3Aw+
-         UQlYBodtUDgNgcaTtBJcFRxHyCb0UTX03Q2wxG2kwmUid/zyr/DkrVCVzMMiuoh79+Zn
-         J6MPcvL68xc+Hb1Mdo2pOtL4HmDIJuflTHDLSU5Q35sE6kS4OYaL9QsWNbHKegcTFE/S
-         lZrmx/07WMGB/L5OOZv2qWW7oVJbB6MVJ7XV5DW+FJD96RBmBvcv9D7iC4VuTP1OHQKo
-         dEVw==
-X-Gm-Message-State: AOAM530bLckXxo9f10QbGd0FdBOuhfc2Hz5XPbpU776KVedpOFouSFp1
-        v+gN89lI2KV+e/mlAnZVw5TX0Jms1Y4=
-X-Google-Smtp-Source: ABdhPJxd0YZSftPkxD/+f96yvJ2QI3MqleeuNByzeM6djihWCYdTQgVG4j7ZbQTiHW3uDizGz0UT8Q==
-X-Received: by 2002:aa7:ce84:0:b0:425:d2e0:a75f with SMTP id y4-20020aa7ce84000000b00425d2e0a75fmr25946415edv.263.1651099579646;
-        Wed, 27 Apr 2022 15:46:19 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=hDNmZdaTEeDFa+SYiy2FhMpx+6VvsSpHDLR10ll6ANk=;
+        b=Gwd9uAfZ0TiDNcfyg1IFB0ZX7hoCzd75JmA33eLPkE2+8QzNAjgvtxo3N/VAqJ7Io2
+         tiv++FpOawJhArc7qJsds2BWT0diWCVrJi+EZnNv5mRGPW7nn4BDkqeQNr1KL6VvIYwE
+         TGaPfpkoK2ILF9LAkULhm/C3dKYLvq7Axar+J0p1yfangAXXVRarWk5zbY4Bp7oDVLB1
+         QgaNvie2v5bjyQ9OqndHkpaE3zEVvQrdd43JsTMGfC6SVLHMKBy9/KtydDnbJkYUIw4I
+         bxtCbOlo3YJXNtWvQ5PYkH/UYcWdKZw5NYGmSAA00OtPi9hiqjdGWEiK+nYnpU8IxzAW
+         Q/Gw==
+X-Gm-Message-State: AOAM531kz8YWi9chhnR/NkZK/8AGDd9LE58Z17LDGj+wJVedsouffmlF
+        x//KQIA7iK4iZaEqP06O3Gw=
+X-Google-Smtp-Source: ABdhPJzH9KUeoZKiyyoLsMaGQe7aDUU5HjyOsWUmyNUcWFoDHmiTTlqcnelDOlnc1Dy+Vj4QInKYZw==
+X-Received: by 2002:a17:907:d24:b0:6f3:7c4f:f710 with SMTP id gn36-20020a1709070d2400b006f37c4ff710mr21160019ejc.6.1651099581835;
+        Wed, 27 Apr 2022 15:46:21 -0700 (PDT)
 Received: from nlaptop.localdomain (ptr-dtfv0poj8u7zblqwbt6.18120a2.ip6.access.telenet.be. [2a02:1811:cc83:eef0:f2b6:6987:9238:41ca])
-        by smtp.gmail.com with ESMTPSA id o14-20020a170906774e00b006d5b915f27dsm7351657ejn.169.2022.04.27.15.46.18
+        by smtp.gmail.com with ESMTPSA id o14-20020a170906774e00b006d5b915f27dsm7351657ejn.169.2022.04.27.15.46.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 15:46:19 -0700 (PDT)
+        Wed, 27 Apr 2022 15:46:21 -0700 (PDT)
 From:   Niels Dossche <dossche.niels@gmail.com>
 To:     Andrew Morton <akpm@linux-foundation.org>
 Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
         Mina Almasry <almasrymina@google.com>,
         Niels Dossche <dossche.niels@gmail.com>
-Subject: [PATCH 0/2] mm: mremap: fix sign for EFAULT error return value
-Date:   Thu, 28 Apr 2022 00:44:37 +0200
-Message-Id: <20220427224439.23828-1-dossche.niels@gmail.com>
+Subject: [PATCH 1/2] mm: mremap: fix sign for EFAULT error return value
+Date:   Thu, 28 Apr 2022 00:44:38 +0200
+Message-Id: <20220427224439.23828-2-dossche.niels@gmail.com>
 X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220427224439.23828-1-dossche.niels@gmail.com>
+References: <20220427224439.23828-1-dossche.niels@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -69,40 +71,27 @@ of failure. Currently, EFAULT is returned when the VMA is not found,
 instead of -EFAULT. The users of this syscall will therefore believe
 the syscall succeeded in case the VMA didn't exist, as it returns a
 pointer to address 0xe (0xe being the value of EFAULT).
+Fix the sign of the error value.
 
-This can easily be reproduced by the following C program. I expected
-mremap to fail, but it does not. If the bug is present, it will print
-0xe, otherwise the mremap will fail.
+Fixes: 550a7d60bd5e ("mm, hugepages: add mremap() support for hugepage backed vma")
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+---
+ mm/mremap.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-The patchset contains two patches: one that fixes the error, and
-one that adds a small test case.
-
-
-#define _GNU_SOURCE
-#include <sys/mman.h>
-#include <stdio.h>
-int main() {
-	// Get pointer that's definitely not mapped
-	void* ptr = mmap(NULL, 4096, PROT_READ, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-	if (ptr == MAP_FAILED) { perror("mmap"); return 1; }
-	int err = munmap(ptr, 4096);
-	if (err < 0) { perror("munmap"); return 1; }
-	// Remap unexisting VMA
-	ptr = mremap(ptr, 4096, 4096, 0);
-	if (ptr == MAP_FAILED) { perror("mremap"); return 1; }
-	printf("%p\n", ptr);
-	return 0;
-}
-
-
-Niels Dossche (2):
-  mm: mremap: fix sign for EFAULT error return value
-  selftest/vm: test that mremap fails on non-existent vma
-
- mm/mremap.c                                  | 2 +-
- tools/testing/selftests/vm/hugepage-mremap.c | 6 ++++++
- 2 files changed, 7 insertions(+), 1 deletion(-)
-
+diff --git a/mm/mremap.c b/mm/mremap.c
+index 303d3290b938..0b93fac76851 100644
+--- a/mm/mremap.c
++++ b/mm/mremap.c
+@@ -947,7 +947,7 @@ SYSCALL_DEFINE5(mremap, unsigned long, addr, unsigned long, old_len,
+ 		return -EINTR;
+ 	vma = vma_lookup(mm, addr);
+ 	if (!vma) {
+-		ret = EFAULT;
++		ret = -EFAULT;
+ 		goto out;
+ 	}
+ 
 -- 
 2.35.2
 
