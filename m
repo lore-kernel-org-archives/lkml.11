@@ -2,181 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B4F1C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:39:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9866C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:40:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229682AbiD0Kmz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 06:42:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42450 "EHLO
+        id S229715AbiD0Kn2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 06:43:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229581AbiD0Kmx (ORCPT
+        with ESMTP id S229538AbiD0Kn0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 06:42:53 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4072490B11
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 03:23:21 -0700 (PDT)
-X-UUID: ecc8a55e2a0a449e90f7df4136eaacc7-20220427
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:f5180c4b-399c-4bd5-80e6-58fb4287062a,OB:0,LO
-        B:10,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,
-        ACTION:release,TS:75
-X-CID-INFO: VERSION:1.1.4,REQID:f5180c4b-399c-4bd5-80e6-58fb4287062a,OB:0,LOB:
-        10,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,
-        ACTION:quarantine,TS:75
-X-CID-META: VersionHash:faefae9,CLOUDID:995bacc6-85ee-4ac1-ac05-bd3f1e72e732,C
-        OID:610a85c4e598,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil
-        ,QS:0,BEC:nil
-X-UUID: ecc8a55e2a0a449e90f7df4136eaacc7-20220427
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
-        (envelope-from <lecopzer.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 81934200; Wed, 27 Apr 2022 17:59:36 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Wed, 27 Apr 2022 17:59:35 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 27 Apr
- 2022 17:59:35 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 27 Apr 2022 17:59:35 +0800
-From:   Lecopzer Chen <lecopzer.chen@mediatek.com>
-To:     <linus.walleij@linaro.org>, <linux@armlinux.org.uk>
-CC:     <lecopzer.chen@mediatek.com>, <andreyknvl@gmail.com>,
-        <anshuman.khandual@arm.com>, <ardb@kernel.org>, <arnd@arndb.de>,
-        <dvyukov@google.com>, <geert+renesas@glider.be>,
-        <glider@google.com>, <kasan-dev@googlegroups.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <lukas.bulwahn@gmail.com>,
-        <mark.rutland@arm.com>, <masahiroy@kernel.org>,
-        <matthias.bgg@gmail.com>, <rmk+kernel@armlinux.org.uk>,
-        <ryabinin.a.a@gmail.com>, <yj.chiang@mediatek.com>
-Subject: [PATCH v5 2/2] arm: kconfig: fix MODULE_PLTS for KASAN with KASAN_VMALLOC
-Date:   Wed, 27 Apr 2022 17:59:16 +0800
-Message-ID: <20220427095916.17515-3-lecopzer.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220427095916.17515-1-lecopzer.chen@mediatek.com>
-References: <20220427095916.17515-1-lecopzer.chen@mediatek.com>
+        Wed, 27 Apr 2022 06:43:26 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2077.outbound.protection.outlook.com [40.107.244.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9A953833C8;
+        Wed, 27 Apr 2022 03:23:51 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GJMTSFKwUUd+PZ9wjXghCBUxzEDfTNR210OZ+6EW6uTAuMWnkJh+TxawjvcAxQx/zGcITwStpdoADwsXQ9OGagsXHXj0PWmPUT+mA3iiFrrxYXvqRdBNo1SbmRW1BWuZBE+wXdIweehyD0qqSt5T9dvqo0H5aO/EIOOb8pvILLN53pWPs13n+Aw839EXBHfMIqorm5goBu7v+/RDE4UgmNJ4Mcs8fngvDjN+BlwxbaOiXXdQkkbyUm+OfkpNF/YP+cXxLYiBTVguFzbXRebACei22neLjq48mk9Pxe1Fm9jNpkgcmFwihojPnW0Ezad7E9dEXxXTQbdHjYI9CNTDhA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=tDKB8Z4a7W46ePFbduTiKosXT2435MHP5AAouTDENwI=;
+ b=Ku7ylRXxIq3soIDZavEk5M0nDqZlOk9YSVUv3Z69eedd/3LhGrRU0r1KMee1QKg5K2ixXeZP5xItaFjIK0g3OsKKMSL9JmLyx8bZHNT1Ru9ynaXIC7sPG0l8hdkCclRU7gpmR0kzwAV3Ch2LJf7dAoWU0eYbjuwqoI0Vk4F172DTdvWH1mZ85QlKkenJ6xp8ouORW20iAPDG0C02QipolEhfIWZu9YyzKxnkxWqtBdbNOGzIrTAnrp9SQdy87IxYKymTPNheNda12oQ6ZCXOTf+AAQUxaHiUAIdwMACh5P7DLrxcFPq6YudyPlPH+6rXYL+irIoF2lBVtPrDzydQKA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tDKB8Z4a7W46ePFbduTiKosXT2435MHP5AAouTDENwI=;
+ b=kM7TnBw3wiZBqorFLmSPZ7YzCzvdu0WErH80GwkrfgK7y7rbExi2cgIcm9ZW9KfEQDhFWr6E4CocQ8ySEmEgWPypP0LsRe8UOxaF+k8Ox0l2plykR0uvChanajBvNRlzKURfPp2BvSTCqLHth7hntSwCUkf9PFyt+X36m3EOvEw=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BN6PR1201MB0178.namprd12.prod.outlook.com
+ (2603:10b6:405:55::20) by MN0PR12MB5738.namprd12.prod.outlook.com
+ (2603:10b6:208:371::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Wed, 27 Apr
+ 2022 09:52:17 +0000
+Received: from BN6PR1201MB0178.namprd12.prod.outlook.com
+ ([fe80::ed22:dd57:358b:9fb0]) by BN6PR1201MB0178.namprd12.prod.outlook.com
+ ([fe80::ed22:dd57:358b:9fb0%10]) with mapi id 15.20.5206.013; Wed, 27 Apr
+ 2022 09:52:17 +0000
+Message-ID: <28329079-09f2-3ff2-4606-5ccd3831cf20@amd.com>
+Date:   Wed, 27 Apr 2022 15:22:02 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v3 7/7] kvm: x86/cpuid: Fix CPUID leaf 0xA
+Content-Language: en-US
+To:     Like Xu <like.xu.linux@gmail.com>
+Cc:     peterz@infradead.org, bp@alien8.de, dave.hansen@linux.intel.com,
+        acme@kernel.org, mark.rutland@arm.com,
+        alexander.shishkin@linux.intel.com, namhyung@kernel.org,
+        jolsa@kernel.org, tglx@linutronix.de, mingo@redhat.com,
+        pbonzini@redhat.com, jmattson@google.com, eranian@google.com,
+        puwen@hygon.cn, ananth.narayan@amd.com, ravi.bangoria@amd.com,
+        santosh.shukla@amd.com, x86@kernel.org,
+        linux-perf-users@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Vasant Hegde <vasant.hegde@amd.com>
+References: <cover.1650977962.git.sandipan.das@amd.com>
+ <476a0d6feef8016ed19e4911ac25abdd20aabeb3.1650977962.git.sandipan.das@amd.com>
+ <da7e8eb6-e473-84ff-1c7b-4214a5233a9b@gmail.com>
+From:   Sandipan Das <sandipan.das@amd.com>
+In-Reply-To: <da7e8eb6-e473-84ff-1c7b-4214a5233a9b@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: PN3PR01CA0136.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:bf::23) To BN6PR1201MB0178.namprd12.prod.outlook.com
+ (2603:10b6:405:55::20)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ee4d4647-c1b5-458d-b173-08da28339ccd
+X-MS-TrafficTypeDiagnostic: MN0PR12MB5738:EE_
+X-Microsoft-Antispam-PRVS: <MN0PR12MB573885E998FC1829D81FE5BC8BFA9@MN0PR12MB5738.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: kq/1aXdHlm19FVrIROT3v8GfcY/39yk/AGXiDQsCVQWDC/r2JE5gJNywPR6i+FDynlteEfomphObYwpLfdnvTM7Ht/RkuNxcJjB69G6vqxgeDXEvD/BRAezCS/t6QklER0VdaCm2hBD78IzKW2BIAzgcylathpuHSscjsQVzQY+5MF409tj+xkybUe4ktRj9SWA6n6wQi828yuyOkXb8m/N6NLhDQc91ei8sPw8GefkDFgEU7/w6grCP2hAeoUBcwmbgCkqh2wPi8j22F/BFHXSCp/mP39iBGRxzHaSNDm7XFsYoOwgWDGIkO44pumeLCK/qGIe7zLhk+UUO5seYVXBtiZtONV/zznUeNeYZtoPwhzkKdqsGB4GdDqfNA+eCfHIwiVb0Zf92seE9L+HJe7YqfXBOAxcVJgIqILAiYl7IR7Ma7Vy7+IM2/B5PrXgpe4xsW8mO2fHQ9N0IUtmoieG33ZxrT1dJZBjpXi2YiM0YkDDCiy8ux5XeyaaFaRsRHk7cBCGuiVzC7KTmg1/tu6AV/D7x+kRSmP/VYAxq0B9DXbWSREoe6+2mNDkfGjrZxfMM1ljbz/Iuhvycs8+lcjXIucymiSfMv24so4s2Rn6kZ1ZMIiPYKhRSo38dx+j+//nGxq3lGlioSjN7fHXioAEdC5PBRCsXwvlds47v9ZkWJrMW/NTdV78wwK1mlURQkTGMBoTpA88eJojtQFVLCP2T9amGizis19G4nwsEmqw=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN6PR1201MB0178.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2616005)(83380400001)(7416002)(53546011)(2906002)(31696002)(6486002)(316002)(6666004)(5660300002)(31686004)(38100700002)(186003)(86362001)(508600001)(26005)(8936002)(6506007)(6916009)(36756003)(66476007)(44832011)(54906003)(66556008)(66946007)(4326008)(8676002)(6512007)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?LzhzUHMzZ3dkNUhUbFlyRlBLU2ducVE4dVB5U2NOUGlma3VNZ3ZqRHRNZGMw?=
+ =?utf-8?B?cTJCSDNPc0hzUkFpLzVWV1c5OXh6anV0OHdyTkwzVmRtZVlCMUUvWTRoZkpX?=
+ =?utf-8?B?WmRISGJ1K1NUa1FLZ01Pb2NGKy8yMWdKMW8xOW1JdmZ3ME1FdmlMTVY2RHBl?=
+ =?utf-8?B?L0ZUUzgyb0o2aGhqSUFDUG0yUDRPT2daRjFoV2pBY3REZTUwbG5wTGF2Z1dn?=
+ =?utf-8?B?Z0dXV2l1R29ZV3lOajJ1MjZ5U3hUdjJ4TFQ1c21RWm94MDg2MFYrS09CY0tR?=
+ =?utf-8?B?NlZKT3pmTU5UUm5PTjNid0FFVjZ2RUE5QzhrUys0R0FqZkdkS0szRnNsRHkz?=
+ =?utf-8?B?bHV4aDd4UWRBVXREVVdDMmNYWisvaGNzVEtiem9VU0R0Qk5XV0lFdEw5dVVY?=
+ =?utf-8?B?WXRwVWJTakJYMnZaRWlsWnNJajB3M3BIZUhRdDlyRGx6MmpCSTg2OElRRDcv?=
+ =?utf-8?B?ZmVnM3pUQ1g0Mmx2aDlUalRVajBjQ2w2RDR6MG0wY2doVmFXKytsNGNsMkFP?=
+ =?utf-8?B?Y01SMVdrbzZ0a1NKT21xcHcwamJZVkdMWTdFcXBNQWpTaUtPTmZvcWlzeWhm?=
+ =?utf-8?B?NzNmZnZobXJKeTNYckNUc2JHWFFVMkdmV0R5alFkT1p1aEJ1Rlo1dHBhTFc4?=
+ =?utf-8?B?eWhIMDZNcTVDMDJ0TldUSzNHd3BpbzJwWEdRYWJpOTloOWRFYXlqM2tKSHdy?=
+ =?utf-8?B?Z20ybWZ3b0YyR1hsaFBVbmJQZUxHQTcySTY3akFJK2ladXM0aVltN2M1R1Fm?=
+ =?utf-8?B?WTdicnRmREhlTFF0V0ZlYy9kYllwZnZXQWlVTmtHSjViaVdqM3N3OG16VWRk?=
+ =?utf-8?B?eWdKL1FUMTdBMTRSS3grR2kwVzEzbGd4N0FhL2dzRC9FSzkyMUpRSlVtRFRG?=
+ =?utf-8?B?WEMyU081MEI1UWZiejZCYzFvNCtCd0V5c1ZKTjFQWXAzMVJpN0hTSTBVNmlh?=
+ =?utf-8?B?NWFzZGtPM0I1ME9qYVA0bWFVQjMvcFFKaTB0NVAvYlZuS3gxeW15ZDRWNmRi?=
+ =?utf-8?B?ZDJwTm5lWTU4cCtLbnZNWERaMTJBU3RjVFZPbmh5UG8zenpDeEpZTUN4V0sr?=
+ =?utf-8?B?VVhWZGZibCttNXZjQWhCbFFSMUVBZHl5a1gyNlFhdURBemN2ZnZTQ2FEcFRq?=
+ =?utf-8?B?YXZIQW5nUEJDMk1jVGNod2FTR3pNSGFPTEpxSllkb3RPVXdjTktRVkZwLysr?=
+ =?utf-8?B?eUNRSGlDcWViY0hwMyt1bVlRZWRBVUE5RWZkR21ROXdVRDQ5SkZMR1VFODh3?=
+ =?utf-8?B?QkVveWQ5M1JYUXFMOXBnYXp1OWIxWWY1QU9tMmJTQkIzTWVYc0RyZE9jZ0l0?=
+ =?utf-8?B?TC9UQmIrd2ZyVEV5VHpNRDhFRkRFV3l1WjdHTjd0UC8rTG5hVXg2QW51Tkds?=
+ =?utf-8?B?RUR4RGdXOHhXR0IzMnRzM1dpeFJlUzBtZVYxZUV2bS94a2lJclEyWUFrNE9J?=
+ =?utf-8?B?QzlzeWxvbUZCR0tTdHJKTWNFNGw1NFEvYUlCQXFJbWwwOUI0Yk1pdU40SUlD?=
+ =?utf-8?B?TEVHQWgwUm1lejJnaXJ4bHZWZGJKMEQrVCttdmJxb1pzbko3VG5zd1RrbVU1?=
+ =?utf-8?B?czRIdDQvN3dZS2NBQnN1UUk1Ti9IYlJHcnhMb2FuSnVtQzZRZEE0REMvcnR2?=
+ =?utf-8?B?NUpXZ2d1M2ZrNlExd0I0TUg1S1lPZTF2MG9BSGZDOWZ2NWZkZnNkUkE1ZDhp?=
+ =?utf-8?B?cGppRkIvWUY0aXgvbkRIcXVJV3BOSUxXN0hCU2pnZTdlbVdTN0pTeklrSTBD?=
+ =?utf-8?B?N3Zjd3MwZ1ZtczRqQ1ErN0lHT2dIYTRack54VnNhb21KNXlobHRnWXZKVUtv?=
+ =?utf-8?B?MmRSK1h6UXVaSzN4UDFKcCs0ZE5sN3FFWU1uYVlJVTJwUFR0Tm94V2xhR0hQ?=
+ =?utf-8?B?eVFjN3hKVjdQNTV0OVpOaDRuclViMnZ4enBFMFhMZnRGRTA0bEhCaVIxZjBK?=
+ =?utf-8?B?TmRNVWR6amsyMTFhKzJkT0dVMmZCK2c4T25lK3U4UTBMV0ZVWndGMkVqN0xo?=
+ =?utf-8?B?b3o4SnpyWTFnMFNuMnRjWGQrd2xxYkViRVlqc0tTV2hxeTJ6cno5RkZhL0xj?=
+ =?utf-8?B?QXJBQ0gvSTdwT1lES1hLSnZCK1pPQldIK2ZPckpveHI5Y1pxeFpsUzVTZkV4?=
+ =?utf-8?B?MHVHUlpUTG5Ea3FocVgvMzRTb3NjREJwdlZMekFXUDhOV21jS3EvaExsN1R6?=
+ =?utf-8?B?QUFpNEsvdno2d1lzams3TlByczUwQmhqaGxsc3JGSlBXbWlMQmtsRTFYRWhQ?=
+ =?utf-8?B?WDRQbnNRRUNSLzJ2UTZYVy9tVk5CejJMZHpXYVF5N0s1dFRYKzA5emNLak9u?=
+ =?utf-8?B?dVFZS2F0STUwK25UemJaRG5IY1JiRjlmU0NvZmxpZWY0L1NyMkNwdz09?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ee4d4647-c1b5-458d-b173-08da28339ccd
+X-MS-Exchange-CrossTenant-AuthSource: BN6PR1201MB0178.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Apr 2022 09:52:17.0046
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ZBV4uet1dmYINEIGhDe1D4wclnGeShT3LUvBRARkbE5ddAOzH2siTvhnr/rC4A8e9nVd6h0eCEq82Fwl19AL5A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB5738
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When we run out of module space address with ko insertion,
-and with MODULE_PLTS, module would turn to try to find memory
-from VMALLOC address space.
 
-Unfortunately, with KASAN enabled, VMALLOC doesn't work without
-KASAN_VMALLOC, thus select KASAN_VMALLOC by default.
+On 4/27/2022 3:02 PM, Like Xu wrote:
+> On 26/4/2022 9:05 pm, Sandipan Das wrote:
+>> On some x86 processors, CPUID leaf 0xA provides information
+>> on Architectural Performance Monitoring features. It
+>> advertises a PMU version which Qemu uses to determine the
+>> availability of additional MSRs to manage the PMCs.
+>>
+>> Upon receiving a KVM_GET_SUPPORTED_CPUID ioctl request for
+>> the same, the kernel constructs return values based on the
+>> x86_pmu_capability irrespective of the vendor.
+>>
+>> This leaf and the additional MSRs are not supported on AMD
+>> and Hygon processors. If AMD PerfMonV2 is detected, the PMU
+> 
+> So, why not:
+> 
+>         if (!static_cpu_has(X86_FEATURE_ARCH_PERFMON))
+>             break;
+> ?
+> 
 
-8<--- cut here ---
- Unable to handle kernel paging request at virtual address bd300860
- [bd300860] *pgd=41cf1811, *pte=41cf26df, *ppte=41cf265f
- Internal error: Oops: 80f [#1] PREEMPT SMP ARM
- Modules linked in: hello(O+)
- CPU: 0 PID: 89 Comm: insmod Tainted: G           O      5.16.0-rc6+ #19
- Hardware name: Generic DT based system
- PC is at mmioset+0x30/0xa8
- LR is at 0x0
- pc : [<c077ed30>]    lr : [<00000000>]    psr: 20000013
- sp : c451fc18  ip : bd300860  fp : c451fc2c
- r10: f18042cc  r9 : f18042d0  r8 : 00000000
- r7 : 00000001  r6 : 00000003  r5 : 01312d00  r4 : f1804300
- r3 : 00000000  r2 : 00262560  r1 : 00000000  r0 : bd300860
- Flags: nzCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
- Control: 10c5387d  Table: 43e9406a  DAC: 00000051
- Register r0 information: non-paged memory
- Register r1 information: NULL pointer
- Register r2 information: non-paged memory
- Register r3 information: NULL pointer
- Register r4 information: 4887-page vmalloc region starting at 0xf1802000 allocated at load_module+0x14f4/0x32a8
- Register r5 information: non-paged memory
- Register r6 information: non-paged memory
- Register r7 information: non-paged memory
- Register r8 information: NULL pointer
- Register r9 information: 4887-page vmalloc region starting at 0xf1802000 allocated at load_module+0x14f4/0x32a8
- Register r10 information: 4887-page vmalloc region starting at 0xf1802000 allocated at load_module+0x14f4/0x32a8
- Register r11 information: non-slab/vmalloc memory
- Register r12 information: non-paged memory
- Process insmod (pid: 89, stack limit = 0xc451c000)
- Stack: (0xc451fc18 to 0xc4520000)
- fc00:                                                       f18041f0 c04803a4
- fc20: c451fc44 c451fc30 c048053c c0480358 f1804030 01312cff c451fc64 c451fc48
- fc40: c047f330 c0480500 f18040c0 c1b52ccc 00000001 c5be7700 c451fc74 c451fc68
- fc60: f1802098 c047f300 c451fcb4 c451fc78 c026106c f180208c c4880004 00000000
- fc80: c451fcb4 bf001000 c044ff48 c451fec0 f18040c0 00000000 c1b54cc4 00000000
- fca0: c451fdf0 f1804268 c451fe64 c451fcb8 c0264e88 c0260d48 ffff8000 00007fff
- fcc0: f18040c0 c025cd00 c451fd14 00000003 0157f008 f1804258 f180425c f1804174
- fce0: f1804154 f180424c f18041f0 f180414c f1804178 f18041c0 bf0025d4 188a3fa8
- fd00: 0000009e f1804170 f2b18000 c451ff10 c0d92e40 f180416c c451feec 00000001
- fd20: 00000000 c451fec8 c451fe20 c451fed0 f18040cc 00000000 f17ea000 c451fdc0
- fd40: 41b58ab3 c1387729 c0261c28 c047fb5c c451fe2c c451fd60 c0525308 c048033c
- fd60: 188a3fb4 c3ccb090 c451fe00 c3ccb080 00000000 00000000 00016920 00000000
- fd80: c02d0388 c047f55c c02d0388 00000000 c451fddc c451fda0 c02d0388 00000000
- fda0: 41b58ab3 c13a72d0 c0524ff0 c1705f48 c451fdfc c451fdc0 c02d0388 c047f55c
- fdc0: 00016920 00000000 00000003 c1bb2384 c451fdfc c3ccb080 c1bb2384 00000000
- fde0: 00000000 00000000 00000000 00000000 c451fe1c c451fe00 c04e9d70 c1705f48
- fe00: c1b54cc4 c1bbc71c c3ccb080 00000000 c3ccb080 00000000 00000003 c451fec0
- fe20: c451fe64 c451fe30 c0525918 c0524ffc c451feb0 c1705f48 00000000 c1b54cc4
- fe40: b78a3fd0 c451ff60 00000000 0157f008 00000003 c451fec0 c451ffa4 c451fe68
- fe60: c0265480 c0261c34 c451feb0 7fffffff 00000000 00000002 00000000 c4880000
- fe80: 41b58ab3 c138777b c02652cc c04803ec 000a0000 c451ff00 ffffff9c b6ac9f60
- fea0: c451fed4 c1705f48 c04a4a90 b78a3fdc f17ea000 ffffff9c b6ac9f60 c0100244
- fec0: f17ea21a f17ea300 f17ea000 00016920 f1800240 f18000ac f17fb7dc 01316000
- fee0: 013161b0 00002590 01316250 00000000 00000000 00000000 00002580 00000029
- ff00: 0000002a 00000013 00000000 0000000c 00000000 00000000 0157f004 c451ffb0
- ff20: c1719be0 aed6f410 c451ff74 c451ff38 c0c4103c c0c407d0 c451ff84 c451ff48
- ff40: 00000805 c02c8658 c1604230 c1719c30 00000805 0157f004 00000005 c451ffb0
- ff60: c1719be0 aed6f410 c451ffac c451ff78 c0122130 c1705f48 c451ffac 0157f008
- ff80: 00000006 0000005f 0000017b c0100244 c4880000 0000017b 00000000 c451ffa8
- ffa0: c0100060 c02652d8 0157f008 00000006 00000003 0157f008 00000000 b6ac9f60
- ffc0: 0157f008 00000006 0000005f 0000017b 00000000 00000000 aed85f74 00000000
- ffe0: b6ac9cd8 b6ac9cc8 00030200 aecf2d60 a0000010 00000003 00000000 00000000
- Backtrace:
- [<c048034c>] (kasan_poison) from [<c048053c>] (kasan_unpoison+0x48/0x5c)
- [<c04804f4>] (kasan_unpoison) from [<c047f330>] (__asan_register_globals+0x3c/0x64)
-  r5:01312cff r4:f1804030
- [<c047f2f4>] (__asan_register_globals) from [<f1802098>] (_sub_I_65535_1+0x18/0xf80 [hello])
-  r7:c5be7700 r6:00000001 r5:c1b52ccc r4:f18040c0
- [<f1802080>] (_sub_I_65535_1 [hello]) from [<c026106c>] (do_init_module+0x330/0x72c)
- [<c0260d3c>] (do_init_module) from [<c0264e88>] (load_module+0x3260/0x32a8)
-  r10:f1804268 r9:c451fdf0 r8:00000000 r7:c1b54cc4 r6:00000000 r5:f18040c0
-  r4:c451fec0
- [<c0261c28>] (load_module) from [<c0265480>] (sys_finit_module+0x1b4/0x1e8)
-  r10:c451fec0 r9:00000003 r8:0157f008 r7:00000000 r6:c451ff60 r5:b78a3fd0
-  r4:c1b54cc4
- [<c02652cc>] (sys_finit_module) from [<c0100060>] (ret_fast_syscall+0x0/0x1c)
- Exception stack(0xc451ffa8 to 0xc451fff0)
- ffa0:                   0157f008 00000006 00000003 0157f008 00000000 b6ac9f60
- ffc0: 0157f008 00000006 0000005f 0000017b 00000000 00000000 aed85f74 00000000
- ffe0: b6ac9cd8 b6ac9cc8 00030200 aecf2d60
-  r10:0000017b r9:c4880000 r8:c0100244 r7:0000017b r6:0000005f r5:00000006
-  r4:0157f008
- Code: e92d4100 e1a08001 e1a0e003 e2522040 (a8ac410a)
- ---[ end trace df6e12843197b6f5 ]---
+That seems to be a better option. Thanks for the suggestion!
+Will change it in the next revision.
 
-Signed-off-by: Lecopzer Chen <lecopzer.chen@mediatek.com>
-Tested-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
----
- arch/arm/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index f440cf59cea1..d9d60a3a5600 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -1519,6 +1519,7 @@ config HW_PERF_EVENTS
- config ARM_MODULE_PLTS
- 	bool "Use PLTs to allow module memory to spill over into vmalloc area"
- 	depends on MODULES
-+	select KASAN_VMALLOC if KASAN
- 	default y
- 	help
- 	  Allocate PLTs when loading modules so that jumps and calls whose
--- 
-2.18.0
-
+>> version is set to 2 and guest startup breaks because of an
+>> attempt to access a non-existent MSR. Return zeros to avoid
+>> this.
+>>
+>> Fixes: a6c06ed1a60a ("KVM: Expose the architectural performance monitoring CPUID leaf")
+>> Reported-by: Vasant Hegde <vasant.hegde@amd.com>
+>> Signed-off-by: Sandipan Das <sandipan.das@amd.com>
+>> ---
+>>   arch/x86/kvm/cpuid.c | 6 ++++++
+>>   1 file changed, 6 insertions(+)
+>>
+>> diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
+>> index 4b62d80bb22f..d27d6a8f601a 100644
+>> --- a/arch/x86/kvm/cpuid.c
+>> +++ b/arch/x86/kvm/cpuid.c
+>> @@ -872,6 +872,12 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array *array, u32 function)
+>>           union cpuid10_eax eax;
+>>           union cpuid10_edx edx;
+>>   +        if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
+>> +            boot_cpu_data.x86_vendor == X86_VENDOR_HYGON) {
+>> +            entry->eax = entry->ebx = entry->ecx = entry->edx = 0;
+>> +            break;
+>> +        }
+>> +
+>>           perf_get_x86_pmu_capability(&cap);
+>>             /*
