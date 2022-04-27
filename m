@@ -2,147 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4239C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:24:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3239C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:24:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243140AbiD0Q1X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:27:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43096 "EHLO
+        id S243157AbiD0QZw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:25:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243004AbiD0Q0l (ORCPT
+        with ESMTP id S243621AbiD0QZH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:26:41 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F25F823948C
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:21:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651076346;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ffzoPVo40T1QB8nGCSIveEjN49tY8CiNvdur2uf9BJA=;
-        b=KQWFmVmsrJvYasYc8HeK2lgAiqLsluRefD9yhizsl4o8ZyvtHdDmc2Q+ZrgjzKzF0mqboI
-        meVudgyqeXdma8M3zjE9M0pRy0IH990jKsionWw2/kBuLEzA+Jg6vWxSCgp3wJVwZeAmr6
-        8+vo+RgvgzGM7YU2Ntug2j1Brd0r3Y0=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-47-YnZZpBD7N92ASds_aD6RqQ-1; Wed, 27 Apr 2022 12:19:04 -0400
-X-MC-Unique: YnZZpBD7N92ASds_aD6RqQ-1
-Received: by mail-ed1-f69.google.com with SMTP id cn27-20020a0564020cbb00b0041b5b91adb5so1257506edb.15
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:19:04 -0700 (PDT)
+        Wed, 27 Apr 2022 12:25:07 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ADC32378CF
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:19:20 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id d15so1990204plh.2
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:19:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=fB+D/7pJaYmPUCdn8kycmM+Ul0B8R84B43ZQd5gS8Kc=;
+        b=gIiaVIaQWTRSTYO0iYSxismgtGatUVsnHjsreouyLf2MOb9MUu/wnU4zqgB5cLTxgX
+         ROBO6loS1ZzQ9c3K4+heCtVCySqvO8yulB8m9PzGXIB80JNY8KbbYNf0ippFZ82sA0gW
+         Dfx6gtUdAp38Ae7mwl133SlUtYWxa+MBJe10b8PAcQ8PBooPuOOXu3rz/AEfDEobWEh9
+         emOr42AABxdRsOegkMJPUEAunHrf8V0foOoeiPEEPC95Uia/bPGuLK0w07ecNtOhrY0W
+         jjW5qiSbK66lahdI3MB20owZwmOdaksuGRcjSywwOeg17cTeppFGSbctYPFk0WMBgaxs
+         Z4lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ffzoPVo40T1QB8nGCSIveEjN49tY8CiNvdur2uf9BJA=;
-        b=7SM1c8aA9TU97ZPOEPL0SjT9Vx3ydimPgiOcxOOSr4JjGkLlAgHiWKSHQAlwupWW+t
-         rBb2f/ujauWpnjv4aIeDX9scNslKMrueOiyGsvaOSRge5jLrBPjfXjqLZGBzI96+WQZp
-         CJwf6Lx3ZOVwMv3lH0Scig12WoX+gORszkGp3OHkqu036kZx1JT7Zc/p4Q6BcDJJKypL
-         7OQik8Ylnoc6GxGTX+JN8xA0dnoUsRLTXI7SkPhdLRr3Pr+JYjZFXXgesq9iYm0wbcti
-         FcHOhOFY6zUU2c0EWQPLY2LZ/URv+1lwGG/R5sZRBw9KVZXDvpujmUt6E7l7xybBLFZM
-         kJZw==
-X-Gm-Message-State: AOAM5333nVdwWg/BSK8mTc8h5e16gLowdpuCV09L+5tbpmfX1BNn3pyY
-        cAIpCKH6nMsPwwZARhV91pRHOApeqXkkoqDJpCalKTNPW3w+IPN6g+dy57webNXtCBEgN3NWN9e
-        oVSgnH2YRiAtvnfYAcPtuA3lk
-X-Received: by 2002:a17:907:6286:b0:6da:6e24:5e43 with SMTP id nd6-20020a170907628600b006da6e245e43mr27124082ejc.449.1651076343675;
-        Wed, 27 Apr 2022 09:19:03 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzabc0/sYttxf8D1jkbuABMsGvUHBUQ5TkmebPJVuLdNvlX2fgRhAzqQvVk/Pgui8yCvJ73OA==
-X-Received: by 2002:a17:907:6286:b0:6da:6e24:5e43 with SMTP id nd6-20020a170907628600b006da6e245e43mr27124052ejc.449.1651076343424;
-        Wed, 27 Apr 2022 09:19:03 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:1c09:f536:3de6:228c? ([2001:b07:6468:f312:1c09:f536:3de6:228c])
-        by smtp.googlemail.com with ESMTPSA id bg16-20020a170906a05000b006f3c03f5871sm1884081ejb.108.2022.04.27.09.19.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Apr 2022 09:19:02 -0700 (PDT)
-Message-ID: <b02f8edc-8d29-46c4-32b4-7317f8eaae2d@redhat.com>
-Date:   Wed, 27 Apr 2022 18:18:58 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=fB+D/7pJaYmPUCdn8kycmM+Ul0B8R84B43ZQd5gS8Kc=;
+        b=gJmfGZk4SpNO4j8ndhAQE+EmoOU/3Nv/XDjTF/5BdyjHE5U08LCS/bU2F7WtpSJToV
+         hecWOywg/rpqCuD0enTnxkan8mwHypVOJs3VzwEnlwAspCtyMKLk6LvicN0w7IUzpLsA
+         WsZ+0YJt/pw/bSA9hoUpW9OGUs8A2uOC5Wd0oKJDw9GwKsAPbIYLB3Qt/ePIvXAP3Aee
+         1pMGj7SZVIcikd5cFsnZ/+WGCO6XS5AqPV01CJNkQwQRuarasC4F/uR+K6qMY+akME/F
+         Mwm5YDxgJWT1q5ZMcfeYgpnbfcbffgDksJjnYOQQmvGx3vmDMpuwyENtGzcUf8GPXIL0
+         TO+Q==
+X-Gm-Message-State: AOAM531AMqgBG9+KbUFCYwuLI6GmCfDmRjsgL2cTpS3+diCg6p2W4y1s
+        NYCZ9kgjkSwyYU7Gktu4jcTg9g==
+X-Google-Smtp-Source: ABdhPJzQQPPVMZgiQeJ7XCwAvPLUZIpex/aF9/4xYQH7aShixtfieF9c2Ptwb0v2h8v8gaVdOZLevg==
+X-Received: by 2002:a17:902:cec4:b0:15d:50ba:d9bf with SMTP id d4-20020a170902cec400b0015d50bad9bfmr4430492plg.28.1651076358662;
+        Wed, 27 Apr 2022 09:19:18 -0700 (PDT)
+Received: from leoy-ThinkPad-X240s ([134.195.101.46])
+        by smtp.gmail.com with ESMTPSA id f10-20020a63de0a000000b003aab55ad590sm17681133pgg.93.2022.04.27.09.19.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 09:19:18 -0700 (PDT)
+Date:   Thu, 28 Apr 2022 00:19:08 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     "Liang, Kan" <kan.liang@linux.intel.com>
+Cc:     Andi Kleen <ak@linux.intel.com>, Ali Saidi <alisaidi@amazon.com>,
+        Nick.Forrington@arm.com, acme@kernel.org,
+        alexander.shishkin@linux.intel.com, andrew.kilroy@arm.com,
+        benh@kernel.crashing.org, german.gomez@arm.com,
+        james.clark@arm.com, john.garry@huawei.com, jolsa@kernel.org,
+        kjain@linux.ibm.com, lihuafei1@huawei.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, mark.rutland@arm.com,
+        mathieu.poirier@linaro.org, mingo@redhat.com, namhyung@kernel.org,
+        peterz@infradead.org, will@kernel.org
+Subject: Re: [PATCH v5 2/5] perf: Add SNOOP_PEER flag to perf mem data struct
+Message-ID: <20220427161908.GE562576@leoy-ThinkPad-X240s>
+References: <c17dedde-6ba8-db9b-4827-32477f039764@linux.intel.com>
+ <20220422212249.22463-1-alisaidi@amazon.com>
+ <20220423063805.GA559531@leoy-ThinkPad-X240s>
+ <8e09af67-a416-4ead-b406-6c8b998de344@linux.intel.com>
+ <20220424114302.GB978927@leoy-ThinkPad-X240s>
+ <b4aaf1ed-124d-1339-3e99-a120f6cc4d28@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH MANUALSEL 5.4 1/2] x86/kvm: Preserve BSP
- MSR_KVM_POLL_CONTROL across suspend/resume
-Content-Language: en-US
-To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Cc:     Wanpeng Li <wanpengli@tencent.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, kvm@vger.kernel.org
-References: <20220427155438.19612-1-sashal@kernel.org>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220427155438.19612-1-sashal@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b4aaf1ed-124d-1339-3e99-a120f6cc4d28@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/27/22 17:54, Sasha Levin wrote:
-> From: Wanpeng Li <wanpengli@tencent.com>
-> 
-> [ Upstream commit 0361bdfddca20c8855ea3bdbbbc9c999912b10ff ]
-> 
-> MSR_KVM_POLL_CONTROL is cleared on reset, thus reverting guests to
-> host-side polling after suspend/resume.  Non-bootstrap CPUs are
-> restored correctly by the haltpoll driver because they are hot-unplugged
-> during suspend and hot-plugged during resume; however, the BSP
-> is not hotpluggable and remains in host-sde polling mode after
-> the guest resume.  The makes the guest pay for the cost of vmexits
-> every time the guest enters idle.
-> 
-> Fix it by recording BSP's haltpoll state and resuming it during guest
-> resume.
-> 
-> Cc: Marcelo Tosatti <mtosatti@redhat.com>
-> Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
-> Message-Id: <1650267752-46796-1-git-send-email-wanpengli@tencent.com>
-> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->   arch/x86/kernel/kvm.c | 13 +++++++++++++
->   1 file changed, 13 insertions(+)
-> 
-> diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
-> index 408b51aba293..f582dda8dd34 100644
-> --- a/arch/x86/kernel/kvm.c
-> +++ b/arch/x86/kernel/kvm.c
-> @@ -59,6 +59,7 @@ static DEFINE_PER_CPU_DECRYPTED(struct kvm_vcpu_pv_apf_data, apf_reason) __align
->   DEFINE_PER_CPU_DECRYPTED(struct kvm_steal_time, steal_time) __aligned(64) __visible;
->   static int has_steal_clock = 0;
->   
-> +static int has_guest_poll = 0;
->   /*
->    * No need for any "IO delay" on KVM
->    */
-> @@ -584,14 +585,26 @@ static int kvm_cpu_down_prepare(unsigned int cpu)
->   
->   static int kvm_suspend(void)
->   {
-> +	u64 val = 0;
-> +
->   	kvm_guest_cpu_offline(false);
->   
-> +#ifdef CONFIG_ARCH_CPUIDLE_HALTPOLL
-> +	if (kvm_para_has_feature(KVM_FEATURE_POLL_CONTROL))
-> +		rdmsrl(MSR_KVM_POLL_CONTROL, val);
-> +	has_guest_poll = !(val & 1);
-> +#endif
->   	return 0;
->   }
->   
->   static void kvm_resume(void)
->   {
->   	kvm_cpu_online(raw_smp_processor_id());
-> +
-> +#ifdef CONFIG_ARCH_CPUIDLE_HALTPOLL
-> +	if (kvm_para_has_feature(KVM_FEATURE_POLL_CONTROL) && has_guest_poll)
-> +		wrmsrl(MSR_KVM_POLL_CONTROL, 0);
-> +#endif
->   }
->   
->   static struct syscore_ops kvm_syscore_ops = {
+Hi Kan,
 
-Acked-by: Paolo Bonzini <pbonzini@redhat.com>
+On Mon, Apr 25, 2022 at 01:01:40PM -0400, Liang, Kan wrote:
+> 
+> 
+> On 4/24/2022 7:43 AM, Leo Yan wrote:
+> > On Sat, Apr 23, 2022 at 05:53:28AM -0700, Andi Kleen wrote:
+> > > 
+> > > > Except SNOOPX_FWD means a no modified cache snooping, it also means it's
+> > > > a cache conherency from *remote* socket.  This is quite different from we
+> > > > define SNOOPX_PEER, which only snoop from peer CPU or clusters.
+> > > > 
+> 
+> The FWD doesn't have to be *remote*. The definition you quoted is just for
+> the "L3 Miss", which is indeed a remote forward. But we still have
+> cross-core FWD. See Table 19-101.
+> 
+> Actually, X86 uses the PERF_MEM_REMOTE_REMOTE + PERF_MEM_SNOOPX_FWD to
+> indicate the remote FWD, not just SNOOPX_FWD.
 
+Thanks a lot for the info.
+
+> > > > If no objection, I prefer we could keep the new snoop type SNOOPX_PEER,
+> > > > this would be easier for us to distinguish the semantics and support the
+> > > > statistics for SNOOPX_FWD and SNOOPX_PEER separately.
+> > > > 
+> > > > I overlooked the flag SNOOPX_FWD, thanks a lot for Kan's reminding.
+> > > 
+> > > Yes seems better to keep using a separate flag if they don't exactly match.
+> > > 
+> 
+> Yes, I agree with Andi. If you still think the existing flag combination
+> doesn't match your requirement, a new separate flag should be introduced.
+> I'm not familiar with ARM. I think I will leave it to you and the maintainer
+> to decide.
+
+It's a bit difficult for me to make decision is because now SNOOPX_FWD
+is not used in the file util/mem-events.c, so I am not very sure if
+SNOOPX_FWD has the consistent usage across different arches.
+
+On the other hand, I sent a patch for 'peer' flag statistics [1], you
+could review it and it only stats for L2 and L3 cache level for local
+node.
+
+The main purpose for my sending this email is if you think the FWD can
+be the consistent for both arches, and even the new added display mode
+is also useful for x86 arch (we can rename it as 'fwd' display mode),
+then I am very glad to unify the flag.
+
+Thanks,
+Leo
+
+[1] https://lore.kernel.org/lkml/20220427155013.1833222-5-leo.yan@linaro.org/
