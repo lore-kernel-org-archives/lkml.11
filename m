@@ -2,100 +2,527 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECD6EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:22:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF45BC43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:23:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236178AbiD0NYV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 09:24:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53892 "EHLO
+        id S235761AbiD0N0u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 09:26:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235781AbiD0NXn (ORCPT
+        with ESMTP id S233146AbiD0N0r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 09:23:43 -0400
-Received: from mail-io1-xd46.google.com (mail-io1-xd46.google.com [IPv6:2607:f8b0:4864:20::d46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DFD2D7A
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 06:20:21 -0700 (PDT)
-Received: by mail-io1-xd46.google.com with SMTP id d19-20020a0566022d5300b0065499cd4a73so2272117iow.14
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 06:20:21 -0700 (PDT)
+        Wed, 27 Apr 2022 09:26:47 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA3D22E080;
+        Wed, 27 Apr 2022 06:23:34 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id j6so3322271ejc.13;
+        Wed, 27 Apr 2022 06:23:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MDq52gg2S38jY8GvvNKkgYiJaKJ9lQGspuro9WnAZFg=;
+        b=QNK8zs7gmg2UP+y5f47IHIL5U/Nm0NbHPkEjS8O7QFnhb8ybi231TTIx6UfJDQBGSb
+         H/SDRoXW0Awz9AAT+V7+oltV0apQ/aFFox2WVuy9VWFr8PWBOwFxq9rE0QqTijSwe6Co
+         B7epnNx9KG9l4TDXhXH2EAMAZDz+/UHOYwL6KXwdlezL/vpp93gQamVgKv5NLXQWKzR0
+         I0A0UA+Ec/y+0xnT9EKIlcOYNwnafKvY4XQzNuTR0JVDuhdzA/vWRboWBQgHobXFBBix
+         103KSgh7fkRcWg70vqkVxFNuWwaii3GCeIcQi1p0Gwb6inlHvwzWWH0r/WXt322UqS31
+         0zsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=0HeRjMQ5Gk682aDL8RE02ZjSUks4bcwfNrNycajs9W4=;
-        b=31YhJHIVZ5snNwnuZeXYTuf4SBhhvHOyz7hm5l3L1D4aWgjwPUZUhC0ER1/tVAAZ7t
-         TSu99wa7gH8lQHV3chzny5Vs6Qf7Bti3QNT5RxBYrihFzFwKdj8S8+U4zy0AyiDnWL1E
-         aaEEX88rk2rI/EgjAr2DCmXs8xwucRfGodM4JnVJErT7kDoVVhcKURQwnAuS5D6G0HhP
-         7C+Gg6lKRjqaPeCcGRcQwer1VK3/VEis8PCo8s6GyRT1AbxKb3f0dOdZSaLqRJY488z8
-         YGgEsHdDjvQ8ixNgh7FdivljSlr24bET6cbNgIXxxmq/eeyr+0dBLDvGZTYR3UVweGu3
-         4Peg==
-X-Gm-Message-State: AOAM533iqwKuysxDOV+6YAOzvmImGfFNgH1+7g0FsVsbop5Qg22wvQU+
-        TeZbzZXJiPQyPGHb0LoNfI4B0wT5GeyM6p7XAEC/zYRgj7AQ
-X-Google-Smtp-Source: ABdhPJwEYdyTfbYiVy/vKw1D8ERT/PZgdQPVn4H4ontcFJyzHBTy3UJBtaghDc5OxxTuRqFSxTpPUyHeWyJ7ZhDykCQxRz+AdbhC
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MDq52gg2S38jY8GvvNKkgYiJaKJ9lQGspuro9WnAZFg=;
+        b=KioDHUbulDfnvdbzi5xDX3WrFZUij8n7zbDGaZlsQtKJOFv7ex4HUxI8228AvILOQV
+         dqJ5dF1+RG3vUNP6aAgpmdgp+ySEaqn47bt+nS+wzUIpjMQiedhRiRYTArgFk6oEMoLb
+         8Q/12BebcEv35HlwgTMn1yeGaQC4okl2wqBnL9BMwRZc1tPqDXAX/hhRDOKxnelOZqEa
+         vFWDQAeNc5rKoOzaQ4NvH4TzoCp5q21MZ+Jw/kQioPOAWp3L72uet25+dQiCFOesHXms
+         wDffeFPN1lacXLzLkkp3meixlmBxTsBElXK+pInEhGk8gn8AsK0TBtNgcZaL7q9/kEM/
+         vRBg==
+X-Gm-Message-State: AOAM532NxGV8ENPy5g+ABCGullIIovKLray1Oj0K65myIoZllEyenktg
+        1rAZ+grbusYsDCSE+TVvDnTGMUDk0MzkT0wLADU=
+X-Google-Smtp-Source: ABdhPJyj6mlB0EWyd+wFjOfEIqh3Q6vXrOtLzz3fxJ4dKTqYbIdJ94W58ikbzgIQiKJJgJTJKT7F3Q4JmSd8LJUXxn8=
+X-Received: by 2002:a17:906:1cd1:b0:6ec:c59:6a1d with SMTP id
+ i17-20020a1709061cd100b006ec0c596a1dmr27039743ejh.77.1651065813236; Wed, 27
+ Apr 2022 06:23:33 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:1409:b0:5e7:487:133c with SMTP id
- t9-20020a056602140900b005e70487133cmr3368591iov.196.1651065320802; Wed, 27
- Apr 2022 06:15:20 -0700 (PDT)
-Date:   Wed, 27 Apr 2022 06:15:20 -0700
-In-Reply-To: <000000000000a23c8505dda227eb@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f28f0005dda29992@google.com>
-Subject: Re: [syzbot] WARNING in vma_merge
-From:   syzbot <syzbot+7728e4ab5371cebc9c00@syzkaller.appspotmail.com>
-To:     akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, syzkaller-bugs@googlegroups.com
+References: <20220426131102.23966-1-andrea.merello@gmail.com> <20220426131102.23966-9-andrea.merello@gmail.com>
+In-Reply-To: <20220426131102.23966-9-andrea.merello@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 27 Apr 2022 15:22:56 +0200
+Message-ID: <CAHp75VdLiBkg100UjFN36rW_vaOObOoJ_Mv9n=4LjSWb+dQWMw@mail.gmail.com>
+Subject: Re: [v5 08/14] iio: imu: add Bosch Sensortec BNO055 core driver
+To:     Andrea Merello <andrea.merello@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matt Ranostay <matt.ranostay@konsulko.com>,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        jmondi <jacopo@jmondi.org>,
+        Andrea Merello <andrea.merello@iit.it>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+On Tue, Apr 26, 2022 at 3:11 PM Andrea Merello <andrea.merello@gmail.com> wrote:
+>
+> From: Andrea Merello <andrea.merello@iit.it>
+>
+> Add the core driver for the BNO055 IMU from Bosch. This IMU can be
+> connected via both serial and I2C busses; separate patches will add support
+> for them.
+>
+> The driver supports "AMG" (Accelerometer, Magnetometer, Gyroscope) mode,
+> that provides raw data from the said internal sensors, and a couple of
+> "fusion" modes (i.e. the IMU also do calculations in order to provide euler
 
-HEAD commit:    f02ac5c95dfd Add linux-next specific files for 20220427
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=105a33a2f00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e9256c70f586da8a
-dashboard link: https://syzkaller.appspot.com/bug?extid=7728e4ab5371cebc9c00
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15f76f82f00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12b42c3cf00000
+does
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+7728e4ab5371cebc9c00@syzkaller.appspotmail.com
+> angles, quaternions, linear acceleration and gravity measurements).
+>
+> In fusion modes the AMG data is still available (with some calibration
+> refinements done by the IMU), but certain settings such as low pass filters
+> cut-off frequency and sensors ranges are fixed, while in AMG mode they can
 
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 3593 at mm/mmap.c:1072 vma_merge+0x428/0x950 mm/mmap.c:1072
-Modules linked in:
-CPU: 1 PID: 3593 Comm: syz-executor549 Not tainted 5.18.0-rc4-next-20220427-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:vma_merge+0x428/0x950 mm/mmap.c:1072
-Code: 00 e8 5c 1f c4 ff e8 57 1f c4 ff 45 31 f6 e8 4f 1f c4 ff 4c 89 f0 48 83 c4 28 5b 5d 41 5c 41 5d 41 5e 41 5f c3 e8 38 1f c4 ff <0f> 0b e9 6c fd ff ff e8 2c 1f c4 ff 48 8d bd 88 00 00 00 48 b8 00
-RSP: 0018:ffffc90002edfd10 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 0000000008102073 RCX: 0000000000000000
-RDX: ffff88801d0a3a80 RSI: ffffffff81b62968 RDI: 0000000000000003
-RBP: ffff88807e550bd0 R08: 0000000021001000 R09: 0000000000000000
-R10: ffffffff81b626ce R11: 0000000000000000 R12: 0000555557211000
-R13: 00005555571ef000 R14: ffff88807e550d80 R15: ffff88807e550d80
-FS:  00005555571ef300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00005564400b0df0 CR3: 0000000073d7f000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- mlock_fixup+0x349/0x7f0 mm/mlock.c:420
- apply_mlockall_flags+0x2be/0x440 mm/mlock.c:691
- __do_sys_mlockall+0x222/0x4b0 mm/mlock.c:719
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f9cdd5a1f99
-Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffecfa63c98 EFLAGS: 00000246 ORIG_RAX: 0000000000000097
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f9cdd5a1f99
-RDX: 00007f9cdd5a1f99 RSI: 0000000000000000 RDI: 0000000000000003
-RBP: 00007f9cdd565f80 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f9cdd566010
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
- </TASK>
+sensor?
+sensors'?
 
+> be customized; this is why AMG mode can still be interesting.
+
+...
+
+> +#include <linux/bitmap.h>
+> +#include <linux/clk.h>
+> +#include <linux/bitfield.h>
+> +#include <linux/debugfs.h>
+> +#include <linux/device.h>
+> +#include <linux/firmware.h>
+> +#include <linux/gpio/consumer.h>
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/regmap.h>
+> +#include <linux/util_macros.h>
+
+Keep them ordered?
+
+...
+
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/triggered_buffer.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/sysfs.h>
+
+Ditto.
+
+...
+
+> +#define BNO055_FW_NAME "bno055-caldata"
+> +#define BNO055_FW_EXT ".dat"
+> +#define BNO055_FW_UID_NAME BNO055_FW_NAME "-%*phN" BNO055_FW_EXT
+
+I believe this should be _FMT prefix, since it's not a name (I don't
+think %*phN is a part of the actual file name).
+
+> +#define BNO055_FW_GENERIC_NAME (BNO055_FW_NAME BNO055_FW_EXT)
+
+And these macros of macros look unreadable, can we just hardcode
+format and generic name?
+
+...
+
+> +#define BNO055_ATTR_VALS(...)          \
+> +       .vals = (int[]){ __VA_ARGS__},  \
+> +       .len = ARRAY_SIZE(((int[]){__VA_ARGS__}))
+
+Not sure this adds any readability to the code. Can we simply have an
+array of int for each case with the explicit ARRAY_SIZE() calls?
+
+...
+
+> +/*
+> + * Theoretically the IMU should return data in a given (i.e. fixed) unit
+> + * regardless the range setting. This happens for the accelerometer, but not for
+
+regardless of
+
+> + * the gyroscope; the gyroscope range setting affects the scale.
+> + * This is probably due to this[0] bug.
+> + * For this reason we map the internal range setting onto the standard IIO scale
+> + * attribute for gyro.
+> + * Since the bug[0] may be fixed in future, we check for the IMU FW version and
+> + * eventually warn the user.
+> + * Currently we just don't care about "range" attributes for gyro.
+> + *
+> + * [0]  https://community.bosch-sensortec.com/t5/MEMS-sensors-forum/BNO055-Wrong-sensitivity-resolution-in-datasheet/td-p/10266
+> + */
+
+...
+
+> +       /* calibration data may be updated by the IMU */
+> +       if (reg >= BNO055_CALDATA_START && reg <= BNO055_CALDATA_END)
+> +               return true;
+> +
+> +       return false;
+
+Can be done in one return statement w/o branch, but probably OK taking
+into account other related functions.
+
+> +}
+
+...
+
+> +       {
+> +               .range_min = 0,
+> +               .range_max = 0x7f * 2,
+> +               .selector_reg = BNO055_PAGESEL_REG,
+> +               .selector_mask = GENMASK(7, 0),
+> +               .selector_shift = 0,
+> +               .window_start = 0,
+> +               .window_len = 0x80
+
+In all cases like this, keep the trailing comma.
+
+> +       },
+
+...
+
+> +       msleep(20);
+
+Perhaps a comment why so long sleep is needed.
+
+...
+
+> +static int bno055_system_reset(struct bno055_priv *priv)
+> +{
+> +       int ret;
+> +
+> +       if (priv->reset_gpio) {
+> +               gpiod_set_value_cansleep(priv->reset_gpio, 0);
+> +               usleep_range(5000, 10000);
+> +               gpiod_set_value_cansleep(priv->reset_gpio, 1);
+> +       } else {
+> +               if (!priv->sw_reset)
+> +                       return 0;
+
+Can be unified with the above 'else':
+
+} else if (...) {
+  return 0;
+} else {
+
+> +               ret = regmap_write(priv->regmap, BNO055_SYS_TRIGGER_REG,
+> +                                  BNO055_SYS_TRIGGER_RST_SYS);
+> +               if (ret)
+> +                       return ret;
+> +       }
+> +
+> +       regcache_drop_region(priv->regmap, 0x0, 0xff);
+> +       usleep_range(650000, 700000);
+> +
+> +       return 0;
+> +}
+
+...
+
+> +exit:
+
+exit_unlock: ?
+
+> +       mutex_unlock(&priv->lock);
+> +       return ret;
+> +}
+
+...
+
+> +       .scan_type = {                                                          \
+> +               .sign = 's',                                                    \
+> +               .realbits = 16,                                                 \
+> +               .storagebits = 16,                                              \
+> +               .endianness = IIO_LE,                                           \
+> +               .repeat = IIO_MOD_##_axis == IIO_MOD_QUATERNION ? 4 : 0         \
+
++ Comma.
+
+> +       },                                                                      \
+
+...
+
+> +       {
+> +               .type = IIO_TEMP,
+> +               .info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+> +               .scan_index = -1
+
++ Comma.
+
+> +       },
+
+...
+
+> +       /*
+> +        * We always get a request in INT_PLUS_MICRO, but we
+> +        * take care of the micro part only when we really have
+> +        * non-integer tables. This prevents 32-bit overflow with
+> +        * larger integers contained in integer tables.
+> +        */
+> +       req_val = val;
+> +       if (attr->type != IIO_VAL_INT) {
+
+
+> +               if (val > 2147)
+> +                       val = 2147;
+
+min() ?
+
+It seems it's not used outside of this branch, so this min() can be
+integrated into below without corrupting val itself.
+
+> +               len /= 2;
+> +               req_val = val * 1000000 + val2;
+> +       }
+
+...
+
+> +               if (first || delta < best_delta) {
+
+In such cases checking 'first' last might slightly be better.
+
+> +                       best_delta = delta;
+> +                       hwval = i;
+> +                       first = false;
+> +               }
+
+...
+
+> +                       /*
+> +                        * IMU reports sensor offests; IIO wants correction
+
+offsets
+
+> +                        * offset, thus we need the 'minus' here.
+> +                        */
+
+...
+
+> +       case IIO_CHAN_INFO_SAMP_FREQ:
+> +               if (chan->type != IIO_MAGN)
+> +                       return -EINVAL;
+
+> +               else
+
+redundant.
+
+> +                       return bno055_get_regmask(priv, val, val2,
+> +                                                 BNO055_MAG_CONFIG_REG,
+> +                                                 BNO055_MAG_CONFIG_ODR_MASK,
+> +                                                 &bno055_mag_odr);
+
+...
+
+> +       for (i = 0; i < bno055_acc_range.len; i++)
+> +               len += sysfs_emit_at(buf, len, "%d%c", bno055_acc_range.vals[i],
+> +                                    (i == bno055_acc_range.len - 1) ? '\n' : ' ');
+
+You may move the condition out of the loop.
+
+...
+
+> +       int ret = 0;
+
+Redundant assignment, see below.
+
+> +       if (indio_dev->active_scan_mask &&
+> +           !bitmap_empty(indio_dev->active_scan_mask, _BNO055_SCAN_MAX))
+> +               return -EBUSY;
+> +
+> +       if (sysfs_streq(buf, "0")) {
+> +               ret = bno055_operation_mode_set(priv, BNO055_OPR_MODE_AMG);
+
+return bno055_operation_mode_set(...);
+
+> +       } else {
+
+...and drop this with the following decreasing indentation.
+
+> +               /*
+> +                * Coming from AMG means the FMC was off, just switch to fusion
+> +                * but don't change anything that doesn't belong to us (i.e let
+> +                * FMC stay off.
+> +                * Coming from any other fusion mode means we don't need to do
+> +                * anything.
+> +                */
+> +               if (priv->operation_mode == BNO055_OPR_MODE_AMG)
+> +                       ret = bno055_operation_mode_set(priv, BNO055_OPR_MODE_FUSION_FMC_OFF);
+> +       }
+> +       if (ret)
+> +               return ret;
+> +       return len;
+
+...
+
+> +       if (count < BNO055_CALDATA_LEN || pos != 0)
+
+Drop ' != 0' part ?
+
+> +               return -EINVAL;
+
+...
+
+> +unlock:
+
+exit_unlock: to be consistent?
+
+> +       mutex_unlock(&priv->lock);
+> +       return ret;
+
+...
+
+> +       /*
+> +        * Walk the bitmap and eventually perform several transfers.
+> +        * Bitmap ones-fileds that are separated by gaps <= xfer_burst_break_thr
+
+ones-fields ?
+
+> +        * will be included in same transfer.
+> +        * Every time the bitmap contains a gap wider than xfer_burst_break_thr
+> +        * then we split the transfer, skipping the gap.
+> +        */
+
+...
+
+> +               /*
+> +                * First transfer will start from the beginnig of the first
+
+beginning
+
+> +                * ones-field in the bitmap
+> +                */
+> +               if (first)
+> +                       xfer_start = start;
+> +
+> +               /*
+> +                * We found the next ones-field; check whether to include it in
+> +                * the current transfer or not (i.e. let's perform the current
+> +                * transfer and prepare for another one).
+> +                */
+
+> +               if (!first) {
+
+'else {' ?
+
+
+> +               }
+
+...
+
+> +static void bno055_clk_disable(void *arg)
+> +{
+> +       clk_disable_unprepare((struct clk *)arg);
+
+Redundant casting.
+
+> +}
+
+...
+
+> +       const u8 *caldata_data = NULL;
+
+> +       int caldata_size = 0;
+
+No need. See below.
+
+...
+
+> +       if (priv->reset_gpio) {
+> +               usleep_range(5000, 10000);
+> +               gpiod_set_value_cansleep(priv->reset_gpio, 1);
+> +               usleep_range(650000, 750000);
+
+> +       } else {
+> +               if (!sw_reset)
+
+} else if () {
+
+> +                       dev_warn(dev, "No usable reset method; IMU may be unreliable");
+> +       }
+
+...
+
+> +       /*
+> +        * Seems that stock FW version conains a bug (see comment at the
+
+the stock
+contains
+
+> +        * beginning of this file) that causes the anglvel scale to be changed
+> +        * depending by the chip range setting. We workaround this, but we don't
+
+on the chip
+
+> +        * know what other FW version might do..
+
+versions
+
+One period at the end is enough, or add another one if there is a
+continuation below.
+
+> +        */
+
+...
+
+> +       ret = request_firmware(&caldata, fw_name_buf, dev);
+> +       kfree(fw_name_buf);
+> +       if (ret)
+> +               ret = request_firmware(&caldata, BNO055_FW_GENERIC_NAME, dev);
+
+> +
+
+Can be removed to group all related checks together.
+
+> +       if (ret)
+> +               dev_notice(dev, "Calibration file load failed. See instruction in kernel Documentation/iio/bno055.rst");
+> +
+> +       if (caldata) {
+> +               caldata_data = caldata->data;
+> +               caldata_size = caldata->size;
+> +       }
+> +       ret = bno055_init(priv, caldata_data, caldata_size);
+
+> +       if (caldata)
+> +               release_firmware(caldata);
+
+> +       if (ret)
+> +               return ret;
+
+Can be rewritten in a form of
+
+if (caldata) {
+ ret = bno055_init();
+ release_firmware(...);
+} else {
+ ret = bno055_init();
+}
+if (ret)
+  return ret;
+
+?
+
+...
+
+> +#include <linux/regmap.h>
+
+Missed types.h.
+
+> +struct device;
+> +int bno055_probe(struct device *dev, struct regmap *regmap,
+> +                int xfer_burst_break_thr, bool sw_reset);
+> +extern const struct regmap_config bno055_regmap_config;
+
+-- 
+With Best Regards,
+Andy Shevchenko
