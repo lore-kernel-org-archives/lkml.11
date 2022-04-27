@@ -2,150 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E20A3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 19:38:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADEBCC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 19:38:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234470AbiD0Tly (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 15:41:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46300 "EHLO
+        id S234458AbiD0Tl7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 15:41:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233247AbiD0Tj4 (ORCPT
+        with ESMTP id S233800AbiD0Tj6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 15:39:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C7E3F34
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 12:36:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CBBF61B8D
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 19:36:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17B71C385B3;
-        Wed, 27 Apr 2022 19:36:43 +0000 (UTC)
-Received: from rostedt by gandalf.local.home with local (Exim 4.95)
-        (envelope-from <rostedt@goodmis.org>)
-        id 1njnSs-002Ivz-6R;
-        Wed, 27 Apr 2022 15:36:42 -0400
-Message-ID: <20220427193642.030264509@goodmis.org>
-User-Agent: quilt/0.66
-Date:   Wed, 27 Apr 2022 15:36:37 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jeff Xie <xiehuan09@gmail.com>
-Subject: [for-next][PATCH 14/21] tracing: Make tp_printk work on syscall tracepoints
-References: <20220427193623.529296556@goodmis.org>
+        Wed, 27 Apr 2022 15:39:58 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A64BC2199;
+        Wed, 27 Apr 2022 12:36:45 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id g23so3097398edy.13;
+        Wed, 27 Apr 2022 12:36:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=laBiheI0U75LASrHjB6ZdZZMpe4PBQO0pkzvkJ7BACU=;
+        b=TulO57A6xlTWM81rj8A7o39sFF9xM0Zptw/Ml8zYreU+dZwZRnR37mY8wfAX69Pl5x
+         vevGv03GOgpcWWfNg0fkxu0LbIduDQWkoWknoefGIPQIhjj+ibdDYYBUMWuivk8jQAZX
+         63/1XotXCRd9FMUS9yENF+Yj6l/RTcc18WXBPonnB1mzsuflpIGQJqC6NzguPgUC1iVT
+         zI2JPYKmsWvUT+1ARi8HHaDwhTnuwvobYjADNWNrlJInIY+fXpZ0HWzbUY6FWdZYZXWE
+         BWc1FXpF1vITNBJvc8DEQ1QuA4XRar+hl/GkfpGhxN1K8aeiEkJKXahYYfF5idA70JE9
+         AsGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=laBiheI0U75LASrHjB6ZdZZMpe4PBQO0pkzvkJ7BACU=;
+        b=z1O+I2ne+RnfJZVdk4BjO9zPg8EzjyOcqJRJMlWeS20NCreOhG8Z/qjALzlWy1VPYD
+         q+o+d5DcQ+Nq4FPO+kOUS8FIf35ZGdIqOjEUSsTEYPQU0aDabk/ccEeLEj3ksfvdzT7p
+         ZQsdUvbc6ZbhzonQ9mxa/QcpgVFm9h3KGsTtFFNvi7iglYqbJHVpkKZ1nXROX3Y6TI4j
+         WSkbnjM4I2IXwUn9LkQnZdrjg2Wwjkux47rIbRa546QZ56EbNYbbDuBjaiuiTa8yj+qQ
+         JZuln9jk7YPdLDPghI73qusQkWGGFlWKkkgVTstYx4KUEPFm+d3/M6m7ITZr8erZgq8v
+         Xkfw==
+X-Gm-Message-State: AOAM530iB4MoMGjCLNqfg8/z5wZkH246PyWds3Vc76sRAigFRatwY5iT
+        oLeSm/8Khyq2k1fmQVXVtxV9+1OpPuN2Ew==
+X-Google-Smtp-Source: ABdhPJzUC30k74cycMu9f4Mp6MtRykBINJsEHSFD9PcJj5evGPN9Hbr/wtuK/7K6Ga/Tdb5i/Zq+ZQ==
+X-Received: by 2002:a05:6402:d0a:b0:421:10e6:2ecc with SMTP id eb10-20020a0564020d0a00b0042110e62eccmr32710929edb.329.1651088203273;
+        Wed, 27 Apr 2022 12:36:43 -0700 (PDT)
+Received: from jernej-laptop.localnet (89-212-118-115.static.t-2.net. [89.212.118.115])
+        by smtp.gmail.com with ESMTPSA id kj11-20020a170907764b00b006f3a41bbdeesm3811224ejc.38.2022.04.27.12.36.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 12:36:42 -0700 (PDT)
+From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
+To:     linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Cc:     Yong Deng <yong.deng@magewell.com>,
+        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Samuel Holland <samuel@sholland.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v4 30/45] media: sun6i-csi: Introduce bridge format structure, list and helper
+Date:   Wed, 27 Apr 2022 21:36:41 +0200
+Message-ID: <1787704.atdPhlSkOF@jernej-laptop>
+In-Reply-To: <20220415152811.636419-31-paul.kocialkowski@bootlin.com>
+References: <20220415152811.636419-1-paul.kocialkowski@bootlin.com> <20220415152811.636419-31-paul.kocialkowski@bootlin.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeff Xie <xiehuan09@gmail.com>
+Dne petek, 15. april 2022 ob 17:27:56 CEST je Paul Kocialkowski napisal(a):
+> Introduce a more informative format list for the bridge, with
+> information about how to configure the input. This separation will
+> later be useful when using the bridge standalone (without capture)
+> for the isp workflow.
+> 
+> Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
 
-Currently the tp_printk option has no effect on syscall tracepoint.
-When adding the kernel option parameter tp_printk, then:
+Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 
-echo 1 > /sys/kernel/debug/tracing/events/syscalls/enable
+Best regards,
+Jernej
 
-When running any application, no trace information is printed on the
-terminal.
 
-Now added printk for syscall tracepoints.
-
-Link: https://lkml.kernel.org/r/20220410145025.681144-1-xiehuan09@gmail.com
-
-Signed-off-by: Jeff Xie <xiehuan09@gmail.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
----
- kernel/trace/trace_syscalls.c | 35 +++++++++++------------------------
- 1 file changed, 11 insertions(+), 24 deletions(-)
-
-diff --git a/kernel/trace/trace_syscalls.c b/kernel/trace/trace_syscalls.c
-index f755bde42fd0..b69e207012c9 100644
---- a/kernel/trace/trace_syscalls.c
-+++ b/kernel/trace/trace_syscalls.c
-@@ -154,7 +154,7 @@ print_syscall_enter(struct trace_iterator *iter, int flags,
- 			goto end;
- 
- 		/* parameter types */
--		if (tr->trace_flags & TRACE_ITER_VERBOSE)
-+		if (tr && tr->trace_flags & TRACE_ITER_VERBOSE)
- 			trace_seq_printf(s, "%s ", entry->types[i]);
- 
- 		/* parameter values */
-@@ -296,9 +296,7 @@ static void ftrace_syscall_enter(void *data, struct pt_regs *regs, long id)
- 	struct trace_event_file *trace_file;
- 	struct syscall_trace_enter *entry;
- 	struct syscall_metadata *sys_data;
--	struct ring_buffer_event *event;
--	struct trace_buffer *buffer;
--	unsigned int trace_ctx;
-+	struct trace_event_buffer fbuffer;
- 	unsigned long args[6];
- 	int syscall_nr;
- 	int size;
-@@ -321,20 +319,16 @@ static void ftrace_syscall_enter(void *data, struct pt_regs *regs, long id)
- 
- 	size = sizeof(*entry) + sizeof(unsigned long) * sys_data->nb_args;
- 
--	trace_ctx = tracing_gen_ctx();
--
--	event = trace_event_buffer_lock_reserve(&buffer, trace_file,
--			sys_data->enter_event->event.type, size, trace_ctx);
--	if (!event)
-+	entry = trace_event_buffer_reserve(&fbuffer, trace_file, size);
-+	if (!entry)
- 		return;
- 
--	entry = ring_buffer_event_data(event);
-+	entry = ring_buffer_event_data(fbuffer.event);
- 	entry->nr = syscall_nr;
- 	syscall_get_arguments(current, regs, args);
- 	memcpy(entry->args, args, sizeof(unsigned long) * sys_data->nb_args);
- 
--	event_trigger_unlock_commit(trace_file, buffer, event, entry,
--				    trace_ctx);
-+	trace_event_buffer_commit(&fbuffer);
- }
- 
- static void ftrace_syscall_exit(void *data, struct pt_regs *regs, long ret)
-@@ -343,9 +337,7 @@ static void ftrace_syscall_exit(void *data, struct pt_regs *regs, long ret)
- 	struct trace_event_file *trace_file;
- 	struct syscall_trace_exit *entry;
- 	struct syscall_metadata *sys_data;
--	struct ring_buffer_event *event;
--	struct trace_buffer *buffer;
--	unsigned int trace_ctx;
-+	struct trace_event_buffer fbuffer;
- 	int syscall_nr;
- 
- 	syscall_nr = trace_get_syscall_nr(current, regs);
-@@ -364,20 +356,15 @@ static void ftrace_syscall_exit(void *data, struct pt_regs *regs, long ret)
- 	if (!sys_data)
- 		return;
- 
--	trace_ctx = tracing_gen_ctx();
--
--	event = trace_event_buffer_lock_reserve(&buffer, trace_file,
--			sys_data->exit_event->event.type, sizeof(*entry),
--			trace_ctx);
--	if (!event)
-+	entry = trace_event_buffer_reserve(&fbuffer, trace_file, sizeof(*entry));
-+	if (!entry)
- 		return;
- 
--	entry = ring_buffer_event_data(event);
-+	entry = ring_buffer_event_data(fbuffer.event);
- 	entry->nr = syscall_nr;
- 	entry->ret = syscall_get_return_value(current, regs);
- 
--	event_trigger_unlock_commit(trace_file, buffer, event, entry,
--				    trace_ctx);
-+	trace_event_buffer_commit(&fbuffer);
- }
- 
- static int reg_event_syscall_enter(struct trace_event_file *file,
--- 
-2.35.1
