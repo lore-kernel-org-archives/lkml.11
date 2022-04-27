@@ -2,75 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDE04C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 11:27:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 287B1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 11:28:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232877AbiD0LaU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 07:30:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55870 "EHLO
+        id S232611AbiD0Lby (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 07:31:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232822AbiD0LaR (ORCPT
+        with ESMTP id S232600AbiD0Lbx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 07:30:17 -0400
-X-Greylist: delayed 3610 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 27 Apr 2022 04:27:03 PDT
-Received: from qq.com (smtpbg480.qq.com [59.36.132.97])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46AC634BA5
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 04:27:02 -0700 (PDT)
-X-QQ-mid: bizesmtp64t1651050605tiahcm92
-Received: from localhost.localdomain ( [113.57.152.160])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 27 Apr 2022 17:10:04 +0800 (CST)
-X-QQ-SSF: 01400000002000B0D000000A0000000
-X-QQ-FEAT: k0yT7W7BRd2hJ3e44CTTxZClb4VhkQvqeT8/1vbIYdFEXyYRmRAwUKNJDbxwE
-        bSyNufrz103kdN+HSbexV3zJ8frcy35rH0dSEjze32oxJ67/YIg1Ui0wQp6jPjn8sdrWouw
-        6976pNoA+b9xTCtCGDlASzzAo7GYAHhfsvSoxHvnHqa+FcOK+Cho3d6AGJe0ZnzzrSHCFmm
-        xQX6+ciD4+yQzVq4GHlS39n+Cp4rnT9gUp+fINjO2aG+gzX7OSyOH7yH0DpFVoacHuI4ZLx
-        4TSq8q5Cf/PbqPJGvV1TIKb+dn/PEScJtoBQxsWLRYegEU3g+82O1ClsQ0NXVyEWh+hNc0V
-        r5UDk6YJJlj4Ih5JBAdRqHCXfY1Ag==
-X-QQ-GoodBg: 1
-From:   jinxiaobo <jinxiaobo@uniontech.com>
-To:     jejb@linux.ibm.com, martin.petersen@oracle.com
-Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jinxiaobo <jinxiaobo@uniontech.com>
-Subject: [PATCH] scsi: sr: Fix some cdroms automatically ejected when booting into the system
-Date:   Wed, 27 Apr 2022 17:09:06 +0800
-Message-Id: <20220427090906.2257940-1-jinxiaobo@uniontech.com>
-X-Mailer: git-send-email 2.20.1
+        Wed, 27 Apr 2022 07:31:53 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C904369E0;
+        Wed, 27 Apr 2022 04:28:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C9A3DCE24A5;
+        Wed, 27 Apr 2022 11:28:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44862C385AA;
+        Wed, 27 Apr 2022 11:28:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651058918;
+        bh=KYefxwE8muQLfB8/GFKsQOVVnH3tuDDSR5Dacx6IqFs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lWFbA7TJ+gjyCugQoD38Y0xsuqPTvrv8+avXuCmzuu6EgBxKT+FdpwlkksGjrBHSw
+         F9oZe5C5XZ9sqPYqv+K+VNwynOTDmy6XL0eRHdREmkioTQfBs+7wdsvxfLzQELuxzw
+         IuMquBUy9l5Lc71+7HSsRifiBaia3rspjVwZ10FPud+NC8OS4DDjvkaXpUO/X/Js4j
+         ZclsUJZ/vJBxM9KDKmHATc2P/roRYljSHl72LnHzrhfuRHnGkpYSUUOCBd5Q6O8DaL
+         rhS1ZKKckKHiumBELoSkqNzcFwaV8KYxxV7FV/tDhWzPHl26vUMkyNECfTDEtobYi0
+         PvmCe40MAKZbA==
+Date:   Wed, 27 Apr 2022 12:28:32 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        cezary.rojewski@intel.com, liam.r.girdwood@linux.intel.com,
+        yang.jie@linux.intel.com, perex@perex.cz, tiwai@suse.com,
+        peter.ujfalusi@linux.intel.com, yung-chuan.liao@linux.intel.com,
+        alsa-devel@alsa-project.org
+Subject: Re: [PATCH AUTOSEL 5.17 06/22] ASoC: Intel: sof_es8336: Add a quirk
+ for Huawei Matebook D15
+Message-ID: <Ymko4F24MvbGJUXp@sirena.org.uk>
+References: <20220426190145.2351135-1-sashal@kernel.org>
+ <20220426190145.2351135-6-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign3
-X-QQ-Bgrelay: 1
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="3g8d3iEzGGy4GnO+"
+Content-Disposition: inline
+In-Reply-To: <20220426190145.2351135-6-sashal@kernel.org>
+X-Cookie: Buckle up!
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-sr_get_events() has been called before udev starts when SCSI CDROM is
-built-in and AHCI SATA is bulit-in,so sr events propagated to 
-user space are not handled.
-if both is loadable, udev will handle sr events, some cdroms may eject.
-We need call sr_get_events() once before device_add_disk() 
-to keep the same result, whether both are built-in or loadable.
 
-Signed-off-by: jinxiaobo <jinxiaobo@uniontech.com>
----
- drivers/scsi/sr.c | 1 +
- 1 file changed, 1 insertion(+)
+--3g8d3iEzGGy4GnO+
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/scsi/sr.c b/drivers/scsi/sr.c
-index cbd92891a762..043b3ab72d7a 100644
---- a/drivers/scsi/sr.c
-+++ b/drivers/scsi/sr.c
-@@ -676,6 +676,7 @@ static int sr_probe(struct device *dev)
- 	set_capacity(disk, cd->capacity);
- 	disk->private_data = cd;
- 
-+	sr_get_events(sdev);
- 	if (register_cdrom(disk, &cd->cdi))
- 		goto fail_minor;
- 
--- 
-2.20.1
+On Tue, Apr 26, 2022 at 03:01:29PM -0400, Sasha Levin wrote:
+> From: Mauro Carvalho Chehab <mchehab@kernel.org>
+>=20
+> [ Upstream commit c7cb4717f641db68e8117635bfcf62a9c27dc8d3 ]
+>=20
+> Based on experimental tests, Huawei Matebook D15 actually uses
+> both gpio0 and gpio1: the first one controls the speaker, while
+> the other one controls the headphone.
 
+Are you sure this doesn't need the rest of the series it came along
+with?
 
+--3g8d3iEzGGy4GnO+
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJpKOAACgkQJNaLcl1U
+h9C2BQf9FuQSxz6S1uzeAKSRzxsY/5aEfiqZExmG3uWEF1KKk8OnUC8AxhiH4mYk
+FkxMONPvC/RyJlltvesFObLOloFwZpxybS0npgw8EzJ69lrTrcIMFnrhlKCofWuJ
+857AGRyGbmipP4oSDs++oTTjmBQYd5o5GXoBJ/sUyfO2bxMYyAhYXpZ/x5+nuMyQ
+6SII3rwtTk3GTQumxiYInwmyEzR5zq/ae4cPAG7fImWA3130lVM7Aa/HwP2HkxYB
+mzS1dP2Yjl944mqBCwq3jQC4SeCSx0zCZbCxGIWDKuRzZVL2KDHsfBvrIX/1EnQ4
+MDVnIs3Nv+dkG5Yj+ZszbK1mTFAf1g==
+=59WY
+-----END PGP SIGNATURE-----
+
+--3g8d3iEzGGy4GnO+--
