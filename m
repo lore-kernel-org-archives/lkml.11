@@ -2,141 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B8B0C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 04:29:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CEBAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 04:29:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357697AbiD0Ecc (ORCPT
+        id S1357690AbiD0Ece (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 00:32:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50640 "EHLO
+        Wed, 27 Apr 2022 00:32:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357703AbiD0Ec0 (ORCPT
+        with ESMTP id S1357704AbiD0Ec0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Apr 2022 00:32:26 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 579BC15A42A
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65D421594B9
         for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 21:29:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651033752; x=1682569752;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=yW17vhjAX+KHvuIhettnF8RnqJyy8HRkyKBPxatDtgo=;
-  b=L2b7ei4xByGXe3rUbS3RjtBPkbviWSP2EL+CrwUDM8D9+D2ibKSQM3l7
-   HzCVRAzwrDM4xF+uWY9ZssL+d5iYpPXwm90i0voiv91/FJKx/AzdqxEp5
-   OFctkT6zOAe5CeLmmGeRAvPg/J1G1eCvJlz827VDzeqXwLv46nabpVCav
-   UunDdAx2wD2bL/ySbT31ghyiADuqyUISEt/pq3vDXqrsUarHlY6IU0fvz
-   709UEpg7PDC8Kj/3zVUguwB999+DvgNb4BXIGPfZLEwS0doc15ZPGoDTw
-   mNqBXp5pilEWnno0m3oSo7DIlOM5Q5zUGa5xtCMxMQNsfivbeoYpWVcHw
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="263399596"
-X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
-   d="scan'208";a="263399596"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 21:28:05 -0700
-X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
-   d="scan'208";a="730601853"
-Received: from aliang-mobl3.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.1.170])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 21:28:02 -0700
-Message-ID: <c31059e479307b347decd1eff1d3a9568b19b613.camel@intel.com>
-Subject: Re: [PATCH v4 1/3] x86/tdx: Add TDX Guest attestation interface
- driver
-From:   Kai Huang <kai.huang@intel.com>
-To:     Sathyanarayanan Kuppuswamy 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
-Cc:     "H . Peter Anvin" <hpa@zytor.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org
-Date:   Wed, 27 Apr 2022 16:28:00 +1200
-In-Reply-To: <405a4f3c-3d49-f3c2-441b-8d8b9d5eec23@linux.intel.com>
-References: <20220422233418.1203092-1-sathyanarayanan.kuppuswamy@linux.intel.com>
-         <20220422233418.1203092-2-sathyanarayanan.kuppuswamy@linux.intel.com>
-         <0457ce8e78ddd1d6c7832176368e095adae1bc18.camel@intel.com>
-         <405a4f3c-3d49-f3c2-441b-8d8b9d5eec23@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1651033749;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=eItuMRrHX4Os0FsD9ZvtHrWEjjS1bDgCgiQWK4LzGH8=;
+        b=Q/L/bZLR2KByUYsk0eKAUGr4PH3NUZja3XUO0pphORYpe2Rj7I0j0E8fs/cZgyDX/WahYp
+        09fcfU+W8FupvA87f9W0dG+wtisEPzXqeStjOqyflUdvzWcdv0AuLrYisdZAoSasUl0Jor
+        l4AoypbWmeThkIg4PlM2aCefocljWNw=
+From:   Naoya Horiguchi <naoya.horiguchi@linux.dev>
+To:     linux-mm@kvack.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        David Hildenbrand <david@redhat.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        linux-kernel@vger.kernel.org
+Subject: [RFC PATCH v1 4/4] mm, memory_hotplug: fix inconsistent num_poisoned_pages on memory hotremove
+Date:   Wed, 27 Apr 2022 13:28:41 +0900
+Message-Id: <20220427042841.678351-5-naoya.horiguchi@linux.dev>
+In-Reply-To: <20220427042841.678351-1-naoya.horiguchi@linux.dev>
+References: <20220427042841.678351-1-naoya.horiguchi@linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Naoya Horiguchi <naoya.horiguchi@nec.com>
 
-> 
-> How about the following summary? It includes important notes mentioned
-> by you and some more driver info.
+When offlining memory section with hwpoisoned pages, the hwpoisons are
+canceled. But num_poisoned_pages is not updated for that event, so the
+counter becomes inconsistent.
 
-Yes fine to me, except minor comments below:
+Add num_poisoned_pages_dec() in __offline_isolated_pages(). PageHWPoison
+can be set on a tail page of some high order buddy page, so we need check
+PageHWPoison on each subpage.
 
-> 
-> x86/tdx: Add TDX Guest attestation interface driver
-> 
-> In TDX guest, attestation is used to verify the trustworthiness of a TD
-> to other entities before provisioning secrets to the TD.
-> 
-> One usage example is, when a TD guest uses encrypted drive and if the
-> decryption keys required to access the drive are stored in a secure 3rd
-> party key server, the key server can use attestation to verify TD's
-> trustworthiness and release the decryption keys to the TD.
-> 
-> The attestation process consists of two steps: TDREPORT generation and
-> Quote generation.
-> 
-> TDREPORT (TDREPORT_STRUCT) is a fixed-size data structure generated by
-> the TDX module which contains TD-specific information (such as TD
-> measurements), platform security version, and the MAC to protect the
-> integrity of the TDREPORT. The TD kernel uses TDCALL[TDG.MR.REPORT] to
-> get the TDREPORT from the TDX module. A user-provided 64-Byte
-> REPORTDATA is used as input and included in the TDREPORT. Typically it
-> can be some nonce provided by attestation service so the TDREPORT can
-> be verified uniquely. More details about TDREPORT can be found in
-> Intel TDX Module specification, section titled "TDG.MR.REPORT Leaf".
-> 
-> After getting the TDREPORT, the second step of the attestation process
-> is to send the TDREPORT to Quoting Enclave (QE) or Quote Generation
-> Service (QGS) to generate the Quote. However, the method of sending the
-> TDREPORT to QE/QGS, communication channel used and data format used is
-> specific to the implementation of QE/QGS.
-> 
-> A typical implementation is, TD userspace attestation software gets the
-> TDREPORT from TD kernel, sends it to QE/QGS, and QE/QGS returns the
-> Quote. TD attestation software can use any available communication
-> channel to talk to QE/QGS, such as using vsock and tcp/ip.
-> 
-> To support the case that those communication channels are not directly
-> available to the TD, TDX also defines TDVMCALL
-> (TDG.VP.VMCALL<GetQuote>) to allow TD to ask VMM to help with sending
-> the TDREPORT and receiving the Quote. This support is documented in the
-> GHCI spec section titled "5.4 TD attestation".
+Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+---
+ mm/page_alloc.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-I intentionally omitted to mention TDG.VP.VMCALL<GetQuote> as I personally
-believe there are still couple issues around GetQuote that we haven't discussed
-thoroughly (timeout, etc).  I am still considering whether we should change GHCI
-to use TDG.VP.VMCALL<Service> defined in GHCI 1.5 for attestation.  And the name
-of TDVMCALL doesn't actually matter here, so I think we don't need to mention
-GetQuote here but just say we have TDVMCALLs for that.
-
-> 
-> Implement a basic attestation driver to allow TD userspace to get the
-> TDREPORT, which is sent to QE by the attestation software to generate
-> a Quote for remote verification. Add a wrapper function
-> (tdx_mcall_tdreport()) to get the TDREPORT from the TDX Module. This
-> API will be used by the interface driver to request for TDREPORT.
-
-I don't think you need to mention tdx_mcall_tdreport().
-
-> 
-> Also note that explicit access permissions are not enforced in this
-> driver because the quote and measurements are not a secret. However
-> the access permissions of the device node can be used to set any
-> desired access policy. The udev default is usually root access
-> only.
-> 
-> 
-> 
-> 
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 6e5b4488a0c5..dcd962855617 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -9487,12 +9487,15 @@ void __offline_isolated_pages(unsigned long start_pfn, unsigned long end_pfn)
+ 	zone = page_zone(pfn_to_page(pfn));
+ 	spin_lock_irqsave(&zone->lock, flags);
+ 	while (pfn < end_pfn) {
++		int i;
++
+ 		page = pfn_to_page(pfn);
+ 		/*
+ 		 * The HWPoisoned page may be not in buddy system, and
+ 		 * page_count() is not 0.
+ 		 */
+ 		if (unlikely(!PageBuddy(page) && PageHWPoison(page))) {
++			num_poisoned_pages_dec();
+ 			pfn++;
+ 			continue;
+ 		}
+@@ -9510,6 +9513,9 @@ void __offline_isolated_pages(unsigned long start_pfn, unsigned long end_pfn)
+ 		BUG_ON(page_count(page));
+ 		BUG_ON(!PageBuddy(page));
+ 		order = buddy_order(page);
++		for (i = 0; i < 1 << order; i++)
++			if (PageHWPoison(page + i))
++				num_poisoned_pages_dec();
+ 		del_page_from_free_list(page, zone, order);
+ 		pfn += (1 << order);
+ 	}
+-- 
+2.25.1
 
