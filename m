@@ -2,91 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 850C7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:54:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D683EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:54:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240474AbiD0P5q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 11:57:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54666 "EHLO
+        id S240656AbiD0P5y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 11:57:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240434AbiD0P5k (ORCPT
+        with ESMTP id S240434AbiD0P5t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 11:57:40 -0400
-X-Greylist: delayed 152 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 27 Apr 2022 08:54:16 PDT
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E51268F9D;
-        Wed, 27 Apr 2022 08:54:16 -0700 (PDT)
-Received: from mail-yb1-f178.google.com ([209.85.219.178]) by
- mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1Mqrjz-1oENqG0iKf-00mrwW; Wed, 27 Apr 2022 17:54:13 +0200
-Received: by mail-yb1-f178.google.com with SMTP id i38so4119931ybj.13;
-        Wed, 27 Apr 2022 08:54:12 -0700 (PDT)
-X-Gm-Message-State: AOAM5335823T6pjdSAsQAfjCB1La+EVJEs666fSiPlkX8XgBmnOIN5N3
-        DGBXwMiHHFrPEjkebILmSADWIWvOlDqBLv8o8K8=
-X-Google-Smtp-Source: ABdhPJxHemNwK0DAy5FuErl9xC8yLLyxMtfbA2y/7QlMY3Z3+7pVeZiYe0pvKik1aCqyajVLtuwn0BCFg68MYiLj78c=
-X-Received: by 2002:a25:75c5:0:b0:648:dccd:e1c with SMTP id
- q188-20020a2575c5000000b00648dccd0e1cmr2434334ybc.452.1651074851892; Wed, 27
- Apr 2022 08:54:11 -0700 (PDT)
+        Wed, 27 Apr 2022 11:57:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18DF56B65C;
+        Wed, 27 Apr 2022 08:54:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4866261B24;
+        Wed, 27 Apr 2022 15:54:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C30DC385B3;
+        Wed, 27 Apr 2022 15:54:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651074860;
+        bh=4jWXUFL4sGPebXcKjYdd9XhHrmSzS5fbyAElvBDd/Vk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=alCXOIOP/Fx35ptG7HPjAhsRAX55CNm7UutwlUAVeR6bFtpEW+zFg065/nhBCWtDC
+         sd0MEeGiDAoLbHUfEwWhO0djdJpfXtCCIsXWmFSmYf/4c7VJxreQgiiwHulLC4yKJB
+         A/DutpmqAqw01J7Ele4sCyW44/tBLy1I3YCkNN/SqWSPzOz1ZbhI31lPFgA+ZIxYwV
+         YqKv/Dnmlc495UQ612LW1ruUHOPcb4BIqKv4ZbgdbeIlgRuV2V4whQEzTUfxpjHJSt
+         cU2lhzv1QmtDRAYWfdA0fGXEK8fYO8TJzy2sdceYqR2ldfeG652yBAHTKYpJz9HOXk
+         CUHqNJwSrXQkw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Wanpeng Li <wanpengli@tencent.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, kvm@vger.kernel.org
+Subject: [PATCH MANUALSEL 5.17 3/7] x86/kvm: Preserve BSP MSR_KVM_POLL_CONTROL across suspend/resume
+Date:   Wed, 27 Apr 2022 11:53:59 -0400
+Message-Id: <20220427155408.19352-3-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220427155408.19352-1-sashal@kernel.org>
+References: <20220427155408.19352-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <cover.1644824638.git.quic_saipraka@quicinc.com> <8e1fe065405c2d9d1e28e3f84880d156c2e887a4.1644824638.git.quic_saipraka@quicinc.com>
-In-Reply-To: <8e1fe065405c2d9d1e28e3f84880d156c2e887a4.1644824638.git.quic_saipraka@quicinc.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 27 Apr 2022 17:53:56 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1mQr5mRQhviymJLdvibUYPyk94MrRmhj4e74+d5_485Q@mail.gmail.com>
-Message-ID: <CAK8P3a1mQr5mRQhviymJLdvibUYPyk94MrRmhj4e74+d5_485Q@mail.gmail.com>
-Subject: Re: [PATCHv10 2/6] coresight: etm4x: Use asm-generic IO memory barriers
-To:     Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-Cc:     Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Trilok Soni <quic_tsoni@quicinc.com>,
-        quic_psodagud@quicinc.com, gregkh <gregkh@linuxfoundation.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Mike Leach <mike.leach@linaro.org>, coresight@lists.linaro.org
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:HzsXgr21LZih4Qg1akjM6j3OWlwK78UWe7tclJwsbp78YXHKteF
- NCO2XA4DeDOP6TgX+0f2/0kgIy52bicYervXFo/Dsi65efFiQJDGrHnTsdvoDSAzj+IBC7o
- tI+iZVTkUzRAsX16vHT6H9paBkExYggU9XvXU0Vyz7TgxYpr0bI/pqprH6rDKh1zsLkTzAp
- H05NSYyVGC18rO/icFXvA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:8W5PFcq20lQ=:aydZdMlFmwdFaTxD++rczK
- 6w8sIdB8+egqwwLx/wGRnQyk0Q303IKvAyQ6XCx1onOgSpq2xKsfTHvNS06v1ap1LJvd3HpVC
- 78mLdOkSTfvDIhQc9RNhhbYHSkUxG7FfNwlDOj1y8vIzCkvZdgNgEsXLiBOXjxR8NvfWW3v6M
- GjYDbY6x7nWuAhi92jsgPGSi+DFi6jMKo7u7Hfn4+2NX0sqUhWNefjcjUQz8jg25tYwLAafO6
- y80DCvdLPeyX2ALGf7FqMh1B3/I2iL95pmwpt4CluxUS3eF7l4ZAN1MdXFPc/plnGXWe6TtT7
- xVJzZW0kdlcGCziSOfy9qCJasAFflAHCuD9hc6dX0jr3pg2ZMY1QgIT4a1mW5JBBzPzKP/fMV
- MONkerpIcdGn4fOsBpCf9mJOqgurFH+wHKkhYpHFSYyC0A25IyBgN5GBr3MqFewo9NDuIA60D
- jHypzASfFG1EDwOVIXK7eP1XV0HkxOcYD5/YLoJAu65VVGxooYVqDviJhKgNhgyq66POBSxNT
- ssrODvixvqSaU6Wjx3gS5t1IvJU57XBPwGNY0XWEziW5TOKKsjNQHGeV0vqlY6LhHv+l6XZKu
- +qL7YpKe/EEBGkhWGmv2b57PTxOiGzd7GBhWIJbwZnK9BTJN2z8SQ0eZ5VJDys7NeW5TxJiSA
- mUNCVH4d8ojfBuuxO4SmJnwfb7m3b9f9tzG4uDSyMFYf08/AAvm7Q9ZVXfIB47oc0WwI0GnA9
- gp70yrWiK5lH0Mo3dSXPz/C8Qt63LyrP6CIm06CWyVd2SoFBSGdzUOoaPvEha3yW9icC9/T53
- 5iVIeGQ4K2pbMiuEQZ+LzIZwIt2FeBGEbwCzSqNoVnRQ/S+KFE=
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 7:07 AM Sai Prakash Ranjan
-<quic_saipraka@quicinc.com> wrote:
->
-> Per discussion in [1], it was decided to move to using architecture
-> independent/asm-generic IO memory barriers to have just one set of
-> them and deprecate use of arm64 specific IO memory barriers in driver
-> code. So replace current usage of __io_rmb()/__iowmb() in drivers to
-> __io_ar()/__io_bw().
->
-> [1] https://lore.kernel.org/lkml/CAK8P3a0L2tLeF1Q0+0ijUxhGNaw+Z0fyPC1oW6_ELQfn0=i4iw@mail.gmail.com/
->
-> Cc: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
-> Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
-> Cc: Mike Leach <mike.leach@linaro.org>
-> Cc: coresight@lists.linaro.org
-> Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+From: Wanpeng Li <wanpengli@tencent.com>
 
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+[ Upstream commit 0361bdfddca20c8855ea3bdbbbc9c999912b10ff ]
+
+MSR_KVM_POLL_CONTROL is cleared on reset, thus reverting guests to
+host-side polling after suspend/resume.  Non-bootstrap CPUs are
+restored correctly by the haltpoll driver because they are hot-unplugged
+during suspend and hot-plugged during resume; however, the BSP
+is not hotpluggable and remains in host-sde polling mode after
+the guest resume.  The makes the guest pay for the cost of vmexits
+every time the guest enters idle.
+
+Fix it by recording BSP's haltpoll state and resuming it during guest
+resume.
+
+Cc: Marcelo Tosatti <mtosatti@redhat.com>
+Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
+Message-Id: <1650267752-46796-1-git-send-email-wanpengli@tencent.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/x86/kernel/kvm.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
+index ed8a13ac4ab2..4c2a158bb6c4 100644
+--- a/arch/x86/kernel/kvm.c
++++ b/arch/x86/kernel/kvm.c
+@@ -69,6 +69,7 @@ static DEFINE_PER_CPU_DECRYPTED(struct kvm_vcpu_pv_apf_data, apf_reason) __align
+ DEFINE_PER_CPU_DECRYPTED(struct kvm_steal_time, steal_time) __aligned(64) __visible;
+ static int has_steal_clock = 0;
+ 
++static int has_guest_poll = 0;
+ /*
+  * No need for any "IO delay" on KVM
+  */
+@@ -706,14 +707,26 @@ static int kvm_cpu_down_prepare(unsigned int cpu)
+ 
+ static int kvm_suspend(void)
+ {
++	u64 val = 0;
++
+ 	kvm_guest_cpu_offline(false);
+ 
++#ifdef CONFIG_ARCH_CPUIDLE_HALTPOLL
++	if (kvm_para_has_feature(KVM_FEATURE_POLL_CONTROL))
++		rdmsrl(MSR_KVM_POLL_CONTROL, val);
++	has_guest_poll = !(val & 1);
++#endif
+ 	return 0;
+ }
+ 
+ static void kvm_resume(void)
+ {
+ 	kvm_cpu_online(raw_smp_processor_id());
++
++#ifdef CONFIG_ARCH_CPUIDLE_HALTPOLL
++	if (kvm_para_has_feature(KVM_FEATURE_POLL_CONTROL) && has_guest_poll)
++		wrmsrl(MSR_KVM_POLL_CONTROL, 0);
++#endif
+ }
+ 
+ static struct syscore_ops kvm_syscore_ops = {
+-- 
+2.35.1
+
