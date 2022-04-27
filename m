@@ -2,110 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7683C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 09:10:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CD36C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 09:10:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233755AbiD0JNM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 05:13:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55792 "EHLO
+        id S231984AbiD0JNR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 05:13:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231888AbiD0JM5 (ORCPT
+        with ESMTP id S231453AbiD0JM6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 05:12:57 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2803246D83;
-        Wed, 27 Apr 2022 02:09:39 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23R98wKe096536;
-        Wed, 27 Apr 2022 04:08:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1651050538;
-        bh=tZmsedJBK+wypmz7ZMqScfecunctYA+e1BUCoMpA3L4=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=aNfVUh7g1x6SSD48M99Ff/4BfgX2xIgk20xloWFGn2DZOwb6C4UQNueXNmoc5rX8q
-         Fix8K9rBfJy52f4c/WYJiClyQOV5OV7uY4urfp6JZexhEiRJVDSDX7Qcvco0O4dmDA
-         KgmXQWf/280bXfNImmOOtpSONwFW9EfJHoOe2GcQ=
-Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23R98waq011856
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 27 Apr 2022 04:08:58 -0500
-Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE112.ent.ti.com
- (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 27
- Apr 2022 04:08:57 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 27 Apr 2022 04:08:57 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23R98utF008682;
-        Wed, 27 Apr 2022 04:08:57 -0500
-From:   Aradhya Bhatia <a-bhatia1@ti.com>
-To:     Vignesh Raghavendra <vigneshr@ti.com>
-CC:     Nishanth Menon <nm@ti.com>, Rob Herring <robh+dt@kernel.org>,
-        Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>,
-        Devicetree List <devicetree@vger.kernel.org>,
-        Linux Kernel List <linux-kernel@vger.kernel.org>,
-        Aradhya Bhatia <a-bhatia1@ti.com>
-Subject: [PATCH 3/4] arm64: dts: ti: k3-am625-sk: Update main-i2c1 frequency
-Date:   Wed, 27 Apr 2022 14:38:49 +0530
-Message-ID: <20220427090850.32280-4-a-bhatia1@ti.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220427090850.32280-1-a-bhatia1@ti.com>
-References: <20220427090850.32280-1-a-bhatia1@ti.com>
+        Wed, 27 Apr 2022 05:12:58 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BF51973066
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 02:09:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651050444;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=VlP3askR5SLt3D/mCVopQREcxnxlzFTELhmls5ml/4o=;
+        b=cEBeAVxtrpzlaoAdq40g/5/8Jv9uM3NNPf7WvlAHoMo7fqx58h76RIFpg8OcfneJNczTxr
+        kzFd7u+PHgQ289qmsizBAMFCUhjEGQ+ValjjqpFYmieYyup9YZzTB654PlCpJiXr4E9h8/
+        nh3CFRu4zaz5jjLL7jS8VaUIYl29NX8=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-279-4WmW6tzYMVCH1HfXcgfZfA-1; Wed, 27 Apr 2022 05:07:22 -0400
+X-MC-Unique: 4WmW6tzYMVCH1HfXcgfZfA-1
+Received: by mail-wm1-f72.google.com with SMTP id c125-20020a1c3583000000b0038e3f6e871aso493066wma.8
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 02:07:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=VlP3askR5SLt3D/mCVopQREcxnxlzFTELhmls5ml/4o=;
+        b=EyIXzFB3240v97ZlAtwBUSxqjliuDTHNCWyXqGd/zc+Ly/1ZjsXlkL8UrBIloc6R2j
+         8ZHuOv5tOF+UxOadGkRahR9RkMa/AwgeUJ8VUuqfuq37RM92gO4ENdJ2h5i9xS27exbT
+         6OVmnwkHE9jWulkp/HdEyjGTUqd/OI1f9fm6M9iIllMcPyrxiZFxuXz5IoB9K5/gn1CW
+         4RYk7iguDGDAvnebyVU0l+Nym/eLVg5omS5MCPbl8cU05oOnUz6QHgsDuQ33Lyqz9EBs
+         ityTDC6JC4KReOhJtK41gmdINoAhO6FH2XqmRtu+GOcaB/7k25qKHAAxE1bU/vsyj2yx
+         C7/A==
+X-Gm-Message-State: AOAM532y/P9EBmCdZbYmtUtHfMdP5rEWKODRMzDLhsnnrJCkBmUPGzZC
+        RaYhdnUtcMbUJoVZUErmmcABpTv2hD/2w5DHA3DlrUDXp1TD3hr2FZosyg98wjcCb2KVaC556WW
+        BZz49Badx5NjGcYESIXXQd4Y=
+X-Received: by 2002:a5d:6102:0:b0:20a:db89:724f with SMTP id v2-20020a5d6102000000b0020adb89724fmr11259445wrt.59.1651050441660;
+        Wed, 27 Apr 2022 02:07:21 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyS6PdfRBkjuFq+2OuKCjksKEbdx1UuoLoYLoAqcMXQdqjUwnhJzSb/Jr7tt/piyg/czfgP9w==
+X-Received: by 2002:a5d:6102:0:b0:20a:db89:724f with SMTP id v2-20020a5d6102000000b0020adb89724fmr11259419wrt.59.1651050441433;
+        Wed, 27 Apr 2022 02:07:21 -0700 (PDT)
+Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
+        by smtp.gmail.com with ESMTPSA id j19-20020adfb313000000b0020aed8ece65sm1302186wrd.32.2022.04.27.02.07.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 02:07:20 -0700 (PDT)
+Date:   Wed, 27 Apr 2022 10:07:19 +0100
+From:   Aaron Tomlin <atomlin@redhat.com>
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     k@ava.usersys.com, cl@linux.com, pmladek@suse.com, mbenes@suse.cz,
+        christophe.leroy@csgroup.eu, akpm@linux-foundation.org,
+        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
+        atomlin@atomlin.com, ghalat@redhat.com, oleksandr@natalenko.name,
+        neelx@redhat.com
+Subject: Re: [PATCH v4 0/2] module: Introduce module unload taint tracking
+Message-ID: <20220427090719.qbtjwvde4wwzmruh@ava.usersys.com>
+X-PGP-Key: http://pgp.mit.edu/pks/lookup?search=atomlin%40redhat.com
+X-PGP-Fingerprint: 7906 84EB FA8A 9638 8D1E  6E9B E2DE 9658 19CC 77D6
+References: <20220425090841.3958494-1-atomlin@redhat.com>
+ <YmcvZQSiu95MUvxI@bombadil.infradead.org>
+ <20220426083930.hltsfxoe6ax6dspj@ava.usersys.com>
+ <YmgcXSXTM80/3R8b@bombadil.infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YmgcXSXTM80/3R8b@bombadil.infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update the main-i2c1 frequency from 400KHz to 100KHz.
+On Tue 2022-04-26 09:22 -0700, Luis Chamberlain wrote:
+> I'd rather see the effort than not, given all the effort to already split things.
+> I think it keeps things pretty tidy and it can scale / and its easier to review.
 
-There are 2 devices on the i2c-1 bus. An IO-Expander and an HDMI TX.
-Both of these are capable of servicing i2c upto a max frequency of
-400KHz.
+Fair enough. I'll create another iteration of the series.
 
-However, below warning log shows up while running any userspace
-application that uses the HDMI display when the main-i2c1 frequency is
-set at 400KHz.
-
-[  985.773431] omap_i2c 20010000.i2c: controller timed out
-
-With some further tests using 2 frequencies, 100 KHz and 400KHz across
-different HDMI cable & monitor setups, it was observed that,
-
- - i2c frequency of 400KHz works fine with standard good quality HDMI
-   cables with branded displays. It will show the controller timeout
-   warnings only when a sub-standard / generic HDMI cable is being used.
-
- - Using 100KHz for i2c frequency, stops the warning from showing up
-   for the generic HDMI cables as well.
-
-Since, the IO-Expander is the only other component on that i2c bus and
-we are not performing any intensive operations on it, it would be safe
-to set the i2c frequency at 100KHz in order to support a broader variety
-of HDMI cables.
-
-Signed-off-by: Aradhya Bhatia <a-bhatia1@ti.com>
----
- arch/arm64/boot/dts/ti/k3-am625-sk.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/arm64/boot/dts/ti/k3-am625-sk.dts b/arch/arm64/boot/dts/ti/k3-am625-sk.dts
-index ab3d90d358ee..96414c5dacf7 100644
---- a/arch/arm64/boot/dts/ti/k3-am625-sk.dts
-+++ b/arch/arm64/boot/dts/ti/k3-am625-sk.dts
-@@ -357,7 +357,7 @@ &main_i2c0 {
- &main_i2c1 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&main_i2c1_pins_default>;
--	clock-frequency = <400000>;
-+	clock-frequency = <100000>;
- 
- 	exp1: gpio@22 {
- 		compatible = "ti,tca6424";
 -- 
-2.36.0
+Aaron Tomlin
 
