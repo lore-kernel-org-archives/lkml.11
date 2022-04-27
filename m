@@ -2,91 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9632C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 17:19:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16A17C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 17:19:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236884AbiD0RWQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 13:22:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35322 "EHLO
+        id S243944AbiD0RWe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 13:22:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234530AbiD0RWM (ORCPT
+        with ESMTP id S234530AbiD0RWc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 13:22:12 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B91843AEA;
-        Wed, 27 Apr 2022 10:19:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E7141CE268F;
-        Wed, 27 Apr 2022 17:18:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDC4DC385A9;
-        Wed, 27 Apr 2022 17:18:55 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="p09l6Q7k"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1651079933;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=IqWbKO2Ia/STBFbkXAEOKtQNiXVUT5pLqnszdw+gft0=;
-        b=p09l6Q7kc1sMO44s2uZU3iEupjKNc188wYKquK0wKgnm1ZSxw3Sd4RKNItff4gd4bvmn1K
-        7wN10NMegomBMrXSgvzCMM+YmFNvjlGFPLuKbvGhjLFwrk6r9wdc84pNepaox5C1/Ypxtg
-        WcdcohwwbK0JjILJvMEn1WGbOaho+M0=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 3cdbf562 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 27 Apr 2022 17:18:53 +0000 (UTC)
-Date:   Wed, 27 Apr 2022 19:18:48 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Willy Tarreau <w@1wt.eu>
-Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Moshe Kol <moshe.kol@mail.huji.ac.il>,
-        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
-        Amit Klein <aksecurity@gmail.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net 1/7] secure_seq: return the full 64-bit of the siphash
-Message-ID: <Yml6+PKmxW7VSHch@zx2c4.com>
-References: <20220427065233.2075-1-w@1wt.eu>
- <20220427065233.2075-2-w@1wt.eu>
+        Wed, 27 Apr 2022 13:22:32 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0726B43EEE;
+        Wed, 27 Apr 2022 10:19:19 -0700 (PDT)
+Received: from mail-yb1-f177.google.com ([209.85.219.177]) by
+ mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1M3lHZ-1nk2AY3Yhf-000pwR; Wed, 27 Apr 2022 19:19:18 +0200
+Received: by mail-yb1-f177.google.com with SMTP id y76so4637875ybe.1;
+        Wed, 27 Apr 2022 10:19:17 -0700 (PDT)
+X-Gm-Message-State: AOAM531+el4QSdxw258V6dhpmKYBsthoDpzNMuJRfg2G2rqhJY7U0zPF
+        tOAY0RJXUQchtqJqCDXOk4ygqMzOqVYwCMBmjFA=
+X-Google-Smtp-Source: ABdhPJxykFm2YFdeTD9c0X4acekrQD5pMu7gY+0N7BMUQZQ8AeFGwdPZwBJhORkCJQqjgz7RTTvsKHR+rJyDsdyNlv0=
+X-Received: by 2002:a25:75c5:0:b0:648:dccd:e1c with SMTP id
+ q188-20020a2575c5000000b00648dccd0e1cmr2536236ybc.452.1651076102000; Wed, 27
+ Apr 2022 09:15:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220427065233.2075-2-w@1wt.eu>
+References: <cover.1644824638.git.quic_saipraka@quicinc.com> <8cf9304d9941c25d920c4835cbc624ff5c2ac2cb.1644824638.git.quic_saipraka@quicinc.com>
+In-Reply-To: <8cf9304d9941c25d920c4835cbc624ff5c2ac2cb.1644824638.git.quic_saipraka@quicinc.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 27 Apr 2022 18:14:46 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1WwghVToFBNZMpG7Wcji_k3CebK3--LL8YNJs_Wu3rBQ@mail.gmail.com>
+Message-ID: <CAK8P3a1WwghVToFBNZMpG7Wcji_k3CebK3--LL8YNJs_Wu3rBQ@mail.gmail.com>
+Subject: Re: [PATCHv10 5/6] lib: Add register read/write tracing support
+To:     Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+Cc:     Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Trilok Soni <quic_tsoni@quicinc.com>,
+        quic_psodagud@quicinc.com, gregkh <gregkh@linuxfoundation.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Prasad Sodagudi <psodagud@codeaurora.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:fNiZgmJlIJjWIct59kSQx8ulkmtN7VhuK0xD8FBYWGJHejqOqrI
+ WFoOWk0Jgc7ITQkzCBP5gToDgyKqCqne6ABQKANTZkYzI1M5xyZ9RUDFVXiffCSp9+h9Zj1
+ UOaUe5K+szrhJSycphxyeSlW48qZTsHNffCN4KgdaxAMECjwlxLO5GZc/ro/Q3GDdbaDM5o
+ q37ylgOliMyNA6s2ZlGGg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:mOXcYFdOMKM=:QmOMmZLYg82fxODCPrNcJ0
+ JSFAZq7c4sP4ApFc32S0zxRzq9pXxIuf1/FtJ/ltcbaIBDMqW2sWzroaY/plVcskhNUEixEsK
+ 9qB5s94QXjaTur14KQdE1bO3mD2qeDKo6jClJxyGYNxGTGgZRMdgsBFiBI+zwdT5457qvykQG
+ KtzY7BDW6aAKlLyZhTxHbrheYXdBUGfYjydv21D5O96VD3bqLz4g/sASmb+CqjS8QP7f24NbE
+ Hv1yFrTMcgw1ecRKj15UGFZOHZQxypiY+JTz0eTjmJ5F2LVEprNAGpI0j6f7XbTZzs/0rDIZc
+ JtaBpJKwXbjoxUPynlZdO1D8HdLGhlzFpXKg/Ai6goHh63fs75tSHhkx00iO6QLHsV8FyWIJj
+ Y/CHAYNo8Lz83S2XZzf7YM2rxW+8ZegpOJDjzcFSH10BoZ46528Ga/+nJtTqfQLo7ldcGckNX
+ EkiAXt8HLH3DvuQjpxf6W57oV1SiRQr5q+whbtup0clInB2B0Lb0W/X3soL/JQ3kX96XLWFDC
+ yioUU8XbUrRZPYGqyx26m5PCmPSD4YwpvAJekKKBiPYSSE0T7SlWRPSzfI0xXLbEPzOEFyCnb
+ 4LCFFDtw+SahIIwrOyxL4W0VBW4ua78M/c4791VuqB9RInnZiCuEwK3U5zteFDRt7beC+u52v
+ V9OKFr67tL8nOBBR3QtLtojhYG3BiEMV1frW64JklzhkcMTT8a+t7LLIjgW4yJtAERwdrV1Q3
+ +6oKpKHEDbtMFdhfOz2ZCQrnzUSGis9snuu0tCA5hN77ikYFKyyMW0I173A0FigpnGDX/DR7J
+ N4PKUBbPALox6FEjjz/W5hNkL2cYboQ2JFlwxUQlN8IZfcOt0Y=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Willy,
+On Thu, Feb 24, 2022 at 7:07 AM Sai Prakash Ranjan
+<quic_saipraka@quicinc.com> wrote:
+>
+> From: Prasad Sodagudi <psodagud@codeaurora.org>
+>
+> Generic MMIO read/write i.e., __raw_{read,write}{b,l,w,q} accessors
+> are typically used to read/write from/to memory mapped registers
+> and can cause hangs or some undefined behaviour in following few
+> cases,
+>
+> * If the access to the register space is unclocked, for example: if
+>   there is an access to multimedia(MM) block registers without MM
+>   clocks.
+>
+> * If the register space is protected and not set to be accessible from
+>   non-secure world, for example: only EL3 (EL: Exception level) access
+>   is allowed and any EL2/EL1 access is forbidden.
+>
+> * If xPU(memory/register protection units) is controlling access to
+>   certain memory/register space for specific clients.
+>
+> and more...
+>
+> Such cases usually results in instant reboot/SErrors/NOC or interconnect
+> hangs and tracing these register accesses can be very helpful to debug
+> such issues during initial development stages and also in later stages.
+>
+> So use ftrace trace events to log such MMIO register accesses which
+> provides rich feature set such as early enablement of trace events,
+> filtering capability, dumping ftrace logs on console and many more.
+>
+> Sample output:
+>
+> rwmmio_write: __qcom_geni_serial_console_write+0x160/0x1e0 width=32 val=0xa0d5d addr=0xfffffbfffdbff700
+> rwmmio_post_write: __qcom_geni_serial_console_write+0x160/0x1e0 width=32 val=0xa0d5d addr=0xfffffbfffdbff700
+> rwmmio_read: qcom_geni_serial_poll_bit+0x94/0x138 width=32 addr=0xfffffbfffdbff610
+> rwmmio_post_read: qcom_geni_serial_poll_bit+0x94/0x138 width=32 val=0x0 addr=0xfffffbfffdbff610
+>
+> Signed-off-by: Prasad Sodagudi <psodagud@codeaurora.org>
+> Co-developed-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+> Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
 
-On Wed, Apr 27, 2022 at 08:52:27AM +0200, Willy Tarreau wrote:
-> diff --git a/include/net/secure_seq.h b/include/net/secure_seq.h
-> index d7d2495f83c2..5cea9ed9c773 100644
-> --- a/include/net/secure_seq.h
-> +++ b/include/net/secure_seq.h
-> @@ -4,7 +4,7 @@
->  
->  #include <linux/types.h>
->  
-> -u32 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport);
-> +u64 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport);
->  u32 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
->  			       __be16 dport);
->  u32 secure_tcp_seq(__be32 saddr, __be32 daddr,
-> diff --git a/net/core/secure_seq.c b/net/core/secure_seq.c
-> index 9b8443774449..2cdd43a63f64 100644
-> --- a/net/core/secure_seq.c
-> +++ b/net/core/secure_seq.c
-> @@ -142,7 +142,7 @@ u32 secure_tcp_seq(__be32 saddr, __be32 daddr,
->  }
->  EXPORT_SYMBOL_GPL(secure_tcp_seq);
->  
-> -u32 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport)
-> +u64 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport)
->  {
->  	net_secret_init();
->  	return siphash_3u32((__force u32)saddr, (__force u32)daddr,
+I think this is ok in general. I saw that Steve had a minor comment, and
+I suppose you could have just resent the same patches with a fixup in order
+to have me pick it up into the asm-generic tree for 5.19.
 
-Should you be doing the same with secure_ipv6_port_ephemeral() too? Why
-the asymmetry?
+There is one more thing that I saw looking through this patch again: the
+address you print is the virtual __iomem token, but it might be more
+valuable to have the physical address instead, which can be looked up
+in the devicetree to know which register is affected.
 
-Jason
+There is a small extra cost to walk the page table, and I'm not sure
+if we actually have an interface for it (vmalloc_to_page is almost
+what we want, but it returns an invalid page pointer). Any suggestions
+on this?
+
+       Arnd
