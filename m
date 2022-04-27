@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08ED0C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:55:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7603C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:55:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241115AbiD0P6b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 11:58:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56828 "EHLO
+        id S241096AbiD0P6f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 11:58:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240753AbiD0P6H (ORCPT
+        with ESMTP id S240712AbiD0P6F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 11:58:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F26077F2F;
-        Wed, 27 Apr 2022 08:54:38 -0700 (PDT)
+        Wed, 27 Apr 2022 11:58:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98A5A6D38D;
+        Wed, 27 Apr 2022 08:54:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 60C6E61B4D;
-        Wed, 27 Apr 2022 15:54:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BD97C385AD;
-        Wed, 27 Apr 2022 15:54:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7085D61A11;
+        Wed, 27 Apr 2022 15:54:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B404FC385B3;
+        Wed, 27 Apr 2022 15:54:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651074875;
-        bh=nt4Jl+T/r56aML4HwP1tjND6t2tSipFlS5Q/81Noaz0=;
+        s=k20201202; t=1651074872;
+        bh=ueB1Y6/yuNWGMloKhd/JUy0TqGqlP4o97wbX0fFeZTk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G/QKHXHMD9uFlfq5qvqlsSkSfCtHLDWNpspub7lz51EJx9XkzDuBNxK8LQjgVSh6n
-         JnyOUwnuQr/tp0RSYp5u7A1XYEOZ2sVGKdtewWHkyPWyX2El/KvGZIpdIm8r9iT6ES
-         00K0zFYkLkZStOdTR+zrkkLHRf3QYC4qiUO/3gPqqX8Zaplm14sVo3GE6yl9qsiGvy
-         EC6+9Zt0EqU6146Re86vo9NDuhkQBFQ3kjT0av7QN9ZYjRwmEXWyukLnBWeNGhxLPQ
-         GddfAdlvPOvcPjAxXotIViuTddH3fWRsUMZH/lg0r75u+QkLu2MpQQfUbRLAHqXEKa
-         lPBDuQLIOmWLw==
+        b=ckY/N9uyrgWAQ55MmKxCQTN/Zui0GM1E4+1gdIWsBSc52bxhyCfaO4O4tjEF1zZDZ
+         4SWn8fh8w92bnxPP2DwBYLZd23k1WOcg3iMB6eOeSv1IMJhB6B/s1ikLCeghIKCgMd
+         fDwR2IpwVpxDKAuCZKKxo70CJBvQ4cUfJB/rlBlpPOH7QO6DudAQhN3gjPFcDm1jv8
+         4NgAxVP5148w4In2rfJobYCc/9K3AG0RcLSA3X8GLIR31k2dlxQUOIpt0vQtJitIbT
+         qJxE101c5FK2RQ5MGlzXmFD4++brdRt90Kmx/6VDaogPfDfQoQ1MTE7YYHkUAItbGm
+         96lWFC7lMhJDA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wanpeng Li <wanpengli@tencent.com>,
-        Aili Yao <yaoaili@kingsoft.com>,
-        Sean Christopherson <seanjc@google.com>,
+Cc:     Thomas Huth <thuth@redhat.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
         Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, kvm@vger.kernel.org
-Subject: [PATCH MANUALSEL 5.15 7/7] KVM: LAPIC: Enable timer posted-interrupt only when mwait/hlt is advertised
-Date:   Wed, 27 Apr 2022 11:54:27 -0400
-Message-Id: <20220427155431.19458-7-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        kvm@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH MANUALSEL 5.15 2/7] KVM: selftests: Silence compiler warning in the kvm_page_table_test
+Date:   Wed, 27 Apr 2022 11:54:22 -0400
+Message-Id: <20220427155431.19458-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220427155431.19458-1-sashal@kernel.org>
 References: <20220427155431.19458-1-sashal@kernel.org>
@@ -55,51 +53,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wanpeng Li <wanpengli@tencent.com>
+From: Thomas Huth <thuth@redhat.com>
 
-[ Upstream commit 1714a4eb6fb0cb79f182873cd011a8ed60ac65e8 ]
+[ Upstream commit 266a19a0bc4fbfab4d981a47640ca98972a01865 ]
 
-As commit 0c5f81dad46 ("KVM: LAPIC: Inject timer interrupt via posted
-interrupt") mentioned that the host admin should well tune the guest
-setup, so that vCPUs are placed on isolated pCPUs, and with several pCPUs
-surplus for *busy* housekeeping.  In this setup, it is preferrable to
-disable mwait/hlt/pause vmexits to keep the vCPUs in non-root mode.
+When compiling kvm_page_table_test.c, I get this compiler warning
+with gcc 11.2:
 
-However, if only some guests isolated and others not, they would not
-have any benefit from posted timer interrupts, and at the same time lose
-VMX preemption timer fast paths because kvm_can_post_timer_interrupt()
-returns true and therefore forces kvm_can_use_hv_timer() to false.
+kvm_page_table_test.c: In function 'pre_init_before_test':
+../../../../tools/include/linux/kernel.h:44:24: warning: comparison of
+ distinct pointer types lacks a cast
+   44 |         (void) (&_max1 == &_max2);              \
+      |                        ^~
+kvm_page_table_test.c:281:21: note: in expansion of macro 'max'
+  281 |         alignment = max(0x100000, alignment);
+      |                     ^~~
 
-By guaranteeing that posted-interrupt timer is only used if MWAIT or
-HLT are done without vmexit, KVM can make a better choice and use the
-VMX preemption timer and the corresponding fast paths.
+Fix it by adjusting the type of the absolute value.
 
-Reported-by: Aili Yao <yaoaili@kingsoft.com>
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-Cc: Aili Yao <yaoaili@kingsoft.com>
-Cc: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
-Message-Id: <1643112538-36743-1-git-send-email-wanpengli@tencent.com>
+Signed-off-by: Thomas Huth <thuth@redhat.com>
+Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+Message-Id: <20220414103031.565037-1-thuth@redhat.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/lapic.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ tools/testing/selftests/kvm/kvm_page_table_test.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-index 83d1743a1dd0..493d636e6231 100644
---- a/arch/x86/kvm/lapic.c
-+++ b/arch/x86/kvm/lapic.c
-@@ -113,7 +113,8 @@ static inline u32 kvm_x2apic_id(struct kvm_lapic *apic)
+diff --git a/tools/testing/selftests/kvm/kvm_page_table_test.c b/tools/testing/selftests/kvm/kvm_page_table_test.c
+index 36407cb0ec85..f1ddfe4c4a03 100644
+--- a/tools/testing/selftests/kvm/kvm_page_table_test.c
++++ b/tools/testing/selftests/kvm/kvm_page_table_test.c
+@@ -278,7 +278,7 @@ static struct kvm_vm *pre_init_before_test(enum vm_guest_mode mode, void *arg)
+ 	else
+ 		guest_test_phys_mem = p->phys_offset;
+ #ifdef __s390x__
+-	alignment = max(0x100000, alignment);
++	alignment = max(0x100000UL, alignment);
+ #endif
+ 	guest_test_phys_mem &= ~(alignment - 1);
  
- static bool kvm_can_post_timer_interrupt(struct kvm_vcpu *vcpu)
- {
--	return pi_inject_timer && kvm_vcpu_apicv_active(vcpu);
-+	return pi_inject_timer && kvm_vcpu_apicv_active(vcpu) &&
-+		(kvm_mwait_in_guest(vcpu->kvm) || kvm_hlt_in_guest(vcpu->kvm));
- }
- 
- bool kvm_can_use_hv_timer(struct kvm_vcpu *vcpu)
 -- 
 2.35.1
 
