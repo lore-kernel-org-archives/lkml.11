@@ -2,81 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4949CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:58:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E07D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:58:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240889AbiD0QBd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:01:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49674 "EHLO
+        id S241307AbiD0P7x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 11:59:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240978AbiD0QBa (ORCPT
+        with ESMTP id S240518AbiD0P6P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:01:30 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47C6C8720D;
-        Wed, 27 Apr 2022 08:58:05 -0700 (PDT)
-Received: from mail-yb1-f172.google.com ([209.85.219.172]) by
- mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1Mzhf5-1o5YCK3XYf-00vhgx; Wed, 27 Apr 2022 17:51:42 +0200
-Received: by mail-yb1-f172.google.com with SMTP id e12so4117163ybc.11;
-        Wed, 27 Apr 2022 08:51:41 -0700 (PDT)
-X-Gm-Message-State: AOAM533SoKq4fi/IJ1BLTrJrJX7syR+IW4SJ7lSFsyLWZHXhfs58WQPD
-        t2TAXWqIUu82+12vi3/OOaPqCSR6V10QXNNwd3k=
-X-Google-Smtp-Source: ABdhPJxg/rp1yZ1Ly2nF5MsxzyFle4shrPG2g7HYew8NwDIoh5cLQ/zvir6C9VKrSaIIp5BPkGMU9F4wPq1zK6iiz6k=
-X-Received: by 2002:a25:c604:0:b0:645:d969:97a7 with SMTP id
- k4-20020a25c604000000b00645d96997a7mr22212946ybf.134.1651074700502; Wed, 27
- Apr 2022 08:51:40 -0700 (PDT)
+        Wed, 27 Apr 2022 11:58:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7631C78397;
+        Wed, 27 Apr 2022 08:54:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8A33EB8287E;
+        Wed, 27 Apr 2022 15:54:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D48EC385A7;
+        Wed, 27 Apr 2022 15:54:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651074874;
+        bh=qotNt6/xEPZX16CKagFcCW/pd3anehroTyUMB8vdWR0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=vMrAiDNJe9pfDMMz9tVN1e3hwYLAEbKJ6qT3yWAmEmtjmexQzvMnE5JLBTDkZkyO9
+         y4RWtuE0kfGKMFsFNutppwFsAccmHhcO629rPhAXV/b6UvlnWueXMp98bqs4QD9Hy4
+         wFI7S+J2HczmgCpqu+t41DEwlqyngS0kpiElpqpIjwcSeAx4IVzGoy6eBxUkMry+ag
+         cgufHxFB7RFW85psr/7bIHQ7lG4HuMX2vZ+M9d0JwVqlgKpUnoNSOFd86Q/hqaiuWi
+         Alub1UHkK3hz6cJXWa+zAAnM5EP3QWj1q5MvxWfdVMLLYeRbH1G7IUzXP5AhOAlipJ
+         rT/D7bNCn0IOQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, Chao Gao <chao.gao@intel.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, kvm@vger.kernel.org
+Subject: [PATCH MANUALSEL 5.15 5/7] KVM: x86: Do not change ICR on write to APIC_SELF_IPI
+Date:   Wed, 27 Apr 2022 11:54:25 -0400
+Message-Id: <20220427155431.19458-5-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220427155431.19458-1-sashal@kernel.org>
+References: <20220427155431.19458-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <cover.1644824638.git.quic_saipraka@quicinc.com> <31f49b98aa921f03d1a9f27af483ac0e5e5bcdb6.1644824638.git.quic_saipraka@quicinc.com>
-In-Reply-To: <31f49b98aa921f03d1a9f27af483ac0e5e5bcdb6.1644824638.git.quic_saipraka@quicinc.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 27 Apr 2022 17:51:24 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0PyoD3adNm1iSi6B7vyM-Mi7yP0vgJ8FpmEOPTXRDr2A@mail.gmail.com>
-Message-ID: <CAK8P3a0PyoD3adNm1iSi6B7vyM-Mi7yP0vgJ8FpmEOPTXRDr2A@mail.gmail.com>
-Subject: Re: [PATCHv10 1/6] arm64: io: Use asm-generic high level MMIO accessors
-To:     Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-Cc:     Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Trilok Soni <quic_tsoni@quicinc.com>,
-        quic_psodagud@quicinc.com, gregkh <gregkh@linuxfoundation.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:TiCnNktqYEftzO2ZWyEYnTWPzKQDRMm4zlTuEku0NeulQq5xe+1
- BGuYMQPhiQDji1fmqliHnnUJURkkR2mU7I+SuABBkCUDomBgXg4V0bOm5tUb7DvxlJEgtY1
- 2L1d7aowdQcvnU/MpLUmqUR9pZVPqHQOniybcgxD3QGDaJSaYDUfpFRsEk3LA9PLchvjrIV
- pz4MEDk13GPm+dlQmVL6w==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:6l2qDR+Ue4M=:JDeZJzfZm3KZLaB59/dCOa
- /2DYy+qx4YiGayvBlcaN0ON2fLzjDXXdQ98M/9dUmQAO8pwL/29fr6P6niPTBLrTH/ys1gGno
- P7sYP7P2KHugGJVrchzi6Ylp2wNYwyIlh6zCdsQBMbOMOe4fXZ1XbnN8gBSrU3rs5LVDhVK1R
- J1DZMDt6P+4dQju43FiyGrCuhK33Nv59tkHF74OdPvvt2ximQkIVwvpF5HR0+PRv185Fq4Sd4
- F1APeAZ3VNJjcCQA27bmwV3PPAQXV9VmJFsguzQ7CR7As+s/UKEWa4J5hubZlHIWWeLvmlBbZ
- +fvNV++NAdVKVh2yOdgZd5LdHnXF+kntpPJ6EwJV0CC6MBmO7LepQfueK7ngTs9kjec9Fk6MI
- o/3RHOJcHD3SSNIbLiu45uJnw/mYjLD06JlbK3+M9pPb9oybfkqRL1NHwCsS+XT2k143/Xyj8
- 9M+AN0ZLjlwAGIHLTRN2k3iWFsuv62wR0bm/xUQx3zmkV4HsKC32Nma6LykGiOnUkAVXiuLQg
- WX+/KU61lw84eTejtv9NXVXYt9yiGVdErNfK9MmLDZbqYTcJClDmpi8YJfjZdQNy01pxxvMyI
- TflF7OaBHiDPEB7Cqkss1L4mYdXxtO/HoqKmhiNX1T9gXXfNfjCHjIKvwuCV1gG9rlHjUoKdQ
- A+oydhWIV/66CphwXuhAkWIeHe6wkdnjiFcwHqGbeoJu9Zwm43WIiDfIKZ2z1Z8lX2UTKfs7m
- stECLgYfoWZ9Zn2cjOqCMBBYb4M6LkOc6cxadlMhLZTbNX5OYMrJIAZJxje0qnGNJu32Q9f91
- yRkPtUiNcItEl5BKZkxsL6o0yycz/6uiHagm06L6N68dOL9jlY=
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 7:07 AM Sai Prakash Ranjan
-<quic_saipraka@quicinc.com> wrote:
->
-> Remove custom arm64 MMIO accessors read{b,w,l,q} and their relaxed
-> versions in support to use asm-generic defined accessors. Also define
-> one set of IO barriers (ar/bw version) used by asm-generic code to
-> override the arm64 specific variants.
->
-> Suggested-by: Arnd Bergmann <arnd@arndb.de>
-> Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-> Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+From: Paolo Bonzini <pbonzini@redhat.com>
 
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+[ Upstream commit d22a81b304a27fca6124174a8e842e826c193466 ]
+
+Emulating writes to SELF_IPI with a write to ICR has an unwanted side effect:
+the value of ICR in vAPIC page gets changed.  The lists SELF_IPI as write-only,
+with no associated MMIO offset, so any write should have no visible side
+effect in the vAPIC page.
+
+Reported-by: Chao Gao <chao.gao@intel.com>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/x86/kvm/lapic.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+index 4d92fb4fdf69..83d1743a1dd0 100644
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
+@@ -2125,10 +2125,9 @@ int kvm_lapic_reg_write(struct kvm_lapic *apic, u32 reg, u32 val)
+ 		break;
+ 
+ 	case APIC_SELF_IPI:
+-		if (apic_x2apic_mode(apic)) {
+-			kvm_lapic_reg_write(apic, APIC_ICR,
+-					    APIC_DEST_SELF | (val & APIC_VECTOR_MASK));
+-		} else
++		if (apic_x2apic_mode(apic))
++			kvm_apic_send_ipi(apic, APIC_DEST_SELF | (val & APIC_VECTOR_MASK), 0);
++		else
+ 			ret = 1;
+ 		break;
+ 	default:
+-- 
+2.35.1
+
