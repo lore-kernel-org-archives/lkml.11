@@ -2,132 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E63B6C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:34:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49D66C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:35:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239755AbiD0Phh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 11:37:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42924 "EHLO
+        id S240072AbiD0PiU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 11:38:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239786AbiD0Ph1 (ORCPT
+        with ESMTP id S240093AbiD0PiO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 11:37:27 -0400
-Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFD7D40A1A;
-        Wed, 27 Apr 2022 08:34:14 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.west.internal (Postfix) with ESMTP id CC2763200915;
-        Wed, 27 Apr 2022 11:34:12 -0400 (EDT)
-Received: from imap47 ([10.202.2.97])
-  by compute2.internal (MEProxy); Wed, 27 Apr 2022 11:34:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
-         h=cc:cc:content-type:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm1; t=1651073652; x=1651160052; bh=Au
-        F5uFMP7QhrB3Wdfj3nB5BTEfBwyWP9fZ17HcqAOyw=; b=Nh9Iows123ywZ7ffOl
-        NsYGHH5Y+vPpOFFEpuqErxU0kDNkURL+Ju4SGbZ2wydp0DLfVlWvMro7WQY2WPmW
-        yPr1g/LWwnGB1kP6qaDB3BiaOC6eRHOdhDVnwPUybz5FoVK7KfjF/sy+AbNaJW3o
-        CK1jlqQiXoU8Pn3XlVMGvEOd/ylQbY4yIoVgLytcprnYe78NdbReNvXmMzDD3UVs
-        nBYs05gE+6xeXc5FKT2ad43HCH++PjLts+hTFuIUj+TlY+pk1IkFzbhDtQGpzxG5
-        iPgHYVqJzXJ+6XpraD+RnoxehYXd7w6fC86tgdxIln8Yl4oh1SEMDNv3BBoIUW9Q
-        Wrww==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1651073652; x=
-        1651160052; bh=AuF5uFMP7QhrB3Wdfj3nB5BTEfBwyWP9fZ17HcqAOyw=; b=D
-        oAW/viue9eJ5ma8l/NQoSwEV0msImhgFcZLXHjWOnFe1z3FTo1gC6Z1vjAAvb3QX
-        SK+dO+eJcaaWvMiLq6zuTp56I1bFCnUAshIxuVdqb3N6IKDrWfOmcdWWPEU8SI9v
-        kYJWc7zMM06qdYxhl2AjgBbazQYqvNLD2rBFJ67PaeLQVVH1YKrF4dxbB8IePXgb
-        5+dvGXyii7MByFIepvZQpst+ZCYa5ShgGlXb3iRv2ehqsz1p/h+zlTcE4eorT6wM
-        0tQ8rdxj8PjJ4Ifr7FDAYsNkJFt32VfGYyakT1QwVdwTxc32tMraKr6Qm13OAkaD
-        XGS9/B08kUAjs56frVO9Q==
-X-ME-Sender: <xms:c2JpYsKb65TZFx-zBhxomiB91tb5NqO4jK33HtoOzfzQQDTIbidjjA>
-    <xme:c2JpYsK5DzHJj3kEJyAA3Zj8pl__58SsIkp4hg1VavMyLgks153H4ANFUx3ASU2pB
-    M-0Db8y9RfXoPh809A>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudehgdekjecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdfuvhgv
-    nhcurfgvthgvrhdfuceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtffrrg
-    htthgvrhhnpeekleekudelvddvhfefhfelgffffefgvdehjeegjefhheejjefgffefieej
-    tdetjeenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivg
-    eptdenucfrrghrrghmpehmrghilhhfrhhomhepshhvvghnsehsvhgvnhhpvghtvghrrdgu
-    vghv
-X-ME-Proxy: <xmx:c2JpYsu7znZ5V62tWFiQEEtRFrcj76dnXKcLKoug1DbDBihUE34CjQ>
-    <xmx:c2JpYpbDxcC3w3vjz9jcgdtD-gSc_MEeHLQrWRGcqAA_RyICMZpTJQ>
-    <xmx:c2JpYjbPeGDHkVYfVTwLDOMkMJwKBSmJ12894doNTvAEjhbatZIO_Q>
-    <xmx:dGJpYnR3ZcrkjmhkG6s-XhnRh3zM7dexQl4_A2_nZJgVKCcI0hytBg>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 77AEA2740386; Wed, 27 Apr 2022 11:34:11 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-569-g7622ad95cc-fm-20220421.002-g7622ad95
-Mime-Version: 1.0
-Message-Id: <0f6ea2c3-586d-4f5a-9cee-688cd73b96b3@www.fastmail.com>
-In-Reply-To: <CAK8P3a1yJkegvgvzHemBd_dowvpyDmxtUnrpiHob8+hiNeO4sw@mail.gmail.com>
-References: <20220426201539.12829-1-sven@svenpeter.dev>
- <CAK8P3a1yJkegvgvzHemBd_dowvpyDmxtUnrpiHob8+hiNeO4sw@mail.gmail.com>
-Date:   Wed, 27 Apr 2022 17:33:50 +0200
-From:   "Sven Peter" <sven@svenpeter.dev>
-To:     "Arnd Bergmann" <arnd@arndb.de>
-Cc:     "Hector Martin" <marcan@marcan.st>,
-        "Alyssa Rosenzweig" <alyssa@rosenzweig.io>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzk+dt@kernel.org>,
-        "Keith Busch" <kbusch@kernel.org>, "axboe@fb.com" <axboe@fb.com>,
-        "hch@lst.de" <hch@lst.de>, "sagi@grimberg.me" <sagi@grimberg.me>,
-        "Marc Zyngier" <maz@kernel.org>, "Janne Grunau" <j@jannau.net>,
-        DTML <devicetree@vger.kernel.org>,
-        "Linux ARM" <linux-arm-kernel@lists.infradead.org>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        linux-nvme@lists.infradead.org
-Subject: Re: [PATCH v3 0/6] Apple M1 (Pro/Max) NVMe driver
-Content-Type: text/plain
+        Wed, 27 Apr 2022 11:38:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8B2C1816A7;
+        Wed, 27 Apr 2022 08:35:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4169AB8285F;
+        Wed, 27 Apr 2022 15:34:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D9D1C385A7;
+        Wed, 27 Apr 2022 15:34:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651073698;
+        bh=AY0M6MiJp4yABlTT36iztg/uwDJL1rZ8nO+etu2NN5k=;
+        h=Date:Subject:To:References:From:In-Reply-To:From;
+        b=dNn2o7iv3UOzfnVpz12chMS2Vu3hNyqvCho+mP+Sppo9FCUA9rUgm8UIZ5xTH/3dm
+         ObdB5J89Yp7d4BXhFpDoluPd7FNemcKpGE9LwRRyC00mNwBphFkUszDGLRZRFkoRWE
+         uwbQf82txbG0c0qL3fn5BT/yO8ZMlOhD93gM0W0iCCNumygEX9VjL3dt09sNxtn8TJ
+         aOuhT+mJrvWHJG41QeoYoZamVNb77oD3fqABjur0Z+wRT5K3yXw9xlrB4Ro1/nZ0S2
+         16zRf69wemBadJ59SOSMthDxq1UWGFwVcPviQiCGfNXvZYIHfbFbkcqGkDiqRHBvbz
+         A8Sb4HXMO80VQ==
+Message-ID: <4769c796-6edd-c23a-ee2a-ce54495548f7@kernel.org>
+Date:   Wed, 27 Apr 2022 18:34:53 +0300
+MIME-Version: 1.0
+Subject: Re: [PATCH] interconnect: qcom: use icc_sync_state
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220427145616.523557-1-krzysztof.kozlowski@linaro.org>
+From:   Georgi Djakov <djakov@kernel.org>
+In-Reply-To: <20220427145616.523557-1-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022, at 23:15, Arnd Bergmann wrote:
-> On Tue, Apr 26, 2022 at 10:15 PM Sven Peter <sven@svenpeter.dev> wrote:
->>
->> Hi,
->>
->> This series includes everything[*] required to get NVMe up and running on
->> Apple's M1, M1 Pro and M1 Max SoCs.
->>
->> v1: https://lore.kernel.org/linux-nvme/20220321165049.35985-1-sven@svenpeter.dev/T/
->> v2: https://lore.kernel.org/linux-nvme/20220415142055.30873-1-sven@svenpeter.dev/T/
->>
->> Thanks everyone for the reviews of v2 again! There are just some minor
->> changes since v2 listed in the individual commits again.
->
-> Nice! I had not looked at v2 in much detail, but I'm perfectly happy
-> with this version,
->
-> I found a few things that could be improved if you do a respin, but
-> nothing important.
+On 27.04.22 17:56, Krzysztof Kozlowski wrote:
+> Use icc_sync_state for interconnect providers, so that the bandwidth
+> request doesn't need to stay on maximum value.
 
-Thanks, I'll respin it later this week to fix those things!
+Did you test this? In general, we should not enable this on boards that
+do not have full interconnect scaling support in consumer drivers yet.
+Some of the interconnects could be enabled by default by the bootloader
+and usually later during boot the consumer drivers request the bandwidth
+that they need. But if the requests are missing, the interconnects
+without bandwidth users will be disabled when we reach sync state. So
+this may (or not) cause issues...
 
->
->> [*] The only missing part in this series are the device tree updates
->>     but since these will go through arm-soc anyway I haven't included
->>     them here but will instead submit them once this series is in a shape
->>     where it can be merged.
->
-> Just as a clarification: the drivers/soc/ portion should normally go through the
-> soc tree as well, but I'm happy for those to get merged along with the
-> nvme driver
-> if that helps get it all mainlined more quickly.
+Thanks,
+Georgi
 
-Makes sense!
-I don't think I'll be ready to submit USB3/USB4/Thunderbolt (which also needs
-RTKit) during this cycle but I think there's a decent chance marcan will submit
-SMC which also depends on RTKit and will go through a different subsystem.
-What's the best way to handle the RTKit commits in that case?
-It would be great if we could get both into 5.19.
-
-
-Sven
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>   drivers/interconnect/qcom/msm8916.c | 1 +
+>   drivers/interconnect/qcom/qcm2290.c | 1 +
+>   drivers/interconnect/qcom/qcs404.c  | 1 +
+>   drivers/interconnect/qcom/sdm660.c  | 1 +
+>   drivers/interconnect/qcom/sm8150.c  | 1 +
+>   drivers/interconnect/qcom/sm8250.c  | 1 +
+>   drivers/interconnect/qcom/sm8350.c  | 1 +
+>   drivers/interconnect/qcom/sm8450.c  | 1 +
+>   8 files changed, 8 insertions(+)
+> 
+> diff --git a/drivers/interconnect/qcom/msm8916.c b/drivers/interconnect/qcom/msm8916.c
+> index 2f397a7c3322..811370fcd211 100644
+> --- a/drivers/interconnect/qcom/msm8916.c
+> +++ b/drivers/interconnect/qcom/msm8916.c
+> @@ -1347,6 +1347,7 @@ static struct platform_driver msm8916_noc_driver = {
+>   	.driver = {
+>   		.name = "qnoc-msm8916",
+>   		.of_match_table = msm8916_noc_of_match,
+> +		.sync_state = icc_sync_state,
+>   	},
+>   };
+>   module_platform_driver(msm8916_noc_driver);
+> diff --git a/drivers/interconnect/qcom/qcm2290.c b/drivers/interconnect/qcom/qcm2290.c
+> index 74404e0b2080..6cf75da91428 100644
+> --- a/drivers/interconnect/qcom/qcm2290.c
+> +++ b/drivers/interconnect/qcom/qcm2290.c
+> @@ -1355,6 +1355,7 @@ static struct platform_driver qcm2290_noc_driver = {
+>   	.driver = {
+>   		.name = "qnoc-qcm2290",
+>   		.of_match_table = qcm2290_noc_of_match,
+> +		.sync_state = icc_sync_state,
+>   	},
+>   };
+>   module_platform_driver(qcm2290_noc_driver);
+> diff --git a/drivers/interconnect/qcom/qcs404.c b/drivers/interconnect/qcom/qcs404.c
+> index 416c8bff8efa..d82f9add4933 100644
+> --- a/drivers/interconnect/qcom/qcs404.c
+> +++ b/drivers/interconnect/qcom/qcs404.c
+> @@ -1086,6 +1086,7 @@ static struct platform_driver qcs404_noc_driver = {
+>   	.driver = {
+>   		.name = "qnoc-qcs404",
+>   		.of_match_table = qcs404_noc_of_match,
+> +		.sync_state = icc_sync_state,
+>   	},
+>   };
+>   module_platform_driver(qcs404_noc_driver);
+> diff --git a/drivers/interconnect/qcom/sdm660.c b/drivers/interconnect/qcom/sdm660.c
+> index 274a7139fe1a..706b49a4bb70 100644
+> --- a/drivers/interconnect/qcom/sdm660.c
+> +++ b/drivers/interconnect/qcom/sdm660.c
+> @@ -1716,6 +1716,7 @@ static struct platform_driver sdm660_noc_driver = {
+>   	.driver = {
+>   		.name = "qnoc-sdm660",
+>   		.of_match_table = sdm660_noc_of_match,
+> +		.sync_state = icc_sync_state,
+>   	},
+>   };
+>   module_platform_driver(sdm660_noc_driver);
+> diff --git a/drivers/interconnect/qcom/sm8150.c b/drivers/interconnect/qcom/sm8150.c
+> index 745e3c36a61a..2a85f53802b5 100644
+> --- a/drivers/interconnect/qcom/sm8150.c
+> +++ b/drivers/interconnect/qcom/sm8150.c
+> @@ -535,6 +535,7 @@ static struct platform_driver qnoc_driver = {
+>   	.driver = {
+>   		.name = "qnoc-sm8150",
+>   		.of_match_table = qnoc_of_match,
+> +		.sync_state = icc_sync_state,
+>   	},
+>   };
+>   module_platform_driver(qnoc_driver);
+> diff --git a/drivers/interconnect/qcom/sm8250.c b/drivers/interconnect/qcom/sm8250.c
+> index aa707582ea01..8dfb5dea562a 100644
+> --- a/drivers/interconnect/qcom/sm8250.c
+> +++ b/drivers/interconnect/qcom/sm8250.c
+> @@ -551,6 +551,7 @@ static struct platform_driver qnoc_driver = {
+>   	.driver = {
+>   		.name = "qnoc-sm8250",
+>   		.of_match_table = qnoc_of_match,
+> +		.sync_state = icc_sync_state,
+>   	},
+>   };
+>   module_platform_driver(qnoc_driver);
+> diff --git a/drivers/interconnect/qcom/sm8350.c b/drivers/interconnect/qcom/sm8350.c
+> index c79f93a1ac73..3e26a2175b28 100644
+> --- a/drivers/interconnect/qcom/sm8350.c
+> +++ b/drivers/interconnect/qcom/sm8350.c
+> @@ -531,6 +531,7 @@ static struct platform_driver qnoc_driver = {
+>   	.driver = {
+>   		.name = "qnoc-sm8350",
+>   		.of_match_table = qnoc_of_match,
+> +		.sync_state = icc_sync_state,
+>   	},
+>   };
+>   module_platform_driver(qnoc_driver);
+> diff --git a/drivers/interconnect/qcom/sm8450.c b/drivers/interconnect/qcom/sm8450.c
+> index 8d99ee6421df..d573018a6324 100644
+> --- a/drivers/interconnect/qcom/sm8450.c
+> +++ b/drivers/interconnect/qcom/sm8450.c
+> @@ -1968,6 +1968,7 @@ static struct platform_driver qnoc_driver = {
+>   	.driver = {
+>   		.name = "qnoc-sm8450",
+>   		.of_match_table = qnoc_of_match,
+> +		.sync_state = icc_sync_state,
+>   	},
+>   };
+>   
 
