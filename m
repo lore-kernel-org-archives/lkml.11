@@ -2,88 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15B9EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 17:56:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 152CAC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 17:57:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244521AbiD0R7q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 13:59:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49822 "EHLO
+        id S244526AbiD0SA7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 14:00:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244534AbiD0R7j (ORCPT
+        with ESMTP id S244483AbiD0SA5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 13:59:39 -0400
-Received: from mail-oa1-x31.google.com (mail-oa1-x31.google.com [IPv6:2001:4860:4864:20::31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CECD2FF8EB;
-        Wed, 27 Apr 2022 10:56:27 -0700 (PDT)
-Received: by mail-oa1-x31.google.com with SMTP id 586e51a60fabf-e656032735so2815607fac.0;
-        Wed, 27 Apr 2022 10:56:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ay70JJfxgI4f1cvx3A4AnPQKdrRnK/Iw4p4S0x3nnCs=;
-        b=OLHjF71WP1J3jvDhuaKlm3iXD/mcjC5RVhiKmJgBGUQ1xKFkLWbrl5AqL8s4exhYvF
-         uUmQK6YlYPorVXyH4XbVv82Nr14izTfeAx4GBFBr0S4CdZF43X/2Bt9j5O8EJfPB7YZP
-         FQxZejmUmpWq88LzHg0ytZLaL+P7UvOIiXvzRqQt6lpnbkRlGb9X2VlqRNMCQ4hl7Cxh
-         /TKiFhg0mNb15LB+hLY00nZIIChJ41lGCrMMjxfrHTP/REPLbodSb2hpj+hx9+fDpJAr
-         s4U0VhwRQTWtC14uh/VlnXAVWpxGfgkR+EYjaOsYp7NzYI5rfOzVC2ClmoacJNvG5RRW
-         pzmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ay70JJfxgI4f1cvx3A4AnPQKdrRnK/Iw4p4S0x3nnCs=;
-        b=2Ev8OclgSmXad/NlvFho7wdEoILWvfmL4UZkhIKE52N8P2jPmC78zDkIrwN7LOHCYu
-         dVWo6avWRTWWcOEbJ4rM+nOHO9Z3E+pAcUCmvP4q0I5WPfVtR9+FnX43fs1WlC2/AQ5J
-         iTJSqVXw4sEW3pIXS9pAjtcKWxHlIDaQJO6GxzzW5q/vkyT9H5m/XRWF8sQre9RzKgIh
-         xgTTLEFTBB1lo7xdk9qRlGW5Kz3NenfLizlKGgQo7xJIOLl1q92/MiBzxGPxq9I/zSAa
-         w5n/8KhZRW3nVxbhaVs2Jl1rkf25mZZAMA2L60OkXhq9ALLrhGMHLJGbv+PWOVuCI5vq
-         mLNg==
-X-Gm-Message-State: AOAM530hBLW0ETmfZ0EqPk3F52Y0odJBWS9bZ7g1Rr1LeUavkwETUyTi
-        bIVLDCYPfxchcLKsgpJg4VA=
-X-Google-Smtp-Source: ABdhPJx74Us6sVSM3wgpFzy70DwQH/Athg2ooakdq3IzGXxabs5U5jeUwxfGbR+8CcSjOp3EALI+fg==
-X-Received: by 2002:a05:6870:3112:b0:ce:c0c9:62b with SMTP id v18-20020a056870311200b000cec0c9062bmr16062307oaa.125.1651082186620;
-        Wed, 27 Apr 2022 10:56:26 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id dv2-20020a056870d88200b000e93d386d97sm915229oab.31.2022.04.27.10.56.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Apr 2022 10:56:24 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <588c401c-6b68-53b3-e2d9-542f40b5e4d3@roeck-us.net>
-Date:   Wed, 27 Apr 2022 10:56:22 -0700
+        Wed, 27 Apr 2022 14:00:57 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2483632A9F3;
+        Wed, 27 Apr 2022 10:57:45 -0700 (PDT)
+Received: from fraeml739-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KpRGm2GrZz67D4J;
+        Thu, 28 Apr 2022 01:54:56 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml739-chm.china.huawei.com (10.206.15.220) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 27 Apr 2022 19:57:43 +0200
+Received: from localhost (10.81.200.74) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2375.24; Wed, 27 Apr
+ 2022 18:57:42 +0100
+Date:   Wed, 27 Apr 2022 18:57:40 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     <ira.weiny@intel.com>
+CC:     Dan Williams <dan.j.williams@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Alison Schofield <alison.schofield@intel.com>,
+        "Vishal Verma" <vishal.l.verma@intel.com>,
+        Ben Widawsky <ben.widawsky@intel.com>,
+        <linux-kernel@vger.kernel.org>, <linux-cxl@vger.kernel.org>,
+        <linux-pci@vger.kernel.org>
+Subject: Re: [PATCH V8 09/10] cxl/mem: Retry reading CDAT on failure
+Message-ID: <20220427185740.00001ea5@Huawei.com>
+In-Reply-To: <20220414203237.2198665-10-ira.weiny@intel.com>
+References: <20220414203237.2198665-1-ira.weiny@intel.com>
+        <20220414203237.2198665-10-ira.weiny@intel.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 4/4] hwmon: (asus-ec-sensors) add PRIME X470-PRO board
-Content-Language: en-US
-To:     Eugene Shalygin <eugene.shalygin@gmail.com>
-Cc:     Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220427143001.1443605-1-eugene.shalygin@gmail.com>
- <20220427143001.1443605-5-eugene.shalygin@gmail.com>
- <CAB95QAQ0jwgQyV+PCVy1swN8hXC9U2oRbtbPqU13oW8_1v9zaw@mail.gmail.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <CAB95QAQ0jwgQyV+PCVy1swN8hXC9U2oRbtbPqU13oW8_1v9zaw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.81.200.74]
+X-ClientProxiedBy: lhreml709-chm.china.huawei.com (10.201.108.58) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/27/22 09:57, Eugene Shalygin wrote:
-> Günter,
+On Thu, 14 Apr 2022 13:32:36 -0700
+ira.weiny@intel.com wrote:
+
+> From: Ira Weiny <ira.weiny@intel.com>
 > 
-> I forgot to add PRIME X470-PRO to the list of supported boards in
-> Documentation/hwmon/asus_ec_sensors.rst. Could you, please, add that?
-> It should be the first entry. Commit
-> 8f8db4b5d10cc4a2a801514e677dd5205651b771. Or should I resend this
-> patch?
+> The CDAT read may fail for a number of reasons but mainly it is possible
+> to get different parts of a valid state.  The checksum in the CDAT table
+> protects against this.
 > 
+> Now that the cdat data is validated issue a retries if the CDAT read
 
-Just send a follow-up patch.
+validated, retry if the CDAT read fails.
 
-Guenter
+> fails.  For now 5 retries are implemented.
+> 
+> Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+
+> 
+> ---
+> Changes from V6
+> 	Move to pci.c
+> 	Fix retries count
+> 	Change to 5 retries
+> 
+> Changes from V5:
+> 	New patch -- easy to push off or drop.
+> ---
+>  drivers/cxl/pci.c | 21 +++++++++++++++++----
+>  1 file changed, 17 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/cxl/pci.c b/drivers/cxl/pci.c
+> index d7952156dd02..43cbc297079d 100644
+> --- a/drivers/cxl/pci.c
+> +++ b/drivers/cxl/pci.c
+> @@ -940,7 +940,7 @@ static void cxl_initialize_cdat_callbacks(struct cxl_dev_state *cxlds)
+>  	cxlds->cdat_read_table = cxl_cdat_read_table;
+>  }
+>  
+> -static int read_cdat_data(struct cxl_dev_state *cxlds)
+> +static int __read_cdat_data(struct cxl_dev_state *cxlds)
+>  {
+>  	struct device *dev = cxlds->dev;
+>  	size_t cdat_length;
+> @@ -962,6 +962,21 @@ static int read_cdat_data(struct cxl_dev_state *cxlds)
+>  	return ret;
+>  }
+>  
+> +static void read_cdat_data(struct cxl_dev_state *cxlds)
+> +{
+> +	int retries = 5;
+> +	int rc;
+> +
+> +	while (retries--) {
+> +		rc = __read_cdat_data(cxlds);
+> +		if (!rc)
+> +			break;
+> +		dev_err(cxlds->dev,
+> +			"CDAT data read error rc=%d (retries %d)\n",
+> +			rc, retries);
+> +	}
+> +}
+> +
+>  static int cxl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>  {
+>  	struct cxl_register_map map;
+> @@ -1035,9 +1050,7 @@ static int cxl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>  	cxl_initialize_cdat_callbacks(cxlds);
+>  
+>  	/* Cache the data early to ensure is_visible() works */
+> -	rc = read_cdat_data(cxlds);
+> -	if (rc)
+> -		dev_err(&pdev->dev, "CDAT data read error (%d)\n", rc);
+> +	read_cdat_data(cxlds);
+>  
+>  	cxl_dvsec_ranges(cxlds);
+>  
 
