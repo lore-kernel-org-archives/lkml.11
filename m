@@ -2,95 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE96FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 06:35:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6126AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 06:36:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358147AbiD0Gig (ORCPT
+        id S1358169AbiD0Gjq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 02:38:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58788 "EHLO
+        Wed, 27 Apr 2022 02:39:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242098AbiD0Gic (ORCPT
+        with ESMTP id S1358175AbiD0Gis (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 02:38:32 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA6E8DAC
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 23:35:19 -0700 (PDT)
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Wed, 27 Apr 2022 02:38:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A57481ADBA;
+        Tue, 26 Apr 2022 23:35:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 475D53F336
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 06:35:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1651041316;
-        bh=MmefrrBswVUvzgRTE2NPvGr6V97N4RUSYuDtOffwdhE=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=WOpE5UR5Hz9Wqb7jVuBOD34t5HqqALrUbw80f/NF3nqejkDlBnzXoWTrqU1KVaS+3
-         gBlCGfBcdr56tyU32fWHLEaqsGoLI8xNSjRpAIhnlvLh6gZPAgmiIyodbyK+vFefsZ
-         x+030NI4Ssqpgi7XZXL4I8pTPoJQVw2uSjuXimdfK/jTvzDj1mLbBliDtl1oKy8n74
-         ejaxvav2z9qh2sZEydH+8Miy/QhIx1C5GYjR35R1l3NTnyxBEWc9wooI0YVTG22VBQ
-         yw8JIcu9qgjaRRwQROtD/vxYckeh+0NkaYUI1s1b+nR2pIWbh6xJf3br1FVr8BbP2U
-         w6cdfg4CXGrSg==
-Received: by mail-ej1-f72.google.com with SMTP id sc26-20020a1709078a1a00b006effb6a81b9so558822ejc.6
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 23:35:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MmefrrBswVUvzgRTE2NPvGr6V97N4RUSYuDtOffwdhE=;
-        b=OTO5f/pBoxdStaDO6++ess5jYP8/GHdqhmuVna1rzCZFem9enqgeqiTuVoGfVF0Egp
-         UU6/xMv5jZ7DkJwj+BeIQB3UCouV95RpBnVcouchXlU8WsXKfljjlzGQjM+2USRiIBwi
-         qB1VPdna0bq2d9DcVZWvy1Rh+4TN10Y/RBHDEszMUZQ1SHRk7rdE2nCzuLyEAD/f6hQx
-         xoyUnSdG4lKwlDymhMWeS+lr8yyrJksSyUsBp7GfDqon5iHK+JAnDkboWpUMyi01tCS2
-         a6tn2QtIkMUoPqzK9iEXTJdKTUB5zZLAo4OIB5j/Y+7HL7ZDFtVXJG1Wk0zjr1AooADP
-         U3XQ==
-X-Gm-Message-State: AOAM530QDy9RU6izNwiYja/wR6df2aTDd/7Nb5TrpxVyImDz6kDdE7ni
-        YxN+bAYwa7wHs26l39BZx1vjpa9Z/DDCYEtDh62G96X+N/KIZDe332YArP3gUxt6E3rYj9RMH2Y
-        Hy6eSB5+2kbgmalkMy4QcBODq0RWQXs7cqoHMrVn8eA==
-X-Received: by 2002:a17:907:3f9e:b0:6f2:b3d8:63c0 with SMTP id hr30-20020a1709073f9e00b006f2b3d863c0mr22671645ejc.86.1651041315960;
-        Tue, 26 Apr 2022 23:35:15 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJynnSs4jOFEV9GW6BdweHs2YdX16aH7caB5g2dU8QtqdplvwIlTdkiQMjPSuQftugFxM8nPLw==
-X-Received: by 2002:a17:907:3f9e:b0:6f2:b3d8:63c0 with SMTP id hr30-20020a1709073f9e00b006f2b3d863c0mr22671633ejc.86.1651041315825;
-        Tue, 26 Apr 2022 23:35:15 -0700 (PDT)
-Received: from gollum.fritz.box ([194.191.244.86])
-        by smtp.gmail.com with ESMTPSA id bq23-20020a056402215700b0041d8fcac53asm7696688edb.23.2022.04.26.23.35.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 23:35:15 -0700 (PDT)
-From:   Juerg Haefliger <juerg.haefliger@canonical.com>
-X-Google-Original-From: Juerg Haefliger <juergh@protonmail.com>
-To:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        linux-bluetooth@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Juerg Haefliger <juergh@protonmail.com>
-Subject: [PATCH] Bluetooth: ath3k: Add MODULE_FIRMWARE for patch and config files
-Date:   Wed, 27 Apr 2022 08:35:04 +0200
-Message-Id: <20220427063504.384540-1-juergh@protonmail.com>
-X-Mailer: git-send-email 2.32.0
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E6CA7618E1;
+        Wed, 27 Apr 2022 06:35:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F730C385AA;
+        Wed, 27 Apr 2022 06:35:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651041335;
+        bh=k6dwnK0xclzWh+p/LmUQUrceR0tDLEKt8/aDgr4lKkY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=tBEzJ/RKt4+uA3PyECI9pK8PzfzbOFUkpk7rcNTM3Y1kWErnDlgFriNrrA1UYUZu5
+         RpjyRQha+T0vysveASlmf5uGZR8wcnqnlt2bMBBBjAmB202KG/zK4162l7s7bqVbOc
+         ymgK/D0l2Q7F7rGoo/O98MQZeNu2SHTX+EQvbFlVnBsWxgjTG3jMAvxg/s7wA849Ts
+         2u/fkIZx6R4w2XSGb8e23lSOMC+vyoJuw1UqRDIj9ayQE0s2Rn7sTvJ9UqfcUnaurd
+         Gbu39XWnUhcThcs7KfLu8TOsIKN+08UTmTW7+BK4v6hmLLW8sdNqogRvDVDYpQt4sE
+         7z8TI57oL5Uag==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan+linaro@kernel.org>)
+        id 1njbGy-0008VT-4i; Wed, 27 Apr 2022 08:35:36 +0200
+From:   Johan Hovold <johan+linaro@kernel.org>
+To:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Johan Hovold <johan+linaro@kernel.org>
+Subject: [PATCH v2 0/3] phy: qcom-qmp: fix leaks on probe errors
+Date:   Wed, 27 Apr 2022 08:32:40 +0200
+Message-Id: <20220427063243.32576-1-johan+linaro@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ath3k driver loads patch and configuration files so add MODULE_FIRMWARE
-macros to povide that information via modinfo.
+Here are two more fixes addressing resource leaks on probe errors (e.g.
+probe deferral) and a related cleanup.
 
-Signed-off-by: Juerg Haefliger <juergh@protonmail.com>
----
- drivers/bluetooth/ath3k.c | 2 ++
- 1 file changed, 2 insertions(+)
+Johan
 
-diff --git a/drivers/bluetooth/ath3k.c b/drivers/bluetooth/ath3k.c
-index 88262d3a9392..56e9a64177ae 100644
---- a/drivers/bluetooth/ath3k.c
-+++ b/drivers/bluetooth/ath3k.c
-@@ -538,3 +538,5 @@ MODULE_DESCRIPTION("Atheros AR30xx firmware driver");
- MODULE_VERSION(VERSION);
- MODULE_LICENSE("GPL");
- MODULE_FIRMWARE(ATH3K_FIRMWARE);
-+MODULE_FIRMWARE("ar3k/AthrBT_0x*.dfu");
-+MODULE_FIRMWARE("ar3k/ramps_0x*_*.dfu");
+Changes in v2
+ - add Bjorn and Philipp's reviewed-by tags
+ - fix reset-controller leak commit message (Philipp)
+ - add patch to switch to explicit reset API (Philipp)
+
+Johan Hovold (3):
+  phy: qcom-qmp: fix struct clk leak on probe errors
+  phy: qcom-qmp: fix reset-controller leak on probe errors
+  phy: qcom-qmp: switch to explicit reset helpers
+
+ drivers/phy/qualcomm/phy-qcom-qmp.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
+
 -- 
-2.32.0
+2.35.1
 
