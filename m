@@ -2,82 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D513AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 09:42:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26A5CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 09:47:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229944AbiD0Jp7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 05:45:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34752 "EHLO
+        id S229657AbiD0Jun (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 05:50:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229648AbiD0Jpt (ORCPT
+        with ESMTP id S229437AbiD0Juf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 05:45:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4F0B3808EE;
-        Wed, 27 Apr 2022 02:42:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 530BAB825CA;
-        Wed, 27 Apr 2022 09:37:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3EC4C385A9;
-        Wed, 27 Apr 2022 09:37:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651052272;
-        bh=qzyHzucfdjJHdS7Al49wqCBqj8KjWdFYjhXKJTQsUX4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=B5aL0i2+qF8+AIrqk2twZ40K34FmY3tt3gGR6gXq2EnyxJjkVxlFPkLbFUhaShKCA
-         F9PqWYapcCOPaHWMPjnGKn8x81eycW5cyHQ9dYvo3wPtvQWnpN94J0+FfW3uvnWAeL
-         cSaF/4xyjd8qOYs4FrIAfNoAToiDPyPl4EcqQ8qo=
-Date:   Wed, 27 Apr 2022 11:37:48 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Jung Daehwan <dh10.jung@samsung.com>
-Cc:     Mathias Nyman <mathias.nyman@intel.com>,
-        "open list:USB XHCI DRIVER" <linux-usb@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Howard Yen <howardyen@google.com>,
-        Jack Pham <jackp@codeaurora.org>,
-        Puma Hsu <pumahsu@google.com>,
-        "J . Avila" <elavila@google.com>, sc.suh@samsung.com,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Subject: Re: [PATCH v4 5/5] usb: host: add xhci-exynos driver
-Message-ID: <YmkO7LDc0q38VFlE@kroah.com>
-References: <1650964728-175347-1-git-send-email-dh10.jung@samsung.com>
- <CGME20220426092023epcas2p32946c087135ca4b7e63b03915060c55d@epcas2p3.samsung.com>
- <1650964728-175347-6-git-send-email-dh10.jung@samsung.com>
- <YmfHtFFIJp6z7ysK@kroah.com>
- <20220427092426.GD145620@ubuntu>
+        Wed, 27 Apr 2022 05:50:35 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13ED028C2BF
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 02:46:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651052786; x=1682588786;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=gZJgqAoeFMNUtsZovCvOzH9l4BnSsHLcKnYp1fr9X7Y=;
+  b=Ryoe99DE6KC05GK9PQnTEk9bA2boSoBph7hm2sMds+WVrljrouXzZJM6
+   Y5tXy+wnxpoRwQYaDp1gpIKYKusBltuTdFUTM1UN+SKmR4K3veVij36VD
+   6AscjOt4w6xDYDR6gooWTTfKcLlWRwP0vzue5W5MkvoaCs8hDETfkFVX0
+   0q/2QovUvlWDq5L3ajKSTpZ4wDaU6xT+VEDhiTXT/n73K5CRooIqZEARp
+   vEUaPpjuUxhJJbNdaubvb8kUnH3WCvDM1vp7OWcnA9KbnruZr8OQild1m
+   LffYbT4V/KMu3MCmFS4C4CJq88lwEzRZfsbqnvI5Bo0KtocH+d/gO9W3d
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="246438768"
+X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
+   d="scan'208";a="246438768"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 02:36:38 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
+   d="scan'208";a="596202340"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 27 Apr 2022 02:36:36 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nje67-0004Yk-Hq;
+        Wed, 27 Apr 2022 09:36:35 +0000
+Date:   Wed, 27 Apr 2022 17:36:17 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Guo Ren <guoren@linux.alibaba.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [ammarfaizi2-block:palmer/linux/riscv-compat 18/20]
+ arch/riscv/include/asm/signal32.h:10:5: warning: no previous prototype for
+ function 'compat_setup_rt_frame'
+Message-ID: <202204271718.xbiawVrz-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220427092426.GD145620@ubuntu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 06:24:26PM +0900, Jung Daehwan wrote:
-> On Tue, Apr 26, 2022 at 12:21:40PM +0200, Greg Kroah-Hartman wrote:
-> > On Tue, Apr 26, 2022 at 06:18:48PM +0900, Daehwan Jung wrote:
-> > > +int xhci_check_trb_in_td_math(struct xhci_hcd *xhci);
-> > > +void xhci_segment_free(struct xhci_hcd *xhci, struct xhci_segment *seg);
-> > > +void xhci_link_segments(struct xhci_segment *prev,
-> > > +		struct xhci_segment *next,
-> > > +		enum xhci_ring_type type, bool chain_links);
-> > > +void xhci_initialize_ring_info(struct xhci_ring *ring,
-> > > +					unsigned int cycle_state);
-> > > +void xhci_remove_stream_mapping(struct xhci_ring *ring);
-> > 
-> > Why does your single driver have global functions?  That should not be
-> > needed, right?
-> > 
-> > And these are odd for a driver's namespace...
-> > 
-> 
-> Those are exported in 1st patches. it's not good to include here as you said.
+tree:   https://github.com/ammarfaizi2/linux-block palmer/linux/riscv-compat
+head:   8d05fa26dd28024fc3f915bf06be41ab7c3204ab
+commit: 299073d795e482ae6a762105fbc3953ec445badd [18/20] riscv: compat: signal: Add rt_frame implementation
+config: riscv-randconfig-r002-20220425 (https://download.01.org/0day-ci/archive/20220427/202204271718.xbiawVrz-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 1cddcfdc3c683b393df1a5c9063252eb60e52818)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv64-linux-gnu
+        # https://github.com/ammarfaizi2/linux-block/commit/299073d795e482ae6a762105fbc3953ec445badd
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block palmer/linux/riscv-compat
+        git checkout 299073d795e482ae6a762105fbc3953ec445badd
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash arch/riscv/kernel/ kernel/bpf/
 
-If you export a function, you also have to add it to a .h file
-somewhere, otherwise it really is not exported.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-thanks,
+All warnings (new ones prefixed by >>):
 
-greg k-h
+   In file included from arch/riscv/kernel/signal.c:12:
+   In file included from include/linux/syscalls.h:88:
+   In file included from include/trace/syscall.h:7:
+   In file included from include/linux/trace_events.h:9:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/riscv/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/riscv/include/asm/io.h:136:
+   include/asm-generic/io.h:464:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __raw_readb(PCI_IOBASE + addr);
+                             ~~~~~~~~~~ ^
+   include/asm-generic/io.h:477:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/little_endian.h:37:51: note: expanded from macro '__le16_to_cpu'
+   #define __le16_to_cpu(x) ((__force __u16)(__le16)(x))
+                                                     ^
+   In file included from arch/riscv/kernel/signal.c:12:
+   In file included from include/linux/syscalls.h:88:
+   In file included from include/trace/syscall.h:7:
+   In file included from include/linux/trace_events.h:9:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/riscv/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/riscv/include/asm/io.h:136:
+   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/little_endian.h:35:51: note: expanded from macro '__le32_to_cpu'
+   #define __le32_to_cpu(x) ((__force __u32)(__le32)(x))
+                                                     ^
+   In file included from arch/riscv/kernel/signal.c:12:
+   In file included from include/linux/syscalls.h:88:
+   In file included from include/trace/syscall.h:7:
+   In file included from include/linux/trace_events.h:9:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/riscv/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/riscv/include/asm/io.h:136:
+   include/asm-generic/io.h:501:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writeb(value, PCI_IOBASE + addr);
+                               ~~~~~~~~~~ ^
+   include/asm-generic/io.h:511:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:521:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:1024:55: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           return (port > MMIO_UPPER_LIMIT) ? NULL : PCI_IOBASE + port;
+                                                     ~~~~~~~~~~ ^
+   In file included from arch/riscv/kernel/signal.c:18:
+>> arch/riscv/include/asm/signal32.h:10:5: warning: no previous prototype for function 'compat_setup_rt_frame' [-Wmissing-prototypes]
+   int compat_setup_rt_frame(struct ksignal *ksig, sigset_t *set,
+       ^
+   arch/riscv/include/asm/signal32.h:10:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int compat_setup_rt_frame(struct ksignal *ksig, sigset_t *set,
+   ^
+   static 
+   arch/riscv/kernel/signal.c:316:27: warning: no previous prototype for function 'do_notify_resume' [-Wmissing-prototypes]
+   asmlinkage __visible void do_notify_resume(struct pt_regs *regs,
+                             ^
+   arch/riscv/kernel/signal.c:316:22: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   asmlinkage __visible void do_notify_resume(struct pt_regs *regs,
+                        ^
+                        static 
+   9 warnings generated.
+
+
+vim +/compat_setup_rt_frame +10 arch/riscv/include/asm/signal32.h
+
+     5	
+     6	#if IS_ENABLED(CONFIG_COMPAT)
+     7	int compat_setup_rt_frame(struct ksignal *ksig, sigset_t *set,
+     8				  struct pt_regs *regs);
+     9	#else
+  > 10	int compat_setup_rt_frame(struct ksignal *ksig, sigset_t *set,
+    11				  struct pt_regs *regs)
+    12	{
+    13		return -1;
+    14	}
+    15	#endif
+    16	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
