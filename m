@@ -2,248 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72D78C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 17:50:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF234C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 17:52:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244484AbiD0RyH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 13:54:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53644 "EHLO
+        id S244471AbiD0Rzu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 13:55:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229920AbiD0RyF (ORCPT
+        with ESMTP id S229451AbiD0Rzp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 13:54:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C09A585644
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 10:50:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6685361EA6
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 17:50:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A22DC385A7;
-        Wed, 27 Apr 2022 17:50:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651081852;
-        bh=wGkQ6bOf5DwV4aJRMZkEA5wEzpzAIRokdGkW7OEyS+U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fGVli05x9E0ui2PCPTieJb1U/F02qJWkGBwfWddyHtM7ohBrP1abR/n7LzcMGGsdB
-         yw7T1KjolZFHTAosbIlUzx8Bvk/mVfAoZSDkJUndma8g7ydEl0K2yjXah3zg3S7Ys9
-         axRsAzll/A/ElxYIfh7kVrGfTN8avHya0IFIa6hdajS9Sj1eRyPwexMnj0v4e4zqfX
-         yrDXJ20457Z4Kxfae6gsHPxg9hPQ14fMMSKvrgN6UXXycLMtRMKZoh3X7rUROHbgvb
-         nd5nhVcp+9TNufUFjs4kcFhyZU2Si/Gj07DBu1ke/1eLgEZg9XJEMhyCx3zLwty+zi
-         JhnacOcnKlz0w==
-From:   sj@kernel.org
-To:     Barry Song <21cnbao@gmail.com>
-Cc:     Rongwei Wang <rongwei.wang@linux.alibaba.com>, sj@kernel.org,
-        "Andrew Morton" <akpm@linux-foundation.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Matthew Wilcox" <willy@infradead.org>, shuah@kernel.org,
-        brendanhiggins@google.com, foersleo@amazon.de, sieberf@amazon.com,
-        "Shakeel Butt" <shakeelb@google.com>, sjpark@amazon.de,
-        tuhailong@gmail.com, "Song Jiang" <sjiang88@gmail.com>,
-        =?UTF-8?q?=E5=BC=A0=E8=AF=97=E6=98=8E=28Simon=20Zhang=29?= 
-        <zhangshiming@oppo.com>,
-        =?UTF-8?q?=E6=9D=8E=E5=9F=B9=E9=94=8B=28wink=29?= 
-        <lipeifeng@oppo.com>, xhao@linux.alibaba.com
-Subject: Re: DAMON VA regions don't split on an large Android APP
-Date:   Wed, 27 Apr 2022 17:50:49 +0000
-Message-Id: <20220427175049.50057-1-sj@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <CAGsJ_4weJ9onh0EJVy8QXMXZ++4qVyVuRi7oP3wiD0XWnqF-Dg@mail.gmail.com>
-References: 
+        Wed, 27 Apr 2022 13:55:45 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 910461FA62
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 10:52:32 -0700 (PDT)
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23RHpUOS018603;
+        Wed, 27 Apr 2022 17:52:27 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-id : content-transfer-encoding : mime-version; s=corp-2021-07-09;
+ bh=f1zALc50L5QTOaP8HmcJOixFlRUPFsv6YPo/jIUq9Gg=;
+ b=z/AVCmrq6usHQvWvp05gmTv7Ci26kDsXPBcRMVci7a71TSLGG/n7v/fJvow9b+JPF+Cw
+ mjttHmtNStc2Tmv7w1xOztjIqW+OZWsn48QO5XYHUsvWebQtKKPEWPpklATng/Et++ok
+ pbKBjCzalvMWxC1gB1iNY3Eyexayg1jUxYd6NdDTzJQ3TqdsZminD71LqLipeC6xOFJg
+ +DgdK59P8P4DoqExf1bYQUx1xXsT2GTAMKlO/ON777AhZg03dCUS8rysx+Xy272A36tF
+ 7sibUtIp5TmLa/eSDp7t3Bcwue2tXIcV1u8uKgF+TxIHe3Mt109Nhl32wdrQibEqKZZp FA== 
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3fmb5k1uys-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 27 Apr 2022 17:52:27 +0000
+Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 23RHj8tx014271;
+        Wed, 27 Apr 2022 17:52:26 GMT
+Received: from nam02-dm3-obe.outbound.protection.outlook.com (mail-dm3nam07lp2049.outbound.protection.outlook.com [104.47.56.49])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fm7w57n27-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 27 Apr 2022 17:52:26 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lptW7+rHqzxwkUPj9IYbJE9bV117IHtZfiQIiM8zX99ANgX8jjMd6lIBlfRsnNoopRViZqHI1YL/Qb3N2h4M6quRpoH+MswAGh3kXtH4iSuovep6qSyMSUI2XGGMXWkth/MuglAt9gTKSV0qbmUkLNLyS/46M4Ym77o5zUfcYD9SSSTzjB7maWZWGQ7TF/Al7zK4Mn8Gv/KBOkV8YGHf7DDnadK2dJ2bEBkGNuHtvJClhwd7c5A7qxaRSV8TXemvnKdsSzFXnUWRaYLYMCWJjku04FXehT6XGHcN7LtpwpydX1fnPwArUSaTRT+amKx3n9hMKw+cFALEJ4SOyqe0Ow==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=f1zALc50L5QTOaP8HmcJOixFlRUPFsv6YPo/jIUq9Gg=;
+ b=PFc9ppmeE2Ttf7FvXr9icQqDpVdDpTZTbzW74N3knAjS6LwEHroImrHFFwoi/t360z+e+4V9ju6WeisqCsB9Opjjh91u1RNcnGDFFOk8sdmpk0Qi0keAggPxdOse6uoJRJfLfkKFXHQMAqx14hv/K60XmDfm78IdIpD+imE/HEW56rNcO16eSSJ7M4G/+5CsfrwDguoBFD5VMbWHuDxbbKJcEYUM8ZOGi3VzXww3klykJbGYEC2dMnBSmgOdZm8mqHqVlQaQjgqjgD+xEebttQKtUVQfAylYYmPstP63EgMusdx8kXIvbZFKN9Grc1YnIXreqgn7xpXDwyYy8p3Npw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=f1zALc50L5QTOaP8HmcJOixFlRUPFsv6YPo/jIUq9Gg=;
+ b=RE6E7dUB2rgFgYTgrJ+FgpMDRTGE/X9udcczfqmiOY3IC7IAlhXgNiVusx0r/6joaF0v33N5YBEoIb1LZryOHl/6uQx49ybTNApVsK29uKPonceGJlMylno3VavEk8E57DCHMLbvCs2i7CIHrFhIT2KaaDpkN9kxmY62LilQZys=
+Received: from SN6PR10MB3022.namprd10.prod.outlook.com (2603:10b6:805:d8::25)
+ by BYAPR10MB2965.namprd10.prod.outlook.com (2603:10b6:a03:90::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.13; Wed, 27 Apr
+ 2022 17:52:24 +0000
+Received: from SN6PR10MB3022.namprd10.prod.outlook.com
+ ([fe80::318c:d02:2280:c2c]) by SN6PR10MB3022.namprd10.prod.outlook.com
+ ([fe80::318c:d02:2280:c2c%7]) with mapi id 15.20.5186.021; Wed, 27 Apr 2022
+ 17:52:24 +0000
+From:   Liam Howlett <liam.howlett@oracle.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+CC:     syzbot <syzbot+7728e4ab5371cebc9c00@syzkaller.appspotmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
+        Peter Xu <peterx@redhat.com>,
+        Qian Cai <quic_qiancai@quicinc.com>
+Subject: Re: [syzbot] WARNING in vma_merge
+Thread-Topic: [syzbot] WARNING in vma_merge
+Thread-Index: AQHYWjRmy9YwbzHJ/0e8lY/ldotJ+K0DvUcAgABEggCAAAjgAA==
+Date:   Wed, 27 Apr 2022 17:52:24 +0000
+Message-ID: <20220427175218.cazytgdlpc6lpn45@revolver>
+References: <000000000000a23c8505dda227eb@google.com>
+ <000000000000f28f0005dda29992@google.com>
+ <20220427102032.5a87283eb64d06c1a6d682fd@linux-foundation.org>
+In-Reply-To: <20220427102032.5a87283eb64d06c1a6d682fd@linux-foundation.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 8e8b5e9c-656e-4947-a3a3-08da2876af90
+x-ms-traffictypediagnostic: BYAPR10MB2965:EE_
+x-microsoft-antispam-prvs: <BYAPR10MB2965AF470BA4AE05D4E6CE1DFDFA9@BYAPR10MB2965.namprd10.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: yVxLLM7X4/HwoV+eNlt65eFRqbcByQXN0/Xi1fzvESZGg3kAdhMyHDuBxfxZVxr28NugEB4nWKvjISfmcoUjbz82czxV33br7sC8gdSKGGtY8lt8i0SVY79HVgD2+Zit/fvdTRfPgkl+VIJ1kmStSVdciIfG37TSnsVrd3uVtkla3qljseblsVWPM3JHxXnjuC5CQMtJQ+66gSS7KpK+4Ox9yMXCQDUEkdrLz2WdkpMhvWlVa1aqGPtAmEMhRY0aEK2uphdwhzzR+5Ggq/dMitr+sPVxr9Q3EMtC6xt5yFdQ8+NSjvzetn6/rdTSw8nlgmxvEl9NwvGD4zTLMffUfVCAzJW1xZSyHBqN6KpHBYPAEsKFngj/mwXjseBxFk/Bwy5yofsYrIon1kIYlF8QE42QddMbAQ/v/WJYoGt+pYT7s9UXuDV/OUQn/8d8k38K92tacx7c2NjrMfR4GtwEq26tXSQN93KyeIaM+00k1T+oX2AY93qEn/tpM238hl7isC/8nqCX0OItaSxP6rL9gMFOkle3dwSdhXmjTynecnl/RK/V/uT3UZ/5s0j7e40MAj6vm2pyeudkAsMOoAr1LCiyBStGjDZH5NEm7IymVnmPSwytbJVYdtcVkfAPvgLBrQ8v/dqsh8oT9oqSbfRqdAc1djdEmm+q122xTNUyL5JlgBIwycwh9Sd+45ARAQSrurhJYpTNujFhfN0ZcSra97Dt2ftzmK/s3cPwGRxTiIb/0//CcwFSRgLKO0eyawImUJSQqoap+D2RAUL+bTE/YVfa8ljPDuC2f545yfczk+5JHLKxWRGIphcZbY13TEsjYFVl7C7WylZGxaQ59tFlqBk/8dzSXSfHHAvPSKlEfqo=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR10MB3022.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(33716001)(76116006)(5660300002)(44832011)(91956017)(66476007)(316002)(186003)(66946007)(66556008)(2906002)(4326008)(6916009)(66446008)(8676002)(64756008)(83380400001)(8936002)(54906003)(71200400001)(86362001)(966005)(6486002)(508600001)(38070700005)(38100700002)(9686003)(1076003)(26005)(6512007)(122000001)(6506007)(99710200001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ishVF/IjrwXHYsC4vDOgegejM9yAToepgVGLJnuwPUm0ai8Y5L7Vf9fjrfSN?=
+ =?us-ascii?Q?QBy/bkHLzP0le5hz/zIHgRNivAYWy1Ft21Dw/6hDvTlaAA8OwLXVcWqEcFsF?=
+ =?us-ascii?Q?mpEpb0jI3qLkn1nyyk00xaRe2ykKGHszwo0go8nkqN2/JQm9vEfr3E4bdp7p?=
+ =?us-ascii?Q?mPXYJ2ho6t2qoagnswkEFKlsD6bkiZCIfzlsCWzU9hdb+dJFTliii143CXs4?=
+ =?us-ascii?Q?R5ix3RQqW2KXZOmMc44RDhuqpR/l6a339Nk5/izZ3LNcxCO/bJNpPvb8kZoR?=
+ =?us-ascii?Q?8SAreAybrlL2rh4uNn9BPKkgKfK13h5nTTQAJZdws5m+jQhWnbMVs8gh3T1N?=
+ =?us-ascii?Q?Nm/VB6M3DH6U8ZUnJ3dZuHVgU4pIpoL+wHord2Hb9XR4Eo1HSXia+f2e07l9?=
+ =?us-ascii?Q?Syi9XPxhWsuOk3pU8GUluoOHFSdZH/0kky3a0Y826JdNS6Jkb9f2oG1yOJKE?=
+ =?us-ascii?Q?eWJrd0N7SdKFRBvp80UG96qcWedSRhLDkss+5gltiHNVo3m/QynlEd0c+MdK?=
+ =?us-ascii?Q?vEBjrsUtl8hyplH3dakObwvDZV4GHyBEfK8OSGjO2Ya30vGuq7ivJ9t9PryP?=
+ =?us-ascii?Q?jURF0Yd6bYhhPYbQAJjDsrOWCwI+njNRw24JI54YL3XuwajzVW4xz3W7/Ks0?=
+ =?us-ascii?Q?iezVbgMg6VaOV1j6aEqLJIClNSbSy3fV4BVkwh1XuAFYipKM2jY2de1+rrpw?=
+ =?us-ascii?Q?CS6At6AWIaKqnKNfM/HRPltwaQVjW9uQPbcjOqgVFOqY8+e7vqUGpgyYl1/S?=
+ =?us-ascii?Q?AmUaKr56AsOcIR0eSPyIC3o8mhi6WGNXaUSSkH4j/uxFT63UxylHeIONLVVC?=
+ =?us-ascii?Q?ryLPY4M7RWEssjjJjJ4ujRdYWeF/iD9tn6YLQ85QZam8AZmmWTmBXqbSzn7A?=
+ =?us-ascii?Q?yK49V1gutkNrUqr/op5sxMOZANtNgb4dsOWFLFWpqhkpARxtnP2J2n1qxPIL?=
+ =?us-ascii?Q?yix15KYWcI3nzqMkXX1Qx/pMwOJCcEgs3utAtNNf5xT3+J+tQy+5p8guT/a7?=
+ =?us-ascii?Q?oLSWbzWwl3lcNIIGip94i913K52ZCItbotn8UIErD5IO65Ce1NdkWU7tikIv?=
+ =?us-ascii?Q?tTmNGQJCFyg2NJeP4Aex/7tY0HXan7/AAgiSUHDaricQkcQHBLj/4Mepq+5v?=
+ =?us-ascii?Q?hcBy0JpsWFnLteupuHdabrLhXIVYdpAhlHnVQK08rioN2t9SzDAgIR6JBlun?=
+ =?us-ascii?Q?QSBq6D8EPewjz2YHQwEnZc3k11FCglaBS3/MvtMVS9ae9vAigmYVFx87Xlos?=
+ =?us-ascii?Q?gr0IuXCbWslmFeVu8RecYkpQ/HLIRpWGnG0QaHK1/DyHEKxIsbem0OJTyMlE?=
+ =?us-ascii?Q?3Sxm/LHISl95ZwNAMMRNzLl56mHKDL2WjH/drvNyNqlZVnbMuQWEqBmCi4og?=
+ =?us-ascii?Q?N9kF4coIeHClGJ0ZpFPOnyvKODCwhyndOIW4iGRhYW2eqAERbamRkP7MWSFc?=
+ =?us-ascii?Q?twU+F+/xysAUbvOsGSUVCJPR1cZzMEWuFxz+HPDsZcXij3xZpnQD5N2DKWru?=
+ =?us-ascii?Q?a5TUalzKAhxcXRTpbJfAulRDckbiD9UqoHv4Zx6es1yg4Sy4JijiIrmRJF5W?=
+ =?us-ascii?Q?bHMmWJhaUfczTMGtCr/SL4a9PaWxTqAYOXt8dQzmepzKfW2cUUla6zRNSNnf?=
+ =?us-ascii?Q?bS5euMrQL4MnyV12djL0leJ9TY1LlTLiZC9I1kmES4v+h2G0swdEL6rQ0alb?=
+ =?us-ascii?Q?nEWteoXUBvczk3hrqeuhr6nhHywmvYuwZsfW1b9tMgYfSlhwdamdtKvyxLlM?=
+ =?us-ascii?Q?6ED5UL2KObPauqZjx1ioZc7AfgUdlCY=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <D7E0166E401D6C43831B249BFBEB56DC@namprd10.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR10MB3022.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8e8b5e9c-656e-4947-a3a3-08da2876af90
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Apr 2022 17:52:24.2621
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: tkkmXmmqmzv48aQEGnGvUH0fyWzBn6ew6YYUD5LsKN1+ZArWLCABTrHKyDJeO78GC5GxuQnj4Yiws84x8haJKQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR10MB2965
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.858
+ definitions=2022-04-27_04:2022-04-27,2022-04-27 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 spamscore=0 adultscore=0
+ mlxscore=0 bulkscore=0 suspectscore=0 malwarescore=0 mlxlogscore=991
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2204270111
+X-Proofpoint-GUID: 74Fg3yWUxHeHoznMAquRratOfZiX1YqN
+X-Proofpoint-ORIG-GUID: 74Fg3yWUxHeHoznMAquRratOfZiX1YqN
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Rongwei and Barry,
+* Andrew Morton <akpm@linux-foundation.org> [220427 13:20]:
+> On Wed, 27 Apr 2022 06:15:20 -0700 syzbot <syzbot+7728e4ab5371cebc9c00@sy=
+zkaller.appspotmail.com> wrote:
+>=20
+> > syzbot has found a reproducer for the following issue on:
+>=20
+> Thanks.
+>=20
+> userfaultfd_release() appears to have offended vma_merge().
 
-On Wed, 27 Apr 2022 19:44:23 +1200 Barry Song <21cnbao@gmail.com> wrote:
+Potentially apply_mlockall_flags() and not userfaultfd_release(). There
+is a potential that the vma iterator is stale if a split/merge succeeds,
+although KASAN should pick this up and KASAN is active according to the
+config below. I've sent a patch for the mlockall issue after Qian Cai's
+reported it to linux-mm.
 
-> On Wed, Apr 27, 2022 at 6:56 PM Rongwei Wang
-> <rongwei.wang@linux.alibaba.com> wrote:
-> >
-> >
-> >
-> > On 4/27/22 7:19 AM, Barry Song wrote:
-> > > Hi SeongJae & Andrew,
-> > > (also Cc-ed main damon developers)
-> > > On an Android phone, I tried to use the DAMON vaddr monitor and found
-> > > that vaddr regions don't split well on large Android Apps though
-> > > everything works well on native Apps.
-> > >
-> > > I have tried the below two cases on an Android phone with 12GB memory
-> > > and snapdragon 888 CPU.
-> > > 1. a native program with small memory working set  as below,
-> > > #define size (1024*1024*100)
-> > > main()
-> > > {
-> > >          volatile int *p = malloc(size);
-> > >          memset(p, 0x55, size);
-> > >
-> > >          while(1) {
-> > >                  int i;
-> > >                  for (i = 0; i < size / 4; i++)
-> > >                          (void)*(p + i);
-> > >                  usleep(1000);
-> > >
-> > >                  for (i = 0; i < size / 16; i++)
-> > >                          (void)*(p + i);
-> > >                  usleep(1000);
-> > >
-> > >          }
-> > > }
-> > > For this application, the Damon vaddr monitor works very well.
-> > > I have modified monitor.py in the damo userspace tool a little bit to
-> > > show the raw data getting from the kernel.
-> > > Regions can split decently on this kind of applications, a typical raw
-> > > data is as below,
-> > >
-> > > monitoring_start:             2.224 s
-> > > monitoring_end:               2.329 s
-> > > monitoring_duration:       104.336 ms
-> > > target_id: 0
-> > > nr_regions: 24
-> > > 005fb37b2000-005fb734a000(  59.594 MiB): 0
-> > > 005fb734a000-005fbaf95000(  60.293 MiB): 0
-> > > 005fbaf95000-005fbec0b000(  60.461 MiB): 0
-> > > 005fbec0b000-005fc2910000(  61.020 MiB): 0
-> > > 005fc2910000-005fc6769000(  62.348 MiB): 0
-> > > 005fc6769000-005fca33f000(  59.836 MiB): 0
-> > > 005fca33f000-005fcdc8b000(  57.297 MiB): 0
-> > > 005fcdc8b000-005fd115a000(  52.809 MiB): 0
-> > > 005fd115a000-005fd45bd000(  52.387 MiB): 0
-> > > 007661c59000-007661ee4000(   2.543 MiB): 2
-> > > 007661ee4000-0076623e4000(   5.000 MiB): 3
-> > > 0076623e4000-007662837000(   4.324 MiB): 2
-> > > 007662837000-0076630f1000(   8.727 MiB): 3
-> > > 0076630f1000-007663494000(   3.637 MiB): 2
-> > > 007663494000-007663753000(   2.746 MiB): 1
-> > > 007663753000-007664251000(  10.992 MiB): 3
-> > > 007664251000-0076666fd000(  36.672 MiB): 2
-> > > 0076666fd000-007666e73000(   7.461 MiB): 1
-> > > 007666e73000-007667c89000(  14.086 MiB): 2
-> > > 007667c89000-007667f97000(   3.055 MiB): 0
-> > > 007667f97000-007668112000(   1.480 MiB): 1
-> > > 007668112000-00766820f000(1012.000 KiB): 0
-> > > 007ff27b7000-007ff27d6000( 124.000 KiB): 0
-> > > 007ff27d6000-007ff27d8000(   8.000 KiB): 8
-> > >
-> > > 2. a large Android app like Asphalt 9
-> > > For this case, basically regions can't split very well, but monitor
-> > > works on small vma:
-> > >
-> > > monitoring_start:             2.220 s
-> > > monitoring_end:               2.318 s
-> > > monitoring_duration:        98.576 ms
-> > > target_id: 0
-> > > nr_regions: 15
-> > > 000012c00000-0001c301e000(   6.754 GiB): 0
-> > > 0001c301e000-000371b6c000(   6.730 GiB): 0
-> > > 000371b6c000-000400000000(   2.223 GiB): 0
-> > > 005c6759d000-005c675a2000(  20.000 KiB): 0
-> > > 005c675a2000-005c675a3000(   4.000 KiB): 3
-> > > 005c675a3000-005c675a7000(  16.000 KiB): 0
-> > > 0072f1e14000-0074928d4000(   6.510 GiB): 0
-> > > 0074928d4000-00763c71f000(   6.655 GiB): 0
-> > > 00763c71f000-0077e863e000(   6.687 GiB): 0
-> > > 0077e863e000-00798e214000(   6.590 GiB): 0
-> > > 00798e214000-007b0e48a000(   6.002 GiB): 0
-> > > 007b0e48a000-007c62f00000(   5.323 GiB): 0
-> > > 007c62f00000-007defb19000(   6.199 GiB): 0
-> > > 007defb19000-007f794ef000(   6.150 GiB): 0
-> > > 007f794ef000-007fe8f53000(   1.745 GiB): 0
-> > >
-> > > As you can see, we have some regions which are very very big and they
-> > > are losing the chance to be splitted. But
-> > > Damon can still monitor memory access for those small VMA areas very well like:
-> > > 005c675a2000-005c675a3000(   4.000 KiB): 3
-> > Hi, Barry
-> >
-> > Actually, we also had found the same problem in redis by ourselves
-> > tool[1]. The DAMON can not split the large anon VMA well, and the anon
-> > VMA has 10G~20G memory. I guess the whole region doesn't have sufficient
-> > hot areas to been monitored or found by DAMON, likes one or more address
-> > choose by DAMON not been accessed during sample period.
-> 
-> Hi Rongwei,
-> Thanks  for your comments and thanks for sharing your tools.
+>=20
+> I'm not seeing any changes in that area from Peter, but Liam's
+> mapletree work changed things around a bit.  Gents, could you please
+> take a look?
+>=20
+>=20
+> > HEAD commit:    f02ac5c95dfd Add linux-next specific files for 20220427
+> > git tree:       linux-next
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=3D105a33a2f00=
+000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=3De9256c70f58=
+6da8a
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=3D7728e4ab5371c=
+ebc9c00
+> > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binu=
+tils for Debian) 2.35.2
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=3D15f76f82f=
+00000
+> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=3D12b42c3cf00=
+000
+> >=20
+> > IMPORTANT: if you fix the issue, please add the following tag to the co=
+mmit:
+> > Reported-by: syzbot+7728e4ab5371cebc9c00@syzkaller.appspotmail.com
+> >=20
+> > ------------[ cut here ]------------
+> > WARNING: CPU: 0 PID: 3593 at mm/mmap.c:1072 vma_merge+0x428/0x950 mm/mm=
+ap.c:1072
+>=20
+> I assume this is
+>=20
+> 		VM_WARN_ON(area && end > area->vm_end);
+>=20
+> But lines change around a lot.  It would be great if the script which
+> generates these reports could quote the code around the indicated file
+> and line.  Like:
+>=20
+> 	next =3D find_vma(mm, prev ? prev->vm_end : 0);
+> 	area =3D next;
+> 	if (area && area->vm_end =3D=3D end)		/* cases 6, 7, 8 */
+> 		next =3D find_vma(mm, next->vm_end);
+>=20
+> 	/* verify some invariant that must be enforced by the caller */
+> 	VM_WARN_ON(prev && addr <=3D prev->vm_start);
+> -->	VM_WARN_ON(area && end > area->vm_end);
+> 	VM_WARN_ON(addr >=3D end);
+>=20
+> 	/*
+> 	 * Can it merge with the predecessor?
+> 	 */
+> 	if (prev && prev->vm_end =3D=3D addr &&
 
-I also appreciate for sharing the great tool, Rongwei!
 
-> 
-> I guess the cause might be:
-> in case a region is very big like 10GiB, we have only 1MiB hot pages
-> in this large region.
-> damon will randomly pick one page to sample, but the page has only
-> 1MiB/10GiB, thus
-> less than 1/10000 chance to hit the hot 1MiB. so probably we need
-> 10000 sample periods
-> to hit the hot 1MiB in order to split this large region?
-> 
-> @SeongJae, please correct me if I am wrong.
+That is the correct line according to the git tree and HEAD commit
+listed above.
 
-I think your theory makes sense.  There was a similar concern, so we made DAMON
-to split regions into 3 sub-regions when we don't see advance[1].  My current
-rough idea for improving DAMON accuracy is making it more aggressive while
-keeping the monitoring overhead low.
+I cannot get this issue to trigger with the given tree and git repo with
+my config.  I will try again with the kernel config above.
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/sj/linux.git/tree/mm/damon/core.c?h=damon/next-2022-04-21-08-31-on-v5.18-rc3-mmots-2022-04-20-17-37#n1053
-
-> 
-> >
-> > I'm not sure whether sets init_regions can deal with the above problem,
-> > or dynamic choose one or limited number VMA to monitor.
-> >
-> 
-> I won't set a limited number of VMA as this will make the damon too hard to use
-> as nobody wants to make such complex operations, especially an Android
-> app might have more than 8000 VMAs.
-> 
-> I agree init_regions might be the right place to enhance the situation.
-
-'init_regions' has developed for the purpose, where user space knows some good
-information for starting point of the regions adjustment, and thus want to hint
-DAMON.  Nevertheless, it might not work as expected, because DAMON
-automatically updates the target regions to cover all VMAs as much as it can.
-I have posted a patchset for the use case yesterday[1].
-
-[1] https://lore.kernel.org/linux-mm/20220426231750.48822-1-sj@kernel.org/
-
-> 
-> > I'm not sure, just share my idea.
-> >
-> > [1] https://github.com/aliyun/data-profile-tools.git
-> 
-> I suppose this tool is based on damon? How do you finally resolve the problem
-> that large anon VMAs can't be splitted?
-> Anyway, I will give your tool a try.
-> 
-> > >
-> > > Typical characteristics of a large Android app is that it has
-> > > thousands of vma and very large virtual address spaces:
-> > > ~/damo # pmap 2550 | wc -l
-> > > 8522
-> > >
-> > > ~/damo # pmap 2550
-> > > ...
-> > > 0000007992bbe000      4K r----   [ anon ]
-> > > 0000007992bbf000     24K rw---   [ anon ]
-> > > 0000007fe8753000      4K -----   [ anon ]
-> > > 0000007fe8754000   8188K rw---   [ stack ]
-> > >   total         36742112K
-> > >
-> > > Because the whole vma list is too long, I have put the list here for
-> > > you to download:
-> > > wget http://www.linuxep.com/patches/android-app-vmas
-> > >
-> > > I can reproduce this problem on other Apps like youtube as well.
-> > > I suppose we need to boost the algorithm of splitting regions for this
-> > > kind of application.
-> > > Any thoughts?
-> > >
-> 
-> Thanks
-> Barry
+Thanks,
+Liam
