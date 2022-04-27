@@ -2,156 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC579C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:47:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BDE6C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:47:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230117AbiD0KuU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 06:50:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35058 "EHLO
+        id S230217AbiD0KuZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 06:50:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230143AbiD0KuH (ORCPT
+        with ESMTP id S230151AbiD0KuI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 06:50:07 -0400
-Received: from mail-qv1-f43.google.com (mail-qv1-f43.google.com [209.85.219.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B40C43AE0C;
-        Wed, 27 Apr 2022 03:20:55 -0700 (PDT)
-Received: by mail-qv1-f43.google.com with SMTP id jt15so707554qvb.13;
-        Wed, 27 Apr 2022 03:20:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=UDR8xO+wwKORB+se6hIjkutRminbXNIR1XrVamWg1PQ=;
-        b=X8H0v4zMcK1PoriBdTRnQM6YUuVfbdF2tw5pJ9qDOS+Vpye2SNjVRl9vnLn+YDjY85
-         8OTn3pCcQ5lBnEhgYR4ZByYeHCJYNrZbe7OCKix61Nej9WgK3S/rrV0b9yQQ8fbQn6Rp
-         J7qmHOLIX/rVmu65rG8pFXm4qXaDTWkbz2saAYZJUlnPp+nFA/u58ZIpa2GQSeYJyDbE
-         ffyXfYNGILkv7eWlEITkyToCnAV5RDIMrzPesSu+c6aMO9TgfRW2Lx8TBi/95M3aHPJ3
-         vBRxkdHejs01RZoBS1FPtFbiHQsjfRbkcSMbHfxLxdfn5CUJa+1Hf2J/+HhOSHLN+vw2
-         CHWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=UDR8xO+wwKORB+se6hIjkutRminbXNIR1XrVamWg1PQ=;
-        b=OJmLgJ4oIRFejR2TR0ldb6khjQ8RZWrxRgkGlOyA/+ak8gfh+MXfYDxG4TM+C3jIyV
-         STM/qogyDJbsibv8c9Dmo1X30jZGLAecJWlg+Zef8Al39+C9B+w8NfVyv4RvGdoXKRVd
-         +U8IqBCtDL7aTxtgoXixZ+zQ2CKGB3Urgu6kIGVM6WbZk2rD5ekXrMyy3fDKvU+GdsNX
-         EM5Ny1b2jkC+hRgIk1droHXrewXcakmHCLxCR0TwdSheLeuG4TkXPgdm0eEYbV3ywr39
-         Cs9vQe4uBy5jcIL1JBtTzL2OAKSm1UBNXPATqk4BmNNvovgRcZkj8D6lZf0yIp3PuFyZ
-         sKIg==
-X-Gm-Message-State: AOAM531RiT/9LKpa/VIakTBG387OrV2fjOWzAxDpHILjnjEArdTf03dJ
-        s8EskfSmRArpuQieIPitk3kqqEY1l+gmmw==
-X-Google-Smtp-Source: ABdhPJxmcoTR6+hgM6pmebkEg3XnH8nl6eCvzxQC7kCt917TO0nJom8Io9I7ZGL03pX356ehYSoyfA==
-X-Received: by 2002:a05:6a00:8c8:b0:4fe:ecb:9b8f with SMTP id s8-20020a056a0008c800b004fe0ecb9b8fmr29049183pfu.55.1651054154248;
-        Wed, 27 Apr 2022 03:09:14 -0700 (PDT)
-Received: from tj10039pcu.spreadtrum.com ([117.18.48.102])
-        by smtp.gmail.com with ESMTPSA id h7-20020aa786c7000000b00505bf336385sm18260649pfo.124.2022.04.27.03.09.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 03:09:13 -0700 (PDT)
-From:   Cixi Geng <gengcixi@gmail.com>
-To:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, orsonzhai@gmail.com,
-        baolin.wang7@gmail.com, zhang.lyra@gmail.com, lee.jones@linaro.org
-Cc:     linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH V4 2/4] dt-bindings: mfd: sprd: Add bindings for ums512 global registers
-Date:   Wed, 27 Apr 2022 18:08:46 +0800
-Message-Id: <20220427100848.3525710-3-gengcixi@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220427100848.3525710-1-gengcixi@gmail.com>
-References: <20220427100848.3525710-1-gengcixi@gmail.com>
+        Wed, 27 Apr 2022 06:50:08 -0400
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [IPv6:2001:4b98:dc4:8::240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEB2436251E
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 03:20:54 -0700 (PDT)
+Received: from relay12.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::232])
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id DBAC4C8E9A
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:44:01 +0000 (UTC)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 88F3C200006;
+        Wed, 27 Apr 2022 09:42:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1651052546;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=2Os8UmEkM4YAJJt2iMunVLmf9fDm4xLcC8Rb9y57nPU=;
+        b=ZHQ5jcKugqfvVn8sQ9TnnPwi8XcY0PlcsLpmyZAgzkTOMz2XiJ+2ZGWconG18qOLJpLv/G
+        8KhzIMo6nqHuzu6v9kvZuXAWRv8QQdYJieYZ0MNekrMLfp5j+IeTYwEqKAsjLVxMwgOttk
+        097KYO5ODV+XOYh54EnZCmDDnYwquf4DR7Kiy/iNqOetPddvZ9QQK2xigVnTIV68RDSkmD
+        pKhF2TanEAuIY/qE/6cewZH/dAII/mMGXB3bDAnZHesbEUVaQW2qP7ibCNo1EqWnfXLftj
+        FgPF8bpubKeSjGuwEr7bqjK/e3N+t4/jtPhsnCbCNwZodZ+pWyNJkHuVMDQ6Zw==
+Date:   Wed, 27 Apr 2022 11:42:22 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-mtd@lists.infradead.org, Richard Weinberger <richard@nod.at>,
+        Tudor Ambarus <Tudor.Ambarus@microchip.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Frieder Schrempf <frieder.schrempf@kontron.de>,
+        Michael Walle <michael@walle.cc>,
+        Pratyush Yadav <p.yadav@ti.com>, linux-kernel@vger.kernel.org
+Subject: [GIT PULL] mtd: Fixes for 5.18-rc5
+Message-ID: <20220427114222.75209cb3@xps13>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chunyan Zhang <chunyan.zhang@unisoc.com>
+Hello Linus,
 
-Add bindings for Unisoc system global register which provide register map
-for clocks.
+This is a fixes MTD PR for the next -rc.
 
-Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
-Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
----
- .../bindings/mfd/sprd,ums512-glbreg.yaml      | 68 +++++++++++++++++++
- 1 file changed, 68 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/mfd/sprd,ums512-glbreg.yaml
+Thanks,
+Miqu=C3=A8l
 
-diff --git a/Documentation/devicetree/bindings/mfd/sprd,ums512-glbreg.yaml b/Documentation/devicetree/bindings/mfd/sprd,ums512-glbreg.yaml
-new file mode 100644
-index 000000000000..3522f3d2d8de
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mfd/sprd,ums512-glbreg.yaml
-@@ -0,0 +1,68 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/mfd/sprd,ums512-glbreg.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Unisoc System Global Register Device Tree Bindings
-+
-+maintainers:
-+  - Orson Zhai <orsonzhai@gmail.com>
-+  - Baolin Wang <baolin.wang7@gmail.com>
-+  - Chunyan Zhang <zhang.lyra@gmail.com>
-+
-+description:
-+  Unisoc system global registers provide register map
-+  for clocks and some multimedia modules of the SoC.
-+
-+properties:
-+  "#address-cells": true
-+  "#size-cells": true
-+
-+  compatible:
-+    items:
-+      - const: sprd,ums512-glbregs
-+      - const: syscon
-+      - const: simple-mfd
-+
-+  ranges:
-+    maxItems: 1
-+
-+  reg:
-+    maxItems: 1
-+
-+patternProperties:
-+  "^.*@[0-9a-f]+$":
-+    # Child node
-+    type: object
-+    $ref: "../clock/sprd,ums512-clk.yaml"
-+    description:
-+      Clock controller for the SoC clocks.
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    ap_apb_regs: syscon@71000000 {
-+      compatible = "sprd,ums512-glbregs", "syscon", "simple-mfd";
-+      reg = <0x71000000 0x3000>;
-+      #address-cells = <1>;
-+      #size-cells = <1>;
-+      ranges = <0 0x71000000 0x3000>;
-+
-+      clock-controller@0 {
-+        compatible = "sprd,ums512-apahb-gate";
-+        reg = <0x0 0x2000>;
-+        #clock-cells = <1>;
-+      };
-+    };
-+
-+  - |
-+    ap_intc5_regs: syscon@32360000 {
-+      compatible = "sprd,ums512-glbregs", "syscon", "simple-mfd";
-+      reg = <0x32360000 0x1000>;
-+    };
--- 
-2.25.1
 
+The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
+
+  Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git tags/mtd/fixe=
+s-for-5.18-rc5
+
+for you to fetch changes up to ba7542eb2dd5dfc75c457198b88986642e602065:
+
+  mtd: rawnand: qcom: fix memory corruption that causes panic (2022-04-21 0=
+9:29:07 +0200)
+
+----------------------------------------------------------------
+MTD core fix:
+* Fix a possible data corruption of the 'part' field in mtd_info
+
+Rawnand fixes:
+* Fix the check on the return value of wait_for_completion_timeout
+* Fix wrong ECC parameters for mt7622
+* Fix a possible memory corruption that might panic in the Qcom driver
+
+----------------------------------------------------------------
+Chuanhong Guo (1):
+      mtd: rawnand: fix ecc parameters for mt7622
+
+Md Sadre Alam (1):
+      mtd: rawnand: qcom: fix memory corruption that causes panic
+
+Miaoqian Lin (1):
+      mtd: rawnand: Fix return value check of wait_for_completion_timeout
+
+Oleksandr Ocheretnyi (1):
+      mtd: fix 'part' field data corruption in mtd_info
+
+ drivers/mtd/nand/raw/mtk_ecc.c    | 12 ++++++++----
+ drivers/mtd/nand/raw/qcom_nandc.c | 24 +++++++++++++-----------
+ drivers/mtd/nand/raw/sh_flctl.c   | 14 ++++++++------
+ include/linux/mtd/mtd.h           |  6 ++----
+ 4 files changed, 31 insertions(+), 25 deletions(-)
