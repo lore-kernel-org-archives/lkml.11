@@ -2,188 +2,279 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52064C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 07:34:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28C47C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 07:34:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358893AbiD0Hhm (ORCPT
+        id S1358898AbiD0HiA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 03:37:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42336 "EHLO
+        Wed, 27 Apr 2022 03:38:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358880AbiD0Hhk (ORCPT
+        with ESMTP id S1358867AbiD0Hh6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 03:37:40 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D69F48D6B7
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 00:34:29 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id w17so1790052ybh.9
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 00:34:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MeaX4XdIMOSF04IoR3Cab+z51sfQuXXpK7U3HQj8e9Y=;
-        b=hrx36cVw/CY8EF92h5eVbLNh7vWB+J2wMLxiihlJLMVIrB09HKNrVpmudoLr6cBTkF
-         dTD6fYbQbe//a0D1xDVLTbodu6ak07ePMkofE2pde60ZH/ukdZz5XN8c6kU2mc3qEZo5
-         IGs0I08RMsWPfVww55ImcBBESzBwMpqhQDuPMQcURMIlO243HR8YWJ4VVm95ZBkByJNn
-         5Jw/jgkylrTeEs743xCSQYs9OOVwUqaThcN3etmD+rUK/H6GAaplb9PN9xKPUTvs+8ws
-         Z1aFBFXccngNPA6LZWxQe3E77+EM2vY7X3Ec8JdBjBlCh+VatF138DxaOSrj/cUGcUa+
-         qPeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MeaX4XdIMOSF04IoR3Cab+z51sfQuXXpK7U3HQj8e9Y=;
-        b=yjU17KBVcHVas6SJg+vptMuD2nn74h2iGWsUkMDDREWseyX8YOdcF08Xn7nK97Y2mb
-         LwbaRzvKN6H9S6CDbLN15PJB923EtrDnNSYUkg4T/tK9luc0E7RwwEERzOHwiriAmBoe
-         ZBVrKE7L6sTk02cN9w74MYEV7xYAhveJEbvgPStmk2PaDrGDhPysAghp8YbCcCK9wsdX
-         aPIImC7JK9etrel+dkZQrimK5VU2OCzjq4zbixwU/coklJPQ3YpJ5AvmZVYg5WL2NQLu
-         WyDIAiLsFzhof07wHktjtv/beJvJ+/1If2R/XGHxH8Of30YXZPVCzzikEVJ3orugTgUA
-         MKZg==
-X-Gm-Message-State: AOAM531Sn+jTg5Vt57mlfU37c8sNd0y1b97yDZm8F/t6Kw3w/5B4bUwh
-        IqSD7iXpDq4c+NsKw99AxClks7Ai8vrsaRbqWZr8/A==
-X-Google-Smtp-Source: ABdhPJw9A1Am1YqwfUuHH25Kgd2alp4pSOBVU71IoXBxNEVLye8foPf3rKxSyf4BvnRSRdqbNgOHt/92tIlzULZ1jNY=
-X-Received: by 2002:a25:cc0b:0:b0:648:4590:6cb6 with SMTP id
- l11-20020a25cc0b000000b0064845906cb6mr15972505ybf.87.1651044868807; Wed, 27
- Apr 2022 00:34:28 -0700 (PDT)
+        Wed, 27 Apr 2022 03:37:58 -0400
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E46BA8D6BC
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 00:34:47 -0700 (PDT)
+Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 12AD3E0004;
+        Wed, 27 Apr 2022 07:34:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1651044886;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=glbYfZqUavVGHNnqJks+ijb5S8BE7L21xINkDb3m644=;
+        b=aARddhOA4gpGItvv8rgUmLqeIkG2mFWwOJyOrJdkHOjJKb9c3Kj8vbvDelNZ9LZktcz3Fb
+        zb6K2r/Ur4pfkbGijSwBx0MjIpxag+jyyPR41Z5qw2kdzwbkSuSLiDacx+GjFseF1WdGkA
+        QqWPTovEeeV8f9yVkvdrPzg/aJjZzxwK1hnAV5deo1mfS/wGtK/0zQNAZG8FtUtjb3Cy31
+        6rd3XWOhd5DEMGArYFnfUddX1U6Rh37BoFC49Rf+owVanBPXpFVBhkkccXSbMZgiR5Or4z
+        VVu4lTz1ywAiTsJFJQn1RKEDTFvkfviLgFFJV5hsBMTxtlhHzpgG4tApmblWbw==
+Date:   Wed, 27 Apr 2022 09:34:41 +0200
+From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Maxime Ripard <maxime@cerno.tech>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Rob Clark <robdclark@gmail.com>, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robert Foss <robert.foss@linaro.org>
+Subject: Re: [PATCH 2/2] Revert "drm: of: Lookup if child node has panel or
+ bridge"
+Message-ID: <YmjyEZs0ND2D9Yki@aptenodytes>
+References: <YmEdAVwZuA7Wo1Ch@aptenodytes>
+ <YmelPCcWCCjALtRU@aptenodytes>
+ <YmfYi5G7hMKLAH3T@pendragon.ideasonboard.com>
+ <YmfoiD0r8MD/kr1N@aptenodytes>
+ <20220426125401.yyrhg6aeafdjw4ad@houat>
+ <20220426125544.mroteu3hvyvlyb6g@houat>
+ <Ymft0SM5GNHXjkVb@aptenodytes>
+ <20220426131944.b26rqqmk7gpcplbg@houat>
+ <Ymf4nmQAkEciwyt/@aptenodytes>
+ <YmhfsGAJjSmSPs/l@ripper>
 MIME-Version: 1.0
-References: <20220427071100.3844081-1-xu.xin16@zte.com.cn>
-In-Reply-To: <20220427071100.3844081-1-xu.xin16@zte.com.cn>
-From:   Marco Elver <elver@google.com>
-Date:   Wed, 27 Apr 2022 09:33:52 +0200
-Message-ID: <CANpmjNM8hKG+HH+pBR4cDLcU-sUWFO6t4CF89bt5uess0Zm3dg@mail.gmail.com>
-Subject: Re: [PATCH] mm/kfence: fix a potential NULL pointer dereference
-To:     cgel.zte@gmail.com
-Cc:     glider@google.com, akpm@linux-foundation.org, dvyukov@google.com,
-        kasan-dev@googlegroups.com, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, xu xin <xu.xin16@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="ijcDL19LA/Jv/8hr"
+Content-Disposition: inline
+In-Reply-To: <YmhfsGAJjSmSPs/l@ripper>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 27 Apr 2022 at 09:11, <cgel.zte@gmail.com> wrote:
->
-> From: xu xin <xu.xin16@zte.com.cn>
->
-> In __kfence_free(), the returned 'meta' from addr_to_metadata()
-> might be NULL just as the implementation of addr_to_metadata()
-> shows.
->
-> Let's add a check of the pointer 'meta' to avoid NULL pointer
-> dereference. The patch brings three changes:
->
-> 1. Add checks in both kfence_free() and __kfence_free();
-> 2. kfence_free is not inline function any longer and new inline
->    function '__try_free_kfence_meta' is introduced.
 
-This is very bad for performance (see below).
+--ijcDL19LA/Jv/8hr
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> 3. The check of is_kfence_address() is not required for
-> __kfence_free() now because __kfence_free has done the check in
-> addr_to_metadata();
->
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
+Hi Bjorn,
 
-Is this a static analysis robot? Please show a real stack trace with
-an actual NULL-deref.
+On Tue 26 Apr 22, 14:10, Bjorn Andersson wrote:
+> On Tue 26 Apr 06:50 PDT 2022, Paul Kocialkowski wrote:
+>=20
+> > On Tue 26 Apr 22, 15:19, Maxime Ripard wrote:
+> > > On Tue, Apr 26, 2022 at 03:04:17PM +0200, Paul Kocialkowski wrote:
+> > > > On Tue 26 Apr 22, 14:55, Maxime Ripard wrote:
+> > > > > On Tue, Apr 26, 2022 at 02:54:01PM +0200, Maxime Ripard wrote:
+> > > > > > On Tue, Apr 26, 2022 at 02:41:44PM +0200, Paul Kocialkowski wro=
+te:
+> > > > > > > On Tue 26 Apr 22, 14:33, Laurent Pinchart wrote:
+> > > > > > > > On Tue, Apr 26, 2022 at 09:54:36AM +0200, Paul Kocialkowski=
+ wrote:
+> > > > > > > > > On Thu 21 Apr 22, 10:59, Paul Kocialkowski wrote:
+> > > > > > > > > > On Thu 21 Apr 22, 10:23, Maxime Ripard wrote:
+> > > > > > > > > > > On Thu, Apr 21, 2022 at 01:15:54PM +0530, Jagan Teki =
+wrote:
+> > > > > > > > > > > > + Linus
+> > > > > > > > > > > > + Marek
+> > > > > > > > > > > > + Laurent
+> > > > > > > > > > > > + Robert
+> > > > > > > > > > > >=20
+> > > > > > > > > > > > On Thu, Apr 21, 2022 at 4:40 AM Bjorn Andersson wro=
+te:
+> > > > > > > > > > > > >
+> > > > > > > > > > > > > Commit '80253168dbfd ("drm: of: Lookup if child n=
+ode has panel or
+> > > > > > > > > > > > > bridge")' attempted to simplify the case of expre=
+ssing a simple panel
+> > > > > > > > > > > > > under a DSI controller, by assuming that the firs=
+t non-graph child node
+> > > > > > > > > > > > > was a panel or bridge.
+> > > > > > > > > > > > >
+> > > > > > > > > > > > > Unfortunately for non-trivial cases the first chi=
+ld node might not be a
+> > > > > > > > > > > > > panel or bridge.  Examples of this can be a aux-b=
+us in the case of
+> > > > > > > > > > > > > DisplayPort, or an opp-table represented before t=
+he panel node.
+> > > > > > > > > > > > >
+> > > > > > > > > > > > > In these cases the reverted commit prevents the c=
+aller from ever finding
+> > > > > > > > > > > > > a reference to the panel.
+> > > > > > > > > > > > >
+> > > > > > > > > > > > > This reverts commit '80253168dbfd ("drm: of: Look=
+up if child node has
+> > > > > > > > > > > > > panel or bridge")', in favor of using an explicit=
+ graph reference to the
+> > > > > > > > > > > > > panel in the trivial case as well.
+> > > > > > > > > > > >=20
+> > > > > > > > > > > > This eventually breaks many child-based devm_drm_of=
+_get_bridge
+> > > > > > > > > > > > switched drivers.  Do you have any suggestions on h=
+ow to proceed to
+> > > > > > > > > > > > succeed in those use cases as well?
+> > > > > > > > > > >=20
+> > > > > > > > > > > I guess we could create a new helper for those, like
+> > > > > > > > > > > devm_drm_of_get_bridge_with_panel, or something.
+> > > > > > > > > >=20
+> > > > > > > > > > Oh wow I feel stupid for not thinking about that.
+> > > > > > > > > >=20
+> > > > > > > > > > Yeah I agree that it seems like the best option.
+> > > > > > > > >=20
+> > > > > > > > > Should I prepare a patch with such a new helper?
+> > > > > > > > >=20
+> > > > > > > > > The idea would be to keep drm_of_find_panel_or_bridge onl=
+y for the of graph
+> > > > > > > > > case and add one for the child node case, maybe:
+> > > > > > > > > drm_of_find_child_panel_or_bridge.
+> > > > > > > > >=20
+> > > > > > > > > I really don't have a clear idea of which driver would ne=
+ed to be switched
+> > > > > > > > > over though. Could someone (Jagan?) let me know where it =
+would be needed?
+> > > > > > > > >=20
+> > > > > > > > > Are there cases where we could both expect of graph and c=
+hild node?
+> > > > > > > > > (i.e. does the new helper also need to try via of graph?)
+> > > > > > > >=20
+> > > > > > > > I still think we should use OF graph uncondtionally, even i=
+n the DSI
+> > > > > > > > case. We need to ensure backward-compatibility, but I'd lik=
+e new
+> > > > > > > > bindings (and thus new drivers) to always use OF graph.
+> > > > > > >=20
+> > > > > > > I just went over the thread on "drm: of: Improve error handli=
+ng in bridge/panel
+> > > > > > > detection" again and I'm no longer sure there's actually stil=
+l an issue that
+> > > > > > > stands, with the fix that allows returning -ENODEV when possi=
+ble.
+> > > > > > >=20
+> > > > > > > The remaining issue that was brought up was with a connector =
+node, but it should
+> > > > > > > be up to the driver to detect that and avoid calling drm_of_f=
+ind_panel_or_bridge
+> > > > > > > in such situations.
+> > > > > > >=20
+> > > > > > > So with that in mind it feels like the child node approach ca=
+n be viable
+> > > > > > > (and integrated in the same helper).
+> > > > > > >=20
+> > > > > > > We might still want to favor an explicit OF graph approach, b=
+ut note that
+> > > > > > > dsi-controller.yaml also specifies extra properties that are =
+specific to
+> > > > > > > MIPI DSI and I'm not sure there are equivalent definitions fo=
+r the OF graph
+> > > > > > > approach.
+> > > > > > >=20
+> > > > > > > What do you think?
+> > > > > >=20
+> > > > > > I don't think Laurent's point was to move the child node away f=
+rom its
+> > > > > > DSI controller, that part doesn't make much sense. The panel or=
+ bridge
+> > > > > > is still accessed through the DSI bus, so it very much belongs =
+there.
+> > > > > >=20
+> > > > > > What he meant I think was that we mandate the OF graph for all =
+panels,
+> > > > > > so for panels/bridges controlled through DCS, you would still l=
+ist the
+> > > > > > output through the graph.
+> > > > >=20
+> > > > > Also, we're already in a bit of a mess right now. I don't think r=
+ushing
+> > > > > that kind of patches in a (late) rc is making much sense, but as =
+I said,
+> > > > > if you want to start working on this, then I'll take a revert for=
+ the
+> > > > > next rc, and then we can work calmly on this.
+> > > >=20
+> > > > As I understand it we either have some broken stuff because of the =
+revert of:
+> > > > - drm: of: Lookup if child node has panel or bridge
+> > > > - drm: of: Properly try all possible cases for bridge/panel detecti=
+on
+> > > >=20
+> > > > because the child node is already used in places, or we can have br=
+oken stuff
+> > > > because with the patches because with these two patches -ENODEV is =
+no longer
+> > > > returned.
+> > > >=20
+> > > > Now with the extra patch that I sent:
+> > > > - drm: of: Improve error handling in bridge/panel detection
+> > > >=20
+> > > > we get -ENODEV back, except for the connector case but this one sho=
+uld be
+> > > > handled in drivers directly and drm_of_find_panel_or_bridge should =
+not be
+> > > > called in that situation.
+> > > >=20
+> > > > So all in all it seems that all the pieces are there, unless I'm mi=
+ssing
+> > > > something.
+> > > >=20
+> > > > What do you think?
+> > >=20
+> > > If Bjorn and Thierry can confirm that it indeeds work in their case,
+> > > I'll be happy to apply those patches as well.
+> >=20
+> > I still think we'd need a fix for Bjorn's connector case though.
+> > Not sure I would be confident providing that one without the hardware
+> > to test with.
+> >=20
+> > Bjorn, what do you think?
+> >=20
+>=20
+> I'm okay with the idea that it's up the driver to check that the output
+> port references an usb-c-connector - either before the call or upon
+> drm_of_find_panel_or_bridge() returning an error.
 
-Nack - please see:
-https://lore.kernel.org/all/CANpmjNO5-o1B9r2eYS_482RBVJSyPoHSnV2t+M8fJdFzBf6d2A@mail.gmail.com/
+Actually I'm starting to think might be wrong on this one: there's a
+display-connector bridge driver that should register a bridge, so
+drm_of_find_panel_or_bridge should work. Did you have that driver enabled?
 
-> Signed-off-by: xu xin <xu.xin16@zte.com.cn>
-> ---
->  include/linux/kfence.h | 10 ++--------
->  mm/kfence/core.c       | 30 +++++++++++++++++++++++++++---
->  2 files changed, 29 insertions(+), 11 deletions(-)
->
-> diff --git a/include/linux/kfence.h b/include/linux/kfence.h
-> index 726857a4b680..fbf6391ab53c 100644
-> --- a/include/linux/kfence.h
-> +++ b/include/linux/kfence.h
-> @@ -160,7 +160,7 @@ void *kfence_object_start(const void *addr);
->   * __kfence_free() - release a KFENCE heap object to KFENCE pool
->   * @addr: object to be freed
->   *
-> - * Requires: is_kfence_address(addr)
-> + * Requires: is_kfence_address(addr), but now it's unnecessary
+Cheers,
 
-(As an aside, something can't be required and be unnecessary at the same time.)
+Paul
 
-There's a reason it was designed this way - is_kfence_address() is
-much cheaper than a full call.
+--=20
+Paul Kocialkowski, Bootlin
+Embedded Linux and kernel engineering
+https://bootlin.com
 
->   * Release a KFENCE object and mark it as freed.
->   */
-> @@ -179,13 +179,7 @@ void __kfence_free(void *addr);
->   * allocator's free codepath. The allocator must check the return value to
->   * determine if it was a KFENCE object or not.
->   */
-> -static __always_inline __must_check bool kfence_free(void *addr)
-> -{
-> -       if (!is_kfence_address(addr))
-> -               return false;
-> -       __kfence_free(addr);
-> -       return true;
-> -}
-> +bool __must_check kfence_free(void *addr);
+--ijcDL19LA/Jv/8hr
+Content-Type: application/pgp-signature; name="signature.asc"
 
-There's a reason is_kfence_address() is inline here, because this
-function is actually called in relatively hot paths, and a simple
-load+cmp is much cheaper than a call!
+-----BEGIN PGP SIGNATURE-----
 
->  /**
->   * kfence_handle_page_fault() - perform page fault handling for KFENCE pages
-> diff --git a/mm/kfence/core.c b/mm/kfence/core.c
-> index 6e69986c3f0d..1405585369b3 100644
-> --- a/mm/kfence/core.c
-> +++ b/mm/kfence/core.c
-> @@ -1048,10 +1048,10 @@ void *kfence_object_start(const void *addr)
->         return meta ? (void *)meta->addr : NULL;
->  }
->
-> -void __kfence_free(void *addr)
-> -{
-> -       struct kfence_metadata *meta = addr_to_metadata((unsigned long)addr);
->
-> +/* Require: meta is not NULL*/
-> +static __always_inline void __try_free_kfence_meta(struct kfence_metadata *meta)
-> +{
->  #ifdef CONFIG_MEMCG
->         KFENCE_WARN_ON(meta->objcg);
->  #endif
-> @@ -1067,6 +1067,30 @@ void __kfence_free(void *addr)
->                 kfence_guarded_free(addr, meta, false);
->  }
->
-> +void __kfence_free(void *addr)
-> +{
-> +       struct kfence_metadata *meta = addr_to_metadata((unsigned long)addr);
-> +
-> +       if (!meta) {
-> +               kfence_report_error(addr, false, NULL, NULL, KFENCE_ERROR_INVALID);
-> +               return;
-> +       }
-> +
-> +       __try_free_kfence_meta(meta);
-> +}
-> +
-> +bool __must_check kfence_free(void *addr)
-> +{
-> +       struct kfence_metadata *meta = addr_to_metadata((unsigned long)addr);
-> +
-> +       if (!meta)
-> +               return false;
-> +
-> +       __try_free_kfence_meta(meta);
-> +
-> +       return true;
-> +}
-> +
->  bool kfence_handle_page_fault(unsigned long addr, bool is_write, struct pt_regs *regs)
->  {
->         const int page_index = (addr - (unsigned long)__kfence_pool) / PAGE_SIZE;
-> --
-> 2.25.1
->
+iQEzBAEBCAAdFiEEJZpWjZeIetVBefti3cLmz3+fv9EFAmJo8hEACgkQ3cLmz3+f
+v9E86wf/SnM+F9tYjlethb+pRfx719VPchCudFwI84lublqHhwrWka/PI2cali7O
+CIelAwhDiBePaRO9OI41gXg0hzw23JTfcfUXABhAjNDmtKu7VdjQJ05RhDjajisy
+X0m96izR97WzXBR+to0sRKuCQaDBLHuJQ+I7udFqC0nCM84tAhxVpMotA1NypiCX
+AugjOQWuUFEaugxLu0wmnGSz8j/k5rrHx73tb7LcZBbk9c3d/NeXjUkDB9TCe8wh
+OXSgU9ijO10Wmms4OXuQRos4yUKI6H1KgV+BHJiOReSbG0ErFtfgpwu55DzkNS5s
+z1qORXdzgTBERDcUhxSI4insQB1xVA==
+=nuGp
+-----END PGP SIGNATURE-----
+
+--ijcDL19LA/Jv/8hr--
