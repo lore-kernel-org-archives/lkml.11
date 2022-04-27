@@ -2,128 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50419C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:19:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCB9FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:22:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243046AbiD0QXE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:23:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40304 "EHLO
+        id S243073AbiD0QZq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:25:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242985AbiD0QVL (ORCPT
+        with ESMTP id S243381AbiD0QYj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:21:11 -0400
-Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [IPv6:2001:4b98:dc4:8::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BA283122B;
-        Wed, 27 Apr 2022 09:17:46 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 842F2200007;
-        Wed, 27 Apr 2022 16:17:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1651076263;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6bH236ERFtId0dlFB5w7Um+t9YOETlWqFMja0vZdBWM=;
-        b=AhHa/7qYmf+S1v9N7LCIjqXNWFg3Zsj2p8Ht4i3+2f+h3gecumPQjKhkL3rFMr36BKyI2L
-        wN98gSrpn/huAqqnOIKPHnmLNeAI7goURKO/AdFRQd8ctCo/Kczm3czNuZFVgHq1qRB7lg
-        Uws9h5BWmjiwWHVBozum2b6Uep4QEHV0Q26KDuzBr6yAyIcyszlcmUzqlSpKt83+/mKUBd
-        aCDJAi3qmiPk70JSdixfWQAORow32i/3F/Bp3ZT7XpiDH+DSkiNo0E082inMB0D8QJx781
-        adTSstgt8+aTIfEdXTCYwvjeBSDwZFnuhFLP0GBTCoUZPIdKggBdBIC/MOHsdQ==
-Date:   Wed, 27 Apr 2022 18:17:38 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Chuanhong Guo <gch981213@gmail.com>, linux-spi@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Roger Quadros <rogerq@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Cai Huoqing <cai.huoqing@linux.dev>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Colin Ian King <colin.king@intel.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Pratyush Yadav <p.yadav@ti.com>, Yu Kuai <yukuai3@huawei.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:NAND FLASH SUBSYSTEM" <linux-mtd@lists.infradead.org>
-Subject: Re: [PATCH v6 0/5] spi: add support for Mediatek SPI-NAND
- controller
-Message-ID: <20220427181738.2ad3e126@xps13>
-In-Reply-To: <YmlPlhKTrRXZo/Sx@sirena.org.uk>
-References: <20220424032527.673605-1-gch981213@gmail.com>
-        <20220427112857.7ddd7fc8@xps13>
-        <CAJsYDV+DfBEmWr7D1aO8F=3WMurAg6aEhf5gY86BXOUSyJ2nXA@mail.gmail.com>
-        <YmlPlhKTrRXZo/Sx@sirena.org.uk>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Wed, 27 Apr 2022 12:24:39 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47876231692;
+        Wed, 27 Apr 2022 09:18:49 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id v10so1813202pgl.11;
+        Wed, 27 Apr 2022 09:18:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=mqASqeNgn2MnRKKvwUc4ZQ7zeAhzxAmdAAXdF7mi3dg=;
+        b=VPYVt0nOnYVYZR60ZA6lctKmm/WOzCKfgCNGoiZ4E9EYKXM3a8SzhPw7rwq3lmJ9Va
+         p90WEIuEcSNY8OZWEnnOLx0GSm4nVQ93Elr89pi1oYOwDl8bS98H8WxP79KZj9PFHaRH
+         nwIkbRDVgIbMuMxCi9PxMEa2Riru3C1Ohn2Fs3atKkNKXXgF4L2Ml7swXiVL6ttY4fFE
+         53/lNcov94euEqSTnTw9eozsCNmF0YbJJeAiMFn+G+SvlMT77Q/gyoKTBTO6HKwi+VHL
+         S1/FQNRSP/h+e6aUTaX3OSLFlxYLKYpeiS/yRqZbiz65EP5Vv3a+yaqEmUdmWvNs4Qns
+         0ujQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=mqASqeNgn2MnRKKvwUc4ZQ7zeAhzxAmdAAXdF7mi3dg=;
+        b=RLdBvyBrpxX5hui1yrLYi4GDtYo4hRaSVltAXan9BOhy6zWWWR3XxLWLwwEYtABJwB
+         JHIfNxYAYmcHIhM4k/NOAsTeBZMoHiGQrMKTI2dSBhQ8yePDLLS654V/eGT3aqZqmN9B
+         Y/qfruqHUVpJp7BAh3VwOFHNYUantVYCjL0NS4+C61s+U/DOX/3+wkBliq/3mvaUiuHL
+         6o1HyttaiwezFrTivmuZMEtWTeKG0EwKovQvbyUnXidLwrSpgqbkCsB+ndWyVWpPjYkI
+         cK0jad+K6v8D963pXkwYEIF6mMvrIyfoHiIfPdAIDUnEJZfLuc9IYuD5lzx/Am1qHkcO
+         noTQ==
+X-Gm-Message-State: AOAM5311xG4XJs35EpnunW+gar9ODdpg3Gtso6Rtcc2o/r+/CEdmsoo/
+        sTPXxzslgzX8OTQyqoUqLylCHJ4qU9Y=
+X-Google-Smtp-Source: ABdhPJylGofNVmOaPFlpu9B/m3r7wliPYu5BslrXyLzQ5pgRedl3bvbInBeBujOFxwCrealaY9G5/w==
+X-Received: by 2002:a63:834a:0:b0:3ab:5946:17b with SMTP id h71-20020a63834a000000b003ab5946017bmr12162950pge.59.1651076324945;
+        Wed, 27 Apr 2022 09:18:44 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::5:4f81])
+        by smtp.gmail.com with ESMTPSA id o41-20020a17090a0a2c00b001d75aabe050sm3386122pjo.34.2022.04.27.09.18.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 09:18:44 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Wed, 27 Apr 2022 06:18:42 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Cc:     lizefan.x@bytedance.com, hannes@cmpxchg.org, shuah@kernel.org,
+        cgroups@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
+Subject: Re: [PATCH] selftests: cgroup: Fix unsigned expression compared with
+ zero
+Message-ID: <Ymls4pydYPMBtyCm@slm.duckdns.org>
+References: <20220427061756.56893-1-jiapeng.chong@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220427061756.56893-1-jiapeng.chong@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
-
-broonie@kernel.org wrote on Wed, 27 Apr 2022 15:13:42 +0100:
-
-> On Wed, Apr 27, 2022 at 10:04:57PM +0800, Chuanhong Guo wrote:
-> > On Wed, Apr 27, 2022 at 5:29 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:  
+On Wed, Apr 27, 2022 at 02:17:56PM +0800, Jiapeng Chong wrote:
+> Fix the following coccicheck warnings:
 > 
-> > > The patch actually look independent, so if it's fine for you I can take
-> > > the two mtd patches and let you merge the spi/binding changes.  
+> ./tools/testing/selftests/cgroup/cgroup_util.c:566:8-12: WARNING:
+> Unsigned expression compared with zero: size < 0.
 > 
-> > Out of curiosity:
-> > Wouldn't that break the build for spi subsystem? Because...  
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+> ---
+>  tools/testing/selftests/cgroup/cgroup_util.c | 2 +-
+>  tools/testing/selftests/cgroup/cgroup_util.h | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
 > 
-> > > >  rename drivers/mtd/nand/raw/mtk_ecc.h => include/linux/mtd/nand-ecc-mtk.h (100%)  
-> 
-> > The spi driver needs this header file which is moved in the mtd patch.  
-> 
-> Ah, that'll be an issue indeed - if I could get a signed tag with the
-> dependency in it I can go ahead with the SPI bits?
+> diff --git a/tools/testing/selftests/cgroup/cgroup_util.c b/tools/testing/selftests/cgroup/cgroup_util.c
+> index 4c52cc6f2f9c..661e06b94a43 100644
+> --- a/tools/testing/selftests/cgroup/cgroup_util.c
+> +++ b/tools/testing/selftests/cgroup/cgroup_util.c
+> @@ -552,7 +552,7 @@ int proc_mount_contains(const char *option)
+>  	return strstr(buf, option) != NULL;
+>  }
+>  
+> -ssize_t proc_read_text(int pid, bool thread, const char *item, char *buf, size_t size)
+> +ssize_t proc_read_text(int pid, bool thread, const char *item, char *buf, ssize_t size)
 
-I pulled the two patches, here is a tag with these patches for you,
-Mark.
+Converting input size parameter to ssize_t doesn't make sense. I don't see
+where it's doing size < 0 either but that's probably where it should be
+fixed.
 
-The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
-
-  Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git tags/mtd/mtk-spi-nand-for-5.19
-
-for you to fetch changes up to 4c5bf4b51c9857e20c5f5e9d74b86aa1bd1def40:
-
-  mtd: nand: mtk-ecc: also parse nand-ecc-engine if available (2022-04-27 18:12:43 +0200)
-
-----------------------------------------------------------------
-Mediatek ECC changes:
-* Also parse the default nand-ecc-engine property if available
-* Make mtk_ecc.c a separated module
-
-----------------------------------------------------------------
-Chuanhong Guo (2):
-      mtd: nand: make mtk_ecc.c a separated module
-      mtd: nand: mtk-ecc: also parse nand-ecc-engine if available
-
- drivers/mtd/nand/Kconfig                                           | 7 +++++++
- drivers/mtd/nand/Makefile                                          | 1 +
- drivers/mtd/nand/{raw/mtk_ecc.c => ecc-mtk.c}                      | 8 +++++---
- drivers/mtd/nand/raw/Kconfig                                       | 1 +
- drivers/mtd/nand/raw/Makefile                                      | 2 +-
- drivers/mtd/nand/raw/mtk_nand.c                                    | 2 +-
- drivers/mtd/nand/raw/mtk_ecc.h => include/linux/mtd/nand-ecc-mtk.h | 0
- 7 files changed, 16 insertions(+), 5 deletions(-)
- rename drivers/mtd/nand/{raw/mtk_ecc.c => ecc-mtk.c} (98%)
- rename drivers/mtd/nand/raw/mtk_ecc.h => include/linux/mtd/nand-ecc-mtk.h (100%)
+-- 
+tejun
