@@ -2,105 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3F80C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 01:24:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F344C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 01:29:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356686AbiD0B1m (ORCPT
+        id S1356693AbiD0BcO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 21:27:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55356 "EHLO
+        Tue, 26 Apr 2022 21:32:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350789AbiD0B1g (ORCPT
+        with ESMTP id S240661AbiD0BcM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 21:27:36 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 602C06E57D
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 18:24:26 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id n18so311577plg.5
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 18:24:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=s+1DGNfP27csPmcEuUa6GdLkoCCKVhZfePm8utK72a0=;
-        b=gjJnXOsK4rrfZw+Ws5lrwQU5BDWtyWrRaNnMu7VdbR+x18pJ0FKC8xVKXILOkJdEn9
-         d68FeNLIwRy2jvUBtHmxu6bckYkT1xpyuBR7kmY0YT944RTmKgN3eT/WNwpkh0dpHP1j
-         Nzu+Zu9su1znHpY4uDer0N3Nr6TFlJmgCg/SeDJ6x5Ag2sklPVV8TbaLzg2dfyf7Yw1a
-         /zYN2skd8pq2/GfYIe7lZyZj3YbB41YaEHlr1J7onqUj+ly9hugUQR0ALOdDpeyWNs5d
-         TGRQ+CfM11cu6lV9tkvwrwXREJr9JpGboX4Qc9Re73LKIl4OUJRxTzqxX7iqquQFKtcL
-         +TPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=s+1DGNfP27csPmcEuUa6GdLkoCCKVhZfePm8utK72a0=;
-        b=pRXY1ZXpHhdZ+DEfphaMdcSjMEsNGXDUov+M4LskZQ1PFNM46b9U/OW/R4O12t+ERx
-         WXAx6ZvxFIIn/3z8pe5j72Y+59lJLzkYscnJ6WpUPZNL4DU2Ompb/5bOv0CAmctANAod
-         5ziMOidMDhr2A8JzBGzqfFylAsIZVjllROiUfu4RFRzAOQBf/9MtQS+ldDrwOl9vtm7s
-         NKEbyDMBappGsX7oBBG8341MyNB9pfaGjvys6U2XLNTHpsiwMogGWvqQ4ivgnQsXYWhf
-         ff1c9YTsRUFx23IOiexurN95rEEzG04GxXbXUYiVZhsqoeVAvXJAgZF9SC0CNraog9bT
-         GKvw==
-X-Gm-Message-State: AOAM5315MenHNITGdgEzZxPjU+YS4LGevyjZD3I+eeyy/gGmJaosfwIk
-        TF31viEyPnoY3HlnP98Uu1sqOx3UGHfnVFRcjfvSUg==
-X-Google-Smtp-Source: ABdhPJwUK91O5b+cbAzQvikG1pLBA2K0awm/orzrnsYaLD/yw4NUbNk63jNIpvhit8xkLMz9irAaJVgaGpEJd3Skf4Q=
-X-Received: by 2002:a17:903:2444:b0:15d:281d:87 with SMTP id
- l4-20020a170903244400b0015d281d0087mr9336428pls.9.1651022665690; Tue, 26 Apr
- 2022 18:24:25 -0700 (PDT)
+        Tue, 26 Apr 2022 21:32:12 -0400
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CC3785669;
+        Tue, 26 Apr 2022 18:29:01 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1651022939;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SIHaNF4527y5Q6cHf2f9Nqj4nsyw93HOagsxqabub9Y=;
+        b=ICUhEc2eK9UWupUv/x/Cuz1UaSthfDD5cy9YHCcnZk9Em8EEUaJ95qRC6ys6vlJDZTHhpi
+        pTh2qCCuYGjf1omC10b+Cm8VkStGFbFblZ2b4erj/VQLDnXVIyozPCd+qWwFfueqOEzpCr
+        Koc1uqN09+z2OQ8leadVYXzKLavPw/Q=
+From:   Guoqing Jiang <guoqing.jiang@linux.dev>
+Subject: Re: [PATCH v2 01/12] md/raid5: Factor out ahead_of_reshape() function
+To:     Logan Gunthorpe <logang@deltatee.com>,
+        linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
+        Song Liu <song@kernel.org>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Stephen Bates <sbates@raithlin.com>,
+        Martin Oliveira <Martin.Oliveira@eideticom.com>,
+        David Sloan <David.Sloan@eideticom.com>,
+        Christoph Hellwig <hch@lst.de>
+References: <20220420195425.34911-1-logang@deltatee.com>
+ <20220420195425.34911-2-logang@deltatee.com>
+Message-ID: <2a6d5554-4f71-6476-6d14-031da52005f5@linux.dev>
+Date:   Wed, 27 Apr 2022 09:28:33 +0800
 MIME-Version: 1.0
-References: <20220327205803.739336-1-mizhang@google.com> <YkHRYY6x1Ewez/g4@google.com>
- <CAL715WL7ejOBjzXy9vbS_M2LmvXcC-CxmNr+oQtCZW0kciozHA@mail.gmail.com>
- <YkH7KZbamhKpCidK@google.com> <7597fe2c-ce04-0e21-bd6c-4051d7d5101d@redhat.com>
- <Ymg1lzsYAd6v/vGw@google.com> <CAL715WK8-cOJWK+iai=ygdOTzPb-QUvEwa607tVEkmGOu3gyQA@mail.gmail.com>
- <YmiZcZf9YXxMVcfx@google.com>
-In-Reply-To: <YmiZcZf9YXxMVcfx@google.com>
-From:   Mingwei Zhang <mizhang@google.com>
-Date:   Tue, 26 Apr 2022 18:24:14 -0700
-Message-ID: <CAL715W+nMyF_f762Qif8ZsiOT8vgxXJ3Rm8EjgG8A=b7iM-cbg@mail.gmail.com>
-Subject: Re: [PATCH] KVM: x86/mmu: add lockdep check before lookup_address_in_mm()
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm <kvm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Ben Gardon <bgardon@google.com>,
-        David Matlack <dmatlack@google.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220420195425.34911-2-logang@deltatee.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 6:16 PM Sean Christopherson <seanjc@google.com> wrote:
->
-> On Tue, Apr 26, 2022, Mingwei Zhang wrote:
-> > > I completely agree that lookup_address() and friends are unnecessarily fragile,
-> > > but I think that attempting to harden them to fix this KVM bug will open a can
-> > > of worms and end up delaying getting KVM fixed.
-> >
-> > So basically, we need to:
-> >  - choose perf_get_page_size() instead of using any of the
-> > lookup_address*() in mm.
-> >  - add a wrapper layer to adapt: 1) irq disabling/enabling and 2) size
-> > -> level translation.
-> >
-> > Agree?
->
-> Drat, I didn't see that it returns the page size, not the level.  That's a bit
-> unfortunate.  It definitely makes me less averse to fixing lookup_address_in_pgd()
->
-> Hrm.  I guess since we know there's at least one broken user, and in theory
-> fixing lookup_address_in_pgd() should do no harm to users that don't need protection,
-> it makes sense to just fix lookup_address_in_pgd() and see if the x86 maintainers
-> push back.
 
-Yeah, fixing lookup_address_in_pgd() should be cleaner(), since the
-page fault usage case does not need irq save/restore. But the other
-one needs it. So, we can easily fix the function with READ_ONCE and
-lockless staff. But wrapping the function with irq save/restore from
-the KVM side.
 
-ok, I think I can proceed and upload one version for that.
+On 4/21/22 3:54 AM, Logan Gunthorpe wrote:
+> There are a few uses of an ugly ternary operator in raid5_make_request()
+> to check if a sector is a head of a reshape sector.
+>
+> Factor this out into a simple helper called ahead_of_reshape().
+>
+> This appears to fix the first bio_wouldblock_error() check which appears
+> to have comparison operators that didn't match the check below which
+> causes a schedule. Besides this, no functional changes intended.
+>
+> Suggested-by: Christoph Hellwig<hch@lst.de>
+> Signed-off-by: Logan Gunthorpe<logang@deltatee.com>
+> ---
+>   drivers/md/raid5.c | 29 +++++++++++++++++------------
+>   1 file changed, 17 insertions(+), 12 deletions(-)
+>
+> diff --git a/drivers/md/raid5.c b/drivers/md/raid5.c
+> index 7f7d1546b9ba..97b23c18402b 100644
+> --- a/drivers/md/raid5.c
+> +++ b/drivers/md/raid5.c
+> @@ -5787,6 +5787,15 @@ static void make_discard_request(struct mddev *mddev, struct bio *bi)
+>   	bio_endio(bi);
+>   }
+>   
+> +static bool ahead_of_reshape(struct mddev *mddev, sector_t sector,
+> +			     sector_t reshape_sector)
+> +{
+> +	if (mddev->reshape_backwards)
+> +		return sector < reshape_sector;
+> +	else
+> +		return sector >= reshape_sector;
+> +}
 
-Thanks.
--Mingwei
+I think it can be an inline function.
+
+> +
+>   static bool raid5_make_request(struct mddev *mddev, struct bio * bi)
+>   {
+>   	struct r5conf *conf = mddev->private;
+> @@ -5843,9 +5852,8 @@ static bool raid5_make_request(struct mddev *mddev, struct bio * bi)
+>   	/* Bail out if conflicts with reshape and REQ_NOWAIT is set */
+>   	if ((bi->bi_opf & REQ_NOWAIT) &&
+>   	    (conf->reshape_progress != MaxSector) &&
+> -	    (mddev->reshape_backwards
+> -	    ? (logical_sector > conf->reshape_progress && logical_sector <= conf->reshape_safe)
+> -	    : (logical_sector >= conf->reshape_safe && logical_sector < conf->reshape_progress))) {
+> +	    !ahead_of_reshape(mddev, logical_sector, conf->reshape_progress) &&
+> +	    ahead_of_reshape(mddev, logical_sector, conf->reshape_safe)) {
+
+TBH, the previous code is more readable to me though I can live with the 
+change.
+
+Thanks,
+Guoqing
