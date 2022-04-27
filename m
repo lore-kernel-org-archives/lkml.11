@@ -2,88 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04229C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 20:31:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68508C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 20:33:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236700AbiD0Ue4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 16:34:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45310 "EHLO
+        id S237249AbiD0Ug2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 16:36:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237202AbiD0Uer (ORCPT
+        with ESMTP id S237070AbiD0UgU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 16:34:47 -0400
-Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13901B42F4
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 13:31:32 -0700 (PDT)
-Received: by mail-oi1-x233.google.com with SMTP id a10so3238052oif.9
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 13:31:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=BTjDu2WbVSkM+THogaOPND5vYJC+rnL9QDTnicnezHw=;
-        b=iedhSo398MjiEuM4wYL0tNDNEjO1emHPQEG0jx4oFdbHMSN0Tbr73uPmbWBHNoClx2
-         gf/Xnyj9fe+RYgCwlA8jRXCNu3ZdfMq5WKktloMpp8SeucsFMyn/KzuTGz76BGy5vUAX
-         HkUD96ZEQ3hhmhG56vDqh8Kj45d2jczHNXwQc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=BTjDu2WbVSkM+THogaOPND5vYJC+rnL9QDTnicnezHw=;
-        b=hZwCw+7en2DGnjAlLXkdJq6LGMZomKbdiUfrkPJiTcGkocmXs5wT200qLggByXpIig
-         EpfMp4IkB912bvyGwy9K0NglTmTeDHbp0eR36wvGdfdL+CQa5ND/Wz8oKFh90Y0jBf00
-         thQLxVFNkfbWg7Ihvi6tgm9atngr8oHI8HMkdlqk/360Z2+s9T6jH2HziAstQqlaXtGY
-         8y8y9gSCPzRqjK0f6G/aMzDxrn/8/yGGmd4wW14O8Km8CdlL5LTcrWnU8hD2XLjk8/RF
-         oz9ZPLJd2hrIUgIR3lRZcppw0OxAbhsP4GdTOhkkVJ0TY5jOJppKj24H0ox3YaFzkE1i
-         td0w==
-X-Gm-Message-State: AOAM531Fvfm3JAglFbVSmIV/rOcVFOVK6/CPWPY4wml/Dy8QJWOGBcPG
-        5JEOn/ZF08Z4YW3YeXPbJL3d2EwZRuFJ1E6W4aZ//w==
-X-Google-Smtp-Source: ABdhPJxs40QvWqeyF3wGk8ZFJb/2UJkHTTGaB8uPg3ULNPuOuUNEUYmGXTbvA8Z4QNZzDDPKDXVVt3/sEqPIqJjowlU=
-X-Received: by 2002:a05:6808:1296:b0:325:8fb:68f3 with SMTP id
- a22-20020a056808129600b0032508fb68f3mr10065713oiw.193.1651091491393; Wed, 27
- Apr 2022 13:31:31 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Wed, 27 Apr 2022 13:31:30 -0700
+        Wed, 27 Apr 2022 16:36:20 -0400
+Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E5FBB6D11;
+        Wed, 27 Apr 2022 13:32:50 -0700 (PDT)
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id EB5F61C0B8F; Wed, 27 Apr 2022 22:32:48 +0200 (CEST)
+Date:   Wed, 27 Apr 2022 22:32:48 +0200
+From:   Pavel Machek <pavel@denx.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Zhang Qilong <zhangqilong3@huawei.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: Re: [PATCH 5.10 14/86] dmaengine: mediatek:Fix PM usage reference
+ leak of mtk_uart_apdma_alloc_chan_resources
+Message-ID: <20220427203248.GA2175@duo.ucw.cz>
+References: <20220426081741.202366502@linuxfoundation.org>
+ <20220426081741.617352615@linuxfoundation.org>
+ <20220427202836.GA1337@duo.ucw.cz>
 MIME-Version: 1.0
-In-Reply-To: <CAE-0n53sfUMiCzEgRwVRuxwnf_BLJi+cL-PoZ_ha_3EfEW1X_A@mail.gmail.com>
-References: <20220426225748.324759-1-swboyd@chromium.org> <CAD=FV=WMf0Jc9oD7CGoLthguzt2aV31sZmFoenbjn72MfwFYEA@mail.gmail.com>
- <CAD=FV=Wey2P_=3Lp6M8GEaoyCn1XcYFhfJwfx43a5f_8H0obwg@mail.gmail.com> <CAE-0n53sfUMiCzEgRwVRuxwnf_BLJi+cL-PoZ_ha_3EfEW1X_A@mail.gmail.com>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Wed, 27 Apr 2022 13:31:30 -0700
-Message-ID: <CAE-0n52vH91zgK0iHiyG5EZtS1KbddUjHgOj2Du43vvnWNJDzg@mail.gmail.com>
-Subject: Re: [PATCH] arm64: dts: qcom: sc7180-trogdor: Remove cros-ec keyboard
- from detachables
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Doug Anderson <dianders@chromium.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        LKML <linux-kernel@vger.kernel.org>, patches@lists.linux.dev,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        "Joseph S. Barrera III" <joebar@chromium.org>,
-        devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="82I3+IH0IqGh5yIs"
+Content-Disposition: inline
+In-Reply-To: <20220427202836.GA1337@duo.ucw.cz>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Stephen Boyd (2022-04-27 11:49:25)
->
-> Yes, if the driver patch isn't applied then we'll skip registering
-> switches when these properties are removed. I suppose a better way to
-> gracefully migrate the logic here would be to add another compatible
-> string. Then we could make the compatible be
->
->         compatible = "google,cros-ec-keyb-switches", "google,cros-ec-keyb";
->
-> on detachables and the driver can skip registering the keyboard if the more
-> specific "google,cros-ec-keyb-switches" compatible is present. The
-> driver will continue to probe and we don't have to remove any
-> properties.
->
 
-I implemented this at
-https://lore.kernel.org/r/20220427203026.828183-1-swboyd@chromium.org
+--82I3+IH0IqGh5yIs
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hi!
+
+> > pm_runtime_get_sync will increment pm usage counter even it failed.
+> > Forgetting to putting operation will result in reference leak here.
+> > We fix it:
+> > 1) Replacing it with pm_runtime_resume_and_get to keep usage counter
+> >    balanced.
+>=20
+> Suspect.
+>=20
+> > 2) Add putting operation before returning error.
+>=20
+> Yes but you also put in success case, which is likely
+> wrong. mtk_uart_apdma_free_chan_resources() does second put.
+
+This is possible fix for the second problem:
+
+Signed-off-by: Pavel Machek <pavel@denx.de>
+
+diff --git a/drivers/dma/mediatek/mtk-uart-apdma.c b/drivers/dma/mediatek/m=
+tk-uart-apdma.c
+index a1517ef1f4a0..8ec046a7e714 100644
+--- a/drivers/dma/mediatek/mtk-uart-apdma.c
++++ b/drivers/dma/mediatek/mtk-uart-apdma.c
+@@ -300,7 +300,8 @@ static int mtk_uart_apdma_alloc_chan_resources(struct d=
+ma_chan *chan)
+=20
+ 	if (mtkd->support_33bits)
+ 		mtk_uart_apdma_write(c, VFF_4G_SUPPORT, VFF_4G_SUPPORT_CLR_B);
+-
++	return 0;
++=09
+ err_pm:
+ 	pm_runtime_put_noidle(mtkd->ddev.dev);
+ 	return ret;
+
+Best regards,
+								Pavel
+
+--=20
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+
+--82I3+IH0IqGh5yIs
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYmmocAAKCRAw5/Bqldv6
+8vfVAJ9QZloVylqz/nLmks05g9Rf0EI/aQCfXpqsymRDI4DHgSkcuxU3sBVBJAE=
+=BoSZ
+-----END PGP SIGNATURE-----
+
+--82I3+IH0IqGh5yIs--
