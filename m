@@ -2,69 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ECF4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 18:48:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E76EFC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 18:49:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230510AbiD0Svz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 14:51:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39070 "EHLO
+        id S229744AbiD0Swh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 14:52:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231561AbiD0Sva (ORCPT
+        with ESMTP id S231206AbiD0SwX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 14:51:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79061C42F4;
-        Wed, 27 Apr 2022 11:36:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 011D861EE6;
-        Wed, 27 Apr 2022 18:36:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F7A4C385A9;
-        Wed, 27 Apr 2022 18:36:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1651084615;
-        bh=OMICTGO/WYqPH3eg8uS6ToJj8mhJ9pJAhueCepETYGw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mL5WuWxE1oAHwTgDVWF/ZSPjveU0MDpd5Uvw46vXoBCYn2+/LaKGjCRkzm4GlsAIM
-         7b/mKi2m9pR5S0iab7gFXcUa6WjTZ82mYZgSVkrTfOxFluiScSimCscnu58NstAxiI
-         U9cw/bYMDrCdB3fqlz02HDDXeqW1WRZ9YtXIArtE=
-Date:   Wed, 27 Apr 2022 11:36:54 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Johannes Weiner <hannes@cmpxchg.org>
-Cc:     Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Seth Jennings <sjenning@redhat.com>,
-        Dan Streetman <ddstreet@ieee.org>, linux-mm@kvack.org,
-        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-team@fb.com
-Subject: Re: [PATCH 4/5] mm: zswap: add basic meminfo and vmstat coverage
-Message-Id: <20220427113654.ef8f543d7ba279952deff6f7@linux-foundation.org>
-In-Reply-To: <20220427160016.144237-5-hannes@cmpxchg.org>
-References: <20220427160016.144237-1-hannes@cmpxchg.org>
-        <20220427160016.144237-5-hannes@cmpxchg.org>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Wed, 27 Apr 2022 14:52:23 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B606DD0AAB;
+        Wed, 27 Apr 2022 11:38:27 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id r13so5141222ejd.5;
+        Wed, 27 Apr 2022 11:38:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Jf9i3ztTNjfWPutrOO+p/55EBe7ejBl7ElvzXmHGQEg=;
+        b=X2Wrw6aGSdtD6osErIZoyheLcvMUX8NAYUDuh9B4v8dSyZZoDLP601yJkl5p94uFnU
+         5Ubb9b8EMYHGAcI5U44jJCxVgx+RD1VwFmHUdyD5P7xlBN87TredFXCsIbeLg9ULH4hy
+         QaRH63Crb0DyI1GApXZDihx/uU0BG4rIdnvz+EYoc3+UAW7d4LpS44swBX6qmC8y7h/S
+         O1YnCBF0RnDKYI1OBIf9L4RBD6zeOcjMUXcxjnR4ZS4pSimK43YIIDodIy9zWc/TXV7z
+         UHdigbdNTV0YYN6+rESapEtYvmFruijwAMEkgjY+m0NzxqMfETrmSaftKX0A4EUVE3wu
+         WWxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Jf9i3ztTNjfWPutrOO+p/55EBe7ejBl7ElvzXmHGQEg=;
+        b=T3GOw5AHrGQIAJ6GfhOejbApJwkoUDYTTNV28Qgj1yquv/cOVMNRDddFDRdvbYE3hL
+         ano9RfC2Kam3f9ZL9AoOZWYi+RuLl7bCmQ9EBkIo06angnj5eKaJWeeLeyW4clx/Ygwv
+         TkCo3VdE/V3bqOY5dZNRp0LeMW05MiJWIeaMxVFlG8Way+ncs1h/qlawrOMtEPjGaLfo
+         PtKdAvbKuslEYg58vlVVJ1YT+Jb3LZU9WtvGtaYmDDQbJkSjQX8g3Qu6ACJE5bkE80fq
+         vOVUKk6HEJMGTyRe51nnanYU/q4wsNS8H0YXGsYddacSX540ZuzHl4V+CGq5VSHK8Yvz
+         VHWw==
+X-Gm-Message-State: AOAM531OqPNDgCYA3vIonRro22Ol5r7uQUmmEsYSvU86Tn7ESBlB51bx
+        uJhn5W7kjNBMiNEbPvN1NNAYjSJQbaI=
+X-Google-Smtp-Source: ABdhPJxYmulAe68OxOgM9m3Ff9OqMHejTV4BuNDsrsdH/lnJG7g4ZBSf8iATJgr6HWV37aVYAGJZZA==
+X-Received: by 2002:a17:906:3104:b0:6ce:6b85:ecc9 with SMTP id 4-20020a170906310400b006ce6b85ecc9mr27247261ejx.339.1651084705994;
+        Wed, 27 Apr 2022 11:38:25 -0700 (PDT)
+Received: from localhost.localdomain (host-79-50-86-254.retail.telecomitalia.it. [79.50.86.254])
+        by smtp.gmail.com with ESMTPSA id ig8-20020a1709072e0800b006f38f2e9ebesm4691667ejc.64.2022.04.27.11.38.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 11:38:24 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Ira Weiny <ira.weiny@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        outreachy@lists.linux.dev
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Subject: [PATCH v3 0/4] Extend and reorganize Highmem's documentation 
+Date:   Wed, 27 Apr 2022 20:38:17 +0200
+Message-Id: <20220427183821.1979-1-fmdefrancesco@gmail.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 27 Apr 2022 12:00:15 -0400 Johannes Weiner <hannes@cmpxchg.org> wrote:
+This series has the purpose to extend and reorganize Highmem's
+documentation.
 
-> Currently it requires poking at debugfs to figure out the size and
-> population of the zswap cache on a host. There are no counters for
-> reads and writes against the cache. As a result, it's difficult to
-> understand zswap behavior on production systems.
-> 
-> Print zswap memory consumption and how many pages are zswapped out in
-> /proc/meminfo. Count zswapouts and zswapins in /proc/vmstat.
+This is still a work in progress, because some information should still be
+moved from highmem.rst to highmem.h and highmem-internal.h. Specifically
+I'm talking about moving the "how to" information to the relevant headers,
+as it as been suggested by Ira Weiny (Intel).
 
-/proc/meminfo is rather prime real estate.  Is this important enough to
-be placed in there, or should it instead be in the more lowly
-/proc/vmstat?
+This series is composed by four patches gathered from a previous series
+made of two, plus two more single patches. The subject of this cover has
+changed and the layout of the changes across the four patches has
+changed too. For this reason it is very hard to show a valid versions'
+log. Therefore, I decided to start over and drop versions (Maintainers
+of the previous patch have been told to drop them).
 
-/proc/meminfo is documented in Documentation/filesystems/proc.rst ;)
+Changes from v1 to v2:
 
-That file appears to need a bit of updating for other things.
+        1/4 - Fix typos (Mike Rapoport); re-write the description of @page
+              because the original was wrong (Ira Weiny); add Ira's and
+              Mike's tags in the commit message.
+        2/4 - Add Ira's and Mike's tags in the commit message.
+        3/4 - Rework the subject to better summarize what this patch
+              changes; merge the section which was removed from highmem.rst
+              with the kdocs of highmem.h (suggested by Ira Weiny); add
+              Ira's tag in the commit message.
+        4/4 - Reformulate a sentence that was incomprehensible due to my
+              own mistakes in copying and pasting the text of another
+              paragraph (problem noted by Ira Weiny); refer to the kdocs
+              of kmap_local_page () to show how nested mappings should be
+              handled; fix grammar error; add Ira's tag in the commit
+              message.
+
+Changes from v2 to v3:
+
+	1/4 - Add a deprecation notice to kunmap_atomic() for consistency
+	      with the same notice in kmap_atomic() (Sebastian Andrzej
+	      Siewior); shorten subject and extend commit message.
+	2/4 - No changes.
+	3/4 - No changes.
+	4/4 - Correct a technical inaccuracy about preemption disabling / 
+	      re-enabling in kmap_atomic() / kunmap_atomic() (Sebastian
+	      Andrzej Siewior).
+
+Fabio M. De Francesco (4):
+  mm/highmem: Fix kernel-doc warnings in highmem*.h
+  Documentation/vm: Include kdocs from highmem*.h into highmem.rst
+  Documentation/vm: Move "Using kmap-atomic" to highmem.h
+  Documentation/vm: Rework "Temporary Virtual Mappings" section
+
+ Documentation/vm/highmem.rst     | 104 +++++++++++++++++++------------
+ include/linux/highmem-internal.h |  15 ++++-
+ include/linux/highmem.h          |  49 +++++++++++----
+ 3 files changed, 112 insertions(+), 56 deletions(-)
+
+-- 
+2.34.1
+
