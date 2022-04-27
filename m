@@ -2,157 +2,266 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68E66C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 19:30:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 674D5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 19:31:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233826AbiD0TdU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 15:33:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60866 "EHLO
+        id S234215AbiD0Te3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 15:34:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234440AbiD0Tcz (ORCPT
+        with ESMTP id S235173AbiD0TeG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 15:32:55 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8C17CE;
-        Wed, 27 Apr 2022 12:29:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651087776; x=1682623776;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=7DM3DwoVa43dxbl3zZEhqiJA/RQy10C5jWu7fExDLWg=;
-  b=XePA+Zw0OIw1HmjPLJvRtDW2CifXTnA45AB1dyPJfFhERYISgPTBFB0O
-   b+5krKVUln4iqpDsgnXaaiRjwdpeoQOIm7M1AdPmubRU4N1dRraxSK2jb
-   92ELijKTYa7fwhR0KdXRoRvcem24oDi47DwDQPcjMP1xZpEIaddpIkl3y
-   YRzVqAPcWTJOEhApsMeGZB9atY+csx1Q/mYAcc2RxM4BFxOp+7yLmfI3O
-   eVaNx2AmPcA1A+Zu0q76umSKTNd4XNeXhj7bDRo0vkjM7L9wqm2Z8vzRd
-   Qa54Svmz6ImWTxNXL3LojEbWLClqkmCTQk2xIS98wQp72unLKwpq1G0vo
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="246607217"
-X-IronPort-AV: E=Sophos;i="5.90,294,1643702400"; 
-   d="scan'208";a="246607217"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 12:29:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,294,1643702400"; 
-   d="scan'208";a="533389441"
-Received: from linux.intel.com ([10.54.29.200])
-  by orsmga006.jf.intel.com with ESMTP; 27 Apr 2022 12:29:36 -0700
-Received: from [10.212.137.53] (kliang2-MOBL.ccr.corp.intel.com [10.212.137.53])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by linux.intel.com (Postfix) with ESMTPS id 90C1C58096C;
-        Wed, 27 Apr 2022 12:29:33 -0700 (PDT)
-Message-ID: <9923422f-2dd3-9951-5814-ab3972e67758@linux.intel.com>
-Date:   Wed, 27 Apr 2022 15:29:31 -0400
+        Wed, 27 Apr 2022 15:34:06 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E901261C;
+        Wed, 27 Apr 2022 12:30:51 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id a1so3113116edt.3;
+        Wed, 27 Apr 2022 12:30:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=piMSvjwkeZ0nhfn9L0hEiy466navA71gRsgoGJRVmX8=;
+        b=gvqMViz1jFk1SBFg27Ndd81xhaWDy6a5g4oiitZHCp+deLsjF/WBhs1c0jZW9tycJz
+         XMlRZKbyc5WxR0YNtgus02Xq6UJ6/Y1qcMIB1FOv+vFdDCNL/nq80Xbk+zjWSC804hRw
+         6Oishuu5CWRXU/ditXpeufNYF/n0n3Xy9a6BL/IfEMZNER6KYjzQFM+yg52pZE+4kOof
+         j3mWpe+4zKKfqwh+P6IAgjbQ4No+Gfva3KgYRGbxQHbR/mhnNey7fDHKns4QNRGJST8C
+         +kOnogvP7LKjGYJLZHLU65wz5myGluRntWljj9HW4yOpZAApfrKFmWKwRUVJ0yXTKsrN
+         c8lA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=piMSvjwkeZ0nhfn9L0hEiy466navA71gRsgoGJRVmX8=;
+        b=0Ob6/hPhRsY+/EsdIEta1B+IbkH1QjonF+W1+vw5cHSfZnNVGZNbhOM5Rt64T40o35
+         sB0yUbI1EgK6DK1VSPTP007umEgwGHs/OvG187JMOR2He8AzL9ol2h5BO4JoM5M+DcNP
+         1PPgtMnrZ6aGecA2ZmGjZgOglTS2kLHp1j6FFMRvHpzbXlL/asY1AHaLusoUGDEj9nQK
+         t6XWVwAD+pbYUETtjQytXERP1MLYb4b2etQNOP/y06xVUMPEHzhkzFjS4TnqkWH2TrW3
+         WJ8oGr+DSohqnCZeFKDYNgPFPIzGfHqnyrwEQLXUNHShw4SIUP7aBpaN0jh9BFEE+uDm
+         irXA==
+X-Gm-Message-State: AOAM533MVgop/1u6UnXmJHVCL9KpYox5K3erGytbaG8Ot9zGG/ZhruPW
+        8FVikN0gt80pQB06Tt7f2pFGB4+k59EX4Q==
+X-Google-Smtp-Source: ABdhPJxuZ1R1o4WDg8MNMs2EldDJiORw1uR54FBa1ILTCASJzOzteyrRkwrVnKarThxPWeqwJPs26g==
+X-Received: by 2002:a05:6402:ca9:b0:425:ff4d:f6fd with SMTP id cn9-20020a0564020ca900b00425ff4df6fdmr9740737edb.405.1651087849664;
+        Wed, 27 Apr 2022 12:30:49 -0700 (PDT)
+Received: from jernej-laptop.localnet (89-212-118-115.static.t-2.net. [89.212.118.115])
+        by smtp.gmail.com with ESMTPSA id g12-20020a170906c18c00b006f3b99d29e0sm2835262ejz.223.2022.04.27.12.30.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 12:30:49 -0700 (PDT)
+From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
+To:     linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Cc:     Yong Deng <yong.deng@magewell.com>,
+        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Samuel Holland <samuel@sholland.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v4 26/45] media: sun6i-csi: Remove custom format helper and rework configure
+Date:   Wed, 27 Apr 2022 21:30:48 +0200
+Message-ID: <1817191.CQOukoFCf9@jernej-laptop>
+In-Reply-To: <20220415152811.636419-27-paul.kocialkowski@bootlin.com>
+References: <20220415152811.636419-1-paul.kocialkowski@bootlin.com> <20220415152811.636419-27-paul.kocialkowski@bootlin.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v5 2/5] perf: Add SNOOP_PEER flag to perf mem data struct
-Content-Language: en-US
-To:     Leo Yan <leo.yan@linaro.org>
-Cc:     Andi Kleen <ak@linux.intel.com>, Ali Saidi <alisaidi@amazon.com>,
-        Nick.Forrington@arm.com, acme@kernel.org,
-        alexander.shishkin@linux.intel.com, andrew.kilroy@arm.com,
-        benh@kernel.crashing.org, german.gomez@arm.com,
-        james.clark@arm.com, john.garry@huawei.com, jolsa@kernel.org,
-        kjain@linux.ibm.com, lihuafei1@huawei.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, mark.rutland@arm.com,
-        mathieu.poirier@linaro.org, mingo@redhat.com, namhyung@kernel.org,
-        peterz@infradead.org, will@kernel.org
-References: <c17dedde-6ba8-db9b-4827-32477f039764@linux.intel.com>
- <20220422212249.22463-1-alisaidi@amazon.com>
- <20220423063805.GA559531@leoy-ThinkPad-X240s>
- <8e09af67-a416-4ead-b406-6c8b998de344@linux.intel.com>
- <20220424114302.GB978927@leoy-ThinkPad-X240s>
- <b4aaf1ed-124d-1339-3e99-a120f6cc4d28@linux.intel.com>
- <20220427161908.GE562576@leoy-ThinkPad-X240s>
-From:   "Liang, Kan" <kan.liang@linux.intel.com>
-In-Reply-To: <20220427161908.GE562576@leoy-ThinkPad-X240s>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 4/27/2022 12:19 PM, Leo Yan wrote:
-> Hi Kan,
+Dne petek, 15. april 2022 ob 17:27:52 CEST je Paul Kocialkowski napisal(a):
+> Remove the custom sun6i_csi_get_bpp helper in favor of common v4l2
+> infrastructure and rework the related window configuration code.
 > 
-> On Mon, Apr 25, 2022 at 01:01:40PM -0400, Liang, Kan wrote:
->>
->>
->> On 4/24/2022 7:43 AM, Leo Yan wrote:
->>> On Sat, Apr 23, 2022 at 05:53:28AM -0700, Andi Kleen wrote:
->>>>
->>>>> Except SNOOPX_FWD means a no modified cache snooping, it also means it's
->>>>> a cache conherency from *remote* socket.  This is quite different from we
->>>>> define SNOOPX_PEER, which only snoop from peer CPU or clusters.
->>>>>
->>
->> The FWD doesn't have to be *remote*. The definition you quoted is just for
->> the "L3 Miss", which is indeed a remote forward. But we still have
->> cross-core FWD. See Table 19-101.
->>
->> Actually, X86 uses the PERF_MEM_REMOTE_REMOTE + PERF_MEM_SNOOPX_FWD to
->> indicate the remote FWD, not just SNOOPX_FWD.
-> 
-> Thanks a lot for the info.
-> 
->>>>> If no objection, I prefer we could keep the new snoop type SNOOPX_PEER,
->>>>> this would be easier for us to distinguish the semantics and support the
->>>>> statistics for SNOOPX_FWD and SNOOPX_PEER separately.
->>>>>
->>>>> I overlooked the flag SNOOPX_FWD, thanks a lot for Kan's reminding.
->>>>
->>>> Yes seems better to keep using a separate flag if they don't exactly match.
->>>>
->>
->> Yes, I agree with Andi. If you still think the existing flag combination
->> doesn't match your requirement, a new separate flag should be introduced.
->> I'm not familiar with ARM. I think I will leave it to you and the maintainer
->> to decide.
-> 
-> It's a bit difficult for me to make decision is because now SNOOPX_FWD
-> is not used in the file util/mem-events.c, so I am not very sure if
-> SNOOPX_FWD has the consistent usage across different arches.
+> Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
 
-No, it's used in the file util/mem-events.c
-See perf_mem__snp_scnprintf().
+Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 
+Best regards,
+Jernej
+
+> ---
+>  .../platform/sunxi/sun6i-csi/sun6i_csi.h      | 49 -------------
+>  .../sunxi/sun6i-csi/sun6i_csi_capture.c       | 70 +++++++++----------
+>  2 files changed, 35 insertions(+), 84 deletions(-)
 > 
-> On the other hand, I sent a patch for 'peer' flag statistics [1], you
-> could review it and it only stats for L2 and L3 cache level for local
-> node.
-
-If it's for the local node, why don't you use the hop level which is 
-introduced recently by Power? The below seems a good fit.
-
-PERF_MEM_LVLNUM_ANY_CACHE | PERF_MEM_HOPS_0?
-
-/* hop level */
-#define PERF_MEM_HOPS_0		0x01 /* remote core, same node */
-#define PERF_MEM_HOPS_1		0x02 /* remote node, same socket */
-#define PERF_MEM_HOPS_2		0x03 /* remote socket, same board */
-#define PERF_MEM_HOPS_3		0x04 /* remote board */
-/* 5-7 available */
-#define PERF_MEM_HOPS_SHIFT	43
-
-Thanks,
-Kan
-
+> diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h
+> b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h index
+> f54ad2f438f8..dd90ffdae5d5 100644
+> --- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h
+> +++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h
+> @@ -60,53 +60,4 @@ struct sun6i_csi_variant {
+>  bool sun6i_csi_is_format_supported(struct sun6i_csi_device *csi_dev,
+>  				   u32 pixformat, u32 mbus_code);
 > 
-> The main purpose for my sending this email is if you think the FWD can
-> be the consistent for both arches, and even the new added display mode
-> is also useful for x86 arch (we can rename it as 'fwd' display mode),
-> then I am very glad to unify the flag.
+> -/* get bpp form v4l2 pixformat */
+> -static inline int sun6i_csi_get_bpp(unsigned int pixformat)
+> -{
+> -	switch (pixformat) {
+> -	case V4L2_PIX_FMT_SBGGR8:
+> -	case V4L2_PIX_FMT_SGBRG8:
+> -	case V4L2_PIX_FMT_SGRBG8:
+> -	case V4L2_PIX_FMT_SRGGB8:
+> -	case V4L2_PIX_FMT_JPEG:
+> -		return 8;
+> -	case V4L2_PIX_FMT_SBGGR10:
+> -	case V4L2_PIX_FMT_SGBRG10:
+> -	case V4L2_PIX_FMT_SGRBG10:
+> -	case V4L2_PIX_FMT_SRGGB10:
+> -		return 10;
+> -	case V4L2_PIX_FMT_SBGGR12:
+> -	case V4L2_PIX_FMT_SGBRG12:
+> -	case V4L2_PIX_FMT_SGRBG12:
+> -	case V4L2_PIX_FMT_SRGGB12:
+> -	case V4L2_PIX_FMT_NV12_16L16:
+> -	case V4L2_PIX_FMT_NV12:
+> -	case V4L2_PIX_FMT_NV21:
+> -	case V4L2_PIX_FMT_YUV420:
+> -	case V4L2_PIX_FMT_YVU420:
+> -		return 12;
+> -	case V4L2_PIX_FMT_YUYV:
+> -	case V4L2_PIX_FMT_YVYU:
+> -	case V4L2_PIX_FMT_UYVY:
+> -	case V4L2_PIX_FMT_VYUY:
+> -	case V4L2_PIX_FMT_NV16:
+> -	case V4L2_PIX_FMT_NV61:
+> -	case V4L2_PIX_FMT_YUV422P:
+> -	case V4L2_PIX_FMT_RGB565:
+> -	case V4L2_PIX_FMT_RGB565X:
+> -		return 16;
+> -	case V4L2_PIX_FMT_RGB24:
+> -	case V4L2_PIX_FMT_BGR24:
+> -		return 24;
+> -	case V4L2_PIX_FMT_RGB32:
+> -	case V4L2_PIX_FMT_BGR32:
+> -		return 32;
+> -	default:
+> -		WARN(1, "Unsupported pixformat: 0x%x\n", pixformat);
+> -		break;
+> -	}
+> -
+> -	return 0;
+> -}
+> -
+>  #endif /* __SUN6I_CSI_H__ */
+> diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
+> b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c index
+> 2aa65a4ddb85..c4e803a38851 100644
+> --- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
+> +++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
+> @@ -483,68 +483,68 @@ static void sun6i_csi_capture_configure_format(struct
+> sun6i_csi_device *csi_dev)
 > 
-> Thanks,
-> Leo
+>  static void sun6i_csi_capture_configure_window(struct sun6i_csi_device
+> *csi_dev) {
+> +	struct regmap *regmap = csi_dev->regmap;
+> +	const struct v4l2_format_info *info;
+> +	u32 hsize_len, vsize_len;
+> +	u32 luma_line, chroma_line = 0;
+>  	u32 pixelformat, field;
+>  	u32 width, height;
+> -	u32 bytesperline_y;
+> -	u32 bytesperline_c;
+> -	u32 hor_len;
 > 
-> [1] https://lore.kernel.org/lkml/20220427155013.1833222-5-leo.yan@linaro.org/
+>  	sun6i_csi_capture_dimensions(csi_dev, &width, &height);
+>  	sun6i_csi_capture_format(csi_dev, &pixelformat, &field);
+> 
+> -	hor_len = width;
+> +	hsize_len = width;
+> +	vsize_len = height;
+> 
+>  	switch (pixelformat) {
+>  	case V4L2_PIX_FMT_YUYV:
+>  	case V4L2_PIX_FMT_YVYU:
+>  	case V4L2_PIX_FMT_UYVY:
+>  	case V4L2_PIX_FMT_VYUY:
+> -		dev_dbg(csi_dev->dev,
+> -			"Horizontal length should be 2 times of 
+width for packed YUV
+> formats!\n"); -		hor_len = width * 2;
+> +		/*
+> +		 * Horizontal length should be 2 times of width for 
+packed
+> +		 * YUV formats.
+> +		 */
+> +		hsize_len *= 2;
+>  		break;
+>  	default:
+>  		break;
+>  	}
+> 
+> -	regmap_write(csi_dev->regmap, SUN6I_CSI_CH_HSIZE_REG,
+> -		     SUN6I_CSI_CH_HSIZE_LEN(hor_len) |
+> +	regmap_write(regmap, SUN6I_CSI_CH_HSIZE_REG,
+> +		     SUN6I_CSI_CH_HSIZE_LEN(hsize_len) |
+>  		     SUN6I_CSI_CH_HSIZE_START(0));
+> -	regmap_write(csi_dev->regmap, SUN6I_CSI_CH_VSIZE_REG,
+> -		     SUN6I_CSI_CH_VSIZE_LEN(height) |
+> +
+> +	regmap_write(regmap, SUN6I_CSI_CH_VSIZE_REG,
+> +		     SUN6I_CSI_CH_VSIZE_LEN(vsize_len) |
+>  		     SUN6I_CSI_CH_VSIZE_START(0));
+> 
+>  	switch (pixelformat) {
+> -	case V4L2_PIX_FMT_NV12_16L16:
+> -	case V4L2_PIX_FMT_NV12:
+> -	case V4L2_PIX_FMT_NV21:
+> -	case V4L2_PIX_FMT_NV16:
+> -	case V4L2_PIX_FMT_NV61:
+> -		bytesperline_y = width;
+> -		bytesperline_c = width;
+> +	case V4L2_PIX_FMT_RGB565X:
+> +		luma_line = width * 2;
+>  		break;
+> -	case V4L2_PIX_FMT_YUV420:
+> -	case V4L2_PIX_FMT_YVU420:
+> -		bytesperline_y = width;
+> -		bytesperline_c = width / 2;
+> +	case V4L2_PIX_FMT_NV12_16L16:
+> +		luma_line = width;
+> +		chroma_line = width;
+>  		break;
+> -	case V4L2_PIX_FMT_YUV422P:
+> -		bytesperline_y = width;
+> -		bytesperline_c = width / 2;
+> +	case V4L2_PIX_FMT_JPEG:
+> +		luma_line = width;
+>  		break;
+> -	default: /* raw */
+> -		dev_dbg(csi_dev->dev,
+> -			"Calculating pixelformat(0x%x)'s 
+bytesperline as a packed format\n",
+> -			pixelformat);
+> -		bytesperline_y = (sun6i_csi_get_bpp(pixelformat) *
+> -				  width) / 8;
+> -		bytesperline_c = 0;
+> +	default:
+> +		info = v4l2_format_info(pixelformat);
+> +		if (WARN_ON(!info))
+> +			return;
+> +
+> +		luma_line = width * info->bpp[0];
+> +
+> +		if (info->comp_planes > 1)
+> +			chroma_line = width * info->bpp[1] / info-
+>hdiv;
+>  		break;
+>  	}
+> 
+> -	regmap_write(csi_dev->regmap, SUN6I_CSI_CH_BUF_LEN_REG,
+> -		     SUN6I_CSI_CH_BUF_LEN_CHROMA_LINE(bytesperline_c) |
+> -		     SUN6I_CSI_CH_BUF_LEN_LUMA_LINE(bytesperline_y));
+> +	regmap_write(regmap, SUN6I_CSI_CH_BUF_LEN_REG,
+> +		     SUN6I_CSI_CH_BUF_LEN_CHROMA_LINE(chroma_line) |
+> +		     SUN6I_CSI_CH_BUF_LEN_LUMA_LINE(luma_line));
+>  }
+> 
+>  static void sun6i_csi_capture_configure(struct sun6i_csi_device *csi_dev)
+
 
 
 
