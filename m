@@ -2,113 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41508C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:53:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DF84C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:53:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236776AbiD0N4n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 09:56:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48658 "EHLO
+        id S236791AbiD0N4t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 09:56:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236700AbiD0N4i (ORCPT
+        with ESMTP id S236700AbiD0N4r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 09:56:38 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B5872ACB;
-        Wed, 27 Apr 2022 06:53:27 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Wed, 27 Apr 2022 09:56:47 -0400
+Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E02A6B1C1;
+        Wed, 27 Apr 2022 06:53:32 -0700 (PDT)
+Received: from janitor.denx.de (unknown [62.91.23.180])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 2D06321118;
-        Wed, 27 Apr 2022 13:53:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1651067606; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=z0VSn2vEXwWXMGAfap1HPPywpjqAc/nB4nW5xPcHwuA=;
-        b=f/xNu/kDIRTMogOu0Uw02XT1TextwCqsKVU5GEime6fEx0GQmAShKNghzduSIpnAvkWvIl
-        4XLpd3AXnkkx71Us1FiykJTL38kwzzkcISvSZKWwnE24AiQJotbu2LNxhs2RA6jAzmKmeI
-        YWMQC29ImtGt9spIXjuzKoHdmIYLXW0=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id DF00713A39;
-        Wed, 27 Apr 2022 13:53:25 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id ehVtNdVKaWJvZgAAMHmgww
-        (envelope-from <mkoutny@suse.com>); Wed, 27 Apr 2022 13:53:25 +0000
-Date:   Wed, 27 Apr 2022 15:53:24 +0200
-From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
-To:     Waiman Long <longman@redhat.com>
-Cc:     Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>, cgroups@vger.kernel.org,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Feng Tang <feng.tang@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Dave Hansen <dave.hansen@intel.com>, ying.huang@intel.com,
-        stable@vger.kernel.org
-Subject: Re: [PATCH v2] cgroup/cpuset: Remove cpus_allowed/mems_allowed setup
- in cpuset_init_smp()
-Message-ID: <20220427135324.GB9823@blackbody.suse.cz>
-References: <20220425155505.1292896-1-longman@redhat.com>
+        (Authenticated sender: noc@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id A2E3883E9E;
+        Wed, 27 Apr 2022 15:53:31 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1651067611;
+        bh=lRN//q0RUoYn1Nk0c/CSAhY6Ns1dN94oveT7N6gNYOc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=UKD7v97iqQW00zjNHA2sR5ASMdAL5Pis2HZldKuWw8fS79MTIz3/kYJg4FoNNDhfu
+         uXv9aomSij7K7HMzc2weVwLxVC137NT1maOSz59xzRfTzw5d8A83Jn/8mvQYom2x+0
+         78j83nAVwgcmli2rXyoyIIhzu4WGtDU45TwgM/2XGi1vTHuuZTjXxF9K0l+fZ/G2Sy
+         CtylI4309qJrr84zbQGIG1B0GRCUsf+e/YDNEMuOHXMvF+OCp70aP6pUF94uJEPsd9
+         9lslKFWQGnh/DURkAxTICPOnFnwYIviZCEr1SjDkFE8UhS2gu6E0GnV7oBVZ92hBuJ
+         EF9mvcHZaZMdg==
+Received: by janitor.denx.de (Postfix, from userid 108)
+        id 581D6A01E1; Wed, 27 Apr 2022 15:53:31 +0200 (CEST)
+Received: from xpert.denx.de (xpert.denx.de [192.168.0.4])
+        by janitor.denx.de (Postfix) with ESMTPS id 73C3FA00A4;
+        Wed, 27 Apr 2022 15:53:17 +0200 (CEST)
+Received: by xpert.denx.de (Postfix, from userid 535)
+        id EC9F83E0398; Wed, 27 Apr 2022 15:53:16 +0200 (CEST)
+From:   Philip Oberfichtner <pro@denx.de>
+Cc:     Philip Oberfichtner <pro@denx.de>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, matthias.winker@de.bosch.com
+Subject: [PATCH v3 1/4] dt-bindings: display: simple: Add DataImage FG1001L0DSSWMG01 compatible string
+Date:   Wed, 27 Apr 2022 15:52:27 +0200
+Message-Id: <20220427135229.2339865-1-pro@denx.de>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220425155505.1292896-1-longman@redhat.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: clamav-milter 0.103.5 at phobos.denx.de
+X-Virus-Status: Clean
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello.
+Add DataImage FG1001L0DSSWMG01 10.1" 1280x800 TFT LCD panel compatible
+string.
 
-On Mon, Apr 25, 2022 at 11:55:05AM -0400, Waiman Long <longman@redhat.com> wrote:
-> smp_init() is called after the first two init functions.  So we don't
-> have a complete list of active cpus and memory nodes until later in
-> cpuset_init_smp() which is the right time to set up effective_cpus
-> and effective_mems.
+Signed-off-by: Philip Oberfichtner <pro@denx.de>
 
-Yes.
+---
 
-	setup_arch
-	  prefill_possible_map
-	cpuset_init (1)
-	cgroup_init
-	  cpuset_bind (2a)
-	...
-	kernel_init
-	  kernel_init_freeable
-	    ...
-	      cpuset_init_smp (3)
-	...
-	...
-	cpuset_bind (2b)
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Cc: Sam Ravnborg <sam@ravnborg.org>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc: dri-devel@lists.freedesktop.org
+Cc: devicetree@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: matthias.winker@de.bosch.com
 
+---
 
-> 
-> diff --git a/kernel/cgroup/cpuset.c b/kernel/cgroup/cpuset.c
-> index 9390bfd9f1cd..6bd8f5ef40fe 100644
-> --- a/kernel/cgroup/cpuset.c
-> +++ b/kernel/cgroup/cpuset.c
-> @@ -3390,8 +3390,9 @@ static struct notifier_block cpuset_track_online_nodes_nb = {
->   */
->  void __init cpuset_init_smp(void)
->  {
-> -	cpumask_copy(top_cpuset.cpus_allowed, cpu_active_mask);
-> -	top_cpuset.mems_allowed = node_states[N_MEMORY];
-> +	/*
-> +	 * cpus_allowd/mems_allowed will be properly set up in cpuset_bind().
-> +	 */
+Changes in v3: new
+---
+ .../devicetree/bindings/display/panel/panel-simple.yaml         | 2 ++
+ 1 file changed, 2 insertions(+)
 
-IIUC, the comment should say
+diff --git a/Documentation/devicetree/bindings/display/panel/panel-simple.yaml b/Documentation/devicetree/bindings/display/panel/panel-simple.yaml
+index 1eb9dd4f8f58..a6db3eff3b1a 100644
+--- a/Documentation/devicetree/bindings/display/panel/panel-simple.yaml
++++ b/Documentation/devicetree/bindings/display/panel/panel-simple.yaml
+@@ -105,6 +105,8 @@ properties:
+       - chunghwa,claa101wb01
+         # Chunghwa Picture Tubes Ltd. 10.1" WXGA TFT LCD panel
+       - chunghwa,claa101wb03
++        # DataImage, Inc. 10.1" WXGA (1280Ã—800) TFT LCD panel
++      - dataimage,fg1001l0dsswmg01
+         # DataImage, Inc. 7" WVGA (800x480) TFT LCD panel with 24-bit parallel interface.
+       - dataimage,scf0700c48ggu18
+         # DLC Display Co. DLC1010GIG 10.1" WXGA TFT LCD Panel
+-- 
+2.34.1
 
-> +	 * cpus_allowed/mems_allowed were (v2) or will be (v1) properly set up in cpuset_bind().
-
-(nit)
-
-Reviewed-by: Michal Koutný <mkoutny@suse.com>
