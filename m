@@ -2,157 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2107C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 19:28:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6898C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 19:28:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233727AbiD0TbJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 15:31:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60238 "EHLO
+        id S232649AbiD0TbY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 15:31:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233726AbiD0Ta6 (ORCPT
+        with ESMTP id S234345AbiD0TbE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 15:30:58 -0400
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D5EF1A39A;
-        Wed, 27 Apr 2022 12:26:48 -0700 (PDT)
-Received: by mail-il1-x132.google.com with SMTP id t4so619092ilo.12;
-        Wed, 27 Apr 2022 12:26:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xPwl3B36r2cAnhKOklI7W5r9ku8U6ZGRu8H06ecsDmA=;
-        b=BjuIo11TFSHGVHxVxumbfBtSf8/SrNJ5SC/Xtue/hPWKa4HvDpapKHpH2L6yrPENpH
-         2OEaN0xGJdlqoxfc0DVjsqxTiZ8R5bPkyB+qiNr3huDg39Lsetol46LCwuW940laIqwf
-         LbzlCHbPy22J2HKPJ39VYopALdVPToXxpMj5gVW+fjtziRpo1gCbCVVZpWWfWygF+PCG
-         u9tyApFiaaMIlpEsxb6c3637itcFm+maFkB4K24+ToVSepQMG4t8SybAruTA07s54LCI
-         I6sdzHWpmJMyz40EX+iwKNtvW//cG/hteQwpeSn/y5CNx4XJoeB+aq7Hrjf+CcT+d5lN
-         ENWQ==
+        Wed, 27 Apr 2022 15:31:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 94D314B43C
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 12:27:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651087622;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8WAoChBSaZGQGR5mebDk3D5BL8qd1xvhTMspSlXtCQc=;
+        b=KPUDzGPWYuBjha2YzHnHXTINO+2Hp1wDEkagH91KF764icnu4O+WnKzx/Z0ApkdEFeM5wZ
+        jxsWLPnarR4ex1gib3QWGJbC3orl2AggZOSbML2MeqQIuhk94xnMSUchREauRh1v/mykzo
+        CmpTGYF0f/tvu+IGl3wZYTd8jsAaszs=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-345-DDC-NOr5Omm3Ugnaj3Eotw-1; Wed, 27 Apr 2022 15:27:00 -0400
+X-MC-Unique: DDC-NOr5Omm3Ugnaj3Eotw-1
+Received: by mail-qk1-f197.google.com with SMTP id q12-20020ae9e40c000000b0069f091022dbso1810905qkc.3
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 12:27:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xPwl3B36r2cAnhKOklI7W5r9ku8U6ZGRu8H06ecsDmA=;
-        b=Cu8VPT2JAFjtCiZiKVboR5MYTqAHrz5WnrpWEEJBPIQUGsbsVYllbc9gGZeRrJCBsa
-         cPENfqMvhi3te2Ulk2x+Emz0LkoB8g3+qvEQSnvb8Tzqpqing4ybbOiCmy9TNPQrqPMr
-         9LsDMt2YcN/fyBDBGN2KnUHFUuxClzFhL42ZlPsO7rwOytkVheQpsLv0F1PrU7T7q05R
-         76Br4kdn8TOcinU2OJ9Y/+ATrkk8aorGUoMkF/0uK/rB7Gsg1k7Zfj2JQDuAXAHypafn
-         H7T03ZLHNUWrOLWLV4vAnqA74JrwwdtOSE8de5fnsar9TtribFY3pmfrWuikb1QCCWCq
-         bwHw==
-X-Gm-Message-State: AOAM533/M00R5d3u7V7EmEftaB+h8R/E/peEF4TVYQVDH1tW/nFkAwxl
-        I4fa8g5caivHU/AiKMKI2byFPmV3yKLE4lQ1wX1/6lib620=
-X-Google-Smtp-Source: ABdhPJzA/MkwsJsuKT3AKg8Kx603QI4N2VDrpmZSAU9hfxKMztHgFoA7OVcNigYiHbBOLyuzfVf/oBw7/LFCsDUaGGg=
-X-Received: by 2002:a05:6e02:1ba3:b0:2cc:4158:d3ff with SMTP id
- n3-20020a056e021ba300b002cc4158d3ffmr11614731ili.98.1651087607619; Wed, 27
- Apr 2022 12:26:47 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220422150507.222488-1-namhyung@kernel.org> <20220422150507.222488-5-namhyung@kernel.org>
- <CAEf4Bzbdh-wbQQLzoXGGKkqqE=+qz19C4tCq4Ynb-_PXzRYM1w@mail.gmail.com> <CAM9d7chos3xgxPMOMwgSh6nCNfqk8k2tXO=0JsdL4KgN_yngCA@mail.gmail.com>
-In-Reply-To: <CAM9d7chos3xgxPMOMwgSh6nCNfqk8k2tXO=0JsdL4KgN_yngCA@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 27 Apr 2022 12:26:36 -0700
-Message-ID: <CAEf4BzZ-RwXV8NoWk4rLyLWyxJhQ6b96ieVCy0kkjLCq8cVxqw@mail.gmail.com>
-Subject: Re: [PATCH 4/4] perf record: Handle argument change in sched_switch
-To:     Namhyung Kim <namhyung@kernel.org>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>, Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Ian Rogers <irogers@google.com>,
-        Song Liu <songliubraving@fb.com>, Hao Luo <haoluo@google.com>,
-        bpf <bpf@vger.kernel.org>,
-        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
-        Blake Jones <blakejones@google.com>
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=8WAoChBSaZGQGR5mebDk3D5BL8qd1xvhTMspSlXtCQc=;
+        b=jr239YT9l0BK823o3FrUh1u8RXgWGRqX9ZHZXTe1sfSycgvDXaGxPppdjvT64YRf8b
+         V9c7Wd44W+xyClXJa9Gk5GMdhr4IqiL065OtKpQDJuOI/Fn7iD3cQEfc9r89FjnYR7en
+         g9cOE43cuYNnIPDW/vh1Vm+AFXsNTy8bLsFvRzz8UAHx1mcYY5xCvB9kWHPlAiG8JbE1
+         omMzUtCLVQWvQ8bMR129wToJQ9gk1aGegCZ6hPLy7gUI7Zgzs6dWNImdRY5n+PXJXOOk
+         bMFdEDgSPZ78rVvq8SJq7P9+INCODV3sujSlzTXjv2xDmFrONUER8eZJGvKutCJnYDSg
+         g9ow==
+X-Gm-Message-State: AOAM533TU3gBtA/pwn8rXEGm9KjZLVVM1vHo9F931/YpxjAKn6zR8SL0
+        lHxRLoCzeNcIl7DtJocHq+xI3Sk1dXXUHuJb4Dglrhxtb/y8fJOSKMkOBMnzSIeh6zhU6tEMqxS
+        xz3YWCQgK4Zgrai7BHhA37Bcz
+X-Received: by 2002:a05:6214:252b:b0:456:3c2b:c910 with SMTP id gg11-20020a056214252b00b004563c2bc910mr10202037qvb.85.1651087619326;
+        Wed, 27 Apr 2022 12:26:59 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzc0xyQRHQQrYPbhNmmirFuUuwf6riBgvsumaJBrw8wUc7zsVs+fk7NOTdY3m0UHwkXgfeC4g==
+X-Received: by 2002:a05:6214:252b:b0:456:3c2b:c910 with SMTP id gg11-20020a056214252b00b004563c2bc910mr10202007qvb.85.1651087618937;
+        Wed, 27 Apr 2022 12:26:58 -0700 (PDT)
+Received: from loberman.users.ipa.redhat.com ([2600:6c64:4e7f:cee0:729d:61b6:700c:6b56])
+        by smtp.gmail.com with ESMTPSA id 9-20020a05620a070900b0069e60da45aasm8188993qkc.60.2022.04.27.12.26.56
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 27 Apr 2022 12:26:58 -0700 (PDT)
+Message-ID: <ae63bff76f384ad7d28aa0833beba6860171aea9.camel@redhat.com>
+Subject: Re: [PATCH] target: pscsi: set SCF_TREAT_READ_AS_NORMAL flag only
+ if there is valid data
+From:   Laurence Oberman <loberman@redhat.com>
+To:     David Jeffery <djeffery@redhat.com>, target-devel@vger.kernel.org
+Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Wed, 27 Apr 2022 15:26:56 -0400
+In-Reply-To: <20220427183250.291881-1-djeffery@redhat.com>
+References: <20220427183250.291881-1-djeffery@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5 (3.28.5-10.el7) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 11:15 AM Namhyung Kim <namhyung@kernel.org> wrote:
->
-> Hello,
->
-> On Tue, Apr 26, 2022 at 4:55 PM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Fri, Apr 22, 2022 at 3:49 PM Namhyung Kim <namhyung@kernel.org> wrote:
-> > >
-> > > Recently sched_switch tracepoint added a new argument for prev_state,
-> > > but it's hard to handle the change in a BPF program.  Instead, we can
-> > > check the function prototype in BTF before loading the program.
-> > >
-> > > Thus I make two copies of the tracepoint handler and select one based
-> > > on the BTF info.
-> > >
-> > > Signed-off-by: Namhyung Kim <namhyung@kernel.org>
-> > > ---
-> > >  tools/perf/util/bpf_off_cpu.c          | 32 +++++++++++++++
-> > >  tools/perf/util/bpf_skel/off_cpu.bpf.c | 55 ++++++++++++++++++++------
-> > >  2 files changed, 76 insertions(+), 11 deletions(-)
-> > >
-> >
-> > [...]
-> >
-> > >
-> > > +SEC("tp_btf/sched_switch")
-> > > +int on_switch3(u64 *ctx)
-> > > +{
-> > > +       struct task_struct *prev, *next;
-> > > +       int state;
-> > > +
-> > > +       if (!enabled)
-> > > +               return 0;
-> > > +
-> > > +       /*
-> > > +        * TP_PROTO(bool preempt, struct task_struct *prev,
-> > > +        *          struct task_struct *next)
-> > > +        */
-> > > +       prev = (struct task_struct *)ctx[1];
-> > > +       next = (struct task_struct *)ctx[2];
-> >
-> >
-> > you don't have to have two BPF programs for this, you can use
-> > read-only variable to make this choice.
-> >
-> > On BPF side
-> >
-> > const volatile bool has_prev_state = false;
-> >
-> > ...
-> >
-> > if (has_prev_state) {
-> >     prev = (struct task_struct *)ctx[2];
-> >     next = (struct task_struct *)ctx[3];
-> > } else {
-> >     prev = (struct task_struct *)ctx[1];
-> >     next = (struct task_struct *)ctx[2];
-> > }
-> >
-> >
-> > And from user-space side you do your detection and before skeleton is loaded:
-> >
-> > skel->rodata->has_prev_state = <whatever you detected>
->
-> Nice, thanks for the tip!
->
-> Actually I tried something similar but it was with a variable (in bss)
-> so the verifier in an old kernel rejected it due to invalid arg access.
->
-> I guess now the const makes the verifier ignore the branch as if
-> it's dead but the compiler still generates the code, right?
+On Wed, 2022-04-27 at 14:32 -0400, David Jeffery wrote:
+> With tape devices, the SCF_TREAT_READ_AS_NORMAL flag is used by the
+> target
+> subsystem to mark commands which have both data to return as well as
+> sense data. But with pscsi, SCF_TREAT_READ_AS_NORMAL can be set even
+> if
+> there is no data to return. The SCF_TREAT_READ_AS_NORMAL flag causes
+> the
+> target core to call iscsit datain callbacks even if there is no data,
+> which
+> iscsit does not support. This results in iscsit going into an error
+> state
+> requiring recovery and being unable to complete the command to the
+> initiator.
+> 
+> This issue can be resolved by fixing pscsi to only set
+> SCF_TREAT_READ_AS_NORMAL if there is valid data to return along side
+> the
+> sense data.
+> 
+> Fixes: bd81372065fa ("scsi: target: transport should handle st
+> FM/EOM/ILI reads")
+> Signed-off-by: David Jeffery <djeffery@redhat.com>
+> Tested-by: Laurence Oberman <loberman@redhat.com>
+> ---
+>  drivers/target/target_core_pscsi.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/target/target_core_pscsi.c
+> b/drivers/target/target_core_pscsi.c
+> index ff292b75e23f..60dafe4c581b 100644
+> --- a/drivers/target/target_core_pscsi.c
+> +++ b/drivers/target/target_core_pscsi.c
+> @@ -588,7 +588,7 @@ static void pscsi_destroy_device(struct se_device
+> *dev)
+>  }
+>  
+>  static void pscsi_complete_cmd(struct se_cmd *cmd, u8 scsi_status,
+> -			       unsigned char *req_sense)
+> +			       unsigned char *req_sense, int
+> valid_data)
+>  {
+>  	struct pscsi_dev_virt *pdv = PSCSI_DEV(cmd->se_dev);
+>  	struct scsi_device *sd = pdv->pdv_sd;
+> @@ -681,7 +681,7 @@ static void pscsi_complete_cmd(struct se_cmd
+> *cmd, u8 scsi_status,
+>  		 * back despite framework assumption that a
+>  		 * check condition means there is no data
+>  		 */
+> -		if (sd->type == TYPE_TAPE &&
+> +		if (sd->type == TYPE_TAPE && valid_data &&
+>  		    cmd->data_direction == DMA_FROM_DEVICE) {
+>  			/*
+>  			 * is sense data valid, fixed format,
+> @@ -1032,6 +1032,7 @@ static void pscsi_req_done(struct request *req,
+> blk_status_t status)
+>  	struct se_cmd *cmd = req->end_io_data;
+>  	struct scsi_cmnd *scmd = blk_mq_rq_to_pdu(req);
+>  	enum sam_status scsi_status = scmd->result & 0xff;
+> +	int valid_data = cmd->data_length - scmd->resid_len;
+>  	u8 *cdb = cmd->priv;
+>  
+>  	if (scsi_status != SAM_STAT_GOOD) {
+> @@ -1039,12 +1040,11 @@ static void pscsi_req_done(struct request
+> *req, blk_status_t status)
+>  			" 0x%02x Result: 0x%08x\n", cmd, cdb[0], scmd-
+> >result);
+>  	}
+>  
+> -	pscsi_complete_cmd(cmd, scsi_status, scmd->sense_buffer);
+> +	pscsi_complete_cmd(cmd, scsi_status, scmd->sense_buffer,
+> valid_data);
+>  
+>  	switch (host_byte(scmd->result)) {
+>  	case DID_OK:
+> -		target_complete_cmd_with_length(cmd, scsi_status,
+> -			cmd->data_length - scmd->resid_len);
+> +		target_complete_cmd_with_length(cmd, scsi_status,
+> valid_data);
+>  		break;
+>  	default:
+>  		pr_debug("PSCSI Host Byte exception at cmd: %p CDB:"
 
+We added a bucnh of debug to track this down, and the fix is solid and
+makes perfect sense.
 
-yes, exactly
+Reviewed-by: Laurence Oberman <loberman@redhat.com>
 
->
-> >
-> > But I'm still hoping that this prev_state argument can be moved to the
-> > end ([0]) to make all this unnecessary.
-> >
-> >   [0] https://lore.kernel.org/lkml/93a20759600c05b6d9e4359a1517c88e06b44834.camel@fb.com/
->
-> Yeah, that would make life easier. :)
->
-> Thanks,
-> Namhyung
