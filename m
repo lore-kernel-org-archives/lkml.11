@@ -2,174 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72D71C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 12:41:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AAB5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 12:41:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234790AbiD0Moj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 08:44:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38732 "EHLO
+        id S234795AbiD0Mo6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 08:44:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234773AbiD0Moc (ORCPT
+        with ESMTP id S234760AbiD0Mo5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 08:44:32 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 701D42B26F
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 05:41:21 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id c190-20020a1c35c7000000b0038e37907b5bso3386544wma.0
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 05:41:21 -0700 (PDT)
+        Wed, 27 Apr 2022 08:44:57 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DAB76FA1D
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 05:41:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=cbbrke0Y/62FpKxLP1THZreWJJ7JOW3ZusoLqpF2UmQ=;
-        b=ElTn2Yk9K1k2G6x565G88Wc8cknGDMkZGWGwEx0MgI1tUAt3pxFiwaRQiGJO5PQa8r
-         WrY1z7OKffnEmtIoMpN5jpA0Y1efS3cm5HNYvMxpqFOkQ4mOScWtqVrTrWANuyOt+MVC
-         sgurh5DJC694jmHjsf+lqbw3oMP0sIu5hgOb1qwTKxR0W7S1IUe2C4tfV15A84jDsg/y
-         cruH9+Y/PEuTXjfwydxBVa4Cc4+o8eO4Ml+CBKALdT68a6barcY6VPfkuZ6zTr/npjOg
-         qduMpQ6iBNsCRzySowGDHCX8WnJhNcnb5teLrNc/73s3uOOPt5dkulKJwN+VIis3tGbD
-         J/eg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=cbbrke0Y/62FpKxLP1THZreWJJ7JOW3ZusoLqpF2UmQ=;
-        b=Gwj7iC0rWUv0Hllt2OuI/zndPBcosljK4yucg6HVw9J+7GXXEM8ajV7FWzOv24E00h
-         cwxUWBv1yKkWlO68FLKVAWbmsZCWoWKClvcoc2K4Ue+uaxnwC8g5Bev+kKEJzR0zN/Zv
-         myBOveH/kPZ5IBEcVHtWtYXfKw/P+RGcDuA2mqqNM75l7OXCNTUv/sxYfXsx0VO9q4dc
-         y3aNlfl7n9vONO7TfkLZChAP15XDArdKEbZfhc67bCTOarDmYybL2cKgfaoGYKQ/BybT
-         W2g+JsaT5HxkQ6rgarkJ8j2+1yUWa8prK1FyAnD4xXvhy2pS+RI7VmuwDnemwjIvGTyt
-         Lmrw==
-X-Gm-Message-State: AOAM533AyRGPbKXY7wqHSMLX7kvAWwSBr6rCxhDEwYdkK85Tc+44KD+8
-        akBlxWuGt/5sjAcZMzj/KuQ6UQ==
-X-Google-Smtp-Source: ABdhPJx0wKS4OaLbYG7ps6he+395x2uxWDsg+VUCTEXspjydLhgvNgKNrwUEhSmg8kC98FSRSh8R4Q==
-X-Received: by 2002:a05:600c:3d0e:b0:38f:f83b:e7dc with SMTP id bh14-20020a05600c3d0e00b0038ff83be7dcmr34426400wmb.29.1651063279745;
-        Wed, 27 Apr 2022 05:41:19 -0700 (PDT)
-Received: from elver.google.com ([2a00:79e0:15:13:493f:cd0f:324a:323c])
-        by smtp.gmail.com with ESMTPSA id p1-20020a1c7401000000b0038ed3bb00c9sm1471152wmc.6.2022.04.27.05.41.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 05:41:18 -0700 (PDT)
-Date:   Wed, 27 Apr 2022 14:41:13 +0200
-From:   Marco Elver <elver@google.com>
-To:     Daniel Latypov <dlatypov@google.com>
-Cc:     brendanhiggins@google.com, davidgow@google.com,
-        linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
-        linux-kselftest@vger.kernel.org, skhan@linuxfoundation.org,
-        kasan-dev@googlegroups.com, glider@google.com
-Subject: Re: [PATCH 3/3] kfence: test: use new suite_{init/exit} support, add
- .kunitconfig
-Message-ID: <Ymk56YygGUU52CHG@elver.google.com>
-References: <20220426181925.3940286-1-dlatypov@google.com>
- <20220426181925.3940286-3-dlatypov@google.com>
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1651063303; x=1682599303;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=iyYEkoFhdQrL+do7Rmsjwg1bFcTgKI5YlBgHLkqTrKo=;
+  b=BvQs7GgIb7D8nf3vtmrtVJ3kKoHagiLmFKA0sEugFYYjl4YVMmwxBRwY
+   cWr8C3iddQrDlWJIkNG/YNyYg0oL6MjmzyyIeGWFNwNh1ZaBUowotlOCf
+   YpXvlVnHOnosJRYIZwBcVf77RFjRkAW2La8m6DVO2Yh8wn0vueAatKCho
+   A=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 27 Apr 2022 05:41:42 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 05:41:42 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 27 Apr 2022 05:41:42 -0700
+Received: from qian (10.80.80.8) by nalasex01a.na.qualcomm.com (10.47.209.196)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 27 Apr
+ 2022 05:41:40 -0700
+Date:   Wed, 27 Apr 2022 08:41:39 -0400
+From:   Qian Cai <quic_qiancai@quicinc.com>
+To:     Zi Yan <ziy@nvidia.com>
+CC:     David Hildenbrand <david@redhat.com>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Eric Ren <renzhengeek@gmail.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        "Oscar Salvador" <osalvador@suse.de>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH v11 0/6] Use pageblock_order for cma and
+ alloc_contig_range alignment.
+Message-ID: <20220427124139.GA71@qian>
+References: <20220425143118.2850746-1-zi.yan@sent.com>
+ <20220426201855.GA1014@qian>
+ <B621B4DD-5D11-4F0E-AFF5-F8684AE37E57@nvidia.com>
+ <20220426210801.GA1038@qian>
+ <2B9844C8-6D35-41E2-ACB2-9854E7A9C29F@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20220426181925.3940286-3-dlatypov@google.com>
-User-Agent: Mutt/2.1.4 (2021-12-11)
+In-Reply-To: <2B9844C8-6D35-41E2-ACB2-9854E7A9C29F@nvidia.com>
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 11:19AM -0700, 'Daniel Latypov' via kasan-dev wrote:
-> Currently, the kfence test suite could not run via "normal" means since
-> KUnit didn't support per-suite setup/teardown. So it manually called
-> internal kunit functions to run itself.
-> This has some downsides, like missing TAP headers => can't use kunit.py
-> to run or even parse the test results (w/o tweaks).
-> 
-> Use the newly added support and convert it over, adding a .kunitconfig
-> so it's even easier to run from kunit.py.
-> 
-> People can now run the test via
-> $ ./tools/testing/kunit/kunit.py run --kunitconfig=mm/kfence --arch=x86_64
-> ...
-> [11:02:32] Testing complete. Passed: 23, Failed: 0, Crashed: 0, Skipped: 2, Errors: 0
-> [11:02:32] Elapsed time: 43.562s total, 0.003s configuring, 9.268s building, 34.281s running
-> 
-> Cc: kasan-dev@googlegroups.com
-> Signed-off-by: Daniel Latypov <dlatypov@google.com>
+On Tue, Apr 26, 2022 at 05:38:58PM -0400, Zi Yan wrote:
+> Thanks. Do you mind attaching your config file? I cannot reproduce
+> the deadlock locally using my own config. I also see kmemleak_scan
+> in the dumped stack, so it must be something else in addition to
+> memory online/offline causing the issue.
 
-Reviewed-by: Marco Elver <elver@google.com>
+This is on an arm64 server.
 
-> ---
->  mm/kfence/.kunitconfig  |  6 ++++++
->  mm/kfence/kfence_test.c | 31 +++++++++++++------------------
->  2 files changed, 19 insertions(+), 18 deletions(-)
->  create mode 100644 mm/kfence/.kunitconfig
-> 
-> diff --git a/mm/kfence/.kunitconfig b/mm/kfence/.kunitconfig
-> new file mode 100644
-> index 000000000000..f3d65e939bfa
-> --- /dev/null
-> +++ b/mm/kfence/.kunitconfig
-> @@ -0,0 +1,6 @@
-> +CONFIG_KUNIT=y
-> +CONFIG_KFENCE=y
-> +CONFIG_KFENCE_KUNIT_TEST=y
-> +
-> +# Additional dependencies.
-> +CONFIG_FTRACE=y
-> diff --git a/mm/kfence/kfence_test.c b/mm/kfence/kfence_test.c
-> index 1b50f70a4c0f..96206a4ee9ab 100644
-> --- a/mm/kfence/kfence_test.c
-> +++ b/mm/kfence/kfence_test.c
-> @@ -826,14 +826,6 @@ static void test_exit(struct kunit *test)
->  	test_cache_destroy();
->  }
->  
-> -static struct kunit_suite kfence_test_suite = {
-> -	.name = "kfence",
-> -	.test_cases = kfence_test_cases,
-> -	.init = test_init,
-> -	.exit = test_exit,
-> -};
-> -static struct kunit_suite *kfence_test_suites[] = { &kfence_test_suite, NULL };
-> -
->  static void register_tracepoints(struct tracepoint *tp, void *ignore)
->  {
->  	check_trace_callback_type_console(probe_console);
-> @@ -847,11 +839,7 @@ static void unregister_tracepoints(struct tracepoint *tp, void *ignore)
->  		tracepoint_probe_unregister(tp, probe_console, NULL);
->  }
->  
-> -/*
-> - * We only want to do tracepoints setup and teardown once, therefore we have to
-> - * customize the init and exit functions and cannot rely on kunit_test_suite().
-> - */
-> -static int __init kfence_test_init(void)
-> +static int kfence_suite_init(struct kunit_suite *suite)
->  {
->  	/*
->  	 * Because we want to be able to build the test as a module, we need to
-> @@ -859,18 +847,25 @@ static int __init kfence_test_init(void)
->  	 * won't work here.
->  	 */
->  	for_each_kernel_tracepoint(register_tracepoints, NULL);
-> -	return __kunit_test_suites_init(kfence_test_suites);
-> +	return 0;
->  }
->  
-> -static void kfence_test_exit(void)
-> +static void kfence_suite_exit(struct kunit_suite *suite)
->  {
-> -	__kunit_test_suites_exit(kfence_test_suites);
->  	for_each_kernel_tracepoint(unregister_tracepoints, NULL);
->  	tracepoint_synchronize_unregister();
->  }
->  
-> -late_initcall_sync(kfence_test_init);
-> -module_exit(kfence_test_exit);
-> +static struct kunit_suite kfence_test_suite = {
-> +	.name = "kfence",
-> +	.test_cases = kfence_test_cases,
-> +	.init = test_init,
-> +	.exit = test_exit,
-> +	.suite_init = kfence_suite_init,
-> +	.suite_exit = kfence_suite_exit,
-> +};
-> +
-> +kunit_test_suites(&kfence_test_suite);
-
-Much nicer!
-
-Thanks,
--- Marco
+$ make defconfig debug.config
