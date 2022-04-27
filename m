@@ -2,115 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34395C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:43:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D64F0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:46:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236376AbiD0Nq6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 09:46:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35672 "EHLO
+        id S236353AbiD0Ntg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 09:49:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236323AbiD0Nqs (ORCPT
+        with ESMTP id S236295AbiD0Nte (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 09:46:48 -0400
-Received: from bin-mail-out-06.binero.net (bin-mail-out-06.binero.net [195.74.38.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F05A93B56F0
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 06:43:35 -0700 (PDT)
-X-Halon-ID: 07644750-c630-11ec-9627-0050569116f7
-Authorized-sender: andreas@gaisler.com
-Received: from andreas.got.gaisler.com (h-98-128-223-123.na.cust.bahnhof.se [98.128.223.123])
-        by bin-vsp-out-03.atm.binero.net (Halon) with ESMTPA
-        id 07644750-c630-11ec-9627-0050569116f7;
-        Wed, 27 Apr 2022 15:43:33 +0200 (CEST)
-From:   Andreas Larsson <andreas@gaisler.com>
-To:     linux-can@vger.kernel.org
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        linux-kernel@vger.kernel.org, software@gaisler.com
-Subject: [PATCH 3/3] can: grcan: Only use the napi poll budget for rx
-Date:   Wed, 27 Apr 2022 15:43:07 +0200
-Message-Id: <20220427134307.22981-4-andreas@gaisler.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220427134307.22981-1-andreas@gaisler.com>
-References: <20220427134307.22981-1-andreas@gaisler.com>
+        Wed, 27 Apr 2022 09:49:34 -0400
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B08483F56F7;
+        Wed, 27 Apr 2022 06:46:23 -0700 (PDT)
+Received: by mail-io1-xd2a.google.com with SMTP id i20so1608544ion.0;
+        Wed, 27 Apr 2022 06:46:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=prEocCfY7/rW3PwyVmCg0lthn9pqud0hftWHvrexhQo=;
+        b=Icd8BrDBG73K3v3KeV90v27I3S//fAYcIxoebG81LxDXGGDv8rB9GmNkRij5vTWmdN
+         euAaWkfmcfF79GcJKp6KFHPH9RzkAeKM/74/DCeCZlarAPPkbzk7gNwoCJzx/tiUK/RK
+         e7nkz6j1WxehpZ/bAQkxuMSsO9FDLbk/LMVtZ/gtjeoGfqGp5EvcACkVSNkyb/qzXOao
+         Dxq8+DyDtXeDBb5hBbGzkZMbGwCoaB1E/cJAHNHlMTI9xingc9wEdOm5PBeIFMFgdLXA
+         dq4u0oQc/iEQvPQ3QLg5A7pmpk1DcsIgz2DHngsr6MrA0nhNrvZuhzNa88HS0PZed4Fw
+         FI2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=prEocCfY7/rW3PwyVmCg0lthn9pqud0hftWHvrexhQo=;
+        b=xvfiIDCAWkzJ1pvg0TZNLTxtjEWjRZZf6sUAaM4OMgQ7aQoqUpE3PZb1gHw4mGny6h
+         aja4V28zqxEqgDxVdzL/yBPjtP8MkqM9qODQCUOu54wXDCZkcCN2sGav0w1ypF14uiT4
+         ymmvOVWqHwmpQRDPyFcrbU3VmnvPDn2JvCpgfIB7x2Tn5G9Q4yyI6Q4MuFkrtwsS/pzN
+         Z1b33xsy+zmG18k59ZBi+DW7HVdhDM0xPiBzZ0j85wzOmULla+xH9MaWyjQGO+uPrFov
+         NlACg7nIrQnwiKkMzVi58DJmOiceLLpJb6YP3hZalChicMC+hQigXxL1KNOs4ofqxYgj
+         VDRg==
+X-Gm-Message-State: AOAM533Q3NFzZuT/eR1jYI0Mro6WIgZabI1dRkgTTrGm6NzFTLB/cNoo
+        6AmCd8jQHAcC+KYHebdJ62NfRQK01xYA9HLukGE=
+X-Google-Smtp-Source: ABdhPJw1oGQuks3mvOOazLRAbtJVRr5lKyc18XoVK4M5hQMRi3ri7JAx5kNmy6WOgrfyMio1s19YLFN+9Ew7hs7/Za8=
+X-Received: by 2002:a05:6602:210c:b0:654:6490:d2b0 with SMTP id
+ x12-20020a056602210c00b006546490d2b0mr12004333iox.106.1651067183168; Wed, 27
+ Apr 2022 06:46:23 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220426092340.495704-1-eugene.shalygin@gmail.com>
+ <20220426092340.495704-2-eugene.shalygin@gmail.com> <20220426151656.GA3119637@roeck-us.net>
+ <CAB95QASxuS=RDN6MRJ89O0pSpqQSaWFQVeyedGyda01FGtR7GQ@mail.gmail.com>
+ <6d69fb63-a84f-31e5-0a88-4a154e290573@roeck-us.net> <CAB95QARDq1Tr64dvPVemXHRNyu=T5P7LJ_DUn7sdHauUB6daaw@mail.gmail.com>
+ <8a8579df-1fd6-32bb-3e27-297efefe28c4@roeck-us.net> <CAB95QAQPRVO=Cd27QthFZ_fDTr=Nvzqzrh0QnFs5475yTx+qJw@mail.gmail.com>
+ <f155e829-3418-379d-760e-77cf70cb34e9@roeck-us.net>
+In-Reply-To: <f155e829-3418-379d-760e-77cf70cb34e9@roeck-us.net>
+From:   Eugene Shalygin <eugene.shalygin@gmail.com>
+Date:   Wed, 27 Apr 2022 15:46:11 +0200
+Message-ID: <CAB95QASkOP9Fc5cuimWTgRk1VbW5qtPFZ4xrGGqMG5rq6M-Sew@mail.gmail.com>
+Subject: Re: [PATCH v2 1/4] hwmon: (asus-ec-sensors) introduce ec_board_info
+ struct for board data
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The previous split budget between tx and rx made it return not using the
-entire budget but at the same time not having calling called
-napi_complete. This sometimes led to the poll to not be called, and at
-the same time with tx and rx interrupts disabled.
+OK, thanks!
 
-Signed-off-by: Andreas Larsson <andreas@gaisler.com>
----
- drivers/net/can/grcan.c | 22 +++++++---------------
- 1 file changed, 7 insertions(+), 15 deletions(-)
+Eugene
 
-diff --git a/drivers/net/can/grcan.c b/drivers/net/can/grcan.c
-index 2f56d4bbb65c..cb98eadc3b93 100644
---- a/drivers/net/can/grcan.c
-+++ b/drivers/net/can/grcan.c
-@@ -1124,7 +1124,7 @@ static int grcan_close(struct net_device *dev)
- 	return 0;
- }
- 
--static int grcan_transmit_catch_up(struct net_device *dev, int budget)
-+static void grcan_transmit_catch_up(struct net_device *dev)
- {
- 	struct grcan_priv *priv = netdev_priv(dev);
- 	unsigned long flags;
-@@ -1132,7 +1132,7 @@ static int grcan_transmit_catch_up(struct net_device *dev, int budget)
- 
- 	spin_lock_irqsave(&priv->lock, flags);
- 
--	work_done = catch_up_echo_skb(dev, budget, true);
-+	work_done = catch_up_echo_skb(dev, -1, true);
- 	if (work_done) {
- 		if (!priv->resetting && !priv->closing &&
- 		    !(priv->can.ctrlmode & CAN_CTRLMODE_LISTENONLY))
-@@ -1146,8 +1146,6 @@ static int grcan_transmit_catch_up(struct net_device *dev, int budget)
- 	}
- 
- 	spin_unlock_irqrestore(&priv->lock, flags);
--
--	return work_done;
- }
- 
- static int grcan_receive(struct net_device *dev, int budget)
-@@ -1229,19 +1227,13 @@ static int grcan_poll(struct napi_struct *napi, int budget)
- 	struct net_device *dev = priv->dev;
- 	struct grcan_registers __iomem *regs = priv->regs;
- 	unsigned long flags;
--	int tx_work_done, rx_work_done;
--	int rx_budget = budget / 2;
--	int tx_budget = budget - rx_budget;
-+	int work_done;
- 
--	/* Half of the budget for receiving messages */
--	rx_work_done = grcan_receive(dev, rx_budget);
-+	work_done = grcan_receive(dev, budget);
- 
--	/* Half of the budget for transmitting messages as that can trigger echo
--	 * frames being received
--	 */
--	tx_work_done = grcan_transmit_catch_up(dev, tx_budget);
-+	grcan_transmit_catch_up(dev);
- 
--	if (rx_work_done < rx_budget && tx_work_done < tx_budget) {
-+	if (work_done < budget) {
- 		napi_complete(napi);
- 
- 		/* Guarantee no interference with a running reset that otherwise
-@@ -1258,7 +1250,7 @@ static int grcan_poll(struct napi_struct *napi, int budget)
- 		spin_unlock_irqrestore(&priv->lock, flags);
- 	}
- 
--	return rx_work_done + tx_work_done;
-+	return work_done;
- }
- 
- /* Work tx bug by waiting while for the risky situation to clear. If that fails,
--- 
-2.17.1
-
+> You are correct, that is easier. I thought that it calls the probe
+> function directly and bypasses the normal probe handling, but that
+> is not the case. Sorry for the noise.
+>
+> Guenter
