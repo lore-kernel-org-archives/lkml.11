@@ -2,93 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A2A5C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:28:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9205AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:28:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237762AbiD0ObU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 10:31:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43186 "EHLO
+        id S237773AbiD0ObX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 10:31:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237738AbiD0ObR (ORCPT
+        with ESMTP id S237749AbiD0ObR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Apr 2022 10:31:17 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 94BDB260A
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 07:28:04 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 52234ED1;
-        Wed, 27 Apr 2022 07:28:04 -0700 (PDT)
-Received: from donnerap.arm.com (donnerap.cambridge.arm.com [10.1.197.42])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2E20E3F5A1;
-        Wed, 27 Apr 2022 07:28:03 -0700 (PDT)
-From:   Andre Przywara <andre.przywara@arm.com>
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH] clocksource/drivers/sp804: avoid error on multiple instances
-Date:   Wed, 27 Apr 2022 15:27:59 +0100
-Message-Id: <20220427142759.4138694-1-andre.przywara@arm.com>
-X-Mailer: git-send-email 2.25.1
+Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F14936352;
+        Wed, 27 Apr 2022 07:28:02 -0700 (PDT)
+Received: from in01.mta.xmission.com ([166.70.13.51]:48032)
+        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1njie7-00H3An-CN; Wed, 27 Apr 2022 08:27:59 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:35868 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1njie6-008bzq-9O; Wed, 27 Apr 2022 08:27:58 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     rjw@rjwysocki.net, Oleg Nesterov <oleg@redhat.com>,
+        mingo@kernel.org, vincent.guittot@linaro.org,
+        dietmar.eggemann@arm.com, rostedt@goodmis.org, mgorman@suse.de,
+        bigeasy@linutronix.de, Will Deacon <will@kernel.org>,
+        tj@kernel.org, linux-pm@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        inux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>
+References: <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
+        <20220426225211.308418-7-ebiederm@xmission.com>
+        <87a6c6bq36.fsf@email.froward.int.ebiederm.org>
+Date:   Wed, 27 Apr 2022 09:27:50 -0500
+In-Reply-To: <87a6c6bq36.fsf@email.froward.int.ebiederm.org> (Eric
+        W. Biederman's message of "Wed, 27 Apr 2022 08:42:05 -0500")
+Message-ID: <87o80m8uu1.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-XM-SPF: eid=1njie6-008bzq-9O;;;mid=<87o80m8uu1.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX1+QyTq7eWW6GZa8ahW1NUDzmexqHmUE7lg=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH 7/9] ptrace: Simplify the wait_task_inactive call in
+ ptrace_check_attach
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a machine sports more than one SP804 timer instance, we only bring
-up the first one, since multiple timers of the same kind are not useful
-to Linux. As this is intentional behaviour, we should not return an
-error message, as we do today:
-===============
-[    0.000800] Failed to initialize '/bus@8000000/motherboard-bus@8000000/iofpga-bus@300000000/timer@120000': -22
-===============
+"Eric W. Biederman" <ebiederm@xmission.com> writes:
 
-Replace the -EINVAL return with an informative message and return 0
-instead.
+> "Eric W. Biederman" <ebiederm@xmission.com> writes:
+>
+>> Asking wait_task_inactive to verify that tsk->__state == __TASK_TRACED
+>> was needed to detect the when ptrace_stop would decide not to stop
+>> after calling "set_special_state(TASK_TRACED)".  With the recent
+>> cleanups ptrace_stop will always stop after calling set_special_state.
+>>
+>> Take advatnage of this by no longer asking wait_task_inactive to
+>> verify the state.  If a bug is hit and wait_task_inactive does not
+>> succeed warn and return -ESRCH.
+>
+> As Oleg noticed upthread there are more reasons than simply
+> !current->ptrace for wait_task_inactive to fail.  In particular a fatal
+> signal can be received any time before JOBCTL_DELAY_SIGKILL.
+>
+> So this change is not safe.  I will respin this one.
 
-Also we do not reach the init function anymore if the DT node is
-disabled (as this is now handled by OF_DECLARE), so remove the explicit
-check for that case.
+Bah.  I definitely need to update the description so there is going to
+be a v2.
 
-This fixes a long standing bogus error when booting ARM's fastmodels.
+I confused myself.  This change is safe because ptrace_freeze_traced
+fails if there is a pending fatal signal, and arranges that no new fatal
+signals will wake up the task.
 
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
----
- drivers/clocksource/timer-sp804.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+Eric
 
-diff --git a/drivers/clocksource/timer-sp804.c b/drivers/clocksource/timer-sp804.c
-index 401d592e85f5a..30cbc580e0448 100644
---- a/drivers/clocksource/timer-sp804.c
-+++ b/drivers/clocksource/timer-sp804.c
-@@ -259,6 +259,12 @@ static int __init sp804_of_init(struct device_node *np, struct sp804_timer *time
- 	struct clk *clk1, *clk2;
- 	const char *name = of_get_property(np, "compatible", NULL);
- 
-+	if (initialized) {
-+		pr_info("%s: only instantiating one timer\n",
-+			of_node_full_name(np));
-+		return 0;
-+	}
-+
- 	base = of_iomap(np, 0);
- 	if (!base)
- 		return -ENXIO;
-@@ -270,11 +276,6 @@ static int __init sp804_of_init(struct device_node *np, struct sp804_timer *time
- 	writel(0, timer1_base + timer->ctrl);
- 	writel(0, timer2_base + timer->ctrl);
- 
--	if (initialized || !of_device_is_available(np)) {
--		ret = -EINVAL;
--		goto err;
--	}
--
- 	clk1 = of_clk_get(np, 0);
- 	if (IS_ERR(clk1))
- 		clk1 = NULL;
--- 
-2.25.1
-
+>> Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+>> ---
+>>  kernel/ptrace.c | 14 +++-----------
+>>  1 file changed, 3 insertions(+), 11 deletions(-)
+>>
+>> diff --git a/kernel/ptrace.c b/kernel/ptrace.c
+>> index 16d1a84a2cae..0634da7ac685 100644
+>> --- a/kernel/ptrace.c
+>> +++ b/kernel/ptrace.c
+>> @@ -265,17 +265,9 @@ static int ptrace_check_attach(struct task_struct *child, bool ignore_state)
+>>  	}
+>>  	read_unlock(&tasklist_lock);
+>>  
+>> -	if (!ret && !ignore_state) {
+>> -		if (!wait_task_inactive(child, __TASK_TRACED)) {
+>> -			/*
+>> -			 * This can only happen if may_ptrace_stop() fails and
+>> -			 * ptrace_stop() changes ->state back to TASK_RUNNING,
+>> -			 * so we should not worry about leaking __TASK_TRACED.
+>> -			 */
+>> -			WARN_ON(READ_ONCE(child->__state) == __TASK_TRACED);
+>> -			ret = -ESRCH;
+>> -		}
+>> -	}
+>> +	if (!ret && !ignore_state &&
+>> +	    WARN_ON_ONCE(!wait_task_inactive(child, 0)))
+>> +		ret = -ESRCH;
+>>  
+>>  	return ret;
+>>  }
+>
+> Eric
