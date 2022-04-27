@@ -2,313 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C21EDC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:52:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05980C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:53:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230421AbiD0Kz3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 06:55:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51850 "EHLO
+        id S230439AbiD0K4S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 06:56:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230348AbiD0Kz1 (ORCPT
+        with ESMTP id S230481AbiD0K4N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 06:55:27 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B038B4A18F3
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 03:27:38 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id d15so1152411pll.10
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 03:27:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=5rTKWkjlHgOXr6kl9UzprHIsMJneYwDS96kK0o+RqvA=;
-        b=dKnZ+95bJGasLjxZvMhXCdPJ8FPh986Z3/p2kElWoyZFQ19AGqrCsyjrBl3Zj+jOFe
-         cpkoqo71cA/CQxE9HAWimnkUxZPVzFD4gMNZXSVrDj/gVvFsaprALNEH0QVjwfQYUCAg
-         nooayKB3XSqsYWD0krgysHqsMQoOTOxff/yX8pMVScF7Reakd3CmoefsrIUYL8qCcQgA
-         6GxBsVS3/663ePc6R6KdZCv2r7xmTn9NkUB/DmFZCUhaja45n8HKmMySP/GtiH7B+zuE
-         WMgO6mNCOwTpffK3DCq6WtEKFkKj3w4iL1ouqYYlzq7MU62/nxJLtPiZLoIp1j4Xsnb1
-         1/EA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=5rTKWkjlHgOXr6kl9UzprHIsMJneYwDS96kK0o+RqvA=;
-        b=FtN791pKCNMJRCUPmNQodbwg7keD+LQLe21l1K4s6luGQOf+ZUlxuPpbpdH3Sk3oee
-         45bKhyiaGQ0ChycYLthkQG3r5oKAwCaiDBpTPlqYgRERB8/1tsWgh5mtn2+LwwV94/H9
-         eKR8+epWTBoDO4J6gPKVQXegmrV+oh4HMf1eWEZw904+nn3po1C52fsXyyh8+NvNiOpD
-         80R2lbl0P4S/VbfIfmOTwEmFEq7n2YpummHYPo/ofDqUSEQenMtc+ptN4OL8nkCK2Hvq
-         474bgW16jNrokDrIRUUgSZxdIWGNxPPk9FZuueidwi+ALJZ5oHRCMKiVlltAa1qdMr9D
-         s1IA==
-X-Gm-Message-State: AOAM530zIz/GH+VdHWeeK0v3RAu5hyy600RD1LIG0bGeqcQa9zjBxRT1
-        6DshEJMasdkgZ3F65MNo5r1sacyRTHDN
-X-Google-Smtp-Source: ABdhPJyXLBYBe4pfEHc+o9PyHyB69LKzRqNhxJ1C506kNv19vpPKkF+ATHy+xtzlS6qmYIB9rzncig==
-X-Received: by 2002:a17:902:e791:b0:151:dbbd:aeae with SMTP id cp17-20020a170902e79100b00151dbbdaeaemr27675625plb.171.1651054706453;
-        Wed, 27 Apr 2022 03:18:26 -0700 (PDT)
-Received: from thinkpad ([117.207.26.174])
-        by smtp.gmail.com with ESMTPSA id mm5-20020a17090b358500b001cd4989ff41sm2354861pjb.8.2022.04.27.03.18.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 03:18:26 -0700 (PDT)
-Date:   Wed, 27 Apr 2022 15:48:20 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     kishon@ti.com, bhelgaas@google.com, robh@kernel.org,
-        lorenzo.pieralisi@arm.com
-Cc:     kw@linux.com, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Om Prakash Singh <omp@nvidia.com>,
-        Vidya Sagar <vidyas@nvidia.com>
-Subject: Re: [PATCH] PCI: designware-ep: Move DBI access to init_complete if
- notifier is used
-Message-ID: <20220427101820.GC2536@thinkpad>
-References: <20220330060515.22328-1-manivannan.sadhasivam@linaro.org>
+        Wed, 27 Apr 2022 06:56:13 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4690D3A03F7;
+        Wed, 27 Apr 2022 03:30:59 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id EF7831F38D;
+        Wed, 27 Apr 2022 10:30:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1651055458; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0SYO6S4wSS5TgNnn69ULkvPYv5FP7agaVxb8vZruMBA=;
+        b=ZtMWsp/vgSv0x+hV9X6XBgzBRpYAhz2Ni1JKSL4BLbE+tikPu/yDLv/LYgJmCiEku80xrF
+        1X5NMCVCrTj2gFM7w18PXmyMw4bPUaS1tJuAbxhTAsejm5cXz2+5gSgVWmlBgvv1zUAQUj
+        N9wH0oEGf1mWY6CurDEf3E9c9npyslo=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1651055458;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0SYO6S4wSS5TgNnn69ULkvPYv5FP7agaVxb8vZruMBA=;
+        b=6X6DqUjKXVYhZDBL9goi/XEUFK1JQuukpkPAwhQWeog8eUle97FBRv3cZZK8i/BbQk5H41
+        5dC/EF6L72Lx8jCw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 73EA91323E;
+        Wed, 27 Apr 2022 10:30:57 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id wzGnGmEbaWJ0AgAAMHmgww
+        (envelope-from <hare@suse.de>); Wed, 27 Apr 2022 10:30:57 +0000
+Message-ID: <96acbc76-1de8-4be0-314c-4a6a9284c5a3@suse.de>
+Date:   Wed, 27 Apr 2022 12:30:56 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220330060515.22328-1-manivannan.sadhasivam@linaro.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v4 01/10] block: Introduce queue limits for copy-offload
+ support
+Content-Language: en-US
+To:     Nitesh Shetty <nj.shetty@samsung.com>
+Cc:     chaitanyak@nvidia.com, linux-block@vger.kernel.org,
+        linux-scsi@vger.kernel.org, dm-devel@redhat.com,
+        linux-nvme@lists.infradead.org, linux-fsdevel@vger.kernel.org,
+        axboe@kernel.dk, msnitzer@redhat.com, bvanassche@acm.org,
+        martin.petersen@oracle.com, kbusch@kernel.org, hch@lst.de,
+        Frederick.Knight@netapp.com, osandov@fb.com,
+        lsf-pc@lists.linux-foundation.org, djwong@kernel.org,
+        josef@toxicpanda.com, clm@fb.com, dsterba@suse.com, tytso@mit.edu,
+        jack@suse.com, nitheshshetty@gmail.com, gost.dev@samsung.com,
+        Kanchan Joshi <joshi.k@samsung.com>,
+        Arnav Dawn <arnav.dawn@samsung.com>,
+        Alasdair Kergon <agk@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        James Smart <james.smart@broadcom.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Naohiro Aota <naohiro.aota@wdc.com>,
+        Johannes Thumshirn <jth@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-kernel@vger.kernel.org
+References: <20220426101241.30100-1-nj.shetty@samsung.com>
+ <CGME20220426101910epcas5p4fd64f83c6da9bbd891107d158a2743b5@epcas5p4.samsung.com>
+ <20220426101241.30100-2-nj.shetty@samsung.com>
+From:   Hannes Reinecke <hare@suse.de>
+In-Reply-To: <20220426101241.30100-2-nj.shetty@samsung.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 11:35:15AM +0530, Manivannan Sadhasivam wrote:
-> For controllers supporting the CORE_INIT notifier, the resources are
-> supposed to be enabled in the init_complete function. Currently,
-> these controllers are enabling the resources during probe time due to
-> the DBI access happens in dw_pcie_ep_init().
+On 4/26/22 12:12, Nitesh Shetty wrote:
+> Add device limits as sysfs entries,
+>          - copy_offload (RW)
+>          - copy_max_bytes (RW)
+>          - copy_max_hw_bytes (RO)
+>          - copy_max_range_bytes (RW)
+>          - copy_max_range_hw_bytes (RO)
+>          - copy_max_nr_ranges (RW)
+>          - copy_max_nr_ranges_hw (RO)
 > 
-> This creates the dependency with the host PCIe controller since the
-> resource enablement like PHY depends on host PCIe to be up. For the
-> standalone endpoint usecase, this would never work. So let's move all DBI
-> access to init_complete function if CORE_INIT notifier is used. For the
-> controllers those doesn't support this notifier, this change is a NO-OP.
+> Above limits help to split the copy payload in block layer.
+> copy_offload, used for setting copy offload(1) or emulation(0).
+> copy_max_bytes: maximum total length of copy in single payload.
+> copy_max_range_bytes: maximum length in a single entry.
+> copy_max_nr_ranges: maximum number of entries in a payload.
+> copy_max_*_hw_*: Reflects the device supported maximum limits.
 > 
-> Cc: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-> Cc: Om Prakash Singh <omp@nvidia.com>
-> Cc: Vidya Sagar <vidyas@nvidia.com>
-> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-
-A gentle ping on this patch!
-
-Thanks,
-Mani
-
+> Signed-off-by: Nitesh Shetty <nj.shetty@samsung.com>
+> Signed-off-by: Kanchan Joshi <joshi.k@samsung.com>
+> Signed-off-by: Arnav Dawn <arnav.dawn@samsung.com>
 > ---
->  .../pci/controller/dwc/pcie-designware-ep.c   | 138 ++++++++++++------
->  drivers/pci/controller/dwc/pcie-designware.h  |   1 +
->  2 files changed, 94 insertions(+), 45 deletions(-)
+>   Documentation/ABI/stable/sysfs-block |  83 ++++++++++++++++
+>   block/blk-settings.c                 |  59 ++++++++++++
+>   block/blk-sysfs.c                    | 138 +++++++++++++++++++++++++++
+>   include/linux/blkdev.h               |  13 +++
+>   4 files changed, 293 insertions(+)
 > 
-> diff --git a/drivers/pci/controller/dwc/pcie-designware-ep.c b/drivers/pci/controller/dwc/pcie-designware-ep.c
-> index 0eda8236c125..fb2bf4bf5ba0 100644
-> --- a/drivers/pci/controller/dwc/pcie-designware-ep.c
-> +++ b/drivers/pci/controller/dwc/pcie-designware-ep.c
-> @@ -636,6 +636,63 @@ static unsigned int dw_pcie_ep_find_ext_capability(struct dw_pcie *pci, int cap)
->  	return 0;
->  }
->  
-> +static int dw_pcie_iatu_config(struct dw_pcie_ep *ep)
-> +{
-> +	struct dw_pcie *pci = to_dw_pcie_from_ep(ep);
-> +	struct device *dev = pci->dev;
-> +	void *addr;
-> +
-> +	dw_pcie_iatu_detect(pci);
-> +
-> +	ep->ib_window_map = devm_kcalloc(dev,
-> +					 BITS_TO_LONGS(pci->num_ib_windows),
-> +					 sizeof(long),
-> +					 GFP_KERNEL);
-> +	if (!ep->ib_window_map)
-> +		return -ENOMEM;
-> +
-> +	ep->ob_window_map = devm_kcalloc(dev,
-> +					 BITS_TO_LONGS(pci->num_ob_windows),
-> +					 sizeof(long),
-> +					 GFP_KERNEL);
-> +	if (!ep->ob_window_map)
-> +		return -ENOMEM;
-> +
-> +	addr = devm_kcalloc(dev, pci->num_ob_windows, sizeof(phys_addr_t),
-> +			    GFP_KERNEL);
-> +	if (!addr)
-> +		return -ENOMEM;
-> +
-> +	ep->outbound_addr = addr;
-> +
-> +	return 0;
-> +}
-> +
-> +static int dw_pcie_ep_func_init(struct dw_pcie_ep *ep)
-> +{
-> +	struct dw_pcie *pci = to_dw_pcie_from_ep(ep);
-> +	struct dw_pcie_ep_func *ep_func;
-> +	struct pci_epc *epc = ep->epc;
-> +	struct device *dev = pci->dev;
-> +	u8 func_no;
-> +
-> +	for (func_no = 0; func_no < epc->max_functions; func_no++) {
-> +		ep_func = devm_kzalloc(dev, sizeof(*ep_func), GFP_KERNEL);
-> +		if (!ep_func)
-> +			return -ENOMEM;
-> +
-> +		ep_func->func_no = func_no;
-> +		ep_func->msi_cap = dw_pcie_ep_find_capability(ep, func_no,
-> +							      PCI_CAP_ID_MSI);
-> +		ep_func->msix_cap = dw_pcie_ep_find_capability(ep, func_no,
-> +							       PCI_CAP_ID_MSIX);
-> +
-> +		list_add_tail(&ep_func->list, &ep->func_list);
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  int dw_pcie_ep_init_complete(struct dw_pcie_ep *ep)
->  {
->  	struct dw_pcie *pci = to_dw_pcie_from_ep(ep);
-> @@ -643,7 +700,22 @@ int dw_pcie_ep_init_complete(struct dw_pcie_ep *ep)
->  	unsigned int nbars;
->  	u8 hdr_type;
->  	u32 reg;
-> -	int i;
-> +	int ret, i;
-> +
-> +	if (ep->core_init_notifier) {
-> +		ret = dw_pcie_iatu_config(ep);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
-> +	if (ep->core_init_notifier) {
-> +		ret = dw_pcie_ep_func_init(ep);
-> +		if (ret)
-> +			return ret;
-> +
-> +		if (ep->ops->ep_init)
-> +			ep->ops->ep_init(ep);
-> +	}
->  
->  	hdr_type = dw_pcie_readb_dbi(pci, PCI_HEADER_TYPE) &
->  		   PCI_HEADER_TYPE_MASK;
-> @@ -677,8 +749,6 @@ EXPORT_SYMBOL_GPL(dw_pcie_ep_init_complete);
->  int dw_pcie_ep_init(struct dw_pcie_ep *ep)
->  {
->  	int ret;
-> -	void *addr;
-> -	u8 func_no;
->  	struct resource *res;
->  	struct pci_epc *epc;
->  	struct dw_pcie *pci = to_dw_pcie_from_ep(ep);
-> @@ -686,7 +756,12 @@ int dw_pcie_ep_init(struct dw_pcie_ep *ep)
->  	struct platform_device *pdev = to_platform_device(dev);
->  	struct device_node *np = dev->of_node;
->  	const struct pci_epc_features *epc_features;
-> -	struct dw_pcie_ep_func *ep_func;
-> +
-> +	if (ep->ops->get_features) {
-> +		epc_features = ep->ops->get_features(ep);
-> +		if (epc_features->core_init_notifier)
-> +			ep->core_init_notifier = true;
-> +	}
->  
->  	INIT_LIST_HEAD(&ep->func_list);
->  
-> @@ -708,7 +783,11 @@ int dw_pcie_ep_init(struct dw_pcie_ep *ep)
->  		}
->  	}
->  
-> -	dw_pcie_iatu_detect(pci);
-> +	if (!ep->core_init_notifier) {
-> +		ret = dw_pcie_iatu_config(ep);
-> +		if (ret)
-> +			return ret;
-> +	}
->  
->  	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "addr_space");
->  	if (!res)
-> @@ -717,26 +796,6 @@ int dw_pcie_ep_init(struct dw_pcie_ep *ep)
->  	ep->phys_base = res->start;
->  	ep->addr_size = resource_size(res);
->  
-> -	ep->ib_window_map = devm_kcalloc(dev,
-> -					 BITS_TO_LONGS(pci->num_ib_windows),
-> -					 sizeof(long),
-> -					 GFP_KERNEL);
-> -	if (!ep->ib_window_map)
-> -		return -ENOMEM;
-> -
-> -	ep->ob_window_map = devm_kcalloc(dev,
-> -					 BITS_TO_LONGS(pci->num_ob_windows),
-> -					 sizeof(long),
-> -					 GFP_KERNEL);
-> -	if (!ep->ob_window_map)
-> -		return -ENOMEM;
-> -
-> -	addr = devm_kcalloc(dev, pci->num_ob_windows, sizeof(phys_addr_t),
-> -			    GFP_KERNEL);
-> -	if (!addr)
-> -		return -ENOMEM;
-> -	ep->outbound_addr = addr;
-> -
->  	if (pci->link_gen < 1)
->  		pci->link_gen = of_pci_get_max_link_speed(np);
->  
-> @@ -753,23 +812,15 @@ int dw_pcie_ep_init(struct dw_pcie_ep *ep)
->  	if (ret < 0)
->  		epc->max_functions = 1;
->  
-> -	for (func_no = 0; func_no < epc->max_functions; func_no++) {
-> -		ep_func = devm_kzalloc(dev, sizeof(*ep_func), GFP_KERNEL);
-> -		if (!ep_func)
-> -			return -ENOMEM;
-> -
-> -		ep_func->func_no = func_no;
-> -		ep_func->msi_cap = dw_pcie_ep_find_capability(ep, func_no,
-> -							      PCI_CAP_ID_MSI);
-> -		ep_func->msix_cap = dw_pcie_ep_find_capability(ep, func_no,
-> -							       PCI_CAP_ID_MSIX);
-> +	if (!ep->core_init_notifier) {
-> +		ret = dw_pcie_ep_func_init(ep);
-> +		if (ret)
-> +			return ret;
->  
-> -		list_add_tail(&ep_func->list, &ep->func_list);
-> +		if (ep->ops->ep_init)
-> +			ep->ops->ep_init(ep);
->  	}
->  
-> -	if (ep->ops->ep_init)
-> -		ep->ops->ep_init(ep);
-> -
->  	ret = pci_epc_mem_init(epc, ep->phys_base, ep->addr_size,
->  			       ep->page_size);
->  	if (ret < 0) {
-> @@ -784,12 +835,9 @@ int dw_pcie_ep_init(struct dw_pcie_ep *ep)
->  		return -ENOMEM;
->  	}
->  
-> -	if (ep->ops->get_features) {
-> -		epc_features = ep->ops->get_features(ep);
-> -		if (epc_features->core_init_notifier)
-> -			return 0;
-> -	}
-> +	if (!ep->core_init_notifier)
-> +		return dw_pcie_ep_init_complete(ep);
->  
-> -	return dw_pcie_ep_init_complete(ep);
-> +	return 0;
->  }
->  EXPORT_SYMBOL_GPL(dw_pcie_ep_init);
-> diff --git a/drivers/pci/controller/dwc/pcie-designware.h b/drivers/pci/controller/dwc/pcie-designware.h
-> index 7d6e9b7576be..aadb14159df7 100644
-> --- a/drivers/pci/controller/dwc/pcie-designware.h
-> +++ b/drivers/pci/controller/dwc/pcie-designware.h
-> @@ -242,6 +242,7 @@ struct dw_pcie_ep {
->  	void __iomem		*msi_mem;
->  	phys_addr_t		msi_mem_phys;
->  	struct pci_epf_bar	*epf_bar[PCI_STD_NUM_BARS];
-> +	bool			core_init_notifier;
->  };
->  
->  struct dw_pcie_ops {
-> -- 
-> 2.25.1
-> 
+
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+
+Cheers,
+
+Hannes
+-- 
+Dr. Hannes Reinecke		           Kernel Storage Architect
+hare@suse.de			                  +49 911 74053 688
+SUSE Software Solutions Germany GmbH, Maxfeldstr. 5, 90409 Nürnberg
+HRB 36809 (AG Nürnberg), GF: Felix Imendörffer
