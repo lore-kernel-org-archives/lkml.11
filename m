@@ -2,69 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D565C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 03:03:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2FE9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 03:07:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357349AbiD0DGa (ORCPT
+        id S1357375AbiD0DKa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 23:06:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49222 "EHLO
+        Tue, 26 Apr 2022 23:10:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232067AbiD0DG0 (ORCPT
+        with ESMTP id S1357362AbiD0DJ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 23:06:26 -0400
-Received: from nksmu.kylinos.cn (mailgw.kylinos.cn [123.150.8.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 025C6340C2;
-        Tue, 26 Apr 2022 20:03:16 -0700 (PDT)
-X-UUID: 2b590d7d9a4c4b11bbec5992426546b3-20220427
-X-UUID: 2b590d7d9a4c4b11bbec5992426546b3-20220427
-Received: from cs2c.com.cn [(172.17.111.24)] by nksmu.kylinos.cn
-        (envelope-from <lienze@kylinos.cn>)
-        (Generic MTA)
-        with ESMTP id 339532612; Wed, 27 Apr 2022 11:01:43 +0800
-X-ns-mid: postfix-6268B26F-7169302919
-Received: from ubuntu (unknown [172.30.60.63])
-        by cs2c.com.cn (NSMail) with ESMTPA id A8AAA3848664;
-        Wed, 27 Apr 2022 03:03:11 +0000 (UTC)
-Date:   Wed, 27 Apr 2022 11:03:11 +0800
-From:   Enze Li <lienze@kylinos.cn>
-To:     martin.petersen@oracle.com
-Cc:     jejb@linux.ibm.com, lienze@kylinos.cn,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org
-Subject: Re: [PATCH] scsi: sr: add handling of memory allocation failure in
- get_capabilities
-Message-ID: <20220427110311.301172b9@ubuntu>
-In-Reply-To: <yq1ilqwt3ml.fsf@ca-mkp.ca.oracle.com>
+        Tue, 26 Apr 2022 23:09:58 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFEBD35DC8
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 20:06:48 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id j6so693997ejc.13
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 20:06:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5pUdY4DuhndvUjRCdZpuhyNHEEZPCX6wjZH7Y0BBjOs=;
+        b=MMzKYlNTUYW6BDIRK8K13taSCkVye8khVNBJGeE9UsfetHvXRw2ROzem+96mVFCZN7
+         b5LWUcoeCd2yM+yq0dJb7zMfvK/wlsIYSeqnQiW1y15LcVd63/goFL/WOf2OEG5cB+pm
+         86JnyL1PFwTSMhYQb6rr1aM5oR3HtVSNMcCGzwYjMCZco3bBKcdHaF6eQF0tY8s2FUO9
+         epSGkQoT9TnG4+Gf941Qyc30HgUsrhaIc57yj+57cadLLUTIt0lcNubLzaXPzL0/cd9Y
+         bISfSkPCVFFgnYCyTqZgOrgYJUFPkSet1WHiONHpCa8oMzeuV3ey1PWpoU7eLvjkrg6d
+         A1Hg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5pUdY4DuhndvUjRCdZpuhyNHEEZPCX6wjZH7Y0BBjOs=;
+        b=1pn3dVIEjK3w3ElkTSS189a3VgXZLiZaoP0A9C42PHypSGc1xnF4mHoaoyFFUjMUXf
+         FrGp7uKPuqNbpsLODkDHUN2/JVdVY61io2/XqYxx3czYNccupINhXx/KQElsH4te6lkW
+         4NDI2zQMy6NANpVerMMspnCQ4QVMMjfsQV42p9orEsxexTm4R9PNlAwDe4tyRT0AfQvR
+         k/QKsk96sqOY7+1Spd+Qi9NeVWUaBbzuZxpz/7zj+3/e8c5pKvEiUXNUYWFH5cNz7jnH
+         oiLMMcNGSx6GehIsRaHbD5FJAWx2iKN9ItEHz756W2FtP9/HnKzgAtIXOKsGqDKu0CXk
+         bx5A==
+X-Gm-Message-State: AOAM532Qh8GDKIYpnS6YHfyL2wMSdiVu3zHRNgAZvp9JIhV1i6CdSP05
+        AhR8JrPIdLvxWVYqcjpTMPVL1QjJ69qLcv0SzNLkzc9qbII=
+X-Google-Smtp-Source: ABdhPJyEXCuSN1HclOa7UelXGrhp+PaWiRDicL+m2sYepa12vT+aKEZLSjwZ6Kd/41ciQ06EOuYLgEs6KrVCNPXG9ao=
+X-Received: by 2002:a17:906:314e:b0:6f0:659:963 with SMTP id
+ e14-20020a170906314e00b006f006590963mr24850096eje.358.1651028807135; Tue, 26
+ Apr 2022 20:06:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220426181925.3940286-1-dlatypov@google.com> <20220426181925.3940286-2-dlatypov@google.com>
+ <CABVgOSkqymYzwaQ68AdEC5yake9VT8HkQmqbyi+9-bg1Jk1UAQ@mail.gmail.com>
+In-Reply-To: <CABVgOSkqymYzwaQ68AdEC5yake9VT8HkQmqbyi+9-bg1Jk1UAQ@mail.gmail.com>
+From:   Daniel Latypov <dlatypov@google.com>
+Date:   Tue, 26 Apr 2022 22:06:35 -0500
+Message-ID: <CAGS_qxrowBiRBBhNmo+RyQSR6NQphkzx1k3HZ7KqXUNDZFZDzw@mail.gmail.com>
+Subject: Re: [PATCH 2/3] kunit: add ability to specify suite-level init and
+ exit functions
+To:     David Gow <davidgow@google.com>
+Cc:     Brendan Higgins <brendanhiggins@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        KUnit Development <kunit-dev@googlegroups.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Martin,
-
-Thank you for the review.  I've fixed the issue you pointed out.
-v2 of this patch is here:
-https://lore.kernel.org/all/20220427025647.298358-1-lienze@kylinos.cn/
-
-Thanks,
-Enze
-
->Enze,
+On Tue, Apr 26, 2022 at 8:56 PM David Gow <davidgow@google.com> wrote:
+> >
+> >  static size_t kunit_suite_counter = 1;
+> >
+> > -static void kunit_print_suite_end(struct kunit_suite *suite)
+> > +static void kunit_print_suite_end(struct kunit_suite *suite, int init_err)
 >
->> @@ -669,8 +669,9 @@ static int sr_probe(struct device *dev)
->>  
->>  	sdev->sector_size = 2048;	/* A guess, just in case */
->>  
->> -	/* FIXME: need to handle a get_capabilities failure properly
->> ?? */
->> -	get_capabilities(cd);
->> +	error = -ENOMEM;
->> +	if (get_capabilities(cd))
->> +		goto fail_put;
+> A part of me feels that it'd be nicer to have the init_err be part of
+> struct kunit_suite, and have kunit_suite_has_succeeded() take it into
+> account. It could go either way, though -- WDYT?
+
+Yeah, passing it around as a parameter felt a bit icky.
+But I think adding it in as a field feels worse.
+
+Another thought: perhaps have this function take a `kunit_status`
+parameter instead?
+Moving the ?: expression below out into the caller isn't that bad, imo.
+
 >
->Shouldn't this be 'goto fail_minor;'?
 >
->-- 
->Martin K. Petersen	Oracle Linux Engineering
+> >  {
+> > +       enum kunit_status status =
+> > +               init_err ? KUNIT_FAILURE : kunit_suite_has_succeeded(suite);
+> > +
