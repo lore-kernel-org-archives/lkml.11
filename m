@@ -2,155 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39146C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:59:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C54FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:00:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241317AbiD0QDG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:03:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54766 "EHLO
+        id S241638AbiD0QDn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:03:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241197AbiD0QCd (ORCPT
+        with ESMTP id S241571AbiD0QDX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:02:33 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEB001869E8
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 08:59:04 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id a1so2479454edt.3
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 08:59:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=63VeYgzArcJTAJPbGvfo3jR2495WIely7Cl6nb2vvt4=;
-        b=ptUeoIdrGVpAlxgfm3SHHA/2ZZYRkB1tr41w4xLCIFu+v1tBxUR8EKRrA22d3aqLFK
-         lHkr2M/0Ek9Gxz9mNDmxnyddPkTpB0zAwH4h5WgmXXPWVRvQzP+bn3PGIy+1ttDo0NHu
-         6NpRv8nG57JtjPD5P/mxp2lYiGubwu1ugphT9FhhFJ+WUkkD3uwEFdK4rsIESN+SaZVj
-         mTXG08wUSyIs9KZopuUHhutWfHyGXi6kU7sWj/yfWgVFoT8Nsb6mpPSq7qoHEhrgVsvR
-         g/sBCyVF7QRkcvnpuYXY7h2qhmhqKqeK/RnhXz1Ut2JLcG4G7XudGpe2wrMMhvb7mCfp
-         STxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=63VeYgzArcJTAJPbGvfo3jR2495WIely7Cl6nb2vvt4=;
-        b=uO+PoqaM3hfY1lCkJGd3bTwyH9a6nWOkUpsNeOXYOjS8sZrczVjvW96DhtxxjGZur7
-         Z5AZTFmbdihiWRczCZ/ANaj+JfttXAio7/DyBB3C1Nbmgsum86ez7k9VTFc9r9Utow8E
-         XcmJOWxxYUWamwCL6iXCd0JwfnXx2goe8vbIsqnAP9eYeM/XVnQ1mgfYfAMIKIBFxoYt
-         Kut1mnoMoTNRsykl4RADI68bNcz/jchSBjs5lcMvdMijINDcf9l4kUoNEI44G/BgB46w
-         SpN6S3Yjz1ZcWqOeVuATUEkX8DySQKw7TZK/ytE2d9D5cpZdhJxlV2wYf0FxBR2dxT8b
-         hRQA==
-X-Gm-Message-State: AOAM530XcZ/f1hH45csS5dK/t84VlzIQpji55ly1ZcSx3x/t4b08rlrJ
-        MctO/7pDmc9NkjawGNFezO2INQ==
-X-Google-Smtp-Source: ABdhPJzy/efEMnS4dAAty/FMYgqViLiv7F+JrXcmW96LxbDzDhkVE0m0Uv5c16HuMio/TX6Np4dhZA==
-X-Received: by 2002:a05:6402:524e:b0:423:e919:8eb4 with SMTP id t14-20020a056402524e00b00423e9198eb4mr31487595edd.153.1651075140245;
-        Wed, 27 Apr 2022 08:59:00 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id l20-20020a1709062a9400b006ce71a88bf5sm6931993eje.183.2022.04.27.08.58.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 08:58:59 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Broadcom Kernel Team <bcm-kernel-feedback-list@broadcom.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH 09/10] arm64: dts: exynos: use proper 'dma-channels/requests' properties
-Date:   Wed, 27 Apr 2022 17:58:39 +0200
-Message-Id: <20220427155840.596535-10-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220427155840.596535-1-krzysztof.kozlowski@linaro.org>
-References: <20220427155840.596535-1-krzysztof.kozlowski@linaro.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 27 Apr 2022 12:03:23 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 44635170E33;
+        Wed, 27 Apr 2022 08:59:35 -0700 (PDT)
+Received: from smtpclient.apple (d66-183-91-182.bchsia.telus.net [66.183.91.182])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 6DA7720E97CA;
+        Wed, 27 Apr 2022 08:58:53 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6DA7720E97CA
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1651075134;
+        bh=LOLk8KFWAb5rXU/Jm0ZFnROrkWq5xdzno1Ze707Mg8Q=;
+        h=Subject:From:In-Reply-To:Date:Cc:References:To:From;
+        b=lCin7lh3eOWoC8NOgWTsOU0C03Zh/WxRxATeRAsLc9arDLmXdbC8Xz3cFZXKGqkcf
+         DfBeM6nu6FeQm0CloG/1lp+Jr4MIPORFywV2OmiQ61fJFZoc5aJpPjVsFbvFPSlF4R
+         uU8SBBkMZMrfVfX7uVGZLvABbGZFb3L5JMNn+Qfs=
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
+Subject: Re: [RFC 1/1] drivers/dma/*: replace tasklets with workqueue
+From:   Allen Pais <apais@linux.microsoft.com>
+In-Reply-To: <e8cb3d63-f5b9-d067-af66-86f7a7c7f76c@intel.com>
+Date:   Wed, 27 Apr 2022 08:58:52 -0700
+Cc:     Vinod Koul <vkoul@kernel.org>, olivier.dautricourt@orolia.com,
+        sr@denx.de, Kees Cook <keescook@chromium.org>,
+        linux-hardening@vger.kernel.org, ludovic.desroches@microchip.com,
+        tudor.ambarus@microchip.com, f.fainelli@gmail.com,
+        rjui@broadcom.com, sbranden@broadcom.com,
+        bcm-kernel-feedback-list@broadcom.com, nsaenz@kernel.org,
+        paul@crapouillou.net, Eugeniy.Paltsev@synopsys.com,
+        gustavo.pimentel@synopsys.com, vireshk@kernel.org,
+        andriy.shevchenko@linux.intel.com, leoyang.li@nxp.com,
+        zw@zh-kernel.org, wangzhou1@hisilicon.com, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, sean.wang@mediatek.com,
+        matthias.bgg@gmail.com, afaerber@suse.de, mani@kernel.org,
+        logang@deltatee.com, sanju.mehta@amd.com, daniel@zonque.org,
+        haojian.zhuang@gmail.com, robert.jarzmik@free.fr,
+        agross@kernel.org, bjorn.andersson@linaro.org,
+        krzysztof.kozlowski@linaro.org, green.wan@sifive.com,
+        orsonzhai@gmail.com, baolin.wang7@gmail.com, zhang.lyra@gmail.com,
+        patrice.chotard@foss.st.com, linus.walleij@linaro.org,
+        wens@csie.org, jernej.skrabec@gmail.com, samuel@sholland.org,
+        dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <27B51CB8-FCC0-49FB-AA28-93594943423E@linux.microsoft.com>
+References: <20220419211658.11403-1-apais@linux.microsoft.com>
+ <20220419211658.11403-2-apais@linux.microsoft.com> <YmiuUy+PAjKEq6uE@matsya>
+ <e8cb3d63-f5b9-d067-af66-86f7a7c7f76c@intel.com>
+To:     Dave Jiang <dave.jiang@intel.com>
+X-Mailer: Apple Mail (2.3696.80.82.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-pl330 DMA controller bindings documented 'dma-channels' and
-'dma-requests' properties (without leading hash sign), so fix the DTS to
-match the bindings.
 
-Reported-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- arch/arm64/boot/dts/exynos/exynos5433.dtsi | 12 ++++++------
- arch/arm64/boot/dts/exynos/exynos7.dtsi    |  8 ++++----
- 2 files changed, 10 insertions(+), 10 deletions(-)
+>> On 19-04-22, 21:16, Allen Pais wrote:
+>>> The tasklet is an old API which will be deprecated, workqueue API
+>>> cab be used instead of them.
+>> What is the reason for tasklet removal, I am not sure old is a reason =
+to
+>> remove an API...
+>>=20
+>>> This patch replaces the tasklet usage in drivers/dma/* with a
+>>> simple work.
+>> Dmaengines need very high throughput, one of the reasons in dmaengine
+>> API design to use tasklet was higher priority given to them. Will the
+>> workqueue allow that...?
+>=20
+> Wouldn't the logical move be to convert threaded irq IF tasklets are =
+being deprecated rather than using workqueue as replacement?
 
-diff --git a/arch/arm64/boot/dts/exynos/exynos5433.dtsi b/arch/arm64/boot/dts/exynos/exynos5433.dtsi
-index 017ccc2f4650..91e82e4283b2 100644
---- a/arch/arm64/boot/dts/exynos/exynos5433.dtsi
-+++ b/arch/arm64/boot/dts/exynos/exynos5433.dtsi
-@@ -1866,8 +1866,8 @@ pdma0: dma-controller@15610000 {
- 			clocks = <&cmu_fsys CLK_PDMA0>;
- 			clock-names = "apb_pclk";
- 			#dma-cells = <1>;
--			#dma-channels = <8>;
--			#dma-requests = <32>;
-+			dma-channels = <8>;
-+			dma-requests = <32>;
- 		};
- 
- 		pdma1: dma-controller@15600000 {
-@@ -1877,8 +1877,8 @@ pdma1: dma-controller@15600000 {
- 			clocks = <&cmu_fsys CLK_PDMA1>;
- 			clock-names = "apb_pclk";
- 			#dma-cells = <1>;
--			#dma-channels = <8>;
--			#dma-requests = <32>;
-+			dma-channels = <8>;
-+			dma-requests = <32>;
- 		};
- 
- 		audio-subsystem@11400000 {
-@@ -1898,8 +1898,8 @@ adma: dma-controller@11420000 {
- 				clocks = <&cmu_aud CLK_ACLK_DMAC>;
- 				clock-names = "apb_pclk";
- 				#dma-cells = <1>;
--				#dma-channels = <8>;
--				#dma-requests = <32>;
-+				dma-channels = <8>;
-+				dma-requests = <32>;
- 				power-domains = <&pd_aud>;
- 			};
- 
-diff --git a/arch/arm64/boot/dts/exynos/exynos7.dtsi b/arch/arm64/boot/dts/exynos/exynos7.dtsi
-index e38bb02a2152..c31534771620 100644
---- a/arch/arm64/boot/dts/exynos/exynos7.dtsi
-+++ b/arch/arm64/boot/dts/exynos/exynos7.dtsi
-@@ -149,8 +149,8 @@ pdma0: dma-controller@10e10000 {
- 			clocks = <&clock_fsys0 ACLK_PDMA0>;
- 			clock-names = "apb_pclk";
- 			#dma-cells = <1>;
--			#dma-channels = <8>;
--			#dma-requests = <32>;
-+			dma-channels = <8>;
-+			dma-requests = <32>;
- 		};
- 
- 		pdma1: dma-controller@10eb0000 {
-@@ -160,8 +160,8 @@ pdma1: dma-controller@10eb0000 {
- 			clocks = <&clock_fsys0 ACLK_PDMA1>;
- 			clock-names = "apb_pclk";
- 			#dma-cells = <1>;
--			#dma-channels = <8>;
--			#dma-requests = <32>;
-+			dma-channels = <8>;
-+			dma-requests = <32>;
- 		};
- 
- 		clock_topc: clock-controller@10570000 {
--- 
-2.32.0
+  Logically yes. Would all tasklets need to be moved to threaded irq, =
+that I am not sure. I think
+Workqueues does the job.
+
+>=20
+> Also, wouldn't all the spin_lock_bh() calls need to be changed to =
+spin_lock_irqsave() now? Probably not as simple as just replace tasklet =
+with workqueue.
+>=20
+
+Yes, this was carefully looked at as we have moved from the =
+interrupt/softirq context to process context.
+
+Thanks.
 
