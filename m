@@ -2,179 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B873C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 22:16:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FC95C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 22:17:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235736AbiD0WUF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 18:20:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55670 "EHLO
+        id S236023AbiD0WU2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 18:20:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229730AbiD0WUD (ORCPT
+        with ESMTP id S229730AbiD0WU0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 18:20:03 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17FE6496A8;
-        Wed, 27 Apr 2022 15:16:51 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id i62so2471168pgd.6;
-        Wed, 27 Apr 2022 15:16:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=2RoFaE1ytRBTyXgweqhP00vnNCFBWuqPT9MahXuxpik=;
-        b=TXgc7SpRW4PY86E79NxGxT/h7KY/SJkkCDx3kBxe7VJ98gCHJ86n8sPgZeFo9p/O6c
-         ulCHi53fjQKhKCqe6S8lFxfrbHxZSPxC9kPYHdh9+c7XDZzS90uxFvp3agkHKJe+0Or4
-         TjPdNh5MxypqyG2xi3F8z3EmdTA8UGKCgbLbVVRingY9D+XGHRAAKkVkIzyMOv1Xm7zG
-         o6Lh4eMvgjkeCHqaZVNCdpuAg0SQ+/QSpPpaAhH2UOBGT49H1VSN3WZwbOTPsqSlhU8T
-         DtrssrAqFHr5TMYpTrQpCvE345AEgT292jIPY3U2lbtqPLbIX4Ftn6BAxNnUcj2onBFZ
-         pnFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=2RoFaE1ytRBTyXgweqhP00vnNCFBWuqPT9MahXuxpik=;
-        b=oG+QikTTpwwiOFc7lItRG8ZhpV3WHg3YkMpaeYvMlYYe+QVv2o0bOUUt7WRjoUFrjp
-         XeVFvsbV00SN5HF4ncLDsVIEO5kyTFUX/kTRrRKRWysNKkoC7xNmoOTzLMuAC2eHHxb3
-         zh3ett+oPyn8sIGS65sqx7RAi2A6Uxrh/2DqhoK2mDoZgH0UFRMfwTajhxhOiGEvCxkM
-         jqKe/Ixsz3DMIzLtgnsNzrfe8gt8PedTqjaha4NfIrhwPk8Ad5Tqa+a526R/necpU1FO
-         NYTZQK6SSRZksJNdzq8c7+eDubRHLIdl0unY7TEVU2kcEetA0jx2TTcuDsEjD/9Bmj+D
-         BNSw==
-X-Gm-Message-State: AOAM533blN0EtJUX3I4nvR3XgDKmFmJO1nTqlhKeEbfhSPu5mo26uPhH
-        oTUci8n15qasei+R6/8VcPM=
-X-Google-Smtp-Source: ABdhPJxG8fhTyLclRTDp7SI0nqPDWxAD3Pb244ovq9B02YRPOPT0/gNbh0cMUp+VSmNA5FRn3wH87Q==
-X-Received: by 2002:a05:6a00:22c7:b0:50d:605d:2d28 with SMTP id f7-20020a056a0022c700b0050d605d2d28mr9896981pfj.80.1651097810561;
-        Wed, 27 Apr 2022 15:16:50 -0700 (PDT)
-Received: from google.com ([2620:15c:211:201:546a:2875:2a75:1b94])
-        by smtp.gmail.com with ESMTPSA id h19-20020a63df53000000b003c14af50634sm307625pgj.76.2022.04.27.15.16.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 15:16:50 -0700 (PDT)
-Sender: Minchan Kim <minchan.kim@gmail.com>
-Date:   Wed, 27 Apr 2022 15:16:48 -0700
-From:   Minchan Kim <minchan@kernel.org>
-To:     Johannes Weiner <hannes@cmpxchg.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Seth Jennings <sjenning@redhat.com>,
-        Dan Streetman <ddstreet@ieee.org>, linux-mm@kvack.org,
-        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-team@fb.com
-Subject: Re: [PATCH 4/5] mm: zswap: add basic meminfo and vmstat coverage
-Message-ID: <YmnA0Da90IURbxrM@google.com>
-References: <20220427160016.144237-1-hannes@cmpxchg.org>
- <20220427160016.144237-5-hannes@cmpxchg.org>
- <Ymmnrkn0mSWcuvmH@google.com>
- <YmmznQ8AO5RLxicA@cmpxchg.org>
+        Wed, 27 Apr 2022 18:20:26 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5CCA496A8;
+        Wed, 27 Apr 2022 15:17:13 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 4090B2224E;
+        Thu, 28 Apr 2022 00:17:12 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1651097832;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KZxv+ND74jZFakl/W5jjwXzeN0ncd5RrSaX/5eCEVgA=;
+        b=B67NSfE4oeqpT1dv3/7Wx1liIee+2qOveDspLbFHeBGtZUqKWhOlvbcBalqaA5+6MZR4Yc
+        e+t0SkNIIb3wLH46nZmPtN9XcXj1O8ecvTAKo0SJJ6a1xNRpUkexqYzE1JlIhhVg2Pkj6k
+        shA3Vnp29YarqdbrTqqYb/02hYT1ly0=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YmmznQ8AO5RLxicA@cmpxchg.org>
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 28 Apr 2022 00:17:12 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v1 3/3] net: phy: micrel: add coma mode GPIO
+In-Reply-To: <cef1c3f7-06e3-f0dd-10ce-513f35fef3d0@gmail.com>
+References: <20220427214406.1348872-1-michael@walle.cc>
+ <20220427214406.1348872-4-michael@walle.cc>
+ <652a5d64-4f06-7ac8-a792-df0a4b43686f@gmail.com>
+ <635fd80542e089722e506bba0ff390ff@walle.cc>
+ <cef1c3f7-06e3-f0dd-10ce-513f35fef3d0@gmail.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <c9214b4cdf308b951a2da797898f3dcd@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 05:20:29PM -0400, Johannes Weiner wrote:
-> On Wed, Apr 27, 2022 at 01:29:34PM -0700, Minchan Kim wrote:
-> > Hi Johannes,
-> > 
-> > On Wed, Apr 27, 2022 at 12:00:15PM -0400, Johannes Weiner wrote:
-> > > Currently it requires poking at debugfs to figure out the size and
-> > > population of the zswap cache on a host. There are no counters for
-> > > reads and writes against the cache. As a result, it's difficult to
-> > > understand zswap behavior on production systems.
-> > > 
-> > > Print zswap memory consumption and how many pages are zswapped out in
-> > > /proc/meminfo. Count zswapouts and zswapins in /proc/vmstat.
-> > > 
-> > > Signed-off-by: Johannes Weiner <hannes@cmpxchg.org>
-> > > ---
-> > >  fs/proc/meminfo.c             |  7 +++++++
-> > >  include/linux/swap.h          |  5 +++++
-> > >  include/linux/vm_event_item.h |  4 ++++
-> > >  mm/vmstat.c                   |  4 ++++
-> > >  mm/zswap.c                    | 13 ++++++-------
-> > >  5 files changed, 26 insertions(+), 7 deletions(-)
-> > > 
-> > > diff --git a/fs/proc/meminfo.c b/fs/proc/meminfo.c
-> > > index 6fa761c9cc78..6e89f0e2fd20 100644
-> > > --- a/fs/proc/meminfo.c
-> > > +++ b/fs/proc/meminfo.c
-> > > @@ -86,6 +86,13 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
-> > >  
-> > >  	show_val_kb(m, "SwapTotal:      ", i.totalswap);
-> > >  	show_val_kb(m, "SwapFree:       ", i.freeswap);
-> > > +#ifdef CONFIG_ZSWAP
-> > > +	seq_printf(m,  "Zswap:          %8lu kB\n",
-> > > +		   (unsigned long)(zswap_pool_total_size >> 10));
-> > > +	seq_printf(m,  "Zswapped:       %8lu kB\n",
-> > > +		   (unsigned long)atomic_read(&zswap_stored_pages) <<
-> > > +		   (PAGE_SHIFT - 10));
-> > > +#endif
-> > 
-> > I agree it would be very handy to have the memory consumption in meminfo
-> > 
-> > https://lore.kernel.org/all/YYwZXrL3Fu8%2FvLZw@google.com/
-> > 
-> > If we really go this Zswap only metric instead of general term
-> > "Compressed", I'd like to post maybe "Zram:" with same reason
-> > in this patchset. Do you think that's better idea instead of
-> > introducing general term like "Compressed:" or something else?
+Am 2022-04-28 00:12, schrieb Florian Fainelli:
+> On 4/27/22 15:08, Michael Walle wrote:
+>> Am 2022-04-28 00:06, schrieb Florian Fainelli:
+>>> On 4/27/2022 2:44 PM, Michael Walle wrote:
+>>>> The LAN8814 has a coma mode pin which puts the PHY into isolate and
+>>>> power-dowm mode. Unfortunately, the mode cannot be disabled by a
+>> s/dowm/down/
+>> 
+>>>> register. Usually, the input pin has a pull-up and connected to a 
+>>>> GPIO
+>>>> which can then be used to disable the mode. Try to get the GPIO and
+>>>> deassert it.
+>>> 
+>>> Poor choice of word, how about deep sleep, dormant, super isolate?
+>> 
+>> Which one do you mean? Super isolate sounded like broadcom wording ;)
 > 
-> I'm fine with changing it to Compressed. If somebody cares about a
-> more detailed breakdown, we can add Zswap, Zram subsets as needed.
+> Coma is not a great term to use IMHO. Yes Super isolate (tm) is a
+> Broadcom thing, and you can come out of super isolate mode with
+> register writes, so maybe not the best suggestion.
 
-Thanks! Please consider ZSWPIN to rename more general term, too.
+I didn't come up with that name. It's all in the datasheets and it's
+actually already used grep for "COMA_MODE" in phy/mscc. (Yes on that
+one you can actually disable it with register access..). Even if
+it is not a great name (which I agree), I'd use the same naming as
+the datasheet and esp. the pin name.
 
-> 
-> From 8e9e2d6490b7082c41743fbdb9ffd2db4e3ce962 Mon Sep 17 00:00:00 2001
-> From: Johannes Weiner <hannes@cmpxchg.org>
-> Date: Wed, 27 Apr 2022 17:15:15 -0400
-> Subject: [PATCH] mm: zswap: add basic meminfo and vmstat coverage fix fix
-> 
-> Signed-off-by: Johannes Weiner <hannes@cmpxchg.org>
-> ---
->  Documentation/filesystems/proc.rst | 7 ++++---
->  fs/proc/meminfo.c                  | 2 +-
->  2 files changed, 5 insertions(+), 4 deletions(-)
-> 
-> diff --git a/Documentation/filesystems/proc.rst b/Documentation/filesystems/proc.rst
-> index 8b5a94cfa722..93edcf233464 100644
-> --- a/Documentation/filesystems/proc.rst
-> +++ b/Documentation/filesystems/proc.rst
-> @@ -964,7 +964,7 @@ Example output. You may not have all of these fields.
->      Mlocked:               0 kB
->      SwapTotal:             0 kB
->      SwapFree:              0 kB
-> -    Zswap:              1904 kB
-> +    Compressed:         1904 kB
->      Zswapped:           7792 kB
->      Dirty:                12 kB
->      Writeback:             0 kB
-> @@ -1057,8 +1057,9 @@ SwapTotal
->  SwapFree
->                Memory which has been evicted from RAM, and is temporarily
->                on the disk
-> -Zswap
-> -              Memory consumed by the zswap backend (compressed size)
-> +Compressed
-> +              Memory consumed by compression backends, such as zswap
-> +              (compressed size)
->  Zswapped
->                Amount of anonymous memory stored in zswap (original size)
->  Dirty
-> diff --git a/fs/proc/meminfo.c b/fs/proc/meminfo.c
-> index 6e89f0e2fd20..554d6f230e67 100644
-> --- a/fs/proc/meminfo.c
-> +++ b/fs/proc/meminfo.c
-> @@ -87,7 +87,7 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
->  	show_val_kb(m, "SwapTotal:      ", i.totalswap);
->  	show_val_kb(m, "SwapFree:       ", i.freeswap);
->  #ifdef CONFIG_ZSWAP
-> -	seq_printf(m,  "Zswap:          %8lu kB\n",
-> +	seq_printf(m,  "Compressed:     %8lu kB\n",
->  		   (unsigned long)(zswap_pool_total_size >> 10));
->  	seq_printf(m,  "Zswapped:       %8lu kB\n",
->  		   (unsigned long)atomic_read(&zswap_stored_pages) <<
-> -- 
-> 2.35.3
-> 
+-michael
