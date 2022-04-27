@@ -2,89 +2,249 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E995EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 07:15:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7028C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 07:15:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358683AbiD0HSU (ORCPT
+        id S1358689AbiD0HS2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 03:18:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51298 "EHLO
+        Wed, 27 Apr 2022 03:18:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242672AbiD0HSS (ORCPT
+        with ESMTP id S1358686AbiD0HSW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 03:18:18 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 834B5140D4;
-        Wed, 27 Apr 2022 00:15:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651043707; x=1682579707;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=fXJkbxDf0qd9gW+A5tjOWCA9l6X90L85cXDE1FuuhiU=;
-  b=gjAaRAarpDtX5g4WR3l822MezjoClULZb4FAhfqYXJCGxiOHcXh5T6fQ
-   SYXgCt3lbgbVPJm+BfHDQ/rF3qZxMpeom1pACpx1cp6uEiuWBCO7KRdzT
-   mR0JQIdiwlE+oV9YwRsxIRXCybZGWaF+9HoKaY2tfYH2xdepoWvEbDBdd
-   001RczP97SRiIr1JeVC+P4z7fX5qBXbcAbUs41d7PEI4M4+4/8+luawFN
-   hMBCycXPSJq9K35UjLP+2ZI/c8TCery+ZARftFnW/Aax58XVRu6RifDPO
-   s0jl3h3vteKVIcmYOpRCy4YjFIj3RX2kwBbxkg4NJeivyGDE2wFtOr1LW
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="328786668"
-X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
-   d="scan'208";a="328786668"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 00:15:07 -0700
-X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
-   d="scan'208";a="580431679"
-Received: from zq-optiplex-7090.bj.intel.com ([10.238.156.125])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 00:15:05 -0700
-From:   Zqiang <qiang1.zhang@intel.com>
-To:     paulmck@kernel.org, frederic@kernel.org
-Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] rcutorture: Fix kmemleak in rcu_test_debug_objects()
-Date:   Wed, 27 Apr 2022 15:15:20 +0800
-Message-Id: <20220427071520.2239030-1-qiang1.zhang@intel.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 27 Apr 2022 03:18:22 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0284013EB0
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 00:15:06 -0700 (PDT)
+X-UUID: ee196ef9134c4ae7b0be0a341beb4f6d-20220427
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:7cb683a5-a8fc-48d8-97bd-0393bb816b16,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:-20
+X-CID-META: VersionHash:faefae9,CLOUDID:87a8a5c6-85ee-4ac1-ac05-bd3f1e72e732,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: ee196ef9134c4ae7b0be0a341beb4f6d-20220427
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <tinghan.shen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1066266900; Wed, 27 Apr 2022 15:15:00 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Wed, 27 Apr 2022 15:14:59 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 27 Apr
+ 2022 15:14:59 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 27 Apr 2022 15:14:59 +0800
+From:   Tinghan Shen <tinghan.shen@mediatek.com>
+To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Daniel Baluta <daniel.baluta@nxp.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tinghan Shen <tinghan.shen@mediatek.com>,
+        "Yaochun Hung" <yc.hung@mediatek.com>,
+        Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        Yang Yingliang <yangyingliang@huawei.com>
+CC:     <sound-open-firmware@alsa-project.org>,
+        <alsa-devel@alsa-project.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: [PATCH v2] ASoC: SOF: mediatek: Fix allyesconfig build error
+Date:   Wed, 27 Apr 2022 15:10:30 +0800
+Message-ID: <20220427071030.10172-1-tinghan.shen@mediatek.com>
+X-Mailer: git-send-email 2.15.GIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The kmemleak kthread scan to the following:
+ld: sound/soc/sof/mediatek/mt8186/mt8186-clk.o:(.opd+0x18): multiple
+definition of `adsp_clock_on';
+sound/soc/sof/mediatek/mt8195/mt8195-clk.o:(.opd+0x60): first defined
+here
+ld: sound/soc/sof/mediatek/mt8186/mt8186-clk.o: in function
+`.adsp_clock_on':
 
-unreferenced object 0xffff95d941135b50 (size 16):
-  comm "swapper/0", pid 1, jiffies 4294667610 (age 1367.451s)
-  hex dump (first 16 bytes):
-    f0 c6 c2 bd d9 95 ff ff 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<00000000bc81d9b1>] kmem_cache_alloc_trace+0x2f6/0x500
-    [<00000000d28be229>] rcu_torture_init+0x1235/0x1354
-    [<0000000032c3acd9>] do_one_initcall+0x51/0x210
-    [<000000003c117727>] kernel_init_freeable+0x205/0x259
-    [<000000003961f965>] kernel_init+0x1a/0x120
-    [<000000001998f890>] ret_from_fork+0x22/0x30
+ld: sound/soc/sof/mediatek/mt8186/mt8186-clk.o:(.opd+0x30): multiple
+definition of `adsp_clock_off';
+sound/soc/sof/mediatek/mt8195/mt8195-clk.o:(.opd+0x78): first defined
+here
+ld: sound/soc/sof/mediatek/mt8186/mt8186-clk.o: in function
+`.adsp_clock_off':
 
-the rhp object is not released after use, so call kfree() to
-release it.
+ld: sound/soc/sof/mediatek/mt8186/mt8186-loader.o:(.opd+0x0): multiple
+definition of `sof_hifixdsp_boot_sequence';
+sound/soc/sof/mediatek/mt8195/mt8195-loader.o:(.opd+0x0): first defined
+here
+ld: sound/soc/sof/mediatek/mt8186/mt8186-loader.o: in function
+`.sof_hifixdsp_boot_sequence':
 
-Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+ld: sound/soc/sof/mediatek/mt8186/mt8186-loader.o:(.opd+0x18): multiple
+definition of `sof_hifixdsp_shutdown';
+ sound/soc/sof/mediatek/mt8195/mt8195-loader.o:(.opd+0x18): first defined
+here
+ld: sound/soc/sof/mediatek/mt8186/mt8186-loader.o: in function
+`.sof_hifixdsp_shutdown':
+
+Fixes: 570c14dc92d5 ("ASoC: SOF: mediatek: Add mt8186 sof fw loader and
+dsp ops")
+Fixes: 210b3ab932f7 ("ASoC: SOF: mediatek: Add mt8186 dsp clock support")
+
+Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
 ---
- kernel/rcu/rcutorture.c | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/kernel/rcu/rcutorture.c b/kernel/rcu/rcutorture.c
-index 0885a66f9d76..f3f9f97c3c1f 100644
---- a/kernel/rcu/rcutorture.c
-+++ b/kernel/rcu/rcutorture.c
-@@ -3183,6 +3183,7 @@ static void rcu_test_debug_objects(void)
- 	pr_alert("%s: WARN: Duplicate call_rcu() test complete.\n", KBUILD_MODNAME);
- 	destroy_rcu_head_on_stack(&rh1);
- 	destroy_rcu_head_on_stack(&rh2);
-+	kfree(rhp);
- #else /* #ifdef CONFIG_DEBUG_OBJECTS_RCU_HEAD */
- 	pr_alert("%s: !CONFIG_DEBUG_OBJECTS_RCU_HEAD, not testing duplicate call_rcu()\n", KBUILD_MODNAME);
- #endif /* #else #ifdef CONFIG_DEBUG_OBJECTS_RCU_HEAD */
+Changes since v1:
+Rebase on Mark's for-next and update "Fixes" commit id
+
+---
+ sound/soc/sof/mediatek/mt8186/mt8186-clk.c    |  4 ++--
+ sound/soc/sof/mediatek/mt8186/mt8186-clk.h    |  4 ++--
+ sound/soc/sof/mediatek/mt8186/mt8186-loader.c |  4 ++--
+ sound/soc/sof/mediatek/mt8186/mt8186.c        | 18 +++++++++---------
+ sound/soc/sof/mediatek/mt8186/mt8186.h        |  4 ++--
+ 5 files changed, 17 insertions(+), 17 deletions(-)
+
+diff --git a/sound/soc/sof/mediatek/mt8186/mt8186-clk.c b/sound/soc/sof/mediatek/mt8186/mt8186-clk.c
+index 5f805981b8e6..22220fd50b62 100644
+--- a/sound/soc/sof/mediatek/mt8186/mt8186-clk.c
++++ b/sound/soc/sof/mediatek/mt8186/mt8186-clk.c
+@@ -74,7 +74,7 @@ static void adsp_disable_all_clock(struct snd_sof_dev *sdev)
+ 	clk_disable_unprepare(priv->clk[CLK_TOP_AUDIODSP]);
+ }
+ 
+-int adsp_clock_on(struct snd_sof_dev *sdev)
++int mt8186_adsp_clock_on(struct snd_sof_dev *sdev)
+ {
+ 	struct device *dev = sdev->dev;
+ 	int ret;
+@@ -92,7 +92,7 @@ int adsp_clock_on(struct snd_sof_dev *sdev)
+ 	return 0;
+ }
+ 
+-void adsp_clock_off(struct snd_sof_dev *sdev)
++void mt8186_adsp_clock_off(struct snd_sof_dev *sdev)
+ {
+ 	snd_sof_dsp_write(sdev, DSP_REG_BAR, ADSP_CK_EN, 0);
+ 	snd_sof_dsp_write(sdev, DSP_REG_BAR, ADSP_UART_CTRL, 0);
+diff --git a/sound/soc/sof/mediatek/mt8186/mt8186-clk.h b/sound/soc/sof/mediatek/mt8186/mt8186-clk.h
+index fa174dfceff0..89c23caf0fee 100644
+--- a/sound/soc/sof/mediatek/mt8186/mt8186-clk.h
++++ b/sound/soc/sof/mediatek/mt8186/mt8186-clk.h
+@@ -19,6 +19,6 @@ enum adsp_clk_id {
+ };
+ 
+ int mt8186_adsp_init_clock(struct snd_sof_dev *sdev);
+-int adsp_clock_on(struct snd_sof_dev *sdev);
+-void adsp_clock_off(struct snd_sof_dev *sdev);
++int mt8186_adsp_clock_on(struct snd_sof_dev *sdev);
++void mt8186_adsp_clock_off(struct snd_sof_dev *sdev);
+ #endif
+diff --git a/sound/soc/sof/mediatek/mt8186/mt8186-loader.c b/sound/soc/sof/mediatek/mt8186/mt8186-loader.c
+index 6ab4921b1010..548b12c33d8a 100644
+--- a/sound/soc/sof/mediatek/mt8186/mt8186-loader.c
++++ b/sound/soc/sof/mediatek/mt8186/mt8186-loader.c
+@@ -11,7 +11,7 @@
+ #include "mt8186.h"
+ #include "../../ops.h"
+ 
+-void sof_hifixdsp_boot_sequence(struct snd_sof_dev *sdev, u32 boot_addr)
++void mt8186_sof_hifixdsp_boot_sequence(struct snd_sof_dev *sdev, u32 boot_addr)
+ {
+ 	/* set RUNSTALL to stop core */
+ 	snd_sof_dsp_update_bits(sdev, DSP_REG_BAR, ADSP_HIFI_IO_CONFIG,
+@@ -39,7 +39,7 @@ void sof_hifixdsp_boot_sequence(struct snd_sof_dev *sdev, u32 boot_addr)
+ 				RUNSTALL, 0);
+ }
+ 
+-void sof_hifixdsp_shutdown(struct snd_sof_dev *sdev)
++void mt8186_sof_hifixdsp_shutdown(struct snd_sof_dev *sdev)
+ {
+ 	/* set RUNSTALL to stop core */
+ 	snd_sof_dsp_update_bits(sdev, DSP_REG_BAR, ADSP_HIFI_IO_CONFIG,
+diff --git a/sound/soc/sof/mediatek/mt8186/mt8186.c b/sound/soc/sof/mediatek/mt8186/mt8186.c
+index c8faa63497c6..6d574fd4492e 100644
+--- a/sound/soc/sof/mediatek/mt8186/mt8186.c
++++ b/sound/soc/sof/mediatek/mt8186/mt8186.c
+@@ -211,7 +211,7 @@ static int mt8186_run(struct snd_sof_dev *sdev)
+ 
+ 	adsp_bootup_addr = SRAM_PHYS_BASE_FROM_DSP_VIEW;
+ 	dev_dbg(sdev->dev, "HIFIxDSP boot from base : 0x%08X\n", adsp_bootup_addr);
+-	sof_hifixdsp_boot_sequence(sdev, adsp_bootup_addr);
++	mt8186_sof_hifixdsp_boot_sequence(sdev, adsp_bootup_addr);
+ 
+ 	return 0;
+ }
+@@ -284,9 +284,9 @@ static int mt8186_dsp_probe(struct snd_sof_dev *sdev)
+ 		return ret;
+ 	}
+ 
+-	ret = adsp_clock_on(sdev);
++	ret = mt8186_adsp_clock_on(sdev);
+ 	if (ret) {
+-		dev_err(sdev->dev, "adsp_clock_on fail!\n");
++		dev_err(sdev->dev, "mt8186_adsp_clock_on fail!\n");
+ 		return ret;
+ 	}
+ 
+@@ -297,18 +297,18 @@ static int mt8186_dsp_probe(struct snd_sof_dev *sdev)
+ 
+ static int mt8186_dsp_remove(struct snd_sof_dev *sdev)
+ {
+-	sof_hifixdsp_shutdown(sdev);
++	mt8186_sof_hifixdsp_shutdown(sdev);
+ 	adsp_sram_power_off(sdev);
+-	adsp_clock_off(sdev);
++	mt8186_adsp_clock_off(sdev);
+ 
+ 	return 0;
+ }
+ 
+ static int mt8186_dsp_suspend(struct snd_sof_dev *sdev, u32 target_state)
+ {
+-	sof_hifixdsp_shutdown(sdev);
++	mt8186_sof_hifixdsp_shutdown(sdev);
+ 	adsp_sram_power_off(sdev);
+-	adsp_clock_off(sdev);
++	mt8186_adsp_clock_off(sdev);
+ 
+ 	return 0;
+ }
+@@ -317,9 +317,9 @@ static int mt8186_dsp_resume(struct snd_sof_dev *sdev)
+ {
+ 	int ret;
+ 
+-	ret = adsp_clock_on(sdev);
++	ret = mt8186_adsp_clock_on(sdev);
+ 	if (ret) {
+-		dev_err(sdev->dev, "adsp_clock_on fail!\n");
++		dev_err(sdev->dev, "mt8186_adsp_clock_on fail!\n");
+ 		return ret;
+ 	}
+ 
+diff --git a/sound/soc/sof/mediatek/mt8186/mt8186.h b/sound/soc/sof/mediatek/mt8186/mt8186.h
+index df52ae9659e4..98b2965e5ba6 100644
+--- a/sound/soc/sof/mediatek/mt8186/mt8186.h
++++ b/sound/soc/sof/mediatek/mt8186/mt8186.h
+@@ -75,6 +75,6 @@ struct snd_sof_dev;
+ #define SIZE_SHARED_DRAM_UL			0x40000 /*Shared buffer for Uplink*/
+ #define TOTAL_SIZE_SHARED_DRAM_FROM_TAIL	(SIZE_SHARED_DRAM_DL + SIZE_SHARED_DRAM_UL)
+ 
+-void sof_hifixdsp_boot_sequence(struct snd_sof_dev *sdev, u32 boot_addr);
+-void sof_hifixdsp_shutdown(struct snd_sof_dev *sdev);
++void mt8186_sof_hifixdsp_boot_sequence(struct snd_sof_dev *sdev, u32 boot_addr);
++void mt8186_sof_hifixdsp_shutdown(struct snd_sof_dev *sdev);
+ #endif
 -- 
-2.25.1
+2.18.0
 
