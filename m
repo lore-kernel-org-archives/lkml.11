@@ -2,145 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCA52C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:43:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E575C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:47:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230037AbiD0Kq0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 06:46:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52326 "EHLO
+        id S230094AbiD0KuI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 06:50:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230034AbiD0KqM (ORCPT
+        with ESMTP id S229872AbiD0KuB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 06:46:12 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 674DD394E2F
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 03:28:44 -0700 (PDT)
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23R73lCq025540;
-        Wed, 27 Apr 2022 09:36:30 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : content-transfer-encoding
- : mime-version; s=pp1; bh=/w+KC+YY9q0y/zt+m9HGRNZ4xIPkZ4LVCXJ5Evns0V8=;
- b=r6brKZonFr8o3yzrMC0gzmj4zpmjRLjZj/69r82JLEqprDk4mADtyW5aG3kTy/P9wPqB
- 5XdPYkA9Gt5m6/hYvElyYui9zevHDE+WDKHmriiSOgkd6vELDj4F+R0N0Ztg6fYvb7Nm
- ZkbwZfpW1fWmSRl98uvDrhjCRWIgMJgn0CxHNqbTPJN3qGJb6nXdgdwlAh6g0q5NDrXc
- 1JmV0ueu7JF+dC9nfsDfJpLOEizjxGxPkMJW1kX//1uqh3YZvgebnM52JlGMg7FnerQj
- U3v8U3OFQj/RF8dQ8IZGK0KmI8SbihScnO8WEG2Xf4ST46rKiE62dEjefpwCIgCkjxHq kA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fpsdpj1js-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 27 Apr 2022 09:36:29 +0000
-Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23R9aTth010556;
-        Wed, 27 Apr 2022 09:36:29 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fpsdpj1hy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 27 Apr 2022 09:36:29 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23R9Sr6R020336;
-        Wed, 27 Apr 2022 09:36:27 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma04ams.nl.ibm.com with ESMTP id 3fm938wq4k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 27 Apr 2022 09:36:27 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23R9abMt10617428
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 27 Apr 2022 09:36:38 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 11CE64C044;
-        Wed, 27 Apr 2022 09:36:25 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4DF2C4C040;
-        Wed, 27 Apr 2022 09:36:22 +0000 (GMT)
-Received: from li-NotSettable.ibm.com.com (unknown [9.43.116.196])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 27 Apr 2022 09:36:21 +0000 (GMT)
-From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
-To:     Michael Ellerman <mpe@ellerman.id.au>,
-        Steven Rostedt <rostedt@goodmis.org>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        <linux-kernel@vger.kernel.org>, <linuxppc-dev@lists.ozlabs.org>,
-        llvm@lists.linux.dev
-Subject: [PATCH 1/2] ftrace: Drop duplicate mcount locations
-Date:   Wed, 27 Apr 2022 15:01:21 +0530
-Message-Id: <9b1b816cff1f479c8de0e9baa5a6ac680b84e17e.1651047542.git.naveen.n.rao@linux.vnet.ibm.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <cover.1651047542.git.naveen.n.rao@linux.vnet.ibm.com>
-References: <cover.1651047542.git.naveen.n.rao@linux.vnet.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: xOD5Je7fuvdMKVm_hwjuxnSEunGOm4QJ
-X-Proofpoint-GUID: qOWJyvUDBeYDjXs0ou5OOdL3rgKWBUIA
+        Wed, 27 Apr 2022 06:50:01 -0400
+Received: from EUR03-VE1-obe.outbound.protection.outlook.com (mail-eopbgr50059.outbound.protection.outlook.com [40.107.5.59])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 303E8369DCE;
+        Wed, 27 Apr 2022 03:20:48 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NWboxjih9uyil/VDcBLedrxjoHs8OKJmpDXygqwudXjh79hf1cojKckCMoj4gFxjLgmuB3Nfda5TEx3+qeEPsjhCbfXGVg6PFXbJJ0DX+1RnO6MggiWV6WxyTvjOnTgtZ718sfKJ1kSMQtw7C7lVin/FgwVWVgqfpwiEcSPFsfx2g9rFkFPz125otE0OZR7SJhWJ4LYmclKGjel9S5YSbzWVVZpRimqMN/KESGIBSl7QAuYPBMIvTB3hMCn9nMwlI/bhS+StY4PEq9/gNXhg6Ios1pAR1z1HwKutxn1BRkReDwpt+dwYPtRTHQ5r6dipm23kUuWSYOl3PD3cNpmeEA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=whH2ubc5nkHKvSb3YnUJM7XY7bRQbe7ooYlsvkFYDEA=;
+ b=geMgr0+BhABrJf34SnzFGUWhX6CUfVRZEay/ap2j2CLXVRQAwPVWrtkhMWWj2HUCtbCmfU1ksR5H0H5NT0lrkc9FV/NO7hmsb+Jlvs0OpQzgsEaAo5WOFOEMDyVV6PeLECGfMmTOruGLgr35HlmkaolbAZGTW0awdiKaUGrMndu5VQ0SqURJxhXMnoDo+gfq2xMvDS8gw3ug0vPDMPU5aKpNmws2KSNOILLGeRUSVP8yltr7fon2F3wVuCn+r/Sv97HwwNNmGlhGFhN/qdcY88VMULnuPsw5SdejgOFZobl5+Zm6u5b67XazYv5o6J261GN8/8hij6zuepyZ/5SjvA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=whH2ubc5nkHKvSb3YnUJM7XY7bRQbe7ooYlsvkFYDEA=;
+ b=jIHUE4NoWVwGQ2L6Mjx8n0KV4eiklS5EFrIbJNsElEv2ega9M3JDOSg/D/5BWKnWTTKVtDuJ6ZfhMk4zvRda0pxMtA05ehXKI54x4nFIQzkR0tHeqdr8Ra03IM5K93T8vwIZzfoQass7b8RVQ2yOYMiuKHG7u9z/dwBonTwGpf8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from PA4PR04MB9416.eurprd04.prod.outlook.com (2603:10a6:102:2ab::21)
+ by AM6PR0402MB3366.eurprd04.prod.outlook.com (2603:10a6:209:5::31) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.21; Wed, 27 Apr
+ 2022 09:19:17 +0000
+Received: from PA4PR04MB9416.eurprd04.prod.outlook.com
+ ([fe80::587c:b068:1987:da36]) by PA4PR04MB9416.eurprd04.prod.outlook.com
+ ([fe80::587c:b068:1987:da36%4]) with mapi id 15.20.5186.021; Wed, 27 Apr 2022
+ 09:19:17 +0000
+From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+To:     bjorn.andersson@linaro.org, mathieu.poirier@linaro.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com,
+        linux-remoteproc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Peng Fan <peng.fan@nxp.com>
+Subject: [PATCH 0/2] remoteproc: add i.MX93 support
+Date:   Wed, 27 Apr 2022 17:20:52 +0800
+Message-Id: <20220427092054.3765690-1-peng.fan@oss.nxp.com>
+X-Mailer: git-send-email 2.25.1
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+Content-Type: text/plain
+X-ClientProxiedBy: SGBP274CA0023.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b0::35)
+ To PA4PR04MB9416.eurprd04.prod.outlook.com (2603:10a6:102:2ab::21)
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-27_03,2022-04-26_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxlogscore=866
- priorityscore=1501 adultscore=0 mlxscore=0 malwarescore=0 bulkscore=0
- impostorscore=0 spamscore=0 suspectscore=0 lowpriorityscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204270063
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 604a9273-6dba-4a28-6d09-08da282f0120
+X-MS-TrafficTypeDiagnostic: AM6PR0402MB3366:EE_
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-Microsoft-Antispam-PRVS: <AM6PR0402MB33669C2964119911190C0FCFC9FA9@AM6PR0402MB3366.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: MFv6Spg0XcQlfQdhojdNuLPZvQjQgJLZXkfxG4Z5ZjeaS0YE0h7cHCgXFrQu7+MpEgePRPL9uT6xteAiSVHbCekzsQRD4tTl0MOo5TzH0EgosfvyzG+fZSG8H3clJtIrAdFqNM8szwNJrrbSVmGB8wItNvZTDULBFP9ebnJXjwvne/NvsiK0ouUzB7TSc53Q2IRuvAlq7cNcbrENQw/nKoTCLClvhli/l42cE5FP+fc8Oz3FwB0uhya14HikQnk2OxyKXH7FC8GMOuTzQBJrQPFGqr7X91Y99zYoCqxUd3Sl6WGopp7VJWVZSYI1Vd087z8MmQpjnPLDcSY89EzM4fzjaCGsfjPMkWmILKsugGmRQ6zyH4h38j38+BNu/1nP+POouqM2nT64x+0r/oUnriy9BMiTI51Rq5ZnkuBlJXTq9L8Bu7qU1zkJZTQt4bF9cWlcqO/PacPWQNn+bMqqsIoYFsHlykZTo/g9G4g9CT7hoebPzPsl3zGLVmjy5Uc433h8SajwQREESv1Vf6Poj1nSndCU0S1CJjRYmOTYOsPxzWiX59I1dVz/3bLAfxcvAcUJofbsbloEuvqTVS0gqggmgubrgoxQgD2CPVAa71UgS8xP/y5008ZM29csr8hQVJbwlw5CanNc/WdR5uKQHj74tFCbSNBJrj4w0SpK0TvnQK1M/lgQqkXrmcP3kgn9m/OpXBpo7l3cw1GT7e5s5qhwjr4jo98v95h3v9WfkTI=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PA4PR04MB9416.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6512007)(66946007)(66556008)(8676002)(6506007)(26005)(52116002)(66476007)(4326008)(2616005)(316002)(6486002)(6666004)(921005)(1076003)(186003)(86362001)(508600001)(38100700002)(38350700002)(4744005)(2906002)(8936002)(5660300002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?7igAC4dSQMBVCo/ndyTBEJ0nfg4etQPvy3agidtSrt1s2DNymcqa+7ZZgmRa?=
+ =?us-ascii?Q?q5xP4sU34cdNmq9DMD4kPcTn6hHqgccU/yzRRCDtLgTsknh2igaUcGl9O+rJ?=
+ =?us-ascii?Q?J9Ffb7OApAkfYuo/dKH+agxJOcSGY/3EUm8UA41F8zlLEXeMDNDbgTPocemH?=
+ =?us-ascii?Q?k12CQvKJiXj6DZspUaDVWzU71laQkR1G5JIdIb4gDrx9s306ev/X6LoPZS/Q?=
+ =?us-ascii?Q?/TnWXwOHEe79R6a/MbwCbXYcngRZfFT9bppPfBMtut1yDU/hqnhFLfc8TW4R?=
+ =?us-ascii?Q?VFesLYAtz3TiixWM6m9nf2Vhl2jARfAUafb9NurJ+khF2Vgdp+mrwoQ52nC6?=
+ =?us-ascii?Q?wH2ixj527aNlQoxXlKxVo2Wpct4hlf5fuqo4SPe3JAmRaCK/TH+djk+Uv1F1?=
+ =?us-ascii?Q?Oz8fxg4nPTQwnLnbiZMjeeKa+aC/Z3vHdjLSX7dDrYTFD54nv5IsiyWelx8S?=
+ =?us-ascii?Q?6G3awtm+wQ5pDXne6+d5WFfgf0PrgVOgxMlDN+/03k3op9awb5g3oJ0XhWZF?=
+ =?us-ascii?Q?VSnEqavy3WVWsyD/E2tnKOoBgsdtIl8PpzmhKTb9jOx5lq9SHCsKsIjlbG48?=
+ =?us-ascii?Q?+TmTI76KsmpEoP9skflvElgDJU1SHed7L5KawcKlT8AyTkbegS8EaM0e5MdB?=
+ =?us-ascii?Q?VnZjLy+XW+IN67QwHgDjIRhV+I/r94Vez+xkx1s4RfuCLNL1JdIfyTGTCxb4?=
+ =?us-ascii?Q?1G2F8b1hco/lO+D95FKGlNsMZy8ODDVKab6n4CghHCuXz7nMenAkyEC2CYse?=
+ =?us-ascii?Q?OF4Mn3YD4dIyXMHe4HW0hmlV+2+ksh6Wo+cnJ3Buw1KryYGEQfoCrBb1Kl1+?=
+ =?us-ascii?Q?iOSZ8i+8+LTi1gd723fpd/TwVmPnOqfUsx30VnruQXV5jTpY81U5N5xKciXj?=
+ =?us-ascii?Q?I8BCPrvUNnh5ToL0A0HCoksNO/dO9QTU0IA6Ax+N4dz5FnCMh9/ZDHH8+Yfh?=
+ =?us-ascii?Q?MXdIBlc4PyNfs7tHIejrqMfT92XqpxxqmiaSqSKrI40JqhIB1o6XXpBESW4D?=
+ =?us-ascii?Q?RyQFONyp6HVcpWj5NCrJaK3fWaOmTOVYyuwwjtjs3L3tfSilT/w6ylKDI/jq?=
+ =?us-ascii?Q?ob4VjB9SZ28p4ZpE2N+6RWdlJT6uqX1jDmJ80in3VYB6TB7fRROsAPJ0cBNh?=
+ =?us-ascii?Q?DslDY3xFcdODVbOg7wJJMgptwKgKeONndKv5zXyF0MSUXJV6ed7pURKNCSBc?=
+ =?us-ascii?Q?NPqR8DbOeZ8DxbXqQgRTweRZkoO8Dv8XffNnkdLiY8Z3ZF7ifDwNNgYC+4zu?=
+ =?us-ascii?Q?oLaxPdrdAO7BZYiYh/geUo3cgIJgSPDlWV6fHOFljH0Avpntz6shVsd3pAtY?=
+ =?us-ascii?Q?7LU2XPiwVRZvLlDlDIeBsqBsTeeSeiCkeySKRDaDxc9epqKnMuZjgXkFyWmw?=
+ =?us-ascii?Q?hZSb2VOkBFzdFq1d0GMsfoN3Fs+jRs4Ysmk9mRLyttYRk7cC2fdKvcZwLgXL?=
+ =?us-ascii?Q?ZZPRpIVvKtPjI8LSRPP5qjKZGMlcU9qa6COld7h0QLm3CTQcV+nI/pCGi1sX?=
+ =?us-ascii?Q?uFx4g5NJwNyacFwQmVOyV/ZPRB0MaPVpHBsdDdz58CBUcu6e4ZiWmm+hMu6/?=
+ =?us-ascii?Q?fiRqKwCc7VAiP6EV8LlVnzzyrxX6lnUnzRMVkO3q+OKzIPbvXJkpZgcaqRvP?=
+ =?us-ascii?Q?cU+W0lbuvbS7ritA1ejEtIxuYcky+ixl/QXkSszKTDXq20KDQ9+C39MnY05s?=
+ =?us-ascii?Q?C11RX2+t8QjioamOPLMqpxkzzgtTBtuD7iimY7oZkZdqILyjD6H8ywGIKvuW?=
+ =?us-ascii?Q?OdgPuJyFLw=3D=3D?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 604a9273-6dba-4a28-6d09-08da282f0120
+X-MS-Exchange-CrossTenant-AuthSource: PA4PR04MB9416.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Apr 2022 09:19:17.7628
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6drX3AQztW9paXDj+Uc02qdcvwrxhbnDLL5rsnDNZEAY5ww5JL/jzrB0t0cJ343gb7F3ljhtauJgwgLCM++2Vw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0402MB3366
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the absence of section symbols [1], objtool (today) and recordmcount
-(with a subsequent patch) generate __mcount_loc relocation records with
-weak symbols as the base. This works fine as long as those weak symbols
-are not overridden, but if they are, these can result in duplicate
-entries in the final vmlinux mcount location table. This will cause
-ftrace to fail when trying to patch the same location twice. Fix this by
-dropping duplicate locations during ftrace init.
+From: Peng Fan <peng.fan@nxp.com>
 
-[1] https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=d1bcae833b32f1
+i.MX93 features a general purpose M33 core, support in with this patchset.
 
-Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
----
- kernel/trace/ftrace.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+Peng Fan (2):
+  dt-bindings: remoteproc: imx_rproc: support i.MX93
+  remoteproc: imx_rproc: support i.MX93
 
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index 4f1d2f5e726341..8bc4f282bb3ff4 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -6496,7 +6496,7 @@ static int ftrace_process_locs(struct module *mod,
- 	struct dyn_ftrace *rec;
- 	unsigned long count;
- 	unsigned long *p;
--	unsigned long addr;
-+	unsigned long addr, prev_addr = 0;
- 	unsigned long flags = 0; /* Shut up gcc */
- 	int ret = -ENOMEM;
- 
-@@ -6550,6 +6550,16 @@ static int ftrace_process_locs(struct module *mod,
- 	while (p < end) {
- 		unsigned long end_offset;
- 		addr = ftrace_call_adjust(*p++);
-+
-+		/*
-+		 * Drop duplicate entries, which can happen when weak
-+		 * functions are overridden, and __mcount_loc relocation
-+		 * records were generated against function names due to
-+		 * absence of non-weak section symbols
-+		 */
-+		if (addr == prev_addr)
-+			addr = 0;
-+
- 		/*
- 		 * Some architecture linkers will pad between
- 		 * the different mcount_loc sections of different
-@@ -6569,6 +6579,7 @@ static int ftrace_process_locs(struct module *mod,
- 
- 		rec = &pg->records[pg->index++];
- 		rec->ip = addr;
-+		prev_addr = addr;
- 	}
- 
- 	/* We should have used all pages */
+ .../bindings/remoteproc/fsl,imx-rproc.yaml    |  1 +
+ drivers/remoteproc/imx_rproc.c                | 33 +++++++++++++++++++
+ 2 files changed, 34 insertions(+)
+
 -- 
-2.35.1
+2.25.1
 
