@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4582C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 22:46:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 378DFC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 22:46:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237966AbiD0Wtw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 18:49:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49542 "EHLO
+        id S238253AbiD0Wt7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 18:49:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237074AbiD0Wto (ORCPT
+        with ESMTP id S237258AbiD0Wtp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 18:49:44 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 517284339B
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:46:23 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id y3so6097649ejo.12
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:46:23 -0700 (PDT)
+        Wed, 27 Apr 2022 18:49:45 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14AE347076
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:46:25 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id k23so6157159ejd.3
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 15:46:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=hDNmZdaTEeDFa+SYiy2FhMpx+6VvsSpHDLR10ll6ANk=;
-        b=UMzpsSwwPouW1UdBJS7hpyHQxIRy9nsYXCcr9W+7hljC2F5PSqtNm+jQpv/doXqgu3
-         HHNb11Aqbv0E91en3I4gFKU/Ii3fTqFvtEZBSNF5NiNzxy7j5SmPrYkyEuZJEcgk+vHR
-         ZBYuesRRia/y2TI4iP0yu4jutPxojq52zbsFu2RdahZURM8L2tUCeQzAxKnM83oJ703S
-         XUBGD5Uv6V3JfnkZAjpopKPf+H6oN1OCemBpy3EBanwiEmr7AqU8d74HMf1j0Q6bg1NO
-         TqQ6GfwQPXaSRTzatjK+ukk+PboYm1k7ZbL+p3l8tZoxaVsNYsQRJdofW2p1p6w8K24i
-         05qg==
+        bh=ktLjh0arY7M9jHkCEl8as+aaLtThvm0ZUfC/SiXTrT0=;
+        b=deJz5bfr1wzbr/xa1nRDWV0Z2KQa4zDAniqQ9qqH+0/M7kOOIqGgya9NtzEe+Q7B/K
+         fZU+C1XHzzyFz/Vj605IEDbk+6nwhB3vofo5hRBrsaRko/bvBIgVN+1FweCXo/Eb/UXr
+         3o2US3nJ+oAyow2HF+srqWZyFOZP594EkwS+Br/PH0+FS77gWzsEnO7IBXwk5kz12K41
+         FxyAtZAXtJul2flX6xNcPy+Bv6IkuoK3OUYGbUcPCje7EXrijBZBsqKiuSfS+/mW0POY
+         9Yjn3nBtSOCJ7BYIkBBfu5ip6Ojb/SgzOrZRWqTCKbPv/Pqs+YqramtF81zqQbGybMhX
+         85Bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=hDNmZdaTEeDFa+SYiy2FhMpx+6VvsSpHDLR10ll6ANk=;
-        b=Gwd9uAfZ0TiDNcfyg1IFB0ZX7hoCzd75JmA33eLPkE2+8QzNAjgvtxo3N/VAqJ7Io2
-         tiv++FpOawJhArc7qJsds2BWT0diWCVrJi+EZnNv5mRGPW7nn4BDkqeQNr1KL6VvIYwE
-         TGaPfpkoK2ILF9LAkULhm/C3dKYLvq7Axar+J0p1yfangAXXVRarWk5zbY4Bp7oDVLB1
-         QgaNvie2v5bjyQ9OqndHkpaE3zEVvQrdd43JsTMGfC6SVLHMKBy9/KtydDnbJkYUIw4I
-         bxtCbOlo3YJXNtWvQ5PYkH/UYcWdKZw5NYGmSAA00OtPi9hiqjdGWEiK+nYnpU8IxzAW
-         Q/Gw==
-X-Gm-Message-State: AOAM531kz8YWi9chhnR/NkZK/8AGDd9LE58Z17LDGj+wJVedsouffmlF
-        x//KQIA7iK4iZaEqP06O3Gw=
-X-Google-Smtp-Source: ABdhPJzH9KUeoZKiyyoLsMaGQe7aDUU5HjyOsWUmyNUcWFoDHmiTTlqcnelDOlnc1Dy+Vj4QInKYZw==
-X-Received: by 2002:a17:907:d24:b0:6f3:7c4f:f710 with SMTP id gn36-20020a1709070d2400b006f37c4ff710mr21160019ejc.6.1651099581835;
-        Wed, 27 Apr 2022 15:46:21 -0700 (PDT)
+        bh=ktLjh0arY7M9jHkCEl8as+aaLtThvm0ZUfC/SiXTrT0=;
+        b=0QXzI3euy4rhL2NGTg5UBn6NIFn+uoZJHy/pCX33nDpfoONWFXlrGa/69qj5753nSB
+         B4NqunikJ4BzUtT3QOcTXwtjWnbCjdKP9KA6/ntoPqMRzizEUZKe440kwcNQ1ZPP683y
+         mrnOJ1E19RnjVzeklSe1Tir0A0/uR7hZFKFEhIRo3q4x7dBy71kc0/Pki3cI8RA3FWCU
+         XrhN4nIA6mnLtA12wfTyMCjTTaC41Dr5jR8eats0CEWvEGgHV0ZX+pOEnwRjcPHR10iu
+         25CORDj07zayeBa47jWqfGxVjkbZ1xvUnsLYdyEoVyK9gEPR/fdL/o+MyMl/rjOsRtWA
+         TsyQ==
+X-Gm-Message-State: AOAM530RlNEnDXS/KBKp5oHAFNbFjeIbxubZzV5Z6ns0/sUOOaui7BKj
+        v+uPZd/ybZ2MsmuIB+XBMfg=
+X-Google-Smtp-Source: ABdhPJy7LMe2OaP7udKjAf2xITYTQLijS7OwSP4EpEcGzbE21HmKPDvNRCEXDAEHPGHDJ6Gp9GRvlw==
+X-Received: by 2002:a17:906:1691:b0:6f3:a3bf:451a with SMTP id s17-20020a170906169100b006f3a3bf451amr14130112ejd.61.1651099583709;
+        Wed, 27 Apr 2022 15:46:23 -0700 (PDT)
 Received: from nlaptop.localdomain (ptr-dtfv0poj8u7zblqwbt6.18120a2.ip6.access.telenet.be. [2a02:1811:cc83:eef0:f2b6:6987:9238:41ca])
-        by smtp.gmail.com with ESMTPSA id o14-20020a170906774e00b006d5b915f27dsm7351657ejn.169.2022.04.27.15.46.20
+        by smtp.gmail.com with ESMTPSA id o14-20020a170906774e00b006d5b915f27dsm7351657ejn.169.2022.04.27.15.46.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 15:46:21 -0700 (PDT)
+        Wed, 27 Apr 2022 15:46:23 -0700 (PDT)
 From:   Niels Dossche <dossche.niels@gmail.com>
 To:     Andrew Morton <akpm@linux-foundation.org>
 Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
         Mina Almasry <almasrymina@google.com>,
         Niels Dossche <dossche.niels@gmail.com>
-Subject: [PATCH 1/2] mm: mremap: fix sign for EFAULT error return value
-Date:   Thu, 28 Apr 2022 00:44:38 +0200
-Message-Id: <20220427224439.23828-2-dossche.niels@gmail.com>
+Subject: [PATCH 2/2] selftest/vm: test that mremap fails on non-existent vma
+Date:   Thu, 28 Apr 2022 00:44:39 +0200
+Message-Id: <20220427224439.23828-3-dossche.niels@gmail.com>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220427224439.23828-1-dossche.niels@gmail.com>
 References: <20220427224439.23828-1-dossche.niels@gmail.com>
@@ -65,32 +65,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The mremap syscall is supposed to return a pointer to the new virtual
-memory area on success, and a negative value of the error code in case
-of failure. Currently, EFAULT is returned when the VMA is not found,
-instead of -EFAULT. The users of this syscall will therefore believe
-the syscall succeeded in case the VMA didn't exist, as it returns a
-pointer to address 0xe (0xe being the value of EFAULT).
-Fix the sign of the error value.
+Add a regression test that validates that mremap fails for vma's that
+don't exist.
 
-Fixes: 550a7d60bd5e ("mm, hugepages: add mremap() support for hugepage backed vma")
 Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
 ---
- mm/mremap.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/testing/selftests/vm/hugepage-mremap.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/mm/mremap.c b/mm/mremap.c
-index 303d3290b938..0b93fac76851 100644
---- a/mm/mremap.c
-+++ b/mm/mremap.c
-@@ -947,7 +947,7 @@ SYSCALL_DEFINE5(mremap, unsigned long, addr, unsigned long, old_len,
- 		return -EINTR;
- 	vma = vma_lookup(mm, addr);
- 	if (!vma) {
--		ret = EFAULT;
-+		ret = -EFAULT;
- 		goto out;
- 	}
+diff --git a/tools/testing/selftests/vm/hugepage-mremap.c b/tools/testing/selftests/vm/hugepage-mremap.c
+index 1d689084a54b..585978f181ed 100644
+--- a/tools/testing/selftests/vm/hugepage-mremap.c
++++ b/tools/testing/selftests/vm/hugepage-mremap.c
+@@ -178,6 +178,12 @@ int main(int argc, char *argv[])
+ 
+ 	munmap(addr, length);
+ 
++	addr = mremap(addr, length, length, 0);
++	if (addr != MAP_FAILED) {
++		printf("mremap: Expected failure, but call succeeded\n");
++		exit(1);
++	}
++
+ 	close(fd);
+ 	unlink(argv[argc-1]);
  
 -- 
 2.35.2
