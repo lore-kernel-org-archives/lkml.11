@@ -2,134 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C486C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:29:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 403C5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 13:29:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236020AbiD0Ncl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 09:32:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60796 "EHLO
+        id S236075AbiD0Nco (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 09:32:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235846AbiD0Ncc (ORCPT
+        with ESMTP id S235998AbiD0Nch (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 09:32:32 -0400
-Received: from bedivere.hansenpartnership.com (bedivere.hansenpartnership.com [IPv6:2607:fcd0:100:8a00::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CE343F896;
-        Wed, 27 Apr 2022 06:29:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-        d=hansenpartnership.com; s=20151216; t=1651066159;
-        bh=svw2QKLySLeBa5NNG/2lDGa1cC2jheHbjip4Kiq8SFo=;
-        h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
-        b=QLwApHFr3nCbCYTm5CWgFeivIHf2YkzTif89S0W47Cy9Y2o2vuu66MxF4aeS4ilfg
-         GXAzMul1I56L0CYwOM5XA8WQ1isTAWoNasqrgdNrGpiaU3oRh+5odJiuCa127KQlIS
-         3vfSlWiDzLbLMEwrOYGlP41vjdLtYhAtOBlIZGhk=
-Received: from localhost (localhost [127.0.0.1])
-        by bedivere.hansenpartnership.com (Postfix) with ESMTP id 852711288C2B;
-        Wed, 27 Apr 2022 09:29:19 -0400 (EDT)
-Received: from bedivere.hansenpartnership.com ([127.0.0.1])
-        by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 66aQ9DCPgOss; Wed, 27 Apr 2022 09:29:19 -0400 (EDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-        d=hansenpartnership.com; s=20151216; t=1651066158;
-        bh=svw2QKLySLeBa5NNG/2lDGa1cC2jheHbjip4Kiq8SFo=;
-        h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
-        b=OB4HmMNFTRjCCWJIUeVZMKQsCcrkIEiWCs7jRmR5UbxTOyyWe3grkEMqiwmm3UkTl
-         oCz2+xF1VurT45hfyL0kOmice0jPJcJTVwPoweLGHWNqN8HyQejxi6R/Ytvh3NIcue
-         15gce1pryuw4ME8biooP3KzK9NTzL0RuN2t6B8VI=
-Received: from lingrow.int.hansenpartnership.com (unknown [IPv6:2601:5c4:4300:c551::c14])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id 5AA8C1288C2F;
-        Wed, 27 Apr 2022 09:29:15 -0400 (EDT)
-Message-ID: <d134571f381868e1cec74aca905012d8aec9fec8.camel@HansenPartnership.com>
-Subject: Re: Race-free block device opening
-From:   James Bottomley <James.Bottomley@HansenPartnership.com>
-To:     Demi Marie Obenour <demi@invisiblethingslab.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Block Mailing List <linux-block@vger.kernel.org>,
-        Linux Filesystem Mailing List <linux-fsdevel@vger.kernel.org>
-Date:   Wed, 27 Apr 2022 09:29:12 -0400
-In-Reply-To: <Ymg2HIc8NGraPNbM@itl-email>
-References: <Ymg2HIc8NGraPNbM@itl-email>
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-m2/yxg2jUsj/Q2J7p/Oh"
-User-Agent: Evolution 3.34.4 
-MIME-Version: 1.0
+        Wed, 27 Apr 2022 09:32:37 -0400
+Received: from mo-csw.securemx.jp (mo-csw1115.securemx.jp [210.130.202.157])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC1472BEC;
+        Wed, 27 Apr 2022 06:29:22 -0700 (PDT)
+Received: by mo-csw.securemx.jp (mx-mo-csw1115) id 23RDSqvK013961; Wed, 27 Apr 2022 22:28:52 +0900
+X-Iguazu-Qid: 2wGrYc4wNwbi6LINH7
+X-Iguazu-QSIG: v=2; s=0; t=1651066132; q=2wGrYc4wNwbi6LINH7; m=ynIzwYAowwA8CuGAVqPLMSzfj2MuDdmXpE06q/gNcNs=
+Received: from imx2-a.toshiba.co.jp (imx2-a.toshiba.co.jp [106.186.93.35])
+        by relay.securemx.jp (mx-mr1113) id 23RDSpGO027012
+        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 27 Apr 2022 22:28:51 +0900
+X-SA-MID: 36913144
+From:   Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org, yuji2.ishikawa@toshiba.co.jp
+Subject: [PATCH v2 4/4] MAINTAINERS: Add entries for Toshiba Visconti AFFINE image processing accelerator
+Date:   Wed, 27 Apr 2022 22:23:45 +0900
+X-TSB-HOP2: ON
+Message-Id: <20220427132345.27327-5-yuji2.ishikawa@toshiba.co.jp>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220427132345.27327-1-yuji2.ishikawa@toshiba.co.jp>
+References: <20220427132345.27327-1-yuji2.ishikawa@toshiba.co.jp>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Signed-off-by: Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
+Reviewed-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+---
+ MAINTAINERS | 2 ++
+ 1 file changed, 2 insertions(+)
 
---=-m2/yxg2jUsj/Q2J7p/Oh
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+diff --git a/MAINTAINERS b/MAINTAINERS
+index dd36acc87..231b2c6f9 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2796,12 +2796,14 @@ F:	Documentation/devicetree/bindings/net/toshiba,visconti-dwmac.yaml
+ F:	Documentation/devicetree/bindings/gpio/toshiba,gpio-visconti.yaml
+ F:	Documentation/devicetree/bindings/pci/toshiba,visconti-pcie.yaml
+ F:	Documentation/devicetree/bindings/pinctrl/toshiba,visconti-pinctrl.yaml
++F:  Documentation/devicetree/bindings/soc/visconti/
+ F:	Documentation/devicetree/bindings/watchdog/toshiba,visconti-wdt.yaml
+ F:	arch/arm64/boot/dts/toshiba/
+ F:	drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
+ F:	drivers/gpio/gpio-visconti.c
+ F:	drivers/pci/controller/dwc/pcie-visconti.c
+ F:	drivers/pinctrl/visconti/
++F:	drivers/soc/visconti/
+ F:	drivers/watchdog/visconti_wdt.c
+ N:	visconti
+ 
+-- 
+2.17.1
 
-On Tue, 2022-04-26 at 14:12 -0400, Demi Marie Obenour wrote:
-> Right now, opening block devices in a race-free way is incredibly
-> hard.
-
-Could you be more specific about what the race you're having problems
-with is?  What is racing.
-
-> The only reasonable approach I know of is sd_device_new_from_path() +
-> sd_device_open(), and is only available in systemd git main.  It also
-> requires waiting on systemd-udev to have processed udev rules, which
-> can be a bottleneck.
-
-This doesn't actually seem to be in my copy of systemd.
-
->   There are better approaches in various special cases, such as using
-> device-mapper ioctls to check that the device one has opened still
-> has the name and/or UUID one expects.  However, none of them works
-> for a plain call to open(2).
-
-Just so we're clear: if you call open on, say /dev/sdb1 and something
-happens to hot unplug and then replug a different device under that
-node, the file descriptor you got at open does *not* point to the new
-node.  It points to a dead device responder that errors everything.
-
-The point being once you open() something, the file descriptor is
-guaranteed to point to the same device (or error).
-
-> A much better approach would be for udev to point its symlinks at
-> "/dev/disk/by-diskseq/$DISKSEQ" for non-partition disk devices, or at
-> "/dev/disk/by-diskseq/${DISKSEQ}p${PARTITION}" for partitions.  A
-> filesystem would then be mounted at "/dev/disk/by-diskseq" that
-> provides for race-free opening of these paths.  This could be
-> implemented in userspace using FUSE, either with difficulty using the
-> current kernel API, or easily and efficiently using a new kernel API
-> for opening a block device by diskseq + partition.  However, I think
-> this should be handled by the Linux kernel itself.
->=20
-> What would be necessary to get this into the kernel?  I would like to
-> implement this, but I don=E2=80=99t have the time to do so anytime soon. =
- Is
-> anyone else interested in taking this on?  I suspect the kernel code
-> needed to implement this would be quite a bit smaller than the FUSE
-> implementation.
-
-So it sounds like the problem is you want to be sure that the device
-doesn't change after you've called libblkid to identify it but before
-you call open?  If that's so, the way you do this in userspace is to
-call libblkid again after the open.  If the before and after id match,
-you're as sure as you can be the open was of the right device.
-
-James
-
-
---=-m2/yxg2jUsj/Q2J7p/Oh
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABMIAB0WIQTnYEDbdso9F2cI+arnQslM7pishQUCYmlFKAAKCRDnQslM7pis
-hUPRAP9pjLs7yDBOO2c5Li9a7Pn7ceWfSbT5gPoE+EHnc411EAD+ILidPuqJQpgK
-dqmy5RX/RG/fj7Tt6j8VKRMWYrsXFbk=
-=fhrO
------END PGP SIGNATURE-----
-
---=-m2/yxg2jUsj/Q2J7p/Oh--
 
