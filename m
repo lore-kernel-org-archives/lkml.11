@@ -2,177 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF0A4C43217
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:18:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45DCDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:18:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237524AbiD0OVn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 10:21:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59638 "EHLO
+        id S237557AbiD0OVp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 10:21:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237757AbiD0OUt (ORCPT
+        with ESMTP id S237483AbiD0OVl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 10:20:49 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9124A5E740
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 07:17:35 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id c15so2811780ljr.9
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 07:17:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=x/04ExZsssyHqK3ybhx4YVkpwU+WO3WPNrqX7DTqXG4=;
-        b=KcoQA4RUPwVoun+6cZl/pmYQbIgxcoqRYDMq1MFkIwR5zf/Z/nxThQRqsAXpO6fHl8
-         KIomzfKhTflfdyS3w9NrdfMQKGTVAnQBz25Pe3HQItAotLqhUfYkS1qxfbzk3sUS9duR
-         BFHXvCs1zMAiB27DkIhE0/vCtJMXpOFFAamo/+d1lmWh492Ftkv8Pm986gpCZzvuSn4y
-         ERQB0kCCij3s2rkuRuKB+Bc3jQrBnKaKTc5O6mddoYlQo+M5eKoU2+gi1W9epBhTqajZ
-         w6bW9WYrXOrScM6YsoZwQGiinAiJsHOebdQqSSZIfkdfg5JzYK5Qmpp4pvfSJhW+zZsP
-         iZZg==
+        Wed, 27 Apr 2022 10:21:41 -0400
+Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 194C76A002;
+        Wed, 27 Apr 2022 07:18:30 -0700 (PDT)
+Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-e5e433d66dso2073800fac.5;
+        Wed, 27 Apr 2022 07:18:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=x/04ExZsssyHqK3ybhx4YVkpwU+WO3WPNrqX7DTqXG4=;
-        b=KqiA7fkxxMIX+KGS1kG5oWUxrl1eOQptcxeGOUH1p4JaLPH9rcDRYfEBHX1SZDVX8t
-         2tqtJTjoC6aFoTInZH0Ioi7FMdoBgoUSXTqZjcaj9uMXgaf9qRsVYKNphbmANV7xUkl4
-         xPgoQCG7pZ1SlBbA0cdvuhUmHh8nwN8xisWwNo8Tpb9PAzTJWqMavZfNYTBjvImXVXv1
-         CCb8Xv4VH8UjUw4mXI/u42gpx9J+kTG83ib9S6w5zqvrZCwLX7VRCumNeQTA/whlLJIJ
-         bYqyeW1UBIlPHUqMzhydMT/rQqU3Sez1tFWXb2eHPFdyhXw/5N1o0URwHao6H4ONbR3M
-         BkfQ==
-X-Gm-Message-State: AOAM533NLYZaaFs73tr6MgMh+baSZHhaeM7Vzl5irphXVpMSE1195R2L
-        ycJF7Ykzk9FrH1K9c4+HI2df+Q==
-X-Google-Smtp-Source: ABdhPJxVjTj0vQFFkI6C0mpp7oyTSf4B40Jzv5S29tPlaFcLkO/RSz/P1O/faKPD1SWNzxgEvPAecQ==
-X-Received: by 2002:a05:651c:887:b0:247:f630:d069 with SMTP id d7-20020a05651c088700b00247f630d069mr18602831ljq.514.1651069053766;
-        Wed, 27 Apr 2022 07:17:33 -0700 (PDT)
-Received: from box.localdomain ([86.57.175.117])
-        by smtp.gmail.com with ESMTPSA id t17-20020a192d51000000b0047212cead69sm633986lft.253.2022.04.27.07.17.32
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=PhXcDgK09TfJ0k4/TcfwOYlktcKSTjsxAO+dgwid8sU=;
+        b=2xOQh1XR7ym3OsES4idwVUbm/DSVPrsxVdgT0UpOOAb1dEfdsZZU2d3l3yTqksSKPy
+         Y4pESMLMBKnrNC/GGg7inPIsbtNdfr6E1LvMlF2g1J21IZdSIP4pavCyYwEyXMVCfvv2
+         ez+n4FXX1bKijJ9Q4nunRP3EcTTuHpYV8A5R/WrAp9D+vFuHk+ufsciWeg1Rz7Wuir6Q
+         zoFjbhF5rSTaXfgyO+38mLa8ww4KpHDDolMmvmJ/YAYXMxRpTIpX5agxrVdAWxYWzbB8
+         4Z/6ottxix+1Z/XryFLYy9z/SU6JY1V0b7xEQm6AkOImg9aZvchM6R49UIpfPVcByOAC
+         SLEg==
+X-Gm-Message-State: AOAM531lx7ZVuA/YFWgzxEHS/PhBhKB6W33hzGKD0bsXvaFJguF12p7F
+        SaEfjNcJaeiUhIeRjsXtO87Rk0Im8w==
+X-Google-Smtp-Source: ABdhPJzEazdYi+wBumpNxD6+bRTRjB1cnfTbRe3mJ/iYA6rFI8tXYvlUpz6mMwksoa3oLiTqbPubyQ==
+X-Received: by 2002:a05:6870:ea8d:b0:e6:135c:1a2e with SMTP id s13-20020a056870ea8d00b000e6135c1a2emr15718470oap.9.1651069109351;
+        Wed, 27 Apr 2022 07:18:29 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id b14-20020a056870160e00b000e915a9121csm672499oae.52.2022.04.27.07.18.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 07:17:32 -0700 (PDT)
-Received: by box.localdomain (Postfix, from userid 1000)
-        id 4FE48103716; Wed, 27 Apr 2022 17:19:14 +0300 (+03)
-Date:   Wed, 27 Apr 2022 17:19:14 +0300
-From:   "Kirill A. Shutemov" <kirill@shutemov.name>
-To:     Michael Roth <michael.roth@amd.com>, Borislav Petkov <bp@alien8.de>
-Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Dario Faggioli <dfaggioli@suse.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        David Hildenbrand <david@redhat.com>, x86@kernel.org,
-        linux-mm@kvack.org, linux-coco@lists.linux.dev,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCHv5 06/12] x86/boot/compressed: Handle unaccepted memory
-Message-ID: <20220427141914.s7y7lhlaau473mu7@box.shutemov.name>
-References: <20220425033934.68551-1-kirill.shutemov@linux.intel.com>
- <20220425033934.68551-7-kirill.shutemov@linux.intel.com>
- <20220427001756.xefhkwwc7uhxuusk@amd.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220427001756.xefhkwwc7uhxuusk@amd.com>
+        Wed, 27 Apr 2022 07:18:28 -0700 (PDT)
+Received: (nullmailer pid 4142584 invoked by uid 1000);
+        Wed, 27 Apr 2022 14:18:28 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Zev Weiss <zev@bewilderbeest.net>
+Cc:     Renze Nicolai <renze@rnplus.nl>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Jean Delvare <jdelvare@suse.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        linux-hwmon@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        openbmc@lists.ozlabs.org, Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <20220427010154.29749-2-zev@bewilderbeest.net>
+References: <20220427010154.29749-1-zev@bewilderbeest.net> <20220427010154.29749-2-zev@bewilderbeest.net>
+Subject: Re: [PATCH v4 1/7] dt-bindings: hwmon: Add nuvoton,nct6775
+Date:   Wed, 27 Apr 2022 09:18:28 -0500
+Message-Id: <1651069108.145838.4142583.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 07:17:56PM -0500, Michael Roth wrote:
-> On Mon, Apr 25, 2022 at 06:39:28AM +0300, Kirill A. Shutemov wrote:
-> > The firmware will pre-accept the memory used to run the stub. But, the
-> > stub is responsible for accepting the memory into which it decompresses
-> > the main kernel. Accept memory just before decompression starts.
-> > 
-> > The stub is also responsible for choosing a physical address in which to
-> > place the decompressed kernel image. The KASLR mechanism will randomize
-> > this physical address. Since the unaccepted memory region is relatively
-> > small, KASLR would be quite ineffective if it only used the pre-accepted
-> > area (EFI_CONVENTIONAL_MEMORY). Ensure that KASLR randomizes among the
-> > entire physical address space by also including EFI_UNACCEPTED_MEMOR
-> > 
-> > Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-> > ---
-> >  arch/x86/boot/compressed/Makefile        |  2 +-
-> >  arch/x86/boot/compressed/kaslr.c         | 14 ++++++++++++--
-> >  arch/x86/boot/compressed/mem.c           | 21 +++++++++++++++++++++
-> >  arch/x86/boot/compressed/misc.c          |  9 +++++++++
-> >  arch/x86/include/asm/unaccepted_memory.h |  2 ++
-> >  5 files changed, 45 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/arch/x86/boot/compressed/Makefile b/arch/x86/boot/compressed/Makefile
-> > index 7f672f7e2fea..b59007e57cbf 100644
-> > --- a/arch/x86/boot/compressed/Makefile
-> > +++ b/arch/x86/boot/compressed/Makefile
-> > @@ -102,7 +102,7 @@ endif
-> >  
-> >  vmlinux-objs-$(CONFIG_ACPI) += $(obj)/acpi.o
-> >  vmlinux-objs-$(CONFIG_INTEL_TDX_GUEST) += $(obj)/tdx.o $(obj)/tdcall.o
-> > -vmlinux-objs-$(CONFIG_UNACCEPTED_MEMORY) += $(obj)/bitmap.o $(obj)/mem.o
-> > +vmlinux-objs-$(CONFIG_UNACCEPTED_MEMORY) += $(obj)/bitmap.o $(obj)/find.o $(obj)/mem.o
+On Tue, 26 Apr 2022 18:01:48 -0700, Zev Weiss wrote:
+> These Super I/O chips have an i2c interface that some systems expose
+> to a BMC; the BMC's device tree can now describe that via this
+> binding.
 > 
-> Since it's possible to have CONFIG_UNACCEPTED_MEMORY=y while
-> CONFIG_INTEL_TDX_GUEST=n (e.g. for SNP-only guest kernels), this can
-> result in mem.o reporting linker errors due to tdx_accept_memory() not
-> being defined. I think it needs a stub for !CONFIG_INTEL_TDX_GUEST, or
-> something along that line.
-
-Fair enough. This would do the trick:
-
-diff --git a/arch/x86/boot/compressed/mem.c b/arch/x86/boot/compressed/mem.c
-index 539fff27de49..4a49a2438180 100644
---- a/arch/x86/boot/compressed/mem.c
-+++ b/arch/x86/boot/compressed/mem.c
-@@ -19,6 +19,9 @@ static bool is_tdx_guest(void)
- 	static bool once;
- 	static bool is_tdx;
-
-+	if (!IS_ENABLED(CONFIG_INTEL_TDX_GUEST))
-+	    return false;
-+
- 	if (!once) {
- 		u32 eax, sig[3];
-
-> >  vmlinux-objs-$(CONFIG_EFI_MIXED) += $(obj)/efi_thunk_$(BITS).o
-> >  efi-obj-$(CONFIG_EFI_STUB) = $(objtree)/drivers/firmware/efi/libstub/lib.a
-> > diff --git a/arch/x86/boot/compressed/kaslr.c b/arch/x86/boot/compressed/kaslr.c
-> > index 411b268bc0a2..59db90626042 100644
-> > --- a/arch/x86/boot/compressed/kaslr.c
-> > +++ b/arch/x86/boot/compressed/kaslr.c
-> > @@ -725,10 +725,20 @@ process_efi_entries(unsigned long minimum, unsigned long image_size)
-> >  		 * but in practice there's firmware where using that memory leads
-> >  		 * to crashes.
-> >  		 *
-> > -		 * Only EFI_CONVENTIONAL_MEMORY is guaranteed to be free.
-> > +		 * Only EFI_CONVENTIONAL_MEMORY and EFI_UNACCEPTED_MEMORY (if
-> > +		 * supported) are guaranteed to be free.
-> >  		 */
-> > -		if (md->type != EFI_CONVENTIONAL_MEMORY)
-> > +
-> > +		switch (md->type) {
-> > +		case EFI_CONVENTIONAL_MEMORY:
-> > +			break;
-> > +		case EFI_UNACCEPTED_MEMORY:
+> Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
+> ---
+>  .../bindings/hwmon/nuvoton,nct6775.yaml       | 56 +++++++++++++++++++
+>  1 file changed, 56 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/hwmon/nuvoton,nct6775.yaml
 > 
-> Just FYI, but with latest tip boot/compressed now relies on a separate header
-> in arch/x86/boot/compressed/efi.h where this need to be defined again.
 
-Right.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Borislav, how do you want to handle this? Do you want me to rebase the
-tree to a specific branch?
+yamllint warnings/errors:
 
--- 
- Kirill A. Shutemov
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/hwmon/nuvoton,nct6775.yaml: properties:nuvoton,tsi-channel-mask: 'oneOf' conditional failed, one must be fixed:
+	'type' is a required property
+		hint: A vendor boolean property can use "type: boolean"
+	Additional properties are not allowed ('default', 'maximum' were unexpected)
+		hint: A vendor boolean property can use "type: boolean"
+	/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/hwmon/nuvoton,nct6775.yaml: properties:nuvoton,tsi-channel-mask: 'oneOf' conditional failed, one must be fixed:
+		'enum' is a required property
+		'const' is a required property
+		hint: A vendor string property with exact values has an implicit type
+		from schema $id: http://devicetree.org/meta-schemas/vendor-props.yaml#
+	/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/hwmon/nuvoton,nct6775.yaml: properties:nuvoton,tsi-channel-mask: 'oneOf' conditional failed, one must be fixed:
+		'$ref' is a required property
+		'allOf' is a required property
+		hint: A vendor property needs a $ref to types.yaml
+		from schema $id: http://devicetree.org/meta-schemas/vendor-props.yaml#
+	hint: Vendor specific properties must have a type and description unless they have a defined, common suffix.
+	from schema $id: http://devicetree.org/meta-schemas/vendor-props.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/hwmon/nuvoton,nct6775.yaml: ignoring, error in schema: properties: nuvoton,tsi-channel-mask
+Documentation/devicetree/bindings/hwmon/nuvoton,nct6775.example.dtb:0:0: /example-0/i2c/superio@4d: failed to match any schema with compatible: ['nuvoton,nct6779']
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
