@@ -2,102 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BDE6C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:47:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96094C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:47:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230217AbiD0KuZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 06:50:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35088 "EHLO
+        id S230234AbiD0Kub (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 06:50:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230151AbiD0KuI (ORCPT
+        with ESMTP id S230078AbiD0KuH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 06:50:08 -0400
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [IPv6:2001:4b98:dc4:8::240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEB2436251E
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 03:20:54 -0700 (PDT)
-Received: from relay12.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::232])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id DBAC4C8E9A
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:44:01 +0000 (UTC)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 88F3C200006;
-        Wed, 27 Apr 2022 09:42:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1651052546;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=2Os8UmEkM4YAJJt2iMunVLmf9fDm4xLcC8Rb9y57nPU=;
-        b=ZHQ5jcKugqfvVn8sQ9TnnPwi8XcY0PlcsLpmyZAgzkTOMz2XiJ+2ZGWconG18qOLJpLv/G
-        8KhzIMo6nqHuzu6v9kvZuXAWRv8QQdYJieYZ0MNekrMLfp5j+IeTYwEqKAsjLVxMwgOttk
-        097KYO5ODV+XOYh54EnZCmDDnYwquf4DR7Kiy/iNqOetPddvZ9QQK2xigVnTIV68RDSkmD
-        pKhF2TanEAuIY/qE/6cewZH/dAII/mMGXB3bDAnZHesbEUVaQW2qP7ibCNo1EqWnfXLftj
-        FgPF8bpubKeSjGuwEr7bqjK/e3N+t4/jtPhsnCbCNwZodZ+pWyNJkHuVMDQ6Zw==
-Date:   Wed, 27 Apr 2022 11:42:22 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-mtd@lists.infradead.org, Richard Weinberger <richard@nod.at>,
-        Tudor Ambarus <Tudor.Ambarus@microchip.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Frieder Schrempf <frieder.schrempf@kontron.de>,
-        Michael Walle <michael@walle.cc>,
-        Pratyush Yadav <p.yadav@ti.com>, linux-kernel@vger.kernel.org
-Subject: [GIT PULL] mtd: Fixes for 5.18-rc5
-Message-ID: <20220427114222.75209cb3@xps13>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Wed, 27 Apr 2022 06:50:07 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B8A43AE09;
+        Wed, 27 Apr 2022 03:20:54 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id s21so1793571wrb.8;
+        Wed, 27 Apr 2022 03:20:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=YpngR4n4Vedu6z5a5k/BhmCiHm7z2H0f6uU18kyeCSk=;
+        b=Ydnwfs5ZFvzstOL4mZcUIcvZik2KN8U7L6ffdUGLBg6HeGTR3AnOj3P361A4EO8w+L
+         DWgIzYlRlM15DR98bPZNiTI/umszdYf8q+emO6IOw+t+yPwDg3vhokWlVucCexx56/yP
+         2ujV5MkybDr6Alz1WPjU96vs7/uCGww4c+UTuhJcxm5Lhqf+ETMyO5QV7PKMqsa7ImM7
+         M0f1uqtoSf7r90QXRCGkKlYuxynQNd8oS17Vsq9i7gpFh/wYKeqvfxLaS0rh/sK4nIAc
+         CuF373jNykgAgIefGdtoXN6PK4qEY9W0gzAUCGnFtbZeCcmw+4mnOD8mswUiY1xeFp5j
+         uRtA==
+X-Gm-Message-State: AOAM533UubrxR7R17k7QmBIsqRg6RqqmII2iZpD/jZrxKOhT58v26kwv
+        mQwep8EnHg/l4qHixZmaKvqAmuaRkiI=
+X-Google-Smtp-Source: ABdhPJydNWOBreqCBQqJ3hGd3bZH28njhPnqbvszt/1SR/tJ1Zv9LgKUiSxIUD7zogUjzT8tsOpkeg==
+X-Received: by 2002:a05:6402:128b:b0:425:d1d7:b321 with SMTP id w11-20020a056402128b00b00425d1d7b321mr22866633edv.179.1651053701125;
+        Wed, 27 Apr 2022 03:01:41 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id z21-20020a05640240d500b004261a2a0ec5sm526804edb.54.2022.04.27.03.01.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Apr 2022 03:01:39 -0700 (PDT)
+Message-ID: <8bd7804b-a38d-47b5-c9d3-1f5dca578260@kernel.org>
+Date:   Wed, 27 Apr 2022 12:01:37 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 5.17 000/146] 5.17.5-rc1 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220426081750.051179617@linuxfoundation.org>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Linus,
+On 26. 04. 22, 10:19, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.17.5 release.
+> There are 146 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Thu, 28 Apr 2022 08:17:22 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.17.5-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.17.y
+> and the diffstat can be found below.
 
-This is a fixes MTD PR for the next -rc.
+openSUSE configs¹⁾ all green.
 
-Thanks,
-Miqu=C3=A8l
+Tested-by: Jiri Slaby <jirislaby@kernel.org>
 
+¹⁾ armv6hl armv7hl arm64 i386 ppc64 ppc64le riscv64 s390x x86_64
 
-The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
-
-  Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git tags/mtd/fixe=
-s-for-5.18-rc5
-
-for you to fetch changes up to ba7542eb2dd5dfc75c457198b88986642e602065:
-
-  mtd: rawnand: qcom: fix memory corruption that causes panic (2022-04-21 0=
-9:29:07 +0200)
-
-----------------------------------------------------------------
-MTD core fix:
-* Fix a possible data corruption of the 'part' field in mtd_info
-
-Rawnand fixes:
-* Fix the check on the return value of wait_for_completion_timeout
-* Fix wrong ECC parameters for mt7622
-* Fix a possible memory corruption that might panic in the Qcom driver
-
-----------------------------------------------------------------
-Chuanhong Guo (1):
-      mtd: rawnand: fix ecc parameters for mt7622
-
-Md Sadre Alam (1):
-      mtd: rawnand: qcom: fix memory corruption that causes panic
-
-Miaoqian Lin (1):
-      mtd: rawnand: Fix return value check of wait_for_completion_timeout
-
-Oleksandr Ocheretnyi (1):
-      mtd: fix 'part' field data corruption in mtd_info
-
- drivers/mtd/nand/raw/mtk_ecc.c    | 12 ++++++++----
- drivers/mtd/nand/raw/qcom_nandc.c | 24 +++++++++++++-----------
- drivers/mtd/nand/raw/sh_flctl.c   | 14 ++++++++------
- include/linux/mtd/mtd.h           |  6 ++----
- 4 files changed, 31 insertions(+), 25 deletions(-)
+-- 
+js
+suse labs
