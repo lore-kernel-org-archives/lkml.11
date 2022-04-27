@@ -2,256 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7069EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:30:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE773C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 14:31:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238065AbiD0OeG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 10:34:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52076 "EHLO
+        id S237952AbiD0OeX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 10:34:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237938AbiD0Oda (ORCPT
+        with ESMTP id S237948AbiD0OeB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 10:33:30 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 712CFB37;
-        Wed, 27 Apr 2022 07:30:15 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id b19so2745468wrh.11;
-        Wed, 27 Apr 2022 07:30:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=2jnubTloA50NBhVPujuweIXddbKN6CZkPHUrLGAPqaI=;
-        b=H9922wGqJwq84wbVnaSaJLWvH2yqxHkhjMKA2X0CcLAh3rNN5Ur65te4IA/jA4OiyD
-         IeWO+vw+E3FvYnxc2FhEUU87/+lyOXdAthjA5NrnM15lG5HtXsg79gLRADK8IgFPX8Hn
-         lkb0uCs25ZgUnGPA2nQBaGVp6K1ewdjzq6LEdGln5ziC37EjiuX2EmthXHpm82K8hKPG
-         4uNEbM4IBZr5TLbXZLq4gdj0if2HIJmfeMhmRpindBrWCe0e6thofEjFxs2gMD8iu++N
-         uEAH6i0rXG+CqrMR2SL6S/KeSgd+rc7CfYv9aaehsgmlVZUFdbMlscoNjI4SN3dbboqK
-         Yg9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=2jnubTloA50NBhVPujuweIXddbKN6CZkPHUrLGAPqaI=;
-        b=rz2haoZeSM1/wBjVbs70kPAmzIFLMjdhwBJeyHyEidzQgFuOj64sVKfhKZ4Ta/mtNg
-         jZV87F+nSUh7J+jMZ27AkfLoD8X2MuKye4fAScv8lqTEoJ5J3dIpAEtdAftpHzA0bHcI
-         1JOKnmNcyQPMUuiEPnOOY/IgZeRpUQGiPKjeGHbV25tyLBKLUrjoA5zEMJ3YahwpIwNF
-         f6GoamhJGw7PRf8BowkFx6OMgH6DB0cu5G13lF0zlxOhtTOhgkV9DYr9p1Rc1TkuHa1B
-         URQ0sSJHgVwKjdm2u/Zi4p8xeRgg29r5/OwlYZ2EZK3TzFgaD21Jv37a033zmdkyq+o2
-         Ud2Q==
-X-Gm-Message-State: AOAM533ZwzOsO1CfnKePzA7oFrS0NLnXr33/pp/sqwIKojgBzlw9pchI
-        b4srFfGugKNE6aO8KgNaF5s=
-X-Google-Smtp-Source: ABdhPJxaZpIgD2ck+2+lMm4OwQWforWeo04POHG4mbM7+oFaOPfxxB0EVqfxEogNVWQhS0cwBLZZwg==
-X-Received: by 2002:a5d:434f:0:b0:205:f514:8955 with SMTP id u15-20020a5d434f000000b00205f5148955mr23252494wrr.73.1651069814001;
-        Wed, 27 Apr 2022 07:30:14 -0700 (PDT)
-Received: from tiger.museclub.art (p200300cf9f393100d379c1e4199524ea.dip0.t-ipconnect.de. [2003:cf:9f39:3100:d379:c1e4:1995:24ea])
-        by smtp.googlemail.com with ESMTPSA id i14-20020a1c540e000000b00393dc91e9c9sm1721625wmb.17.2022.04.27.07.30.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 07:30:13 -0700 (PDT)
-From:   Eugene Shalygin <eugene.shalygin@gmail.com>
-Cc:     Eugene Shalygin <eugene.shalygin@gmail.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 3/4] hwmon: (asus-ec-sensors) add support for board families
-Date:   Wed, 27 Apr 2022 16:30:00 +0200
-Message-Id: <20220427143001.1443605-4-eugene.shalygin@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220427143001.1443605-1-eugene.shalygin@gmail.com>
-References: <20220427143001.1443605-1-eugene.shalygin@gmail.com>
+        Wed, 27 Apr 2022 10:34:01 -0400
+Received: from conssluserg-02.nifty.com (conssluserg-02.nifty.com [210.131.2.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71935617C
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 07:30:47 -0700 (PDT)
+Received: from mail-pj1-f50.google.com (mail-pj1-f50.google.com [209.85.216.50]) (authenticated)
+        by conssluserg-02.nifty.com with ESMTP id 23REUMKv013589
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 23:30:22 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 23REUMKv013589
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1651069823;
+        bh=PaAe2OFK506VVqXplQDNPZOKX+44YVahRECy+APqLjM=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=w5tapwFWKkhIK37xg0+ASjYfOkAOkNUoTuSC4NhqJ7MyEtYf6Fa0zwpF/TI6L1d2R
+         rb0UZMgfW6jxY8lqZco/flmD3tX8/C1tBvAZxK5IzWstlzHRnXyxO11Q6RYw9KbP0o
+         4u0I5LpbDHKJQq15lDh9d6nfymy0hfapbpTxekG7DyvhqqQJav5+h2LhhKiw73HSjF
+         UgN2EeV6g2RzVWsowgiCZt9chU2pE/wE6czC+kxQ7D1ss+pjMiniQA21PMbhbUBK6L
+         ngW8lJypz2s/0TrYIRbJRZH8ilBBsg1nZRsT1/pHICTxTBZyAg7X3IXHqiEWBtwpF4
+         8o+2QMjCvocMg==
+X-Nifty-SrcIP: [209.85.216.50]
+Received: by mail-pj1-f50.google.com with SMTP id fv2so1637665pjb.4
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 07:30:22 -0700 (PDT)
+X-Gm-Message-State: AOAM531Csb05+RhN4nCk81gDEyE5ViIJGm0/i2U5jRQWlvENWiWsaA4U
+        Z0553cTL3QdrmuvzKDzN/GGBRfMz6K1vTYY5PSc=
+X-Google-Smtp-Source: ABdhPJzsqO5dqPiCgEbDywVSsGVMqRfZVIbn+bDPITwKt7U1kozX58TTKo8CXXJNGCMuJrcaEa3uaRpPqcrxDMUVLPY=
+X-Received: by 2002:a17:90a:e7d1:b0:1da:30d0:9327 with SMTP id
+ kb17-20020a17090ae7d100b001da30d09327mr4886230pjb.144.1651069821974; Wed, 27
+ Apr 2022 07:30:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+References: <20220427090442.2105905-1-gregkh@linuxfoundation.org>
+In-Reply-To: <20220427090442.2105905-1-gregkh@linuxfoundation.org>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Wed, 27 Apr 2022 23:29:19 +0900
+X-Gmail-Original-Message-ID: <CAK7LNASFK3z8Y=L1Q6uG3YZ2GBffBAASkc4tWfnPF__qeYh3SA@mail.gmail.com>
+Message-ID: <CAK7LNASFK3z8Y=L1Q6uG3YZ2GBffBAASkc4tWfnPF__qeYh3SA@mail.gmail.com>
+Subject: Re: [PATCH v2] export: fix string handling of namespace in EXPORT_SYMBOL_NS
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Emil Velikov <emil.l.velikov@gmail.com>,
+        Jessica Yu <jeyu@kernel.org>,
+        Quentin Perret <qperret@google.com>,
+        Matthias Maennich <maennich@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DSDT code for AMD 400-series chipset shows that sensor addresses differ
-for this generation from those for the AMD 500-series boards.
+On Wed, Apr 27, 2022 at 6:06 PM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> Commit c3a6cf19e695 ("export: avoid code duplication in
+> include/linux/export.h") broke the ability for a defined string to be
+> used as a namespace value.
 
-Signed-off-by: Eugene Shalygin <eugene.shalygin@gmail.com>
----
- drivers/hwmon/asus-ec-sensors.c | 40 ++++++++++++++++++++++++++++-----
- 1 file changed, 35 insertions(+), 5 deletions(-)
+In hindsight, this was a bad idea.
 
-diff --git a/drivers/hwmon/asus-ec-sensors.c b/drivers/hwmon/asus-ec-sensors.c
-index 581df4053060..109c3920d77c 100644
---- a/drivers/hwmon/asus-ec-sensors.c
-+++ b/drivers/hwmon/asus-ec-sensors.c
-@@ -135,8 +135,13 @@ enum ec_sensors {
- #define SENSOR_TEMP_WATER_IN BIT(ec_sensor_temp_water_in)
- #define SENSOR_TEMP_WATER_OUT BIT(ec_sensor_temp_water_out)
- 
-+enum board_family {
-+	family_unknown,
-+	family_amd_500_series,
-+};
-+
- /* All the known sensors for ASUS EC controllers */
--static const struct ec_sensor_info known_ec_sensors[] = {
-+static const struct ec_sensor_info sensors_family_amd_500[] = {
- 	[ec_sensor_temp_chipset] =
- 		EC_SENSOR("Chipset", hwmon_temp, 1, 0x00, 0x3a),
- 	[ec_sensor_temp_cpu] = EC_SENSOR("CPU", hwmon_temp, 1, 0x00, 0x3b),
-@@ -177,6 +182,7 @@ struct ec_board_info {
- 	 * the hardware is not guarded.
- 	 */
- 	const char *mutex_path;
-+	enum board_family family;
- };
- 
- static const struct ec_board_info board_info[] = {
-@@ -185,6 +191,7 @@ static const struct ec_board_info board_info[] = {
- 		.sensors = SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_VRM |
- 			SENSOR_TEMP_T_SENSOR | SENSOR_FAN_CHIPSET,
- 		.mutex_path = ASUS_HW_ACCESS_MUTEX_ASMX,
-+		.family = family_amd_500_series,
- 	},
- 	{
- 		.board_names = {"ProArt X570-CREATOR WIFI"},
-@@ -198,6 +205,7 @@ static const struct ec_board_info board_info[] = {
- 			SENSOR_TEMP_T_SENSOR | SENSOR_FAN_CHIPSET |
- 			SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE,
- 		.mutex_path = ASUS_HW_ACCESS_MUTEX_ASMX,
-+		.family = family_amd_500_series,
- 	},
- 	{
- 		.board_names = {"ROG CROSSHAIR VIII DARK HERO"},
-@@ -207,6 +215,7 @@ static const struct ec_board_info board_info[] = {
- 			SENSOR_FAN_CPU_OPT | SENSOR_FAN_WATER_FLOW |
- 			SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE,
- 		.mutex_path = ASUS_HW_ACCESS_MUTEX_ASMX,
-+		.family = family_amd_500_series,
- 	},
- 	{
- 		.board_names = {"ROG CROSSHAIR VIII FORMULA"},
-@@ -215,6 +224,7 @@ static const struct ec_board_info board_info[] = {
- 			SENSOR_FAN_CPU_OPT | SENSOR_FAN_CHIPSET |
- 			SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE,
- 		.mutex_path = ASUS_HW_ACCESS_MUTEX_ASMX,
-+		.family = family_amd_500_series,
- 	},
- 	{
- 		.board_names = {
-@@ -228,6 +238,7 @@ static const struct ec_board_info board_info[] = {
- 			SENSOR_FAN_WATER_FLOW | SENSOR_CURR_CPU |
- 			SENSOR_IN_CPU_CORE,
- 		.mutex_path = ASUS_HW_ACCESS_MUTEX_ASMX,
-+		.family = family_amd_500_series,
- 	},
- 	{
- 		.board_names = {"ROG CROSSHAIR VIII IMPACT"},
-@@ -236,6 +247,7 @@ static const struct ec_board_info board_info[] = {
- 			SENSOR_FAN_CHIPSET | SENSOR_CURR_CPU |
- 			SENSOR_IN_CPU_CORE,
- 		.mutex_path = ASUS_HW_ACCESS_MUTEX_ASMX,
-+		.family = family_amd_500_series,
- 	},
- 	{
- 		.board_names = {"ROG STRIX B550-E GAMING"},
-@@ -243,6 +255,7 @@ static const struct ec_board_info board_info[] = {
- 			SENSOR_TEMP_T_SENSOR | SENSOR_TEMP_VRM |
- 			SENSOR_FAN_CPU_OPT,
- 		.mutex_path = ASUS_HW_ACCESS_MUTEX_ASMX,
-+		.family = family_amd_500_series,
- 	},
- 	{
- 		.board_names = {"ROG STRIX B550-I GAMING"},
-@@ -251,6 +264,7 @@ static const struct ec_board_info board_info[] = {
- 			SENSOR_FAN_VRM_HS | SENSOR_CURR_CPU |
- 			SENSOR_IN_CPU_CORE,
- 		.mutex_path = ASUS_HW_ACCESS_MUTEX_ASMX,
-+		.family = family_amd_500_series,
- 	},
- 	{
- 		.board_names = {"ROG STRIX X570-E GAMING"},
-@@ -259,12 +273,14 @@ static const struct ec_board_info board_info[] = {
- 			SENSOR_FAN_CHIPSET | SENSOR_CURR_CPU |
- 			SENSOR_IN_CPU_CORE,
- 		.mutex_path = ASUS_HW_ACCESS_MUTEX_ASMX,
-+		.family = family_amd_500_series,
- 	},
- 	{
- 		.board_names = {"ROG STRIX X570-F GAMING"},
- 		.sensors = SENSOR_SET_TEMP_CHIPSET_CPU_MB |
- 			SENSOR_TEMP_T_SENSOR | SENSOR_FAN_CHIPSET,
- 		.mutex_path = ASUS_HW_ACCESS_MUTEX_ASMX,
-+		.family = family_amd_500_series,
- 	},
- 	{
- 		.board_names = {"ROG STRIX X570-I GAMING"},
-@@ -272,6 +288,7 @@ static const struct ec_board_info board_info[] = {
- 			SENSOR_FAN_CHIPSET | SENSOR_CURR_CPU |
- 			SENSOR_IN_CPU_CORE,
- 		.mutex_path = ASUS_HW_ACCESS_MUTEX_ASMX,
-+		.family = family_amd_500_series,
- 	},
- 	{}
- };
-@@ -323,6 +340,7 @@ static bool unlock_global_acpi_lock(struct lock_data *data)
- 
- struct ec_sensors_data {
- 	const struct ec_board_info *board_info;
-+	const struct ec_sensor_info *sensors_info;
- 	struct ec_sensor *sensors;
- 	/* EC registers to read from */
- 	u16 *registers;
-@@ -365,7 +383,7 @@ static bool is_sensor_data_signed(const struct ec_sensor_info *si)
- static const struct ec_sensor_info *
- get_sensor_info(const struct ec_sensors_data *state, int index)
- {
--	return &known_ec_sensors[state->sensors[index].info_index];
-+	return state->sensors_info + state->sensors[index].info_index;
- }
- 
- static int find_ec_sensor_index(const struct ec_sensors_data *ec,
-@@ -403,9 +421,9 @@ static void __init setup_sensor_data(struct ec_sensors_data *ec)
- 		s->info_index = i;
- 		s->cached_value = 0;
- 		ec->nr_registers +=
--			known_ec_sensors[s->info_index].addr.components.size;
-+			ec->sensors_info[s->info_index].addr.components.size;
- 		bank_found = false;
--		bank = known_ec_sensors[s->info_index].addr.components.bank;
-+		bank = ec->sensors_info[s->info_index].addr.components.bank;
- 		for (j = 0; j < ec->nr_banks; j++) {
- 			if (ec->banks[j] == bank) {
- 				bank_found = true;
-@@ -556,7 +574,7 @@ static void update_sensor_values(struct ec_sensors_data *ec, u8 *data)
- 
- 	sensor_end = ec->sensors + ec->nr_sensors;
- 	for (s = ec->sensors; s != sensor_end; s++) {
--		si = &known_ec_sensors[s->info_index];
-+		si = ec->sensors_info + s->info_index;
- 		s->cached_value = get_sensor_value(si, data);
- 		data += si->addr.components.size;
- 	}
-@@ -733,6 +751,17 @@ static int __init asus_ec_probe(struct platform_device *pdev)
- 
- 	dev_set_drvdata(dev, ec_data);
- 	ec_data->board_info = pboard_info;
-+
-+	switch (ec_data->board_info->family) {
-+	case family_amd_500_series:
-+		ec_data->sensors_info = sensors_family_amd_500;
-+		break;
-+	default:
-+		dev_err(dev, "Unknown board family: %d",
-+			ec_data->board_info->family);
-+		return -EINVAL;
-+	}
-+
- 	ec_data->nr_sensors = hweight_long(ec_data->board_info->sensors);
- 	ec_data->sensors = devm_kcalloc(dev, ec_data->nr_sensors,
- 					sizeof(struct ec_sensor), GFP_KERNEL);
-@@ -742,6 +771,7 @@ static int __init asus_ec_probe(struct platform_device *pdev)
- 		dev_err(dev, "Failed to setup state/EC locking: %d", status);
- 		return status;
- 	}
-+
- 	setup_sensor_data(ec_data);
- 	ec_data->registers = devm_kcalloc(dev, ec_data->nr_registers,
- 					  sizeof(u16), GFP_KERNEL);
+
+EXPORT_SYMBOL_NS_GPL(dw_spi_resume_host, "SPI_DW_CORE")
+
+   is much much better than:
+
+EXPORT_SYMBOL_NS_GPL(dw_spi_resume_host, SPI_DW_CORE)
+
+
+
+
+ccflags-y += -DDEFAULT_SYMBOL_NAMESPACE=USB_STORAGE
+
+is also a bad idea.
+
+When you look at EXPORT_SYMBOL_GPL() in C files, you will not be
+aware of the presence of the namespace.
+
+
+
+Anyway, it is presumably too late to fix it.
+
+
+>  Fix this up by using stringify to properly
+> encode the namespace name.
+>
+> Fixes: c3a6cf19e695 ("export: avoid code duplication in include/linux/export.h")
+> Cc: Miroslav Benes <mbenes@suse.cz>
+> Cc: Emil Velikov <emil.l.velikov@gmail.com>
+> Cc: Jessica Yu <jeyu@kernel.org>
+> Cc: Quentin Perret <qperret@google.com>
+> Cc: Masahiro Yamada <yamada.masahiro@socionext.com>
+
+This email is no longer valid.
+
+Feel free to replace it with
+
+Reviewed-by: Masahiro Yamada <masahiroy@kernel.org>
+
+
+
+> Cc: Matthias Maennich <maennich@google.com>
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> ---
+> v2: use stringify() instead of 2 step redirection as pointed out by Masahiro
+>
+>  include/linux/export.h | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
+>
+> diff --git a/include/linux/export.h b/include/linux/export.h
+> index 27d848712b90..5910ccb66ca2 100644
+> --- a/include/linux/export.h
+> +++ b/include/linux/export.h
+> @@ -2,6 +2,8 @@
+>  #ifndef _LINUX_EXPORT_H
+>  #define _LINUX_EXPORT_H
+>
+> +#include <linux/stringify.h>
+> +
+>  /*
+>   * Export symbols from the kernel to modules.  Forked from module.h
+>   * to reduce the amount of pointless cruft we feed to gcc when only
+> @@ -154,7 +156,6 @@ struct kernel_symbol {
+>  #endif /* CONFIG_MODULES */
+>
+>  #ifdef DEFAULT_SYMBOL_NAMESPACE
+> -#include <linux/stringify.h>
+>  #define _EXPORT_SYMBOL(sym, sec)       __EXPORT_SYMBOL(sym, sec, __stringify(DEFAULT_SYMBOL_NAMESPACE))
+>  #else
+>  #define _EXPORT_SYMBOL(sym, sec)       __EXPORT_SYMBOL(sym, sec, "")
+> @@ -162,8 +163,8 @@ struct kernel_symbol {
+>
+>  #define EXPORT_SYMBOL(sym)             _EXPORT_SYMBOL(sym, "")
+>  #define EXPORT_SYMBOL_GPL(sym)         _EXPORT_SYMBOL(sym, "_gpl")
+> -#define EXPORT_SYMBOL_NS(sym, ns)      __EXPORT_SYMBOL(sym, "", #ns)
+> -#define EXPORT_SYMBOL_NS_GPL(sym, ns)  __EXPORT_SYMBOL(sym, "_gpl", #ns)
+> +#define EXPORT_SYMBOL_NS(sym, ns)      __EXPORT_SYMBOL(sym, "", __stringify(ns))
+> +#define EXPORT_SYMBOL_NS_GPL(sym, ns)  __EXPORT_SYMBOL(sym, "_gpl", __stringify(ns))
+>
+>  #endif /* !__ASSEMBLY__ */
+>
+> --
+> 2.36.0
+>
+
+
 -- 
-2.35.1
-
+Best Regards
+Masahiro Yamada
