@@ -2,95 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91A49C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 22:42:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57E28C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 22:44:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232671AbiD0Wp7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 18:45:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39246 "EHLO
+        id S233163AbiD0Wrp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 18:47:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229695AbiD0Wp4 (ORCPT
+        with ESMTP id S233279AbiD0WrW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 18:45:56 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 606401E3F8;
-        Wed, 27 Apr 2022 15:42:42 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Wed, 27 Apr 2022 18:47:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 502C6255AF;
+        Wed, 27 Apr 2022 15:44:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KpYfm3j7fz4xXW;
-        Thu, 28 Apr 2022 08:42:40 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1651099360;
-        bh=hN+RU05kT3BQ/bSZrT1Y4ytgtwH7Y0bdyCzdEfE9lVc=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D8B5F61E41;
+        Wed, 27 Apr 2022 22:44:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F29B5C385AA;
+        Wed, 27 Apr 2022 22:44:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651099449;
+        bh=OeoXLpSjFFW6YXYpM+6X1nCwuoz/C5wuMa1J1bJYg/o=;
         h=Date:From:To:Cc:Subject:From;
-        b=fJBlSeM6q0M5fMzqI/NOfe+gPN/flbr+C026E6pBefdjfGtONq782Z2cVdrizBsGb
-         OORF+ppf8LYMw4nOeTXDRveRo378MFDtViz5d+i8l4scmCNE6H1w9SS8GGQQIISGtM
-         GSQQTtVe+AGAd7A/18MaO2Wumvb+ni709nsIk8DawUShVsx3i7B1oyJmqI9U8RWcdB
-         uIoGApUevh53bQxcOk+wiUMadvp0SMJoue3B7wYE7kcEP3W8UuABUWrZuRscllMg4J
-         TRH0TCPcFYmhqaZXxtvWa9cn57JB77ifmKI2sepiyXku4BgYsIrahnRwsw2e0EZU5S
-         o5TA3R1mH2m8A==
-Date:   Thu, 28 Apr 2022 08:42:39 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Liam Howlett <liam.howlett@oracle.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: Fixes tag needs some work in the mm tree
-Message-ID: <20220428084239.06ebf49d@canb.auug.org.au>
+        b=mZYO1TnlG1jhH6wwXv7uGnA2tmATzmBfcvQCkMPaaVVojbu0+4O11HvMgieSLnNBn
+         HnBBftQJkegNqvIOJUYFoWDLGkphWjYeC3WQLhPxgzZL0v31oYwCTaIrdVZyGHqJbk
+         gJFYxMNz2uAuUDyX3oaBo0n12t/eCT9bZoishwc++Nj+ah4IKroF4rp6UbUlY4sZb8
+         7RAiCxJR7ZmvO0n7II3qcrjSRnPb7mWxpeDBwrerc8qIXHzgXmKXNBldulrRKEO3zO
+         aaqGKJ8IcGX+Id2sF+ARH6ByQ3V2ZHjk+tJQAqBGaC9eRs5OZ6NEfnrYyu9frrF7kB
+         ufYknbLSKYW+A==
+Date:   Wed, 27 Apr 2022 17:53:01 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] drm/i915: Fix -Wstringop-overflow warning in call to
+ intel_read_wm_latency()
+Message-ID: <20220427225301.GA24406@embeddedor>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/lv4Ugcf46ZP9kaW54xgpTI1";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/lv4Ugcf46ZP9kaW54xgpTI1
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Fix the following -Wstringop-overflow warnings when building with GCC-11:
 
-Hi all,
+drivers/gpu/drm/i915/intel_pm.c:3106:9: warning: ‘intel_read_wm_latency’ accessing 16 bytes in a region of size 10 [-Wstringop-overflow=]
+ 3106 |         intel_read_wm_latency(dev_priv, dev_priv->wm.pri_latency);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/i915/intel_pm.c:3106:9: note: referencing argument 2 of type ‘u16 *’ {aka ‘short unsigned int *’}
+drivers/gpu/drm/i915/intel_pm.c:2861:13: note: in a call to function ‘intel_read_wm_latency’
+ 2861 | static void intel_read_wm_latency(struct drm_i915_private *dev_priv,
+      |             ^~~~~~~~~~~~~~~~~~~~~
 
-In commit
+by removing the over-specified array size from the argument declarations.
 
-  bc7608890065 ("mm/mlock: use maple state in apply_mlockall_flags()")
+It seems that this code is actually safe because the size of the
+array depends on the hardware generation, and the function checks
+for that.
 
-Fixes tag
+This helps with the ongoing efforts to globally enable
+-Wstringop-overflow.
 
-  Fixes: 0d43186b36c1 (mm/mlock: use vma iterator and instead of vma linked=
- list)
+Link: https://github.com/KSPP/linux/issues/181
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ drivers/gpu/drm/i915/intel_pm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-has these problem(s):
+diff --git a/drivers/gpu/drm/i915/intel_pm.c b/drivers/gpu/drm/i915/intel_pm.c
+index ee0047fdc95d..5735915facc5 100644
+--- a/drivers/gpu/drm/i915/intel_pm.c
++++ b/drivers/gpu/drm/i915/intel_pm.c
+@@ -2862,7 +2862,7 @@ static void ilk_compute_wm_level(const struct drm_i915_private *dev_priv,
+ }
+ 
+ static void intel_read_wm_latency(struct drm_i915_private *dev_priv,
+-				  u16 wm[8])
++				  u16 wm[])
+ {
+ 	struct intel_uncore *uncore = &dev_priv->uncore;
+ 
+-- 
+2.27.0
 
-  - Target SHA1 does not exist
-
-Maybe you meant
-
-Fixes: 1dfcb33e7c19 ("mm/mlock: use vma iterator and instead of vma linked =
-list")
-
-This is a semi-automatic notification - I know this is just a fix patch
-that will probably be rolled into the patch it fixes.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/lv4Ugcf46ZP9kaW54xgpTI1
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJpxt8ACgkQAVBC80lX
-0GyrUAf/eTEZvVZYhl/T2MlWtwykqau3y1EDWGz/EEhymDXK8Wus6Nx0ueKJirua
-SPV0J5CbKIAoht/V1NFyztCyHBijKAX3vZTIltimiTzkN03fGJ4OjnEP/+0v4q6v
-XnCvHmUlnMgMKaL/Id33dvdQkkO2Nx0o7Du3dQo/TjR2onCkV8ldy4bZlAcmP1VP
-NXEzm0k1Igo6TIzR8CU99qvsQJaEJ7mQbQWuTw9ubNtmkHnirbO0zE2tYieYd2Fe
-jGWW7SN/gxkBU/bz7R34cHZRtrnGMUeDbt1j6wlzrYqZYeLm3LVgeA4TlDZWimXn
-+Ctao4qHN6wsvhin7mqbhyT7mtRilQ==
-=NEZE
------END PGP SIGNATURE-----
-
---Sig_/lv4Ugcf46ZP9kaW54xgpTI1--
