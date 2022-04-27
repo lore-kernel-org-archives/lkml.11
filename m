@@ -2,48 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39A21C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:55:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6E0EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:56:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241000AbiD0P6q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 11:58:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57974 "EHLO
+        id S241198AbiD0P66 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 11:58:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240794AbiD0P6P (ORCPT
+        with ESMTP id S240974AbiD0P6Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 11:58:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 766B0737B1;
-        Wed, 27 Apr 2022 08:54:36 -0700 (PDT)
+        Wed, 27 Apr 2022 11:58:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B6E973795;
+        Wed, 27 Apr 2022 08:54:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DB8161B0E;
-        Wed, 27 Apr 2022 15:54:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4F49C385B2;
-        Wed, 27 Apr 2022 15:54:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8F970B82888;
+        Wed, 27 Apr 2022 15:54:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33246C385A7;
+        Wed, 27 Apr 2022 15:54:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651074873;
-        bh=1Uup5LJ6XP8bOQ07lFkq/Wf9IwYm+naacOCcADdNm1Y=;
+        s=k20201202; t=1651074880;
+        bh=qS9yeF5Z4kqyQaN+jkF6ZO2qnwVTEewgiRMJ/qCZUY4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N0xez6qk5XnSMVyrBLbBhTRPRxRQsVGZSuK0nq+oGSlHLV1b01RmZXyP4+VkRrqHt
-         L9W6LvDTCCsftZeb/etHOyTqePA/s1roSveCHYrbsdigdQkEuwHkNkAAE3VINFeeVb
-         tlUo9dwI4GySjsNKHMQMtqgegfcreCg1I7Onsu4orFpH89clRBzn+PD0rgKlnj9CEw
-         5Cb0VBOOOcjRb7MuCmvpIqltC+DkkJQnWdFKhUKV49tFkBJU+N5fYYhSaEwliSJUJY
-         3pDSDV73MG/maNQ3Zdu0+qgJE9HOsjKxjWNR845OEQyC8N9VG/6HN2Qe0CO7FF/LH+
-         YfHJHy/PfmJhw==
+        b=pJBB+zJLelsPEKwCEF1Dtr3aQQMufAT8fjOt9upW1OCposOswFLoBJ2sEzJzVlCGz
+         UFJwjVRGKBxom3kLwm+KFAXQ+d+9nb5sZExu7I2oMkW8vZ8Ql98H+ydzjknTkKKASG
+         m72QI2DW+ENWZj4VUON5nCbTm9BQZnRULG+yS8Z1Pk1QY7EczLBeV+sHrmLBRWMj0N
+         woYhs/Pm/DqtGs6qwHoD7GulgmfRYne3N1qmx78RYHnwiYRR6xZxkCVVb77ospoul4
+         rgk5TH475pN/Np9HMlgyLUeWFHtTbvO+LuiMPlUNPh8og9+Yu2eb0J+eoiM6vKnCzx
+         CJ21O85p/JpOg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+Cc:     Wanpeng Li <wanpengli@tencent.com>,
+        Aili Yao <yaoaili@kingsoft.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
         mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
         x86@kernel.org, kvm@vger.kernel.org
-Subject: [PATCH MANUALSEL 5.15 4/7] KVM: x86/mmu: do not allow readers to acquire references to invalid roots
-Date:   Wed, 27 Apr 2022 11:54:24 -0400
-Message-Id: <20220427155431.19458-4-sashal@kernel.org>
+Subject: [PATCH MANUALSEL 5.4 2/2] KVM: LAPIC: Enable timer posted-interrupt only when mwait/hlt is advertised
+Date:   Wed, 27 Apr 2022 11:54:38 -0400
+Message-Id: <20220427155438.19612-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220427155431.19458-1-sashal@kernel.org>
-References: <20220427155431.19458-1-sashal@kernel.org>
+In-Reply-To: <20220427155438.19612-1-sashal@kernel.org>
+References: <20220427155438.19612-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,58 +55,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Bonzini <pbonzini@redhat.com>
+From: Wanpeng Li <wanpengli@tencent.com>
 
-[ Upstream commit 614f6970aa70242a3f8a8051b01244c029f77b2a ]
+[ Upstream commit 1714a4eb6fb0cb79f182873cd011a8ed60ac65e8 ]
 
-Remove the "shared" argument of for_each_tdp_mmu_root_yield_safe, thus ensuring
-that readers do not ever acquire a reference to an invalid root.  After this
-patch, all readers except kvm_tdp_mmu_zap_invalidated_roots() treat
-refcount=0/valid, refcount=0/invalid and refcount=1/invalid in exactly the
-same way.  kvm_tdp_mmu_zap_invalidated_roots() is different but it also
-does not acquire a reference to the invalid root, and it cannot see
-refcount=0/invalid because it is guaranteed to run after
-kvm_tdp_mmu_invalidate_all_roots().
+As commit 0c5f81dad46 ("KVM: LAPIC: Inject timer interrupt via posted
+interrupt") mentioned that the host admin should well tune the guest
+setup, so that vCPUs are placed on isolated pCPUs, and with several pCPUs
+surplus for *busy* housekeeping.  In this setup, it is preferrable to
+disable mwait/hlt/pause vmexits to keep the vCPUs in non-root mode.
 
-Opportunistically add a lockdep assertion to the yield-safe iterator.
+However, if only some guests isolated and others not, they would not
+have any benefit from posted timer interrupts, and at the same time lose
+VMX preemption timer fast paths because kvm_can_post_timer_interrupt()
+returns true and therefore forces kvm_can_use_hv_timer() to false.
 
+By guaranteeing that posted-interrupt timer is only used if MWAIT or
+HLT are done without vmexit, KVM can make a better choice and use the
+VMX preemption timer and the corresponding fast paths.
+
+Reported-by: Aili Yao <yaoaili@kingsoft.com>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Cc: Aili Yao <yaoaili@kingsoft.com>
+Cc: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
+Message-Id: <1643112538-36743-1-git-send-email-wanpengli@tencent.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/mmu/tdp_mmu.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ arch/x86/kvm/lapic.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-index 853780eb033b..7e854313ec3b 100644
---- a/arch/x86/kvm/mmu/tdp_mmu.c
-+++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -155,14 +155,15 @@ static struct kvm_mmu_page *tdp_mmu_next_root(struct kvm *kvm,
- 	for (_root = tdp_mmu_next_root(_kvm, NULL, _shared, _only_valid);	\
- 	     _root;								\
- 	     _root = tdp_mmu_next_root(_kvm, _root, _shared, _only_valid))	\
--		if (kvm_mmu_page_as_id(_root) != _as_id) {			\
-+		if (kvm_lockdep_assert_mmu_lock_held(_kvm, _shared) &&		\
-+		    kvm_mmu_page_as_id(_root) != _as_id) {			\
- 		} else
+diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+index afe3b8e61514..3696b4de9d99 100644
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
+@@ -118,7 +118,8 @@ static inline u32 kvm_x2apic_id(struct kvm_lapic *apic)
  
- #define for_each_valid_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, _shared)	\
- 	__for_each_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, _shared, true)
- 
--#define for_each_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, _shared)		\
--	__for_each_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, _shared, false)
-+#define for_each_tdp_mmu_root_yield_safe(_kvm, _root, _as_id)			\
-+	__for_each_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, false, false)
- 
- #define for_each_tdp_mmu_root(_kvm, _root, _as_id)				\
- 	list_for_each_entry_rcu(_root, &_kvm->arch.tdp_mmu_roots, link,		\
-@@ -828,7 +829,7 @@ bool __kvm_tdp_mmu_zap_gfn_range(struct kvm *kvm, int as_id, gfn_t start,
+ bool kvm_can_post_timer_interrupt(struct kvm_vcpu *vcpu)
  {
- 	struct kvm_mmu_page *root;
- 
--	for_each_tdp_mmu_root_yield_safe(kvm, root, as_id, false)
-+	for_each_tdp_mmu_root_yield_safe(kvm, root, as_id)
- 		flush = zap_gfn_range(kvm, root, start, end, can_yield, flush,
- 				      false);
+-	return pi_inject_timer && kvm_vcpu_apicv_active(vcpu);
++	return pi_inject_timer && kvm_vcpu_apicv_active(vcpu) &&
++		(kvm_mwait_in_guest(vcpu->kvm) || kvm_hlt_in_guest(vcpu->kvm));
+ }
+ EXPORT_SYMBOL_GPL(kvm_can_post_timer_interrupt);
  
 -- 
 2.35.1
