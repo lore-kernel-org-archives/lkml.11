@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2138BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:59:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83ED5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:59:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241300AbiD0QC5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:02:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55104 "EHLO
+        id S241306AbiD0QDC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:03:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241346AbiD0QCb (ORCPT
+        with ESMTP id S241343AbiD0QCa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:02:31 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 540711A431E
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 08:59:06 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id a1so2479523edt.3
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 08:59:06 -0700 (PDT)
+        Wed, 27 Apr 2022 12:02:30 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B280B1632E7
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 08:59:01 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id r13so4318447ejd.5
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 08:59:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=76W1cUhpVZ4S1kk1owDY4fNBWLgNIFgf8c4KyIt+188=;
-        b=crGsQu75U2P+YiYm4OLO1RAMBFX+JBucI6Hse1p27B8vuZvTO1eDpVf3XiMTYBL7wf
-         suuQgktoE/OB+Eo1RxJWXW1Bl9Uob8kZWOpCLMnAbbqLejmphreCc5bL+sccVJUfOKY0
-         k77Hn91bAWF/nAUpynIHeo8Z1wtghV35s2Ua4NNuWhpGFKWeTy+8lw1PP8X9eXN9vhGt
-         gWiaHW2XSZBD2+je5N3YWDyJihxaFCz1JZhj1s0Fh2xeuP6j+j5erROZLMHqF3RiCCNS
-         aGKIlmFEX/BcDxzSyLq+r8+hTKDVT6zBUHk+83NXUz/8vq59DaqiwpJiRqwS8Fepgnm1
-         0NNQ==
+        bh=IksiNhcQ6mciop9yOBJfsgBTzjVfi6pE2+JXa5kV6jQ=;
+        b=beD8ORtMzxP6rFpwCfmFTFN1r6Yb1KIRS/9H+HxtQMyp3BfaB5MUx/4CsZPnAA/dZ8
+         ZxnXELdl/VWcT4X2ygao3zP1cHUfTTEanMUQbRn7qDU2Zqcg1CC+2I4xwL6FM5IS6ZeL
+         vUnbb2Ahx4bllPivcg2dXne3HFQCtFutDAoCbUCx1aMdkaOKqPbmlcvdFh4ZEQLRMiKQ
+         WxDLBf4qLZDmpf0EVOFJ6VpzXQrbznf+lAj0GJSo/ysQiEBzUR1cmB2mXRQ/CAfUds7c
+         Kq607GEACCNcao8/Z2lZuH4R5aJEZH+GELyfXfqhS+I79k9h3iCmszY8DtWmvD6MceYQ
+         rUsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=76W1cUhpVZ4S1kk1owDY4fNBWLgNIFgf8c4KyIt+188=;
-        b=4dN0GqXB2ee9YqQh5ZlXlArUY8DqtdjMJHkh/aTrYO51KCk5BzEM+uytNmwWr1Gjgh
-         kGwOtbF652CuqKCK8fUi8a2xKbRsRV1+JCph3nlHCBrb41ilwlKXsuZaKuZ0SrImt1bk
-         gP/34hZHHPjvmRt2oxFmyZB0jw7UyMHPbuV0/fdCcRY61UtmB3LD7xUvcL9thY1Jjv8B
-         VEb8FMwG3W1+4sM4sIroribqxO61e91l/VYCqoc8kNNycf+CcZKJs9nmWxeHb95GMmml
-         LxpoEBLklRLfuObnlZtLzSUHpcwTvh0Mh9DC4BWU7VHGjyWixEdG2PickpbcE/cdggkF
-         hTmA==
-X-Gm-Message-State: AOAM531TFSRTIjk3nqFdBgdoUkVDVa8obSTHJkFopa7UbdQoxt5W5WQo
-        WXfbScFUXxjjF1OzRAGUUM34XQ==
-X-Google-Smtp-Source: ABdhPJykwglLB5mxEF++h8AEZRS2tUiHCIGL3J/BB834XWnFYca4p+5vl3EQBBArh/CVlfSqzcAmJw==
-X-Received: by 2002:a50:9e61:0:b0:419:d8e5:6236 with SMTP id z88-20020a509e61000000b00419d8e56236mr31130749ede.327.1651075141506;
-        Wed, 27 Apr 2022 08:59:01 -0700 (PDT)
+        bh=IksiNhcQ6mciop9yOBJfsgBTzjVfi6pE2+JXa5kV6jQ=;
+        b=IBqeJiCg4DdFI8W2kHPM4PVPHe3GfzYrXWMkq8UO+aXhQ9bX0wZ1T/yEBIBJRYOSk7
+         J/eDH5dMDiXf2kXJ5lSDB0fefugrlwS5bXxzxbbDfddivx71boOeN0lLx201B6wTO7kq
+         0oVIZD9Adj+gKkLJd9N6cNepLW8tPzHyF21Aiedhot8F3mI3r9/Ta1RtMELLhdOcxp8X
+         4rmDJwvMTH2yhrMKhLxDN1LiWtSrnzNs8zUhM3L9O8nAb5X8i3HpiVUOBvlQRRUy2rk8
+         JBGqWklq8IzHogY9UoslWljvSvnY0Akv4vKef7N3IaA8samwRnbaJBrhrYmU9Rfrz3DK
+         Ba/g==
+X-Gm-Message-State: AOAM531rK0lRT0HhHM+W+urmS54zyN2H+Z+q+c1oH5DOmfqXTh08t81b
+        hiEqJoIjV+xl2u6upXTe3aBcdg==
+X-Google-Smtp-Source: ABdhPJytNvI2RmQmaTFyUReVtLPKo6iYa/E2OYQyQive6MOG9yr+D0tvn9hqoKO/QQWI7KDnvCSYJQ==
+X-Received: by 2002:a17:907:6d9b:b0:6f3:9a8d:6a08 with SMTP id sb27-20020a1709076d9b00b006f39a8d6a08mr14580252ejc.87.1651075134261;
+        Wed, 27 Apr 2022 08:58:54 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id l20-20020a1709062a9400b006ce71a88bf5sm6931993eje.183.2022.04.27.08.59.00
+        by smtp.gmail.com with ESMTPSA id l20-20020a1709062a9400b006ce71a88bf5sm6931993eje.183.2022.04.27.08.58.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 08:59:01 -0700 (PDT)
+        Wed, 27 Apr 2022 08:58:53 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -65,9 +65,9 @@ To:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
         linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Rob Herring <robh@kernel.org>
-Subject: [PATCH 10/10] arm64: dts: fsd: use proper 'dma-channels/requests' properties
-Date:   Wed, 27 Apr 2022 17:58:40 +0200
-Message-Id: <20220427155840.596535-11-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 06/10] dt-bindings: mfd: samsung,exynos5433-lpass: fix 'dma-channels/requests' properties
+Date:   Wed, 27 Apr 2022 17:58:36 +0200
+Message-Id: <20220427155840.596535-7-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220427155840.596535-1-krzysztof.kozlowski@linaro.org>
 References: <20220427155840.596535-1-krzysztof.kozlowski@linaro.org>
@@ -82,59 +82,27 @@ pl330 DMA controller bindings documented 'dma-channels' and
 match the bindings.
 
 Reported-by: Rob Herring <robh@kernel.org>
+Fixes: e18183cefc8b ("mfd: Add DT bindings documentation for Samsung Exynos LPASS")
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- arch/arm64/boot/dts/tesla/fsd.dtsi | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ .../devicetree/bindings/mfd/samsung,exynos5433-lpass.yaml     | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/tesla/fsd.dtsi b/arch/arm64/boot/dts/tesla/fsd.dtsi
-index 10c217a57a7d..7fba37d860b2 100644
---- a/arch/arm64/boot/dts/tesla/fsd.dtsi
-+++ b/arch/arm64/boot/dts/tesla/fsd.dtsi
-@@ -432,8 +432,8 @@ mdma0: dma-controller@10100000 {
- 			reg = <0x0 0x10100000 0x0 0x1000>;
- 			interrupts = <GIC_SPI 424 IRQ_TYPE_LEVEL_HIGH>;
- 			#dma-cells = <1>;
--			#dma-channels = <8>;
--			#dma-requests = <32>;
-+			dma-channels = <8>;
-+			dma-requests = <32>;
- 			clocks = <&clock_imem IMEM_DMA0_IPCLKPORT_ACLK>;
- 			clock-names = "apb_pclk";
- 			iommus = <&smmu_imem 0x800 0x0>;
-@@ -444,8 +444,8 @@ mdma1: dma-controller@10110000 {
- 			reg = <0x0 0x10110000 0x0 0x1000>;
- 			interrupts = <GIC_SPI 425 IRQ_TYPE_LEVEL_HIGH>;
- 			#dma-cells = <1>;
--			#dma-channels = <8>;
--			#dma-requests = <32>;
-+			dma-channels = <8>;
-+			dma-requests = <32>;
- 			clocks = <&clock_imem IMEM_DMA1_IPCLKPORT_ACLK>;
- 			clock-names = "apb_pclk";
- 			iommus = <&smmu_imem 0x801 0x0>;
-@@ -456,8 +456,8 @@ pdma0: dma-controller@14280000 {
- 			reg = <0x0 0x14280000 0x0 0x1000>;
- 			interrupts = <GIC_SPI 190 IRQ_TYPE_LEVEL_HIGH>;
- 			#dma-cells = <1>;
--			#dma-channels = <8>;
--			#dma-requests = <32>;
-+			dma-channels = <8>;
-+			dma-requests = <32>;
- 			clocks = <&clock_peric PERIC_DMA0_IPCLKPORT_ACLK>;
- 			clock-names = "apb_pclk";
- 			iommus = <&smmu_peric 0x2 0x0>;
-@@ -468,8 +468,8 @@ pdma1: dma-controller@14290000 {
- 			reg = <0x0 0x14290000 0x0 0x1000>;
- 			interrupts = <GIC_SPI 191 IRQ_TYPE_LEVEL_HIGH>;
- 			#dma-cells = <1>;
--			#dma-channels = <8>;
--			#dma-requests = <32>;
-+			dma-channels = <8>;
-+			dma-requests = <32>;
- 			clocks = <&clock_peric PERIC_DMA1_IPCLKPORT_ACLK>;
- 			clock-names = "apb_pclk";
- 			iommus = <&smmu_peric 0x1 0x0>;
+diff --git a/Documentation/devicetree/bindings/mfd/samsung,exynos5433-lpass.yaml b/Documentation/devicetree/bindings/mfd/samsung,exynos5433-lpass.yaml
+index f7bb67d10eff..b97b06848729 100644
+--- a/Documentation/devicetree/bindings/mfd/samsung,exynos5433-lpass.yaml
++++ b/Documentation/devicetree/bindings/mfd/samsung,exynos5433-lpass.yaml
+@@ -79,8 +79,8 @@ examples:
+             clocks = <&cmu_aud CLK_ACLK_DMAC>;
+             clock-names = "apb_pclk";
+             #dma-cells = <1>;
+-            #dma-channels = <8>;
+-            #dma-requests = <32>;
++            dma-channels = <8>;
++            dma-requests = <32>;
+             power-domains = <&pd_aud>;
+         };
+ 
 -- 
 2.32.0
 
