@@ -2,242 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76971C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 07:11:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9041DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 07:11:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358623AbiD0HO2 (ORCPT
+        id S1344735AbiD0HOi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 03:14:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34016 "EHLO
+        Wed, 27 Apr 2022 03:14:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344735AbiD0HO0 (ORCPT
+        with ESMTP id S1358622AbiD0HOa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 03:14:26 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 380EF38DB2
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 00:11:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651043476; x=1682579476;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=8duyb/+ssT9ps9wnLY94ZdGxDfZW/9By36wLbrcDEcg=;
-  b=BLykOcU+5lq8qAqx6IP/RiJybVTuogtboFBbhYHpnyEpm7TgoOkvYAlv
-   l2Xg1JEhgR5ufJovRFHqoN5wGStvGeNT8i5f58seRhLjSKrPnbGAeaxUm
-   ie9H6AkSrzivTIno+AKtDrnFyO/H5DeWdqFHI+/iUtEr9y0f9cHJ/WA8h
-   jUvkccu/N1YrDKmogy9XJ5b6MmxmtiXi0u/+AXcsDVA+c0gN3nRs9dnwb
-   YqQBcBAWcBPcG6Wi+HWISR07Nj5RR94Afjie2EP8SqqGlTDseoK6BAtJt
-   C+IrRhyv29CAznv6ZrI6ayMh+wwbmY8xxhN9CwHYOBE1uFv6223hoQbLf
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="266003848"
-X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
-   d="scan'208";a="266003848"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 00:11:15 -0700
-X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
-   d="scan'208";a="730662992"
-Received: from kang1-mobl1.ccr.corp.intel.com ([10.254.212.35])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 00:11:11 -0700
-Message-ID: <a1b875913df743355e1ff3752c0eb7ddf74bae91.camel@intel.com>
-Subject: Re: [PATCH v2 0/5] mm: demotion: Introduce new node state
- N_DEMOTION_TARGETS
-From:   "ying.huang@intel.com" <ying.huang@intel.com>
-To:     Wei Xu <weixugc@google.com>
-Cc:     Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Linux MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Greg Thelen <gthelen@google.com>,
-        MichalHocko <mhocko@kernel.org>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Tim C Chen <tim.c.chen@intel.com>
-Date:   Wed, 27 Apr 2022 15:11:08 +0800
-In-Reply-To: <CAAPL-u94H9FLjVtYLhi_A2AqLTOCTMRh6=Sx9cX8A3WGNM-OdA@mail.gmail.com>
-References: <CAAPL-u_pSWD6U0yQ8Ws+_Yfb_3ZEmNXJsYcRJjAFBkyDk=nq8g@mail.gmail.com>
-         <ea73f6fda9cafdd0cb6ba8351139e6f4b47354a8.camel@intel.com>
-         <CAAPL-u-aeceXFUNdok_GYb2aLhZa0zBBuSqHxFznQob3PbJt7Q@mail.gmail.com>
-         <a80647053bba44623094995730e061f0e6129677.camel@intel.com>
-         <CAAPL-u89Jxutu1VH0LnO5VGdMbkLvc2M9eapuwP-y9oG9QSsrA@mail.gmail.com>
-         <610ccaad03f168440ce765ae5570634f3b77555e.camel@intel.com>
-         <CAAPL-u9ktM82zAW_OVwqTmQsr-XC8XOPmAsjoiCLo18cxUWA=A@mail.gmail.com>
-         <8e31c744a7712bb05dbf7ceb2accf1a35e60306a.camel@intel.com>
-         <CAAPL-u9uP+FUh7Yn0ByOECo+EP32ZABnCvNPKQB9JCA68VHEqQ@mail.gmail.com>
-         <78b5f4cfd86efda14c61d515e4db9424e811c5be.camel@intel.com>
-         <YmKKwXa2XI/nwac0@li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com>
-         <200e95cf36c1642512d99431014db8943fed715d.camel@intel.com>
-         <CAAPL-u94H9FLjVtYLhi_A2AqLTOCTMRh6=Sx9cX8A3WGNM-OdA@mail.gmail.com>
+        Wed, 27 Apr 2022 03:14:30 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 363EB3968B;
+        Wed, 27 Apr 2022 00:11:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=kBYXnZGelPUmL/h6ghNUjmmjkB82BgyHIdyq6pLu9pA=;
+        t=1651043480; x=1652253080; b=aiwry/tJ+Bc7UlHbV5IEkmsM9vBuoZnt9LuEaiBk5okEae+
+        kIMQYznz8NlcKWjsJbAs8axTsdNBsfLpVQnEefgHPhztJYvhS9ca20TsJjhexhQv66z9ZuB4chps3
+        z+lc6A79zR+6toSg9+oMk46qQz9ydAD2EvpjvSV3xJaF+YDUQR3v5wIrd1Ji4+AvOwegTeimQmHhZ
+        /piWbpa0FMN1BEw8zXC36dBjDWUcZv4Rt+vB0TvFdHPmQcGMyG1Z0hNuvswT5MvUGRUnGd2N2Jwxm
+        QQBod+lCojG5h7vPzT530d9nRSL9wxewk7KqedX2dKkbexqcIP0vEZVt4efihJxg==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.95)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1njbp2-00Fndk-U2;
+        Wed, 27 Apr 2022 09:10:49 +0200
+Message-ID: <f6d31801de631dfe6e1a2da25370cddf2aca32ad.camel@sipsolutions.net>
+Subject: Re: [PATCH 3/9] ptrace/um: Replace PT_DTRACE with TIF_SINGLESTEP
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>,
+        linux-kernel@vger.kernel.org
+Cc:     rjw@rjwysocki.net, Oleg Nesterov <oleg@redhat.com>,
+        mingo@kernel.org, vincent.guittot@linaro.org,
+        dietmar.eggemann@arm.com, rostedt@goodmis.org, mgorman@suse.de,
+        bigeasy@linutronix.de, Will Deacon <will@kernel.org>,
+        tj@kernel.org, linux-pm@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        inux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>
+Date:   Wed, 27 Apr 2022 09:10:47 +0200
+In-Reply-To: <20220426225211.308418-3-ebiederm@xmission.com>
+References: <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
+         <20220426225211.308418-3-ebiederm@xmission.com>
 Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-04-25 at 09:56 -0700, Wei Xu wrote:
-> On Sat, Apr 23, 2022 at 8:02 PM ying.huang@intel.com
-> <ying.huang@intel.com> wrote:
-> > 
-> > Hi, All,
-> > 
-> > On Fri, 2022-04-22 at 16:30 +0530, Jagdish Gediya wrote:
-> > 
-> > [snip]
-> > 
-> > > I think it is necessary to either have per node demotion targets
-> > > configuration or the user space interface supported by this patch
-> > > series. As we don't have clear consensus on how the user interface
-> > > should look like, we can defer the per node demotion target set
-> > > interface to future until the real need arises.
-> > > 
-> > > Current patch series sets N_DEMOTION_TARGET from dax device kmem
-> > > driver, it may be possible that some memory node desired as demotion
-> > > target is not detected in the system from dax-device kmem probe path.
-> > > 
-> > > It is also possible that some of the dax-devices are not preferred as
-> > > demotion target e.g. HBM, for such devices, node shouldn't be set to
-> > > N_DEMOTION_TARGETS. In future, Support should be added to distinguish
-> > > such dax-devices and not mark them as N_DEMOTION_TARGETS from the
-> > > kernel, but for now this user space interface will be useful to avoid
-> > > such devices as demotion targets.
-> > > 
-> > > We can add read only interface to view per node demotion targets
-> > > from /sys/devices/system/node/nodeX/demotion_targets, remove
-> > > duplicated /sys/kernel/mm/numa/demotion_target interface and instead
-> > > make /sys/devices/system/node/demotion_targets writable.
-> > > 
-> > > Huang, Wei, Yang,
-> > > What do you suggest?
-> > 
-> > We cannot remove a kernel ABI in practice.  So we need to make it right
-> > at the first time.  Let's try to collect some information for the kernel
-> > ABI definitation.
-> > 
-> > The below is just a starting point, please add your requirements.
-> > 
-> > 1. Jagdish has some machines with DRAM only NUMA nodes, but they don't
-> > want to use that as the demotion targets.  But I don't think this is a
-> > issue in practice for now, because demote-in-reclaim is disabled by
-> > default.
-> > 
-> > 2. For machines with PMEM installed in only 1 of 2 sockets, for example,
-> > 
-> > Node 0 & 2 are cpu + dram nodes and node 1 are slow
-> > memory node near node 0,
-> > 
-> > available: 3 nodes (0-2)
-> > node 0 cpus: 0 1
-> > node 0 size: n MB
-> > node 0 free: n MB
-> > node 1 cpus:
-> > node 1 size: n MB
-> > node 1 free: n MB
-> > node 2 cpus: 2 3
-> > node 2 size: n MB
-> > node 2 free: n MB
-> > node distances:
-> > node   0   1   2
-> >   0:  10  40  20
-> >   1:  40  10  80
-> >   2:  20  80  10
-> > 
-> > We have 2 choices,
-> > 
-> > a)
-> > node    demotion targets
-> > 0       1
-> > 2       1
-> > 
-> > b)
-> > node    demotion targets
-> > 0       1
-> > 2       X
-> > 
-> > a) is good to take advantage of PMEM.  b) is good to reduce cross-socket
-> > traffic.  Both are OK as defualt configuration.  But some users may
-> > prefer the other one.  So we need a user space ABI to override the
-> > default configuration.
+On Tue, 2022-04-26 at 17:52 -0500, Eric W. Biederman wrote:
+> User mode linux is the last user of the PT_DTRACE flag.  Using the flag to indicate
+> single stepping is a little confusing and worse changing tsk->ptrace without locking
+> could potentionally cause problems.
 > 
-> I think 2(a) should be the system-wide configuration and 2(b) can be
-> achieved with NUMA mempolicy (which needs to be added to demotion).
-
-Unfortunately, some NUMA mempolicy information isn't available at
-demotion time, for example, mempolicy enforced via set_mempolicy() is
-for thread. But I think that cpusets can work for demotion.
-
-> In general, we can view the demotion order in a way similar to
-> allocation fallback order (after all, if we don't demote or demotion
-> lags behind, the allocations will go to these demotion target nodes
-> according to the allocation fallback order anyway).  If we initialize
-> the demotion order in that way (i.e. every node can demote to any node
-> in the next tier, and the priority of the target nodes is sorted for
-> each source node), we don't need per-node demotion order override from
-> the userspace.  What we need is to specify what nodes should be in
-> each tier and support NUMA mempolicy in demotion.
-
-This sounds interesting. Tier sounds like a natural and general concept
-for these memory types. It's attracting to use it for user space
-interface too. For example, we may use that for mem_cgroup limits of a
-specific memory type (tier).
-
-And if we take a look at the N_DEMOTION_TARGETS again from the "tier"
-point of view. The nodes are divided to 2 classes via
-N_DEMOTION_TARGETS.
-
-- The nodes without N_DEMOTION_TARGETS are top tier (or tier 0).
-
-- The nodes with N_DEMOTION_TARGETS are non-top tier (or tier 1, 2, 3,
-...)
-
-So, another possibility is to fit N_DEMOTION_TARGETS and its overriding
-into "tier" concept too.  !N_DEMOTION_TARGETS == TIER0.
-
-- All nodes start with TIER0
-
-- TIER0 can be cleared for some nodes via e.g. kmem driver
-
-TIER0 node list can be read or overriden by the user space via the
-following interface,
-
-  /sys/devices/system/node/tier0
-
-In the future, if we want to customize more tiers, we can add tier1,
-tier2, tier3, .....  For now, we can add just tier0.  That is, the
-interface is extensible in the future compared with
-.../node/demote_targets.
-
-This isn't as flexible as the writable per-node demotion targets.  But
-it may be enough for most requirements?
-
-Best Regards,
-Huang, Ying
-
-> Cross-socket demotion should not be too big a problem in practice
-> because we can optimize the code to do the demotion from the local CPU
-> node (i.e. local writes to the target node and remote read from the
-> source node).  The bigger issue is cross-socket memory access onto the
-> demoted pages from the applications, which is why NUMA mempolicy is
-> important here.
+> So use a thread info flag with a better name instead of flag in tsk->ptrace.
 > 
-> > 3. For machines with HBM (High Bandwidth Memory), as in
-> > 
-> > https://lore.kernel.org/lkml/39cbe02a-d309-443d-54c9-678a0799342d@gmail.com/
-> > 
-> > > [1] local DDR = 10, remote DDR = 20, local HBM = 31, remote HBM = 41
-> > 
-> > Although HBM has better performance than DDR, in ACPI SLIT, their
-> > distance to CPU is longer.  We need to provide a way to fix this.  The
-> > user space ABI is one way.  The desired result will be to use local DDR
-> > as demotion targets of local HBM.
-> > 
-> > Best Regards,
-> > Huang, Ying
-> > 
+> Remove the definition PT_DTRACE as uml is the last user.
+
+
+Looks fine to me.
+
+Acked-by: Johannes Berg <johannes@sipsolutions.net>
+
+Looking at pending patches, I don't see any conflicts from this. I'm
+guessing anyway you'll want/need to take these through some tree all
+together.
+
+johannes
 
 
