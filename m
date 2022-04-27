@@ -2,120 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97BC9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:28:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82DC2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:28:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243296AbiD0Qbd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:31:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48360 "EHLO
+        id S243309AbiD0Qbi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:31:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242999AbiD0Q2p (ORCPT
+        with ESMTP id S244887AbiD0QaK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:28:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A06AC3CFF3
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:23:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651076582;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vJ4wAPj8Ho9F1Ue1RXAlHhGRCBLfJzK2cfRA2KGgk4Q=;
-        b=DxVEFEjOs9W0Xwq9k8wIrpH9EWuCoew232Cr1axtSmRPOJdfaOJoGzeYBjzT3GPz4gwRPm
-        Mz+MZpgDCYL0jYvwncfxr69NVf0lvQMhDYdvUNC9qRnUcjeeL4l5uHT2x8OtzphEz8r5UQ
-        +ZsDO4uQSMP625kMWURuyZCxZTuUyfY=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-219-S7QBKZW9MeC1RENIrcyCsQ-1; Wed, 27 Apr 2022 12:19:12 -0400
-X-MC-Unique: S7QBKZW9MeC1RENIrcyCsQ-1
-Received: by mail-ej1-f69.google.com with SMTP id sb36-20020a1709076da400b006f3d4b12d3aso328982ejc.5
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:19:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=vJ4wAPj8Ho9F1Ue1RXAlHhGRCBLfJzK2cfRA2KGgk4Q=;
-        b=4aYg6pmQp5Wpm0zLkyTOD7Fim2VLRjYC3z7SNEdSn31bohVBTxIYG0I8ckihehx9Bk
-         ZQ5y3V01TVodcL+egpqZ7UnAeeREdraqK6FlPRNm24VMgWPpxoCoyOfTeHkMcVnR3MN/
-         Gz93uZuMrGvxV0N9X+0AsImS6dYdDb94HCeOdQ3qG9murB33hUjiDXr2+N9v+nObb3NN
-         5vx0IQFC2zcF52/LFYduvAmlbqm3UJ54RWVz8mTAq9xKPJnMWcVJybqBeEdcceRW4a/+
-         YINMf2i1J3rJmItgcDYx16tQmKzR+6EmStjL9bSDLV129yOJJiTBpjZbzkIoEgMUNZrO
-         c3qg==
-X-Gm-Message-State: AOAM530RceXbcQX9htH4VHRIlmRG5yPaciQKzFnZzkw1/KDkGwzuACei
-        rJ01leUJASvPlFldD7VO8OkuiinlIuoNBGGqKXsnj3baP7LO+9IXlAe1+3UWipx6WnDjClcD46d
-        S53o15ahavQahAChKUFnS+DWk
-X-Received: by 2002:a05:6402:1d51:b0:41f:cf6c:35a5 with SMTP id dz17-20020a0564021d5100b0041fcf6c35a5mr31370550edb.25.1651076351005;
-        Wed, 27 Apr 2022 09:19:11 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyHUHDxQ9+2qIBaoLcdz/3ksJr5tgaS0nsKWd3kKPdVGWUJLj9DAEqv/3NFmIQNKEAv6vnpkA==
-X-Received: by 2002:a05:6402:1d51:b0:41f:cf6c:35a5 with SMTP id dz17-20020a0564021d5100b0041fcf6c35a5mr31370529edb.25.1651076350810;
-        Wed, 27 Apr 2022 09:19:10 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:1c09:f536:3de6:228c? ([2001:b07:6468:f312:1c09:f536:3de6:228c])
-        by smtp.googlemail.com with ESMTPSA id 17-20020a508751000000b004260124ab84sm2596414edv.90.2022.04.27.09.19.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Apr 2022 09:19:09 -0700 (PDT)
-Message-ID: <26c10626-b6a2-9be4-6565-c9fbaf1955d3@redhat.com>
-Date:   Wed, 27 Apr 2022 18:19:07 +0200
+        Wed, 27 Apr 2022 12:30:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C076DDFB5;
+        Wed, 27 Apr 2022 09:26:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 506EE61DB3;
+        Wed, 27 Apr 2022 16:26:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F3F6C385A9;
+        Wed, 27 Apr 2022 16:26:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651076817;
+        bh=+OKlmgWgdB+jhvrK301YGaf77tLtn1CuLBwYTY305wY=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=aqNYgc5miFVZD/qMi5HRONesbzvwbbU4e9Oo/2xvgNh/B/iMJ08os7ubDGhnxj+qD
+         KAJw1LDv2JGcF99wuJAW/bWLj4UcrpnXVa6wKNngIfgQz8p441ON3YbnLfpwh8tbxK
+         JoObX2LOJJ30uTydMhljm7JAMU2GmRtKchKsllyIFXgRdyZf5RlBt8taIRlhukACvX
+         Z+okLtvkST1TO4DaGDs1QlyiwQoCKGpUZ3cDlo8wN2WkytIL/zIcGYbUlTvy+TUxRY
+         SK8Qqy2DtQnz6IKkIs06db+ypxhzE5/5kj5LKYPh1DaJZ82O34o+Fwl10uhOWwYDdX
+         btBOm1o59dvyQ==
+Message-ID: <878e726c3caf36c624d2f43d6b8e6f8a488f97b0.camel@kernel.org>
+Subject: Re: [PATCH v3] ceph: fix statfs for subdir mounts
+From:   Jeff Layton <jlayton@kernel.org>
+To:     =?ISO-8859-1?Q?Lu=EDs?= Henriques <lhenriques@suse.de>,
+        Xiubo Li <xiubli@redhat.com>, Ilya Dryomov <idryomov@gmail.com>
+Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Ryan Taylor <rptaylor@uvic.ca>
+Date:   Wed, 27 Apr 2022 12:26:55 -0400
+In-Reply-To: <20220427155704.4758-1-lhenriques@suse.de>
+References: <20220427155704.4758-1-lhenriques@suse.de>
+Content-Type: text/plain; charset="ISO-8859-15"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH MANUALSEL 5.10 2/4] KVM: x86: Do not change ICR on write
- to APIC_SELF_IPI
-Content-Language: en-US
-To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Cc:     Chao Gao <chao.gao@intel.com>,
-        Sean Christopherson <seanjc@google.com>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, kvm@vger.kernel.org
-References: <20220427155435.19554-1-sashal@kernel.org>
- <20220427155435.19554-2-sashal@kernel.org>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220427155435.19554-2-sashal@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/27/22 17:54, Sasha Levin wrote:
-> From: Paolo Bonzini <pbonzini@redhat.com>
+On Wed, 2022-04-27 at 16:57 +0100, Luís Henriques wrote:
+> When doing a mount using as base a directory that has 'max_bytes' quotas
+> statfs uses that value as the total; if a subdirectory is used instead,
+> the same 'max_bytes' too in statfs, unless there is another quota set.
 > 
-> [ Upstream commit d22a81b304a27fca6124174a8e842e826c193466 ]
+> Unfortunately, if this subdirectory only has the 'max_files' quota set,
+> then statfs uses the filesystem total.  Fix this by making sure we only
+> lookup realms that contain the 'max_bytes' quota.
 > 
-> Emulating writes to SELF_IPI with a write to ICR has an unwanted side effect:
-> the value of ICR in vAPIC page gets changed.  The lists SELF_IPI as write-only,
-> with no associated MMIO offset, so any write should have no visible side
-> effect in the vAPIC page.
-> 
-> Reported-by: Chao Gao <chao.gao@intel.com>
-> Reviewed-by: Sean Christopherson <seanjc@google.com>
-> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> Link: https://tracker.ceph.com/issues/55090
+> Cc: Ryan Taylor <rptaylor@uvic.ca>
+> Signed-off-by: Luís Henriques <lhenriques@suse.de>
 > ---
->   arch/x86/kvm/lapic.c | 7 +++----
->   1 file changed, 3 insertions(+), 4 deletions(-)
+> Changes since v2:
+> Renamed function __ceph_has_any_quota() to __ceph_has_quota()
 > 
-> diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-> index de11149e28e0..e45ebf0870b6 100644
-> --- a/arch/x86/kvm/lapic.c
-> +++ b/arch/x86/kvm/lapic.c
-> @@ -2106,10 +2106,9 @@ int kvm_lapic_reg_write(struct kvm_lapic *apic, u32 reg, u32 val)
->   		break;
->   
->   	case APIC_SELF_IPI:
-> -		if (apic_x2apic_mode(apic)) {
-> -			kvm_lapic_reg_write(apic, APIC_ICR,
-> -					    APIC_DEST_SELF | (val & APIC_VECTOR_MASK));
-> -		} else
-> +		if (apic_x2apic_mode(apic))
-> +			kvm_apic_send_ipi(apic, APIC_DEST_SELF | (val & APIC_VECTOR_MASK), 0);
-> +		else
->   			ret = 1;
->   		break;
->   	default:
+> Changes since v1:
+> Moved some more logic into __ceph_has_any_quota() function.
+> 
+>  fs/ceph/inode.c |  2 +-
+>  fs/ceph/quota.c | 19 +++++++++++--------
+>  fs/ceph/super.h | 28 ++++++++++++++++++++++++----
+>  3 files changed, 36 insertions(+), 13 deletions(-)
+> 
+> diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
+> index 5de7bb9048b7..1067209cf6f6 100644
+> --- a/fs/ceph/inode.c
+> +++ b/fs/ceph/inode.c
+> @@ -691,7 +691,7 @@ void ceph_evict_inode(struct inode *inode)
+>  
+>  	__ceph_remove_caps(ci);
+>  
+> -	if (__ceph_has_any_quota(ci))
+> +	if (__ceph_has_quota(ci, QUOTA_GET_ANY))
+>  		ceph_adjust_quota_realms_count(inode, false);
+>  
+>  	/*
+> diff --git a/fs/ceph/quota.c b/fs/ceph/quota.c
+> index a338a3ec0dc4..64592adfe48f 100644
+> --- a/fs/ceph/quota.c
+> +++ b/fs/ceph/quota.c
+> @@ -195,9 +195,9 @@ void ceph_cleanup_quotarealms_inodes(struct ceph_mds_client *mdsc)
+>  
+>  /*
+>   * This function walks through the snaprealm for an inode and returns the
+> - * ceph_snap_realm for the first snaprealm that has quotas set (either max_files
+> - * or max_bytes).  If the root is reached, return the root ceph_snap_realm
+> - * instead.
+> + * ceph_snap_realm for the first snaprealm that has quotas set (max_files,
+> + * max_bytes, or any, depending on the 'which_quota' argument).  If the root is
+> + * reached, return the root ceph_snap_realm instead.
+>   *
+>   * Note that the caller is responsible for calling ceph_put_snap_realm() on the
+>   * returned realm.
+> @@ -209,7 +209,9 @@ void ceph_cleanup_quotarealms_inodes(struct ceph_mds_client *mdsc)
+>   * will be restarted.
+>   */
+>  static struct ceph_snap_realm *get_quota_realm(struct ceph_mds_client *mdsc,
+> -					       struct inode *inode, bool retry)
+> +					       struct inode *inode,
+> +					       enum quota_get_realm which_quota,
+> +					       bool retry)
+>  {
+>  	struct ceph_inode_info *ci = NULL;
+>  	struct ceph_snap_realm *realm, *next;
+> @@ -248,7 +250,7 @@ static struct ceph_snap_realm *get_quota_realm(struct ceph_mds_client *mdsc,
+>  		}
+>  
+>  		ci = ceph_inode(in);
+> -		has_quota = __ceph_has_any_quota(ci);
+> +		has_quota = __ceph_has_quota(ci, which_quota);
+>  		iput(in);
+>  
+>  		next = realm->parent;
+> @@ -279,8 +281,8 @@ bool ceph_quota_is_same_realm(struct inode *old, struct inode *new)
+>  	 * dropped and we can then restart the whole operation.
+>  	 */
+>  	down_read(&mdsc->snap_rwsem);
+> -	old_realm = get_quota_realm(mdsc, old, true);
+> -	new_realm = get_quota_realm(mdsc, new, false);
+> +	old_realm = get_quota_realm(mdsc, old, QUOTA_GET_ANY, true);
+> +	new_realm = get_quota_realm(mdsc, new, QUOTA_GET_ANY, false);
+>  	if (PTR_ERR(new_realm) == -EAGAIN) {
+>  		up_read(&mdsc->snap_rwsem);
+>  		if (old_realm)
+> @@ -483,7 +485,8 @@ bool ceph_quota_update_statfs(struct ceph_fs_client *fsc, struct kstatfs *buf)
+>  	bool is_updated = false;
+>  
+>  	down_read(&mdsc->snap_rwsem);
+> -	realm = get_quota_realm(mdsc, d_inode(fsc->sb->s_root), true);
+> +	realm = get_quota_realm(mdsc, d_inode(fsc->sb->s_root),
+> +				QUOTA_GET_MAX_BYTES, true);
+>  	up_read(&mdsc->snap_rwsem);
+>  	if (!realm)
+>  		return false;
+> diff --git a/fs/ceph/super.h b/fs/ceph/super.h
+> index a2e1c83ab29a..0ecde1c12fee 100644
+> --- a/fs/ceph/super.h
+> +++ b/fs/ceph/super.h
+> @@ -1317,9 +1317,29 @@ extern void ceph_fs_debugfs_init(struct ceph_fs_client *client);
+>  extern void ceph_fs_debugfs_cleanup(struct ceph_fs_client *client);
+>  
+>  /* quota.c */
+> -static inline bool __ceph_has_any_quota(struct ceph_inode_info *ci)
+> +
+> +enum quota_get_realm {
+> +	QUOTA_GET_MAX_FILES,
+> +	QUOTA_GET_MAX_BYTES,
+> +	QUOTA_GET_ANY
+> +};
+> +
+> +static inline bool __ceph_has_quota(struct ceph_inode_info *ci,
+> +				    enum quota_get_realm which)
+>  {
+> -	return ci->i_max_files || ci->i_max_bytes;
+> +	bool has_quota = false;
+> +
+> +	switch (which) {
+> +	case QUOTA_GET_MAX_BYTES:
+> +		has_quota = !!ci->i_max_bytes;
+> +		break;
+> +	case QUOTA_GET_MAX_FILES:
+> +		has_quota = !!ci->i_max_files;
+> +		break;
+> +	default:
+> +		has_quota = !!(ci->i_max_files || ci->i_max_bytes);
+> +	}
+> +	return has_quota;
+>  }
+>  
+>  extern void ceph_adjust_quota_realms_count(struct inode *inode, bool inc);
+> @@ -1328,10 +1348,10 @@ static inline void __ceph_update_quota(struct ceph_inode_info *ci,
+>  				       u64 max_bytes, u64 max_files)
+>  {
+>  	bool had_quota, has_quota;
+> -	had_quota = __ceph_has_any_quota(ci);
+> +	had_quota = __ceph_has_quota(ci, QUOTA_GET_ANY);
+>  	ci->i_max_bytes = max_bytes;
+>  	ci->i_max_files = max_files;
+> -	has_quota = __ceph_has_any_quota(ci);
+> +	has_quota = __ceph_has_quota(ci, QUOTA_GET_ANY);
+>  
+>  	if (had_quota != has_quota)
+>  		ceph_adjust_quota_realms_count(&ci->vfs_inode, has_quota);
 
-Acked-by: Paolo Bonzini <pbonzini@redhat.com>
-
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
