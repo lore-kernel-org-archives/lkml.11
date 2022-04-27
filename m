@@ -2,117 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E54B8C4321E
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:50:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B08C5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 15:51:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240418AbiD0PyG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 11:54:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35686 "EHLO
+        id S240552AbiD0PyL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 11:54:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240705AbiD0Px7 (ORCPT
+        with ESMTP id S240449AbiD0Pxu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 11:53:59 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FD7A5418D
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 08:50:46 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id u9so1286205plf.6
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 08:50:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=mfKXbZgTIWEbTeJVhX3se1YhLuBecr8QQNQtzkisZ/M=;
-        b=FynZD/Nxe3Kd36w7ZFjddUbEH+HlByXx87gtJ4W57LZLaRmUOK1HRcfbyB6Ql8llP3
-         Lnjwql8fWqr9XFPpLWm66YB+ZbPyCJH87wO59ONmwO3sQ3q/NHljKCCBH2rEGeqf1+TS
-         pos6vXQ78YWj6iqWkEfIaM7qSt37Y7ukFGvPiW3ELILfmRZSy+bCMJyxnZOwiIS67gZY
-         qKQqJTD8UAXCD7mQHEwN2qigtUxK49DEXsMosJbcFv7CT9iPjVHTXOiuCJ7seygl50FK
-         /vbqM8DHshD2+mhEuXaIJT4uvpgiuqgWoQKX0p3uJR+ES+VPb/UMINH8W3sI8v6Od8QK
-         UPog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=mfKXbZgTIWEbTeJVhX3se1YhLuBecr8QQNQtzkisZ/M=;
-        b=QSTjZNgcktaeouQIoEvv7+SqhUwzukIoc3NCENgJ5fFHQ9BpEBm3pGjwOysUHdDXkG
-         qEzy6orHglqowmZiZrTh0mpo8ZUakzCU8Yh0xQ2FZ3W8FUdicp9HOpj1zhlGBoV/7iTa
-         thk5jZol5lhyaG8eVppO8rdr9KfanXPjbR3Y8UEMpYCGIazON6y7SZjEDl/dDuKGlVU3
-         SupwFjDr8Vztv+R9oa4jkN3ohzCMuMoAsmafF8BS1X+rkFGFoHOkjMI5jsvf2q0QXanP
-         1JlMKnPEIyTE3eO/AsrRLD5eQPwLRqinV/WUZHuMGDCsyCZL0NwEe+kk3/5qOe9m4bIc
-         WXQw==
-X-Gm-Message-State: AOAM5335wthqaJcEm3NvntMkPYu0uRRezH5r86852/2FIBg7XWcGFOBk
-        TRGzDNsYRKr2P03DHTFDO0FSUg==
-X-Google-Smtp-Source: ABdhPJzyg4F/AeRn63E0UEHpjQyBVkOG2K2klpoV5R1ukWxPZZMkych35g8pp0R8H2elq8bJi8QzTA==
-X-Received: by 2002:a17:90b:1c8e:b0:1bf:364c:dd7a with SMTP id oo14-20020a17090b1c8e00b001bf364cdd7amr33215082pjb.103.1651074646401;
-        Wed, 27 Apr 2022 08:50:46 -0700 (PDT)
-Received: from localhost.localdomain ([134.195.101.46])
-        by smtp.gmail.com with ESMTPSA id v65-20020a626144000000b0050a839e490bsm19164127pfb.185.2022.04.27.08.50.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 08:50:46 -0700 (PDT)
-From:   Leo Yan <leo.yan@linaro.org>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>, Alyssa Ross <hi@alyssa.is>,
-        Like Xu <likexu@tencent.com>, Kajol Jain <kjain@linux.ibm.com>,
-        Li Huafei <lihuafei1@huawei.com>,
-        Ali Saidi <alisaidi@amazon.com>,
-        German Gomez <german.gomez@arm.com>,
-        James Clark <james.clark@arm.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH v1 03/11] perf c2c: Update documentation for store metric 'Any Lvl'
-Date:   Wed, 27 Apr 2022 23:50:05 +0800
-Message-Id: <20220427155013.1833222-4-leo.yan@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220427155013.1833222-1-leo.yan@linaro.org>
-References: <20220427155013.1833222-1-leo.yan@linaro.org>
+        Wed, 27 Apr 2022 11:53:50 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E20055218;
+        Wed, 27 Apr 2022 08:50:35 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id CA450210DF;
+        Wed, 27 Apr 2022 15:50:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1651074633; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TaceuM3WU4XI+Zz9j3zfhCCykahUsXu9N5LvjuOhrMk=;
+        b=FqmVrKKfoWSKm0TFOR3wPpbllqhBkmkw2Vag9oTMTjZHVFGlR37HOoT9GbKBR2o4z84qJF
+        kPLvvnJYFylrfPOowj0HwMSf61u9kZeT/kdDk1rTEhSpQp+x/w1jHTYiFSc+9AF1KoK78f
+        7VYLTh59YeczY0MmW4HHGAj8q7+27jU=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1651074633;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TaceuM3WU4XI+Zz9j3zfhCCykahUsXu9N5LvjuOhrMk=;
+        b=cjgDf8REStmgY8xcupAN2SoGbSHsH9NjmfzGRN/JeF/MDb+q2eLaC5mBJFrofXbHUoYhOc
+        9VK6QyFzgxOtT3DA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5F5BD1323E;
+        Wed, 27 Apr 2022 15:50:33 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id elZCFElmaWI+HgAAMHmgww
+        (envelope-from <lhenriques@suse.de>); Wed, 27 Apr 2022 15:50:33 +0000
+Received: from localhost (brahms.olymp [local])
+        by brahms.olymp (OpenSMTPD) with ESMTPA id 6c0e8c47;
+        Wed, 27 Apr 2022 15:51:03 +0000 (UTC)
+Date:   Wed, 27 Apr 2022 16:51:03 +0100
+From:   =?iso-8859-1?Q?Lu=EDs?= Henriques <lhenriques@suse.de>
+To:     Jeff Layton <jlayton@kernel.org>
+Cc:     Xiubo Li <xiubli@redhat.com>, Ilya Dryomov <idryomov@gmail.com>,
+        ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Ryan Taylor <rptaylor@uvic.ca>
+Subject: Re: [PATCH v2] ceph: fix statfs for subdir mounts
+Message-ID: <YmlmZ8CA6+lHH9cz@suse.de>
+References: <20220427143303.950-1-lhenriques@suse.de>
+ <9beddcc315595751d5fbcb83f73cd94533b62cbd.camel@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <9beddcc315595751d5fbcb83f73cd94533b62cbd.camel@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 'Any Lvl' metric is added for store operations, update documentation
-to reflect changes in the report table.
+On Wed, Apr 27, 2022 at 11:07:40AM -0400, Jeff Layton wrote:
+> On Wed, 2022-04-27 at 15:33 +0100, Luís Henriques wrote:
+> > When doing a mount using as base a directory that has 'max_bytes' quotas
+> > statfs uses that value as the total; if a subdirectory is used instead,
+> > the same 'max_bytes' too in statfs, unless there is another quota set.
+> > 
+> > Unfortunately, if this subdirectory only has the 'max_files' quota set,
+> > then statfs uses the filesystem total.  Fix this by making sure we only
+> > lookup realms that contain the 'max_bytes' quota.
+> > 
+> > Link: https://tracker.ceph.com/issues/55090
+> > Cc: Ryan Taylor <rptaylor@uvic.ca>
+> > Signed-off-by: Luís Henriques <lhenriques@suse.de>
+> > ---
+> > As I mentioned in v1, I do *not* think this really fixes the tracker
+> > above, as the bug reporter never mentioned setting quotas in the subdir.
+> > 
+> > Changes since v1:
+> > Moved some more logic into __ceph_has_any_quota() function.
+> > 
+> >  fs/ceph/inode.c |  2 +-
+> >  fs/ceph/quota.c | 19 +++++++++++--------
+> >  fs/ceph/super.h | 28 ++++++++++++++++++++++++----
+> >  3 files changed, 36 insertions(+), 13 deletions(-)
+> > 
+> > diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
+> > index 5de7bb9048b7..4b7406d6fbe4 100644
+> > --- a/fs/ceph/inode.c
+> > +++ b/fs/ceph/inode.c
+> > @@ -691,7 +691,7 @@ void ceph_evict_inode(struct inode *inode)
+> >  
+> >  	__ceph_remove_caps(ci);
+> >  
+> > -	if (__ceph_has_any_quota(ci))
+> > +	if (__ceph_has_any_quota(ci, QUOTA_GET_ANY))
+> >  		ceph_adjust_quota_realms_count(inode, false);
+> >  
+> >  	/*
+> > diff --git a/fs/ceph/quota.c b/fs/ceph/quota.c
+> > index a338a3ec0dc4..e9f7ca18cdb7 100644
+> > --- a/fs/ceph/quota.c
+> > +++ b/fs/ceph/quota.c
+> > @@ -195,9 +195,9 @@ void ceph_cleanup_quotarealms_inodes(struct ceph_mds_client *mdsc)
+> >  
+> >  /*
+> >   * This function walks through the snaprealm for an inode and returns the
+> > - * ceph_snap_realm for the first snaprealm that has quotas set (either max_files
+> > - * or max_bytes).  If the root is reached, return the root ceph_snap_realm
+> > - * instead.
+> > + * ceph_snap_realm for the first snaprealm that has quotas set (max_files,
+> > + * max_bytes, or any, depending on the 'which_quota' argument).  If the root is
+> > + * reached, return the root ceph_snap_realm instead.
+> >   *
+> >   * Note that the caller is responsible for calling ceph_put_snap_realm() on the
+> >   * returned realm.
+> > @@ -209,7 +209,9 @@ void ceph_cleanup_quotarealms_inodes(struct ceph_mds_client *mdsc)
+> >   * will be restarted.
+> >   */
+> >  static struct ceph_snap_realm *get_quota_realm(struct ceph_mds_client *mdsc,
+> > -					       struct inode *inode, bool retry)
+> > +					       struct inode *inode,
+> > +					       enum quota_get_realm which_quota,
+> > +					       bool retry)
+> >  {
+> >  	struct ceph_inode_info *ci = NULL;
+> >  	struct ceph_snap_realm *realm, *next;
+> > @@ -248,7 +250,7 @@ static struct ceph_snap_realm *get_quota_realm(struct ceph_mds_client *mdsc,
+> >  		}
+> >  
+> >  		ci = ceph_inode(in);
+> > -		has_quota = __ceph_has_any_quota(ci);
+> > +		has_quota = __ceph_has_any_quota(ci, which_quota);
+> >  		iput(in);
+> >  
+> >  		next = realm->parent;
+> > @@ -279,8 +281,8 @@ bool ceph_quota_is_same_realm(struct inode *old, struct inode *new)
+> >  	 * dropped and we can then restart the whole operation.
+> >  	 */
+> >  	down_read(&mdsc->snap_rwsem);
+> > -	old_realm = get_quota_realm(mdsc, old, true);
+> > -	new_realm = get_quota_realm(mdsc, new, false);
+> > +	old_realm = get_quota_realm(mdsc, old, QUOTA_GET_ANY, true);
+> > +	new_realm = get_quota_realm(mdsc, new, QUOTA_GET_ANY, false);
+> >  	if (PTR_ERR(new_realm) == -EAGAIN) {
+> >  		up_read(&mdsc->snap_rwsem);
+> >  		if (old_realm)
+> > @@ -483,7 +485,8 @@ bool ceph_quota_update_statfs(struct ceph_fs_client *fsc, struct kstatfs *buf)
+> >  	bool is_updated = false;
+> >  
+> >  	down_read(&mdsc->snap_rwsem);
+> > -	realm = get_quota_realm(mdsc, d_inode(fsc->sb->s_root), true);
+> > +	realm = get_quota_realm(mdsc, d_inode(fsc->sb->s_root),
+> > +				QUOTA_GET_MAX_BYTES, true);
+> >  	up_read(&mdsc->snap_rwsem);
+> >  	if (!realm)
+> >  		return false;
+> > diff --git a/fs/ceph/super.h b/fs/ceph/super.h
+> > index a2e1c83ab29a..3cd96720f14a 100644
+> > --- a/fs/ceph/super.h
+> > +++ b/fs/ceph/super.h
+> > @@ -1317,9 +1317,29 @@ extern void ceph_fs_debugfs_init(struct ceph_fs_client *client);
+> >  extern void ceph_fs_debugfs_cleanup(struct ceph_fs_client *client);
+> >  
+> >  /* quota.c */
+> > -static inline bool __ceph_has_any_quota(struct ceph_inode_info *ci)
+> > +
+> > +enum quota_get_realm {
+> > +	QUOTA_GET_MAX_FILES,
+> > +	QUOTA_GET_MAX_BYTES,
+> > +	QUOTA_GET_ANY
+> > +};
+> > +
+> > +static inline bool __ceph_has_any_quota(struct ceph_inode_info *ci,
+> > +					enum quota_get_realm which)
+> >  {
+> > -	return ci->i_max_files || ci->i_max_bytes;
+> > +	bool has_quota = false;
+> > +
+> > +	switch (which) {
+> > +	case QUOTA_GET_MAX_BYTES:
+> > +		has_quota = !!ci->i_max_bytes;
+> > +		break;
+> > +	case QUOTA_GET_MAX_FILES:
+> > +		has_quota = !!ci->i_max_files;
+> > +		break;
+> > +	default:
+> > +		has_quota = !!(ci->i_max_files || ci->i_max_bytes);
+> > +	}
+> > +	return has_quota;
+> >  }
+> >  
+> >  extern void ceph_adjust_quota_realms_count(struct inode *inode, bool inc);
+> > @@ -1328,10 +1348,10 @@ static inline void __ceph_update_quota(struct ceph_inode_info *ci,
+> >  				       u64 max_bytes, u64 max_files)
+> >  {
+> >  	bool had_quota, has_quota;
+> > -	had_quota = __ceph_has_any_quota(ci);
+> > +	had_quota = __ceph_has_any_quota(ci, QUOTA_GET_ANY);
+> >  	ci->i_max_bytes = max_bytes;
+> >  	ci->i_max_files = max_files;
+> > -	has_quota = __ceph_has_any_quota(ci);
+> > +	has_quota = __ceph_has_any_quota(ci, QUOTA_GET_ANY);
+> >  
+> >  	if (had_quota != has_quota)
+> >  		ceph_adjust_quota_realms_count(&ci->vfs_inode, has_quota);
+> 
+> Code looks fine. I think Xiubo had suggested renaming the funtion to
+> __ceph_has_quota(), but other than that this looks good.
 
-Signed-off-by: Leo Yan <leo.yan@linaro.org>
-Tested-by: Ali Saidi <alisaidi@amazon.com>
----
- tools/perf/Documentation/perf-c2c.txt | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+Doh!  Yeah, of course.  Let me quickly respin v3 to fix that.  Thanks.
 
-diff --git a/tools/perf/Documentation/perf-c2c.txt b/tools/perf/Documentation/perf-c2c.txt
-index 3b6a2c84ea02..b39e3f3df272 100644
---- a/tools/perf/Documentation/perf-c2c.txt
-+++ b/tools/perf/Documentation/perf-c2c.txt
-@@ -189,9 +189,10 @@ For each cacheline in the 1) list we display following data:
-   Total stores
-   - sum of all store accesses
- 
--  Store Reference - L1Hit, L1Miss
-+  Store Reference - L1Hit, L1Miss, AnyLvl
-     L1Hit - store accesses that hit L1
-     L1Miss - store accesses that missed L1
-+    AnyLvl - store accesses which is possible to hit any cache level
- 
-   Core Load Hit - FB, L1, L2
-   - count of load hits in FB (Fill Buffer), L1 and L2 cache
-@@ -210,8 +211,9 @@ For each offset in the 2) list we display following data:
-   HITM - Rmt, Lcl
-   - % of Remote/Local HITM accesses for given offset within cacheline
- 
--  Store Refs - L1 Hit, L1 Miss
--  - % of store accesses that hit/missed L1 for given offset within cacheline
-+  Store Refs - L1 Hit, L1 Miss, Any Lvl
-+  - % of store accesses that hit L1, missed L1 and any cache level for given
-+    offset within cacheline
- 
-   Data address - Offset
-   - offset address
--- 
-2.25.1
+> Reviewed-by: Jeff Layton <jlayton@kernel.org>
 
+Cheers,
+--
+Luís
