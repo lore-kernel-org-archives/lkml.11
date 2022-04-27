@@ -2,210 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8621FC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 12:58:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DC2AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 12:59:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235167AbiD0NBv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 09:01:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53724 "EHLO
+        id S235180AbiD0NCn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 09:02:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235076AbiD0NBs (ORCPT
+        with ESMTP id S235103AbiD0NCi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 09:01:48 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 417D12C6E10;
-        Wed, 27 Apr 2022 05:58:36 -0700 (PDT)
-X-UUID: 18f6b30eee0d4f45bfcdf202e41777c7-20220427
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:fb2ad7dd-64a7-4742-b634-438b1994c429,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:-20
-X-CID-META: VersionHash:faefae9,CLOUDID:25d9e82e-6199-437e-8ab4-9920b4bc5b76,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: 18f6b30eee0d4f45bfcdf202e41777c7-20220427
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
-        (envelope-from <sam.shih@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 434883125; Wed, 27 Apr 2022 20:58:30 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Wed, 27 Apr 2022 20:48:02 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 27 Apr 2022 20:48:02 +0800
-From:   Sam Shih <sam.shih@mediatek.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     John Crispin <john@phrozen.org>, Ryder Lee <ryder.lee@kernel.org>,
-        Sam Shih <sam.shih@mediatek.com>
-Subject: [PATCH 2/5] arm64: dts: mt7986: add spi related device nodes
-Date:   Wed, 27 Apr 2022 20:47:38 +0800
-Message-ID: <20220427124741.18245-3-sam.shih@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220427124741.18245-1-sam.shih@mediatek.com>
-References: <20220427124741.18245-1-sam.shih@mediatek.com>
+        Wed, 27 Apr 2022 09:02:38 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 390FF4CD64
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 05:59:27 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id y3so3198687ejo.12
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 05:59:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LDmJp5Whp8dmiIhAKFOdeRxPyoTu+bfhB5tptGx09HE=;
+        b=K4S0rAP9lJ862776psIkLpwKBo+nn/e4mEFZkcbquLCnaqGCrJU59iqV3dfOIFdh/G
+         zWZKaT3UAZqEGVfzw2zJsyxhRWthe1I2zoBlZ4t2ZtIOBIdHjBsT3fEn8d6bf4yLT/gW
+         N4ZcGFwyp7xUVA49I9ZYumzPtsip5hnoK7eXw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LDmJp5Whp8dmiIhAKFOdeRxPyoTu+bfhB5tptGx09HE=;
+        b=LyJv0dS2Fm8WwRosfQi5zNREiSIdzzihcX/qjU0+wZUn/m4MlKhQJR1UeSb6yIIPFf
+         ARtQAABiB1wjaB+MHqodswQ5MxBPTEb1sHKc0FwRrR7hgXoazY2BLxwxk+rZT/bFbmgf
+         /YLdKJqm2fhUArhkLAP3qK56udVEa3dbYO5QTFgqoH2PsRIn0lrDXwZwyS1uzppbstnc
+         jRB1NwmVgxRA9dlETcJa9u2SBoG5X+adS2zN033KrHzwIHoogLO+5e8fnTxZ+gzQj5sf
+         5VN1oRAwWIvHQrIiJw0AjJwFmxY5LtCcCBqKABQutbucOFeHvalsQ/F+9fnYnoQJmC9E
+         boIw==
+X-Gm-Message-State: AOAM532eAPSgStsra5YQp0BE+sQY0JPgrxHIlzT0hJpw1tzAlW5ulBYE
+        0kLiKw5J7bBqia26S6YZ8nI38c/18FGh7CYssUhQdw==
+X-Google-Smtp-Source: ABdhPJx85svbNMmRdxdVllL14VDSpMLFHkEO+pHyAu218rBgoFHo2Rfwxf/WsB6BpXdKawskZgUeKZjUGhuPjw7j9IU=
+X-Received: by 2002:a17:907:7287:b0:6f3:8414:74f1 with SMTP id
+ dt7-20020a170907728700b006f3841474f1mr18237119ejc.123.1651064365737; Wed, 27
+ Apr 2022 05:59:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+References: <20220420231230.58499-1-bjorn.andersson@linaro.org>
+ <20220420231230.58499-2-bjorn.andersson@linaro.org> <CAMty3ZAw7DUSnBePC05qC8Gn6ESKiu+FHw4a-HPPc05VX1hqhg@mail.gmail.com>
+ <20220421082358.ivpmtak3ednvddrc@houat> <CAMty3ZCLEMv4cqUcUGUAkLtH8tmh1WO582cDjZWynAifZJy=_w@mail.gmail.com>
+ <CAMty3ZAkw0rssCzR_ka7U9JeoGxJr5JPM7GWDfd1dob9goL-BQ@mail.gmail.com> <Ymk01GLqfIKoZtJQ@aptenodytes>
+In-Reply-To: <Ymk01GLqfIKoZtJQ@aptenodytes>
+From:   Jagan Teki <jagan@amarulasolutions.com>
+Date:   Wed, 27 Apr 2022 18:29:14 +0530
+Message-ID: <CAMty3ZDQg2d33ce+OrSayuLUEErsMcYZ5WRhjvxM6QaQJ7JQ4A@mail.gmail.com>
+Subject: Re: [PATCH 2/2] Revert "drm: of: Lookup if child node has panel or bridge"
+To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Cc:     Maxime Ripard <maxime@cerno.tech>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Michael Nazzareno Trimarchi <michael@amarulasolutions.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Rob Clark <robdclark@gmail.com>, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robert Foss <robert.foss@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds spi support for MT7986.
+Hi Paul,
 
-Signed-off-by: Sam Shih <sam.shih@mediatek.com>
----
- arch/arm64/boot/dts/mediatek/mt7986a-rfb.dts | 35 ++++++++++++++++++
- arch/arm64/boot/dts/mediatek/mt7986a.dtsi    | 28 +++++++++++++++
- arch/arm64/boot/dts/mediatek/mt7986b-rfb.dts | 37 ++++++++++++++++++++
- 3 files changed, 100 insertions(+)
+On Wed, Apr 27, 2022 at 5:49 PM Paul Kocialkowski
+<paul.kocialkowski@bootlin.com> wrote:
+>
+> Hi Jagan,
+>
+> On Wed 27 Apr 22, 17:22, Jagan Teki wrote:
+> > On Wed, Apr 27, 2022 at 12:29 PM Jagan Teki <jagan@amarulasolutions.com> wrote:
+> > >
+> > > On Thu, Apr 21, 2022 at 1:54 PM Maxime Ripard <maxime@cerno.tech> wrote:
+> > > >
+> > > > On Thu, Apr 21, 2022 at 01:15:54PM +0530, Jagan Teki wrote:
+> > > > > + Linus
+> > > > > + Marek
+> > > > > + Laurent
+> > > > > + Robert
+> > > > >
+> > > > > On Thu, Apr 21, 2022 at 4:40 AM Bjorn Andersson
+> > > > > <bjorn.andersson@linaro.org> wrote:
+> > > > > >
+> > > > > > Commit '80253168dbfd ("drm: of: Lookup if child node has panel or
+> > > > > > bridge")' attempted to simplify the case of expressing a simple panel
+> > > > > > under a DSI controller, by assuming that the first non-graph child node
+> > > > > > was a panel or bridge.
+> > > > > >
+> > > > > > Unfortunately for non-trivial cases the first child node might not be a
+> > > > > > panel or bridge.  Examples of this can be a aux-bus in the case of
+> > > > > > DisplayPort, or an opp-table represented before the panel node.
+> > > > > >
+> > > > > > In these cases the reverted commit prevents the caller from ever finding
+> > > > > > a reference to the panel.
+> > > > > >
+> > > > > > This reverts commit '80253168dbfd ("drm: of: Lookup if child node has
+> > > > > > panel or bridge")', in favor of using an explicit graph reference to the
+> > > > > > panel in the trivial case as well.
+> > > > >
+> > > > > This eventually breaks many child-based devm_drm_of_get_bridge
+> > > > > switched drivers.  Do you have any suggestions on how to proceed to
+> > > > > succeed in those use cases as well?
+> > > >
+> > > > I guess we could create a new helper for those, like
+> > > > devm_drm_of_get_bridge_with_panel, or something.
+> > >
+> > > I think using the same existing helper and updating child support is
+> > > make sense, as there is a possibility to use the same host for child
+> > > and OF-graph bindings.
+> > >
+> > > I can see two possible solutions (as of now)
+> > >
+> > > 1. adding "dcs-child-type" bindings for child-based panel or bridge
+> > > 2. iterate child and skip those nodes other than panel or bridge. or
+> > > iterate sub-child to find it has a panel or bridge-like aux-bus (which
+> > > is indeed hard as this configuration seems not 'standard' i think )
+> > >
+> > > Any inputs?
+> >
+> > Checking aux-bus with the sub-node panel can be a possible check to
+> > look at it, any comments?
+>
+> That looks very fragile and oddly specific. Also why base changes on the
+> original patch that you made?
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt7986a-rfb.dts b/arch/arm64/boot/dts/mediatek/mt7986a-rfb.dts
-index 5a1a605a7828..eb14e82d74b1 100644
---- a/arch/arm64/boot/dts/mediatek/mt7986a-rfb.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt7986a-rfb.dts
-@@ -26,6 +26,20 @@
- };
- 
- &pio {
-+	spi_flash_pins: spi-flash-pins {
-+		mux {
-+			function = "spi";
-+			groups = "spi0", "spi0_wp_hold";
-+		};
-+	};
-+
-+	spic_pins: spic-pins {
-+		mux {
-+			function = "spi";
-+			groups = "spi1_2";
-+		};
-+	};
-+
- 	uart1_pins: uart1-pins {
- 		mux {
- 			function = "uart";
-@@ -41,6 +55,27 @@
- 	};
- };
- 
-+&spi0 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&spi_flash_pins>;
-+	cs-gpios = <0>, <0>;
-+	status = "okay";
-+	spi_nand: spi_nand@0 {
-+		compatible = "spi-nand";
-+		reg = <0>;
-+		spi-max-frequency = <10000000>;
-+		spi-tx-buswidth = <4>;
-+		spi-rx-buswidth = <4>;
-+	};
-+};
-+
-+&spi1 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&spic_pins>;
-+	cs-gpios = <0>, <0>;
-+	status = "okay";
-+};
-+
- &uart0 {
- 	status = "okay";
- };
-diff --git a/arch/arm64/boot/dts/mediatek/mt7986a.dtsi b/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-index 694acf8f5b70..069d3a9bdac9 100644
---- a/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-@@ -106,6 +106,34 @@
- 			#clock-cells = <1>;
- 		};
- 
-+		spi0: spi@1100a000 {
-+			compatible = "mediatek,mt7986-spi-ipm", "mediatek,spi-ipm";
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			reg = <0 0x1100a000 0 0x100>;
-+			interrupts = <GIC_SPI 140 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&topckgen CLK_TOP_MPLL_D2>,
-+				 <&topckgen CLK_TOP_SPI_SEL>,
-+				 <&infracfg CLK_INFRA_SPI0_CK>,
-+				 <&infracfg CLK_INFRA_SPI0_HCK_CK>;
-+			clock-names = "parent-clk", "sel-clk", "spi-clk", "hclk";
-+			status = "disabled";
-+		};
-+
-+		spi1: spi@1100b000 {
-+			compatible = "mediatek,mt7986-spi-ipm", "mediatek,spi-ipm";
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			reg = <0 0x1100b000 0 0x100>;
-+			interrupts = <GIC_SPI 141 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&topckgen CLK_TOP_MPLL_D2>,
-+				 <&topckgen CLK_TOP_SPIM_MST_SEL>,
-+				 <&infracfg CLK_INFRA_SPI1_CK>,
-+				 <&infracfg CLK_INFRA_SPI1_HCK_CK>;
-+			clock-names = "parent-clk", "sel-clk", "spi-clk", "hclk";
-+			status = "disabled";
-+		};
-+
- 		topckgen: topckgen@1001b000 {
- 			compatible = "mediatek,mt7986-topckgen", "syscon";
- 			reg = <0 0x1001B000 0 0x1000>;
-diff --git a/arch/arm64/boot/dts/mediatek/mt7986b-rfb.dts b/arch/arm64/boot/dts/mediatek/mt7986b-rfb.dts
-index d73467ea3641..f159f1ac618b 100644
---- a/arch/arm64/boot/dts/mediatek/mt7986b-rfb.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt7986b-rfb.dts
-@@ -25,6 +25,43 @@
- 	};
- };
- 
-+&pio {
-+	spi_flash_pins: spi-flash-pins {
-+		mux {
-+			function = "spi";
-+			groups = "spi0", "spi0_wp_hold";
-+		};
-+	};
-+
-+	spic_pins: spic-pins {
-+		mux {
-+			function = "spi";
-+			groups = "spi1_2";
-+		};
-+	};
-+};
-+
-+&spi0 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&spi_flash_pins>;
-+	cs-gpios = <0>, <0>;
-+	status = "okay";
-+	spi_nand: spi_nand@0 {
-+		compatible = "spi-nand";
-+		reg = <0>;
-+		spi-max-frequency = <10000000>;
-+		spi-tx-buswidth = <4>;
-+		spi-rx-buswidth = <4>;
-+	};
-+};
-+
-+&spi1 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&spic_pins>;
-+	cs-gpios = <0>, <0>;
-+	status = "okay";
-+};
-+
- &uart0 {
- 	status = "okay";
- };
--- 
-2.18.0
+It is just showcased a snippet to check the child's conditions.
 
+>
+> With the follow-up fixes, we are checking the of graph first and only
+> considering child nodes if the of graph and remote are missing, so there isn't
+> really a need to be more specific in the child noise discrimination.
+
+So, does it handle child panel or bridge finding? just keep in mind
+the same call from the host need to handle with and without OF-graph
+representation.
+
+>
+> Actually I should also make a new version of "drm: of: Improve error handling in
+> bridge/panel detection" to also return -ENODEV if of_graph_get_remote_node
+> fails, so that it doesn't try to use the child node when the graph is defined
+> but not remote is defined.
+
+Jagan.
