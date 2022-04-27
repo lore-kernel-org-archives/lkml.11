@@ -2,416 +2,329 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16781C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 09:37:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A96C1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 09:37:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229825AbiD0Jkc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 05:40:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33222 "EHLO
+        id S230281AbiD0Jki (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 05:40:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbiD0Jk1 (ORCPT
+        with ESMTP id S229516AbiD0Jk3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 05:40:27 -0400
-Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01olkn2081.outbound.protection.outlook.com [40.92.99.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7814332BCF1;
-        Wed, 27 Apr 2022 02:36:06 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=I2J3mR8d7sWLjO95c1Tpb82+Brlq3ONFZaAYmqLzVWs1GaYOSCq7WvGWtbVTnFnfJcv6JXpg+wcHUsH5pZ16YBD0wCJhDv7L6DjTWa9aj6YDuwQEJQ/JMxg1xspJzVO0Nh3SubVl3wq6QjyiqsQ/eAI8CyIZ8RgV25k4uo6L2CNGsa0mIZ0LKfmUiWMY8vOPJT+Gm9mKCeMdHNuWOuk9eA66KIQjIn8tkS9vL6Y2UxxtOIUkAdblXSmdaJ7GguWtyNXeJ7UEyMbCcfcFMZYt0S3j2cgZEkgl7+A7chL0uTmKg/bV4+/2suO6p7DPxhd1PBzr+DrBA9ENuts4TXFc+g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rGR6+NgsNpXIWjEwY9hs+rTt5kII+sa1gLwGI9mLJ0M=;
- b=nNAFfmCX+SC4jWkh7OWJI5MMf72U2pipUwIDbknGA+BJszkj3ekLkKfuVWfi+XZKe7vZ2+s4p8Huym/PatbxhPHSdB6dNeQw9GqV20QPC9gGCj8hY4CoORM1/6yQW1uKhAyoT68BXgPKRN5s4wjDhW1gkCo8qjaos2eY1jb1oP68R/n3xg2bwCt9Ko7ARD8qYBoMjGr2+y5QEGlRenKnNP/kUy2SroyQoOqou16c3koro2r+Q2Ziv1r8+8TIR9CNKSwiq8RGe+XrjDZVT54J1j0AyLhNOycDx1pUSo3alfpj0WSIAxzO9TNCZqu34eHIrtteLHka9zfEMrkMxPs3TA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rGR6+NgsNpXIWjEwY9hs+rTt5kII+sa1gLwGI9mLJ0M=;
- b=WrKj4mt7o3j7mocAOJ/lVWfsPJpizuJKJn7LJvUXSu4Q2Hj4kdd/2Nd0cRdBT7XyScgk+NKLY4sqEzy+oKDuSRQ9NcfCRY5D/mik6pz1djTP7R6Jgb0Z9RVYDm8aE5yfcXYjBpA01xbY4Qv3gC+7Prp7l72vLT42x4wGkmT1fI+jC8Aahac0/QWeiqkyR2j8G8S9mW/idM9k3s63mthNpPUcw5LGvmQSBGRYJWa+vkzVK8Fj1d6Cn5klYlHQCzanIydHHnuZd5ByQC+2AoifaNB1UjaK3P3BehGVZZjwxpnWf9wFhKAYa1dUAWdiTvapNs8EXvLGKBYVZcr7YFeGsQ==
-Received: from TYYP286MB1115.JPNP286.PROD.OUTLOOK.COM (2603:1096:400:ce::9) by
- OS3P286MB1057.JPNP286.PROD.OUTLOOK.COM (2603:1096:604:10f::13) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5186.14; Wed, 27 Apr 2022 09:33:01 +0000
-Received: from TYYP286MB1115.JPNP286.PROD.OUTLOOK.COM
- ([fe80::ed8c:9e75:ddab:8c5e]) by TYYP286MB1115.JPNP286.PROD.OUTLOOK.COM
- ([fe80::ed8c:9e75:ddab:8c5e%4]) with mapi id 15.20.5186.021; Wed, 27 Apr 2022
- 09:33:01 +0000
-From:   Xie Yongmei <yongmeixie@hotmail.com>
-To:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        linux-fsdevel@vger.kernel.org
-Cc:     yongmeixie@hotmail.comc, Xie Yongmei <yongmeixie@hotmail.com>
-Subject: [PATCH 3/3] writeback: specify writeback period and expire interval per memcg
-Date:   Wed, 27 Apr 2022 05:32:41 -0400
-Message-ID: <TYYP286MB1115331A1F4852D7CA3E86A2C5FA9@TYYP286MB1115.JPNP286.PROD.OUTLOOK.COM>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220427093241.108281-1-yongmeixie@hotmail.com>
-References: <20220427093241.108281-1-yongmeixie@hotmail.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-TMN:  [XbBKjZKgJ/uPV0EtxqE/Feo+t1tbxwHe]
-X-ClientProxiedBy: HK0PR01CA0067.apcprd01.prod.exchangelabs.com
- (2603:1096:203:a6::31) To TYYP286MB1115.JPNP286.PROD.OUTLOOK.COM
- (2603:1096:400:ce::9)
-X-Microsoft-Original-Message-ID: <20220427093241.108281-4-yongmeixie@hotmail.com>
+        Wed, 27 Apr 2022 05:40:29 -0400
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B75C532B240
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 02:35:56 -0700 (PDT)
+Date:   Wed, 27 Apr 2022 17:25:00 +0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1651051458;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=FYDGoArT+xGRQbdrqz5n0jOvvhgfHpBytyG0lSdheRw=;
+        b=Od9XWW+yvjhqficwrGhy0M8bVcoZ3jQiTSbqKnPawDGHaJ5cffqzlXcQsBsTaioHkmBXoe
+        +iRg5X940sWh+bQIjKYJvFeY9ZIZl3zqYCEcoJWfjpc1aB3w99wy5yLWRP260yofQzDNJ7
+        U3r0LKKoV5b17ANt8mIMr45cjFZryGU=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Tao Zhou <tao.zhou@linux.dev>
+To:     Vincent Donnefort <vincent.donnefort@arm.com>,
+        Tao Zhou <tao.zhou@linux.dev>
+Cc:     peterz@infradead.org, mingo@redhat.com, vincent.guittot@linaro.org,
+        linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
+        morten.rasmussen@arm.com, chris.redpath@arm.com, qperret@google.com
+Subject: Re: [PATCH v6 2/7] sched/fair: Decay task PELT values during wakeup
+ migration
+Message-ID: <YmkL7CevuugEHsol@geo.homenetwork>
+References: <20220426093506.3415588-1-vincent.donnefort@arm.com>
+ <20220426093506.3415588-3-vincent.donnefort@arm.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 974a3c04-51bb-4c67-f184-08da2830ebef
-X-MS-Exchange-SLBlob-MailProps: Zv/SX2iM+5XXEEEdR/xMXhNCeF/y1+93HUjrN3m8MDCUewaI1nR/wSpNIuOIuWJzda/Pjr8Q7LMUGAFZf0frLZogWCQ9BY6YTIMtEPWm6ZbPnAqMV3jQ9Qa8J8MiiU0HlP2sNpaoBFWmF/M0BJhIeKkBzpxCSWlETieosOVhPZF7/mgnV1k0KGoXL62N9wBMFPQffkwXiRMCQk+HHIpH33Ee58kIdF7b0GlIS9mJxinW8oRxZ25FODJlHYgXKVs0EnKMr5S55OXW0zgVUkKVWRrTxCqg+cLjjbH1ViBKgfZLIKJX/am0TYN+OaXNnA9rhI3VRBxhXHhg+V3rrUNS1/qlcUDJcEkoBOV31zMfxvb/G77wwb4ye5usXRmBm1w86MYdWkx9H7naMYPDez872ZDZJC1xUN6FgJFOyQS5+GBt0wQsfIUt9qn1Jm+w2nhZIkWA8flHkz884zWlYdBXhzXHXPeKVJmir6FOpM5wkDSNj2Fuh86N5pvX13jA/J2NqLhROt5VrcGnq5h7IMdXzb3tdVp2RVmhccnjdNgXiqEjOU1PVsmO8Il3WeugD3d6ra21ypzd9RQxs1PD2eNvMWbzBR8HZhIluBQTW5eFuGKkI7n2yowvigy8kzJ7ZhO2Ko9nn+87FlO3O6YOaDPX7W10vWJMsRtz1OdrfMma+I8g9R5gSwM9M9QGQmdVS6cJYLu2bGZNxo4=
-X-MS-TrafficTypeDiagnostic: OS3P286MB1057:EE_
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: iO5u6YuWYb/R8PJf91wLiHCKPY7pGEMs6DahvS/9awUvcHe33x0/AjAXfWJo2ZqkEhL6D6dU/Kaha3a4KVmA06YXdINlBeFjs2zy/FqcWFMl89NxEOyQ+2wavY/t+2noNZPFMFBnqgi8M7B/XLcLnaregehr5t9NuXL5xW+rbRHxXnhXruIajOc0ZGTxIYD6ujhR8C4t+L8077yGZGmEAmuvgV+rlK01gvV2SY2IhNE/mc319Diy8yfakPRFBnJFOIGjNmDnk1aqDyGVj/xZupStfvxgDrBNhxWmBR3GuEseS4tqiRECve2UHSZUyqKq9A4/0y5iqnX6fkePYE0BNsxGgOprms7rtNsiF89NjSC13zuW+KLXb/DoT8g+6ngzkVyzNIuDHkMCeUbcmK6psn2zEi5r5kVxXJoVWVhePa2VONK2cSrEEOO2IUlOIlaZ5mz7bFEspibZrFiD3sd/co0KM9qzZYeDPT6hR79YxYXkDGFv6zBa+J9tk4bWfVTTfrL0DFt9BjUE7J3SjpqMEwzzSHQPimIugjfwdsuvIV6fxQu8cLnaO7eYovClfMKf44GZ91+xiTNuJyGHFo7REA==
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?mmuDWfVau0H2Y0fYYbmM8KswuSTgsVi4FEdaQM6RfvxZuByCoNp8JZVyCNUj?=
- =?us-ascii?Q?5onMCW5jd7V3u0iVjYK2o+vXihk8FLp5KyZyCU3fwkYKv4cTShUsqus2kSLg?=
- =?us-ascii?Q?aehjaH6LIPewvb66H3ant2p1kbT0I9O2fW3x51/dTJWsJwgyou7QwI/q4l3R?=
- =?us-ascii?Q?g0lpPq0TmSxcHofq7yV8uOfZmYXnspZqyVNYJlDyUdYfFPBy3BOwNmyX9xoG?=
- =?us-ascii?Q?tdG3d6IEX2CLRZ7vK6vme/fXUzWZIu8TgyJO2ITMqPaFnSTfDkjG8+lJyLAw?=
- =?us-ascii?Q?fzoCqAfdGzZ4rMaOumAxBd9yfFYOfxRKMEvzDZFDiDHE223CU2x0QkqUS3oa?=
- =?us-ascii?Q?Anpkg1eNTSFaqnPvIhfSKO6nuGgQQac6tp+myBpeoTH3aTCXYHEvLYPs2Uub?=
- =?us-ascii?Q?u0ujQVCMg7VRceX5RlLwAb9aCHMB2RdGDSWFrg+1ZQtE2CRNrhs9pagrydpz?=
- =?us-ascii?Q?A1NhX9gnEs3MFZd7BKlSYpnkqdAOoxHiSdyVn88U65UD0J0WOAtFWpiASvgp?=
- =?us-ascii?Q?Lu8l+Q4axID9QbDl/XeJi235ggS/dYeHhw/RRH70Uem9WpqkgjM8edngcjy/?=
- =?us-ascii?Q?u40jXLIGqrjX+2LEFIR+CFqbeWs2JMXCBBxBguzBVjcq2EqIy6ynpU0xpkCh?=
- =?us-ascii?Q?zJmvIlVu6KhBvcKhS3BOJbQdYZyM85whq5aXt+cNik0ihcuZhDOKEPGfnjt/?=
- =?us-ascii?Q?nBlTs6WgaoWDZ31bb8wtWmGFFt90fUHmq4ZasIvLSWjLC+gmpYXp55QDtBzY?=
- =?us-ascii?Q?9fHxUwuuny6csOH6p9F49PmRRGAv3e0ULgX2xVLN5rpgE5M5qLaq8xGE1Qk3?=
- =?us-ascii?Q?CG+CviadJodUcg4xyKNwGKRUKEGeykHkxcMd1h9j3+EH2OlLpf6815vymVeJ?=
- =?us-ascii?Q?Cq9rFpkAmHIijo8yJ5BifGMVPT4glDzgaRNuyv3zEdW59HrjvMAtTCSFYKj4?=
- =?us-ascii?Q?KdpLV4sSxncM0WU+EUEni4rN84hPLPHJB/Js82Qfidlb3eV5SGA5ywot3H5q?=
- =?us-ascii?Q?vzBRxDdCap8BmfpWubZYR48BMb8KKoKkFW5Aro8eLos8FLObMqAhweBlztoK?=
- =?us-ascii?Q?ZuZ8HZbuWa2+2reUaeW7VRhaHloXOSG6gHhOegLIPBYQ/VB8Nky/8ydz4FaL?=
- =?us-ascii?Q?jH5Kk7wnHLMer0Ka0mZ3ibvivQVa0cWKQBamFdHPiad3xSQxeSlBES5kCvGw?=
- =?us-ascii?Q?CyJMG0QFAInejstroSQfqzjc9DETmDgOxOYna60uGE88deA7fsqRC2rjdwkC?=
- =?us-ascii?Q?pxJdklHzvFr6vt+ZucjEaNmSqdUEQ2ysNxzT0io/j30Nrf0OfuMBiwrB+AVP?=
- =?us-ascii?Q?gIuH+UGn1dHFfjlYX/KAFqRKUCoutLgmYwzXcwWUB8/Ga4+z4HKcu2TIM/jl?=
- =?us-ascii?Q?ejB6RWFzWsXjiBfq4FGedx4odbL3Tco4lFGE0G+jtdYybL6kp96vhfUObnpd?=
- =?us-ascii?Q?2UP/kuABmYs=3D?=
-X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-05f45.templateTenant
-X-MS-Exchange-CrossTenant-Network-Message-Id: 974a3c04-51bb-4c67-f184-08da2830ebef
-X-MS-Exchange-CrossTenant-AuthSource: TYYP286MB1115.JPNP286.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Apr 2022 09:33:01.1851
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OS3P286MB1057
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220426093506.3415588-3-vincent.donnefort@arm.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-dirty_writeback_interval: dirty wakeup period
-dirty_expire_interval: expire period
+On Tue, Apr 26, 2022 at 10:35:01AM +0100, Vincent Donnefort wrote:
 
-This patch provides per memcg setttings for writeback interval.
+> Before being migrated to a new CPU, a task sees its PELT values
+> synchronized with rq last_update_time. Once done, that same task will also
+> have its sched_avg last_update_time reset. This means the time between
+> the migration and the last clock update (B) will not be accounted for in
+> util_avg and a discontinuity will appear. This issue is amplified by the
+> PELT clock scaling. If the clock hasn't been updated while the CPU is
+> idle, clock_pelt will not be aligned with clock_task and that time (A)
+> will be also lost.
+> 
+>    ---------|----- A -----|-----------|------- B -----|>
+>         clock_pelt   clock_task     clock            now
+> 
+> This is especially problematic for asymmetric CPU capacity systems which
+> need stable util_avg signals for task placement and energy estimation.
+> 
+> Ideally, this problem would be solved by updating the runqueue clocks
+> before the migration. But that would require taking the runqueue lock
+> which is quite expensive [1]. Instead estimate the missing time and update
+> the task util_avg with that value:
+> 
+>   A + B = clock_task - clock_pelt + sched_clock_cpu() - clock
+> 
+> sched_clock_cpu() is a costly functinon. Limit the usage to the case where
+> the source CPU is idle as we know this is when the clock is having the
+> biggest risk of being outdated.
+> 
+> Neither clock_task, clock_pelt nor clock can be accessed without the
+> runqueue lock. We then need to store those values in a timestamp variable
+> which can be accessed during the migration. rq's enter_idle will give the
+> wall-clock time when the rq went idle. We have then:
+> 
+>   B = sched_clock_cpu() - rq->enter_idle.
+> 
+> Then, to catch-up the PELT clock scaling (A), two cases:
+> 
+>   * !CFS_BANDWIDTH: We can simply use clock_task(). This value is stored
+>     in rq's clock_pelt_idle, before the rq enters idle. The estimated time
+>     is then:
+> 
+>       rq->clock_pelt_idle + sched_clock_cpu() - rq->enter_idle.
+> 
+>   * CFS_BANDWIDTH: We can't catch-up with clock_task because of the
+>     throttled_clock_task_time offset. cfs_rq's clock_pelt_idle is then
+>     giving the PELT clock when the cfs_rq becomes idle. This gives:
+> 
+>       A = rq->clock_pelt_idle - cfs_rq->clock_pelt_idle
 
-Dirty writeback could be triggered in the below ways:
-  - mark_inode_dirty: when the first time of dirtying pages for this inode,
-		it tries to wakeup the callback hook wb_workfn in
-		wakeup period later.
-  - wb_workfn: if there're more writeback works to do, it would wakeup the
-		callback hook wb_workfn in another wakeup period later.
-  - external event: kswad found dirty pages piled up at the end of inactive
-		list or desktop mode timer.
-  - buffered write context: balance_dirty_pages tries to wake up background
-		writeback once dirty pages above freerun level of pages.
-  - sync context: sync(fs sync) writeback immediately
+The code calulating A below is not consistent with this. The order is reversed.
 
-No matter how writeback is triggered, wb_workfn is the unique callback hook
-to manipulate the flushing things. Actually, wb_check_old_data_flush
-handles the period writeback and decides the scope of dirty pages which
-have to be written back because they were too old.
-
-Signed-off-by: Xie Yongmei <yongmeixie@hotmail.com>
----
- fs/fs-writeback.c          |  11 ++--
- include/linux/memcontrol.h |  16 ++++++
- mm/backing-dev.c           |   4 +-
- mm/memcontrol.c            | 114 +++++++++++++++++++++++++++++++++++++
- 4 files changed, 140 insertions(+), 5 deletions(-)
-
-diff --git a/fs/fs-writeback.c b/fs/fs-writeback.c
-index 591fe9cf1659..f59e4709ec39 100644
---- a/fs/fs-writeback.c
-+++ b/fs/fs-writeback.c
-@@ -1980,6 +1980,7 @@ static long wb_writeback(struct bdi_writeback *wb,
- 	struct inode *inode;
- 	long progress;
- 	struct blk_plug plug;
-+	unsigned int dirty_expire = wb_dirty_expire_interval(wb);
- 
- 	blk_start_plug(&plug);
- 	spin_lock(&wb->list_lock);
-@@ -2015,7 +2016,7 @@ static long wb_writeback(struct bdi_writeback *wb,
- 		 */
- 		if (work->for_kupdate) {
- 			dirtied_before = jiffies -
--				msecs_to_jiffies(dirty_expire_interval * 10);
-+				msecs_to_jiffies(dirty_expire * 10);
- 		} else if (work->for_background)
- 			dirtied_before = jiffies;
- 
-@@ -2101,15 +2102,16 @@ static long wb_check_old_data_flush(struct bdi_writeback *wb)
- {
- 	unsigned long expired;
- 	long nr_pages;
-+	unsigned int writeback_interval = wb_dirty_writeback_interval(wb);
- 
- 	/*
- 	 * When set to zero, disable periodic writeback
- 	 */
--	if (!dirty_writeback_interval)
-+	if (!writeback_interval)
- 		return 0;
- 
- 	expired = wb->last_old_flush +
--			msecs_to_jiffies(dirty_writeback_interval * 10);
-+			msecs_to_jiffies(writeback_interval * 10);
- 	if (time_before(jiffies, expired))
- 		return 0;
- 
-@@ -2194,6 +2196,7 @@ void wb_workfn(struct work_struct *work)
- 	struct bdi_writeback *wb = container_of(to_delayed_work(work),
- 						struct bdi_writeback, dwork);
- 	long pages_written;
-+	unsigned int writeback_interval = wb_dirty_writeback_interval(wb);
- 
- 	set_worker_desc("flush-%s", bdi_dev_name(wb->bdi));
- 
-@@ -2222,7 +2225,7 @@ void wb_workfn(struct work_struct *work)
- 
- 	if (!list_empty(&wb->work_list))
- 		wb_wakeup(wb);
--	else if (wb_has_dirty_io(wb) && dirty_writeback_interval)
-+	else if (wb_has_dirty_io(wb) && writeback_interval)
- 		wb_wakeup_delayed(wb);
- }
- 
-diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-index 386fc9b70c95..c1dc88bb8f80 100644
---- a/include/linux/memcontrol.h
-+++ b/include/linux/memcontrol.h
-@@ -347,6 +347,8 @@ struct mem_cgroup {
- #ifdef CONFIG_CGROUP_WRITEBACK_PARA
- 	int dirty_background_ratio;
- 	int dirty_ratio;
-+	int dirty_writeback_interval;
-+	int dirty_expire_interval;
- #endif
- 
- 	struct mem_cgroup_per_node *nodeinfo[];
-@@ -1642,6 +1644,8 @@ static inline void mem_cgroup_flush_foreign(struct bdi_writeback *wb)
- #ifdef CONFIG_CGROUP_WRITEBACK_PARA
- unsigned int wb_dirty_background_ratio(struct bdi_writeback *wb);
- unsigned int wb_dirty_ratio(struct bdi_writeback *wb);
-+unsigned int wb_dirty_writeback_interval(struct bdi_writeback *wb);
-+unsigned int wb_dirty_expire_interval(struct bdi_writeback *wb);
- #else
- static inline
- unsigned int wb_dirty_background_ratio(struct bdi_writeback *wb)
-@@ -1654,6 +1658,18 @@ unsigned int wb_dirty_ratio(struct bdi_writeback *wb)
- {
- 	return vm_dirty_ratio;
- }
-+
-+static inline
-+unsigned int wb_dirty_writeback_interval(struct bdi_writeback *wb)
-+{
-+	return dirty_writeback_interval;
-+}
-+
-+static inline
-+unsigned int wb_dirty_expire_interval(struct bdi_writeback *wb)
-+{
-+	return dirty_expire_interval;
-+}
- #endif
- 
- struct sock;
-diff --git a/mm/backing-dev.c b/mm/backing-dev.c
-index 7176af65b103..685558362ad8 100644
---- a/mm/backing-dev.c
-+++ b/mm/backing-dev.c
-@@ -15,6 +15,7 @@
- #include <linux/writeback.h>
- #include <linux/device.h>
- #include <trace/events/writeback.h>
-+#include <linux/memcontrol.h>
- 
- struct backing_dev_info noop_backing_dev_info;
- EXPORT_SYMBOL_GPL(noop_backing_dev_info);
-@@ -264,8 +265,9 @@ subsys_initcall(default_bdi_init);
- void wb_wakeup_delayed(struct bdi_writeback *wb)
- {
- 	unsigned long timeout;
-+	unsigned int dirty_interval = wb_dirty_writeback_interval(wb);
- 
--	timeout = msecs_to_jiffies(dirty_writeback_interval * 10);
-+	timeout = msecs_to_jiffies(dirty_interval * 10);
- 	spin_lock_bh(&wb->work_lock);
- 	if (test_bit(WB_registered, &wb->state))
- 		queue_delayed_work(bdi_wq, &wb->dwork, timeout);
-diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index b1c1b150637a..c392aec22e2e 100644
---- a/mm/memcontrol.c
-+++ b/mm/memcontrol.c
-@@ -4851,17 +4851,49 @@ unsigned int wb_dirty_ratio(struct bdi_writeback *wb)
- 	return memcg->dirty_ratio;
- }
- 
-+unsigned int wb_dirty_writeback_interval(struct bdi_writeback *wb)
-+{
-+	struct mem_cgroup *memcg;
-+
-+	if (mem_cgroup_disabled() || !wb)
-+		return dirty_writeback_interval;
-+
-+	memcg = mem_cgroup_from_css(wb->memcg_css);
-+	if (memcg == root_mem_cgroup || memcg->dirty_writeback_interval < 0)
-+		return dirty_writeback_interval;
-+
-+	return memcg->dirty_writeback_interval;
-+}
-+
-+unsigned int wb_dirty_expire_interval(struct bdi_writeback *wb)
-+{
-+	struct mem_cgroup *memcg;
-+
-+	if (mem_cgroup_disabled() || !wb)
-+		return dirty_expire_interval;
-+
-+	memcg = mem_cgroup_from_css(wb->memcg_css);
-+	if (memcg == root_mem_cgroup || memcg->dirty_expire_interval < 0)
-+		return dirty_expire_interval;
-+
-+	return memcg->dirty_expire_interval;
-+}
-+
- static void wb_memcg_inherit_from_parent(struct mem_cgroup *parent,
- 					 struct mem_cgroup *memcg)
- {
- 	memcg->dirty_background_ratio = parent->dirty_background_ratio;
- 	memcg->dirty_ratio = parent->dirty_ratio;
-+	memcg->dirty_writeback_interval = parent->dirty_writeback_interval;
-+	memcg->dirty_expire_interval = parent->dirty_expire_interval;
- }
- 
- static void wb_memcg_init(struct mem_cgroup *memcg)
- {
- 	memcg->dirty_background_ratio = -1;
- 	memcg->dirty_ratio = -1;
-+	memcg->dirty_writeback_interval = -1;
-+	memcg->dirty_expire_interval = -1;
- }
- 
- static int mem_cgroup_dirty_background_ratio_show(struct seq_file *m, void *v)
-@@ -4918,6 +4950,64 @@ mem_cgroup_dirty_ratio_write(struct kernfs_open_file *of,
- 	memcg->dirty_ratio = dirty_ratio;
- 	return nbytes;
- }
-+
-+static int mem_cgroup_dirty_writeback_interval_show(struct seq_file *m, void *v)
-+{
-+	struct mem_cgroup *memcg = mem_cgroup_from_css(seq_css(m));
-+
-+	seq_printf(m, "%d\n", memcg->dirty_writeback_interval);
-+	return 0;
-+}
-+
-+static ssize_t
-+mem_cgroup_dirty_writeback_interval_write(struct kernfs_open_file *of,
-+					  char *buf, size_t nbytes,
-+					  loff_t off)
-+{
-+	struct mem_cgroup *memcg = mem_cgroup_from_css(of_css(of));
-+	int ret, writeback_interval;
-+
-+	buf = strstrip(buf);
-+	ret = kstrtoint(buf, 0, &writeback_interval);
-+	if (ret)
-+		return ret;
-+
-+	if (writeback_interval < -1)
-+		return -EINVAL;
-+
-+	if (memcg->dirty_writeback_interval != writeback_interval) {
-+		memcg->dirty_writeback_interval = writeback_interval;
-+		wakeup_flusher_threads(WB_REASON_PERIODIC);
-+	}
-+	return nbytes;
-+}
-+
-+static int mem_cgroup_dirty_expire_interval_show(struct seq_file *m, void *v)
-+{
-+	struct mem_cgroup *memcg = mem_cgroup_from_css(seq_css(m));
-+
-+	seq_printf(m, "%d\n", memcg->dirty_expire_interval);
-+	return 0;
-+}
-+
-+static ssize_t
-+mem_cgroup_dirty_expire_interval_write(struct kernfs_open_file *of,
-+				       char *buf, size_t nbytes, loff_t off)
-+{
-+	struct mem_cgroup *memcg = mem_cgroup_from_css(of_css(of));
-+	int ret, expire_interval;
-+
-+	buf = strstrip(buf);
-+	ret = kstrtoint(buf, 0, &expire_interval);
-+	if (ret)
-+		return ret;
-+
-+	if (expire_interval < -1)
-+		return -EINVAL;
-+
-+	memcg->dirty_expire_interval = expire_interval;
-+	return nbytes;
-+}
- #else
- static void wb_memcg_inherit_from_parent(struct mem_cgroup *parent,
- 					 struct mem_cgroup *memcg)
-@@ -5067,6 +5157,18 @@ static struct cftype mem_cgroup_legacy_files[] = {
- 		.seq_show = mem_cgroup_dirty_ratio_show,
- 		.write = mem_cgroup_dirty_ratio_write,
- 	},
-+	{
-+		.name = "dirty_writeback_interval_centisecs",
-+		.flags = CFTYPE_NOT_ON_ROOT,
-+		.seq_show = mem_cgroup_dirty_writeback_interval_show,
-+		.write = mem_cgroup_dirty_writeback_interval_write,
-+	},
-+	{
-+		.name = "dirty_expire_interval_centisecs",
-+		.flags = CFTYPE_NOT_ON_ROOT,
-+		.seq_show = mem_cgroup_dirty_expire_interval_show,
-+		.write = mem_cgroup_dirty_expire_interval_write,
-+	},
- #endif
- 	{ },	/* terminate */
- };
-@@ -6549,6 +6651,18 @@ static struct cftype memory_files[] = {
- 		.seq_show = mem_cgroup_dirty_ratio_show,
- 		.write = mem_cgroup_dirty_ratio_write,
- 	},
-+	{
-+		.name = "dirty_writeback_interval_centisecs",
-+		.flags = CFTYPE_NOT_ON_ROOT,
-+		.seq_show = mem_cgroup_dirty_writeback_interval_show,
-+		.write = mem_cgroup_dirty_writeback_interval_write,
-+	},
-+	{
-+		.name = "dirty_expire_interval_centisecs",
-+		.flags = CFTYPE_NOT_ON_ROOT,
-+		.seq_show = mem_cgroup_dirty_expire_interval_show,
-+		.write = mem_cgroup_dirty_expire_interval_write,
-+	},
- #endif
- 	{ }	/* terminate */
- };
--- 
-2.27.0
-
+>     And gives the following estimated time:
+> 
+>       cfs_rq->last_update_time +
+>       rq->clock_pelt_idle - cfs_rq->clock_pelt_idle + (A)
+>       sched_clock_cpu() - rq->enter_idle (B)
+> 
+> The (B) part of the missing time is however an estimation that doesn't
+> take into account IRQ and Paravirt time.
+> 
+> [1] https://lore.kernel.org/all/20190709115759.10451-1-chris.redpath@arm.com/
+> 
+> Signed-off-by: Vincent Donnefort <vincent.donnefort@arm.com>
+> 
+> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+> index abd1feeec0c2..1256e2c0e2e2 100644
+> --- a/kernel/sched/fair.c
+> +++ b/kernel/sched/fair.c
+> @@ -3694,6 +3694,48 @@ static inline void add_tg_cfs_propagate(struct cfs_rq *cfs_rq, long runnable_sum
+>  
+>  #endif /* CONFIG_FAIR_GROUP_SCHED */
+>  
+> +#ifdef CONFIG_NO_HZ_COMMON
+> +static inline void migrate_se_pelt_lag(struct sched_entity *se)
+> +{
+> +	struct cfs_rq *cfs_rq;
+> +	struct rq *rq;
+> +	bool is_idle;
+> +	u64 now;
+> +
+> +	cfs_rq = cfs_rq_of(se);
+> +	rq = rq_of(cfs_rq);
+> +
+> +	rcu_read_lock();
+> +	is_idle = is_idle_task(rcu_dereference(rq->curr));
+> +	rcu_read_unlock();
+> +
+> +	/*
+> +	 * The lag estimation comes with a cost we don't want to pay all the
+> +	 * time. Hence, limiting to the case where the source CPU is idle and
+> +	 * we know we are at the greatest risk to have an outdated clock.
+> +	 */
+> +	if (!is_idle)
+> +		return;
+> +
+> +#ifdef CONFIG_CFS_BANDWIDTH
+> +	now = u64_u32_load(cfs_rq->clock_pelt_idle);
+> +	/* The clock has been stopped for throttling */
+> +	if (now == U64_MAX)
+> +		return;
+> +
+> +	now += cfs_rq_last_update_time(cfs_rq);
+> +	now -= u64_u32_load(rq->clock_pelt_idle);
+> +#else
+> +	now = u64_u32_load(rq->clock_pelt_idle);
+> +#endif
+> +	now += sched_clock_cpu(cpu_of(rq)) - u64_u32_load(rq->enter_idle);
+> +
+> +	__update_load_avg_blocked_se(now, se);
+> +}
+> +#else
+> +static void migrate_se_pelt_lag(struct sched_entity *se) {}
+> +#endif
+> +
+>  /**
+>   * update_cfs_rq_load_avg - update the cfs_rq's load/util averages
+>   * @now: current time, as per cfs_rq_clock_pelt()
+> @@ -4429,6 +4471,9 @@ dequeue_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
+>  	 */
+>  	if ((flags & (DEQUEUE_SAVE | DEQUEUE_MOVE)) != DEQUEUE_SAVE)
+>  		update_min_vruntime(cfs_rq);
+> +
+> +	if (cfs_rq->nr_running == 0)
+> +		update_idle_cfs_rq_clock_pelt(cfs_rq);
+>  }
+>  
+>  /*
+> @@ -6946,6 +6991,8 @@ static void detach_entity_cfs_rq(struct sched_entity *se);
+>   */
+>  static void migrate_task_rq_fair(struct task_struct *p, int new_cpu)
+>  {
+> +	struct sched_entity *se = &p->se;
+> +
+>  	/*
+>  	 * As blocked tasks retain absolute vruntime the migration needs to
+>  	 * deal with this by subtracting the old and adding the new
+> @@ -6953,7 +7000,6 @@ static void migrate_task_rq_fair(struct task_struct *p, int new_cpu)
+>  	 * the task on the new runqueue.
+>  	 */
+>  	if (READ_ONCE(p->__state) == TASK_WAKING) {
+> -		struct sched_entity *se = &p->se;
+>  		struct cfs_rq *cfs_rq = cfs_rq_of(se);
+>  
+>  		se->vruntime -= u64_u32_load(cfs_rq->min_vruntime);
+> @@ -6965,25 +7011,29 @@ static void migrate_task_rq_fair(struct task_struct *p, int new_cpu)
+>  		 * rq->lock and can modify state directly.
+>  		 */
+>  		lockdep_assert_rq_held(task_rq(p));
+> -		detach_entity_cfs_rq(&p->se);
+> +		detach_entity_cfs_rq(se);
+>  
+>  	} else {
+> +		remove_entity_load_avg(se);
+> +
+>  		/*
+> -		 * We are supposed to update the task to "current" time, then
+> -		 * its up to date and ready to go to new CPU/cfs_rq. But we
+> -		 * have difficulty in getting what current time is, so simply
+> -		 * throw away the out-of-date time. This will result in the
+> -		 * wakee task is less decayed, but giving the wakee more load
+> -		 * sounds not bad.
+> +		 * Here, the task's PELT values have been updated according to
+> +		 * the current rq's clock. But if that clock hasn't been
+> +		 * updated in a while, a substantial idle time will be missed,
+> +		 * leading to an inflation after wake-up on the new rq.
+> +		 *
+> +		 * Estimate the missing time from the cfs_rq last_update_time
+> +		 * and update sched_avg to improve the PELT continuity after
+> +		 * migration.
+>  		 */
+> -		remove_entity_load_avg(&p->se);
+> +		migrate_se_pelt_lag(se);
+>  	}
+>  
+>  	/* Tell new CPU we are migrated */
+> -	p->se.avg.last_update_time = 0;
+> +	se->avg.last_update_time = 0;
+>  
+>  	/* We have migrated, no longer consider this task hot */
+> -	p->se.exec_start = 0;
+> +	se->exec_start = 0;
+>  
+>  	update_scan_period(p, new_cpu);
+>  }
+> diff --git a/kernel/sched/pelt.h b/kernel/sched/pelt.h
+> index 4ff2ed4f8fa1..0380f750adbe 100644
+> --- a/kernel/sched/pelt.h
+> +++ b/kernel/sched/pelt.h
+> @@ -103,6 +103,14 @@ static inline void update_rq_clock_pelt(struct rq *rq, s64 delta)
+>  	rq->clock_pelt += delta;
+>  }
+>  
+> +static inline u64 rq_clock_pelt(struct rq *rq)
+> +{
+> +	lockdep_assert_rq_held(rq);
+> +	assert_clock_updated(rq);
+> +
+> +	return rq->clock_pelt - rq->lost_idle_time;
+> +}
+> +
+>  /*
+>   * When rq becomes idle, we have to check if it has lost idle time
+>   * because it was fully busy. A rq is fully used when the /Sum util_sum
+> @@ -130,17 +138,24 @@ static inline void update_idle_rq_clock_pelt(struct rq *rq)
+>  	 */
+>  	if (util_sum >= divider)
+>  		rq->lost_idle_time += rq_clock_task(rq) - rq->clock_pelt;
+> -}
+>  
+> -static inline u64 rq_clock_pelt(struct rq *rq)
+> -{
+> -	lockdep_assert_rq_held(rq);
+> -	assert_clock_updated(rq);
+> +	 /* The rq is idle, we can sync with clock_task */
+> +	rq->clock_pelt = rq_clock_task(rq);
+>  
+> -	return rq->clock_pelt - rq->lost_idle_time;
+> +	u64_u32_store(rq->enter_idle, rq_clock(rq));
+> +	u64_u32_store(rq->clock_pelt_idle, rq_clock_pelt(rq));
+>  }
+>  
+>  #ifdef CONFIG_CFS_BANDWIDTH
+> +static inline void update_idle_cfs_rq_clock_pelt(struct cfs_rq *cfs_rq)
+> +{
+> +	if (unlikely(cfs_rq->throttle_count))
+> +		u64_u32_store(cfs_rq->clock_pelt_idle, U64_MAX);
+> +	else
+> +		u64_u32_store(cfs_rq->clock_pelt_idle,
+> +			      rq_clock_pelt(rq_of(cfs_rq)));
+> +}
+> +
+>  /* rq->task_clock normalized against any time this cfs_rq has spent throttled */
+>  static inline u64 cfs_rq_clock_pelt(struct cfs_rq *cfs_rq)
+>  {
+> @@ -150,6 +165,7 @@ static inline u64 cfs_rq_clock_pelt(struct cfs_rq *cfs_rq)
+>  	return rq_clock_pelt(rq_of(cfs_rq)) - cfs_rq->throttled_clock_pelt_time;
+>  }
+>  #else
+> +static inline void update_idle_cfs_rq_clock_pelt(struct cfs_rq *cfs_rq) { }
+>  static inline u64 cfs_rq_clock_pelt(struct cfs_rq *cfs_rq)
+>  {
+>  	return rq_clock_pelt(rq_of(cfs_rq));
+> @@ -204,6 +220,7 @@ update_rq_clock_pelt(struct rq *rq, s64 delta) { }
+>  static inline void
+>  update_idle_rq_clock_pelt(struct rq *rq) { }
+>  
+> +static inline void update_idle_cfs_rq_clock_pelt(struct cfs_rq *cfs_rq) { }
+>  #endif
+>  
+>  
+> diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+> index e2cf6e48b165..07014e8cbae2 100644
+> --- a/kernel/sched/sched.h
+> +++ b/kernel/sched/sched.h
+> @@ -641,6 +641,10 @@ struct cfs_rq {
+>  	int			runtime_enabled;
+>  	s64			runtime_remaining;
+>  
+> +	u64			clock_pelt_idle;
+> +#ifndef CONFIG_64BIT
+> +	u64                     clock_pelt_idle_copy;
+> +#endif
+>  	u64			throttled_clock;
+>  	u64			throttled_clock_pelt;
+>  	u64			throttled_clock_pelt_time;
+> @@ -1013,6 +1017,12 @@ struct rq {
+>  	u64			clock_task ____cacheline_aligned;
+>  	u64			clock_pelt;
+>  	unsigned long		lost_idle_time;
+> +	u64			clock_pelt_idle;
+> +	u64			enter_idle;
+> +#ifndef CONFIG_64BIT
+> +	u64			clock_pelt_idle_copy;
+> +	u64			enter_idle_copy;
+> +#endif
+>  
+>  	atomic_t		nr_iowait;
+>  
+> -- 
+> 2.25.1
+> 
