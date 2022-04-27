@@ -2,282 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEF2CC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:42:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 970E9C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:43:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229942AbiD0Kpw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 06:45:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51314 "EHLO
+        id S229946AbiD0KqP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 06:46:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229805AbiD0Kpu (ORCPT
+        with ESMTP id S229930AbiD0KqC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 06:45:50 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A499284D47;
-        Wed, 27 Apr 2022 03:29:18 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 63E961F388;
-        Wed, 27 Apr 2022 10:29:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1651055356; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rJ68u8jd1pGMMpvwjEOkdhZXSNG8xLLCdO1Cn+Xq+gA=;
-        b=gDV+xrS2GbcllQPvhcHYRsIZ5JmMF2CTqkJH2hZzzFtDP0TXmtJZrpUuuojh3t96ebXcco
-        MAc0BQ67VewzXUn+zMa2QyCdDcBvaXF2/Fq9ddaIFETQCt9fte7B7E4o+krYi72nEXZLYM
-        2ZEuZ2TIjVXu6V9ocZWj7LvaM3Bftfc=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1651055356;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rJ68u8jd1pGMMpvwjEOkdhZXSNG8xLLCdO1Cn+Xq+gA=;
-        b=EkM4US2Ur6JYETOSv0kVXMTGm4wfX9NWB6vWzYaHSmzhLafSzMfv1PShz4hn4/DwHAF+XD
-        EYzGw+r4D0s0dBCQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 193711323E;
-        Wed, 27 Apr 2022 10:29:16 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 24OHBfwaaWJ/AQAAMHmgww
-        (envelope-from <hare@suse.de>); Wed, 27 Apr 2022 10:29:16 +0000
-Message-ID: <2082148f-890f-e5f4-c304-b99212aa377e@suse.de>
-Date:   Wed, 27 Apr 2022 12:29:15 +0200
+        Wed, 27 Apr 2022 06:46:02 -0400
+Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25F3F284DB6
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 03:29:28 -0700 (PDT)
+Received: from epcas2p4.samsung.com (unknown [182.195.41.56])
+        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220427095116epoutp032d217dd899e6d1d15c13a5d70d4ca407~puAZsoK8L2124521245epoutp03V
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:51:16 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220427095116epoutp032d217dd899e6d1d15c13a5d70d4ca407~puAZsoK8L2124521245epoutp03V
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1651053076;
+        bh=toikZkWvgf3TsW9HrpdB/VW96mbkCmI+ZUJJ8BdL1vY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=oKlUGyhpOlKUaS5HfmvWAtn5CJoiHntwnjdbKDSR8pE0TBMthXJO2ENOJFEYUi1B4
+         tGGeGKhAWcX6xZtrYvQe/7Nb4sQAP67ErtIvZzRGQ/fGGz9MZMK/89copVrDV1c+rx
+         oZtuho034IMCO5n5P/yYkBpm30vbl5qf9neAyVf0=
+Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
+        20220427095115epcas2p129811a3526d13bd86a48d685ea82ef9b~puAZLkMeY1310213102epcas2p1B;
+        Wed, 27 Apr 2022 09:51:15 +0000 (GMT)
+Received: from epsmges2p3.samsung.com (unknown [182.195.36.68]) by
+        epsnrtp3.localdomain (Postfix) with ESMTP id 4KpDXc0hgjz4x9QB; Wed, 27 Apr
+        2022 09:51:12 +0000 (GMT)
+Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
+        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
+        F2.04.10028.F0219626; Wed, 27 Apr 2022 18:51:11 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTPA id
+        20220427095111epcas2p3b20b677d07fb99f738a83acf4107638d~puAVB7Ndc1069310693epcas2p34;
+        Wed, 27 Apr 2022 09:51:11 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220427095111epsmtrp2a0b011af334c469215f0fad5470eae86~puAVBK16f0395603956epsmtrp2O;
+        Wed, 27 Apr 2022 09:51:11 +0000 (GMT)
+X-AuditID: b6c32a47-573ff7000000272c-08-6269120f9538
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        E8.1D.08924.E0219626; Wed, 27 Apr 2022 18:51:11 +0900 (KST)
+Received: from ubuntu (unknown [10.229.95.128]) by epsmtip2.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220427095110epsmtip2bcb9ed1ed08fea0ed034674121200c58~puAU2Sz5L2747927479epsmtip2V;
+        Wed, 27 Apr 2022 09:51:10 +0000 (GMT)
+Date:   Wed, 27 Apr 2022 18:49:42 +0900
+From:   Jung Daehwan <dh10.jung@samsung.com>
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     Mathias Nyman <mathias.nyman@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "open list:USB XHCI DRIVER" <linux-usb@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Howard Yen <howardyen@google.com>,
+        Jack Pham <jackp@codeaurora.org>,
+        Puma Hsu <pumahsu@google.com>,
+        "J . Avila" <elavila@google.com>, sc.suh@samsung.com,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Subject: Re: [PATCH v4 0/5] add xhci-exynos driver
+Message-ID: <20220427094942.GE145620@ubuntu>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Content-Language: en-US
-To:     Nitesh Shetty <nj.shetty@samsung.com>
-Cc:     chaitanyak@nvidia.com, linux-block@vger.kernel.org,
-        linux-scsi@vger.kernel.org, dm-devel@redhat.com,
-        linux-nvme@lists.infradead.org, linux-fsdevel@vger.kernel.org,
-        axboe@kernel.dk, msnitzer@redhat.com, bvanassche@acm.org,
-        martin.petersen@oracle.com, kbusch@kernel.org, hch@lst.de,
-        Frederick.Knight@netapp.com, osandov@fb.com,
-        lsf-pc@lists.linux-foundation.org, djwong@kernel.org,
-        josef@toxicpanda.com, clm@fb.com, dsterba@suse.com, tytso@mit.edu,
-        jack@suse.com, nitheshshetty@gmail.com, gost.dev@samsung.com,
-        Arnav Dawn <arnav.dawn@samsung.com>,
-        Alasdair Kergon <agk@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        James Smart <james.smart@broadcom.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Naohiro Aota <naohiro.aota@wdc.com>,
-        Johannes Thumshirn <jth@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        linux-kernel@vger.kernel.org
-References: <20220426101241.30100-1-nj.shetty@samsung.com>
- <CGME20220426101921epcas5p341707619b5e836490284a42c92762083@epcas5p3.samsung.com>
- <20220426101241.30100-3-nj.shetty@samsung.com>
-From:   Hannes Reinecke <hare@suse.de>
-Subject: Re: [PATCH v4 02/10] block: Add copy offload support infrastructure
-In-Reply-To: <20220426101241.30100-3-nj.shetty@samsung.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <3ce5f3b8-3c6b-1e83-94c2-84f4ad8aa9dc@kernel.org>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrFJsWRmVeSWpSXmKPExsWy7bCmmS6/UGaSwY4XshZPjixit2hevJ7N
+        4vqf94wW7c8vsFmcP7+B3WLj2x9MFpd3zWGzWLSsldmiedMUVouZa5Utuu7eYHTg9pjV0Mvm
+        cbmvl8ljwaZSj8V7XjJ5bFrVyeaxf+4ado++LasYPT5vkgvgiMq2yUhNTEktUkjNS85PycxL
+        t1XyDo53jjc1MzDUNbS0MFdSyEvMTbVVcvEJ0HXLzAG6U0mhLDGnFCgUkFhcrKRvZ1OUX1qS
+        qpCRX1xiq5RakJJTYF6gV5yYW1yal66Xl1piZWhgYGQKVJiQnfGxfwl7wX/JitbX91gaGC+I
+        djFyckgImEhcX/iItYuRi0NIYAejxMb2LSwQzidGieYn8xghnM+MEo+WNTHBtCzad5oJIrGL
+        UWLBt0VQLU8YJb4s+M0KUsUioCrx9cxFdhCbTUBL4t6PE8wgtoiApsT1v9/BFjILzGGWuLbk
+        BgtIQljASOLW7nVgRbwCOhIr56yEsgUlTs58AlbDKWAncf77QSCbg0NUQEXi1cF6kDkSAis5
+        JDa/bmGHOM9FYn5fDwuELSzx6vgWqLiUxOd3e9kg7GKJXZ9amSCaGxglGh9AXCchYCwx61k7
+        I4jNLJAh8ezPGVaQZRICyhJHbrFAhPkkOg7/ZYcI80p0tAlBdCpLTL88gRXClpQ4+Poc1EQP
+        iYvLlrJDAugco8TJ2RfYJzDKz0Ly2iwk2yBsHYkFuz+xzQJawSwgLbH8HweEqSmxfpf+AkbW
+        VYxiqQXFuempxUYFxvDoTs7P3cQITsRa7jsYZ7z9oHeIkYmD8RCjBAezkgjvl90ZSUK8KYmV
+        ValF+fFFpTmpxYcYTYERNZFZSjQ5H5gL8kriDU0sDUzMzAzNjUwNzJXEeb1SNiQKCaQnlqRm
+        p6YWpBbB9DFxcEo1MC0KPH/t5R1HmYI1trvq+NvXFKdnxwRyaPXUfDnGdd8scsGK/d69u1bt
+        /+74oidyykqmpV8Xxa1Mmf19Uqno8yb5FW3uOh2xNycdSRPyPHReWOxFy8lWNkYj1mLBO0yx
+        ylPL4rdy/5H53XLobdTMSFPHD17Jrx4Y3j2wNP3bjvWPXj2LSZLgLVXYIHD06s7pE7IPcO1Q
+        cZtk/kkx91njy1jOHV9bjV5K8NTVrdCqFlVJuft9Z2IYr9GCbrnK+ZtuV09J/3Og6vKciCqb
+        r5+znlvXn3ZiVd565pvAx/dFdxcymT0ziN3ccsZLTdKSJe/jn8A/LYfSz//W/ft1zqX8w4wF
+        LxblMO5+ESn7PejDxH9KLMUZiYZazEXFiQC4FJXWTQQAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrLLMWRmVeSWpSXmKPExsWy7bCSvC6/UGaSwYKvjBZPjixit2hevJ7N
+        4vqf94wW7c8vsFmcP7+B3WLj2x9MFpd3zWGzWLSsldmiedMUVouZa5Utuu7eYHTg9pjV0Mvm
+        cbmvl8ljwaZSj8V7XjJ5bFrVyeaxf+4ado++LasYPT5vkgvgiOKySUnNySxLLdK3S+DKWD1d
+        smC/eMWZf1YNjCuFuxg5OSQETCQW7TvN1MXIxSEksINR4tK2rWwQCUmJpXNvsEPYwhL3W46w
+        QhQ9YpTo/PQaLMEioCrx9cxFMJtNQEvi3o8TzCC2iICmxPW/38EamAUWMEuca5sHNlVYwEji
+        1u51YEW8AjoSK+esZIaYeo5RYv7jFUwQCUGJkzOfsIDYzEBTb/x7CRTnALKlJZb/4wAJcwrY
+        SZz/fpAFJCwqoCLx6mD9BEbBWUiaZyFpnoXQvICReRWjZGpBcW56brFhgVFearlecWJucWle
+        ul5yfu4mRnAMaWntYNyz6oPeIUYmDsZDjBIczEoivF92ZyQJ8aYkVlalFuXHF5XmpBYfYpTm
+        YFES573QdTJeSCA9sSQ1OzW1ILUIJsvEwSnVwKQQdTvm26XQ7yui95wyWS4RrJneFnqF4bJX
+        dld7QvDVF6V1po//vYm9vFBF7NikS90LzzNGehiFtD/d+KtGYYLBg/PaP/009kUEndqV0jmp
+        5f76H36bFy+akfcsPTdhaeCxB1Hr5no8XGjktnrjr6urry728A4simf+ufXRwceFz3X4qmcu
+        Tvq/ak5HyS8+3Wtn9shrnw8V2WlZa5y3mWdXmO+7afFVTxu/HD+pGLYg/fik2oZIVy3ZeRkf
+        eGoenW7eI6ig8cpZ/Vzy3zdzex0X2+rqveg4fXlj/CrOSQt+zekyONYjlG5q6baReZXNrLMO
+        zZOXHj4ou1TqoXrUp+/Cv9/ny0tzyXEyfHi9WbpXiaU4I9FQi7moOBEA2wgTcxADAAA=
+X-CMS-MailID: 20220427095111epcas2p3b20b677d07fb99f738a83acf4107638d
+X-Msg-Generator: CA
+Content-Type: multipart/mixed;
+        boundary="----s9reHD3dvq.Swzu4OgS99nNlXP7CLa0djtt04wdzZepsPVyA=_2720f_"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220426092019epcas2p2ef5dfde273edaaadc2ff74414f1b2c7a
+References: <CGME20220426092019epcas2p2ef5dfde273edaaadc2ff74414f1b2c7a@epcas2p2.samsung.com>
+        <1650964728-175347-1-git-send-email-dh10.jung@samsung.com>
+        <3ce5f3b8-3c6b-1e83-94c2-84f4ad8aa9dc@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/26/22 12:12, Nitesh Shetty wrote:
-> Introduce blkdev_issue_copy which supports source and destination bdevs,
-> and an array of (source, destination and copy length) tuples.
-> Introduce REQ_COPY copy offload operation flag. Create a read-write
-> bio pair with a token as payload and submitted to the device in order.
-> Read request populates token with source specific information which
-> is then passed with write request.
-> This design is courtesy Mikulas Patocka's token based copy
+------s9reHD3dvq.Swzu4OgS99nNlXP7CLa0djtt04wdzZepsPVyA=_2720f_
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+
+On Tue, Apr 26, 2022 at 02:46:14PM +0200, Krzysztof Kozlowski wrote:
+> On 26/04/2022 11:18, Daehwan Jung wrote:
+> > This patchset is for Samsung Exynos xhci host conroller. It uses xhci-plat
+> > driver mainly and extends some functions by xhci hooks and overrides.
+> > 
+> > This driver supports USB offload which makes Co-processor to use
+> > some memories of xhci. Especially it's useful for USB Audio scenario.
+> > Audio stream would get shortcut because Co-processor directly write/read
+> > data in xhci memories. It could get speed-up using faster memory like SRAM.
+> > That's why this gives vendors flexibilty of memory management. This feature
+> > is done with xhci hooks and overrides.
+> > 
+> > Changes in v2 :
+> > - Fix commit message by adding Signed-off-by in each patch.
+> > - Fix conflict on latest.
+> > 
+> > Changes in v3 :
+> > - Remove export symbols and xhci hooks which xhci-exynos don't need.
+> > - Modify commit message to clarify why it needs to export symbols.
+> > - Check compiling of xhci-exynos.
+> > 
+> > Changes in v4 :
+> > - Modify commit message to clarify why it needs to export symbols.
+> > - Add a function for override of hc driver in xhci-plat.
+> > - Make xhci-exynos extending xhci-plat by xhci hooks and overrides.
+> >   (vendor_init / vendor_cleanup hooks are useful from here v4)
+> > - Change the term (USB offload -> xhci-exynos) on subject of patches.
+> > 
 > 
-> Larger copy will be divided, based on max_copy_sectors,
-> max_copy_range_sector limits.
+> You received comments already that you need to base your work on recent
+> Linux kernel and use scripts/get_maintainers.pl to notify necessary
+> parties. This is the fourth patchset and still you did not do it.
 > 
-> Signed-off-by: Nitesh Shetty <nj.shetty@samsung.com>
-> Signed-off-by: Arnav Dawn <arnav.dawn@samsung.com>
-> ---
->   block/blk-lib.c           | 232 ++++++++++++++++++++++++++++++++++++++
->   block/blk.h               |   2 +
->   include/linux/blk_types.h |  21 ++++
->   include/linux/blkdev.h    |   2 +
->   include/uapi/linux/fs.h   |  14 +++
->   5 files changed, 271 insertions(+)
+> Maybe there is some misunderstanding or trouble using
+> scripts/get_maintainers.pl, so could you clarify:
 > 
-> diff --git a/block/blk-lib.c b/block/blk-lib.c
-> index 09b7e1200c0f..ba9da2d2f429 100644
-> --- a/block/blk-lib.c
-> +++ b/block/blk-lib.c
-> @@ -117,6 +117,238 @@ int blkdev_issue_discard(struct block_device *bdev, sector_t sector,
->   }
->   EXPORT_SYMBOL(blkdev_issue_discard);
->   
-> +/*
-> + * Wait on and process all in-flight BIOs.  This must only be called once
-> + * all bios have been issued so that the refcount can only decrease.
-> + * This just waits for all bios to make it through bio_copy_end_io. IO
-> + * errors are propagated through cio->io_error.
-> + */
-> +static int cio_await_completion(struct cio *cio)
-> +{
-> +	int ret = 0;
-> +	unsigned long flags;
-> +
-> +	spin_lock_irqsave(&cio->lock, flags);
-> +	if (cio->refcount) {
-> +		cio->waiter = current;
-> +		__set_current_state(TASK_UNINTERRUPTIBLE);
-> +		spin_unlock_irqrestore(&cio->lock, flags);
-> +		blk_io_schedule();
-> +		/* wake up sets us TASK_RUNNING */
-> +		spin_lock_irqsave(&cio->lock, flags);
-> +		cio->waiter = NULL;
-> +		ret = cio->io_err;
-> +	}
-> +	spin_unlock_irqrestore(&cio->lock, flags);
-> +	kvfree(cio);
-> +
-> +	return ret;
-> +}
-> +
-> +static void bio_copy_end_io(struct bio *bio)
-> +{
-> +	struct copy_ctx *ctx = bio->bi_private;
-> +	struct cio *cio = ctx->cio;
-> +	sector_t clen;
-> +	int ri = ctx->range_idx;
-> +	unsigned long flags;
-> +	bool wake = false;
-> +
-> +	if (bio->bi_status) {
-> +		cio->io_err = bio->bi_status;
-> +		clen = (bio->bi_iter.bi_sector << SECTOR_SHIFT) - ctx->start_sec;
-> +		cio->rlist[ri].comp_len = min_t(sector_t, clen, cio->rlist[ri].comp_len);
-> +	}
-> +	__free_page(bio->bi_io_vec[0].bv_page);
-> +	kfree(ctx);
-> +	bio_put(bio);
-> +
-> +	spin_lock_irqsave(&cio->lock, flags);
-> +	if (((--cio->refcount) <= 0) && cio->waiter)
-> +		wake = true;
-> +	spin_unlock_irqrestore(&cio->lock, flags);
-> +	if (wake)
-> +		wake_up_process(cio->waiter);
-> +}
-> +
-> +/*
-> + * blk_copy_offload	- Use device's native copy offload feature
-> + * Go through user provide payload, prepare new payload based on device's copy offload limits.
-> + */
-> +int blk_copy_offload(struct block_device *src_bdev, int nr_srcs,
-> +		struct range_entry *rlist, struct block_device *dst_bdev, gfp_t gfp_mask)
-> +{
-> +	struct request_queue *sq = bdev_get_queue(src_bdev);
-> +	struct request_queue *dq = bdev_get_queue(dst_bdev);
-> +	struct bio *read_bio, *write_bio;
-> +	struct copy_ctx *ctx;
-> +	struct cio *cio;
-> +	struct page *token;
-> +	sector_t src_blk, copy_len, dst_blk;
-> +	sector_t remaining, max_copy_len = LONG_MAX;
-> +	unsigned long flags;
-> +	int ri = 0, ret = 0;
-> +
-> +	cio = kzalloc(sizeof(struct cio), GFP_KERNEL);
-> +	if (!cio)
-> +		return -ENOMEM;
-> +	cio->rlist = rlist;
-> +	spin_lock_init(&cio->lock);
-> +
-> +	max_copy_len = min_t(sector_t, sq->limits.max_copy_sectors, dq->limits.max_copy_sectors);
-> +	max_copy_len = min3(max_copy_len, (sector_t)sq->limits.max_copy_range_sectors,
-> +			(sector_t)dq->limits.max_copy_range_sectors) << SECTOR_SHIFT;
-> +
-> +	for (ri = 0; ri < nr_srcs; ri++) {
-> +		cio->rlist[ri].comp_len = rlist[ri].len;
-> +		src_blk = rlist[ri].src;
-> +		dst_blk = rlist[ri].dst;
-> +		for (remaining = rlist[ri].len; remaining > 0; remaining -= copy_len) {
-> +			copy_len = min(remaining, max_copy_len);
-> +
-> +			token = alloc_page(gfp_mask);
-> +			if (unlikely(!token)) {
-> +				ret = -ENOMEM;
-> +				goto err_token;
-> +			}
-> +
-> +			ctx = kzalloc(sizeof(struct copy_ctx), gfp_mask);
-> +			if (!ctx) {
-> +				ret = -ENOMEM;
-> +				goto err_ctx;
-> +			}
-> +			ctx->cio = cio;
-> +			ctx->range_idx = ri;
-> +			ctx->start_sec = dst_blk;
-> +
-> +			read_bio = bio_alloc(src_bdev, 1, REQ_OP_READ | REQ_COPY | REQ_NOMERGE,
-> +					gfp_mask);
-> +			if (!read_bio) {
-> +				ret = -ENOMEM;
-> +				goto err_read_bio;
-> +			}
-> +			read_bio->bi_iter.bi_sector = src_blk >> SECTOR_SHIFT;
-> +			__bio_add_page(read_bio, token, PAGE_SIZE, 0);
-> +			/*__bio_add_page increases bi_size by len, so overwrite it with copy len*/
-> +			read_bio->bi_iter.bi_size = copy_len;
-> +			ret = submit_bio_wait(read_bio);
-> +			bio_put(read_bio);
-> +			if (ret)
-> +				goto err_read_bio;
-> +
-> +			write_bio = bio_alloc(dst_bdev, 1, REQ_OP_WRITE | REQ_COPY | REQ_NOMERGE,
-> +					gfp_mask);
-> +			if (!write_bio) {
-> +				ret = -ENOMEM;
-> +				goto err_read_bio;
-> +			}
-> +			write_bio->bi_iter.bi_sector = dst_blk >> SECTOR_SHIFT;
-> +			__bio_add_page(write_bio, token, PAGE_SIZE, 0);
-> +			/*__bio_add_page increases bi_size by len, so overwrite it with copy len*/
-> +			write_bio->bi_iter.bi_size = copy_len;
-> +			write_bio->bi_end_io = bio_copy_end_io;
-> +			write_bio->bi_private = ctx;
-> +
-> +			spin_lock_irqsave(&cio->lock, flags);
-> +			++cio->refcount;
-> +			spin_unlock_irqrestore(&cio->lock, flags);
-> +
-> +			submit_bio(write_bio);
-> +			src_blk += copy_len;
-> +			dst_blk += copy_len;
-> +		}
-> +	}
-> +
+> 1. What is this based on? Output of: git describe
 
-Hmm. I'm not sure if I like the copy loop.
-What I definitely would do is to allocate the write bio before reading 
-data; after all, if we can't allocate the write bio reading is pretty 
-much pointless.
+url = https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next
+fetch = +refs/heads/*:refs/remotes/origin/*
 
-But the real issue I have with this is that it's doing synchronous 
-reads, thereby limiting the performance.
+or
 
-Can't you submit the write bio from the end_io function of the read bio?
-That would disentangle things, and we should be getting a better 
-performance.
+url = https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+fetch = +refs/heads/*:refs/remotes/origin/*
 
-Cheers,
+> 
+> 2. What does the scripts/get_maintainers.pl print when you run on this
+> patchset?
 
-Hannes
--- 
-Dr. Hannes Reinecke		           Kernel Storage Architect
-hare@suse.de			                  +49 911 74053 688
-SUSE Software Solutions Germany GmbH, Maxfeldstr. 5, 90409 Nürnberg
-HRB 36809 (AG Nürnberg), GF: Felix Imendörffer
+I don't see your name in xhci even for whole usb/host directory.
+I see same result on above 2 gits.
+
+jdh@PlatFormDev3:~/works/mainline/linux-next$ ./scripts/get_maintainer.pl drivers/usb/host/
+Greg Kroah-Hartman <gregkh@linuxfoundation.org> (supporter:USB SUBSYSTEM,commit_signer:170/184=92%)
+Mathias Nyman <mathias.nyman@linux.intel.com> (commit_signer:52/184=28%,authored:25/184=14%)
+Alan Stern <stern@rowland.harvard.edu> (commit_signer:30/184=16%)
+Chunfeng Yun <chunfeng.yun@mediatek.com> (commit_signer:23/184=12%,authored:21/184=11%)
+linux-usb@vger.kernel.org (open list:USB SUBSYSTEM)
+linux-kernel@vger.kernel.org (open list)
+
+> 
+
+In fact, I manually tried adding you as you commendted previous patchset.
+But, It seems you changed email id and domain..
+
+Best Regards,
+Jung Daehwan
+
+> 
+> Best regards,
+> Krzysztof
+> 
+
+------s9reHD3dvq.Swzu4OgS99nNlXP7CLa0djtt04wdzZepsPVyA=_2720f_
+Content-Type: text/plain; charset="utf-8"
+
+
+------s9reHD3dvq.Swzu4OgS99nNlXP7CLa0djtt04wdzZepsPVyA=_2720f_--
