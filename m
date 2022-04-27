@@ -2,92 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2FE9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 03:07:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19794C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 03:07:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357375AbiD0DKa (ORCPT
+        id S1357384AbiD0DKd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 23:10:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60396 "EHLO
+        Tue, 26 Apr 2022 23:10:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357362AbiD0DJ6 (ORCPT
+        with ESMTP id S1357356AbiD0DKV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 23:09:58 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFEBD35DC8
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 20:06:48 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id j6so693997ejc.13
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Apr 2022 20:06:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5pUdY4DuhndvUjRCdZpuhyNHEEZPCX6wjZH7Y0BBjOs=;
-        b=MMzKYlNTUYW6BDIRK8K13taSCkVye8khVNBJGeE9UsfetHvXRw2ROzem+96mVFCZN7
-         b5LWUcoeCd2yM+yq0dJb7zMfvK/wlsIYSeqnQiW1y15LcVd63/goFL/WOf2OEG5cB+pm
-         86JnyL1PFwTSMhYQb6rr1aM5oR3HtVSNMcCGzwYjMCZco3bBKcdHaF6eQF0tY8s2FUO9
-         epSGkQoT9TnG4+Gf941Qyc30HgUsrhaIc57yj+57cadLLUTIt0lcNubLzaXPzL0/cd9Y
-         bISfSkPCVFFgnYCyTqZgOrgYJUFPkSet1WHiONHpCa8oMzeuV3ey1PWpoU7eLvjkrg6d
-         A1Hg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5pUdY4DuhndvUjRCdZpuhyNHEEZPCX6wjZH7Y0BBjOs=;
-        b=1pn3dVIEjK3w3ElkTSS189a3VgXZLiZaoP0A9C42PHypSGc1xnF4mHoaoyFFUjMUXf
-         FrGp7uKPuqNbpsLODkDHUN2/JVdVY61io2/XqYxx3czYNccupINhXx/KQElsH4te6lkW
-         4NDI2zQMy6NANpVerMMspnCQ4QVMMjfsQV42p9orEsxexTm4R9PNlAwDe4tyRT0AfQvR
-         k/QKsk96sqOY7+1Spd+Qi9NeVWUaBbzuZxpz/7zj+3/e8c5pKvEiUXNUYWFH5cNz7jnH
-         oiLMMcNGSx6GehIsRaHbD5FJAWx2iKN9ItEHz756W2FtP9/HnKzgAtIXOKsGqDKu0CXk
-         bx5A==
-X-Gm-Message-State: AOAM532Qh8GDKIYpnS6YHfyL2wMSdiVu3zHRNgAZvp9JIhV1i6CdSP05
-        AhR8JrPIdLvxWVYqcjpTMPVL1QjJ69qLcv0SzNLkzc9qbII=
-X-Google-Smtp-Source: ABdhPJyEXCuSN1HclOa7UelXGrhp+PaWiRDicL+m2sYepa12vT+aKEZLSjwZ6Kd/41ciQ06EOuYLgEs6KrVCNPXG9ao=
-X-Received: by 2002:a17:906:314e:b0:6f0:659:963 with SMTP id
- e14-20020a170906314e00b006f006590963mr24850096eje.358.1651028807135; Tue, 26
- Apr 2022 20:06:47 -0700 (PDT)
+        Tue, 26 Apr 2022 23:10:21 -0400
+Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 401363616B;
+        Tue, 26 Apr 2022 20:07:02 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VBQb5qj_1651028815;
+Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VBQb5qj_1651028815)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 27 Apr 2022 11:06:59 +0800
+From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To:     rafael@kernel.org
+Cc:     daniel.lezcano@linaro.org, amitk@kernel.org, rui.zhang@intel.com,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH 2/2] tools/thermal: remove unneeded semicolon
+Date:   Wed, 27 Apr 2022 11:06:19 +0800
+Message-Id: <20220427030619.81556-2-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
+In-Reply-To: <20220427030619.81556-1-jiapeng.chong@linux.alibaba.com>
+References: <20220427030619.81556-1-jiapeng.chong@linux.alibaba.com>
 MIME-Version: 1.0
-References: <20220426181925.3940286-1-dlatypov@google.com> <20220426181925.3940286-2-dlatypov@google.com>
- <CABVgOSkqymYzwaQ68AdEC5yake9VT8HkQmqbyi+9-bg1Jk1UAQ@mail.gmail.com>
-In-Reply-To: <CABVgOSkqymYzwaQ68AdEC5yake9VT8HkQmqbyi+9-bg1Jk1UAQ@mail.gmail.com>
-From:   Daniel Latypov <dlatypov@google.com>
-Date:   Tue, 26 Apr 2022 22:06:35 -0500
-Message-ID: <CAGS_qxrowBiRBBhNmo+RyQSR6NQphkzx1k3HZ7KqXUNDZFZDzw@mail.gmail.com>
-Subject: Re: [PATCH 2/3] kunit: add ability to specify suite-level init and
- exit functions
-To:     David Gow <davidgow@google.com>
-Cc:     Brendan Higgins <brendanhiggins@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        KUnit Development <kunit-dev@googlegroups.com>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 8:56 PM David Gow <davidgow@google.com> wrote:
-> >
-> >  static size_t kunit_suite_counter = 1;
-> >
-> > -static void kunit_print_suite_end(struct kunit_suite *suite)
-> > +static void kunit_print_suite_end(struct kunit_suite *suite, int init_err)
->
-> A part of me feels that it'd be nicer to have the init_err be part of
-> struct kunit_suite, and have kunit_suite_has_succeeded() take it into
-> account. It could go either way, though -- WDYT?
+Fix the following coccicheck warnings:
 
-Yeah, passing it around as a parameter felt a bit icky.
-But I think adding it in as a field feels worse.
+./tools/thermal/thermometer/thermometer.c:147:3-4: Unneeded semicolon.
 
-Another thought: perhaps have this function take a `kunit_status`
-parameter instead?
-Moving the ?: expression below out into the caller isn't that bad, imo.
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+---
+ tools/thermal/thermometer/thermometer.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->
->
-> >  {
-> > +       enum kunit_status status =
-> > +               init_err ? KUNIT_FAILURE : kunit_suite_has_succeeded(suite);
-> > +
+diff --git a/tools/thermal/thermometer/thermometer.c b/tools/thermal/thermometer/thermometer.c
+index 914986f20a37..1a87a0a77f9f 100644
+--- a/tools/thermal/thermometer/thermometer.c
++++ b/tools/thermal/thermometer/thermometer.c
+@@ -144,7 +144,7 @@ static int configuration_init(const char *path, struct configuration *config)
+ 		if (!node) {
+ 			ERROR("Missing node name '%d'\n", i);
+ 			return -1;
+-		};
++		}
+ 
+ 		if (!config_setting_lookup_string(node, "name", &name)) {
+ 			ERROR("Thermal zone name not found\n");
+-- 
+2.20.1.7.g153144c
+
