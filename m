@@ -2,68 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7A1FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 00:49:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4846C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 00:50:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356491AbiD0Aw1 (ORCPT
+        id S1356514AbiD0Axg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Apr 2022 20:52:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40546 "EHLO
+        Tue, 26 Apr 2022 20:53:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347338AbiD0AwU (ORCPT
+        with ESMTP id S1356495AbiD0Ax1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Apr 2022 20:52:20 -0400
-Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C23FA5F8CE;
-        Tue, 26 Apr 2022 17:49:10 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R511e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0VBPajTW_1651020547;
-Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0VBPajTW_1651020547)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 27 Apr 2022 08:49:08 +0800
-From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     dmitry.torokhov@gmail.com
-Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH -next] Input: Remove unnecessary print function dev_err()
-Date:   Wed, 27 Apr 2022 08:49:06 +0800
-Message-Id: <20220427004906.129893-1-yang.lee@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        Tue, 26 Apr 2022 20:53:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E5912089;
+        Tue, 26 Apr 2022 17:50:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5E53DB8244F;
+        Wed, 27 Apr 2022 00:50:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0FC73C385AD;
+        Wed, 27 Apr 2022 00:50:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651020612;
+        bh=5ugFcVFrOmmS9Q8uSz+4TjYa6aVuDjAntW4uD8UynZY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=pAPNnXXEyE4nya2VSXNhs71bxP9T1wlsCGw2bB0EXVMLkKAC5Nqlks3ZaXRf0f8/m
+         S94m0uJHdR9Mx2KuO36FJ8iGA4x7kTrA3+OSrll1ogDiEh802lN/UY2BgR3ZRcpJJm
+         XmyTJyO/PWbP2M8Lw2TECVCLljVKaSkuiEvfwm8XW96VDmcAuGtjOcWrqDDIdXu6mu
+         ROTZRernPK8Y94H0cFIsqjH/gIdEgpqRjtEErV0m4WHkoO//n9QeeA4FxWmSV/XLg5
+         DO191wF4qG5MKs1Z/cUIAOYUtXyTjm8RqcfF+tW9ZoeL6NE8PhcpLe5b7ufPNIwoqt
+         qbz7PxPJ8XaNA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EA21EF03840;
+        Wed, 27 Apr 2022 00:50:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 0/2] net: Remove unused __SLOW_DOWN_IO
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165102061195.18100.14728173281862395377.git-patchwork-notify@kernel.org>
+Date:   Wed, 27 Apr 2022 00:50:11 +0000
+References: <20220425212644.1659070-1-helgaas@kernel.org>
+In-Reply-To: <20220425212644.1659070-1-helgaas@kernel.org>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     kuba@kernel.org, davem@davemloft.net, pabeni@redhat.com,
+        3chas3@gmail.com, linux-atm-general@lists.sourceforge.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bhelgaas@google.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The print function dev_err() is redundant because
-platform_get_irq() already prints an error.
+Hello:
 
-Eliminate the follow coccicheck warning:
-./drivers/input/joystick/sensehat-joystick.c:102:2-9: line 102 is
-redundant because platform_get_irq() already prints an error
+This series was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
----
- drivers/input/joystick/sensehat-joystick.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+On Mon, 25 Apr 2022 16:26:42 -0500 you wrote:
+> From: Bjorn Helgaas <bhelgaas@google.com>
+> 
+> Remove unused mentions of __SLOW_DOWN_IO.
+> 
+> Bjorn Helgaas (2):
+>   net: wan: atp: remove unused eeprom_delay()
+>   net: remove comments that mention obsolete __SLOW_DOWN_IO
+> 
+> [...]
 
-diff --git a/drivers/input/joystick/sensehat-joystick.c b/drivers/input/joystick/sensehat-joystick.c
-index 5ad1fe4ff496..a84df39d3b2f 100644
---- a/drivers/input/joystick/sensehat-joystick.c
-+++ b/drivers/input/joystick/sensehat-joystick.c
-@@ -98,10 +98,8 @@ static int sensehat_joystick_probe(struct platform_device *pdev)
- 	}
- 
- 	irq = platform_get_irq(pdev, 0);
--	if (irq < 0) {
--		dev_err(&pdev->dev, "Could not retrieve interrupt request");
-+	if (irq < 0)
- 		return irq;
--	}
- 
- 	error = devm_request_threaded_irq(&pdev->dev, irq,
- 					  NULL, sensehat_joystick_report,
+Here is the summary with links:
+  - [1/2] net: wan: atp: remove unused eeprom_delay()
+    https://git.kernel.org/netdev/net-next/c/dac173db114d
+  - [2/2] net: remove comments that mention obsolete __SLOW_DOWN_IO
+    https://git.kernel.org/netdev/net-next/c/e39f63fe0d94
+
+You are awesome, thank you!
 -- 
-2.20.1.7.g153144c
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
