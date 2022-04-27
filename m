@@ -2,427 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FBABC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:47:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A8ECC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 10:47:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230218AbiD0Kuw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 06:50:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35846 "EHLO
+        id S229872AbiD0Ku4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 06:50:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230096AbiD0KuN (ORCPT
+        with ESMTP id S230172AbiD0KuP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 06:50:13 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4005436A76C
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 03:21:07 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 715AE1480;
-        Wed, 27 Apr 2022 03:15:22 -0700 (PDT)
-Received: from [10.0.0.20] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 184833F774;
-        Wed, 27 Apr 2022 03:15:20 -0700 (PDT)
-Message-ID: <cf4288be-3f1c-5e6b-a3e9-163b9e4eb06f@arm.com>
-Date:   Wed, 27 Apr 2022 11:15:05 +0100
+        Wed, 27 Apr 2022 06:50:15 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86E4F36CE14;
+        Wed, 27 Apr 2022 03:21:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651054869; x=1682590869;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=t6kyq7AiYQ2tz2vU/N/RsGfuRMNtYSu1eleATTJMBgM=;
+  b=TnqYVZG+H4a5bjQXFK61ZcVEjKfHYx75H4q1AmhrO3/vbStsyubf+vkm
+   I8QJo+CkUMBQBBOXiBEoDx1oOWpU+TJjkDT47eoVC2RLRY8ktTZfEQgk1
+   QEEHEXJJB9C6ei6uMsVmyTBk+9oKoGcvOWazTemj6KF9psjU5HCKfDX3I
+   xiWxrylwUHu8qaYoLCEmn0JBoCZx7egbDGe4Kj6hpv2Hta3nBtUjb5fWV
+   uIrtkDbf9H3BwcFG2iy3QjXuTbtS8CBeW3Gh9nSgGNQ9psoFz7uMI73T6
+   WYz3x1BQJMZ/OGW1YihEcXk75/tU40rNOhRXbeZFJtUaE9Rs46bqzpIJG
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="263469525"
+X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
+   d="scan'208";a="263469525"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2022 02:57:40 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
+   d="scan'208";a="650626768"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 27 Apr 2022 02:57:38 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1njeQU-0004ZY-0k;
+        Wed, 27 Apr 2022 09:57:38 +0000
+Date:   Wed, 27 Apr 2022 17:56:41 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Willy Tarreau <w@1wt.eu>, netdev@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Moshe Kol <moshe.kol@mail.huji.ac.il>,
+        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
+        Amit Klein <aksecurity@gmail.com>,
+        linux-kernel@vger.kernel.org, Willy Tarreau <w@1wt.eu>,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>
+Subject: Re: [PATCH net 1/7] secure_seq: return the full 64-bit of the siphash
+Message-ID: <202204271705.VrWNPv7n-lkp@intel.com>
+References: <20220427065233.2075-2-w@1wt.eu>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.8.0
-Subject: Re: [PATCH v6 2/7] sched/fair: Decay task PELT values during wakeup
- migration
-Content-Language: en-US
-To:     Vincent Guittot <vincent.guittot@linaro.org>
-Cc:     peterz@infradead.org, mingo@redhat.com,
-        linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
-        morten.rasmussen@arm.com, chris.redpath@arm.com, qperret@google.com
-References: <20220426093506.3415588-1-vincent.donnefort@arm.com>
- <20220426093506.3415588-3-vincent.donnefort@arm.com>
- <20220426164116.GA24773@vingu-book>
-From:   Vincent Donnefort <vincent.donnefort@arm.com>
-In-Reply-To: <20220426164116.GA24773@vingu-book>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220427065233.2075-2-w@1wt.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Willy,
 
+I love your patch! Yet something to improve:
 
-On 26/04/2022 17:41, Vincent Guittot wrote:
-> Hi Vincent,
-> 
-> Le mardi 26 avril 2022 ï¿½ 10:35:01 (+0100), Vincent Donnefort a ï¿½crit :
->> Before being migrated to a new CPU, a task sees its PELT values
->> synchronized with rq last_update_time. Once done, that same task will also
->> have its sched_avg last_update_time reset. This means the time between
->> the migration and the last clock update (B) will not be accounted for in
->> util_avg and a discontinuity will appear. This issue is amplified by the
->> PELT clock scaling. If the clock hasn't been updated while the CPU is
->> idle, clock_pelt will not be aligned with clock_task and that time (A)
->> will be also lost.
->>
->>     ---------|----- A -----|-----------|------- B -----|>
->>          clock_pelt   clock_task     clock            now
->>
->> This is especially problematic for asymmetric CPU capacity systems which
->> need stable util_avg signals for task placement and energy estimation.
->>
->> Ideally, this problem would be solved by updating the runqueue clocks
->> before the migration. But that would require taking the runqueue lock
->> which is quite expensive [1]. Instead estimate the missing time and update
->> the task util_avg with that value:
->>
->>    A + B = clock_task - clock_pelt + sched_clock_cpu() - clock
->>
->> sched_clock_cpu() is a costly functinon. Limit the usage to the case where
->> the source CPU is idle as we know this is when the clock is having the
->> biggest risk of being outdated.
->>
->> Neither clock_task, clock_pelt nor clock can be accessed without the
->> runqueue lock. We then need to store those values in a timestamp variable
->> which can be accessed during the migration. rq's enter_idle will give the
->> wall-clock time when the rq went idle. We have then:
->>
->>    B = sched_clock_cpu() - rq->enter_idle.
->>
->> Then, to catch-up the PELT clock scaling (A), two cases:
->>
->>    * !CFS_BANDWIDTH: We can simply use clock_task(). This value is stored
->>      in rq's clock_pelt_idle, before the rq enters idle. The estimated time
->>      is then:
->>
->>        rq->clock_pelt_idle + sched_clock_cpu() - rq->enter_idle.
->>
->>    * CFS_BANDWIDTH: We can't catch-up with clock_task because of the
->>      throttled_clock_task_time offset. cfs_rq's clock_pelt_idle is then
->>      giving the PELT clock when the cfs_rq becomes idle. This gives:
->>
->>        A = rq->clock_pelt_idle - cfs_rq->clock_pelt_idle
->>
->>      And gives the following estimated time:
->>
->>        cfs_rq->last_update_time +
->>        rq->clock_pelt_idle - cfs_rq->clock_pelt_idle + (A)
->>        sched_clock_cpu() - rq->enter_idle (B)
->>
->> The (B) part of the missing time is however an estimation that doesn't
->> take into account IRQ and Paravirt time.
->>
->> [1] https://lore.kernel.org/all/20190709115759.10451-1-chris.redpath@arm.com/
->>
->> Signed-off-by: Vincent Donnefort <vincent.donnefort@arm.com>
->>
->> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
->> index abd1feeec0c2..1256e2c0e2e2 100644
->> --- a/kernel/sched/fair.c
->> +++ b/kernel/sched/fair.c
->> @@ -3694,6 +3694,48 @@ static inline void add_tg_cfs_propagate(struct cfs_rq *cfs_rq, long runnable_sum
->>   
->>   #endif /* CONFIG_FAIR_GROUP_SCHED */
->>   
->> +#ifdef CONFIG_NO_HZ_COMMON
->> +static inline void migrate_se_pelt_lag(struct sched_entity *se)
->> +{
->> +	struct cfs_rq *cfs_rq;
->> +	struct rq *rq;
->> +	bool is_idle;
->> +	u64 now;
->> +
->> +	cfs_rq = cfs_rq_of(se);
->> +	rq = rq_of(cfs_rq);
->> +
->> +	rcu_read_lock();
->> +	is_idle = is_idle_task(rcu_dereference(rq->curr));
->> +	rcu_read_unlock();
->> +
->> +	/*
->> +	 * The lag estimation comes with a cost we don't want to pay all the
->> +	 * time. Hence, limiting to the case where the source CPU is idle and
->> +	 * we know we are at the greatest risk to have an outdated clock.
->> +	 */
->> +	if (!is_idle)
->> +		return;
->> +
->> +#ifdef CONFIG_CFS_BANDWIDTH
->> +	now = u64_u32_load(cfs_rq->clock_pelt_idle);
->> +	/* The clock has been stopped for throttling */
->> +	if (now == U64_MAX)
->> +		return;
->> +
->> +	now += cfs_rq_last_update_time(cfs_rq);
->> +	now -= u64_u32_load(rq->clock_pelt_idle);
-> 
-> This is a bit difficult to read and follow.
-> 
-> we should have
-> /* start at the last cfs pelt update time */
-> now = cfs_rq_last_update_time(cfs_rq);
-> /* Add delta between cfs rq becoming idle and rq becoming idle */
-> now += u64_u32_load(cfs_rq->clock_pelt_idle); - u64_u32_load(rq->clock_pelt_idle);
-> 
-> But IIUC, you started with u64_u32_load(cfs_rq->clock_pelt_idle) to dectect throttled case
+[auto build test ERROR on net/master]
 
-That is correct.
+url:    https://github.com/intel-lab-lkp/linux/commits/Willy-Tarreau/insufficient-TCP-source-port-randomness/20220427-145651
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 71cffebf6358a7f5031f5b208bbdc1cb4db6e539
+config: i386-randconfig-r026-20220425 (https://download.01.org/0day-ci/archive/20220427/202204271705.VrWNPv7n-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/01b26e522b598adf346b809075880feab3dcdc08
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Willy-Tarreau/insufficient-TCP-source-port-randomness/20220427-145651
+        git checkout 01b26e522b598adf346b809075880feab3dcdc08
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
-> 
-> All this would deserve a comment explaining what we are computing here at least
-And that would also helped me to identify that this part is wrong.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-It should be rq->clock_pelt_idle - cfs_rq->clock_pelt_idle and not the
-opposite, as rq->clock_pelt_idle is taken _after_ cfs_rq's. (especially
-at idle time, rq's clock_pelt_idle is catching up with clock_task, while
-cfs_rq is not).
+All errors (new ones prefixed by >>):
 
-> 
-> 
->> +#else
->> +	now = u64_u32_load(rq->clock_pelt_idle);
->> +#endif
->> +	now += sched_clock_cpu(cpu_of(rq)) - u64_u32_load(rq->enter_idle);
->> +
->> +	__update_load_avg_blocked_se(now, se);
->> +}
->> +#else
->> +static void migrate_se_pelt_lag(struct sched_entity *se) {}
->> +#endif
->> +
->>   /**
->>    * update_cfs_rq_load_avg - update the cfs_rq's load/util averages
->>    * @now: current time, as per cfs_rq_clock_pelt()
->> @@ -4429,6 +4471,9 @@ dequeue_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
->>   	 */
->>   	if ((flags & (DEQUEUE_SAVE | DEQUEUE_MOVE)) != DEQUEUE_SAVE)
->>   		update_min_vruntime(cfs_rq);
->> +
->> +	if (cfs_rq->nr_running == 0)
->> +		update_idle_cfs_rq_clock_pelt(cfs_rq);
->>   }
->>   
->>   /*
->> @@ -6946,6 +6991,8 @@ static void detach_entity_cfs_rq(struct sched_entity *se);
->>    */
->>   static void migrate_task_rq_fair(struct task_struct *p, int new_cpu)
->>   {
->> +	struct sched_entity *se = &p->se;
->> +
->>   	/*
->>   	 * As blocked tasks retain absolute vruntime the migration needs to
->>   	 * deal with this by subtracting the old and adding the new
->> @@ -6953,7 +7000,6 @@ static void migrate_task_rq_fair(struct task_struct *p, int new_cpu)
->>   	 * the task on the new runqueue.
->>   	 */
->>   	if (READ_ONCE(p->__state) == TASK_WAKING) {
->> -		struct sched_entity *se = &p->se;
->>   		struct cfs_rq *cfs_rq = cfs_rq_of(se);
->>   
->>   		se->vruntime -= u64_u32_load(cfs_rq->min_vruntime);
->> @@ -6965,25 +7011,29 @@ static void migrate_task_rq_fair(struct task_struct *p, int new_cpu)
->>   		 * rq->lock and can modify state directly.
->>   		 */
->>   		lockdep_assert_rq_held(task_rq(p));
->> -		detach_entity_cfs_rq(&p->se);
->> +		detach_entity_cfs_rq(se);
->>   
->>   	} else {
->> +		remove_entity_load_avg(se);
->> +
->>   		/*
->> -		 * We are supposed to update the task to "current" time, then
->> -		 * its up to date and ready to go to new CPU/cfs_rq. But we
->> -		 * have difficulty in getting what current time is, so simply
->> -		 * throw away the out-of-date time. This will result in the
->> -		 * wakee task is less decayed, but giving the wakee more load
->> -		 * sounds not bad.
->> +		 * Here, the task's PELT values have been updated according to
->> +		 * the current rq's clock. But if that clock hasn't been
->> +		 * updated in a while, a substantial idle time will be missed,
->> +		 * leading to an inflation after wake-up on the new rq.
->> +		 *
->> +		 * Estimate the missing time from the cfs_rq last_update_time
->> +		 * and update sched_avg to improve the PELT continuity after
->> +		 * migration.
->>   		 */
->> -		remove_entity_load_avg(&p->se);
->> +		migrate_se_pelt_lag(se);
->>   	}
->>   
->>   	/* Tell new CPU we are migrated */
->> -	p->se.avg.last_update_time = 0;
->> +	se->avg.last_update_time = 0;
->>   
->>   	/* We have migrated, no longer consider this task hot */
->> -	p->se.exec_start = 0;
->> +	se->exec_start = 0;
->>   
->>   	update_scan_period(p, new_cpu);
->>   }
->> diff --git a/kernel/sched/pelt.h b/kernel/sched/pelt.h
->> index 4ff2ed4f8fa1..0380f750adbe 100644
->> --- a/kernel/sched/pelt.h
->> +++ b/kernel/sched/pelt.h
->> @@ -103,6 +103,14 @@ static inline void update_rq_clock_pelt(struct rq *rq, s64 delta)
->>   	rq->clock_pelt += delta;
->>   }
->>   
->> +static inline u64 rq_clock_pelt(struct rq *rq)
->> +{
->> +	lockdep_assert_rq_held(rq);
->> +	assert_clock_updated(rq);
->> +
->> +	return rq->clock_pelt - rq->lost_idle_time;
->> +}
->> +
->>   /*
->>    * When rq becomes idle, we have to check if it has lost idle time
->>    * because it was fully busy. A rq is fully used when the /Sum util_sum
->> @@ -130,17 +138,24 @@ static inline void update_idle_rq_clock_pelt(struct rq *rq)
->>   	 */
->>   	if (util_sum >= divider)
->>   		rq->lost_idle_time += rq_clock_task(rq) - rq->clock_pelt;
->> -}
->>   
->> -static inline u64 rq_clock_pelt(struct rq *rq)
->> -{
->> -	lockdep_assert_rq_held(rq);
->> -	assert_clock_updated(rq);
->> +	 /* The rq is idle, we can sync with clock_task */
->> +	rq->clock_pelt = rq_clock_task(rq);
->>   
->> -	return rq->clock_pelt - rq->lost_idle_time;
->> +	u64_u32_store(rq->enter_idle, rq_clock(rq));
->> +	u64_u32_store(rq->clock_pelt_idle, rq_clock_pelt(rq));
-> 
-> rq and cfs rq clock pelt can also be updated during ILB/update_blocked_load.
-> So you also need this:
+   ld: net/ipv4/inet_hashtables.o: in function `__inet_hash_connect':
+>> inet_hashtables.c:(.text+0x187d): undefined reference to `__umoddi3'
 
-Ack.
-
-
-> 
-> ---
->   kernel/sched/fair.c |  4 ++++
->   kernel/sched/pelt.h | 18 ++++++++++--------
->   2 files changed, 14 insertions(+), 8 deletions(-)
-> 
-> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> index fa79d31a36bd..3c1d243079a3 100644
-> --- a/kernel/sched/fair.c
-> +++ b/kernel/sched/fair.c
-> @@ -8269,6 +8269,10 @@ static bool __update_blocked_fair(struct rq *rq, bool *done)
->   		if (update_cfs_rq_load_avg(cfs_rq_clock_pelt(cfs_rq), cfs_rq)) {
->   			update_tg_load_avg(cfs_rq);
-> 
-> +			/* sync clock_pelt_idle with last update */
-> +			if (cfs_rq->nr_running == 0)
-> +				update_idle_cfs_rq_clock_pelt(cfs_rq);
-> +
->   			if (cfs_rq == &rq->cfs)
->   				decayed = true;
->   		}
-> diff --git a/kernel/sched/pelt.h b/kernel/sched/pelt.h
-> index 0380f750adbe..6a4dbff8fdd3 100644
-> --- a/kernel/sched/pelt.h
-> +++ b/kernel/sched/pelt.h
-> @@ -61,6 +61,14 @@ static inline void cfs_se_util_change(struct sched_avg *avg)
->   	WRITE_ONCE(avg->util_est.enqueued, enqueued);
->   }
-> 
-> +static inline u64 rq_clock_pelt(struct rq *rq)
-> +{
-> +	lockdep_assert_rq_held(rq);
-> +	assert_clock_updated(rq);
-> +
-> +	return rq->clock_pelt - rq->lost_idle_time;
-> +}
-> +
->   /*
->    * The clock_pelt scales the time to reflect the effective amount of
->    * computation done during the running delta time but then sync back to
-> @@ -78,6 +86,8 @@ static inline void update_rq_clock_pelt(struct rq *rq, s64 delta)
->   	if (unlikely(is_idle_task(rq->curr))) {
->   		/* The rq is idle, we can sync to clock_task */
->   		rq->clock_pelt  = rq_clock_task(rq);
-> +		u64_u32_store(rq->enter_idle, rq_clock(rq));
-> +		u64_u32_store(rq->clock_pelt_idle, rq_clock_pelt(rq));
->   		return;
->   	}
-> 
-> @@ -103,14 +113,6 @@ static inline void update_rq_clock_pelt(struct rq *rq, s64 delta)
->   	rq->clock_pelt += delta;
->   }
-> 
-> -static inline u64 rq_clock_pelt(struct rq *rq)
-> -{
-> -	lockdep_assert_rq_held(rq);
-> -	assert_clock_updated(rq);
-> -
-> -	return rq->clock_pelt - rq->lost_idle_time;
-> -}
-> -
->   /*
->    * When rq becomes idle, we have to check if it has lost idle time
->    * because it was fully busy. A rq is fully used when the /Sum util_sum
-> --
-> 
-> 
-> 
->>   }
->>   
->>   #ifdef CONFIG_CFS_BANDWIDTH
->> +static inline void update_idle_cfs_rq_clock_pelt(struct cfs_rq *cfs_rq)
->> +{
->> +	if (unlikely(cfs_rq->throttle_count))
->> +		u64_u32_store(cfs_rq->clock_pelt_idle, U64_MAX);
->> +	else
->> +		u64_u32_store(cfs_rq->clock_pelt_idle,
->> +			      rq_clock_pelt(rq_of(cfs_rq)));
->> +}
->> +
->>   /* rq->task_clock normalized against any time this cfs_rq has spent throttled */
->>   static inline u64 cfs_rq_clock_pelt(struct cfs_rq *cfs_rq)
->>   {
->> @@ -150,6 +165,7 @@ static inline u64 cfs_rq_clock_pelt(struct cfs_rq *cfs_rq)
->>   	return rq_clock_pelt(rq_of(cfs_rq)) - cfs_rq->throttled_clock_pelt_time;
->>   }
->>   #else
->> +static inline void update_idle_cfs_rq_clock_pelt(struct cfs_rq *cfs_rq) { }
->>   static inline u64 cfs_rq_clock_pelt(struct cfs_rq *cfs_rq)
->>   {
->>   	return rq_clock_pelt(rq_of(cfs_rq));
->> @@ -204,6 +220,7 @@ update_rq_clock_pelt(struct rq *rq, s64 delta) { }
->>   static inline void
->>   update_idle_rq_clock_pelt(struct rq *rq) { }
->>   
->> +static inline void update_idle_cfs_rq_clock_pelt(struct cfs_rq *cfs_rq) { }
->>   #endif
->>   
->>   
->> diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
->> index e2cf6e48b165..07014e8cbae2 100644
->> --- a/kernel/sched/sched.h
->> +++ b/kernel/sched/sched.h
->> @@ -641,6 +641,10 @@ struct cfs_rq {
->>   	int			runtime_enabled;
->>   	s64			runtime_remaining;
->>   
->> +	u64			clock_pelt_idle;
->> +#ifndef CONFIG_64BIT
->> +	u64                     clock_pelt_idle_copy;
->> +#endif
->>   	u64			throttled_clock;
->>   	u64			throttled_clock_pelt;
->>   	u64			throttled_clock_pelt_time;
->> @@ -1013,6 +1017,12 @@ struct rq {
->>   	u64			clock_task ____cacheline_aligned;
->>   	u64			clock_pelt;
->>   	unsigned long		lost_idle_time;
->> +	u64			clock_pelt_idle;
->> +	u64			enter_idle;
->> +#ifndef CONFIG_64BIT
->> +	u64			clock_pelt_idle_copy;
->> +	u64			enter_idle_copy;
->> +#endif
->>   
->>   	atomic_t		nr_iowait;
->>   
->> -- 
->> 2.25.1
->>
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
