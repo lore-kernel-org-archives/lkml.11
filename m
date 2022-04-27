@@ -2,77 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9785CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:24:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B00FAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Apr 2022 16:24:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242855AbiD0Q1N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Apr 2022 12:27:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39734 "EHLO
+        id S243083AbiD0Q1R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Apr 2022 12:27:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243220AbiD0Q0p (ORCPT
+        with ESMTP id S242940AbiD0Q0s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Apr 2022 12:26:45 -0400
+        Wed, 27 Apr 2022 12:26:48 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0F094580C4
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:21:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CDE5956F8F
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:21:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651076370;
+        s=mimecast20190719; t=1651076377;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=cpdTKSdO+rieFpHnkUAZpM/6Dw8rA4JkcSTNkjZ8rq0=;
-        b=dw/IKhS1vbgDPbdAkAXZ0s1xwxbO/ohjo79xY/H1Lme3kFBbm/cMVbFGlKaPfvdgxRCfOY
-        6JUdFHZQE7MCI20rQ1u/eWfIpbQx6UWg4mX8NYDae3MZNBWYG7PzR/Gfkx8NrQXYQ70lCc
-        iL3gvvAX666MzwFqRugLcVX1ot8bqrY=
+        bh=j1g4Lo5UORRm0vFgOwsRrO7418gb/Lu+Zn38d1Vgpl4=;
+        b=SHPMDaj5xGPmSOodmUPzixK7/wSmJ4MSqk/GrKhvFylNq/FrKuegxdWdb245FCpnT9Elc0
+        HjS4fVmccpvrZWC5Fdyt4JC7GWXW2sCGJJTYRXpTydcRva7p2KggVe8aZDCzfafXz4b5BU
+        9F686ZGiTu3OGa+4W30hLRzMnyrR42Q=
 Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
  [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-59-6EsW22NlORWuyQ4e-1s00g-1; Wed, 27 Apr 2022 12:19:29 -0400
-X-MC-Unique: 6EsW22NlORWuyQ4e-1s00g-1
-Received: by mail-ed1-f72.google.com with SMTP id dk9-20020a0564021d8900b00425a9c3d40cso1270684edb.7
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:19:28 -0700 (PDT)
+ us-mta-591-8UspmCuOMKWl4eIJ3rM0fg-1; Wed, 27 Apr 2022 12:19:35 -0400
+X-MC-Unique: 8UspmCuOMKWl4eIJ3rM0fg-1
+Received: by mail-ed1-f72.google.com with SMTP id cn27-20020a0564020cbb00b0041b5b91adb5so1258151edb.15
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Apr 2022 09:19:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=cpdTKSdO+rieFpHnkUAZpM/6Dw8rA4JkcSTNkjZ8rq0=;
-        b=g279lVFXGO/i6Zx8a/tBoOmoXf2pzW6iUJp2NND/GO1LlBNI0roG9E0XcYZlrJK7qm
-         GsMqQgCXACo32axlZAk/eQB9bxEeX/MpfQXTGTMOeFydgksef+aljkZBhRRoIsmZuDod
-         qqNeCjo7zITqJpwL2LPzhgf40ROapNG+SEEKPcWJXTRan5h0Vn9VWqvg7DHr9lRvP0TD
-         Y6zEA61oONQWYZzCrawEzvfizv/pvtFiMz0cIy5KHkLIYGnpdWxkwKHTE6sHf/e9jrkT
-         AdydePwuJNbLmf/jkl10PaGYxMn4HxhImrhwL5kX4Rd/5Mn0gS8J62y+poIB49e+as4P
-         GJAg==
-X-Gm-Message-State: AOAM532/I04+wxwr2pC0C++Z+0yIs+gBQ44sSsDvXkYZesJGgWAt6AEX
-        WEUZDG/CBtCMFnJrp8fZES3BKcx9rfLvqPvhRqKa0Sim5uMNc6HpMmijC1ME2Lgf0eqhM3wNEeA
-        uPLf/fsxRhtnd0JWCR1B3hc4Y
-X-Received: by 2002:a05:6402:4004:b0:426:1a0a:a2b8 with SMTP id d4-20020a056402400400b004261a0aa2b8mr2943532eda.241.1651076367941;
-        Wed, 27 Apr 2022 09:19:27 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzRi274/0pJFnefUE34/+I0M2mwYpfNL1VVyniwojXwdGQHhToi5cq0Vivpg5gmlGbu04FBdw==
-X-Received: by 2002:a05:6402:4004:b0:426:1a0a:a2b8 with SMTP id d4-20020a056402400400b004261a0aa2b8mr2943517eda.241.1651076367773;
-        Wed, 27 Apr 2022 09:19:27 -0700 (PDT)
+        bh=j1g4Lo5UORRm0vFgOwsRrO7418gb/Lu+Zn38d1Vgpl4=;
+        b=BzACGuHilb/XPiXB1snYNMQxWYx1iOZJW6ORa8zw7nV7h3e73KnMbWJCVL01Zsz0Lo
+         WSGki2Pgz90w9dV0Rl+pFGn8KYFrshnc/PpBZZQL68+KXYb7QmwrBgsFyF/BoX6i4cmK
+         w8JJVEYY/GXgDpq4vI5X8tpOi7wz6h+j5TrxvwEFHjBI6Elig8/0fxy5xeOMtumTkv6o
+         qwzW+jOR/G8WRhrdheKCICCiWt6H8B4IfZRD1E92Ir2NvBFoRJFMJR+XtFsVCPe8UAKE
+         PBKRkAxRT7DxcryGXp5v5EurFoZy6tF+H7WMDN071akm1NrRMrx9M1RshpZBCguvTNuP
+         UaJw==
+X-Gm-Message-State: AOAM531vHRCFloC0spIlBlbv3rI4nxsYHTCLvJl4AQDaRrMpimr+i32m
+        EHf0QEG0q1hjvHVVpVaPkw+4lWOXb7FKz2iHPLNsFQltAUnRY7+qbFazZy49aWmb85wLZM/BbaG
+        W670ZeL5fu9dZEvfWU0YcqyVC
+X-Received: by 2002:a17:907:3e2a:b0:6f3:aa0c:ab94 with SMTP id hp42-20020a1709073e2a00b006f3aa0cab94mr10805950ejc.23.1651076374584;
+        Wed, 27 Apr 2022 09:19:34 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyjZ6W9xmB5XG3x6XEQmtkDBUgc5GdXJZS/TzhSKPE/kMrcxbEZy+QKYLx6jksmh7d3X6pSNw==
+X-Received: by 2002:a17:907:3e2a:b0:6f3:aa0c:ab94 with SMTP id hp42-20020a1709073e2a00b006f3aa0cab94mr10805925ejc.23.1651076374380;
+        Wed, 27 Apr 2022 09:19:34 -0700 (PDT)
 Received: from ?IPV6:2001:b07:6468:f312:1c09:f536:3de6:228c? ([2001:b07:6468:f312:1c09:f536:3de6:228c])
-        by smtp.googlemail.com with ESMTPSA id t27-20020a1709063e5b00b006f3a94f5194sm3347586eji.77.2022.04.27.09.19.25
+        by smtp.googlemail.com with ESMTPSA id ah14-20020a1709069ace00b006f38e912d3dsm4816355ejc.99.2022.04.27.09.19.32
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Apr 2022 09:19:27 -0700 (PDT)
-Message-ID: <032e22bd-4faa-7a0c-da78-8bf7ee3df31f@redhat.com>
-Date:   Wed, 27 Apr 2022 18:19:25 +0200
+        Wed, 27 Apr 2022 09:19:33 -0700 (PDT)
+Message-ID: <17052637-912d-fee2-094c-d043355e682a@redhat.com>
+Date:   Wed, 27 Apr 2022 18:19:32 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.0
-Subject: Re: [PATCH MANUALSEL 5.15 2/7] KVM: selftests: Silence compiler
- warning in the kvm_page_table_test
+Subject: Re: [PATCH MANUALSEL 5.15 4/7] KVM: x86/mmu: do not allow readers to
+ acquire references to invalid roots
 Content-Language: en-US
 To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
         stable@vger.kernel.org
-Cc:     Thomas Huth <thuth@redhat.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>, shuah@kernel.org,
-        kvm@vger.kernel.org, linux-kselftest@vger.kernel.org
+Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, kvm@vger.kernel.org
 References: <20220427155431.19458-1-sashal@kernel.org>
- <20220427155431.19458-2-sashal@kernel.org>
+ <20220427155431.19458-4-sashal@kernel.org>
 From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220427155431.19458-2-sashal@kernel.org>
+In-Reply-To: <20220427155431.19458-4-sashal@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -80,45 +79,58 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 On 4/27/22 17:54, Sasha Levin wrote:
-> From: Thomas Huth <thuth@redhat.com>
+> From: Paolo Bonzini <pbonzini@redhat.com>
 > 
-> [ Upstream commit 266a19a0bc4fbfab4d981a47640ca98972a01865 ]
+> [ Upstream commit 614f6970aa70242a3f8a8051b01244c029f77b2a ]
 > 
-> When compiling kvm_page_table_test.c, I get this compiler warning
-> with gcc 11.2:
+> Remove the "shared" argument of for_each_tdp_mmu_root_yield_safe, thus ensuring
+> that readers do not ever acquire a reference to an invalid root.  After this
+> patch, all readers except kvm_tdp_mmu_zap_invalidated_roots() treat
+> refcount=0/valid, refcount=0/invalid and refcount=1/invalid in exactly the
+> same way.  kvm_tdp_mmu_zap_invalidated_roots() is different but it also
+> does not acquire a reference to the invalid root, and it cannot see
+> refcount=0/invalid because it is guaranteed to run after
+> kvm_tdp_mmu_invalidate_all_roots().
 > 
-> kvm_page_table_test.c: In function 'pre_init_before_test':
-> ../../../../tools/include/linux/kernel.h:44:24: warning: comparison of
->   distinct pointer types lacks a cast
->     44 |         (void) (&_max1 == &_max2);              \
->        |                        ^~
-> kvm_page_table_test.c:281:21: note: in expansion of macro 'max'
->    281 |         alignment = max(0x100000, alignment);
->        |                     ^~~
+> Opportunistically add a lockdep assertion to the yield-safe iterator.
 > 
-> Fix it by adjusting the type of the absolute value.
-> 
-> Signed-off-by: Thomas Huth <thuth@redhat.com>
-> Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-> Message-Id: <20220414103031.565037-1-thuth@redhat.com>
 > Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 > Signed-off-by: Sasha Levin <sashal@kernel.org>
 > ---
->   tools/testing/selftests/kvm/kvm_page_table_test.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+>   arch/x86/kvm/mmu/tdp_mmu.c | 9 +++++----
+>   1 file changed, 5 insertions(+), 4 deletions(-)
 > 
-> diff --git a/tools/testing/selftests/kvm/kvm_page_table_test.c b/tools/testing/selftests/kvm/kvm_page_table_test.c
-> index 36407cb0ec85..f1ddfe4c4a03 100644
-> --- a/tools/testing/selftests/kvm/kvm_page_table_test.c
-> +++ b/tools/testing/selftests/kvm/kvm_page_table_test.c
-> @@ -278,7 +278,7 @@ static struct kvm_vm *pre_init_before_test(enum vm_guest_mode mode, void *arg)
->   	else
->   		guest_test_phys_mem = p->phys_offset;
->   #ifdef __s390x__
-> -	alignment = max(0x100000, alignment);
-> +	alignment = max(0x100000UL, alignment);
->   #endif
->   	guest_test_phys_mem &= ~(alignment - 1);
+> diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+> index 853780eb033b..7e854313ec3b 100644
+> --- a/arch/x86/kvm/mmu/tdp_mmu.c
+> +++ b/arch/x86/kvm/mmu/tdp_mmu.c
+> @@ -155,14 +155,15 @@ static struct kvm_mmu_page *tdp_mmu_next_root(struct kvm *kvm,
+>   	for (_root = tdp_mmu_next_root(_kvm, NULL, _shared, _only_valid);	\
+>   	     _root;								\
+>   	     _root = tdp_mmu_next_root(_kvm, _root, _shared, _only_valid))	\
+> -		if (kvm_mmu_page_as_id(_root) != _as_id) {			\
+> +		if (kvm_lockdep_assert_mmu_lock_held(_kvm, _shared) &&		\
+> +		    kvm_mmu_page_as_id(_root) != _as_id) {			\
+>   		} else
+>   
+>   #define for_each_valid_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, _shared)	\
+>   	__for_each_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, _shared, true)
+>   
+> -#define for_each_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, _shared)		\
+> -	__for_each_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, _shared, false)
+> +#define for_each_tdp_mmu_root_yield_safe(_kvm, _root, _as_id)			\
+> +	__for_each_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, false, false)
+>   
+>   #define for_each_tdp_mmu_root(_kvm, _root, _as_id)				\
+>   	list_for_each_entry_rcu(_root, &_kvm->arch.tdp_mmu_roots, link,		\
+> @@ -828,7 +829,7 @@ bool __kvm_tdp_mmu_zap_gfn_range(struct kvm *kvm, int as_id, gfn_t start,
+>   {
+>   	struct kvm_mmu_page *root;
+>   
+> -	for_each_tdp_mmu_root_yield_safe(kvm, root, as_id, false)
+> +	for_each_tdp_mmu_root_yield_safe(kvm, root, as_id)
+>   		flush = zap_gfn_range(kvm, root, start, end, can_yield, flush,
+>   				      false);
 >   
 
 Acked-by: Paolo Bonzini <pbonzini@redhat.com>
